@@ -1,4 +1,5 @@
 [![Stories in Ready](https://badge.waffle.io/farmbot/farmbot-dss.png?label=ready&title=Ready)](https://waffle.io/farmbot/farmbot-dss)
+[![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-dss.png)](https://codeclimate.com/github/FarmBot/farmbot-dss)
 
 # Farmbot Decision Support System
 
