@@ -3,7 +3,15 @@
 
 # Farmbot Decision Support System
 
-This Repo.
+This Repo is the Web based side of the decision support system. It is the glue that ties together all other farmbot components and services.
+
+# Developer setup
+
+ 1. `git clone git@github.com:FarmBot/farmbot-web-backend.git`
+ 2. `cd farmbot-web-backend`
+ 3. `bundle install`
+ 4. `rails s`
+ 5. Checkout `http://localhost:3000`
 
 # How to Contribute
 
