@@ -1,2 +1,90 @@
-<h1> Hello, world! </h1>
-<p>The time is now <strong><%= Time.now %></strong></p>
+<nav class="top-bar" data-topbar>
+  <ul class="title-area">
+    <li class="name">
+      <h1><a href="#">Farmbot</a></h1>
+    </li>
+    <li class="toggle-topbar menu-icon"><a href="#">Menu</a></li>
+  </ul>
+
+  <section class="top-bar-section">
+    <!-- Right Nav Section -->
+    <ul class="right">
+      <li class="has-dropdown">
+        <a href="#">Welcome, Rory!</a>
+        <ul class="dropdown">
+          <li><a href="#">Account Settings</a></li>
+        </ul>
+      </li>
+      <li><a href="#">Logout</a></li>
+    </ul>
+
+    <!-- Left Nav Section -->
+    <ul class="left">
+      <li class="active"><a href="#">Dashboard</a></li>
+      <li><a href="#">Farm</a></li>
+      <li><a href="#">Data</a></li>
+      <li><a href="#">Help</a></li>
+    </ul>
+  </section>
+</nav>
+
+<div class="row">
+  <div class="large-6 columns">
+    <h4>Farmbot</h4>
+    
+    <!-- accordion-->
+<dl class="accordion" data-accordion>
+  <dd>
+    <a href="#panel1">Genesis Tracks</a>
+    <div id="panel1" class="content active">
+      <ul>
+        <li>Model: Genesis Tracks</li>
+        <li>Lenght</li>
+        <li>Width</li>
+        <li>Height</li>
+        <li>Installation Date</li>
+      </ul>
+    </div>
+  </dd>
+  <dd>
+    <a href="#panel2">Genesis Gantry</a>
+    <div id="panel2" class="content">
+      
+    </div>
+  </dd>
+  <dd>
+    <a href="#panel3">Richmond Cross-Slide</a>
+    <div id="panel3" class="content">
+      
+    </div>
+  </dd>
+   <dd>
+    <a href="#panel3">Custom Tool Mount</a>
+    <div id="panel3" class="content">
+      
+    </div>
+  </dd>
+</dl>
+    <!-- /accordion-->
+    
+    <h4>Tools</h4>
+    <h4>Sensors</h4>
+  </div>
+  <div class="large-6 columns">
+    <h4>Resource Usage</h4>
+  </div>
+</div>
+
+<div class="row">
+
+  <div class="large-6 columns">
+    <h4>System Information</h4>
+    <h4>Manual Control</h4>
+  </div>
+  
+  <div class="large-6 columns">
+    <h4>Finances</h4>
+  </div>
+  
+</div>
+
