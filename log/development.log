@@ -89,3 +89,124 @@ Started GET "/assets/turbolinks.js?body=1" for 127.0.0.1 at 2014-03-31 06:28:36 
 
 
 Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-03-31 06:28:36 -0700
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-06 11:34:10 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (3.6ms)
+Completed 200 OK in 572ms (Views: 549.7ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/turbolinks.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-06 11:34:11 -0700
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-06 11:34:17 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.4ms)
+Completed 200 OK in 10ms (Views: 9.2ms)
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-06 11:34:18 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.0ms)
+Completed 200 OK in 9ms (Views: 8.4ms)
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-06 11:34:21 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.1ms)
+Completed 200 OK in 11ms (Views: 10.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-06 11:34:35 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.0ms)
+Completed 200 OK in 9ms (Views: 8.7ms)
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-06 11:34:41 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.1ms)
+Completed 200 OK in 14ms (Views: 13.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-06 11:35:04 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.0ms)
+Completed 200 OK in 9ms (Views: 8.5ms)
