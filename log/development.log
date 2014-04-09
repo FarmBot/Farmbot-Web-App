@@ -210,3 +210,104 @@ Processing by HighVoltage::PagesController#show as HTML
   Parameters: {"id"=>"welcome"}
   Rendered pages/welcome.html.erb within layouts/application (0.0ms)
 Completed 200 OK in 9ms (Views: 8.5ms)
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-09 06:46:08 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (1.2ms)
+Completed 500 Internal Server Error in 166ms
+
+ActionView::Template::Error (couldn't find file 'turbolinks'
+  (in /Users/ricardocarlino/coding/farmbot-dss/app/assets/javascripts/application.js:16)):
+    16:     <p class="notice"><%= notice %></p>
+    17:     <p class="alert"><%= alert %></p>
+    18:     <%= yield %>
+    19:     <%= javascript_include_tag "application" %>
+    20:   </body>
+    21: </html>
+  app/views/layouts/application.html.erb:19:in `_app_views_layouts_application_html_erb___2086124100225648697_70187935560720'
+
+
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/rescues/_trace.html.erb (1.3ms)
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/rescues/_request_and_response.html.erb (1.0ms)
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/rescues/template_error.html.erb within rescues/layout (14.3ms)
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.1ms)
+Completed 200 OK in 190ms (Views: 189.9ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.slider.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:48 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:49 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:49 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:49 -0700
