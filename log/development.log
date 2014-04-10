@@ -311,3 +311,1219 @@ Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:49
 
 
 Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-09 06:46:49 -0700
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-10 06:12:37 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (17.1ms)
+Completed 200 OK in 882ms (Views: 881.5ms)
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.1ms)
+Completed 200 OK in 11ms (Views: 10.5ms)
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.slider.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:12:38 -0700
+
+
+Started GET "/sitemap.html" for 127.0.0.1 at 2014-04-10 06:17:28 -0700
+
+ActionController::RoutingError (No route matches [GET] "/sitemap.html"):
+  actionpack (4.1.0) lib/action_dispatch/middleware/debug_exceptions.rb:21:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/show_exceptions.rb:30:in `call'
+  railties (4.1.0) lib/rails/rack/logger.rb:38:in `call_app'
+  railties (4.1.0) lib/rails/rack/logger.rb:20:in `block in call'
+  activesupport (4.1.0) lib/active_support/tagged_logging.rb:68:in `block in tagged'
+  activesupport (4.1.0) lib/active_support/tagged_logging.rb:26:in `tagged'
+  activesupport (4.1.0) lib/active_support/tagged_logging.rb:68:in `tagged'
+  railties (4.1.0) lib/rails/rack/logger.rb:20:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/request_id.rb:21:in `call'
+  rack (1.5.2) lib/rack/methodoverride.rb:21:in `call'
+  rack (1.5.2) lib/rack/runtime.rb:17:in `call'
+  activesupport (4.1.0) lib/active_support/cache/strategy/local_cache_middleware.rb:26:in `call'
+  rack (1.5.2) lib/rack/lock.rb:17:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/static.rb:64:in `call'
+  rack (1.5.2) lib/rack/sendfile.rb:112:in `call'
+  railties (4.1.0) lib/rails/engine.rb:514:in `call'
+  railties (4.1.0) lib/rails/application.rb:144:in `call'
+  rack (1.5.2) lib/rack/lock.rb:17:in `call'
+  rack (1.5.2) lib/rack/content_length.rb:14:in `call'
+  rack (1.5.2) lib/rack/handler/webrick.rb:60:in `service'
+  /Users/ricardocarlino/.rvm/rubies/ruby-2.1.1/lib/ruby/2.1.0/webrick/httpserver.rb:138:in `service'
+  /Users/ricardocarlino/.rvm/rubies/ruby-2.1.1/lib/ruby/2.1.0/webrick/httpserver.rb:94:in `run'
+  /Users/ricardocarlino/.rvm/rubies/ruby-2.1.1/lib/ruby/2.1.0/webrick/server.rb:295:in `block in start_thread'
+
+
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/rescues/_trace.html.erb (1.2ms)
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/routes/_route.html.erb (2.2ms)
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/routes/_table.html.erb (36.8ms)
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/rescues/routing_error.html.erb within rescues/layout (94.2ms)
+
+
+Started GET "/sitemap" for 127.0.0.1 at 2014-04-10 06:17:33 -0700
+
+ActionController::RoutingError (No route matches [GET] "/sitemap"):
+  actionpack (4.1.0) lib/action_dispatch/middleware/debug_exceptions.rb:21:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/show_exceptions.rb:30:in `call'
+  railties (4.1.0) lib/rails/rack/logger.rb:38:in `call_app'
+  railties (4.1.0) lib/rails/rack/logger.rb:20:in `block in call'
+  activesupport (4.1.0) lib/active_support/tagged_logging.rb:68:in `block in tagged'
+  activesupport (4.1.0) lib/active_support/tagged_logging.rb:26:in `tagged'
+  activesupport (4.1.0) lib/active_support/tagged_logging.rb:68:in `tagged'
+  railties (4.1.0) lib/rails/rack/logger.rb:20:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/request_id.rb:21:in `call'
+  rack (1.5.2) lib/rack/methodoverride.rb:21:in `call'
+  rack (1.5.2) lib/rack/runtime.rb:17:in `call'
+  activesupport (4.1.0) lib/active_support/cache/strategy/local_cache_middleware.rb:26:in `call'
+  rack (1.5.2) lib/rack/lock.rb:17:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/static.rb:64:in `call'
+  rack (1.5.2) lib/rack/sendfile.rb:112:in `call'
+  railties (4.1.0) lib/rails/engine.rb:514:in `call'
+  railties (4.1.0) lib/rails/application.rb:144:in `call'
+  rack (1.5.2) lib/rack/lock.rb:17:in `call'
+  rack (1.5.2) lib/rack/content_length.rb:14:in `call'
+  rack (1.5.2) lib/rack/handler/webrick.rb:60:in `service'
+  /Users/ricardocarlino/.rvm/rubies/ruby-2.1.1/lib/ruby/2.1.0/webrick/httpserver.rb:138:in `service'
+  /Users/ricardocarlino/.rvm/rubies/ruby-2.1.1/lib/ruby/2.1.0/webrick/httpserver.rb:94:in `run'
+  /Users/ricardocarlino/.rvm/rubies/ruby-2.1.1/lib/ruby/2.1.0/webrick/server.rb:295:in `block in start_thread'
+
+
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/rescues/_trace.html.erb (1.2ms)
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/routes/_route.html.erb (2.3ms)
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/routes/_table.html.erb (1.1ms)
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/rescues/routing_error.html.erb within rescues/layout (28.5ms)
+
+
+Started GET "/pages/sitemap" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"sitemap"}
+  Rendered pages/sitemap.html.erb within layouts/application (2.0ms)
+Completed 200 OK in 19ms (Views: 19.0ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:40 -0700
+
+
+Started GET "/users/sign_up" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+Processing by Devise::RegistrationsController#new as HTML
+  Rendered devise/shared/_links.erb (2.8ms)
+  Rendered devise/registrations/new.html.erb within layouts/application (134.1ms)
+Completed 200 OK in 170ms (Views: 164.2ms)
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-10 06:17:52 -0700
+
+
+Started POST "/users" for 127.0.0.1 at 2014-04-10 06:18:00 -0700
+Processing by Devise::RegistrationsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"C4IBHSaRzVDRiraj6WS74e3Q7NLwdJ7odd8lnNkpCu0=", "user"=>{"email"=>"rick.carlino@gmail.com", "password"=>"[FILTERED]", "password_confirmation"=>"[FILTERED]"}, "commit"=>"Sign up"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.9540ms
+  MOPED: Retrying connection attempt 1 more time(s). runtime: n/a
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 2.2480ms
+Completed 500 Internal Server Error in 373ms
+
+Moped::Errors::ConnectionFailure (Could not connect to a primary node for replica set #<Moped::Cluster:70230757640220 @seeds=[<Moped::Node resolved_address="127.0.0.1:27017">]>):
+  moped (2.0.0.rc1) lib/moped/cluster.rb:248:in `with_primary'
+  moped (2.0.0.rc1) lib/moped/read_preference/primary.rb:55:in `block in with_node'
+  moped (2.0.0.rc1) lib/moped/read_preference/selectable.rb:65:in `call'
+  moped (2.0.0.rc1) lib/moped/read_preference/selectable.rb:65:in `with_retry'
+  moped (2.0.0.rc1) lib/moped/read_preference/selectable.rb:71:in `rescue in with_retry'
+  moped (2.0.0.rc1) lib/moped/read_preference/selectable.rb:64:in `with_retry'
+  moped (2.0.0.rc1) lib/moped/read_preference/primary.rb:54:in `with_node'
+  moped (2.0.0.rc1) lib/moped/query.rb:127:in `first'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/query_cache.rb:186:in `block in first_with_cache'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/query_cache.rb:135:in `with_cache'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/query_cache.rb:185:in `first_with_cache'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/contextual/mongo.rb:149:in `block in exists?'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/contextual/mongo.rb:447:in `try_cache'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/contextual/mongo.rb:148:in `exists?'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/contextual.rb:20:in `exists?'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/validatable/uniqueness.rb:277:in `validate_root'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/validatable/uniqueness.rb:48:in `block in validate_each'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/validatable/queryable.rb:23:in `with_query'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/validatable/uniqueness.rb:42:in `validate_each'
+  activemodel (4.1.0) lib/active_model/validator.rb:167:in `block in validate'
+  activemodel (4.1.0) lib/active_model/validator.rb:164:in `each'
+  activemodel (4.1.0) lib/active_model/validator.rb:164:in `validate'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:447:in `public_send'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:447:in `block in make_lambda'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:176:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:176:in `block in conditional'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:178:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:178:in `block in conditional'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:86:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:86:in `run_callbacks'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/interceptable.rb:138:in `run_callbacks'
+  activemodel (4.1.0) lib/active_model/validations.rb:376:in `run_validations!'
+  activemodel (4.1.0) lib/active_model/validations/callbacks.rb:111:in `block in run_validations!'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:113:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:113:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:166:in `block in halting'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:166:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:166:in `block in halting'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:86:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:86:in `run_callbacks'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/interceptable.rb:138:in `run_callbacks'
+  activemodel (4.1.0) lib/active_model/validations/callbacks.rb:111:in `run_validations!'
+  activemodel (4.1.0) lib/active_model/validations.rb:317:in `valid?'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/validatable.rb:98:in `valid?'
+  activemodel (4.1.0) lib/active_model/validations.rb:352:in `invalid?'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/persistable/creatable.rb:114:in `prepare_insert'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/persistable/creatable.rb:23:in `insert'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/mongoid-026e32109178/lib/mongoid/persistable/savable.rb:23:in `save'
+  /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/bundler/gems/devise-b0b18fb80508/app/controllers/devise/registrations_controller.rb:15:in `create'
+  actionpack (4.1.0) lib/action_controller/metal/implicit_render.rb:4:in `send_action'
+  actionpack (4.1.0) lib/abstract_controller/base.rb:189:in `process_action'
+  actionpack (4.1.0) lib/action_controller/metal/rendering.rb:10:in `process_action'
+  actionpack (4.1.0) lib/abstract_controller/callbacks.rb:20:in `block in process_action'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:113:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:113:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:229:in `block in halting'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:166:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:166:in `block in halting'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:166:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:166:in `block in halting'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:149:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:149:in `block in halting_and_conditional'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:149:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:149:in `block in halting_and_conditional'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:86:in `call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:86:in `run_callbacks'
+  actionpack (4.1.0) lib/abstract_controller/callbacks.rb:19:in `process_action'
+  actionpack (4.1.0) lib/action_controller/metal/rescue.rb:29:in `process_action'
+  actionpack (4.1.0) lib/action_controller/metal/instrumentation.rb:31:in `block in process_action'
+  activesupport (4.1.0) lib/active_support/notifications.rb:159:in `block in instrument'
+  activesupport (4.1.0) lib/active_support/notifications/instrumenter.rb:20:in `instrument'
+  activesupport (4.1.0) lib/active_support/notifications.rb:159:in `instrument'
+  actionpack (4.1.0) lib/action_controller/metal/instrumentation.rb:30:in `process_action'
+  actionpack (4.1.0) lib/action_controller/metal/params_wrapper.rb:250:in `process_action'
+  actionpack (4.1.0) lib/abstract_controller/base.rb:136:in `process'
+  actionview (4.1.0) lib/action_view/rendering.rb:30:in `process'
+  actionpack (4.1.0) lib/action_controller/metal.rb:195:in `dispatch'
+  actionpack (4.1.0) lib/action_controller/metal/rack_delegation.rb:13:in `dispatch'
+  actionpack (4.1.0) lib/action_controller/metal.rb:231:in `block in action'
+  actionpack (4.1.0) lib/action_dispatch/routing/route_set.rb:80:in `call'
+  actionpack (4.1.0) lib/action_dispatch/routing/route_set.rb:80:in `dispatch'
+  actionpack (4.1.0) lib/action_dispatch/routing/route_set.rb:48:in `call'
+  actionpack (4.1.0) lib/action_dispatch/routing/mapper.rb:45:in `call'
+  actionpack (4.1.0) lib/action_dispatch/journey/router.rb:71:in `block in call'
+  actionpack (4.1.0) lib/action_dispatch/journey/router.rb:59:in `each'
+  actionpack (4.1.0) lib/action_dispatch/journey/router.rb:59:in `call'
+  actionpack (4.1.0) lib/action_dispatch/routing/route_set.rb:676:in `call'
+  warden (1.2.3) lib/warden/manager.rb:35:in `block in call'
+  warden (1.2.3) lib/warden/manager.rb:34:in `catch'
+  warden (1.2.3) lib/warden/manager.rb:34:in `call'
+  rack (1.5.2) lib/rack/etag.rb:23:in `call'
+  rack (1.5.2) lib/rack/conditionalget.rb:35:in `call'
+  rack (1.5.2) lib/rack/head.rb:11:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/params_parser.rb:27:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/flash.rb:254:in `call'
+  rack (1.5.2) lib/rack/session/abstract/id.rb:225:in `context'
+  rack (1.5.2) lib/rack/session/abstract/id.rb:220:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/cookies.rb:560:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/callbacks.rb:29:in `block in call'
+  activesupport (4.1.0) lib/active_support/callbacks.rb:82:in `run_callbacks'
+  actionpack (4.1.0) lib/action_dispatch/middleware/callbacks.rb:27:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/reloader.rb:73:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/remote_ip.rb:76:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/debug_exceptions.rb:17:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/show_exceptions.rb:30:in `call'
+  railties (4.1.0) lib/rails/rack/logger.rb:38:in `call_app'
+  railties (4.1.0) lib/rails/rack/logger.rb:20:in `block in call'
+  activesupport (4.1.0) lib/active_support/tagged_logging.rb:68:in `block in tagged'
+  activesupport (4.1.0) lib/active_support/tagged_logging.rb:26:in `tagged'
+  activesupport (4.1.0) lib/active_support/tagged_logging.rb:68:in `tagged'
+  railties (4.1.0) lib/rails/rack/logger.rb:20:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/request_id.rb:21:in `call'
+  rack (1.5.2) lib/rack/methodoverride.rb:21:in `call'
+  rack (1.5.2) lib/rack/runtime.rb:17:in `call'
+  activesupport (4.1.0) lib/active_support/cache/strategy/local_cache_middleware.rb:26:in `call'
+  rack (1.5.2) lib/rack/lock.rb:17:in `call'
+  actionpack (4.1.0) lib/action_dispatch/middleware/static.rb:64:in `call'
+  rack (1.5.2) lib/rack/sendfile.rb:112:in `call'
+  railties (4.1.0) lib/rails/engine.rb:514:in `call'
+  railties (4.1.0) lib/rails/application.rb:144:in `call'
+  rack (1.5.2) lib/rack/lock.rb:17:in `call'
+  rack (1.5.2) lib/rack/content_length.rb:14:in `call'
+  rack (1.5.2) lib/rack/handler/webrick.rb:60:in `service'
+  /Users/ricardocarlino/.rvm/rubies/ruby-2.1.1/lib/ruby/2.1.0/webrick/httpserver.rb:138:in `service'
+  /Users/ricardocarlino/.rvm/rubies/ruby-2.1.1/lib/ruby/2.1.0/webrick/httpserver.rb:94:in `run'
+  /Users/ricardocarlino/.rvm/rubies/ruby-2.1.1/lib/ruby/2.1.0/webrick/server.rb:295:in `block in start_thread'
+
+
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/rescues/_source.erb (0.7ms)
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/rescues/_trace.html.erb (1.3ms)
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/rescues/_request_and_response.html.erb (1.2ms)
+  Rendered /Users/ricardocarlino/.rvm/gems/ruby-2.1.1@farmbot-dss/gems/actionpack-4.1.0/lib/action_dispatch/middleware/templates/rescues/diagnostics.erb within rescues/layout (34.0ms)
+
+
+Started POST "/users" for 127.0.0.1 at 2014-04-10 06:18:38 -0700
+Processing by Devise::RegistrationsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"C4IBHSaRzVDRiraj6WS74e3Q7NLwdJ7odd8lnNkpCu0=", "user"=>{"email"=>"rick.carlino@gmail.com", "password"=>"[FILTERED]", "password_confirmation"=>"[FILTERED]"}, "commit"=>"Sign up"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.9610ms
+  MOPED: 127.0.0.1:27017 QUERY        database=dss_development collection=users selector={"email"=>"rick.carlino@gmail.com"} flags=[] limit=-1 skip=0 batch_size=nil fields={:_id=>1} runtime: 0.5500ms
+  MOPED: 127.0.0.1:27017 INSERT       database=dss_development collection=users documents=[{"_id"=>BSON::ObjectId('53469a2e5269630648000000'), "email"=>"rick.carlino@gmail.com", "encrypted_password"=>"$2a$10$jlqgee7Ia4RgfTH4Uo9xyesh4pnUKb96URP8f8GPYwa.38WN06AIS", "sign_in_count"=>0}] flags=[]
+                         COMMAND      database=dss_development command={:getlasterror=>1, :w=>1} runtime: 1437.1980ms
+  MOPED: 127.0.0.1:27017 UPDATE       database=dss_development collection=users selector={"_id"=>BSON::ObjectId('53469a2e5269630648000000')} update={"$set"=>{"last_sign_in_at"=>2014-04-10 13:18:39 UTC, "current_sign_in_at"=>2014-04-10 13:18:39 UTC, "last_sign_in_ip"=>"127.0.0.1", "current_sign_in_ip"=>"127.0.0.1", "sign_in_count"=>1}} flags=[]
+                         COMMAND      database=dss_development command={:getlasterror=>1, :w=>1} runtime: 15.7750ms
+Redirected to http://localhost:3000/
+Completed 302 Found in 1548ms
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-10 06:18:39 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.1ms)
+Completed 200 OK in 13ms (Views: 13.0ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-10 06:18:39 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:39 -0700
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-10 06:18:39 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:39 -0700
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:39 -0700
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:39 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:39 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:39 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation/foundation.slider.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:40 -0700
+
+
+Started GET "/users/password/new" for 127.0.0.1 at 2014-04-10 06:18:48 -0700
+Processing by Devise::PasswordsController#new as HTML
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.4430ms
+  MOPED: 127.0.0.1:27017 QUERY        database=dss_development collection=users selector={"$query"=>{"_id"=>BSON::ObjectId('53469a2e5269630648000000')}, "$orderby"=>{:_id=>1}} flags=[] limit=-1 skip=0 batch_size=nil fields=nil runtime: 0.4840ms
+Redirected to http://localhost:3000/
+Filter chain halted as :require_no_authentication rendered or redirected
+Completed 302 Found in 4ms
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-10 06:18:48 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.0ms)
+Completed 200 OK in 10ms (Views: 9.8ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-10 06:18:48 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:48 -0700
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:48 -0700
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:48 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.slider.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-10 06:18:49 -0700
+
+
+Started GET "/users/cancel" for 127.0.0.1 at 2014-04-10 06:19:01 -0700
+Processing by Devise::RegistrationsController#cancel as HTML
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3720ms
+  MOPED: 127.0.0.1:27017 QUERY        database=dss_development collection=users selector={"$query"=>{"_id"=>BSON::ObjectId('53469a2e5269630648000000')}, "$orderby"=>{:_id=>1}} flags=[] limit=-1 skip=0 batch_size=nil fields=nil runtime: 0.2830ms
+Redirected to http://localhost:3000/
+Filter chain halted as :require_no_authentication rendered or redirected
+Completed 302 Found in 3ms
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.0ms)
+Completed 200 OK in 10ms (Views: 10.0ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.slider.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:02 -0700
+
+
+Started GET "/users/cancel" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+Processing by Devise::RegistrationsController#cancel as HTML
+  MOPED: 127.0.0.1:27017 QUERY        database=dss_development collection=users selector={"$query"=>{"_id"=>BSON::ObjectId('53469a2e5269630648000000')}, "$orderby"=>{:_id=>1}} flags=[] limit=-1 skip=0 batch_size=nil fields=nil runtime: 0.4690ms
+Redirected to http://localhost:3000/
+Filter chain halted as :require_no_authentication rendered or redirected
+Completed 302 Found in 2ms
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.1ms)
+Completed 200 OK in 10ms (Views: 9.9ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.slider.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:24 -0700
+
+
+Started GET "/users/edit" for 127.0.0.1 at 2014-04-10 06:19:33 -0700
+Processing by Devise::RegistrationsController#edit as HTML
+  MOPED: 127.0.0.1:27017 QUERY        database=dss_development collection=users selector={"$query"=>{"_id"=>BSON::ObjectId('53469a2e5269630648000000')}, "$orderby"=>{:_id=>1}} flags=[] limit=-1 skip=0 batch_size=nil fields=nil runtime: 0.4750ms
+  Rendered devise/registrations/edit.html.erb within layouts/application (4.7ms)
+Completed 200 OK in 82ms (Views: 79.9ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.slider.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:34 -0700
+
+
+Started GET "/users/password/edit" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+Processing by Devise::PasswordsController#edit as HTML
+  MOPED: 127.0.0.1:27017 QUERY        database=dss_development collection=users selector={"$query"=>{"_id"=>BSON::ObjectId('53469a2e5269630648000000')}, "$orderby"=>{:_id=>1}} flags=[] limit=-1 skip=0 batch_size=nil fields=nil runtime: 0.4670ms
+Redirected to http://localhost:3000/
+Filter chain halted as :require_no_authentication rendered or redirected
+Completed 302 Found in 2ms
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.0ms)
+Completed 200 OK in 11ms (Views: 10.4ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:41 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:42 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:42 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:42 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:42 -0700
+
+
+Started GET "/assets/foundation/foundation.slider.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:42 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:42 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:42 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:42 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:42 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:42 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-10 06:19:42 -0700
+
+
+Started GET "/pages/sitemap" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"sitemap"}
+  Rendered pages/sitemap.html.erb within layouts/application (1.5ms)
+Completed 200 OK in 14ms (Views: 13.8ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.slider.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:22 -0700
+
+
+Started GET "/users/sign_up" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+Processing by Devise::RegistrationsController#new as HTML
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.4690ms
+  MOPED: 127.0.0.1:27017 QUERY        database=dss_development collection=users selector={"$query"=>{"_id"=>BSON::ObjectId('53469a2e5269630648000000')}, "$orderby"=>{:_id=>1}} flags=[] limit=-1 skip=0 batch_size=nil fields=nil runtime: 0.4710ms
+Redirected to http://localhost:3000/
+Filter chain halted as :require_no_authentication rendered or redirected
+Completed 302 Found in 4ms
+
+
+Started GET "/" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"welcome"}
+  Rendered pages/welcome.html.erb within layouts/application (0.0ms)
+Completed 200 OK in 9ms (Views: 9.3ms)
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:23 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:24 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:24 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:24 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:24 -0700
+
+
+Started GET "/assets/foundation/foundation.slider.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:24 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:24 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:24 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:24 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:24 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:24 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:24 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:25:24 -0700
+
+
+Started GET "/pages/sitemap" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+Processing by HighVoltage::PagesController#show as HTML
+  Parameters: {"id"=>"sitemap"}
+  Rendered pages/sitemap.html.erb within layouts/application (0.3ms)
+Completed 200 OK in 13ms (Views: 12.9ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/vendor/modernizr.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation_and_overrides.css?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.abide.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.accordion.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.clearing.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.alert.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.dropdown.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.interchange.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.joyride.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.magellan.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.offcanvas.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.orbit.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.reveal.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.slider.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.topbar.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.tab.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.equalizer.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/foundation/foundation.tooltip.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2014-04-10 06:26:19 -0700

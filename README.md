@@ -9,6 +9,8 @@ This Repo is the Web based side of the decision support system. It is the glue t
 
  1. `git clone git@github.com:FarmBot/farmbot-web-backend.git`
  2. `cd farmbot-web-backend`
+ 3. [Install MongoDB](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
+ 4. Start Mongo if you have not already done so. (typically via the `mongod` command)
  3. `bundle install`
  4. `rails s`
  5. Checkout `http://localhost:3000`
@@ -20,7 +22,7 @@ This Repo is the Web based side of the decision support system. It is the glue t
 
 # Roadmap
 
-This project is still in its infancy. Our current focus as of March 2014 is to create a basic system of control for the farmbot user via technologies such as:
+This project is still in its infancy. Our current focus as of April 2014 is to create a basic system of control for the farmbot user via technologies such as:
 
  * [Farmbot Controller](https://github.com/FarmBot/farmbot-raspberry-pi-controller)
  * [Skynet IoT Messaging Platform](http://www.skynet.im) ([Github](https://github.com/skynetim/skynet))
