@@ -23,7 +23,6 @@ capybara-*.html
 /tmp
 /db/*.sqlite3
 /public/system
-/public/assets
 /coverage/
 /spec/tmp
 **.orig
