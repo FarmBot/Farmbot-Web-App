@@ -30,8 +30,10 @@ end
 group :development, :test do
   gem 'pry'
   gem 'rspec'
-  gem 'rspec-rails', '~> 3.0.0.beta'
+  gem 'rspec-rails'
   gem 'simplecov'
 end
+
+gem 'capybara', group: :test
 
 gem 'devise', github: 'plataformatec/devise'
