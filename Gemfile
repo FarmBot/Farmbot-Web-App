@@ -34,4 +34,6 @@ group :development, :test do
   gem 'simplecov'
 end
 
+gem 'capybara', group: :test
+
 gem 'devise', github: 'plataformatec/devise'
