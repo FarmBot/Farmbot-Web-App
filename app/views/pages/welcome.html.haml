@@ -1,0 +1,54 @@
+.row
+  .large-12.columns
+    %h1 Create your Farmbot Account
+.row
+  .large-6.columns
+    %ul
+      %li Graphically Design your farm or garden with drag and drop plants and operations.
+      %li Adjust grow settings for maximum efficiency.
+      %li Analyze data maps for data-driven design.
+      %li View and edit scheduled operations.
+      %li Communicate with your FarmBot.
+  .large-6.columns
+    .signup-panel
+      %p.welcome Create your Account
+      %form{action: "/users", method: "post"}
+        .row.collapse
+          .small-2.columns
+            %span.prefix
+              %i.fi-torso-female
+          .small-10.columns
+            %input{placeholder: "username", type: "text"}/
+        .row.collapse
+          .small-2.columns
+            %span.prefix
+              %i.fi-mail
+          .small-10.columns
+            %input{placeholder: "email", type: "text"}/
+        .row.collapse
+          .small-2.columns
+            %span.prefix
+              %i.fi-lock
+          .small-10.columns
+            %input{placeholder: "password", type: "password"}/
+        .row.collapse
+          .small-2.columns
+            %span.prefix
+              %i.fi-lock
+          .small-10.columns
+            %input{placeholder: "Confirm Password", type: "password"}/
+        %a.button
+          Next Step
+        %p
+          Already have an account?
+          %a{href: "#"} Login here »
+/ = form_for :person do |f|
+/   First name: #{f.text_field :first_name}
+/   %br/
+/   Last name : #{f.text_field :last_name}
+/   %br/
+/   Biography : #{f.text_area :biography}
+/   %br/
+/   Admin?    : #{f.check_box :admin}
+/   %br/
+/   = f.submit
