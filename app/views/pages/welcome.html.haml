@@ -12,43 +12,32 @@
   .large-6.columns
     .signup-panel
       %p.welcome Create your Account
-      %form{action: "/users", method: "post"}
+      = form_for(User.new, url: '/users') do |f|
         .row.collapse
           .small-2.columns
             %span.prefix
               %i.fi-torso-female
           .small-10.columns
-            %input{placeholder: "username", type: "text"}/
+            = f.text_field :name, autofocus: true, placeholder: 'Pick a User Name'
         .row.collapse
           .small-2.columns
             %span.prefix
               %i.fi-mail
           .small-10.columns
-            %input{placeholder: "email", type: "text"}/
+            = f.email_field :email, placeholder: 'Email'
         .row.collapse
           .small-2.columns
             %span.prefix
               %i.fi-lock
           .small-10.columns
-            %input{placeholder: "password", type: "password"}/
+            = f.password_field :password, autocomplete: "off", placeholder: 'Password'
         .row.collapse
           .small-2.columns
             %span.prefix
               %i.fi-lock
           .small-10.columns
-            %input{placeholder: "Confirm Password", type: "password"}/
-        %a.button
-          Next Step
+            = f.password_field :password_confirmation, autocomplete: "off", placeholder: 'Confirm Password'
+        = f.submit "Sign up", class: 'button'
         %p
           Already have an account?
-          %a{href: "#"} Login here »
-/ = form_for :person do |f|
-/   First name: #{f.text_field :first_name}
-/   %br/
-/   Last name : #{f.text_field :last_name}
-/   %br/
-/   Biography : #{f.text_area :biography}
-/   %br/
-/   Admin?    : #{f.check_box :admin}
-/   %br/
-/   = f.submit
+          = link_to 'Login here »', new_user_session_path
