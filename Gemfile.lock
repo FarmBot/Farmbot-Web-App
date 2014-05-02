@@ -77,6 +77,8 @@ GEM
     foundation-rails (5.2.2.0)
       railties (>= 3.1.0)
       sass (>= 3.2.0)
+    haml (4.0.5)
+      tilt
     high_voltage (2.1.0)
     hike (1.2.3)
     i18n (0.6.9)
@@ -205,6 +207,7 @@ DEPENDENCIES
   devise!
   foundation-icons-sass-rails
   foundation-rails
+  haml
   high_voltage
   jbuilder (~> 1.2)
   jquery-rails
