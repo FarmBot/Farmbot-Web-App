@@ -27,15 +27,15 @@ group :doc do
   gem 'sdoc', require: false
 end
 
-group :development, :test do
-  gem 'pry'
-  gem 'rspec'
-  gem 'rspec-rails'
-  gem 'simplecov'
-end
+gem 'pry', group: [:development, :test]
 
 gem 'haml'
 
-gem 'capybara', group: :test
+group :test do
+  gem 'rspec'
+  gem 'rspec-rails'
+  gem 'simplecov'
+  gem 'capybara'
+end
 
 gem 'devise', github: 'plataformatec/devise'
