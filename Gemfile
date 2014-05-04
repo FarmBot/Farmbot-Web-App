@@ -13,8 +13,9 @@ gem 'mongoid', '~> 4.0.0.beta1', github: 'mongoid/mongoid'
 gem 'sass-rails' 
 gem 'coffee-rails'
 gem 'uglifier'
-gem 'foundation-icons-sass-rails'
-gem 'foundation-rails'
+# Not liking these- will replace manually later.
+# gem 'foundation-icons-sass-rails'
+# gem 'foundation-rails'
 gem 'jquery-rails'
 gem 'high_voltage'
 

@@ -26,3 +26,11 @@ production:
       username: <%= ENV['MONGODB_USERNAME'] %>
       password: <%= ENV['MONGODB_PASSWORD'] %>
       database: <%= ENV['MONGODB_DATABASE'] %>
+default:
+  sessions:
+    default:
+      host: <%= ENV['MONGO_URL'] %>
+      port: <%= ENV['MONGODB_PORT'] %>
+      username: <%= ENV['MONGODB_USERNAME'] %>
+      password: <%= ENV['MONGODB_PASSWORD'] %>
+      database: <%= ENV['MONGODB_DATABASE'] %>
