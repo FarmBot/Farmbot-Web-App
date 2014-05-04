@@ -22,7 +22,3 @@ production:
   sessions:
     default:
       uri: <%= ENV['MONGO_URL'] %>
-      # port: <%= ENV['MONGODB_PORT'] %>
-      # username: <%= ENV['MONGODB_USERNAME'] %>
-      # password: <%= ENV['MONGODB_PASSWORD'] %>
-      # database: <%= ENV['MONGODB_DATABASE'] %>
