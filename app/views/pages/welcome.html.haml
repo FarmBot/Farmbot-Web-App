@@ -16,25 +16,25 @@
         .row.collapse
           .small-2.columns
             %span.prefix
-              %i.fi-torso-female
+              %i.fi-torso-female.big-icon
           .small-10.columns
             = f.text_field :name, autofocus: true, placeholder: 'Pick a User Name'
         .row.collapse
           .small-2.columns
             %span.prefix
-              %i.fi-mail
+              %i.fi-mail.big-icon
           .small-10.columns
             = f.email_field :email, placeholder: 'Email'
         .row.collapse
           .small-2.columns
             %span.prefix
-              %i.fi-lock
+              %i.fi-lock.big-icon
           .small-10.columns
             = f.password_field :password, autocomplete: "off", placeholder: 'Password'
         .row.collapse
           .small-2.columns
             %span.prefix
-              %i.fi-lock
+              %i.fi-lock.big-icon
           .small-10.columns
             = f.password_field :password_confirmation, autocomplete: "off", placeholder: 'Confirm Password'
         = f.submit "Sign up", class: 'button'

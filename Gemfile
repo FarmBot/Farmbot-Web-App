@@ -13,11 +13,7 @@ gem 'mongoid', '~> 4.0.0.beta1', github: 'mongoid/mongoid'
 gem 'sass-rails' 
 gem 'coffee-rails'
 gem 'uglifier'
-gem 'foundation-icons-sass-rails'
-gem 'foundation-rails'
-gem 'jquery-rails'
-gem 'high_voltage'
-
+gem 'high_voltage', '~> 2.1.0'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 1.2'
