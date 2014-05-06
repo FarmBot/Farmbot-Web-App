@@ -1,0 +1,51 @@
+!!!
+%html{lang: "en"}
+  %head
+    %meta{charset: "utf-8"}/
+    %meta{content: "width=device-width, initial-scale=1.0", name: "viewport"}/
+    = favicon_link_tag 'favicon.png'
+    %title= content_for?(:title) ? yield(:title) : "FarmBot"
+    = stylesheet_link_tag "application"
+    = csrf_meta_tags
+  %body
+    %nav.top-bar{"data-topbar" => ""}
+      %ul.title-area
+        %li.name
+          %h1
+            = link_to "Farmbot", root_path
+        %li.toggle-topbar.menu-icon
+          %a{href: "#"} Menu
+      %section.top-bar-section
+        %ul.left
+          %li{class: ("active" if current_page? page_path('help'))}
+            = link_to 'Help', page_path('help')
+        %ul.right
+          - if current_user
+            %li
+              %a.button{href: "http://foundation.zurb.com/docs"} Send Data to Farmbot
+            %li.has-dropdown.not-click
+              %a{href: "#"}
+                = "Welcome #{current_user.name}!"
+              %ul.dropdown
+                %li.title.back.js-generated
+                  %h5
+                    %a{href: "javascript:void(0)"} Back
+                %li
+                  = link_to "Sign out", destroy_user_session_path, :method => :delete
+          - else
+            %li
+              =link_to "Register", new_user_registration_path, class: 'button'
+            %li
+              =link_to "Log In", new_user_session_path
+    .container{style: 'margin: 10px;'}
+      - if notice
+        .alert-box.round{"data-alert" => ""}
+          = notice
+          %a.close{href: "#"} ×
+      - if alert
+        .alert-box.alert.round{"data-alert" => ""}
+          = alert
+          %a.close{href: "#"} ×
+    .content
+      = yield
+      = javascript_include_tag "application"
