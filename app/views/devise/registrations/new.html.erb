@@ -1,10 +1,12 @@
+<div class="row">
+<div class="small-12 large-12 columns">
 <h2>Sign up</h2>
 
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
   <%= devise_error_messages! %>
 
   <div><%= f.label 'User Name' %><br />
-  <%= f.email_field :name %></div>
+  <%= f.text_field :name %></div>
 
   <div><%= f.label :email %><br />
   <%= f.email_field :email, autofocus: true %></div>
@@ -19,3 +21,5 @@
 <% end %>
 
 <%= render "devise/shared/links" %>
+</div>
+</div>
