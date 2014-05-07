@@ -28,7 +28,6 @@ group :development, :test do
   gem 'factory_girl_rails'
 end
 
-
 gem 'haml'
 
 group :test do
