@@ -1,7 +1,6 @@
 <div class="row">
 <div class="small-12 large-12 columns">
-<h2>Sign up</h2>
-
+<h2>Sign Up</h2>
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
   <%= devise_error_messages! %>
 
@@ -17,7 +16,7 @@
   <div><%= f.label :password_confirmation %><br />
     <%= f.password_field :password_confirmation, autocomplete: "off" %></div>
 
-  <div><%= f.submit "Sign up" %></div>
+  <div><%= f.submit "Sign Up" %></div>
 <% end %>
 
 <%= render "devise/shared/links" %>

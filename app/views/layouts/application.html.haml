@@ -27,9 +27,8 @@
               %a{href: "#"}
                 = "Welcome #{current_user.name}!"
               %ul.dropdown
-                %li.title.back.js-generated
-                  %h5
-                    %a{href: "javascript:void(0)"} Back
+                %li
+                  = link_to 'User Settings', edit_user_registration_path
                 %li
                   = link_to "Sign out", destroy_user_session_path, :method => :delete
           - else

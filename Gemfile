@@ -23,7 +23,10 @@ group :doc do
   gem 'sdoc', require: false
 end
 
-gem 'pry', group: [:development, :test]
+group :development, :test do
+  gem 'pry'
+  gem 'factory_girl_rails'
+end
 
 gem 'haml'
 
