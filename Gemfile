@@ -26,6 +26,7 @@ end
 group :development, :test do
   gem 'pry'
   gem 'factory_girl_rails'
+  gem 'faker'
 end
 
 gem 'haml'
@@ -35,6 +36,7 @@ group :test do
   gem 'rspec-rails'
   gem 'simplecov'
   gem 'capybara'
+  gem 'launchy' #save_and_open_page while debugging integration tests.
 end
 
 gem 'devise', github: 'plataformatec/devise'

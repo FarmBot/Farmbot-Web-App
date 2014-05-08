@@ -17,8 +17,14 @@
           %a{href: "#"} Menu
       %section.top-bar-section
         %ul.left
+          -if current_user
+            %li{class: ("active" if current_page? page_path('dashboard'))}
+              = link_to 'Dashboard', page_path('dashboard')
+            %li{class: ("active" if current_page? page_path('data'))}
+              = link_to 'Data', page_path('data') # TODO: View helper for these items.
           %li{class: ("active" if current_page? page_path('help'))}
             = link_to 'Help', page_path('help')
+
         %ul.right
           - if current_user
             %li
