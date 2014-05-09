@@ -1,7 +1,8 @@
 class User
   include Mongoid::Document
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
+
+  has_many :farmbot_devices, dependent: :destroy
+
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
@@ -23,6 +24,13 @@ class User
   field :current_sign_in_ip, type: String
   field :last_sign_in_ip,    type: String
 
+  # The username.
+  field :name, type: String
+  validates_uniqueness_of :name
+  validates_presence_of :name
+end
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable and :omniauthable
   ## Confirmable
   # field :confirmation_token,   type: String
   # field :confirmed_at,         type: Time
@@ -35,9 +43,3 @@ class User
   # field :unlock_token,    type: String
   # Only if unlock strategy is :email or :both
   # field :locked_at,       type: Time
-
-  # The username.
-  field :name, type: String
-  validates_uniqueness_of :name
-  validates_presence_of :name
-end
