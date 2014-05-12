@@ -1,7 +1,7 @@
 class User
   include Mongoid::Document
 
-  has_many :farmbot_devices, dependent: :destroy
+  has_many :devices, dependent: :destroy
 
   field :name, type: String
   validates_uniqueness_of :name

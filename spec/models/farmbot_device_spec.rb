@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe FarmbotDevice do
+describe Device do
   let(:user)  { FactoryGirl.create(:user) }
-  let(:device){ FactoryGirl.create(:farmbot_device, user: user)}
+  let(:device){ FactoryGirl.create(:device, user: user)}
 
   it 'is associated with a user' do
     expect(device.user).to be_kind_of(User)

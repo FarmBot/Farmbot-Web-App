@@ -1,5 +1,9 @@
 Dss::Application.routes.draw do
 
+  namespace :api do
+    resources :devices, only: [:index]
+  end
+
   devise_for :users, :controllers => {:registrations => "registrations"}
 
   # get "/pages/*id" => 'pages#show', as: :page, format: false
