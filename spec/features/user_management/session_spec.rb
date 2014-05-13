@@ -12,7 +12,7 @@ describe 'User Session' do
 
   it 'edits user settings' do
     user = FactoryGirl.create(:user)
-    sign_in_as(user)
+    sign_in_as user
     visit edit_user_registration_path
     old_email = user.email
     new_email = Faker::Internet.email

@@ -1,6 +1,7 @@
 module Helpers
   def sign_in_as(user)
-    #TODO: Sign in via Warden instead.
+    # For when you're actually testing the login UI components. Otherwise,
+    # consider using the devise test helper `sign_in`
     visit new_user_session_path
     fill_in 'user_email', with: user.email
     fill_in 'user_password', with: user.password

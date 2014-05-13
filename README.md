@@ -13,7 +13,7 @@ This Repo is the Web based side of the decision support system. It is the glue t
  4. Start Mongo if you have not already done so. (typically via the `mongod` command)
  3. `bundle install`
  4. `rails s`
- 5. Checkout `http://localhost:3000`
+ 5. Go to `http://localhost:3000`
 
 # How to Contribute
 
@@ -22,10 +22,10 @@ This Repo is the Web based side of the decision support system. It is the glue t
 
 # Roadmap
 
-This project is still in its infancy. Our current focus as of April 2014 is to create a basic system of control for the farmbot user via technologies such as:
+This project is still in its infancy. Our current focus as of May 2014 is to create a basic system of control for the farmbot user via technologies such as:
 
  * [Farmbot Controller](https://github.com/FarmBot/farmbot-raspberry-pi-controller)
  * [Skynet IoT Messaging Platform](http://www.skynet.im) ([Github](https://github.com/skynetim/skynet))
  * Ruby on Rails
 
-Eventually, the DSS hopes to be a rich environment for users to manage their FarmBot and gain insights into the farming decision making process.
+Eventually, the DSS hopes to be a rich environment for users to manage their FarmBot and gain insights into the farming decision process.
