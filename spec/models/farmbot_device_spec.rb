@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe FarmbotDevice do
+describe Device do
   let(:user)  { FactoryGirl.create(:user) }
-  let(:device){ FactoryGirl.create(:farmbot_device, user: user)}
+  let(:device){ FactoryGirl.create(:device, user: user)}
 
   it 'is associated with a user' do
     expect(device.user).to be_kind_of(User)
-    expect(user.farmbot_devices).to be_kind_of(Array)
-    expect(user.farmbot_devices.first).to be_kind_of(FarmbotDevice)
+    expect(user.devices).to be_kind_of(Array)
+    expect(user.devices.first).to be_kind_of(Device)
   end
   
   it 'destroys dependant devices' do
@@ -15,7 +15,7 @@ describe FarmbotDevice do
     user_id = user.id
     user.destroy
     user_results = User.where(id: user_id).first
-    bot_results  = FarmbotDevice.where(id: bot_id).first
+    bot_results  = Device.where(id: bot_id).first
     expect(bot_results).to be_nil
     expect(user_results).to be_nil
   end

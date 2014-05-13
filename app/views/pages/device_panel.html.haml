@@ -1,6 +1,10 @@
-.row
+/ = javascript_include_tag "device_panel"
+.row{"ng-app" => "FarmBot", "ng-controller" => "DeviceController"}
   .large-12.columns
-    %h1 Manage FarmBot Device Settings
+    %ul{"ng-repeat" => 'device in devices'}
+      %li
+        {{ device._id }}
+    %h1 Manage FarmBot Device Settings {{ status }}
     %form
       %fieldset
         %legend FarmBot Settings
