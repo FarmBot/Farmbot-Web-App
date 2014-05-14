@@ -1,9 +1,6 @@
 / = javascript_include_tag "device_panel"
 .row{"ng-app" => "FarmBot", "ng-controller" => "DeviceController"}
   .large-12.columns
-    %ul{"ng-repeat" => 'device in devices'}
-      %li
-        {{ device._id }}
     %h1 Manage FarmBot Device Settings {{ status }}
     %form
       %fieldset
@@ -31,18 +28,9 @@
         %th{width: '5%'} Delete
         %th{width: '5%'} Edit
     %tbody
-      %tr
+      %tr{'ng-repeat' => 'device in devices'}
         %td
-          Franny the Farmbot
-        %td
-          %button.tiny.alert.button
-            %i.fi-x{style: 'font-size: 18px;'}
-        %td
-          %button.tiny.button
-            %i.fi-wrench{style: 'font-size: 18px;'}
-      %tr
-        %td
-          The Cabbage Patch Kid
+          {{ device.name }}
         %td
           %button.tiny.alert.button
             %i.fi-x{style: 'font-size: 18px;'}
