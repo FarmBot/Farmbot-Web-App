@@ -1,9 +1,24 @@
-# This is a manifest for all the files related to the Farmbot Device management
-# page. This page is currently located via '/pages/device_panel'.
+# Put routes and configs and stuff in here.
 
-app = angular.module('FarmBot', ['restangular'])
+app = angular.module('FarmBot', [
+  'restangular'
+  'ngRoute'
+  ])
 
-app.controller "DeviceController",  ($scope, Restangular) ->
-  devices = Restangular.all('devices')
-  devices.getList().then (data) ->
-    $scope.devices = data
+app.config [
+  "RestangularProvider"
+  (RestangularProvider) ->
+    RestangularProvider.setBaseUrl '/api'
+]
+
+app.config [
+  "$routeProvider"
+  ($routeProvider) ->
+    $routeProvider.when("/main",
+      templateUrl: "main.html"
+      controller: "MainController"
+    ).when("/devices",
+      templateUrl: "devices.html"
+      controller: "DeviceController"
+    ).otherwise redirectTo: "/main"
+]

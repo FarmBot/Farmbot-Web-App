@@ -6,6 +6,8 @@ Dss::Application.routes.draw do
 
   devise_for :users, :controllers => {:registrations => "registrations"}
 
+  get "/dashboard", to: 'dashboard#index', as: :dashboard
+
   # get "/pages/*id" => 'pages#show', as: :page, format: false
 
   # # if routing the root path, update for your controller
