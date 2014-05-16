@@ -1,3 +1,4 @@
+config/initializers/secret_token.rb
 *.gem
 *.rbc
 .bundle

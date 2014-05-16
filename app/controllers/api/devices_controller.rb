@@ -1,9 +1,21 @@
 class Api::DevicesController < ApplicationController
+  respond_to :json
+
   before_action :ensure_logged_in
 
   def index
     @devices = Device.where(user_id: current_user.id)
     render json: @devices
+  end
+
+  def destroy
+    @device = Device.find(params[:id])
+    ensure_device_ownership
+    if @device.destroy
+      render nothing: true, status: :unauthorized
+    else
+      render @device.errors, status: :unprocessable_entity
+    end
   end
 
   # def create # Not yet implemented - sit tight. Coming soon!
@@ -27,4 +39,11 @@ private
       render nothing: true, :status => :unauthorized
     end
   end
+
+  def ensure_device_ownership
+    if @device.user == current_user
+      render nothing: true, :status => :unauthorized
+    end
+  end
+
 end
