@@ -9,7 +9,6 @@ class Api::DevicesController < ApplicationController
   end
 
   def destroy
-    binding.pry
     @device = Device.find(params[:id])
     ensure_device_ownership
     if @device.destroy
