@@ -1,7 +1,19 @@
-
 app = angular.module('FarmBot')
 
-app.controller "DeviceController",  ($scope, Restangular) ->
-  devices = Restangular.all('devices')
-  devices.getList().then (data) ->
-    $scope.devices = data
+controller = ($scope, Restangular, Device) ->
+  $scope.devices = Restangular.all('devices').getList().$object
+  $scope.refreshDeviceList = ->
+    devices.getList().then (data) ->
+      $scope.devices = data
+  $scope.removeDevice = (device) ->
+    device.remove().then ->
+      #update the $scope var once the repsonse is OK
+      $scope.devices = _.without($scope.products, product);
+
+
+app.controller "DeviceController", [
+  '$scope'
+  'Restangular'
+  "DeviceService"
+  controller
+]

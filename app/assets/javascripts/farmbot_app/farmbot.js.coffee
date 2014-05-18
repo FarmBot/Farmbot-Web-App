@@ -3,12 +3,14 @@
 app = angular.module('FarmBot', [
   'restangular'
   'ngRoute'
+  'ng-rails-csrf'
   ])
 
 app.config [
   "RestangularProvider"
   (RestangularProvider) ->
     RestangularProvider.setBaseUrl '/api'
+    RestangularProvider.setRestangularFields id: "_id"
 ]
 
 app.config [

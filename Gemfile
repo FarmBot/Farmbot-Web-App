@@ -5,6 +5,8 @@ ruby '2.1.1'
 #Dokku demands this one.
 gem 'rails_12factor'
 
+gem 'ng-rails-csrf'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.0'
 

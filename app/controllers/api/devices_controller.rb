@@ -36,13 +36,13 @@ private
   # Handles unauthorized / unauthenticated API requests.
   def ensure_logged_in
     unless current_user
-      render nothing: true, :status => :unauthorized
+      render nothing: true, :status => :unauthorized and return
     end
   end
 
   def ensure_device_ownership
     if @device.user == current_user
-      render nothing: true, :status => :unauthorized
+      render nothing: true, :status => :unauthorized and return
     end
   end
 

@@ -31,7 +31,7 @@
         %td
           {{ device.name }}
         %td
-          %button.tiny.alert.button
+          %button.tiny.alert.button{'ng-click' => 'removeDevice(device)'}
             %i.fi-x{style: 'font-size: 18px;'}
         %td
           %button.tiny.button
