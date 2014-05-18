@@ -5,8 +5,11 @@ controller = ($scope, Restangular, Device) ->
   $scope.refreshDeviceList = ->
     devices.getList().then (data) ->
       $scope.devices = data
-  # window.haha = $scope.devices
-  # haha.doDELETE(a._id)
+  $scope.removeDevice = (device) ->
+    device.remove().then ->
+      #update the $scope var once the repsonse is OK
+      $scope.devices = _.without($scope.products, product);
+
 
 app.controller "DeviceController", [
   '$scope'
