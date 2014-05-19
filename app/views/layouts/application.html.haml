@@ -29,10 +29,10 @@
           - if current_user
             - if current_user.devices.count > 0
               %li
-                %a.button{href: "http://foundation.zurb.com/docs"} Send Data to Farmbot
+                %a.button{href: "/dashboard#/devices"} Send Data to Farmbot
             - else
               %li
-                %a.button{href: "http://foundation.zurb.com/docs"} Pair with Device
+                %a.button{href: '/dashboard#/devices'} Pair with Device
             %li.has-dropdown.not-click
               %a{href: "#"}
                 = "Welcome #{current_user.name}!"
