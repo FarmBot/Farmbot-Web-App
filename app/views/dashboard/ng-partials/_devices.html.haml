@@ -1,20 +1,20 @@
 .row
   .large-12.columns
     %h1 Manage FarmBot Device Settings {{ status }}
-    %form
+    %form{ng_submit: 'createDevice()'}
       %fieldset
         %legend FarmBot Settings
         .row
           .large-12.columns
             %label Friendly Name
-            %input{placeholder: "Franny the FarmBot", type: "text"}/
+            %input{placeholder: "Franny the FarmBot", type: "text", ng_model: 'device.name'}/
         .row
           .large-6.columns
             %label Skynet UUID
-            %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text"}/
+            %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'device.uuid'}/
           .large-6.columns
             %label Skynet Security Token
-            %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text"}/
+            %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'device.token'}/
         .row
           .large-12.columns
             %button.button

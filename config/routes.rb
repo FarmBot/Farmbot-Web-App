@@ -1,7 +1,7 @@
 Dss::Application.routes.draw do
 
   namespace :api do
-    resources :devices, only: [:index, :destroy]
+    resources :devices, only: [:index, :destroy, :create]
   end
 
   devise_for :users, :controllers => {:registrations => "registrations"}

@@ -1,49 +1,50 @@
 class Api::DevicesController < ApplicationController
   respond_to :json
 
-  before_action :ensure_logged_in
+  before_action :set_device, only: [:show, :edit, :update, :destroy]
 
+  # GET /api/devices
   def index
     @devices = Device.where(user_id: current_user.id)
     render json: @devices
   end
 
+  # GET /api/devices/1
+  def show
+  end
+
+  # POST /api/devices
+  def create
+    @device      = Device.new(device_params)
+    @device.user = current_user
+    if @device.save
+      render json: @device
+    end
+  end
+
+  # PATCH/PUT /api/devices/1
+  def update
+    if @device.update(device_params)
+      render json: @device
+    end
+  end
+
+  # DELETE /api/devices/1
   def destroy
-    @device = Device.find(params[:id])
-    ensure_device_ownership
-    if @device.destroy
-      render nothing: true, status: :unauthorized
-    else
-      render @device.errors, status: :unprocessable_entity
-    end
-  end
-
-  # def create # Not yet implemented - sit tight. Coming soon!
-  #   @device = Device.new(device_params)
-  #   if @device.save
-  #     render json: @device, status: 201
-  #   else
-  #     render json: @device, status: 400
-  #   end
-  # end
-
-private
-
-  # def device_params
-  #   params.require(:person).permit(:name, :age)
-  # end
-
-  # Handles unauthorized / unauthenticated API requests.
-  def ensure_logged_in
-    unless current_user
-      render nothing: true, :status => :unauthorized and return
-    end
-  end
-
-  def ensure_device_ownership
     if @device.user == current_user
-      render nothing: true, :status => :unauthorized and return
+      @device.destroy
+      render nothing: true, status: 204
     end
   end
 
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_device
+      @device = Device.find(params[:id])
+    end
+
+    # Only allow a trusted parameter "white list" through.
+    def device_params
+      params.permit([:name, :uuid, :token])
+    end
 end
