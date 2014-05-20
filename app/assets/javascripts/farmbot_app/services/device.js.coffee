@@ -1,10 +1,7 @@
 app = angular.module("FarmBot")
 
 deviceService = (Restangular) ->
-  class Device
-    constructor: (@name = '', @uuid = '', @token = '') ->
-
-  return Device
+  return {}
 
 app.service "DeviceService", [
   "Restangular"
