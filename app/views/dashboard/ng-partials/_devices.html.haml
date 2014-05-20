@@ -6,15 +6,15 @@
         %legend FarmBot Settings
         .row
           .large-12.columns
-            %label Friendly Name
-            %input{placeholder: "Franny the FarmBot", type: "text", ng_model: 'device.name'}/
+            %label Friendly Name *
+            %input{placeholder: "Farmbot 1 Behind Barn", type: "text", ng_model: 'device.name', required: true}/
         .row
           .large-6.columns
-            %label Skynet UUID
-            %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'device.uuid'}/
+            %label Skynet UUID *
+            %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'device.uuid', required: true}/
           .large-6.columns
-            %label Skynet Security Token
-            %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'device.token'}/
+            %label Skynet Security Token *
+            %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'device.token', required: true}/
         .row
           .large-12.columns
             %button.button
@@ -34,5 +34,5 @@
           %button.tiny.alert.button{'ng-click' => 'removeDevice(device)'}
             %i.fi-x{style: 'font-size: 18px;'}
         %td
-          %button.tiny.button
+          %button.tiny.button{ng_click: 'selectDevice(device)'}
             %i.fi-wrench{style: 'font-size: 18px;'}
