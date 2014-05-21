@@ -19,9 +19,12 @@
         %ul.left
           -if current_user
             %li{class: ("active" if current_page? page_path('dashboard'))}
-              = link_to 'Dashboard', page_path('dashboard')
-            %li{class: ("active" if current_page? page_path('data'))}
-              = link_to 'Data', page_path('data') # TODO: View helper for these items.
+              = link_to 'STUB', page_path('dashboard')
+            %li{class: ("active" if current_page? page_path('#/settings'))}
+              = link_to 'Device Overview', '/dashboard#/overview'
+            // TODO: Add CSS rul based on hash fragment.
+            %li{class: ("active" if current_page? page_path('#/settings'))}
+              = link_to 'Device Settings', '/dashboard#/settings'
           %li{class: ("active" if current_page? page_path('help'))}
             = link_to 'Help', page_path('help')
 
