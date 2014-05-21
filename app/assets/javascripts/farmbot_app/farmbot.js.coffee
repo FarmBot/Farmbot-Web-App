@@ -19,8 +19,11 @@ app.config [
     $routeProvider.when("/main",
       templateUrl: "main.html"
       controller: "MainController"
-    ).when("/devices",
-      templateUrl: "devices.html"
-      controller: "DeviceController"
+    ).when("/settings",
+      templateUrl: "settings.html"
+      controller: "SettingsController"
+    ).when("/overview",
+      templateUrl: "overview.html"
+      controller: "OverviewController"
     ).otherwise redirectTo: "/main"
 ]

@@ -1,8 +1,10 @@
 %div{'ng-app' => 'FarmBot'}
   // TODO: Write a view helper that traverses /views/dashboard/ng-partials and
   // includes them here.
-  %script{:id => "devices.html", :type => "text/ng-template"}
-    = render partial: "dashboard/ng-partials/devices"
+  %script{:id => "overview.html", :type => "text/ng-template"}
+    = render partial: "dashboard/ng-partials/overview"
+  %script{:id => "settings.html", :type => "text/ng-template"}
+    = render partial: "dashboard/ng-partials/settings"
   %script{:id => "main.html", :type => "text/ng-template"}
     = render partial: "dashboard/ng-partials/main"
   %div{'ng-view' => true}
