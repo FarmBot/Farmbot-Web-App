@@ -9,7 +9,7 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Dss::Application.config.secret_key_base = ENV['secret_key_base']
+Dss::Application.config.secret_key_base = `rake secret`
 # if Rails.env == 'production'
 #   Dss::Application.config.secret_key_base = ENV['secret_key_base']
 # # else
