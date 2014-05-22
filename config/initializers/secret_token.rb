@@ -10,8 +10,8 @@
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
 if Rails.env == 'production'
-  Dss::Application.config.secret_key_base = ENV['secret_key_base']
-else
+#   Dss::Application.config.secret_key_base = ENV['secret_key_base']
+# else
   # Going to keep a hard coded one here to make life easy for folks who want to
   # run it in development / submit PRs. Less config. RC.
   Dss::Application.config.secret_key_base = '452b4491c1cdd7315a0d787be2f7668ea'\
