@@ -22,5 +22,3 @@ production:
   sessions:
     default:
       uri: <%= ENV['MONGO_URL'] %>
-      username: <%= ENV['MONGODB_USERNAME'] %>
-      password: <%= ENV['MONGODB_PASSWORD'] %>
