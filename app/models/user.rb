@@ -1,3 +1,4 @@
+### A single system User on the decision support system.
 class User
   include Mongoid::Document
 

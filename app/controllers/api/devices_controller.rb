@@ -1,6 +1,6 @@
 class Api::DevicesController < ApplicationController
   respond_to :json
-
+  before_action :authenticate_user!
   before_action :set_device, only: [:show, :edit, :update, :destroy]
 
   # GET /api/devices
