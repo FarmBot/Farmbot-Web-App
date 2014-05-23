@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+# Api::DevicesController is the RESTful endpoint for managing device related
+# settings. Consumed by the Angular SPA on the front end.
 describe Api::DevicesController do
 
   include Devise::TestHelpers
@@ -21,9 +23,9 @@ describe Api::DevicesController do
     end
 
     it 'handles requests from unauthenticated users' do
+      binding.pry
       get :index
       expect(response.status).to eq(401)
-    end
   end
 
 end
