@@ -1,5 +1,6 @@
 //= require lodash
 //= require foundation/jquery
+//= require skynet
 //= require foundation/foundation
 //= require_tree ./foundation
 //= require angular/angular
