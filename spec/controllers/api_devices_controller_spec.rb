@@ -27,5 +27,5 @@ describe Api::DevicesController do
       get :index
       expect(response.status).to eq(401)
   end
-
+ end
 end
