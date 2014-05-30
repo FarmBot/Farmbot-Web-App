@@ -2,7 +2,7 @@
 # cnxn = new Skynet(device.uuid, device.token, device.message)
 Skynet = () ->
   class Skynet
-    constructor: (uuid, token, callback) ->
+    constructor: (uuid, token) ->
       config =
         uuid:  uuid
         token: token

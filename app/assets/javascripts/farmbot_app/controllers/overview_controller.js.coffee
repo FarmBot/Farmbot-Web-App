@@ -4,6 +4,11 @@
 angular.module('FarmBot').controller "OverviewController", [
   '$scope'
   'Restangular'
-  ($scope, Restangular) ->
-    $scope.device = {}
+  'Skynet'
+  ($scope, Restangular, Skynet) ->
+    Restangular.all('devices').getList().then (data) ->
+      $scope.devices = data
+      $scope.device  = #new Skynet(dvc.uuid, dvc.token)
+    $scope.goHome = ->
+      debugger
 ]
