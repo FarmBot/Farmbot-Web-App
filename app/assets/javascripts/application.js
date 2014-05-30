@@ -8,7 +8,8 @@
 //= require angular/angular-route
 //= require ng-rails-csrf
 //= require farmbot_app/farmbot
-//= require_tree ./farmbot_app
+//= require_tree ./farmbot_app/services
+//= require_tree ./farmbot_app/controllers
 
 
 //bootstrap the alert box plugin
