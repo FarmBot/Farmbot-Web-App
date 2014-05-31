@@ -3,7 +3,7 @@
 
 # Farmbot Decision Support System
 
-This Repo is the Web based side of the decision support system. It is the glue that ties together all other farmbot components and services.
+This Repo is the Web based side of the decision support system. It is the glue that ties together all other farmbot components and services. **ITS NOT STABLE. WE ARE IN PRE ALPHA.**
 
 # Developer setup
 
