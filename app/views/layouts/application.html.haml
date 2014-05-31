@@ -21,10 +21,10 @@
             %li{class: ("active" if current_page? page_path('dashboard'))}
               = link_to 'STUB', page_path('dashboard')
             %li{class: ("active" if current_page? page_path('#/settings'))}
-              = link_to 'Device Overview', '/dashboard#/overview'
+              = link_to 'Control', '/dashboard#/overview'
             // TODO: Add CSS rul based on hash fragment.
             %li{class: ("active" if current_page? page_path('#/settings'))}
-              = link_to 'Device Settings', '/dashboard#/settings'
+              = link_to 'Settings', '/dashboard#/settings'
           %li{class: ("active" if current_page? page_path('help'))}
             = link_to 'Help', page_path('help')
 
