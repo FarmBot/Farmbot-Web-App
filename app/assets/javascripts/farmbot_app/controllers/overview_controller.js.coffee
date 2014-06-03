@@ -8,7 +8,6 @@
 angular.module('FarmBot').controller "OverviewController", [
   '$scope'
   'Restangular'
-  'Skynet'
   ($scope, Restangular, Skynet) ->
     Restangular.all('devices').getList().then (data) ->
       $scope.devices = data
