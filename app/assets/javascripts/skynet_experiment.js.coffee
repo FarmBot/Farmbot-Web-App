@@ -42,7 +42,7 @@ window.fake_message2 =
 window.start_skynet = ->
   device = prompt 'Which device are you using? 1 or 2'
   device = eval("device#{device}")
-  skynet config, (e, socket) ->
+  skynet device, (e, socket) ->
     throw e  if e
     window.skynet_socket = socket
     socket.on "message", (message) ->

@@ -17,7 +17,6 @@ controller = ($scope, Restangular) ->
     $scope.device = device
 
   $scope.createDevice = ->
-    # How does this even work!? Looks like the wrong order, but it works??
     if typeof($scope.device._id) != 'undefined'
       $scope.device.put().then (data) ->
         $scope.device = {}
