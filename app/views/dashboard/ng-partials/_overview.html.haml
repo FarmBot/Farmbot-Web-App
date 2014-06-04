@@ -42,5 +42,10 @@
         %li
           %a.button.small.alert{href: "#"} Shutdown
   .row
-    .large-12.columns
+    .large-6.columns
       %iframe{frameborder: "0", height: "234", scrolling: "no", src: "http://75.128.5.101:8081/", style: "border: 0px none transparent;", width: "800", height: "600"}
+    .large-6.columns
+      %h1 debugger (Hi Tim!)
+      %form{ng_submit: 'debug()'}
+        %textarea{rows: "30", cols: "25", ng_model: 'message'}
+        %input.button{name: "commit", type: "submit", value: "Send"}

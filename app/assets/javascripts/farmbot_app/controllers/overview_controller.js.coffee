@@ -26,7 +26,7 @@ angular.module('FarmBot').controller "OverviewController", [
             y: 0
             z: 0
             speed: 100   # Not sure about this one.
-            amount: null # Is this for "DOSE WATER"?
+            amount: 0 # Is this for "DOSE WATER"?
             delay: 0
         , (data) ->
           console.log data
@@ -43,5 +43,9 @@ angular.module('FarmBot').controller "OverviewController", [
         $scope.socket = socket
         $scope.socket.on "message", (message) ->
           console.log "message received", message
+    
+    $scope.debug = ->
+      $scope.socket.emit "message", JSON.parse($scope.message), (data) ->
+        console.log data
 
 ]
