@@ -17,7 +17,7 @@ angular.module('FarmBot').controller "OverviewController", [
     $scope.goHome = ->
       $scope.socket.emit "message",
         devices: $scope.device.uuid
-        payload:
+        message:
           message_type: 'single_command'
           time_stamp: new Date()
           command:
