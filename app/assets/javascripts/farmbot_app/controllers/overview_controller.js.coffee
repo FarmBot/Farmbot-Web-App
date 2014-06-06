@@ -17,7 +17,7 @@ angular.module('FarmBot').controller "OverviewController", [
     $scope.goHome = ->
       $scope.socket.emit "message",
         devices: $scope.device.uuid
-        payload:
+        message:
           message_type: 'single_command'
           time_stamp: new Date()
           command:
@@ -26,7 +26,7 @@ angular.module('FarmBot').controller "OverviewController", [
             y: 0
             z: 0
             speed: 100   # Not sure about this one.
-            amount: null # Is this for "DOSE WATER"?
+            amount: 0 # Is this for "DOSE WATER"?
             delay: 0
         , (data) ->
           console.log data
@@ -34,14 +34,18 @@ angular.module('FarmBot').controller "OverviewController", [
 
     $scope.connectToSkyNet = ->
       config =
-        type: "farmbot"
-        uuid: $scope.device.uuid
-        token: $scope.device.token
+        type: "farmbotdss"
+        uuid: "901ba251-ed7a-11e3-995a-b7667747c514"
+        token: "32pwbkzd7qp06bt9zznee5xjhc7kfbt9"
         protocol: "websocket"
       skynet config, (e, socket) ->
         throw e  if e
         $scope.socket = socket
         $scope.socket.on "message", (message) ->
           console.log "message received", message
+
+    $scope.debug = ->
+      $scope.socket.emit "message", JSON.parse($scope.message), (data) ->
+        console.log data
 
 ]
