@@ -34,16 +34,16 @@ angular.module('FarmBot').controller "OverviewController", [
 
     $scope.connectToSkyNet = ->
       config =
-        type: "farmbot"
-        uuid: $scope.device.uuid
-        token: $scope.device.token
+        type: "farmbotdss"
+        uuid: "901ba251-ed7a-11e3-995a-b7667747c514"
+        token: "32pwbkzd7qp06bt9zznee5xjhc7kfbt9"
         protocol: "websocket"
       skynet config, (e, socket) ->
         throw e  if e
         $scope.socket = socket
         $scope.socket.on "message", (message) ->
           console.log "message received", message
-    
+
     $scope.debug = ->
       $scope.socket.emit "message", JSON.parse($scope.message), (data) ->
         console.log data
