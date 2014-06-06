@@ -1,6 +1,7 @@
 # The overview controller provides an indepth view of a device as well as fine-
 # grained controll options. Needs a better name.
-
+# TODO: Network status indicator
+# TODO: Device selection
 # Run this in the command line for diagnostics.
 # ======
 # curl -X GET http://skynet.im/subscribe/713c69b1-e36a-11e3-93f8-f3e7e8d1cce9?token=0waw1l97lbwc23xrh0oem7d8rbai3sor --header "skynet_auth_uuid: 4bb4a961-e8e6-11e3-93f8-f3e7e8d1cce9" --header "skynet_auth_token: jce90gf7szxxyldihii1m3xv5d9jatt9"
@@ -17,7 +18,7 @@ angular.module('FarmBot').controller "OverviewController", [
     $scope.goHome = ->
       $scope.socket.emit "message",
         devices: $scope.device.uuid
-        message:
+        payload:
           message_type: 'single_command'
           time_stamp: new Date()
           command:
