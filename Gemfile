@@ -37,6 +37,8 @@ end
 
 gem 'haml'
 
+gem 'figaro' # Store secrets the 12 factor way.
+
 group :test do
   gem 'rspec'
   gem 'rspec-rails'

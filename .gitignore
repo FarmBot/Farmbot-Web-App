@@ -39,3 +39,5 @@ pickle-email-*.html
 
 # unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
 .rvmrc
+# Ignore application configuration
+/config/application.yml
