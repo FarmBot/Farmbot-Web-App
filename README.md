@@ -1,9 +1,9 @@
-[![Stories in Ready](https://badge.waffle.io/farmbot/farmbot-web-backend.png?label=ready&title=Ready)](https://waffle.io/farmbot/farmbot-dss)
-[![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-dss.png)](https://codeclimate.com/github/FarmBot/farmbot-dss)
+[![Stories in Ready](https://badge.waffle.io/farmbot/farmbot-web-backend.png?label=ready&title=Ready)](https://waffle.io/FarmBot/farmbot-web-app)
+[![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-web-app.png)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
 
-# Farmbot Decision Support System
+# Farmbot Web App
 
-This Repo is the Web based side of the decision support system. It is the glue that ties together all other farmbot components and services. **ITS NOT STABLE. WE ARE IN PRE ALPHA.**
+This Repo is the Web based side of FarmBot. It is the glue that ties together all other farmbot components and services. **ITS NOT STABLE. WE ARE IN PRE ALPHA.**
 
 # Developer setup
 
@@ -18,14 +18,35 @@ This Repo is the Web based side of the decision support system. It is the glue t
 # How to Contribute
 
  * Check out [Waffle.io](https://waffle.io/farmbot/farmbot-web-backend) for issues that are ready to be worked on.
- * Pull requests are always appreciated, but *please do write tests* for your contribuitions- this project is the work of many people. Having a good test suite keeps it maintainable.
+ * Pull requests are always appreciated, but *please*
+   * Write tests.
+   * Follow the [Ruby Community Style Guide](https://github.com/bbatsov/ruby-style-guide).
+   * Raise issues. We love to know about issues.
 
 # Roadmap
 
-This project is still in its infancy. Our current focus as of May 2014 is to create a basic system of control for the farmbot user via technologies such as:
+This project is still in its infancy. Our current focus as of June 2014 is to create a basic system of control for the farmbot user via technologies such as:
 
  * [Farmbot Controller](https://github.com/FarmBot/farmbot-raspberry-pi-controller)
  * [Skynet IoT Messaging Platform](http://www.skynet.im) ([Github](https://github.com/skynetim/skynet))
  * Ruby on Rails
 
 Eventually, the DSS hopes to be a rich environment for users to manage their FarmBot and gain insights into the farming decision process.
+
+# Accomplishments
+
+APRIL 2014:
+
+ * Finished basic user registration
+ * Functional mockups
+
+MAY 2014:
+
+ * Deployed pre-alpha staging server (contact Rick Carlino for contributor access)
+ * Connected to [SkyNet](www.skynet.im)
+ * Finished in browser device config for skynet.
+
+JUNE 2014:
+
+ * Achieved Device movement in the real world.
+ * More to come...

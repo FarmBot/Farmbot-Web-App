@@ -23,9 +23,8 @@ describe Api::DevicesController do
     end
 
     it 'handles requests from unauthenticated users' do
-      binding.pry
-      get :index
+      get :index, format: :json # FIXME: Y U NO DEFAULT JSON?
       expect(response.status).to eq(401)
+    end
   end
- end
 end

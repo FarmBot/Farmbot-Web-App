@@ -1,6 +1,6 @@
 Dss::Application.routes.draw do
 
-  namespace :api do
+  namespace :api, defaults: {format: :json} do
     resources :devices, only: [:index, :destroy, :create, :update]
   end
 

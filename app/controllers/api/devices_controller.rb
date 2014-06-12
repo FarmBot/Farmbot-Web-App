@@ -11,6 +11,7 @@ class Api::DevicesController < ApplicationController
 
   # GET /api/devices/1
   def show
+    raise 'Not implemented.'
   end
 
   # POST /api/devices
