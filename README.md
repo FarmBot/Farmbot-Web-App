@@ -1,6 +1,4 @@
-[![Stories in Ready](https://badge.waffle.io/farmbot/farmbot-web-backend.png?label=ready&title=Ready)](https://waffle.io/FarmBot/farmbot-web-app)
-
-[![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-web-app.png)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
+[![Stories in Ready](https://badge.waffle.io/farmbot/farmbot-web-backend.png?label=ready&title=Ready)](https://waffle.io/FarmBot/farmbot-web-app)[![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-web-app.png)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
 
 # Farmbot Web App
 

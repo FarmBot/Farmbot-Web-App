@@ -9,5 +9,4 @@ class ApplicationController < ActionController::Base
     # devise resources (eg: admin users, etc.)
     dashboard_path
   end
-
 end

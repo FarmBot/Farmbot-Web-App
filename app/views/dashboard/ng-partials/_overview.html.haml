@@ -6,30 +6,30 @@
       .container.clearfix
         .large-4.columns Gantry (X)
         .large-4.columns
-          %span.label.round.success>
+          %span.label.round.success{ng_click: 'upx()'}
             %i.fi-plus
-          46
-          %span.label.round.alert
+          {{ x }}
+          %span.label.round.alert{ng_click: 'downx()'}
             %i.fi-minus
         .large-4.columns Jog to:
       %br/
       .container.clearfix
         .large-4.columns Cross-Slide (Y)
         .large-4.columns
-          %span.label.round.success>
+          %span.label.round.success{ng_click: 'upy()'}
             %i.fi-plus
-          46
-          %span.label.round.alert
+          {{ y }}
+          %span.label.round.alert{ng_click: 'downy()'}
             %i.fi-minus
         .large-4.columns Jog to:
       %br/
       .container.clearfix
         .large-4.columns Tool Mount (Z)
         .large-4.columns
-          %span.label.round.success>
+          %span.label.round.success{ng_click: 'upz()'}
             %i.fi-plus
-          46
-          %span.label.round.alert
+          {{ z }}
+          %span.label.round.alert{ng_click: 'downz()'}
             %i.fi-minus
         .large-4.columns Jog to:
       %br/
@@ -38,7 +38,7 @@
         %li
           %a.button.small{href: "", 'ng-click' => 'goHome()'} Jog to Home
         %li
-          %a.button.small{href: "#"} Calibrate
+          %a.button.small{href: "", ng_click: 'goAbs()'} Move!
         %li
           %a.button.small.alert{href: "#"} Shutdown
   .row

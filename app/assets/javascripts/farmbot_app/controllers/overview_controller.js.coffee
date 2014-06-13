@@ -10,6 +10,25 @@ angular.module('FarmBot').controller "OverviewController", [
   '$scope'
   'Restangular'
   ($scope, Restangular, Skynet) ->
+
+    $scope.x = 0
+    $scope.y = 0
+    $scope.z = 0
+
+    $scope.upx = ->
+      $scope.x = $scope.x + 5
+    $scope.upy = ->
+      $scope.y = $scope.y + 5
+    $scope.upz = ->
+      $scope.z = $scope.z + 5
+    
+    $scope.downx = ->
+      $scope.x = $scope.x - 5
+    $scope.downy = ->
+      $scope.y = $scope.y - 5
+    $scope.downz = ->
+      $scope.z = $scope.z - 5
+
     Restangular.all('devices').getList().then (data) ->
       $scope.devices = data
       $scope.device  = data[0]
@@ -26,6 +45,24 @@ angular.module('FarmBot').controller "OverviewController", [
             x: 0
             y: 0
             z: 0
+            speed: 100   # Not sure about this one.
+            amount: 0 # Is this for "DOSE WATER"?
+            delay: 0
+        , (data) ->
+          console.log data
+      return true
+
+    $scope.goAbs = ->
+      $scope.socket.emit "message",
+        devices: $scope.device.uuid
+        payload:
+          message_type: 'single_command'
+          time_stamp: new Date()
+          command:
+            action: 'MOVE ABSOLUTE'
+            x: $scope.x
+            y: $scope.y
+            z: $scope.z
             speed: 100   # Not sure about this one.
             amount: 0 # Is this for "DOSE WATER"?
             delay: 0
