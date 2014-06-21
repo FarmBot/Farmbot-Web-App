@@ -1,6 +1,9 @@
 require 'simplecov'
 #Ignore anything with the word 'spec' in it. No need to test your tests.
-SimpleCov.start{ add_filter '/spec/' }
+SimpleCov.start do
+  add_filter '/spec/'
+  add_filter 'config/initializers'
+end
 require 'pry'
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'

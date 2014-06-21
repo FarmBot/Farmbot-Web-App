@@ -1,24 +1,19 @@
 require 'spec_helper'
 
-# Api::DevicesController is the RESTful endpoint for managing device related
-# settings. Consumed by the Angular SPA on the front end.
 describe Api::DevicesController do
 
   include Devise::TestHelpers
 
   describe '#index' do
 
-    let(:user) do
-      user = FactoryGirl.create(:user)
-      user.devices << FactoryGirl.create(:device)
-      user
-    end
+    let(:user) { FactoryGirl.create(:user) }
 
     it 'returns all the users devices, as JSON' do
       sign_in user
-      get :index
+      get :index, format: :json
       device = user.devices.first
-      expect(response.body).to include(device._id)
+      id = JSON.parse(response.body).first["_id"]
+      expect(Device.find(id)).to eq(device)
       expect(response.status).to eq(200)
     end
 
