@@ -1,3 +1,5 @@
+# Api::DevicesController is the RESTful endpoint for managing device related
+# settings. Consumed by the Angular SPA on the front end.
 class Api::DevicesController < ApplicationController
   respond_to :json
   before_action :authenticate_user!
@@ -10,9 +12,9 @@ class Api::DevicesController < ApplicationController
   end
 
   # GET /api/devices/1
-  def show
-    raise 'Not implemented.'
-  end
+  # def show
+  #   raise 'Not implemented.'
+  # end
 
   # POST /api/devices
   def create
