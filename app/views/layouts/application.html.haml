@@ -18,8 +18,6 @@
       %section.top-bar-section
         %ul.left
           -if current_user
-            %li{class: ("active" if current_page? page_path('dashboard'))}
-              = link_to 'STUB', page_path('dashboard')
             %li{class: ("active" if current_page? page_path('#/settings'))}
               = link_to 'Control', '/dashboard#/overview'
             // TODO: Add CSS rul based on hash fragment.
