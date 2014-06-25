@@ -7,7 +7,6 @@ angular.module('FarmBot').controller "OverviewController", [
   'DeviceFactory'
   ($scope, Restangular, DeviceFactory) ->
     Restangular.all('devices').getList().then (data) ->
-      $scope.test    = yes # Delete this line.
       $scope.devices = data
       $scope.device  = data[0]
       $scope.device.connectToSkyNet()
