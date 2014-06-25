@@ -9,7 +9,7 @@ describe Api::DevicesController do
     let(:user) { FactoryGirl.create(:user) }
 
     it 'shows a single Device' do
-      pending
+      pending 'Pending until implemented'
       sign_in user
       get :show, {id: user.devices.first.id}
       shown = JSON.parse response.body

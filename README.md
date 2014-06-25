@@ -34,10 +34,10 @@ Eventually, the DSS hopes to be a rich environment for users to manage their Far
 
 # Accomplishments
 
-APRIL 2014:
+JUNE 2014:
 
- * Finished basic user registration
- * Functional mockups
+ * Achieved Device movement in the real world.
+ * More to come...
 
 MAY 2014:
 
@@ -45,7 +45,7 @@ MAY 2014:
  * Connected to [SkyNet](www.skynet.im)
  * Finished in browser device config for skynet.
 
-JUNE 2014:
+APRIL 2014:
 
- * Achieved Device movement in the real world.
- * More to come...
+ * Finished basic user registration
+ * Functional mockups
