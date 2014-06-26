@@ -2,13 +2,12 @@ source 'https://rubygems.org'
 
 ruby '2.1.1'
 
+gem 'rails', '4.1.0'
+
 #Dokku demands this one.
 gem 'rails_12factor'
 
 gem 'ng-rails-csrf'
-
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.1.0'
 
 gem 'mongoid', '~> 4.0.0.beta1', github: 'mongoid/mongoid'
 
