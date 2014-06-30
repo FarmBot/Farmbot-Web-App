@@ -37,7 +37,6 @@ Eventually, the DSS hopes to be a rich environment for users to manage their Far
 JUNE 2014:
 
  * Achieved Device movement in the real world.
- * More to come...
 
 MAY 2014:
 

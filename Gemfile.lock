@@ -298,7 +298,7 @@ DEPENDENCIES
   jasmine-rails
   launchy
   metric_fu
-  mongoid (~> 4.0.0.beta1)!
+  mongoid (~> 4.0.0)!
   ng-rails-csrf
   pry
   rails (= 4.1.0)

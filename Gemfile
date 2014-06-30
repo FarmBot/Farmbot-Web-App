@@ -7,7 +7,7 @@ gem 'rails', '4.1.0'
 #Dokku demands this one.
 gem 'rails_12factor'
 gem 'ng-rails-csrf'
-gem 'mongoid', '~> 4.0.0.beta1', github: 'mongoid/mongoid'
+gem 'mongoid', '~> 4.0.0', github: 'mongoid/mongoid'
 
 #Asset stuff
 gem 'sass-rails', github: 'rails/sass-rails'
@@ -30,7 +30,7 @@ end
 gem 'figaro' # Store secrets the 12 factor way.
 
 group :test do
-  gem 'rspec'#, '<3.0'
+  gem 'rspec'
   gem 'rspec-rails'
   gem 'simplecov'
   gem 'capybara'
