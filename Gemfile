@@ -6,23 +6,15 @@ gem 'rails', '4.1.0'
 
 #Dokku demands this one.
 gem 'rails_12factor'
-
 gem 'ng-rails-csrf'
-
 gem 'mongoid', '~> 4.0.0.beta1', github: 'mongoid/mongoid'
 
-gem 'sass-rails'
+#Asset stuff
+gem 'sass-rails', github: 'rails/sass-rails'
 gem 'coffee-rails'
 gem 'uglifier'
 gem 'high_voltage', '~> 2.1.0'
-
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 1.2'
-
-group :doc do
-  # bundle exec rake doc:rails generates the API under doc/api.
-  gem 'sdoc', require: false
-end
+gem 'haml'
 
 group :development, :test do
   gem 'pry'
@@ -35,12 +27,10 @@ group :development do
   gem 'metric_fu' # Run this to see where the code smells. metric_fu in terminal
 end
 
-gem 'haml'
-
 gem 'figaro' # Store secrets the 12 factor way.
 
 group :test do
-  gem 'rspec'
+  gem 'rspec'#, '<3.0'
   gem 'rspec-rails'
   gem 'simplecov'
   gem 'capybara'
