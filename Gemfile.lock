@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/mongoid/mongoid.git
-  revision: 50b633c8baf2fa467e8c36b18a013a2cd50e0454
+  revision: e01daa73623520716d62b7513bda10e978e0d583
   specs:
     mongoid (4.0.0)
       activemodel (~> 4.0)
@@ -10,7 +10,7 @@ GIT
 
 GIT
   remote: git://github.com/plataformatec/devise.git
-  revision: b6af1675d5b4123b2481dd2630fe5197829994ec
+  revision: 50679e1d93a13d3111b92a929ac1f62d65338e29
   specs:
     devise (3.2.4)
       bcrypt (~> 3.0)
@@ -18,6 +18,16 @@ GIT
       railties (>= 3.2.6, < 5)
       thread_safe (~> 0.1)
       warden (~> 1.2.3)
+
+GIT
+  remote: git://github.com/rails/sass-rails.git
+  revision: 3a9e47db7d769221157c82229fc1bade55b580f0
+  specs:
+    sass-rails (4.0.1)
+      railties (>= 4.0.0, < 5.0)
+      sass (~> 3.2)
+      sprockets (~> 2.12)
+      sprockets-rails (~> 2.0)
 
 GEM
   remote: https://rubygems.org/
@@ -88,7 +98,7 @@ GEM
     diff-lcs (1.2.5)
     docile (1.1.5)
     erubis (2.7.0)
-    execjs (2.2.0)
+    execjs (2.2.1)
     factory_girl (4.4.0)
       activesupport (>= 3.0.0)
     factory_girl_rails (4.4.1)
@@ -118,9 +128,6 @@ GEM
       phantomjs
       railties (>= 3.1.0)
       sprockets-rails
-    jbuilder (1.5.3)
-      activesupport (>= 3.0.0)
-      multi_json (>= 1.2.0)
     json (1.8.1)
     json_pure (1.8.1)
     launchy (2.4.2)
@@ -206,8 +213,6 @@ GEM
       thor (>= 0.18.1, < 2.0)
     rainbow (2.0.0)
     rake (10.3.2)
-    rdoc (4.1.1)
-      json (~> 1.4)
     redcard (1.1.0)
     reek (1.3.7)
       rainbow
@@ -245,15 +250,7 @@ GEM
       sexp_processor (~> 4.0)
     ruby_parser (3.6.1)
       sexp_processor (~> 4.1)
-    sass (3.2.19)
-    sass-rails (4.0.3)
-      railties (>= 4.0.0, < 5.0)
-      sass (~> 3.2.0)
-      sprockets (~> 2.8, <= 2.11.0)
-      sprockets-rails (~> 2.0)
-    sdoc (0.4.0)
-      json (~> 1.8)
-      rdoc (~> 4.0, < 5.0)
+    sass (3.3.9)
     sexp_processor (4.4.3)
     simplecov (0.8.2)
       docile (~> 1.1.0)
@@ -261,7 +258,7 @@ GEM
       simplecov-html (~> 0.8.0)
     simplecov-html (0.8.0)
     slop (3.5.0)
-    sprockets (2.11.0)
+    sprockets (2.12.1)
       hike (~> 1.2)
       multi_json (~> 1.0)
       rack (~> 1.0)
@@ -299,17 +296,15 @@ DEPENDENCIES
   haml
   high_voltage (~> 2.1.0)
   jasmine-rails
-  jbuilder (~> 1.2)
   launchy
   metric_fu
-  mongoid (~> 4.0.0.beta1)!
+  mongoid (~> 4.0.0)!
   ng-rails-csrf
   pry
   rails (= 4.1.0)
   rails_12factor
   rspec
   rspec-rails
-  sass-rails
-  sdoc
+  sass-rails!
   simplecov
   uglifier

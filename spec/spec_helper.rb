@@ -24,12 +24,12 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 RSpec.configure do |config|
 
   config.include Helpers
+  config.infer_spec_type_from_file_location!
+  config.order = "random"
 
   config.after do
     Mongoid.purge!
   end
-
-  config.order = "random"
 end
 
 # Moped was making the test output buffer look ugly every time the database was
