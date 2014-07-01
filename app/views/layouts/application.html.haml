@@ -19,8 +19,8 @@
         %ul.left
           -if current_user
             %li{class: ("active" if current_page? page_path('#/settings'))}
-              = link_to 'Control', '/dashboard#/overview'
-            // TODO: Add CSS rul based on hash fragment.
+              = link_to 'Control', '/dashboard#/movement'
+            // TODO: Add CSS rule based on hash fragment?
             %li{class: ("active" if current_page? page_path('#/settings'))}
               = link_to 'Settings', '/dashboard#/settings'
           %li{class: ("active" if current_page? page_path('help'))}

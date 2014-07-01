@@ -6,9 +6,9 @@ describe "Restauranteur controllers", ->
     module("FarmBot")
     inject ($controller) ->
       @scope = {}
-      @ctrl = $controller("OverviewController", $scope: scope)
+      @ctrl = $controller("MovementController", $scope: scope)
 
-  describe "OverviewController", ->
+  describe "MovementController", ->
     it "initializes X, Y and Z", ->
       expect(scope.x).toBe(0)
       expect(scope.y).toBe(0)
