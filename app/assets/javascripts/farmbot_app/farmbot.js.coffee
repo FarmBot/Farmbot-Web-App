@@ -22,8 +22,8 @@ app.config [
     ).when("/settings",
       templateUrl: "settings.html"
       controller: "SettingsController"
-    ).when("/overview",
-      templateUrl: "overview.html"
-      controller: "OverviewController"
+    ).when("/movement",
+      templateUrl: "movement.html"
+      controller: "MovementController"
     ).otherwise redirectTo: "/main"
 ]
