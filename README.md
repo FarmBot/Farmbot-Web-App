@@ -14,13 +14,25 @@ This Repo is the Web based side of FarmBot. It is the glue that ties together al
  4. `rails s`
  5. Go to `http://localhost:3000`
 
+# Running Tests
+
+Please run them before submitting pull requests.
+
+## Ruby Specs
+
+ * `bundle exec rspec spec`
+
+## Javascript Specs
+
+ * ` bundle exec rake spec:javascript`
+
 # How to Contribute
 
  * Check out [Waffle.io](https://waffle.io/farmbot/farmbot-web-backend) for issues that are ready to be worked on.
  * Pull requests are always appreciated, but *please*
    * Write tests.
    * Follow the [Ruby Community Style Guide](https://github.com/bbatsov/ruby-style-guide).
-   * Raise issues. We love to know about issues.
+   * Raise issues. We love to know about issues. Even the issues you think are only relevant to your setup. Just submit issues if you have issues.
 
 # Roadmap
 
