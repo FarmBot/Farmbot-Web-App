@@ -25,5 +25,8 @@ app.config [
     ).when("/movement",
       templateUrl: "movement.html"
       controller: "MovementController"
+    ).when("/movement2",
+      templateUrl: "movement2.html"
+      controller: "Movement2Controller"
     ).otherwise redirectTo: "/main"
 ]
