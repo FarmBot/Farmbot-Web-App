@@ -49,7 +49,7 @@ angular.module('FarmBot').controller "MovementController", [
       return true
 
     $scope.goAbs = ->
-      $scope.socket.emit "message",
+      $scope.socket.message
         devices: $scope.device.uuid
         payload:
           message_type: 'single_command'
@@ -62,6 +62,8 @@ angular.module('FarmBot').controller "MovementController", [
             speed: 100   # Not sure about this one.
             amount: 0 # Is this for "DOSE WATER"?
             delay: 0
+        , (data) ->
+          console.log data
       return true
 
     $scope.connectToSkyNet = ->
