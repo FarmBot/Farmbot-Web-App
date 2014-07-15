@@ -9,18 +9,15 @@ angular.module('FarmBot').controller "MovementController", [
   '$scope'
   'Restangular'
   ($scope, Restangular) ->
-
     $scope.x = 0
     $scope.y = 0
     $scope.z = 0
-
     $scope.upx = ->
       $scope.x = $scope.x + 5
     $scope.upy = ->
       $scope.y = $scope.y + 5
     $scope.upz = ->
       $scope.z = $scope.z + 5
-    
     $scope.downx = ->
       $scope.x = $scope.x - 5
     $scope.downy = ->
@@ -34,7 +31,7 @@ angular.module('FarmBot').controller "MovementController", [
       $scope.connectToSkyNet()
 
     $scope.goHome = ->
-      $scope.socket.emit "message",
+      $scope.socket.message
         devices: $scope.device.uuid
         payload:
           message_type: 'single_command'
@@ -65,8 +62,6 @@ angular.module('FarmBot').controller "MovementController", [
             speed: 100   # Not sure about this one.
             amount: 0 # Is this for "DOSE WATER"?
             delay: 0
-        , (data) ->
-          console.log data
       return true
 
     $scope.connectToSkyNet = ->
@@ -74,13 +69,15 @@ angular.module('FarmBot').controller "MovementController", [
         type: "farmbotdss"
         uuid: "901ba251-ed7a-11e3-995a-b7667747c514"
         token: "32pwbkzd7qp06bt9zznee5xjhc7kfbt9"
-        protocol: "websocket"
-      skynet config, (e, socket) ->
-        throw e  if e
-        $scope.socket = socket
-        $scope.socket.on "message", (message) ->
-          #TODO: Append all incoming messages to an array for display / unit tests.
-          console.log "message received", message
+      $scope.socket = skynet.createConnection(config)
+      $scope.socket.on "ready", (data) ->
+        console.log "Ready"
+        $scope.socket.on "message", (data) ->
+          #TODO: Append all incoming messages to an array for
+          # display / unit tests.
+          console.log data
+        $scope.socket.status (data) ->
+          console.log data
 
     $scope.debug = ->
       $scope.socket.emit "message", JSON.parse($scope.message), (data) ->

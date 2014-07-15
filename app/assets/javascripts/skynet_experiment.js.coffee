@@ -42,16 +42,10 @@ window.fake_message2 =
 window.start_skynet = ->
   device = prompt 'Which device are you using? 1 or 2'
   device = eval("device#{device}")
-  skynet device, (e, socket) ->
-    throw e  if e
-    window.skynet_socket = socket
-    socket.on "message", (message) ->
-      console.log "message received", message
-
-  # # Send and receive messages
-  # socket.emit "message",
-  #   devices: "0d3a53a0-2a0b-11e3-b09c-ff4de847b2cc"
-  #   payload:
-  #     red: "on"
-  # , (data) ->
-  #   console.log data
+  window.conn = skynet.createConnection(device)
+  conn.on "ready", (data) ->
+          console.log "Ready"
+          conn.on "message", (data) ->
+            console.log data
+          conn.status (data) ->
+            console.log data
