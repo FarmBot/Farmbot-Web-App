@@ -9,26 +9,23 @@ angular.module('FarmBot').controller "Movement2Controller", [
   '$scope'
   'Restangular'
   ($scope, Restangular) ->
-    $scope.x = 0
-    $scope.y = 0
-    $scope.z = 0
-    $scope.upx = ->
-      $scope.x = $scope.x + 5
-    $scope.upy = ->
-      $scope.y = $scope.y + 5
-    $scope.upz = ->
-      $scope.z = $scope.z + 5
-    $scope.downx = ->
-      $scope.x = $scope.x - 5
-    $scope.downy = ->
-      $scope.y = $scope.y - 5
-    $scope.downz = ->
-      $scope.z = $scope.z - 5
-
     Restangular.all('devices').getList().then (data) ->
       $scope.devices = data
       $scope.device  = data[0]
       $scope.connectToSkyNet()
+
+    $scope.x = 0
+    $scope.y = 0
+    $scope.z = 0
+
+    $scope.moveTo = ({x, y, z}) ->
+      # These will probably get out of sync at some point. Will need to find a
+      # way to refresh based on what the device tells us about its location.
+      $scope.x += x if x
+      $scope.y += y if y
+      $scope.z += z if z
+      console.log("Movings to #{$scope.x}, #{$scope.y}, #{$scope.z}")
+      $scope.goAbs()
 
     $scope.goHome = ->
       $scope.socket.message
@@ -45,6 +42,7 @@ angular.module('FarmBot').controller "Movement2Controller", [
             amount: 0 # Is this for "DOSE WATER"?
             delay: 0
         , (data) ->
+          console.log("Done moving home")
           console.log data
       return true
 
@@ -63,6 +61,7 @@ angular.module('FarmBot').controller "Movement2Controller", [
             amount: 0 # Is this for "DOSE WATER"?
             delay: 0
         , (data) ->
+          console.log("Done attempting movement to #{$scope.x}, #{$scope.y}, #{$scope.z}")
           console.log data
       return true
 
