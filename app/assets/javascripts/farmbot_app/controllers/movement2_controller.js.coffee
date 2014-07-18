@@ -9,31 +9,26 @@ angular.module('FarmBot').controller "Movement2Controller", [
   '$scope'
   'Restangular'
   ($scope, Restangular) ->
-    $scope.x = 0
-    $scope.y = 0
-    $scope.z = 0
-
-    $scope.upx = (x = 5) ->
-      $scope.x = $scope.x + x
-    $scope.upy = (y = 5) ->
-      $scope.y = $scope.y + y
-    $scope.upz = (z = 5) ->
-      $scope.z = $scope.z + z
-    
-    $scope.downx = ->
-      $scope.x = $scope.x - 5
-    $scope.downy = ->
-      $scope.y = $scope.y - 5
-    $scope.downz = ->
-      $scope.z = $scope.z - 5
-
     Restangular.all('devices').getList().then (data) ->
       $scope.devices = data
       $scope.device  = data[0]
       $scope.connectToSkyNet()
 
+    $scope.x = 0
+    $scope.y = 0
+    $scope.z = 0
+
+    $scope.moveTo = ({x, y, z}) ->
+      # These will probably get out of sync at some point. Will need to find a
+      # way to refresh based on what the device tells us about its location.
+      $scope.x += x if x
+      $scope.y += y if y
+      $scope.z += z if z
+      console.log("Movings to #{$scope.x}, #{$scope.y}, #{$scope.z}")
+      $scope.goAbs()
+
     $scope.goHome = ->
-      $scope.socket.emit "message",
+      $scope.socket.message
         devices: $scope.device.uuid
         payload:
           message_type: 'single_command'
@@ -47,11 +42,12 @@ angular.module('FarmBot').controller "Movement2Controller", [
             amount: 0 # Is this for "DOSE WATER"?
             delay: 0
         , (data) ->
+          console.log("Done moving home")
           console.log data
       return true
 
     $scope.goAbs = ->
-      $scope.socket.emit "message",
+      $scope.socket.message
         devices: $scope.device.uuid
         payload:
           message_type: 'single_command'
@@ -65,6 +61,7 @@ angular.module('FarmBot').controller "Movement2Controller", [
             amount: 0 # Is this for "DOSE WATER"?
             delay: 0
         , (data) ->
+          console.log("Done attempting movement to #{$scope.x}, #{$scope.y}, #{$scope.z}")
           console.log data
       return true
 
@@ -73,13 +70,15 @@ angular.module('FarmBot').controller "Movement2Controller", [
         type: "farmbotdss"
         uuid: "901ba251-ed7a-11e3-995a-b7667747c514"
         token: "32pwbkzd7qp06bt9zznee5xjhc7kfbt9"
-        protocol: "websocket"
-      skynet config, (e, socket) ->
-        throw e  if e
-        $scope.socket = socket
-        $scope.socket.on "message", (message) ->
-          #TODO: Append all incoming messages to an array for display / unit tests.
-          console.log "message received", message
+      $scope.socket = skynet.createConnection(config)
+      $scope.socket.on "ready", (data) ->
+        console.log "Ready"
+        $scope.socket.on "message", (data) ->
+          #TODO: Append all incoming messages to an array for
+          # display / unit tests.
+          console.log data
+        $scope.socket.status (data) ->
+          console.log data
 
     $scope.debug = ->
       $scope.socket.emit "message", JSON.parse($scope.message), (data) ->
