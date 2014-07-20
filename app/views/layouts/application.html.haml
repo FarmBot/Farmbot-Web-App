@@ -56,11 +56,11 @@
       - if notice
         .alert-box.round{"onClick" => "hidden = true"}
           = notice
-          %button.close ×
+          %a.close ×
       - if alert
         .alert-box.alert.round{"onClick" => "hidden = true"}
           = alert
-          %button.close ×
+          %a.close ×
     .content
       = yield
       = javascript_include_tag "application"
