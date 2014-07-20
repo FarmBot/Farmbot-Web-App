@@ -54,13 +54,13 @@
               =link_to "Log In", new_user_session_path
     .container{style: 'margin: 10px;'}
       - if notice
-        .alert-box.round{"data-alert" => ""}
+        .alert-box.round{"onClick" => "hidden = true"}
           = notice
-          %a.close{href: "#"} ×
+          %button.close ×
       - if alert
-        .alert-box.alert.round{"data-alert" => ""}
+        .alert-box.alert.round{"onClick" => "hidden = true"}
           = alert
-          %a.close{href: "#"} ×
+          %button.close ×
     .content
       = yield
       = javascript_include_tag "application"
