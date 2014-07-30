@@ -2,7 +2,7 @@
 
 # Farmbot Web App
 
-This Repo is the Web based side of FarmBot. It is the glue that ties together all other farmbot components and services. **ITS NOT STABLE. WE ARE IN PRE ALPHA.**
+This Repo is the Web based side of FarmBot. It allows users to control the device from their web browser. **ITS NOT STABLE. WE ARE IN PRE ALPHA.**
 
 # Developer setup
 
@@ -36,15 +36,21 @@ Please run them before submitting pull requests.
 
 # Roadmap
 
-This project is still in its infancy. Our current focus as of June 2014 is to create a basic system of control for the farmbot user via technologies such as:
+This project is still in its infancy. Our current focus as of July 2014 is to create a basic system of control for the farmbot user via technologies such as:
 
  * [Farmbot Controller](https://github.com/FarmBot/farmbot-raspberry-pi-controller)
- * [Skynet IoT Messaging Platform](http://www.skynet.im) ([Github](https://github.com/skynetim/skynet))
+ * [MeshBlu IoT Messaging Platform](http://www.skynet.im) ([Github](https://github.com/skynetim/skynet))
  * Ruby on Rails
 
-Eventually, the DSS hopes to be a rich environment for users to manage their FarmBot and gain insights into the farming decision process.
+Eventually, the app hopes to be a rich environment for users to manage their FarmBot and gain insights into the farming decision process.
 
 # Accomplishments
+
+JULY 2014:
+
+ * Changed UI Components
+ * MeshBlu upgrade
+ * Production server changes
 
 JUNE 2014:
 
@@ -53,7 +59,7 @@ JUNE 2014:
 MAY 2014:
 
  * Deployed pre-alpha staging server (contact Rick Carlino for contributor access)
- * Connected to [SkyNet](www.skynet.im)
+ * Connected to [MeshBlu, formerly skynet](www.skynet.im)
  * Finished in browser device config for skynet.
 
 APRIL 2014:
