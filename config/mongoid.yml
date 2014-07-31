@@ -22,6 +22,3 @@ production:
   sessions:
     default:
       uri: <%= ENV['MONGO_URL'] %>
-      options:
-        skip_version_check: true
-        safe: true
