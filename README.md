@@ -44,6 +44,14 @@ This project is still in its infancy. Our current focus as of July 2014 is to cr
 
 Eventually, the app hopes to be a rich environment for users to manage their FarmBot and gain insights into the farming decision process.
 
+# nice-to-haves
+
+ * Actually make use of MeshBlu response objects, instead of just screaming commands at the device.
+ * Display device status.
+ * Test precision control widget on device.
+ * Dropdown box to select device (defaults to first)
+ * Better test suite for angular side of things.
+
 # Accomplishments
 
 JULY 2014:
