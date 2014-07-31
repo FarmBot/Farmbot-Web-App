@@ -21,4 +21,7 @@ test:
 production:
   sessions:
     default:
-      uri: mongodb://00-default:cFdZV2ZKYUdUSm1aaEswZFlBTm4vTW1HWGhXdVJOek9QT0NveVdQNVc3WT0K@172.17.0.27:27017/farmbot-production
+      uri: <%= ENV['MONGO_URL'] %>
+      options:
+        skip_version_check: true
+        safe: true
