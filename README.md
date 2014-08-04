@@ -67,7 +67,7 @@ JUNE 2014:
 MAY 2014:
 
  * Deployed pre-alpha staging server (contact Rick Carlino for contributor access)
- * Connected to [MeshBlu, formerly skynet](www.skynet.im)
+ * Connected to [MeshBlu](http://www.skynet.im/), formerly SkyNet.
  * Finished in browser device config for skynet.
 
 APRIL 2014:
