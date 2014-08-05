@@ -1,4 +1,8 @@
 .row
+  .large-10.columns
+    %ul{'ng-repeat' => 'device in new_devices.list'}
+      %li {{device.name}}
+.row
   .large-6.columns
     = render partial: "dashboard/ng-partials/control_star"
   .large-6.columns
@@ -7,7 +11,7 @@
         .large-3.columns
           %h5 Axis
         .large-3.columns
-          %h5 Current Position (m)
+          %h5 Current Position (m1)
         .large-3.columns
           %h5 Enter New Position (m)
         .large-3.columns
