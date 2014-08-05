@@ -8,11 +8,9 @@
 angular.module('FarmBot').controller "Movement2Controller", [
   '$scope'
   'Restangular'
-  ($scope, Restangular) ->
-    Restangular.all('devices').getList().then (data) ->
-      $scope.devices = data
-      $scope.device  = data[0]
-      $scope.connectToSkyNet()
+  'Devices'
+  ($scope, Restangular, Devices) ->
+    $scope.devices = Devices
 
     $scope.x = 0
     $scope.y = 0
@@ -28,8 +26,8 @@ angular.module('FarmBot').controller "Movement2Controller", [
       $scope.goAbs()
 
     $scope.goHome = ->
-      $scope.socket.message
-        devices: $scope.device.uuid
+      $scope.devices.connection.message
+        devices: $scope.devices.current.uuid
         payload:
           message_type: 'single_command'
           time_stamp: new Date()
@@ -43,12 +41,13 @@ angular.module('FarmBot').controller "Movement2Controller", [
             delay: 0
         , (data) ->
           console.log("Done moving home")
+          $scope.devices.log << data
           console.log data
       return true
 
     $scope.goAbs = ->
-      $scope.socket.message
-        devices: $scope.device.uuid
+      $scope.devices.connection.message
+        devices: $scope.devices.current.uuid
         payload:
           message_type: 'single_command'
           time_stamp: new Date()
@@ -62,26 +61,11 @@ angular.module('FarmBot').controller "Movement2Controller", [
             delay: 0
         , (data) ->
           console.log("Done attempting movement to #{$scope.x}, #{$scope.y}, #{$scope.z}")
+          $scope.devices.log << data
           console.log data
       return true
-
-    $scope.connectToSkyNet = ->
-      config =
-        type: "farmbotdss"
-        uuid: "901ba251-ed7a-11e3-995a-b7667747c514"
-        token: "32pwbkzd7qp06bt9zznee5xjhc7kfbt9"
-      $scope.socket = skynet.createConnection(config)
-      $scope.socket.on "ready", (data) ->
-        console.log "Ready"
-        $scope.socket.on "message", (data) ->
-          #TODO: Append all incoming messages to an array for
-          # display / unit tests.
-          console.log data
-        $scope.socket.status (data) ->
-          console.log data
-
     $scope.debug = ->
-      $scope.socket.emit "message", JSON.parse($scope.message), (data) ->
+      $scope.devices.connection.emit "message", JSON.parse($scope.message), (data) ->
         console.log data
 
 ]
