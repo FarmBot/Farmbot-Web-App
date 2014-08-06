@@ -1,4 +1,4 @@
-[![Stories in Ready](https://badge.waffle.io/farmbot/farmbot-web-backend.png?label=ready&title=Ready)](https://waffle.io/FarmBot/farmbot-web-app)[![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-web-app.png)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
+[![Stories in Ready](https://badge.waffle.io/farmbot/farmbot-web-app.png?label=ready&title=Ready)](https://waffle.io/FarmBot/farmbot-web-app)[![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-web-app.png)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
 
 # Farmbot Web App
 
@@ -6,8 +6,8 @@ This Repo is the Web based side of FarmBot. It allows users to control the devic
 
 # Developer setup
 
- 1. `git clone git@github.com:FarmBot/farmbot-web-backend.git`
- 2. `cd farmbot-web-backend`
+ 1. `git clone git@github.com:FarmBot/farmbot-web-app.git`
+ 2. `cd farmbot-web-app`
  3. [Install MongoDB](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
  4. Start Mongo if you have not already done so. (typically via the `mongod` command)
  3. `bundle install`
@@ -28,7 +28,7 @@ Please run them before submitting pull requests.
 
 # How to Contribute
 
- * Check out [Waffle.io](https://waffle.io/farmbot/farmbot-web-backend) for issues that are ready to be worked on.
+ * Check out [Waffle.io](https://waffle.io/farmbot/farmbot-web-app) for issues that are ready to be worked on.
  * Pull requests are always appreciated, but *please*
    * Write tests.
    * Follow the [Ruby Community Style Guide](https://github.com/bbatsov/ruby-style-guide).
