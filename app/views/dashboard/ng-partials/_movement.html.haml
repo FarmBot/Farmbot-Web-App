@@ -1,46 +1,63 @@
 .row
-  %h1 Manual Device Control
+  .large-10.columns
+    %ul{'ng-repeat' => 'device in new_devices.list'}
+      %li {{device.name}}
 .row
-  .large-8.columns
+  .large-6.columns
+    = render partial: "dashboard/ng-partials/control_star"
+  .large-6.columns
     .panel
       .container.clearfix
-        .large-4.columns Gantry (X)
-        .large-4.columns
-          %span.label.round.success{ng_click: 'upx()'}
-            %i.fi-plus
-          {{ x }}
-          %span.label.round.alert{ng_click: 'downx()'}
-            %i.fi-minus
-        .large-4.columns Jog to:
-      %br/
+        .large-3.columns
+          %h5 Axis
+        .large-3.columns
+          %h5 Current Position (m1)
+        .large-3.columns
+          %h5 Enter New Position (m)
+        .large-3.columns
+          %h5 Home
+        %br
       .container.clearfix
-        .large-4.columns Cross-Slide (Y)
-        .large-4.columns
-          %span.label.round.success{ng_click: 'upy()'}
-            %i.fi-plus
-          {{ y }}
-          %span.label.round.alert{ng_click: 'downy()'}
-            %i.fi-minus
-        .large-4.columns Jog to:
-      %br/
+        .large-3.columns Gantry (X)
+        .large-3.columns 10.2
+        .large-3.columns
+          %input.tiny-input{type: "number"}
+        .large-3.columns
+          %button.button.tiny
+            X
+        %br
       .container.clearfix
-        .large-4.columns Tool Mount (Z)
-        .large-4.columns
-          %span.label.round.success{ng_click: 'upz()'}
-            %i.fi-plus
-          {{ z }}
-          %span.label.round.alert{ng_click: 'downz()'}
-            %i.fi-minus
-        .large-4.columns Jog to:
-      %br/
-      %br/
-      %ul.button-group.even-3
-        %li
-          %a.button.small{href: "", 'ng-click' => 'goHome()'} Jog to Home
-        %li
-          %a.button.small{href: "", ng_click: 'goAbs()'} Move!
-        %li
-          %a.button.small.alert{href: "#"} Shutdown
+        .large-3.columns Cross-Slide (Y)
+        .large-3.columns 4.6
+        .large-3.columns
+          %input.tiny-input{type: "number"}
+        .large-3.columns
+          %button.button.tiny
+            Y
+        %br
+      .container.clearfix
+        .large-3.columns Tool Slide (Z)
+        .large-3.columns 3.14
+        .large-3.columns
+          %input.tiny-input{type: "number"}
+        .large-3.columns
+          %button.button.tiny
+            Z
+        %br
+      .container.clearfix
+        .large-3.columns.clearfix
+          %br
+        .large-3.columns.clearfix
+          %br
+        .large-3.columns
+          %button.button.tiny
+            Home
+        .large-3.columns
+          %button.button.tiny
+            All
+  .row
+    .large-12.columns
+      %iframe{frameborder: "0", scrolling: "no", src: "http://75.128.5.101:8081/", style: "border: 0px none transparent;", width: '100%', height: '640'}
   .row
     .large-3.columns
     .large-6.columns
@@ -49,6 +66,3 @@
         %input{type: "text", name: "fname", ng_model: 'message'}
         %input.button{name: "commit", type: "submit", value: "Send"}
     .large-3.columns
-  .row
-    .large-6.columns
-      %iframe{frameborder: "0", height: "234", scrolling: "no", src: "http://75.128.5.101:8081/", style: "border: 0px none transparent;", width: "800", height: "600"}
