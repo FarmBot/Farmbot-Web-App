@@ -1,7 +1,7 @@
 angular.module("FarmBot").factory "Devices",[
   'Restangular'
   (Restangular) ->
-    Devices = 
+    Devices =
       log: []
       status: {skynet: "offline"}
     Restangular.all('devices').getList().then (data) ->
@@ -14,15 +14,17 @@ angular.module("FarmBot").factory "Devices",[
       unless Devices.connection?.connected
         Devices.connection = skynet.createConnection
           type:  "farmbotdss"
-          uuid:  Devices.current.uuid
-          token: Devices.current.token
+          uuid:  "7e3a8a10-6bf6-11e4-9ead-634ea865603d" #Devices.current.uuid
+          token: "zj6tn36gux6crf6rjjarh35wi3f5stt9" #Devices.current.token
         Devices.connection.on "ready", (data) ->
           console.log "Ready"
           Devices.connection.on "message", (data) ->
             Devices.log << data
+            console.log "Message:"
             console.log data
           Devices.connection.status (data) ->
             Devices.status = data
+            console.log "Status:"
             console.log data
       else
         console.log "[WARN] Already connected to MeshBlu."

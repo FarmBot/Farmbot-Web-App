@@ -65,7 +65,7 @@ angular.module('FarmBot').controller "MovementController", [
           console.log data
       return true
     $scope.debug = ->
-      $scope.devices.connection.emit "message", JSON.parse($scope.message), (data) ->
+      $scope.devices.connection.emit "message", eval($scope.message), (data) ->
         console.log data
 
 ]
