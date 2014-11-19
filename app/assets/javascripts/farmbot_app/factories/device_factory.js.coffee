@@ -14,8 +14,8 @@ angular.module("FarmBot").factory "Devices",[
       unless Devices.connection?.connected
         Devices.connection = skynet.createConnection
           type:  "farmbotdss"
-          uuid:  "7e3a8a10-6bf6-11e4-9ead-634ea865603d" #Devices.current.uuid
-          token: "zj6tn36gux6crf6rjjarh35wi3f5stt9" #Devices.current.token
+          uuid:  "7e3a8a10-6bf6-11e4-9ead-634ea865603d"
+          token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
         Devices.connection.on "ready", (data) ->
           console.log "Ready"
           Devices.connection.on "message", (data) ->
@@ -29,5 +29,14 @@ angular.module("FarmBot").factory "Devices",[
       else
         console.log "[WARN] Already connected to MeshBlu."
 
+    Devices.send = (msg, cb = (d) -> console.log("Got msg: #{JSON.stringify(d)}")) ->
+      if !!Devices.connection
+        Devices.connection.message
+          devices: Devices.current.uuid
+          payload: msg
+          , cb()
+      else
+        console.log("WARNING! You tried to send a message before being connected")
+    window.sn = Devices.send #debuggery.
     return Devices
 ]

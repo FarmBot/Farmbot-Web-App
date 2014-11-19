@@ -30,7 +30,7 @@ angular.module('FarmBot').controller "MovementController", [
         devices: $scope.devices.current.uuid
         payload:
           message_type: 'single_command'
-          time_stamp: new Date()
+          time_stamp: Date().now()
           command:
             action: 'MOVE ABSOLUTE'
             x: 0
