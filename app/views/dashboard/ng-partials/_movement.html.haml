@@ -2,10 +2,10 @@
   .large-10.columns
     %ul{'ng-repeat' => 'device in new_devices.list'}
       %li {{device.name}}
-.row
-  .large-6.columns
+.row.controlPageRow
+  .large-3.columns
     = render partial: "dashboard/ng-partials/control_star"
-  .large-6.columns
+  .large-3.columns
     .panel
       .container.clearfix
         .large-3.columns
@@ -55,14 +55,39 @@
         .large-3.columns
           %button.button.tiny
             All
-  .row
-    .large-12.columns
-      %iframe{frameborder: "0", scrolling: "no", src: "http://75.128.5.101:8081/", style: "border: 0px none transparent;", width: '100%', height: '640'}
-  .row
-    .large-3.columns
-    .large-6.columns
-      %h1 Debugger
-      %form{ng_submit: 'debug()'}
-        %input{type: "text", name: "fname", ng_model: 'message'}
-        %input.button{name: "commit", type: "submit", value: "Send"}
-    .large-3.columns
+  .large-3.columns
+    %iframe{frameborder: "0", scrolling: "no", src: "http://75.128.5.101:8081/", style: "border: 0px none transparent;", width: '100%', height: '640'}
+  .large-3.columns
+    .panel
+      .container.clearfix
+        .large-8.columns Vacuum
+        .large-2.columns
+          %input{type: "checkbox"}
+        %br
+      .container.clearfix
+        .large-8.columns Water Pump
+        .large-2.columns
+          %input{type: "checkbox"}
+        %br
+      .container.clearfix
+        .large-8.columns LED
+        .large-2.columns
+          %input{type: "checkbox"}
+        %br
+      .container.clearfix
+        .large-8.columns Pump
+        .large-2.columns
+          %input{type: "checkbox"}
+        %br
+.row.controlPageRow
+  .large-3.columns
+  .large-3.columns
+    %h1 Debugger
+    %form{ng_submit: 'debug()'}
+      %input{type: "text", name: "fname", ng_model: 'message'}
+      %input.button{name: "commit", type: "submit", value: "Send"}
+    .switch
+      %input#exampleCheckboxSwitch{:type => "checkbox"}/
+      %label{:for => "exampleCheckboxSwitch"}
+  .large-3.columns .
+  .large-3.columns .

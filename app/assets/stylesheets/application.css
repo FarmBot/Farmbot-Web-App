@@ -11,5 +11,6 @@
  *= require_self
  *= require_tree ./foundation/
  *= require_tree ./foundation-icons/
+ *= require help_we_need_a_designer
  */
 
