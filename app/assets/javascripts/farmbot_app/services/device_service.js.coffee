@@ -1,4 +1,4 @@
-angular.module("FarmBot").factory "Devices",[
+angular.module("FarmBot").service "Devices",[
   'Restangular'
   (Restangular) ->
     Devices =
@@ -19,9 +19,8 @@ angular.module("FarmBot").factory "Devices",[
         Devices.connection.on "ready", (data) ->
           console.log "Ready"
           Devices.connection.on "message", (data) ->
-            Devices.log << data
-            console.log "Message:"
-            console.log data
+            bot = _.find(Devices.list, {uuid: data.fromUuid})
+            new Router(data, bot)
           Devices.connection.status (data) ->
             Devices.status = data
             console.log "Status:"
@@ -29,14 +28,17 @@ angular.module("FarmBot").factory "Devices",[
       else
         console.log "[WARN] Already connected to MeshBlu."
 
+    Devices.getStatus = -> Devices.send(new BotMessage("read_status"))
+
     Devices.send = (msg, cb = (d) -> console.log("Got msg: #{JSON.stringify(d)}")) ->
       if !!Devices.connection
         Devices.connection.message
           devices: Devices.current.uuid
           payload: msg
-          , cb()
+          , -> cb()
       else
         console.log("WARNING! You tried to send a message before being connected")
+
     window.sn = Devices.send #debuggery.
     return Devices
 ]

@@ -1,10 +1,16 @@
-class FarmbotCommand
-  constructor: (type, args) ->
-    result = FarmbotCommand.list[type](args)
-  @list:
+# Used for _CREATION_ of _OUTBOUND_ messages.
+class window.BotMessage
+  constructor: (type, args = {}) ->
+    unless BotMessage.all.hasOwnProperty(type)
+      args = type
+      type = 'error'
+    return BotMessage.all[type](args)
+
+  @all:
     single_command: (_args) ->
       message_type: 'single_command'
       time_stamp: Date.now()
+
 
     read_status: (_args) ->
       message_type: 'read_status'
@@ -27,3 +33,7 @@ class FarmbotCommand
       message_type: 'crop_schedule_update'
       time_stamp: Date.now()
 
+    error: (nope) ->
+      msg = "Unknown FarmBot message type #{nope}"
+      console.warn(msg)
+      return error: "Unknown message type #{nope}"

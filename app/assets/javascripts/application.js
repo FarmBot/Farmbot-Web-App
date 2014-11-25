@@ -4,5 +4,6 @@
 //= require angular/restangular
 //= require angular/angular-route
 //= require ng-rails-csrf
+//= require_tree ./messaging
 //= require farmbot_app/farmbot
 //= require_tree ./farmbot_app

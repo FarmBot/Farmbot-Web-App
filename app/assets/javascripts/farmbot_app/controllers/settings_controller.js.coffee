@@ -1,4 +1,4 @@
-# The deivce settings controller mostly handles SkyNet configuration options.
+# The device settings controller mostly handles MeshBlu configuration options.
 # If you're storing things related to a particular device and it's not an action
 # it probably belongs in here.
 app = angular.module('FarmBot')

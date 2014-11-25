@@ -59,10 +59,16 @@
     %iframe{frameborder: "0", scrolling: "no", src: "http://75.128.5.101:8081/", style: "border: 0px none transparent;", width: '100%', height: '640'}
   .large-3.columns
     .panel
+      %button.small{ng_click: 'refresh()'} Refresh
+      %span
+        x: {{ devices.current.x }}
+        y: {{ devices.current.y }}
+        z: {{ devices.current.z }}
+        status: {{ devices.current.status }}
       .container.clearfix
         .large-8.columns Vacuum
         .large-2.columns
-          %input{type: "checkbox"}
+          %input.switch{type: "checkbox"}
         %br
       .container.clearfix
         .large-8.columns Water Pump

@@ -67,5 +67,8 @@ angular.module('FarmBot').controller "MovementController", [
     $scope.debug = ->
       $scope.devices.connection.emit "message", eval($scope.message), (data) ->
         console.log data
+    # Just to show progress to team. Re-factor later.
+    $scope.refresh = ->
+      Devices.getStatus()
 
 ]
