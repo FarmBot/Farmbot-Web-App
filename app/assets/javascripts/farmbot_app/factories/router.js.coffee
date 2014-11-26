@@ -11,7 +11,6 @@ angular.module("FarmBot").factory 'Router', [
         else
           msg = "Failed message. Possible unknown key '#{@routing_key}'?"
           console.error(msg)
-          debugger
           RouteTable['missing'](@data, @bot)
     new Router
 ]
