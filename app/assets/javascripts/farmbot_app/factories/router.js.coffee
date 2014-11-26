@@ -4,9 +4,12 @@ angular.module("FarmBot").factory 'Router', [() ->
   class Router
     create: (@data, @bot) ->
       @routing_key = @data.message.message_type
-      @routing_key ?= "missing"
-      RouteTable[@routing_key](@data, @bot)
-
+      if RouteTable.hasOwnProperty(this.routing_key)
+        RouteTable[@routing_key](@data, @bot)
+      else
+        msg = "Failed message. Most likely caused by unknown message key. #{e}"
+        console.error(msg)
+        RouteTable['missing'](@data, @bot)
   new Router
 ]
 

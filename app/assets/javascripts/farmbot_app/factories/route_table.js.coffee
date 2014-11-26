@@ -1,5 +1,7 @@
 # angular.module("FarmBot").factory 'RouteTable', [() ->
   class window.RouteTable
+    @confirmation: (data, device) ->
+      console.warn("You really ought to write the confirmation code")
     @read_status_response: (data, device) ->
       console.log "reading status response"
       try
