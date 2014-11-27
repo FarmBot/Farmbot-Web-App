@@ -2,7 +2,8 @@ angular.module("FarmBot").service "Devices",[
   'Restangular'
   'Command'
   'Router'
-  (Restangular, Command, Router) ->
+  '$q'
+  (Restangular, Command, Router, $q) ->
     Devices =
       log: []
       status: {skynet: "offline"}
@@ -30,14 +31,16 @@ angular.module("FarmBot").service "Devices",[
       else
         console.log "[WARN] Already connected to MeshBlu."
 
-    Devices.getStatus = -> Devices.send(Command.create("read_status"))
+    Devices.getStatus = (cb) ->
+      Devices.current.status = 'Fetching data...'
+      Devices.send(Command.create("read_status"), cb)
 
-    Devices.send = (msg, cb = (d) -> console.log("Got msg: #{JSON.stringify(d)}")) ->
+    Devices.send = (msg, cb = (d) -> console.log(d)) ->
       if !!Devices.connection
         Devices.connection.message
           devices: Devices.current.uuid
           payload: msg
-          , -> cb()
+          , cb
       else
         console.log("WARNING! You tried to send a message before being connected")
 
