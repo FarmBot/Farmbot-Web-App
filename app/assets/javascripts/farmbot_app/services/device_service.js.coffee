@@ -2,8 +2,7 @@ angular.module("FarmBot").service "Devices",[
   'Restangular'
   'Command'
   'Router'
-  '$q'
-  (Restangular, Command, Router, $q) ->
+  (Restangular, Command, Router) ->
     Devices =
       log: []
       status: {skynet: "offline"}
@@ -34,8 +33,9 @@ angular.module("FarmBot").service "Devices",[
     Devices.getStatus = (cb) ->
       Devices.current.status = 'Fetching data...'
       Devices.send(Command.create("read_status"), cb)
+    Devices.toggleVac = (cb) -> Devices.send(Command.create("read_status"), cb)
 
-    Devices.send = (msg, cb = (d) -> console.log(d)) ->
+    Devices.send = (msg, cb = -> console.log(d)) ->
       if !!Devices.connection
         Devices.connection.message
           devices: Devices.current.uuid
