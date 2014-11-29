@@ -12,14 +12,32 @@ angular.module("FarmBot").factory 'Command', [() ->
         message_type: 'single_command'
         time_stamp: Date.now()
 
+      read_status: (_args) ->
+        message_type: 'read_status'
+        time_stamp: Date.now()
+
+      pin_on: (pin_number) ->
+        message_type: "single_command",
+        time_stamp: Date.now(),
+        command:
+          action: "PIN WRITE",
+          pin: pin_number,
+          value1: 1,
+          mode: 0,
+
+      pin_off: (pin_number) ->
+        message_type: "single_command",
+        time_stamp: Date.now(),
+        command:
+          action: "PIN WRITE",
+          pin: pin_number,
+          value1: 1,
+          mode: 0,
+
       error: (nope) ->
         msg = "Unknown FarmBot message type #{nope}"
         console.warn(msg)
         return error: "Unknown message type #{nope}"
-
-      read_status: (_args) ->
-        message_type: 'read_status'
-        time_stamp: Date.now()
 
       # write_parameters: (args) ->
       #   message_type: 'write_parameters'

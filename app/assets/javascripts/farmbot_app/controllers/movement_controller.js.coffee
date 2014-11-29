@@ -8,6 +8,16 @@ angular.module('FarmBot').controller "MovementController", [
   'Devices'
   ($scope, Restangular, Devices) ->
     $scope.devices = Devices
+    $scope.device  = Devices.current
+    watch = (nw, old) ->
+      return unless !!nw and !!old
+      if nw isnt old
+        try
+          $scope.$digest()
+        catch e
+          # This is awful!
+      true
+    $scope.$watch 'devices.current', watch, true
 
     $scope.x = 0
     $scope.y = 0
@@ -62,7 +72,7 @@ angular.module('FarmBot').controller "MovementController", [
           console.log data
       return true
 
-    $scope.refresh = -> Devices.getStatus(=> $scope.$digest())
-    $scope.toggleVac = -> Devices.toggleVac(=> $scope.$digest())
+    $scope.refresh = -> Devices.getStatus()
+    $scope.toggleVac = -> Devices.toggleVac()
 
 ]

@@ -33,9 +33,16 @@ angular.module("FarmBot").service "Devices",[
     Devices.getStatus = (cb) ->
       Devices.current.status = 'Fetching data...'
       Devices.send(Command.create("read_status"), cb)
-    Devices.toggleVac = (cb) -> Devices.send(Command.create("read_status"), cb)
 
-    Devices.send = (msg, cb = -> console.log(d)) ->
+    Devices.toggleVac = (cb) ->
+      if Devices.current.pin13
+        Devices.current.pin13 = off
+        Devices.send(Command.create("pin_off", 13), cb)
+      else
+        Devices.current.pin13 = on
+        Devices.send(Command.create("pin_on", 13), cb)
+
+    Devices.send = (msg, cb = (d) -> console.log(d)) ->
       if !!Devices.connection
         Devices.connection.message
           devices: Devices.current.uuid
