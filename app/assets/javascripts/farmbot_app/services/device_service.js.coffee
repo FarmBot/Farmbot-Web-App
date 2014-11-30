@@ -1,15 +1,29 @@
+# TODOs:
+# 1. Get rid of Restangular and just use vanilla $http and $q. It was nice, but
+#    has too many gotchas
+# 2. Convert to Coffeescript class.
 angular.module("FarmBot").service "Devices",[
+  '$rootScope'
   'Restangular'
   'Command'
   'Router'
-  (Restangular, Command, Router) ->
+  ($rootScope, Restangular, Command, Router) ->
     Devices =
       log: []
       status: {skynet: "offline"}
+
     Restangular.all('devices').getList().then (data) ->
       Devices.list     = data
       Devices.current  = data[0]
       Devices.connectToMeshBlu()
+
+    Devices.handleMsg = (data) ->
+      bot = _.find(Devices.list, {uuid: data.fromUuid})
+      $rootScope.$apply(Router.create(data, bot))
+
+    Devices.handleStatus = (data) ->
+      Devices.status = data
+      console.log data
 
     Devices.connectToMeshBlu = ->
       # Avoid double connections
@@ -20,13 +34,8 @@ angular.module("FarmBot").service "Devices",[
           token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
         Devices.connection.on "ready", (data) ->
           console.log "Ready"
-          Devices.connection.on "message", (data) ->
-            bot = _.find(Devices.list, {uuid: data.fromUuid})
-            Router.create(data, bot)
-          Devices.connection.status (data) ->
-            Devices.status = data
-            console.log "Status:"
-            console.log data
+          Devices.connection.on "message", Devices.handleMsg
+          Devices.connection.on "status", Devices.handleStatus
       else
         console.log "[WARN] Already connected to MeshBlu."
 
@@ -47,10 +56,9 @@ angular.module("FarmBot").service "Devices",[
         Devices.connection.message
           devices: Devices.current.uuid
           payload: msg
-          , cb
+          , -> $rootScope.$apply(cb)
       else
         console.log("WARNING! You tried to send a message before being connected")
 
-    window.sn = Devices.send #debuggery.
     return Devices
 ]
