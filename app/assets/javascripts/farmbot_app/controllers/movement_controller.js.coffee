@@ -8,11 +8,7 @@ angular.module('FarmBot').controller "MovementController", [
   'Devices'
   ($scope, Restangular, Devices) ->
     $scope.devices = Devices
-    $scope.device  = Devices.current
-
-    $scope.x = 0
-    $scope.y = 0
-    $scope.z = 0
+    [$scope.x, $scope.y, $scope.z] = [0, 0, 0]
 
     $scope.moveTo = ({x, y, z}) ->
       # These will probably get out of sync at some point. Will need to find a
@@ -20,49 +16,12 @@ angular.module('FarmBot').controller "MovementController", [
       $scope.x += x if x
       $scope.y += y if y
       $scope.z += z if z
-      console.log("Movings to #{$scope.x}, #{$scope.y}, #{$scope.z}")
       $scope.goAbs()
 
-    $scope.goHome = ->
-      $scope.devices.connection.message
-        devices: $scope.devices.current.uuid
-        payload:
-          message_type: 'single_command'
-          time_stamp: Date().now()
-          command:
-            action: 'MOVE ABSOLUTE'
-            x: 0
-            y: 0
-            z: 0
-            speed: 100   # Not sure about this one.
-            amount: 0 # Is this for "DOSE WATER"?
-            delay: 0
-        , (data) ->
-          console.log("Done moving home")
-          $scope.devices.log << data
+    $scope.goHome = -> Devices.moveAbs 0, 0, 0, (data) -> console.log 'Home.'
+    $scope.goAbs = -> Devices.moveAbs $scope.x, $scope.y, $scope.z, (data) ->
+          console.log("#{$scope.x}, #{$scope.y}, #{$scope.z}")
           console.log data
-      return true
-
-    $scope.goAbs = ->
-      $scope.devices.connection.message
-        devices: $scope.devices.current.uuid
-        payload:
-          message_type: 'single_command'
-          time_stamp: new Date()
-          command:
-            action: 'MOVE ABSOLUTE'
-            x: $scope.x
-            y: $scope.y
-            z: $scope.z
-            speed: 100   # Not sure about this one.
-            amount: 0 # Is this for "DOSE WATER"?
-            delay: 0
-        , (data) ->
-          console.log("Done attempting movement to #{$scope.x}, #{$scope.y}, #{$scope.z}")
-          $scope.devices.log << data
-          console.log data
-      return true
-
     $scope.refresh = -> Devices.getStatus()
     $scope.toggleVac = -> Devices.toggleVac()
 

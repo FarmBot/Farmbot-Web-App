@@ -5,7 +5,7 @@
 class DeviceService
   constructor: (@$rootScope, @Restangular, @Command, @Router) ->
     @log = []
-    @status = {skynet: "offline"}
+    @status = {meshblu: "Connecting"}
     @Restangular.all('devices').getList().then (data) =>
       @list     = data
       @current  = data[0]
@@ -15,7 +15,7 @@ class DeviceService
     bot = _.find(@list, {uuid: data.fromUuid})
     @$rootScope.$apply(@Router.create(data, bot))
 
-  handleStatus: (data) =>
+  handleStatus: (data) ->
     @status = data
 
   connectToMeshBlu: ->
@@ -26,14 +26,14 @@ class DeviceService
         uuid:  "7e3a8a10-6bf6-11e4-9ead-634ea865603d"
         token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
       @connection.on "ready", (data) =>
-        console.log "Ready"
+        @$rootScope.$apply(=> @status.meshblu = "online")
         @connection.on "message", @handleMsg
         @connection.on "status", @handleStatus
     else
       console.log "[WARN] Already connected to MeshBlu."
 
   getStatus: (cb) ->
-    @current.status = 'Fetching data...'
+    @current.status = 'Fetching data'
     @send(@Command.create("read_status"), cb)
 
   toggleVac: (cb) ->
@@ -44,6 +44,9 @@ class DeviceService
       @current.pin13 = on
       @send(@Command.create("pin_on", 13), cb)
 
+  moveAbs: (x, y, z, cb) ->
+    @send(@Command.create("move_abs", x, y, z), cb)
+
   send: (msg, cb = (d) -> console.log(d)) ->
     if !!@connection
       @connection.message
@@ -51,7 +54,7 @@ class DeviceService
         payload: msg
         , => @$rootScope.$apply(cb)
     else
-      console.log("WARNING! You tried to send a message before being connected")
+      console.warn("Already connected to Meshblu")
 
 angular.module("FarmBot").service "Devices",[
   '$rootScope'

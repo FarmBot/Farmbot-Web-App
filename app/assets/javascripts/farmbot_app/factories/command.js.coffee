@@ -31,8 +31,19 @@ angular.module("FarmBot").factory 'Command', [() ->
         command:
           action: "PIN WRITE",
           pin: pin_number,
-          value1: 1,
+          value1: 0,
           mode: 0,
+
+      move_abs: (x, y, z) ->
+        message_type: 'single_command'
+        time_stamp: new Date()
+        command:
+          action: 'MOVE ABSOLUTE'
+          x: x
+          y: y
+          z: z
+          speed: 100
+          delay: 0
 
       error: (nope) ->
         msg = "Unknown FarmBot message type #{nope}"

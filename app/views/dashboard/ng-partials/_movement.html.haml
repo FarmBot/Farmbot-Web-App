@@ -60,11 +60,12 @@
   .large-3.columns
     .panel
       %button.small{ng_click: 'refresh()'} Refresh
-      %span
+      %p
         x: {{ devices.current.x }}
         y: {{ devices.current.y }}
         z: {{ devices.current.z }}
         status: {{ devices.current.status }}
+        Connection: {{ devices.status.meshblu }}
       %button.small{ng_click: 'toggleVac()'} Totes temporary vaccuum toggle.
       .container.clearfix
         .large-8.columns Vacuum
