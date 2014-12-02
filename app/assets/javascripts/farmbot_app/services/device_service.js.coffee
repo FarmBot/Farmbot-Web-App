@@ -13,6 +13,7 @@ class DeviceService
 
   handleMsg: (data) =>
     bot = _.find(@list, {uuid: data.fromUuid})
+    console.log 'handleMsg'
     @$rootScope.$apply(@Router.create(data, bot))
 
   handleStatus: (data) ->

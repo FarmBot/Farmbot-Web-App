@@ -19,10 +19,8 @@ angular.module('FarmBot').controller "MovementController", [
       $scope.goAbs()
 
     $scope.goHome = -> Devices.moveAbs 0, 0, 0, (data) -> console.log 'Home.'
-    $scope.goAbs = -> Devices.moveAbs $scope.x, $scope.y, $scope.z, (data) ->
-          console.log("#{$scope.x}, #{$scope.y}, #{$scope.z}")
-          console.log data
-    $scope.refresh = -> Devices.getStatus()
+    $scope.goAbs = -> Devices.moveAbs $scope.x, $scope.y, $scope.z, (data) -> null
+    $scope.refresh = -> Devices.getStatus( (d) -> console.log d)
     $scope.toggleVac = -> Devices.toggleVac()
 
 ]

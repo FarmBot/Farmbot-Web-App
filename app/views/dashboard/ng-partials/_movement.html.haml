@@ -1,5 +1,5 @@
 .row
-  .large-10.columns
+  .large-12.columns
     %ul{'ng-repeat' => 'device in new_devices.list'}
       %li {{device.name}}
 .row.controlPageRow
@@ -66,26 +66,46 @@
         z: {{ devices.current.z }}
         status: {{ devices.current.status }}
         Connection: {{ devices.status.meshblu }}
-      %button.small{ng_click: 'toggleVac()'} Totes temporary vaccuum toggle.
+      %button.tiny{ng_click: 'toggleVac()'} LED
       .container.clearfix
         .large-8.columns Vacuum
-        .large-2.columns
-          %input.switch{type: "checkbox"}
+        .large-4.columns
+          .switch
+            %input#vacuum-switch-off{checked: "checked", name: "vacuum-switch", type: "radio", ng_change: 'toggleVac()', ng_model: 'devices.current.pin13'}
+            %label{for: "x"} Off
+            %input#vacuum-switch-on{name: "vacuum-switch", type: "radio",  ng_change: 'toggleVac()', ng_model: 'devices.current.pin13'}/
+            %label{:for => "x1"} On
+            %span
         %br
       .container.clearfix
         .large-8.columns Water Pump
-        .large-2.columns
-          %input{type: "checkbox"}
+        .large-4.columns
+          .switch
+            %input#water-switch-off{checked: "checked", name: "water-switch", type: "radio"}
+            %label{for: "x"} Off
+            %input#water-switch-on{name: "water-switch", type: "radio"}/
+            %label{:for => "x1"} On
+            %span
         %br
       .container.clearfix
         .large-8.columns LED
-        .large-2.columns
-          %input{type: "checkbox"}
+        .large-4.columns
+          .switch
+            %input#led-switch-off{checked: "checked", name: "led-switch", type: "radio"}
+            %label{for: "x"} Off
+            %input#led-switch-on{name: "led-switch", type: "radio"}/
+            %label{:for => "x1"} On
+            %span
         %br
       .container.clearfix
         .large-8.columns Pump
-        .large-2.columns
-          %input{type: "checkbox"}
+        .large-4.columns
+          .switch
+            %input#x{checked: "checked", name: "switch-x", type: "radio"}
+            %label{for: "x"} Off
+            %input#x1{name: "switch-x", type: "radio"}/
+            %label{:for => "x1"} On
+            %span
         %br
 .row.controlPageRow
   .large-3.columns
