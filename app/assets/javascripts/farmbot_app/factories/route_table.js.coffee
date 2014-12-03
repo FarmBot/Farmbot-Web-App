@@ -4,7 +4,6 @@ angular.module("FarmBot").factory 'RouteTable', [() ->
     console.log "Just got a confirmation message. Yay!"
 
   read_status_response: (data, device) ->
-    console.log("Incoming read_status_response...")
     msg = data.message || {}
     device.status = msg.status
     device.x = msg.status_current_x
