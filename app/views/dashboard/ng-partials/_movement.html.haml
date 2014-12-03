@@ -59,54 +59,50 @@
     %iframe{frameborder: "0", scrolling: "no", src: "http://75.128.5.101:8081/", style: "border: 0px none transparent;", width: '100%', height: '640'}
   .large-3.columns
     .panel
-      %button.small{ng_click: 'refresh()'} Refresh
       %p
-        x: {{ devices.current.x }}
-        y: {{ devices.current.y }}
-        z: {{ devices.current.z }}
-        status: {{ devices.current.status }}
-        Connection: {{ devices.status.meshblu }}
-      %button.tiny{ng_click: 'toggleVac()'} LED
+      %ul.breadcrumbs
+        %li
+          %a{:href => "#"} x:{{ devices.current.x }}
+        %li
+          %a{:href => "#"} y:{{ devices.current.y }}
+        %li
+          %a{:href => "#"} z:{{ devices.current.z }}
+      %ul.breadcrumbs
+        %li
+          %a{:href => "#"} status: {{ devices.current.status }}
+      %ul.breadcrumbs
+        %li
+          %a{:href => "#"} Net: {{ devices.status.meshblu }}
       .container.clearfix
         .large-8.columns Vacuum
         .large-4.columns
-          .switch
-            %input#vacuum-switch-off{checked: "checked", name: "vacuum-switch", type: "radio", ng_change: 'toggleVac()', ng_model: 'devices.current.pin13'}
-            %label{for: "x"} Off
-            %input#vacuum-switch-on{name: "vacuum-switch", type: "radio",  ng_change: 'toggleVac()', ng_model: 'devices.current.pin13'}/
-            %label{:for => "x1"} On
-            %span
+          %button.tiny{ng_class: "{'disabled': !devices.current.pin10 }", ng_click: 'toggle(10)'}
+            %span{ng_hide: '!devices.current.pin10'} on
+            %span{ng_hide: 'devices.current.pin10'} off
         %br
       .container.clearfix
         .large-8.columns Water Pump
         .large-4.columns
-          .switch
-            %input#water-switch-off{checked: "checked", name: "water-switch", type: "radio"}
-            %label{for: "x"} Off
-            %input#water-switch-on{name: "water-switch", type: "radio"}/
-            %label{:for => "x1"} On
-            %span
+          %button.tiny{ng_class: "{'disabled': !devices.current.pin9 }", ng_click: 'toggle(9)'}
+            %span{ng_hide: '!devices.current.pin9'} on
+            %span{ng_hide: 'devices.current.pin9'} off
+
         %br
       .container.clearfix
         .large-8.columns LED
         .large-4.columns
-          .switch
-            %input#led-switch-off{checked: "checked", name: "led-switch", type: "radio"}
-            %label{for: "x"} Off
-            %input#led-switch-on{name: "led-switch", type: "radio"}/
-            %label{:for => "x1"} On
-            %span
+          %button.tiny{ng_class: "{'disabled': !devices.current.pin13 }", ng_click: 'toggle(13)'}
+            %span{ng_hide: '!devices.current.pin13'} on
+            %span{ng_hide: 'devices.current.pin13'} off
         %br
       .container.clearfix
-        .large-8.columns Pump
+        .large-8.columns Tool Mount
         .large-4.columns
-          .switch
-            %input#x{checked: "checked", name: "switch-x", type: "radio"}
-            %label{for: "x"} Off
-            %input#x1{name: "switch-x", type: "radio"}/
-            %label{:for => "x1"} On
-            %span
+          %button.tiny{ng_class: "{'disabled': !devices.current.pin8 }", ng_click: 'toggle(8)'}
+            %span{ng_hide: '!devices.current.pin8'} on
+            %span{ng_hide: 'devices.current.pin8'} off
         %br
+      %button.small{ng_click: 'refresh()'} Fetch Status
 .row.controlPageRow
   .large-3.columns
   .large-3.columns

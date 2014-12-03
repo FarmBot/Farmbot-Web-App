@@ -37,13 +37,15 @@ class DeviceService
     @current.status = 'Fetching data'
     @send(@Command.create("read_status"), cb)
 
-  toggleVac: (cb) ->
-    if @current.pin13
-      @current.pin13 = off
+  togglePin: (number, cb) ->
+    pin = "pin#{number}"
+    if @current[pin]
+      @current[pin] = off
       @send(@Command.create("pin_off", 13), cb)
     else
-      @current.pin13 = on
+      @current[pin] = on
       @send(@Command.create("pin_on", 13), cb)
+    console.log "Pin #{number} is now #{@current[pin]}"
 
   moveAbs: (x, y, z, cb) ->
     @send(@Command.create("move_abs", x, y, z), cb)

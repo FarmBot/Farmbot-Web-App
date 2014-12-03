@@ -17,10 +17,13 @@ angular.module('FarmBot').controller "MovementController", [
       $scope.y += y if y
       $scope.z += z if z
       $scope.goAbs()
-
-    $scope.goHome = -> Devices.moveAbs 0, 0, 0, (data) -> console.log 'Home.'
-    $scope.goAbs = -> Devices.moveAbs $scope.x, $scope.y, $scope.z, (data) -> null
+# Vacuum = 10
+# Water Pump = 9
+# LED = 13
+# UTM = 8
+    $scope.goHome  = -> Devices.moveAbs 0, 0, 0, (data) -> console.log 'Home.'
+    $scope.goAbs   = -> Devices.moveAbs $scope.x, $scope.y, $scope.z, (d)->(d)
     $scope.refresh = -> Devices.getStatus( (d) -> console.log d)
-    $scope.toggleVac = -> Devices.toggleVac()
+    $scope.toggle  = (num) -> Devices.togglePin(num)
 
 ]
