@@ -1,6 +1,9 @@
 .row
   .large-12.columns
     %h1 Manage FarmBot Device Settings
+    %h2 Word of Warning:
+    %p
+      We don't support multi-bot setups at this time (but will in the future). The system will assume that the first bot is the bot that you wish to operate. Don't add more than one bot, as this will lead to unexpected behavior.
     %form{ng_submit: 'createDevice()'}
       %fieldset
         %legend FarmBot Settings

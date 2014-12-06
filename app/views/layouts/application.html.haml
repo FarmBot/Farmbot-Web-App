@@ -16,14 +16,6 @@
         %li.toggle-topbar.menu-icon
           %a{href: "#"} Menu
       %section.top-bar-section
-        %ul.left{"ng-if" => 'devices.list.length > 0'}
-          %li.has-dropdown.not-click
-            %a{href: "#"}
-              Current device: {{ devices.current.name }}
-            %ul.dropdown
-              %li{"ng-repeat" => "dev in devices.list"}
-                %a{ng_click: 'devices.current = dev'}
-                  {{ dev.name }}
         %ul.left
           -if current_user
             %li{class: ("active" if current_page? page_path('#/settings'))}

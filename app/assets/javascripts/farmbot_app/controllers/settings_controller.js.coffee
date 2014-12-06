@@ -3,10 +3,14 @@
 # it probably belongs in here.
 app = angular.module('FarmBot')
 
-controller = ($scope, Restangular) ->
-  $scope.devices = Restangular.all('devices').getList().$object
+controller = ($scope, Devices) ->
+  $scope.devices = Devices
 
-  $scope.device = {}
+  $scope.device = Devices.current
+
+  # I am going to stop here for now, as I am incredibly tired. When I get back
+  # to this, I will move all of this functionality into the Devices service and
+  # rid us of Restangular.
 
   $scope.removeDevice = (device) ->
     device.remove().then ->
@@ -25,4 +29,4 @@ controller = ($scope, Restangular) ->
         $scope.device = {}
 
 
-app.controller "SettingsController", ['$scope', 'Restangular', controller]
+app.controller "SettingsController", ['$scope', 'Devices', controller]

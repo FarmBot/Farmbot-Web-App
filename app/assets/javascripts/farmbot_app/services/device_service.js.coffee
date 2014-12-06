@@ -1,15 +1,19 @@
-# TODOs:
-# 1. Get rid of Restangular and just use vanilla $http and $q. It was nice, but
-#    has too many gotchas
-# 2. Convert to Coffeescript class.
 class DeviceService
-  constructor: (@$rootScope, @Restangular, @Command, @Router) ->
+  constructor: (@$rootScope, @$http, @Command, @Router) ->
+    @initConnections()
+
+  initConnections: ->
     @log = []
+    @current = {}
     @status = {meshblu: "Connecting"}
-    @Restangular.all('devices').getList().then (data) =>
+    good = (data, status, request, meta) =>
       @list     = data
       @current  = data[0]
       @connectToMeshBlu()
+    bad  = (data, status, request, meta) =>
+      alert "Oh no! I could not connect to the My Farmbot service. The server" +
+            " might be temporarily down"
+    @$http.get('api/devices').success(good).error(bad)
 
   handleMsg: (data) =>
     bot = _.find(@list, {uuid: data.fromUuid})
@@ -60,9 +64,9 @@ class DeviceService
 
 angular.module("FarmBot").service "Devices",[
   '$rootScope'
-  'Restangular'
+  '$http'
   'Command'
   'Router'
-  ($rootScope, Restangular, Command, Router) ->
-    return new DeviceService($rootScope, Restangular, Command, Router)
+  ($rootScope, $http, Command, Router) ->
+    return new DeviceService($rootScope, $http, Command, Router)
 ]
