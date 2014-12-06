@@ -40,10 +40,10 @@ class DeviceService
     pin = "pin#{number}"
     if @current[pin]
       @current[pin] = off
-      @send(@Command.create("pin_off", 13), cb)
+      @send(@Command.create("pin_off", number), cb)
     else
       @current[pin] = on
-      @send(@Command.create("pin_on", 13), cb)
+      @send(@Command.create("pin_on", number), cb)
     console.log "Pin #{number} is now #{@current[pin]}"
 
   moveAbs: (x, y, z, cb) ->
