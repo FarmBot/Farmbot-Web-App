@@ -1,19 +1,44 @@
 class DeviceService
   constructor: (@$rootScope, @$http, @Command, @Router) ->
+    [@log, @list, @current, @status] = [[], [], {}, {meshblu: "Connecting"}]
     @initConnections()
 
   initConnections: ->
-    @log = []
-    @current = {}
-    @status = {meshblu: "Connecting"}
-    good = (data, status, request, meta) =>
+    ok = (data, status, request, meta) =>
+      # THOUGHT: Maybe we should just bootstrap this data in the HTML and pull
+      # from there for extra snappiness?
       @list     = data
+      # TODO: Real error handling.
+      alert 'You need to link a Farmbot to your account.' unless data[0]
       @current  = data[0]
       @connectToMeshBlu()
-    bad  = (data, status, request, meta) =>
-      alert "Oh no! I could not connect to the My Farmbot service. The server" +
-            " might be temporarily down"
-    @$http.get('api/devices').success(good).error(bad)
+    @$http.get('api/devices').success(ok).error(@ajaxError)
+
+  ajaxError: (data, status, request, meta) =>
+    alert "Oh no! I could not connect to the My Farmbot service. The server" +
+          " might be temporarily down"
+
+  save: (device) ->
+    if !!device._id then @update(device) else @create(device)
+
+  update: (device) ->
+    ok = (data) =>
+      @list = _.without(@list, _.find(@list, {_id: device._id}))
+      @list.push(data)
+    @$http.put("api/devices/#{device._id}", device)
+    .success(ok)
+    .error(@ajaxError)
+
+  create: (device) ->
+    @$http.post("api/devices", device)
+    .success((data) => @list.push(data))
+    .error(@ajaxError)
+
+  remove: (device) ->
+    @$http
+      .delete("api/devices/#{device._id}")
+      .success(=> @list = _.without(@list, device))
+      .error(@ajaxError)
 
   handleMsg: (data) =>
     bot = _.find(@list, {uuid: data.fromUuid})

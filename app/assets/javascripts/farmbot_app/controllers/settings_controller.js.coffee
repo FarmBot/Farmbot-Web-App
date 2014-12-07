@@ -5,28 +5,12 @@ app = angular.module('FarmBot')
 
 controller = ($scope, Devices) ->
   $scope.devices = Devices
+  $scope.form    = {}
+  $scope.device  = Devices.current
 
-  $scope.device = Devices.current
-
-  # I am going to stop here for now, as I am incredibly tired. When I get back
-  # to this, I will move all of this functionality into the Devices service and
-  # rid us of Restangular.
-
-  $scope.removeDevice = (device) ->
-    device.remove().then ->
-      $scope.devices = _.without($scope.devices, device);
-
-  $scope.selectDevice = (device) ->
-    $scope.device = device
-
-  $scope.createDevice = ->
-    if typeof($scope.device._id) != 'undefined'
-      $scope.device.put().then (data) ->
-        $scope.device = {}
-    else
-      $scope.devices.post($scope.device).then (data) ->
-        $scope.devices.push(data)
-        $scope.device = {}
+  $scope.createDevice = -> $scope.devices.save($scope.form) and $scope.form = {}
+  $scope.selectDevice = (device) -> $scope.form = _.clone(device)
+  $scope.removeDevice = (device) -> Devices.remove(device) and $scope.form = {}
 
 
 app.controller "SettingsController", ['$scope', 'Devices', controller]

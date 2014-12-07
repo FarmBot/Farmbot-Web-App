@@ -18,5 +18,4 @@ angular.module('FarmBot').controller "MovementController", [
       $scope.y += y if y
       $scope.z += z if z
       $scope.goAbs()
-
 ]
