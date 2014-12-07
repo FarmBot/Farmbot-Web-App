@@ -3,26 +3,14 @@
 # it probably belongs in here.
 app = angular.module('FarmBot')
 
-controller = ($scope, Restangular) ->
-  $scope.devices = Restangular.all('devices').getList().$object
+controller = ($scope, Devices) ->
+  $scope.devices = Devices
+  $scope.form    = {}
+  $scope.device  = Devices.current
 
-  $scope.device = {}
-
-  $scope.removeDevice = (device) ->
-    device.remove().then ->
-      $scope.devices = _.without($scope.devices, device);
-
-  $scope.selectDevice = (device) ->
-    $scope.device = device
-
-  $scope.createDevice = ->
-    if typeof($scope.device._id) != 'undefined'
-      $scope.device.put().then (data) ->
-        $scope.device = {}
-    else
-      $scope.devices.post($scope.device).then (data) ->
-        $scope.devices.push(data)
-        $scope.device = {}
+  $scope.createDevice = -> $scope.devices.save($scope.form) and $scope.form = {}
+  $scope.selectDevice = (device) -> $scope.form = _.clone(device)
+  $scope.removeDevice = (device) -> Devices.remove(device) and $scope.form = {}
 
 
-app.controller "SettingsController", ['$scope', 'Restangular', controller]
+app.controller "SettingsController", ['$scope', 'Devices', controller]

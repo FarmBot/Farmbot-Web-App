@@ -1,15 +1,44 @@
-# TODOs:
-# 1. Get rid of Restangular and just use vanilla $http and $q. It was nice, but
-#    has too many gotchas
-# 2. Convert to Coffeescript class.
 class DeviceService
-  constructor: (@$rootScope, @Restangular, @Command, @Router) ->
-    @log = []
-    @status = {meshblu: "Connecting"}
-    @Restangular.all('devices').getList().then (data) =>
+  constructor: (@$rootScope, @$http, @Command, @Router) ->
+    [@log, @list, @current, @status] = [[], [], {}, {meshblu: "Connecting"}]
+    @initConnections()
+
+  initConnections: ->
+    ok = (data, status, request, meta) =>
+      # THOUGHT: Maybe we should just bootstrap this data in the HTML and pull
+      # from there for extra snappiness?
       @list     = data
+      # TODO: Real error handling.
+      alert 'You need to link a Farmbot to your account.' unless data[0]
       @current  = data[0]
       @connectToMeshBlu()
+    @$http.get('api/devices').success(ok).error(@ajaxError)
+
+  ajaxError: (data, status, request, meta) =>
+    alert "Oh no! I could not connect to the My Farmbot service. The server" +
+          " might be temporarily down"
+
+  save: (device) ->
+    if !!device._id then @update(device) else @create(device)
+
+  update: (device) ->
+    ok = (data) =>
+      @list = _.without(@list, _.find(@list, {_id: device._id}))
+      @list.push(data)
+    @$http.put("api/devices/#{device._id}", device)
+    .success(ok)
+    .error(@ajaxError)
+
+  create: (device) ->
+    @$http.post("api/devices", device)
+    .success((data) => @list.push(data))
+    .error(@ajaxError)
+
+  remove: (device) ->
+    @$http
+      .delete("api/devices/#{device._id}")
+      .success(=> @list = _.without(@list, device))
+      .error(@ajaxError)
 
   handleMsg: (data) =>
     bot = _.find(@list, {uuid: data.fromUuid})
@@ -60,9 +89,9 @@ class DeviceService
 
 angular.module("FarmBot").service "Devices",[
   '$rootScope'
-  'Restangular'
+  '$http'
   'Command'
   'Router'
-  ($rootScope, Restangular, Command, Router) ->
-    return new DeviceService($rootScope, Restangular, Command, Router)
+  ($rootScope, $http, Command, Router) ->
+    return new DeviceService($rootScope, $http, Command, Router)
 ]

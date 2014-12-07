@@ -1,12 +1,9 @@
-# The movement controller provides an indepth view of a device as well as fine-
+# The movement controller provides an in depth view of a device as well as fine-
 # grained control options. The name is an artifact and needs to be changed.
-# TODO: Network status indicator
-# TODO: Device selection
 angular.module('FarmBot').controller "MovementController", [
   '$scope'
-  'Restangular'
   'Devices'
-  ($scope, Restangular, Devices) ->
+  ($scope, Devices) ->
     $scope.devices = Devices
     [$scope.x, $scope.y, $scope.z] = [0, 0, 0]
 
@@ -21,5 +18,4 @@ angular.module('FarmBot').controller "MovementController", [
       $scope.y += y if y
       $scope.z += z if z
       $scope.goAbs()
-
 ]
