@@ -14,5 +14,8 @@ app.config [
     ).when("/movement",
       templateUrl: "movement.html"
       controller: "MovementController"
+    ).when("/sequence",
+      templateUrl: "sequence.html"
+      controller: "SequenceController"
     ).otherwise redirectTo: "/movement"
 ]
