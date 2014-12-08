@@ -30,8 +30,11 @@ class DeviceService
     .error(@ajaxError)
 
   create: (device) ->
+    ok = (data) =>
+      @current = data # Set new one to current one.
+      @list.push(data)
     @$http.post("api/devices", device)
-    .success((data) => @list.push(data))
+    .success(ok)
     .error(@ajaxError)
 
   remove: (device) ->
