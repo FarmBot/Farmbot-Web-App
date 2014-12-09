@@ -78,15 +78,21 @@ class DeviceService
       @send(@Command.create("pin_on", number), cb)
     console.log "Pin #{number} is now #{@current[pin]}"
 
+  moveRel: (x, y, z, cb) ->
+    @send(@Command.create("move_rel", x, y, z), cb)
+
   moveAbs: (x, y, z, cb) ->
     @send(@Command.create("move_abs", x, y, z), cb)
 
   send: (msg, cb = (d) -> console.log(d)) ->
     if !!@connection
+      doIt = (d) ->
+        cb(d)
+        console.log d
       @connection.message
         devices: @current.uuid
         payload: msg
-        , => @$rootScope.$apply(cb)
+        , => @$rootScope.$apply(doIt)
     else
       console.warn("Already connected to Meshblu")
 

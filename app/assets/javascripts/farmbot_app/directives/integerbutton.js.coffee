@@ -1,10 +1,10 @@
-# coffeescript uses YAML style syntax for object literals.
+# A button used to set integers
 directive =
   # priority: 0
-  template: '<div>Hello, world!</div>'
   # templateUrl: 'directive.html'
   # replace: false
   # transclude: false
+  template: '<i><button class="button tiny">Hello!</button></i>'
   restrict: 'E'
   scope: false
   # controller: ($scope, $element, $attrs, $transclude, otherInjectables) -> ...
@@ -13,4 +13,4 @@ directive =
   #   post: (scope, iElement, iAttrs, controller) -> ...
   # link: (scope, iElement, iAttrs) -> ...
 
-angular.module("FarmBot").directive 'sequence-draggable', [() -> directive]
+angular.module("FarmBot").directive 'integerbutton', [() -> directive]

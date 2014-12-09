@@ -4,7 +4,36 @@
       %li {{device.name}}
 .row.controlPageRow
   .large-3.columns
-    = render partial: "dashboard/ng-partials/control_star"
+    .panel
+      .container.clearfix
+        .row
+          %ul.button-group
+            %li
+              %button.button.tiny{ng_click: 'setMultiplier(1)'} 1
+            %li
+              %button.button.tiny{ng_click: 'setMultiplier(10)'} 10
+            %li
+              %button.button.tiny{ng_click: 'setMultiplier(100)'} 100
+            %li
+              %button.button.tiny{ng_click: 'setMultiplier(1000)'} 1000
+
+        .row
+          .large-8.columns
+            %button.tiny
+              %i.fi-arrow-left{style: 'color: #fff;',  ng_click: 'move("y", -1)'}
+            %button.tiny
+              %i.fi-arrow-up{style: 'color: #fff;',    ng_click: 'move("x", 1)'}
+            %button.tiny
+              %i.fi-arrow-down{style: 'color: #fff;',  ng_click: 'move("x", -1)'}
+            %button.tiny
+              %i.fi-arrow-right{style: 'color: #fff;', ng_click: 'move("y", 1)'}
+          .large-4.columns
+            %button.tiny
+              %i.fi-arrow-up{style: 'color: #fff;',    ng_click: 'move("z", 1)'}
+            %button.tiny
+              %i.fi-arrow-down{style: 'color: #fff;',  ng_click: 'move("z", -1)'}
+        .row
+          %button.button.tiny.alert STOP
   .large-3.columns
     .panel
       .container.clearfix
@@ -102,7 +131,7 @@
             %span{ng_hide: '!devices.current.pin8'} on
             %span{ng_hide: 'devices.current.pin8'} off
         %br
-      %button.small{ng_click: 'refresh()'} Fetch Status
+      %button.button.small{ng_click: 'refresh()'} Fetch Status
 .row.controlPageRow
   .large-3.columns
   .large-3.columns

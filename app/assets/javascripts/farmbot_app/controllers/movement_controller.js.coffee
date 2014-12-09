@@ -5,17 +5,17 @@ angular.module('FarmBot').controller "MovementController", [
   'Devices'
   ($scope, Devices) ->
     $scope.devices = Devices
-    [$scope.x, $scope.y, $scope.z] = [0, 0, 0]
+    [$scope.x, $scope.y, $scope.z, $scope.multiplier] = [0, 0, 0, 100]
 
-    $scope.goHome  = -> Devices.moveAbs 0, 0, 0, (data) -> console.log 'Home.'
-    $scope.goAbs   = -> Devices.moveAbs $scope.x, $scope.y, $scope.z, (d)->(d)
-    $scope.refresh = -> Devices.getStatus( (d) -> console.log d)
-    $scope.toggle  = (num) -> Devices.togglePin(num)
-    $scope.moveTo  = ({x, y, z}) ->
-      # These will probably get out of sync at some point. Will need to find a
-      # way to refresh based on what the device tells us about its location.
-      $scope.x += x if x
-      $scope.y += y if y
-      $scope.z += z if z
-      $scope.goAbs()
+    $scope.goHome     = -> Devices.moveAbs 0, 0, 0, (data)-> console.log 'Home.'
+    $scope.goRel      = -> Devices.moveRel $scope.x, $scope.y, $scope.z, (d)->(d)
+    $scope.refresh    = -> Devices.getStatus( (d) -> console.log d)
+    $scope.toggle     = (num) -> Devices.togglePin(num)
+    $scope.zeroCoords = -> [$scope.x, $scope.y, $scope.z] = [0, 0, 0]
+    $scope.move       = (axis, modifier = 1) ->
+      console.log "Set #{axis} from #{$scope[axis]} to #{$scope.multiplier * modifier}"
+      $scope.zeroCoords()
+      $scope[axis] = $scope.multiplier * modifier
+      $scope.goRel()
+
 ]
