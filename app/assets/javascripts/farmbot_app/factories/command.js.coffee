@@ -44,6 +44,17 @@ class Command
         speed: 100
         delay: 0
 
+    move_rel: (x, y, z) ->
+      message_type: 'single_command'
+      time_stamp: new Date()
+      command:
+        action: 'MOVE RELATIVE'
+        x: x
+        y: y
+        z: z
+        speed: 100
+        delay: 0
+
     error: (nope) ->
       msg = "Unknown FarmBot message type #{nope}"
       console.warn(msg)
