@@ -86,13 +86,10 @@ class DeviceService
 
   send: (msg, cb = (d) -> console.log(d)) ->
     if !!@connection
-      doIt = (d) ->
-        cb(d)
-        console.log d
       @connection.message
         devices: @current.uuid
         payload: msg
-        , => @$rootScope.$apply(doIt)
+        , => @$rootScope.$apply(cb)
     else
       console.warn("Already connected to Meshblu")
 
