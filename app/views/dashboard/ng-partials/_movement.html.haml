@@ -19,19 +19,14 @@
 
         .row
           .large-8.columns
-            %button.tiny
-              %i.fi-arrow-left{style: 'color: #fff;',  ng_click: 'move("y", -1)'}
-            %button.tiny
-              %i.fi-arrow-up{style: 'color: #fff;',    ng_click: 'move("x", 1)'}
-            %button.tiny
-              %i.fi-arrow-down{style: 'color: #fff;',  ng_click: 'move("x", -1)'}
-            %button.tiny
-              %i.fi-arrow-right{style: 'color: #fff;', ng_click: 'move("y", 1)'}
-          .large-4.columns
-            %button.tiny
-              %i.fi-arrow-up{style: 'color: #fff;',    ng_click: 'move("z", 1)'}
-            %button.tiny
-              %i.fi-arrow-down{style: 'color: #fff;',  ng_click: 'move("z", -1)'}
+            %directionbutton{direction: "up", axis: "x", icon: "'fi-arrow-left'" }
+            %directionbutton{direction: "down", axis: "x", icon: "'fi-arrow-up'" }
+
+            %directionbutton{direction: "up", axis: "y", icon: "'fi-arrow-down'" }
+            %directionbutton{direction: "down", axis: "y", icon: "'fi-arrow-right'" }
+
+            %directionbutton{direction: "up", axis: "z", icon: "'fi-arrow-up'" }
+            %directionbutton{direction: "down", axis: "z", icon: "'fi-arrow-down'" }
         .row
           %button.button.tiny.alert STOP
   .large-3.columns
