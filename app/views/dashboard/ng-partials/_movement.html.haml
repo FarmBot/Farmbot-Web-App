@@ -80,7 +80,7 @@
           %button.button.tiny
             All
   .large-3.columns
-    %iframe{frameborder: "0", scrolling: "no", src: "http://75.128.5.101:8081/", style: "border: 0px none transparent;", width: '100%', height: '640'}
+    %img{src: "http://108.90.200.9:8080/?action=stream", style: "width: 1080px; height: auto;"}
   .large-3.columns
     .panel
       %p
@@ -127,15 +127,3 @@
             %span{ng_hide: 'devices.current.pin8'} off
         %br
       %button.button.small{ng_click: 'refresh()'} Fetch Status
-.row.controlPageRow
-  .large-3.columns
-  .large-3.columns
-    %h1 Debugger
-    %form{ng_submit: 'debug()'}
-      %input{type: "text", name: "fname", ng_model: 'message'}
-      %input.button{name: "commit", type: "submit", value: "Send"}
-    .switch
-      %input#exampleCheckboxSwitch{:type => "checkbox"}/
-      %label{:for => "exampleCheckboxSwitch"}
-  .large-3.columns .
-  .large-3.columns .
