@@ -18,7 +18,10 @@ directive =
     $scope.move       = (axis, direction) ->
       console.log "Set #{axis} to #{direction}"
       $scope.zeroCoords()
-      if direction is 'up' then direction = 1 else direction = -1
+      if direction == 'up'
+        direction = -1
+      else
+        direction = 1
       $scope[axis] = 100 * direction
       $scope.goRel()
 
