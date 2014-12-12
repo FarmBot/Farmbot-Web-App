@@ -127,15 +127,3 @@
             %span{ng_hide: 'devices.current.pin8'} off
         %br
       %button.button.small{ng_click: 'refresh()'} Fetch Status
-.row.controlPageRow
-  .large-3.columns
-  .large-3.columns
-    %h1 Debugger
-    %form{ng_submit: 'debug()'}
-      %input{type: "text", name: "fname", ng_model: 'message'}
-      %input.button{name: "commit", type: "submit", value: "Send"}
-    .switch
-      %input#exampleCheckboxSwitch{:type => "checkbox"}/
-      %label{:for => "exampleCheckboxSwitch"}
-  .large-3.columns .
-  .large-3.columns .

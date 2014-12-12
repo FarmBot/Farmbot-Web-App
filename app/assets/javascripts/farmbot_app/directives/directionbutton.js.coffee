@@ -13,17 +13,18 @@ directive =
   link: (scope, el, attr) ->
     el.on 'click', => scope.move(attr.axis, attr.direction)
   controller: ['$scope', 'Devices', ($scope, Devices) ->
-    $scope.goRel      = -> Devices.moveRel $scope.x, $scope.y, $scope.z, (d)->(d)
-    $scope.zeroCoords = -> [$scope.x, $scope.y, $scope.z] = [0, 0, 0]
-    $scope.move       = (axis, direction) ->
-      console.log "Set #{axis} to #{direction}"
-      $scope.zeroCoords()
+    $scope.move = (axis, direction) ->
       if direction == 'up'
         direction = -1
       else
         direction = 1
-      $scope[axis] = 100 * direction
-      $scope.goRel()
+      cmd =
+        x: 0
+        y: 0
+        z: 0
+      cmd[axis] = 100 * direction
+      console.log cmd
+      Devices.moveRel cmd.x, cmd.y, cmd.z, (d)->(d)
 
   ]
     # . . .
