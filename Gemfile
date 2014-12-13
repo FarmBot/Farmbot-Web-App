@@ -16,6 +16,8 @@ gem 'uglifier'
 gem 'high_voltage', '~> 2.1.0'
 gem 'haml'
 
+gem 'font-awesome-rails'
+
 group :development, :test do
   gem 'pry'
   gem 'factory_girl_rails'
