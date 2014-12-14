@@ -9,8 +9,9 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require_self
+ *= require font-awesome
  *= require_tree ./foundation/
  *= require_tree ./foundation-icons/
+ *= require sequence_builder
  *= require help_we_need_a_designer
  */
-

@@ -1,0 +1,426 @@
+<div class="row">
+
+  <div class="large-4 medium-4 columns">
+      <div class="row">
+          <div class="small-12 columns">
+              <div class="header-wrapper">
+                <h5>Basic Operations</h5>
+                <p>These are the most <span class="uppercase">basic operations</span> that FarmBot can execute. Drag them to the right to <span class="uppercase">build a sequence</span> of operations</p>
+              </div>
+          </div>
+      </div>
+      <div class="content-wrapper">
+            <div class="row">
+              <div class="small-6 large-6 columns">
+                <button draggablesequence class="tiny expand button radius blue">MOVE ABSOLUTE
+                </button>
+              </div>
+              <div class="small-6 large-6 columns">
+                <button draggablesequence class="tiny expand button radius green">MOVE RELATIVE</button>
+              </div>
+              </div>
+            <div class="row">
+              <div class="small-6 large-6 columns">
+                <button draggablesequence class="tiny expand button radius yellow">READ PIN</button>
+              </div>
+              <div class="small-6 large-6 columns">
+                <button draggablesequence class="tiny expand button radius orange">WRITE PIN</button>
+              </div>
+              </div>
+            <div class="row">
+              <div class="small-6 large-6 columns">
+                <button draggablesequence class="tiny expand button radius purple">TAKE PICTURE</button>
+              </div>
+              <div class="small-6 large-6 columns">
+                <button draggablesequence class="tiny expand button radius pink">IF STATEMENT</button>
+              </div>
+            </div>
+             <div class="row">
+              <div class="small-6 large-6 columns">
+                <button draggablesequence class="tiny expand button radius gray">WAITE</button>
+              </div>
+              <div class="small-6 large-6 columns">
+                <button draggablesequence class="tiny expand button radius red">SEND ERROR</button>
+              </div>
+            </div>
+      </div>
+      <div class="row">
+          <div class="small-12 columns">
+              <div class="header-wrapper">
+                <h5>Saved Sequences</h5>
+              <p>Drag <span class="uppercase">saved sequences</span> to the right to <span class="uppercase">build a sequence</span> that is even larger</p>
+              </div>
+            <div class="content-wrapper">
+              <a href="#" class="tiny expand button radius blue">MOVE AWAY FOR MAINTENANCE</a>
+              <a href="#" class="tiny expand button radius red">SCARE AWAY THE BIRDS</a>
+              <a href="#" class="tiny expand button radius purple">SOW SEEDS</a>
+              <a href="#" class="tiny expand button radius green">SPRAY NITROGEN FERTILIZER</a>
+            </div>
+          </div>
+      </div>
+  </div>
+
+  <div class="large-8 medium-8 columns">
+      <div class="row">
+        <div class="small-12 columns">
+          <div class="header-wrapper">
+            <h5>Build A Sequence</h5>
+              <p>Drag <span class="uppercase">basic operation</span> and/or saved sequences into this area to <span class="uppercase">build a sequence</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+          <div class="small-12 columns">
+            <div class="content-wrapper">
+              <div class="row">
+                    <div class="small-9 columns">
+                        <input type="text" id="right-label" placeholder="Name this Sequence">
+                    </div>
+                    <div class="small-1 columns">
+                        <i class="fa fa-circle fa-2x yellow-circle"></i>
+                    </div>
+                    <div class="small-2 columns">
+                        <a href="#" class="tiny button radius save-green">Save</a>
+                    </div>
+              </div>
+              <div class="row">
+                  <div class="small-4 columns">
+                    <label>Sequence Parameters:</label>
+                  </div>
+                  <div class="small-5 columns">
+                    <a href="#" class="tiny expand button round dark-gray">PLANT-ID/PLANT-GROUP-ID</a>
+                  </div>
+                  <div class="small-3 columns">
+                    <a href="#" class="tiny expand button radius dark-gray">ADD PARAMETER</a>
+                  </div>
+              </div>
+
+              <div class="row">
+
+                <div class="row">
+                  <div class="small-12 columns">
+                    <div class="row">
+                      <div class="small-12 columns">
+                        <nav class="top-bar green" data-topbar role="navigation">
+                          <ul class="title-area">
+                            <li class="name">
+                              <h1><a href="#">MOVE RELATIVE</a></h1>
+                            </li>
+                          </ul>
+                          <div class="icon-group">
+                            <a href="#"><i class="fa fa-angle-up"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-trash"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-clipboard"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-bars"></i></a>
+                          </div>
+
+                        </nav>
+                      </div>
+                    </div>
+                    <div class="row">
+                    <div class="large-2 columns">
+                        <div class="row collapse prefix-radius">
+                          <div class="small-3 columns">
+                            <span class="prefix">X</span>
+                          </div>
+                          <div class="small-9 columns">
+                            <input type="text" placeholder="25 mm">
+                          </div>
+                        </div>
+                    </div>
+                    <div class="large-2 columns">
+                        <div class="row collapse prefix-radius">
+                          <div class="small-3 columns">
+                            <span class="prefix">Y</span>
+                          </div>
+                          <div class="small-9 columns">
+                            <input type="text" placeholder="20 mm">
+                          </div>
+                        </div>
+                    </div>
+                    <div class="large-2 columns">
+                        <div class="row collapse prefix-radius">
+                          <div class="small-3 columns">
+                            <span class="prefix">Z</span>
+                          </div>
+                          <div class="small-9 columns">
+                            <input type="text" placeholder="0 mm">
+                          </div>
+                        </div>
+                    </div>
+                    <div class="large-6 columns">
+                        <div class="row collapse prefix-radius">
+                          <div class="small-3 columns">
+                            <span class="prefix">SPEED</span>
+                          </div>
+                          <div class="small-7 columns">
+                            <input type="text" placeholder="Default">
+                          </div>
+                          <div class="small-2 columns">
+                            <button href="#" data-dropdown="drop1" aria-controls="drop1" aria-expanded="false" class="tiny button postfix dropdown light-gray"></button>
+                              <ul id="drop1" data-dropdown-content class="f-dropdown" aria-hidden="true" tabindex="-1">
+                                <li><a href="#">This is a link</a></li>
+                                <li><a href="#">This is another</a></li>
+                                <li><a href="#">Yet another</a></li>
+                              </ul>
+                          </div>
+                        </div>
+                    </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="small-12 columns">
+                    <div class="row">
+                      <div class="small-12 columns">
+                        <nav class="top-bar orange" data-topbar role="navigation">
+                          <ul class="title-area">
+                            <li class="name">
+                              <h1><a href="#">WRITE PIN</a></h1>
+                            </li>
+                          </ul>
+                          <div class="icon-group">
+                            <a href="#"><i class="fa fa-angle-up"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-trash"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-clipboard"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-bars"></i></a>
+                          </div>
+                        </nav>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="large-4 columns">
+                        <div class="row collapse prefix-radius">
+                          <div class="small-6 columns">
+                            <span class="prefix uppercase">pin-number</span>
+                          </div>
+                          <div class="small-6 columns">
+                            <input type="text" placeholder="10">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="large-4 columns">
+                        <div class="row collapse prefix-radius">
+                          <div class="small-6 columns">
+                            <span class="prefix uppercase">value</span>
+                          </div>
+                          <div class="small-6 columns">
+                            <input type="text" placeholder="1">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="large-4 columns">
+                        <div class="row collapse prefix-radius">
+                          <div class="small-6 columns">
+                            <span class="prefix uppercase">pin-mode</span>
+                          </div>
+                          <div class="small-6 columns">
+                            <input type="text" placeholder="0">
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="small-12 columns">
+                    <div class="row">
+                      <div class="small-12 columns">
+                        <nav class="top-bar blue" data-topbar role="navigation">
+                          <ul class="title-area">
+                            <li class="name">
+                              <h1><a href="#">MOVE ABSOLUTE</a></h1>
+                            </li>
+                          </ul>
+                          <div class="icon-group">
+                            <a href="#"><i class="fa fa-angle-up"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-trash"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-clipboard"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-bars"></i></a>
+                          </div>
+                        </nav>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="large-8 columns">
+                        <div class="row collapse prefix-radius">
+                          <div class="small-2 columns">
+                            <span class="prefix uppercase">x</span>
+                          </div>
+                          <div class="small-8 columns">
+                            <input type="text" placeholder="Inherit Plant-ID_X">
+                          </div>
+                          <div class="small-2 columns">
+                            <button href="#" data-dropdown="drop1" aria-controls="drop1" aria-expanded="false" class="tiny button postfix dropdown light-gray"></button>
+                              <ul id="drop1" data-dropdown-content class="f-dropdown" aria-hidden="true" tabindex="-1">
+                                <li><a href="#">This is a link</a></li>
+                                <li><a href="#">This is another</a></li>
+                                <li><a href="#">Yet another</a></li>
+                              </ul>
+                          </div>
+                        </div>
+                        <div class="row collapse prefix-radius">
+                          <div class="small-2 columns">
+                            <span class="prefix uppercase">y</span>
+                          </div>
+                          <div class="small-8 columns">
+                            <input type="text" placeholder="Inherit Plant-ID_Y">
+                          </div>
+                          <div class="small-2 columns">
+                            <button href="#" data-dropdown="drop1" aria-controls="drop1" aria-expanded="false" class="tiny button postfix dropdown light-gray"></button>
+                              <ul id="drop1" data-dropdown-content class="f-dropdown" aria-hidden="true" tabindex="-1">
+                                <li><a href="#">This is a link</a></li>
+                                <li><a href="#">This is another</a></li>
+                                <li><a href="#">Yet another</a></li>
+                              </ul>
+                          </div>
+                        </div>
+                        <div class="row collapse prefix-radius">
+                          <div class="small-2 columns">
+                            <span class="prefix uppercase">z</span>
+                          </div>
+                          <div class="small-8 columns">
+                            <input type="text" placeholder="Inherit Plant-ID Plant-Height">
+                          </div>
+                          <div class="small-2 columns">
+                            <button href="#" data-dropdown="drop1" aria-controls="drop1" aria-expanded="false" class="tiny button postfix dropdown light-gray"></button>
+                              <ul id="drop1" data-dropdown-content class="f-dropdown" aria-hidden="true" tabindex="-1">
+                                <li><a href="#">This is a link</a></li>
+                                <li><a href="#">This is another</a></li>
+                                <li><a href="#">Yet another</a></li>
+                              </ul>
+                          </div>
+                        </div>
+                        <div class="row collapse prefix-radius">
+                          <div class="small-3 columns">
+                            <span class="prefix uppercase">speed</span>
+                          </div>
+                          <div class="small-7 columns">
+                            <input type="text" placeholder="Default">
+                          </div>
+                          <div class="small-2 columns">
+                            <button href="#" data-dropdown="drop1" aria-controls="drop1" aria-expanded="false" class="tiny button postfix dropdown light-gray"></button>
+                              <ul id="drop1" data-dropdown-content class="f-dropdown" aria-hidden="true" tabindex="-1">
+                                <li><a href="#">This is a link</a></li>
+                                <li><a href="#">This is another</a></li>
+                                <li><a href="#">Yet another</a></li>
+                              </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="large-4 columns">
+                        <div class="row collapse prefix-radius">
+                          <div class="small-6 columns">
+                            <span class="prefix uppercase">x-offset</span>
+                          </div>
+                          <div class="small-6 columns">
+                            <input type="text" placeholder="-100 mm">
+                          </div>
+                        </div>
+                        <div class="row collapse prefix-radius">
+                          <div class="small-6 columns">
+                            <span class="prefix uppercase">y-offset</span>
+                          </div>
+                          <div class="small-6 columns">
+                            <input type="text" placeholder="0 mm">
+                          </div>
+                        </div>
+                        <div class="row collapse prefix-radius">
+                          <div class="small-6 columns">
+                            <span class="prefix uppercase">z-offset</span>
+                          </div>
+                          <div class="small-6 columns">
+                            <input type="text" placeholder="+20 mm">
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="small-12 columns">
+                    <div class="row">
+                      <div class="small-12 columns">
+                        <nav class="top-bar red" data-topbar role="navigation">
+                          <ul class="title-area">
+                            <li class="name">
+                              <h1><a href="#">SCARE AWAY THE BIRDS</a></h1>
+                            </li>
+                          </ul>
+                          <div class="icon-group">
+                            <a href="#"><i class="fa fa-angle-up"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-trash"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-clipboard"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-bars"></i></a>
+                          </div>
+                        </nav>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="large-8 columns">
+                        <div class="row collapse prefix-radius">
+                          <div class="small-3 columns">
+                            <span class="prefix uppercase">plant-id</span>
+                          </div>
+                          <div class="small-7 columns">
+                            <input type="text" placeholder="Inherit Plant-ID">
+                          </div>
+                          <div class="small-2 columns">
+                            <button href="#" data-dropdown="drop1" aria-controls="drop1" aria-expanded="false" class="tiny button postfix dropdown light-gray"></button>
+                              <ul id="drop1" data-dropdown-content class="f-dropdown" aria-hidden="true" tabindex="-1">
+                                <li><a href="#">This is a link</a></li>
+                                <li><a href="#">This is another</a></li>
+                                <li><a href="#">Yet another</a></li>
+                              </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="large-4 columns">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="small-12 columns">
+                     <div class="row">
+                      <div class="small-12 columns">
+                        <nav class="top-bar gray" data-topbar role="navigation">
+                          <ul class="title-area">
+                            <li class="name">
+                              <h1><a href="#">WAIT</a></h1>
+                            </li>
+                          </ul>
+                          <div class="icon-group">
+                            <a href="#"><i class="fa fa-angle-up"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-trash"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-clipboard"></i></a>&nbsp;
+                            <a href="#"><i class="fa fa-bars"></i></a>
+                          </div>
+                        </nav>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="small-12 columns">
+                     <div class="drag-drop-area padding">
+                        <h6>DRAG BASIC OPERATIONS AND/OR SAVE SEQUENCES HERE</h6>
+                     </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+      </div>
+  </div>
+
+</div>
