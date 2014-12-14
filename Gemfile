@@ -12,11 +12,11 @@ gem 'mongoid', '~> 4.0.0', github: 'mongoid/mongoid'
 #Asset stuff
 gem 'sass-rails', github: 'rails/sass-rails'
 gem 'coffee-rails'
+gem 'font-awesome-rails'
 gem 'uglifier'
 gem 'high_voltage', '~> 2.1.0'
 gem 'haml'
 
-gem 'font-awesome-rails'
 
 group :development, :test do
   gem 'pry'
