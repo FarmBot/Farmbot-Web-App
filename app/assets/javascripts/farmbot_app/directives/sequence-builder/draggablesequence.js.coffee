@@ -5,6 +5,8 @@ class DraggableSequence
   scope:
     some_setting: '='
   link: (scope, element, attr) =>
+    # TODO: Use `draggable` property?
+    # https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Drag_operations
     [startX, startY, x, y] = [0, 0, 0, 0]
 
     mousemove = (event) ->
