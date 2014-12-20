@@ -2,5 +2,7 @@
 angular.module('FarmBot').controller "SequenceController", [
   '$scope'
   ($scope) ->
-    $scope.hello = 'world'
+    # TODO: Put the message_type in caps.
+    $scope.commandList = [{message_type: 'move_rel'}]
+    console.log $scope.commandList
 ]

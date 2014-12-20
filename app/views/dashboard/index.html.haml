@@ -8,5 +8,9 @@
     = render partial: "dashboard/ng-partials/settings"
   %script{:id => "sequence.html", :type => "text/ng-template"}
     = render partial: "dashboard/ng-partials/sequence"
+
+  / sequence builder things ....
+  %script{:id => "sequence-builder/move_rel", :type => "text/ng-template"}
+    = render partial: "dashboard/ng-partials/sequence-builder/move_rel"
   %div{'ng-view' => true}
     loading...

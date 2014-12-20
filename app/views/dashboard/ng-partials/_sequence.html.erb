@@ -10,6 +10,16 @@
           </div>
       </div>
       <div class="content-wrapper">
+            <!-- sandbox area -->
+            <div class="row" id='delete-this-later'>
+              <div class="small-6 large-6 columns">
+                <h1>Test Area: please ignore.</h1>
+                <div ng-repeat = 'cmd in commandList'>
+                  <ng-include src="'sequence-builder/' + cmd.message_type">
+                  </ng-include>
+                </div>
+              </div>
+            </div>
             <div class="row">
               <div class="small-6 large-6 columns">
                 <button draggablesequence class="tiny expand button radius blue">MOVE ABSOLUTE
