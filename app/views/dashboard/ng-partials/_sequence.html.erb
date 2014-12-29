@@ -1,128 +1,155 @@
 <div class="row">
-
   <div class="large-4 medium-4 columns">
+    <div class="row">
+      <div class="small-12 columns">
+        <div class="header-wrapper">
+          <h5>Basic Operations</h5>
+
+
+          <p>These are the most <span class="uppercase">basic operations</span> that FarmBot can execute. Drag them to the right to <span class="uppercase">build a sequence</span> of operations</p>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="content-wrapper">
       <div class="row">
-          <div class="small-12 columns">
-              <div class="header-wrapper">
-                <h5>Basic Operations</h5>
-                <p>These are the most <span class="uppercase">basic operations</span> that FarmBot can execute. Drag them to the right to <span class="uppercase">build a sequence</span> of operations</p>
-              </div>
-          </div>
+        <div class="small-6 large-6 columns">
+          <button class="tiny expand button radius blue">MOVE ABSOLUTE</button>
+        </div>
+
+
+        <div class="small-6 large-6 columns">
+          <button class="tiny expand button radius green">MOVE RELATIVE</button>
+        </div>
       </div>
-      <div class="content-wrapper">
-            <!-- sandbox area -->
-            <div class="row" id='delete-this-later'>
-              <div class="small-6 large-6 columns">
-                <h1>Test Area: please ignore.</h1>
-              </div>
-            </div>
-            <div class="row">
-              <div class="small-6 large-6 columns">
-                <button draggablesequence class="tiny expand button radius blue">MOVE ABSOLUTE
-                </button>
-              </div>
-              <div class="small-6 large-6 columns">
-                <button draggablesequence class="tiny expand button radius green">MOVE RELATIVE</button>
-              </div>
-              </div>
-            <div class="row">
-              <div class="small-6 large-6 columns">
-                <button draggablesequence class="tiny expand button radius yellow">READ PIN</button>
-              </div>
-              <div class="small-6 large-6 columns">
-                <button draggablesequence class="tiny expand button radius orange">WRITE PIN</button>
-              </div>
-              </div>
-            <div class="row">
-              <div class="small-6 large-6 columns">
-                <button draggablesequence class="tiny expand button radius purple">TAKE PICTURE</button>
-              </div>
-              <div class="small-6 large-6 columns">
-                <button draggablesequence class="tiny expand button radius pink">IF STATEMENT</button>
-              </div>
-            </div>
-             <div class="row">
-              <div class="small-6 large-6 columns">
-                <button draggablesequence class="tiny expand button radius gray">WAITE</button>
-              </div>
-              <div class="small-6 large-6 columns">
-                <button draggablesequence class="tiny expand button radius red">SEND ERROR</button>
-              </div>
-            </div>
-      </div>
+
+
       <div class="row">
-          <div class="small-12 columns">
-              <div class="header-wrapper">
-                <h5>Saved Sequences</h5>
-              <p>Drag <span class="uppercase">saved sequences</span> to the right to <span class="uppercase">build a sequence</span> that is even larger</p>
-              </div>
-            <div class="content-wrapper">
-              <a href="#" class="tiny expand button radius blue">MOVE AWAY FOR MAINTENANCE</a>
-              <a href="#" class="tiny expand button radius red">SCARE AWAY THE BIRDS</a>
-              <a href="#" class="tiny expand button radius purple">SOW SEEDS</a>
-              <a href="#" class="tiny expand button radius green">SPRAY NITROGEN FERTILIZER</a>
-            </div>
-          </div>
+        <div class="small-6 large-6 columns">
+          <button class="tiny expand button radius yellow">READ PIN</button>
+        </div>
+
+
+        <div class="small-6 large-6 columns">
+          <button class="tiny expand button radius orange">WRITE PIN</button>
+        </div>
       </div>
+
+
+      <div class="row">
+        <div class="small-6 large-6 columns">
+          <button class="tiny expand button radius purple">TAKE PICTURE</button>
+        </div>
+
+
+        <div class="small-6 large-6 columns">
+          <button class="tiny expand button radius pink">IF STATEMENT</button>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="small-6 large-6 columns">
+          <button class="tiny expand button radius gray">WAITE</button>
+        </div>
+
+
+        <div class="small-6 large-6 columns">
+          <button class="tiny expand button radius red">SEND ERROR</button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="small-12 columns">
+        <div class="header-wrapper">
+          <h5>Saved Sequences</h5>
+
+
+          <p>Drag <span class="uppercase">saved sequences</span> to the right to <span class="uppercase">build a sequence</span> that is even larger</p>
+        </div>
+
+
+        <div class="content-wrapper">
+          <a class="tiny expand button radius blue" href="#">MOVE AWAY FOR MAINTENANCE</a> <a class="tiny expand button radius red" href="#">SCARE AWAY THE BIRDS</a> <a class=
+          "tiny expand button radius purple" href="#">SOW SEEDS</a> <a class="tiny expand button radius green" href="#">SPRAY NITROGEN FERTILIZER</a>
+        </div>
+      </div>
+    </div>
   </div>
 
+
   <div class="large-8 medium-8 columns">
-      <div class="row">
-        <div class="small-12 columns">
-          <div class="header-wrapper">
-            <h5>Build A Sequence</h5>
-              <p>Drag <span class="uppercase">basic operation</span> and/or saved sequences into this area to <span class="uppercase">build a sequence</span></p>
+    <div class="row">
+      <div class="small-12 columns">
+        <div class="header-wrapper">
+          <h5>Build A Sequence</h5>
+
+
+          <p>Drag <span class="uppercase">basic operation</span> and/or saved sequences into this area to <span class="uppercase">build a sequence</span></p>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="small-12 columns">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="small-9 columns">
+              <input id="right-label" placeholder="Name this Sequence" type="text">
+            </div>
+
+
+            <div class="small-1 columns">
+              <i class="fa fa-circle fa-2x yellow-circle"></i>
+            </div>
+
+
+            <div class="small-2 columns">
+              <a class="tiny button radius save-green" href="#">Save</a>
+            </div>
+          </div>
+
+
+          <div class="row">
+            <div class="small-12 columns">
+              <div class="drag-drop-area padding">
+                <h6>DRAG BASIC OPERATIONS AND/OR SAVE SEQUENCES HERE</h6>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="row">
+            <div class="small-4 columns">
+              <label>Sequence Parameters:</label>
+            </div>
+
+
+            <div class="small-5 columns">
+              <a class="tiny expand button round dark-gray" href="#">PLANT-ID/PLANT-GROUP-ID</a>
+            </div>
+
+
+            <div class="small-3 columns">
+              <a class="tiny expand button radius dark-gray" href="#">ADD PARAMETER</a>
+            </div>
+          </div>
+
+
+          <div class="row">
+            <div ng-repeat = 'cmd in commandList'>
+              <div class="row">
+                <ng-include src="'sequence-builder/' + cmd.message_type">
+                </ng-include>
+              </div><div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="row">
-          <div class="small-12 columns">
-            <div class="content-wrapper">
-              <div class="row">
-                    <div class="small-9 columns">
-                        <input type="text" id="right-label" placeholder="Name this Sequence">
-                    </div>
-                    <div class="small-1 columns">
-                        <i class="fa fa-circle fa-2x yellow-circle"></i>
-                    </div>
-                    <div class="small-2 columns">
-                        <a href="#" class="tiny button radius save-green">Save</a>
-                    </div>
-              </div>
-
-              <div class="row">
-                <div class="small-12 columns">
-                  <div class="drag-drop-area padding" sequencedrop=true>
-                  <h6>DRAG BASIC OPERATIONS AND/OR SAVE SEQUENCES HERE</h6>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row">
-                  <div class="small-4 columns">
-                    <label>Sequence Parameters:</label>
-                  </div>
-                  <div class="small-5 columns">
-                    <a href="#" class="tiny expand button round dark-gray">PLANT-ID/PLANT-GROUP-ID</a>
-                  </div>
-                  <div class="small-3 columns">
-                    <a href="#" class="tiny expand button radius dark-gray">ADD PARAMETER</a>
-                  </div>
-              </div>
-
-              <div class="row">
-                <div ng-repeat = 'cmd in commandList'>
-                  <div class="row">
-                    <ng-include src="'sequence-builder/' + cmd.message_type">
-                    </ng-include>
-                  </div>
-                </div>
-
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
-          </div>
+    </div>
+  </div>
+</div>
