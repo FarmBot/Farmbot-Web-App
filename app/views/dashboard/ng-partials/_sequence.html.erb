@@ -141,9 +141,12 @@
 
 
           <div class="row">
-            <div ng-repeat = 'cmd in commandList'>
-              <div class="row">
-                <ng-include src="'sequence-builder/' + cmd.message_type">
+            <div ng-repeat='cmd in commandList'
+                 ng-model="commandList"
+                 as-sortable="dragControlListeners" >
+
+              <div class="row" as-sortable-item>
+                <ng-include src="'sequence-builder/' + cmd.message_type" >
                 </ng-include>
               </div><div>
             </div>

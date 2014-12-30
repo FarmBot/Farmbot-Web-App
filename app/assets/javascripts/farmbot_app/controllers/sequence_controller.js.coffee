@@ -8,5 +8,8 @@ angular.module('FarmBot').controller "SequenceController", [
       {message_type: 'write_pin'}
       {message_type: 'move_abs'}
     ]
-    console.log $scope.commandList
+    $scope.dragControlListeners =
+      accept: (sourceItemHandleScope, destSortableScope) -> debugger
+      itemMoved: (event) -> debugger
+      orderChanged: (event) -> debugger
 ]

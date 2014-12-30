@@ -3,6 +3,7 @@
 app = angular.module('FarmBot', [
   'ngRoute'
   'ng-rails-csrf'
+  'ui.sortable'
   ])
 
 app.config [
