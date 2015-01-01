@@ -1,3 +1,4 @@
+
 # The sequence controller supports the WYSIWYG sequence editor.
 angular.module('FarmBot').controller "SequenceController", [
   '$scope'
@@ -8,8 +9,8 @@ angular.module('FarmBot').controller "SequenceController", [
       {message_type: 'write_pin'}
       {message_type: 'move_abs'}
     ]
-    $scope.dragControlListeners =
-      accept: (sourceItemHandleScope, destSortableScope) -> debugger
-      itemMoved: (event) -> debugger
-      orderChanged: (event) -> debugger
+    $scope.dragControlListeners = {}
+      # accept: (sourceItemHandleScope, destSortableScope) -> debugger
+      # itemMoved: (event) -> debugger
+      # orderChanged: (event) -> debugger
 ]
