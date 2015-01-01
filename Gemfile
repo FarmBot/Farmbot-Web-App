@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+source 'https://rails-assets.org'
 
 ruby '2.1.1'
 
@@ -16,7 +17,7 @@ gem 'font-awesome-rails'
 gem 'uglifier'
 gem 'high_voltage', '~> 2.1.0'
 gem 'haml'
-
+gem 'rails-assets-ng-sortable'
 
 group :development, :test do
   gem 'pry'
