@@ -67,8 +67,13 @@
 
 
         <div class="content-wrapper">
-          <a class="tiny expand button radius blue" href="#">MOVE AWAY FOR MAINTENANCE</a> <a class="tiny expand button radius red" href="#">SCARE AWAY THE BIRDS</a> <a class=
-          "tiny expand button radius purple" href="#">SOW SEEDS</a> <a class="tiny expand button radius green" href="#">SPRAY NITROGEN FERTILIZER</a>
+          <div ng-repeat="seq in storedSequences track by $id(seq)">
+            <button
+              ng-click="load(seq)"
+              class="tiny expand button radius {{seq.color}}">
+              {{seq.name}}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -90,7 +95,7 @@
         <div class="content-wrapper">
           <div class="row">
             <div class="small-9 columns">
-              <input id="right-label" placeholder="Name this Sequence" type="text">
+              <input id="right-label" type="text" ng-model="command.name">
             </div>
 
 
@@ -100,7 +105,9 @@
 
 
             <div class="small-2 columns">
-              <a class="tiny button radius save-green" href="#">Save</a>
+              <button class="tiny button radius save-green" ng-click="save()">
+                Save
+              </button>
             </div>
           </div>
 
@@ -132,7 +139,7 @@
 
 
           <div class="row" as-sortable="dragControlListeners" ng-model="commandList">
-            <div ng-repeat='cmd in commandList track by $id(cmd)' as-sortable-item>
+            <div ng-repeat='cmd in command.sequences track by $id(cmd)' as-sortable-item>
 
               <div class="row">
                 <ng-include src="'sequence-builder/' + cmd.message_type" >
