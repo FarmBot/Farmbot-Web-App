@@ -9,8 +9,8 @@
           </ul>
           <div class="icon-group">
             <a href="#"><i class="fa fa-angle-up"></i></a>&nbsp;
-            <a href="#"><i class="fa fa-trash"></i></a>&nbsp;
-            <a href="#"><i class="fa fa-clipboard"></i></a>&nbsp;
+            <i class="fa fa-trash" ng-click="remove($index)"></i>&nbsp;
+            <i class="fa fa-clipboard" ng-click="copy(cmd, $index)"></i></a>&nbsp;
             <i class="fa fa-bars" as-sortable-item-handle></i>
           </div>
 

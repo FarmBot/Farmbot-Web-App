@@ -141,7 +141,7 @@
 
 
           <div class="row" as-sortable="dragControlListeners" ng-model="commandList">
-            <div ng-repeat='cmd in commandList' as-sortable-item>
+            <div ng-repeat='cmd in commandList track by $id(cmd)' as-sortable-item>
 
               <div class="row">
                 <ng-include src="'sequence-builder/' + cmd.message_type" >
