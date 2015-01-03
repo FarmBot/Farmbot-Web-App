@@ -15,8 +15,18 @@ class Command
       message_type: 'read_status'
       time_stamp: Date.now()
 
+    pin_write: (arg) ->
+      message_type: "pin_write",
+      time_stamp: Date.now(),
+      command:
+        action: "PIN WRITE",
+        pin: arg.pin,
+        value1: arg.value1,
+        mode: arg.mode,
+
+    # TODO: deprecate this method in favor of pin_write
     pin_on: (pin_number) ->
-      message_type: "single_command",
+      message_type: "pin_on",
       time_stamp: Date.now(),
       command:
         action: "PIN WRITE",
@@ -24,8 +34,9 @@ class Command
         value1: 1,
         mode: 0,
 
+    # TODO: deprecate this method in favor of pin_write
     pin_off: (pin_number) ->
-      message_type: "single_command",
+      message_type: "pin_off",
       time_stamp: Date.now(),
       command:
         action: "PIN WRITE",
@@ -33,25 +44,25 @@ class Command
         value1: 0,
         mode: 0,
 
-    move_abs: (x, y, z) ->
-      message_type: 'single_command'
+    move_abs: (coords) ->
+      message_type: 'move_abs'
       time_stamp: new Date()
       command:
         action: 'MOVE ABSOLUTE'
-        x: x
-        y: y
-        z: z
+        x: coords.x
+        y: coords.y
+        z: coords.z
         speed: 100
         delay: 0
 
-    move_rel: (x, y, z) ->
-      message_type: 'single_command'
+    move_rel: (coords) ->
+      message_type: 'move_rel'
       time_stamp: new Date()
       command:
         action: 'MOVE RELATIVE'
-        x: x
-        y: y
-        z: z
+        x: coords.x
+        y: coords.y
+        z: coords.z
         speed: 100
         delay: 0
 

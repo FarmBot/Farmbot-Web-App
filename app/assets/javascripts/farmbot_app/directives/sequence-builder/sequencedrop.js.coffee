@@ -7,7 +7,6 @@ class SequenceDrop
     element[0].addEventListener "drop", ((e) ->
       # Stops some browsers from redirecting.
       e.stopPropagation() if e.stopPropagation
-      debugger
       false
       ), false
     scope.drops = []

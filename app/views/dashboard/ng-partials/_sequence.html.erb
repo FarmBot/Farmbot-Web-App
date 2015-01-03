@@ -4,9 +4,6 @@
       <div class="small-12 columns">
         <div class="header-wrapper">
           <h5>Basic Operations</h5>
-
-
-          <p>These are the most <span class="uppercase">basic operations</span> that FarmBot can execute. Drag them to the right to <span class="uppercase">build a sequence</span> of operations</p>
         </div>
       </div>
     </div>
@@ -15,48 +12,48 @@
     <div class="content-wrapper">
       <div class="row">
         <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius blue">MOVE ABSOLUTE</button>
+          <button class="tiny expand button radius blue" ng-click="add('move_abs')">MOVE ABSOLUTE</button>
         </div>
 
 
         <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius green">MOVE RELATIVE</button>
-        </div>
-      </div>
-
-
-      <div class="row">
-        <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius yellow">READ PIN</button>
-        </div>
-
-
-        <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius orange">WRITE PIN</button>
+          <button class="tiny expand button radius green" ng-click="add('move_rel')">MOVE RELATIVE</button>
         </div>
       </div>
 
 
       <div class="row">
         <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius purple">TAKE PICTURE</button>
+          <button class="tiny expand button radius yellow" ng-click="add('pin_write')">PIN WRITE</button>
         </div>
 
 
         <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius pink">IF STATEMENT</button>
+          <button class="tiny expand button radius orange" ng-click="add('move_rel')">HELLO</button>
         </div>
       </div>
 
 
       <div class="row">
         <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius gray">WAITE</button>
+          <button class="tiny expand button radius purple" ng-click="add('move_rel')">TAKE PICTURE</button>
         </div>
 
 
         <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius red">SEND ERROR</button>
+          <button class="tiny expand button radius pink" ng-click="add('move_rel')">IF STATEMENT</button>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="small-6 large-6 columns">
+          <button class="tiny expand button radius gray" ng-click="add('move_rel')">WAITE</button>
+        </div>
+
+
+        <div class="small-6 large-6 columns">
+          <button class="tiny expand button radius red" ng-click="add('move_rel')">SEND ERROR</button>
         </div>
       </div>
     </div>
@@ -66,9 +63,6 @@
       <div class="small-12 columns">
         <div class="header-wrapper">
           <h5>Saved Sequences</h5>
-
-
-          <p>Drag <span class="uppercase">saved sequences</span> to the right to <span class="uppercase">build a sequence</span> that is even larger</p>
         </div>
 
 
@@ -86,9 +80,6 @@
       <div class="small-12 columns">
         <div class="header-wrapper">
           <h5>Build A Sequence</h5>
-
-
-          <p>Drag <span class="uppercase">basic operation</span> and/or saved sequences into this area to <span class="uppercase">build a sequence</span></p>
         </div>
       </div>
     </div>

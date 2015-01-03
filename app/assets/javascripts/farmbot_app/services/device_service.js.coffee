@@ -79,10 +79,10 @@ class DeviceService
     console.log "Pin #{number} is now #{@current[pin]}"
 
   moveRel: (x, y, z, cb) ->
-    @send(@Command.create("move_rel", x, y, z), cb)
+    @send(@Command.create("move_rel", {x: 0, y: 0, z: 0}), cb)
 
   moveAbs: (x, y, z, cb) ->
-    @send(@Command.create("move_abs", x, y, z), cb)
+    @send(@Command.create("move_abs", {x: 0, y: 0, z: 0}), cb)
 
   send: (msg, cb = (d) -> console.log(d)) ->
     if !!@connection
