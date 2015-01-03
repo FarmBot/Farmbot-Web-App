@@ -10,7 +10,8 @@ angular.module('FarmBot').controller "SequenceController", [
       {message_type: 'move_abs'}
     ]
     $scope.dragControlListeners = {}
-      # accept: (sourceItemHandleScope, destSortableScope) -> debugger
-      # itemMoved: (event) -> debugger
-      # orderChanged: (event) -> debugger
+    $scope.copy = (obj, index) ->
+      obj2 = angular.copy(obj)
+      $scope.commandList.splice((index + 1), 0, obj2)
+    $scope.remove = (index) -> $scope.commandList.splice(index, 1)
 ]
