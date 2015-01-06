@@ -12,6 +12,8 @@ class User
   validates_uniqueness_of :email
   validates_presence_of :email
 
+  has_many :sequences
+
   # BEGIN DEVISE CRAP ==========================================================
   devise :database_authenticatable, :registerable, :recoverable, :rememberable,
          :trackable, :validatable #, :omniauthable

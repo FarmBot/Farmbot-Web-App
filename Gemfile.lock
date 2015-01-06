@@ -46,6 +46,8 @@ GEM
       activesupport (= 4.1.0)
       builder (~> 3.1)
       erubis (~> 2.7.0)
+    active_model_serializers (0.9.2)
+      activemodel (>= 3.2)
     activemodel (4.1.0)
       activesupport (= 4.1.0)
       builder (~> 3.1)
@@ -168,6 +170,8 @@ GEM
       connection_pool (~> 2.0)
       optionable (~> 0.2.0)
     multi_json (1.10.1)
+    mutations (0.7.2)
+      activesupport
     ng-rails-csrf (0.1.0)
     nokogiri (1.6.2.1)
       mini_portile (= 0.6.0)
@@ -293,6 +297,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  active_model_serializers
   capybara
   coffee-rails
   devise!
@@ -306,6 +311,7 @@ DEPENDENCIES
   launchy
   metric_fu
   mongoid (~> 4.0.0)!
+  mutations
   ng-rails-csrf
   pry
   rails (= 4.1.0)
