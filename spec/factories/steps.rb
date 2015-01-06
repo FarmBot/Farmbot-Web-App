@@ -2,5 +2,8 @@
 
 FactoryGirl.define do
   factory :step do
+    message_type
+    time_stamp { Time.now }
+    command
   end
 end

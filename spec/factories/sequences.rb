@@ -2,5 +2,7 @@
 
 FactoryGirl.define do
   factory :sequence do
+    name
+    color
   end
 end

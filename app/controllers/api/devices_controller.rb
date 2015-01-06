@@ -26,7 +26,7 @@ module Api
 
     # PATCH/PUT /api/devices/1
     def update
-      if @device.update(device_params)
+      if @device.update_attributes(device_params)
         render json: @device
       end
     end

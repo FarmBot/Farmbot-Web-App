@@ -8,4 +8,6 @@ class Sequence
   COLORS = %w(blue green yellow orange purple pink gray red)
   field :color, type: String, default: -> { COLORS.sample }
 
+  embeds_many :steps
+  belongs_to :user
 end
