@@ -9,7 +9,7 @@ private
       if outcome.success?
         render options.merge(json: outcome)
       else
-        render options.merge(json: outcome.errors.message_list, status: 422)
+        render options.merge(json: outcome.errors.message, status: 422)
       end
     end
 

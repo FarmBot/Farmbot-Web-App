@@ -10,11 +10,18 @@ describe Api::SequencesController do
 
     it 'creates a new sequences for a user' do
       sign_in user
-      inputs = {name: "Scare Birds",
+      input = {name: "Scare Birds",
                 steps: [{
-                    message_type: 'move_rel'
-                  }]}
-      post :create, inputs
+                    message_type: 'move_rel',
+                    time_stamp: Time.now,
+                    command: {action: 'MOVE RELATIVE',
+                              x: 1,
+                              y: 2,
+                              z: 3,
+                              speed: 100,
+                              delay: 0}}]}
+      post :create, input
+      binding.pry
       expect(response.status).to eq(200)
     end
   end

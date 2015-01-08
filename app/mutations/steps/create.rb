@@ -3,6 +3,9 @@ module Steps
 
     required do
       string :message_type, in: Step::MESSAGE_TYPES
+      date :time_stamp
+      hash(:command) { :* }
+      model :sequence
     end
 
     def validate

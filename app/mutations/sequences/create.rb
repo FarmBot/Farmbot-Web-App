@@ -2,9 +2,11 @@ module Sequences
   class Create < Mutations::Command
 
     required do
-      model  :user
-      string :name
-      array(:steps) { model :step, builder: Steps::Create, class: Object }
+      model :user
+      string :time_stamp
+      array(:steps) do
+        model :step, builder: Steps::Create
+      end
     end
 
     def validate
