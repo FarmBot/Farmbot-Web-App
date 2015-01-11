@@ -9,6 +9,7 @@ describe Api::SequencesController do
     let(:user) { FactoryGirl.create(:user) }
 
     it 'creates a new sequences for a user' do
+      pending "Going to create mutation level tests first."
       sign_in user
       input = {name: "Scare Birds",
                 steps: [{
@@ -21,7 +22,6 @@ describe Api::SequencesController do
                               speed: 100,
                               delay: 0}}]}
       post :create, input
-      binding.pry
       expect(response.status).to eq(200)
     end
   end
