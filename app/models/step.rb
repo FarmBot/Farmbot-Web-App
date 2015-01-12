@@ -11,5 +11,4 @@ class Step
 
   field :command, type: Hash
   validates :command, presence: true
-
 end

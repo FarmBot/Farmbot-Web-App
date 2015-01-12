@@ -3,16 +3,21 @@ require 'spec_helper'
 describe Steps::Create do
   let(:user) { FactoryGirl.create(:user) }
   let(:mutation) { Sequences::Create }
-  let(:step) { {message_type: 'move_rel',
-                command: {action: 'MOVE RELATIVE',
-                          x: 1,
-                          y: 2,
-                          z: 3,
-                          speed: 100,
-                          delay: 0}} }
-  let(:valid_params) { {user: user,
-                        name: 'Hi.',
-                        steps: [step]} }
+  let(:step) do
+    { message_type: 'move_rel',
+      command: { action: 'MOVE RELATIVE',
+                 x: 1,
+                 y: 2,
+                 z: 3,
+                 speed: 100,
+                 delay: 0 } }
+  end
+
+  let(:valid_params) do
+    { user: user,
+      name: 'Hi.',
+      steps: [step] }
+  end
 
   it 'Builds a `sequence`' do
     outcome = mutation.run(valid_params)
