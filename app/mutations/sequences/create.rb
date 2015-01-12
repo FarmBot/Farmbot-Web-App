@@ -1,17 +1,21 @@
 module Sequences
   class Create < Mutations::Command
+    using MongoidRefinements
 
     required do
-      model  :user
+      model :user, class: User
       string :name
-      array(:steps) { model :step, builder: Steps::Create, class: Object }
+      array :steps do
+        model :step, builder: Steps::Initialize, new_records: true
+      end
     end
 
-    def validate
+    optional do
+      string :color, in: Sequence::COLORS
     end
 
     def execute
-      {}
+      create(Sequence, inputs)
     end
   end
 end

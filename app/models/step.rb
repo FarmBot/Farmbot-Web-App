@@ -7,6 +7,8 @@ class Step
   embedded_in :sequence
 
   field :message_type
-  field :time_stamp, type: Time
+  validates :message_type, presence: true
+
   field :command, type: Hash
+  validates :command, presence: true
 end

@@ -2,7 +2,8 @@
 
 FactoryGirl.define do
   factory :sequence do
-    name
-    color
+    name { Faker::Company.catch_phrase }
+    color { Step::MESSAGE_TYPES.sample }
+    user
   end
 end

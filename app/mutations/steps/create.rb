@@ -1,18 +1,15 @@
 module Steps
   class Create < Mutations::Command
+    using MongoidRefinements
 
     required do
       string :message_type, in: Step::MESSAGE_TYPES
-    end
-
-    def validate
+      hash(:command) { model :*, class: Object }
+      model :sequence
     end
 
     def execute
-      # STILL NEED TO:
-      # * Make the steps mutation create a step
-      # * Make the sequence mutation create one, too.
-      binding.pry
+      create(Step, inputs)
     end
   end
 end
