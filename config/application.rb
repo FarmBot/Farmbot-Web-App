@@ -11,6 +11,7 @@ require "sprockets/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env)
 
+# TODO: Rename this from DSS to Farmbot or something like that.
 module Dss
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified
@@ -33,6 +34,6 @@ module Dss
       g.helper_specs false
       g.fixture_replacement :factory_girl, :dir => 'spec/factories'
     end
-
+    config.autoload_paths << Rails.root.join('lib')
   end
 end

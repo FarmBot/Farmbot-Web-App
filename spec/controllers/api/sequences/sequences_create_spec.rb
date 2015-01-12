@@ -9,12 +9,10 @@ describe Api::SequencesController do
     let(:user) { FactoryGirl.create(:user) }
 
     it 'creates a new sequences for a user' do
-      pending "Going to create mutation level tests first."
       sign_in user
       input = {name: "Scare Birds",
                 steps: [{
                     message_type: 'move_rel',
-                    time_stamp: Time.now,
                     command: {action: 'MOVE RELATIVE',
                               x: 1,
                               y: 2,
