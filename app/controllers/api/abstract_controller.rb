@@ -4,7 +4,7 @@ module Api
     before_action :authenticate_user!
 
     rescue_from Errors::Forbidden do |exception|
-      msg = {error: "You can't perform that action. #{exception.message}"}
+      msg = { error: "You can't perform that action. #{exception.message}" }
       render json: msg, status: 403
     end
 

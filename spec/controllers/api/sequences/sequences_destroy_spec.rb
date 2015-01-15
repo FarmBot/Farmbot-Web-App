@@ -6,7 +6,7 @@ describe Api::SequencesController do
 
   describe '#destroy' do
 
-    let(:sequence) { FactoryGirl.create(:sequence)}
+    let(:sequence) { FactoryGirl.create(:sequence) }
     let(:user) { sequence.user }
 
     it 'destroys a sequence' do
