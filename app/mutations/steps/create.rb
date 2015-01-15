@@ -4,8 +4,10 @@ module Steps
 
     required do
       string :message_type, in: Step::MESSAGE_TYPES
-      hash(:command) { model :*, class: Object }
       model :sequence
+      hash :command do
+        model :*, class: Object
+      end
     end
 
     def execute

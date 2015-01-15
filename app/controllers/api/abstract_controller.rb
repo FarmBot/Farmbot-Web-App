@@ -3,12 +3,19 @@ module Api
     respond_to :json
     before_action :authenticate_user!
 
-    rescue_from Errors::Forbidden do |exception|
-      msg = { error: "You can't perform that action. #{exception.message}" }
-      render json: msg, status: 403
+    rescue_from Errors::Forbidden do |exc|
+      sorry "You can't perform that action. #{exc.message}", 403
+    end
+
+    rescue_from Mongoid::Errors::DocumentNotFound do |exc|
+      sorry "Can't find #{exc.klass}(s) with ID(s): #{exc.params}", 404
     end
 
 private
+
+    def sorry(msg, status)
+      render json: {error: msg}, status: status
+    end
 
     def mutate(outcome, options = {})
       if outcome.success?

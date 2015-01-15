@@ -3,7 +3,9 @@ Dss::Application.routes.draw do
   mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)
   namespace :api, defaults: {format: :json} do
     resources :devices, only: [:index, :destroy, :create, :update]
-    resources :sequences, only: [:create, :destroy]
+    resources :sequences, only: [:create, :destroy] do
+      resources :steps, only: [:create, :destroy]
+    end
   end
 
   devise_for :users, :controllers => {:registrations => "registrations"}
