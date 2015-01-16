@@ -7,4 +7,8 @@ module Helpers
     fill_in 'user_password', with: user.password
     click_button 'Sign in'
   end
+
+  def json
+    JSON.parse(response.body).map(&:deep_symbolize_keys!)
+  end
 end
