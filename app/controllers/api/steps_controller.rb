@@ -20,7 +20,7 @@ module Api
     end
 
     def step
-      @step ||= Step.find(params[:id])
+      @step ||= sequence.steps.find(params[:id])
     end
 
     def must_own_sequence

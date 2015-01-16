@@ -22,11 +22,8 @@ describe Api::StepsController do
                            delay: 0 } }
       before = sequence.steps.count
       post :create, input
-      binding.pry if response.status != 200
       expect(response.status).to eq(200)
       expect(sequence.reload.steps.count).to be > before
     end
-
-    it 'handles 404 for sequence'
   end
 end
