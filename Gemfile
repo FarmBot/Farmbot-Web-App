@@ -18,6 +18,7 @@ gem 'uglifier'
 gem 'high_voltage', '~> 2.1.0'
 gem 'haml'
 gem 'rails-assets-ng-sortable'
+gem 'rails-assets-angular-data'
 
 gem 'figaro' # Store secrets the 12 factor way. TODO: Get off of this gem.
 gem 'devise', github: 'plataformatec/devise'

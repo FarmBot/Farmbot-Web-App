@@ -2,9 +2,11 @@
 angular.module('FarmBot').controller "SequenceController", [
   '$scope'
   'Command'
-  ($scope, Command) ->
+  'Devices'
+  ($scope, Command, Devices) ->
     # Stub for now. Maybe we can randomly set this in the
     # backend on creation or something.
+    debugger
     randomColor = ->
       colors =
         ['blue'
