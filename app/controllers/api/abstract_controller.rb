@@ -14,7 +14,7 @@ module Api
 private
 
     def sorry(msg, status)
-      render json: {error: msg}, status: status
+      render json: { error: msg }, status: status
     end
 
     def mutate(outcome, options = {})

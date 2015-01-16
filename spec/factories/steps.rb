@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
   factory :step do
-    message_type "single_command"
+    message_type 'single_command'
     command do
       { action: 'MOVE RELATIVE',
         x: 1,

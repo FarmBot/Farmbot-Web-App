@@ -23,7 +23,6 @@ describe Api::StepsController do
       sign_in user
       input = { sequence_id: sequence._id.to_s,
                 id: '0000000000' }
-      before = sequence.steps.count
       delete :destroy, input
       expect(response.status).to eq(404)
       expect(response.body).to include("Can't find Step(s)")

@@ -1,6 +1,5 @@
 module Api
   class StepsController < Api::AbstractController
-
     before_action :must_own_sequence
 
     def create
@@ -17,7 +16,7 @@ module Api
       mutate Steps::Update.run(params: params, step: step)
     end
 
-  private
+    private
 
     def sequence
       @sequence ||= Sequence.find(params[:sequence_id])
@@ -29,7 +28,7 @@ module Api
 
     def must_own_sequence
       if sequence.user != current_user
-        raise Errors::Forbidden, "Not your Sequence object."
+        raise Errors::Forbidden, 'Not your Sequence object.'
       end
     end
   end
