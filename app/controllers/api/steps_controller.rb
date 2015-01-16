@@ -13,6 +13,10 @@ module Api
       end
     end
 
+    def update
+      mutate Steps::Update.run(params: params, step: step)
+    end
+
   private
 
     def sequence

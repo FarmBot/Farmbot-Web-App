@@ -4,7 +4,7 @@ module Steps
 
     required do
       string :message_type, in: Step::MESSAGE_TYPES
-      model :sequence
+      model :sequence, class: Sequence
       hash :command do
         model :*, class: Object
       end

@@ -19,7 +19,7 @@ private
 
     def mutate(outcome, options = {})
       if outcome.success?
-        render options.merge(json: outcome)
+        render options.merge(json: outcome.result)
       else
         render options.merge(json: outcome.errors.message, status: 422)
       end

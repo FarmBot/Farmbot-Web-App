@@ -21,5 +21,14 @@ module MongoidRefinements
         model.errors.messages
       end
     end
+
+    # See documentation for `create()`.
+    def update(model, inputs = {})
+      if model.update_attributes(inputs)
+        model
+      else
+        model.errors.messages
+      end
+    end
   end
 end
