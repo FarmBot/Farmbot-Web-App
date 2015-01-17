@@ -3,7 +3,7 @@
 FactoryGirl.define do
   factory :sequence do
     name { Faker::Company.catch_phrase }
-    color { Step::MESSAGE_TYPES.sample }
+    color { Sequence::COLORS.sample }
     user
     steps { [FactoryGirl.build(:step)] }
   end
