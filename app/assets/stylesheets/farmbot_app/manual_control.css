@@ -1,0 +1,35 @@
+.x-small{
+	padding-left: 0.95rem;
+	padding-right: 0.95rem;
+	padding-top: 0.5rem;
+	padding-bottom: 0.6rem;
+	font-size: 0.825rem;
+	color: #333;
+	background-color: #D1D1D1;
+}
+.xx-small{
+	padding-left: 0.45rem;
+	padding-right: 0.45rem;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+	font-size: 0.625rem;
+	background-color: #333;
+}
+button.stop{
+    background-color: red;
+}
+button.go{
+    background-color: green;
+}
+button.restart{
+    background-color: orange;
+}
+label.shrink{
+	font-size: 0.625rem;
+}
+span.spacing-right{
+	padding-right: 20px;
+}
+span.spacing-left{
+	padding-left: 38px;
+}
