@@ -2,7 +2,8 @@
 angular.module('FarmBot').controller "SequenceController", [
   '$scope'
   'Command'
-  ($scope, Command) ->
+  'Sequences'
+  ($scope, Command, Sequences) ->
     # Stub for now. Maybe we can randomly set this in the
     # backend on creation or something.
     randomColor = ->
@@ -17,6 +18,14 @@ angular.module('FarmBot').controller "SequenceController", [
          'red']
       _.sample(colors)
 
+    Sequences
+    .findAll({})
+    .then((sequences) -> console.log sequences)
+    .catch((error) ->
+      alert "There was a problem. See console for details."
+      console.log error)
+    .finally(-> null)
+    window.qqq = Sequences
     $scope.command =
       name: 'Untitled Sequence'
       color: randomColor()
@@ -32,11 +41,13 @@ angular.module('FarmBot').controller "SequenceController", [
       color: randomColor(),
       steps:[Command.create("move_abs"), Command.create("move_rel"), Command.create("move_rel")]}
     ]
-
+    Sequences.bindAll($scope, 'storedSequences', {})
     $scope.copy = (obj, index) -> $scope.command.steps.splice((index + 1), 0, angular.copy(obj))
     $scope.remove = (index) -> $scope.command.steps.splice(index, 1)
     $scope.add = (name) -> $scope.command.steps.push(Command.create(name))
-    $scope.load = (seq) -> $scope.command = seq
+    $scope.load = (seq) ->
+      Sequences.loadRelations(seq._id, ['step'])
+      $scope.command = seq
     $scope.save = ->
       oldSeq = _.find($scope.storedSequences, {name: $scope.command.name})
       if oldSeq

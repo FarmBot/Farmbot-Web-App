@@ -1,5 +1,9 @@
 module Api
   class SequencesController < Api::AbstractController
+    def index
+      render json: Sequence.where(user: current_user)
+    end
+
     def create
       mutate Sequences::Create.run(params, user: current_user)
     end
