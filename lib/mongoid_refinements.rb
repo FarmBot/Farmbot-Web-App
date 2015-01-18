@@ -18,7 +18,7 @@ module MongoidRefinements
       if model.valid? && model.save
         model
       else
-        model.errors.messages
+        add_error klass.to_s.downcase.to_sym, :invalid, model.errors.messages
       end
     end
 
