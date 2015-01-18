@@ -1,6 +1,6 @@
-# TODO this needs to get separated into separate factories. As you can see,
-# there are two resources being defined here.
-sequences = (DS) ->
+# RESTful data adapter for hooking angular JS into the backend API. SEE:
+# http://angular-data.pseudobry.com/
+data = (DS) ->
   DS.defineResource
     name: "step"
     endpoint: 'steps',
@@ -24,7 +24,9 @@ sequences = (DS) ->
           localField: "steps"
           foreignKey: "sequence_id"
 
-angular.module("FarmBot").factory 'Sequences', [
+  return DS
+
+angular.module("FarmBot").service 'Data', [
   'DS',
-  sequences
+  data
 ]

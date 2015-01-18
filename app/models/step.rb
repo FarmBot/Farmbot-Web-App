@@ -9,6 +9,5 @@ class Step
   field :message_type
   validates :message_type, presence: true
 
-  field :command, type: Hash
-  validates :command, presence: true
+  field :command, type: Hash, default: {}
 end
