@@ -11,7 +11,7 @@ require "sprockets/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env)
 
-# TODO: Rename this from DSS to Farmbot or something like that.
+# TODO: Rename this to Farmbot.
 module Dss
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified
