@@ -100,18 +100,18 @@
       <div class="small-12 columns">
         <div class="content-wrapper">
           <div class="row">
-            <div class="small-9 columns">
+            <div class="small-8 columns">
               <input id="right-label" type="text" ng-model="sequence.name">
             </div>
 
 
-            <div class="small-1 columns">
-              <i class="fa fa-circle fa-2x yellow-circle"></i>
-            </div>
-
-
             <div class="small-2 columns">
-              <button class="tiny button radius save-green" ng-click="save()">
+              <button class="tiny button radius red" ng-click="deleteSequence(sequence)">
+                Delete
+              </button>
+            </div>
+            <div class="small-2 columns">
+              <button class="tiny button radius green" ng-click="save()">
                 Save
               </button>
             </div>

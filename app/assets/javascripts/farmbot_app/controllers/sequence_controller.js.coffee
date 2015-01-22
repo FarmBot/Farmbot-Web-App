@@ -7,8 +7,15 @@ controller = ($scope, Data) ->
   .catch (error) -> console.error error
 
   Data.bindAll($scope, 'storedSequences', 'sequence', {})
+  hasSequence = ->
+    if $scope.sequence
+      return yes
+    else
+      alert 'Select or create a sequence first.'
+      return no
   $scope.add = (message_type) ->
     # TODO: Rename to addStep
+    return unless hasSequence()
     Data.create('step',
       message_type: message_type
       sequence_id: $scope.sequence._id
@@ -21,9 +28,16 @@ controller = ($scope, Data) ->
     params.name ?= 'Untitled Sequence'
     Data
       .create('sequence', params)
-      .then((seq) -> $scope.sequence = seq)
+      .then((seq) -> $scope.load(seq)) # Load child resources of the new seqnce
       .catch((e) -> console.error(e))
+  $scope.deleteSequence = (seq) ->
+    return unless hasSequence()
+    Data
+      .destroy('sequence', seq._id)
+      .then(() -> $scope.sequence = null)
+      .catch((e) -> debugger)
   $scope.save = ->
+    return unless hasSequence()
     oldSeq = _.find($scope.storedSequences, {name: $scope.sequence.name})
     if oldSeq
       oldSeq = $scope.sequence
