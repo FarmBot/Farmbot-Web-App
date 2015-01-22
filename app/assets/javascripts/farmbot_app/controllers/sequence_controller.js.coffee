@@ -5,7 +5,10 @@ controller = ($scope, Data) ->
   Data
   .findAll('sequence', {})
   .catch (error) -> console.error error
-
+  $scope.dragControlListeners =
+    accept: (sourceItemHandleScope, destSortableScope) -> true
+    itemMoved: (event) -> debugger
+    orderChanged: (event) -> debugger
   Data.bindAll($scope, 'storedSequences', 'sequence', {})
   hasSequence = ->
     if $scope.sequence
@@ -35,16 +38,14 @@ controller = ($scope, Data) ->
     Data
       .destroy('sequence', seq._id)
       .then(() -> $scope.sequence = null)
-      .catch((e) -> debugger)
-  $scope.save = ->
-    return unless hasSequence()
-    oldSeq = _.find($scope.storedSequences, {name: $scope.sequence.name})
-    if oldSeq
-      oldSeq = $scope.sequence
-    else
-      $scope.storedSequences.push($scope.sequence)
+      .catch((e) -> console.error(e))
+  $scope.saveSequence = (seq) ->
+    Data
+      .save('sequence', seq._id)
+      .then((s) -> console.log(s))
+      .catch((e) -> console.error(e))
   $scope.copy = (obj, index) ->
-    debugger # Let's try:
+    # Let's try:
     # Data.create('step', the_step_to_copy)
     $scope.sequence.steps.splice((index + 1), 0, angular.copy(obj))
   $scope.remove = (index) ->

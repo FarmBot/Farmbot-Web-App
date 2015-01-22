@@ -8,6 +8,10 @@ module Api
       mutate Sequences::Create.run(params, user: current_user)
     end
 
+    def update
+      binding.pry
+    end
+
     def destroy
       # TODO: If you touch this again, add a mutation.
       seq = Sequence.find(params[:id])
