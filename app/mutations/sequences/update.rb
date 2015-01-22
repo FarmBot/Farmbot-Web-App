@@ -5,7 +5,7 @@ module Sequences
     required do
       model :user, class: User
       model :sequence, class: Sequence
-   end
+    end
 
     optional do
       string :name

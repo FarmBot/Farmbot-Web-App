@@ -23,7 +23,7 @@ module Api
       end
     end
 
-  private
+    private
 
     def sequence
       @sequence ||= Sequence.find(params[:id])
