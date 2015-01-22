@@ -5,9 +5,20 @@ controller = ($scope, Data) ->
   Data
   .findAll('sequence', {})
   .catch (error) -> console.error error
-
+  $scope.dragControlListeners =
+    accept: (sourceItemHandleScope, destSortableScope) -> true
+    itemMoved: (event) -> debugger
+    orderChanged: (event) -> debugger
   Data.bindAll($scope, 'storedSequences', 'sequence', {})
+  hasSequence = ->
+    if $scope.sequence
+      return yes
+    else
+      alert 'Select or create a sequence first.'
+      return no
   $scope.add = (message_type) ->
+    # TODO: Rename to addStep
+    return unless hasSequence()
     Data.create('step',
       message_type: message_type
       sequence_id: $scope.sequence._id
@@ -16,13 +27,27 @@ controller = ($scope, Data) ->
   $scope.load = (seq) ->
     Data.loadRelations('sequence', seq._id, ['step'])
     $scope.sequence = seq
-  $scope.save = ->
-    oldSeq = _.find($scope.storedSequences, {name: $scope.sequence.name})
-    if oldSeq
-      oldSeq = $scope.sequence
-    else
-      $scope.storedSequences.push($scope.sequence)
-  $scope.copy = (obj, index) -> $scope.sequence.steps.splice((index + 1), 0, angular.copy(obj))
+  $scope.addSequence = (params = {}, makeItDefaultNow = yes) ->
+    params.name ?= 'Untitled Sequence'
+    Data
+      .create('sequence', params)
+      .then((seq) -> $scope.load(seq)) # Load child resources of the new seqnce
+      .catch((e) -> console.error(e))
+  $scope.deleteSequence = (seq) ->
+    return unless hasSequence()
+    Data
+      .destroy('sequence', seq._id)
+      .then(() -> $scope.sequence = null)
+      .catch((e) -> console.error(e))
+  $scope.saveSequence = (seq) ->
+    Data
+      .save('sequence', seq._id)
+      .then((s) -> console.log(s))
+      .catch((e) -> console.error(e))
+  $scope.copy = (obj, index) ->
+    # Let's try:
+    # Data.create('step', the_step_to_copy)
+    $scope.sequence.steps.splice((index + 1), 0, angular.copy(obj))
   $scope.remove = (index) ->
     step = $scope.sequence.steps[index]
     Data.destroy('step', step._id).catch((e) -> console.error e)

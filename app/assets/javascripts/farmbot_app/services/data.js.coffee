@@ -1,5 +1,6 @@
 # RESTful data adapter for hooking angular JS into the backend API. SEE:
 # http://angular-data.pseudobry.com/
+# TODO can I put this as a config and call DS directly?
 data = (DS) ->
   DS.defineResource
     name: "step"
@@ -18,6 +19,10 @@ data = (DS) ->
     endpoint: 'sequences',
     baseUrl: '/api',
     idAttribute: "_id"
+    serialize: (resourceName, data) ->
+      pojo = _.clone(data)
+      delete pojo.steps
+      pojo
     relations:
       hasMany:
         step:

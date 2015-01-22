@@ -48,7 +48,7 @@
 
       <div class="row">
         <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius gray" ng-click="add('move_rel')">WAITE</button>
+          <button class="tiny expand button radius gray" ng-click="add('move_rel')">WAIT</button>
         </div>
 
 
@@ -67,6 +67,12 @@
 
 
         <div class="content-wrapper">
+          <button
+            class="tiny expand button radius green"
+            ng-click="addSequence()">
+            <i class="step fi-plus size-12"></i>
+            New Sequence
+          </button>
           <div ng-repeat="seq in storedSequences track by $id(seq)">
             <button
               ng-click="load(seq)"
@@ -94,18 +100,18 @@
       <div class="small-12 columns">
         <div class="content-wrapper">
           <div class="row">
-            <div class="small-9 columns">
+            <div class="small-8 columns">
               <input id="right-label" type="text" ng-model="sequence.name">
             </div>
 
 
-            <div class="small-1 columns">
-              <i class="fa fa-circle fa-2x yellow-circle"></i>
-            </div>
-
-
             <div class="small-2 columns">
-              <button class="tiny button radius save-green" ng-click="save()">
+              <button class="tiny button radius red" ng-click="deleteSequence(sequence)">
+                Delete
+              </button>
+            </div>
+            <div class="small-2 columns">
+              <button class="tiny button radius green" ng-click="saveSequence(sequence)">
                 Save
               </button>
             </div>

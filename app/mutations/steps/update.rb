@@ -20,7 +20,7 @@ module Steps
       # Maybe:
       #    1. Create a StepValidatorFactory
       #    2. Create a SingleCommandValidator, ReadStatusValidator, etc.
-      update(step, params)
+      update_attributes(step, params)
     end
   end
 end

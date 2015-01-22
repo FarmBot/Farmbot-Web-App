@@ -22,12 +22,13 @@ module MongoidRefinements
       end
     end
 
-    # See documentation for `create()`.
-    def update(model, inputs = {})
+    # See documentation for `create()`. Does the same thing, except for updates.
+    def update_attributes(model, inputs = {})
       if model.update_attributes(inputs)
         model
       else
-        model.errors.messages
+        # TODO test this
+        add_error klass.to_s.downcase.to_sym, :invalid, model.errors.messages
       end
     end
   end

@@ -5,7 +5,7 @@ module Sequences
     required do
       model :user, class: User
       string :name
-      array :steps do
+      array :steps, default: [] do
         model :step, builder: Steps::Initialize, new_records: true
       end
     end
