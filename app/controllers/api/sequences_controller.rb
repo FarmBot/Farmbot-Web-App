@@ -9,17 +9,24 @@ module Api
     end
 
     def update
-      binding.pry
+      mutate Sequences::Update.run(params[:sequence],
+                                   user: current_user,
+                                   sequence: sequence)
     end
 
     def destroy
       # TODO: If you touch this again, add a mutation.
-      seq = Sequence.find(params[:id])
-      if (seq.user == current_user) && seq.destroy
+      if (sequence.user == current_user) && sequence.destroy
         render nothing: true
       else
         raise Errors::Forbidden, "Not your Sequence object."
       end
+    end
+
+  private
+
+    def sequence
+      @sequence ||= Sequence.find(params[:id])
     end
   end
 end
