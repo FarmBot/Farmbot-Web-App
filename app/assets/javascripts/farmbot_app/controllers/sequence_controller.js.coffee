@@ -8,6 +8,7 @@ controller = ($scope, Data) ->
 
   Data.bindAll($scope, 'storedSequences', 'sequence', {})
   $scope.add = (message_type) ->
+    # TODO: Rename to addStep
     Data.create('step',
       message_type: message_type
       sequence_id: $scope.sequence._id
@@ -16,13 +17,22 @@ controller = ($scope, Data) ->
   $scope.load = (seq) ->
     Data.loadRelations('sequence', seq._id, ['step'])
     $scope.sequence = seq
+  $scope.addSequence = (params = {}, makeItDefaultNow = yes) ->
+    params.name ?= 'Untitled Sequence'
+    Data
+      .create('sequence', params)
+      .then((seq) -> $scope.sequence = seq)
+      .catch((e) -> console.error(e))
   $scope.save = ->
     oldSeq = _.find($scope.storedSequences, {name: $scope.sequence.name})
     if oldSeq
       oldSeq = $scope.sequence
     else
       $scope.storedSequences.push($scope.sequence)
-  $scope.copy = (obj, index) -> $scope.sequence.steps.splice((index + 1), 0, angular.copy(obj))
+  $scope.copy = (obj, index) ->
+    debugger # Let's try:
+    # Data.create('step', the_step_to_copy)
+    $scope.sequence.steps.splice((index + 1), 0, angular.copy(obj))
   $scope.remove = (index) ->
     step = $scope.sequence.steps[index]
     Data.destroy('step', step._id).catch((e) -> console.error e)
