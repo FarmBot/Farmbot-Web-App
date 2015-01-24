@@ -1,12 +1,9 @@
 class DraggableSequence
   constructor: (@$document) ->
-  # template: ''
   restrict: 'A'
   scope:
     some_setting: '='
   link: (scope, element, attr) =>
-    # TODO: Use `draggable` property?
-    # https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Drag_operations
     [startX, startY, x, y] = [0, 0, 0, 0]
 
     mousemove = (event) ->
@@ -35,10 +32,6 @@ class DraggableSequence
       '$document'
       ($scope, $document) ->
     ]
-    # . . .
-  # compile: (tElement, tAttrs, transclude) ->
-  #   pre: (scope, iElement, iAttrs, controller) -> ...2
-  #   post: (scope, iElement, iAttrs, controller) -> ...
 
 angular.module("FarmBot").directive 'draggablesequence', [
   '$document'

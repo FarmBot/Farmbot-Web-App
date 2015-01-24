@@ -69,13 +69,15 @@ class DeviceService
     @send(@Command.create("read_status"), cb)
 
   togglePin: (number, cb) ->
+    #TODO Untested.
     pin = "pin#{number}"
-    if @current[pin]
+    if @current[pin] is on
       @current[pin] = off
-      @send(@Command.create("pin_off", number), cb)
+      message = {pin: pin_number, value1: 1, mode: 0}
     else
       @current[pin] = on
-      @send(@Command.create("pin_on", number), cb)
+      message = {pin: pin_number, value1: 0, mode: 0}
+    @send @Command.create("pin_write", message), cb
     console.log "Pin #{number} is now #{@current[pin]}"
 
   moveRel: (x, y, z, cb) ->

@@ -3,8 +3,7 @@ controller = ($scope, Data) ->
   nope = (e) ->
     alert 'Doh!'
     console.error e
-  #TODO: We need a way of creating a "new" sequence. If you load a sequence,
-  # there is no way to clear out of it.
+
   Data
   .findAll('sequence', {})
   .catch(nope)
@@ -20,8 +19,7 @@ controller = ($scope, Data) ->
     else
       alert 'Select or create a sequence first.'
       return no
-  $scope.add = (message_type) ->
-    # TODO: Rename to addStep
+  $scope.addStep = (message_type) ->
     return unless hasSequence()
     Data.create('step',
       message_type: message_type
