@@ -8,11 +8,12 @@ controller = ($scope, Data) ->
   .findAll('sequence', {})
   .catch(nope)
 
+  # TODO figure out why ng-sortables break if passed a null value.
   $scope.sequenceSteps ?= []
-  $scope.dragControlListeners = {}
-    # accept: (sourceItemHandleScope, destSortableScope) -> true
-    # itemMoved: (event) -> debugger
-    # orderChanged: (event) -> debugger
+  $scope.dragControlListeners = orderChanged: (event) ->
+    rank = event.dest.index
+    step = event.source.itemScope.modelValue
+    debugger
   Data.bindAll($scope, 'storedSequences', 'sequence', {})
   hasSequence = ->
     if $scope.sequence
