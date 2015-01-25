@@ -1,6 +1,5 @@
 # RESTful data adapter for hooking angular JS into the backend API. SEE:
 # http://angular-data.pseudobry.com/
-# TODO can I put this as a config and call DS directly?
 data = (DS) ->
   DS.defineResource
     name: "step"

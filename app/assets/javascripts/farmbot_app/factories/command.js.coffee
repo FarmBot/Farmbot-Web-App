@@ -24,26 +24,6 @@ class Command
         value1: arg.value1,
         mode: arg.mode,
 
-    # TODO: deprecate this method in favor of pin_write
-    pin_on: (pin_number) ->
-      message_type: "pin_on",
-      time_stamp: Date.now(),
-      command:
-        action: "PIN WRITE",
-        pin: pin_number,
-        value1: 1,
-        mode: 0,
-
-    # TODO: deprecate this method in favor of pin_write
-    pin_off: (pin_number) ->
-      message_type: "pin_off",
-      time_stamp: Date.now(),
-      command:
-        action: "PIN WRITE",
-        pin: pin_number,
-        value1: 0,
-        mode: 0,
-
     move_abs: (coords) ->
       message_type: 'move_abs'
       time_stamp: new Date()

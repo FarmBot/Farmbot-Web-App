@@ -3,16 +3,17 @@ controller = ($scope, Data) ->
   nope = (e) ->
     alert 'Doh!'
     console.error e
-  #TODO: We need a way of creating a "new" sequence. If you load a sequence,
-  # there is no way to clear out of it.
+
   Data
   .findAll('sequence', {})
   .catch(nope)
 
-  $scope.dragControlListeners =
-    accept: (sourceItemHandleScope, destSortableScope) -> true
-    itemMoved: (event) -> debugger
-    orderChanged: (event) -> debugger
+  # TODO figure out why ng-sortables break if passed a null value.
+  $scope.sequenceSteps ?= []
+  $scope.dragControlListeners = orderChanged: (event) ->
+    rank = event.dest.index
+    step = event.source.itemScope.modelValue
+    debugger
   Data.bindAll($scope, 'storedSequences', 'sequence', {})
   hasSequence = ->
     if $scope.sequence
@@ -20,8 +21,7 @@ controller = ($scope, Data) ->
     else
       alert 'Select or create a sequence first.'
       return no
-  $scope.add = (message_type) ->
-    # TODO: Rename to addStep
+  $scope.addStep = (message_type) ->
     return unless hasSequence()
     Data.create('step',
       message_type: message_type
@@ -29,8 +29,12 @@ controller = ($scope, Data) ->
     ).then((step) -> $scope.sequence.steps.push(step))
     .catch(nope)
   $scope.load = (seq) ->
-    Data.loadRelations('sequence', seq._id, ['step'])
-    $scope.sequence = seq
+    Data
+      .loadRelations('sequence', seq._id, ['step'])
+      .catch(nope)
+      .then ->
+        $scope.sequence = seq
+        $scope.sequenceSteps = $scope.sequence.steps
   $scope.addSequence = (params = {}, makeItDefaultNow = yes) ->
     params.name ?= 'Untitled Sequence'
     Data
