@@ -145,10 +145,10 @@
 
 
           <div class="row" as-sortable="dragControlListeners" ng-model="sequenceList">
-            <div ng-repeat='seq in sequence.steps track by $id(seq)' as-sortable-item>
+            <div ng-repeat='step in sequence.steps track by $id(step)' as-sortable-item>
 
               <div class="row">
-                <ng-include src="'sequence-builder/' + seq.message_type" >
+                <ng-include src="'sequence-builder/' + step.message_type" >
                 </ng-include>
               </div><div>
             </div>
@@ -161,7 +161,7 @@
 
 <div class="row">
   <div class="small-12 columns">
-    <div ng-repeat="seq in storedSequences track by $id(seq)">
+    <div ng-repeat="step in storedSequences track by $id(step)">
     </div>
   </div>
 </div>

@@ -1,10 +1,14 @@
 controller = ($scope, Data) ->
   #TODO: We really really need an error handler / reporter at this point.
+  nope = (e) ->
+    alert 'Doh!'
+    console.error e
   #TODO: We need a way of creating a "new" sequence. If you load a sequence,
   # there is no way to clear out of it.
   Data
   .findAll('sequence', {})
-  .catch (error) -> console.error error
+  .catch(nope)
+
   $scope.dragControlListeners =
     accept: (sourceItemHandleScope, destSortableScope) -> true
     itemMoved: (event) -> debugger
@@ -23,7 +27,7 @@ controller = ($scope, Data) ->
       message_type: message_type
       sequence_id: $scope.sequence._id
     ).then((step) -> $scope.sequence.steps.push(step))
-    .catch((e) -> console.error e)
+    .catch(nope)
   $scope.load = (seq) ->
     Data.loadRelations('sequence', seq._id, ['step'])
     $scope.sequence = seq
@@ -32,22 +36,28 @@ controller = ($scope, Data) ->
     Data
       .create('sequence', params)
       .then((seq) -> $scope.load(seq)) # Load child resources of the new seqnce
-      .catch((e) -> console.error(e))
+      .catch(nope)
   $scope.deleteSequence = (seq) ->
     return unless hasSequence()
     Data
       .destroy('sequence', seq._id)
       .then(() -> $scope.sequence = null)
-      .catch((e) -> console.error(e))
+      .catch(nope)
   $scope.saveSequence = (seq) ->
     Data
       .save('sequence', seq._id)
       .then((s) -> console.log(s))
-      .catch((e) -> console.error(e))
+      .catch(nope)
   $scope.copy = (obj, index) ->
-    # Let's try:
-    # Data.create('step', the_step_to_copy)
-    $scope.sequence.steps.splice((index + 1), 0, angular.copy(obj))
+    return unless hasSequence()
+    yep  = (step) -> $scope.sequence.steps.splice((index + 1), 0, step)
+    Data
+      .create('step',
+        sequence_id: $scope.sequence._id
+        message_type: obj.message_type
+        command: obj.command || {}
+      ).then(yep)
+      .catch(nope)
   $scope.remove = (index) ->
     step = $scope.sequence.steps[index]
     Data.destroy('step', step._id).catch((e) -> console.error e)
