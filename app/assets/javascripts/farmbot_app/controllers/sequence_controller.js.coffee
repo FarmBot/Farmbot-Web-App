@@ -8,10 +8,11 @@ controller = ($scope, Data) ->
   .findAll('sequence', {})
   .catch(nope)
 
-  $scope.dragControlListeners =
-    accept: (sourceItemHandleScope, destSortableScope) -> true
-    itemMoved: (event) -> debugger
-    orderChanged: (event) -> debugger
+  $scope.sequenceSteps ?= []
+  $scope.dragControlListeners = {}
+    # accept: (sourceItemHandleScope, destSortableScope) -> true
+    # itemMoved: (event) -> debugger
+    # orderChanged: (event) -> debugger
   Data.bindAll($scope, 'storedSequences', 'sequence', {})
   hasSequence = ->
     if $scope.sequence
@@ -27,8 +28,12 @@ controller = ($scope, Data) ->
     ).then((step) -> $scope.sequence.steps.push(step))
     .catch(nope)
   $scope.load = (seq) ->
-    Data.loadRelations('sequence', seq._id, ['step'])
-    $scope.sequence = seq
+    Data
+      .loadRelations('sequence', seq._id, ['step'])
+      .catch(nope)
+      .then ->
+        $scope.sequence = seq
+        $scope.sequenceSteps = $scope.sequence.steps
   $scope.addSequence = (params = {}, makeItDefaultNow = yes) ->
     params.name ?= 'Untitled Sequence'
     Data
