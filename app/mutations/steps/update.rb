@@ -6,6 +6,7 @@ module Steps
       model :step, class: Step
       hash :params do
         optional do
+          integer :position
           string :message_type, in: Step::MESSAGE_TYPES
           hash :command do
             model :*, class: Object
