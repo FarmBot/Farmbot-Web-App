@@ -165,6 +165,8 @@ GEM
     mime-types (1.25.1)
     mini_portile (0.6.0)
     minitest (5.3.5)
+    mongoid_orderable (4.1.1)
+      mongoid
     moped (2.0.0)
       bson (~> 2.2)
       connection_pool (~> 2.0)
@@ -313,6 +315,7 @@ DEPENDENCIES
   launchy
   metric_fu
   mongoid (~> 4.0.0)!
+  mongoid_orderable
   mutations
   ng-rails-csrf
   pry
