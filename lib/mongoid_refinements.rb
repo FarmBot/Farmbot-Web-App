@@ -14,7 +14,7 @@ module MongoidRefinements
     #     end # ==============================================================
     def create(klass, inputs = {})
       model = klass.new(inputs)
-      yield(model, inputs) if block_given?
+      yield(model, inputs) if block_given? && model.valid?
       if model.valid? && model.save
         model
       else

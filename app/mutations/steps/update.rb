@@ -6,6 +6,7 @@ module Steps
       model :step, class: Step
       hash :params do
         optional do
+          integer :position
           string :message_type, in: Step::MESSAGE_TYPES
           hash :command do
             model :*, class: Object
@@ -20,6 +21,7 @@ module Steps
       # Maybe:
       #    1. Create a StepValidatorFactory
       #    2. Create a SingleCommandValidator, ReadStatusValidator, etc.
+      # Or: Use inheritance and embed different classes of Command
       update_attributes(step, params)
     end
   end

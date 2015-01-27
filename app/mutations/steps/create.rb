@@ -8,6 +8,10 @@ module Steps
       model :command, class: Hash, default: {}
     end
 
+    optional do
+      integer :position
+    end
+
     def execute
       create(Step, inputs)
     end
