@@ -4,6 +4,10 @@ module Api
       render json: Sequence.where(user: current_user)
     end
 
+    def show
+      render json: sequence
+    end
+
     def create
       mutate Sequences::Create.run(params, user: current_user)
     end

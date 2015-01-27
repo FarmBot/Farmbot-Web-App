@@ -17,7 +17,7 @@ module Api
     end
 
     def update
-      mutate Steps::Update.run(params: params, step: step)
+      mutate Steps::Update.run(step_params: params[:step], step: step)
     end
 
     private

@@ -30,6 +30,7 @@ module MongoidRefinements
       else
         # TODO test this
         add_error klass.to_s.downcase.to_sym, :invalid, model.errors.messages
+        false
       end
     end
   end
