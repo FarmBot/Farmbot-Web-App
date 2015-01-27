@@ -54,12 +54,13 @@ controller = ($scope, Data) ->
       .catch(nope)
   $scope.copy = (obj, index) ->
     return unless hasSequence()
-    yep  = (step) -> $scope.sequence.steps.splice((index + 1), 0, step)
+    yep = (step) -> $scope.sequence.steps.push(step)
     Data
       .create('step',
         sequence_id: $scope.sequence._id
         message_type: obj.message_type
         command: obj.command || {}
+        position: index + 1
       ).then(yep)
       .catch(nope)
   $scope.remove = (index) ->
