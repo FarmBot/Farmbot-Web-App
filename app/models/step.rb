@@ -11,30 +11,52 @@ class Step
 
   field :command, type: Hash, default: {}
   field :position, type: Integer, default: -> do
-    (self.sequence.try(:steps) || []).count
+    steps = self.sequence.try(:steps)
+    if steps
+      steps.pluck(:position).max + 1
+    else
+      0
+    end
   end
-  # TODO : Move this into a refinement
+
+  # TODO : Move this into a refinement =========================================
   def destroy(*args)
     result = super(*args)
     self.reorder
     result
   end
 
-  def position=(*args)
-    result = super(*args)
-    insert_position(*args)
+  def set_relation(name, relation)
+    if name == 'sequence' && self.sequence.present?
+      raise 'Sequence reassignment not supported'
+    else
+      super(name, relation)
+    end
+
+  end
+
+  def position=(num)
+    result = super(num)
+    insert_position(num)
     self.position
   end
 
   def insert_position(num)
     # Sort by position, then by updated_at
-    return if sequence.try(:reload).nil?
-    steps = sequence
-              .steps
-              .where(:position.gte => num, :_id.ne => _id)
-              .order_by(:position.asc, :updated_at.desc)
-    steps.each_with_index do |step, inx|
+    next_steps.each_with_index do |step, inx|
       step[:position] = inx + num + 1
+      step.save
+    end
+  end
+
+  def next_steps
+    if sequence.try(:reload).nil?
+      Step.none
+    else
+      sequence
+        .steps
+        .where(:position.gte => self[:position], :_id.ne => _id)
+        .order_by(:position.asc)
     end
   end
 
