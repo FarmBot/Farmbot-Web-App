@@ -11,11 +11,12 @@ controller = ($scope, Data) ->
   # TODO figure out why ng-sortables breaks if passed a null value.
   $scope.sequenceSteps ?= []
   $scope.dragControlListeners = orderChanged: (event) ->
+    console.log 'DING'
     position = event.dest.index
     step = event.source.itemScope.modelValue
-    # TODO I want to do $scope.reload(step.sequence) but cant until I resolve
+    # TODO I want to do $scope.reposition(step.sequence) but cant until I resolve
     # the stack overflow issue.
-    yep = (step) -> $scope.reload($scope.sequence)
+    yep = (step) -> $scope.reposition($scope.sequenceSteps)
     # Failure to delete step.sequence results in a stack overflow :(
     # TODO Figure out why angular-data isn't doing this by default.
     # https://github.com/jmdobry/angular-data/issues/299
@@ -25,33 +26,29 @@ controller = ($scope, Data) ->
       .then(yep)
       .catch(nope)
   Data.bindAll($scope, 'storedSequences', 'sequence', {})
+
   hasSequence = ->
-    if $scope.sequence
-      return yes
-    else
-      alert 'Select or create a sequence first.'
-      return no
+    whoah = -> alert 'Select or create a sequence first.'
+    if !!$scope.sequence then yes else do whoah; no
   $scope.addStep = (message_type) ->
     return unless hasSequence()
     Data.create('step',
       message_type: message_type
       sequence_id: $scope.sequence._id
-    ).then((step) -> $scope.sequence.steps.push(step))
-    .catch(nope)
+    ).catch(nope)
+    .then (step) -> $scope.sequence.steps.push(step)
   $scope.load = (seq) ->
-    # Invalidate the cache to prevent the `position` field from going stale.
-    Data.ejectAll('step', {sequence_id: seq._id})
     Data
       .loadRelations('sequence', seq._id, ['step'])
       .catch(nope)
       .then ->
         $scope.sequence = seq
         $scope.sequenceSteps = $scope.sequence.steps
-  $scope.reload = (seq) ->
-    Data
-      .refresh('sequence', seq._id)
-      .then($scope.load)
-      .catch(nope)
+  $scope.reposition = (list) ->
+    # You're my best friend, LoDash. I love you. <3
+    sorted = _.sortBy(list, ['position', 'updated_at'])
+    _.each list, (val, index) ->
+      val.position = index
   $scope.addSequence = (params = {}, makeItDefaultNow = yes) ->
     params.name ?= 'Untitled Sequence'
     Data
@@ -62,7 +59,7 @@ controller = ($scope, Data) ->
     return unless hasSequence()
     Data
       .destroy('sequence', seq._id)
-      .then(() ->
+      .then(->
         $scope.sequence = null
         $scope.sequenceSteps = [])
       .catch(nope)
