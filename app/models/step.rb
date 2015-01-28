@@ -1,6 +1,7 @@
 class Step
   include Mongoid::Document
   include Mongoid::Orderable
+  include Mongoid::Timestamps
 
   MESSAGE_TYPES = %w(single_command read_status pin_write move_abs move_rel)
 

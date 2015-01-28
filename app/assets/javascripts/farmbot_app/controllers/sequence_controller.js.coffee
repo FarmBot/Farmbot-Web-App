@@ -11,7 +11,6 @@ controller = ($scope, Data) ->
   # TODO figure out why ng-sortables breaks if passed a null value.
   $scope.sequenceSteps ?= []
   $scope.dragControlListeners = orderChanged: (event) ->
-    console.log 'DING'
     position = event.dest.index
     step = event.source.itemScope.modelValue
     # TODO I want to do $scope.reposition(step.sequence) but cant until I resolve
@@ -36,18 +35,18 @@ controller = ($scope, Data) ->
       message_type: message_type
       sequence_id: $scope.sequence._id
     ).catch(nope)
-    .then (step) -> $scope.sequence.steps.push(step)
+    .then (step) ->
+      $scope.sequence.steps.push(step)
+      $scope.reposition($scope.sequenceSteps)
   $scope.load = (seq) ->
     Data
       .loadRelations('sequence', seq._id, ['step'])
       .catch(nope)
       .then ->
         $scope.sequence = seq
-        $scope.sequenceSteps = $scope.sequence.steps
+        $scope.sequenceSteps = $scope.sequence.steps || []
   $scope.reposition = (list) ->
-    # You're my best friend, LoDash. I love you. <3
-    sorted = _.sortBy(list, ['position', 'updated_at'])
-    _.each list, (val, index) ->
+    _.each _.sortByAll(list, ['position', 'updated_at']), (val, index) ->
       val.position = index
   $scope.addSequence = (params = {}, makeItDefaultNow = yes) ->
     params.name ?= 'Untitled Sequence'
@@ -70,19 +69,24 @@ controller = ($scope, Data) ->
       .catch(nope)
   $scope.copy = (obj, index) ->
     return unless hasSequence()
-    yep = (step) -> $scope.sequence.steps.push(step)
+    yep = (step) ->
+      $scope.sequence.steps.push(step)
+      $scope.reposition($scope.sequenceSteps)
     Data
       .create('step',
         sequence_id: $scope.sequence._id
         message_type: obj.message_type
         command: obj.command || {}
-        position: index + 1
+        position: index
       ).then(yep)
       .catch(nope)
   $scope.remove = (index) ->
     # TODO Rename to deleteStep
     step = $scope.sequence.steps[index]
-    Data.destroy('step', step._id).catch((e) -> console.error e)
+    Data
+      .destroy('step', step._id)
+      .catch((e) -> console.error e)
+      .then -> $scope.reposition($scope.sequenceSteps)
 
 # The sequence controller supports the WYSIWYG sequence editor.
 angular.module('FarmBot').controller "SequenceController", [
