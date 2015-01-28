@@ -9,6 +9,12 @@ module Helpers
   end
 
   def json
-    JSON.parse(response.body).map(&:deep_symbolize_keys!)
+    json = JSON.parse(response.body)
+
+    if json.is_a?(Array)
+      json.map(&:deep_symbolize_keys!)
+    else
+      json.deep_symbolize_keys!
+    end
   end
 end
