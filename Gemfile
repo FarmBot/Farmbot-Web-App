@@ -9,7 +9,6 @@ gem 'rails', '4.1.0'
 gem 'rails_12factor'
 gem 'ng-rails-csrf'
 gem 'mongoid', '~> 4.0.0', github: 'mongoid/mongoid'
-gem 'mongoid_orderable'
 
 #Asset stuff
 gem 'sass-rails', github: 'rails/sass-rails'

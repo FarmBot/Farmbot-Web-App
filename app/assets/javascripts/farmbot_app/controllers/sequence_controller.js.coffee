@@ -11,11 +11,11 @@ controller = ($scope, Data) ->
   # TODO figure out why ng-sortables breaks if passed a null value.
   $scope.sequenceSteps ?= []
   $scope.dragControlListeners = orderChanged: (event) ->
-    position = event.dest.index
+    position = event.dest.index + 1
     step = event.source.itemScope.modelValue
     # TODO I want to do $scope.reposition(step.sequence) but cant until I resolve
     # the stack overflow issue.
-    yep = (step) -> $scope.reposition($scope.sequenceSteps)
+    yep = (step) -> $scope.reposition($scope.sequenceSteps, step)
     # Failure to delete step.sequence results in a stack overflow :(
     # TODO Figure out why angular-data isn't doing this by default.
     # https://github.com/jmdobry/angular-data/issues/299
@@ -24,6 +24,7 @@ controller = ($scope, Data) ->
       .update('step', step._id, {position: position})
       .then(yep)
       .catch(nope)
+    true
   Data.bindAll($scope, 'storedSequences', 'sequence', {})
 
   hasSequence = ->
@@ -37,7 +38,7 @@ controller = ($scope, Data) ->
     ).catch(nope)
     .then (step) ->
       $scope.sequence.steps.push(step)
-      $scope.reposition($scope.sequenceSteps)
+      $scope.reposition($scope.sequenceSteps, step)
   $scope.load = (seq) ->
     Data
       .loadRelations('sequence', seq._id, ['step'])
@@ -45,9 +46,36 @@ controller = ($scope, Data) ->
       .then ->
         $scope.sequence = seq
         $scope.sequenceSteps = $scope.sequence.steps || []
-  $scope.reposition = (list) ->
-    _.each _.sortByAll(list, ['position', 'updated_at']), (val, index) ->
-      val.position = index
+  $scope.reposition = (list, recentlyUpdated) ->
+    _.each list, (s) ->
+      Data.refresh('step', s._id)
+
+    # All of the items behind the recentlyUpdated one
+    # bumpThese = _.filter list, (s) ->
+    #   (s isnt recentlyUpdated) and (s.position >= recentlyUpdated.position)
+    # debugger
+    # _.each bumpThese, (val, index) ->
+    #   val.position = val.position + 1
+    # _.sortByAll(list, 'position')
+    # _.each list, (val, index) -> val.position = index + 1
+
+
+
+    # sortedList = _.sortByAll(list, 'position')
+    # groupedByPosition = _.toArray(_.groupBy(sortedList, 'position'))
+    # reverseByUpdate = _.map groupedByPosition, (collection) ->
+    #   _.sortByAll(collection, 'updated_at').reverse()
+    # correctOrder = _.flatten(groupedByPosition)
+    # newList = _.map correctOrder, (step, index) ->
+    #   out = {}
+    #   out[step._id] = index + 1
+    #   out
+    # _.each $scope.sequenceSteps, (step) ->
+    #   step.position = newList[step._id]
+    # _.each $scope.sequence.steps, (step) ->
+    #   step.position = newList[step._id]
+
+
   $scope.addSequence = (params = {}, makeItDefaultNow = yes) ->
     params.name ?= 'Untitled Sequence'
     Data
@@ -71,7 +99,7 @@ controller = ($scope, Data) ->
     return unless hasSequence()
     yep = (step) ->
       $scope.sequence.steps.push(step)
-      $scope.reposition($scope.sequenceSteps)
+      $scope.reposition($scope.sequenceSteps, step)
     Data
       .create('step',
         sequence_id: $scope.sequence._id
