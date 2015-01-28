@@ -4,7 +4,7 @@ module Steps
 
     required do
       model :step, class: Step
-      hash :params do
+      hash :step_params do
         optional do
           integer :position
           string :message_type, in: Step::MESSAGE_TYPES
@@ -22,7 +22,10 @@ module Steps
       #    1. Create a StepValidatorFactory
       #    2. Create a SingleCommandValidator, ReadStatusValidator, etc.
       # Or: Use inheritance and embed different classes of Command
-      update_attributes(step, params)
+
+      # TODO move_to is possibly broke. Going to reorder on every request to stay in sync?
+      step.move_to step_params[:position] || step.position
+      update_attributes(step, step_params.except(:position))
     end
   end
 end

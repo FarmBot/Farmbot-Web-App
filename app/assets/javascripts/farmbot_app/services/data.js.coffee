@@ -6,6 +6,7 @@ data = (DS) ->
     endpoint: 'steps',
     baseUrl: '/api',
     idAttribute: "_id"
+    serialize: (resourceName, data) -> _.omit(data, 'sequence')
     relations:
       belongsTo:
         sequence:
@@ -18,10 +19,7 @@ data = (DS) ->
     endpoint: 'sequences',
     baseUrl: '/api',
     idAttribute: "_id"
-    serialize: (resourceName, data) ->
-      pojo = _.clone(data)
-      delete pojo.steps
-      pojo
+    serialize: (resourceName, data) -> _.omit(data, 'steps')
     relations:
       hasMany:
         step:

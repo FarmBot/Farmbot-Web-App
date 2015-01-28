@@ -14,11 +14,12 @@ module MongoidRefinements
     #     end # ==============================================================
     def create(klass, inputs = {})
       model = klass.new(inputs)
-      yield(model, inputs) if block_given? && model.valid?
+      yield(model, inputs) if block_given?
       if model.valid? && model.save
         model
       else
         add_error klass.to_s.downcase.to_sym, :invalid, model.errors.messages
+        false
       end
     end
 
@@ -29,6 +30,7 @@ module MongoidRefinements
       else
         # TODO test this
         add_error klass.to_s.downcase.to_sym, :invalid, model.errors.messages
+        false
       end
     end
   end

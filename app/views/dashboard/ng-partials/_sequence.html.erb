@@ -145,8 +145,9 @@
 
 
           <div class="row" as-sortable='dragControlListeners' ng-model="sequenceSteps">
-            <div ng-repeat='step in sequenceSteps track by $id(step)' >
+            <div ng-repeat='step in sequenceSteps | orderBy: "position" ' >
               <div class="row" as-sortable-item ng-model="step">
+                {{ step.position }}
                 <ng-include src="'sequence-builder/' + step.message_type">
                 </ng-include>
               </div>
