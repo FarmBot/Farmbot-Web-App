@@ -1,15 +1,11 @@
 controller = ($scope, Data) ->
-  #TODO: We really really need an error handler / reporter at this point.
-  nope = (e) ->
-    alert 'Doh!'
-    console.error e
-
-  Data
-  .findAll('sequence', {})
-  .catch(nope)
-
   # TODO figure out why ng-sortables breaks if passed a null value.
   $scope.sequenceSteps ?= []
+  #TODO: We really really need an error handler / reporter at this point.
+  nope = (e) -> alert 'Doh!'; console.error e
+  Data.findAll('sequence', {}).catch(nope)
+  Data.bindAll($scope, 'storedSequences', 'sequence', {})
+
   $scope.dragControlListeners = orderChanged: (event) ->
     position = event.dest.index
     step = event.source.itemScope.modelValue
@@ -21,8 +17,6 @@ controller = ($scope, Data) ->
       .update('step', step._id, {position: position})
       .catch(nope)
       .then (step) -> null
-    true
-  Data.bindAll($scope, 'storedSequences', 'sequence', {})
 
   hasSequence = ->
     whoah = -> alert 'Select or create a sequence first.'
@@ -36,35 +30,37 @@ controller = ($scope, Data) ->
     ).catch(nope)
     .then (step) ->
       $scope.sequence.steps.push(step)
-      $scope.reposition($scope.sequenceSteps, step)
 
   $scope.load = (seq) ->
     Data
       .loadRelations('sequence', seq._id, ['step'])
       .catch(nope)
-      .then ->
-        $scope.sequence = seq
-        $scope.sequenceSteps = $scope.sequence.steps || []
+      .then (sequence) ->
+        $scope.sequence = sequence
+        $scope.sequenceSteps = sequence.steps || []
 
-  $scope.addSequence = (params = {}, makeItDefaultNow = yes) ->
+  $scope.addSequence = (params = {}) ->
     params.name ?= 'Untitled Sequence'
     Data
       .create('sequence', params)
-      .then((seq) -> $scope.load(seq)) # Load child resources of the new seqnce
       .catch(nope)
+      .then (seq) -> $scope.load(seq) # Load child resources of the new sequence
+
   $scope.deleteSequence = (seq) ->
     return unless hasSequence()
     Data
       .destroy('sequence', seq._id)
-      .then(->
-        $scope.sequence = null
-        $scope.sequenceSteps = [])
       .catch(nope)
+      .then ->
+        $scope.sequence = null
+        $scope.sequenceSteps = []
+
   $scope.saveSequence = (seq) ->
     Data
       .save('sequence', seq._id)
       .catch(nope)
       .then((s) -> console.log(s))
+
   $scope.copy = (obj, index) ->
     return unless hasSequence()
     Data
@@ -76,11 +72,9 @@ controller = ($scope, Data) ->
       ).catch(nope) # Shouldnt angular-data auto-push new elements?
       .then (step) -> $scope.sequence.steps.push(step)
 
-  $scope.remove = (index) ->
-    # TODO Rename to deleteStep
-    step = $scope.sequence.steps[index]
+  $scope.deleteStep = (index) ->
     Data
-      .destroy('step', step._id)
+      .destroy('step', $scope.sequence.steps[index]._id)
       .catch((e) -> console.error e)
       .then (s) -> null
 

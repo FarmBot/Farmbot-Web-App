@@ -7,7 +7,6 @@ module Api
     end
 
     def show
-      `espeak "get #{step.position}"`
       render json: step
     end
 
@@ -22,7 +21,6 @@ module Api
     end
 
     def update
-      `espeak "put #{params[:step][:position] || 'none'}"`
       mutate Steps::Update.run(step_params: params[:step], step: step)
     end
 
