@@ -15,6 +15,7 @@ controller = ($scope, Data) ->
     step = event.source.itemScope.modelValue
     # TODO I want to do $scope.reposition(step.sequence) but cant until I resolve
     # the stack overflow issue.
+    console.log "Moving to #{position}"
     yep = (step) -> $scope.reposition($scope.sequenceSteps, step)
     # Failure to delete step.sequence results in a stack overflow :(
     # TODO Figure out why angular-data isn't doing this by default.

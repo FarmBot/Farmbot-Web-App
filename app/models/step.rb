@@ -22,28 +22,34 @@ class Step
 
   def move_to!(p)
     direction = (position <=> p)
-    reshuffle!
-    self.position = p
-    self.save!
+    self.update_attributes!(position: p)
     untangle!(direction)
-    reshuffle! if sequence.steps.pluck(:position).min < 0
+    reshuffle!
   end
 
   def untangle!(direction)
-    return if direction == 0
-    all_steps.each_with_index do |s, i|
-      next if s == self
-      operand    = (direction > 0) ? :+ : :-
+    puts "\n\n\n"
+    steps = all_steps
+    steps.each_with_index do |s, i|
+      operand = (direction > 0) ? :+ : :-
+      old = s.position
+      if s == self
+        puts "#{old} => #{s.position} direction: #{direction} i: #{i} operand: #{operand}."
+        next
+      end
       s.position = (s.position == self.position) ? i.send(operand, 1) : i
+      puts "#{old} => #{s.position} direction: #{direction} i: #{i} operand: #{operand}."
       s.save! if s.changed?
     end
   end
 
   def reshuffle!
+    old = all_steps.pluck(:position).sort
     all_steps.each_with_index do |step, index|
       step.position = index
       step.save! if step.changed?
     end
+    puts "#{old} => #{all_steps.pluck(:position).sort}"
   end
 
   def destroy(*args)
