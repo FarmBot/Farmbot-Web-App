@@ -20,36 +20,31 @@ class Step
     (sequence.try(:steps) || Step.none).order_by(:position.asc)
   end
 
-  def move_to!(p)
-    direction = (position <=> p)
-    self.update_attributes!(position: p)
-    untangle!(direction)
-    reshuffle!
+  def move_to!(position)
+    new_steps = all_steps.to_a
+    new_steps.delete_at(new_steps.index(self))
+    new_steps.insert(position, self)
+    new_steps.each_with_index do |step, index|
+      step.position = index
+      step.save!
+    end
   end
 
-  def untangle!(direction)
-    puts "\n\n\n"
-    steps = all_steps
-    steps.each_with_index do |s, i|
-      operand = (direction > 0) ? :+ : :-
-      old = s.position
-      if s == self
-        puts "#{old} => #{s.position} direction: #{direction} i: #{i} operand: #{operand}."
-        next
-      end
-      s.position = (s.position == self.position) ? i.send(operand, 1) : i
-      puts "#{old} => #{s.position} direction: #{direction} i: #{i} operand: #{operand}."
-      s.save! if s.changed?
+  def untangle!
+    passed_self = false
+    all_steps.each_with_index do |step, i|
+      passed_self = true && next if step == self
+      step.position = i
+      step.position += 1 if passed_self
+      step.save!
     end
   end
 
   def reshuffle!
-    old = all_steps.pluck(:position).sort
     all_steps.each_with_index do |step, index|
       step.position = index
-      step.save! if step.changed?
+      step.save!
     end
-    puts "#{old} => #{all_steps.pluck(:position).sort}"
   end
 
   def destroy(*args)

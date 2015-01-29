@@ -85,8 +85,32 @@ describe Steps::Update do
     expect(c.position).to eq(1)
     expect(a.position).to eq(2)
 
-    $lol = true
     Steps::Update.run!(step: b, step_params: {position: 2})
+    expect(c.position).to eq(0)
+    expect(a.position).to eq(1)
+    expect(b.position).to eq(2)
+
+    Steps::Update.run!(step: b, step_params: {position: 0})
+    expect(b.position).to eq(0)
+    expect(c.position).to eq(1)
+    expect(a.position).to eq(2)
+
+    Steps::Update.run!(step: a, step_params: {position: 0})
+    expect(a.position).to eq(0)
+    expect(b.position).to eq(1)
+    expect(c.position).to eq(2)
+
+    Steps::Update.run!(step: a, step_params: {position: 2})
+    expect(b.position).to eq(0)
+    expect(c.position).to eq(1)
+    expect(a.position).to eq(2)
+
+    Steps::Update.run!(step: b, step_params: {position: 2})
+    expect(c.position).to eq(0)
+    expect(a.position).to eq(1)
+    expect(b.position).to eq(2)
+
+    Steps::Update.run!(step: a, step_params: {position: 1})
     expect(c.position).to eq(0)
     expect(a.position).to eq(1)
     expect(b.position).to eq(2)
