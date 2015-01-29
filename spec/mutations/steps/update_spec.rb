@@ -23,16 +23,17 @@ describe Steps::Update do
     expect(sequence.steps.find_by(position: 2)).to eq(red)
     expect(sequence.steps.find_by(position: 3)).to eq(orange)
     expect(sequence.steps.find_by(position: 4)).to eq(green)
-    # Current order is: blue, pink, red, orange, green
+    # Current order is:
 
     # Move orange ==> pink
-    # Expected order: blue, orange, pink, red, green
-    Steps::Update.run!(step_params: {position: 2}, step: orange)
-    binding.pry
-    expect(sequence.steps.find_by(position: 1)).to eq(blue)
-    expect(sequence.steps.find_by(position: 2)).to eq(orange)
-    expect(sequence.steps.find_by(position: 3)).to eq(pink)
-    expect(sequence.steps.find_by(position: 3)).to eq(red)
+    # precondition: pink, blue, red, orange, green,
+    # postcondtion: blue, red, pink, orange, green,
+    Steps::Update.run!(step_params: {position: 2}, step: pink)
+    expect(sequence.steps.pluck(:position).sort).to eq([0,1,2,3,4])
+    expect(sequence.steps.find_by(position: 0)).to eq(blue)
+    expect(sequence.steps.find_by(position: 1)).to eq(red)
+    expect(sequence.steps.find_by(position: 2)).to eq(pink)
+    expect(sequence.steps.find_by(position: 3)).to eq(orange)
     expect(sequence.steps.find_by(position: 4)).to eq(green)
   end
 end

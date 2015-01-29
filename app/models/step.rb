@@ -20,13 +20,49 @@ class Step
   end
   validates :position, presence: true
   # TODO : Move this into a refinement =========================================
+
+  def all_steps
+    (sequence.try(:steps) || Step.none).order_by(:position.asc)
+  end
+
   def move_to!(p)
+    # TODO bound checking of p
+    puts "#{self.position} <=> #{p} = #{self.position <=> p}"
+    # TODO test these. Coverage tool might not catch a lack of coverage.
+    # p =  - 1  if p >= sequence.steps.size
+    p = 0 if p < 0
+    case self.position <=> p
+    when -1
+      move_up!(p)
+    when 0
+      reshuffle!
+    when 1
+      move_down!(p)
+    end
+  end
+
+  def move_up!(p)
     steps = all_steps
     steps.each_with_index do |step, index|
       its_me = (self == step)
-      # TODO test these. Coverage tool might not catch a lack of coverage.
-      p = steps.size - 1  if p >= sequence.steps.size
-      p = 0 if p < 0
+      if index > p
+        step.position = index
+      else
+        step.position = index - 1
+      end
+      step.position = p if its_me
+      step.save!
+    end
+  end
+
+  def reshuffle!
+    raise 'reshuffle'
+  end
+
+  def move_down!(p)
+    steps = all_steps
+    steps.each_with_index do |step, index|
+      its_me = (self == step)
       if index < p
         step.position = index
       else
@@ -35,10 +71,6 @@ class Step
       step.position = p if its_me
       step.save!
     end
-  end
-
-  def all_steps
-    (sequence.try(:steps) || Step.none).order_by(:position.asc)
   end
 
   def destroy(*args)
@@ -55,27 +87,4 @@ class Step
     end
   end
 
-  def reorder
-    all_steps.each_with_index do |step, index|
-      case index <=> position
-      when -1 # Below target
-        # Autocorrects drift
-        if step.position != index
-          warn 'How?'
-          step.position = index
-          step.save!
-        end
-      when 0 # At target
-        if step == self
-          step.position = index
-        else
-          step.position = index + 1
-        end
-        step.save!
-      when 1 # Above target
-        step.position = index + 1
-        step.save!
-      end
-    end
-  end
 end
