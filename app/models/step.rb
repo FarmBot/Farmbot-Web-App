@@ -21,33 +21,20 @@ class Step
   end
 
   def move_to!(p)
-    # TODO bound checking of p
-    puts "#{self.position} <=> #{p} = #{self.position <=> p}"
-    # TODO test these. Coverage tool might not catch a lack of coverage.
-    # p =  - 1  if p >= sequence.steps.size
-    p = 0 if p < 0
-    case self.position <=> p
-    when -1
-      move_up!(p)
-    when 0
-      reshuffle!
-    when 1
-      move_down!(p)
-    end
+    direction = (position <=> p)
+    reshuffle!
+    self.position = p
+    self.save!
+    untangle!(direction)
   end
 
-  def move_up!(p)
-    steps = all_steps
-    steps.each_with_index do |step, index|
-      its_me = (self == step)
-      if index > p
-        step.position = index
-      else
-        #TODO negative values
-        step.position = index - 1
-      end
-      step.position = p if its_me
-      step.save!
+  def untangle!(direction)
+    return if direction == 0
+    all_steps.each_with_index do |s, i|
+      next if s == self
+      operand    = (direction > 0) ? :+ : :-
+      s.position = (s.position == self.position) ? i.send(operand, 1) : i
+      s.save!
     end
   end
 
@@ -55,20 +42,6 @@ class Step
     steps = all_steps
     steps.each_with_index do |step, index|
       step.position = index
-      step.save!
-    end
-  end
-
-  def move_down!(p)
-    steps = all_steps
-    steps.each_with_index do |step, index|
-      its_me = (self == step)
-      if index < p
-        step.position = index
-      else
-        step.position = index + 1
-      end
-      step.position = p if its_me
       step.save!
     end
   end
