@@ -11,7 +11,7 @@ controller = ($scope, Data) ->
   # TODO figure out why ng-sortables breaks if passed a null value.
   $scope.sequenceSteps ?= []
   $scope.dragControlListeners = orderChanged: (event) ->
-    position = event.dest.index + 1
+    position = event.dest.index
     step = event.source.itemScope.modelValue
     # TODO I want to do $scope.reposition(step.sequence) but cant until I resolve
     # the stack overflow issue.

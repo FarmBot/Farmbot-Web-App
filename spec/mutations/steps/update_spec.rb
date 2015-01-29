@@ -36,4 +36,33 @@ describe Steps::Update do
     expect(sequence.steps.find_by(position: 3)).to eq(orange)
     expect(sequence.steps.find_by(position: 4)).to eq(green)
   end
+
+  it 'moves first to middle' do
+    sequence = Sequences::Create.run!(name: 'test', user: user)
+
+    a = Steps::Create.run!(message_type: 'pin_write',
+                          sequence: sequence,
+                          command: {name: :a})
+    b = Steps::Create.run!(message_type: 'pin_write',
+                          sequence: sequence,
+                          command: {name: :b})
+    c = Steps::Create.run!(message_type: 'pin_write',
+                          sequence: sequence,
+                          command: {name: :c})
+    expect(sequence.steps).to eq([a, b, c])
+    expect(a.position).to eq(0)
+    expect(b.position).to eq(1)
+    expect(c.position).to eq(2)
+
+    Steps::Update.run!(step: c, step_params: {position: 0})
+    expect(c.position).to eq(0)
+    expect(a.position).to eq(1)
+    expect(b.position).to eq(2)
+
+    Steps::Update.run!(step: c, step_params: {position: 1})
+    expect(a.position).to eq(0)
+    expect(c.position).to eq(1)
+    expect(b.position).to eq(2)
+
+  end
 end

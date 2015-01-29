@@ -11,7 +11,7 @@ class Step
 
   field :command, type: Hash, default: {}
   field :position, type: Integer, default: -> do
-    self.try(:sequence).try(:steps).try(:size) || 0
+    (self.try(:sequence).try(:steps).try(:size) || 1) - 1 || 0
   end
   validates :position, presence: true
   # TODO : Move this into a refinement =========================================
@@ -26,6 +26,7 @@ class Step
     self.position = p
     self.save!
     untangle!(direction)
+    reshuffle! if sequence.steps.pluck(:position).min < 0
   end
 
   def untangle!(direction)
@@ -34,15 +35,14 @@ class Step
       next if s == self
       operand    = (direction > 0) ? :+ : :-
       s.position = (s.position == self.position) ? i.send(operand, 1) : i
-      s.save!
+      s.save! if s.changed?
     end
   end
 
   def reshuffle!
-    steps = all_steps
-    steps.each_with_index do |step, index|
+    all_steps.each_with_index do |step, index|
       step.position = index
-      step.save!
+      step.save! if step.changed?
     end
   end
 
