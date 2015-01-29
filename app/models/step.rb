@@ -13,13 +13,34 @@ class Step
   field :position, type: Integer, default: -> do
     steps = self.sequence.try(:steps)
     if steps
-      steps.pluck(:position).max + 1
+      (steps.pluck(:position).max) + 1
     else
       0
     end
   end
-
+  validates :position, presence: true
   # TODO : Move this into a refinement =========================================
+  def move_to!(p)
+    steps = all_steps
+    steps.each_with_index do |step, index|
+      its_me = (self == step)
+      # TODO test these. Coverage tool might not catch a lack of coverage.
+      p = steps.size - 1  if p >= sequence.steps.size
+      p = 0 if p < 0
+      if index < p
+        step.position = index
+      else
+        step.position = index + 1
+      end
+      step.position = p if its_me
+      step.save!
+    end
+  end
+
+  def all_steps
+    (sequence.try(:steps) || Step.none).order_by(:position.asc)
+  end
+
   def destroy(*args)
     result = super(*args)
     self.reorder
@@ -32,41 +53,29 @@ class Step
     else
       super(name, relation)
     end
-
-  end
-
-  def position=(num)
-    result = super(num)
-    insert_position(num)
-    self.position
-  end
-
-  def insert_position(num)
-    # Sort by position, then by updated_at
-    next_steps.each_with_index do |step, inx|
-      step[:position] = inx + num + 1
-      step.save
-    end
-  end
-
-  def next_steps
-    if sequence.try(:reload).nil?
-      Step.none
-    else
-      sequence
-        .steps
-        .where(:position.gte => self[:position], :_id.ne => _id)
-        .order_by(:position.asc)
-    end
   end
 
   def reorder
-    # Sort by position, then by updated_at
-    return if sequence.try(:reload).nil?
-    steps = sequence.steps.order_by(:position.asc)
-    steps.each_with_index do |step, inx|
-      step[:position] = inx
-      step.save
+    all_steps.each_with_index do |step, index|
+      case index <=> position
+      when -1 # Below target
+        # Autocorrects drift
+        if step.position != index
+          warn 'How?'
+          step.position = index
+          step.save!
+        end
+      when 0 # At target
+        if step == self
+          step.position = index
+        else
+          step.position = index + 1
+        end
+        step.save!
+      when 1 # Above target
+        step.position = index + 1
+        step.save!
+      end
     end
   end
 end
