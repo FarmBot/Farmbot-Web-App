@@ -11,12 +11,7 @@ class Step
 
   field :command, type: Hash, default: {}
   field :position, type: Integer, default: -> do
-    steps = self.sequence.try(:steps)
-    if steps
-      (steps.pluck(:position).max) + 1
-    else
-      0
-    end
+    self.try(:sequence).try(:steps).try(:size) || 0
   end
   validates :position, presence: true
   # TODO : Move this into a refinement =========================================
@@ -48,6 +43,7 @@ class Step
       if index > p
         step.position = index
       else
+        #TODO negative values
         step.position = index - 1
       end
       step.position = p if its_me
@@ -56,7 +52,11 @@ class Step
   end
 
   def reshuffle!
-    raise 'reshuffle'
+    steps = all_steps
+    steps.each_with_index do |step, index|
+      step.position = index
+      step.save!
+    end
   end
 
   def move_down!(p)
@@ -75,7 +75,7 @@ class Step
 
   def destroy(*args)
     result = super(*args)
-    self.reorder
+    self.reshuffle!
     result
   end
 
