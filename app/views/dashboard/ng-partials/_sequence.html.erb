@@ -144,10 +144,10 @@
           </div>
 
 
-          <div class="row" as-sortable='dragControlListeners' ng-model="sequenceSteps">
-            <div ng-repeat='step in sequenceSteps | orderBy: "position" ' >
+          <div class="row" as-sortable='dragControlListeners' ng-model="sequenceSteps" style="border-style: dashed;">
+            <div ng-repeat='step in sequenceSteps | orderBy: "position" '>
               <div class="row" as-sortable-item ng-model="step">
-                {{ step.position }}
+                {{ step.position }} {{ step._id.substr(-6, 3) }}
                 <ng-include src="'sequence-builder/' + step.message_type">
                 </ng-include>
               </div>
