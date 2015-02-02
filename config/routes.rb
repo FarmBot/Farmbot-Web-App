@@ -4,7 +4,7 @@ Dss::Application.routes.draw do
   namespace :api, defaults: {format: :json} do
     resources :devices, only: [:index, :destroy, :create, :update]
     resources :sequences, only: [:create, :update, :destroy, :index, :show] do
-      resources :steps, only: [:create, :index, :update, :destroy]
+      resources :steps, only: [:show, :create, :index, :update, :destroy]
     end
   end
 

@@ -1,5 +1,6 @@
 module Api
   class SequencesController < Api::AbstractController
+    # TODO add user authorization maybe (privacy)
     def index
       render json: Sequence.where(user: current_user)
     end

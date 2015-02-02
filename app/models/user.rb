@@ -10,7 +10,6 @@ class User
 
   field :email, type: String, default: ""
   validates_uniqueness_of :email
-  validates_presence_of :email
 
   has_many :sequences
 

@@ -28,5 +28,16 @@ describe Api::StepsController do
       expect(response.body).to include("Can't find Step(s)")
       expect(response.body).to include('0000000000')
     end
+
+    it 'cannot delete other peoples steps' do
+      other_guy = FactoryGirl.create(:user)
+      sign_in other_guy
+      input = { sequence_id: sequence._id.to_s,
+                id: step._id.to_s }
+      unchanged = sequence.steps.count
+      delete :destroy, input
+      expect(response.status).to eq(403)
+      expect(sequence.reload.steps.count).to eq(unchanged)
+    end
   end
 end

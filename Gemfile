@@ -9,7 +9,6 @@ gem 'rails', '4.1.0'
 gem 'rails_12factor'
 gem 'ng-rails-csrf'
 gem 'mongoid', '~> 4.0.0', github: 'mongoid/mongoid'
-gem 'mongoid_orderable'
 
 #Asset stuff
 gem 'sass-rails', github: 'rails/sass-rails'
@@ -20,6 +19,7 @@ gem 'high_voltage', '~> 2.1.0'
 gem 'haml'
 gem 'rails-assets-ng-sortable'
 gem 'rails-assets-angular-data'
+gem 'rails-assets-lodash'
 
 gem 'figaro' # Store secrets the 12 factor way. TODO: Get off of this gem.
 gem 'devise', github: 'plataformatec/devise'

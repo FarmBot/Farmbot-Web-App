@@ -1,91 +1,82 @@
 controller = ($scope, Data) ->
-  #TODO: We really really need an error handler / reporter at this point.
-  nope = (e) ->
-    alert 'Doh!'
-    console.error e
-
-  Data
-  .findAll('sequence', {})
-  .catch(nope)
-
   # TODO figure out why ng-sortables breaks if passed a null value.
   $scope.sequenceSteps ?= []
+  #TODO: We really really need an error handler / reporter at this point.
+  nope = (e) -> alert 'Doh!'; console.error e
+  Data.findAll('sequence', {}).catch(nope)
+  Data.bindAll($scope, 'storedSequences', 'sequence', {})
+
   $scope.dragControlListeners = orderChanged: (event) ->
     position = event.dest.index
     step = event.source.itemScope.modelValue
-    # TODO I want to do $scope.reload(step.sequence) but cant until I resolve
-    # the stack overflow issue.
-    yep = (step) -> $scope.reload($scope.sequence)
     # Failure to delete step.sequence results in a stack overflow :(
     # TODO Figure out why angular-data isn't doing this by default.
     # https://github.com/jmdobry/angular-data/issues/299
     delete step.sequence
     Data
       .update('step', step._id, {position: position})
-      .then(yep)
       .catch(nope)
-  Data.bindAll($scope, 'storedSequences', 'sequence', {})
+      .then (step) -> null
+
   hasSequence = ->
-    if $scope.sequence
-      return yes
-    else
-      alert 'Select or create a sequence first.'
-      return no
+    whoah = -> alert 'Select or create a sequence first.'
+    if !!$scope.sequence then yes else do whoah; no
+
   $scope.addStep = (message_type) ->
     return unless hasSequence()
     Data.create('step',
       message_type: message_type
       sequence_id: $scope.sequence._id
-    ).then((step) -> $scope.sequence.steps.push(step))
-    .catch(nope)
+    ).catch(nope)
+    .then (step) ->
+      $scope.sequence.steps.push(step)
+
   $scope.load = (seq) ->
-    # Invalidate the cache to prevent the `position` field from going stale.
-    Data.ejectAll('step', {sequence_id: seq._id})
     Data
       .loadRelations('sequence', seq._id, ['step'])
       .catch(nope)
-      .then ->
-        $scope.sequence = seq
-        $scope.sequenceSteps = $scope.sequence.steps
-  $scope.reload = (seq) ->
-    Data
-      .refresh('sequence', seq._id)
-      .then($scope.load)
-      .catch(nope)
-  $scope.addSequence = (params = {}, makeItDefaultNow = yes) ->
+      .then (sequence) ->
+        $scope.sequence = sequence
+        $scope.sequenceSteps = sequence.steps || []
+
+  $scope.addSequence = (params = {}) ->
     params.name ?= 'Untitled Sequence'
     Data
       .create('sequence', params)
-      .then((seq) -> $scope.load(seq)) # Load child resources of the new seqnce
       .catch(nope)
+      .then (seq) -> $scope.load(seq) # Load child resources of the new sequence
+
   $scope.deleteSequence = (seq) ->
     return unless hasSequence()
     Data
       .destroy('sequence', seq._id)
-      .then(() ->
-        $scope.sequence = null
-        $scope.sequenceSteps = [])
       .catch(nope)
+      .then ->
+        $scope.sequence = null
+        $scope.sequenceSteps = []
+
   $scope.saveSequence = (seq) ->
     Data
       .save('sequence', seq._id)
-      .then((s) -> console.log(s))
       .catch(nope)
+      .then((s) -> console.log(s))
+
   $scope.copy = (obj, index) ->
     return unless hasSequence()
-    yep = (step) -> $scope.sequence.steps.push(step)
     Data
       .create('step',
         sequence_id: $scope.sequence._id
         message_type: obj.message_type
         command: obj.command || {}
-        position: index + 1
-      ).then(yep)
-      .catch(nope)
-  $scope.remove = (index) ->
-    # TODO Rename to deleteStep
-    step = $scope.sequence.steps[index]
-    Data.destroy('step', step._id).catch((e) -> console.error e)
+        position: index
+      ).catch(nope) # Shouldnt angular-data auto-push new elements?
+      .then (step) -> $scope.sequence.steps.push(step)
+
+  $scope.deleteStep = (index) ->
+    Data
+      .destroy('step', $scope.sequence.steps[index]._id)
+      .catch((e) -> console.error e)
+      .then (s) -> null
 
 # The sequence controller supports the WYSIWYG sequence editor.
 angular.module('FarmBot').controller "SequenceController", [

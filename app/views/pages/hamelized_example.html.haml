@@ -1,0 +1,150 @@
+.row
+  .large-4.small-12.columns
+    .row
+      .large-12.small-12.columns
+        .header-wrapper
+          %h5 Move Relative
+      .large-12.small-12.columns
+        .content-wrapper
+          %h6 Move Amount(mm)
+          .row
+            %button.x-small.button.radius Manual
+            %button.x-small.button.radius 1
+            %button.x-small.button.radius 10
+            %button.x-small.button.radius 100
+            %button.x-small.button.radius 1000
+          .row
+            .large-9.small-6.columns
+              %p
+                %span.spacing-left (X)
+            .large-3.small-6.columns
+              %p (Z)
+          .row
+            .large-9.small-6.columns
+              %span.spacing-left
+                %i.fa.fa-arrow-circle-up.fa-2x
+            .large-3.small-6.columns
+              \ 
+              %i.fa.fa-arrow-circle-up.fa-2x>
+              \ 
+          .row
+            .large-9.small-6.columns
+              %p
+                %span.spacing-right (Y)
+                = succeed "\u{a0}" do
+                  %i.fa.fa-arrow-circle-left.fa-2x
+                = succeed "\u{a0}" do
+                  %i.fa.fa-arrow-circle-down.fa-2x
+                %i.fa.fa-arrow-circle-right.fa-2x
+            .large-3.small-6.columns
+              \ 
+              %i.fa.fa-arrow-circle-down.fa-2x>
+              \ 
+          .row
+            .large-12.columns
+              %button.xx-small.button.radius.stop.expand STOP
+      .large-12.small-12.columns
+        .header-wrapper
+          %h5 Tool Control
+      .large-12.small-12.columns
+        .content-wrapper
+          .row
+            .large-6.small-6.columns
+              %label.left.inline Vacuum Pump
+            .large-6.small-6.columns
+              .switch.small.radius
+                %input#exampleRadioSwitch2{:name => "testGroup", :type => "radio"}/
+                %label{:for => "exampleRadioSwitch2"}
+          .row
+            .large-6.small-6.columns
+              %label.left.inline Water Pump
+            .large-6.small-6.columns
+              .switch.small.radius
+                %input#exampleRadioSwitch2{:name => "testGroup", :type => "radio"}/
+                %label{:for => "exampleRadioSwitch2"}
+          .row
+            .large-6.small-6.columns
+              %label.left.inline LED
+            .large-6.small-6.columns
+              .switch.small.radius
+                %input#exampleRadioSwitch2{:name => "testGroup", :type => "radio"}/
+                %label{:for => "exampleRadioSwitch2"}
+  .large-4.small-12.columns
+    .row
+      .large-12.small-12.columns
+        .header-wrapper
+          %h5 Camera 1
+      .large-12.small-12.columns
+        .flex-video
+          %iframe{:allowfullscreen => "", :frameborder => "0", :height => "315", :mozallowfullscreen => "", :src => "//www.youtube.com/embed/Qjcd4jt8eEM", :webkitallowfullscreen => "", :width => "420"}
+    .row
+      .large-12.small-12.columns
+        .header-wrapper
+          %h5 Move Absolute
+      .large-12.small-12.columns
+        .content-wrapper
+          .row
+            .large-4.small-4.columns
+              %label.left.inline.shrink Gantry(X)
+            .large-4.small-4.columns
+              %input{:placeholder => "3.124m", :type => "text"}/
+            .large-4.small-4.columns
+              %button.xx-small.expand.button.radius HOME X
+          .row
+            .large-4.small-4.columns
+              %label.left.inline.shrink Cross Slide(Y)
+            .large-4.small-4.columns
+              %input{:placeholder => "1.210m", :type => "text"}/
+            .large-4.small-4.columns
+              %button.xx-small.expand.button.radius HOME Y
+          .row
+            .large-4.small-4.columns
+              %label.left.inline.shrink Tool Mount(Z)
+            .large-4.small-4.columns
+              %input{:placeholder => "0.893m", :type => "text"}/
+            .large-4.small-4.columns
+              %button.xx-small.expand.button.radius HOME Z
+          .row
+            .large-4.small-4.columns
+              %button.xx-small.expand.button.radius.stop STOP
+            .large-4.small-4.columns
+              %button.xx-small.expand.button.radius.go GO
+            .large-4.small-4.columns
+              %button.xx-small.expand.button.radius HOME ALL
+  .large-4.small-12.columns
+    .row
+      .large-12.small-12.columns
+        .header-wrapper
+          %h5 Device Status
+      .large-12.small-12.columns
+        .content-wrapper
+          .row
+            .large-6.small-6.columns
+              %label.left.inline Current Operation
+            .large-6.small-6.columns
+              %label.left.inline Idle
+          .row
+            .large-6.small-6.columns
+              %label.left.inline Next Operation
+            .large-6.small-6.columns
+              %label.left.inline Current Operation
+          .row
+            .large-6.small-6.columns
+              %label.left.inline Gantry Position(X)
+            .large-6.small-6.columns
+              %label.left.inline 3.124 m
+          .row
+            .large-6.small-6.columns
+              %label.left.inline Cross Slide Position(Y)
+            .large-6.small-6.columns
+              %label.left.inline 1.210 m
+          .row
+            .large-6.small-6.columns
+              %label.left.inline Z-Axis Position(Z)
+            .large-6.small-6.columns
+              %label.left.inline 0.893 m
+          .row
+            .large-6.small-6.columns
+              %button.xx-small.expand.button.radius.stop STOP
+            .large-6.small-6.columns
+              %button.xx-small.expand.button.radius.restart RESTART

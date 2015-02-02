@@ -28,8 +28,9 @@ module MongoidRefinements
       if model.update_attributes(inputs)
         model
       else
-        # TODO test this
-        add_error klass.to_s.downcase.to_sym, :invalid, model.errors.messages
+        add_error model.class.to_s.downcase.to_sym,
+                  :invalid,
+                  model.errors.messages
         false
       end
     end

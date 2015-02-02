@@ -26,6 +26,6 @@ describe Steps::Create do
   it 'inserts new steps at a specified index' do
     my_params = valid_params.merge(position: 2)
     step = mutation.run!(my_params)
-    expect(sequence.steps.order_by(rank: 1).second).to eq(step)
+    expect(step.position).to eq(2)
   end
 end

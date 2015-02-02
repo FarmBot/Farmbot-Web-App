@@ -6,6 +6,10 @@ module Api
       mutate Steps::Create.run(params, sequence: sequence)
     end
 
+    def show
+      render json: step
+    end
+
     def index
       render json: sequence.steps
     end
