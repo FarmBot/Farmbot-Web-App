@@ -125,9 +125,7 @@
               </div>
             </div>
           </div>
-
-
-          <div class="row">
+          <div class="row" as-sortable='dragControlListeners' ng-model="sequenceSteps" style="padding-bottom: 100px;">
             <div class="small-4 columns">
               <label>Sequence Parameters:</label>
             </div>
@@ -141,13 +139,9 @@
             <div class="small-3 columns">
               <a class="tiny expand button radius dark-gray" href="#">ADD PARAMETER</a>
             </div>
-          </div>
 
-
-          <div class="row" as-sortable='dragControlListeners' ng-model="sequenceSteps" style="border-style: dashed;">
             <div ng-repeat='step in sequenceSteps | orderBy: "position" '>
               <div class="row" as-sortable-item ng-model="step">
-                {{ step.position }} {{ step._id.substr(-6, 3) }}
                 <ng-include src="'sequence-builder/' + step.message_type">
                 </ng-include>
               </div>

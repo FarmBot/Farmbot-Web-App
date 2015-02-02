@@ -14,7 +14,6 @@ controller = ($scope, Data) ->
       # TODO Figure out why angular-data isn't doing this by default.
       # https://github.com/jmdobry/angular-data/issues/299
       delete step.sequence
-      debugger
       Data
         .update('step', step._id, {position: position})
         .catch(nope)
