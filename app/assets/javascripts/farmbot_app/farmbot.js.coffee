@@ -14,13 +14,13 @@ app.config [
       templateUrl: "settings.html"
       controller: "SettingsController"
     ).when("/movement",
-      templateUrl: "movement.html"
+      templateUrl: "newmovement.html"
       controller: "MovementController"
     ).when("/sequence",
       templateUrl: "sequence.html"
       controller: "SequenceController"
     ).when("/newmovement",
-      templateUrl: "newmovement.html"
+      templateUrl: "movement.html"
       controller: "MovementController"
-    ).otherwise redirectTo: "/movement"
+    ).otherwise redirectTo: "/newmovement"
 ]

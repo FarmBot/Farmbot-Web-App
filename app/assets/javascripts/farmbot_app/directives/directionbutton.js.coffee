@@ -1,31 +1,36 @@
 # A button used to set integers
 directive =
-  # priority: 0
-  # templateUrl: 'directive.html'
-  # replace: false
-  # transclude: false
-  template: '<button class="tiny"><i class="{{icon}}" style="color: #fff;"></i></button>'
+  template: '<i></i>'
   restrict: 'E'
   scope:
     direction: '='
     axis:      '='
     icon:      '='
   link: (scope, el, attr) ->
-    el.on 'click', => scope.move(attr.axis, attr.direction)
+    classes =
+      x:
+        up:   'fa fa-2x fa-arrow-circle-left'
+        down: 'fa fa-2x fa-arrow-circle-right'
+      y:
+        up:   'fa fa-2x fa-arrow-circle-up'
+        down: 'fa fa-2x fa-arrow-circle-down'
+      z:
+        up:   'fa fa-2x fa-arrow-circle-up'
+        down: 'fa fa-2x fa-arrow-circle-down'
+    try
+      el.addClass(classes[attr.axis][attr.direction])
+    catch e
+      el.addClass(classes.x.up)
+      console.warn 'Malformed <directionbutton> params. Using default.'
+
+    el.on 'click', =>
+      scope.move attr.axis, (attr.direction == 'up') ? -1 : 1
   controller: ['$scope', 'Devices', ($scope, Devices) ->
     $scope.move = (axis, direction) ->
-      if direction == 'up'
-        direction = -1
-      else
-        direction = 1
-      cmd =
-        x: 0
-        y: 0
-        z: 0
+      cmd = {x: 0, y: 0, z: 0}
+      # TODO un-hardcode the 'multiplier'
       cmd[axis] = 100 * direction
-      console.log cmd
-      Devices.moveRel cmd.x, cmd.y, cmd.z, (d)->(d)
-
+      Devices.moveRel cmd.x, cmd.y, cmd.z, (d) -> (d)
   ]
     # . . .
   # compile: (tElement, tAttrs, transclude) ->
