@@ -7,6 +7,8 @@ controller = ($scope, Data) ->
   Data.bindAll($scope, 'storedSequences', 'sequence', {})
 
   $scope.dragControlListeners =
+    containment: true
+    containerPositioning: 'relative'
     orderChanged: (event) ->
       position = event.dest.index
       step = event.source.itemScope.step
