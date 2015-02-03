@@ -6,17 +6,18 @@ controller = ($scope, Data) ->
   Data.findAll('sequence', {}).catch(nope)
   Data.bindAll($scope, 'storedSequences', 'sequence', {})
 
-  $scope.dragControlListeners = orderChanged: (event) ->
-    position = event.dest.index
-    step = event.source.itemScope.modelValue
-    # Failure to delete step.sequence results in a stack overflow :(
-    # TODO Figure out why angular-data isn't doing this by default.
-    # https://github.com/jmdobry/angular-data/issues/299
-    delete step.sequence
-    Data
-      .update('step', step._id, {position: position})
-      .catch(nope)
-      .then (step) -> null
+  $scope.dragControlListeners =
+    orderChanged: (event) ->
+      position = event.dest.index
+      step = event.source.itemScope.step
+      # Failure to delete step.sequence results in a stack overflow :(
+      # TODO Figure out why angular-data isn't doing this by default.
+      # https://github.com/jmdobry/angular-data/issues/299
+      delete step.sequence
+      Data
+        .update('step', step._id, {position: position})
+        .catch(nope)
+        .then (step) -> $scope.load($scope.sequence)
 
   hasSequence = ->
     whoah = -> alert 'Select or create a sequence first.'
@@ -33,7 +34,7 @@ controller = ($scope, Data) ->
 
   $scope.load = (seq) ->
     Data
-      .loadRelations('sequence', seq._id, ['step'])
+      .loadRelations('sequence', seq._id, ['step'], bypassCache: true)
       .catch(nope)
       .then (sequence) ->
         $scope.sequence = sequence
