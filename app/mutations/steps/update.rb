@@ -24,7 +24,7 @@ module Steps
       # Or: Use inheritance and embed different classes of Command
 
       # TODO move_to is possibly broke. Going to reorder on every request to stay in sync?
-      step.move_to! step_params[:position]
+      step.move_to! step_params[:position] if step_params[:position]
       update_attributes(step, step_params.except(:position))
       step.reload
     end
