@@ -6,7 +6,7 @@
   margin-bottom: 1rem;
   padding: 1.25rem;
   background: #ffffff;
-  color: #333333;
+  color: #434343;
 }
 .header-wrapper{
   border-style: solid;
@@ -14,7 +14,7 @@
   border-color: #d8d8d8;
   margin-bottom: 0rem;
   padding: 1rem;
-  background: #333333;
+  background: #434343;
   color: #ffffff;
 }
 .header-wrapper h5{
@@ -34,55 +34,60 @@
   color: #333333;
   text-align: center;
 }
+button.tiny.expand.button.radius {
+font-weight: bold;
+text-align: left;
+padding-left: 10px;
+}
 .sized a{
   width: 100px;
 }
 .blue{
-  background-color: #9ADFF6;
-  border-right:1px solid #5BAFCB;
-  border-bottom: 1px solid #5BAFCB;
+  background-color: #A4C2F4;
+  border-right:2px solid #3C78D8;
+  border-bottom: 2px solid #3C78D8;
   color: #333;
 }
 .green{
-  background-color: #99F9AA;
-  border-right:1px solid #5FDF75;
-  border-bottom: 1px solid #5FDF75;
+  background-color: #B6D7A8;
+  border-right:2px solid #6AA84F;
+  border-bottom: 2px solid #6AA84F;
   color: #333;
 }
 .yellow{
-  background-color: #FFF69D;
-  border-right:1px solid #FFDC34;
-  border-bottom: 1px solid #FFDC34;
+  background-color: #FFE599;
+  border-right:2px solid #BF9000;
+  border-bottom: 2px solid #BF9000;
   color: #333;
 }
 .orange{
-  background-color: #FFB770;
-  border-right:1px solid #FF7F01;
-  border-bottom: 1px solid #FF7F01;
+  background-color: #F9CB9C;
+  border-right:2px solid #E69138;
+  border-bottom: 2px solid #E69138;
   color: #333;
 }
 .purple{
-  background-color: #F88EF8;
-  border-right:1px solid #A805C4;
-  border-bottom: 1px solid #A805C4;
+  background-color: #B4A7D6;
+  border-right:2px solid #674EA7;
+  border-bottom: 2px solid #674EA7;
   color: #333;
 }
 .pink{
-  background-color: #FF99D3;
-  border-right:1px solid #F31A95;
-  border-bottom: 1px solid #F31A95;
+  background-color: #D5A6BD;
+  border-right:2px solid #A64D79;
+  border-bottom: 2px solid #A64D79;
   color: #333;
 }
 .gray{
-  background-color: #D1D1D1;
-  border-right:1px solid #646062;
-  border-bottom: 1px solid #646062;
+  background-color: #CCCCCC;
+  border-right:2px solid #999999;
+  border-bottom: 2px solid #999999;
   color: #333;
 }
 .red{
-  background-color: #FF9297;
-  border-right:1px solid #FC2F39;
-  border-bottom: 1px solid #FC2F39;
+  background-color: #EA9999;
+  border-right:2px solid #E06666;
+  border-bottom: 2px solid #E06666;
   color: #333;
 }
 .save-green{
