@@ -22,5 +22,5 @@ app.config [
     ).when("/newmovement",
       templateUrl: "movement.html"
       controller: "MovementController"
-    ).otherwise redirectTo: "/newmovement"
+    ).otherwise redirectTo: "/movement"
 ]
