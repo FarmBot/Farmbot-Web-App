@@ -2,7 +2,8 @@
 
 .page-title {
 	text-align: center;
-	line-height: 8rem;
+	padding-top: 2rem;
+	padding-bottom: 1rem;
 }
 
 label {

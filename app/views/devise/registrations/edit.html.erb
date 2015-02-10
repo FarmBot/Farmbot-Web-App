@@ -1,11 +1,13 @@
 <div class="row">
-  <div class="small-12 large-12 columns">
-    <h2>Edit <%= resource_name.to_s.humanize %></h2>
+  <div class="large-8 medium-10 small-12 small-centered columns">
+    <h2 class="page-title">Edit account</h2>
+  </div>
+    <div class="large-6 medium-8 small-12 small-centered columns">
 
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
       <%= devise_error_messages! %>
 
-      <div><%= f.label :email %><br />
+      <div><%= f.label :email %>
       <%= f.email_field :email, autofocus: true %></div>
 
       <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
@@ -15,19 +17,27 @@
       <div><%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
         <%= f.password_field :password, autocomplete: "off" %></div>
 
-      <div><%= f.label :password_confirmation %><br />
+      <div><%= f.label :password_confirmation %>
         <%= f.password_field :password_confirmation, autocomplete: "off" %></div>
 
       <div><%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
         <%= f.password_field :current_password, autocomplete: "off" %></div>
 
-      <div><%= f.submit "Update" %></div>
+      <div><%= f.submit "Update Account" %></div>
     <% end %>
 
-    <h3>Cancel my account</h3>
+    </div>
+</div>
 
-    <p>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>
+<div class="row">
+  <div class="large-8 medium-10 small-12 small-centered columns">
+    <h2 class="page-title">Delete account</h2>
+  </div>
+    <div class="large-6 medium-8 small-12 small-centered columns">
+      
+      <p>Are you sure you want to delete your account? This cannot be undone and all of your data will be lost permanently!</p>
+      
+      <%= button_to "Delete account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %>
 
-    <%= link_to "Back", :back %>
   </div>
 </div>
