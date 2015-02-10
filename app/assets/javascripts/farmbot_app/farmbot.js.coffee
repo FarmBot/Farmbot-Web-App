@@ -4,7 +4,7 @@ app = angular.module('FarmBot', [
   'ngRoute'
   'ng-rails-csrf'
   'ui.sortable'
-  'angular-data.DS'
+  'js-data'
   ])
 
 app.config [
@@ -19,8 +19,11 @@ app.config [
     ).when("/sequence",
       templateUrl: "sequence.html"
       controller: "SequenceController"
+    ).when("/schedule",
+      templateUrl: "schedule.html"
+      controller: "ScheduleController"
     ).when("/newmovement",
       templateUrl: "movement.html"
       controller: "MovementController"
-    ).otherwise redirectTo: "/newmovement"
+    ).otherwise redirectTo: "/movement"
 ]
