@@ -208,11 +208,30 @@ body.ng-scope {
 background: #EEE;
 }
 
-/* SITE WIDE BUTTONS */
+/* SITE WIDE STUFF */
 
 .green-button{
+  font-size: 0.9rem;
+  float: right;
   background-color: #6AA84F;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border: none;
+  border-radius: 5px;
 }
 .red-button{
   background-color: #E06666;
+}
+
+fieldset legend {
+background: transparent;
+}
+
+fieldset {
+border: none;
 }
