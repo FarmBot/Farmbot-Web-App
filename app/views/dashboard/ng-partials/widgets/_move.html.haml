@@ -1,0 +1,37 @@
+.row
+  .small-12.columns
+    .header-wrapper
+      %h5 Move Relative
+  .small-12.columns
+    .content-wrapper
+      %h6 Move Amount(mm)
+      .row
+        %button.x-small.button.radius.gray Manual
+        %button.x-small.button.radius.gray{ng_click: 'setMultiplier(1)'} 1
+        %button.x-small.button.radius.gray{ng_click: 'setMultiplier(10)'} 10
+        %button.x-small.button.radius.gray{ng_click: 'setMultiplier(100)'} 100
+        %button.x-small.button.radius.gray{ng_click: 'setMultiplier(1000)'} 1000
+        .row
+        / sorry. #shipit
+        %table{style:'border: transparent;'}
+          %tr
+            %td
+            %td
+              %directionbutton{direction: "up", axis: "y"}
+              %td
+              %td
+              %td
+              %directionbutton{direction: "up", axis: "z"}
+            %tr{style: 'background-color: transparent !important;'}
+              %td
+              %directionbutton{direction: "up", axis: "x"}
+            %td
+              %directionbutton{direction: "down", axis: "y"}
+            %td
+              %directionbutton{direction: "down", axis: "x"}
+            %td
+            %td
+              %directionbutton{direction: "down", axis: "z"}
+        .row
+          .large-12.columns
+            %button.tiny.expand.button.radius.red STOP

@@ -1,0 +1,34 @@
+.row
+  .large-12.small-12.columns
+    .header-wrapper
+      %h5 Move Absolute
+  .large-12.small-12.columns
+    .content-wrapper
+      .row
+        .large-4.small-4.columns
+          %label.left.inline.shrink Gantry(X)
+        .large-4.small-4.columns
+          %input{:placeholder => "3.124m", :type => "text"}/
+        .large-4.small-4.columns
+          %button.xx-small.button.radius.gray HOME X
+      .row
+        .large-4.small-4.columns
+          %label.left.inline.shrink Cross Slide(Y)
+        .large-4.small-4.columns
+          %input{:placeholder => "1.210m", :type => "text"}/
+        .large-4.small-4.columns
+          %button.xx-small.button.radius.gray HOME Y
+      .row
+        .large-4.small-4.columns
+          %label.left.inline.shrink Tool Mount(Z)
+        .large-4.small-4.columns
+          %input{:placeholder => "0.893m", :type => "text"}/
+        .large-4.small-4.columns
+          %button.xx-small.button.radius.gray HOME Z
+      .row
+        .large-4.small-4.columns
+          %button.tiny.expand.button.radius.red STOP
+        .large-4.small-4.columns
+          %button.tiny.button.radius.green GO
+        .large-4.small-4.columns
+          %button.xx-small.button.radius.gray HOME ALL

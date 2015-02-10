@@ -34,6 +34,16 @@
     = render partial: "dashboard/ng-partials/widgets/schedule_sequence"
   %script{:id => "widgets/calendar", :type => "text/ng-template"}
     = render partial: "dashboard/ng-partials/widgets/calendar"
+  %script{:id => "widgets/move", :type => "text/ng-template"}
+    = render partial: "dashboard/ng-partials/widgets/move"
+  %script{:id => "widgets/move_abs", :type => "text/ng-template"}
+    = render partial: "dashboard/ng-partials/widgets/move_abs"
+  %script{:id => "widgets/camera", :type => "text/ng-template"}
+    = render partial: "dashboard/ng-partials/widgets/camera"
+  %script{:id => "widgets/tool_control", :type => "text/ng-template"}
+    = render partial: "dashboard/ng-partials/widgets/tool_control"
+  %script{:id => "widgets/device_status", :type => "text/ng-template"}
+    = render partial: "dashboard/ng-partials/widgets/device_status"
 
   %div{'ng-view' => true}
     loading...
