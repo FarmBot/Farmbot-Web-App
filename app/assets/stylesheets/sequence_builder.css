@@ -167,7 +167,7 @@ padding-left: 10px;
 .content-area{
   padding-top:15px;
 }
- 
+
 /* OTHER STUFF */
 
 .dark-gray{
@@ -204,7 +204,7 @@ span.prefix{
 
 /* SITE-WIDE BACKGROUND */
 
-body.ng-scope {
+body {
 background: #EEE;
 }
 
