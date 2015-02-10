@@ -1,6 +1,7 @@
-.large-12.small-12.columns
-  .header-wrapper
-    %h5 Tool Control
+.row
+  .large-12.small-12.columns
+    .header-wrapper
+      %h5 Tool Control
   .large-12.small-12.columns
     .content-wrapper
       .row
@@ -13,8 +14,8 @@
           %label.left.inline Water Pump
         .large-6.small-6.columns
           %togglebutton{monitor: 'devices.current.pin8'}
-          .row
-            .large-6.small-6.columns
-              %label.left.inline LED
-            .large-6.small-6.columns
-              %togglebutton{monitor: 'devices.current.pin8'}
+      .row
+        .large-6.small-6.columns
+          %label.left.inline LED
+        .large-6.small-6.columns
+          %togglebutton{monitor: 'devices.current.pin8'}
