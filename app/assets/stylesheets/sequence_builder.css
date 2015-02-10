@@ -235,3 +235,7 @@ background: transparent;
 fieldset {
 border: none;
 }
+
+.row {
+  max-width: 80rem;
+}

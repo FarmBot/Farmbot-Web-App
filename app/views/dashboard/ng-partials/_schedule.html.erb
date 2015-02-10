@@ -1,11 +1,16 @@
 <div class="row">
-  <div class="large-12 columns">
-    <h1>Placeholder for new scheduler UI</h1>
-    <h3>RORY:</h3>
-    <p>I am about to go on vacation and might be off the grid for a few days.</p>
-    <ul>
-      <li>Sequence Builder is broke because of an in-progress upgrade (sorry). The maintainer of js-data fixed a bug I found and he put the fix in the latest version.</li>
-      <li>Feel free to build out this according to that mock up, or if you prefer, I can get you something basic and you can do the fine tuning.</li>
-    </ul>
+  <div class="large-12 medium-10 small-centered columns">
+    <h2 class="page-title">Sequence Scheduler</h2>
+    <div class="large-6 columns">
+	    <h3>Widget Area 1</h3>
+	    <ng-include src="'widgets/schedule_sequence'">
+   	  </ng-include>
+	  </div>
+
+    <div class="large-6 columns">
+      <h3>Widget Area 2</h3>
+	    <ng-include src="'widgets/calendar'">
+ 	    </ng-include>
+	  </div>
   </div>
 </div>
