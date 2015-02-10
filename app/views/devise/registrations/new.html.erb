@@ -1,22 +1,24 @@
 <div class="row">
-<div class="small-12 large-12 columns">
-<h2>Sign Up</h2>
+<div class="large-8 medium-10 small-12 small-centered columns">
+<h2 class="page-title">Create your FarmBot Account</h2>
+</div>
+<div class="large-6 medium-8 small-12 small-centered columns">
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
   <%= devise_error_messages! %>
 
-  <div><%= f.label 'User Name' %><br />
-  <%= f.text_field :name %></div>
+  <div><%= f.label 'Username' %>
+  <%= f.text_field :name, autofocus: true %></div>
 
-  <div><%= f.label :email %><br />
-  <%= f.email_field :email, autofocus: true %></div>
+  <div><%= f.label :email %>
+  <%= f.email_field :email %></div>
 
-  <div><%= f.label :password %><br />
+  <div><%= f.label :password %>
     <%= f.password_field :password, autocomplete: "off" %></div>
 
-  <div><%= f.label :password_confirmation %><br />
+  <div><%= f.label :password_confirmation %>
     <%= f.password_field :password_confirmation, autocomplete: "off" %></div>
 
-  <div><%= f.submit "Sign Up" %></div>
+  <div><%= f.submit "Register" %></div>
 <% end %>
 
 <%= render "devise/shared/links" %>

@@ -1,3 +1,5 @@
+/* CSS for the sequence builder page */
+
 .content-wrapper{
   border-style: none;
   border-top-width: 0px;
@@ -165,15 +167,6 @@ padding-left: 10px;
 .content-area{
   padding-top:15px;
 }
-
-/* BUTTONS */
-
-.green-button{
-  background-color: #6AA84F;
-}
-.red-button{
-  background-color: #E06666;
-}
  
 /* OTHER STUFF */
 
@@ -209,8 +202,17 @@ span.prefix{
   font-weight: bold;
 }
 
-/* SITE-WIDE ISH */
+/* SITE-WIDE BACKGROUND */
 
 body.ng-scope {
 background: #EEE;
+}
+
+/* SITE WIDE BUTTONS */
+
+.green-button{
+  background-color: #6AA84F;
+}
+.red-button{
+  background-color: #E06666;
 }
