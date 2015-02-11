@@ -3,14 +3,12 @@
     <h2 class="page-title">Sequence Scheduler</h2>
     <div class="large-6 columns">
 	    <h3>Widget Area 1</h3>
-	    <ng-include src="'widgets/schedule_sequence'">
-   	  </ng-include>
+      <%= render partial: "dashboard/ng-partials/widgets/schedule_sequence" %>
 	  </div>
 
     <div class="large-6 columns">
       <h3>Widget Area 2</h3>
-	    <ng-include src="'widgets/calendar'">
- 	    </ng-include>
+      <%= render partial: "dashboard/ng-partials/widgets/calendar" %>
 	  </div>
   </div>
 </div>

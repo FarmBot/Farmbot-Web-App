@@ -29,25 +29,5 @@
   %script{:id => "sequence-builder/single_command", :type => "text/ng-template"}
     = render partial: "dashboard/ng-partials/sequence-builder/single_command"
 
-  / widgets ==============
-  %script{:id => "widgets/schedule_sequence", :type => "text/ng-template"}
-    = render partial: "dashboard/ng-partials/widgets/schedule_sequence"
-  %script{:id => "widgets/calendar", :type => "text/ng-template"}
-    = render partial: "dashboard/ng-partials/widgets/calendar"
-  %script{:id => "widgets/move", :type => "text/ng-template"}
-    = render partial: "dashboard/ng-partials/widgets/move"
-  %script{:id => "widgets/camera", :type => "text/ng-template"}
-    = render partial: "dashboard/ng-partials/widgets/camera"
-  %script{:id => "widgets/tool_control", :type => "text/ng-template"}
-    = render partial: "dashboard/ng-partials/widgets/tool_control"
-  %script{:id => "widgets/device_status", :type => "text/ng-template"}
-    = render partial: "dashboard/ng-partials/widgets/device_status"
-  %script{:id => "widgets/basic_operations", :type => "text/ng-template"}
-    = render partial: "dashboard/ng-partials/widgets/basic_operations"
-  %script{:id => "widgets/saved_sequences", :type => "text/ng-template"}
-    = render partial: "dashboard/ng-partials/widgets/saved_sequences"
-  %script{:id => "widgets/build_sequence", :type => "text/ng-template"}
-    = render partial: "dashboard/ng-partials/widgets/build_sequence"
-
   %div{'ng-view' => true}
     loading...

@@ -1,7 +1,7 @@
 .row
   .large-4.medium-6.small-12.columns
-    %ng-include{:src => "'widgets/move'"}
-    %ng-include{:src => "'widgets/tool_control'"}
-    %ng-include{:src => "'widgets/device_status'"}
+    %div= render partial: "dashboard/ng-partials/widgets/move"
+    %div= render partial: "dashboard/ng-partials/widgets/tool_control"
+    %div= render partial: "dashboard/ng-partials/widgets/device_status"
   .large-8.medium-6.small-12.columns
-    %ng-include{:src => "'widgets/camera'"}
+    %div= render partial: "dashboard/ng-partials/widgets/camera"
