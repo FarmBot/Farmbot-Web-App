@@ -4,7 +4,7 @@ controller = ($scope, Data) ->
   #TODO: We really really need an error handler / reporter at this point.
   nope = (e) -> alert 'Doh!'; console.error e
   Data.findAll('sequence', {}).catch(nope)
-  Data.bindAll($scope, 'storedSequences', 'sequence', {})
+  Data.bindAll 'sequence', {}, $scope, 'storedSequences'
 
   $scope.dragControlListeners =
     containment: true
@@ -31,8 +31,7 @@ controller = ($scope, Data) ->
       message_type: message_type
       sequence_id: $scope.sequence._id
     ).catch(nope)
-    .then (step) ->
-      $scope.sequence.steps.push(step)
+    .then (step) -> $scope.sequenceSteps.push(step)
 
   $scope.load = (seq) ->
     Data
@@ -72,8 +71,8 @@ controller = ($scope, Data) ->
         message_type: obj.message_type
         command: obj.command || {}
         position: index
-      ).catch(nope) # Shouldnt angular-data auto-push new elements?
-      .then (step) -> $scope.sequence.steps.push(step)
+      ).catch(nope)
+      .then (step) -> $scope.sequenceSteps.push(step)
 
   $scope.deleteStep = (index) ->
     Data
