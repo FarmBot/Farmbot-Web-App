@@ -9,14 +9,14 @@ directive =
   link: (scope, el, attr) ->
     classes =
       x:
-        up:   'fa fa-2x fa-arrow-circle-left'
-        down: 'fa fa-2x fa-arrow-circle-right'
+        up:   'fa fa-2x fa-arrow-left arrow-button radius'
+        down: 'fa fa-2x fa-arrow-right arrow-button radius'
       y:
-        up:   'fa fa-2x fa-arrow-circle-up'
-        down: 'fa fa-2x fa-arrow-circle-down'
+        up:   'fa fa-2x fa-arrow-up arrow-button radius'
+        down: 'fa fa-2x fa-arrow-down arrow-button radius'
       z:
-        up:   'fa fa-2x fa-arrow-circle-up'
-        down: 'fa fa-2x fa-arrow-circle-down'
+        up:   'fa fa-2x fa-arrow-up arrow-button radius'
+        down: 'fa fa-2x fa-arrow-down arrow-button radius'
     try
       el.addClass(classes[attr.axis][attr.direction])
     catch e
