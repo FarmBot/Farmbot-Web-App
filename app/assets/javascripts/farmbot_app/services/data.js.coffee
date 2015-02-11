@@ -1,12 +1,11 @@
-# RESTful data adapter for hooking angular JS into the backend API. SEE:
-# http://angular-data.pseudobry.com/
+# RESTful data adapter for hooking angular JS into the backend API.
+# Checkout "js-data-angular" docs for more info.
 data = (DS) ->
   DS.defineResource
     name: "step"
     endpoint: 'steps',
-    baseUrl: '/api',
+    basePath: '/api',
     idAttribute: "_id"
-    serialize: (resourceName, data) -> _.omit(data, 'sequence')
     relations:
       belongsTo:
         sequence:
@@ -17,9 +16,8 @@ data = (DS) ->
   DS.defineResource
     name: "sequence"
     endpoint: 'sequences',
-    baseUrl: '/api',
+    basePath: '/api',
     idAttribute: "_id"
-    serialize: (resourceName, data) -> _.omit(data, 'steps')
     relations:
       hasMany:
         step:
