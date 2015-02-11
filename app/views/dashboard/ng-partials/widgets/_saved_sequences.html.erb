@@ -7,7 +7,7 @@
 <div class="row">
   <div class="content-wrapper">
     <button
-      class="tiny expand button radius green"
+      class="full-width margin green left-aligned"
       ng-click="addSequence()">
       <i class="step fi-plus size-12"></i>
       New Sequence
@@ -15,7 +15,7 @@
     <div ng-repeat="seq in storedSequences track by $id(seq)">
       <button
         ng-click="load(seq)"
-        class="tiny expand button radius {{seq.color}}-block">
+        class="full-width left-aligned margin no-radius {{seq.color}}-block">
         {{seq.name}}
       </button>
     </div>
