@@ -1,0 +1,44 @@
+/* CSS for the calendar widget */
+
+.widget-contents {
+	background-color: #F3F3F3;
+}
+
+.single-day {
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
+.single-operation {
+	background-color: #FFFFFF;
+	border-bottom: 5px solid #F3F3F3;
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
+.single-operation:hover {
+	background-color: #D9D9D9;
+}
+
+.calendar-month, .calendar-date {
+	text-align: center;
+	color: #666666;
+}
+
+.calendar-date {
+	font-weight: bold;
+	font-size: 1.4rem;
+}
+
+.no-right-gutter {
+	padding-right: 0px;
+}
+
+.edit-icon {
+	text-align: right;
+	display: none;
+}
+
+.single-operation:hover .edit-icon {
+    display: inherit;
+}

@@ -1,0 +1,32 @@
+/* CSS for the new user signup page */
+
+.page-title {
+	text-align: center;
+	padding-top: 2rem;
+	padding-bottom: 1rem;
+}
+
+label {
+	font-size: 1.2rem;
+	color: #666666;
+}
+
+input[type="text"] {
+	font-size: 1.2rem;
+	height: auto;
+}
+
+input[type="submit"]{
+	font-size: 0.9rem;
+	float: right;
+	background-color: #6AA84F;
+	font-weight: bold;
+	text-transform: uppercase;
+	color: white;
+	padding-top: 7px;
+	padding-bottom: 7px;
+	padding-left: 15px;
+	padding-right: 15px;
+	border: none;
+	border-radius: 5px;
+}

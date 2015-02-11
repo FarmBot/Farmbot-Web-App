@@ -1,3 +1,5 @@
+/* CSS for the sequence builder page */
+
 .content-wrapper{
   border-style: none;
   border-top-width: 0px;
@@ -166,15 +168,6 @@ padding-left: 10px;
   padding-top:15px;
 }
 
-/* BUTTONS */
-
-.green-button{
-  background-color: #6AA84F;
-}
-.red-button{
-  background-color: #E06666;
-}
- 
 /* OTHER STUFF */
 
 .dark-gray{
@@ -209,8 +202,40 @@ span.prefix{
   font-weight: bold;
 }
 
-/* SITE-WIDE ISH */
+/* SITE-WIDE BACKGROUND */
 
-body.ng-scope {
+body {
 background: #EEE;
+}
+
+/* SITE WIDE STUFF */
+
+.green-button{
+  font-size: 0.9rem;
+  float: right;
+  background-color: #6AA84F;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border: none;
+  border-radius: 5px;
+}
+.red-button{
+  background-color: #E06666;
+}
+
+fieldset legend {
+background: transparent;
+}
+
+fieldset {
+border: none;
+}
+
+.row {
+  max-width: 80rem;
 }

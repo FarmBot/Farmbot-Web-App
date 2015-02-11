@@ -29,5 +29,11 @@
   %script{:id => "sequence-builder/single_command", :type => "text/ng-template"}
     = render partial: "dashboard/ng-partials/sequence-builder/single_command"
 
+  / widgets ==============
+  %script{:id => "widgets/schedule_sequence", :type => "text/ng-template"}
+    = render partial: "dashboard/ng-partials/widgets/schedule_sequence"
+  %script{:id => "widgets/calendar", :type => "text/ng-template"}
+    = render partial: "dashboard/ng-partials/widgets/calendar"
+
   %div{'ng-view' => true}
     loading...

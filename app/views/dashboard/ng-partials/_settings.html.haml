@@ -1,16 +1,14 @@
 .row
-  .large-12.columns
-    %h1 Manage FarmBot Device Settings
-    %h2 Word of Warning:
-    %p
-      We don't support multi-bot setups at this time (but will in the future). The system will assume that the first bot is the bot that you wish to operate. Don't add more than one bot, as this will lead to unexpected behavior.
+  .large-10.medium-10.small-12.columns.small-centered
+    %h2.page-title Manage your FarmBots
+    %p Note: We don't support multi-bot setups at this time (but will in the future). The system will assume that the first bot is the bot that you wish to operate. Don't add more than one bot, as this will lead to unexpected behavior.
     %form{ng_submit: 'createDevice()'}
       %fieldset
-        %legend FarmBot Settings
+        %h2.page-title Add a FarmBot
         .row
           .large-12.columns
-            %label Friendly Name *
-            %input{placeholder: "Farmbot 1 Behind Barn", type: "text", ng_model: 'form.name', required: true}/
+            %label FarmBot Name *
+            %input{placeholder: "Brocolli Overlord", type: "text", ng_model: 'form.name', required: true}/
         .row
           .large-6.columns
             %label Skynet UUID *
@@ -20,22 +18,22 @@
             %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'form.token', required: true}/
         .row
           .large-12.columns
-            %button.button
-              %i.fi-check{style: 'font-size: 18px;'}
-                Store Settings
-  %table
-    %thead
-      %tr
-        %th{width: '90%'} Friendly Name
-        %th{width: '5%'} Delete
-        %th{width: '5%'} Edit
-    %tbody
-      %tr{'ng-repeat' => 'device in devices.list'}
-        %td
-          {{ device.name }}
-        %td
-          %button.tiny.alert.button{'ng-click' => 'removeDevice(device)'}
-            %i.fi-x{style: 'font-size: 18px;'}
-        %td
-          %button.tiny.button{ng_click: 'selectDevice(device)'}
-            %i.fi-wrench{style: 'font-size: 18px;'}
+            %button.button.green-button
+              Add FarmBot
+    %h2.page-title My FarmBots
+    %table
+      %thead
+        %tr
+          %th{width: '90%'} FarmBot Name
+          %th{width: '5%'} Delete
+          %th{width: '5%'} Edit
+      %tbody
+        %tr{'ng-repeat' => 'device in devices.list'}
+          %td
+            {{ device.name }}
+          %td
+            %button.tiny.alert.button{'ng-click' => 'removeDevice(device)'}
+              %i.fi-x{style: 'font-size: 18px;'}
+          %td
+            %button.tiny.button{ng_click: 'selectDevice(device)'}
+              %i.fi-wrench{style: 'font-size: 18px;'}
