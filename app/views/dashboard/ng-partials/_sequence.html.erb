@@ -12,48 +12,48 @@
     <div class="content-wrapper">
       <div class="row">
         <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius blue-block" ng-click="addStep('move_abs')">MOVE ABSOLUTE</button>
+          <button class="full-width left-aligned blue-block margin no-radius" ng-click="addStep('move_abs')">MOVE ABSOLUTE</button>
         </div>
 
 
         <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius green-block" ng-click="addStep('move_rel')">MOVE RELATIVE</button>
-        </div>
-      </div>
-
-
-      <div class="row">
-        <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius orange-block" ng-click="addStep('pin_write')">WRITE PIN</button>
-        </div>
-
-
-        <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius yellow-block" ng-click="addStep('pin_read')">READ PIN</button>
+          <button class="full-width left-aligned green-block margin no-radius" ng-click="addStep('move_rel')">MOVE RELATIVE</button>
         </div>
       </div>
 
 
       <div class="row">
         <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius purple-block" ng-click="addStep('move_rel')">TAKE PICTURE</button>
+          <button class="full-width left-aligned orange-block margin no-radius" ng-click="addStep('pin_write')">WRITE PIN</button>
         </div>
 
 
         <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius pink-block" ng-click="addStep('move_rel')">IF STATEMENT</button>
+          <button class="full-width left-aligned yellow-block margin no-radius" ng-click="addStep('pin_read')">READ PIN</button>
         </div>
       </div>
 
 
       <div class="row">
         <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius gray-block" ng-click="addStep('wait')">WAIT</button>
+          <button class="full-width left-aligned purple-block margin no-radius" ng-click="addStep('move_rel')">TAKE PICTURE</button>
         </div>
 
 
         <div class="small-6 large-6 columns">
-          <button class="tiny expand button radius red-block" ng-click="addStep('send_message')">SEND MESSAGE</button>
+          <button class="full-width left-aligned pink-block margin no-radius" ng-click="addStep('move_rel')">IF STATEMENT</button>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="small-6 large-6 columns">
+          <button class="full-width left-aligned gray-block margin no-radius" ng-click="addStep('wait')">WAIT</button>
+        </div>
+
+
+        <div class="small-6 large-6 columns">
+          <button class="full-width left-aligned red-block margin no-radius" ng-click="addStep('send_message')">SEND MESSAGE</button>
         </div>
       </div>
     </div>
@@ -68,7 +68,7 @@
 
         <div class="content-wrapper">
           <button
-            class="tiny expand button radius green-button"
+            class="tiny expand button radius green"
             ng-click="addSequence()">
             <i class="step fi-plus size-12"></i>
             New Sequence
@@ -106,12 +106,12 @@
 
 
             <div class="small-2 columns">
-              <button class="tiny button radius red-button" ng-click="deleteSequence(sequence)">
+              <button class="tiny button radius red" ng-click="deleteSequence(sequence)">
                 Delete
               </button>
             </div>
             <div class="small-2 columns">
-              <button class="tiny button radius green-button" ng-click="saveSequence(sequence)">
+              <button class="tiny button radius green" ng-click="saveSequence(sequence)">
                 Save
               </button>
             </div>
