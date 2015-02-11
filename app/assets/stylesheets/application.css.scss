@@ -12,11 +12,12 @@
  *= require font-awesome
  *= require_tree ./foundation/
  *= require_tree ./foundation-icons/
- *= require_tree ./farmbot_app/
  *= require manual_control
  *= require sequence_builder
  *= require ng-sortable
  *= require help_we_need_a_designer
  *= require new_user
  *= require calendar_widget
+ *= require move_widget
+ *= require dashboard
  */

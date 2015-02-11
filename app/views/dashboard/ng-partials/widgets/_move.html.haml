@@ -1,0 +1,55 @@
+.row
+  .small-12.columns
+    .header-wrapper
+      %h5 Move
+  .small-12.columns
+    .content-wrapper
+      %h6.control-title Move Amount (mm)
+      .row
+        %button.move-amount.no-radius.leftmost{ng_click: 'setMultiplier(1)'} 1
+        %button.move-amount.no-radius{ng_click: 'setMultiplier(10)'} 10
+        %button.move-amount.no-radius{ng_click: 'setMultiplier(100)'} 100
+        %button.move-amount.no-radius.rightmost{ng_click: 'setMultiplier(1000)'} 1000
+        .row.text-center
+          .small-9.columns
+            %directionbutton{direction: "up", axis: "y"}
+          .small-3.columns
+            %directionbutton{direction: "up", axis: "z"}
+        .row.text-center
+          .small-3.columns
+            %directionbutton{direction: "up", axis: "x"}
+          .small-3.columns
+            %directionbutton{direction: "down", axis: "y"}
+          .small-3.columns
+            %directionbutton{direction: "down", axis: "x"}
+          .small-3.columns
+            %directionbutton{direction: "down", axis: "z"}
+
+        .row
+          .small-4.columns
+            %div Gantry (X)
+          .small-4.columns
+            %input{:placeholder => "3.124m", :type => "text"}/
+          .small-4.columns
+            %button.full-width.gray HOME X
+        .row
+          .small-4.columns
+            %div Cross-Slide (Y)
+          .small-4.columns
+            %input{:placeholder => "1.210m", :type => "text"}/
+          .small-4.columns
+            %button.full-width.gray HOME Y
+        .row
+          .small-4.columns
+            %div Z-Axis (Z)
+          .small-4.columns
+            %input{:placeholder => "0.893m", :type => "text"}/
+          .small-4.columns
+            %button.full-width.gray HOME Z
+        .row
+          .small-3.columns
+            %button.full-width.red STOP
+          .small-5.columns
+            %button.full-width.green GO TO POSITION
+          .small-4.columns
+            %button.full-width.gray HOME ALL

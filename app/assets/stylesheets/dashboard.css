@@ -1,0 +1,82 @@
+/* SITE-WIDE BACKGROUND */
+
+body {
+background: #EEE;
+}
+
+/* SITE WIDE STUFF */
+
+.control-title{
+  font-weight: bold;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+button{
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: bold;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border: none;
+  border-radius: 5px;
+}
+
+.no-radius{
+  border-radius: 0px;
+}
+
+.radius{
+  border-radius: 5px;
+}
+
+.left-aligned {
+text-align: left;
+padding-left: 15px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+button.green{
+  float: right;
+  background-color: #6AA84F;
+  color: white;
+  font-weight: bold;
+
+}
+button.red{
+  background-color: #E06666;]
+  float: right;
+  color: white;
+  font-weight: bold;
+}
+button.gray{
+  background-color: #666666;]
+  float: right;
+  color: white;
+  font-weight: bold;
+}
+button.yellow{
+  background-color: #FFD966;]
+  float: right;
+  color: #666666;
+  font-weight: bold;
+}
+
+
+fieldset legend {
+background: transparent;
+}
+
+fieldset {
+border: none;
+}
+
+.row {
+  max-width: 80rem;
+}
