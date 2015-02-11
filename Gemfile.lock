@@ -326,10 +326,10 @@ DEPENDENCIES
   ng-rails-csrf
   pry
   rails (= 4.1.0)
-  rails-assets-js-data!
-  rails-assets-js-data-angular!
-  rails-assets-lodash!
-  rails-assets-ng-sortable!
+  rails-assets-js-data
+  rails-assets-js-data-angular
+  rails-assets-lodash
+  rails-assets-ng-sortable
   rails_12factor
   rspec
   rspec-rails
