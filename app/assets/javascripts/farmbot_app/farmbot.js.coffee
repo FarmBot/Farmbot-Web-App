@@ -10,9 +10,9 @@ app = angular.module('FarmBot', [
 app.config [
   "$routeProvider"
   ($routeProvider) ->
-    $routeProvider.when("/settings",
-      templateUrl: "settings.html"
-      controller: "SettingsController"
+    $routeProvider.when("/devices",
+      templateUrl: "devices.html"
+      controller: "DevicesController"
     ).when("/movement",
       templateUrl: "newmovement.html"
       controller: "MovementController"

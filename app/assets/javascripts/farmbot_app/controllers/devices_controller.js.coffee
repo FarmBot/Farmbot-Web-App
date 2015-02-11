@@ -13,4 +13,4 @@ controller = ($scope, Devices) ->
   $scope.removeDevice = (device) -> Devices.remove(device) and $scope.form = {}
 
 
-app.controller "SettingsController", ['$scope', 'Devices', controller]
+app.controller "DevicesController", ['$scope', 'Devices', controller]
