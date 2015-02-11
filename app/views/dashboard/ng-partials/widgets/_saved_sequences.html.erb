@@ -1,0 +1,24 @@
+<div class="row">
+  <div class="small-12 columns">
+    <div class="header-wrapper">
+      <h5>Saved Sequences</h5>
+    </div>
+
+
+    <div class="content-wrapper">
+      <button
+        class="tiny expand button radius green"
+        ng-click="addSequence()">
+        <i class="step fi-plus size-12"></i>
+        New Sequence
+      </button>
+      <div ng-repeat="seq in storedSequences track by $id(seq)">
+        <button
+          ng-click="load(seq)"
+          class="tiny expand button radius {{seq.color}}-block">
+          {{seq.name}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

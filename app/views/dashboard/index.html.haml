@@ -42,6 +42,10 @@
     = render partial: "dashboard/ng-partials/widgets/tool_control"
   %script{:id => "widgets/device_status", :type => "text/ng-template"}
     = render partial: "dashboard/ng-partials/widgets/device_status"
+  %script{:id => "widgets/basic_operations", :type => "text/ng-template"}
+    = render partial: "dashboard/ng-partials/widgets/basic_operations"
+  %script{:id => "widgets/saved_sequences", :type => "text/ng-template"}
+    = render partial: "dashboard/ng-partials/widgets/saved_sequences"
 
   %div{'ng-view' => true}
     loading...
