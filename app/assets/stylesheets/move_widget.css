@@ -1,1 +1,45 @@
 /* CSS for the movement widget */
+
+button.move-amount{
+  background-color: transparent;
+  font-weight: bold;
+  border: 2px solid #666;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0px;
+  padding-right: 0px;
+  text-align: center;
+  width: 25%;
+  margin: 0px;
+  float: left;
+}
+
+button.move-amount:hover{
+  background-color: #D9D9D9;
+  color: #434343
+}
+
+button.move-amount:focus{
+  background-color: #666666;
+  color: #FFFFFF;
+  border-color: inherit;
+}
+
+button.move-amount:nth-child(n+2) {
+    border-left: 0px;
+}
+
+button.move-amount.leftmost{
+  border-bottom-left-radius: 7px;
+  border-top-left-radius: 7px;
+}
+
+button.move-amount.rightmost{
+  border-bottom-right-radius: 7px;
+  border-top-right-radius: 7px;
+}
+
+.fa.fa-2x{
+  font-size: 2.5rem;
+  border-radius: 0px;
+}
