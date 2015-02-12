@@ -1,6 +1,9 @@
+class NullSequence
+  _id:   null
+  steps: []
+
 controller = ($scope, Data) ->
-  # TODO figure out why ng-sortables breaks if passed a null value.
-  $scope.sequenceSteps ?= []
+  $scope.sequence = new NullSequence
   #TODO: We really really need an error handler / reporter at this point.
   nope = (e) -> alert 'Doh!'; console.error e
   Data.findAll('sequence', {}).catch(nope)
@@ -23,7 +26,7 @@ controller = ($scope, Data) ->
 
   hasSequence = ->
     whoah = -> alert 'Select or create a sequence first.'
-    if !!$scope.sequence then yes else do whoah; no
+    if !!$scope.sequence._id then yes else do whoah; no
 
   $scope.addStep = (message_type) ->
     return unless hasSequence()
@@ -31,15 +34,12 @@ controller = ($scope, Data) ->
       message_type: message_type
       sequence_id: $scope.sequence._id
     ).catch(nope)
-    .then (step) -> $scope.sequenceSteps.push(step)
 
   $scope.load = (seq) ->
     Data
       .loadRelations('sequence', seq._id, ['step'], bypassCache: true)
       .catch(nope)
-      .then (sequence) ->
-        $scope.sequence = sequence
-        $scope.sequenceSteps = sequence.steps || []
+      .then (sequence) -> $scope.sequence = sequence
 
   $scope.addSequence = (params = {}) ->
     params.name ?= 'Untitled Sequence'
@@ -53,15 +53,12 @@ controller = ($scope, Data) ->
     Data
       .destroy('sequence', seq._id)
       .catch(nope)
-      .then ->
-        $scope.sequence = null
-        $scope.sequenceSteps = []
+      .then -> $scope.sequence = new NullSequence
 
   $scope.saveSequence = (seq) ->
     Data
       .save('sequence', seq._id)
       .catch(nope)
-      .then((s) -> console.log(s))
 
   $scope.copy = (obj, index) ->
     return unless hasSequence()
@@ -72,13 +69,11 @@ controller = ($scope, Data) ->
         command: obj.command || {}
         position: index
       ).catch(nope)
-      .then (step) -> $scope.sequenceSteps.push(step)
 
   $scope.deleteStep = (index) ->
     Data
       .destroy('step', $scope.sequence.steps[index]._id)
       .catch((e) -> console.error e)
-      .then (s) -> null
 
 # The sequence controller supports the WYSIWYG sequence editor.
 angular.module('FarmBot').controller "SequenceController", [
