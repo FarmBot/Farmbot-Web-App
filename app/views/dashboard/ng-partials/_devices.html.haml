@@ -31,7 +31,7 @@
             %th{width: '5%'} Delete
             %th{width: '5%'} Edit
         %tbody
-          %tr{'ng-repeat' => 'device in devices.list'}
+          %tr.device-row{'ng-repeat' => 'device in devices.list'}
             %td
               {{ device.name }}
             %td

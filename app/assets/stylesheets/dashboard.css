@@ -6,9 +6,12 @@ background: #EEE;
 
 /* SITE WIDE STUFF */
 
+.padding-bottom{
+  padding-bottom: 15px
+}
+
 .control-title{
   font-weight: bold;
-  text-align: center;
   font-size: 0.8rem;
 }
 
@@ -79,4 +82,10 @@ border: none;
 
 .row {
   max-width: 80rem;
+}
+
+/* DEVICE SETTINGS PAGE */
+
+.device-row:hover {
+  background-color: #D9D9D9;
 }
