@@ -27,7 +27,7 @@ button{
   border-radius: 5px;
 }
 
-button:active, input:active{
+.button-like:active{
   border-bottom-width: 1px!important;
   transform: translateY(2px);
   margin-top: 2px;

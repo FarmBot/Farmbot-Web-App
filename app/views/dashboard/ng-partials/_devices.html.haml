@@ -21,7 +21,7 @@
               %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'form.token', required: true}/
           .row
             .large-12.columns
-              %button.green
+              %button.green.button-like
                 Add FarmBot
       %h2.page-title My FarmBots
       %table
@@ -35,8 +35,8 @@
             %td
               {{ device.name }}
             %td
-              %button.red{'ng-click' => 'removeDevice(device)'}
+              %button.red.button-like{'ng-click' => 'removeDevice(device)'}
                 %i.fi-x{style: 'font-size: 18px;'}
             %td
-              %button.gray{ng_click: 'selectDevice(device)'}
+              %button.gray.button-like{ng_click: 'selectDevice(device)'}
                 %i.fi-wrench{style: 'font-size: 18px;'}
