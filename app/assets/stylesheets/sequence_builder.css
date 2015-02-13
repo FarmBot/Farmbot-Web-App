@@ -51,104 +51,128 @@
   margin: 0px;
   line-height: normal;
 }
+
 .blue-header{
   background-color: #A4C2F4;
   color: #333;
 }
+
 .blue-content{
   background-color: #C9DAF8;
 }
+
 .blue-block{
   background-color: #A4C2F4;
   border-right: 2px solid #3C78D8;
   border-bottom: 2px solid #3C78D8;
   color: #333;
 }
+
 .green-header{
   background-color: #B6D7A8;
   color:#333;
 }
+
 .green-content{
   background-color: #D9EAD3;
 }
+
 .green-block{
   background-color: #B6D7A8;
   border-right: 2px solid #6AA84F;
   border-bottom: 2px solid #6AA84F;
   color: #333;
 }
+
 .yellow-header{
   background-color: #FFE599;
   color:#333;
 }
+
 .yellow-content{
   background-color: #FFF2CC;
 }
+
 .yellow-block{
   background-color: #FFE599;
   border-right: 2px solid #BF9000;
   border-bottom: 2px solid #BF9000;
   color: #333;
 }
+
 .orange-header{
   background-color: #F9CB9C;
   color:#333;
 }
+
 .orange-content{
   background-color: #FCE5CD;
 }
+
 .orange-block{
   background-color: #F9CB9C;
   border-right: 2px solid #E69138;
   border-bottom: 2px solid #E69138;
   color: #333;
 }
+
 .purple-header{
   background-color: #B4A7D6;
   color:#333;
 }
+
 .purple-content{
   background-color: #D9D2E9;
 }
+
 .purple-block{
   background-color: #B4A7D6;
   border-right: 2px solid #674EA7;
   border-bottom: 2px solid #674EA7;
   color: #333;
 }
+
 .pink-header{
   background-color: #D5A6BD;
   color:#333;
 }
+
 .pink-content{
   background-color: #EAD1DC;
 }
+
 .pink-block{
   background-color: #D5A6BD;
   border-right: 2px solid #A64D79;
   border-bottom: 2px solid #A64D79;
   color: #333;
 }
+
 .gray-header{
   background-color: #B7B7B7;
   color:#333;
 }
+
 .gray-content{
   background-color: #D9D9D9;
 }
+
 .gray-block{
   background-color: #B7B7B7;
   border-right: 2px solid #999999;
   border-bottom: 2px solid #999999;
   color: #333;
 }
+
 .red-header{
   background-color: #EA9999;
   color:#333;
 }
+
 .red-content{
   background-color: #F4CCCC;
 }
+
 .red-block{
   background-color: #EA9999;
   border-right: 2px solid #E06666;
