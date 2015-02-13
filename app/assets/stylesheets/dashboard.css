@@ -51,11 +51,6 @@ button {
   border-radius: 5px;
 }
 
-.left-aligned {
-text-align: left;
-padding-left: 15px;
-}
-
 .full-width {
   width: 100%;
 }
