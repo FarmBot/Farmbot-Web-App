@@ -163,6 +163,10 @@
   padding-top:15px;
 }
 
+i.fa.fa-bars.right {
+line-height: inherit;
+}
+
 /* OTHER STUFF */
 
 .dark-gray{
