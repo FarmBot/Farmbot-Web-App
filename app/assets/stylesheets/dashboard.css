@@ -24,8 +24,13 @@ button{
   padding-bottom: 7px;
   padding-left: 15px;
   padding-right: 15px;
-  border: none;
   border-radius: 5px;
+}
+
+button:active, input:active{
+  border-bottom-width: 1px!important;
+  transform: translateY(2px);
+  margin-top: 2px;
 }
 
 .no-radius{
@@ -45,32 +50,34 @@ padding-left: 15px;
   width: 100%;
 }
 
-button.green{
+button.green, input.green{
   float: right;
   background-color: #6AA84F;
   color: white;
   font-weight: bold;
-
+  border-bottom: 3px solid #38761D;
 }
-button.red{
-  background-color: #E06666;]
+button.red, input.red{
+  background-color: #E06666;
   float: right;
   color: white;
   font-weight: bold;
+  border-bottom: 3px solid #990000;
 }
 button.gray{
-  background-color: #666666;]
+  background-color: #666666;
   float: right;
   color: white;
   font-weight: bold;
+  border-bottom: 3px solid #333333;
 }
 button.yellow{
-  background-color: #FFD966;]
+  background-color: #FFD966;
   float: right;
   color: #666666;
   font-weight: bold;
+  border-bottom: 3px solid #BF9000;
 }
-
 
 fieldset legend {
 background: transparent;

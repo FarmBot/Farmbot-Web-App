@@ -12,6 +12,7 @@ button.move-amount{
   width: 25%;
   margin: 0px;
   float: left;
+  transition: 0s;
 }
 
 button.move-amount:hover{
@@ -47,10 +48,16 @@ button.move-amount.rightmost{
   padding: 15px;
   font-size: 20px;
   text-align: center;
+  border-bottom: 3px solid #333333;
+}
+
+.arrow-button:active{
+  border-bottom-width: 1px!important;
+  transform: translateY(2px);
 }
 
 .transparent-table tr:nth-of-type(even) {
-    background-color: transparent !important;
+  background-color: transparent !important;
 }
 
 .jog-table{
