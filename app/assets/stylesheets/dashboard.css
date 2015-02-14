@@ -1,7 +1,7 @@
 /* SITE-WIDE BACKGROUND */
 
 body {
-background: #EEE;
+background: #ECECEC;
 }
 
 /* SITE WIDE STUFF */
@@ -23,6 +23,10 @@ background: #EEE;
 .control-title {
   font-weight: bold;
   font-size: 0.8rem;
+}
+
+.no-right-gutter{
+  padding-right: 0px;
 }
 
 button {

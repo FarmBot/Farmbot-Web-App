@@ -1,44 +1,64 @@
 /* CSS for the calendar widget */
 
-.widget-contents {
+.content-wrapper.calendar-contents{
 	background-color: #F3F3F3;
 }
 
-.single-day {
-	padding-top: 15px;
-	padding-bottom: 15px;
+.row.day{
+	margin-bottom: 20px;
 }
 
-.single-operation {
+.event{
 	background-color: #FFFFFF;
-	border-bottom: 5px solid #F3F3F3;
 	padding-top: 15px;
 	padding-bottom: 15px;
+	margin-bottom: 2px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.single-operation:hover {
-	background-color: #D9D9D9;
+.event.past{
+	background-color: #F1F1F1;
+	color: #CCCCCC;
 }
 
-.calendar-month, .calendar-date {
+.event.next{
+  margin-top: -2px;
+  border-top: 4px solid #6AA84F;
+}
+
+.event:hover{
+	background-color: #EEEEEE;
+	color: black;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: all 0.2s ease-out;
+}
+
+.event.past:hover{
+	color: #777;
+}
+
+.calendar-month, .calendar-date{
 	text-align: center;
 	color: #666666;
+	margin-bottom: 0px;
 }
 
-.calendar-date {
+.calendar-date{
 	font-weight: bold;
 	font-size: 1.4rem;
 }
 
-.no-right-gutter {
-	padding-right: 0px;
-}
-
-.edit-icon {
-	text-align: right;
+.edit-icon{
+	float: right;
 	display: none;
 }
 
-.single-operation:hover .edit-icon {
+.event:hover .edit-icon{
     display: inherit;
+}
+
+.event-icon, .event-time{
+	margin-right: 20px;
+	float: left;
 }
