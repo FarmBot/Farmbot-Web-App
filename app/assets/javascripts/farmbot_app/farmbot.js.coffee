@@ -25,5 +25,8 @@ app.config [
     ).when("/newmovement",
       templateUrl: "movement.html"
       controller: "MovementController"
+    ).when("/farm-designer",
+      templateUrl: "farm-designer.html"
+      controller: "DesignController"
     ).otherwise redirectTo: "/movement"
 ]

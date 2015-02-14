@@ -1,55 +1,59 @@
 <div class="row">
-  <div class="small-12 columns header-wrapper">
-    <h5>Basic Operations</h5>
+  <div class="small-12 columns">
+    <div class="header-wrapper">
+      <h5>Basic Operations</h5>
+    </div>
   </div>
 </div>
 
 <div class="row">
-  <div class="content-wrapper">
-    <div class="row">
-      <div class="small-6 large-6 columns">
-        <button class="full-width text-left blue-block no-radius block" ng-click="addStep('move_abs')">MOVE ABSOLUTE<i class="fa fa-bars right"></i></button>
+  <div class="small-12 columns">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="small-6 large-6 columns">
+          <button class="full-width text-left blue-block no-radius block" ng-click="addStep('move_abs')">MOVE ABSOLUTE<i class="fa fa-bars right"></i></button>
+        </div>
+
+
+        <div class="small-6 large-6 columns">
+          <button class="full-width text-left green-block no-radius block" ng-click="addStep('move_rel')">MOVE RELATIVE<i class="fa fa-bars right"></i></button>
+        </div>
       </div>
 
 
-      <div class="small-6 large-6 columns">
-        <button class="full-width text-left green-block no-radius block" ng-click="addStep('move_rel')">MOVE RELATIVE<i class="fa fa-bars right"></i></button>
-      </div>
-    </div>
+      <div class="row">
+        <div class="small-6 large-6 columns">
+          <button class="full-width text-left orange-block no-radius block" ng-click="addStep('pin_write')">WRITE PIN<i class="fa fa-bars right"></i></button>
+        </div>
 
 
-    <div class="row">
-      <div class="small-6 large-6 columns">
-        <button class="full-width text-left orange-block no-radius block" ng-click="addStep('pin_write')">WRITE PIN<i class="fa fa-bars right"></i></button>
-      </div>
-
-
-      <div class="small-6 large-6 columns">
-        <button class="full-width text-left yellow-block no-radius block" ng-click="addStep('pin_read')">READ PIN<i class="fa fa-bars right"></i></button>
-      </div>
-    </div>
-
-
-    <div class="row">
-      <div class="small-6 large-6 columns">
-        <button class="full-width text-left purple-block no-radius block" ng-click="addStep('move_rel')">TAKE PICTURE<i class="fa fa-bars right"></i></button>
+        <div class="small-6 large-6 columns">
+          <button class="full-width text-left yellow-block no-radius block" ng-click="addStep('pin_read')">READ PIN<i class="fa fa-bars right"></i></button>
+        </div>
       </div>
 
 
-      <div class="small-6 large-6 columns">
-        <button class="full-width text-left pink-block no-radius block" ng-click="addStep('move_rel')">IF STATEMENT<i class="fa fa-bars right"></i></button>
+      <div class="row">
+        <div class="small-6 large-6 columns">
+          <button class="full-width text-left purple-block no-radius block" ng-click="addStep('move_rel')">TAKE PICTURE<i class="fa fa-bars right"></i></button>
+        </div>
+
+
+        <div class="small-6 large-6 columns">
+          <button class="full-width text-left pink-block no-radius block" ng-click="addStep('move_rel')">IF STATEMENT<i class="fa fa-bars right"></i></button>
+        </div>
       </div>
-    </div>
 
 
-    <div class="row">
-      <div class="small-6 large-6 columns">
-        <button class="full-width text-left gray-block no-radius block" ng-click="addStep('wait')">WAIT<i class="fa fa-bars right"></i></button>
-      </div>
+      <div class="row">
+        <div class="small-6 large-6 columns">
+          <button class="full-width text-left gray-block no-radius block" ng-click="addStep('wait')">WAIT<i class="fa fa-bars right"></i></button>
+        </div>
 
 
-      <div class="small-6 large-6 columns">
-        <button class="full-width text-left red-block no-radius block" ng-click="addStep('send_message')">SEND MESSAGE<i class="fa fa-bars right"></i></button>
+        <div class="small-6 large-6 columns">
+          <button class="full-width text-left red-block no-radius block" ng-click="addStep('send_message')">SEND MESSAGE<i class="fa fa-bars right"></i></button>
+        </div>
       </div>
     </div>
   </div>

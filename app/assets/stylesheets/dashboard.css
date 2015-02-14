@@ -16,6 +16,14 @@ background: #ECECEC;
   user-select: none;
 }
 
+.content{
+  margin-top: 20px;
+}
+
+div.content-wrapper{
+  margin-bottom: 20px;
+}
+
 .padding-bottom {
   padding-bottom: 15px
 }
@@ -97,7 +105,7 @@ border: none;
 }
 
 .row {
-  max-width: 80rem;
+  max-width: 120rem;
 }
 
 /* DEVICE SETTINGS PAGE */
