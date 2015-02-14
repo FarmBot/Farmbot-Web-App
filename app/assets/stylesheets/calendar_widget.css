@@ -50,7 +50,7 @@
 }
 
 .edit-icon{
-	float: right;
+	float: left;
 	display: none;
 }
 
@@ -58,7 +58,7 @@
     display: inherit;
 }
 
-.event-icon, .event-time{
+.event-icon, .event-time, .event-title{
 	margin-right: 20px;
 	float: left;
 }
