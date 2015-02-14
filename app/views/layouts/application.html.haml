@@ -14,10 +14,12 @@
           %h1
             = link_to "Farmbot", root_path
         %li.toggle-topbar.menu-icon
-          %a{href: "#"} Menu
+          %a{href: ""} Menu
       %section.top-bar-section
         %ul.left
           -if current_user
+            %li
+              = link_to 'Farm Designer', '/dashboard#/farm-designer'
             %li
               = link_to 'Controls', '/dashboard#/movement'
             %li
@@ -31,7 +33,7 @@
         %ul.right
           - if current_user
             %li.has-dropdown.not-click
-              %a{href: "#"}
+              %a{href: ""}
                 = "Welcome #{current_user.name}!"
               %ul.dropdown
                 %li

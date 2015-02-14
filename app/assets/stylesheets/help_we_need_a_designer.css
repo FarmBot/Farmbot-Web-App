@@ -1,9 +1,0 @@
-/*There is so much going on in other parts of the app that I have not had time
-to do this "the right way". I will try my best keep the smells isolated to this
-file*/
-
-/*This class is to make rows full width on the device control page (the one
-with the web cam and buttons )*/
-.controlPageRow{
-  max-width: 100%;
-}
