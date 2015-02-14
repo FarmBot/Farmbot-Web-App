@@ -1,7 +1,7 @@
 /* CSS for the movement widget */
 
 button.move-amount{
-  background-color: transparent;
+  background-color: #EEE;
   font-weight: bold;
   border: 2px solid #666;
   padding-top: 0.5rem;
@@ -12,6 +12,7 @@ button.move-amount{
   width: 25%;
   margin: 0px;
   float: left;
+  transition: 0s;
 }
 
 button.move-amount:hover{
@@ -45,6 +46,24 @@ button.move-amount.rightmost{
   width: 50px;
   height: 50px;
   padding: 15px;
-  margin: 5px;
   font-size: 20px;
+  text-align: center;
+  border-bottom: 3px solid #333333;
+}
+
+.arrow-button:active{
+  border-bottom-width: 1px!important;
+  transform: translateY(2px);
+}
+
+.transparent-table tr:nth-of-type(even) {
+  background-color: transparent !important;
+}
+
+.jog-table{
+  margin-top: 15px;
+}
+
+input.move-input{
+  font-size: 1rem;
 }

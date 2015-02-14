@@ -1,18 +1,43 @@
 /* SITE-WIDE BACKGROUND */
 
 body {
-background: #EEE;
+background: #ECECEC;
 }
 
 /* SITE WIDE STUFF */
 
-.control-title{
+* {
+  outline: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.content{
+  margin-top: 20px;
+}
+
+div.content-wrapper{
+  margin-bottom: 20px;
+}
+
+.padding-bottom {
+  padding-bottom: 15px
+}
+
+.control-title {
   font-weight: bold;
-  text-align: center;
   font-size: 0.8rem;
 }
 
-button{
+.no-right-gutter{
+  padding-right: 0px;
+}
+
+button {
   font-size: 0.8rem;
   text-transform: uppercase;
   text-align: center;
@@ -21,53 +46,55 @@ button{
   padding-bottom: 7px;
   padding-left: 15px;
   padding-right: 15px;
-  border: none;
   border-radius: 5px;
 }
 
-.no-radius{
+.button-like:active {
+  border-bottom-width: 1px!important;
+  transform: translateY(2px);
+  margin-top: 2px;
+}
+
+.no-radius {
   border-radius: 0px;
 }
 
-.radius{
+.radius {
   border-radius: 5px;
-}
-
-.left-aligned {
-text-align: left;
-padding-left: 15px;
 }
 
 .full-width {
   width: 100%;
 }
 
-button.green{
+button.green, input.green {
   float: right;
   background-color: #6AA84F;
   color: white;
   font-weight: bold;
-
+  border-bottom: 3px solid #38761D;
 }
-button.red{
-  background-color: #E06666;]
+button.red, input.red {
+  background-color: #E06666;
   float: right;
   color: white;
   font-weight: bold;
+  border-bottom: 3px solid #990000;
 }
-button.gray{
-  background-color: #666666;]
+button.gray {
+  background-color: #666666;
   float: right;
   color: white;
   font-weight: bold;
+  border-bottom: 3px solid #333333;
 }
-button.yellow{
-  background-color: #FFD966;]
+button.yellow {
+  background-color: #FFD966;
   float: right;
   color: #666666;
   font-weight: bold;
+  border-bottom: 3px solid #BF9000;
 }
-
 
 fieldset legend {
 background: transparent;
@@ -78,5 +105,11 @@ border: none;
 }
 
 .row {
-  max-width: 80rem;
+  max-width: 120rem;
+}
+
+/* DEVICE SETTINGS PAGE */
+
+.device-row:hover {
+  background-color: #D9D9D9;
 }
