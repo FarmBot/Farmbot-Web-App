@@ -1,5 +1,5 @@
 class NullSequence
-  _id:   null
+  _id: null
   steps: []
 
 controller = ($scope, Data) ->

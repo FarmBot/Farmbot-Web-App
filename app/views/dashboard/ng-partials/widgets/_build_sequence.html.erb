@@ -48,7 +48,7 @@
         </div>
 
         <div class="small-12 columns">
-          <div ng-repeat='step in sequenceSteps | orderBy: "position" '>
+          <div ng-repeat='step in sequence.steps | orderBy: "position" '>
             <div class="row" as-sortable-item ng-model="step">
               <ng-include src="'sequence-builder/' + step.message_type">
               </ng-include>
