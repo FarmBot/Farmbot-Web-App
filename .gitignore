@@ -28,7 +28,7 @@ capybara-*.html
 **.orig
 rerun.txt
 pickle-email-*.html
-/assets/*
+/public/assets/
 
 ## Environment normalisation:
 /.bundle
