@@ -15,10 +15,6 @@ controller = ($scope, Data) ->
     orderChanged: (event) ->
       position = event.dest.index
       step = event.source.itemScope.step
-      # Failure to delete step.sequence results in a stack overflow :(
-      # TODO Figure out why angular-data isn't doing this by default.
-      # https://github.com/jmdobry/angular-data/issues/299
-      delete step.sequence
       Data
         .update('step', step._id, {position: position})
         .catch(nope)
