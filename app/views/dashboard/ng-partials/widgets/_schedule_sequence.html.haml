@@ -1,0 +1,52 @@
+.widget-wrapper
+  .row
+    .small-12.columns
+      .header-wrapper
+        %h5 Schedule a Sequence
+  .row
+    .small-12.columns
+      .content-wrapper
+        .row.padding-bottom
+          .small-4.columns
+            %p Choose a Sequence
+          .small-12.columns
+            .small-12.columns
+              .row.content-area.blue-content
+                .large-6.columns
+                  .row.collapse.prefix-radius
+                    .small-4.columns
+                      %span.prefix.uppercase Plant-ID
+                    .small-8.columns
+                      %input{:placeholder => "42", :type => "text"}
+                  .row.collapse.prefix-radius
+                    .small-4.columns
+                      %span.prefix.uppercase Date
+                    .small-8.columns
+                      %input{:placeholder => "25 August", :type => "text"}
+                  .row.collapse.prefix-radius
+                    .small-4.columns
+                      %span.prefix.uppercase Repeat
+                    .small-8.columns
+                      %input{:placeholder => "Weekly", :type => "text"}
+                .large-6.columns
+                  .row.collapse.prefix-radius
+                    .small-6.columns
+                      %span.prefix.uppercase Tool-ID
+                    .small-6.columns
+                      %input{:placeholder => "3", :type => "text"}
+                  .row.collapse.prefix-radius
+                    .small-6.columns
+                      %span.prefix.uppercase Time
+                    .small-6.columns
+                      %input{:placeholder => "9:00am", :type => "text"}
+                  .row.collapse.prefix-radius
+                    .small-6.columns
+                      %span.prefix.uppercase Ends
+                    .small-6.columns
+                      %input{:placeholder => "Never", :type => "text"}
+        .row.padding-bottom
+          .small-12.columns
+            %button.green.button-like{"ng-click" => "saveEvent(event)"}
+              Schedule
+            %button.red.button-like.left{"ng-click" => "deleteEvent(event)"}
+              Delete

@@ -247,12 +247,12 @@ line-height: inherit;
 
 .icon-group{
   float:right;
-  padding-right: 10px;
+  padding-right: 5px;
 }
 
 .icon-group a{
   color: #333;
-  padding-right: 5px;
+  padding-right: 10px;
 }
 
 span.prefix{
