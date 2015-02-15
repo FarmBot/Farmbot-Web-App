@@ -18,9 +18,11 @@
         </button>
         <div ng-repeat="seq in storedSequences track by $id(seq)">
           <button
-            ng-click="load(seq)"
-            class="full-width text-left no-radius {{seq.color}}-block block">
-            {{seq.name}}<i class="fa fa-bars right"></i>
+            class="full-width text-left no-radius {{seq.color}}-block block"
+            as-sortable-item-handle>
+            {{seq.name}}
+            <i class="fa fa-bars right"></i>
+            <i ng-click="load(seq)" class="fa fa-pencil right edit-icon"></i>
           </button>
         </div>
       </div>

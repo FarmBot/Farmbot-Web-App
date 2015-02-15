@@ -1,23 +1,18 @@
 /* CSS for the calendar widget */
 
-.content-wrapper.calendar-contents{
-	background-color: #F3F3F3;
-}
-
 .row.day{
 	padding-bottom: 20px;
 }
 
 .event{
-	background-color: #FFFFFF;
+	background-color: #F3F3F3;
 	padding-top: 15px;
 	padding-bottom: 15px;
 	margin-bottom: 2px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .event.past{
-	background-color: #F1F1F1;
 	color: #CCCCCC;
 }
 
@@ -27,10 +22,10 @@
 }
 
 .event:hover{
-	background-color: #EEEEEE;
+	background-color: #E4E4E4;
 	color: black;
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
   transition: all 0.2s ease-out;
 }
 

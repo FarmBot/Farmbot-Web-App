@@ -215,7 +215,7 @@
   padding-top:15px;
 }
 
-i.fa.fa-bars.right {
+i.fa.fa-bars.right, i.fa.fa-pencil.right{
 line-height: inherit;
 }
 
@@ -261,4 +261,10 @@ span.prefix{
   font-weight: bold;
   height: auto;
   border: none;
+}
+
+.block:hover .edit-icon{
+    display: inherit;
+    padding-right: 15px;
+    color: #333;
 }
