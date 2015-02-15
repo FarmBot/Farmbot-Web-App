@@ -1,26 +1,28 @@
-<div class="row">
-  <div class="small-12 columns">
-    <div class="header-wrapper">
-      <h5>Saved Sequences</h5>
+<div class="widget-wrapper">
+  <div class="row">
+    <div class="small-12 columns">
+      <div class="header-wrapper">
+        <h5>Saved Sequences</h5>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="row">
-  <div class="small-12 columns">
-    <div class="content-wrapper">
-      <button
-        class="full-width green margin button-like text-left"
-        ng-click="addSequence()">
-        <i class="step fi-plus size-12"></i>
-        New Sequence
-      </button>
-      <div ng-repeat="seq in storedSequences track by $id(seq)">
+  <div class="row">
+    <div class="small-12 columns">
+      <div class="content-wrapper">
         <button
-          ng-click="load(seq)"
-          class="full-width text-left no-radius {{seq.color}}-block block">
-          {{seq.name}}<i class="fa fa-bars right"></i>
+          class="full-width green margin button-like text-left"
+          ng-click="addSequence()">
+          <i class="step fi-plus size-12"></i>
+          New Sequence
         </button>
+        <div ng-repeat="seq in storedSequences track by $id(seq)">
+          <button
+            ng-click="load(seq)"
+            class="full-width text-left no-radius {{seq.color}}-block block">
+            {{seq.name}}<i class="fa fa-bars right"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>

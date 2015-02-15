@@ -20,10 +20,6 @@ background: #ECECEC;
   margin-top: 20px;
 }
 
-div.content-wrapper{
-  margin-bottom: 20px;
-}
-
 .padding-bottom {
   padding-bottom: 15px
 }
@@ -120,4 +116,9 @@ border: none;
 
 .medium-icon{
   font-size: 1.3rem;
+}
+
+.widget-wrapper{
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
 }

@@ -1,61 +1,62 @@
-<div class="row">
-  <div class="small-12 columns">
-    <div class="header-wrapper">
-      <h5>Build A Sequence</h5>
+<div class="widget-wrapper">
+  <div class="row">
+    <div class="small-12 columns">
+      <div class="header-wrapper">
+        <h5>Build A Sequence</h5>
+      </div>
     </div>
   </div>
-</div>
 
+  <div class="row">
+    <div class="small-12 columns">
+      <div class="content-wrapper">
+        <div class="row">
+          <div class="small-8 columns">
+            <input id="right-label" type="text" ng-model="sequence.name">
+          </div>
 
-<div class="row">
-  <div class="small-12 columns">
-    <div class="content-wrapper">
-      <div class="row">
-        <div class="small-8 columns">
-          <input id="right-label" type="text" ng-model="sequence.name">
-        </div>
-
-        <div class="small-2 columns">
-          <button class="red button-like" ng-click="deleteSequence(sequence)">
-            Delete
-          </button>
-        </div>
-        <div class="small-2 columns">
-          <button class="green button-like" ng-click="saveSequence(sequence)">
-            Save
-          </button>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="small-12 columns">
-          <div class="drag-drop-area padding">
-            <h6>DRAG BASIC OPERATIONS AND/OR SAVE SEQUENCES HERE</h6>
+          <div class="small-2 columns">
+            <button class="red button-like" ng-click="deleteSequence(sequence)">
+              Delete
+            </button>
+          </div>
+          <div class="small-2 columns">
+            <button class="green button-like" ng-click="saveSequence(sequence)">
+              Save
+            </button>
           </div>
         </div>
-      </div>
-      <div class="row" as-sortable='dragControlListeners' ng-model="sequenceSteps">
-        <div class="small-4 columns">
-          <label>Sequence Parameters:</label>
-        </div>
 
-        <div class="small-5 columns">
-          <a class="tiny expand button round dark-gray" href="#">PLANT-ID/PLANT-GROUP-ID</a>
-        </div>
-
-        <div class="small-3 columns">
-          <a class="tiny expand button radius dark-gray" href="#">ADD PARAMETER</a>
-        </div>
-
-        <div class="small-12 columns">
-          <div ng-repeat='step in sequenceSteps | orderBy: "position" '>
-            <div class="row" as-sortable-item ng-model="step">
-              <ng-include src="'sequence-builder/' + step.message_type">
-              </ng-include>
+        <div class="row">
+          <div class="small-12 columns">
+            <div class="drag-drop-area padding">
+              <h6>DRAG BASIC OPERATIONS AND/OR SAVE SEQUENCES HERE</h6>
             </div>
           </div>
+        </div>
+        <div class="row" as-sortable='dragControlListeners' ng-model="sequenceSteps">
+          <div class="small-4 columns">
+            <label>Sequence Parameters:</label>
+          </div>
+
+          <div class="small-5 columns">
+            <a class="tiny expand button round dark-gray" href="#">PLANT-ID/PLANT-GROUP-ID</a>
+          </div>
+
+          <div class="small-3 columns">
+            <a class="tiny expand button radius dark-gray" href="#">ADD PARAMETER</a>
+          </div>
+
           <div class="small-12 columns">
-            <div ng-repeat="step in storedSequences track by $id(step)">
+            <div ng-repeat='step in sequenceSteps | orderBy: "position" '>
+              <div class="row" as-sortable-item ng-model="step">
+                <ng-include src="'sequence-builder/' + step.message_type">
+                </ng-include>
+              </div>
+            </div>
+            <div class="small-12 columns">
+              <div ng-repeat="step in storedSequences track by $id(step)">
+              </div>
             </div>
           </div>
         </div>
