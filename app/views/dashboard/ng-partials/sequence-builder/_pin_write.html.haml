@@ -1,0 +1,36 @@
+.small-12.column
+  .small-12.columns.orange-block.block
+    .row.orange-header{"as-sortable-item-handle" => "", "data-topbar" => ""}
+      .small-12.columns
+        %nav.row.top-bar.orange-header{:role => "navigation"}
+          %ul.title-area
+            %li.name
+              %h5 WRITE PIN
+          .icon-group
+            %a{:href => ""}>
+              %i.fa.fa-angle-up
+              %a{:href => ""}
+                %i.fa.fa-trash{"ng-click" => "deleteStep($index)"}
+              %a{:href => ""}
+                %i.fa.fa-clipboard{"ng-click" => "copy(step, $index)"}
+            %a{:href => ""}
+              %i.fa.fa-bars{"as-sortable-item-handle" => ""}
+    .row.content-area.orange-content
+      .large-4.columns
+        .row.collapse.prefix-radius
+          .small-6.columns
+            %span.prefix PIN NUMBER
+          .small-6.columns
+            %input{:placeholder => "10", :type => "text"}
+      .large-4.columns
+        .row.collapse.prefix-radius
+          .small-6.columns
+            %span.prefix VALUE
+          .small-6.columns
+            %input{:placeholder => "1", :type => "text"}
+      .large-4.columns
+        .row.collapse.prefix-radius
+          .small-6.columns
+            %span.prefix PIN MODE
+          .small-6.columns
+            %input{:placeholder => "0", :type => "text"}

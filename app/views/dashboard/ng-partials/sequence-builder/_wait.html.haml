@@ -1,0 +1,24 @@
+.small-12.columns
+  .small-12.columns.gray-block.block
+    .row.gray-header{"as-sortable-item-handle" => "", "data-topbar" => ""}
+      .small-12.columns
+        %nav.row.top-bar.gray-header{:role => "navigation"}
+          %ul.title-area
+            %li.name
+              %h5 WAIT
+          .icon-group
+            %a{:href => ""}>
+              %i.fa.fa-angle-up
+              %a{:href => ""}
+                %i.fa.fa-trash{"ng-click" => "deleteStep($index)"}
+              %a{:href => ""}
+                %i.fa.fa-clipboard{"ng-click" => "copy(step, $index)"}
+            %a{:href => ""}
+              %i.fa.fa-bars{"as-sortable-item-handle" => ""}
+    .row.content-area.gray-content
+      .large-5.columns
+        .row.collapse.prefix-radius
+          .small-6.columns
+            %span.prefix TIME (ms)
+          .small-6.columns
+            %input{:placeholder => "1000", :type => "text"}
