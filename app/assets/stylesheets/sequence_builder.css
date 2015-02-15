@@ -228,31 +228,41 @@ line-height: inherit;
 .dark-gray{
   background-color: #333;
 }
+
 .light-gray{
   background-color: #BDBCBD;
 }
+
 .black{
   color: #000;
 }
+
 .margin{
   margin-bottom: 20px;
 }
+
 .yellow-circle{
   color: #FFF69D;
 }
+
 .uppercase{
     text-transform: uppercase;
 }
+
 .icon-group{
   float:right;
   padding-right: 10px;
 }
+
 .icon-group a{
   color: #333;
   padding-right: 5px;
 }
+
 span.prefix{
   color: #EEE;
   background-color: #666;
   font-weight: bold;
+  height: auto;
+  border: none;
 }

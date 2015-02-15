@@ -113,3 +113,11 @@ border: none;
 .device-row:hover {
   background-color: #D9D9D9;
 }
+
+.light-icon{
+  color: #EEE;
+}
+
+.medium-icon{
+  font-size: 1.3rem;
+}
