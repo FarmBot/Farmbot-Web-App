@@ -26,6 +26,7 @@ gem 'figaro' # Store secrets the 12 factor way. TODO: Get off of this gem.
 gem 'devise', github: 'plataformatec/devise'
 gem 'mutations'
 gem 'active_model_serializers'
+gem 'ice_cube'
 
 group :development, :test do
   gem 'pry'
