@@ -1,0 +1,91 @@
+.small-12.columns
+  .small-12.columns.blue-block.block
+    .row.blue-header{"as-sortable-item-handle" => "", "data-topbar" => ""}
+      .small-12.columns
+        %nav.row.top-bar.blue-header{:role => "navigation"}
+          %ul.title-area
+            %li.name
+              %h5 MOVE ABSOLUTE
+          .icon-group
+            %a{:href => ""}>
+              %i.fa.fa-angle-up
+              %a{:href => ""}
+                %i.fa.fa-trash{"ng-click" => "deleteStep($index)"}
+              %a{:href => ""}
+                %i.fa.fa-clipboard{"ng-click" => "copy(step, $index)"}
+            %a{:href => ""}
+              %i.fa.fa-bars{"as-sortable-item-handle" => ""}
+    .row.content-area.blue-content
+      .large-8.columns
+        .row.collapse.prefix-radius
+          .small-2.columns
+            %span.prefix.uppercase x
+          .small-8.columns
+            %input{:placeholder => "Inherit Plant-ID_X", :type => "text"}
+          .small-2.columns
+            %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
+            %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
+              %li
+                %a{:href => "#"} This is a link
+              %li
+                %a{:href => "#"} This is another
+              %li
+                %a{:href => "#"} Yet another
+        .row.collapse.prefix-radius
+          .small-2.columns
+            %span.prefix.uppercase y
+          .small-8.columns
+            %input{:placeholder => "Inherit Plant-ID_Y", :type => "text"}
+          .small-2.columns
+            %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
+            %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
+              %li
+                %a{:href => "#"} This is a link
+              %li
+                %a{:href => "#"} This is another
+              %li
+                %a{:href => "#"} Yet another
+        .row.collapse.prefix-radius
+          .small-2.columns
+            %span.prefix.uppercase z
+          .small-8.columns
+            %input{:placeholder => "Inherit Plant-ID Plant-Height", :type => "text"}
+          .small-2.columns
+            %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
+            %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
+              %li
+                %a{:href => "#"} This is a link
+              %li
+                %a{:href => "#"} This is another
+              %li
+                %a{:href => "#"} Yet another
+        .row.collapse.prefix-radius
+          .small-3.columns
+            %span.prefix.uppercase speed
+          .small-7.columns
+            %input{:placeholder => "Default", :type => "text"}
+          .small-2.columns
+            %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
+            %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
+              %li
+                %a{:href => "#"} This is a link
+              %li
+                %a{:href => "#"} This is another
+              %li
+                %a{:href => "#"} Yet another
+      .large-4.columns
+        .row.collapse.prefix-radius
+          .small-6.columns
+            %span.prefix.uppercase x-offset
+          .small-6.columns
+            %input{:placeholder => "-100 mm", :type => "text"}
+        .row.collapse.prefix-radius
+          .small-6.columns
+            %span.prefix.uppercase y-offset
+          .small-6.columns
+            %input{:placeholder => "0 mm", :type => "text"}
+        .row.collapse.prefix-radius
+          .small-6.columns
+            %span.prefix.uppercase z-offset
+          .small-6.columns
+            %input{:placeholder => "+20 mm", :type => "text"}
