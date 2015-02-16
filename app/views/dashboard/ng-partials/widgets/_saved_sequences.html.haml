@@ -10,7 +10,7 @@
           %i.step.fi-plus.size-12
           New Sequence
         %div{"ng-repeat" => "seq in storedSequences track by $id(seq)"}
-          %button.full-width.text-left.no-radius.block{"as-sortable-item-handle" => "", :class => "{{seq.color}}-block"}
+          %button.full-width.text-left.no-radius.block{"ng-click" => "load(seq)", class: "{{seq.color}}-block"}
             {{seq.name}}
             %i.fa.fa-bars.right
-            %i.fa.fa-pencil.right.edit-icon{"ng-click" => "load(seq)"}
+            %i.fa.fa-pencil.right.edit-icon

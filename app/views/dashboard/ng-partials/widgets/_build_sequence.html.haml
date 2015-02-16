@@ -19,16 +19,14 @@
           .small-12.columns
             .drag-drop-area.padding
               %h6 DRAG BASIC OPERATIONS AND/OR SAVE SEQUENCES HERE
-        .row{"as-sortable" => "dragControlListeners", "ng-model" => "sequenceSteps"}
+        .row
           .small-4.columns
             %label Sequence Parameters:
           .small-5.columns
             %a.tiny.expand.button.round.dark-gray{:href => "#"} PLANT-ID/PLANT-GROUP-ID
           .small-3.columns
             %a.tiny.expand.button.radius.dark-gray{:href => "#"} ADD PARAMETER
-          .small-12.columns
-            %div{"ng-repeat" => "step in sequenceSteps | orderBy: \"position\" "}
-              .row{"as-sortable-item" => "", "ng-model" => "step"}
-                %ng-include{:src => "'sequence-builder/' + step.message_type"}
-            .small-12.columns
-              %div{"ng-repeat" => "step in storedSequences track by $id(step)"}
+          .small-12.columns{"as-sortable" => "dragControlListeners", "ng-model" => "sequence.steps"}
+            %div{"ng-repeat" => "step in sequence.steps | orderBy: 'position'", 'as-sortable-item' => true}
+              .row
+                %ng-include{src: "'sequence-builder/' + step.message_type"}
