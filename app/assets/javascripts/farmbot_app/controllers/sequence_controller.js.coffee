@@ -67,7 +67,7 @@ controller = ($scope, Data) ->
   $scope.deleteStep = (index) ->
     Data
       .destroy('step', $scope.sequence.steps[index]._id)
-      .catch((e) -> console.error e)
+      .catch(nope)
 
 # The sequence controller supports the WYSIWYG sequence editor.
 angular.module('FarmBot').controller "SequenceController", [
