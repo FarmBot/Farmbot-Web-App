@@ -1,6 +1,6 @@
 class Sequence
   include Mongoid::Document
-
+  belongs_to :schedule
   field :name
   validates :name, presence: true
 

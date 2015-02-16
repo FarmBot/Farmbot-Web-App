@@ -1,6 +1,7 @@
 # Responsible for timing and execution of sequences.
 class Schedule
   include Mongoid::Document
+  has_one :sequence
   field :start_date, type: Date
   field :end_date, type: Date
   field :every, type: Integer
