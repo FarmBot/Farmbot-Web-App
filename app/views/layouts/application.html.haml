@@ -47,15 +47,15 @@
               =link_to "Register", new_user_registration_path, class: 'button'
             %li
               =link_to "Log In", new_user_session_path
-    .container{style: 'margin: 10px;'}
+    .container.small-12.medium-6.large-4.small-centered.columns{style: 'margin-top: 20px;'}
       - if notice
-        .alert-box.round{"onClick" => "hidden = true"}
+        .alert-box.notice.round{"onClick" => "hidden = true"}
           = notice
-          %a.close ×
+          %a.close{style: 'margin-right: 10px; color: white; opacity: 1.0;'} ×
       - if alert
         .alert-box.alert.round{"onClick" => "hidden = true"}
           = alert
-          %a.close ×
+          %a.close{style: 'margin-right: 10px; color: white; opacity: 1.0;'} ×
     .content
       = yield
       = javascript_include_tag "application"

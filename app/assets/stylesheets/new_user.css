@@ -33,3 +33,7 @@ input[type="submit"]{
 	border: none;
 	border-radius: 5px;
 }
+
+.padding-bottom-large{
+	padding-bottom: 50px;
+}
