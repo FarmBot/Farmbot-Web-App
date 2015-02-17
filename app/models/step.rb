@@ -17,7 +17,6 @@ class Step
     end
   end
   validates :position, presence: true
-  # TODO : Move this into a refinement =========================================
 
   def all_steps
     (sequence.try(:steps) || Step.none).order_by(:position.asc)
