@@ -3,11 +3,13 @@ class Schedule
   include Mongoid::Document
   UNITS_OF_TIME = %w(minutely hourly daily weekly monthly yearly)
 
-  has_one :sequence
+  belongs_to :sequence
+  belongs_to :user
 
   field :start_time, type: Time
   field :end_time, type: Time
   field :next_time, type: Time
+  validates_presence_of :next_time
   field :repeat, type: Integer
   field :time_unit
   validates_inclusion_of :time_unit, in: UNITS_OF_TIME
