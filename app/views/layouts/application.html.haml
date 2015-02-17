@@ -8,45 +8,21 @@
     = stylesheet_link_tag "application"
     = csrf_meta_tags
   %body{'ng-app' => 'FarmBot'}
-    %nav.top-bar{"data-topbar" => ""}
-      %ul.title-area
-        %li.name
-          %h1
-            = link_to "Farmbot", root_path
-        %li.toggle-topbar.menu-icon
-          %a{href: ""} Menu
-      %section.top-bar-section
-        %ul.left
-          -if current_user
-            %li
-              = link_to 'Farm Designer', '/dashboard#/farm-designer'
-            %li
-              = link_to 'Controls', '/dashboard#/movement'
-            %li
-              = link_to 'Devices', '/dashboard#/devices'
-            %li
-              = link_to 'Sequences', '/dashboard#/sequence'
-            %li
-              = link_to 'Schedules', '/dashboard#/schedule'
-          %li{class: ("active" if current_page? page_path('help'))}
-            = link_to 'Help', page_path('help')
-        %ul.right
-          - if current_user
-            %li.has-dropdown.not-click
-              %a{href: ""}
-                = "Welcome #{current_user.name}!"
-              %ul.dropdown
-                %li
-                  = link_to 'User Settings', edit_user_registration_path
-                %li
-                  = link_to 'Device Settings', '/dashboard#/devices'
-                %li
-                  = link_to "Sign out", destroy_user_session_path, :method => :delete
-          - else
-            %li
-              =link_to "Register", new_user_registration_path, class: 'button'
-            %li
-              =link_to "Log In", new_user_session_path
+    %select.menu{name: "MENU", :onChange => "window.location.href=this.value"}
+      %option.display-none{:value => root_path} MENU
+      %option{:value => root_path} Home
+      - if current_user
+        %option{:value => "/dashboard#/farm-designer"} Farm Designer
+        %option{:value => "/dashboard#/movement"} Controls
+        %option{:value => "/dashboard#/devices"} Devices
+        %option{:value => "/dashboard#/sequence"} Sequences
+        %option{:value => "/dashboard#/schedule"} Schedules
+        %option{:value => edit_user_registration_path} My Account
+        %option{:value => destroy_user_session_path} Sign out
+      - else
+        %option{:value => new_user_session_path} Log In
+        %option{:value => new_user_registration_path} Register
+        %option{:value => page_path('help')} Help
     .container.small-12.medium-6.large-4.small-centered.columns{style: 'margin-top: 20px;'}
       - if notice
         .alert-box.notice.round{"onClick" => "hidden = true"}
