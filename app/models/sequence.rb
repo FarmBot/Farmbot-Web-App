@@ -9,7 +9,6 @@ class Sequence
   field :color, type: String, default: -> { COLORS.sample }
   validates_inclusion_of :color, in: COLORS
 
-
   embeds_many :steps
   belongs_to :user
 end
