@@ -1,43 +1,57 @@
 <div class="row">
   <div class="large-5 medium-8 small-12 small-centered columns">
-    <h2 class="page-title">Edit account</h2>
-  </div>
-    <div class="large-5 medium-8 small-12 small-centered columns">
+    <div class="widget-wrapper">
+      <div class="row">
+        <div class="small-12 columns">
+          <div class="header-wrapper">Edit account
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-12 columns">
+          <div class="content-wrapper padding-bottom-large">
+            <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+              <%= devise_error_messages! %>
 
-    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-      <%= devise_error_messages! %>
+              <div><%= f.label :email %>
+              <%= f.email_field :email, autofocus: true %></div>
 
-      <div><%= f.label :email %>
-      <%= f.email_field :email, autofocus: true %></div>
+              <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+                <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+              <% end %>
 
-      <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-        <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
-      <% end %>
+              <div><%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
+                <%= f.password_field :password, autocomplete: "off" %></div>
 
-      <div><%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
-        <%= f.password_field :password, autocomplete: "off" %></div>
+              <div><%= f.label :password_confirmation %>
+                <%= f.password_field :password_confirmation, autocomplete: "off" %></div>
 
-      <div><%= f.label :password_confirmation %>
-        <%= f.password_field :password_confirmation, autocomplete: "off" %></div>
+              <div><%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
+                <%= f.password_field :current_password, autocomplete: "off" %></div>
 
-      <div><%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-        <%= f.password_field :current_password, autocomplete: "off" %></div>
-
-      <div><%= f.submit "Update Account", class: "green button-like" %></div>
-    <% end %>
-
+              <div><%= f.submit "Update Account", class: "green button-like" %></div>
+            <% end %>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
 
-<div class="row">
-  <div class="large-5 medium-8 small-12 small-centered columns">
-    <h2 class="page-title">Delete account</h2>
-  </div>
-    <div class="large-5 medium-8 small-12 small-centered columns">
+    <div class="widget-wrapper">
+      <div class="row">
+        <div class="small-12 columns">
+          <div class="header-wrapper">Delete account
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-12 columns">
+          <div class="content-wrapper padding-bottom-large">
+            <p>Are you sure you want to delete your account? This cannot be undone and all of your data will be lost permanently!</p>
 
-      <p>Are you sure you want to delete your account? This cannot be undone and all of your data will be lost permanently!</p>
-
-      <%= button_to "Delete account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete, class: "red button-like" %>
-
+            <%= button_to "Delete account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete, class: "red button-like" %>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
