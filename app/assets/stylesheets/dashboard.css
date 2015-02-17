@@ -4,7 +4,28 @@ body {
 background: #ECECEC;
 }
 
+/* SITE-WIDE NAVIGATION */
+
+select.menu{
+  background-color: #434343;
+  color: white;
+  font-weight: bold;
+  border: none;
+}
+
+.display-none{
+  display: none;
+}
+
 /* SITE WIDE STUFF */
+
+.alert-box.alert.round, .alert-box.notice.round{
+  background-color: #E06666;
+  border: none;
+  font-weight: bold;
+  padding-left: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
 
 * {
   outline: none;
@@ -21,7 +42,7 @@ background: #ECECEC;
 }
 
 .padding-bottom {
-  padding-bottom: 15px
+  padding-bottom: 20px
 }
 
 .control-title {
