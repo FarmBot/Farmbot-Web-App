@@ -4,6 +4,19 @@ body {
 background: #ECECEC;
 }
 
+/* SITE-WIDE NAVIGATION */
+
+select.menu{
+  background-color: #434343;
+  color: white;
+  font-weight: bold;
+  border: none;
+}
+
+.display-none{
+  display: none;
+}
+
 /* SITE WIDE STUFF */
 
 .alert-box.alert.round, .alert-box.notice.round{
