@@ -27,13 +27,15 @@
                     .small-3.columns
                       %span.prefix.uppercase Time
                     .small-9.columns
-                      %input{placeholder: "Now", type: "text"}
+                      %input{'pick-a-time' => "form.tstart", placeholder: "Now", type: "text"}
                 .large-6.columns
                   .row.collapse.prefix-radius
                     .small-4.columns
-                      %span.prefix.uppercase Repeat
-                    .small-8.columns
-                      %input{:placeholder => "Weekly", :type => "text"}
+                      %span.prefix.uppercase Every
+                    .small-4.columns
+                      %input{:placeholder => "4", :type => "text"}
+                    .small-4.columns
+                      %select{'ng-options' => 'item.value as item.show for item in repeats', 'ng-model' => 'form.repeat'}
                   .row.collapse.prefix-radius
                     .small-4.columns
                       %span.prefix.uppercase Plant-ID
