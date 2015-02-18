@@ -6,6 +6,7 @@ Dss::Application.routes.draw do
     resources :sequences, only: [:create, :update, :destroy, :index, :show] do
       resources :steps, only: [:show, :create, :index, :update, :destroy]
     end
+    resources :schedules, only: [:create, :index]
   end
 
   devise_for :users, :controllers => {:registrations => "registrations"}

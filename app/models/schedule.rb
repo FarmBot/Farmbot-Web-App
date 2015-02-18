@@ -4,7 +4,9 @@ class Schedule
   UNITS_OF_TIME = %w(minutely hourly daily weekly monthly yearly)
 
   belongs_to :sequence
+  validates_presence_of :sequence_id
   belongs_to :user
+  validates_presence_of :user_id
 
   field :start_time, type: Time
   field :end_time, type: Time
