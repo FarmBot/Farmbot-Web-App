@@ -1,5 +1,6 @@
 controller = ($scope, Data) ->
-  $scope.world = 'world'
+  $scope.form = {} # Data for new schedules.
+  $scope.pickADateOptions = {interval: 15}
 
 angular.module('FarmBot').controller "ScheduleController", [
   '$scope'

@@ -22,7 +22,9 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-js-data'
   gem 'rails-assets-js-data-angular'
   gem 'rails-assets-lodash'
-  gem 'rails-assets-angular-native-picker'
+  gem 'rails-assets-jquery'
+  gem 'rails-assets-pickadate'
+  gem 'rails-assets-ng-pickadate'
 end
 
 gem 'figaro' # Store secrets the 12 factor way. TODO: Get off of this gem.
