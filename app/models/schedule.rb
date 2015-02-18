@@ -4,7 +4,9 @@ class Schedule
   UNITS_OF_TIME = %w(minutely hourly daily weekly monthly yearly)
 
   belongs_to :sequence
+  validates_presence_of :sequence_id
   belongs_to :user
+  validates_presence_of :user_id
 
   field :start_time, type: Time
   field :end_time, type: Time
@@ -22,5 +24,10 @@ class Schedule
 
   def calculate_next_occurence
     schedule.next_occurrence
+  end
+
+  def between(start, finish)
+    # Just for reference for later. Probably should just delegate.
+    schedule.occurrences_between(start, finish)
   end
 end
