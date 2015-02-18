@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Api::SchedulesController do
-
   include Devise::TestHelpers
 
   describe '#index' do

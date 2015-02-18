@@ -6,5 +6,6 @@
 //= require js-data
 //= require js-data-angular
 //= require ng-rails-csrf
+//= require angular-native-picker
 //= require farmbot_app/farmbot
 //= require_tree ./farmbot_app

@@ -29,9 +29,9 @@ module Api
 
     private
 
-      def sequence
-        @sequence ||= Sequence.find(params[:sequence_id])
-      end
+    def sequence
+      @sequence ||= Sequence.find(params[:sequence_id])
+    end
     # def schedule
     #   @schedule ||= Schedule.find(params[:id])
     # end
