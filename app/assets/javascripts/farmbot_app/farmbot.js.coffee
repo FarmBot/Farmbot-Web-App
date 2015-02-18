@@ -5,6 +5,7 @@ app = angular.module('FarmBot', [
   'ng-rails-csrf'
   'ui.sortable'
   'js-data'
+  'pickadate'
   ])
 
 app.config [

@@ -22,7 +22,7 @@
                     .small-4.columns
                       %span.prefix.uppercase Date
                     .small-8.columns
-                      %input{:placeholder => "25 August", :type => "text"}
+                      %input{'pick-a-date' => "form.dstart", placeholder: "25 August", :type => "text"}
                   .row.collapse.prefix-radius
                     .small-4.columns
                       %span.prefix.uppercase Repeat
@@ -38,7 +38,7 @@
                     .small-6.columns
                       %span.prefix.uppercase Time
                     .small-6.columns
-                      %input{:placeholder => "9:00am", :type => "text"}
+                      %input{'pick-a-time' => "form.tstart", placeholder: "9:00am", type: "text"}
                   .row.collapse.prefix-radius
                     .small-6.columns
                       %span.prefix.uppercase Ends
