@@ -14,36 +14,36 @@
               .row.content-area.blue-content
                 .large-6.columns
                   .row.collapse.prefix-radius
+                    .small-3.columns
+                      %span.prefix.uppercase Starts
+                    .small-9.columns
+                      %input{'pick-a-date' => "form.dstart", placeholder: "Today", :type => "text"}
+                  .row.collapse.prefix-radius
+                    .small-3.columns
+                      %span.prefix.uppercase Ends
+                    .small-9.columns
+                      %input{'pick-a-date' => "form.dend", :placeholder => "Never", :type => "text"}
+                  .row.collapse.prefix-radius
+                    .small-3.columns
+                      %span.prefix.uppercase Time
+                    .small-9.columns
+                      %input{placeholder: "Now", type: "text"}
+                .large-6.columns
+                  .row.collapse.prefix-radius
+                    .small-4.columns
+                      %span.prefix.uppercase Repeat
+                    .small-8.columns
+                      %input{:placeholder => "Weekly", :type => "text"}
+                  .row.collapse.prefix-radius
                     .small-4.columns
                       %span.prefix.uppercase Plant-ID
                     .small-8.columns
                       %input{:placeholder => "42", :type => "text"}
                   .row.collapse.prefix-radius
                     .small-4.columns
-                      %span.prefix.uppercase Date
-                    .small-8.columns
-                      %input{'pick-a-date' => "form.dstart", placeholder: "25 August", :type => "text"}
-                  .row.collapse.prefix-radius
-                    .small-4.columns
-                      %span.prefix.uppercase Repeat
-                    .small-8.columns
-                      %input{:placeholder => "Weekly", :type => "text"}
-                .large-6.columns
-                  .row.collapse.prefix-radius
-                    .small-6.columns
                       %span.prefix.uppercase Tool-ID
-                    .small-6.columns
+                    .small-8.columns
                       %input{:placeholder => "3", :type => "text"}
-                  .row.collapse.prefix-radius
-                    .small-6.columns
-                      %span.prefix.uppercase Time
-                    .small-6.columns
-                      %input{'pick-a-time' => "form.tstart", placeholder: "9:00am", type: "text"}
-                  .row.collapse.prefix-radius
-                    .small-6.columns
-                      %span.prefix.uppercase Ends
-                    .small-6.columns
-                      %input{:placeholder => "Never", :type => "text"}
         .row.padding-bottom
           .small-12.columns
             %button.green.button-like{"ng-click" => "saveEvent(event)"}
