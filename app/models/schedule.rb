@@ -25,4 +25,9 @@ class Schedule
   def calculate_next_occurence
     schedule.next_occurrence
   end
+
+  def between(start, finish)
+    # Just for reference for later. Probably should just delegate.
+    schedule.occurrences_between(start, finish)
+  end
 end
