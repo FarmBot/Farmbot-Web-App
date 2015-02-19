@@ -1,0 +1,7 @@
+input[type="text"][readonly]{
+  background-color: white;
+}
+
+.picker__day, .picker__weekday {
+text-align: center;
+}
