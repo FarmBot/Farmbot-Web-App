@@ -8,37 +8,23 @@
     = stylesheet_link_tag "application"
     = csrf_meta_tags
   %body{'ng-app' => 'FarmBot'}
-    %select.small-menu.show-for-small-only{name: "MENU", :onChange => "window.location.href=this.value"}
-      %option.display-none{:value => root_path} MENU
-      %option{:value => root_path} Home
-      - if current_user
-        %option{:value => "/dashboard#/farm-designer"} Farm Designer
-        %option{:value => "/dashboard#/movement"} Controls
-        %option{:value => "/dashboard#/devices"} Devices
-        %option{:value => "/dashboard#/sequence"} Sequences
-        %option{:value => "/dashboard#/schedule"} Schedules
-        %option{:value => edit_user_registration_path} My Account
-        %option{:value => destroy_user_session_path} Sign out
-      - else
-        %option{:value => new_user_session_path} Log In
-        %option{:value => new_user_registration_path} Register
-        %option{:value => page_path('help')} Help
 
-    .row.show-for-medium-up
-      .large-menu
-        %a.large-menu-item{:href => root_path} Home
+    .row
+      %nav
+        .small-menu-title MENU
+        %a{:href => root_path} Home
         - if current_user
-          %a.large-menu-item{:href => "/dashboard#/farm-designer"} Farm Designer
-          %a.large-menu-item{:href => "/dashboard#/movement"} Controls
-          %a.large-menu-item{:href => "/dashboard#/devices"} Devices
-          %a.large-menu-item{:href => "/dashboard#/sequence"} Sequences
-          %a.large-menu-item{:href => "/dashboard#/schedule"} Schedules
-          %a.large-menu-item.right{:href => destroy_user_session_path} Sign out
-          %a.large-menu-item.right{:href => edit_user_registration_path} My Account
+          %a{:href => "/dashboard#/farm-designer"} Farm Designer
+          %a{:href => "/dashboard#/movement"} Controls
+          %a{:href => "/dashboard#/devices"} Devices
+          %a{:href => "/dashboard#/sequence"} Sequences
+          %a{:href => "/dashboard#/schedule"} Schedules
+          %a.large-menu-right{:href => destroy_user_session_path} Sign out
+          %a.large-menu-right{:href => edit_user_registration_path} My Account
         - else
-          %a.large-menu-item.right{:href => new_user_session_path} Log In
-          %a.large-menu-item.right{:href => new_user_registration_path} Register
-          %a.large-menu-item.right{:href => page_path('help')} Help
+          %a.large-menu-right{:href => new_user_session_path} Log In
+          %a.large-menu-right{:href => new_user_registration_path} Register
+          %a.large-menu-right{:href => page_path('help')} Help
 
     .container.small-12.medium-6.large-4.small-centered.columns{style: 'margin-top: 20px;'}
       - if notice
