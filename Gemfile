@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+source 'https://rails-assets.org'
 ruby '2.2.0'
 
 gem 'rails', '4.1.0'
@@ -9,15 +10,6 @@ gem 'ng-rails-csrf'
 gem 'mongoid', '~> 4.0.0', github: 'mongoid/mongoid'
 
 #Asset stuff
-source 'https://rails-assets.org' do
-  gem 'rails-assets-ng-sortable'
-  gem 'rails-assets-js-data'
-  gem 'rails-assets-js-data-angular'
-  gem 'rails-assets-lodash'
-  gem 'rails-assets-jquery'
-  gem 'rails-assets-pickadate'
-  gem 'rails-assets-ng-pickadate'
-end
 gem 'sass-rails', github: 'rails/sass-rails'
 gem 'coffee-rails'
 gem 'font-awesome-rails'
@@ -29,6 +21,13 @@ gem 'devise', github: 'plataformatec/devise'
 gem 'mutations'
 gem 'active_model_serializers'
 gem 'ice_cube'
+gem 'rails-assets-ng-sortable'
+gem 'rails-assets-js-data'
+gem 'rails-assets-js-data-angular'
+gem 'rails-assets-lodash'
+gem 'rails-assets-jquery'
+gem 'rails-assets-pickadate'
+gem 'rails-assets-ng-pickadate'
 
 group :development, :test do
   gem 'pry'
