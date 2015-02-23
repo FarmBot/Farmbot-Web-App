@@ -15,7 +15,6 @@ describe Api::SchedulesController do
                     .map(&:to_s)
                     .sort
       get :index
-      binding.pry
       expect(response.status).to eq(200)
       expect(json.length).to eq(2)
       expect(json.map{ |s| s[:_id] }.sort).to eq(schedules)

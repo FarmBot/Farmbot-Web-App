@@ -24,7 +24,6 @@ describe 'User Session' do
   end
 
   it 'logs the user out' do
-    pending 'Rory is making changes to the navbar at the moment.'
     user = FactoryGirl.create(:user)
     sign_in_as(user)
     click_link 'Sign out'
