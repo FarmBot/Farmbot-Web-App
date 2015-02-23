@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-
+source 'https://rails-assets.org'
 ruby '2.2.0'
 
 gem 'rails', '4.1.0'
@@ -16,22 +16,18 @@ gem 'font-awesome-rails'
 gem 'uglifier'
 gem 'high_voltage', '~> 2.1.0'
 gem 'haml'
-
-source 'https://rails-assets.org' do
-  gem 'rails-assets-ng-sortable'
-  gem 'rails-assets-js-data'
-  gem 'rails-assets-js-data-angular'
-  gem 'rails-assets-lodash'
-  gem 'rails-assets-jquery'
-  gem 'rails-assets-pickadate'
-  gem 'rails-assets-ng-pickadate'
-end
-
 gem 'figaro' # Store secrets the 12 factor way. TODO: Get off of this gem.
 gem 'devise', github: 'plataformatec/devise'
 gem 'mutations'
 gem 'active_model_serializers'
 gem 'ice_cube'
+gem 'rails-assets-ng-sortable'
+gem 'rails-assets-js-data'
+gem 'rails-assets-js-data-angular'
+gem 'rails-assets-lodash'
+gem 'rails-assets-jquery'
+gem 'rails-assets-pickadate'
+gem 'rails-assets-ng-pickadate'
 
 group :development, :test do
   gem 'pry'
