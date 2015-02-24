@@ -1,12 +1,10 @@
 class DeviceService
-  constructor: (@$rootScope, @$http, @Command, @Router) ->
+  constructor: (@$rootScope, @$http, @Command, @Router, @socket) ->
     [@log, @list, @current, @status] = [[], [], {}, {meshblu: "Connecting"}]
     @initConnections()
 
   initConnections: ->
     ok = (data, status, request, meta) =>
-      # THOUGHT: Maybe we should just bootstrap this data in the HTML and pull
-      # from there for extra snappiness?
       @list     = data
       # TODO: Real error handling.
       alert 'You need to link a Farmbot to your account.' unless data[0]
@@ -53,10 +51,15 @@ class DeviceService
   connectToMeshBlu: ->
     # Avoid double connections
     unless @connection?.connected
+      debugger
+      skynet = {createConnection: ->
+                  console.warn "Need to deprecate skynetJS"
+                  return {on: -> null}}
       @connection = skynet.createConnection
+        # TODO: Why is this hardcoded?
         type:  "farmbotdss"
-        uuid:  "7e3a8a10-6bf6-11e4-9ead-634ea865603d"
-        token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
+        uuid:  "adca1b97-aad9-486d-b0b4-aafe38ce2486"
+        token: "d294de10955e0f76b1f7620bcede6f61"
       @connection.on "ready", (data) =>
         @$rootScope.$apply(=> @status.meshblu = "online")
         @connection.on "message", @handleMsg
@@ -100,6 +103,7 @@ angular.module("FarmBot").service "Devices",[
   '$http'
   'Command'
   'Router'
-  ($rootScope, $http, Command, Router) ->
-    return new DeviceService($rootScope, $http, Command, Router)
+  'socket'
+  ($rootScope, $http, Command, Router, socket) ->
+    return new DeviceService($rootScope, $http, Command, Router, socket)
 ]
