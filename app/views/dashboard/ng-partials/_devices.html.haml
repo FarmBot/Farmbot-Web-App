@@ -1,45 +1,48 @@
 .row
   .large-8.medium-10.small-12.columns.small-centered
-    .row
-      .widget-wrapper
-        .header-wrapper
-          %h5 Manage your FarmBots
-        .content-wrapper
-          %p Note: We don't support multi-bot setups at this time (but will in the future). The system will assume that the first bot is the bot that you wish to operate. Don't add more than one bot, as this will lead to unexpected behavior.
-          %form{ng_submit: 'createDevice()'}
-            %fieldset
-              %h2.page-title Add a FarmBot
-              .row
-                .large-12.columns
-                  %label FarmBot Name *
-                  %input{placeholder: "Brocolli Overlord", type: "text", ng_model: 'form.name', required: true}/
-              .row
-                .large-6.columns
-                  %label UUID *
-                  %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'form.uuid', required: true}/
-                .large-6.columns
-                  %label Security Token *
-                  %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'form.token', required: true}/
-              .row
-                .large-12.columns
-                  %button.green.button-like
-                    Add FarmBot
-          %h2.page-title My FarmBots
-          .row.padding-bottom
-            .small-12.columns
-              %table
-                %thead
-                  %tr
-                    %th{width: '90%'} FarmBot Name
-                    %th{width: '5%'} Delete
-                    %th{width: '5%'} Edit
-                %tbody
-                  %tr.device-row{'ng-repeat' => 'device in devices.list'}
-                    %td
-                      {{ device.name }}
-                    %td
-                      %button.red.button-like{'ng-click' => 'removeDevice(device)'}
-                        %i.fi-x{style: 'font-size: 18px;'}
-                    %td
-                      %button.gray.button-like{ng_click: 'selectDevice(device)'}
-                        %i.fi-wrench{style: 'font-size: 18px;'}
+    .widget-wrapper
+      .row
+        .small-12.columns
+          .header-wrapper
+            %h5 Manage your FarmBots
+      .row
+        .small-12.columns
+          .content-wrapper
+            %p Note: We don't support multi-bot setups at this time (but will in the future). The system will assume that the first bot is the bot that you wish to operate. Don't add more than one bot, as this will lead to unexpected behavior.
+            %form{ng_submit: 'createDevice()'}
+              %fieldset
+                %h2.page-title Add a FarmBot
+                .row
+                  .large-12.columns
+                    %label FarmBot Name *
+                    %input{placeholder: "Brocolli Overlord", type: "text", ng_model: 'form.name', required: true}/
+                .row
+                  .large-6.columns
+                    %label UUID *
+                    %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'form.uuid', required: true}/
+                  .large-6.columns
+                    %label Security Token *
+                    %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'form.token', required: true}/
+                .row
+                  .large-12.columns
+                    %button.green.button-like
+                      Add FarmBot
+            %h2.page-title My FarmBots
+            .row.padding-bottom
+              .small-12.columns
+                %table
+                  %thead
+                    %tr
+                      %th{width: '90%'} FarmBot Name
+                      %th{width: '5%'} Delete
+                      %th{width: '5%'} Edit
+                  %tbody
+                    %tr.device-row{'ng-repeat' => 'device in devices.list'}
+                      %td
+                        {{ device.name }}
+                      %td
+                        %button.red.button-like{'ng-click' => 'removeDevice(device)'}
+                          %i.fi-x{style: 'font-size: 18px;'}
+                      %td
+                        %button.gray.button-like{ng_click: 'selectDevice(device)'}
+                          %i.fi-wrench{style: 'font-size: 18px;'}
