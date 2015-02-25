@@ -7,10 +7,13 @@ module Schedules
     required do
       model :sequence, class: Sequence
       model :user, class: User
-      time :start_time
-      time :end_time
       integer :repeat
       string :time_unit, in: Schedule::UNITS_OF_TIME
+    end
+
+    optional do
+      time :start_time, default: Time.current
+      time :end_time
     end
 
     def execute
