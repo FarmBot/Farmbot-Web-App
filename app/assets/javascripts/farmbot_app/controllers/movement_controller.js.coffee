@@ -7,7 +7,7 @@ angular.module('FarmBot').controller "MovementController", [
     $scope.devices = Devices
     [$scope.x, $scope.y, $scope.z, $scope.multiplier] = [0, 0, 0, 100]
 
-    $scope.goHome  = -> Devices.moveAbs 0, 0, 0, (data)-> console.log 'Home.'
+    $scope.goHome  = -> Devices.moveAbs 0, 0, 0, (data) -> console.log 'Home.'
     $scope.refresh = -> Devices.getStatus( (d) -> console.log d)
     $scope.toggle  = (num) -> Devices.togglePin(num)
     # $scope.goRel      = -> Devices.moveRel $scope.x, $scope.y, $scope.z, (d)->(d)
