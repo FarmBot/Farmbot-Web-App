@@ -24,7 +24,7 @@
             .row
               .large-12.columns
                 %button.green.button-like
-                  Add FarmBot
+                  {{ !!form._id ? "Update" : "Add" }} FarmBot
         %h2.page-title My FarmBots
         .row.padding-bottom
           .small-12.columns
