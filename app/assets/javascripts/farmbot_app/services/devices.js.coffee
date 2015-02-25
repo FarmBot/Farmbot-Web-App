@@ -45,7 +45,6 @@ class DeviceService
       .error(@ajaxError)
 
   handleMsg: (data) =>
-    debugger
     bot = _.find(@list, {uuid: data.fromUuid})
     @Router.create(data, bot)
 
