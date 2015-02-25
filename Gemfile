@@ -28,6 +28,7 @@ gem 'rails-assets-lodash'
 gem 'rails-assets-jquery'
 gem 'rails-assets-pickadate'
 gem 'rails-assets-ng-pickadate'
+gem 'rails-assets-sio-client'
 
 group :development, :test do
   gem 'pry'

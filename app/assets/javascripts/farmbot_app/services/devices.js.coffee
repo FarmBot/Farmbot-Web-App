@@ -1,12 +1,13 @@
 class DeviceService
-  constructor: (@$rootScope, @$http, @Command, @Router) ->
-    [@log, @list, @current, @status] = [[], [], {}, {meshblu: "Connecting"}]
+  constructor: (@$rootScope, @$http, @Command, @Router, @socket) ->
+    @log     = []
+    @list    = []
+    @current = {}
+    @status  = {meshblu: "Connecting"}
     @initConnections()
 
   initConnections: ->
     ok = (data, status, request, meta) =>
-      # THOUGHT: Maybe we should just bootstrap this data in the HTML and pull
-      # from there for extra snappiness?
       @list     = data
       # TODO: Real error handling.
       alert 'You need to link a Farmbot to your account.' unless data[0]
@@ -44,23 +45,27 @@ class DeviceService
       .error(@ajaxError)
 
   handleMsg: (data) =>
+    debugger
     bot = _.find(@list, {uuid: data.fromUuid})
-    @$rootScope.$apply(@Router.create(data, bot))
+    @Router.create(data, bot)
 
   handleStatus: (data) ->
     @status = data
 
   connectToMeshBlu: ->
     # Avoid double connections
-    unless @connection?.connected
-      @connection = skynet.createConnection
-        type:  "farmbotdss"
-        uuid:  "7e3a8a10-6bf6-11e4-9ead-634ea865603d"
-        token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
-      @connection.on "ready", (data) =>
-        @$rootScope.$apply(=> @status.meshblu = "online")
-        @connection.on "message", @handleMsg
-        @connection.on "status", @handleStatus
+    unless @socket?.connected()
+      skynet = {createConnection: ->
+                  console.warn "Need to deprecate skynetJS"
+                  return {on: -> null}}
+      @socket.on "message", @handleMsg
+      @socket.on "status", @handleStatus
+      @socket.on 'connect', =>
+        @socket.on 'identify', (data) =>
+          @socket.emit 'identity',
+            socketid: data.socketid
+            uuid:  "7e3a8a10-6bf6-11e4-9ead-634ea865603d"
+            token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
     else
       console.log "[WARN] Already connected to MeshBlu."
 
@@ -86,20 +91,20 @@ class DeviceService
   moveAbs: (x, y, z, cb) ->
     @send(@Command.create("move_abs", {x: 0, y: 0, z: 0}), cb)
 
-  send: (msg, cb = (d) -> console.log(d)) ->
-    if !!@connection
-      @connection.message
-        devices: @current.uuid
-        payload: msg
-        , => @$rootScope.$apply(cb)
+  send: (msg) ->
+    if @socket.connected()
+      console.log 'Sending Message.'
+      @socket.emit "message", {devices: @current.uuid, payload: msg}
     else
-      console.warn("Already connected to Meshblu")
+      alert 'Unable to send device messages.' +
+            ' Wait for device to connect or refresh the page'
 
 angular.module("FarmBot").service "Devices",[
   '$rootScope'
   '$http'
   'Command'
   'Router'
-  ($rootScope, $http, Command, Router) ->
-    return new DeviceService($rootScope, $http, Command, Router)
+  'socket'
+  ($rootScope, $http, Command, Router, socket) ->
+    return new DeviceService($rootScope, $http, Command, Router, socket)
 ]

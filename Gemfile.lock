@@ -229,6 +229,7 @@ GEM
       rails-assets-angular (~> 1.3.0)
     rails-assets-pickadate (3.5.5)
       rails-assets-jquery (>= 1.7)
+    rails-assets-sio-client (1.3.3)
     rails_12factor (0.0.3)
       rails_serve_static_assets
       rails_stdout_logging
@@ -358,6 +359,7 @@ DEPENDENCIES
   rails-assets-ng-pickadate
   rails-assets-ng-sortable
   rails-assets-pickadate
+  rails-assets-sio-client
   rails_12factor
   rspec
   rspec-rails

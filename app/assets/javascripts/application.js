@@ -1,7 +1,7 @@
 //= require lodash
 //= require jquery
 //= require pickadate
-//= require skynet
+//= require sio-client
 //= require angular/angular
 //= require angular/angular-route
 //= require ng-sortable
