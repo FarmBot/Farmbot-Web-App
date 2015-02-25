@@ -6,6 +6,10 @@ background: #ECECEC;
 
 /* SITE-WIDE NAVIGATION */
 
+.drop-shadow{
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
 nav{
   background-color: #434343;
   margin: 0px;
@@ -84,10 +88,6 @@ nav > a.large-menu-right{
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-
-.content{
-  margin-top: 20px;
 }
 
 .padding-bottom {
