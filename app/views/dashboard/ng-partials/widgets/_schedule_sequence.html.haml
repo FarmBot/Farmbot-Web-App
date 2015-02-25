@@ -5,7 +5,7 @@
         %h5 Schedule a Sequence
   .row
     .small-12.columns
-      .content-wrapper
+      %form.content-wrapper{name: 'form',  "ng-submit" => "submit()" }
         .row.padding-bottom
           .small-4.columns
             %p Choose a Sequence
@@ -31,24 +31,28 @@
                 .large-6.columns
                   .row.collapse.prefix-radius
                     .small-4.columns
-                      %span.prefix.uppercase Every
+                      %span.prefix.uppercase * Every
                     .small-4.columns
-                      %input{:placeholder => "4", :type => "text"}
+                      %input{:placeholder => "4", :type => "text", ng_model: 'form.repeat', required: true}
                     .small-4.columns
-                      %select{'ng-options' => 'item.value as item.show for item in repeats', 'ng-model' => 'form.repeat'}
-                  .row.collapse.prefix-radius
-                    .small-4.columns
-                      %span.prefix.uppercase Plant-ID
-                    .small-8.columns
-                      %input{:placeholder => "42", :type => "text"}
+                      %select{'ng-options' => 'item.value as item.show for item in repeats', 'ng-model' => 'form.timeUnit', required: true}
                   .row.collapse.prefix-radius
                     .small-4.columns
                       %span.prefix.uppercase Tool-ID
                     .small-8.columns
                       %input{:placeholder => "3", :type => "text"}
-        .row.padding-bottom
+                  .row.collapse.prefix-radius
+                    .small-4.columns
+                      %span.prefix.uppercase * Sequence
+                    .small-8.columns
+                      %select{'ng-options' => 'item._id as item.name for item in sequences', 'ng-model' => 'form.sequenceId', required: true}
+        .row
           .small-12.columns
-            %button.green.button-like{"ng-click" => "saveEvent(event)"}
+            %button.green.button-like{'ng-disabled' => 'form.$invalid'}
               Schedule
             %button.red.button-like.left{"ng-click" => "deleteEvent(event)"}
               Delete
+        .row.padding-bottom
+          .small-12.columns
+            %strong{'ng-show' => 'form.$invalid'}
+              Fields marked with (*) are required.

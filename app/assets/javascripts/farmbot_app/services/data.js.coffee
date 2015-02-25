@@ -24,6 +24,17 @@ data = (DS) ->
           localField: "steps"
           foreignKey: "sequence_id"
 
+  DS.defineResource
+    name: "schedule"
+    endpoint: 'schedules',
+    basePath: '/api',
+    idAttribute: "_id"
+    # relations:
+    #   hasMany:
+    #     step:
+    #       localField: "steps"
+    #       foreignKey: "sequence_id"
+
   return DS
 
 angular.module("FarmBot").service 'Data', [

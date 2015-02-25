@@ -10,7 +10,9 @@ angular.module("FarmBot").factory 'RouteTable', [() ->
     device.y = msg.status_current_y
     device.z = msg.status_current_z
     return true
-
+  error: (data, device) ->
+    alert "Got an 'error' message from Farmbot"
+    console.warn data
   missing: (data, device) ->
     console.error("Unable to parse message type from MeshBlu")
 ]

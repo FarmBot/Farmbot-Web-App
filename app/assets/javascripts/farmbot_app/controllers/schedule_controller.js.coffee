@@ -1,14 +1,38 @@
 controller = ($scope, Data) ->
-  $scope.form = {repeat: 'daily'}
-  $scope.pickADateOptions = {interval: 15}
+  nope = (e) -> alert 'Doh!'; console.error e
   $scope.repeats = [{show: 'Minutes', value: 'minutely'},
                     {show: 'Hours',   value: 'hourly'},
                     {show: 'Days',    value: 'daily'},
                     {show: 'Weeks',   value: 'weekly'},
                     {show: 'Months',  value: 'monthly'},
                     {show: 'Years',   value: 'yearly'}]
-  $scope.schedules = JSON.parse('[{"_id":"54e485ec70726f39a3020000","start_time":"2015-02-16T17:01:00.000Z","end_time":"2015-02-20T00:01:00.000Z","next_time":"2015-02-18T17:01:00.000Z","repeat":1,"time_unit":"daily","sequence_id":"54e485ec70726f39a3050000"},{"_id":"54e485ec70726f39a3070000","start_time":"2015-02-16T17:01:00.000Z","end_time":"2015-02-20T00:01:00.000Z","next_time":"2015-02-18T17:01:00.000Z","repeat":1,"time_unit":"daily","sequence_id":"54e485ec70726f39a30a0000"}]')
-  debugger
+  Data.findAll('sequence', {}).catch(nope)
+  Data.bindAll 'sequence', {}, $scope, 'sequences'
+  $scope.submit = ->
+    Data
+      .create('schedule', $scope.jsonPayload())
+      .catch(nope)
+      .then(-> $scope.form = {})
+
+  # Data transfer from angular format to API consumable format.
+  $scope.jsonPayload = ->
+    submission =
+      start_time:  $scope.form.dstart
+      end_time:    $scope.form.dend
+      time_unit:   $scope.form.timeUnit
+      repeat:      $scope.form.repeat
+      sequence_id: $scope.form.sequenceId
+    if $scope.form.tstart
+      if submission.start_time
+        submission.start_time.setHours   $scope.form.tstart.getHours()
+        submission.start_time.setMinutes $scope.form.tstart.getMinutes()
+
+      if submission.end_time
+        submission.end_time.setMinutes $scope.form.tstart.getMinutes()
+        submission.end_time.setHours   $scope.form.tstart.getHours()
+
+    submission
+
 angular.module('FarmBot').controller "ScheduleController", [
   '$scope'
   'Data'
