@@ -18,7 +18,7 @@ module Api
 
     def update
       if schedule.user != current_user
-        raise Errors::Forbidden, "Not your schedule."
+        raise Errors::Forbidden, 'Not your schedule.'
       end
       mutate Schedules::Update.run(params[:schedule],
                                    user: current_user,
@@ -29,7 +29,7 @@ module Api
       if (schedule.user == current_user) && schedule.destroy
         render nothing: true
       else
-        raise Errors::Forbidden, "Not your schedule."
+        raise Errors::Forbidden, 'Not your schedule.'
       end
     end
 

@@ -2,7 +2,7 @@ module Api
   class SequencesController < Api::AbstractController
     # TODO add user authorization maybe (privacy)
     def index
-      query = {user: current_user}
+      query = { user: current_user }
       query.merge!(schedule_id: params[:schedule_id]) if params[:schedule_id]
       render json: Sequence.where(query)
     end
