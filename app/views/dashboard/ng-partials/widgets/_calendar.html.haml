@@ -6,55 +6,17 @@
   .row
     .small-12.columns
       .content-wrapper
-        .row.day
+        .row.day{'ng-repeat' => '(date, scheds) in prettyDates'}
           .small-2.columns
-            %h6.calendar-date 21
-            .calendar-month Aug
-          .small-10.columns
-            .small-12.columns.event.past
-              .row
-                .small-12.columns
-                  .event-time 2pm
-                  %i.event-icon.fi-target
-                  .event-title Deep Watering
-                  %i.edit-icon.fi-pencil.right
-            .small-12.columns.event.past
-              .row
-                .small-12.columns
-                  .event-time 4pm
-                  %i.event-icon.fi-target
-                  .event-title Seed Injection
-                  %i.edit-icon.fi-pencil.right
-            .small-12.columns.event.next
-              .row
-                .small-12.columns
-                  .event-time 6pm
-                  %i.event-icon.fi-target
-                  .event-title Harvest
-                  %i.edit-icon.fi-pencil.right
-        .row.day
-          .small-2.columns
-            %h6.calendar-date 22
-            .calendar-month Aug
-          .small-10.columns
+            %h6.calendar-date {{ date.substring(0, 3) }}
+            .calendar-month {{ date.substring(4, 6) }}
+          .small-10.columns{'ng-repeat' => 's in scheds'}
             .small-12.columns.event
+              // .past is a thing, FYI.
+              // See examples in source control from 2/25/15
               .row
                 .small-12.columns
-                  .event-time 2pm
+                  .event-time {{ s.start_time | date: 'h a' }}
                   %i.event-icon.fi-target
-                  .event-title Deep Watering
-                  %i.edit-icon.fi-pencil.right
-            .small-12.columns.event
-              .row
-                .small-12.columns
-                  .event-time 4pm
-                  %i.event-icon.fi-target
-                  .event-title Seed Injection
-                  %i.edit-icon.fi-pencil.right
-            .small-12.columns.event
-              .row
-                .small-12.columns
-                  .event-time 6pm
-                  %i.event-icon.fi-target
-                  .event-title Harvest
+                  .event-title {{ s.sequence_name }}
                   %i.edit-icon.fi-pencil.right

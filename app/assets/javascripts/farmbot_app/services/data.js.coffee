@@ -30,9 +30,9 @@ data = (DS) ->
     basePath: '/api',
     idAttribute: "_id"
     # relations:
-    #   hasMany:
-    #     step:
-    #       localField: "steps"
+    #   hasOne:
+    #     sequence:
+    #       localField: "sequence"
     #       foreignKey: "sequence_id"
 
   return DS

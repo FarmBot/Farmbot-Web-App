@@ -6,8 +6,19 @@ controller = ($scope, Data) ->
                     {show: 'Weeks',   value: 'weekly'},
                     {show: 'Months',  value: 'monthly'},
                     {show: 'Years',   value: 'yearly'}]
+
   Data.findAll('sequence', {}).catch(nope)
-  Data.bindAll 'sequence', {}, $scope, 'sequences'
+  Data.bindAll('sequence', {}, $scope, 'sequences')
+  Data.findAll('schedule', {}).catch(nope)
+  Data.bindAll('schedule', {}, $scope, 'schedules')
+
+  $scope.prettyDates = []
+  $scope.$watchCollection 'schedules', ->
+    pretty = _.groupBy $scope.schedules, (s) ->
+      new Date(s.start_time).toDateString().substring(4, 10)
+    $scope.prettyDates = pretty
+    console.log $scope.prettyDates
+
   $scope.submit = ->
     Data
       .create('schedule', $scope.jsonPayload())
