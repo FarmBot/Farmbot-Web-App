@@ -32,7 +32,7 @@ class Command
         x: coords.x
         y: coords.y
         z: coords.z
-        speed: 100
+        speed: coords.speed || 100
         delay: 0
 
     move_rel: (coords) ->
@@ -43,7 +43,7 @@ class Command
         x: coords.x
         y: coords.y
         z: coords.z
-        speed: 100
+        speed: coords.speed || 100
         delay: 0
 
     error: (nope) ->

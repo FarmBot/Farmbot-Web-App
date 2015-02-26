@@ -29,7 +29,7 @@ directive =
     $scope.move = (axis, direction) ->
       cmd = {x: 0, y: 0, z: 0}
       # TODO un-hardcode the 'multiplier'
-      cmd[axis] = 100 * direction
+      cmd[axis] = 300 * (if direction then 1 else -1)
       Devices.moveRel cmd.x, cmd.y, cmd.z, (d) -> (d)
   ]
     # . . .
