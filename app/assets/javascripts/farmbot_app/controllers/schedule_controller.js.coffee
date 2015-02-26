@@ -1,5 +1,6 @@
 controller = ($scope, Data) ->
   nope = (e) -> alert 'Doh!'; console.error e
+  $scope.clear = -> $scope.form = {}
   $scope.repeats = [{show: 'Minutes', value: 'minutely'},
                     {show: 'Hours',   value: 'hourly'},
                     {show: 'Days',    value: 'daily'},
@@ -18,32 +19,20 @@ controller = ($scope, Data) ->
       new Date(s.start_time).toDateString().substring(4, 10)
     $scope.prettyDates = pretty
     console.log $scope.prettyDates
-
   $scope.submit = ->
     Data
-      .create('schedule', $scope.jsonPayload())
+      .create('schedule', $scope.form)
       .catch(nope)
-      .then(-> $scope.form = {})
-
-  # Data transfer from angular format to API consumable format.
-  $scope.jsonPayload = ->
-    submission =
-      start_time:  $scope.form.dstart
-      end_time:    $scope.form.dend
-      time_unit:   $scope.form.timeUnit
-      repeat:      $scope.form.repeat
-      sequence_id: $scope.form.sequenceId
-    if $scope.form.tstart
-      if submission.start_time
-        submission.start_time.setHours   $scope.form.tstart.getHours()
-        submission.start_time.setMinutes $scope.form.tstart.getMinutes()
-
-      if submission.end_time
-        submission.end_time.setMinutes $scope.form.tstart.getMinutes()
-        submission.end_time.setHours   $scope.form.tstart.getHours()
-
-    submission
-
+      .then($scope.clear)
+  $scope.destroy = ->
+    if !!$scope.form._id
+      Data
+        .destroy('schedule', $scope.form._id)
+        .catch(nope)
+        .then($scope.clear)
+    else
+      $scope.clear()
+  $scope.edit = (sched) -> _.assign($scope.form, sched)
 angular.module('FarmBot').controller "ScheduleController", [
   '$scope'
   'Data'

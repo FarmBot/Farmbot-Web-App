@@ -16,26 +16,31 @@ module Api
     #   render json: schedule
     # end
 
-    # def update
-    #   mutate Schedules::Update.run(params[:schedule],
-    #                                user: current_user)
-    # end
+    def update
+      if schedule.user != current_user
+        raise Errors::Forbidden, "Not your schedule."
+      end
+      mutate Schedules::Update.run(params[:schedule],
+                                   user: current_user,
+                                   schedule: schedule)
+    end
 
-    # def destroy
-    #   if (schedule.user == current_user) && schedule.destroy
-    #     render nothing: true
-    #   else
-    #     raise Errors::Forbidden, "Not your schedule."
-    #   end
-    # end
+    def destroy
+      if (schedule.user == current_user) && schedule.destroy
+        render nothing: true
+      else
+        raise Errors::Forbidden, "Not your schedule."
+      end
+    end
 
     private
 
     def sequence
       @sequence ||= Sequence.find(params[:sequence_id])
     end
-    # def schedule
-    #   @schedule ||= Schedule.find(params[:id])
-    # end
+
+    def schedule
+      @schedule ||= Schedule.find(params[:id])
+    end
   end
 end

@@ -17,17 +17,17 @@
                     .small-3.columns
                       %span.prefix.uppercase Starts
                     .small-9.columns
-                      %input{'pick-a-date' => "form.dstart", placeholder: "Today", :type => "text"}
+                      %input{'pick-a-date' => "form.start_time", placeholder: "Today", :type => "text"}
                   .row.collapse.prefix-radius
                     .small-3.columns
                       %span.prefix.uppercase Ends
                     .small-9.columns
-                      %input{'pick-a-date' => "form.dend", :placeholder => "Never", :type => "text"}
+                      %input{'pick-a-date' => "form.end_time", :placeholder => "Never", :type => "text"}
                   .row.collapse.prefix-radius
                     .small-3.columns
                       %span.prefix.uppercase Time
                     .small-9.columns
-                      %input{'pick-a-time' => "form.tstart", placeholder: "Now", type: "text"}
+                      %input{'pick-a-time' => "form.start_time", placeholder: "Now", type: "text"}
                 .large-6.columns
                   .row.collapse.prefix-radius
                     .small-4.columns
@@ -35,7 +35,7 @@
                     .small-4.columns
                       %input{:placeholder => "4", :type => "text", ng_model: 'form.repeat', required: true}
                     .small-4.columns
-                      %select{'ng-options' => 'item.value as item.show for item in repeats', 'ng-model' => 'form.timeUnit', required: true}
+                      %select{'ng-options' => 'item.value as item.show for item in repeats', 'ng-model' => 'form.time_unit', required: true}
                   .row.collapse.prefix-radius
                     .small-4.columns
                       %span.prefix.uppercase Tool-ID
@@ -45,12 +45,12 @@
                     .small-4.columns
                       %span.prefix.uppercase * Sequence
                     .small-8.columns
-                      %select{'ng-options' => 'item._id as item.name for item in sequences', 'ng-model' => 'form.sequenceId', required: true}
+                      %select{'ng-options' => 'item._id as item.name for item in sequences', 'ng-model' => 'form.sequence_id', required: true}
         .row
           .small-12.columns
-            %button.green.button-like{'ng-disabled' => 'form.$invalid'}
+            %button.green.button-like{'ng-disabled' => 'form.$invalid', type: 'submit'}
               Schedule
-            %button.red.button-like.left{"ng-click" => "deleteEvent(event)"}
+            %button.red.button-like.left{"ng-click" => "destroy()", type: 'button'}
               Delete
         .row.padding-bottom
           .small-12.columns

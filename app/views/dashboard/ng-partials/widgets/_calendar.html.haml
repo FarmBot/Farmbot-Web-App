@@ -19,4 +19,4 @@
                   .event-time {{ s.start_time | date: 'h a' }}
                   %i.event-icon.fi-target
                   .event-title {{ s.sequence_name }}
-                  %i.edit-icon.fi-pencil.right
+                  %i.edit-icon.fi-pencil.right{'ng-click' => 'edit(s)'}
