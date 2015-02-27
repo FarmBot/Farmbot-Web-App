@@ -8,8 +8,8 @@
       .content-wrapper
         .row.day{'ng-repeat' => '(date, scheds) in prettyDates'}
           .small-2.columns
-            %h6.calendar-date {{ date.substring(0, 3) }}
-            .calendar-month {{ date.substring(4, 6) }}
+            %h6.calendar-date {{ date | date: 'd MMM'  }}
+            .calendar-month {{ date | date: 'hh:mma' }}
           .small-10.columns{'ng-repeat' => 's in scheds'}
             .small-12.columns.event
               // .past is a thing, FYI.

@@ -15,10 +15,15 @@ controller = ($scope, Data) ->
 
   $scope.prettyDates = []
   $scope.$watchCollection 'schedules', ->
-    pretty = _.groupBy $scope.schedules, (s) ->
-      new Date(s.start_time).toDateString().substring(4, 10)
-    $scope.prettyDates = pretty
-    console.log $scope.prettyDates
+    allDates = _.map $scope.schedules, 'calendar'
+    relevantDates = _.uniq(_.flatten(allDates))
+    # => ["2015-02-25T00:00:00.000Z"]
+    wow = (accumulator, date, indx) ->
+      if indx < 10
+        schedules = _.where($scope.schedules, { 'calendar': [date] })
+        accumulator[date] = (accumulator[date] || []).concat(schedules)
+      accumulator
+    $scope.prettyDates = _.reduce relevantDates, wow, {}
   $scope.submit = ->
     Data
       .create('schedule', $scope.form)

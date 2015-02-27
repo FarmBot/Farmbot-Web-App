@@ -1,3 +1,4 @@
+# TODO: Step destruction is completely untested (controller, models, mutations)
 class Step
   include Mongoid::Document
 
@@ -44,13 +45,4 @@ class Step
     self.reshuffle!
     result
   end
-
-  def set_relation(name, relation)
-    if name == 'sequence' && self.sequence.present?
-      raise 'Sequence reassignment not supported'
-    else
-      super(name, relation)
-    end
-  end
-
 end
