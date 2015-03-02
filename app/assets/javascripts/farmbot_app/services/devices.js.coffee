@@ -4,7 +4,7 @@ class DeviceService
     @initConnections()
 
   initConnections: ->
-    nope = =>
+    nope = ->
       alert "Oh no! I could not connect to the My Farmbot service. The server" +
           " might be temporarily down"
     ok = (data) =>
