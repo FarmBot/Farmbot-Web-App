@@ -1,6 +1,14 @@
 # RESTful data adapter for hooking angular JS into the backend API.
 # Checkout "js-data-angular" docs for more info.
 data = (DS) ->
+  deviceMethods = {}
+  DS.defineResource
+    name: "device"
+    endpoint: 'devices',
+    basePath: '/api',
+    idAttribute: "_id"
+    methods: deviceMethods
+
   DS.defineResource
     name: "step"
     endpoint: 'steps',
