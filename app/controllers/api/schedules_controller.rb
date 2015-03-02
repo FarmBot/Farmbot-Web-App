@@ -1,13 +1,9 @@
 module Api
   class SchedulesController < Api::AbstractController
     def index
-      start  = Time.now - 2.day
-      finish = Time.now + 4.days
       # Follow this for better querying in the future:
       # http://www.js-data.io/v1.3.0/docs/query-syntax
-      render json: Schedule.where(user: current_user),
-             start: start,
-             finish: finish
+      render json: Schedule.where(user: current_user)
     end
 
     def create
