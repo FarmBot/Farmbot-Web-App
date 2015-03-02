@@ -1,9 +1,9 @@
-describe "SettingsController", ->
+describe "DevicesController", ->
   beforeEach ->
     module("FarmBot")
     inject ($controller) ->
       @scope = {}
-      @ctrl = $controller("SettingsController", $scope: scope)
+      @ctrl = $controller("DevicesController", $scope: @scope)
 
   it "initializes an empty default device", ->
     expect(scope.device).toEqual({})

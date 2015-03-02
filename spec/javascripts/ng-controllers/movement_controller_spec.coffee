@@ -3,7 +3,7 @@ describe "MovementController", ->
     module("FarmBot")
     inject ($controller) ->
       @scope = {}
-      @ctrl = $controller("MovementController", $scope: scope)
+      @ctrl = $controller("MovementController", $scope: @scope)
 
   it "initializes X, Y and Z", ->
     expect(scope.x).toBe(0)
