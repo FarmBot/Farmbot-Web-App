@@ -14,6 +14,11 @@ controller = ($scope, Data) ->
   Data.bindAll('schedule', {}, $scope, 'schedules')
 
   $scope.prettyDates = {}
+  lastDate = '2015-01-01T12:00:00.000Z' # initial val is dtub. Remember last key
+  $scope.showNextDate = (date) ->
+    same = lastDate.substring(8,10) is date.substring(8,10)
+    lastDate = date
+    if not same then yes else no
   $scope.drawCalendar = ->
     # TODO: Maybe I should put this into a filter?
     relevantDates = _.uniq(_.flatten(_.map($scope.schedules, 'calendar')))
