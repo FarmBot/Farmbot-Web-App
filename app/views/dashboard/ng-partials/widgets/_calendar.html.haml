@@ -8,11 +8,11 @@
       .content-wrapper.calendar-wrapper
         .row.day{'ng-repeat' => '(date, scheds) in prettyDates'}
           .small-2.columns
-            .div{ng_if: 'showNextDate(date)'}
-              %h6.calendar-date {{ date | date: 'd' }}
-              %h6.calendar-month {{ date | date: 'MMM' }}
+            .div
+              %h6.calendar-date {{ date.substring(0,3) }}
+              %h6.calendar-month {{ date.substring(3,5) }}
           .small-10.columns.event{'ng-repeat' => 's in scheds'}
-            .event-time {{ s.start_time | date: 'h a' }}
+            .event-time {{ s.start_time | date: 'h:mm a' }}
             %i.event-icon.fi-target
             .event-title {{ s.sequence_name }}
             %i.edit-icon.fi-pencil.right{'ng-click' => 'edit(s)'}

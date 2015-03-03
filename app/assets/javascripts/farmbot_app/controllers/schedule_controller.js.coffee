@@ -14,20 +14,28 @@ controller = ($scope, Data) ->
   Data.bindAll('schedule', {}, $scope, 'schedules')
 
   $scope.prettyDates = {}
-  lastDate = '2015-01-01T12:00:00.000Z' # initial val is dtub. Remember last key
-  $scope.showNextDate = (date) ->
-    same = lastDate.substring(8,10) is date.substring(8,10)
-    lastDate = date
-    if not same then yes else no
   $scope.drawCalendar = ->
-    # TODO: Maybe I should put this into a filter?
+    # TODO: put this into a filter
+    # First, grab all the unique dates for the users schedules.
     relevantDates = _.uniq(_.flatten(_.map($scope.schedules, 'calendar')))
+    # This is the reduce function that gets called by _.reduce().
     groupByMany = (accumulator, date, indx) ->
+      # Grab all the schedule items that match the current date.
       schedules = _.where($scope.schedules, calendar: [date])
-      accumulator[date] = (accumulator[date] || []).concat(schedules)
-      accumulator[date] = _.uniq(accumulator[date])
+      # Then convert that date string into a Date Object
+      date = new Date(date)
+      months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+                'Oct', 'Nov', 'Dec']
+      # Then make a 'stringly typed' date object that only is `MMMDD`
+      key = "#{months[date.getMonth()-1]}#{date.getDate()}"
+      # Then, push it into the array of schedules for that time slot. Make an
+      # array if one does not already exist on that hash key.
+      accumulator[key] = (accumulator[key] || []).concat(schedules)
+      # Then, sort them all so they are in order
+      accumulator[key] = _.sortBy(accumulator[key], 'start_time')
       accumulator
     $scope.prettyDates = _.reduce relevantDates, groupByMany, {}
+
   $scope.$watchCollection 'schedules', $scope.drawCalendar
   $scope.submit = ->
     Data
