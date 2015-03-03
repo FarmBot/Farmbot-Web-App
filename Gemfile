@@ -47,4 +47,5 @@ group :test do
   gem 'simplecov'
   gem 'capybara'
   gem 'launchy' #save_and_open_page while debugging integration tests.
+  gem 'capybara-angular' # Avoid race conditions in angular integration tests
 end

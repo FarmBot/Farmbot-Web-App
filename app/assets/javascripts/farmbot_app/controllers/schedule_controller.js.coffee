@@ -1,4 +1,4 @@
-controller = ($scope, Data) ->
+controller = ($scope, Data, Calendar) ->
   nope = (e) -> alert 'Doh!'; console.error e
   $scope.clear = -> $scope.form = {} and $scope.drawCalendar()
   $scope.repeats = [{show: 'Minutes', value: 'minutely'},
@@ -28,26 +28,17 @@ controller = ($scope, Data) ->
       $scope.clear()
   $scope.edit = (sched) -> $scope.form = sched
 
-  $scope.prettyDates = {}
-  # NASTY FUNCTION ALERT!!!
-  # Groups a collection of schedule objects into a hash by MMMDD. Ex:
-  # {'Feb02': [. . .], 'Mar27': [. . .]}
-  $scope.drawCalendar = ->
-    relevantDates = _.uniq(_.flatten(_.map($scope.schedules, 'calendar')))
-    groupByMany = (accumulator, date, indx) ->
-      schedules = _.where($scope.schedules, calendar: [date])
-      date = new Date(date)
-      months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
-                'Oct', 'Nov', 'Dec']
-      key = "#{months[date.getMonth()-1]}#{date.getDate()}"
-      accumulator[key] = (accumulator[key] || []).concat(schedules)
-      accumulator[key] = _.sortBy(accumulator[key], 'start_time')
-      accumulator
-    $scope.prettyDates = _.reduce relevantDates, groupByMany, {}
+  $scope.prettyDates = []
+  $scope.drawCalendar = -> $scope.prettyDates = Calendar.draw($scope.schedules)
   $scope.$watchCollection 'schedules', $scope.drawCalendar
-
+  lastDate = '2015-01-01T12:00:00.000Z' # initial val is dtub. Remember last key
+  $scope.showNextDate = (date) ->
+    same = lastDate.substring(8,10) is date.substring(8,10)
+    lastDate = date
+    if not same then yes else no
 angular.module('FarmBot').controller "ScheduleController", [
   '$scope'
   'Data'
+  'Calendar'
   controller
 ]

@@ -6,13 +6,13 @@
   .row
     .small-12.columns
       .content-wrapper.calendar-wrapper
-        .row.day{'ng-repeat' => '(date, scheds) in prettyDates'}
+        .row.day{'ng-repeat' => 'schedule in prettyDates'}
           .small-2.columns
-            .div
-              %h6.calendar-date {{ date.substring(0,3) }}
-              %h6.calendar-month {{ date.substring(3,5) }}
-          .small-10.columns.event{'ng-repeat' => 's in scheds'}
-            .event-time {{ s.start_time | date: 'h:mm a' }}
+            .div{ng_if: 'showNextDate(schedule.next_time)'}
+              %h6.calendar-date {{ schedule.next_time | date: 'd' }}
+              %h6.calendar-month {{ schedule.next_time | date: 'MMM' }}
+          .small-10.columns.event
+            .event-time {{ schedule.start_time | date: 'h:mm a' }}
             %i.event-icon.fi-target
-            .event-title {{ s.sequence_name }}
+            .event-title {{ schedule.sequence_name }}
             %i.edit-icon.fi-pencil.right{'ng-click' => 'edit(s)'}
