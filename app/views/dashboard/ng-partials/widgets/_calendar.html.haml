@@ -12,7 +12,7 @@
               %h6.calendar-date {{ schedule.next_time | date: 'd' }}
               %h6.calendar-month {{ schedule.next_time | date: 'MMM' }}
           .small-10.columns.event
-            .event-time {{ schedule.start_time | date: 'h:mm a' }}
+            .event-time {{ schedule.next_time | date: 'h:mm a' }}
             %i.event-icon.fi-target
             .event-title {{ schedule.sequence_name }}
-            %i.edit-icon.fi-pencil.right{'ng-click' => 'edit(s)'}
+            %i.edit-icon.fi-pencil.right{'ng-click' => 'edit(schedule)'}

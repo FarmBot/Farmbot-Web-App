@@ -1,5 +1,5 @@
 controller = ($scope, Data, Calendar) ->
-  nope = (e) -> alert 'Doh!'; console.error e
+  nope = (e) -> alert 'Doh!'; console.error e;
   $scope.clear = -> $scope.form = {} and $scope.drawCalendar()
   $scope.repeats = [{show: 'Minutes', value: 'minutely'},
                     {show: 'Hours',   value: 'hourly'},
@@ -14,10 +14,15 @@ controller = ($scope, Data, Calendar) ->
   Data.bindAll('schedule', {}, $scope, 'schedules')
 
   $scope.submit = ->
+    # :(? Why is this? This might be a JSData bug?
+    class ScheduleFormAdapter
+      constructor: ({@_id, @repeat, @time_unit,
+                     @start_time, @end_time, @sequence_id}) ->
     Data
-      .create('schedule', $scope.form)
+      .create('schedule', (new ScheduleFormAdapter($scope.form)))
       .catch(nope)
       .then($scope.clear)
+
   $scope.destroy = ->
     if !!$scope.form._id
       Data
@@ -26,12 +31,13 @@ controller = ($scope, Data, Calendar) ->
         .then($scope.clear)
     else
       $scope.clear()
+
   $scope.edit = (sched) -> $scope.form = sched
 
   $scope.prettyDates = []
   $scope.drawCalendar = -> $scope.prettyDates = Calendar.draw($scope.schedules)
   $scope.$watchCollection 'schedules', $scope.drawCalendar
-  lastDate = '2015-01-01T12:00:00.000Z' # initial val is dtub. Remember last key
+  lastDate = '' # Closure. Initial value is stub.
   $scope.showNextDate = (date) ->
     same = lastDate.substring(8,10) is date.substring(8,10)
     lastDate = date

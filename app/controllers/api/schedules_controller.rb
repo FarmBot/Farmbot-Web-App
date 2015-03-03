@@ -10,6 +10,8 @@ module Api
       mutate Schedules::Create.run(params,
                                    user: current_user,
                                    sequence: sequence)
+    rescue => que
+      binding.pry
     end
 
     # def show
@@ -37,6 +39,9 @@ module Api
 
     def sequence
       @sequence ||= Sequence.find(params[:sequence_id])
+    rescue Mongoid::Errors::InvalidFind => e
+      # TODO: Proper error handler.
+      raise 'You need to add a sequence_id. I need to add a better error handler'
     end
 
     def schedule
