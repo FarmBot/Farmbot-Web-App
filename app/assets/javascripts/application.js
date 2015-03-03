@@ -9,5 +9,5 @@
 //= require js-data-angular
 //= require ng-rails-csrf
 //= require ng-pickadate
-//= require farmbot_app/farmbot
+//= require farmbot
 //= require_tree ./farmbot_app
