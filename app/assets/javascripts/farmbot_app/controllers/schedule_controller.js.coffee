@@ -13,30 +13,6 @@ controller = ($scope, Data) ->
   Data.bindAll('sequence', {}, $scope, 'sequences')
   Data.bindAll('schedule', {}, $scope, 'schedules')
 
-  $scope.prettyDates = {}
-  $scope.drawCalendar = ->
-    # TODO: put this into a filter
-    # First, grab all the unique dates for the users schedules.
-    relevantDates = _.uniq(_.flatten(_.map($scope.schedules, 'calendar')))
-    # This is the reduce function that gets called by _.reduce().
-    groupByMany = (accumulator, date, indx) ->
-      # Grab all the schedule items that match the current date.
-      schedules = _.where($scope.schedules, calendar: [date])
-      # Then convert that date string into a Date Object
-      date = new Date(date)
-      months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
-                'Oct', 'Nov', 'Dec']
-      # Then make a 'stringly typed' date object that only is `MMMDD`
-      key = "#{months[date.getMonth()-1]}#{date.getDate()}"
-      # Then, push it into the array of schedules for that time slot. Make an
-      # array if one does not already exist on that hash key.
-      accumulator[key] = (accumulator[key] || []).concat(schedules)
-      # Then, sort them all so they are in order
-      accumulator[key] = _.sortBy(accumulator[key], 'start_time')
-      accumulator
-    $scope.prettyDates = _.reduce relevantDates, groupByMany, {}
-
-  $scope.$watchCollection 'schedules', $scope.drawCalendar
   $scope.submit = ->
     Data
       .create('schedule', $scope.form)
@@ -51,6 +27,25 @@ controller = ($scope, Data) ->
     else
       $scope.clear()
   $scope.edit = (sched) -> $scope.form = sched
+
+  $scope.prettyDates = {}
+  # NASTY FUNCTION ALERT!!!
+  # Groups a collection of schedule objects into a hash by MMMDD. Ex:
+  # {'Feb02': [. . .], 'Mar27': [. . .]}
+  $scope.drawCalendar = ->
+    relevantDates = _.uniq(_.flatten(_.map($scope.schedules, 'calendar')))
+    groupByMany = (accumulator, date, indx) ->
+      schedules = _.where($scope.schedules, calendar: [date])
+      date = new Date(date)
+      months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+                'Oct', 'Nov', 'Dec']
+      key = "#{months[date.getMonth()-1]}#{date.getDate()}"
+      accumulator[key] = (accumulator[key] || []).concat(schedules)
+      accumulator[key] = _.sortBy(accumulator[key], 'start_time')
+      accumulator
+    $scope.prettyDates = _.reduce relevantDates, groupByMany, {}
+  $scope.$watchCollection 'schedules', $scope.drawCalendar
+
 angular.module('FarmBot').controller "ScheduleController", [
   '$scope'
   'Data'
