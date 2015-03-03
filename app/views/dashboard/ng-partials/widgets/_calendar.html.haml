@@ -5,11 +5,12 @@
         %h5 Calendar
   .row
     .small-12.columns
-      .content-wrapper
+      .content-wrapper.calendar-wrapper
         .row.day{'ng-repeat' => '(date, scheds) in prettyDates'}
           .small-2.columns
-            %h6.calendar-date{ng_if: 'showNextDate(date)'}
-              {{ date | date: 'd MMM'  }}
+            .div{ng_if: 'showNextDate(date)'}
+              %h6.calendar-date {{ date | date: 'd' }}
+              %h6.calendar-month {{ date | date: 'MMM' }}
           .small-10.columns.event{'ng-repeat' => 's in scheds'}
             .event-time {{ s.start_time | date: 'h a' }}
             %i.event-icon.fi-target

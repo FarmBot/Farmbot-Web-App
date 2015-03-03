@@ -1,7 +1,11 @@
 /* CSS for the calendar widget */
 
+.content-wrapper.calendar-wrapper {
+  padding-bottom: 20px;
+}
+
 .row.day{
-	padding-bottom: 20px;
+  margin-right: 0px;
 }
 
 .event, .plant-block{
@@ -41,6 +45,7 @@
 	text-align: center;
 	color: #666666;
 	margin-bottom: 0px;
+  margin-top: 0px;
 }
 
 .calendar-date{
