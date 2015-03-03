@@ -7,9 +7,11 @@
     .small-12.columns
       .content-wrapper
         .row.day{'ng-repeat' => '(date, scheds) in prettyDates'}
+          // How can this work in the above line?
+          // :class => ("past" if date < time.now)
           .small-2.columns
-            %h6.calendar-date {{ date | date: 'd MMM'  }}
-            .calendar-month {{ date | date: 'hh:mma' }}
+            %h6.calendar-date {{ date | date: 'd'  }}
+            .calendar-month {{ date | date: 'MMM' }}
           .small-10.columns{'ng-repeat' => 's in scheds'}
             .small-12.columns.event
               // .past is a thing, FYI.
