@@ -8,15 +8,10 @@
       .content-wrapper
         .row.day{'ng-repeat' => '(date, scheds) in prettyDates'}
           .small-2.columns
-            %h6.calendar-date {{ date | date: 'd MMM'  }}
-            .calendar-month {{ date | date: 'hh:mma' }}
-          .small-10.columns{'ng-repeat' => 's in scheds'}
-            .small-12.columns.event
-              // .past is a thing, FYI.
-              // See examples in source control from 2/25/15
-              .row
-                .small-12.columns
-                  .event-time {{ s.start_time | date: 'h a' }}
-                  %i.event-icon.fi-target
-                  .event-title {{ s.sequence_name }}
-                  %i.edit-icon.fi-pencil.right{'ng-click' => 'edit(s)'}
+            %h6.calendar-date{ng_if: 'showNextDate(date)'}
+              {{ date | date: 'd MMM'  }}
+          .small-10.columns.event{'ng-repeat' => 's in scheds'}
+            .event-time {{ s.start_time | date: 'h a' }}
+            %i.event-icon.fi-target
+            .event-title {{ s.sequence_name }}
+            %i.edit-icon.fi-pencil.right{'ng-click' => 'edit(s)'}
