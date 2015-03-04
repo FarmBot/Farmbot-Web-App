@@ -11,7 +11,7 @@
             .div{ng_show: 'showDate(schedule.next_time)'}
               %h6.calendar-date {{ schedule.next_time | date: 'd' }}
               %h6.calendar-month {{ schedule.next_time | date: 'MMM' }}
-          .small-10.columns.event{ng_class: '{past: pastEvent(schedule)}'}
+          .small-10.columns.event{ng_class: '{past: pastEvent(schedule), next: nextEvent($index)}'}
             .event-time {{ schedule.next_time | date: 'h:mm a' }}
             %i.event-icon.fi-target
             .event-title {{ schedule.sequence_name }}
