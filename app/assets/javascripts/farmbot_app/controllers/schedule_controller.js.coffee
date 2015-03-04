@@ -37,11 +37,11 @@ controller = ($scope, Data, Calendar) ->
   $scope.prettyDates = []
   $scope.drawCalendar = -> $scope.prettyDates = Calendar.draw($scope.schedules)
   $scope.$watchCollection 'schedules', $scope.drawCalendar
-  lastDate = '' # Closure. Initial value is stub.
-  $scope.showNextDate = (date) ->
-    same = lastDate.substring(8,10) is date.substring(8,10)
-    lastDate = date
-    if not same then yes else no
+  last = {getDay: -> NaN}
+  $scope.showDate = (date) ->
+    isSameDay = last.getDay() is date.getDay()
+    last = date
+    if isSameDay then no else yes
 angular.module('FarmBot').controller "ScheduleController", [
   '$scope'
   'Data'

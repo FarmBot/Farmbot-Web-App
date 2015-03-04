@@ -17,7 +17,7 @@ class Calendar
     for key, values of keyValPairs
        for object in values
         result = _.omit(object, 'calendar')
-        result.next_time = key
+        result.next_time = new Date(key)
         results.push result
 
     _.sortBy(results, 'next_time')
