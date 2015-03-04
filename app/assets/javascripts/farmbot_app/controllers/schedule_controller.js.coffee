@@ -33,7 +33,7 @@ controller = ($scope, Data, Calendar) ->
       $scope.clear()
 
   $scope.edit = (sched) -> $scope.form = sched
-
+  $scope.pastEvent = (sched) -> sched.next_time < new Date()
   $scope.prettyDates = []
   $scope.drawCalendar = -> $scope.prettyDates = Calendar.draw($scope.schedules)
   $scope.$watchCollection 'schedules', $scope.drawCalendar

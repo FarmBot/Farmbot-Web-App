@@ -12,7 +12,7 @@ class ScheduleSerializer < ActiveModel::Serializer
   end
 
   def calendar
-    start  = serialization_options[:start] || Time.current
+    start  = serialization_options[:start] || Time.current - 1.day
     finish = serialization_options[:finish] || Time.current + 1.day
     object.between start, finish
   end
