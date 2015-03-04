@@ -10,8 +10,6 @@ module Api
       mutate Schedules::Create.run(params,
                                    user: current_user,
                                    sequence: sequence)
-    rescue => que
-      binding.pry
     end
 
     # def show
