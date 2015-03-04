@@ -1,5 +1,5 @@
-controller = ($scope, Data) ->
-  nope = (e) -> alert 'Doh!'; console.error e
+controller = ($scope, Data, Calendar) ->
+  nope = (e) -> alert 'Doh!'; console.error e;
   $scope.clear = -> $scope.form = {} and $scope.drawCalendar()
   $scope.repeats = [{show: 'Minutes', value: 'minutely'},
                     {show: 'Hours',   value: 'hourly'},
@@ -13,27 +13,16 @@ controller = ($scope, Data) ->
   Data.bindAll('sequence', {}, $scope, 'sequences')
   Data.bindAll('schedule', {}, $scope, 'schedules')
 
-  $scope.prettyDates = {}
-  lastDate = '2015-01-01T12:00:00.000Z' # initial val is dtub. Remember last key
-  $scope.showNextDate = (date) ->
-    same = lastDate.substring(8,10) is date.substring(8,10)
-    lastDate = date
-    if not same then yes else no
-  $scope.drawCalendar = ->
-    # TODO: Maybe I should put this into a filter?
-    relevantDates = _.uniq(_.flatten(_.map($scope.schedules, 'calendar')))
-    groupByMany = (accumulator, date, indx) ->
-      schedules = _.where($scope.schedules, calendar: [date])
-      accumulator[date] = (accumulator[date] || []).concat(schedules)
-      accumulator[date] = _.uniq(accumulator[date])
-      accumulator
-    $scope.prettyDates = _.reduce relevantDates, groupByMany, {}
-  $scope.$watchCollection 'schedules', $scope.drawCalendar
   $scope.submit = ->
+    # :(? Why is this? This might be a JSData bug?
+    class ScheduleFormAdapter
+      constructor: ({@_id, @repeat, @time_unit,
+                     @start_time, @end_time, @sequence_id}) ->
     Data
-      .create('schedule', $scope.form)
+      .create('schedule', (new ScheduleFormAdapter($scope.form)))
       .catch(nope)
       .then($scope.clear)
+
   $scope.destroy = ->
     if !!$scope.form._id
       Data
@@ -42,9 +31,20 @@ controller = ($scope, Data) ->
         .then($scope.clear)
     else
       $scope.clear()
+
   $scope.edit = (sched) -> $scope.form = sched
+
+  $scope.prettyDates = []
+  $scope.drawCalendar = -> $scope.prettyDates = Calendar.draw($scope.schedules)
+  $scope.$watchCollection 'schedules', $scope.drawCalendar
+  last = {getDay: -> NaN}
+  $scope.showDate = (date) ->
+    isSameDay = last.getDay() is date.getDay()
+    last = date
+    if isSameDay then no else yes
 angular.module('FarmBot').controller "ScheduleController", [
   '$scope'
   'Data'
+  'Calendar'
   controller
 ]

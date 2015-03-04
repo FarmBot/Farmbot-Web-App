@@ -82,6 +82,8 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
+    capybara-angular (0.1.0)
+      capybara
     chronic (0.10.2)
     churn (0.0.35)
       chronic (>= 0.2.3)
@@ -335,6 +337,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers
   capybara
+  capybara-angular
   coffee-rails
   devise!
   factory_girl_rails
