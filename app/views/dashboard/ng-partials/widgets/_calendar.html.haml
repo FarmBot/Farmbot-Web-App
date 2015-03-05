@@ -8,7 +8,7 @@
       .content-wrapper.calendar-wrapper
         .row.day{'ng-repeat' => 'schedule in prettyDates'}
           .small-2.columns
-            .div{ng_show: 'showDate(schedule.next_time)'}
+            .div{ng_show: 'showDate($index)'}
               %h6.calendar-date {{ schedule.next_time | date: 'd' }}
               %h6.calendar-month {{ schedule.next_time | date: 'MMM' }}
           .small-10.columns.event{ng_class: '{past: pastEvent(schedule), next: nextEvent($index)}'}
