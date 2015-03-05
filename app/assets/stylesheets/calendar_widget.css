@@ -4,8 +4,13 @@
   padding-bottom: 20px;
 }
 
-.row.day{
-  margin-right: 0px;
+.row.date-flipper {
+  margin-bottom: 20px;
+}
+
+.row.event{
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .event, .plant-block{
@@ -41,16 +46,15 @@
 	color: #777;
 }
 
-.calendar-month, .calendar-date{
+h6.date{
 	text-align: center;
+  text-transform: uppercase;
 	color: #666666;
 	margin-bottom: 0px;
   margin-top: 0px;
-}
-
-.calendar-date{
 	font-weight: bold;
 	font-size: 1.4rem;
+  line-height: 50px;
 }
 
 .edit-icon{
@@ -63,6 +67,13 @@
 }
 
 .event-icon, .event-time, .event-title{
-	margin-right: 20px;
 	float: left;
+}
+
+.event-time {
+  width: 90px;
+}
+
+.event-icon {
+  width: 30px;
 }

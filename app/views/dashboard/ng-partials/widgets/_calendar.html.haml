@@ -6,12 +6,15 @@
   .row
     .small-12.columns
       .content-wrapper.calendar-wrapper
-        .row.day{'ng-repeat' => 'schedule in prettyDates'}
+        .row.date-flipper
           .small-2.columns
-            .div{ng_show: 'showDate($index)'}
-              %h6.calendar-date {{ schedule.next_time | date: 'd' }}
-              %h6.calendar-month {{ schedule.next_time | date: 'MMM' }}
-          .small-10.columns.event{ng_class: '{past: pastEvent(schedule), next: nextEvent($index)}'}
+            %i.fa.fa-2x.fa-arrow-left.arrow-button.radius
+          .small-8.columns
+            %h6.date {{ schedule.next_time | date: 'MMMM d' }} March 5 (make me real)
+          .small-2.columns
+            %i.fa.fa-2x.fa-arrow-right.arrow-button.radius.right
+        .row.event{'ng-repeat' => 'schedule in prettyDates', ng_class:'{past: pastEvent(schedule), next: nextEvent($index)}'}
+          .small-12.columns
             .event-time {{ schedule.next_time | date: 'h:mm a' }}
             %i.event-icon.fi-target
             .event-title {{ schedule.sequence_name }}
