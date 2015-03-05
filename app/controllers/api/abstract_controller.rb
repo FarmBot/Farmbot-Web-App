@@ -11,10 +11,10 @@ module Api
       sorry "Can't find #{exc.klass}(s) with ID(s): #{exc.params}", 404
     end
 
-    rescue_from Mongoid::Errors::InvalidFind do |exc|
-      sorry "You most likely forgot to provide an `*_id` attribute in your "\
-            "request parameters. Examples of possible missing params: "\
-            "schedule_id, sequence_id, id, etc..", 400
+    rescue_from Mongoid::Errors::InvalidFind do
+      sorry 'You most likely forgot to provide an `*_id` attribute in your '\
+            'request parameters. Examples of possible missing params: '\
+            'schedule_id, sequence_id, id, etc..', 400
     end
 
 private
