@@ -7,15 +7,21 @@ controller = ($scope, Data, Calendar) ->
                     {show: 'Weeks',   value: 'weekly'},
                     {show: 'Months',  value: 'monthly'},
                     {show: 'Years',   value: 'yearly'}]
+  $scope.calDate = new Date()
+  $scope.calDate.setHours(0)
+  $scope.calDate.setMinutes(0)
+  getSchedules = ->
+    Data.ejectAll('schedule')
+    Data.findAll('schedule', start: $scope.calDate, bypassCache: yes).catch nope
+  getSchedules()
+  $scope.$watch 'calDate', getSchedules, true
   Data.findAll('sequence', {}).catch(nope)
-  Data.findAll('schedule', {}).catch(nope)
   Data.bindAll('sequence', {}, $scope, 'sequences')
   Data.bindAll('schedule', {}, $scope, 'schedules')
 
   $scope.prettyDates = []
   drawCalendar = -> $scope.prettyDates = Calendar.draw($scope.schedules)
   $scope.$watchCollection 'schedules', drawCalendar
-
   $scope.submit = -> Data.create('schedule', $scope.form).catch(nope).then clear
 
   $scope.destroy = ->
@@ -25,18 +31,16 @@ controller = ($scope, Data, Calendar) ->
       clear()
 
   $scope.edit = (sched) -> $scope.form = sched
-
+  $scope.shiftDate = (days) ->
+    console.log '->'
+    n = $scope.calDate.getTime() + (86400000 * days);
+    $scope.calDate = new Date(n)
   previousSchedule = (indx) ->
     $scope.prettyDates[indx - 1] || {next_time: new Date(0)}
   currentSchedule = (indx) -> $scope.prettyDates[indx]
-
-  $scope.showDate = (indx) ->
-    return yes if $scope.prettyDates.length is 1
-    before = previousSchedule(indx).next_time.getDay()
-    after = currentSchedule(indx).next_time.getDay()
-    if before is after then no else yes
   $scope.pastEvent = (sched) -> sched.next_time < new Date()
   $scope.nextEvent = ($index) ->
+    return false if $index is 0
     previous = $scope.pastEvent(previousSchedule($index))
     current  = $scope.pastEvent(currentSchedule($index))
     if previous is true and current is false then yes else no

@@ -12,8 +12,24 @@ class ScheduleSerializer < ActiveModel::Serializer
   end
 
   def calendar
-    start  = serialization_options[:start] || Time.current - 1.day
-    finish = serialization_options[:finish] || Time.current + 1.day
     object.between start, finish
+  end
+
+private
+
+  def start
+    if options[:start]
+      Time.parse(options[:start])
+    else
+      Time.current.midnight - 1.day
+    end
+  end
+
+  def finish
+    if options[:finish]
+      Time.parse(options[:finish])
+    else
+      start + 1.day
+    end
   end
 end

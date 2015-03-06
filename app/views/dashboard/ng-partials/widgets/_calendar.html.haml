@@ -8,11 +8,11 @@
       .content-wrapper.calendar-wrapper
         .row.date-flipper
           .small-2.columns
-            %i.fa.fa-2x.fa-arrow-left.arrow-button.radius
+            %i.fa.fa-2x.fa-arrow-left.arrow-button.radius{ng_click: 'shiftDate(-1)'}
           .small-8.columns
-            %h6.date {{ schedule.next_time | date: 'MMMM d' }} March 5 (make me real)
+            %h6.date{'pick-a-date' => 'calDate'} {{ calDate | date: 'MMMM d' }}
           .small-2.columns
-            %i.fa.fa-2x.fa-arrow-right.arrow-button.radius.right
+            %i.fa.fa-2x.fa-arrow-right.arrow-button.radius.right{ng_click: 'shiftDate(1)'}
         .row.event{'ng-repeat' => 'schedule in prettyDates', ng_class:'{past: pastEvent(schedule), next: nextEvent($index)}'}
           .small-12.columns
             .event-time {{ schedule.next_time | date: 'h:mm a' }}
