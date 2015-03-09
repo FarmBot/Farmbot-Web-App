@@ -1,3 +1,5 @@
+require "codeclimate-test-reporter"
+CodeClimate::TestReporter.start
 require 'simplecov'
 #Ignore anything with the word 'spec' in it. No need to test your tests.
 SimpleCov.start do

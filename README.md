@@ -1,6 +1,6 @@
 [![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-web-app.png)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
 [![Build Status](https://travis-ci.org/FarmBot/farmbot-web-app.svg)](https://travis-ci.org/FarmBot/farmbot-web-app)
-# Farmbot Web App
+[![Test Coverage](https://codeclimate.com/github/FarmBot/farmbot-web-app/badges/coverage.svg)](https://codeclimate.com/github/FarmBot/farmbot-web-app)# Farmbot Web App
 
 This Repo is the Web based side of FarmBot. It allows users to control the device from their web browser. **ITS NOT STABLE. WE ARE IN PRE ALPHA.**
 
