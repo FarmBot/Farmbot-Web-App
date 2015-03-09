@@ -124,8 +124,6 @@ GEM
     faker (1.4.3)
       i18n (~> 0.5)
     fattr (2.2.2)
-    figaro (1.1.0)
-      thor (~> 0.14)
     flay (2.6.1)
       ruby_parser (~> 3.0)
       sexp_processor (~> 4.0)
@@ -345,7 +343,6 @@ DEPENDENCIES
   devise!
   factory_girl_rails
   faker
-  figaro
   font-awesome-rails
   haml
   high_voltage (~> 2.1.0)

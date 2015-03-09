@@ -16,7 +16,6 @@ gem 'font-awesome-rails'
 gem 'uglifier'
 gem 'high_voltage', '~> 2.1.0'
 gem 'haml'
-gem 'figaro' # Store secrets the 12 factor way. TODO: Get off of this gem.
 gem 'devise', github: 'plataformatec/devise'
 gem 'mutations'
 gem 'active_model_serializers', '~> 0.8.3'
