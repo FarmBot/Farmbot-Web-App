@@ -1,7 +1,7 @@
 development:
   sessions:
     default:
-      database: dss_development
+      database: farmbot_web_development
       hosts:
         - localhost:27017
       options:
@@ -9,9 +9,9 @@ development:
 test:
   sessions:
     default:
-      database: dss_test
+      database: farmbot_web_test
       hosts:
-        - localhost:27017
+        - <%= ENV['MONGO_HOST'] || 'localhost:27017' %>
       options:
         read: primary
         # In the test environment we lower the retries and retry interval to

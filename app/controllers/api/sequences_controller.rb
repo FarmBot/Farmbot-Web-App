@@ -22,7 +22,8 @@ module Api
     end
 
     def destroy
-      # TODO: If you touch this again, add a mutation.
+      # HEY YOU!! If you touch this again, add a mutation. This is the most
+      # complexity I would like to see in one controlelr action.
       if (sequence.user == current_user) && sequence.destroy
         render nothing: true
       else
