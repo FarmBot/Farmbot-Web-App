@@ -15,7 +15,7 @@ class ScheduleSerializer < ActiveModel::Serializer
     object.between start, finish
   end
 
-private
+  private
 
   def start
     if options[:start]

@@ -46,10 +46,8 @@ module Api
     def default_serializer_options
       # For some strange reason, angular-data crashes if we don't call super()
       # here. Rails doesn't care, though.
-      super.merge({
-        start: params[:start],
-        finish: params[:finish]
-        })
+      super.merge(start: params[:start],
+                  finish: params[:finish])
     end
   end
 end

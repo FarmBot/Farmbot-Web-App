@@ -32,8 +32,7 @@ controller = ($scope, Data, Calendar) ->
 
   $scope.edit = (sched) -> $scope.form = sched
   $scope.shiftDate = (days) ->
-    console.log '->'
-    n = $scope.calDate.getTime() + (86400000 * days);
+    n = $scope.calDate.getTime() + (86400000 * days)
     $scope.calDate = new Date(n)
   previousSchedule = (indx) ->
     $scope.prettyDates[indx - 1] || {next_time: new Date(0)}
