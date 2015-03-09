@@ -1,10 +1,11 @@
 language: ruby
 rvm:
-  - 2.2.0
+- 2.2.0
 services:
-  - mongodb
+- mongodb
 notifications:
-  irc: chat.freenode.net#farmbot
+  irc:
+    - "chat.freenode.net#farmbot"
 env:
 # A 'fake' secret token for use in our CI env.
 # Don't worry- this isn't the real one.

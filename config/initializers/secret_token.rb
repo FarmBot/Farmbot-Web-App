@@ -10,4 +10,4 @@
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
 
-  Dss::Application.config.secret_key_base = '78d21d901ba79defae9ddf6359eb70c6d8203f7ea7eec3e8f3e3791c6b1fe04a5b0313f149b2b81dd108aae49254dd2b905c00f863e1923916dbac70bba63134'
+  FarmBot::Application.config.secret_key_base = '78d21d901ba79defae9ddf6359eb70c6d8203f7ea7eec3e8f3e3791c6b1fe04a5b0313f149b2b81dd108aae49254dd2b905c00f863e1923916dbac70bba63134'
