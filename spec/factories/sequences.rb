@@ -5,6 +5,6 @@ FactoryGirl.define do
     name { Faker::Company.catch_phrase }
     color { Sequence::COLORS.sample }
     user
-    steps { [FactoryGirl.build(:step)] }
+    steps { FactoryGirl.build_list(:step, 1) }
   end
 end
