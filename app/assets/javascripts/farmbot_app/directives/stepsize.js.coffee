@@ -3,6 +3,9 @@ directive =
   restrict: 'A'
   link: (scope, el, attr) ->
     el.on 'click', =>
+      # this is actually wrong. It needs to select
+      # $('items where stepsize &&(stepsize != scope.stepSize)').removeClass...
+      # $('items where (stepsize == scope.stepSize)').addClass...
       $('.move-amount-selected').removeClass('move-amount-selected')
       el.addClass('move-amount-selected')
       scope.move parseInt(attr.stepsize)
