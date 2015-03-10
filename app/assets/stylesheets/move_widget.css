@@ -20,7 +20,7 @@ button.move-amount:hover{
   color: #434343
 }
 
-button.move-amount:focus{
+button.move-amount-selected{
   background-color: #666666;
   color: #FFFFFF;
   border-color: inherit;

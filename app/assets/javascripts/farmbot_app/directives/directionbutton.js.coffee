@@ -28,13 +28,9 @@ directive =
   controller: ['$scope', 'Devices', ($scope, Devices) ->
     $scope.move = (axis, direction) ->
       cmd = {x: 0, y: 0, z: 0}
-      # TODO un-hardcode the 'multiplier'
-      cmd[axis] = 300 * (if direction then 1 else -1)
+      direction = if direction then 1 else -1
+      cmd[axis] = Devices.stepSize * direction
       Devices.moveRel cmd.x, cmd.y, cmd.z, (d) -> (d)
   ]
-    # . . .
-  # compile: (tElement, tAttrs, transclude) ->
-  #   pre: (scope, iElement, iAttrs, controller) -> ...2
-  #   post: (scope, iElement, iAttrs, controller) -> ...
 
 angular.module("FarmBot").directive 'directionbutton', [() -> directive]

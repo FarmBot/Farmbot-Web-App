@@ -8,10 +8,10 @@
         %h6.control-title.text-center Move Amount (mm)
         .row
           .small-12.columns
-            %button.move-amount.no-radius.leftmost{ng_click: 'setMultiplier(1)'} 1
-            %button.move-amount.no-radius{ng_click: 'setMultiplier(10)'} 10
-            %button.move-amount.no-radius{ng_click: 'setMultiplier(100)'} 100
-            %button.move-amount.no-radius.rightmost{ng_click: 'setMultiplier(1000)'} 1000
+            %button.move-amount.no-radius.leftmost{stepsize: '1'} 1
+            %button.move-amount.no-radius{stepsize: '10'} 10
+            %button.move-amount.no-radius{stepsize: '100'} 100
+            %button.move-amount.no-radius.rightmost{stepsize: '1000'} 1000
 
         .row
           %table.transparent-table.jog-table{:align => "center", :style => 'border: 0px;'}

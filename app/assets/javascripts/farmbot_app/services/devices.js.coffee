@@ -1,6 +1,7 @@
 class DeviceService
   constructor: (@Command, @Router, @socket, @Data) ->
     [@list, @current, @status] = [[], {}, {meshblu: "Connecting"}]
+    @stepSize = 1000
     @initConnections()
 
   initConnections: ->
@@ -8,9 +9,12 @@ class DeviceService
       alert "Oh no! I could not connect to the My Farmbot service. The server" +
           " might be temporarily down"
     ok = (data) =>
-      [@list, @current] = [data, data[0]]
-      alert 'You need to link a Farmbot to your account.' unless data[0]
-      @connectToMeshBlu()
+      if data[0]
+        [@list, @current] = [data, data[0]]
+        @connectToMeshBlu()
+      else
+        alert 'You need to link a Farmbot to your account.'
+        window.location = '/dashboard#/devices'
     @Data.findAll('device', {}).catch(nope).then(ok)
 
   handleMsg: (data) =>
@@ -65,6 +69,8 @@ class DeviceService
     else
       alert 'Unable to send device messages.' +
             ' Wait for device to connect or refresh the page'
+
+  setStepSize: (size) -> @stepSize = size
 
 angular.module("FarmBot").service "Devices",[
   'Command'
