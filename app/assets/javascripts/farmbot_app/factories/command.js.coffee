@@ -16,12 +16,12 @@ class Command
   @all:
     read_status: (args) -> new SingleCommandMessage(args)
 
-    pin_write: (args) ->
+    pin_write: (values) ->
       new SingleCommandMessage
         action: "PIN WRITE",
-        pin: arg.pin,
-        value1: arg.value1,
-        mode: arg.mode,
+        pin: values.pin,
+        value1: values.value1,
+        mode: values.mode,
 
     move_abs: (coords) ->
       new SingleCommandMessage

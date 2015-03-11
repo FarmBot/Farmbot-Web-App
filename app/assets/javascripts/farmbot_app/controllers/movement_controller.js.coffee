@@ -14,5 +14,11 @@ angular.module('FarmBot').controller "MovementController", [
         Devices.sendMessage "home_#{axis}"
       else
         $scope.home(dir) for dir in ['x', 'y', 'z']
-    $scope.toggle  = (num) -> Devices.togglePin(num)
+    $scope.toggle  = (num) ->
+      pins =
+        water:  10
+        led:    13
+        vacuum: 9
+        tool:   8
+      Devices.togglePin(pins[num] || 13)
 ]
