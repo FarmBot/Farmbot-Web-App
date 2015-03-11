@@ -47,6 +47,18 @@ class Command
         speed: args.speed || 100
         delay: 0
 
+    home_y: (args) ->
+      new SingleCommandMessage
+        action: 'HOME Y'
+        speed: args.speed || 100
+        delay: 0
+
+    home_z: (args) ->
+      new SingleCommandMessage
+        action: 'HOME Z'
+        speed: args.speed || 100
+        delay: 0
+
     error: (nope) ->
       msg = "Unknown FarmBot message type #{nope}"
       console.warn(msg)
