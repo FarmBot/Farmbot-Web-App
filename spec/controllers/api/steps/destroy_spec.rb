@@ -5,7 +5,9 @@ describe Api::StepsController do
   include Devise::TestHelpers
 
   describe '#destroy' do
-    let(:sequence) { FactoryGirl.create(:sequence) }
+    let(:sequence) do
+      FactoryGirl.create(:sequence, steps: FactoryGirl.build_list(:step, 2))
+    end
     let(:step) { sequence.steps[0] }
     let(:user) { sequence.user }
 
