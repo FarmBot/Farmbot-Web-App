@@ -1,3 +1,10 @@
+# Helper class to DRY up creation of outbound command messages
+class SingleCommandMessage
+  constructor: (payload = {}) ->
+    @time_stamp = new Date()
+    @command = payload
+  message_type: 'single_command'
+
 # Used for _CREATION_ of _OUTBOUND_ messages.
 class Command
   create: (type, args = {}) ->
@@ -7,27 +14,17 @@ class Command
     return Command.all[type](args)
 
   @all:
-    single_command: (_args) ->
-      message_type: 'single_command'
-      time_stamp: Date.now()
+    read_status: (args) -> new SingleCommandMessage(args)
 
-    read_status: (_args) ->
-      message_type: 'read_status'
-      time_stamp: Date.now()
-
-    pin_write: (arg) ->
-      message_type: "pin_write",
-      time_stamp: Date.now(),
-      command:
+    pin_write: (args) ->
+      new SingleCommandMessage
         action: "PIN WRITE",
         pin: arg.pin,
         value1: arg.value1,
         mode: arg.mode,
 
     move_abs: (coords) ->
-      message_type: 'move_abs'
-      time_stamp: new Date()
-      command:
+      new SingleCommandMessage
         action: 'MOVE ABSOLUTE'
         x: coords.x
         y: coords.y
@@ -36,14 +33,18 @@ class Command
         delay: 0
 
     move_rel: (coords) ->
-      message_type: 'move_rel'
-      time_stamp: new Date()
-      command:
+      new SingleCommandMessage
         action: 'MOVE RELATIVE'
         x: coords.x
         y: coords.y
         z: coords.z
         speed: coords.speed || 100
+        delay: 0
+
+    home_x: (args) ->
+      new SingleCommandMessage
+        action: 'HOME X'
+        speed: args.speed || 100
         delay: 0
 
     error: (nope) ->

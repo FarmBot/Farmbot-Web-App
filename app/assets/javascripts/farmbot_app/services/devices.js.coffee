@@ -56,11 +56,16 @@ class DeviceService
     @send @Command.create("pin_write", message), cb
     console.log "Pin #{number} is now #{@current[pin]}"
 
+  # TODO This method (and moveAbs) might be overly specific. Consider removal in
+  # favor of @sendMessage()
   moveRel: (x, y, z, cb) ->
     @send(@Command.create("move_rel", {x: x, y: y, z: z}), cb)
 
   moveAbs: (x, y, z, cb) ->
     @send(@Command.create("move_abs", {x: x, y: y, z: z}), cb)
+
+  sendMessage: (name, params, cb) ->
+    @send(@Command.create(name, params), cb)
 
   send: (msg) ->
     if @socket.connected()
