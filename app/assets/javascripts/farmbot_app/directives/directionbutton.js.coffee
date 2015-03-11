@@ -23,7 +23,7 @@ directive =
       el.addClass(classes.x.up)
       console.warn 'Malformed <directionbutton> params. Using default.'
 
-    el.on 'click', =>
+    el.on 'click', ->
       scope.move attr.axis, (attr.direction == 'up') ? -1 : 1
   controller: ['$scope', 'Devices', ($scope, Devices) ->
     $scope.move = (axis, direction) ->

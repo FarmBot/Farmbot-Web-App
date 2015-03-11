@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Api::StepsController do
-
   include Devise::TestHelpers
 
   describe '#show' do

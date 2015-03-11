@@ -16,4 +16,4 @@ directive =
       $scope.stepSize = Devices.stepSize
   ]
 
-angular.module("FarmBot").directive 'stepsize', [() -> directive]
+angular.module("FarmBot").directive 'stepsize', [-> directive]

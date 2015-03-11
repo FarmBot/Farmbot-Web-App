@@ -28,7 +28,7 @@ describe Api::SchedulesController do
                 time_unit: 'minutely' }
       post :create, input
       expect(response.status).to eq(400)
-      expect(json[:error]).to include("forgot to provide an `*_id` attribute")
+      expect(json[:error]).to include('forgot to provide an `*_id` attribute')
     end
   end
 end

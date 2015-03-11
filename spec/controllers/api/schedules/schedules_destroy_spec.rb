@@ -4,7 +4,6 @@ describe Api::SchedulesController do
   include Devise::TestHelpers
 
   describe '#destroy' do
-
     let(:user) { FactoryGirl.create(:user) }
 
     it 'deletes a schedule' do

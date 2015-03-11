@@ -1,6 +1,6 @@
 RSpec.describe ScheduleSerializer do
   it 'accepts a :start and :end option' do
-    params = {start_time: 5.days.ago, end_time: 5.days.from_now}
+    params = { start_time: 5.days.ago, end_time: 5.days.from_now }
     schedule = FactoryGirl.build(:schedule, params)
     before = 2.days.ago.to_time
     after = 2.days.from_now.to_time
