@@ -3,7 +3,7 @@ class SingleCommandMessage
   constructor: (payload = {}) ->
     @time_stamp = new Date()
     @command = payload
-  message_type: 'single_command'
+    @message_type = 'single_command'
 
 # Used for _CREATION_ of _OUTBOUND_ messages.
 class Command
@@ -14,7 +14,9 @@ class Command
     return Command.all[type](args)
 
   @all:
-    read_status: (args) -> new SingleCommandMessage(args)
+    read_status: (args) ->
+      time_stamp: new Date()
+      message_type: 'read_status'
 
     pin_write: (values) ->
       new SingleCommandMessage
