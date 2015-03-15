@@ -1,4 +1,4 @@
-angular.module("FarmBot").factory 'RouteTable', [() ->
+RouteTable = () ->
   confirmation: (data, device) -> yes
   read_status_response: (data, device) ->
     msg = data.message || {}
@@ -9,4 +9,5 @@ angular.module("FarmBot").factory 'RouteTable', [() ->
     yes
   error: (data, device) -> console.warn data
   missing: (data, device) -> console.error "Uknown message type"
-]
+
+angular.module("FarmBot").factory 'RouteTable', [RouteTable]

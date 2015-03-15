@@ -14,22 +14,22 @@
           .large-6.small-6.columns
             %label.left.inline Status
           .large-6.small-6.columns
-            %label.left.inline {{ device.status || '?'}}
+            %label.left.inline {{ device.current.status }}
         .row
           .large-6.small-6.columns
             %label.left.inline Gantry Position(X)
           .large-6.small-6.columns
-            %label.left.inline {{ device.x || '?' }}
+            %label.left.inline {{ device.current.x }}
         .row
           .large-6.small-6.columns
             %label.left.inline Cross Slide Position(Y)
           .large-6.small-6.columns
-            %label.left.inline {{ device.x || '?' }}
+            %label.left.inline {{ device.current.x }}
         .row
           .large-6.small-6.columns
             %label.left.inline Z-Axis Position(Z)
           .large-6.small-6.columns
-            %label.left.inline {{ device.x || '?' }}
+            %label.left.inline {{ device.current.x }}
         .row.padding-bottom
           .large-6.small-6.columns
             %button.red.button-like STOP

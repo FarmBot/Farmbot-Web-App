@@ -48,6 +48,7 @@ class DeviceService
 
   pollStatus: =>
     INTERVAL = 3000
+    console.log @current
     if @socket.connected()
       @$timeout @getStatus, INTERVAL
     else
