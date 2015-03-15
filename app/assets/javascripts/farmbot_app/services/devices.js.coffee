@@ -1,5 +1,5 @@
 class DeviceService
-  constructor: (@Command, @Router, @socket, @Data) ->
+  constructor: (@Command, @Router, @socket, @Data, @$timeout) ->
     [@list, @current, @status] = [[], {}, {meshblu: "Connecting"}]
     @stepSize = 1000
     @initConnections()
@@ -40,9 +40,18 @@ class DeviceService
             socketid: data.socketid
             uuid:  "7e3a8a10-6bf6-11e4-9ead-634ea865603d"
             token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
-  getStatus: (cb) ->
+
+  getStatus: =>
     @current.status = 'Fetching data'
-    @send(@Command.create("read_status"), cb)
+    @send(@Command.create("read_status"))
+    @pollStatus()
+
+  pollStatus: =>
+    INTERVAL = 3000
+    if @socket.connected()
+      @$timeout @getStatus, INTERVAL
+    else
+      @$timeout @pollStatus, INTERVAL
 
   togglePin: (number, cb) ->
     pin = "pin#{number}"
@@ -68,7 +77,6 @@ class DeviceService
 
   send: (msg) ->
     if @socket.connected()
-      console.log 'Sending Message.'
       @socket.emit "message", {devices: @current.uuid, payload: msg}
     else
       alert 'Unable to send device messages.' +
@@ -81,6 +89,7 @@ angular.module("FarmBot").service "Devices",[
   'Router'
   'socket'
   'Data'
-  (Command, Router, socket, Data) ->
-    return new DeviceService(Command, Router, socket, Data)
+  '$timeout'
+  (Command, Router, socket, Data, $timeout) ->
+    return new DeviceService(Command, Router, socket, Data, $timeout)
 ]

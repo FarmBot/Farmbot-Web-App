@@ -7,6 +7,7 @@ angular.module("FarmBot").factory 'Router', [
       create: (@data, @bot) ->
         @routing_key = @data.message.message_type
         if RouteTable.hasOwnProperty(this.routing_key)
+          console.log "Got a '#{@routing_key}' message."
           RouteTable[@routing_key](@data, @bot)
         else
           msg = "Failed message. Possible unknown key '#{@routing_key}'?"

@@ -11,6 +11,7 @@ class Command
     unless Command.all.hasOwnProperty(type)
       args = type
       type = 'error'
+    console.log "Sending message type '#{type}'."
     return Command.all[type](args)
 
   @all:
