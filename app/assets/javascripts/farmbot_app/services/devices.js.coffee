@@ -1,5 +1,5 @@
 class DeviceService
-  constructor: (@Command, @Router, @socket, @Data) ->
+  constructor: (@Command, @Router, @socket, @Data, @$timeout) ->
     [@list, @current, @status] = [[], {}, {meshblu: "Connecting"}]
     @stepSize = 1000
     @initConnections()
@@ -40,31 +40,43 @@ class DeviceService
             socketid: data.socketid
             uuid:  "7e3a8a10-6bf6-11e4-9ead-634ea865603d"
             token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
-  getStatus: (cb) ->
+
+  getStatus: =>
     @current.status = 'Fetching data'
-    @send(@Command.create("read_status"), cb)
+    @send(@Command.create("read_status"))
+    @pollStatus()
+
+  pollStatus: =>
+    INTERVAL = 3000
+    if @socket.connected()
+      @$timeout @getStatus, INTERVAL
+    else
+      @$timeout @pollStatus, INTERVAL
 
   togglePin: (number, cb) ->
-    #TODO Untested.
     pin = "pin#{number}"
     if @current[pin] is on
       @current[pin] = off
-      message = {pin: pin_number, value1: 1, mode: 0}
+      message = {pin: number, value1: 1, mode: 0}
     else
       @current[pin] = on
-      message = {pin: pin_number, value1: 0, mode: 0}
+      message = {pin: number, value1: 0, mode: 0}
     @send @Command.create("pin_write", message), cb
     console.log "Pin #{number} is now #{@current[pin]}"
 
+  # TODO This method (and moveAbs) might be overly specific. Consider removal in
+  # favor of @sendMessage()
   moveRel: (x, y, z, cb) ->
     @send(@Command.create("move_rel", {x: x, y: y, z: z}), cb)
 
   moveAbs: (x, y, z, cb) ->
     @send(@Command.create("move_abs", {x: x, y: y, z: z}), cb)
 
+  sendMessage: (name, params, cb) ->
+    @send(@Command.create(name, params), cb)
+
   send: (msg) ->
     if @socket.connected()
-      console.log 'Sending Message.'
       @socket.emit "message", {devices: @current.uuid, payload: msg}
     else
       alert 'Unable to send device messages.' +
@@ -77,6 +89,7 @@ angular.module("FarmBot").service "Devices",[
   'Router'
   'socket'
   'Data'
-  (Command, Router, socket, Data) ->
-    return new DeviceService(Command, Router, socket, Data)
+  '$timeout'
+  (Command, Router, socket, Data, $timeout) ->
+    return new DeviceService(Command, Router, socket, Data, $timeout)
 ]

@@ -38,25 +38,25 @@
           .small-4.columns
             %input.move-input{:placeholder => "3.124", :type => "text"}/
           .small-4.columns
-            %button.full-width.gray.button-like HOME X
+            %button.full-width.gray.button-like{ng_click: 'home("x")'} HOME X
         .row
           .small-4.columns
             %div.control-title Cross-Slide (Y)
           .small-4.columns
             %input.move-input{:placeholder => "1.210", :type => "text"}/
           .small-4.columns
-            %button.full-width.gray.button-like HOME Y
+            %button.full-width.gray.button-like{ng_click: 'home("y")'} HOME Y
         .row
           .small-4.columns
             %div.control-title Z-Axis (Z)
           .small-4.columns
             %input.move-input{:placeholder => "0.893", :type => "text"}/
           .small-4.columns
-            %button.full-width.gray.button-like HOME Z
+            %button.full-width.gray.button-like{ng_click: 'home("z")'} HOME Z
         .row.padding-bottom
           .small-4.columns
             %button.full-width.red.button-like STOP
           .small-4.columns
             %button.full-width.green.button-like GO
           .small-4.columns
-            %button.full-width.gray.button-like HOME ALL
+            %button.full-width.gray.button-like{ng_click: 'home()'} HOME ALL

@@ -9,29 +9,29 @@
           .large-6.small-6.columns
             %label.left.inline Current Operation
           .large-6.small-6.columns
-            %label.left.inline Idle
+            %label.left.inline ?
         .row
           .large-6.small-6.columns
-            %label.left.inline Next Operation
+            %label.left.inline Status
           .large-6.small-6.columns
-            %label.left.inline Current Operation
+            %label.left.inline {{ device.status || '?'}}
         .row
           .large-6.small-6.columns
             %label.left.inline Gantry Position(X)
           .large-6.small-6.columns
-            %label.left.inline 3.124 m
+            %label.left.inline {{ device.x || '?' }}
         .row
           .large-6.small-6.columns
             %label.left.inline Cross Slide Position(Y)
           .large-6.small-6.columns
-            %label.left.inline 1.210 m
+            %label.left.inline {{ device.x || '?' }}
         .row
           .large-6.small-6.columns
             %label.left.inline Z-Axis Position(Z)
           .large-6.small-6.columns
-            %label.left.inline 0.893 m
+            %label.left.inline {{ device.x || '?' }}
         .row.padding-bottom
           .large-6.small-6.columns
             %button.red.button-like STOP
           .large-6.small-6.columns
-            %button.yellow.button-like RESTART
+            %button.yellow.button-like{ng_click: 'setRefreshTimer()'} RESTART

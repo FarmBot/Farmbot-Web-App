@@ -3,10 +3,15 @@
 angular.module('FarmBot').controller "MovementController", [
   '$scope'
   'Devices'
-  ($scope, Devices) ->
-    $scope.devices = Devices
-    [$scope.x, $scope.y, $scope.z, $scope.multiplier] = [0, 0, 0, 100]
+  '$timeout'
+  ($scope, Devices, $timeout) ->
+    nope = (e) -> alert 'Doh!'; console.error e
+    $scope.device  = Devices.current
     $scope.goHome  = -> Devices.moveAbs 0, 0, 0, (data) -> console.log 'Home.'
-    $scope.refresh = -> Devices.getStatus( (d) -> console.log d)
-    $scope.toggle  = (num) -> Devices.togglePin(num)
+    $scope.home = (axis) ->
+      if axis
+        Devices.sendMessage "home_#{axis}"
+      else
+        $scope.home(dir) for dir in ['x', 'y', 'z']
+    Devices.pollStatus()
 ]
