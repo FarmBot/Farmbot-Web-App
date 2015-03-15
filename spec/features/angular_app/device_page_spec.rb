@@ -7,6 +7,5 @@ describe 'Device Management' do
     pending 'Fix these broke integration tests :('
     sign_in user
     visit 'dashboard#/devices'
-    binding.pry
   end
 end
