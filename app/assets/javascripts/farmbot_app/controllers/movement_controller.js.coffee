@@ -3,10 +3,11 @@
 angular.module('FarmBot').controller "MovementController", [
   '$scope'
   'Devices'
-  '$timeout'
-  ($scope, Devices, $timeout) ->
+  ($scope, Devices) ->
     nope = (e) -> alert 'Doh!'; console.error e
-    $scope.device  = Devices.current
+    # I really don't like throwing the whole device service into the $scope.
+    # TODO determine why $scope.device = Devices.current is broke :(
+    $scope.device  = Devices
     $scope.goHome  = -> Devices.moveAbs 0, 0, 0, (data) -> console.log 'Home.'
     $scope.home = (axis) ->
       if axis
