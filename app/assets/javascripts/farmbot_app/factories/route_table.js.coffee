@@ -1,4 +1,4 @@
-RouteTable = () ->
+RouteTable = ->
   confirmation: (data, device) -> yes
   read_status_response: (data, device) ->
     msg = data.message || {}
