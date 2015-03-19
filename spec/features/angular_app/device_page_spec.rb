@@ -8,7 +8,6 @@ describe 'Device Management' do
   it 'adds a device', js: true do
     pending 'Not there yet.'
     visit 'dashboard#/devices'
-    old_count = Device.count
     fill_in 'FarmBot Name *', with: 'LOL!@'
   end
 end

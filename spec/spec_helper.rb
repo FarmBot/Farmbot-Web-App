@@ -19,7 +19,7 @@ Capybara.javascript_driver = :poltergeist
 Capybara.register_driver :poltergeist do |app|
   Capybara::Poltergeist::Driver.new(app, timeout: 300)
   Capybara::Poltergeist::Driver.new(app, js_errors: true)
-  Capybara::Poltergeist::Driver.new(app, :phantomjs => Phantomjs.path)
+  Capybara::Poltergeist::Driver.new(app, phantomjs: Phantomjs.path)
 end
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
