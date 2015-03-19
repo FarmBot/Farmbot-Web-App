@@ -1,4 +1,4 @@
-controller = ($scope, Data, Calendar) ->
+controller = ($scope, Data, Calendar, Devices) ->
   nope = (e) -> alert 'Doh!'; console.error e
   clear = -> $scope.form = {}; drawCalendar()
   $scope.repeats = [{show: 'Minutes', value: 'minutely'},
@@ -43,10 +43,12 @@ controller = ($scope, Data, Calendar) ->
     previous = $scope.pastEvent(previousSchedule($index))
     current  = $scope.pastEvent(currentSchedule($index))
     if previous is true and current is false then yes else no
-
+  $scope.sync = ->
+    Devices.sendMessage('crop_schedule_update', $scope.schedules)
 angular.module('FarmBot').controller "ScheduleController", [
   '$scope'
   'Data'
   'Calendar'
+  'Devices'
   controller
 ]

@@ -1,4 +1,3 @@
-# TODO: Step destruction is completely untested (controller, models, mutations)
 class Step
   include Mongoid::Document
 
