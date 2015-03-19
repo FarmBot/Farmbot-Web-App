@@ -1,7 +1,7 @@
 class DeviceService
   constructor: (@Command, @Router, @socket, @Data, @$timeout) ->
     [@list, @current, @status] = [[], {}, {meshblu: "Connecting"}]
-    @stepSize = 1000
+    @stepSize = 10
     @initConnections()
 
   initConnections: ->
