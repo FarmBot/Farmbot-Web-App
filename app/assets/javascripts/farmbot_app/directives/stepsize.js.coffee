@@ -1,19 +1,19 @@
 # A directive for setting the bot's stepSize
 directive =
   restrict: 'A'
-  link: (scope, el, attr) ->
+  link: ($scope, el, attr) ->
+    if $scope.stepSizeIs(parseInt(attr.stepsize))
+      el.addClass('move-amount-selected')
+
     el.on 'click', =>
-      # this is actually wrong. It needs to select
-      # $('items where stepsize &&(stepsize != scope.stepSize)').removeClass...
-      # $('items where (stepsize == scope.stepSize)').addClass...
       $('.move-amount-selected').removeClass('move-amount-selected')
       el.addClass('move-amount-selected')
-      scope.move parseInt(attr.stepsize)
+      $scope.setStepSize(parseInt(attr.stepsize))
+
+
   controller: ['$scope', 'Devices', ($scope, Devices) ->
-    $scope.stepSize = Devices.stepSize
-    $scope.move = (num) ->
-      Devices.setStepSize(num)
-      $scope.stepSize = Devices.stepSize
+    $scope.stepSizeIs = (num) -> Devices.stepSize is num
+    $scope.setStepSize = (num) -> Devices.stepSize = num
   ]
 
 angular.module("FarmBot").directive 'stepsize', [-> directive]

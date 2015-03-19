@@ -32,7 +32,7 @@ class DeviceService
       skynet = {createConnection: ->
                   console.warn "Need to deprecate skynetJS"
                   return {on: -> null}}
-      @socket.on "message", @handleMsg
+      @socket.on "message", (d) => @handleMsg; console.log(d)
       @socket.on "status", @handleStatus
       @socket.on 'connect', =>
         @socket.on 'identify', (data) =>
@@ -42,13 +42,12 @@ class DeviceService
             token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
 
   getStatus: =>
-    @current.status = 'Fetching data'
-    @send(@Command.create("read_status"))
+    console.log 'Status is disabled right now.'
+    # @send(@Command.create("read_status"))
     @pollStatus()
 
   pollStatus: =>
-    INTERVAL = 3000
-    console.log @current
+    INTERVAL = 9000
     if @socket.connected()
       @$timeout @getStatus, INTERVAL
     else
@@ -63,7 +62,6 @@ class DeviceService
       @current[pin] = on
       message = {pin: number, value1: 0, mode: 0}
     @send @Command.create("pin_write", message), cb
-    console.log "Pin #{number} is now #{@current[pin]}"
 
   # TODO This method (and moveAbs) might be overly specific. Consider removal in
   # favor of @sendMessage()
@@ -73,8 +71,8 @@ class DeviceService
   moveAbs: (x, y, z, cb) ->
     @send(@Command.create("move_abs", {x: x, y: y, z: z}), cb)
 
-  sendMessage: (name, params, cb) ->
-    @send(@Command.create(name, params), cb)
+  sendMessage: (name, params) ->
+    @send @Command.create(name, params)
 
   send: (msg) ->
     if @socket.connected()
@@ -82,8 +80,6 @@ class DeviceService
     else
       alert 'Unable to send device messages.' +
             ' Wait for device to connect or refresh the page'
-
-  setStepSize: (size) -> @stepSize = size
 
 angular.module("FarmBot").service "Devices",[
   'Command'

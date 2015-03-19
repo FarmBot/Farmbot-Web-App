@@ -11,13 +11,17 @@ class Command
     unless Command.all.hasOwnProperty(type)
       args = type
       type = 'error'
-    console.log "Sending message type '#{type}'."
     return Command.all[type](args)
 
   @all:
-    read_status: (args) ->
+    read_status: (values) ->
       time_stamp: new Date()
       message_type: 'read_status'
+
+    crop_schedule_update: (values) ->
+      time_stamp: new Date()
+      message_type: 'crop_schedule_update'
+      payload: values
 
     pin_write: (values) ->
       new SingleCommandMessage
