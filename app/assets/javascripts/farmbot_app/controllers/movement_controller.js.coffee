@@ -8,6 +8,7 @@ angular.module('FarmBot').controller "MovementController", [
     # I really don't like throwing the whole device service into the $scope.
     # TODO determine why $scope.device = Devices.current is broke :(
     $scope.device  = Devices
+    $scope.stop    = -> Devices.stop()
     $scope.goHome  = -> Devices.moveAbs 0, 0, 0, (data) -> console.log 'Home.'
     $scope.home = (axis) ->
       if axis

@@ -42,8 +42,7 @@ class DeviceService
             token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
 
   getStatus: =>
-    console.log 'Status is disabled right now.'
-    # @send(@Command.create("read_status"))
+    @send(@Command.create("read_status"))
     @pollStatus()
 
   pollStatus: =>
@@ -73,6 +72,9 @@ class DeviceService
 
   sendMessage: (name, params) ->
     @send @Command.create(name, params)
+
+  stop: ->
+    @send(@Command.create("emergency_stop"))
 
   send: (msg) ->
     if @socket.connected()

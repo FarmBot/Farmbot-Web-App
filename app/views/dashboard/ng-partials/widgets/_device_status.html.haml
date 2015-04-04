@@ -32,6 +32,6 @@
             %label.left.inline {{ device.current.x }}
         .row.padding-bottom
           .large-5.small-5.columns
-            %button.red.button-like STOP
+            %button.red.button-like{ng_click: 'stop()'} STOP
           .large-7.small-7.columns
             %button.yellow.button-like{ng_click: 'setRefreshTimer()'} RESTART

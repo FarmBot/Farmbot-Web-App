@@ -60,6 +60,10 @@ class Command
         speed: args.speed || 100
         delay: 0
 
+    emergency_stop: (args) ->
+      new SingleCommandMessage
+        action: 'EMERGENCY STOP'
+
     home_z: (args) ->
       new SingleCommandMessage
         action: 'HOME Z'
