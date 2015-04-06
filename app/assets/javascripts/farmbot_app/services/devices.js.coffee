@@ -46,7 +46,7 @@ class DeviceService
     @pollStatus()
 
   pollStatus: =>
-    INTERVAL = 9000
+    INTERVAL = (5 * 60 * 60) # 5 minutes
     if @socket.connected()
       @$timeout @getStatus, INTERVAL
     else
