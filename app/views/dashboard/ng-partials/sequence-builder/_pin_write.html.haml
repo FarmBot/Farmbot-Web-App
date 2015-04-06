@@ -13,16 +13,16 @@
           .small-6.columns
             %span.prefix PIN NUMBER
           .small-6.columns
-            %input{:placeholder => "10", :type => "text"}
+            %input{:placeholder => "10", :type => "text", ng_model: "step.command.pin"}
       .large-4.columns
         .row.collapse.prefix-radius
           .small-6.columns
             %span.prefix VALUE
           .small-6.columns
-            %input{:placeholder => "1", :type => "text"}
+            %input{:placeholder => "1", :type => "text", ng_model: "step.command.value"}
       .large-4.columns
         .row.collapse.prefix-radius
           .small-6.columns
             %span.prefix PIN MODE
           .small-6.columns
-            %input{:placeholder => "0", :type => "text"}
+            %input{:placeholder => "0", :type => "text", ng_model: "step.command.mode"}

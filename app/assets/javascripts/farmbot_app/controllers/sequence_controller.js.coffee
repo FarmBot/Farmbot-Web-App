@@ -50,9 +50,13 @@ controller = ($scope, Data) ->
       .then -> $scope.sequence = new NullSequence
 
   $scope.saveSequence = (seq) ->
-    Data
-      .save('sequence', seq._id)
-      .catch(nope)
+    Data.save('sequence', seq._id).catch(nope).then (sequence) ->
+      # TODO: This needs to be optimized to not update unchanged elements.
+      # I'm having issues understanding JS-Data's way of dirty tracking atm.
+      for step, inx in sequence.steps
+        Data.update('step', step._id, {command: step.command}).catch (e) ->
+          alert "Error saving step #{ inx + 1 }. See console for details."
+          console.error e
 
   $scope.copy = (obj, index) ->
     return unless hasSequence()

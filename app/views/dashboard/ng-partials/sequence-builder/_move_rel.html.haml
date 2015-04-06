@@ -13,25 +13,25 @@
           .small-3.columns
             %span.prefix X
           .small-9.columns
-            %input{:placeholder => "25 mm", :type => "text"}
+            %input{:placeholder => "25 mm", :type => "text", ng_model: "step.command.x"}
       .large-2.columns
         .row.collapse.prefix-radius
           .small-3.columns
             %span.prefix Y
           .small-9.columns
-            %input{:placeholder => "20 mm", :type => "text"}
+            %input{:placeholder => "20 mm", :type => "text", ng_model: "step.command.y"}
       .large-2.columns
         .row.collapse.prefix-radius
           .small-3.columns
             %span.prefix Z
           .small-9.columns
-            %input{:placeholder => "0 mm", :type => "text"}
+            %input{:placeholder => "0 mm", :type => "text", ng_model: "step.command.z"}
       .large-6.columns
         .row.collapse.prefix-radius
           .small-3.columns
             %span.prefix SPEED
           .small-7.columns
-            %input{:placeholder => "Default", :type => "text"}
+            %input{:placeholder => "Default", :type => "text", ng_model: "step.command.speed"}
           .small-2.columns
             %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
             %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
