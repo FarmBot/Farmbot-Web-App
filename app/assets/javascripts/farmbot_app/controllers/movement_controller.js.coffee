@@ -11,5 +11,11 @@ angular.module('FarmBot').controller "MovementController", [
     $scope.stop   = -> Devices.stop()
     $scope.goHome = -> Devices.moveAbs 0, 0, 0, (data) -> console.log 'Home.'
     $scope.home   = (axis) -> Devices.sendMessage "home_#{axis or 'all'}"
+
+    # Coordinates object for fine grained control
+    $scope.manualMovementCoords = {x: 0, y: 0, z: 0}
+    $scope.manualMovement = ->
+      that = $scope.manualMovementCoords
+      Devices.moveRel that.x, that.y, that.z
     Devices.pollStatus()
 ]

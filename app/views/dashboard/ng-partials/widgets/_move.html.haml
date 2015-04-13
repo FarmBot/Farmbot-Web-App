@@ -36,27 +36,27 @@
           .small-4.columns
             %div.control-title Gantry (X)
           .small-4.columns
-            %input.move-input{:placeholder => "3.124", :type => "text"}/
+            %input.move-input{:placeholder => "3.124", :type => "text", ng_model: "manualMovementCoords.x"}/
           .small-4.columns
             %button.full-width.gray.button-like{ng_click: 'home("x")'} HOME X
         .row
           .small-4.columns
             %div.control-title Cross-Slide (Y)
           .small-4.columns
-            %input.move-input{:placeholder => "1.210", :type => "text"}/
+            %input.move-input{:placeholder => "1.210", :type => "text", ng_model: "manualMovementCoords.y"}/
           .small-4.columns
             %button.full-width.gray.button-like{ng_click: 'home("y")'} HOME Y
         .row
           .small-4.columns
             %div.control-title Z-Axis (Z)
           .small-4.columns
-            %input.move-input{:placeholder => "0.893", :type => "text"}/
+            %input.move-input{:placeholder => "0.893", :type => "text", ng_model: "manualMovementCoords.z"}/
           .small-4.columns
             %button.full-width.gray.button-like{ng_click: 'home("z")'} HOME Z
         .row.padding-bottom
           .small-4.columns
             %button.full-width.red.button-like{ng_click: 'stop()'} STOP
           .small-4.columns
-            %button.full-width.green.button-like GO
+            %button.full-width.green.button-like{ng_click: 'manualMovement()'} GO
           .small-4.columns
             %button.full-width.gray.button-like{ng_click: 'home()'} HOME ALL
