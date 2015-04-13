@@ -37,7 +37,6 @@ class Command
         y: coords.y
         z: coords.z
         speed: coords.speed || 100
-        delay: 0
 
     move_rel: (coords) ->
       new SingleCommandMessage
@@ -46,25 +45,30 @@ class Command
         y: coords.y
         z: coords.z
         speed: coords.speed || 100
-        delay: 0
 
     home_x: (args) ->
       new SingleCommandMessage
         action: 'HOME X'
         speed: args.speed || 100
-        delay: 0
 
     home_y: (args) ->
       new SingleCommandMessage
         action: 'HOME Y'
         speed: args.speed || 100
-        delay: 0
+
+    emergency_stop: (args) ->
+      new SingleCommandMessage
+        action: 'EMERGENCY STOP'
 
     home_z: (args) ->
       new SingleCommandMessage
         action: 'HOME Z'
         speed: args.speed || 100
-        delay: 0
+
+    home_all: (args) ->
+      new SingleCommandMessage
+        action: 'HOME ALL'
+        speed: args.speed || 100
 
     error: (nope) ->
       msg = "Unknown FarmBot message type #{nope}"

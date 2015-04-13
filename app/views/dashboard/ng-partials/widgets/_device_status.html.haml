@@ -7,14 +7,14 @@
       .content-wrapper
         .row
           .large-5.small-5.columns
-            %label.left.inline Current Operation
+            %label.left.inline Latest Operation
           .large-7.small-7.columns
-            %label.left.inline ?
+            %label.left.inline {{ device.current.current_command || "?" }}
         .row
           .large-5.small-5.columns
             %label.left.inline Status
           .large-7.small-7.columns
-            %label.left.inline {{ device.current.status }}
+            %label.left.inline {{ device.current.busy == 0 ? "Ready" : "Busy" }}
         .row
           .large-5.small-5.columns
             %label.left.inline Gantry (X)
@@ -24,14 +24,14 @@
           .large-5.small-5.columns
             %label.left.inline Cross Slide (Y)
           .large-7.small-7.columns
-            %label.left.inline {{ device.current.x }}
+            %label.left.inline {{ device.current.y }}
         .row
           .large-5.small-5.columns
             %label.left.inline Z-Axis (Z)
           .large-7.small-7.columns
-            %label.left.inline {{ device.current.x }}
+            %label.left.inline {{ device.current.z}}
         .row.padding-bottom
           .large-5.small-5.columns
-            %button.red.button-like STOP
+            %button.red.button-like{ng_click: 'stop()'} STOP
           .large-7.small-7.columns
             %button.yellow.button-like{ng_click: 'setRefreshTimer()'} RESTART

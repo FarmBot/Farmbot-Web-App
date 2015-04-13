@@ -21,7 +21,8 @@ class DeviceService
     bot = _.find(@list, {uuid: data.fromUuid})
     @Router.create(data, bot)
 
-  handleStatus: (data) ->
+  handleStatus: (data) =>
+    console.log(data)
     @status = data
 
   connectToMeshBlu: ->
@@ -29,11 +30,7 @@ class DeviceService
     if @socket?.connected()
       console.log "[WARN] Already connected to MeshBlu."
     else
-      skynet = {createConnection: ->
-                  console.warn "Need to deprecate skynetJS"
-                  return {on: -> null}}
-      @socket.on "message", (d) => @handleMsg; console.log(d)
-      @socket.on "status", @handleStatus
+      @socket.on "message", @handleMsg
       @socket.on 'connect', =>
         @socket.on 'identify', (data) =>
           @socket.emit 'identity',
@@ -42,12 +39,11 @@ class DeviceService
             token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
 
   getStatus: =>
-    console.log 'Status is disabled right now.'
-    # @send(@Command.create("read_status"))
+    @send(@Command.create("read_status"))
     @pollStatus()
 
   pollStatus: =>
-    INTERVAL = 9000
+    INTERVAL = 5300
     if @socket.connected()
       @$timeout @getStatus, INTERVAL
     else
@@ -73,6 +69,9 @@ class DeviceService
 
   sendMessage: (name, params) ->
     @send @Command.create(name, params)
+
+  stop: ->
+    @send(@Command.create("emergency_stop"))
 
   send: (msg) ->
     if @socket.connected()

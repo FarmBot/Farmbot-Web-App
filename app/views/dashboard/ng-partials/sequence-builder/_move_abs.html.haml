@@ -13,7 +13,7 @@
           .small-2.columns
             %span.prefix.uppercase x
           .small-8.columns
-            %input{:placeholder => "Inherit Plant-ID_X", :type => "text"}
+            %input{:placeholder => "Inherit Plant-ID_X", :type => "text", ng_model: "step.command.x"}
           .small-2.columns
             %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
             %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
@@ -27,7 +27,7 @@
           .small-2.columns
             %span.prefix.uppercase y
           .small-8.columns
-            %input{:placeholder => "Inherit Plant-ID_Y", :type => "text"}
+            %input{:placeholder => "Inherit Plant-ID_Y", :type => "text", ng_model: "step.command.y"}
           .small-2.columns
             %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
             %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
@@ -41,7 +41,7 @@
           .small-2.columns
             %span.prefix.uppercase z
           .small-8.columns
-            %input{:placeholder => "Inherit Plant-ID Plant-Height", :type => "text"}
+            %input{:placeholder => "Inherit Plant-ID Plant-Height", :type => "text", ng_model: "step.command.z"}
           .small-2.columns
             %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
             %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
@@ -55,7 +55,7 @@
           .small-3.columns
             %span.prefix.uppercase speed
           .small-7.columns
-            %input{:placeholder => "Default", :type => "text"}
+            %input{:placeholder => "Default", :type => "text", ng_model: "step.command.speed"}
           .small-2.columns
             %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
             %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
