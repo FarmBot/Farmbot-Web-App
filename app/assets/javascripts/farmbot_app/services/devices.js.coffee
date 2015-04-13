@@ -43,7 +43,7 @@ class DeviceService
     @pollStatus()
 
   pollStatus: =>
-    INTERVAL = 5300
+    INTERVAL = 500
     if @socket.connected()
       @$timeout @getStatus, INTERVAL
     else
