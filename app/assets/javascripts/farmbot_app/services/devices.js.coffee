@@ -3,7 +3,8 @@ class DeviceService
     [@list, @current, @status] = [[], {}, {meshblu: "Connecting"}]
     @stepSize = 10
     @initConnections()
-
+  opps = -> alert 'Unable to send device messages. Wait for device to connect' +
+                  ' or refresh the page'
   initConnections: ->
     nope = ->
       alert "Oh no! I could not connect to the My Farmbot service. The server" +
@@ -43,21 +44,22 @@ class DeviceService
     @pollStatus()
 
   pollStatus: =>
-    INTERVAL = 500
-    if @socket.connected()
-      @$timeout @getStatus, INTERVAL
-    else
-      @$timeout @pollStatus, INTERVAL
+    callback = if @socket.connected() then @getStatus else @pollStatus
+    @$timeout callback, 500
 
   togglePin: (number, cb) ->
     pin = "pin#{number}"
-    if @current[pin] is on
-      @current[pin] = off
-      message = {pin: number, value1: 1, mode: 0}
-    else
-      @current[pin] = on
-      message = {pin: number, value1: 0, mode: 0}
-    @send @Command.create("pin_write", message), cb
+    # TODO DRY it up!
+    switch @current[pin]
+       when 'on'
+         msg = @Command.create "pin_write", pin: number, value1: 0, mode: 0
+         @send msg
+       when 'off'
+         msg = @Command.create "pin_write", pin: number, value1: 1, mode: 0
+         @send msg
+       else
+         console.warn 'I refuse to write a non-exhaustive case statement.'
+    console.log "Set #{pin} to #{@current[pin]}"
 
   # TODO This method (and moveAbs) might be overly specific. Consider removal in
   # favor of @sendMessage()
@@ -77,8 +79,7 @@ class DeviceService
     if @socket.connected()
       @socket.emit "message", {devices: @current.uuid, payload: msg}
     else
-      alert 'Unable to send device messages.' +
-            ' Wait for device to connect or refresh the page'
+      opps()
 
 angular.module("FarmBot").service "Devices",[
   'Command'

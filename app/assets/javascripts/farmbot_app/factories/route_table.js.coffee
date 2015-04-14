@@ -1,5 +1,6 @@
 RouteTable = ->
   confirmation: (data, device) -> yes
+  single_command: (data, device) -> yes
   read_status: (data, device) ->
     device[k] = v for k, v of (data.message || {})
   error: (data, device) -> console.warn data
