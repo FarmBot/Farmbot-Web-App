@@ -20,7 +20,7 @@ class DeviceService
 
   handleMsg: (data) =>
     bot = _.find(@list, {uuid: data.fromUuid})
-    @Router.create(data, bot)
+    @Router.route(data, bot)
 
   handleStatus: (data) =>
     console.log(data)
