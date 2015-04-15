@@ -1,14 +1,12 @@
 class DeviceService
   constructor: (@Command, @Router, @socket, @Data, @$timeout) ->
     [@list, @current, @status] = [[], {}, {meshblu: "Connecting"}]
-    @stepSize = 10
+    @stepSize = 100
     @initConnections()
-  opps = -> alert 'Unable to send device messages. Wait for device to connect' +
-                  ' or refresh the page'
+  opps = (error) ->
+    alert 'Message error. Wait for device to connect or refresh the page'
+    console.error error
   initConnections: ->
-    nope = ->
-      alert "Oh no! I could not connect to the My Farmbot service. The server" +
-          " might be temporarily down"
     ok = (data) =>
       if data[0]
         [@list, @current] = [data, data[0]]
@@ -16,7 +14,7 @@ class DeviceService
       else
         alert 'You need to link a Farmbot to your account.'
         window.location = '/dashboard#/devices'
-    @Data.findAll('device', {}).catch(nope).then(ok)
+    @Data.findAll('device', {}).catch(opps).then(ok)
 
   handleMsg: (data) =>
     bot = _.find(@list, {uuid: data.fromUuid})
@@ -38,46 +36,31 @@ class DeviceService
             socketid: data.socketid
             uuid:  "7e3a8a10-6bf6-11e4-9ead-634ea865603d"
             token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
-
-  getStatus: =>
-    @send(@Command.create("read_status"))
-    @pollStatus()
+  getStatus: => @send("read_status") and @pollStatus()
 
   pollStatus: =>
     callback = if @socket.connected() then @getStatus else @pollStatus
     @$timeout callback, 500
 
   togglePin: (number, cb) ->
-    pin = "pin#{number}"
-    # TODO DRY it up!
-    switch @current[pin]
+    switch @current["pin#{number}"]
        when 'on'
-         msg = @Command.create "pin_write", pin: number, value1: 0, mode: 0
-         @send msg
+         @send "pin_write", pin: number, value1: 0, mode: 0
        when 'off'
-         msg = @Command.create "pin_write", pin: number, value1: 1, mode: 0
-         @send msg
+         @send "pin_write", pin: number, value1: 1, mode: 0
        else
-         console.warn 'I refuse to write a non-exhaustive case statement.'
-    console.log "Set #{pin} to #{@current[pin]}"
+         opps()
 
   # TODO This method (and moveAbs) might be overly specific. Consider removal in
   # favor of @sendMessage()
-  moveRel: (x, y, z, cb) ->
-    @send(@Command.create("move_rel", {x: x, y: y, z: z}), cb)
+  moveRel: (x, y, z) -> @send "move_rel", {x: x, y: y, z: z}
+  moveAbs: (x, y, z) -> @send "move_abs", {x: x, y: y, z: z}
+  stop: -> @send "emergency_stop"
 
-  moveAbs: (x, y, z, cb) ->
-    @send(@Command.create("move_abs", {x: x, y: y, z: z}), cb)
-
-  sendMessage: (name, params) ->
-    @send @Command.create(name, params)
-
-  stop: ->
-    @send(@Command.create("emergency_stop"))
-
-  send: (msg) ->
+  send: (msg, body = {}) ->
     if @socket.connected()
-      @socket.emit "message", {devices: @current.uuid, payload: msg}
+      cmd = @Command.create(msg, body)
+      @socket.emit "message", {devices: @current.uuid, payload: cmd}
     else
       opps()
 

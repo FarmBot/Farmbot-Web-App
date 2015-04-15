@@ -75,21 +75,4 @@ class Command
       console.warn(msg)
       return error: "Unknown message type #{nope}"
 
-    # write_parameters: (args) ->
-    #   message_type: 'write_parameters'
-    #   time_stamp: Date.now()
-    #   paramets: args
-
-    # read_parameters: (_args) ->
-    #   message_type: 'read_parameters'
-    #   time_stamp: Date.now()
-
-    # read_logs: (_args) ->
-    #   message_type: 'read_logs'
-    #   time_stamp: Date.now()
-
-    # crop_schedule_update: (_args) ->
-    #   message_type: 'crop_schedule_update'
-    #   time_stamp: Date.now()
-
 angular.module("FarmBot").factory 'Command', [() -> new Command ]

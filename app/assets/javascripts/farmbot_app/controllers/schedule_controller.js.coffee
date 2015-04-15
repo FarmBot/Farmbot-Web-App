@@ -44,7 +44,7 @@ controller = ($scope, Data, Calendar, Devices) ->
     current  = $scope.pastEvent(currentSchedule($index))
     if previous is true and current is false then yes else no
   $scope.sync = ->
-    Devices.sendMessage('crop_schedule_update', $scope.schedules)
+    Devices.send('crop_schedule_update', $scope.schedules)
 angular.module('FarmBot').controller "ScheduleController", [
   '$scope'
   'Data'
