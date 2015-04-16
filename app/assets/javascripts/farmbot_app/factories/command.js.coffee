@@ -70,6 +70,12 @@ class Command
         action: 'HOME ALL'
         speed: args.speed || 100
 
+    exec_sequence: (sequence) ->
+      time_stamp: new Date()
+      command: sequence
+      message_type: 'exec_sequence'
+
+
     error: (nope) ->
       msg = "Unknown FarmBot message type #{nope}"
       console.warn(msg)

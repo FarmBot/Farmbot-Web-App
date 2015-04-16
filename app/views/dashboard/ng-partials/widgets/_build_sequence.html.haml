@@ -7,14 +7,17 @@
     .small-12.columns
       .content-wrapper
         .row
-          .small-8.columns
+          .small-6.columns
             %input#right-label{"ng-model" => "sequence.name", :type => "text"}
-          .small-2.columns
-            %button.red.button-like{"ng-click" => "deleteSequence(sequence)"}
-              Delete
           .small-2.columns
             %button.green.button-like{"ng-click" => "saveSequence(sequence)"}
               Save
+          .small-2.columns
+            %button.yellow.button-like{"ng-click" => "execute(sequence)"}
+              Execute
+          .small-2.columns
+            %button.red.button-like{"ng-click" => "deleteSequence(sequence)"}
+              Delete
         .row
           .small-12.columns
             .drag-drop-area.padding

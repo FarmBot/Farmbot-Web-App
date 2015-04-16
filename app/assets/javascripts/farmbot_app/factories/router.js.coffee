@@ -13,6 +13,9 @@ angular.module("FarmBot").factory 'Router', [
     single_command: (data, device) -> yes
     read_status: (data, device) ->
       device[k] = v for k, v of (data.message || {})
-    error: (data, device) -> console.warn data
+    error: (data, device) ->
+      msg = data?.message?.error || "Unexpected error. See console for details."
+      alert "FarmBot sent back an error: #{msg}. See console for details"
+      console.warn data
     missing: (data, device) -> no
 ]
