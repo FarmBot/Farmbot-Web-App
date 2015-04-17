@@ -1,7 +1,6 @@
 # Helper class to DRY up creation of outbound command messages
 class SingleCommandMessage
   constructor: (payload = {}) ->
-    @time_stamp = new Date()
     @command = payload
     @message_type = 'single_command'
 
@@ -15,22 +14,16 @@ class Command
 
   @all:
     read_status: (values) ->
-      time_stamp: new Date()
       message_type: 'read_status'
 
-    crop_schedule_update: (values) ->
-      time_stamp: new Date()
-      message_type: 'crop_schedule_update'
-      payload: values
-
-    pin_write: (values) ->
+    write_pin: (values) ->
       new SingleCommandMessage
-        action: "PIN WRITE",
+        action: "WRITE PIN",
         pin: values.pin,
         value1: values.value1,
         mode: values.mode,
 
-    move_abs: (coords) ->
+    move_absolute: (coords) ->
       new SingleCommandMessage
         action: 'MOVE ABSOLUTE'
         x: coords.x
@@ -38,7 +31,7 @@ class Command
         z: coords.z
         speed: coords.speed || 100
 
-    move_rel: (coords) ->
+    move_relative: (coords) ->
       new SingleCommandMessage
         action: 'MOVE RELATIVE'
         x: coords.x
@@ -70,26 +63,14 @@ class Command
         action: 'HOME ALL'
         speed: args.speed || 100
 
+    exec_sequence: (sequence) ->
+      command: sequence
+      message_type: 'exec_sequence'
+
+
     error: (nope) ->
       msg = "Unknown FarmBot message type #{nope}"
       console.warn(msg)
       return error: "Unknown message type #{nope}"
-
-    # write_parameters: (args) ->
-    #   message_type: 'write_parameters'
-    #   time_stamp: Date.now()
-    #   paramets: args
-
-    # read_parameters: (_args) ->
-    #   message_type: 'read_parameters'
-    #   time_stamp: Date.now()
-
-    # read_logs: (_args) ->
-    #   message_type: 'read_logs'
-    #   time_stamp: Date.now()
-
-    # crop_schedule_update: (_args) ->
-    #   message_type: 'crop_schedule_update'
-    #   time_stamp: Date.now()
 
 angular.module("FarmBot").factory 'Command', [() -> new Command ]

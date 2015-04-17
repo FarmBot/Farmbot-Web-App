@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Steps::Create do
   let(:user) { FactoryGirl.create(:user) }
   let(:mutation) { Steps::Create }
-  let(:valid_params) { {message_type: 'move_rel',
+  let(:valid_params) { {message_type: 'move_relative',
                         sequence: FactoryGirl.create(:sequence),
                         command: {action: 'MOVE RELATIVE',
                                   x: 1,

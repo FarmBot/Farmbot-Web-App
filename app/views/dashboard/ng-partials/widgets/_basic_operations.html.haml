@@ -8,11 +8,11 @@
       .content-wrapper
         .row
           .small-6.large-6.columns
-            %button.full-width.text-left.blue-block.no-radius.block{"ng-click" => "addStep('move_abs')"}
+            %button.full-width.text-left.blue-block.no-radius.block{"ng-click" => "addStep('move_absolute')"}
               MOVE ABSOLUTE
               %i.fa.fa-bars.right
           .small-6.large-6.columns
-            %button.full-width.text-left.green-block.no-radius.block{"ng-click" => "addStep('move_rel')"}
+            %button.full-width.text-left.green-block.no-radius.block{"ng-click" => "addStep('move_relative')"}
               MOVE RELATIVE
               %i.fa.fa-bars.right
         .row
@@ -21,24 +21,24 @@
               WRITE PIN
               %i.fa.fa-bars.right
           .small-6.large-6.columns
-            %button.full-width.text-left.yellow-block.no-radius.block{"ng-click" => "addStep('pin_read')"}
-              READ PIN
+            %button.full-width.text-left.yellow-block.no-radius.block{"ng-click" => "addStep('move_relative')"}
+              READ PIN*
               %i.fa.fa-bars.right
         .row
           .small-6.large-6.columns
-            %button.full-width.text-left.purple-block.no-radius.block{"ng-click" => "addStep('move_rel')"}
-              TAKE PICTURE
+            %button.full-width.text-left.purple-block.no-radius.block{"ng-click" => "addStep('move_relative')"}
+              TAKE PICTURE*
               %i.fa.fa-bars.right
           .small-6.large-6.columns
-            %button.full-width.text-left.pink-block.no-radius.block{"ng-click" => "addStep('move_rel')"}
-              IF STATEMENT
+            %button.full-width.text-left.pink-block.no-radius.block{"ng-click" => "addStep('move_relative')"}
+              IF STATEMENT*
               %i.fa.fa-bars.right
         .row
           .small-6.large-6.columns
-            %button.full-width.text-left.gray-block.no-radius.block{"ng-click" => "addStep('wait')"}
-              WAIT
+            %button.full-width.text-left.gray-block.no-radius.block{"ng-click" => "addStep('move_relative')"}
+              WAIT*
               %i.fa.fa-bars.right
           .small-6.large-6.columns
-            %button.full-width.text-left.red-block.no-radius.block{"ng-click" => "addStep('send_message')"}
-              SEND MESSAGE
+            %button.full-width.text-left.red-block.no-radius.block{"ng-click" => "addStep('move_relative')"}
+              SEND MESSAGE*
               %i.fa.fa-bars.right

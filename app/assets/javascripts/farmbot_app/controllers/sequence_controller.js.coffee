@@ -2,7 +2,7 @@ class NullSequence
   _id: null
   steps: []
 
-controller = ($scope, Data) ->
+controller = ($scope, Data, Devices) ->
   $scope.sequence = new NullSequence
   #TODO: We really really need an error handler / reporter at this point.
   nope = (e) -> alert 'Doh!'; console.error e
@@ -73,9 +73,15 @@ controller = ($scope, Data) ->
       .destroy('step', $scope.sequence.steps[index]._id)
       .catch(nope)
 
+  $scope.execute = (seq) ->
+    sequence = Data.utils.removeCircular(seq)
+    Devices.send "exec_sequence", sequence
+
+
 # The sequence controller supports the WYSIWYG sequence editor.
 angular.module('FarmBot').controller "SequenceController", [
   '$scope'
   'Data'
+  'Devices'
   controller
 ]

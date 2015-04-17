@@ -1,13 +1,12 @@
 class DeviceService
   constructor: (@Command, @Router, @socket, @Data, @$timeout) ->
     [@list, @current, @status] = [[], {}, {meshblu: "Connecting"}]
-    @stepSize = 10
+    @stepSize = 100
     @initConnections()
-
+  opps = (error) ->
+    alert 'Message error. Wait for device to connect or refresh the page'
+    console.error error
   initConnections: ->
-    nope = ->
-      alert "Oh no! I could not connect to the My Farmbot service. The server" +
-          " might be temporarily down"
     ok = (data) =>
       if data[0]
         [@list, @current] = [data, data[0]]
@@ -15,11 +14,11 @@ class DeviceService
       else
         alert 'You need to link a Farmbot to your account.'
         window.location = '/dashboard#/devices'
-    @Data.findAll('device', {}).catch(nope).then(ok)
+    @Data.findAll('device', {}).catch(opps).then(ok)
 
   handleMsg: (data) =>
     bot = _.find(@list, {uuid: data.fromUuid})
-    @Router.create(data, bot)
+    @Router.route(data, bot)
 
   handleStatus: (data) =>
     console.log(data)
@@ -37,48 +36,33 @@ class DeviceService
             socketid: data.socketid
             uuid:  "7e3a8a10-6bf6-11e4-9ead-634ea865603d"
             token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
-
-  getStatus: =>
-    @send(@Command.create("read_status"))
-    @pollStatus()
+  getStatus: => @send("read_status") and @pollStatus()
 
   pollStatus: =>
-    INTERVAL = 500
-    if @socket.connected()
-      @$timeout @getStatus, INTERVAL
-    else
-      @$timeout @pollStatus, INTERVAL
+    callback = if @socket.connected() then @getStatus else @pollStatus
+    @$timeout callback, 500
 
   togglePin: (number, cb) ->
-    pin = "pin#{number}"
-    if @current[pin] is on
-      @current[pin] = off
-      message = {pin: number, value1: 1, mode: 0}
-    else
-      @current[pin] = on
-      message = {pin: number, value1: 0, mode: 0}
-    @send @Command.create("pin_write", message), cb
+    switch @current["pin#{number}"]
+       when 'on'
+         @send "pin_write", pin: number, value1: 0, mode: 0
+       when 'off'
+         @send "pin_write", pin: number, value1: 1, mode: 0
+       else
+         opps()
 
   # TODO This method (and moveAbs) might be overly specific. Consider removal in
   # favor of @sendMessage()
-  moveRel: (x, y, z, cb) ->
-    @send(@Command.create("move_rel", {x: x, y: y, z: z}), cb)
+  moveRel: (x, y, z) -> @send "move_relative", {x: x, y: y, z: z}
+  moveAbs: (x, y, z) -> @send "move_absolute", {x: x, y: y, z: z}
+  stop: -> @send "emergency_stop"
 
-  moveAbs: (x, y, z, cb) ->
-    @send(@Command.create("move_abs", {x: x, y: y, z: z}), cb)
-
-  sendMessage: (name, params) ->
-    @send @Command.create(name, params)
-
-  stop: ->
-    @send(@Command.create("emergency_stop"))
-
-  send: (msg) ->
+  send: (msg, body = {}) ->
     if @socket.connected()
-      @socket.emit "message", {devices: @current.uuid, payload: msg}
+      cmd = @Command.create(msg, body)
+      @socket.emit "message", {devices: @current.uuid, payload: cmd}
     else
-      alert 'Unable to send device messages.' +
-            ' Wait for device to connect or refresh the page'
+      opps()
 
 angular.module("FarmBot").service "Devices",[
   'Command'

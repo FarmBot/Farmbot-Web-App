@@ -6,8 +6,9 @@ describe 'Device Management' do
   let(:user) { FactoryGirl.create(:user) }
 
   it 'adds a device', js: true do
-    pending 'Not there yet.'
     visit 'dashboard#/devices'
-    fill_in 'FarmBot Name *', with: 'LOL!@'
+    binding.pry
+
+    fill_in 'botname', with: 'LOL!@'
   end
 end
