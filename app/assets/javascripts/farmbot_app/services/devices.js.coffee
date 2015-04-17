@@ -53,8 +53,8 @@ class DeviceService
 
   # TODO This method (and moveAbs) might be overly specific. Consider removal in
   # favor of @sendMessage()
-  moveRel: (x, y, z) -> @send "move_rel", {x: x, y: y, z: z}
-  moveAbs: (x, y, z) -> @send "move_abs", {x: x, y: y, z: z}
+  moveRel: (x, y, z) -> @send "move_relative", {x: x, y: y, z: z}
+  moveAbs: (x, y, z) -> @send "move_absolute", {x: x, y: y, z: z}
   stop: -> @send "emergency_stop"
 
   send: (msg, body = {}) ->

@@ -13,7 +13,7 @@ describe Api::SequencesController do
       sequence = FactoryGirl.create(:sequence, user: user)
       input = { id: sequence._id.to_s,
                 sequence: { name: "Scare Birds",
-                            steps: [{ message_type: 'move_rel',
+                            steps: [{ message_type: 'move_relative',
                             command: { action: 'MOVE RELATIVE',
                                        x: 1,
                                        y: 2,

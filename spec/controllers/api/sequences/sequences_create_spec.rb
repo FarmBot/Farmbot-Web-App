@@ -11,7 +11,7 @@ describe Api::SequencesController do
     it 'creates a new sequences for a user' do
       sign_in user
       input = { name: "Scare Birds",
-                steps: [{ message_type: 'move_rel',
+                steps: [{ message_type: 'move_relative',
                           command: { action: 'MOVE RELATIVE',
                                      x: 1,
                                      y: 2,
@@ -25,7 +25,7 @@ describe Api::SequencesController do
     it 'handles invalid params' do
       # Needed to test the `else` branch of mutate() somewhere
       sign_in user
-      input = { steps: [{ message_type: 'move_rel',
+      input = { steps: [{ message_type: 'move_relative',
                           command: { action: 'MOVE RELATIVE',
                                      x: 1,
                                      y: 2,

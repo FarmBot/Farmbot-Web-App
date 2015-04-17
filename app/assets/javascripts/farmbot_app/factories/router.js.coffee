@@ -18,4 +18,6 @@ angular.module("FarmBot").factory 'Router', [
       alert "FarmBot sent back an error: #{msg}. See console for details"
       console.warn data
     missing: (data, device) -> no
+    exec_sequence: (data, device) ->
+      console.log "Hooray, the sequence was sent off!"
 ]

@@ -4,7 +4,7 @@ describe Steps::Create do
   let(:user) { FactoryGirl.create(:user) }
   let(:mutation) { Sequences::Create }
   let(:step) do
-    { message_type: 'move_rel',
+    { message_type: 'move_relative',
       command: { action: 'MOVE RELATIVE',
                  x: 1,
                  y: 2,

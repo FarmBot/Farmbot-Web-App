@@ -1,7 +1,8 @@
 class Step
   include Mongoid::Document
 
-  MESSAGE_TYPES = %w(single_command read_status pin_write pin_read move_abs move_rel wait send_message)
+  MESSAGE_TYPES = %w(emergency_stop home_all home_x home_y home_z move_absolute
+    move_relative pin_write read_parameter read_status write_parameter)
 
   embedded_in :sequence
 

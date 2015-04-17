@@ -13,7 +13,7 @@ describe Api::StepsController do
       sign_in user
       input = { sequence_id: sequence._id.to_s,
                 name: 'Scare Birds',
-                message_type: 'move_rel',
+                message_type: 'move_relative',
                 command: { action: 'MOVE RELATIVE',
                            x: 1,
                            y: 2,
