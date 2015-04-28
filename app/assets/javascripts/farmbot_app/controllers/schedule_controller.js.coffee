@@ -15,7 +15,9 @@ controller = ($scope, Data, Calendar, Devices) ->
     Data.findAll('schedule', start: $scope.calDate, bypassCache: yes).catch nope
   getSchedules()
   $scope.$watch 'calDate', getSchedules, true
-  Data.findAll('sequence', {}).catch(nope)
+  Data.findAll('sequence', {}).catch(nope).then (seqs) ->
+    Data.loadRelations('sequence', s._id, ['step']) for s in seqs
+
   Data.bindAll('sequence', {}, $scope, 'sequences')
   Data.bindAll('schedule', {}, $scope, 'schedules')
 
@@ -29,7 +31,9 @@ controller = ($scope, Data, Calendar, Devices) ->
       Data.destroy('schedule', $scope.form._id).catch(nope).then clear
     else
       clear()
-
+  $scope.sync = ->
+    payload = Data.utils.removeCircular($scope.schedules)
+    Devices.send "sync_sequence", payload
   $scope.edit = (sched) -> $scope.form = sched
   $scope.shiftDate = (days) ->
     n = $scope.calDate.getTime() + (86400000 * days)
