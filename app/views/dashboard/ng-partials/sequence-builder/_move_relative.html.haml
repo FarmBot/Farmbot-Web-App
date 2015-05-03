@@ -1,0 +1,43 @@
+.small-12.columns
+  .small-12.columns.green-block.block
+    .row.green-header
+      .small-12.columns
+        %nav.row.top-bar.green-header{:role => "navigation"}
+          %ul.title-area
+            %li.name
+              %h5 MOVE RELATIVE
+          = render partial: "dashboard/ng-partials/sequence-builder/step_ui/step_titlebar_button_group"
+    .row.content-area.green-content
+      .large-2.columns
+        .row.collapse.prefix-radius
+          .small-3.columns
+            %span.prefix X
+          .small-9.columns
+            %input{:placeholder => "25 mm", :type => "text", ng_model: "step.command.x"}
+      .large-2.columns
+        .row.collapse.prefix-radius
+          .small-3.columns
+            %span.prefix Y
+          .small-9.columns
+            %input{:placeholder => "20 mm", :type => "text", ng_model: "step.command.y"}
+      .large-2.columns
+        .row.collapse.prefix-radius
+          .small-3.columns
+            %span.prefix Z
+          .small-9.columns
+            %input{:placeholder => "0 mm", :type => "text", ng_model: "step.command.z"}
+      .large-6.columns
+        .row.collapse.prefix-radius
+          .small-3.columns
+            %span.prefix SPEED
+          .small-7.columns
+            %input{:placeholder => "Default", :type => "text", ng_model: "step.command.speed"}
+          .small-2.columns
+            %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
+            %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
+              %li
+                %a{:href => "#"} This is a link
+              %li
+                %a{:href => "#"} This is another
+              %li
+                %a{:href => "#"} Yet another

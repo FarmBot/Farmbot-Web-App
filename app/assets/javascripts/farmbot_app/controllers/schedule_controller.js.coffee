@@ -15,7 +15,9 @@ controller = ($scope, Data, Calendar, Devices) ->
     Data.findAll('schedule', start: $scope.calDate, bypassCache: yes).catch nope
   getSchedules()
   $scope.$watch 'calDate', getSchedules, true
-  Data.findAll('sequence', {}).catch(nope)
+  Data.findAll('sequence', {}).catch(nope).then (seqs) ->
+    Data.loadRelations('sequence', s._id, ['step']) for s in seqs
+
   Data.bindAll('sequence', {}, $scope, 'sequences')
   Data.bindAll('schedule', {}, $scope, 'schedules')
 
@@ -29,7 +31,18 @@ controller = ($scope, Data, Calendar, Devices) ->
       Data.destroy('schedule', $scope.form._id).catch(nope).then clear
     else
       clear()
+  $scope.sync = ->
+    # This method contains a lot of data massaging that shouldn't happen.
+    # I tried to adjust the relationship settings so that the relationship is
+    # auto-stringified (send "Sched => Seq => Steps" automatically.)
+    # JS-Data should be handling this stuff for us, but I don't have time to
+    # learn the conventions atm. Pull requests welcome. Look in data.js.coffee
+    payload = Data.utils.removeCircular($scope.schedules)
+    for schedule in payload
+      seq = _($scope.sequences).findWhere _id: schedule.sequence_id
+      schedule.sequence = Data.utils.removeCircular(seq)
 
+    Devices.send "sync_sequence", payload
   $scope.edit = (sched) -> $scope.form = sched
   $scope.shiftDate = (days) ->
     n = $scope.calDate.getTime() + (86400000 * days)

@@ -40,7 +40,7 @@ class DeviceService
 
   pollStatus: =>
     callback = if @socket.connected() then @getStatus else @pollStatus
-    @$timeout callback, 500
+    @$timeout callback, 750
 
   togglePin: (number, cb) ->
     switch @current["pin#{number}"]
