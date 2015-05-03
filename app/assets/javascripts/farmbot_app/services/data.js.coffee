@@ -31,26 +31,12 @@ data = (DS) ->
         step:
           localField: "steps"
           foreignKey: "sequence_id"
-        schedule:
-          localField: "schedules"
-          foreignKey: "sequence_id"
-      belongsTo:
-        schedule:
-          localKey: 'sequence_id'
-          localField: 'sequence'
-          parent: true
 
   DS.defineResource
     name: "schedule"
     endpoint: 'schedules',
     basePath: '/api',
     idAttribute: "_id"
-    relations:
-      belongsTo:
-        sequence:
-          localKey: 'sequence_id'
-          localField: 'sequence'
-          parent: true
     # relations:
     #   hasOne:
     #     sequence:
