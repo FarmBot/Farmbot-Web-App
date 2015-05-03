@@ -67,6 +67,9 @@ class Command
       command: sequence
       message_type: 'exec_sequence'
 
+    sync_sequence: (sequence) ->
+      command: sequence
+      message_type: 'sync_sequence'
 
     error: (nope) ->
       msg = "Unknown FarmBot message type #{nope}"
