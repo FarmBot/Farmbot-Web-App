@@ -20,5 +20,5 @@ angular.module("FarmBot").factory 'Router', [
     missing: (data, device) -> no
     exec_sequence: (data, device) ->
       console.log "Hooray, the sequence was sent off!"
-    exec_sequence: (data, device) -> console.log "Sync, Saync, sunk."
+    sync_sequence: (data, device) -> console.log "Sync, Saync, sunk."
 ]
