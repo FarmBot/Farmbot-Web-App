@@ -36,7 +36,9 @@ class DeviceService
             socketid: data.socketid
             uuid:  "7e3a8a10-6bf6-11e4-9ead-634ea865603d"
             token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
-  getStatus: => @send("read_status") and @pollStatus()
+  getStatus: =>
+    @send("read_status")
+    @pollStatus()
 
   pollStatus: =>
     callback = if @socket.connected() then @getStatus else @pollStatus

@@ -77,6 +77,7 @@ controller = ($scope, Data, Devices) ->
     sequence = Data.utils.removeCircular(seq)
     Devices.send "exec_sequence", sequence
 
+  $scope.wow = {one: 'two'}
 
 # The sequence controller supports the WYSIWYG sequence editor.
 angular.module('FarmBot').controller "SequenceController", [
