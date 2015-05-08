@@ -2,7 +2,8 @@
 ctrl = [
   '$scope',
   'Devices',
-  ($scope, Devices) ->
+  'Data'
+  ($scope, Devices, Data) ->
     $scope.sync = ->
       # This method contains a lot of data massaging that shouldn't happen.
       # I tried to adjust the relationship settings so that the relationship
@@ -18,13 +19,13 @@ ctrl = [
       Devices.send "sync_sequence", payload
 ]
 directive =
-  restrict: 'E'
-  template: '<button class="yellow button-like" type="button">New Sync Button</button>'
+  restrict: 'AEC'
+  template: '<button class="yellow button-like" type="button">Sync Button</button>'
   scope:
-    blah: '='
+    schedules: '='
   link: ($scope, el, attr) ->
-    console.log "Blah is:", attr.blah
-    el.on 'click', => alert ':('
+    console.log "Schedules are:", $scope.schedules
+    el.on 'click', => $scope.sync()
   controller: ctrl
 
 angular.module("FarmBot").directive 'syncbutton', [() -> directive]

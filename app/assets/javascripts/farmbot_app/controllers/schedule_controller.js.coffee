@@ -56,6 +56,7 @@ controller = ($scope, Data, Calendar, Devices) ->
     previous = $scope.pastEvent(previousSchedule($index))
     current  = $scope.pastEvent(currentSchedule($index))
     if previous is true and current is false then yes else no
+
 angular.module('FarmBot').controller "ScheduleController", [
   '$scope'
   'Data'
