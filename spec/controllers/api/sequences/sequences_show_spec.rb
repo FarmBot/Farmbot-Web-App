@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::SequencesController do
+describe API::SequencesController do
 
   include Devise::TestHelpers
 

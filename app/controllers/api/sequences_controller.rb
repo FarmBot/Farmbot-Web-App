@@ -1,5 +1,5 @@
-module Api
-  class SequencesController < Api::AbstractController
+module API
+  class SequencesController < API::AbstractController
     # TODO add user authorization maybe (privacy)
     def index
       query = { user: current_user }

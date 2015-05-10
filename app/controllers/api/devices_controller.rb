@@ -1,7 +1,7 @@
-# Api::DevicesController is the RESTful endpoint for managing device related
+# API::DevicesController is the RESTful endpoint for managing device related
 # settings. Consumed by the Angular SPA on the front end.
-module Api
-  class DevicesController < Api::AbstractController
+module API
+  class DevicesController < API::AbstractController
     before_action :set_device, only: [:show, :edit, :update, :destroy]
 
     # GET /api/devices

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::SchedulesController do
+describe API::SchedulesController do
   include Devise::TestHelpers
 
   describe '#update' do

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::DevicesController do
+describe API::DevicesController do
 
   include Devise::TestHelpers
 
