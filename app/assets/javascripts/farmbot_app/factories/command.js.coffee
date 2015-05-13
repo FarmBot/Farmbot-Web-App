@@ -16,9 +16,9 @@ class Command
     read_status: (values) ->
       message_type: 'read_status'
 
-    write_pin: (values) ->
+    pin_write: (values) ->
       new SingleCommandMessage
-        action: "WRITE PIN",
+        action: "pin write",
         pin: values.pin,
         value1: values.value1,
         mode: values.mode,

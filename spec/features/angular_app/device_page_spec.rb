@@ -6,6 +6,7 @@ describe 'Device Management' do
   let(:user) { FactoryGirl.create(:user) }
 
   it 'adds a device', js: true do
+    pending
     visit 'dashboard#/devices'
     fill_in 'botname', with: 'LOL!@'
   end
