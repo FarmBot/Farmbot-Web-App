@@ -19,25 +19,14 @@ angular.module('FarmBot').controller "MovementController", [
     # Returns a getter/setter function for specified axis
     $scope.axis = (axis) ->
       set = (v, axis) ->
-        # CASES:
-        # 1. User enters '' (wants to clear the form)
-        # 2. User enters 0 (evals to false)
-        # 3. User enters real number
-        # 4. User enters letters / bad input
-        # FIXME!
-        wow = parseInt(v)
-        if wow == 0
-          buffer[axis] = 0
-        else
-          buffer[axis] = wow or null
+        buffer[axis] = if _.isFinite(num = parseInt(v)) then num else null
 
       get = (axis)    -> buffer[axis] or Devices.current[axis]
+
       (v) -> if arguments.length then set(v, axis) else get(axis)
 
     $scope.manualMovement = ->
-      Devices.moveRel ($scope.axis(coord)() for coord in ['x', 'y', 'z'])...
-      buffer['x'] = null
-      buffer['y'] = null
-      buffer['z'] = null
+      Devices.moveAbs ($scope.axis(coord)() for coord in ['x', 'y', 'z'])...
+      [buffer.x, buffer.y, buffer.z] = [null, null, null]
     Devices.pollStatus()
 ]
