@@ -51,8 +51,6 @@
             %button.green.button-like{'ng-disabled' => 'form.$invalid', type: 'submit'}
               Schedule
             %syncbutton{schedules: "schedules"}
-            / %button.yellow.button-like{ng_click: 'sync()', type: 'button'}
-            /   Sync Device
             %button.red.button-like.left{"ng-click" => "destroy()", type: 'button'}
               Delete
         .row.padding-bottom

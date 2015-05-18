@@ -20,7 +20,7 @@ ctrl = [
 ]
 directive =
   restrict: 'AEC'
-  template: '<button class="yellow button-like" type="button">Sync Button</button>'
+  template: '<button class="yellow button-like" type="button">Sync</button>'
   scope:
     schedules: '='
   link: ($scope, el, attr) ->

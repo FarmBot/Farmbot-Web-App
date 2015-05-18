@@ -4,6 +4,7 @@ angular.module('FarmBot').controller "MovementController", [
   '$scope'
   'Devices'
   ($scope, Devices) ->
+    $scope.wow = 'Hello'
     nope = (e) -> alert 'Doh!'; console.error e
     # I really don't like throwing the whole device service into the $scope.
     # TODO determine why $scope.device = Devices.current is broke :(
