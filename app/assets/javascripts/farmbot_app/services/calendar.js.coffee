@@ -1,10 +1,21 @@
-service = (Data) ->
+service = (Data, $q) ->
   nope = (e) -> console.error e
-  Data.findAll('sequence', {}).catch(nope).then (seqs) =>
-    @sequences = seqs
-    Data.loadRelations('sequence', s._id, ['step']) for s in seqs
-    Data.findAll('schedule', {}).catch(nope).then (d) => @schedules = d
 
+  @loadData = ->
+    deferred = $q.defer()
+    promise  = deferred.promise
+    fail    = -> deferred.reject(a, b, c)
+    Data
+      .findAll('sequence', {})
+      .catch(fail)
+      .then (sequences) =>
+        Data.loadRelations('sequence', s._id, ['step']) for s in sequences
+        Data
+          .findAll('schedule', {})
+          .catch(fail)
+          .then (schedules) =>
+            deferred.resolve(sequences: sequences, schedules: schedules)
+    promise
   # Welcome to the hairest method in all of Farmbot!
   # source: Array<Schedule> collection of Schedule objects
   # Returns Array<Schedule>, sorted by execution time, with duplicate items for
@@ -39,9 +50,11 @@ service = (Data) ->
      .reduce(insertFieldThatIsNamedNextTime, []) # Splice in 'next_time' field
      .sortBy('next_time')
      .value()
+
   return
 
 angular.module("FarmBot").service "Calendar",[
   'Data'
+  '$q'
   service
 ]
