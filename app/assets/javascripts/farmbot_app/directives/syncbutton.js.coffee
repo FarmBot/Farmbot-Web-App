@@ -18,7 +18,6 @@ ctrl = [
         for schedule in payload
           seq = _(data.sequences).findWhere _id: schedule.sequence_id
           schedule.sequence = Data.utils.removeCircular(seq)
-        debugger
         Devices.send "sync_sequence", payload
 
       Calendar.loadData().then(yep, nope)
