@@ -8,12 +8,12 @@ service = (Data, $q) ->
     Data
       .findAll('sequence', {})
       .catch(fail)
-      .then (sequences) =>
+      .then (sequences) ->
         Data.loadRelations('sequence', s._id, ['step']) for s in sequences
         Data
           .findAll('schedule', {})
           .catch(fail)
-          .then (schedules) =>
+          .then (schedules) ->
             deferred.resolve(sequences: sequences, schedules: schedules)
     promise
   # Welcome to the hairest method in all of Farmbot!
@@ -39,12 +39,14 @@ service = (Data, $q) ->
       accumulator
 
     _.chain(source)
-     .map('calendar')            # Grab 2d array of all possible execution times.
+     .map('calendar')            # Grab 2d array of all possible
+                                 # execution times.
      .flatten()                  # Flatten down into 1d array
-     .uniq()                     # Grab uniq values to give all possible calendar
-                                 # points
+     .uniq()                     # Grab uniq values to give all possible
+                                 # calendar points
      .reduce(groupByDueDate, {}) # Return:
-                                 # [{date1: [schedules...]},{date2: [schedules]}]
+                                 # [ {date1: [schedules...]},
+                                 #   {date2: [schedules]}]
      .pairs()                    # Return: [ [date1, [schedules]],
                                  #           [date2, [schedules]], . . .]
      .reduce(insertFieldThatIsNamedNextTime, []) # Splice in 'next_time' field
