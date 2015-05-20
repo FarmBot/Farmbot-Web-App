@@ -5,6 +5,11 @@ ctrl = [
   'Data'
   'Calendar'
   ($scope, Devices, Data, Calendar) ->
+    $scope.text = ->
+      switch Devices.current.busy
+        when 0 then 'Sync'
+        when 1 then 'Sync (busy)'
+        else 'Waiting'
     $scope.sync = ->
       nope = (data) -> alert 'SYNC FAILURE'; console.log data
       yep  = (data) ->
@@ -24,7 +29,7 @@ ctrl = [
 ]
 directive =
   restrict: 'AEC'
-  template: '<button class="yellow button-like" type="button">Sync</button>'
+  template: '<button class="yellow button-like" type="button">{{ text() }}</button>'
   scope:
     schedules: '='
   link: ($scope, el, attr) ->

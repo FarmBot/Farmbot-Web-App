@@ -5,7 +5,7 @@
         %h5 Move
     .small-12.columns
       .content-wrapper
-        %h6.control-title.text-center Move Amount (mm)
+        %h6.control-title.text-center Move Amount (mm) {{ device.current.busy == 0 ? "Ready" : "Busy" }}
         .row
           .small-12.columns
             %button.move-amount.no-radius.leftmost{stepsize: '1'} 1
@@ -55,7 +55,7 @@
             %button.full-width.gray.button-like{ng_click: 'home("z")'} HOME Z
         .row.padding-bottom
           .small-4.columns
-            %button.full-width.red.button-like{ng_click: 'stop()'} STOP
+            %stopbutton
           .small-4.columns
             %button.full-width.green.button-like{ng_click: 'manualMovement()'} GO
           .small-4.columns
