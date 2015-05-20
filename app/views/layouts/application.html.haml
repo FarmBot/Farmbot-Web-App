@@ -10,7 +10,7 @@
   %body{'ng-app' => 'FarmBot'}
 
     .row
-      %nav.drop-shadow
+      %nav.drop-shadow{ng_app: 'farmbot', ng_controller: 'nav'}
         .small-menu-title MENU
         %a{:href => root_path} Home
         - if current_user
@@ -25,7 +25,8 @@
           %a.large-menu-right{:href => new_user_session_path} Log In
           %a.large-menu-right{:href => new_user_registration_path} Register
           %a.large-menu-right{:href => page_path('help')} Help
-
+        - if current_user && controller_name == "dashboard"
+          %syncbutton.nav-bar{schedules: "schedules"}
     .container.small-12.medium-6.large-4.small-centered.columns{style: 'margin-top: 20px;'}
       - if notice
         .alert-box.notice.round{"onClick" => "hidden = true"}
