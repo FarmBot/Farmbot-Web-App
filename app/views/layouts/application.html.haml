@@ -7,6 +7,7 @@
     %title= content_for?(:title) ? yield(:title) : "FarmBot"
     = stylesheet_link_tag "application"
     = csrf_meta_tags
+    = javascript_include_tag "application"
   %body{'ng-app' => 'FarmBot'}
 
     .row
@@ -40,4 +41,3 @@
 
     .content
       = yield
-      = javascript_include_tag "application"
