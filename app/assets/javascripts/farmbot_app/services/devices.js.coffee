@@ -34,8 +34,8 @@ class DeviceService
         @socket.on 'identify', (data) =>
           @socket.emit 'identity',
             socketid: data.socketid
-            uuid:  "7e3a8a10-6bf6-11e4-9ead-634ea865603d"
-            token: "zj6tn36gux6crf6rjjarh35wi3f5stt9"
+            uuid:  "1468ca9e-97fb-44f0-8bf7-8200a0d93629"
+            token: "89baa6476be84b0948b544cb51ba7860f9183e2e"
   getStatus: =>
     @send("read_status")
     @pollStatus()

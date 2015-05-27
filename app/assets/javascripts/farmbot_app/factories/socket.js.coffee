@@ -1,4 +1,4 @@
-socket = io.connect 'wss://meshblu.octoblu.com', port: 443
+socket = io.connect 'ws://45.55.200.178'
 
 angular.module("FarmBot").factory 'socket', ($rootScope) ->
   on: (eventName, callback) ->
