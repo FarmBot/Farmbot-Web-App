@@ -25,17 +25,14 @@ class DeviceService
     @status = data
 
   connectToMeshBlu: ->
-    # Avoid double connections
-    if @socket?.connected()
-      console.log "[WARN] Already connected to MeshBlu."
-    else
-      @socket.on "message", @handleMsg
-      @socket.on 'connect', =>
-        @socket.on 'identify', (data) =>
-          @socket.emit 'identity',
-            socketid: data.socketid
-            uuid:  "73425170-2660-49de-acd9-6fad4989aff6"
-            token: "bcbd352aaeb9b7f18214a63cb4f3b16b89d8fd24"
+    @socket.on 'connect', =>
+      @socket.on 'reconnect_error', -> alert 'Lost connection to MeshBlu'
+      @socket.on 'message', @handleMsg
+      @socket.on 'identify', (data) =>
+        @socket.emit 'identity',
+          socketid: data.socketid
+          uuid:  "73425170-2660-49de-acd9-6fad4989aff6"
+          token: "bcbd352aaeb9b7f18214a63cb4f3b16b89d8fd24"
   getStatus: =>
     @send("read_status")
     @pollStatus()
