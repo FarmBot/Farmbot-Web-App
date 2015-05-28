@@ -13,20 +13,33 @@ angular.module('FarmBot').controller "MovementController", [
     $scope.home   = (axis) -> Devices.send "home_#{axis or 'all'}"
 
 
+    class Axis
+      constructor: (@axis) ->
+        [@dirty, @editing] = [no, no]
+        @num = Devices.current[@axis]
+      set: (v) ->
+        if _.isEmpty(v) then [@dirty, @num] = [no, ''] else @dirty = yes
+        @num = num if _.isFinite(num = parseInt(v))
+      get: ->
+        if @dirty || @editing then @num else Devices.current[@axis]
+      in: =>
+        @editing = yes
+        @num = '' if !@dirty
+      out: =>
+        @editing = no
+
     # Holds temporary x/y/z coords until ready to send to bot.
-    buffer  = {x: null, y: null, z: null}
+    $scope.buffer = {x: new Axis('x'), y: new Axis('y'), z: new Axis('z')}
 
     # Returns a getter/setter function for specified axis
     $scope.axis = (axis) ->
-      set = (v, axis) ->
-        buffer[axis] = if _.isFinite(num = parseInt(v)) then num else null
-
-      get = (axis)    -> buffer[axis] or Devices.current[axis]
+      set = (v, axis) -> $scope.buffer[axis].set(v)
+      get = (axis) -> $scope.buffer[axis].get()
 
       (v) -> if arguments.length then set(v, axis) else get(axis)
 
     $scope.manualMovement = ->
       Devices.moveAbs ($scope.axis(coord)() for coord in ['x', 'y', 'z'])...
-      [buffer.x, buffer.y, buffer.z] = [null, null, null]
+      [$scope.buffer.x, $scope.buffer.y, $scope.buffer.z] = [null, null, null]
     Devices.pollStatus()
 ]
