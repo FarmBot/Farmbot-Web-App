@@ -1,4 +1,4 @@
-socket = io.connect 'ws://45.55.200.178'
+socket = io.connect 'ws://mesh.farmbot.it'
 
 angular.module("FarmBot").factory 'socket', ($rootScope) ->
   on: (eventName, callback) ->

@@ -12,21 +12,12 @@ angular.module('FarmBot').controller "MovementController", [
     $scope.goHome = -> Devices.moveAbs 0, 0, 0
     $scope.home   = (axis) -> Devices.send "home_#{axis or 'all'}"
 
-
-    # Holds temporary x/y/z coords until ready to send to bot.
-    buffer  = {x: null, y: null, z: null}
-
-    # Returns a getter/setter function for specified axis
-    $scope.axis = (axis) ->
-      set = (v, axis) ->
-        buffer[axis] = if _.isFinite(num = parseInt(v)) then num else null
-
-      get = (axis)    -> buffer[axis] or Devices.current[axis]
-
-      (v) -> if arguments.length then set(v, axis) else get(axis)
+    $scope.axisdata = {} # Holding area for axis data in <manualmovementinput/>
 
     $scope.manualMovement = ->
-      Devices.moveAbs ($scope.axis(coord)() for coord in ['x', 'y', 'z'])...
-      [buffer.x, buffer.y, buffer.z] = [null, null, null]
+      coords = ($scope.axisdata[coord] for coord in ['x', 'y', 'z'])
+      Devices.moveAbs (coord.val() for coord in coords)...
+      (coord.reset() for coord in coords)
+
     Devices.pollStatus()
 ]
