@@ -23,7 +23,6 @@ controller = ($scope, Data) ->
       .catch(nope)
       .then($scope.clear)
 
-
 angular
 .module('FarmBot')
 .controller "DevicesController", ['$scope', 'Data', controller]
