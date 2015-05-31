@@ -19,5 +19,5 @@ angular.module('FarmBot').controller "MovementController", [
       Devices.moveAbs (coord.val() for coord in coords)...
       (coord.reset() for coord in coords)
 
-    Devices.pollStatus()
+    # Devices.pollStatus()
 ]
