@@ -25,8 +25,15 @@ class DeviceService
     @status = data
 
   connectToMeshBlu: ->
+    @socket.on 'connect', (a, b) -> console.log 'connect', a, b
+    @socket.on 'connect_error', (a, b) -> console.log 'connect_error', a, b
+    @socket.on 'connect_timeout', (a, b) -> console.log 'connect_timeout', a, b
+    @socket.on 'reconnect', (a, b) -> console.log 'reconnect', a, b
+    @socket.on 'reconnect_attempt', (a, b) -> console.log 'reconnect_attempt', a, b
+    @socket.on 'reconnecting', (a, b) -> console.log 'reconnecting', a, b
+    @socket.on 'reconnect_error', (a, b) -> console.log 'reconnect_error', a, b
+    @socket.on 'reconnect_failed', (a, b) -> console.log 'reconnect_failed', a, b
     @socket.on 'connect', =>
-      @socket.on 'reconnect_error', -> alert 'Lost connection to MeshBlu'
       @socket.on 'message', @handleMsg
       @socket.on 'identify', (data) =>
         @socket.emit 'identity',
