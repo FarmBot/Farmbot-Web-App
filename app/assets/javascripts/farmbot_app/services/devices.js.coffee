@@ -40,22 +40,22 @@ class DeviceService
           socketid: data.socketid
           uuid: "73425170-2660-49de-acd9-6fad4989aff6"
           token: "bcbd352aaeb9b7f18214a63cb4f3b16b89d8fd24"
-  getStatus: =>
-    @send("read_status")
-    @pollStatus()
+        @socket.emit 'subscribe',
+          uuid: @current.uuid, token: @current.token,
+          (data) -> console.log data
+  # getStatus: =>
+  #   @send("read_status")
+  #   @pollStatus()
 
-  pollStatus: =>
-    callback = if @socket.connected() then @getStatus else @pollStatus
-    @$timeout callback, 750
+  # pollStatus: =>
+  #   callback = if @socket.connected() then @getStatus else @pollStatus
+  #   @$timeout callback, 750
 
   togglePin: (number, cb) ->
     switch @current["pin#{number}"]
-       when 'on'
-         @send "pin_write", pin: number, value1: 0, mode: 0
-       when 'off'
-         @send "pin_write", pin: number, value1: 1, mode: 0
-       else
-         opps()
+       when 'on' then @send "pin_write", pin: number, value1: 0, mode: 0
+       when 'off' then @send "pin_write", pin: number, value1: 1, mode: 0
+       else opps()
 
   # TODO This method (and moveAbs) might be overly specific. Consider removal in
   # favor of @sendMessage()
