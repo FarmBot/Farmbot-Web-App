@@ -25,6 +25,22 @@
               .large-12.columns
                 %button.green.button-like
                   {{ !!form._id ? "Update" : "Add" }} FarmBot
+                %button.gray.button-like{ng_if: '!!form._id', ng_click: 'refreshLogs()', type: 'button'}
+                  Fetch Logs
+        %hr
+          %div{'ng-repeat' => 'log in logs'}
+            %h4 {{ log.log || "Untitled Log Event" }}
+            %table
+              %thead
+                %tr
+                  %th Key
+                  %th value
+              %tbody
+                %tr{ng_repeat: "(key, value) in log"}
+                  %td
+                    {{ key }}
+                  %td
+                    {{ value }}
         %h2.page-title My FarmBots
         .row.padding-bottom
           .small-12.columns
@@ -33,7 +49,7 @@
                 %tr
                   %th{width: '90%'} FarmBot Name
                   %th{width: '5%'} Delete
-                  %th{width: '5%'} Edit
+                  %th{width: '5%'} Edit / Info
               %tbody
                 %tr.device-row{'ng-repeat' => 'device in devices'}
                   %td
@@ -43,4 +59,4 @@
                       %i.fi-x{style: 'font-size: 18px;'}
                   %td
                     %button.gray.button-like{ng_click: 'selectDevice(device)'}
-                      %i.fi-wrench{style: 'font-size: 18px;'}
+                      %i.fi-zoom-in{style: 'font-size: 18px;'}
