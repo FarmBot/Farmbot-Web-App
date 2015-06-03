@@ -25,14 +25,6 @@ class DeviceService
     @status = data
 
   connectToMeshBlu: ->
-    @socket.on 'connect', (a, b) -> console.log 'connect', a, b
-    @socket.on 'connect_error', (a, b) -> console.log 'connect_error', a, b
-    @socket.on 'connect_timeout', (a, b) -> console.log 'connect_timeout', a, b
-    @socket.on 'reconnect', (a, b) -> console.log 'reconnect', a, b
-    @socket.on 'reconnect_attempt', (a, b) -> console.log 'reconnect_attempt', a, b
-    @socket.on 'reconnecting', (a, b) -> console.log 'reconnecting', a, b
-    @socket.on 'reconnect_error', (a, b) -> console.log 'reconnect_error', a, b
-    @socket.on 'reconnect_failed', (a, b) -> console.log 'reconnect_failed', a, b
     @socket.on 'connect', =>
       @socket.on 'message', @handleMsg
       @socket.on 'identify', (data) =>
@@ -43,13 +35,6 @@ class DeviceService
         @socket.emit 'subscribe',
           uuid: @current.uuid, token: @current.token,
           (data) -> console.log data
-  # getStatus: =>
-  #   @send("read_status")
-  #   @pollStatus()
-
-  # pollStatus: =>
-  #   callback = if @socket.connected() then @getStatus else @pollStatus
-  #   @$timeout callback, 750
 
   togglePin: (number, cb) ->
     switch @current["pin#{number}"]
@@ -58,10 +43,16 @@ class DeviceService
        else opps()
 
   # TODO This method (and moveAbs) might be overly specific. Consider removal in
-  # favor of @sendMessage()
+  # favor of @send()
   moveRel: (x, y, z) -> @send "move_relative", {x: x, y: y, z: z}
   moveAbs: (x, y, z) -> @send "move_absolute", {x: x, y: y, z: z}
   stop: -> @send "emergency_stop"
+  fetchLogs: (cb = (d)-> console.log(d)) ->
+    @socket.emit 'getdata', {
+      uuid:  @current.uuid
+      token: @current.token
+      limit: 10
+    }, cb
 
   send: (msg, body = {}) ->
     if @socket.connected()
