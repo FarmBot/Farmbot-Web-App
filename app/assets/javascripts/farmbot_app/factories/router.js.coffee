@@ -3,13 +3,12 @@
 angular.module("FarmBot").factory 'Router', [
   ->
     route: (data, bot) ->
-      # Why are some messages coming in with a 'data' attribute and others with
-      # a 'payload' attribute?
-      routing_key = (data.message || data.payload).message_type
+      return if data.payload # "payload" means its telemetry, not message.
+      routing_key = data.message.message_type
       if @hasOwnProperty(routing_key) and routing_key != 'route'
         @[routing_key](data, bot)
       else
-        console.error  "Failed message. Possible unknown key '#{routing_key}'?"
+        alert  "Got an unknown '#{routing_key}' message from the device."
         @['missing'](data, bot)
     confirmation: (data, device) -> yes
     single_command: (data, device) -> yes
