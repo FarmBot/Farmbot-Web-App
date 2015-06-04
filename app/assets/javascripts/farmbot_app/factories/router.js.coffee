@@ -3,7 +3,9 @@
 angular.module("FarmBot").factory 'Router', [
   ->
     route: (data, bot) ->
-      routing_key = data.message.message_type
+      # Why are some messages coming in with a 'data' attribute and others with
+      # a 'payload' attribute?
+      routing_key = (data.message || data.payload).message_type
       if @hasOwnProperty(routing_key) and routing_key != 'route'
         @[routing_key](data, bot)
       else
@@ -20,5 +22,5 @@ angular.module("FarmBot").factory 'Router', [
     missing: (data, device) -> no
     exec_sequence: (data, device) ->
       console.log "Hooray, the sequence was sent off!"
-    sync_sequence: (data, device) -> console.log "Sync, Saync, sunk."
+    sync_sequence: (data, device) -> console.log "Sync"
 ]
