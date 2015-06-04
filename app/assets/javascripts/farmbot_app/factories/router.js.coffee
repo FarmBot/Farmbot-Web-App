@@ -3,11 +3,12 @@
 angular.module("FarmBot").factory 'Router', [
   ->
     route: (data, bot) ->
+      return if data.payload # "payload" means its telemetry, not message.
       routing_key = data.message.message_type
       if @hasOwnProperty(routing_key) and routing_key != 'route'
         @[routing_key](data, bot)
       else
-        console.error  "Failed message. Possible unknown key '#{routing_key}'?"
+        alert  "Got an unknown '#{routing_key}' message from the device."
         @['missing'](data, bot)
     confirmation: (data, device) -> yes
     single_command: (data, device) -> yes
@@ -20,5 +21,5 @@ angular.module("FarmBot").factory 'Router', [
     missing: (data, device) -> no
     exec_sequence: (data, device) ->
       console.log "Hooray, the sequence was sent off!"
-    sync_sequence: (data, device) -> console.log "Sync, Saync, sunk."
+    sync_sequence: (data, device) -> console.log "Sync"
 ]

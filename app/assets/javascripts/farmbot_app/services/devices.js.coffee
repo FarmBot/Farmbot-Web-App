@@ -47,12 +47,16 @@ class DeviceService
   moveRel: (x, y, z) -> @send "move_relative", {x: x, y: y, z: z}
   moveAbs: (x, y, z) -> @send "move_absolute", {x: x, y: y, z: z}
   stop: -> @send "emergency_stop"
-  fetchLogs: (cb = (d)-> console.log(d)) ->
+  fetchLogs: (cb) ->
     @socket.emit 'getdata', {
       uuid:  @current.uuid
       token: @current.token
       limit: 10
-    }, cb
+    }, (d) ->
+      if d.result is false
+        alert 'Ensure you have entered the correct token for your FarmBot'
+      else
+        cb(d)
 
   send: (msg, body = {}) ->
     if @socket.connected()
