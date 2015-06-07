@@ -1,4 +1,4 @@
-module Api
+module API
   class AbstractController < ApplicationController
     respond_to :json
     before_action :authenticate_user!

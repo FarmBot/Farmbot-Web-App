@@ -1,5 +1,5 @@
-module Api
-  class StepsController < Api::AbstractController
+module API
+  class StepsController < API::AbstractController
     before_action :must_own_sequence
 
     def create
