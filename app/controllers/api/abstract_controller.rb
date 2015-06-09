@@ -19,6 +19,11 @@ module Api
 
 private
 
+    # def authenticate_user!
+    #   authenticate_or_request_with_http_token do |token, other_options |
+    #   end
+    # end
+
     def sorry(msg, status)
       render json: { error: msg }, status: status
     end
