@@ -23,13 +23,10 @@ private
       return true if current_user
       auth = Auth::Create.run(request.headers.to_h)
       if auth.success?
-        binding.pry
         @current_user = auth.result
-        super
       else
-        sorry("""You failed to authenticate with the API. If you are an API
-         consumer, ensure that you have provided a `bot_token` and `bot_uuid`
-         header in the HTTP request.
+        sorry("""You failed to authenticate with the API. Ensure that you have
+         provided a `bot_token` and `bot_uuid` header in the HTTP request.
         """.squish, 401)
       end
     end

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Api::SchedulesController do
-
   include Devise::TestHelpers
 
   describe 'Bot authentication' do
@@ -16,6 +15,14 @@ describe Api::SchedulesController do
     end
 
     it 'tells you why you failed to auth' do
+      get :index
+      expect(response.status).to eq(401)
+      expect(json[:error]).to include("failed to authenticate")
+    end
+
+    it 'handles bad credentials' do
+      @request.headers["bot_token"] = '321'
+      @request.headers["bot_uuid"]  = '123'
       get :index
       expect(response.status).to eq(401)
       expect(json[:error]).to include("failed to authenticate")

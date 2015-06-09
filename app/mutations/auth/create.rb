@@ -7,14 +7,10 @@ module Auth
       string :bot_uuid
     end
 
-    def validate
-      @user = Device.find_by(uuid: bot_uuid, token: bot_token).user
-    rescue Mongoid::Errors::DocumentNotFound
-      add_error :auth, 'bad uuid or token'
-    end
-
     def execute
-      @user
+      Device.find_by(uuid: bot_uuid, token: bot_token).user
+    rescue Mongoid::Errors::DocumentNotFound
+      add_error :auth, :*, 'Bad uuid or token'
     end
   end
 end
