@@ -36,6 +36,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'faker'
   gem 'jasmine-rails'
+  # gem 'smarf_doc'
 end
 
 group :development do

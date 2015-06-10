@@ -19,6 +19,18 @@ module Api
 
 private
 
+    def authenticate_user!
+      return true if current_user
+      auth = Auth::Create.run(request.headers.to_h)
+      if auth.success?
+        @current_user = auth.result
+      else
+        sorry("""You failed to authenticate with the API. Ensure that you have
+         provided a `bot_token` and `bot_uuid` header in the HTTP request.
+        """.squish, 401)
+      end
+    end
+
     def sorry(msg, status)
       render json: { error: msg }, status: status
     end
