@@ -1,4 +1,10 @@
 GIT
+  remote: git://github.com/RickCarlino/smarf_doc.git
+  revision: 9b4cb42312f971dc565811da713584b2979dd913
+  specs:
+    smarf_doc (0.0.1)
+
+GIT
   remote: git://github.com/mongoid/mongoid.git
   revision: 6632302e7fc88f99aa7cff24719b95e6347048f7
   specs:
@@ -380,4 +386,5 @@ DEPENDENCIES
   rspec-rails
   sass-rails!
   simplecov
+  smarf_doc!
   uglifier
