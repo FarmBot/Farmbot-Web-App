@@ -1,0 +1,25 @@
+<% if response.success? %>
+# <%= request.method %> <%= request.path %>
+
+### Request
+
+```
+<%= JSON.pretty_generate(request.params) %>
+```
+
+### Response
+
+```
+<%=
+  begin
+    if response.body.length > 500
+      "Too big to display."
+    else
+      JSON.pretty_generate(JSON.parse(response.body))
+    end
+  rescue
+    response.body
+  end
+%>
+```
+<% end %>

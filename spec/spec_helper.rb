@@ -30,11 +30,23 @@ end
 # option on the command line or in ~/.rspec, .rspec or `.rspec-local`.
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
+SmarfDoc.config do |c|
+  c.template_file = 'api_docs.md.erb'
+  c.output_file   = 'api_docs.md'
+end
+
 RSpec.configure do |config|
 
   config.include Helpers
   config.infer_spec_type_from_file_location!
   config.order = 'random'
+
+  if ENV['docs']
+    config.after(:each, type: :controller) do
+      SmarfDoc.run!(request, response)
+    end
+  end
+  config.after(:suite) { SmarfDoc.finish! }
 
   config.after do
     Mongoid.purge!
