@@ -21,7 +21,8 @@ private
 
     def authenticate_user!
       return true if current_user
-      auth = Auth::Create.run(request.headers.to_h)
+      auth = Auth::Create.run(bot_token: request.headers["HTTP_BOT_TOKEN"],
+                              bot_uuid:  request.headers["HTTP_BOT_UUID"])
       if auth.success?
         @current_user = auth.result
       else
