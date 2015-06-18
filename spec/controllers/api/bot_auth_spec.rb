@@ -8,8 +8,8 @@ describe Api::SchedulesController do
     let(:device) { FactoryGirl.create(:device) }
 
     it 'authorizes using MeshBlu UUID / Token' do
-      @request.headers["bot_token"] = device.token
-      @request.headers["bot_uuid"]  = device.uuid
+      @request.headers["HTTP_BOT_TOKEN"] = device.token
+      @request.headers["HTTP_BOT_UUID"]  = device.uuid
       get :index
       expect(subject.current_user).to eq(device.user)
     end
@@ -21,8 +21,8 @@ describe Api::SchedulesController do
     end
 
     it 'handles bad credentials' do
-      @request.headers["bot_token"] = '321'
-      @request.headers["bot_uuid"]  = '123'
+      @request.headers["HTTP_BOT_TOKEN"] = '321'
+      @request.headers["HTTP_BOT_UUID"]  = '123'
       get :index
       expect(response.status).to eq(401)
       expect(json[:error]).to include("failed to authenticate")
