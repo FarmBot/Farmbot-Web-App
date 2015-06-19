@@ -8,24 +8,9 @@ ctrl = [
     $scope.text = ->
       switch Devices.current.busy
         when 0 then 'Sync'
-        when 1 then 'Sync (busy)'
+        when 1 then 'Working'
         else 'Waiting'
-    $scope.sync = ->
-      nope = (data) -> alert 'SYNC FAILURE'; console.log data
-      yep  = (data) ->
-        # This method contains a lot of data massaging that shouldn't happen.
-        # I tried to adjust the relationship settings so that the relationship
-        # is auto-stringified (send "Sched => Seq => Steps" automatically.)
-        # JS-Data should be handling this stuff for us, but I don't have time
-        # to learn the conventions atm. Pull requests welcome. Look in
-        # data.js.coffee
-        payload = Data.utils.removeCircular(data.schedules)
-        for schedule in payload
-          seq = _(data.sequences).findWhere _id: schedule.sequence_id
-          schedule.sequence = Data.utils.removeCircular(seq)
-        Devices.send "sync_sequence", payload
-
-      Calendar.loadData().then(yep, nope)
+    $scope.sync = -> Devices.send "sync_sequence"
 ]
 directive =
   restrict: 'AEC'
