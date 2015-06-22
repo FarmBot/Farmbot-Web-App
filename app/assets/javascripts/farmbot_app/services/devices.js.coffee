@@ -1,5 +1,5 @@
 class DeviceService
-  constructor: (@Command, @Router, @socket, @Data, @$timeout) ->
+  constructor: (@Command, @Router, @socket, @$http, @$timeout) ->
     [@list, @current, @status] = [[], {}, {meshblu: "Connecting"}]
     @stepSize = 100
     @initConnections()
@@ -14,7 +14,8 @@ class DeviceService
       else
         alert 'You need to link a Farmbot to your account.'
         window.location = '/dashboard#/devices'
-    @Data.findAll('device', {}).catch(opps).then(ok)
+    nope = (a,b,c,d) -> alert "Can't fetch devices"; console.error error
+    @$http.get('/api/devices').success(ok).error(nope)
 
   handleMsg: (data) =>
     bot = _.find(@list, {uuid: data.fromUuid})
@@ -69,8 +70,8 @@ angular.module("FarmBot").service "Devices",[
   'Command'
   'Router'
   'socket'
-  'Data'
+  '$http'
   '$timeout'
-  (Command, Router, socket, Data, $timeout) ->
-    return new DeviceService(Command, Router, socket, Data, $timeout)
+  (Command, Router, socket, $http, $timeout) ->
+    return new DeviceService(Command, Router, socket, $http, $timeout)
 ]
