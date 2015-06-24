@@ -60,9 +60,21 @@ class DeviceService
         cb(d)
 
   send: (msg, body = {}) ->
+    uuid = ->
+      'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) ->
+        r = Math.random() * 16 | 0
+        v = if c is 'x' then r else (r & 0x3|0x8)
+        v.toString(16)
+      )
     if @socket.connected()
       cmd = @Command.create(msg, body)
-      @socket.emit "message", {devices: @current.uuid, payload: cmd}
+      stringy_method = "#{cmd.message_type || 'undefined'}"
+      stringy_method += ".#{cmd.command.action}" if cmd.command.action
+      @socket.emit "message",
+        devices: @current.uuid,
+        params: _.omit(cmd.command, "action"),
+        method: stringy_method,
+        id: uuid()
     else
       opps()
 
