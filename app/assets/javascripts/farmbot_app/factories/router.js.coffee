@@ -3,7 +3,7 @@ angular.module("FarmBot").factory 'Router', [
     routes =
       read_status: (data, dvc) -> dvc[k] = v for k, v of (data.params || {})
       error: (data, device) ->
-        msg = data?.message?.error || "Unexpected error. See console."
+        msg = data?.error?.error || "Unexpected error. See console."
         alert "FarmBot sent back an error: #{msg}. See console for details"
         console.warn data
       missing: (data, device) -> no
@@ -21,12 +21,13 @@ angular.module("FarmBot").factory 'Router', [
       message_type = "ACK"          if data.fromUuid != bot.uuid
 
       switch message_type
-        # when 'TELEMETRY' then
         when 'NOTIFICATION' then (routes[data.method] || routes.error)(data,bot)
-        when 'RESULT'       then (routes[data.method] || routes.error)(data,bot)
-        when 'ACK'          then console.log 'Msg acknowledged.', data
-        when 'MISC'         then console.log "MeshBlu Noise:", data
+        when 'RESULT'       then routes[data.result.method](data,bot)
+        when 'ERROR'        then routes.error(data, bot)
+        when 'ACK'          then console.log 'MeshBlu acknowledgment:', data
         else
-          console.log message_type
-          debugger
+          if data.payload
+            console.log "Logs:", data.payload
+          else
+            console.log "Noise:", data
 ]
