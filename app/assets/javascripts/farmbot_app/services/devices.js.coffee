@@ -2,6 +2,7 @@ class DeviceService
   constructor: (@Command, @Router, @socket, @$http, @$timeout) ->
     [@list, @current, @status] = [[], {}, {meshblu: "Connecting"}]
     @stepSize = 100
+    @current.syncStatus = 'offline'
     @initConnections()
   opps = (error) ->
     alert 'Message error. Wait for device to connect or refresh the page'
@@ -18,7 +19,7 @@ class DeviceService
     @$http.get('/api/devices').success(ok).error(nope)
 
   handleMsg: (data) =>
-    bot = _.find(@list, {uuid: data.fromUuid})
+    bot = _.find(@list, {uuid: data.fromUuid}) || @current
     @Router.route(data, bot)
 
   handleStatus: (data) =>
@@ -27,6 +28,7 @@ class DeviceService
 
   connectToMeshBlu: ->
     @socket.on 'connect', =>
+      @current.syncStatus = 'sync_now'
       @socket.on 'message', @handleMsg
       @socket.on 'identify', (data) =>
         @socket.emit 'identity',
@@ -35,8 +37,7 @@ class DeviceService
           token: "bcbd352aaeb9b7f18214a63cb4f3b16b89d8fd24"
         @socket.emit 'subscribe',
           uuid: @current.uuid, token: @current.token,
-          (data) -> console.log data
-
+          (data) -> console.log 'Subscribed to bot successfully.'
   togglePin: (number, cb) ->
     switch @current["pin#{number}"]
        when 'on' then @send "pin_write", pin: number, value1: 0, mode: 0

@@ -6,11 +6,11 @@ angular.module("FarmBot").factory 'Router', [
         msg = data?.error?.error || "Unexpected error. See console."
         alert "FarmBot sent back an error: #{msg}. See console for details"
         console.warn data
-      missing: (data, device) -> no
-      exec_sequence: (data, device) -> no
-      sync_sequence: (data, device) -> no
-      confirmation: (data, device) -> yes
-      single_command: (data, device) -> console.log yes
+      missing: (data, device)        -> yes
+      exec_sequence: (data, device)  -> yes
+      sync_sequence: (data, device)  -> device.syncStatus = "synced"
+      confirmation: (data, device)   -> yes
+      single_command: (data, device) -> yes
 
     route: (data, bot = {}) ->
       message_type = "MISC"
@@ -20,14 +20,13 @@ angular.module("FarmBot").factory 'Router', [
       message_type = "ERROR"        if data.error
       message_type = "ACK"          if data.fromUuid != bot.uuid
 
+      console.log message_type, data
+
       switch message_type
         when 'NOTIFICATION' then (routes[data.method] || routes.error)(data,bot)
         when 'RESULT'       then routes[data.result.method](data,bot)
         when 'ERROR'        then routes.error(data, bot)
-        when 'ACK'          then console.log 'MeshBlu acknowledgment:', data
+        when 'ACK'          then return yes
         else
-          if data.payload
-            console.log "Logs:", data.payload
-          else
-            console.log "Noise:", data
+          return yes
 ]
