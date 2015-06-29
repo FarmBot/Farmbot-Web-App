@@ -3,7 +3,7 @@
 data = (DS, Devices) ->
 
   resync = (resource, data, cb) ->
-    Devices.send 'sync_sequence'
+    Devices.current.syncStatus = 'sync_now'
     return cb(null, data) # Let JS-Data know everything is OK
 
   DS.defineResource
