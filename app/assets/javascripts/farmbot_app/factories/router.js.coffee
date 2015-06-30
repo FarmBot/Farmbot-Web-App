@@ -1,15 +1,16 @@
 angular.module("FarmBot").factory 'Router', [
   ->
     routes =
-      read_status: (data, dvc) -> dvc[k] = v for k, v of (data.params || {})
+      read_status: (data, dvc) ->
+        dvc[k] = v for k, v of (data.params || data.result || {})
       error: (data, device) ->
-        msg = data?.error?.error || "Unexpected error. See console."
+        msg = data?.error?.error || "Unexpected error."
         alert "FarmBot sent back an error: #{msg}. See console for details"
         console.warn data
-      missing: (data, device)        -> yes
-      exec_sequence: (data, device)  -> yes
-      sync_sequence: (data, device)  -> device.syncStatus = "synced"
-      confirmation: (data, device)   -> yes
+      sync_sequence:  (data, device) -> device.syncStatus = "synced"
+      missing:        (data, device) -> yes
+      exec_sequence:  (data, device) -> yes
+      confirmation:   (data, device) -> yes
       single_command: (data, device) -> yes
 
     route: (data, bot = {}) ->
