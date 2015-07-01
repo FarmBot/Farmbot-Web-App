@@ -12,7 +12,7 @@ controller = ($scope, Data, Devices) ->
     $scope.form = {}
     $scope.logs = []
   $scope.clear()
-  $scope.refreshLogs = -> (Devices.fetchLogs (d) -> $scope.logs = d.data || [])
+  $scope.refreshLogs = -> (Devices.fetchLogs (d) -> $scope.logs = (d.data || []); console.log d)
   $scope.selectDevice = (device) -> $scope.form = device
   $scope.createDevice = ->
     Data

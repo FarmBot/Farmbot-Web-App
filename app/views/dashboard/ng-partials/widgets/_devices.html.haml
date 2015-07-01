@@ -1,62 +1,74 @@
-.widget-wrapper
-  .row
-    .small-12.columns
-      .header-wrapper
-        %h5 Manage your FarmBots
-  .row
-    .small-12.columns
-      .content-wrapper
-        %p Note: We don't support multi-bot setups at this time (but will in the future). The system will assume that the first bot is the bot that you wish to operate. Don't add more than one bot, as this will lead to unexpected behavior.
-        %form{ng_submit: 'createDevice()'}
-          %fieldset
-            %h2.page-title Add a FarmBot
-            .row
-              .large-12.columns
-                %label FarmBot Name *
-                %input{id: 'botname', placeholder: "Brocolli Overlord", type: "text", ng_model: 'form.name', required: true}/
-            .row
-              .large-6.columns
-                %label UUID *
-                %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'form.uuid', required: true}/
-              .large-6.columns
-                %label Security Token *
-                %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'form.token', required: true}/
-            .row
-              .large-12.columns
-                %button.green.button-like
-                  {{ !!form._id ? "Update" : "Add" }} FarmBot
-                %button.gray.button-like{ng_if: '!!form._id', ng_click: 'refreshLogs()', type: 'button'}
-                  Fetch Logs
-        %hr
-          %div{'ng-repeat' => 'log in logs'}
-            %h4 {{ log.log || "Untitled Log Event" }}
-            %table
-              %thead
-                %tr
-                  %th Key
-                  %th value
-              %tbody
-                %tr{ng_repeat: "(key, value) in log"}
-                  %td
-                    {{ key }}
-                  %td
-                    {{ value }}
-        %h2.page-title My FarmBots
-        .row.padding-bottom
-          .small-12.columns
-            %table
-              %thead
-                %tr
-                  %th{width: '90%'} FarmBot Name
-                  %th{width: '5%'} Delete
-                  %th{width: '5%'} Edit / Info
-              %tbody
-                %tr.device-row{'ng-repeat' => 'device in devices'}
-                  %td
-                    {{ device.name }}
-                  %td
-                    %button.red.button-like{'ng-click' => 'removeDevice(device)'}
-                      %i.fi-x{style: 'font-size: 18px;'}
-                  %td
-                    %button.gray.button-like{ng_click: 'selectDevice(device)'}
-                      %i.fi-zoom-in{style: 'font-size: 18px;'}
+/ .widget-wrapper
+.row
+  .small-6.columns
+    .row
+      .small-12.columns
+        .header-wrapper
+          %h5 FarmBot List
+    .row
+      .small-12.columns
+        %table
+          %thead
+            %tr
+              %th{width: '90%'} FarmBot Name
+              %th{width: '5%'} Delete
+              %th{width: '5%'} Edit / Info
+          %tbody
+            %tr.device-row{'ng-repeat' => 'device in devices'}
+              %td
+                {{ device.name }}
+              %td
+                %button.red.button-like{'ng-click' => 'removeDevice(device)'}
+                  %i.fi-x{style: 'font-size: 18px;'}
+              %td
+                %button.gray.button-like{ng_click: 'selectDevice(device)'}
+                  %i.fi-zoom-in{style: 'font-size: 18px;'}
+  .small-6.columns
+    .row
+      .small-12.columns
+        .header-wrapper
+          %h5 Add / Update
+    .row
+      .small-12.columns
+        .content-wrapper
+          %form{ng_submit: 'createDevice()'}
+            %fieldset
+              .row
+                .large-12.columns
+                  %label FarmBot Name *
+                  %input{id: 'botname', placeholder: "Brocolli Overlord", type: "text", ng_model: 'form.name', required: true}/
+              .row
+                .large-6.columns
+                  %label UUID *
+                  %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'form.uuid', required: true}/
+                .large-6.columns
+                  %label Security Token *
+                  %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'form.token', required: true}/
+              .row
+                .large-12.columns
+                  %button.green.button-like
+                    {{ !!form._id ? "Update" : "Add" }} FarmBot
+                  %button.gray.button-like{ng_if: '!!form._id', ng_click: 'refreshLogs()', type: 'button'}
+                    Fetch Logs
+/ sorry
+%br
+.row
+  .small-12.columns
+    .row
+      .small-12.columns
+        .header-wrapper
+          %h5 Logs
+    .row
+      .small-12.columns
+        .content-wrapper
+          %table
+            %thead
+              %tr
+                %th Time
+                %th Data
+                %th Coords
+            %tbody
+              %tr{'ng-repeat' => 'log in logs'}
+                %td {{ log.timestamp | date:'MM/dd h:mma' }}
+                %td {{ log.data || "?" }}
+                %td {{ (log.X || '?') + ', ' + (log.Y || '?') + ', ' + (log.Z || '?') }}
