@@ -3,27 +3,14 @@
 # it probably belongs in here.
 controller = ($scope, Data, Devices) ->
   nope = (e) -> alert 'Doh!'; console.error e
-  Data
-    .findAll('device', {})
-    .catch(nope)
-    .then((data) -> $scope.device = data[0])
+  $scope.logs = []
+  initBot = (data) ->
+    $scope.form = data[0] || {}
+    Devices.socket.on 'ready',->
+      Devices.fetchLogs (d) -> $scope.logs = (d.data || [])
+  Data.findAll('device', {}).catch(nope).then(initBot)
   Data.bindAll 'device', {}, $scope, 'devices'
-  $scope.clear = ->
-    $scope.form = {}
-    $scope.logs = []
-  $scope.clear()
-  $scope.refreshLogs = -> (Devices.fetchLogs (d) -> $scope.logs = (d.data || []); console.log d)
-  $scope.selectDevice = (device) -> $scope.form = device
-  $scope.createDevice = ->
-    Data
-      .create('device', $scope.form)
-      .catch(nope)
-      .then($scope.clear)
-  $scope.removeDevice = (device) ->
-    Data
-      .destroy('device', device._id)
-      .catch(nope)
-      .then($scope.clear)
+  $scope.createDevice = -> Data.create('device', $scope.form).catch(nope)
 
 angular
 .module('FarmBot')
