@@ -70,7 +70,7 @@ class DeviceService
       )
     # LEGACY COMPATIBILITY STUFF AHEAD! We had a different naming convention
     # that used 2 object keys (`action` and `message_type`). I switched it to
-    # use 'topic' style routing keys (strings). The code below massages the
+    # use topic style routing keys (strings). The code below massages the
     # legacy code into a usable format with out breaking old stuff. TODO: go
     # back and remove legacy calls.
     cmd = @Command.create(msg, body)
