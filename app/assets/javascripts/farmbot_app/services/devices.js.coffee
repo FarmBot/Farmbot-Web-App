@@ -1,8 +1,9 @@
 class DeviceService
   constructor: (@Command, @Router, @socket, @$http, @$timeout) ->
-    [@list, @current, @status] = [[], {}, {meshblu: "Connecting"}]
-    @stepSize = 100
+    [@list, @current, @status] = [[], {}, {}]
+    @stepSize = 1000
     @current.syncStatus = 'offline'
+    @current.logs = []
     @initConnections()
   opps = (error) ->
     alert 'Message error. Wait for device to connect or refresh the page'
@@ -10,7 +11,7 @@ class DeviceService
   initConnections: ->
     ok = (data) =>
       if data[0]
-        [@list, @current] = [data, data[0]]
+        [@list, @current] = [data, _.assign(data[0], @current)]
         @connectToMeshBlu()
       else
         alert 'You need to link a Farmbot to your account.'

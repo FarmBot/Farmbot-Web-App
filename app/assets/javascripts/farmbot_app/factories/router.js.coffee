@@ -15,19 +15,21 @@ angular.module("FarmBot").factory 'Router', [
 
     route: (data, bot = {}) ->
       message_type = "MISC"
-      message_type = "NOTIFICATION" if data.method and data.params and !data.id
-      message_type = "REQUEST"      if data.method and data.params and data.id
-      message_type = "RESULT"       if data.result
-      message_type = "ERROR"        if data.error
-      message_type = "ACK"          if data.fromUuid != bot.uuid
+      message_type = "NOTIFY"  if data.method and data.params and !data.id
+      message_type = "REQUEST" if data.method and data.params and data.id
+      message_type = "RESULT"  if data.result
+      message_type = "ERROR"   if data.error
+      message_type = "ACK"     if data.fromUuid != bot.uuid
+      message_type = "LOG"     if data.payload
 
       console.log message_type, data
 
       switch message_type
-        when 'NOTIFICATION' then (routes[data.method] || routes.error)(data,bot)
-        when 'RESULT'       then routes[data.result.method](data,bot)
-        when 'ERROR'        then routes.error(data, bot)
-        when 'ACK'          then return yes
-        else
-          return yes
+        when 'RESULT' then routes[data.result.method](data,bot)
+        when 'ERROR'  then routes.error(data, bot)
+        when 'ACK'    then return yes
+        when 'LOG'
+          bot.logs.push(_.extend(data.payload, {timestamp: Date.now()}))
+        when 'NOTIFY' then (routes[data.method] || routes.error)(data,bot)
+        else yes
 ]
