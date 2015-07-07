@@ -3,7 +3,6 @@ class DeviceService
     [@list, @current, @status] = [[], {}, {}]
     @stepSize = 1000
     @current.syncStatus = 'offline'
-    @current.logs = []
     @initConnections()
   opps = (error) ->
     alert 'Message error. Wait for device to connect or refresh the page'
