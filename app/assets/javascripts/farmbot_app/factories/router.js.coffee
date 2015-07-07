@@ -1,5 +1,6 @@
 angular.module("FarmBot").factory 'Router', [
-  ->
+  "Info"
+  (Info) ->
     routes =
       read_status: (data, dvc) ->
         dvc[k] = v for k, v of (data.params || data.result || {})
@@ -29,7 +30,7 @@ angular.module("FarmBot").factory 'Router', [
         when 'ERROR'  then routes.error(data, bot)
         when 'ACK'    then return yes
         when 'LOG'
-          bot.logs.push(_.extend(data.payload, {timestamp: Date.now()}))
+          Info.push(_.extend(data.payload, {timestamp: Date.now()}))
         when 'NOTIFY' then (routes[data.method] || routes.error)(data,bot)
         else yes
 ]
