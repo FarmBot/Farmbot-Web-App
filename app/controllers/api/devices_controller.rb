@@ -2,43 +2,36 @@
 # settings. Consumed by the Angular SPA on the front end.
 module Api
   class DevicesController < Api::AbstractController
-    before_action :set_device, only: [:show, :edit, :update, :destroy]
 
     # GET /api/device
     def show
-      @devices = Device.where(user_id: current_user.id)
-      render json: @devices
+      render json: current_device
     end
 
     # POST /api/device
     def create
-      @device      = Device.new(device_params)
-      @device.user = current_user
-      if @device.save
-        render json: @device
+      current_user.device = Device.new(device_params)
+      if current_user.device.save
+        render json: current_device
       end
     end
 
     # PATCH/PUT /api/device
     def update
-      if @device.update_attributes(device_params)
-        render json: @device
+      if current_device.update_attributes(device_params)
+        render json: current_device
       end
     end
 
     # DELETE /api/devices/1
     def destroy
-      if @device.user == current_user
-        @device.destroy
+      if current_device.users.include?(current_user)
+        current_device.destroy
         render nothing: true, status: 204
       end
     end
 
     private
-      # Use callbacks to share common setup or constraints between actions.
-      def set_device
-        @device = Device.find(params[:id])
-      end
 
       # Only allow a trusted parameter "white list" through.
       def device_params

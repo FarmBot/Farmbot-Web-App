@@ -20,7 +20,9 @@ module Api
 private
 
     def current_device
-      current_user.try(:device) || NullDevice.new(user: current_user)
+      current_user.try(:device) || NullDevice
+                                    .new(users: [current_user])
+                                    .reject(&:empty?)
     end
 
     def authenticate_user!

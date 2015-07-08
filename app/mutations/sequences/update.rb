@@ -13,7 +13,7 @@ module Sequences
     end
 
     def validate
-      raise Errors::Forbidden unless sequence.user == user
+      raise Errors::Forbidden unless sequence.device.users.include?(user)
     end
 
     def execute

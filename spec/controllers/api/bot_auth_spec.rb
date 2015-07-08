@@ -11,7 +11,7 @@ describe Api::SchedulesController do
       @request.headers["HTTP_BOT_TOKEN"] = device.token
       @request.headers["HTTP_BOT_UUID"]  = device.uuid
       get :index
-      expect(subject.current_user).to eq(device.user)
+      expect(device.users).to include(subject.current_user)
     end
 
     it 'tells you why you failed to auth' do

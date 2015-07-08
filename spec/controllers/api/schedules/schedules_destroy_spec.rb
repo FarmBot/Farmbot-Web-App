@@ -8,7 +8,7 @@ describe Api::SchedulesController do
 
     it 'deletes a schedule' do
       sign_in user
-      schedule = FactoryGirl.create(:schedule, user: user)
+      schedule = FactoryGirl.create(:schedule, device: user.device)
       before = Schedule.count
       delete :destroy, id: schedule._id.to_s
 

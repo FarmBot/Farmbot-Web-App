@@ -14,7 +14,7 @@ describe Api::DevicesController do
       post :create, params
       resp       = JSON.parse(response.body)
       new_device = Device.find(resp['_id'])
-      expect(new_device.user).to eq(user)
+      expect(user.device).to eq(new_device)
       expect(response.status).to eq(200)
     end
   end

@@ -2,7 +2,7 @@ module Api
   class SequencesController < Api::AbstractController
     # TODO add user authorization maybe (privacy)
     def index
-      query = { user: current_user }
+      query = { device: current_device }
       query.merge!(schedule_id: params[:schedule_id]) if params[:schedule_id]
       render json: Sequence.where(query)
     end
@@ -12,7 +12,7 @@ module Api
     end
 
     def create
-      mutate Sequences::Create.run(params, user: current_user)
+      mutate Sequences::Create.run(params, device: current_device)
     end
 
     def update
@@ -24,7 +24,7 @@ module Api
     def destroy
       # HEY YOU!! If you touch this again, add a mutation. This is the most
       # complexity I would like to see in one controlelr action.
-      if (sequence.user == current_user) && sequence.destroy
+      if (sequence.device == current_device) && sequence.destroy
         render nothing: true
       else
         raise Errors::Forbidden, "Not your Sequence object."

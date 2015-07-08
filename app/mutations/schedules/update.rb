@@ -6,7 +6,7 @@ module Schedules
 
     required do
       model :schedule, class: Schedule
-      model :user, class: User
+      model :device, class: Device
     end
 
     optional do
