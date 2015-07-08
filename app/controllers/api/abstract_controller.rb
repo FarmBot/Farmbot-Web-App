@@ -19,6 +19,10 @@ module Api
 
 private
 
+    def current_device
+      current_user.try(:device) || NullDevice.new(user: current_user)
+    end
+
     def authenticate_user!
       return true if current_user
       auth = Auth::Create.run(bot_token: request.headers["HTTP_BOT_TOKEN"],

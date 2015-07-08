@@ -4,7 +4,7 @@ FactoryGirl.define do
   factory :sequence do
     name { Faker::Company.catch_phrase }
     color { Sequence::COLORS.sample }
-    user
+    device
     steps { FactoryGirl.build_list(:step, 1) }
   end
 end

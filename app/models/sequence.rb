@@ -2,7 +2,7 @@ class Sequence
   include Mongoid::Document
 
   belongs_to :schedule
-  belongs_to :user
+  belongs_to :device
   embeds_many :steps
   has_many :schedules, dependent: :destroy
 

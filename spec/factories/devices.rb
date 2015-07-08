@@ -3,7 +3,6 @@ require 'securerandom'
 
 FactoryGirl.define do
   factory :device do
-    user
     name  Faker::Internet.user_name
     uuid  SecureRandom.uuid
     token SecureRandom.urlsafe_base64

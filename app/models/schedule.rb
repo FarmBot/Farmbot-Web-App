@@ -5,8 +5,8 @@ class Schedule
 
   belongs_to :sequence
   validates_presence_of :sequence_id
-  belongs_to :user
-  validates_presence_of :user_id
+  belongs_to :device
+  validates_presence_of :device_id
 
   field :start_time, type: Time
   field :end_time, type: Time

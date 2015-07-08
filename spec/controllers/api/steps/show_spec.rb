@@ -4,8 +4,8 @@ describe Api::StepsController do
   include Devise::TestHelpers
 
   describe '#show' do
-    let(:sequence) { FactoryGirl.create(:sequence) }
-    let(:user) { sequence.user }
+    let(:sequence) { FactoryGirl.create(:sequence, device: user.device) }
+    let(:user) { FactoryGirl.create :user }
 
     it 'retrieves all steps for a sequence' do
       id = sequence.steps.first._id.to_s

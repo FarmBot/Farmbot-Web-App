@@ -3,7 +3,10 @@
 class Device
   include Mongoid::Document
 
-  belongs_to :user
+  has_many :users
+  has_many :schedules, dependent: :destroy
+  has_many :sequences
+
 
   # The SkyNet UUID of the device
   field :uuid

@@ -6,8 +6,8 @@ describe Api::StepsController do
 
   describe '#create' do
 
-    let(:sequence) { FactoryGirl.create(:sequence) }
-    let(:user) { sequence.user }
+    let(:sequence) { FactoryGirl.create(:sequence, device: user.device) }
+    let(:user) { FactoryGirl.create :user }
 
     it 'creates a new step sequence' do
       sign_in user

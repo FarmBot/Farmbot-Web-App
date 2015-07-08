@@ -4,18 +4,13 @@ module Api
   class DevicesController < Api::AbstractController
     before_action :set_device, only: [:show, :edit, :update, :destroy]
 
-    # GET /api/devices
-    def index
+    # GET /api/device
+    def show
       @devices = Device.where(user_id: current_user.id)
       render json: @devices
     end
 
-    # GET /api/devices/1
-    # def show
-    #   raise 'Not implemented.'
-    # end
-
-    # POST /api/devices
+    # POST /api/device
     def create
       @device      = Device.new(device_params)
       @device.user = current_user
@@ -24,7 +19,7 @@ module Api
       end
     end
 
-    # PATCH/PUT /api/devices/1
+    # PATCH/PUT /api/device
     def update
       if @device.update_attributes(device_params)
         render json: @device

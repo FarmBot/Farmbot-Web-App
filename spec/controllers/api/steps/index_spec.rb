@@ -5,8 +5,8 @@ describe Api::StepsController do
   include Devise::TestHelpers
 
   describe '#index' do
-    let(:sequence) { FactoryGirl.create(:sequence) }
-    let(:user) { sequence.user }
+    let(:user) { FactoryGirl.create(:user) }
+    let(:sequence) { FactoryGirl.create(:sequence, device: user.device) }
 
     it 'retrieves all steps for a sequence' do
       sign_in user

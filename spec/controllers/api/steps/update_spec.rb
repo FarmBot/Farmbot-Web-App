@@ -5,9 +5,9 @@ describe Api::StepsController do
   include Devise::TestHelpers
 
   describe '#update' do
-    let(:sequence) { FactoryGirl.create(:sequence) }
+    let(:sequence) { FactoryGirl.create(:sequence, device: user.device) }
     let(:step) { sequence.steps[0] }
-    let(:user) { sequence.user }
+    let(:user) { FactoryGirl.create :user }
 
     it 'updates a step' do
       sign_in user
