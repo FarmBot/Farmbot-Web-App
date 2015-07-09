@@ -5,13 +5,14 @@ describe Api::SchedulesController do
 
   describe 'Bot authentication' do
 
-    let(:device) { FactoryGirl.create(:device) }
+    let(:user) { FactoryGirl.create(:user) }
+    let(:device) { user.device }
 
     it 'authorizes using MeshBlu UUID / Token' do
       @request.headers["HTTP_BOT_TOKEN"] = device.token
       @request.headers["HTTP_BOT_UUID"]  = device.uuid
       get :index
-      expect(subject.current_user).to eq(device.user)
+      expect(device).to eq(subject.send(:current_device))
     end
 
     it 'tells you why you failed to auth' do

@@ -2,7 +2,7 @@ FarmBot::Application.routes.draw do
 
   mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)
   namespace :api, defaults: {format: :json} do
-    resources :devices, only: [:index, :destroy, :create, :update]
+    resource :device, only: [:show, :destroy, :create, :update]
     resources :sequences, only: [:create, :update, :destroy, :index, :show] do
       resources :steps, only: [:show, :create, :index, :update, :destroy]
     end

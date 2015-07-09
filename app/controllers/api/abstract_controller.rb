@@ -19,12 +19,16 @@ module Api
 
 private
 
+    def current_device
+      @current_device ||= (current_user.try(:device) || NullDevice.new)
+    end
+
     def authenticate_user!
       return true if current_user
       auth = Auth::Create.run(bot_token: request.headers["HTTP_BOT_TOKEN"],
                               bot_uuid:  request.headers["HTTP_BOT_UUID"])
       if auth.success?
-        @current_user = auth.result
+        @current_device = auth.result
       else
         sorry("""You failed to authenticate with the API. Ensure that you have
          provided a `bot_token` and `bot_uuid` header in the HTTP request.

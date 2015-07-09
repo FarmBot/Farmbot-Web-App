@@ -35,7 +35,7 @@ module Api
     end
 
     def must_own_sequence
-      if sequence.user != current_user
+      if sequence.device != current_device
         raise Errors::Forbidden, 'Not your Sequence object.'
       end
     end

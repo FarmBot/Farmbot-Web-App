@@ -3,30 +3,26 @@ module Api
     def index
       # Follow this for better querying in the future:
       # http://www.js-data.io/v1.3.0/docs/query-syntax
-      render json: Schedule.where(user: current_user)
+      render json: current_device.schedules
     end
 
     def create
       mutate Schedules::Create.run(params,
-                                   user: current_user,
+                                   device: current_device,
                                    sequence: sequence)
     end
 
-    # def show
-    #   render json: schedule
-    # end
-
     def update
-      if schedule.user != current_user
+      if schedule.device != current_device
         raise Errors::Forbidden, 'Not your schedule.'
       end
       mutate Schedules::Update.run(params[:schedule],
-                                   user: current_user,
+                                   device: current_device,
                                    schedule: schedule)
     end
 
     def destroy
-      if (schedule.user == current_user) && schedule.destroy
+      if (schedule.device_id == current_device.id) && schedule.destroy
         render nothing: true
       else
         raise Errors::Forbidden, 'Not your schedule.'

@@ -11,7 +11,7 @@ describe Api::SequencesController do
     it 'lists all sequences for a user' do
       sign_in user
       sequences = FactoryGirl
-                    .create_list(:sequence, 2, user: user)
+                    .create_list(:sequence, 2, device: user.device)
                     .map(&:id)
                     .map(&:to_s)
                     .sort

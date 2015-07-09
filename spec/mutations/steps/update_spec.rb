@@ -2,8 +2,9 @@ require 'spec_helper'
 
 describe Steps::Update do
   let(:user) { FactoryGirl.create(:user) }
+  let(:device) { user.device }
   let(:mutation) { Steps::Update }
-  let(:sequence) { FactoryGirl.create(:sequence, user: user) }
+  let(:sequence) { FactoryGirl.create(:sequence, device: device) }
 
   it 'automatically populates position field via black magic.' do
     # This feature is a crime against humanity. Sorry :(
@@ -38,7 +39,7 @@ describe Steps::Update do
   end
 
   it 'moves first to middle' do
-    sequence = Sequences::Create.run!(name: 'test', user: user)
+    sequence = Sequences::Create.run!(name: 'test', device: device)
 
     a = Steps::Create.run!(message_type: 'pin_write',
                           sequence: sequence,

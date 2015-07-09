@@ -2,11 +2,10 @@
 
 FactoryGirl.define do
   factory :user do
+    device
     name { Faker::Name.name }
     email { Faker::Internet.email }
     password { Faker::Internet.password(8) }
-    after(:create) do |user|
-      FactoryGirl.create(:device, user: user)
-    end
+    after(:create) { |user| user.device ||= FactoryGirl.create(:device) }
   end
 end

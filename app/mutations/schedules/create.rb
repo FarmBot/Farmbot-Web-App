@@ -6,7 +6,7 @@ module Schedules
 
     required do
       model :sequence, class: Sequence
-      model :user, class: User
+      model :device, class: Device
       integer :repeat
       string :time_unit, in: Schedule::UNITS_OF_TIME
     end

@@ -2,8 +2,7 @@
 class User
   include Mongoid::Document
 
-  has_many :devices, dependent: :destroy
-  has_many :schedules, dependent: :destroy
+  belongs_to :device, dependent: :destroy
 
   field :name, type: String
   validates_uniqueness_of :name
@@ -11,8 +10,6 @@ class User
 
   field :email, type: String, default: ""
   validates_uniqueness_of :email
-
-  has_many :sequences
 
   # BEGIN DEVISE CRAP ==========================================================
   devise :database_authenticatable, :registerable, :recoverable, :rememberable,

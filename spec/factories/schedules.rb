@@ -7,7 +7,7 @@ FactoryGirl.define do
     after(:build) do |s|
       s.next_time ||= s.calculate_next_occurence
       s.sequence ||= create(:sequence)
-      s.user ||= s.sequence.user
+      s.device ||= s.sequence.device
     end
   end
 end

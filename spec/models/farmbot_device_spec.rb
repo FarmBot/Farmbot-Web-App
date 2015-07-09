@@ -1,13 +1,12 @@
 require 'spec_helper'
 
 describe Device do
-  let(:user)  { FactoryGirl.create(:user) }
-  let(:device){ FactoryGirl.create(:device, user: user)}
+  let(:device){ FactoryGirl.create(:device, users: [FactoryGirl.create(:user)])}
+  let(:user)  { device.users.first }
 
   it 'is associated with a user' do
-    expect(device.user).to be_kind_of(User)
-    expect(user.devices).to be_kind_of(Array)
-    expect(user.devices.first).to be_kind_of(Device)
+    expect(device.users.first).to be_kind_of(User)
+    expect(user.device).to be_kind_of(Device)
   end
 
   it 'destroys dependant devices' do

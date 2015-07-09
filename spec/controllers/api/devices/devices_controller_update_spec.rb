@@ -13,10 +13,10 @@ describe Api::DevicesController do
     it 'updates a Device' do
       sign_in user
       fake_name = Faker::Name.name
-      put :update, {id: user.devices.first.id, name: fake_name}, format: :json
+      put :update, {id: user.device.id, name: fake_name}, format: :json
       # put path, params, options
       user.reload
-      device = user.devices.first
+      device = user.device
       expect(device.name).to eq(fake_name)
       expect(response.status).to eq(200)
     end
