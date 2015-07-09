@@ -3,7 +3,7 @@ module Api
     def index
       # Follow this for better querying in the future:
       # http://www.js-data.io/v1.3.0/docs/query-syntax
-      render json: Schedule.where(device: current_device)
+      render json: current_device.schedules
     end
 
     def create

@@ -10,8 +10,8 @@ module Api
 
     # POST /api/device
     def create
-      current_user.device = Device.new(device_params)
-      if current_user.device.save
+      # TODO: Make a service that deletes old devices when they become 'orphans'
+      if current_user.update_attributes(device: Device.create(device_params))
         render json: current_device
       end
     end
