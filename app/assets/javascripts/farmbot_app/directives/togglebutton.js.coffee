@@ -19,7 +19,7 @@ directive =
         vacuum: 9
         tool:   8
       $scope.pinStatus = ->
-        switch @device.current["pin#{@pin}"]
+        switch @device["pin#{@pin}"]
           when "on"
             "ON"
           when "off"

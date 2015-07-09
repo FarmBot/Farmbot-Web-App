@@ -1,34 +1,17 @@
 class DeviceService
   constructor: (@Command, @Router, @socket, @$http, @$timeout) ->
-    [@list, @current, @status] = [[], {}, {}]
-    @stepSize = 1000
-    @current.syncStatus = 'offline'
+    [@status, @stepSize, @syncStatus] = [{}, 1000, 'offline']
     @initConnections()
-  opps = (error) ->
-    alert 'Message error. Wait for device to connect or refresh the page'
-    console.error error
+  opps = (error) -> alert 'Message error. Wait for device or refresh the page'
   initConnections: ->
-    ok = (data) =>
-      if data[0]
-        [@list, @current] = [data, _.assign(data[0], @current)]
-        @connectToMeshBlu()
-      else
-        alert 'You need to link a Farmbot to your account.'
-        window.location = '/dashboard#/devices'
-    nope = (a,b,c,d) -> alert "Can't fetch devices"; console.error error
-    @$http.get('/api/devices').success(ok).error(nope)
-
-  handleMsg: (data) =>
-    bot = _.find(@list, {uuid: data.fromUuid}) || @current
-    @Router.route(data, bot)
-
-  handleStatus: (data) =>
-    console.log(data)
-    @status = data
-
+    @$http.get('/api/device')
+      .success((data) => _.merge(@, data); @connectToMeshBlu())
+      .error((a,b,c,d) -> alert "Can't fetch device. Have you added one?")
+  save: -> @$http.put('/api/device', @).success((data) => _.merge(@, data))
+  handleMsg: (data) => @Router.route(data, @)
   connectToMeshBlu: ->
     @socket.on 'connect', =>
-      @current.syncStatus = 'sync_now'
+      @syncStatus = 'sync_now'
       @socket.on 'message', @handleMsg
       @socket.on 'identify', (data) =>
         @socket.emit 'identity',
@@ -36,10 +19,10 @@ class DeviceService
           uuid: "73425170-2660-49de-acd9-6fad4989aff6"
           token: "bcbd352aaeb9b7f18214a63cb4f3b16b89d8fd24"
         @socket.emit 'subscribe',
-          uuid: @current.uuid, token: @current.token,
+          uuid: @uuid, token: @token,
           (data) => @send "read_status"
   togglePin: (number, cb) ->
-    switch @current["pin#{number}"]
+    switch @["pin#{number}"]
        when 'on' then @send "pin_write", pin: number, value1: 0, mode: 0
        when 'off' then @send "pin_write", pin: number, value1: 1, mode: 0
        else opps()
@@ -51,8 +34,8 @@ class DeviceService
   stop: -> @send "emergency_stop"
   fetchLogs: (cb) ->
     @socket.emit 'getdata', {
-      uuid:  @current.uuid
-      token: @current.token
+      uuid:  @uuid
+      token: @token
       limit: 10
     }, (d) ->
       if d.result is false
@@ -80,7 +63,7 @@ class DeviceService
     else
       stringy_method = msg
     @socket.emit "message",
-      devices: @current.uuid,
+      devices: @uuid,
       params: _.omit(cmd.command, "action"),
       method: stringy_method,
       id: uuid()

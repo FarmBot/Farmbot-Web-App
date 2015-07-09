@@ -5,7 +5,9 @@ module Api
 
     # GET /api/device
     def show
-      render json: current_device
+      current_device
+        .if_null { render json: {error: "add device to account"}, status: 404 }
+        .if_not_null { render json: current_device }
     end
 
     # POST /api/device
@@ -18,9 +20,11 @@ module Api
 
     # PATCH/PUT /api/device
     def update
-      if current_device.update_attributes(device_params)
-        render json: current_device
-      end
+      current_device
+        .if_null { create }
+        .if_not_null do
+          render json: current_device.update_attributes(device_params)
+        end
     end
 
     # DELETE /api/devices/1

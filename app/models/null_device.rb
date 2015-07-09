@@ -10,4 +10,13 @@ class NullDevice < Device
   def no(method)
     raise 'Cant call #{method} on a NullDevice'
   end
+
+  def if_not_null
+    self
+  end
+
+  def if_null
+    yield(self)
+    self
+  end
 end

@@ -13,11 +13,11 @@ ctrl = [
   'Data'
   'Calendar'
   ($scope, Devices, Data, Calendar) ->
-    $scope.icon  = -> SYNC_DISPLAY[Devices.current.syncStatus || 'unknown'].icon
-    $scope.color = -> SYNC_DISPLAY[Devices.current.syncStatus || 'unknown'].color
-    $scope.txt   = -> SYNC_DISPLAY[Devices.current.syncStatus || 'unknown'].txt
+    $scope.icon  = -> SYNC_DISPLAY[Devices.syncStatus || 'unknown'].icon
+    $scope.color = -> SYNC_DISPLAY[Devices.syncStatus || 'unknown'].color
+    $scope.txt   = -> SYNC_DISPLAY[Devices.syncStatus || 'unknown'].txt
     $scope.sync  = ->
-      Devices.current.syncStatus = 'syncing'
+      Devices.syncStatus = 'syncing'
       Devices.send "sync_sequence"
 ]
 directive =

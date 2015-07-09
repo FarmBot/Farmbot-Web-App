@@ -20,7 +20,13 @@ module Api
 private
 
     def current_device
-      @current_device ||= (current_user.try(:device) || NullDevice.new)
+      @current_device ||= (current_user.try(:device) || null_device)
+    end
+
+    def null_device
+      @null_device ||= NullDevice.new(name:  'null_device',
+                                      uuid:  '-',
+                                      token: '-')
     end
 
     def authenticate_user!

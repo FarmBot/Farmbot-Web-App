@@ -9,14 +9,10 @@ ctrl = [
   ($scope, Data, Devices, Info) ->
     nope = (e) -> alert 'Doh!'; console.error e
     $scope.logs = Info.logs
-    initBot = (data) ->
-      $scope.form = data[0] || {}
-      Devices.socket.on 'ready',->
-        Devices.fetchLogs (d) ->
-          Info.logs.push(data) for data in (d.data || [])
-    Data.findAll('device', {}).catch(nope).then(initBot)
-    Data.bindAll 'device', {}, $scope, 'devices'
-    $scope.createDevice = -> Data.create('device', $scope.form).catch(nope)
+    $scope.form = Devices
+    Devices.socket.on 'ready',->
+      Devices.fetchLogs (d) -> Info.logs.push(data) for data in (d.data || [])
+    $scope.createDevice = -> Devices.save().error(nope)
 ]
 controller =
 
