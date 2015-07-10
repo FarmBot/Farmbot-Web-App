@@ -8,7 +8,7 @@ class NullDevice < Device
   end
 
   def no(method)
-    raise 'Cant call #{method} on a NullDevice'
+    raise "Cant call #{method} on a NullDevice"
   end
 
   def if_not_null

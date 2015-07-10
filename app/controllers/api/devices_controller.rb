@@ -12,10 +12,7 @@ module Api
 
     # POST /api/device
     def create
-      # TODO: Make a service that deletes old devices when they become 'orphans'
-      if current_user.update_attributes(device: Device.create(device_params))
-        render json: current_device
-      end
+      mutate Devices::Create.run(device_params, user: current_user)
     end
 
     # PATCH/PUT /api/device
@@ -29,6 +26,7 @@ module Api
 
     # DELETE /api/devices/1
     def destroy
+      # TODO: Make a service that deletes old devices when they become 'orphans'
       if current_device.users.include?(current_user)
         current_device.destroy
         render nothing: true, status: 204

@@ -25,7 +25,7 @@ private
 
     def null_device
       @null_device ||= NullDevice.new(name:  'null_device',
-                                      uuid:  '-',
+                                      uuid: '-',
                                       token: '-')
     end
 
