@@ -5,26 +5,28 @@ module Api
 
     # GET /api/device
     def show
-      render json: current_device
+      current_device
+        .if_null { render json: {error: "add device to account"}, status: 404 }
+        .if_not_null { render json: current_device }
     end
 
     # POST /api/device
     def create
-      # TODO: Make a service that deletes old devices when they become 'orphans'
-      if current_user.update_attributes(device: Device.create(device_params))
-        render json: current_device
-      end
+      mutate Devices::Create.run(device_params, user: current_user)
     end
 
     # PATCH/PUT /api/device
     def update
-      if current_device.update_attributes(device_params)
-        render json: current_device
-      end
+      current_device
+        .if_null { create }
+        .if_not_null do
+          render json: current_device.update_attributes(device_params)
+        end
     end
 
     # DELETE /api/devices/1
     def destroy
+      # TODO: Make a service that deletes old devices when they become 'orphans'
       if current_device.users.include?(current_user)
         current_device.destroy
         render nothing: true, status: 204

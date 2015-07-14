@@ -6,12 +6,12 @@ ctrl = [
     class Axis
       constructor: (@axis) ->
         [@dirty, @editing] = [no, no]
-        @num = Devices.current[@axis]
+        @num = Devices[@axis]
       val: (v) -> if arguments.length then @set(v) else @get()
       set: (v) ->
         if _.isEmpty(v) then @reset() else @dirty = yes
         @num = num if _.isFinite(num = parseInt(v))
-      get: -> if @dirty || @editing then @num else Devices.current[@axis]
+      get: -> if @dirty || @editing then @num else Devices[@axis]
       out: => @editing = no
       in: =>
         @editing = yes

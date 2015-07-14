@@ -17,4 +17,13 @@ class Device
   # The 'Friendly Name' of the device. I recommend 'The Cabbage Patch Kid'
   field :name
   validates :name, presence: true
+
+  def if_not_null
+    yield(self)
+    self
+  end
+
+  def if_null
+    self
+  end
 end

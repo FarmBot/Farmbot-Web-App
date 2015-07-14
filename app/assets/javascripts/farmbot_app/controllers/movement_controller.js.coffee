@@ -6,8 +6,6 @@ angular.module('FarmBot').controller "MovementController", [
   ($scope, Devices) ->
     $scope.wow = 'Hello'
     nope = (e) -> alert 'Doh!'; console.error e
-    # I really don't like throwing the whole device service into the $scope.
-    # TODO determine why $scope.device = Devices.current is broke :(
     $scope.device = Devices
     $scope.goHome = -> Devices.moveAbs 0, 0, 0
     $scope.home   = (axis) -> Devices.send "home_#{axis or 'all'}"
