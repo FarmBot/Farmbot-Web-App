@@ -13,33 +13,9 @@
           .small-3.columns
             %span.prefix IF
           .small-3.columns
-            %select
-              %option{value: 'x'} x
-              %option{value: 'y'} y
-              %option{value: 'z'} z
-              %option{value: 's'} s
-              %option{value: 'busy'} busy
-              %option{value: 'last'} last
-              %option{value: 'pin0'} pin0
-              %option{value: 'pin1'} pin1
-              %option{value: 'pin2'} pin2
-              %option{value: 'pin3'} pin3
-              %option{value: 'pin4'} pin4
-              %option{value: 'pin5'} pin5
-              %option{value: 'pin6'} pin6
-              %option{value: 'pin7'} pin7
-              %option{value: 'pin8'} pin8
-              %option{value: 'pin9'} pin9
-              %option{value: 'pin10'} pin10
-              %option{value: 'pin11'} pin11
-              %option{value: 'pin12'} pin12
-              %option{value: 'pin13'} pin13
+            %select{ng_options: "obj for obj in variables", ng_model: "step.command.variable"}
           .small-3.columns
-            %select
-              %option{value: '>'} >
-              %option{value: '<'} <
-              %option{value: '=='} =
-              %option{value: '!='} !=
+            %select{ng_options: "obj for obj in operators", ng_model: "step.command.operator"}
           .small-3.columns
             %input{:placeholder => "off", :type => "text", ng_model: "step.command.value"}
     .row.content-area.purple-content
@@ -48,7 +24,5 @@
           .small-3.columns
             %span.prefix EXECUTE
           .small-9.columns
-            %select
-              %option{value: 'x'} Sequence 1
-              %option{value: 'y'} Sequence 2
+            %select{ng_options: "obj._id as obj.name for obj in excludeSelfFromSequenceList()", ng_model: "step.command.sub_sequence_id"}
         %br
