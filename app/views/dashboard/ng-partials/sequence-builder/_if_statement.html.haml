@@ -24,5 +24,5 @@
           .small-3.columns
             %span.prefix EXECUTE
           .small-9.columns
-            %select{ng_options: "obj._id as obj.name for obj in excludeSelfFromSequenceList()", ng_model: "step.command.sub_sequence_id"}
-        %br
+            %select{ng_options: "obj._id as obj.name for obj in storedSequences", ng_model: "step.command.sub_sequence_id"}
+        %p <strong>PROTIP:</strong> Create a `Schedule` for endless execution. Sequences don't support endless looping.

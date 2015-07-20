@@ -10,8 +10,6 @@ controller = ($scope, Data, Devices) ->
     "pin2", "pin3", "pin4", "pin5", "pin6", "pin7", "pin8", "pin9", "pin10",
     "pin11", "pin12", "pin13"]
 
-  $scope.excludeSelfFromSequenceList = ->
-    _.without($scope.storedSequences, $scope.sequence || {})
   #TODO: We really really need an error handler / reporter at this point.
   nope = (e) -> alert 'Doh!'; console.error e
   Data.findAll('sequence', {}).catch(nope)
