@@ -6,6 +6,7 @@ SYNC_DISPLAY =
     error:     {txt: 'Error', icon: 'fa fa-times', color: 'red'}
     estopped:  {txt: 'E-Stopped', icon: 'fa fa-stop', color: 'red'}
     unknown:   {txt: 'Unknown', icon: 'fa fa-question', color: 'red'}
+    booting:   {txt: 'Booting', icon: 'fa fa-bolt', color: 'yellow'}
 
 ctrl = [
   '$scope',
