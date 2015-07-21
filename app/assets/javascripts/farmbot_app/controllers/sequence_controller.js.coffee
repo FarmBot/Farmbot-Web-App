@@ -4,6 +4,12 @@ class NullSequence
 
 controller = ($scope, Data, Devices) ->
   $scope.sequence = new NullSequence
+
+  $scope.operators = ['==', '>', '<', '!=']
+  $scope.variables = ["x", "y", "z", "s", "busy", "last", "pin0", "pin1",
+    "pin2", "pin3", "pin4", "pin5", "pin6", "pin7", "pin8", "pin9", "pin10",
+    "pin11", "pin12", "pin13"]
+
   #TODO: We really really need an error handler / reporter at this point.
   nope = (e) -> alert 'Doh!'; console.error e
   Data.findAll('sequence', {}).catch(nope)
