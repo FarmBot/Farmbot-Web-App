@@ -3,7 +3,7 @@ class Step
 
   MESSAGE_TYPES = %w(emergency_stop home_all home_x home_y home_z move_absolute
     move_relative pin_write read_parameter read_status write_parameter wait
-    send_message if_statement)
+    send_message if_statement read_pin)
 
   embedded_in :sequence
 
