@@ -61,6 +61,64 @@
     .row
       .small-12.columns
         .header-wrapper
+          %h5 Hardware
+    .row
+      .small-12.columns
+        .content-wrapper
+          %table
+            %thead
+              %tr
+                %th Axis
+                %th Length
+                %th Max Speed
+                %th Accelerate For
+                %th Timeout After
+                %th Steps Per mm
+                %th Invert Ends
+                %th Invert Motor
+                %th Negatives
+            %tbody
+              %tr
+                %td X
+                %td 1.23 m
+                %td
+                  %div
+                    %input
+                    mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+              %tr
+                %td Y
+                %td 1.23 m
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+              %tr
+                %td Z
+                %td 1.23 m
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+                %td 500 mm/s
+          %p
+            %button.xx-small.yellow.pull-right
+              calibrate
+.row
+  .small-12.columns
+    .row
+      .small-12.columns
+        .header-wrapper
           %h5 Logs
     .row
       .small-12.columns
