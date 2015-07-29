@@ -65,55 +65,53 @@
     .row
       .small-12.columns
         .content-wrapper
-          %table
+          %table.calibration-control
             %thead
               %tr
-                %th Axis
-                %th Length
-                %th Max Speed
-                %th Accelerate For
-                %th Timeout After
-                %th Steps Per mm
-                %th Invert Ends
-                %th Invert Motor
-                %th Negatives
+                %th.row-axis Axis
+                %th.row-length Length
+                %th.row-input Max Speed
+                %th.row-input Accelerate For
+                %th.row-input Timeout After
+                %th.row-input Steps Per mm
+                %th.row-invert
+                  Invert
+                  %br
+                  Ends
+                %th.row-invert
+                  Invert
+                  %br
+                  Motor
+                %th.row-invert Negatives
             %tbody
               %tr
                 %td X
                 %td 1.23 m
                 %td
-                  %div
-                    %input
-                    mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-              %tr
-                %td Y
-                %td 1.23 m
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-              %tr
-                %td Z
-                %td 1.23 m
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-                %td 500 mm/s
-          %p
-            %button.xx-small.yellow.pull-right
-              calibrate
+                  %input
+                  %br
+                  mm/s
+                %td
+                  %input
+                  %br
+                  steps
+                %td
+                  %input
+                  %br
+                  seconds
+                %td
+                  %input
+                  %br
+                  steps
+                %td
+                  %button.xx-small.green YES
+                %td
+                  %button.xx-small.green YES
+                %td
+                  %button.xx-small.red NO
+    %p
+      %button.xx-small.yellow.pull-right
+        calibrate
 .row
   .small-12.columns
     .row
