@@ -61,6 +61,62 @@
     .row
       .small-12.columns
         .header-wrapper
+          %h5 Hardware
+    .row
+      .small-12.columns
+        .content-wrapper
+          %table.calibration-control
+            %thead
+              %tr
+                %th.row-axis Axis
+                %th.row-length Length
+                %th.row-input Max Speed
+                %th.row-input Accelerate For
+                %th.row-input Timeout After
+                %th.row-input Steps Per mm
+                %th.row-invert
+                  Invert
+                  %br
+                  Ends
+                %th.row-invert
+                  Invert
+                  %br
+                  Motor
+                %th.row-invert Negatives
+            %tbody
+              %tr
+                %td X
+                %td 1.23 m
+                %td
+                  %input
+                  %br
+                  mm/s
+                %td
+                  %input
+                  %br
+                  steps
+                %td
+                  %input
+                  %br
+                  seconds
+                %td
+                  %input
+                  %br
+                  steps
+                %td
+                  %button.xx-small.green YES
+                %td
+                  %button.xx-small.green YES
+                %td
+                  %button.xx-small.red NO
+    %p
+      %button.xx-small.yellow.pull-right
+        calibrate
+.row
+  .small-12.columns
+    .row
+      .small-12.columns
+        .header-wrapper
           %h5 Logs
     .row
       .small-12.columns

@@ -24,3 +24,21 @@ button.go{
 button.restart{
     background-color: orange;
 }
+
+table.calibration-control{
+    table-layout: fixed;
+    width: 100%;
+    white-space: nowrap;
+}
+.row-length, .row-invert{
+    width: 8%;
+}
+.row-axis {
+  width: 5%;
+}
+.row-input{
+    width: 15%;
+}
+td input.fixed{
+  width: 85%;
+}
