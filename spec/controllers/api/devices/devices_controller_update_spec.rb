@@ -32,5 +32,8 @@ describe Api::DevicesController do
         expect(user.device[key]).to eq('Not set.')
       end
     end
+
+    it 'shares devices between two users'
+
   end
 end
