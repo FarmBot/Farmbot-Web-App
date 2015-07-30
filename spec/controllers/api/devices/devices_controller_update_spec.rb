@@ -9,14 +9,15 @@ describe Api::DevicesController do
   describe '#update' do
 
     let(:user) { FactoryGirl.create(:user) }
+    let(:user2) { FactoryGirl.create(:user) }
 
     it 'updates a Device' do
       sign_in user
       fake_name = Faker::Name.name
-      put :update, {id: user.device.id, name: fake_name}, format: :json
+      put :update, {id: user.device.id, name: fake_name, uuid: 1, token: 2}, format: :json
       # put path, params, options
       user.reload
-      device = user.device
+      device = user.reload.device.reload
       expect(device.name).to eq(fake_name)
       expect(response.status).to eq(200)
     end
@@ -25,15 +26,21 @@ describe Api::DevicesController do
       user.update_attributes(device: nil)
       sign_in user
       fake_name = Faker::Name.name
-      put :update, {}, format: :json
+      put :update, {uuid: 1, token: 2}, format: :json
       user.reload
       expect(user.device).to be_kind_of(Device)
-      [:uuid, :token, :name].each do |key|
-        expect(user.device[key]).to eq('Not set.')
-      end
+      expect(user.device['name']).to eq('Not set.')
+      expect(user.device['uuid']).to eq('1')
+      expect(user.device['token']).to eq('2')
     end
 
-    it 'shares devices between two users'
-
+    it 'shares devices between two users' do
+      bot = user.device
+      sign_in user2
+      post :update, { name: 'Frank', uuid: bot.uuid, token: bot.token }
+      user.reload
+      user2.reload
+      expect(user.device._id).to eq(user2.device._id)
+    end
   end
 end
