@@ -80,7 +80,6 @@
                   Invert
                   %br
                   Motor
-                %th.row-invert Negatives
             %tbody
               %tr
                 %td X
@@ -96,12 +95,10 @@
                   %input{ng_model: "device.MOVEMENT_TIMEOUT_X"}
                   %br
                   seconds
-                %td{ng_click: "debug()"}
-                  %calibrationbutton{toggle_val: "'MOVEMENT_TIMEOUT_X'"}
                 %td
-                  %button.xx-small.green YES
+                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_ENDPOINTS_X"}
                 %td
-                  %button.xx-small.red NO
+                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_Y"}
               %tr
                 %td Y
                 %td
@@ -116,12 +113,10 @@
                   %input{ng_model: "device.MOVEMENT_TIMEOUT_Y"}
                   %br
                   seconds
-                %td{ng_click: "debug()"}
-                  %button.xx-small.green YES
                 %td
-                  %button.xx-small.green YES
+                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_ENDPOINTS_Y"}
                 %td
-                  %button.xx-small.red NO
+                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_Y"}
               %tr
                 %td Z
                 %td
@@ -136,12 +131,10 @@
                   %input{ng_model: "device.MOVEMENT_TIMEOUT_Z"}
                   %br
                   seconds
-                %td{ng_click: "debug()"}
-                  %button.xx-small.green YES
                 %td
-                  %button.xx-small.green YES
+                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_ENDPOINTS_Z"}
                 %td
-                  %button.xx-small.red NO
+                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_Z"}
     %p
       %button.xx-small.yellow.pull-right
         calibrate
