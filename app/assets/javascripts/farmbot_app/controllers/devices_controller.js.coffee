@@ -8,11 +8,12 @@ ctrl = [
   'Info'
   ($scope, Data, Devices, Info) ->
     nope = (e) -> alert 'Doh!'; console.error e
-    $scope.logs = Info.logs
-    $scope.form = Devices
+    $scope.logs   = Info.logs
+    $scope.device = Devices
     Devices.socket.on 'ready',->
       Devices.fetchLogs (d) -> Info.logs.push(data) for data in (d.data || [])
     $scope.createDevice = -> Devices.save().error(nope)
+    $scope.debug = -> debugger
 ]
 controller =
 

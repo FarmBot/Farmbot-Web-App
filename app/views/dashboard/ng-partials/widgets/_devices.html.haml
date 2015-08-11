@@ -40,19 +40,19 @@
               .row
                 .large-12.columns
                   %label FarmBot Name *
-                  %input{id: 'botname', placeholder: "Brocolli Overlord", type: "text", ng_model: 'form.name', required: true}/
+                  %input{id: 'botname', placeholder: "Brocolli Overlord", type: "text", ng_model: 'device.name', required: true}/
               .row
                 .large-6.columns
                   %label UUID *
-                  %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'form.uuid', required: true}/
+                  %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'device.uuid', required: true}/
                 .large-6.columns
                   %label Security Token *
-                  %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'form.token', required: true}/
+                  %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'device.token', required: true}/
               .row
                 .large-12.columns
                   %button.green.button-like
-                    {{ !!form._id ? "Update" : "Add" }} FarmBot
-                  %button.gray.button-like{ng_if: '!!form._id', ng_click: 'refreshLogs()', type: 'button'}
+                    {{ !!device._id ? "Update" : "Add" }} FarmBot
+                  %button.gray.button-like{ng_if: '!!device._id', ng_click: 'refreshLogs()', type: 'button'}
                     Fetch Logs
 / sorry
 %br
@@ -69,11 +69,9 @@
             %thead
               %tr
                 %th.row-axis Axis
-                %th.row-length Length
                 %th.row-input Max Speed
                 %th.row-input Accelerate For
                 %th.row-input Timeout After
-                %th.row-input Steps Per mm
                 %th.row-invert
                   Invert
                   %br
@@ -86,24 +84,59 @@
             %tbody
               %tr
                 %td X
-                %td 1.23 m
                 %td
-                  %input
+                  %input{ng_model: "device.MOVEMENT_MAX_SPD_X"}
                   %br
                   mm/s
                 %td
-                  %input
+                  %input{ng_model: "device.MOVEMENT_STEPS_ACC_DEC_X"}
                   %br
                   steps
                 %td
-                  %input
+                  %input{ng_model: "device.MOVEMENT_TIMEOUT_X"}
                   %br
                   seconds
+                %td{ng_click: "debug()"}
+                  %calibrationbutton{toggle_val: "'MOVEMENT_TIMEOUT_X'"}
                 %td
-                  %input
+                  %button.xx-small.green YES
+                %td
+                  %button.xx-small.red NO
+              %tr
+                %td Y
+                %td
+                  %input{ng_model: "device.MOVEMENT_MAX_SPD_Y"}
+                  %br
+                  mm/s
+                %td
+                  %input{ng_model: "device.MOVEMENT_STEPS_ACC_DEC_Y"}
                   %br
                   steps
                 %td
+                  %input{ng_model: "device.MOVEMENT_TIMEOUT_Y"}
+                  %br
+                  seconds
+                %td{ng_click: "debug()"}
+                  %button.xx-small.green YES
+                %td
+                  %button.xx-small.green YES
+                %td
+                  %button.xx-small.red NO
+              %tr
+                %td Z
+                %td
+                  %input{ng_model: "device.MOVEMENT_MAX_SPD_Z"}
+                  %br
+                  mm/s
+                %td
+                  %input{ng_model: "device.MOVEMENT_STEPS_ACC_DEC_Z"}
+                  %br
+                  steps
+                %td
+                  %input{ng_model: "device.MOVEMENT_TIMEOUT_Z"}
+                  %br
+                  seconds
+                %td{ng_click: "debug()"}
                   %button.xx-small.green YES
                 %td
                   %button.xx-small.green YES
