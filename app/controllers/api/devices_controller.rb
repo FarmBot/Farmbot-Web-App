@@ -17,11 +17,9 @@ module Api
 
     # PATCH/PUT /api/device
     def update
-      current_device
-        .if_null { create }
-        .if_not_null do
-          render json: current_device.update_attributes(device_params)
-        end
+      # Because of the way bots are shared, there is no true 'update' action.
+      # Just a creation/reasignment of bots based on UUID / Token.
+      create
     end
 
     # DELETE /api/devices/1

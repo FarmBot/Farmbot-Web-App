@@ -4,18 +4,20 @@ module Devices
 
     required do
       model :user, class: User
+      string :uuid
+      string :token
     end
 
     optional do
       string :name, default: 'Not set.'
-      string :uuid, default: 'Not set.'
-      string :token, default: 'Not set.'
     end
 
     def execute
-      create Device, inputs.except(:user) do |dev|
+      dev = Device.find_or_initialize_by(uuid: uuid, token: token)
+      if update_attributes(dev, inputs.except(:user))
         user.update_attributes(device: dev)
       end
+      dev
     end
   end
 end

@@ -13,6 +13,13 @@ class Command
     return Command.all[type](args)
 
   @all:
+    update_calibration: (the_whole_friggin_bot) ->
+      {
+        message_type: 'update_calibration'
+        command:      the_whole_friggin_bot
+      }
+
+
     read_status: (values) ->
       message_type: 'read_status'
 
