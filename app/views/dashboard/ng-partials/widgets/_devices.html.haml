@@ -136,8 +136,9 @@
                 %td
                   %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_Z"}
     %p
-      %button.xx-small.yellow.pull-right
+      %button.xx-small.yellow.pull-right{ng_click: "updateCalibration()"}
         calibrate
+
 .row
   .small-12.columns
     .row
