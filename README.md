@@ -1,6 +1,13 @@
 [![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-web-app.png)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
 [![Build Status](https://travis-ci.org/FarmBot/farmbot-web-app.svg)](https://travis-ci.org/FarmBot/farmbot-web-app)
 [![Test Coverage](https://codeclimate.com/github/FarmBot/farmbot-web-app/badges/coverage.svg)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
+
+# STOP!! You might not need this!
+
+This repo is intended for developers who build the [Farmbot Web App](http://my.farmbot.cc/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.cc/).
+
+If you are a developer interested in contributing or would like to provision your own server, you are in the right place.
+
 # Farmbot Web App
 
 This Repo is the Web based side of FarmBot. It allows users to control the device from their web browser. **We're getting closer to launch, but it this is an unstable pre-alpha repo.**
@@ -15,21 +22,16 @@ This Repo is the Web based side of FarmBot. It allows users to control the devic
  4. `rails s`
  5. Go to `http://localhost:3000`
 
-# Running Tests
+**We can't fix issues we don't know about.** Please submit an issue if you are having trouble installing on your local machine.
+
+## Running Specs
 
 Please run them before submitting pull requests.
 
-## Ruby Specs
-
  * `bundle exec rspec spec`
-
-## Javascript Specs
-
- * ` bundle exec rake spec:javascript`
 
 # How to Contribute
 
- * Check out [Waffle.io](https://waffle.io/farmbot/farmbot-web-app) for issues that are ready to be worked on.
  * Pull requests are always appreciated, but *please*
    * Write tests.
    * Follow the [Ruby Community Style Guide](https://github.com/bbatsov/ruby-style-guide).
@@ -37,23 +39,22 @@ Please run them before submitting pull requests.
 
 # Roadmap
 
-This project is still in its infancy. Our current focus as of July 2014 is to create a basic system of control for the farmbot user via technologies such as:
-
- * [Farmbot Controller](https://github.com/FarmBot/farmbot-raspberry-pi-controller)
- * [MeshBlu IoT Messaging Platform](http://www.skynet.im) ([Github](https://github.com/skynetim/skynet))
- * Ruby on Rails
+As of July 2015, the Web App supports scheduling and manual movemnt of FarmBot via the browser.
 
 Eventually, the app hopes to be a rich environment for users to manage their FarmBot and gain insights into the farming decision process.
 
 # nice-to-haves
 
- * Actually make use of MeshBlu response objects, instead of just screaming commands at the device.
- * Display device status.
- * Test precision control widget on device.
- * Dropdown box to select device (defaults to first)
+ * Actually make use of MeshBlu response objects (with timeouts), instead of just screaming commands at the device.
  * Better test suite for angular side of things.
 
 # Accomplishments
+
+July 2015:
+
+ * 1.0 release candidate.
+ * Full manual control of device via browser.
+ * Scheduling of sequences and commands.
 
 JULY 2014:
 
