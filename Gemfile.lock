@@ -77,6 +77,10 @@ GEM
     arel (5.0.1.20140414130214)
     arrayfields (4.9.2)
     ast (2.0.0)
+    babel-source (5.8.23)
+    babel-transpiler (0.7.0)
+      babel-source (>= 4.0, < 6)
+      execjs (~> 2.0)
     bcrypt (3.1.10)
     bson (2.3.0)
     builder (3.2.2)
@@ -265,6 +269,13 @@ GEM
       thor (>= 0.18.1, < 2.0)
     rainbow (2.0.0)
     rake (10.4.2)
+    react-rails (1.2.0)
+      babel-transpiler (>= 0.7.0)
+      coffee-script-source (~> 1.8)
+      connection_pool
+      execjs
+      rails (>= 3.2)
+      tilt
     redcard (1.1.0)
     reek (1.6.6)
       parser (~> 2.2.0.pre.7)
@@ -382,6 +393,7 @@ DEPENDENCIES
   rails-assets-pickadate
   rails-assets-sio-client
   rails_12factor
+  react-rails (~> 1.0)
   rspec
   rspec-rails
   sass-rails!

@@ -27,7 +27,8 @@ directive =
           else
             "LOADING"
       $scope.toggle = ->
-        $rootScope.$apply -> Devices.togglePin $scope.pin
+        $rootScope.$apply ->
+          Devices.togglePin $scope.pin
   ]
 
 angular.module("FarmBot").directive 'togglebutton', [() -> directive]

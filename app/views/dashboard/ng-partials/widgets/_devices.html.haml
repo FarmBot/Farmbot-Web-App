@@ -52,14 +52,13 @@
                 .large-12.columns
                   %button.green.button-like
                     {{ !!device._id ? "Update" : "Add" }} FarmBot
-                  %button.gray.button-like{ng_if: '!!device._id', ng_click: 'refreshLogs()', type: 'button'}
-                    Fetch Logs
 / sorry
 %br
 .row
   .small-12.columns
     .row
       .small-12.columns
+        %button.xx-small.yellow{ng_click: "updateCalibration()", style: "margin: 10px;"} calibrate
         .header-wrapper
           %h5 Hardware
     .row
@@ -135,9 +134,6 @@
                   %calibrationbutton{toggleval: "MOVEMENT_INVERT_ENDPOINTS_Z"}
                 %td
                   %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_Z"}
-    %p
-      %button.xx-small.yellow.pull-right{ng_click: "updateCalibration()"}
-        calibrate
 
 .row
   .small-12.columns
@@ -147,15 +143,18 @@
           %h5 Logs
     .row
       .small-12.columns
-        .content-wrapper
+        .content-wrapper{ng_if: "logs.length > 1"}
           %table
             %thead
               %tr
-                %th Time
-                %th Data
-                %th Coords
+                %th{width: '15%'} Time
+                %th{width: '80%'} Data
+                %th{width: '5%'} Coords
             %tbody
               %tr{'ng-repeat' => 'log in logs'}
                 %td {{ log.timestamp | date:'MM/dd h:mma' }}
                 %td {{ log.data || "?" }}
                 %td {{ (log.X || '?') + ', ' + (log.Y || '?') + ', ' + (log.Z || '?') }}
+        .content-wrapper{ng_if: "logs.length < 1"}
+          %p
+            We can't seem to find any logs. Is the bot online? Does your browser have a connection to the bot?
