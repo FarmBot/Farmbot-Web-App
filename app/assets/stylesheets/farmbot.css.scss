@@ -2,11 +2,7 @@ $alto: #d9d9d9;
 $asparagus: #6aa84f;
 $bilbao: #38761d;
 $black: #000;
-$black_10: rgba(0, 0, 0, 0.1);
-$black_15: rgba(0, 0, 0, 0.15);
-$black_20: rgba(0, 0, 0, 0.2);
-$black_30: rgba(0, 0, 0, 0.3);
-$black_40: rgba(0, 0, 0, 0.4);
+$translucent: rgba(0, 0, 0, 0.2);
 $blue: #00f;
 $buddha_gold: #bf9000;
 $butterfly_bush: #674ea7;
@@ -55,14 +51,14 @@ $zanah: #d9ead3;
   padding-top: 15px;
   padding-bottom: 15px;
   margin-bottom: 2px;
-    box-shadow: 0 4px 10px $black_20;
+    box-shadow: 0 4px 10px $translucent;
 }
 
 %extend_2 {
   background-color: $mercury;
   color: $black;
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px $black_40;
+    box-shadow: 0 4px 10px $translucent;
     transition: all 0.2s ease-out;
 }
 
@@ -81,7 +77,7 @@ $zanah: #d9ead3;
   border: none;
   font-weight: bold;
   padding-left: 20px;
-    box-shadow: 0 4px 10px $black_15;
+    box-shadow: 0 4px 10px $translucent;
 }
 
 %greenish {
@@ -410,10 +406,10 @@ button {
 }
 .block {
   margin-bottom: 20px;
-    box-shadow: 0 4px 10px $black_10;
+    box-shadow: 0 4px 10px $translucent;
   &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 10px $black_30;
+        box-shadow: 0 4px 10px $translucent;
         transition: all 0.2s ease-out;
     .edit-icon {
       display: inherit;
@@ -625,7 +621,7 @@ body {
   background: $cararra;
 }
 .drop-shadow {
-    box-shadow: 0 4px 10px $black_15;
+    box-shadow: 0 4px 10px $translucent;
 }
 nav {
   background-color: $cape_cod;
@@ -723,7 +719,7 @@ fieldset {
   font-size: 1.3rem;
 }
 .widget-wrapper {
-    box-shadow: 0 4px 10px $black_15;
+    box-shadow: 0 4px 10px $translucent;
   margin-bottom: 20px;
 }
 .farmdesigner-left-menu {
