@@ -1,53 +1,34 @@
-$alto: #d9d9d9;
-$asparagus: #6aa84f;
-$bilbao: #38761d;
-$black: #000;
-$translucent: rgba(0, 0, 0, 0.2);
-$blue: #00f;
-$buddha_gold: #bf9000;
-$butterfly_bush: #674ea7;
-$cadillac: #a64d79;
-$cape_cod: #434343;
-$cararra: #ececec;
-$celeste: #d1d1d1;
-$cold_purple: #b4a7d6;
-$concrete: #f3f3f3;
-$gallery: #eee;
-$golden_glow: #ffe599;
-$goldenrod: #ffd966;
-$iron: #d8d8d8;
-$jaffa: #e69138;
-$japanese_laurel: #008000;
-$lily: #d5a6bd;
-$manhattan: #f9cb9c;
-$mercury: #e4e4e4;
-$mine_shaft: #333;
-$moss_green: #b6d7a8;
-$mountain_mist: #999;
-$oyster_pink: #f4cccc;
-$perano: #a4c2f4;
-$picasso: #fff69d;
-$pink_swan: #b7b7b7;
-$pipi: #fff2cc;
-$quill_gray: #d5d5d5;
-$red: #f00;
-$red_berry: #900;
-$royal_blue: #3c78d8;
-$sea_pink: #ea9999;
-$silver: #bdbcbd;
-$snuff: #d9d2e9;
-$storm_dust: #666;
-$sunglo: #e06666;
-$tapa: #777;
-$tequila: #fce5cd;
-$tropical_blue: #c9daf8;
-$twilight: #ead1dc;
-$web_orange: #ffa500;
-$white: #fff;
-$zanah: #d9ead3;
+$translucent:        rgba(0, 0, 0, 0.2);
+$white:              #fff;
+$light_gray:         #ddd;
+$gray:               #999;
+$dark_gray:          #444;
+$black:              #000;
+$light_blue:         #cdf;
+$blue:               #00f;
+$dark_blue:          #37d;
+$asparagus:          #6a4;
+$bilbao:             #371;
+$buddha_gold:        #b90;
+$butterfly_bush:     #64a;
+$cadillac:           #a47;
+$cold_purple:        #bad;
+$golden_glow:        #fe9;
+$goldenrod:          #fd6;
+$jaffa:              #e93;
+$lily:               #dab;
+$manhattan:          #fc9;
+$moss_green:         #bda;
+$sea_pink:           #e99;
+$pipi:               #ffc;
+$red:                #f00;
+$red_berry:          #900;
+$sunglo:             #e66;
+$tequila:            #fec;
+$web_orange:         #fa0;
 
 %extend_1 {
-  background-color: $concrete;
+  background-color: $white;
   padding-top: 15px;
   padding-bottom: 15px;
   margin-bottom: 2px;
@@ -55,7 +36,7 @@ $zanah: #d9ead3;
 }
 
 %extend_2 {
-  background-color: $mercury;
+  background-color: $light_gray;
   color: $black;
     transform: translateY(-2px);
     box-shadow: 0 4px 10px $translucent;
@@ -69,7 +50,7 @@ $zanah: #d9ead3;
   padding-top: 12px;
   padding-bottom: 12px;
   margin: 0;
-  color: $quill_gray;
+  color: $light_gray;
 }
 
 %extend_4 {
@@ -103,8 +84,8 @@ $zanah: #d9ead3;
   padding-top: 0.5rem;
   padding-bottom: 0.6rem;
   font-size: 0.825rem;
-  color: $mine_shaft;
-  background-color: $celeste;
+  color: $dark_gray;
+  background-color: $light_gray;
 }
 .xx-small {
   padding-left: 0.45rem;
@@ -112,7 +93,7 @@ $zanah: #d9ead3;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   font-size: 0.625rem;
-  background-color: $mine_shaft;
+  background-color: $dark_gray;
 }
 button {
   font-size: 0.8rem;
@@ -128,15 +109,15 @@ button {
     background-color: $red;
   }
   &.go {
-    background-color: $japanese_laurel;
+    background-color: $asparagus;
   }
   &.restart {
     background-color: $web_orange;
   }
   &.move-amount {
-    background-color: $gallery;
+    background-color: $light_gray;
     font-weight: bold;
-    border: 2px solid $storm_dust;
+    border: 2px solid $dark_gray;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     padding-left: 0;
@@ -147,8 +128,8 @@ button {
     float: left;
         transition: 0s;
     &:hover {
-      background-color: $alto;
-      color: $cape_cod;
+      background-color: $light_gray;
+      color: $dark_gray;
     }
     &:nth-child(n+2) {
       border-left: 0;
@@ -163,7 +144,7 @@ button {
     }
   }
   &.move-amount-selected {
-    background-color: $storm_dust;
+    background-color: $dark_gray;
     color: $white;
     border-color: inherit;
   }
@@ -174,16 +155,16 @@ button {
     @extend %reddish;
   }
   &.gray {
-    background-color: $storm_dust;
+    background-color: $dark_gray;
     float: right;
     color: $white;
     font-weight: bold;
-    border-bottom: 3px solid $mine_shaft;
+    border-bottom: 3px solid $dark_gray;
   }
   &.yellow {
     background-color: $goldenrod;
     float: right;
-    color: $storm_dust;
+    color: $dark_gray;
     font-weight: bold;
     border-bottom: 3px solid $buddha_gold;
   }
@@ -203,11 +184,11 @@ button {
 .content-wrapper {
   border-style: none;
   border-top-width: 0;
-  border-color: $iron;
+  border-color: $light_gray;
   padding: 1.25rem;
   padding-bottom: 0;
   background: $white;
-  color: $cape_cod;
+  color: $dark_gray;
   &.calendar-wrapper {
     padding-bottom: 20px;
   }
@@ -215,7 +196,7 @@ button {
 .header-wrapper {
   margin-bottom: 0;
   padding: 1rem;
-  background: $cape_cod;
+  background: $dark_gray;
   color: $white;
   h5 {
     color: $white;
@@ -229,71 +210,71 @@ button {
 .drag-drop-area {
   border-style: dashed;
   border-width: 2px;
-  border-color: $iron;
+  border-color: $light_gray;
   margin-bottom: 1rem;
   padding: 1.25rem;
   background: $white;
-  color: $mine_shaft;
+  color: $dark_gray;
   text-align: center;
 }
 .blue-header {
-  background-color: $perano;
-  color: $mine_shaft;
+  background-color: $light_blue;
+  color: $dark_gray;
 }
 .blue-block {
-  background-color: $perano;
-  color: $mine_shaft;
-  border-right: 2px solid $royal_blue;
-  border-bottom: 2px solid $royal_blue;
+  background-color: $light_blue;
+  color: $dark_gray;
+  border-right: 2px solid $dark_blue;
+  border-bottom: 2px solid $dark_blue;
   &:hover {
-    background-color: $perano;
-    color: $mine_shaft;
+    background-color: $light_blue;
+    color: $dark_gray;
   }
   &:focus {
-    background-color: $perano;
-    color: $mine_shaft;
+    background-color: $light_blue;
+    color: $dark_gray;
   }
 }
 .blue-content {
-  background-color: $tropical_blue;
+  background-color: $light_blue;
 }
 .green-header {
   background-color: $moss_green;
-  color: $mine_shaft;
+  color: $dark_gray;
 }
 .green-block {
   background-color: $moss_green;
-  color: $mine_shaft;
+  color: $dark_gray;
   border-right: 2px solid $asparagus;
   border-bottom: 2px solid $asparagus;
   &:hover {
     background-color: $moss_green;
-    color: $mine_shaft;
+    color: $dark_gray;
   }
   &:focus {
     background-color: $moss_green;
-    color: $mine_shaft;
+    color: $dark_gray;
   }
 }
 .green-content {
-  background-color: $zanah;
+  background-color: $light_gray;
 }
 .yellow-header {
   background-color: $golden_glow;
-  color: $mine_shaft;
+  color: $dark_gray;
 }
 .yellow-block {
   background-color: $golden_glow;
-  color: $mine_shaft;
+  color: $dark_gray;
   border-right: 2px solid $buddha_gold;
   border-bottom: 2px solid $buddha_gold;
   &:hover {
     background-color: $golden_glow;
-    color: $mine_shaft;
+    color: $dark_gray;
   }
   &:focus {
     background-color: $golden_glow;
-    color: $mine_shaft;
+    color: $dark_gray;
   }
 }
 .yellow-content {
@@ -301,20 +282,20 @@ button {
 }
 .orange-header {
   background-color: $manhattan;
-  color: $mine_shaft;
+  color: $dark_gray;
 }
 .orange-block {
   background-color: $manhattan;
-  color: $mine_shaft;
+  color: $dark_gray;
   border-right: 2px solid $jaffa;
   border-bottom: 2px solid $jaffa;
   &:hover {
     background-color: $manhattan;
-    color: $mine_shaft;
+    color: $dark_gray;
   }
   &:focus {
     background-color: $manhattan;
-    color: $mine_shaft;
+    color: $dark_gray;
   }
 }
 .orange-content {
@@ -322,87 +303,87 @@ button {
 }
 .purple-header {
   background-color: $cold_purple;
-  color: $mine_shaft;
+  color: $dark_gray;
 }
 .purple-block {
   background-color: $cold_purple;
-  color: $mine_shaft;
+  color: $dark_gray;
   border-right: 2px solid $butterfly_bush;
   border-bottom: 2px solid $butterfly_bush;
   &:hover {
     background-color: $cold_purple;
-    color: $mine_shaft;
+    color: $dark_gray;
   }
   &:focus {
     background-color: $cold_purple;
-    color: $mine_shaft;
+    color: $dark_gray;
   }
 }
 .purple-content {
-  background-color: $snuff;
+  background-color: $light_gray;
 }
 .pink-header {
   background-color: $lily;
-  color: $mine_shaft;
+  color: $dark_gray;
 }
 .pink-block {
   background-color: $lily;
-  color: $mine_shaft;
+  color: $dark_gray;
   border-right: 2px solid $cadillac;
   border-bottom: 2px solid $cadillac;
   &:hover {
     background-color: $lily;
-    color: $mine_shaft;
+    color: $dark_gray;
   }
   &:focus {
     background-color: $lily;
-    color: $mine_shaft;
+    color: $dark_gray;
   }
 }
 .pink-content {
-  background-color: $twilight;
+  background-color: $light_gray;
 }
 .gray-header {
-  background-color: $pink_swan;
-  color: $mine_shaft;
+  background-color: $gray;
+  color: $dark_gray;
 }
 .gray-block {
-  background-color: $pink_swan;
-  color: $mine_shaft;
-  border-right: 2px solid $mountain_mist;
-  border-bottom: 2px solid $mountain_mist;
+  background-color: $gray;
+  color: $dark_gray;
+  border-right: 2px solid $gray;
+  border-bottom: 2px solid $gray;
   &:hover {
-    background-color: $pink_swan;
-    color: $mine_shaft;
+    background-color: $gray;
+    color: $dark_gray;
   }
   &:focus {
-    background-color: $pink_swan;
-    color: $mine_shaft;
+    background-color: $gray;
+    color: $dark_gray;
   }
 }
 .gray-content {
-  background-color: $alto;
+  background-color: $light_gray;
 }
 .red-header {
   background-color: $sea_pink;
-  color: $mine_shaft;
+  color: $dark_gray;
 }
 .red-block {
   background-color: $sea_pink;
-  color: $mine_shaft;
+  color: $dark_gray;
   border-right: 2px solid $sunglo;
   border-bottom: 2px solid $sunglo;
   &:hover {
     background-color: $sea_pink;
-    color: $mine_shaft;
+    color: $dark_gray;
   }
   &:focus {
     background-color: $sea_pink;
-    color: $mine_shaft;
+    color: $dark_gray;
   }
 }
 .red-content {
-  background-color: $oyster_pink;
+  background-color: $sea_pink;
 }
 .block {
   margin-bottom: 20px;
@@ -414,7 +395,7 @@ button {
     .edit-icon {
       display: inherit;
       padding-right: 15px;
-      color: $mine_shaft;
+      color: $dark_gray;
     }
   }
 }
@@ -422,10 +403,10 @@ button {
   padding-top: 15px;
 }
 .dark-gray {
-  background-color: $mine_shaft;
+  background-color: $dark_gray;
 }
 .light-gray {
-  background-color: $silver;
+  background-color: $gray;
 }
 .black {
   color: $black;
@@ -434,7 +415,7 @@ button {
   margin-bottom: 20px;
 }
 .yellow-circle {
-  color: $picasso;
+  color: $sea_pink;
 }
 .uppercase {
   text-transform: uppercase;
@@ -443,7 +424,7 @@ button {
   float: right;
   padding-right: 5px;
   a {
-    color: $mine_shaft;
+    color: $dark_gray;
     padding-right: 10px;
   }
 }
@@ -454,7 +435,7 @@ button {
 }
 label {
   font-size: 1.2rem;
-  color: $storm_dust;
+  color: $dark_gray;
 }
 input[type="text"] {
   font-size: 1.2rem;
@@ -542,9 +523,9 @@ input[type="submit"] {
 .event {
   @extend %extend_1;
   &.past {
-    color: $celeste;
+    color: $light_gray;
     &:hover {
-      color: $tapa;
+      color: $dark_gray;
     }
   }
   &.next {
@@ -581,14 +562,14 @@ input[type="submit"] {
   float: left;
 }
 .arrow-button {
-  background-color: $storm_dust;
+  background-color: $dark_gray;
   color: $white;
   width: 50px;
   height: 50px;
   padding: 15px;
   font-size: 20px;
   text-align: center;
-  border-bottom: 3px solid $mine_shaft;
+  border-bottom: 3px solid $dark_gray;
   &:active {
     border-bottom-width: 1px!important;
         transform: translateY(2px);
@@ -618,13 +599,13 @@ input[type="text"][readonly] {
   text-align: center;
 }
 body {
-  background: $cararra;
+  background: $light_gray;
 }
 .drop-shadow {
     box-shadow: 0 4px 10px $translucent;
 }
 nav {
-  background-color: $cape_cod;
+  background-color: $dark_gray;
   margin: 0;
   width: 100%;
   padding-left: 15px;
@@ -634,11 +615,11 @@ nav {
   > a {
     @extend %extend_3;
     &:hover {
-      background-color: $storm_dust;
+      background-color: $dark_gray;
       color: $white!important;
     }
     &:focus {
-      color: $quill_gray;
+      color: $light_gray;
     }
     &.large-menu-right {
       float: right;
@@ -713,7 +694,7 @@ fieldset {
   }
 }
 .light-icon {
-  color: $gallery;
+  color: $light_gray;
 }
 .medium-icon {
   font-size: 1.3rem;
@@ -739,7 +720,7 @@ td input.fixed {
 }
 .top-bar .name h5 {
   font-weight: bold;
-  color: $cape_cod;
+  color: $dark_gray;
   padding: 12px;
   padding-left: 15px;
   margin: 0;
@@ -754,8 +735,8 @@ i.fa {
   }
 }
 span.prefix {
-  color: $gallery;
-  background-color: $storm_dust;
+  color: $light_gray;
+  background-color: $dark_gray;
   font-weight: bold;
   height: auto;
   border: none;
@@ -763,7 +744,7 @@ span.prefix {
 h6.date {
   text-align: center;
   text-transform: uppercase;
-  color: $storm_dust;
+  color: $dark_gray;
   margin-bottom: 0;
   margin-top: 0;
   font-weight: bold;
@@ -779,5 +760,5 @@ h6.date {
   margin-top: 2px;
 }
 .device-row:hover {
-  background-color: $alto;
+  background-color: $light_gray;
 }
