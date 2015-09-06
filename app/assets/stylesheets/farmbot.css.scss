@@ -1,31 +1,33 @@
-$translucent:        rgba(0, 0, 0, 0.2);
-$white:              #fff;
-$light_gray:         #ddd;
-$gray:               #999;
-$dark_gray:          #444;
-$black:              #000;
-$light_blue:         #cdf;
-$blue:               #00f;
-$dark_blue:          #37d;
-$asparagus:          #6a4;
-$bilbao:             #371;
-$buddha_gold:        #b90;
-$butterfly_bush:     #64a;
-$cadillac:           #a47;
-$cold_purple:        #bad;
-$golden_glow:        #fe9;
-$goldenrod:          #fd6;
-$jaffa:              #e93;
-$lily:               #dab;
-$manhattan:          #fc9;
-$moss_green:         #bda;
-$sea_pink:           #e99;
-$pipi:               #ffc;
-$red:                #f00;
-$red_berry:          #900;
-$sunglo:             #e66;
-$tequila:            #fec;
-$web_orange:         #fa0;
+$translucent:    rgba(0, 0, 0, 0.2);
+$white:          #fff;
+$light_gray:     #ddd;
+$gray:           #999;
+$dark_gray:      #444;
+$black:          #000;
+
+$light_blue:     #cdf;
+$blue:           #00f;
+$dark_blue:      #37d;
+
+$light_green:    #bda;
+$green:          #6a4;
+$dark_green:     #371;
+
+$gold:           #b90;
+$beige:          #fec;
+$yellow:         #fd6;
+$light_yellow:   #ffc;
+$orange:         #fa0;
+$dark_orange:    #e93;
+$lavender:       #bad;
+$royal_purple:   #64a;
+$dark_purple:    #a47;
+$pink_purple:    #dab;
+$pink:           #e99;
+$dark_pink:      #e66;
+$peach:          #fc9;
+$red:            #f00;
+$dark_red:       #900;
 
 %extend_1 {
   background-color: $white;
@@ -54,7 +56,7 @@ $web_orange:         #fa0;
 }
 
 %extend_4 {
-  background-color: $sunglo;
+  background-color: $dark_pink;
   border: none;
   font-weight: bold;
   padding-left: 20px;
@@ -63,18 +65,18 @@ $web_orange:         #fa0;
 
 %greenish {
   float: right;
-  background-color: $asparagus;
+  background-color: $green;
   color: $white;
   font-weight: bold;
-  border-bottom: 3px solid $bilbao;
+  border-bottom: 3px solid $dark_green;
 }
 
 %reddish {
-  background-color: $sunglo;
+  background-color: $dark_pink;
   float: right;
   color: $white;
   font-weight: bold;
-  border-bottom: 3px solid $red_berry;
+  border-bottom: 3px solid $dark_red;
 }
 
 
@@ -109,10 +111,10 @@ button {
     background-color: $red;
   }
   &.go {
-    background-color: $asparagus;
+    background-color: $green;
   }
   &.restart {
-    background-color: $web_orange;
+    background-color: $orange;
   }
   &.move-amount {
     background-color: $light_gray;
@@ -162,11 +164,11 @@ button {
     border-bottom: 3px solid $dark_gray;
   }
   &.yellow {
-    background-color: $goldenrod;
+    background-color: $yellow;
     float: right;
     color: $dark_gray;
     font-weight: bold;
-    border-bottom: 3px solid $buddha_gold;
+    border-bottom: 3px solid $gold;
   }
 }
 .row-length {
@@ -239,20 +241,20 @@ button {
   background-color: $light_blue;
 }
 .green-header {
-  background-color: $moss_green;
+  background-color: $light_green;
   color: $dark_gray;
 }
 .green-block {
-  background-color: $moss_green;
+  background-color: $light_green;
   color: $dark_gray;
-  border-right: 2px solid $asparagus;
-  border-bottom: 2px solid $asparagus;
+  border-right: 2px solid $green;
+  border-bottom: 2px solid $green;
   &:hover {
-    background-color: $moss_green;
+    background-color: $light_green;
     color: $dark_gray;
   }
   &:focus {
-    background-color: $moss_green;
+    background-color: $light_green;
     color: $dark_gray;
   }
 }
@@ -260,62 +262,62 @@ button {
   background-color: $light_gray;
 }
 .yellow-header {
-  background-color: $golden_glow;
+  background-color: $light_yellow;
   color: $dark_gray;
 }
 .yellow-block {
-  background-color: $golden_glow;
+  background-color: $light_yellow;
   color: $dark_gray;
-  border-right: 2px solid $buddha_gold;
-  border-bottom: 2px solid $buddha_gold;
+  border-right: 2px solid $gold;
+  border-bottom: 2px solid $gold;
   &:hover {
-    background-color: $golden_glow;
+    background-color: $light_yellow;
     color: $dark_gray;
   }
   &:focus {
-    background-color: $golden_glow;
+    background-color: $light_yellow;
     color: $dark_gray;
   }
 }
 .yellow-content {
-  background-color: $pipi;
+  background-color: $light_yellow;
 }
 .orange-header {
-  background-color: $manhattan;
+  background-color: $peach;
   color: $dark_gray;
 }
 .orange-block {
-  background-color: $manhattan;
+  background-color: $peach;
   color: $dark_gray;
-  border-right: 2px solid $jaffa;
-  border-bottom: 2px solid $jaffa;
+  border-right: 2px solid $dark_orange;
+  border-bottom: 2px solid $dark_orange;
   &:hover {
-    background-color: $manhattan;
+    background-color: $peach;
     color: $dark_gray;
   }
   &:focus {
-    background-color: $manhattan;
+    background-color: $peach;
     color: $dark_gray;
   }
 }
 .orange-content {
-  background-color: $tequila;
+  background-color: $beige;
 }
 .purple-header {
-  background-color: $cold_purple;
+  background-color: $lavender;
   color: $dark_gray;
 }
 .purple-block {
-  background-color: $cold_purple;
+  background-color: $lavender;
   color: $dark_gray;
-  border-right: 2px solid $butterfly_bush;
-  border-bottom: 2px solid $butterfly_bush;
+  border-right: 2px solid $royal_purple;
+  border-bottom: 2px solid $royal_purple;
   &:hover {
-    background-color: $cold_purple;
+    background-color: $lavender;
     color: $dark_gray;
   }
   &:focus {
-    background-color: $cold_purple;
+    background-color: $lavender;
     color: $dark_gray;
   }
 }
@@ -323,20 +325,20 @@ button {
   background-color: $light_gray;
 }
 .pink-header {
-  background-color: $lily;
+  background-color: $pink_purple;
   color: $dark_gray;
 }
 .pink-block {
-  background-color: $lily;
+  background-color: $pink_purple;
   color: $dark_gray;
-  border-right: 2px solid $cadillac;
-  border-bottom: 2px solid $cadillac;
+  border-right: 2px solid $dark_purple;
+  border-bottom: 2px solid $dark_purple;
   &:hover {
-    background-color: $lily;
+    background-color: $pink_purple;
     color: $dark_gray;
   }
   &:focus {
-    background-color: $lily;
+    background-color: $pink_purple;
     color: $dark_gray;
   }
 }
@@ -350,8 +352,8 @@ button {
 .gray-block {
   background-color: $gray;
   color: $dark_gray;
-  border-right: 2px solid $gray;
-  border-bottom: 2px solid $gray;
+  border-right: 2px solid $dark_gray;
+  border-bottom: 2px solid $dark_gray;
   &:hover {
     background-color: $gray;
     color: $dark_gray;
@@ -365,25 +367,25 @@ button {
   background-color: $light_gray;
 }
 .red-header {
-  background-color: $sea_pink;
+  background-color: $pink;
   color: $dark_gray;
 }
 .red-block {
-  background-color: $sea_pink;
+  background-color: $pink;
   color: $dark_gray;
-  border-right: 2px solid $sunglo;
-  border-bottom: 2px solid $sunglo;
+  border-right: 2px solid $dark_pink;
+  border-bottom: 2px solid $dark_pink;
   &:hover {
-    background-color: $sea_pink;
+    background-color: $pink;
     color: $dark_gray;
   }
   &:focus {
-    background-color: $sea_pink;
+    background-color: $pink;
     color: $dark_gray;
   }
 }
 .red-content {
-  background-color: $sea_pink;
+  background-color: $pink;
 }
 .block {
   margin-bottom: 20px;
@@ -415,7 +417,7 @@ button {
   margin-bottom: 20px;
 }
 .yellow-circle {
-  color: $sea_pink;
+  color: $pink;
 }
 .uppercase {
   text-transform: uppercase;
@@ -496,7 +498,7 @@ input[type="color"] {
 input[type="submit"] {
   font-size: 0.9rem;
   float: right;
-  background-color: $asparagus;
+  background-color: $green;
   font-weight: bold;
   text-transform: uppercase;
   color: $white;
@@ -530,7 +532,7 @@ input[type="submit"] {
   }
   &.next {
     margin-top: -2px;
-    border-top: 4px solid $asparagus;
+    border-top: 4px solid $green;
   }
   &:hover {
     @extend %extend_2;
