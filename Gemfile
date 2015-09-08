@@ -30,6 +30,7 @@ gem 'rails-assets-jquery'
 gem 'rails-assets-pickadate'
 gem 'rails-assets-ng-pickadate'
 gem 'rails-assets-sio-client'
+gem 'react-rails', '~> 1.0'
 
 group :development, :test do
   gem 'pry'

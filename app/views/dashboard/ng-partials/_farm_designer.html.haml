@@ -1,7 +1,7 @@
-.row
-  .large-3.medium-4.small-12.columns
-    %div= render partial: "dashboard/ng-partials/widgets/plants_and_operations"
-  .large-6.medium-8.small-12.columns
-    %div= render partial: "dashboard/ng-partials/widgets/map"
-  .large-3.medium-12.small-12.columns
-    %div= render partial: "dashboard/ng-partials/widgets/calendar"
+.row.collapse.farm-designer
+  .large-2.columns.designer-left-bar
+    = render partial: "dashboard/ng-partials/farm-designer/left_side"
+  .large-8.columns
+    = render partial: "dashboard/ng-partials/farm-designer/middle"
+  .large-2.columns.hello
+    = render partial: "dashboard/ng-partials/farm-designer/right_side"
