@@ -11,7 +11,6 @@
     = csrf_meta_tags
     = javascript_include_tag "application"
   %body{'ng-app' => 'FarmBot'}
-
     .row
       %nav.drop-shadow{ng_app: 'farmbot', ng_controller: 'nav'}
         .small-menu-title MENU
@@ -40,6 +39,5 @@
         .alert-box.alert.round{"onClick" => "hidden = true"}
           = alert
           %a.close{style: 'margin-right: 10px; color: white; opacity: 1.0;'} ×
-
     .content
       = yield
