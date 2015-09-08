@@ -76,7 +76,42 @@ $dark_red:       #900;
   padding-left: 20px;
     box-shadow: 0 4px 10px $translucent;
 }
+.fb-tooltip{
+  padding: 2px;
+  display: inline;
+  .tooltip-text {
+    display: inline;
+    background-color: $dark_gray;
+    color: $white;
+    border-radius: 3px;
+    padding: 3px;
+  }
+  &:after {
+    display: inline-block;
+    content: ' ';
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid $dark_gray;
+  }
+}
 
+.plus-circle{
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  padding: 13px;
+  background: $dark_green;
+  font-family: FontAwesome;
+  color: $white;
+  font-size: 20px;
+  text-align: center;
+
+  &:after {
+    content: '\f067';
+  }
+}
 .farm-designer {
   margin-top: -4px;
   .search {
