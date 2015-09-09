@@ -115,10 +115,8 @@ $brown:          #CA8;
 .farm-designer {
   .calendar{
     padding-top: 10px;
-    height: 526px;
   }
   .garden-view {
-    height: 570px;
   }
   margin-top: -4px;
   .search {
@@ -164,7 +162,6 @@ $brown:          #CA8;
     background-color: $light_green;
     color: $dark_gray;
     margin: 0 0 0 0;
-    height: 500px;
     overflow-y: scroll;
   }
 }
@@ -195,7 +192,7 @@ button {
   padding-bottom: 7px;
   padding-left: 15px;
   padding-right: 15px;
-    border-radius: 5px;
+  border-radius: 5px;
   &.stop {
     background-color: $red;
   }
@@ -802,7 +799,6 @@ fieldset {
   font-size: 1.3rem;
 }
 .widget-wrapper {
-    box-shadow: 0 4px 10px $translucent;
   margin-bottom: 20px;
 }
 .farmdesigner-left-menu {
