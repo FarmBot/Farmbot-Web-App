@@ -30,7 +30,10 @@ Fb.CropListItem = React.createClass({
 });
 
 Fb.AddCrop = React.createClass({
-  addCrop: (e) => React.render(<Fb.PlantStuff />, Fb.leftMenuContent),
+  addCrop: function(e) {
+    React.render(<Fb.PlantStuffMenu />, Fb.leftMenu);
+    React.render(<Fb.PlantStuff />, Fb.leftMenuContent);
+  },
   render: function(){
     return(
       <div>
@@ -57,14 +60,60 @@ Fb.CropInventory = React.createClass({
   }
 })
 
+Fb.InventoryMenu = React.createClass({
+  render: function(){
+    return (
+      <div>
+        <div className="search-box-wrapper">
+          <input className="search" placeholder="Search"/>
+        </div>
+        <ul className="tabs">
+          <li className="active">
+            <a href="#">Plants</a>
+          </li>
+          <li>
+            <a href="#">Groups</a>
+          </li>
+          <li>
+            <a href="#">Zones</a>
+          </li>
+        </ul>
+      </div>
+    )
+  }
+})
+
 Fb.PlantStuff = React.createClass({
   render: function () {
     return <p> This is where a list of plantable crops will go </p>
   }
 })
 
-$(document).ready(function() {
-  Fb.leftMenuContent = document.getElementById("crop-inventory");
+Fb.PlantStuffMenu = React.createClass({
+  render: function () {
+    return(
+      <div>
+        <div className="search-box-wrapper">
+          <p>
+            <a href="#" onClick={Fb.renderInventory}>
+              <i className="fa fa-arrow-left"></i>
+            </a>
+            Choose a Crop
+          </p>
+        </div>
+      </div>
+    )
+  }
+})
+
+Fb.renderInventory = function(){
+  React.render(<Fb.InventoryMenu />, Fb.leftMenu);
   React.render(<Fb.CropInventory />, Fb.leftMenuContent);
+};
+
+$(document).ready(function() {
+  Fb.leftMenuContent = document.getElementById("designer-left-content");
+  Fb.leftMenu        = document.getElementById("designer-left-menu-bar");
+  Fb.renderInventory();
 });
 

@@ -153,6 +153,15 @@ $brown:          #CA8;
   margin-top: -4px;
   .search-box-wrapper {
     padding: 6px;
+
+    p {
+      color: $light_gray;
+      margin: auto 0 auto 0;
+    }
+    a {
+      color: $light_gray;
+      margin: 2px;
+    }
   }
   .search {
     &::-webkit-input-placeholder { color: $light_gray; }
