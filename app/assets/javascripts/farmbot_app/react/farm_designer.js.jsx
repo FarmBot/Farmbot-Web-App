@@ -1,5 +1,7 @@
 //= require farmbot_app/react/crop_inventory
 //= require farmbot_app/react/plant_catalog
+//= require farmbot_app/react/crop_info
+
 Fb = (window.Fb || {});
 
 var fakeCrops = [
