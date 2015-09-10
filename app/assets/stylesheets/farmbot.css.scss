@@ -339,6 +339,10 @@ button {
     font-style: italic;
   }
 }
+.small-header-wrapper {
+  @extend .header-wrapper;
+  padding: 0.25rem;
+}
 .drag-drop-area {
   border-style: dashed;
   border-width: 2px;
