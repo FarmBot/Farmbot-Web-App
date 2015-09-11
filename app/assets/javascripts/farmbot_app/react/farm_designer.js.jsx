@@ -40,8 +40,6 @@ Fb.ToolTip = React.createClass({
 $(document).ready(function() {
   Fb.leftMenuContent = document.getElementById("designer-left-content");
   Fb.leftMenu        = document.getElementById("designer-left-menu-bar");
-  React.render(<Fb.CropInfoMenu crop={ fakeCrops[0] } />, Fb.leftMenu);
-  React.render(<Fb.CropInfoContent crop={ fakeCrops[0] } />, Fb.leftMenuContent);
-  // Fb.renderInventory();
+  Fb.renderInventory();
 });
 
