@@ -14,11 +14,25 @@ Fb.CropInfoMenu = class extends React.Component {
 };
 
 Fb.CropInfoContent = class extends React.Component {
+
+  drop (e) {
+    console.log(e);
+    var style = {
+      position: 'absolute',
+      left: (e.clientX - 20),
+      top: (e.clientY - 40)
+    };
+    var domnode = <img style={style} src="/designer_icons/pin.png"></img>;
+    React.render(domnode, document.getElementById('drop-area'));
+  }
+
   render() {
     return  <div className="designer-crop-info">
               <div className="crop-drag-info-tile">
                 <h6>Crop Image</h6>
-                <img className="crop-drag-info-image" src={this.props.crop.imgUrl}/>
+                <img className="crop-drag-info-image"
+                     src={this.props.crop.imgUrl}
+                     onDragEnd={ this.drop }/>
                 <div className="crop-info-overlay">
                   To plant, drag and drop into map
                 </div>
@@ -67,6 +81,7 @@ Fb.CropInfoContent = class extends React.Component {
                     Delete
                   </button>
                 </span>
+                <div id="drop-area"></div>
               </div>
             </div>
   }
