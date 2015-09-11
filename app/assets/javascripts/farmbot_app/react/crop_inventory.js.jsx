@@ -28,7 +28,7 @@ Fb.InventoryContent = React.createClass({
     return(
       <div>
         <Fb.InventoryList crops={ fakeCrops } />
-        <Fb.AddCrop />
+        <Fb.ToolTip action={ Fb.renderCatalog } desc="Add a new plant!" color="dark-green"/>
       </div>
     );
   }
@@ -55,25 +55,10 @@ Fb.InventoryItem = React.createClass({
   }
 });
 
-Fb.AddCrop = React.createClass({
-  addCrop: function(e) {
+Fb.renderCatalog = function() {
     React.render(<Fb.PlantCatalogMenu />, Fb.leftMenu);
     React.render(<Fb.PlantCatalogContent />, Fb.leftMenuContent);
-  },
-  render: function(){
-    return(
-      <div>
-        <div className="fb-tooltip">
-          <div className="tooltip-text">
-          Add a new plant
-          </div>
-        </div>
-        <span className="plus-circle dark-green" onClick={this.addCrop}>
-        </span>
-      </div>
-    );
-  }
-})
+};
 
 Fb.renderInventory = function(){
   React.render(<Fb.InventoryMenu />, Fb.leftMenu);

@@ -1,4 +1,5 @@
 $translucent:    rgba(0, 0, 0, 0.2);
+$translucent2:   rgba(0, 0, 0, 0.6);
 $white:          #fff;
 $light_gray:     #ddd;
 $gray:           #999;
@@ -75,7 +76,7 @@ $brown:          #CA8;
   border: none;
   font-weight: bold;
   padding-left: 20px;
-    box-shadow: 0 4px 10px $translucent;
+  box-shadow: 0 4px 10px $translucent;
 }
 .fb-tooltip{
   padding: 2px;
@@ -97,6 +98,42 @@ $brown:          #CA8;
     border-top: 6px solid transparent;
     border-bottom: 6px solid transparent;
     border-left: 6px solid $dark_gray;
+  }
+}
+
+.designer-crop-info {
+  .crop-drag-info-image {
+    max-width: 98%;
+    padding: 0 auto 0 auto;
+    background-color: $translucent;
+  }
+  .crop-info-overlay {
+    position: relative;
+    bottom: 3rem;
+    z-index: 3;
+    background-color: $dark_gray;
+    font-style: italic;
+    color: $white;
+    display: flex;
+    justify-content: center; /* align horizontal */
+    align-items: center; /* align vertical */
+    height: 3rem;
+    max-width: 98%;
+  }
+  padding: 0 0 0 5px;
+  color: $dark_gray;
+  a {
+    color: $dark_gray;
+    padding: 0 0 0 4px;
+    text-transform: none;
+    text-decoration: underline;
+    font-weight: normal;
+    font-size: 0.75rem;
+  }
+  h6 {
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
   }
 }
 

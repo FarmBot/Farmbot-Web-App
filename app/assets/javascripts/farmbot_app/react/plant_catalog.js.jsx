@@ -31,13 +31,9 @@ Fb.PlantCatalogMenu = React.createClass({
 });
 
 Fb.PlantCatalogTile = React.createClass({
-  click: e => {
-    React.render(<Fb.CropInfoMenu />, Fb.leftMenu);
-    React.render(<Fb.CropInfoContent />, Fb.leftMenuContent);
-  },
   render: function() {
     return(
-      <div className="plantCatalogTile" onClick={this.click}>
+      <div className="plantCatalogTile" onClick={ e => { Fb.renderCropInfo(this.props.crop); } }>
         <div className="row">
           <div className="small-12 columns">
             <div className="small-header-wrapper">
