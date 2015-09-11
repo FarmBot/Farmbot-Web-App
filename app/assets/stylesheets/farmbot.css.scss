@@ -1,4 +1,5 @@
 $translucent:    rgba(0, 0, 0, 0.2);
+$translucent2:   rgba(0, 0, 0, 0.6);
 $white:          #fff;
 $light_gray:     #ddd;
 $gray:           #999;
@@ -75,12 +76,14 @@ $brown:          #CA8;
   border: none;
   font-weight: bold;
   padding-left: 20px;
-    box-shadow: 0 4px 10px $translucent;
+  box-shadow: 0 4px 10px $translucent;
 }
 .fb-tooltip{
   padding: 2px;
   display: inline;
+  font-style: normal;
   .tooltip-text {
+    font-style: normal;
     display: inline;
     background-color: $dark_gray;
     color: $white;
@@ -98,6 +101,46 @@ $brown:          #CA8;
   }
 }
 
+.designer-crop-info {
+  .crop-drag-info-image {
+    max-width: 98%;
+    padding: 0 auto 0 auto;
+    background-color: $translucent;
+  }
+  .crop-info-overlay {
+    position: relative;
+    bottom: 3rem;
+    z-index: 3;
+    background-color: $dark_gray;
+    font-style: italic;
+    color: $white;
+    display: flex;
+    justify-content: center; /* align horizontal */
+    align-items: center; /* align vertical */
+    height: 3rem;
+    max-width: 98%;
+  }
+  padding: 0 0 0 5px;
+  color: $dark_gray;
+  a {
+    color: $dark_gray;
+    padding: 0 0 0 4px;
+    text-transform: none;
+    text-decoration: underline;
+    font-weight: normal;
+    font-size: 0.75rem;
+  }
+  h6 {
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+}
+
+.plantCatalogTile{
+  cursor: pointer;
+}
+
 .plus-circle{
   border-radius: 50%;
   width: 52px;
@@ -107,20 +150,60 @@ $brown:          #CA8;
   color: $white;
   font-size: 20px;
   text-align: center;
-
+  display: inline-block;
+  font-style: normal;
+  cursor: pointer;
   &:after {
     content: '\f067';
   }
 }
+
+  .farm-designer-body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .farm-designer-left {
+    order: -1;
+    background-color: $light_green;
+  }
+  .farm-designer-body {
+    flex-direction: row;
+    flex: 1;
+  }
+  .farm-designer-middle {
+    flex: 1;
+    background-color: $brown;
+  }
+  .farm-designer-left, .farm-designer-right {
+    /* 12em is the width of the columns */
+    flex: 0 0 16em;
+  }
+  .farm-designer-right {
+    background-color: $light_purple;
+  }
+
 .farm-designer {
+  display: flex;
+  flex-direction: column;
   .calendar{
     padding-top: 10px;
-    height: 526px;
   }
   .garden-view {
-    height: 570px;
   }
   margin-top: -4px;
+  .search-box-wrapper {
+    padding: 6px;
+
+    p {
+      color: $light_gray;
+      margin: auto 0 auto 0;
+    }
+    a {
+      color: $light_gray;
+      margin: 2px;
+    }
+  }
   .search {
     &::-webkit-input-placeholder { color: $light_gray; }
     &:-moz-placeholder { color: $light_gray; }
@@ -133,6 +216,7 @@ $brown:          #CA8;
     border-bottom: 1px solid $light_gray;
     margin: 0 auto 9px auto;
     padding: 10px 0px 5px 0px;
+    width: 90%;
   }
   .tabs{
     display: table;
@@ -164,8 +248,6 @@ $brown:          #CA8;
     background-color: $light_green;
     color: $dark_gray;
     margin: 0 0 0 0;
-    height: 500px;
-    overflow-y: scroll;
   }
 }
 
@@ -195,7 +277,7 @@ button {
   padding-bottom: 7px;
   padding-left: 15px;
   padding-right: 15px;
-    border-radius: 5px;
+  border-radius: 5px;
   &.stop {
     background-color: $red;
   }
@@ -297,6 +379,10 @@ button {
     font-size: 88%;
     font-style: italic;
   }
+}
+.small-header-wrapper {
+  @extend .header-wrapper;
+  padding: 0.25rem;
 }
 .drag-drop-area {
   border-style: dashed;
@@ -802,7 +888,6 @@ fieldset {
   font-size: 1.3rem;
 }
 .widget-wrapper {
-    box-shadow: 0 4px 10px $translucent;
   margin-bottom: 20px;
 }
 .farmdesigner-left-menu {
