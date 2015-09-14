@@ -1,6 +1,7 @@
 //= require farmbot_app/react/crop_inventory
 //= require farmbot_app/react/plant_catalog
 //= require farmbot_app/react/crop_info
+//= require farmbot_app/react/calendar
 
 Fb = (window.Fb || {});
 
@@ -38,8 +39,11 @@ Fb.ToolTip = React.createClass({
 });
 
 $(document).ready(function() {
-  Fb.leftMenuContent = document.getElementById("designer-left-content");
-  Fb.leftMenu        = document.getElementById("designer-left-menu-bar");
+  Fb.leftMenuContent  = document.getElementById("designer-left-content");
+  Fb.leftMenu         = document.getElementById("designer-left-menu-bar");
+  Fb.rightMenuContent = document.getElementById("designer-right-content");
+  Fb.rightMenu        = document.getElementById("designer-right-menu-bar");
   Fb.renderInventory();
+  Fb.renderCalendar();
 });
 
