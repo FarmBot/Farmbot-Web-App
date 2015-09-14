@@ -5,8 +5,7 @@ FarmBot::Application.configure do
   config.assets.debug = true
   config.assets.compile = true
   config.assets.digest = true
-  config.assets.js_compressor = :uglifier
-  config.assets.js_compressor = Uglifier.new(mangle: false)
+  # config.assets.js_compressor = :none # Uglifier.new(mangle: false)
   config.assets.precompile += ['farmbot.js']
   config.assets.version = '1.1'
   config.cache_classes = true
