@@ -1,7 +1,8 @@
-//= require farmbot_app/react/crop_inventory
-//= require farmbot_app/react/plant_catalog
-//= require farmbot_app/react/crop_info
-//= require farmbot_app/react/calendar
+//= require farmbot_app/react/menus/crop_inventory
+//= require farmbot_app/react/menus/plant_catalog
+//= require farmbot_app/react/menus/crop_info
+//= require farmbot_app/react/menus/calendar
+//= require farmbot_app/react/menus/schedule_creation
 
 Fb = (window.Fb || {});
 

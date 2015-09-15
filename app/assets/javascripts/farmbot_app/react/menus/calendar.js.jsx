@@ -43,12 +43,7 @@ Fb.CalendarContent = class extends React.Component {
             </div>
           </div>
         </div>
-        <div className="fb-tooltip">
-          <div className="tooltip-text">
-            Add a new plant
-          </div>
-        </div>
-        <span className="plus-circle dark-purple"></span>
+        <Fb.ToolTip action={ Fb.renderScheduleCreation } desc="Schedule new event" color="dark-purple"/>
       </div>);
   }
 };

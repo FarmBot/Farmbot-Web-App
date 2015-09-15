@@ -37,11 +37,7 @@ Fb.CropInfoMenu = class extends React.Component {
 };
 
 Fb.CropInfoContent = class extends React.Component {
-  // drop (e) {
-  //   var style = {position: 'absolute', left: (e.clientX - 20), top: (e.clientY - 40)};
-  //   var domnode = <img style={style} src="/designer_icons/pin.png"></img>;
-  //   React.render(domnode, document.getElementById('drop-area'));
-  // }
+
   drop (e) {
     this.setState({
       data: this.state.data.concat(new MapPoint(e.clientX, e.clientY))
