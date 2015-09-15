@@ -49,11 +49,13 @@ Fb.CropInfoContent = class extends React.Component {
    this.render = this.render.bind(this);
    this.state = {data: []};
   }
+
+
   render() {
     var points = this.state.data.map(
       (p) => <Fb.MapPointView point={ p } />
     );
-    return  <div className="designer-crop-info">
+    return  <div className="designer-info">
               <div className="crop-drag-info-tile">
                 <h6>Crop Image</h6>
                 <img className="crop-drag-info-image"
@@ -119,14 +121,3 @@ Fb.renderCropInfo = function(crop) {
   React.render(<Fb.CropInfoMenu crop={crop} />, Fb.leftMenu);
   React.render(<Fb.CropInfoContent crop={crop} />, Fb.leftMenuContent);
 };
-// PLANTING TIPS    Edit
-// • Plant in full sun
-// • Fruits most in acidic soil
-// • Plant near melons
-
-// DEFAULT REGIMENS    Edit
-// • Blueberries by OpenFarm
-// • Soil acidifier
-
-// DELETE THIS CROP
-// Note: You will no longer be able to plant this crop

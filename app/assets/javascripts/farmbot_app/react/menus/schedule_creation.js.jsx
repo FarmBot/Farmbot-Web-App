@@ -19,22 +19,55 @@ Fb.scheduleCreationMenu = class extends React.Component {
 
 Fb.scheduleCreationContent = class extends React.Component {
   render() {
-    return <div>
-              <h5>
-                Choose A Sequence or Regimen
-              </h5>
+    return <div className="designer-info">
+              <h6>Chose a Sequence or Regimen</h6>
               <select>
                 <option value="volvo">Volvo</option>
                 <option value="saab">Saab</option>
                 <option value="mercedes">Mercedes</option>
                 <option value="audi">Audi</option>
               </select>
-           </div>
+              <h6>Starts</h6>
+              <div className="flex">
+                <input placeholder="Today"
+                       type="text"
+                       className="flex3"></input>
+                <select className="flex3">
+                  <option value="volvo">12:30</option>
+                  <option value="saab">12:00</option>
+                </select>
+              </div>
+              <h6>Repeats</h6>
+              <div className="flex">
+                <input placeholder="2"
+                       type="text"
+                       className="flex3"></input>
+                <select className="flex3">
+                  <option value="volvo">days</option>
+                  <option value="saab">hours</option>
+                </select>
+                <input type="checkbox" name="wow" value="no">Does not repeat</input>
+              </div>
+              <h6>Ends</h6>
+              <div className="flex">
+                <input placeholder="Today"
+                       type="text"
+                       className="flex3"></input>
+                <select className="flex3">
+                  <option value="volvo">12:30</option>
+                  <option value="saab">12:00</option>
+                </select>
+              </div>
+              <div>
+                <button className="purple-content">
+                  Save
+                </button>
+              </div>
+            </div>
   }
 }
 
 Fb.renderScheduleCreation = function() {
-  console.log("HELLO?");
   React.render(<Fb.scheduleCreationMenu />, Fb.rightMenu);
   React.render(<Fb.scheduleCreationContent />, Fb.rightMenuContent);
 };
