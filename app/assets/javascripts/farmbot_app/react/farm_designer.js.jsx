@@ -43,7 +43,11 @@ $(document).ready(function() {
   Fb.leftMenu         = document.getElementById("designer-left-menu-bar");
   Fb.rightMenuContent = document.getElementById("designer-right-content");
   Fb.rightMenu        = document.getElementById("designer-right-menu-bar");
-  Fb.renderInventory();
-  Fb.renderCalendar();
+  if (Fb.leftMenuContent && Fb.leftMenu && Fb.rightMenuContent && Fb.rightMenu){
+    Fb.renderInventory();
+    Fb.renderCalendar();
+  } else{
+    console.info('Not loading designer.');
+  };
 });
 

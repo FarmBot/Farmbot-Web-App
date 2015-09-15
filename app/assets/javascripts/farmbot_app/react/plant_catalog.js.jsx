@@ -1,3 +1,5 @@
+Fb = (window.Fb || {});
+
 Fb.PlantCatalogContent = React.createClass({
   render: function () {
     var crops = fakeCrops.map(
