@@ -1,7 +1,7 @@
 Fb = (window.Fb || {});
 
-Fb.InventoryMenu = React.createClass({
-  render: function(){
+Fb.InventoryMenu = class extends React.Component {
+  render() {
     return (
       <div>
         <div className="search-box-wrapper">
@@ -21,10 +21,10 @@ Fb.InventoryMenu = React.createClass({
       </div>
     )
   }
-})
-// used to be line
-Fb.InventoryContent = React.createClass({
-  render: function(){
+};
+
+Fb.InventoryContent = class extends React.Component {
+  render() {
     return(
       <div>
         <Fb.InventoryList crops={ fakeCrops } />
@@ -32,32 +32,26 @@ Fb.InventoryContent = React.createClass({
       </div>
     );
   }
-})
+};
 
-Fb.InventoryList = React.createClass({
-  render: function() {
-
+Fb.InventoryList = class extends React.Component {
+  render() {
     var crops = this.props.crops.map(
        (crop) => <Fb.InventoryItem crop={crop} key={crop._id} />
      );
 
     return(<ul className="crop-inventory"> { crops } </ul>);
   }
-});
+};
 
-Fb.InventoryItem = React.createClass({
-  render: function() {
+Fb.InventoryItem = class extends React.Component {
+  render() {
     return(
       <li>
         <a href="#"> {this.props.crop.name} </a>
         <div>{this.props.crop.age} days old</div>
       </li>);
   }
-});
-
-Fb.renderCatalog = function() {
-    React.render(<Fb.PlantCatalogMenu />, Fb.leftMenu);
-    React.render(<Fb.PlantCatalogContent />, Fb.leftMenuContent);
 };
 
 Fb.renderInventory = function(){
