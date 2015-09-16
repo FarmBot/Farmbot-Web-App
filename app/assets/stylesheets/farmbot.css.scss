@@ -78,6 +78,34 @@ $brown:          #CA8;
   padding-left: 20px;
   box-shadow: 0 4px 10px $translucent;
 }
+.flex {
+  display: flex;
+}
+
+.flex1 {
+  flex: 1;
+}
+
+.flex2 {
+  flex: 2;
+}
+
+.flex3 {
+  flex: 3;
+}
+
+.flex4 {
+  flex: 4;
+}
+
+.flex5 {
+  flex: 5;
+}
+
+.flex6 {
+  flex: 6;
+}
+
 .fb-tooltip{
   padding: 2px;
   display: inline;
@@ -101,7 +129,7 @@ $brown:          #CA8;
   }
 }
 
-.designer-crop-info {
+.designer-info {
   .crop-drag-info-image {
     max-width: 98%;
     padding: 0 auto 0 auto;
@@ -120,7 +148,7 @@ $brown:          #CA8;
     height: 3rem;
     max-width: 98%;
   }
-  padding: 0 0 0 5px;
+  padding: 0 5px 0 5px;
   color: $dark_gray;
   a {
     color: $dark_gray;
@@ -177,7 +205,7 @@ $brown:          #CA8;
   }
   .farm-designer-left, .farm-designer-right {
     /* 12em is the width of the columns */
-    flex: 0 0 16em;
+    flex: 0 0 20em;
   }
   .farm-designer-right {
     background-color: $light_purple;

@@ -1,3 +1,5 @@
+Fb = (window.Fb || {});
+
 Fb.PlantCatalogContent = React.createClass({
   render: function () {
     var crops = fakeCrops.map(
@@ -52,3 +54,9 @@ Fb.PlantCatalogTile = React.createClass({
     );
   }
 })
+
+
+Fb.renderCatalog = function() {
+    React.render(<Fb.PlantCatalogMenu />, Fb.leftMenu);
+    React.render(<Fb.PlantCatalogContent />, Fb.leftMenuContent);
+};

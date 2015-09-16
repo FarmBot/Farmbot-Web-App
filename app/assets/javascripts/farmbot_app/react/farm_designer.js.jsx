@@ -1,6 +1,8 @@
-//= require farmbot_app/react/crop_inventory
-//= require farmbot_app/react/plant_catalog
-//= require farmbot_app/react/crop_info
+//= require farmbot_app/react/menus/crop_inventory
+//= require farmbot_app/react/menus/plant_catalog
+//= require farmbot_app/react/menus/crop_info
+//= require farmbot_app/react/menus/calendar
+//= require farmbot_app/react/menus/schedule_creation
 
 Fb = (window.Fb || {});
 
@@ -38,10 +40,15 @@ Fb.ToolTip = React.createClass({
 });
 
 $(document).ready(function() {
-  Fb.leftMenuContent = document.getElementById("designer-left-content");
-  Fb.leftMenu        = document.getElementById("designer-left-menu-bar");
-  React.render(<Fb.CropInfoMenu crop={ fakeCrops[0] } />, Fb.leftMenu);
-  React.render(<Fb.CropInfoContent crop={ fakeCrops[0] } />, Fb.leftMenuContent);
-  // Fb.renderInventory();
+  Fb.leftMenuContent  = document.getElementById("designer-left-content");
+  Fb.leftMenu         = document.getElementById("designer-left-menu-bar");
+  Fb.rightMenuContent = document.getElementById("designer-right-content");
+  Fb.rightMenu        = document.getElementById("designer-right-menu-bar");
+  if (Fb.leftMenuContent && Fb.leftMenu && Fb.rightMenuContent && Fb.rightMenu){
+    Fb.renderInventory();
+    Fb.renderCalendar();
+  } else{
+    console.info('Not loading designer.');
+  };
 });
 

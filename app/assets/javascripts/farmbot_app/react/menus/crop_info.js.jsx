@@ -1,3 +1,26 @@
+Fb = (window.Fb || {});
+
+class MapPoint {
+  constructor(x, y) {
+    this.x = x || 0;
+    this.y = y || 0;
+
+  }
+}
+
+Fb.MapPointView = class extends React.Component {
+  render() {
+    var style = {
+      position: 'absolute',
+      left: (this.props.point.x - 20),
+      top: (this.props.point.y - 40)
+    };
+    return  <img style={style}
+                 src="/designer_icons/pin.png">
+            </img>;
+  }
+};
+
 Fb.CropInfoMenu = class extends React.Component {
   render() {
    return <div>
@@ -16,23 +39,28 @@ Fb.CropInfoMenu = class extends React.Component {
 Fb.CropInfoContent = class extends React.Component {
 
   drop (e) {
-    console.log(e);
-    var style = {
-      position: 'absolute',
-      left: (e.clientX - 20),
-      top: (e.clientY - 40)
-    };
-    var domnode = <img style={style} src="/designer_icons/pin.png"></img>;
-    React.render(domnode, document.getElementById('drop-area'));
+    this.setState({
+      data: this.state.data.concat(new MapPoint(e.clientX, e.clientY))
+    });
   }
 
+  constructor() {
+   super();
+   this.render = this.render.bind(this);
+   this.state = {data: []};
+  }
+
+
   render() {
-    return  <div className="designer-crop-info">
+    var points = this.state.data.map(
+      (p) => <Fb.MapPointView point={ p } />
+    );
+    return  <div className="designer-info">
               <div className="crop-drag-info-tile">
                 <h6>Crop Image</h6>
                 <img className="crop-drag-info-image"
                      src={this.props.crop.imgUrl}
-                     onDragEnd={ this.drop }/>
+                     onDragEnd={ this.drop.bind(this) }/>
                 <div className="crop-info-overlay">
                   To plant, drag and drop into map
                 </div>
@@ -81,7 +109,9 @@ Fb.CropInfoContent = class extends React.Component {
                     Delete
                   </button>
                 </span>
-                <div id="drop-area"></div>
+                <div id="drop-area">
+                  { points }
+                </div>
               </div>
             </div>
   }
@@ -91,14 +121,3 @@ Fb.renderCropInfo = function(crop) {
   React.render(<Fb.CropInfoMenu crop={crop} />, Fb.leftMenu);
   React.render(<Fb.CropInfoContent crop={crop} />, Fb.leftMenuContent);
 };
-// PLANTING TIPS    Edit
-// • Plant in full sun
-// • Fruits most in acidic soil
-// • Plant near melons
-
-// DEFAULT REGIMENS    Edit
-// • Blueberries by OpenFarm
-// • Soil acidifier
-
-// DELETE THIS CROP
-// Note: You will no longer be able to plant this crop
