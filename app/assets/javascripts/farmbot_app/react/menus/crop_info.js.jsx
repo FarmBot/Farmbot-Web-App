@@ -1,5 +1,3 @@
-Fb = (window.Fb || {});
-
 class MapPoint {
   constructor(x, y) {
     this.x = x || 0;

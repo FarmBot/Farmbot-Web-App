@@ -1,7 +1,5 @@
-Fb = (window.Fb || {});
-
-Fb.PlantCatalogContent = React.createClass({
-  render: function () {
+Fb.PlantCatalogContent = class extends React.Component {
+  render() {
     var crops = fakeCrops.map(
        (crop) => <Fb.PlantCatalogTile crop={crop} key={crop._id} />
      );
@@ -13,10 +11,10 @@ Fb.PlantCatalogContent = React.createClass({
       </div>
     );
   }
-})
+};
 
-Fb.PlantCatalogMenu = React.createClass({
-  render: function () {
+Fb.PlantCatalogMenu = class extends React.Component {
+  render() {
     return(
       <div>
         <div className="search-box-wrapper">
@@ -30,10 +28,10 @@ Fb.PlantCatalogMenu = React.createClass({
       </div>
     );
   }
-});
+};
 
-Fb.PlantCatalogTile = React.createClass({
-  render: function() {
+Fb.PlantCatalogTile = class extends React.Component {
+  render() {
     return(
       <div className="plantCatalogTile" onClick={ e => { Fb.renderCropInfo(this.props.crop); } }>
         <div className="row">
@@ -53,7 +51,7 @@ Fb.PlantCatalogTile = React.createClass({
       </div>
     );
   }
-})
+};
 
 
 Fb.renderCatalog = function() {

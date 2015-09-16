@@ -1,4 +1,35 @@
-Fb = (window.Fb || {});
+Fb.InventoryTab = class extends React.Component {
+  render() {
+    return <li>
+            <a href="#"
+               className={this.props.active ? "active" : ""}>
+              { this.props.name }
+            </a>
+           </li>
+  }
+}
+
+Fb.InventoryTabList = class extends React.Component {
+  handleClick(a,b,c,d) {
+    debugger;
+  }
+
+  constructor() {
+   super();
+   this.state = {current_tab: "Plants"};
+  }
+
+  render() {
+    return <ul className="tabs">
+            {
+              this.props.items.map(function(item, i) {
+                return <Fb.InventoryTab key={i}
+                                        name={item}
+                                        active={this.state.current_tab === item}/>;
+            }.bind(this))}
+           </ul>
+  }
+}
 
 Fb.InventoryMenu = class extends React.Component {
   render() {
@@ -7,17 +38,7 @@ Fb.InventoryMenu = class extends React.Component {
         <div className="search-box-wrapper">
           <input className="search" placeholder="Search"/>
         </div>
-        <ul className="tabs">
-          <li className="active">
-            <a href="#">Plants</a>
-          </li>
-          <li>
-            <a href="#">Groups</a>
-          </li>
-          <li>
-            <a href="#">Zones</a>
-          </li>
-        </ul>
+        <Fb.InventoryTabList items={["Plants", "Groups", "Zones"]} />
       </div>
     )
   }
@@ -28,7 +49,7 @@ Fb.InventoryContent = class extends React.Component {
     return(
       <div>
         <Fb.InventoryList crops={ fakeCrops } />
-        <Fb.ToolTip action={ Fb.renderCatalog } desc="Add a new plant!" color="dark-green"/>
+        <Fb.ToolTip action={ Fb.renderCatalog } desc="Add a new plant" color="dark-green"/>
       </div>
     );
   }
