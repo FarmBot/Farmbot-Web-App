@@ -28,7 +28,7 @@ Fb.InventoryContent = class extends React.Component {
     return(
       <div>
         <Fb.InventoryList crops={ fakeCrops } />
-        <Fb.ToolTip action={ Fb.renderCatalog } desc="Add a new plant!" color="dark-green"/>
+        <Fb.ToolTip action={ Fb.renderCatalog } desc="Add a new plant" color="dark-green"/>
       </div>
     );
   }
