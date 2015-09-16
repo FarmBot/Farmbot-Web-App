@@ -4,7 +4,6 @@
 //= require farmbot_app/react/menus/crop_info
 //= require farmbot_app/react/menus/calendar
 //= require farmbot_app/react/menus/schedule_creation
-
 class Crop {
   constructor(options) {
     this.name = (options.name || "Untitled Crop");
@@ -43,7 +42,10 @@ $(document).ready(function() {
   Fb.leftMenu         = document.getElementById("designer-left-menu-bar");
   Fb.rightMenuContent = document.getElementById("designer-right-content");
   Fb.rightMenu        = document.getElementById("designer-right-menu-bar");
-  if (Fb.leftMenuContent && Fb.leftMenu && Fb.rightMenuContent && Fb.rightMenu){
+  if (Fb.leftMenuContent &&
+      Fb.leftMenu &&
+      Fb.rightMenuContent &&
+      Fb.rightMenu){
     Fb.renderInventory();
     Fb.renderCalendar();
   } else{
