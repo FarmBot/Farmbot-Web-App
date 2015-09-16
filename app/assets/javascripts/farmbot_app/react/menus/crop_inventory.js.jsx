@@ -1,5 +1,3 @@
-Fb = (window.Fb || {});
-
 Fb.InventoryMenu = class extends React.Component {
   render() {
     return (

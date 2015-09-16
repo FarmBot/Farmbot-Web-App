@@ -1,5 +1,3 @@
-Fb = (window.Fb || {});
-
 Fb.PlantCatalogContent = class extends React.Component {
   render() {
     var crops = fakeCrops.map(

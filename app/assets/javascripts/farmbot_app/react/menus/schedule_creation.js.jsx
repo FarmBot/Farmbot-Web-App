@@ -1,5 +1,3 @@
-Fb = (window.Fb || {});
-
 Fb.scheduleCreationMenu = class extends React.Component {
   render() {
     return(

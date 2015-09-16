@@ -1,5 +1,3 @@
-Fb = (window.Fb || {});
-
 Fb.CalendarMenu = class extends React.Component {
   render() {
     return  <div className="search-box-wrapper">

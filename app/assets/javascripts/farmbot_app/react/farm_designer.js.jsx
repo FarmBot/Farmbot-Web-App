@@ -1,10 +1,9 @@
+//= require farmbot_app/react/init
 //= require farmbot_app/react/menus/crop_inventory
 //= require farmbot_app/react/menus/plant_catalog
 //= require farmbot_app/react/menus/crop_info
 //= require farmbot_app/react/menus/calendar
 //= require farmbot_app/react/menus/schedule_creation
-
-Fb = (window.Fb || {});
 
 class Crop {
   constructor(options) {
