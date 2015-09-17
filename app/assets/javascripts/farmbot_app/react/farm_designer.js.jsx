@@ -38,10 +38,9 @@ Fb.ToolTip = React.createClass({
 });
 
 $(document).ready(function() {
-  Fb.leftMenuContent  = document.getElementById("designer-left-content");
-  Fb.leftMenu         = document.getElementById("designer-left-menu-bar");
+  Fb.leftMenu         = document.getElementById("designer-left");
   Fb.rightMenu        = document.getElementById("designer-right");
-  if (Fb.leftMenuContent && Fb.leftMenu && Fb.rightMenu){
+  if (Fb.leftMenu && Fb.rightMenu){
     Fb.renderInventory();
     Fb.renderCalendar();
   } else{

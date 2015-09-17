@@ -20,11 +20,12 @@ Fb.MapPointView = class extends React.Component {
 };
 
 Fb.CropInfoMenu = class extends React.Component {
+  move() { Fb.renderInventory }
   render() {
    return <div>
             <div className="search-box-wrapper">
               <p>
-                <a href="#" onClick={Fb.renderInventory}>
+                <a href="#" onClick={ this.move }>
                   <i className="fa fa-arrow-left"></i>
                 </a>
                 { this.props.crop.name }
