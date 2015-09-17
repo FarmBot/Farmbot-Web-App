@@ -16,7 +16,7 @@ Fb.PlantCatalogContent = class extends React.Component {
 Fb.PlantCatalogMenu = class extends React.Component {
   render() {
     return(
-      <div>
+      <div className="green-content">
         <div className="search-box-wrapper">
           <p>
             <a href="#" onClick={Fb.renderInventory}>
@@ -53,8 +53,16 @@ Fb.PlantCatalogTile = class extends React.Component {
   }
 };
 
+Fb.PlantCatalog = class extends React.Component {
+  render() {
+    return <div>
+             <Fb.PlantCatalogMenu />
+             <Fb.PlantCatalogContent />
+           </div>
+  }
+}
+
 
 Fb.renderCatalog = function() {
-    React.render(<Fb.PlantCatalogMenu />, Fb.leftMenu);
-    React.render(<Fb.PlantCatalogContent />, Fb.leftMenuContent);
+    React.render(<Fb.PlantCatalog/>, Fb.leftMenu);
 };
