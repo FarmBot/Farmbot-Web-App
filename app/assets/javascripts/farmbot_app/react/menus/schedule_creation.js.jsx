@@ -2,9 +2,9 @@ Fb.scheduleCreationMenu = class extends React.Component {
   render() {
     return(
       <div>
-        <div className="search-box-wrapper">
+        <div className="search-box-wrapper purple-content">
           <p>
-            <a href="#" onClick={Fb.renderInventory}>
+            <a href="#" onClick={ Fb.renderInventory }>
               <i className="fa fa-arrow-left"></i>
             </a>
             Schedule Event
@@ -65,7 +65,15 @@ Fb.scheduleCreationContent = class extends React.Component {
   }
 }
 
+Fb.ScheduleCreation = class extends React.Component {
+  render() {
+    return <div>
+             <Fb.scheduleCreationMenu />
+             <Fb.scheduleCreationContent />
+           </div>
+  }
+}
+
 Fb.renderScheduleCreation = function() {
-  React.render(<Fb.scheduleCreationMenu />, Fb.rightMenu);
-  React.render(<Fb.scheduleCreationContent />, Fb.rightMenuContent);
+  React.render(<Fb.ScheduleCreation />, Fb.rightMenu);
 };

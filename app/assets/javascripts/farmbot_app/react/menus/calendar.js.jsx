@@ -1,6 +1,6 @@
 Fb.CalendarMenu = class extends React.Component {
   render() {
-    return  <div className="search-box-wrapper">
+    return  <div className="search-box-wrapper purple-content">
               <input className="search" placeholder="Search"/>
             </div>;
   }
@@ -98,6 +98,5 @@ Fb.Calendar = class extends React.Component {
 }
 
 Fb.renderCalendar = function() {
-  React.render(<Fb.CalendarMenu />, Fb.rightMenu);
-  React.render(<Fb.CalendarContent />, Fb.rightMenuContent);
+  React.render(<Fb.Calendar />, Fb.rightMenu);
 };
