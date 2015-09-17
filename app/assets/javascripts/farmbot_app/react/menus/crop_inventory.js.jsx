@@ -27,13 +27,76 @@ Fb.Inventory.Plants = class extends React.Component {
 
 Fb.Inventory.Groups = class extends React.Component {
   render() {
-    return <p> This is where Groups will go </p>
+    return(
+      <div className="designer-info">
+        <h6>My Groups</h6>
+        <ul>
+          <li>
+            <a href="#">Lucky Cabages</a>
+            <p>5 Plants</p>
+          </li>
+          <li>
+            <a href="#">Lucky Cabages</a>
+            <p>5 Plants</p>
+          </li>
+        </ul>
+        <h6>Zone Auto-Groups</h6>
+        <ul>
+          <li>
+            <a href="#">Plants in "Broccoli Overlord"</a>
+            <p>10 Plants</p>
+          </li>
+          <li>
+            <a href="#">Plants in "Flower Patch"</a>
+            <p>7 Plants</p>
+          </li>
+        </ul>
+        <h6>Crop Auto-Groups</h6>
+        <ul>
+          <li>
+            <a href="#">All Strawberries</a>
+            <p>1 plant</p>
+          </li>
+          <li>
+            <a href="#">All Flowers</a>
+            <p>42 plants</p>
+          </li>
+        </ul>
+        <Fb.ToolTip action={ Fb.renderCatalog }
+                    desc="Add a new group"
+                    color="dark-green"/>
+      </div>
+    )
   }
 };
 
 Fb.Inventory.Zones = class extends React.Component {
   render() {
-    return <p> This is where Zones will go </p>
+    return(
+      <div className="designer-info">
+        <h6>My Zones</h6>
+        <ul>
+          <li>
+            <a href="#">Front area</a>
+            <p>18 Square Feet</p>
+          </li>
+          <li>
+            <a href="#">Needs Compost</a>
+            <p>5 Square Feet</p>
+          </li>
+        </ul>
+        <h6>Auto-Zones</h6>
+        <ul>
+          <li>
+            <a href="#">Broccoli Overlord</a>
+            <p>60 Square Feet</p>
+          </li>
+        </ul>
+        <Fb.ToolTip action={ Fb.renderCatalog }
+                    desc="Add New Zone"
+                    color="dark-green"/>
+      </div>
+    )
   }
 };
 Fb.Inventory.Item = class extends React.Component {
