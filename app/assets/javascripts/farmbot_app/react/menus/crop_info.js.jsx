@@ -52,7 +52,7 @@ Fb.CropInfoContent = class extends React.Component {
 
   render() {
     var points = this.state.data.map(
-      (p) => <Fb.MapPointView point={ p } />
+      (p, k) => <Fb.MapPointView point={ p } key={k} />
     );
     return  <div className="designer-info">
               <div className="crop-drag-info-tile">

@@ -10,7 +10,7 @@ Fb.CalendarContent = class extends React.Component {
   render() {
     var events = _(Fb.scheduledEvents)
                    .sortBy('time')
-                   .map((s) => <Fb.ScheduleEventView scheduledEvent={s}/>)
+                   .map((s, k) => <Fb.ScheduleEventView scheduledEvent={s} key={k}/>)
                    .value();
     return (
       <div className="calendar">

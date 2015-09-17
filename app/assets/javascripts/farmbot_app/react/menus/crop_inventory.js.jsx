@@ -10,11 +10,7 @@ Fb.Inventory.Tab = class extends React.Component {
            </li>
   }
 
-  handleClick(a,b,c,d){
-    var that = this.props.fml;
-    var name = this.props.name;
-    that.setState({current_tab: name});
-  }
+  handleClick() { this.props.fml.setState({current_tab: this.props.name}); }
 }
 
 
@@ -53,7 +49,7 @@ Fb.Inventory.Item = class extends React.Component {
 Fb.Inventory.List = class extends React.Component {
   render() {
     var crops = this.props.crops.map(
-       (crop) => <Fb.Inventory.Item crop={crop} key={crop._id} />
+       (crop, k) => <Fb.Inventory.Item crop={crop} key={ k } />
      );
 
     return(<ul className="crop-inventory"> { crops } </ul>);

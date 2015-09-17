@@ -1,7 +1,7 @@
 Fb.PlantCatalogContent = class extends React.Component {
   render() {
     var crops = fakeCrops.map(
-       (crop) => <Fb.PlantCatalogTile crop={crop} key={crop._id} />
+       (crop, k) => <Fb.PlantCatalogTile crop={crop} key={ k } />
      );
 
     return(
