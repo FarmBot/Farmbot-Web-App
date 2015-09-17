@@ -2,7 +2,6 @@ class MapPoint {
   constructor(x, y) {
     this.x = x || 0;
     this.y = y || 0;
-
   }
 }
 
@@ -13,9 +12,7 @@ Fb.MapPointView = class extends React.Component {
       left: (this.props.point.x - 20),
       top: (this.props.point.y - 40)
     };
-    return  <img style={style}
-                 src="/designer_icons/pin.png">
-            </img>;
+    return  <img style={style} src="/designer_icons/pin.png"></img>;
   }
 };
 
@@ -23,9 +20,8 @@ Fb.CropInfoContent = class extends React.Component {
   move() { Fb.renderInventory() }
 
   drop (e) {
-    this.setState({
-      data: this.state.data.concat(new MapPoint(e.clientX, e.clientY))
-    });
+    var data = this.state.data.concat(new MapPoint(e.clientX, e.clientY));
+    this.setState({data: data});
   }
 
   constructor() {
@@ -34,11 +30,14 @@ Fb.CropInfoContent = class extends React.Component {
    this.state = {data: []};
   }
 
-
-  render() {
+  get points() {
     var points = this.state.data.map(
       (p, k) => <Fb.MapPointView point={ p } key={k} />
     );
+    return points;
+  }
+
+  render() {
     return  <div>
               <div className="green-content">
                 <div className="search-box-wrapper">
@@ -105,7 +104,7 @@ Fb.CropInfoContent = class extends React.Component {
                     </button>
                   </span>
                   <div id="drop-area">
-                    { points }
+                    { this.points }
                   </div>
                 </div>
               </div>
