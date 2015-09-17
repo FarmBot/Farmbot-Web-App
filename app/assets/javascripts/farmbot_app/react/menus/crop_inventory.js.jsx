@@ -1,19 +1,22 @@
 Fb.InventoryTab = class extends React.Component {
   render() {
-    return <li>
+    return <li onClick={ this.handleClick.bind(this) }>
             <a href="#"
                className={this.props.active ? "active" : ""}>
               { this.props.name }
             </a>
            </li>
   }
+
+  handleClick(a,b,c,d){
+    var that = this.props.fml;
+    var name = this.props.name;
+    that.setState({current_tab: name});
+    Fb.renderInventoryMenuByName(name);
+  }
 }
 
 Fb.InventoryTabList = class extends React.Component {
-  handleClick(a,b,c,d) {
-    debugger;
-  }
-
   constructor() {
    super();
    this.state = {current_tab: "Plants"};
@@ -25,6 +28,7 @@ Fb.InventoryTabList = class extends React.Component {
               this.props.items.map(function(item, i) {
                 return <Fb.InventoryTab key={i}
                                         name={item}
+                                        fml={this}
                                         active={this.state.current_tab === item}/>;
             }.bind(this))}
            </ul>
@@ -44,7 +48,9 @@ Fb.InventoryMenu = class extends React.Component {
   }
 };
 
-Fb.InventoryContent = class extends React.Component {
+Fb.InventoryContent = {};
+
+Fb.InventoryContent.Plants = class extends React.Component {
   render() {
     return(
       <div>
@@ -52,6 +58,18 @@ Fb.InventoryContent = class extends React.Component {
         <Fb.ToolTip action={ Fb.renderCatalog } desc="Add a new plant" color="dark-green"/>
       </div>
     );
+  }
+};
+
+Fb.InventoryContent.Groups = class extends React.Component {
+  render() {
+    return <p> This is where Groups will go </p>
+  }
+};
+
+Fb.InventoryContent.Zones = class extends React.Component {
+  render() {
+    return <p> This is where Zones will go </p>
   }
 };
 
@@ -75,7 +93,12 @@ Fb.InventoryItem = class extends React.Component {
   }
 };
 
+Fb.renderInventoryMenuByName = function(name) {
+  var menu = React.createElement(Fb.InventoryContent[name]);
+  React.render(menu, Fb.leftMenuContent);
+};
+
 Fb.renderInventory = function(){
   React.render(<Fb.InventoryMenu />, Fb.leftMenu);
-  React.render(<Fb.InventoryContent />, Fb.leftMenuContent);
+  Fb.renderInventoryMenuByName("Plants");
 };

@@ -88,6 +88,14 @@ Fb.ScheduleEventView = class extends React.Component {
   }
 }
 
+Fb.Calendar = class extends React.Component {
+  render () {
+    return <div>
+             <Fb.CalendarMenu />
+             <Fb.CalendarContent />
+           </div>
+  }
+}
 
 Fb.renderCalendar = function() {
   React.render(<Fb.CalendarMenu />, Fb.rightMenu);
