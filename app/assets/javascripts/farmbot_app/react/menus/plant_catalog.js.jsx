@@ -1,35 +1,3 @@
-Fb.PlantCatalogContent = class extends React.Component {
-  render() {
-    var crops = fakeCrops.map(
-       (crop, k) => <Fb.PlantCatalogTile crop={crop} key={ k } />
-     );
-
-    return(
-      <div crops={ fakeCrops }>
-        <br/>
-        { crops }
-      </div>
-    );
-  }
-};
-
-Fb.PlantCatalogMenu = class extends React.Component {
-  render() {
-    return(
-      <div className="green-content">
-        <div className="search-box-wrapper">
-          <p>
-            <a href="#" onClick={Fb.renderInventory}>
-              <i className="fa fa-arrow-left"></i>
-            </a>
-            Choose a Crop
-          </p>
-        </div>
-      </div>
-    );
-  }
-};
-
 Fb.PlantCatalogTile = class extends React.Component {
   render() {
     return(
@@ -55,9 +23,24 @@ Fb.PlantCatalogTile = class extends React.Component {
 
 Fb.PlantCatalog = class extends React.Component {
   render() {
+    var crops = fakeCrops.map(
+       (crop, k) => <Fb.PlantCatalogTile crop={crop} key={ k } />
+     );
     return <div>
-             <Fb.PlantCatalogMenu />
-             <Fb.PlantCatalogContent />
+            <div className="green-content">
+              <div className="search-box-wrapper">
+                <p>
+                  <a href="#" onClick={Fb.renderInventory}>
+                    <i className="fa fa-arrow-left"></i>
+                  </a>
+                  Choose a Crop
+                </p>
+              </div>
+            </div>
+            <div crops={ fakeCrops }>
+              <br/>
+              { crops }
+            </div>
            </div>
   }
 }
