@@ -234,6 +234,7 @@ GEM
       railties (= 4.1.0)
       sprockets-rails (~> 2.0)
     rails-assets-angular (1.3.13)
+    rails-assets-gaearon--redux (3.0.0)
     rails-assets-jquery (2.1.3)
     rails-assets-js-data (1.3.0)
     rails-assets-js-data-angular (2.1.0)
@@ -383,15 +384,16 @@ DEPENDENCIES
   poltergeist
   pry
   rails (= 4.1.0)
-  rails-assets-angular (~> 1.3)
-  rails-assets-jquery
-  rails-assets-js-data
-  rails-assets-js-data-angular
-  rails-assets-lodash
-  rails-assets-ng-pickadate
-  rails-assets-ng-sortable
-  rails-assets-pickadate
-  rails-assets-sio-client
+  rails-assets-angular (~> 1.3)!
+  rails-assets-gaearon--redux!
+  rails-assets-jquery!
+  rails-assets-js-data!
+  rails-assets-js-data-angular!
+  rails-assets-lodash!
+  rails-assets-ng-pickadate!
+  rails-assets-ng-sortable!
+  rails-assets-pickadate!
+  rails-assets-sio-client!
   rails_12factor
   react-rails (~> 1.0)
   rspec

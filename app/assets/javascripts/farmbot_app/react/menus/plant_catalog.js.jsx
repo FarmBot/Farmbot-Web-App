@@ -26,11 +26,11 @@ Fb.PlantCatalog = class extends React.Component {
     var crops = fakeCrops.map(
        (crop, k) => <Fb.PlantCatalogTile crop={crop} key={ k } />
      );
-    return <div>
+    return <div id="designer-left">
             <div className="green-content">
               <div className="search-box-wrapper">
                 <p>
-                  <a href="#" onClick={Fb.renderInventory}>
+                  <a href="#" onClick={ "" }>
                     <i className="fa fa-arrow-left"></i>
                   </a>
                   Choose a Crop
@@ -47,5 +47,8 @@ Fb.PlantCatalog = class extends React.Component {
 
 
 Fb.renderCatalog = function() {
-    React.render(<Fb.PlantCatalog/>, Fb.leftMenu);
+  console.log('wow');
+  // React.render(<Fb.PlantCatalog/>, Fb.leftMenu);
+  React.render(<p> Literally </p>, Fb.leftMenu);
+
 };
