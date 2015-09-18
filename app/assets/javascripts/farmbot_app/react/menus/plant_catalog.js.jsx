@@ -47,8 +47,5 @@ Fb.PlantCatalog = class extends React.Component {
 
 
 Fb.renderCatalog = function() {
-  console.log('wow');
-  // React.render(<Fb.PlantCatalog/>, Fb.leftMenu);
-  React.render(<p> Literally </p>, Fb.leftMenu);
-
+  alert('this is where you left off. Add a redux dispatcher here.');
 };

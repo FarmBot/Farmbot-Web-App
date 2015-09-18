@@ -64,13 +64,12 @@ Fb.DesignerApp = class extends React.Component {
   }
 }
 
-var initialState = {
-  leftMenu: Fb.Inventory.Content
-}
+Fb.initialState = { leftMenu: Fb.Inventory.Content }
+Fb.store = createStore((wow) =>{ return wow }, Fb.initialState);
+
 $(document).ready(function() {
   var dom = document.getElementById("farm-designer-app");
   if (dom){
-    Fb.store = createStore((wow) =>{ return wow }, initialState);
     React.render(<Provider store={Fb.store}>{()=><Fb.DesignerApp/>}</Provider>,
                  dom);
   } else{
