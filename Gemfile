@@ -33,7 +33,7 @@ source 'https://rails-assets.org' do
 end
 
 gem 'react-rails', '~> 1.0'
-# gem 'browserify-rails'
+gem 'browserify-rails'
 
 group :development, :test do
   gem 'pry'

@@ -5,10 +5,6 @@
 //= require farmbot_app/react/menus/calendar
 //= require farmbot_app/react/menus/schedule_creation
 
-import { createStore } from 'redux';
-
-let wow = createStore("WOW");
-debugger;
 class Crop {
   constructor(options) {
     this.name = (options.name || "Untitled Crop");
