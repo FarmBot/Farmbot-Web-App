@@ -21,14 +21,13 @@ gem 'active_model_serializers', '~> 0.8.3'
 gem 'ice_cube'
 
 source 'https://rails-assets.org' do
-  gem 'rails-assets-angular', '~> 1.3'
   gem 'rails-assets-ng-sortable'
+  gem 'rails-assets-ng-pickadate'
   gem 'rails-assets-js-data'
   gem 'rails-assets-js-data-angular'
   gem 'rails-assets-lodash'
   gem 'rails-assets-jquery'
   gem 'rails-assets-pickadate'
-  gem 'rails-assets-ng-pickadate'
   gem 'rails-assets-sio-client'
 end
 
