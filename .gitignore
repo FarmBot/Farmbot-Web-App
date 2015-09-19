@@ -11,6 +11,7 @@ spec/reports
 test/tmp
 test/version_tmp
 tmp
+*.log
 log/*.log
 # YARD artifacts
 .yardoc
@@ -42,3 +43,4 @@ pickle-email-*.html
 # Ignore application configuration
 /config/application.yml
 .DS_Store
+node_modules/

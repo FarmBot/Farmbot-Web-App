@@ -34,5 +34,8 @@ module FarmBot
       g.fixture_replacement :factory_girl, :dir => 'spec/factories'
     end
     config.autoload_paths << Rails.root.join('lib')
+    config
+      .browserify_rails
+      .commandline_options = "-t [ reactify --es6 target --es5 ]"
   end
 end

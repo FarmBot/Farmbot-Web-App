@@ -1,6 +1,6 @@
 Fb.CalendarMenu = class extends React.Component {
   render() {
-    return  <div className="search-box-wrapper">
+    return  <div className="search-box-wrapper purple-content">
               <input className="search" placeholder="Search"/>
             </div>;
   }
@@ -10,7 +10,7 @@ Fb.CalendarContent = class extends React.Component {
   render() {
     var events = _(Fb.scheduledEvents)
                    .sortBy('time')
-                   .map((s) => <Fb.ScheduleEventView scheduledEvent={s}/>)
+                   .map((s, k) => <Fb.ScheduleEventView scheduledEvent={s} key={k}/>)
                    .value();
     return (
       <div className="calendar">
@@ -88,8 +88,15 @@ Fb.ScheduleEventView = class extends React.Component {
   }
 }
 
+Fb.Calendar = class extends React.Component {
+  render () {
+    return <div>
+             <Fb.CalendarMenu />
+             <Fb.CalendarContent />
+           </div>
+  }
+}
 
 Fb.renderCalendar = function() {
-  React.render(<Fb.CalendarMenu />, Fb.rightMenu);
-  React.render(<Fb.CalendarContent />, Fb.rightMenuContent);
+  React.render(<Fb.Calendar />, Fb.rightMenu);
 };

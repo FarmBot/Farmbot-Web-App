@@ -1,71 +1,105 @@
-Fb.InventoryTab = class extends React.Component {
+Fb.Inventory = {}
+
+Fb.Inventory.Tab = class extends React.Component {
   render() {
-    return <li>
+    return <li onClick={ this.handleClick.bind(this) }>
             <a href="#"
                className={this.props.active ? "active" : ""}>
               { this.props.name }
             </a>
            </li>
   }
+
+  handleClick() { this.props.fml.setState({current_tab: this.props.name}); }
 }
 
-Fb.InventoryTabList = class extends React.Component {
-  handleClick(a,b,c,d) {
-    debugger;
-  }
 
-  constructor() {
-   super();
-   this.state = {current_tab: "Plants"};
-  }
-
-  render() {
-    return <ul className="tabs">
-            {
-              this.props.items.map(function(item, i) {
-                return <Fb.InventoryTab key={i}
-                                        name={item}
-                                        active={this.state.current_tab === item}/>;
-            }.bind(this))}
-           </ul>
-  }
-}
-
-Fb.InventoryMenu = class extends React.Component {
-  render() {
-    return (
-      <div>
-        <div className="search-box-wrapper">
-          <input className="search" placeholder="Search"/>
-        </div>
-        <Fb.InventoryTabList items={["Plants", "Groups", "Zones"]} />
-      </div>
-    )
-  }
-};
-
-Fb.InventoryContent = class extends React.Component {
+Fb.Inventory.Plants = class extends React.Component {
   render() {
     return(
       <div>
-        <Fb.InventoryList crops={ fakeCrops } />
+        <Fb.Inventory.List crops={ fakeCrops } />
         <Fb.ToolTip action={ Fb.renderCatalog } desc="Add a new plant" color="dark-green"/>
       </div>
     );
   }
 };
 
-Fb.InventoryList = class extends React.Component {
+Fb.Inventory.Groups = class extends React.Component {
   render() {
-    var crops = this.props.crops.map(
-       (crop) => <Fb.InventoryItem crop={crop} key={crop._id} />
-     );
-
-    return(<ul className="crop-inventory"> { crops } </ul>);
+    return(
+      <div className="designer-info">
+        <h6>My Groups</h6>
+        <ul>
+          <li>
+            <a href="#">Lucky Cabages</a>
+            <p>5 Plants</p>
+          </li>
+          <li>
+            <a href="#">Lucky Cabages</a>
+            <p>5 Plants</p>
+          </li>
+        </ul>
+        <h6>Zone Auto-Groups</h6>
+        <ul>
+          <li>
+            <a href="#">Plants in "Broccoli Overlord"</a>
+            <p>10 Plants</p>
+          </li>
+          <li>
+            <a href="#">Plants in "Flower Patch"</a>
+            <p>7 Plants</p>
+          </li>
+        </ul>
+        <h6>Crop Auto-Groups</h6>
+        <ul>
+          <li>
+            <a href="#">All Strawberries</a>
+            <p>1 plant</p>
+          </li>
+          <li>
+            <a href="#">All Flowers</a>
+            <p>42 plants</p>
+          </li>
+        </ul>
+        <Fb.ToolTip action={ Fb.renderCatalog }
+                    desc="Add a new group"
+                    color="dark-green"/>
+      </div>
+    )
   }
 };
 
-Fb.InventoryItem = class extends React.Component {
+Fb.Inventory.Zones = class extends React.Component {
+  render() {
+    return(
+      <div className="designer-info">
+        <h6>My Zones</h6>
+        <ul>
+          <li>
+            <a href="#">Front area</a>
+            <p>18 Square Feet</p>
+          </li>
+          <li>
+            <a href="#">Needs Compost</a>
+            <p>5 Square Feet</p>
+          </li>
+        </ul>
+        <h6>Auto-Zones</h6>
+        <ul>
+          <li>
+            <a href="#">Broccoli Overlord</a>
+            <p>60 Square Feet</p>
+          </li>
+        </ul>
+        <Fb.ToolTip action={ Fb.renderCatalog }
+                    desc="Add New Zone"
+                    color="dark-green"/>
+      </div>
+    )
+  }
+};
+Fb.Inventory.Item = class extends React.Component {
   render() {
     return(
       <li>
@@ -75,7 +109,47 @@ Fb.InventoryItem = class extends React.Component {
   }
 };
 
+Fb.Inventory.List = class extends React.Component {
+  render() {
+    var crops = this.props.crops.map(
+       (crop, k) => <Fb.Inventory.Item crop={crop} key={ k } />
+     );
+
+    return(<ul className="crop-inventory"> { crops } </ul>);
+  }
+};
+
+Fb.Inventory.Content = class extends React.Component {
+  constructor() {
+   super();
+   this.state = {current_tab: "Plants"};
+  }
+
+  render() {
+    return (
+      <div>
+        <div className="green-content">
+          <div className="search-box-wrapper">
+            <input className="search" placeholder="Search"/>
+          </div>
+          <ul className="tabs">
+            {
+              ["Plants", "Groups", "Zones"].map(function(item, i) {
+                return <Fb.Inventory.Tab key={i}
+                                        name={item}
+                                        fml={this}
+                                        active={this.state.current_tab === item}/>;
+            }.bind(this))}
+          </ul>
+        </div>
+
+        { React.createElement(Fb.Inventory[this.state.current_tab]) }
+      </div>
+    )
+  }
+};
+
+
 Fb.renderInventory = function(){
-  React.render(<Fb.InventoryMenu />, Fb.leftMenu);
-  React.render(<Fb.InventoryContent />, Fb.leftMenuContent);
+  React.render(<Fb.Inventory.Content />, Fb.leftMenu);
 };
