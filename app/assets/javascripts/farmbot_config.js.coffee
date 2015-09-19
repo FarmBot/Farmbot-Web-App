@@ -3,7 +3,7 @@
 app = angular.module('FarmBot', [
   'ngRoute'
   'ng-rails-csrf'
-  'ui.sortable'
+  # 'ui.sortable'# This is so broke right now.
   'js-data'
   'pickadate'
   ])
