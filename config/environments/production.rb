@@ -1,6 +1,6 @@
 FarmBot::Application.configure do
   config.action_controller.perform_caching = true
-  config.action_mailer.default_url_options = { host: 'my.farmbot.cc' }
+  config.action_mailer.default_url_options = { host: 'my.farmbot.io' }
   config.active_support.deprecation = :notify
   config.assets.debug = true
   config.assets.compile = true

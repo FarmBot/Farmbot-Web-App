@@ -4,7 +4,7 @@
 
 # STOP!! You might not need this!
 
-This repo is intended for developers who build the [Farmbot Web App](http://my.farmbot.cc/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.cc/).
+This repo is intended for developers who build the [Farmbot Web App](http://my.farmbot.io/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.io/).
 
 If you are a developer interested in contributing or would like to provision your own server, you are in the right place.
 
