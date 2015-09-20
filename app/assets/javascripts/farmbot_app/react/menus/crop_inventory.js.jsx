@@ -10,7 +10,9 @@ Fb.Inventory.Tab = class extends React.Component {
            </li>
   }
 
-  handleClick() { this.props.fml.setState({current_tab: this.props.name}); }
+  handleClick() {
+    Fb.store.dispatch({type: "CLICK_INVENTORY_TAB", params: this.props.name})
+  }
 }
 
 
@@ -120,10 +122,14 @@ Fb.Inventory.List = class extends React.Component {
 };
 
 Fb.Inventory.Content = class extends React.Component {
-  constructor() {
-   super();
-   this.state = {current_tab: "Plants"};
+
+  get tabName() {
+    return (Fb.store.getState().UI.inventoryTab || "Plants")
   }
+
+  currentTab() { return Fb.Inventory[this.tabName] }
+
+  isActive(item) { return this.tabName === item }
 
   render() {
     return (
@@ -137,13 +143,14 @@ Fb.Inventory.Content = class extends React.Component {
               ["Plants", "Groups", "Zones"].map(function(item, i) {
                 return <Fb.Inventory.Tab key={i}
                                         name={item}
-                                        fml={this}
-                                        active={this.state.current_tab === item}/>;
+                                        active={this.isActive(item)}/>;
             }.bind(this))}
           </ul>
         </div>
 
-        { React.createElement(Fb.Inventory[this.state.current_tab]) }
+        {
+          React.createElement(this.currentTab())
+        }
       </div>
     )
   }
