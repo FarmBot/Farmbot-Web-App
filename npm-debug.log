@@ -1,82 +1,22 @@
 0 info it worked if it ends with ok
-1 verbose cli [ '/usr/bin/node',
-1 verbose cli   '/usr/bin/npm',
-1 verbose cli   'install',
-1 verbose cli   '--save',
-1 verbose cli   'angular-ui-sortable@1.1.9' ]
+1 verbose cli [ '/usr/bin/node', '/usr/bin/npm', 'install' ]
 2 info using npm@1.4.28
 3 info using node@v0.10.40
 4 verbose node symlink /usr/bin/node
-5 verbose readDependencies using package.json deps
-6 verbose cache add [ 'angular-ui-sortable@1.1.9', null ]
-7 verbose cache add name=undefined spec="angular-ui-sortable@1.1.9" args=["angular-ui-sortable@1.1.9",null]
-8 verbose parsed url { protocol: null,
-8 verbose parsed url   slashes: null,
-8 verbose parsed url   auth: null,
-8 verbose parsed url   host: null,
-8 verbose parsed url   port: null,
-8 verbose parsed url   hostname: null,
-8 verbose parsed url   hash: null,
-8 verbose parsed url   search: null,
-8 verbose parsed url   query: null,
-8 verbose parsed url   pathname: 'angular-ui-sortable@1.1.9',
-8 verbose parsed url   path: 'angular-ui-sortable@1.1.9',
-8 verbose parsed url   href: 'angular-ui-sortable@1.1.9' }
-9 verbose cache add name="angular-ui-sortable" spec="1.1.9" args=["angular-ui-sortable","1.1.9"]
-10 verbose parsed url { protocol: null,
-10 verbose parsed url   slashes: null,
-10 verbose parsed url   auth: null,
-10 verbose parsed url   host: null,
-10 verbose parsed url   port: null,
-10 verbose parsed url   hostname: null,
-10 verbose parsed url   hash: null,
-10 verbose parsed url   search: null,
-10 verbose parsed url   query: null,
-10 verbose parsed url   pathname: '1.1.9',
-10 verbose parsed url   path: '1.1.9',
-10 verbose parsed url   href: '1.1.9' }
-11 verbose addNamed [ 'angular-ui-sortable', '1.1.9' ]
-12 verbose addNamed [ '1.1.9', '1.1.9' ]
-13 silly lockFile 78e9cb4d-angular-ui-sortable-1-1-9 angular-ui-sortable@1.1.9
-14 verbose lock angular-ui-sortable@1.1.9 /home/rick/.npm/78e9cb4d-angular-ui-sortable-1-1-9.lock
-15 verbose request where is /angular-ui-sortable
-16 verbose request registry https://registry.npmjs.org/
-17 verbose request id 98d362a443651b7b
-18 verbose url raw /angular-ui-sortable
-19 verbose url resolving [ 'https://registry.npmjs.org/', './angular-ui-sortable' ]
-20 verbose url resolved https://registry.npmjs.org/angular-ui-sortable
-21 verbose request where is https://registry.npmjs.org/angular-ui-sortable
-22 info trying registry request attempt 1 at 14:07:06
-23 http GET https://registry.npmjs.org/angular-ui-sortable
-24 http 200 https://registry.npmjs.org/angular-ui-sortable
-25 silly registry.get cb [ 200,
-25 silly registry.get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
-25 silly registry.get     etag: '"3J8HFZUTMVGWI54PGIPF26P6L"',
-25 silly registry.get     'content-type': 'application/json',
-25 silly registry.get     'cache-control': 'max-age=60',
-25 silly registry.get     'content-length': '16545',
-25 silly registry.get     'accept-ranges': 'bytes',
-25 silly registry.get     date: 'Fri, 18 Sep 2015 19:07:07 GMT',
-25 silly registry.get     via: '1.1 varnish',
-25 silly registry.get     age: '0',
-25 silly registry.get     connection: 'keep-alive',
-25 silly registry.get     'x-served-by': 'cache-dfw1821-DFW',
-25 silly registry.get     'x-cache': 'MISS',
-25 silly registry.get     'x-cache-hits': '0',
-25 silly registry.get     'x-timer': 'S1442603227.634451,VS0,VE304',
-25 silly registry.get     vary: 'Accept' } ]
-26 silly lockFile 78e9cb4d-angular-ui-sortable-1-1-9 angular-ui-sortable@1.1.9
-27 silly lockFile 78e9cb4d-angular-ui-sortable-1-1-9 angular-ui-sortable@1.1.9
-28 error Error: version not found: angular-ui-sortable@1.1.9
-28 error     at /usr/lib/node_modules/npm/lib/cache/add-named.js:125:12
-28 error     at saved (/usr/lib/node_modules/npm/node_modules/npm-registry-client/lib/get.js:167:7)
-28 error     at Object.oncomplete (fs.js:108:15)
-29 error If you need help, you may report this *entire* log,
-29 error including the npm and node versions, at:
-29 error     <http://github.com/npm/npm/issues>
-30 error System Linux 3.13.0-37-generic
-31 error command "/usr/bin/node" "/usr/bin/npm" "install" "--save" "angular-ui-sortable@1.1.9"
-32 error cwd /home/rick/code/farmbot-web-app
-33 error node -v v0.10.40
-34 error npm -v 1.4.28
-35 verbose exit [ 1, true ]
+5 error install Couldn't read dependencies
+6 error Failed to parse json
+6 error Unexpected token /
+7 error File: /home/rick/code/farmbot-web-app/package.json
+8 error Failed to parse package.json data.
+8 error package.json must be actual JSON, not just JavaScript.
+8 error
+8 error This is not a bug in npm.
+8 error Tell the package author to fix their package.json file. JSON.parse
+9 error System Linux 3.13.0-37-generic
+10 error command "/usr/bin/node" "/usr/bin/npm" "install"
+11 error cwd /home/rick/code/farmbot-web-app
+12 error node -v v0.10.40
+13 error npm -v 1.4.28
+14 error file /home/rick/code/farmbot-web-app/package.json
+15 error code EJSONPARSE
+16 verbose exit [ 1, true ]

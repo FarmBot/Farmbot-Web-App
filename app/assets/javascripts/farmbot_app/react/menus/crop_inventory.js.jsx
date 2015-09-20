@@ -4,6 +4,7 @@ Fb.Inventory.Tab = class extends React.Component {
   render() {
     return <li onClick={ this.handleClick.bind(this) }>
             <a href="#"
+               wow={this.store}
                className={this.props.active ? "active" : ""}>
               { this.props.name }
             </a>
@@ -11,6 +12,7 @@ Fb.Inventory.Tab = class extends React.Component {
   }
 
   handleClick() {
+    debugger;
     Fb.store.dispatch({type: "CLICK_INVENTORY_TAB", params: this.props.name})
   }
 }

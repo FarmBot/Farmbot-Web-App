@@ -64,6 +64,8 @@ Fb.DesignerApp = class extends React.Component {
   }
 }
 
+Fb.wow = connect(s => s)(Fb.DesignerApp);
+
 Fb.initialState = {
   UI: {
     leftMenu: Fb.Inventory.Content, // Left side of screen
@@ -92,12 +94,11 @@ Fb.store = createStore(Fb.reducer, Fb.initialState);
 
 $(document).ready(function() {
   var dom = document.getElementById("farm-designer-app");
-
   var menu = (
     <Provider store={Fb.store}>
-      {()=><Fb.DesignerApp/>}
+      {()=><Fb.wow/>}
     </Provider>);
-  debugger;
+  connect()(menu);
   if (dom){ React.render(menu, dom);
   } else{
     console.info('Not loading designer.');
