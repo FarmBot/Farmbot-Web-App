@@ -7,10 +7,10 @@ export class Crop {
   }
 };
 
-export fakeCrops = [
+
+Crop.fakeCrops = [
   new Crop({name: "Blueberry", imgUrl: "/designer_icons/blueberry.svg"}),
   new Crop({name: "Cabbage", imgUrl: "/designer_icons/cabbage.svg"}),
   new Crop({name: "Pepper", imgUrl: "/designer_icons/pepper.svg"}),
   new Crop({name: "Cilantro", imgUrl: "/designer_icons/cilantro.svg"}),
 ];
-

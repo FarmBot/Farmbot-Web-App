@@ -1,3 +1,5 @@
+import { renderScheduleCreation } from 'schedule_creation'
+
 Fb.CalendarMenu = class extends React.Component {
   render() {
     return  <div className="search-box-wrapper purple-content">
@@ -41,7 +43,7 @@ Fb.CalendarContent = class extends React.Component {
             </div>
           </div>
         </div>
-        <Fb.ToolTip action={ Fb.renderScheduleCreation } desc="Schedule new event" color="dark-purple"/>
+        <Fb.ToolTip action={ renderScheduleCreation } desc="Schedule new event" color="dark-purple"/>
       </div>);
   }
 };
@@ -88,7 +90,7 @@ Fb.ScheduleEventView = class extends React.Component {
   }
 }
 
-Fb.Calendar = class extends React.Component {
+export class Calendar extends React.Component {
   render () {
     return <div>
              <Fb.CalendarMenu />
@@ -98,5 +100,5 @@ Fb.Calendar = class extends React.Component {
 }
 
 Fb.renderCalendar = function() {
-  React.render(<Fb.Calendar />, Fb.rightMenu);
+  React.render(<Calendar />, Fb.rightMenu);
 };

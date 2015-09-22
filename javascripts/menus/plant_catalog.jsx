@@ -1,3 +1,5 @@
+import { Crop } from './crops';
+
 Fb.PlantCatalogTile = class extends React.Component {
   render() {
     return(
@@ -23,7 +25,7 @@ Fb.PlantCatalogTile = class extends React.Component {
 
 Fb.PlantCatalog = class extends React.Component {
   render() {
-    var crops = fakeCrops.map(
+    var crops = Crop.fakeCrops.map(
        (crop, k) => <Fb.PlantCatalogTile crop={crop} key={ k } />
      );
     return <div id="designer-left">

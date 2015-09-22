@@ -17,7 +17,7 @@ Fb.MapPointView = class extends React.Component {
 };
 
 Fb.CropInfoContent = class extends React.Component {
-  move() { Fb.renderInventory() }
+  move() { renderInventory() }
 
   drop (e) {
     var data = this.state.data.concat(new MapPoint(e.clientX, e.clientY));

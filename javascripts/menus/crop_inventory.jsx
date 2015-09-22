@@ -1,10 +1,11 @@
-Fb.Inventory = {}
+import { Crop } from '../crops';
+import { store } from '../farm_designer';
 
-Fb.Inventory.Tab = class extends React.Component {
+export class Tab extends React.Component {
   render() {
     return <li onClick={ this.handleClick.bind(this) }>
             <a href="#"
-               wow={this.store}
+               wow={ this.store }
                className={this.props.active ? "active" : ""}>
               { this.props.name }
             </a>
@@ -12,24 +13,23 @@ Fb.Inventory.Tab = class extends React.Component {
   }
 
   handleClick() {
-    debugger;
     Fb.store.dispatch({type: "CLICK_INVENTORY_TAB", params: this.props.name})
   }
 }
 
 
-Fb.Inventory.Plants = class extends React.Component {
+export class Plants extends React.Component {
   render() {
     return(
       <div>
-        <Fb.Inventory.List crops={ fakeCrops } />
+        <List crops={ Crop.fakeCrops } />
         <Fb.ToolTip action={ Fb.renderCatalog } desc="Add a new plant" color="dark-green"/>
       </div>
     );
   }
 };
 
-Fb.Inventory.Groups = class extends React.Component {
+class Groups extends React.Component {
   render() {
     return(
       <div className="designer-info">
@@ -74,7 +74,7 @@ Fb.Inventory.Groups = class extends React.Component {
   }
 };
 
-Fb.Inventory.Zones = class extends React.Component {
+export class Zones extends React.Component {
   render() {
     return(
       <div className="designer-info">
@@ -103,7 +103,8 @@ Fb.Inventory.Zones = class extends React.Component {
     )
   }
 };
-Fb.Inventory.Item = class extends React.Component {
+
+export class Item extends React.Component {
   render() {
     return(
       <li>
@@ -113,20 +114,19 @@ Fb.Inventory.Item = class extends React.Component {
   }
 };
 
-Fb.Inventory.List = class extends React.Component {
+export class List extends React.Component {
   render() {
     var crops = this.props.crops.map(
-       (crop, k) => <Fb.Inventory.Item crop={crop} key={ k } />
+       (crop, k) => <Item crop={crop} key={ k } />
      );
 
     return(<ul className="crop-inventory"> { crops } </ul>);
   }
 };
 
-Fb.Inventory.Content = class extends React.Component {
-
+export class Content extends React.Component {
   get tabName() {
-    return (Fb.store.getState().UI.inventoryTab || "Plants")
+    return (store.getState().UI.inventoryTab || "Plants")
   }
 
   currentTab() { return Fb.Inventory[this.tabName] }
@@ -143,7 +143,7 @@ Fb.Inventory.Content = class extends React.Component {
           <ul className="tabs">
             {
               ["Plants", "Groups", "Zones"].map(function(item, i) {
-                return <Fb.Inventory.Tab key={i}
+                return <Tab key={i}
                                         name={item}
                                         active={this.isActive(item)}/>;
             }.bind(this))}
@@ -159,6 +159,6 @@ Fb.Inventory.Content = class extends React.Component {
 };
 
 
-Fb.renderInventory = function(){
-  React.render(<Fb.Inventory.Content />, Fb.leftMenu);
+export function renderInventory() {
+  React.render(<Content />, Fb.leftMenu);
 };

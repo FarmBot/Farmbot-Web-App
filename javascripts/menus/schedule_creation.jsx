@@ -1,4 +1,4 @@
-Fb.ScheduleCreation = class extends React.Component {
+export class ScheduleCreation extends React.Component {
   back() { Fb.renderCalendar(); }
 
   render() {
