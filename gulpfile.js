@@ -11,18 +11,11 @@ var paths = {
 };
 
 gulp.task('default', function () {
-  var input = paths.jsIn;
-  var output = gulp.dest(paths.jsOut);
-  // return gulp.src(input)
-  //     .pipe(babel({ }))
-  //     .pipe(concat("development.js"))
-  //     .pipe(output);
-});
-
-gulp.task("hmm", function() {
-  var output = gulp.dest(paths.jsOut  + '/whatever.js');
-  browserify({entries: ['javascripts/farm_designer.jsx'], extensions: ['.jsx']})
+  browserify({
+      entries: ['javascripts/farm_designer.jsx'],
+      extensions: ['.jsx']
+    })
   .bundle()
-  .pipe(source('bundle.js'))
-  .pipe(gulp.dest('public/development.js'));
-})
+  .pipe(source('farm-designer.js'))
+  .pipe(gulp.dest('public/'));
+});
