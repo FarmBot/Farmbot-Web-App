@@ -48,6 +48,6 @@ Fb.PlantCatalog = class extends React.Component {
 }
 
 
-Fb.renderCatalog = function() {
+export function renderCatalog() {
   alert('this is where you left off. Add a redux dispatcher here.');
 };

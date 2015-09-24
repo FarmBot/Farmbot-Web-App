@@ -10,14 +10,18 @@ var paths = {
 };
 
 function oops (s) {
-  exec( 'notify-send "' + (s.message || s));
+  var wow = 'notify-send "' + (s.message || s) + '"';
+  gutil.log(wow)
+  exec( wow );
   gutil.log(s.fileName);
   gutil.log(s.lineNumber);
   gutil.log(s.message);
 }
 
 gulp.task('default', function () {
-  gulp.watch(paths.jsx, ['compile']);
+  var tasks = ['compile'];
+  gulp.run(tasks);
+  gulp.watch(paths.jsx, tasks);
 });
 
 gulp.task('compile', function () {

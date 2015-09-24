@@ -1,5 +1,9 @@
 import { Crop } from '../crops';
 import { store } from '../farm_designer';
+import { ToolTip } from '../tooltip'
+import { renderCatalog } from 'plant_catalog';
+
+var wow = {};
 
 export class Tab extends React.Component {
   render() {
@@ -23,11 +27,13 @@ export class Plants extends React.Component {
     return(
       <div>
         <List crops={ Crop.fakeCrops } />
-        <Fb.ToolTip action={ Fb.renderCatalog } desc="Add a new plant" color="dark-green"/>
+        <ToolTip action={ renderCatalog } desc="Add a new plant" color="dark-green"/>
       </div>
     );
   }
 };
+
+wow.Plants = Plants
 
 class Groups extends React.Component {
   render() {
@@ -66,7 +72,7 @@ class Groups extends React.Component {
             <p>42 plants</p>
           </li>
         </ul>
-        <Fb.ToolTip action={ Fb.renderCatalog }
+        <Fb.ToolTip action={ renderCatalog }
                     desc="Add a new group"
                     color="dark-green"/>
       </div>
@@ -96,7 +102,7 @@ export class Zones extends React.Component {
             <p>60 Square Feet</p>
           </li>
         </ul>
-        <Fb.ToolTip action={ Fb.renderCatalog }
+        <Fb.ToolTip action={ renderCatalog }
                     desc="Add New Zone"
                     color="dark-green"/>
       </div>
@@ -125,13 +131,9 @@ export class List extends React.Component {
 };
 
 export class Content extends React.Component {
-  get tabName() {
-    return (store.getState().UI.inventoryTab || "Plants")
-  }
-
-  currentTab() { return Fb.Inventory[this.tabName] }
-
-  isActive(item) { return this.tabName === item }
+  get tabName() { return (this.props.tab || "Plants") };
+  currentTab() { return wow[this.tabName] };
+  isActive(item) { return this.tabName === item };
 
   render() {
     return (
@@ -157,7 +159,6 @@ export class Content extends React.Component {
     )
   }
 };
-
 
 export function renderInventory() {
   React.render(<Content />, Fb.leftMenu);

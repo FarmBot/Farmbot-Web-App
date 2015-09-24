@@ -1,38 +1,78 @@
+import React from 'react';
 import { createStore } from 'redux';
 import { Provider, connect } from 'react-redux';
-import { Crop, fakeCrops } from './crops.jsx';
-import { Content } from './menus/crop_inventory';
-import { reducer } from './reducer.jsx';
-import { Calendar } from './menus/crop_inventory';
-import { tooltip } from './tooltip';
-import { designer_app } from './designer_app';
+import { Content as LeftContent } from './menus/crop_inventory';
 
+// React component
+class FarmDesigner extends React.Component {
+  render(){
+    return (
+      <div className="farm-designer-body">
+        <div className="farm-designer-left">
+          <div id="designer-left">
+            <LeftContent tab={this.props.leftMenu.tab}/>
+          </div>
+        </div>
 
-var store = createStore(reducer, {
-  UI: {
-    leftMenu: Content,    // Left side of screen
-    inventoryTab: 'Zones' // Current tab selection in "Inventory"
+        <div className="farm-designer-middle">
+          <div></div>
+        </div>
+
+        <div className="farm-designer-right">
+          <div id="designer-right">
+            <p>hello</p>
+          </div>
+        </div>
+      </div>
+    );
   }
-});
-
-class Wut extends React.Component {
-  render() {
-    debugger;
-    return <h1> Hello, world! </h1>; }
 }
 
-$(document).ready(function() {
-  var wow = connect()(Wut);
-  var dom = document.getElementById("farm-designer-app");
-  var menu = (
-    <Provider store={store}>
-      { () => <wow/> }
-    </Provider>);
+// Action:
+const increaseAction = {type: 'increase'};
 
-  if (dom) {
-    React.render(<Wut/>, dom);
-  } else {
-    console.info('Not loading designer.');
+// Reducer:
+function counter(state={count: 0}, action) {
+  let count = state.count;
+  switch(action.type){
+    case 'increase':
+      return {count: count+1};
+    default:
+      return state;
+  }
+}
+
+var initialState = {
+  leftMenu: {
+    tab: 'Plants'
+  },
+  UI: {
+    inventoryTab: 'Zones'           // Current tab selection in "Inventory"
+  }
+};
+
+// Store:
+let store = createStore(counter, initialState);
+
+// Map Redux state to component props
+function mapStateToProps(state)  { return state; };
+
+// Map Redux actions to component props
+function mapDispatchToProps(dispatch) {
+  return {
+    onIncreaseClick: () => dispatch(increaseAction)
   };
-});
+}
 
+// Connected Component:
+let App = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FarmDesigner);
+
+React.render(
+  <Provider store={store}>
+    {() => <App />}
+  </Provider>,
+  document.getElementById('root')
+);
