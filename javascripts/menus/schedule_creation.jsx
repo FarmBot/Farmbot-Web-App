@@ -65,6 +65,6 @@ export class ScheduleCreation extends React.Component {
   }
 }
 
-renderScheduleCreation = function() {
+export function renderScheduleCreation() {
   React.render(<ScheduleCreation />, rightMenu);
 };

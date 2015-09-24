@@ -2,6 +2,7 @@ import React from 'react';
 import { createStore } from 'redux';
 import { Provider, connect } from 'react-redux';
 import { Content as LeftContent } from './menus/crop_inventory';
+import { Calendar } from './menus/calendar'
 
 // React component
 class FarmDesigner extends React.Component {
@@ -20,7 +21,7 @@ class FarmDesigner extends React.Component {
 
         <div className="farm-designer-right">
           <div id="designer-right">
-            <p>hello</p>
+            <Calendar />
           </div>
         </div>
       </div>

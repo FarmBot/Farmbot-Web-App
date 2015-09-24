@@ -1,6 +1,7 @@
-import { renderScheduleCreation } from 'schedule_creation'
+import { renderScheduleCreation } from './schedule_creation'
+import { ToolTip } from '../tooltip'
 
-CalendarMenu = class extends React.Component {
+export class CalendarMenu extends React.Component {
   render() {
     return  <div className="search-box-wrapper purple-content">
               <input className="search" placeholder="Search"/>
@@ -8,7 +9,7 @@ CalendarMenu = class extends React.Component {
   }
 };
 
-CalendarContent = class extends React.Component {
+export class CalendarContent extends React.Component {
   render() {
     var events = _(scheduledEvents)
                    .sortBy('time')
@@ -48,7 +49,7 @@ CalendarContent = class extends React.Component {
   }
 };
 
-ScheduledEvent = class {
+export class ScheduledEvent {
   constructor (options) {
     this.time = (options.time || new Date());
     this.desc = (options.desc || "Untitled Event");
@@ -63,16 +64,16 @@ ScheduledEvent = class {
   hasPassed () { return this.time < new Date(); }
 };
 
-scheduledEvents = [
+export var scheduledEvents = [
   (new ScheduledEvent({desc: "Photograph",
                           time: new Date("02-28-2015 06:00")})),
   (new ScheduledEvent({desc: "Weed Crops",
                           time: new Date("02-28-2015 07:00")})),
   (new ScheduledEvent({desc: "Spectral Rdg",
                           time: new Date("02-28-2015 09:00")}))
-]
+];
 
-ScheduleEventView = class extends React.Component {
+export class ScheduleEventView extends React.Component {
   render () {
     var evnt = this.props.scheduledEvent;
 
@@ -99,6 +100,6 @@ export class Calendar extends React.Component {
   }
 }
 
-renderCalendar = function() {
+export function renderCalendar() {
   React.render(<Calendar />, rightMenu);
 };
