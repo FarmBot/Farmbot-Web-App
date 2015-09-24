@@ -5,7 +5,7 @@ class MapPoint {
   }
 }
 
-Fb.MapPointView = class extends React.Component {
+MapPointView = class extends React.Component {
   render() {
     var style = {
       position: 'absolute',
@@ -16,7 +16,7 @@ Fb.MapPointView = class extends React.Component {
   }
 };
 
-Fb.CropInfoContent = class extends React.Component {
+CropInfoContent = class extends React.Component {
   move() { renderInventory() }
 
   drop (e) {
@@ -32,7 +32,7 @@ Fb.CropInfoContent = class extends React.Component {
 
   get points() {
     var points = this.state.data.map(
-      (p, k) => <Fb.MapPointView point={ p } key={k} />
+      (p, k) => <MapPointView point={ p } key={k} />
     );
     return points;
   }
@@ -112,6 +112,6 @@ Fb.CropInfoContent = class extends React.Component {
   }
 }
 
-Fb.renderCropInfo = function(crop) {
-  React.render(<Fb.CropInfoContent crop={crop} />, Fb.leftMenu);
+renderCropInfo = function(crop) {
+  React.render(<CropInfoContent crop={crop} />, leftMenu);
 };

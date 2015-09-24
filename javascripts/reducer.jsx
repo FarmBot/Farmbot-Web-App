@@ -2,7 +2,7 @@ export function reducer(state, action) {
   if (action.type === "@@redux/INIT") {
     return state;
   } else {
-    return(Fb.reducer[action.type] || Fb.reducer.UNKNOWN)(state, action.params);
+    return(reducer[action.type] || reducer.UNKNOWN)(state, action.params);
   };
 };
 

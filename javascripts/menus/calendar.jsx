@@ -1,6 +1,6 @@
 import { renderScheduleCreation } from 'schedule_creation'
 
-Fb.CalendarMenu = class extends React.Component {
+CalendarMenu = class extends React.Component {
   render() {
     return  <div className="search-box-wrapper purple-content">
               <input className="search" placeholder="Search"/>
@@ -8,11 +8,11 @@ Fb.CalendarMenu = class extends React.Component {
   }
 };
 
-Fb.CalendarContent = class extends React.Component {
+CalendarContent = class extends React.Component {
   render() {
-    var events = _(Fb.scheduledEvents)
+    var events = _(scheduledEvents)
                    .sortBy('time')
-                   .map((s, k) => <Fb.ScheduleEventView scheduledEvent={s} key={k}/>)
+                   .map((s, k) => <ScheduleEventView scheduledEvent={s} key={k}/>)
                    .value();
     return (
       <div className="calendar">
@@ -43,12 +43,12 @@ Fb.CalendarContent = class extends React.Component {
             </div>
           </div>
         </div>
-        <Fb.ToolTip action={ renderScheduleCreation } desc="Schedule new event" color="dark-purple"/>
+        <ToolTip action={ renderScheduleCreation } desc="Schedule new event" color="dark-purple"/>
       </div>);
   }
 };
 
-Fb.ScheduledEvent = class {
+ScheduledEvent = class {
   constructor (options) {
     this.time = (options.time || new Date());
     this.desc = (options.desc || "Untitled Event");
@@ -63,16 +63,16 @@ Fb.ScheduledEvent = class {
   hasPassed () { return this.time < new Date(); }
 };
 
-Fb.scheduledEvents = [
-  (new Fb.ScheduledEvent({desc: "Photograph",
+scheduledEvents = [
+  (new ScheduledEvent({desc: "Photograph",
                           time: new Date("02-28-2015 06:00")})),
-  (new Fb.ScheduledEvent({desc: "Weed Crops",
+  (new ScheduledEvent({desc: "Weed Crops",
                           time: new Date("02-28-2015 07:00")})),
-  (new Fb.ScheduledEvent({desc: "Spectral Rdg",
+  (new ScheduledEvent({desc: "Spectral Rdg",
                           time: new Date("02-28-2015 09:00")}))
 ]
 
-Fb.ScheduleEventView = class extends React.Component {
+ScheduleEventView = class extends React.Component {
   render () {
     var evnt = this.props.scheduledEvent;
 
@@ -93,12 +93,12 @@ Fb.ScheduleEventView = class extends React.Component {
 export class Calendar extends React.Component {
   render () {
     return <div>
-             <Fb.CalendarMenu />
-             <Fb.CalendarContent />
+             <CalendarMenu />
+             <CalendarContent />
            </div>
   }
 }
 
-Fb.renderCalendar = function() {
-  React.render(<Calendar />, Fb.rightMenu);
+renderCalendar = function() {
+  React.render(<Calendar />, rightMenu);
 };

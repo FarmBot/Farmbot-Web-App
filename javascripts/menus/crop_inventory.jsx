@@ -1,15 +1,12 @@
 import { Crop } from '../crops';
 import { store } from '../farm_designer';
 import { ToolTip } from '../tooltip'
-import { renderCatalog } from 'plant_catalog';
-
-var wow = {};
+import { renderCatalog } from './plant_catalog';
 
 export class Tab extends React.Component {
   render() {
     return <li onClick={ this.handleClick.bind(this) }>
             <a href="#"
-               wow={ this.store }
                className={this.props.active ? "active" : ""}>
               { this.props.name }
             </a>
@@ -17,7 +14,7 @@ export class Tab extends React.Component {
   }
 
   handleClick() {
-    Fb.store.dispatch({type: "CLICK_INVENTORY_TAB", params: this.props.name})
+    store.dispatch({type: "CLICK_INVENTORY_TAB", params: this.props.name})
   }
 }
 
@@ -32,8 +29,6 @@ export class Plants extends React.Component {
     );
   }
 };
-
-wow.Plants = Plants
 
 class Groups extends React.Component {
   render() {
@@ -72,7 +67,7 @@ class Groups extends React.Component {
             <p>42 plants</p>
           </li>
         </ul>
-        <Fb.ToolTip action={ renderCatalog }
+        <ToolTip action={ renderCatalog }
                     desc="Add a new group"
                     color="dark-green"/>
       </div>
@@ -102,7 +97,7 @@ export class Zones extends React.Component {
             <p>60 Square Feet</p>
           </li>
         </ul>
-        <Fb.ToolTip action={ renderCatalog }
+        <ToolTip action={ renderCatalog }
                     desc="Add New Zone"
                     color="dark-green"/>
       </div>
@@ -132,7 +127,9 @@ export class List extends React.Component {
 
 export class Content extends React.Component {
   get tabName() { return (this.props.tab || "Plants") };
-  currentTab() { return wow[this.tabName] };
+  get content() {
+    return React.createElement({Plants}[this.tabName]);
+  };
   isActive(item) { return this.tabName === item };
 
   render() {
@@ -146,20 +143,17 @@ export class Content extends React.Component {
             {
               ["Plants", "Groups", "Zones"].map(function(item, i) {
                 return <Tab key={i}
-                                        name={item}
-                                        active={this.isActive(item)}/>;
+                            name={item}
+                            active={this.isActive(item)}/>;
             }.bind(this))}
           </ul>
         </div>
-
-        {
-          React.createElement(this.currentTab())
-        }
+        { this.content }
       </div>
     )
   }
 };
 
 export function renderInventory() {
-  React.render(<Content />, Fb.leftMenu);
+  React.render(<Content />, leftMenu);
 };

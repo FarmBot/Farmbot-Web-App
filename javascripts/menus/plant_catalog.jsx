@@ -1,9 +1,9 @@
-import { Crop } from './crops';
+import { Crop } from '../crops';
 
-Fb.PlantCatalogTile = class extends React.Component {
+export class PlantCatalogTile extends React.Component {
   render() {
     return(
-      <div className="plantCatalogTile" onClick={ e => { Fb.renderCropInfo(this.props.crop); } }>
+      <div className="plantCatalogTile" onClick={ e => { renderCropInfo(this.props.crop); } }>
         <div className="row">
           <div className="small-12 columns">
             <div className="small-header-wrapper">
@@ -23,10 +23,10 @@ Fb.PlantCatalogTile = class extends React.Component {
   }
 };
 
-Fb.PlantCatalog = class extends React.Component {
+export class PlantCatalog extends React.Component {
   render() {
     var crops = Crop.fakeCrops.map(
-       (crop, k) => <Fb.PlantCatalogTile crop={crop} key={ k } />
+       (crop, k) => <PlantCatalogTile crop={crop} key={ k } />
      );
     return <div id="designer-left">
             <div className="green-content">
@@ -46,7 +46,6 @@ Fb.PlantCatalog = class extends React.Component {
            </div>
   }
 }
-
 
 export function renderCatalog() {
   alert('this is where you left off. Add a redux dispatcher here.');
