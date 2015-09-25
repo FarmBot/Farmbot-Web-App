@@ -1,5 +1,5 @@
-Fb.ScheduleCreation = class extends React.Component {
-  back() { Fb.renderCalendar(); }
+export class ScheduleCreation extends React.Component {
+  back() { renderCalendar(); }
 
   render() {
     var html = (
@@ -65,6 +65,6 @@ Fb.ScheduleCreation = class extends React.Component {
   }
 }
 
-Fb.renderScheduleCreation = function() {
-  React.render(<Fb.ScheduleCreation />, Fb.rightMenu);
+export function renderScheduleCreation() {
+  React.render(<ScheduleCreation />, rightMenu);
 };

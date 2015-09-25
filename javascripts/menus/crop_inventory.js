@@ -1,6 +1,9 @@
-Fb.Inventory = {}
+import { Crop } from '../crops';
+import { store } from '../farm_designer';
+import { ToolTip } from '../tooltip'
+import { renderCatalog } from './plant_catalog';
 
-Fb.Inventory.Tab = class extends React.Component {
+export class Tab extends React.Component {
   render() {
     return <li onClick={ this.handleClick.bind(this) }>
             <a href="#"
@@ -10,22 +13,24 @@ Fb.Inventory.Tab = class extends React.Component {
            </li>
   }
 
-  handleClick() { this.props.fml.setState({current_tab: this.props.name}); }
+  handleClick() {
+    this.props.dispatch({type: "INVENTORY_SHOW_TAB", tab: this.props.name});
+  }
 }
 
 
-Fb.Inventory.Plants = class extends React.Component {
+export class Plants extends React.Component {
   render() {
     return(
       <div>
-        <Fb.Inventory.List crops={ fakeCrops } />
-        <Fb.ToolTip action={ Fb.renderCatalog } desc="Add a new plant" color="dark-green"/>
+        <List crops={ Crop.fakeCrops } />
+        <ToolTip action={ () => this.props.dispatch({type: "CATALOG_SHOW"}) } desc="Add a new plant" color="dark-green"/>
       </div>
     );
   }
 };
 
-Fb.Inventory.Groups = class extends React.Component {
+class Groups extends React.Component {
   render() {
     return(
       <div className="designer-info">
@@ -62,7 +67,7 @@ Fb.Inventory.Groups = class extends React.Component {
             <p>42 plants</p>
           </li>
         </ul>
-        <Fb.ToolTip action={ Fb.renderCatalog }
+        <ToolTip action={ renderCatalog }
                     desc="Add a new group"
                     color="dark-green"/>
       </div>
@@ -70,7 +75,7 @@ Fb.Inventory.Groups = class extends React.Component {
   }
 };
 
-Fb.Inventory.Zones = class extends React.Component {
+export class Zones extends React.Component {
   render() {
     return(
       <div className="designer-info">
@@ -92,14 +97,15 @@ Fb.Inventory.Zones = class extends React.Component {
             <p>60 Square Feet</p>
           </li>
         </ul>
-        <Fb.ToolTip action={ Fb.renderCatalog }
+        <ToolTip action={ renderCatalog }
                     desc="Add New Zone"
                     color="dark-green"/>
       </div>
     )
   }
 };
-Fb.Inventory.Item = class extends React.Component {
+
+export class Item extends React.Component {
   render() {
     return(
       <li>
@@ -109,21 +115,24 @@ Fb.Inventory.Item = class extends React.Component {
   }
 };
 
-Fb.Inventory.List = class extends React.Component {
+export class List extends React.Component {
   render() {
     var crops = this.props.crops.map(
-       (crop, k) => <Fb.Inventory.Item crop={crop} key={ k } />
+       (crop, k) => <Item crop={crop} key={ k } />
      );
 
     return(<ul className="crop-inventory"> { crops } </ul>);
   }
 };
 
-Fb.Inventory.Content = class extends React.Component {
-  constructor() {
-   super();
-   this.state = {current_tab: "Plants"};
-  }
+export class CropInventory extends React.Component {
+  get tabName() { return (this.props.tab || "Plants") };
+  get content() {
+    var component = {Plants, Groups, Zones}[this.tabName];
+    return React.createElement(component,
+                               {dispatch: this.props.dispatch});
+  };
+  isActive(item) { return this.tabName === item };
 
   render() {
     return (
@@ -135,21 +144,19 @@ Fb.Inventory.Content = class extends React.Component {
           <ul className="tabs">
             {
               ["Plants", "Groups", "Zones"].map(function(item, i) {
-                return <Fb.Inventory.Tab key={i}
-                                        name={item}
-                                        fml={this}
-                                        active={this.state.current_tab === item}/>;
+                return <Tab key={i}
+                            name={item}
+                            dispatch={this.props.dispatch}
+                            active={this.isActive(item)}/>;
             }.bind(this))}
           </ul>
         </div>
-
-        { React.createElement(Fb.Inventory[this.state.current_tab]) }
+        { this.content }
       </div>
     )
   }
 };
 
-
-Fb.renderInventory = function(){
-  React.render(<Fb.Inventory.Content />, Fb.leftMenu);
+export function renderInventory() {
+  React.render(<CropInventory />, leftMenu);
 };
