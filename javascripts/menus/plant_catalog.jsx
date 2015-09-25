@@ -28,6 +28,7 @@ export class PlantCatalog extends React.Component {
     var crops = Crop.fakeCrops.map(
        (crop, k) => <PlantCatalogTile crop={crop} key={ k } />
      );
+
     return <div id="designer-left">
             <div className="green-content">
               <div className="search-box-wrapper">

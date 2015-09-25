@@ -26,7 +26,7 @@ Crop.fakeCrops = [new Crop({ name: "Blueberry", imgUrl: "/designer_icons/blueber
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -59,19 +59,21 @@ var FarmDesigner = (function (_React$Component) {
     _get(Object.getPrototypeOf(FarmDesigner.prototype), 'constructor', this).apply(this, arguments);
   }
 
-  // Action:
+  // Reducer:
   _createClass(FarmDesigner, [{
     key: 'renderPanel',
+
+    // Dynamically determine what to render on the left side of the designer,
+    // based on the value of getStore().leftMenu.component
     value: function renderPanel() {
       var _props$leftMenu = this.props.leftMenu;
       var tab = _props$leftMenu.tab;
       var component = _props$leftMenu.component;
 
-      var components = { LeftContent: _menusCrop_inventory.Content, PlantCatalog: _menusPlant_catalog.PlantCatalog };
-      var showCatalog = this.props.showCatalog;
-      var target = components[component];
+      var dispatch = this.props.dispatch;
+      var target = ({ CropInventory: _menusCrop_inventory.CropInventory, PlantCatalog: _menusPlant_catalog.PlantCatalog })[component];
 
-      return _react2['default'].createElement(target, { tab: tab, showCatalog: showCatalog });
+      return _react2['default'].createElement(target, { tab: tab, dispatch: dispatch });
     }
   }, {
     key: 'render',
@@ -109,13 +111,15 @@ var FarmDesigner = (function (_React$Component) {
   return FarmDesigner;
 })(_react2['default'].Component);
 
-var increaseAction = { type: 'increase' };
-
-// Reducer:
 function reducer(state, action) {
+  var replace = function replace(new_state) {
+    return _.merge({}, state, new_state);
+  };
   switch (action.type) {
-    case 'RENDER_CATALOG':
-      return _.merge({}, state, { leftMenu: { component: 'PlantCatalog' } });
+    case 'SHOW_CATALOG':
+      return replace({ leftMenu: { component: 'PlantCatalog' } });
+    case 'SHOW_INVENTORY':
+      return replace({ leftMenu: { component: 'PlantCatalog' } });
     default:
       return state;
   }
@@ -123,7 +127,7 @@ function reducer(state, action) {
 
 var initialState = {
   leftMenu: {
-    component: 'LeftContent',
+    component: 'CropInventory',
     tab: 'Plants'
   }
 };
@@ -137,13 +141,15 @@ function mapStateToProps(state) {
 };
 
 // Map Redux actions to component props
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(_dispatch) {
   return {
-    showCatalog: function showCatalog(tabName) {
-      return dispatch({ type: "RENDER_CATALOG", tab: tabName });
+    dispatch: function dispatch(type) {
+      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      return _dispatch(_.merge({ type: type }, params));
     }
   };
-}
+};
 
 // Connected Component:
 var App = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(FarmDesigner);
@@ -472,11 +478,15 @@ var Plants = (function (_React$Component2) {
   _createClass(Plants, [{
     key: 'render',
     value: function render() {
+      var _this = this;
+
       return React.createElement(
         'div',
         null,
         React.createElement(List, { crops: _crops.Crop.fakeCrops }),
-        React.createElement(_tooltip.ToolTip, { action: this.props.showCatalog, desc: 'Add a new plant', color: 'dark-green' })
+        React.createElement(_tooltip.ToolTip, { action: function () {
+            return _this.props.dispatch("SHOW_CATALOG");
+          }, desc: 'Add a new plant', color: 'dark-green' })
       );
     }
   }]);
@@ -783,16 +793,16 @@ var List = (function (_React$Component6) {
 exports.List = List;
 ;
 
-var Content = (function (_React$Component7) {
-  _inherits(Content, _React$Component7);
+var CropInventory = (function (_React$Component7) {
+  _inherits(CropInventory, _React$Component7);
 
-  function Content() {
-    _classCallCheck(this, Content);
+  function CropInventory() {
+    _classCallCheck(this, CropInventory);
 
-    _get(Object.getPrototypeOf(Content.prototype), 'constructor', this).apply(this, arguments);
+    _get(Object.getPrototypeOf(CropInventory.prototype), 'constructor', this).apply(this, arguments);
   }
 
-  _createClass(Content, [{
+  _createClass(CropInventory, [{
     key: 'isActive',
     value: function isActive(item) {
       return this.tabName === item;
@@ -832,18 +842,18 @@ var Content = (function (_React$Component7) {
   }, {
     key: 'content',
     get: function get() {
-      return React.createElement(({ Plants: Plants })[this.tabName], { showCatalog: this.props.showCatalog });
+      return React.createElement(({ Plants: Plants })[this.tabName], { dispatch: this.props.dispatch });
     }
   }]);
 
-  return Content;
+  return CropInventory;
 })(React.Component);
 
-exports.Content = Content;
+exports.CropInventory = CropInventory;
 ;
 
 function renderInventory() {
-  React.render(React.createElement(Content, null), leftMenu);
+  React.render(React.createElement(CropInventory, null), leftMenu);
 }
 
 ;
@@ -947,6 +957,7 @@ var PlantCatalog = (function (_React$Component2) {
       var crops = _crops.Crop.fakeCrops.map(function (crop, k) {
         return React.createElement(PlantCatalogTile, { crop: crop, key: k });
       });
+
       return React.createElement(
         "div",
         { id: "designer-left" },

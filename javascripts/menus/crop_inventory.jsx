@@ -24,7 +24,7 @@ export class Plants extends React.Component {
     return(
       <div>
         <List crops={ Crop.fakeCrops } />
-        <ToolTip action={ this.props.showCatalog } desc="Add a new plant" color="dark-green"/>
+        <ToolTip action={ () => this.props.dispatch("SHOW_CATALOG") } desc="Add a new plant" color="dark-green"/>
       </div>
     );
   }
@@ -125,11 +125,11 @@ export class List extends React.Component {
   }
 };
 
-export class Content extends React.Component {
+export class CropInventory extends React.Component {
   get tabName() { return (this.props.tab || "Plants") };
   get content() {
     return React.createElement({Plants}[this.tabName],
-                               {showCatalog: this.props.showCatalog});
+                               {dispatch: this.props.dispatch});
   };
   isActive(item) { return this.tabName === item };
 
@@ -156,5 +156,5 @@ export class Content extends React.Component {
 };
 
 export function renderInventory() {
-  React.render(<Content />, leftMenu);
+  React.render(<CropInventory />, leftMenu);
 };

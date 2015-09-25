@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStore } from 'redux';
 import { Provider, connect } from 'react-redux';
-import { Content as LeftContent } from './menus/crop_inventory';
+import { CropInventory } from './menus/crop_inventory';
 import { PlantCatalog } from './menus/plant_catalog'
 import { Calendar } from './menus/calendar'
 
@@ -11,10 +11,10 @@ class FarmDesigner extends React.Component {
   // based on the value of getStore().leftMenu.component
   renderPanel() {
     let {tab, component} = this.props.leftMenu;
-    let showCatalog = this.props.showCatalog;
-    let target = {LeftContent, PlantCatalog}[component];
+    let dispatch = this.props.dispatch;
+    let target = {CropInventory, PlantCatalog}[component];
 
-    return React.createElement(target, {tab, showCatalog});
+    return React.createElement(target, {tab, dispatch});
   }
   render(){
     return (
@@ -41,9 +41,14 @@ class FarmDesigner extends React.Component {
 
 // Reducer:
 function reducer(state, action) {
+  var replace = function(new_state) {
+    return _.merge({}, state, new_state);
+  };
   switch(action.type){
-    case 'RENDER_CATALOG':
-      return _.merge({}, state, {leftMenu: {component: 'PlantCatalog'}});
+    case 'SHOW_CATALOG':
+      return replace({leftMenu: {component: 'PlantCatalog'}});
+    case 'SHOW_INVENTORY':
+      return replace({leftMenu: {component: 'PlantCatalog'}})
     default:
       return state;
   }
@@ -51,7 +56,7 @@ function reducer(state, action) {
 
 var initialState = {
   leftMenu: {
-    component: 'LeftContent',
+    component: 'CropInventory',
     tab: 'Plants'
   }
 };
@@ -65,9 +70,11 @@ function mapStateToProps(state)  { return state; };
 // Map Redux actions to component props
 function mapDispatchToProps(dispatch) {
   return {
-    showCatalog: (tabName) => dispatch({type: "RENDER_CATALOG", tab: tabName})
-  };
-}
+    dispatch: function(type, params = {}) {
+      return dispatch(_.merge({type}, params))
+    }
+  }
+ };
 
 // Connected Component:
 let App = connect(
