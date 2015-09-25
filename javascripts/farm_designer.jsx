@@ -7,11 +7,12 @@ import { Calendar } from './menus/calendar'
 
 // React component
 class FarmDesigner extends React.Component {
+  // Dynamically determine what to render on the left side of the designer,
+  // based on the value of getStore().leftMenu.component
   renderPanel() {
     let {tab, component} = this.props.leftMenu;
-    let components = {LeftContent, PlantCatalog};
     let showCatalog = this.props.showCatalog;
-    let target = components[component];
+    let target = {LeftContent, PlantCatalog}[component];
 
     return React.createElement(target, {tab, showCatalog});
   }
@@ -37,9 +38,6 @@ class FarmDesigner extends React.Component {
     );
   }
 }
-
-// Action:
-const increaseAction = {type: 'increase'};
 
 // Reducer:
 function reducer(state, action) {
