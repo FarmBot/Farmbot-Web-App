@@ -6,31 +6,28 @@ var gulp   = require('gulp'),
     exec = require('child_process').exec;
 
 var paths = {
-  jsx: './javascripts/**/**/*.jsx'
+  js: './javascripts/**/**/*.js'
 };
 
 function oops (s) {
-  var wow = 'notify-send "' + (s.message || s) + '"';
-  gutil.log(wow)
-  exec( wow );
-  gutil.log(s.fileName);
-  gutil.log(s.lineNumber);
+  exec("espeak 'Compile Error.'");
+  exec( 'notify-send "' + (s.message || s) + '"' );
   gutil.log(s.message);
 }
 
 gulp.task('default', function () {
   var tasks = ['compile'];
-  gulp.run(tasks);
-  gulp.watch(paths.jsx, tasks);
+  gulp.watch(paths.js, tasks);
 });
 
 gulp.task('compile', function () {
   browserify({
-      entries: ['javascripts/farm_designer.jsx'],
-      extensions: ['.jsx']
+      entries: ['javascripts/farm_designer.js'],
+      extensions: ['.js']
     })
   .bundle()
   .on('error', oops)
   .pipe(source('farm-designer.js'))
   .pipe(gulp.dest('public/'));
+  exec("espeak 'Saved.'");
 })

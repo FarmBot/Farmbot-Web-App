@@ -24,6 +24,7 @@ export class PlantCatalogTile extends React.Component {
 };
 
 export class PlantCatalog extends React.Component {
+  back() { this.props.dispatch("SHOW_INVENTORY") }
   render() {
     var crops = Crop.fakeCrops.map(
        (crop, k) => <PlantCatalogTile crop={crop} key={ k } />
@@ -33,7 +34,7 @@ export class PlantCatalog extends React.Component {
             <div className="green-content">
               <div className="search-box-wrapper">
                 <p>
-                  <a href="#" onClick={ "" }>
+                  <a href="#" onClick={ this.back.bind(this) }>
                     <i className="fa fa-arrow-left"></i>
                   </a>
                   Choose a Crop

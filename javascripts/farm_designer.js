@@ -1,9 +1,10 @@
 import React from 'react';
-import { createStore } from 'redux';
-import { Provider, connect } from 'react-redux';
+import { Provider } from 'react-redux';
 import { CropInventory } from './menus/crop_inventory';
-import { PlantCatalog } from './menus/plant_catalog'
-import { Calendar } from './menus/calendar'
+import { PlantCatalog } from './menus/plant_catalog';
+import { Calendar } from './menus/calendar';
+import { store } from './redux/store';
+import { connect } from 'react-redux';
 
 // React component
 class FarmDesigner extends React.Component {
@@ -39,34 +40,6 @@ class FarmDesigner extends React.Component {
   }
 }
 
-// Reducer:
-function reducer(state, action) {
-  var replace = function(new_state) {
-    return _.merge({}, state, new_state);
-  };
-  switch(action.type){
-    case 'SHOW_CATALOG':
-      return replace({leftMenu: {component: 'PlantCatalog'}});
-    case 'SHOW_INVENTORY':
-      return replace({leftMenu: {component: 'PlantCatalog'}})
-    default:
-      return state;
-  }
-}
-
-var initialState = {
-  leftMenu: {
-    component: 'CropInventory',
-    tab: 'Plants'
-  }
-};
-
-// Store:
-let store = createStore(reducer, initialState);
-
-// Map Redux state to component props
-function mapStateToProps(state)  { return state; };
-
 // Map Redux actions to component props
 function mapDispatchToProps(dispatch) {
   return {
@@ -76,11 +49,7 @@ function mapDispatchToProps(dispatch) {
   }
  };
 
-// Connected Component:
-let App = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(FarmDesigner);
+var App = connect(s => s, mapDispatchToProps)(FarmDesigner);
 
 React.render(
   <Provider store={store}>
