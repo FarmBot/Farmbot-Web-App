@@ -24,7 +24,7 @@ export class Plants extends React.Component {
     return(
       <div>
         <List crops={ Crop.fakeCrops } />
-        <ToolTip action={ renderCatalog } desc="Add a new plant" color="dark-green"/>
+        <ToolTip action={ this.props.showCatalog } desc="Add a new plant" color="dark-green"/>
       </div>
     );
   }
@@ -128,7 +128,8 @@ export class List extends React.Component {
 export class Content extends React.Component {
   get tabName() { return (this.props.tab || "Plants") };
   get content() {
-    return React.createElement({Plants}[this.tabName]);
+    return React.createElement({Plants}[this.tabName],
+                               {showCatalog: this.props.showCatalog});
   };
   isActive(item) { return this.tabName === item };
 

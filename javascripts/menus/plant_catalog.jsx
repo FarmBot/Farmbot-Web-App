@@ -1,4 +1,4 @@
-import { Crop } from '../crops';
+import { Crop, fakeCrops } from '../crops';
 
 export class PlantCatalogTile extends React.Component {
   render() {
@@ -39,7 +39,7 @@ export class PlantCatalog extends React.Component {
                 </p>
               </div>
             </div>
-            <div crops={ fakeCrops }>
+            <div crops={ Crop.fakeCrops }>
               <br/>
               { crops }
             </div>

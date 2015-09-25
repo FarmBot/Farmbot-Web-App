@@ -101,5 +101,5 @@ export class Calendar extends React.Component {
 }
 
 export function renderCalendar() {
-  React.render(<Calendar />, rightMenu);
+  React.render(<Calendar />, function(){ alert('Dispatch a show_calendar method here.') });
 };

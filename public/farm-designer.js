@@ -44,6 +44,8 @@ var _reactRedux = require('react-redux');
 
 var _menusCrop_inventory = require('./menus/crop_inventory');
 
+var _menusPlant_catalog = require('./menus/plant_catalog');
+
 var _menusCalendar = require('./menus/calendar');
 
 // React component
@@ -59,6 +61,19 @@ var FarmDesigner = (function (_React$Component) {
 
   // Action:
   _createClass(FarmDesigner, [{
+    key: 'renderPanel',
+    value: function renderPanel() {
+      var _props$leftMenu = this.props.leftMenu;
+      var tab = _props$leftMenu.tab;
+      var component = _props$leftMenu.component;
+
+      var components = { LeftContent: _menusCrop_inventory.Content, PlantCatalog: _menusPlant_catalog.PlantCatalog };
+      var showCatalog = this.props.showCatalog;
+      var target = components[component];
+
+      return _react2['default'].createElement(target, { tab: tab, showCatalog: showCatalog });
+    }
+  }, {
     key: 'render',
     value: function render() {
       return _react2['default'].createElement(
@@ -70,7 +85,7 @@ var FarmDesigner = (function (_React$Component) {
           _react2['default'].createElement(
             'div',
             { id: 'designer-left' },
-            _react2['default'].createElement(_menusCrop_inventory.Content, { tab: this.props.leftMenu.tab })
+            this.renderPanel()
           )
         ),
         _react2['default'].createElement(
@@ -97,13 +112,10 @@ var FarmDesigner = (function (_React$Component) {
 var increaseAction = { type: 'increase' };
 
 // Reducer:
-function counter(state, action) {
-  if (state === undefined) state = { count: 0 };
-
-  var count = state.count;
+function reducer(state, action) {
   switch (action.type) {
-    case 'increase':
-      return { count: count + 1 };
+    case 'RENDER_CATALOG':
+      return _.merge({}, state, { leftMenu: { component: 'PlantCatalog' } });
     default:
       return state;
   }
@@ -111,15 +123,13 @@ function counter(state, action) {
 
 var initialState = {
   leftMenu: {
+    component: 'LeftContent',
     tab: 'Plants'
-  },
-  UI: {
-    inventoryTab: 'Zones' // Current tab selection in "Inventory"
   }
 };
 
 // Store:
-var store = (0, _redux.createStore)(counter, initialState);
+var store = (0, _redux.createStore)(reducer, initialState);
 
 // Map Redux state to component props
 function mapStateToProps(state) {
@@ -129,8 +139,8 @@ function mapStateToProps(state) {
 // Map Redux actions to component props
 function mapDispatchToProps(dispatch) {
   return {
-    onIncreaseClick: function onIncreaseClick() {
-      return dispatch(increaseAction);
+    showCatalog: function showCatalog(tabName) {
+      return dispatch({ type: "RENDER_CATALOG", tab: tabName });
     }
   };
 }
@@ -146,7 +156,7 @@ _react2['default'].render(_react2['default'].createElement(
   }
 ), document.getElementById('root'));
 
-},{"./menus/calendar":3,"./menus/crop_inventory":4,"react":172,"react-redux":12,"redux":174}],3:[function(require,module,exports){
+},{"./menus/calendar":3,"./menus/crop_inventory":4,"./menus/plant_catalog":5,"react":172,"react-redux":12,"redux":174}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -383,7 +393,9 @@ var Calendar = (function (_React$Component4) {
 exports.Calendar = Calendar;
 
 function renderCalendar() {
-  React.render(React.createElement(Calendar, null), rightMenu);
+  React.render(React.createElement(Calendar, null), function () {
+    alert('Dispatch a show_calendar method here.');
+  });
 }
 
 ;
@@ -464,7 +476,7 @@ var Plants = (function (_React$Component2) {
         'div',
         null,
         React.createElement(List, { crops: _crops.Crop.fakeCrops }),
-        React.createElement(_tooltip.ToolTip, { action: _plant_catalog.renderCatalog, desc: 'Add a new plant', color: 'dark-green' })
+        React.createElement(_tooltip.ToolTip, { action: this.props.showCatalog, desc: 'Add a new plant', color: 'dark-green' })
       );
     }
   }]);
@@ -820,7 +832,7 @@ var Content = (function (_React$Component7) {
   }, {
     key: 'content',
     get: function get() {
-      return React.createElement(({ Plants: Plants })[this.tabName]);
+      return React.createElement(({ Plants: Plants })[this.tabName], { showCatalog: this.props.showCatalog });
     }
   }]);
 
@@ -958,7 +970,7 @@ var PlantCatalog = (function (_React$Component2) {
         ),
         React.createElement(
           "div",
-          { crops: fakeCrops },
+          { crops: _crops.Crop.fakeCrops },
           React.createElement("br", null),
           crops
         )
