@@ -24,7 +24,7 @@ export class PlantCatalogTile extends React.Component {
 };
 
 export class PlantCatalog extends React.Component {
-  back() { this.props.dispatch("SHOW_INVENTORY") }
+  back() { this.props.dispatch({type: "INVENTORY_SHOW"}) }
   render() {
     var crops = Crop.fakeCrops.map(
        (crop, k) => <PlantCatalogTile crop={crop} key={ k } />

@@ -36,19 +36,12 @@ var _reduxStore = require('./redux/store');
 
 var _menusDesigner_main = require('./menus/designer_main');
 
-function mapDispatchToProps(_dispatch) {
-  return {
-    dispatch: function dispatch(type) {
-      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      return _dispatch(_.merge({ type: type }, params));
-    }
-  };
-};
-
+function wow(d) {
+  return { d: d };
+}
 var App = (0, _reactRedux.connect)(function (s) {
   return s;
-}, mapDispatchToProps)(_menusDesigner_main.DesignerMain);
+}, wow)(_menusDesigner_main.DesignerMain);
 
 _react2['default'].render(_react2['default'].createElement(
   _reactRedux.Provider,
@@ -353,7 +346,7 @@ var Tab = (function (_React$Component) {
   }, {
     key: 'handleClick',
     value: function handleClick() {
-      _farm_designer.store.dispatch({ type: "CLICK_INVENTORY_TAB", params: this.props.name });
+      this.props.dispatch({ type: "INVENTORY_SHOW_TAB", name: this.props.name });
     }
   }]);
 
@@ -381,7 +374,7 @@ var Plants = (function (_React$Component2) {
         null,
         React.createElement(List, { crops: _crops.Crop.fakeCrops }),
         React.createElement(_tooltip.ToolTip, { action: function () {
-            return _this.props.dispatch("SHOW_CATALOG");
+            return _this.props.dispatch({ type: "CATALOG_SHOW" });
           }, desc: 'Add a new plant', color: 'dark-green' })
       );
     }
@@ -723,6 +716,7 @@ var CropInventory = (function (_React$Component7) {
             ["Plants", "Groups", "Zones"].map((function (item, i) {
               return React.createElement(Tab, { key: i,
                 name: item,
+                dispatch: this.props.dispatch,
                 active: this.isActive(item) });
             }).bind(this))
           )
@@ -934,7 +928,7 @@ var PlantCatalog = (function (_React$Component2) {
   _createClass(PlantCatalog, [{
     key: "back",
     value: function back() {
-      this.props.dispatch("SHOW_INVENTORY");
+      this.props.dispatch({ type: "INVENTORY_SHOW" });
     }
   }, {
     key: "render",
@@ -1188,19 +1182,29 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 var actions = {
+  '@@redux/INIT': empty,
   DEFAULT: function DEFAULT(s, a) {
+    console.warn("Unknown action fired.");
+    console.trace();
     return s;
   },
-  SHOW_CATALOG: function SHOW_CATALOG(s, a) {
-    return replace(s, { leftMenu: { component: 'PlantCatalog' } });
+  CATALOG_SHOW: function CATALOG_SHOW(s, a) {
+    return update(s, { leftMenu: { component: 'PlantCatalog' } });
   },
-  SHOW_INVENTORY: function SHOW_INVENTORY(s, a) {
+  INVENTORY_SHOW: function INVENTORY_SHOW(s, a) {
     console.log('!');
-    return replace(s, { leftMenu: { component: 'CropInventory' } });
+    return update(s, { leftMenu: { component: 'CropInventory' } });
+  },
+  INVENTORY_SHOW_TAB: function INVENTORY_SHOW_TAB(s, a) {
+    return update(s, {});
   }
 };
 
-function replace(old_state, new_state) {
+function empty(s, a) {
+  return s;
+};
+
+function update(old_state, new_state) {
   return _.merge({}, old_state, new_state);
 };
 
@@ -1232,6 +1236,7 @@ exports.reducer = reducer;
 var _actions = require('./actions');
 
 function reducer(state, action) {
+  console.log(action.type);
   var action = _actions.actions[action.type] || _actions.actions.DEFAULT;
   return action(state, action);
 }

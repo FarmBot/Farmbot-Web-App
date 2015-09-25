@@ -14,7 +14,7 @@ export class Tab extends React.Component {
   }
 
   handleClick() {
-    store.dispatch({type: "CLICK_INVENTORY_TAB", params: this.props.name})
+    this.props.dispatch({type: "INVENTORY_SHOW_TAB", name: this.props.name})
   }
 }
 
@@ -24,7 +24,7 @@ export class Plants extends React.Component {
     return(
       <div>
         <List crops={ Crop.fakeCrops } />
-        <ToolTip action={ () => this.props.dispatch("SHOW_CATALOG") } desc="Add a new plant" color="dark-green"/>
+        <ToolTip action={ () => this.props.dispatch({type: "CATALOG_SHOW"}) } desc="Add a new plant" color="dark-green"/>
       </div>
     );
   }
@@ -145,6 +145,7 @@ export class CropInventory extends React.Component {
               ["Plants", "Groups", "Zones"].map(function(item, i) {
                 return <Tab key={i}
                             name={item}
+                            dispatch={this.props.dispatch}
                             active={this.isActive(item)}/>;
             }.bind(this))}
           </ul>

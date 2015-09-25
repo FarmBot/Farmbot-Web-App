@@ -1,15 +1,27 @@
 let actions = {
-  DEFAULT: function(s, a){ return s; },
-  SHOW_CATALOG: function(s, a){
-    return replace(s, {leftMenu: {component: 'PlantCatalog'}});
+  '@@redux/INIT': empty,
+  DEFAULT: function (s, a) {
+    console.warn("Unknown action fired.");
+    console.trace();
+    return s;
   },
-  SHOW_INVENTORY: function(s, a){
+  CATALOG_SHOW: function(s, a){
+    return update(s, {leftMenu: {component: 'PlantCatalog'}});
+  },
+  INVENTORY_SHOW: function(s, a){
     console.log('!');
-    return replace(s, {leftMenu: {component: 'CropInventory'}});
+    return update(s, {leftMenu: {component: 'CropInventory'}});
+  },
+  INVENTORY_SHOW_TAB: function(s, a){
+    return update(s, {});
   }
 }
 
-function replace(old_state, new_state) {
+function empty(s, a) {
+  return s;
+};
+
+function update(old_state, new_state) {
   return _.merge({}, old_state, new_state);
 };
 
