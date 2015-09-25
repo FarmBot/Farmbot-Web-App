@@ -16,7 +16,7 @@ MapPointView = class extends React.Component {
   }
 };
 
-CropInfoContent = class extends React.Component {
+export class CropInfoContent extends React.Component {
   move() { renderInventory() }
 
   drop (e) {
