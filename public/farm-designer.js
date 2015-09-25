@@ -732,7 +732,8 @@ var CropInventory = (function (_React$Component7) {
   }, {
     key: 'content',
     get: function get() {
-      return React.createElement(({ Plants: Plants })[this.tabName], { dispatch: this.props.dispatch });
+      var component = ({ Plants: Plants, Groups: Groups, Zones: Zones })[this.tabName];
+      return React.createElement(component, { dispatch: this.props.dispatch });
     }
   }]);
 

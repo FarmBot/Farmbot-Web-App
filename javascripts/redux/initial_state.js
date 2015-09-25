@@ -1,7 +1,7 @@
 var initialState = {
   leftMenu: {
     component: 'CropInventory',
-    tab: 'Plants'
+    tab:       'Plants'
   }
 };
 

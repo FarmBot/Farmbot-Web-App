@@ -128,7 +128,8 @@ export class List extends React.Component {
 export class CropInventory extends React.Component {
   get tabName() { return (this.props.tab || "Plants") };
   get content() {
-    return React.createElement({Plants}[this.tabName],
+    var component = {Plants, Groups, Zones}[this.tabName];
+    return React.createElement(component,
                                {dispatch: this.props.dispatch});
   };
   isActive(item) { return this.tabName === item };
