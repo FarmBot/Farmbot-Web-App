@@ -4,7 +4,7 @@ import { store } from './redux/store';
 import { connect } from 'react-redux';
 import { DesignerMain } from './menus/designer_main'
 function wow (d) {
-  return {d};
+  return {dispatch: d};
 }
 var App = connect(s => s, wow)(DesignerMain);
 

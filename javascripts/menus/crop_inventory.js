@@ -14,7 +14,7 @@ export class Tab extends React.Component {
   }
 
   handleClick() {
-    this.props.dispatch({type: "INVENTORY_SHOW_TAB", name: this.props.name})
+    this.props.dispatch({type: "INVENTORY_SHOW_TAB", tab: this.props.name});
   }
 }
 

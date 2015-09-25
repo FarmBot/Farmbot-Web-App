@@ -37,7 +37,7 @@ var _reduxStore = require('./redux/store');
 var _menusDesigner_main = require('./menus/designer_main');
 
 function wow(d) {
-  return { d: d };
+  return { dispatch: d };
 }
 var App = (0, _reactRedux.connect)(function (s) {
   return s;
@@ -346,7 +346,7 @@ var Tab = (function (_React$Component) {
   }, {
     key: 'handleClick',
     value: function handleClick() {
-      this.props.dispatch({ type: "INVENTORY_SHOW_TAB", name: this.props.name });
+      this.props.dispatch({ type: "INVENTORY_SHOW_TAB", tab: this.props.name });
     }
   }]);
 
@@ -1192,11 +1192,10 @@ var actions = {
     return update(s, { leftMenu: { component: 'PlantCatalog' } });
   },
   INVENTORY_SHOW: function INVENTORY_SHOW(s, a) {
-    console.log('!');
     return update(s, { leftMenu: { component: 'CropInventory' } });
   },
   INVENTORY_SHOW_TAB: function INVENTORY_SHOW_TAB(s, a) {
-    return update(s, {});
+    return update(s, { leftMenu: { tab: a.tab } });
   }
 };
 
@@ -1237,8 +1236,7 @@ var _actions = require('./actions');
 
 function reducer(state, action) {
   console.log(action.type);
-  var action = _actions.actions[action.type] || _actions.actions.DEFAULT;
-  return action(state, action);
+  return (_actions.actions[action.type] || _actions.actions.DEFAULT)(state, action);
 }
 
 ;

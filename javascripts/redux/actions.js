@@ -9,12 +9,11 @@ let actions = {
     return update(s, {leftMenu: {component: 'PlantCatalog'}});
   },
   INVENTORY_SHOW: function(s, a){
-    console.log('!');
     return update(s, {leftMenu: {component: 'CropInventory'}});
   },
-  INVENTORY_SHOW_TAB: function(s, a){
-    return update(s, {});
-  }
+  INVENTORY_SHOW_TAB: function(s, a) {
+    return update(s, {leftMenu: {tab: a.tab}});
+  },
 }
 
 function empty(s, a) {
