@@ -16,8 +16,7 @@ function oops (s) {
 }
 
 gulp.task('default', function () {
-  var tasks = ['compile'];
-  gulp.watch(paths.js, tasks);
+  gulp.watch(paths.js, ['compile']);
 });
 
 gulp.task('compile', function () {
