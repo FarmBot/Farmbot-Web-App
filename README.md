@@ -19,8 +19,9 @@ This Repo is the Web based side of FarmBot. It allows users to control the devic
  3. [Install MongoDB](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
  4. Start Mongo if you have not already done so. (typically via the `mongod` command)
  3. `bundle install`
- 4. `rails s`
- 5. Go to `http://localhost:3000`
+ 4.  `npm install`
+ 5. `rails s`
+ 6. Go to `http://localhost:3000`
 
 **We can't fix issues we don't know about.** Please submit an issue if you are having trouble installing on your local machine.
 
