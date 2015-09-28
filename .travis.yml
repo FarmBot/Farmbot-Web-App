@@ -2,7 +2,7 @@ language: ruby
 rvm:
 - 2.2.3
 before_script:
-- npm install karma
+- npm install
 services:
 - mongodb
 notifications:
