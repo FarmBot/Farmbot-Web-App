@@ -32,6 +32,7 @@ rerun.txt
 pickle-email-*.html
 /public/assets/
 
+
 ## Environment normalisation:
 /.bundle
 /vendor/bundle
