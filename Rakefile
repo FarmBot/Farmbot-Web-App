@@ -3,3 +3,7 @@
 
 require File.expand_path('../config/application', __FILE__)
 FarmBot::Application.load_tasks
+
+Rake::Task["assets:precompile"].enhance do
+  puts `gulp build`
+end

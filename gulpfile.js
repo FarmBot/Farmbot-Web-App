@@ -10,16 +10,16 @@ var paths = {
 };
 
 function oops (s) {
-  exec("espeak 'Compile Error.'");
+  exec("espeak 'build Error.'");
   exec( 'notify-send "' + (s.message || s) + '"' );
   gutil.log(s.message);
 }
 
 gulp.task('default', function () {
-  gulp.watch(paths.js, ['compile']);
+  gulp.watch(paths.js, ['build']);
 });
 
-gulp.task('compile', function () {
+gulp.task('build', function () {
   browserify({
       entries: ['javascripts/farm_designer.js'],
       extensions: ['.js']
