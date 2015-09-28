@@ -5,5 +5,7 @@ require File.expand_path('../config/application', __FILE__)
 FarmBot::Application.load_tasks
 
 Rake::Task["assets:precompile"].enhance do
+  puts '====== Running `gulp build`'
   puts `gulp build`
+  puts '====== Done running `gulp build`'
 end
