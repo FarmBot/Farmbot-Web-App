@@ -1,16 +1,19 @@
 import { CropInventory } from './crop_inventory';
 import { PlantCatalog } from './plant_catalog';
 import { Calendar } from './calendar';
+import { CropInfo } from './crop_info';
 
-// React component
+const MENU_CHOICES = {CropInventory, PlantCatalog, CropInfo}
+
 export class DesignerMain extends React.Component {
   // Dynamically determine what to render on the left side of the designer,
   // based on the value of getStore().leftMenu.component
   renderPanel() {
-    let {tab, component} = this.props.leftMenu;
-    let dispatch = this.props.dispatch;
-    let target = {CropInventory, PlantCatalog}[component];
-    return React.createElement(target, {tab, dispatch});
+    let props = _.merge({},
+                        {dispatch: this.props.dispatch},
+                        this.props.leftMenu);
+    let component = MENU_CHOICES[props.component];
+    return React.createElement(component, props);
   }
   render(){
     return (

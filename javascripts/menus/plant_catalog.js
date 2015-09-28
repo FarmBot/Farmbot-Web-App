@@ -1,9 +1,16 @@
 import { Crop, fakeCrops } from '../crops';
 
 export class PlantCatalogTile extends React.Component {
+  showCropInfo(){
+    this.props.dispatch({
+      type: 'CROP_INFO_SHOW',
+      crop: this.props.crop
+    });
+  };
+
   render() {
     return(
-      <div className="plantCatalogTile" onClick={ e => { renderCropInfo(this.props.crop); } }>
+      <div className="plantCatalogTile" onClick={ this.showCropInfo.bind(this) }>
         <div className="row">
           <div className="small-12 columns">
             <div className="small-header-wrapper">
@@ -27,7 +34,9 @@ export class PlantCatalog extends React.Component {
   back() { this.props.dispatch({type: "INVENTORY_SHOW"}) }
   render() {
     var crops = Crop.fakeCrops.map(
-       (crop, k) => <PlantCatalogTile crop={crop} key={ k } />
+       (crop, k) => <PlantCatalogTile crop={ crop }
+                                      key={ k }
+                                      dispatch={ this.props.dispatch } />
      );
 
     return <div id="designer-left">

@@ -5,11 +5,21 @@ let actions = {
     console.trace();
     return s;
   },
+  CROP_INFO_SHOW: function(s, a) {
+    // TODO: add type system to check for presence of `crop` Object?
+    let fragment = {
+      leftMenu: {
+        component: 'CropInfo',
+        crop: a.crop
+      }
+    };
+    return update(s, fragment);
+  },
   CATALOG_SHOW: function(s, a){
-    return update(s, {leftMenu: {component: 'PlantCatalog'}});
+    return changeLeftComponent(s, 'PlantCatalog');
   },
   INVENTORY_SHOW: function(s, a){
-    return update(s, {leftMenu: {component: 'CropInventory'}});
+    return changeLeftComponent(s, 'CropInventory');
   },
   INVENTORY_SHOW_TAB: function(s, a) {
     return update(s, {leftMenu: {tab: a.tab}});
@@ -18,6 +28,10 @@ let actions = {
 
 function empty(s, a) {
   return s;
+};
+
+function changeLeftComponent(state, name) {
+  return update(state, {leftMenu: {component: name}});
 };
 
 function update(old_state, new_state) {
