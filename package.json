@@ -27,6 +27,7 @@
     "react": "^0.13.3",
     "react-redux": "^2.1.2",
     "reactify": "^1.1.1",
+    "gulp": "^3.9.0",
     "redux": "^3.0.0"
   },
   "devDependencies": {
