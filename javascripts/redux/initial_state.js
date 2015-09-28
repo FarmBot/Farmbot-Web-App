@@ -5,6 +5,9 @@ var initialState = {
   },
   centerMenu: {
     mapPoints: []
+  },
+  rightMenu: {
+
   }
 };
 

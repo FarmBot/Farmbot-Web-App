@@ -40,7 +40,6 @@ export class CropInfo extends React.Component {
   }
 
   render() {
-
     return  <div>
               <div className="green-content">
                 <div className="search-box-wrapper">

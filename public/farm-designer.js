@@ -371,7 +371,6 @@ var CropInfo = (function (_React$Component2) {
   }, {
     key: "render",
     value: function render() {
-
       return React.createElement(
         "div",
         null,
@@ -1513,7 +1512,8 @@ var initialState = {
   },
   centerMenu: {
     mapPoints: []
-  }
+  },
+  rightMenu: {}
 };
 
 exports.initialState = initialState;

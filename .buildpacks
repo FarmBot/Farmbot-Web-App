@@ -1,2 +1,3 @@
 https://github.com/heroku/heroku-buildpack-nodejs.git
+https://github.com/ezynda3/dokku-bower-gulp-build.git
 https://github.com/heroku/heroku-buildpack-ruby.git
