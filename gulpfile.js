@@ -27,6 +27,6 @@ gulp.task('compile', function () {
   .bundle()
   .on('error', oops)
   .pipe(source('farm-designer.js'))
-  .pipe(gulp.dest('public/'));
+  .pipe(gulp.dest('public/build/'));
   exec("espeak 'Saved.'");
 })
