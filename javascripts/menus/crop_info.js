@@ -1,38 +1,15 @@
-class MapPoint {
-  constructor(x, y) {
-    this.x = x || 0;
-    this.y = y || 0;
-  }
-}
-
-export class MapPointView extends React.Component {
-  render() {
-    var style = {
-      position: 'absolute',
-      left: (this.props.point.x - 20),
-      top: (this.props.point.y - 40)
-    };
-    return  <img style={style} src="/designer_icons/pin.png"></img>;
-  }
-};
+import { Crop } from '../crops';
 
 export class CropInfo extends React.Component {
   drop (e) {
-    var data = this.state.data.concat(new MapPoint(e.clientX, e.clientY));
-    this.setState({data: data});
+    var crop = new Crop({x: e.clientX, y: e.clientY});
+    this.props.dispatch({type: "CROP_ADD_REQUEST", payload: crop})
   }
 
   constructor() {
    super();
    this.render = this.render.bind(this);
    this.state = {data: []};
-  }
-
-  get points() {
-    var points = this.state.data.map(
-      (p, k) => <MapPointView point={ p } key={k} />
-    );
-    return points;
   }
 
   showCatalog(){
@@ -105,9 +82,6 @@ export class CropInfo extends React.Component {
                       Delete
                     </button>
                   </span>
-                  <div id="drop-area">
-                    { this.points }
-                  </div>
                 </div>
               </div>
             </div>

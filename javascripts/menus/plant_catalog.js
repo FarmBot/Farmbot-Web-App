@@ -4,7 +4,7 @@ export class PlantCatalogTile extends React.Component {
   showCropInfo(){
     this.props.dispatch({
       type: 'CROP_INFO_SHOW',
-      crop: this.props.crop
+      payload: this.props.crop
     });
   };
 

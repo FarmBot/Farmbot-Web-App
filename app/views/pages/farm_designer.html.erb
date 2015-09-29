@@ -1,4 +1,18 @@
 <div class="farm-designer" id="root">
 </div>
 
+<script type="text/javascript">
+  window.initialState = {
+  leftMenu: {
+    component: 'CropInventory',
+    tab:       'Plants'
+  },
+  middleMenu: {
+    crops: <%= raw(current_user.device.crops.to_json) %>
+  },
+  rightMenu: {
+  }
+};
+</script>
+
 <%= javascript_include_tag "/build/farm-designer.js" %>

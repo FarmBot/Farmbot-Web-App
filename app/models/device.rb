@@ -6,6 +6,7 @@ class Device
   has_many :users
   has_many :schedules, dependent: :destroy
   has_many :sequences
+  has_many :crops, dependent: :destroy
 
 
   # The SkyNet UUID of the device
