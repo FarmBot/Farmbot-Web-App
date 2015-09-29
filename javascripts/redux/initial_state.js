@@ -3,8 +3,11 @@ var initialState = {
     component: 'CropInventory',
     tab:       'Plants'
   },
-  centerMenu: {
+  middleMenu: {
     mapPoints: []
+  },
+  rightMenu: {
+
   }
 };
 

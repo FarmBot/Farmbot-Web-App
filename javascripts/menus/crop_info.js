@@ -5,7 +5,7 @@ class MapPoint {
   }
 }
 
-MapPointView = class extends React.Component {
+export class MapPointView extends React.Component {
   render() {
     var style = {
       position: 'absolute',
@@ -16,9 +16,7 @@ MapPointView = class extends React.Component {
   }
 };
 
-export class CropInfoContent extends React.Component {
-  move() { renderInventory() }
-
+export class CropInfo extends React.Component {
   drop (e) {
     var data = this.state.data.concat(new MapPoint(e.clientX, e.clientY));
     this.setState({data: data});
@@ -37,12 +35,16 @@ export class CropInfoContent extends React.Component {
     return points;
   }
 
+  showCatalog(){
+    this.props.dispatch({type: "CATALOG_SHOW"})
+  }
+
   render() {
     return  <div>
               <div className="green-content">
                 <div className="search-box-wrapper">
                   <p>
-                    <a href="#" onClick={ this.move }>
+                    <a href="#" onClick={ this.showCatalog.bind(this) }>
                       <i className="fa fa-arrow-left"></i>
                     </a>
                     { this.props.crop.name }
@@ -111,7 +113,3 @@ export class CropInfoContent extends React.Component {
             </div>
   }
 }
-
-renderCropInfo = function(crop) {
-  React.render(<CropInfoContent crop={crop} />, leftMenu);
-};
