@@ -3,13 +3,13 @@ import { Crop } from '../crops';
 export class CropInfo extends React.Component {
   drop (e) {
     var crop = new Crop({x: e.clientX, y: e.clientY});
-    this.props.dispatch({type: "CROP_ADD_REQUEST", payload: crop})
+    this.props.dispatch({type: "CROP_ADD_REQUEST", payload: crop});
   }
 
   constructor() {
-   super();
-   this.render = this.render.bind(this);
-   this.state = {data: []};
+    super();
+    this.render = this.render.bind(this);
+    this.state = {data: []};
   }
 
   showCatalog(){
