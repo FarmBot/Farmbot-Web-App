@@ -125,7 +125,7 @@ export class List extends React.Component {
   }
 };
 
-export class CropInventory extends React.Component {
+export class PlantInventory extends React.Component {
   get tabName() { return (this.props.tab || "Plants") };
   get content() {
     var component = {Plants, Groups, Zones}[this.tabName];
@@ -155,8 +155,4 @@ export class CropInventory extends React.Component {
       </div>
     )
   }
-};
-
-export function renderInventory() {
-  React.render(<CropInventory />, leftMenu);
 };

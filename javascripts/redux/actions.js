@@ -86,7 +86,7 @@ actions.CATALOG_SHOW = function(s, a){
 };
 
 actions.INVENTORY_SHOW = function(s, a){
-  return changeLeftComponent(s, 'CropInventory');
+  return changeLeftComponent(s, 'PlantInventory');
 };
 
 actions.INVENTORY_SHOW_TAB = function(s, a) {

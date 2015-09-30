@@ -1,11 +1,11 @@
-import { CropInventory } from './crop_inventory';
+import { PlantInventory } from './plant_inventory';
 import { PlantCatalog } from './plant_catalog';
 import { Calendar } from './calendar';
 import { PlantInfo } from './plant_info';
 import { CropInfo } from './crop_info';
 import { GardenMap } from './garden_map';
 
-const LEFT_MENU_CHOICES = {CropInventory, PlantCatalog, PlantInfo, CropInfo}
+const LEFT_MENU_CHOICES = {PlantInventory, PlantCatalog, PlantInfo, CropInfo}
 
 export class DesignerMain extends React.Component {
   transferableProps(name){
@@ -15,9 +15,15 @@ export class DesignerMain extends React.Component {
   // Dynamically determine what to render on the left side of the designer,
   // based on the value of getStore().leftMenu.component
   renderLeft() {
-    let props = this.transferableProps("leftMenu")
-    let component = LEFT_MENU_CHOICES[props.component];
-    return React.createElement(component, props);
+    var props = this.transferableProps("leftMenu");
+    var component = LEFT_MENU_CHOICES[props.component];
+    if (!component) {
+      var msg = `Attempted to render component ${props.component}, but valid choices are:`
+      var choices = Object.keys(LEFT_MENU_CHOICES);
+      console.warn(msg, choices);
+    } else {
+      return React.createElement(component, props);
+    };
   }
 
   renderMiddle(){
