@@ -1,4 +1,4 @@
-import { Crop } from '../crops';
+import { Plant } from '../plant';
 import { store } from '../farm_designer';
 import { ToolTip } from '../tooltip'
 import { renderCatalog } from './plant_catalog';
@@ -23,7 +23,7 @@ export class Plants extends React.Component {
   render() {
     return(
       <div>
-        <List crops={ Crop.fakeCrops } />
+        <List plants={ Plant.fakePlants } />
         <ToolTip action={ () => this.props.dispatch({type: "CATALOG_SHOW"}) } desc="Add a new plant" color="dark-green"/>
       </div>
     );
@@ -117,7 +117,7 @@ export class Item extends React.Component {
 
 export class List extends React.Component {
   render() {
-    var crops = this.props.crops.map(
+    var crops = this.props.plants.map(
        (crop, k) => <Item crop={crop} key={ k } />
      );
 

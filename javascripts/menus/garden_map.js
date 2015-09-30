@@ -17,7 +17,7 @@ export class MapPointView extends React.Component {
 
 export class GardenMap extends React.Component {
   crops() {
-    return this.props.crops.map(
+    return this.props.plants.map(
       (p, k) => <MapPointView crop={ p }
                               key={ k }
                               selected={ p._id && (this.props.selectedCrop._id === p._id) }

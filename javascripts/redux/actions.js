@@ -19,9 +19,9 @@ actions.CROP_SELECT = function(s, a) {
 };
 
 actions.CROP_ADD_REQUEST = function (s, a) {
-  var req = $.ajax({method: "POST", url: "/api/crops", data: a.payload})
-  .done(function (crop) {
-    store.dispatch({type: "CROP_ADD_SUCCESS", payload: crop});
+  var req = $.ajax({method: "POST", url: "/api/plants", data: a.payload})
+  .done(function (plant) {
+    store.dispatch({type: "CROP_ADD_SUCCESS", payload: plant});
   })
   .fail(function (a, b, c) { store.dispatch({type: "CROP_ADD_FAILURE"}) });
   return s;
@@ -33,14 +33,14 @@ actions.CROP_ADD_FAILURE = function (s = store.getState(), a) {
 };
 
 actions.CROP_ADD_SUCCESS = function (s = store.getState(), a) {
-  var new_array = s.middleMenu.crops.concat(a.payload);
-  return update(s, {middleMenu: {crops: new_array}});
+  var new_array = s.middleMenu.plants.concat(a.payload);
+  return update(s, {middleMenu: {plants: new_array}});
 };
 
 actions.CROP_REMOVE_REQUEST = function (s, a) {
   $.ajax({
     method: "DELETE",
-    url: "/api/crops/" + a.payload._id
+    url: "/api/plants/" + a.payload._id
   }).done(function () {
     store.dispatch({type: "CROP_REMOVE_SUCCESS", payload: a.payload});
   }).fail(function (a, b, c) { store.dispatch({type: "CROP_REMOVE_FAILURE"}) });
@@ -53,9 +53,9 @@ actions.CROP_REMOVE_FAILURE = function (s = store.getState(), a) {
 };
 
 actions.CROP_REMOVE_SUCCESS = function (s = store.getState(), a) {
-  let oldArray = s.middleMenu.crops;
+  let oldArray = s.middleMenu.plants;
   var newArray = _.filter(oldArray, (c) => c._id !== a.payload._id);
-  return update(s, {middleMenu: {crops: newArray}});
+  return update(s, {middleMenu: {plants: newArray}});
 };
 
 

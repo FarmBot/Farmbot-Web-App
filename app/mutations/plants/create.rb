@@ -1,4 +1,4 @@
-module Crops
+module Plants
   class Create < Mutations::Command
     required do
       model :device, class: Device
@@ -7,7 +7,7 @@ module Crops
     end
 
     def execute
-      Crop.create!(inputs)
+      Plant.create!(inputs)
     end
   end
 end

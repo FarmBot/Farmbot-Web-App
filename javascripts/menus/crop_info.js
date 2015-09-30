@@ -1,4 +1,4 @@
-import { Crop } from '../crops';
+import { Plant } from '../plant';
 
 export class CropInfo extends React.Component {
   goBack() {

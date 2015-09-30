@@ -1,5 +1,5 @@
-#
-class Crop
+# a single organism living in the ground that FarmBot watches over.
+class Plant
   include Mongoid::Document
 
   belongs_to :device

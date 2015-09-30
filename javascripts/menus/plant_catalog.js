@@ -1,4 +1,4 @@
-import { Crop, fakeCrops } from '../crops';
+import { Plant } from '../plant';
 
 export class PlantCatalogTile extends React.Component {
   showPlantInfo(){
@@ -33,7 +33,7 @@ export class PlantCatalogTile extends React.Component {
 export class PlantCatalog extends React.Component {
   back() { this.props.dispatch({type: "INVENTORY_SHOW"}) }
   render() {
-    var crops = Crop.fakeCrops.map(
+    var crops = Plant.fakePlants.map(
        (crop, k) => <PlantCatalogTile crop={ crop }
                                       key={ k }
                                       dispatch={ this.props.dispatch } />
@@ -50,7 +50,7 @@ export class PlantCatalog extends React.Component {
                 </p>
               </div>
             </div>
-            <div crops={ Crop.fakeCrops }>
+            <div plants={ Plant.fakePlants }>
               <br/>
               { crops }
             </div>

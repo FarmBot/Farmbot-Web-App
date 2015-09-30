@@ -1,6 +1,6 @@
 import { Plant } from '../plant';
 
-export class PlantInfo extends React.Component {
+export class SpeciesInfo extends React.Component {
   drop (e) {
     var plant = new Plant({x: e.clientX, y: e.clientY});
     this.props.dispatch({type: "CROP_ADD_REQUEST", payload: plant});
@@ -24,7 +24,7 @@ export class PlantInfo extends React.Component {
               </div>
               <div className="designer-info">
                 <div className="crop-drag-info-tile">
-                  <h6>Plant Image</h6>
+                  <h6>Species Image</h6>
                   <img className="crop-drag-info-image"
                        src={this.props.crop.imgUrl}
                        onDragEnd={ this.drop.bind(this) }/>
