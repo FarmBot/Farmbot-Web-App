@@ -1,10 +1,11 @@
 import { CropInventory } from './crop_inventory';
 import { PlantCatalog } from './plant_catalog';
 import { Calendar } from './calendar';
+import { PlantInfo } from './plant_info';
 import { CropInfo } from './crop_info';
 import { GardenMap } from './garden_map';
 
-const LEFT_MENU_CHOICES = {CropInventory, PlantCatalog, CropInfo}
+const LEFT_MENU_CHOICES = {CropInventory, PlantCatalog, PlantInfo, CropInfo}
 
 export class DesignerMain extends React.Component {
   transferableProps(name){

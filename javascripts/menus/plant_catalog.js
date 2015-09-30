@@ -1,16 +1,16 @@
 import { Crop, fakeCrops } from '../crops';
 
 export class PlantCatalogTile extends React.Component {
-  showCropInfo(){
+  showPlantInfo(){
     this.props.dispatch({
-      type: 'CROP_INFO_SHOW',
+      type: 'PLANT_INFO_SHOW',
       payload: this.props.crop
     });
   };
 
   render() {
     return(
-      <div className="plantCatalogTile" onClick={ this.showCropInfo.bind(this) }>
+      <div className="plantCatalogTile" onClick={ this.showPlantInfo.bind(this) }>
         <div className="row">
           <div className="small-12 columns">
             <div className="small-header-wrapper">
