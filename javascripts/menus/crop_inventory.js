@@ -6,15 +6,15 @@ import { renderCatalog } from './plant_catalog';
 export class Tab extends React.Component {
   render() {
     return <li onClick={ this.handleClick.bind(this) }>
-            <a href="#"
-               className={this.props.active ? "active" : ""}>
-              { this.props.name }
-            </a>
+             <a href="#"
+                className={this.props.active ? "active" : ""}>
+               { this.props.name }
+             </a>
            </li>
   }
 
   handleClick() {
-    this.props.dispatch({type: "INVENTORY_SHOW_TAB", tab: this.props.name});
+    this.props.dispatch({type: "INVENTORY_SHOW_TAB", payload: this.props.name});
   }
 }
 

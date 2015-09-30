@@ -38,7 +38,6 @@ group :development, :test do
   gem 'pry'
   gem 'factory_girl_rails'
   gem 'faker'
-  gem 'jasmine-rails'
   gem 'smarf_doc', github: 'RickCarlino/smarf_doc'
 end
 

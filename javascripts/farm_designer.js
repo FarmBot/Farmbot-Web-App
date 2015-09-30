@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react/addons';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import { connect } from 'react-redux';

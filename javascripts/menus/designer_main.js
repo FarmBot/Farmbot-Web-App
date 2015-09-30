@@ -1,15 +1,17 @@
 import { CropInventory } from './crop_inventory';
 import { PlantCatalog } from './plant_catalog';
 import { Calendar } from './calendar';
+import { PlantInfo } from './plant_info';
 import { CropInfo } from './crop_info';
 import { GardenMap } from './garden_map';
 
-const LEFT_MENU_CHOICES = {CropInventory, PlantCatalog, CropInfo}
+const LEFT_MENU_CHOICES = {CropInventory, PlantCatalog, PlantInfo, CropInfo}
 
 export class DesignerMain extends React.Component {
   transferableProps(name){
     return _.merge({}, {dispatch: this.props.dispatch}, this.props[name]);
   };
+
   // Dynamically determine what to render on the left side of the designer,
   // based on the value of getStore().leftMenu.component
   renderLeft() {
@@ -17,10 +19,12 @@ export class DesignerMain extends React.Component {
     let component = LEFT_MENU_CHOICES[props.component];
     return React.createElement(component, props);
   }
+
   renderMiddle(){
     let props = this.transferableProps("middleMenu");
     return React.createElement(GardenMap, props);
   }
+
   render(){
     return (
       <div className="farm-designer-body">
