@@ -36,31 +36,17 @@ actions.CROP_ADD_REQUEST = function (s, a) {
 };
 
 actions.CROP_REMOVE_REQUEST = function (s, a) {
-  $.ajax({method: "DELETE", url: "/api/plants/" + a.payload._id })
-  .fail(() => alert("Failed to delete. Refresh the page."));
-  var plants = _.filter(_.cloneDeep(s.global.plants),
-               (p) => p._id == a.payload._id);
-  return update(s, {
-    global: {
-      plants: plants
-    }
-  });
+  var s = _.cloneDeep(s);
+  var id = a.payload._id;
+  _.remove(s.global.plants, a.payload)
 
-  return update(s, {global: {plants: plants}});
-};
+  $.ajax({
+    method: "DELETE",
+    url: "/api/plants/" + id
+  }).fail(() => alert("Failed to delete. Refresh the page."));
 
-actions.CROP_REMOVE_FAILURE = function (s = store.getState(), a) {
-  alert("Failed to remove crop.");
   return s;
 };
-
-// actions.CROP_REMOVE_SUCCESS = function (s = store.getState(), a) {
-//   return update(s, {
-//     global: {
-//       plants: _.filter(s.global.plants, a.payload)
-//     }
-//   });
-// };
 
 actions.PLANT_INFO_SHOW = function(s, a) {
   // TODO: add type system to check for presence of `crop` Object?
