@@ -27,13 +27,17 @@ actions.CROP_ADD_REQUEST = function (s, a) {
   var plants = _.cloneDeep(s.global.plants);
   var selectedPlant  = _.cloneDeep(a.payload);
   plants.push(selectedPlant);
-  return update(s, {
-    global: {
-      plants: plants,
-      selectedPlant: selectedPlant
-    }
-  });
+  return update(s, { global: { plants, selectedPlant } });
 };
+
+// function incrementAsync() {
+//   return dispatch => {
+//     setTimeout(() => {
+//       // Yay! Can invoke sync or async actions with `dispatch`
+//       dispatch(increment());
+//     }, 1000);
+//   };
+// }
 
 actions.CROP_REMOVE_REQUEST = function (s, a) {
   var s = _.cloneDeep(s);
