@@ -2,6 +2,7 @@ export class MapPointView extends React.Component {
   select() {
     this.props.dispatch({type: "CROP_SELECT", payload: this.props.plant});
   }
+
   render() {
     var style = {
       position: 'absolute',

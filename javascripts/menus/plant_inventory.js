@@ -18,12 +18,30 @@ export class Tab extends React.Component {
   }
 }
 
+export class Item extends React.Component {
+  clicked() {
+    this.props.dispatch({type: "CROP_SELECT", payload: this.props.plant});
+  }
+
+  render() {
+    return(
+      <li onClick={ () => this.clicked() }>
+        <a href="#"> {this.props.plant.name || "Untitled Plant"} </a>
+        <div>{ this.props.plant.age || -1 } days old</div>
+      </li>);
+  }
+};
 
 export class Plants extends React.Component {
   render() {
+    var d = this.props.dispatch;
     return(
       <div>
-        <List plants={ Plant.fakePlants } />
+        <ul className="crop-inventory">
+          { this.props.plants.map((p, k) => <Item plant={p}
+                                                  key={ k }
+                                                  dispatch={ d }/>) }
+        </ul>
         <ToolTip action={ () => this.props.dispatch({type: "CATALOG_SHOW"}) } desc="Add a new plant" color="dark-green"/>
       </div>
     );
@@ -105,32 +123,13 @@ export class Zones extends React.Component {
   }
 };
 
-export class Item extends React.Component {
-  render() {
-    return(
-      <li>
-        <a href="#"> {this.props.plant.name} </a>
-        <div>{this.props.plant.age} days old</div>
-      </li>);
-  }
-};
-
-export class List extends React.Component {
-  render() {
-    var crops = this.props.plants.map(
-       (plant, k) => <Item plant={plant} key={ k } />
-     );
-
-    return(<ul className="crop-inventory"> { crops } </ul>);
-  }
-};
-
 export class PlantInventory extends React.Component {
   get tabName() { return (this.props.tab || "Plants") };
   get content() {
     var component = {Plants, Groups, Zones}[this.tabName];
     return React.createElement(component,
-                               {dispatch: this.props.dispatch});
+                               {dispatch: this.props.dispatch,
+                                plants: this.props.plants});
   };
   isActive(item) { return this.tabName === item };
 
