@@ -1,12 +1,12 @@
 export class MapPointView extends React.Component {
   select() {
-    this.props.dispatch({type: "CROP_SELECT", payload: this.props.crop});
+    this.props.dispatch({type: "CROP_SELECT", payload: this.props.plant});
   }
   render() {
     var style = {
       position: 'absolute',
-      left: (this.props.crop.x - 20),
-      top: (this.props.crop.y - 40)
+      left: (this.props.plant.x - 20),
+      top: (this.props.plant.y - 40)
     };
     if (!!this.props.selected) { style.border = "1px solid green"; };
     return <div onClick={ this.select.bind(this) }>
@@ -16,11 +16,11 @@ export class MapPointView extends React.Component {
 };
 
 export class GardenMap extends React.Component {
-  crops() {
+  plants() {
     return this.props.plants.map(
-      (p, k) => <MapPointView crop={ p }
+      (p, k) => <MapPointView plant={ p }
                               key={ k }
-                              selected={ p._id && (this.props.selectedCrop._id === p._id) }
+                              selected={ (this.props.selectedPlant._id === p._id) }
                               dispatch={ this.props.dispatch }/>
     );
   }
@@ -28,7 +28,7 @@ export class GardenMap extends React.Component {
   render() {
     return <div>
              <div id="drop-area">
-              { this.crops() }
+              { this.plants() }
              </div>
            </div>;
   }

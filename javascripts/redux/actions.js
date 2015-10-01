@@ -13,18 +13,23 @@ actions.DEFAULT = function (s, a) {
 };
 
 actions.CROP_SELECT = function(s, a) {
-  var select_crop = update(s, {middleMenu: {selectedCrop: a.payload}});
+  var select_crop = update(s, {global: {selectedPlant: a.payload}});
   var change_menu = actions.CROP_INFO_SHOW(select_crop, a);
-  return change_menu;
+  return _.merge({}, select_crop, change_menu);
 };
 
 actions.CROP_ADD_REQUEST = function (s, a) {
-  var req = $.ajax({method: "POST", url: "/api/plants", data: a.payload})
-  .done(function (plant) {
-    store.dispatch({type: "CROP_ADD_SUCCESS", payload: plant});
-  })
+  $.ajax({method: "POST", url: "/api/plants", data: a.payload})
   .fail(function (a, b, c) { store.dispatch({type: "CROP_ADD_FAILURE"}) });
-  return s;
+  var plants = _.cloneDeep(s.global.plants);
+  var selectedPlant  = _.cloneDeep(a.payload);
+  plants.push(selectedPlant);
+  return update(s, {
+    global: {
+      plants: plants,
+      selectedPlant: selectedPlant
+    }
+  });
 };
 
 actions.CROP_ADD_FAILURE = function (s = store.getState(), a) {
@@ -32,18 +37,27 @@ actions.CROP_ADD_FAILURE = function (s = store.getState(), a) {
   return s;
 };
 
-actions.CROP_ADD_SUCCESS = function (s = store.getState(), a) {
-  var new_array = s.middleMenu.plants.concat(a.payload);
-  return update(s, {middleMenu: {plants: new_array}});
+actions.CROP_ADD_SUCCESS = function (s, a) {
+  var plants = _.cloneDeep(s.global.plants);
+  var selectedPlant  = _.cloneDeep(a.payload);
+  plants.push(selectedPlant);
+  return update(s, {
+    global: {
+      plants: plants,
+      selectedPlant: selectedPlant
+    }
+  });
 };
 
 actions.CROP_REMOVE_REQUEST = function (s, a) {
   $.ajax({
     method: "DELETE",
     url: "/api/plants/" + a.payload._id
+  }).fail(function () {
+    store.dispatch({type: "CROP_REMOVE_FAILURE"});
   }).done(function () {
     store.dispatch({type: "CROP_REMOVE_SUCCESS", payload: a.payload});
-  }).fail(function (a, b, c) { store.dispatch({type: "CROP_REMOVE_FAILURE"}) });
+  });
   return s;
 };
 
@@ -53,18 +67,19 @@ actions.CROP_REMOVE_FAILURE = function (s = store.getState(), a) {
 };
 
 actions.CROP_REMOVE_SUCCESS = function (s = store.getState(), a) {
-  let oldArray = s.middleMenu.plants;
-  var newArray = _.filter(oldArray, (c) => c._id !== a.payload._id);
-  return update(s, {middleMenu: {plants: newArray}});
+  return update(s, {
+    global: {
+      plants: _.filter(s.global.plants, a.payload)
+    }
+  });
 };
-
 
 actions.PLANT_INFO_SHOW = function(s, a) {
   // TODO: add type system to check for presence of `crop` Object?
   let fragment = {
     leftMenu: {
       component: 'PlantInfo',
-      crop: a.payload
+      plant: a.payload
     }
   };
   return update(s, fragment);
@@ -72,13 +87,12 @@ actions.PLANT_INFO_SHOW = function(s, a) {
 
 actions.CROP_INFO_SHOW = function(s, a) {
   // TODO: add type system to check for presence of `crop` Object?
-  let fragment = {
-    leftMenu: {
-      component: 'CropInfo',
-      crop: a.payload
-    }
-  };
-  return update(s, fragment);
+  return update(s, {
+      leftMenu: {
+        component: 'CropInfo',
+        plant: a.payload
+      }
+    });
 };
 
 actions.CATALOG_SHOW = function(s, a){

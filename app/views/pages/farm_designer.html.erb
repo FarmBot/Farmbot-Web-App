@@ -7,11 +7,9 @@
       component: 'PlantInventory',
       tab:       'Plants'
     },
-    middleMenu: {
+    global: {
       plants: <%= raw(current_user.device.plants.to_json) %>,
-      selectedCrop: {}
-    },
-    rightMenu: {
+      selectedPlant: {}
     }
   };
 </script>

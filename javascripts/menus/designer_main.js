@@ -9,7 +9,7 @@ const LEFT_MENU_CHOICES = {PlantInventory, PlantCatalog, PlantInfo, CropInfo}
 
 export class DesignerMain extends React.Component {
   transferableProps(name){
-    return _.merge({}, {dispatch: this.props.dispatch}, this.props[name]);
+    return _.merge({}, this.props.global, {dispatch: this.props.dispatch}, this.props[name]);
   };
 
   // Dynamically determine what to render on the left side of the designer,
@@ -27,8 +27,8 @@ export class DesignerMain extends React.Component {
   }
 
   renderMiddle(){
-    let props = this.transferableProps("middleMenu");
-    return React.createElement(GardenMap, props);
+    return React.createElement(GardenMap,
+                               this.transferableProps("middleMenu"));
   }
 
   render(){

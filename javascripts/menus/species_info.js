@@ -18,7 +18,7 @@ export class SpeciesInfo extends React.Component {
                     <a href="#" onClick={ this.showCatalog.bind(this) }>
                       <i className="fa fa-arrow-left"></i>
                     </a>
-                    { this.props.crop.name }
+                    { this.props.plant.name }
                   </p>
                 </div>
               </div>
@@ -26,7 +26,7 @@ export class SpeciesInfo extends React.Component {
                 <div className="crop-drag-info-tile">
                   <h6>Species Image</h6>
                   <img className="crop-drag-info-image"
-                       src={this.props.crop.imgUrl}
+                       src={this.props.plant.imgUrl}
                        onDragEnd={ this.drop.bind(this) }/>
                   <div className="crop-info-overlay">
                     To plant, drag and drop into map

@@ -109,8 +109,8 @@ export class Item extends React.Component {
   render() {
     return(
       <li>
-        <a href="#"> {this.props.crop.name} </a>
-        <div>{this.props.crop.age} days old</div>
+        <a href="#"> {this.props.plant.name} </a>
+        <div>{this.props.plant.age} days old</div>
       </li>);
   }
 };
@@ -118,7 +118,7 @@ export class Item extends React.Component {
 export class List extends React.Component {
   render() {
     var crops = this.props.plants.map(
-       (crop, k) => <Item crop={crop} key={ k } />
+       (plant, k) => <Item plant={plant} key={ k } />
      );
 
     return(<ul className="crop-inventory"> { crops } </ul>);
