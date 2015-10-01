@@ -2,7 +2,8 @@ import React from 'react/addons';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import { connect } from 'react-redux';
-import { DesignerMain } from './menus/designer_main'
+import { DesignerMain } from './menus/designer_main';
+
 function wow (d) {
   return {dispatch: d};
 }

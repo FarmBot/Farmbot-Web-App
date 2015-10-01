@@ -3,17 +3,15 @@
 
 <script type="text/javascript">
   window.initialState = {
-  leftMenu: {
-    component: 'CropInventory',
-    tab:       'Plants'
-  },
-  middleMenu: {
-    crops: <%= raw(current_user.device.crops.to_json) %>,
-    selectedCrop: {}
-  },
-  rightMenu: {
-  }
-};
+    leftMenu: {
+      component: 'PlantInventory',
+      tab:       'Plants'
+    },
+    global: {
+      plants: <%= raw(current_user.device.plants.to_json) %>,
+      selectedPlant: {}
+    }
+  };
 </script>
 
 <%= javascript_include_tag "/build/farm-designer.js" %>
