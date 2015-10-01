@@ -19,25 +19,11 @@ actions.CROP_SELECT = function(s, a) {
 };
 
 actions.CROP_ADD_REQUEST = function (s, a) {
+  // TODO: Add some sort of Redux Async handler.
   $.ajax({method: "POST", url: "/api/plants", data: a.payload})
-  .fail(function (a, b, c) { store.dispatch({type: "CROP_ADD_FAILURE"}) });
-  var plants = _.cloneDeep(s.global.plants);
-  var selectedPlant  = _.cloneDeep(a.payload);
-  plants.push(selectedPlant);
-  return update(s, {
-    global: {
-      plants: plants,
-      selectedPlant: selectedPlant
-    }
+  .fail(function (a, b, c) {
+    alert("Failed to add crop. Refresh page.");
   });
-};
-
-actions.CROP_ADD_FAILURE = function (s = store.getState(), a) {
-  alert("Failed to add crop, and also failed to write an error handler :(");
-  return s;
-};
-
-actions.CROP_ADD_SUCCESS = function (s, a) {
   var plants = _.cloneDeep(s.global.plants);
   var selectedPlant  = _.cloneDeep(a.payload);
   plants.push(selectedPlant);
@@ -50,15 +36,17 @@ actions.CROP_ADD_SUCCESS = function (s, a) {
 };
 
 actions.CROP_REMOVE_REQUEST = function (s, a) {
-  $.ajax({
-    method: "DELETE",
-    url: "/api/plants/" + a.payload._id
-  }).fail(function () {
-    store.dispatch({type: "CROP_REMOVE_FAILURE"});
-  }).done(function () {
-    store.dispatch({type: "CROP_REMOVE_SUCCESS", payload: a.payload});
+  $.ajax({method: "DELETE", url: "/api/plants/" + a.payload._id })
+  .fail(() => alert("Failed to delete. Refresh the page."));
+  var plants = _.filter(_.cloneDeep(s.global.plants),
+               (p) => p._id == a.payload._id);
+  return update(s, {
+    global: {
+      plants: plants
+    }
   });
-  return s;
+
+  return update(s, {global: {plants: plants}});
 };
 
 actions.CROP_REMOVE_FAILURE = function (s = store.getState(), a) {
@@ -66,13 +54,13 @@ actions.CROP_REMOVE_FAILURE = function (s = store.getState(), a) {
   return s;
 };
 
-actions.CROP_REMOVE_SUCCESS = function (s = store.getState(), a) {
-  return update(s, {
-    global: {
-      plants: _.filter(s.global.plants, a.payload)
-    }
-  });
-};
+// actions.CROP_REMOVE_SUCCESS = function (s = store.getState(), a) {
+//   return update(s, {
+//     global: {
+//       plants: _.filter(s.global.plants, a.payload)
+//     }
+//   });
+// };
 
 actions.PLANT_INFO_SHOW = function(s, a) {
   // TODO: add type system to check for presence of `crop` Object?
