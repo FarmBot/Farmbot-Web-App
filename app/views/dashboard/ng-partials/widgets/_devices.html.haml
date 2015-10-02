@@ -1,160 +1,53 @@
 / .widget-wrapper
 .row
-  .small-6.columns
-    .row
-      .small-12.columns
-        .header-wrapper
-          %h5 Software
-    .row
-      .small-12.columns
-        .content-wrapper
-          .alert-box.warning
-            Click Here to Get the Latest Firmware (not real).
-          .row
-            .large-6.small-6.columns
-              %label.left.inline Software Version
-            .large-6.small-6.columns
-              %label.right.inline xyz123
-          .row
-            .large-6.small-6.columns
-              %label.left.inline Software Version
-            .large-6.small-6.columns
-              %label.right.inline xyz123
-          .row
-            .large-6.small-6.columns
-              %label.left.inline Software Version
-            .large-6.small-6.columns
-              %label.right.inline xyz123
-
-
-  .small-6.columns
-    .row
-      .small-12.columns
-        .header-wrapper
-          %h5 Add / Update
-    .row
-      .small-12.columns
-        .content-wrapper
-          %form{ng_submit: 'createDevice()'}
-            %fieldset
-              .row
-                .large-12.columns
-                  %label FarmBot Name *
-                  %input{id: 'botname', placeholder: "Brocolli Overlord", type: "text", ng_model: 'device.name', required: true}/
-              .row
-                .large-6.columns
-                  %label UUID *
-                  %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'device.uuid', required: true}/
-                .large-6.columns
-                  %label Security Token *
-                  %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'device.token', required: true}/
-              .row
-                .large-12.columns
-                  %button.green.button-like
-                    {{ !!device._id ? "Update" : "Add" }} FarmBot
-/ sorry
-%br
-.row
-  .small-12.columns
-    .row
-      .small-12.columns
-        %button.xx-small.yellow{ng_click: "updateCalibration()", style: "margin: 10px;"} calibrate
-        .header-wrapper
-          %h5 Hardware
-    .row
-      .small-12.columns
-        .content-wrapper
-          %table.calibration-control
-            %thead
-              %tr
-                %th.row-axis Axis
-                %th.row-input Max Speed
-                %th.row-input Accelerate For
-                %th.row-input Timeout After
-                %th.row-invert
-                  Invert
-                  %br
-                  Ends
-                %th.row-invert
-                  Invert
-                  %br
-                  Motor
-            %tbody
-              %tr
-                %td X
-                %td
-                  %input{ng_model: "device.MOVEMENT_MAX_SPD_X"}
-                  %br
-                  mm/s
-                %td
-                  %input{ng_model: "device.MOVEMENT_STEPS_ACC_DEC_X"}
-                  %br
-                  steps
-                %td
-                  %input{ng_model: "device.MOVEMENT_TIMEOUT_X"}
-                  %br
-                  seconds
-                %td
-                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_ENDPOINTS_X"}
-                %td
-                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_Y"}
-              %tr
-                %td Y
-                %td
-                  %input{ng_model: "device.MOVEMENT_MAX_SPD_Y"}
-                  %br
-                  mm/s
-                %td
-                  %input{ng_model: "device.MOVEMENT_STEPS_ACC_DEC_Y"}
-                  %br
-                  steps
-                %td
-                  %input{ng_model: "device.MOVEMENT_TIMEOUT_Y"}
-                  %br
-                  seconds
-                %td
-                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_ENDPOINTS_Y"}
-                %td
-                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_Y"}
-              %tr
-                %td Z
-                %td
-                  %input{ng_model: "device.MOVEMENT_MAX_SPD_Z"}
-                  %br
-                  mm/s
-                %td
-                  %input{ng_model: "device.MOVEMENT_STEPS_ACC_DEC_Z"}
-                  %br
-                  steps
-                %td
-                  %input{ng_model: "device.MOVEMENT_TIMEOUT_Z"}
-                  %br
-                  seconds
-                %td
-                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_ENDPOINTS_Z"}
-                %td
-                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_Z"}
-
-.row
   .small-12.columns
     .row
       .small-12.columns
         .header-wrapper
-          %h5 Logs
+          %h5 DEVICE
     .row
       .small-12.columns
-        .content-wrapper{ng_if: "logs.length > 1"}
-          %table
-            %thead
-              %tr
-                %th{width: '15%'} Time
-                %th{width: '80%'} Data
-                %th{width: '5%'} Coords
+        .content-wrapper
+          %table.device-settings
             %tbody
-              %tr{'ng-repeat' => 'log in logs'}
-                %td {{ log.timestamp | date:'MM/dd h:mma' }}
-                %td {{ log.data || "?" }}
-                %td {{ (log.X || '?') + ', ' + (log.Y || '?') + ', ' + (log.Z || '?') }}
-        .content-wrapper{ng_if: "logs.length < 1"}
-          %p
-            We can't seem to find any logs. Is the bot online? Does your browser have a connection to the bot?
+              %tr
+                %td
+                  %form{ng_submit: 'createDevice()'}
+                    %fieldset
+                      .row
+                        .large-12.columns
+                          %label FARMBOT NAME *
+                          %input{id: 'botname', placeholder: "Brocolli Overlord", type: "text", ng_model: 'device.name', required: true}/
+                      .row
+                        .large-6.columns
+                          %label UUID *
+                          %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'device.uuid', required: true}/
+                        .large-6.columns
+                          %label SECURITY TOKEN *
+                          %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'device.token', required: true}/
+                      .row
+                        .large-12.columns
+                          %button.green.button-like
+                            {{ !!device._id ? "Update" : "Add" }} FarmBots
+              %tr
+                %td
+                  .alert-box.warning
+                    Click Here to Get the Latest Firmware (not real).
+                  .row
+                    .large-6.small-6.columns
+                      %label.left.inline Software Version
+                    .large-6.small-6.columns
+                      %label.right.inline xyz123
+                  .row
+                    .large-6.small-6.columns
+                      %label.left.inline Software Version
+                    .large-6.small-6.columns
+                      %label.right.inline xyz123
+                  .row
+                    .large-6.small-6.columns
+                      %label.left.inline Software Version
+                    .large-6.small-6.columns
+                      %label.right.inline xyz123
+          
+
+

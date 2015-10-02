@@ -1,0 +1,23 @@
+.row
+  .small-12.columns
+    .row
+      .small-12.columns
+        .header-wrapper
+          %h5 Logs
+    .row
+      .small-12.columns
+        .content-wrapper{ng_if: "logs.length > 1"}
+          %table
+            %thead
+              %tr
+                %th{width: '15%'} TIME
+                %th{width: '80%'} MESSAGE
+                %th{width: '5%'} COORDINATES
+            %tbody
+              %tr{'ng-repeat' => 'log in logs'}
+                %td {{ log.timestamp | date:'MM/dd h:mma' }}
+                %td {{ log.data || "-" }}
+                %td {{ (log.X || '-') + ', ' + (log.Y || '-') + ', ' + (log.Z || '-') }}
+        .content-wrapper{ng_if: "logs.length < 1"}
+          %p
+            We can't find any logs. Is your FarmBot online?
