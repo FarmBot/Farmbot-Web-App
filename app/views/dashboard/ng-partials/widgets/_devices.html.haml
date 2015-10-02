@@ -1,53 +1,50 @@
-/ .widget-wrapper
-.row
-  .small-12.columns
-    .row
-      .small-12.columns
-        .header-wrapper
-          %h5 DEVICE
-    .row
-      .small-12.columns
-        .content-wrapper
-          %table.device-settings
-            %tbody
-              %tr
-                %td
-                  %form{ng_submit: 'createDevice()'}
-                    %fieldset
-                      .row
-                        .large-12.columns
-                          %label FARMBOT NAME *
-                          %input{id: 'botname', placeholder: "Brocolli Overlord", type: "text", ng_model: 'device.name', required: true}/
-                      .row
-                        .large-6.columns
-                          %label UUID *
-                          %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'device.uuid', required: true}/
-                        .large-6.columns
-                          %label SECURITY TOKEN *
-                          %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'device.token', required: true}/
-                      .row
-                        .large-12.columns
-                          %button.green.button-like
-                            {{ !!device._id ? "Update" : "Add" }} FarmBots
-              %tr
-                %td
-                  .alert-box.warning
-                    Click Here to Get the Latest Firmware (not real).
-                  .row
-                    .large-6.small-6.columns
-                      %label.left.inline Software Version
-                    .large-6.small-6.columns
-                      %label.right.inline xyz123
-                  .row
-                    .large-6.small-6.columns
-                      %label.left.inline Software Version
-                    .large-6.small-6.columns
-                      %label.right.inline xyz123
-                  .row
-                    .large-6.small-6.columns
-                      %label.left.inline Software Version
-                    .large-6.small-6.columns
-                      %label.right.inline xyz123
-          
-
-
+.widget-wrapper
+  .row
+    .small-12.columns
+      .row
+        .small-12.columns
+          .header-wrapper
+            %h5 DEVICE
+      .row
+        .small-12.columns
+          .content-wrapper
+            %table.device-settings
+              %tbody
+                %tr
+                  %td
+                    %form{ng_submit: 'createDevice()'}
+                      %fieldset
+                        .row
+                          .large-12.columns
+                            %label FARMBOT NAME *
+                            %input{id: 'botname', placeholder: "Brocolli Overlord", type: "text", ng_model: 'device.name', required: true}/
+                        .row
+                          .large-6.columns
+                            %label UUID *
+                            %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'device.uuid', required: true}/
+                          .large-6.columns
+                            %label SECURITY TOKEN *
+                            %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'device.token', required: true}/
+                        .row
+                          .large-12.columns
+                            %button.green.button-like
+                              {{ !!device._id ? "Update" : "Add" }} FarmBot
+                %tr
+                  %td
+                    .alert-box.warning
+                      Click Here to Get the Latest Firmware (not real).
+                    .row
+                      .large-6.small-6.columns
+                        %label.left.inline Software Version
+                      .large-6.small-6.columns
+                        %label.right.inline xyz123
+                    .row
+                      .large-6.small-6.columns
+                        %label.left.inline Software Version
+                      .large-6.small-6.columns
+                        %label.right.inline xyz123
+                    .row
+                      .large-6.small-6.columns
+                        %label.left.inline Software Version
+                      .large-6.small-6.columns
+                        %label.right.inline xyz123

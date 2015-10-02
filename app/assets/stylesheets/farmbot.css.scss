@@ -28,6 +28,7 @@ $white:          #fff;
 $off_white:      #f4f4f4;
 $light_gray:     #ddd;
 $gray:           #cccccc;
+$medium_gray:    #666666;
 $dark_gray:      #434343;
 $black:          #000;
 
@@ -63,7 +64,7 @@ $dark_red:       #900;
 %greenish {
   float: right;
   background-color: $green;
-  color: $white;
+  color: $off_white;
   font-weight: bold;
   border-bottom: 3px solid $dark_green;
 }
@@ -71,7 +72,7 @@ $dark_red:       #900;
 %reddish {
   background-color: $dark_pink;
   float: right;
-  color: $white;
+  color: $off_white;
   font-weight: bold;
   border-bottom: 3px solid $dark_red;
 }
@@ -145,7 +146,7 @@ $dark_red:       #900;
     font-style: normal;
     display: inline;
     background-color: $dark_gray;
-    color: $white;
+    color: $off_white;
     border-radius: 3px;
     padding: 3px;
   }
@@ -172,7 +173,7 @@ $dark_red:       #900;
     z-index: 3;
     background-color: $dark_gray;
     font-style: italic;
-    color: $white;
+    color: $off_white;
     display: flex;
     justify-content: center; /* align horizontal */
     align-items: center; /* align vertical */
@@ -209,7 +210,7 @@ $dark_red:       #900;
   height: 52px;
   padding: 13px;
   font-family: FontAwesome;
-  color: $white;
+  color: $off_white;
   font-size: 20px;
   text-align: center;
   display: inline-block;
@@ -331,15 +332,15 @@ $dark_red:       #900;
   background-color: $dark_gray;
 }
 button {
-  font-size: 0.8rem;
+  font-size: .8rem;
   text-transform: uppercase;
   text-align: center;
   font-weight: bold;
-  padding-top: 7px;
-  padding-bottom: 7px;
-  padding-left: 15px;
-  padding-right: 15px;
-  border-radius: 5px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 12px;
+  padding-right: 12px;
+  border-radius: 4px;
   &.stop {
     background-color: $red;
   }
@@ -350,9 +351,10 @@ button {
     background-color: $orange;
   }
   &.move-amount {
-    background-color: $light_gray;
+    background-color: $white;
+    border-right: 2px solid $off-white;
+    color: $medium_gray;
     font-weight: bold;
-    border: 2px solid $dark_gray;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     padding-left: 0;
@@ -363,8 +365,8 @@ button {
     float: left;
         transition: 0s;
     &:hover {
-      background-color: $light_gray;
-      color: $dark_gray;
+      background-color: $medium_gray;
+      color: $off_white;
     }
     &:nth-child(n+2) {
       border-left: 0;
@@ -379,9 +381,8 @@ button {
     }
   }
   &.move-amount-selected {
-    background-color: $dark_gray;
-    color: $white;
-    border-color: inherit;
+    background-color: $medium_gray;
+    color: $off_white;
   }
   &.green {
     @extend %greenish;
@@ -392,7 +393,7 @@ button {
   &.gray {
     background-color: $dark_gray;
     float: right;
-    color: $white;
+    color: $off_white;
     font-weight: bold;
     border-bottom: 3px solid $dark_gray;
   }
@@ -422,7 +423,7 @@ button {
   border-color: $light_gray;
   padding: 1.25rem;
   padding-bottom: 0;
-  background: $white;
+  background: $off_white;
   color: $dark_gray;
   &.calendar-wrapper {
     padding-bottom: 20px;
@@ -430,13 +431,13 @@ button {
 }
 .header-wrapper {
   margin-bottom: 0;
-  padding: .5rem .75rem;
+  padding: .75rem 1rem;
   background: $dark_gray;
   text-transform: uppercase;
   h5 {
     color: $gray;
     margin: 0;
-    font-size: 14px;
+    font-size: 1rem;
   }
   p {
     font-size: 88%;
@@ -453,7 +454,7 @@ button {
   border-color: $light_gray;
   margin-bottom: 1rem;
   padding: 1.25rem;
-  background: $white;
+  background: $off_white;
   color: $dark_gray;
   text-align: center;
 }
@@ -686,8 +687,9 @@ button {
   padding-bottom: 1rem;
 }
 label {
-  font-size: 1.2rem;
-  color: $dark_gray;
+  font-size: 1rem;
+  font-weight: bold;
+  color: $medium_gray;
 }
 input[type="text"] {
   font-size: 1.2rem;
@@ -751,13 +753,13 @@ input[type="submit"] {
   background-color: $green;
   font-weight: bold;
   text-transform: uppercase;
-  color: $white;
-  padding-top: 7px;
-  padding-bottom: 7px;
-  padding-left: 15px;
-  padding-right: 15px;
+  color: $off-white;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 12px;
+  padding-right: 12px;
   border: none;
-    border-radius: 5px;
+  border-radius: 4px;
 }
 .padding-bottom-large {
   padding-bottom: 50px;
@@ -814,8 +816,8 @@ input[type="submit"] {
   float: left;
 }
 .arrow-button {
-  background-color: $dark_gray;
-  color: $white;
+  background-color: $medium_gray;
+  color: $off_white;
   width: 50px;
   height: 50px;
   padding: 15px;
@@ -827,9 +829,12 @@ input[type="submit"] {
         transform: translateY(2px);
   }
 }
+
 .jog-table {
   margin-top: 15px;
+  background-color: $off-white;
 }
+
 input {
   &.move-input {
     font-size: 1rem;
@@ -859,7 +864,7 @@ body {
 nav {
   background-color: $dark_gray;
   color: $gray;
-  font-size: 14px;
+  font-size: 1rem;
   margin: 0;
   width: 100%;
   padding-left: 15px;
@@ -924,10 +929,6 @@ nav {
 .padding-bottom {
   padding-bottom: 20px;
 }
-.control-title {
-  font-weight: bold;
-  font-size: 0.8rem;
-}
 .no-right-gutter {
   padding-right: 0;
 }
@@ -953,7 +954,7 @@ fieldset {
   font-size: 1.3rem;
 }
 .widget-wrapper {
-  margin-bottom: 20px;
+  margin-top: 25px;
 }
 .farmdesigner-left-menu {
   border: 1px $black dashed;
@@ -1008,10 +1009,14 @@ h6.date {
 }
 .button-like:active {
   border-bottom-width: 1px!important;
-    transform: translateY(2px);
+  transform: translateY(1px);
   margin-top: 2px;
 }
 .device-row:hover {
   background-color: $light_gray;
+}
+
+table {
+  border: 0;
 }
 
