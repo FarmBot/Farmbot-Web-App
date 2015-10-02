@@ -1,33 +1,64 @@
+// Google Fonts
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,400italic,700,700italic,100,100italic);
+
+// Font Variables
+// TODO: Prevent this from being overridden by normalize.css
+$roboto: 'Roboto', Arial, Helvetica, sans-serif;
+
+// Styles
+body, html {
+  font-family: $roboto;
+  font-weight: 400;
+}
+h1, h2, h3, h4, h5, h6, p {
+  font-family: $roboto;
+  font-weight: 400;
+}
+
+.button {
+  font-family: $roboto;
+  font-weight: 700;
+}
+
+// Variables
+
 $translucent:    rgba(0, 0, 0, 0.2);
 $translucent2:   rgba(0, 0, 0, 0.6);
 $white:          #fff;
+$off_white:      #f4f4f4;
 $light_gray:     #ddd;
-$gray:           #999;
-$dark_gray:      #444;
+$gray:           #cccccc;
+$dark_gray:      #434343;
 $black:          #000;
 
 $light_blue:     #cdf;
 $blue:           #00f;
 $dark_blue:      #37d;
+
 $light_green:    #bda;
 $green:          #6a4;
 $dark_green:     #371;
+
+
+$light_yellow:   #ffc;
+$yellow:         #fd6;
 $gold:           #b90;
 $beige:          #fec;
-$yellow:         #fd6;
-$light_yellow:   #ffc;
+$brown:          #CA8;
+
 $orange:         #fa0;
 $dark_orange:    #e93;
+
+$light_purple:   #dab;
 $lavender:       #bad;
 $royal_purple:   #64a;
 $dark_purple:    #a47;
-$light_purple:   #dab;
+
 $pink:           #e99;
 $dark_pink:      #e66;
 $peach:          #fc9;
 $red:            #f00;
 $dark_red:       #900;
-$brown:          #CA8;
 
 %greenish {
   float: right;
@@ -399,12 +430,13 @@ button {
 }
 .header-wrapper {
   margin-bottom: 0;
-  padding: 1rem;
+  padding: .5rem .75rem;
   background: $dark_gray;
-  color: $white;
+  text-transform: uppercase;
   h5 {
-    color: $white;
+    color: $gray;
     margin: 0;
+    font-size: 14px;
   }
   p {
     font-size: 88%;
@@ -826,20 +858,22 @@ body {
 }
 nav {
   background-color: $dark_gray;
+  color: $gray;
+  font-size: 14px;
   margin: 0;
   width: 100%;
   padding-left: 15px;
   padding-right: 15px;
+  text-transform: uppercase;
   height: 48px;
     transition: height 0.2s;
   > a {
     @extend %extend_3;
     &:hover {
-      background-color: $dark_gray;
-      color: $white!important;
+      color: $off_white!important;
     }
     &:focus {
-      color: $light_gray;
+      color: $off_white;
     }
     &.large-menu-right {
       float: right;
