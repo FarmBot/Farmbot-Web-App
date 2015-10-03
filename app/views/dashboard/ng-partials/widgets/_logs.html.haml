@@ -23,7 +23,7 @@
                 %td
                   %p {{ log.data || "-" }}
                 %td
-                  %p {{ (log.X || '-') + ', ' + (log.Y || '-') + ', ' + (log.Z || '-') }}
+                  %p {{ (log.X || '0') + ', ' + (log.Y || '0') + ', ' + (log.Z || '0') }}
             %tbody{ng_if: "logs.length < 1"}
               %tr
                 %td{colspan: '3'}
