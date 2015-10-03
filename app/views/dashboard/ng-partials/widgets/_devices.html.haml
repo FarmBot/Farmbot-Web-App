@@ -3,48 +3,90 @@
     .small-12.columns
       .row
         .small-12.columns
+          %button.button-like.yellow{style: "margin: 9px;"}
+            {{ !!device._id ? "Update" : "Add" }} FarmBot
+            // TODO: Hide the save button ^ until a value in the table has been changed and needs saving. Once the user presses the button, change the text to 'UPDATING' (while the update is happening, just like the sync button). Once the update is complete, change it to 'UPDATED :checkmark:' and make it green.
           .header-wrapper
             %h5 DEVICE
       .row
         .small-12.columns
-          .content-wrapper
-            %table.device-settings
-              %tbody
-                %tr
-                  %td
-                    %form{ng_submit: 'createDevice()'}
-                      %fieldset
-                        .row
-                          .large-12.columns
-                            %label FARMBOT NAME *
-                            %input{id: 'botname', placeholder: "Brocolli Overlord", type: "text", ng_model: 'device.name', required: true}/
-                        .row
-                          .large-6.columns
-                            %label UUID *
-                            %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'device.uuid', required: true}/
-                          .large-6.columns
-                            %label SECURITY TOKEN *
-                            %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'device.token', required: true}/
-                        .row
-                          .large-12.columns
-                            %button.green.button-like
-                              {{ !!device._id ? "Update" : "Add" }} FarmBot
-                %tr
-                  %td
-                    .alert-box.warning
-                      Click Here to Get the Latest Firmware (not real).
-                    .row
-                      .large-6.small-6.columns
-                        %label.left.inline Software Version
-                      .large-6.small-6.columns
-                        %label.right.inline xyz123
-                    .row
-                      .large-6.small-6.columns
-                        %label.left.inline Software Version
-                      .large-6.small-6.columns
-                        %label.right.inline xyz123
-                    .row
-                      .large-6.small-6.columns
-                        %label.left.inline Software Version
-                      .large-6.small-6.columns
-                        %label.right.inline xyz123
+          %form{ng_submit: 'createDevice()'}
+            %fieldset
+              .row
+                .large-12.columns
+                  %label FARMBOT NAME *
+                  %input{id: 'botname', placeholder: "Brocolli Overlord", type: "text", ng_model: 'device.name', required: true}/
+              .row
+                .large-6.columns
+                  %label UUID *
+                  %input{placeholder: "ad698900-2546-11e3-87fb-c560cb0ca47b", type: "text", ng_model: 'device.uuid', required: true}/
+                .large-6.columns
+                  %label SECURITY TOKEN *
+                  %input{placeholder: "4bbd2jm242dl5wmimbwz4rvlu77m0a4i", type: "text", ng_model: 'device.token', required: true}/
+              .row
+                %button.button-like.yellow{style: "margin: 9px;"}
+                  {{ !!device._id ? "Update" : "Add" }} FarmBot
+                  // TODO: Replace this button ^ with the one up in the widget header
+          %table.plain
+            %tbody
+              %tr
+                %td
+                  %label FARMBOT NAME
+                %td{colspan: '2'}
+                  %p Broccoli Overlord
+              %tr
+                %td
+                  %label UUID
+                %td{colspan: '2'}
+                  %p 12345678-1234-1234-1234-123456789abc
+              %tr
+                %td
+                  %label SECURITY TOKEN
+                %td{colspan: '2'}
+                  %p 1a17aacb03981542b892ccb1gf19e13d2b980dc2
+              %tr
+                %td
+                  %label NETWORK
+                %td{colspan: '2'}
+                  %p Ethernet
+              %tr
+                %td
+                  %label IP ADDRESS
+                %td{colspan: '2'}
+                  %p 0.0.0.0
+              %tr
+                %td
+                  %label MAC ADDRESS
+                %td{colspan: '2'}
+                  %p 00:00:00:00:00:00
+              %tr
+                %td
+                  %label COMPUTER
+                %td
+                  %p Raspberry Pi 2 Model B+ running farmbot-raspberry-pi-controller V1.233
+                %td
+                  %button.button-like.yellow UPDATE TO V1.234
+              %tr
+                %td
+                  %label MICROCONTROLLER
+                %td
+                  %p Arduino MEGA 2560 running farmbot-arduino-firmware V1.233
+                %td
+                  %button.button-like.yellow UPDATE TO V1.234
+              %tr
+                %td
+                  %label POWER
+                %td
+                  %button.button-like.yellow.left RESTART
+                  %button.button-like.red.left SHUTDOWN
+                // TODO: Make this real ^
+                %td
+                // TODO: Make this real ^
+              %tr
+                %td
+                  %label DELETE FARMBOT
+                %td
+                  %button.button-like.red.left DELETE
+                  %p Caution! This cannot be undone
+                %td 
+                // TODO: Make this real ^

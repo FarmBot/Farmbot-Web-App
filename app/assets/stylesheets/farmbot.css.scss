@@ -5,21 +5,6 @@
 // TODO: Prevent this from being overridden by normalize.css
 $roboto: 'Roboto', Arial, Helvetica, sans-serif;
 
-// Styles
-body, html {
-  font-family: $roboto;
-  font-weight: 400;
-}
-h1, h2, h3, h4, h5, h6, p {
-  font-family: $roboto;
-  font-weight: 400;
-}
-
-.button {
-  font-family: $roboto;
-  font-weight: 700;
-}
-
 // Variables
 
 $translucent:    rgba(0, 0, 0, 0.2);
@@ -110,6 +95,29 @@ $dark_red:       #900;
   padding-left: 20px;
   box-shadow: 0 4px 10px $translucent;
 }
+
+// Styles
+body, html {
+  font-family: $roboto;
+  font-weight: 400;
+}
+h1, h2, h3, h4, h5, h6, p {
+  font-family: $roboto;
+  font-weight: 400;
+}
+
+p {
+  font-size: 1.1rem;
+  color: $dark_gray;
+  line-height: 1.4rem;
+  margin-bottom: 0;
+}
+
+.button {
+  font-family: $roboto;
+  font-weight: 700;
+}
+
 .flex {
   display: flex;
 }
@@ -405,18 +413,6 @@ button {
     border-bottom: 3px solid $gold;
   }
 }
-.row-length {
-  width: 8%;
-}
-.row-invert {
-  width: 8%;
-}
-.row-axis {
-  width: 5%;
-}
-.row-input {
-  width: 15%;
-}
 .content-wrapper {
   border-style: none;
   border-top-width: 0;
@@ -691,6 +687,13 @@ label {
   font-weight: bold;
   color: $medium_gray;
 }
+input {
+  font-size: 1.2rem;
+  height: auto;
+  width: 100%;
+  border: 0;
+  padding: 6px;
+}
 input[type="text"] {
   font-size: 1.2rem;
   height: auto;
@@ -824,15 +827,20 @@ input[type="submit"] {
   font-size: 20px;
   text-align: center;
   border-bottom: 3px solid $dark_gray;
+  margin-bottom: 0px;
   &:active {
     border-bottom-width: 1px!important;
         transform: translateY(2px);
+  }
+  &:hover {
+    background-color: $medium_gray;
   }
 }
 
 .jog-table {
   margin-top: 15px;
   background-color: $off-white;
+  width: auto;
 }
 
 input {
@@ -955,18 +963,11 @@ fieldset {
 }
 .widget-wrapper {
   margin-top: 25px;
+  box-shadow: 0px 0px 10px $gray;
 }
 .farmdesigner-left-menu {
   border: 1px $black dashed;
   background-color: $blue;
-}
-table.calibration-control {
-  table-layout: fixed;
-  width: 100%;
-  white-space: nowrap;
-}
-td input.fixed {
-  width: 85%;
 }
 .sized a {
   width: 100px;
@@ -1018,5 +1019,10 @@ h6.date {
 
 table {
   border: 0;
+  width: 100%;
+  margin-bottom: 0;
+}
+table.plain tr:nth-of-type(1n) {
+  background: $off-white;
 }
 

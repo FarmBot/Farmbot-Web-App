@@ -10,18 +10,21 @@
           %table
             %thead
               %tr
-                %th{width: '15%'}
+                %th{width: '10%'}
                   %label TIME
                 %th{width: '80%'}
                   %label MESSAGE
-                %th{width: '5%'}
+                %th{width: '10%'}
                   %label COORDINATES
             %tbody{ng_if: "logs.length > 1"}
               %tr{'ng-repeat' => 'log in logs'}
-                %td {{ log.timestamp | date:'MM/dd h:mma' }}
-                %td {{ log.data || "-" }}
-                %td {{ (log.X || '-') + ', ' + (log.Y || '-') + ', ' + (log.Z || '-') }}
+                %td
+                  %p {{ log.timestamp | date:'MM/dd h:mma' }}
+                %td
+                  %p {{ log.data || "-" }}
+                %td
+                  %p {{ (log.X || '-') + ', ' + (log.Y || '-') + ', ' + (log.Z || '-') }}
             %tbody{ng_if: "logs.length < 1"}
               %tr
                 %td{colspan: '3'}
-                  We can't find any logs. Are your FarmBot device credentials correct?
+                  %p We can't find any logs. Are your FarmBot device credentials correct?

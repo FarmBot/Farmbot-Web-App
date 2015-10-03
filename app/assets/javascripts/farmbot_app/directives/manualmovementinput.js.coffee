@@ -28,7 +28,7 @@ ctrl = [
 directive =
   restrict: 'EA'
   template: '<input class="move-input" ng_blur="buffer.out()" placeholder=' +
-            parseInt(Math.random() * 1000) +
+            parseInt(0) +
             ' ng_style="buffer.dirty ? {\'border-color\':\'red\'} : {}"' +
             ' ng_focus="buffer.in()" ng_model="buffer.val" ' +
             'ng_model_options="{ getterSetter: true }" type="text">'

@@ -3,93 +3,92 @@
     .small-12.columns
       .row
         .small-12.columns
-          %button.xx-small.yellow{ng_click: "updateCalibration()", style: "margin: 10px;"} UPDATE FARMBOT
+          %button.yellow.button-like{ng_click: "updateCalibration()", style: "margin: 9px;"} UPDATE FARMBOT
           // TODO: Hide the save button ^ until a value in the table has been changed and needs saving. Once the user presses the button, change the text to 'UPDATING' (while the update is happening, just like the sync button). Once the update is complete, change it to 'UPDATED :checkmark:' and make it green.
           .header-wrapper
             %h5 Hardware
       .row
         .small-12.columns
-          .content-wrapper
-            %table.calibration-control
-              %thead
-                %tr
-                  %th.row-parameters
-                  %th
-                    %label GANTRY (X)
-                  %th
-                    %label CROSS-SLIDE (Y)
-                  %th
-                    %label Z-AXIS (Z)
-              %tbody
-                %tr.row-input
-                  %td
-                    %label LENGTH (m)
-                  %td
-                    %input{ng_model: "device.LENGTH_X"}
-                  %td
-                    %input{ng_model: "device.LENGTH_Y"}
-                  %td
-                    %input{ng_model: "device.LENGTH_Z"}
-                %tr.row-input
-                  %td
-                    %label MAX SPEED (mm/s)
-                  %td
-                    %input{ng_model: "device.MOVEMENT_MAX_SPD_X"}
-                  %td
-                    %input{ng_model: "device.MOVEMENT_MAX_SPD_Y"}
-                  %td
-                    %input{ng_model: "device.MOVEMENT_MAX_SPD_Z"}
-                %tr.row-input
-                  %td
-                    %label ACCELERATE FOR (steps)
-                  %td
-                    %input{ng_model: "device.MOVEMENT_STEPS_ACC_DEC_X"}
-                  %td
-                    %input{ng_model: "device.MOVEMENT_STEPS_ACC_DEC_Y"}
-                  %td
-                    %input{ng_model: "device.MOVEMENT_STEPS_ACC_DEC_Z"}
-                %tr.row-input
-                  %td
-                    %label TIMEOUT AFTER (seconds)
-                  %td
-                    %input{ng_model: "device.MOVEMENT_TIMEOUT_X"}
-                  %td
-                    %input{ng_model: "device.MOVEMENT_TIMEOUT_Y"}
-                  %td
-                    %input{ng_model: "device.MOVEMENT_TIMEOUT_Z"}
-                %tr.row-input
-                  %td
-                    %label STEPS PER MM
-                  %td
-                    %input{ng_model: "device.MOVEMENT_STEPS_PER_MM_X"}
-                  %td
-                    %input{ng_model: "device.MOVEMENT_STEPS_PER_MM_Y"}
-                  %td
-                    %input{ng_model: "device.MOVEMENT_STEPS_PER_MM_Z"}
-                %tr.row-invert
-                  %td
-                    %label INVERT ENDPOINTS
-                  %td
-                    %calibrationbutton{toggleval: "MOVEMENT_INVERT_ENDPOINTS_X"}
-                  %td
-                    %calibrationbutton{toggleval: "MOVEMENT_INVERT_ENDPOINTS_Y"}
-                  %td
-                    %calibrationbutton{toggleval: "MOVEMENT_INVERT_ENDPOINTS_Z"}
-                %tr.row-invert
-                  %td
-                    %label INVERT MOTOR
-                  %td
-                    %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_X"}
-                  %td
-                    %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_Y"}
-                  %td
-                    %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_Z"}
-                %tr.row-invert
-                  %td
-                    %label NEGATIVES
-                  %td
-                    %calibrationbutton{toggleval: "MOVEMENT_NEGATIVE_X"}
-                  %td
-                    %calibrationbutton{toggleval: "MOVEMENT_NEGATIVE_Y"}
-                  %td
-                    %calibrationbutton{toggleval: "MOVEMENT_NEGATIVE_Z"}
+          %table.plain
+            %thead
+              %tr
+                %th{width: '32%'}
+                %th{width: '22%'}
+                  %label GANTRY (X)
+                %th{width: '22%'}
+                  %label CROSS-SLIDE (Y)
+                %th{width: '22%'}
+                  %label Z-AXIS (Z)
+            %tbody
+              %tr
+                %td
+                  %label LENGTH (m)
+                %td
+                  %input{ng_model: "device.LENGTH_X"}
+                %td
+                  %input{ng_model: "device.LENGTH_Y"}
+                %td
+                  %input{ng_model: "device.LENGTH_Z"}
+              %tr
+                %td
+                  %label MAX SPEED (mm/s)
+                %td
+                  %input{ng_model: "device.MOVEMENT_MAX_SPD_X"}
+                %td
+                  %input{ng_model: "device.MOVEMENT_MAX_SPD_Y"}
+                %td
+                  %input{ng_model: "device.MOVEMENT_MAX_SPD_Z"}
+              %tr
+                %td
+                  %label ACCELERATE FOR (steps)
+                %td
+                  %input{ng_model: "device.MOVEMENT_STEPS_ACC_DEC_X"}
+                %td
+                  %input{ng_model: "device.MOVEMENT_STEPS_ACC_DEC_Y"}
+                %td
+                  %input{ng_model: "device.MOVEMENT_STEPS_ACC_DEC_Z"}
+              %tr
+                %td
+                  %label TIMEOUT AFTER (seconds)
+                %td
+                  %input{ng_model: "device.MOVEMENT_TIMEOUT_X"}
+                %td
+                  %input{ng_model: "device.MOVEMENT_TIMEOUT_Y"}
+                %td
+                  %input{ng_model: "device.MOVEMENT_TIMEOUT_Z"}
+              %tr
+                %td
+                  %label STEPS PER MM
+                %td
+                  %input{ng_model: "device.MOVEMENT_STEPS_PER_MM_X"}
+                %td
+                  %input{ng_model: "device.MOVEMENT_STEPS_PER_MM_Y"}
+                %td
+                  %input{ng_model: "device.MOVEMENT_STEPS_PER_MM_Z"}
+              %tr
+                %td
+                  %label INVERT ENDPOINTS
+                %td
+                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_ENDPOINTS_X"}
+                %td
+                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_ENDPOINTS_Y"}
+                %td
+                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_ENDPOINTS_Z"}
+              %tr
+                %td
+                  %label INVERT MOTOR
+                %td
+                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_X"}
+                %td
+                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_Y"}
+                %td
+                  %calibrationbutton{toggleval: "MOVEMENT_INVERT_MOTOR_Z"}
+              %tr
+                %td
+                  %label NEGATIVES
+                %td
+                  %calibrationbutton{toggleval: "MOVEMENT_NEGATIVE_X"}
+                %td
+                  %calibrationbutton{toggleval: "MOVEMENT_NEGATIVE_Y"}
+                %td
+                  %calibrationbutton{toggleval: "MOVEMENT_NEGATIVE_Z"}
