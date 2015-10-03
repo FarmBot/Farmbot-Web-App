@@ -10,13 +10,13 @@
           %table
             %thead
               %tr
-                %th{width: '15%'}
+                %th{ width: '15%' }
                   %label TIME
-                %th{width: '75%'}
+                %th{ width: '75%' }
                   %label MESSAGE
-                %th{width: '10%'}
+                %th{ width: '10%' }
                   %label COORDINATES
-            %tbody{ng_if: "logs.length > 1"}
+            %tbody{ ng_if: "logs.length > 1" }
               %tr{'ng-repeat' => 'log in logs'}
                 %td
                   %p {{ log.timestamp | date:'MM/dd h:mma' }}
@@ -24,7 +24,7 @@
                   %p {{ log.data || "-" }}
                 %td
                   %p {{ (log.X || '0') + ', ' + (log.Y || '0') + ', ' + (log.Z || '0') }}
-            %tbody{ng_if: "logs.length < 1"}
+            %tbody{ ng_if: "logs.length < 1" }
               %tr
-                %td{colspan: '3'}
+                %td{ colspan: '3' }
                   %p We can't find any logs. Are your FarmBot device credentials correct?

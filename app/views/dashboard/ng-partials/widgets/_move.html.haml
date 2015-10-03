@@ -8,36 +8,36 @@
         %label.text-center MOVE AMOUNT (mm) {{ device.current.busy == 0 ? "Ready" : "Busy" }}
         .row
           .small-12.columns
-            %button.move-amount.no-radius.leftmost{stepsize: '1'} 1
-            %button.move-amount.no-radius{stepsize: '10'} 10
-            %button.move-amount.no-radius{stepsize: '100'} 100
-            %button.move-amount.no-radius.rightmost{stepsize: '1000'} 1000
+            %button.move-amount.no-radius.leftmost{ stepsize: '1' } 1
+            %button.move-amount.no-radius{ stepsize: '10' } 10
+            %button.move-amount.no-radius{ stepsize: '100' } 100
+            %button.move-amount.no-radius.rightmost{ stepsize: '1000' } 1000
 
         .row
-          %table.jog-table{:align => "center", :style => 'border: 0px;'}
+          %table.jog-table{ :align => "center", :style => 'border: 0px;' }
             %tr
               %td
               %td
               %td
               %td
-                %directionbutton{direction: "up", axis: "y"}
+                %directionbutton{ direction: "up", axis: "y" }
               %td
               %td
               %td
-                %directionbutton{direction: "up", axis: "z"}
+                %directionbutton{ direction: "up", axis: "z" }
             %tr
               %td
-                %button.button-like.i.fa.fa-home.arrow-button{ng_click: 'home()'}
+                %button.button-like.i.fa.fa-home.arrow-button{ ng_click: 'home()' }
               %td
               %td
-                %directionbutton{direction: "up", axis: "x"}
+                %directionbutton{ direction: "up", axis: "x" }
               %td
-                %directionbutton{direction: "down", axis: "y"}
+                %directionbutton{ direction: "down", axis: "y" }
               %td
-                %directionbutton{direction: "down", axis: "x"}
+                %directionbutton{ direction: "down", axis: "x" }
               %td
               %td
-                %directionbutton{direction: "down", axis: "z"}
+                %directionbutton{ direction: "down", axis: "z" }
             %tr
               %td
 
