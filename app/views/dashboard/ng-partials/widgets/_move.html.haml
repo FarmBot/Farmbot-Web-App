@@ -38,25 +38,27 @@
               %td
               %td
                 %directionbutton{direction: "down", axis: "z"}
+            %tr
+              %td
 
         .row
-          .small-6.columns
+          .medium-6.small-7.columns.medium-offset-1
             %label GANTRY (X)
-          .small-6.columns
+          .medium-4.small-5.columns.end
             %manualmovementinput{axisdata: 'axisdata', axis: 'x'}
         .row
-          .small-6.columns
+          .medium-6.small-7.columns.medium-offset-1
             %label CROSS-SLIDE (Y)
-          .small-6.columns
+          .medium-4.small-5.columns.end
             %manualmovementinput{axisdata: 'axisdata', axis: 'y'}
         .row
-          .small-6.columns
+          .medium-6.small-7.columns.medium-offset-1
             %label Z-AXIS (Z)
-          .small-6.columns
+          .medium-4.small-5.columns.end
             %manualmovementinput{axisdata: 'axisdata', axis: 'z'}
         .row.padding-bottom
-          .small-6.columns
-            %stopbutton
-          .small-6.columns
+          .medium-6.small-7.columns.medium-offset-1
+            %stopbutton.left
+          .medium-4.small-5.columns.end
             %button.full-width.green.button-like{ng_click: 'manualMovement()'} GO
 

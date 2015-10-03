@@ -821,10 +821,10 @@ input[type="submit"] {
 .arrow-button {
   background-color: $medium_gray;
   color: $off_white;
-  width: 50px;
-  height: 50px;
-  padding: 15px;
-  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  padding: 12px;
+  font-size: 16px;
   text-align: center;
   border-bottom: 3px solid $dark_gray;
   margin-bottom: 0px;
@@ -1024,5 +1024,9 @@ table {
 }
 table.plain tr:nth-of-type(1n) {
   background: $off-white;
+}
+
+table tr td {
+  padding: .3rem;
 }
 
