@@ -349,6 +349,7 @@ button {
   padding-left: 12px;
   padding-right: 12px;
   border-radius: 4px;
+  margin-bottom: 0px;
   &.stop {
     background-color: $red;
   }
@@ -687,16 +688,19 @@ label {
   font-weight: bold;
   color: $medium_gray;
 }
-input {
+
+input, input[type="text"] {
   font-size: 1.2rem;
+  color: $dark_gray;
   height: auto;
   width: 100%;
   border: 0;
-  padding: 6px;
-}
-input[type="text"] {
-  font-size: 1.2rem;
-  height: auto;
+  padding: 6px 8px;
+  box-shadow: 0px 0px 10px $light_gray;
+  &:focus {
+    background-color: $white;
+    box-shadow: 0px 0px 10px $translucent;
+  }
 }
 input[type="password"] {
   font-size: 1.2rem;
@@ -827,7 +831,7 @@ input[type="submit"] {
   font-size: 16px;
   text-align: center;
   border-bottom: 3px solid $dark_gray;
-  margin-bottom: 0px;
+  margin: -5px;
   &:active {
     border-bottom-width: 1px!important;
         transform: translateY(2px);
@@ -1018,15 +1022,19 @@ h6.date {
 }
 
 table {
-  border: 0;
   width: 100%;
   margin-bottom: 0;
 }
 table.plain tr:nth-of-type(1n) {
   background: $off-white;
+  border: .5rem solid $off-white;
 }
 
 table tr td {
-  padding: .3rem;
+  padding: .5rem;
+}
+
+table thead tr th {
+  padding: .5rem;
 }
 
