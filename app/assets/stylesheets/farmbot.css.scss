@@ -116,6 +116,7 @@ p {
 .button {
   font-family: $roboto;
   font-weight: 700;
+  margin-bottom: 0;
 }
 
 .flex {
@@ -349,6 +350,7 @@ button {
   padding-left: 12px;
   padding-right: 12px;
   border-radius: 4px;
+  margin-bottom: 0px;
   &.stop {
     background-color: $red;
   }
@@ -361,6 +363,7 @@ button {
   &.move-amount {
     background-color: $white;
     border-right: 2px solid $off-white;
+    box-shadow: 0px 0px 10px $light_gray;
     color: $medium_gray;
     font-weight: bold;
     padding-top: 0.5rem;
@@ -380,12 +383,13 @@ button {
       border-left: 0;
     }
     &.leftmost {
-            border-bottom-left-radius: 7px;
-            border-top-left-radius: 7px;
+      border-bottom-left-radius: 7px;
+      border-top-left-radius: 7px;
     }
     &.rightmost {
-            border-bottom-right-radius: 7px;
-            border-top-right-radius: 7px;
+      border-bottom-right-radius: 7px;
+      border-top-right-radius: 7px;
+      border-right: 0px none;
     }
   }
   &.move-amount-selected {
@@ -687,16 +691,19 @@ label {
   font-weight: bold;
   color: $medium_gray;
 }
-input {
+
+input, input[type="text"] {
   font-size: 1.2rem;
+  color: $dark_gray;
   height: auto;
   width: 100%;
   border: 0;
-  padding: 6px;
-}
-input[type="text"] {
-  font-size: 1.2rem;
-  height: auto;
+  padding: 6px 8px;
+  box-shadow: 0px 0px 10px $light_gray;
+  &:focus {
+    background-color: $white;
+    box-shadow: 0px 0px 10px $translucent;
+  }
 }
 input[type="password"] {
   font-size: 1.2rem;
@@ -821,13 +828,13 @@ input[type="submit"] {
 .arrow-button {
   background-color: $medium_gray;
   color: $off_white;
-  width: 50px;
-  height: 50px;
-  padding: 15px;
-  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  padding: 12px;
+  font-size: 16px;
   text-align: center;
   border-bottom: 3px solid $dark_gray;
-  margin-bottom: 0px;
+  margin: -5px;
   &:active {
     border-bottom-width: 1px!important;
         transform: translateY(2px);
@@ -1005,9 +1012,6 @@ h6.date {
   font-size: 1.4rem;
   line-height: 50px;
 }
-.transparent-table tr:nth-of-type(even) {
-  background-color: transparent !important;
-}
 .button-like:active {
   border-bottom-width: 1px!important;
   transform: translateY(1px);
@@ -1018,11 +1022,19 @@ h6.date {
 }
 
 table {
-  border: 0;
   width: 100%;
   margin-bottom: 0;
 }
 table.plain tr:nth-of-type(1n) {
   background: $off-white;
+  border: .5rem solid $off-white;
+}
+
+table tr td {
+  padding: .5rem;
+}
+
+table thead tr th {
+  padding: .5rem;
 }
 
