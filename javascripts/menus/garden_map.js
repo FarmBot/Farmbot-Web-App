@@ -27,19 +27,21 @@ export class GardenMap extends React.Component {
   }
 
   render() {
+    var SVG_PADDING = 20;
+    var SVG_MARGIN = SVG_PADDING / 2;
     var style = {
-      fill: 'rgb(136, 119, 102)',
-      'strokeWidth':3,
-      stroke: 'rgb(0,0,0)'
+      fill:        'rgb(136, 119, 102)',
+      strokeWidth: 1,
+      stroke:      'rgb(0,0,0)'
     }
     var {width, length} = this.props.planting_area;
 
     return <div>
              <div id="drop-area">
-              <svg width={ width + 20 }
-                   height={ length + 20 } >
-                <rect x="10"
-                      y="10"
+              <svg width={ width + SVG_PADDING }
+                   height={ length + SVG_PADDING } >
+                <rect x={ SVG_MARGIN }
+                      y={ SVG_MARGIN }
                       width={ width }
                       height={ length }
                       style={ style } />

@@ -40,9 +40,6 @@ export class Plants extends React.Component {
     var d = this.props.dispatch;
     return(
       <div>
-        <button onClick={ this.wow.bind(this) }>
-          Probe
-        </button>
         <ul className="crop-inventory">
           { this.props.plants.map((p, k) => <Item plant={p}
                                                   key={ k }
