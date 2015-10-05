@@ -5,6 +5,4 @@ import thunk from 'redux-thunk';
 var wrappedCreatedStore = applyMiddleware(thunk)(createStore);
 var store = wrappedCreatedStore(reducer, window.initialState);
 
-console.log('hi.');
-
 export { store };
