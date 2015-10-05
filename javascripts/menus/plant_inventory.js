@@ -33,10 +33,16 @@ export class Item extends React.Component {
 };
 
 export class Plants extends React.Component {
+  wow() {
+    this.props.dispatch({type: "EXPERIMENTAL"});
+  }
   render() {
     var d = this.props.dispatch;
     return(
       <div>
+        <button onClick={ this.wow.bind(this) }>
+          Probe
+        </button>
         <ul className="crop-inventory">
           { this.props.plants.map((p, k) => <Item plant={p}
                                                   key={ k }

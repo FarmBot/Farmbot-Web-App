@@ -9,7 +9,6 @@ export class Plant {
   }
 };
 
-
 Plant.fakePlants = [
   new Plant({name: "Blueberry", imgUrl: "/designer_icons/blueberry.svg"}),
   new Plant({name: "Cabbage", imgUrl: "/designer_icons/cabbage.svg"}),
