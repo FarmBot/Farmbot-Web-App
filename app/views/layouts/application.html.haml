@@ -30,7 +30,7 @@
           %a.large-menu-right{:href => page_path('help')} Help
         - if current_user && controller_name == "dashboard"
           %stopbutton
-          %syncbutton{schedules: "schedules"}
+          %syncbutton{ schedules: "schedules" }
     .container.small-12.medium-6.large-4.small-centered.columns
       - if notice
         .alert-box.notice.round{"onClick" => "hidden = true"}
