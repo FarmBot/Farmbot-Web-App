@@ -10,7 +10,6 @@ var paths = {
 };
 
 function oops (s) {
-  exec("espeak 'build Error.'");
   exec( 'notify-send "' + (s.message || s) + '"' );
   gutil.log(s.message);
 }
