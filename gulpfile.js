@@ -15,11 +15,11 @@ function oops (s) {
   gutil.log(s.message);
 }
 
-gulp.task('default', function () {
-  gulp.watch(paths.js, ['build']);
+gulp.task('watch', function () {
+  gulp.watch(paths.js, ['default']);
 });
 
-gulp.task('build', function () {
+gulp.task('default', function () {
   browserify({
       entries: ['javascripts/farm_designer.js'],
       extensions: ['.js']

@@ -14,14 +14,18 @@ This Repo is the Web based side of FarmBot. It allows users to control the devic
 
 # Developer setup
 
- 1. `git clone git@github.com:FarmBot/farmbot-web-app.git`
- 2. `cd farmbot-web-app`
- 3. [Install MongoDB](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
- 4. Start Mongo if you have not already done so. (typically via the `mongod` command)
- 3. `bundle install`
- 4.  `npm install`
- 5. `rails s`
- 6. Go to `http://localhost:3000`
+ 0. `git clone git@github.com:FarmBot/farmbot-web-app.git`
+ 0. `cd farmbot-web-app`
+ 0. [Install MongoDB](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
+ 0. Start Mongo if you have not already done so. (typically via the `mongod` command)
+ 0. `bundle install`
+ 0. [Install node](https://nodejs.org/en/download/package-manager/)
+ 0. `sudo npm install gulp -g` if you don't have gulp installed already.
+ 0.  `npm install`
+ 0. `rails s`
+ 0. Go to `http://localhost:3000`
+
+The frontend (and asset management) are very much in a transitional state. We're experimenting with Gulp as an alternative 
 
 **We can't fix issues we don't know about.** Please submit an issue if you are having trouble installing on your local machine.
 
