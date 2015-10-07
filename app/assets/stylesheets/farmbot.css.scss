@@ -452,10 +452,10 @@ button {
   border-style: dashed;
   border-width: 2px;
   border-color: $light_gray;
+  color: $gray;
+  font-weight: bold;
   margin-bottom: 1rem;
   padding: 1.25rem;
-  background: $off_white;
-  color: $dark_gray;
   text-align: center;
 }
 .blue-header {
@@ -465,8 +465,6 @@ button {
 .blue-block {
   background-color: $light_blue;
   color: $dark_gray;
-  border-right: 2px solid $dark_blue;
-  border-bottom: 2px solid $dark_blue;
   &:hover {
     background-color: $light_blue;
     color: $dark_gray;
@@ -487,8 +485,6 @@ button {
 .green-block {
   background-color: $light_green;
   color: $dark_gray;
-  border-right: 2px solid $green;
-  border-bottom: 2px solid $green;
   &:hover {
     background-color: $light_green;
     color: $dark_gray;
@@ -504,20 +500,18 @@ button {
 }
 
 .yellow-header {
-  background-color: $light_yellow;
+  background-color: $yellow;
   color: $dark_gray;
 }
 .yellow-block {
-  background-color: $light_yellow;
+  background-color: $yellow;
   color: $dark_gray;
-  border-right: 2px solid $gold;
-  border-bottom: 2px solid $gold;
   &:hover {
-    background-color: $light_yellow;
+    background-color: $yellow;
     color: $dark_gray;
   }
   &:focus {
-    background-color: $light_yellow;
+    background-color: $yellow;
     color: $dark_gray;
   }
 }
@@ -531,8 +525,6 @@ button {
 .orange-block {
   background-color: $peach;
   color: $dark_gray;
-  border-right: 2px solid $dark_orange;
-  border-bottom: 2px solid $dark_orange;
   &:hover {
     background-color: $peach;
     color: $dark_gray;
@@ -552,8 +544,6 @@ button {
 .purple-block {
   background-color: $lavender;
   color: $dark_gray;
-  border-right: 2px solid $royal_purple;
-  border-bottom: 2px solid $royal_purple;
   &:hover {
     background-color: $lavender;
     color: $dark_gray;
@@ -579,8 +569,6 @@ button {
 .pink-block {
   background-color: $light_purple;
   color: $dark_gray;
-  border-right: 2px solid $dark_purple;
-  border-bottom: 2px solid $dark_purple;
   &:hover {
     background-color: $light_purple;
     color: $dark_gray;
@@ -600,8 +588,6 @@ button {
 .gray-block {
   background-color: $gray;
   color: $dark_gray;
-  border-right: 2px solid $dark_gray;
-  border-bottom: 2px solid $dark_gray;
   &:hover {
     background-color: $gray;
     color: $dark_gray;
@@ -621,8 +607,6 @@ button {
 .red-block {
   background-color: $pink;
   color: $dark_gray;
-  border-right: 2px solid $dark_pink;
-  border-bottom: 2px solid $dark_pink;
   &:hover {
     background-color: $pink;
     color: $dark_gray;
@@ -637,9 +621,9 @@ button {
 }
 .block {
   margin-bottom: 20px;
-    box-shadow: 0 4px 10px $translucent;
+  box-shadow: 0px 0px 10px $light_gray;
   &:hover {
-        transform: translateY(-2px);
+        transform: translateY(-1px);
         box-shadow: 0 4px 10px $translucent;
         transition: all 0.2s ease-out;
     .edit-icon {
@@ -1038,3 +1022,12 @@ table thead tr th {
   padding: .5rem;
 }
 
+.margin-top {
+  margin-top: 9px;
+}
+.margin-left {
+  margin-left: 12px;
+}
+.margin-right {
+  margin-right: 12px;
+}
