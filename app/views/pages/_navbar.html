@@ -1,0 +1,37 @@
+<div class="row">
+  <nav class="drop-shadow" ng_app="farmbot" ng_controller="nav">
+    <div class="small-menu-title">MENU</div>
+    <a href="<%= root_path %>">Home</a>
+    <% if current_user %>
+      <a href="/pages/farm_designer">Farm Designer</a>
+      <a href="/dashboard#/movement">Controls</a>
+      <a href="/dashboard#/devices">Devices</a>
+      <a href="/dashboard#/sequence">Sequences</a>
+      <a href="/dashboard#/schedule">Schedules</a>
+      <a class="large-menu-right" href="<%= destroy_user_session_path %>">Sign out</a>
+      <a class="large-menu-right" href="<%= edit_user_registration_path %>">My Account</a>
+    <% else %>
+      <a class="large-menu-right" href="<%= new_user_session_path %>">Log In</a>
+      <a class="large-menu-right" href="<%= new_user_registration_path %>">Register</a>
+      <a class="large-menu-right" href="<%= page_path('help') %>">Help</a>
+    <% end %>
+    <% if current_user && controller_name == "dashboard" %>
+      <stopbutton></stopbutton>
+      <syncbutton schedules="schedules"></syncbutton>
+    <% end %>
+  </nav>
+</div>
+<div class="container small-12 medium-6 large-4 small-centered columns">
+  <% if notice %>
+    <div class="alert-box notice round" onClick="hidden = true">
+      <%= notice %>
+      <a class="close" style="margin-right: 10px; color: white; opacity: 1.0;">×</a>
+    </div>
+  <% end %>
+  <% if alert %>
+    <div class="alert-box alert round" onClick="hidden = true">
+      <%= alert %>
+      <a class="close" style="margin-right: 10px; color: white; opacity: 1.0;">×</a>
+    </div>
+  <% end %>
+</div>

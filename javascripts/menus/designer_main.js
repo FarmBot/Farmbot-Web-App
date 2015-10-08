@@ -4,6 +4,7 @@ import { Calendar } from './calendar';
 import { PlantInfo } from './plant_info';
 import { CropInfo } from './crop_info';
 import { GardenMap } from './garden_map';
+import { Navbar } from './navbar';
 
 const LEFT_MENU_CHOICES = {PlantInventory, PlantCatalog, PlantInfo, CropInfo}
 
@@ -33,23 +34,26 @@ export class DesignerMain extends React.Component {
 
   render(){
     return (
-      <div className="farm-designer-body">
-        <div className="farm-designer-left">
-          <div id="designer-left">
-            { this.renderLeft() }
+        <div className="farm-designer">
+          <Navbar/>
+          <div className="farm-designer-body">
+            <div className="farm-designer-left">
+              <div id="designer-left">
+                { this.renderLeft() }
+              </div>
+            </div>
+
+            <div className="farm-designer-middle">
+              { this.renderMiddle() }
+            </div>
+
+            <div className="farm-designer-right">
+              <div id="designer-right">
+                <Calendar />
+              </div>
+            </div>
           </div>
         </div>
-
-        <div className="farm-designer-middle">
-          { this.renderMiddle() }
-        </div>
-
-        <div className="farm-designer-right">
-          <div id="designer-right">
-            <Calendar />
-          </div>
-        </div>
-      </div>
     );
   }
 }
