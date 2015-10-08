@@ -1,14 +1,14 @@
 .widget-wrapper
   .row
-    .small-12.columns
+    .col-sm-12
       .row
-        .small-12.columns
+        .col-sm-12
           %button.yellow.button-like{ ng_click: "updateCalibration()", style: "margin: 9px;" } UPDATE FARMBOT
           // TODO: Hide the save button ^ until a value in the table has been changed and needs saving. Once the user presses the button, change the text to 'UPDATING' (while the update is happening, just like the sync button). Once the update is complete, change it to 'UPDATED :checkmark:' and make it green.
           .header-wrapper
             %h5 Hardware
       .row
-        .small-12.columns
+        .col-sm-12
           %table.plain
             %thead
               %tr
