@@ -3,7 +3,8 @@ var gulp   = require('gulp'),
     concat = require('gulp-concat'),
     browserify = require('browserify'),
     source = require('vinyl-source-stream'),
-    exec = require('child_process').exec;
+    exec = require('child_process').exec,
+    babelify = require('babelify');
 
 var paths = {
   js: './javascripts/**/**/*.js'
@@ -19,10 +20,8 @@ gulp.task('watch', function () {
 });
 
 gulp.task('default', function () {
-  browserify({
-      entries: ['javascripts/farm_designer.js'],
-      extensions: ['.js']
-    })
+  browserify('javascripts/farm_designer.js',{debug:true})
+  .transform(babelify)
   .bundle()
   .on('error', oops)
   .pipe(source('farm-designer.js'))

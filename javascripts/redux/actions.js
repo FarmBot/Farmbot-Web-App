@@ -1,5 +1,4 @@
 import { store } from './store';
-import { addons } from 'react/addons';
 
 let actions = {};
 
