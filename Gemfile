@@ -22,7 +22,7 @@ gem 'ice_cube'
 gem 'gulp_rails', '~> 1.0'
 
 source 'https://rails-assets.org' do
-  gem 'rails-assets-ng-sortable'
+  gem 'rails-assets-ng-sortable', '~> 1.2.2'
   gem 'rails-assets-ng-pickadate'
   gem 'rails-assets-js-data'
   gem 'rails-assets-js-data-angular'
