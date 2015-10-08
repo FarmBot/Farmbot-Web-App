@@ -15,20 +15,18 @@
     = javascript_include_tag "application"
   %body{'ng-app' => 'FarmBot'}
     .row
-
-
     %nav.navbar.navbar-default.drop-shadow{ng_app: 'farmbot', ng_controller: 'nav', role: "navigation"}
       .container-fluid
         / Brand and toggle get grouped for better mobile display
         .navbar-header
-          %button.navbar-toggle{"data-target" => "#pull-out-navbar", "data-toggle" => "collapse", :type => "button"}
+          %button.navbar-toggle{"data-target" => "#navbar", "data-toggle" => "collapse", :type => "button"}
             %span.sr-only Toggle navigation
             %span.icon-bar
             %span.icon-bar
             %span.icon-bar
           %a.navbar-brand{:href => "#"} Current page
         / Collect the nav links, forms, and other content for toggling
-        #pull-out-navbar.collapse.navbar-collapse
+        #navbar.collapse.navbar-collapse
           %ul.nav.navbar-nav
             - if current_user
               %li
