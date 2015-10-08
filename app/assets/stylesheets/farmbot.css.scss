@@ -880,20 +880,15 @@ body {
 nav.navbar {
   background-color: $dark_gray;
   color: $gray;
-  font-size: 1rem;
+  font-size: 1.2rem;
+  letter-spacing: .1rem;
   margin: 0;
-  width: 100%;
   padding-left: 15px;
   padding-right: 15px;
   text-transform: uppercase;
-  > li > a {
-    &:hover {
-      color: $off_white;
-    }
-    &:focus {
-      color: $off_white;
-    }
-  }
+}
+.navbar-nav>li>a:hover, :active, :focus {
+  color: $off_white!important;
 }
 .alert-box {
   &.alert.round {

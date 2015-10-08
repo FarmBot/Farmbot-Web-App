@@ -20,11 +20,7 @@
         / Brand and toggle get grouped for better mobile display
         .navbar-header
           %button.navbar-toggle{"data-target" => "#navbar", "data-toggle" => "collapse", :type => "button"}
-            %span.sr-only Toggle navigation
-            %span.icon-bar
-            %span.icon-bar
-            %span.icon-bar
-          %a.navbar-brand{:href => "#"} Current page
+            %span.glyphicon.glyphicon-menu-hamburger
         / Collect the nav links, forms, and other content for toggling
         #navbar.collapse.navbar-collapse
           %ul.nav.navbar-nav
@@ -40,6 +36,11 @@
               %li
                 %a{:href => "/dashboard#/schedule"} Schedules
           %ul.nav.navbar-nav.navbar-right
+            - if current_user && controller_name == "dashboard"
+              %li
+                %syncbutton{schedules: "schedules"}
+              %li
+                %stopbutton
             - if current_user
               %li
                 %a{:href => destroy_user_session_path} Sign out
@@ -52,11 +53,6 @@
                 %a{:href => new_user_registration_path} Register
               %li
                 %a{:href => page_path('help')} Help
-            - if current_user && controller_name == "dashboard"
-              %li
-                %stopbutton
-              %li
-                %syncbutton{schedules: "schedules"}
         / /.navbar-collapse
       / /.container-fluid
 
