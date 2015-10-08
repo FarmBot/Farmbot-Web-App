@@ -10,28 +10,58 @@
     = stylesheet_link_tag "application"
     = csrf_meta_tags
     = javascript_include_tag "//cdnjs.cloudflare.com/ajax/libs/redux/1.0.1/redux.min.js"
+    = javascript_include_tag "//code.jquery.com/jquery-2.1.4.min.js"
     = javascript_include_tag "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
     = javascript_include_tag "application"
   %body{'ng-app' => 'FarmBot'}
     .row
-      %nav.drop-shadow{ng_app: 'farmbot', ng_controller: 'nav'}
-        .col-xs-menu-title MENU
-        %a{:href => root_path} Home
-        - if current_user
-          %a{:href => "/pages/farm_designer"} Farm Designer
-          %a{:href => "/dashboard#/movement"} Controls
-          %a{:href => "/dashboard#/devices"} Devices
-          %a{:href => "/dashboard#/sequence"} Sequences
-          %a{:href => "/dashboard#/schedule"} Schedules
-          %a.col-md-menu-right{:href => destroy_user_session_path} Sign out
-          %a.col-md-menu-right{:href => edit_user_registration_path} My Account
-        - else
-          %a.col-md-menu-right{:href => new_user_session_path} Log In
-          %a.col-md-menu-right{:href => new_user_registration_path} Register
-          %a.col-md-menu-right{:href => page_path('help')} Help
-        - if current_user && controller_name == "dashboard"
-          %stopbutton
-          %syncbutton{schedules: "schedules"}
+
+
+    %nav.navbar.navbar-default.drop-shadow{ng_app: 'farmbot', ng_controller: 'nav', role: "navigation"}
+      .container-fluid
+        / Brand and toggle get grouped for better mobile display
+        .navbar-header
+          %button.navbar-toggle{"data-target" => "#pull-out-navbar", "data-toggle" => "collapse", :type => "button"}
+            %span.sr-only Toggle navigation
+            %span.icon-bar
+            %span.icon-bar
+            %span.icon-bar
+          %a.navbar-brand{:href => "#"} Current page
+        / Collect the nav links, forms, and other content for toggling
+        #pull-out-navbar.collapse.navbar-collapse
+          %ul.nav.navbar-nav
+            - if current_user
+              %li
+                %a{:href => "/pages/farm_designer"} Farm Designer
+              %li
+                %a{:href => "/dashboard#/movement"} Controls
+              %li
+                %a{:href => "/dashboard#/devices"} Devices
+              %li
+                %a{:href => "/dashboard#/sequence"} Sequences
+              %li
+                %a{:href => "/dashboard#/schedule"} Schedules
+          %ul.nav.navbar-nav.navbar-right
+            - if current_user
+              %li
+                %a{:href => destroy_user_session_path} Sign out
+              %li
+                %a{:href => edit_user_registration_path} My Account
+            - else
+              %li
+                %a{:href => new_user_session_path} Log In
+              %li
+                %a{:href => new_user_registration_path} Register
+              %li
+                %a{:href => page_path('help')} Help
+            - if current_user && controller_name == "dashboard"
+              %li
+                %stopbutton
+              %li
+                %syncbutton{schedules: "schedules"}
+        / /.navbar-collapse
+      / /.container-fluid
+
     .container.col-xs-12.col-sm-6.col-md-4.col-xs-centered
       - if notice
         .alert-box.notice.round{"onClick" => "hidden = true"}
