@@ -12,9 +12,9 @@ function mapDispatchToProps(d) {
 }
 var App = connect(state => state, mapDispatchToProps)(DesignerMain);
 
-ReactDOM.render(
+React.render(
   <Provider store={store}>
-    <App />
+    { () => <App />}
   </Provider>,
   document.getElementById('root')
 );
