@@ -6,39 +6,65 @@
     = favicon_link_tag 'favicon.png'
     %title= content_for?(:title) ? yield(:title) : "FarmBot"
     = stylesheet_link_tag "//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css"
-    = stylesheet_link_tag "//cdnjs.cloudflare.com/ajax/libs/foundation/5.4.7/css/foundation.min.css"
+    = stylesheet_link_tag "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
     = stylesheet_link_tag "application"
     = csrf_meta_tags
     = javascript_include_tag "//cdnjs.cloudflare.com/ajax/libs/redux/1.0.1/redux.min.js"
+    = javascript_include_tag "//code.jquery.com/jquery-2.1.4.min.js"
+    = javascript_include_tag "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
     = javascript_include_tag "application"
   %body{'ng-app' => 'FarmBot'}
     .row
-      %nav.drop-shadow{ng_app: 'farmbot', ng_controller: 'nav'}
-        .small-menu-title MENU
-        %a{:href => root_path} Home
-        - if current_user
-          %a{:href => "/pages/farm_designer"} Farm Designer
-          %a{:href => "/dashboard#/movement"} Controls
-          %a{:href => "/dashboard#/devices"} Devices
-          %a{:href => "/dashboard#/sequence"} Sequences
-          %a{:href => "/dashboard#/schedule"} Schedules
-          %a.large-menu-right{:href => destroy_user_session_path} Sign out
-          %a.large-menu-right{:href => edit_user_registration_path} My Account
-        - else
-          %a.large-menu-right{:href => new_user_session_path} Log In
-          %a.large-menu-right{:href => new_user_registration_path} Register
-          %a.large-menu-right{:href => page_path('help')} Help
-        - if current_user && controller_name == "dashboard"
-          %stopbutton
-          %syncbutton{ schedules: "schedules" }
-    .container.small-12.medium-6.large-4.small-centered.columns
-      - if notice
-        .alert-box.notice.round{"onClick" => "hidden = true"}
-          = notice
-          %a.close{style: 'margin-right: 10px; color: white; opacity: 1.0;'} ×
-      - if alert
-        .alert-box.alert.round{"onClick" => "hidden = true"}
-          = alert
-          %a.close{style: 'margin-right: 10px; color: white; opacity: 1.0;'} ×
-    .content
-      = yield
+    %nav.navbar.navbar-default.drop-shadow{ng_app: 'farmbot', ng_controller: 'nav', role: "navigation"}
+      .container-fluid
+        / Brand and toggle get grouped for better mobile display
+        .navbar-header
+          %button.navbar-toggle{"data-target" => "#navbar", "data-toggle" => "collapse", :type => "button"}
+            %span.glyphicon.glyphicon-menu-hamburger
+        / Collect the nav links, forms, and other content for toggling
+        #navbar.collapse.navbar-collapse
+          %ul.nav.navbar-nav
+            - if current_user
+              %li
+                %a{:href => "/pages/farm_designer"} Farm Designer
+              %li
+                %a{:href => "/dashboard#/movement"} Controls
+              %li
+                %a{:href => "/dashboard#/devices"} Devices
+              %li
+                %a{:href => "/dashboard#/sequence"} Sequences
+              %li
+                %a{:href => "/dashboard#/schedule"} Schedules
+          %ul.nav.navbar-nav.navbar-right
+            - if current_user && controller_name == "dashboard"
+              %li
+                %syncbutton.nav-status-buttons{schedules: "schedules"}
+              %li
+                %stopbutton.nav-status-buttons
+            - if current_user
+              %li
+                %a{:href => destroy_user_session_path} Sign out
+              %li
+                %a{:href => edit_user_registration_path} My Account
+            - else
+              %li
+                %a{:href => new_user_session_path} Log In
+              %li
+                %a{:href => new_user_registration_path} Register
+              %li
+                %a{:href => page_path('help')} Help
+        / /.navbar-collapse
+      / /.container-fluid
+    .row
+      .container.col-xs-12.col-sm-6.col-md-4.col-xs-centered
+        - if notice
+          .alert-box.notice.round{"onClick" => "hidden = true"}
+            = notice
+            %a.close{style: 'margin-right: 10px; color: white; opacity: 1.0;'} ×
+        - if alert
+          .alert-box.alert.round{"onClick" => "hidden = true"}
+            = alert
+            %a.close{style: 'margin-right: 10px; color: white; opacity: 1.0;'} ×
+    .container.col-lg-12
+      .content
+        = yield

@@ -20,7 +20,7 @@ ctrl = [
     $scope.sync  = ->
       Devices.syncStatus = 'syncing'
       Devices.send "sync_sequence"
-    $scope.wow   = -> Devices.last_sync || "Never"
+    $scope.wow   = -> Devices.last_sync || "---"
 ]
 directive =
   restrict: 'AEC'
@@ -28,7 +28,7 @@ directive =
     {{ txt() }}
     <i class="{{ icon() }}"></i>
     </button>
-    LAST SYNC: {{ wow() | date:"h:mm a, MMM d" }}'
+    <div class="last-sync">LAST SYNC: {{ wow() | date:"h:mm a, MMM d" }}</div>'
   scope:
     schedules: '='
   link: ($scope, el, attr) ->

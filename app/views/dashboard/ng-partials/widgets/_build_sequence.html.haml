@@ -1,26 +1,30 @@
 .widget-wrapper
   .row
-    .small-12.columns
-      %button.green.button-like{ "ng-click" => "saveSequence(sequence)", style: "margin: 9px;" }
+    .col-sm-12
+      %button.green.button-like{"ng-click" => "saveSequence(sequence)", style: 'margin-top: 5px; margin-right: 15px;'}
         Save
-      %button.yellow.button-like{ "ng-click" => "execute(sequence)", style: "margin: 9px;" }
+      %button.yellow.button-like{"ng-click" => "execute(sequence)", style: 'margin-top: 5px; margin-right: 15px;'}
         Execute
-      %button.red.button-like{ "ng-click" => "deleteSequence(sequence)", style: "margin: 9px;" }
+      %button.red.button-like{"ng-click" => "deleteSequence(sequence)", style: 'margin-top: 5px; margin-right: 15px;'}
         Delete
       .header-wrapper
         %h5 Sequence Builder
   .row
-    .small-12.columns
+    .col-sm-12
       .content-wrapper
         .row
-          .small-12.columns
-            %label.left NAME
-            %input{"ng-model" => "sequence.name", :type => "text"}
+          .col-sm-12
+            %input#right-label{"ng-model" => "sequence.name", :type => "text"}
         .row
-          .small-12.columns
-            %label.left PARAMETERS
-            %button.round.dark-gray.left.margin-left PLANT-ID
-          .small-12.columns{"as-sortable" => "dragControlListeners", "ng-model" => "sequence.steps"}
+          .col-sm-12
+            %label Sequence Parameters:
+            %a.tiny.expand.button.round.dark-gray{:href => "#"} PLANT-ID/PLANT-GROUP-ID
+        .row
+          .col-sm-12
+            .drag-drop-area.padding
+              %h6 DRAG BASIC OPERATIONS AND/OR SAVE SEQUENCES HERE
+        .row
+          .col-sm-12{"as-sortable" => "dragControlListeners", "ng-model" => "sequence.steps"}
             %div{"ng-repeat" => "step in sequence.steps | orderBy: 'position'", 'as-sortable-item' => true}
               .row
                 %ng-include{src: "'sequence-builder/' + step.message_type"}

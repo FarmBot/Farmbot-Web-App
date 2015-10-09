@@ -1,19 +1,19 @@
-.small-12.columns
-  .small-12.columns.red-block.block
+.col-sm-12
+  .col-sm-12.red-block.block
     .row.red-header
-      .small-12.columns
+      .col-sm-12
         %nav.row.top-bar.red-header
           %ul.title-area
             %li.name
               %h5 SEND MESSAGE
           = render partial: "dashboard/ng-partials/sequence-builder/step_ui/step_titlebar_button_group"
     .row.content-area.red-content
-      .large-12.columns
+      .col-md-12
         .row.collapse.prefix-radius
-          .small-2.columns
+          .col-sm-2
             %span.prefix MESSAGE
-          .small-10.columns
+          .col-sm-10
             %input{:placeholder => "Pin 9 was {{ pin9 }} at {{ time }}.", :type => "text", ng_model: "step.command.value"}
         .row.collapse.prefix-radius
-          .small-10
+          .col-sm-10
             %p <strong> Use <a href="https://github.com/Shopify/liquid/wiki/Liquid-for-Designers">Liquid Markup</a> to embed the following information into messages:</strong> x, y, z, s (speed setting), busy, last (command executed), pin0, pin1, pin2, pin3, pin4, pin5, pin6, pin7, pin8, pin9, pin10, pin11, pin12, pin13, time (message sent)
