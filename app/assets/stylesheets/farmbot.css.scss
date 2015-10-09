@@ -455,6 +455,8 @@ button {
   border-style: dashed;
   border-width: 2px;
   border-color: $light_gray;
+  color: $gray;
+  font-weight: bold;
   margin-bottom: 1rem;
   padding: 1.25rem;
   background: $off_white;
@@ -504,7 +506,7 @@ button {
 }
 
 .yellow-header {
-  background-color: $light_yellow;
+  background-color: $yellow;
   color: $dark_gray;
 }
 .yellow-block {
@@ -626,7 +628,7 @@ button {
 .block {
   height: 2.5rem;
   margin-bottom: 1.5rem;
-    box-shadow: 0 0px 10px $light_gray;
+  box-shadow: 0 0px 10px $light_gray;
   &:hover {
         transform: translateY(-1px);
         box-shadow: 0 4px 10px $translucent;
