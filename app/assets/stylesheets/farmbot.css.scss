@@ -823,7 +823,7 @@ input[type="submit"] {
   font-size: 16px;
   text-align: center;
   border-bottom: 3px solid $dark_gray;
-  margin: -5px;
+  margin: 0;
   &:active {
     border-bottom-width: 1px!important;
         transform: translateY(2px);
