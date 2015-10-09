@@ -10,7 +10,7 @@ module Api
     end
 
     def destroy
-      if (crop.device == current_device) && crop.destroy
+      if (plant.device == current_device) && plant.destroy
         render nothing: true
       else
         raise Errors::Forbidden, "Not your Plant object."
@@ -19,8 +19,8 @@ module Api
 
     private
 
-    def crop
-      @crop ||= Plant.find(params[:id])
+    def plant
+      @plant ||= Plant.find(params[:id])
     end
   end
 end

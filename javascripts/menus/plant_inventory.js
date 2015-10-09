@@ -33,6 +33,9 @@ export class Item extends React.Component {
 };
 
 export class Plants extends React.Component {
+  wow() {
+    this.props.dispatch({type: "EXPERIMENTAL"});
+  }
   render() {
     var d = this.props.dispatch;
     return(

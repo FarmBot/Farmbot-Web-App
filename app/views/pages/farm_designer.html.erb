@@ -1,4 +1,4 @@
-<div class="farm-designer" id="root">
+<div id="root">
 </div>
 
 <script type="text/javascript">
@@ -9,6 +9,7 @@
     },
     global: {
       plants: <%= raw(current_user.device.plants.to_json) %>,
+      planting_area: <%= raw PlantingArea.find_or_create_by(device: current_user.device).to_json %>,
       selectedPlant: {}
     }
   };

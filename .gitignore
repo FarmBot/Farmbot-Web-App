@@ -32,6 +32,7 @@ rerun.txt
 pickle-email-*.html
 /public/assets/
 /public/build/*
+/public/js/*
 
 
 ## Environment normalisation:
