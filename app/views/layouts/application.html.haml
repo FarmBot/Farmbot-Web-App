@@ -55,15 +55,17 @@
                 %a{:href => page_path('help')} Help
         / /.navbar-collapse
       / /.container-fluid
-
-    .container.col-xs-12.col-sm-6.col-md-4.col-xs-centered
-      - if notice
-        .alert-box.notice.round{"onClick" => "hidden = true"}
-          = notice
-          %a.close{style: 'margin-right: 10px; color: white; opacity: 1.0;'} ×
-      - if alert
-        .alert-box.alert.round{"onClick" => "hidden = true"}
-          = alert
-          %a.close{style: 'margin-right: 10px; color: white; opacity: 1.0;'} ×
-    .content
-      = yield
+    .row
+      .container.col-xs-12.col-sm-6.col-md-4.col-xs-centered
+        - if notice
+          .alert-box.notice.round{"onClick" => "hidden = true"}
+            = notice
+            %a.close{style: 'margin-right: 10px; color: white; opacity: 1.0;'} ×
+        - if alert
+          .alert-box.alert.round{"onClick" => "hidden = true"}
+            = alert
+            %a.close{style: 'margin-right: 10px; color: white; opacity: 1.0;'} ×
+    .row
+      .col-lg-12
+        .content
+          = yield
