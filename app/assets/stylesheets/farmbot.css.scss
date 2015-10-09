@@ -18,7 +18,7 @@ $dark_gray:      #434343;
 $black:          #000;
 
 $light_blue:     #cdf;
-$blue:           #00f;
+$blue:           #a4c2f4;
 $dark_blue:      #37d;
 
 $light_green:    #bda;
@@ -345,11 +345,13 @@ button {
   text-transform: uppercase;
   text-align: center;
   font-weight: bold;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 12px;
-  padding-right: 12px;
-  border-radius: 4px;
+  padding-top: .2rem;
+  padding-bottom: .2rem;
+  padding-left: .8rem;
+  padding-right: .8rem;
+  border-radius: 3px;
+  border-bottom-width: 2px!important;
+  border: none;
   margin-bottom: 0px;
   &.stop {
     background-color: $red;
@@ -434,10 +436,11 @@ button {
   padding: .75rem 1rem;
   background: $dark_gray;
   text-transform: uppercase;
+  letter-spacing: .05rem;
   h5 {
     color: $gray;
-    margin: 0;
-    font-size: 1rem;
+    margin: .25rem;
+    font-size: 1.2rem;
   }
   p {
     font-size: 88%;
@@ -456,21 +459,24 @@ button {
   font-weight: bold;
   margin-bottom: 1rem;
   padding: 1.25rem;
+  background: $off_white;
   text-align: center;
+  color: $gray;
+  font-weight: bold;
 }
 .blue-header {
-  background-color: $light_blue;
+  background-color: $blue;
   color: $dark_gray;
 }
 .blue-block {
-  background-color: $light_blue;
+  background-color: $blue;
   color: $dark_gray;
   &:hover {
-    background-color: $light_blue;
+    background-color: $blue;
     color: $dark_gray;
   }
   &:focus {
-    background-color: $light_blue;
+    background-color: $blue;
     color: $dark_gray;
   }
 }
@@ -620,8 +626,9 @@ button {
   background-color: $pink;
 }
 .block {
-  margin-bottom: 20px;
-  box-shadow: 0px 0px 10px $light_gray;
+  height: 2.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0px 10px $light_gray;
   &:hover {
         transform: translateY(-1px);
         box-shadow: 0 4px 10px $translucent;
@@ -759,7 +766,7 @@ input[type="submit"] {
   padding-bottom: 50px;
 }
 .row {
-  max-width: 120rem;
+  max-width: 160rem;
   &.date-flipper {
     margin-bottom: 20px;
   }
@@ -818,7 +825,7 @@ input[type="submit"] {
   font-size: 16px;
   text-align: center;
   border-bottom: 3px solid $dark_gray;
-  margin: -5px;
+  margin: 0;
   &:active {
     border-bottom-width: 1px!important;
         transform: translateY(2px);
@@ -860,58 +867,20 @@ body {
 .drop-shadow {
     box-shadow: 0 4px 10px $translucent;
 }
-nav {
+nav.navbar {
   background-color: $dark_gray;
-  color: $gray;
-  font-size: 1rem;
+  color: $light_gray;
+  font-size: 1.2rem;
+  letter-spacing: .15rem;
   margin: 0;
-  width: 100%;
-  padding-left: 15px;
-  padding-right: 15px;
   text-transform: uppercase;
-  height: 48px;
-    transition: height 0.2s;
-  > a {
-    @extend %extend_3;
-    &:hover {
-      color: $off_white!important;
-    }
-    &:focus {
-      color: $off_white;
-    }
-    &.large-menu-right {
-      float: right;
-    }
-  }
+  border-radius: 0px;
+
 }
-.small-menu-title {
-  @extend %extend_3;
-  display: none;
-}
-@media only screen and(max-width: 64.063em) {
-  nav {
-    &:hover {
-      height: 432px;
-            transition: height 0.2s;
-      height: 432px;
-            transition: height 0.2s;
-      > a {
-        display: block;
-        display: block;
-      }
-    }
-    > a {
-      display: none;
-      display: none;
-      &.large-menu-right {
-        float: none;
-        float: none;
-      }
-    }
-  }
-  .small-menu-title {
-    display: inline-block;
-    display: inline-block;
+.navbar-nav>li>a {
+  color: $gray!important;
+  &:hover, :active, :focus {
+    color: $off_white!important;
   }
 }
 .alert-box {
@@ -1022,12 +991,13 @@ table thead tr th {
   padding: .5rem;
 }
 
-.margin-top {
-  margin-top: 9px;
+.nav-status-buttons {
+  display: block;
+  margin: 15px;
+  float: right;
 }
-.margin-left {
-  margin-left: 12px;
-}
-.margin-right {
-  margin-right: 12px;
+
+.last-sync {
+  margin-right: 30px;
+  float: right;
 }

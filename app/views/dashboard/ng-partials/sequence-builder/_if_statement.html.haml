@@ -1,28 +1,28 @@
-.small-12.columns
-  .small-12.columns.purple-block.block
+.col-sm-12
+  .col-sm-12.purple-block.block
     .row.purple-header
-      .small-12.columns
+      .col-sm-12
         %nav.row.top-bar.purple-header
           %ul.title-area
             %li.name
               %h5 IF STATMENT
           = render partial: "dashboard/ng-partials/sequence-builder/step_ui/step_titlebar_button_group"
     .row.content-area.purple-content
-      .large-12.columns
+      .col-md-12
         .row.collapse.prefix-radius
-          .small-3.columns
+          .col-sm-3
             %span.prefix IF
-          .small-3.columns
+          .col-sm-3
             %select{ng_options: "obj for obj in variables", ng_model: "step.command.variable"}
-          .small-3.columns
+          .col-sm-3
             %select{ng_options: "obj for obj in operators", ng_model: "step.command.operator"}
-          .small-3.columns
+          .col-sm-3
             %input{:placeholder => "off", :type => "text", ng_model: "step.command.value"}
     .row.content-area.purple-content
-      .large-12.columns
+      .col-md-12
         .row.collapse.prefix-radius
-          .small-3.columns
+          .col-sm-3
             %span.prefix EXECUTE
-          .small-9.columns
+          .col-sm-9
             %select{ng_options: "obj._id as obj.name for obj in storedSequences", ng_model: "step.command.sub_sequence_id"}
         %p <strong>PROTIP:</strong> Create a `Schedule` for endless execution. Sequences don't support endless looping.

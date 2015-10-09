@@ -1,13 +1,13 @@
 .widget-wrapper
   .row
-    .small-12.columns
+    .col-sm-12
       .header-wrapper
         %h5 Move
-    .small-12.columns
+    .col-sm-12
       .content-wrapper
         %label.text-center MOVE AMOUNT (mm) {{ device.current.busy == 0 ? "Ready" : "Busy" }}
         .row
-          .small-12.columns
+          .col-sm-12
             %button.move-amount.no-radius.leftmost{ stepsize: '1' } 1
             %button.move-amount.no-radius{ stepsize: '10' } 10
             %button.move-amount.no-radius{ stepsize: '100' } 100
@@ -42,23 +42,23 @@
               %td
 
         .row
-          .medium-6.small-7.columns.medium-offset-1
+          .col-md-6.col-sm-7.col-md-offset-1
             %label GANTRY (X)
-          .medium-4.small-5.columns.end
+          .col-md-4.col-sm-5.end
             %manualmovementinput{axisdata: 'axisdata', axis: 'x'}
         .row
-          .medium-6.small-7.columns.medium-offset-1
+          .col-md-6.col-sm-7.col-md-offset-1
             %label CROSS-SLIDE (Y)
-          .medium-4.small-5.columns.end
+          .col-md-4.col-sm-5.end
             %manualmovementinput{axisdata: 'axisdata', axis: 'y'}
         .row
-          .medium-6.small-7.columns.medium-offset-1
+          .col-md-6.col-sm-7.col-md-offset-1
             %label Z-AXIS (Z)
-          .medium-4.small-5.columns.end
+          .col-md-4.col-sm-5.end
             %manualmovementinput{axisdata: 'axisdata', axis: 'z'}
         .row.padding-bottom
-          .medium-6.small-7.columns.medium-offset-1
+          .col-md-6.col-sm-7.col-md-offset-1
             %stopbutton.left
-          .medium-4.small-5.columns.end
+          .col-md-4.col-sm-5.end
             %button.full-width.green.button-like{ng_click: 'manualMovement()'} GO
 

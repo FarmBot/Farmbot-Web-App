@@ -1,59 +1,59 @@
 .widget-wrapper
   .row
-    .small-12.columns
+    .col-sm-12
       .header-wrapper
         %h5 Schedule a Sequence
   .row
-    .small-12.columns
+    .col-sm-12
       %form.content-wrapper{name: 'form',  "ng-submit" => "submit()" }
         .row.padding-bottom
-          .small-4.columns
+          .col-sm-4
             %p Choose a Sequence
-          .small-12.columns
-            .small-12.columns
+          .col-sm-12
+            .col-sm-12
               .row.content-area.blue-content
-                .large-6.columns
+                .col-md-6
                   .row.collapse.prefix-radius
-                    .small-3.columns
+                    .col-sm-3
                       %span.prefix.uppercase Starts
-                    .small-9.columns
+                    .col-sm-9
                       %input{'pick-a-date' => "form.start_time", placeholder: "Today", :type => "text"}
                   .row.collapse.prefix-radius
-                    .small-3.columns
+                    .col-sm-3
                       %span.prefix.uppercase Ends
-                    .small-9.columns
+                    .col-sm-9
                       %input{'pick-a-date' => "form.end_time", :placeholder => "Never", :type => "text"}
                   .row.collapse.prefix-radius
-                    .small-3.columns
+                    .col-sm-3
                       %span.prefix.uppercase Time
-                    .small-9.columns
+                    .col-sm-9
                       %input{'pick-a-time' => "form.start_time", placeholder: "Now", type: "text"}
-                .large-6.columns
+                .col-md-6
                   .row.collapse.prefix-radius
-                    .small-4.columns
+                    .col-sm-4
                       %span.prefix.uppercase * Every
-                    .small-4.columns
+                    .col-sm-4
                       %input{:placeholder => "4", :type => "text", ng_model: 'form.repeat', required: true}
-                    .small-4.columns
+                    .col-sm-4
                       %select{'ng-options' => 'item.value as item.show for item in repeats', 'ng-model' => 'form.time_unit', required: true}
                   .row.collapse.prefix-radius
-                    .small-4.columns
+                    .col-sm-4
                       %span.prefix.uppercase Tool-ID
-                    .small-8.columns
+                    .col-sm-8
                       %input{:placeholder => "3", :type => "text"}
                   .row.collapse.prefix-radius
-                    .small-4.columns
+                    .col-sm-4
                       %span.prefix.uppercase * Sequence
-                    .small-8.columns
+                    .col-sm-8
                       %select{'ng-options' => 'item._id as item.name for item in sequences', 'ng-model' => 'form.sequence_id', required: true}
         .row
-          .small-12.columns
+          .col-sm-12
             %button.green.button-like{'ng-disabled' => 'form.$invalid', type: 'submit'}
               Schedule
             %syncbutton{schedules: "schedules"}
             %button.red.button-like.left{"ng-click" => "destroy()", type: 'button'}
               Delete
         .row.padding-bottom
-          .small-12.columns
+          .col-sm-12
             %strong{'ng-show' => 'form.$invalid'}
               Fields marked with (*) are required.

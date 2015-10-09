@@ -1,12 +1,13 @@
 .widget-wrapper
   .row
-    .small-12.columns
-      %button.green.button-like{"ng-click" => "addSequence()", style: "margin: 9px;" }
-        Add
+    .col-sm-12
       .header-wrapper
+        %button.green.button-like.text-left{"ng-click" => "addSequence()", style: 'margin-top: -3px;'}
+          %i.step.fi-plus.size-12
+          Add
         %h5 Sequences
   .row
-    .small-12.columns
+    .col-sm-12
       .content-wrapper
         %div{"ng-repeat" => "seq in storedSequences track by $id(seq)"}
           %button.full-width.text-left.no-radius.block{"ng-click" => "load(seq)", class: "{{seq.color}}-block"}

@@ -1,38 +1,38 @@
-.small-12.columns
-  .small-12.columns.green-block.block
+.col-sm-12
+  .col-sm-12.green-block.block
     .row.green-header
-      .small-12.columns
+      .col-sm-12
         %nav.row.top-bar.green-header{:role => "navigation"}
           %ul.title-area
             %li.name
               %h5 MOVE RELATIVE
           = render partial: "dashboard/ng-partials/sequence-builder/step_ui/step_titlebar_button_group"
     .row.content-area.green-content
-      .large-2.columns
+      .col-md-2
         .row.collapse.prefix-radius
-          .small-3.columns
+          .col-sm-3
             %span.prefix X
-          .small-9.columns
+          .col-sm-9
             %input{:placeholder => "25 mm", :type => "text", ng_model: "step.command.x"}
-      .large-2.columns
+      .col-md-2
         .row.collapse.prefix-radius
-          .small-3.columns
+          .col-sm-3
             %span.prefix Y
-          .small-9.columns
+          .col-sm-9
             %input{:placeholder => "20 mm", :type => "text", ng_model: "step.command.y"}
-      .large-2.columns
+      .col-md-2
         .row.collapse.prefix-radius
-          .small-3.columns
+          .col-sm-3
             %span.prefix Z
-          .small-9.columns
+          .col-sm-9
             %input{:placeholder => "0 mm", :type => "text", ng_model: "step.command.z"}
-      .large-6.columns
+      .col-md-6
         .row.collapse.prefix-radius
-          .small-3.columns
+          .col-sm-3
             %span.prefix SPEED
-          .small-7.columns
+          .col-sm-7
             %input{:placeholder => "Default", :type => "text", ng_model: "step.command.speed"}
-          .small-2.columns
+          .col-sm-2
             %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
             %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
               %li
