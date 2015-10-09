@@ -1,20 +1,20 @@
-.small-12.columns
-  .small-12.columns.blue-block.block
+.col-sm-12
+  .col-sm-12.blue-block.block
     .row.blue-header
-      .small-12.columns
+      .col-sm-12
         %nav.row.top-bar.blue-header{:role => "navigation"}
           %ul.title-area
             %li.name
               %h5 MOVE ABSOLUTE
           = render partial: "dashboard/ng-partials/sequence-builder/step_ui/step_titlebar_button_group"
     .row.content-area.blue-content
-      .large-8.columns
+      .col-md-8
         .row.collapse.prefix-radius
-          .small-2.columns
+          .col-sm-2
             %span.prefix.uppercase x
-          .small-8.columns
+          .col-sm-8
             %input{:placeholder => "Inherit Plant-ID_X", :type => "text", ng_model: "step.command.x"}
-          .small-2.columns
+          .col-sm-2
             %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
             %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
               %li
@@ -24,11 +24,11 @@
               %li
                 %a{:href => "#"} Yet another
         .row.collapse.prefix-radius
-          .small-2.columns
+          .col-sm-2
             %span.prefix.uppercase y
-          .small-8.columns
+          .col-sm-8
             %input{:placeholder => "Inherit Plant-ID_Y", :type => "text", ng_model: "step.command.y"}
-          .small-2.columns
+          .col-sm-2
             %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
             %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
               %li
@@ -38,11 +38,11 @@
               %li
                 %a{:href => "#"} Yet another
         .row.collapse.prefix-radius
-          .small-2.columns
+          .col-sm-2
             %span.prefix.uppercase z
-          .small-8.columns
+          .col-sm-8
             %input{:placeholder => "Inherit Plant-ID Plant-Height", :type => "text", ng_model: "step.command.z"}
-          .small-2.columns
+          .col-sm-2
             %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
             %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
               %li
@@ -52,11 +52,11 @@
               %li
                 %a{:href => "#"} Yet another
         .row.collapse.prefix-radius
-          .small-3.columns
+          .col-sm-3
             %span.prefix.uppercase speed
-          .small-7.columns
+          .col-sm-7
             %input{:placeholder => "Default", :type => "text", ng_model: "step.command.speed"}
-          .small-2.columns
+          .col-sm-2
             %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
             %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
               %li
@@ -65,19 +65,19 @@
                 %a{:href => "#"} This is another
               %li
                 %a{:href => "#"} Yet another
-      .large-4.columns
+      .col-md-4
         .row.collapse.prefix-radius
-          .small-6.columns
+          .col-sm-6
             %span.prefix.uppercase x-offset
-          .small-6.columns
+          .col-sm-6
             %input{:placeholder => "-100 mm", :type => "text"}
         .row.collapse.prefix-radius
-          .small-6.columns
+          .col-sm-6
             %span.prefix.uppercase y-offset
-          .small-6.columns
+          .col-sm-6
             %input{:placeholder => "0 mm", :type => "text"}
         .row.collapse.prefix-radius
-          .small-6.columns
+          .col-sm-6
             %span.prefix.uppercase z-offset
-          .small-6.columns
+          .col-sm-6
             %input{:placeholder => "+20 mm", :type => "text"}

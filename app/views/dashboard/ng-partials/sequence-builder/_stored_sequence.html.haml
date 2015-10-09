@@ -1,20 +1,20 @@
-.small-12.columns
-  .small-12.columns.red-block.block
+.col-sm-12
+  .col-sm-12.red-block.block
     .row.red-header
-      .small-12.columns
+      .col-sm-12
         %nav.row.top-bar.red-header
           %ul.title-area
             %li.name
               %h5 SCARE AWAY THE BIRDS
           = render partial: "dashboard/ng-partials/sequence-builder/step_ui/step_titlebar_button_group"
     .row.content-area
-      .large-8.columns
+      .col-md-8
         .row.collapse.prefix-radius
-          .small-3.columns
+          .col-sm-3
             %span.prefix.uppercase plant-id
-          .small-7.columns
+          .col-sm-7
             %input{:placeholder => "Inherit Plant-ID", :type => "text"}
-          .small-2.columns
+          .col-sm-2
             %button.tiny.button.postfix.dropdown.light-gray{"aria-controls" => "drop1", "aria-expanded" => "false", "data-dropdown" => "drop1", :href => "#"}
             %ul#drop1.f-dropdown{"aria-hidden" => "true", "data-dropdown-content" => "", :tabindex => "-1"}
               %li
@@ -23,4 +23,4 @@
                 %a{:href => "#"} This is another
               %li
                 %a{:href => "#"} Yet another
-      .large-4.columns
+      .col-md-4
