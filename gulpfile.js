@@ -11,7 +11,7 @@ var paths = {
 };
 
 function oops (s) {
-  exec( 'notify-send "' + (s.message || s) + '"' );
+  exec( 'notify-send "' + (s.message || s || "Gulp Error") + '"' );
   gutil.log(s.message);
 }
 
@@ -26,5 +26,4 @@ gulp.task('default', function () {
   .on('error', oops)
   .pipe(source('farm-designer.js'))
   .pipe(gulp.dest('public/build/'));
-  exec("espeak 'Saved.'");
 })
