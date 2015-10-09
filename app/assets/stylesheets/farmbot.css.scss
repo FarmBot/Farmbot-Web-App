@@ -18,7 +18,7 @@ $dark_gray:      #434343;
 $black:          #000;
 
 $light_blue:     #cdf;
-$blue:           #00f;
+$blue:           #a4c2f4;
 $dark_blue:      #37d;
 
 $light_green:    #bda;
@@ -345,11 +345,12 @@ button {
   text-transform: uppercase;
   text-align: center;
   font-weight: bold;
-  padding-top: .3rem;
-  padding-bottom: .3rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  border-radius: 4px;
+  padding-top: .2rem;
+  padding-bottom: .2rem;
+  padding-left: .8rem;
+  padding-right: .8rem;
+  border-radius: 3px;
+  border-bottom-width: 2px!important;
   border: none;
   margin-bottom: 0px;
   &.stop {
@@ -435,10 +436,11 @@ button {
   padding: .75rem 1rem;
   background: $dark_gray;
   text-transform: uppercase;
+  letter-spacing: .05rem;
   h5 {
     color: $gray;
-    margin: 0;
-    font-size: 1rem;
+    margin: .25rem;
+    font-size: 1.2rem;
   }
   p {
     font-size: 88%;
@@ -456,24 +458,23 @@ button {
   margin-bottom: 1rem;
   padding: 1.25rem;
   background: $off_white;
-  color: $dark_gray;
   text-align: center;
+  color: $gray;
+  font-weight: bold;
 }
 .blue-header {
-  background-color: $light_blue;
+  background-color: $blue;
   color: $dark_gray;
 }
 .blue-block {
-  background-color: $light_blue;
+  background-color: $blue;
   color: $dark_gray;
-  border-right: 2px solid $dark_blue;
-  border-bottom: 2px solid $dark_blue;
   &:hover {
-    background-color: $light_blue;
+    background-color: $blue;
     color: $dark_gray;
   }
   &:focus {
-    background-color: $light_blue;
+    background-color: $blue;
     color: $dark_gray;
   }
 }
@@ -488,8 +489,6 @@ button {
 .green-block {
   background-color: $light_green;
   color: $dark_gray;
-  border-right: 2px solid $green;
-  border-bottom: 2px solid $green;
   &:hover {
     background-color: $light_green;
     color: $dark_gray;
@@ -509,16 +508,14 @@ button {
   color: $dark_gray;
 }
 .yellow-block {
-  background-color: $light_yellow;
+  background-color: $yellow;
   color: $dark_gray;
-  border-right: 2px solid $gold;
-  border-bottom: 2px solid $gold;
   &:hover {
-    background-color: $light_yellow;
+    background-color: $yellow;
     color: $dark_gray;
   }
   &:focus {
-    background-color: $light_yellow;
+    background-color: $yellow;
     color: $dark_gray;
   }
 }
@@ -532,8 +529,6 @@ button {
 .orange-block {
   background-color: $peach;
   color: $dark_gray;
-  border-right: 2px solid $dark_orange;
-  border-bottom: 2px solid $dark_orange;
   &:hover {
     background-color: $peach;
     color: $dark_gray;
@@ -553,8 +548,6 @@ button {
 .purple-block {
   background-color: $lavender;
   color: $dark_gray;
-  border-right: 2px solid $royal_purple;
-  border-bottom: 2px solid $royal_purple;
   &:hover {
     background-color: $lavender;
     color: $dark_gray;
@@ -580,8 +573,6 @@ button {
 .pink-block {
   background-color: $light_purple;
   color: $dark_gray;
-  border-right: 2px solid $dark_purple;
-  border-bottom: 2px solid $dark_purple;
   &:hover {
     background-color: $light_purple;
     color: $dark_gray;
@@ -601,8 +592,6 @@ button {
 .gray-block {
   background-color: $gray;
   color: $dark_gray;
-  border-right: 2px solid $dark_gray;
-  border-bottom: 2px solid $dark_gray;
   &:hover {
     background-color: $gray;
     color: $dark_gray;
@@ -622,8 +611,6 @@ button {
 .red-block {
   background-color: $pink;
   color: $dark_gray;
-  border-right: 2px solid $dark_pink;
-  border-bottom: 2px solid $dark_pink;
   &:hover {
     background-color: $pink;
     color: $dark_gray;
@@ -637,10 +624,11 @@ button {
   background-color: $pink;
 }
 .block {
-  margin-bottom: 20px;
-    box-shadow: 0 4px 10px $translucent;
+  height: 2.5rem;
+  margin-bottom: 1.5rem;
+    box-shadow: 0 0px 10px $light_gray;
   &:hover {
-        transform: translateY(-2px);
+        transform: translateY(-1px);
         box-shadow: 0 4px 10px $translucent;
         transition: all 0.2s ease-out;
     .edit-icon {
@@ -881,7 +869,7 @@ nav.navbar {
   background-color: $dark_gray;
   color: $light_gray;
   font-size: 1.2rem;
-  letter-spacing: .1rem;
+  letter-spacing: .15rem;
   margin: 0;
   text-transform: uppercase;
   border-radius: 0px;
