@@ -879,16 +879,19 @@ body {
 }
 nav.navbar {
   background-color: $dark_gray;
-  color: $gray;
+  color: $light_gray;
   font-size: 1.2rem;
   letter-spacing: .1rem;
   margin: 0;
-  padding-left: 15px;
-  padding-right: 15px;
   text-transform: uppercase;
+  border-radius: 0px;
+
 }
-.navbar-nav>li>a:hover, :active, :focus {
-  color: $off_white!important;
+.navbar-nav>li>a {
+  color: $gray!important;
+  &:hover, :active, :focus {
+    color: $off_white!important;
+  }
 }
 .alert-box {
   &.alert.round {
@@ -996,4 +999,15 @@ table tr td {
 
 table thead tr th {
   padding: .5rem;
+}
+
+.nav-status-buttons {
+  display: block;
+  margin: 15px;
+  float: right;
+}
+
+.last-sync {
+  margin-right: 30px;
+  float: right;
 }

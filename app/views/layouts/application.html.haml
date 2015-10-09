@@ -38,9 +38,9 @@
           %ul.nav.navbar-nav.navbar-right
             - if current_user && controller_name == "dashboard"
               %li
-                %syncbutton{schedules: "schedules"}
+                %syncbutton.nav-status-buttons{schedules: "schedules"}
               %li
-                %stopbutton
+                %stopbutton.nav-status-buttons
             - if current_user
               %li
                 %a{:href => destroy_user_session_path} Sign out
