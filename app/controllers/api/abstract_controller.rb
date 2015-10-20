@@ -2,6 +2,7 @@ module Api
   class AbstractController < ApplicationController
     respond_to :json
     before_action :authenticate_user!
+    skip_before_action :verify_authenticity_token
 
     rescue_from Errors::Forbidden do |exc|
       sorry "You can't perform that action. #{exc.message}", 403
@@ -36,9 +37,9 @@ private
       if auth.success?
         @current_device = auth.result
       else
-        sorry("""You failed to authenticate with the API. Ensure that you have
-         provided a `bot_token` and `bot_uuid` header in the HTTP request.
-        """.squish, 401)
+        sorry("You failed to authenticate with the API. Ensure that you " +
+          "have provided a `bot_token` and `bot_uuid` header in the HTTP" +
+          " request.", 401)
       end
     end
 
