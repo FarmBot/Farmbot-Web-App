@@ -6,7 +6,6 @@ module Api
     end
 
     def create
-      binding.pry
       mutate Plants::Create.run(params, device: current_device)
     end
 
