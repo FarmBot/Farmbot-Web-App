@@ -145,7 +145,6 @@ GEM
       sexp_processor (~> 4.4)
     font-awesome-rails (4.3.0.0)
       railties (>= 3.2, < 5.0)
-    gulp_rails (1.0)
     haml (4.0.6)
       tilt
     high_voltage (2.1.0)
@@ -218,6 +217,7 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
     rack (1.5.2)
+    rack-cors (0.4.0)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.1.0)
@@ -371,7 +371,6 @@ DEPENDENCIES
   factory_girl_rails
   faker
   font-awesome-rails
-  gulp_rails (~> 1.0)
   haml
   high_voltage (~> 2.1.0)
   ice_cube
@@ -383,6 +382,7 @@ DEPENDENCIES
   phantomjs
   poltergeist
   pry
+  rack-cors
   rails (= 4.1.0)
   rails-assets-jquery!
   rails-assets-js-data!

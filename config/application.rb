@@ -34,8 +34,15 @@ module FarmBot
       g.fixture_replacement :factory_girl, :dir => 'spec/factories'
     end
     config.autoload_paths << Rails.root.join('lib')
-    config
-      .browserify_rails
-      .commandline_options = "-t [ reactify --es6 target --es5 ]"
+    config.middleware.insert_before 'ActionDispatch::Static', 'Rack::Cors' do
+      allow do
+        origins '*'
+        resource '/api/*',
+                 headers: :any,
+                 methods: [:get, :post, :delete, :put, :patch, :options, :head],
+                 credentials: false, # No cookies.
+                 max_age: 0
+      end
+    end
   end
 end

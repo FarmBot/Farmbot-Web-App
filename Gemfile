@@ -19,7 +19,7 @@ gem 'devise', github: 'plataformatec/devise'
 gem 'mutations'
 gem 'active_model_serializers', '~> 0.8.3'
 gem 'ice_cube'
-gem 'gulp_rails', '~> 1.0'
+gem 'rack-cors', require: 'rack/cors'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-ng-sortable', '~> 1.2.2'
