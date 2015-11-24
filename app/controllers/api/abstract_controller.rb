@@ -55,7 +55,6 @@ private
       end
     end
 
-    # TODO: go back to using root elements for JSON
     def default_serializer_options
       {root: false, user: current_user}
     end

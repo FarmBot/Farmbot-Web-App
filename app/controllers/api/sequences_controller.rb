@@ -1,6 +1,6 @@
 module Api
   class SequencesController < Api::AbstractController
-    # TODO add user authorization maybe (privacy)
+
     def index
       query = { device: current_device }
       query.merge!(schedule_id: params[:schedule_id]) if params[:schedule_id]

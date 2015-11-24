@@ -1,15 +1,16 @@
 source 'https://rubygems.org'
 ruby '2.2.3'
 
-gem 'rails',  '4.1.0'
+gem 'rails',  '4.2.4'
 
 #Dokku demands this one.
 gem 'rails_12factor'
 gem 'ng-rails-csrf'
-gem 'mongoid', '~> 4.0.0', github: 'mongoid/mongoid'
+gem 'mongoid', '~> 5.0.1'#, github: 'mongoid/mongoid'
 
 #Asset stuff
-gem 'sass-rails', github: 'rails/sass-rails'
+gem 'sprockets'
+gem 'sass-rails'#, github: 'rails/sass-rails'
 gem 'coffee-rails'
 gem 'font-awesome-rails'
 gem 'uglifier'
@@ -50,7 +51,8 @@ group :test do
   gem 'capybara'
   gem 'launchy' #save_and_open_page while debugging integration tests.
   gem 'capybara-angular' # Avoid race conditions in angular integration tests
-  gem 'poltergeist'
-  gem 'phantomjs'
+  # gem 'poltergeist'
+  # gem 'phantomjs'
+  gem 'selenium-webdriver'
   gem 'codeclimate-test-reporter', require: nil
 end

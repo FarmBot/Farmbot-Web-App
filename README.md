@@ -1,6 +1,6 @@
-[![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-web-app.png)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
-[![Build Status](https://travis-ci.org/FarmBot/farmbot-web-app.svg)](https://travis-ci.org/FarmBot/farmbot-web-app)
+[![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-web-app/badges/gpa.svg)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
 [![Test Coverage](https://codeclimate.com/github/FarmBot/farmbot-web-app/badges/coverage.svg)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
+[![Build Status](https://travis-ci.org/FarmBot/farmbot-web-app.svg)](https://travis-ci.org/FarmBot/farmbot-web-app)
 
 # STOP!! You might not need this!
 
@@ -25,7 +25,7 @@ This Repo is the Web based side of FarmBot. It allows users to control the devic
  0. `rails s`
  0. Go to `http://localhost:3000`
 
-The frontend (and asset management) are very much in a transitional state. We're experimenting with Gulp as an alternative 
+The frontend (and asset management) are very much in a transitional state. We're experimenting with Gulp as an alternative
 
 **We can't fix issues we don't know about.** Please submit an issue if you are having trouble installing on your local machine.
 

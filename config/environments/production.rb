@@ -14,7 +14,7 @@ FarmBot::Application.configure do
   config.i18n.fallbacks = true
   config.log_formatter = ::Logger::Formatter.new
   config.log_level = :info
-  config.serve_static_assets = false
+  config.serve_static_files = false
   config.action_mailer.smtp_settings = { address:   'smtp.mandrillapp.com',
                                          port:      587,
                                          user_name: ENV['MANDRILL_USERNAME'],
