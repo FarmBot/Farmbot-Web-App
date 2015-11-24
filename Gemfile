@@ -32,9 +32,6 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-sio-client'
 end
 
-gem 'react-rails', '~> 1.0'
-gem 'browserify-rails'
-
 group :development, :test do
   gem 'pry'
   gem 'factory_girl_rails'

@@ -10,7 +10,7 @@ describe 'User Session' do
     expect(page).to have_content('Signed in successfully.')
   end
 
-  it 'edits user settings' do
+  it 'edits user settings', js: true do
     user = FactoryGirl.create(:user)
     sign_in_as user
     visit edit_user_registration_path
@@ -19,6 +19,7 @@ describe 'User Session' do
     fill_in 'user_email', with: new_email
     fill_in 'user_current_password', with: user.password
     click_button 'Update'
+    binding.pry
     expect(page).to have_content('Your account has been updated successfully.')
     expect(user.reload.email).to eq(new_email)
   end
@@ -26,6 +27,8 @@ describe 'User Session' do
   it 'logs the user out' do
     user = FactoryGirl.create(:user)
     sign_in_as(user)
+    save_and_open_page
+    binding.pry
     click_link 'Sign out'
     expect(page).to have_content('Signed out successfully.')
   end
