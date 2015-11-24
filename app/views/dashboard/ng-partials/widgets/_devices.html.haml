@@ -5,7 +5,6 @@
         .col-sm-12
           %button.button-like.yellow{style: "margin: 4px;"}
             {{ !!device._id ? "Update" : "Add" }} FarmBot
-            // TODO: Hide the save button ^ until a value in the table has been changed and needs saving. Once the user presses the button, change the text to 'UPDATING' (while the update is happening, just like the sync button). Once the update is complete, change it to 'UPDATED :checkmark:' and make it green.
           .header-wrapper
             %h5 DEVICE
       .row
@@ -26,7 +25,6 @@
               .row
                 %button.button-like.yellow{style: "margin: 9px;"}
                   {{ !!device._id ? "Update" : "Add" }} FarmBot
-                  // TODO: Replace this button ^ with the one up in the widget header
           %table.plain
             %tbody
               %tr
@@ -79,9 +77,7 @@
                 %td
                   %button.button-like.yellow.left RESTART
                   %button.button-like.red.left SHUTDOWN
-                // TODO: Make this real ^
                 %td
-                // TODO: Make this real ^
               %tr
                 %td
                   %label DELETE FARMBOT
@@ -89,4 +85,3 @@
                   %button.button-like.red.left DELETE
                   %p Caution! This cannot be undone
                 %td
-                // TODO: Make this real ^

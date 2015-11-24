@@ -20,7 +20,7 @@ module Api
     private
 
     def device_params
-      {device: current_device}
+      @device_params ||= {device: current_device}
     end
 
     def plant
