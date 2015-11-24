@@ -2,11 +2,11 @@ module Api
   class PlantsController < Api::AbstractController
 
     def index
-      render json: Plant.where(device: current_device)
+      render json: Plant.where(device_params)
     end
 
     def create
-      mutate Plants::Create.run(params, device: current_device)
+      mutate Plants::Create.run(params, device_params)
     end
 
     def destroy
@@ -18,6 +18,10 @@ module Api
     end
 
     private
+
+    def device_params
+      {device: current_device}
+    end
 
     def plant
       @plant ||= Plant.find(params[:id])
