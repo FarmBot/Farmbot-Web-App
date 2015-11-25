@@ -10,6 +10,8 @@ If you are a developer interested in contributing or would like to provision you
 
 # Farmbot Web App
 
+**[LATEST STABLE VERSION IS HERE](https://github.com/FarmBot/farmbot-web-app/tree/dcf7cecf83d4b489ec55620f30614cc6b7c202f3)**
+
 This Repo is the Web based side of FarmBot. It allows users to control the device from their web browser. **We're getting closer to launch, but it this is an unstable pre-alpha repo.**
 
 # Developer setup
