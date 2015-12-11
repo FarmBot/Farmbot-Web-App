@@ -31,16 +31,32 @@ private
     end
 
     def authenticate_user!
-      return true if current_user
-      auth = Auth::Create.run(bot_token: request.headers["HTTP_BOT_TOKEN"],
-                              bot_uuid:  request.headers["HTTP_BOT_UUID"])
-      if auth.success?
-        @current_device = auth.result
+      # All possible information that could be needed for any of the 3 auth
+      # strategies.
+      context = { bot_token:     request.headers["HTTP_BOT_TOKEN"],
+                  bot_uuid:      request.headers["HTTP_BOT_UUID"],
+                  jwt:           request.headers["Authorization"],
+                  user:          current_user }
+      # Returns a symbol representing the appropriate auth strategy, or nil if
+      # unknown.
+      strategy = Auth::DetermineAuthStrategy.run!(context)
+      case strategy
+      when :bot
+        # When a bot uses the API, there is no current_user.
+        @current_device = Auth::Create.run!(context)
+      when :jwt
+        sign_in(Auth::FromJWT.run!(context))
+      when :already_connected
+        # Probably provided a cookie.
+        return true
       else
         sorry("You failed to authenticate with the API. Ensure that you " +
           "have provided a `bot_token` and `bot_uuid` header in the HTTP" +
           " request.", 401)
       end
+    rescue Mutations::ValidationException => e
+      errors = e.errors.message.merge(strategy: strategy)
+      render json: {error: errors}, status: 401
     end
 
     def sorry(msg, status)

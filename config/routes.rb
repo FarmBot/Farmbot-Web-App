@@ -1,6 +1,7 @@
 FarmBot::Application.routes.draw do
 
   namespace :api, defaults: {format: :json} do
+    resource :tokens, only: [:create]
     resource :device, only: [:show, :destroy, :create, :update]
     resources :plants, only: [:create, :destroy, :index]
     resources :planting_area, only: [:create, :destroy]

@@ -2,9 +2,9 @@
 [![Test Coverage](https://codeclimate.com/github/FarmBot/farmbot-web-app/badges/coverage.svg)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
 [![Build Status](https://travis-ci.org/FarmBot/farmbot-web-app.svg)](https://travis-ci.org/FarmBot/farmbot-web-app)
 
-# STOP!! You might not need this!
+# Do I need this?
 
-This repo is intended for developers who build the [Farmbot Web App](http://my.farmbot.io/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.io/).
+This repository is intended for developers who build the [Farmbot Web App](http://my.farmbot.io/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.io/).
 
 If you are a developer interested in contributing or would like to provision your own server, you are in the right place.
 
@@ -50,10 +50,6 @@ As of July 2015, the Web App supports scheduling and manual movemnt of FarmBot v
 
 Eventually, the app hopes to be a rich environment for users to manage their FarmBot and gain insights into the farming decision process.
 
-# nice-to-haves
-
- * Actually make use of MeshBlu response objects (with timeouts), instead of just screaming commands at the device.
- * Better test suite for angular side of things.
 
 # Accomplishments
 
@@ -63,23 +59,14 @@ July 2015:
  * Full manual control of device via browser.
  * Scheduling of sequences and commands.
 
-JULY 2014:
+2014:
 
  * Changed UI Components
  * MeshBlu upgrade
  * Production server changes
-
-JUNE 2014:
-
  * Achieved Device movement in the real world.
-
-MAY 2014:
-
  * Deployed pre-alpha staging server (contact Rick Carlino for contributor access)
  * Connected to [MeshBlu](http://www.skynet.im/), formerly SkyNet.
  * Finished in browser device config for skynet.
-
-APRIL 2014:
-
  * Finished basic user registration
  * Functional mockups
