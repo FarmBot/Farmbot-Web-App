@@ -4,6 +4,8 @@ module Api
     before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
 
+    rescue_from(JWT::VerificationError) { |e| auth_err }
+
     rescue_from Errors::Forbidden do |exc|
       sorry "You can't perform that action. #{exc.message}", 403
     end
@@ -50,13 +52,18 @@ private
         # Probably provided a cookie.
         return true
       else
-        sorry("You failed to authenticate with the API. Ensure that you " +
-          "have provided a `bot_token` and `bot_uuid` header in the HTTP" +
-          " request.", 401)
+        auth_err
       end
     rescue Mutations::ValidationException => e
       errors = e.errors.message.merge(strategy: strategy)
       render json: {error: errors}, status: 401
+    end
+
+    def auth_err
+      sorry("You failed to authenticate with the API. Ensure that you " +
+          "have provided a `bot_token` and `bot_uuid` header in the HTTP" +
+          " request. Alternatively, you may provide a JSON Web Token in the " +
+          " `Authorization:` header" , 401)
     end
 
     def sorry(msg, status)
