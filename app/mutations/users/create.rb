@@ -14,10 +14,15 @@ module Users
     end
 
     def execute
-      User.create!(email:                 email,
-                   password:              password,
-                   password_confirmation: password_confirmation,
-                   name:                  name)
+      resp = {}
+
+      resp[:user]  = User.create!(email:                 email,
+                                  password:              password,
+                                  password_confirmation: password_confirmation,
+                                  name:                  name)
+
+      resp.merge!(Auth::CreateToken.run!(email:       email,
+                                            password:    password))
     end
   end
 end
