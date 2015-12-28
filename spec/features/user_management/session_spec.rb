@@ -26,7 +26,6 @@ describe 'User Session' do
   it 'logs the user out' do
     user = FactoryGirl.create(:user)
     sign_in_as(user)
-    save_and_open_page
     click_link 'Sign out'
     expect(page).to have_content('Signed out successfully.')
   end

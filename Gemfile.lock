@@ -143,6 +143,7 @@ GEM
     ice_nine (0.11.1)
     json (1.8.3)
     json_pure (1.8.3)
+    jwt (1.5.2)
     launchy (2.4.3)
       addressable (~> 2.3)
     loofah (2.0.3)
@@ -367,6 +368,7 @@ DEPENDENCIES
   haml
   high_voltage (~> 2.1.0)
   ice_cube
+  jwt
   launchy
   metric_fu
   mongoid (~> 5.0.1)

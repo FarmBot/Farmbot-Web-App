@@ -26,7 +26,7 @@ describe Api::SchedulesController do
       @request.headers["HTTP_BOT_UUID"]  = '123'
       get :index
       expect(response.status).to eq(401)
-      expect(json[:error]).to include("failed to authenticate")
+      expect(json[:error][:auth]).to include("Bad uuid or token")
     end
   end
 end
