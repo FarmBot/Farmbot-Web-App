@@ -55,6 +55,7 @@ private
         auth_err
       end
     rescue Mutations::ValidationException => e
+
       errors = e.errors.message.merge(strategy: strategy)
       render json: {error: errors}, status: 401
     end
