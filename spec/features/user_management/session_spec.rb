@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'User Session' do
+xdescribe 'User Session' do
   it 'logs the user in' do
     user = FactoryGirl.create(:user)
     visit new_user_session_path

@@ -24,14 +24,8 @@ gem 'ice_cube'
 gem 'rack-cors', require: 'rack/cors'
 
 source 'https://rails-assets.org' do
-  gem 'rails-assets-ng-sortable', '~> 1.2.2'
-  gem 'rails-assets-ng-pickadate'
-  gem 'rails-assets-js-data'
-  gem 'rails-assets-js-data-angular'
   gem 'rails-assets-lodash'
   gem 'rails-assets-jquery'
-  gem 'rails-assets-pickadate'
-  gem 'rails-assets-sio-client'
 end
 
 group :development, :test do
@@ -51,9 +45,6 @@ group :test do
   gem 'simplecov'
   gem 'capybara'
   gem 'launchy' #save_and_open_page while debugging integration tests.
-  gem 'capybara-angular' # Avoid race conditions in angular integration tests
-  # gem 'poltergeist'
-  # gem 'phantomjs'
   gem 'selenium-webdriver'
   gem 'codeclimate-test-reporter', require: nil
 end
