@@ -1,51 +1,15 @@
-= render partial: "pages/navbar"
-.row
-  .col-md-7.col-sm-10.col-sm-centered
-    %br
-    %h2.text-center Welcome to the FarmBot Web App
-    %br
-    %h4.text-center Setup, customize, and control FarmBot from your web browser
-    %br
-    %br
-.row
-  .col-md-7.col-sm-10.col-sm-centered
-    .col-md-6
-      %h4 Features
-      %ul
-        %li Graphically design your farm with a drag and drop interface
-        %li Control FarmBot real-time from your laptop, tablet, or smartphone
-        %li Create, view, edit, and tune scheduled operations
-        %li Analyze data and adjust grow settings for maximum efficiency
-    .col-md-6
-      .signup-panel.widget-wrapper
-        %h5.welcome.header-wrapper Sign Up
-        .content-wrapper.padding-bottom
-          = form_for(User.new, url: '/users') do |f|
-            .row.collapse
-              .col-xs-2
-                %span.prefix
-                  %i.fi-torso-female.medium-icon.light-icon
-              .col-xs-10
-                = f.text_field :name, autofocus: true, placeholder: 'Pick a User Name'
-            .row.collapse
-              .col-xs-2
-                %span.prefix
-                  %i.fi-mail.medium-icon.light-icon
-              .col-xs-10
-                = f.email_field :email, placeholder: 'Email'
-            .row.collapse
-              .col-xs-2
-                %span.prefix
-                  %i.fi-lock.medium-icon.light-icon
-              .col-xs-10
-                = f.password_field :password, autocomplete: "off", placeholder: 'Password'
-            .row.collapse
-              .col-xs-2
-                %span.prefix
-                  %i.fi-lock.medium-icon.light-icon
-              .col-xs-10
-                = f.password_field :password_confirmation, autocomplete: "off", placeholder: 'Confirm Password'
-            = f.submit "Sign Up", class: 'button-like green'
-            %p
-              Already have an account?
-              = link_to 'Login here »', new_user_session_path
+%br
+%br
+%h1.text-center Welcome to the FarmBot Web App
+%br
+%h3.text-center Setup, customize, and control FarmBot from any device
+%br
+%br
+%img{:src => "http://farmbot.io/wp-content/uploads/2014/03/Web-App-on-Different-Devices-1.png", :style => "width: 80%; max-width: 1200px; margin-left: auto; margin-right: auto; display: block;"}/
+%br
+%br
+%br
+%h2.text-center
+  %a{:href => "/app/login"} Login or Create an Account
+%br
+%br
