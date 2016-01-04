@@ -7,7 +7,7 @@ module Auth
     def execute
       token  = SessionToken.decode!(jwt)
       claims = token.unencoded.first
-      email  = claims['email']
+      email  = claims['sub']
       User.find_by(email: email)
     end
   end

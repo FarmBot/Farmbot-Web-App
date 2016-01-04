@@ -1,4 +1,10 @@
-// This is where the React application will mount.
-// See farmbot/farmbot-web-frontend on Github.
-#root
-%script{ src: "//computer_programmer.neocities.org/production.js" }
+!!!
+%html{lang: "en"}
+  %head
+    %meta{charset: "utf-8"}/
+    %meta{content: "width=device-width, initial-scale=1", name: "viewport"}/
+    = favicon_link_tag 'favicon.png'
+    %title= content_for?(:title) ? yield(:title) : "FarmBot"
+  %body
+    #root
+    %script{ src: "//computer_programmer.neocities.org/production.js" }
