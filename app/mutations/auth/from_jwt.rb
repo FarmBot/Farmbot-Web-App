@@ -9,6 +9,8 @@ module Auth
       claims = token.unencoded.first
       email  = claims['sub']
       User.find_by(email: email)
+    rescue JWT::DecodeError
+      add_error :jwt, :decode_error, "JSON Web Token is not valid."
     end
   end
 end
