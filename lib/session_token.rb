@@ -19,6 +19,7 @@ class SessionToken
              iat: iat,
              jti: SecureRandom.uuid, # TODO: Add ability to revoke.
              iss: ISSUER,
-             exp: exp)
+             exp: exp,
+             alg: "RS256")
   end
 end

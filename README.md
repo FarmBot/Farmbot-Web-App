@@ -27,7 +27,7 @@ This Repo is the Web based side of FarmBot. It allows users to control the devic
  0. `rails s`
  0. Go to `http://localhost:3000`
 
-# Provisioning your own with Dokk
+# Provisioning your own with Dokku
 
  0. Get a Dokku instance running. HINT: DigitalOcean offers one click images.
  0. Run `dokku plugin:install https://github.com/dokku/dokku-mongo.git mongo` on the server.
