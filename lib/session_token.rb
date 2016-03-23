@@ -1,17 +1,19 @@
 class SessionToken
-  PASSWORD = Rails.application.secrets.secret_key_base
-  EXPIRY   = 4.days
-  ISSUER   = 'farmbot-web-app'
+  EXPIRY       = 4.days
+  ISSUER       = 'farmbot-web-app'
+  PRIVATE_KEY  = KeyGen.current
+  PUBLIC_KEY   = KeyGen.current.public_key
+  ALG          = 'RS256'
 
   attr_accessor :encoded, :unencoded
 
   def initialize(payload)
     @unencoded = payload
-    @encoded   = JWT.encode(payload, PASSWORD)
+    @encoded   = JWT.encode(payload, PRIVATE_KEY, ALG)
   end
 
   def self.decode!(token)
-    self.new JWT.decode(token, PASSWORD)
+    self.new JWT.decode(token, PUBLIC_KEY, true, algorithm: ALG)
   end
 
   def self.issue_to(user, iat = Time.now.to_i, exp = EXPIRY.from_now.to_i)
@@ -19,6 +21,7 @@ class SessionToken
              iat: iat,
              jti: SecureRandom.uuid, # TODO: Add ability to revoke.
              iss: ISSUER,
-             exp: exp)
+             exp: exp,
+             alg: ALG)
   end
 end

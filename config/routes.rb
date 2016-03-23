@@ -1,6 +1,7 @@
 FarmBot::Application.routes.draw do
 
   namespace :api, defaults: {format: :json} do
+    resource :public_key, only: [:show]
     resource :tokens, only: [:create]
     resource :users, only: [:create]
     resource :device, only: [:show, :destroy, :create, :update]
