@@ -4,7 +4,7 @@
 
 # Do I need this?
 
-This repository is intended for developers who build the [Farmbot Web App](http://my.farmbot.io/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.io/).
+This repository is intended for *software developers* who wish to modify the [Farmbot Web App](http://my.farmbot.io/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.io/).
 
 If you are a developer interested in contributing or would like to provision your own server, you are in the right place.
 
@@ -21,9 +21,6 @@ This Repo is the Web based side of FarmBot. It allows users to control the devic
  0. [Install MongoDB](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
  0. Start Mongo if you have not already done so. (typically via the `mongod` command)
  0. `bundle install`
- 0. [Install node](https://nodejs.org/en/download/package-manager/)
- 0. `sudo npm install gulp -g` if you don't have gulp installed already.
- 0.  `npm install`
  0. `rails s`
  0. Go to `http://localhost:3000`
 

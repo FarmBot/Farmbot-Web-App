@@ -3,8 +3,8 @@
 module Api
   class PublicKeysController < Api::AbstractController
     skip_before_action :authenticate_user!, only: :show
-
     PUBLIC_KEY = KeyGen.current.public_key.to_pem
+
     # GET /api/public_key
     def show
       render text: PUBLIC_KEY

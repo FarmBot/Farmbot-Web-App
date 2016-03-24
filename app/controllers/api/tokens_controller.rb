@@ -10,7 +10,8 @@ module Api
 
     def auth_params
       return { email:    params[:user][:email],
-               password: params[:user][:password] }
+               password: params[:user][:password],
+               host:     root_url }
     end
   end
 end
