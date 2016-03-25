@@ -14,7 +14,7 @@ class KeyGen
   # For them, there's maybe_load_from_env.
   # Stores the *.pem file in an ENV var.
   def self.maybe_load_from_env
-    OpenSSL::PKey::RSA.new(ENV['RSA_KEYS']) if ENV['RSA_KEYS']
+    OpenSSL::PKey::RSA.new(ENV['RSA_KEY']) if ENV['RSA_KEY']
   end
 
   def self.current

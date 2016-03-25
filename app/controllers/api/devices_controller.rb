@@ -6,8 +6,9 @@ module Api
     # GET /api/device
     def show
       current_device
-        .if_null { render json: {error: "add device to account"}, status: 404 }
+        .if_null { create }
         .if_not_null { render json: current_device }
+        # .if_null { render json: {error: "add device to account"}, status: 404 }
     end
 
     # POST /api/device
@@ -35,7 +36,9 @@ module Api
 
       # Only allow a trusted parameter "white list" through.
       def device_params
-        params.permit([:name, :uuid, :token])
+        { name:  params[:name]  || Haikunator.haikunate(99),
+          uuid:  params[:uuid]  || SecureRandom.uuid,
+          token: params[:token] || SecureRandom.hex }
       end
   end
 end
