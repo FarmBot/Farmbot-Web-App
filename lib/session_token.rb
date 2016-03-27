@@ -20,11 +20,13 @@ class SessionToken
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
                     iss: "http://localhost:3000")
+
     self.new(sub:  user.email,
              iat:  iat,
              jti:  SecureRandom.uuid, # TODO: Add ability to revoke.
              iss:  iss,
              exp:  exp,
-             mqtt: MQTT)
+             mqtt: MQTT,
+             bot: user.device.uuid)
   end
 end
