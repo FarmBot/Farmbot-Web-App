@@ -21,8 +21,9 @@ module Users
                                   password_confirmation: password_confirmation,
                                   name:                  name)
 
-      resp.merge!(Auth::CreateToken.run!(email:       email,
-                                            password:    password))
+      resp.merge!(Auth::CreateToken.run!(email:   email,
+                                         password: password,
+                                         host: "http://localhost:3000"))
     end
   end
 end

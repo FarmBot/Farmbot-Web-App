@@ -3,6 +3,7 @@ module Auth
     required do
       string :email
       string :password
+      string :host
     end
 
     def validate
@@ -11,7 +12,7 @@ module Auth
     end
 
     def execute
-      {token: SessionToken.issue_to(@user)}
+      {token: SessionToken.issue_to(@user, iss: host)}
     end
 
     def whoops!

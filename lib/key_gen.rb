@@ -4,20 +4,25 @@
 class KeyGen
   SAVE_PATH = "jwt.#{Rails.env}.pem"
 
-  def self.run(path = SAVE_PATH)
+  def self.try_file
+    OpenSSL::PKey::RSA.new(File.read(SAVE_PATH)) if File.file?(SAVE_PATH)
+  end
+
+  def self.generate_new_key(path = SAVE_PATH)
     rsa = OpenSSL::PKey::RSA.generate(2048)
     File.open(path, 'w') { |f| f.write(rsa.to_pem) }
     return rsa
   end
 
-  # Heroku users can't store stuff on the file system.
-  # For them, there's maybe_load_from_env.
-  # Stores the *.pem file in an ENV var.
-  def self.maybe_load_from_env
-    OpenSSL::PKey::RSA.new(ENV['RSA_KEYS']) if ENV['RSA_KEYS']
+  # Heroku / 12Factor users can't store stuff on the file system. Store your pem
+  # file in ENV['RSA_KEY'] if that applies to you.
+  def self.try_env
+    OpenSSL::PKey::RSA.new(ENV['RSA_KEY']) if ENV['RSA_KEY']
   end
 
+  # Lazy loads a crypto key.  Will look in ENV['RSA_KEY'], then
+  # jwt.environment_name.pem. Generates new key if neither is available.
   def self.current
-    @current ||= ( maybe_load_from_env || self.run)
+    @current ||= ( try_env || try_file || generate_new_key)
   end
 end

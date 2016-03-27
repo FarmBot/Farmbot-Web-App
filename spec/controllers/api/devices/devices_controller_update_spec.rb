@@ -29,7 +29,7 @@ describe Api::DevicesController do
       put :update, {uuid: 1, token: 2}, format: :json
       user.reload
       expect(user.device).to be_kind_of(Device)
-      expect(user.device['name']).to eq('Not set.')
+      expect(user.device['name'].length).to be > 4 # Haikunator
       expect(user.device['uuid']).to eq('1')
       expect(user.device['token']).to eq('2')
     end

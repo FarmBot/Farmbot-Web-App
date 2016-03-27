@@ -24,4 +24,12 @@ class User
   field :current_sign_in_ip, type: String
   field :last_sign_in_ip,    type: String
   # END DEVISE CRAP ============================================================
+
+  # Lazy load a device into the account. Prevents weird edge cases, such as
+  # device === nil on first login.
+  def device
+    Device.where(_id: self[:device]).first || Devices::Create.run!(user: self,
+                              uuid: SecureRandom.uuid,
+                              token: SecureRandom.hex)
+  end
 end

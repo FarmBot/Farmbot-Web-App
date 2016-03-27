@@ -1,9 +1,9 @@
 class SessionToken
   EXPIRY       = 4.days
-  ISSUER       = 'farmbot-web-app'
   PRIVATE_KEY  = KeyGen.current
   PUBLIC_KEY   = KeyGen.current.public_key
   ALG          = 'RS256'
+  MQTT         = ENV['MQTT_URL'] || "localhost" # my.farmbot.io
 
   attr_accessor :encoded, :unencoded
 
@@ -16,12 +16,17 @@ class SessionToken
     self.new JWT.decode(token, PUBLIC_KEY, true, algorithm: ALG)
   end
 
-  def self.issue_to(user, iat = Time.now.to_i, exp = EXPIRY.from_now.to_i)
-    self.new(sub: user.email,
-             iat: iat,
-             jti: SecureRandom.uuid, # TODO: Add ability to revoke.
-             iss: ISSUER,
-             exp: exp,
-             alg: ALG)
+  def self.issue_to(user,
+                    iat: Time.now.to_i,
+                    exp: EXPIRY.from_now.to_i,
+                    iss: "http://localhost:3000")
+
+    self.new(sub:  user.email,
+             iat:  iat,
+             jti:  SecureRandom.uuid, # TODO: Add ability to revoke.
+             iss:  iss,
+             exp:  exp,
+             mqtt: MQTT,
+             bot: user.device.uuid)
   end
 end
