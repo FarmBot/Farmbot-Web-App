@@ -3,15 +3,22 @@ module Api
     skip_before_action :authenticate_user!, only: :create
 
     def create
-      mutate Auth::CreateToken.run(auth_params)
+      if(auth_params[:credentials])
+        mutate Auth::CreateTokenFromCredentials.run(auth_params)
+      else
+        mutate Auth::CreateToken.run(auth_params)
+      end
     end
 
     private
 
     def auth_params
-      return { email:    params[:user][:email],
-               password: params[:user][:password],
-               host:     root_url }
+      params[:user] ||= {}
+
+      { email:       params[:user][:email],
+        password:    params[:user][:password],
+        credentials: params[:user][:credentials],
+        host:        root_url }
     end
   end
 end
