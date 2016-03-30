@@ -32,4 +32,8 @@ class User
                               uuid: SecureRandom.uuid,
                               token: SecureRandom.hex)
   end
+
+  def device_id
+    self[:device_id] || device.id
+  end
 end
