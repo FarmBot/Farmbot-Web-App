@@ -7,60 +7,29 @@ $roboto: 'Roboto', Arial, Helvetica, sans-serif;
 
 // Variables
 
-$translucent:    rgba(0, 0, 0, 0.2);
-$translucent2:   rgba(0, 0, 0, 0.6);
-$white:          #fff;
+$white:          #ffffff;
 $off_white:      #f4f4f4;
-$light_gray:     #ddd;
-$gray:           #cccccc;
-$medium_gray:    #666666;
-$dark_gray:      #434343;
-$black:          #000;
-
-$light_blue:     #cdf;
-$blue:           #a4c2f4;
-$dark_blue:      #37d;
-
-$light_green:    #bda;
-$green:          #6a4;
-$dark_green:     #371;
-
-
-$light_yellow:   #ffc;
-$yellow:         #fd6;
-$gold:           #b90;
-$beige:          #fec;
-$brown:          #CA8;
-
-$orange:         #fa0;
-$dark_orange:    #e93;
-
-$light_purple:   #dab;
-$lavender:       #bad;
-$royal_purple:   #64a;
-$dark_purple:    #a47;
-
-$pink:           #e99;
-$dark_pink:      #e66;
-$peach:          #fc9;
-$red:            #f00;
-$dark_red:       #900;
+$green:          #159ACC;
+$blue:           #089460;
 
 // Styles
-body, html {
-  font-family: $roboto;
-  font-weight: 400;
-}
-h1, h2, h3, h4, h5, h6, p {
-  font-family: $roboto;
-  font-weight: 400;
+
+html {
+  height: 100%
 }
 
-p {
-  font-size: 1.1rem;
-  color: $dark_gray;
-  line-height: 1.4rem;
-  margin-bottom: 0;
+h1, h2 {
+  font-family: $roboto;
+  font-weight: 300;
+  color: $off-white;
+}
+
+h1 {
+  font-size: 4rem;
+}
+
+h2 {
+  font-size: 2.5rem;
 }
 
 .front-page-image {
@@ -72,44 +41,29 @@ p {
 }
 
 a {
-  color: $off_white;
+  color: $off-white;
   display: block;
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
-  padding-left: 2.5rem;
-  padding-right: 2.5rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
   &:hover, &:focus {
-    color: $off_white;
+    color: $white;
     text-decoration: none;
   }
 }
 
 button {
-  font-size: 2rem!important;
+  font-size: 1.5rem!important;
   text-transform: uppercase!important;
   text-align: center;
   font-family: $roboto;
   font-weight: 700!important;
+  background: transparent;
   border-radius: 5px;
-  border-bottom-width: 4px!important;
-  border: none;
+  border: 2px solid $off-white;
   margin-bottom: 0px;
   padding: 0;
-  &.green {
-    background-color: $green;
-    border-bottom: solid $dark_green;
-    &:hover {
-      background-color: darken($green, 5%);
-    }
-  }
-}
-
-.button-like {
-  &:active {
-    border-bottom-width: 2px!important;
-    border-top: 2px solid transparent!important;
-    transform: translateY(1px);
-  }
 }
 
 .row {
@@ -117,7 +71,9 @@ button {
 }
 
 body {
-  background: $light_gray;
+  background: linear-gradient(-135deg, $blue, $green);
+  min-height: 100%;
+  padding: 2rem;
 }
 
 * {
