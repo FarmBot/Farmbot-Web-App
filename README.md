@@ -26,11 +26,12 @@ This Repo is the Web based side of FarmBot. It allows users to control the devic
 
 # Provisioning your own with Dokku
 
- 0. Get a Dokku instance running. HINT: DigitalOcean offers one click images.
- 0. Run `dokku plugin:install https://github.com/dokku/dokku-mongo.git mongo` on the server.
- 0. Push the app to the dokku server
- 0. dokku mongo:create web_app_staging
- 0. (on server) `dokku mongo:link web_app_staging 00-default`
+0. Create a fresh Ubuntu 14 server with Dokku (or just use DigitalOcean)
+0. [Upgrade to the latest version of Dokku](https://github.com/dokku/dokku/blob/master/docs/upgrading.md) (especially if you are on DigitalOcean- their version is out of date)
+0. Install dokku-haproxy plugin: `ssh root@YOUR_SERVER dokku plugin:install https://github.com/256dpi/dokku-haproxy.git`
+0. Deploy: `git push dokku@YOUR_SERVER:mqtt`
+0. Point to correct host/port: `ssh dokku@MQTT_SERVER config:set mqtt PORT=3002 DOKKU_NGINX_PORT=3002 WEB_APP_URL=WEBAPP_URL_HERE`
+0. Expose MQTT port: `ssh dokku@MQTT_SERVER ports:add mqtt 1883 web 1883`
 
 # Config Settings (important)
 
