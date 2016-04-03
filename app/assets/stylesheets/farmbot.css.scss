@@ -71,9 +71,30 @@ button {
 }
 
 body {
-  background: linear-gradient(-135deg, $blue, $green);
   min-height: 100%;
   padding: 2rem;
+  background: linear-gradient(-135deg, $blue, $green);
+  background-size: 400% 400%;
+
+  -webkit-animation: BackgroundGradient 30s ease infinite;
+  -moz-animation: BackgroundGradient 30s ease infinite;
+  animation: BackgroundGradient 30s ease infinite;
+}
+
+@-webkit-keyframes BackgroundGradient {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@-moz-keyframes BackgroundGradient {
+    0%{background-position:0% 0%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@keyframes BackgroundGradient {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
 }
 
 * {
