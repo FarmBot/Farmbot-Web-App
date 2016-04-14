@@ -21,8 +21,8 @@ test:
 production:
   clients:
     default:
-      uri: <%= ENV['MONGOHQ_URL'] || ENV['MONGO_URL'] %>
+      uri: <%= ENV['MONGO_URL'] %>
 staging:
   clients:
     default:
-      uri: <%= ENV['MONGOHQ_URL'] || ENV['MONGO_URL'] %>
+      uri: <%= ENV['MONGO_URL'] %>
