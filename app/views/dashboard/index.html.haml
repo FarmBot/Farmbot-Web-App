@@ -7,4 +7,4 @@
     %title= content_for?(:title) ? yield(:title) : "FarmBot"
   %body
     #root
-    %script{ src: "//computer_programmer.neocities.org/production.js" }
+    %script{ src: ENV["JS_FILE_URL"] || "YOU_DIDNT_SET_JS_FILE_URL_IN_YOUR_ENV" }
