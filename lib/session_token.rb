@@ -3,7 +3,7 @@ class SessionToken
   PRIVATE_KEY  = KeyGen.current
   PUBLIC_KEY   = KeyGen.current.public_key
   ALG          = 'RS256'
-  MQTT         = ENV['MQTT_URL'] || "localhost" # my.farmbot.io
+  MQTT         = ENV['MQTT_URL'] || "YOU_DID_NOT_SET_MQTT_URL" # mqtt.farmbot.io
 
   attr_accessor :encoded, :unencoded
 
