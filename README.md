@@ -21,7 +21,7 @@ This Repo is the Web based side of FarmBot. It allows users to control the devic
  0. [Install MongoDB](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
  0. Start Mongo if you have not already done so. (typically via the `mongod` command)
  0. `bundle install`
- 0. `rails s`
+ 0. `MQTT_URL=your_mqtt_server_domain:1883 rails s`
  0. Go to `http://localhost:3000`
 
 # Provisioning your own with Dokku
