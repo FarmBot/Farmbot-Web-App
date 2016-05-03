@@ -10,6 +10,7 @@ module Sequences
     optional do
       string :name
       string :color, in: Sequence::COLORS
+      array :steps
     end
 
     def validate

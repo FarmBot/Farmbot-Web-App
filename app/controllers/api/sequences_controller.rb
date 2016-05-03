@@ -16,6 +16,8 @@ module Api
     end
 
     def update
+      # FIXME Need to determine if we're nesting or not. This is a hack: 
+      params[:sequence][:steps] ||= params[:steps]
       mutate Sequences::Update.run(params[:sequence],
                                    user: current_user,
                                    sequence: sequence)
@@ -23,7 +25,7 @@ module Api
 
     def destroy
       # HEY YOU!! If you touch this again, add a mutation. This is the most
-      # complexity I would like to see in one controlelr action.
+      # complexity I would like to see in one controller action.
       if (sequence.device == current_device) && sequence.destroy
         render nothing: true
       else
