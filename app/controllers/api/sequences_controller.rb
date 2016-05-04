@@ -16,10 +16,13 @@ module Api
     end
 
     def update
-      # FIXME Need to determine if we're nesting or not. This is a hack: 
-      params[:sequence][:steps] ||= params[:steps]
+      # This is a mess because of some Rails security precautions that are not
+      # relevant to this use case:
+      # http://guides.rubyonrails.org/security.html#unsafe-query-generation
+      steps = JSON.parse(request.body.read)["steps"]
       mutate Sequences::Update.run(params[:sequence],
                                    user: current_user,
+                                   steps: steps,
                                    sequence: sequence)
     end
 
