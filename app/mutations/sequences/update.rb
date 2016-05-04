@@ -14,6 +14,7 @@ module Sequences
     end
 
     def validate
+      add_error(:steps, :empty, "Can't be blank") if steps == []
       raise Errors::Forbidden unless sequence.device.users.include?(user)
     end
 
