@@ -16,13 +16,9 @@ module Api
     end
 
     def update
-      # This is a mess because of some Rails security precautions that are not
-      # relevant to this use case:
-      # http://guides.rubyonrails.org/security.html#unsafe-query-generation
-      steps = JSON.parse(request.body.read)["steps"]
       mutate Sequences::Update.run(params[:sequence],
                                    user: current_user,
-                                   steps: steps,
+                                   steps: params[:steps],
                                    sequence: sequence)
     end
 
