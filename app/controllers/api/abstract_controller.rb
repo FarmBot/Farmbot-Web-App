@@ -20,6 +20,11 @@ module Api
             'schedule_id, sequence_id, id, etc..', 400
     end
 
+
+    rescue_from Mongoid::Errors::Validations do |exc|
+      render json: {error: exc.summary}, status: 422
+    end
+
 private
 
     def current_device

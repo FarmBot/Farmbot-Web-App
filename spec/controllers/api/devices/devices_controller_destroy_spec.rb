@@ -10,9 +10,10 @@ describe Api::DevicesController do
 
     it 'destroys a Device' do
       sign_in user
+      old_bot = user.device
       delete :destroy, id: user.device.id, fromat: :json
       user.reload
-      expect(user.device).to be_nil
+      expect(user.device._id).not_to eq(old_bot._id)
       expect(response.status).to eq(204)
     end
   end

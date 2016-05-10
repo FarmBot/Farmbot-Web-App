@@ -25,7 +25,6 @@ module Api
 
     # DELETE /api/devices/1
     def destroy
-      # TODO: Make a service that deletes old devices when they become 'orphans'
       if current_device.users.include?(current_user)
         current_device.destroy
         render nothing: true, status: 204
