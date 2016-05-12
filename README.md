@@ -10,7 +10,7 @@ If you are a developer interested in contributing or would like to provision you
 
 # Farmbot Web API
 
-**[LATEST STABLE VERSION IS HERE](https://github.com/FarmBot/farmbot-web-app/tree/dcf7cecf83d4b489ec55620f30614cc6b7c202f3)** :star: :star: :star:
+**[LATEST STABLE VERSION IS HERE](https://github.com/FarmBot/Farmbot-Web-API/tree/a3762b25dab757d43623de3ed67c3c2d56dccb6c)** :star: :star: :star:
 
 This Repo is RESTful JSON API for Farmbot. This includes things like storage of user data, plant data, authorization tokens and a variety of other resources.
 
