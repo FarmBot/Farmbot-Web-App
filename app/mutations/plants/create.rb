@@ -2,8 +2,8 @@ module Plants
   class Create < Mutations::Command
     required do
       model :device, class: Device
-      integer :x
-      integer :y
+      float :x
+      float :y
     end
 
     def execute
