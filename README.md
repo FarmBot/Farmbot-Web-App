@@ -18,8 +18,8 @@ The key responsibility of the API is *information and permissions management*. T
 
 # Developer setup
 
- 0. `git clone git@github.com:FarmBot/farmbot-web-app.git`
- 0. `cd farmbot-web-app`
+ 0. `git clone git@github.com:FarmBot/farmbot-web-api.git`
+ 0. `cd farmbot-web-api`
  0. [Install MongoDB](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
  0. Start Mongo if you have not already done so. (typically via the `mongod` command)
  0. `bundle install`
