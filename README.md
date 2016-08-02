@@ -22,6 +22,7 @@ The key responsibility of the API is *information and permissions management*. T
  0. `cd farmbot-web-api`
  0. [Install MongoDB](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
  0. Start Mongo if you have not already done so. (typically via the `mongod` command)
+ 0. Install [Bundler](http://bundler.io/) (`gem install bundler`)
  0. `bundle install`
  0. `MQTT_HOST=your_mqtt_server_domain:1883 rails s`
  0. Go to `http://localhost:3000`
