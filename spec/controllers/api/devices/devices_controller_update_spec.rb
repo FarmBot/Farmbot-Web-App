@@ -4,7 +4,7 @@ require 'spec_helper'
 # settings. Consumed by the Angular SPA on the front end.
 describe Api::DevicesController do
 
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   describe '#update' do
 

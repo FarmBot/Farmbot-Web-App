@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Api::StepsController do
 
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   describe '#index' do
     let(:user) { FactoryGirl.create(:user) }

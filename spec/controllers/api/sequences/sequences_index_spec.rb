@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Api::SequencesController do
 
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   describe '#index' do
 

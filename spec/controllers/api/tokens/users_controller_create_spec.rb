@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Api::TokensController do
 
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   describe '#create' do
     let(:user) { FactoryGirl.create(:user, password: "password") }

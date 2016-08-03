@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Api::StepsController do
 
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   describe '#destroy' do
     let(:user) { FactoryGirl.create(:user) }

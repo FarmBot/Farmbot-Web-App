@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Api::UsersController do
 
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   describe '#create' do
 
