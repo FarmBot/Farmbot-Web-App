@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Api::StepsController do
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   describe '#show' do
     let(:sequence) { FactoryGirl.create(:sequence, device: user.device) }

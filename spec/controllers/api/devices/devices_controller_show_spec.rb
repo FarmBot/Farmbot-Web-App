@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Api::DevicesController do
 
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   let(:user) { FactoryGirl.create(:user) }
 

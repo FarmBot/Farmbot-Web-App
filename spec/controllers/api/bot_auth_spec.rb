@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Api::SchedulesController do
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   describe 'Bot authentication' do
 
