@@ -6,6 +6,7 @@ FarmBot::Application.routes.draw do
     resource :users, only: [:create]
     resource :device, only: [:show, :destroy, :create, :update]
     resources :plants, only: [:create, :destroy, :index]
+    resources :regimens, only: [:create, :destroy, :index, :update]
     resources :planting_area, only: [:create, :destroy]
     resources :sequences, only: [:create, :update, :destroy, :index, :show] do
       resources :steps, only: [:show, :create, :index, :update, :destroy]

@@ -1,5 +1,6 @@
 class RegimenItem
   include Mongoid::Document
   field :offset, type: Integer
-  has_one :schedule
+  belongs_to :schedule
+  belongs_to :sequence
 end
