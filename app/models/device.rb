@@ -6,6 +6,7 @@ class Device
   has_many :users
   has_many :schedules, dependent: :destroy
   has_many :sequences
+  has_many :regimens
   has_many :plants, dependent: :destroy
   has_one  :planting_area
 

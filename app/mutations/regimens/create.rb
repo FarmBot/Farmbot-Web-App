@@ -1,5 +1,7 @@
 module Regimens
   class Create < Mutations::Command
+    using MongoidRefinements
+
     required do
       model :device, class: Device
       string :name
@@ -13,7 +15,8 @@ module Regimens
     end
 
     def execute
-      Regimen.create!(input_params)
+      binding.pry
+      create(Regimen, input_params)
     end
 
     def input_params
