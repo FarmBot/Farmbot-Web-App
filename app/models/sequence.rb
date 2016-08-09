@@ -3,8 +3,10 @@ class Sequence
 
   belongs_to :schedule
   belongs_to :device
+  belongs_to :regimen, class_name: "Regimen"
   embeds_many :steps
   has_many :schedules, dependent: :destroy
+  has_many :regimen_items
 
   field :name
   validates :name, presence: true

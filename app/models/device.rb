@@ -6,14 +6,16 @@ class Device
   has_many :users
   has_many :schedules, dependent: :destroy
   has_many :sequences
+  has_many :regimens
   has_many :plants, dependent: :destroy
   has_one  :planting_area
 
 
-  # The SkyNet UUID of the device
+  # The UUID of the device
   field :uuid
   validates :uuid, presence: true
-  # The SkyNet Authentication token for the device
+  # The Authentication token for the device.
+  # DEPRECATED LEGACY USE ONLY!
   field :token
   validates :token, presence: true
   # The 'Friendly Name' of the device. I recommend 'The Cabbage Patch Kid'
