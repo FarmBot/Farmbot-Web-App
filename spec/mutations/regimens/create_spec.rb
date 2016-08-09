@@ -19,7 +19,6 @@ describe Regimens::Create do
         }
       ]
     }
-    $wow = seq1
     result = Regimens::Create.run!(optns).reload
     expect(result.regimen_items.length).to eq(2)
     expect(result.regimen_items.first.time_offset).to eq(129600000)
