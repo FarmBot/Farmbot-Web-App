@@ -15,5 +15,13 @@ describe Api::RegimensController do
       expect(json.count).to eq(1)
       expect(json.first[:_id]).to eq(regimen._id.to_s)
     end
+
+    it 'doesnt fetch other peoples regimens' do
+      other_person = FactoryGirl.create(:user)
+      sign_in other_person
+      get :index
+      expect(response.status).to eq(200)
+      expect(json.count).to eq(0)
+    end
   end
 end
