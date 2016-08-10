@@ -1,6 +1,6 @@
 FactoryGirl.define do
-  factory :regiman, :class => 'Regimen' do
-    
+  factory :regimen, :class => 'Regimen' do
+
   end
 
 end

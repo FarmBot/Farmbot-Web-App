@@ -17,7 +17,7 @@ module Api
   private
     
     def regimen_params
-      device: current_user.device
+      { device: current_user.device }
     end
   end
 end
