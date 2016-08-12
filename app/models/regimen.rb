@@ -1,8 +1,12 @@
+
 class Regimen
   include Mongoid::Document
-  field :color #, in: Sequence::COLORS
+  field :color, type: String, default: -> { Sequence::COLORS.sample }
   field :name
   has_many :regimen_items
   belongs_to :device, dependent: :destroy
-end
 
+  validates_uniqueness_of :name, scope: :device_id
+  validates_presence_of :next_time
+  validates_inclusion_of :color, in: Sequence::COLORS
+end
