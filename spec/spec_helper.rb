@@ -49,11 +49,6 @@ RSpec.configure do |config|
   config.after(:suite) { SmarfDoc.finish! }
 
   config.after do
-    Mongoid.purge!
+    puts "TODO: Purge the database!!!"
   end
 end
-
-# Moped was making the test output buffer look ugly every time the database was
-# purged. These settings stop that.
-Mongoid.logger.level = Logger::WARN
-Mongo::Logger.logger.level = Logger::WARN

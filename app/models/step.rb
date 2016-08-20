@@ -1,24 +1,23 @@
-class Step
-  include Mongoid::Document
+class Step < ActiveRecord::Base
 
   MESSAGE_TYPES = %w(emergency_stop home_all home_x home_y home_z move_absolute
     move_relative pin_write read_parameter read_status write_parameter wait
     send_message if_statement read_pin)
 
-  embedded_in :sequence
+  # embedded_in :sequence
 
-  field :message_type
-  validates :message_type, presence: true
+  # field :message_type
+  # validates :message_type, presence: true
 
-  field :command, type: Hash, default: {}
-  field :position, type: Integer, default: -> do
-    if sequence && sequence.steps.present?
-      sequence.steps.size - 1
-    else
-      0
-    end
-  end
-  validates :position, presence: true
+  # field :command, type: Hash, default: {}
+  # field :position, type: Integer, default: -> do
+  #   if sequence && sequence.steps.present?
+  #     sequence.steps.size - 1
+  #   else
+  #     0
+  #   end
+  # end
+  # validates :position, presence: true
 
   def all_steps
     (sequence.try(:steps) || Step.none).order_by(:position.asc)

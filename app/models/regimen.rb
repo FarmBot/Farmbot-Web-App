@@ -1,7 +1,4 @@
-
-class Regimen
-  include Mongoid::Document
-
+class Regimen < ActiveRecord::Base
   field :color, type: String, default: -> { Sequence::COLORS.sample }
   field :name
 

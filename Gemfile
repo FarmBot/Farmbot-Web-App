@@ -6,7 +6,6 @@ gem 'rails',  '4.2.7'
 #Dokku demands this one.
 gem 'rails_12factor'
 gem 'ng-rails-csrf'
-gem 'mongoid', '~> 5.0.1'
 
 #Asset stuff
 gem 'sprockets'
@@ -34,6 +33,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'faker'
   gem 'smarf_doc', github: 'RickCarlino/smarf_doc'
+  gem 'sqlite3'
 end
 
 group :development do

@@ -1,5 +1,4 @@
-class Sequence
-  include Mongoid::Document
+class Sequence < ActiveRecord::Base
 
   belongs_to :schedule
   belongs_to :device

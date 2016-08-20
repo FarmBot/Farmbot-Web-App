@@ -65,7 +65,6 @@ GEM
     arrayfields (4.9.2)
     ast (2.3.0)
     bcrypt (3.1.11)
-    bson (4.1.1)
     builder (3.2.2)
     cane (2.6.2)
       parallel
@@ -181,13 +180,6 @@ GEM
     mime-types-data (3.2016.0521)
     mini_portile2 (2.1.0)
     minitest (5.9.0)
-    mongo (2.2.7)
-      bson (~> 4.0)
-    mongoid (5.0.2)
-      activemodel (~> 4.0)
-      mongo (~> 2.1)
-      origin (~> 2.1)
-      tzinfo (>= 0.3.37)
     multi_json (1.12.1)
     mutations (0.8.0)
       activesupport
@@ -196,7 +188,6 @@ GEM
     nokogiri (1.6.8)
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
-    origin (2.2.0)
     orm_adapter (0.5.0)
     parallel (1.9.0)
     parser (2.3.1.2)
@@ -317,6 +308,7 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
+    sqlite3 (1.3.10)
     thor (0.19.1)
     thread_safe (0.3.5)
     tilt (2.0.5)
@@ -360,7 +352,6 @@ DEPENDENCIES
   jwt
   launchy
   metric_fu
-  mongoid (~> 5.0.1)
   mutations
   ng-rails-csrf
   pry
@@ -376,6 +367,7 @@ DEPENDENCIES
   simplecov
   smarf_doc!
   sprockets
+  sqlite3
   uglifier
 
 RUBY VERSION
