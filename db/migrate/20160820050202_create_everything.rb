@@ -1,4 +1,4 @@
-class CreateUsers < ActiveRecord::Migration
+class CreateEverything < ActiveRecord::Migration
   def change
     create_table :devices do |t|
       t.string :planting_area_id
