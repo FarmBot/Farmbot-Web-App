@@ -37,6 +37,8 @@ end
 
 RSpec.configure do |config|
 
+  config.backtrace_exclusion_patterns = [/gems/]
+
   config.include Helpers
   config.infer_spec_type_from_file_location!
   config.order = 'random'
@@ -45,6 +47,9 @@ RSpec.configure do |config|
     config.after(:each, type: :controller) do
       SmarfDoc.run!(request, response)
     end
+  end
+  config.before(:suite) do
+    ActiveRecord::Base.subclasses.map(&:delete_all)
   end
   config.after(:suite) { SmarfDoc.finish! }
 

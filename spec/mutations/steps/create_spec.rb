@@ -20,7 +20,7 @@ describe Steps::Create do
     expect(outcome.result.sequence).to eq(valid_params[:sequence])
     cmd = outcome.result.command.deep_symbolize_keys
     expect(cmd).to eq(valid_params[:command])
-    expect(sequence.steps.order_by(position: 1).last).to eq(outcome.result)
+    expect(sequence.steps.order(position: :asc).last).to eq(outcome.result)
   end
 
   it 'inserts new steps at a specified index' do

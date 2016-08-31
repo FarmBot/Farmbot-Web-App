@@ -13,85 +13,87 @@
 
 ActiveRecord::Schema.define(version: 20160820050202) do
 
-  create_table "commands", force: :cascade do |t|
-    t.string "step_id"
-  end
-
   create_table "devices", force: :cascade do |t|
-    t.string "planting_area_id"
-    t.string "uuid"
-    t.string "token"
-    t.string "name"
+    t.integer "planting_area_id"
+    t.string  "uuid"
+    t.string  "token"
+    t.string  "name"
   end
 
   create_table "planting_areas", force: :cascade do |t|
-    t.string "width"
-    t.string "length"
-    t.string "device_id"
+    t.integer "width"
+    t.integer "length"
+    t.integer "device_id"
   end
 
   create_table "plants", force: :cascade do |t|
-    t.string "device_id"
-    t.string "planting_area_id"
-    t.string "name"
-    t.string "img_url"
-    t.string "icon_url"
-    t.string "openfarm_slug"
-    t.string "x"
-    t.string "y"
-    t.string "planted_at"
+    t.integer "device_id"
+    t.integer "planting_area_id"
+    t.string  "name"
+    t.string  "img_url"
+    t.string  "icon_url"
+    t.string  "openfarm_slug"
+    t.string  "x"
+    t.string  "y"
+    t.string  "planted_at"
   end
 
   create_table "regimen_items", force: :cascade do |t|
-    t.string "time_offset"
-    t.string "schedule_id"
-    t.string "regimen_id"
-    t.string "sequence_id"
+    t.string  "time_offset"
+    t.integer "schedule_id"
+    t.integer "regimen_id"
+    t.integer "sequence_id"
   end
 
   create_table "regimens", force: :cascade do |t|
-    t.string "color"
-    t.string "name"
-    t.string "device_id"
+    t.string  "color"
+    t.string  "name"
+    t.integer "device_id"
   end
 
   create_table "schedules", force: :cascade do |t|
-    t.string "sequence_id"
-    t.string "device_id"
-    t.string "start_time"
-    t.string "end_time"
-    t.string "next_time"
-    t.string "repeat"
-    t.string "time_unit"
+    t.integer  "sequence_id"
+    t.integer  "device_id"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.datetime "next_time"
+    t.integer  "repeat"
+    t.string   "time_unit"
   end
 
   create_table "sequences", force: :cascade do |t|
-    t.string "schedule_id"
-    t.string "device_id"
-    t.string "regimen"
-    t.string "name"
-    t.string "color"
+    t.integer "schedule_id"
+    t.integer "device_id"
+    t.string  "regimen"
+    t.string  "name"
+    t.string  "color"
   end
 
   create_table "steps", force: :cascade do |t|
-    t.string "sequence_id"
-    t.string "message_type"
-    t.string "position"
+    t.integer "sequence_id"
+    t.string  "message_type"
+    t.integer "position"
+    t.text    "command"
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "device_id"
-    t.string "name"
-    t.string "email"
-    t.string "encrypted_password"
-    t.string "reset_password_token"
-    t.string "reset_password_sent_at"
-    t.string "remember_created_at"
-    t.string "sign_in_count"
-    t.string "current_sign_in_at"
-    t.string "last_sign_in_at"
-    t.string "current_sign_in_ip"
-    t.string "last_sign_in_ip"
+    t.integer  "device_id"
+    t.string   "name"
+    t.string   "email",                  default: "", null: false
+    t.string   "encrypted_password",     default: "", null: false
+    t.string   "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer  "sign_in_count",          default: 0,  null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string   "current_sign_in_ip"
+    t.string   "last_sign_in_ip"
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
   end
+
+  add_index "users", ["email"], name: "index_users_on_email", unique: true
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
 
 end

@@ -19,7 +19,7 @@ module Sequences
     end
 
     def execute
-      update_attributes(sequence, inputs.except(:user, :sequence, :_id))
+      update_attributes(sequence, inputs.except(:user, :sequence, :id))
     end
   end
 end

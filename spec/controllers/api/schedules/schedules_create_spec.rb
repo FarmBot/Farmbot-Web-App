@@ -8,7 +8,7 @@ describe Api::SchedulesController do
 
     it 'makes a schedule' do
       sign_in user
-      seq_id = FactoryGirl.create(:sequence)._id.to_s
+      seq_id = FactoryGirl.create(:sequence).id
       input = { sequence_id: seq_id,
                 start_time: '2015-02-17T15:16:17.000Z',
                 end_time: '2099-02-17T18:19:20.000Z',

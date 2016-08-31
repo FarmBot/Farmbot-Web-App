@@ -10,8 +10,8 @@ module Api
       sorry "You can't perform that action. #{exc.message}", 403
     end
 
-    rescue_from Mongoid::Errors::DocumentNotFound do |exc|
-      sorry "Can't find #{exc.klass}(s) with ID(s): #{exc.params}", 404
+    rescue_from ActiveRecord::RecordNotFound do |exc|
+      sorry "Document not found.", 404
     end
 
     rescue_from Mongoid::Errors::InvalidFind do
@@ -21,8 +21,8 @@ module Api
     end
 
 
-    rescue_from Mongoid::Errors::Validations do |exc|
-      render json: {error: exc.summary}, status: 422
+    rescue_from ActiveRecord::RecordInvalid do |exc|
+      render json: {error: exc.message}, status: 422
     end
 
 private

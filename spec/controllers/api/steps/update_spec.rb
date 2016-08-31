@@ -11,8 +11,8 @@ describe Api::StepsController do
 
     it 'updates a step' do
       sign_in user
-      params = { id: step._id.to_s,
-                 sequence_id: sequence._id.to_s,
+      params = { id: step.id,
+                 sequence_id: sequence.id,
                  step: { message_type: 'read_status' } }
       patch :update, params
       expect(response.status).to eq(200)

@@ -13,17 +13,17 @@ describe Api::SequencesController do
 
     it 'destroys a sequence' do
       sign_in user
-      input = { id: sequence._id.to_s }
+      input = { id: sequence.id }
       delete :destroy, input
       expect(response.status).to eq(200)
       expect { sequence.reload }
-        .to(raise_error(Mongoid::Errors::DocumentNotFound))
+        .to(raise_error(ActiveRecord::RecordNotFound))
     end
 
     it 'doesnt destroy other peoples sequence' do
       sign_in user
       other_dudes = FactoryGirl.create(:sequence)
-      input = { id: other_dudes._id.to_s }
+      input = { id: other_dudes.id }
       delete :destroy, input
       expect(response.status).to eq(403)
     end

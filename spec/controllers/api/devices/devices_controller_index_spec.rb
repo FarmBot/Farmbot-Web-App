@@ -12,7 +12,7 @@ describe Api::DevicesController do
       sign_in user
       get :show, format: :json
       device = user.device
-      id = JSON.parse(response.body)["_id"]
+      id = JSON.parse(response.body)["id"]
       expect(Device.find(id)).to eq(device)
       expect(response.status).to eq(200)
     end
