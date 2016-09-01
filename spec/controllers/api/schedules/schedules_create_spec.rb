@@ -26,11 +26,10 @@ describe Api::SchedulesController do
       input = { start_time: '2015-02-17T15:16:17.000Z',
                 end_time: '2099-02-17T18:19:20.000Z',
                 repeat: 4,
-                time_unit: 'minutely',
-                sequence_id: sequence.id }
+                time_unit: 'minutely' }
       post :create, input
-      expect(response.status).to eq(400)
-      expect(json[:error]).to include('forgot to provide an `*_id` attribute')
+      expect(response.status).to eq(422)
+      expect(json[:sequence]).to include("can't be nil")
     end
   end
 end
