@@ -13,7 +13,15 @@ module Steps
     end
 
     def execute
-      create(Step, inputs)
+      step = Step.new(inputs)
+      # Make sure position is always > 0.
+      step.position ||= step.sequence.steps.count
+
+      if step.valid? && step.save
+        return step
+      else
+        add_error :step, :invalid, step.errors.messages
+      end
     end
   end
 end

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Steps::Update do
+xdescribe Steps::Update do
   let(:user) { FactoryGirl.create(:user) }
   let(:device) { user.device }
   let(:mutation) { Steps::Update }
