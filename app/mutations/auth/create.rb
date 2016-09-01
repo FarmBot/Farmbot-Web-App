@@ -9,7 +9,7 @@ module Auth
 
     def execute
       Device.find_by(uuid: bot_uuid, token: bot_token)
-    rescue Mongoid::Errors::DocumentNotFound
+    rescue ActiveRecord::RecordNotFound
       add_error :auth, :*, 'Bad uuid or token'
     end
   end

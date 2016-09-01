@@ -66,6 +66,9 @@ GEM
     ast (2.3.0)
     bcrypt (3.1.11)
     builder (3.2.2)
+    bullet (5.3.0)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.10.0)
     cane (2.6.2)
       parallel
     capybara (2.7.1)
@@ -319,6 +322,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.2)
+    uniform_notifier (1.10.0)
     unparser (0.2.5)
       abstract_type (~> 0.0.7)
       adamantium (~> 0.2.0)
@@ -338,6 +342,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers (~> 0.8.3)
+  bullet
   capybara
   codeclimate-test-reporter
   coffee-rails

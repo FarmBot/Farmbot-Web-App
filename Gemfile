@@ -29,15 +29,13 @@ source 'https://rails-assets.org' do
 end
 
 group :development, :test do
+  gem "bullet"
+  gem 'metric_fu' # Run this to see where the code smells. metric_fu in terminal  
   gem 'pry'
   gem 'factory_girl_rails'
   gem 'faker'
   gem 'smarf_doc', github: 'RickCarlino/smarf_doc'
   gem 'sqlite3'
-end
-
-group :development do
-  gem 'metric_fu' # Run this to see where the code smells. metric_fu in terminal
 end
 
 group :test do

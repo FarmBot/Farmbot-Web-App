@@ -14,13 +14,6 @@ module Api
       sorry "Document not found.", 404
     end
 
-    rescue_from Mongoid::Errors::InvalidFind do
-      sorry 'You most likely forgot to provide an `*_id` attribute in your '\
-            'request parameters. Examples of possible missing params: '\
-            'schedule_id, sequence_id, id, etc..', 400
-    end
-
-
     rescue_from ActiveRecord::RecordInvalid do |exc|
       render json: {error: exc.message}, status: 422
     end

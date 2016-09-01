@@ -48,12 +48,9 @@ RSpec.configure do |config|
       SmarfDoc.run!(request, response)
     end
   end
-  config.before(:each) do
+  
+  config.after(:suite) do
     ActiveRecord::Base.subclasses.map(&:delete_all)
-  end
-  config.after(:suite) { SmarfDoc.finish! }
-
-  config.after do
-    puts "TODO: Purge the database!!!"
+    SmarfDoc.finish!
   end
 end
