@@ -12,11 +12,8 @@ describe Api::SchedulesController do
 
       sign_in user
 
-      # schedules = FactoryGirl
-      #               .create_list(:schedule, 2, device_id: user.device.id)
-      FactoryGirl.create(:schedule, device: user.device)
-      # Schedule.create!(device: user.device)
-      $thatuser=user
+      schedules = FactoryGirl
+                    .create_list(:schedule, 2, device_id: user.device.id)
 
       schedule_ids = user.device.schedules
                        .map(&:id)

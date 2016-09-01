@@ -1,7 +1,6 @@
 module Api
   class SchedulesController < Api::AbstractController
     def index
-      binding.pry
       render json: current_device.schedules
     end
 
