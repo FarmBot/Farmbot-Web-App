@@ -11,14 +11,14 @@ class Step < ActiveRecord::Base
 
   serialize :command
   # http://stackoverflow.com/a/5127684/1064917
-  after_initialize :init
+  after_initialize :update_the_position
 
-  def init
-    self.position = 0
-    # if sequence && sequence.steps.present?
-    #   self[:position] = (sequence.steps.size - 1)
+  def update_the_position
+    # if sequence_id && self[:position].nil?
+    #   # stepss = Step.where(sequence_id: sequence_id)
+    #   self[:position] = (steps.count - 1)
     # else
-    #   self[:position] = 0
+      self[:position] = 0
     # end
   end
 

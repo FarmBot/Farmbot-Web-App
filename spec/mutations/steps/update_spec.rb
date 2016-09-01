@@ -13,14 +13,16 @@ describe Steps::Update do
     orange = Step.create(sequence: sequence, message_type: 'pin_write')
     green  = Step.create(sequence: sequence, message_type: 'pin_write')
     blue   = Step.create(sequence: sequence, message_type: 'pin_write')
-    expectation = [pink, red, orange, green, blue]
-    expect(sequence.steps.sort).to eq(expectation)
+    expectation = [pink, red, orange, green, blue].map(&:id)
+    reality     = sequence.reload.steps.sort.map(&:id)
+    expect(expectation).to eq(reality)
 
     # Move last ==> first
     Steps::Update.run!(step_params: {position: 1}, step: blue)
-    expect(sequence.steps.pluck(:position).sort).to eq([0,1,2,3,4])
+    sequence.reload
+    expect(sequence.steps.map(&:position).sort).to eq([0,1,2,3,4])
     expect(sequence.steps.find_by(position: 0)).to eq(pink)
-    expect(blue.position).to             eq(1)
+    expect(blue.position).to eq(1)
     expect(sequence.steps.find_by(position: 2)).to eq(red)
     expect(sequence.steps.find_by(position: 3)).to eq(orange)
     expect(sequence.steps.find_by(position: 4)).to eq(green)
@@ -30,7 +32,7 @@ describe Steps::Update do
     # precondition: pink, blue, red, orange, green,
     # postcondtion: blue, red, pink, orange, green,
     Steps::Update.run!(step_params: {position: 2}, step: pink)
-    expect(sequence.steps.pluck(:position).sort).to eq([0,1,2,3,4])
+    expect(sequence.steps.map(&:position).sort).to eq([0,1,2,3,4])
     expect(sequence.steps.find_by(position: 0)).to eq(blue)
     expect(sequence.steps.find_by(position: 1)).to eq(red)
     expect(sequence.steps.find_by(position: 2)).to eq(pink)
@@ -50,8 +52,7 @@ describe Steps::Update do
     c = Steps::Create.run!(message_type: 'pin_write',
                           sequence: sequence,
                           command: {name: :c})
-
-    expect(sequence.steps).to eq([a, b, c])
+    expect(sequence.reload.steps.map(&:id)).to eq([a, b, c].map(&:id))
     expect(a.position).to eq(0)
     expect(b.position).to eq(1)
     expect(c.position).to eq(2)
