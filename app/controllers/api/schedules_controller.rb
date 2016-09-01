@@ -8,6 +8,8 @@ module Api
       mutate Schedules::Create.run(params,
                                    device: current_device,
                                    sequence: sequence)
+    rescue Exception => e
+      binding.pry
     end
 
     def update
@@ -30,7 +32,7 @@ module Api
     private
 
     def sequence
-      @sequence ||= Sequence.find(params[:sequence_id])
+      @sequence ||= Sequence.where(id: params[:sequence_id]).first
     end
 
     def schedule

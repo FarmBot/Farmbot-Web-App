@@ -5,10 +5,11 @@ describe Api::SchedulesController do
 
   describe '#create' do
     let(:user) { FactoryGirl.create(:user) }
+    let(:sequence) { FactoryGirl.create(:sequence) }
 
     it 'makes a schedule' do
       sign_in user
-      seq_id = FactoryGirl.create(:sequence).id
+      seq_id = sequence.id
       input = { sequence_id: seq_id,
                 start_time: '2015-02-17T15:16:17.000Z',
                 end_time: '2099-02-17T18:19:20.000Z',
@@ -25,7 +26,8 @@ describe Api::SchedulesController do
       input = { start_time: '2015-02-17T15:16:17.000Z',
                 end_time: '2099-02-17T18:19:20.000Z',
                 repeat: 4,
-                time_unit: 'minutely' }
+                time_unit: 'minutely',
+                sequence_id: sequence.id }
       post :create, input
       expect(response.status).to eq(400)
       expect(json[:error]).to include('forgot to provide an `*_id` attribute')

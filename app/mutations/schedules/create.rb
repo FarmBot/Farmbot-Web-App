@@ -20,6 +20,8 @@ module Schedules
       create(Schedule, inputs) do |sched|
         sched.next_time = sched.calculate_next_occurence
       end
+    rescue Exception => e
+      binding.pry
     end
   end
 end
