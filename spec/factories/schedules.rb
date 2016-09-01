@@ -4,10 +4,11 @@ FactoryGirl.define do
     end_time { Date.today + 1.minute + 2.days }
     time_unit "daily"
     repeat 1
+    # device
     after(:build) do |s|
       s.next_time ||= s.calculate_next_occurence
       s.sequence ||= create(:sequence)
-      # s.device ||= s.sequence.device
+      s.device ||= s.sequence.device
     end
   end
 end
