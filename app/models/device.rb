@@ -9,7 +9,6 @@ class Device < ActiveRecord::Base
   has_many :plants, dependent: :destroy
   has_one  :planting_area
 
-
   # # The UUID of the device
   # field :uuid
   # validates :uuid, presence: true
