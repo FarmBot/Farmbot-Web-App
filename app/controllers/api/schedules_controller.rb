@@ -8,8 +8,6 @@ module Api
       mutate Schedules::Create.run(params,
                                    device: current_device,
                                    sequence: sequence)
-    rescue Exception => e
-      binding.pry
     end
 
     def update
