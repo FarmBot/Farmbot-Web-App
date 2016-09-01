@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 20160820050202) do
   end
 
   create_table "regimen_items", force: :cascade do |t|
-    t.string  "time_offset"
+    t.integer "time_offset"
     t.integer "schedule_id"
     t.integer "regimen_id"
     t.integer "sequence_id"

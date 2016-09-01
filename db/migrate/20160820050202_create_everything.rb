@@ -58,7 +58,7 @@ class CreateEverything < ActiveRecord::Migration
     end
 
     create_table :regimen_items do |t|
-      t.string :time_offset
+      t.integer :time_offset
       t.integer :schedule_id
       t.integer :regimen_id
       t.integer :sequence_id
