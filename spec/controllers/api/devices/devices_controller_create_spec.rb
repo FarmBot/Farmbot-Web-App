@@ -27,6 +27,7 @@ describe Api::DevicesController do
       post :create, params
       user.reload
       user2.reload
+      binding.pry
       expect(user.device.id).to eq(user2.device.id)
     end
   end
