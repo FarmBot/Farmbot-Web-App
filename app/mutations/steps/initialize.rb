@@ -7,8 +7,12 @@ module Steps
       hash(:command) { model :*, class: Object }
     end
 
+    optional do 
+      integer :position
+    end
+
     def execute
-      Step.new inputs
+      Step.new(inputs).tap {|step| step.position ||= 987 }
     end
   end
 end

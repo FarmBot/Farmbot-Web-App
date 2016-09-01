@@ -49,3 +49,4 @@ pickle-email-*.html
 /config/application.yml
 .DS_Store
 node_modules/
+*.journal

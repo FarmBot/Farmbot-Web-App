@@ -37,6 +37,8 @@ end
 
 RSpec.configure do |config|
 
+  config.backtrace_exclusion_patterns = [/gems/]
+
   config.include Helpers
   config.infer_spec_type_from_file_location!
   config.order = 'random'
@@ -46,14 +48,9 @@ RSpec.configure do |config|
       SmarfDoc.run!(request, response)
     end
   end
-  config.after(:suite) { SmarfDoc.finish! }
-
-  config.after do
-    Mongoid.purge!
+  
+  config.after(:suite) do
+    ActiveRecord::Base.subclasses.map(&:delete_all)
+    SmarfDoc.finish!
   end
 end
-
-# Moped was making the test output buffer look ugly every time the database was
-# purged. These settings stop that.
-Mongoid.logger.level = Logger::WARN
-Mongo::Logger.logger.level = Logger::WARN

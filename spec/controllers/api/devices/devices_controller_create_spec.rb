@@ -14,7 +14,7 @@ describe Api::DevicesController do
       params     = {user_id: user.id, name: 'Frank', uuid: '123', token: '321'}
       post :create, params
       resp       = JSON.parse(response.body)
-      new_device = Device.find(resp['_id'])
+      new_device = Device.find(resp['id'])
       user.reload
       expect(user.device).to eq(new_device)
       expect(response.status).to eq(200)
@@ -27,7 +27,8 @@ describe Api::DevicesController do
       post :create, params
       user.reload
       user2.reload
-      expect(user.device._id).to eq(user2.device._id)
+      binding.pry
+      expect(user.device.id).to eq(user2.device.id)
     end
   end
 end

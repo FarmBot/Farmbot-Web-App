@@ -13,7 +13,7 @@ describe Api::DevicesController do
       old_bot = user.device
       delete :destroy, id: user.device.id, fromat: :json
       user.reload
-      expect(user.device._id).not_to eq(old_bot._id)
+      expect(user.device.id).not_to eq(old_bot.id)
       expect(response.status).to eq(204)
     end
   end

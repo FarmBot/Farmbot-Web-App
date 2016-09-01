@@ -40,7 +40,7 @@ describe Api::DevicesController do
       post :update, { name: 'Frank', uuid: bot.uuid, token: bot.token }
       user.reload
       user2.reload
-      expect(user.device._id).to eq(user2.device._id)
+      expect(user.device.id).to eq(user2.device.id)
     end
   end
 end

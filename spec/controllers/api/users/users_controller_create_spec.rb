@@ -14,7 +14,7 @@ describe Api::UsersController do
                   name:                  "Frank" }
       post :create, params
       expect(User.count > original_count).to be_truthy
-      user = User.find json[:user][:_id]
+      user = User.find json[:user][:id]
       expect(user.name).to eq("Frank")
       expect(user.email).to eq("t@g.com")
       expect(user.valid_password?('Password123')).to be_truthy

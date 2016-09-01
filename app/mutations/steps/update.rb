@@ -16,14 +16,7 @@ module Steps
     end
 
     def execute
-      # FIXME: Right now, we do almost 0 validation on command objects.
-      # There are 7 different command types, with different validation rules.
-      # Maybe:
-      #    1. Create a StepValidatorFactory
-      #    2. Create a SingleCommandValidator, ReadStatusValidator, etc.
-      # Or: Use inheritance and embed different classes of Command
-      step.move_to! step_params[:position] if step_params[:position]
-      update_attributes(step, step_params.except(:position))
+      update_attributes(step, step_params)
       step.reload
     end
   end

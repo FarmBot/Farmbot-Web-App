@@ -14,7 +14,7 @@ module Devices
 
     def execute
       inputs["name"] ||= Haikunator.haikunate(99)
-      dev = Device.find_or_initialize_by(uuid: uuid, token: token)
+      dev = Device.find_or_initialize_by(uuid: uuid)
       if update_attributes(dev, inputs.except(:user))
         user.update_attributes(device: dev)
       end
