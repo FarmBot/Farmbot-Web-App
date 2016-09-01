@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
 
   # # Lazy load a device into the account. Prevents weird edge cases, such as
   # # device === nil on first login.
+  # TODO THIS NEEDS TO NOT EXIST!!!
   def device
     # Device.where(id: self[:device]).first || Devices::Create.run!(user: self,
     #                           uuid: SecureRandom.uuid,

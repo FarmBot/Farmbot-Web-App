@@ -13,11 +13,14 @@ module Devices
     end
 
     def execute
-      inputs["name"] ||= Haikunator.haikunate(99)
+      inputs["name"] ||= Haikunator.haikunate(9999)
       dev = Device.find_or_initialize_by(uuid: uuid)
-      if update_attributes(dev, inputs.except(:user))
-        user.update_attributes(device: dev)
+
+      ActiveRecord::Base.transaction do
+        dev.update_attributes!(inputs.except(:user))
+        user.update_attributes!(device_id: dev.id)
       end
+
       dev
     end
   end
