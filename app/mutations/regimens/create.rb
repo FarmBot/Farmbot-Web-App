@@ -5,11 +5,11 @@ module Regimens
     required do
       model :device, class: Device
       string :name
-      string :color # in: whatever
+      string :color, in: Sequence::COLORS
       array :regimen_items do
         hash do
           integer :time_offset
-          string :sequence_id
+          integer :sequence_id
         end
       end
     end
