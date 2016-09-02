@@ -16,7 +16,6 @@ ActiveRecord::Schema.define(version: 20160820050202) do
   create_table "devices", force: :cascade do |t|
     t.integer "planting_area_id"
     t.string  "uuid"
-    t.string  "token"
     t.string  "name"
   end
 

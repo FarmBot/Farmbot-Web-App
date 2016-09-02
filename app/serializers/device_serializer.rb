@@ -1,3 +1,3 @@
 class DeviceSerializer < ActiveModel::Serializer
-  attributes :id, :name, :uuid, :token
+  attributes :id, :name, :uuid
 end

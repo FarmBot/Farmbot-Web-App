@@ -11,7 +11,7 @@ describe Api::DevicesController do
 
     it 'creates a new device for a user' do
       sign_in user
-      params     = {user_id: user.id, name: 'Frank', uuid: '123', token: '321'}
+      params     = {user_id: user.id, name: 'Frank', uuid: '123'}
       post :create, params
       resp       = JSON.parse(response.body)
       new_device = Device.find(resp['id'])
@@ -23,7 +23,7 @@ describe Api::DevicesController do
     it 'shares devices between two users' do
       bot = user.device
       sign_in user2
-      params = {name: 'QQQ', uuid: bot.uuid, token: bot.token}
+      params = {name: 'QQQ', uuid: bot.uuid}
       post :create, params
       expect(user.reload.device.reload.name).to eq("QQQ")
       expect(user2.reload.device.reload.name).to eq("QQQ")

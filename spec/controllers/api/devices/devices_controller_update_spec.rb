@@ -14,7 +14,7 @@ describe Api::DevicesController do
     it 'updates a Device' do
       sign_in user
       fake_name = Faker::Name.name
-      put :update, {id: user.device.id, name: fake_name, uuid: 1, token: 2}, format: :json
+      put :update, {id: user.device.id, name: fake_name, uuid: 1}, format: :json
       # put path, params, options
       user.reload
       device = user.reload.device.reload
@@ -26,18 +26,17 @@ describe Api::DevicesController do
       user.update_attributes(device: nil)
       sign_in user
       fake_name = Faker::Name.name
-      put :update, {uuid: 1, token: 2}, format: :json
+      put :update, {uuid: 1}, format: :json
       user.reload
       expect(user.device).to be_kind_of(Device)
       expect(user.device['name'].length).to be > 4 # Haikunator
       expect(user.device['uuid']).to eq('1')
-      expect(user.device['token']).to eq('2')
     end
 
     it 'shares devices between two users' do
       bot = user.device
       sign_in user2
-      post :update, { name: 'Frank', uuid: bot.uuid, token: bot.token }
+      post :update, { name: 'Frank', uuid: bot.uuid }
       user.reload
       user2.reload
       expect(user.device.id).to eq(user2.device.id)

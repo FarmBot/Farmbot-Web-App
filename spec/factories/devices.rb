@@ -5,6 +5,5 @@ FactoryGirl.define do
   factory :device do
     name  { Faker::Internet.user_name }
     uuid  { SecureRandom.uuid }
-    token { SecureRandom.urlsafe_base64 }
   end
 end

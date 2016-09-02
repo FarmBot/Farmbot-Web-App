@@ -9,17 +9,6 @@ class Device < ActiveRecord::Base
   has_many :plants, dependent: :destroy
   has_one  :planting_area
 
-  # # The UUID of the device
-  # field :uuid
-  # validates :uuid, presence: true
-  # # The Authentication token for the device.
-  # # DEPRECATED LEGACY USE ONLY!
-  # field :token
-  # validates :token, presence: true
-  # # The 'Friendly Name' of the device. I recommend 'The Cabbage Patch Kid'
-  # field :name
-  # validates :name, presence: true
-
   def if_not_null
     yield(self)
     self

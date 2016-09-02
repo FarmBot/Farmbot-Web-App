@@ -32,9 +32,7 @@ module Api
 
       # Only allow a trusted parameter "white list" through.
       def device_params
-        { name:  params[:name]  || Haikunator.haikunate(99),
-          uuid:  params[:uuid]  || SecureRandom.uuid,
-          token: params[:token] || SecureRandom.hex }
+        { name:  params[:name], uuid:  params[:uuid] }
       end
   end
 end

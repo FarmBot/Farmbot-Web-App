@@ -8,7 +8,6 @@ module Devices
 
     optional do
       string :uuid
-      string :token
       string :name
     end
 
@@ -30,7 +29,6 @@ module Devices
   
     def merge_default_values
       inputs[:uuid]  ||= SecureRandom.uuid 
-      inputs[:token] ||= SecureRandom.hex
       inputs[:name]  ||= Haikunator.haikunate(9999)
     end
 

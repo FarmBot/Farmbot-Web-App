@@ -29,7 +29,6 @@ class CreateEverything < ActiveRecord::Migration
     create_table :devices do |t|
       t.integer :planting_area_id
       t.string :uuid
-      t.string :token
       t.string :name
     end
 
