@@ -4,21 +4,36 @@ module Devices
 
     required do
       model :user, class: User
-      string :uuid
-      string :token
     end
 
     optional do
-      string :name, default: nil
+      string :uuid
+      string :name
     end
 
     def execute
-      inputs["name"] ||= Haikunator.haikunate(99)
-      dev = Device.find_or_initialize_by(uuid: uuid, token: token)
-      if update_attributes(dev, inputs.except(:user))
-        user.update_attributes(device: dev)
+      merge_default_values
+
+      ActiveRecord::Base.transaction do
+        device.update_attributes!(inputs.except(:user))
+        old_device = user.device
+        user.update_attributes!(device_id: device.id)
+        if device.users.count < 1
+          old_device.destroy! # Clean up "orphan" devices.
+        end
       end
-      dev
+
+      device
+    end
+  private
+  
+    def merge_default_values
+      inputs[:uuid]  ||= SecureRandom.uuid 
+      inputs[:name]  ||= Haikunator.haikunate(9999)
+    end
+
+    def device
+      @device ||= Device.find_by(uuid: uuid) || Device.new(uuid: uuid)
     end
   end
 end

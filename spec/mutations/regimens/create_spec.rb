@@ -12,10 +12,10 @@ describe Regimens::Create do
       regimen_items: [
         {
           time_offset: 129600000,
-          sequence_id: seq1._id.to_s
+          sequence_id: seq1.id
         }, {
           time_offset: 259200000,
-          sequence_id: seq2._id.to_s
+          sequence_id: seq2.id
         }
       ]
     }

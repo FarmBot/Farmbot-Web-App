@@ -1,8 +1,6 @@
 module Api
   class SchedulesController < Api::AbstractController
     def index
-      # Follow this for better querying in the future:
-      # http://www.js-data.io/v1.3.0/docs/query-syntax
       render json: current_device.schedules
     end
 
@@ -32,7 +30,7 @@ module Api
     private
 
     def sequence
-      @sequence ||= Sequence.find(params[:sequence_id])
+      @sequence ||= Sequence.where(id: params[:sequence_id]).first
     end
 
     def schedule

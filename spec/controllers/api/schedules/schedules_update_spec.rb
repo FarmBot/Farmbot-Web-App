@@ -8,7 +8,7 @@ describe Api::SchedulesController do
 
     it 'allows authorized modification' do
       sign_in user
-      id = FactoryGirl.create(:schedule, device: user.device)._id.to_s
+      id = FactoryGirl.create(:schedule, device: user.device).id
       input = { id: id, schedule: { repeat: 66 } }
       patch :update, input
       expect(response.status).to eq(200)
@@ -16,7 +16,7 @@ describe Api::SchedulesController do
 
     it 'prevents unauthorized modification' do
       sign_in user
-      id = FactoryGirl.create(:schedule)._id.to_s
+      id = FactoryGirl.create(:schedule).id
       input = { id: id, repeat: 66 }
       patch :update, input
       expect(response.status).to eq(403)

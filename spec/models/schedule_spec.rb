@@ -5,7 +5,7 @@ describe Schedule do
 
     it 'indicates next_occurrence' do\
       actual = schedule.calculate_next_occurence
-      expected = schedule.schedule.next_occurrence
+      expected = schedule.schedule_rules.next_occurrence
       expect(actual).to eq(expected)
     end
   end

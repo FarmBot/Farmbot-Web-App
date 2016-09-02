@@ -11,7 +11,7 @@ describe Api::SequencesController do
     it 'updates existing sequences' do
       sign_in user
       sequence = FactoryGirl.create(:sequence, device: user.device)
-      input = { id: sequence._id.to_s,
+      input = { id: sequence.id,
                 sequence: { name: "Scare Birds",
                             steps: [{ message_type: 'move_relative',
                             command: { action: 'MOVE RELATIVE',

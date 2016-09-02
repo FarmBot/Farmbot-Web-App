@@ -11,7 +11,7 @@ describe Api::StepsController do
 
     it 'creates a new step sequence' do
       sign_in user
-      input = { sequence_id: sequence._id.to_s,
+      input = { sequence_id: sequence.id,
                 name: 'Scare Birds',
                 message_type: 'move_relative',
                 command: { action: 'MOVE RELATIVE',

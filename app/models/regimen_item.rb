@@ -1,6 +1,4 @@
-class RegimenItem
-  include Mongoid::Document
-  field :time_offset, type: Integer
+class RegimenItem < ActiveRecord::Base
   belongs_to :schedule
   belongs_to :regimen
   belongs_to :sequence

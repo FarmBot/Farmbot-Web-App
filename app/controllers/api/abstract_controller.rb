@@ -10,19 +10,12 @@ module Api
       sorry "You can't perform that action. #{exc.message}", 403
     end
 
-    rescue_from Mongoid::Errors::DocumentNotFound do |exc|
-      sorry "Can't find #{exc.klass}(s) with ID(s): #{exc.params}", 404
+    rescue_from ActiveRecord::RecordNotFound do |exc|
+      sorry "Document not found.", 404
     end
 
-    rescue_from Mongoid::Errors::InvalidFind do
-      sorry 'You most likely forgot to provide an `*_id` attribute in your '\
-            'request parameters. Examples of possible missing params: '\
-            'schedule_id, sequence_id, id, etc..', 400
-    end
-
-
-    rescue_from Mongoid::Errors::Validations do |exc|
-      render json: {error: exc.summary}, status: 422
+    rescue_from ActiveRecord::RecordInvalid do |exc|
+      render json: {error: exc.message}, status: 422
     end
 
 private
@@ -33,24 +26,19 @@ private
 
     def null_device
       @null_device ||= NullDevice.new(name:  'null_device',
-                                      uuid: '-',
-                                      token: '-')
+                                      uuid: '-')
     end
 
     def authenticate_user!
       # All possible information that could be needed for any of the 3 auth
       # strategies.
-      context = { bot_token:     request.headers["HTTP_BOT_TOKEN"],
-                  bot_uuid:      request.headers["HTTP_BOT_UUID"],
+      context = { 
                   jwt:           request.headers["Authorization"],
                   user:          current_user }
       # Returns a symbol representing the appropriate auth strategy, or nil if
       # unknown.
       strategy = Auth::DetermineAuthStrategy.run!(context)
       case strategy
-      when :bot
-        # When a bot uses the API, there is no current_user.
-        @current_device = Auth::Create.run!(context)
       when :jwt
         sign_in(Auth::FromJWT.run!(context))
       when :already_connected

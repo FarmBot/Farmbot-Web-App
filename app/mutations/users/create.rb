@@ -21,6 +21,8 @@ module Users
                                   password_confirmation: password_confirmation,
                                   name:                  name)
 
+      device = Devices::Create.run!(user: resp[:user])
+
       resp.merge!(Auth::CreateToken.run!(email:   email,
                                          password: password,
                                          host: "http://localhost:3000"))

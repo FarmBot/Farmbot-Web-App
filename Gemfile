@@ -6,7 +6,6 @@ gem 'rails',  '4.2.7'
 #Dokku demands this one.
 gem 'rails_12factor'
 gem 'ng-rails-csrf'
-gem 'mongoid', '~> 5.0.1'
 
 #Asset stuff
 gem 'sprockets'
@@ -30,14 +29,13 @@ source 'https://rails-assets.org' do
 end
 
 group :development, :test do
+  gem "bullet"
+  gem 'metric_fu' # Run this to see where the code smells. metric_fu in terminal  
   gem 'pry'
   gem 'factory_girl_rails'
   gem 'faker'
   gem 'smarf_doc', github: 'RickCarlino/smarf_doc'
-end
-
-group :development do
-  gem 'metric_fu' # Run this to see where the code smells. metric_fu in terminal
+  gem 'sqlite3'
 end
 
 group :test do
