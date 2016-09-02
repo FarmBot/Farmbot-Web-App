@@ -6,8 +6,8 @@ describe Api::DevicesController do
 
   describe '#create' do
 
-    let(:user) { FactoryGirl.create(:user) }
-    let(:user2) { FactoryGirl.create(:user) }
+    let!(:user) { FactoryGirl.create(:user) }
+    let!(:user2) { FactoryGirl.create(:user) }
 
     it 'creates a new device for a user' do
       sign_in user
@@ -23,12 +23,11 @@ describe Api::DevicesController do
     it 'shares devices between two users' do
       bot = user.device
       sign_in user2
-      params = {name: 'Frank', uuid: bot.uuid, token: bot.token}
+      params = {name: 'QQQ', uuid: bot.uuid, token: bot.token}
       post :create, params
-      user.reload
-      user2.reload
-      binding.pry
-      expect(user.device.id).to eq(user2.device.id)
+      expect(user.reload.device.reload.name).to eq("QQQ")
+      expect(user2.reload.device.reload.name).to eq("QQQ")
+      expect(user.device_id).to eq(user2.device_id)
     end
   end
 end

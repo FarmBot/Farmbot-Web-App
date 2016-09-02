@@ -12,7 +12,6 @@ module Api
     end
 
     def create
-      #binding.pry
       mutate Sequences::Create.run(params, device: current_device)
     end
 

@@ -4,24 +4,32 @@ module Devices
 
     required do
       model :user, class: User
-      string :uuid
-      string :token
     end
 
     optional do
-      string :name, default: nil
+      string :uuid
+      string :token
+      string :name
     end
 
     def execute
-      inputs["name"] ||= Haikunator.haikunate(9999)
-      dev = Device.find_or_initialize_by(uuid: uuid)
+      merge_default_values
 
-      ActiveRecord::Base.transaction do
-        dev.update_attributes!(inputs.except(:user))
-        user.update_attributes!(device_id: dev.id)
-      end
+      device.update_attributes(inputs.except(:user))
+      user.update_attributes(device_id: device.id)
 
-      dev
+      device
+    end
+  private
+  
+    def merge_default_values
+      inputs[:uuid]  ||= SecureRandom.uuid 
+      inputs[:token] ||= SecureRandom.hex
+      inputs[:name]  ||= Haikunator.haikunate(9999)
+    end
+
+    def device
+      @device ||= Device.find_by(uuid: uuid) || Device.new(uuid: uuid)
     end
   end
 end
