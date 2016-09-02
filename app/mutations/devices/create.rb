@@ -15,8 +15,14 @@ module Devices
     def execute
       merge_default_values
 
-      device.update_attributes(inputs.except(:user))
-      user.update_attributes(device_id: device.id)
+      ActiveRecord::Base.transaction do
+        device.update_attributes!(inputs.except(:user))
+        old_device = user.device
+        user.update_attributes!(device_id: device.id)
+        if device.users.count < 1
+          old_device.destroy! # Clean up "orphan" devices.
+        end
+      end
 
       device
     end
