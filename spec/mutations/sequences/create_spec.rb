@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Steps::Create do
   let(:user) { FactoryGirl.create(:user) }
   let(:device) { user.device }
-  let(:mutation) { Sequences::Create }
+
   let(:step) do
     { message_type: 'move_relative',
       command: { action: 'MOVE RELATIVE',
@@ -14,17 +14,17 @@ describe Steps::Create do
                  delay: 0 } }
   end
 
-  let(:valid_params) do
+  name = Faker::Pokemon.name
+  let(:sequence_params) do
     { device: device,
-      name: 'Hi.',
+      name: name,
       steps: [step] }
   end
 
   it 'Builds a `sequence`' do
-    seq = mutation.run!(valid_params)
-
+    seq = Sequences::Create.run!(sequence_params)
     expect(seq.steps.count).to eq(1)
-    expect(seq.name).to eq('Hi.')
+    expect(seq.name).to eq(name)
     expect(seq.device).to eq(device)
   end
 end
