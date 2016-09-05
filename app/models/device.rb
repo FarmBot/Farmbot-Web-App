@@ -4,8 +4,8 @@ class Device < ActiveRecord::Base
 
   has_many :users
   has_many :schedules, dependent: :destroy
-  has_many :sequences
-  has_many :regimens
+  has_many :sequences, dependent: :destroy
+  has_many :regimens, dependent: :destroy
   has_many :plants, dependent: :destroy
   has_one  :planting_area
 
