@@ -50,3 +50,7 @@ pickle-email-*.html
 .DS_Store
 node_modules/
 *.journal
+# SmarfDoc Documentation
+api_docs.md
+# RailsERD Output
+erd.pdf

@@ -80,6 +80,7 @@ GEM
       xpath (~> 2.0)
     childprocess (0.5.9)
       ffi (~> 1.0, >= 1.0.11)
+    choice (0.2.0)
     chronic (0.10.2)
     churn (0.0.35)
       chronic (>= 0.2.3)
@@ -225,6 +226,11 @@ GEM
       activesupport (>= 4.2.0.beta, < 5.0)
       nokogiri (~> 1.6.0)
       rails-deprecated_sanitizer (>= 1.0.1)
+    rails-erd (1.5.0)
+      activerecord (>= 3.2)
+      activesupport (>= 3.2)
+      choice (~> 0.2.0)
+      ruby-graphviz (~> 1.2)
     rails-html-sanitizer (1.0.3)
       loofah (~> 2.0)
     rails_12factor (0.0.3)
@@ -282,6 +288,7 @@ GEM
       rspec-mocks (~> 3.5.0)
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
+    ruby-graphviz (1.2.2)
     ruby-progressbar (1.8.1)
     ruby_parser (3.8.2)
       sexp_processor (~> 4.1)
@@ -364,6 +371,7 @@ DEPENDENCIES
   rails (= 4.2.7)
   rails-assets-jquery!
   rails-assets-lodash!
+  rails-erd
   rails_12factor
   rspec
   rspec-rails

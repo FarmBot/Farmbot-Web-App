@@ -6,8 +6,11 @@ module Api
     end
 
     def create
-      ship_it = JSON.parse(params.to_json).merge(regimen_params)
       mutate Regimens::Create.run(ship_it)
+    end
+
+    def update
+      mutate Regimens::Create.run(ship_it)      
     end
 
     def destroy
@@ -16,6 +19,12 @@ module Api
     end
 
   private
+
+    # PROBLEM: ActiveRecord is trying to prevent us from directly handling arrays.
+    # SOLUTION: Duplicate the item for now.
+    def ship_it
+      JSON.parse(params.to_json).merge(regimen_params)
+    end
 
     def the_regimen
       your_regimens.find(params[:id])

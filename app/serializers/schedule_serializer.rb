@@ -2,10 +2,6 @@ class ScheduleSerializer < ActiveModel::Serializer
   attributes :id, :start_time, :end_time, :next_time, :repeat, :time_unit,
              :sequence_id, :sequence_name, :calendar
   try :url, :sequence
-  # TODO: This is almost certainly wrong. I shouldn't need to write this method.
-  def sequence_id
-    object.sequence.id
-  end
 
   def sequence_name
     object.sequence.name
