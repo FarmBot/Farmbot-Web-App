@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160820050202) do
+ActiveRecord::Schema.define(version: 20160905151345) do
 
   create_table "devices", force: :cascade do |t|
     t.integer "planting_area_id"
@@ -32,9 +32,9 @@ ActiveRecord::Schema.define(version: 20160820050202) do
     t.string  "img_url"
     t.string  "icon_url"
     t.string  "openfarm_slug"
-    t.string  "x"
-    t.string  "y"
     t.string  "planted_at"
+    t.float   "x",                default: 0.0
+    t.float   "y",                default: 0.0
   end
 
   create_table "regimen_items", force: :cascade do |t|

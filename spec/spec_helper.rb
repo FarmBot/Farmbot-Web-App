@@ -48,7 +48,7 @@ RSpec.configure do |config|
       SmarfDoc.run!(request, response)
     end
   end
-  
+
   config.after(:suite) do
     SmarfDoc.finish!
   end
