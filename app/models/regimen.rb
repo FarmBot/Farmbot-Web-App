@@ -5,6 +5,5 @@ class Regimen < ActiveRecord::Base
   self.table_name = "regimens"
 
   has_many   :regimen_items
-  belongs_to :device, dependent: :destroy
-  # validates :email, uniqueness: true
+  belongs_to :device
 end
