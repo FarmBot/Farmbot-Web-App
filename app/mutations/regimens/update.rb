@@ -1,5 +1,5 @@
 module Regimens
-  class Create < Mutations::Command
+  class Update < Mutations::Command
     using MongoidRefinements
 
     required do
@@ -15,10 +15,7 @@ module Regimens
     end
 
     def execute
-      inputs[:regimen_items].map! do |i|
-        RegimenItem.new(i)
-      end
-      Regimen.create(inputs)
+      
     end
   end
 end

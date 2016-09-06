@@ -3,6 +3,8 @@ class Regimen < ActiveRecord::Base
   # Ocasionally to "regimans".
   # This is the workaround.
   self.table_name = "regimens"
+  validates_presence_of :name
+  validates_uniqueness_of :name, scope: :device
 
   has_many   :regimen_items
   belongs_to :device

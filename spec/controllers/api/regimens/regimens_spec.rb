@@ -8,7 +8,7 @@ describe Api::RegimensController do
     let(:user) { FactoryGirl.create(:user) }
 
     it 'retrieves all regimina' do
-      regimen = Regimen.create(device: user.device)
+      regimen = Regimen.create!(name: SecureRandom.hex, device: user.device)
       sign_in user
       get :index
       expect(response.status).to eq(200)
@@ -17,7 +17,7 @@ describe Api::RegimensController do
     end
 
     it 'doesnt fetch other peoples regimens' do
-      regimen = Regimen.create(device: user.device)
+      regimen = Regimen.create!(name: SecureRandom.hex, device: user.device)
       other_person = FactoryGirl.create(:user)
       sign_in other_person
       get :index
