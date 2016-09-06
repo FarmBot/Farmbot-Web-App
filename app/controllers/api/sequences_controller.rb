@@ -1,5 +1,6 @@
 module Api
   class SequencesController < Api::AbstractController
+    before_action :authorize_user, except: [:index, :create]
 
     def index
       query = { device: current_device }
@@ -23,13 +24,7 @@ module Api
     end
 
     def destroy
-      # HEY YOU!! If you touch this again, add a mutation. This is the most
-      # complexity I would like to see in one controller action.
-      if (sequence.device == current_device) && sequence.destroy
-        render nothing: true
-      else
-        raise Errors::Forbidden, "Not your Sequence object."
-      end
+      mutate Sequences::Delete.run(sequence: sequence, device: current_device)
     end
 
     private
@@ -37,5 +32,10 @@ module Api
     def sequence
       @sequence ||= Sequence.find(params[:id])
     end
+
+    def authorize_user 
+      raise Errors::Forbidden, "Not your Sequence object." if sequence.device != current_device 
+    end
   end
 end
+ 
