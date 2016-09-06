@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Steps::Create do
+describe Sequences::Create do
   let(:user) { FactoryGirl.create(:user) }
   let(:device) { user.device }
 
