@@ -1,4 +1,7 @@
-class NullDevice < Device
+class NullDevice# < Device
+  def initialize(*args)
+  end
+
   def save
     no(__method__)
   end
