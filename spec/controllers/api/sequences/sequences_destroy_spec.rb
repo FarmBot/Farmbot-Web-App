@@ -5,8 +5,6 @@ describe Api::SequencesController do
   include Devise::Test::ControllerHelpers
 
   describe '#destroy' do
-
-
     let(:user) { FactoryGirl.create(:user) }
     let(:device) { user.device }
     let(:sequence) { FactoryGirl.create(:sequence, device: device) }
@@ -15,6 +13,7 @@ describe Api::SequencesController do
       sign_in user
       input = { id: sequence.id }
       delete :destroy, input
+      # binding.pry
       expect(response.status).to eq(200)
       expect { sequence.reload }
         .to(raise_error(ActiveRecord::RecordNotFound))
@@ -29,3 +28,4 @@ describe Api::SequencesController do
     end
   end
 end
+ 
