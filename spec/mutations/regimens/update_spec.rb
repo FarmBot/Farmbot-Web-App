@@ -14,7 +14,7 @@ describe Regimens::Update do
 
     new_reg_params = {
         device: device,
-        id: existing_reg.id,
+        regimen: existing_reg,
         name: "NEW NAME",
         color: "red",
         regimen_items: [
@@ -27,8 +27,9 @@ describe Regimens::Update do
                 sequence_id: sequence.id
             }
        ]}
-    result = Regimens::Update.run!(new_reg_params)
-    # THIS MUTATION TEST DOES NOT WORK THEREFORE THE API TEST DOES NOT WORK. FINDME TOMORROW
-    binding.pry
+    result = Regimens::Update.run!(new_reg_params).reload
+    expect(result.name).to eq(new_reg_params[:name])
+    expect(result.color).to eq(new_reg_params[:color])
+    expect(result.regimen_items.count).to eq(new_reg_params[:regimen_items].count)
   end
 end

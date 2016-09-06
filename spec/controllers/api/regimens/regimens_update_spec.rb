@@ -18,21 +18,23 @@ describe Api::RegimensController do
         "regimen_items" => [
             {
                 "time_offset" => 1555500000,
-                "sequence_id" => 1
+                "sequence_id" => sequence.id
             },
             {
                 "time_offset" => 864300000,
-                "sequence_id" => 1
+                "sequence_id" => sequence.id
             },
             {
                 "time_offset" => 950700000,
-                "sequence_id" => 1
+                "sequence_id" => sequence.id
             }
         ]
         }
       put :update, payload
-      #FINDME TOMORROW MAKE SURE THE MUTATION IS DONE FIRST!!!!!!
-      binding.pry
+      expect(response.status).to eq(200)
+      expect(existing.reload.regimen_items.count).to eq(payload["regimen_items"].length)
+      expect(json[:name]).to eq("something new")
+      expect(existing.name).to eq("something new")
     end
   end
 end

@@ -10,7 +10,9 @@ module Api
     end
 
     def update
-      mutate Regimens::Update.run(params, regimen_params)      
+      mutate Regimens::Update.run(params,
+                                  regimen_params,
+                                  regimen: the_regimen)      
     end
 
     def destroy
