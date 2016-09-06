@@ -1,4 +1,4 @@
-class NullDevice# < Device
+class NullDevice
   def initialize(*args)
   end
 
