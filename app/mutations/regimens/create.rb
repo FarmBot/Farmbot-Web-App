@@ -18,7 +18,7 @@ module Regimens
       inputs[:regimen_items].map! do |i|
         RegimenItem.new(i)
       end
-      Regimen.create(inputs)
+      Regimen.create!(inputs)
     end
   end
 end
