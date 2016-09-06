@@ -7,11 +7,15 @@ module Sequences
     end
 
     def validate
-      regimen_items = RegimenItem.joins(:sequence, :regimen).where(sequence_id: sequence.id )
-      binding.pry
+      regimen_items = RegimenItem
+                        .joins(:sequence, :regimen)
+                        .where(sequence_id: sequence.id )
       if regimen_items.count > 0 
-        names = regimen_items.map(&:sequence).map(&:name).join(", ")
-        add_error(:sequence, :required, "The following regimes are still using this sequence: " + names)
+        names = regimen_items.map(&:regimen)
+                             .map(&:name)
+                             .join(", ")
+        msg = "The following regimens are still using this sequence: " + names
+        add_error(:sequence, :required, msg)
       end
     end
 
