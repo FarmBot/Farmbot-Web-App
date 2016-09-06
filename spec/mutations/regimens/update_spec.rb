@@ -1,29 +1,35 @@
 require 'spec_helper'
 
-describe Regimens::Create do
+describe Regimens::Update do
   let(:sequence) { FactoryGirl.create(:sequence) }
   let(:device) { sequence.device }
-  let(:sequence2) { FactoryGirl.create(:sequence, device: sequence.device) }
 
-  it 'updates a regimen' do
-    # input = {
-    #     device: device,
-    #     name: "My Second Regimen",
-    #     color: "red",
-    #     regimen_items: => [
-    #         {
-    #             time_offset: 518700000,
-    #             sequence_id: 1
-    #         },
-    #         {
-    #             time_offset: 864300000,
-    #             sequence_id: 1
-    #         },
-    #         {
-    #             time_offset: 86700000,
-    #             sequence_id: 1
-    #         }
-    #    ]}
-    # result = Regimens::Update.run!(input).reload
+  it 'updates an existing regimen' do
+    existing_reg = Regimens::Create.run!({
+      device: device,
+      name: "TESTME",
+      color: "purple",
+      regimen_items: []
+    })
+
+    new_reg_params = {
+        device: device,
+        regimen: existing_reg,
+        name: "NEW NAME",
+        color: "red",
+        regimen_items: [
+            {
+                time_offset: 518700000,
+                sequence_id: sequence.id
+            },
+            {
+                time_offset: 864300000,
+                sequence_id: sequence.id
+            }
+       ]}
+    result = Regimens::Update.run!(new_reg_params).reload
+    expect(result.name).to eq(new_reg_params[:name])
+    expect(result.color).to eq(new_reg_params[:color])
+    expect(result.regimen_items.count).to eq(new_reg_params[:regimen_items].count)
   end
 end

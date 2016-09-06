@@ -1,5 +1,9 @@
-# require 'rails_helper'
+require 'spec_helper'
+describe Regimen do
+  let(:regimen) { FactoryGirl.create(:regimen) }
 
-# RSpec.describe Regimen, type: :model do
-#   pending "add some examples to (or delete) #{__FILE__}"
-# end
+  it "Enforces uniqueness of names" do 
+    expect {Regimen.create!(name: regimen.name, device: regimen.device)}.to raise_error(ActiveRecord::RecordInvalid)
+  end
+
+end
