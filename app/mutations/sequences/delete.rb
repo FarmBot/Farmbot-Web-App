@@ -13,6 +13,7 @@ module Sequences
       if regimen_items.count > 0 
         names = regimen_items.map(&:regimen)
                              .map(&:name)
+                             .uniq
                              .join(", ")
         msg = "The following regimens are still using this sequence: " + names
         add_error(:sequence, :required, msg)
