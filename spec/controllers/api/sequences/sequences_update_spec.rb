@@ -7,23 +7,24 @@ describe Api::SequencesController do
   describe '#update' do
 
     let(:user) { FactoryGirl.create(:user) }
-
     it 'updates existing sequences' do
       sign_in user
       sequence = FactoryGirl.create(:sequence, device: user.device)
       input = { id: sequence.id,
                 sequence: { name: "Scare Birds",
                             steps: [{ message_type: 'move_relative',
-                            command: { action: 'MOVE RELATIVE',
+                                      command: { action: 'MOVE RELATIVE',
                                        x: 1,
                                        y: 2,
                                        z: 3,
                                        speed: 100,
                                        delay: 0} }] } }
+                                       
       patch :update, input, {format: :json}
       expect(response.status).to eq(200)
       sequence.reload
       expect(sequence.name).to eq(input[:sequence][:name])
+      expect(sequence.steps.length ).to eq(1)
     end
   end
 end

@@ -1,6 +1,5 @@
 module Sequences
   class Update < Mutations::Command
-    using MongoidRefinements
 
     required do
       model :user, class: User
@@ -19,7 +18,25 @@ module Sequences
     end
 
     def execute
-      update_attributes(sequence, inputs.except(:user, :sequence, :id))
+      ActiveRecord::Base.transaction do
+        sequence.steps.destroy_all if inputs[:steps].present?
+        Array(inputs[:steps]).map!(&:as_json)
+        .map!(&:deep_symbolize_keys)
+        .map! do |ri|
+          Step.new(ri.except(:id, :sequence_id)).tap{ |r| r.validate! }
+        end
+
+        sequence.update_attributes!(inputs.slice(:name, :color, :steps))
+      end
+
+      sequence
+
+      rescue ActiveRecord::RecordInvalid => e
+        binding.pry
+        offender = e.record.as_json.slice("message_type", "position").to_s
+        add_error :steps,
+                :probably_bad,
+                "Failed to instantiate nested step. Offending item: " + offender
     end
   end
 end
