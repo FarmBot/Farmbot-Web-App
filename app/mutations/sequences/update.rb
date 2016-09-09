@@ -19,8 +19,8 @@ module Sequences
 
     def execute
       ActiveRecord::Base.transaction do
-        sequence.steps.destroy_all
-        inputs[:steps].map!(&:as_json)
+        sequence.steps.destroy_all if inputs[:steps].present?
+        Array(inputs[:steps]).map!(&:as_json)
         .map!(&:deep_symbolize_keys)
         .map! do |ri|
           Step.new(ri.except(:id, :sequence_id)).tap{ |r| r.validate! }
