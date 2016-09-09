@@ -7,7 +7,6 @@ describe Api::SequencesController do
   describe '#update' do
 
     let(:user) { FactoryGirl.create(:user) }
-
     it 'updates existing sequences' do
       sign_in user
       sequence = FactoryGirl.create(:sequence, device: user.device)
