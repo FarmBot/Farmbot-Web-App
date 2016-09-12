@@ -16,5 +16,3 @@ test:
 
 production:
   <<: *default
-  database: farmbot_api_dev
-  password: "password123"
