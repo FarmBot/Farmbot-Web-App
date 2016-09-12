@@ -187,6 +187,7 @@ GEM
     multi_json (1.12.1)
     mutations (0.8.0)
       activesupport
+    mysql (2.9.1)
     netrc (0.11.0)
     ng-rails-csrf (0.1.0)
     nokogiri (1.6.8)
@@ -197,6 +198,7 @@ GEM
     parser (2.3.1.2)
       ast (~> 2.2)
     path_expander (1.0.0)
+    pg (0.18.4)
     pkg-config (1.1.7)
     procto (0.0.3)
     pry (0.10.4)
@@ -365,7 +367,9 @@ DEPENDENCIES
   launchy
   metric_fu
   mutations
+  mysql
   ng-rails-csrf
+  pg
   pry
   rack-cors
   rails (= 4.2.7)

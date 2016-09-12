@@ -36,6 +36,7 @@ group :development, :test do
   gem 'faker'
   gem 'smarf_doc', github: 'RickCarlino/smarf_doc'
   gem 'sqlite3'
+  gem 'mysql'
   gem 'rails-erd'
 end
 
