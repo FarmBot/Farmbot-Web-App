@@ -22,6 +22,7 @@ gem 'active_model_serializers', '~> 0.8.3'
 gem 'ice_cube'
 gem 'rack-cors', require: 'rack/cors'
 gem 'haikunator' # For cool bot names.
+gem 'mysql'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-lodash'
@@ -35,8 +36,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'faker'
   gem 'smarf_doc', github: 'RickCarlino/smarf_doc'
-  gem 'sqlite3'
-  gem 'mysql'
+  # gem 'sqlite3'
   gem 'rails-erd'
 end
 
