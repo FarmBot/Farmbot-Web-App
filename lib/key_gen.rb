@@ -2,7 +2,7 @@
 # Mostly used for creation of jwt.pem- which is used to verify authenticity of
 # JSON Web Tokens
 class KeyGen
-  SAVE_PATH = "keys/jwt.#{Rails.env || "unknown_env"}.pem"
+  SAVE_PATH = (Rails.env == "production") ? "/keys/production.pem" : "jwt.#{Rails.env}.pem"
 
   def self.try_file
     OpenSSL::PKey::RSA.new(File.read(SAVE_PATH)) if File.file?(SAVE_PATH)
