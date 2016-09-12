@@ -27,12 +27,7 @@ The key responsibility of the API is *information and permissions management*. T
 
 # Provisioning Your Own with Dokku
 
-0. Create a fresh Ubuntu 14 server with Dokku (or just use DigitalOcean)
-0. [Upgrade to the latest version of Dokku](https://github.com/dokku/dokku/blob/master/docs/upgrading.md) (especially if you are on DigitalOcean- their version is out of date)
-0. Install dokku-haproxy plugin: `ssh root@YOUR_SERVER dokku plugin:install https://github.com/256dpi/dokku-haproxy.git`
-0. Deploy: `git push dokku@YOUR_SERVER:mqtt`
-0. Point to correct host/port: `ssh dokku@MQTT_SERVER config:set mqtt PORT=3002 DOKKU_NGINX_PORT=3002 WEB_APP_URL=WEBAPP_URL_HERE`
-0. Expose MQTT port: `ssh dokku@MQTT_SERVER ports:add mqtt 1883 web 1883`
+Please see `deployment.md`.
 
 # Config Settings (important)
 
