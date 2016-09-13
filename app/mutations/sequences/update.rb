@@ -32,7 +32,6 @@ module Sequences
       sequence
 
       rescue ActiveRecord::RecordInvalid => e
-        binding.pry
         offender = e.record.as_json.slice("message_type", "position").to_s
         add_error :steps,
                 :probably_bad,

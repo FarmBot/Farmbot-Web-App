@@ -21,8 +21,6 @@ module Api
                                     user: current_user,
                                     steps: params[:steps],
                                     sequence: sequence)
-      rescue => e 
-        binding.pry
     end
 
     def destroy
