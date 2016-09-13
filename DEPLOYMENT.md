@@ -4,20 +4,18 @@
 0. Create a fresh Ubuntu 16 server with Dokku (or just use DigitalOcean)
   * Make sure you have atleast 1gb.
 0. [Install the latest version of Dokku (don't use that DigitalOcean image)](https://github.com/dokku/dokku#installing)
-0. Setup Dokku by visiting the server's URL. Follow the directions on screen.
+0. Visit the server's URL in a browser. Follow the directions on screen to setup Dokku.
 0. `git remote add my_server dokku@your-server:my-api-name`
 0. Install mariaDB plugin: [instructions](https://github.com/dokku/dokku-mariadb).
+0. Create the Dokku app. `ssh dokku@your-server apps:create my-api-name`.
+0. Give Dokku a place to store RSA keys: `ssh dokku@your-server storage:mount my-api-name /var/lib/dokku/data/keys:/keys`.
 0. Create a databse: `ssh dokku@your-server mariadb:create my_db`
 0. Link the DB: `ssh dokku@your-server mariadb:link my_db my-api-name`
-0. Set ENV vars:
-  * `ssh dokku@your-server config:set my-api-name DEVISE_SECRET=$(rake secret)`
-  * `ssh dokku@your-server config:set my-api-name JS_FILE_URL=//mycdn.org/farmbot-fronted.js`
-  * `ssh dokku@your-server config:set my-api-name MQTT_HOST=my-mqtt-server.org`
-  * `ssh dokku@your-server config:set my-api-name DATABASE_URL=mysql://dbusername:dbpassword@dburl:dbport/dbname`
-0. Migrate / create db: `ssh dokku@your-server run my-api-name rake db:setup`
-0. Give Dokku a place to store RSA keys: `ssh dokku@your-server storage:mount my-api-name /var/lib/dokku/data/keys:/keys`.
-  * If you don't do this (or don't want to) you will need to restart your MQTT server and re-run `setup.rb` after any deployments / upgrades.
-0. Generate Encryption keys `ssh dokku@your-server run my-api-name rake keys:generate`
+0. Set ENV vars (Set `JS\_FILE\_URL` and `MQTT_HOST` to real values):
+  * `ssh dokku@your-server config:set my-api-name DEVISE_SECRET=$(rake secret) JS_FILE_URL=//mycdn.org/farmbot-fronted.js MQTT_HOST=my-mqtt-server.org`
+0. Deploy the app: `git push dokku@your-server:my-api-name master `
+0. Migrate the database: `ssh dokku@your-server run my-api-name rake db:setup`
+0. Your API is ready to go! You probably need to deploy the MQTT server next.
 
 # Old / Legacy Setup
 
