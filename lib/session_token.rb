@@ -1,4 +1,6 @@
 class SessionToken
+  HOST         = Rails.application.routes.default_url_options[:host]
+  PORT         = Rails.application.routes.default_url_options[:port]
   EXPIRY       = 4.days
   PRIVATE_KEY  = KeyGen.current
   PUBLIC_KEY   = KeyGen.current.public_key
@@ -19,7 +21,7 @@ class SessionToken
   def self.issue_to(user,
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
-                    iss: "http://localhost:3000")
+                    iss: "http://#{ HOST }:#{ PORT }")
 
     self.new(sub:  user.email,
              iat:  iat,
