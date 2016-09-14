@@ -37,7 +37,9 @@ Here are some of the configuration options you must set when provisioning a new 
  * `ENV['DEVISE_SECRET']`: Used for devise. Use `rake secret` to generate a new value.
  * `ENV['MQTT_HOST']`: Host (no port or slashes or anything) of running [MQTT gateway](https://github.com/FarmBot/mqtt-gateway). This is required so that Farmbot can know where to connect when given an authorization token.
  * `ENV['JS_FILE_URL']`: URL pointing to the [Farmbot Frontend](https://github.com/FarmBot/farmbot-web-frontend) `bundle.js` file. This is what gets injected into the `<script>` tag when the user visits `/app`. 
-
+ * `ENV['API_HOST']`: Domain of the server. Default is `localhost`.
+ * `ENV['API_PORT']`: Port the server is on. Default is `3000`.
+ 
 **We can't fix issues we don't know about.** Please submit an issue if you are having trouble installing on your local machine.
 
 ## Running Specs
