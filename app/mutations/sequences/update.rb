@@ -32,8 +32,23 @@ module Sequences
       sequence
 
       rescue ActiveRecord::RecordInvalid => e
-        offender = e.record.as_json.slice("message_type", "position").to_s
-        add_error :steps,
+        case e.record
+        when Sequence
+          bad_sequence(e)
+        when Step
+          bad_step(e)
+        else
+          add_error :other, :unknown, (e.try(:message) || "Unknown validation issues.")
+        end
+    end
+
+    def bad_sequence(e)
+      add_error :sequence, :not_valid, e.message
+    end
+
+    def bad_step(e)
+      offender = e.record.as_json.slice("message_type", "position").to_s
+      add_error :steps,
                 :probably_bad,
                 "Failed to instantiate nested step. Offending item: " + offender
     end
