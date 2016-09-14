@@ -51,5 +51,6 @@ RSpec.configure do |config|
 
   config.after(:suite) do
     SmarfDoc.finish!
+    ActiveRecord::Base.subclasses.map(&:delete_all)
   end
 end
