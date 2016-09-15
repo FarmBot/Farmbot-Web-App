@@ -3,6 +3,8 @@ module Auth
     required do
       string :email
       string :password
+      # TODO: Rename all occurences to "URL".
+      # This is not truly a host, as it has a protocol and port associatied with it.
       string :host
     end
 
