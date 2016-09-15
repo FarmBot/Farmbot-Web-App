@@ -32,14 +32,5 @@ describe Api::DevicesController do
       expect(user.device['name'].length).to be > 4 # Haikunator
       expect(user.device['uuid']).to eq('1')
     end
-
-    it 'shares devices between two users' do
-      bot = user.device
-      sign_in user2
-      post :update, { name: 'Frank', uuid: bot.uuid }
-      user.reload
-      user2.reload
-      expect(user.device.id).to eq(user2.device.id)
-    end
   end
 end

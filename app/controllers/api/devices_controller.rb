@@ -12,14 +12,14 @@ module Api
 
     # POST /api/device
     def create
-      mutate Devices::Create.run(device_params, user: current_user)
+      mutate Devices::Create.run(params, user: current_user)
     end
 
     # PATCH/PUT /api/device
     def update
-      # Because of the way bots are shared, there is no true 'update' action.
-      # Just a creation/reasignment of bots based on UUID / Token.
-      create
+      current_device
+        .if_null { create }
+        .if_not_null { mutate Devices::Update.run(params, device: current_device) }
     end
 
     # DELETE /api/devices/1

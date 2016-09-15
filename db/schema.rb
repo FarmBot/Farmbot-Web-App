@@ -11,88 +11,89 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160905172003) do
+ActiveRecord::Schema.define(version: 20160914201415) do
 
   create_table "devices", force: :cascade do |t|
-    t.integer "planting_area_id"
-    t.string  "uuid"
-    t.string  "name"
+    t.integer "planting_area_id", limit: 4
+    t.string  "uuid",             limit: 255
+    t.string  "name",             limit: 255
+    t.string  "webcam_url",       limit: 255
   end
 
   create_table "planting_areas", force: :cascade do |t|
-    t.integer "width"
-    t.integer "length"
-    t.integer "device_id"
+    t.integer "width",     limit: 4
+    t.integer "length",    limit: 4
+    t.integer "device_id", limit: 4
   end
 
   create_table "plants", force: :cascade do |t|
-    t.integer "device_id"
-    t.integer "planting_area_id"
-    t.string  "name"
-    t.string  "img_url"
-    t.string  "icon_url"
-    t.string  "openfarm_slug"
-    t.string  "planted_at"
-    t.float   "x",                default: 0.0
-    t.float   "y",                default: 0.0
+    t.integer "device_id",        limit: 4
+    t.integer "planting_area_id", limit: 4
+    t.string  "name",             limit: 255
+    t.string  "img_url",          limit: 255
+    t.string  "icon_url",         limit: 255
+    t.string  "openfarm_slug",    limit: 255
+    t.string  "planted_at",       limit: 255
+    t.float   "x",                limit: 24,  default: 0.0
+    t.float   "y",                limit: 24,  default: 0.0
   end
 
   create_table "regimen_items", force: :cascade do |t|
     t.integer "time_offset", limit: 8
-    t.integer "schedule_id"
-    t.integer "regimen_id"
-    t.integer "sequence_id"
+    t.integer "schedule_id", limit: 4
+    t.integer "regimen_id",  limit: 4
+    t.integer "sequence_id", limit: 4
   end
 
   create_table "regimens", force: :cascade do |t|
-    t.string  "color"
-    t.string  "name"
-    t.integer "device_id"
+    t.string  "color",     limit: 255
+    t.string  "name",      limit: 255
+    t.integer "device_id", limit: 4
   end
 
   create_table "schedules", force: :cascade do |t|
-    t.integer  "sequence_id"
-    t.integer  "device_id"
+    t.integer  "sequence_id", limit: 4
+    t.integer  "device_id",   limit: 4
     t.datetime "start_time"
     t.datetime "end_time"
     t.datetime "next_time"
-    t.integer  "repeat"
-    t.string   "time_unit"
+    t.integer  "repeat",      limit: 4
+    t.string   "time_unit",   limit: 255
   end
 
   create_table "sequences", force: :cascade do |t|
-    t.integer "schedule_id"
-    t.integer "device_id"
-    t.string  "regimen"
-    t.string  "name"
-    t.string  "color"
+    t.integer "schedule_id", limit: 4
+    t.integer "device_id",   limit: 4
+    t.string  "regimen",     limit: 255
+    t.string  "name",        limit: 255
+    t.string  "color",       limit: 255
   end
 
   create_table "steps", force: :cascade do |t|
-    t.integer "sequence_id"
-    t.string  "message_type"
-    t.integer "position"
-    t.text    "command"
+    t.integer "sequence_id",  limit: 4
+    t.string  "message_type", limit: 255
+    t.integer "position",     limit: 4
+    t.text    "command",      limit: 65535
   end
 
   create_table "users", force: :cascade do |t|
-    t.integer  "device_id"
-    t.string   "name"
-    t.string   "email",                  default: "", null: false
-    t.string   "encrypted_password",     default: "", null: false
-    t.string   "reset_password_token"
+    t.integer  "device_id",              limit: 4
+    t.string   "name",                   limit: 255
+    t.string   "email",                  limit: 255, default: "", null: false
+    t.string   "encrypted_password",     limit: 255, default: "", null: false
+    t.string   "reset_password_token",   limit: 255
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          default: 0,  null: false
+    t.integer  "sign_in_count",          limit: 4,   default: 0,  null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip"
-    t.string   "last_sign_in_ip"
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
+    t.string   "current_sign_in_ip",     limit: 255
+    t.string   "last_sign_in_ip",        limit: 255
+    t.datetime "created_at",                                      null: false
+    t.datetime "updated_at",                                      null: false
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", unique: true
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
 end
