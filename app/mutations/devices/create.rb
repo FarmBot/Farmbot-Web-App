@@ -9,18 +9,18 @@ module Devices
     optional do
       string :uuid
       string :name
+      string :webcam_url
     end
 
     def execute
       merge_default_values
-
+      device = Device.new(inputs.except(:user))
       ActiveRecord::Base.transaction do
-        device.update_attributes!(inputs.except(:user))
-        old_device = user.device
-        user.update_attributes!(device_id: device.id)
-        if device.users.count < 1
-          old_device.destroy! # Clean up "orphan" devices.
-        end
+        old_device = user.device                      # Ref. to old device
+        device.save!                                  # Create the new one.
+        user.update_attributes!(device_id: device.id) # Detach from old one.
+        # Remove userless devices.
+        old_device.destroy! if old_device && device.users.count < 1
       end
 
       device
@@ -30,10 +30,6 @@ module Devices
     def merge_default_values
       inputs[:uuid]  ||= SecureRandom.uuid 
       inputs[:name]  ||= Haikunator.haikunate(9999)
-    end
-
-    def device
-      @device ||= Device.find_by(uuid: uuid) || Device.new(uuid: uuid)
     end
   end
 end
