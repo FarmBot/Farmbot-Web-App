@@ -10,7 +10,8 @@ module Devices
     end
 
     def execute
-      device.update_attributes inputs.except(:device)
+      device.update_attributes!(inputs.except(:device))
+      device
     end
   end
 end

@@ -18,7 +18,7 @@ module Api
       { email:       params[:user][:email],
         password:    params[:user][:password],
         credentials: params[:user][:credentials],
-        host:        root_url }
+        host:        $API_URL }
     end
   end
 end

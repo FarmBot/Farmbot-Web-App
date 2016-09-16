@@ -13,5 +13,17 @@ describe Api::DevicesController do
       get :show, {}, format: :json
       expect(user.reload.device).to be_kind_of(Device)
     end
+
+    it 'has expected keys' do
+      sign_in user
+      get :show, {}, format: :json
+      { id:         Fixnum,
+        name:       String,
+        uuid:       String,
+        webcam_url: String }.each{ |name, klass|
+          expect(json[name]).to be_an_instance_of(klass)
+        }
+      
+    end
   end
 end
