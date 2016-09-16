@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160914201415) do
+ActiveRecord::Schema.define(version: 20160916132424) do
 
   create_table "devices", force: :cascade do |t|
     t.integer "planting_area_id", limit: 4
@@ -27,15 +27,15 @@ ActiveRecord::Schema.define(version: 20160914201415) do
   end
 
   create_table "plants", force: :cascade do |t|
-    t.integer "device_id",        limit: 4
-    t.integer "planting_area_id", limit: 4
-    t.string  "name",             limit: 255
-    t.string  "img_url",          limit: 255
-    t.string  "icon_url",         limit: 255
-    t.string  "openfarm_slug",    limit: 255
-    t.string  "planted_at",       limit: 255
-    t.float   "x",                limit: 24,  default: 0.0
-    t.float   "y",                limit: 24,  default: 0.0
+    t.integer  "device_id",        limit: 4
+    t.integer  "planting_area_id", limit: 4
+    t.string   "name",             limit: 255
+    t.string   "img_url",          limit: 255
+    t.string   "icon_url",         limit: 255
+    t.string   "openfarm_slug",    limit: 255
+    t.float    "x",                limit: 24,  default: 0.0
+    t.float    "y",                limit: 24,  default: 0.0
+    t.datetime "planted_at"
   end
 
   create_table "regimen_items", force: :cascade do |t|
