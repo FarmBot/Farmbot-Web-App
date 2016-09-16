@@ -22,7 +22,6 @@ module Devices
         # Remove userless devices.
         old_device.destroy! if old_device && device.users.count < 1
       end
-
       device
     end
   private
