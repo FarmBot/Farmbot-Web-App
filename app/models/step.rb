@@ -8,7 +8,11 @@ class Step < ActiveRecord::Base
   validates :message_type, presence: true
   validates :position, presence: true
 
-  serialize :command
+  has_may :step_params
+
+  def command
+    raise "TODO: Return a hash here."
+  end
 
   # def all_steps
   #   raise "NOT READY FOR USE"  
