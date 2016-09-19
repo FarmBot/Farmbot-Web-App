@@ -12,15 +12,22 @@ module Steps
       integer :position
     end
 
-    def execute
-      step = Step.new(inputs)
-      # Make sure position is always > 0.
-      step.position ||= step.sequence.steps.count
+    def validate
+      command.each do |k, v|
+        unless k.is_a?(String)
+          add_error :command,
+                    :not_string,
+                    "command.#{k} must be a string."
+        end
+      end
+    end
 
-      if step.valid? && step.save
-        return step
-      else
-        add_error :step, :invalid, step.errors.messages
+    def execute
+      ActiveRecord::Base.transaction do
+        step = Step.create!(inputs.except(:message_type).merge(position: sequence.steps.count))
+        command.map { |k, v| step.step_params.create!(key: k, value: v) }
+        # Make sure position is always > 0.
+        step
       end
     end
   end
