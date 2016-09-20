@@ -3,7 +3,7 @@ describe Sequence do
   let(:regimen) { FactoryGirl.create(:regimen) }
 
   it "Enforces uniqueness of names" do
-
+    Sequence.destroy_all
     optns = { device: regimen.device,
                 name: "Dupe",
                 color: "red" }

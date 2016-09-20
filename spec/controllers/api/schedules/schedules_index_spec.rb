@@ -8,8 +8,6 @@ describe Api::SchedulesController do
     let(:user) { FactoryGirl.create(:user) }
 
     it 'lists all schedules for a user' do
-      ActiveRecord::Base.subclasses.map(&:delete_all)
-
       sign_in user
 
       schedules = FactoryGirl
