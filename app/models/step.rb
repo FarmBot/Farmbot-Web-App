@@ -8,7 +8,27 @@ class Step < ActiveRecord::Base
   validates :message_type, presence: true
   validates :position, presence: true
 
-  serialize :command
+  has_many :step_params, dependent: :destroy
+
+  def command=(step_params)
+    ActiveRecord::Base.transaction do
+      step_params
+        .map { |k, v| StepParam.create!(step_id: id, key: k, value: v) }
+        .inject({}) do |accum, step|
+          accum[step.key] = step.value
+          accum
+        end
+    end
+  end
+
+  def command
+    self
+      .step_params
+      .inject({}) do |accum, step|
+          accum[step.key] = step.value
+          accum
+      end
+  end
 
   # def all_steps
   #   raise "NOT READY FOR USE"  

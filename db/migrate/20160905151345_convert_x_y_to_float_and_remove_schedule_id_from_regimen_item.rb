@@ -5,7 +5,5 @@ class ConvertXYToFloatAndRemoveScheduleIdFromRegimenItem < ActiveRecord::Migrati
      remove_column :plants, coord
      add_column :plants, coord, :float, default: 0
    end
-   # Remove schedule_id from regimen_item.
-   remove_column :plants, :schedule_id
   end
 end

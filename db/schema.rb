@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160916132424) do
+ActiveRecord::Schema.define(version: 20160919153025) do
 
   create_table "devices", force: :cascade do |t|
     t.integer "planting_area_id", limit: 4
@@ -69,11 +69,18 @@ ActiveRecord::Schema.define(version: 20160916132424) do
     t.string  "color",       limit: 255
   end
 
+  create_table "step_params", force: :cascade do |t|
+    t.string  "key",     limit: 255
+    t.string  "value",   limit: 255
+    t.integer "step_id", limit: 4
+  end
+
+  add_index "step_params", ["step_id"], name: "index_step_params_on_step_id", using: :btree
+
   create_table "steps", force: :cascade do |t|
     t.integer "sequence_id",  limit: 4
     t.string  "message_type", limit: 255
     t.integer "position",     limit: 4
-    t.text    "command",      limit: 65535
   end
 
   create_table "users", force: :cascade do |t|
@@ -96,4 +103,5 @@ ActiveRecord::Schema.define(version: 20160916132424) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "step_params", "steps"
 end
