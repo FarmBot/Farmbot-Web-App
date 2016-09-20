@@ -6,11 +6,11 @@ describe Steps::Create do
   let(:valid_params) { {message_type: 'move_relative',
                         sequence: FactoryGirl.create(:sequence),
                         command: {action: 'MOVE RELATIVE',
-                                  x: 1,
-                                  y: 2,
-                                  z: 3,
-                                  speed: 100,
-                                  delay: 0}} }
+                                  x: "1",
+                                  y: "2",
+                                  z: "3",
+                                  speed: "100",
+                                  delay: "0"}} }
   let(:sequence) { valid_params[:sequence] }
 
   it 'Builds an instance of `step`' do

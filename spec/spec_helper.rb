@@ -46,11 +46,11 @@ RSpec.configure do |config|
   if ENV['docs']
     config.after(:each, type: :controller) do
       SmarfDoc.run!(request, response)
+      ActiveRecord::Base.subclasses.map(&:delete_all)
     end
   end
 
   config.after(:suite) do
     SmarfDoc.finish!
-    ActiveRecord::Base.subclasses.map(&:delete_all)
   end
 end
