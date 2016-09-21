@@ -17,8 +17,7 @@ FarmBot::Application.routes.draw do
   devise_for :users, :controllers => {:registrations => "registrations"}
 
   # Routes for the single page Javascript app.
-  web_app_path = "/app"
-  get web_app_path, to: 'dashboard#index', as: :dashboard
-  match web_app_path + "/*path", to: redirect(web_app_path), via: :all
+  get "/app", to: 'dashboard#index', as: :dashboard
+  match "/app/*path", to: redirect("/app"), via: :all
 
 end
