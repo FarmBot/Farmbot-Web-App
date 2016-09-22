@@ -60,3 +60,4 @@ public/app
 public/typings
 public/node_modules
 public/tools
+.vscode/

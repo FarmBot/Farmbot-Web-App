@@ -10,8 +10,8 @@ class SessionToken
   attr_accessor :encoded, :unencoded
 
   def initialize(payload)
-    @unencoded = payload
-    @encoded   = JWT.encode(payload, PRIVATE_KEY, ALG)
+    @unencoded = payload[0]
+    @encoded   = JWT.encode(payload[0], PRIVATE_KEY, ALG)
   end
 
   def self.decode!(token)
@@ -23,12 +23,13 @@ class SessionToken
                     exp: EXPIRY.from_now.to_i,
                     iss: "http://#{ HOST }:#{ PORT }")
 
-    self.new(sub:  user.email,
+    self.new([{
+             sub:  user.email,
              iat:  iat,
              jti:  SecureRandom.uuid, # TODO: Add ability to revoke.
              iss:  iss,
              exp:  exp,
              mqtt: MQTT,
-             bot:  user.device.uuid)
+             bot:  user.device.uuid}])
   end
 end
