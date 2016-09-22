@@ -9,4 +9,3 @@ cd public
 npm install webpack
 npm install
 npm run build
-# ./node_modules/webpack/bin/webpack.js --config tools/webpack.config.prd.js
