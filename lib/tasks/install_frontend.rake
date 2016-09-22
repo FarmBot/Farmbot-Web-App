@@ -9,6 +9,7 @@ namespace :frontend do
      rm -rf /tmp/farmbot_frontend/.git
      cp -R /tmp/farmbot_frontend/* public/ 
      cd public
+     npm install webpack
      npm install --production
      npm run build`
   end
