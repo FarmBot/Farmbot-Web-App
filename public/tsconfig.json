@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "jsx": "react",
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
+    "allowUnreachableCode": false,
+    "strictNullChecks": true
+  },
+  "exclude": [
+    "node_modules",
+    "typings"
+  ],
+  "compileOnSave": false,
+  "buildOnSave": false
+}

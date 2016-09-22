@@ -44,9 +44,9 @@ RSpec.configure do |config|
   config.order = 'random'
 
   if ENV['docs']
-    config.after(:each, type: :controller) do
+    config.before(:each, type: :controller) do
       SmarfDoc.run!(request, response)
-      ActiveRecord::Base.subclasses.map(&:delete_all)
+      ActiveRecord::Base.subclasses.(&:destroy_all)
     end
   end
 

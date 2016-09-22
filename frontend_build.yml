@@ -1,0 +1,14 @@
+language: ruby
+rvm:
+- 2.2.3
+before_script:
+- npm install
+services:
+- mongodb
+notifications:
+  irc:
+    - "chat.freenode.net#farmbot"
+env:
+# A 'fake' secret token for use in our CI env.
+# Don't worry- this isn't the real one.
+  - SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
