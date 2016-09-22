@@ -1,2 +1,3 @@
+https://github.com/heroku/heroku-buildpack-nodejs.git
 https://github.com/FarmBot-Labs/buildpack-frontend.git
 https://github.com/heroku/heroku-buildpack-ruby.git#v142
