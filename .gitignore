@@ -54,3 +54,9 @@ node_modules/
 api_docs.md
 # RailsERD Output
 erd.pdf
+# Ignore frontend packages that are source related.
+public/src
+public/app
+public/typings
+public/node_modules
+public/tools
