@@ -2,7 +2,7 @@
   "name": "farmbot_api",
   "version": "1.0.0",
   "description": "[![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-web-app/badges/gpa.svg)](https://codeclimate.com/github/FarmBot/farmbot-web-app) [![Test Coverage](https://codeclimate.com/github/FarmBot/farmbot-web-app/badges/coverage.svg)](https://codeclimate.com/github/FarmBot/farmbot-web-app) [![Build Status](https://travis-ci.org/FarmBot/farmbot-web-app.svg)](https://travis-ci.org/FarmBot/farmbot-web-app)",
-  "scripts": { "heroku-postbuild": "rake frontend:install" },
+  "scripts": { "start": "./install_frontend.sh" },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rickcarlino/farmbot-web-app.git"
