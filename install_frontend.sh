@@ -7,4 +7,5 @@ mkdir public/ -p
 cp -R /tmp/farmbot_frontend/* public/ 
 cd public
 npm install
-npm run build
+# npm run build
+./node_modules/webpack/bin/webpack.js --config tools/webpack.config.prd.js
