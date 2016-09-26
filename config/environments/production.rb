@@ -20,3 +20,4 @@ FarmBot::Application.configure do
                                          user_name: ENV['MANDRILL_USERNAME'],
                                          password:  ENV['MANDRILL_APIKEY'] }
 end
+
