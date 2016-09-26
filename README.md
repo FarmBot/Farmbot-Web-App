@@ -1,6 +1,5 @@
 [![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-web-app/badges/gpa.svg)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
 [![Test Coverage](https://codeclimate.com/github/FarmBot/farmbot-web-app/badges/coverage.svg)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
-[![Build Status](https://travis-ci.org/FarmBot/farmbot-web-app.svg)](https://travis-ci.org/FarmBot/farmbot-web-app)
 
 # Do I need this?
 
@@ -10,25 +9,32 @@ If you are a developer interested in contributing or would like to provision you
 
 # Farmbot Web API
 
-**[LATEST STABLE VERSION IS HERE](https://github.com/FarmBot/Farmbot-Web-API/tree/a3762b25dab757d43623de3ed67c3c2d56dccb6c)** :star: :star: :star:
+**[LATEST STABLE VERSION IS HERE](https://github.com/FarmBot/Farmbot-Web-API/releases)** :star: :star: :star:
 
 This Repo is RESTful JSON API for Farmbot. This includes things like storage of user data, plant data, authorization tokens and a variety of other resources.
 
 The key responsibility of the API is *information and permissions management*. This should not be confused with device control, which is done via [MQTT](https://github.com/FarmBot/mqtt-gateway).
 
-# Developer setup
+# Developer Setup
 
 ## Prerequisites
- 0. Ruby 2.3.1
- 0. mysql installed and running with root password `password123`
+
+Your machine will need the following:
+
+ 0. [Ruby 2.3.1](http://rvm.io/rvm/install)
+ 0. [A running MySQL server](http://dev.mysql.com/doc/refman/5.7/en/installing.html)
 
 ## Setup
  0. `git clone https://github.com/FarmBot/Farmbot-Web-API farmbot-web-app`
  0. `cd farmbot-web-app`
  0. `bundle install`
+ 0. Copy `config/database.example.yml` to `config/database.yml`. In GNU/Linux or Mac: `mv config/database.example.yml config/database.yml`.
+ 0. `rake db:create:all db:migrate db:seed`
+ 0. (optional) Verify installation with `RAILS_ENV=test rake db:create db:migrate && rspec spec`.
  0. `MQTT_HOST=your_mqtt_server_domain rails s`
- 0. Start the [Web Front End](https://github.com/FarmBot/farmbot-web-frontend) (See it's README)
- 0. Open [localhost:8080](http://localhost:8080/app/login) in your favorite web browser
+ 0. (optional) Run `./install_frontend.sh` to install the latest frontend app. You may also run the frontend on a seperate server. See [frontend repository](https://github.com/FarmBot/farmbot-web-frontend) for details.
+ 0. Open [localhost:3000](http://localhost:3000).
+ 0. [Raise an issue](https://github.com/FarmBot/farmbot-web-frontend/issues/new?title=Installation%20Failure) if you hit problems with any of these steps. 
 
 # Provisioning Your Own with Dokku
 
@@ -52,6 +58,7 @@ Here are some of the configuration options you must set when provisioning a new 
 Please run them before submitting pull requests.
 
  * `bundle exec rspec spec`
+
 # Generating an API token
 
 You must pass a `token` string into most HTTP requests under the `Authorization: ` request header.
@@ -77,7 +84,7 @@ Here's what a response looks like when you request a token:
 }
 ```
 
-**Important:** The response is provided as JSON for human readability. For you `Authorization` header, you will only be using `data.token.encoded`. In this example, it's the string starting with `eyJ0eXAiOiJ...`
+**Important:** The response is provided as JSON for human readability. For your `Authorization` header, you will only be using `data.token.encoded`. In this example, it's the string starting with `eyJ0eXAiOiJ...`
 
 ## Via CURL
 

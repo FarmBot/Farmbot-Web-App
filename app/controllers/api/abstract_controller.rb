@@ -54,9 +54,7 @@ private
 
     def auth_err
       sorry("You failed to authenticate with the API. Ensure that you " \
-          "have provided a `bot_token` and `bot_uuid` header in the HTTP" \
-          " request. Alternatively, you may provide a JSON Web Token in the " \
-          " `Authorization:` header" , 401)
+            " provide a JSON Web Token in the `Authorization:` header." , 401)
     end
 
     def sorry(msg, status)
