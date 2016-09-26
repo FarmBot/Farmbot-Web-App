@@ -19,6 +19,9 @@
 2. Copy the contents of `/app` into your webserver so that it will be accessible via `/app`.
 3. Visit `/app/login` on your web server to verify installation.
 
+# internationalization
+TODO: Write how to i18n
+
 # Issues
 
 We can't fix problems we aren't aware of. Please let us know of any setup issues you may face. Bug reports and documentation updates are greatly appreciated!
