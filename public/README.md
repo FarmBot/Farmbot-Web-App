@@ -9,26 +9,16 @@
 2. cd farmbot-web-frontend
 3. npm install
 4. run `npm start`
-5. Visit `http://localhost:8080/`
+5. Visit `http://localhost:8080/app/login`
 
 # Deploy to Production
 
+**NOTE:** The [Web API](https://github.com/FarmBot/Farmbot-Web-API) deployment will automatically build the latest version of the frontend and mount it in the web server. The instructions below are intended for reference purposes, or for users who wish to host their frontend code on a different server than their API.
+
 1. run `npm run build`
-2. Upload `tools/dist/farmbot-production.min.js` to your server.
-3. Add `<script src="entry.min.js">` to the page at `app/index.html`. This is the only endpoint we support at the moment. PRs welcome.
-4. Please, [raise an issue](https://github.com/FarmBot/farmbot-web-frontend/issues/new?title=Help,%20I%20cant%20setup!) if you have any trouble setting up.
+2. Copy the contents of `/app` into your webserver so that it will be accessible via `/app`.
+3. Visit `/app/login` on your web server to verify installation.
 
-# Configuration
+# Issues
 
-All config is in the user auth token. There's no need to point to an MQTT URL or a particular bot. That information is contained in your auth token.
-
-# Low Hanging Fruit
-
-Are you a developer? Do you want to help? Don't know where to start?
-
-Here are some easy-to-do tasks that our (small) team hasn't gotten around to yet:
-
- - [ ] Writing unit tests for existing code.
- - [ ] Factoring out implcity `any` types. This was originally a vanilla JS project that later became TypeScript. We have a lot of "unsafe" code that does not have type annotations yet.
- - [ ] DRY up URL usage into a URL config object. A lot of AJAX requests are still relying on hardcoded strings rather than DRY configuration.
- - [ ] Any comment in sourcode with the word `HACK` or `TODO`.
+We can't fix problems we aren't aware of. Please let us know of any setup issues you may face. Bug reports and documentation updates are greatly appreciated!
