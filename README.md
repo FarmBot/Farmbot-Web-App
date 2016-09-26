@@ -18,12 +18,17 @@ The key responsibility of the API is *information and permissions management*. T
 
 # Developer setup
 
+## Prerequisites
+ 0. Ruby 2.3.1
+ 0. mysql installed and running with root password `password123`
+
+## Setup
  0. `git clone https://github.com/FarmBot/Farmbot-Web-API farmbot-web-app`
  0. `cd farmbot-web-app`
  0. `bundle install`
  0. `MQTT_HOST=your_mqtt_server_domain rails s`
  0. Start the [Web Front End](https://github.com/FarmBot/farmbot-web-frontend) (See it's README)
- 0. Open localhost in your [favorite web browser](www.google.com/chrome‎)
+ 0. Open [localhost:8080](http://localhost:8080/app/login) in your favorite web browser
 
 # Provisioning Your Own with Dokku
 
