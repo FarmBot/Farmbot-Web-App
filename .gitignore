@@ -59,6 +59,7 @@ erd.pdf
 # Ignore Farmbot Frontend stuff...
 public/src
 public/app
+public/app-resources
 public/typings
 public/node_modules
 public/tools
