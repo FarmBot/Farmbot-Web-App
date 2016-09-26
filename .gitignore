@@ -61,3 +61,4 @@ public/typings
 public/node_modules
 public/tools
 .vscode/
+config/database.yml
