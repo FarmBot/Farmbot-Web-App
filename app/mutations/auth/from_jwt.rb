@@ -6,7 +6,7 @@ module Auth
 
     def execute
       token  = SessionToken.decode!(just_the_token)
-      claims = token.unencoded.first
+      claims = token.unencoded
       email  = claims['sub']
       User.find_by(email: email)
     rescue JWT::DecodeError
