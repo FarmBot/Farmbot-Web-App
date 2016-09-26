@@ -65,6 +65,8 @@ public/node_modules
 public/tools
 public/*.js
 public/*.json
+public/*.md
+public/*.sh
 
 .vscode/
 config/database.yml
