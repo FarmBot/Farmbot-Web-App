@@ -55,8 +55,15 @@ api_docs.md
 # RailsERD Output
 erd.pdf
 # Ignore frontend packages that are source related.
+
+# Ignore Farmbot Frontend stuff...
 public/src
 public/app
 public/typings
 public/node_modules
 public/tools
+public/*.js
+public/*.json
+
+.vscode/
+config/database.yml
