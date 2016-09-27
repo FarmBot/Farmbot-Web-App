@@ -70,3 +70,4 @@ public/*.sh
 
 .vscode/
 config/database.yml
+public/frontend_build.log

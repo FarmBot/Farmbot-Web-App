@@ -7,8 +7,8 @@ rm -rf /tmp/farmbot_frontend/.git
 mkdir public/ -p
 cp -R /tmp/farmbot_frontend/* public/ 
 cd public
-npm install -g webpack --no-bin-links 2>&1
-npm install webpack --no-bin-links 2>&1
-npm install i18n-webpack-plugin --no-bin-links -g 2>&1
-npm install --no-bin-links 2>&1
-npm run build 2>&1
+npm install -g webpack --no-bin-links >> frontend_build.log
+npm install webpack --no-bin-links >> frontend_build.log
+npm install i18n-webpack-plugin --no-bin-links -g >> frontend_build.log
+npm install --no-bin-links >> frontend_build.log
+npm run build >> frontend_build.log
