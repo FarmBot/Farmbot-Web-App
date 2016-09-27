@@ -7,7 +7,7 @@ rm -rf /tmp/farmbot_frontend/.git
 mkdir public/ -p
 cp -R /tmp/farmbot_frontend/* public/ 
 cd public
-npm install -g webpack 2>&1
+# npm install -g webpack 2>&1
 npm install 2>&1
 chmod +x node_modules/webpack/bin/webpack.js
 npm run build 2>&1
