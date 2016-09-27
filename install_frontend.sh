@@ -8,8 +8,7 @@ mkdir public/ -p
 cp -R /tmp/farmbot_frontend/* public/ 
 cd public
 npm install -g webpack --no-bin-links 2>&1
-npm install webpack --no-bin-links 2>&1
-npm install i18n-webpack-plugin --no-bin-links -g 2>&1
+npm install --dev --no-bin-links 2>&1
 npm install --no-bin-links 2>&1
 chmod +x node_modules/webpack/bin/webpack.js
 npm run build 2>&1
