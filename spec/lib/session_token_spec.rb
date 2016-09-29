@@ -32,4 +32,11 @@ describe SessionToken do
   it 'issues a token to a user' do
     SessionToken.issue_to(user, iat: 000, exp: 456, iss: "//lycos.com:9867")
   end
+
+  it "doesn't honor expired tokens" do
+    token  = SessionToken.issue_to(user, iat: 000, exp: 1, iss: "//lycos.com:9867")
+    result = Auth::FromJWT.run(jwt: token.encoded)
+    expect(result.success?).to be(false)
+    expect(result.errors.values.first.message).to include("is not valid")
+  end
 end

@@ -1,7 +1,7 @@
 class SessionToken
   HOST         = Rails.application.routes.default_url_options[:host]
   PORT         = Rails.application.routes.default_url_options[:port]
-  EXPIRY       = 4.days
+  EXPIRY       = 40.days
   PRIVATE_KEY  = KeyGen.current
   PUBLIC_KEY   = KeyGen.current.public_key
   ALG          = 'RS256'
