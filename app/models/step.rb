@@ -1,7 +1,7 @@
 class Step < ActiveRecord::Base
 
   MESSAGE_TYPES = %w(emergency_stop home_all home_x home_y home_z move_absolute
-    move_relative pin_write read_parameter read_status write_parameter wait
+    move_relative write_pin read_parameter read_status write_parameter wait
     send_message if_statement read_pin)
 
   belongs_to :sequence

@@ -9,10 +9,10 @@ xdescribe Steps::Update do
   it 'automatically populates position field via black magic.' do
     # This feature is a crime against humanity. Sorry :(
     pink   = sequence.steps.first
-    red    = Step.create(sequence: sequence, message_type: 'pin_write')
-    orange = Step.create(sequence: sequence, message_type: 'pin_write')
-    green  = Step.create(sequence: sequence, message_type: 'pin_write')
-    blue   = Step.create(sequence: sequence, message_type: 'pin_write')
+    red    = Step.create(sequence: sequence, message_type: 'write_pin')
+    orange = Step.create(sequence: sequence, message_type: 'write_pin')
+    green  = Step.create(sequence: sequence, message_type: 'write_pin')
+    blue   = Step.create(sequence: sequence, message_type: 'write_pin')
     expectation = [pink, red, orange, green, blue].map(&:id)
     reality     = sequence.reload.steps.sort.map(&:id)
     expect(expectation).to eq(reality)
@@ -43,13 +43,13 @@ xdescribe Steps::Update do
   it 'moves first to middle' do
     sequence = Sequences::Create.run!(name: 'test', device: device)
 
-    a = Steps::Create.run!(message_type: 'pin_write',
+    a = Steps::Create.run!(message_type: 'write_pin',
                           sequence: sequence,
                           command: {name: :a})
-    b = Steps::Create.run!(message_type: 'pin_write',
+    b = Steps::Create.run!(message_type: 'write_pin',
                           sequence: sequence,
                           command: {name: :b})
-    c = Steps::Create.run!(message_type: 'pin_write',
+    c = Steps::Create.run!(message_type: 'write_pin',
                           sequence: sequence,
                           command: {name: :c})
     expect(sequence.reload.steps.map(&:id)).to eq([a, b, c].map(&:id))
