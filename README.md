@@ -114,9 +114,7 @@ $.ajax({
 });
 ```
 
-# How to Contribute
 
- * Pull requests are always appreciated, but *please*
-   * Write tests.
-   * Follow the [Ruby Community Style Guide](https://github.com/bbatsov/ruby-style-guide).
-   * Raise issues. We love to know about issues. Even the issues you think are only relevant to your setup. Just submit issues if you have issues.
+# Want to Help?
+
+[Low Hanging Fruit](https://github.com/FarmBot/Farmbot-Web-API/search?utf8=%E2%9C%93&q=todo)
