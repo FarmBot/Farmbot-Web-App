@@ -9,7 +9,9 @@ module Sync
           device: device,
           users: device.users,
           sequences: device.sequences,
-          regimens: device.regimens
+          regimens: device.regimens,
+          regimen_items: device.regimen_items,
+          plants: device.plants
       }.as_json
       message[:checksum] = Digest::MD5.hexdigest(Marshal::dump(message))
       message
