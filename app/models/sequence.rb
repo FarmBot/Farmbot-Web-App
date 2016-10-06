@@ -1,17 +1,22 @@
 class Sequence < ActiveRecord::Base
   belongs_to :device
   has_many :regimen_items
+  serialize :body, Array
+  serialize :args, Hash
 
   # allowable label colors for the frontend.
   COLORS = %w(blue green yellow orange purple pink gray red)
-  validates :name, presence: true
+  [ :name, :kind ].each { |n| validates n, presence: true }
   validates_inclusion_of :color, in: COLORS
   validates_uniqueness_of :name, scope: :device
 
   # http://stackoverflow.com/a/5127684/1064917
-  after_initialize :init
+  before_validation :set_defaults
 
-  def init
+  def set_defaults
     self.color ||= COLORS.sample
+    self.kind ||= "sequence"
+    self.body ||= []
+    self.args ||= {}
   end
 end
