@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Sequences::AstValidation do
   let(:nodes) {
-      # Big 'ol valid tree.
+      # Big 'ol node tree.
       JSON.parse(
         '[{"kind":"move_absolute","args":{"x":1,"y":2,"z":3,"speed":4}}'+
         ',{"kind":"move_relative","args":{"x":1,"y":2,"z":3,"speed":4}}'+
@@ -15,7 +15,17 @@ describe Sequences::AstValidation do
         '"sub_sequence_id":123}}]')
   }
   it 'validates the sequence AST' do
-    puts "You were here. Connor needed help, tho."
-    Sequences::AstValidation.run!(body: nodes)
+    result = Sequences::AstValidation.run!(body: nodes)
+    expect(result.length).to eq(nodes.length)
+    nodes.each_with_index do |node, index|
+      expect(result[index][:kind]).to eq(node["kind"])
+    end
   end
+  it 'strips out useless args'
+  it 'explains invalid args'
+  it 'ensures that mode is 0 or 1'
+  it 'validates lhs'
+  it 'validates op'
+  it 'validates rhs'
+
 end

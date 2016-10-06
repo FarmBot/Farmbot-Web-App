@@ -42,7 +42,7 @@ module Sequences
     end
 
     def validate
-      body.each do |node, index|
+      body.each_with_index do |node, index|
         validate_structure(node, index)
       end
     end
