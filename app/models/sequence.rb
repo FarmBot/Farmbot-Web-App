@@ -1,6 +1,5 @@
 class Sequence < ActiveRecord::Base
   belongs_to :device
-  # belongs_to :regimen, class_name: "Regimen"
   has_many :steps
   has_many :regimen_items
 

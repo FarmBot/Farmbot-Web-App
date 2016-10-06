@@ -1,7 +1,6 @@
 # FarmbotDevice models all data related to an actual FarmBot in the real world.
-# This is useful for caching things like SkyNey IDs, owner users, work logs, etc
+# This is useful for caching things like owner info, work logs, etc
 class Device < ActiveRecord::Base
-
   has_many :users
   has_many :schedules, dependent: :destroy
   has_many :sequences, dependent: :destroy
