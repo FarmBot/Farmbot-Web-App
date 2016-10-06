@@ -63,7 +63,6 @@ ActiveRecord::Schema.define(version: 20161006154039) do
 
   create_table "sequences", force: :cascade do |t|
     t.integer "device_id", limit: 4
-    t.string  "regimen",   limit: 255
     t.string  "name",      limit: 255
     t.string  "color",     limit: 255
   end
