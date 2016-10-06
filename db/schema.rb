@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160919153025) do
+ActiveRecord::Schema.define(version: 20161006154039) do
 
   create_table "devices", force: :cascade do |t|
     t.integer "planting_area_id", limit: 4
@@ -62,11 +62,10 @@ ActiveRecord::Schema.define(version: 20160919153025) do
   end
 
   create_table "sequences", force: :cascade do |t|
-    t.integer "schedule_id", limit: 4
-    t.integer "device_id",   limit: 4
-    t.string  "regimen",     limit: 255
-    t.string  "name",        limit: 255
-    t.string  "color",       limit: 255
+    t.integer "device_id", limit: 4
+    t.string  "regimen",   limit: 255
+    t.string  "name",      limit: 255
+    t.string  "color",     limit: 255
   end
 
   create_table "step_params", force: :cascade do |t|
