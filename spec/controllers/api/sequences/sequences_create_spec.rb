@@ -18,7 +18,7 @@ describe Api::SequencesController do
     it 'handles invalid params' do
       # Needed to test the `else` branch of mutate() somewhere
       sign_in user
-      input = { }
+      input = {}
       post :create, input
       expect(response.status).to eq(422)
       expect(json[:name]).to eq("Name is required")

@@ -4,8 +4,6 @@ describe Sequences::Create do
   let(:user) { FactoryGirl.create(:user) }
   let(:device) { user.device }
 
-  end
-
   name = Faker::Pokemon.name
   let(:sequence_params) do
     { device: device,

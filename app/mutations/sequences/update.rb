@@ -2,7 +2,7 @@ module Sequences
   class Update < Mutations::Command
 
     required do
-      model :user, class: User
+      model :device, class: Device
       model :sequence, class: Sequence
     end
 
@@ -12,19 +12,19 @@ module Sequences
     end
 
     def validate
-      raise Errors::Forbidden unless sequence.device.users.include?(user)
+      raise Errors::Forbidden unless device.sequences.include?(sequence)
     end
 
     def execute
+      sequence.update_attributes!(inputs.except(:sequence, :device))
       sequence
-
-      rescue ActiveRecord::RecordInvalid => e
-        case e.record
-        when Sequence
-          bad_sequence(e)
-        else
-          add_error :other, :unknown, (e.try(:message) || "Unknown validation issues.")
-        end
+    rescue ActiveRecord::RecordInvalid => e
+      case e.record
+      when Sequence
+        bad_sequence(e)
+      else
+        add_error :other, :unknown, (e.try(:message) || "Unknown validation issues.")
+      end
     end
 
     def bad_sequence(e)

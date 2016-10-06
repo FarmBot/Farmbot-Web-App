@@ -18,7 +18,7 @@ module Api
 
     def update
       mutate Sequences::Update.run(params[:sequence],
-                                    user: current_user,
+                                    device: current_device,
                                     sequence: sequence)
     end
 
