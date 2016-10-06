@@ -9,9 +9,7 @@ FarmBot::Application.routes.draw do
     resources :plants, only: [:create, :destroy, :index]
     resources :regimens, only: [:create, :destroy, :index, :update]
     resources :planting_area, only: [:create, :destroy]
-    resources :sequences, only: [:create, :update, :destroy, :index, :show] do
-      resources :steps, only: [:show, :create, :index, :update, :destroy]
-    end
+    resources :sequences, only: [:create, :update, :destroy, :index, :show]
     resources :schedules, only: [:create, :update, :destroy, :index]
   end
 

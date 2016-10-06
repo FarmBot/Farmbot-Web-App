@@ -19,7 +19,6 @@ module Api
     def update
       mutate Sequences::Update.run(params[:sequence],
                                     user: current_user,
-                                    steps: params[:steps],
                                     sequence: sequence)
     end
 
