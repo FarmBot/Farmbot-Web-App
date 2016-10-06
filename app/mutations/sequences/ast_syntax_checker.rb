@@ -1,7 +1,7 @@
 module Sequences
   # Validate the syntax of a sequence body.
   # Just validates syntax. Does not perform any sort of contextual analysis. 
-  class AstValidation < Mutations::Command
+  class AstSyntaxChecker < Mutations::Command
     PARAM_SCHEMA      = {
         x:               Fixnum,
         y:               Fixnum,
