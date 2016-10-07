@@ -3,9 +3,6 @@ module Sequences
     required do
       model :device, class: Device
       string :name
-      array :steps, default: [] do
-        model :step, builder: Steps::Initialize, new_records: true
-      end
     end
 
     optional do
