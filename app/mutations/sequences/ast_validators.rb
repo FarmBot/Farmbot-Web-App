@@ -1,11 +1,8 @@
 module Sequences
   module AstValidatorsInstanceMethods
+
     def validate_ast!
-      if body
-        run_ast_validations
-      else
-        body = []
-      end
+      run_ast_validations if body
     end
 
     def run_ast_validations

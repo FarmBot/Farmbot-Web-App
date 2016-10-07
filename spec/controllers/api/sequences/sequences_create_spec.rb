@@ -17,8 +17,10 @@ describe Api::SequencesController do
                 body: nodes }
       post :create,
            input.merge(format: :json)
-      binding.pry
       expect(response.status).to eq(200)
+      expect(json[:args]).to be_kind_of(Hash)
+      expect(json[:body]).to be_kind_of(Array)
+      expect(json[:body].length).to eq(nodes.length)      
     end
 
     it 'creates a new sequences for a user' do
