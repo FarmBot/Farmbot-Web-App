@@ -39,7 +39,7 @@ class Sequence < ActiveRecord::Base
       move_absolute: [ :x, :y, :z, :speed],
       move_relative: [ :x, :y, :z, :speed ],        
       write_pin:     [ :pin_number, :pin_value, :pin_mode ],
-      read_pin:      [ :pin_number, :data_label],
+      read_pin:      [ :pin_number, :data_label], # TODO: Needs pin_mode, also
       wait:          [ :milliseconds ],
       send_message:  [ :message ],
       execute:       [ :sub_sequence_id ],

@@ -76,5 +76,32 @@ describe Sequences::AstSyntaxCleaner do
     expect(results.errors["bad_args"].message).to include(expected)
   end
 
-  it "validates data_value"
+  it "validates data_value" do
+    example = {
+      body: [
+        { kind: "var_set",
+          args: { data_type: "integer",
+                  data_value: "1",
+                  data_label: "valid" }
+        }
+      ]
+    }
+    results = Sequences::AstSyntaxCleaner.run(example)
+    expect(results.success?).to eq(true)
+  end
+
+  it "does not validate data type if data_type is wrong" do
+    example = {
+      body: [
+        { kind: "var_set",
+          args: { data_type: "integer",
+                  data_value: "abc",
+                  data_label: "invalid" }
+        }
+      ]
+    }
+    results = Sequences::AstSyntaxCleaner.run(example)
+    expect(results.success?).to eq(false)
+    binding.pry
+  end
 end

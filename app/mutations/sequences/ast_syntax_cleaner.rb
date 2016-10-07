@@ -73,6 +73,18 @@ module Sequences
       end
     end
 
+    def validate_data_value(node, index)
+      type  = node[:args][:data_type]
+      value = node[:args][:data_value]
+      case type
+      when "integer"
+        sorry("'data_value'",
+              index + 1,
+              "be an integer",
+              "got non-integer input") if !(value =~ /^-?\d+$/)
+      end
+    end
+
 private
 
     def validate_structure(node, index)
