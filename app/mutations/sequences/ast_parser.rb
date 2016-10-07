@@ -9,6 +9,7 @@ module Sequences
 
     def validate
       body.each_with_index do |node, index|
+        validate_kind(node, index)
         validate_structure(node, index)
       end
 
@@ -32,7 +33,7 @@ module Sequences
         sorry("'pin_mode'",
               index + 1,
               "be " + Sequence::ALLOWED_PIN_MODES.join(" or "),
-              "got #{ actual }")
+              "got #{ actual } (#{ actual.class })")
       end
     end
 
@@ -80,6 +81,10 @@ module Sequences
     end
 
 private
+
+    def validate_kind(node, index)
+    # foo unless Sequence::NODE_KINDS.include?(node[:kind])
+    end
 
     def validate_structure(node, index)
       Sequence::ARGS_SCHEMA[node[:kind].to_sym].each do |arg|

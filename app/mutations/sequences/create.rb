@@ -1,5 +1,8 @@
 module Sequences
   class Create < Mutations::Command
+    extend AstValidators
+    ast_body :optional
+
     required do
       model :device, class: Device
       string :name
@@ -10,6 +13,7 @@ module Sequences
     end
 
     def execute
+      validate_ast!
       Sequence.create!(inputs)  
     end
   end

@@ -1,5 +1,7 @@
 module Sequences
   class Update < Mutations::Command
+    extend AstValidators
+    ast_body :optional
 
     required do
       model :device, class: Device

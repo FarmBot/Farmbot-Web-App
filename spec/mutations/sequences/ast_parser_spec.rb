@@ -42,7 +42,7 @@ describe Sequences::AstParser do
     expect(results.success?).to eq(false)
     expect(results.errors.length).to eq(1)
     actual = results.errors["bad_args"].message
-    expected = "Expected 'pin_mode' in step 3 to be 0 or 1 but got 6"
+    expected = "Expected 'pin_mode' in step 3 to be 0 or 1 but got 6 (Fixnum)"
     expect(actual).to eq(expected)
   end
 

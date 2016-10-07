@@ -5,8 +5,21 @@ describe Api::SequencesController do
   include Devise::Test::ControllerHelpers
 
   describe '#create' do
+    let(:nodes) {
+      JSON.parse(File.read("./spec/mutations/sequences/ast_fixture.json"))
+    }
 
     let(:user) { FactoryGirl.create(:user) }
+
+    it 'handles a well formed AST in the body attribute' do
+      sign_in user
+      input = { name: "Scare Birds",
+                body: nodes }
+      post :create,
+           input.merge(format: :json)
+      binding.pry
+      expect(response.status).to eq(200)
+    end
 
     it 'creates a new sequences for a user' do
       sign_in user
