@@ -1,17 +1,13 @@
+require_relative "./ast_validators"
+
 module Sequences
   # Validate the syntax of a sequence body.
   # Just validates syntax and removes irrelevant junk.
   # Does not perform any sort of contextual analysis. 
   class AstParser < Mutations::Command
-    required do
-      array :body do
-        hash do
-            string :kind, in: Sequence::NODE_KINDS
-            duck :args, methods: [:[], :[]=]
-            string :comments, default: nil
-        end
-      end
-    end
+    extend AstValidators
+
+    ast_body :required
 
     def validate
       body.each_with_index do |node, index|
