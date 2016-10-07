@@ -1,5 +1,3 @@
-require_relative "./ast_validators"
-
 module Sequences
   # Validate the syntax of a sequence body.
   # Just validates syntax and removes irrelevant junk.
