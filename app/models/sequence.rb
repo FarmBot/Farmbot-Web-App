@@ -15,12 +15,8 @@ class Sequence < ActiveRecord::Base
       pin_value:       Fixnum,
       pin_mode:        Fixnum,
       data_label:      String,
-
-      # STUFF IM ADDING:
       data_value:      String,
       data_type:       String,
-      # /STUFF IM ADDING
-
       milliseconds:    Fixnum,
       message:         String,
       sub_sequence_id: Fixnum, # TODO Requires contextual analysis.
@@ -30,12 +26,8 @@ class Sequence < ActiveRecord::Base
     }
 
     ARGS_SCHEMA = {
-
-      # STUFF IM ADDING:
-      var_set: [:data_label],
-      var_get: [:data_label, :data_type, :data_value],
-      # /STUFF IM ADDING
-
+      var_set:       [:data_label],
+      var_get:       [:data_label, :data_type, :data_value],
       move_absolute: [ :x, :y, :z, :speed],
       move_relative: [ :x, :y, :z, :speed ],        
       write_pin:     [ :pin_number, :pin_value, :pin_mode ],

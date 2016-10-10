@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161006190538) do
+ActiveRecord::Schema.define(version: 20161010145613) do
 
   create_table "devices", force: :cascade do |t|
     t.integer "planting_area_id", limit: 4
@@ -40,7 +40,6 @@ ActiveRecord::Schema.define(version: 20161006190538) do
 
   create_table "regimen_items", force: :cascade do |t|
     t.integer "time_offset", limit: 8
-    t.integer "schedule_id", limit: 4
     t.integer "regimen_id",  limit: 4
     t.integer "sequence_id", limit: 4
   end
