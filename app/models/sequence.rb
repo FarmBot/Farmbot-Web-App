@@ -29,7 +29,7 @@ class Sequence < ActiveRecord::Base
       var_set:       [:data_label],
       var_get:       [:data_label, :data_type, :data_value],
       move_absolute: [ :x, :y, :z, :speed],
-      move_relative: [ :x, :y, :z, :speed ],        
+      move_relative: [ :x, :y, :z, :speed ],
       write_pin:     [ :pin_number, :pin_value, :pin_mode ],
       read_pin:      [ :pin_number, :data_label], # TODO: Needs pin_mode, also
       wait:          [ :milliseconds ],
@@ -64,7 +64,7 @@ class Sequence < ActiveRecord::Base
   before_validation :set_defaults
 
   def set_defaults
-    self.color ||= COLORS.sample
+    self.color ||= "gray"
     self.kind ||= "sequence"
     self.body ||= []
     self.args ||= {}
