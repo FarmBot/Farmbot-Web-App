@@ -6,6 +6,6 @@ class Regimen < ActiveRecord::Base
   validates_presence_of :name
   validates_uniqueness_of :name, scope: :device
 
-  has_many   :regimen_items
+  has_many   :regimen_items, dependent: :destroy
   belongs_to :device
 end
