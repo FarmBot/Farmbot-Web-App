@@ -1,4 +1,3 @@
 class SequenceSerializer < ActiveModel::Serializer
-  attributes :id, :name, :color
-  has_many :steps
+  attributes :id, :name, :color, :body, :args, :kind
 end
