@@ -10,6 +10,10 @@ module Api
       sorry "You can't perform that action. #{exc.message}", 403
     end
 
+    rescue_from Errors::NoBot do |exc|
+      sorry "You need to register a device first.", 422
+    end
+
     rescue_from ActiveRecord::RecordNotFound do |exc|
       sorry "Document not found.", 404
     end
@@ -21,12 +25,11 @@ module Api
 private
 
     def current_device
-      @current_device ||= (current_user.try(:device) || null_device)
+      @current_device ||= (current_user.try(:device) || no_device)
     end
 
-    def null_device
-      @null_device ||= NullDevice.new(name:  'null_device',
-                                      uuid: '-')
+    def no_device
+      raise Errors::NoBot
     end
 
     def authenticate_user!

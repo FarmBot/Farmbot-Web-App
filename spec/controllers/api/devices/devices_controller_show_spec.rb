@@ -11,7 +11,8 @@ describe Api::DevicesController do
       user.update_attributes(device: nil)
       sign_in user
       get :show, {}, format: :json
-      expect(user.reload.device).to be_kind_of(Device)
+      expect(response.status).to eq(422)
+      expect(json[:error]).to include("You need to register a device first.")
     end
 
     it 'has expected keys' do
@@ -20,9 +21,9 @@ describe Api::DevicesController do
       { id:         Fixnum,
         name:       String,
         uuid:       String,
-        webcam_url: String }.each{ |name, klass|
+        webcam_url: String }.each do |name, klass|
           expect(json[name]).to be_an_instance_of(klass)
-        }
+        end
       
     end
   end

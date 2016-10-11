@@ -5,9 +5,7 @@ module Api
 
     # GET /api/device
     def show
-      current_device
-        .if_null { create }
-        .if_not_null { render json: current_device }
+      render json: current_device
     end
 
     # POST /api/device
@@ -17,9 +15,7 @@ module Api
 
     # PATCH/PUT /api/device
     def update
-      current_device
-        .if_null { create }
-        .if_not_null { mutate Devices::Update.run(params, device: current_device) }
+      mutate Devices::Update.run(params, device: current_device)
     end
 
     # DELETE /api/devices/1

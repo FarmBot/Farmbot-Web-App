@@ -21,16 +21,5 @@ describe Api::DevicesController do
       expect(device.name).to eq(fake_name)
       expect(response.status).to eq(200)
     end
-
-    it 'creates a new device if you dont have one' do
-      user.update_attributes(device: nil)
-      sign_in user
-      fake_name = Faker::Name.name
-      put :update, {uuid: 1}, format: :json
-      user.reload
-      expect(user.device).to be_kind_of(Device)
-      expect(user.device['name'].length).to be > 4 # Haikunator
-      expect(user.device['uuid']).to eq('1')
-    end
   end
 end
