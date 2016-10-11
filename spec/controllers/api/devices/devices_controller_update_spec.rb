@@ -14,7 +14,7 @@ describe Api::DevicesController do
     it 'updates a Device' do
       sign_in user
       fake_name = Faker::Name.name
-      put :update, {id: user.device.id, name: fake_name, uuid: 1}, format: :json
+      put :update, {id: user.device.id, name: fake_name }, format: :json
       # put path, params, options
       user.reload
       device = user.reload.device.reload

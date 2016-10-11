@@ -5,7 +5,6 @@ module Auth
     optional do
       string :jwt
       string :bot_token
-      string :bot_uuid
       model  :user, class: User
     end
 
@@ -15,7 +14,7 @@ module Auth
       # other way around, so JWT should get higher preference.
       return :already_connected if user
       return :jwt               if jwt
-      return :bot               if (bot_token && bot_uuid)
+      return :bot               if bot_token
       return nil                # Failure case- can't determine.
     end
   end

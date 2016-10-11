@@ -30,6 +30,6 @@ class SessionToken
              iss:  iss,
              exp:  exp,
              mqtt: MQTT,
-             bot:  user.device.uuid}])
+             bot:  user.device.name}])
   end
 end

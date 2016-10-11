@@ -3,8 +3,9 @@ require 'securerandom'
 
 FactoryGirl.define do
   factory :device do
-    name  { Faker::Internet.user_name }
-    uuid  { SecureRandom.uuid }
+    name  {
+      Haikunator.haikunate(1000)
+    }
     webcam_url { Faker::Company.logo }
   end
 end
