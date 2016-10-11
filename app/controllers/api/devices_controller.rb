@@ -28,7 +28,7 @@ module Api
 
       # Only allow a trusted parameter "white list" through.
       def device_params
-        { name:  params[:name], uuid:  params[:uuid] }
+        { name:  params[:name] }
       end
   end
 end

@@ -20,7 +20,6 @@ describe Api::DevicesController do
       get :show, {}, format: :json
       { id:         Fixnum,
         name:       String,
-        uuid:       String,
         webcam_url: String }.each do |name, klass|
           expect(json[name]).to be_an_instance_of(klass)
         end

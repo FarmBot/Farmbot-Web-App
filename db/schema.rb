@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161010145613) do
+ActiveRecord::Schema.define(version: 20161011185734) do
 
   create_table "devices", force: :cascade do |t|
     t.integer "planting_area_id", limit: 4
-    t.string  "uuid",             limit: 255
     t.string  "name",             limit: 255
     t.string  "webcam_url",       limit: 255
   end

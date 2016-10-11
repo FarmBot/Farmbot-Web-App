@@ -136,7 +136,6 @@ GEM
       railties (>= 3.2, < 5.1)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
-    haikunator (1.1.0)
     haml (4.0.7)
       tilt
     high_voltage (2.1.0)
@@ -357,7 +356,6 @@ DEPENDENCIES
   factory_girl_rails
   faker
   font-awesome-rails
-  haikunator
   haml
   high_voltage (~> 2.1.0)
   ice_cube
