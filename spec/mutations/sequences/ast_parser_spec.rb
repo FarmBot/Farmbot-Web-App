@@ -21,9 +21,9 @@ describe Sequences::AstParser do
 
   it 'allows comments' do
     msg = "Just like a real programming language"
-    nodes[0]["comments"] = msg
+    nodes[0]["comment"] = msg
     results = Sequences::AstParser.run!(body: nodes)
-    expect(results[0]["comments"]).to eq(msg)
+    expect(results[0]["comment"]).to eq(msg)
   end
 
   it 'explains invalid args' do

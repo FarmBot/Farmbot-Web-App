@@ -24,7 +24,9 @@ module Sequences
           hash do
               string :kind
               duck :args, methods: [:[], :[]=]
-              string :comment, default: "", nils: true
+              optional do
+                string :comment, discard_empty: true
+              end
           end
         end
       end
