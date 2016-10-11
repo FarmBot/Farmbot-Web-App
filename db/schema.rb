@@ -11,12 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161011185734) do
+ActiveRecord::Schema.define(version: 20161006190538) do
 
   create_table "devices", force: :cascade do |t|
     t.integer "planting_area_id", limit: 4
     t.string  "name",             limit: 255
     t.string  "webcam_url",       limit: 255
+    t.integer "uuid",             limit: 4
   end
 
   create_table "planting_areas", force: :cascade do |t|
@@ -41,6 +42,7 @@ ActiveRecord::Schema.define(version: 20161011185734) do
     t.integer "time_offset", limit: 8
     t.integer "regimen_id",  limit: 4
     t.integer "sequence_id", limit: 4
+    t.integer "schedule_id", limit: 4
   end
 
   create_table "regimens", force: :cascade do |t|
@@ -57,6 +59,11 @@ ActiveRecord::Schema.define(version: 20161011185734) do
     t.datetime "next_time"
     t.integer  "repeat",      limit: 4
     t.string   "time_unit",   limit: 255
+  end
+
+  create_table "sequence_dependencies", force: :cascade do |t|
+    t.integer "dependency_id",   limit: 4
+    t.string  "dependency_type", limit: 255
   end
 
   create_table "sequences", force: :cascade do |t|

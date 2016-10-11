@@ -1,6 +1,8 @@
 class Sequence < ActiveRecord::Base
   belongs_to :device
   has_many :regimen_items
+  has_many  :sequence_dependencies, dependent: :destroy
+
   serialize :body, Array
   serialize :args, Hash
 
