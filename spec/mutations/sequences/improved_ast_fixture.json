@@ -1,0 +1,28 @@
+{
+    "kind": "sequence",
+    "args": {
+        "x": {
+            "kind": "literal",
+            "args": {
+                "data_value": "5",
+                "data_type": "integer"
+            }
+        }
+    },
+    "body": [
+        {
+            "kind": "literal",
+            "args": {
+                "data_type": "integer",
+                "data_value": 1000
+            }
+        },
+        {
+            "kind": "literal",
+            "args": {
+                "data_type": "integer",
+                "data_value": 1000
+            }
+        }
+    ]
+}
