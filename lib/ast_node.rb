@@ -29,12 +29,19 @@ end
 
 # Temp stub.
 class Parser
-  def define(name, arg_types, body_types = nil)
+  def self.define(name, arg_types, body_types = nil)
     self
+  end
+
+  def self.validate(name)
+    self
+  end
+
+  def self.reset
   end
 end
 
-Parser.new
+Parser
   .define(
     # Define node name
     "sequence", {
@@ -51,9 +58,11 @@ Parser.new
     "send_message",
     "execute",
     "if_statement"
-   ]) {
-
-   }
+   ])
+  .validate("sequence") do |node, problem|
+  # Accepts block or anything that respond_to? call()
+    problem("Expected sequence to have steps.") if node.body.length < 1
+  end
   .define("literal", {
     # Literal has "terminal" args (args that are not nodes).
     # Pass in the class you expect instead of a string.
