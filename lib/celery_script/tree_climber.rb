@@ -1,7 +1,7 @@
 module CeleryScript
   class TreeClimber
-    def self.travel(node, callable = nil, &blk)
-      visit_node(node, callable || blk)
+    def self.travel(node, callable)
+      visit_node(node, callable)
     end
 
   private
