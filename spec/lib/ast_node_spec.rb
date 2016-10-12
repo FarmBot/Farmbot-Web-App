@@ -8,6 +8,11 @@ describe AstNode do
 
   it "initializes" do
     node = AstNode.new(**hash)
-    binding.pry
+    expect(node.kind).to eq("sequence")
+    expect(node.body.length).to eq(2)
+    expect(node.body[0].kind).to eq("other")
+    expect(node.body[1].kind).to eq("whatever")
+    expect(node.args[:x].kind).to eq("blah")
+    expect(node.args[:x].args[:data_value]).to be_kind_of(AstNode)
   end
 end

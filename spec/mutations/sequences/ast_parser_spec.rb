@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 describe Sequences::AstParser do
-  let(:nodes) {
+  let(:nodes) do
     JSON.parse(File.read("./spec/mutations/sequences/ast_fixture.json"))
-  }
+  end
 
   it 'validates the type of all key/value pairs in the AST' do
     result = Sequences::AstParser.run!(body: nodes)

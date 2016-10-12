@@ -2,23 +2,28 @@
     "kind": "sequence",
     "args": {
         "x": {
-            "kind": "literal",
+            "kind": "blah",
             "args": {
-                "data_value": "5",
+                "data_value": {
+                    "kind": "var_get",
+                    "args": {
+                        "data_label": "wow"
+                    }
+                },
                 "data_type": "integer"
             }
         }
     },
     "body": [
         {
-            "kind": "literal",
+            "kind": "other",
             "args": {
                 "data_type": "integer",
                 "data_value": 1000
             }
         },
         {
-            "kind": "literal",
+            "kind": "whatever",
             "args": {
                 "data_type": "integer",
                 "data_value": 1000
