@@ -11,13 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161006190538) do
+ActiveRecord::Schema.define(version: 20161011221406) do
 
   create_table "devices", force: :cascade do |t|
     t.integer "planting_area_id", limit: 4
     t.string  "name",             limit: 255
     t.string  "webcam_url",       limit: 255
-    t.integer "uuid",             limit: 4
   end
 
   create_table "planting_areas", force: :cascade do |t|
@@ -42,7 +41,6 @@ ActiveRecord::Schema.define(version: 20161006190538) do
     t.integer "time_offset", limit: 8
     t.integer "regimen_id",  limit: 4
     t.integer "sequence_id", limit: 4
-    t.integer "schedule_id", limit: 4
   end
 
   create_table "regimens", force: :cascade do |t|
@@ -64,7 +62,12 @@ ActiveRecord::Schema.define(version: 20161006190538) do
   create_table "sequence_dependencies", force: :cascade do |t|
     t.integer "dependency_id",   limit: 4
     t.string  "dependency_type", limit: 255
+    t.integer "sequence_id",     limit: 4
   end
+
+  add_index "sequence_dependencies", ["dependency_id"], name: "index_sequence_dependencies_on_dependency_id", using: :btree
+  add_index "sequence_dependencies", ["dependency_type"], name: "index_sequence_dependencies_on_dependency_type", using: :btree
+  add_index "sequence_dependencies", ["sequence_id"], name: "index_sequence_dependencies_on_sequence_id", using: :btree
 
   create_table "sequences", force: :cascade do |t|
     t.integer "device_id", limit: 4

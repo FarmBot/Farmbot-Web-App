@@ -2,6 +2,7 @@ class CreateSequenceDependencies < ActiveRecord::Migration
   def change
     create_table :sequence_dependencies do |t|
       t.references :dependency, polymorphic: true
+      t.references :sequence
     end
 
     add_index :sequence_dependencies, :dependency_id

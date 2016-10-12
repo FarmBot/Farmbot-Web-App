@@ -1,5 +1,17 @@
-require 'rails_helper'
+describe SequenceDependency do
+  let(:parent) { FactoryGirl.create(:sequence) }
+  let(:child1) { FactoryGirl.create(:sequence) }
+  let(:child2) { Plant.create }
 
-RSpec.describe SequenceDependency, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it 'depends upon another sequence' do
+    sd = SequenceDependency.create(sequence:   parent,
+                                   dependency: child1)
+    expect(sd.valid?).to eq(true)
+  end
+
+  it 'depends upon a plant' do
+    sd = SequenceDependency.create(sequence:   parent,
+                                   dependency: child2)
+    expect(sd.valid?).to eq(true)
+  end  
 end
