@@ -17,4 +17,10 @@ describe CeleryScript::TreeClimber do
       expect(kinds.first).to eq("blah")
       expect(kinds.last).to eq("whatever")
   end
+
+  it "searches the tree for a specific `kind`" do
+    query = CeleryScript::TreeClimber.find_all_by_kind(node, "var_get")
+    expect(query.length).to eq(1)
+    expect(query.first.kind).to eq("var_get")
+  end
 end

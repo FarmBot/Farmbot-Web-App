@@ -4,6 +4,13 @@ module CeleryScript
       visit_node(node, callable)
     end
 
+    def self.find_all_by_kind(node, name)
+      results = []
+      filter = -> (node) { results.push(node) if node.kind == name }
+      travel(node, filter)
+      results
+    end
+
   private
 
     def self.visit_node(node, callable)
