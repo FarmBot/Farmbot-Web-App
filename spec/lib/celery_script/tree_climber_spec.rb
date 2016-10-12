@@ -23,4 +23,10 @@ describe CeleryScript::TreeClimber do
     expect(query.length).to eq(1)
     expect(query.first.kind).to eq("var_get")
   end
+
+  it "searches the tree for a specific `arg`" do
+    query = CeleryScript::TreeClimber.find_all_with_arg(node, :data_value)
+    expect(query.length).to eq(3)
+    expect(query.map(&:kind).sort).to eq(["blah", "other", "whatever"])
+  end
 end
