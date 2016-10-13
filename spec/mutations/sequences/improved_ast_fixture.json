@@ -19,14 +19,14 @@
             "kind": "other",
             "args": {
                 "data_type": "integer",
-                "data_value": 1000
+                "data_value": "1000"
             }
         },
         {
             "kind": "whatever",
             "args": {
                 "data_type": "integer",
-                "data_value": 2000
+                "data_value": "2000"
             }
         }
     ]

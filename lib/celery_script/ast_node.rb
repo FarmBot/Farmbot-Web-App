@@ -1,4 +1,10 @@
 module CeleryScript
+  class AstLeaf
+    attr_reader :value, :parent
+    def initialize(parent, value)
+      @parent, @value = parent, value
+    end
+  end
   class AstNode
       attr_reader :args, :body, :comments, :kind, :parent
 
@@ -15,7 +21,8 @@ module CeleryScript
       end
 
       def maybe_initialize(parent, leaf_or_node)
-        is_node?(leaf_or_node) ? AstNode.new(parent, **leaf_or_node) : hash
+        klass = is_node?(leaf_or_node) ? AstNode : AstLeaf
+        klass.new(parent, leaf_or_node)
       end
 
       def is_node?(hash)

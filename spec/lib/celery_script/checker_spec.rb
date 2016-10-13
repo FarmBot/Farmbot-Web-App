@@ -25,11 +25,11 @@ describe CeleryScript::Checker do
   end
 
   it "runs" do
-      begin
-        checker = CeleryScript::Checker.new(tree, corpus)
-        outcome = checker.run!
-      rescue CeleryScript::TypeCheckError => e
-        binding.pry
-      end
+    begin
+      checker = CeleryScript::Checker.new(tree, corpus)
+      outcome = checker.run!
+    rescue CeleryScript::TypeCheckError => e
+      binding.pry
+    end
   end
 end
