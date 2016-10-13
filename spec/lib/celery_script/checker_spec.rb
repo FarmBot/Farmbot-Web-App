@@ -7,22 +7,30 @@
 #       CeleryScript::AstNode.new(JSON.parse(file_path).deep_symbolize_keys)
 #   end
 
-#   class LeafValue
-#   end
-#   class NodeValue
-#   end
+# #   class LeafValue
+# #     attr_reader :val
+# #     def initialize(val)
+# #       @val = val
+# #     end
+# #   end
+# #   class NodeValue
+# #     attr_reader :val
+# #     def initialize(val)
+# #       @val = val
+# #     end
+# #   end
 
 #   let (:corpus) do
 #     CeleryScript::Corpus
 #         .new
-#         .defineArg(:data_label, [Leaf.new(String)])
-#         .defineArg(:data_type,  [Leaf.new(String)])
-#         .defineArg(:data_value, [Leaf.new(Fixnum),
-#                                  NodeValue.new(:var_get)])
-#         .defineArg(:x,          [NodeValue.new(:blah)]) do |param, problem|
+#         .defineArg(:data_label, [String])
+#         .defineArg(:data_type,  [String])
+#         .defineArg(:data_value, [Fixnum, :var_get])
+#         .defineArg(:x,          [:blah]) do |param, problem|
 #             problem("Param can't be -1") if param < 0
 #         end
-#         .defineNode(:sequence, [:x], [:other, :whatever])
+#                     # Kind:    # args:  # body:
+#         .defineNode(:sequence, [:x],    [:other, :whatever])
 #         .defineNode(:blah,     [:data_value, :data_type])
 #         .defineNode(:var_get,  [:data_label])
 #         .defineNode(:whatever, [:data_type, :data_value])
@@ -31,8 +39,11 @@
 #   end
 
 #   it "runs" do
-#       checker = CeleryScript::Checker.new(tree, corpus)
-#       ok      = checker.run
-#       binding.pry
+#       begin
+#         checker = CeleryScript::Checker.new(tree, corpus)
+#         outcome = checker.run!
+#       rescue => CeleryScript::TypeCheckError
+#         binding.pry
+#       end
 #   end
 # end
