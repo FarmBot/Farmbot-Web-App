@@ -14,8 +14,8 @@ module CeleryScript
           end if body
       end
 
-      def maybe_initialize(parent, hash)
-        is_node?(hash) ? AstNode.new(self, **hash) : hash
+      def maybe_initialize(parent, leaf_or_node)
+        is_node?(leaf_or_node) ? AstNode.new(parent, **leaf_or_node) : hash
       end
 
       def is_node?(hash)
