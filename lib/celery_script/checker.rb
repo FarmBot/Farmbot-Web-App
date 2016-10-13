@@ -1,19 +1,5 @@
 module CeleryScript
   class TypeCheckError < StandardError; end
-  class LeafValue
-    attr_reader :val
-    def initialize(val)
-      @val = val
-    end
-  end
-
-  class NodeValue
-    attr_reader :val
-    def initialize(val)
-      @val = val
-    end
-  end
-
   class Checker
     attr_reader :tree, :corpus
 
@@ -70,18 +56,8 @@ module CeleryScript
       else
         raise TypeCheckError, "What was that?"
       end
-    end
-
-    def validate_agaist_spec(argSpec, node)
-      argSpec.allowed_values.map do |value|
-        case value
-        when Class
-          # binding.pry
-        when Symbol, String
-          # binding.pry
-        else; raise TypeCheckError, "What was that?"
-        end
-      end
+      validator = corpus.fetchArg(should_be).additional_validation
+      validator.call(node, TypeCheckError, corpus) if(validator)
     end
   end
 end

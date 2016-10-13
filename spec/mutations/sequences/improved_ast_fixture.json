@@ -1,18 +1,7 @@
 {
     "kind": "sequence",
     "args": {
-        "x": {
-            "kind": "blah",
-            "args": {
-                "data_value": {
-                    "kind": "var_get",
-                    "args": {
-                        "data_label": "wow"
-                    }
-                },
-                "data_type": "integer"
-            }
-        }
+        "x": -1
     },
     "body": [
         {

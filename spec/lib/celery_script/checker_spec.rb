@@ -12,15 +12,9 @@ describe CeleryScript::Checker do
         .new
         .defineArg(:data_label, [String])
         .defineArg(:data_type,  [String])
-        .defineArg(:data_value, [
-          # If it's a leaf.
-          # Check that node.value.is_a?(Fixnum)
-          Fixnum,
-          # If it's a legit node,
-          # just check node.kind == "var_get"
-          :var_get])
-        .defineArg(:x,          [:blah]) do |param, problem|
-            problem("Param can't be -1") if param < 0
+        .defineArg(:data_value, [String, :var_get])
+        .defineArg(:x,          [Fixnum, :blah]) do |node|
+            node.invalidate!("NO NO NOE!!!") if node.value < 0
         end
         .defineNode(:sequence, [:x],    [:other, :whatever])
         .defineNode(:blah,     [:data_value, :data_type])

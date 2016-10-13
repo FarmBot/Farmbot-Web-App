@@ -20,21 +20,6 @@ module CeleryScript
     end
   end
 
-  class TypeCheckError < StandardError; end
-  class LeafValue
-    attr_reader :val
-    def initialize(val)
-      @val = val
-    end
-  end
-
-  class NodeValue
-    attr_reader :val
-    def initialize(val)
-      @val = val
-    end
-  end
-
   class Corpus
     def initialize
       @arg_def_list = {}
@@ -45,10 +30,11 @@ module CeleryScript
       @arg_def_list[name.to_sym] or raise "CANT FIND ARG SPEC"
     end
 
-    def defineArg(arg_name, allowed_values)
+    def defineArg(arg_name, allowed_values, &blk)
     #   additional_checks.call("node", "err_callback")
       @arg_def_list[arg_name.to_sym] = ArgumentSpecification.new(arg_name,
-                                                                 allowed_values)
+                                                                 allowed_values,
+                                                                 blk)
       self
     end
     #TODO : These names are all JS case!

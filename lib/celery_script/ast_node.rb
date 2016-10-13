@@ -1,12 +1,18 @@
 module CeleryScript
-  class AstLeaf
+  class AbstractNode
+    def invalidate!(message = "Unspecified type check error.")
+      raise CeleryScript::TypeCheckError, message
+    end
+  end
+
+  class AstLeaf < AbstractNode
     attr_reader :kind, :value, :parent
     def initialize(parent, value, kind)
       @parent, @value, @kind = parent, value, kind
     end
   end
 
-  class AstNode
+  class AstNode < AbstractNode
       attr_reader :args, :body, :comments, :kind, :parent
 
       def initialize(parent = nil, args:, body: nil, comment: "", kind:)
