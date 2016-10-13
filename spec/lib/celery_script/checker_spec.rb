@@ -12,7 +12,13 @@ describe CeleryScript::Checker do
         .new
         .defineArg(:data_label, [String])
         .defineArg(:data_type,  [String])
-        .defineArg(:data_value, [Fixnum, :var_get])
+        .defineArg(:data_value, [
+          # If it's a leaf.
+          # Check that node.value.is_a?(Fixnum)
+          Fixnum,
+          # If it's a legit node,
+          # just check node.kind == "var_get"
+          :var_get])
         .defineArg(:x,          [:blah]) do |param, problem|
             problem("Param can't be -1") if param < 0
         end

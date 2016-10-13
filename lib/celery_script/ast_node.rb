@@ -1,10 +1,11 @@
 module CeleryScript
   class AstLeaf
-    attr_reader :value, :parent
-    def initialize(parent, value)
-      @parent, @value = parent, value
+    attr_reader :kind, :value, :parent
+    def initialize(parent, value, kind)
+      @parent, @value, @kind = parent, value, kind
     end
   end
+
   class AstNode
       attr_reader :args, :body, :comments, :kind, :parent
 
@@ -12,7 +13,7 @@ module CeleryScript
           @comment, @kind, @parent = comment, kind, parent
 
           @args = args.map  do |key, value|
-            [key, maybe_initialize(self, value)]
+            [key, maybe_initialize(self, value, key)]
           end.to_h if args
 
           @body = body.map do |e|
@@ -20,9 +21,12 @@ module CeleryScript
           end if body
       end
 
-      def maybe_initialize(parent, leaf_or_node)
-        klass = is_node?(leaf_or_node) ? AstNode : AstLeaf
-        klass.new(parent, leaf_or_node)
+      def maybe_initialize(parent, leaf_or_node, key = "__NEVER__")
+        if is_node?(leaf_or_node)
+          AstNode.new(parent, leaf_or_node)
+        else
+          AstLeaf.new(parent, leaf_or_node, key)
+        end
       end
 
       def is_node?(hash)

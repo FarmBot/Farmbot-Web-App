@@ -53,20 +53,34 @@ module CeleryScript
 
     def check_arg_validity(should_be, node)
       # 2. DONT check validity of body? write test to verify...
-
       case node
       when AstNode
-        corpus
-          .fetchNode(node.kind)
-          .allowed_args
-          .map { |aa| corpus.fetchArg(aa) }
-          .map do |argSpec|
-            binding.pry
-          end
       when AstLeaf
-        puts "Skipping (for now?)"
+        allowed = corpus
+                    .fetchArg(node.kind)
+                    .allowed_values
+                    .select { |d| d.is_a?(Class) }
+        actual = node.value.class
+        unless allowed.include?(actual)
+          raise TypeCheckError, "Expected leaf '#{ node.kind }' within "\
+                                "'#{ node.parent.kind }' to be one of: "\
+                                "#{ allowed.inspect } but got #{ actual.inspect }"
+        end
+        puts "VALID LEAF!"
       else
         raise TypeCheckError, "What was that?"
+      end
+    end
+
+    def validate_agaist_spec(argSpec, node)
+      argSpec.allowed_values.map do |value|
+        case value
+        when Class
+          # binding.pry
+        when Symbol, String
+          # binding.pry
+        else; raise TypeCheckError, "What was that?"
+        end
       end
     end
   end
