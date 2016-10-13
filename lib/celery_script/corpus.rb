@@ -14,16 +14,14 @@ module CeleryScript
     end
   end
 
-  class Checker
-    attr_reader :tree, :corpus
-
-    def initialize(tree, corpus)
-      @tree, @corpus = tree, corpus
+  class Corpus
+    def defineArg(arg_name, allowed_values)
+    #   additional_checks.call("node", "err_callback")
+      self
     end
 
-    def run!
-      binding.pry
-      tree
+    def defineNode(kind, allowed_args, allowed_body_nodes = [])
+      self
     end
   end
 end

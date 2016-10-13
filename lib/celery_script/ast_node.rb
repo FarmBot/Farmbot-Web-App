@@ -6,7 +6,7 @@ module CeleryScript
           @comment, @kind, @parent = comment, kind, parent
 
           @args = args.map  do |key, value|
-            [key, maybe_initialize(key, value)]
+            [key, maybe_initialize(self, value)]
           end.to_h if args
 
           @body = body.map do |e|
