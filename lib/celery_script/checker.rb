@@ -1,4 +1,5 @@
 module CeleryScript
+  class TypeCheckError < StandardError; end
   class Checker
       attr_reader :tree, :corpus, :problems
 
@@ -9,24 +10,26 @@ module CeleryScript
       end
 
       def run
-        check = ->(node) { validate_node(node) }
+        puts "========================================="
+        check = ->(node) { validate_node(node) if node }
         TreeClimber.travel(tree, check)
         self
       end
 
       def validate_node(node)
-          nd = corpus.fetchNodeDeclaration(node.kind)
+          nd = corpus.fetchNodeSpecification(node.kind)
           if nd
-            reporter = ->(n, m) { problem(n, m) }
-            nd.validate(node, corpus, reporter)
+            # TODO: Try &method(:problem)
+            info = ValidationInfo.new(node, corpus, ->(n, m) { problem(n, m) })
+            nd.validate(info)
           else
-            binding.pry
             problem(node, UNKNOWN_NODE_KIND)
           end
       end
 
       def problem(node, message)
-          problems.push(Problem.new(node, message))
+          binding.pry
+          raise TypeCheckError, Problem.new(node, message)
       end
   end
 end

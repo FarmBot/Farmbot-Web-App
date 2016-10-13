@@ -1,5 +1,5 @@
 module CeleryScript
-  class ArgumentDeclaration
+  class ArgSpecification
     attr_reader :name, :types, :validator
 
     def initialize(name, types, validator = nil)
