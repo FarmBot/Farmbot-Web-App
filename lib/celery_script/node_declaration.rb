@@ -21,6 +21,7 @@ module CeleryScript
             else
               val = node.args[type.to_sym]
               return problem.call(node, MISSING_ARG + type.to_s) unless val
+              binding.pry
               validate(val, corpus, problem)
               # TODO: Call custom validator here?
             end
