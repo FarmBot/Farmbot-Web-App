@@ -13,13 +13,19 @@ module Sequences
     end
 
     def reload_dependencies(sequence)
+        must_be_in_transaction
         SequenceDependency.where(sequence: sequence).destroy_all
         list_of_items = sub_sequences.map do |id|
           {sequence: sequence,
            dependency_type: Sequence,
            dependency_id: id}
         end
-        SequenceDependency.create(list_of_items)
+        SequenceDependency.create!(list_of_items)
+    end
+
+    def must_be_in_transaction
+      count = ActiveRecord::Base.connection.open_transactions
+      raise "You need to do this in a transaction" if count < 1
     end
 
     def tree

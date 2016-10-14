@@ -8,31 +8,25 @@ module Sequences
     end
 
     optional do
-      puts "needs a body! FIXME"
+      duck :body, methods: [:[], :[]=, :each, :map]
       string :name
       string :color, in: Sequence::COLORS
     end
 
     def validate
       validate_sequence
-      puts "REFRESH SEQUENCE DEPS, YO"
       raise Errors::Forbidden unless device.sequences.include?(sequence)
     end
 
     def execute
-      sequence.update_attributes!(inputs.except(:sequence, :device))
+      ActiveRecord::Base.transaction do
+        sequence.update_attributes!(inputs.except(:sequence, :device))
+        reload_dependencies(sequence)
+      end
       sequence
     rescue ActiveRecord::RecordInvalid => e
-      case e.record
-      when Sequence
-        bad_sequence(e)
-      else
-        add_error :other, :unknown, (e.try(:message) || "Unknown validation issues.")
-      end
-    end
-
-    def bad_sequence(e)
-      add_error :sequence, :not_valid, e.message
+      m = (e.try(:message) || "Unknown validation issues.")
+      add_error :other, :unknown, m
     end
   end
 end
