@@ -14,6 +14,23 @@ module CeleryScript
       tree
     end
 
+    def run
+      error || tree
+    end
+    
+    def valid?
+      error ? false : true
+    end
+
+    def error
+      run!
+      nil
+    rescue TypeCheckError => e
+      e
+    end
+
+    private
+
     def validate_node(node)
       check_arity(node)
       node.args.map do |array|
@@ -25,10 +42,10 @@ module CeleryScript
     end
 
     def check_arity(node)
-      corpus
+        allowed = corpus
         .fetchNode(node.kind)
         .allowed_args
-        .map do |arg|
+        allowed.map do |arg|
           has_key = node.args.has_key?(arg) || node.args.has_key?(arg.to_s)
           unless has_key
           msg = "Expected node '#{node.kind}' to have a '#{arg}',"\
@@ -38,7 +55,11 @@ module CeleryScript
         end
       has      = node.args.keys.map(&:to_sym) # Either bigger or equal.
       required = corpus.fetchNode(node.kind).allowed_args # Always smallest.
-      raise TypeCheckError unless (has.length === required.length)
+      if !(has.length === required.length)
+        extras = has - required
+        raise TypeCheckError, "'#{node.kind}' has unexpected arguments: "\
+                              "#{extras}. Allowed arguments: #{allowed}"
+      end
     end
 
     def check_arg_validity(should_be, node)
@@ -57,7 +78,8 @@ module CeleryScript
                                 "#{ allowed.inspect } but got #{ actual.inspect }"
         end
       else
-        raise TypeCheckError, "What was that?"
+        raise TypeCheckError, "Expected '#{should_be}' to be a node or leaf, "\
+                              "but it was neither"
       end
       validator = corpus.fetchArg(should_be).additional_validation
       validator.call(node, TypeCheckError, corpus) if(validator)
