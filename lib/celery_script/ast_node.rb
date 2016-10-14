@@ -13,7 +13,7 @@ module CeleryScript
   end
 
   class AstNode < AbstractNode
-      attr_reader :args, :body, :comments, :kind, :parent
+      attr_reader :args, :body, :comment, :kind, :parent
 
       def initialize(parent = nil, args:, body: nil, comment: "", kind:)
           @comment, @kind, @parent = comment, kind, parent
