@@ -1,0 +1,33 @@
+{
+    "kind": "other",
+    "args": {
+        "x": -1
+    },
+    "body": [
+        {
+            "kind": "var_get",
+            "args": {
+                "data_value": "hello_world"
+            }
+        },
+        {
+            "kind": "whatever",
+            "args": {
+                "data_type": "integer",
+                "data_value": "2000"
+            }
+        },
+        {
+            "kind": "blah",
+            "args": {
+                "really": "deep",
+                "data_value": {
+                    "kind": "blah",
+                    "args": {
+                        "interesting": true
+                    }
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,68 @@
+{
+    "kind": "sequence",
+    "comment": "Properly formatted, syntactically valid sequence.",
+    "args": {},
+    "body": [
+        {
+            "kind": "move_absolute",
+            "args": {
+                "x": 1,
+                "y": 2,
+                "z": 3,
+                "speed": 4
+            }
+        },
+        {
+            "kind": "move_relative",
+            "args": {
+                "x": 1,
+                "y": 2,
+                "z": 3,
+                "speed": 4
+            }
+        },
+        {
+            "kind": "write_pin",
+            "args": {
+                "pin_number": 1,
+                "pin_value": 128,
+                "pin_mode": 1
+            }
+        },
+        {
+            "kind": "read_pin",
+            "args": {
+                "pin_number": 1,
+                "data_label": "my_pin",
+                "pin_mode": 1
+            }
+        },
+        {
+            "kind": "wait",
+            "args": {
+                "milliseconds": 500
+            }
+        },
+        {
+            "kind": "send_message",
+            "args": {
+                "message": "Bot at coord {{ x }} {{ y }} {{ z }}."
+            }
+        },
+        {
+            "kind": "if_statement",
+            "args": {
+                "lhs": "x",
+                "rhs": 300,
+                "op": "is",
+                "sub_sequence_id": 456
+            }
+        },
+        {
+            "kind": "execute",
+            "args": {
+                "sub_sequence_id": 123
+            }
+        }
+    ]
+}

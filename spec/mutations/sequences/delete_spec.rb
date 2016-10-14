@@ -21,4 +21,15 @@ describe Sequences::Delete do
     expect(result).to eq("")
     expect( Sequence.where(id: sequence.id).count ).to eq(0)
   end
+
+  it 'prevents deletion when the sequence is in use by another sequence' do
+    SequenceDependency.create!(sequence:   FactoryGirl.create(:sequence),
+                               dependency: sequence)
+    result = Sequences::Delete.run(device: sequence.device, sequence: sequence)
+    expect(result.success?).to be(false)
+    expect(result.errors.has_key?("sequence")).to be(true)
+    message = result.errors["sequence"].message
+    expect(message).to include("sequences are still relying on this sequence")
+  end
+
 end

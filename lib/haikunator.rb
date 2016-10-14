@@ -16,10 +16,6 @@ module Haikunator
       sections.compact.join(delimiter)
     end
 
-    def random_seed
-      SecureRandom.random_number(4096)
-    end
-
     def token(range)
       SecureRandom.random_number(range) if range > 0
     end

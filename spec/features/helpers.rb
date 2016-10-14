@@ -1,4 +1,23 @@
 module Helpers
+  AST_FIXTURE = File.read("./spec/lib/celery_script/ast_fixture3.json").freeze
+
+  # Create a VALID fake sequence.body for a particular user. Creates a fake
+  # subsequence in the DB when called.
+  def sequence_body_for(input)
+    body = JSON.parse(AST_FIXTURE)["body"]
+    case input
+    when User; id = FactoryGirl.create(:sequence, device: user.device).id
+    when Sequence; id = input.id
+    else; raise "?????"
+    end
+    body.map! do |node|
+      has_subseq = node.dig("args", "sub_sequence_id");
+      node["args"]["sub_sequence_id"] = id if has_subseq
+      node
+    end
+    body
+  end
+
   def sign_in_as(user)
     # For when you're actually testing the login UI components. Otherwise,
     # consider using the devise test helper `sign_in`

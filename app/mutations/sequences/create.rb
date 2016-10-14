@@ -1,20 +1,27 @@
 module Sequences
   class Create < Mutations::Command
-    extend AstValidators
-    ast_body :optional
-
+    include CeleryScriptValidators
     required do
       model :device, class: Device
       string :name
+      duck :body, methods: [:[], :[]=, :each, :map]
     end
 
     optional do
       string :color, in: Sequence::COLORS
     end
 
+    def validate
+      validate_sequence
+    end
+
     def execute
-      validate_ast!
-      Sequence.create!(inputs)  
+      seq = Sequence.new(inputs)
+      ActiveRecord::Base.transaction do
+        seq.save
+        reload_dependencies(seq)
+      end
+      seq
     end
   end
 end

@@ -107,6 +107,7 @@ GEM
       adamantium (~> 0.2.0)
       equalizer (~> 0.0.9)
     concurrent-ruby (1.0.2)
+    database_cleaner (1.5.3)
     diff-lcs (1.2.5)
     docile (1.1.5)
     domain_name (0.5.20160826)
@@ -352,6 +353,7 @@ DEPENDENCIES
   capybara
   codeclimate-test-reporter
   coffee-rails
+  database_cleaner
   devise!
   factory_girl_rails
   faker
