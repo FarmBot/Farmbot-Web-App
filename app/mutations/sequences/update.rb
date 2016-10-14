@@ -1,14 +1,12 @@
 module Sequences
   class Update < Mutations::Command
-    extend AstValidators
-    ast_body :optional
-
     required do
       model :device, class: Device
       model :sequence, class: Sequence
     end
 
     optional do
+      puts "needs a body! FIXME"
       string :name
       string :color, in: Sequence::COLORS
     end

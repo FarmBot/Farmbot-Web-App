@@ -31,12 +31,14 @@ module CeleryScript
         if is_node?(leaf_or_node)
           AstNode.new(parent, leaf_or_node)
         else
+          raise TypeCheckError, "Panic." if key == "__NEVER__"
           AstLeaf.new(parent, leaf_or_node, key)
         end
       end
 
       def is_node?(hash)
         hash.is_a?(Hash) &&
+        hash.symbolize_keys! &&
         hash.has_key?(:kind) &&
         hash.has_key?(:args) &&
         (hash[:body].is_a?(Array) || hash[:body] == nil) &&

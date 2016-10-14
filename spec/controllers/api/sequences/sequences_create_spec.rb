@@ -6,13 +6,13 @@ describe Api::SequencesController do
 
   describe '#create' do
     let(:nodes) {
-      JSON.parse(File.read("./spec/lib/celery_script/ast_fixture2.json"))
+      f = File.read("./spec/lib/celery_script/ast_fixture3.json")
+      JSON.parse(f)["body"]
     }
 
     let(:user) { FactoryGirl.create(:user) }
 
     it 'handles a well formed AST in the body attribute' do
-      pending("This is broke. Must fix after integration of CelerScript")
       sign_in user
       input = { name: "Scare Birds",
                 body: nodes }
@@ -26,7 +26,7 @@ describe Api::SequencesController do
 
     it 'creates a new sequences for a user' do
       sign_in user
-      input = { name: "Scare Birds" }
+      input = { name: "Scare Birds", body: [] }
       post :create, input
       expect(response.status).to eq(200)
     end

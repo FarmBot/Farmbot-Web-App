@@ -3,43 +3,13 @@ require 'spec_helper'
 describe CeleryScript::Checker do
   file = File.read("./spec/lib/celery_script/ast_fixture3.json")
 
+  let(:hash) { JSON.parse(file).deep_symbolize_keys }
+
   let(:tree) do
-      CeleryScript::AstNode.new(JSON.parse(file).deep_symbolize_keys)
+      CeleryScript::AstNode.new(hash)
   end
 
-  let (:corpus) do
-    steps = [ :var_set, :var_get, :move_absolute, :move_relative, :write_pin,
-              :read_pin, :wait, :send_message, :execute, :if_statement]
-    CeleryScript::Corpus
-      .new
-      .defineArg(:x,               [Fixnum])
-      .defineArg(:y,               [Fixnum])
-      .defineArg(:z,               [Fixnum])
-      .defineArg(:speed,           [Fixnum])
-      .defineArg(:pin_number,      [Fixnum])
-      .defineArg(:pin_value,       [Fixnum])
-      .defineArg(:pin_mode,        [Fixnum])
-      .defineArg(:data_label,      [String])
-      .defineArg(:data_value,      [String])
-      .defineArg(:data_type,       [String])
-      .defineArg(:milliseconds,    [Fixnum])
-      .defineArg(:message,         [String])
-      .defineArg(:sub_sequence_id, [Fixnum])
-      .defineArg(:lhs,             [String])
-      .defineArg(:op,              [String])
-      .defineArg(:rhs,             [Fixnum])
-      .defineNode(:var_set,        [:data_label, :data_type])
-      .defineNode(:var_get,        [:data_label, :data_type, :data_value],)
-      .defineNode(:move_absolute,  [:x, :y, :z, :speed],)
-      .defineNode(:move_relative,  [:x, :y, :z, :speed],)
-      .defineNode(:write_pin,      [:pin_number, :pin_value, :pin_mode ],)
-      .defineNode(:read_pin,       [:pin_number, :data_label, :pin_mode])
-      .defineNode(:wait,           [:milliseconds])
-      .defineNode(:send_message,   [:message])
-      .defineNode(:execute,        [:sub_sequence_id])
-      .defineNode(:if_statement,   [:lhs, :op, :rhs, :sub_sequence_id])
-      .defineNode(:sequence,       [], steps)
-  end
+  let (:corpus) { Sequence::Corpus}
 
   let (:checker) { CeleryScript::Checker.new(tree, corpus) }
 
@@ -70,5 +40,19 @@ describe CeleryScript::Checker do
     expect(checker.valid?).to be(false)
     msg = checker.error.message
     expect(msg).to eq("Expected 'x' to be a node or leaf, but it was neither")
+  end
+
+  it "returns an error rather than raising one via #run()" do
+      outcome = checker.run
+      expect(outcome).to be_kind_of(CeleryScript::AstNode)
+      checker.tree.body.first.args[:x] = "No longer valid"
+      expect(checker.run).to be_kind_of(CeleryScript::TypeCheckError)
+  end
+
+  it 'handles wrong leaf types' do
+    hash[:body][0][:args][:x] = "supposed to be a Fixnum"
+    result = checker.run
+    expect(result.message).to eq("Expected leaf 'x' within 'move_absolute' to"\
+                                 " be one of: [Fixnum] but got String")
   end
 end

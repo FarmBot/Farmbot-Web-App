@@ -2,7 +2,6 @@ module CeleryScript
   class ArgumentSpecification
     attr_reader :name, :allowed_values, :additional_validation
     NOOP = ->(_, __) { }
-
     def initialize(name, allowed_values, additional_validation = NOOP)
       @name                  = name
       @allowed_values        = allowed_values
@@ -21,6 +20,8 @@ module CeleryScript
   end
 
   class Corpus
+    BAD_NODE_NAME = "Can't find validation rules for node "
+
     def initialize
       @arg_def_list = {}
       @node_def_list = {}      
@@ -37,9 +38,11 @@ module CeleryScript
                                                                  blk)
       self
     end
-    #TODO : These names are all JS case!
+
+    #TODO : These names are all JS case! Use snake case in Ruby.
     def fetchNode(name)
-      @node_def_list[name.to_sym] or raise "CANT FIND NODE SPEC"
+      n = @node_def_list[name.to_sym]
+      n ? n : raise(TypeCheckError, BAD_NODE_NAME + name)
     end
 
     def defineNode(kind, allowed_args, allowed_body_nodes = [])
