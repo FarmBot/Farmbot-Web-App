@@ -13,6 +13,7 @@ module Sequences
 
     def validate
       validate_sequence
+      update_sequence_dependencies
     end
 
     def execute

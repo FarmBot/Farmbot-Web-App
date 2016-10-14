@@ -1,5 +1,7 @@
 module Sequences
   class Update < Mutations::Command
+    include CeleryScriptValidators
+
     required do
       model :device, class: Device
       model :sequence, class: Sequence
@@ -12,6 +14,8 @@ module Sequences
     end
 
     def validate
+      validate_sequence
+      update_sequence_dependencies
       raise Errors::Forbidden unless device.sequences.include?(sequence)
     end
 
