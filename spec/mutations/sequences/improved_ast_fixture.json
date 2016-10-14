@@ -1,14 +1,13 @@
 {
-    "kind": "sequence",
+    "kind": "other",
     "args": {
         "x": -1
     },
     "body": [
         {
-            "kind": "other",
+            "kind": "var_get",
             "args": {
-                "data_type": "integer",
-                "data_value": "1000"
+                "data_value": "hello_world"
             }
         },
         {
@@ -16,6 +15,18 @@
             "args": {
                 "data_type": "integer",
                 "data_value": "2000"
+            }
+        },
+        {
+            "kind": "blah",
+            "args": {
+                "really": "deep",
+                "data_value": {
+                    "kind": "blah",
+                    "args": {
+                        "interesting": true
+                    }
+                }
             }
         }
     ]

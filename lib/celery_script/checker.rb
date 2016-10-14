@@ -30,7 +30,11 @@ module CeleryScript
         .allowed_args
         .map do |arg|
           has_key = node.args.has_key?(arg) || node.args.has_key?(arg.to_s)
-          raise TypeCheckError unless has_key
+          unless has_key
+          msg = "Expected node '#{node.kind}' to have a '#{arg}',"\
+          " but it only has #{node.args.keys.join(", ")}."
+          raise TypeCheckError, msg
+          end
         end
       has      = node.args.keys.map(&:to_sym) # Either bigger or equal.
       required = corpus.fetchNode(node.kind).allowed_args # Always smallest.
@@ -52,7 +56,6 @@ module CeleryScript
                                 "'#{ node.parent.kind }' to be one of: "\
                                 "#{ allowed.inspect } but got #{ actual.inspect }"
         end
-        puts "VALID LEAF!"
       else
         raise TypeCheckError, "What was that?"
       end
