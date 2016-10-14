@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe CeleryScript::TreeClimber do
-  file_path = File.read("/home/rick/code/farmbot/api/spec/mutations/sequences/improved_ast_fixture.json")
+  file_path = File.read("./spec/lib/celery_script/ast_fixture2.json")
 
   let(:node) do
       hash = JSON.parse(file_path).deep_symbolize_keys

@@ -6,7 +6,7 @@ describe Api::SequencesController do
 
   describe '#create' do
     let(:nodes) {
-      JSON.parse(File.read("./spec/mutations/sequences/ast_fixture.json"))
+      JSON.parse(File.read("./spec/lib/celery_script/ast_fixture2.json"))
     }
 
     let(:user) { FactoryGirl.create(:user) }

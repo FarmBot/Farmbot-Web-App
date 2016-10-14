@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe CeleryScript::Checker do
-  file_path = File.read("/home/rick/code/farmbot/api/spec/mutations/sequences/improved_ast_fixture.json")
+  file = File.read("./spec/lib/celery_script/ast_fixture2.json")
 
   let(:tree) do
-      CeleryScript::AstNode.new(JSON.parse(file_path).deep_symbolize_keys)
+      CeleryScript::AstNode.new(JSON.parse(file).deep_symbolize_keys)
   end
 
   let (:corpus) do

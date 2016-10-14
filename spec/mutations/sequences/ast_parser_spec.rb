@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Sequences::AstParser do
   let(:nodes) do
-    JSON.parse(File.read("./spec/mutations/sequences/ast_fixture.json"))
+    JSON.parse(File.read("./spec/lib/celery_script/ast_fixture1.json"))
   end
 
   it 'validates the type of all key/value pairs in the AST' do
