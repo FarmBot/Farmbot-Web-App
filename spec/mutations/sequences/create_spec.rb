@@ -3,10 +3,7 @@ require 'spec_helper'
 describe Sequences::Create do
   let(:user) { FactoryGirl.create(:user) }
   let(:device) { user.device }
-  let(:body) {
-    f = File.read("./spec/lib/celery_script/ast_fixture3.json")
-    JSON.parse(f)["body"]
-  }
+  let(:body) { sequence_body_for(user) }
 
   name = Faker::Pokemon.name
   let(:sequence_params) do

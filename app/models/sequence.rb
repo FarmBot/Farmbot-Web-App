@@ -28,7 +28,10 @@ class Sequence < ActiveRecord::Base
       .defineArg(:data_type,       [String])
       .defineArg(:milliseconds,    [Fixnum])
       .defineArg(:message,         [String])
-      .defineArg(:sub_sequence_id, [Fixnum])
+      .defineArg(:sub_sequence_id, [Fixnum]) do |node|
+        missing = !exists?(node.value)
+        node.invalidate!("Sequence ##{ node.value } does not exist.") if missing
+      end
       .defineArg(:lhs,             [String])
       .defineArg(:op,              [String])
       .defineArg(:rhs,             [Fixnum])

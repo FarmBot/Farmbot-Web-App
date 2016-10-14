@@ -5,17 +5,14 @@ describe Api::SequencesController do
   include Devise::Test::ControllerHelpers
 
   describe '#create' do
-    let(:nodes) {
-      f = File.read("./spec/lib/celery_script/ast_fixture3.json")
-      JSON.parse(f)["body"]
-    }
-
     let(:user) { FactoryGirl.create(:user) }
+    let(:nodes) { sequence_body_for(user) }
 
     it 'handles a well formed AST in the body attribute' do
       sign_in user
       input = { name: "Scare Birds",
                 body: nodes }
+      sequence_body_for(user)
       post :create,
            input.merge(format: :json)
       expect(response.status).to eq(200)

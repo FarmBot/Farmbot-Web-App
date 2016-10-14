@@ -1,9 +1,15 @@
 require 'spec_helper'
 
 describe CeleryScript::Checker do
-  file = File.read("./spec/lib/celery_script/ast_fixture3.json")
 
-  let(:hash) { JSON.parse(file).deep_symbolize_keys }
+  let(:hash) do
+    {
+      kind: "sequence",
+      args: {},
+      comment: "Properly formatted, syntactically valid sequence.",
+      body: sequence_body_for(FactoryGirl.create(:sequence))
+    }.deep_symbolize_keys
+  end
 
   let(:tree) do
       CeleryScript::AstNode.new(hash)

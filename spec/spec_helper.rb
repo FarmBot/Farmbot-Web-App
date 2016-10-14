@@ -38,6 +38,11 @@ SmarfDoc.config do |c|
   c.output_file   = 'api_docs.md'
 end
 
+require 'database_cleaner'
+DatabaseCleaner.strategy = :truncation
+# then, whenever you need to clean the DB
+DatabaseCleaner.clean
+
 RSpec.configure do |config|
 
   config.backtrace_exclusion_patterns = [/gems/]
@@ -49,7 +54,6 @@ RSpec.configure do |config|
   if ENV['docs']
     config.before(:each, type: :controller) do
       SmarfDoc.run!(request, response)
-      ActiveRecord::Base.subclasses.(&:destroy_all)
     end
   end
 
