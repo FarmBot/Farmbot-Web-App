@@ -13,11 +13,15 @@ module Sequences
 
     def validate
       validate_sequence
-      update_sequence_dependencies
     end
 
     def execute
-      Sequence.create!(inputs)  
+      seq = Sequence.new(inputs)
+      ActiveRecord::Base.transaction do
+        seq.save
+        reload_dependencies(seq)
+      end
+      seq
     end
   end
 end

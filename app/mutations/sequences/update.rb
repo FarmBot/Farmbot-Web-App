@@ -15,7 +15,7 @@ module Sequences
 
     def validate
       validate_sequence
-      update_sequence_dependencies
+      puts "REFRESH SEQUENCE DEPS, YO"
       raise Errors::Forbidden unless device.sequences.include?(sequence)
     end
 

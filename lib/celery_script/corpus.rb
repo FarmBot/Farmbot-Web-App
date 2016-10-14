@@ -42,7 +42,7 @@ module CeleryScript
     #TODO : These names are all JS case! Use snake case in Ruby.
     def fetchNode(name)
       n = @node_def_list[name.to_sym]
-      n ? n : raise(TypeCheckError, BAD_NODE_NAME + name)
+      n ? n : raise(TypeCheckError, BAD_NODE_NAME + name.to_s)
     end
 
     def defineNode(kind, allowed_args, allowed_body_nodes = [])
