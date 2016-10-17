@@ -5,7 +5,9 @@ describe CeleryScript::Checker do
   let(:hash) do
     {
       kind: "sequence",
-      args: {},
+      args: {
+        tag_version: 0
+      },
       comment: "Properly formatted, syntactically valid sequence.",
       body: sequence_body_for(FactoryGirl.create(:sequence))
     }.deep_symbolize_keys
