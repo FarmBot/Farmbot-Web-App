@@ -14,5 +14,8 @@ rm -rf .git
 cd $CURRENT_DIR
 # Move it over to the rails /public directory and install deps
 mkdir public/ -p
+mkdir public/app -p
+mkdir public/app-resources -p
+
 cp -R /tmp/farmbot_frontend/app/* public/app 
 cp -R /tmp/farmbot_frontend/app-resources/* public/app-resources 
