@@ -34,8 +34,8 @@ class Sequence < ActiveRecord::Base
       .new
       .defineArg(:pin_mode,        [Fixnum]) do |node|
         within(ALLOWED_PIN_MODES, node) do |val|
-          "Can not put #{ val.inspect } into a left hand side (LHS)"\
-          " argument. Allowed values: #{ALLOWED_LHS.map(&:inspect).join(", ")}"
+          "Can not put \"#{ val.to_s }\" into a left hand side (LHS)"\
+          " argument. Allowed values: #{ALLOWED_LHS.map(&:to_s).join(", ")}"
         end
       end
       .defineArg(:sub_sequence_id, [Fixnum]) do |node|
@@ -44,14 +44,14 @@ class Sequence < ActiveRecord::Base
       end
       .defineArg(:lhs,             [String]) do |node|
         within(ALLOWED_LHS, node) do |val|
-          "Can not put #{ val.inspect } into a left hand side (LHS)"\
-          " argument. Allowed values: #{ALLOWED_LHS.map(&:inspect).join(", ")}"
+          "Can not put \"#{ val.to_s }\" into a left hand side (LHS)"\
+          " argument. Allowed values: #{ALLOWED_LHS.map(&:to_s).join(", ")}"
         end
       end
       .defineArg(:op,              [String]) do |node|
         within(ALLOWED_OPS, node) do |val|
-          "Can not put #{ val.inspect } into an operand (OP)"\
-          " argument. Allowed values: #{ALLOWED_OPS.map(&:inspect).join(", ")}"
+          "Can not put \"#{ val.to_s }\" into an operand (OP)"\
+          " argument. Allowed values: #{ALLOWED_OPS.map(&:to_s).join(", ")}"
         end
       end
       .defineArg(:x,               [Fixnum])
@@ -61,12 +61,9 @@ class Sequence < ActiveRecord::Base
       .defineArg(:pin_number,      [Fixnum])
       .defineArg(:pin_value,       [Fixnum])
       .defineArg(:data_label,      [String])
-      .defineArg(:data_value,      [String])
       .defineArg(:milliseconds,    [Fixnum])
       .defineArg(:message,         [String])
       .defineArg(:rhs,             [Fixnum])
-      .defineNode(:var_set,        [:data_label, :data_type])
-      .defineNode(:var_get,        [:data_label, :data_type, :data_value],)
       .defineNode(:move_absolute,  [:x, :y, :z, :speed],)
       .defineNode(:move_relative,  [:x, :y, :z, :speed],)
       .defineNode(:write_pin,      [:pin_number, :pin_value, :pin_mode ],)

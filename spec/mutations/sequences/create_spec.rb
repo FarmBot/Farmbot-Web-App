@@ -29,7 +29,7 @@ describe Sequences::Create do
     body[2]["args"]["pin_mode"] = -9
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
-    expectation = "Can not put -9 into a left hand side (LHS) argument."
+    expectation = 'Can not put "-9" into a left hand side (LHS) argument.'
     expect(seq.errors["body"].message).to include(expectation)
   end
 
@@ -56,6 +56,4 @@ describe Sequences::Create do
     expected = "Can not put \"was\" into an operand (OP) argument."
     expect(seq.errors["body"].message).to include(expected)
   end
-
-
 end
