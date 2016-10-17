@@ -11,7 +11,7 @@ FarmBot::Application.routes.draw do
     resources :planting_area, only: [:create, :destroy]
     resources :sequences, only: [:create, :update, :destroy, :index, :show]
     resources :schedules, only: [:create, :update, :destroy, :index]
-    resources :corpuses, only: [:index]
+    resources :corpuses, only: [:index, :show]
   end
 
   devise_for :users, :controllers => {:registrations => "registrations"}
