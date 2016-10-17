@@ -11,6 +11,7 @@ npm install 2>&1
 chmod +x node_modules/webpack/bin/webpack.js
 npm run build 2>&1
 rm -rf .git
+
 cd $CURRENT_DIR
 # Move it over to the rails /public directory and install deps
 mkdir public/ -p
