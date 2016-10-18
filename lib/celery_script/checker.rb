@@ -48,8 +48,10 @@ module CeleryScript
         allowed.map do |arg|
           has_key = node.args.has_key?(arg) || node.args.has_key?(arg.to_s)
           unless has_key
+            msgs = node.args.keys.join(", ")
+            msgs = "nothing" if msgs.length < 1
           msg = "Expected node '#{node.kind}' to have a '#{arg}',"\
-          " but it only has #{node.args.keys.join(", ")}."
+          " but got: #{ msgs }."
           raise TypeCheckError, msg
           end
         end

@@ -1,7 +1,9 @@
 {
     "kind": "sequence",
     "comment": "Properly formatted, syntactically valid sequence.",
-    "args": {},
+    "args": {
+        "tag_version": 0
+    },
     "body": [
         {
             "kind": "move_absolute",

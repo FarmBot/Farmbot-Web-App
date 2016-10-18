@@ -31,5 +31,4 @@ describe Sequences::Delete do
     message = result.errors["sequence"].message
     expect(message).to include("sequences are still relying on this sequence")
   end
-
 end
