@@ -15,7 +15,9 @@ module Sequences
     def reload_dependencies(sequence)
         must_be_in_transaction
         SequenceDependency.where(sequence: sequence).destroy_all
-        list_of_items = sub_sequences.map do |id|
+        list_of_items = sub_sequences
+        .select { |ss| sequence.id != ss } # Avoid recursive dependency creation
+        .map do |id|
           {sequence: sequence,
            dependency_type: Sequence,
            dependency_id: id}
