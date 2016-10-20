@@ -18,7 +18,7 @@ module Sequences
     def execute
       seq = Sequence.new(inputs)
       ActiveRecord::Base.transaction do
-        seq.save
+        seq.save!
         reload_dependencies(seq)
       end
       seq
