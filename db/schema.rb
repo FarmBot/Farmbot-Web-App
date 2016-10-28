@@ -11,13 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161011221406) do
+ActiveRecord::Schema.define(version: 20161028175744) do
 
   create_table "devices", force: :cascade do |t|
     t.integer "planting_area_id", limit: 4
     t.string  "name",             limit: 255
     t.string  "webcam_url",       limit: 255
   end
+
+  create_table "peripherals", force: :cascade do |t|
+    t.integer  "device_id",  limit: 4
+    t.integer  "pin",        limit: 4
+    t.integer  "mode",       limit: 4
+    t.string   "label",      limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "peripherals", ["device_id"], name: "index_peripherals_on_device_id", using: :btree
 
   create_table "planting_areas", force: :cascade do |t|
     t.integer "width",     limit: 4
@@ -98,4 +109,5 @@ ActiveRecord::Schema.define(version: 20161011221406) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "peripherals", "devices"
 end
