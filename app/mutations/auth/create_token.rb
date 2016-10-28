@@ -14,7 +14,7 @@ module Auth
     end
 
     def execute
-      {token: SessionToken.issue_to(@user, iss: host)}
+      {token: SessionToken.issue_to(@user, iss: host), user: @user}
     end
 
     def whoops!
