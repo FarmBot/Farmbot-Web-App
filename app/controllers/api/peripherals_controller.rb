@@ -4,9 +4,7 @@ module Api
     end
 
     def create
-      mutate Peripherals::Create.run(params,
-                                   peripheral: peripheral,
-                                   device: current_device)
+      mutate Peripherals::Create.run(params, device: current_device)
     end
 
     def update
