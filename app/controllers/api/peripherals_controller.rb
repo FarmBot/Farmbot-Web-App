@@ -5,14 +5,16 @@ module Api
 
     def create
       mutate Peripherals::Create.run(params,
+                                   peripheral: peripheral,
                                    device: current_device)
     end
 
     def update
       if peripheral.device != current_device
-        raise Errors::Forbidden, 'Not your peripheral.'
+        raise Errors::Forbidden, 'Not your Peripheral.'
       end
-      mutate Peripherals::Update.run(params[:peripheral],
+      mutate Peripherals::Update.run(params,
+                                   peripheral: peripheral,
                                    device: current_device)
     end
 
