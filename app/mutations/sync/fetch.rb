@@ -11,6 +11,7 @@ module Sync
           users: device.users,
           sequences: device.sequences,
           regimens: regimens,
+          peripherals: device.peripherals,
           regimen_items: RegimenItem.where(regimen_id: regimens.pluck(:id)),
           plants: device.plants
       }.as_json
