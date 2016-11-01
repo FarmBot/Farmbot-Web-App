@@ -38,6 +38,6 @@ class SessionToken
              mqtt: MQTT,
              os_update_server: OS_RELEASE,
              fw_update_server: FW_RELEASE,
-             bot:  user.device.name}])
+             bot:  user.device.id}])
   end
 end
