@@ -5,10 +5,6 @@ module Peripherals
       model :device, class: Device
       array :peripherals do
         hash do
-          optional do
-            integer :mode
-          end
-
           required do
             integer :pin
             string  :label
@@ -20,7 +16,7 @@ module Peripherals
     def execute
       ActiveRecord::Base.transaction do
         device.peripherals.destroy_all
-        inputs["peripherals"].each{|p| p[:device] = device }
+        inputs["peripherals"].each{|p| p[:device] = device; p[:mode] = 0 }
         Peripheral.create!(inputs["peripherals"])
       end
     end
