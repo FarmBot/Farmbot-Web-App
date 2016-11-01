@@ -4,17 +4,10 @@ module Api
       render json: current_device.peripherals
     end
 
+    # This controller action is barely RESTful.
+    # Replaces *all* existing peripherals with a new array of peripherals.
     def create
       mutate Peripherals::Create.run(params, device: current_device)
-    end
-
-    def update
-      if peripheral.device != current_device
-        raise Errors::Forbidden, 'Not your Peripheral.'
-      end
-      mutate Peripherals::Update.run(params,
-                                   peripheral: peripheral,
-                                   device: current_device)
     end
 
     def destroy
