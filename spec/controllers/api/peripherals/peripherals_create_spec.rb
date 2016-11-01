@@ -9,11 +9,11 @@ describe Api::PeripheralsController do
     it 'makes a Peripheral' do
       sign_in user
       before = Peripheral.count
-      post :create, { pin: 13, mode: 0, label: "LED" }
+      post :create, peripherals: [{ pin: 13, mode: 0, label: "LED" }]
       expect(response.status).to eq(200)
-      expect(json[:pin]).to eq(13)
-      expect(json[:mode]).to eq(0)
-      expect(json[:label]).to eq("LED")
+      expect(json.first[:pin]).to eq(13)
+      expect(json.first[:mode]).to eq(0)
+      expect(json.first[:label]).to eq("LED")
       expect(before < Peripheral.count).to be_truthy
     end
 
