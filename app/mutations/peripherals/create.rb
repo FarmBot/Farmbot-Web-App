@@ -3,16 +3,26 @@ module Peripherals
 
     required do
       model :device, class: Device
-      integer :pin
-      string  :label
-    end
+      array :peripherals do
+        hash do
+          optional do
+            integer :mode
+          end
 
-    optional do
-      integer :mode
+          required do
+            integer :pin
+            string  :label
+          end
+        end
+      end
     end
 
     def execute
-        Peripheral.create!(inputs)
+      ActiveRecord::Base.transaction do
+        device.peripherals.destroy_all
+        inputs["peripherals"].each{|p| p[:device] = device }
+        Peripheral.create!(inputs["peripherals"])
+      end
     end
   end
 end
