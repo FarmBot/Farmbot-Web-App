@@ -44,7 +44,7 @@ group :test do
   gem 'rspec-rails'
   gem 'simplecov'
   gem 'capybara'
-  gem 'launchy' #save_and_open_page while debugging integration tests.
+  gem 'launchy'
   gem 'selenium-webdriver'
   gem 'codeclimate-test-reporter', require: nil
 end
