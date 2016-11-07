@@ -57,17 +57,7 @@ erd.pdf
 # Ignore frontend packages that are source related.
 
 # Ignore Farmbot Frontend stuff...
-public/src
-public/app
-public/app-resources
-public/typings
-public/node_modules
-public/tools
-public/*.js
-public/*.json
-public/*.md
-public/*.sh
-
+public/*
 .vscode/
 config/database.yml
 public/frontend_build.log
