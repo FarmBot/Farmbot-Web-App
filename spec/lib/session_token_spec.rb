@@ -7,7 +7,7 @@ describe SessionToken do
         { "sub"  => "admin@admin.com",
           "iat"  => 1474570171,
           "jti"  => "c315f378-a318-4d4c-ba06-e4544cbc0621",
-          "iss"  => "http://localhost:3000",
+          "iss"  => "//localhost:3000",
           "exp"  => 1474915771,
           "mqtt" => "localhost",
           "bot"  => "04b57247-763a-4e99-b1a7-3743fe946a1a" },
