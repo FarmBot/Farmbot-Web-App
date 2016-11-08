@@ -11,7 +11,7 @@ describe Api::TokensController do
       post :create, payload
       token = json[:token][:unencoded]
       expect(token[:iss].last).not_to eq("/") # Trailing slashes are BAD!
-      expect(token[:iss]).to eq("http://localhost:3000")
+      expect(token[:iss]).to eq("//localhost:3000")
     end
   end
 end

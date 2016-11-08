@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "echo starting...", 
-    "heroku-postbuild": "./install_frontend.sh 2>&1" },
+    "start": "echo 'starting...'",
+    "heroku-postbuild": "./install_frontend.sh 2>&1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rickcarlino/farmbot-web-app.git"
