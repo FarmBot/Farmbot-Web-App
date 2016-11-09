@@ -47,6 +47,7 @@ module FarmBot
     end
     Rails.application.routes.default_url_options[:host] = ENV["API_HOST"] || "localhost" 
     Rails.application.routes.default_url_options[:port] = ENV["API_PORT"] || 3000
-    $API_URL = "http://#{ Rails.application.routes.default_url_options[:host] }:#{ Rails.application.routes.default_url_options[:port] }" # ¯\_(ツ)_/¯
+    # ¯\_(ツ)_/¯
+    $API_URL = "//#{ Rails.application.routes.default_url_options[:host] }:#{ Rails.application.routes.default_url_options[:port] }"
   end
 end

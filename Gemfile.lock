@@ -198,6 +198,7 @@ GEM
     parser (2.3.1.4)
       ast (~> 2.2)
     path_expander (1.0.0)
+    pg (0.18.4)
     pkg-config (1.1.7)
     procto (0.0.3)
     pry (0.10.4)
@@ -368,6 +369,7 @@ DEPENDENCIES
   mutations
   mysql
   ng-rails-csrf
+  pg
   pry
   rack-cors
   rails (= 4.2.7)

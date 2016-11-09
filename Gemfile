@@ -40,12 +40,16 @@ group :development, :test do
   gem 'rails-erd'
 end
 
+group :production do
+  gem 'pg'
+end
+
 group :test do
   gem 'rspec'
   gem 'rspec-rails'
   gem 'simplecov'
   gem 'capybara'
-  gem 'launchy' #save_and_open_page while debugging integration tests.
+  gem 'launchy'
   gem 'selenium-webdriver'
   gem 'codeclimate-test-reporter', require: nil
 end
