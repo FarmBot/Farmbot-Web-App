@@ -1,6 +1,6 @@
 module Regimens
   class Create < Mutations::Command
-    using MongoidRefinements
+    using LegacyRefinementsModule
 
     required do
       model :device, class: Device

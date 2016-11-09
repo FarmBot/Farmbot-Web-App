@@ -2,7 +2,7 @@ require 'mutations/time_filter'
 
 module Schedules
   class Create < Mutations::Command
-    using MongoidRefinements
+    using LegacyRefinementsModule
 
     required do
       model :sequence, class: Sequence

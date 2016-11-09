@@ -6,14 +6,24 @@ module Api
       mutate Users::Create.run(user_params)
     end
 
+    def update
+      mutate Users::Update.run(user_params, user: current_user)
+    end
+
+    def destroy
+      mutate Users::Destroy.run(user_params, user: current_user)
+    end
+
     private
 
     def user_params
       user = params[:user] || params
-      {email:                 user[:email],
-       name:                  user[:name],
-       password:              user[:password],
-       password_confirmation: user[:password_confirmation]}
+      {email:                     user[:email],
+       name:                      user[:name],
+       password:                  user[:password],
+       password_confirmation:     user[:password_confirmation],
+       new_password:              user[:new_password],
+       new_password_confirmation: user[:new_password_confirmation]}
     end
   end
 end
