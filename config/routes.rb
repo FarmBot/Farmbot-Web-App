@@ -4,7 +4,7 @@ FarmBot::Application.routes.draw do
     resource :sync, only: [:show]
     resource :public_key, only: [:show]
     resource :tokens, only: [:create]
-    resource :users, only: [:create]
+    resource :users, only: [:create, :update]
     resource :device, only: [:show, :destroy, :create, :update]
     resources :plants, only: [:create, :destroy, :index]
     resources :regimens, only: [:create, :destroy, :index, :update]
