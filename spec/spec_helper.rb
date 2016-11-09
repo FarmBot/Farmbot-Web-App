@@ -1,8 +1,6 @@
-require 'codeclimate-test-reporter'
 ENV['MQTT_HOST'] = "blooper.io"
 ENV['OS_UPDATE_SERVER'] = "http://blah.com"
 ENV['FW_UPDATE_SERVER'] = "http://test.com"
-CodeClimate::TestReporter.start
 require 'simplecov'
 #Ignore anything with the word 'spec' in it. No need to test your tests.
 SimpleCov.start do
