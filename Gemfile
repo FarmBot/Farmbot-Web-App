@@ -2,19 +2,10 @@ source 'https://rubygems.org'
 ruby '2.3.1'
 
 gem 'rails',  '4.2.7'
-
 #Dokku demands this one.
 gem 'rails_12factor'
-gem 'ng-rails-csrf'
 
 #Asset stuff
-gem 'sprockets'
-gem 'sass-rails'
-gem 'coffee-rails'
-gem 'font-awesome-rails'
-gem 'uglifier'
-gem 'high_voltage', '~> 2.1.0'
-gem 'haml'
 gem 'devise', github: 'plataformatec/devise'
 gem 'jwt'
 gem 'mutations'
@@ -47,8 +38,5 @@ group :test do
   gem 'rspec'
   gem 'rspec-rails'
   gem 'simplecov'
-  gem 'capybara'
-  gem 'launchy'
-  gem 'selenium-webdriver'
   gem 'codeclimate-test-reporter', require: nil
 end

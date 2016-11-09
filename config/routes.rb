@@ -15,7 +15,7 @@ FarmBot::Application.routes.draw do
     resources :corpuses, only: [:index, :show]
   end
 
-  devise_for :users, :controllers => {:registrations => "registrations"}
+  devise_for :users#, :controllers => {:registrations => "registrations"}
 
   # Routes for the single page Javascript app.
 
