@@ -10,6 +10,10 @@ module Api
       mutate Users::Update.run(user_params, user: current_user)
     end
 
+    def destroy
+      mutate Users::Destroy.run(user_params, user: current_user)
+    end
+
     private
 
     def user_params
