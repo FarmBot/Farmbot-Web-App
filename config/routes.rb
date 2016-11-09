@@ -15,11 +15,9 @@ FarmBot::Application.routes.draw do
     resources :corpuses, only: [:index, :show]
   end
 
-  devise_for :users#, :controllers => {:registrations => "registrations"}
-
-  # Routes for the single page Javascript app.
-
-  # Routes for the single page Javascript app.
+  devise_for :users
+  
+  # Hacks for HTML5 push state routing:
   get "/app", to: 'dashboard#index', as: :dashboard
   match "/app/*path", to: 'dashboard#index', via: :all
 
