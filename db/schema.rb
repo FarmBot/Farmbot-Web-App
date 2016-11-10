@@ -13,101 +13,108 @@
 
 ActiveRecord::Schema.define(version: 20161028175744) do
 
+  create_table "ar_internal_metadata", primary_key: "key", force: :cascade do |t|
+    t.string   "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "ar_internal_metadata", ["key"], name: "sqlite_autoindex_ar_internal_metadata_1", unique: true
+
   create_table "devices", force: :cascade do |t|
-    t.integer "planting_area_id", limit: 4
-    t.string  "name",             limit: 255
-    t.string  "webcam_url",       limit: 255
+    t.integer "planting_area_id"
+    t.string  "name"
+    t.string  "webcam_url"
   end
 
   create_table "peripherals", force: :cascade do |t|
-    t.integer  "device_id",  limit: 4
-    t.integer  "pin",        limit: 4
-    t.integer  "mode",       limit: 4
-    t.string   "label",      limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.integer  "device_id"
+    t.integer  "pin"
+    t.integer  "mode"
+    t.string   "label"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  add_index "peripherals", ["device_id"], name: "index_peripherals_on_device_id", using: :btree
+  add_index "peripherals", ["device_id"], name: "index_peripherals_on_device_id"
 
   create_table "planting_areas", force: :cascade do |t|
-    t.integer "width",     limit: 4
-    t.integer "length",    limit: 4
-    t.integer "device_id", limit: 4
+    t.integer "width"
+    t.integer "length"
+    t.integer "device_id"
   end
 
   create_table "plants", force: :cascade do |t|
-    t.integer  "device_id",        limit: 4
-    t.integer  "planting_area_id", limit: 4
-    t.string   "name",             limit: 255
-    t.string   "img_url",          limit: 255
-    t.string   "icon_url",         limit: 255
-    t.string   "openfarm_slug",    limit: 255
-    t.float    "x",                limit: 24,  default: 0.0
-    t.float    "y",                limit: 24,  default: 0.0
+    t.integer  "device_id"
+    t.integer  "planting_area_id"
+    t.string   "name"
+    t.string   "img_url"
+    t.string   "icon_url"
+    t.string   "openfarm_slug"
+    t.float    "x",                default: 0.0
+    t.float    "y",                default: 0.0
     t.datetime "planted_at"
   end
 
   create_table "regimen_items", force: :cascade do |t|
     t.integer "time_offset", limit: 8
-    t.integer "regimen_id",  limit: 4
-    t.integer "sequence_id", limit: 4
+    t.integer "regimen_id"
+    t.integer "sequence_id"
   end
 
   create_table "regimens", force: :cascade do |t|
-    t.string  "color",     limit: 255
-    t.string  "name",      limit: 255
-    t.integer "device_id", limit: 4
+    t.string  "color"
+    t.string  "name"
+    t.integer "device_id"
   end
 
   create_table "schedules", force: :cascade do |t|
-    t.integer  "sequence_id", limit: 4
-    t.integer  "device_id",   limit: 4
+    t.integer  "sequence_id"
+    t.integer  "device_id"
     t.datetime "start_time"
     t.datetime "end_time"
     t.datetime "next_time"
-    t.integer  "repeat",      limit: 4
-    t.string   "time_unit",   limit: 255
+    t.integer  "repeat"
+    t.string   "time_unit"
   end
 
   create_table "sequence_dependencies", force: :cascade do |t|
-    t.integer "dependency_id",   limit: 4
-    t.string  "dependency_type", limit: 255
-    t.integer "sequence_id",     limit: 4
+    t.string  "dependency_type"
+    t.integer "dependency_id"
+    t.integer "sequence_id"
   end
 
-  add_index "sequence_dependencies", ["dependency_id"], name: "index_sequence_dependencies_on_dependency_id", using: :btree
-  add_index "sequence_dependencies", ["dependency_type"], name: "index_sequence_dependencies_on_dependency_type", using: :btree
-  add_index "sequence_dependencies", ["sequence_id"], name: "index_sequence_dependencies_on_sequence_id", using: :btree
+  add_index "sequence_dependencies", ["dependency_id"], name: "index_sequence_dependencies_on_dependency_id"
+  add_index "sequence_dependencies", ["dependency_type"], name: "index_sequence_dependencies_on_dependency_type"
+  add_index "sequence_dependencies", ["sequence_id"], name: "index_sequence_dependencies_on_sequence_id"
 
   create_table "sequences", force: :cascade do |t|
-    t.integer "device_id", limit: 4
-    t.string  "name",      limit: 255
-    t.string  "color",     limit: 255
-    t.string  "kind",      limit: 255,   default: "sequence"
-    t.text    "args",      limit: 65535
-    t.text    "body",      limit: 65535
+    t.integer "device_id"
+    t.string  "name"
+    t.string  "color"
+    t.string  "kind",      default: "sequence"
+    t.text    "args"
+    t.text    "body"
   end
 
   create_table "users", force: :cascade do |t|
-    t.integer  "device_id",              limit: 4
-    t.string   "name",                   limit: 255
-    t.string   "email",                  limit: 255, default: "", null: false
-    t.string   "encrypted_password",     limit: 255, default: "", null: false
-    t.string   "reset_password_token",   limit: 255
+    t.integer  "device_id"
+    t.string   "name"
+    t.string   "email",                  default: "", null: false
+    t.string   "encrypted_password",     default: "", null: false
+    t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          limit: 4,   default: 0,  null: false
+    t.integer  "sign_in_count",          default: 0,  null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip",     limit: 255
-    t.string   "last_sign_in_ip",        limit: 255
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
+    t.string   "current_sign_in_ip"
+    t.string   "last_sign_in_ip"
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+  add_index "users", ["email"], name: "index_users_on_email", unique: true
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
 
-  add_foreign_key "peripherals", "devices"
 end
