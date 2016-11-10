@@ -3,6 +3,19 @@ require 'spec_helper'
 describe Api::UsersController do
   let(:user) { FactoryGirl.create(:user) }
   include Devise::Test::ControllerHelpers
+    it 'errors if you try to delete with the wrong password' do
+      sign_in user
+      delete :destroy, { password: "NOPE!", format: :json } 
+      expect(response.status).to eq(422)
+      expect(json[:password]).to eq(Users::Destroy::BAD_PASSWORD)
+    end
+
+    it 'deletes a user account' do
+      sign_in user
+      delete :destroy, { password: user.password, format: :json } 
+      expect(response.status).to eq(200)
+      expect(User.where(id: user.id).count).to eq(0)
+    end
 
     it 'updates user info' do
       sign_in user

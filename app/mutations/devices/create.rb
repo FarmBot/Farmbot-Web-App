@@ -1,6 +1,6 @@
 module Devices
   class Create < Mutations::Command
-    using MongoidRefinements
+    using LegacyRefinementsModule
 
     required do
       model :user, class: User

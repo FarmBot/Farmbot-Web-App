@@ -1,6 +1,6 @@
 module Regimens
   class Update < Mutations::Command
-    using MongoidRefinements
+    using LegacyRefinementsModule
 
     required do
       model :device, class: Device

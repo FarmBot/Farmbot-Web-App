@@ -2,12 +2,6 @@ FarmBot::Application.configure do
   config.action_controller.perform_caching = true
   config.action_mailer.default_url_options = { host: 'my.farmbot.io' }
   config.active_support.deprecation = :notify
-  config.assets.debug = true
-  config.assets.compile = true
-  config.assets.digest = true
-  config.assets.js_compressor = Uglifier.new(mangle: false)
-  config.assets.precompile += ['farmbot.js']
-  config.assets.version = '1.1'
   config.cache_classes = true
   config.consider_all_requests_local       = false
   config.eager_load = true

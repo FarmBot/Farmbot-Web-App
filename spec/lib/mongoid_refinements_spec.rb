@@ -1,12 +1,12 @@
 class TestCreateMutation < Mutations::Command
-  using MongoidRefinements
+  using LegacyRefinementsModule
   def execute
     create(User, {})
   end
 end
 
 class TestUpdateMutation < Mutations::Command
-  using MongoidRefinements
+  using LegacyRefinementsModule
   required do
     model :user, class: User
   end
@@ -16,7 +16,7 @@ class TestUpdateMutation < Mutations::Command
   end
 end
 
-RSpec.describe MongoidRefinements do
+RSpec.describe LegacyRefinementsModule do
   describe '#create' do
     it 'catches model errors' do
       mutation = TestCreateMutation.run({})
