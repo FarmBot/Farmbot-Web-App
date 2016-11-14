@@ -17,7 +17,8 @@ module Api
     private
 
     def user_params
-      user = params[:user] || params
+      user = params.merge!(params[:user] || {})
+
       {email:                     user[:email],
        name:                      user[:name],
        password:                  user[:password],
