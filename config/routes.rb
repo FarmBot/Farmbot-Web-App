@@ -19,7 +19,5 @@ FarmBot::Application.routes.draw do
   
   # Hacks for HTML5 push state routing:
   get "/app", to: 'dashboard#index', as: :dashboard
-  match "/app/*path", to: 'dashboard#index', via: :all
-
+  match "/app/*path", to: 'dashboard#index', via: :all # Loads /app/index.html
 end
-

@@ -22,7 +22,6 @@ The key responsibility of the API is *information and permissions management*. T
 Your machine will need the following:
 
  0. [Ruby 2.3.1](http://rvm.io/rvm/install)
- 0. [A running MySQL server](http://dev.mysql.com/doc/refman/5.7/en/installing.html)
 
 ## Setup
  0. `git clone https://github.com/FarmBot/Farmbot-Web-API farmbot-web-app`
@@ -34,7 +33,7 @@ Your machine will need the following:
  0. `MQTT_HOST=your_mqtt_server_domain rails s`
  0. (optional) Run `./install_frontend.sh` to install the latest frontend app. You may also run the frontend on a seperate server. See [frontend repository](https://github.com/FarmBot/farmbot-web-frontend) for details.
  0. Open [localhost:3000](http://localhost:3000).
- 0. [Raise an issue](https://github.com/FarmBot/farmbot-web-frontend/issues/new?title=Installation%20Failure) if you hit problems with any of these steps. 
+ 0. [Raise an issue](https://github.com/FarmBot/farmbot-web-frontend/issues/new?title=Installation%20Failure) if you hit problems with any of these steps.
 
 # Provisioning Your Own with Dokku
 
@@ -49,7 +48,7 @@ Here are some of the configuration options you must set when provisioning a new 
  * `ENV['MQTT_HOST']`: Host (no port or slashes or anything) of running [MQTT gateway](https://github.com/FarmBot/mqtt-gateway). This is required so that Farmbot can know where to connect when given an authorization token.
  * `ENV['API_HOST']`: Domain of the server. Default is `localhost`.
  * `ENV['API_PORT']`: Port the server is on. Default is `3000`.
- 
+
 **We can't fix issues we don't know about.** Please submit an issue if you are having trouble installing on your local machine.
 
 ## Running Specs
