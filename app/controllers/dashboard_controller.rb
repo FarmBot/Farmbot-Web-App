@@ -7,6 +7,7 @@ class DashboardController < ApplicationController
   # know.
   THE_FRONTEND_APP = File.read("public/app/index.html") # Cache in memory.
   LETS_ENCRYPT_CHALENGE = ENV["LETS_ENCRYPT"] || "SET ENV['LETS_ENCRYPT'] PLZ"
+
   def index
     render text: THE_FRONTEND_APP, format: :html
   end
