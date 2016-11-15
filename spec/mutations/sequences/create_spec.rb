@@ -56,4 +56,8 @@ describe Sequences::Create do
     expected = "Can not put \"was\" into an operand (OP) argument."
     expect(seq.errors["body"].message).to include(expected)
   end
+
+  it 'builds a send_message sequence' do
+    pending "Just found a new error with auth on the server."
+  end
 end

@@ -46,6 +46,8 @@ private
         sign_in(Auth::FromJWT.run!(context))
       when :already_connected
         # Probably provided a cookie.
+        # 9 times out of 10, it's a unit test.
+        # Our cookie system works, we just don't use it.
         return true
       else
         auth_err
