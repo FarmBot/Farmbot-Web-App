@@ -80,5 +80,6 @@ describe Sequences::Create do
       ]
     }
     pending "Just found a new error with auth on the server."
+    expect("pass").to eq("fail")
   end
 end
