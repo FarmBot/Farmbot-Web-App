@@ -14,6 +14,6 @@ class DashboardController < ApplicationController
   # This endpoint gets hit by Certbot / Let's Encrypt when its time to verify
   # You control a domain name.
   def lets_encrypt
-    render text: parms[:id]
+    render text: params[:id]
   end
 end
