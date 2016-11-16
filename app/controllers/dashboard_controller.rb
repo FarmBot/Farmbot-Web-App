@@ -6,7 +6,6 @@ class DashboardController < ApplicationController
   # If anyone knows a better way to support push state routing, please let me
   # know.
   THE_FRONTEND_APP = File.read("public/app/index.html") # Cache in memory.
-
   def index
     render text: THE_FRONTEND_APP, format: :html
   end
@@ -14,6 +13,6 @@ class DashboardController < ApplicationController
   # This endpoint gets hit by Certbot / Let's Encrypt when its time to verify
   # You control a domain name.
   def lets_encrypt
-    render text: params[:id]
+    render text: params[:id].split(".").first
   end
 end
