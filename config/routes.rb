@@ -17,7 +17,8 @@ FarmBot::Application.routes.draw do
 
   devise_for :users
   
+  get "/.well-known/acme-challenge/:id" => "dashboard#lets_encrypt", as: :lets_encrypt
   # Hacks for HTML5 push state routing:
-  get "/app", to: 'dashboard#index', as: :dashboard
+  get "/app"                            => 'dashboard#index', as: :dashboard
   match "/app/*path", to: 'dashboard#index', via: :all # Loads /app/index.html
 end
