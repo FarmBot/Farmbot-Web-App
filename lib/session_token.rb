@@ -4,8 +4,6 @@ class SessionToken
     raise "You forgot to set ENV['#{ name }']"
   end
 
-  HOST         = Rails.application.routes.default_url_options[:host]
-  PORT         = Rails.application.routes.default_url_options[:port]
   EXPIRY       = 40.days
   PRIVATE_KEY  = KeyGen.current
   PUBLIC_KEY   = KeyGen.current.public_key
@@ -27,7 +25,7 @@ class SessionToken
   def self.issue_to(user,
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
-                    iss: "http://#{ HOST }:#{ PORT }")
+                    iss: $API_URL)
 
     self.new([{
              sub:  user.email,

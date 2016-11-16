@@ -58,6 +58,27 @@ describe Sequences::Create do
   end
 
   it 'builds a send_message sequence' do
+    {
+      name: "New Sequence",
+      color: "gray",
+      kind: "sequence",
+      args: {},
+      body: [
+        {
+          kind: "send_message",
+          args: {
+            message: "Hello, world!"
+          },
+          # DOES NOT EXIST YET.
+          body: [
+            {
+              kind: "channel",
+              args: { data_label: ""}
+            }
+          ]
+        }
+      ]
+    }
     pending "Just found a new error with auth on the server."
   end
 end
