@@ -16,7 +16,8 @@ FarmBot::Application.routes.draw do
   end
 
   devise_for :users
-  
+
+  # You can set FORCE_SSL when you're done.  
   get "/.well-known/acme-challenge/:id" => "dashboard#lets_encrypt", as: :lets_encrypt
   # Hacks for HTML5 push state routing:
   get "/app"                            => 'dashboard#index', as: :dashboard
