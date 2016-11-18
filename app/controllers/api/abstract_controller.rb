@@ -35,8 +35,7 @@ private
     def authenticate_user!
       # All possible information that could be needed for any of the 3 auth
       # strategies.
-      context = { 
-                  jwt:           request.headers["Authorization"],
+      context = { jwt:           request.headers["Authorization"],
                   user:          current_user }
       # Returns a symbol representing the appropriate auth strategy, or nil if
       # unknown.
