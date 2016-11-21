@@ -15,7 +15,7 @@ gem "database_cleaner"
 group :development, :test do
   gem "sqlite3"
   gem "bullet"
-  gem "metric_fu" # Run this to see where the code smells. metric_fu in terminal  
+  gem "metric_fu"
   gem "pry"
   gem "factory_girl_rails"
   gem "faker"
