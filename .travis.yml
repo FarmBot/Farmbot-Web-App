@@ -1,7 +1,14 @@
 language: ruby
 rvm:
 - 2.3.3
-before_script: "bundle exec rake db:drop db:create db:migrate"
+before_script:
+  - cp config/database.travis.yml config/database.yml
+  - mysql -e 'create database farmbot_test'
+  - psql -c 'create database farmbot_test' -U postgres
+script:
+  - RAILS_ENV=test bundle exec rake db:migrate --trace
+  - bundle exec rake db:test:prepare
+  - bundle exec rake
 script: "bundle exec rspec spec/"
 env:
 # A 'fake' secret token for use in our CI env.
@@ -10,3 +17,4 @@ env:
   - MQTT_HOST=blooper.io
   - OS_UPDATE_SERVER=http://blah.com
   - FW_UPDATE_SERVER=http://test.com
+  - DB=postgresql
