@@ -1,13 +1,8 @@
 language: ruby
 rvm:
-- 2.3.1
-before_script:
-- npm install
-services:
-- mongodb
-notifications:
-  irc:
-    - "chat.freenode.net#farmbot"
+- 2.3.3
+before_script: "bundle exec rake db:drop db:create db:migrate"
+script: "bundle exec rspec spec/"
 env:
 # A 'fake' secret token for use in our CI env.
 # Don't worry- this isn't the real one.
