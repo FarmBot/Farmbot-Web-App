@@ -23,8 +23,8 @@
 
 # Deployment Using Heroku (easier)
 
- 1. Deploy as you would deploy 
- 2. Enable Dyno metadata: `heroku labs:enable runtime-dyno-metadata -a <app name>`
+ 1. Deploy as you would normally [deploy to Heroku](https://devcenter.heroku.com/articles/getting-started-with-rails4#deploy-your-application-to-heroku) 
+ 2. Enable Dyno metadata: `heroku labs:enable runtime-dyno-metadata --app <app name>`
 
 # Setting up SSL
 
