@@ -1,8 +1,6 @@
 module Sync
   class Fetch  < Mutations::Command
-    API_VERSION = ENV
-      .fetch("HEROKU_SLUG_COMMIT", `git log --pretty=format:"%h" -1`)
-      .first(6) 
+    API_VERSION = ENV.fetch("HEROKU_SLUG_COMMIT", `git log --pretty=format:"%h" -1`).first(6) 
     COMPAT_NUM = 0
 
     required do
