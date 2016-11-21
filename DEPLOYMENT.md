@@ -23,7 +23,8 @@
 
 # Deployment Using Heroku (easier)
 
-WIP
+ 1. Deploy as you would deploy 
+ 2. Enable Dyno metadata: `heroku labs:enable runtime-dyno-metadata -a <app name>`
 
 # Setting up SSL
 
