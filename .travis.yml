@@ -6,13 +6,14 @@ before_script:
   - mysql -e 'create database farmbot_test'
   - psql -c 'create database farmbot_test' -U postgres
 script:
+  - cp config/database.travis.yml config/database.yml
   - RAILS_ENV=test bundle exec rake db:migrate --trace
   - bundle exec rake db:test:prepare
   - bundle exec rake
 script: "bundle exec rspec spec/"
 env:
-# A 'fake' secret token for use in our CI env.
-# Don't worry- this isn't the real one.
+  # A 'fake' secret token for use in our CI env.
+  # Don't worry- this isn't the real one.
   - SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
   - MQTT_HOST=blooper.io
   - OS_UPDATE_SERVER=http://blah.com
