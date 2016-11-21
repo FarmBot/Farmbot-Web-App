@@ -56,4 +56,32 @@ describe Sequences::Create do
     expected = "Can not put \"was\" into an operand (OP) argument."
     expect(seq.errors["body"].message).to include(expected)
   end
+
+  it 'builds a send_message sequence' do
+    app = {
+      name: "New Sequence",
+      color: "gray",
+      device: device,
+      kind: "sequence",
+      args: {},
+      body: [
+        {
+          kind: "send_message",
+          args: {
+            message: "Hello, world!"
+          },
+          # DOES NOT EXIST YET.
+          body: [
+            {
+              kind: "channel",
+              args: { channel_name: "toast"}
+            }
+          ]
+        }
+      ]
+    }
+    seq = Sequences::Create.run!(app)
+    expect(seq.body.first[:body].first["kind"]).to eq("channel")
+    expect(seq.body.dig(0, :args, :message)).to eq("Hello, world!")
+  end
 end

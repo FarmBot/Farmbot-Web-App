@@ -35,8 +35,7 @@ private
     def authenticate_user!
       # All possible information that could be needed for any of the 3 auth
       # strategies.
-      context = { 
-                  jwt:           request.headers["Authorization"],
+      context = { jwt:           request.headers["Authorization"],
                   user:          current_user }
       # Returns a symbol representing the appropriate auth strategy, or nil if
       # unknown.
@@ -46,6 +45,8 @@ private
         sign_in(Auth::FromJWT.run!(context))
       when :already_connected
         # Probably provided a cookie.
+        # 9 times out of 10, it's a unit test.
+        # Our cookie system works, we just don't use it.
         return true
       else
         auth_err

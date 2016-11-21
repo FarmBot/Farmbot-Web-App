@@ -48,6 +48,8 @@ Here are some of the configuration options you must set when provisioning a new 
  * `ENV['MQTT_HOST']`: Host (no port or slashes or anything) of running [MQTT gateway](https://github.com/FarmBot/mqtt-gateway). This is required so that Farmbot can know where to connect when given an authorization token.
  * `ENV['API_HOST']`: Domain of the server. Default is `localhost`.
  * `ENV['API_PORT']`: Port the server is on. Default is `3000`.
+ * `ENV['FORCE_SSL']`: Optional, but *highly* recomended if you are going to support HTTPS.
+ * `ENV['ACME_SECRET']`: If you're using ACME based SSL verification (like Let's Encrypt), set this to your ACME challenge string.
 
 **We can't fix issues we don't know about.** Please submit an issue if you are having trouble installing on your local machine.
 

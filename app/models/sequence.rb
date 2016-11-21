@@ -13,6 +13,8 @@ class Sequence < ActiveRecord::Base
   validates_uniqueness_of :name, scope: :device
   STEPS = [ :var_set, :var_get, :move_absolute, :move_relative, :write_pin,
             :read_pin, :wait, :send_message, :execute, :if_statement]
+  ALLOWED_CHANNEL_NAMES = [ "ticker", "ticker_error", "ticker_success",
+                            "toast", "toast_error", "toast_success" ]
   ALLOWED_DATA_TYPES = ["string", "integer"]
   ALLOWED_OPS = ["<", ">", "is", "not"]
   ALLOWED_PIN_MODES = [0, 1]
@@ -54,6 +56,12 @@ class Sequence < ActiveRecord::Base
           " argument. Allowed values: #{ALLOWED_OPS.map(&:to_s).join(", ")}"
         end
       end
+      .defineArg(:channel_name,    [String]) do |node|
+        within(ALLOWED_CHANNEL_NAMES, node) do |val|
+          "\"#{ val.to_s }\" is not a valid channel_name. " \
+          "Allowed values: #{ALLOWED_CHANNEL_NAMES.map(&:to_s).join(", ")}"
+        end
+      end
       .defineArg(:tag_version,     [Fixnum])
       .defineArg(:x,               [Fixnum])
       .defineArg(:y,               [Fixnum])
@@ -61,14 +69,15 @@ class Sequence < ActiveRecord::Base
       .defineArg(:speed,           [Fixnum])
       .defineArg(:pin_number,      [Fixnum])
       .defineArg(:pin_value,       [Fixnum])
-      .defineArg(:data_label,      [String])
       .defineArg(:milliseconds,    [Fixnum])
-      .defineArg(:message,         [String])
       .defineArg(:rhs,             [Fixnum])
-      .defineNode(:move_absolute,  [:x, :y, :z, :speed],)
-      .defineNode(:move_relative,  [:x, :y, :z, :speed],)
-      .defineNode(:write_pin,      [:pin_number, :pin_value, :pin_mode ],)
+      .defineArg(:data_label,      [String])
+      .defineArg(:message,         [String])
+      .defineNode(:move_absolute,  [:x, :y, :z, :speed])
+      .defineNode(:move_relative,  [:x, :y, :z, :speed])
+      .defineNode(:write_pin,      [:pin_number, :pin_value, :pin_mode ])
       .defineNode(:read_pin,       [:pin_number, :data_label, :pin_mode])
+      .defineNode(:channel,        [:channel_name])
       .defineNode(:wait,           [:milliseconds])
       .defineNode(:send_message,   [:message])
       .defineNode(:execute,        [:sub_sequence_id])
