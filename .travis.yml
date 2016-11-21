@@ -1,6 +1,10 @@
 language: ruby
 rvm:
 - 2.3.2
+before_script:
+  - cp config/database.travis.yml config/database.yml
+  - mysql -e 'create database farmbot_test'
+  - psql -c 'create database farmbot_test' -U postgres
 script:
   - mysql -e 'create database farmbot_test'
   - psql -c 'create database farmbot_test' -U postgres
