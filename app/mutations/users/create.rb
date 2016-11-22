@@ -16,7 +16,7 @@ module Users
     def execute
       resp = {}
 
-      resp[:user]  = User.create!(email:                 email,
+      resp[:user]  = User.create!(email:                 email.downcase,
                                   password:              password,
                                   password_confirmation: password_confirmation,
                                   name:                  name)

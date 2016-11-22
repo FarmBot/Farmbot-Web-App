@@ -6,7 +6,7 @@ module Auth
     end
 
     def validate
-      @user = User.where(email: email).first
+      @user = User.where(email: email.downcase).first
       whoops! unless @user && @user.valid_password?(password)
     end
 
