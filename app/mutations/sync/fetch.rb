@@ -1,6 +1,6 @@
 module Sync
   class Fetch  < Mutations::Command
-    API_VERSION = `git log --pretty=format:"%h" -1`
+    API_VERSION = ENV.fetch("HEROKU_SLUG_COMMIT", `git log --pretty=format:"%h" -1`) 
     COMPAT_NUM = 0
 
     required do
@@ -10,7 +10,7 @@ module Sync
     def execute
       regimens = device.regimens;
       message = {
-          api_version: API_VERSION,
+          api_version: API_VERSION[0,5],
           compat_num: COMPAT_NUM,
           device: device,
           users: device.users,

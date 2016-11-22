@@ -3,18 +3,15 @@ module Auth
     required do
       string :email
       string :password
-      # TODO: Rename all occurences to "URL".
-      # This is not truly a host, as it has a protocol and port associatied with it.
-      string :host
     end
 
     def validate
-      @user = User.where(email: email).first
+      @user = User.where(email: email.downcase).first
       whoops! unless @user && @user.valid_password?(password)
     end
 
     def execute
-      {token: SessionToken.issue_to(@user, iss: host), user: @user}
+      {token: SessionToken.issue_to(@user, iss: $API_URL), user: @user}
     end
 
     def whoops!

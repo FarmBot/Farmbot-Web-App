@@ -23,10 +23,12 @@
 
 # Deployment Using Heroku (easier)
 
-WIP
+ 1. Deploy as you would normally [deploy to Heroku](https://devcenter.heroku.com/articles/getting-started-with-rails4#deploy-your-application-to-heroku) 
+ 2. Enable Dyno metadata: `heroku labs:enable runtime-dyno-metadata --app <app name>`
 
 # Setting up SSL
 
+Before setting up SSL, [setup your domain on Heroku](https://devcenter.heroku.com/articles/custom-domains).
 
 Install [Certbot](https://certbot.eff.org/).
 

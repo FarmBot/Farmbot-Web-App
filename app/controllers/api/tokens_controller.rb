@@ -15,7 +15,7 @@ module Api
     def auth_params
       params[:user] ||= {}
 
-      { email:       params[:user][:email],
+      { email:       (params[:user][:email] || "").downcase,
         password:    params[:user][:password],
         credentials: params[:user][:credentials],
         host:        $API_URL }
