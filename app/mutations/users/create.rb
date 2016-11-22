@@ -1,8 +1,5 @@
 module Users
   class Create < Mutations::Command
-    HOST = Rails.application.routes.default_url_options[:host]
-    PORT = Rails.application.routes.default_url_options[:port]
-
     required do
       string :name
       string :email
@@ -27,8 +24,7 @@ module Users
       device = Devices::Create.run!(user: resp[:user])
 
       resp.merge!(Auth::CreateToken.run!(email:   email,
-                                         password: password,
-                                         host: "http://#{ HOST }:#{ PORT }"))
+                                         password: password))
     end
   end
 end

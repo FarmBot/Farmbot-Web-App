@@ -28,6 +28,7 @@
 
 # Setting up SSL
 
+Before setting up SSL, [setup your domain on Heroku](https://devcenter.heroku.com/articles/custom-domains).
 
 Install [Certbot](https://certbot.eff.org/).
 

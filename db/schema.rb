@@ -79,8 +79,8 @@ ActiveRecord::Schema.define(version: 20161028175744) do
   end
 
   create_table "sequence_dependencies", force: :cascade do |t|
-    t.integer "dependency_id"
     t.string  "dependency_type"
+    t.integer "dependency_id"
     t.integer "sequence_id"
   end
 
