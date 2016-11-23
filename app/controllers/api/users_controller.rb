@@ -17,7 +17,7 @@ module Api
     private
 
     def user_params
-      user = params.merge!(params[:user] || {})
+      user = params.as_json.merge!(params[:user] || {})
 
       {email:                     user[:email],
        name:                      user[:name],
