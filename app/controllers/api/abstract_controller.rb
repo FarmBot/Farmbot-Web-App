@@ -3,7 +3,7 @@ module Api
     respond_to :json
     before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
-
+    after_action :skip_set_cookies_header
     rescue_from(JWT::VerificationError) { |e| auth_err }
 
     rescue_from Errors::Forbidden do |exc|
@@ -23,6 +23,10 @@ module Api
     end
 
 private
+    # Disable cookies. This is an API!
+    def skip_set_cookies_header
+      request.session_options = {}
+    end
 
     def current_device
       @current_device ||= (current_user.try(:device) || no_device)
