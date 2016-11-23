@@ -17,7 +17,10 @@ module Api
     private
 
     def user_params
-      user = params.as_json.merge!(params[:user] || {})
+      user = params
+        .as_json
+        .merge!(params.as_json["user"] || {})
+        .deep_symbolize_keys
 
       {email:                     user[:email],
        name:                      user[:name],
