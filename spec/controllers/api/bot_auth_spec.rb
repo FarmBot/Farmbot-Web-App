@@ -9,7 +9,7 @@ describe Api::SchedulesController do
     let(:device) { user.device }
 
     it 'tells you why you failed to auth' do
-      get :index
+      process :index, method: :get
       expect(response.status).to eq(401)
       expect(json[:error]).to include("failed to authenticate")
     end

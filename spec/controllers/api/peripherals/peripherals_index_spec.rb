@@ -14,7 +14,7 @@ describe Api::PeripheralsController do
       peripheral_ids = user.device.peripherals
                        .map(&:id)
                        .sort
-      get :index
+      process :index, method: :get
       expect(response.status).to eq(200)
       expect(json.length).to eq(2)
       expect(json.map { |s| s[:id] }.sort).to eq(peripheral_ids)

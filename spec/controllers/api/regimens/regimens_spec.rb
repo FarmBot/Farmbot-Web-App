@@ -10,7 +10,7 @@ describe Api::RegimensController do
     it 'retrieves all regimina' do
       regimen = Regimen.create!(name: SecureRandom.hex, device: user.device)
       sign_in user
-      get :index
+      process :index, method: :get
       expect(response.status).to eq(200)
       expect(json.count).to eq(1)
       expect(json.first[:id]).to eq(regimen.id)
@@ -20,7 +20,7 @@ describe Api::RegimensController do
       regimen = Regimen.create!(name: SecureRandom.hex, device: user.device)
       other_person = FactoryGirl.create(:user)
       sign_in other_person
-      get :index
+      process :index, method: :get
       expect(response.status).to eq(200)
       expect(json.count).to eq(0)
     end
