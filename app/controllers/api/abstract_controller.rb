@@ -1,5 +1,6 @@
 module Api
   class AbstractController < ApplicationController
+    class OnlyJson < Exception; end;
     respond_to :json
     before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
@@ -12,6 +13,11 @@ module Api
 
     rescue_from Errors::NoBot do |exc|
       sorry "You need to register a device first.", 422
+    end
+
+    rescue_from OnlyJson do |exc|
+      sorry "Requests must be properly formatted type application/json",
+            422
     end
 
     rescue_from ActiveRecord::RecordNotFound do |exc|

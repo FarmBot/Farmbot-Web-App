@@ -14,15 +14,13 @@ describe Api::SequencesController do
       old_count = SequenceDependency.count
       sign_in user
       sequence = FactoryGirl.create(:sequence, device: user.device)
-      input = {
-                id: sequence.id,
-                sequence: {
-                  name: "Scare Birds",
-                  body: nodes,
-                },
-                format: :json
-              }
-      patch :update, params: input
+      input = { id: sequence.id,
+                sequence: { name: "Scare Birds",
+                            body: nodes } }
+      patch :update,
+            params: {id: sequence.id },
+            body: input.to_json,
+            format: :json
       expect(response.status).to eq(200)
       new_count = SequenceDependency.count
       expect(old_count < new_count).to be(true)
@@ -36,7 +34,6 @@ describe Api::SequencesController do
                   name: "Scare Birds"
                 }
               }
-                                       
       patch :update, params: input, session: {format: :json}
       expect(response.status).to eq(200)
       sequence.reload

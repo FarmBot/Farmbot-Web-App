@@ -14,7 +14,8 @@ describe Api::SequencesController do
                 body: nodes }
       sequence_body_for(user)
       post :create,
-           params: input.merge(format: :json)
+           body: input.to_json,
+           params: {format: :json}
       expect(response.status).to eq(200)
       expect(json[:args]).to be_kind_of(Hash)
       expect(json[:body]).to be_kind_of(Array)
@@ -45,7 +46,8 @@ describe Api::SequencesController do
                 body: nodes }
       sequence_body_for(user)
       post :create,
-           params: input.merge(format: :json)
+           body: input.to_json,
+           params: {format: :json}
       expect(response.status).to eq(200)
       new_count       = SequenceDependency.count
       validated_count = SequenceDependency.where(sequence_id: json[:id]).count
