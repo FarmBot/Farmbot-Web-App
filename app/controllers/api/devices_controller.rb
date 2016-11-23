@@ -10,12 +10,12 @@ module Api
 
     # POST /api/device
     def create
-      mutate Devices::Create.run(params, user: current_user)
+      mutate Devices::Create.run(params.as_json, user: current_user)
     end
 
     # PATCH/PUT /api/device
     def update
-      mutate Devices::Update.run(params, device: current_device)
+      mutate Devices::Update.run(params.as_json, device: current_device)
     end
 
     # DELETE /api/devices/1

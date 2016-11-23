@@ -13,11 +13,11 @@ module Api
     end
 
     def create
-      mutate Sequences::Create.run(params, device: current_device)
+      mutate Sequences::Create.run(params.as_json, device: current_device)
     end
 
     def update
-      mutate Sequences::Update.run(params[:sequence],
+      mutate Sequences::Update.run(params[:sequence].as_json,
                                     device: current_device,
                                     sequence: sequence)
     end

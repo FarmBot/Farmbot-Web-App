@@ -6,7 +6,7 @@ module Api
     end
 
     def create
-      mutate PlantingAreas::Create.run(params, device: current_device)
+      mutate PlantingAreas::Create.run(params.as_json, device: current_device)
     end
 
     def destroy

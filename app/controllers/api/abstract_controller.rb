@@ -2,6 +2,7 @@ module Api
   class AbstractController < ApplicationController
     respond_to :json
     before_action :authenticate_user!
+ActionController::Parameters.permit_all_parameters = true
     skip_before_action :verify_authenticity_token
     after_action :skip_set_cookies_header
     rescue_from(JWT::VerificationError) { |e| auth_err }
@@ -23,6 +24,7 @@ module Api
     end
 
 private
+
     # Disable cookies. This is an API!
     def skip_set_cookies_header
       request.session_options = {}
