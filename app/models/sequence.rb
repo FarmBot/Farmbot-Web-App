@@ -13,8 +13,8 @@ class Sequence < ActiveRecord::Base
   validates_uniqueness_of :name, scope: :device
   STEPS = [ :var_set, :var_get, :move_absolute, :move_relative, :write_pin,
             :read_pin, :wait, :send_message, :execute, :if_statement]
-  ALLOWED_CHANNEL_NAMES = [ "ticker", "ticker_error", "ticker_success",
-                            "toast", "toast_error", "toast_success" ]
+  ALLOWED_CHANNEL_NAMES = [ "ticker", "error_ticker",
+                            "success_toast", "error_toast", "warning_toast" ]
   ALLOWED_DATA_TYPES = ["string", "integer"]
   ALLOWED_OPS = ["<", ">", "is", "not"]
   ALLOWED_PIN_MODES = [0, 1]
