@@ -10,7 +10,7 @@ module Sync
     def execute
       regimens = device.regimens;
       message = {
-          api_version: API_VERSION[0,5],
+          api_version: API_VERSION[0,7],
           compat_num: COMPAT_NUM,
           device: device,
           users: device.users,
