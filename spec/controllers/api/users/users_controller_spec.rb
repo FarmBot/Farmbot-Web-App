@@ -26,6 +26,7 @@ describe Api::UsersController do
         format: :json
       }
       patch :update, params: input
+      binding.pry
       expect(response.status).to eq(200)
       expect(json[:name]).to eq("Ricky McRickerson")
       expect(json[:email]).to eq("rick@rick.com")
