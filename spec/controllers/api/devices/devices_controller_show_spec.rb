@@ -10,14 +10,14 @@ describe Api::DevicesController do
     it 'handles deviceless requests' do
       user.update_attributes(device: nil)
       sign_in user
-      get :show, {}, format: :json
+      get :show, params: {}, session: { format: :json }
       expect(response.status).to eq(422)
       expect(json[:error]).to include("You need to register a device first.")
     end
 
     it 'has expected keys' do
       sign_in user
-      get :show, {}, format: :json
+      get :show, params: {}, session: { format: :json }
       { id:         Fixnum,
         name:       String,
         webcam_url: String }.each do |name, klass|

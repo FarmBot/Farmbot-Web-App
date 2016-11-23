@@ -22,7 +22,7 @@ describe Api::SequencesController do
                 },
                 format: :json
               }
-      patch :update, input
+      patch :update, params: input
       expect(response.status).to eq(200)
       new_count = SequenceDependency.count
       expect(old_count < new_count).to be(true)
@@ -37,7 +37,7 @@ describe Api::SequencesController do
                 }
               }
                                        
-      patch :update, input, {format: :json}
+      patch :update, params: input, session: {format: :json}
       expect(response.status).to eq(200)
       sequence.reload
       expect(sequence.name).to eq(input[:sequence][:name])

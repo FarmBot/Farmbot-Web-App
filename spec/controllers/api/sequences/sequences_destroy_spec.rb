@@ -12,7 +12,7 @@ describe Api::SequencesController do
     it 'destroys a sequence' do
       sign_in user
       input = { id: sequence.id }
-      delete :destroy, input
+      delete :destroy, params: input
       expect(response.status).to eq(200)
       expect { sequence.reload }
         .to(raise_error(ActiveRecord::RecordNotFound))
@@ -22,7 +22,7 @@ describe Api::SequencesController do
       sign_in user
       other_dudes = FactoryGirl.create(:sequence)
       input = { id: other_dudes.id }
-      delete :destroy, input
+      delete :destroy, params: input
       expect(response.status).to eq(403)
     end
   end
