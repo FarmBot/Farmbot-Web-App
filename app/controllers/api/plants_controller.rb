@@ -11,7 +11,7 @@ module Api
 
     def destroy
       if (plant.device == current_device) && plant.destroy
-        render nothing: true
+        render json: ""
       else
         raise Errors::Forbidden, "Not your Plant object."
       end

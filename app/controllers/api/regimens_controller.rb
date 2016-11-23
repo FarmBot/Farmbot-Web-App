@@ -19,7 +19,7 @@ module Api
 
     def destroy
       the_regimen.destroy!
-      render nothing: true
+      render json: ""
     end
 
   private

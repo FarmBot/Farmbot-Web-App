@@ -11,7 +11,7 @@ module Api
 
     def destroy
       if (planting_area.device == current_device) && planting_area.destroy
-        render nothing: true
+        render json: ""
       else
         raise Errors::Forbidden, "Not your Planting Area."
       end

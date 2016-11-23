@@ -21,7 +21,7 @@ module Api
     # DELETE /api/devices/1
     def destroy
       Devices::Destroy.run!(user: current_user, device: current_device)
-      render nothing: true, status: 204
+      render json: "", status: 204
     end
 
     private

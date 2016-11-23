@@ -21,7 +21,7 @@ module Api
 
     def destroy
       if (schedule.device_id == current_device.id) && schedule.destroy
-        render nothing: true
+        render json: ""
       else
         raise Errors::Forbidden, 'Not your schedule.'
       end
