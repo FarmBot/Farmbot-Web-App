@@ -3,6 +3,7 @@ module Api
     class OnlyJson < Exception; end;
     respond_to :json
     before_action :set_default_response_format
+    puts "======================"
     before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
     after_action :skip_set_cookies_header
@@ -32,7 +33,7 @@ module Api
 private
 
     def set_default_response_format
-      request.format = :json
+      request.format = "json"
     end
 
     # Disable cookies. This is an API!

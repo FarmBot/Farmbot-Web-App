@@ -1,6 +1,6 @@
 FarmBot::Application.routes.draw do
 
-  namespace :api, constraints: { format: 'json' } do
+  namespace :api, defaults: {format: :json}, constraints: { format: 'json' } do
     resource :sync, only: [:show]
     resource :public_key, only: [:show]
     resource :tokens, only: [:create]
