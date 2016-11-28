@@ -13,9 +13,9 @@ FarmBot::Application.configure do
   config.eager_load = false
 
   # Configure static asset server for tests with Cache-Control for performance.
-  config.serve_static_files  = true
+  config.public_file_server.enabled = true
   config.assets.debug = true
-  config.static_cache_control = "public, max-age=3600"
+  config.public_file_server.headers = { 'Cache-Control' => 'public, max-age=3600' }
 
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true
@@ -34,16 +34,6 @@ FarmBot::Application.configure do
 
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
-
-  config.after_initialize do
-    Bullet.enable = true
-    Bullet.alert = true
-    Bullet.bullet_logger = true
-    Bullet.console = true
-    Bullet.rails_logger = true
-    # Bullet.stacktrace_includes = [ 'your_gem', 'your_middleware' ]
-    # Bullet.stacktrace_excludes = [ 'their_gem', 'their_middleware' ]
-  end
 
   config.log_level = :error 
 end

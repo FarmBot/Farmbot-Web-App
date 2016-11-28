@@ -13,13 +13,13 @@ module Api
     end
 
     def create
-      mutate Sequences::Create.run(params, device: current_device)
+      mutate Sequences::Create.run(sequence_i_guess, device: current_device)
     end
 
     def update
-      mutate Sequences::Update.run(params[:sequence],
-                                    device: current_device,
-                                    sequence: sequence)
+      mutate Sequences::Update.run(sequence_i_guess, # params[:sequence].as_json,
+                                   device: current_device,
+                                   sequence: sequence)
     end
 
     def destroy
@@ -27,6 +27,19 @@ module Api
     end
 
     private
+
+    # TODO: Come back and fix this. Rails 5 has changed the way it handles
+    # params.
+    def sequence_i_guess
+      if @seq_i_guess
+        return @seq_i_guess
+      else
+        js = JSON.parse(request.body.read);
+        @seq_i_guess ||= js["sequence"] || js || {}
+      end
+    rescue JSON::ParserError => e
+      raise OnlyJson
+    end
 
     def sequence
       @sequence ||= Sequence.find(params[:id])

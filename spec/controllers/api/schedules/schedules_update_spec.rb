@@ -10,7 +10,7 @@ describe Api::SchedulesController do
       sign_in user
       id = FactoryGirl.create(:schedule, device: user.device).id
       input = { id: id, schedule: { repeat: 66 } }
-      patch :update, input
+      patch :update, params: input
       expect(response.status).to eq(200)
     end
 
@@ -18,7 +18,7 @@ describe Api::SchedulesController do
       sign_in user
       id = FactoryGirl.create(:schedule).id
       input = { id: id, repeat: 66 }
-      patch :update, input
+      patch :update, params: input
       expect(response.status).to eq(403)
       expect(json[:error]).to include('Not your schedule')
     end

@@ -9,7 +9,7 @@ FarmBot::Application.configure do
   config.i18n.fallbacks = true
   config.log_formatter = ::Logger::Formatter.new
   config.log_level = :info
-  config.serve_static_files = false
+  config.public_file_server.enabled = false
 
   # HACK AHEAD! Here's why:
   # 1. FarmBot Inc. Uses Sendgrid for email.

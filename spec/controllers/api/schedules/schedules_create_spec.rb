@@ -16,7 +16,7 @@ describe Api::SchedulesController do
                 repeat: 4,
                 time_unit: 'minutely' }
       before = Schedule.count
-      post :create, input
+      post :create, params: input
       expect(response.status).to eq(200)
       expect(before < Schedule.count).to be_truthy
     end
@@ -27,7 +27,7 @@ describe Api::SchedulesController do
                 end_time: '2099-02-17T18:19:20.000Z',
                 repeat: 4,
                 time_unit: 'minutely' }
-      post :create, input
+      post :create, params: input
       expect(response.status).to eq(422)
       expect(json[:sequence]).to include("can't be nil")
     end

@@ -35,7 +35,7 @@ module FarmBot
       g.fixture_replacement :factory_girl, :dir => 'spec/factories'
     end
     config.autoload_paths << Rails.root.join('lib')
-    config.middleware.insert_before 'ActionDispatch::Static', 'Rack::Cors' do
+    config.middleware.insert_before ActionDispatch::Static, Rack::Cors do
       allow do
         origins '*'
         resource '/api/*',

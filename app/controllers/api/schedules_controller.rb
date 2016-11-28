@@ -5,7 +5,7 @@ module Api
     end
 
     def create
-      mutate Schedules::Create.run(params,
+      mutate Schedules::Create.run(params.as_json,
                                    device: current_device,
                                    sequence: sequence)
     end
@@ -14,14 +14,14 @@ module Api
       if schedule.device != current_device
         raise Errors::Forbidden, 'Not your schedule.'
       end
-      mutate Schedules::Update.run(params[:schedule],
+      mutate Schedules::Update.run(params[:schedule].as_json,
                                    device: current_device,
                                    schedule: schedule)
     end
 
     def destroy
       if (schedule.device_id == current_device.id) && schedule.destroy
-        render nothing: true
+        render json: ""
       else
         raise Errors::Forbidden, 'Not your schedule.'
       end
