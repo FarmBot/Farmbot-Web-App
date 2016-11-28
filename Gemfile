@@ -11,7 +11,6 @@ gem "ice_cube"
 gem "rack-cors", require: "rack/cors"
 gem "mysql"
 gem "database_cleaner"
-gem "sucker_punch"
 
 group :development, :test do
   gem "sqlite3"

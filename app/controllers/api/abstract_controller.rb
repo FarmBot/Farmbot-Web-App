@@ -30,6 +30,10 @@ module Api
       render json: {error: exc.message}, status: 422
     end
 
+    rescue_from NoMethodError do |exc|
+      binding.pry
+    end
+
 private
 
     def set_default_response_format
