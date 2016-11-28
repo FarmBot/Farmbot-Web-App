@@ -1,5 +1,3 @@
-require_relative "./checker"
-
 module CeleryScript
   class AbstractNode
     def invalidate!(message = "Unspecified type check error.")

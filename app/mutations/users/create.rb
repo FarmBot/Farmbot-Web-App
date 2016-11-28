@@ -21,10 +21,11 @@ module Users
                                   password_confirmation: password_confirmation,
                                   name:                  name)
 
-      device = Devices::Create.run!(user: resp[:user])
-
-      resp.merge!(Auth::CreateToken.run!(email:   email,
-                                         password: password))
+      device     = Devices::Create.run!(user: resp[:user])
+      auth_stuff = Auth::CreateToken.run!(email: email, password: password)
+      resp.merge!(auth_stuff)
+      SendWelcomeEmailJob.perform_later(resp[:user])
+      resp
     end
   end
 end

@@ -8,7 +8,7 @@ class DashboardController < ApplicationController
   THE_FRONTEND_APP = File.read("public/app/index.html") # Cache in memory.
   ACME_SECRET = ENV["ACME_SECRET"]
   def index
-    render plain: THE_FRONTEND_APP, format: :html
+    render html: THE_FRONTEND_APP.html_safe, layout: false
   end
 
   # This endpoint gets hit by Certbot / Let's Encrypt when its time to verify
