@@ -7,7 +7,7 @@ module Api
 
     # GET /api/public_key
     def show
-      render text: PUBLIC_KEY
+      render plain: PUBLIC_KEY
     end
   end
 end

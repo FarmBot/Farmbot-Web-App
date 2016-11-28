@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Api::SequencesController do
-
   include Devise::Test::ControllerHelpers
   let(:nodes) { sequence_body_for(user) }
 
@@ -20,7 +19,7 @@ describe Api::SequencesController do
       patch :update,
             params: {id: sequence.id },
             body: input.to_json,
-            format: :json
+            as: :json
       expect(response.status).to eq(200)
       new_count = SequenceDependency.count
       expect(old_count < new_count).to be(true)
@@ -29,12 +28,13 @@ describe Api::SequencesController do
     it 'updates existing sequences' do
       sign_in user
       sequence = FactoryGirl.create(:sequence, device: user.device)
-      input = { id: sequence.id,
-                sequence: {
-                  name: "Scare Birds"
-                }
-              }
-      patch :update, params: input, session: {format: :json}
+      input = { sequence: { name: "Scare Birds" } }
+      params = { id: sequence.id }
+
+      patch :update,
+        params: params,
+        body: input.to_json,
+        format: :json
       expect(response.status).to eq(200)
       sequence.reload
       expect(sequence.name).to eq(input[:sequence][:name])

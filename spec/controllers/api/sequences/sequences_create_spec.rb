@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 describe Api::SequencesController do
+  before :each do
+    request.headers["accept"] = 'application/json'
+  end
 
   include Devise::Test::ControllerHelpers
 
@@ -25,7 +28,7 @@ describe Api::SequencesController do
     it 'creates a new sequences for a user' do
       sign_in user
       input = { name: "Scare Birds", body: [] }
-      post :create, params: input
+      post :create, body: input.to_json, format: :json
       expect(response.status).to eq(200)
     end
 

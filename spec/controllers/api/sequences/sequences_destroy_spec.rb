@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 describe Api::SequencesController do
+  before :each do
+    request.headers["accept"] = 'application/json'
+  end
 
   include Devise::Test::ControllerHelpers
 

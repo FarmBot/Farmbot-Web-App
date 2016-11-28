@@ -20,8 +20,6 @@ module Api
       mutate Sequences::Update.run(sequence_i_guess, # params[:sequence].as_json,
                                    device: current_device,
                                    sequence: sequence)
-    rescue => e
-      binding.pry
     end
 
     def destroy

@@ -5,6 +5,9 @@ describe Api::SequencesController do
   include Devise::Test::ControllerHelpers
 
   describe '#index' do
+    before :each do
+      request.headers["accept"] = 'application/json'
+    end
 
     let(:user) { FactoryGirl.create(:user) }
 

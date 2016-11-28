@@ -13,8 +13,6 @@ module Api
       mutate Regimens::Update.run(params.as_json,
                                   regimen_params,
                                   regimen: the_regimen)
-    rescue => e
-      binding.pry      
     end
 
     def destroy
