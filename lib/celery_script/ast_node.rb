@@ -1,3 +1,5 @@
+require_relative "./checker"
+
 module CeleryScript
   class AbstractNode
     def invalidate!(message = "Unspecified type check error.")
@@ -14,7 +16,9 @@ module CeleryScript
 
   class AstNode < AbstractNode
       attr_reader :args, :body, :comment, :kind, :parent
-
+      BODY_HAS_NON_NODES = "The `body` of a node can only contain nodes- " \
+                           "no leaves here."
+      LEAVES_NEED_KEYS   = "Tried to initialize a leaf without a key."
       def initialize(parent = nil, args:, body: nil, comment: "", kind:)
           @comment, @kind, @parent = comment, kind, parent
 
@@ -23,6 +27,7 @@ module CeleryScript
           end.to_h if args
 
           @body = body.map do |e|
+            raise TypeCheckError, BODY_HAS_NON_NODES unless is_node?(e)
             maybe_initialize(self, e)
           end if body
       end
@@ -31,7 +36,7 @@ module CeleryScript
         if is_node?(leaf_or_node)
           AstNode.new(parent, leaf_or_node)
         else
-          raise TypeCheckError, "Panic." if key == "__NEVER__"
+          raise TypeCheckError, LEAVES_NEED_KEYS if key == "__NEVER__"
           AstLeaf.new(parent, leaf_or_node, key)
         end
       end

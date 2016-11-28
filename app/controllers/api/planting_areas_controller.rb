@@ -6,12 +6,12 @@ module Api
     end
 
     def create
-      mutate PlantingAreas::Create.run(params, device: current_device)
+      mutate PlantingAreas::Create.run(params.as_json, device: current_device)
     end
 
     def destroy
       if (planting_area.device == current_device) && planting_area.destroy
-        render nothing: true
+        render json: ""
       else
         raise Errors::Forbidden, "Not your Planting Area."
       end

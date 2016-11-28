@@ -5,14 +5,14 @@ describe Api::UsersController do
   include Devise::Test::ControllerHelpers
     it 'errors if you try to delete with the wrong password' do
       sign_in user
-      delete :destroy, { password: "NOPE!", format: :json } 
+      delete :destroy, params: { password: "NOPE!" }, format: :json 
       expect(response.status).to eq(422)
       expect(json[:password]).to eq(Users::Destroy::BAD_PASSWORD)
     end
 
     it 'deletes a user account' do
       sign_in user
-      delete :destroy, { password: user.password, format: :json } 
+      delete :destroy, params: { password: user.password }, format: :json 
       expect(response.status).to eq(200)
       expect(User.where(id: user.id).count).to eq(0)
     end
@@ -25,7 +25,7 @@ describe Api::UsersController do
         name: "Ricky McRickerson",
         format: :json
       }
-      patch :update, input
+      patch :update, params: input
       expect(response.status).to eq(200)
       expect(json[:name]).to eq("Ricky McRickerson")
       expect(json[:email]).to eq("rick@rick.com")
@@ -40,7 +40,7 @@ describe Api::UsersController do
         new_password_confirmation: "123456789",       
         format: :json
       }
-      patch :update, input
+      patch :update, params: input
       expect(response.status).to eq(200)
       user.reload
       expect(user.valid_password?(old_pass)).to be_falsy
@@ -56,7 +56,7 @@ describe Api::UsersController do
         password_confirmation: "123456789",       
         format: :json
       }
-      patch :update, input
+      patch :update, params: input
       expect(response.status).to eq(422)
       expect(json[:password]).to eq(Users::Update::PASSWORD_PROBLEMS)
     end
@@ -70,7 +70,7 @@ describe Api::UsersController do
         password_confirmation: "123456789",        
         format: :json
       }
-      patch :update, input
+      patch :update, params: input
       expect(response.status).to eq(422)
       expect(json[:password]).to eq(Users::Update::PASSWORD_PROBLEMS)
     end
@@ -82,7 +82,7 @@ describe Api::UsersController do
                   password:              "Password123",
                   email:                 email,
                   name:                  "Frank" }
-      post :create, params
+      post :create, params: params
 
       expect(User.count).to eq(original_count + 1)
       user = User.find json[:user][:id]
@@ -99,7 +99,7 @@ describe Api::UsersController do
                   password:              "Password321",
                   email:                 email,
                   name:                  "Frank" }
-      post :create, params
+      post :create, params: params
       expect(User.count > original_count).to be_falsy
       expect(json[:password]).to include("do not match")
       expect(response.status).to eq(422)

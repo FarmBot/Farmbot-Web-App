@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 describe Api::SequencesController do
+  before :each do
+    request.headers["accept"] = 'application/json'
+  end
 
   include Devise::Test::ControllerHelpers
 
@@ -14,7 +17,8 @@ describe Api::SequencesController do
                 body: nodes }
       sequence_body_for(user)
       post :create,
-           input.merge(format: :json)
+           body: input.to_json,
+           params: {format: :json}
       expect(response.status).to eq(200)
       expect(json[:args]).to be_kind_of(Hash)
       expect(json[:body]).to be_kind_of(Array)
@@ -24,7 +28,7 @@ describe Api::SequencesController do
     it 'creates a new sequences for a user' do
       sign_in user
       input = { name: "Scare Birds", body: [] }
-      post :create, input
+      post :create, body: input.to_json, format: :json
       expect(response.status).to eq(200)
     end
 
@@ -32,8 +36,9 @@ describe Api::SequencesController do
       # Needed to test the `else` branch of mutate() somewhere
       sign_in user
       input = {}
-      post :create, input
+      post :create, body: input.to_json, format: :json
       expect(response.status).to eq(422)
+
       expect(json[:name]).to eq("Name is required")
     end
 
@@ -45,7 +50,8 @@ describe Api::SequencesController do
                 body: nodes }
       sequence_body_for(user)
       post :create,
-           input.merge(format: :json)
+           body: input.to_json,
+           params: {format: :json}
       expect(response.status).to eq(200)
       new_count       = SequenceDependency.count
       validated_count = SequenceDependency.where(sequence_id: json[:id]).count

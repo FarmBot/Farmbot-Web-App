@@ -21,7 +21,7 @@ The key responsibility of the API is *information and permissions management*. T
 
 Your machine will need the following:
 
- 0. [Ruby 2.3.1](http://rvm.io/rvm/install)
+ 0. [Ruby 2.3.2](http://rvm.io/rvm/install)
 
 ## Setup
  0. `git clone https://github.com/FarmBot/Farmbot-Web-API farmbot-web-app`
@@ -50,6 +50,9 @@ Here are some of the configuration options you must set when provisioning a new 
  * `ENV['API_PORT']`: Port the server is on. Default is `3000`.
  * `ENV['FORCE_SSL']`: Optional, but *highly* recomended if you are going to support HTTPS.
  * `ENV['ACME_SECRET']`: If you're using ACME based SSL verification (like Let's Encrypt), set this to your ACME challenge string.
+ * `ENV['SMTP_USERNAME']`: Email server username.
+ * `ENV['SMTP_PASSWORD']`: Email server password.
+ * `ENV['SMTP_HOST']`: Email server host name (Eg: `smtp.sendgrid.net`).
 
 **We can't fix issues we don't know about.** Please submit an issue if you are having trouble installing on your local machine.
 

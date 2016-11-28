@@ -6,12 +6,12 @@ module Api
     end
 
     def create
-      mutate Plants::Create.run(params, device_params)
+      mutate Plants::Create.run(params.as_json, device_params)
     end
 
     def destroy
       if (plant.device == current_device) && plant.destroy
-        render nothing: true
+        render json: ""
       else
         raise Errors::Forbidden, "Not your Plant object."
       end

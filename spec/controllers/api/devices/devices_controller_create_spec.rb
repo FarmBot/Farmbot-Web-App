@@ -12,7 +12,7 @@ describe Api::DevicesController do
     it 'creates a new device for a user' do
       sign_in user
       params     = { user_id: user.id, name: Haikunator.haikunate(1000) }
-      post :create, params
+      post :create, params: params
       expect(response.status).to eq(200)
       resp       = JSON.parse(response.body)
       new_device = Device.find(resp['id'])

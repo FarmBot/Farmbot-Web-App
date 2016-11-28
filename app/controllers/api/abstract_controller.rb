@@ -1,9 +1,11 @@
 module Api
   class AbstractController < ApplicationController
+    class OnlyJson < Exception; end;
     respond_to :json
+    before_action :set_default_response_format
     before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
-
+    after_action :skip_set_cookies_header
     rescue_from(JWT::VerificationError) { |e| auth_err }
 
     rescue_from Errors::Forbidden do |exc|
@@ -12,6 +14,11 @@ module Api
 
     rescue_from Errors::NoBot do |exc|
       sorry "You need to register a device first.", 422
+    end
+
+    rescue_from OnlyJson do |exc|
+      sorry "Requests must be properly formatted type application/json",
+            422
     end
 
     rescue_from ActiveRecord::RecordNotFound do |exc|
@@ -23,6 +30,15 @@ module Api
     end
 
 private
+
+    def set_default_response_format
+      request.format = :json
+    end
+
+    # Disable cookies. This is an API!
+    def skip_set_cookies_header
+      request.session_options = {}
+    end
 
     def current_device
       @current_device ||= (current_user.try(:device) || no_device)

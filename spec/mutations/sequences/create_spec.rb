@@ -74,7 +74,7 @@ describe Sequences::Create do
           body: [
             {
               kind: "channel",
-              args: { channel_name: "toast"}
+              args: { channel_name: "success_toast"}
             }
           ]
         }

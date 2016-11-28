@@ -21,7 +21,7 @@ describe Api::RegimensController do
       old_regimen_count = Regimen.count
       old_item_count = RegimenItem.count
 
-      post :create, payload
+      post :create, params: payload
 
       expect(response.status).to eq(200)
       expect(Regimen.count).to be > old_regimen_count
