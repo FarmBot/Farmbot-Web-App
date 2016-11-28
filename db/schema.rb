@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -13,14 +12,6 @@
 
 ActiveRecord::Schema.define(version: 20161028175744) do
 
-  create_table "ar_internal_metadata", primary_key: "key", force: :cascade do |t|
-    t.string   "value"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "ar_internal_metadata", ["key"], name: "sqlite_autoindex_ar_internal_metadata_1", unique: true
-
   create_table "devices", force: :cascade do |t|
     t.integer "planting_area_id"
     t.string  "name"
@@ -34,9 +25,8 @@ ActiveRecord::Schema.define(version: 20161028175744) do
     t.string   "label"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_peripherals_on_device_id"
   end
-
-  add_index "peripherals", ["device_id"], name: "index_peripherals_on_device_id"
 
   create_table "planting_areas", force: :cascade do |t|
     t.integer "width"
@@ -82,11 +72,10 @@ ActiveRecord::Schema.define(version: 20161028175744) do
     t.string  "dependency_type"
     t.integer "dependency_id"
     t.integer "sequence_id"
+    t.index ["dependency_id"], name: "index_sequence_dependencies_on_dependency_id"
+    t.index ["dependency_type"], name: "index_sequence_dependencies_on_dependency_type"
+    t.index ["sequence_id"], name: "index_sequence_dependencies_on_sequence_id"
   end
-
-  add_index "sequence_dependencies", ["dependency_id"], name: "index_sequence_dependencies_on_dependency_id"
-  add_index "sequence_dependencies", ["dependency_type"], name: "index_sequence_dependencies_on_dependency_type"
-  add_index "sequence_dependencies", ["sequence_id"], name: "index_sequence_dependencies_on_sequence_id"
 
   create_table "sequences", force: :cascade do |t|
     t.integer "device_id"
@@ -112,9 +101,8 @@ ActiveRecord::Schema.define(version: 20161028175744) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
-
-  add_index "users", ["email"], name: "index_users_on_email", unique: true
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
 
 end
