@@ -13,6 +13,7 @@ module Api
     end
 
     def create
+      binding.pry
       mutate Sequences::Create.run(sequence_i_guess, device: current_device)
     end
 
@@ -31,7 +32,12 @@ module Api
     # TODO: Come back and fix this. Rails 5 has changed the way it handles
     # params.
     def sequence_i_guess
-      JSON.parse(request.body.read)["sequence"] || {}
+      if @seq_i_guess
+        return @seq_i_guess
+      else
+        js = JSON.parse(request.body.read);
+        @seq_i_guess ||= js["sequence"] || js || {}
+      end
     rescue JSON::ParserError => e
       raise OnlyJson
     end
