@@ -1,3 +1,5 @@
+require_relative "../../../lib/haikunator"
+
 module Devices
   class Create < Mutations::Command
     using LegacyRefinementsModule
