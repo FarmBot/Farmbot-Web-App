@@ -30,7 +30,7 @@ describe Api::RegimensController do
             }
         ]
         }
-      put :update, payload
+      put :update, params: payload
       expect(response.status).to eq(200)
       expect(existing.reload.regimen_items.count).to eq(payload["regimen_items"].length)
       expect(json[:name]).to eq("something new")

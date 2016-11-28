@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 ruby "2.3.2"
 
-gem "rails",  "4.2.7"
+gem "rails",  "5.0.0.1"
 gem "rails_12factor"
 gem "devise", github: "plataformatec/devise"
 gem "jwt"
@@ -14,8 +14,6 @@ gem "database_cleaner"
 
 group :development, :test do
   gem "sqlite3"
-  gem "bullet"
-  gem "metric_fu"
   gem "pry"
   gem "factory_girl_rails"
   gem "faker"

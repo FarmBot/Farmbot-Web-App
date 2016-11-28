@@ -6,18 +6,18 @@ module Api
     end
 
     def create
-      mutate Regimens::Create.run(params, regimen_params)
+      mutate Regimens::Create.run(params.as_json, regimen_params)
     end
 
     def update
-      mutate Regimens::Update.run(params,
+      mutate Regimens::Update.run(params.as_json,
                                   regimen_params,
-                                  regimen: the_regimen)      
+                                  regimen: the_regimen)
     end
 
     def destroy
       the_regimen.destroy!
-      render nothing: true
+      render json: ""
     end
 
   private
