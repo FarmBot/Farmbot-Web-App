@@ -36,8 +36,9 @@ describe Api::SequencesController do
       # Needed to test the `else` branch of mutate() somewhere
       sign_in user
       input = {}
-      post :create, params: input
+      post :create, body: input.to_json, format: :json
       expect(response.status).to eq(422)
+
       expect(json[:name]).to eq("Name is required")
     end
 
