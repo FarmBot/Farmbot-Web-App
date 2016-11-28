@@ -1,5 +1,3 @@
-require 'mutations/time_filter'
-
 module Schedules
   class Create < Mutations::Command
     using LegacyRefinementsModule

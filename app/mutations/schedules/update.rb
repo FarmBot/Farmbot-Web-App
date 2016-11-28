@@ -1,5 +1,3 @@
-require 'mutations/time_filter'
-
 module Schedules
   class Update < Mutations::Command
     using LegacyRefinementsModule
