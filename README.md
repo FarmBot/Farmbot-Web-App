@@ -21,7 +21,7 @@ The key responsibility of the API is *information and permissions management*. T
 
 Your machine will need the following:
 
- 0. [Ruby 2.3.1](http://rvm.io/rvm/install)
+ 0. [Ruby 2.3.2](http://rvm.io/rvm/install)
 
 ## Setup
  0. `git clone https://github.com/FarmBot/Farmbot-Web-API farmbot-web-app`
