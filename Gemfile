@@ -2,16 +2,16 @@ source "https://rubygems.org"
 ruby "2.3.2"
 
 gem "rails",  "5.0.0.1"
+gem "thin"
 gem "rails_12factor"
 gem "devise", github: "plataformatec/devise"
 gem "jwt"
 gem "mutations"
-gem "active_model_serializers", "~> 0.8.3"
+gem "active_model_serializers"
 gem "ice_cube"
 gem "rack-cors", require: "rack/cors"
 gem "mysql"
 gem "database_cleaner"
-gem "sucker_punch"
 
 group :development, :test do
   gem "sqlite3"

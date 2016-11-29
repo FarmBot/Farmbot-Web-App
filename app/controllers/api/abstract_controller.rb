@@ -29,15 +29,19 @@ module Api
       render json: {error: exc.message}, status: 422
     end
 
+    rescue_from NoMethodError do |exc|
+      binding.pry
+    end
+
 private
 
     def set_default_response_format
-      request.format = :json
+      request.format = "json"
     end
 
     # Disable cookies. This is an API!
     def skip_set_cookies_header
-      request.session_options = {}
+      reset_session
     end
 
     def current_device
