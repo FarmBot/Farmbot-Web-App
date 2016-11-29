@@ -4,13 +4,17 @@ class SessionToken
     raise "You forgot to set ENV['#{ name }']"
   end
 
+  DEFAULT_OS = "https://api.github.com/repos/" \
+               "farmbot/farmbot_os/releases/latest"
+  DEFAULT_FW = "https://api.github.com/repos/FarmBot/farmbot-arduino-firmware/"\
+               "releases/latest"
   EXPIRY       = 40.days
   PRIVATE_KEY  = KeyGen.current
   PUBLIC_KEY   = KeyGen.current.public_key
   ALG          = 'RS256'
   MQTT         = ENV['MQTT_HOST']  || missing_env('MQTT_HOST')
-  OS_RELEASE   = ENV['OS_UPDATE_SERVER'] || missing_env('OS_UPDATE_SERVER')
-  FW_RELEASE   = ENV['FW_UPDATE_SERVER'] || missing_env('FW_UPDATE_SERVER')
+  OS_RELEASE   = ENV['OS_UPDATE_SERVER'] || DEFAULT_OS
+  FW_RELEASE   = ENV['FW_UPDATE_SERVER'] || DEFAULT_FW
 
   attr_accessor :encoded, :unencoded
   def initialize(payload)

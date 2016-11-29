@@ -3,7 +3,6 @@ module Api
     class OnlyJson < Exception; end;
     respond_to :json
     before_action :set_default_response_format
-    puts "======================"
     before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
     after_action :skip_set_cookies_header
@@ -42,7 +41,7 @@ private
 
     # Disable cookies. This is an API!
     def skip_set_cookies_header
-      request.session_options = {}
+      reset_session
     end
 
     def current_device
