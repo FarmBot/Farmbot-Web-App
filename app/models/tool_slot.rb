@@ -1,3 +1,4 @@
 class ToolSlot < ApplicationRecord
-  belongs_to :ToolBay
+  belongs_to :tool_bay
+  has_many :tools
 end

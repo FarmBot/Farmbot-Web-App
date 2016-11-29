@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :tool do
-    ToolSlot nil
+    tool_slot
     name "MyString"
   end
 end

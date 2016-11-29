@@ -1,3 +1,3 @@
 class Tool < ApplicationRecord
-  belongs_to :ToolSlot
+  belongs_to :tool_slot
 end

@@ -1,9 +1,9 @@
 FactoryGirl.define do
   factory :tool_slot do
-    ToolBay nil
-    name "MyString"
+    tool_bay
+    name "Example Tool Slot"
     x 1
-    y 1
-    z 1
+    y 2
+    z 3
   end
 end

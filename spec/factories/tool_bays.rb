@@ -1,5 +1,6 @@
 FactoryGirl.define do
   factory :tool_bay do
-    name "MyString"
+    device
+    name "Example Tool Bay"
   end
 end
