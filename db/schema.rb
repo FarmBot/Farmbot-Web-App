@@ -10,7 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161028175744) do
+ActiveRecord::Schema.define(version: 20161129155523) do
+
+  create_table "delayed_jobs", force: :cascade do |t|
+    t.integer  "priority",   default: 0, null: false
+    t.integer  "attempts",   default: 0, null: false
+    t.text     "handler",                null: false
+    t.text     "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string   "locked_by"
+    t.string   "queue"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["priority", "run_at"], name: "delayed_jobs_priority"
+  end
 
   create_table "devices", force: :cascade do |t|
     t.integer "planting_area_id"
@@ -84,6 +99,33 @@ ActiveRecord::Schema.define(version: 20161028175744) do
     t.string  "kind",      default: "sequence"
     t.text    "args"
     t.text    "body"
+  end
+
+  create_table "tool_bays", force: :cascade do |t|
+    t.integer  "device_id"
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_tool_bays_on_device_id"
+  end
+
+  create_table "tool_slots", force: :cascade do |t|
+    t.integer  "tool_bay_id"
+    t.string   "name"
+    t.integer  "x"
+    t.integer  "y"
+    t.integer  "z"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.index ["tool_bay_id"], name: "index_tool_slots_on_tool_bay_id"
+  end
+
+  create_table "tools", force: :cascade do |t|
+    t.integer  "tool_slot_id"
+    t.string   "name"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.index ["tool_slot_id"], name: "index_tools_on_tool_slot_id"
   end
 
   create_table "users", force: :cascade do |t|

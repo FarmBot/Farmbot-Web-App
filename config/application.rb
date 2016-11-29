@@ -22,7 +22,7 @@ module FarmBot
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
     config.generators do |g|
-      g.template_engine :haml
+      g.template_engine :none
       g.test_framework :rspec, :fixture_replacement => :factory_girl, :views => false, :helper => false
       g.view_specs false
       g.helper_specs false
