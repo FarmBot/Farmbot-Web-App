@@ -30,17 +30,17 @@ module Sync
 
     def tools
       # Eager load Tools,slots and bays for performance
-      @tools = Tool
-        .includes(tool_slot: :tool_bay)
-        .where(tool_slot: {tool_bays: {device_id: Device.last.id}})
-    end
-
-    def tool_bays
-      @tool_bays ||= tool_slots.map(&:tool_bay)
+      @tools = tool_slots.map(&:tools).flatten.uniq
     end
 
     def tool_slots
-      @tool_slots ||= tools.map(&:tool_slot)
+      @tool_slots ||= tool_bays.map(&:tool_slots).flatten.uniq
+    end
+
+    def tool_bays
+      @tool_bays ||= ToolBay
+                       .includes(tool_slots: :tools)
+                       .where(device: device)
     end
 
     def plants
@@ -70,7 +70,7 @@ module Sync
     # The UI does not yet support creation of tool bays
     # This is a temporary stub
     # TODO: Remove this when UI level creation of tool bays happens.
-    def maybe_initialize_a_tool_bay      
+    def maybe_initialize_a_tool_bay
       unless device.tool_bays.any?
         ToolBay.create(device: device, name: "Tool Bay 1")
       end
