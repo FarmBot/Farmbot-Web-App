@@ -6,7 +6,7 @@ module ToolSlots
     end
 
     optional do
-      string :name
+      string  :name
       integer :x
       integer :y
       integer :z
