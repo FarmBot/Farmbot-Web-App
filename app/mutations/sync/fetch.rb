@@ -28,19 +28,20 @@ module Sync
 
   private
 
+    def q
+      @q ||= ToolBay::DeviceQuery.new(device)
+    end
+
     def tools
-      # Eager load Tools,slots and bays for performance
-      @tools = tool_slots.map(&:tools).flatten.uniq
+      @tools = q.tools
     end
 
     def tool_slots
-      @tool_slots ||= tool_bays.map(&:tool_slots).flatten.uniq
+      @tool_slots ||= q.tool_slots
     end
 
     def tool_bays
-      @tool_bays ||= ToolBay
-                       .includes(tool_slots: :tools)
-                       .where(device: device)
+      @tool_bays ||= q.tool_bays
     end
 
     def plants

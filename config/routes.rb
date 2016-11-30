@@ -14,7 +14,7 @@ FarmBot::Application.routes.draw do
     resources :peripherals,   only: [:create, :destroy, :index]
     resources :corpuses,      only: [:index, :show]
     resources :tool_bays,     only: [:show, :index, :update]
-    # resources :tool_slots,  only: [:create, :show, :index, :destroy, :update]
+    resources :tool_slots,    only: [:create, :show, :index, :destroy, :update]
     # resources :tools,       only: [:create, :show, :index, :destroy, :update]
   end
 
