@@ -5,10 +5,11 @@ class DashboardController < ApplicationController
   # support HTML5 push state routing.
   # If anyone knows a better way to support push state routing, please let me
   # know.
-  THE_FRONTEND_APP = File.read("public/app/index.html") # Cache in memory.
+  THE_FRONTEND_APP = File.read("public/app/index.html").html_safe # Cache in memory.
   ACME_SECRET = ENV["ACME_SECRET"]
+
   def index
-    render html: THE_FRONTEND_APP.html_safe, layout: false
+    render html: THE_FRONTEND_APP, layout: false
   end
 
   # This endpoint gets hit by Certbot / Let's Encrypt when its time to verify
