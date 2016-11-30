@@ -35,17 +35,22 @@ module Api
     def tool_slot
       @tool_slot ||= tool_slots.find{ |s| s.id == params.fetch(:id, "").to_i }
     end
-  
+
+    def maybe_add(name)
+      @tool_slot_params[name] = params[name] if params[name]
+    end
+
     def tool_slot_params
       if @tool_slot_params
         @tool_slot_params
       else
-        @tool_slot_params             = {device: current_device}
-        @tool_slot_params[:tool_slot] = tool_slot     if params[:id]
-        @tool_slot_params[:name]      = params[:name] if params[:name]
-        @tool_slot_params[:x]         = params[:x]    if params[:x]
-        @tool_slot_params[:y]         = params[:y]    if params[:y]
-        @tool_slot_params[:z]         = params[:z]    if params[:z]
+        @tool_slot_params               = {device: current_device}
+        @tool_slot_params[:tool_slot]   = tool_slot     if params[:id]
+        maybe_add :name
+        maybe_add :x
+        maybe_add :y
+        maybe_add :z
+        maybe_add :tool_bay_id
 
         @tool_slot_params
       end
