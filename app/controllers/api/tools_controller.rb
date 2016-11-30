@@ -5,15 +5,16 @@ module Api
     end
 
     def show
-        raise "Not implemented yet"
+      render json: tool
     end
 
     def destroy
-        raise "Not implemented yet"
+      tool.destroy!
+      render json: ""
     end
 
     def create
-        raise "Not implemented yet"
+      mutate Tools::Create.run(create_params)
     end
 
     def update
@@ -21,6 +22,10 @@ module Api
     end
 
 private
+
+    def create_params
+      {name: params[:name], tool_slot: q.find(:tool_slots, params[:tool_slot_id]) }
+    end
 
     def q
       @q ||= ToolBay::DeviceQuery.new(current_device)
@@ -30,5 +35,8 @@ private
       q.tools
     end
 
+    def tool
+      q.find(:tools, params[:id])
+    end
   end
 end
