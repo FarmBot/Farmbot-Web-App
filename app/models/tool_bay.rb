@@ -9,7 +9,7 @@ class ToolBay < ApplicationRecord
       @device = device
       @query  = ToolBay
                   .includes(tool_slots: :tools)
-                  .where(device: device)
+                  .where(device_id: device.id)
     end
 
     def tool_bays

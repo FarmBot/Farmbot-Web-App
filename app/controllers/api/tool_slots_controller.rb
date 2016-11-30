@@ -6,6 +6,8 @@ module Api
   
     def index
         render json: tool_slots
+    rescue => e
+      binding.pry
     end
   
     def update
