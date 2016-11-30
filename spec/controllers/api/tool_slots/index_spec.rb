@@ -5,13 +5,13 @@ describe Api::ToolSlotsController do
   describe '#show' do
     let(:user) { FactoryGirl.create(:user) }
     let!(:tool_bay) { FactoryGirl.create(:tool_bay, device: user.device) }
-    let!(:tool_slot) { FactoryGirl.create(:tool_slot, tool_bay: tool_bay) }
 
     it 'updates a tool slot' do
       sign_in user
+      ts = ToolSlot.create(tool_bay: tool_bay)
       get :index
-      expect(json.first[:id]).to eq(tool_bay.id)      
-      expect(json.first[:name]).to eq(tool_bay.name)      
+      expect(json.first[:id]).to eq(ts.id)      
+      expect(json.first[:name]).to eq(ts.name)      
     end
   end
 end
