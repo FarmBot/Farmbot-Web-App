@@ -4,7 +4,9 @@
 ### Request
 
 ```
-<%= JSON.pretty_generate(request.params) %>
+<%=
+  JSON.pretty_generate(request.params.except(:controller, :action, :format))
+%>
 ```
 
 ### Response
@@ -15,10 +17,10 @@
     if response.body.length > 500
       "Too big to display."
     else
-      JSON.pretty_generate(JSON.parse(response.body))
+      JSON.pretty_generate(response.body)
     end
-  rescue
-    response.body
+  rescue => e
+    e.message
   end
 %>
 ```
