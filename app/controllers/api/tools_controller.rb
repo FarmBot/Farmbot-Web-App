@@ -18,17 +18,28 @@ module Api
     end
 
     def update
-        raise "Not implemented yet"
+      mutate Tools::Update.run(update_params)
     end
 
 private
 
+    def update_params
+      output = {tool: tool}
+      output[:name]      = params[:name] if params[:name]
+      output[:tool_slot] = tool_slot     if params[:tool_slot_id]
+      output
+    end
+
     def create_params
-      {name: params[:name], tool_slot: q.find(:tool_slots, params[:tool_slot_id]) }
+      {name: params[:name], tool_slot: tool_slot }
     end
 
     def q
       @q ||= ToolBay::DeviceQuery.new(current_device)
+    end
+
+    def tool_slot
+      q.find(:tool_slots, params[:tool_slot_id])
     end
 
     def tools
