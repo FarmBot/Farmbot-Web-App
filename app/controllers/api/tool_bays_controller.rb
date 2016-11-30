@@ -5,6 +5,7 @@ module Api
     end
   
     def index
+        binding.pry
         render json: tool_bays
     end
   

@@ -7,6 +7,7 @@ describe Api::ToolBaysController do
     let!(:tool_bay) { FactoryGirl.create(:tool_bay, device: user.device) }
 
     it 'lists tool bays' do
+      tool_bay
       sign_in user
       get :index
       expect(json.first[:id]).to eq(tool_bay.id)      
