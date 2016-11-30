@@ -12,6 +12,13 @@ class ToolBay < ApplicationRecord
                   .where(device_id: device.id)
     end
 
+    def find(name, id)
+      result = send(name).find { |s| s.id == id.to_i }
+      raise ActiveRecord::RecordNotFound,
+        "Could not find #{name} with id #{id}" if !result
+      result
+    end
+
     def tool_bays
       query
     end

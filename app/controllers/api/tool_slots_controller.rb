@@ -33,7 +33,7 @@ module Api
     end
 
     def tool_slot
-      @tool_slot ||= tool_slots.find{ |s| s.id == params.fetch(:id, "").to_i }
+      @tool_slot ||= q.find(:tool_slots, params[:id])
     end
 
     def maybe_add(name)

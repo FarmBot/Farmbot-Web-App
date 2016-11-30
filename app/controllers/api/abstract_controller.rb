@@ -16,11 +16,6 @@ module Api
       sorry "You need to register a device first.", 422
     end
 
-    rescue_from OnlyJson do |exc|
-      sorry "Requests must be properly formatted type application/json",
-            422
-    end
-
     rescue_from ActiveRecord::RecordNotFound do |exc|
       sorry "Document not found.", 404
     end
