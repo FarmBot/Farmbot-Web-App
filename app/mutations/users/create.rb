@@ -24,6 +24,7 @@ module Users
       device     = Devices::Create.run!(user: resp[:user])
       auth_stuff = Auth::CreateToken.run!(email: email, password: password)
       resp.merge!(auth_stuff)
+      UserMailer.welcome_email(resp[:user]).deliver_later
       resp
     end
   end

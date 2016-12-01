@@ -14,7 +14,6 @@ gem "mysql"
 gem "database_cleaner"
 
 group :development, :test do
-  gem "mailcatcher"
   gem "sqlite3"
   gem "pry"
   gem "factory_girl_rails"
