@@ -1,0 +1,2 @@
+class WelcomeMailer < ApplicationMailer
+end
