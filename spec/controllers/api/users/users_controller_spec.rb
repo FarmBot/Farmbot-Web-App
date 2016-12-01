@@ -84,6 +84,7 @@ describe Api::UsersController do
                   name:                  "Frank" }
       old_email_count = ActionMailer::Base.deliveries.length
       post :create, params: params
+      sleep 0.5 # Mail deliveries occur in background thread.
       expect(ActionMailer::Base.deliveries.length).to be > old_email_count
       expect(ActionMailer::Base.deliveries.last.to.first).to eq(email)
       expect(User.count).to eq(original_count + 1)
