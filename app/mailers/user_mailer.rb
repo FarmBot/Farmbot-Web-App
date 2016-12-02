@@ -7,6 +7,7 @@ class UserMailer < ApplicationMailer
     def password_reset(user, raw_token)
       @user  = user
       @token = raw_token
+      @host  = $API_URL
       mail(to: @user.email, subject: 'FarmBot Password Reset Instructions')
     end
 end
