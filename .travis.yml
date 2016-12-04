@@ -5,12 +5,11 @@ before_script:
   - cp config/database.travis.yml config/database.yml
   - bundle exec rake db:create db:migrate
 script:
-  - bundle exec rspec
-env:
   # A 'fake' secret token for use in our CI env.
   # Don't worry- this isn't the real one.
-  - SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
-  - MQTT_HOST=blooper.io
-  - OS_UPDATE_SERVER=http://blah.com
-  - FW_UPDATE_SERVER=http://test.com
-  - DB=postgresql
+  - export SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
+  - export MQTT_HOST=example.com
+  - export OS_UPDATE_SERVER=http://example.com
+  - export FW_UPDATE_SERVER=http://example.com
+  - export DB=postgresql
+  - bundle exec rspec
