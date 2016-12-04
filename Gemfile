@@ -20,6 +20,8 @@ group :development, :test do
   gem "faker"
   gem "smarf_doc", github: "RickCarlino/smarf_doc"
   gem "rails-erd"
+  gem "rspec"
+  gem "rspec-rails"
 end
 
 group :production do
@@ -27,7 +29,5 @@ group :production do
 end
 
 group :test do
-  gem "rspec"
-  gem "rspec-rails"
   gem "simplecov"
 end
