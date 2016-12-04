@@ -3,16 +3,9 @@ rvm:
   - 2.3.2
 before_script:
   - cp config/database.travis.yml config/database.yml
-  - mysql -e 'create database farmbot_test'
-  - psql -c 'create database farmbot_test' -U postgres
+  - bundle exec rake db:create db:migrate
 script:
-  - mysql -e 'create database farmbot_test'
-  - psql -c 'create database farmbot_test' -U postgres
-  - cp config/database.travis.yml config/database.yml
-  - RAILS_ENV=test bundle exec rake db:migrate --trace
-  - bundle exec rake db:test:prepare
-  - bundle exec rake
-script: "bundle exec rspec spec/"
+  - bundle exec rspec
 env:
   # A 'fake' secret token for use in our CI env.
   # Don't worry- this isn't the real one.
