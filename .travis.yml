@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-- 2.3.2
+  - 2.3.2
 before_script:
   - cp config/database.travis.yml config/database.yml
   - mysql -e 'create database farmbot_test'
