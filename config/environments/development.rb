@@ -9,4 +9,6 @@ FarmBot::Application.configure do
   config.cache_classes = false
   config.consider_all_requests_local = true
   config.eager_load = false
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = { :address => "localhost", :port => 1025 }
 end
