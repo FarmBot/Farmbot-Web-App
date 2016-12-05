@@ -17,6 +17,7 @@ FarmBot::Application.routes.draw do
     resources :tool_bays,       only: [:show, :index, :update]
     resources :tool_slots,      only: [:create, :show, :index, :destroy, :update]
     resources :tools,           only: [:create, :show, :index, :destroy, :update]
+    put "/password_resets" => "password_resets#update", as: :whatever
   end
 
   devise_for :users
