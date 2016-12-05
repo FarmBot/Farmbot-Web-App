@@ -31,7 +31,15 @@ private
     end
 
     def create_params
-      {name: params[:name], tool_slot: tool_slot }
+      if @create_params
+        @create_params
+      else
+        tsid = params[:tool_slot_id]
+        @create_params = { name: params[:name],
+                          device: current_device }
+        @create_params[:tool_slot_id] = tsid if tsid
+        @create_params
+      end
     end
 
     def q
