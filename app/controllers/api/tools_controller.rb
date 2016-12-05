@@ -55,7 +55,8 @@ private
     end
 
     def tool
-      q.find(:tools, params[:id])
+      puts "FIX THIS NOW!!"
+      @tool ||= Tool.find(params[:id])
     end
   end
 end
