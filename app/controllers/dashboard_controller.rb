@@ -5,7 +5,8 @@ class DashboardController < ApplicationController
   # support HTML5 push state routing.
   # If anyone knows a better way to support push state routing, please let me
   # know.
-  THE_FRONTEND_APP = File.read("public/app/index.html") # Cache in memory.
+  app_file = "public/app/index.html"
+  THE_FRONTEND_APP = File.read(app_file) if File.exist? app_file # Cache in memory.
   ACME_SECRET = ENV["ACME_SECRET"]
   def index
     render html: THE_FRONTEND_APP.html_safe, layout: false
