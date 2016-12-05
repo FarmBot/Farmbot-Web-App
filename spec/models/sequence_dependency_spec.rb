@@ -13,5 +13,5 @@ describe SequenceDependency do
     sd = SequenceDependency.create(sequence:   parent,
                                    dependency: child2)
     expect(sd.valid?).to eq(true)
-  end  
+  end
 end

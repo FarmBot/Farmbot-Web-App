@@ -20,7 +20,7 @@ module Api
       render json: ""
     end
 
-  private
+    private
 
     def the_regimen
       your_regimens.find(params[:id])
@@ -29,7 +29,7 @@ module Api
     def your_regimens
       Regimen.where(regimen_params)
     end
-    
+
     def regimen_params
       { device: current_device }
     end

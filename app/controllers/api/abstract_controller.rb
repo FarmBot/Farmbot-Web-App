@@ -33,7 +33,7 @@ module Api
       binding.pry
     end
 
-private
+    private
 
     def set_default_response_format
       request.format = "json"

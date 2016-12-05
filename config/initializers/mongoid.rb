@@ -10,7 +10,6 @@
 #       puts "TODO: DELETE THIS!!"
 #     end
 
-
 #     class Validations < Exception
 #       puts "TODO: DELETE THIS!!"
 #     end

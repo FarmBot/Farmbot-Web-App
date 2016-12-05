@@ -17,7 +17,7 @@ module CeleryScript
     def run
       error || tree
     end
-    
+
     def valid?
       error ? false : true
     end
@@ -50,18 +50,18 @@ module CeleryScript
           unless has_key
             msgs = node.args.keys.join(", ")
             msgs = "nothing" if msgs.length < 1
-          msg = "Expected node '#{node.kind}' to have a '#{arg}',"\
-          " but got: #{ msgs }."
-          raise TypeCheckError, msg
+            msg = "Expected node '#{node.kind}' to have a '#{arg}',"\
+            " but got: #{ msgs }."
+            raise TypeCheckError, msg
           end
         end
-      has      = node.args.keys.map(&:to_sym) # Either bigger or equal.
-      required = corpus.fetchNode(node.kind).allowed_args # Always smallest.
-      if !(has.length === required.length)
-        extras = has - required
-        raise TypeCheckError, "'#{node.kind}' has unexpected arguments: "\
-                              "#{extras}. Allowed arguments: #{allowed}"
-      end
+        has      = node.args.keys.map(&:to_sym) # Either bigger or equal.
+        required = corpus.fetchNode(node.kind).allowed_args # Always smallest.
+        if !(has.length === required.length)
+          extras = has - required
+          raise TypeCheckError, "'#{node.kind}' has unexpected arguments: "\
+                                "#{extras}. Allowed arguments: #{allowed}"
+        end
     end
 
     def check_arg_validity(should_be, node)

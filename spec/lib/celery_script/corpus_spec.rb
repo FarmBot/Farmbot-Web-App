@@ -11,8 +11,8 @@ describe CeleryScript::Corpus do
       expect(result["nodes"]).to be_kind_of(Array)
       expect(result["nodes"].sample.keys.sort).to eq(["allowed_args",
                                                       "allowed_body_types",
-                                                      "name"])  
+                                                      "name"])
       expect(result["args"].sample.keys.sort).to eq(["allowed_values",
-                                                     "name"])  
+                                                     "name"])
   end
 end

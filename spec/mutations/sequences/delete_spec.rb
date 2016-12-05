@@ -4,8 +4,8 @@ describe Sequences::Delete do
   let(:sequence)     { FactoryGirl.create(:sequence)  }
 
   it 'refuses to delete a sequence that a regimen depends on' do
-    regimen_item1 = FactoryGirl.create(:regimen_item, sequence: sequence)  
-    regimen_item2 = FactoryGirl.create(:regimen_item, sequence: sequence) 
+    regimen_item1 = FactoryGirl.create(:regimen_item, sequence: sequence)
+    regimen_item2 = FactoryGirl.create(:regimen_item, sequence: sequence)
     expect(sequence.regimen_items.count).to eq(2)
     result = Sequences::Delete.run(device: sequence.device, sequence: sequence)
     expect(result.success?).to be false

@@ -5,7 +5,7 @@ describe Api::PeripheralsController do
   describe '#destroy' do
     let(:user) { FactoryGirl.create(:user) }
     let(:peripheral) { FactoryGirl.create(:peripheral, device: user.device) }
-  
+
     it 'deletes a Peripheral' do
       sign_in user
       peripheral

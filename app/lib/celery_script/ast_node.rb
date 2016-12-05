@@ -47,7 +47,7 @@ module CeleryScript
         (hash[:body].is_a?(Array) || hash[:body] == nil) &&
         (hash[:comment].is_a?(String) || hash[:comment] == nil) &&
         (hash[:args].is_a?(Hash)) &&
-        (hash[:kind].is_a?(String))      
+        (hash[:kind].is_a?(String))
       end
   end
 end
