@@ -4,17 +4,6 @@ GIT
   specs:
     smarf_doc (1.0.0)
 
-GIT
-  remote: git://github.com/plataformatec/devise.git
-  revision: 8a4d610c587ca7d0f5ce40d9a4a28a2da717f1e9
-  specs:
-    devise (4.2.0)
-      bcrypt (~> 3.0)
-      orm_adapter (~> 0.1)
-      railties (>= 4.1.0, < 5.1)
-      responders
-      warden (~> 1.2.3)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -65,6 +54,12 @@ GEM
     concurrent-ruby (1.0.2)
     daemons (1.2.4)
     database_cleaner (1.5.3)
+    devise (4.2.0)
+      bcrypt (~> 3.0)
+      orm_adapter (~> 0.1)
+      railties (>= 4.1.0, < 5.1)
+      responders
+      warden (~> 1.2.3)
     diff-lcs (1.2.5)
     docile (1.1.5)
     erubis (2.7.0)
@@ -200,7 +195,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers (~> 0.8.3)
   database_cleaner
-  devise!
+  devise
   factory_girl_rails
   faker
   ice_cube

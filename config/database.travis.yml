@@ -1,21 +1,11 @@
-postgresql: &postgresql
+defaults: &defaults
   adapter: postgresql
-  username: postgres
-  password:
-  database: farmbot_<%= Rails.env %>
   min_messages: ERROR
 
-defaults: &defaults
-  pool: 5
-  timeout: 5000
-  host: localhost
-  <<: *<%= ENV['DB'] || "postgresql" %>
-
 development:
+  database: farmbot_development
   <<: *defaults
 
 test:
-  <<: *defaults
-
-production:
+  database: farmbot_test
   <<: *defaults
