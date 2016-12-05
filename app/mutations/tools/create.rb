@@ -14,7 +14,7 @@ module Tools
     end
 
     def execute
-      Tool.create!(inputs.except(:device))
+      Tool.create!(inputs)
     end
 
   private

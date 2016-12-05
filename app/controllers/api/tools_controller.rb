@@ -42,21 +42,12 @@ private
       end
     end
 
-    def q
-      @q ||= ToolBay::DeviceQuery.new(current_device)
-    end
-
-    def tool_slot
-      q.find(:tool_slots, params[:tool_slot_id])
-    end
-
     def tools
-      q.tools
+      Tool.where(device: current_device)
     end
 
     def tool
-      puts "FIX THIS NOW!!"
-      @tool ||= Tool.find(params[:id])
+      @tool ||= tools.find(params[:id])
     end
   end
 end

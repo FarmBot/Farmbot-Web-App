@@ -9,6 +9,5 @@ class Device < ActiveRecord::Base
   has_many :peripherals, dependent: :destroy
   has_many :tool_bays, dependent: :destroy
   has_one  :planting_area, dependent: :destroy
-
   validates_uniqueness_of :name
 end

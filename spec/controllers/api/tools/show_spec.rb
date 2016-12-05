@@ -6,7 +6,9 @@ describe Api::ToolsController do
     let(:user) { FactoryGirl.create(:user) }
     let(:tool_bay) { FactoryGirl.create(:tool_bay, device: user.device) }
     let(:tool_slot) { FactoryGirl.create(:tool_slot, tool_bay: tool_bay) }
-    let(:tool) { FactoryGirl.create(:tool, tool_slot: tool_slot) }
+    let(:tool) { FactoryGirl.create(:tool,
+                    tool_slot: tool_slot,
+                    device: user.device) }
 
     it 'renders a tool' do
       sign_in user

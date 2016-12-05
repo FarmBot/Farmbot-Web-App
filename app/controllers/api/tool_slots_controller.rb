@@ -24,16 +24,12 @@ module Api
   
   private
 
-    def q
-      @q ||= ToolBay::DeviceQuery.new(current_device)
-    end
-
     def tool_slots
-        @tool_slots ||= q.tool_slots
+        @tool_slots ||= ToolSlot.where(tool_bay_id: current_device.tool_bays.pluck(:id))
     end
 
     def tool_slot
-      @tool_slot ||= q.find(:tool_slots, params[:id])
+      @tool_slot ||= tool_slots.find(params[:id])
     end
 
     def maybe_add(name)

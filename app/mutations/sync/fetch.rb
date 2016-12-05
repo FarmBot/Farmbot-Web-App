@@ -28,20 +28,16 @@ module Sync
 
   private
 
-    def q
-      @q ||= ToolBay::DeviceQuery.new(device)
-    end
-
     def tools
-      @tools = q.tools
+      @tools = Tool.where(device: device)
     end
 
     def tool_slots
-      @tool_slots ||= q.tool_slots
+      @tool_slots ||= ToolSlot.where(tool_bay_id: tool_bays.pluck(:id))
     end
 
     def tool_bays
-      @tool_bays ||= q.tool_bays
+      @tool_bays ||= device.tool_bays
     end
 
     def plants
