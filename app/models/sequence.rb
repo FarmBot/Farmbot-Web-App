@@ -34,7 +34,7 @@ class Sequence < ActiveRecord::Base
 
   Corpus = CeleryScript::Corpus
       .new
-      .defineArg(:pin_mode,        [Fixnum]) do |node|
+      .defineArg(:pin_mode, [Fixnum]) do |node|
         within(ALLOWED_PIN_MODES, node) do |val|
           "Can not put \"#{ val.to_s }\" into a left hand side (LHS)"\
           " argument. Allowed values: #{ALLOWED_LHS.map(&:to_s).join(", ")}"
@@ -44,19 +44,19 @@ class Sequence < ActiveRecord::Base
         missing = !exists?(node.value)
         node.invalidate!("Sequence ##{ node.value } does not exist.") if missing
       end
-      .defineArg(:lhs,             [String]) do |node|
+      .defineArg(:lhs, [String]) do |node|
         within(ALLOWED_LHS, node) do |val|
           "Can not put \"#{ val.to_s }\" into a left hand side (LHS)"\
           " argument. Allowed values: #{ALLOWED_LHS.map(&:to_s).join(", ")}"
         end
       end
-      .defineArg(:op,              [String]) do |node|
+      .defineArg(:op, [String]) do |node|
         within(ALLOWED_OPS, node) do |val|
           "Can not put \"#{ val.to_s }\" into an operand (OP)"\
           " argument. Allowed values: #{ALLOWED_OPS.map(&:to_s).join(", ")}"
         end
       end
-      .defineArg(:channel_name,    [String]) do |node|
+      .defineArg(:channel_name, [String]) do |node|
         within(ALLOWED_CHANNEL_NAMES, node) do |val|
           "\"#{ val.to_s }\" is not a valid channel_name. " \
           "Allowed values: #{ALLOWED_CHANNEL_NAMES.map(&:to_s).join(", ")}"

@@ -44,7 +44,7 @@ module Api
         @tool_slot_params
       else
         @tool_slot_params               = {device: current_device}
-        @tool_slot_params[:tool_slot]   = tool_slot     if params[:id]
+        @tool_slot_params[:tool_slot]   = tool_slot if params[:id]
         maybe_add :name
         maybe_add :x
         maybe_add :y

@@ -86,7 +86,7 @@ class CreateEverything < ActiveRecord::Migration
       t.integer :sequence_id
       t.string :message_type
       t.integer :position
-      t.text   :command
+      t.text :command
     end
 
     ### A single system User on the decision support system.

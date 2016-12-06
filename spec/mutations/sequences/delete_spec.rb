@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Sequences::Delete do
-  let(:sequence)     { FactoryGirl.create(:sequence)  }
+  let(:sequence) { FactoryGirl.create(:sequence) }
 
   it 'refuses to delete a sequence that a regimen depends on' do
     regimen_item1 = FactoryGirl.create(:regimen_item, sequence: sequence)

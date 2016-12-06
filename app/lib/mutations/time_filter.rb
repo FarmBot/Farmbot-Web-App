@@ -29,7 +29,7 @@ module Mutations
         rescue ArgumentError
           return [nil, :time]
         end
-      elsif data.respond_to?(:to_time)  # Time
+      elsif data.respond_to?(:to_time) # Time
         actual_time = data.to_time
       else
         return [nil, :time]
