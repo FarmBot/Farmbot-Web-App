@@ -26,6 +26,15 @@ module Api
 
 private
 
+    # TODO: Come back and fix this. Rails 5 params conflict with
+    # the way we do things right now. We used to just use the params
+    # object (it was a hash), but now it is a proper object.
+    def raw_json
+      @raw_json ||= JSON.parse(request.body.read)
+    rescue JSON::ParserError => e
+      raise OnlyJson
+    end
+
     def set_default_response_format
       request.format = "json"
     end

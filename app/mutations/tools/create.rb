@@ -10,7 +10,7 @@ module Tools
     end
 
     def validate
-      bad_tool_slot_id! unless tool_slot
+      bad_tool_slot_id! if tool_slot_id && !tool_slot
       forbidden! if tool_slot_id && !it_is_your_tool_slot
     end
 
