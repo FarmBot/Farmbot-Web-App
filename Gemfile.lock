@@ -90,6 +90,7 @@ GEM
     mutations (0.8.0)
       activesupport
     mysql (2.9.1)
+    mysql2 (0.4.5)
     nio4r (1.2.1)
     nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
@@ -202,6 +203,7 @@ DEPENDENCIES
   jwt
   mutations
   mysql
+  mysql2
   pg
   pry
   rack-cors
