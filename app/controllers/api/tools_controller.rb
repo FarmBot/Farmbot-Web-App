@@ -25,8 +25,8 @@ private
 
     def update_params
       output = {tool: tool}
-      output[:name]      = params[:name] if params[:name]
-      output[:tool_slot] = tool_slot     if params[:tool_slot_id]
+      output[:name]      = params[:name]         if params[:name]
+      output[:tool_slot] = params[:tool_slot_id] if params[:tool_slot_id]
       output
     end
 
@@ -34,9 +34,9 @@ private
       if @create_params
         @create_params
       else
-        tsid = params[:tool_slot_id]
         @create_params = { name: params[:name],
                           device: current_device }
+        tsid = params[:tool_slot_id]
         @create_params[:tool_slot_id] = tsid if tsid
         @create_params
       end

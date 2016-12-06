@@ -1,5 +1,5 @@
 module Tools
-  class Create  < Mutations::Command
+  class Create  < Tools::Base
     required do
       string :name
       model :device, class: Device
@@ -10,17 +10,12 @@ module Tools
     end
 
     def validate
-      puts "TODO: Validate user authorizations"
+      bad_tool_slot_id! unless tool_slot
+      forbidden! if tool_slot_id && !it_is_your_tool_slot
     end
 
     def execute
       Tool.create!(inputs)
-    end
-
-  private
-
-    def query
-      @query ||= ToolBay::DeviceQuery.new(device)
     end
   end
 end

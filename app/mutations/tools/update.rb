@@ -1,12 +1,17 @@
 module Tools
-  class Update  < Mutations::Command
+  class Update  < Tools::Base
     required do
-      model :tool,      class: Tool
+      model :tool, class: Tool
     end
 
     optional do
       string :name
-      model :tool_slot, class: ToolSlot
+      integer :tool_slot_id
+    end
+
+    def validate
+      bad_tool_slot_id! if tool_slot_id && !tool_slot
+      forbidden! if tool_slot_id && !it_is_your_tool_slot
     end
 
     def execute
