@@ -1,6 +1,5 @@
 module Api
   class RegimensController < Api::AbstractController
-
     def index
       render json: your_regimens
     end

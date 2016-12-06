@@ -1,5 +1,4 @@
 class SessionToken < AbstractJwtToken
-
   DEFAULT_OS = "https://api.github.com/repos/" \
                "farmbot/farmbot_os/releases/latest"
   DEFAULT_FW = "https://api.github.com/repos/FarmBot/farmbot-arduino-firmware/"\

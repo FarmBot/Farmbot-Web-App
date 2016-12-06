@@ -1,6 +1,5 @@
 module Api
   class ToolSlotsController < Api::AbstractController
-
     def create
       mutate ToolSlots::Create.run(tool_slot_params)      
     end

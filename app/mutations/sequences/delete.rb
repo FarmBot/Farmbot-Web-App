@@ -1,6 +1,5 @@
 module Sequences
   class Delete < Mutations::Command
-
     required do
       model :device, class: Device
       model :sequence, class: Sequence

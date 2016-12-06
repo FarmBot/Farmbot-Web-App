@@ -5,5 +5,4 @@ class PlantingArea < ActiveRecord::Base
 
   # field :width, type: Integer, default: 600
   # field :length, type: Integer, default: 300
-
 end
