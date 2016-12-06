@@ -18,7 +18,7 @@ group :development, :test do
   gem "pry"
   gem "factory_girl_rails"
   gem "faker"
-  gem "smarf_doc", github: "RickCarlino/smarf_doc"
+  gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
   gem "rails-erd"
   gem "rspec"
   gem "rspec-rails"
