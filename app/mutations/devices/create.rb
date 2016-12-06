@@ -22,6 +22,7 @@ module Devices
       end
       device
     end
+
     private
 
     def merge_default_values

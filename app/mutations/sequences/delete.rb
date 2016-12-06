@@ -14,6 +14,7 @@ module Sequences
        sequence.destroy!
        return ""
     end
+
     private
 
     def check_if_any_sequences_using_this
