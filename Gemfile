@@ -25,7 +25,10 @@ group :development, :test do
 end
 
 group :production do
+  # For Heroku users:
   gem "pg"
+  # For Dokku users:
+  gem "mysql"
 end
 
 group :test do

@@ -2,11 +2,15 @@ module ToolSlots
   class Create < Mutations::Command
     required do
       model :device, class: Device
+      integer :tool_bay_id
+    end
+
+    optional do
+      integer :tool_id
       string :name
       integer :x
       integer :y
       integer :z
-      integer :tool_bay_id
     end
 
     def validate

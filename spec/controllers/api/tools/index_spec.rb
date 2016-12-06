@@ -7,6 +7,10 @@ describe Api::ToolsController do
     let(:tool_bay) { FactoryGirl.create(:tool_bay, device: user.device) }
     let(:tool_slot) { FactoryGirl.create(:tool_slot, tool_bay: tool_bay) }
     let(:tools) { FactoryGirl.create_list(:tool, 1, tool_slot: tool_slot) }
+    let!(:tools) { FactoryGirl.create_list(:tool,
+                    1,
+                    tool_slot: tool_slot,
+                    device: user.device) }
 
     it 'lists all tools' do
       tools
