@@ -22,7 +22,7 @@ module Mutations
       elsif data.is_a?(String)
         begin
           actual_time = if options[:format]
-            Time.strptime(data, options[:format])
+                          Time.strptime(data, options[:format])
           else
             Time.parse(data)
           end

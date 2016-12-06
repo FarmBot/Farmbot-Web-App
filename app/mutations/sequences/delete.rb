@@ -11,8 +11,8 @@ module Sequences
     end
 
     def execute
-       sequence.destroy!
-       return ""
+      sequence.destroy!
+      return ""
     end
 
     private

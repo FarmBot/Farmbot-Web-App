@@ -42,26 +42,26 @@ module CeleryScript
     end
 
     def check_arity(node)
-        allowed = corpus
-        .fetchNode(node.kind)
-        .allowed_args
-        allowed.map do |arg|
-          has_key = node.args.has_key?(arg) || node.args.has_key?(arg.to_s)
-          unless has_key
-            msgs = node.args.keys.join(", ")
-            msgs = "nothing" if msgs.length < 1
-            msg = "Expected node '#{node.kind}' to have a '#{arg}',"\
-            " but got: #{ msgs }."
-            raise TypeCheckError, msg
-          end
+      allowed = corpus
+      .fetchNode(node.kind)
+      .allowed_args
+      allowed.map do |arg|
+        has_key = node.args.has_key?(arg) || node.args.has_key?(arg.to_s)
+        unless has_key
+          msgs = node.args.keys.join(", ")
+          msgs = "nothing" if msgs.length < 1
+          msg = "Expected node '#{node.kind}' to have a '#{arg}',"\
+          " but got: #{ msgs }."
+          raise TypeCheckError, msg
         end
-        has      = node.args.keys.map(&:to_sym) # Either bigger or equal.
-        required = corpus.fetchNode(node.kind).allowed_args # Always smallest.
-        if !(has.length === required.length)
-          extras = has - required
-          raise TypeCheckError, "'#{node.kind}' has unexpected arguments: "\
-                                "#{extras}. Allowed arguments: #{allowed}"
-        end
+      end
+      has      = node.args.keys.map(&:to_sym) # Either bigger or equal.
+      required = corpus.fetchNode(node.kind).allowed_args # Always smallest.
+      if !(has.length === required.length)
+        extras = has - required
+        raise TypeCheckError, "'#{node.kind}' has unexpected arguments: "\
+                              "#{extras}. Allowed arguments: #{allowed}"
+      end
     end
 
     def check_arg_validity(should_be, node)

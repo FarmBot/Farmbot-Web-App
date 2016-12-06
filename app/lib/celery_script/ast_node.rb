@@ -13,41 +13,41 @@ module CeleryScript
   end
 
   class AstNode < AbstractNode
-      attr_reader :args, :body, :comment, :kind, :parent
-      BODY_HAS_NON_NODES = "The `body` of a node can only contain nodes- " \
-                           "no leaves here."
-      LEAVES_NEED_KEYS   = "Tried to initialize a leaf without a key."
-      def initialize(parent = nil, args:, body: nil, comment: "", kind:)
-          @comment, @kind, @parent = comment, kind, parent
+    attr_reader :args, :body, :comment, :kind, :parent
+    BODY_HAS_NON_NODES = "The `body` of a node can only contain nodes- " \
+                         "no leaves here."
+    LEAVES_NEED_KEYS   = "Tried to initialize a leaf without a key."
+    def initialize(parent = nil, args:, body: nil, comment: "", kind:)
+      @comment, @kind, @parent = comment, kind, parent
 
-          @args = args.map  do |key, value|
-            [key, maybe_initialize(self, value, key)]
-          end.to_h if args
+      @args = args.map  do |key, value|
+        [key, maybe_initialize(self, value, key)]
+      end.to_h if args
 
-          @body = body.map do |e|
-            raise TypeCheckError, BODY_HAS_NON_NODES unless is_node?(e)
-            maybe_initialize(self, e)
-          end if body
+      @body = body.map do |e|
+        raise TypeCheckError, BODY_HAS_NON_NODES unless is_node?(e)
+        maybe_initialize(self, e)
+      end if body
+    end
+
+    def maybe_initialize(parent, leaf_or_node, key = "__NEVER__")
+      if is_node?(leaf_or_node)
+        AstNode.new(parent, leaf_or_node)
+      else
+        raise TypeCheckError, LEAVES_NEED_KEYS if key == "__NEVER__"
+        AstLeaf.new(parent, leaf_or_node, key)
       end
+    end
 
-      def maybe_initialize(parent, leaf_or_node, key = "__NEVER__")
-        if is_node?(leaf_or_node)
-          AstNode.new(parent, leaf_or_node)
-        else
-          raise TypeCheckError, LEAVES_NEED_KEYS if key == "__NEVER__"
-          AstLeaf.new(parent, leaf_or_node, key)
-        end
-      end
-
-      def is_node?(hash)
-        hash.is_a?(Hash) &&
-        hash.symbolize_keys! &&
-        hash.has_key?(:kind) &&
-        hash.has_key?(:args) &&
-        (hash[:body].is_a?(Array) || hash[:body] == nil) &&
-        (hash[:comment].is_a?(String) || hash[:comment] == nil) &&
-        (hash[:args].is_a?(Hash)) &&
-        (hash[:kind].is_a?(String))
-      end
+    def is_node?(hash)
+      hash.is_a?(Hash) &&
+      hash.symbolize_keys! &&
+      hash.has_key?(:kind) &&
+      hash.has_key?(:args) &&
+      (hash[:body].is_a?(Array) || hash[:body] == nil) &&
+      (hash[:comment].is_a?(String) || hash[:comment] == nil) &&
+      (hash[:args].is_a?(Hash)) &&
+      (hash[:kind].is_a?(String))
+    end
   end
 end

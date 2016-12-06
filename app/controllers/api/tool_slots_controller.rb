@@ -5,15 +5,15 @@ module Api
     end
 
     def show
-        render json: tool_slot
+      render json: tool_slot
     end
   
     def index
-        render json: tool_slots
+      render json: tool_slots
     end
   
     def update
-        mutate ToolSlots::Update.run(tool_slot_params)
+      mutate ToolSlots::Update.run(tool_slot_params)
     end
 
     def destroy
@@ -28,7 +28,7 @@ module Api
     end
 
     def tool_slots
-        @tool_slots ||= q.tool_slots
+      @tool_slots ||= q.tool_slots
     end
 
     def tool_slot

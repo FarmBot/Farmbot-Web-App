@@ -13,7 +13,7 @@ describe CeleryScript::Checker do
   end
 
   let(:tree) do
-      CeleryScript::AstNode.new(hash)
+    CeleryScript::AstNode.new(hash)
   end
 
   let (:corpus) { Sequence::Corpus}
@@ -21,10 +21,10 @@ describe CeleryScript::Checker do
   let (:checker) { CeleryScript::Checker.new(tree, corpus) }
 
   it "runs through a syntactically valid program" do
-      outcome = checker.run!
-      expect(outcome).to be_kind_of(CeleryScript::AstNode)
-      expect(outcome.comment).to eq("Properly formatted, syntactically valid"\
-                                    " sequence.")
+    outcome = checker.run!
+    expect(outcome).to be_kind_of(CeleryScript::AstNode)
+    expect(outcome.comment).to eq("Properly formatted, syntactically valid"\
+                                  " sequence.")
   end
 
   it "handles missing args" do
@@ -50,10 +50,10 @@ describe CeleryScript::Checker do
   end
 
   it "returns an error rather than raising one via #run()" do
-      outcome = checker.run
-      expect(outcome).to be_kind_of(CeleryScript::AstNode)
-      checker.tree.body.first.args[:x] = "No longer valid"
-      expect(checker.run).to be_kind_of(CeleryScript::TypeCheckError)
+    outcome = checker.run
+    expect(outcome).to be_kind_of(CeleryScript::AstNode)
+    checker.tree.body.first.args[:x] = "No longer valid"
+    expect(checker.run).to be_kind_of(CeleryScript::TypeCheckError)
   end
 
   it 'handles wrong leaf types' do
