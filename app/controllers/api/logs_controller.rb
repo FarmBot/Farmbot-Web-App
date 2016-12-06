@@ -9,6 +9,7 @@ module Api
         render json: raw_json
           .map { |i| new_log(i) }
           .map { |i| i.success? ? i : i.errors.message }
+          .tap { current_device.limit_log_length }
       when Hash
         return mutate new_log(raw_json)
       else

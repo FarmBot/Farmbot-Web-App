@@ -11,4 +11,9 @@ class Device < ActiveRecord::Base
   has_many :tool_bays,     dependent: :destroy
   has_one  :planting_area, dependent: :destroy
   validates :name,         uniqueness: true
+
+  def limit_log_length
+    these = logs.last(max_log_count).pluck(:id)
+    logs.where.not(id: these).destroy_all!
+  end
 end
