@@ -1,6 +1,5 @@
 module Api
   class PlantingAreasController < Api::AbstractController
-
     def index
       render json: PlantingArea.where(device: current_device)
     end

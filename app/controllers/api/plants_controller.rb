@@ -1,6 +1,5 @@
 module Api
   class PlantsController < Api::AbstractController
-
     def index
       render json: Plant.where(device_params)
     end

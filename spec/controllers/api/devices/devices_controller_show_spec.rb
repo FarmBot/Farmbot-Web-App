@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Api::DevicesController do
-
   include Devise::Test::ControllerHelpers
 
   let(:user) { FactoryGirl.create(:user) }
@@ -23,7 +22,6 @@ describe Api::DevicesController do
         webcam_url: String }.each do |name, klass|
           expect(json[name]).to be_an_instance_of(klass)
         end
-      
     end
   end
 end

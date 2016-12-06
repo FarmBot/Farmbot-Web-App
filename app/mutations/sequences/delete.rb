@@ -1,6 +1,5 @@
 module Sequences
   class Delete < Mutations::Command
-
     required do
       model :device, class: Device
       model :sequence, class: Sequence
@@ -12,10 +11,11 @@ module Sequences
     end
 
     def execute
-       sequence.destroy!
-       return ""
+      sequence.destroy!
+      return ""
     end
-  private
+
+    private
 
     def check_if_any_sequences_using_this
       in_use = SequenceDependency.where(dependency: sequence)
@@ -34,7 +34,7 @@ module Sequences
       regimen_items = RegimenItem
                         .joins(:sequence, :regimen)
                         .where(sequence_id: sequence.id )
-      if regimen_items.count > 0 
+      if regimen_items.count > 0
         names = regimen_items.map(&:regimen)
                              .map(&:name)
                              .uniq

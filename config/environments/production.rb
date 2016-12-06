@@ -14,7 +14,7 @@ FarmBot::Application.configure do
   # HACK AHEAD! Here's why:
   # 1. FarmBot Inc. Uses Sendgrid for email.
   # 2. FarmBot is an open source project that must be vendor neutral.
-  # 3. Heroku uses non-neutral ENV names like "SENDGRID_PASSWORD" 
+  # 3. Heroku uses non-neutral ENV names like "SENDGRID_PASSWORD"
   # SOLUTION: Support neutral names like "SMTP_HOST",
   #           but fallback to non-neutral var names like "SENDGRID_USERNAME" if
   #           required.
@@ -26,4 +26,3 @@ FarmBot::Application.configure do
                                          user_name: uname,
                                          password:  pw }
 end
-

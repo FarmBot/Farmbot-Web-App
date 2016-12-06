@@ -1,27 +1,26 @@
 module Api
   class ToolSlotsController < Api::AbstractController
-
     def create
-      mutate ToolSlots::Create.run(tool_slot_params)      
+      mutate ToolSlots::Create.run(tool_slot_params)
     end
 
     def show
-        render json: tool_slot
+      render json: tool_slot
     end
-  
+
     def index
-        render json: tool_slots
+      render json: tool_slots
     end
-  
+
     def update
-        mutate ToolSlots::Update.run(tool_slot_params)
+      mutate ToolSlots::Update.run(tool_slot_params)
     end
 
     def destroy
       tool_slot.destroy!
       render json: ""
     end
-  
+
   private
 
     def q
@@ -29,7 +28,7 @@ module Api
     end
 
     def tool_slots
-        @tool_slots ||= q.tool_slots
+      @tool_slots ||= q.tool_slots
     end
 
     def tool_slot
@@ -45,7 +44,7 @@ module Api
         @tool_slot_params
       else
         @tool_slot_params               = {device: current_device}
-        @tool_slot_params[:tool_slot]   = tool_slot     if params[:id]
+        @tool_slot_params[:tool_slot]   = tool_slot if params[:id]
         maybe_add :name
         maybe_add :x
         maybe_add :y

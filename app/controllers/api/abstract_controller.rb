@@ -24,7 +24,7 @@ module Api
       render json: {error: exc.message}, status: 422
     end
 
-private
+    private
 
     def set_default_response_format
       request.format = "json"

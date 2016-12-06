@@ -20,7 +20,7 @@ module Auth
       {token: SessionToken.issue_to(user, iss: host)}
     end
 
-private
+    private
 
     def whoops!(reason = "Bad email or password.")
       add_error :auth, :*, reason

@@ -1,6 +1,6 @@
 module Sync
-  class Fetch  < Mutations::Command
-    API_VERSION = ENV.fetch("HEROKU_SLUG_COMMIT", `git log --pretty=format:"%h" -1`) 
+  class Fetch < Mutations::Command
+    API_VERSION = ENV.fetch("HEROKU_SLUG_COMMIT", `git log --pretty=format:"%h" -1`)
     COMPAT_NUM = 0
 
     required do
@@ -26,7 +26,7 @@ module Sync
                tools:         tools }.as_json
     end
 
-  private
+    private
 
     def q
       @q ||= ToolBay::DeviceQuery.new(device)

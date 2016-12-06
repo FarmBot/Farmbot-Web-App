@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Api::RegimensController do
-
   include Devise::Test::ControllerHelpers
 
   describe '#update' do

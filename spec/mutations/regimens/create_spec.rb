@@ -13,7 +13,7 @@ describe Regimens::Create do
         {
           time_offset: 129600000,
           sequence_id: seq1.id
-        }, 
+        },
         {
           time_offset: 259200000,
           sequence_id: seq2.id

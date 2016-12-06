@@ -1,7 +1,7 @@
 module Tools
-  class Update  < Mutations::Command
+  class Update < Mutations::Command
     required do
-      model :tool,      class: Tool
+      model :tool, class: Tool
     end
 
     optional do

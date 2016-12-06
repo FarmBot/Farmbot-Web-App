@@ -1,12 +1,12 @@
 module Tools
-  class Create  < Mutations::Command
+  class Create < Mutations::Command
     required do
       string :name
       model :device, class: Device
     end
 
     optional do
-      integer :tool_slot_id 
+      integer :tool_slot_id
     end
 
     def validate

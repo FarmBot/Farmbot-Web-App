@@ -4,7 +4,7 @@ describe CeleryScript::AstNode do
   FIXTURE_FILE = File.read("./spec/lib/celery_script/ast_fixture2.json")
 
   let(:hash) do
-      JSON.parse(FIXTURE_FILE).deep_symbolize_keys
+    JSON.parse(FIXTURE_FILE).deep_symbolize_keys
   end
 
   let (:node) { CeleryScript::AstNode.new(**hash) }
@@ -21,6 +21,4 @@ describe CeleryScript::AstNode do
   it "invalidates a node" do
     expect { node.invalidate!("Boo!")}.to raise_error("Boo!")
   end
-
-
 end

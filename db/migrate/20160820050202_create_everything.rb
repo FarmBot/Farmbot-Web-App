@@ -86,12 +86,11 @@ class CreateEverything < ActiveRecord::Migration
       t.integer :sequence_id
       t.string :message_type
       t.integer :position
-      t.text   :command
+      t.text :command
     end
 
     ### A single system User on the decision support system.
     create_table :users do |t|
-
       t.integer :device_id
       t.string :name
 
@@ -107,9 +106,7 @@ class CreateEverything < ActiveRecord::Migration
       t.string   :last_sign_in_ip
       t.timestamps null: false
     end
-      add_index :users, :email,                unique: true
-      add_index :users, :reset_password_token, unique: true
-
-    end
-
+    add_index :users, :email,                unique: true
+    add_index :users, :reset_password_token, unique: true
+  end
 end

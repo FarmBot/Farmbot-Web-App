@@ -4,7 +4,6 @@ describe Api::SchedulesController do
   include Devise::Test::ControllerHelpers
 
   describe 'Bot authentication' do
-
     let(:user) { FactoryGirl.create(:user) }
     let(:device) { user.device }
 

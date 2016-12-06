@@ -27,7 +27,6 @@ DatabaseCleaner.strategy = :truncation
 DatabaseCleaner.clean
 
 RSpec.configure do |config|
-
   config.backtrace_exclusion_patterns = [/gems/]
 
   config.include Helpers

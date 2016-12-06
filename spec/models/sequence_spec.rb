@@ -5,10 +5,9 @@ describe Sequence do
   it "Enforces uniqueness of names" do
     Sequence.destroy_all
     optns = { device: regimen.device,
-                name: "Dupe",
-                color: "red" }
+              name: "Dupe",
+              color: "red" }
     Sequence.create!(optns)
     expect { Sequence.create!(optns) }.to raise_error(ActiveRecord::RecordInvalid)
   end
-
 end

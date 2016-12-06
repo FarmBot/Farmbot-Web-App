@@ -13,7 +13,7 @@ describe Api::ToolBaysController do
       tool_bay.reload
       expect(response.status).to eq(200)
       expect(tool_bay.name).to eq(payload[:name])
-      expect(json[:name]).to eq(payload[:name])      
+      expect(json[:name]).to eq(payload[:name])
     end
   end
 end

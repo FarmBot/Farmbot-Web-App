@@ -30,4 +30,3 @@ describe Api::SequencesController do
     end
   end
 end
- 

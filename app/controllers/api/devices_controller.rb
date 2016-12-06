@@ -2,7 +2,6 @@
 # settings. Consumed by the Angular SPA on the front end.
 module Api
   class DevicesController < Api::AbstractController
-
     # GET /api/device
     def show
       render json: current_device
@@ -26,9 +25,9 @@ module Api
 
     private
 
-      # Only allow a trusted parameter "white list" through.
-      def device_params
-        { name:  params[:name] }
-      end
+    # Only allow a trusted parameter "white list" through.
+    def device_params
+      { name:  params[:name] }
+    end
   end
 end

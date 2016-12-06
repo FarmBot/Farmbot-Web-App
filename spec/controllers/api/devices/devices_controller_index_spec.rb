@@ -1,11 +1,9 @@
 require 'spec_helper'
 
 describe Api::DevicesController do
-
   include Devise::Test::ControllerHelpers
 
   describe '#show' do
-
     let(:user) { FactoryGirl.create(:user) }
 
     it 'returns all the users devices, as JSON' do

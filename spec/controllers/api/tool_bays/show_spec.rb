@@ -10,8 +10,8 @@ describe Api::ToolBaysController do
       sign_in user
       payload = { id: tool_bay.id }
       get :show, params: payload
-      expect(payload[:id]).to eq(json[:id])      
-      expect(json[:name]).to eq(tool_bay.name)      
+      expect(payload[:id]).to eq(json[:id])
+      expect(json[:name]).to eq(tool_bay.name)
     end
   end
 end

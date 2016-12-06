@@ -15,7 +15,7 @@ describe Api::ToolSlotsController do
       tool_slot.reload
       expect(response.status).to eq(200)
       expect(tool_slot.name).to eq(payload[:name])
-      expect(json[:name]).to eq(payload[:name])      
+      expect(json[:name]).to eq(payload[:name])
     end
   end
 end

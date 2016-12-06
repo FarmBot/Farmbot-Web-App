@@ -1,5 +1,4 @@
 class AbstractJwtToken
-
   def self.missing_env(name)
     raise "You forgot to set ENV['#{ name }']"
   end

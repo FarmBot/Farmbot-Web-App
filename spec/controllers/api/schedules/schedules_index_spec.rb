@@ -4,12 +4,11 @@ describe Api::SchedulesController do
   include Devise::Test::ControllerHelpers
 
   describe '#index' do
-
     let(:user) { FactoryGirl.create(:user) }
 
     it 'lists all schedules for a user' do
       sign_in user
-      
+
       schedules = FactoryGirl.create_list(:schedule, 2, device_id: user.device.id)
       schedule_ids = user.device.schedules
                        .map(&:id)

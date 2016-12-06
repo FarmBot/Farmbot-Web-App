@@ -22,14 +22,14 @@ module Mutations
       elsif data.is_a?(String)
         begin
           actual_time = if options[:format]
-            Time.strptime(data, options[:format])
-          else
-            Time.parse(data)
-          end
+                          Time.strptime(data, options[:format])
+                        else
+                          Time.parse(data)
+                        end
         rescue ArgumentError
           return [nil, :time]
         end
-      elsif data.respond_to?(:to_time)  # Time
+      elsif data.respond_to?(:to_time) # Time
         actual_time = data.to_time
       else
         return [nil, :time]

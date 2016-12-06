@@ -1,6 +1,5 @@
 module Peripherals
   class Create < Mutations::Command
-
     required do
       model :device, class: Device
       array :peripherals do

@@ -17,7 +17,7 @@ module CeleryScript
     def run
       error || tree
     end
-    
+
     def valid?
       error ? false : true
     end
@@ -42,19 +42,19 @@ module CeleryScript
     end
 
     def check_arity(node)
-        allowed = corpus
-        .fetchNode(node.kind)
-        .allowed_args
-        allowed.map do |arg|
-          has_key = node.args.has_key?(arg) || node.args.has_key?(arg.to_s)
-          unless has_key
-            msgs = node.args.keys.join(", ")
-            msgs = "nothing" if msgs.length < 1
+      allowed = corpus
+      .fetchNode(node.kind)
+      .allowed_args
+      allowed.map do |arg|
+        has_key = node.args.has_key?(arg) || node.args.has_key?(arg.to_s)
+        unless has_key
+          msgs = node.args.keys.join(", ")
+          msgs = "nothing" if msgs.length < 1
           msg = "Expected node '#{node.kind}' to have a '#{arg}',"\
           " but got: #{ msgs }."
           raise TypeCheckError, msg
-          end
         end
+      end
       has      = node.args.keys.map(&:to_sym) # Either bigger or equal.
       required = corpus.fetchNode(node.kind).allowed_args # Always smallest.
       if !(has.length === required.length)

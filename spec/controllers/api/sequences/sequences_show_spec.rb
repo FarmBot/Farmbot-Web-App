@@ -8,7 +8,6 @@ describe Api::SequencesController do
   include Devise::Test::ControllerHelpers
 
   describe '#show' do
-
     let(:user) { FactoryGirl.create(:user) }
 
     it 'shows sequence' do

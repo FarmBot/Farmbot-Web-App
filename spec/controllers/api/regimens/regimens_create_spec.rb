@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Api::RegimensController do
-
   include Devise::Test::ControllerHelpers
 
   describe '#create' do
@@ -10,7 +9,7 @@ describe Api::RegimensController do
     it 'creates a new regimen' do
       sign_in user
       color = %w(blue green yellow orange purple pink gray red).sample
-      
+
       name = (1..3).map{ Faker::Pokemon.name }.join(" ")
       payload = {
           name: name,

@@ -22,10 +22,11 @@ module Devices
       end
       device
     end
-  private
-  
+
+    private
+
     def merge_default_values
-      inputs[:name]  ||= random_name
+      inputs[:name] ||= random_name
     end
 
     def random_name
