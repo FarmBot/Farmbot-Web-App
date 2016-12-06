@@ -17,20 +17,39 @@ describe Api::LogsController do
   end
 
   describe "#create" do
-    # it 'creates one log' do
-    #   sign_in user
-    #   post :create,
-    #        body: {}.to_json,
-    #        params: {format: :json}
-    #   expect(response.status).to eq(200)
-    # end
+    it 'creates one log' do
+      sign_in user
+      before_count = Log.count
+      post :create,
+           body: { meta: { x: 1, y: 2, z: 3, type: "fun" },
+                   channels: ["toast"],
+                   message: "Hello, world!"
+                 }.to_json,
+           params: {format: :json}
+      expect(response.status).to eq(200)
+      expect(Log.count).to be > before_count
+      expect(Log.last.message).to eq("Hello, world!")
+      expect(Log.last.device).to eq(user.device)      
+    end
 
     it 'creates many logs (with an Array)' do
       sign_in user
+      before_count = Log.count
       post :create,
-           body: [].to_json,
+           body: [
+            { meta: { x: 1, y: 2, z: 3, type: "fun" },
+              channels: ["toast"],
+              message: "one" },
+            { meta: { x: 1, y: 2, z: 3, type: "fun" },
+              channels: ["toast"],
+              message: "two" },
+            { meta: { x: 1, y: 2, z: 3, type: "fun" },
+              channels: ["toast"],
+              message: "three" },
+           ].to_json,
            params: {format: :json}
       expect(response.status).to eq(200)
+      expect(Log.count).to eq(before_count + 3)
     end
   end
 end
