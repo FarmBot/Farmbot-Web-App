@@ -1,4 +1,6 @@
 class Log < ActiveRecord::Base
+  TYPES = ["success", "busy", "warning", "error", "info", "fun"]
+
   serialize  :meta
   serialize  :channels
   belongs_to :device

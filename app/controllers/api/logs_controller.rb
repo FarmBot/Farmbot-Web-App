@@ -5,7 +5,7 @@ module Api
     end
 
     def index
-      binding.pry
+      render json: current_device.logs.last(25)
     end
   end
 end

@@ -15,21 +15,21 @@ describe Api::LogsController do
     end
   end
 
-  describe "#create" do
-    it 'creates one log' do
-      sign_in user
-      post :create,
-           body: {}.to_json,
-           params: {format: :json}
-      expect(response.status).to eq(200)
-    end
+  # describe "#create" do
+  #   it 'creates one log' do
+  #     sign_in user
+  #     post :create,
+  #          body: {}.to_json,
+  #          params: {format: :json}
+  #     expect(response.status).to eq(200)
+  #   end
 
-    it 'creates many logs (with an Array)' do
-      sign_in user
-      post :create,
-           body: [].to_json,
-           params: {format: :json}
-      expect(response.status).to eq(200)
-    end
-  end
+  #   it 'creates many logs (with an Array)' do
+  #     sign_in user
+  #     post :create,
+  #          body: [].to_json,
+  #          params: {format: :json}
+  #     expect(response.status).to eq(200)
+  #   end
+  # end
 end
