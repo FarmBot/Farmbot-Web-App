@@ -3,9 +3,9 @@ class Schedule < ActiveRecord::Base
   UNITS_OF_TIME = %w(minutely hourly daily weekly monthly yearly)
 
   belongs_to :sequence
-  validates_presence_of :sequence_id
+  validates :sequence_id, presence: true
   belongs_to :device
-  validates_presence_of :device_id
+  validates :device_id, presence: true
 
   def schedule_rules
     @schedule_rules ||= IceCube::Schedule.new(start_time, end_time: end_time) do |sch|
