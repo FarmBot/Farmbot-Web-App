@@ -1,11 +1,9 @@
 require 'spec_helper'
 
 describe Api::DevicesController do
-
   include Devise::Test::ControllerHelpers
 
   describe '#destroy' do
-
     let(:user) { FactoryGirl.create(:user) }
 
     it 'destroys a Device' do

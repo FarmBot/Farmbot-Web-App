@@ -10,5 +10,4 @@ describe Sequence do
     Sequence.create!(optns)
     expect { Sequence.create!(optns) }.to raise_error(ActiveRecord::RecordInvalid)
   end
-
 end

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe CeleryScript::Checker do
-
   let(:hash) do
     {
       kind: "sequence",

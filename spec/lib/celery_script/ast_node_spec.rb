@@ -21,5 +21,4 @@ describe CeleryScript::AstNode do
   it "invalidates a node" do
     expect { node.invalidate!("Boo!")}.to raise_error("Boo!")
   end
-
 end

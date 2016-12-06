@@ -1,5 +1,4 @@
 describe Api::RegimensController do
-
   include Devise::Test::ControllerHelpers
 
   describe '#index' do

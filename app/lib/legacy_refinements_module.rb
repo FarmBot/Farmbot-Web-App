@@ -2,7 +2,6 @@
 # DONT USE IT FOR NEW CODE.
 module LegacyRefinementsModule
   refine Mutations::Command do
-
     # IF YOU ARE TRYING TO UNDERSTAND CODE THAT USES THIS MODULE- DONT!!!
     # REWRITE IT INSTEAD. THIS IS A LEGACY MODULE THAT NEEDS TO GO AWAY!!
     def create(klass, inputs = {})

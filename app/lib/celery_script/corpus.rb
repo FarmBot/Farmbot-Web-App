@@ -43,7 +43,7 @@ module CeleryScript
     end
 
     def fetchArg(name)
-      @arg_def_list[name.to_sym] or raise "CANT FIND ARG SPEC"
+      @arg_def_list[name.to_sym] || raise("CANT FIND ARG SPEC")
     end
 
     def defineArg(arg_name, allowed_values, &blk)

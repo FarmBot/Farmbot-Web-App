@@ -91,7 +91,6 @@ class CreateEverything < ActiveRecord::Migration
 
     ### A single system User on the decision support system.
     create_table :users do |t|
-
       t.integer :device_id
       t.string :name
 

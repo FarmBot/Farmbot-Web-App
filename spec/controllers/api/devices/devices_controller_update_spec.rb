@@ -3,11 +3,9 @@ require 'spec_helper'
 # Api::DevicesController is the RESTful endpoint for managing device related
 # settings. Consumed by the Angular SPA on the front end.
 describe Api::DevicesController do
-
   include Devise::Test::ControllerHelpers
 
   describe '#update' do
-
     let(:user) { FactoryGirl.create(:user) }
     let(:user2) { FactoryGirl.create(:user) }
 

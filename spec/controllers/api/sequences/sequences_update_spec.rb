@@ -5,7 +5,6 @@ describe Api::SequencesController do
   let(:nodes) { sequence_body_for(user) }
 
   describe '#update' do
-
     let(:user) { FactoryGirl.create(:user) }
 
     it 'refreshes sequence dependencies on update' do

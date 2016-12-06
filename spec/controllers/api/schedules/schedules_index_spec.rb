@@ -4,7 +4,6 @@ describe Api::SchedulesController do
   include Devise::Test::ControllerHelpers
 
   describe '#index' do
-
     let(:user) { FactoryGirl.create(:user) }
 
     it 'lists all schedules for a user' do
