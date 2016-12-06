@@ -16,5 +16,14 @@ describe Api::ToolsController do
       expect(Tool.count).to be > old_tool_count
       expect(json[:name]).to eq("wow")
     end
+
+    it 'creates a new (detached) tool' do
+      sign_in user
+      payload = { name: "wow2" }
+      old_tool_count = Tool.count
+      post :create, params: payload
+      expect(response.status).to eq(200)
+      expect(Tool.count).to be > old_tool_count
+    end
   end
 end
