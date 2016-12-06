@@ -6,7 +6,7 @@ module Tools
     end
 
     optional do
-      integer :tool_slot_id 
+      integer :tool_slot_id
     end
 
     def validate

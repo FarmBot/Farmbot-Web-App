@@ -5,7 +5,7 @@ module PasswordResets
     end
 
     def validate
-      email_not_found! unless user 
+      email_not_found! unless user
     end
 
     def execute

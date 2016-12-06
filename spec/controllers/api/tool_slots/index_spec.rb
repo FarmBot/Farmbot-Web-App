@@ -10,8 +10,8 @@ describe Api::ToolSlotsController do
       sign_in user
       ts = ToolSlot.create(tool_bay: tool_bay)
       get :index
-      expect(json.first[:id]).to eq(ts.id)      
-      expect(json.first[:name]).to eq(ts.name)      
+      expect(json.first[:id]).to eq(ts.id)
+      expect(json.first[:name]).to eq(ts.name)
     end
   end
 end

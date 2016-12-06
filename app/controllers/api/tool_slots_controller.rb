@@ -1,17 +1,17 @@
 module Api
   class ToolSlotsController < Api::AbstractController
     def create
-      mutate ToolSlots::Create.run(tool_slot_params)      
+      mutate ToolSlots::Create.run(tool_slot_params)
     end
 
     def show
       render json: tool_slot
     end
-  
+
     def index
       render json: tool_slots
     end
-  
+
     def update
       mutate ToolSlots::Update.run(tool_slot_params)
     end
@@ -20,7 +20,7 @@ module Api
       tool_slot.destroy!
       render json: ""
     end
-  
+
   private
 
     def q

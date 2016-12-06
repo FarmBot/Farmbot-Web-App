@@ -10,8 +10,8 @@ describe Api::ToolBaysController do
       tool_bay
       sign_in user
       get :index
-      expect(json.first[:id]).to eq(tool_bay.id)      
-      expect(json.first[:name]).to eq(tool_bay.name)      
+      expect(json.first[:id]).to eq(tool_bay.id)
+      expect(json.first[:name]).to eq(tool_bay.name)
     end
   end
 end
