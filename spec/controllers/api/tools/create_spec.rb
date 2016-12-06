@@ -4,17 +4,17 @@ describe Api::ToolsController do
   include Devise::Test::ControllerHelpers
   describe '#create' do
     let(:user) { FactoryGirl.create(:user) }
-    let(:sequence) { FactoryGirl.create(:sequence, device: user.device) }
+    let(:tool_bay) { FactoryGirl.create(:tool_bay, device: user.device) }
+    let(:tool_slot) { FactoryGirl.create(:tool_slot, tool_bay: tool_bay) }
+
     it 'creates a new tool' do
-      pending "Not done yet."
       sign_in user
-      payload = {}
+      payload = { tool_slot_id: tool_slot.id, name: "wow" }
       old_tool_count = Tool.count
       post :create, params: payload
-
       expect(response.status).to eq(200)
-      expect(Tool.count).to be > old_regimen_count
-      expect(json[:foo]).to eq("bar")
+      expect(Tool.count).to be > old_tool_count
+      expect(json[:name]).to eq("wow")
     end
   end
 end

@@ -1,4 +1,4 @@
-require_relative '../key_gen'
+require_relative '../../app/lib/key_gen'
 
 namespace :keys do
   desc "Reset RSA keys used for signing / verifying tokens."
