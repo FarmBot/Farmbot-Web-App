@@ -1,4 +1,4 @@
  describe Sequences::Update do
-  it 'updates sequence body' do
-  end
-end
+   it 'updates sequence body' do
+   end
+ end

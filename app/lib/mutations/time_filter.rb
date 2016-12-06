@@ -23,9 +23,9 @@ module Mutations
         begin
           actual_time = if options[:format]
                           Time.strptime(data, options[:format])
-          else
-            Time.parse(data)
-          end
+                        else
+                          Time.parse(data)
+                        end
         rescue ArgumentError
           return [nil, :time]
         end

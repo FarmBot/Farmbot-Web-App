@@ -36,7 +36,7 @@ private
       else
         tsid = params[:tool_slot_id]
         @create_params = { name: params[:name],
-                          device: current_device }
+                           device: current_device }
         @create_params[:tool_slot_id] = tsid if tsid
         @create_params
       end
