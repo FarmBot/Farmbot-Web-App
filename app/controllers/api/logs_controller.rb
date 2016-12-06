@@ -6,7 +6,9 @@ module Api
         # TODO: PROBLEM: If you post an Array, and that array is full of garbage
         # data, the API returns a 200 OK (and an array of error explanations).
         # This is not RESTful. Will fix later.
+        # TODO Create in batches if this becomes a perf. bottleneck.
         render json: raw_json
+          .last(current_device.max_log_count)
           .map { |i| new_log(i) }
           .map { |i| i.success? ? i : i.errors.message }
           .tap { current_device.limit_log_length }

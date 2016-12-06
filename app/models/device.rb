@@ -1,6 +1,7 @@
 # FarmbotDevice models all data related to an actual FarmBot in the real world.
 # This is useful for caching things like owner info, work logs, etc
 class Device < ActiveRecord::Base
+  DEFAULT_MAX_LOGS = 50
   has_many :users
   has_many :schedules,     dependent: :destroy
   has_many :logs,          dependent: :destroy
@@ -13,7 +14,7 @@ class Device < ActiveRecord::Base
   validates :name,         uniqueness: true
 
   def limit_log_length
-    these = logs.last(max_log_count).pluck(:id)
-    logs.where.not(id: these).destroy_all!
+    these = logs.last(max_log_count || DEFAULT_MAX_LOGS).pluck(:id)
+    logs.where.not(id: these).destroy_all
   end
 end

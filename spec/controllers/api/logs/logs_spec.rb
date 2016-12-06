@@ -51,5 +51,19 @@ describe Api::LogsController do
       expect(response.status).to eq(200)
       expect(Log.count).to eq(before_count + 3)
     end
+
+    it 'Runs compaction when the logs pile up' do
+      stub = {
+        meta: { x: 1, y: 2, z: 3, type: "fun" }, channels: ["toast"],
+              message: "one" }
+      payl = []
+      100.times { payl.push(stub) }
+      sign_in user
+      user.device.update_attributes!(max_log_count: 15)
+      before_count = Log.count
+      post :create, body: payl.to_json, params: {format: :json}
+      expect(response.status).to eq(200)
+      expect(user.device.logs.count).to eq(user.device.max_log_count)
+    end
   end
 end
