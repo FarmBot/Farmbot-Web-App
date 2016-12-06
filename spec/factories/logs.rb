@@ -4,7 +4,7 @@ FactoryGirl.define do
     message { Faker::Company.bs }
     channels ["toast"]
     meta do
-      { types: [Log::TYPES.sample] }
+      { type: [Log::TYPES.sample] }
     end
   end
 end
