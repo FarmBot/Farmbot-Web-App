@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161205222137) do
+ActiveRecord::Schema.define(version: 20161206162700) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
@@ -31,6 +31,17 @@ ActiveRecord::Schema.define(version: 20161205222137) do
     t.integer "planting_area_id"
     t.string  "name"
     t.string  "webcam_url"
+    t.integer "max_log_count",    default: 100
+  end
+
+  create_table "logs", force: :cascade do |t|
+    t.text     "message"
+    t.text     "meta"
+    t.text     "channels"
+    t.integer  "device_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_logs_on_device_id"
   end
 
   create_table "peripherals", force: :cascade do |t|

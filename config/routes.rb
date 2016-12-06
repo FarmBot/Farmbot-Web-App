@@ -10,13 +10,22 @@ FarmBot::Application.routes.draw do
     resources :password_resets, only: [:create, :update]
     resources :regimens,        only: [:create, :destroy, :index, :update]
     resources :planting_area,   only: [:create, :destroy]
-    resources :sequences,       only: [:create, :update, :destroy, :index, :show]
-    resources :schedules,       only: [:create, :update, :destroy, :index]
     resources :peripherals,     only: [:create, :destroy, :index]
     resources :corpuses,        only: [:index, :show]
     resources :tool_bays,       only: [:show, :index, :update]
-    resources :tool_slots,      only: [:create, :show, :index, :destroy, :update]
-    resources :tools,           only: [:create, :show, :index, :destroy, :update]
+    resources :logs,            only: [:index, :create]    
+    resources :sequences,       only: [:create, :update, :destroy,
+                                       :index, :show]
+    resources :schedules,       only: [:create, :update, :destroy,
+                                       :index]
+    resources :tool_slots,      only: [:create, :show, :index,
+                                       :destroy, :update]
+    resources :tools,           only: [:create, :show, :index,
+                                       :destroy, :update]
+    # TODO: Why does Rails hate JWTs as an ID?
+    #       JWTs are supposed to be URL safe, I thought?
+    #       This is a hack to get around 404 errors caused by
+    #       PUTing a JWT to api/password_resets/MY_JWT_HERE
     put "/password_resets" => "password_resets#update", as: :whatever
   end
 
