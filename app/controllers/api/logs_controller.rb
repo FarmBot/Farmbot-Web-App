@@ -1,7 +1,7 @@
 module Api
   class LogsController < Api::AbstractController
     def create
-      binding.pry
+      # binding.pry
     end
 
     def index
