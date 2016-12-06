@@ -28,7 +28,8 @@ group :production do
   # For Heroku users:
   gem "pg"
   # For Dokku users:
-  gem "mysql"
+  # TODO: Remove MySQL completly and update Dokku deployment instructions.
+  gem "mysql2"
 end
 
 group :test do
