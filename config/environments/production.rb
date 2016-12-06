@@ -26,4 +26,3 @@ FarmBot::Application.configure do
                                          user_name: uname,
                                          password:  pw }
 end
-
