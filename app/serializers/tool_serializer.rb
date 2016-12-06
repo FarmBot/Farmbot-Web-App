@@ -1,3 +1,3 @@
 class ToolSerializer < ActiveModel::Serializer
-  attributes :id, :tool_slot_id, :name
+  attributes :id, :name
 end

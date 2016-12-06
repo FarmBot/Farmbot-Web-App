@@ -1,11 +1,12 @@
 module ToolSlots
-  class Update < Mutations::Command
+  class Update < ToolSlots::Base
     required do
       model :device, class: Device
       model :tool_slot, class: ToolSlot
     end
 
     optional do
+      integer :tool_id
       string  :name
       integer :x
       integer :y
