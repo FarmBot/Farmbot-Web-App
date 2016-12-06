@@ -1,5 +1,5 @@
 module ToolSlots
-  class Create < Mutations::Command
+  class Create < ToolSlots::Base
     required do
       model :device, class: Device
       integer :tool_bay_id
@@ -14,11 +14,8 @@ module ToolSlots
     end
 
     def validate
-      if !device.tool_bays.where(id: tool_bay_id).any?
-        add_error :tool_bay_id,
-                  :not_found,
-                  "Can't find tool bay with id #{tool_bay_id}"
-      end
+      validate_tool
+      validate_bay
     end
 
     def execute

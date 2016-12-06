@@ -19,14 +19,7 @@ module Logs
     end
 
     def execute
-      maybe_truncate_logs
       Log.create!(inputs)
-    end
-
-private
-
-    def maybe_truncate_logs
-      puts "=============== TODO"
     end
   end
 end

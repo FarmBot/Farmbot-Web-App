@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161206162700) do
+ActiveRecord::Schema.define(version: 20161206210809) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
@@ -136,17 +136,17 @@ ActiveRecord::Schema.define(version: 20161206162700) do
     t.integer  "z"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.integer  "tool_id"
     t.index ["tool_bay_id"], name: "index_tool_slots_on_tool_bay_id"
+    t.index ["tool_id"], name: "index_tool_slots_on_tool_id"
   end
 
   create_table "tools", force: :cascade do |t|
-    t.integer  "tool_slot_id"
     t.string   "name"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer  "device_id"
     t.index ["device_id"], name: "index_tools_on_device_id"
-    t.index ["tool_slot_id"], name: "index_tools_on_tool_slot_id"
   end
 
   create_table "users", force: :cascade do |t|
