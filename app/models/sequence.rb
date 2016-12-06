@@ -9,8 +9,8 @@ class Sequence < ActiveRecord::Base
 
   # allowable label colors for the frontend.
   [ :name, :kind ].each { |n| validates n, presence: true }
-  validates_inclusion_of :color, in: COLORS
-  validates_uniqueness_of :name, scope: :device
+  validates :color, inclusion: { in: COLORS }
+  validates :name, uniqueness: { scope: :device }
   STEPS = [ :var_set, :var_get, :move_absolute, :move_relative, :write_pin,
             :read_pin, :wait, :send_message, :execute, :if_statement]
   ALLOWED_CHANNEL_NAMES = [ "ticker", "error_ticker",
