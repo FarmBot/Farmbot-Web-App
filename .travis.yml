@@ -3,6 +3,7 @@ rvm:
   - 2.3.2
 before_script:
   - cp config/database.travis.yml config/database.yml
+  - ./install_frontend.sh
   - bundle exec rake db:create db:migrate
 script:
   # A 'fake' secret token for use in our CI env.
