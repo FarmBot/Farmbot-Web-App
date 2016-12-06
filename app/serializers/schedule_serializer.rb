@@ -14,16 +14,16 @@ class ScheduleSerializer < ActiveModel::Serializer
   private
 
   def start
-    if config[:start]
-      Time.parse(config[:start])
+    if options[:start]
+      Time.parse(options[:start])
     else
       Time.current.midnight - 1.day
     end
   end
 
   def finish
-    if config[:finish]
-      Time.parse(config[:finish])
+    if options[:finish]
+      Time.parse(options[:finish])
     else
       start + 1.day
     end

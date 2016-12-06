@@ -1,0 +1,2 @@
+class TokenExpiration < ApplicationRecord
+end

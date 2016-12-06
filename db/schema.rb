@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161129155523) do
+ActiveRecord::Schema.define(version: 20161201195329) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
@@ -99,6 +99,14 @@ ActiveRecord::Schema.define(version: 20161129155523) do
     t.string  "kind",      default: "sequence"
     t.text    "args"
     t.text    "body"
+  end
+
+  create_table "token_expirations", force: :cascade do |t|
+    t.string   "sub"
+    t.integer  "exp"
+    t.string   "jti"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "tool_bays", force: :cascade do |t|

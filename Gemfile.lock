@@ -4,17 +4,6 @@ GIT
   specs:
     smarf_doc (1.0.0)
 
-GIT
-  remote: git://github.com/plataformatec/devise.git
-  revision: 8a4d610c587ca7d0f5ce40d9a4a28a2da717f1e9
-  specs:
-    devise (4.2.0)
-      bcrypt (~> 3.0)
-      orm_adapter (~> 0.1)
-      railties (>= 4.1.0, < 5.1)
-      responders
-      warden (~> 1.2.3)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -41,10 +30,8 @@ GEM
       erubis (~> 2.7.0)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.2)
-    active_model_serializers (0.10.3)
-      actionpack (>= 4.1, < 6)
-      activemodel (>= 4.1, < 6)
-      jsonapi (= 0.1.1.beta2)
+    active_model_serializers (0.8.3)
+      activemodel (>= 3.0)
     activejob (5.0.0.1)
       activesupport (= 5.0.0.1)
       globalid (>= 0.3.6)
@@ -67,6 +54,12 @@ GEM
     concurrent-ruby (1.0.2)
     daemons (1.2.4)
     database_cleaner (1.5.3)
+    devise (4.2.0)
+      bcrypt (~> 3.0)
+      orm_adapter (~> 0.1)
+      railties (>= 4.1.0, < 5.1)
+      responders
+      warden (~> 1.2.3)
     diff-lcs (1.2.5)
     docile (1.1.5)
     erubis (2.7.0)
@@ -83,8 +76,6 @@ GEM
     i18n (0.7.0)
     ice_cube (0.14.0)
     json (1.8.3)
-    jsonapi (0.1.1.beta2)
-      json (~> 1.8)
     jwt (1.5.6)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
@@ -202,9 +193,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_model_serializers
+  active_model_serializers (~> 0.8.3)
   database_cleaner
-  devise!
+  devise
   factory_girl_rails
   faker
   ice_cube
