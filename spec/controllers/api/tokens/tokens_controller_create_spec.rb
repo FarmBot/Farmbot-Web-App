@@ -9,11 +9,9 @@ describe Api::TokensController do
     it 'creates a new token' do
       payload = {user: {email: user.email, password: "password"}}
       post :create, params: payload
-      puts "==================== TODO: This needs to change now. =="
-      binding.pry
-      # token = json[:token][:unencoded]
-      # expect(token[:iss].last).not_to eq("/") # Trailing slashes are BAD!
-      # expect(token[:iss]).to eq("//localhost:3000")
+      token = json[:token][:unencoded]
+      expect(token[:iss].last).not_to eq("/") # Trailing slashes are BAD!
+      expect(token[:iss]).to eq("//localhost:3000")
     end
   end
 end

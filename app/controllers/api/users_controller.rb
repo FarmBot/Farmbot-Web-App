@@ -14,6 +14,10 @@ module Api
       mutate Users::Destroy.run(user_params, user: current_user)
     end
 
+    def verify
+      binding.pry
+    end
+
     private
 
     def user_params

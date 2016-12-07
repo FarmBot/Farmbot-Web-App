@@ -20,7 +20,7 @@ module Users
                             name:                  name)
       device = Devices::Create.run!(user: user)
       UserMailer.welcome_email(user).deliver_later
-      "'Check your email!'"
+      {message: "Check your email!"}
     end
   end
 end
