@@ -27,7 +27,7 @@ FarmBot::Application.routes.draw do
     #       This is a hack to get around 404 errors caused by
     #       PUTing a JWT to api/password_resets/MY_JWT_HERE
     put "/password_resets"     => "password_resets#update", as: :whatever
-    put "/users/verify/:token" => "users#verfiy",           as: :users_verify
+    put "/users/verify/:token" => "users#verify",           as: :users_verify
   end
 
   devise_for :users
