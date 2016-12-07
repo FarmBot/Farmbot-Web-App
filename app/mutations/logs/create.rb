@@ -16,10 +16,12 @@ module Logs
     end
 
     def validate
+      @log = Log.new(inputs)
+      @log.validate!
     end
 
     def execute
-      Log.create!(inputs)
+      @log
     end
   end
 end
