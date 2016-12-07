@@ -34,13 +34,17 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   config.order = 'random'
 
-  if ENV['docs']
-    config.before(:each, type: :controller) do
+  if ENV['DOCS']
+    config.after(:each, type: :controller) do
       SmarfDoc.run!(request, response)
     end
-  end
 
-  config.after(:suite) do
-    SmarfDoc.finish!
+    config.after(:suite) do
+      SmarfDoc.finish!
+    end
   end
 end
+
+# class Stub
+#   def initialize(response)
+# end

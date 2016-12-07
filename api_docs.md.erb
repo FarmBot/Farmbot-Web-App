@@ -1,26 +1,22 @@
 <% if response.success? %>
-# <%= request.method %> <%= request.path %>
-
+# <%= request.method %> <%= request.path.first(45) %>
+<% if request.params.except(:controller, :action, :format, :id).keys.length > 0 %>
 ### Request
 
 ```
 <%=
-  JSON.pretty_generate(request.params.except(:controller, :action, :format))
+  JSON.pretty_generate(request.params.except(:controller, :action, :format, :id))
 %>
 ```
-
+<% end %>
 ### Response
 
 ```
 <%=
   begin
-    if response.body.length > 500
-      "Too big to display."
-    else
-      JSON.pretty_generate(response.body)
-    end
+      JSON.pretty_generate(JSON.parse(response.body)).first(500)
   rescue => e
-    e.message
+    "Empty Response"
   end
 %>
 ```
