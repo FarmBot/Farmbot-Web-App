@@ -1,6 +1,8 @@
 class UserMailer < ApplicationMailer
     def welcome_email(user)
-      @user = user
+      @user      = user
+      @user_name = user.name
+      @the_url   = "http:" + $API_URL + "/verify/" + user.verification_token
       mail(to: @user.email, subject: 'Welcome to The FarmBot Web App!')
     end
 

@@ -162,6 +162,7 @@ ActiveRecord::Schema.define(version: 20161207195423) do
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
     t.datetime "verified_at"
+    t.string   "verification_token"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
