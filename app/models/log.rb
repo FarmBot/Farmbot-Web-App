@@ -1,5 +1,6 @@
 class Log < ActiveRecord::Base
-  TYPES = ["success", "busy", "warn", "error", "info", "fun"]
+  PAGE_SIZE = 25
+  TYPES     = ["success", "busy", "warn", "error", "info", "fun"]
 
   serialize  :meta
   serialize  :channels

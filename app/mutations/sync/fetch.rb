@@ -23,7 +23,8 @@ module Sync
                plants:        plants,
                tool_bays:     tool_bays,
                tool_slots:    tool_slots,
-               tools:         tools }.as_json
+               tools:         tools,
+               logs:          logs }.as_json
     end
 
   private
@@ -61,7 +62,11 @@ module Sync
     end
 
     def users
-      @users = device.users
+      @users ||= device.users
+    end
+
+    def logs
+      @logs ||= device.logs.last(Log::PAGE_SIZE)
     end
 
     # The UI does not yet support creation of tool bays
