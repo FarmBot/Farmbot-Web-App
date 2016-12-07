@@ -10,6 +10,7 @@ class Device < ActiveRecord::Base
   has_many :plants,        dependent: :destroy
   has_many :peripherals,   dependent: :destroy
   has_many :tool_bays,     dependent: :destroy
+  has_many :tools,         dependent: :destroy
   has_one  :planting_area, dependent: :destroy
   validates :name,         uniqueness: true
 
