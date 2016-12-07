@@ -7,9 +7,10 @@ module Users
 
     def execute
       user.verified_at = Time.now
+      # Prevent token reuse:
       user.verification_token = ""
       user.save!
-      user
+      SessionToken.as_json(user)
     end
 
 private

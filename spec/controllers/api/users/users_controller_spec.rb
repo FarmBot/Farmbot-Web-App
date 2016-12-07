@@ -86,13 +86,14 @@ describe Api::UsersController do
       post :create, params: params
       sleep 0.5 # Mail deliveries occur in background thread.
       expect(ActionMailer::Base.deliveries.length).to be > old_email_count
-      expect(ActionMailer::Base.deliveries.last.to.first).to eq(email)
+      msg = ActionMailer::Base.deliveries.last
+      expect(msg.to.first).to eq(email)
       expect(User.count).to eq(original_count + 1)
-      user = User.find json[:user][:id]
+      user = User.last
       expect(user.name).to eq("Frank")
       expect(user.email).to eq(email)
+      expect(msg.body.parts.first.to_s).to include(user.verification_token)
       expect(user.valid_password?('Password123')).to be_truthy
-      expect(json[:token][:unencoded][:sub]).to eq(user.email)
     end
 
     it 'handles password confirmation mismatch' do
