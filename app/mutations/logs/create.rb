@@ -17,7 +17,7 @@ module Logs
 
     def validate
       @log = Log.new(inputs)
-      binding.pry
+      @log.validate!
     end
 
     def execute

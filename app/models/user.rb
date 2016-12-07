@@ -2,7 +2,9 @@
 class User < ActiveRecord::Base
   belongs_to :device, dependent: :destroy
 
-  devise :database_authenticatable, :registerable, :recoverable, :rememberable,
-         :trackable, :validatable
-
+  devise :database_authenticatable, :trackable     
+        #  :registerable,  # Remove?
+        #  :recoverable,   # Remove.
+        #  :rememberable,  # Remove.
+        #  :validatable    # Remove?
 end
