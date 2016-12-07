@@ -1,3 +1,3 @@
 class ToolBaySerializer < ActiveModel::Serializer
-  attributes :id, :name
+  attributes :id, :name, :device_id
 end
