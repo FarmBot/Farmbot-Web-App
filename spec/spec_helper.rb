@@ -35,7 +35,7 @@ RSpec.configure do |config|
   config.order = 'random'
 
   if ENV['DOCS']
-    config.before(:each, type: :controller) do
+    config.after(:each, type: :controller) do
       SmarfDoc.run!(request, response)
     end
 
@@ -44,3 +44,7 @@ RSpec.configure do |config|
     end
   end
 end
+
+# class Stub
+#   def initialize(response)
+# end
