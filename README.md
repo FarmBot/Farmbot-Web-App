@@ -15,6 +15,10 @@ This Repo is RESTful JSON API for Farmbot. This includes things like storage of 
 
 The key responsibility of the API is *information and permissions management*. This should not be confused with device control, which is done via [MQTT](https://github.com/FarmBot/mqtt-gateway).
 
+# API Documentation
+
+For a list of example API requests and responses, see our [reference documentation](https://gist.github.com/RickCarlino/5f3d885e88d6e15b2ffe1763cc2a750a).
+
 # Developer Setup
 
 ## Prerequisites
@@ -23,7 +27,7 @@ Your machine will need the following:
 
  0. [Ruby 2.3.2](http://rvm.io/rvm/install)
 
-## Setup
+### Setup
  0. `git clone https://github.com/FarmBot/Farmbot-Web-API farmbot-web-app`
  0. `cd farmbot-web-app`
  0. `bundle install`
