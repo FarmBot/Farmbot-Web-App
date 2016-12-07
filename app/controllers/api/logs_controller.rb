@@ -11,10 +11,13 @@ module Api
           .last(current_device.max_log_count)
           .map { |i| new_log(i) }
           .select { |i| i.success? }
-          .tap { |i| Log.create(i) }
+          .map { |i| i.result }
+          .tap { |i| Log.transaction { i.map(&:save) } }
           .tap { current_device.limit_log_length }
       when Hash
-        return mutate new_log(raw_json)
+        outcome = new_log(raw_json)
+        outcome.result.save if outcome.success?
+        return mutate outcome
       else
         sorry "Post a JSON array or object.", 422
       end
