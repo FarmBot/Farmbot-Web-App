@@ -10,7 +10,7 @@ module ToolSlots
     end
 
     def owns_tool
-      devices.tools.where(id: tool_id).any?
+      device.tools.where(id: tool_id).any?
     end
 
     def validate_bay

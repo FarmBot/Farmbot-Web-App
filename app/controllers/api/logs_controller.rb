@@ -10,7 +10,8 @@ module Api
         render json: raw_json
           .last(current_device.max_log_count)
           .map { |i| new_log(i) }
-          .map { |i| i.success? ? i : i.errors.message }
+          .select { |i| i.success? }
+          .tap { |i| Log.create(i) }
           .tap { current_device.limit_log_length }
       when Hash
         return mutate new_log(raw_json)
