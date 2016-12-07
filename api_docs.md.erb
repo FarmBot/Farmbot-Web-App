@@ -1,11 +1,11 @@
 <% if response.success? %>
-# <%= request.method %> <%= request.path.first(65) %>
-<% if request.params.except(:controller, :action, :format).keys.length > 0 %>
+# <%= request.method %> <%= request.path.first(45) %>
+<% if request.params.except(:controller, :action, :format, :id).keys.length > 0 %>
 ### Request
 
 ```
 <%=
-  JSON.pretty_generate(request.params.except(:controller, :action, :format))
+  JSON.pretty_generate(request.params.except(:controller, :action, :format, :id))
 %>
 ```
 <% end %>
