@@ -8,5 +8,7 @@ unless Rails.env == "production"
                               email:                 "admin@admin.com",
                               password:              "password123",
                               password_confirmation: "password123")
-    FactoryGirl.create_list(:log, 35, device: User.last.device)
+    Log.transaction do
+      FactoryGirl.create_list(:log, 35, device: User.last.device)
+    end
 end

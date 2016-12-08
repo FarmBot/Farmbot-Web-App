@@ -34,6 +34,7 @@ describe SessionToken do
   end
 
   it "doesn't honor expired tokens" do
+    user.update_attributes!(verified_at: Time.now)
     token  = SessionToken.issue_to(user, iat: 000, exp: 1, iss: "//lycos.com:9867")
     result = Auth::FromJWT.run(jwt: token.encoded)
     expect(result.success?).to be(false)

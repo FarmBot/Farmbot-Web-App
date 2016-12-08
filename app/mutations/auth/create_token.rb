@@ -11,7 +11,7 @@ module Auth
     end
 
     def execute
-      {token: SessionToken.issue_to(@user, iss: $API_URL), user: @user}
+      SessionToken.as_json(@user)
     end
 
     def whoops!

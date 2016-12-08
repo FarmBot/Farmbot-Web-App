@@ -1,6 +1,6 @@
 module Api
   class UsersController < Api::AbstractController
-    skip_before_action :authenticate_user!, only: :create
+    skip_before_action :authenticate_user!, only: [:create, :verify]
 
     def create
       mutate Users::Create.run(user_params)
@@ -12,6 +12,10 @@ module Api
 
     def destroy
       mutate Users::Destroy.run(user_params, user: current_user)
+    end
+
+    def verify
+      mutate Users::Verify.run(token: params[:token])
     end
 
     private

@@ -1,5 +1,5 @@
 class SessionToken < AbstractJwtToken
-
+  MUST_VERIFY = 'Verify account first'
   DEFAULT_OS = "https://api.github.com/repos/" \
                "farmbot/farmbot_os/releases/latest"
   DEFAULT_FW = "https://api.github.com/repos/FarmBot/farmbot-arduino-firmware/"\
@@ -13,6 +13,7 @@ class SessionToken < AbstractJwtToken
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
                     iss: $API_URL)
+    raise Errors::Forbidden, MUST_VERIFY unless user.verified?
 
     self.new([{
              sub:  user.email,
@@ -24,5 +25,9 @@ class SessionToken < AbstractJwtToken
              os_update_server: OS_RELEASE,
              fw_update_server: FW_RELEASE,
              bot:  "device_#{user.device.id}"}])
+  end
+
+  def self.as_json(user)
+    {token: SessionToken.issue_to(user, iss: $API_URL), user: user}
   end
 end

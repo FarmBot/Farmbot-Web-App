@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161207141826) do
+ActiveRecord::Schema.define(version: 20161207195423) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
@@ -161,6 +161,8 @@ ActiveRecord::Schema.define(version: 20161207141826) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
+    t.datetime "verified_at"
+    t.string   "verification_token"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
