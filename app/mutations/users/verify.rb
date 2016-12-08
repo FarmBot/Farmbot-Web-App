@@ -10,7 +10,7 @@ module Users
       # Prevent token reuse:
       user.verification_token = ""
       user.save!
-      SessionToken.as_json(user)
+      SessionToken.as_json(user.reload)
     end
 
 private
