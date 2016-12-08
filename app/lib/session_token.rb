@@ -13,7 +13,7 @@ class SessionToken < AbstractJwtToken
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
                     iss: $API_URL)
-    raise Errors::Forbidden, MUST_VERIFY unless (!user.verified?)
+    raise Errors::Forbidden, MUST_VERIFY unless user.verified?
 
     self.new([{
              sub:  user.email,

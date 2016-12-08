@@ -15,7 +15,7 @@ module Users
 
 private
     def user
-      @user ||= User.find_by(verification_token: token)
+      @user ||= User.find_by!(verification_token: token)
     end
   end
 end
