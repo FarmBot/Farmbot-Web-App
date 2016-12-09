@@ -27,6 +27,10 @@ module Api
       render json: current_device.logs.last(25)
     end
 
+    def destroy
+      render json: current_device.logs.destroy_all && ""
+    end
+
 private
 
     def new_log(input)
