@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/rickcarlino/farmbot-web-app/issues"
   },
-  "homepage": "https://github.com/rickcarlino/farmbot-web-app#readme"
+  "homepage": "https://github.com/rickcarlino/farmbot-web-app#readme",
+  "dependencies": {
+    "farmbot-inc": "0.0.1"
+  }
 }
