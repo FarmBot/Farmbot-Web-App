@@ -65,5 +65,14 @@ describe Api::LogsController do
       expect(response.status).to eq(200)
       expect(user.device.logs.count).to eq(user.device.max_log_count)
     end
+
+    it 'deletes ALL logs' do
+      sign_in user
+      before = user.device.logs.count
+      delete :destroy, params: { id: "all" }
+      expect(response.status).to eq(200)
+      expect(user.device.reload.logs.count).to be < before
+      expect(user.device.logs.count).to eq(0)
+    end
   end
 end
