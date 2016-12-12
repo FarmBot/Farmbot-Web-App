@@ -8,6 +8,7 @@ module Users
     end
 
     def validate
+      add_error :email, :*, 'Already registered' if User.find_by(email: email)
       if password != password_confirmation
         add_error :password, :*, 'Password and confirmation do not match.'
       end
