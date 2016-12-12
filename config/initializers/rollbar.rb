@@ -10,19 +10,6 @@
 # own repo and out of the main app.               |
 # TODO: Move this into its own module.            |
 #=================================================+
-
-class Device < ActiveRecord::Base
-  # This is for the error reporting tool.
-  def username
-    device.users.pluck(:name).join(" ")
-  end
-
-  # This is for the error reporting tool.
-  def email
-    device.users.pluck(:name).join(" ")
-  end
-end
-
 Rollbar.configure do |config|
   config.access_token = ENV['ROLLBAR_ACCESS_TOKEN'] || "NO_ROLLBAR_ACCESS"
   config.enabled = Rails.env.production? ? true : false
