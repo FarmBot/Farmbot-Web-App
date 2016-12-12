@@ -12,6 +12,7 @@ gem "ice_cube"
 gem "rack-cors"
 gem "mysql"
 gem "database_cleaner"
+gem "rollbar"
 
 group :development, :test do
   gem "sqlite3"

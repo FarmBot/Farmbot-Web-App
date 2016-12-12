@@ -87,6 +87,7 @@ GEM
     mime-types-data (3.2016.0521)
     mini_portile2 (2.1.0)
     minitest (5.9.1)
+    multi_json (1.12.1)
     mutations (0.8.0)
       activesupport
     mysql (2.9.1)
@@ -140,6 +141,8 @@ GEM
     rake (11.3.0)
     responders (2.3.0)
       railties (>= 4.2.0, < 5.1)
+    rollbar (2.13.3)
+      multi_json
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
@@ -210,6 +213,7 @@ DEPENDENCIES
   rails (= 5.0.0.1)
   rails-erd
   rails_12factor
+  rollbar
   rspec
   rspec-rails
   simplecov
