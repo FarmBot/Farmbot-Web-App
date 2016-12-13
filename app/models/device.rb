@@ -18,4 +18,14 @@ class Device < ActiveRecord::Base
     these = logs.last(max_log_count || DEFAULT_MAX_LOGS).pluck(:id)
     logs.where.not(id: these).destroy_all
   end
+
+  # This is for the error reporting tool.
+  def username
+    users.pluck(:name).join(", ")
+  end
+
+  # This is for the error reporting tool.
+  def email
+    users.pluck(:email).join(", ")
+  end
 end
