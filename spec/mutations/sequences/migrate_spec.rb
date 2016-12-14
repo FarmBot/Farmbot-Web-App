@@ -79,13 +79,13 @@ BODY2 = [
           ]
       }
   ]
-describe Sequences::Migrate do
+describe "Migrate from [0, nil] to 1" do
   let(:user) { FactoryGirl.create(:user) }
   let(:device) { user.device }
   let(:seq1) { FactoryGirl.create(:sequence, device: device, body: BODY1) }
   let(:seq2) { FactoryGirl.create(:sequence, device: device, body: BODY2) }
 
-  it 'migrates [nil,  0] => 1' do
+  it 'handles nodes without a body' do
       # BEFORE:
       expect(seq1.body.first["message_type"]).to eq(nil)
       expect(seq1.args["version"]).to eq(nil)
@@ -97,5 +97,19 @@ describe Sequences::Migrate do
       expect(actual).to eq(expected)
       expect(seq1.body.dig(0, "args", "message_type")).to eq("info")
       expect(seq1.args["version"]).to eq(1)
+  end
+
+  it 'handles `channel` body nodes' do
+      Sequences::Migrate.run!(device: device, sequence: seq2)
+
+      expect(seq2.body.dig(0, "args", "message_type")).to eq("info")
+      expect(seq2.args["version"]).to eq(1)
+      results = seq2
+                  .body
+                  .map{|x| x["body"]}
+                  .flatten
+                  .map{|x| x.dig("args", "channel_name")}
+                  .uniq
+      expect(results).to eq(["toast"])
   end
 end

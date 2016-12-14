@@ -8,8 +8,9 @@ class UpdateChannelNames < SequenceMigration
       sequence
         .body
         .select { |x| x["kind"] == "send_message" }
-        .map    { |x| x["args"]["message_type"] = "info" }
+        .each   { |x| x["args"]["message_type"] = "info" }
         .map    { |x| x["body"] }
+        .flatten
         .compact
         .select { |x| x["kind"] == "channel" }
         .compact
