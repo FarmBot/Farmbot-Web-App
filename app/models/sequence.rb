@@ -6,7 +6,7 @@ class Sequence < ActiveRecord::Base
 
   serialize :body, Array
   serialize :args, Hash
-
+  CURRENT_VERSION = 0
   # allowable label colors for the frontend.
   [ :name, :kind ].each { |n| validates n, presence: true }
   validates :color, inclusion: { in: COLORS }
@@ -62,7 +62,7 @@ class Sequence < ActiveRecord::Base
           "Allowed values: #{ALLOWED_CHANNEL_NAMES.map(&:to_s).join(", ")}"
         end
       end
-      .defineArg(:tag_version,     [Fixnum])
+      .defineArg(:version,     [Fixnum])
       .defineArg(:x,               [Fixnum])
       .defineArg(:y,               [Fixnum])
       .defineArg(:z,               [Fixnum])
@@ -82,7 +82,7 @@ class Sequence < ActiveRecord::Base
       .defineNode(:send_message,   [:message])
       .defineNode(:execute,        [:sub_sequence_id])
       .defineNode(:if_statement,   [:lhs, :op, :rhs, :sub_sequence_id])
-      .defineNode(:sequence,       [:tag_version], STEPS)
+      .defineNode(:sequence,       [:version], STEPS)
 
   # http://stackoverflow.com/a/5127684/1064917
   before_validation :set_defaults
@@ -91,7 +91,7 @@ class Sequence < ActiveRecord::Base
     self.color ||= "gray"
     self.kind ||= "sequence"
     self.body ||= []
-    self.args ||= { tag_version: 0 }
+    self.args ||= {}
   end
 
   def self.within(array, node)

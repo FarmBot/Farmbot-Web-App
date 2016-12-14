@@ -6,7 +6,7 @@ describe CeleryScript::Checker do
     {
       kind: "sequence",
       args: {
-        tag_version: 0
+        version: 0
       },
       comment: "Properly formatted, syntactically valid sequence.",
       body: sequence_body_for(FactoryGirl.create(:sequence))
