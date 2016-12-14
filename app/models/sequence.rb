@@ -62,7 +62,7 @@ class Sequence < ActiveRecord::Base
           "Allowed values: #{ALLOWED_CHANNEL_NAMES.map(&:to_s).join(", ")}"
         end
       end
-      .defineArg(:version,     [Fixnum])
+      .defineArg(:version,         [Fixnum])
       .defineArg(:x,               [Fixnum])
       .defineArg(:y,               [Fixnum])
       .defineArg(:z,               [Fixnum])

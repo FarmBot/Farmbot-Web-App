@@ -86,7 +86,6 @@ describe Sequences::Migrate do
   let(:seq2) { FactoryGirl.create(:sequence, device: device, body: BODY2) }
 
   it 'migrates [nil,  0] => 1' do
-      pending("Hmmm....")
       # BEFORE:
       expect(seq1.body.first["message_type"]).to eq(nil)
       expect(seq1.args["version"]).to eq(nil)
