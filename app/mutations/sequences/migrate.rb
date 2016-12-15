@@ -14,10 +14,9 @@ module Sequences
 
     def execute
       theirs = sequence.args["version"]
-      ours   = SequenceMigration.latest_version
+      ours   = SequenceMigration::Base.latest_version
       if theirs != ours
-        puts "RUNNING MIGRATION ON SEQUENCE ##{sequence.id || 0}"
-        SequenceMigration.generate_list(sequence).map(&:run)
+        SequenceMigration::Base.generate_list(sequence).map(&:run)
         sequence.args["is_outdated"] = true
       end
       sequence

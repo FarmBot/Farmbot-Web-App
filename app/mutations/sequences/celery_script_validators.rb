@@ -6,7 +6,7 @@ module Sequences
 
     def seq
       @seq ||= {body: [],
-                args: { version: SequenceMigration.latest_version },
+                args: { version: SequenceMigration::Base.latest_version },
                 kind: "sequence"}.merge(inputs.symbolize_keys.slice(:body,
                                                                     :kind,
                                                                     :args))

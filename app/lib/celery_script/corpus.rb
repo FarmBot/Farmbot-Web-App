@@ -29,8 +29,8 @@ module CeleryScript
 
     def initialize(name, allowed_args, allowed_body_types)
       @name                  = name
-      @allowed_args          = allowed_args  
-      @allowed_body_types    = allowed_body_types   
+      @allowed_args          = allowed_args
+      @allowed_body_types    = allowed_body_types
     end
   end
 
@@ -39,7 +39,7 @@ module CeleryScript
 
     def initialize
       @arg_def_list = {}
-      @node_def_list = {}      
+      @node_def_list = {}
     end
 
     def fetchArg(name)
@@ -68,7 +68,7 @@ module CeleryScript
     end
 
     def as_json(optns)
-      { "tag": 0,
+      { "tag": SequenceMigration::Base.latest_version,
         "args": @arg_def_list.to_a.map(&:last).map{|x| x.as_json({}) },
         "nodes": @node_def_list.to_a.map(&:last).map{|x| x.as_json({}) }}
     end
