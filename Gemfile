@@ -13,6 +13,7 @@ gem "rack-cors"
 gem "mysql"
 gem "database_cleaner"
 gem "rollbar"
+gem "rack-attack"
 
 group :development, :test do
   gem "sqlite3"
