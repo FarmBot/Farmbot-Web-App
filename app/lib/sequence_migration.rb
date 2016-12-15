@@ -9,10 +9,6 @@ class SequenceMigration
     @latest_version ||= self.descendants.map{ |k| k::VERSION }.max
   end
 
-  def self.inherited(subclass)
-    @latest_version = nil
-  end
-
   attr_accessor :sequence
 
   def initialize(sequence)

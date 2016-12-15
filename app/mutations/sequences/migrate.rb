@@ -18,7 +18,6 @@ module Sequences
       if theirs != ours
         puts "RUNNING MIGRATION ON SEQUENCE ##{sequence.id || 0}"
         SequenceMigration.generate_list(sequence).map(&:run)
-        sequence.save! if save
         sequence.args["is_outdated"] = true
       end
       sequence

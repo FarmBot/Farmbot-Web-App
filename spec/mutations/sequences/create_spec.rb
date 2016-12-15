@@ -68,13 +68,15 @@ describe Sequences::Create do
         {
           kind: "send_message",
           args: {
-            message: "Hello, world!"
+            message: "Hello, world!",
+            message_type: "warn"
           },
-          # DOES NOT EXIST YET.
           body: [
             {
               kind: "channel",
-              args: { channel_name: "success_toast"}
+              args: {
+                channel_name: "toast"
+              }
             }
           ]
         }
