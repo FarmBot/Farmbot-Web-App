@@ -10,11 +10,10 @@ module Sequences
 
     def execute
       theirs = sequence.args["version"]
-      ours   = Sequence::CURRENT_VERSION
+      ours   = SequenceMigration.latest_version
       if theirs == ours
         return sequence
       else
-        # CeleryScript::AstNode.new(sequence.body.deep_symbolize_keys)
         SequenceMigration
           .generate_list(sequence)
           .map(&:run)

@@ -5,6 +5,14 @@ class SequenceMigration
   LEGACY_VERSION = -1
   VERSION        = "YOU MUST CHANGE THIS!!!"
 
+  def self.latest_version
+    @latest_version ||= self.descendants.map{ |k| k::VERSION }.max
+  end
+
+  def self.inherited(subclass)
+    @latest_version = nil
+  end
+
   attr_accessor :sequence
 
   def initialize(sequence)
