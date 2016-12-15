@@ -4,6 +4,8 @@
 #   this migration.
 class UpdateChannelNames < SequenceMigration
     VERSION = 1
+    CREATED_ON = "DECEMBER 15 2016"
+
     def up
       sequence
         .body
