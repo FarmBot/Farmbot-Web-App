@@ -3,7 +3,8 @@
 # the rug.
 module CeleryScriptSettingsBag
   ALLOWED_PIN_MODES = [0, 1]
-  ALLOWED_CHANNEL_NAMES = %w(ticker error_ticker success_toast error_toast warning_toast)
+  ALLOWED_CHANNEL_NAMES = %w(ticker error_ticker success_toast error_toast
+                             warning_toast)
   ALLOWED_DATA_TYPES = %w(string integer)
   ALLOWED_OPS =%w(< > is not)
   ALLOWED_LHS = %w(x y z s busy param_version movement_timeout_x
