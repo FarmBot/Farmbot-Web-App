@@ -5,7 +5,8 @@ module Api
     def index
       query = { device: current_device }
       query.merge!(schedule_id: params[:schedule_id]) if params[:schedule_id]
-      render json: Sequence.where(query)
+      sequences = Sequence.where(query)
+      render json: sequences
     end
 
     def show
@@ -28,6 +29,9 @@ module Api
 
     private
 
+    def maybe_migrate(sequences)
+    end
+
     # TODO: Come back and fix this. Rails 5 has changed the way it handles
     # params.
     def sequence_i_guess
@@ -45,9 +49,9 @@ module Api
       @sequence ||= Sequence.find(params[:id])
     end
 
-    def authorize_user 
-      raise Errors::Forbidden, "Not your Sequence object." if sequence.device != current_device 
+    def authorize_user
+      raise Errors::Forbidden,
+            "Not your Sequence object." if sequence.device != current_device
     end
   end
 end
- 

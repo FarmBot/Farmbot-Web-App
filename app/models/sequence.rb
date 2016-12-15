@@ -13,6 +13,12 @@ class Sequence < ActiveRecord::Base
   validates :color, inclusion: { in: COLORS }
   validates :name, uniqueness: { scope: :device }
 
+  after_find :maybe_migrate
+
+  def maybe_migrate
+    Sequences::Migrate.run!(sequence: self, device: self.device)
+  end
+
   # http://stackoverflow.com/a/5127684/1064917
   before_validation :set_defaults
 
