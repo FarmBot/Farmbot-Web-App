@@ -7,8 +7,8 @@ module CeleryScriptSettingsBag
   ALLOWED_CHANNEL_NAMES = %w(ticker toast)
   ALLOWED_DATA_TYPES    = %w(string integer)
   ALLOWED_OPS           = %w(< > is not)
-  STEPS = %s(var_set var_get move_absolute move_relative write_pin read_pin wait
-             send_message execute if_statement)
+  STEPS = %w(move_absolute move_relative write_pin read_pin wait send_message
+             execute if_statement)
   ALLOWED_LHS = %w(busy pin0 pin1 pin2 pin3 pin4 pin5 pin6 pin7 pin8 pin9 pin10
                    pin11 pin12 pin13 x y z)
 

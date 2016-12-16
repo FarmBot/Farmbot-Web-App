@@ -9,7 +9,7 @@ module CeleryScript
     end
 
     def run!
-      cb = method(:validate_node)
+      cb = method(:validate)
       CeleryScript::TreeClimber.travel(tree, cb.to_proc)
       tree
     end
@@ -17,7 +17,7 @@ module CeleryScript
     def run
       error || tree
     end
-    
+
     def valid?
       error ? false : true
     end
@@ -31,6 +31,25 @@ module CeleryScript
 
     private
 
+    def validate(node)
+      validate_body(node)
+      validate_node(node)
+    end
+
+    def validate_body(node)
+      (node.body || []).each_with_index do |inner_node, i|
+        if inner_node.is_a?(AstNode)
+          allowed = corpus.fetchNode(node.kind).allowed_body_types
+          body_ok = Array(allowed)
+                      .map(&:to_sym)
+                      .include?(inner_node.kind.to_sym)
+          bad_body_kind(node, inner_node, i, allowed) unless body_ok
+        else
+          leaf_in_body(node, i)
+        end
+      end
+    end
+
     def validate_node(node)
       check_arity(node)
       node.args.map do |array|
@@ -38,7 +57,6 @@ module CeleryScript
         node      = array.last
         check_arg_validity(should_be, node)
       end
-      #    * Run user defined validations
     end
 
     def check_arity(node)
@@ -65,7 +83,6 @@ module CeleryScript
     end
 
     def check_arg_validity(should_be, node)
-      # 2. DONT check validity of body? write test to verify...
       case node
       when AstNode
       when AstLeaf
@@ -85,6 +102,17 @@ module CeleryScript
       end
       validator = corpus.fetchArg(should_be).additional_validation
       validator.call(node, TypeCheckError, corpus) if(validator)
+    end
+
+    def bad_body_kind(prnt, child, i, ok)
+      m = "Body of `#{prnt.kind}` node contains `#{child.kind}` node. It may "\
+          "only contain: #{ok.inspect}"
+      raise TypeCheckError, m
+    end
+
+    def leaf_in_body(parent, i)
+      m = "Body item ##{i} in '#{parent.kind}' node is not a valid AstNode."
+      raise TypeCheckError, m
     end
   end
 end
