@@ -9,14 +9,8 @@ module CeleryScriptSettingsBag
   ALLOWED_OPS           = %w(< > is not)
   STEPS = %s(var_set var_get move_absolute move_relative write_pin read_pin wait
              send_message execute if_statement)
-  ALLOWED_LHS = %w(x y z s busy param_version movement_timeout_x pin3 pin4 pin5
-  movement_timeout_y movement_timeout_z movement_invert_endpoints_x pin6 pin7
-  movement_invert_endpoints_y movement_invert_endpoints_z time pin0 pin1 pin2
-  movement_invert_motor_x movement_invert_motor_y movement_invert_motor_z pin8
-  movement_steps_acc_dec_x movement_steps_acc_dec_y movement_steps_acc_dec_z
-  movement_home_up_x movement_home_up_y movement_home_up_z movement_min_spd_x
-  movement_min_spd_y movement_min_spd_z movement_max_spd_x movement_max_spd_y
-  movement_max_spd_z pin9 pin10 pin11 pin12 pin13)
+  ALLOWED_LHS = %w(busy pin0 pin1 pin2 pin3 pin4 pin5 pin6 pin7 pin8 pin9 pin10
+                   pin11 pin12 pin13 x y z)
 
   Corpus = CeleryScript::Corpus
       .new
@@ -71,13 +65,13 @@ module CeleryScriptSettingsBag
       .defineNode(:read_pin,       [:pin_number, :data_label, :pin_mode])
       .defineNode(:channel,        [:channel_name])
       .defineNode(:wait,           [:milliseconds])
-      .defineNode(:send_message,   [:message, :message_type])
+      .defineNode(:send_message,   [:message, :message_type], [:channel])
       .defineNode(:execute,        [:sub_sequence_id])
       .defineNode(:if_statement,   [:lhs, :op, :rhs, :sub_sequence_id])
       .defineNode(:sequence,       [:version], STEPS)
+
   def self.within(array, node)
     val = node&.value
     node.invalidate!(yield(val)) if !array.include?(val)
   end
-
 end
