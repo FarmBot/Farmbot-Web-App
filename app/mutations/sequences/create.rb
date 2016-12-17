@@ -17,6 +17,7 @@ module Sequences
 
     def execute
       seq = Sequence.new(inputs)
+      seq.args["is_outdated"] = false
       ActiveRecord::Base.transaction do
         seq.save!
         reload_dependencies(seq)

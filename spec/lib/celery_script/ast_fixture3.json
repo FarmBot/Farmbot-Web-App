@@ -2,7 +2,7 @@
     "kind": "sequence",
     "comment": "Properly formatted, syntactically valid sequence.",
     "args": {
-        "tag_version": 0
+        "version": 1
     },
     "body": [
         {
@@ -48,8 +48,17 @@
         {
             "kind": "send_message",
             "args": {
-                "message": "Bot at coord {{ x }} {{ y }} {{ z }}."
-            }
+                "message": "Bot at coord {{ x }} {{ y }} {{ z }}.",
+                "message_type": "info"
+            },
+            "body": [
+                {
+                    "kind": "channel",
+                    "args": {
+                        "channel_name": "toast"
+                    }
+                }
+            ]
         },
         {
             "kind": "if_statement",

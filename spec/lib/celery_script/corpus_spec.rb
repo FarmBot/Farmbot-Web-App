@@ -6,13 +6,13 @@ describe CeleryScript::Corpus do
   it "serializes into JSON" do
       result = JSON.parse(corpus.to_json)
 
-      expect(result["tag"]).to eq(0)
+      expect(result["tag"]).to eq(1)
       expect(result["args"]).to be_kind_of(Array)
       expect(result["nodes"]).to be_kind_of(Array)
       expect(result["nodes"].sample.keys.sort).to eq(["allowed_args",
                                                       "allowed_body_types",
-                                                      "name"])  
+                                                      "name"])
       expect(result["args"].sample.keys.sort).to eq(["allowed_values",
-                                                     "name"])  
+                                                     "name"])
   end
 end

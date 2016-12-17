@@ -20,6 +20,7 @@ module Sequences
 
     def execute
       ActiveRecord::Base.transaction do
+        sequence.args["is_outdated"] = false
         sequence.update_attributes!(inputs.except(:sequence, :device))
         reload_dependencies(sequence)
       end
