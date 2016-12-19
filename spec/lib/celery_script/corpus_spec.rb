@@ -15,4 +15,25 @@ describe CeleryScript::Corpus do
       expect(result["args"].sample.keys.sort).to eq(["allowed_values",
                                                      "name"])
   end
+
+  it "Handles error validations for version 1" do
+    # This test is __ONLY__ relevant for version 1.
+    # Change / delete / update as needed.
+    expect(SequenceMigration::Base.latest_version).to eq(1)
+        tree = CeleryScript::AstNode.new({
+      "kind": "send_message",
+      "args": {
+        "message": "Hello, world!",
+        "message_type": "wrong"
+      },
+      "body": [
+        {
+          "kind": "channel",
+          "args": { "channel_name": "also_wrong" }
+        }
+      ]
+    })
+    checker = CeleryScript::Checker.new(tree, CeleryScriptSettingsBag::Corpus)
+    binding.pry
+  end
 end
