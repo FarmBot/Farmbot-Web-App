@@ -1,6 +1,13 @@
 module CeleryScript
   class TypeCheckError < StandardError; end
   class Checker
+    MISSING_ARG = "Expected node '%s' to have a '%s', but got: %s."
+    EXTRA_ARGS  = "'%s' has unexpected arguments: %s. Allowed arguments: %s"
+    BAD_LEAF    = "Expected leaf '%s' within '%s' to be one of: %s but got %s"
+    MALFORMED   = "Expected '%s' to be a node or leaf, but it was neither"
+    BAD_BODY    = "Body of '%s' node contains '%s' node. "\
+                  "Expected one of: %s"
+
     attr_reader :tree, :corpus
 
     def initialize(tree, corpus)
@@ -64,8 +71,7 @@ module CeleryScript
           unless has_key
             msgs = node.args.keys.join(", ")
             msgs = "nothing" if msgs.length < 1
-          msg = "Expected node '#{node.kind}' to have a '#{arg}',"\
-          " but got: #{ msgs }."
+          msg = MISSING_ARG % [node.kind, arg, msgs]
           raise TypeCheckError, msg
           end
         end
@@ -73,8 +79,7 @@ module CeleryScript
       required = corpus.fetchNode(node.kind).allowed_args # Always smallest.
       if !(has.length === required.length)
         extras = has - required
-        raise TypeCheckError, "'#{node.kind}' has unexpected arguments: "\
-                              "#{extras}. Allowed arguments: #{allowed}"
+        raise TypeCheckError, (EXTRA_ARGS % [node.kind, extras, allowed])
       end
     end
 
@@ -88,22 +93,18 @@ module CeleryScript
                     .select { |d| d.is_a?(Class) }
         actual = node.value.class
         unless allowed.include?(actual)
-          raise TypeCheckError, "Expected leaf '#{ node.kind }' within "\
-                                "'#{ node.parent.kind }' to be one of: "\
-                                "#{ allowed.inspect } but got #{ actual.inspect }"
+          raise TypeCheckError, (BAD_LEAF % [node.kind, node.parent.kind,
+                                             allowed.inspect, actual.inspect])
         end
       else
-        raise TypeCheckError, "Expected '#{should_be}' to be a node or leaf, "\
-                              "but it was neither"
+        raise TypeCheckError, (MALFORMED % should_be)
       end
       validator = corpus.fetchArg(should_be).additional_validation
       validator.call(node, TypeCheckError, corpus) if(validator)
     end
 
     def bad_body_kind(prnt, child, i, ok)
-      m = "Body of `#{prnt.kind}` node contains `#{child.kind}` node. It may "\
-          "only contain: #{ok.inspect}"
-      raise TypeCheckError, m
+      raise TypeCheckError, (BAD_BODY % [prnt.kind, child.kind, ok.inspect])
     end
   end
 end

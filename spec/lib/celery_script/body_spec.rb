@@ -25,7 +25,7 @@ describe "Body nodes" do
     checker = CeleryScript::Checker.new(tree, test_corpus)
     expect(checker.valid?).to eq(false)
     expect(checker.error.message).to include(
-      "node contains `wrong` node"
+      "node contains 'wrong' node"
     )
   end
 

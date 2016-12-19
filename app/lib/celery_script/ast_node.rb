@@ -1,18 +1,5 @@
 module CeleryScript
-  class AbstractNode
-    def invalidate!(message = "Unspecified type check error.")
-      raise CeleryScript::TypeCheckError, message
-    end
-  end
-
-  class AstLeaf < AbstractNode
-    attr_reader :kind, :value, :parent
-    def initialize(parent, value, kind)
-      @parent, @value, @kind = parent, value, kind
-    end
-  end
-
-  class AstNode < AbstractNode
+  class AstNode < AstBase
       attr_reader :args, :body, :comment, :kind, :parent
       BODY_HAS_NON_NODES = "The `body` of a node can only contain nodes- " \
                            "no leaves here."
@@ -47,7 +34,7 @@ module CeleryScript
         (hash[:body].is_a?(Array) || hash[:body] == nil) &&
         (hash[:comment].is_a?(String) || hash[:comment] == nil) &&
         (hash[:args].is_a?(Hash)) &&
-        (hash[:kind].is_a?(String))      
+        (hash[:kind].is_a?(String))
       end
   end
 end
