@@ -28,4 +28,14 @@ describe "Body nodes" do
       "node contains `wrong` node"
     )
   end
+
+  it 'disallows leaves in the body field of a node' do
+    expect do
+      CeleryScript::AstNode.new({
+        "kind": "baz",
+        "args": {},
+        "body": ["wrong"]
+      })
+    end.to raise_error(CeleryScript::TypeCheckError)
+  end
 end

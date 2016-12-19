@@ -36,25 +36,23 @@ module CeleryScript
 
   class Corpus
     BAD_NODE_NAME = "Can't find validation rules for node "
-
+    NO_ARG_SPEC   = "CANT FIND ARG SPEC"
     def initialize
       @arg_def_list = {}
       @node_def_list = {}
     end
 
     def fetchArg(name)
-      @arg_def_list[name.to_sym] or raise "CANT FIND ARG SPEC"
+      @arg_def_list[name.to_sym] or raise NO_ARG_SPEC
     end
 
     def defineArg(arg_name, allowed_values, &blk)
-    #   additional_checks.call("node", "err_callback")
       @arg_def_list[arg_name.to_sym] = ArgumentSpecification.new(arg_name,
                                                                  allowed_values,
                                                                  blk)
       self
     end
 
-    #TODO : These names are all JS case! Use snake case in Ruby.
     def fetchNode(name)
       n = @node_def_list[name.to_sym]
       n ? n : raise(TypeCheckError, BAD_NODE_NAME + name.to_s)

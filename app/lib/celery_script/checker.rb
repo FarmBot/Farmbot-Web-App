@@ -38,15 +38,11 @@ module CeleryScript
 
     def validate_body(node)
       (node.body || []).each_with_index do |inner_node, i|
-        if inner_node.is_a?(AstNode)
-          allowed = corpus.fetchNode(node.kind).allowed_body_types
-          body_ok = Array(allowed)
-                      .map(&:to_sym)
-                      .include?(inner_node.kind.to_sym)
-          bad_body_kind(node, inner_node, i, allowed) unless body_ok
-        else
-          leaf_in_body(node, i)
-        end
+        allowed = corpus.fetchNode(node.kind).allowed_body_types
+        body_ok = Array(allowed)
+                    .map(&:to_sym)
+                    .include?(inner_node.kind.to_sym)
+        bad_body_kind(node, inner_node, i, allowed) unless body_ok
       end
     end
 
@@ -107,11 +103,6 @@ module CeleryScript
     def bad_body_kind(prnt, child, i, ok)
       m = "Body of `#{prnt.kind}` node contains `#{child.kind}` node. It may "\
           "only contain: #{ok.inspect}"
-      raise TypeCheckError, m
-    end
-
-    def leaf_in_body(parent, i)
-      m = "Body item ##{i} in '#{parent.kind}' node is not a valid AstNode."
       raise TypeCheckError, m
     end
   end
