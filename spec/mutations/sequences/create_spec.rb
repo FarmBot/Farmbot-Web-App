@@ -19,14 +19,17 @@ describe Sequences::Create do
   end
 
   it 'Gives validation errors for malformed AST nodes' do
-    body.first["args"]["location"]["x"] = "not a number"
+    move_abs = body.select{ |x| x["kind"] == "move_absolute" }.first
+    binding.pry
+    move_abs["args"]["location"]["x"] = "not a number"
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
     expect(seq.errors["body"].message).to include("but got String")
   end
 
   it 'Gives validation errors for malformed pin_mode' do
-    body[2]["args"]["pin_mode"] = -9
+    pin_write = body.select{ |x| x["kind"] == "write_pin" }.first
+    pin_write["args"]["pin_mode"] = -9
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
     expectation = 'Can not put "-9" into a left hand side (LHS) argument.'
@@ -42,7 +45,7 @@ describe Sequences::Create do
   end
 
   it 'Gives validation errors for malformed LHS' do
-    body[6]["args"]["lhs"] = "xyz"
+    body.select{ |x| x["kind"] == "if_statement" }.first["args"]["lhs"] = "xyz"
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
     expected = "Can not put \"xyz\" into a left hand side (LHS) argument."
@@ -50,7 +53,7 @@ describe Sequences::Create do
   end
 
   it 'Gives validation errors for malformed OP' do
-    body[6]["args"]["op"] = "was"
+    body.select{ |x| x["kind"] == "if_statement" }.first["args"]["op"] = "was"
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
     expected = "Can not put \"was\" into an operand (OP) argument."

@@ -4,6 +4,7 @@ module Helpers
   # Create a VALID fake sequence.body for a particular user. Creates a fake
   # subsequence in the DB when called.
   def sequence_body_for(input)
+    user ||= FactoryGirl.create(:user)
     body = JSON.parse(AST_FIXTURE)["body"]
     case input
     when User; id = FactoryGirl.create(:sequence, device: user.device).id

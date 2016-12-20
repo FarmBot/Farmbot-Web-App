@@ -29,6 +29,12 @@ describe "Migration from version 0 or nil" do
 
   it 'Updates `move_absolute` nodes' do
       Sequences::Migrate.run!(device: device, sequence: seq)
-      binding.pry
+      nodes = seq.body.select{ |x| x["kind"] == "move_absolute"}
+      args = nodes.map { |x| x["args"].keys }.flatten.uniq
+      expect(args).to_not include("x")
+      expect(args).to_not include("y")
+      expect(args).to_not include("z")
+      expect(args).to include("speed")
+      expect(args).to include("location")
   end
 end
