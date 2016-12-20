@@ -45,6 +45,7 @@ describe CeleryScript::Corpus do
     })
     check = CeleryScript::Checker.new(bad, Sequence::Corpus)
     expect(check.valid?).to be_falsey
+    binding.pry
   end
 
   it "serializes into JSON" do
