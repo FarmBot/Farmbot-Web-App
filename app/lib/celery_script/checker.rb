@@ -52,16 +52,11 @@ module CeleryScript
 
     def validate_node(node)
       check_arity(node)
-      node.args.map do |array|
-        should_be, node = array
-        check_arg_validity(should_be, node)
-      end
+      node.args.map { |array| check_arg_validity(*array) }
     end
 
     def check_arity(node)
-        allowed = corpus
-        .fetchNode(node.kind)
-        .allowed_args
+        allowed = corpus.args(node)
         allowed.map do |arg|
           has_key = node.args.has_key?(arg) || node.args.has_key?(arg.to_s)
           unless has_key
@@ -79,27 +74,36 @@ module CeleryScript
       end
     end
 
-    def check_arg_validity(should_be, node)
+    def check_arg_validity(expectation, node)
       case node
       when AstNode
       when AstLeaf
-        allowed = corpus
-                    .fetchArg(node.kind)
-                    .allowed_values
-        actual = node.value.class
-        unless allowed.include?(actual)
-          raise TypeCheckError, (BAD_LEAF % [node.kind, node.parent.kind,
-                                             allowed.inspect, actual.inspect])
-        end
+        check_leaf(node)
       else
-        raise TypeCheckError, (MALFORMED % should_be)
+        malformed_node!(expectation)
       end
-      validator = corpus.fetchArg(should_be).additional_validation
-      validator.call(node, TypeCheckError, corpus) if(validator)
+      run_additional_validations(node, expectation)
     end
 
     def bad_body_kind(prnt, child, i, ok)
       raise TypeCheckError, (BAD_BODY % [prnt.kind, child.kind, ok.inspect])
+    end
+
+    def check_leaf(node)
+      allowed = corpus.values(node)
+      actual = node.value.class
+      unless allowed.include?(actual)
+        raise TypeCheckError, (BAD_LEAF % [node.kind, node.parent.kind,
+                                           allowed.inspect, actual.inspect])
+      end
+    end
+
+    def malformed_node!(expectation)
+      raise TypeCheckError, (MALFORMED % expectation)
+    end
+
+    def run_additional_validations(node, expectation)
+      corpus.validator(expectation).call(node, TypeCheckError, corpus)
     end
   end
 end

@@ -1,7 +1,7 @@
 module CeleryScript
+  NOOP = ->(*_) { }
   class ArgumentSpecification
     attr_reader :name, :allowed_values, :additional_validation
-    NOOP = ->(_, __) { }
 
     def initialize(name, allowed_values, additional_validation = NOOP)
       @name                  = name

@@ -2,6 +2,7 @@ module CeleryScript
   class Corpus
     BAD_NODE_NAME = "Can't find validation rules for node "
     NO_ARG_SPEC   = "CANT FIND ARG SPEC"
+
     def initialize
       @arg_def_list = {}
       @node_def_list = {}
@@ -43,6 +44,10 @@ module CeleryScript
     # List of allowed body node types within a node
     def bodies(node)
       Array(fetchNode(node.kind).allowed_body_types).map(&:to_sym)
+    end
+
+    def validator(name)
+      fetchArg(name).additional_validation || CeleryScript::NOOP
     end
 
     def as_json(optns)
