@@ -79,7 +79,7 @@ BODY2 = [
           ]
       }
   ]
-describe "Migrate from [0, nil] to 1" do
+describe "Migration from version 0 or nil" do
   let(:user) { FactoryGirl.create(:user) }
   let(:device) { user.device }
   let(:seq1) { FactoryGirl.create(:sequence, device: device, body: BODY1) }
@@ -96,14 +96,14 @@ describe "Migrate from [0, nil] to 1" do
       expected = BODY1.dig(0, "args", "message")
       expect(actual).to eq(expected)
       expect(seq1.body.dig(0, "args", "message_type")).to eq("info")
-      expect(seq1.args["version"]).to eq(1)
+      expect(seq1.args["version"]).to eq(2)
   end
 
   it 'handles `channel` body nodes' do
       Sequences::Migrate.run!(device: device, sequence: seq2)
 
       expect(seq2.body.dig(0, "args", "message_type")).to eq("info")
-      expect(seq2.args["version"]).to eq(1)
+      expect(seq2.args["version"]).to eq(2)
       results = seq2
                   .body
                   .map{|x| x["body"]}

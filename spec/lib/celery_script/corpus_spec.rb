@@ -3,10 +3,56 @@ require 'spec_helper'
 describe CeleryScript::Corpus do
   let (:corpus) { Sequence::Corpus }
 
+  it "handles valid move_absolute blocks" do
+    ok1 = CeleryScript::AstNode.new({
+      kind: "move_absolute",
+      args: {
+        location: {
+          kind: "coordinate",
+          args: {
+            x: 1,
+            y: 2,
+            z: 3
+          }
+        },
+        speed: 100
+      }
+    })
+    check1 = CeleryScript::Checker.new(ok1, Sequence::Corpus)
+    expect(check1.valid?).to be_truthy
+
+    ok2 = CeleryScript::AstNode.new({
+      kind: "move_absolute",
+      args: {
+        location: {
+          kind: "tool",
+          args: { tool_id: FactoryGirl.create(:tool).id }
+        },
+        speed: 100
+      }
+    })
+    check2 = CeleryScript::Checker.new(ok2, Sequence::Corpus)
+    expect(check2.valid?).to be_truthy
+  end
+
+  it "kicks back invalid move_absolute nodes" do
+    bad = CeleryScript::AstNode.new({
+      kind: "move_absolute",
+      args: {
+        location: 42,
+        speed: 100
+      }
+    })
+    check = CeleryScript::Checker.new(bad, Sequence::Corpus)
+    expect(check.valid?).to be_falsey
+    expect(check.error.message).to include("but got Fixnum")
+    expect(check.error.message).to include("'location' within 'move_absolute'")
+  end
+
   it "serializes into JSON" do
       result = JSON.parse(corpus.to_json)
 
-      expect(result["tag"]).to eq(1)
+      expect(result["tag"]).to eq(2)
       expect(result["args"]).to be_kind_of(Array)
       expect(result["nodes"]).to be_kind_of(Array)
       expect(result["nodes"].sample.keys.sort).to eq(["allowed_args",
@@ -14,5 +60,40 @@ describe CeleryScript::Corpus do
                                                       "name"])
       expect(result["args"].sample.keys.sort).to eq(["allowed_values",
                                                      "name"])
+  end
+
+  it "Handles message_type validations for version 1" do
+    # This test is __ONLY__ relevant for version 1.
+    # Change / delete / update as needed.
+    tree = CeleryScript::AstNode.new({
+      "kind": "send_message",
+      "args": {
+        "message": "Hello, world!",
+        "message_type": "wrong"
+      },
+      "body": []
+    })
+    checker = CeleryScript::Checker.new(tree, CeleryScriptSettingsBag::Corpus)
+    expect(checker.error.message).to include("not a valid message_type")
+  end
+
+  it "Handles channel_name validations for version 1" do
+    # This test is __ONLY__ relevant for version 1.
+    # Change / delete / update as needed.
+    tree = CeleryScript::AstNode.new({
+      "kind": "send_message",
+      "args": {
+        "message": "Hello, world!",
+        "message_type": "fun"
+      },
+      "body": [
+        {
+          "kind": "channel",
+          "args": { "channel_name": "wrong" }
+        }
+      ]
+    })
+    checker = CeleryScript::Checker.new(tree, CeleryScriptSettingsBag::Corpus)
+    expect(checker.error.message).to include("not a valid channel_name")
   end
 end
