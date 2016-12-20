@@ -11,7 +11,8 @@ module SequenceMigration
     def self.descendants
       [
         AddVersionInfo,
-        UpdateChannelNames
+        UpdateChannelNames,
+        AddToolsToMoveAbs
       ]
     end
 

@@ -8,9 +8,42 @@
         {
             "kind": "move_absolute",
             "args": {
-                "x": 1,
-                "y": 2,
-                "z": 3,
+                "location": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 1,
+                        "y": 2,
+                        "z": 3
+                    }
+                },
+                "offset": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "speed": 4
+            }
+        },
+        {
+            "kind": "move_absolute",
+            "args": {
+                "location": {
+                    "kind": "tool",
+                    "args": {
+                        "tool_id": 1
+                    }
+                },
+                "offset": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
                 "speed": 4
             }
         },

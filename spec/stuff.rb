@@ -4,14 +4,18 @@ module Helpers
   # Create a VALID fake sequence.body for a particular user. Creates a fake
   # subsequence in the DB when called.
   def sequence_body_for(input)
+    user ||= FactoryGirl.create(:user)
     body = JSON.parse(AST_FIXTURE)["body"]
     case input
     when User; id = FactoryGirl.create(:sequence, device: user.device).id
     when Sequence; id = input.id
     else; raise "?????"
     end
+    tool_id = FactoryGirl.create(:tool, device: user.device).id
     body.map! do |node|
-      has_subseq = node.dig("args", "sub_sequence_id");
+      has_subseq = node.dig("args", "sub_sequence_id")
+      has_tool   = node.dig("args", "location", "args", "tool_id")
+      node["args"]["location"]["args"]["tool_id"] = tool_id if has_tool
       node["args"]["sub_sequence_id"] = id if has_subseq
       node
     end
