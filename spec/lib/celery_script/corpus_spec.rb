@@ -45,7 +45,8 @@ describe CeleryScript::Corpus do
     })
     check = CeleryScript::Checker.new(bad, Sequence::Corpus)
     expect(check.valid?).to be_falsey
-    binding.pry
+    expect(check.error.message).to include("but got Fixnum")
+    expect(check.error.message).to include("'location' within 'move_absolute'")
   end
 
   it "serializes into JSON" do
