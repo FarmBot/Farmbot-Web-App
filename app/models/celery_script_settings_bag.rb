@@ -7,10 +7,10 @@ module CeleryScriptSettingsBag
   ALLOWED_CHANNEL_NAMES = %w(ticker toast)
   ALLOWED_DATA_TYPES    = %w(string integer)
   ALLOWED_OPS           = %w(< > is not)
-  STEPS = %w(move_absolute move_relative write_pin read_pin wait send_message
-             execute if_statement)
-  ALLOWED_LHS = %w(busy pin0 pin1 pin2 pin3 pin4 pin5 pin6 pin7 pin8 pin9 pin10
-                   pin11 pin12 pin13 x y z)
+  STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
+                             send_message execute if_statement)
+  ALLOWED_LHS           = %w(busy pin0 pin1 pin2 pin3 pin4 pin5 pin6 pin7 pin8
+                             pin9 pin10 pin11 pin12 pin13 x y z)
 
   Corpus = CeleryScript::Corpus
       .new
@@ -48,6 +48,10 @@ module CeleryScriptSettingsBag
           "Allowed values: #{ALLOWED_MESSAGE_TYPES.map(&:to_s).join(", ")}"
         end
       end
+      .defineArg(:tool_id,         [Fixnum]) do |node|
+        missing = !Tool.exists?(node.value)
+        node.invalidate!("Tool ##{ node.value } does not exist.") if missing
+      end
       .defineArg(:version,         [Fixnum])
       .defineArg(:x,               [Fixnum])
       .defineArg(:y,               [Fixnum])
@@ -59,7 +63,10 @@ module CeleryScriptSettingsBag
       .defineArg(:rhs,             [Fixnum])
       .defineArg(:data_label,      [String])
       .defineArg(:message,         [String])
-      .defineNode(:move_absolute,  [:x, :y, :z, :speed])
+      .defineArg(:location,        [String])
+      .defineNode(:tool,           [:tool_id])
+      .defineNode(:coordinate,     [:x, :y, :z])
+      .defineNode(:move_absolute,  [:location, :speed])
       .defineNode(:move_relative,  [:x, :y, :z, :speed])
       .defineNode(:write_pin,      [:pin_number, :pin_value, :pin_mode ])
       .defineNode(:read_pin,       [:pin_number, :data_label, :pin_mode])

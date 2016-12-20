@@ -6,7 +6,7 @@ describe CeleryScript::Corpus do
   it "serializes into JSON" do
       result = JSON.parse(corpus.to_json)
 
-      expect(result["tag"]).to eq(1)
+      expect(result["tag"]).to eq(2)
       expect(result["args"]).to be_kind_of(Array)
       expect(result["nodes"]).to be_kind_of(Array)
       expect(result["nodes"].sample.keys.sort).to eq(["allowed_args",
@@ -19,8 +19,7 @@ describe CeleryScript::Corpus do
   it "Handles message_type validations for version 1" do
     # This test is __ONLY__ relevant for version 1.
     # Change / delete / update as needed.
-    expect(SequenceMigration::Base.latest_version).to eq(1)
-        tree = CeleryScript::AstNode.new({
+    tree = CeleryScript::AstNode.new({
       "kind": "send_message",
       "args": {
         "message": "Hello, world!",
@@ -35,8 +34,7 @@ describe CeleryScript::Corpus do
   it "Handles channel_name validations for version 1" do
     # This test is __ONLY__ relevant for version 1.
     # Change / delete / update as needed.
-    expect(SequenceMigration::Base.latest_version).to eq(1)
-        tree = CeleryScript::AstNode.new({
+    tree = CeleryScript::AstNode.new({
       "kind": "send_message",
       "args": {
         "message": "Hello, world!",

@@ -19,7 +19,7 @@ describe Sequences::Create do
   end
 
   it 'Gives validation errors for malformed AST nodes' do
-    body.first["args"]["x"] = "not a number"
+    body.first["args"]["location"]["x"] = "not a number"
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
     expect(seq.errors["body"].message).to include("but got String")
