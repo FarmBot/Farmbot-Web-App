@@ -16,6 +16,7 @@ class Sequence < ActiveRecord::Base
   after_find :maybe_migrate
 
   def maybe_migrate
+    # spot check with Sequence.order("RANDOM()").first.maybe_migrate
     Sequences::Migrate.run!(sequence: self, device: self.device)
   end
 
@@ -27,5 +28,13 @@ class Sequence < ActiveRecord::Base
     self.kind ||= "sequence"
     self.body ||= []
     self.args ||= {}
+  end
+
+  # Convinience method so that I can spot check sequences on staging to make
+  # sure migrations ran OK (yes, we write tests).
+  def self.spot_check
+    s = Sequence.order("RANDOM()").first
+    puts "Sequence ##{s.id} ========="
+    puts s.maybe_migrate.body.to_yaml
   end
 end

@@ -16,6 +16,15 @@ module SequenceMigration
           loc = { "kind" => "coordinate" }.merge(x["args"].slice("x", "y", "z"))
           x["args"]["location"] = loc
           x["args"].except!("x", "y", "z")
+          x["args"]["offset"] = {
+            "kind" => "coordinate",
+            "args" => {
+              "x" => 0,
+              "y" => 0,
+              "z" => 0
+            }
+          }
+
         end
     end
   end

@@ -15,6 +15,14 @@ describe CeleryScript::Corpus do
             z: 3
           }
         },
+        offset: {
+          kind: "coordinate",
+          args: {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        },
         speed: 100
       }
     })
@@ -28,6 +36,14 @@ describe CeleryScript::Corpus do
           kind: "tool",
           args: { tool_id: FactoryGirl.create(:tool).id }
         },
+        offset: {
+          kind: "coordinate",
+          args: {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        },
         speed: 100
       }
     })
@@ -40,7 +56,15 @@ describe CeleryScript::Corpus do
       kind: "move_absolute",
       args: {
         location: 42,
-        speed: 100
+        speed: 100,
+        offset: {
+          kind: "coordinate",
+          args: {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        },
       }
     })
     check = CeleryScript::Checker.new(bad, Sequence::Corpus)
