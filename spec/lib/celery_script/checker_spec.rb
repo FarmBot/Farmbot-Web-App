@@ -57,10 +57,9 @@ describe CeleryScript::Checker do
   end
 
   it 'handles wrong leaf types' do
-    pending("Actually broke?")
-    hash[:body][0][:args][:location]["x"] = "supposed to be a Fixnum"
+    hash[:body][0][:args][:location][:args][:x] = "supposed to be a Fixnum"
     result = checker.run
-    expect(result.message).to eq("Expected leaf 'x' within 'move_absolute' to"\
+    expect(result.message).to eq("Expected leaf 'x' within 'coordinate' to"\
                                  " be one of: [Fixnum] but got String")
   end
 end

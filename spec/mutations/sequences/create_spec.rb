@@ -20,8 +20,7 @@ describe Sequences::Create do
 
   it 'Gives validation errors for malformed AST nodes' do
     move_abs = body.select{ |x| x["kind"] == "move_absolute" }.first
-    binding.pry
-    move_abs["args"]["location"]["x"] = "not a number"
+    move_abs["args"]["location"]["args"]["x"] = "not a number"
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
     expect(seq.errors["body"].message).to include("but got String")
