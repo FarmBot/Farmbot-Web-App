@@ -67,7 +67,7 @@ module CeleryScriptSettingsBag
       .defineArg(:rhs,             [Fixnum])
       .defineArg(:data_label,      [String])
       .defineArg(:message,         [String])
-      .defineArg(:location,        [String])
+      .defineArg(:location,        [:tool, :coordinate])
       .defineNode(:tool,           [:tool_id])
       .defineNode(:coordinate,     [:x, :y, :z])
       .defineNode(:move_absolute,  [:location, :speed])

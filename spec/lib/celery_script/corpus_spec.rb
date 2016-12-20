@@ -3,6 +3,50 @@ require 'spec_helper'
 describe CeleryScript::Corpus do
   let (:corpus) { Sequence::Corpus }
 
+  it "handles valid move_absolute blocks" do
+    ok1 = CeleryScript::AstNode.new({
+      kind: "move_absolute",
+      args: {
+        location: {
+          kind: "coordinate",
+          args: {
+            x: 1,
+            y: 2,
+            z: 3
+          }
+        },
+        speed: 100
+      }
+    })
+    check1 = CeleryScript::Checker.new(ok1, Sequence::Corpus)
+    expect(check1.valid?).to be_truthy
+
+    ok2 = CeleryScript::AstNode.new({
+      kind: "move_absolute",
+      args: {
+        location: {
+          kind: "tool",
+          args: { tool_id: FactoryGirl.create(:tool).id }
+        },
+        speed: 100
+      }
+    })
+    check2 = CeleryScript::Checker.new(ok2, Sequence::Corpus)
+    expect(check2.valid?).to be_truthy
+  end
+
+  it "kicks back invalid move_absolute nodes" do
+    bad = CeleryScript::AstNode.new({
+      kind: "move_absolute",
+      args: {
+        location: 42,
+        speed: 100
+      }
+    })
+    check = CeleryScript::Checker.new(bad, Sequence::Corpus)
+    expect(check.valid?).to be_falsey
+  end
+
   it "serializes into JSON" do
       result = JSON.parse(corpus.to_json)
 

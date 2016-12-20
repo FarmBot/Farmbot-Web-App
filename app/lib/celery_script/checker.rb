@@ -16,8 +16,7 @@ module CeleryScript
     end
 
     def run!
-      cb = method(:validate)
-      CeleryScript::TreeClimber.travel(tree, cb.to_proc)
+      CeleryScript::TreeClimber.travel(tree, method(:validate).to_proc)
       tree
     end
 
@@ -45,10 +44,8 @@ module CeleryScript
 
     def validate_body(node)
       (node.body || []).each_with_index do |inner_node, i|
-        allowed = corpus.fetchNode(node.kind).allowed_body_types
-        body_ok = Array(allowed)
-                    .map(&:to_sym)
-                    .include?(inner_node.kind.to_sym)
+        allowed = corpus.bodies(node)
+        body_ok = allowed.include?(inner_node.kind.to_sym)
         bad_body_kind(node, inner_node, i, allowed) unless body_ok
       end
     end
@@ -56,8 +53,7 @@ module CeleryScript
     def validate_node(node)
       check_arity(node)
       node.args.map do |array|
-        should_be = array.first
-        node      = array.last
+        should_be, node = array
         check_arg_validity(should_be, node)
       end
     end
@@ -76,7 +72,7 @@ module CeleryScript
           end
         end
       has      = node.args.keys.map(&:to_sym) # Either bigger or equal.
-      required = corpus.fetchNode(node.kind).allowed_args # Always smallest.
+      required = corpus.args(node) # Always smallest.
       if !(has.length === required.length)
         extras = has - required
         raise TypeCheckError, (EXTRA_ARGS % [node.kind, extras, allowed])
@@ -90,7 +86,6 @@ module CeleryScript
         allowed = corpus
                     .fetchArg(node.kind)
                     .allowed_values
-                    .select { |d| d.is_a?(Class) }
         actual = node.value.class
         unless allowed.include?(actual)
           raise TypeCheckError, (BAD_LEAF % [node.kind, node.parent.kind,

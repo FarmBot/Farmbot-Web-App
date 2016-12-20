@@ -30,6 +30,21 @@ module CeleryScript
       self
     end
 
+    # List of allowed arg types for a node.
+    def args(node)
+      fetchNode(node.kind).allowed_args
+    end
+
+    # List of allowed values for a node
+    def values(node)
+      fetchArg(node.kind).allowed_values
+    end
+
+    # List of allowed body node types within a node
+    def bodies(node)
+      Array(fetchNode(node.kind).allowed_body_types).map(&:to_sym)
+    end
+
     def as_json(optns)
       { "tag": SequenceMigration::Base.latest_version,
         "args": @arg_def_list.to_a.map(&:last).map{|x| x.as_json({}) },
