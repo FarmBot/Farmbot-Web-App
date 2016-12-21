@@ -42,6 +42,7 @@ module Sequences
       @checker = CeleryScript::Checker.new(tree, corpus)
     end
 
+    # TODO: This is too specific to corpus stuff. Does not belong in this class.
     def sub_sequences
       all = []
       return all unless checker.valid?

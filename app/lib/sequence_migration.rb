@@ -12,7 +12,8 @@ module SequenceMigration
       [
         AddVersionInfo,
         UpdateChannelNames,
-        AddToolsToMoveAbs
+        AddToolsToMoveAbs,
+        UpdateIfStatement
       ]
     end
 

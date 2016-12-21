@@ -36,7 +36,7 @@ describe Sequences::Create do
   end
 
   it 'Gives validation errors for malformed sub_sequence_id' do
-    body[7]["args"]["sub_sequence_id"] = 0
+    body[7]["args"]["_then"]["args"]["sub_sequence_id"] = 0
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
     expectation = "Sequence #0 does not exist."
@@ -44,7 +44,7 @@ describe Sequences::Create do
   end
 
   it 'Gives validation errors for malformed LHS' do
-    body.select{ |x| x["kind"] == "if_statement" }.first["args"]["lhs"] = "xyz"
+    body.select{ |x| x["kind"] == "_if" }.first["args"]["lhs"] = "xyz"
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
     expected = "Can not put \"xyz\" into a left hand side (LHS) argument."
@@ -52,7 +52,7 @@ describe Sequences::Create do
   end
 
   it 'Gives validation errors for malformed OP' do
-    body.select{ |x| x["kind"] == "if_statement" }.first["args"]["op"] = "was"
+    body.select{ |x| x["kind"] == "_if" }.first["args"]["op"] = "was"
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
     expected = "Can not put \"was\" into an operand (OP) argument."

@@ -3,7 +3,8 @@ module SequenceMigration
   # When this migration was created, the move_absolute block could only move to
   # a fixed point on the map.
   # After this migration, the user could move to a dynamically set tool location
-  # -OR- a fixed point on the map.
+  # -OR- a fixed point on the map. It also added an "offset" property for tools
+  # with funny sizes.
   class AddToolsToMoveAbs < Base
     VERSION = 2
     CREATED_ON = "DECEMBER 19 2016"
