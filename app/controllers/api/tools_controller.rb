@@ -9,8 +9,7 @@ module Api
     end
 
     def destroy
-      tool.destroy!
-      render json: ""
+      mutate Tools::Destroy.run(tool: tool)
     end
 
     def create
