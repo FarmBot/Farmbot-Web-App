@@ -1,7 +1,7 @@
 require "json"
 require "pry"
 require "rails"
-
+PIPE = "\n  | "
 class CSArg
     TRANSLATIONS = { "integer" => "number",
                      "string"  => "string" }
@@ -16,7 +16,7 @@ class CSArg
     end
 
     def values
-      allowed_values.map { |v| TRANSLATIONS[v] || v.camelize }.join("|")
+      allowed_values.map { |v| TRANSLATIONS[v] || v.camelize }.join(PIPE)
     end
 
     def to_ts
@@ -46,7 +46,7 @@ class CSNode
     end
 
     def body_names
-        b = allowed_body_types.map(&:camelize).join("|")
+        b = allowed_body_types.map(&:camelize).join(PIPE)
         b.length > 0 ? b : "undefined"
     end
 
@@ -56,15 +56,15 @@ class CSNode
 
     def to_ts
 """
-  interface #{camelize}Args extends #{arg_names} { }
+interface #{camelize}Args extends #{arg_names} { }
 
-  type #{camelize}BodyNode = #{ body_names };
+type #{camelize}BodyNode = #{ body_names };
 
-  interface #{camelize} {
-    kind: #{name.inspect};
-    args: #{camelize}Args;
-    body: #{camelize}BodyNode[]|undefined;
-  };
+export interface #{camelize} {
+  kind: #{name.inspect};
+  args: #{camelize}Args;
+  body: #{camelize}BodyNode[] | undefined;
+}
 """
     end
 end
@@ -72,8 +72,8 @@ end
 HASH  = JSON.parse(File.read("./latest_corpus.json")).deep_symbolize_keys
 ARGS  = HASH[:args].map  { |x| CSArg.new(x) }
 NODES = HASH[:nodes].map { |x| CSNode.new(x) }
-ALL = NODES.map(&:name).map(&:camelize).join("|");
+ALL = NODES.map(&:name).map(&:camelize).join(PIPE);
 result = ARGS.map(&:to_ts)
 result += NODES.map(&:to_ts)
-result.push "type CeleryNode = #{ALL};"
-puts result.join("\n")
+result.push "\n export type CeleryNode = #{ALL};"
+puts result.join("")
