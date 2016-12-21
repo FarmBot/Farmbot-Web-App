@@ -1,2 +1,6 @@
-HASH = JSON.parse(file.read("./latest_corpus.json"))
+require "json"
+require "pry"
 
+HASH = JSON.parse(File.read("./latest_corpus.json"))
+
+binding.pry
