@@ -73,6 +73,31 @@ describe CeleryScript::Corpus do
     expect(check.error.message).to include("'location' within 'move_absolute'")
   end
 
+  it "finds problems with nested nodes" do
+    bad = CeleryScript::AstNode.new({
+      kind: "move_absolute",
+      args: {
+        location: {
+          kind: "tool",
+          # Invalid:
+          args: { tool_id: "PROBLEM!" }
+        },
+        offset: {
+          kind: "coordinate",
+          args: {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        },
+        speed: 100
+      }
+    })
+    check = CeleryScript::Checker.new(bad, Sequence::Corpus)
+    expect(check.valid?).to be_falsey
+    expect(check.error.message).to include("but got String")
+  end
+
   it "serializes into JSON" do
       result = JSON.parse(corpus.to_json)
 
