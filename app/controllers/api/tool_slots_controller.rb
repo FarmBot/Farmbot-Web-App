@@ -2,9 +2,8 @@ module Api
   class ToolSlotsController < Api::AbstractController
 
     def create
-      if batch_updates
-        mutate ToolSlots::BatchUpdate.run(tool_slots: batch_updates,
-                                          device:     current_device)
+      if raw_json && raw_json[:tool_slots]
+        mutate ToolSlots::BatchUpdate.run(raw_json, device: current_device)
       else
         mutate ToolSlots::Create.run(tool_slot_params)
       end
@@ -28,10 +27,6 @@ module Api
     end
 
   private
-
-    def batch_updates
-      @batch_updates ||= raw_json[:tool_slots]
-    end
 
     def tool_slots
         @tool_slots ||= ToolSlot.where(tool_bay_id: current_device.tool_bays.pluck(:id))

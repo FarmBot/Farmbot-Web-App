@@ -4,5 +4,6 @@ class ToolSlot < ApplicationRecord
   validates_uniqueness_of :tool,
                           allow_blank: true,
                           allow_nil: true,
-                          scope: :tool_bay_id
+                          scope: :tool_bay_id,
+                          message: "already in use by another tool slot"
 end
