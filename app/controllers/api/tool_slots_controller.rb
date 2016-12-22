@@ -2,17 +2,22 @@ module Api
   class ToolSlotsController < Api::AbstractController
 
     def create
-      mutate ToolSlots::Create.run(tool_slot_params)      
+      if batch_updates
+        mutate ToolSlots::BatchUpdate.run(tool_slots: batch_updates,
+                                          device:     current_device)
+      else
+        mutate ToolSlots::Create.run(tool_slot_params)
+      end
     end
 
     def show
         render json: tool_slot
     end
-  
+
     def index
         render json: tool_slots
     end
-  
+
     def update
         mutate ToolSlots::Update.run(tool_slot_params)
     end
@@ -21,8 +26,12 @@ module Api
       tool_slot.destroy!
       render json: ""
     end
-  
+
   private
+
+    def batch_updates
+      @batch_updates ||= raw_json[:tool_slots]
+    end
 
     def tool_slots
         @tool_slots ||= ToolSlot.where(tool_bay_id: current_device.tool_bays.pluck(:id))
@@ -32,25 +41,11 @@ module Api
       @tool_slot ||= tool_slots.find(params[:id])
     end
 
-    def maybe_add(name)
-      @tool_slot_params[name] = params[name] if params[name]
-    end
-
     def tool_slot_params
-      if @tool_slot_params
-        @tool_slot_params
-      else
-        @tool_slot_params               = {device: current_device}
-        @tool_slot_params[:tool_slot]   = tool_slot if params[:id]
-        maybe_add :name
-        maybe_add :x
-        maybe_add :y
-        maybe_add :z
-        maybe_add :tool_bay_id
-        maybe_add :tool_id
-
-        @tool_slot_params
-      end
+      @tool_slot_params ||= raw_json
+                            .merge({ device: current_device,
+                                     tool_slot: (params[:id] ? tool_slot : nil)
+                                    }).compact
     end
   end
 end

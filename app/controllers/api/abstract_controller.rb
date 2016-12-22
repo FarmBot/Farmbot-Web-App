@@ -30,9 +30,14 @@ private
     # the way we do things right now. We used to just use the params
     # object (it was a hash), but now it is a proper object.
     def raw_json
-      @raw_json ||= JSON.parse(request.body.read)
+      @raw_json ||= JSON.parse(request.body.read).tap{ |x| symbolize(x) }
     rescue JSON::ParserError => e
       raise OnlyJson
+    end
+
+    # Just a hack to prevent runtime errors when people POST JSON arrays.
+    def symbolize(x)
+      x.is_a?(Array) ? x.map(&:deep_symbolize_keys!) : x.deep_symbolize_keys!
     end
 
     def set_default_response_format
