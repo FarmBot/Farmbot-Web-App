@@ -31,7 +31,7 @@ private
     # object (it was a hash), but now it is a proper object.
     def raw_json
       @raw_json ||= JSON.parse(request.body.read).tap{ |x| symbolize(x) }
-    rescue JSON::ParserError => e
+    rescue JSON::ParserError
       raise OnlyJson
     end
 

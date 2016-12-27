@@ -1,4 +1,4 @@
-### A single system User on the decision support system.
+# A human
 class User < ActiveRecord::Base
   belongs_to :device, dependent: :destroy
 

@@ -1,8 +1,12 @@
-# Let's not pretend that shoving configuration into a module is a design pattern
-# I am going to unclutter sequence.rb by sweeping CeleryScript config under
-# the rug.
+# All configuration related to validation of sequences. This includes
+# information such as which operators and labels are allowed, custom validations
+# when a sequence is saved and related error messages that result.
+# This module helps unclutter sequence.rb by sweeping CeleryScript config under
+# the rug. Shoving configuration into a module is not a design pattern. Feedback
+# welcome for refactoring of this code.
 module CeleryScriptSettingsBag
-  ALLOWED_PIN_MODES     = [0, 1]
+  DIGITAL, ANALOG       = 0, 1
+  ALLOWED_PIN_MODES     = [DIGITAL, ANALOG]
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast)
   ALLOWED_DATA_TYPES    = %w(string integer)
@@ -85,6 +89,8 @@ module CeleryScriptSettingsBag
       .defineNode(:_if,            [:lhs, :op, :rhs, :_then, :_else])
       .defineNode(:sequence,       [:version], STEPS)
 
+  # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
+  # if the node contains a legal value. Throws exception and invalidates if not.
   def self.within(array, node)
     val = node&.value
     node.invalidate!(yield(val)) if !array.include?(val)

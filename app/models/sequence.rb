@@ -1,10 +1,14 @@
+# A sequence is a set of predefined steps executed by FarmBot. Sequences
+# represent one of the most complicated systems in FarmBot. Sequences implement
+# most of the functionality of a programming language such a variables and
+# conditional logic.
 class Sequence < ActiveRecord::Base
-  include CeleryScriptSettingsBag
   COLORS = %w(blue green yellow orange purple pink gray red)
+  include CeleryScriptSettingsBag
+
   belongs_to :device
   has_many :regimen_items
   has_many  :sequence_dependencies, dependent: :destroy
-
   serialize :body, Array
   serialize :args, Hash
 
@@ -14,11 +18,6 @@ class Sequence < ActiveRecord::Base
   validates :name, uniqueness: { scope: :device }
 
   after_find :maybe_migrate
-
-  def maybe_migrate
-    # spot check with Sequence.order("RANDOM()").first.maybe_migrate
-    Sequences::Migrate.run!(sequence: self, device: self.device)
-  end
 
   # http://stackoverflow.com/a/5127684/1064917
   before_validation :set_defaults
@@ -30,8 +29,13 @@ class Sequence < ActiveRecord::Base
     self.args ||= {}
   end
 
-  # Convinience method so that I can spot check sequences on staging to make
-  # sure migrations ran OK (yes, we write tests).
+  def maybe_migrate
+    # spot check with Sequence.order("RANDOM()").first.maybe_migrate
+    Sequences::Migrate.run!(sequence: self, device: self.device)
+  end
+
+  # Helper used for QAing stuff on staging. Grabs a random sequence from the
+  # database, runs a migration (does not save) and prints to screen.
   def self.spot_check
     s = Sequence.order("RANDOM()").first
     puts "Sequence ##{s.id} ========="
