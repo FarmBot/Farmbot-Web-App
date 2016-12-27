@@ -1,3 +1,4 @@
+# Define how a particular argument should behave in a corpus.
 module CeleryScript
   NOOP = ->(*_) { }
   class ArgumentSpecification

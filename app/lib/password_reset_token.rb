@@ -1,3 +1,4 @@
+# A JSON Web Token (JWT) used only for password resets.
 class PasswordResetToken < AbstractJwtToken
   EXPIRY = 24.hours
   AUD    = "PASSWORD_RESETER"

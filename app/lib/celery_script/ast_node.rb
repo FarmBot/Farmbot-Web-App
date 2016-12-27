@@ -1,3 +1,6 @@
+# An AST Node in celery script MUST have a `kind` property (string) and an
+# `args` property (dictionary). It also may have a `body`, which is an array of
+# other nodes (optional).
 module CeleryScript
   class AstNode < AstBase
       attr_reader :args, :body, :comment, :kind, :parent

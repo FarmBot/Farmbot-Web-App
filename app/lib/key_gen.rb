@@ -1,8 +1,10 @@
-# Service for creating key pairs for cryptographically secure operations.
+# Creates asymetric key pairs for cryptographically secure operations.
 # Mostly used for creation of jwt.pem- which is used to verify authenticity of
 # JSON Web Tokens
 class KeyGen
-  SAVE_PATH = (Rails.env == "production") ? "/keys/production.pem" : "jwt.#{Rails.env}.pem"
+  PROD_KEY_FILE    = "/keys/production.pem"
+  KEY_FILE         = "jwt.#{Rails.env}.pem"
+  SAVE_PATH        = (Rails.env == "production") ? PROD_KEY_FILE : KEY_FILE
 
   def self.try_file
     OpenSSL::PKey::RSA.new(File.read(SAVE_PATH)) if File.file?(SAVE_PATH)

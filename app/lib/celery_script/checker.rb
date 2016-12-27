@@ -1,3 +1,5 @@
+# Takes a corpus and an AST and tells you if it is syntactically valid.
+# PROBABLY THE MOST COMPLICATED CODE IN ALL OF FARMBOT.
 module CeleryScript
   class TypeCheckError < StandardError; end
   class Checker
