@@ -20,7 +20,7 @@ class SessionToken < AbstractJwtToken
     self.new([{
              sub:  user.email,
              iat:  iat,
-             jti:  SecureRandom.uuid, # TODO: Add ability to revoke.
+             jti:  SecureRandom.uuid, # Used for revokation if need be.
              iss:  iss,
              exp:  exp,
              mqtt: MQTT,

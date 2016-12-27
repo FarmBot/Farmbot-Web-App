@@ -32,10 +32,8 @@ module Api
     def maybe_migrate(sequences)
     end
 
-    # TODO: Come back and fix this. Rails 5 has changed the way it handles
-    # params.
     def sequence_params
-        @seq_i_guess ||= raw_json[:sequence] || raw_json || {}
+        @sequence_params ||= raw_json[:sequence] || raw_json || {}
     end
 
     def sequence

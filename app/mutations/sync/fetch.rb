@@ -69,8 +69,9 @@ module Sync
       @logs ||= device.logs.last(Log::PAGE_SIZE)
     end
 
-    # The UI does not yet support creation of tool bays
-    # This is a temporary stub
+    # PROBLEM: The UI does not offer a means of creating tool bays. You must
+    # have a ToolBay to create a ToolSlot or Tool. Temporary fix: Create a
+    # ToolBay in the background if the user does not have one.
     # TODO: Remove this when UI level creation of tool bays happens.
     def maybe_initialize_a_tool_bay
       unless device.tool_bays.any?
