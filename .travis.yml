@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-  - 2.3.2
+  - 2.3.3
 before_script:
   - cp config/database.travis.yml config/database.yml
   - ./install_frontend.sh
