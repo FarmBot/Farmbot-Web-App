@@ -14,7 +14,11 @@ module Api
     end
 
     def create
-      mutate Tools::Create.run(create_params)
+      if raw_json[:tools]
+        mutate Tools::BatchUpdate.run(raw_json, device: current_device)
+      else
+        mutate Tools::Create.run(create_params)
+      end
     end
 
     def update

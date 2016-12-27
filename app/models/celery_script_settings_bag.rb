@@ -9,8 +9,8 @@ module CeleryScriptSettingsBag
   ALLOWED_OPS           = %w(< > is not)
   STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
                              send_message execute if_statement)
-  ALLOWED_LHS           = %w(busy pin0 pin1 pin2 pin3 pin4 pin5 pin6 pin7 pin8
-                             pin9 pin10 pin11 pin12 pin13 x y z)
+  ALLOWED_LHS           = %w(pin0 pin1 pin2 pin3 pin4 pin5 pin6 pin7 pin8 pin9
+                             pin10 pin11 pin12 pin13 x y z)
   BAD_ALLOWED_PIN_MODES = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\

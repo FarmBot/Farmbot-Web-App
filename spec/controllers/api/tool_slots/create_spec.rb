@@ -14,15 +14,15 @@ describe Api::ToolSlotsController do
                   y: 5,
                   z: 6 }
       before = ToolSlot.count
-      post :create, params: payload
+      post :create, body: payload.to_json, format: :json
       after = ToolSlot.count
       expect(before).to be < after
       expect(response.status).to eq(200)
-      expect(json[:name]).to eq(payload[:name])      
-      expect(json[:x]).to eq(payload[:x])      
-      expect(json[:y]).to eq(payload[:y])      
-      expect(json[:z]).to eq(payload[:z])      
-      expect(json[:tool_bay_id]).to eq(payload[:tool_bay_id])      
+      expect(json[:name]).to eq(payload[:name])
+      expect(json[:x]).to eq(payload[:x])
+      expect(json[:y]).to eq(payload[:y])
+      expect(json[:z]).to eq(payload[:z])
+      expect(json[:tool_bay_id]).to eq(payload[:tool_bay_id])
     end
   end
 end

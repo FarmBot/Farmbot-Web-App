@@ -30,7 +30,6 @@ describe Api::SequencesController do
       sequence = FactoryGirl.create(:sequence, device: user.device)
       input = { sequence: { name: "Scare Birds" } }
       params = { id: sequence.id }
-
       patch :update,
         params: params,
         body: input.to_json,
