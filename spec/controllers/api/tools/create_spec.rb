@@ -11,7 +11,7 @@ describe Api::ToolsController do
       sign_in user
       payload = { tool_slot_id: tool_slot.id, name: "wow" }
       old_tool_count = Tool.count
-      post :create, params: payload
+      post :create, body: payload.to_json, params: {format: :json}
       expect(response.status).to eq(200)
       expect(Tool.count).to be > old_tool_count
       expect(json[:name]).to eq("wow")
@@ -21,7 +21,7 @@ describe Api::ToolsController do
       sign_in user
       payload = { name: "wow2" }
       old_tool_count = Tool.count
-      post :create, params: payload
+      post :create, body: payload.to_json, params: {format: :json}
       expect(response.status).to eq(200)
       expect(Tool.count).to be > old_tool_count
     end
