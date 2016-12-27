@@ -96,14 +96,14 @@ describe "Migration from version 0 or nil" do
       expected = BODY1.dig(0, "args", "message")
       expect(actual).to eq(expected)
       expect(seq1.body.dig(0, "args", "message_type")).to eq("info")
-      expect(seq1.args["version"]).to eq(2)
+      expect(seq1.args["version"]).to eq(3)
   end
 
   it 'handles `channel` body nodes' do
       Sequences::Migrate.run!(device: device, sequence: seq2)
 
       expect(seq2.body.dig(0, "args", "message_type")).to eq("info")
-      expect(seq2.args["version"]).to eq(2)
+      expect(seq2.args["version"]).to eq(3)
       results = seq2
                   .body
                   .map{|x| x["body"]}

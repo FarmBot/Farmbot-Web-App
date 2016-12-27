@@ -28,6 +28,48 @@ describe Api::SequencesController do
       delete :destroy, params: input
       expect(response.status).to eq(403)
     end
+
+
+    it 'does not destroy a sequence when in use by a sequence' do
+      before = SequenceDependency.count
+      program = [
+        {
+          kind: "_if",
+          args: {
+            lhs:"x",
+            op:"is",
+            rhs:0,
+            _then: {
+              kind: "execute",
+              args: {
+                sub_sequence_id: sequence.id
+              }
+            },
+            _else: {
+              kind: "execute",
+              args: {
+                sub_sequence_id: sequence.id
+              }
+            },
+          }
+        }
+      ]
+      Sequences::Create.run!(name:   "Dep. tracking",
+                             device: user.device,
+                             body:   program)
+      expect(SequenceDependency.count).to be > before
+      sd = SequenceDependency.last
+      newest = Sequence.last
+      expect(sd.dependency).to eq(sequence)
+      expect(sd.sequence).to eq(newest)
+
+      sign_in user
+      before = Sequence.count
+      delete :destroy, params: { id: sequence.id }
+      after = Sequence.count
+      expect(response.status).to eq(422)
+      expect(before).to eq(after)
+      expect(json[:sequence]).to include("sequences are still relying on this sequence")
+    end
   end
 end
- 

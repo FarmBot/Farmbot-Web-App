@@ -8,7 +8,7 @@ module CeleryScriptSettingsBag
   ALLOWED_DATA_TYPES    = %w(string integer)
   ALLOWED_OPS           = %w(< > is not)
   STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
-                             send_message execute if_statement)
+                             send_message execute _if)
   ALLOWED_LHS           = %w(pin0 pin1 pin2 pin3 pin4 pin5 pin6 pin7 pin8 pin9
                              pin10 pin11 pin12 pin13 x y z)
   BAD_ALLOWED_PIN_MODES = 'Can not put "%s" into a left hand side (LHS) '\
@@ -69,6 +69,9 @@ module CeleryScriptSettingsBag
       .defineArg(:message,         [String])
       .defineArg(:location,        [:tool, :coordinate])
       .defineArg(:offset,          [:coordinate])
+      .defineArg(:_then,           [:execute, :nothing])
+      .defineArg(:_else,           [:execute, :nothing])
+      .defineNode(:nothing,        [])
       .defineNode(:tool,           [:tool_id])
       .defineNode(:coordinate,     [:x, :y, :z])
       .defineNode(:move_absolute,  [:location, :speed, :offset])
@@ -79,7 +82,7 @@ module CeleryScriptSettingsBag
       .defineNode(:wait,           [:milliseconds])
       .defineNode(:send_message,   [:message, :message_type], [:channel])
       .defineNode(:execute,        [:sub_sequence_id])
-      .defineNode(:if_statement,   [:lhs, :op, :rhs, :sub_sequence_id])
+      .defineNode(:_if,            [:lhs, :op, :rhs, :_then, :_else])
       .defineNode(:sequence,       [:version], STEPS)
 
   def self.within(array, node)

@@ -9,15 +9,14 @@ module Api
     end
 
     def destroy
-      tool.destroy!
-      render json: ""
+      mutate Tools::Destroy.run(tool: tool)
     end
 
     def create
       if raw_json[:tools]
         mutate Tools::BatchUpdate.run(raw_json, device: current_device)
       else
-        mutate Tools::Create.run(create_params)
+        mutate Tools::Create.run(raw_json, device: current_device)
       end
     end
 
@@ -31,16 +30,6 @@ private
       output = {tool: tool}
       output[:name] = params[:name] if params[:name]
       output
-    end
-
-    def create_params
-      if @create_params
-        @create_params
-      else
-        @create_params = { name: params[:name],
-                          device: current_device }
-        @create_params
-      end
     end
 
     def tools

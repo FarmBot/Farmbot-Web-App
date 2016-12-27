@@ -1,4 +1,12 @@
 
+export interface Nothing {
+  kind: "nothing";
+  args: {
+  };
+  comment?: string | undefined;
+  body?: (undefined)[] | undefined;
+}
+
 export interface Tool {
   kind: "tool";
   args: {
@@ -102,13 +110,16 @@ export interface Execute {
   body?: (undefined)[] | undefined;
 }
 
-export interface IfStatement {
-  kind: "if_statement";
+export interface If {
+  kind: "_if";
   args: {
     lhs: string;
     op: string;
     rhs: number;
-    sub_sequence_id: number;
+    _then: Execute
+           | Nothing;
+    _else: Execute
+           | Nothing;
   };
   comment?: string | undefined;
   body?: (undefined)[] | undefined;
@@ -127,10 +138,11 @@ export interface Sequence {
            | Wait
            | SendMessage
            | Execute
-           | IfStatement)[] | undefined;
+           | If)[] | undefined;
 }
 
- export type CeleryNode = Tool
+ export type CeleryNode = Nothing
+           | Tool
            | Coordinate
            | MoveAbsolute
            | MoveRelative
@@ -140,5 +152,5 @@ export interface Sequence {
            | Wait
            | SendMessage
            | Execute
-           | IfStatement
+           | If
            | Sequence;
