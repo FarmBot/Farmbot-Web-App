@@ -1,3 +1,5 @@
+# PROBLEM THIS CLASS SOLVES: You need to run a function against every node in
+#    an abstract syntax tree, usually for validation or type checking.
 module CeleryScript
   class TreeClimber
     def self.travel(node, callable)
@@ -7,14 +9,14 @@ module CeleryScript
 
     def self.find_all_by_kind(node, name)
       results = []
-      filter = -> (node) { results.push(node) if node.kind == name }
+      filter = -> (n) { results.push(n) if n.kind == name }
       travel(node, filter)
       results
     end
 
     def self.find_all_with_arg(node, arg_name)
       results = []
-      filter = -> (node) { results.push(node) if node.args.has_key?(arg_name) }
+      filter = -> (n) { results.push(n) if n.args.has_key?(arg_name) }
       travel(node, filter)
       results
     end

@@ -1,7 +1,7 @@
 require "json"
 require "pry"
 require "rails"
-PIPE = "\n           | "
+PIPE = "\n          | "
 
 class CSArg
     TRANSLATIONS = { "integer" => "number",

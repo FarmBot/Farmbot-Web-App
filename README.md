@@ -3,7 +3,7 @@
 
 # Do I need this?
 
-This repository is intended for *software developers* who wish to modify the [Farmbot Web App](http://my.farmbot.io/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.io/).
+This repository is intended for *software developers* who wish to modify the [Farmbot Web App](http://my.farmbot.io/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.io/). Running a server is a non-trivial task which will require an intermediate background in Ruby, SQL and Linux system administration.
 
 If you are a developer interested in contributing or would like to provision your own server, you are in the right place.
 
@@ -11,7 +11,7 @@ If you are a developer interested in contributing or would like to provision you
 
 **[LATEST STABLE VERSION IS HERE](https://github.com/FarmBot/Farmbot-Web-API/releases)** :star: :star: :star:
 
-This Repo is RESTful JSON API for Farmbot. This includes things like storage of user data, plant data, authorization tokens and a variety of other resources.
+This Repo is the RESTful JSON API for Farmbot. This includes things like storage of user data, plant data, authorization tokens and a variety of other resources.
 
 The key responsibility of the API is *information and permissions management*. This should not be confused with device control, which is done via [MQTT](https://github.com/FarmBot/mqtt-gateway).
 
@@ -25,7 +25,7 @@ For a list of example API requests and responses, see our [reference documentati
 
 Your machine will need the following:
 
- 0. [Ruby 2.3.2](http://rvm.io/rvm/install)
+ 0. [Ruby 2.3.3](http://rvm.io/rvm/install)
 
 ### Setup
  0. `git clone https://github.com/FarmBot/Farmbot-Web-API farmbot-web-app`
@@ -124,4 +124,4 @@ $.ajax({
 
 # Want to Help?
 
-[Low Hanging Fruit](https://github.com/FarmBot/Farmbot-Web-API/search?utf8=%E2%9C%93&q=todo)
+[Low Hanging Fruit](https://github.com/FarmBot/Farmbot-Web-API/search?utf8=%E2%9C%93&q=todo). [Raise an issue](https://github.com/FarmBot/Farmbot-Web-API/issues/new?title=Question%20about%20a%20TODO) if you have any questions.

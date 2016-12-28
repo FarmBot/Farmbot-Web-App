@@ -1,3 +1,5 @@
+# Generates a JSON Web Token (JWT) for a given user. Typically placed in the
+# `Authorization` header, or used a password to gain access to the MQTT server.
 class SessionToken < AbstractJwtToken
   MUST_VERIFY = 'Verify account first'
   DEFAULT_OS = "https://api.github.com/repos/" \
@@ -18,7 +20,7 @@ class SessionToken < AbstractJwtToken
     self.new([{
              sub:  user.email,
              iat:  iat,
-             jti:  SecureRandom.uuid, # TODO: Add ability to revoke.
+             jti:  SecureRandom.uuid, # Used for revokation if need be.
              iss:  iss,
              exp:  exp,
              mqtt: MQTT,

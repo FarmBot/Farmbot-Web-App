@@ -1,3 +1,5 @@
+# This filter was created by a mutations contributor but was not accepted into
+# master. I have copy/pasted it here for our own use.
 module Mutations
   class TimeFilter < AdditionalFilter
     @default_options = {

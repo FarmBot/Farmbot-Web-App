@@ -1,3 +1,6 @@
+# This is a module that generates cool names like "billowing-raindrop-48".
+# We originally used the usmanbashir/haikunator gem, but forked the code to begin
+# more "plant friendly".
 module Haikunator
   class << self
     def haikunate(token_range = 9999, delimiter = "-")

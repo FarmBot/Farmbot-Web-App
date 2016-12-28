@@ -1,5 +1,21 @@
+# Run on a Local Machine
+
+If you want to run a server on a LAN for personal use, this is the easiest and cheapest option.
+
+**Simplicity:** :heart::heart::heart:
+**Reliability:** :broken_heart:
+**Affordability:** :heart::heart::heart:
+
+ 1. Follow the [developer setup guide](https://github.com/FarmBot/Farmbot-Web-API#developer-setup).
+ 2. Run `rails s -e production -b 0.0.0.0` (Set ENV vars accordingly).
 
 # Deployment to Dokku (cheaper)
+
+**NOTE TO USERS**: We no longer deploy the server using Dokku. Although we will make a best effort to support Dokku users, our ability to provide troubleshooting and documentation for Dokku setups is limited since we do not use it ourselves.
+
+**Simplicity:** :broken_heart:
+**Reliability:** :heart::heart:
+**Affordability:** :heart::heart:
 
 0. Provision a fresh Ubuntu 16 server (we use DigitalOcean's "Ubuntu 16 docker" image).
   * Make sure you have atleast 1gb.
@@ -23,8 +39,12 @@
 
 # Deployment Using Heroku (easier)
 
- 1. Deploy as you would normally [deploy to Heroku](https://devcenter.heroku.com/articles/getting-started-with-rails4#deploy-your-application-to-heroku) 
- 2. Enable Dyno metadata: `heroku labs:enable runtime-dyno-metadata --app <app name>`
+**Simplicity:** :heart::heart::heart::heart:
+**Reliability:** :heart::heart::heart::heart:
+**Affordability:** :broken_heart:
+
+ 1. Deploy as you would normally [deploy to Heroku](https://devcenter.heroku.com/articles/getting-started-with-rails4#deploy-your-application-to-heroku)
+ 2. Enable Dyno metadata: `heroku labs:enable runtime-dyno-metadata --app <app name>` (we need this to know the version number of the web app).
 
 # Setting up SSL
 
@@ -42,7 +62,7 @@ http://yourdomain.io/.well-known/acme-challenge/SOME-LONG-URL before continuing:
 
 ya6k1edW38z-CopyThisValueNow!!!
 
-``` 
+```
 
 Set the `ACME_SECRET` ENV var to the value shown above (yours will be different) and **restart your API process**.
 
@@ -64,7 +84,8 @@ heroku certs:add /etc/letsencrypt/live/yourdomain.io/fullchain.pem /etc/letsencr
 
 Heroku will then give you instructions on which DNS records you must create.
 
-**Dokku Users**: We haven't had a need for this yet, because we usually run Dokku on staging setups only. Please [raise an issue](https://github.com/FarmBot/farmbot-web-frontend/issues/new) to receive support.
+**Dokku Users**: FarmBot, Inc. no longer uses Dokku. As such, our ability to troubleshoot problems is limited.
+Please [raise an issue](https://github.com/FarmBot/farmbot-web-frontend/issues/new) to receive community support.
 
 # Renew SSL Certificates
 

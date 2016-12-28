@@ -31,7 +31,7 @@ export interface MoveAbsolute {
   kind: "move_absolute";
   args: {
     location: Tool
-           | Coordinate;
+          | Coordinate;
     speed: number;
     offset: Coordinate;
   };
@@ -117,9 +117,9 @@ export interface If {
     op: string;
     rhs: number;
     _then: Execute
-           | Nothing;
+          | Nothing;
     _else: Execute
-           | Nothing;
+          | Nothing;
   };
   comment?: string | undefined;
   body?: (undefined)[] | undefined;
@@ -132,25 +132,25 @@ export interface Sequence {
   };
   comment?: string | undefined;
   body?: (MoveAbsolute
-           | MoveRelative
-           | WritePin
-           | ReadPin
-           | Wait
-           | SendMessage
-           | Execute
-           | If)[] | undefined;
+          | MoveRelative
+          | WritePin
+          | ReadPin
+          | Wait
+          | SendMessage
+          | Execute
+          | If)[] | undefined;
 }
 
  export type CeleryNode = Nothing
-           | Tool
-           | Coordinate
-           | MoveAbsolute
-           | MoveRelative
-           | WritePin
-           | ReadPin
-           | Channel
-           | Wait
-           | SendMessage
-           | Execute
-           | If
-           | Sequence;
+          | Tool
+          | Coordinate
+          | MoveAbsolute
+          | MoveRelative
+          | WritePin
+          | ReadPin
+          | Channel
+          | Wait
+          | SendMessage
+          | Execute
+          | If
+          | Sequence;

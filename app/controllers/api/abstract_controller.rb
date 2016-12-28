@@ -26,16 +26,19 @@ module Api
 
 private
 
-    # TODO: Come back and fix this. Rails 5 params conflict with
-    # the way we do things right now. We used to just use the params
-    # object (it was a hash), but now it is a proper object.
+    # Rails 5 params are no longer simple hashes. This was for security reasons.
+    # Our API does not do things the "Rails way" (we use Mutations for input
+    # sanitation) so we can ignore this and grab the raw input.
     def raw_json
       @raw_json ||= JSON.parse(request.body.read).tap{ |x| symbolize(x) }
-    rescue JSON::ParserError => e
+    rescue JSON::ParserError
       raise OnlyJson
     end
 
-    # Just a hack to prevent runtime errors when people POST JSON arrays.
+    # PROBLEM: We want to deep_symbolize_keys! on all JSON inputs, but what if
+    # the user POSTs an Array? It will crash because [] does not respond_to
+    # deep_symbolize_keys! This is the workaround. I could probably use a
+    # refinement.
     def symbolize(x)
       x.is_a?(Array) ? x.map(&:deep_symbolize_keys!) : x.deep_symbolize_keys!
     end

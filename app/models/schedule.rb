@@ -1,4 +1,7 @@
-# Responsible for timing and execution of sequences.
+# Not the same thing as a Regimen. A schedule is a "dumb" list of sequecnes that
+# are executed at fixed intervals. Schedules are less flexible than Regimens
+# because they can only perform one sequence. Also unlike Regimens, they can run
+# forever.
 class Schedule < ActiveRecord::Base
   UNITS_OF_TIME = %w(minutely hourly daily weekly monthly yearly)
 
