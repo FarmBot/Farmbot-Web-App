@@ -33,5 +33,4 @@ module ToolSlots
       ts.update_attributes!(params) && ts
     end
   end
- end
-
+end

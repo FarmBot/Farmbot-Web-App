@@ -5,7 +5,7 @@
 
 ```
 <%=
-  JSON.pretty_generate(request.params.except(:controller, :action, :format, :id))
+  JSON.pretty_generate(request.params.except(:controller, :action, :format, :id, :user_id, :device_id))
 %>
 ```
 <% end %>
