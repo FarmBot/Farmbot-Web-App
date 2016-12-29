@@ -37,8 +37,12 @@ class Sequence < ActiveRecord::Base
   # Helper used for QAing stuff on staging. Grabs a random sequence from the
   # database, runs a migration (does not save) and prints to screen.
   def self.spot_check
-    s = Sequence.order("RANDOM()").first
+    s = random
     puts "Sequence ##{s.id} ========="
     puts s.maybe_migrate.body.to_yaml
+  end
+
+  def self.random
+    Sequence.order("RANDOM()").first
   end
 end

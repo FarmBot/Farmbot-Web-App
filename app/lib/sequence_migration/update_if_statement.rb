@@ -15,7 +15,17 @@ module SequenceMigration
         .body
         .select { |x| x["kind"] == "if_statement" }
         .each   do |x|
-          binding.pry
+          x["kind"] = "_if"
+          x["args"] = {
+                  "lhs": x["args"]["lhs"],
+                  "rhs": x["args"]["rhs"],
+                  "op": x["args"]["op"],
+                  "_then": {
+                      "kind": "execute",
+                      "args": { "sub_sequence_id": x["args"]["sub_sequence_id"] }
+                  },
+                  "_else": { "kind": "nothing", "args": {} }
+          }
         end
     end
   end
