@@ -12,6 +12,7 @@ class Log < ActiveRecord::Base
   belongs_to :device
 
   validates :device, presence: true
+  validates :meta, presence: true
   # http://stackoverflow.com/a/5127684/1064917
   before_validation :set_defaults
 
