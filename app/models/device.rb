@@ -11,7 +11,7 @@ class Device < ActiveRecord::Base
   has_many  :tool_bays,     dependent: :destroy
   has_many  :tools,         dependent: :destroy
   has_one   :planting_area, dependent: :destroy
-  validates :name,         uniqueness: true
+  validates :name,          uniqueness: true
 
   # Prevent the database from filling up with logs by deleting all logs after
   # the first X records. Increasing device.max_log_count gives the user

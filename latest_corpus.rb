@@ -6,6 +6,7 @@ require_relative "./app/lib/celery_script/argument_specification"
 require_relative "./app/lib/celery_script/corpus"
 require_relative "./app/lib/sequence_migration"
 require_relative "./app/models/celery_script_settings_bag.rb"
+require_relative "./app/models/sequence.rb"
 Dir["./app/lib/sequence_migration/*.rb"].each {|file| require file }
 
 
@@ -117,6 +118,6 @@ result.push(enum_type :ALLOWED_OPS,
             CeleryScriptSettingsBag::ALLOWED_OPS)
 result.push(enum_type :ALLOWED_PACKAGES,
             CeleryScriptSettingsBag::ALLOWED_PACKAGES)
-result.push(enum_type :ALLOWED_AXIS,
-            CeleryScriptSettingsBag::ALLOWED_AXIS)
-puts result.join("")
+result.push(enum_type :ALLOWED_AXIS, CeleryScriptSettingsBag::ALLOWED_AXIS)
+result.push(enum_type :Color, Sequence::COLORS)
+puts result.join
