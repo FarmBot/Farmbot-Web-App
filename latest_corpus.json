@@ -1,1 +1,421 @@
-{"tag":3,"args":[{"name":"pin_mode","allowed_values":["integer"]},{"name":"sub_sequence_id","allowed_values":["integer"]},{"name":"lhs","allowed_values":["string"]},{"name":"op","allowed_values":["string"]},{"name":"channel_name","allowed_values":["string"]},{"name":"message_type","allowed_values":["string"]},{"name":"tool_id","allowed_values":["integer"]},{"name":"version","allowed_values":["integer"]},{"name":"x","allowed_values":["integer"]},{"name":"y","allowed_values":["integer"]},{"name":"z","allowed_values":["integer"]},{"name":"speed","allowed_values":["integer"]},{"name":"pin_number","allowed_values":["integer"]},{"name":"pin_value","allowed_values":["integer"]},{"name":"milliseconds","allowed_values":["integer"]},{"name":"rhs","allowed_values":["integer"]},{"name":"data_label","allowed_values":["string"]},{"name":"message","allowed_values":["string"]},{"name":"location","allowed_values":["tool","coordinate"]},{"name":"offset","allowed_values":["coordinate"]},{"name":"_then","allowed_values":["execute","nothing"]},{"name":"_else","allowed_values":["execute","nothing"]}],"nodes":[{"name":"nothing","allowed_args":[],"allowed_body_types":[]},{"name":"tool","allowed_args":["tool_id"],"allowed_body_types":[]},{"name":"coordinate","allowed_args":["x","y","z"],"allowed_body_types":[]},{"name":"move_absolute","allowed_args":["location","speed","offset"],"allowed_body_types":[]},{"name":"move_relative","allowed_args":["x","y","z","speed"],"allowed_body_types":[]},{"name":"write_pin","allowed_args":["pin_number","pin_value","pin_mode"],"allowed_body_types":[]},{"name":"read_pin","allowed_args":["pin_number","data_label","pin_mode"],"allowed_body_types":[]},{"name":"channel","allowed_args":["channel_name"],"allowed_body_types":[]},{"name":"wait","allowed_args":["milliseconds"],"allowed_body_types":[]},{"name":"send_message","allowed_args":["message","message_type"],"allowed_body_types":["channel"]},{"name":"execute","allowed_args":["sub_sequence_id"],"allowed_body_types":[]},{"name":"_if","allowed_args":["lhs","op","rhs","_then","_else"],"allowed_body_types":[]},{"name":"sequence","allowed_args":["version"],"allowed_body_types":["move_absolute","move_relative","write_pin","read_pin","wait","send_message","execute","_if"]}]}
+{
+    "tag": 3,
+    "args": [
+        {
+            "name": "pin_mode",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "sub_sequence_id",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "regimen_id",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "lhs",
+            "allowed_values": [
+                "string"
+            ]
+        },
+        {
+            "name": "op",
+            "allowed_values": [
+                "string"
+            ]
+        },
+        {
+            "name": "channel_name",
+            "allowed_values": [
+                "string"
+            ]
+        },
+        {
+            "name": "message_type",
+            "allowed_values": [
+                "string"
+            ]
+        },
+        {
+            "name": "tool_id",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "package",
+            "allowed_values": [
+                "string"
+            ]
+        },
+        {
+            "name": "axis",
+            "allowed_values": [
+                "string"
+            ]
+        },
+        {
+            "name": "version",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "x",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "y",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "z",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "speed",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "pin_number",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "pin_value",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "milliseconds",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "rhs",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "data_label",
+            "allowed_values": [
+                "string"
+            ]
+        },
+        {
+            "name": "message",
+            "allowed_values": [
+                "string"
+            ]
+        },
+        {
+            "name": "number",
+            "allowed_values": [
+                "integer"
+            ]
+        },
+        {
+            "name": "location",
+            "allowed_values": [
+                "tool",
+                "coordinate"
+            ]
+        },
+        {
+            "name": "offset",
+            "allowed_values": [
+                "coordinate"
+            ]
+        },
+        {
+            "name": "_then",
+            "allowed_values": [
+                "execute",
+                "nothing"
+            ]
+        },
+        {
+            "name": "_else",
+            "allowed_values": [
+                "execute",
+                "nothing"
+            ]
+        }
+    ],
+    "nodes": [
+        {
+            "name": "nothing",
+            "allowed_args": [],
+            "allowed_body_types": []
+        },
+        {
+            "name": "tool",
+            "allowed_args": [
+                "tool_id"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "coordinate",
+            "allowed_args": [
+                "x",
+                "y",
+                "z"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "move_absolute",
+            "allowed_args": [
+                "location",
+                "speed",
+                "offset"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "move_relative",
+            "allowed_args": [
+                "x",
+                "y",
+                "z",
+                "speed"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "write_pin",
+            "allowed_args": [
+                "pin_number",
+                "pin_value",
+                "pin_mode"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "read_pin",
+            "allowed_args": [
+                "pin_number",
+                "data_label",
+                "pin_mode"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "channel",
+            "allowed_args": [
+                "channel_name"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "wait",
+            "allowed_args": [
+                "milliseconds"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "send_message",
+            "allowed_args": [
+                "message",
+                "message_type"
+            ],
+            "allowed_body_types": [
+                "channel"
+            ]
+        },
+        {
+            "name": "execute",
+            "allowed_args": [
+                "sub_sequence_id"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "_if",
+            "allowed_args": [
+                "lhs",
+                "op",
+                "rhs",
+                "_then",
+                "_else"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "sequence",
+            "allowed_args": [
+                "version"
+            ],
+            "allowed_body_types": [
+                "move_absolute",
+                "move_relative",
+                "write_pin",
+                "read_pin",
+                "wait",
+                "send_message",
+                "execute",
+                "_if"
+            ]
+        },
+        {
+            "name": "home",
+            "allowed_args": [
+                "speed",
+                "axis"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "emergency_lock",
+            "allowed_args": [],
+            "allowed_body_types": []
+        },
+        {
+            "name": "emergency_unlock",
+            "allowed_args": [],
+            "allowed_body_types": []
+        },
+        {
+            "name": "read_status",
+            "allowed_args": [],
+            "allowed_body_types": []
+        },
+        {
+            "name": "sync",
+            "allowed_args": [],
+            "allowed_body_types": []
+        },
+        {
+            "name": "check_updates",
+            "allowed_args": [
+                "package"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "power_off",
+            "allowed_args": [],
+            "allowed_body_types": []
+        },
+        {
+            "name": "reboot",
+            "allowed_args": [],
+            "allowed_body_types": []
+        },
+        {
+            "name": "toggle_pin",
+            "allowed_args": [
+                "pin_number"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "start_regimen",
+            "allowed_args": [
+                "regimen_id",
+                "data_label"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "stop_regimen",
+            "allowed_args": [
+                "data_label"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "explanation",
+            "allowed_args": [
+                "message"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "rpc_request",
+            "allowed_args": [
+                "data_label"
+            ],
+            "allowed_body_types": [
+                "home",
+                "emergency_lock",
+                "emergency_unlock",
+                "read_status",
+                "sync",
+                "check_updates",
+                "power_off",
+                "reboot",
+                "toggle_pin",
+                "start_regimen",
+                "stop_regimen",
+                "mcu_config_update",
+                "calibrate",
+                "bot_config_update",
+                "execute",
+                "move_absolute",
+                "move_relative",
+                "write_pin",
+                "read_pin",
+                "wait",
+                "send_message"
+            ]
+        },
+        {
+            "name": "rpc_ok",
+            "allowed_args": [
+                "data_label"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "rpc_error",
+            "allowed_args": [
+                "data_label"
+            ],
+            "allowed_body_types": [
+                "explanation"
+            ]
+        },
+        {
+            "name": "calibrate",
+            "allowed_args": [
+                "axis"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "mcu_config_update",
+            "allowed_args": [
+                "number",
+                "data_label"
+            ],
+            "allowed_body_types": []
+        },
+        {
+            "name": "bot_config_update",
+            "allowed_args": [],
+            "allowed_body_types": []
+        }
+    ]
+}
