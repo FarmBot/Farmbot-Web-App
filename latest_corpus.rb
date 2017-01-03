@@ -120,4 +120,5 @@ result.push(enum_type :ALLOWED_PACKAGES,
             CeleryScriptSettingsBag::ALLOWED_PACKAGES)
 result.push(enum_type :ALLOWED_AXIS, CeleryScriptSettingsBag::ALLOWED_AXIS)
 result.push(enum_type :Color, Sequence::COLORS)
+
 puts result.join
