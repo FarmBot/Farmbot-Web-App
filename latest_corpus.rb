@@ -47,7 +47,12 @@ class CSNode
     end
 
     def arg_names
-      allowed_args.map{|x| ARGS[x]}.map(&:to_ts).join("")
+      allowed_args
+         .map{ |x| ARGS[x] }
+         .map(&:to_ts)
+         .join("")
+    rescue => foo
+      binding.pry
     end
 
     def body_names
@@ -110,4 +115,8 @@ result.push(enum_type :ALLOWED_DATA_TYPES,
             CeleryScriptSettingsBag::ALLOWED_DATA_TYPES)
 result.push(enum_type :ALLOWED_OPS,
             CeleryScriptSettingsBag::ALLOWED_OPS)
+result.push(enum_type :ALLOWED_PACKAGES,
+            CeleryScriptSettingsBag::ALLOWED_PACKAGES)
+result.push(enum_type :ALLOWED_AXIS,
+            CeleryScriptSettingsBag::ALLOWED_AXIS)
 puts result.join("")
