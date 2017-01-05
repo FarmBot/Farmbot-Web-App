@@ -1,6 +1,7 @@
 require "json"
 require "pry"
-require "rails"
+require "rails/all"
+require "open-uri"
 require_relative "./app/lib/celery_script/node_specification"
 require_relative "./app/lib/celery_script/argument_specification"
 require_relative "./app/lib/celery_script/corpus"
@@ -84,7 +85,7 @@ def enum_type(key, val, inspect = true)
   "\nexport type #{key} = #{(inspect ? val.map(&:inspect) : val).join(PIPE)};"
 end
 
-HASH  = JSON.parse(File.read("./latest_corpus.json")).deep_symbolize_keys
+HASH  = JSON.load(open("http://localhost:3000/api/corpuses/3")).deep_symbolize_keys
 ARGS  = {}
 HASH[:args].map{ |x| CSArg.new(x) }.each{|x| ARGS[x.name] = x}
 NODES = HASH[:nodes].map { |x| CSNode.new(x) }
