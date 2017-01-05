@@ -45,4 +45,12 @@ class Sequence < ActiveRecord::Base
   def self.random
     Sequence.order("RANDOM()").first
   end
+
+  def traverse(&blk)
+    hash = as_json
+      .tap { |x| x[:kind] = "sequence" }
+      .deep_symbolize_keys
+      .slice(:kind, :args, :body)
+    CeleryScript::JSONClimber.climb(hash, &blk)
+  end
 end
