@@ -1,8 +1,8 @@
 module Sequences
   module CeleryScriptValidators
     NO_TRANSACTION = "You need to do this in a transaction"
-    RESOURCES      = { "tool_id"         => Tool,
-                       "sub_sequence_id" => Sequence }
+    RESOURCES      = { "tool_id"     => Tool,
+                       "sequence_id" => Sequence }
     def validate_sequence
         add_error :body, :syntax_error, checker.error.message if !checker.valid?
     end

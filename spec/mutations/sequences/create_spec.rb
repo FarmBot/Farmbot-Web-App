@@ -35,8 +35,8 @@ describe Sequences::Create do
     expect(seq.errors["body"].message).to include(expectation)
   end
 
-  it 'Gives validation errors for malformed sub_sequence_id' do
-    body[7]["args"]["_then"]["args"]["sub_sequence_id"] = 0
+  it 'Gives validation errors for malformed sequence_id' do
+    body[7]["args"]["_then"]["args"]["sequence_id"] = 0
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
     expectation = "Sequence #0 does not exist."

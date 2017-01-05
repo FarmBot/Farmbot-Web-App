@@ -43,7 +43,7 @@ module CeleryScriptSettingsBag
           BAD_ALLOWED_PIN_MODES % [val.to_s, ALLOWED_LHS.inspect]
         end
       end
-      .defineArg(:sub_sequence_id, [Fixnum]) do |node|
+      .defineArg(:sequence_id, [Fixnum]) do |node|
         missing = !Sequence.exists?(node.value)
         node.invalidate!(BAD_SUB_SEQ % [node.value]) if missing
       end
@@ -93,7 +93,7 @@ module CeleryScriptSettingsBag
       .defineArg(:pin_value,       [Fixnum])
       .defineArg(:milliseconds,    [Fixnum])
       .defineArg(:rhs,             [Fixnum])
-      .defineArg(:data_label,      [String])
+      .defineArg(:label,      [String])
       .defineArg(:package,         [String])
       .defineArg(:message,         [String])
       .defineArg(:number,          [Fixnum])
@@ -107,11 +107,11 @@ module CeleryScriptSettingsBag
       .defineNode(:move_absolute,  [:location, :speed, :offset])
       .defineNode(:move_relative,  [:x, :y, :z, :speed])
       .defineNode(:write_pin,      [:pin_number, :pin_value, :pin_mode ])
-      .defineNode(:read_pin,       [:pin_number, :data_label, :pin_mode])
+      .defineNode(:read_pin,       [:pin_number, :label, :pin_mode])
       .defineNode(:channel,        [:channel_name])
       .defineNode(:wait,           [:milliseconds])
       .defineNode(:send_message,   [:message, :message_type], [:channel])
-      .defineNode(:execute,        [:sub_sequence_id])
+      .defineNode(:execute,        [:sequence_id])
       .defineNode(:_if,            [:lhs, :op, :rhs, :_then, :_else])
       .defineNode(:sequence,          [:version], STEPS)
       .defineNode(:home,              [:speed, :axis], [])
@@ -123,14 +123,14 @@ module CeleryScriptSettingsBag
       .defineNode(:power_off,         [], [])
       .defineNode(:reboot,            [], [])
       .defineNode(:toggle_pin,        [:pin_number], [])
-      .defineNode(:start_regimen,     [:regimen_id, :data_label], [])
-      .defineNode(:stop_regimen,      [:data_label], [])
+      .defineNode(:start_regimen,     [:regimen_id, :label], [])
+      .defineNode(:stop_regimen,      [:label], [])
       .defineNode(:explanation,       [:message], [])
-      .defineNode(:rpc_request,       [:data_label], ALLOWED_RPC_NODES)
-      .defineNode(:rpc_ok,            [:data_label], [])
-      .defineNode(:rpc_error,         [:data_label], [:explanation])
+      .defineNode(:rpc_request,       [:label], ALLOWED_RPC_NODES)
+      .defineNode(:rpc_ok,            [:label], [])
+      .defineNode(:rpc_error,         [:label], [:explanation])
       .defineNode(:calibrate,         [:axis], [])
-      .defineNode(:mcu_config_update, [:number, :data_label], [])
+      .defineNode(:mcu_config_update, [:number, :label], [])
       .defineNode(:bot_config_update, [], [])
 
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE

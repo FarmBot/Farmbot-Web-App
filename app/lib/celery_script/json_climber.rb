@@ -11,8 +11,6 @@ module CeleryScript
       raise NOT_NODE  unless is_node?(thing)
       go(thing, callable)
       thing
-    rescue => q
-      binding.pry
     end
 
   private

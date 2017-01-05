@@ -52,8 +52,6 @@ class CSNode
          .map{ |x| ARGS[x] }
          .map(&:to_ts)
          .join("")
-    rescue => foo
-      binding.pry
     end
 
     def body_names

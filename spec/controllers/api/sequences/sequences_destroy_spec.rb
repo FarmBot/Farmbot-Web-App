@@ -42,13 +42,13 @@ describe Api::SequencesController do
             _then: {
               kind: "execute",
               args: {
-                sub_sequence_id: sequence.id
+                sequence_id: sequence.id
               }
             },
             _else: {
               kind: "execute",
               args: {
-                sub_sequence_id: sequence.id
+                sequence_id: sequence.id
               }
             },
           }

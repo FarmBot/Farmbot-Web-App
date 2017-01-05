@@ -1,5 +1,5 @@
 class Hash
-    def traverse(parent=nil, &blk)
+  def traverse(parent=nil, &blk)
     each do |k, v|
       Hash === v ? v.traverse(k, &blk) : blk.call([parent, k, v])
     end
