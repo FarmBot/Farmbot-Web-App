@@ -9,9 +9,9 @@ module CeleryScriptSettingsBag
   ALLOWED_PIN_MODES     = [DIGITAL, ANALOG]
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
                              sync check_updates power_off reboot toggle_pin
-                             start_regimen stop_regimen mcu_config_update
-                             calibrate bot_config_update execute move_absolute
-                             move_relative write_pin read_pin wait send_message)
+                             start_regimen stop_regimen config_update calibrate
+                             execute move_absolute move_relative write_pin
+                             read_pin wait send_message)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast)
@@ -93,7 +93,8 @@ module CeleryScriptSettingsBag
       .defineArg(:pin_value,       [Fixnum])
       .defineArg(:milliseconds,    [Fixnum])
       .defineArg(:rhs,             [Fixnum])
-      .defineArg(:label,      [String])
+      .defineArg(:value,           [String, Fixnum, TrueClass, FalseClass])
+      .defineArg(:label,           [String])
       .defineArg(:package,         [String])
       .defineArg(:message,         [String])
       .defineArg(:number,          [Fixnum])
@@ -130,8 +131,8 @@ module CeleryScriptSettingsBag
       .defineNode(:rpc_ok,            [:label], [])
       .defineNode(:rpc_error,         [:label], [:explanation])
       .defineNode(:calibrate,         [:axis], [])
-      .defineNode(:mcu_config_update, [:number, :label], [])
-      .defineNode(:bot_config_update, [], [])
+      .defineNode(:pair,              [:label , :value], [])
+      .defineNode(:config_update,     [:package], [:pair])
 
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.

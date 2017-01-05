@@ -272,9 +272,8 @@ export interface RpcRequest {
           | TogglePin
           | StartRegimen
           | StopRegimen
-          | McuConfigUpdate
+          | ConfigUpdate
           | Calibrate
-          | BotConfigUpdate
           | Execute
           | MoveAbsolute
           | MoveRelative
@@ -311,22 +310,25 @@ export interface Calibrate {
   body?: undefined;
 }
 
-export interface McuConfigUpdate {
-  kind: "mcu_config_update";
+export interface Pair {
+  kind: "pair";
   args: {
-    number: number;
     label: string;
+    value: string
+          | number
+          | Boolean;
   };
   comment?: string | undefined;
   body?: undefined;
 }
 
-export interface BotConfigUpdate {
-  kind: "bot_config_update";
+export interface ConfigUpdate {
+  kind: "config_update";
   args: {
+    package: string;
   };
   comment?: string | undefined;
-  body?: undefined;
+  body?: (Pair)[] | undefined;
 }
 
 export type CeleryNode = Nothing
@@ -358,8 +360,8 @@ export type CeleryNode = Nothing
           | RpcOk
           | RpcError
           | Calibrate
-          | McuConfigUpdate
-          | BotConfigUpdate;
+          | Pair
+          | ConfigUpdate;
 export const LATEST_VERSION = 4;
 export const DIGITAL = 0;
 export const ANALOG = 1;

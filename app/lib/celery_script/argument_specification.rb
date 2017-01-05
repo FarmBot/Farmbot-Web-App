@@ -13,14 +13,16 @@ module CeleryScript
     # PROBLEM: Ruby calls them "Fixnum"s, but the world calls them "integers"
     # SOLUTION: Add a dictionary of special rules.
     def serialize_allowed_value(v)
-      { String => "string",
-        Fixnum => "integer" }[v] || v
+      { String     => "string",
+        Fixnum     => "integer",
+        TrueClass  => "boolean",
+        FalseClass => "boolean", }[v] || v
     end
 
     def as_json(optns)
       {
         "name"           => name,
-        "allowed_values" => allowed_values.map { |av| serialize_allowed_value(av) }
+        "allowed_values" => allowed_values.map { |av| serialize_allowed_value(av) }.uniq
       }
     end
   end
