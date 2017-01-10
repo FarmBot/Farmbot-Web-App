@@ -21,7 +21,7 @@ describe Api::LogsController do
       sign_in user
       before_count = Log.count
       post :create,
-           body: { meta: { x: 1, y: 2, z: 3, type: "fun" },
+           body: { meta: { x: 1, y: 2, z: 3, type: "info" },
                    channels: ["toast"],
                    message: "Hello, world!"
                  }.to_json,
@@ -29,7 +29,7 @@ describe Api::LogsController do
       expect(response.status).to eq(200)
       expect(Log.count).to be > before_count
       expect(Log.last.message).to eq("Hello, world!")
-      expect(Log.last.device).to eq(user.device)      
+      expect(Log.last.device).to eq(user.device)
     end
 
     it 'creates many logs (with an Array)' do
@@ -37,13 +37,13 @@ describe Api::LogsController do
       before_count = Log.count
       post :create,
            body: [
-            { meta: { x: 1, y: 2, z: 3, type: "fun" },
+            { meta: { x: 1, y: 2, z: 3, type: "info" },
               channels: ["toast"],
               message: "one" },
-            { meta: { x: 1, y: 2, z: 3, type: "fun" },
+            { meta: { x: 1, y: 2, z: 3, type: "info" },
               channels: ["toast"],
               message: "two" },
-            { meta: { x: 1, y: 2, z: 3, type: "fun" },
+            { meta: { x: 1, y: 2, z: 3, type: "info" },
               channels: ["toast"],
               message: "three" },
            ].to_json,
@@ -52,9 +52,29 @@ describe Api::LogsController do
       expect(Log.count).to eq(before_count + 3)
     end
 
+    it 'does not bother saving `fun` logs' do
+      sign_in user
+      before_count = Log.count
+      post :create,
+           body: [
+            { meta: { x: 1, y: 2, z: 3, type: "info" },
+              channels: ["toast"],
+              message: "one" },
+            { meta: { x: 1, y: 2, z: 3, type: "fun" },
+              channels: [],
+              message: "two" },
+            { meta: { x: 1, y: 2, z: 3, type: "info" },
+              channels: [],
+              message: "three" },
+           ].to_json,
+           params: {format: :json}
+      expect(response.status).to eq(200)
+      expect(Log.count).to eq(before_count + 2)
+    end
+
     it 'Runs compaction when the logs pile up' do
       stub = {
-        meta: { x: 1, y: 2, z: 3, type: "fun" }, channels: ["toast"],
+        meta: { x: 1, y: 2, z: 3, type: "info" }, channels: ["toast"],
               message: "one" }
       payl = []
       100.times { payl.push(stub) }

@@ -12,6 +12,7 @@ module Api
           .map { |i| new_log(i) }
           .select { |i| i.success? }
           .map { |i| i.result }
+          .select { |i| i.meta["type"] != "fun"}
           .tap { |i| Log.transaction { i.map(&:save) } }
           .tap { current_device.limit_log_length }
       when Hash
