@@ -5,7 +5,7 @@ class Image < ApplicationRecord
   validates :device, presence: true
 
   has_attached_file :attachment,
-    # default_url: "/images/:style/missing.png",
+    default_url: "http://placehold.it/640?text=Processing...",
     styles: { x1280: "1280x1280>",
               x640:  "640x640>",
               x320:  "320x320>",

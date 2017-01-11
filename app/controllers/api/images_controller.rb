@@ -1,7 +1,7 @@
 module Api
   class ImagesController < Api::AbstractController
     def create
-        mutate Images::Create.run({device: current_device}, params.as_json)
+        mutate Images::Create.run({device: current_device}, raw_json)
     end
 
     def show
