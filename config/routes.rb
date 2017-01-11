@@ -6,6 +6,7 @@ FarmBot::Application.routes.draw do
     resource :tokens,           only: [:create]
     resource :users,            only: [:create, :update, :destroy]
     resource :device,           only: [:show, :destroy, :create, :update]
+    resources :images,          only: [:create, :destroy, :show]
     resources :plants,          only: [:create, :destroy, :index]
     resources :password_resets, only: [:create, :update]
     resources :regimens,        only: [:create, :destroy, :index, :update]
