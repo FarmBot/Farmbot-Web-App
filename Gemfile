@@ -14,6 +14,7 @@ gem "mysql"
 gem "database_cleaner"
 gem "rollbar"
 gem "rack-attack"
+gem "paperclip", "~> 5.0.0"
 
 group :development, :test do
   gem "sqlite3"
