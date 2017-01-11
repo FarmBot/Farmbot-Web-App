@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161207195423) do
+ActiveRecord::Schema.define(version: 20170111035209) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
@@ -32,6 +32,15 @@ ActiveRecord::Schema.define(version: 20161207195423) do
     t.string  "name"
     t.string  "webcam_url"
     t.integer "max_log_count",    default: 100
+  end
+
+  create_table "images", force: :cascade do |t|
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+    t.string   "attachment_file_name"
+    t.string   "attachment_content_type"
+    t.integer  "attachment_file_size"
+    t.datetime "attachment_updated_at"
   end
 
   create_table "logs", force: :cascade do |t|
