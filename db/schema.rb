@@ -35,12 +35,15 @@ ActiveRecord::Schema.define(version: 20170111035209) do
   end
 
   create_table "images", force: :cascade do |t|
+    t.integer  "device_id"
+    t.datetime "image_processed_at"
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
     t.string   "attachment_file_name"
     t.string   "attachment_content_type"
     t.integer  "attachment_file_size"
     t.datetime "attachment_updated_at"
+    t.index ["device_id"], name: "index_images_on_device_id"
   end
 
   create_table "logs", force: :cascade do |t|

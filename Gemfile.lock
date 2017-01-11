@@ -57,6 +57,11 @@ GEM
     concurrent-ruby (1.0.2)
     daemons (1.2.4)
     database_cleaner (1.5.3)
+    delayed_job (4.1.2)
+      activesupport (>= 3.0, < 5.1)
+    delayed_job_active_record (4.1.1)
+      activerecord (>= 3.0, < 5.1)
+      delayed_job (>= 3.0, < 5)
     devise (4.2.0)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -211,6 +216,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers (~> 0.8.3)
   database_cleaner
+  delayed_job_active_record
   devise
   factory_girl_rails
   faker
