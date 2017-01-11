@@ -5,7 +5,15 @@ describe Api::ImagesController do
   let(:user) { FactoryGirl.create(:user) }
 
   describe '#show' do
-    it 'shows image meta data'
+    it 'shows image meta data' do
+      sign_in user
+      image = FactoryGirl.create(:image, device: user.device)
+      get :show, params: { id: image.id }
+      expect(response.status).to eq(200)
+      expect(json[:id]).to eq(image.id)
+      expect(json[:device_id]).to eq(user.device_id)
+      expect(json[:meta]).to be_truthy
+    end
   end
 
   describe "#create" do
@@ -27,7 +35,14 @@ describe Api::ImagesController do
     end
 
     describe '#delete' do
-      it 'deletes an image'
+      it 'deletes an image' do
+        sign_in user
+        image = FactoryGirl.create(:image, device: user.device)
+        before_count = Image.count
+        delete :destroy, params: { id: image.id }
+        expect(response.status).to eq(200)
+        expect(Image.count).to be < before_count
+      end
     end
   end
 end

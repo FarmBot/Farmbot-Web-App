@@ -5,11 +5,17 @@ module Api
     end
 
     def show
-        raise "Pending."
+      render json: image
     end
 
     def destroy
-        raise "Pending."
+      render json: image.destroy! && ""
+    end
+
+  private
+
+    def image
+      Image.where(device: current_device).find(params[:id])
     end
   end
 end
