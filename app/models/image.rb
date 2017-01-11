@@ -17,11 +17,11 @@ class Image < ApplicationRecord
                      "image/jpeg",
                      "image/png",
                      "image/gif"]
+
   def set_attachment_by_url(url)
-    # Image.new.from_url("http://i.imgur.com/OhLresv.png").save!
+    # Image.new.set_attachment_by_url("http://i.imgur.com/OhLresv.png").save!
     self.attachment = open(url)
-    self.image_processed_at = Time.now
+    self.attachment_processed_at = Time.now
     self
   end
-  handle_asynchronously :set_attachment_by_url
 end

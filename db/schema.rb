@@ -36,7 +36,7 @@ ActiveRecord::Schema.define(version: 20170111035209) do
 
   create_table "images", force: :cascade do |t|
     t.integer  "device_id"
-    t.datetime "image_processed_at"
+    t.datetime "attachment_processed_at"
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
     t.string   "attachment_file_name"
