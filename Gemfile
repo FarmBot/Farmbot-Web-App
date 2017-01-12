@@ -16,7 +16,8 @@ gem "rollbar"
 gem "rack-attack"
 gem "paperclip", "~> 5.0.0"
 gem "delayed_job_active_record"
-gem "fog"
+gem "figaro"
+gem "fog-google", git: "https://github.com/fog/fog-google"
 
 group :development, :test do
   gem "sqlite3"

@@ -7,11 +7,7 @@ Bundler.require(:default, Rails.env)
 
 module FarmBot
   class Application < Rails::Application
-    # config.paperclip_defaults.merge({
-    #   storage: :fog,
-    #   fog_credentials: { provider: "Google",
-    #                      google_storage_access_key_id: "XXX",
-    #                      google_storage_secret_access_key: "XXX" }})
+
     config.active_job.queue_adapter = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false

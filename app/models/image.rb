@@ -13,8 +13,14 @@ class Image < ApplicationRecord
   def set_defaults
     self.meta ||= {}
   end
+  HOLD_ON = JSON.parse(File.read("secret.json"))
 
   has_attached_file :attachment,
+    storage: :fog,
+    fog_directory: ENV["GCS_BUCKET"],
+    fog_credentials: { provider:                         "Google",
+                       google_storage_access_key_id:     ENV["GCS_KEY"],
+                       google_storage_secret_access_key: ENV["GCS_ID"]},
     default_url: "http://placehold.it/640?text=Processing...",
     styles: { x1280: "1280x1280>",
               x640:  "640x640>",
