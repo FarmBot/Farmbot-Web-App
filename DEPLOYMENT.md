@@ -108,3 +108,12 @@ http://staging.farmbot.io/.well-known/acme-challenge/3tFAi5c7tJK-UJu0LGFM0xFwSEx
 ```
 
  4. (Heroku users only) `sudo heroku certs:update /etc/letsencrypt/live/YOUR_DOMAIN_HERE/fullchain.pem /etc/letsencrypt/live/YOUR_DOMAIN_HERE/privkey.pem`
+
+
+# FILE / PHOTO storage
+
+ This is a work in progress. **Please ignore this section**
+
+ * We use paperclip and the fog gem for Google Cloud Storage uploads.
+ * You need to use an *INTEROPERABILITY KEY* to setup Paperclip/fog. You will be frustrated if you try to generate an API key.
+ * INTEROPERABILITY keys can be found under the "settings" pane of the bucket in the INTEROPERABILITY tab.

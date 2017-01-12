@@ -6,12 +6,12 @@ class Log < ActiveRecord::Base
   PAGE_SIZE = 25
   # self.meta[:type] is used by the bot and the frontend as a sort of
   TYPES     = %w(success busy warn error info fun)
-  serialize  :meta
   # The means by which the message will be sent. Ex: frontend toast notification
   serialize  :channels
   belongs_to :device
 
   validates :device, presence: true
+  serialize  :meta
   validates :meta, presence: true
   # http://stackoverflow.com/a/5127684/1064917
   before_validation :set_defaults

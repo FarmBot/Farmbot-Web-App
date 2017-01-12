@@ -1,63 +1,49 @@
-*.pem
+**.orig
 *.gem
+*.log
+*.pem
 *.rbc
+*.rbc
+*journal
+.DS_Store
 .bundle
 .config
-coverage
+.rspec
+.rvmrc
+.vscode/
+.yardoc
+/.bundle
+/config/application.yml
+/coverage/
+/db/*.sqlite3
+/log
+/public/assets/
+/public/build/*
+/public/js/*
+/public/system
+/spec/tmp
+/tmp
+/vendor/bundle
 InstalledFiles
+_yardoc
+api_docs.md
+capybara-*.html
+config/database.yml
+coverage
+doc/
+erd.pdf
 lib/bundler/man
+log/*.log
+node_modules/
+npm-debug.log
+pickle-email-*.html
 pkg
+public/*
+public/frontend_build.log
 rdoc
+rerun.txt
+secret.json
 spec/reports
 test/tmp
 test/version_tmp
 tmp
-npm-debug.log
-*.log
-log/*.log
-# YARD artifacts
-.yardoc
-_yardoc
-doc/
-*.rbc
-capybara-*.html
-.rspec
-/log
-/tmp
-/db/*.sqlite3
-/public/system
-/coverage/
-/spec/tmp
-**.orig
-rerun.txt
-pickle-email-*.html
-/public/assets/
-/public/build/*
-/public/js/*
-
-
-## Environment normalisation:
-/.bundle
-/vendor/bundle
-
-# these should all be checked in to normalise the environment:
-# Gemfile.lock, .ruby-version, .ruby-gemset
-
-# unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
-.rvmrc
-# Ignore application configuration
-/config/application.yml
-.DS_Store
-node_modules/
-*journal
-# SmarfDoc Documentation
-api_docs.md
-# RailsERD Output
-erd.pdf
-# Ignore frontend packages that are source related.
-
-# Ignore Farmbot Frontend stuff...
-public/*
-.vscode/
-config/database.yml
-public/frontend_build.log
