@@ -108,3 +108,54 @@ http://staging.farmbot.io/.well-known/acme-challenge/3tFAi5c7tJK-UJu0LGFM0xFwSEx
 ```
 
  4. (Heroku users only) `sudo heroku certs:update /etc/letsencrypt/live/YOUR_DOMAIN_HERE/fullchain.pem /etc/letsencrypt/live/YOUR_DOMAIN_HERE/privkey.pem`
+
+
+# FILE / PHOTO storage
+
+ This is a work in progress. **Please ignore this section**
+
+
+ * "public" and "trusted" bucket.
+ * Public bucket needs `reader` and `writer` permissions for user `allUsers`.
+ * Public bucket needs CORs enabled using a JSON config (see below).
+     * `gsutil cors set google_cloud_storage_cors_config.json gs://BUCKET_NAME`
+ * Public buckets need to auto delete items after a day (see below)
+     * `gsutil lifecycle set google_cloud_storage_auto_delete_after_one_day gs://BUCKET_NAME`
+
+```json
+// AUTO DELETE AFTER A DAY
+{
+    "rule": [
+        {
+            "action": {
+                "type": "Delete"
+            },
+            "condition": {
+                "age": 1
+            }
+        }
+    ]
+}
+```
+
+```json
+// ENABLE CORS
+[
+    {
+        "origin": [
+            "*"
+        ],
+        "responseHeader": [
+            "Content-Type"
+        ],
+        "method": [
+            "GET",
+            "HEAD",
+            "POST",
+            "PUT",
+            "DELETE"
+        ],
+        "maxAgeSeconds": 3600
+    }
+]
+```

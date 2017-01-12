@@ -15,7 +15,8 @@ gem "database_cleaner"
 gem "rollbar"
 gem "rack-attack"
 gem "paperclip", "~> 5.0.0"
-gem 'delayed_job_active_record'
+gem "delayed_job_active_record"
+gem "fog"
 
 group :development, :test do
   gem "sqlite3"
