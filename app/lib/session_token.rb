@@ -6,10 +6,10 @@ class SessionToken < AbstractJwtToken
                "farmbot/farmbot_os/releases/latest"
   DEFAULT_FW = "https://api.github.com/repos/FarmBot/farmbot-arduino-firmware/"\
                "releases/latest"
+  OS_RELEASE   = ENV.fetch('OS_UPDATE_SERVER') { DEFAULT_OS }
+  FW_RELEASE   = ENV.fetch('FW_UPDATE_SERVER') { DEFAULT_FW }
+  MQTT         = ENV.fetch('MQTT_HOST')
   EXPIRY       = 40.days
-  MQTT         = ENV['MQTT_HOST']  || missing_env('MQTT_HOST')
-  OS_RELEASE   = ENV['OS_UPDATE_SERVER'] || DEFAULT_OS
-  FW_RELEASE   = ENV['FW_UPDATE_SERVER'] || DEFAULT_FW
 
   def self.issue_to(user,
                     iat: Time.now.to_i,

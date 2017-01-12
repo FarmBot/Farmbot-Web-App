@@ -13,7 +13,6 @@ class Image < ApplicationRecord
   def set_defaults
     self.meta ||= {}
   end
-  HOLD_ON = JSON.parse(File.read("secret.json"))
 
   has_attached_file :attachment,
     storage: :fog,

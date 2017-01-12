@@ -1,0 +1,23 @@
+# If you use Let's Encrypt for SSL,
+# you must set this when renewing SSL. Otherwise, not required.
+ACME_SECRET: "-----"
+API_HOST: "localhost"
+API_PORT: "3000"
+DOCS: "Set this to any value if you want to generate API docs after running tests"
+DATABASE_URL: "postgres://USERNAME:PASSWORD@URL:PORT/DB_NAME"
+DEVISE_SECRET: "Used for devise. Use `rake secret` to generate a new value."
+FORCE_SSL: "Remove this if not using HTTPS://"
+# Firmware update server. Use default if you don't have a special use case
+FW_UPDATE_SERVER: "https://api.github.com/repos/FarmBot/farmbot-arduino-firmware/releases/latest"
+GCS_BUCKET: "GOOGLE_CLOUD_STORAGE_BUCKET_NAME_FOR_IMAGE_FILES"
+GCS_ID: "GOOGLE_CLOUD_STORAGE: 'interop' id"
+GCS_KEY: "GOOGLE_CLOUD_STORAGE: 'interop' key"
+HEROKU_SLUG_COMMIT: "This is set by Herok, used by Frontend to show current version."
+MQTT_HOST: "localhost"
+NPM_ADDON: "Used by FarmBot, Inc. to load proprietary extras, like Rollbar."
+OS_UPDATE_SERVER: "https://api.github.com/repos/farmbot/farmbot_os/releases/latest"
+ROLLBAR_ACCESS_TOKEN: "____"
+RSA_KEY: "-----BEGIN RSA ........."
+SENDGRID_PASSWORD: "Used by FarmBot, Inc"
+SENDGRID_USERNAME: "Used by FarmBot, Inc"
+SMTP_HOST: "smtp.sendgrid.net"

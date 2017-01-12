@@ -1,9 +1,5 @@
 class AbstractJwtToken
 
-  def self.missing_env(name)
-    raise "You forgot to set ENV['#{ name }']"
-  end
-
   PRIVATE_KEY  = KeyGen.current
   PUBLIC_KEY   = KeyGen.current.public_key
   ALG          = 'RS256'
