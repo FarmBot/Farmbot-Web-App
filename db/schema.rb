@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170111035209) do
+ActiveRecord::Schema.define(version: 20170113205236) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 20170111035209) do
     t.string  "name"
     t.string  "webcam_url"
     t.integer "max_log_count",    default: 100
+    t.index ["planting_area_id"], name: "index_devices_on_planting_area_id"
   end
 
   create_table "images", force: :cascade do |t|
@@ -71,6 +72,7 @@ ActiveRecord::Schema.define(version: 20170111035209) do
     t.integer "width"
     t.integer "length"
     t.integer "device_id"
+    t.index ["device_id"], name: "index_planting_areas_on_device_id"
   end
 
   create_table "plants", force: :cascade do |t|
@@ -83,18 +85,23 @@ ActiveRecord::Schema.define(version: 20170111035209) do
     t.float    "x",                default: 0.0
     t.float    "y",                default: 0.0
     t.datetime "planted_at"
+    t.index ["device_id"], name: "index_plants_on_device_id"
+    t.index ["planting_area_id"], name: "index_plants_on_planting_area_id"
   end
 
   create_table "regimen_items", force: :cascade do |t|
     t.integer "time_offset", limit: 8
     t.integer "regimen_id"
     t.integer "sequence_id"
+    t.index ["regimen_id"], name: "index_regimen_items_on_regimen_id"
+    t.index ["sequence_id"], name: "index_regimen_items_on_sequence_id"
   end
 
   create_table "regimens", force: :cascade do |t|
     t.string  "color"
     t.string  "name"
     t.integer "device_id"
+    t.index ["device_id"], name: "index_regimens_on_device_id"
   end
 
   create_table "schedules", force: :cascade do |t|
@@ -105,6 +112,8 @@ ActiveRecord::Schema.define(version: 20170111035209) do
     t.datetime "next_time"
     t.integer  "repeat"
     t.string   "time_unit"
+    t.index ["device_id"], name: "index_schedules_on_device_id"
+    t.index ["sequence_id"], name: "index_schedules_on_sequence_id"
   end
 
   create_table "sequence_dependencies", force: :cascade do |t|
@@ -123,6 +132,7 @@ ActiveRecord::Schema.define(version: 20170111035209) do
     t.string  "kind",      default: "sequence"
     t.text    "args"
     t.text    "body"
+    t.index ["device_id"], name: "index_sequences_on_device_id"
   end
 
   create_table "token_expirations", force: :cascade do |t|
@@ -176,6 +186,7 @@ ActiveRecord::Schema.define(version: 20170111035209) do
     t.datetime "updated_at",                      null: false
     t.datetime "verified_at"
     t.string   "verification_token"
+    t.index ["device_id"], name: "index_users_on_device_id"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
