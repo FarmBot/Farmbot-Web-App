@@ -8,6 +8,7 @@ module Users
     end
 
     def validate
+      email.downcase!
       add_error :email, :*, 'Already registered' if User.find_by(email: email)
       if password != password_confirmation
         add_error :password, :*, 'Password and confirmation do not match.'
@@ -15,7 +16,7 @@ module Users
     end
 
     def execute
-      user   = User.create!(email:                 email.downcase,
+      user   = User.create!(email:                 email,
                             password:              password,
                             password_confirmation: password_confirmation,
                             name:                  name)
