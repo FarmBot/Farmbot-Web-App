@@ -4,6 +4,18 @@ describe Api::ImagesController do
   include Devise::Test::ControllerHelpers
   let(:user) { FactoryGirl.create(:user) }
 
+  describe '#index' do
+    it 'shows only the max images allowed' do
+      sign_in user
+      device = user.device
+      device.update_attributes!(max_images_count: 10)
+      FactoryGirl.create_list(:image, 15, device: user.device)
+      get :index
+      expect(response.status).to eq(200)
+      expect(json.length).to eq(10)
+    end
+  end
+
   describe '#show' do
     it 'shows image meta data' do
       sign_in user

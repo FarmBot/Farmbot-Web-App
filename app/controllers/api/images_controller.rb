@@ -8,6 +8,10 @@ module Api
         mutate Images::Create.run({device: current_device}, raw_json)
     end
 
+    def index
+      render json: current_device.images.last(current_device.max_images_count)
+    end
+
     def show
       render json: image
     end
