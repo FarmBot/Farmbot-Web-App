@@ -133,6 +133,7 @@ module CeleryScriptSettingsBag
       .defineNode(:calibrate,         [:axis], [])
       .defineNode(:pair,              [:label , :value], [])
       .defineNode(:config_update,     [:package], [:pair])
+      .defineNode(:take_photo,        [], [])
 
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
