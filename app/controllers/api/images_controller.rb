@@ -27,10 +27,9 @@ module Api
       # You probably want to POST that URL to Images#Create after that.
       render json: {
         verb:    "POST",
-        url:     "//storage.googleapis.com/#{BUCKET}",
+        url:     "//storage.googleapis.com/#{BUCKET}/",
         headers: {
-          "success_action_status" => 201,
-          "key"                   => "#{SecureRandom.uuid}.jpg",
+          "key"                   => random_filename,
           "acl"                   => "public-read",
           "Content-Type"          => "image/jpeg",
           "policy"                => policy,
@@ -43,24 +42,27 @@ module Api
 
   private
 
+    def random_filename
+      @range ||= "temp1/#{SecureRandom.uuid}.jpg"
+    end
+
     def policy
-      Base64.encode64(
+      @policy ||= Base64.encode64(
         { 'expiration' => 1.hour.from_now.utc.xmlschema,
           'conditions' => [
-           { 'bucket' =>  BUCKET },
-           ['starts-with', '$key', ''],
-           { 'acl' => 'public-read' },
-           { success_action_status: '201' },
-           ['starts-with', '$Content-Type', ''],
+           { 'bucket'                =>  BUCKET },
+           { 'key'                   => random_filename},
+           { 'acl'                   => 'public-read' },
+           { 'Content-Type'          => "image/jpeg"},
            ['content-length-range', 1, 4.megabytes]
          ]}.to_json).gsub(/\n/, '')
     end
 
     def policy_signature
-      Base64.encode64(
+      @policy_signature ||= Base64.encode64(
         OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('sha1'),
         SECRET,
-        s3_upload_policy)).gsub("\n",'')
+        policy)).gsub("\n",'')
     end
 
     def image
