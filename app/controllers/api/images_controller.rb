@@ -52,7 +52,7 @@ module Api
            { 'key'                   => random_filename},
            { 'acl'                   => 'public-read' },
            { 'Content-Type'          => "image/jpeg"},
-           ['content-length-range', 1, 4.megabytes]
+           ['content-length-range', 1, 7.megabytes]
          ]}.to_json).gsub(/\n/, '')
     end
 

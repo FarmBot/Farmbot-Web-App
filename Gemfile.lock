@@ -79,6 +79,8 @@ GEM
       warden (~> 1.2.3)
     diff-lcs (1.2.5)
     docile (1.1.5)
+    domain_name (0.5.20161129)
+      unf (>= 0.0.5, < 1.0.0)
     erubis (2.7.0)
     eventmachine (1.2.1)
     excon (0.54.0)
@@ -104,6 +106,8 @@ GEM
     formatador (0.2.5)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
+    http-cookie (1.0.3)
+      domain_name (~> 0.5)
     i18n (0.7.0)
     ice_cube (0.14.0)
     json (1.8.3)
@@ -124,6 +128,7 @@ GEM
       activesupport
     mysql (2.9.1)
     mysql2 (0.4.5)
+    netrc (0.11.0)
     nio4r (1.2.1)
     nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
@@ -181,6 +186,10 @@ GEM
     rake (11.3.0)
     responders (2.3.0)
       railties (>= 4.2.0, < 5.1)
+    rest-client (2.0.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     rollbar (2.13.3)
       multi_json
     rspec (3.5.0)
@@ -227,6 +236,9 @@ GEM
     thread_safe (0.3.5)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.2)
     warden (1.2.6)
       rack (>= 1.0)
     websocket-driver (0.6.4)
@@ -258,6 +270,7 @@ DEPENDENCIES
   rails (= 5.0.0.1)
   rails-erd
   rails_12factor
+  rest-client
   rollbar
   rspec
   rspec-rails

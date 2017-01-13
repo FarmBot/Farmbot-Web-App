@@ -18,6 +18,7 @@ gem "paperclip", "~> 5.0.0"
 gem "delayed_job_active_record"
 gem "figaro"
 gem "fog-google", git: "https://github.com/fog/fog-google"
+gem "rest-client" # If you see this, delete this.
 
 group :development, :test do
   gem "sqlite3"

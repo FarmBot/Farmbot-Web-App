@@ -26,7 +26,7 @@ class Image < ApplicationRecord
               x320:  "320x320>",
               x160:  "160x160>",
               x80:    "80x80>" },
-    size: { in: 0..5.megabytes } # Worst case scenario for 1280x1280 BMP.
+    size: { in: 0..7.megabytes } # Worst case scenario for 1280x1280 BMP.
     validates_attachment_content_type :attachment,
       content_type: ["image/jpg",
                      "image/jpeg",
