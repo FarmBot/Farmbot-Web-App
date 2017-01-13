@@ -3,5 +3,6 @@ class CreateAttachmentFromUrlJob < ApplicationJob
 
   def perform(image:,attachment_url:)
     image.set_attachment_by_url(attachment_url)
+    image.save!
   end
 end

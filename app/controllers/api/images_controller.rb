@@ -1,13 +1,8 @@
 module Api
   class ImagesController < Api::AbstractController
-    BUCKET = ENV.fetch("GCS_BUCKET") { raise "You need to set ENV['GCS_BUCKET']"}
-    KEY    = ENV.fetch("GCS_KEY") { raise "You need to set ENV['GCS_KEY']"}
-    SECRET = ENV.fetch("GCS_ID") { raise "You need to set ENV['GCS_ID']"}
-
-    if (!Rails.env.production?)
-      skip_before_action :authenticate_user!, only: [:storage_auth]
-      puts "REMOVE THIS NOW!"
-    end
+    BUCKET = ENV.fetch("GCS_BUCKET")
+    KEY    = ENV.fetch("GCS_KEY")
+    SECRET = ENV.fetch("GCS_ID")
 
     def create
         mutate Images::Create.run({device: current_device}, raw_json)
@@ -28,15 +23,18 @@ module Api
       render json: {
         verb:    "POST",
         url:     "//storage.googleapis.com/#{BUCKET}/",
-        headers: {
-          "key"                   => random_filename,
-          "acl"                   => "public-read",
-          "Content-Type"          => "image/jpeg",
-          "policy"                => policy,
-          "signature"             => policy_signature,
-          "GoogleAccessId"        => KEY,
-          "file"                  => "REPLACE_THIS_WITH_A_BINARY_JPEG_FILE",
-        }
+        form_data: {
+          "key"            => random_filename,
+          "acl"            => "public-read",
+          "Content-Type"   => "image/jpeg",
+          "policy"         => policy,
+          "signature"      => policy_signature,
+          "GoogleAccessId" => KEY,
+          "file"           => "REPLACE_THIS_WITH_A_BINARY_JPEG_FILE"
+        },
+        instructions: "Send a 'from-data' request to the URL provided."\
+                      "Then POST the resulting URL as an 'attachment_url' "\
+                      "(json) to api/images/."
       }
     end
 
