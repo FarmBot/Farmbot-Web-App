@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170113205236) do
+ActiveRecord::Schema.define(version: 20170113211527) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 20170113205236) do
     t.string  "name"
     t.string  "webcam_url"
     t.integer "max_log_count",    default: 100
+    t.integer "max_images_count", default: 100
     t.index ["planting_area_id"], name: "index_devices_on_planting_area_id"
   end
 

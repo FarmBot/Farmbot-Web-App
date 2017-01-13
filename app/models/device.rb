@@ -1,6 +1,7 @@
 # Farmbot Device models all data related to an actual FarmBot in the real world.
 class Device < ActiveRecord::Base
-  DEFAULT_MAX_LOGS = 50
+  DEFAULT_MAX_LOGS   = 50
+  DEFAULT_MAX_IMAGES = 100
   has_many  :users
   has_many  :schedules,     dependent: :destroy
   has_many  :logs,          dependent: :destroy
