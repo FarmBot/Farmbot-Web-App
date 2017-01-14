@@ -13,6 +13,7 @@ describe Api::ImagesController do
       get :index
       expect(response.status).to eq(200)
       expect(json.length).to eq(device.max_images_count)
+      expect(json.first.key?(:attachment_url)).to be_truthy
     end
   end
 
@@ -25,6 +26,7 @@ describe Api::ImagesController do
       expect(json[:id]).to eq(image.id)
       expect(json[:device_id]).to eq(user.device_id)
       expect(json[:meta]).to be_truthy
+      expect(json.key?(:attachment_url)).to be_truthy
     end
   end
 
