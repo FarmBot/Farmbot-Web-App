@@ -31,7 +31,15 @@ module Sync
   private
 
     def images
-      @images ||= Images::Fetch.run(device: device)
+      # TODO: I wanted to just write:
+      # @images ||= Images::Fetch.run!(device: device)
+      # But ActiveModelSerializer is not serializing the models. Instead, it is
+      # just converting all of the models [mostly irrelevant] attributes to
+      # json directly. This method is also very slow right now. :shipit:
+      @images ||= Images::Fetch
+        .run!(device: device)
+        .map { |x| ImageSerializer.new(x) }
+        .map { |x| x.as_json[:image] }
     end
 
     def tools
