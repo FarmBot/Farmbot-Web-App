@@ -9,7 +9,7 @@ module Api
     end
 
     def index
-      render json: current_device.images.last(current_device.max_images_count)
+      mutate Images::Fetch.run(device: current_device)
     end
 
     def show

@@ -12,7 +12,7 @@ describe Api::ImagesController do
       FactoryGirl.create_list(:image, 15, device: user.device)
       get :index
       expect(response.status).to eq(200)
-      expect(json.length).to eq(10)
+      expect(json.length).to eq(device.max_images_count)
     end
   end
 

@@ -24,10 +24,15 @@ module Sync
                tool_bays:     tool_bays,
                tool_slots:    tool_slots,
                tools:         tools,
-               logs:          logs }.as_json
+               logs:          logs,
+               images:        images }.as_json
     end
 
   private
+
+    def images
+      @images ||= Images::Fetch.run(device: device)
+    end
 
     def tools
       @tools = Tool.where(device: device)
