@@ -5,14 +5,14 @@ describe Api::UsersController do
   include Devise::Test::ControllerHelpers
     it 'errors if you try to delete with the wrong password' do
       sign_in user
-      delete :destroy, params: { password: "NOPE!" }, format: :json 
+      delete :destroy, params: { password: "NOPE!" }, format: :json
       expect(response.status).to eq(422)
       expect(json[:password]).to eq(Users::Destroy::BAD_PASSWORD)
     end
 
     it 'deletes a user account' do
       sign_in user
-      delete :destroy, params: { password: user.password }, format: :json 
+      delete :destroy, params: { password: user.password }, format: :json
       expect(response.status).to eq(200)
       expect(User.where(id: user.id).count).to eq(0)
     end
@@ -37,7 +37,7 @@ describe Api::UsersController do
       input = {
         password: old_pass,
         new_password: "123456789",
-        new_password_confirmation: "123456789",       
+        new_password_confirmation: "123456789",
         format: :json
       }
       patch :update, params: input
@@ -53,7 +53,7 @@ describe Api::UsersController do
       input = {
         old_password: old_pass,
         password: "123456789"  + "WRONG!",
-        password_confirmation: "123456789",       
+        password_confirmation: "123456789",
         format: :json
       }
       patch :update, params: input
@@ -67,7 +67,7 @@ describe Api::UsersController do
       input = {
         old_password: old_pass + "WRONG!",
         password: "123456789",
-        password_confirmation: "123456789",        
+        password_confirmation: "123456789",
         format: :json
       }
       patch :update, params: input
@@ -84,7 +84,7 @@ describe Api::UsersController do
                   name:                  "Frank" }
       old_email_count = ActionMailer::Base.deliveries.length
       post :create, params: params
-      sleep 0.5 # Mail deliveries occur in background thread.
+      sleep 0.75 # Mail deliveries occur in background thread.
       expect(ActionMailer::Base.deliveries.length).to be > old_email_count
       msg = ActionMailer::Base.deliveries.last
       expect(msg.to.first).to eq(email)
