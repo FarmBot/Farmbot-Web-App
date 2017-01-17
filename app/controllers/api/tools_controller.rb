@@ -33,7 +33,7 @@ private
     end
 
     def tools
-      Tool.where(device: current_device)
+      Tool.includes(:tool_slot).where(device: current_device)
     end
 
     def tool
