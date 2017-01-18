@@ -3,6 +3,8 @@ rvm:
   - 2.3.3
 before_script:
   - cp config/database.travis.yml config/database.yml
+  - mkdir -p public/app
+  - touch public/app/index.html
   - ./install_frontend.sh
   - bundle exec rake db:create db:migrate
 script:
