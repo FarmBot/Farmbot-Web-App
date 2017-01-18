@@ -10,8 +10,8 @@ module CeleryScriptSettingsBag
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
                              sync check_updates power_off reboot toggle_pin
                              start_regimen stop_regimen config_update calibrate
-                             execute move_absolute move_relative write_pin
-                             read_pin wait send_message)
+                             execute move_absolute move_relative write_pin wait
+                             read_pin send_message take_photo factory_reset)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast)
