@@ -95,13 +95,6 @@ private
 
     def mutate(outcome, options = {})
       if outcome.success?
-        result = outcome.result.tap do |x|
-          puts "REMOVE THIS  -  TESTING ONLY!!"
-          if x.to_json.length > 200
-            JSON.parse(x.to_json)
-            JSON.parse(x.as_json.to_json)
-          end
-        end
         render options.merge(json: outcome.result)
       else
         render options.merge(json: outcome.errors.message, status: 422)
