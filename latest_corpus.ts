@@ -119,7 +119,7 @@ export interface Wait {
   body?: undefined;
 }
 
-type SendMessageBodyItem = (Channel)[] | undefined;
+export type SendMessageBodyItem = (Channel)[] | undefined;
 
 export interface SendMessage {
   kind: "send_message";
@@ -128,7 +128,7 @@ export interface SendMessage {
     message_type: string;
   };
   comment?: string | undefined;
-  body?: SendMessageBody;
+  body?: SendMessageBodyItem;
 }
 
 
@@ -159,7 +159,7 @@ export interface If {
   body?: undefined;
 }
 
-type SequenceBodyItem = (MoveAbsolute
+export type SequenceBodyItem = (MoveAbsolute
           | MoveRelative
           | WritePin
           | ReadPin
@@ -174,7 +174,7 @@ export interface Sequence {
     version: number;
   };
   comment?: string | undefined;
-  body?: SequenceBody;
+  body?: SequenceBodyItem;
 }
 
 
@@ -305,7 +305,7 @@ export interface Explanation {
   body?: undefined;
 }
 
-type RpcRequestBodyItem = (Home
+export type RpcRequestBodyItem = (Home
           | EmergencyLock
           | EmergencyUnlock
           | ReadStatus
@@ -334,7 +334,7 @@ export interface RpcRequest {
     label: string;
   };
   comment?: string | undefined;
-  body?: RpcRequestBody;
+  body?: RpcRequestBodyItem;
 }
 
 
@@ -348,7 +348,7 @@ export interface RpcOk {
   body?: undefined;
 }
 
-type RpcErrorBodyItem = (Explanation)[] | undefined;
+export type RpcErrorBodyItem = (Explanation)[] | undefined;
 
 export interface RpcError {
   kind: "rpc_error";
@@ -356,7 +356,7 @@ export interface RpcError {
     label: string;
   };
   comment?: string | undefined;
-  body?: RpcErrorBody;
+  body?: RpcErrorBodyItem;
 }
 
 
@@ -384,7 +384,7 @@ export interface Pair {
   body?: undefined;
 }
 
-type ConfigUpdateBodyItem = (Pair)[] | undefined;
+export type ConfigUpdateBodyItem = (Pair)[] | undefined;
 
 export interface ConfigUpdate {
   kind: "config_update";
@@ -392,7 +392,7 @@ export interface ConfigUpdate {
     package: string;
   };
   comment?: string | undefined;
-  body?: ConfigUpdateBody;
+  body?: ConfigUpdateBodyItem;
 }
 
 

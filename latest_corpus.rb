@@ -65,11 +65,11 @@ class CSNode
     end
 
     def body_type
-      "type #{camelize}BodyItem = #{body_names};" if has_body?
+      "export type #{camelize}BodyItem = #{body_names};" if has_body?
     end
 
     def body_attr
-      "body?: #{ has_body? ? (camelize + "Body") : UNDEFINED };"
+      "body?: #{ has_body? ? (camelize + "BodyItem") : UNDEFINED };"
     end
 
     def to_ts
