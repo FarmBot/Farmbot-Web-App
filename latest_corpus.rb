@@ -10,7 +10,7 @@ require_relative "./app/models/celery_script_settings_bag.rb"
 require_relative "./app/models/sequence.rb"
 Dir["./app/lib/sequence_migration/*.rb"].each {|file| require file }
 
-
+UNDEFINED = "undefined"
 PIPE = "\n          | "
 
 class CSArg
@@ -57,21 +57,31 @@ class CSNode
 
     def body_names
       b = allowed_body_types.map(&:camelize).join(PIPE)
-      (b.length > 0) ? "(#{b})[] | undefined" : "undefined"
+      (b.length > 0) ? "(#{b})[] | undefined" : UNDEFINED
     end
 
-    def args
+    def has_body?
+      body_names != UNDEFINED
+    end
 
+    def body_type
+      "type #{camelize}BodyItem = #{body_names};" if has_body?
+    end
+
+    def body_attr
+      "body?: #{ has_body? ? (camelize + "Body") : UNDEFINED };"
     end
 
     def to_ts
 """
+#{body_type}
+
 export interface #{camelize} {
   kind: #{name.inspect};
   args: {#{arg_names}
   };
   comment?: string | undefined;
-  body?: #{body_names};
+  #{body_attr}
 }
 """
     end
