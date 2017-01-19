@@ -9,8 +9,6 @@ IT WILL BE OVERWRITTEN ON EVERY CELERYSCRIPT UPGRADE.
 
 */
 
-
-
 export interface Nothing {
   kind: "nothing";
   args: {
@@ -18,8 +16,6 @@ export interface Nothing {
   comment?: string | undefined;
   body?: undefined;
 }
-
-
 
 export interface Tool {
   kind: "tool";
@@ -29,8 +25,6 @@ export interface Tool {
   comment?: string | undefined;
   body?: undefined;
 }
-
-
 
 export interface Coordinate {
   kind: "coordinate";
@@ -42,8 +36,6 @@ export interface Coordinate {
   comment?: string | undefined;
   body?: undefined;
 }
-
-
 
 export interface MoveAbsolute {
   kind: "move_absolute";
@@ -57,8 +49,6 @@ export interface MoveAbsolute {
   body?: undefined;
 }
 
-
-
 export interface MoveRelative {
   kind: "move_relative";
   args: {
@@ -71,8 +61,6 @@ export interface MoveRelative {
   body?: undefined;
 }
 
-
-
 export interface WritePin {
   kind: "write_pin";
   args: {
@@ -83,8 +71,6 @@ export interface WritePin {
   comment?: string | undefined;
   body?: undefined;
 }
-
-
 
 export interface ReadPin {
   kind: "read_pin";
@@ -97,8 +83,6 @@ export interface ReadPin {
   body?: undefined;
 }
 
-
-
 export interface Channel {
   kind: "channel";
   args: {
@@ -107,8 +91,6 @@ export interface Channel {
   comment?: string | undefined;
   body?: undefined;
 }
-
-
 
 export interface Wait {
   kind: "wait";
@@ -131,8 +113,6 @@ export interface SendMessage {
   body?: SendMessageBodyItem;
 }
 
-
-
 export interface Execute {
   kind: "execute";
   args: {
@@ -141,8 +121,6 @@ export interface Execute {
   comment?: string | undefined;
   body?: undefined;
 }
-
-
 
 export interface If {
   kind: "_if";
@@ -177,8 +155,6 @@ export interface Sequence {
   body?: SequenceBodyItem;
 }
 
-
-
 export interface Home {
   kind: "home";
   args: {
@@ -189,8 +165,6 @@ export interface Home {
   body?: undefined;
 }
 
-
-
 export interface EmergencyLock {
   kind: "emergency_lock";
   args: {
@@ -198,8 +172,6 @@ export interface EmergencyLock {
   comment?: string | undefined;
   body?: undefined;
 }
-
-
 
 export interface EmergencyUnlock {
   kind: "emergency_unlock";
@@ -209,8 +181,6 @@ export interface EmergencyUnlock {
   body?: undefined;
 }
 
-
-
 export interface ReadStatus {
   kind: "read_status";
   args: {
@@ -219,8 +189,6 @@ export interface ReadStatus {
   body?: undefined;
 }
 
-
-
 export interface Sync {
   kind: "sync";
   args: {
@@ -228,8 +196,6 @@ export interface Sync {
   comment?: string | undefined;
   body?: undefined;
 }
-
-
 
 export interface CheckUpdates {
   kind: "check_updates";
@@ -240,8 +206,6 @@ export interface CheckUpdates {
   body?: undefined;
 }
 
-
-
 export interface PowerOff {
   kind: "power_off";
   args: {
@@ -249,8 +213,6 @@ export interface PowerOff {
   comment?: string | undefined;
   body?: undefined;
 }
-
-
 
 export interface Reboot {
   kind: "reboot";
@@ -260,8 +222,6 @@ export interface Reboot {
   body?: undefined;
 }
 
-
-
 export interface TogglePin {
   kind: "toggle_pin";
   args: {
@@ -270,8 +230,6 @@ export interface TogglePin {
   comment?: string | undefined;
   body?: undefined;
 }
-
-
 
 export interface StartRegimen {
   kind: "start_regimen";
@@ -283,8 +241,6 @@ export interface StartRegimen {
   body?: undefined;
 }
 
-
-
 export interface StopRegimen {
   kind: "stop_regimen";
   args: {
@@ -293,8 +249,6 @@ export interface StopRegimen {
   comment?: string | undefined;
   body?: undefined;
 }
-
-
 
 export interface Explanation {
   kind: "explanation";
@@ -337,8 +291,6 @@ export interface RpcRequest {
   body?: RpcRequestBodyItem;
 }
 
-
-
 export interface RpcOk {
   kind: "rpc_ok";
   args: {
@@ -359,8 +311,6 @@ export interface RpcError {
   body?: RpcErrorBodyItem;
 }
 
-
-
 export interface Calibrate {
   kind: "calibrate";
   args: {
@@ -369,8 +319,6 @@ export interface Calibrate {
   comment?: string | undefined;
   body?: undefined;
 }
-
-
 
 export interface Pair {
   kind: "pair";
@@ -395,8 +343,6 @@ export interface ConfigUpdate {
   body?: ConfigUpdateBodyItem;
 }
 
-
-
 export interface TakePhoto {
   kind: "take_photo";
   args: {
@@ -404,8 +350,6 @@ export interface TakePhoto {
   comment?: string | undefined;
   body?: undefined;
 }
-
-
 
 export interface FactoryReset {
   kind: "factory_reset";

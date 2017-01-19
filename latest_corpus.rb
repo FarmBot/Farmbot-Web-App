@@ -130,4 +130,4 @@ result.push(enum_type :ALLOWED_PACKAGES,
 result.push(enum_type :ALLOWED_AXIS, CeleryScriptSettingsBag::ALLOWED_AXIS)
 result.push(enum_type :Color, Sequence::COLORS)
 
-puts result.join
+puts result.join.gsub("\n\n\n", "\n")
