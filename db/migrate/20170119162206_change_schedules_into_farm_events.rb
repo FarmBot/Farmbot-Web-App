@@ -1,4 +1,4 @@
-class ChangeFarmEventsIntoFarmEvents < ActiveRecord::Migration[5.0]
+class ChangeSchedulesIntoFarmEvents < ActiveRecord::Migration[5.0]
   def change
     remove_column :farm_events, :sequence_id
     rename_table  :farm_events, :farm_events
