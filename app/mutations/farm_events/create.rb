@@ -3,7 +3,7 @@ module FarmEvents
     using LegacyRefinementsModule
 
     required do
-      model :sequence, class: Sequence
+      # model :sequence, class: Sequence
       model :device, class: Device
       integer :repeat
       string :time_unit, in: FarmEvent::UNITS_OF_TIME
@@ -15,6 +15,7 @@ module FarmEvents
     end
 
     def execute
+      Rollbar.info("-- ENDPOINT REQUIRES UPDATES --")
       create(FarmEvent, inputs) do |sched|
         sched.next_time = sched.calculate_next_occurence
       end

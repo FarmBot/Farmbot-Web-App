@@ -6,8 +6,8 @@ module Api
 
     def create
       mutate FarmEvents::Create.run(params.as_json,
-                                   device: current_device,
-                                   sequence: sequence)
+                                   device:     current_device,
+                                   executable: sequence)
     end
 
     def update

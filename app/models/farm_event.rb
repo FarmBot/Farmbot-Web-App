@@ -5,13 +5,13 @@
 class FarmEvent < ActiveRecord::Base
   UNITS_OF_TIME = %w(minutely hourly daily weekly monthly yearly)
 
-  belongs_to :sequence
-  validates :sequence_id, presence: true
+  belongs_to :executable, polymorphic: true
+  validates :executable, presence: true
   belongs_to :device
   validates :device_id, presence: true
 
   def farm_event_rules
-    @farm_event_rules ||= IceCube::FarmEvent.new(start_time, end_time: end_time) do |sch|
+    @farm_event_rules ||= IceCube::Schedule.new(start_time, end_time: end_time) do |sch|
       sch.add_recurrence_rule IceCube::Rule.send(time_unit.to_sym, repeat)
     end
   end

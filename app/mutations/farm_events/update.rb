@@ -8,7 +8,7 @@ module FarmEvents
     end
 
     optional do
-      string :sequence_id
+      # string :sequence_id
       integer :repeat
       string :time_unit, in: FarmEvent::UNITS_OF_TIME
       time :start_time
@@ -16,6 +16,7 @@ module FarmEvents
     end
 
     def execute
+      Rollbar.info("-- ENDPOINT REQUIRES UPDATES --")
       update_attributes(farm_event, inputs.except(:farm_event))
     end
   end
