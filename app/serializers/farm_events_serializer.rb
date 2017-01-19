@@ -1,4 +1,4 @@
-class ScheduleSerializer < ActiveModel::Serializer
+class FarmEventSerializer < ActiveModel::Serializer
   attributes :id, :start_time, :end_time, :next_time, :repeat, :time_unit,
              :sequence_id, :sequence_name, :calendar
   try :url, :sequence

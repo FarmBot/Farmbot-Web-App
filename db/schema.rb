@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170113211527) do
+ActiveRecord::Schema.define(version: 20170119162206) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,6 +37,20 @@ ActiveRecord::Schema.define(version: 20170113211527) do
     t.integer "max_log_count",    default: 100
     t.integer "max_images_count", default: 100
     t.index ["planting_area_id"], name: "index_devices_on_planting_area_id", using: :btree
+  end
+
+  create_table "farm_events", force: :cascade do |t|
+    t.integer  "device_id"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.datetime "next_time"
+    t.integer  "repeat"
+    t.string   "time_unit"
+    t.boolean  "repeats"
+    t.string   "executable_type"
+    t.integer  "executable_id"
+    t.index ["device_id"], name: "index_farm_events_on_device_id", using: :btree
+    t.index ["executable_type", "executable_id"], name: "index_farm_events_on_executable_type_and_executable_id", using: :btree
   end
 
   create_table "images", force: :cascade do |t|
@@ -106,18 +120,6 @@ ActiveRecord::Schema.define(version: 20170113211527) do
     t.string  "name"
     t.integer "device_id"
     t.index ["device_id"], name: "index_regimens_on_device_id", using: :btree
-  end
-
-  create_table "schedules", force: :cascade do |t|
-    t.integer  "sequence_id"
-    t.integer  "device_id"
-    t.datetime "start_time"
-    t.datetime "end_time"
-    t.datetime "next_time"
-    t.integer  "repeat"
-    t.string   "time_unit"
-    t.index ["device_id"], name: "index_schedules_on_device_id", using: :btree
-    t.index ["sequence_id"], name: "index_schedules_on_sequence_id", using: :btree
   end
 
   create_table "sequence_dependencies", force: :cascade do |t|

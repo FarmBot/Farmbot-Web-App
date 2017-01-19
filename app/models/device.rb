@@ -3,7 +3,7 @@ class Device < ActiveRecord::Base
   DEFAULT_MAX_LOGS   = 50
   DEFAULT_MAX_IMAGES = 100
   has_many  :users
-  has_many  :schedules,     dependent: :destroy
+  has_many  :farm_events,     dependent: :destroy
   has_many  :logs,          dependent: :destroy
   has_many  :sequences,     dependent: :destroy
   has_many  :regimens,      dependent: :destroy

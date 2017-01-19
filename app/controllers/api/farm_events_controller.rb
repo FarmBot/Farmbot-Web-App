@@ -1,29 +1,29 @@
 module Api
-  class SchedulesController < Api::AbstractController
+  class FarmEventsController < Api::AbstractController
     def index
-      render json: current_device.schedules
+      render json: current_device.farm_events
     end
 
     def create
-      mutate Schedules::Create.run(params.as_json,
+      mutate FarmEvents::Create.run(params.as_json,
                                    device: current_device,
                                    sequence: sequence)
     end
 
     def update
-      if schedule.device != current_device
-        raise Errors::Forbidden, 'Not your schedule.'
+      if farm_event.device != current_device
+        raise Errors::Forbidden, 'Not your farm_event.'
       end
-      mutate Schedules::Update.run(params[:schedule].as_json,
+      mutate FarmEvents::Update.run(params[:farm_event].as_json,
                                    device: current_device,
-                                   schedule: schedule)
+                                   farm_event: farm_event)
     end
 
     def destroy
-      if (schedule.device_id == current_device.id) && schedule.destroy
+      if (farm_event.device_id == current_device.id) && farm_event.destroy
         render json: ""
       else
-        raise Errors::Forbidden, 'Not your schedule.'
+        raise Errors::Forbidden, 'Not your farm_event.'
       end
     end
 
@@ -33,8 +33,8 @@ module Api
       @sequence ||= Sequence.where(id: params[:sequence_id]).first
     end
 
-    def schedule
-      @schedule ||= Schedule.find(params[:id])
+    def farm_event
+      @farm_event ||= FarmEvent.find(params[:id])
     end
 
     def default_serializer_options

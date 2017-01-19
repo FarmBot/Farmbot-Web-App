@@ -17,7 +17,7 @@ FarmBot::Application.routes.draw do
     resources :logs,            only: [:index, :create, :destroy]
     resources :sequences,       only: [:create, :update, :destroy,
                                        :index, :show]
-    resources :schedules,       only: [:create, :update, :destroy,
+    resources :farm_events,       only: [:create, :update, :destroy,
                                        :index]
     resources :tool_slots,      only: [:create, :show, :index,
                                        :destroy, :update]

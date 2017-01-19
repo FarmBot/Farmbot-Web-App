@@ -4,7 +4,7 @@ module Api
 
     def index
       query = { device: current_device }
-      query.merge!(schedule_id: params[:schedule_id]) if params[:schedule_id]
+      query.merge!(farm_event_id: params[:farm_event_id]) if params[:farm_event_id]
       sequences = Sequence.where(query)
       render json: sequences
     end
