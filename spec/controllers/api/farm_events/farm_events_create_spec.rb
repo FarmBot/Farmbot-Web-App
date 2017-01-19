@@ -8,6 +8,7 @@ describe Api::FarmEventsController do
     let(:sequence) { FactoryGirl.create(:sequence) }
 
     it 'makes a farm_event' do
+      pending("This API endpoint is changing soon.")
       sign_in user
       seq_id = sequence.id
       input = { sequence_id: seq_id,
@@ -22,6 +23,7 @@ describe Api::FarmEventsController do
     end
 
     it 'handles missing farm_event_id' do
+      pending("API CHANGING SOON")
       sign_in user
       input = { start_time: '2015-02-17T15:16:17.000Z',
                 end_time: '2099-02-17T18:19:20.000Z',
@@ -29,7 +31,7 @@ describe Api::FarmEventsController do
                 time_unit: 'minutely' }
       post :create, params: input
       expect(response.status).to eq(422)
-      expect(json[:sequence]).to include("can't be nil")
+      expect(json[:executable]).to include("can't be nil")
     end
   end
 end

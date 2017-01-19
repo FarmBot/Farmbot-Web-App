@@ -1,11 +1,7 @@
 class FarmEventSerializer < ActiveModel::Serializer
   attributes :id, :start_time, :end_time, :next_time, :repeat, :time_unit,
-             :sequence_id, :sequence_name, :calendar
+             :executable_id, :executable_type, :calendar
   try :url, :sequence
-
-  def sequence_name
-    object.sequence.name
-  end
 
   def calendar
     object.between start, finish
