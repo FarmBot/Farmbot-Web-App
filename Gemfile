@@ -20,7 +20,8 @@ gem "rest-client" # If you see this, delete this.
 gem "pg"
 
 # Error reporting tools.
-# Only active on the "official" FarmBot server, not used anywhere else.
+# Active on the "official" FarmBot server, set the appropriate ENV
+# vars if you wish to use them on your own servers.
 gem "rollbar"
 gem "skylight"
 
