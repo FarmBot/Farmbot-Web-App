@@ -1,0 +1,264 @@
+{
+    "id": 83,
+    "device_id": 14,
+    "name": "abs",
+    "color": "gray",
+    "kind": "sequence",
+    "args": {
+        "is_outdated": false,
+        "version": 4
+    },
+    "body": [
+        {
+            "kind": "move_absolute",
+            "args": {
+                "offset": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "speed": 100,
+                "location": {
+                    "args": {
+                        "x": 30,
+                        "y": 0,
+                        "z": 0
+                    },
+                    "kind": "coordinate"
+                }
+            }
+        },
+        {
+            "kind": "move_relative",
+            "args": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "speed": 100
+            }
+        },
+        {
+            "kind": "move_absolute",
+            "args": {
+                "offset": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "speed": 100,
+                "location": {
+                    "args": {
+                        "tool_id": 32
+                    },
+                    "kind": "tool"
+                }
+            }
+        },
+        {
+            "kind": "write_pin",
+            "args": {
+                "pin_number": 0,
+                "pin_value": 0,
+                "pin_mode": 0
+            }
+        },
+        {
+            "kind": "send_message",
+            "args": {
+                "message": "Bot is at position {{ x }}, {{ y }}, {{ z }}.",
+                "message_type": "success"
+            }
+        },
+        {
+            "kind": "move_absolute",
+            "args": {
+                "location": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "offset": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "speed": 100
+            }
+        },
+        {
+            "kind": "move_absolute",
+            "args": {
+                "offset": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "speed": 100,
+                "location": {
+                    "args": {
+                        "tool_id": 32
+                    },
+                    "kind": "tool"
+                }
+            }
+        },
+        {
+            "kind": "move_absolute",
+            "args": {
+                "offset": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "speed": 100,
+                "location": {
+                    "args": {
+                        "tool_id": 32
+                    },
+                    "kind": "tool"
+                }
+            }
+        },
+        {
+            "kind": "move_absolute",
+            "args": {
+                "location": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "offset": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "speed": 100
+            }
+        },
+        {
+            "kind": "wait",
+            "args": {
+                "milliseconds": 0
+            }
+        },
+        {
+            "kind": "move_absolute",
+            "args": {
+                "location": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "offset": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "speed": 100
+            }
+        },
+        {
+            "kind": "move_absolute",
+            "args": {
+                "location": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "offset": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "speed": 100
+            }
+        },
+        {
+            "kind": "execute",
+            "args": {
+                "sequence_id": 0
+            }
+        },
+        {
+            "kind": "move_absolute",
+            "args": {
+                "location": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "offset": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "speed": 100
+            }
+        },
+        {
+            "kind": "move_absolute",
+            "args": {
+                "location": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "offset": {
+                    "kind": "coordinate",
+                    "args": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                "speed": 100
+            }
+        }
+    ],
+    "dirty": true
+}

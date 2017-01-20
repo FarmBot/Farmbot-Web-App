@@ -27,6 +27,7 @@ module CeleryScriptSettingsBag
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
   BAD_SUB_SEQ           = 'Sequence #%s does not exist.'
+  NO_SUB_SEQ            = 'is missing a sequence selection for `execute` block.'
   BAD_REGIMEN           = 'Regimen #%s does not exist.'
   BAD_OP                = 'Can not put "%s" into an operand (OP) argument. '\
                           'Allowed values: %s'
@@ -44,8 +45,12 @@ module CeleryScriptSettingsBag
         end
       end
       .defineArg(:sequence_id, [Fixnum]) do |node|
-        missing = !Sequence.exists?(node.value)
-        node.invalidate!(BAD_SUB_SEQ % [node.value]) if missing
+        if (node.value == 0)
+          node.invalidate!(NO_SUB_SEQ)
+        else
+          missing = !Sequence.exists?(node.value)
+          node.invalidate!(BAD_SUB_SEQ % [node.value]) if missing
+        end
       end
       .defineArg(:regimen_id, [Fixnum]) do |node|
         missing = !Regimen.exists?(node.value)

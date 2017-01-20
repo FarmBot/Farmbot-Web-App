@@ -25,5 +25,4 @@ unless Rails.env == "production"
         openfarm_slug: "tomato",
         planted_at: Time.now.utc)
     end
-
 end
