@@ -1,34 +1,18 @@
-# EXAMPLE FOR MYSQL USERS:
-# ========================
-# default: &default
-#   adapter: mysql
-#   encoding: utf8
-#   pool: 5
-#   timeout: 5000
-
-# development:
-#   <<: *default
-#   database: farmbot_api_dev
-#   password: "password123"
-
-# test:
-#   <<: *default
-#   database: farmbot_api_test
-#   password: "password123"
-
-# production:
-#   <<: *default
 default: &default
-  adapter: sqlite3
-  database: db/db_dev_db.sqlite3
+  adapter: postgresql
+  encoding: unicode
+  database: farmbot_development
   pool: 5
-  timeout: 5000
 
 development:
+  database: farmbot_development
   <<: *default
 
 test:
+  database: farmbot_test
   <<: *default
 
 production:
+  database: farmbot_prod
   <<: *default
+  
