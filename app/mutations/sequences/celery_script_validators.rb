@@ -27,6 +27,8 @@ module Sequences
     end
 
     def tree
+      # TODO: Change this to recursive tree climbing if it causes issues in prod
+      seq[:body].map! { |x| x.except("uuid", :uuid) }
       @tree = CeleryScript::AstNode.new(**seq)
     end
 
