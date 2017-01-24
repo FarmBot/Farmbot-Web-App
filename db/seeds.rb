@@ -22,7 +22,6 @@ unless Rails.env == "production"
         name: Haikunator.haikunate,
         img_url: "http://placehold.it/200x150",
         icon_url: "/icons/Natural Food-96.png",
-        openfarm_slug: "tomato",
-        planted_at: Time.now.utc)
+        openfarm_slug: "tomato")
     end
 end
