@@ -10,7 +10,9 @@ module Api
     end
 
     def update
-      mutate Plants::Update.run(params.as_json, device_params)
+      mutate Plants::Update.run(params.as_json,
+                                { plant: plant },
+                                device_params)
     end
 
     def destroy

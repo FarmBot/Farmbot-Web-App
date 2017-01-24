@@ -7,7 +7,7 @@ FarmBot::Application.routes.draw do
     resource :users,            only: [:create, :update, :destroy]
     resource :device,           only: [:show, :destroy, :create, :update]
     resources :images,          only: [:create, :destroy, :show, :index]
-    resources :plants,          only: [:create, :destroy, :index]
+    resources :plants,          only: [:create, :destroy, :index, :update]
     resources :password_resets, only: [:create, :update]
     resources :regimens,        only: [:create, :destroy, :index, :update]
     resources :planting_area,   only: [:create, :destroy]

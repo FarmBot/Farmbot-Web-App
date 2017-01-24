@@ -16,7 +16,7 @@ module Plants
     end
 
     def execute
-      plant.update_attributes(inputs.except(:device, :plant))
+      plant.update_attributes!(inputs.except(:device, :plant)) && plant
     end
   end
 end
