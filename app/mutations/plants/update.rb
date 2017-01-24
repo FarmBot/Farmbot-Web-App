@@ -12,7 +12,7 @@ module Plants
       string :img_url
       string :icon_url
       string :openfarm_slug
-      integer :planted_at
+      time :created_at
     end
 
     def execute
