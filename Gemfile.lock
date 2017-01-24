@@ -258,7 +258,7 @@ DEPENDENCIES
   fog-google!
   ice_cube
   jwt
-  mutations
+  mutations (~> 0.8.0)
   paperclip (~> 5.0.0)
   pg
   pry
@@ -280,4 +280,4 @@ RUBY VERSION
    ruby 2.3.3p222
 
 BUNDLED WITH
-   1.13.7
+   1.14.1

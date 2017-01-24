@@ -3,6 +3,16 @@ module Sequences
     NO_TRANSACTION = "You need to do this in a transaction"
     RESOURCES      = { "tool_id"     => Tool,
                        "sequence_id" => Sequence }
+    ALLOWED_NODE_KEYS = [
+      "body",
+      "kind",
+      "args",
+      "comment",
+      :body,
+      :kind,
+      :args,
+      :comment
+    ]
     def validate_sequence
         add_error :body, :syntax_error, checker.error.message if !checker.valid?
     end
@@ -27,6 +37,8 @@ module Sequences
     end
 
     def tree
+      # TODO: Change this to recursive tree climbing if it causes issues in prod
+      seq[:body].map! { |x| x.slice(*ALLOWED_NODE_KEYS) }
       @tree = CeleryScript::AstNode.new(**seq)
     end
 

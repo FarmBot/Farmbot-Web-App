@@ -36,10 +36,10 @@ describe Sequences::Create do
   end
 
   it 'Gives validation errors for malformed sequence_id' do
-    body[7]["args"]["_then"]["args"]["sequence_id"] = 0
+    body[7]["args"]["_then"]["args"]["sequence_id"] = -1
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
-    expectation = "Sequence #0 does not exist."
+    expectation = "Sequence #-1 does not exist."
     expect(seq.errors["body"].message).to include(expectation)
   end
 

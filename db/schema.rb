@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170119162206) do
+ActiveRecord::Schema.define(version: 20170124141914) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -100,9 +100,10 @@ ActiveRecord::Schema.define(version: 20170119162206) do
     t.string   "img_url"
     t.string   "icon_url"
     t.string   "openfarm_slug"
-    t.float    "x",                default: 0.0
-    t.float    "y",                default: 0.0
-    t.datetime "planted_at"
+    t.integer  "x",                default: 0
+    t.integer  "y",                default: 0
+    t.datetime "created_at"
+    t.index ["created_at"], name: "index_plants_on_created_at", using: :btree
     t.index ["device_id"], name: "index_plants_on_device_id", using: :btree
     t.index ["planting_area_id"], name: "index_plants_on_planting_area_id", using: :btree
   end
