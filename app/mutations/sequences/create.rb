@@ -1,6 +1,7 @@
 module Sequences
   class Create < Mutations::Command
     include CeleryScriptValidators
+
     required do
       model :device, class: Device
       string :name
