@@ -1,6 +1,7 @@
 module Sequences
   class Create < Mutations::Command
     include CeleryScriptValidators
+
     required do
       model :device, class: Device
       string :name
@@ -18,6 +19,10 @@ module Sequences
     def execute
       seq = Sequence.new(inputs)
       seq.args["is_outdated"] = false
+      # version is never user definable!
+      # IF YOU UNCOMMENT THIS BAD STUFF WILL HAPPEN.
+      seq.args["version"]     = SequenceMigration::Base.latest_version
+      # See comment above ^
       ActiveRecord::Base.transaction do
         seq.save!
         reload_dependencies(seq)

@@ -88,4 +88,37 @@ describe Sequences::Create do
     expect(seq.body.first[:body].first["kind"]).to eq("channel")
     expect(seq.body.dig(0, :args, :message)).to eq("Hello, world!")
   end
+
+  it "Strips UUIDs and other 'noises', leaves other attributes in tact. " do
+    body = [
+      { "kind" => "move_absolute",
+        "args" => { "location" => { "kind" => "coordinate",
+                                    "args" => { "x" => 0,
+                                                "y" => 0,
+                                                "z" => 0 } },
+                    "offset"   => { "kind" => "coordinate",
+                                    "args" => { "x" => 0,
+                                                "y" => 0,
+                                                "z" => 0 } },
+                    "speed"    => 100 },
+        "uuid" => "cce8ef3c-f35e-49c1-a39f-76624173632c" },
+      { "kind" => "move_relative",
+        "args" => { "x"     => 0,
+                    "y"     => 0,
+                    "z"     => 0,
+                    "speed" => 100},
+        "uuid"  => "5cf47f9d-0205-44d9-a0b6-44a148dc5a54"}
+    ]
+    result = Sequences::Create.run!({
+      body:   body,
+      device: device,
+      color:  "gray",
+      name:   "New Sequence",
+    }).reload
+    expected    = result.body.dig(0, "args", "location", "args")
+    actual      = body.dig(0, "args", "location", "args")
+    extra_stuff = result.body.map{|x| x["uuid"]}.compact
+    expect(extra_stuff.length).to eq(0)
+    expect(expected).to eq(actual)
+  end
 end

@@ -3,14 +3,35 @@
 # most of the functionality of a programming language such a variables and
 # conditional logic.
 class Sequence < ActiveRecord::Base
+  # Does some extra magic for serialized columns for us, such as providing a 
+  # default value and making hashes have indifferent access.
+  class CustomSerializer
+    def initialize(default)
+      @default = default
+    end
+
+    def load(value)
+      output = value ? YAML.load(value) : @default.new
+      if(output.respond_to?(:with_indifferent_access))
+        return output.with_indifferent_access
+      else
+        return output.map(&:with_indifferent_access)
+      end
+    end
+
+    def dump(value)
+      YAML.dump(value || @default.new)
+    end
+  end
+
   COLORS = %w(blue green yellow orange purple pink gray red)
   include CeleryScriptSettingsBag
 
   belongs_to :device
   has_many :regimen_items
   has_many  :sequence_dependencies, dependent: :destroy
-  serialize :body, Array
-  serialize :args, Hash
+  serialize :body, CustomSerializer.new(Array)
+  serialize :args, CustomSerializer.new(Hash)
 
   # allowable label colors for the frontend.
   [ :name, :kind ].each { |n| validates n, presence: true }
@@ -25,8 +46,6 @@ class Sequence < ActiveRecord::Base
   def set_defaults
     self.color ||= "gray"
     self.kind ||= "sequence"
-    self.body ||= []
-    self.args ||= {}
   end
 
   def maybe_migrate
