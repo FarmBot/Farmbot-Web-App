@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170124141914) do
+ActiveRecord::Schema.define(version: 20170126143117) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -133,12 +133,15 @@ ActiveRecord::Schema.define(version: 20170124141914) do
   end
 
   create_table "sequences", force: :cascade do |t|
-    t.integer "device_id"
-    t.string  "name"
-    t.string  "color"
-    t.string  "kind",      default: "sequence"
-    t.text    "args"
-    t.text    "body"
+    t.integer  "device_id"
+    t.string   "name"
+    t.string   "color"
+    t.string   "kind",       default: "sequence"
+    t.text     "args"
+    t.text     "body"
+    t.datetime "updated_at"
+    t.datetime "created_at"
+    t.index ["created_at"], name: "index_sequences_on_created_at", using: :btree
     t.index ["device_id"], name: "index_sequences_on_device_id", using: :btree
   end
 
