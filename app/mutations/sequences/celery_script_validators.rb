@@ -14,7 +14,12 @@ module Sequences
       :comment
     ]
     def validate_sequence
-        add_error :body, :syntax_error, checker.error.message if !checker.valid?
+      # TODO: The code below strips out unneeded attributes, or attributes that
+      # are not part of CeleryScript. We're only stripping attributes out of the
+      # first level, though. I would like to recursively strip out "noise" via
+      # CeleryScript::JSONClimber. I am holding off for now in the name of time.
+      (inputs[:body] || []).map! { |x| x.slice(*ALLOWED_NODE_KEYS) }
+      add_error :body, :syntax_error, checker.error.message if !checker.valid?
     end
 
     def seq
@@ -37,8 +42,6 @@ module Sequences
     end
 
     def tree
-      # TODO: Change this to recursive tree climbing if it causes issues in prod
-      seq[:body].map! { |x| x.slice(*ALLOWED_NODE_KEYS) }
       @tree = CeleryScript::AstNode.new(**seq)
     end
 

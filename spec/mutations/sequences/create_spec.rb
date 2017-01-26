@@ -115,8 +115,10 @@ describe Sequences::Create do
       color:  "gray",
       name:   "New Sequence",
     }).reload
-    expected = result.body.dig(0, "args", "location", "args")
-    actual   = body.dig(0, "args", "location", "args")
+    expected    = result.body.dig(0, "args", "location", "args")
+    actual      = body.dig(0, "args", "location", "args")
+    extra_stuff = result.body.map{|x| x["uuid"]}.compact
+    expect(extra_stuff.length).to eq(0)
     expect(expected).to eq(actual)
   end
 end

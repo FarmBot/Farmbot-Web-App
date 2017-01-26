@@ -49,6 +49,7 @@ module SequenceMigration
       if incorrect_version
         raise "Version must be #{expected_version} to run #{self.class}"
       end
+      Rollbar.info "RUNNING MIGRATION #{sequence_version}"
     end
 
     def after

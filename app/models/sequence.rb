@@ -11,7 +11,7 @@ class Sequence < ActiveRecord::Base
     end
 
     def load(value)
-      output = (JSON.load(value) || @default.new)
+      output = value ? YAML.load(value) : @default.new
       if(output.respond_to?(:with_indifferent_access))
         return output.with_indifferent_access
       else
@@ -20,7 +20,7 @@ class Sequence < ActiveRecord::Base
     end
 
     def dump(value)
-      (value || @default.new).to_json
+      YAML.dump(value || @default.new)
     end
   end
 

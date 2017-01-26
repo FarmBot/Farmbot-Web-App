@@ -14,18 +14,25 @@ module SequenceMigration
         .body
         .select { |x| x["kind"] == "move_absolute" }
         .each   do |x|
-          loc = { "kind" => "coordinate" }.merge(x["args"].slice("x", "y", "z"))
-          x["args"]["location"] = loc
-          x["args"].except!("x", "y", "z")
-          x["args"]["offset"] = {
-            "kind" => "coordinate",
-            "args" => {
-              "x" => 0,
-              "y" => 0,
-              "z" => 0
+          # THIS IS MY FAULT. 25 JAN 17, RC.
+          # I must fix a mistake I made. Some sequence.args.version was `nil`
+          # but actually should have been `4`.
+          if (x["args"].keys.include?("location"))
+            # I will need to manually fix these.
+            Rollbar.info("Sequence #{sequence.id} is bad.")
+          else
+            loc = { "kind" => "coordinate" }.merge(x["args"].slice("x", "y", "z"))
+            x["args"]["location"] = loc
+            x["args"].except!("x", "y", "z")
+            x["args"]["offset"] = {
+              "kind" => "coordinate",
+              "args" => {
+                "x" => 0,
+                "y" => 0,
+                "z" => 0
+              }
             }
-          }
-
+          end
         end
     end
   end
