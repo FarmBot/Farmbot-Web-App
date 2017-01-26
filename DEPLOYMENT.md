@@ -85,7 +85,7 @@ heroku certs:add /etc/letsencrypt/live/yourdomain.io/fullchain.pem /etc/letsencr
 Heroku will then give you instructions on which DNS records you must create.
 
 **Dokku Users**: FarmBot, Inc. no longer uses Dokku. As such, our ability to troubleshoot problems is limited.
-Please [raise an issue](https://github.com/FarmBot/farmbot-web-frontend/issues/new) to receive community support.
+Please [raise an issue](https://github.com/FarmBot/Farmbot-Web-API/issues/new) to receive community support.
 
 # Renew SSL Certificates
 
