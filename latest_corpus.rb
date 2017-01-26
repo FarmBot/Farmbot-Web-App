@@ -55,8 +55,12 @@ class CSNode
          .join("")
     end
 
+    def items_joined_by_pipe
+      allowed_body_types.map(&:camelize).join(PIPE)
+    end
+
     def body_names
-      b = allowed_body_types.map(&:camelize).join(PIPE)
+      b = items_joined_by_pipe
       (b.length > 0) ? "(#{b})[] | undefined" : UNDEFINED
     end
 
@@ -65,11 +69,11 @@ class CSNode
     end
 
     def body_type
-      "export type #{camelize}BodyItem = #{body_names};" if has_body?
+      "export type #{camelize}BodyItem = #{items_joined_by_pipe};" if has_body?
     end
 
     def body_attr
-      "body?: #{ has_body? ? (camelize + "BodyItem") : UNDEFINED };"
+      "body?: #{ has_body? ? (camelize + "BodyItem[] | undefined") : UNDEFINED };"
     end
 
     def to_ts
@@ -129,5 +133,7 @@ result.push(enum_type :ALLOWED_PACKAGES,
             CeleryScriptSettingsBag::ALLOWED_PACKAGES)
 result.push(enum_type :ALLOWED_AXIS, CeleryScriptSettingsBag::ALLOWED_AXIS)
 result.push(enum_type :Color, Sequence::COLORS)
-
+result.push(enum_type :LegalArgString, HASH[:args].map{ |x| x[:name] }.sort.uniq)
+result.push(enum_type :LegalKindString, HASH[:nodes].map{ |x| x[:name] }.sort.uniq)
+result.push(enum_type :LegalSequenceKind, CeleryScriptSettingsBag::STEPS.sort)
 puts result.join.gsub("\n\n\n", "\n")
