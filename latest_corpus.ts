@@ -1,3 +1,4 @@
+
 /*
 
 THIS INTERFACE WAS AUTO GENERATED ON 2017-01-26
@@ -143,7 +144,8 @@ export type SequenceBodyItem = MoveAbsolute
           | Wait
           | SendMessage
           | Execute
-          | If;
+          | If
+          | ExecuteScript;
 
 export interface Sequence {
   kind: "sequence";
@@ -230,25 +232,6 @@ export interface TogglePin {
   body?: undefined;
 }
 
-export interface StartRegimen {
-  kind: "start_regimen";
-  args: {
-    regimen_id: number;
-    label: string;
-  };
-  comment?: string | undefined;
-  body?: undefined;
-}
-
-export interface StopRegimen {
-  kind: "stop_regimen";
-  args: {
-    label: string;
-  };
-  comment?: string | undefined;
-  body?: undefined;
-}
-
 export interface Explanation {
   kind: "explanation";
   args: {
@@ -267,8 +250,6 @@ export type RpcRequestBodyItem = Home
           | PowerOff
           | Reboot
           | TogglePin
-          | StartRegimen
-          | StopRegimen
           | ConfigUpdate
           | Calibrate
           | Execute
@@ -278,8 +259,8 @@ export type RpcRequestBodyItem = Home
           | Wait
           | ReadPin
           | SendMessage
-          | TakePhoto
-          | FactoryReset;
+          | FactoryReset
+          | ExecuteScript;
 
 export interface RpcRequest {
   kind: "rpc_request";
@@ -342,20 +323,23 @@ export interface ConfigUpdate {
   body?: ConfigUpdateBodyItem[] | undefined;
 }
 
-export interface TakePhoto {
-  kind: "take_photo";
-  args: {
-  };
-  comment?: string | undefined;
-  body?: undefined;
-}
-
 export interface FactoryReset {
   kind: "factory_reset";
   args: {
   };
   comment?: string | undefined;
   body?: undefined;
+}
+
+export type ExecuteScriptBodyItem = Pair;
+
+export interface ExecuteScript {
+  kind: "execute_script";
+  args: {
+    label: string;
+  };
+  comment?: string | undefined;
+  body?: ExecuteScriptBodyItem[] | undefined;
 }
 
 export type CeleryNode = Nothing
@@ -380,8 +364,6 @@ export type CeleryNode = Nothing
           | PowerOff
           | Reboot
           | TogglePin
-          | StartRegimen
-          | StopRegimen
           | Explanation
           | RpcRequest
           | RpcOk
@@ -389,8 +371,8 @@ export type CeleryNode = Nothing
           | Calibrate
           | Pair
           | ConfigUpdate
-          | TakePhoto
-          | FactoryReset;
+          | FactoryReset
+          | ExecuteScript;
 export const LATEST_VERSION = 4;
 export const DIGITAL = 0;
 export const ANALOG = 1;
@@ -424,3 +406,68 @@ export type Color = "blue"
           | "pink"
           | "gray"
           | "red";
+export type LegalArgString = "_else"
+          | "_then"
+          | "axis"
+          | "channel_name"
+          | "label"
+          | "lhs"
+          | "location"
+          | "message"
+          | "message_type"
+          | "milliseconds"
+          | "offset"
+          | "op"
+          | "package"
+          | "pin_mode"
+          | "pin_number"
+          | "pin_value"
+          | "rhs"
+          | "sequence_id"
+          | "speed"
+          | "tool_id"
+          | "value"
+          | "version"
+          | "x"
+          | "y"
+          | "z";
+export type LegalKindString = "_if"
+          | "calibrate"
+          | "channel"
+          | "check_updates"
+          | "config_update"
+          | "coordinate"
+          | "emergency_lock"
+          | "emergency_unlock"
+          | "execute"
+          | "execute_script"
+          | "explanation"
+          | "factory_reset"
+          | "home"
+          | "move_absolute"
+          | "move_relative"
+          | "nothing"
+          | "pair"
+          | "power_off"
+          | "read_pin"
+          | "read_status"
+          | "reboot"
+          | "rpc_error"
+          | "rpc_ok"
+          | "rpc_request"
+          | "send_message"
+          | "sequence"
+          | "sync"
+          | "toggle_pin"
+          | "tool"
+          | "wait"
+          | "write_pin";
+export type LegalSequenceKind = "_if"
+          | "execute"
+          | "execute_script"
+          | "move_absolute"
+          | "move_relative"
+          | "read_pin"
+          | "send_message"
+          | "wait"
+          | "write_pin";
