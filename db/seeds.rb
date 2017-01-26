@@ -13,7 +13,12 @@ unless Rails.env == "production"
     Log.transaction do
       FactoryGirl.create_list(:log, 35, device: User.last.device)
     end
-
+    [ "http://i.imgur.com/bBfIDqR.jpg",
+      "http://i.imgur.com/YvTHnjt.jpg",
+      "http://i.imgur.com/cWWLVKv.jpg",
+      "http://i.imgur.com/NmibZez.jpg" ].each do |url|
+        Images::Create.run!(attachment_url: url, device: User.last.device)
+    end
     10.times do
       Plant.create(
         device: User.last.device,
