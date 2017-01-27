@@ -4,9 +4,12 @@ class CreateAttachmentFromUrlJob < ApplicationJob
   def perform(image:,attachment_url:)
     image.set_attachment_by_url(attachment_url)
     image.save!
+  rescue => e
+    Rollbar.log('EROR PROCESSING IMAGE!!', e)
+    raise e
   end
 
   def max_attempts
-    0
+    2
   end
 end
