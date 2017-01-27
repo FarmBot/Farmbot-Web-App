@@ -9,6 +9,7 @@ module SequenceMigration
     def up
         # Since we're only incrementing the version, and because versions are
         # auto incremented after running up(), there is nothing to do here.
+        Rollbar.info "Sequence ##{sequence.id} on #{$API_URL} was versionless!"
     end
   end
 end
