@@ -51,7 +51,7 @@ module Haikunator
         epinecral epiphloedal exserted exstipulate extrastaminal
         falcate fasciculate faveolate faucal felted fenestrate
         fertile fimbriate flabellate foliate foveolate furcate
-        fused guttulate halonate hastate hoary imbricate imparipinnate
+        fused guttulate halonate hastate imbricate imparipinnate
         incised included incurved indeterminate induplicate inflated
         inflexed inrolled inserted intercalary intramarginal intrastaminal
         isobifacial jugary labiate lacerate laciniate laminal lanceolate
