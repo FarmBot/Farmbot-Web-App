@@ -11,7 +11,7 @@ module CeleryScriptSettingsBag
                              sync check_updates power_off reboot toggle_pin
                              config_update calibrate execute move_absolute
                              move_relative write_pin wait read_pin send_message
-                             factory_reset execute_script)
+                             factory_reset execute_script set_user_env)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast)
@@ -133,6 +133,7 @@ module CeleryScriptSettingsBag
       .defineNode(:config_update,     [:package], [:pair])
       .defineNode(:factory_reset,     [], [])
       .defineNode(:execute_script,    [:label], [:pair])
+      .defineNode(:set_user_env,      [], [:pair])
 
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
