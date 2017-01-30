@@ -29,4 +29,6 @@ unless Rails.env == "production"
         icon_url: "/icons/Natural Food-96.png",
         openfarm_slug: "tomato")
     end
+    Peripherals::Create.run!(device:User.last.device, peripherals: [{pin: 13, label: "LED"}])
+    Tools::Create.run!(name: "Trench Digging Tool", device: User.last.device)
 end

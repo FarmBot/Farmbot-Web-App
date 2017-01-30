@@ -30,6 +30,7 @@ Your machine will need the following:
 ### Setup
  0. `git clone https://github.com/FarmBot/Farmbot-Web-API farmbot-web-app`
  0. `cd farmbot-web-app`
+ 0. [Install libpg-dev](http://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem/6040822#6040822)
  0. `bundle install`
  0. Copy `config/database.example.yml` to `config/database.yml`. In GNU/Linux or Mac: `mv config/database.example.yml config/database.yml`.
  0. `rake db:create:all db:migrate db:seed`
@@ -37,7 +38,7 @@ Your machine will need the following:
  0. `MQTT_HOST=your_mqtt_server_domain rails s`
  0. (optional) Run `./install_frontend.sh` to install the latest frontend app. You may also run the frontend on a seperate server. See [frontend repository](https://github.com/FarmBot/farmbot-web-frontend) for details.
  0. Open [localhost:3000](http://localhost:3000).
- 0. [Raise an issue](https://github.com/FarmBot/farmbot-web-frontend/issues/new?title=Installation%20Failure) if you hit problems with any of these steps.
+ 0. [Raise an issue](https://github.com/FarmBot/Farmbot-Web-API/issues/new?title=Installation%20Failure) if you hit problems with any of these steps.
 
 # Provisioning Your Own with Dokku
 
