@@ -5,10 +5,11 @@ unless Rails.env == "production"
     ENV['FW_UPDATE_SERVER'] = "http://test.com"
     User.delete_all
     Device.delete_all
-    Users::Create.run!(name:                   "Administrator",
+    Users::Create.run!(name:                    "Administrator",
                          email:                 "admin@admin.com",
                          password:              "password123",
-                         password_confirmation: "password123")
+                         password_confirmation: "password123",
+                         agree_to_terms:        true)
     User.last.update_attributes(verified_at: Time.now)
     Log.transaction do
       FactoryGirl.create_list(:log, 35, device: User.last.device)

@@ -1,16 +1,18 @@
 module Api
   class TokensController < Api::AbstractController
     skip_before_action :authenticate_user!, only: :create
-
+    CREDS    = Auth::CreateTokenFromCredentials
+    NO_CREDS = Auth::CreateToken
     def create
-      if(auth_params[:credentials])
-        mutate Auth::CreateTokenFromCredentials.run(auth_params)
-      else
-        mutate Auth::CreateToken.run(auth_params)
-      end
+      klass = (auth_params[:credentials]) ? CREDS : NO_CREDS
+      mutate klass.run(auth_params).tap{ |result| maybe_halt_login(result) }
     end
 
     private
+    # Dont proceed with login if they need to sign the EULA
+    def maybe_halt_login(result)
+      result.result[:user].try(:require_consent!) if result.success?
+    end
 
     def auth_params
       params[:user] ||= {}
