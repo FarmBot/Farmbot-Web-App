@@ -1,6 +1,8 @@
 module Api
   class AbstractController < ApplicationController
     class OnlyJson < Exception; end;
+    CONSENT_REQUIRED = "all device users must agree to terms of service."
+
     respond_to :json
     before_action :set_default_response_format
     before_action :authenticate_user!
@@ -22,6 +24,10 @@ module Api
 
     rescue_from ActiveRecord::RecordInvalid do |exc|
       render json: {error: exc.message}, status: 422
+    end
+
+    rescue_from Errors::LegalConsent do |exc|
+      render json: {error: CONSENT_REQUIRED}, status: 451
     end
 
 private
@@ -63,18 +69,19 @@ private
     def authenticate_user!
       # All possible information that could be needed for any of the 3 auth
       # strategies.
-      context = { jwt:           request.headers["Authorization"],
-                  user:          current_user }
+      context = { jwt:  request.headers["Authorization"],
+                  user: current_user }
       # Returns a symbol representing the appropriate auth strategy, or nil if
       # unknown.
       strategy = Auth::DetermineAuthStrategy.run!(context)
       case strategy
       when :jwt
-        sign_in(Auth::FromJWT.run!(context))
+        sign_in(Auth::FromJWT.run!(context).require_consent!)
       when :already_connected
         # Probably provided a cookie.
         # 9 times out of 10, it's a unit test.
         # Our cookie system works, we just don't use it.
+        current_user.require_consent!
         return true
       else
         auth_err
