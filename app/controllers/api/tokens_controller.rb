@@ -3,6 +3,7 @@ module Api
     skip_before_action :authenticate_user!, only: :create
     CREDS    = Auth::CreateTokenFromCredentials
     NO_CREDS = Auth::CreateToken
+
     def create
       klass = (auth_params[:credentials]) ? CREDS : NO_CREDS
       mutate klass.run(auth_params).tap{ |result| maybe_halt_login(result) }
