@@ -14,10 +14,11 @@ module Auth
     def validate
       @user = User.where(email: email.downcase).first
       whoops! unless @user && @user.valid_password?(password)
-      maybe_validate_tos if @user && @user.must_consent?
+      @user.require_consent! if @user && @user.must_consent? && !agree_to_terms
     end
 
     def execute
+      @user.update_attributes(agreed_to_terms_at: Time.now) if agree_to_terms
       SessionToken.as_json(@user)
     end
 
