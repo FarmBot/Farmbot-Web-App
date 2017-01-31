@@ -6,6 +6,14 @@ unless Rails.env == "production"
     User.delete_all
     Device.delete_all
     Users::Create.run!(name:                    "Administrator",
+                         email:                 "notos@notos.com",
+                         password:              "password123",
+                         password_confirmation: "password123",
+                         agree_to_terms:        true)
+    no_tos = User.last
+    no_tos.agreed_to_terms_at = nil
+    no_tos.save!
+    Users::Create.run!(name:                    "Administrator",
                          email:                 "admin@admin.com",
                          password:              "password123",
                          password_confirmation: "password123",
