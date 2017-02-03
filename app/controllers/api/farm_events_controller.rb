@@ -7,7 +7,7 @@ module Api
     def create
       mutate FarmEvents::Create.run(params.as_json,
                                    device:     current_device,
-                                   executable: sequence)
+                                   executable: executable)
     end
 
     def update
@@ -15,6 +15,7 @@ module Api
         raise Errors::Forbidden, 'Not your farm_event.'
       end
       mutate FarmEvents::Update.run(params[:farm_event].as_json,
+                                   executable: executable,
                                    device: current_device,
                                    farm_event: farm_event)
     end
@@ -29,8 +30,17 @@ module Api
 
     private
 
-    def sequence
-      @sequence ||= Sequence.where(id: params[:sequence_id]).first
+    def executable
+      if (@executable)
+        @executable
+      else
+        klass = ({
+          "Sequence": Sequence,
+          "Regimen": Regimen
+        })[params[:executable_type]]
+        raise "NO!" unless klass
+        @executable ||= klass.where(id: params[:executable_id]).first
+      end
     end
 
     def farm_event

@@ -3,7 +3,8 @@ module FarmEvents
     using LegacyRefinementsModule
 
     required do
-      # model :sequence, class: Sequence
+      duck :executable, to: []
+      model :executable, class: [Sequence, Regimen]
       model :device, class: Device
       integer :repeat
       string :time_unit, in: FarmEvent::UNITS_OF_TIME
