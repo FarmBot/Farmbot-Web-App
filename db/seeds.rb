@@ -29,8 +29,8 @@ unless Rails.env == "production"
     10.times do
       Plant.create(
         device: User.last.device,
-        x: rand(1...100),
-        y: rand(1...100),
+        x: rand(1...550),
+        y: rand(1...550),
         name: Haikunator.haikunate,
         img_url: "http://placehold.it/200x150",
         icon_url: "/icons/Natural Food-96.png",
