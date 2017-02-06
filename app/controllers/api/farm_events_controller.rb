@@ -37,8 +37,8 @@ module Api
         @executable
       else
         klass = ({
-          "Sequence": Sequence,
-          "Regimen": Regimen
+          "Sequence" => Sequence,
+          "Regimen" => Regimen
         })[params[:executable_type]]
         raise "NO!" unless klass
         @executable ||= klass.where(id: params[:executable_id]).first

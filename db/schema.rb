@@ -124,8 +124,8 @@ ActiveRecord::Schema.define(version: 20170130154455) do
   end
 
   create_table "sequence_dependencies", force: :cascade do |t|
-    t.string  "dependency_type"
     t.integer "dependency_id"
+    t.string  "dependency_type"
     t.integer "sequence_id"
     t.index ["dependency_id"], name: "index_sequence_dependencies_on_dependency_id", using: :btree
     t.index ["dependency_type"], name: "index_sequence_dependencies_on_dependency_type", using: :btree
