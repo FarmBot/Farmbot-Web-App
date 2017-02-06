@@ -25,10 +25,16 @@ module Sync
                tool_slots:    tool_slots,
                tools:         tools,
                logs:          logs,
-               images:        images }.as_json
+               images:        images,
+               farm_events:   farm_events }.as_json
     end
 
   private
+
+    def farm_events
+      @farm_events ||= ActiveModel::ArraySerializer.new(FarmEvent.where(device: device),
+                                                        each_serializer: FarmEventSerializer)
+    end
 
     def images
       @images ||= ActiveModel::ArraySerializer

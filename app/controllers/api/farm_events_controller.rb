@@ -14,10 +14,12 @@ module Api
       if farm_event.device != current_device
         raise Errors::Forbidden, 'Not your farm_event.'
       end
-      mutate FarmEvents::Update.run(params[:farm_event].as_json,
-                                   executable: executable,
-                                   device: current_device,
-                                   farm_event: farm_event)
+      # TODO: Put this in a mutation.
+      input = params[:farm_event]
+        .as_json
+        .merge(device: current_device, farm_event: farm_event)
+      input[:executable] = executable if params[:executable_id]
+      mutate FarmEvents::Update.run(input)
     end
 
     def destroy
