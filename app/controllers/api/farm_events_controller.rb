@@ -6,8 +6,7 @@ module Api
 
     def create
       mutate FarmEvents::Create.run(params.as_json,
-                                   device:     current_device,
-                                   executable: executable)
+                                   device: current_device)
     end
 
     def update
@@ -18,7 +17,6 @@ module Api
       input = params[:farm_event]
         .as_json
         .merge(device: current_device, farm_event: farm_event)
-      input[:executable] = executable if params[:executable_id]
       mutate FarmEvents::Update.run(input)
     end
 
@@ -32,18 +30,6 @@ module Api
 
     private
 
-    def executable
-      if (@executable)
-        @executable
-      else
-        klass = ({
-          "Sequence" => Sequence,
-          "Regimen" => Regimen
-        })[params[:executable_type]]
-        raise "NO!" unless klass
-        @executable ||= klass.where(id: params[:executable_id]).first
-      end
-    end
 
     def farm_event
       @farm_event ||= FarmEvent.find(params[:id])
