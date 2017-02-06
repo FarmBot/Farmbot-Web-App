@@ -4,7 +4,7 @@
 # forever.
 class FarmEvent < ActiveRecord::Base
   UNITS_OF_TIME = %w(minutely hourly daily weekly monthly yearly)
-
+  EXECUTABLE_CLASSES = [Sequence, Regimen]
   belongs_to :executable, polymorphic: true
   validates :executable, presence: true
   belongs_to :device

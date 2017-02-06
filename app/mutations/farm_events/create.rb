@@ -3,9 +3,10 @@ module FarmEvents
     using LegacyRefinementsModule
     NO_EXECUTABLE = "You must provide a valid executable_id and "\
                     "executable_type for a Sequence or Regimen object."
+
     required do
       integer :executable_id
-      string :executable_type, in: ["Sequence", "Regimen"]
+      string :executable_type, in: FarmEvent::EXECUTABLE_CLASSES.map(&:inspect)
       model :device, class: Device
       integer :repeat
       string :time_unit, in: FarmEvent::UNITS_OF_TIME
