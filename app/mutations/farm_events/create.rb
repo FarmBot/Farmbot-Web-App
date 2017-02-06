@@ -1,15 +1,13 @@
 module FarmEvents
   class Create < Mutations::Command
     using LegacyRefinementsModule
-    NO_EXECUTABLE = "You must provide a valid executable_id and "\
-                    "executable_type for a Sequence or Regimen object."
+    include FarmEvents::ExecutableHelpers
+    executable_fields :required
 
     required do
-      integer :executable_id
-      string :executable_type, in: FarmEvent::EXECUTABLE_CLASSES.map(&:inspect)
-      model :device, class: Device
+      model   :device, class: Device
       integer :repeat
-      string :time_unit, in: FarmEvent::UNITS_OF_TIME
+      string  :time_unit, in: FarmEvent::UNITS_OF_TIME
     end
 
     optional do
@@ -18,7 +16,7 @@ module FarmEvents
     end
 
     def validate
-        add_error :executable, :not_found, NO_EXECUTABLE unless executable
+      validate_executable
     end
 
     def execute
@@ -29,13 +27,5 @@ module FarmEvents
     end
 
     private
-
-    def executable
-      @executable ||= klass.where(id: executable_id).first
-    end
-
-    def klass
-      ({"Sequence" => Sequence, "Regimen"  => Regimen })[executable_type]
-    end
   end
 end
