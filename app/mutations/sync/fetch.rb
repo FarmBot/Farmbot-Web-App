@@ -21,6 +21,7 @@ module Sync
                peripherals:   peripherals,
                regimen_items: regimen_items,
                plants:        plants,
+               points:        points,
                tool_bays:     tool_bays,
                tool_slots:    tool_slots,
                tools:         tools,
@@ -83,6 +84,11 @@ module Sync
 
     def logs
       @logs ||= device.limited_log_list
+    end
+
+    def points
+      @points = ActiveModel::ArraySerializer.new(Point.where(device: device),
+                                                each_serializer: PointSerializer)
     end
 
     # PROBLEM: The UI does not offer a means of creating tool bays. You must

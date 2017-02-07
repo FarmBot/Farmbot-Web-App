@@ -37,6 +37,15 @@ unless Rails.env == "production"
         icon_url: "/icons/Natural Food-96.png",
         openfarm_slug: "tomato")
     end
+    10.times do
+      Point.create(
+        device: User.last.device,
+        x: rand(1...550),
+        y: rand(1...550),
+        z: 5,
+        radius: rand(1...100),
+        meta: {})
+    end
     Peripherals::Create.run!(device:User.last.device, peripherals: [{pin: 13, label: "LED"}])
     Tools::Create.run!(name: "Trench Digging Tool", device: User.last.device)
 end
