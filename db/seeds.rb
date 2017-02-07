@@ -4,6 +4,7 @@ unless Rails.env == "production"
     ENV['OS_UPDATE_SERVER'] = "http://blah.com"
     ENV['FW_UPDATE_SERVER'] = "http://test.com"
     User.delete_all
+    Point.delete_all
     Device.delete_all
     Users::Create.run!(name:                    "Administrator",
                          email:                 "notos@notos.com",

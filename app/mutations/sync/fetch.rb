@@ -1,7 +1,7 @@
 module Sync
   class Fetch  < Mutations::Command
     API_VERSION = ENV.fetch("HEROKU_SLUG_COMMIT", `git log --pretty=format:"%h" -1`)
-    COMPAT_NUM = 1
+    COMPAT_NUM  = 1
 
     required do
       model :device, class: Device
@@ -82,7 +82,7 @@ module Sync
     end
 
     def logs
-      @logs ||= device.logs.last(Log::PAGE_SIZE)
+      @logs ||= device.limited_log_list
     end
 
     # PROBLEM: The UI does not offer a means of creating tool bays. You must

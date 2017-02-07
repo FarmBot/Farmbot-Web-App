@@ -1,8 +1,8 @@
-# Every now and then, I need an array with EXACTLY two elements,
-# or a hash with EXACTLY one key/value. It always felt hacky.
-# I'm surprised this is not in the STDLIB. Please submit an issue if
-# it is.
 class Pair
+  WHY_I_WROTE_THIS = "http://stackoverflow.com/questions/"\
+                    "42093912/does-ruby-have-a-pair-data-type/"\
+                    "42095784#42095784"
+
   attr_accessor :head, :tail
 
   def initialize(h, t)
