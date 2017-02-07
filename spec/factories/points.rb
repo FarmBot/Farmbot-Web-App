@@ -4,6 +4,7 @@ FactoryGirl.define do
     x 1.5
     y 1.5
     z 1.5
-    device nil
+    meta ({})
+    device
   end
 end

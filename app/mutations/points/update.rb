@@ -2,21 +2,20 @@ module Points
   class Update < Mutations::Command
     required do
       model :device, class: Device
+      model :point, class: Point
     end
 
     optional do
-      float :x
-      float :y
-      float :radius
-      hash :meta do
-        string  :*
-        boolean :*
-        float   :*
-      end
+      float  :x
+      float  :y
+      float  :z
+      float  :radius
+      hstore :meta
     end
 
     def execute
-      Point.create!(inputs)
+      point.update_attributes!(inputs.except(:device, :point))
+      point
     end
   end
 end
