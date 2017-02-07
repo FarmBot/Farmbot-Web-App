@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170130154455) do
+ActiveRecord::Schema.define(version: 20170207132639) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "hstore"
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
@@ -108,6 +109,19 @@ ActiveRecord::Schema.define(version: 20170130154455) do
     t.index ["planting_area_id"], name: "index_plants_on_planting_area_id", using: :btree
   end
 
+  create_table "points", force: :cascade do |t|
+    t.float    "radius"
+    t.float    "x"
+    t.float    "y"
+    t.float    "z"
+    t.integer  "device_id"
+    t.hstore   "meta"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_points_on_device_id", using: :btree
+    t.index ["meta"], name: "index_points_on_meta", using: :gin
+  end
+
   create_table "regimen_items", force: :cascade do |t|
     t.bigint  "time_offset"
     t.integer "regimen_id"
@@ -124,8 +138,8 @@ ActiveRecord::Schema.define(version: 20170130154455) do
   end
 
   create_table "sequence_dependencies", force: :cascade do |t|
-    t.integer "dependency_id"
     t.string  "dependency_type"
+    t.integer "dependency_id"
     t.integer "sequence_id"
     t.index ["dependency_id"], name: "index_sequence_dependencies_on_dependency_id", using: :btree
     t.index ["dependency_type"], name: "index_sequence_dependencies_on_dependency_type", using: :btree
@@ -202,4 +216,5 @@ ActiveRecord::Schema.define(version: 20170130154455) do
     t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
   end
 
+  add_foreign_key "points", "devices"
 end
