@@ -3,7 +3,8 @@ class Device < ActiveRecord::Base
   DEFAULT_MAX_LOGS   = 50
   DEFAULT_MAX_IMAGES = 100
   has_many  :users
-  has_many  :farm_events,     dependent: :destroy
+  has_many  :farm_events,   dependent: :destroy
+  has_many  :points,        dependent: :destroy
   has_many  :logs,          dependent: :destroy
   has_many  :sequences,     dependent: :destroy
   has_many  :regimens,      dependent: :destroy
@@ -15,11 +16,8 @@ class Device < ActiveRecord::Base
   has_one   :planting_area, dependent: :destroy
   validates :name,          uniqueness: true
 
-  # Prevent the database from filling up with logs by deleting all logs after
-  # the first X records. Increasing device.max_log_count gives the user
-  # increased log storage.
-  def limit_log_length
-    these = logs.last(max_log_count || DEFAULT_MAX_LOGS).pluck(:id)
-    logs.where.not(id: these).destroy_all
+  # Give the user back the amount of logs they are allowed to view.
+  def limited_log_list
+    logs.all.last(max_log_count || DEFAULT_MAX_LOGS)
   end
 end

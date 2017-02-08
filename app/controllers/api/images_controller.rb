@@ -52,7 +52,7 @@ module Api
       @policy ||= Base64.encode64(
         { 'expiration' => 1.hour.from_now.utc.xmlschema,
           'conditions' => [
-           { 'bucket'                =>  BUCKET },
+           { 'bucket'                => BUCKET },
            { 'key'                   => random_filename},
            { 'acl'                   => 'public-read' },
            { 'Content-Type'          => "image/jpeg"},

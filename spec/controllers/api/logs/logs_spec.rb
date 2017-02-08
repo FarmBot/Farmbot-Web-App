@@ -83,7 +83,7 @@ describe Api::LogsController do
       before_count = Log.count
       post :create, body: payl.to_json, params: {format: :json}
       expect(response.status).to eq(200)
-      expect(user.device.logs.count).to eq(user.device.max_log_count)
+      expect(json.length).to eq(user.device.max_log_count)
     end
 
     it 'deletes ALL logs' do

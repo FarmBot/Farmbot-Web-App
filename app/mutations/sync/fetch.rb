@@ -1,7 +1,7 @@
 module Sync
   class Fetch  < Mutations::Command
     API_VERSION = ENV.fetch("HEROKU_SLUG_COMMIT", `git log --pretty=format:"%h" -1`)
-    COMPAT_NUM = 1
+    COMPAT_NUM  = 1
 
     required do
       model :device, class: Device
@@ -21,14 +21,21 @@ module Sync
                peripherals:   peripherals,
                regimen_items: regimen_items,
                plants:        plants,
+               points:        points,
                tool_bays:     tool_bays,
                tool_slots:    tool_slots,
                tools:         tools,
                logs:          logs,
-               images:        images }.as_json
+               images:        images,
+               farm_events:   farm_events }.as_json
     end
 
   private
+
+    def farm_events
+      @farm_events ||= ActiveModel::ArraySerializer.new(FarmEvent.where(device: device),
+                                                        each_serializer: FarmEventSerializer)
+    end
 
     def images
       @images ||= ActiveModel::ArraySerializer
@@ -76,7 +83,12 @@ module Sync
     end
 
     def logs
-      @logs ||= device.logs.last(Log::PAGE_SIZE)
+      @logs ||= device.limited_log_list
+    end
+
+    def points
+      @points = ActiveModel::ArraySerializer.new(Point.where(device: device),
+                                                each_serializer: PointSerializer)
     end
 
     # PROBLEM: The UI does not offer a means of creating tool bays. You must

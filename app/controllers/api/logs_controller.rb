@@ -14,7 +14,6 @@ module Api
           .map { |i| i.result }
           .select { |i| i.meta["type"] != "fun"}
           .tap { |i| Log.transaction { i.map(&:save) } }
-          .tap { current_device.limit_log_length }
       when Hash
         outcome = new_log(raw_json)
         outcome.result.save if outcome.success?
@@ -25,7 +24,7 @@ module Api
     end
 
     def index
-      render json: current_device.logs.last(25)
+      render json: current_device.limited_log_list
     end
 
     def destroy

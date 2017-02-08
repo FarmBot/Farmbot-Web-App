@@ -1,12 +1,13 @@
 module FarmEvents
   class Create < Mutations::Command
     using LegacyRefinementsModule
+    include FarmEvents::ExecutableHelpers
+    executable_fields :required
 
     required do
-      # model :sequence, class: Sequence
-      model :device, class: Device
+      model   :device, class: Device
       integer :repeat
-      string :time_unit, in: FarmEvent::UNITS_OF_TIME
+      string  :time_unit, in: FarmEvent::UNITS_OF_TIME
     end
 
     optional do
@@ -14,11 +15,17 @@ module FarmEvents
       time :end_time
     end
 
+    def validate
+      validate_executable
+    end
+
     def execute
-      Rollbar.info("-- ENDPOINT REQUIRES UPDATES --")
-      create(FarmEvent, inputs) do |sched|
-        sched.next_time = sched.calculate_next_occurence
+      create(FarmEvent, inputs) do |farm_event|
+        farm_event.executable = executable
+        farm_event.next_time = farm_event.calculate_next_occurence
       end
     end
+
+    private
   end
 end
