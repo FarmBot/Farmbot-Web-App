@@ -117,11 +117,11 @@ $.ajax({
     url: "https://my.farmbot.io/api/tokens",
     type: "POST",
     data: JSON.stringify({user: {email: 'admin@admin.com', password: 'password123'}}),
-    contentType: "application/json"
-})
-.then(function(data){
-  // You can now use your token:
-  var MY_SHINY_TOKEN = data.token.encoded;
+    contentType: "application/json",
+    success: function (data) {
+                 // You can now use your token:
+                 var MY_SHINY_TOKEN = data.token.encoded;
+             }
 });
 ```
 
