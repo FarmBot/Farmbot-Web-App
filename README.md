@@ -28,17 +28,25 @@ Your machine will need the following:
  0. [Ruby 2.3.3](http://rvm.io/rvm/install)
 
 ### Setup
- 0. `git clone https://github.com/FarmBot/Farmbot-Web-API farmbot-web-app`
- 0. `cd farmbot-web-app`
- 0. [Install libpg-dev](http://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem/6040822#6040822)
+ 0. `git clone https://github.com/FarmBot/Farmbot-Web-API`
+ 0. `cd Farmbot-Web-API`
+ 0. [Install `libpq-dev` and `postgresql`](http://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem/6040822#6040822)
  0. `bundle install`
  0. Copy `config/database.example.yml` to `config/database.yml`. In GNU/Linux or Mac: `mv config/database.example.yml config/database.yml`.
+ 0. Get permission to create database*
  0. `rake db:create:all db:migrate db:seed`
  0. (optional) Verify installation with `RAILS_ENV=test rake db:create db:migrate && rspec spec`.
  0. `MQTT_HOST=your_mqtt_server_domain rails s`
  0. (optional) Run `./install_frontend.sh` to install the latest frontend app. You may also run the frontend on a seperate server. See [frontend repository](https://github.com/FarmBot/farmbot-web-frontend) for details.
  0. Open [localhost:3000](http://localhost:3000).
  0. [Raise an issue](https://github.com/FarmBot/Farmbot-Web-API/issues/new?title=Installation%20Failure) if you hit problems with any of these steps.
+
+\*Give permission to `user` to create database:
+```
+sudo -u postgres createuser user
+sudo -u postgres psql
+ALTER USER user WITH SUPERUSER;
+```
 
 # Provisioning Your Own with Dokku
 
