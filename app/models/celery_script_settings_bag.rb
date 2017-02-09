@@ -89,6 +89,7 @@ module CeleryScriptSettingsBag
       .defineArg(:x,               [Fixnum])
       .defineArg(:y,               [Fixnum])
       .defineArg(:z,               [Fixnum])
+      .defineArg(:radius,          [Fixnum])
       .defineArg(:speed,           [Fixnum])
       .defineArg(:pin_number,      [Fixnum])
       .defineArg(:pin_value,       [Fixnum])
@@ -134,6 +135,7 @@ module CeleryScriptSettingsBag
       .defineNode(:factory_reset,     [], [])
       .defineNode(:execute_script,    [:label], [:pair])
       .defineNode(:set_user_env,      [], [:pair])
+      .defineNode(:add_point,         [:coordinate], [:pair])
 
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.

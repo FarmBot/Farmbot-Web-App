@@ -27,68 +27,70 @@ module Sync
                tools:         tools,
                logs:          logs,
                images:        images,
-               farm_events:   farm_events }.as_json
+               farm_events:   farm_events }
     end
 
   private
 
     def farm_events
       @farm_events ||= ActiveModel::ArraySerializer.new(FarmEvent.where(device: device),
-                                                        each_serializer: FarmEventSerializer).tap { $PROFILE.("1") }
+                                                        each_serializer: FarmEventSerializer)
     end
 
     def images
       @images ||= ActiveModel::ArraySerializer
                     .new(Images::Fetch.run!(device: device),
-                         each_serializer: ImageSerializer).tap { $PROFILE.("2") }
+                         each_serializer: ImageSerializer)
     end
 
     def tools
       @tools = ActiveModel::ArraySerializer.new(Tool.where(device: device),
-                                                each_serializer: ToolSerializer).tap { $PROFILE.("3") }
+                                                each_serializer: ToolSerializer)
     end
 
     def tool_slots
       @tool_slots ||= ActiveModel::ArraySerializer
                         .new(ToolSlot.where(tool_bay_id: tool_bays.pluck(:id)),
-                             each_serializer: ToolSlotSerializer).tap { $PROFILE.("4") }
+                             each_serializer: ToolSlotSerializer)
     end
 
     def tool_bays
-      @tool_bays ||= device.tool_bays.tap { $PROFILE.("5") }
+      []
+      # @tool_bays ||= device.tool_bays
     end
 
     def plants
-      @plants ||= device.plants.tap { $PROFILE.("6") }
+      @plants ||= device.plants
     end
 
     def regimen_items
-      @regimen_items ||= RegimenItem.where(regimen_id: regimens.pluck(:id)).tap { $PROFILE.("7") }
+      @regimen_items ||= RegimenItem.where(regimen_id: regimens.pluck(:id))
     end
 
     def peripherals
-      @peripherals ||= device.peripherals.tap { $PROFILE.("8") }
+      @peripherals ||= device.peripherals
     end
 
     def regimens
-      @regimens ||= device.regimens.tap { $PROFILE.("9") };
+      @regimens ||= device.regimens
     end
 
     def sequences
-      @sequences ||= device.sequences.tap { $PROFILE.("10") }
+      @sequences ||= device.sequences
     end
 
     def users
-      @users ||= device.users.tap { $PROFILE.("11") }
+      @users ||= device.users
     end
 
     def logs
-      @logs ||= device.limited_log_list.tap { $PROFILE.("12") }
+      @logs ||= device.limited_log_list
     end
 
     def points
+      # FAST
       @points = ActiveModel::ArraySerializer.new(Point.where(device: device),
-                                                each_serializer: PointSerializer).tap { $PROFILE.("13") }
+                                                each_serializer: PointSerializer)
     end
 
     # PROBLEM: The UI does not offer a means of creating tool bays. You must
@@ -97,7 +99,7 @@ module Sync
     # TODO: Remove this when UI level creation of tool bays happens.
     def maybe_initialize_a_tool_bay
       unless device.tool_bays.any?
-        ToolBay.create(device: device, name: "Tool Bay 1").tap { $PROFILE.("14") }
+        ToolBay.create(device: device, name: "Tool Bay 1")
       end
     end
   end
