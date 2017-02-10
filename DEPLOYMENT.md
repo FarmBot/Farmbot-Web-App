@@ -1,4 +1,4 @@
-# Run on a Local Machine
+# Run on a Local Machine (fast)
 
 If you want to run a server on a LAN for personal use, this is the easiest and cheapest option.
 
@@ -9,7 +9,7 @@ If you want to run a server on a LAN for personal use, this is the easiest and c
  1. Follow the [developer setup guide](https://github.com/FarmBot/Farmbot-Web-API#developer-setup).
  2. Run `rails s -e production -b 0.0.0.0` (Set ENV vars accordingly).
 
-# Deployment to Dokku (cheaper)
+# Deployment to Dokku (cheap)
 
 **NOTE TO USERS**: We no longer deploy the server using Dokku. Although we will make a best effort to support Dokku users, our ability to provide troubleshooting and documentation for Dokku setups is limited since we do not use it ourselves.
 
@@ -37,7 +37,7 @@ If you want to run a server on a LAN for personal use, this is the easiest and c
 0. Migrate the database: `ssh dokku@my_server_name run my_app_name rake db:setup`
 0. Your API is ready to go! You probably need to deploy the MQTT server next.
 
-# Deployment Using Heroku (easier)
+# Deployment Using Heroku (good)
 
 **Simplicity:** :heart::heart::heart::heart:
 **Reliability:** :heart::heart::heart::heart:

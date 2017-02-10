@@ -37,7 +37,7 @@ Your machine will need the following:
  0. `rake db:create:all db:migrate db:seed`
  0. (optional) Verify installation with `RAILS_ENV=test rake db:create db:migrate && rspec spec`.
  0. `MQTT_HOST=your_mqtt_server_domain rails s`
- 0. (optional) Run `./install_frontend.sh` to install the latest frontend app. You may also run the frontend on a seperate server. See [frontend repository](https://github.com/FarmBot/farmbot-web-frontend) for details.
+ 0. (optional- REQUIRES NODE > v6) Run `./install_frontend.sh` to install the latest frontend app. You may also run the frontend on a seperate server. See [frontend repository](https://github.com/FarmBot/farmbot-web-frontend) for details.
  0. Open [localhost:3000](http://localhost:3000).
  0. [Raise an issue](https://github.com/FarmBot/Farmbot-Web-API/issues/new?title=Installation%20Failure) if you hit problems with any of these steps.
 
@@ -54,7 +54,7 @@ Please see `deployment.md`.
 
 # Config Settings (important)
 
-You're server won't run without setting ENV variables first.
+Your server won't run without setting ENV variables first.
 
 You can accomplish this by setting the ENV variables directly from your shell / server management tool or by writing an `application.yml` file.
 

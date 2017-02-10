@@ -21,3 +21,5 @@ RSA_KEY: "-----BEGIN RSA ........."
 SENDGRID_PASSWORD: "Used by FarmBot, Inc"
 SENDGRID_USERNAME: "Used by FarmBot, Inc"
 SMTP_HOST: "smtp.sendgrid.net"
+# Optional with default of 587
+SMTP_PORT: 587

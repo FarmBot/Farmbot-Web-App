@@ -1,7 +1,7 @@
 FarmBot::Application.configure do
   config.force_ssl = true if ENV["FORCE_SSL"]
   config.action_controller.perform_caching = true
-  config.action_mailer.default_url_options = { host: 'my.farmbot.io' }
+  config.action_mailer.default_url_options = { host: ENV.fetch("API_HOST", "my.farmbot.io") }
   config.active_support.deprecation = :notify
   config.cache_classes = true
   config.consider_all_requests_local = false
@@ -21,7 +21,7 @@ FarmBot::Application.configure do
   pw    = ENV['SMTP_PASSWORD'] || ENV['SENDGRID_PASSWORD']
   uname = ENV['SMTP_USERNAME'] || ENV['SENDGRID_USERNAME']
 
-  config.action_mailer.smtp_settings = { port:      587,
+  config.action_mailer.smtp_settings = { port:      ENV.fetch("SMTP_PORT", 587),
                                          address:   ENV['SMTP_HOST'],
                                          user_name: uname,
                                          password:  pw }
