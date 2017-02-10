@@ -55,8 +55,7 @@ module Sync
     end
 
     def tool_bays
-      []
-      # @tool_bays ||= device.tool_bays
+      @tool_bays ||= device.tool_bays
     end
 
     def plants
