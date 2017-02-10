@@ -46,6 +46,8 @@ If you want to run a server on a LAN for personal use, this is the easiest and c
  1. Deploy as you would normally [deploy to Heroku](https://devcenter.heroku.com/articles/getting-started-with-rails4#deploy-your-application-to-heroku)
  2. Enable Dyno metadata: `heroku labs:enable runtime-dyno-metadata --app <app name>` (we need this to know the version number of the web app).
 
+Don't forget to [set ENV vars](https://devcenter.heroku.com/articles/config-vars) and run `heroku run rake db:setup`.
+
 # Setting up SSL
 
 Before setting up SSL, [setup your domain on Heroku](https://devcenter.heroku.com/articles/custom-domains).
