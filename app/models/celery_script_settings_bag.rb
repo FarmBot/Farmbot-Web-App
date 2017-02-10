@@ -11,7 +11,8 @@ module CeleryScriptSettingsBag
                              sync check_updates power_off reboot toggle_pin
                              config_update calibrate execute move_absolute
                              move_relative write_pin wait read_pin send_message
-                             factory_reset execute_script set_user_env)
+                             factory_reset execute_script set_user_env
+                             take_photo add_point)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast)
@@ -19,7 +20,7 @@ module CeleryScriptSettingsBag
   ALLOWED_OPS           = %w(< > is not)
   ALLOWED_AXIS          = %w(x y z all)
   STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
-                             send_message execute _if execute_script)
+                             send_message execute _if execute_script take_photo)
   ALLOWED_LHS           = %w(pin0 pin1 pin2 pin3 pin4 pin5 pin6 pin7 pin8 pin9
                              pin10 pin11 pin12 pin13 x y z)
   BAD_ALLOWED_PIN_MODES = 'Can not put "%s" into a left hand side (LHS) '\
@@ -135,7 +136,8 @@ module CeleryScriptSettingsBag
       .defineNode(:factory_reset,     [], [])
       .defineNode(:execute_script,    [:label], [:pair])
       .defineNode(:set_user_env,      [], [:pair])
-      .defineNode(:add_point,         [:coordinate], [:pair])
+      .defineNode(:add_point,         [:location], [:pair])
+      .defineNode(:take_photo,        [], [])
 
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.

@@ -51,6 +51,7 @@ class CSNode
     def arg_names
       allowed_args
          .map{ |x| ARGS[x] }
+         .each { |x| raise "NON EXISTANT ARG TYPE" unless x }
          .map(&:to_ts)
          .join("")
     end
