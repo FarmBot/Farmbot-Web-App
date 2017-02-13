@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170207132639) do
+ActiveRecord::Schema.define(version: 20170213151834) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,7 +47,6 @@ ActiveRecord::Schema.define(version: 20170207132639) do
     t.datetime "next_time"
     t.integer  "repeat"
     t.string   "time_unit"
-    t.boolean  "repeats"
     t.string   "executable_type"
     t.integer  "executable_id"
     t.index ["device_id"], name: "index_farm_events_on_device_id", using: :btree
@@ -104,6 +103,7 @@ ActiveRecord::Schema.define(version: 20170207132639) do
     t.integer  "x",                default: 0
     t.integer  "y",                default: 0
     t.datetime "created_at"
+    t.float    "radius",           default: 50.0
     t.index ["created_at"], name: "index_plants_on_created_at", using: :btree
     t.index ["device_id"], name: "index_plants_on_device_id", using: :btree
     t.index ["planting_area_id"], name: "index_plants_on_planting_area_id", using: :btree
