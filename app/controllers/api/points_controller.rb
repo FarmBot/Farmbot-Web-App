@@ -2,7 +2,11 @@ module Api
   class PointsController < Api::AbstractController
 
     def index
-      render json: Point.where(device_params)
+      render json: points
+    end
+
+    def search
+      mutate Points::Query.run(raw_json, device_params)
     end
 
     def create

@@ -13,7 +13,9 @@ FarmBot::Application.routes.draw do
     resources :farm_events,   only: [:create, :update, :destroy, :index]
     resources :tool_slots,    only: [:create, :show, :index, :destroy, :update]
     resources :tools,         only: [:create, :show, :index, :destroy, :update]
-    resources :points,        only: [:create, :show, :index, :destroy, :update]
+    resources :points,        only: [:create, :show, :index, :destroy, :update] do
+        post :search, on: :collection
+    end
     resource :sync,           only: [:show]
     resource :public_key,     only: [:show]
     resource :tokens,         only: [:create]
