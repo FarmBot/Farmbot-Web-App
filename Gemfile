@@ -18,6 +18,7 @@ gem "figaro"
 gem "fog-google", git: "https://github.com/fog/fog-google"
 gem "rest-client" # If you see this, delete this.
 gem "pg"
+gem "batch_api"
 
 # Error reporting tools.
 # Active on the "official" FarmBot server, set the appropriate ENV
@@ -33,8 +34,6 @@ group :development, :test do
   gem "rails-erd"
   gem "rspec"
   gem "rspec-rails"
-end
-
-group :test do
   gem "simplecov"
+  gem "letter_opener"
 end

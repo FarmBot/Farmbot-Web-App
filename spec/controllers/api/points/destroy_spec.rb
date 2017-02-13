@@ -14,5 +14,13 @@ describe Api::PointsController do
       expect(response.status).to eq(200)
       expect(Point.count).to eq(b4 - 1)
     end
+
+    it 'performs batch deletion' do
+      sign_in user
+      points       = FactoryGirl.create_list(:point, 6, device: user.device)
+      before_count = Point.count
+      delete :destroy, params: { id: points.map(&:id) }
+      expect(Point.count).to eq(before_count - 6)
+    end
   end
 end
