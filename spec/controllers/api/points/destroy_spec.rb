@@ -19,7 +19,7 @@ describe Api::PointsController do
       sign_in user
       points       = FactoryGirl.create_list(:point, 6, device: user.device)
       before_count = Point.count
-      delete :destroy, params: { id: points.map(&:id) }
+      delete :destroy, params: { id: points.map(&:id).join(",") }
       expect(Point.count).to eq(before_count - 6)
     end
   end
