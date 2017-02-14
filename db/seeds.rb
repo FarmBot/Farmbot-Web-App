@@ -1,5 +1,5 @@
-# User for testing purposes:
 unless Rails.env == "production"
+    $COUNT00 = 0
     ENV['MQTT_HOST']        = "blooper.io"
     ENV['OS_UPDATE_SERVER'] = "http://blah.com"
     ENV['FW_UPDATE_SERVER'] = "http://test.com"
@@ -13,23 +13,24 @@ unless Rails.env == "production"
                          agree_to_terms:        true)
     no_tos = User.last
     no_tos.agreed_to_terms_at = nil
-    no_tos.save!
-    Users::Create.run!(name:                    "Administrator",
-                         email:                 "admin@admin.com",
-                         password:              "password123",
-                         password_confirmation: "password123",
-                         agree_to_terms:        true)
-    User.last.update_attributes(verified_at: Time.now)
+    # no_tos.save!
+    Users::Create.run!(name:                  "Administrator",
+                       email:                 "admin@admin.com",
+                       password:              "password123",
+                       password_confirmation: "password123",
+                       agree_to_terms:        true)
+    u = User.last
+    u.update_attributes(verified_at: Time.now)
     Log.transaction do
-      FactoryGirl.create_list(:log, 35, device: User.last.device)
+      FactoryGirl.create_list(:log, 35, device: u.device)
     end
     [ "http://i.imgur.com/XvFBGA4.jpg",
       "http://i.imgur.com/XsFczCY.jpg" ].each do |url|
-        Images::Create.run!(attachment_url: url, device: User.last.device)
+        Images::Create.run!(attachment_url: url, device: u.device)
     end
     10.times do
       Plant.create(
-        device: User.last.device,
+        device: u.device,
         x: rand(1...550),
         y: rand(1...550),
         name: Haikunator.haikunate,
@@ -39,13 +40,27 @@ unless Rails.env == "production"
     end
     10.times do
       Point.create(
-        device: User.last.device,
+        device: u.device,
         x: rand(1...550),
         y: rand(1...550),
         z: 5,
         radius: rand(1...100) * 2,
         meta: { created_by: "plant-detection" })
     end
-    Peripherals::Create.run!(device:User.last.device, peripherals: [{pin: 13, label: "LED"}])
-    Tools::Create.run!(name: "Trench Digging Tool", device: User.last.device)
+
+    s = Sequences::Create.run!(device: u.device,
+    name: "Goto 0, 0, 0",
+    body: [{kind:"move_absolute",args:{location:{kind:"coordinate", args:{x:0,
+    y:0, z:0}}, offset:{kind:"coordinate", args:{x:0, y:0, z:0}}, speed:800}}])
+
+    Regimens::Create.run(device: u.device,
+                         name:"Test Regimen 456",
+                         color:"gray",
+                         regimen_items: [
+                           {time_offset:300000, sequence_id:s.id},
+                           {time_offset:173100000, sequence_id:s.id},
+                           {time_offset:345900000, sequence_id:s.id}
+                         ])
+    Peripherals::Create.run!(device:u.device, peripherals: [{pin: 13, label: "LED"}])
+    Tools::Create.run!(name: "Trench Digging Tool", device: u.device)
 end
