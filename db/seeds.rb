@@ -43,8 +43,8 @@ unless Rails.env == "production"
         x: rand(1...550),
         y: rand(1...550),
         z: 5,
-        radius: rand(1...100),
-        meta: {})
+        radius: rand(1...100) * 2,
+        meta: { created_by: "plant-detection" })
     end
     Peripherals::Create.run!(device:User.last.device, peripherals: [{pin: 13, label: "LED"}])
     Tools::Create.run!(name: "Trench Digging Tool", device: User.last.device)

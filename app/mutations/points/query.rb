@@ -1,3 +1,5 @@
+require_relative "../../lib/hstore_filter"
+# WHY??? ^
 module Points
     class Query < Mutations::Command
       H_QUERY = "meta @> hstore(:key, :value)"

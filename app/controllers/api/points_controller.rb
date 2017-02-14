@@ -18,7 +18,9 @@ module Api
     end
 
     def destroy
-      render json: Array(point).map!(&:destroy!) && ""
+      render json: points
+        .find(params[:id].to_s.split(","))
+        .map!(&:destroy!) && ""
     end
 
     private
