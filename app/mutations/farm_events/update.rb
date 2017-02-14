@@ -11,7 +11,7 @@ module FarmEvents
     end
 
     optional do
-      integer :repeat
+      integer :repeat, min: 1
       string  :time_unit, in: FarmEvent::UNITS_OF_TIME
       time    :start_time
       time    :end_time

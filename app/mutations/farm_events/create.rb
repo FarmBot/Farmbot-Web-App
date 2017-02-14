@@ -6,7 +6,7 @@ module FarmEvents
 
     required do
       model   :device, class: Device
-      integer :repeat
+      integer :repeat, min: 1
       string  :time_unit, in: FarmEvent::UNITS_OF_TIME
     end
 
@@ -25,7 +25,5 @@ module FarmEvents
         farm_event.next_time = farm_event.calculate_next_occurence
       end
     end
-
-    private
   end
 end
