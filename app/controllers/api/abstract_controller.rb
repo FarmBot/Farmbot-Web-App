@@ -104,6 +104,7 @@ private
       if outcome.success?
         render options.merge(json: outcome.result)
       else
+        outcome.errors.message.map { |x| puts x }
         render options.merge(json: outcome.errors.message, status: 422)
       end
     end
