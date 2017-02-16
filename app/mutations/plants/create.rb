@@ -12,6 +12,7 @@ module Plants
       string :icon_url, default: "/app-resources/img/icons/Sprout-96.png"
       string :openfarm_slug, default: "not-set"
       time   :created_at#, default: ->{ Time.now.utc }
+      float  :radius      
     end
 
     def execute
