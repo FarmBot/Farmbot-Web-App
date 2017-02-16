@@ -13,6 +13,7 @@ module Plants
       string :icon_url
       string :openfarm_slug
       time :created_at
+      float  :radius
     end
 
     def execute
