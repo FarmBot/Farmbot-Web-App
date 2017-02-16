@@ -14,7 +14,9 @@ module Auth
     def validate
       @user = User.where(email: email.downcase).first
       whoops! unless @user && @user.valid_password?(password)
-      @user.require_consent! if @user && @user.must_consent? && !agree_to_terms
+      if @user && @user.must_consent? && !agree_to_terms && @user.valid_password?(password)
+        @user.require_consent!
+      end
     end
 
     def execute

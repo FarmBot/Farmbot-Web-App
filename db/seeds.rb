@@ -1,19 +1,19 @@
 unless Rails.env == "production"
-    $COUNT00 = 0
     ENV['MQTT_HOST']        = "blooper.io"
     ENV['OS_UPDATE_SERVER'] = "http://blah.com"
     ENV['FW_UPDATE_SERVER'] = "http://test.com"
     User.delete_all
     Point.delete_all
     Device.delete_all
-    Users::Create.run!(name:                    "Administrator",
-                         email:                 "notos@notos.com",
-                         password:              "password123",
-                         password_confirmation: "password123",
-                         agree_to_terms:        true)
+    Users::Create.run!(name:                  "Administrator",
+                       email:                 "notos@notos.com",
+                       password:              "password123",
+                       password_confirmation: "password123",
+                       agree_to_terms:        true)
     no_tos = User.last
     no_tos.agreed_to_terms_at = nil
-    # no_tos.save!
+    no_tos.verified_at = Time.now
+    no_tos.save(validate: false)
     Users::Create.run!(name:                  "Administrator",
                        email:                 "admin@admin.com",
                        password:              "password123",
