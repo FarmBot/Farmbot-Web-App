@@ -18,6 +18,10 @@ module Api
       mutate Users::Verify.run(token: params[:token])
     end
 
+    def show
+      render json: current_device.users
+    end
+
     private
 
     def user_params

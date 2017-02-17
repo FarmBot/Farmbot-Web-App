@@ -19,7 +19,7 @@ FarmBot::Application.routes.draw do
     resource :sync,           only: [:show]
     resource :public_key,     only: [:show]
     resource :tokens,         only: [:create]
-    resource :users,          only: [:create, :update, :destroy]
+    resource :users,          only: [:create, :update, :destroy, :show]
     resource :device,         only: [:show, :destroy, :create, :update]
     resources :password_resets, only: [:create, :update]
     put "/password_resets"     => "password_resets#update", as: :whatever
