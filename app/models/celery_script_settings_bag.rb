@@ -13,7 +13,7 @@ module CeleryScriptSettingsBag
                              move_relative write_pin read_pin send_message
                              factory_reset execute_script set_user_env wait
                              add_point install_farmware update_farmware
-                             remove_farmware)
+                             remove_farmware take_photo)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast)
