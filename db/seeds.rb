@@ -44,7 +44,7 @@ unless Rails.env == "production"
         x: rand(1...225) + rand(1...225),
         y: rand(1...225) + rand(1...225),
         z: 5,
-        radius: rand(1...100) * 2,
+        radius: rand(1...150) + rand(1...150),
         meta: { created_by: "plant-detection" })
     end
 
