@@ -38,11 +38,11 @@ unless Rails.env == "production"
         icon_url: "/icons/Natural Food-96.png",
         openfarm_slug: "tomato")
     end
-    10.times do
+    750.times do
       Point.create(
         device: u.device,
-        x: rand(1...550),
-        y: rand(1...550),
+        x: rand(1...225) + rand(1...225),
+        y: rand(1...225) + rand(1...225),
         z: 5,
         radius: rand(1...100) * 2,
         meta: { created_by: "plant-detection" })
