@@ -9,6 +9,8 @@ describe Api::FarmEventsController do
 
     it 'makes a farm_event' do
       sign_in user
+      SmarfDoc.note("This is how you could create a FarmEvent that fires every"+
+                    "4 minutes")
       input = { executable_id: sequence.id,
                 executable_type: sequence.class.name,
                 start_time: '2015-02-17T15:16:17.000Z',
