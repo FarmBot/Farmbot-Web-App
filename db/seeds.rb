@@ -64,6 +64,14 @@ unless Rails.env == "production"
     Peripherals::Create.run!(device:u.device, peripherals: [{pin: 13, label: "LED"}])
     Tools::Create.run!(name: "Trench Digging Tool", device: u.device)
     5.times do
-      FactoryGirl.create(:farm_event, device: u.device)
+      FarmEvents::Create.run!(
+        device: u.device,
+        start_time: Date.yesterday - [*(1..5)].sample.days,
+        end_time: Date.today + 1.minute + ([*(1..5)].sample).days,
+        time_unit: FarmEvent::UNITS_OF_TIME.without("never").sample,
+        repeat: [*(1..5)].sample,
+        executable_id: Sequence.where(device: u.device).order("RANDOM()").first.id,
+        executable_type: "Sequence"
+      )
     end
 end
