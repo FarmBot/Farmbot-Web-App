@@ -38,7 +38,7 @@ unless Rails.env == "production"
         icon_url: "/icons/Natural Food-96.png",
         openfarm_slug: "tomato")
     end
-    750.times do
+    100.times do
       Point.create(
         device: u.device,
         x: rand(1...225) + rand(1...225),
@@ -63,4 +63,7 @@ unless Rails.env == "production"
                          ])
     Peripherals::Create.run!(device:u.device, peripherals: [{pin: 13, label: "LED"}])
     Tools::Create.run!(name: "Trench Digging Tool", device: u.device)
+    5.times do
+      FactoryGirl.create(:farm_event, device: u.device)
+    end
 end

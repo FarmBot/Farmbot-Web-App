@@ -1,9 +1,9 @@
 FactoryGirl.define do
   factory :farm_event do
-    start_time { Date.yesterday.to_time + 1.minute }
-    end_time { Date.today + 1.minute + 2.days }
-    time_unit "daily"
-    repeat 1
+    start_time { Date.yesterday - [*(1..5)].sample.days }
+    end_time { Date.today + 1.minute + ([*(1..5)].sample).days }
+    time_unit { FarmEvent::UNITS_OF_TIME.sample }
+    repeat { [*(1..5)].sample }
     # device
     after(:build) do |s|
       s.next_time ||= s.calculate_next_occurence
