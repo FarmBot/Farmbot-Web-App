@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe FarmEvents::Create do
+  let(:seq) { FactoryGirl.create(:sequence) }
   it 'Builds a farm_event' do
-    seq = FactoryGirl.create(:sequence)
     device = seq.device
     start_time = '2015-02-17T15:16:17.000Z'
     end_time = '2099-02-17T18:19:20.000Z'
@@ -22,5 +22,17 @@ describe FarmEvents::Create do
     expect(farm_event.repeat).to eq(4)
     expect(farm_event.time_unit).to eq('minutely')
     expect(farm_event.next_time).to eq(farm_event.calculate_next_occurence)
+  end
+
+  it 'has a calendar' do
+     x = FarmEvents::Create.run!({ start_time:     "2017-02-24T13:04:07.754Z",
+                                   end_time:       "2017-02-26T13:30:00.000Z",
+                                   device:         seq.device,
+                                   repeat:          2,
+                                   time_unit:       "hourly",
+                                   executable_id:   seq.id,
+                                   executable_type: seq.class.name })
+    binding.pry
+    expect(x.calendar.length).to eq(25)
   end
 end

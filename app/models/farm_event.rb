@@ -12,9 +12,30 @@ class FarmEvent < ActiveRecord::Base
   belongs_to :device
   validates :device_id, presence: true
 
+  class NullEventRules
+    def initialize(*)
+    end
+
+    def occurrences_between(*)
+      []
+    end
+
+    def next_occurrence(*)
+    end
+
+    def first(*)
+      []
+    end
+  end
+
+  def calendar
+    # occurrences_between is the bottleneck
+    farm_event_rules.first(100)#occurrences_between(start_time, end_time)
+  end
+
   def farm_event_rules
     if time_unit.to_sym == NEVER
-      {}
+      @farm_event_rules ||= NullEventRules.new
     else
       @farm_event_rules ||= IceCube::Schedule.new(start_time, end_time: end_time) do |sch|
         sch.add_recurrence_rule IceCube::Rule.send(time_unit.to_sym, repeat)
@@ -24,10 +45,5 @@ class FarmEvent < ActiveRecord::Base
 
   def calculate_next_occurence
     farm_event_rules.next_occurrence
-  end
-
-  def between(start, finish)
-    # Just for reference for later. Probably should just delegate.
-    farm_event_rules.occurrences_between(start, finish)
   end
 end
