@@ -25,6 +25,9 @@ describe FarmEvents::Create do
   end
 
   it 'has a calendar' do
+     pending(
+       "SEE: https://github.com/seejohnrun/ice_cube/issues/378"
+     )
      x = FarmEvents::Create.run!({ start_time:     "2017-02-24T13:04:07.754Z",
                                    end_time:       "2017-02-26T13:30:00.000Z",
                                    device:         seq.device,
@@ -32,7 +35,7 @@ describe FarmEvents::Create do
                                    time_unit:       "hourly",
                                    executable_id:   seq.id,
                                    executable_type: seq.class.name })
-    binding.pry
+    # binding.pry
     expect(x.calendar.length).to eq(25)
   end
 end

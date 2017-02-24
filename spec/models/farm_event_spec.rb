@@ -8,9 +8,5 @@ describe FarmEvent do
       expected = farm_event.farm_event_rules.next_occurrence
       expect(actual).to eq(expected)
     end
-
-    it 'calculates time between two dates' do
-      # binding.pry
-    end
   end
 end
