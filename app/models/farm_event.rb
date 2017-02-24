@@ -12,7 +12,13 @@ class FarmEvent < ActiveRecord::Base
   belongs_to :device
   validates :device_id, presence: true
 
+  class NullEventRules
+    def next_occurrence(*)
+    end
+  end
+
   def farm_event_rules
+    return NullEventRules.new if time_unit.to_sym == NEVER
     @farm_event_rules ||= IceCube::Schedule.new(start_time, end_time: end_time) do |sch|
       sch.add_recurrence_rule IceCube::Rule.send(time_unit.to_sym, repeat)
     end

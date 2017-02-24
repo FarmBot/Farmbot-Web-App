@@ -4,6 +4,9 @@ class FarmEventSerializer < ActiveModel::Serializer
   try :url, :sequence
 
   def calendar
+    # TODO: This is wrong!
+    # Will not work if we add pagination.
+    return [] if object.time_unit == FarmEvent::NEVER
     object.between start, finish
   end
 
@@ -16,6 +19,6 @@ class FarmEventSerializer < ActiveModel::Serializer
 
   def finish
     t = options[:finish]
-    t ? Time.parse(options[:finish]) : start + 1.day
+    return t ? Time.parse(options[:finish]) : start + 1.day
   end
 end
