@@ -113,7 +113,6 @@ GEM
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     i18n (0.7.0)
-    ice_cube (0.15.0)
     json (1.8.3)
     jwt (1.5.6)
     launchy (2.4.3)
@@ -267,7 +266,6 @@ DEPENDENCIES
   faker
   figaro
   fog-google!
-  ice_cube (~> 0.15.0)
   jwt
   letter_opener
   mutations (~> 0.8.0)

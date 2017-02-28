@@ -9,8 +9,7 @@ describe Api::FarmEventsController do
     it 'allows authorized modification' do
       sign_in user
       id = FactoryGirl.create(:farm_event, device: user.device).id
-      input = { id: id,
-                farm_event: { repeat: 66 } }
+      input = { id: id, farm_event: { repeat: 66 } }
       patch :update, params: input
       expect(response.status).to eq(200)
     end

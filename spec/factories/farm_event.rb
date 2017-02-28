@@ -6,7 +6,6 @@ FactoryGirl.define do
     repeat { [*(1..5)].sample }
     # device
     after(:build) do |s|
-      s.next_time ||= s.calculate_next_occurence
       s.executable ||= create(:sequence)
       s.device ||= s.executable.device
     end
