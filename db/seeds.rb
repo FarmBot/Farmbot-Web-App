@@ -67,8 +67,8 @@ unless Rails.env == "production"
       FarmEvents::Create.run!(
         device: u.device,
         start_time: Date.yesterday - [*(1..3)].sample.days,
-        end_time: Date.today + ([*(1..3)].sample).days,
-        time_unit: FarmEvent::UNITS_OF_TIME.without("never").sample,
+        end_time: Date.today + ([*(3..8)].sample).days,
+        time_unit: "daily",
         repeat: [*(1..3)].sample,
         executable_id: Sequence.where(device: u.device).order("RANDOM()").first.id,
         executable_type: "Sequence"

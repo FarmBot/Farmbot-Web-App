@@ -1,6 +1,7 @@
 # A human
 class User < ActiveRecord::Base
   ENFORCE_TOS = ENV.fetch("TOS_URL") { false }
+
   belongs_to :device, dependent: :destroy
 
   devise :database_authenticatable, :trackable
