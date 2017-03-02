@@ -13,8 +13,12 @@ module CeleryScriptSettingsBag
                              move_relative write_pin read_pin send_message
                              factory_reset execute_script set_user_env wait
                              add_point install_farmware update_farmware
-                             remove_farmware take_photo)
+                             remove_farmware take_photo data_update)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
+  ALLOWED_CHAGES        = %w(add remove update)
+  RESOURCE_NAME         = %w(images plants regimens planting_area peripherals
+                             corpuses tool_bays logs sequences farm_events
+                             tool_slots tools points tokens users device)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast)
   ALLOWED_DATA_TYPES    = %w(string integer)
@@ -143,6 +147,7 @@ module CeleryScriptSettingsBag
       .defineNode(:set_user_env,      [], [:pair])
       .defineNode(:add_point,         [:location], [:pair])
       .defineNode(:take_photo,        [], [])
+      .defineNode(:data_update,       [:value], [:pair])
 
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.

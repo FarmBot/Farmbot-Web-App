@@ -137,4 +137,7 @@ result.push(enum_type :Color, Sequence::COLORS)
 result.push(enum_type :LegalArgString, HASH[:args].map{ |x| x[:name] }.sort.uniq)
 result.push(enum_type :LegalKindString, HASH[:nodes].map{ |x| x[:name] }.sort.uniq)
 result.push(enum_type :LegalSequenceKind, CeleryScriptSettingsBag::STEPS.sort)
+result.push(enum_type :DataChangeType, CeleryScriptSettingsBag::ALLOWED_CHAGES)
+result.push(enum_type :ResourceName, CeleryScriptSettingsBag::RESOURCE_NAME)
+
 puts result.join.gsub("\n\n\n", "\n")
