@@ -52,7 +52,9 @@ unless Rails.env == "production"
     name: "Goto 0, 0, 0",
     body: [{kind:"move_absolute",args:{location:{kind:"coordinate", args:{x:0,
     y:0, z:0}}, offset:{kind:"coordinate", args:{x:0, y:0, z:0}}, speed:800}}])
-
+    Sequences::Create.run!(device: u.device,
+        name: "Every Node",
+        body: JSON.parse(File.read("spec/lib/celery_script/ast_fixture4.json")))
     Regimens::Create.run(device: u.device,
                          name:"Test Regimen 456",
                          color:"gray",
