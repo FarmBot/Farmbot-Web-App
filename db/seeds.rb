@@ -52,9 +52,14 @@ unless Rails.env == "production"
     name: "Goto 0, 0, 0",
     body: [{kind:"move_absolute",args:{location:{kind:"coordinate", args:{x:0,
     y:0, z:0}}, offset:{kind:"coordinate", args:{x:0, y:0, z:0}}, speed:800}}])
+    t = Tools::Create.run!(name: "Trench Digging Tool", device: u.device)
+
+    body_txt = File.read("spec/lib/celery_script/ast_fixture4.json")
+                   .gsub("__SEQUENCE_ID__", s.id.to_s)
+                   .gsub("__TOOL_ID__", t.id.to_s)
     Sequences::Create.run!(device: u.device,
         name: "Every Node",
-        body: JSON.parse(File.read("spec/lib/celery_script/ast_fixture4.json")))
+        body: JSON.parse(body_txt))
     Regimens::Create.run(device: u.device,
                          name:"Test Regimen 456",
                          color:"gray",
@@ -64,7 +69,6 @@ unless Rails.env == "production"
                            {time_offset:345900000, sequence_id:s.id}
                          ])
     Peripherals::Create.run!(device:u.device, peripherals: [{pin: 13, label: "LED"}])
-    Tools::Create.run!(name: "Trench Digging Tool", device: u.device)
     5.times do
       FarmEvents::Create.run!(
         device: u.device,

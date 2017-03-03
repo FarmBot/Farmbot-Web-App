@@ -2,14 +2,6 @@
   {
     "kind": "move_absolute",
     "args": {
-      "location": {
-        "kind": "coordinate",
-        "args": {
-          "x": 1,
-          "y": 2,
-          "z": 3
-        }
-      },
       "offset": {
         "kind": "coordinate",
         "args": {
@@ -18,85 +10,63 @@
           "z": 0
         }
       },
-      "speed": 4
-    }
-  },
-  {
-    "kind": "move_absolute",
-    "args": {
+      "speed": 800,
       "location": {
-        "kind": "tool",
         "args": {
-          "tool_id": 8888
-        }
-      },
-      "offset": {
-        "kind": "coordinate",
-        "args": {
-          "x": 0,
-          "y": 0,
-          "z": 0
-        }
-      },
-      "speed": 4
+          "tool_id": __TOOL_ID__
+        },
+        "kind": "tool"
+      }
     }
   },
   {
     "kind": "move_relative",
     "args": {
-      "x": 1,
-      "y": 2,
-      "z": 3,
-      "speed": 4
+      "x": 4,
+      "y": 5,
+      "z": 6,
+      "speed": 800
     }
   },
   {
     "kind": "write_pin",
     "args": {
       "pin_number": 1,
-      "pin_value": 128,
-      "pin_mode": 1
+      "pin_value": 2,
+      "pin_mode": 0
     }
   },
   {
     "kind": "read_pin",
     "args": {
-      "pin_number": 1,
-      "label": "my_pin",
-      "pin_mode": 1
+      "pin_number": 4,
+      "pin_mode": 0,
+      "label": "foo"
     }
   },
   {
     "kind": "wait",
     "args": {
-      "milliseconds": 500
+      "milliseconds": 4
     }
   },
   {
     "kind": "send_message",
     "args": {
-      "message": "Bot at coord {{ x }} {{ y }} {{ z }}.",
-      "message_type": "info"
-    },
-    "body": [
-      {
-        "kind": "channel",
-        "args": {
-          "channel_name": "toast"
-        }
-      }
-    ]
+      "message": "Bot is at position {{ x }}, {{ y }}, {{ z }}.",
+      "message_type": "success"
+    }
   },
   {
     "kind": "_if",
     "args": {
       "lhs": "x",
-      "rhs": 300,
       "op": "is",
+      "rhs": 0,
       "_then": {
         "kind": "execute",
         "args": {
-          "sequence_id": 9999
+          "sequence_id": __SEQUENCE_ID__
         }
       },
       "_else": {
@@ -108,7 +78,39 @@
   {
     "kind": "execute",
     "args": {
-      "sequence_id": 9999
+      "sequence_id": __SEQUENCE_ID__
+    }
+  },
+  {
+    "kind": "execute_script",
+    "args": {
+      "label": "plant-detection"
+    }
+  },
+  {
+    "kind": "take_photo",
+    "args": {}
+  },
+  {
+    "kind": "move_absolute",
+    "args": {
+      "offset": {
+        "kind": "coordinate",
+        "args": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "speed": 800,
+      "location": {
+        "args": {
+          "x": 1,
+          "y": 2,
+          "z": 3
+        },
+        "kind": "coordinate"
+      }
     }
   }
 ]
