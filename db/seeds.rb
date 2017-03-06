@@ -26,7 +26,11 @@ unless Rails.env == "production"
     end
     [ "http://i.imgur.com/XvFBGA4.jpg",
       "http://i.imgur.com/XsFczCY.jpg" ].each do |url|
-        Images::Create.run!(attachment_url: url, device: u.device)
+        Images::Create.run!(attachment_url: url,
+                            device: u.device,
+                            meta: {x: rand(1...550),
+                                   y: rand(1...550),
+                                   z: rand(1...550)})
     end
     10.times do
       Plant.create(
