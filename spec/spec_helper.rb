@@ -13,6 +13,7 @@ ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
 require_relative './stuff'
+require_relative './json_schema_idea'
 
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
@@ -36,10 +37,12 @@ RSpec.configure do |config|
 
   if ENV['DOCS']
     config.after(:each, type: :controller) do
+      JsonSchemaIdea.add(request)
       SmarfDoc.run!(request, response)
     end
 
     config.after(:suite) do
+      JsonSchemaIdea.finish!
       SmarfDoc.finish!
     end
   end
