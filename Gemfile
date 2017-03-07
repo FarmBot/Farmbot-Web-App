@@ -18,6 +18,7 @@ gem "fog-google", git: "https://github.com/fog/fog-google"
 gem "rest-client" # If you see this, delete this.
 gem "pg"
 gem "batch_api"
+gem "json-schema-generator"
 
 # Error reporting tools.
 # Active on the "official" FarmBot server, set the appropriate ENV

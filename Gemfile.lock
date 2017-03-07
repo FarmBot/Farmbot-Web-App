@@ -114,6 +114,10 @@ GEM
       domain_name (~> 0.5)
     i18n (0.7.0)
     json (1.8.3)
+    json-schema-generator (0.0.9)
+      jsonpath
+    jsonpath (0.5.8)
+      multi_json
     jwt (1.5.6)
     launchy (2.4.3)
       addressable (~> 2.3)
@@ -266,6 +270,7 @@ DEPENDENCIES
   faker
   figaro
   fog-google!
+  json-schema-generator
   jwt
   letter_opener
   mutations (~> 0.8.0)

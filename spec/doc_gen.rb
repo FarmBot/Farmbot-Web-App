@@ -1,6 +1,7 @@
-class JsonSchemaIdea
-  @all = {}
+require_relative "./doc_page"
 
+class DocGen
+  @all       = {}
   BLACK_LIST = ["/api/sequences/:id (PATCH)",
                 "/api/sequences (POST)"]
 
@@ -18,7 +19,12 @@ class JsonSchemaIdea
     @all.select!{|k, v| v.length > 0}
     # TOO LONG TO DOCUMENT - IGNORE INSTEAD.
     BLACK_LIST.map {|k| @all.delete(k) }
-    binding.pry
+    @all
+      .map do |key, y|
+        url, verb = key.split(" ")
+        DocPage.new(url, verb, JSON.parse(JSON::SchemaGenerator
+                                   .generate(key, y.to_json))["items"])
+      end
   end
 
   def self.from_json(request)
