@@ -13,6 +13,7 @@ describe Api::ToolsController do
     it 'destroy a tool' do
       sign_in user
       before = Tool.count
+      tool.tool_slot.update_attributes(tool: nil)
       delete :destroy, params: { id: tool.id }
       after = Tool.count
       expect(response.status).to eq(200)
@@ -49,6 +50,7 @@ describe Api::ToolsController do
       expect(sd.sequence_id).to eq(sequence.id)
 
       sign_in user
+      tool.tool_slot.update_attributes(tool: nil)
       before = Tool.count
       delete :destroy, params: { id: tool.id }
       after = Tool.count
@@ -56,6 +58,18 @@ describe Api::ToolsController do
       expect(before).to eq(after)
       expect(json[:tool]).to include(
         Tools::Destroy::STILL_IN_USE % sequence.name)
+    end
+
+    it 'does not destroy a tool when in a slot' do
+      t  = FactoryGirl.create(:tool, device: user.device)
+      ts = FactoryGirl.create(:tool_slot, tool: tool)
+      sign_in user
+      before = Tool.count
+      delete :destroy, params: { id: tool.id }
+      after = Tool.count
+      expect(response.status).to eq(422)
+      expect(before).to eq(after)
+      expect(json[:tool]).to include(Tools::Destroy::STILL_IN_SLOT)
     end
   end
 end
