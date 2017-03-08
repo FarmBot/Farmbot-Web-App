@@ -43,7 +43,7 @@ RSpec.configure do |config|
     end
 
     config.after(:suite) do
-      DocGen.finish!#.tap{ |x| binding.pry }
+      DocGen.finish!
       SmarfDoc.finish!
     end
   end
