@@ -7,6 +7,7 @@ module Devices
     end
 
     optional do
+      string :timezone, in: Device::TIMEZONES
       string :name
       string :webcam_url
     end
@@ -23,7 +24,7 @@ module Devices
       device
     end
   private
-  
+
     def merge_default_values
       inputs[:name]  ||= random_name
     end

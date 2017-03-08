@@ -5,6 +5,7 @@ module Devices
     end
 
     optional do
+      string  :timezone, in: Device::TIMEZONES
       string  :name
       string  :webcam_url
     end

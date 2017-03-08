@@ -2,6 +2,8 @@
 class Device < ActiveRecord::Base
   DEFAULT_MAX_LOGS   = 50
   DEFAULT_MAX_IMAGES = 100
+  TIMEZONES          = ActiveSupport::TimeZone.all.map(&:to_s)
+
   has_many  :users
   has_many  :farm_events,   dependent: :destroy
   has_many  :points,        dependent: :destroy
