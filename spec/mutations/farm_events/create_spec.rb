@@ -23,18 +23,4 @@ describe FarmEvents::Create do
     expect(farm_event.time_unit).to eq('minutely')
     # expect(farm_event.next_time).to eq(farm_event.calculate_next_occurence)
   end
-
-  it 'has a calendar' do
-     pending(
-       "SEE: https://github.com/seejohnrun/ice_cube/issues/378"
-     )
-     x = FarmEvents::Create.run!({ start_time:     "2017-02-24T13:04:07.754Z",
-                                   end_time:       "2017-02-26T13:30:00.000Z",
-                                   device:         seq.device,
-                                   repeat:          2,
-                                   time_unit:       "hourly",
-                                   executable_id:   seq.id,
-                                   executable_type: seq.class.name })
-    expect(x.calendar.length).to eq(25)
-  end
 end

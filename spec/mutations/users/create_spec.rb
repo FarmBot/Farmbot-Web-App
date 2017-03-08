@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Users::Create do
   it 'enforces terms of service' do
-    User::ENFORCE_TOS = true
+    const_reassign(User, :ENFORCE_TOS, true)
     results = Users::Create.run(email:                 "xyz@qwerty.io",
                                 name:                  "Faker",
                                 password:              "password12345",
@@ -10,11 +10,11 @@ describe Users::Create do
                                 agree_to_terms:        false)
     tos = results.errors.message["terms_of_service"] || ""
     expect(tos).to include("must agree")
-    User::ENFORCE_TOS = false
+    const_reassign(User, :ENFORCE_TOS, false)
   end
 
   it 'opts out of terms of service' do
-    User::ENFORCE_TOS = false
+    const_reassign(User, :ENFORCE_TOS, false)
     results = Users::Create.run(email:                 "xyz@qwerty.io",
                                 name:                  "Faker",
                                 password:              "password12345",
