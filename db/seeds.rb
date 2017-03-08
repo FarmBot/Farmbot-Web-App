@@ -56,8 +56,7 @@ unless Rails.env == "production"
     name: "Goto 0, 0, 0",
     body: [{kind:"move_absolute",args:{location:{kind:"coordinate", args:{x:0,
     y:0, z:0}}, offset:{kind:"coordinate", args:{x:0, y:0, z:0}}, speed:800}}])
-    t = Tools::Create.run!(name: "Trench Digging Tool", device: u.device)
-
+    t  = Tools::Create.run!(name: "Trench Digging Tool", device: u.device)
     body_txt = File.read("spec/lib/celery_script/ast_fixture4.json")
                    .gsub("__SEQUENCE_ID__", s.id.to_s)
                    .gsub("__TOOL_ID__", t.id.to_s)
@@ -84,4 +83,15 @@ unless Rails.env == "production"
         executable_type: "Sequence"
       )
     end
+    bay = u
+      .device
+      .tool_bays
+      .last || ToolBay.create(device: u.device, name: "Tool Bay 1")
+    ts = ToolSlots::Create.run!(device: u.device,
+                                tool_id: t.id,
+                                tool_bay_id: bay.id,
+                                name: "Slot One.",
+                                x: 10,
+                                y: 10,
+                                z: 10)
 end
