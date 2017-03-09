@@ -49,7 +49,10 @@ unless Rails.env == "production"
         y: rand(1...225) + rand(1...225),
         z: 5,
         radius: rand(1...150) + rand(1...150),
-        meta: { created_by: "plant-detection" })
+        meta: {
+          created_by: "plant-detection",
+          color: (Sequence::COLORS + [nil]).sample
+        })
     end
 
     s = Sequences::Create.run!(device: u.device,
