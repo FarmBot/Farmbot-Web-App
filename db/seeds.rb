@@ -39,7 +39,7 @@ unless Rails.env == "production"
         y: rand(1...550),
         name: Haikunator.haikunate,
         img_url: "http://placehold.it/200x150",
-        icon_url: "/icons/Natural Food-96.png",
+        icon_url: Plant::DEFAULT_ICON,
         openfarm_slug: "tomato")
     end
     100.times do
