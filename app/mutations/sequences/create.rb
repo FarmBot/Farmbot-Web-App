@@ -20,7 +20,7 @@ module Sequences
       seq = Sequence.new(inputs)
       seq.args["is_outdated"] = false
       # version is never user definable!
-      # IF YOU UNCOMMENT THIS BAD STUFF WILL HAPPEN.
+      # IF YOU REMOVE THIS BAD STUFF WILL HAPPEN:
       seq.args["version"]     = SequenceMigration::Base.latest_version
       # See comment above ^
       ActiveRecord::Base.transaction do

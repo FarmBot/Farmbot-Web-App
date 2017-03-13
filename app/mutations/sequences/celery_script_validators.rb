@@ -32,7 +32,10 @@ module Sequences
 
     def reload_dependencies(sequence)
         must_be_in_transaction
-        SequenceDependency.where(sequence: sequence).destroy_all
+        SequenceDependency
+          .where(sequence: sequence)
+          .destroy_all
+
         SequenceDependency.create!(deps(sequence))
     end
 
@@ -60,18 +63,24 @@ module Sequences
       cb = ->(n) {
           RESOURCES.map do |arg, klass|
             id = n&.args&.fetch(arg, nil)&.value
+            # must_track = ((id) &&
+            #               # Kick out recursive sequences,
+            #               # This prevents undeletable sequences that dependend
+            #               # On themselves.
+            #               ((klass == Sequence) &&
+            #                (sequence.id) &&
+            #                (id != sequence.id)))
             all.push(sequence: sequence,
-                      dependency_type: klass,
-                      dependency_id: id) if id
+                     dependency_type: klass,
+                     dependency_id: id) if id
           end
       }
-      # Filter out the target sequence to prevent runaway recursion.
-      all.select do |r|
-        !(r[dependency_type] == Sequence && r[dependency_id] == sequence.id)
-      end
 
       CeleryScript::TreeClimber.travel(tree, cb)
-      all
+      # Filter out the target sequence to prevent runaway recursion.
+      all.select do |r|
+        !((r[:dependency_type] == Sequence) && (r[:dependency_id] == sequence.id))
+      end
     end
   end
 end
