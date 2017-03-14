@@ -14,7 +14,7 @@ module ToolSlots
             integer :x
             integer :y
             integer :z
-            integer :tool_id
+            integer :tool_id, nils: true, empty_is_nil: true
           end
         end
       end
