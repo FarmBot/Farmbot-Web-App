@@ -31,7 +31,7 @@ describe Sequences::Create do
     pin_write["args"]["pin_mode"] = -9
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
-    expectation = 'Can not put "-9" into a left hand side (LHS) argument.'
+    expectation = '"-9" is not a valid pin_mode.'
     expect(seq.errors["body"].message).to include(expectation)
   end
 
