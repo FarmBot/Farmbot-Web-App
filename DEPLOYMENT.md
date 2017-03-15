@@ -105,6 +105,10 @@ http://staging.farmbot.io/.well-known/acme-challenge/3tFAi5c7tJK-UJu0LGFM0xFwSEx
  3. Set the `ACME_SECRET` ENV var to the value shown above (yours will be different). Process restart may be required if you are not on Heroku!
 
 ```
+heroku config:set ACME_SECRET=THAT_BIG_CODE_FROM_PREVIOUS_STEP --app=YOUR_APP_HERE
+```
+
+```
   - Congratulations! Your certificate and chain have been saved at
    /etc/letsencrypt/live/staging.farmbot.io/fullchain.pem.
 ```
