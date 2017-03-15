@@ -28,8 +28,7 @@ module CeleryScriptSettingsBag
                              send_message execute _if execute_script take_photo)
   ALLOWED_LHS           = %w(pin0 pin1 pin2 pin3 pin4 pin5 pin6 pin7 pin8 pin9
                              pin10 pin11 pin12 pin13 x y z)
-  BAD_ALLOWED_PIN_MODES = 'Can not put "%s" into a left hand side (LHS) '\
-                          'argument. Allowed values: %s'
+  BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
   BAD_SUB_SEQ           = 'Sequence #%s does not exist.'
@@ -47,7 +46,7 @@ module CeleryScriptSettingsBag
       .new
       .defineArg(:pin_mode,        [Fixnum]) do |node|
         within(ALLOWED_PIN_MODES, node) do |val|
-          BAD_ALLOWED_PIN_MODES % [val.to_s, ALLOWED_LHS.inspect]
+          BAD_ALLOWED_PIN_MODES % [val.to_s, ALLOWED_PIN_MODES.inspect]
         end
       end
       .defineArg(:sequence_id, [Fixnum]) do |node|
