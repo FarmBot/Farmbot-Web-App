@@ -32,15 +32,16 @@ unless Rails.env == "production"
                                    y: rand(1...550),
                                    z: rand(1...550)})
     end
-    10.times do
+    25.times do
       Plant.create(
         device: u.device,
         x: rand(1...550),
         y: rand(1...550),
+        radius: rand(10...50),
         name: Haikunator.haikunate,
         img_url: "http://placehold.it/200x150",
         icon_url: Plant::DEFAULT_ICON,
-        openfarm_slug: "tomato")
+        openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample)
     end
     100.times do
       Point.create(
