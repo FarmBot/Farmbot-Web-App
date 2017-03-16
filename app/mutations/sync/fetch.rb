@@ -17,7 +17,8 @@ module Sync
                device:        device,
                users:         users,
                regimen_items: regimen_items,
-               logs:          logs
+               logs:          logs,
+               images:        images
               }
     end
 
