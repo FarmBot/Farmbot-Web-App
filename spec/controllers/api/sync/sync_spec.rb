@@ -17,9 +17,6 @@ describe Api::SyncsController do
       expect(response.status).to eq(200)
       expect(json).to be_a_kind_of(Hash)
       expect(json[:device][:id]).to eq(device_id)
-      expect(json[:sequences].length).to eq(2)
-      expect(json[:sequences].map { |s| s[:id] }.sort).to eq(farm_event_ids)
-      expect(json[:images].first.key?(:attachment_url)).to be_truthy
     end
   end
 end

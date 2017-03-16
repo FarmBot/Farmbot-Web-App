@@ -16,18 +16,9 @@ module Sync
                compat_num:    COMPAT_NUM,
                device:        device,
                users:         users,
-               sequences:     sequences,
-               regimens:      regimens,
-               peripherals:   peripherals,
                regimen_items: regimen_items,
-               plants:        plants,
-               points:        points,
-               tool_bays:     tool_bays,
-               tool_slots:    tool_slots,
-               tools:         tools,
-               logs:          logs,
-               images:        images,
-               farm_events:   farm_events }
+               logs:          logs
+              }
     end
 
   private
