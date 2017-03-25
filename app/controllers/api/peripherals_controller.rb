@@ -11,8 +11,8 @@ module Api
     end
 
     def update
-      mutate Peripherals::Update.run(peripheral: peripheral,
-       params.as_json,
+      mutate Peripherals::Update.run(params.as_json,
+       peripheral: peripheral,
        device: current_device)
     end
 
