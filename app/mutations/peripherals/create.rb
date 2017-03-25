@@ -2,14 +2,8 @@ module Peripherals
   class Create < Mutations::Command
     required do
       model :device, class: Device
-      array :peripherals do
-        hash do
-          required do
-            integer :pin
-            string  :label
-          end
-        end
-      end
+      integer :pin
+      string  :label
     end
 
     def execute
