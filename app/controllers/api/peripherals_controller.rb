@@ -10,6 +10,10 @@ module Api
       mutate Peripherals::Create.run(params.as_json, device: current_device)
     end
 
+    def update
+      mutate Peripherals::Update.run(params.as_json, device: current_device)
+    end
+
     def destroy
       if (peripheral.device_id == current_device.id) && peripheral.destroy!
         render json: ""
