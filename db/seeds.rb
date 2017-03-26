@@ -75,7 +75,7 @@ unless Rails.env == "production"
                            {time_offset:173100000, sequence_id:s.id},
                            {time_offset:345900000, sequence_id:s.id}
                          ])
-    Peripherals::Create.run!(device:u.device, peripherals: [{pin: 13, label: "LED"}])
+    Peripherals::Create.run!(device: u.device, pin: 13, label: "LED")
     5.times do
       FarmEvents::Create.run!(
         device: u.device,
