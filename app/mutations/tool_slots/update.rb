@@ -6,7 +6,7 @@ module ToolSlots
     end
 
     optional do
-      integer :tool_id
+      integer :tool_id, nils: true, empty_is_nil: true
       string  :name
       integer :x
       integer :y

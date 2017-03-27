@@ -40,7 +40,7 @@ module Api
       @tool_slot_params ||= raw_json
                             .merge({ device: current_device,
                                      tool_slot: (params[:id] ? tool_slot : nil)
-                                    }).compact
+                                    })#.compact
     end
   end
 end
