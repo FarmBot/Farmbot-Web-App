@@ -14,6 +14,9 @@ module Auth
       cred_info   = JSON.parse(plain_text).symbolize_keys!
       @user       = User.where(email: cred_info[:email]).first
       whoops! unless @user && @user.valid_password?(cred_info[:password])
+    rescue OpenSSL::PKey::RSAError => e
+      whoops!("You are most likely on the wrong server env."+
+              " That's not a valid public key.")
     end
 
     def execute
