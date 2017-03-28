@@ -16,7 +16,6 @@ FarmBot::Application.routes.draw do
     resources :points,        only: [:create, :show, :index, :destroy, :update] do
         post :search, on: :collection
     end
-    resource :sync,           only: [:show]
     resource :public_key,     only: [:show]
     resource :tokens,         only: [:create]
     resource :users,          only: [:create, :update, :destroy, :show]
