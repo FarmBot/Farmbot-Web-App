@@ -1,15 +1,14 @@
 module FarmEvents
   module ExecutableHelpers
-    NO_EXECUTABLE = "You must provide a valid executable_id and "\
-                    "executable_type for a Sequence or Regimen object."
+    NO_EXECUTABLE = "An event requires a sequence or regimen"
     def self.included(base)
       base.extend(ClassMethods)
     end
 
     module ClassMethods
       # :required or :optional
-      def executable_fields(optionality)
-        self.send(optionality) do
+      def executable_fields(optionality = "deprecated")
+        optional do
           integer :executable_id
           string  :executable_type, in: FarmEvent::EXECUTABLE_CLASSES.map(&:name)
         end
@@ -17,7 +16,7 @@ module FarmEvents
     end
 
     def validate_executable
-        add_error :executable, :not_found, NO_EXECUTABLE unless executable
+        add_error :farm_event, :not_found, NO_EXECUTABLE unless executable
     end
 
     def executable
@@ -25,7 +24,8 @@ module FarmEvents
     end
 
     def klass
-      ({"Sequence" => Sequence, "Regimen"  => Regimen })[executable_type]
+      ({"Sequence" => Sequence,
+        "Regimen"  => Regimen })[executable_type] || Sequence
     end
   end
 end

@@ -2,7 +2,7 @@ module FarmEvents
   class Create < Mutations::Command
     using LegacyRefinementsModule
     include FarmEvents::ExecutableHelpers
-    executable_fields :required
+    executable_fields :optional
 
     required do
       model   :device, class: Device
