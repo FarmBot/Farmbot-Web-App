@@ -31,8 +31,7 @@ describe Api::FarmEventsController do
                 time_unit: 'minutely' }
       post :create, params: input
       expect(response.status).to eq(422)
-      expect(json.keys).to include(:executable_type)
-      expect(json.keys).to include(:executable_id)
+      expect(json.keys).to include(:farm_event)
     end
   end
 end
