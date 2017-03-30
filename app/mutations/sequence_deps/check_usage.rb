@@ -1,7 +1,7 @@
 module SequenceDeps
   # Returns an array of sequence IDs (sequences that need the dependency).
   # an empty array indicates that the resource is not in use.
-  class CheckUsers
+  class CheckUsers < Mutations::Command
     required do
       duck :resource , methods: [:id]
     end
