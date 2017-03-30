@@ -1,13 +1,13 @@
 module ToolSlots
   class Create < ToolSlots::Base
     required do
-      model :device, class: Device
+      model   :device, class: Device
       integer :tool_bay_id
     end
 
     optional do
       integer :tool_id
-      string :name
+      string  :name
       integer :x
       integer :y
       integer :z

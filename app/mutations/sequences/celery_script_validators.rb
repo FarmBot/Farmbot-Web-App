@@ -81,6 +81,11 @@ module Sequences
       all.select do |r|
         !((r[:dependency_type] == Sequence) && (r[:dependency_id] == sequence.id))
       end
+      .tap { |x|
+        puts "TODO: Left off here. Aside from checking tool_id, I will also " +
+             "need to check a tools slot and it as a dependency as well."
+        binding.pry
+      }
     end
   end
 end

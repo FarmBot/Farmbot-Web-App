@@ -34,7 +34,7 @@ module Sequences
       regimen_items = RegimenItem
                         .joins(:sequence, :regimen)
                         .where(sequence_id: sequence.id )
-      if regimen_items.count > 0 
+      if regimen_items.count > 0
         names = regimen_items.map(&:regimen)
                              .map(&:name)
                              .uniq
