@@ -97,7 +97,7 @@ Please [raise an issue](https://github.com/FarmBot/Farmbot-Web-API/issues/new) t
 ```
 
 Make sure your web server displays the following content at
-http://staging.farmbot.io/.well-known/acme-challenge/3tFAi5c7tJK-UJu0LGFM0xFwSExRZqzZD60w1723wOo before continuing:
+http://staging.farmbot.io/.well-known/acme-challenge/<CODE_HERE> before continuing:
 
 3tFAi5c7tJK-YOURS\_WILL\_BE\_DIFFERENT
 
