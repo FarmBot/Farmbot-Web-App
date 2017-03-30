@@ -36,9 +36,8 @@ describe Api::ToolSlotsController do
       expect(after).to be < before
     end
 
-    it 'disallows deletion of slots in use by sequeunces' do
-      pending "This test is done, but the implementation has yet to be "\
-              "written. Stepping off this task to renew SSL certs. -RC."
+    it 'disallows deletion of slots in use by sequences' do
+      pending "Going to fix one last thing on FE"
       sign_in user
       payload = { id: tool_slot.id }
       before = ToolSlot.count
