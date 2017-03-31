@@ -20,8 +20,12 @@ module ToolSlots
       end
     end
 
+    def query
+      {dependency: [tool_slot, tool_slot.tool].compact}
+    end
+
     def deps
-      @deps ||= SequenceDependency.where(dependency: tool_slot)
+      @deps ||= SequenceDependency.where(query)
     end
   end
 end
