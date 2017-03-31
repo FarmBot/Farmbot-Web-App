@@ -1,8 +1,8 @@
 module Sequences
   module CeleryScriptValidators
-    NO_TRANSACTION = "You need to do this in a transaction"
-    RESOURCES      = { "tool_id"     => Tool,
-                       "sequence_id" => Sequence }
+    NO_TRANSACTION   = "You need to do this in a transaction"
+    ARGS_OF_INTEREST = { "tool_id"     => Tool,
+                         "sequence_id" => Sequence }
     ALLOWED_NODE_KEYS = [
       "body",
       "kind",
@@ -56,36 +56,33 @@ module Sequences
       @checker = CeleryScript::Checker.new(tree, corpus)
     end
 
+    # Climbs through every node in a sequence and finds out which dependencies
+    # will need to be kept track of
     def deps(sequence)
-      all = []
-      return all unless checker.valid?
+      return [] unless checker.valid? # Exit early if it'sbad data
+      all = [] # Start collecting the list.
+      CeleryScript::TreeClimber.travel(tree, ->(n) {
+        # Iterate over each node, looking for "args of interest".
+        # Tools, sub sequences, etc.
+        ARGS_OF_INTEREST.map do |arg, klass|
+          id = n&.args&.fetch(arg, nil)&.value
+          all.push(klass.find(id)) if id
+        end
+      })
 
-      cb = ->(n) {
-          RESOURCES.map do |arg, klass|
-            id = n&.args&.fetch(arg, nil)&.value
-            # must_track = ((id) &&
-            #               # Kick out recursive sequences,
-            #               # This prevents undeletable sequences that dependend
-            #               # On themselves.
-            #               ((klass == Sequence) &&
-            #                (sequence.id) &&
-            #                (id != sequence.id)))
-            all.push(sequence: sequence,
-                     dependency_type: klass,
-                     dependency_id: id) if id
-          end
-      }
-
-      CeleryScript::TreeClimber.travel(tree, cb)
       # Filter out the target sequence to prevent runaway recursion.
-      all.select do |r|
-        !((r[:dependency_type] == Sequence) && (r[:dependency_id] == sequence.id))
+      # It would be impossible to delete recursive sequences otherwise.
+      all.select! { |d| !(d.is_a?(Sequence) && (d.id == sequence.id)) }
+
+      # If this sequence is using an active tool, we need to keep its slot on
+      # hold also.
+      all.map { |d| all.push(d.slot) if d.is_a?(Tool) && d.slot }
+
+      # Finally, output the data in a format that can directly be used by
+      # SequenceDependency#create!().
+      return all.uniq.map do |d|
+        { sequence: sequence, dependency_type: d.class, dependency_id: d.id }
       end
-      .tap { |x|
-        puts "TODO: Left off here. Aside from checking tool_id, I will also " +
-             "need to check a tools slot and it as a dependency as well."
-        binding.pry
-      }
     end
   end
 end

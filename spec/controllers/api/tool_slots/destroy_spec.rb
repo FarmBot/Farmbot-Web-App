@@ -15,13 +15,7 @@ describe Api::ToolSlotsController do
     let(:user) { FactoryGirl.create(:user) }
     let!(:tool_bay) { FactoryGirl.create(:tool_bay, device: user.device) }
     let!(:tool) { FactoryGirl.create(:tool, device: user.device) }
-    let!(:tool_slot) { ToolSlots::Create.run!(tool_id: tool.id,
-                                              x:           0,
-                                              y:           0,
-                                              z:           0,
-                                              name:        "Test 123",
-                                              device:      user.device,
-                                              tool_bay_id: tool_bay.id) }
+    let!(:tool_slot) { tool.slot }
     let!(:sequence) { Sequences::Create.run!({
                         device: user.device,
                         name: "TOOL SLOT",
@@ -29,7 +23,11 @@ describe Api::ToolSlotsController do
                               .parse(sequence_fixture.gsub("---", tool.id.to_s))
                       }) }
 
-    it 'removes a tool slot' do
+    it 'cleans up tool slot SequenceDependencies' do
+      tool_slot.tool_bay.update_attributes(device: user.device)
+      # This sequence requires the tool slot above.
+      # deletetion should free up the resource.
+      sequence.destroy!
       sign_in user
       payload = { id: tool_slot.id }
       before = ToolSlot.count
@@ -42,11 +40,10 @@ describe Api::ToolSlotsController do
 
     it 'disallows deletion of slots in use by sequences' do
       sign_in user
+      tool_slot.tool_bay.update_attributes(device: user.device)
       payload = { id: tool_slot.id }
       before = ToolSlot.count
       delete :destroy, params: payload
-      binding.pry
-      expect(response.status).to eq(200)
       after = ToolSlot.count
       expect(response.status).to eq(422)
       expect(after).to eq(before)

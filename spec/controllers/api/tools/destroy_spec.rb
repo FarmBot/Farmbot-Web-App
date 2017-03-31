@@ -6,9 +6,12 @@ describe Api::ToolsController do
     let(:user) { FactoryGirl.create(:user) }
     let(:tool_bay) { FactoryGirl.create(:tool_bay, device: user.device) }
     let(:tool_slot) { FactoryGirl.create(:tool_slot, tool_bay: tool_bay) }
-    let!(:tool) { FactoryGirl.create(:tool,
-                    tool_slot: tool_slot,
-                    device: user.device) }
+    let!(:tool) {
+        ToolSlot.destroy_all
+        Tool.destroy_all
+        FactoryGirl.create(:tool,
+        tool_slot: tool_slot,
+        device: user.device) }
 
     it 'destroy a tool' do
       sign_in user
@@ -44,10 +47,12 @@ describe Api::ToolsController do
                              device: user.device,
                              body:   program)
       expect(SequenceDependency.count).to be > before
-      sd = SequenceDependency.last
+      sd_list = SequenceDependency
+                  .where(sequence: Sequence.last)
+                  .map(&:dependency)
       sequence = Sequence.last
-      expect(sd.dependency).to eq(tool)
-      expect(sd.sequence_id).to eq(sequence.id)
+      expect(sd_list).to include(tool)
+      expect(sd_list).to include(tool.slot)
 
       sign_in user
       tool.tool_slot.update_attributes(tool: nil)
@@ -61,8 +66,6 @@ describe Api::ToolsController do
     end
 
     it 'does not destroy a tool when in a slot' do
-      t  = FactoryGirl.create(:tool, device: user.device)
-      ts = FactoryGirl.create(:tool_slot, tool: tool)
       sign_in user
       before = Tool.count
       delete :destroy, params: { id: tool.id }

@@ -6,4 +6,8 @@ class Tool < ApplicationRecord
   has_one    :tool_slot
   validates  :device, presence: true
   validates  :name, uniqueness: { scope: :device }
+
+  def slot
+    tool_slot # I kept forgetting. It's an alias.
+  end
 end

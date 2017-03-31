@@ -22,8 +22,7 @@ module Api
     end
 
     def destroy
-      tool_slot.destroy!
-      render json: ""
+      mutate ToolSlots::Destroy.run(tool_slot: tool_slot)
     end
 
   private
@@ -37,10 +36,9 @@ module Api
     end
 
     def tool_slot_params
-      @tool_slot_params ||= raw_json
-                            .merge({ device: current_device,
-                                     tool_slot: (params[:id] ? tool_slot : nil)
-                                    })#.compact
+      @tool_slot_params ||= raw_json.merge({ device: current_device,
+                                            tool_slot: (params[:id] ?
+                                                          tool_slot : nil) })
     end
   end
 end
