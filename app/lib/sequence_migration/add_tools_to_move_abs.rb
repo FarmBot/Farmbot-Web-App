@@ -21,17 +21,22 @@ module SequenceMigration
             # I will need to manually fix these.
             Rollbar.info("Sequence #{sequence.id} is bad.")
           else
-            loc = { "kind" => "coordinate" }.merge(x["args"].slice("x", "y", "z"))
-            x["args"]["location"] = loc
-            x["args"].except!("x", "y", "z")
-            x["args"]["offset"] = {
-              "kind" => "coordinate",
-              "args" => {
-                "x" => 0,
-                "y" => 0,
-                "z" => 0
+
+            x["args"] = {
+                 "location" => {
+                   "kind" => "coordinate",
+                   "args" => {
+                      "x" => (x.dig("args", "x") || 0),
+                      "y" => (x.dig("args", "y") || 0),
+                      "z" => (x.dig("args", "z") || 0)
+                    }
+                  },
+                 "offset" => {
+                    "kind" => "coordinate",
+                    "args" => { "x" => 0, "y" => 0, "z" => 0 }
+                 },
+                 "speed" => 800
               }
-            }
           end
         end
     end
