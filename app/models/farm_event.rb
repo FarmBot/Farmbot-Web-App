@@ -8,11 +8,16 @@ class FarmEvent < ActiveRecord::Base
                           weekly monthly yearly) << NEVER
   EXECUTABLE_CLASSES = [Sequence, Regimen]
   belongs_to :executable, polymorphic: true
-  validates :executable, presence: true
+  validates  :executable, presence: true
   belongs_to :device
-  validates :device_id, presence: true
+  validates  :device_id, presence: true
 
   def calculate_next_occurence
     Time.now.as_json
+  end
+
+  # Check if an executable is in use.
+  def self.if_still_using(executable)
+    yield if self.where(executable: executable).any?
   end
 end
