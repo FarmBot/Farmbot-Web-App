@@ -17,7 +17,7 @@ class FarmEvent < ActiveRecord::Base
   end
 
   # Check if an executable is in use.
-  def self.still_using(executable)
-    self.where(executable: executable)
+  def self.if_still_using(executable)
+    yield if self.where(executable: executable).any?
   end
 end

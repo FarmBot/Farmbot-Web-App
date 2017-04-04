@@ -11,9 +11,8 @@ describe Sequences::Delete do
     expect(result.success?).to be false
     errors = result.errors.message
     expect(errors.keys).to include("sequence")
-    expect(errors["sequence"]).to include("still relying")
-    expect(errors["sequence"]).to include(regimen_item1.regimen.name)
-    expect(errors["sequence"]).to include(regimen_item2.regimen.name)
+    expect(errors["sequence"]).to include("regimens are still relying on " +
+                                          "this sequence")
   end
 
   it 'deletes a sequence' do
