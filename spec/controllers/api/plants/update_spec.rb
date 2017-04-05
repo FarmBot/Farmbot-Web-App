@@ -5,7 +5,7 @@ describe Api::PlantsController do
   describe '#update' do
     let(:user) { FactoryGirl.create(:user) }
     let(:plant) { FactoryGirl.create(:plant, device: user.device) }
-  
+
     it 'updates a plant' do
       sign_in user
       RIGHT_NOW = "2017-01-24T07:40:26.965-06:00"
@@ -14,7 +14,6 @@ describe Api::PlantsController do
             y: 45,
             name: "My Lettuce",
             img_url: "/lettuce.png",
-            icon_url: "/tiny-lettuce.png",
             openfarm_slug: "limestone-lettuce",
             created_at: RIGHT_NOW }
       patch :update, params: p
@@ -24,7 +23,6 @@ describe Api::PlantsController do
       expect(plant.y).to eq(p[:y])
       expect(plant.name).to eq(p[:name])
       expect(plant.img_url).to eq(p[:img_url])
-      expect(plant.icon_url).to eq(p[:icon_url])
       expect(plant.openfarm_slug).to eq(p[:openfarm_slug])
       expect(plant.created_at).to eq(p[:created_at])
       p.keys.each do |key|

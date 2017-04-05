@@ -40,7 +40,6 @@ unless Rails.env == "production"
         radius: rand(10...50),
         name: Haikunator.haikunate,
         img_url: "http://placehold.it/200x150",
-        icon_url: Plant::DEFAULT_ICON,
         openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample)
     end
     100.times do

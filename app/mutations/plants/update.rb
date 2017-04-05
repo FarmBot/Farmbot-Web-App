@@ -10,7 +10,6 @@ module Plants
       float :y
       string :name
       string :img_url
-      string :icon_url
       string :openfarm_slug
       time :created_at
       float  :radius
