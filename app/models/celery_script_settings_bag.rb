@@ -7,6 +7,7 @@
 module CeleryScriptSettingsBag
   DIGITAL, ANALOG       = 0, 1
   ALLOWED_PIN_MODES     = [DIGITAL, ANALOG]
+  ALLOWED_VAR_TYPES = %w(location)
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
                              sync check_updates power_off reboot toggle_pin
                              config_update calibrate execute move_absolute
@@ -41,9 +42,14 @@ module CeleryScriptSettingsBag
   BAD_TOOL_ID           = 'Tool #%s does not exist.'
   BAD_PACKAGE           = '"%s" is not a valid package. Allowed values: %s'
   BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
-
+  BAD_VAR_TYPE          = '"%s" is not a valid type. Allowed values: %s'
   Corpus = CeleryScript::Corpus
       .new
+      .defineArg(:var_type,        [String]) do |node|
+        within(ALLOWED_VAR_TYPES, node) do |val|
+          BAD_VAR_TYPE % [val.to_s, ALLOWED_VAR_TYPES.inspect]
+        end
+      end
       .defineArg(:pin_mode,        [Fixnum]) do |node|
         within(ALLOWED_PIN_MODES, node) do |val|
           BAD_ALLOWED_PIN_MODES % [val.to_s, ALLOWED_PIN_MODES.inspect]
@@ -147,6 +153,7 @@ module CeleryScriptSettingsBag
       .defineNode(:add_point,         [:location], [:pair])
       .defineNode(:take_photo,        [], [])
       .defineNode(:data_update,       [:value], [:pair])
+      .defineNode(:variable,          [:var_type, :label], [])
 
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
