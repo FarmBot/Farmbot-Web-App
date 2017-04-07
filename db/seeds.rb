@@ -75,7 +75,7 @@ unless Rails.env == "production"
                            {time_offset:345900000, sequence_id:s.id}
                          ])
     Peripherals::Create.run!(device: u.device, pin: 13, label: "LED")
-    5.times do
+    2.times do
       FarmEvents::Create.run!(
         device: u.device,
         start_time: Date.yesterday - [*(1..3)].sample.days,
