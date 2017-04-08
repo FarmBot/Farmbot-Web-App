@@ -114,7 +114,10 @@ private
     end
 
     def check_fbos_version
-      if request.user_agent.upcase.include?("FARMBOTOS")
+      # "FARMBOTOS/3.1.0 (RPI3) RPI3 ()"
+      ua = request.user_agent.upcase
+      if ua.include?("FARMBOTOS")
+        major, minor = ua.upcase.split("/").pop.split(".").first(2).map(&:to_i)
         binding.pry
       end
     end
