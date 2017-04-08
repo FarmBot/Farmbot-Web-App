@@ -118,7 +118,7 @@ private
     end
 
     EXPECTED_MAJOR = 3
-    EXPECTED_MINOR = 0
+    EXPECTED_MINOR = 1
     def check_fbos_version
       # "FARMBOTOS/3.1.0 (RPI3) RPI3 ()"
       ua = request.user_agent.upcase
