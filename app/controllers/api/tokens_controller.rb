@@ -1,6 +1,7 @@
 module Api
   class TokensController < Api::AbstractController
     skip_before_action :authenticate_user!, only: :create
+    skip_before_action :check_fbos_version, only: :create
     CREDS    = Auth::CreateTokenFromCredentials
     NO_CREDS = Auth::CreateToken
 

@@ -113,12 +113,20 @@ private
       {root: false, user: current_user}
     end
 
+    def bad_version
+      render json: {error: "Upgrade to latest FarmBot OS"}, status: 426
+    end
+
+    EXPECTED_MAJOR = 3
+    EXPECTED_MINOR = 0
     def check_fbos_version
       # "FARMBOTOS/3.1.0 (RPI3) RPI3 ()"
       ua = request.user_agent.upcase
       if ua.include?("FARMBOTOS")
         major, minor = ua.upcase.split("/").pop.split(".").first(2).map(&:to_i)
-        binding.pry
+        maj_ok = major >= EXPECTED_MAJOR
+        min_ok = minor >= EXPECTED_MINOR
+        bad_version unless maj_ok && min_ok
       end
     end
   end
