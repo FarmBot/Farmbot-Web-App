@@ -4,6 +4,7 @@ module Api
     CONSENT_REQUIRED = "all device users must agree to terms of service."
 
     respond_to :json
+    before_action :check_fbos_version
     before_action :set_default_response_format
     before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
@@ -110,6 +111,12 @@ private
 
     def default_serializer_options
       {root: false, user: current_user}
+    end
+
+    def check_fbos_version
+      if request.user_agent.upcase.include?("FARMBOTOS")
+        binding.pry
+      end
     end
   end
 end
