@@ -28,11 +28,12 @@ describe FarmEvents::GenerateCalendar do
   end
 
   it 'hit another bug' do
+    pending
     calendar = FarmEvents::GenerateCalendar.run!(
-     "start_time"=>"2017-04-10T15:00:00.000Z",
-     "end_time"=>"2017-04-11T01:00:00.000Z",
-     "repeat"=>1,
-     "time_unit"=>"minutely")
+     "start_time" => "2017-04-10T15:00:00.000Z",
+     "end_time"   => "2017-04-11T01:00:00.000Z",
+     "repeat"     => 1,
+     "time_unit"  => "minutely")
     expect(calendar.length).to be > 3
     expect(calendar.length).to be < 7
     binding.pry

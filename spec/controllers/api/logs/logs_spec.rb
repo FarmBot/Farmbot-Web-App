@@ -32,6 +32,18 @@ describe Api::LogsController do
       expect(Log.last.device).to eq(user.device)
     end
 
+    it 'disallows blacklisted (sensitive) words in logs' do
+      Log.delete_all
+      stub = { meta: { x: 1, y: 2, z: 3, type: "info" },
+               channels: ["toast"],
+               message: "my password is foo123!" }
+      sign_in user
+      post :create, body: stub.to_json, params: {format: :json}
+      expect(json[:log]).to include(Logs::Create::BAD_WORDS)
+      expect(response.status).to eq(422)
+      expect(Log.count).to eq(0)
+    end
+
     it 'creates many logs (with an Array)' do
       sign_in user
       before_count = Log.count
