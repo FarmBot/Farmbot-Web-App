@@ -36,6 +36,6 @@ describe FarmEvents::GenerateCalendar do
      "time_unit"  => "minutely")
     expect(calendar.length).to be > 3
     expect(calendar.length).to be < 7
-    binding.pry
+    # binding.pry
   end
 end
