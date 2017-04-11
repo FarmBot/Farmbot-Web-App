@@ -147,7 +147,7 @@ module CeleryScriptSettingsBag
       .defineNode(:calibrate,         [:axis], [])
       .defineNode(:pair,              [:label, :value], [])
       .defineNode(:config_update,     [:package], [:pair])
-      .defineNode(:factory_reset,     [], [])
+      .defineNode(:factory_reset,     [:package], [])
       .defineNode(:execute_script,    [:label], [:pair])
       .defineNode(:set_user_env,      [], [:pair])
       .defineNode(:add_point,         [:location], [:pair])
