@@ -7,14 +7,14 @@
 module CeleryScriptSettingsBag
   DIGITAL, ANALOG       = 0, 1
   ALLOWED_PIN_MODES     = [DIGITAL, ANALOG]
-  ALLOWED_VAR_TYPES = %w(location)
+  ALLOWED_VAR_TYPES     = %w(location)
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
                              sync check_updates power_off reboot toggle_pin
                              config_update calibrate execute move_absolute
                              move_relative write_pin read_pin send_message
                              factory_reset execute_script set_user_env wait
                              add_point install_farmware update_farmware
-                             remove_farmware take_photo data_update)
+                             remove_farmware take_photo data_update zero)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
   RESOURCE_NAME         = %w(images plants regimens planting_area peripherals
@@ -132,6 +132,7 @@ module CeleryScriptSettingsBag
       .defineNode(:_if,            [:lhs, :op, :rhs, :_then, :_else])
       .defineNode(:sequence,          [:version], STEPS)
       .defineNode(:home,              [:speed, :axis], [])
+      .defineNode(:zero,              [:axis], [])
       .defineNode(:emergency_lock,    [], [])
       .defineNode(:emergency_unlock,  [], [])
       .defineNode(:read_status,       [], [])
