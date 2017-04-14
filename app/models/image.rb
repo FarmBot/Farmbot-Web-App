@@ -14,24 +14,31 @@ class Image < ApplicationRecord
     self.meta ||= {}
   end
 
-  has_attached_file :attachment,
-    storage: :fog,
-    fog_directory: ENV["GCS_BUCKET"],
-    fog_credentials: { provider:                         "Google",
-                       google_storage_access_key_id:     ENV["GCS_KEY"],
-                       google_storage_secret_access_key: ENV["GCS_ID"]},
+  CONFIG = {
     default_url: "http://placehold.it/640?text=Processing...",
     styles: { x1280: "1280x1280>",
               x640:  "640x640>",
               x320:  "320x320>",
               x160:  "160x160>",
-              x80:    "80x80>" },
+              x80:   "80x80>" },
     size: { in: 0..7.megabytes } # Worst case scenario for 1280x1280 BMP.
-    validates_attachment_content_type :attachment,
-      content_type: ["image/jpg",
-                     "image/jpeg",
-                     "image/png",
-                     "image/gif"]
+  }
+
+
+  if(ENV.has_key?("GCS_BUCKET"))
+    CONFIG.merge!({
+      storage:         :fog,
+      fog_directory:   ENV.fetch("GCS_BUCKET"),
+      fog_credentials: { provider:                         "Google",
+                         google_storage_access_key_id:     ENV.fetch("GCS_KEY"),
+                         google_storage_secret_access_key: ENV.fetch("GCS_ID")}
+    })
+  end
+
+  has_attached_file :attachment, CONFIG
+
+  validates_attachment_content_type :attachment,
+    content_type: ["image/jpg", "image/jpeg", "image/png", "image/gif"]
 
   def set_attachment_by_url(url)
     # Image.new.set_attachment_by_url("http://i.imgur.com/OhLresv.png").save!

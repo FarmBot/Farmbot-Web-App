@@ -27,7 +27,7 @@ describe FarmEvents::GenerateCalendar do
     expect(calendar.length).to be < 7
   end
 
-  it 'hit another bug' do
+  it 'has a known calendar bug' do
     pending
     calendar = FarmEvents::GenerateCalendar.run!(
      "start_time" => "2017-04-10T15:00:00.000Z",

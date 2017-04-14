@@ -1,8 +1,8 @@
 module Api
   class ImagesController < Api::AbstractController
-    BUCKET = ENV.fetch("GCS_BUCKET")
-    KEY    = ENV.fetch("GCS_KEY")
-    SECRET = ENV.fetch("GCS_ID")
+    BUCKET = ENV.fetch("GCS_BUCKET") { "YOU_MUST_CONFIG_GOOGLE_CLOUD_STORAGE" }
+    KEY    = ENV.fetch("GCS_KEY") { "" }
+    SECRET = ENV.fetch("GCS_ID") { "" }
 
     def create
         mutate Images::Create.run({device: current_device}, raw_json)

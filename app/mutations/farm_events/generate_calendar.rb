@@ -31,7 +31,6 @@ module FarmEvents
           t             = (start_time + (i * one_interval))
           expired       = (t > (end_time || t)) || (t < Time.now)
           # Seeing dates more than 1 year out is confusing.
-          puts "+"
           too_far_ahead = t > (Time.now + 1.year)
           (expired || too_far_ahead) ? nil : t
         }.compact
