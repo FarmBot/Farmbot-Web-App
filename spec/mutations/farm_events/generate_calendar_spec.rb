@@ -28,14 +28,14 @@ describe FarmEvents::GenerateCalendar do
   end
 
   it 'has a known calendar bug' do
-    pending
+    tomorrow = Time.now + 1.day
     calendar = FarmEvents::GenerateCalendar.run!(
-     "start_time" => "2017-04-10T15:00:00.000Z",
-     "end_time"   => "2017-04-11T01:00:00.000Z",
-     "repeat"     => 1,
-     "time_unit"  => "minutely")
+     "start_time" => tomorrow,
+     "end_time"   => tomorrow + 10.hours,
+     "repeat"     => 2,
+     "time_unit"  => "hourly")
+
     expect(calendar.length).to be > 3
     expect(calendar.length).to be < 7
-    # binding.pry
   end
 end
