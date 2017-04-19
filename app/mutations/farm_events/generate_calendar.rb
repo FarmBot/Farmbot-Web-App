@@ -29,7 +29,7 @@ module FarmEvents
     end
 
     def full_calendar
-      throw "NO NO NO!!!" if start_time > end_time
+      throw "NO NO NO!!!" if start_time && end_time && (start_time > end_time)
       options = { starts: start_time }
       options[:until] = end_time if end_time
       return Montrose
