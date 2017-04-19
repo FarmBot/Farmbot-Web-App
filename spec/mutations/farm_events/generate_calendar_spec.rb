@@ -11,7 +11,7 @@ describe FarmEvents::GenerateCalendar do
     expect(calendar.first).to eq(params[:start_time])
     calendar.map { |date| expect(date).to be >= params[:start_time] }
     calendar.map { |date| expect(date).to be <= params[:end_time] }
-    expect(calendar.length).to eq(13)
+    expect(calendar.length).to eq(12)
   end
 
   it 'hit a bug in production' do

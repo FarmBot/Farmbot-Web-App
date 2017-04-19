@@ -4,8 +4,7 @@
 # forever.
 class FarmEvent < ActiveRecord::Base
   NEVER              = :never
-  UNITS_OF_TIME      = %w(never minutely hourly daily
-                          weekly monthly yearly) << NEVER
+  UNITS_OF_TIME      = %w(minutely hourly daily weekly monthly yearly)# << NEVER
   EXECUTABLE_CLASSES = [Sequence, Regimen]
   belongs_to :executable, polymorphic: true
   validates  :executable, presence: true

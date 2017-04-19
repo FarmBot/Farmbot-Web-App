@@ -135,6 +135,8 @@ GEM
     mimemagic (0.3.2)
     mini_portile2 (2.1.0)
     minitest (5.9.1)
+    montrose (0.6.0)
+      activesupport (>= 4.1, < 5.1)
     multi_json (1.12.1)
     mutations (0.8.0)
       activesupport
@@ -273,6 +275,7 @@ DEPENDENCIES
   json-schema-generator
   jwt
   letter_opener
+  montrose
   mutations (~> 0.8.0)
   paperclip (~> 5.0.0)
   pg
