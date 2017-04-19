@@ -18,12 +18,17 @@ module FarmEvents
       integer :repeat
       string  :time_unit, in: FarmEvent::UNITS_OF_TIME
       time    :start_time
+    end
+
+    optional do
       time    :end_time
     end
 
     def execute
       every = UNIT_TRANSLATION.fetch(time_unit) { raise "GOT BAD TIME_UNIT: " + time_unit.inspect }
-      return Montrose.every(repeat.send(every), until: end_time, starts: start_time).take(60)
+      options = {starts: (start_time > Time.now) ? start_time : Time.now}
+      options[:until] = end_time if end_time
+      return Montrose.every(repeat.send(every), options).take(60)
       # if time_unit == NEVER
       #   return []
       # else
