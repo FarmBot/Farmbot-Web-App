@@ -26,6 +26,7 @@ For a list of example API requests and responses, see our [reference documentati
 Your machine will need the following:
 
  0. [Ruby 2.3.3](http://rvm.io/rvm/install)
+ 1. [ImageMagick](https://www.imagemagick.org/script/index.php) (`brew install imagemagick` or `sudo apt-get install imagemagick`)
 
 ### Setup
  0. `git clone https://github.com/FarmBot/Farmbot-Web-API`
