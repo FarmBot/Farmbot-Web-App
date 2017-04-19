@@ -25,13 +25,13 @@ module FarmEvents
     end
 
     def execute
-      if repeat === FarmEvent::NEVER
-        return [start_time]
-      else
-        every = UNIT_TRANSLATION.fetch(time_unit) { raise "GOT BAD TIME_UNIT: " + time_unit.inspect }
+      every = UNIT_TRANSLATION.fetch(time_unit)
+      if every
         options = {starts: (start_time > Time.now) ? start_time : Time.now}
         options[:until] = end_time if end_time
         return Montrose.every(repeat.send(every), options).take(60)
+      else
+        return [start_time]
       end
     end
   end
