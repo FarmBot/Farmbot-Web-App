@@ -3,8 +3,9 @@
 # because they can only perform one sequence. Also unlike Regimens, they can run
 # forever.
 class FarmEvent < ActiveRecord::Base
-  NEVER              = :never
-  UNITS_OF_TIME      = %w(minutely hourly daily weekly monthly yearly) << NEVER
+  NEVER              = "never"
+  UNITS_OF_TIME      = %w(minutely hourly daily weekly monthly yearly)
+  UNITS_OF_TIME      << NEVER
   EXECUTABLE_CLASSES = [Sequence, Regimen]
   belongs_to :executable, polymorphic: true
   validates  :executable, presence: true
