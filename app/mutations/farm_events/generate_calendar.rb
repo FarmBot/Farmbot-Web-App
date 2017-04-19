@@ -25,27 +25,14 @@ module FarmEvents
     end
 
     def execute
-      every = UNIT_TRANSLATION.fetch(time_unit) { raise "GOT BAD TIME_UNIT: " + time_unit.inspect }
-      options = {starts: (start_time > Time.now) ? start_time : Time.now}
-      options[:until] = end_time if end_time
-      return Montrose.every(repeat.send(every), options).take(60)
-      # if time_unit == NEVER
-      #   return []
-      # else
-      #   one_interval = (repeat * TIME[time_unit]).seconds
-      #   next_year = Time.now + 1.year
-      #   return [*(0..59)].map { |i|
-      #     t             = (start_time + (i * one_interval))
-
-      #     # Seeing dates more than 1 year out is confusing.
-      #     too_far_off     = t > next_year
-      #     already_past    = Time.now > t
-      #     beyond_end_time = t > (end_time || t)
-      #     valid           = !(already_past || beyond_end_time || too_far_off)
-
-      #     (valid ? t : nil)
-      #   }.compact
-      # end
+      if repeat === FarmEvent::NEVER
+        return [start_time]
+      else
+        every = UNIT_TRANSLATION.fetch(time_unit) { raise "GOT BAD TIME_UNIT: " + time_unit.inspect }
+        options = {starts: (start_time > Time.now) ? start_time : Time.now}
+        options[:until] = end_time if end_time
+        return Montrose.every(repeat.send(every), options).take(60)
+      end
     end
   end
 end
