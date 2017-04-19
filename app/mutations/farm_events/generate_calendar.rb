@@ -25,7 +25,7 @@ module FarmEvents
     end
 
     def execute
-      every = UNIT_TRANSLATION.fetch(time_unit)
+      every = UNIT_TRANSLATION[time_unit]
       if every
         options = {starts: (start_time > Time.now) ? start_time : Time.now}
         options[:until] = end_time if end_time
