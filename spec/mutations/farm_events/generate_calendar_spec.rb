@@ -38,4 +38,16 @@ describe FarmEvents::GenerateCalendar do
     expect(calendar.length).to be > 3
     expect(calendar.length).to be < 7
   end
+
+  it 'hit more bugs' do
+    tomorrow = Time.now + 1.day
+    calendar = FarmEvents::GenerateCalendar.run!(
+     "start_time" => tomorrow,
+     "end_time"   => tomorrow + 5.minutes,
+     "repeat"     => 1,
+     "time_unit"  => "minutely")
+
+    expect(calendar.length).to be > 3
+    expect(calendar.length).to be < 7
+  end
 end

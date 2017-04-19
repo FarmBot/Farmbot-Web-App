@@ -25,14 +25,30 @@ module FarmEvents
     end
 
     def execute
-      every = UNIT_TRANSLATION[time_unit]
-      if every
-        options = {starts: (start_time > Time.now) ? start_time : Time.now}
-        options[:until] = end_time if end_time
-        return Montrose.every(repeat.send(every), options).take(60)
-      else
-        return [start_time]
-      end
+      (every ? full_calendar : partial_calendar)
+    end
+
+    def full_calendar
+      throw "NO NO NO!!!" if start_time > end_time
+      options = { starts: start_time }
+      options[:until] = end_time if end_time
+      return Montrose
+        .every(every, options)
+        .take(60)
+        .reject { |x| x > (end_time + 1.second)  }   # clear events beyon the ned time
+        .reject { |x| x <= Time.now } # Clear past events
+    end
+
+    def partial_calendar
+      start_time > Time.now ? [start_time] : []
+    end
+
+    def one_unit
+      UNIT_TRANSLATION[time_unit]
+    end
+
+    def every
+      one_unit && repeat.send(one_unit)
     end
   end
 end

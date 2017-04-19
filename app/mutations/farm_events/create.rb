@@ -3,6 +3,7 @@ module FarmEvents
     using LegacyRefinementsModule
     include FarmEvents::ExecutableHelpers
     executable_fields :optional
+    BACKWARDS_END_TIME = "This event starts before it ends. Did you flip the start and end times?"
 
     required do
       model   :device, class: Device
@@ -16,6 +17,7 @@ module FarmEvents
     end
 
     def validate
+      validate_start_and_end if end_time
       validate_executable
     end
 
@@ -24,6 +26,10 @@ module FarmEvents
         farm_event.executable = executable
         farm_event.next_time = farm_event.calculate_next_occurence
       end
+    end
+
+    def validate_start_and_end
+      add_error :end_time, :backwards, BACKWARDS_END_TIME if start_time > end_time
     end
   end
 end
