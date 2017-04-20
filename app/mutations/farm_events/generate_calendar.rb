@@ -35,8 +35,8 @@ module FarmEvents
       return Montrose
         .every(every, options)
         .take(60)
-        .reject { |x| x > (end_time + 1.second)  }   # clear events beyon the ned time
-        .reject { |x| x <= Time.now } # Clear past events
+        .reject { |x| end_time ? x > (end_time + 1.second) : false  } # clear events beyon the end time
+        .reject { |x| x <= Time.now }                                 # Clear past events
     end
 
     def partial_calendar
