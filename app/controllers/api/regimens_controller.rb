@@ -17,8 +17,7 @@ module Api
     end
 
     def destroy
-      the_regimen.destroy!
-      render json: ""
+      mutate Regimens::Destroy.run(regimen: the_regimen, device: current_device)
     end
 
   private

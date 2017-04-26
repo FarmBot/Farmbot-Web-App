@@ -7,6 +7,7 @@ class FarmEvent < ActiveRecord::Base
   UNITS_OF_TIME      = %w(minutely hourly daily weekly monthly yearly)
   UNITS_OF_TIME      << NEVER
   EXECUTABLE_CLASSES = [Sequence, Regimen]
+  FE_USE             = "still in use by some farm events"
   belongs_to :executable, polymorphic: true
   validates  :executable, presence: true
   belongs_to :device

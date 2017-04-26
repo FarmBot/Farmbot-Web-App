@@ -1,15 +1,13 @@
 module Regimens
-  class Delete < Mutations::Command
-    IN_USE = "still in use by some farm events"
-
+  class Destroy < Mutations::Command
     required do
       model :device, class: Device
       model :regimen, class: Regimen
     end
 
     def validate
-      FarmEvent.if_still_using(sequence) do
-        add_error(:regimen, :required, msg)
+      FarmEvent.if_still_using(regimen) do
+        add_error :regimen, :required, FarmEvent::IN_USE
       end
     end
 

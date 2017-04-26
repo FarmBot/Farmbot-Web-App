@@ -1,6 +1,5 @@
 module Sequences
   class Delete < Mutations::Command
-    FE_USE = "still in use by some farm events"
     IN_USE = "The following %s are still relying on this sequence: %s"
     required do
       model :device, class: Device
@@ -11,7 +10,7 @@ module Sequences
       check_if_any_regimens_using_this
       check_if_any_sequences_using_this
       FarmEvent.if_still_using(sequence) do
-        add_error :sequence, :required, FE_USE
+        add_error :sequence, :required, FarmEvent::FE_USE
       end
     end
 
