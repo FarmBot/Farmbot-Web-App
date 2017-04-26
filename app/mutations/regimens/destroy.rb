@@ -7,7 +7,7 @@ module Regimens
 
     def validate
       FarmEvent.if_still_using(regimen) do
-        add_error :regimen, :required, FarmEvent::IN_USE
+        add_error :regimen, :required, FarmEvent::FE_USE
       end
     end
 
