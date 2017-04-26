@@ -29,7 +29,7 @@ describe Api::FarmEventsController do
       start_count = FarmEvent.count
       process :index, method: :get
       end_count = FarmEvent.count
-      expect(start_count).to be < end_count
+      expect(start_count).to be > end_count
     end
   end
 end

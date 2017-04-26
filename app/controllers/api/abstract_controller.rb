@@ -33,6 +33,10 @@ module Api
 
 private
 
+    def clean_expired_farm_events
+      FarmEvents::CleanExpired.run!(device: current_device)
+    end
+
     # Rails 5 params are no longer simple hashes. This was for security reasons.
     # Our API does not do things the "Rails way" (we use Mutations for input
     # sanitation) so we can ignore this and grab the raw input.

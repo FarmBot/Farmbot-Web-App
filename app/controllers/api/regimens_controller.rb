@@ -1,5 +1,6 @@
 module Api
   class RegimensController < Api::AbstractController
+    before_action :clean_expired_farm_events, only: [:destroy]
 
     def index
       render json: your_regimens
@@ -29,7 +30,7 @@ module Api
     def your_regimens
       Regimen.where(regimen_params)
     end
-    
+
     def regimen_params
       { device: current_device }
     end
