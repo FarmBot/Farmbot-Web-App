@@ -28,15 +28,15 @@ unless Rails.env == "production"
       "http://i.imgur.com/XsFczCY.jpg" ].each do |url|
         Images::Create.run!(attachment_url: url,
                             device: u.device,
-                            meta: {x: rand(1...550),
-                                   y: rand(1...550),
-                                   z: rand(1...550)})
+                            meta: {x: rand(1...300),
+                                   y: rand(1...300),
+                                   z: rand(1...300)})
     end
-    25.times do
+    70.times do
       Plant.create(
         device: u.device,
-        x: rand(1...550),
-        y: rand(1...550),
+        x: rand(1...300),
+        y: rand(1...300),
         radius: rand(10...50),
         name: Haikunator.haikunate,
         img_url: "http://placehold.it/200x150",
