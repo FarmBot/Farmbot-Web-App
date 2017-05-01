@@ -39,7 +39,6 @@ unless Rails.env == "production"
         y: rand(40...470),
         radius: rand(10...50),
         name: Haikunator.haikunate,
-        img_url: "http://placehold.it/200x150",
         openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample)
     end
     100.times do

@@ -6,12 +6,11 @@ module Plants
     end
 
     optional do
-      float :x
-      float :y
+      float  :x
+      float  :y
       string :name
-      string :img_url
       string :openfarm_slug
-      time :created_at
+      time   :created_at
       float  :radius
     end
 

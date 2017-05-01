@@ -24,7 +24,6 @@ module FarmEvents
     def execute
       create(FarmEvent, inputs) do |farm_event|
         farm_event.executable = executable
-        farm_event.next_time = farm_event.calculate_next_occurence
       end
     end
 

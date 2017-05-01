@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170312013804) do
+ActiveRecord::Schema.define(version: 20170501194857) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,21 +32,16 @@ ActiveRecord::Schema.define(version: 20170312013804) do
   end
 
   create_table "devices", force: :cascade do |t|
-    t.integer "planting_area_id"
     t.string  "name"
     t.string  "webcam_url"
     t.integer "max_log_count",    default: 100
     t.integer "max_images_count", default: 100
-    t.string  "timezone"
-    t.index ["planting_area_id"], name: "index_devices_on_planting_area_id", using: :btree
-    t.index ["timezone"], name: "index_devices_on_timezone", using: :btree
   end
 
   create_table "farm_events", force: :cascade do |t|
     t.integer  "device_id"
     t.datetime "start_time"
     t.datetime "end_time"
-    t.datetime "next_time"
     t.integer  "repeat"
     t.string   "time_unit"
     t.string   "executable_type"
@@ -88,27 +83,16 @@ ActiveRecord::Schema.define(version: 20170312013804) do
     t.index ["device_id"], name: "index_peripherals_on_device_id", using: :btree
   end
 
-  create_table "planting_areas", force: :cascade do |t|
-    t.integer "width"
-    t.integer "length"
-    t.integer "device_id"
-    t.index ["device_id"], name: "index_planting_areas_on_device_id", using: :btree
-  end
-
   create_table "plants", force: :cascade do |t|
     t.integer  "device_id"
-    t.integer  "planting_area_id"
     t.string   "name"
-    t.string   "img_url"
-    t.string   "icon_url"
     t.string   "openfarm_slug"
-    t.integer  "x",                default: 0
-    t.integer  "y",                default: 0
+    t.integer  "x",             default: 0
+    t.integer  "y",             default: 0
     t.datetime "created_at"
-    t.float    "radius",           default: 50.0
+    t.float    "radius",        default: 50.0
     t.index ["created_at"], name: "index_plants_on_created_at", using: :btree
     t.index ["device_id"], name: "index_plants_on_device_id", using: :btree
-    t.index ["planting_area_id"], name: "index_plants_on_planting_area_id", using: :btree
   end
 
   create_table "points", force: :cascade do |t|

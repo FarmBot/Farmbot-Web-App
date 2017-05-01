@@ -21,7 +21,6 @@ describe FarmEvents::Create do
     expect(farm_event.end_time.to_time).to eq(Time.parse end_time)
     expect(farm_event.repeat).to eq(4)
     expect(farm_event.time_unit).to eq('minutely')
-    # expect(farm_event.next_time).to eq(farm_event.calculate_next_occurence)
   end
   it 'Prevents backwards start/end times' do
     device = seq.device

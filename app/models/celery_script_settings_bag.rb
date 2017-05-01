@@ -17,7 +17,7 @@ module CeleryScriptSettingsBag
                              remove_farmware take_photo data_update find_home)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
-  RESOURCE_NAME         = %w(images plants regimens planting_area peripherals
+  RESOURCE_NAME         = %w(images plants regimens peripherals
                              corpuses tool_bays logs sequences farm_events
                              tool_slots tools points tokens users device)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun)

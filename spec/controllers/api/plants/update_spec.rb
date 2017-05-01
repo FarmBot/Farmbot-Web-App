@@ -13,7 +13,6 @@ describe Api::PlantsController do
             x: 23,
             y: 45,
             name: "My Lettuce",
-            img_url: "/lettuce.png",
             openfarm_slug: "limestone-lettuce",
             created_at: RIGHT_NOW }
       patch :update, params: p
@@ -22,7 +21,6 @@ describe Api::PlantsController do
       expect(plant.x).to eq(p[:x])
       expect(plant.y).to eq(p[:y])
       expect(plant.name).to eq(p[:name])
-      expect(plant.img_url).to eq(p[:img_url])
       expect(plant.openfarm_slug).to eq(p[:openfarm_slug])
       expect(plant.created_at).to eq(p[:created_at])
       p.keys.each do |key|

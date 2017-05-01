@@ -13,10 +13,6 @@ class FarmEvent < ActiveRecord::Base
   belongs_to :device
   validates  :device_id, presence: true
 
-  def calculate_next_occurence
-    Time.now.as_json
-  end
-
   # Check if an executable is in use.
   def self.if_still_using(executable)
     yield if self.where(executable: executable).any?

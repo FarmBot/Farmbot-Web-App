@@ -4,7 +4,6 @@ FarmBot::Application.routes.draw do
     resources :images,        only: [:create, :destroy, :show, :index]
     resources :plants,        only: [:create, :destroy, :index, :update]
     resources :regimens,      only: [:create, :destroy, :index, :update]
-    resources :planting_area, only: [:create, :destroy]
     resources :peripherals,   only: [:create, :destroy, :index, :update]
     resources :corpuses,      only: [:index, :show]
     resources :tool_bays,     only: [:show, :index, :update]

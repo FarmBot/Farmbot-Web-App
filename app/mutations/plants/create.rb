@@ -8,9 +8,8 @@ module Plants
 
     optional do
       string :name, default: "Unknown Plant"
-      string :img_url, default: "//placehold.it/200x150"
       string :openfarm_slug, default: "not-set"
-      time   :created_at#, default: ->{ Time.now.utc }
+      time   :created_at
       float  :radius
     end
 
