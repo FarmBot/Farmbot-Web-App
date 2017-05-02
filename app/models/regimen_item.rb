@@ -4,6 +4,6 @@
 # can be used in many regimens. RegimenItem links a sequence and regimen.
 class RegimenItem < ActiveRecord::Base
   belongs_to :regimen
-  belongs_to :sequence
-  validates :sequence, presence: true
+  # belongs_to :sequence
+  # validates :sequence, presence: true
 end

@@ -3,6 +3,11 @@
 # etc.
 class ToolSlot < ApplicationRecord
   belongs_to :tool
+  belongs_to :point
+  delegate :x, to: :point
+  delegate :y, to: :point
+  delegate :z, to: :point
+  delegate :radius, to: :point
   validates_uniqueness_of :tool,
                           allow_blank: true,
                           allow_nil: true,

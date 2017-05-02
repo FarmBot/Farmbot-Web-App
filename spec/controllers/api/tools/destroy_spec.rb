@@ -4,7 +4,6 @@ describe Api::ToolsController do
   include Devise::Test::ControllerHelpers
   describe '#destroy' do
     let(:user) { FactoryGirl.create(:user) }
-    let(:tool_bay) { FactoryGirl.create(:tool_bay, device: user.device) }
     let(:tool_slot) { FactoryGirl.create(:tool_slot, tool_bay: tool_bay) }
     let!(:tool) {
         ToolSlot.destroy_all
