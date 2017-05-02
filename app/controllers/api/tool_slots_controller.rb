@@ -28,7 +28,7 @@ module Api
   private
 
     def tool_slots
-        @tool_slots ||= ToolSlot.where(tool_bay_id: current_device.tool_bays.pluck(:id))
+        @tool_slots ||= ToolSlot.where(device_id: current_device)
     end
 
     def tool_slot

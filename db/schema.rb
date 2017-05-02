@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170502200416) do
+ActiveRecord::Schema.define(version: 20170502203408) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -87,11 +87,8 @@ ActiveRecord::Schema.define(version: 20170502200416) do
     t.integer  "device_id"
     t.string   "name"
     t.string   "openfarm_slug"
-    t.integer  "x",             default: 0
-    t.integer  "y",             default: 0
     t.datetime "created_at"
-    t.float    "radius",        default: 50.0
-    t.integer  "point_id"
+    t.integer  "point_id",      null: false
     t.index ["created_at"], name: "index_plants_on_created_at", using: :btree
     t.index ["device_id"], name: "index_plants_on_device_id", using: :btree
     t.index ["point_id"], name: "index_plants_on_point_id", using: :btree
@@ -156,24 +153,13 @@ ActiveRecord::Schema.define(version: 20170502200416) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tool_bays", force: :cascade do |t|
-    t.integer  "device_id"
-    t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["device_id"], name: "index_tool_bays_on_device_id", using: :btree
-  end
-
   create_table "tool_slots", force: :cascade do |t|
     t.integer  "tool_bay_id"
     t.string   "name"
-    t.integer  "x"
-    t.integer  "y"
-    t.integer  "z"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
     t.integer  "tool_id"
-    t.integer  "point_id"
+    t.integer  "point_id",    null: false
     t.integer  "device_id"
     t.index ["device_id"], name: "index_tool_slots_on_device_id", using: :btree
     t.index ["point_id"], name: "index_tool_slots_on_point_id", using: :btree

@@ -2,7 +2,6 @@ module ToolSlots
   class Create < ToolSlots::Base
     required do
       model   :device, class: Device
-      integer :tool_bay_id
     end
 
     optional do
@@ -15,7 +14,6 @@ module ToolSlots
 
     def validate
       validate_tool
-      validate_bay
     end
 
     def execute

@@ -85,13 +85,9 @@ unless Rails.env == "production"
         executable_type: "Sequence"
       )
     end
-    bay = u
-      .device
-      .tool_bays
-      .last || ToolBay.create(device: u.device, name: "Tool Bay 1")
+
     ts = ToolSlots::Create.run!(device: u.device,
                                 tool_id: t.id,
-                                tool_bay_id: bay.id,
                                 name: "Slot One.",
                                 x: 10,
                                 y: 10,
