@@ -46,7 +46,7 @@ Your machine will need the following:
 ```
 sudo -u postgres createuser user
 sudo -u postgres psql
-ALTER USER user WITH SUPERUSER;
+ALTER USER "user" WITH SUPERUSER;
 ```
 
 # Provisioning Your Own with Dokku
