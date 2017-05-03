@@ -11,12 +11,11 @@ class NormalizePoints < ActiveRecord::Migration[5.0]
                   null:  false,
                   default: 50
     create_table(:generic_pointers) { |_| /# Empty table..#/ }
-    add_column    :points, :name, :string, null: false
+    add_column    :points, :name, :string, null: false, default: "untitled"
     add_reference :points,
                   :pointer,
                   index: true,
-                  polymorphic: true,
-                  null: false
+                  polymorphic: true
     # MANUAL MIGRATIONS ===================================================
     ToolSlot.includes(:tool_bay).find_each do |ts|
       Point.create!(x:         ts.x,

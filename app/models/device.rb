@@ -5,13 +5,11 @@ class Device < ActiveRecord::Base
   TIMEZONES          = ActiveSupport::TimeZone.all.map(&:to_s)
 
   has_many  :users
-  has_many  :generic_pointers, dependent: :destroy
   has_many  :farm_events,      dependent: :destroy
   has_many  :points,           dependent: :destroy
   has_many  :logs,             dependent: :destroy
   has_many  :sequences,        dependent: :destroy
   has_many  :regimens,         dependent: :destroy
-  has_many  :plants,           dependent: :destroy
   has_many  :peripherals,      dependent: :destroy
   has_many  :tools,            dependent: :destroy
   has_many  :images,           dependent: :destroy
