@@ -16,8 +16,13 @@ module ToolSlots
       validate_tool
     end
 
-    def execute
-      ToolSlot.create!(inputs.except(:device))
-    end
+  def execute
+    Point
+      .create!(inputs.slice(:x,:y,:z).merge(pointer: pointer))
+      .pointer
+  end
+
+  def pointer
+    ToolSlot.new(inputs.slice(:device, :name, :tool_id))
   end
 end
