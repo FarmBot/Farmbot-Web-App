@@ -4,7 +4,7 @@ describe Api::ToolsController do
   include Devise::Test::ControllerHelpers
   describe '#create' do
     let(:user) { FactoryGirl.create(:user) }
-    let(:tool_slot) { FactoryGirl.create(:tool_slot, tool_bay: tool_bay) }
+    let(:tool_slot) { FactoryGirl.create(:tool_slot) }
 
     it 'creates a new tool' do
       sign_in user

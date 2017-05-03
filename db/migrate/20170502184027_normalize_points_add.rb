@@ -6,7 +6,6 @@ class NormalizePointsAdd < ActiveRecord::Migration[5.0]
     change_column :points, :radius, :float,  null:  false, default: 50
     add_reference :tool_slots,      :point,  index: true
     add_reference :tool_slots,      :device, index: true
-    add_reference :plants,          :point,  index: true
     add_reference :points,
                   :pointer,
                   index: true,

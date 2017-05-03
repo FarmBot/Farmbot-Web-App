@@ -7,7 +7,6 @@ class NormalizePointsRemove < ActiveRecord::Migration[5.0]
     remove_column :tool_slots, :z, :float
     remove_column :tool_slots, :tool_bay_id, :float
     remove_column :plants,     :radius, :float
-    change_column :plants,     :point_id, :integer, null: false
     change_column :tool_slots, :point_id, :integer, null: false
     drop_table    :tool_bays
   end

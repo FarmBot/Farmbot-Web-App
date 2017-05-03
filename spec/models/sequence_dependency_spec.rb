@@ -2,10 +2,10 @@ describe SequenceDependency do
   let(:parent) { FactoryGirl.create(:sequence) }
   let(:child1) { FactoryGirl.create(:sequence) }
   let(:child2) do
-    Plant.create(point: Point.create!(x:    1,
-                                      y:    2,
-                                      z:    3,
-                                      kind: "Plant"))
+    Point.create!(x:       1,
+                  y:       2,
+                  z:       3,
+                  pointer: Plant.create!()).pointer
   end
 
   it 'depends upon another sequence' do
