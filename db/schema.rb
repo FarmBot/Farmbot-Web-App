@@ -95,17 +95,19 @@ ActiveRecord::Schema.define(version: 20170502203408) do
   end
 
   create_table "points", force: :cascade do |t|
-    t.float    "radius",     default: 50.0,    null: false
-    t.float    "x",                            null: false
-    t.float    "y",                            null: false
-    t.float    "z",          default: 0.0,     null: false
+    t.float    "radius",       default: 50.0, null: false
+    t.float    "x",                           null: false
+    t.float    "y",                           null: false
+    t.float    "z",            default: 0.0,  null: false
     t.integer  "device_id"
     t.hstore   "meta"
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-    t.string   "kind",       default: "Point", null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.string   "pointer_type"
+    t.integer  "pointer_id"
     t.index ["device_id"], name: "index_points_on_device_id", using: :btree
     t.index ["meta"], name: "index_points_on_meta", using: :gin
+    t.index ["pointer_type", "pointer_id"], name: "index_points_on_pointer_type_and_pointer_id", using: :btree
   end
 
   create_table "regimen_items", force: :cascade do |t|
@@ -154,16 +156,14 @@ ActiveRecord::Schema.define(version: 20170502203408) do
   end
 
   create_table "tool_slots", force: :cascade do |t|
-    t.integer  "tool_bay_id"
     t.string   "name"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer  "tool_id"
-    t.integer  "point_id",    null: false
+    t.integer  "point_id",   null: false
     t.integer  "device_id"
     t.index ["device_id"], name: "index_tool_slots_on_device_id", using: :btree
     t.index ["point_id"], name: "index_tool_slots_on_point_id", using: :btree
-    t.index ["tool_bay_id"], name: "index_tool_slots_on_tool_bay_id", using: :btree
     t.index ["tool_id"], name: "index_tool_slots_on_tool_id", using: :btree
   end
 
@@ -195,6 +195,7 @@ ActiveRecord::Schema.define(version: 20170502203408) do
     t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
   end
 
+  add_foreign_key "peripherals", "devices"
   add_foreign_key "points", "devices"
   add_foreign_key "tool_slots", "tools"
 end

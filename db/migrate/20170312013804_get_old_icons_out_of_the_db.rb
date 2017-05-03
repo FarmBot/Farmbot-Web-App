@@ -5,6 +5,6 @@ class GetOldIconsOutOfTheDb < ActiveRecord::Migration[5.0]
       .update_all(radius: 25)
     Plant
       .where(icon_url: "/app-resources/img/icons/Sprout-96.png")
-      .update_all(icon_url: Plant::DEFAULT_ICON)
+      .update_all(icon_url: "IRELLEVANT_NOW")
   end
 end
