@@ -28,7 +28,8 @@ class Sequence < ActiveRecord::Base
   include CeleryScriptSettingsBag
 
   belongs_to :device
-  has_many  :sequence_dependencies, dependent: :destroy
+  has_many  :farm_events, as: :executable
+  has_many  :sequence_dependencies, dependent: :destroy, as: :dependency
   serialize :body, CustomSerializer.new(Array)
   serialize :args, CustomSerializer.new(Hash)
 
