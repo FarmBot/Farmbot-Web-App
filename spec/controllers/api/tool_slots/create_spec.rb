@@ -20,7 +20,6 @@ describe Api::ToolSlotsController do
       expect(json[:x]).to eq(payload[:x])
       expect(json[:y]).to eq(payload[:y])
       expect(json[:z]).to eq(payload[:z])
-      expect(json[:tool_bay_id]).to eq(payload[:tool_bay_id])
     end
   end
 end

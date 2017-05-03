@@ -4,7 +4,7 @@ describe Api::ToolsController do
   include Devise::Test::ControllerHelpers
   describe '#update' do
     let(:user) { FactoryGirl.create(:user) }
-    let(:tool_slot) { FactoryGirl.create(:tool_slot, tool_bay: tool_bay) }
+    let(:tool_slot) { FactoryGirl.create(:tool_slot) }
     let!(:tool) { FactoryGirl.create(:tool,
                     tool_slot: tool_slot,
                     device: user.device) }

@@ -13,7 +13,6 @@ describe Api::ToolSlotsController do
 
   describe '#destroy' do
     let(:user) { FactoryGirl.create(:user) }
-    let!(:tool_bay) { FactoryGirl.create(:tool_bay, device: user.device) }
     let!(:tool) { FactoryGirl.create(:tool, device: user.device) }
     let!(:tool_slot) { tool.slot }
     let!(:sequence) { Sequences::Create.run!({
@@ -24,7 +23,6 @@ describe Api::ToolSlotsController do
                       }) }
 
     it 'cleans up tool slot SequenceDependencies' do
-      tool_slot.tool_bay.update_attributes(device: user.device)
       # This sequence requires the tool slot above.
       # deletetion should free up the resource.
       sequence.destroy!
@@ -40,7 +38,6 @@ describe Api::ToolSlotsController do
 
     it 'disallows deletion of slots in use by sequences' do
       sign_in user
-      tool_slot.tool_bay.update_attributes(device: user.device)
       payload = { id: tool_slot.id }
       before = ToolSlot.count
       delete :destroy, params: payload

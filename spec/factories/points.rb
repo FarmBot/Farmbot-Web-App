@@ -6,5 +6,6 @@ FactoryGirl.define do
     z { rand(1...550) }
     meta ({})
     device
+    pointer { GenericPointer.new(device: device) }
   end
 end
