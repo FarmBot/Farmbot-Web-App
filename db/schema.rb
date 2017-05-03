@@ -202,6 +202,9 @@ ActiveRecord::Schema.define(version: 20170501194857) do
     t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
   end
 
+  add_foreign_key "peripherals", "devices"
   add_foreign_key "points", "devices"
+  add_foreign_key "tool_bays", "devices"
+  add_foreign_key "tool_slots", "tool_bays"
   add_foreign_key "tool_slots", "tools"
 end
