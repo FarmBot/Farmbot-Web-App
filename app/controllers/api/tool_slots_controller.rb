@@ -33,7 +33,7 @@ module Api
     end
 
     def tool_slot
-      @tool_slot ||= tool_slots.find_by!(pointer_id: params[:id]).pointer
+      @tool_slot ||= tool_slots.find_by!(pointer_id: params[:id]).pointer || binding.pry
     end
 
     def tool_slot_params

@@ -21,7 +21,7 @@ module ToolSlots
     end
 
     def execute
-      ToolSlot.transaction do
+      Point.transaction do
         tool_slots.map { |p| update_tool_slot(p) }
       end
     end
@@ -29,8 +29,14 @@ module ToolSlots
   private
 
     def update_tool_slot(params)
-      ts = ToolSlot.find(params.delete(:id))
-      ts.update_attributes!(params) && ts
+      # TODO: This can be optimized.
+      # LOOK AT THIS N+1 - FIX IT!
+      # Grab all the tool_slots in one upfront query instead of inside an
+      # iterator. - RC 4 May 17
+      tool_slot = ToolSlot.find(params.delete(:id))
+      x = params.slice(*Point::SHARED_FIELDS).merge(pointer: tool_slot)
+      tool_slot.assign_attributes(params.slice(:tool_id))
+      tool_slot.point.update_attributes!(x) && tool_slot.reload
     end
   end
 end

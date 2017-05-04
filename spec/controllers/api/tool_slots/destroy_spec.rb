@@ -14,7 +14,15 @@ describe Api::ToolSlotsController do
   describe '#destroy' do
     let(:user) { FactoryGirl.create(:user) }
     let!(:tool) { FactoryGirl.create(:tool, device: user.device) }
-    let!(:tool_slot) { tool.slot }
+    let!(:tool_slot) do
+      Point.create(x:       0,
+                   y:       0,
+                   z:       0,
+                   radius:  50,
+                   name:    "Whatever",
+                   pointer: ToolSlot.new(tool: tool)).pointer
+    end
+
     let!(:sequence) { Sequences::Create.run!({
                         device: user.device,
                         name: "TOOL SLOT",
@@ -23,9 +31,9 @@ describe Api::ToolSlotsController do
                       }) }
 
     it 'cleans up tool slot SequenceDependencies' do
-      pending("Also important, but saving for last.")
       # This sequence requires the tool slot above.
       # deletetion should free up the resource.
+      pending("Last one?")
       sequence.destroy!
       sign_in user
       payload = { id: tool_slot.id }
@@ -33,12 +41,10 @@ describe Api::ToolSlotsController do
       delete :destroy, params: payload
       expect(response.status).to eq(200)
       after = ToolSlot.count
-      expect(response.status).to eq(200)
       expect(after).to be < before
     end
 
     it 'disallows deletion of slots in use by sequences' do
-      pending("Also important, but saving for last.")
       sign_in user
       payload = { id: tool_slot.id }
       before = ToolSlot.count

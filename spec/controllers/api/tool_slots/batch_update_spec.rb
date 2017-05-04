@@ -9,7 +9,6 @@ describe Api::ToolSlotsController do
     end
 
     it 'updates a list of tool slots' do
-      pending("This one is important, but saving for last.")
       sign_in user
       payload = [ {id: tool_slots[0].id, name: "first"},
                   {id: tool_slots[1].id, name: "second"},
