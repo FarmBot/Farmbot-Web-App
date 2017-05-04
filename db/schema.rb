@@ -87,24 +87,23 @@ ActiveRecord::Schema.define(version: 20170502184027) do
   end
 
   create_table "plants", force: :cascade do |t|
-    t.string   "name"
-    t.string   "openfarm_slug"
+    t.string   "openfarm_slug", default: "50", null: false
     t.datetime "created_at"
     t.index ["created_at"], name: "index_plants_on_created_at", using: :btree
   end
 
   create_table "points", force: :cascade do |t|
-    t.float    "radius",       default: 50.0, null: false
-    t.float    "x",                           null: false
-    t.float    "y",                           null: false
-    t.float    "z",            default: 0.0,  null: false
+    t.float    "radius",       default: 50.0,       null: false
+    t.float    "x",                                 null: false
+    t.float    "y",                                 null: false
+    t.float    "z",            default: 0.0,        null: false
     t.integer  "device_id"
     t.hstore   "meta"
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
-    t.string   "name",                        null: false
-    t.string   "pointer_type",                null: false
-    t.integer  "pointer_id",                  null: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+    t.string   "name",         default: "untitled", null: false
+    t.string   "pointer_type"
+    t.integer  "pointer_id"
     t.index ["device_id"], name: "index_points_on_device_id", using: :btree
     t.index ["meta"], name: "index_points_on_meta", using: :gin
     t.index ["pointer_type", "pointer_id"], name: "index_points_on_pointer_type_and_pointer_id", using: :btree
@@ -156,7 +155,6 @@ ActiveRecord::Schema.define(version: 20170502184027) do
   end
 
   create_table "tool_slots", force: :cascade do |t|
-    t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer  "tool_id"

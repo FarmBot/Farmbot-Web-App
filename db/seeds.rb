@@ -33,13 +33,15 @@ unless Rails.env == "production"
                                    z: rand(1...300)})
     end
     70.times do
-      Plant.create(
+      Point.create(
         device: u.device,
         x: rand(40...970),
         y: rand(40...470),
         radius: rand(10...50),
         name: Haikunator.haikunate,
-        openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample)
+        pointer: Plant.new(
+          openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample
+        ))
     end
     100.times do
       Point.create(

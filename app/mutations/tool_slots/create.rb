@@ -6,7 +6,7 @@ module ToolSlots
 
     optional do
       integer :tool_id
-      string  :name
+      string  :name, default: "Untitled Slot"
       integer :x
       integer :y
       integer :z
@@ -18,12 +18,12 @@ module ToolSlots
 
     def execute
       Point
-        .create!(inputs.slice(:x,:y,:z).merge(pointer: pointer))
+        .create!(inputs.slice(:x,:y,:z,:name).merge(pointer: pointer))
         .pointer
     end
 
     def pointer
-      ToolSlot.new(inputs.slice(:device, :name, :tool_id))
+      ToolSlot.new(inputs.slice(:tool_id))
     end
   end
 end

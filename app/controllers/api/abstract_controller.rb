@@ -111,8 +111,6 @@ private
       else
         render options.merge(json: outcome.errors.message, status: 422)
       end
-    rescue => x
-      binding.pry
     end
 
     def default_serializer_options
