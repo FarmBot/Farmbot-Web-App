@@ -6,6 +6,10 @@ FactoryGirl.define do
     z { rand(1...550) }
     meta ({})
     device
-    pointer { GenericPointer.new(device: device) }
+    pointer { GenericPointer.new }
+    trait :plant_point do
+      pointer { Plant.new(openfarm_slug: "lettuce") }
+    end
+    factory :plant_point, traits: [:plant_point]
   end
 end

@@ -21,8 +21,10 @@ module Api
 
     private
 
-    def plants
-      Plant.where(device_params)
+    def plant_points
+      Point
+         .where(device_params)
+         .where(pointer_type: "Plant")
     end
 
     def device_params
@@ -30,7 +32,9 @@ module Api
     end
 
     def plant
-      @plant ||= plants.find(params[:id])
+      @plant ||= plant_points
+                   .find_by(pointer_id: params[:id])
+                   .pointer
     end
   end
 end
