@@ -10,15 +10,15 @@ module Api
     end
 
     def show
-        render json: tool_slot
+      render json: tool_slot.pointer
     end
 
     def index
-        render json: tool_slots
+      render json: tool_slots.map(&:pointer)
     end
 
     def update
-        mutate ToolSlots::Update.run(tool_slot_params)
+      mutate ToolSlots::Update.run(tool_slot_params)
     end
 
     def destroy
@@ -28,11 +28,12 @@ module Api
   private
 
     def tool_slots
-        @tool_slots ||= ToolSlot.where(device_id: current_device)
+        @tool_slots ||= Point.where(device_id: current_device,
+                                    pointer_type: "ToolSlot")
     end
 
     def tool_slot
-      @tool_slot ||= tool_slots.find(params[:id])
+      @tool_slot ||= tool_slots.find_by(pointer_id: params[:id])
     end
 
     def tool_slot_params
