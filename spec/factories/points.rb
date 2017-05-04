@@ -7,9 +7,15 @@ FactoryGirl.define do
     meta ({})
     device
     pointer { GenericPointer.new }
+
     trait :plant_point do
       pointer { Plant.new(openfarm_slug: "lettuce") }
     end
     factory :plant_point, traits: [:plant_point]
+
+    trait :tool_slot_point do
+      pointer { ToolSlot.new }
+    end
+    factory :tool_slot_point, traits: [:tool_slot_point]
   end
 end
