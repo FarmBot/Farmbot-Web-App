@@ -33,7 +33,7 @@ module Api
 
     def plant
       @plant ||= plant_points
-                   .find_by(pointer_id: params[:id])
+                   .find_by!(pointer_id: params[:id])
                    .pointer
     end
   end

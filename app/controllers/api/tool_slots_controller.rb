@@ -10,7 +10,7 @@ module Api
     end
 
     def show
-      render json: tool_slot.pointer
+      render json: tool_slot
     end
 
     def index
@@ -33,13 +33,13 @@ module Api
     end
 
     def tool_slot
-      @tool_slot ||= tool_slots.find_by(pointer_id: params[:id])
+      @tool_slot ||= tool_slots.find_by!(pointer_id: params[:id]).pointer
     end
 
     def tool_slot_params
-      @tool_slot_params ||= raw_json.merge({ device: current_device,
-                                            tool_slot: (params[:id] ?
-                                                          tool_slot : nil) })
+      ts = (params[:id] ? tool_slot : nil)
+      @tool_slot_params ||= raw_json
+                              .merge({ device: current_device, tool_slot: ts })
     end
   end
 end
