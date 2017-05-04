@@ -16,7 +16,7 @@ module ToolSlots
     def execute
       tool_slot
         .point
-        .update_attributes!(update_params) && tool_slot.point
+        .update_attributes!(update_params) && tool_slot
     end
 
 private
