@@ -15,7 +15,6 @@ describe Api::PlantsController do
             openfarm_slug: "limestone-lettuce"
            }
       patch :update, params: p
-      binding.pry
       expect(response.status).to eq(200)
       plant.reload
       expect(plant.point.x).to eq(p[:x])
