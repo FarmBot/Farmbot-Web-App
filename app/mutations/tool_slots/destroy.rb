@@ -15,17 +15,21 @@ module ToolSlots
 
     def any_deps?
       if deps.any?
-        names = deps.map(&:sequence).map(&:name).join(", ")
+        names = deps.map(&:name).join(", ")
         add_error :tool_slot, :in_use, STILL_IN_USE % [names]
       end
     end
 
-    def query
-      {dependency: [tool_slot, tool_slot.tool].compact}
-    end
-
     def deps
-      @deps ||= SequenceDependency.where(query)
+      # TODO: Optimize this ridiculous mess.
+      #       RC 5 May 17
+      @deps ||= Sequence.where(id: [tool_slot, tool_slot.tool]
+                                        .compact
+                                        .map { |x| x&.sequence_dependencies }
+                                        .compact
+                                        .flatten
+                                        .map(&:sequence_id)
+                                        .compact)
     end
   end
 end

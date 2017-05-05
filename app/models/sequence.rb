@@ -29,7 +29,7 @@ class Sequence < ActiveRecord::Base
 
   belongs_to :device
   has_many  :farm_events, as: :executable
-  has_many :regimen_items
+  has_many  :regimen_items
   has_many  :sequence_dependencies, dependent: :destroy, as: :dependency
   serialize :body, CustomSerializer.new(Array)
   serialize :args, CustomSerializer.new(Hash)
