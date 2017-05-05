@@ -14,7 +14,7 @@ module Api
     end
 
     def index
-      render json: tool_slots.map(&:pointer)
+      render json: tool_slots
     end
 
     def update
@@ -28,12 +28,18 @@ module Api
   private
 
     def tool_slots
-        @tool_slots ||= Point.where(device_id: current_device,
-                                    pointer_type: "ToolSlot")
+      @tool_slots ||= ToolSlot
+                        .where(id: Point.where(device: current_device,
+                                               pointer_type: "ToolSlot")
+                                               .pluck(:pointer_id))
     end
 
     def tool_slot
-      @tool_slot ||= tool_slots.find_by!(pointer_id: params[:id]).pointer || binding.pry
+      # TODO: Optimize/DRY this query. Behind schedule atm.
+      # RC 5 May 2017
+      @tool_slot ||= Point.find_by!(device: current_device,
+                                   pointer_type: "ToolSlot",
+                                   pointer_id:   params[:id]).pointer
     end
 
     def tool_slot_params

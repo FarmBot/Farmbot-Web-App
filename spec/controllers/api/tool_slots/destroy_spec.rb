@@ -20,6 +20,7 @@ describe Api::ToolSlotsController do
                    z:       0,
                    radius:  50,
                    name:    "Whatever",
+                   device: user.device,
                    pointer: ToolSlot.new(tool: tool)).pointer
     end
 
@@ -49,9 +50,8 @@ describe Api::ToolSlotsController do
       payload = { id: tool_slot.id }
       before = ToolSlot.count
       delete :destroy, params: payload
-      after = ToolSlot.count
       expect(response.status).to eq(422)
-      expect(after).to eq(before)
+      expect(ToolSlot.count).to eq(before)
     end
   end
 end
