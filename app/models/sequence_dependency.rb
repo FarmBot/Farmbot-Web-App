@@ -7,5 +7,6 @@
 #          now delete SEQUENCE2 prior to deleting SEQUENCE1.
 class SequenceDependency < ActiveRecord::Base
   belongs_to :sequence
+  validates_presence_of :sequence
   belongs_to :dependency, polymorphic: true
 end

@@ -34,7 +34,6 @@ describe Api::ToolSlotsController do
     it 'cleans up tool slot SequenceDependencies' do
       # This sequence requires the tool slot above.
       # deletetion should free up the resource.
-      pending("Last one?")
       sequence.destroy!
       sign_in user
       payload = { id: tool_slot.id }
