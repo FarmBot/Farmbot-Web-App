@@ -2,9 +2,7 @@ module Api
   class PlantsController < Api::AbstractController
 
     def index
-      render json: Plant
-        .joins(:point)
-        .where("points.device_id = ?", current_device.id)
+      render json: plants
     end
 
     def create
@@ -23,10 +21,10 @@ module Api
 
     private
 
-    def plant_points
-      Point
-         .where(device_params)
-         .where(pointer_type: "Plant")
+    def plants
+      Plant
+        .joins(:point)
+        .where("points.device_id = ?", current_device.id)
     end
 
     def device_params
@@ -34,10 +32,7 @@ module Api
     end
 
     def plant
-      puts "OPTIMIZE THESE HACKS"
-      @plant ||= plant_points
-                   .find_by!(pointer_id: params[:id])
-                   .pointer
+      @plant ||= plants.find_by("points.pointer_id = ?", params[:id])
     end
   end
 end
