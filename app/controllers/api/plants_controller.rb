@@ -2,8 +2,9 @@ module Api
   class PlantsController < Api::AbstractController
 
     def index
-      binding.pry
-      render json: Plant.where(device_params)
+      render json: Plant
+        .joins(:point)
+        .where("points.device_id = ?", current_device.id)
     end
 
     def create
@@ -33,6 +34,7 @@ module Api
     end
 
     def plant
+      puts "OPTIMIZE THESE HACKS"
       @plant ||= plant_points
                    .find_by!(pointer_id: params[:id])
                    .pointer

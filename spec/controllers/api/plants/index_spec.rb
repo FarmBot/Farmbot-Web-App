@@ -5,8 +5,9 @@ describe Api::PlantsController do
   describe '#index' do
     let(:user) { FactoryGirl.create(:user) }
 
-    it 'lists all tools' do
-      3.times do |num|
+    it 'lists all plants' do
+      Point.destroy_all
+      plants = 3.times do |num|
         Point.create!(x:       num,
                       y:       num,
                       z:       num,
@@ -18,7 +19,7 @@ describe Api::PlantsController do
       sign_in user
       get :index
       expect(response.status).to eq(200)
-      expect(json.first[:id]).to eq(tools.first.id)
+      expect(json.length).to eq(3)
     end
   end
 end
