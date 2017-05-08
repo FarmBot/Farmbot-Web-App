@@ -23,11 +23,13 @@ module Tools
     end
 
     def any_deps?
-      deps = SequenceDependency.where(dependency: tool)
-      if deps.any?
-        names = deps.map(&:sequence).map(&:name).join(", ")
-        add_error :tool, :in_use, STILL_IN_USE % [names]
-      end
+      names = SequenceDependency
+                .includes(:sequence)
+                .where(dependency: tool)
+                .pluck("sequences.name")
+                .map{|x| x || "Untitled sequence"}
+                .join(", ")
+      add_error :tool, :in_use, STILL_IN_USE % [names] if names.present?
     end
   end
 end

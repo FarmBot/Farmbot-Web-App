@@ -6,8 +6,11 @@ class NormalizePoints < ActiveRecord::Migration[5.0]
     change_column :points,   :z,         :float,  null:  false, default: 0
     change_column :points,   :radius,    :float,  null:  false, default: 50
     change_column :points,   :device_id, :integer,null:  false
-    change_column :sequence, :name,      :string, null: false
-    change_column :sequence_dependencies, :sequence_id, :integer, null: false
+    change_column :sequences, :name,      :string, null: false
+    change_column_null :sequence_dependencies, :sequence_id, false
+    add_foreign_key :sequence_dependencies,
+                    :sequences,
+                    column: :sequence_id
     change_column :plants,
                   :openfarm_slug,
                   :string,
