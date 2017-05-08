@@ -2,9 +2,10 @@ unless Rails.env == "production"
     ENV['MQTT_HOST']        = "blooper.io"
     ENV['OS_UPDATE_SERVER'] = "http://blah.com"
     ENV['FW_UPDATE_SERVER'] = "http://test.com"
+    ToolSlot.destroy_all
+    Device.destroy_all
     User.destroy_all
     Point.destroy_all
-    Device.destroy_all
     Users::Create.run!(name:                  "Administrator",
                        email:                 "notos@notos.com",
                        password:              "password123",
