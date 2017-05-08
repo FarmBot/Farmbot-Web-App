@@ -1,11 +1,12 @@
 class NormalizePoints < ActiveRecord::Migration[5.0]
   def change
     # UPDATES TO TABLES ===================================================
-    change_column :points,   :x,      :float,  null:  false
-    change_column :points,   :y,      :float,  null:  false
-    change_column :points,   :z,      :float,  null:  false, default: 0
-    change_column :points,   :radius, :float,  null:  false, default: 50
-    change_column :sequence, :name, :name, null: false
+    change_column :points,   :x,         :float,  null:  false
+    change_column :points,   :y,         :float,  null:  false
+    change_column :points,   :z,         :float,  null:  false, default: 0
+    change_column :points,   :radius,    :float,  null:  false, default: 50
+    change_column :points,   :device_id, :integer,null:  false
+    change_column :sequence, :name,      :string, null: false
     change_column :sequence_dependencies, :sequence_id, :integer, null: false
     change_column :plants,
                   :openfarm_slug,

@@ -29,17 +29,12 @@ module Api
 
     def tool_slots
       @tool_slots ||= ToolSlot
-                        .where(id: Point.where(device: current_device,
-                                               pointer_type: "ToolSlot")
-                                               .pluck(:pointer_id))
+                        .joins(:point)
+                        .where("points.device_id = ?", current_device.id)
     end
 
     def tool_slot
-      # TODO: Optimize/DRY this query. Behind schedule atm.
-      # RC 5 May 2017
-      @tool_slot ||= Point.find_by!(device: current_device,
-                                   pointer_type: "ToolSlot",
-                                   pointer_id:   params[:id]).pointer
+      @tool_slot ||= tool_slots.find_by!(id: params[:id])
     end
 
     def tool_slot_params
