@@ -3,7 +3,7 @@
 # etc.
 class ToolSlot < ApplicationRecord
   belongs_to :tool
-  belongs_to :tool_bay # Remove after refactor - Rc 3-mar-17
+  belongs_to :tool_bay # Remove after refactor - Rc 3-may-17
   has_one :point, as: :pointer
   has_many  :sequence_dependencies, dependent: :destroy, as: :dependency
   validates_uniqueness_of :tool,

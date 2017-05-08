@@ -19,4 +19,8 @@ class Device < ActiveRecord::Base
   def limited_log_list
     logs.all.last(max_log_count || DEFAULT_MAX_LOGS)
   end
+
+  def auth_token
+    SessionToken.as_json(self.users.first)[:token].encoded
+  end
 end
