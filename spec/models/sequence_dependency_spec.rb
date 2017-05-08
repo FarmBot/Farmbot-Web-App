@@ -5,7 +5,8 @@ describe SequenceDependency do
     Point.create!(x:       1,
                   y:       2,
                   z:       3,
-                  pointer: Plant.create!()).pointer
+                  device: parent.device,
+                  pointer: Plant.create!).pointer
   end
 
   it 'depends upon another sequence' do
