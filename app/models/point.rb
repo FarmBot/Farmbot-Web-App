@@ -1,4 +1,7 @@
 class Point < ApplicationRecord
+  POINTER_KINDS = { "GenericPointer" => GenericPointer,
+                    "ToolSlot"       => ToolSlot,
+                    "Plant"          => Plant }
   SHARED_FIELDS = [:x, :y, :z, :radius, :name, :device_id]
   belongs_to :device
   belongs_to :pointer, polymorphic: true

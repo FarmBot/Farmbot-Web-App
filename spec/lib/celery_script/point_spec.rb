@@ -1,0 +1,42 @@
+require 'spec_helper'
+
+describe "Celery Script `point` node" do
+  let(:plant) { FactoryGirl.create(:plant_point).pointer }
+  let(:hash) do
+    { kind: "sequence",
+      args: { version:4 },
+      body: [
+        {
+          kind:"move_absolute",
+          args:{
+            location: {
+              kind:"point",
+              args: { point_type: plant.class.to_s,
+                      point_id:   plant.id }
+            },
+            offset:{ kind:"coordinate", args:{ x: 0, y: 0, z: 0} },
+            speed:800
+          }
+        }
+      ]
+    }.deep_symbolize_keys
+  end
+
+  let (:tree)    { CeleryScript::AstNode.new(hash) }
+  let (:corpus)  { Sequence::Corpus }
+  let (:checker) { CeleryScript::Checker.new(tree, corpus) }
+
+  it 'handles the corner case' do
+    expect { checker.run! }.not_to raise_error
+  end
+
+  it 'handles bad types' do
+    hash[:body][0][:args][:location][:args][:point_type] = "wrong"
+    expect(checker.run.message).to include("not a type of point")
+  end
+
+  it 'handles bad ids' do
+    hash[:body][0][:args][:location][:args][:point_id] = -9
+    expect(checker.run.message).to include("Bad point ID")
+  end
+end

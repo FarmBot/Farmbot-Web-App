@@ -7,7 +7,6 @@
 module CeleryScriptSettingsBag
   DIGITAL, ANALOG       = 0, 1
   ALLOWED_PIN_MODES     = [DIGITAL, ANALOG]
-  ALLOWED_VAR_TYPES     = %w(location)
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
                              sync check_updates power_off reboot toggle_pin
                              config_update calibrate execute move_absolute
@@ -25,10 +24,11 @@ module CeleryScriptSettingsBag
   ALLOWED_DATA_TYPES    = %w(string integer)
   ALLOWED_OPS           = %w(< > is not)
   ALLOWED_AXIS          = %w(x y z all)
-  STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
-                             send_message execute _if execute_script take_photo)
   ALLOWED_LHS           = %w(pin0 pin1 pin2 pin3 pin4 pin5 pin6 pin7 pin8 pin9
                              pin10 pin11 pin12 pin13 x y z)
+  ALLOWED_POINT_TYPE    = %w(GenericPointer ToolSlot Plant)
+  STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
+                             send_message execute _if execute_script take_photo)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
@@ -42,15 +42,27 @@ module CeleryScriptSettingsBag
   BAD_TOOL_ID           = 'Tool #%s does not exist.'
   BAD_PACKAGE           = '"%s" is not a valid package. Allowed values: %s'
   BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
-  BAD_VAR_TYPE          = '"%s" is not a valid type. Allowed values: %s'
+  BAD_POINT_ID          = "Bad point ID: %s"
+  BAD_POINT_TYPE        = '"%s" is not a type of point. Allowed values: %s'
+
   Corpus = CeleryScript::Corpus
       .new
-      .defineArg(:var_type,        [String]) do |node|
-        within(ALLOWED_VAR_TYPES, node) do |val|
-          BAD_VAR_TYPE % [val.to_s, ALLOWED_VAR_TYPES.inspect]
+      .defineArg(:point_id, [Fixnum]) do |node|
+        p_type = node&.parent&.args[:point_type]&.value
+        klass  = Point::POINTER_KINDS[p_type]
+        # Don't try to validate if `pointer_type` is wrong.
+        # That's a different respnsiblity.
+        if(klass)
+          bad_node = !klass.exists?(node.value)
+          node.invalidate!(BAD_POINT_ID % node.value) if bad_node
         end
       end
-      .defineArg(:pin_mode,        [Fixnum]) do |node|
+      .defineArg(:point_type, [String]) do |node|
+        within(ALLOWED_POINT_TYPE, node) do |val|
+          BAD_POINT_TYPE % [val.to_s, ALLOWED_POINT_TYPE.inspect]
+        end
+      end
+      .defineArg(:pin_mode, [Fixnum]) do |node|
         within(ALLOWED_PIN_MODES, node) do |val|
           BAD_ALLOWED_PIN_MODES % [val.to_s, ALLOWED_PIN_MODES.inspect]
         end
@@ -110,7 +122,7 @@ module CeleryScriptSettingsBag
       .defineArg(:label,           [String])
       .defineArg(:package,         [String])
       .defineArg(:message,         [String])
-      .defineArg(:location,        [:tool, :coordinate])
+      .defineArg(:location,        [:tool, :coordinate, :point])
       .defineArg(:offset,          [:coordinate])
       .defineArg(:_then,           [:execute, :nothing])
       .defineArg(:_else,           [:execute, :nothing])
@@ -155,8 +167,7 @@ module CeleryScriptSettingsBag
       .defineNode(:add_point,         [:location], [:pair])
       .defineNode(:take_photo,        [], [])
       .defineNode(:data_update,       [:value], [:pair])
-      .defineNode(:variable,          [:var_type, :label], [])
-
+      .defineNode(:point,             [:point_type, :point_id], [])
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
   def self.within(array, node)
