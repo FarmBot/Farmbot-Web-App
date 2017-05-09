@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170502184027) do
+ActiveRecord::Schema.define(version: 20170501194857) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -50,9 +50,6 @@ ActiveRecord::Schema.define(version: 20170502184027) do
     t.index ["executable_type", "executable_id"], name: "index_farm_events_on_executable_type_and_executable_id", using: :btree
   end
 
-  create_table "generic_pointers", force: :cascade do |t|
-  end
-
   create_table "images", force: :cascade do |t|
     t.integer  "device_id"
     t.text     "meta"
@@ -87,26 +84,28 @@ ActiveRecord::Schema.define(version: 20170502184027) do
   end
 
   create_table "plants", force: :cascade do |t|
-    t.string   "openfarm_slug", default: "50", null: false
+    t.integer  "device_id"
+    t.string   "name"
+    t.string   "openfarm_slug"
+    t.integer  "x",             default: 0
+    t.integer  "y",             default: 0
     t.datetime "created_at"
+    t.float    "radius",        default: 50.0
     t.index ["created_at"], name: "index_plants_on_created_at", using: :btree
+    t.index ["device_id"], name: "index_plants_on_device_id", using: :btree
   end
 
   create_table "points", force: :cascade do |t|
-    t.float    "radius",       default: 50.0,       null: false
-    t.float    "x",                                 null: false
-    t.float    "y",                                 null: false
-    t.float    "z",            default: 0.0,        null: false
+    t.float    "radius"
+    t.float    "x"
+    t.float    "y"
+    t.float    "z"
     t.integer  "device_id"
     t.hstore   "meta"
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
-    t.string   "name",         default: "untitled", null: false
-    t.string   "pointer_type"
-    t.integer  "pointer_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["device_id"], name: "index_points_on_device_id", using: :btree
     t.index ["meta"], name: "index_points_on_meta", using: :gin
-    t.index ["pointer_type", "pointer_id"], name: "index_points_on_pointer_type_and_pointer_id", using: :btree
   end
 
   create_table "regimen_items", force: :cascade do |t|
@@ -154,10 +153,24 @@ ActiveRecord::Schema.define(version: 20170502184027) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tool_slots", force: :cascade do |t|
+  create_table "tool_bays", force: :cascade do |t|
+    t.integer  "device_id"
+    t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_tool_bays_on_device_id", using: :btree
+  end
+
+  create_table "tool_slots", force: :cascade do |t|
+    t.integer  "tool_bay_id"
+    t.string   "name"
+    t.integer  "x"
+    t.integer  "y"
+    t.integer  "z"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
     t.integer  "tool_id"
+    t.index ["tool_bay_id"], name: "index_tool_slots_on_tool_bay_id", using: :btree
     t.index ["tool_id"], name: "index_tool_slots_on_tool_id", using: :btree
   end
 
@@ -191,5 +204,7 @@ ActiveRecord::Schema.define(version: 20170502184027) do
 
   add_foreign_key "peripherals", "devices"
   add_foreign_key "points", "devices"
+  add_foreign_key "tool_bays", "devices"
+  add_foreign_key "tool_slots", "tool_bays"
   add_foreign_key "tool_slots", "tools"
 end
