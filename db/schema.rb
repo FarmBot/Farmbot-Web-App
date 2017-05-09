@@ -97,7 +97,7 @@ ActiveRecord::Schema.define(version: 20170502184027) do
     t.float    "x",                                 null: false
     t.float    "y",                                 null: false
     t.float    "z",            default: 0.0,        null: false
-    t.integer  "device_id"
+    t.integer  "device_id",                         null: false
     t.hstore   "meta"
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
@@ -127,7 +127,7 @@ ActiveRecord::Schema.define(version: 20170502184027) do
   create_table "sequence_dependencies", force: :cascade do |t|
     t.string  "dependency_type"
     t.integer "dependency_id"
-    t.integer "sequence_id"
+    t.integer "sequence_id",     null: false
     t.index ["dependency_id"], name: "index_sequence_dependencies_on_dependency_id", using: :btree
     t.index ["dependency_type"], name: "index_sequence_dependencies_on_dependency_type", using: :btree
     t.index ["sequence_id"], name: "index_sequence_dependencies_on_sequence_id", using: :btree
@@ -135,7 +135,7 @@ ActiveRecord::Schema.define(version: 20170502184027) do
 
   create_table "sequences", force: :cascade do |t|
     t.integer  "device_id"
-    t.string   "name"
+    t.string   "name",                            null: false
     t.string   "color"
     t.string   "kind",       default: "sequence"
     t.text     "args"
@@ -191,5 +191,6 @@ ActiveRecord::Schema.define(version: 20170502184027) do
 
   add_foreign_key "peripherals", "devices"
   add_foreign_key "points", "devices"
+  add_foreign_key "sequence_dependencies", "sequences"
   add_foreign_key "tool_slots", "tools"
 end

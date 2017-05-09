@@ -24,22 +24,22 @@ class NormalizePoints < ActiveRecord::Migration[5.0]
                   polymorphic: true
     # MANUAL MIGRATIONS ===================================================
     ToolSlot.includes(:tool_bay).find_each do |ts|
-      Point.create!(x:         ts.x,
-                    y:         ts.y,
-                    z:         ts.z,
-                    name:      ts.name,
+      Point.create!(x:         ts[:x],
+                    y:         ts[:y],
+                    z:         ts[:z],
+                    name:      ts[:name],
+                    device_id: ts.tool_bay[:device_id],
                     pointer:   ts,
-                    device_id: ts.tool_bay.device_id,
                     meta:      {})
     end
 
     Plant.find_each do |pl|
-      Point.create!(x:         pl.x,
-                    y:         pl.y,
-                    z:         pl.z,
-                    name:      pl.name,
+      Point.create!(x:         pl[:x],
+                    y:         pl[:y],
+                    z:         pl[:z] || 0,
+                    name:      pl[:name],
+                    device_id: pl[:device_id],
                     pointer:   pl,
-                    device_id: pl.device_id,
                     meta:      {})
     end
 
