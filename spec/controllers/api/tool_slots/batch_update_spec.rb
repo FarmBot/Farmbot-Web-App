@@ -4,7 +4,9 @@ describe Api::ToolSlotsController do
   include Devise::Test::ControllerHelpers
   describe 'batch updates' do
     let(:user) { FactoryGirl.create(:user) }
-    let!(:tool_slots) { FactoryGirl.create_list(:tool_slot, 3) }
+    let!(:tool_slots) do
+      FactoryGirl.create_list(:tool_slot_point, 3).map(&:pointer)
+    end
 
     it 'updates a list of tool slots' do
       sign_in user
@@ -14,7 +16,8 @@ describe Api::ToolSlotsController do
       post :create, body: {tool_slots: payload}.to_json, format: :json
       expect(response.status).to eq(200)
       expect(json[1][:name]).to eq("second")
-      expect(ToolSlot.find(json[1][:id]).reload.name).to eq("second")
+      ts = ToolSlot.find(json[1][:id]).reload
+      expect(ts.point.name).to eq("second")
     end
   end
 end

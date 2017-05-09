@@ -3,7 +3,7 @@
 # most of the functionality of a programming language such a variables and
 # conditional logic.
 class Sequence < ActiveRecord::Base
-  # Does some extra magic for serialized columns for us, such as providing a 
+  # Does some extra magic for serialized columns for us, such as providing a
   # default value and making hashes have indifferent access.
   class CustomSerializer
     def initialize(default)
@@ -28,7 +28,8 @@ class Sequence < ActiveRecord::Base
   include CeleryScriptSettingsBag
 
   belongs_to :device
-  has_many :regimen_items
+  has_many  :farm_events, as: :executable
+  has_many  :regimen_items
   has_many  :sequence_dependencies, dependent: :destroy
   serialize :body, CustomSerializer.new(Array)
   serialize :args, CustomSerializer.new(Hash)

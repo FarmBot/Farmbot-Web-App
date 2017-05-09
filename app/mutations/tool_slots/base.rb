@@ -3,20 +3,9 @@ module ToolSlots
     def has_tool_id
       !!tool_id
     end
-    
-    def has_tool_bay
-        # Verifies that the tool bay EXISTS and is owned by user.
-      device.tool_bays.where(id: tool_bay_id).any?
-    end
 
     def owns_tool
       device.tools.where(id: tool_id).any?
-    end
-
-    def validate_bay
-      add_error :tool_bay_id,
-                :not_found,
-                "Can't find tool bay with id #{tool_bay_id}" unless has_tool_bay
     end
 
     def validate_tool

@@ -10,11 +10,22 @@ module Plants
       string :name, default: "Unknown Plant"
       string :openfarm_slug, default: "not-set"
       time   :created_at
-      float  :radius
+      float  :radius, default: 50
+      float  :z, default: 0
     end
 
     def execute
-      Plant.create!(inputs)
+      Point.create!(creation_params).pointer
+    end
+
+    def creation_params
+      inputs
+        .slice(:x, :y, :z, :device, :name, :radius)
+        .merge(pointer: pointer)
+    end
+
+    def pointer
+      Plant.new(inputs.slice(:openfarm_slug))
     end
   end
 end

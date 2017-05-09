@@ -14,13 +14,18 @@ module ToolSlots
     end
 
     def execute
-      tool_slot.update_attributes!(update_params) && tool_slot
+      tool_slot
+        .point
+        .update_attributes!(update_params) && tool_slot
     end
 
 private
 
     def update_params
-      inputs.except(:device, :tool_slot)
+      tool_slot.assign_attributes(inputs.slice(:tool_id))
+      inputs
+        .slice(*Point::SHARED_FIELDS)
+        .merge(pointer: tool_slot)
     end
   end
 end

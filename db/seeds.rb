@@ -2,9 +2,10 @@ unless Rails.env == "production"
     ENV['MQTT_HOST']        = "blooper.io"
     ENV['OS_UPDATE_SERVER'] = "http://blah.com"
     ENV['FW_UPDATE_SERVER'] = "http://test.com"
-    User.delete_all
-    Point.delete_all
-    Device.delete_all
+    ToolSlot.destroy_all
+    Device.destroy_all
+    User.destroy_all
+    Point.destroy_all
     Users::Create.run!(name:                  "Administrator",
                        email:                 "notos@notos.com",
                        password:              "password123",
@@ -33,13 +34,15 @@ unless Rails.env == "production"
                                    z: rand(1...300)})
     end
     70.times do
-      Plant.create(
+      Point.create(
         device: u.device,
         x: rand(40...970),
         y: rand(40...470),
         radius: rand(10...50),
         name: Haikunator.haikunate,
-        openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample)
+        pointer: Plant.new(
+          openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample
+        ))
     end
     100.times do
       Point.create(
@@ -85,13 +88,9 @@ unless Rails.env == "production"
         executable_type: "Sequence"
       )
     end
-    bay = u
-      .device
-      .tool_bays
-      .last || ToolBay.create(device: u.device, name: "Tool Bay 1")
+
     ts = ToolSlots::Create.run!(device: u.device,
                                 tool_id: t.id,
-                                tool_bay_id: bay.id,
                                 name: "Slot One.",
                                 x: 10,
                                 y: 10,

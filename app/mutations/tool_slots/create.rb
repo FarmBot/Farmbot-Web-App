@@ -2,12 +2,11 @@ module ToolSlots
   class Create < ToolSlots::Base
     required do
       model   :device, class: Device
-      integer :tool_bay_id
     end
 
     optional do
       integer :tool_id
-      string  :name
+      string  :name, default: "Untitled Slot"
       integer :x
       integer :y
       integer :z
@@ -15,11 +14,16 @@ module ToolSlots
 
     def validate
       validate_tool
-      validate_bay
     end
 
     def execute
-      ToolSlot.create!(inputs.except(:device))
+      Point
+        .create!(inputs.slice(:x,:y,:z,:name, :device).merge(pointer: pointer))
+        .pointer
+    end
+
+    def pointer
+      ToolSlot.new(inputs.slice(:tool_id))
     end
   end
 end

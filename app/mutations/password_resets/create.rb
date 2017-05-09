@@ -5,7 +5,7 @@ module PasswordResets
     end
 
     def validate
-      email_not_found! unless user 
+      email_not_found! unless user
     end
 
     def execute
@@ -29,7 +29,7 @@ private
     end
 
     def user
-      @user ||= User.find_by(email: email)
+      @user ||= User.find_by!(email: email)
     end
   end
 end

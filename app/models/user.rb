@@ -1,6 +1,7 @@
 # A human
 class User < ActiveRecord::Base
   ENFORCE_TOS = ENV.fetch("TOS_URL") { false }
+  validates :email, uniqueness: true
 
   belongs_to :device, dependent: :destroy
 

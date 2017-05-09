@@ -5,7 +5,7 @@ describe Api::PlantsController do
   describe '#destroy' do
     let(:device) { FactoryGirl.create(:device) }
     let(:user) { FactoryGirl.create(:user, device: device) }
-    let!(:plant) { FactoryGirl.create(:plant, device: device) }
+    let!(:plant) { FactoryGirl.create(:plant_point, device: device).pointer }
 
     it 'deletes a plant' do
       sign_in user

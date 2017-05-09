@@ -14,9 +14,9 @@ describe Api::PlantsController do
       post :create, params: p
       expect(response.status).to eq(200)
       plant = Plant.last
-      expect(plant.x).to eq(p[:x])
-      expect(plant.y).to eq(p[:y])
-      expect(plant.name).to eq(p[:name])
+      expect(plant.point.x).to eq(p[:x])
+      expect(plant.point.y).to eq(p[:y])
+      expect(plant.point.name).to eq(p[:name])
       expect(plant.openfarm_slug).to eq(p[:openfarm_slug])
       expect(plant.created_at).to be_truthy
       p.keys.each do |key|
