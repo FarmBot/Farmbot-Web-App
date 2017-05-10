@@ -1,5 +1,14 @@
 module Api
   class PointsController < Api::AbstractController
+    class BadPointerType < StandardError; end
+    BAD_POINTER_TYPE =     <<~XYZ
+      Please provide a JSON object with a `pointer_type` that matches one
+      of the following values: %s
+    XYZ
+
+    rescue_from BadPointerType do |exc|
+      sorry BAD_POINTER_TYPE % [Point::POINTER_KINDS.keys.join(", ")], 422
+    end
 
     def index
       render json: points
@@ -10,7 +19,13 @@ module Api
     end
 
     def create
-      mutate Points::Create.run(raw_json, device_params)
+      mutate (case raw_json&.dig(:pointer_type)
+        when "GenericPointer" then Points::Create
+        when "ToolSlot"       then ToolSlots::Create
+        when "Plant"          then Plants::Create
+        else
+          raise BAD_POINTER_TYPE
+      end).run(raw_json, device_params)
     end
 
     def update
@@ -34,6 +49,22 @@ module Api
 
     def device_params
       @device_params ||= {device: current_device}
+    end
+
+    def tool_slots
+      @tool_slots ||= ToolSlot
+                        .joins(:point)
+                        .where("points.device_id = ?", current_device.id)
+    end
+
+    def tool_slot
+      @tool_slot ||= tool_slots.find_by!(id: params[:id])
+    end
+
+    def tool_slot_params
+      ts = (params[:id] ? tool_slot : nil)
+      @tool_slot_params ||= raw_json
+                              .merge({ device: current_device, tool_slot: ts })
     end
   end
 end
