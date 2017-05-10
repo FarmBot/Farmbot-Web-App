@@ -41,9 +41,8 @@ describe Api::PointsController do
                         device: user.device,
                         pointer: ToolSlot.new)
       get :index
-      binding.pry
       expect(json.first[:id]).to eq(ts.id)
-      expect(json.first[:name]).to eq(ts.point.name)
+      expect(json.first[:name]).to eq(ts.name)
     end
   end
 end

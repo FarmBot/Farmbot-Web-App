@@ -1,31 +1,36 @@
 module ToolSlots
   class Update < ToolSlots::Base
-    required do
-      model :device, class: Device
-      model :tool_slot, class: ToolSlot
-    end
 
-    optional do
-      integer :tool_id, nils: true, empty_is_nil: true
-      string  :name
-      integer :x
-      integer :y
-      integer :z
-    end
+#     required do
+#       model :device, class: Device
+#       model :point,  class: Point
+#     end
 
-    def execute
-      tool_slot
-        .point
-        .update_attributes!(update_params) && tool_slot
-    end
+#     optional do
+#       integer :tool_id, nils: true, empty_is_nil: true
+#       float   :x
+#       float   :y
+#       float   :z
+#       float   :radius
+#       string  :name
+#       string  :openfarm_slug
+#     end
 
-private
+#     def validate
+#       throw "BRB" if tool_id && !device.tools.pluck(:id).includes?(tool_id)
+#     end
 
-    def update_params
-      tool_slot.assign_attributes(inputs.slice(:tool_id))
-      inputs
-        .slice(*Point::SHARED_FIELDS)
-        .merge(pointer: tool_slot)
-    end
+#     def execute
+#       point.point.update_attributes!(update_params) && point
+#     end
+
+# private
+
+#     def update_params
+#       point.assign_attributes(inputs.slice(:tool_id, :openfarm_slug))
+#       inputs
+#         .slice(*Point::SHARED_FIELDS)
+#         .merge(pointer: point)
+#     end
   end
 end

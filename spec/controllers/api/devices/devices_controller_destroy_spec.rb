@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Api::DevicesController do
-
   include Devise::Test::ControllerHelpers
+
 
   describe '#destroy' do
 

@@ -26,19 +26,24 @@ describe Api::PointsController do
     end
 
     it 'updates a plant' do
+      plant = Point.create(x: 0,
+                           y: 0,
+                           z: 0,
+                           radius: 1,
+                           pointer: Plant.new(openfarm_slug: "lettuce"),
+                           device: user.device)
       sign_in user
       p = { id: plant.id,
             x: 23,
             y: 45,
             name: "My Lettuce",
-            openfarm_slug: "limestone-lettuce"
-           }
-      patch :update, params: p
+            openfarm_slug: "limestone-lettuce" }
+      put :update, body: p.to_json, params: { format: :json, id: point.id }
       expect(response.status).to eq(200)
       plant.reload
-      expect(plant.point.x).to eq(p[:x])
-      expect(plant.point.y).to eq(p[:y])
-      expect(plant.point.name).to eq(p[:name])
+      expect(plant.x).to eq(p[:x])
+      expect(plant.y).to eq(p[:y])
+      expect(plant.name).to eq(p[:name])
       expect(plant.openfarm_slug).to eq(p[:openfarm_slug])
       p.keys.each do |key|
         expect(json).to have_key(key)

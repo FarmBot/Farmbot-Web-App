@@ -14,22 +14,22 @@ module Api
       render json: points
     end
 
+    def show
+      render json: points.find(params[:id])
+    end
+
     def search
       mutate Points::Query.run(raw_json, device_params)
     end
 
     def create
-      mutate (case raw_json&.dig(:pointer_type)
-        when "GenericPointer" then Points::Create
-        when "ToolSlot"       then ToolSlots::Create
-        when "Plant"          then Plants::Create
-        else
-          raise BadPointerType
-      end).run(raw_json, device_params)
+      mutate pointer_klass::Create.run(raw_json, device_params)
     end
 
     def update
-      mutate Points::Update.run raw_json, { point: point }, device_params
+      mutate Points::Update.run(params.as_json,
+                                { point: point },
+                                device_params)
     end
 
     def destroy
@@ -38,6 +38,15 @@ module Api
     end
 
     private
+
+    def pointer_klass
+      case raw_json&.dig(:pointer_type)
+        when "GenericPointer" then Points
+        when "ToolSlot"       then ToolSlots
+        when "Plant"          then Plants
+        else;                 raise BadPointerType
+      end
+    end
 
     def point
       @point ||= points.find(params[:id])
@@ -49,22 +58,6 @@ module Api
 
     def device_params
       @device_params ||= {device: current_device}
-    end
-
-    def tool_slots
-      @tool_slots ||= ToolSlot
-                        .joins(:point)
-                        .where("points.device_id = ?", current_device.id)
-    end
-
-    def tool_slot
-      @tool_slot ||= tool_slots.find_by!(id: params[:id])
-    end
-
-    def tool_slot_params
-      ts = (params[:id] ? tool_slot : nil)
-      @tool_slot_params ||= raw_json
-                              .merge({ device: current_device, tool_slot: ts })
     end
   end
 end

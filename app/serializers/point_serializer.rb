@@ -1,6 +1,6 @@
 class PointSerializer < ActiveModel::Serializer
-  attributes :created_at, :updated_at, :device_id, :meta, :name, :pointer_type,
-             :radius, :x, :y, :z
+  attributes :id, :created_at, :updated_at, :device_id, :meta, :name,
+             :pointer_type, :radius, :x, :y, :z
   attribute :openfarm_slug, if: :plant?
   attribute :tool_id,       if: :tool_slot?
 
