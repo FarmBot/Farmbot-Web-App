@@ -25,7 +25,7 @@ module Api
         when "Plant"          then Plants::Create
         else
           raise BadPointerType
-      end).run(raw_json, device_params).tap{ |x| binding.pry }
+      end).run(raw_json, device_params)
     end
 
     def update
