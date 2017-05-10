@@ -2,11 +2,7 @@ module Api
   class ToolSlotsController < Api::AbstractController
 
     def create
-    if (raw_json && raw_json.is_a?(Hash) && raw_json[:tool_slots])
-        mutate ToolSlots::BatchUpdate.run(raw_json, device: current_device)
-      else
-        mutate ToolSlots::Create.run(tool_slot_params)
-      end
+      mutate ToolSlots::Create.run(tool_slot_params)
     end
 
     def show
