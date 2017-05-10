@@ -14,6 +14,7 @@ describe Api::PointsController do
                z:      33,
                radius: 55,
                meta: { foo: "BAR" } }
+      $lol = body
       put :update, body: body.to_json,
                    params: { format: :json, id: point.id }
       expect(response.status).to eq(200)

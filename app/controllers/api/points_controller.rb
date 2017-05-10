@@ -27,9 +27,7 @@ module Api
     end
 
     def update
-      mutate Points::Update.run(params.as_json,
-                                { point: point },
-                                device_params)
+      mutate Points::Update.run(raw_json, { point: point }, device_params)
     end
 
     def destroy
