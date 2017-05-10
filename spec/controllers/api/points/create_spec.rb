@@ -8,15 +8,13 @@ describe Api::PointsController do
 
     it 'creates a tool slot' do
       sign_in user
-      payload = { name: "Fooo",
-                  x: 4,
-                  y: 5,
-                  z: 6 }
+      payload = { name: "Fooo", x: 4, y: 5, z: 6, pointer_type: "ToolSlot" }
       before = ToolSlot.count
       post :create, body: payload.to_json, format: :json
+      expect(response.status).to eq(200)
+
       after = ToolSlot.count
       expect(before).to be < after
-      expect(response.status).to eq(200)
       expect(json[:name]).to eq(payload[:name])
       expect(json[:x]).to eq(payload[:x])
       expect(json[:y]).to eq(payload[:y])
@@ -28,9 +26,9 @@ describe Api::PointsController do
       p = { x: 23,
             y: 45,
             name: "My Lettuce",
+            pointer_type: "Plant",
             openfarm_slug: "limestone-lettuce" }
-      post :create, body: p.to_json,
-                    params: { format: :json }
+      post :create, body: p.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       plant = Plant.last
       expect(plant.point.x).to eq(p[:x])
@@ -45,18 +43,19 @@ describe Api::PointsController do
 
     it 'creates a point' do
       sign_in user
-      body = { x: 1,
-               y: 2,
-               z: 3,
-               radius: 3,
+      body = { x:            1,
+               y:            2,
+               z:            3,
+               radius:       3,
+               pointer_type: "GenericPointer",
                meta: { foo: "BAR" } }
-      post :create, body: body.to_json,
-                    params: { format: :json }
+      post :create, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       expect(json[:x]).to eq(body[:x])
       expect(json[:y]).to eq(body[:y])
       expect(json[:z]).to eq(body[:z])
       expect(json[:radius]).to eq(body[:radius])
+      expect(json[:pointer_type]).to eq(body[:pointer_type])
       expect(json[:meta][:foo]).to eq(body[:meta][:foo])
       expect(Point.last.device).to eq(device)
     end

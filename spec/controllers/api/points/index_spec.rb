@@ -39,7 +39,7 @@ describe Api::PointsController do
                         radius: 50,
                         name: "My TS",
                         device: user.device,
-                        pointer: ToolSlot.new).pointer
+                        pointer: ToolSlot.new)
       get :index
       expect(json.first[:id]).to eq(ts.id)
       expect(json.first[:name]).to eq(ts.point.name)

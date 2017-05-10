@@ -14,11 +14,19 @@ describe Api::PointsController do
     let(:user) { FactoryGirl.create(:user, device: device) }
     let!(:point) { FactoryGirl.create(:point, device: device) }
     let!(:plant) { FactoryGirl.create(:plant_point, device: device) }
+    let!(:tool_slot) do
+      Point.create(x:       0,
+                   y:       0,
+                   z:       0,
+                   radius:  50,
+                   name:    "Whatever",
+                   device: user.device,
+                   pointer: ToolSlot.new(tool: tool)).pointer
+    end
     let!(:sequence) { Sequences::Create.run!({
                     device: user.device,
                     name: "TOOL SLOT",
-                    body: JSON
-                          .parse(sequence_fixture.gsub("---", tool.id.to_s))
+                    body: JSON.parse(sequence_fixture.gsub("---", tool.id.to_s))
                   }) }
 
     it 'deletes a plant' do

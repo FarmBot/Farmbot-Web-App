@@ -24,8 +24,8 @@ module Api
         when "ToolSlot"       then ToolSlots::Create
         when "Plant"          then Plants::Create
         else
-          raise BAD_POINTER_TYPE
-      end).run(raw_json, device_params)
+          raise BadPointerType
+      end).run(raw_json, device_params).tap{ |x| binding.pry }
     end
 
     def update

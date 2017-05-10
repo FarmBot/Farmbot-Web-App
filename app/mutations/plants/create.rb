@@ -15,7 +15,7 @@ module Plants
     end
 
     def execute
-      Point.create!(creation_params).pointer
+      Point.create!(creation_params)
     end
 
     def creation_params

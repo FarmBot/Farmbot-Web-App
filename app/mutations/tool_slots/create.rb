@@ -19,7 +19,6 @@ module ToolSlots
     def execute
       Point
         .create!(inputs.slice(:x,:y,:z,:name, :device).merge(pointer: pointer))
-        .pointer
     end
 
     def pointer
