@@ -9,6 +9,6 @@ class Tool < ApplicationRecord
   has_many  :sequence_dependencies, dependent: :destroy, as: :dependency
 
   def slot
-    tool_slot # I kept forgetting. It's an alias.
+    tool_slot # I kept forgetting. It's just an alias for when I forget.
   end
 end

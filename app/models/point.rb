@@ -8,6 +8,7 @@ class Point < ApplicationRecord
   validates :pointer_type,
             inclusion: { in: POINTER_KINDS.keys,
                          message: "%{value} is not a valid pointer type" }
+  has_many  :sequence_dependencies, dependent: :destroy, as: :dependency
   validates_presence_of :pointer
   validates_presence_of :device
   accepts_nested_attributes_for :pointer

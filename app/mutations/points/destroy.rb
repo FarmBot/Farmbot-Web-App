@@ -1,5 +1,12 @@
 module Points
   class Destroy < Mutations::Command
+    Problem       = Struct.new("Problem",
+                               :sequence_name,
+                               :resource_name,
+                               :resource_type)
+
+    ALL_SEQ_DEPS  = "sequence_id IN"\
+                    "(SELECT id FROM sequences WHERE sequences.device_id = ?)"
     STILL_IN_USE  = "Can't delete tool slot because the following sequences "\
                     "are still using it: %s"
 
@@ -27,16 +34,28 @@ private
     end
 
     def deps
-      []
-      # # TODO: Optimize this ridiculous mess.
-      # #       RC 5 May 17
-      # @deps ||= Sequence.where(id: [tool_slot, tool_slot.tool]
-      #                                   .compact
-      #                                   .map { |x| x&.sequence_dependencies }
-      #                                   .compact
-      #                                   .flatten
-      #                                   .map(&:sequence_id)
-      #                                   .compact)
+      # What do we need to check?
+      #   * Plant in use?
+      #   * ToolSlot in use?
+      #   * Point in use?
+      #   * Tool in use?
+      @deps ||= calculate_deps
+    end
+    "Sequence 'sequence.NAME' is using (tool|point.pointer_type).RESOURCE NAME "
+    def calculate_deps
+      cant_delete    = SequenceDependency
+                        .where(ALL_SEQ_DEPS, device.id)
+                        .pluck(:dependency_type, :dependency_id)
+                        .map{ |pair| pair.join(".") }
+
+      want_to_delete = Point
+                        .pluck(:dependency_type, :dependency_id)
+                        .map{ |pair| pair.join(".") }
+      intersection   = cant_delete & want_to_delete
+      return intersection
+    end
+
+    def points_in_use
     end
   end
 end
