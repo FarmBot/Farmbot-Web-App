@@ -1,7 +1,7 @@
 module Api
   class PointsController < Api::AbstractController
     class BadPointerType < StandardError; end
-    BAD_POINTER_TYPE =     <<~XYZ
+    BAD_POINTER_TYPE = <<~XYZ
       Please provide a JSON object with a `pointer_type` that matches one
       of the following values: %s
     XYZ
@@ -31,8 +31,8 @@ module Api
     end
 
     def destroy
-      points.where(id: params[:id].to_s.split(",")).destroy_all
-      render json: ""
+      ids = params[:id].to_s.split(",")
+      mutate Points::Destroy.run({ points: points.find(ids) }, device_params)
     end
 
     private

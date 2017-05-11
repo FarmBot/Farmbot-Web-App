@@ -64,29 +64,8 @@ describe Api::PointsController do
       expect(Point.count).to eq(before_count - 6)
     end
 
-    it 'cleans up tool slot SequenceDependencies' do
-      pending("I might need to re-think sequence deps.")
-      # This sequence requires the tool slot above.
-      # deletetion should free up the resource.
-      sequence.destroy!
-      sign_in user
-      payload = { id: tool_slot.id }
-      before = ToolSlot.count
-      delete :destroy, params: payload
-      expect(response.status).to eq(200)
-      after = ToolSlot.count
-      expect(after).to be < before
-    end
+    it 'cleans up tool slot SequenceDependencies'
 
-    it 'disallows deletion of slots in use by sequences' do
-      pending("I might need to re-think sequence deps.")
-      sign_in user
-      payload = { id: tool_slot.id }
-      before = ToolSlot.count
-      delete :destroy, params: payload
-      expect(response.status).to eq(422)
-      expect(ToolSlot.count).to eq(before)
-    end
-
+    it 'disallows deletion of slots in use by sequences'
   end
 end
