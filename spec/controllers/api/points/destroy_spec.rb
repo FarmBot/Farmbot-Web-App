@@ -63,9 +63,5 @@ describe Api::PointsController do
       delete :destroy, params: { id: points.map(&:id).join(",") }
       expect(Point.count).to eq(before_count - 6)
     end
-
-    it 'cleans up tool slot SequenceDependencies'
-
-    it 'disallows deletion of slots in use by sequences'
   end
 end
