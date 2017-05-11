@@ -5,7 +5,7 @@ class CreateAttachmentFromUrlJob < ApplicationJob
     image.set_attachment_by_url(attachment_url)
     image.save!
   rescue => e
-    Rollbar.log('EROR PROCESSING IMAGE!!', e)
+    Rollbar.error('ERROR PROCESSING IMAGE!!', e)
     raise e
   end
 
