@@ -34,7 +34,7 @@ RSpec.configure do |config|
 
   config.include Helpers
   config.infer_spec_type_from_file_location!
-  config.order = 'defined' #'random'
+  config.order = 'random'
 
   if ENV['DOCS']
     config.after(:each, type: :controller) do
