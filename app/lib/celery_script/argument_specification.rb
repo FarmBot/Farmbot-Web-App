@@ -10,11 +10,12 @@ module CeleryScript
       @additional_validation = additional_validation
     end
 
-    # PROBLEM: Ruby calls them "Fixnum"s, but the world calls them "integers"
+    # PROBLEM: Ruby calls them "TrueClass" and "FalseClass", everyone else calls
+    # it "boolean".
     # SOLUTION: Add a dictionary of special rules.
     def serialize_allowed_value(v)
       { String     => "string",
-        Fixnum     => "integer",
+        Integer    => "integer",
         TrueClass  => "boolean",
         FalseClass => "boolean", }[v] || v
     end

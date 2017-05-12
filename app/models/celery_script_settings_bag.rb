@@ -47,7 +47,7 @@ module CeleryScriptSettingsBag
 
   Corpus = CeleryScript::Corpus
       .new
-      .defineArg(:point_id, [Fixnum]) do |node|
+      .defineArg(:point_id, [Integer]) do |node|
         p_type = node&.parent&.args[:point_type]&.value
         klass  = Point::POINTER_KINDS[p_type]
         # Don't try to validate if `pointer_type` is wrong.
@@ -62,12 +62,12 @@ module CeleryScriptSettingsBag
           BAD_POINT_TYPE % [val.to_s, ALLOWED_POINT_TYPE.inspect]
         end
       end
-      .defineArg(:pin_mode, [Fixnum]) do |node|
+      .defineArg(:pin_mode, [Integer]) do |node|
         within(ALLOWED_PIN_MODES, node) do |val|
           BAD_ALLOWED_PIN_MODES % [val.to_s, ALLOWED_PIN_MODES.inspect]
         end
       end
-      .defineArg(:sequence_id, [Fixnum]) do |node|
+      .defineArg(:sequence_id, [Integer]) do |node|
         if (node.value == 0)
           node.invalidate!(NO_SUB_SEQ)
         else
@@ -95,7 +95,7 @@ module CeleryScriptSettingsBag
           BAD_MESSAGE_TYPE % [val.to_s, ALLOWED_MESSAGE_TYPES.inspect]
         end
       end
-      .defineArg(:tool_id,         [Fixnum]) do |node|
+      .defineArg(:tool_id,         [Integer]) do |node|
         node.invalidate!(BAD_TOOL_ID % node.value) if !Tool.exists?(node.value)
       end
       .defineArg(:package, [String]) do |node|
@@ -108,17 +108,17 @@ module CeleryScriptSettingsBag
           BAD_AXIS % [val.to_s, ALLOWED_AXIS.inspect]
         end
       end
-      .defineArg(:version,         [Fixnum])
-      .defineArg(:x,               [Fixnum])
-      .defineArg(:y,               [Fixnum])
-      .defineArg(:z,               [Fixnum])
-      .defineArg(:radius,          [Fixnum])
-      .defineArg(:speed,           [Fixnum])
-      .defineArg(:pin_number,      [Fixnum])
-      .defineArg(:pin_value,       [Fixnum])
-      .defineArg(:milliseconds,    [Fixnum])
-      .defineArg(:rhs,             [Fixnum])
-      .defineArg(:value,           [String, Fixnum, TrueClass, FalseClass])
+      .defineArg(:version,         [Integer])
+      .defineArg(:x,               [Integer])
+      .defineArg(:y,               [Integer])
+      .defineArg(:z,               [Integer])
+      .defineArg(:radius,          [Integer])
+      .defineArg(:speed,           [Integer])
+      .defineArg(:pin_number,      [Integer])
+      .defineArg(:pin_value,       [Integer])
+      .defineArg(:milliseconds,    [Integer])
+      .defineArg(:rhs,             [Integer])
+      .defineArg(:value,           [String, Integer, TrueClass, FalseClass])
       .defineArg(:label,           [String])
       .defineArg(:package,         [String])
       .defineArg(:message,         [String])

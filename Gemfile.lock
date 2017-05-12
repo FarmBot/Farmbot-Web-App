@@ -1,4 +1,21 @@
 GIT
+  remote: git://github.com/gogovan/delayed_job.git
+  revision: a2d73c4ddae7763ef5150aa340483dff02a284fa
+  branch: rails-5.1
+  specs:
+    delayed_job (4.1.2)
+      activesupport (>= 3.0, < 5.2)
+
+GIT
+  remote: git://github.com/gogovan/delayed_job_active_record.git
+  revision: 3ca88883fe3881fda11174f03261e7e017bc7cf1
+  branch: rails-5.1
+  specs:
+    delayed_job_active_record (4.1.1)
+      activerecord (>= 3.0, < 5.2)
+      delayed_job (>= 3.0, < 5)
+
+GIT
   remote: https://github.com/RickCarlino/smarf_doc.git
   revision: 40dc733363431c6153ccebbeb80df942a77f0b02
   specs:
@@ -6,123 +23,123 @@ GIT
 
 GIT
   remote: https://github.com/fog/fog-google
-  revision: 512ca524246ed4df129fa0ea7b34c56908e81b67
+  revision: 98db2308eed2ba5eeeb0d05596c0d4ccf05034a1
   specs:
-    fog-google (0.5.0)
+    fog-google (0.5.2)
       fog-core
       fog-json
       fog-xml
 
+GIT
+  remote: https://github.com/plataformatec/devise
+  revision: 5e014ab6072551f6c39c391340e6b2089c849d00
+  specs:
+    devise (4.3.0)
+      bcrypt (~> 3.0)
+      orm_adapter (~> 0.1)
+      railties (>= 4.1.0, < 5.2)
+      responders
+      warden (~> 1.2.3)
+
 GEM
   remote: https://rubygems.org/
   specs:
-    actioncable (5.0.0.1)
-      actionpack (= 5.0.0.1)
-      nio4r (~> 1.2)
+    actioncable (5.1.0)
+      actionpack (= 5.1.0)
+      nio4r (~> 2.0)
       websocket-driver (~> 0.6.1)
-    actionmailer (5.0.0.1)
-      actionpack (= 5.0.0.1)
-      actionview (= 5.0.0.1)
-      activejob (= 5.0.0.1)
+    actionmailer (5.1.0)
+      actionpack (= 5.1.0)
+      actionview (= 5.1.0)
+      activejob (= 5.1.0)
       mail (~> 2.5, >= 2.5.4)
       rails-dom-testing (~> 2.0)
-    actionpack (5.0.0.1)
-      actionview (= 5.0.0.1)
-      activesupport (= 5.0.0.1)
+    actionpack (5.1.0)
+      actionview (= 5.1.0)
+      activesupport (= 5.1.0)
       rack (~> 2.0)
       rack-test (~> 0.6.3)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.2)
-    actionview (5.0.0.1)
-      activesupport (= 5.0.0.1)
+    actionview (5.1.0)
+      activesupport (= 5.1.0)
       builder (~> 3.1)
-      erubis (~> 2.7.0)
+      erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
-      rails-html-sanitizer (~> 1.0, >= 1.0.2)
+      rails-html-sanitizer (~> 1.0, >= 1.0.3)
     active_model_serializers (0.10.6)
       actionpack (>= 4.1, < 6)
       activemodel (>= 4.1, < 6)
       case_transform (>= 0.2)
       jsonapi-renderer (>= 0.1.1.beta1, < 0.2)
-    activejob (5.0.0.1)
-      activesupport (= 5.0.0.1)
+    activejob (5.1.0)
+      activesupport (= 5.1.0)
       globalid (>= 0.3.6)
-    activemodel (5.0.0.1)
-      activesupport (= 5.0.0.1)
-    activerecord (5.0.0.1)
-      activemodel (= 5.0.0.1)
-      activesupport (= 5.0.0.1)
-      arel (~> 7.0)
-    activesupport (5.0.0.1)
+    activemodel (5.1.0)
+      activesupport (= 5.1.0)
+    activerecord (5.1.0)
+      activemodel (= 5.1.0)
+      activesupport (= 5.1.0)
+      arel (~> 8.0)
+    activesupport (5.1.0)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (~> 0.7)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
-    addressable (2.5.0)
+    addressable (2.5.1)
       public_suffix (~> 2.0, >= 2.0.2)
-    arel (7.1.4)
+    arel (8.0.0)
     batch_api (0.3.0)
       middleware
     bcrypt (3.1.11)
-    builder (3.2.2)
+    builder (3.2.3)
     case_transform (0.2)
       activesupport
     choice (0.2.0)
-    climate_control (0.1.0)
+    climate_control (0.2.0)
     cocaine (0.5.8)
       climate_control (>= 0.0.3, < 1.0)
     coderay (1.1.1)
     concurrent-ruby (1.0.5)
     daemons (1.2.4)
-    database_cleaner (1.5.3)
-    delayed_job (4.1.2)
-      activesupport (>= 3.0, < 5.1)
-    delayed_job_active_record (4.1.1)
-      activerecord (>= 3.0, < 5.1)
-      delayed_job (>= 3.0, < 5)
-    devise (4.2.0)
-      bcrypt (~> 3.0)
-      orm_adapter (~> 0.1)
-      railties (>= 4.1.0, < 5.1)
-      responders
-      warden (~> 1.2.3)
-    diff-lcs (1.2.5)
+    database_cleaner (1.6.1)
+    diff-lcs (1.3)
     docile (1.1.5)
-    domain_name (0.5.20161129)
+    domain_name (0.5.20170404)
       unf (>= 0.0.5, < 1.0.0)
-    erubis (2.7.0)
-    eventmachine (1.2.1)
-    excon (0.54.0)
-    factory_girl (4.7.0)
+    erubi (1.6.0)
+    eventmachine (1.2.3)
+    excon (0.55.0)
+    factory_girl (4.8.0)
       activesupport (>= 3.0.0)
-    factory_girl_rails (4.7.0)
-      factory_girl (~> 4.7.0)
+    factory_girl_rails (4.8.0)
+      factory_girl (~> 4.8.0)
       railties (>= 3.0.0)
-    faker (1.6.6)
+    faker (1.7.3)
       i18n (~> 0.5)
     figaro (1.1.1)
       thor (~> 0.14)
-    fog-core (1.43.0)
+    fog-core (1.44.1)
       builder
       excon (~> 0.49)
       formatador (~> 0.2)
     fog-json (1.0.2)
       fog-core (~> 1.0)
       multi_json (~> 1.10)
-    fog-xml (0.1.2)
+    fog-xml (0.1.3)
       fog-core
-      nokogiri (~> 1.5, >= 1.5.11)
+      nokogiri (>= 1.5.11, < 2.0.0)
     formatador (0.2.5)
-    globalid (0.3.7)
-      activesupport (>= 4.1.0)
+    globalid (0.4.0)
+      activesupport (>= 4.2.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     i18n (0.8.1)
-    json (1.8.3)
+    json (2.1.0)
     json-schema-generator (0.0.9)
       jsonpath
     jsonapi-renderer (0.1.2)
-    jsonpath (0.5.8)
+    jsonpath (0.7.2)
       multi_json
     jwt (1.5.6)
     launchy (2.4.3)
@@ -131,7 +148,7 @@ GEM
       launchy (~> 2.2)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
-    mail (2.6.4)
+    mail (2.6.5)
       mime-types (>= 1.16, < 4)
     method_source (0.8.2)
     middleware (0.1.0)
@@ -140,50 +157,50 @@ GEM
     mime-types-data (3.2016.0521)
     mimemagic (0.3.2)
     mini_portile2 (2.1.0)
-    minitest (5.10.1)
-    montrose (0.6.0)
-      activesupport (>= 4.1, < 5.1)
+    minitest (5.10.2)
+    montrose (0.4.0)
+      activesupport
     multi_json (1.12.1)
-    mutations (0.8.0)
+    mutations (0.8.1)
       activesupport
     netrc (0.11.0)
-    nio4r (1.2.1)
-    nokogiri (1.6.8.1)
+    nio4r (2.0.0)
+    nokogiri (1.7.2)
       mini_portile2 (~> 2.1.0)
     orm_adapter (0.5.0)
-    paperclip (5.0.0)
+    paperclip (5.1.0)
       activemodel (>= 4.2.0)
       activesupport (>= 4.2.0)
       cocaine (~> 0.5.5)
       mime-types
       mimemagic (~> 0.3.0)
-    pg (0.19.0)
+    pg (0.20.0)
     pry (0.10.4)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
     public_suffix (2.0.5)
-    rack (2.0.1)
+    rack (2.0.2)
     rack-attack (5.0.1)
       rack
-    rack-cors (0.4.0)
+    rack-cors (0.4.1)
     rack-test (0.6.3)
       rack (>= 1.0)
-    rails (5.0.0.1)
-      actioncable (= 5.0.0.1)
-      actionmailer (= 5.0.0.1)
-      actionpack (= 5.0.0.1)
-      actionview (= 5.0.0.1)
-      activejob (= 5.0.0.1)
-      activemodel (= 5.0.0.1)
-      activerecord (= 5.0.0.1)
-      activesupport (= 5.0.0.1)
+    rails (5.1.0)
+      actioncable (= 5.1.0)
+      actionmailer (= 5.1.0)
+      actionpack (= 5.1.0)
+      actionview (= 5.1.0)
+      activejob (= 5.1.0)
+      activemodel (= 5.1.0)
+      activerecord (= 5.1.0)
+      activesupport (= 5.1.0)
       bundler (>= 1.3.0, < 2.0)
-      railties (= 5.0.0.1)
+      railties (= 5.1.0)
       sprockets-rails (>= 2.0.0)
-    rails-dom-testing (2.0.1)
-      activesupport (>= 4.2.0, < 6.0)
-      nokogiri (~> 1.6.0)
+    rails-dom-testing (2.0.3)
+      activesupport (>= 4.2.0)
+      nokogiri (>= 1.6)
     rails-erd (1.5.0)
       activerecord (>= 3.2)
       activesupport (>= 3.2)
@@ -196,44 +213,45 @@ GEM
       rails_stdout_logging
     rails_serve_static_assets (0.0.5)
     rails_stdout_logging (0.0.5)
-    railties (5.0.0.1)
-      actionpack (= 5.0.0.1)
-      activesupport (= 5.0.0.1)
+    railties (5.1.0)
+      actionpack (= 5.1.0)
+      activesupport (= 5.1.0)
       method_source
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
-    rake (11.3.0)
-    responders (2.3.0)
-      railties (>= 4.2.0, < 5.1)
-    rest-client (2.0.0)
+    rake (12.0.0)
+    responders (2.4.0)
+      actionpack (>= 4.2.0, < 5.3)
+      railties (>= 4.2.0, < 5.3)
+    rest-client (2.0.2)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     rollbar (2.14.1)
       multi_json
-    rspec (3.5.0)
-      rspec-core (~> 3.5.0)
-      rspec-expectations (~> 3.5.0)
-      rspec-mocks (~> 3.5.0)
-    rspec-core (3.5.4)
-      rspec-support (~> 3.5.0)
-    rspec-expectations (3.5.0)
+    rspec (3.6.0)
+      rspec-core (~> 3.6.0)
+      rspec-expectations (~> 3.6.0)
+      rspec-mocks (~> 3.6.0)
+    rspec-core (3.6.0)
+      rspec-support (~> 3.6.0)
+    rspec-expectations (3.6.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.5.0)
-    rspec-mocks (3.5.0)
+      rspec-support (~> 3.6.0)
+    rspec-mocks (3.6.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.5.0)
-    rspec-rails (3.5.2)
+      rspec-support (~> 3.6.0)
+    rspec-rails (3.6.0)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       railties (>= 3.0)
-      rspec-core (~> 3.5.0)
-      rspec-expectations (~> 3.5.0)
-      rspec-mocks (~> 3.5.0)
-      rspec-support (~> 3.5.0)
-    rspec-support (3.5.0)
-    ruby-graphviz (1.2.2)
-    simplecov (0.12.0)
+      rspec-core (~> 3.6.0)
+      rspec-expectations (~> 3.6.0)
+      rspec-mocks (~> 3.6.0)
+      rspec-support (~> 3.6.0)
+    rspec-support (3.6.0)
+    ruby-graphviz (1.2.3)
+    simplecov (0.14.1)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
@@ -241,7 +259,7 @@ GEM
     skylight (1.2.2)
       activesupport (>= 3.0.0)
     slop (3.6.0)
-    sprockets (3.7.0)
+    sprockets (3.7.1)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
     sprockets-rails (3.2.0)
@@ -258,10 +276,10 @@ GEM
       thread_safe (~> 0.1)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.7.2)
-    warden (1.2.6)
+    unf_ext (0.0.7.4)
+    warden (1.2.7)
       rack (>= 1.0)
-    websocket-driver (0.6.4)
+    websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
 
@@ -269,11 +287,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_model_serializers (~> 0.10.0)
+  active_model_serializers
   batch_api
   database_cleaner
-  delayed_job_active_record
-  devise
+  delayed_job!
+  delayed_job_active_record!
+  devise!
   factory_girl_rails
   faker
   figaro
@@ -282,13 +301,13 @@ DEPENDENCIES
   jwt
   letter_opener
   montrose
-  mutations (~> 0.8.0)
-  paperclip (~> 5.0.0)
+  mutations
+  paperclip
   pg
   pry
   rack-attack
   rack-cors
-  rails (= 5.0.0.1)
+  rails (~> 5.1)
   rails-erd
   rails_12factor
   rest-client
@@ -301,7 +320,7 @@ DEPENDENCIES
   thin
 
 RUBY VERSION
-   ruby 2.3.3p222
+   ruby 2.4.1p111
 
 BUNDLED WITH
-   1.14.1
+   1.14.6
