@@ -26,9 +26,11 @@ class Image < ApplicationRecord
 
 
   if(ENV.has_key?("GCS_BUCKET"))
+    bucket = ENV.fetch("GCS_BUCKET")
     CONFIG.merge!({
       storage:         :fog,
-      fog_directory:   ENV.fetch("GCS_BUCKET"),
+      fog_host:        "http://#{bucket}.storage.googleapis.com",
+      fog_directory:   bucket,
       fog_credentials: { provider:                         "Google",
                          google_storage_access_key_id:     ENV.fetch("GCS_KEY"),
                          google_storage_secret_access_key: ENV.fetch("GCS_ID")}
