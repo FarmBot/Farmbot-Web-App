@@ -26,6 +26,7 @@ module Api
       end
     end
 
+    instrument_method
     def index
       render json: current_device.limited_log_list
     end
