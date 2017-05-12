@@ -1,5 +1,7 @@
 module Api
   class LogsController < Api::AbstractController
+    include Skylight::Helpers
+
     def create
       case raw_json
       when Array
@@ -9,11 +11,12 @@ module Api
         # TODO Create in batches if this becomes a perf. bottleneck.
         render json: raw_json
           .last(current_device.max_log_count)
-          .map { |i| new_log(i) }
-          .select { |i| i.success? }
-          .map { |i| i.result }
-          .select { |i| i.meta["type"] != "fun"}
-          .tap { |i| Log.transaction { i.map(&:save) } }
+          .map    { |i| new_log(i) }
+          .select { |i| i.success? }             # Ignore rejects
+          .map    { |i| i.result }
+          .select { |i| i.meta["type"] != "fun"} # Don't save jokes
+          .map    { |i| i.as_json }
+          .tap    { |i| Log.create(i) }
       when Hash
         outcome = new_log(raw_json)
         outcome.result.save if outcome.success?
