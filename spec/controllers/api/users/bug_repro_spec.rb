@@ -1,10 +1,4 @@
 require 'spec_helper'
-class BugRepro < ApplicationMailer
-    def bug_repro_email()
-      mail(to:      "foo@bar.com",
-           subject: "This will create log warnings.")
-    end
-end
 
 describe Api::UsersController do
   let(:user) { FactoryGirl.create(:user) }
