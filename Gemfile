@@ -17,15 +17,11 @@ gem "jwt"
 gem "mutations"
 gem "active_model_serializers"
 gem "rack-cors"
-gem "database_cleaner"
 gem "rack-attack"
 gem "paperclip"
 gem "figaro"
 gem "fog-google", git: "https://github.com/fog/fog-google"
-gem "rest-client" # If you see this, delete this.
 gem "pg"
-gem "batch_api"
-gem "json-schema-generator"
 gem "montrose"
 
 # Error reporting tools.
@@ -35,6 +31,7 @@ gem "rollbar"
 gem "skylight"
 
 group :development, :test do
+  gem "database_cleaner"
   gem "pry"
   gem "factory_girl_rails"
   gem "faker"
