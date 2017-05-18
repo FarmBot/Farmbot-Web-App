@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-  - 2.3.3
+  - 2.4.1
 before_script:
   - cp config/database.travis.yml config/database.yml
   - mkdir -p public/app
