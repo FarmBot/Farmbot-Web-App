@@ -26,7 +26,7 @@ module CeleryScriptSettingsBag
   ALLOWED_AXIS          = %w(x y z all)
   ALLOWED_LHS           = %w(pin0 pin1 pin2 pin3 pin4 pin5 pin6 pin7 pin8 pin9
                              pin10 pin11 pin12 pin13 x y z)
-  ALLOWED_POINT_TYPE    = %w(GenericPointer ToolSlot Plant)
+  ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
   STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
                              send_message execute _if execute_script take_photo)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
@@ -42,24 +42,24 @@ module CeleryScriptSettingsBag
   BAD_TOOL_ID           = 'Tool #%s does not exist.'
   BAD_PACKAGE           = '"%s" is not a valid package. Allowed values: %s'
   BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
-  BAD_POINT_ID          = "Bad point ID: %s"
-  BAD_POINT_TYPE        = '"%s" is not a type of point. Allowed values: %s'
+  BAD_POINTER_ID          = "Bad point ID: %s"
+  BAD_POINTER_TYPE        = '"%s" is not a type of point. Allowed values: %s'
 
   Corpus = CeleryScript::Corpus
       .new
-      .defineArg(:point_id, [Integer]) do |node|
-        p_type = node&.parent&.args[:point_type]&.value
+      .defineArg(:pointer_id, [Integer]) do |node|
+        p_type = node&.parent&.args[:pointer_type]&.value
         klass  = Point::POINTER_KINDS[p_type]
         # Don't try to validate if `pointer_type` is wrong.
         # That's a different respnsiblity.
         if(klass)
           bad_node = !klass.exists?(node.value)
-          node.invalidate!(BAD_POINT_ID % node.value) if bad_node
+          node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
         end
       end
-      .defineArg(:point_type, [String]) do |node|
-        within(ALLOWED_POINT_TYPE, node) do |val|
-          BAD_POINT_TYPE % [val.to_s, ALLOWED_POINT_TYPE.inspect]
+      .defineArg(:pointer_type, [String]) do |node|
+        within(ALLOWED_POINTER_TYPE, node) do |val|
+          BAD_POINTER_TYPE % [val.to_s, ALLOWED_POINTER_TYPE.inspect]
         end
       end
       .defineArg(:pin_mode, [Integer]) do |node|
