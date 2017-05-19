@@ -167,7 +167,7 @@ module CeleryScriptSettingsBag
       .defineNode(:add_point,         [:location], [:pair])
       .defineNode(:take_photo,        [], [])
       .defineNode(:data_update,       [:value], [:pair])
-      .defineNode(:point,             [:point_type, :point_id], [])
+      .defineNode(:point,             [:pointer_type, :pointer_id], [])
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
   def self.within(array, node)
