@@ -18,12 +18,12 @@ describe Api::DevicesController do
     it 'has expected keys' do
       sign_in user
       get :show, params: {}, session: { format: :json }
-      { id:         Fixnum,
+      { id:         Integer,
         name:       String,
         webcam_url: String }.each do |name, klass|
           expect(json[name]).to be_an_instance_of(klass)
         end
-      
+
     end
   end
 end

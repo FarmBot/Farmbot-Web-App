@@ -2,10 +2,10 @@ unless Rails.env == "production"
     ENV['MQTT_HOST']        = "blooper.io"
     ENV['OS_UPDATE_SERVER'] = "http://blah.com"
     ENV['FW_UPDATE_SERVER'] = "http://test.com"
+    Point.destroy_all
     ToolSlot.destroy_all
     Device.destroy_all
     User.destroy_all
-    Point.destroy_all
     Users::Create.run!(name:                  "Administrator",
                        email:                 "notos@notos.com",
                        password:              "password123",
@@ -51,6 +51,7 @@ unless Rails.env == "production"
         y: rand(40...470) + rand(40...470),
         z: 5,
         radius: (rand(1...150) + rand(1...150)) / 20,
+        pointer: GenericPointer.new(),
         meta: {
           created_by: "plant-detection",
           color: (Sequence::COLORS + [nil]).sample

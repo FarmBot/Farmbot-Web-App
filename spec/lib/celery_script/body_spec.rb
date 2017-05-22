@@ -2,7 +2,7 @@ require "spec_helper"
 describe "Body nodes" do
   test_corpus = CeleryScript::Corpus
                   .new
-                  .defineArg(:foo, [Fixnum])
+                  .defineArg(:foo, [Integer])
                   .defineNode(:wrong, [], [])
                   .defineNode(:bar, [:foo], [])
                   .defineNode(:baz, [], [:bar])

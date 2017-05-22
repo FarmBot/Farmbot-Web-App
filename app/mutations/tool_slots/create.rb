@@ -1,5 +1,5 @@
 module ToolSlots
-  class Create < ToolSlots::Base
+  class Create < Mutations::Command
     required do
       model   :device, class: Device
     end
@@ -19,11 +19,22 @@ module ToolSlots
     def execute
       Point
         .create!(inputs.slice(:x,:y,:z,:name, :device).merge(pointer: pointer))
-        .pointer
     end
 
     def pointer
       ToolSlot.new(inputs.slice(:tool_id))
+    end
+
+    def has_tool_id
+      !!tool_id
+    end
+
+    def validate_tool
+      if has_tool_id && !device.tools.where(id: tool_id).any?
+        add_error :tool_id,
+                  :not_found,
+                  "Can't find tool with id #{tool_id}"
+      end
     end
   end
 end

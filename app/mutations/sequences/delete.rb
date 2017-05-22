@@ -1,6 +1,7 @@
 module Sequences
   class Delete < Mutations::Command
     IN_USE = "The following %s are still relying on this sequence: %s"
+
     required do
       model :device, class: Device
       model :sequence, class: Sequence

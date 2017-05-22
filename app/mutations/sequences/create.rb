@@ -3,9 +3,9 @@ module Sequences
     include CeleryScriptValidators
 
     required do
-      model :device, class: Device
+      model  :device, class: Device
       string :name
-      duck :body, methods: [:[], :[]=, :each, :map]
+      duck   :body, methods: [:[], :[]=, :each, :map]
     end
 
     optional do

@@ -11,8 +11,8 @@ describe "Celery Script `point` node" do
           args:{
             location: {
               kind:"point",
-              args: { point_type: plant.class.to_s,
-                      point_id:   plant.id }
+              args: { pointer_type: plant.class.to_s,
+                      pointer_id:   plant.id }
             },
             offset:{ kind:"coordinate", args:{ x: 0, y: 0, z: 0} },
             speed:800
@@ -31,12 +31,12 @@ describe "Celery Script `point` node" do
   end
 
   it 'handles bad types' do
-    hash[:body][0][:args][:location][:args][:point_type] = "wrong"
+    hash[:body][0][:args][:location][:args][:pointer_type] = "wrong"
     expect(checker.run.message).to include("not a type of point")
   end
 
   it 'handles bad ids' do
-    hash[:body][0][:args][:location][:args][:point_id] = -9
+    hash[:body][0][:args][:location][:args][:pointer_id] = -9
     expect(checker.run.message).to include("Bad point ID")
   end
 end

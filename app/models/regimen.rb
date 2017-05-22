@@ -10,6 +10,7 @@ class Regimen < ActiveRecord::Base
   self.table_name = "regimens"
   validates :name, presence: true
   validates :name, uniqueness: { scope: :device }
+  has_many  :farm_events, as: :executable
 
   has_many   :regimen_items, dependent: :destroy
   belongs_to :device
