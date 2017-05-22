@@ -1,3 +1,5 @@
+require_relative "../../lib/hstore_filter"
+
 module Api
   class PointsController < Api::AbstractController
     class BadPointerType < StandardError; end
