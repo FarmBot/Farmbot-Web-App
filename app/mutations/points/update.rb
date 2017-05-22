@@ -17,7 +17,11 @@ module Points
     end
 
     def validate
-      throw "BRB" if tool_id && !device.tools.pluck(:id).includes?(tool_id)
+      throw "BRB" if (tool_id &&
+                      !device
+                        .tools
+                        .pluck(:id)
+                        .include?(tool_id))
     end
 
     def execute
