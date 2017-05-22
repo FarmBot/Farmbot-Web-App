@@ -51,6 +51,7 @@ unless Rails.env == "production"
         y: rand(40...470) + rand(40...470),
         z: 5,
         radius: (rand(1...150) + rand(1...150)) / 20,
+        pointer: GenericPointer.new(),
         meta: {
           created_by: "plant-detection",
           color: (Sequence::COLORS + [nil]).sample
