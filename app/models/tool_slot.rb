@@ -3,7 +3,7 @@
 # etc.
 class ToolSlot < ApplicationRecord
   belongs_to :tool
-  has_one :point, as: :pointer, dependent: :destroy
+  has_one :point, as: :pointer#, dependent: :destroy
   # has_many  :sequence_dependencies, dependent: :destroy, as: :dependency
   validates_uniqueness_of :tool,
                           allow_blank: true,

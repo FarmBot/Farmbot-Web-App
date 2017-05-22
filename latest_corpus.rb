@@ -139,6 +139,6 @@ result.push(enum_type :LegalKindString, HASH[:nodes].map{ |x| x[:name] }.sort.un
 result.push(enum_type :LegalSequenceKind, CeleryScriptSettingsBag::STEPS.sort)
 result.push(enum_type :DataChangeType, CeleryScriptSettingsBag::ALLOWED_CHAGES)
 result.push(enum_type :ResourceName, CeleryScriptSettingsBag::RESOURCE_NAME)
-result.push(enum_type :PointType, CeleryScriptSettingsBag::ALLOWED_POINT_TYPE)
+result.push(enum_type :PointType, CeleryScriptSettingsBag::ALLOWED_POINTER_TYPE)
 
 puts result.join.gsub("\n\n\n", "\n")
