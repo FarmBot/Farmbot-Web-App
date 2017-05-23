@@ -40,11 +40,12 @@ module CeleryScriptSettingsBag
                           'Allowed values: %s'
   BAD_CHANNEL_NAME      = '"%s" is not a valid channel_name. Allowed values: %s'
   BAD_MESSAGE_TYPE      = '"%s" is not a valid message_type. Allowed values: %s'
+  BAD_MESSAGE           = "Messages must be between 1 and 300 characters"
   BAD_TOOL_ID           = 'Tool #%s does not exist.'
   BAD_PACKAGE           = '"%s" is not a valid package. Allowed values: %s'
   BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
-  BAD_POINTER_ID          = "Bad point ID: %s"
-  BAD_POINTER_TYPE        = '"%s" is not a type of point. Allowed values: %s'
+  BAD_POINTER_ID        = "Bad point ID: %s"
+  BAD_POINTER_TYPE      = '"%s" is not a type of point. Allowed values: %s'
 
   Corpus = CeleryScript::Corpus
       .new
@@ -122,7 +123,12 @@ module CeleryScriptSettingsBag
       .defineArg(:value,           [String, Integer, TrueClass, FalseClass])
       .defineArg(:label,           [String])
       .defineArg(:package,         [String])
-      .defineArg(:message,         [String])
+      .defineArg(:message,         [String]) do |node|
+        notString = node.value.is_a?(String)
+        tooShort  = notString || node.value.length == 0
+        tooLong   = notString || node.value.length > 300
+        node.invalidate! BAD_MESSAGE if (tooShort || tooLong)
+      end
       .defineArg(:location,        [:tool, :coordinate, :point])
       .defineArg(:offset,          [:coordinate])
       .defineArg(:_then,           [:execute, :nothing])
