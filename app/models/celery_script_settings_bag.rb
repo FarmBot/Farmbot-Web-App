@@ -124,7 +124,7 @@ module CeleryScriptSettingsBag
       .defineArg(:label,           [String])
       .defineArg(:package,         [String])
       .defineArg(:message,         [String]) do |node|
-        notString = node.value.is_a?(String)
+        notString = !node.value.is_a?(String)
         tooShort  = notString || node.value.length == 0
         tooLong   = notString || node.value.length > 300
         node.invalidate! BAD_MESSAGE if (tooShort || tooLong)
