@@ -28,7 +28,8 @@ module CeleryScriptSettingsBag
                              pin10 pin11 pin12 pin13 x y z)
   ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
   STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
-                             send_message execute _if execute_script take_photo)
+                             send_message execute _if execute_script take_photo
+                             find_home)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
