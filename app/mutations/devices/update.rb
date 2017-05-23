@@ -6,7 +6,7 @@ module Devices
 
     optional do
       string  :name
-      string  :webcam_url
+      string  :webcam_url, empty: true
     end
 
     def execute
