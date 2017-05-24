@@ -1,4 +1,4 @@
-class RemoveScheduleIdFromRegimenItems < ActiveRecord::Migration
+class RemoveScheduleIdFromRegimenItems < ActiveRecord::Migration[4.1]
   def change
     remove_column :regimen_items, :schedule_id, :integer
   end

@@ -1,4 +1,4 @@
-class RemoveUuidFromDevice < ActiveRecord::Migration
+class RemoveUuidFromDevice < ActiveRecord::Migration[4.1]
   def change
     remove_column :devices, :uuid, :integer
   end

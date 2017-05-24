@@ -1,4 +1,4 @@
-class RemoveScheduleIdFromSequence < ActiveRecord::Migration
+class RemoveScheduleIdFromSequence < ActiveRecord::Migration[4.1]
   def change
     remove_column :sequences, :schedule_id, :integer
     remove_column :sequences, :regimen, :string

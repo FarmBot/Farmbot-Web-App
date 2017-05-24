@@ -1,4 +1,4 @@
-class CreateStepParams < ActiveRecord::Migration
+class CreateStepParams < ActiveRecord::Migration[4.1]
   def change
     create_table :step_params do |t|
       t.string :key

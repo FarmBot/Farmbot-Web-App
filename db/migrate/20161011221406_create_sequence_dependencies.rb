@@ -1,4 +1,4 @@
-class CreateSequenceDependencies < ActiveRecord::Migration
+class CreateSequenceDependencies < ActiveRecord::Migration[4.1]
   def change
     create_table :sequence_dependencies do |t|
       t.references :dependency, polymorphic: true

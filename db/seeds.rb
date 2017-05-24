@@ -1,4 +1,8 @@
 unless Rails.env == "production"
+    POINT_COUNT             = 2 # 70
+    PLANT_COUNT             = 2 # 100
+    DATE_RANGE_LO           = 1..3
+    DATE_RANGE_HI           = 3..8
     ENV['MQTT_HOST']        = "blooper.io"
     ENV['OS_UPDATE_SERVER'] = "http://blah.com"
     ENV['FW_UPDATE_SERVER'] = "http://test.com"
@@ -33,7 +37,8 @@ unless Rails.env == "production"
                                    y: rand(40...470),
                                    z: rand(1...300)})
     end
-    70.times do
+
+    PLANT_COUNT.times do
       Point.create(
         device: u.device,
         x: rand(40...970),
@@ -44,7 +49,8 @@ unless Rails.env == "production"
           openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample
         ))
     end
-    100.times do
+
+    POINT_COUNT.times do
       Point.create(
         device: u.device,
         x: rand(40...970) + rand(40...970),
@@ -81,10 +87,10 @@ unless Rails.env == "production"
     2.times do
       FarmEvents::Create.run!(
         device: u.device,
-        start_time: Date.yesterday - [*(1..3)].sample.days,
-        end_time: Date.today + ([*(3..8)].sample).days,
+        start_time: Date.yesterday - [*(DATE_RANGE_LO)].sample.days,
+        end_time: Date.today + ([*(DATE_RANGE_HI)].sample).days,
         time_unit: "daily",
-        repeat: [*(1..3)].sample,
+        repeat: [*(DATE_RANGE_LO)].sample,
         executable_id: Sequence.where(device: u.device).order("RANDOM()").first.id,
         executable_type: "Sequence"
       )
