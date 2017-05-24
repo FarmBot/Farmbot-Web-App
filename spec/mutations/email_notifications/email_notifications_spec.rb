@@ -8,6 +8,7 @@ describe EmailNotifications::Create do
 #      * Throttle with Rack::Attack
 #  *
   it 'sends notifications' do
+    pending
     results = EmailNotifications::Create.run(device: device)
   end
   it 'batches multiple requests into one'
