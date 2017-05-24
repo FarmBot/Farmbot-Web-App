@@ -1,2 +1,0 @@
-class EmailNotification < ApplicationRecord
-end
