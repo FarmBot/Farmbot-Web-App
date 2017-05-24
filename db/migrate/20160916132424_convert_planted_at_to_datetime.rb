@@ -1,4 +1,4 @@
-class ConvertPlantedAtToDatetime < ActiveRecord::Migration[4.1]
+class ConvertPlantedAtToDatetime < ActiveRecord::Migration[4.2]
   def change
    # Make Plant planted_at a datetime
      remove_column :plants, :planted_at

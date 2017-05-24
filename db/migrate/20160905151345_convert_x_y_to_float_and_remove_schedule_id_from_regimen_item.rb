@@ -1,4 +1,4 @@
-class ConvertXYToFloatAndRemoveScheduleIdFromRegimenItem < ActiveRecord::Migration[4.1]
+class ConvertXYToFloatAndRemoveScheduleIdFromRegimenItem < ActiveRecord::Migration[4.2]
   def change
    # Make Plant x/y a float
    [:x,:y].each do |coord|

@@ -1,4 +1,4 @@
-class CreateEverything < ActiveRecord::Migration[4.1]
+class CreateEverything < ActiveRecord::Migration[4.2]
   def self.up
     execute """
     ALTER TABLE schedules
