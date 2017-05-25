@@ -13,9 +13,13 @@ module Api
           .select { |i| i.meta["type"] != "fun"} # Don't save jokes
           .map    { |i| i.as_json }
           .tap    { |i| Log.create(i) }
+          .tap    { |i| maybe_deliver(i) }
       when Hash
         outcome = new_log(raw_json)
-        outcome.result.save if outcome.success?
+        if outcome.success?
+          outcome.result.save!
+          maybe_deliver(outcome.result)
+        end
         return mutate outcome
       else
         sorry "Post a JSON array or object.", 422
@@ -35,6 +39,10 @@ private
 
     def new_log(input)
       Logs::Create.run(input, device: current_device)
+    end
+
+    def maybe_deliver(log_or_logs)
+      LogDispatch.deliver(current_device, log_or_logs)
     end
   end
 end

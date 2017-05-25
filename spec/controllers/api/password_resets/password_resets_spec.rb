@@ -12,7 +12,7 @@ describe Api::PasswordResetsController do
       post :create, params: params
       expect(response.status).to eq(200)
       expect(ActionMailer::Base.deliveries.length).to be > old_email_count
-      message = last_mail_delivery.to_s
+      message = last_email.to_s
       expect(message).to include("password reset")
     end
 

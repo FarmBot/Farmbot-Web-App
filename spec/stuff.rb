@@ -11,7 +11,7 @@ module Helpers
   MAGIC_NUMBER_TOOL_ID = "8888"
   AST_FIXTURE          = File.read("./spec/lib/celery_script/ast_fixture3.json")
 
-  def last_mail_delivery
+  def last_email
     ActionMailer::Base.deliveries.last
   end
 

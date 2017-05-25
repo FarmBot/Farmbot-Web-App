@@ -8,7 +8,6 @@ class CreateLogDispatches < ActiveRecord::Migration[5.1]
       t.timestamps
     end
 
-    add_index :log_dispatches, :device_id
     add_index :log_dispatches, :sent_at
   end
 end

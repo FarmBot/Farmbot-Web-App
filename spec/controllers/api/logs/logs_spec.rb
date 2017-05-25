@@ -106,5 +106,24 @@ describe Api::LogsController do
       expect(user.device.reload.logs.count).to be < before
       expect(user.device.logs.count).to eq(0)
     end
+
+    it 'delivers emails for logs marked as `email`' do
+      sign_in user
+      empty_mail_bag
+      before = LogDispatch.count
+      body         = { meta: { x: 1, y: 2, z: 3, type: "info" },
+                       channels: ["email"],
+                       message: "one" }.to_json
+      before_count = Log.count
+      post :create, body: body, params: {format: :json}
+      after = LogDispatch.count
+      expect(response.status).to eq(200)
+      expect(last_email).to be
+      sleep 1
+      binding.pry
+    end
+
+    it "batches multiple messages"
+    it "throttles excess requests"
   end
 end
