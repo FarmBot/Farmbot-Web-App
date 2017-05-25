@@ -121,16 +121,14 @@ private
       render json: {error: "Upgrade to latest FarmBot OS"}, status: 426
     end
 
-    EXPECTED_MAJOR = 3
-    EXPECTED_MINOR = 1
+    EXPECTED_VER = Gem::Version::new('3.1.6')
+
     def check_fbos_version
       # "FARMBOTOS/3.1.0 (RPI3) RPI3 ()"
       ua = request.user_agent.upcase
       if ua.include?("FARMBOTOS")
-        major, minor = ua.upcase.split("/").pop.split(".").first(2).map(&:to_i)
-        maj_ok = major >= EXPECTED_MAJOR
-        min_ok = minor >= EXPECTED_MINOR
-        bad_version unless maj_ok && min_ok
+        actual_version = Gem::Version::new(ua.upcase.split("/").last.split(" ").first)
+        bad_version unless actual_version >= EXPECTED_VER
       end
     end
   end
