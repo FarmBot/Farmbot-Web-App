@@ -1,8 +1,12 @@
 class LogDeliveryMailer < ApplicationMailer
 
   def log_digest(device)
-    if LogDispatch.where(sent_at: 1.hours.ago..Time.now).count > 20
-      raise "Device #{device.id} is sending too many emails!!! (> 20 / hr)"
+    total_sent_this_hour = LogDispatch
+                             .where(sent_at: 1.hours.ago..Time.now)
+                             .count
+    if total_sent_this_hour > LogDispatch.max_per_hour
+      raise LogDispatch::RateLimitError,
+              "Device #{device.id} is sending too many emails!!! (> 20 / hr)"
     end
     ld        = LogDispatch.where(sent_at: nil, device: device)
     logs      = Log.find(ld.pluck(:log_id))

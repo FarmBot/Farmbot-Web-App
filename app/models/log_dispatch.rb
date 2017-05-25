@@ -1,6 +1,11 @@
 class LogDispatch < ApplicationRecord
+  class RateLimitError < StandardError; end
+
   belongs_to :device
   belongs_to :log
+
+  class_attribute :max_per_hour
+  self.max_per_hour = 20
 
   # If this method grows, create a mutation.
   def self.deliver(device, log_or_logs)

@@ -1,5 +1,13 @@
 require "spec_helper"
 
-RSpec.describe LogDeliveryMailer, type: :mailer do
-  pending "add some examples to (or delete) #{__FILE__}"
+describe LogDeliveryMailer, type: :mailer do
+    let(:device)          { FactoryGirl.create(:device) }
+    let!(:log_dispatches) { FactoryGirl.create(:log_dispatch, device: device) }
+
+    it "throttles excess requests" do
+      LogDispatch.max_per_hour = -1 # Throttle it all
+      x = LogDeliveryMailer.log_digest(device)
+      expect { x.deliver_now }.to raise_error LogDispatch::RateLimitError
+      LogDispatch.max_per_hour = 20
+    end
 end

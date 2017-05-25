@@ -125,6 +125,5 @@ describe Api::LogsController do
     end
 
     it "batches multiple messages"
-    it "throttles excess requests"
   end
 end
