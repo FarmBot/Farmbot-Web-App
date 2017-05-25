@@ -20,7 +20,7 @@ module CeleryScriptSettingsBag
                              corpuses logs sequences farm_events
                              tool_slots tools points tokens users device)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun)
-  ALLOWED_CHANNEL_NAMES = %w(ticker toast)
+  ALLOWED_CHANNEL_NAMES = %w(ticker toast email)
   ALLOWED_DATA_TYPES    = %w(string integer)
   ALLOWED_OPS           = %w(< > is not)
   ALLOWED_AXIS          = %w(x y z all)
