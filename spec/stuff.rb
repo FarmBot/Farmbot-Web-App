@@ -9,7 +9,15 @@ end
 module Helpers
   MAGIC_NUMBER_SEQ_ID  = "9999"
   MAGIC_NUMBER_TOOL_ID = "8888"
-  AST_FIXTURE = File.read("./spec/lib/celery_script/ast_fixture3.json")
+  AST_FIXTURE          = File.read("./spec/lib/celery_script/ast_fixture3.json")
+
+  def last_mail_delivery
+    ActionMailer::Base.deliveries.last
+  end
+
+  def empty_mail_bag
+    ActionMailer::Base.deliveries = []
+  end
 
   # Create a VALID fake sequence.body for a particular user. Creates a fake
   # subsequence in the DB when called.

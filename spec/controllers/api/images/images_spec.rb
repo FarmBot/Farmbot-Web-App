@@ -8,8 +8,9 @@ describe Api::ImagesController do
     it 'shows only the max images allowed' do
       sign_in user
       device = user.device
-      device.update_attributes!(max_images_count: 10)
-      FactoryGirl.create_list(:image, 15, device: user.device)
+      # Using the *real* value (10) was super slow (~30 seconds)
+      device.update_attributes!(max_images_count: 1)
+      FactoryGirl.create_list(:image, 2, device: user.device)
       get :index
       expect(response.status).to eq(200)
       expect(json.length).to eq(device.max_images_count)
@@ -35,7 +36,8 @@ describe Api::ImagesController do
       sign_in user
       before_count = Image.count
       post :create,
-           body: { attachment_url: "http://i.imgur.com/OhLresv.png",
+           body: { attachment_url: "https://placeholdit.imgix.net/~text?txt"\
+                                   "size=5&txt=1%C3%971&w=1&h=1&txtpad=1",
                    meta: { x: 1, y: 2, z: 3 } }.to_json,
            params: {format: :json}
       expect(response.status).to eq(200)

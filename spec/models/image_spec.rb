@@ -8,7 +8,8 @@ describe Image do
       expect(image.attachment_processed_at).to be_nil
       expect(image.attachment.exists?).to be_falsy
 
-      image.set_attachment_by_url("http://i.imgur.com/OhLresv.png")
+      image.set_attachment_by_url("https://placeholdit.imgix.net/~text?txts"\
+                                  "ize=5&txt=1%C3%971&w=1&h=1&txtpad=1")
       image.save!
 
       expect(image.attachment.exists?).to be_truthy
