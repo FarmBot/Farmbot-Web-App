@@ -11,6 +11,7 @@ describe Api::PasswordResetsController do
       old_email_count = ActionMailer::Base.deliveries.length
       post :create, params: params
       expect(response.status).to eq(200)
+      # expect(UserMailer).to(receive(:deliver_signup).with("email@example.com", "Jimmy Bean"))
       sleep 0.75 # Mail deliveries occur in background thread. TODO: Fix this
                 # `sleep` nonsense the right way.
       expect(ActionMailer::Base.deliveries.length).to be > old_email_count

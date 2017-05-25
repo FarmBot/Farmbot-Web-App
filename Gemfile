@@ -38,8 +38,11 @@ group :development, :test do
   gem "faker"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
   gem "rails-erd"
-  gem "rspec"
-  gem "rspec-rails"
+  # TODO: Upgrade versions when they fix this stuff:
+  # https://stackoverflow.com/questions/43983466
+  #   /controller-test-emits-debug-failure-messages-after-rails-5-1-upgrade
+  gem "rspec", "~> 3.5.0"
+  gem "rspec-rails", "~> 3.5.0"
   gem "simplecov"
   gem "letter_opener"
 end
