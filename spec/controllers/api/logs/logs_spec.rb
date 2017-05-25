@@ -33,7 +33,7 @@ describe Api::LogsController do
     end
 
     it 'disallows blacklisted (sensitive) words in logs' do
-      Log.delete_all
+      Log.destroy_all
       stub = { meta: { x: 1, y: 2, z: 3, type: "info" },
                channels: ["toast"],
                message: "my password is foo123!" }
@@ -110,17 +110,18 @@ describe Api::LogsController do
     it 'delivers emails for logs marked as `email`' do
       sign_in user
       empty_mail_bag
-      before = LogDispatch.count
+      before_count = LogDispatch.count
       body         = { meta: { x: 1, y: 2, z: 3, type: "info" },
                        channels: ["email"],
-                       message: "one" }.to_json
-      before_count = Log.count
+                       message: "Heyoooo" }.to_json
       post :create, body: body, params: {format: :json}
-      after = LogDispatch.count
+      after_count = LogDispatch.count
       expect(response.status).to eq(200)
       expect(last_email).to be
-      sleep 1
-      binding.pry
+      expect(last_email.body.to_s).to include("Heyoooo")
+      expect(last_email.to).to include(user.email)
+      expect(before_count).to be < after_count
+      expect(LogDispatch.where(sent_at: nil).count).to eq(0)
     end
 
     it "batches multiple messages"
