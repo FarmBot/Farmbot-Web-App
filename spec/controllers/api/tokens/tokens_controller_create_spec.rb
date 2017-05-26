@@ -11,7 +11,7 @@ describe Api::TokensController do
       post :create, params: payload
       token = json[:token][:unencoded]
       expect(token[:iss].last).not_to eq("/") # Trailing slashes are BAD!
-      expect(token[:iss]).to include(Env.fetch!("WEB_API_URL"))
+      expect(token[:iss]).to include($API_URL)
     end
   end
 end
