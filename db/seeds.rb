@@ -7,7 +7,6 @@ unless Rails.env == "production"
     ENV['OS_UPDATE_SERVER'] = "http://blah.com"
     ENV['FW_UPDATE_SERVER'] = "http://test.com"
     Point.destroy_all
-    ToolSlot.destroy_all
     Device.destroy_all
     User.destroy_all
     Users::Create.run!(name:                  "Administrator",
