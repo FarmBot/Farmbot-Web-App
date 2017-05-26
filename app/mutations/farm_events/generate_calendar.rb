@@ -8,6 +8,7 @@ module FarmEvents
              "weekly"   => 60 * 60 * 24 * 7,
              "monthly"  => 60 * 60 * 24 * 30, # Not perfect...
              "yearly"   => 60 * 60 * 24 * 365 }
+
     UNIT_TRANSLATION = { "minutely" => :minutes,
                          "hourly"   => :hours,
                          "daily"    => :days,
@@ -25,6 +26,11 @@ module FarmEvents
     end
 
     def execute
+      # Does the input have a valid repeat?
+      # Is it in the future?
+      # Then generate a calendar.
+      # Otherwise, return a "partial calendar" that is either empty or (in the
+      # case of one-off events) has only one date in it (start_time).
       (every ? full_calendar : partial_calendar)
     end
 
@@ -40,15 +46,19 @@ module FarmEvents
     end
 
     def partial_calendar
-      start_time > Time.now ? [start_time] : []
+      in_future? ? [start_time] : []
     end
 
-    def one_unit
+    def the_unit
       UNIT_TRANSLATION[time_unit]
     end
 
     def every
-      one_unit && repeat.send(one_unit)
+      (the_unit != NEVER) && the_unit && repeat.send(the_unit)
+    end
+
+    def in_future?
+      start_time > Time.now
     end
   end
 end

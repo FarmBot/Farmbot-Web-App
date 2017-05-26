@@ -41,13 +41,23 @@ describe FarmEvents::GenerateCalendar do
 
   it 'hit more bugs' do
     tomorrow = Time.now + 1.day
-    calendar = FarmEvents::GenerateCalendar.run!(
-     "start_time" => tomorrow,
-     "end_time"   => tomorrow + 5.minutes,
-     "repeat"     => 1,
-     "time_unit"  => "minutely")
+    calendar = FarmEvents::GenerateCalendar.run!("start_time" => tomorrow,
+                                                 "end_time"   => tomorrow + 5.minutes,
+                                                 "repeat"     => 1,
+                                                 "time_unit"  => "minutely")
 
     expect(calendar.length).to be > 3
     expect(calendar.length).to be < 7
+  end
+
+  it 'schedules one-off events' do
+    tomorrow = Time.now + 1.day
+    params   = { start_time: tomorrow,
+                 end_time:   nil,
+                 repeat:     1,
+                 time_unit:  "never" }
+    calendar = FarmEvents::GenerateCalendar.run!(params)
+    expect(calendar.length).to eq(1)
+    expect(calendar.first).to eq(params[:start_time])
   end
 end
