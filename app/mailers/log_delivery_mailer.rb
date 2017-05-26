@@ -9,10 +9,12 @@ class LogDeliveryMailer < ApplicationMailer
               "Device #{device.id} is sending too many emails!!! (> 20 / hr)"
     end
     ld        = LogDispatch.where(sent_at: nil, device: device)
-    logs      = Log.find(ld.pluck(:log_id))
-    @emails   = device.users.pluck(:email)
-    @messages = logs.map(&:message)
-    mail(to: @emails, subject: '🌱 New message from FarmBot!')
-    ld.update_all(sent_at: Time.now)
+    if(ld.any?)
+      logs      = Log.find(ld.pluck(:log_id))
+      @emails   = device.users.pluck(:email)
+      @messages = logs.map(&:message)
+      mail(to: @emails, subject: '🌱 New message from FarmBot!')
+      ld.update_all(sent_at: Time.now)
+    end
   end
 end

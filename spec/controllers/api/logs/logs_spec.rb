@@ -1,4 +1,5 @@
 require 'spec_helper'
+JSON_EXAMPLE = File.read("spec/controllers/api/logs/connor_fixture.json")
 
 describe Api::LogsController do
   include Devise::Test::ControllerHelpers
@@ -128,5 +129,16 @@ describe Api::LogsController do
     end
 
     it "batches multiple messages"
+
+    it "handles bug that Connor reported" do
+      sign_in user
+      empty_mail_bag
+      Log.destroy_all
+      LogDispatch.destroy_all
+      post :create,
+           body: JSON_EXAMPLE,
+           params: {format: :json}
+      expect(last_email).to eq(nil)
+    end
   end
 end

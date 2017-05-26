@@ -5,15 +5,14 @@ module Api
     def create
       case raw_json
     when Array
-      log_params = raw_json
-                     .last(current_device.max_log_count)
-                     .map    { |i| new_log(i) }
-                     .select { |i| i.success? }             # Ignore rejects
-                     .map    { |i| i.result }
-                     .select { |i| i.meta["type"] != "fun"} # Don't save jokes
-                     .map    { |i| i.as_json }
-                     # .tap    { |i| Log.create(i) }
-        logs = Log.create(log_params).tap { |i| maybe_deliver(i) }
+        logs = Log
+                 .create(raw_json.last(current_device.max_log_count)
+                                 .map    { |i| new_log(i) }
+                                 .select { |i| i.success? } # <= Ignore rejects
+                                 .map    { |i| i.result } # Don't save jokes:
+                                 .select { |i| i.meta["type"] != "fun"}
+                                 .map    { |i| i.as_json })
+                 .tap { |i| maybe_deliver(i) }
         render json: logs
       when Hash
         outcome = new_log(raw_json)
