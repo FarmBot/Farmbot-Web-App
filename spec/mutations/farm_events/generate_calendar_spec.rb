@@ -55,7 +55,7 @@ describe FarmEvents::GenerateCalendar do
     params   = { start_time: tomorrow,
                  end_time:   nil,
                  repeat:     1,
-                 time_unit:  "never" }
+                 time_unit:  FarmEvent::NEVER }
     calendar = FarmEvents::GenerateCalendar.run!(params)
     expect(calendar.length).to eq(1)
     expect(calendar.first).to eq(params[:start_time])
