@@ -125,7 +125,7 @@ private
 
     def check_fbos_version
       # "FARMBOTOS/3.1.0 (RPI3) RPI3 ()"
-      ua = request.user_agent.upcase
+      ua = (request.user_agent || "").upcase
       if ua.include?("FARMBOTOS")
         actual_version = Gem::Version::new(ua.upcase.split("/").last.split(" ").first)
         bad_version unless actual_version >= EXPECTED_VER

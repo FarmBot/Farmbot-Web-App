@@ -1,6 +1,6 @@
 module PasswordResets
   class Update < Mutations::Command
-    OLD_TOKEN = "Your password reset request has timed out. "+
+    OLD_TOKEN = "Password reset requests expire after 24 hours. " +
                 "You must start the password reset process over again."
 
     required do
