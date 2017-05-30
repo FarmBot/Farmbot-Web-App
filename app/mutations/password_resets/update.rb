@@ -1,5 +1,8 @@
 module PasswordResets
   class Update < Mutations::Command
+    OLD_TOKEN = "Your password reset request has timed out. "+
+                "You must start the password reset process over again."
+
     required do
       string :password
       string :password_confirmation
@@ -15,6 +18,8 @@ module PasswordResets
                               password_confirmation: password_confirmation)
       Auth::CreateToken.run!(email:    user.email,
                              password: password)
+    rescue JWT::ExpiredSignature
+      add_error :reset, :too_old, OLD_TOKEN
     end
 
 private

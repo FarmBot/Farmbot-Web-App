@@ -30,5 +30,20 @@ describe Api::PasswordResetsController do
       expect(json.keys).to include(:token)
       expect(json.keys).to include(:user)
     end
+
+    it 'handles token expiration' do
+      token  = PasswordResetToken
+                 .issue_to(user, {exp: Time.now.yesterday})
+                 .encoded
+
+      params = { password:              "xpassword123",
+                 password_confirmation: "xpassword123",
+                 id:                    token }
+
+      put :update, params: params
+      expect(response.status).to eq(422)
+      expect(user.reload.valid_password?(params[:password])).to eq(false)
+      expect(json.to_json).to include(PasswordResets::Update::OLD_TOKEN)
+    end
   end
 end
