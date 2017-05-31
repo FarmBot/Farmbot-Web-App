@@ -1,45 +1,48 @@
 [![Code Climate](https://codeclimate.com/github/FarmBot/farmbot-web-app/badges/gpa.svg)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
 [![Test Coverage](https://codeclimate.com/github/FarmBot/farmbot-web-app/badges/coverage.svg)](https://codeclimate.com/github/FarmBot/farmbot-web-app)
 
-# Do I need this?
+# Q: Do I need this?
 
 This repository is intended for *software developers* who wish to modify the [Farmbot Web App](http://my.farmbot.io/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.io/). Running a server is a non-trivial task which will require an intermediate background in Ruby, SQL and Linux system administration.
 
 If you are a developer interested in contributing or would like to provision your own server, you are in the right place.
 
-# Farmbot Web API
-
-**[LATEST STABLE VERSION IS HERE](https://github.com/FarmBot/Farmbot-Web-API/releases)** :star: :star: :star:
+# Q: What is the Farmbot Web API?
 
 This Repo is the RESTful JSON API for Farmbot. This includes things like storage of user data, plant data, authorization tokens and a variety of other resources.
 
 The key responsibility of the API is *information and permissions management*. This should not be confused with device control, which is done via [MQTT](https://github.com/FarmBot/mqtt-gateway).
 
-# API Documentation
+# Q: Can I see some example API requests?
 
-For a list of example API requests and responses, see our [reference documentation](https://gist.github.com/RickCarlino/5f3d885e88d6e15b2ffe1763cc2a750a).
+For a list of example API requests and responses, see our [reference documentation](https://gist.github.com/RickCarlino/10db2df375d717e9efdd3c2d9d8932af). If you wish to write an add-on application that uses the FarmBot API, please let us know in an issue. We are happy to answer any specific questions you may have.
 
-# Developer Setup
+# Q: How do I Setup an API locally?
 
 ## Prerequisites
 
 Your machine will need the following:
 
+ 0. A Linux of Mac based machine. We do not support windows at this time.
  0. [Ruby 2.3.3](http://rvm.io/rvm/install)
- 1. [ImageMagick](https://www.imagemagick.org/script/index.php) (`brew install imagemagick` or `sudo apt-get install imagemagick`)
+ 1. [ImageMagick](https://www.imagemagick.org/script/index.php) (`brew install imagemagick` (Mac) or `sudo apt-get install imagemagick` (Ubuntu))
+ 2. [Node JS > v6](https://nodejs.org/en/download/)
+ 3. [`libpq-dev` and `postgresql`](http://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem/6040822#6040822)
 
 ### Setup
+
  0. `git clone https://github.com/FarmBot/Farmbot-Web-API`
  0. `cd Farmbot-Web-API`
  0. [Install `libpq-dev` and `postgresql`](http://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem/6040822#6040822)
  0. `bundle install`
- 0. Copy `config/database.example.yml` to `config/database.yml`. In GNU/Linux or Mac: `mv config/database.example.yml config/database.yml`. **Please read the file and replace the values with real world values.**.
+ 0. **MOST IMPORTANT STEP**. Copy `config/database.example.yml` to `config/database.yml`. In GNU/Linux or Mac: `mv config/database.example.yml config/database.yml`. **Please read the instructions inside the file. Replace the example values provided with real world values.**
  0. Give permission to create a database*
  0. `rake db:create:all db:migrate db:seed`
  0. (optional) Verify installation with `RAILS_ENV=test rake db:create db:migrate && rspec spec`.
- 0. `MQTT_HOST=your_mqtt_server_domain rails s`
- 0. (REQUIRES NODE JS > v6) Run `./install_frontend.sh` to install the latest frontend app. You may also run the frontend on a seperate server. See [frontend repository](https://github.com/FarmBot/farmbot-web-frontend) for details.
- 0. Open [localhost:3000](http://localhost:3000).
+ 0. `MQTT_HOST=your_mqtt_server_domain rails s -b 0.0.0.0` where `your_mqtt_server_domain` is the IP or domain name of the MQTT server (see next step). The MQTT server does not need to be running yet.
+ 0. Now that the API server is running, [provision an MQTT server](https://github.com/FarmBot/mqtt-gateway).
+ 0. (REQUIRES NODE JS > v6) Run `./install_frontend.sh` to build the latest frontend app. You may also run the frontend on a seperate server. The [frontend repository](https://github.com/FarmBot/farmbot-web-frontend) has more info on this if you wish to do so. For most users, `./install_frontend.sh` should be sufficient.
+ 0. Open [localhost:3000](http://localhost:3000). The application is now ready for use.
  0. [Raise an issue](https://github.com/FarmBot/Farmbot-Web-API/issues/new?title=Installation%20Failure) if you hit problems with any of these steps.
 
 \*Give permission to `user` to create database:
@@ -49,13 +52,13 @@ sudo -u postgres psql
 ALTER USER "user" WITH SUPERUSER;
 ```
 
-# Provisioning Your Own with Dokku
+# Q: Is Dokku / Docker supported?
 
-Please see `deployment.md`.
+Doku (a Docker management system) is partially supported. Pull requests welcome. Please see `deployment.md` for more information.
 
 # Config Settings (important)
 
-Your server won't run without setting ENV variables first.
+We try our best to follow the [12 Factor Methodology](https://12factor.net/). Part of that means using ENV variables as a means of [storing configuration](https://12factor.net/config). **Your server won't run without setting ENV variables first**.
 
 You can accomplish this by setting the ENV variables directly from your shell / server management tool or by writing an `application.yml` file.
 
@@ -65,13 +68,7 @@ See `config/application.example.yml` for a list of all the variables that must b
 
 **We can't fix issues we don't know about.** Please submit an issue if you are having trouble installing on your local machine.
 
-## Running Specs
-
-Please run them before submitting pull requests.
-
- * `bundle exec rspec spec`
-
-# Generating an API token
+# Q: How can I Generate an API token?
 
 You must pass a `token` string into most HTTP requests under the `Authorization: ` request header.
 
