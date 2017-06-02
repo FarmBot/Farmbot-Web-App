@@ -31,12 +31,15 @@ module Points
   private
 
     def update_params
-      point
-        .pointer
-        .assign_attributes(inputs.slice(:tool_id, :openfarm_slug))
+      maybe_update_pointer
       inputs
         .slice(*Point::SHARED_FIELDS)
         .merge(pointer: point.pointer)
+    end
+
+    def maybe_update_pointer
+      p = point.pointer
+      p && p.assign_attributes(inputs.slice(:tool_id, :openfarm_slug))
     end
   end
 end
