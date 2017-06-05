@@ -6,6 +6,7 @@ describe Api::FarmEventsController do
   describe '#create' do
     let(:user) { FactoryGirl.create(:user) }
     let(:sequence) { FactoryGirl.create(:sequence) }
+    let(:regimen) { FactoryGirl.create(:regimen, device: user.device) }
 
     it 'makes a farm_event' do
       sign_in user
@@ -33,5 +34,24 @@ describe Api::FarmEventsController do
       expect(response.status).to eq(422)
       expect(json.keys).to include(:farm_event)
     end
+
+    it 'cant use other peoples executables'
+    it 'provides a bad executable'
+    it 'creates a one-off FarmEvent'
+    # do
+    #   sign_in user
+    #   input = { "start_time": (Time.now + 1.hour).to_json.gsub("\"", ""),
+    #             "next_time": "2017-06-05T18:33:04.342Z",
+    #             "time_unit": "never",
+    #             "executable_id": 8,
+    #             "executable_type": "Regimen",
+    #             "end_time": "2017-06-05T18:34:00.000Z",
+    #             "repeat": 1 }
+    #   post :create, params: input
+    #   expect(response.status).to eq(422)
+    #   get :index
+    #   binding.pry
+    #   expect(json.length).to eq(1)
+    # end
   end
 end

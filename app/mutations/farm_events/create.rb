@@ -1,6 +1,5 @@
 module FarmEvents
   class Create < Mutations::Command
-    using LegacyRefinementsModule
     include FarmEvents::ExecutableHelpers
     executable_fields :optional
     BACKWARDS_END_TIME = "This event starts before it ends. Did you flip the "\
@@ -23,9 +22,7 @@ module FarmEvents
     end
 
     def execute
-      create(FarmEvent, inputs) do |farm_event|
-        farm_event.executable = executable
-      end
+      FarmEvent.create!(inputs.merge(executable: executable))
     end
 
     def validate_start_and_end
