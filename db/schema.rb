@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170525111655) do
+ActiveRecord::Schema.define(version: 20170605170609) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -113,8 +113,8 @@ ActiveRecord::Schema.define(version: 20170525111655) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "name", default: "untitled", null: false
-    t.string "pointer_type"
-    t.integer "pointer_id"
+    t.string "pointer_type", null: false
+    t.integer "pointer_id", null: false
     t.index ["device_id"], name: "index_points_on_device_id"
     t.index ["meta"], name: "index_points_on_meta", using: :gin
     t.index ["pointer_type", "pointer_id"], name: "index_points_on_pointer_type_and_pointer_id"
@@ -163,14 +163,6 @@ ActiveRecord::Schema.define(version: 20170525111655) do
     t.string "jti"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "tool_bays", id: :serial, force: :cascade do |t|
-    t.integer "device_id"
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["device_id"], name: "index_tool_bays_on_device_id"
   end
 
   create_table "tool_slots", id: :serial, force: :cascade do |t|
