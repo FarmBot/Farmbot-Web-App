@@ -28,8 +28,12 @@ unless Rails.env == "production"
     Log.transaction do
       FactoryGirl.create_list(:log, 35, device: u.device)
     end
-    [ "http://i.imgur.com/XvFBGA4.jpg",
-      "http://i.imgur.com/XsFczCY.jpg" ].each do |url|
+    [ "http://via.placeholder.com/350x250?text=Image%20Zero",
+      "http://i.imgur.com/XvFBGA4.jpg",
+      "http://via.placeholder.com/350x250?text=Image%20Two",
+      "http://i.imgur.com/XsFczCY.jpg",
+      "http://via.placeholder.com/350x250?text=Image%20Four"
+    ].each do |url|
         Images::Create.run!(attachment_url: url,
                             device: u.device,
                             meta: {x: rand(40...970),
