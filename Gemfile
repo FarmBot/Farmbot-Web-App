@@ -8,9 +8,10 @@ gem "rails_12factor"
 # TODO: Get off of this version once Devise folks ship a 5.1 release.
 #       - RC 12 May 17
 gem "devise", git: "https://github.com/plataformatec/devise"
-gem 'delayed_job', github: 'gogovan/delayed_job', branch: 'rails-5.1'
+gem 'delayed_job', git: 'https://github.com/gogovan/delayed_job',
+                   branch: 'rails-5.1'
 gem 'delayed_job_active_record',
-    github: 'gogovan/delayed_job_active_record',
+    git: 'https://github.com/gogovan/delayed_job_active_record',
     branch: 'rails-5.1'
 # END TEMPORARY RAILS 5.1 GEMS =========================================-"`
 gem "jwt"
