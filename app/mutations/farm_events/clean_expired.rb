@@ -9,8 +9,6 @@ module FarmEvents
     def execute
       device
         .farm_events
-        .where
-        .not(repeat: 'never')
         .where('end_time < ?', DateTime.now)
         .map(&:destroy!)
     end

@@ -7,11 +7,11 @@ module FarmEvents
 
     required do
       model :farm_event, class: FarmEvent
-      model :device, class: Device
+      model :device,     class: Device
     end
 
     optional do
-      integer :repeat, min: 1
+      integer :repeat,    min: 1
       string  :time_unit, in: FarmEvent::UNITS_OF_TIME
       time    :start_time
       time    :end_time
@@ -23,11 +23,17 @@ module FarmEvents
     end
 
     def execute
-      update_attributes(farm_event, inputs.except(:farm_event))
+      p = inputs.except(:farm_event)
+      p[:end_time] = (p[:start_time] + 1.minute) if is_one_time_event
+      update_attributes(farm_event, )
     end
 
     def validate_ownership
       raise Errors::Forbidden, NOT_YOURS if farm_event.device != device
+    end
+
+    def is_one_time_event
+      (time_unit || farm_event.time_unit) == FarmEvent::NEVER
     end
   end
 end

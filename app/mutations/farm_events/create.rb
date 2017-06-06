@@ -22,13 +22,19 @@ module FarmEvents
     end
 
     def execute
-      FarmEvent.create!(inputs.merge(executable: executable))
+      p = inputs.merge(executable: executable)
+      p[:end_time] = (p[:start_time] + 1.minute) if is_one_time_event
+      FarmEvent.create!(p)
     end
 
     def validate_start_and_end
-      if (start_time > end_time) && (time_unit != FarmEvent::NEVER)
+      if (start_time > end_time) && !is_one_time_event
         add_error :end_time, :backwards, BACKWARDS_END_TIME
       end
+    end
+
+    def is_one_time_event
+      time_unit == FarmEvent::NEVER
     end
   end
 end
