@@ -33,7 +33,9 @@ module Users
       params[:agreed_to_terms_at] = Time.now if User::ENFORCE_TOS
       user   = User.create!(params)
       device = Devices::Create.run!(user: user)
-      UserMailer.welcome_email(user).deliver_later
+      UserMailer
+        .welcome_email(user)
+        .deliver_later unless User::SKIP_EMAIL_VALIDATION
       {message: "Check your email!"}
     end
   end

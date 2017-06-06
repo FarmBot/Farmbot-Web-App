@@ -1,7 +1,7 @@
 # A human
 class User < ActiveRecord::Base
-  ENFORCE_TOS              = ENV.fetch("TOS_URL") { false }
-  REQUIRE_EMAIL_VALIDATION = ENV.fetch("NO_EMAILS") { false }
+  ENFORCE_TOS           = ENV.fetch("TOS_URL") { false }
+  SKIP_EMAIL_VALIDATION = ENV.fetch("NO_EMAILS") { false }
   validates :email, uniqueness: true
 
   belongs_to :device, dependent: :destroy
@@ -26,6 +26,6 @@ class User < ActiveRecord::Base
   end
 
   def verified?
-    REQUIRE_EMAIL_VALIDATION ? !!verified_at : true
+    SKIP_EMAIL_VALIDATION ? !!verified_at : true
   end
 end
