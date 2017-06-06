@@ -1,7 +1,5 @@
 module Devices
   class Create < Mutations::Command
-    using LegacyRefinementsModule
-
     required do
       model :user, class: User
     end

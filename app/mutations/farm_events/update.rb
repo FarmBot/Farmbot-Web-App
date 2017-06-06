@@ -1,7 +1,6 @@
 module FarmEvents
   class Update < Mutations::Command
     NOT_YOURS = 'Not your farm_event.'
-    using LegacyRefinementsModule
     include FarmEvents::ExecutableHelpers
     executable_fields :optional
 
@@ -24,8 +23,9 @@ module FarmEvents
 
     def execute
       p = inputs.except(:farm_event)
-      p[:end_time] = (p[:start_time] + 1.minute) if is_one_time_event
-      update_attributes(farm_event, )
+      # Keeps cleanup operations on schedule:
+      p[:end_time] = next_start_time + 1.minute if is_one_time_event
+      farm_event.update_attributes(p)
     end
 
     def validate_ownership
@@ -33,7 +33,19 @@ module FarmEvents
     end
 
     def is_one_time_event
-      (time_unit || farm_event.time_unit) == FarmEvent::NEVER
+      next_time_unit == FarmEvent::NEVER
+    end
+
+    # The FarmEvent's time_unit, after saving completes.
+    # Defaults to farm_event.time_unit if the user is not updating that field.
+    def next_time_unit
+      (time_unit || farm_event.time_unit)
+    end
+
+    # The FarmEvent's start_Time, after saving completes.
+    # Defaults to farm_event.start_time if the user is not updating that field.
+    def next_start_time
+      (start_time || farm_event.start_time)
     end
   end
 end

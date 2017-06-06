@@ -1,7 +1,5 @@
 module Regimens
   class Update < Mutations::Command
-    using LegacyRefinementsModule
-
     required do
       model :device, class: Device
       model :regimen, class: Regimen

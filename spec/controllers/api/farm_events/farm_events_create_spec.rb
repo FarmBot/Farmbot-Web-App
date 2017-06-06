@@ -37,21 +37,20 @@ describe Api::FarmEventsController do
 
     it 'cant use other peoples executables'
     it 'provides a bad executable'
-    it 'creates a one-off FarmEvent'
-    # do
-    #   sign_in user
-    #   input = { "start_time": (Time.now + 1.hour).to_json.gsub("\"", ""),
-    #             "next_time": "2017-06-05T18:33:04.342Z",
-    #             "time_unit": "never",
-    #             "executable_id": 8,
-    #             "executable_type": "Regimen",
-    #             "end_time": "2017-06-05T18:34:00.000Z",
-    #             "repeat": 1 }
-    #   post :create, params: input
-    #   expect(response.status).to eq(422)
-    #   get :index
-    #   binding.pry
-    #   expect(json.length).to eq(1)
-    # end
+    it 'creates a one-off FarmEvent' do
+      sign_in user
+      r = FactoryGirl.create(:regimen, device: user.device)
+      input = { "start_time": (Time.now + 1.hour).to_json.gsub("\"", ""),
+                "next_time": "2017-06-05T18:33:04.342Z",
+                "time_unit": "never",
+                "executable_id": r.id,
+                "executable_type": "Regimen",
+                "end_time": "2017-06-05T18:34:00.000Z",
+                "repeat": 1 }
+      post :create, params: input
+      expect(response.status).to eq(200)
+      get :index
+      expect(json.length).to eq(1)
+    end
   end
 end

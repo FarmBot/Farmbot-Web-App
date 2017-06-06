@@ -1,6 +1,8 @@
 module FarmEvents
   module ExecutableHelpers
-    NO_EXECUTABLE = "An event requires a sequence or regimen"
+    NO_EXECUTABLE = "An event requires a sequence or regimen. Provided values "\
+                    "were either not present, or not valid."
+
     def self.included(base)
       base.extend(ClassMethods)
     end

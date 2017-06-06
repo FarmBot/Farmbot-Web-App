@@ -23,6 +23,7 @@ module FarmEvents
 
     def execute
       p = inputs.merge(executable: executable)
+      # Needs to be set this way for cleanup operations:
       p[:end_time] = (p[:start_time] + 1.minute) if is_one_time_event
       FarmEvent.create!(p)
     end

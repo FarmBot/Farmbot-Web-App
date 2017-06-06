@@ -1,11 +1,13 @@
 module Auth
   class CreateTokenFromCredentials < Mutations::Command
     PRIVATE_KEY = KeyGen.current
+    BAD_KEY     = "You are most likely on the wrong server env. That's not a "\
+                  "valid credentials file."
+
     attr_reader :user
 
     required do
       string :credentials
-      string :host
     end
 
     def validate
@@ -15,8 +17,7 @@ module Auth
       @user       = User.where(email: cred_info[:email]).first
       whoops! unless @user && @user.valid_password?(cred_info[:password])
     rescue OpenSSL::PKey::RSAError => e
-      whoops!("You are most likely on the wrong server env."+
-              " That's not a valid public key.")
+      whoops!(BAD_KEY)
     end
 
     def execute
