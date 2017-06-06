@@ -24,8 +24,7 @@ module CeleryScriptSettingsBag
   ALLOWED_DATA_TYPES    = %w(string integer)
   ALLOWED_OPS           = %w(< > is not)
   ALLOWED_AXIS          = %w(x y z all)
-  ALLOWED_LHS           = %w(pin1 pin2 pin3 pin4 pin5 pin6 pin7 pin8 pin9 pin10
-                             pin11 pin12 pin13 pin59 pin63 x y z)
+  ALLOWED_LHS           = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
   ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
   STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
                              send_message execute _if execute_script take_photo
