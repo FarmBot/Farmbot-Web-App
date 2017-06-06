@@ -9,6 +9,10 @@ module Points
       hstore :meta
     end
 
+    optional do
+      string :name
+    end
+
     def execute
       Point.create!(inputs.merge(pointer: GenericPointer.new))
     end
