@@ -1,11 +1,12 @@
 # A human
 class User < ActiveRecord::Base
-  ENFORCE_TOS = ENV.fetch("TOS_URL") { false }
+  ENFORCE_TOS              = ENV.fetch("TOS_URL") { false }
+  REQUIRE_EMAIL_VALIDATION = ENV.fetch("NO_EMAILS") { false }
   validates :email, uniqueness: true
 
   belongs_to :device, dependent: :destroy
 
-  devise :database_authenticatable if !ENV.fetch("NO_EMAILS") { false }
+  devise :database_authenticatable
   devise :trackable
 
   # http://stackoverflow.com/a/5127684/1064917
@@ -25,6 +26,6 @@ class User < ActiveRecord::Base
   end
 
   def verified?
-    !!verified_at
+    REQUIRE_EMAIL_VALIDATION ? !!verified_at : true
   end
 end

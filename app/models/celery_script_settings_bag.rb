@@ -147,7 +147,7 @@ module CeleryScriptSettingsBag
       .defineNode(:wait,           [:milliseconds])
       .defineNode(:send_message,   [:message, :message_type], [:channel])
       .defineNode(:execute,        [:sequence_id])
-      .defineNode(:_if,            [:lhs, :op, :rhs, :_then, :_else])
+      .defineNode(:_if,            [:lhs, :op, :rhs, :_then, :_else], [:pair])
       .defineNode(:sequence,          [:version], STEPS)
       .defineNode(:home,              [:speed, :axis], [])
       .defineNode(:find_home,         [:speed, :axis], [])
