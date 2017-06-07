@@ -121,7 +121,7 @@ private
       render json: {error: "Upgrade to latest FarmBot OS"}, status: 426
     end
 
-    EXPECTED_VER = Gem::Version::new('3.1.6')
+    EXPECTED_VER = Gem::Version::new('4.0.0')
 
     def check_fbos_version
       # "FARMBOTOS/3.1.0 (RPI3) RPI3 ()"
