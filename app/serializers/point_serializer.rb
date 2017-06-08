@@ -4,6 +4,18 @@ class PointSerializer < ActiveModel::Serializer
   attribute :openfarm_slug, if: :plant?
   attribute :tool_id,       if: :tool_slot?
 
+  def x
+    object.x.round
+  end
+
+  def y
+    object.y.round
+  end
+
+  def z
+    object.z.round
+  end
+
   def plant?
     object.pointer.is_a? Plant
   end
