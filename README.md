@@ -23,7 +23,7 @@ For a list of example API requests and responses, see our [reference documentati
 
 Your machine will need the following:
 
- 0. A Linux of Mac based machine. We do not support windows at this time.
+ 0. A Linux or Mac based machine. We do not support windows at this time.
  0. [Ruby 2.3.3](http://rvm.io/rvm/install)
  1. [ImageMagick](https://www.imagemagick.org/script/index.php) (`brew install imagemagick` (Mac) or `sudo apt-get install imagemagick` (Ubuntu))
  2. [Node JS > v6](https://nodejs.org/en/download/)
