@@ -4,7 +4,8 @@ module Sequences
 
     NO_TRANSACTION   = "You need to do this in a transaction"
     ARGS_OF_INTEREST = { "tool_id"     => Tool,
-                         "sequence_id" => Sequence }
+                         "sequence_id" => Sequence,
+                         "pointer_id"  => Point }
     ALLOWED_NODE_KEYS = [
       "body",
       "kind",

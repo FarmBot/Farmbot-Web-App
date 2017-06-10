@@ -1,0 +1,33 @@
+{
+  "id": 17,
+  "name": "Has Map Point",
+  "color": "gray",
+  "body": [
+    {
+      "kind": "move_absolute",
+      "args": {
+        "location": {
+          "kind": "point",
+          "args": {
+            "pointer_type": "GenericPointer",
+            "pointer_id": "____CHANGE___THIS_____"
+          }
+        },
+        "offset": {
+          "kind": "coordinate",
+          "args": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        },
+        "speed": 800
+      }
+    }
+  ],
+  "args": {
+    "is_outdated": false,
+    "version": 4
+  },
+  "kind": "sequence"
+}

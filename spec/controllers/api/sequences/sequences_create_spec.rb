@@ -1,4 +1,5 @@
 require 'spec_helper'
+HAS_POINTS = JSON.parse(File.read("spec/lib/celery_script/ast_has_points.json"))
 
 describe Api::SequencesController do
   before :each do
@@ -22,7 +23,7 @@ describe Api::SequencesController do
       expect(response.status).to eq(200)
       expect(json[:args]).to be_kind_of(Hash)
       expect(json[:body]).to be_kind_of(Array)
-      expect(json[:body].length).to eq(nodes.length)      
+      expect(json[:body].length).to eq(nodes.length)
     end
 
     it 'disregards extra attrs (like `uuid`) on sequence body nodes' do
@@ -73,6 +74,28 @@ describe Api::SequencesController do
       validated_count = SequenceDependency.where(sequence_id: json[:id]).count
       expect(old_count < new_count).to be(true)
       expect(validated_count).to eq(new_count)
+    end
+
+    it 'tracks Points' do
+      point = FactoryGirl.create(:point, device: user.device)
+      SequenceDependency.destroy_all
+      Sequence.destroy_all
+      old_count = SequenceDependency.count
+      HAS_POINTS["body"][0]["args"]["location"]["args"]["pointer_id"] =
+        point.id
+      sign_in user
+      input = { name: "Scare Birds",
+                body: HAS_POINTS["body"] }
+      sequence_body_for(user)
+      post :create,
+           body: input.to_json,
+           params: {format: :json}
+      expect(response.status).to eq(200)
+      new_count       = SequenceDependency.count
+      validated_count = SequenceDependency.where(sequence_id: json[:id]).count
+      expect(old_count).to be < new_count
+      expect(validated_count).to eq(new_count)
+      expect(SequenceDependency.last.dependency.id).to eq(point.id)
     end
   end
 end
