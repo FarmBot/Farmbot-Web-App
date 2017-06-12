@@ -31,6 +31,10 @@ module Api
       render json: {error: CONSENT_REQUIRED}, status: 451
     end
 
+    rescue_from ActionDispatch::ParamsParser::ParseError do |exc|
+      sorry "You have a typo in your JSON.", 422
+    end
+
 private
 
     def clean_expired_farm_events
