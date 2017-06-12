@@ -35,7 +35,6 @@ module FarmEvents
                                               .pluck(:time_offset)
                                               .max || 0) < DateTime.now)) }
         .select { |x| x.do_destroy }
-        .tap    { |x| Rollbar.info("Got these: " + x.to_json)}
         .map    { |x| x.fe.destroy! }
     end
   end
