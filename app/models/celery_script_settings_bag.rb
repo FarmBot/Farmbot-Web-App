@@ -22,7 +22,7 @@ module CeleryScriptSettingsBag
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email)
   ALLOWED_DATA_TYPES    = %w(string integer)
-  ALLOWED_OPS           = %w(< > is not)
+  ALLOWED_OPS           = %w(< > is not is_undefined)
   ALLOWED_AXIS          = %w(x y z all)
   ALLOWED_LHS           = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
   ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
