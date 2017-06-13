@@ -35,6 +35,10 @@ module Api
       sorry "You have a typo in your JSON.", 422
     end
 
+    rescue_from ActiveModel::RangeError do |_|
+      sorry "One of those numbers was too big/small. " +
+            "If you need larger numbers, let us know.", 422
+    end
 private
 
     def clean_expired_farm_events
