@@ -4,7 +4,7 @@ describe FarmEvents::Create do
   let(:seq) { FactoryGirl.create(:sequence) }
   it 'Builds a farm_event' do
     device = seq.device
-    start_time = '2015-02-17T15:16:17.000Z'
+    start_time = '2087-02-17T15:16:17.000Z'
     end_time = '2099-02-17T18:19:20.000Z'
     farm_event = FarmEvents::Create.run!(device:          device,
                                          executable_id:   seq.id,

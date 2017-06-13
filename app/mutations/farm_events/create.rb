@@ -5,6 +5,8 @@ module FarmEvents
     BACKWARDS_END_TIME = "This event starts before it ends. Did you flip the "\
                          "start and end times?"
 
+    BAD_START_TIME     = "FarmEvent start time needs to be in the future, not" +
+                         " the past."
     required do
       model   :device, class: Device
       integer :repeat, min: 1
@@ -17,7 +19,8 @@ module FarmEvents
     end
 
     def validate
-      validate_start_and_end if end_time
+      validate_start_time
+      validate_end_time
       validate_executable
     end
 
@@ -28,10 +31,13 @@ module FarmEvents
       FarmEvent.create!(p)
     end
 
-    def validate_start_and_end
-      if (start_time > end_time) && !is_one_time_event
-        add_error :end_time, :backwards, BACKWARDS_END_TIME
-      end
+    def validate_start_time
+      add_error :start_time, :expired, BAD_START_TIME if (start_time < Time.now)
+    end
+
+    def validate_end_time
+      no_go = end_time && (start_time > end_time) && !is_one_time_event
+      add_error :end_time, :backwards, BACKWARDS_END_TIME if no_go
     end
 
     def is_one_time_event
