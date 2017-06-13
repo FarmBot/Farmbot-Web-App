@@ -28,12 +28,11 @@ module FarmEvents
       device
         .farm_events
         .where(executable_type: "Regimen")
-        .map    { |x| Wow.new(x,
-                              x.executable,
-                              (x.end_time + (x.executable
-                                              .regimen_items
-                                              .pluck(:time_offset)
-                                              .max || 0) < DateTime.now)) }
+        .map do |x|
+          exctbls    = x.executable.regimen_items || RegimenItem.none
+          max_offset = (exctbls.pluck(:time_offset).max || 0)
+          Wow.new(x, x.executable, ((x.end_time + max_offset) < DateTime.now))
+        end
         .select { |x| x.do_destroy }
         .map    { |x| x.fe.destroy! }
     end
