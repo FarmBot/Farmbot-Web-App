@@ -25,6 +25,7 @@ gem "fog-google", git: "https://github.com/fog/fog-google"
 gem "pg"
 gem "montrose"
 gem "polymorphic_constraints"
+gem "tzinfo" # For validation of user selected timezone names
 
 # Error reporting tools.
 # Active on the "official" FarmBot server, set the appropriate ENV

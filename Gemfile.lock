@@ -299,6 +299,7 @@ DEPENDENCIES
   skylight
   smarf_doc!
   thin
+  tzinfo
 
 RUBY VERSION
    ruby 2.4.1p111
