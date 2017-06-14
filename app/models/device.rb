@@ -3,6 +3,7 @@ class Device < ActiveRecord::Base
   DEFAULT_MAX_LOGS   = 50
   DEFAULT_MAX_IMAGES = 100
   TIMEZONES          = ActiveSupport::TimeZone.all.map(&:to_s)
+  BAD_TZ             = "%{value} is not a valid timezone"
 
   has_many  :users
   has_many  :farm_events,      dependent: :destroy
@@ -14,7 +15,9 @@ class Device < ActiveRecord::Base
   has_many  :tools,            dependent: :destroy
   has_many  :images,           dependent: :destroy
   validates :name,             uniqueness: true
-
+  validates :timezone,         inclusion: { in: TIMEZONES,
+                                            message: BAD_TZ,
+                                            allow_nil: true }
   # Give the user back the amount of logs they are allowed to view.
   def limited_log_list
     logs.all.last(max_log_count || DEFAULT_MAX_LOGS)
