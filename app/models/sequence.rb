@@ -51,7 +51,13 @@ class Sequence < ActiveRecord::Base
 
   def maybe_migrate
     # spot check with Sequence.order("RANDOM()").first.maybe_migrate
-    Sequences::Migrate.run!(sequence: self, device: self.device)
+    if self.device
+      Sequences::Migrate.run!(sequence: self, device: self.device)
+    else
+      puts "SERIOUS: INVESTIGATE THIS - RC"
+      Rollbar.info "Hazardous condition!" +
+        "Sequence: #{self.id || "unsaved"} does not have a device. HOW!?!"
+    end
   end
 
   # Helper used for QAing stuff on staging. Grabs a random sequence from the

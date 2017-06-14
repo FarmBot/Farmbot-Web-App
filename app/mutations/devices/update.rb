@@ -7,6 +7,7 @@ module Devices
     optional do
       string  :name
       string  :webcam_url, empty: true
+      string  :timezone, in: Device::TIMEZONES
     end
 
     def execute

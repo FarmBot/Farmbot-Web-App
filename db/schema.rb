@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170605170609) do
+ActiveRecord::Schema.define(version: 20170614212232) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,8 @@ ActiveRecord::Schema.define(version: 20170605170609) do
     t.string "webcam_url"
     t.integer "max_log_count", default: 100
     t.integer "max_images_count", default: 100
+    t.string "timezone"
+    t.index ["timezone"], name: "index_devices_on_timezone"
   end
 
   create_table "farm_events", id: :serial, force: :cascade do |t|
