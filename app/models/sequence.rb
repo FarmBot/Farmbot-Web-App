@@ -54,7 +54,7 @@ class Sequence < ActiveRecord::Base
     if self.device
       Sequences::Migrate.run!(sequence: self, device: self.device)
     else
-      puts "SERIOUS: INVESTIGATE THIS - RC"
+      puts "IF YOU CAN SEE THIS, INVESTIGATE NOW. - RC"
       Rollbar.info "Hazardous condition!" +
         "Sequence: #{self.id || "unsaved"} does not have a device. HOW!?!"
     end
