@@ -88,15 +88,14 @@ unless Rails.env == "production"
                          ])
     Peripherals::Create.run!(device: u.device, pin: 13, label: "LED")
     2.times do
-      FarmEvents::Create.run!(
-        device: u.device,
-        start_time: Date.yesterday - [*(DATE_RANGE_LO)].sample.days,
-        end_time: Date.today + ([*(DATE_RANGE_HI)].sample).days,
-        time_unit: "daily",
-        repeat: [*(DATE_RANGE_LO)].sample,
-        executable_id: Sequence.where(device: u.device).order("RANDOM()").first.id,
-        executable_type: "Sequence"
-      )
+        FarmEvents::Create.run!(
+          device: u.device,
+          start_time: Time.now + 1.hour,
+          end_time: Date.today + ([*(DATE_RANGE_HI)].sample).days,
+          time_unit: "daily",
+          repeat: [*(DATE_RANGE_LO)].sample,
+          executable_id: Sequence.where(device: u.device).order("RANDOM()").first.id,
+          executable_type: "Sequence")
     end
 
     ts = ToolSlots::Create.run!(device: u.device,
