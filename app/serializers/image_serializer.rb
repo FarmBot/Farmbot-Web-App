@@ -5,6 +5,12 @@ class ImageSerializer < ActiveModel::Serializer
 
   instrument_method
   def attachment_url
-    object.attachment.url("x640")
+    url_ = object.attachment.url("x640")
+    # Force google cloud users to use HTTPS://
+    if Api::ImagesController::KEY.present?
+      return url_.gsub("http://", "https://")
+    else
+      return url_
+    end
   end
 end
