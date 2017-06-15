@@ -15,7 +15,7 @@ class Image < ApplicationRecord
   end
 
   CONFIG = {
-    default_url: "http://placehold.it/640?text=Processing...",
+    default_url: "//placehold.it/640?text=Processing...",
     styles: { x1280: "1280x1280>",
               x640:  "640x640>",
               x320:  "320x320>",
