@@ -23,7 +23,7 @@ module Users
 
     def execute
       user.update_attributes!(inputs.except(:user))
-      user
+      user.reload
     end
 
 private
