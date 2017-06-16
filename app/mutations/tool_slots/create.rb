@@ -2,14 +2,14 @@ module ToolSlots
   class Create < Mutations::Command
     required do
       model   :device, class: Device
-    end
-
-    optional do
-      integer :tool_id
       string  :name, default: "Untitled Slot"
       integer :x
       integer :y
       integer :z
+    end
+
+    optional do
+      integer :tool_id, empty: true
     end
 
     def validate
