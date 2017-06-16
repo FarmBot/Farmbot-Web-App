@@ -1,9 +1,10 @@
-<% if response.success? or note.present? %>
-# <%= request.method %> <%= request.path.first(45) %>
+<% if (response.success? || note.present?) %>
+# <%= response.success? ? "" : "(NOT OK)" %> <%= request.method %> <%= request.path.first(45) %>
 <% if note.present? %>
 **Notes:** <%= note %>
 <% end %>
 <% if request.params.except(:controller, :action, :format, :id).keys.length > 0 %>
+
 ### Request
 
 ```
