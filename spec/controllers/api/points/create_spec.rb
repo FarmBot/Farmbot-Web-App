@@ -67,13 +67,13 @@ describe Api::PointsController do
       body = { y:            2,
                z:            3,
                radius:       3,
-               name:         "YOLO",
                pointer_type: "GenericPointer",
                meta:         { foo: "BAR" } }
       post :create, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(422)
       expect(json[:x]).to be
       expect(json[:x]).to include("is required")
+      expect(json[:name]).to eq(nil)
     end
   end
 end
