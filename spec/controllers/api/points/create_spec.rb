@@ -61,5 +61,19 @@ describe Api::PointsController do
       expect(json[:meta][:foo]).to eq(body[:meta][:foo])
       expect(Point.last.device).to eq(device)
     end
+
+    it 'requires x' do
+      sign_in user
+      body = { y:            2,
+               z:            3,
+               radius:       3,
+               name:         "YOLO",
+               pointer_type: "GenericPointer",
+               meta:         { foo: "BAR" } }
+      post :create, body: body.to_json, params: { format: :json }
+      expect(response.status).to eq(422)
+      expect(json[:x]).to be
+      expect(json[:x]).to include("is required")
+    end
   end
 end
