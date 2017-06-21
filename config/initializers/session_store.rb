@@ -1,3 +1,4 @@
 # Be sure to restart your server when you modify this file.
 
-FarmBot::Application.config.session_store :cookie_store, key: '_farmbot_session'
+FarmBot::Application.config.session_store :cookie_store, key: '__farmbot_session'
+ActionController::Base.expire_page '/app/controls'
