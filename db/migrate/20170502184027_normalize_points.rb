@@ -23,7 +23,7 @@ class NormalizePoints < ActiveRecord::Migration[5.0]
                   index: true,
                   polymorphic: true
     # MANUAL MIGRATIONS ===================================================
-    ToolSlot.includes(:tool_bay).find_each do |ts|
+    ToolSlot.find_each do |ts|
       Point.create!(x:         ts[:x] || 0,
                     y:         ts[:y] || 0,
                     z:         ts[:z] || 0,
