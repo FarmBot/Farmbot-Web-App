@@ -1,6 +1,6 @@
 FarmBot::Application.configure do
   config.force_ssl = true if ENV["FORCE_SSL"]
-  config.action_controller.perform_caching = true
+  config.action_controller.perform_caching = false
   config.action_mailer.default_url_options = { host: ENV.fetch("API_HOST", "my.farmbot.io") }
   config.active_support.deprecation = :notify
   config.cache_classes = true
@@ -14,7 +14,7 @@ FarmBot::Application.configure do
   # HACK AHEAD! Here's why:
   # 1. FarmBot Inc. Uses Sendgrid for email.
   # 2. FarmBot is an open source project that must be vendor neutral.
-  # 3. Heroku uses non-neutral ENV names like "SENDGRID_PASSWORD" 
+  # 3. Heroku uses non-neutral ENV names like "SENDGRID_PASSWORD"
   # SOLUTION: Support neutral names like "SMTP_HOST",
   #           but fallback to non-neutral var names like "SENDGRID_USERNAME" if
   #           required.
