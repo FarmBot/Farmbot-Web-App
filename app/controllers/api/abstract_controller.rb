@@ -15,6 +15,10 @@ module Api
       sorry "You can't perform that action. #{exc.message}", 403
     end
 
+    rescue_from OnlyJson do |e|
+      sorry "This is a JSON API. Please use _valid_ JSON.", 422
+    end
+
     rescue_from Errors::NoBot do |exc|
       sorry "You need to register a device first.", 422
     end
