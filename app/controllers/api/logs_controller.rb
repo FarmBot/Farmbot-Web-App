@@ -3,7 +3,7 @@ module Api
     include Skylight::Helpers
 
     def create
-      case raw_json
+    case raw_json
     when Array
         logs = Log
                  .create(raw_json.last(current_device.max_log_count)
