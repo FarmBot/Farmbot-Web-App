@@ -68,7 +68,7 @@ ya6k1edW38z-CopyThisValueNow!!!
 
 ```
 
-Set the `ACME_SECRET` ENV var to the value shown above (yours will be different) and **restart your API process**.
+Set the `ACME_SECRET` ENV var to the value shown above (yours will be different) and **restart your API process**. On heroku, do `heroku ps:restart --app=MY-APP-NAME-HERE`
 
 Once you have restarted the API process, continue through the installer.
 
@@ -82,10 +82,17 @@ IMPORTANT NOTES:
 
 **Heroku Users**: Run the following snippet to submit the certs to Heroku:
 
+**First time:**
+
 ```
 heroku certs:add /etc/letsencrypt/live/yourdomain.io/fullchain.pem /etc/letsencrypt/live/yourdomain.io/privkey.pem
 ```
 
+**After that:**
+
+```
+sudo heroku certs:update /etc/letsencrypt/live/staging.farmbot.io/fullchain.pem /etc/letsencrypt/live/staging.farmbot.io/privkey.pem --app=farmbot-staging
+```
 Heroku will then give you instructions on which DNS records you must create.
 
 **Dokku Users**: FarmBot, Inc. no longer uses Dokku. As such, our ability to troubleshoot problems is limited.
