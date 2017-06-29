@@ -24,3 +24,5 @@ npm run build 2>&1
 echo "=========   Going back into Rails dir"
 cd $CURRENT_DIR
 
+# Move it over to the rails /public directory and install deps
+mkdir public/ -p
