@@ -1,7 +1,9 @@
 var webpack = require("webpack");
 var fs = require("fs");
 var path = require("path");
-
+var VERSION = JSON.stringify(process.env.BUILT_AT
+  || HEROKU_SLUG_COMMIT
+  || "NONE");
 var WebpackNotifierPlugin = require("webpack-notifier");
 
 var generateConfig = require("./webpack.config.base");
@@ -28,7 +30,7 @@ c = function () {
     .plugins
     .push(new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify("development"),
-      "process.env.REVISION": JSON.stringify(process.env.BUILT_AT || "NONE")
+      "process.env.REVISION": VERSION
     }));
 
   conf

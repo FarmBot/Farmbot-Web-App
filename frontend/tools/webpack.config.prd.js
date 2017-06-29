@@ -1,5 +1,7 @@
 global.WEBPACK_ENV = "production";
-
+var VERSION = JSON.stringify(process.env.BUILT_AT
+  || HEROKU_SLUG_COMMIT
+  || "NONE");
 var webpack = require("webpack");
 var exec = require("child_process").execSync;
 var path = require("path");
@@ -26,7 +28,7 @@ c = function () {
   [
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify("production"),
-      "process.env.REVISION": JSON.stringify(process.env.BUILT_AT || "NONE")
+      "process.env.REVISION": VERSION
     }),
     new ExtractTextPlugin({
       // Temporary hotfix for some issues on staging.
