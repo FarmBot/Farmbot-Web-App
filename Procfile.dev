@@ -1,0 +1,3 @@
+web: rails s
+worker: rake jobs:work
+webpack: npm run webpack
