@@ -1,10 +1,9 @@
 #!/bin/bash
 
 CURRENT_DIR=$(pwd)
-# Clone into a temp folder...
-rm -rf /tmp/farmbot_frontend
-mkdir /tmp/farmbot_frontend
+
 echo "@@@ THIS IS THE NEW INSTALLER"
+
 cd frontend
 
 if [ "$NPM_ADDON" ]; then

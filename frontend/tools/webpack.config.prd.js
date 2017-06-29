@@ -26,8 +26,7 @@ c = function () {
   [
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify("production"),
-      "process.env.REVISION": JSON.stringify(
-        exec("git log --pretty=format:'%h%n%ad%n%f' -1").toString())
+      "process.env.REVISION": JSON.stringify(exec('echo "TEMP"').toString())
     }),
     new ExtractTextPlugin({
       // Temporary hotfix for some issues on staging.
