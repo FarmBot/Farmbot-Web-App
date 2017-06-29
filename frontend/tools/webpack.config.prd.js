@@ -1,6 +1,6 @@
 global.WEBPACK_ENV = "production";
 var VERSION = JSON.stringify(process.env.BUILT_AT
-  || HEROKU_SLUG_COMMIT
+  || process.env.HEROKU_SLUG_COMMIT
   || "NONE");
 var webpack = require("webpack");
 var exec = require("child_process").execSync;
