@@ -1,0 +1,72 @@
+{
+  "rules": {
+    "max-line-length": [
+      true,
+      100
+    ],
+    "no-inferrable-types": true,
+    "class-name": true,
+    "comment-format": [
+      true,
+      "check-space"
+    ],
+    "cyclomatic-complexity": [
+      true,
+      21
+    ],
+    "indent": [
+      true,
+      "spaces"
+    ],
+    "no-invalid-this": true,
+    "no-switch-case-fall-through": true,
+    "no-string-literal": true,
+    "no-eval": true,
+    "no-any": true,
+    "no-duplicate-variable": true,
+    "no-arg": true,
+    "no-internal-module": true,
+    "no-trailing-whitespace": true,
+    "no-bitwise": true,
+    "no-var-requires": false,
+    "no-shadowed-variable": true,
+    "no-unused-variable": true,
+    "eofline": true,
+    "one-line": [
+      true,
+      "check-catch",
+      "check-else",
+      "check-open-brace",
+      "check-whitespace"
+    ],
+    "quotemark": [
+      true,
+      "double",
+      "avoid-escape"
+    ],
+    "semicolon": [
+      true,
+      "ignore-interfaces",
+      "ignore-bound-class-methods"
+    ],
+    "typedef-whitespace": [
+      true,
+      {
+        "call-signature": "nospace",
+        "index-signature": "nospace",
+        "parameter": "nospace",
+        "property-declaration": "nospace",
+        "variable-declaration": "nospace"
+      }
+    ],
+    "curly": true,
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-separator",
+      "check-type"
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"> {{#if isProd}}
+  <link rel="stylesheet" href="/dist/styles.css"> {{/if}}
+</head>
+
+<body>
+  {{#each wantedAssets}}
+  <script type="text/javascript" src="{{name}}"></script>
+  {{/each}}
+</body>
+
+</html>

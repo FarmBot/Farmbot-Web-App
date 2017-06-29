@@ -1,0 +1,91 @@
+// Padding for the popups.
+.pt-popover-content {
+  padding: 1rem;
+}
+
+// Arrow is slightly off by default in the popup menu.
+.pt-tether-element-attached-left.pt-tether-target-attached-right>.pt-popover>.pt-popover-arrow {
+  left: -1rem;
+}
+
+// As of right now, all the menus appear from floated icons in the widgets.
+.widget-header {
+  .pt-popover-target {
+    float: right;
+  }
+}
+
+.device-widget {
+  .pt-popover-target {
+    width: 100%;
+  }
+  .pt-icon-standard {
+    float: right;
+    margin-top: 0.7rem;
+  }
+  .pt-button {
+    text-align: left;
+    width: 100%;
+    span {
+      font-weight: normal;
+      text-transform: none;
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.pt-overlay-content.pt-tether-abutted.pt-tether-abutted-top.pt-tether-element.pt-tether-element-attached-left.pt-tether-element-attached-top.pt-tether-enabled.pt-tether-target-attached-bottom.pt-tether-target-attached-left.pt-transition-container {
+  top: 2rem !important;
+}
+
+.pt-menu {
+  max-height: 20rem !important;
+  overflow-y: scroll;
+}
+
+.pt-input-group {
+  .pt-icon {
+    top: 0.6rem;
+  }
+}
+
+.pt-button:not(.pt-minimal) {
+  font-weight: normal;
+  text-transform: none;
+  background: $white;
+  border-radius: 0;
+  font-size: 1.2rem !important;
+  color: $black !important;
+  height: 27px !important;
+  width: 100% !important;
+  border: 0 !important;
+  box-shadow: 0px 0px 10px #ddd !important;
+  background: $white !important;
+  &:active {
+    box-shadow: none !important;
+    transform: translateY(0px) !important;
+  }
+  &:hover {
+    background: $white !important;
+  }
+   :first-child {
+    white-space: nowrap;
+    width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+  }
+}
+
+.pt-popover-target {
+  position: relative;
+  display: block;
+  * {
+    text-align: left;
+  }
+}
+
+.pt-icon-standard.pt-align-right {
+  float: right !important;
+  margin-top: 0.6rem !important;
+}

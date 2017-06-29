@@ -1,0 +1,135 @@
+.toast-container {
+    position: fixed;
+    top: 10vh;
+    right: 2vw;
+    width: 300px;
+    height: 100vh;
+    z-index: 999999;
+    pointer-events: none;
+}
+
+.toast {
+    box-shadow: 0px 1px 4px #555;
+    pointer-events: all;
+    padding: 1.8rem;
+    cursor: pointer;
+    min-height: 6rem;
+    position: relative;
+    margin-bottom: 1rem;
+    color: $off_white;
+    font-size: 1.2rem;
+    opacity: 0;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-font-smoothing: antialiased;
+    transition: all 0.2s ease;
+    &:hover {
+        border: 1px solid #555;
+        transition: all 0.2s ease;
+        color: $white;
+        box-shadow: 0px 2px 6px #555;
+    }
+    &.active {
+        transition: all 0.4s ease;
+        opacity: 1;
+    }
+    &.poof {
+        transition: all 0.8s ease;
+        opacity: 0;
+        pointer-events: none;
+    }
+    &.yellow {
+        .toast-title {
+            color: $dark_gray;
+        }
+        .toast-message {
+            color: $dark_gray;
+        }
+    }
+    &.blue {
+        .toast-title {
+            color: $off_white;
+        }
+    }
+    &.green,
+    &.red {
+        .toast-title {
+            color: $off_white;
+        }
+    }
+}
+
+.toast-title {
+    margin: 0 0 0.6rem;
+    pointer-events: none;
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+.toast-message {
+    pointer-events: none;
+    font-size: 1.3rem;
+}
+
+.toast-loader {
+    position: absolute;
+    width: 1.6rem;
+    height: 1.6rem;
+    overflow: hidden;
+    transform: rotate(180deg);
+    top: 1rem;
+    right: 1rem;
+}
+
+.toast-loader-left,
+.toast-loader-right,
+.toast-loader-spinner {
+    top: 0;
+    position: absolute;
+    width: 50%;
+    height: 100%;
+}
+
+.toast-loader-left {
+    left: 0;
+    z-index: 3;
+    opacity: 1;
+    animation: show-hide 7s steps(1, end);
+    border-radius: 100% 0 0 100%/ 50% 0 0 50%;
+}
+
+.toast-loader-right {
+    right: 0;
+    background: #666 !important;
+    z-index: 1;
+    opacity: 0;
+    animation: show-hide 7s steps(1, end) reverse;
+    border-radius: 0 100% 100% 0/ 0 50% 50% 0;
+}
+
+.toast-loader-spinner {
+    left: 0;
+    background: #666 !important;
+    animation: spin 7s linear;
+    transform-origin: center right;
+    z-index: 2;
+    border-radius: 100% 0 0 100%/ 50% 0 0 50%;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes show-hide {
+    0% {
+        opacity: 0;
+    }
+    50%,
+    100% {
+        opacity: 1;
+    }
+}

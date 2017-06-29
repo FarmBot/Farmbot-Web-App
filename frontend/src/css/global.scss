@@ -1,0 +1,387 @@
+/* Styles used throughout the frontend */
+
+.ticker-list::-webkit-scrollbar {
+  display: none;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button,
+input[type=date]::-webkit-inner-spin-button,
+input[type=date]::-webkit-outer-spin-button,
+input[type=time]::-webkit-inner-spin-button,
+input[type=time]::-webkit-outer-spin-button,
+input[type=time] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  margin: 0;
+  border-radius: 0;
+}
+
+@media (max-width: 830px) {
+  .app {
+    overflow: hidden !important;
+  }
+}
+
+body {
+  background: $gray !important;
+  &.freeze {
+    height: 100% !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    position: fixed !important;
+  }
+}
+
+.char-limit {
+  float: right;
+  font-size: 1.4rem;
+}
+
+.markdown * {
+  color: #fff;
+}
+
+.all-content-wrapper {
+  padding: 3rem 3rem 0rem 3rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 160rem;
+  animation: page-transition 0.2s ease-in-out;
+}
+
+@media (max-width: 767px) {
+  .all-content-wrapper {
+    padding: 2.5rem 0rem 0rem 0rem;
+  }
+}
+
+a {
+  cursor: pointer !important;
+  outline: none !important;
+}
+
+.input-group {
+  a {
+    color: #434343;
+    &:visited {
+      color: #434343;
+    }
+  }
+  input[type=checkbox] {
+    box-shadow: none;
+  }
+  width: 100% !important;
+}
+
+.fa {
+  cursor: pointer !important;
+  &.fa-gear {
+    color: $white;
+  }
+}
+
+.select-search-container {
+  input {
+    cursor: pointer;
+  }
+  &:after {
+    content: "\25BE";
+    position: absolute;
+    color: $dark_gray;
+    font-size: 2rem;
+    right: 1rem;
+    top: 0.2rem;
+    line-height: initial;
+    pointer-events: none;
+  }
+}
+
+.thin-search-wrapper {
+  .select-search-container:after {
+    content: "";
+  }
+}
+
+.drag-drop-area {
+  border-style: dashed;
+  border-width: 2px;
+  border-color: $light_gray;
+  color: $gray;
+  font-weight: bold;
+  margin: 1rem 0;
+  padding: 1.25rem;
+  background: $off_white;
+  text-align: center;
+  color: $gray;
+  font-weight: bold;
+}
+
+@keyframes expand {
+  0% {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+  100% {
+    max-height: 300px;
+    overflow: shown;
+    opacity: 1;
+  }
+}
+
+@keyframes collapse {
+  0% {
+    max-height: 300px;
+    overflow: shown;
+    opacity: 1;
+  }
+  100% {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+}
+
+.hardware-widget {
+  overflow: hidden;
+  section {
+    overflow: hidden;
+  }
+  h4 {
+    cursor: pointer;
+  }
+  .is-open-false {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    // animation: collapse 0.4s normal forwards ease-in-out;
+  }
+  .is-open-true {
+    max-height: 300px;
+    overflow: shown;
+    opacity: 1;
+    // animation: expand 0.4s normal forwards ease-in-out;
+  }
+  .icon-toggle {
+    font-size: 1.2rem;
+    font-weight: bold;
+    .fa {
+      font-size: 1rem;
+    }
+  }
+  .label-headings div[class*="col"] {
+    text-align: right;
+  }
+  .row {
+    margin-bottom: 0.6rem;
+  }
+  label {
+    padding: 0.5rem 0 0 0.5rem;
+  }
+}
+
+.row {
+  max-width: 160rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+fieldset {
+  border: none;
+  legend {
+    background: transparent;
+  }
+}
+
+.webcam-stream {
+  width: 100%;
+}
+
+.webcam-stream-unavailable {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.webcam-stream-unavailable img {
+  width: 100%;
+  opacity: 0.20;
+}
+
+.webcam-stream-unavailable text {
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  vertical-align: middle;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.clear-webcam-url-btn {
+  position: absolute;
+  left: 2rem;
+  top: 6.2rem;
+}
+
+.webcam-url-input {
+  padding-left: 4rem !important;
+}
+
+ul {
+  padding-left: 15px;
+}
+
+.step-drag-ghost-image {
+  max-width: 150px;
+}
+
+.step-drag-ghost-image-big {
+  max-width: 400px;
+}
+
+.peripherals-widget,
+.tools-widget {
+  .widget-content .row {
+    margin-bottom: 0.8rem;
+  }
+}
+
+h3 {
+  display: inline-block;
+}
+
+.e-stop {
+  white-space: nowrap;
+}
+
+a {
+  text-decoration: none !important;
+  outline: none !important;
+  cursor: pointer !important;
+  color: $off_white;
+  &:visited {
+    color: $off_white;
+  }
+}
+
+button,
+select,
+input {
+  outline: none !important;
+}
+
+input:disabled {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+ul {
+  list-style-type: none !important;
+  padding: 0;
+}
+
+.devices-pad {
+  p,
+  button {
+    margin-bottom: 1rem !important;
+  }
+}
+
+.select {
+  position: relative;
+  input {
+    height: 30px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 3rem !important;
+  }
+  .select-results-container {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    max-height: 15rem;
+    overflow-y: scroll;
+    &.is-open-false {
+      display: none;
+    }
+    &.is-open-true {
+      display: block;
+    }
+  }
+  .select-result {
+    background: $off_white;
+    padding: 0.2rem 0 0.2rem 1.4rem;
+    border-bottom: 1px solid $gray;
+    cursor: pointer;
+    &:hover {
+      background: $light_gray;
+    }
+    &.is-hidden {
+      display: none;
+    }
+    padding-left: 1rem !important;
+    &.is-heading {
+      pointer-events: none !important;
+      label {
+        font-weight: bold !important;
+        text-transform: uppercase;
+        padding-left: 0 !important;
+      }
+    }
+    label {
+      margin-top: 0 !important;
+      text-transform: none;
+      font-weight: normal;
+      cursor: pointer;
+    }
+  }
+}
+
+.coming-soon {
+  opacity: 0.50;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.coming-soon:after {
+  content: "Coming Soon!";
+  background-color: $red;
+  width: 107%;
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  vertical-align: middle;
+  text-align: center;
+  font-size: 2.5rem;
+}
+
+.unavailable {
+  @extend .coming-soon;
+  &:after {
+    content: "Not available when device is offline.";
+  }
+}
+
+.note {
+  margin-top: 4rem;
+  font-style: italic;
+  font-size: 1.2rem;
+}
+
+@keyframes page-transition {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

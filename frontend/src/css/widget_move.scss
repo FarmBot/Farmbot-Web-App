@@ -1,0 +1,78 @@
+// MOVE AMOUNT (mm) selector
+.text-center {
+  text-align: center;
+  width: 100%;
+}
+
+.move-amount-wrapper {
+  box-shadow: 0px 0px 10px $light_gray;
+  height: 2.5rem;
+  border-radius: 7px;
+}
+
+.move-amount {
+  background-color: $white;
+  border-right: 2px solid $off-white;
+  color: $medium_gray;
+  font-weight: bold;
+  height: 2.5rem;
+  padding-top: auto;
+  padding-bottom: auto;
+  padding-left: 0;
+  padding-right: 0;
+  text-align: center;
+  width: 20%;
+  margin: 0;
+  float: left;
+  &:hover {
+    background-color: darken($white, 40%);
+    color: $off_white;
+  }
+  &:nth-child(n+2) {
+    border-left: 0;
+  }
+  &.leftmost {
+    border-bottom-left-radius: 7px;
+    border-top-left-radius: 7px;
+  }
+  &.rightmost {
+    border-bottom-right-radius: 7px;
+    border-top-right-radius: 7px;
+    border-right: 0px none;
+  }
+  &.move-amount-selected {
+    background-color: $medium_gray!important;
+    color: $off_white;
+  }
+}
+
+// JOG CONTROLS
+.jog-table {
+  margin: auto;
+  margin-top: 15px;
+  width: auto;
+}
+
+.arrow-button {
+  background-color: $medium_gray;
+  border-bottom: 2px solid $dark_gray;
+  color: $off_white;
+  font-size: 16px!important;
+  height: 40px;
+  margin: 0;
+  padding: 12px;
+  text-align: center;
+  width: 40px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 7px 0px;
+  &:hover {
+    background-color: darken($medium_gray, 5%);
+  }
+}
+
+// ABSOLUTE MOVES
+input {
+  &.move-input {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+}

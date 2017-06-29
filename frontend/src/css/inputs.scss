@@ -1,0 +1,48 @@
+// Styles for INPUTS
+input:not([role="combobox"]) {
+  font-size: 1.2rem;
+  color: $dark_gray;
+  height: auto;
+  width: 100%;
+  border: 0;
+  padding: 6px 8px;
+  box-shadow: 0px 0px 10px $light_gray;
+  &[type="checkbox"] {
+    width: inherit;
+  }
+  &:focus {
+    background-color: $white;
+    box-shadow: 0px 0px 10px $translucent;
+  }
+  &.bulk-day-selector {
+    width: 10%;
+    box-shadow: none;
+    margin-bottom: 0.75rem!important;
+    margin-top: 0.75rem!important;
+    height: 1.5rem;
+    vertical-align: top;
+    &.margin-left {
+      margin-left: 20%;
+    }
+  }
+  &.day {
+    display: none;
+  }
+}
+
+.day-selector-wrapper {
+  width: 10%;
+  height: 3rem;
+  display: inline-block;
+}
+
+.week-row {
+  height: 30.5px;
+}
+
+select {
+  border: none;
+  padding: 7px;
+  background: $white;
+  width: 100%;
+}

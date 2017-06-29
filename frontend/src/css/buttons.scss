@@ -1,0 +1,235 @@
+.fb-button {
+  font-size: 1rem;
+  float: right;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 700;
+  padding: .2rem .8rem;
+  border-radius: 3px;
+  border: none;
+  position: relative;
+  color: $off_white;
+  transition: all 0.1s ease-in-out !important;
+  &.disabled,
+  &:disabled {
+    background: $gray !important;
+    box-shadow: 0 2px 0px 0px lighten($gray, 5%) !important;
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+  }
+  &.is-saved,
+  &.is-saving {
+    background: $medium_gray !important;
+    box-shadow: 0 2px 0px 0px $dark_gray !important;
+    pointer-events: none;
+  }
+  .btn-spinner {
+    width: 0.8rem;
+    height: 0.8rem;
+    animation: rotate 0.8s infinite linear;
+    border: 1px solid #fff;
+    border-right-color: transparent;
+    border-radius: 50%;
+    float: right;
+    margin: 0.2rem 0px 0 0.6rem;
+  }
+  &:active:not(.fb-toggle-button) {
+    box-shadow: none !important;
+    transform: translateY(2px);
+  }
+  &.go {
+    background-color: $green;
+    margin-top: 2.4rem;
+    padding: .4rem .8rem;
+    font-size: 1.2rem;
+  }
+  &.green {
+    background-color: $green;
+    box-shadow: 0 2px 0px 0px darken($green, 12%);
+    &:hover {
+      background-color: darken($green, 5%) !important;
+    }
+  }
+  &.blue {
+    background-color: $blue;
+    box-shadow: 0 2px 0px 0px darken($blue, 12%);
+    &:hover {
+      background-color: darken($blue, 5%) !important;
+    }
+  }
+  &.red {
+    background-color: $red;
+    box-shadow: 0 2px 0px 0px darken($red, 12%);
+    &:hover {
+      background-color: darken($red, 5%) !important;
+    }
+  }
+  &.gray {
+    background-color: $medium_gray !important;
+    box-shadow: 0 2px 0px 0px darken($medium_gray, 12%);
+    &:hover {
+      background-color: darken($medium_gray, 5%) !important;
+    }
+  }
+  &.yellow {
+    color: $dark_gray;
+    background-color: $yellow;
+    box-shadow: 0 2px 0px 0px darken($yellow, 12%);
+    &:hover {
+      background-color: darken($yellow, 5%) !important;
+    }
+  }
+  &.orange {
+    background-color: $orange;
+    box-shadow: 0 2px 0px 0px darken($orange, 12%);
+    &:hover {
+      background-color: darken($orange, 5%) !important;
+    }
+  }
+  &.magenta {
+    background-color: $magenta;
+    box-shadow: 0 2px 0px 0px darken($magenta, 12%);
+    &:hover {
+      background-color: darken($magenta, 5%) !important;
+    }
+  }
+  &.cyan {
+    background-color: $cyan;
+    box-shadow: 0 2px 0px 0px darken($cyan, 12%);
+    &:hover {
+      background-color: darken($cyan, 5%) !important;
+    }
+  }
+  &.brown {
+    background-color: $brown;
+    box-shadow: 0 2px 0px 0px darken($brown, 12%);
+    &:hover {
+      background-color: darken($brown, 5%) !important;
+    }
+  }
+  &.purple {
+    background-color: $purple;
+    box-shadow: 0 2px 0px 0px darken($purple, 12%);
+    &:hover {
+      background-color: darken($purple, 5%) !important;
+    }
+  }
+  &.pink {
+    background-color: $pink;
+    box-shadow: 0 2px 0px 0px darken($pink, 12%);
+    &:hover {
+      background-color: darken($pink, 5%) !important;
+    }
+  }
+}
+
+.fb-toggle-button {
+  height: 1.8rem !important;
+  position: relative;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  padding: 0.3rem 0.10rem;
+  border-radius: 10px;
+  width: 5rem;
+  border-bottom: none;
+  position: relative;
+  transition: all 0.4s ease;
+  &.yellow {
+    &:after {
+      content: '';
+      position: absolute;
+      height: 1.6rem;
+      width: 1.6rem;
+      background: white;
+      border-radius: 50%;
+      margin: 0 auto;
+      left: 0;
+      right: 0;
+      top: 0.1rem;
+      box-shadow: inset rgba(0, 0, 0, 0.03) 0px 0px 3px 3px;
+    }
+    &:before {
+      content: '';
+      position: absolute;
+      height: 1.6rem;
+      width: 1.6rem;
+      border-radius: 50%;
+      top: 0.1rem;
+      margin: 0 auto;
+      left: 0;
+      right: 0;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0px 0 rgba(0, 0, 0, 0.04), 0 4px 9px rgba(0, 0, 0, 0.13), 0 3px 3px rgba(0, 0, 0, 0.05);
+    }
+  }
+  &.green {
+    text-align: left;
+    padding-left: 0.6rem;
+    &:after {
+      content: '';
+      position: absolute;
+      height: 1.6rem;
+      width: 1.6rem;
+      background: white;
+      border-radius: 50%;
+      top: 0.1rem;
+      right: 0.2rem;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0px 0 rgba(0, 0, 0, 0.04), 0 4px 9px rgba(0, 0, 0, 0.13), 0 3px 3px rgba(0, 0, 0, 0.05);
+    }
+    &:hover {
+      background: $green;
+    }
+  }
+  &.red {
+    text-align: right !important;
+    padding-right: 0.8rem;
+    &:after {
+      content: '';
+      position: absolute;
+      height: 1.6rem;
+      width: 1.6rem;
+      background: white;
+      border-radius: 50%;
+      top: 0.1rem;
+      left: 0.2rem;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0px 0 rgba(0, 0, 0, 0.04), 0 4px 9px rgba(0, 0, 0, 0.13), 0 3px 3px rgba(0, 0, 0, 0.05);
+    }
+  }
+}
+
+.plus-button {
+  z-index: 3;
+  border-radius: 50%;
+  bottom: 5rem;
+  width: 5rem;
+  height: 5rem;
+  color: $off_white;
+  margin-left: 12rem;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 3px 0px 0px $dark_green;
+  position: fixed;
+  left: 0;
+  right: 0;
+  &:active {
+    box-shadow: none !important;
+    transform: translateY(2px);
+  }
+  &:hover {
+    background: darken($green, 5%) !important;
+  }
+  i {
+    line-height: 5rem;
+  }
+  &.magenta {
+    box-shadow: 0 3px 0px 0px darken($magenta, 10%);
+    &:hover {
+      background: darken($magenta, 5%) !important;
+    }
+  }
+}
+
+@media (max-width: 568px) {
+  .plus-button {
+    margin: 0 auto;
+  }
+}

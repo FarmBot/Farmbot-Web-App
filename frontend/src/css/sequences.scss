@@ -1,0 +1,38 @@
+.sequence-editor,
+.regimen-editor,
+.sequence-list,
+.regimen-list,
+.bulk-scheduler {
+  >button {
+    margin: -3.2rem 0 2rem 1rem;
+    display: inline-block;
+  }
+}
+
+.sequence-editor,
+.regimen-editor {
+  background: $light_gray;
+  margin: -3rem -1.5rem -6rem;
+  padding: 3rem 1.5rem 8rem;
+  min-height: 96vh;
+  overflow-y: scroll;
+  max-height: 96vh;
+}
+
+.step-button-cluster-widget,
+.sequence-list,
+.regimen-list {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: 82vh;
+}
+
+.sequence-list,
+.regimen-list {
+  padding-top: 0.4rem;
+}
+
+.sequence-list input,
+.regimen-list input {
+  margin-bottom: 1rem;
+}

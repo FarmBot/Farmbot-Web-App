@@ -1,0 +1,433 @@
+.farm-designer {
+  height: 86.8vh;
+  overflow-y: hidden;
+  position: relative;
+}
+
+.farm-designer-map {
+  background-color: #CA8;
+  min-width: 100%;
+  display: inline-block;
+  padding: 2rem 2rem 2rem 31.8rem;
+  height: 100%;
+  overflow: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.drop-area {
+  // Light grid lines every 10px, heavier grid every 100px
+  background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, 0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 2px, transparent 2px);
+  background-size: 10px 10px, 10px 10px, 100px 100px, 100px 100px;
+  overflow: scroll;
+  height: 1502px;
+  max-height: 1502px;
+  width: 3002px;
+  max-width: 3002px;
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.crop-drag-info-image {
+  width: 100%;
+  background-color: $translucent;
+  width: 28rem;
+}
+
+.plant-catalog-image {
+  width: 100%;
+  background-position: center center !important;
+  background-size: 158% !important;
+  background-color: $translucent;
+  height: 12rem;
+}
+
+.crop-search-result-wrapper {
+  .plant-catalog-tile {
+    position: relative;
+    cursor: pointer;
+    &:nth-child(4n),
+    &:nth-child(4n-1) {
+      margin-bottom: 2rem;
+    }
+    &:nth-child(4n-2),
+    &:nth-child(4n-3) {
+      margin-bottom: 2rem;
+    }
+    label {
+      left: 15px;
+      right: 15px;
+      margin-top: 0 !important;
+      padding: 0.4rem 0.6rem 0.2rem;
+      bottom: -5px;
+      background: rgba(0, 0, 0, 0.5);
+      color: $white;
+      position: absolute;
+      font-size: 1.2rem !important;
+    }
+  }
+}
+
+.crop-info-overlay {
+  position: relative;
+  bottom: 3rem;
+  z-index: 2;
+  background-color: $dark_gray;
+  font-style: italic;
+  color: $off_white;
+  display: flex;
+  justify-content: center;
+  /* align horizontal */
+  align-items: center;
+  /* align vertical */
+  height: 3rem;
+  width: 100%;
+}
+
+.farm-events {
+  margin-top: 5rem;
+  .farm-event {
+    &.has-passed {
+      color: $gray;
+    }
+    &:hover {
+      .edit-icon {
+        display: block;
+      }
+    }
+    &:before {
+      content: "";
+      position: absolute;
+      left: 28%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: $gray;
+    }
+    position: relative;
+    font-size: 1.2rem;
+    padding: 0.8rem;
+    background: white;
+    border-bottom: 1px solid $gray;
+  }
+  .edit-icon {
+    display: none;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    color: $gray;
+    &:hover {
+      color: $dark_gray;
+    }
+  }
+}
+
+.farm-event-wrapper {
+  margin-bottom: 1rem;
+  .farm-event-date-month {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  .farm-event-date-day {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+  }
+}
+
+.thin-search-wrapper {
+  .text-input-wrapper {
+    margin-bottom: 1rem;
+    position: relative;
+    border-bottom: 1px solid #000;
+    &:before,
+    &:after {
+      content: "";
+      position: absolute;
+      background: #000;
+      width: 1px;
+      height: 10px;
+      bottom: 0;
+    }
+    &:before {
+      left: 0;
+    }
+    &:after {
+      right: 0;
+    }
+    .fa-search {
+      position: absolute;
+      top: 0.8rem;
+      left: 1rem;
+    }
+  }
+  input {
+    background: transparent;
+    box-shadow: none !important;
+    padding-left: 3rem !important;
+    font-size: 1.4rem !important;
+    &:active,
+    &:focus {
+      background: transparent !important;
+    }
+    &::-webkit-input-placeholder {
+      color: #000;
+    }
+  }
+  .select-results-container {
+    top: 4rem;
+    margin-bottom: 12rem;
+    max-height: none;
+  }
+  .select-result {
+    padding: 0;
+    margin-bottom: 1rem;
+    background: transparent;
+    border-bottom: none;
+    transition: all 0.4s ease;
+    &:last-child {
+      margin-bottom: 14rem;
+    }
+    &:hover {
+      background: rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+  }
+  .plant-search-item {
+    cursor: pointer;
+    height: 4rem;
+    margin-bottom: 1rem;
+    &:hover {
+      background: darken($light_green, 10%);
+      transition: background 0.2s ease;
+    }
+    img {
+      height: 4rem;
+      width: 4rem;
+      margin: 0 1rem 0 0;
+    }
+  }
+  .plant-search-item-age {
+    text-align: right;
+    font-size: 1rem;
+    padding-top: 1.4rem;
+    padding-right: 1rem;
+    float: right;
+  }
+  .plant-search-item-name {
+    vertical-align: middle;
+    white-space: nowrap;
+    width: 8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    margin-left: 1rem;
+  }
+}
+
+@media(min-width: 568px) {
+  .event-time {
+    padding-left: 0;
+  }
+}
+
+.hovered-plant-copy {
+  cursor: pointer;
+  transform-origin: center;
+}
+
+.plant-link-wrapper {
+  &.is-chosen-true.is-editing-true {
+    cursor: -webkit-grab !important;
+    &:active {
+      cursor: -webkit-grabbing !important;
+    }
+  }
+  &:hover {
+    image {
+      &.is-chosen-true {
+        transform: scale(1, 1);
+      }
+    }
+  }
+}
+
+.plant-indicator.is-chosen-true {
+  border: 3px dashed $green;
+  animation: pulse-and-rotate 4s infinite linear;
+  transform-origin: center
+}
+
+.garden-map-legend {
+  position: fixed;
+  top: 11rem;
+  right: -12rem;
+  transition: all 0.4s ease;
+  box-shadow: 0px 1px 4px #555;
+  &.active {
+    transform: translateX(-14rem);
+  }
+  .content {
+    background: $light_green;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    >*+* {
+      margin-top: 1rem;
+    }
+    label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .plus-button {
+      position: initial;
+      margin: 0 auto;
+    }
+    .fb-toggle-button {
+      height: 1.8rem;
+    }
+  }
+  .toggle-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .farmbot-origin {
+    .quadrants {
+      border: 1px solid $dark_gray;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .quadrant {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, 0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 2px, transparent 2px);
+      background-size: 4px 4px, 4px 4px, 100px 100px, 100px 100px;
+      cursor: pointer;
+      border: 1px solid $dark_gray;
+      width: 50%;
+      height: 24px;
+      display: inline-block;
+      position: relative;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+      &.selected {
+        box-shadow: inset 0 0 8px $dark_gray;
+      }
+      // Quadrant 1
+      &:nth-child(2) {
+        &:before {
+          top: 0;
+          right: 0;
+        }
+        &:after {
+          top: 8px;
+          right: 16px;
+        }
+      }
+      // Quadrant 2
+      &:nth-child(1) {
+        &:before {
+          top: 0;
+          left: 0;
+        }
+        &:after {
+          top: 8px;
+          left: 16px;
+        }
+      }
+      // Quadrant 3
+      &:nth-child(3) {
+        &:before {
+          bottom: 0;
+          left: 0;
+        }
+        &:after {
+          bottom: 8px;
+          left: 16px;
+        }
+      }
+      // Quadrant 4
+      &:nth-child(4) {
+        &:before {
+          bottom: 0;
+          right: 0;
+        }
+        &:after {
+          bottom: 8px;
+          right: 16px;
+        }
+      }
+      &:before {
+        content: "";
+        position: absolute;
+        background: $black;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+      &:after {
+        content: "";
+        position: absolute;
+        background: $green;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+    }
+  }
+  .menu-pullout {
+    color: $white;
+    cursor: pointer;
+    position: absolute;
+    left: -4.5rem;
+    transition: all 0.4s ease;
+    text-shadow: 0px 1px 1px #555;
+    &.active {
+      left: -4.5rem;
+      transform: rotate(180deg);
+      text-shadow: 1px 0px 0px #555;
+      &:hover {
+        left: -4.5rem;
+        span {
+          opacity: 0;
+        }
+      }
+    }
+    &:hover {
+      left: -5rem;
+      span {
+        opacity: 1;
+      }
+    }
+    span {
+      transition-delay: 0.6s;
+      transition: all 0.4s ease;
+      opacity: 0;
+      position: absolute;
+      left: -4.6rem;
+      top: 0.6rem;
+    }
+  }
+}
+
+@keyframes pulse-and-rotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.2);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}

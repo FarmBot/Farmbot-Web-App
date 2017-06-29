@@ -1,0 +1,38 @@
+.add-event-repeat-frequency {
+    min-height: 34px;
+}
+
+.events {
+    .fa-calendar {
+        font-size: 2rem;
+        padding-top: 0.6rem;
+        padding-left: 2.4rem;
+    }
+    .event-list {
+        margin-top: 1rem;
+    }
+    .event-block-list>*+* {
+        border-top: 1px solid $light_gray;
+    }
+    .event-block {
+        background: $white;
+        display: flex;
+        height: 3rem;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .event-date {
+        padding: 0;
+        .month-abbr {
+            font-weight: normal;
+            margin-bottom: 0;
+        }
+        .month-day {
+            font-size: 2rem;
+        }
+    }
+}
+
+.event-select-date {
+    margin-right: 2rem;
+}

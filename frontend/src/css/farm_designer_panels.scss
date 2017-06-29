@@ -1,0 +1,165 @@
+.farm-designer-panels {
+  width: 30rem;
+  position: fixed;
+  top: 9.3rem;
+  bottom: 0;
+  .panel-container {
+    width: 100%;
+    height: 88vh;
+    overflow-x: hidden;
+    font-size: 1.6rem;
+    padding-bottom: 3rem;
+    label {
+      font-size: 1.3rem;
+      margin-top: 2rem;
+    }
+  }
+}
+
+.panel-container {
+  &.green-panel {
+    background-color: $light_green;
+  }
+  &.cyan-panel {
+    background-color: $light_cyan;
+  }
+  &.brown-panel {
+    background-color: $light_brown;
+  }
+  &.magenta-panel {
+    background-color: $light_magenta;
+  }
+}
+
+.panel-header {
+  color: $light_gray;
+  &.green-panel {
+    background-color: $dark_green;
+  }
+  &.cyan-panel {
+    background-color: $cyan;
+  }
+  &.brown-panel {
+    background-color: $dark_brown;
+  }
+  &.magenta-panel {
+    background-color: $magenta;
+  }
+  &.gray-panel {
+    background-color: $dark_gray;
+  }
+}
+
+.panel-tabs {
+  display: flex;
+  a {
+    flex: 1;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 1.4rem;
+    line-height: 5rem;
+    height: 5rem;
+    color: $light_gray;
+    display: block;
+    &.active {
+      border-bottom: 3px solid $white;
+      font-weight: bold;
+      color: $white;
+    }
+    &:hover {
+      color: $off_white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    &:focus {
+      color: $off_white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  }
+}
+
+.panel-title {
+  height: 50px;
+  padding-top: 1.8rem;
+  padding-left: 1.4rem;
+  padding-right: 2rem;
+  .back-arrow {
+    color: $off_white;
+    margin-right: 1rem;
+    font-size: 1.8rem;
+    margin-top: -1.8rem;
+    display: inline-block;
+    vertical-align: middle;
+    &:hover {
+      color: $white;
+    }
+  }
+  .title {
+    color: $white;
+    font-size: 1.8rem;
+    margin-top: 0.4rem;
+    white-space: nowrap;
+    width: 10em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    height: 2rem;
+  }
+  .right-button {
+    float: right;
+    text-transform: uppercase;
+    font-size: 1rem;
+    border: 1px solid;
+    padding: 0.4rem 1.2rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    color: $off_white;
+    &:hover {
+      color: $white;
+    }
+  }
+}
+
+.plant-inventory-panel {
+  .panel-content {
+    padding: 6rem 2.4rem;
+  }
+}
+
+.crop-catalog-panel {
+  .back-arrow {
+    margin-top: 0rem;
+    vertical-align: bottom;
+  }
+  .panel-top {
+    padding: 6rem 1rem;
+    .panel-content {
+      padding: 1rem 1rem 6rem;
+    }
+  }
+}
+
+.panel-content {
+  padding: 6rem 1rem;
+  a {
+    color: $black;
+    text-decoration: underline !important;
+  }
+}
+
+.add-farm-event-panel {
+  .back-arrow {
+    margin-top: -0.2rem;
+    vertical-align: bottom;
+  }
+}
+
+.add-farm-event-panel button.red,
+.edit-farm-event-panel button.red,
+.add-farm-event-panel button.magenta,
+.edit-farm-event-panel button.magenta {
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
