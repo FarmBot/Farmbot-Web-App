@@ -28,8 +28,7 @@ c = function () {
     .plugins
     .push(new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify("development"),
-      "process.env.REVISION": JSON.stringify(
-        exec('echo "TEMP"').toString())
+      "process.env.REVISION": JSON.stringify(process.env.BUILT_AT || "NONE")
     }));
 
   conf

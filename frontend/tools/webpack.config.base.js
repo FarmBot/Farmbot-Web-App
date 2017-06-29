@@ -6,6 +6,7 @@ var webpack = require("webpack");
 var fs = require("fs");
 
 var FarmBotRenderer = require("./farmBotRenderer");
+var VERSION = JSON.stringify(process.env.BUILT_AT || "NONE");
 
 // WEBPACK BASE CONFIG
 exec("mkdir -p public/app");
@@ -57,12 +58,10 @@ module.exports = function () {
     // Shared plugins for prod and dev.
     plugins: [
       new webpack.DefinePlugin({
-        "process.env.REVISION": JSON.stringify(execSync(
-          'echo "TEMP"').toString())
+        "process.env.REVISION": VERSION
       }),
       new webpack.DefinePlugin({
-        "process.env.SHORT_REVISION": JSON.stringify(execSync(
-          'echo "TEMP"').toString())
+        "process.env.SHORT_REVISION": VERSION
       }),
       // FarmBot Inc related.
       new webpack.DefinePlugin({
