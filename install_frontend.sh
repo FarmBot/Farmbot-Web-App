@@ -9,7 +9,8 @@ fi
 
 echo "=========   Running Yarn"
 yarn install 2>&1
-
+# https://github.com/yarnpkg/yarn/issues/1981
+npm rebuild node-sass
 # Make webpack executable and compile everything.
 echo "=========   Changing Webpack permissions"
 chmod +x node_modules/webpack/bin/webpack.js
