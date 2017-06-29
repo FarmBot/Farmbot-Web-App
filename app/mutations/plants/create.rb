@@ -10,7 +10,7 @@ module Plants
       string :name, default: "Unknown Plant"
       string :openfarm_slug, default: "not-set"
       time   :created_at
-      float  :radius, default: 50
+      float  :radius, default: 25
       float  :z, default: 0
     end
 
