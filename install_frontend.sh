@@ -2,14 +2,12 @@
 echo "=========   RUNNING install_frontend.sh"
 CURRENT_DIR=$(pwd)
 
-echo "=========   Going into frontend/ directory"
-
 if [ "$NPM_ADDON" ]; then
     echo "=========   NPM ADD ON DETECTED... INSTALLING"
     npm install $NPM_ADDON --save 2>&1
 fi
 
-echo "=========   NPM INSTALLING"
+echo "=========   Running Yarn"
 yarn install 2>&1
 
 # Make webpack executable and compile everything.
