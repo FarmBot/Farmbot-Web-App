@@ -37,7 +37,7 @@ RSpec.configure do |config|
 
   if ENV['DOCS']
     config.after(:each, type: :controller) do
-      SmarfDoc.run!(request, response)
+      SmarfDoc.run!(NiceResponse.new(request), response)
     end
 
     config.after(:suite) do
@@ -51,4 +51,31 @@ end
 def const_reassign(target, const, value)
   target.send(:remove_const, const)
   target.const_set(const, value)
+end
+
+class NiceResponse
+  attr_reader :r
+
+  def initialize(r)
+    @r = r
+  end
+
+  def path
+    r.path
+  end
+
+  def pretty_url
+    r.method + " " + r.path.first(45)
+  end
+
+  def has_params?
+    r.params.except(:controller, :action, :format, :id).keys.length > 0
+  end
+
+  def display_body
+    p = r
+      .params
+      .except(:controller, :action, :format, :id, :user_id, :device_id)
+    JSON.pretty_generate(p)
+  end
 end
