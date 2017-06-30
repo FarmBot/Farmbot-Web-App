@@ -8,7 +8,7 @@ import { devices } from "../device";
 import { ToolTips } from "../constants";
 import { selectImage } from "../images/actions";
 
-export class Photos extends React.Component<PhotosProps, void> {
+export class Photos extends React.Component<PhotosProps, {}> {
 
   takePhoto = () => {
     let ok = () => success(t("Processing now. Refresh page to see result."));

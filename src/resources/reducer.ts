@@ -37,7 +37,7 @@ let consumerReducer = combineReducers<RestResources["consumers"]>({
   sequences,
   farm_designer,
   farmware
-});
+} as any);
 
 export function emptyState(): RestResources {
   return {

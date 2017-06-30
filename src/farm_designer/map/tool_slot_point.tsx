@@ -35,7 +35,7 @@ export class ToolSlotPoint extends
         fillOpacity={0.5}
         fill={this.state.hovered ? "#434343" : "#666666"} />
       <text
-        hidden={!this.state.hovered}
+        visibility={this.state.hovered ? "visible" : "hidden"}
         x={qx}
         y={qy}
         dx={40}

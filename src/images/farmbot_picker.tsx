@@ -18,18 +18,20 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
   }
 
   hueCSS = (): React.CSSProperties => {
-    let position = "relative";
+    // TODO: Investigate if this is a bug with our code or @types/react:
+    //       CC @Chris
+    let position: any = "relative";
     let width = "100%";
     let paddingBottom = "10%";
-    let overflow = "hidden";
+    let overflow: any = "hidden";
     return { position, width, paddingBottom, overflow };
   }
 
   saturationCSS = (): React.CSSProperties => {
-    let position = "relative";
+    let position: any = "relative";
     let width = "100%";
     let paddingBottom = "35%";
-    let overflow = "hidden";
+    let overflow: any = "hidden";
     return { position, width, paddingBottom, overflow };
   }
 

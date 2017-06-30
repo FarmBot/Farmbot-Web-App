@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@blueprintjs/core@^1.18.0", "@blueprintjs/core@^1.20.0":
+"@blueprintjs/core@^1.18.0":
   version "1.20.0"
   resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.20.0.tgz#3a95cb4b854b0687c6ca60ef26a39b4e016b42b0"
   dependencies:
@@ -15,9 +15,22 @@
     tether "^1.4"
     tslib "^1.5.0"
 
-"@blueprintjs/labs@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/labs/-/labs-0.1.0.tgz#fedcbd7dd694f13903b25953e04df265ed20158f"
+"@blueprintjs/core@^1.21.0":
+  version "1.21.0"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.21.0.tgz#b5c456e73983f1f0b17f9c41a820cb2060edf8d6"
+  dependencies:
+    "@types/dom4" "^1.5.20"
+    "@types/tether" "^1.1.27"
+    classnames "^2.2"
+    dom4 "^1.8"
+    normalize.css "4.1.1"
+    pure-render-decorator "^1.1"
+    tether "^1.4"
+    tslib "^1.5.0"
+
+"@blueprintjs/labs@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/labs/-/labs-0.2.0.tgz#72014d668faaf70bab759a6d8bed4d9cd1651116"
   dependencies:
     "@blueprintjs/core" "^1.18.0"
     classnames "^2.2"
@@ -28,17 +41,17 @@
   version "0.22.1"
   resolved "https://registry.yarnpkg.com/@types/cheerio/-/cheerio-0.22.1.tgz#740c4cd8c4d3f3074f83b9ab62e711eac2c764ce"
 
-"@types/deep-freeze@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@types/deep-freeze/-/deep-freeze-0.1.0.tgz#93eff1f571efc57fc449e83c3e0499bd0a5867e3"
+"@types/deep-freeze@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@types/deep-freeze/-/deep-freeze-0.1.1.tgz#0e1ee6ceee06f51baeb663deec0bb7780bd72827"
 
 "@types/dom4@^1.5.20":
   version "1.5.20"
   resolved "https://registry.yarnpkg.com/@types/dom4/-/dom4-1.5.20.tgz#ccf636d3b794fe65a4191ebc7ff979a78efea6c2"
 
-"@types/enzyme@^2.7.8":
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/@types/enzyme/-/enzyme-2.8.0.tgz#84c6204cf89831223a89ab6dc3f490b1e0886352"
+"@types/enzyme@^2.8.1":
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/@types/enzyme/-/enzyme-2.8.1.tgz#78b3c6c455b6b437898b54bff6d285d65323578d"
   dependencies:
     "@types/cheerio" "*"
     "@types/react" "*"
@@ -47,9 +60,9 @@
   version "1.0.28"
   resolved "https://registry.yarnpkg.com/@types/fastclick/-/fastclick-1.0.28.tgz#db4b3f6f079235324b264338e229f9cdd98a6c4e"
 
-"@types/handlebars@^4.0.31":
-  version "4.0.32"
-  resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.32.tgz#637e8d945a9354aab47df7125005490fe9f8e592"
+"@types/handlebars@^4.0.33":
+  version "4.0.33"
+  resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.33.tgz#ee45696b067e4bdf15c3956710a4c36c17d8f8f0"
 
 "@types/history@^2.0.39":
   version "2.0.48"
@@ -67,9 +80,9 @@
   version "19.2.3"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-19.2.3.tgz#61748040e8589a891dfc2ec1d16a2dd74482980e"
 
-"@types/lodash@^4.14.64":
-  version "4.14.64"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.64.tgz#979cf3a3d4a368670840bf9b3e448dc33ffe84ee"
+"@types/lodash@^4.14.67":
+  version "4.14.67"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.67.tgz#4714714434da110306b9862fbd36b30b55eb850a"
 
 "@types/markdown-it@0.0.1":
   version "0.0.1"
@@ -85,9 +98,9 @@
   version "6.0.73"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.73.tgz#85dc4bb6f125377c75ddd2519a1eeb63f0a4ed70"
 
-"@types/react-color@^2.11.0":
-  version "2.11.1"
-  resolved "https://registry.yarnpkg.com/@types/react-color/-/react-color-2.11.1.tgz#bb1bc7615cf9c18ea02b7648eb88dcafaffc5538"
+"@types/react-color@^2.11.4":
+  version "2.11.4"
+  resolved "https://registry.yarnpkg.com/@types/react-color/-/react-color-2.11.4.tgz#55d8a94bbb521837b2b2af404a3b86477a1a03af"
   dependencies:
     "@types/react" "*"
 
@@ -97,23 +110,23 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-redux@^4.4.32":
-  version "4.4.40"
-  resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-4.4.40.tgz#268d1a9b9a42e52562450e2c306630fa38db36ad"
+"@types/react-redux@^4.4.45":
+  version "4.4.45"
+  resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-4.4.45.tgz#afad851d8592119225aa6bcc402c7f6b9c7e4106"
   dependencies:
     "@types/react" "*"
     redux "^3.6.0"
 
-"@types/react-router@^3.0.0":
-  version "3.0.11"
-  resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-3.0.11.tgz#fbb1965e5cc1786d2cbb0f1fa49d4856e2e579f6"
+"@types/react-router@3":
+  version "3.0.12"
+  resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-3.0.12.tgz#afa9ab477440ae9d2efd4d150b043e67ce9ae06e"
   dependencies:
     "@types/history" "^3"
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^0.14.57":
-  version "0.14.57"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-0.14.57.tgz#1878a8654fafdd1d381b8457292b6433498c5b62"
+"@types/react@*", "@types/react@^15.0.33":
+  version "15.0.33"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.33.tgz#442b025b3ee7d65f25c5cf495b7bd773855c079b"
 
 "@types/redux@^3.6.31":
   version "3.6.31"
@@ -3213,7 +3226,7 @@ loader-runner@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-2.3.0.tgz#f482aea82d543e07921700d5a46ef26fdac6b8a2"
 
-loader-utils@^0.2.15, loader-utils@^0.2.16, loader-utils@^0.2.6, loader-utils@~0.2.2:
+loader-utils@^0.2.15, loader-utils@^0.2.16, loader-utils@~0.2.2:
   version "0.2.17"
   resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-0.2.17.tgz#f86e6374d43205a6e6c60e9196f17c0299bfb348"
   dependencies:
@@ -5641,14 +5654,13 @@ ts-jest@^19.0.9:
     tsconfig "^6.0.0"
     yargs "^7.0.2"
 
-ts-loader@^1.0.0:
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-1.3.3.tgz#30c6203e1e66b841a88701ed8858f1725d94b026"
+ts-loader@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-2.2.1.tgz#2ed6d2e1296335259562e3cb190a53832f7ec5a3"
   dependencies:
     colors "^1.0.3"
     enhanced-resolve "^3.0.0"
-    loader-utils "^0.2.6"
-    object-assign "^4.1.0"
+    loader-utils "^1.0.2"
     semver "^5.0.1"
 
 tsconfig@^6.0.0:
@@ -5715,9 +5727,9 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@2.3, typescript@^2.0.9, typescript@^2.1.5, typescript@^2.3.4:
-  version "2.3.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.3.4.tgz#3d38321828231e434f287514959c37a82b629f42"
+typescript@^2.0.9, typescript@^2.1.5, typescript@^2.3.4, typescript@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.1.tgz#c3ccb16ddaa0b2314de031e7e6fee89e5ba346bc"
 
 ua-parser-js@^0.7.9:
   version "0.7.12"

@@ -7,14 +7,14 @@ import { getMiddleware } from "./middlewares";
 let ENV = process.env.NODE_ENV as string;
 
 function dev() {
-  store = createStore(rootReducer,
+  store = createStore(rootReducer as any,
     maybeFetchOldState(),
     getMiddleware("development"));
   return store;
 }
 
 function prod() {
-  return createStore(rootReducer, ({} as any), getMiddleware("production"));
+  return createStore(rootReducer as any, ({} as any), getMiddleware("production"));
 }
 
 export function configureStore(options = {}) {

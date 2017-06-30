@@ -33,7 +33,7 @@ export class GardenPlant extends
 
       <image
         className={"plant-image is-chosen-" + selected}
-        href={this.state.icon}
+        xlinkHref={this.state.icon}
         onClick={() => onClick(this.props.plant)}
         onMouseEnter={() => dispatch(action)}
         onMouseLeave={() => dispatch(action)}
