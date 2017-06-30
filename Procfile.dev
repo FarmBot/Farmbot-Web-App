@@ -1,3 +1,3 @@
-web: rails s
+web: rails s -e development -p 3000 -b 0.0.0.0
 worker: rake jobs:work
 webpack: npm run webpack
