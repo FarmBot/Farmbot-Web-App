@@ -101,7 +101,8 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
                   "processing_pictures",
                   "description",
                   "main_image_path",
-                  "tags_array"
+                  "tags_array",
+                  "guides_count"
                 ])
                 .pairs()
                 .map((pair: string, i: number) => {
@@ -136,7 +137,6 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
                     case "spread":
                     case "row_spacing":
                     case "height":
-                    case "guides_count":
                       return <li key={i}>
                         <strong>
                           {_.startCase(key)}:&nbsp;
