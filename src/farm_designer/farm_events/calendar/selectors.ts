@@ -52,17 +52,17 @@ export function joinFarmEventsToExecutable(input: ResourceIndex): FarmEventWithE
   }));
 }
 
-function regimenCalendarItem(input: FarmEventWithRegimen):
-  NewCalendarItem {
-  let time = moment(input);
-  return {
-    dayOfMonth: time.day(),
-    month: time.format("MMM"),
-    executable_id: input.executable_id,
-    executable_type: input.executable_type,
-    farm_event_id: input.id || -1,
-    label: input.executable.name,
-    sortKey: time.unix(),
-    timeStr: time.format("hh mm dd yy")
-  };
-};
+// function regimenCalendarItem(input: FarmEventWithRegimen):
+//   NewCalendarItem {
+//   let time = moment(input as any);
+//   return {
+//     dayOfMonth: time.day(),
+//     month: time.format("MMM"),
+//     executable_id: input.executable_id,
+//     executable_type: input.executable_type,
+//     farm_event_id: input.id || -1,
+//     label: input.executable.name,
+//     sortKey: time.unix(),
+//     timeStr: time.format("hh mm dd yy")
+//   };
+// }
