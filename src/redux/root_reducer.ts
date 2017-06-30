@@ -6,6 +6,7 @@ import { combineReducers } from "redux";
 import { ReduxAction } from "./interfaces";
 import { Session } from "../session";
 import { resourceReducer as resources } from "../resources/reducer"
+import { Everything } from "../interfaces";
 
 export let reducers = combineReducers({
   auth,
@@ -13,15 +14,17 @@ export let reducers = combineReducers({
   config,
   draggable,
   resources
-});
+} as any); // TODO: Fix this. -RC. TSC 2.4 upgrade broke stuff.
 /** This is the topmost reducer in the application. If you need to preempt a
  * "normal" reducer this is the place to do it */
 export function rootReducer(
   /** Sorry for the `any` here. */
-  state: {} | any,
+  state: any,
   action: ReduxAction<{}>) {
   if (action.type === "LOGOUT") {
     Session.clear(true);
   }
-  return reducers(state, action);
+  // TODO: Get rid of this nasty type case / hack. Resulted from TSC 2.4 upgrade
+  // - RC 30 JUN 17
+  return reducers(state, action) as Everything;
 };

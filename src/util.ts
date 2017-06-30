@@ -408,7 +408,7 @@ export function semverCompare(left: string, right: string): SemverResult {
 
 /** TODO: Upgrading to TSC 2.4, maybe we don't need this?
  * - RC 20 June 2016 */
-type JSXChild = JSX.Element | string | undefined;
+type JSXChild = JSX.Element | JSX.Element[] | Primitive | undefined;
 export type JSXChildren = JSXChild[] | JSXChild;
 
 /** HACK: Server side caching (or webpack) is not doing something right.

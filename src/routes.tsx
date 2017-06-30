@@ -278,10 +278,14 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
   };
 
   render() {
-    return <Provider store={store}>
+    // TODO: Why is this happening? Started after TSC 2.4 upgrade.
+    //       Let's re-investigate after our deps are upgraded.
+    //       - RC 30 Jun 17
+    let Wow = Provider as any;
+    return <Wow store={(store as any)}>
       <Router history={history}>
         {this.routes}
       </Router>
-    </Provider>;
+    </Wow>;
   }
 }

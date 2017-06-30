@@ -3,7 +3,7 @@ import { defensiveClone } from "../util";
 
 export function generateReducer<State>(initialState: State,
   /** For passing state down to children. */
-  afterEach?: <T>(s: T, a: ReduxAction<any>) => T) {
+  afterEach?: (s: State, a: ReduxAction<any>) => State) {
   /** A function that responds to a particular action from within a
    * generated reducer. */
   interface ActionHandler {
@@ -29,12 +29,11 @@ export function generateReducer<State>(initialState: State,
   let reducer: GeneratedReducer = function <T>(state = initialState,
     action: ReduxAction<T>): State {
     let NOOP: ActionHandler = (s, a) => s;
-    afterEach = afterEach || NOOP;
     let handler = (actionHandlers[action.type] || NOOP);
     let clonedState = defensiveClone(state);
     let clonedAction = defensiveClone(action);
     let result: State = handler(clonedState, clonedAction);
-    result = afterEach(defensiveClone(result), action)
+    result = (afterEach || NOOP)(defensiveClone(result), action)
     return defensiveClone(result);
   } as GeneratedReducer;
 

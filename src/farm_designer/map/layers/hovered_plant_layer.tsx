@@ -61,7 +61,7 @@ export class HoveredPlantLayer extends
     let scaleFactor = (this.state.isHovered) ? "1.3, 1.3" : "1, 1";
 
     return <image
-      hidden={this.props.isEditing}
+      visibility={this.props.isEditing ? "visible" : "hidden"}
       style={{ transform: "scale(" + scaleFactor + ")" }}
       className={"hovered-plant-copy"}
       x={qx - (this.plantInfo.radius)}
@@ -71,7 +71,6 @@ export class HoveredPlantLayer extends
       onClick={this.onClick}
       width={this.plantInfo.radius * 2}
       height={this.plantInfo.radius * 2}
-      href={icon}
-    />
+      xlinkHref={icon} />
   }
 }

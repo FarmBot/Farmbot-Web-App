@@ -35,7 +35,7 @@ const CAMERA_CHOICES = [
 export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps, FarmbotOsState> {
 
-  changeBot = (e: React.MouseEvent<HTMLInputElement>) => {
+  changeBot = (e: React.ChangeEvent<HTMLInputElement>) => {
     let { account, dispatch } = this.props;
     dispatch(changeDevice(account, { name: e.currentTarget.value }));
   }
@@ -99,8 +99,7 @@ export class FarmbotOsSettings
               </label>
             </Col>
             <Col xs={10}>
-              <input
-                name="name"
+              <input name="name"
                 onChange={this.changeBot}
                 value={this.props.account.body.name} />
             </Col>

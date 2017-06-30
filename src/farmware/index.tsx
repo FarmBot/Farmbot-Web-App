@@ -11,7 +11,7 @@ import { WeedDetector } from "../images/weed_detector/index";
 import { envGet } from "../images/weed_detector/remote_env/selectors";
 
 @connect(mapStateToProps)
-export class FarmwarePage extends React.Component<FarmwareProps, void> {
+export class FarmwarePage extends React.Component<FarmwareProps, {}> {
   render() {
     return <Page className="farmware">
       <Row>
