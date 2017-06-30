@@ -1790,9 +1790,9 @@ eyes@0.1.x:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/eyes/-/eyes-0.1.8.tgz#62cf120234c683785d902348a800ef3e0cc20bc0"
 
-farmbot-toastr@^1.0.0, farmbot-toastr@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/farmbot-toastr/-/farmbot-toastr-1.0.2.tgz#a8fbc744e6d706d9539c0cf180e2ab50f4ea422e"
+farmbot-toastr@^1.0.0, farmbot-toastr@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/farmbot-toastr/-/farmbot-toastr-1.0.3.tgz#849dc68e78ad5a88251aca20f1c6ee56f25ddbf5"
   dependencies:
     farmbot-toastr "^1.0.0"
     typescript "^2.3.4"
