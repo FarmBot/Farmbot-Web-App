@@ -2,6 +2,7 @@ import { ResourceName } from "./tagged_resources";
 import { joinKindAndId } from "./reducer";
 import { Dictionary } from "farmbot/dist";
 import { betterCompact } from "../util";
+import * as _ from "lodash";
 
 var count = 0;
 export function generateUuid(id: number | undefined, kind: ResourceName) {

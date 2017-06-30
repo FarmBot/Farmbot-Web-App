@@ -269,7 +269,7 @@ export
   let store = createStore(resourceReducer as any);
   _(resources)
     .groupBy(KIND)
-    .pairs()
+    .toPairs()
     .map((x: [(TaggedResource["kind"]), TaggedResource[]]) => x)
     .map(y => ({ type: "RESOURCE_READY", payload: { name: y[0], data: y[1] } }))
     .map(store.dispatch);

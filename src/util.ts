@@ -32,7 +32,7 @@ export let colors: Array<Color> = [
 
 /** Picks a color that is compliant with sequence / regimen color codes */
 export function randomColor(): Color {
-  return _.sample(colors);
+  return _.sample(colors) || "gray";
 }
 
 export function defensiveClone<T>(target: T): T {
@@ -46,7 +46,7 @@ export interface AxiosErrorResponse {
       [reason: string]: string
     };
   };
-};
+}
 
 export function toastErrors({ err }: UnsafeError) {
   return error(prettyPrintApiErrors(err));
@@ -199,7 +199,7 @@ export function hasKey<T>(base: (keyof T)[]) {
 export class Progress {
   constructor(public total: number,
     public cb: ProgressCallback,
-    public completed = 0) { };
+    public completed = 0) { }
 
   get isDone() {
     return this.completed >= this.total;
@@ -209,9 +209,9 @@ export class Progress {
     if (force || !this.isDone) { this.cb(this); }
   }
 
-  inc = () => { this.completed++; this.bump(); }
+  inc = () => { this.completed++; this.bump(); };
 
-  finish = () => { this.completed = this.total; this.bump(true); }
+  finish = () => { this.completed = this.total; this.bump(true); };
 }
 /** If you're creating a module that publishes Progress state, you can use this
  * to prevent people from directly modifying the progress. */
@@ -239,7 +239,7 @@ export function smoothScrollToBottom() {
   // Higher the distance divided, faster the scroll.
   // Numbers too low will cause jarring ui bugs.
   let speed = Math.round(distance / 14);
-  if (speed >= 6) { speed = 14; };
+  if (speed >= 6) { speed = 14; }
   let step = Math.round(distance / 25);
   let leapY = stopY > startY ? startY + step : startY - step;
   let timer = 0;
@@ -265,7 +265,7 @@ export function fancyDebug(t: any) {
     .keys(t)
     .map(key => [key, t[key]])
     .map((x) => {
-      let key = _.padRight(x[0], 20, " ");
+      let key = _.padStart(x[0], 20, " ");
       let val = (JSON.stringify(x[1]) || "Nothing").slice(0, 52);
 
       return `${key} => ${val}`;
@@ -346,7 +346,7 @@ export function attachToRoot<P>(type: React.ComponentClass<P>,
     render(reactElem, domElem);
   } else {
     throw new Error(t("Add a <div> with id `root` to the page first."));
-  };
+  }
 }
 
 /** The firmware will have an integer overflow if you don't check this one. */
@@ -365,7 +365,7 @@ export function clampUnsignedInteger(input: string): ClampResult {
   let result = Math.round(parseInt(input, 10));
 
   // Clamp to prevent overflow.
-  if (_.isNaN(result)) { return { outcome: "malformed", result: undefined }; };
+  if (_.isNaN(result)) { return { outcome: "malformed", result: undefined }; }
   if (result > MAX_INPUT) { return { outcome: "high", result: MAX_INPUT }; }
   if (result < MIN_INPUT) { return { outcome: "low", result: MIN_INPUT }; }
 
@@ -394,17 +394,17 @@ export function semverCompare(left: string, right: string): SemverResult {
     }
 
     if (!isNaN(num_left) && isNaN(num_right)) {
-      return SemverResult.LEFT_IS_GREATER
-    };
+      return SemverResult.LEFT_IS_GREATER;
+    }
 
     if (isNaN(num_left) && !isNaN(num_right)) {
-      return SemverResult.RIGHT_IS_GREATER
-    };
+      return SemverResult.RIGHT_IS_GREATER;
+    }
 
   }
 
   return SemverResult.EQUAL;
-};
+}
 
 /** TODO: Upgrading to TSC 2.4, maybe we don't need this?
  * - RC 20 June 2016 */
@@ -434,7 +434,7 @@ export function hardRefresh() {
     }
   } else {
     console.log("Local storage not supported.");
-  };
+  }
 }
 
 /** Tim reported some issues Chrome. I don't think it is cookie related,

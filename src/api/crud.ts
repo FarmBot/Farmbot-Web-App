@@ -15,6 +15,7 @@ import { defensiveClone } from "../util";
 import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
 import { SequenceBodyItem } from "farmbot/dist";
+import * as _ from "lodash";
 
 export function edit(tr: TaggedResource, update: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
@@ -63,7 +64,7 @@ export function init(resource: TaggedResource): ReduxAction<TaggedResource> {
   resource.dirty = true;
   /** Technically, this happens in the reducer, but I like to be extra safe. */
   resource.uuid = generateUuid(resource.body.id, resource.kind);
-  return { type: "INIT_RESOURCE", payload: resource }
+  return { type: "INIT_RESOURCE", payload: resource };
 }
 
 export function initSave(resource: TaggedResource) {
@@ -74,7 +75,7 @@ export function initSave(resource: TaggedResource) {
     let nextState = getState().resources.index;
     let tr = findByUuid(nextState, action.payload.uuid);
     return dispatch(save(tr.uuid));
-  }
+  };
 }
 
 export function save(uuid: string) {
@@ -82,13 +83,13 @@ export function save(uuid: string) {
     let resource = findByUuid(getState().resources.index, uuid);
     dispatch({ type: "SAVE_RESOURCE_START", payload: resource });
     return dispatch(update(uuid));
-  }
+  };
 }
 
 function update(uuid: string) {
   return function (dispatch: Function, getState: GetState) {
     return updateViaAjax(getState().resources.index, uuid, dispatch);
-  }
+  };
 }
 
 export function destroy(uuid: string) {
@@ -107,11 +108,11 @@ export function destroy(uuid: string) {
             return Promise.reject(err);
           });
       } else {
-        dispatch(destroyOK(resource))
+        dispatch(destroyOK(resource));
         return Promise.resolve("");
       }
     }) || Promise.reject("User pressed cancel");
-  }
+  };
 }
 
 export function saveAll(input: TaggedResource[],
@@ -121,7 +122,7 @@ export function saveAll(input: TaggedResource[],
     /** Perf issues maybe? RC - Mar 2017 */
     let p = input.filter(x => x.dirty).map(tts => dispatch(save(tts.uuid)));
     Promise.all(p).then(callback, errBack);
-  }
+  };
 }
 
 export function urlFor(tag: ResourceName) {
@@ -136,7 +137,7 @@ export function urlFor(tag: ResourceName) {
     device: API.current.devicePath,
     images: API.current.imagesPath,
     logs: API.current.logsPath
-  }
+  };
   let url = OPTIONS[tag];
   if (url) {
     return url;
@@ -189,4 +190,4 @@ let confirmationChecker = (resource: TaggedResource) =>
       }
     }
     return proceed();
-  }
+  };

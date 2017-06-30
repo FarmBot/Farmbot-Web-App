@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import { error } from "farmbot-toastr";
 import { ResourceIndex, SlotWithTool } from "./interfaces";
 import { joinKindAndId } from "./reducer";
@@ -26,7 +27,8 @@ import {
   TaggedToolSlotPointer,
   TaggedUser
 } from "./tagged_resources";
-import { CowardlyDictionary, betterCompact, sortResourcesById } from "../util";
+import { CowardlyDictionary, betterCompact, sortResourcesById, betterMerge } from "../util";
+import { ToolSlotPointer } from "../interfaces";
 type StringMap = CowardlyDictionary<string>;
 
 export let findId = (index: ResourceIndex, kind: ResourceName, id: number) => {
@@ -36,9 +38,9 @@ export let findId = (index: ResourceIndex, kind: ResourceName, id: number) => {
   if (uuid) {
     return uuid;
   } else {
-    throw new Error("UUID not found for id " + id)
+    throw new Error("UUID not found for id " + id);
   }
-}
+};
 
 export function findResourceById(index: ResourceIndex, kind: ResourceName,
   id: number) {
@@ -53,7 +55,7 @@ function findAll(index: ResourceIndex, name: ResourceName) {
   index.byKind[name].map(function (uuid) {
     let item = index.references[uuid];
     (item && isTaggedResource(item) && results.push(item));
-  })
+  });
   return sortResourcesById(results);
 }
 
@@ -280,7 +282,7 @@ export function assertUuid(expected: ResourceName, actual: string | undefined) {
     BAD NEWS!!! You thought this was a ${expected} UUID, but here's what it
     actually was:
       ${actual}
-    `)
+    `);
     return false;
   } else {
     return true;
@@ -301,25 +303,7 @@ export function toArray(index: ResourceIndex) {
 /** Search for matching key/value pairs in the body of a resource. */
 export function where(index: ResourceIndex,
   body: object): (TaggedResource | undefined)[] {
-  return _.where(toArray(index), { body });
-}
-
-/** Search for matching key/value pairs in the body of a resource. */
-export function findWhere(index: ResourceIndex,
-  body: object): TaggedResource | undefined {
-  /** TODO: Find a way to add type safety.
-   *        currently, this method will accept any old object, which might be
-   *        unsafe. */
-  return _.findWhere(toArray(index), { body });
-}
-
-export function findSlotWhere(index: ResourceIndex, body: object):
-  TaggedToolSlotPointer | undefined {
-  /** TODO: Find a way to add type safety.
-   *        currently, this method will accept any old object, which might be
-   *        unsafe. */
-  let x = _.findWhere(toArray(index), { kind: "tool_slots", body });
-  return (x && isTaggedToolSlotPointer(x)) ? x : undefined;
+  return _.filter(index.references, body);
 }
 
 /** GIVEN: a slot UUID.
@@ -465,7 +449,7 @@ export function getDeviceAccountSettings(index: ResourceIndex) {
 }
 
 export function maybeFetchUser(index: ResourceIndex):
-TaggedUser | undefined {
+  TaggedUser | undefined {
   let list = index.byKind.users;
   let uuid = list[0];
   let user = index.references[uuid || -1];

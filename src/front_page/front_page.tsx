@@ -7,7 +7,7 @@ import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState } from "./interfaces";
-
+import * as _ from "lodash";
 export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   constructor() {
     super();

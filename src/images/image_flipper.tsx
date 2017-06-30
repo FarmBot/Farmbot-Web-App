@@ -3,6 +3,7 @@ import * as React from "react";
 import { safeStringFetch } from "../util";
 import { t } from "i18next";
 import * as moment from "moment";
+import * as _ from "lodash";
 
 export const PLACEHOLDER_FARMBOT = "/placeholder_farmbot.jpg";
 

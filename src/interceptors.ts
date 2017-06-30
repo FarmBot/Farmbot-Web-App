@@ -10,12 +10,13 @@ import {
 } from "./interceptor_support";
 import { API } from "./api/index";
 import { AuthState } from "./auth/interfaces";
+import * as _ from "lodash";
 
 export function responseFulfilled(input: Xhr): Xhr {
   let method = input.config.method;
   if (method && METHODS.includes(method)) {
     notifyBotOfChanges(input.config.url, METHOD_MAP[method]);
-  };
+  }
   return input;
 }
 

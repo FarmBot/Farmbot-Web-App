@@ -104,7 +104,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
                   "tags_array",
                   "guides_count"
                 ])
-                .pairs()
+                .toPairs()
                 .map((pair: string, i: number) => {
                   let key = pair[0];
                   let value = pair[1];
@@ -129,7 +129,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
                             {t("Not Set")}
                           </span>
                         }
-                      </li>
+                      </li>;
                     /**
                      * Need to convert the `cm` provided by OpenFarm to `mm`
                      * to match the Farm Designer units.
@@ -144,7 +144,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
                         <span>
                           {(parseInt(value) * 10) + t("mm") || t("Not Set")}
                         </span>
-                      </li>
+                      </li>;
                     /**
                      * Default behavior for all other properties.
                      */
@@ -156,7 +156,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
                         <span>
                           {value || t("Not Set")}
                         </span>
-                      </li>
+                      </li>;
                   }
                 }).value()
             }

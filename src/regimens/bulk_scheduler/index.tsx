@@ -46,8 +46,8 @@ export function BulkSchedulerWidget(props: BulkEditorProps) {
 function msToTime(ms: number) {
   if (_.isNumber(ms)) {
     let d = duration(ms);
-    let h = _.padLeft(d.hours().toString(), 2, "0");
-    let m = _.padLeft(d.minutes().toString(), 2, "0");
+    let h = _.padStart(d.hours().toString(), 2, "0");
+    let m = _.padStart(d.minutes().toString(), 2, "0");
     return `${h}:${m}`;
   } else {
     return "00:01";

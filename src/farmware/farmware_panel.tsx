@@ -13,6 +13,7 @@ import {
   Col
 } from "../ui";
 import { betterCompact } from "../util";
+import * as _ from "lodash";
 
 export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   constructor() {
@@ -113,7 +114,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
                   if (_.isString(selectedFarmware)) {
                     this.setState({ selectedFarmware });
                   } else {
-                    throw new Error(`Bad farmware UUID: ${x.value}`)
+                    throw new Error(`Bad farmware UUID: ${x.value}`);
                   }
                 }}
                 placeholder="Installed Farmware Packages" />

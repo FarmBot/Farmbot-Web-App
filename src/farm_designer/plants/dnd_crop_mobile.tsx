@@ -80,7 +80,7 @@ export class DNDCropMobile
             {
               _(result.crop)
                 .omit(["slug", "processing_pictures", "description"])
-                .pairs()
+                .toPairs()
                 .map((pair: string, i: number) => {
                   let key = pair[0];
                   let value = pair[1];

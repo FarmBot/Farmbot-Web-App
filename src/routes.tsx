@@ -10,15 +10,18 @@ import { ready } from "./config/actions";
 import { Session } from "./session";
 import { isMobile } from "./util";
 import { hardRefresh } from "./util";
-hardRefresh()
+import * as _ from "lodash";
+
+hardRefresh();
+
 interface RootComponentProps {
   store: Store;
 }
-declare const System: any;
-let errorLoading = (cb: any) => function handleError(err: any) {
+
+let errorLoading = (cb: Function) => function handleError(err: object) {
   console.error("Dynamic page loading failed", err);
   var container = document.getElementById("root");
-  let stack = _.get(err, "stack", "No stack.")
+  let stack = _.get(err, "stack", "No stack.");
   if (container) {
     let message = _.get(err, "message", "No message available.");
     _.get(window, "Rollbar.error", (x: string) => { })(message);
@@ -56,12 +59,12 @@ let errorLoading = (cb: any) => function handleError(err: any) {
     var element = y[x];
     element.remove();
   }
-}
+};
 let controlsRoute = {
   path: "app/controls",
-  getComponent(location: any, cb: any) {
-    System.import("./controls/controls.tsx").then(
-      (module: any) => cb(null, module.Controls)
+  getComponent(_: void, cb: Function) {
+    import("./controls/controls").then(
+      (module) => cb(null, module.Controls)
     ).catch(errorLoading(cb));
   }
 };
@@ -74,11 +77,11 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         return;
       } else { // Has session but not logged in (returning visitor).
         store.dispatch(ready());
-      };
+      }
     } else { // Not logged in yet.
       Session.clear(true);
     }
-  };
+  }
 
   /** These methods are a way to determine how to load certain modules
    * based on the device (mobile or desktop) for optimization/css purposes.
@@ -88,7 +91,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
     if (next.location.pathname === "/app/designer" && !isMobile()) {
       replace(`${next.location.pathname}/plants`);
     }
-  };
+  }
 
   // replaceSequencesModules(next: RouterState, replace: RedirectFunction) {
   //   if (next.location.pathname === "/app/sequences" && isMobile()) {
@@ -114,107 +117,107 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
     childRoutes: [
       {
         path: "app/account",
-        getComponent(location: any, cb: any) {
-          System.import("./account/index.tsx").then(
-            (module: any) => cb(null, module.Account)
+        getComponent(_: void, cb: Function) {
+          import("./account/index").then(
+            (module) => cb(null, module.Account)
           ).catch(errorLoading(cb));
         }
       },
       controlsRoute,
       {
         path: "app/device",
-        getComponent(location: any, cb: any) {
-          System.import("./devices/devices.tsx").then(
-            (module: any) => cb(null, module.Devices)
+        getComponent(_: void, cb: Function) {
+          import("./devices/devices").then(
+            (module) => cb(null, module.Devices)
           ).catch(errorLoading(cb));
         }
       },
       {
         path: "app/farmware",
-        getComponent(location: any, cb: any) {
-          System.import("./farmware/index.tsx").then(
-            (module: any) => cb(null, module.FarmwarePage)
+        getComponent(_: void, cb: Function) {
+          import("./farmware/index").then(
+            (module) => cb(null, module.FarmwarePage)
           ).catch(errorLoading(cb));
         }
       },
       {
         path: "app/designer",
         onEnter: this.maybeReplaceDesignerModules.bind(this),
-        getComponent(location: any, cb: any) {
-          System.import("./farm_designer/index.tsx").then(
-            (module: any) => cb(null, module.FarmDesigner)
+        getComponent(_: void, cb: Function) {
+          import("./farm_designer/index").then(
+            (module) => cb(null, module.FarmDesigner)
           ).catch(errorLoading(cb));
         },
         childRoutes: [
           {
             path: "plants",
-            getComponent(location: any, cb: any) {
-              System.import("./farm_designer/plants/plant_inventory.tsx").then(
-                (module: any) => cb(null, module.Plants)
+            getComponent(_: void, cb: Function) {
+              import("./farm_designer/plants/plant_inventory").then(
+                (module) => cb(null, module.Plants)
               ).catch(errorLoading(cb));
             },
           },
           {
             path: "plants/crop_search",
-            getComponent(location: any, cb: any) {
-              System.import("./farm_designer/plants/crop_catalog.tsx").then(
-                (module: any) => cb(null, module.CropCatalog)
+            getComponent(_: void, cb: Function) {
+              import("./farm_designer/plants/crop_catalog").then(
+                (module) => cb(null, module.CropCatalog)
               ).catch(errorLoading(cb));
             },
           },
           {
             path: "plants/crop_search/:crop",
-            getComponent(location: any, cb: any) {
-              System.import("./farm_designer/plants/crop_info.tsx").then(
-                (module: any) => cb(null, module.CropInfo)
+            getComponent(_: void, cb: Function) {
+              import("./farm_designer/plants/crop_info").then(
+                (module) => cb(null, module.CropInfo)
               ).catch(errorLoading(cb));
             },
           },
           {
             path: "plants/crop_search/:crop/add",
-            getComponent(location: any, cb: any) {
-              System.import("./farm_designer/plants/dnd_crop_mobile.tsx").then(
-                (module: any) => cb(null, module.DNDCropMobile)
+            getComponent(_: void, cb: Function) {
+              import("./farm_designer/plants/dnd_crop_mobile").then(
+                (module) => cb(null, module.DNDCropMobile)
               ).catch(errorLoading(cb));
             },
           },
           {
             path: "plants/:plant_id",
-            getComponent(location: any, cb: any) {
-              System.import("./farm_designer/plants/plant_info.tsx").then(
-                (module: any) => cb(null, module.PlantInfo)
+            getComponent(_: void, cb: Function) {
+              import("./farm_designer/plants/plant_info").then(
+                (module) => cb(null, module.PlantInfo)
               ).catch(errorLoading(cb));
             },
           },
           {
             path: "plants/:plant_id/edit",
-            getComponent(location: any, cb: any) {
-              System.import("./farm_designer/plants/edit_plant_info.tsx").then(
-                (module: any) => cb(null, module.EditPlantInfo)
+            getComponent(_: void, cb: Function) {
+              import("./farm_designer/plants/edit_plant_info").then(
+                (module) => cb(null, module.EditPlantInfo)
               ).catch(errorLoading(cb));
             },
           },
           {
             path: "farm_events",
-            getComponent(location: any, cb: any) {
-              System.import("./farm_designer/farm_events/farm_events.tsx").then(
-                (module: any) => cb(null, module.FarmEvents)
+            getComponent(_: void, cb: Function) {
+              import("./farm_designer/farm_events/farm_events").then(
+                (module) => cb(null, module.FarmEvents)
               ).catch(errorLoading(cb));
             }
           },
           {
             path: "farm_events/add",
-            getComponent(location: any, cb: any) {
-              System.import("./farm_designer/farm_events/add_farm_event.tsx").then(
-                (module: any) => cb(null, module.AddFarmEvent)
+            getComponent(_: void, cb: Function) {
+              import("./farm_designer/farm_events/add_farm_event").then(
+                (module) => cb(null, module.AddFarmEvent)
               ).catch(errorLoading(cb));
             }
           },
           {
             path: "farm_events/:farm_event_id",
-            getComponent(location: any, cb: any) {
-              System.import("./farm_designer/farm_events/edit_farm_event.tsx").then(
-                (module: any) => cb(null, module.EditFarmEvent)
+            getComponent(_: void, cb: Function) {
+              import("./farm_designer/farm_events/edit_farm_event").then(
+                (module) => cb(null, module.EditFarmEvent)
               ).catch(errorLoading(cb));
             }
           }
@@ -222,55 +225,55 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       },
       {
         path: "app/regimens",
-        getComponent(location: any, cb: any) {
+        getComponent(_: void, cb: Function) {
           if (!isMobile()) {
-            System.import("./regimens/index.tsx").then(
-              (module: any) => cb(null, module.Regimens)
+            import("./regimens/index").then(
+              (module) => cb(null, module.Regimens)
             ).catch(errorLoading(cb));
           } else {
-            System.import("./regimens/list/index.tsx").then(
-              (module: any) => cb(null, module.RegimensList)
+            import("./regimens/list/index").then(
+              (module) => cb(null, module.RegimensList)
             ).catch(errorLoading(cb));
           }
         },
       },
       {
         path: "app/regimens/:regimen",
-        getComponent(location: any, cb: any) {
-          System.import("./regimens/index.tsx").then(
-            (module: any) => cb(null, module.Regimens)
+        getComponent(_: void, cb: Function) {
+          import("./regimens/index").then(
+            (module) => cb(null, module.Regimens)
           ).catch(errorLoading(cb));
         }
       },
       {
         path: "app/sequences",
-        getComponent(location: any, cb: any) {
-          System.import("./sequences/sequences.tsx").then(
-            (module: any) => cb(null, module.Sequences)
+        getComponent(_: void, cb: Function) {
+          import("./sequences/sequences").then(
+            (module) => cb(null, module.Sequences)
           ).catch(errorLoading(cb));
         },
       },
       {
         path: "app/sequences/:sequence",
-        getComponent(location: any, cb: any) {
-          System.import("./sequences/sequences.tsx").then(
-            (module: any) => cb(null, module.Sequences)
+        getComponent(_: void, cb: Function) {
+          import("./sequences/sequences").then(
+            (module) => cb(null, module.Sequences)
           ).catch(errorLoading(cb));
         },
       },
       {
         path: "app/tools",
-        getComponent(location: any, cb: any) {
-          System.import("./tools/index.tsx").then(
-            (module: any) => cb(null, module.Tools)
+        getComponent(_: void, cb: Function) {
+          import("./tools/index").then(
+            (module) => cb(null, module.Tools)
           ).catch(errorLoading(cb));
         }
       },
       {
         path: "*",
-        getComponent(location: any, cb: any) {
-          System.import("./404").then(
-            (module: any) => cb(null, module.FourOhFour)
+        getComponent(_: void, cb: Function) {
+          import("./404").then(
+            (module) => cb(null, module.FourOhFour)
           ).catch(errorLoading(cb));
         }
       }
@@ -281,11 +284,10 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
     // TODO: Why is this happening? Started after TSC 2.4 upgrade.
     //       Let's re-investigate after our deps are upgraded.
     //       - RC 30 Jun 17
-    let Wow = Provider as any;
-    return <Wow store={(store as any)}>
+    return <Provider store={store}>
       <Router history={history}>
         {this.routes}
       </Router>
-    </Wow>;
+    </Provider>;
   }
 }

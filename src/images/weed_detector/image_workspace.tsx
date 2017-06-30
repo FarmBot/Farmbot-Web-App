@@ -6,6 +6,7 @@ import { HSV } from "../interfaces";
 import { WeedDetectorSlider } from "./slider";
 import { TaggedImage } from "../../resources/tagged_resources";
 import { t } from "i18next";
+import * as _ from "lodash";
 
 const RANGES = {
   H: { LOWEST: 0, HIGHEST: 179 },

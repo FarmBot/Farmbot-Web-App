@@ -6,7 +6,6 @@ import {
   selectAllToolSlotPointers,
   selectAllTools,
   currentToolInSlot,
-  findSlotWhere
 } from "../resources/selectors";
 import {
   isTaggedTool,
@@ -39,13 +38,13 @@ export function mapStateToProps(props: Everything): Props {
       .value();
   };
 
-  let activeTools = _(toolSlots).map(x => x.body.tool_id).compact().value()
+  let activeTools = _(toolSlots).map(x => x.body.tool_id).compact().value();
 
   let isActive = (t: TaggedTool) => activeTools.includes(t.body.id);
 
   let getToolByToolSlotUUID = currentToolInSlot(props.resources.index);
 
-	/** Returns the current tool chosen in a slot based off the slot's id
+  /** Returns the current tool chosen in a slot based off the slot's id
 	 * and in an <FBSelect /> compatible format. */
   let getChosenToolOption = (toolSlotUUID: string | undefined) => {
     let chosenTool = toolSlotUUID && getToolByToolSlotUUID(toolSlotUUID);
@@ -61,7 +60,7 @@ export function mapStateToProps(props: Everything): Props {
     (d: DropDownItem) => {
       let tool_id = d.value ? d.value : (null as any); // Move "" to undefined;
       dispatch(edit(t, { tool_id }));
-    }
+    };
 
   return {
     toolSlots,
