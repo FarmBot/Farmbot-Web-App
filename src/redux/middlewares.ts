@@ -16,7 +16,7 @@ export let mwConfig: MiddlewareConfig[] = [
   }
   , {
     env: "development",
-    fn: require("redux-immutable-state-invariant")()
+    fn: require("redux-immutable-state-invariant").default()
   }
 ];
 

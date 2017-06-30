@@ -3,8 +3,8 @@
 // to load non-opensource tools, such as RollBar error reporting.
 declare var SHORT_REVISION: string;
 // Global variable so that the NPM_ADDON knows the version number of the FE.
-SHORT_REVISION = process.env.SHORT_REVISION;
+SHORT_REVISION = process.env.SHORT_REVISION || "";
 
 if (process.env.NPM_ADDON) {
-  require(process.env.NPM_ADDON);
+  require(process.env.NPM_ADDON as string);
 }

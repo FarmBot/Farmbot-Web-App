@@ -9,6 +9,7 @@ import { BlurableInput } from "../../ui/blurable_input";
 import { duration } from "moment";
 import { t } from "i18next";
 import { ToolTips } from "../../constants";
+import * as _ from "lodash";
 
 export function BulkSchedulerWidget(props: BulkEditorProps) {
   let { dispatch, sequences, selectedSequence, dailyOffsetMs } = props;

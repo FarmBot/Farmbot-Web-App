@@ -9,16 +9,19 @@ import "./npm_addons";
 import { stopIE, attachToRoot } from "./util";
 
 stopIE();
-
+interface DebugStuff {
+  ip_address: string;
+}
 let r = (process.env.REVISION as string) || "REVISION INFO NOT AVAILABLE";
 console.log(r);
 
 /** For external device debugging purposes
  * See https://github.com/FarmBot/farmbot-web-frontend for details. */
-if (process.env.CONFIG
-  && process.env.CONFIG.ip_address
+let hmm = process.env.CONFIG as DebugStuff | undefined;
+if (hmm
+  && hmm.ip_address
   && process.env.NODE_ENV !== "production") {
-  let ip = process.env.CONFIG.ip_address;
+  let ip = hmm.ip_address;
   let script = document.createElement("script");
   script.src = `http://${ip}:8081/target/target-script-min.js#anonymous`;
   document.body.appendChild(script);
