@@ -82,13 +82,13 @@
   version "4.0.33"
   resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.33.tgz#ee45696b067e4bdf15c3956710a4c36c17d8f8f0"
 
-"@types/history@^2.0.39":
-  version "2.0.48"
-  resolved "https://registry.yarnpkg.com/@types/history/-/history-2.0.48.tgz#7e2868c3ad73d83c482f1d68f148c4fdc79c8a79"
-
 "@types/history@^3":
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-3.2.1.tgz#0039ab0e0be2a0cc22bac171d27a44588103d123"
+
+"@types/history@^4.6.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@types/history/-/history-4.6.0.tgz#093d67ed780d889c9543f6dca24ebee0b6b9fc45"
 
 "@types/i18next@^2.3.32":
   version "2.3.38"
