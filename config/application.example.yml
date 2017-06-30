@@ -6,7 +6,8 @@
 # You will hit issues if any of these are set to the wrong value.
 # Please read each line of this file before starting the server.
 #
-#  =============================================================================
+#  PLEASE READ ALL ENTRIES.
+# =============================================================================
 #
 # Self hosting users can safely delete this (a new key will be created).
 # This key is used to exchange secrets between bots and MQTT servers (important
@@ -19,8 +20,7 @@ RSA_KEY: "Change this! Keys look like `-----BEGIN RSA .........`"
 # Otherwise, not required and CAN BE REMOVED.
 ACME_SECRET: "-----"
 # If your server is on a domain (eg: my-own-farmbot.com), put it here.
-# 0.0.0.0 is a good value because it exposes all IPs on your machine.
-# DONT USE `localhost`. USE A REAL IP!
+# DONT USE `localhost`. USE A REAL IP OR DOMAIN!
 API_HOST: "12.34.56.78"
 # 3000 for local development. 443 is using SSL. You will need `sudo` to use PORT
 # 80 on most systems.
