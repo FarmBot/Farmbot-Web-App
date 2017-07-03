@@ -73,7 +73,7 @@ export class WeedDetector
           <TitleBar
             onDeletionClick={this.clearWeeds}
             deletionProgress={this.state.deletionProgress}
-            onSave={() => { throw new Error("NEVER @@") }}
+            onSave={() => { console.log("TODO"); }}
             onTest={this.test}
             title={"Weed Detector"}
             help={t(ToolTips.WEED_DETECTOR)}
