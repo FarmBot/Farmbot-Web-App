@@ -40,7 +40,7 @@ export class WeedDetector
     H: ["CAMERA_CALIBRATION_H_LO", "CAMERA_CALIBRATION_H_HI"],
     S: ["CAMERA_CALIBRATION_S_LO", "CAMERA_CALIBRATION_S_HI"],
     V: ["CAMERA_CALIBRATION_V_LO", "CAMERA_CALIBRATION_V_LO"]
-  }
+  };
 
   test = () => {
     let settings = this.props.env;

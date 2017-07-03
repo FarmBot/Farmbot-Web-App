@@ -68,7 +68,7 @@ export class API {
             Tried to access API before URL was resolved.
             Call API.setBaseUrl() before using API.current .`);
     }
-  };
+  }
 
   /** "https:" or "http:". NO "//"! */
   private readonly protocol: ProtocolString;
@@ -97,31 +97,31 @@ export class API {
   }
 
   /** http://localhost:3000 */
-  get baseUrl() { return `${this.protocol}//${this.host}`; };
+  get baseUrl() { return `${this.protocol}//${this.host}`; }
   /** /api/tokens/ */
-  get tokensPath() { return `${this.baseUrl}/api/tokens/`; };
+  get tokensPath() { return `${this.baseUrl}/api/tokens/`; }
   /** /api/password_resets/ */
-  get passwordResetPath() { return `${this.baseUrl}/api/password_resets/`; };
+  get passwordResetPath() { return `${this.baseUrl}/api/password_resets/`; }
   /** /api/device/ */
-  get devicePath() { return `${this.baseUrl}/api/device/`; };
+  get devicePath() { return `${this.baseUrl}/api/device/`; }
   /** /api/users/ */
-  get usersPath() { return `${this.baseUrl}/api/users/`; };
+  get usersPath() { return `${this.baseUrl}/api/users/`; }
   /** /api/peripherals/ */
-  get peripheralsPath() { return `${this.baseUrl}/api/peripherals/`; };
+  get peripheralsPath() { return `${this.baseUrl}/api/peripherals/`; }
   /** /api/farm_events/ */
-  get farmEventsPath() { return `${this.baseUrl}/api/farm_events/`; };
+  get farmEventsPath() { return `${this.baseUrl}/api/farm_events/`; }
   /** /api/regimens/ */
-  get regimensPath() { return `${this.baseUrl}/api/regimens/`; };
+  get regimensPath() { return `${this.baseUrl}/api/regimens/`; }
   /** /api/sequences/ */
-  get sequencesPath() { return `${this.baseUrl}/api/sequences/`; };
+  get sequencesPath() { return `${this.baseUrl}/api/sequences/`; }
   /** /api/tools/ */
-  get toolsPath() { return `${this.baseUrl}/api/tools/`; };
+  get toolsPath() { return `${this.baseUrl}/api/tools/`; }
   /** /api/images/ */
-  get imagesPath() { return `${this.baseUrl}/api/images/`; };
+  get imagesPath() { return `${this.baseUrl}/api/images/`; }
   /** /api/points/ */
-  get pointsPath() { return `${this.baseUrl}/api/points/`; };
+  get pointsPath() { return `${this.baseUrl}/api/points/`; }
   /** /api/points/search */
-  get pointSearchPath() { return `${this.pointsPath}/search/`; };
+  get pointSearchPath() { return `${this.pointsPath}/search/`; }
   /** /api/logs */
-  get logsPath() { return `${this.baseUrl}/api/logs/`; };
+  get logsPath() { return `${this.baseUrl}/api/logs/`; }
 }

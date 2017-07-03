@@ -176,8 +176,8 @@ export function save(input: TaggedDevice) {
     return Axios
       .put<User>(API.current.devicePath, input.body)
       .then(resp => dispatch({ type: "SAVE_DEVICE_OK", payload: resp.data }))
-      .catch(resp => error("Error saving device settings."))
-  }
+      .catch(resp => error("Error saving device settings."));
+  };
 }
 
 /**
@@ -193,7 +193,7 @@ export function changeDevice(device: TaggedDevice,
   return function (dispatch, getState) {
     dispatch(edit(device, update));
     dispatch(save(getDeviceAccountSettings(getState().resources.index)));
-  }
+  };
 }
 
 
@@ -208,7 +208,7 @@ export function botConfigChange(key: configKey, value: number) {
     .current
     .updateMcu({ [key]: value })
     .then(_.noop, commandErr(noun));
-};
+}
 
 export function settingToggle(name: configKey, bot: BotState) {
   let noun = "Setting toggle";
@@ -218,7 +218,7 @@ export function settingToggle(name: configKey, bot: BotState) {
       [name]: ((bot.hardware.mcu_params)[name] === 0) ? ON : OFF
     })
     .then(_.noop, commandErr(noun));
-};
+}
 
 export function moveRelative(props: MoveRelProps) {
   return devices
@@ -310,7 +310,7 @@ export function connectDevice(token: string): {} | ((dispatch: Function) => any)
         });
       }, (err) => dispatch(fetchDeviceErr(err)));
   };
-};
+}
 
 function fetchDeviceErr(err: Error) {
   return {
@@ -321,17 +321,17 @@ function fetchDeviceErr(err: Error) {
 
 let startUpdate = (dispatch: Function) => {
   dispatch({ type: "SETTING_UPDATE_START", payload: undefined });
-}
+};
 
 let updateOK = (dispatch: Function, noun: string) => {
   dispatch({ type: "SETTING_UPDATE_END", payload: undefined });
   commandOK(noun);
-}
+};
 
 let updateNO = (dispatch: Function, noun: string) => {
   dispatch({ type: "SETTING_UPDATE_END", payload: undefined });
   commandErr(noun);
-}
+};
 
 export function updateMCU(key: configKey, val: string) {
   let noun = "configuration update";
@@ -342,7 +342,7 @@ export function updateMCU(key: configKey, val: string) {
       .updateMcu({ [key]: val })
       .then(() => updateOK(dispatch, noun))
       .catch(() => updateNO(dispatch, noun));
-  }
+  };
 }
 
 export function updateConfig(config: Configuration) {
@@ -353,7 +353,7 @@ export function updateConfig(config: Configuration) {
       .updateConfig(config)
       .then(() => updateOK(dispatch, noun))
       .catch(() => updateNO(dispatch, noun));
-  }
+  };
 }
 
 export function changeStepSize(integer: number) {
@@ -369,15 +369,15 @@ const TOAST: ALLOWED_CHANNEL_NAMES = "toast";
 function maybeShowLog(log: Log) {
   let chanList = _.get(log, CHANNELS, ["ERROR FETCHING CHANNELS"]);
   let t = log.meta.type as ALLOWED_MESSAGE_TYPES;
-  const TITLE = "New message from bot"
+  const TITLE = "New message from bot";
   if (chanList.includes(TOAST)) {
     switch (t) {
       case "success":
-        return success(log.message, TITLE)
+        return success(log.message, TITLE);
       case "busy":
       case "warn":
       case "error":
-        return error(log.message, TITLE)
+        return error(log.message, TITLE);
       case "fun":
       case "info":
       default:
@@ -387,7 +387,7 @@ function maybeShowLog(log: Log) {
 }
 
 export function setSyncStatus(payload: SyncStatus) {
-  return { type: "SET_SYNC_STATUS", payload }
+  return { type: "SET_SYNC_STATUS", payload };
 }
 
 function badVersion() {

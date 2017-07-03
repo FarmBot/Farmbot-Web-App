@@ -325,7 +325,7 @@ export let currentToolInSlot = (index: ResourceIndex) =>
 /** FINDS: all tagged resources with particular ID */
 export function findAllById(i: ResourceIndex, ids: number[], k: ResourceName) {
   let output: TaggedResource[] = [];
-  findAll(i, k).map(x => x.kind === k ? output.push(x) : "")
+  findAll(i, k).map(x => x.kind === k ? output.push(x) : "");
   return output;
 }
 
@@ -338,7 +338,7 @@ export function toolsInUse(index: ResourceIndex): TaggedTool[] {
 export let byId = <T extends TaggedResource>(name: ResourceName) =>
   (index: ResourceIndex, id: number): T | undefined => {
     let tools = findAll(index, name);
-    let f = (x: TaggedResource) => (x.kind === name) && (x.body.id === id)
+    let f = (x: TaggedResource) => (x.kind === name) && (x.body.id === id);
     // Maybe we should add a throw here?
     return tools.filter(f)[0] as T | undefined;
   };
@@ -403,14 +403,14 @@ export let findSlotByToolId = (index: ResourceIndex, tool_id: number) => {
     if (x && isTaggedToolSlotPointer(x)) {
       return x.body.tool_id === tool_id;
     }
-  }
+  };
   let tts = where(index, { tool_id: tool.body.id }).filter(filter)[0];
   if (tts && isTaggedToolSlotPointer(tts) && sanityCheck(tts)) {
     return tts;
   } else {
     return undefined;
   }
-}
+};
 
 export function maybeGetSequence(index: ResourceIndex,
   uuid: string | undefined): TaggedSequence | undefined {
@@ -424,7 +424,7 @@ export function maybeGetSequence(index: ResourceIndex,
 export function maybeGetRegimen(index: ResourceIndex,
   uuid: string | undefined): TaggedRegimen | undefined {
   let tr = uuid && getRegimenByUUID(index, uuid);
-  if (tr && isTaggedRegimen(tr)) { return tr; };
+  if (tr && isTaggedRegimen(tr)) { return tr; }
 }
 
 /** Unlike other findById methods, this one allows undefined (missed) values */
@@ -456,7 +456,7 @@ export function maybeFetchUser(index: ResourceIndex):
 
   if (user && sanityCheck(user) && list.length > 1) {
     throw new Error("Index is broke. Expected exactly 1 user.");
-  };
+  }
   if ((list.length === 1) && user && user.kind === "users") {
     return user;
   } else {
@@ -485,7 +485,7 @@ export function joinToolsAndSlot(index: ResourceIndex): SlotWithTool[] {
       return {
         toolSlot,
         tool: maybeFindToolById(index, toolSlot.body.tool_id)
-      }
+      };
     });
 }
 

@@ -30,7 +30,7 @@
     "no-bitwise": true,
     "no-var-requires": false,
     "no-shadowed-variable": true,
-    "no-unused-variable": true,
+    "no-unused-vars": true,
     "eofline": true,
     "one-line": [
       true,

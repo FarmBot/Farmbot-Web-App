@@ -12,7 +12,7 @@ export function mapStateToProps(props: Everything): Props {
     user,
     saveUser(dispatch: Function, update: Partial<User>) {
       dispatch(edit(user, update));
-      dispatch(save(user.uuid))
+      dispatch(save(user.uuid));
     },
     enactDeletion(dispatch: Function, password: string | undefined) {
       dispatch(deleteUser({ password: password || "NEVER SET" }));

@@ -6,6 +6,6 @@ import { Session } from "../session";
 export function ready(): Thunk {
   return (dispatch, getState) => {
     let state = Session.get() || getState().auth;
-    if (state) { didLogin(state, dispatch); };
+    if (state) { didLogin(state, dispatch); }
   };
 }
