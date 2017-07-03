@@ -179,7 +179,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                   <div className="row">
                     <form onSubmit={this.submitLogin.bind(this)}>
                       <div className="col-sm-12">
-                        <div className="widget-content">
+                        <div className="widget-body">
                           <div className="input-group">
                             <label>{t("Email")}</label>
                             <input type="email"
@@ -245,7 +245,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                   <div className="row">
                     <form onSubmit={this.submitForgotPassword.bind(this)}>
                       <div className="col-sm-12">
-                        <div className="widget-content">
+                        <div className="widget-body">
                           <div className="input-group">
                             <label>{t("Enter Email")}</label>
                             <input type="email"
@@ -281,7 +281,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                 <div className="row">
                   <div className="col-sm-12">
                     <form onSubmit={this.submitRegistration.bind(this)} >
-                      <div className="widget-content">
+                      <div className="widget-body">
                         <div className="input-group">
                           <label>{t("Email")} </label>
                           <input type="email" onChange={this.set("regEmail").bind(this)} ></input>

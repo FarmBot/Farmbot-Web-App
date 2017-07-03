@@ -79,6 +79,6 @@ export class WebcamPanel
         </div>
       }
       {showUrl(url, dirty)}
-    </Widget>
+    </Widget>;
   }
 }

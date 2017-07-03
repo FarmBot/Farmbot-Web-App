@@ -233,23 +233,12 @@ fieldset {
   padding-left: 4rem !important;
 }
 
-ul {
-  padding-left: 15px;
-}
-
 .step-drag-ghost-image {
   max-width: 150px;
 }
 
 .step-drag-ghost-image-big {
   max-width: 400px;
-}
-
-.peripherals-widget,
-.tools-widget {
-  .widget-content .row {
-    margin-bottom: 0.8rem;
-  }
 }
 
 h3 {
@@ -283,13 +272,6 @@ input:disabled {
 ul {
   list-style-type: none !important;
   padding: 0;
-}
-
-.devices-pad {
-  p,
-  button {
-    margin-bottom: 1rem !important;
-  }
 }
 
 .select {

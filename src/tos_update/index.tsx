@@ -105,7 +105,7 @@ export class Wow extends React.Component<Props, Partial<State>> {
               <div className="row">
                 <form onSubmit={this.submit}>
                   <div className="col-sm-12">
-                    <div className="widget-content">
+                    <div className="widget-body">
                       <div className="input-group">
                         <p>
                           {t("Something went wrong while rendering this page.")}
@@ -143,7 +143,7 @@ export class Wow extends React.Component<Props, Partial<State>> {
             <div className="row">
               <form onSubmit={this.submit}>
                 <div className="col-sm-12">
-                  <div className="widget-content">
+                  <div className="widget-body">
                     <div className="input-group">
                       <label> {t("Email")} </label>
                       <input type="email"

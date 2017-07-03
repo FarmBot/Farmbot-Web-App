@@ -9,7 +9,7 @@ import { AuthState } from "./auth/interfaces";
  * IF YOU BREAK THIS FUNCTION, YOU BREAK *ALL* NEW USER REGISTRATIONS.
  */
 export async function verify() {
-  const token = getParam('token');
+  const token = getParam("token");
   const url = API.fetchBrowserLocation();
   try {
     let { data } = await put<AuthState>(url + "/api/users/verify/" + token);
