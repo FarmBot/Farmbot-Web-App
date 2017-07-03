@@ -123,6 +123,26 @@
   }
 }
 
+.block {
+  height: 3.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  &:hover {
+    .block-control {
+      transition: all 0.2s ease-out;
+      opacity: 1;
+    }
+  }
+}
+
+.block-control {
+  transition: all 0.2s ease-out;
+  opacity: 0;
+  float: right;
+  font-size: 1.4rem !important;
+  padding-left: 1rem;
+}
+
 .fb-toggle-button {
   height: 1.8rem !important;
   position: relative;
@@ -225,11 +245,5 @@
     &:hover {
       background: darken($magenta, 5%) !important;
     }
-  }
-}
-
-@media (max-width: 568px) {
-  .plus-button {
-    margin: 0 auto;
   }
 }

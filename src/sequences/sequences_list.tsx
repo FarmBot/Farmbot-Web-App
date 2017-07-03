@@ -11,14 +11,7 @@ import { t } from "i18next";
 
 let buttonList = (dispatch: Function) =>
   (ts: TaggedSequence, index: number) => {
-    let css = [
-      "fb-button",
-      "block-wrapper",
-      "block",
-      "full-width",
-      "text-left",
-      `${ts.body.color || "purple"}`,
-      "block-header"].join(" ");
+    let css = `fb-button block full-width ${ts.body.color || "purple"}`;
     let click = () => { dispatch(selectSequence(ts.uuid)); };
     let name = ts.body.name + (ts.dirty ? "*" : "");
     let { uuid } = ts;
@@ -34,9 +27,9 @@ let buttonList = (dispatch: Function) =>
       return <button
         key={uuid}
         onClick={click}
-        className={css}>
+        className={css}
+      >
         {name}
-        <i className="fa fa-pencil block-control" />
       </button>;
     }
   };
