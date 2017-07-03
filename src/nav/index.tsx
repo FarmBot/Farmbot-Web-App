@@ -47,10 +47,10 @@ let DropDown = ({ user, onClick }: DropDownProps) => {
           </li>
         </ul>
         <div className="version-links">
-          <span>{t("Frontend")}:
-            <a href="https://github.com/FarmBot/farmbot-web-frontend"
+          <span>{t("Application")}:
+            <a href="https://github.com/FarmBot/Farmbot-Web-API"
               target="_blank">
-              {process.env.SHORT_REVISION}
+              {(process.env.SHORT_REVISION || "NONE").slice(0, 8)}
             </a>
           </span>
         </div>
@@ -102,7 +102,7 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
     updatePageInfo(pageName);
 
     let { toggleMobileNav, toggleTicker, logout } = this;
-    let user = this.props.user
+    let user = this.props.user;
     return <div className="nav-wrapper">
       <nav role="navigation">
         <button

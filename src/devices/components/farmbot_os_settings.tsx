@@ -71,7 +71,7 @@ export class FarmbotOsSettings
       return `Note: The selected timezone for your FarmBot is different than
         your local browser time.`;
     } else {
-      return ""
+      return "";
     }
   }
 
