@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170629160248) do
+ActiveRecord::Schema.define(version: 20170703010946) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,7 +36,7 @@ ActiveRecord::Schema.define(version: 20170629160248) do
     t.string "webcam_url"
     t.integer "max_log_count", default: 100
     t.integer "max_images_count", default: 100
-    t.string "timezone"
+    t.string "timezone", limit: 280
     t.index ["timezone"], name: "index_devices_on_timezone"
   end
 
@@ -46,7 +46,7 @@ ActiveRecord::Schema.define(version: 20170629160248) do
     t.datetime "end_time"
     t.integer "repeat"
     t.string "time_unit"
-    t.string "executable_type"
+    t.string "executable_type", limit: 280
     t.integer "executable_id"
     t.index ["device_id"], name: "index_farm_events_on_device_id"
     t.index ["executable_type", "executable_id"], name: "index_farm_events_on_executable_type_and_executable_id"
@@ -82,7 +82,7 @@ ActiveRecord::Schema.define(version: 20170629160248) do
   create_table "logs", id: :serial, force: :cascade do |t|
     t.text "message"
     t.text "meta"
-    t.text "channels"
+    t.string "channels", limit: 280
     t.integer "device_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -93,14 +93,14 @@ ActiveRecord::Schema.define(version: 20170629160248) do
     t.integer "device_id"
     t.integer "pin"
     t.integer "mode"
-    t.string "label"
+    t.string "label", limit: 280
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["device_id"], name: "index_peripherals_on_device_id"
   end
 
   create_table "plants", id: :serial, force: :cascade do |t|
-    t.string "openfarm_slug", default: "50", null: false
+    t.string "openfarm_slug", limit: 280, default: "50", null: false
     t.datetime "created_at"
     t.index ["created_at"], name: "index_plants_on_created_at"
   end
@@ -115,7 +115,7 @@ ActiveRecord::Schema.define(version: 20170629160248) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "name", default: "untitled", null: false
-    t.string "pointer_type", null: false
+    t.string "pointer_type", limit: 280, null: false
     t.integer "pointer_id", null: false
     t.index ["device_id"], name: "index_points_on_device_id"
     t.index ["meta"], name: "index_points_on_meta", using: :gin
@@ -132,7 +132,7 @@ ActiveRecord::Schema.define(version: 20170629160248) do
 
   create_table "regimens", id: :serial, force: :cascade do |t|
     t.string "color"
-    t.string "name"
+    t.string "name", limit: 280
     t.integer "device_id"
     t.index ["device_id"], name: "index_regimens_on_device_id"
   end
@@ -150,7 +150,7 @@ ActiveRecord::Schema.define(version: 20170629160248) do
     t.integer "device_id"
     t.string "name", null: false
     t.string "color"
-    t.string "kind", default: "sequence"
+    t.string "kind", limit: 280, default: "sequence"
     t.text "args"
     t.text "body"
     t.datetime "updated_at"
@@ -175,7 +175,7 @@ ActiveRecord::Schema.define(version: 20170629160248) do
   end
 
   create_table "tools", id: :serial, force: :cascade do |t|
-    t.string "name"
+    t.string "name", limit: 280
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "device_id"
@@ -185,7 +185,7 @@ ActiveRecord::Schema.define(version: 20170629160248) do
   create_table "users", id: :serial, force: :cascade do |t|
     t.integer "device_id"
     t.string "name"
-    t.string "email", default: "", null: false
+    t.string "email", limit: 280, default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.integer "sign_in_count", default: 0, null: false
     t.datetime "current_sign_in_at"
