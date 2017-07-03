@@ -179,7 +179,12 @@ function updateViaAjax(index: ResourceIndex,
 }
 
 
-let MUST_CONFIRM_LIST: ResourceName[] = ["farm_events", "points"];
+let MUST_CONFIRM_LIST: ResourceName[] = [
+  "farm_events",
+  "points",
+  "sequences",
+  "regimens"
+];
 let confirmationChecker = (resource: TaggedResource) =>
   <T>(proceed: () => T): T | undefined => {
     if (MUST_CONFIRM_LIST.includes(resource.kind)) {
