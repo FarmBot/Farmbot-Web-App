@@ -18,3 +18,12 @@
     transform: rotate(360deg) scale(1);
   }
 }
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-3px);
+  }
+}

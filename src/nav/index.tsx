@@ -77,7 +77,6 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
   toggleMobileNav = () => {
     let { mobileNavExpanded } = this.state;
     /** Don't let user scroll when nav is open */
-    // document.body.classList.toggle("freeze");
     this.setState({ mobileNavExpanded: !mobileNavExpanded });
   }
 

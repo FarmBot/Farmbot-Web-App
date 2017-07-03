@@ -17,22 +17,6 @@ input[type=time] {
   border-radius: 0;
 }
 
-@media (max-width: 830px) {
-  .app {
-    overflow: hidden !important;
-  }
-}
-
-body {
-  background: $gray !important;
-  &.freeze {
-    height: 100% !important;
-    overflow: hidden !important;
-    width: 100% !important;
-    position: fixed !important;
-  }
-}
-
 .char-limit {
   float: right;
   font-size: 1.4rem;
@@ -49,12 +33,6 @@ body {
   width: 100%;
   max-width: 160rem;
   animation: page-transition 0.2s ease-in-out;
-}
-
-@media (max-width: 767px) {
-  .all-content-wrapper {
-    padding: 2.5rem 0rem 0rem 0rem;
-  }
 }
 
 a {
