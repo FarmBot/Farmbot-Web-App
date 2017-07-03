@@ -65,17 +65,34 @@ class NiceResponse
   end
 
   def pretty_url
-    r.method + " " + r.path.first(45)
+    binding.pry if (r.path || "").include?("search")
+    r.method + " " + r.path.first(45) + query
   end
 
   def has_params?
     r.params.except(:controller, :action, :format, :id).keys.length > 0
   end
 
+  def has_body?
+    r.body.size > 2
+  end
+
   def display_body
-    p = r
-      .params
-      .except(:controller, :action, :format, :id, :user_id, :device_id)
-    JSON.pretty_generate(p)
+    if has_body?
+      raise "BRB"
+    else
+      JSON.pretty_generate(r
+        .params
+        .except(:controller, :action, :format, :id, :user_id, :device_id))
+    end
+  end
+
+  def query
+    if r.query_string.present?
+      "?" + r.query_string.first(45)
+    else
+      ""
+    end
+
   end
 end

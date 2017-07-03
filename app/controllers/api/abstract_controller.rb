@@ -10,7 +10,9 @@ module Api
     skip_before_action :verify_authenticity_token
     after_action :skip_set_cookies_header
     rescue_from(JWT::VerificationError) { |e| auth_err }
-
+    rescue_from(ActiveRecord::ValueTooLong) do
+      sorry "Please use reasonable lengths on string inputs", 422
+    end
     rescue_from Errors::Forbidden do |exc|
       sorry "You can't perform that action. #{exc.message}", 403
     end

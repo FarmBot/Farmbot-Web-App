@@ -58,6 +58,9 @@ export function mapStateToProps(props: Everything): Props {
   let changeToolSlot = (t: TaggedToolSlotPointer,
     dispatch: Function) =>
     (d: DropDownItem) => {
+      // THIS IS IMPORTANT:
+      // If you remove the `any`, the tool will be serialized wrong and
+      // cause errors.
       let tool_id = d.value ? d.value : (null as any); // Move "" to undefined;
       dispatch(edit(t, { tool_id }));
     };
@@ -68,7 +71,6 @@ export function mapStateToProps(props: Everything): Props {
     getToolSlots,
     getToolOptions,
     getChosenToolOption,
-    dispatch: props.dispatch,
     getToolByToolSlotUUID,
     changeToolSlot,
     isActive
