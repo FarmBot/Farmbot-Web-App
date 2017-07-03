@@ -29,5 +29,5 @@ export class ColorPicker extends React.Component<PickerProps, PickerState> {
         {colors.map(renderColors)}
       </div>
     </div>;
-  };
+  }
 }

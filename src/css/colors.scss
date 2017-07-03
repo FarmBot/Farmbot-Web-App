@@ -36,22 +36,6 @@ $light_red: #e99;
 $red: #e66;
 $dark_red: #f00;
 $darkest_red: #900;
-%extend_1 {
-  background-color: $white;
-  padding-top: 15px;
-  padding-bottom: 15px;
-  margin-bottom: 2px;
-  box-shadow: 0 4px 10px $translucent;
-}
-
-%extend_2 {
-  background-color: $light_gray;
-  color: $black;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px $translucent;
-  transition: all 0.2s ease-out;
-}
-
 .dark-gray {
   background-color: $dark_gray !important;
 }
