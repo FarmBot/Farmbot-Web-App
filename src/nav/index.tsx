@@ -15,10 +15,10 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
   logout = () => Session.clear(true);
 
   render() {
-    // The way our app is laid out, we'll pretty much always want this bit.
+    /** The way our app is laid out, we'll pretty much always want this bit. */
     let pageName = history.getCurrentLocation().pathname.split("/")[2] || "";
 
-    // Change document meta title on every route change.
+    /** Change document meta title on every route change. */
     updatePageInfo(pageName);
 
     return <div className="nav-wrapper">

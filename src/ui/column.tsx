@@ -20,14 +20,18 @@ interface ColumnProps {
   mdOffset?: number;
   /** {lg-col-size-offset} */
   lgOffset?: number;
+  /** Default hidden prop for react components. */
   hidden?: boolean;
   key?: string | number;
   className?: string;
 }
 
 export function Col(props: ColumnProps) {
-  let classNames = parseClassNames(props, "");
-  return <div className={classNames} hidden={!!props.hidden}>
+  let classNames = parseClassNames(props, null);
+  return <div
+    className={classNames}
+    hidden={!!props.hidden}
+  >
     {props.children}
   </div>;
 }
