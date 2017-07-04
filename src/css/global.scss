@@ -1,5 +1,9 @@
 /* Styles used throughout the frontend */
 
+body {
+  background: $gray;
+}
+
 .ticker-list::-webkit-scrollbar {
   display: none;
 }
@@ -27,9 +31,7 @@ input[type=time] {
 }
 
 .all-content-wrapper {
-  padding: 3rem 3rem 0rem 3rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
   width: 100%;
   max-width: 160rem;
   animation: page-transition 0.2s ease-in-out;

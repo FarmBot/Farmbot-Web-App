@@ -9,7 +9,7 @@ export interface NavButtonProps {
   onClick?: () => void;
 }
 
-export interface DropDownProps {
+export interface AdditonalMenuProps {
   user: TaggedUser | undefined;
   onClick?: () => void;
 }
