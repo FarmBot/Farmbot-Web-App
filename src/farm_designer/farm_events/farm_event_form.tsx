@@ -192,7 +192,7 @@ export class EditFEForm extends React.Component<Props, State> {
     let isSaving = fe.saving;
     let isDirty = fe.dirty || this.state.localCopyDirty;
     let isSaved = !isSaving && !isDirty;
-    let options = _.indexBy(this.props.repeatOptions, "value");
+    let options = _.keyBy(this.props.repeatOptions, "value");
 
     return <div className="panel-container magenta-panel add-farm-event-panel">
       <div className="panel-header magenta-panel">

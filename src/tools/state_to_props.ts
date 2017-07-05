@@ -6,7 +6,6 @@ import {
   selectAllToolSlotPointers,
   selectAllTools,
   currentToolInSlot,
-  findSlotWhere
 } from "../resources/selectors";
 import {
   isTaggedTool,
@@ -39,13 +38,13 @@ export function mapStateToProps(props: Everything): Props {
       .value();
   };
 
-  let activeTools = _(toolSlots).map(x => x.body.tool_id).compact().value()
+  let activeTools = _(toolSlots).map(x => x.body.tool_id).compact().value();
 
   let isActive = (t: TaggedTool) => activeTools.includes(t.body.id);
 
   let getToolByToolSlotUUID = currentToolInSlot(props.resources.index);
 
-	/** Returns the current tool chosen in a slot based off the slot's id
+  /** Returns the current tool chosen in a slot based off the slot's id
 	 * and in an <FBSelect /> compatible format. */
   let getChosenToolOption = (toolSlotUUID: string | undefined) => {
     let chosenTool = toolSlotUUID && getToolByToolSlotUUID(toolSlotUUID);
@@ -59,9 +58,12 @@ export function mapStateToProps(props: Everything): Props {
   let changeToolSlot = (t: TaggedToolSlotPointer,
     dispatch: Function) =>
     (d: DropDownItem) => {
-      let tool_id = d.value ? d.value : (null as any); // Move "" to undefined;
+      // THIS IS IMPORTANT:
+      // If you remove the `any`, the tool will be serialized wrong and
+      // cause errors.
+      let tool_id = d.value ? d.value : (null as any);
       dispatch(edit(t, { tool_id }));
-    }
+    };
 
   return {
     toolSlots,
@@ -69,10 +71,10 @@ export function mapStateToProps(props: Everything): Props {
     getToolSlots,
     getToolOptions,
     getChosenToolOption,
-    dispatch: props.dispatch,
     getToolByToolSlotUUID,
     changeToolSlot,
-    isActive
+    isActive,
+    dispatch: _.noop
   };
 
 }

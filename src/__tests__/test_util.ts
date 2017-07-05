@@ -16,7 +16,7 @@ describe("util", () => {
       "number": 0,
       "string": "hello",
       "boolean": false,
-      "other": () => { "not allowed!" }
+      "other": () => { "not allowed!"; }
     };
 
     it("fetches null", () => {
@@ -101,7 +101,7 @@ describe("util", () => {
     it("determines non-matches", () => {
       expect(oneOf(["foo"], "QMMADSDASDASD")).toBeFalsy();
       expect(oneOf(["foo", "baz"], "nothing to see here.")).toBeFalsy();
-    })
+    });
   });
 
   describe("semver compare", () => {
@@ -132,5 +132,5 @@ describe("util", () => {
       expect(semverCompare("2.0.2", "1.1.9"))
         .toBe(SemverResult.LEFT_IS_GREATER);
     });
-  })
+  });
 });

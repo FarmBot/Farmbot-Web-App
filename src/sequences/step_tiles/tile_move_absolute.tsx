@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import * as React from "react";
 import { Component } from "react";
 import { StepParams } from "../interfaces";

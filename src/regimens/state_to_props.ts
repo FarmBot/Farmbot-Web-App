@@ -13,6 +13,7 @@ import { duration } from "moment";
 import * as moment from "moment";
 import { ResourceIndex } from "../resources/interfaces";
 import { randomColor } from "../util";
+import * as _ from "lodash";
 
 export function mapStateToProps(props: Everything): Props {
   let { resources, dispatch, bot } = props;
@@ -73,9 +74,9 @@ let createRows = (index: ResourceIndex, dispatch: Function, regimen: TaggedRegim
     let { time_offset } = item;
     let d = duration(time_offset);
     let { name } = sequence.body;
-    let color = sequence.body.color || randomColor()
+    let color = sequence.body.color || randomColor();
     let hhmm = moment({ hour: d.hours(), minute: d.minutes() }).format(FMT);
     let day = Math.floor(duration(time_offset).asDays()) + 1;
     return { name, hhmm, color, day, dispatch, regimen, item, sortKey: time_offset };
-  }
+  };
 

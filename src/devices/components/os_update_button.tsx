@@ -5,6 +5,7 @@ import { ToggleButton } from "../../controls/toggle_button";
 import { checkControllerUpdates, updateConfig } from "../actions";
 import { isUndefined, noop } from "lodash";
 import { semverCompare, SemverResult } from "../../util";
+import * as _ from "lodash";
 
 export let OsUpdateButton = ({ bot }: BotProp) => {
   let osUpdateBool = bot.hardware.configuration.os_auto_update;

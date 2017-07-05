@@ -21,5 +21,5 @@ export function fakeState(dispatcher: Function = noop): Everything {
     config,
     draggable,
     resources
-  }
+  };
 }

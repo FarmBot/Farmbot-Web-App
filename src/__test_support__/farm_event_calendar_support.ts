@@ -26,5 +26,5 @@ export let fake_fe = (): FarmEventWithExecutable => {
       kind: "sequence",
       args: { version: 0 }
     }
-  }
+  };
 };

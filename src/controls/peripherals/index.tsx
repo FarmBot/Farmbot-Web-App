@@ -9,6 +9,7 @@ import { PeripheralState } from "./interfaces";
 import { TaggedPeripheral } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
 import { ToolTips } from "../../constants";
+import * as _ from "lodash";
 
 export class Peripherals extends React.Component<PeripheralsProps, PeripheralState> {
   constructor() {
@@ -46,11 +47,11 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
     let pins = bot.hardware.pins;
     if (this.state.isEditing) {
       return <PeripheralForm peripherals={peripherals}
-        dispatch={dispatch} />
+        dispatch={dispatch} />;
     } else {
       return <PeripheralList peripherals={peripherals}
         dispatch={dispatch}
-        pins={pins} />
+        pins={pins} />;
     }
   }
 
@@ -59,7 +60,7 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
       uuid: "WILL_BE_CHANGED_BY_REDUCER",
       kind: "peripherals",
       body: { pin: 0, label: "New Peripheral" }
-    }
+    };
   }
 
   render() {
@@ -94,7 +95,7 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
           hidden={!isEditing}
           className="fb-button green"
           type="button"
-          onClick={() => { dispatch(init(this.emptyPeripheral())) }}>
+          onClick={() => { dispatch(init(this.emptyPeripheral())); }}>
           <i className="fa fa-plus" />
         </button>
       </WidgetHeader>
@@ -102,5 +103,5 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
         {this.showPins()}
       </WidgetBody>
     </Widget>;
-  };
+  }
 }

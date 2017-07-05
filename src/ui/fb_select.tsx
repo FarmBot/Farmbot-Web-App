@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as _ from "lodash";
 
 type OptionComponent =
   | React.ComponentClass<DropDownItem>

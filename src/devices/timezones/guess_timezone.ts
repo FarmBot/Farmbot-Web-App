@@ -1,4 +1,4 @@
-
+import * as _ from "lodash";
 /** Remove this in October 2017 - RC */
 let ONLY_ONCE = {
   need_to_talk: true

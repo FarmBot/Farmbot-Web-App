@@ -40,7 +40,7 @@ export class WeedDetector
     H: ["CAMERA_CALIBRATION_H_LO", "CAMERA_CALIBRATION_H_HI"],
     S: ["CAMERA_CALIBRATION_S_LO", "CAMERA_CALIBRATION_S_HI"],
     V: ["CAMERA_CALIBRATION_V_LO", "CAMERA_CALIBRATION_V_LO"]
-  }
+  };
 
   test = () => {
     let settings = this.props.env;
@@ -73,7 +73,7 @@ export class WeedDetector
           <TitleBar
             onDeletionClick={this.clearWeeds}
             deletionProgress={this.state.deletionProgress}
-            onSave={() => { throw new Error("NEVER @@") }}
+            onSave={() => { console.log("TODO"); }}
             onTest={this.test}
             title={"Weed Detector"}
             help={t(ToolTips.WEED_DETECTOR)}

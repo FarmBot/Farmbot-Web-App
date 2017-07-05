@@ -2,6 +2,7 @@ import * as Axios from "axios";
 import { ResourceName, DataChangeType, Dictionary } from "farmbot/dist";
 import { devices } from "./device";
 import { box } from "boxed_value";
+import * as _ from "lodash";
 
 export type Xhr = Axios.AxiosXHR<{}>;
 export let METHOD_MAP: Dictionary<DataChangeType> = {

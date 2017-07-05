@@ -52,4 +52,4 @@ export let fakeImages: TaggedImage[] = [
     },
     "uuid": "images.7.5"
   }
-]
+];

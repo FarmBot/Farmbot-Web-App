@@ -4,6 +4,7 @@ import { EditPlantInfoProps } from "../interfaces";
 import { maybeFindPlantById } from "../../resources/selectors";
 import { history } from "../../history";
 import { TaggedPlantPointer } from "../../resources/tagged_resources";
+import * as _ from "lodash";
 
 export function mapStateToProps(props: Everything): EditPlantInfoProps {
   let findPlant = (id: string | undefined) => {

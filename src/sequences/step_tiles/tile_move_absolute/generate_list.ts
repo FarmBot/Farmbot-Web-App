@@ -10,6 +10,7 @@ import { PointerType, TaggedTool } from "../../../resources/tagged_resources";
 import { DropDownItem } from "../../../ui/index";
 import { Vector3 } from "farmbot/dist";
 import { TOOL } from "./interfaces";
+import * as _ from "lodash";
 
 export function generateList(input: ResourceIndex): DropDownItem[] {
   let toolNameById = mapToolIdToName(input);
@@ -27,7 +28,7 @@ export const NAME_MAP: Record<PointerTypeName, string> = {
   "GenericPointer": "Map Point",
   "Plant": "Plant",
   "ToolSlot": "Tool Slot",
-}
+};
 
 let formatPoint = (toolNames: CowardlyDictionary<string>) =>
   (p: PointerType) => {
@@ -44,7 +45,7 @@ let formatPoint = (toolNames: CowardlyDictionary<string>) =>
       value: "" + id,
       headingId: pointer_type
     };
-  }
+  };
 
 let formatTools = (t: TaggedTool) => {
   let { id, name } = t.body;
@@ -54,7 +55,7 @@ let formatTools = (t: TaggedTool) => {
     value: "" + id,
     headingId: TOOL
   };
-}
+};
 
 /** Uniformly generate a label for things that have an X/Y/Z value. */
 export function dropDownName(kind: string, name: string, v?: Vector3) {

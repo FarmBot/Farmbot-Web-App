@@ -5,6 +5,7 @@ import {
 } from "../resources/selectors";
 import { Props } from "./interfaces";
 import { maybeFetchUser } from "../resources/selectors";
+import * as _ from "lodash";
 
 export function mapStateToProps(props: Everything): Props {
   let peripherals = _.uniq(selectAllPeripherals(props.resources.index));

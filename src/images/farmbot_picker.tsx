@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Hue, Saturation } from "react-color/lib/components/common";
 import { FarmbotPickerProps } from "./index";
+import * as _ from "lodash";
 
 /** Wrapper class around `react-color`'s `<Saturation />` and `<Hue />`.
  *  Add an extra white box feature for showing user weed detection settings.
@@ -46,7 +47,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
   }
 
   saturationboxCSS = (): React.CSSProperties => {
-    const MAX = 255
+    const MAX = 255;
     let [s0, s1] = this.props.s;
     let [v0, v1] = this.props.v;
 

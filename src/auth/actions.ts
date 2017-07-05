@@ -24,7 +24,7 @@ export function didLogin(authState: AuthState, dispatch: Function) {
 
   Sync.fetchSyncData(dispatch);
   dispatch(connectDevice(authState.token.encoded));
-};
+}
 
 // We need to handle OK logins for numerous use cases (Ex: login & registration)
 function onLogin(dispatch: Function) {
@@ -34,7 +34,7 @@ function onLogin(dispatch: Function) {
     didLogin(data, dispatch);
     push("/app/controls");
   };
-};
+}
 
 export function login(username: string, password: string, url: string): Thunk {
   return dispatch => {

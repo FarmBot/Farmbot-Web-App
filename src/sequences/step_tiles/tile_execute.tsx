@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import * as React from "react";
 import { splice, remove } from "../step_tiles/index";
 import { StepParams } from "../interfaces";

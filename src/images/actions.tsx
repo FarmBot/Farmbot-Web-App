@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import * as Axios from "axios";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
@@ -49,7 +50,7 @@ export function resetWeedDetection(cb: ProgressCallback): Thunk {
       throw e;
     }
   };
-};
+}
 
 const value = "PLANT_DETECTION_selected_image";
 
@@ -66,6 +67,6 @@ export function detectWeeds(imageId: number) {
           .execScript(proc.uuid, [{
             kind: "pair", args: { value, label: "" + imageId }
           }]);
-      })
-  }
+      });
+  };
 }

@@ -17,12 +17,12 @@ module Api
     end
 
     def auth_params
-      params[:user] ||= {}
+      user = params.as_json.deep_symbolize_keys.fetch(:user, {})
 
-      { email:          (params[:user][:email] || "").downcase,
-        password:       params[:user][:password],
-        credentials:    params[:user][:credentials],
-        agree_to_terms: !!params[:user][:agree_to_terms],
+      { email:          user.fetch(:email, "").downcase,
+        password:       user[:password],
+        credentials:    user[:credentials],
+        agree_to_terms: !!user[:agree_to_terms],
         host:           $API_URL }
     end
   end

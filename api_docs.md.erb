@@ -3,7 +3,7 @@
 <% if note.present? %>
 **Notes:** <%= note %>
 <% end %>
-<% if request.has_params? %>
+<% if request.has_params? || request.has_body? %>
 
 ### Request
 
