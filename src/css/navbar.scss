@@ -35,7 +35,7 @@ nav {
     &.active {
       font-weight: bold;
       &:after {
-        transition: all 0.6s ease;
+        transition: all 0.4s ease;
         transform: translateY(-3px);
       }
     }

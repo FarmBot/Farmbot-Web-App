@@ -1,11 +1,11 @@
 import * as React from "react";
 import { Link } from "react-router";
+import { t } from "i18next";
+import * as moment from "moment";
 import { NavBarState, NavBarProps } from "./interfaces";
 import { EStopButton } from "../devices/components/e_stop_btn";
-import { t } from "i18next";
 import { Session } from "../session";
 import { Markdown, Row, Col } from "../ui";
-import * as moment from "moment";
 import { history } from "../history";
 import { updatePageInfo } from "../util";
 import { SyncButton } from "./sync_button";
@@ -26,16 +26,22 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
       <nav role="navigation">
         <Row>
           <Col xs={12}>
-            {NavLinks(this.logout)}
-            <EStopButton
-              bot={this.props.bot}
-              user={this.props.user}
-            />
-            <SyncButton
-              bot={this.props.bot}
-              user={this.props.user}
-              dispatch={this.props.dispatch}
-            />
+            <div className="nav-group">
+              <div className="nav-left">
+                {NavLinks(this.logout)}
+              </div>
+              <div className="nav-right">
+                <EStopButton
+                  bot={this.props.bot}
+                  user={this.props.user}
+                />
+                <SyncButton
+                  bot={this.props.bot}
+                  user={this.props.user}
+                  dispatch={this.props.dispatch}
+                />
+              </div>
+            </div>
           </Col>
         </Row>
       </nav>
