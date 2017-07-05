@@ -1,7 +1,6 @@
 import { t } from "i18next";
 import { error } from "farmbot-toastr";
 import {
-  Xhr,
   METHODS,
   notifyBotOfChanges,
   METHOD_MAP,
@@ -11,9 +10,9 @@ import {
 import { API } from "./api/index";
 import { AuthState } from "./auth/interfaces";
 import * as _ from "lodash";
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
-export function responseFulfilled(input: Xhr): Xhr {
+export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   let method = input.config.method;
   if (method && METHODS.includes(method)) {
     notifyBotOfChanges(input.config.url, METHOD_MAP[method]);
