@@ -54,10 +54,11 @@ def const_reassign(target, const, value)
 end
 
 class NiceResponse
-  attr_reader :r
+  attr_reader :r, :body
 
   def initialize(r)
-    @r = r
+    @r    = r
+    @body = r.body.read
   end
 
   def path
@@ -65,7 +66,6 @@ class NiceResponse
   end
 
   def pretty_url
-    binding.pry if (r.path || "").include?("search")
     r.method + " " + r.path.first(45) + query
   end
 
@@ -78,9 +78,9 @@ class NiceResponse
   end
 
   def display_body
-    if has_body?
-      raise "BRB"
-    else
+    begin
+      JSON.parse(body)
+    rescue
       JSON.pretty_generate(r
         .params
         .except(:controller, :action, :format, :id, :user_id, :device_id))

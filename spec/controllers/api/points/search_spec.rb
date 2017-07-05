@@ -16,7 +16,7 @@ describe Api::PointsController do
       expect(response.status).to eq(200)
       expect(json.length).to eq(1)
       expect(json.first[:meta].keys).to include(:foo1)
-      
+
     end
   end
 end
