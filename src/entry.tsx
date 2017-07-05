@@ -6,13 +6,13 @@ import { ready } from "./config/actions";
 import { detectLanguage } from "./i18n";
 import * as i18next from "i18next";
 import "./npm_addons";
-import { stopIE, attachToRoot } from "./util";
+import { stopIE, attachToRoot, shortRevision } from "./util";
 
 stopIE();
 interface DebugStuff {
   ip_address: string;
 }
-let r = (process.env.REVISION as string) || "REVISION INFO NOT AVAILABLE";
+let r = shortRevision();
 console.log(r);
 
 /** For external device debugging purposes

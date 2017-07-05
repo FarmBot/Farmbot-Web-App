@@ -8,7 +8,7 @@ import { Markdown } from "../ui";
 import * as moment from "moment";
 import { SyncButton } from "./sync_button";
 import { history } from "../history";
-import { updatePageInfo } from "../util";
+import { updatePageInfo, shortRevision } from "../util";
 
 let DropDown = ({ user, onClick }: DropDownProps) => {
   // Just checking if user is logged in, otherwise nothing is returned.
@@ -50,7 +50,7 @@ let DropDown = ({ user, onClick }: DropDownProps) => {
           <span>{t("Application")}:
             <a href="https://github.com/FarmBot/Farmbot-Web-API"
               target="_blank">
-              {(process.env.SHORT_REVISION || "NONE").slice(0, 8)}
+              {shortRevision()}
             </a>
           </span>
         </div>
@@ -151,7 +151,7 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
                 <a href="https://github.com/FarmBot/farmbot-web-frontend"
               target="_blank">
               {/** SHORT_REVISION is the last frontend commit. */}
-              {process.env.SHORT_REVISION}
+              {shortRevision()}
             </a>
           </div>
         </div>

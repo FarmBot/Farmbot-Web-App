@@ -293,9 +293,9 @@ export function isUndefined(x: any): x is undefined {
  */
 export function betterCompact<T>(input: (T | undefined)[]): T[] {
   let output: T[] = [];
-  input.forEach(x => x ? output.push(x) : "")
+  input.forEach(x => x ? output.push(x) : "");
   return output;
-};
+}
 
 /** Sorts a list of tagged resources. Unsaved resource get put on the end. */
 export function sortResourcesById<T extends TaggedResource>(input: T[]): T[] {
@@ -468,6 +468,8 @@ export interface HttpData<T> extends AxiosResponse {
  * TODO: Write farmbot-resource library or something like that to do real
  *       runtime type checking.
  */
-export interface HttpPromise<T> extends Promise<HttpData<T>> {
+export interface HttpPromise<T> extends Promise<HttpData<T>> { }
 
+export function shortRevision() {
+  return (process.env.SHORT_REVISION || "NONE").slice(0, 8);
 }
