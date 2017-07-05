@@ -61,7 +61,7 @@ export function mapStateToProps(props: Everything): Props {
       // THIS IS IMPORTANT:
       // If you remove the `any`, the tool will be serialized wrong and
       // cause errors.
-      let tool_id = d.value ? d.value : (null as any); // Move "" to undefined;
+      let tool_id = d.value ? d.value : (null as any);
       dispatch(edit(t, { tool_id }));
     };
 
@@ -73,7 +73,8 @@ export function mapStateToProps(props: Everything): Props {
     getChosenToolOption,
     getToolByToolSlotUUID,
     changeToolSlot,
-    isActive
+    isActive,
+    dispatch: _.noop
   };
 
 }
