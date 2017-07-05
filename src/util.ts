@@ -8,6 +8,7 @@ import { Color, UnsafeError } from "./interfaces";
 import { box } from "boxed_value";
 import { TaggedResource } from "./resources/tagged_resources";
 import { Session } from "./session";
+import { AxiosResponse } from "axios";
 
 // http://stackoverflow.com/a/901144/1064917
 // Grab a query string param by name, because react-router-redux doesn't
@@ -454,3 +455,19 @@ function deleteAllCookies() {
 }
 
 export type Primitive = boolean | string | number;
+
+/** Axios uses `{data: any}` to describe AxiosResponse.data.
+ * This interface adds type hints.
+ * TODO: LOW HANGING FRUIT: Write user defined type guards to provide
+ * real type safety. */
+export interface HttpData<T> extends AxiosResponse {
+  data: T;
+}
+
+/** Like AxiosPromise, but holds onto type information.
+ * TODO: Write farmbot-resource library or something like that to do real
+ *       runtime type checking.
+ */
+export interface HttpPromise<T> extends Promise<HttpData<T>> {
+
+}

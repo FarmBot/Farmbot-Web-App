@@ -11,6 +11,7 @@ import {
 import { API } from "./api/index";
 import { AuthState } from "./auth/interfaces";
 import * as _ from "lodash";
+import axios, { AxiosRequestConfig } from "axios";
 
 export function responseFulfilled(input: Xhr): Xhr {
   let method = input.config.method;
@@ -57,8 +58,8 @@ export function responseRejected(x: SafeError | undefined) {
 }
 
 export function requestFulfilled(auth: AuthState) {
-  return (config: Axios.AxiosXHRConfig<{}>) => {
-    let req = config.url;
+  return (config: AxiosRequestConfig) => {
+    let req = config.url || "";
     let isAPIRequest = req.includes(API.current.baseUrl);
     if (isAPIRequest) {
       config.headers = config.headers || {};

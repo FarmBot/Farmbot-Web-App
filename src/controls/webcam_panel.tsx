@@ -9,14 +9,15 @@ import { overwrite, edit, save } from "../api/crud";
 import { API } from "../api/api";
 import { DeviceAccountSettings } from "../devices/interfaces";
 import { createOK } from "../resources/actions";
-import * as axios from "axios";
+import axios from "axios";
+import { HttpData } from "../util";
 
 export class WebcamPanel
   extends React.Component<Props, Partial<WebcamPanelState>> {
 
   state: WebcamPanelState = { isEditing: false };
 
-  toggle = () => { this.setState({ isEditing: !this.state.isEditing }); }
+  toggle = () => { this.setState({ isEditing: !this.state.isEditing }); };
 
   save = () => {
     this.props.dispatch(save(this.props.account.uuid));
@@ -29,8 +30,8 @@ export class WebcamPanel
 
   clearURL = () => {
     axios
-      .get<DeviceAccountSettings>(API.current.devicePath)
-      .then(resp => {
+      .get(API.current.devicePath)
+      .then((resp: HttpData<DeviceAccountSettings>) => {
         // TODO: We're starting to hit use cases where we need edit/undo.
         //       Revisit this one when undo/redo is implemented.
         this.props.dispatch(overwrite(this.props.account, resp.data));
@@ -79,6 +80,6 @@ export class WebcamPanel
         </div>
       }
       {showUrl(url, dirty)}
-    </Widget>
+    </Widget>;
   }
 }

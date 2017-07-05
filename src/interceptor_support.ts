@@ -4,7 +4,6 @@ import { devices } from "./device";
 import { box } from "boxed_value";
 import * as _ from "lodash";
 
-export type Xhr = Axios.AxiosXHR<{}>;
 export let METHOD_MAP: Dictionary<DataChangeType> = {
   "post": "add",
   "put": "update",

@@ -1,9 +1,9 @@
 import * as React from "react";
-import * as axios from "axios";
+import axios from "axios";
 import { t } from "i18next";
 import { error as log, success, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
-import { prettyPrintApiErrors } from "../util";
+import { prettyPrintApiErrors, HttpData } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState } from "./interfaces";
@@ -58,15 +58,15 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       url = API.fetchBrowserLocation();
     }
     API.setBaseUrl(url);
-    axios.post<AuthState>(API.current.tokensPath, payload)
-      .then(resp => {
+    axios.post(API.current.tokensPath, payload)
+      .then((resp: HttpData<AuthState>) => {
         Session.put(resp.data);
         window.location.href = "/app/controls";
-      }).catch(error => {
+      }).catch((error: Error) => {
         if (_.get(error, "response.status") === 451) {
           window.location.href = "/tos_update.html";
         }
-        log(prettyPrintApiErrors(error));
+        log(prettyPrintApiErrors(error as {}));
       });
   }
 
@@ -82,7 +82,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         agree_to_terms: agreeToTerms
       }
     };
-    axios.post<AuthState>(API.current.usersPath, form).then(resp => {
+    axios.post(API.current.usersPath, form).then(() => {
       let m = "Almost done! Check your email for the verification link.";
       success(t(m));
     }).catch(error => {
@@ -102,8 +102,8 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     e.preventDefault();
     let { email } = this.state;
     let data = { email };
-    axios.post<{}>(API.current.passwordResetPath, data)
-      .then(resp => {
+    axios.post(API.current.passwordResetPath, data)
+      .then(() => {
         success("Email has been sent.", "Forgot Password");
         this.setState({ forgotPassword: false });
       }).catch(error => {

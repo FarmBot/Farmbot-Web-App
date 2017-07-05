@@ -1,5 +1,5 @@
-import { getParam } from "./util";
-import { put } from "axios";
+import { getParam, HttpData } from "./util";
+import axios from "axios";
 import { API } from "./api/api";
 import { Session } from "./session";
 import { AuthState } from "./auth/interfaces";
@@ -9,11 +9,11 @@ import { AuthState } from "./auth/interfaces";
  * IF YOU BREAK THIS FUNCTION, YOU BREAK *ALL* NEW USER REGISTRATIONS.
  */
 export async function verify() {
-  const token = getParam('token');
+  const token = getParam("token");
   const url = API.fetchBrowserLocation();
   try {
-    let { data } = await put<AuthState>(url + "/api/users/verify/" + token);
-    Session.put(data);
+    let r: HttpData<AuthState> = await axios.put(url + "/api/users/verify/" + token);
+    Session.put(r.data);
     window.location.href = window.location.origin + "/app/controls";
   } catch (e) {
     document.write(`

@@ -6,12 +6,12 @@ import {
 } from "../resources/tagged_resources";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { API } from "./index";
-import * as Axios from "axios";
+import axios from "axios";
 import { updateOK, updateNO, destroyOK, destroyNO } from "../resources/actions";
 import { UnsafeError } from "../interfaces";
 import { findByUuid } from "../resources/reducer";
 import { generateUuid } from "../resources/util";
-import { defensiveClone } from "../util";
+import { defensiveClone, HttpData } from "../util";
 import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
 import { SequenceBodyItem } from "farmbot/dist";
@@ -98,9 +98,9 @@ export function destroy(uuid: string) {
     let maybeProceed = confirmationChecker(resource);
     return maybeProceed(() => {
       if (resource.body.id) {
-        return Axios
-          .delete<typeof resource.body>(urlFor(resource.kind) + resource.body.id)
-          .then(function (resp) {
+        return axios
+          .delete(urlFor(resource.kind) + resource.body.id)
+          .then(function (resp: HttpData<typeof resource.body>) {
             dispatch(destroyOK(resource));
           })
           .catch(function (err: UnsafeError) {
@@ -161,8 +161,8 @@ function updateViaAjax(index: ResourceIndex,
   } else {
     verb = "post";
   }
-  return Axios[verb]<typeof resource.body>(url, body)
-    .then(function (resp) {
+  return axios[verb](url, body)
+    .then(function (resp: HttpData<typeof resource.body>) {
       let r1 = defensiveClone(resource);
       let r2 = { body: defensiveClone(resp.data) };
       let newTR = _.assign({}, r1, r2);
@@ -178,13 +178,13 @@ function updateViaAjax(index: ResourceIndex,
     });
 }
 
-
 let MUST_CONFIRM_LIST: ResourceName[] = [
   "farm_events",
   "points",
   "sequences",
   "regimens"
 ];
+
 let confirmationChecker = (resource: TaggedResource) =>
   <T>(proceed: () => T): T | undefined => {
     if (MUST_CONFIRM_LIST.includes(resource.kind)) {

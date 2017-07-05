@@ -1,12 +1,12 @@
-import * as Axios from "axios";
+import axios from "axios";
 import * as _ from "lodash";
 import { OpenFarm, CropSearchResult } from "./openfarm";
 import { DEFAULT_ICON } from "../open_farm/index";
+import { HttpPromise } from "../util";
 
 let url = (q: string) => `${OpenFarm.cropUrl}?include=pictures&filter=${q}`;
-
-let openFarmSearchQuery = _.throttle((q: string) =>
-  Axios.get<CropSearchResult>(url(q)), 800);
+type X = HttpPromise<CropSearchResult>;
+let openFarmSearchQuery = _.throttle((q: string): X => axios.get(url(q)), 800);
 
 export let OFSearch = (searchTerm: string) =>
   (dispatch: Function) => {

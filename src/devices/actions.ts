@@ -1,6 +1,6 @@
 import { Farmbot } from "farmbot";
 import { t } from "i18next";
-import { get } from "axios";
+import axios from "axios";
 import * as Axios from "axios";
 import * as _ from "lodash";
 import { success, warning, info, error } from "farmbot-toastr";
@@ -25,7 +25,7 @@ import { init, edit } from "../api/crud";
 import { getDeviceAccountSettings } from "../resources/selectors";
 import { TaggedDevice } from "../resources/tagged_resources";
 import { versionOK } from "./reducer";
-import { oneOf } from "../util";
+import { oneOf, HttpData } from "../util";
 
 const ON = 1, OFF = 0;
 type configKey = keyof McuParams;
@@ -34,8 +34,8 @@ function incomingStatus(statusMessage: HardwareState) {
   return { type: "BOT_CHANGE", payload: statusMessage };
 }
 
-function isLog(x: any): x is Log {
-  return _.isObject(x) && _.isString(x.message);
+function isLog(x: object): x is Log {
+  return _.isObject(x) && _.isString(_.get(x, "message" as keyof Log));
 }
 
 export function checkControllerUpdates() {
@@ -153,8 +153,9 @@ let commandOK = (noun = "Command") => () => {
 
 export let fetchReleases =
   (url: string) => (dispatch: Function, getState: Function) => {
-    get<GithubRelease>(url)
-      .then((resp) => {
+    axios
+      .get(url)
+      .then((resp: HttpData<GithubRelease>) => {
         let version = resp.data.tag_name;
         let versionWithoutV = version.slice(1, version.length);
         dispatch({
@@ -173,9 +174,9 @@ export let fetchReleases =
 
 export function save(input: TaggedDevice) {
   return function (dispatch: Function, getState: GetState) {
-    return Axios
-      .put<User>(API.current.devicePath, input.body)
-      .then(resp => dispatch({ type: "SAVE_DEVICE_OK", payload: resp.data }))
+    return axios
+      .put(API.current.devicePath, input.body)
+      .then((resp: HttpData<User>) => dispatch({ type: "SAVE_DEVICE_OK", payload: resp.data }))
       .catch(resp => error("Error saving device settings."));
   };
 }
@@ -195,7 +196,6 @@ export function changeDevice(device: TaggedDevice,
     dispatch(save(getDeviceAccountSettings(getState().resources.index)));
   };
 }
-
 
 export function MCUFactoryReset() {
   return devices.current.resetMCU();
@@ -264,7 +264,7 @@ let NEED_VERSION_CHECK = true;
 // an additional layer of safety. If sensitive data ever hits a client, it will
 // be reported to ROllbar for investigation.
 const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
-export function connectDevice(token: string): {} | ((dispatch: Function) => any) {
+export function connectDevice(token: string): {} | ((dispatch: Function) => void) {
   return (dispatch: Function, getState: GetState) => {
     let secure = location.protocol === "https:";
     let bot = new Farmbot({ token, secure });
@@ -273,7 +273,7 @@ export function connectDevice(token: string): {} | ((dispatch: Function) => any)
       .then(() => {
         devices.online = true;
         devices.current = bot;
-        (window as any)["current_bot"] = bot;
+        _.set(window, "current_bot", bot);
         readStatus()
           .then(() => bot.setUserEnv({ "LAST_CLIENT_CONNECTED": JSON.stringify(new Date()) }))
           .catch(() => { });

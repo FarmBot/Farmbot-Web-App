@@ -14,8 +14,8 @@ jest.mock("axios", function () {
         }
       });
     }
-  }
-})
+  };
+});
 
 import { cachedIcon, DATA_URI, OpenFarmAPI } from "../index";
 describe("cachedIcon()", () => {
@@ -33,5 +33,5 @@ describe("cachedIcon()", () => {
 
   it("has a base URL", () => {
     expect(OpenFarmAPI.OFBaseURL).toContain("openfarm.cc");
-  })
+  });
 });
