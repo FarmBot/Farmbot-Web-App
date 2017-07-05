@@ -1,8 +1,40 @@
 .nav-wrapper {
-  background: palegoldenrod;
+  background: $dark_gray;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .2);
 }
 
 nav {
   max-width: 160rem;
-  padding: 1rem 4.4rem;
+}
+
+.links {
+  display: inline-block;
+  a {
+    text-transform: uppercase;
+    i {
+      display: none;
+    }
+  }
+  .external-links {
+    display: none;
+  }
+  .nav-links a {
+    white-space: nowrap;
+    display: inline-block;
+    padding: 2rem 1rem;
+    letter-spacing: 0.5px;
+    position: relative;
+    &.active {
+      font-weight: bold;
+      &:after {
+        content: "";
+        bottom: 0;
+        left: 0;
+        right: 0;
+        position: absolute;
+        height: 3px;
+        background: $white;
+      }
+    }
+  }
 }

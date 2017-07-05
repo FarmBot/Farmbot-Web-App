@@ -6,9 +6,10 @@ import { t } from "i18next";
 import { Session } from "../session";
 import { Markdown, Row, Col } from "../ui";
 import * as moment from "moment";
-import { SyncButton } from "./sync_button";
 import { history } from "../history";
 import { updatePageInfo } from "../util";
+import { SyncButton } from "./sync_button";
+import { NavLinks } from "./links";
 
 export class NavBar extends React.Component<NavBarProps, NavBarState> {
 
@@ -22,24 +23,22 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
     updatePageInfo(pageName);
 
     return <div className="nav-wrapper">
-      <Row>
-        <Col xs={12}>
-          <nav role="navigation">
-            <span className="page-name visible-xs-inline-block">
-              {pageName}
-            </span>
+      <nav role="navigation">
+        <Row>
+          <Col xs={12}>
+            {NavLinks(this.logout)}
+            <EStopButton
+              bot={this.props.bot}
+              user={this.props.user}
+            />
             <SyncButton
               bot={this.props.bot}
               user={this.props.user}
               dispatch={this.props.dispatch}
             />
-            <EStopButton
-              bot={this.props.bot}
-              user={this.props.user}
-            />
-          </nav>
-        </Col>
-      </Row>
+          </Col>
+        </Row>
+      </nav>
     </div>;
   }
 }
