@@ -6,7 +6,7 @@ If you want to run a server on a LAN for personal use, this is the easiest and c
 **Reliability:** :broken_heart:
 **Affordability:** :heart::heart::heart:
 
- 1. Follow the [developer setup guide](https://github.com/FarmBot/Farmbot-Web-API#developer-setup).
+ 1. Follow the [developer setup guide](https://github.com/FarmBot/Farmbot-Web-App#developer-setup).
 
 # Deployment to Dokku (cheap)
 
@@ -96,7 +96,7 @@ sudo heroku certs:update /etc/letsencrypt/live/staging.farmbot.io/fullchain.pem 
 Heroku will then give you instructions on which DNS records you must create.
 
 **Dokku Users**: FarmBot, Inc. no longer uses Dokku. As such, our ability to troubleshoot problems is limited.
-Please [raise an issue](https://github.com/FarmBot/Farmbot-Web-API/issues/new) to receive community support.
+Please [raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new) to receive community support.
 
 # Renew SSL Certificates
 
