@@ -55,8 +55,8 @@ export function powerOff() {
 }
 
 export function factoryReset() {
-  if (!confirm("WAIT! This will erase EVERYTHING stored on your device SD " +
-    "card. Are you sure?")) {
+  if (!confirm(`WAIT! This will erase EVERYTHING stored on your device SD card.
+  Are you sure?`)) {
     return;
   }
   devices
@@ -87,15 +87,18 @@ export function emergencyLock() {
     .emergencyLock()
     .then(commandOK(noun), commandErr(noun));
 }
+
 const REBOOT_CONF = `Are you sure you want to unlock the device?
 Device will reboot.`;
+
 export function emergencyUnlock() {
   let noun = "Emergency unlock";
   if (confirm(REBOOT_CONF)) {
     devices
       .current
       .reboot() // .emergencyUnlock is broke ATM RC 8 Jun 2017
-      .then(commandOK(noun), _.noop); // REMOVE NOOP WHEN YOU PUT BACK UNLOCK RC - June 8 2017
+      // REMOVE NOOP WHEN YOU PUT BACK UNLOCK RC - June 8 2017
+      .then(commandOK(noun), _.noop);
   }
 }
 
@@ -263,8 +266,9 @@ let NEED_VERSION_CHECK = true;
 // Already filtering messages in FarmBot OS and the API- this is just for
 // an additional layer of safety. If sensitive data ever hits a client, it will
 // be reported to ROllbar for investigation.
+type ConnectDeviceReturn = {} | ((dispatch: Function) => void);
 const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
-export function connectDevice(token: string): {} | ((dispatch: Function) => void) {
+export function connectDevice(token: string): ConnectDeviceReturn {
   return (dispatch: Function, getState: GetState) => {
     let secure = location.protocol === "https:";
     let bot = new Farmbot({ token, secure });
@@ -275,7 +279,9 @@ export function connectDevice(token: string): {} | ((dispatch: Function) => void
         devices.current = bot;
         _.set(window, "current_bot", bot);
         readStatus()
-          .then(() => bot.setUserEnv({ "LAST_CLIENT_CONNECTED": JSON.stringify(new Date()) }))
+          .then(() => bot.setUserEnv(
+            { "LAST_CLIENT_CONNECTED": JSON.stringify(new Date()) }
+          ))
           .catch(() => { });
         bot.on("logs", function (msg: Log) {
           if (isLog(msg) && !oneOf(BAD_WORDS, msg.message.toUpperCase())) {
@@ -302,9 +308,8 @@ export function connectDevice(token: string): {} | ((dispatch: Function) => void
         let alreadyToldYou = false;
         bot.on("malformed", function () {
           if (!alreadyToldYou) {
-            warning(t("FarmBot sent a malformed message. " +
-              "You may need to upgrade FarmBot OS. " +
-              "Please upgrade FarmBot OS and log back in."));
+            warning(t(`FarmBot sent a malformed message. You may need to upgrade
+            FarmBot OS. Please upgrade FarmBot OS and log back in.`));
             alreadyToldYou = true;
           }
         });
