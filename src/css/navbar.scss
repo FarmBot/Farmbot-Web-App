@@ -5,6 +5,10 @@
 
 nav {
   max-width: 160rem;
+  button {
+    margin: 1.8rem 1.8rem 0 0;
+    font-size: 1.3rem !important;
+  }
 }
 
 .links {
@@ -24,17 +28,34 @@ nav {
     padding: 2rem 1rem;
     letter-spacing: 0.5px;
     position: relative;
+    transition: font-weight 0.2s ease;
+    &:hover {
+      font-weight: bold;
+    }
     &.active {
       font-weight: bold;
       &:after {
-        content: "";
-        bottom: 0;
-        left: 0;
-        right: 0;
-        position: absolute;
-        height: 3px;
-        background: $white;
+        transition: all 0.6s ease;
+        transform: translateY(-3px);
       }
+    }
+    &:before {
+      content: "";
+      bottom: 0;
+      left: 0;
+      right: 0;
+      position: absolute;
+      height: 3px;
+      background: $white;
+    }
+    &:after {
+      content: "";
+      bottom: 0;
+      left: 0;
+      right: 0;
+      position: absolute;
+      height: 3px;
+      background: $dark_gray;
     }
   }
 }
