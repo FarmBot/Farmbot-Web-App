@@ -37,6 +37,10 @@
     box-shadow: none !important;
     transform: translateY(2px);
   }
+  &.arrow-button:active {
+    border-bottom: none !important;
+    transform: translateY(2px);
+  }
   &.go {
     background-color: $green;
     margin-top: 2.4rem;
