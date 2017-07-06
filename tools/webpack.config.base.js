@@ -60,9 +60,6 @@ module.exports = function () {
     // Shared plugins for prod and dev.
     plugins: [
       new webpack.DefinePlugin({
-        "process.env.REVISION": VERSION
-      }),
-      new webpack.DefinePlugin({
         "process.env.SHORT_REVISION": VERSION
       }),
       // FarmBot Inc related.

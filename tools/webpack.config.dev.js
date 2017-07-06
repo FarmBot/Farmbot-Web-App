@@ -29,8 +29,7 @@ c = function () {
   conf
     .plugins
     .push(new webpack.DefinePlugin({
-      "process.env.NODE_ENV": JSON.stringify("development"),
-      "process.env.REVISION": VERSION
+      "process.env.NODE_ENV": JSON.stringify("development")
     }));
 
   conf

@@ -48,7 +48,7 @@ let DropDown = ({ user, onClick }: DropDownProps) => {
         </ul>
         <div className="version-links">
           <span>{t("Application")}:
-            <a href="https://github.com/FarmBot/Farmbot-Web-API"
+            <a href="https://github.com/FarmBot/Farmbot-Web-App"
               target="_blank">
               {shortRevision()}
             </a>
@@ -147,10 +147,9 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
             </li>
           </ul>
           <div className="version-links mobile-only">
-            {t("Frontend")}:
-                <a href="https://github.com/FarmBot/farmbot-web-frontend"
+            {t("Application")}:
+                <a href="https://github.com/FarmBot/Farmbot-Web-App"
               target="_blank">
-              {/** SHORT_REVISION is the last frontend commit. */}
               {shortRevision()}
             </a>
           </div>
