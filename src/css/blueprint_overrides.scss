@@ -89,3 +89,16 @@
   float: right !important;
   margin-top: 0.6rem !important;
 }
+
+.nav-right .pt-popover-target {
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  color: $gray;
+  float: right;
+  font-weight: bold;
+  margin-top: 1.8rem;
+  cursor: pointer;
+  &:hover {
+    color: $white;
+  }
+}

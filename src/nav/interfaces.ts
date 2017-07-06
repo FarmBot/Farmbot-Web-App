@@ -9,16 +9,6 @@ export interface NavButtonProps {
   onClick?: () => void;
 }
 
-export interface AdditonalMenuProps {
-  user: TaggedUser | undefined;
-  onClick?: () => void;
-}
-
-export interface NavBarState {
-  mobileNavExpanded?: boolean;
-  tickerExpanded?: boolean;
-}
-
 export interface NavBarProps {
   logs: Log[];
   bot: BotState;
