@@ -5,16 +5,6 @@ describe Api::PeripheralsController do
 
   describe '#create' do
     let(:user) { FactoryGirl.create(:user) }
-    it 'Ignores ridiculously long names' do
-      pending "See stackoverflow question below:"
-      # https://stackoverflow.com/questions/44890107
-      # /length-is-not-enforced-on-string-column-with-postgresql
-      sign_in user
-      Peripheral.destroy_all
-      before = Peripheral.count
-      post :create, params: { pin: 13, mode: 0, label: ("@"*700) }
-      expect(response.status).to eq(422)
-    end
 
     it 'makes a Peripheral' do
       sign_in user

@@ -70,7 +70,10 @@ class NiceResponse
   end
 
   def has_params?
-    r.params.except(:controller, :action, :format, :id).keys.length > 0
+    r.params
+     .except(:controller, :action, :format, :id)
+     .keys
+     .length > 0
   end
 
   def has_body?
@@ -79,11 +82,13 @@ class NiceResponse
 
   def display_body
     begin
-      JSON.parse(body)
+      JSON
+        .pretty_generate(JSON.parse(body))
+        .first(500)
     rescue
       JSON.pretty_generate(r
         .params
-        .except(:controller, :action, :format, :id, :user_id, :device_id))
+        .except(:controller, :action, :format, :id, :user_id, :device_id)).first(500)
     end
   end
 
@@ -93,6 +98,5 @@ class NiceResponse
     else
       ""
     end
-
   end
 end
