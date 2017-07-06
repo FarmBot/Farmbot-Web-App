@@ -9,7 +9,14 @@ module Points
       end
 
       optional do
-        hstore :meta
+        float    :radius
+        float    :x
+        float    :y
+        float    :z
+        hstore   :meta
+        integer  :pointer_id
+        string   :name
+        string   :pointer_type
       end
 
       def execute
