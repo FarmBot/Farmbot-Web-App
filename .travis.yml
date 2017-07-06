@@ -19,3 +19,4 @@ script:
   - export FW_UPDATE_SERVER=http://example.com
   - export DB=postgresql
   - bundle exec rspec
+  - npm run test
