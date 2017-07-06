@@ -27,9 +27,9 @@ describe("calendar", () => {
     let calendar = new Calendar();
     let wow = occurrence(TIME.MONDAY, fake_fe());
     calendar.insert(wow);
-    expect(calendar.findByDate(moment())).toBeInstanceOf(Array);
+    expect(calendar.findByDate(TIME.FRIDAY)).toBeInstanceOf(Array);
     expect(calendar.findByDate(TIME.MONDAY)).toContain(wow);
   });
   it("sorts CalendarDay");
   it("formats a date");
-})
+});

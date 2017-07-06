@@ -1,6 +1,6 @@
-let errorStub = jest.fn();
+let mockErr = jest.fn();
 jest.mock("i18next", () => ({ t: (i: string) => i }))
-jest.mock("farmbot-toastr", () => ({ error: errorStub }));
+jest.mock("farmbot-toastr", () => ({ error: mockErr }));
 
 import { commitBulkEditor } from "../actions";
 import { fakeState } from "../../../__test_support__/fake_state";
@@ -11,6 +11,6 @@ describe("commitBulkEditor()", () => {
     let dispatch = jest.fn();
     let results = commitBulkEditor()(dispatch, getState);
     expect(dispatch.mock.calls.length).toEqual(0);
-    expect(errorStub.mock.calls.length).toEqual(1);
+    expect(mockErr.mock.calls.length).toEqual(1);
   });
 });
