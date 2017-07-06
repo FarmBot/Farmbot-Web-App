@@ -4,7 +4,7 @@ import { newRegimen } from "../actions";
 
 export function AddRegimen(props: AddRegimenProps) {
   props.className ? props.className : "";
-  let classes = "fb-button green " + props.className;
+  let classes = "fb-button green add " + props.className;
   let { dispatch } = props;
   return <button
     className={classes}

@@ -68,30 +68,32 @@ export class SequenceEditorMiddleActive
         <i>{t("Sequence Editor")}</i>
       </h3>
       <ToolTip helpText={ToolTips.SEQUENCE_EDITOR} />
-      <SaveBtn
-        isDirty={isDirty}
-        isSaving={isSaving}
-        isSaved={isSaved}
-        onClick={() => { dispatch(save(sequence.uuid)); }}
-      />
-      <button
-        className="fb-button orange"
-        onClick={performSeq(dispatch, sequence)}
-      >
-        {t("Save & Run")}
-      </button>
-      <button
-        className="fb-button red"
-        onClick={() => dispatch(destroy(sequence.uuid))}
-      >
-        {t("Delete")}
-      </button>
-      <button
-        className="fb-button yellow"
-        onClick={copy(dispatch, sequence)}
-      >
-        {t("Copy")}
-      </button>
+      <div className="button-group">
+        <SaveBtn
+          isDirty={isDirty}
+          isSaving={isSaving}
+          isSaved={isSaved}
+          onClick={() => { dispatch(save(sequence.uuid)); }}
+        />
+        <button
+          className="fb-button orange"
+          onClick={performSeq(dispatch, sequence)}
+        >
+          {t("Save & Run")}
+        </button>
+        <button
+          className="fb-button red"
+          onClick={() => dispatch(destroy(sequence.uuid))}
+        >
+          {t("Delete")}
+        </button>
+        <button
+          className="fb-button yellow"
+          onClick={copy(dispatch, sequence)}
+        >
+          {t("Copy")}
+        </button>
+      </div>
       <Row>
         <Col xs={11}>
           <BlurableInput value={sequence.body.name}

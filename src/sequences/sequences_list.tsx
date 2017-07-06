@@ -68,7 +68,7 @@ export class SequencesList extends
         <i>{t("Sequences")}</i>
       </h3>
       <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
-      <button className="fb-button green"
+      <button className="fb-button green add"
         onClick={() => dispatch(init(this.emptySequence()))}>
         <i className="fa fa-plus" />
       </button>

@@ -226,6 +226,10 @@ h3 {
   white-space: nowrap;
 }
 
+.widget-body .row {
+  margin-top: 1rem;
+}
+
 a {
   text-decoration: none !important;
   outline: none !important;
@@ -327,6 +331,18 @@ ul {
   @extend .coming-soon;
   &:after {
     content: "Not available when device is offline.";
+  }
+}
+
+.add {
+  margin-top: -3rem;
+}
+
+.button-group {
+  float: right;
+  margin: -2rem 0 2rem;
+  button:not(:first-of-type) {
+    margin-right: 1rem;
   }
 }
 
