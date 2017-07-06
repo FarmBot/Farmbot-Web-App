@@ -80,24 +80,24 @@ export class ImageWorkspace extends React.Component<Props, {}> {
           </h4>
           <label htmlFor="hue">{t("HUE")}</label>
           <WeedDetectorSlider
-            onChange={this.onHslChange("H")}
-            onRelease={_.noop}
+            onChange={_.noop}
+            onRelease={this.onHslChange("H")}
             lowest={RANGES.H.LOWEST}
             highest={RANGES.H.HIGHEST}
             lowValue={H_LO}
             highValue={H_HI} />
           <label htmlFor="saturation">{t("SATURATION")}</label>
           <WeedDetectorSlider
-            onChange={this.onHslChange("S")}
-            onRelease={_.noop}
+            onChange={_.noop}
+            onRelease={this.onHslChange("S")}
             lowest={RANGES.S.LOWEST}
             highest={RANGES.S.HIGHEST}
             lowValue={S_LO}
             highValue={S_HI} />
           <label htmlFor="value">{t("VALUE")}</label>
           <WeedDetectorSlider
-            onChange={this.onHslChange("V")}
-            onRelease={_.noop}
+            onChange={_.noop}
+            onRelease={this.onHslChange("V")}
             lowest={RANGES.V.LOWEST}
             highest={RANGES.V.HIGHEST}
             lowValue={V_LO}
