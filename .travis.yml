@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - 6.11.0
 before_script:
-  - apt-get install curl
+  - sudo apt-get install curl
   - rvm install 2.4.1
   - cp config/database.travis.yml config/database.yml
   - mkdir -p public/app
