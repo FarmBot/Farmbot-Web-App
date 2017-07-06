@@ -2,13 +2,14 @@ language: node_js
 node_js:
   - 6.11.0
 before_script:
+  - apt-get install curl
   - rvm install 2.4.1
   - cp config/database.travis.yml config/database.yml
   - mkdir -p public/app
   - touch public/app/index.html
   - ./install_frontend.sh
   - bundle exec rake db:create db:migrate
-  - npm install
+  - yarn install
 script:
   # A 'fake' secret token for use in our CI env.
   # Don't worry- this isn't the real one.
