@@ -26,4 +26,5 @@ script:
 - npm run test
 env:
   global:
-    secure: SEZ/oqZLElOhpPwSwWnwqsmhyIwGrBiDkyJ7X0AVS8L9vjFcZDsoUOSNDHaW4J7/8ihYE3zil3LNe+spIo6qHg6yJTK+5yY6g0mgu/g+ZMIR3cwAx89pZYmPriaItUW0Tc5dwivaxvKLWj1p+SLs0Dl6ygTblGDjQXdMS5Gamyk=
+  - secure: SLiSua1p+Q9Jcu+hhCIXFDSvXl6TGHJ3O1BXbMm2sP+AkFhCpOuD7lP9Eua95veQolece9rRSsyCOC2FWRxEoSxtP183h3X9i3Yr1kTv8pXrjuTEwPBMQ6koEtbBBl64rehpmfCWV9/gMr3u09zjS2hKKunvZiF5iIcHAmOPOzE=
+  - secure: Aviun4JOw9fOiAFFx23VolDku9itZLzBxYPxVP0GAaqSZwx4pINoslAIanOxvWBGo5X2PvE2L4wyMEukWrPY8N3saCgXRfTDU8NHLsGl50jScfgZKqzebWOVuSEtv8ZWK4KVgYkElTMWfw2NBIbBjaq7ZEbJO3A6AocptZ9jkxg=
