@@ -69,6 +69,7 @@ nav {
       color: $white !important;
       font-weight: bold;
       transition: all 0.4s ease;
+      pointer-events: none;
       &:before {
         content: "";
         background: $dark_gray;

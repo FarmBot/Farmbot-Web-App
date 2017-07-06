@@ -49,6 +49,12 @@ export class SequencesList extends
     searchTerm: ""
   };
 
+  componentDidMount() {
+    let { dispatch, sequence, sequences } = this.props;
+    sequence && urlFriendly(sequence.body.name) &&
+      push("/app/sequences/" + urlFriendly(sequence.body.name));
+  }
+
   onChange = (e: React.SyntheticEvent<HTMLInputElement>) =>
     this.setState({ searchTerm: e.currentTarget.value });
 

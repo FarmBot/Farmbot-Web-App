@@ -114,9 +114,15 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
         <div className={`links ${mobileMenuClass}`}>
           <ul>
             {links.map(link => {
+              let cn = history
+                .getCurrentLocation()
+                .pathname
+                .includes(link.url) ? "active" : "";
               return <li key={link.url}>
-                <Link to={link.url}
-                  activeClassName="active">
+                <Link
+                  to={link.url}
+                  className={cn}
+                >
                   <i className={`fa fa-${link.icon}`} />
                   {link.name}
                 </Link>
