@@ -37,7 +37,7 @@ function emptyRegimen(): TaggedRegimen {
       color: "gray",
       regimen_items: []
     }
-  }
+  };
 }
 
 export let newRegimen = () => init(emptyRegimen());

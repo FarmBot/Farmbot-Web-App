@@ -2,8 +2,10 @@
 .block-wrapper {
   height: 3.5rem;
   margin-bottom: 1.5rem;
+  text-align: left !important;
   button {
     transition: all 0.2s ease-out;
+    text-align: left;
     &:hover {
       transition: all 0.2s ease-out;
       .block-control {
@@ -25,4 +27,16 @@
 .block-header {
   height: 3.5rem;
   font-size: 1.2rem !important;
+}
+
+.fb-button.gray.block {
+  background-color: $medium_light_gray !important;
+  box-shadow: 0 2px 0px 0px darken($medium_light_gray, 12%);
+  &:hover {
+    background-color: darken($medium_light_gray, 5%) !important;
+  }
+}
+
+.fb-button.block {
+  color: $dark_gray;
 }
