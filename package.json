@@ -12,7 +12,7 @@
     "build": "node_modules/webpack/bin/webpack.js --config tools/webpack.config.prd.js --display-error-details",
     "start": "echo '===We use `npm run dev` now.==='",
     "heroku-postbuild": "./install_frontend.sh 2>&1",
-    "dev": "PORT=3000 foreman start --procfile=Procfile.dev",
+    "dev": "PORT=3000 bundle exec foreman start --procfile=Procfile.dev",
     "webpack": "webpack-dev-server --config tools/webpack.config.dev.js --content-base public/ --host 0.0.0.0",
     "test": "jest --coverage --no-cache && cat ./coverage/remapped/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "just_test": "jest --coverage --no-cache"

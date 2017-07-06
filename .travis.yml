@@ -1,27 +1,29 @@
 language: node_js
 node_js:
-  - 6.11.0
+- 6.11.0
 before_script:
-  - sudo apt-get install curl -y
-  - mv node_modules/.bin/which node_modules/.bin/which.backup
-  - rvm install 2.4.1 && rvm use 2.4.1
-  - mv node_modules/.bin/which.backup node_modules/.bin/which
-  - cp config/database.travis.yml config/database.yml
-  - mkdir -p public/app
-  - touch public/app/index.html
-  - ./install_frontend.sh
-  - bundle exec rake db:create db:migrate
-  - yarn install
+- sudo apt-get install curl -y
+- mv node_modules/.bin/which node_modules/.bin/which.backup
+- rvm install 2.4.1 && rvm use 2.4.1
+- mv node_modules/.bin/which.backup node_modules/.bin/which
+- cp config/database.travis.yml config/database.yml
+- mkdir -p public/app
+- touch public/app/index.html
+- "./install_frontend.sh"
+- bundle exec rake db:create db:migrate
+- bundle install
+- yarn install
 script:
-  # A 'fake' secret token for use in our CI env.
-  # Don't worry- this isn't the real one.
-  - export SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
-  - export GCS_BUCKET=farmbot-team
-  - export GCS_ID=XnqcumDRnrsFdJpX5glhFpZQKSJIjZ+/lPnWkPe/
-  - export GCS_KEY=GOOGSDXDNLBL7DHPNZTT
-  - export MQTT_HOST=example.com
-  - export OS_UPDATE_SERVER=http://example.com
-  - export FW_UPDATE_SERVER=http://example.com
-  - export DB=postgresql
-  - bundle exec rspec
-  - npm run test
+- export SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
+- export GCS_BUCKET=farmbot-team
+- export GCS_ID=XnqcumDRnrsFdJpX5glhFpZQKSJIjZ+/lPnWkPe/
+- export GCS_KEY=GOOGSDXDNLBL7DHPNZTT
+- export MQTT_HOST=example.com
+- export OS_UPDATE_SERVER=http://example.com
+- export FW_UPDATE_SERVER=http://example.com
+- export DB=postgresql
+- bundle exec rspec
+- npm run test
+env:
+  global:
+    secure: SEZ/oqZLElOhpPwSwWnwqsmhyIwGrBiDkyJ7X0AVS8L9vjFcZDsoUOSNDHaW4J7/8ihYE3zil3LNe+spIo6qHg6yJTK+5yY6g0mgu/g+ZMIR3cwAx89pZYmPriaItUW0Tc5dwivaxvKLWj1p+SLs0Dl6ygTblGDjQXdMS5Gamyk=
