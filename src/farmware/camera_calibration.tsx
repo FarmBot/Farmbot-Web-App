@@ -16,7 +16,7 @@ export class CameraCalibration extends
   }
 
   render() {
-    return <Widget className="weed-detector-widget">
+    return <Widget className="weed-detector-widget coming-soon">
       <Row>
         <Col>
           <TitleBar
@@ -29,7 +29,7 @@ export class CameraCalibration extends
             <Col sm={12}>
               <ImageWorkspace
                 onProcessPhoto={this.props.onProcessPhoto}
-                onFlip={(u) => { console.log("TODO. Stub.") }}
+                onFlip={(u) => { console.log("TODO. Stub."); }}
                 images={this.props.images}
                 currentImage={this.props.currentImage}
                 onChange={(key, value) => {
@@ -60,6 +60,6 @@ export class CameraCalibration extends
           </Row>
         </Col>
       </Row>
-    </Widget>
+    </Widget>;
   }
 }

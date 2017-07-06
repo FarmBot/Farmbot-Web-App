@@ -54,10 +54,11 @@ def const_reassign(target, const, value)
 end
 
 class NiceResponse
-  attr_reader :r
+  attr_reader :r, :body
 
   def initialize(r)
-    @r = r
+    @r    = r
+    @body = r.body.read
   end
 
   def path
@@ -65,25 +66,29 @@ class NiceResponse
   end
 
   def pretty_url
-    binding.pry if (r.path || "").include?("search")
     r.method + " " + r.path.first(45) + query
   end
 
   def has_params?
-    r.params.except(:controller, :action, :format, :id).keys.length > 0
+    r.params
+     .except(:controller, :action, :format, :id)
+     .keys
+     .length > 0
   end
 
   def has_body?
-    r.body.size > 2
+    r.body.size > 4
   end
 
   def display_body
-    if has_body?
-      raise "BRB"
-    else
+    begin
+      JSON
+        .pretty_generate(JSON.parse(body))
+        .first(500)
+    rescue
       JSON.pretty_generate(r
         .params
-        .except(:controller, :action, :format, :id, :user_id, :device_id))
+        .except(:controller, :action, :format, :id, :user_id, :device_id)).first(500)
     end
   end
 
@@ -93,6 +98,5 @@ class NiceResponse
     else
       ""
     end
-
   end
 end

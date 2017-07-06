@@ -31,7 +31,7 @@ export let handleSelect = (index: ResourceIndex, input: DropDownItem): LocationD
     default:
       return { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };
   }
-}
+};
 
 function bail(msg: string): never {
   throw new Error(msg);

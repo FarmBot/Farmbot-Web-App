@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render } from "react-dom";
-import * as axios from "axios";
+import axios from "axios";
 import { t, init } from "i18next";
 import { fun as log, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
@@ -10,9 +10,9 @@ import { detectLanguage } from "../i18n";
 import { API } from "../api";
 import "../css/_index.scss";
 import "../npm_addons";
-import { hardRefresh } from "../util";
-hardRefresh()
-interface Props { };
+import { hardRefresh, HttpData } from "../util";
+hardRefresh();
+interface Props { }
 interface State {
   hideServerSettings: boolean;
   email: string;
@@ -20,7 +20,7 @@ interface State {
   agree_to_terms: boolean;
   serverHost: string;
   serverPort: string;
-};
+}
 
 export class Wow extends React.Component<Props, Partial<State>> {
   constructor() {
@@ -36,7 +36,7 @@ export class Wow extends React.Component<Props, Partial<State>> {
   }
 
   toggleServerOpts = () => {
-    this.setState({ hideServerSettings: !this.state.hideServerSettings })
+    this.setState({ hideServerSettings: !this.state.hideServerSettings });
   }
 
   set = (name: keyof State) => (event: React.FormEvent<HTMLInputElement>) => {
@@ -52,8 +52,8 @@ export class Wow extends React.Component<Props, Partial<State>> {
     let url = `//${this.state.serverHost}:${this.state.serverPort}`;
     API.setBaseUrl(url);
     axios
-      .post<AuthState>(API.current.tokensPath, payload)
-      .then(resp => {
+      .post(API.current.tokensPath, payload)
+      .then((resp: HttpData<AuthState>) => {
         Session.put(resp.data);
         window.location.href = "/app/controls";
       })
@@ -202,6 +202,6 @@ detectLanguage().then((config) => {
       render(reactElem, domElem);
     } else {
       throw new Error(t("Add a div with id `root` to the page first."));
-    };
+    }
   });
 });

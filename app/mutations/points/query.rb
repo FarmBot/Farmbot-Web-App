@@ -3,13 +3,29 @@ require_relative "../../lib/hstore_filter"
 module Points
     class Query < Mutations::Command
       H_QUERY = "meta @> hstore(:key, :value)"
-
+      WHITELIST = [
+        :radius,
+        :x,
+        :y,
+        :z,
+        :pointer_id,
+        :name,
+        :pointer_type,
+        :device
+      ]
       required do
         model :device, class: Device
       end
 
       optional do
-        hstore :meta
+        float    :radius
+        float    :x
+        float    :y
+        float    :z
+        hstore   :meta
+        integer  :pointer_id
+        string   :name
+        string   :pointer_type
       end
 
       def execute
@@ -20,7 +36,7 @@ module Points
         if @points
           @points
         else
-          @points = Point.where(device: device)
+          @points = Point.where(inputs.slice(*WHITELIST))
           add_meta_fields if meta
           @points
         end

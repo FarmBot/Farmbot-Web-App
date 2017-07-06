@@ -1,10 +1,10 @@
 import * as _ from "lodash";
-import * as Axios from "axios";
+import axios from "axios";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
 import { Thunk, GetState } from "../redux/interfaces";
 import { API } from "../api";
-import { Progress, ProgressCallback } from "../util";
+import { Progress, ProgressCallback, HttpData } from "../util";
 import { GenericPointer } from "../interfaces";
 import { devices } from "../device";
 const QUERY = { meta: { created_by: "plant-detection" } };
@@ -17,15 +17,15 @@ export function resetWeedDetection(cb: ProgressCallback): Thunk {
   return async function (dispatch, getState) {
     const URL = API.current.pointSearchPath;
     try {
-      let { data } = await Axios.post<GenericPointer[]>(URL, QUERY);
-      let ids = data.map(x => x.id);
+      let resp: HttpData<GenericPointer[]> = await axios.post(URL, QUERY);
+      let ids = resp.data.map(x => x.id);
       // If you delete too many points, you will violate the URL length
       // limitation of 2,083. Chunking helps fix that.
       let chunks = _.chunk(ids, 179 /* Prime numbers, why not? */);
       let prog = new Progress(chunks.length, cb);
       prog.inc();
       let promises = chunks.map(function (chunk) {
-        return Axios
+        return axios
           .delete(API.current.pointsPath + chunk.join(","))
           .then(function (x) {
             prog.inc();

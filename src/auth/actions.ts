@@ -1,4 +1,4 @@
-import * as Axios from "axios";
+import axios from "axios";
 import { t } from "i18next";
 import { error, success } from "farmbot-toastr";
 import { connectDevice, fetchReleases } from "../devices/actions";
@@ -7,7 +7,7 @@ import { AuthState } from "./interfaces";
 import { ReduxAction, Thunk } from "../redux/interfaces";
 import * as Sync from "../sync/actions";
 import { API } from "../api";
-import { toastErrors } from "../util";
+import { toastErrors, HttpData } from "../util";
 import { Session } from "../session";
 import { UnsafeError } from "../interfaces";
 import {
@@ -28,7 +28,7 @@ export function didLogin(authState: AuthState, dispatch: Function) {
 
 // We need to handle OK logins for numerous use cases (Ex: login & registration)
 function onLogin(dispatch: Function) {
-  return (response: Axios.AxiosXHR<AuthState>) => {
+  return (response: HttpData<AuthState>) => {
     let { data } = response;
     Session.put(data);
     didLogin(data, dispatch);
@@ -40,7 +40,7 @@ export function login(username: string, password: string, url: string): Thunk {
   return dispatch => {
     return requestToken(username, password, url).then(
       onLogin(dispatch),
-      (err) => dispatch(loginErr())
+      () => dispatch(loginErr())
     );
   };
 }
@@ -54,8 +54,8 @@ function loginErr() {
  * have a JSON Web Token attached to their "Authorization" header,
  * thereby granting access to the API. */
 export function loginOk(auth: AuthState): ReduxAction<AuthState> {
-  Axios.interceptors.response.use(responseFulfilled, responseRejected);
-  Axios.interceptors.request.use(requestFulfilled(auth));
+  axios.interceptors.response.use(responseFulfilled, responseRejected);
+  axios.interceptors.request.use(requestFulfilled(auth));
 
   return {
     type: Actions.LOGIN_OK,
@@ -106,7 +106,7 @@ function requestRegistration(name: string,
       name: name
     }
   };
-  return Axios.post<AuthState>(API.current.usersPath, form);
+  return axios.post(API.current.usersPath, form);
 }
 
 /** Fetch API token if already registered. */
@@ -117,7 +117,7 @@ function requestToken(email: string,
   // Set the base URL once here.
   // It will get set once more when we get the "iss" claim from the JWT.
   API.setBaseUrl(url);
-  return Axios.post<AuthState>(API.current.tokensPath, payload);
+  return axios.post(API.current.tokensPath, payload);
 }
 
 export function logout() {

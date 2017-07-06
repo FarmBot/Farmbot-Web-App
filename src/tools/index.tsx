@@ -53,6 +53,6 @@ export class Tools extends React.Component<Props, Partial<ToolsState>> {
             />}
         </Col>
       </Row>
-    </Page>
+    </Page>;
   }
 }

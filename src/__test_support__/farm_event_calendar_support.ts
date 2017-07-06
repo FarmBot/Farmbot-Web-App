@@ -4,12 +4,12 @@ import {
 } from "../farm_designer/farm_events/calendar/interfaces";
 
 export const TIME = {
-  MONDAY: moment("2017-06-19 01:30:00 -0500"),
-  TUESDAY: moment("2017-06-20 02:00:00 -0500"),
-  WEDNESDAY: moment("2017-06-21 03:45:00 -0500"),
-  THURSDAY: moment("2017-06-22 14:00:00 -0500"),
-  FRIDAY: moment("2017-06-23 00:05:37 -0500"),
-  SATURDAY: moment("2017-06-24 23:00:00 -0500")
+  MONDAY: moment("2017-06-19T01:30:00.000-05:00"),
+  TUESDAY: moment("2017-06-20T01:30:00.000-05:00"),
+  WEDNESDAY: moment("2017-06-21T01:30:00.000-05:00"),
+  THURSDAY: moment("2017-06-22T01:30:00.000-05:00"),
+  FRIDAY: moment("2017-06-23T01:30:00.000-05:00"),
+  SATURDAY: moment("2017-06-24T01:30:00.000-05:00")
 };
 
 export let fake_fe = (): FarmEventWithExecutable => {

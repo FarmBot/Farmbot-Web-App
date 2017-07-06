@@ -1,12 +1,12 @@
 import * as React from "react";
-import * as axios from "axios";
+import axios from "axios";
 import { t } from "i18next";
 import { error as log, init as logInit } from "farmbot-toastr";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { State, Props } from "./interfaces";
 import { hardRefresh } from "../util";
-hardRefresh()
+hardRefresh();
 export class PasswordReset extends React.Component<Props, State> {
   constructor() {
     super();
@@ -37,14 +37,14 @@ export class PasswordReset extends React.Component<Props, State> {
     e.preventDefault();
     let { password, passwordConfirmation } = this.state;
     let token = window.location.href.split("/").pop();
-    axios.put<{}>(API.current.passwordResetPath, {
+    axios.put(API.current.passwordResetPath, {
       id: token,
       password,
       password_confirmation: passwordConfirmation,
-    }).then(resp => {
+    }).then(() => {
       window.location.href = "/";
-    }).catch(error => {
-      log(prettyPrintApiErrors(error));
+    }).catch((error: string) => {
+      log(prettyPrintApiErrors(error as {}));
     });
   }
 

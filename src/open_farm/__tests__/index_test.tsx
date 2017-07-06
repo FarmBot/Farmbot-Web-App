@@ -1,21 +1,23 @@
-const FAKE_SVG = "<svg>Wow</svg>";
+
 jest.mock("axios", function () {
   return {
-    get: function () {
-      return Promise.resolve({
-        data: {
-          id: 0,
+    default: {
+      get: function () {
+        return Promise.resolve({
           data: {
-            attributes: {
-              svg_icon: FAKE_SVG,
-              slug: "lettuce"
+            id: 0,
+            data: {
+              attributes: {
+                svg_icon: "<svg>Wow</svg>",
+                slug: "lettuce"
+              }
             }
           }
-        }
-      });
+        });
+      }
     }
-  }
-})
+  };
+});
 
 import { cachedIcon, DATA_URI, OpenFarmAPI } from "../index";
 describe("cachedIcon()", () => {
@@ -23,7 +25,7 @@ describe("cachedIcon()", () => {
     cachedIcon("lettuce")
       .then(function (item) {
         expect(item).toContain(DATA_URI);
-        expect(item).toContain(encodeURIComponent(FAKE_SVG));
+        expect(item).toContain(encodeURIComponent("<svg>Wow</svg>"));
         done();
       })
       .catch(() => {
@@ -33,5 +35,5 @@ describe("cachedIcon()", () => {
 
   it("has a base URL", () => {
     expect(OpenFarmAPI.OFBaseURL).toContain("openfarm.cc");
-  })
+  });
 });

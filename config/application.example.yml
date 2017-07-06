@@ -24,7 +24,7 @@ ACME_SECRET: "-----"
 API_HOST: "12.34.56.78"
 # 3000 for local development. 443 is using SSL. You will need `sudo` to use PORT
 # 80 on most systems.
-API_PORT: "3000"
+PORT: "3000"
 # This can be set to anything.
 # Most users can just delete it.
 # This is used for people writing modifications to the software, mostly.

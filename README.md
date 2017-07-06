@@ -31,8 +31,8 @@ You will need the following:
 
 ### Setup
 
- 0. `git clone https://github.com/FarmBot/Farmbot-Web-API`
- 0. `cd Farmbot-Web-API`
+ 0. `git clone https://github.com/FarmBot/Farmbot-Web-App`
+ 0. `cd Farmbot-Web-App`
  0. [Install `libpq-dev` and `postgresql`](http://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem/6040822#6040822)
  0. `bundle install`
  0. **MOST IMPORTANT STEP**. Copy `config/database.example.yml` to `config/database.yml`. In GNU/Linux or Mac: `mv config/database.example.yml config/database.yml`. **Please read the instructions inside the file. Replace the example values provided with real world values.**
@@ -42,7 +42,7 @@ You will need the following:
  0. Start server with `npm run dev`. Make sure you set an `MQTT_HOST` entry in `application.yml` pointing to the IP address or domain of the (soon-to-be-installed) MQTT server. You will need to set that up next.
  0. Now that the API server is running, [provision an MQTT server](https://github.com/FarmBot/mqtt-gateway).
  0. Open [localhost:8080](http://localhost:8080). The application is now ready for use.
- 0. [Raise an issue](https://github.com/FarmBot/Farmbot-Web-API/issues/new?title=Installation%20Failure) if you hit problems with any of these steps. *We can't fix issues we don't know about.*
+ 0. [Raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new?title=Installation%20Failure) if you hit problems with any of these steps. *We can't fix issues we don't know about.*
 
 \*Give permission to `user` to create database:
 ```
@@ -125,4 +125,4 @@ $.ajax({
 
 # Want to Help?
 
-[Low Hanging Fruit](https://github.com/FarmBot/Farmbot-Web-API/search?utf8=%E2%9C%93&q=todo). [Raise an issue](https://github.com/FarmBot/Farmbot-Web-API/issues/new?title=Question%20about%20a%20TODO) if you have any questions.
+[Low Hanging Fruit](https://github.com/FarmBot/Farmbot-Web-App/search?utf8=%E2%9C%93&q=todo). [Raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new?title=Question%20about%20a%20TODO) if you have any questions.

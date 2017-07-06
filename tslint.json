@@ -31,6 +31,8 @@
     "no-var-requires": false,
     "no-shadowed-variable": true,
     "no-unused-vars": true,
+    "no-consecutive-blank-lines": true,
+    "no-angle-bracket-type-assertion": true,
     "eofline": true,
     "one-line": [
       true,

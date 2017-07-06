@@ -8,6 +8,8 @@ import { Color, UnsafeError } from "./interfaces";
 import { box } from "boxed_value";
 import { TaggedResource } from "./resources/tagged_resources";
 import { Session } from "./session";
+import { AxiosResponse } from "axios";
+import { history } from "./history";
 
 // http://stackoverflow.com/a/901144/1064917
 // Grab a query string param by name, because react-router-redux doesn't
@@ -292,9 +294,9 @@ export function isUndefined(x: any): x is undefined {
  */
 export function betterCompact<T>(input: (T | undefined)[]): T[] {
   let output: T[] = [];
-  input.forEach(x => x ? output.push(x) : "")
+  input.forEach(x => x ? output.push(x) : "");
   return output;
-};
+}
 
 /** Sorts a list of tagged resources. Unsaved resource get put on the end. */
 export function sortResourcesById<T extends TaggedResource>(input: T[]): T[] {
@@ -454,3 +456,32 @@ function deleteAllCookies() {
 }
 
 export type Primitive = boolean | string | number;
+
+/** Axios uses `{data: any}` to describe AxiosResponse.data.
+ * This interface adds type hints.
+ * TODO: LOW HANGING FRUIT: Write user defined type guards to provide
+ * real type safety. */
+export interface HttpData<T> extends AxiosResponse {
+  data: T;
+}
+
+/** Like AxiosPromise, but holds onto type information.
+ * TODO: Write farmbot-resource library or something like that to do real
+ *       runtime type checking.
+ */
+export interface HttpPromise<T> extends Promise<HttpData<T>> { }
+
+export function shortRevision() {
+  return (process.env.SHORT_REVISION || "NONE").slice(0, 8);
+}
+
+/** When needing to reference the url in some js universally or vice versa. */
+export function urlFriendly(unformattedString: string) {
+  return unformattedString.replace(/ /gi, "_").toLowerCase();
+}
+
+/** Get remainder of current url after the last "/". */
+export function lastUrlChunk() {
+  let p = history.getCurrentLocation().pathname;
+  return p.split("/")[p.split("/").length - 1];
+}

@@ -1,8 +1,8 @@
-import * as axios from "axios";
+import axios from "axios";
 import { Thunk } from "../redux/interfaces";
 import { API } from "../api";
 import { DeletionRequest } from "./interfaces";
-import { toastErrors } from "../util";
+import { toastErrors, HttpData } from "../util";
 import { Session } from "../session";
 
 export function deleteUser(payload: DeletionRequest): Thunk {
@@ -10,13 +10,13 @@ export function deleteUser(payload: DeletionRequest): Thunk {
     let state = getState().auth;
     if (state) {
       // https://github.com/mzabriskie/axios/issues/312
-      axios<{}>({
+      axios({
         method: "delete",
         url: API.current.usersPath,
         data: payload,
         params: { force: true }
       })
-        .then(resp => {
+        .then((resp: HttpData<{}>) => {
           alert("We're sorry to see you go. :(");
           Session.clear(true);
         })

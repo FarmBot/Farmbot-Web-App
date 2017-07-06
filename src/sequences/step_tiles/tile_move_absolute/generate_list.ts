@@ -15,12 +15,17 @@ import * as _ from "lodash";
 export function generateList(input: ResourceIndex): DropDownItem[] {
   let toolNameById = mapToolIdToName(input);
   let SORT_KEY: keyof DropDownItem = "headingId";
-  return _(selectAllPoints(input).filter(x => !!x.body.id))
+  let points = selectAllPoints(input)
     .filter(x => (x.body.pointer_type !== "ToolSlot"))
+  let toolDDI = selectAllTools(input)
+    .filter(x => !!x.body.id)
+    .map(t => formatTools(t));
+  return _(points)
     .map(formatPoint(toolNameById))
     .sortBy(SORT_KEY)
     .reverse()
-    .concat(selectAllTools(input).map(t => formatTools(t)))
+    .concat(toolDDI)
+    .filter(x => parseInt("" + x.value) > 0)
     .value();
 }
 

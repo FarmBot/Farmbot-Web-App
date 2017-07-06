@@ -27,8 +27,7 @@ c = function () {
   // PLUGINS:
   [
     new webpack.DefinePlugin({
-      "process.env.NODE_ENV": JSON.stringify("production"),
-      "process.env.REVISION": VERSION
+      "process.env.NODE_ENV": JSON.stringify("production")
     }),
     new ExtractTextPlugin({
       // Temporary hotfix for some issues on staging.

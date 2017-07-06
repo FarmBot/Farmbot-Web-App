@@ -1,7 +1,6 @@
 import { t } from "i18next";
 import { error } from "farmbot-toastr";
 import {
-  Xhr,
   METHODS,
   notifyBotOfChanges,
   METHOD_MAP,
@@ -11,8 +10,9 @@ import {
 import { API } from "./api/index";
 import { AuthState } from "./auth/interfaces";
 import * as _ from "lodash";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
-export function responseFulfilled(input: Xhr): Xhr {
+export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   let method = input.config.method;
   if (method && METHODS.includes(method)) {
     notifyBotOfChanges(input.config.url, METHOD_MAP[method]);
@@ -57,8 +57,8 @@ export function responseRejected(x: SafeError | undefined) {
 }
 
 export function requestFulfilled(auth: AuthState) {
-  return (config: Axios.AxiosXHRConfig<{}>) => {
-    let req = config.url;
+  return (config: AxiosRequestConfig) => {
+    let req = config.url || "";
     let isAPIRequest = req.includes(API.current.baseUrl);
     if (isAPIRequest) {
       config.headers = config.headers || {};
