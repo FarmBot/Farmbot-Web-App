@@ -43,7 +43,7 @@ export class NavBar extends React.Component<NavBarProps, {}> {
               <div className="nav-right">
                 <Popover
                   inline
-                  interactionKind={PopoverInteractionKind.CLICK}
+                  interactionKind={PopoverInteractionKind.HOVER}
                   target={<div className="nav-name">{firstName}</div>}
                   position={Position.BOTTOM_RIGHT}
                   content={AdditionalMenu(this.logout)}
