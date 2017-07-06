@@ -77,7 +77,7 @@ class NiceResponse
   end
 
   def has_body?
-    r.body.size > 2
+    r.body.size > 4
   end
 
   def display_body
