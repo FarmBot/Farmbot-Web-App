@@ -10,8 +10,8 @@ before_script:
 - mkdir -p public/app
 - touch public/app/index.html
 - "./install_frontend.sh"
-- bundle exec rake db:create db:migrate
 - bundle install
+- bundle exec rake db:create db:migrate
 - yarn install
 script:
 - export SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
