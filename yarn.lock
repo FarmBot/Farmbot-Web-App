@@ -2,20 +2,7 @@
 # yarn lockfile v1
 
 
-"@blueprintjs/core@^1.18.0":
-  version "1.21.0"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.21.0.tgz#b5c456e73983f1f0b17f9c41a820cb2060edf8d6"
-  dependencies:
-    "@types/dom4" "^1.5.20"
-    "@types/tether" "^1.1.27"
-    classnames "^2.2"
-    dom4 "^1.8"
-    normalize.css "4.1.1"
-    pure-render-decorator "^1.1"
-    tether "^1.4"
-    tslib "^1.5.0"
-
-"@blueprintjs/core@^1.22.0":
+"@blueprintjs/core@^1.18.0", "@blueprintjs/core@^1.22.0":
   version "1.22.0"
   resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.22.0.tgz#5da642fcc4d614d90c1b0f1864b30e3da9c08a9f"
   dependencies:
@@ -125,11 +112,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*":
-  version "8.0.7"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.7.tgz#fb0ad04b5b6f6eabe0372a32a8f1fbba5c130cae"
-
-"@types/node@^8.0.8":
+"@types/node@*", "@types/node@^8.0.8":
   version "8.0.8"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.8.tgz#0dc4ca2c6f6fc69baee16c5e928c4a627f517ada"
 
