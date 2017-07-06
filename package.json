@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@blueprintjs/core": "^1.22.0",
-    "@blueprintjs/labs": "^0.2.0",
+    "@blueprintjs/labs": "^0.3.0",
     "@types/deep-freeze": "^0.1.1",
     "@types/enzyme": "^2.8.1",
     "@types/fastclick": "^1.0.28",
@@ -39,7 +39,7 @@
     "@types/markdown-it": "^0.0.2",
     "@types/mqtt": "^0.0.34",
     "@types/node": "^8.0.8",
-    "@types/react": "^15.0.34",
+    "@types/react": "^15.0.35",
     "@types/react-color": "^2.11.4",
     "@types/react-dom": "^15.5.1",
     "@types/react-redux": "^4.4.32",
