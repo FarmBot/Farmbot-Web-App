@@ -3,6 +3,11 @@
   height: 3.5rem;
   margin-bottom: 1.5rem;
   text-align: left !important;
+  &.active {
+    box-shadow: none !important;
+    border: 1px solid $white;
+    pointer-events: none !important;
+  }
   button {
     transition: all 0.2s ease-out;
     text-align: left;

@@ -1,15 +1,22 @@
 import * as React from "react";
+import { Link } from "react-router";
+import * as _ from "lodash";
+import { t } from "i18next";
+import { history, push } from "../history";
 import { selectSequence } from "./actions";
 import { SequencesListProps, SequencesListState } from "./interfaces";
-import { isMobile, sortResourcesById } from "../util";
-import { Link } from "react-router";
+import {
+  isMobile,
+  sortResourcesById,
+  urlFriendly,
+  lastUrlChunk
+} from "../util";
 import { Row, Col, ToolTip } from "../ui/index";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { init } from "../api/crud";
 import { ToolTips } from "../constants";
-import { t } from "i18next";
 
-let buttonList = (dispatch: Function) =>
+let sequenceList = (dispatch: Function) =>
   (ts: TaggedSequence, index: number) => {
     let css = [
       "fb-button",
@@ -18,27 +25,21 @@ let buttonList = (dispatch: Function) =>
       "full-width",
       "text-left",
       `${ts.body.color || "purple"}`,
-      "block-header"].join(" ");
-    let click = () => { dispatch(selectSequence(ts.uuid)); };
+      "block-header"
+    ];
+    lastUrlChunk() === urlFriendly(ts.body.name) && css.push("active");
+    let click = () => dispatch(selectSequence(ts.uuid));
     let name = ts.body.name + (ts.dirty ? "*" : "");
     let { uuid } = ts;
-    if (isMobile()) {
-      return <Link
-        to={`/app/sequences/${ts.body.name.replace(" ", "_").toLowerCase()}`}
-        key={uuid}
-        onClick={click}
-        className={css}>
+    return <Link
+      to={`/app/sequences/${urlFriendly(ts.body.name) || ""}`}
+      key={uuid}
+      onClick={click}
+    >
+      <button className={css.join(" ")}>
         {name}
-      </Link>;
-    } else {
-      return <button
-        key={uuid}
-        onClick={click}
-        className={css}>
-        {name}
-        <i className="fa fa-pencil block-control" />
-      </button>;
-    }
+      </button>
+    </Link>;
   };
 
 export class SequencesList extends
@@ -48,9 +49,8 @@ export class SequencesList extends
     searchTerm: ""
   };
 
-  onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
+  onChange = (e: React.SyntheticEvent<HTMLInputElement>) =>
     this.setState({ searchTerm: e.currentTarget.value });
-  }
 
   emptySequence = (): TaggedSequence => {
     return {
@@ -63,7 +63,7 @@ export class SequencesList extends
         kind: "sequence",
         body: []
       }
-    }
+    };
   }
 
   render() {
@@ -75,8 +75,10 @@ export class SequencesList extends
         <i>{t("Sequences")}</i>
       </h3>
       <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
-      <button className="fb-button green"
-        onClick={() => dispatch(init(this.emptySequence()))}>
+      <button
+        className="fb-button green"
+        onClick={() => dispatch(init(this.emptySequence()))}
+      >
         <i className="fa fa-plus" />
       </button>
       <input
@@ -87,8 +89,12 @@ export class SequencesList extends
         <Col xs={12}>
           {
             sortResourcesById(sequences)
-              .filter(seq => seq.body.name.toLowerCase().includes(searchTerm))
-              .map(buttonList(dispatch))
+              .filter(seq => seq
+                .body
+                .name
+                .toLowerCase()
+                .includes(searchTerm))
+              .map(sequenceList(dispatch))
           }
         </Col>
       </Row>
