@@ -6,6 +6,7 @@ import { checkControllerUpdates, updateConfig } from "../actions";
 import { isUndefined, noop } from "lodash";
 import { semverCompare, SemverResult } from "../../util";
 import * as _ from "lodash";
+import { Row, Col } from "../../ui/index";
 
 export let OsUpdateButton = ({ bot }: BotProp) => {
   let osUpdateBool = bot.hardware.configuration.os_auto_update;
@@ -29,21 +30,27 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
   }
   let toggleVal = isUndefined(osUpdateBool) ? "undefined" : ("" + osUpdateBool);
   return <div className="updates">
-    <p>
-      {t("Auto Updates?")}
-    </p>
-    <ToggleButton toggleval={toggleVal}
-      toggleAction={() => {
-        let os_auto_update = !osUpdateBool ? 1 : 0;
-        // TODO: This no longer needs to be a thunk
-        //       since it does not change redux state.
-        updateConfig({ os_auto_update })(noop);
-      }} />
-    <button
-      className={"fb-button " + buttonColor}
-      onClick={() => checkControllerUpdates()}
-    >
-      {buttonStr}
-    </button>
+    <Row>
+      <Col xs={4}>
+        <p>{t("Auto Updates?")}</p>
+      </Col>
+      <Col xs={1}>
+        <ToggleButton toggleval={toggleVal}
+          toggleAction={() => {
+            let os_auto_update = !osUpdateBool ? 1 : 0;
+            // TODO: This no longer needs to be a thunk
+            //       since it does not change redux state.
+            updateConfig({ os_auto_update })(noop);
+          }} />
+      </Col>
+      <Col xs={7}>
+        <button
+          className={"fb-button " + buttonColor}
+          onClick={() => checkControllerUpdates()}
+        >
+          {buttonStr}
+        </button>
+      </Col>
+    </Row>
   </div>;
 };
