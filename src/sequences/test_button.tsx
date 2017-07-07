@@ -3,7 +3,7 @@ import { t } from "i18next";
 import { SyncStatus } from "farmbot/dist";
 import { TaggedSequence } from "../resources/tagged_resources";
 
-interface Props {
+export interface TestBtnProps {
   /** Callback fired ONLY if synced. */
   onClick(): void;
   /** Callback fired is NOT synced. */
@@ -12,15 +12,16 @@ interface Props {
   sequence: TaggedSequence;
 }
 
-export function TestButton({ onClick, onFail, syncStatus, sequence }: Props) {
+export function TestButton({ onClick, onFail, syncStatus, sequence }: TestBtnProps) {
   let isSynced = syncStatus === "synced";
   let isSaved = !sequence.dirty;
-  let className = isSynced ? "orange" : "gray";
+  let canTest = isSynced && isSaved;
+  let className = canTest ? "orange" : "gray";
 
-  let clickHandler = () => (isSynced) ?
+  let clickHandler = () => (canTest) ?
     onClick() : onFail(t("Sync device before running."));
 
-  return <button className={`fb-button ${className}`} onClick={onClick} >
+  return <button className={`fb-button ${className}`} onClick={clickHandler} >
     {t("Test")}
   </button>;
 }
