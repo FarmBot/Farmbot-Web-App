@@ -10,6 +10,7 @@ import { history } from "../history";
 import { updatePageInfo } from "../util";
 import { SyncButton } from "./sync_button";
 import { NavLinks } from "./links";
+import { TickerList } from "./ticker_list";
 import { AdditionalMenu } from "./additional_menu";
 import {
   Popover,
@@ -36,27 +37,30 @@ export class NavBar extends React.Component<NavBarProps, {}> {
       <nav role="navigation">
         <Row>
           <Col xs={12}>
-            <div className="nav-group">
-              <div className="nav-left">
-                {NavLinks()}
-              </div>
-              <div className="nav-right">
-                <Popover
-                  inline
-                  interactionKind={PopoverInteractionKind.HOVER}
-                  target={<div className="nav-name">{firstName}</div>}
-                  position={Position.BOTTOM_RIGHT}
-                  content={AdditionalMenu(this.logout)}
-                />
-                <EStopButton
-                  bot={this.props.bot}
-                  user={this.props.user}
-                />
-                <SyncButton
-                  bot={this.props.bot}
-                  user={this.props.user}
-                  dispatch={this.props.dispatch}
-                />
+            <div>
+              {TickerList({ logs: this.props.logs })}
+              <div className="nav-group">
+                <div className="nav-left">
+                  {NavLinks()}
+                </div>
+                <div className="nav-right">
+                  <Popover
+                    inline
+                    interactionKind={PopoverInteractionKind.HOVER}
+                    target={<div className="nav-name">{firstName}</div>}
+                    position={Position.BOTTOM_RIGHT}
+                    content={AdditionalMenu(this.logout)}
+                  />
+                  <EStopButton
+                    bot={this.props.bot}
+                    user={this.props.user}
+                  />
+                  <SyncButton
+                    bot={this.props.bot}
+                    user={this.props.user}
+                    dispatch={this.props.dispatch}
+                  />
+                </div>
               </div>
             </div>
           </Col>
