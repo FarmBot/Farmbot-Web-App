@@ -41,6 +41,7 @@ nav {
       color: $white;
     }
     &.active {
+      pointer-events: none;
       font-weight: bold;
       color: $white;
       &:after {

@@ -95,10 +95,11 @@
   text-transform: uppercase;
   color: $gray;
   float: right;
-  font-weight: bold;
+  font-weight: normal;
   margin-top: 1.8rem;
   cursor: pointer;
   &:hover {
+    font-weight: bold;
     color: $white;
   }
 }

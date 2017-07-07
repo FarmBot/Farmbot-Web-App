@@ -2,6 +2,8 @@ import * as React from "react";
 import { Link } from "react-router";
 import { t } from "i18next";
 
+import { history } from "../history";
+
 export const links = [
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
   { name: "Controls", icon: "keyboard-o", slug: "controls" },
@@ -13,12 +15,14 @@ export const links = [
 ];
 
 export const NavLinks = () => {
+  let currPath = history.getCurrentLocation().pathname;
   return <div className="links">
     <div className="nav-links">
       {links.map(link => {
+        let cn = currPath.includes(link.slug) ? "active" : "";
         return <Link
           to={"/app/" + link.slug}
-          activeClassName="active"
+          className={cn}
           key={link.slug}
         >
           <i className={`fa fa-${link.icon}`} />
