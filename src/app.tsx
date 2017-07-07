@@ -8,6 +8,7 @@ import { Spinner } from "./spinner";
 import { BotState } from "./devices/interfaces";
 import { ResourceName, TaggedUser } from "./resources/tagged_resources";
 import { selectAllLogs, maybeFetchUser } from "./resources/selectors";
+import { HotKeys } from "./hotkeys";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
 let fastClick = require("fastclick");
@@ -76,6 +77,7 @@ export default class App extends React.Component<AppProps, {}> {
   render() {
     let syncLoaded = this.isLoaded;
     return <div className="app">
+      <HotKeys />
       <NavBar
         user={this.props.user}
         bot={this.props.bot}
