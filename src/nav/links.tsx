@@ -14,15 +14,17 @@ export const links = [
   { name: "Farmware", icon: "crosshairs", slug: "farmware" }
 ];
 
+let classNames = ["hidden-xs"];
+
 export const NavLinks = () => {
   let currPath = history.getCurrentLocation().pathname;
   return <div className="links">
     <div className="nav-links">
       {links.map(link => {
-        let cn = currPath.includes(link.slug) ? "active" : "";
+        currPath.includes(link.slug) && classNames.push("active");
         return <Link
           to={"/app/" + link.slug}
-          className={cn}
+          className={classNames.join(" ")}
           key={link.slug}
         >
           <i className={`fa fa-${link.icon}`} />

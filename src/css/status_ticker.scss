@@ -1,153 +1,153 @@
 // CSS for the Status Ticker in the main nav
 .ticker-list {
-    position: fixed;
+  position: fixed;
+  z-index: 3;
+  cursor: pointer;
+  left: 0;
+  right: 0;
+  top: 0;
+  overflow: scroll;
+  height: 3.2rem;
+  background: #000;
+  transition: all 0.2s ease-in-out;
+  touch-action: manipulation;
+  .status-ticker-wrapper:first-child {
+    background: #000;
+    padding: .8rem 3.4rem 0.2rem;
     z-index: 3;
-    cursor: pointer;
+    position: fixed;
     left: 0;
     right: 0;
-    top: 0;
-    overflow: scroll;
-    height: 3.2rem;
-    background: #000;
+    .status-ticker-message,
+    .status-ticker-created-at {
+      padding: 0.2rem;
+    }
+    .status-ticker-message *,
+    .status-ticker-created-at {
+      opacity: 1 !important;
+      text-transform: uppercase !important;
+      font-size: 1.2rem !important;
+      font-weight: bold;
+    }
+    .markdown p {
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+    .saucer {
+      opacity: 1;
+      width: 1.8rem;
+      height: 1.8rem;
+    }
+  }
+  .status-ticker-wrapper:nth-child(2) {
+    margin-top: 5rem;
+  }
+  a {
+    padding: 0;
+    text-decoration: underline !important;
+  }
+  &:after {
     transition: all 0.2s ease-in-out;
-    touch-action: manipulation;
-    .status-ticker-wrapper:first-child {
-        background: #000;
-        padding: .8rem 3.4rem 0.2rem;
-        z-index: 3;
-        position: fixed;
-        left: 0;
-        right: 0;
-        .status-ticker-message,
-        .status-ticker-created-at {
-            padding: 0.2rem;
-        }
-        .status-ticker-message *,
-        .status-ticker-created-at {
-            opacity: 1 !important;
-            text-transform: uppercase !important;
-            font-size: 1.2rem !important;
-            font-weight: bold;
-        }
-        .markdown p {
-            white-space: nowrap !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-        }
-        .saucer {
-            opacity: 1;
-            width: 1.8rem;
-            height: 1.8rem;
-        }
+    content: "";
+    position: fixed;
+    transform: translateY(-34rem);
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 34rem;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(to top, black 0%, transparent 30%);
+  }
+  .status-ticker-wrapper {
+    display: block;
+    position: relative;
+    padding: 0.2rem 3.4rem;
+    margin-bottom: 0.6rem;
+    transition: all 0.2s ease-in-out;
+    .status-ticker-message * {
+      transition: all 0.2s ease-in-out;
+      font-size: 1.3rem;
+      opacity: 0;
+      text-transform: none;
+      font-weight: normal;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
     }
-    .status-ticker-wrapper:nth-child(2) {
-        margin-top: 5rem;
+    .saucer {
+      transition: all 0.2s ease-in-out;
+      width: 1.4rem;
+      height: 1.4rem;
+      vertical-align: top;
+      opacity: 0;
     }
-    a {
-        padding: 0;
-        text-decoration: underline !important;
+    .status-ticker-created-at {
+      transition: all 0.2s ease-in-out;
+      float: right;
+      color: $white;
+      text-transform: none;
+      font-weight: 300;
+      opacity: 0;
     }
+  }
+  &.expanded {
+    transition: all 0.2s ease-in-out 0.2s;
+    height: 34rem;
+    box-shadow: 0px 0px 16px #000;
+    background: rgba(0, 0, 0, 0.8);
+    padding-bottom: 5rem;
+    .status-ticker-message * {
+      transition: all 0.2s ease-in-out;
+      opacity: 1 !important;
+    }
+    .saucer {
+      transition: all 0.2s ease-in-out;
+      opacity: 1 !important;
+    }
+    .status-ticker-created-at {
+      transition: all 0.2s ease-in-out;
+      opacity: 1 !important;
+    }
+    &:before,
     &:after {
-        transition: all 0.2s ease-in-out;
-        content: "";
-        position: fixed;
-        transform: translateY(-34rem);
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 34rem;
-        z-index: 2;
-        pointer-events: none;
-        background: linear-gradient(to top, black 0%, transparent 30%);
+      transition: all 0.2s ease-in-out 0.2s;
+      transform: translateY(0);
     }
-    .status-ticker-wrapper {
-        display: block;
-        position: relative;
-        padding: 0.2rem 3.4rem;
-        margin-bottom: 0.6rem;
-        transition: all 0.2s ease-in-out;
-        .status-ticker-message * {
-            transition: all 0.2s ease-in-out;
-            font-size: 1.3rem;
-            opacity: 0;
-            text-transform: none;
-            font-weight: normal;
-            text-rendering: optimizeLegibility;
-            -webkit-font-smoothing: antialiased;
-        }
-        .saucer {
-            transition: all 0.2s ease-in-out;
-            width: 1.4rem;
-            height: 1.4rem;
-            vertical-align: top;
-            opacity: 0;
-        }
-        .status-ticker-created-at {
-            transition: all 0.2s ease-in-out;
-            float: right;
-            color: $white;
-            text-transform: none;
-            font-weight: 300;
-            opacity: 0;
-        }
-    }
-    &.expanded {
-        transition: all 0.2s ease-in-out 0.2s;
-        height: 34rem;
-        box-shadow: 0px 0px 16px #000;
-        background: rgba(0, 0, 0, 0.8);
-        padding-bottom: 5rem;
-        .status-ticker-message * {
-            transition: all 0.2s ease-in-out;
-            opacity: 1 !important;
-        }
-        .saucer {
-            transition: all 0.2s ease-in-out;
-            opacity: 1 !important;
-        }
-        .status-ticker-created-at {
-            transition: all 0.2s ease-in-out;
-            opacity: 1 !important;
-        }
-        &:before,
-        &:after {
-            transition: all 0.2s ease-in-out 0.2s;
-            transform: translateY(0);
-        }
-    }
+  }
 }
 
 .saucer {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: inline-block;
-    background: $green;
-    transition: all 0.2s ease;
-    &.active {
-        border: 3px solid #666;
-    }
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  background: $green;
+  transition: all 0.2s ease;
+  &.active {
+    border: 3px solid #666;
+  }
 }
 
 .status-ticker-message {
-    color: $off-white;
-    margin-bottom: 0px;
-    margin-left: 15px;
-    line-height: 20px;
-    vertical-align: top;
-    max-width: 82%;
+  color: $off-white;
+  margin-bottom: 0px;
+  margin-left: 15px;
+  line-height: 20px;
+  vertical-align: top;
+  max-width: 64%;
 }
 
 .status-ticker-message span {
-    -webkit-animation: flash 1.5s ease-in;
-    animation: flash 1.5s ease-in;
+  -webkit-animation: flash 1.5s ease-in;
+  animation: flash 1.5s ease-in;
 }
 
 @keyframes flash {
-    0% {
-        text-shadow: white 0px 0px 10px;
-    }
-    100% {
-        text-shadow: none;
-    }
+  0% {
+    text-shadow: white 0px 0px 10px;
+  }
+  100% {
+    text-shadow: none;
+  }
 }
