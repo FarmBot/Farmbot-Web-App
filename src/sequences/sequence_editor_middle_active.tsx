@@ -17,6 +17,8 @@ import { save, edit, destroy } from "../api/crud";
 import { GetState } from "../redux/interfaces";
 import { ToolTips } from "../constants";
 import { get } from "lodash";
+import { TestButton } from "./test_button";
+import { warning } from "farmbot-toastr";
 
 let onDrop = (index: number, dispatch1: Function, sequence: TaggedSequence) =>
   (key: string) => {
@@ -76,12 +78,11 @@ export class SequenceEditorMiddleActive
           isSaved={isSaved}
           onClick={() => { dispatch(save(sequence.uuid)); }}
         />
-        <button
-          className="fb-button orange"
-          onClick={performSeq(dispatch, sequence)}
-        >
-          {t("Save & Run")}
-        </button>
+        <TestButton
+          syncStatus={this.props.syncStatus}
+          sequence={sequence}
+          onFail={warning}
+          onClick={performSeq(dispatch, sequence)} />
         <button
           className="fb-button red"
           onClick={() => dispatch(destroy(sequence.uuid))}

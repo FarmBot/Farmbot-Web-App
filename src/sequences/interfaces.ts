@@ -3,7 +3,8 @@ import { AuthState } from "../auth/interfaces";
 import {
   Sequence as CeleryScriptSequence,
   SequenceBodyItem,
-  LegalArgString
+  LegalArgString,
+  SyncStatus
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import {
@@ -22,6 +23,7 @@ export interface Props {
   sequence: TaggedSequence | undefined;
   auth: AuthState | undefined;
   resources: ResourceIndex;
+  syncStatus: SyncStatus;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -34,10 +36,12 @@ export interface SequenceEditorMiddleProps {
   /** @deprecated Use props.resources now. */
   slots: TaggedToolSlotPointer[];
   resources: ResourceIndex;
+  syncStatus: SyncStatus;
 }
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
   sequence: TaggedSequence;
+  syncStatus: SyncStatus;
 }
 
 export type CHANNEL_NAME = "toast" | "ticker";
