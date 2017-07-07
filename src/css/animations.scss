@@ -27,3 +27,12 @@
     transform: translateY(-3px);
   }
 }
+
+@keyframes flash {
+  0% {
+    text-shadow: white 0px 0px 10px;
+  }
+  100% {
+    text-shadow: none;
+  }
+}

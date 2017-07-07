@@ -23,7 +23,8 @@ import {
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   state: NavBarState = {
-    mobileMenuOpen: false
+    mobileMenuOpen: false,
+    tickerListOpen: false
   };
 
   logout = () => Session.clear(true);
@@ -45,7 +46,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     updatePageInfo(pageName);
 
     let { toggle } = this;
-    let { mobileMenuOpen } = this.state;
+    let { mobileMenuOpen, tickerListOpen } = this.state;
     let { logs } = this.props;
 
     return <div className="nav-wrapper">
@@ -53,7 +54,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         <Row>
           <Col xs={12}>
             <div>
-              {TickerList({ logs })}
+              {TickerList({ logs, tickerListOpen, toggle })}
               <div className="nav-group">
                 <div className="nav-left">
                   <i
