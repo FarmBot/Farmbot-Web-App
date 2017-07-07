@@ -6,7 +6,8 @@ import {
   TaggedResource,
   ResourceName,
   sanityCheck,
-  isTaggedResource
+  isTaggedResource,
+  TaggedSequence
 } from "./tagged_resources";
 import { generateUuid, arrayWrap } from "./util";
 import { EditResourceParams } from "../api/interfaces";
@@ -31,6 +32,7 @@ import {
   farmwareState
 } from "../farmware/reducer";
 import { Actions } from "../constants";
+import { uuid as rando } from "farmbot/dist";
 
 let consumerReducer = combineReducers<RestResources["consumers"]>({
   regimens,
@@ -71,7 +73,7 @@ export function emptyState(): RestResources {
 
 let initialState: RestResources = emptyState();
 
-let afterEach = (state: RestResources, a: ReduxAction<any>) => {
+let afterEach = (state: RestResources, a: ReduxAction<object>) => {
   state.consumers = consumerReducer({
     sequences: state.consumers.sequences,
     regimens: state.consumers.regimens,
@@ -93,7 +95,7 @@ export let resourceReducer = generateReducer
         let cropInfo = crop.data.attributes;
         addToIndex(s.index, kind, cropInfo, generateUuid(undefined, kind));
       }
-    })
+    });
     return s;
   })
   .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
@@ -158,7 +160,7 @@ export let resourceReducer = generateReducer
       throw new Error("BAD UUID IN UPDATE_RESOURCE_OK");
     }
   })
-  .add<TaggedResource>("*_RESOURCE_NO", (s, { payload }) => {
+  .add<TaggedResource>(Actions._RESOURCE_NO, (s, { payload }) => {
     let uuid = payload.uuid;
     let tr = _.merge(findByUuid(s.index, uuid), payload);
     tr.dirty = true;
@@ -176,16 +178,17 @@ export let resourceReducer = generateReducer
     payload && isTaggedResource(source);
     return s;
   })
-  .add<EditResourceParams>("OVERWRITE_RESOURCE", (s, { payload }) => {
+  .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
     let uuid = payload.uuid;
     let original = findByUuid(s.index, uuid);
     original.body = payload.update as typeof original.body;
     original.dirty = true;
     sanityCheck(original);
     payload && isTaggedResource(original);
+    if (original.kind === "sequences") { setStepUuid(original); }
     return s;
   })
-  .add<TaggedResource>("INIT_RESOURCE", (s, { payload }) => {
+  .add<TaggedResource>(Actions.INIT_RESOURCE, (s, { payload }) => {
     let tr = payload;
     let uuid = tr.uuid;
     // TEMPORARY STUB:
@@ -196,6 +199,9 @@ export let resourceReducer = generateReducer
     // NOTE:      Remove this in June 2017.
     if (tr.kind === "logs" && (typeof tr.body.created_at === "string")) {
       tr.body.created_at = moment(tr.body.created_at).unix();
+    }
+    if (tr.kind == "sequences") {
+      setStepUuid(tr);
     }
     reindexResource(s.index, tr);
     if (tr.kind === "logs") {
@@ -266,13 +272,13 @@ function removeFromIndex(index: ResourceIndex, tr: TaggedResource) {
   let id = tr.body.id;
   index.all = index.all.filter(filterOutUuid(tr));
   index.byKind[tr.kind] = index.byKind[tr.kind].filter(filterOutUuid(tr));
-  delete index.byKindAndId[joinKindAndId(kind, id)]
-  delete index.byKindAndId[joinKindAndId(kind, 0)]
+  delete index.byKindAndId[joinKindAndId(kind, id)];
+  delete index.byKindAndId[joinKindAndId(kind, 0)];
   delete index.references[tr.uuid];
 }
 
 function whoops(origin: string, kind: string) {
-  let msg = `${origin}/${kind}: No handler written for this one yet.`
+  let msg = `${origin}/${kind}: No handler written for this one yet.`;
   throw new Error(msg);
 }
 
@@ -289,3 +295,6 @@ function reindexResource(i: ResourceIndex, r: TaggedResource) {
   removeFromIndex(i, r);
   addToIndex(i, r.kind, r.body, r.uuid);
 }
+
+let setStepUuid = (s: TaggedSequence) => (s.body.body || [])
+  .map(x => _.set(x, "uuid", rando()));

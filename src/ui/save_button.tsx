@@ -23,7 +23,7 @@ interface SaveBtnProps {
 }
 
 /** Animation during saving action */
-function BtnSpinner() { return <span className="btn-spinner" />; }
+const btnSpinner = <span className="btn-spinner" />;
 
 export function SaveBtn(props: SaveBtnProps) {
   let { isDirty, isSaving, isSaved, dirtyText, savingText, savedText } = props;
@@ -39,14 +39,14 @@ export function SaveBtn(props: SaveBtnProps) {
   return <button
     onClick={props.onClick}
     hidden={!!props.hidden}
-    className={`${btnColor} save-btn ${statusClass} fb-button`}
+    className={`${btnColor} ${statusClass} save-btn fb-button`}
   >
 
     {/** Dirty */}
     {isDirty && !isSaving && (t(dirtyText || "Save ") + " *")}
 
     {/** Saving */}
-    {isSaving && (t(savingText || "Saving"))} {isSaving && <BtnSpinner />}
+    {isSaving && (t(savingText || "Saving"))} {isSaving && btnSpinner}
 
     {/** Saved */}
     {isSaved && (t(savedText || "Saved ") + " ✔")}

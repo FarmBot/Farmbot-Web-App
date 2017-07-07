@@ -1,9 +1,9 @@
 import * as React from "react";
+import { connect } from "react-redux";
 import { SequencesList } from "./sequences_list";
 import { StepButtonCluster } from "./step_button_cluster";
 import { SequenceEditorMiddle } from "./sequence_editor_middle";
 import { MobileSequencesNav } from "./mobile_nav";
-import { connect } from "react-redux";
 import { isMobile } from "../util";
 import { Page, Col } from "../ui/index";
 import { Props } from "./interfaces";
@@ -20,6 +20,7 @@ export class Sequences extends React.Component<Props, {}> {
       </Col>
       <Col sm={6}>
         <SequenceEditorMiddle
+          syncStatus={this.props.syncStatus}
           dispatch={this.props.dispatch}
           sequences={this.props.sequences}
           sequence={this.props.sequence}
@@ -33,6 +34,7 @@ export class Sequences extends React.Component<Props, {}> {
         <SequencesList
           dispatch={this.props.dispatch}
           auth={this.props.auth}
+          sequence={this.props.sequence}
           sequences={this.props.sequences}
         />
       </Col>

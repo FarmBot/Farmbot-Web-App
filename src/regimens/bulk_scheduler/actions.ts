@@ -7,6 +7,7 @@ import { assertUuid, findSequence, findRegimen } from "../../resources/selectors
 import { groupRegimenItemsByWeek } from "./group_regimen_items_by_week";
 import { defensiveClone } from "../../util";
 import { overwrite } from "../../api/crud";
+import { Actions } from "../../constants";
 
 export function pushWeek() {
   return {
@@ -27,7 +28,7 @@ export function setTimeOffset(ms: number) {
     throw new Error("Bad time input on regimen page: " + JSON.stringify(ms));
   } else {
     return { type: "SET_TIME_OFFSET", payload: ms };
-  };
+  }
 }
 
 export function toggleDay({ week, day }: ToggleDayParams) {
@@ -42,11 +43,11 @@ export function toggleDay({ week, day }: ToggleDayParams) {
 
 export function setSequence(uuid: string): ReduxAction<string> {
   assertUuid("sequences", uuid);
-  return { type: "SET_SEQUENCE", payload: uuid };
-};
+  return { type: Actions.SET_SEQUENCE, payload: uuid };
+}
 
 export function commitBulkEditor(): Thunk {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     let res = getState().resources;
     let { weeks, dailyOffsetMs, selectedSequenceUUID, currentRegimen } =
       res.consumers.regimens;

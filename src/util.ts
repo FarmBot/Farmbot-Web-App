@@ -9,6 +9,7 @@ import { box } from "boxed_value";
 import { TaggedResource } from "./resources/tagged_resources";
 import { Session } from "./session";
 import { AxiosResponse } from "axios";
+import { history } from "./history";
 
 // http://stackoverflow.com/a/901144/1064917
 // Grab a query string param by name, because react-router-redux doesn't
@@ -416,7 +417,7 @@ export type JSXChildren = JSXChild[] | JSXChild;
  *        This is a work around until then. */
 export function hardRefresh() {
   // Change this string to trigger a force cache reset.
-  let HARD_RESET = "NEED_HARD_REFRESH4";
+  let HARD_RESET = "CACHE5";
   if (localStorage && sessionStorage) {
     if (!localStorage.getItem(HARD_RESET)) {
       console.warn("Performing hard reset of localstorage and JS cookies.");
@@ -472,4 +473,15 @@ export interface HttpPromise<T> extends Promise<HttpData<T>> { }
 
 export function shortRevision() {
   return (process.env.SHORT_REVISION || "NONE").slice(0, 8);
+}
+
+/** When needing to reference the url in some js universally or vice versa. */
+export function urlFriendly(unformattedString: string) {
+  return unformattedString.replace(/ /gi, "_").toLowerCase();
+}
+
+/** Get remainder of current url after the last "/". */
+export function lastUrlChunk() {
+  let p = history.getCurrentLocation().pathname;
+  return p.split("/")[p.split("/").length - 1];
 }

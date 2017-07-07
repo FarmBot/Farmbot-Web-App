@@ -13,8 +13,8 @@ export function WidgetHeader(props: WidgetHeaderProps) {
     {props.children}
     <h5>{t(props.title)}</h5>
     {props.helpText &&
-      <i className="fa fa-question-circle widget-help-icon">
-        <div className="widget-help-text">
+      <i className="fa fa-question-circle help-icon">
+        <div className="help-text">
           {props.helpText}
         </div>
       </i>

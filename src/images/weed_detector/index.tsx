@@ -4,7 +4,7 @@ import { Pair } from "farmbot";
 import { DetectorState } from "../interfaces";
 import { TitleBar } from "./title";
 import { devices } from "../../device";
-import { Row, Col, Widget } from "../../ui/index";
+import { Row, Col, Widget, WidgetBody } from "../../ui/index";
 import { t } from "i18next";
 import { resetWeedDetection, selectImage, detectWeeds } from "../actions";
 import { Progress } from "../../util";
@@ -67,39 +67,35 @@ export class WeedDetector
   });
 
   render() {
-    return <Widget className="weed-detector-widget coming-soon">
-      <Row>
-        <Col>
-          <TitleBar
-            onDeletionClick={this.clearWeeds}
-            deletionProgress={this.state.deletionProgress}
-            onSave={() => { console.log("TODO"); }}
-            onTest={this.test}
-            title={"Weed Detector"}
-            help={t(ToolTips.WEED_DETECTOR)}
-            env={this.props.env}
-          />
-          <Row>
-            <Col sm={12}>
-              <ImageWorkspace
-                onProcessPhoto={(id) => { this.props.dispatch(detectWeeds(id)); }}
-                onFlip={(uuid) => this.props.dispatch(selectImage(uuid))}
-                currentImage={this.props.currentImage}
-                images={this.props.images}
-                onChange={this.translateValueAndSave}
-                iteration={envGet("WEED_DETECTOR_iteration", this.props.env)}
-                morph={envGet("WEED_DETECTOR_morph", this.props.env)}
-                blur={envGet("WEED_DETECTOR_blur", this.props.env)}
-                H_LO={envGet("WEED_DETECTOR_H_LO", this.props.env)}
-                H_HI={envGet("WEED_DETECTOR_H_HI", this.props.env)}
-                S_LO={envGet("WEED_DETECTOR_S_LO", this.props.env)}
-                S_HI={envGet("WEED_DETECTOR_S_HI", this.props.env)}
-                V_LO={envGet("WEED_DETECTOR_V_LO", this.props.env)}
-                V_HI={envGet("WEED_DETECTOR_V_HI", this.props.env)} />
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+    return <Widget className="weed-detector-widget">
+      <TitleBar
+        onDeletionClick={this.clearWeeds}
+        deletionProgress={this.state.deletionProgress}
+        onTest={this.test}
+        title={"Weed Detector"}
+        help={t(ToolTips.WEED_DETECTOR)} />
+      <WidgetBody>
+        <Row>
+          <Col sm={12}>
+            <ImageWorkspace
+              onProcessPhoto={(id) => { this.props.dispatch(detectWeeds(id)); }}
+              onFlip={(uuid) => this.props.dispatch(selectImage(uuid))}
+              currentImage={this.props.currentImage}
+              images={this.props.images}
+              onChange={this.translateValueAndSave}
+              iteration={envGet("WEED_DETECTOR_iteration", this.props.env)}
+              morph={envGet("WEED_DETECTOR_morph", this.props.env)}
+              blur={envGet("WEED_DETECTOR_blur", this.props.env)}
+              H_LO={envGet("WEED_DETECTOR_H_LO", this.props.env)}
+              H_HI={envGet("WEED_DETECTOR_H_HI", this.props.env)}
+              S_LO={envGet("WEED_DETECTOR_S_LO", this.props.env)}
+              S_HI={envGet("WEED_DETECTOR_S_HI", this.props.env)}
+              V_LO={envGet("WEED_DETECTOR_V_LO", this.props.env)}
+              V_HI={envGet("WEED_DETECTOR_V_HI", this.props.env)}
+            />
+          </Col>
+        </Row>
+      </WidgetBody>
     </Widget>;
   }
 }

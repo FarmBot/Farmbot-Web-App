@@ -13,7 +13,8 @@ export class SequenceEditorMiddle
       sequences,
       tools,
       slots,
-      resources
+      resources,
+      syncStatus
     } = this.props;
     if (sequence && isTaggedSequence(sequence)) {
       return <SequenceEditorMiddleActive
@@ -22,7 +23,8 @@ export class SequenceEditorMiddle
         sequence={sequence}
         sequences={sequences}
         tools={tools}
-        resources={resources} />;
+        resources={resources}
+        syncStatus={syncStatus} />;
     } else {
       return <SequenceEditorMiddleInactive />;
     }

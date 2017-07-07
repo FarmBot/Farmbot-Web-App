@@ -23,9 +23,9 @@ export function WeedDetectorConfig(props: SettingsMenuProps) {
       <BlurableInput type="number"
         id={conf}
         value={"" + envGet(conf, props.values)}
-        onCommit={e => props.onChange(conf, parseInt(e.currentTarget.value, 10))}
+        onCommit={e => props.onChange(conf, parseFloat(e.currentTarget.value))}
         placeholder={label} />
-    </div>
+    </div>;
   };
 
   let setDDI = (k: keyof WD_ENV) => (d: DropDownItem) => {
@@ -34,13 +34,13 @@ export function WeedDetectorConfig(props: SettingsMenuProps) {
     } else {
       throw new Error("Weed detector got a non-numeric value");
     }
-  }
+  };
 
   let find = (needle: keyof WD_ENV): DropDownItem => {
     let wow = envGet(needle, props.values);
     let ok = SPECIAL_VALUE_DDI[wow];
     return ok || NULL_CHOICE;
-  }
+  };
 
   return <div>
     <label htmlFor="invert_hue_selection">
@@ -64,11 +64,11 @@ export function WeedDetectorConfig(props: SettingsMenuProps) {
       {t(`Calibration Object Separation along axis`)}
     </label>
     <FBSelect
+      isFilterable={false}
       onChange={setDDI("CAMERA_CALIBRATION_calibration_along_axis")}
       selectedItem={find("CAMERA_CALIBRATION_calibration_along_axis")}
       list={CALIBRATION_DROPDOWNS}
-      placeholder="Select..."
-    />
+      placeholder="Select..." />
     <Row>
       <Col xs={6}>
         <NumberBox
@@ -87,6 +87,7 @@ export function WeedDetectorConfig(props: SettingsMenuProps) {
       {t(`Origin Location in Image`)}
     </label>
     <FBSelect
+      isFilterable={false}
       list={ORIGIN_DROPDOWNS}
       onChange={setDDI("CAMERA_CALIBRATION_image_bot_origin_location")}
       selectedItem={find("CAMERA_CALIBRATION_image_bot_origin_location")}
@@ -107,4 +108,4 @@ export function WeedDetectorConfig(props: SettingsMenuProps) {
       </Col>
     </Row>
   </div>;
-};
+}

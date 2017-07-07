@@ -5,8 +5,9 @@ import { draggableReducer as draggable } from "../draggable/reducer";
 import { combineReducers } from "redux";
 import { ReduxAction } from "./interfaces";
 import { Session } from "../session";
-import { resourceReducer as resources } from "../resources/reducer"
+import { resourceReducer as resources } from "../resources/reducer";
 import { Everything } from "../interfaces";
+import { Actions } from "../constants";
 
 export let reducers = combineReducers({
   auth,
@@ -21,10 +22,10 @@ export function rootReducer(
   /** Sorry for the `any` here. */
   state: any,
   action: ReduxAction<{}>) {
-  if (action.type === "LOGOUT") {
+  if (action.type === Actions.LOGOUT) {
     Session.clear(true);
   }
   // TODO: Get rid of this nasty type case / hack. Resulted from TSC 2.4 upgrade
   // - RC 30 JUN 17
   return reducers(state, action) as Everything;
-};
+}

@@ -86,6 +86,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
     let copy = defensiveClone(this.props.currentSequence).body;
     let step = (copy.body || [])[this.props.index];
     if (step && step.kind === "move_absolute") {
+      // TODO: Hacky...Something off with the copying here
+      delete step.args.location.args;
       step.args = betterMerge(step.args, update);
       this.props.dispatch(overwrite(this.props.currentSequence, copy));
     } else {
@@ -157,7 +159,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
                 <TileMoveAbsSelect
                   resources={this.resources}
                   selectedItem={this.args.location}
-                  onChange={(x) => this.updateArgs({ location: x })} />
+                  onChange={(x) => this.updateArgs({ location: x })}
+                />
               </Col>
               <Col xs={3}>
                 <InputBox

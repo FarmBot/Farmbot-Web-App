@@ -1,15 +1,4 @@
 .sequence-editor,
-.regimen-editor,
-.sequence-list,
-.regimen-list,
-.bulk-scheduler {
-  >button {
-    margin: -3.2rem 0 2rem 1rem;
-    display: inline-block;
-  }
-}
-
-.sequence-editor,
 .regimen-editor {
   background: $light_gray;
   margin: -3rem -1.5rem -6rem;

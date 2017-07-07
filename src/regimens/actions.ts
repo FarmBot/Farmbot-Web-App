@@ -6,7 +6,7 @@ export function editRegimen(r: TaggedRegimen | undefined,
   update: Partial<Regimen>) {
   return (dispatch: Function) => {
     r && isTaggedRegimen(r) && dispatch(edit(r, update));
-  }
+  };
 }
 
 export function saveRegimen(uuid: string) {
@@ -21,7 +21,7 @@ export function selectRegimen(payload: TaggedRegimen) {
   if (isTaggedRegimen(payload)) {
     return { type: "SELECT_REGIMEN", payload };
   } else {
-    throw new Error("Not a regimen.")
+    throw new Error("Not a regimen.");
   }
 }
 
@@ -37,8 +37,7 @@ function emptyRegimen(): TaggedRegimen {
       color: "gray",
       regimen_items: []
     }
-  }
+  };
 }
 
 export let newRegimen = () => init(emptyRegimen());
-

@@ -1,16 +1,17 @@
-import * as React from "react";
-import { connect } from "react-redux";
+import * as React from "react";
+import { connect } from "react-redux";
 import * as _ from "lodash";
-import { init, error } from "farmbot-toastr";
-import { NavBar } from "./nav";
-import { Everything, Log } from "./interfaces";
-import { Spinner } from "./spinner";
+import { init, error } from "farmbot-toastr";
+import { NavBar } from "./nav";
+import { Everything, Log } from "./interfaces";
+import { Spinner } from "./spinner";
 import { BotState } from "./devices/interfaces";
 import { ResourceName, TaggedUser } from "./resources/tagged_resources";
 import { selectAllLogs, maybeFetchUser } from "./resources/selectors";
+import { HotKeys } from "./hotkeys";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
-let fastClick = require("fastclick");
+let fastClick = require("fastclick");
 fastClick.attach(document.body);
 
 /** For the logger module */
@@ -20,10 +21,10 @@ init();
  * If the sync object takes more than 10s to load, the user will be granted
  * access into the app, but still warned.
  */
-const TIMEOUT_MESSAGE = `App could not be fully loaded, we recommend you try 
-refreshing the page.`;
+const TIMEOUT_MESSAGE = `App could not be fully loaded, we recommend you try
+ refreshing the page.`;
 
-interface AppProps {
+interface AppProps {
   dispatch: Function;
   loaded: ResourceName[];
   logs: Log[];
@@ -31,8 +32,8 @@ interface AppProps {
   bot: BotState;
 }
 
-function mapStateToProps(props: Everything): AppProps {
-  return {
+function mapStateToProps(props: Everything): AppProps {
+  return {
     dispatch: props.dispatch,
     user: maybeFetchUser(props.resources.index),
     bot: props.bot,
@@ -61,29 +62,29 @@ export default class App extends React.Component<AppProps, {}> {
 
   get isLoaded() {
     return (MUST_LOAD.length ===
-    _.intersection(this.props.loaded, MUST_LOAD).length);
+      _.intersection(this.props.loaded, MUST_LOAD).length);
   }
 
-  componentDidMount() {
+  componentDidMount() {
     setTimeout(() => {
-      if (!this.isLoaded) {
-        this.props.dispatch({ type: "SYNC_TIMEOUT_EXCEEDED" });
+      if (!this.isLoaded) {
         error(TIMEOUT_MESSAGE, "Warning");
       }
     }, 10000);
   }
 
-  render() {
-    let syncLoaded = this.isLoaded;
+  render() {
+    let syncLoaded = this.isLoaded;
     return <div className="app">
+      <HotKeys dispatch={this.props.dispatch} />
       <NavBar
         user={this.props.user}
         bot={this.props.bot}
         dispatch={this.props.dispatch}
         logs={this.props.logs}
       />
-        {!syncLoaded && <Spinner radius={33} strokeWidth={6} />}
-        {syncLoaded && this.props.children}
+      {!syncLoaded && <Spinner radius={33} strokeWidth={6} />}
+      {syncLoaded && this.props.children}
     </div>;
   }
 }

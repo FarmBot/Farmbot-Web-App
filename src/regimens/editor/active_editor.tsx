@@ -6,8 +6,11 @@ import { RegimenItem, RegimenItemCalendarRow } from "../interfaces";
 import { TaggedRegimen } from "../../resources/tagged_resources";
 import { defensiveClone } from "../../util";
 import { overwrite } from "../../api/crud";
-/** The bottom half of the regimen editor panel (when there's something to
-    actually edit). */
+
+/**
+ * The bottom half of the regimen editor panel (when there's something to
+ * actually edit).
+ */
 export function ActiveEditor(props: ActiveEditorProps) {
   return <div>
     <RegimenNameInput regimen={props.regimen} dispatch={props.dispatch} />
@@ -18,7 +21,7 @@ export function ActiveEditor(props: ActiveEditorProps) {
         {group.items.map(function (row, index2) {
           let { item, regimen } = row;
           let click = () => props.dispatch(removeRegimenItem(item, regimen));
-          let klass = `${row.color} block-header regimen-event`
+          let klass = `${row.color} regimen-event`;
           return <div className={klass} key={`${index1}.${index2}`}>
             <span className="regimen-event-title">{row.name}</span>
             <span className="regimen-event-time">{row.hhmm}</span>

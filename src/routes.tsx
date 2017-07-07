@@ -1,6 +1,7 @@
 import "./css/_index.scss";
 import * as React from "react";
 import { Provider } from "react-redux";
+import * as _ from "lodash";
 import { Router, RedirectFunction, RouterState } from "react-router";
 import App from "./app";
 import { store } from "./redux/store";
@@ -10,7 +11,6 @@ import { ready } from "./config/actions";
 import { Session } from "./session";
 import { isMobile } from "./util";
 import { hardRefresh } from "./util";
-import * as _ from "lodash";
 
 hardRefresh();
 

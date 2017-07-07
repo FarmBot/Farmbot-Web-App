@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Widget, Row, Col } from "../ui/index";
+import { Widget, Row, Col, WidgetBody } from "../ui/index";
 import { CameraCalibrationState, CameraCalibrationProps } from "./interfaces";
 import { TitleBar } from "../images/weed_detector/title";
 import { ImageWorkspace } from "../images/weed_detector/image_workspace";
@@ -16,20 +16,20 @@ export class CameraCalibration extends
   }
 
   render() {
-    return <Widget className="weed-detector-widget coming-soon">
-      <Row>
-        <Col>
-          <TitleBar
-            title={"Camera Calibration"}
-            help={t(ToolTips.CAMERA_CALIBRATION)}
-            onCalibrate={this.calibrate}
-            env={this.props.env}
-          />
+    return (
+      <Widget className="weed-detector-widget">
+        <TitleBar
+          title={"Camera Calibration"}
+          help={t(ToolTips.CAMERA_CALIBRATION)}
+          onCalibrate={this.calibrate}
+          env={this.props.env}
+        />
+        <WidgetBody>
           <Row>
             <Col sm={12}>
               <ImageWorkspace
                 onProcessPhoto={this.props.onProcessPhoto}
-                onFlip={(u) => { console.log("TODO. Stub.") }}
+                onFlip={(u) => { console.log("TODO. Stub."); }}
                 images={this.props.images}
                 currentImage={this.props.currentImage}
                 onChange={(key, value) => {
@@ -58,8 +58,8 @@ export class CameraCalibration extends
               />
             </Col>
           </Row>
-        </Col>
-      </Row>
-    </Widget>
+        </WidgetBody>
+      </Widget>
+    );
   }
 }

@@ -18,5 +18,15 @@ describe Api::PointsController do
       expect(json.first[:meta].keys).to include(:foo1)
 
     end
+
+    it 'queries fields other than meta' do
+      sign_in user
+      FactoryGirl.create(:point, device: device, x: 23)
+      FactoryGirl.create(:point, device: device, x: 98)
+      post :search, body: {x: 23}.to_json, params: {format: :json }
+      expect(response.status).to eq(200)
+      expect(json.length).to eq(1)
+      expect(json.first[:x]).to eq(23)
+    end
   end
 end

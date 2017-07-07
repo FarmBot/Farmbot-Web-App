@@ -3,7 +3,7 @@ import * as React from "react";
 export interface SaucerProps {
   color?: string;
   active?: boolean;
-};
+}
 
 /** A colored UI disc/circle. */
 export function Saucer({ color, active }: SaucerProps) {
