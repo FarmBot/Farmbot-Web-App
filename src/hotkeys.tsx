@@ -27,31 +27,58 @@ export class HotKeys extends React.Component<Props, {}> {
     let right = "/app/" + (links[idx + 1] || links[0]).slug;
     let left = "/app/" + (links[idx - 1] || links[links.length - 1]).slug;
     let hotkeyMap: IHotkeyProps[] = [
+      // Mac
       {
-        combo: "ctrl + shift + s",
-        label: "Sync",
+        combo: "cmd+shift+s",
+        label: "Mac Sync",
         onKeyDown: () => dispatch(sync())
       },
       {
-        combo: "ctrl + shift + right",
-        label: "Navigate Right",
+        combo: "cmd+shift+right",
+        label: "Mac Navigate Right",
         onKeyDown: () => push(right)
       },
       {
-        combo: "ctrl + shift + left",
-        label: "Navigate Left",
+        combo: "cmd+shift+left",
+        label: "Mac Navigate Left",
         onKeyDown: () => push(left)
       },
       {
-        combo: "ctrl + shift + p",
-        label: "Add Plant",
+        combo: "cmd+shift+p",
+        label: "Mac Add Plant",
         onKeyDown: () => push("/app/designer/plants/crop_search")
       },
       {
-        combo: "ctrl + shift + e",
-        label: "Add Farm Event",
+        combo: "cmd+shift+e",
+        label: "Mac Add Farm Event",
         onKeyDown: () => push("/app/designer/farm_events/add")
-      }
+      },
+      // Universal
+      {
+        combo: "ctrl+shift+s",
+        label: "Universal Sync",
+        onKeyDown: () => dispatch(sync())
+      },
+      {
+        combo: "ctrl+shift+right",
+        label: "Universal Navigate Right",
+        onKeyDown: () => push(right)
+      },
+      {
+        combo: "ctrl+shift+left",
+        label: "Universal Navigate Left",
+        onKeyDown: () => push(left)
+      },
+      {
+        combo: "ctrl+shift+p",
+        label: "Universal Add Plant",
+        onKeyDown: () => push("/app/designer/plants/crop_search")
+      },
+      {
+        combo: "ctrl+shift+e",
+        label: "Universal Add Farm Event",
+        onKeyDown: () => push("/app/designer/farm_events/add")
+      },
     ];
     return hotkeyMap;
   }
