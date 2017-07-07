@@ -27,41 +27,43 @@ export function TitleBar({
   title,
   help
 }: Props) {
-  return <WidgetHeader helpText={help} title={title}>
-    <button
-      hidden={!onSave}
-      onClick={onSave}
-      className="fb-button green"
-    >
-      {t("SAVE")}
-    </button>
-    <button
-      hidden={!onTest}
-      onClick={onTest}
-      className="fb-button yellow"
-    >
-      {t("TEST")}
-    </button>
-    <button
-      hidden={!onDeletionClick}
-      onClick={onDeletionClick}
-      className="fb-button red"
-    >
-      {deletionProgress || t("CLEAR WEEDS")}
-    </button>
-    <button
-      hidden={!onCalibrate}
-      onClick={() => { }}
-      className="fb-button green"
-    >
-      {t("Calibrate")}
-    </button>
-    <Popover>
-      <i className="fa fa-cog" />
-      <WeedDetectorConfig
-        values={env}
-        onChange={envSave}
-      />
-    </Popover>
-  </WidgetHeader>;
+  return (
+    <WidgetHeader helpText={help} title={title}>
+      <button
+        hidden={!onSave}
+        onClick={onSave}
+        className="fb-button green"
+      >
+        {t("SAVE")}
+      </button>
+      <button
+        hidden={!onTest}
+        onClick={onTest}
+        className="fb-button yellow"
+      >
+        {t("TEST")}
+      </button>
+      <button
+        hidden={!onDeletionClick}
+        onClick={onDeletionClick}
+        className="fb-button red"
+      >
+        {deletionProgress || t("CLEAR WEEDS")}
+      </button>
+      <button
+        hidden={!onCalibrate}
+        onClick={() => { }}
+        className="fb-button green"
+      >
+        {t("Calibrate")}
+      </button>
+      <Popover>
+        <i className="fa fa-cog" />
+        <WeedDetectorConfig
+          values={env}
+          onChange={envSave}
+        />
+      </Popover>
+    </WidgetHeader>
+  );
 }

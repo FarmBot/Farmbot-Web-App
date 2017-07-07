@@ -72,6 +72,9 @@
   border-color: $light_gray;
   color: $dark_gray;
   padding: 1.25rem;
+  >.row:not(:first-of-type) {
+    margin-top: 1rem;
+  }
 }
 
 .widget-footer {
