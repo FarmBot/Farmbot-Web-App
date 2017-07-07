@@ -21,7 +21,8 @@ export class Regimens extends React.Component<Props, {}> {
             weeks={this.props.weeks}
             sequences={this.props.sequences}
             resources={this.props.resources}
-            dispatch={this.props.dispatch} />
+            dispatch={this.props.dispatch}
+          />
         </Col>
         <Col xs={12} md={6}>
           <RegimenEditorWidget
@@ -29,13 +30,16 @@ export class Regimens extends React.Component<Props, {}> {
             auth={this.props.auth}
             bot={this.props.bot}
             calendar={this.props.calendar}
-            current={this.props.current} />
+            current={this.props.current}
+          />
         </Col>
         {isMobile() && <MobileRegimensNav />}
         <Col xs={12} md={3}>
           <RegimensList
             dispatch={this.props.dispatch}
-            regimens={this.props.regimens} />
+            regimens={this.props.regimens}
+            regimen={this.props.current}
+          />
         </Col>
       </Row>
     </Page>;
