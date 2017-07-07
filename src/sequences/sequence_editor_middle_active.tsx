@@ -56,7 +56,7 @@ export class SequenceEditorMiddleActive
         pushStep(xfer.value, dispatch, sequence);
       } else {
         pushStep(xfer.value, dispatch, sequence);
-      };
+      }
     };
 
     let isSaving = sequence.saving;

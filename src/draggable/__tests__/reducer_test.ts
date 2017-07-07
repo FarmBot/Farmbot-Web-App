@@ -1,5 +1,6 @@
 import { draggableReducer } from "../reducer";
 import { DraggableState } from "../interfaces";
+import { Actions } from "../../constants";
 
 describe("draggableReducer", () => {
   function emptyState(): DraggableState {
@@ -20,7 +21,7 @@ describe("draggableReducer", () => {
 
   it("puts a step", () => {
     let payload = { uuid: "FOO" };
-    let action = { type: "PUT_DATA_XFER", payload };
+    let action = { type: Actions.PUT_DATA_XFER, payload };
     let nextState = draggableReducer(emptyState(), action);
     let dt = nextState.dataTransfer;
     expect(Object.keys(dt)).toContain(payload.uuid);
@@ -30,9 +31,9 @@ describe("draggableReducer", () => {
 
   it("drops a step", () => {
     let payload = "BAR";
-    let action = { type: "DROP_DATA_XFER", payload };
+    let action = { type: Actions.DROP_DATA_XFER, payload };
     let nextState = draggableReducer(emptyState(), action);
     expect(Object.keys(nextState.dataTransfer).length)
       .toEqual(0);
   });
-})
+});

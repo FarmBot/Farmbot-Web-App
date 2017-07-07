@@ -4,6 +4,7 @@ import { SequenceBodyItem as Step } from "farmbot";
 import { Everything } from "../interfaces";
 import { ReduxAction } from "../redux/interfaces";
 import * as React from "react";
+import { Actions } from "../constants";
 export const STEP_DATATRANSFER_IDENTIFER = "farmbot/sequence-step";
 
 /** SIDE EFFECT-Y!! Stores a step into state.draggable.dataTransfer and
@@ -17,7 +18,7 @@ export function stepPut(value: Step,
   let uuid = id();
   ev.dataTransfer.setData(STEP_DATATRANSFER_IDENTIFER, uuid);
   return {
-    type: "PUT_DATA_XFER",
+    type: Actions.PUT_DATA_XFER,
     payload: {
       intent,
       uuid,
@@ -25,7 +26,7 @@ export function stepPut(value: Step,
       draggerId
     }
   };
-};
+}
 
 /** Used by a React component reacting to a "drop" event. Takes a UUID and looks
  * for a step stored in store.draggable.data_transfer. Removes it from the store

@@ -1,5 +1,6 @@
 
 import { regimensReducer } from "../reducer";
+import { Actions } from "../../constants";
 
 const STATE = {
   "dailyOffsetMs": 300000,
@@ -17,12 +18,12 @@ const STATE = {
       }
     }
   ]
-}
+};
 
 describe("Regimens reducer", () => {
   it("initializes", () => {
-    const ACTION = { type: "TOGGLE_DAY", payload: { week: 0, day: 4 } };
+    const ACTION = { type: Actions.TOGGLE_DAY, payload: { week: 0, day: 4 } };
     let nextState = regimensReducer(STATE, ACTION);
     expect(nextState.weeks[0].days["day4"]).toBeFalsy();
-  })
-})
+  });
+});

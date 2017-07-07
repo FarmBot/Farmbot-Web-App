@@ -20,7 +20,6 @@
     ],
     "no-invalid-this": true,
     "no-switch-case-fall-through": true,
-    "no-string-literal": true,
     "no-eval": true,
     "no-any": true,
     "no-duplicate-variable": true,

@@ -16,22 +16,25 @@ import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
 import { SequenceBodyItem } from "farmbot/dist";
 import * as _ from "lodash";
+import { Actions } from "../constants";
 
-export function edit(tr: TaggedResource, update: Partial<typeof tr.body>):
+export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
   return {
-    type: "EDIT_RESOURCE",
-    payload: { uuid: tr.uuid, update: update }
+    type: Actions.EDIT_RESOURCE,
+    payload: { uuid: tr.uuid, update: changes }
   };
 }
 
 /** Rather than update (patch) a TaggedResource, this method will overwrite
  * everything within the `.body` property. */
-export function overwrite(tr: TaggedResource, update: typeof tr.body):
+export function overwrite(tr: TaggedResource,
+  changeset: typeof tr.body):
   ReduxAction<EditResourceParams> {
+
   return {
-    type: "OVERWRITE_RESOURCE",
-    payload: { uuid: tr.uuid, update: update }
+    type: Actions.OVERWRITE_RESOURCE,
+    payload: { uuid: tr.uuid, update: changeset }
   };
 }
 
@@ -64,7 +67,7 @@ export function init(resource: TaggedResource): ReduxAction<TaggedResource> {
   resource.dirty = true;
   /** Technically, this happens in the reducer, but I like to be extra safe. */
   resource.uuid = generateUuid(resource.body.id, resource.kind);
-  return { type: "INIT_RESOURCE", payload: resource };
+  return { type: Actions.INIT_RESOURCE, payload: resource };
 }
 
 export function initSave(resource: TaggedResource) {
