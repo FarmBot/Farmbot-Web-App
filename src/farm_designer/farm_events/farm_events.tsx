@@ -62,7 +62,7 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
       <div className="panel-content events">
 
         <Row>
-          <i className="col-xs-2 fa fa-calendar"></i>
+          <i className="col-xs-2 fa fa-calendar default-pointer"></i>
 
           <Col xs={10}>
             <DeprecatedFBSelect list={[]}
