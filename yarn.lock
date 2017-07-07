@@ -15,9 +15,9 @@
     tether "^1.4"
     tslib "^1.5.0"
 
-"@blueprintjs/labs@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/labs/-/labs-0.2.0.tgz#72014d668faaf70bab759a6d8bed4d9cd1651116"
+"@blueprintjs/labs@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/labs/-/labs-0.3.0.tgz#c3f006c046be98e4cfdcb28f3f58a0719dfa65a2"
   dependencies:
     "@blueprintjs/core" "^1.18.0"
     classnames "^2.2"
@@ -142,9 +142,13 @@
     "@types/history" "^3"
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^15.0.34":
+"@types/react@*":
   version "15.0.34"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.34.tgz#c4f7235f3d245216a706887b7d1ffedaf5b1dc06"
+
+"@types/react@^15.0.35":
+  version "15.0.35"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.35.tgz#4672923cd502d03e1480d03816ebc5a719fb86da"
 
 "@types/redux@^3.6.31":
   version "3.6.31"
