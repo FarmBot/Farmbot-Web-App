@@ -260,14 +260,8 @@
   position: fixed;
   left: 0;
   right: 0;
-  &:active {
-    box-shadow: none !important;
-    transform: translateY(2px);
-  }
-  &:hover {
-    background: darken($green, 5%) !important;
-  }
   i {
     line-height: 5rem;
+    font-size: 2.8rem;
   }
 }
