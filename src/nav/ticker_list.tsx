@@ -33,7 +33,7 @@ export let TickerList = (props: TickerListProps) => {
       onClick={props.toggle("tickerListOpen")}
     >
       <div className="first-ticker">
-        {Ticker(firstTicker || { type: "" }, -1)}
+        {Ticker(firstTicker || {}, -1)}
       </div>
       <Collapse isOpen={props.tickerListOpen}>
         {props
