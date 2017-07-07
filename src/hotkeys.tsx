@@ -1,26 +1,76 @@
 import * as React from "react";
 import * as _ from "lodash";
+import { t } from "i18next";
 import {
   Hotkey,
   Hotkeys,
   HotkeysTarget,
-  IHotkeyProps
+  IHotkeyProps,
+  Overlay,
+  Classes
 } from "@blueprintjs/core";
 
 import { links } from "./nav/links";
 import { sync } from "./devices/actions";
 import { lastUrlChunk } from "./util";
 import { history, push } from "./history";
+import { Row, Col } from "./ui/index";
 
 interface Props {
   dispatch: Function;
 }
 
+interface State {
+  guideOpen: boolean;
+}
+
+let hotkeyGuideClasses = [
+  "hotkey-guide",
+  "pt-card",
+  Classes.ELEVATION_4
+].join(" ");
+
 @HotkeysTarget
-export class HotKeys extends React.Component<Props, {}> {
+export class HotKeys extends React.Component<Props, Partial<State>> {
+
+  state: State = { guideOpen: false };
+
   render() {
-    return <span />;
+    return (
+      <div>
+        <Overlay
+          isOpen={this.state.guideOpen}
+          onClose={this.toggle("guideOpen")}
+        >
+          <div className={hotkeyGuideClasses}>
+            <h3>{t("Hotkeys")}</h3>
+            <i
+              className="fa fa-times"
+              onClick={this.toggle("guideOpen")}
+            />
+            {
+              this.hotkeys(this.props.dispatch, "")
+                .map(hotkey => {
+                  return (
+                    <Row key={hotkey.combo}>
+                      <Col xs={5}>
+                        <label>{hotkey.label}</label>
+                      </Col>
+                      <Col xs={7}>
+                        <code>{hotkey.combo}</code>
+                      </Col>
+                    </Row>
+                  );
+                })
+            }
+          </div>
+        </Overlay>
+      </div>
+    );
   }
+
+  toggle = (property: keyof State) => () =>
+    this.setState({ [property]: !this.state[property] });
 
   hotkeys(dispatch: Function, slug: string) {
     let idx = _.findIndex(links, { slug });
@@ -51,6 +101,11 @@ export class HotKeys extends React.Component<Props, {}> {
         combo: "ctrl + shift + e",
         label: "Add Farm Event",
         onKeyDown: () => push("/app/designer/farm_events/add")
+      },
+      {
+        combo: "ctrl + shift + /",
+        label: "Toggle Guide",
+        onKeyDown: () => this.toggle("guideOpen")()
       },
     ];
     return hotkeyMap;
