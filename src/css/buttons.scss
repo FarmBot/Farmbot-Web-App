@@ -50,28 +50,32 @@
   &.green {
     background-color: $green;
     box-shadow: 0 2px 0px 0px darken($green, 12%);
-    &:hover {
+    &:hover,
+    &.active {
       background-color: darken($green, 5%) !important;
     }
   }
   &.blue {
     background-color: $blue;
     box-shadow: 0 2px 0px 0px darken($blue, 12%);
-    &:hover {
+    &:hover,
+    &.active {
       background-color: darken($blue, 5%) !important;
     }
   }
   &.red {
     background-color: $red;
     box-shadow: 0 2px 0px 0px darken($red, 12%);
-    &:hover {
+    &:hover,
+    &.active {
       background-color: darken($red, 5%) !important;
     }
   }
   &.gray {
     background-color: $medium_gray !important;
     box-shadow: 0 2px 0px 0px darken($medium_gray, 12%);
-    &:hover {
+    &:hover,
+    &.active {
       background-color: darken($medium_gray, 5%) !important;
     }
   }
@@ -79,7 +83,8 @@
     color: $dark_gray;
     background-color: $yellow;
     box-shadow: 0 2px 0px 0px darken($yellow, 12%);
-    &:hover {
+    &:hover,
+    &.active {
       background-color: darken($yellow, 5%) !important;
     }
   }
@@ -87,42 +92,48 @@
     color: $dark_gray;
     background-color: $orange;
     box-shadow: 0 2px 0px 0px darken($orange, 12%);
-    &:hover {
+    &:hover,
+    &.active {
       background-color: darken($orange, 5%) !important;
     }
   }
   &.magenta {
     background-color: $magenta;
     box-shadow: 0 2px 0px 0px darken($magenta, 12%);
-    &:hover {
+    &:hover,
+    &.active {
       background-color: darken($magenta, 5%) !important;
     }
   }
   &.cyan {
     background-color: $cyan;
     box-shadow: 0 2px 0px 0px darken($cyan, 12%);
-    &:hover {
+    &:hover,
+    &.active {
       background-color: darken($cyan, 5%) !important;
     }
   }
   &.brown {
     background-color: $brown;
     box-shadow: 0 2px 0px 0px darken($brown, 12%);
-    &:hover {
+    &:hover,
+    &.active {
       background-color: darken($brown, 5%) !important;
     }
   }
   &.purple {
     background-color: $purple;
     box-shadow: 0 2px 0px 0px darken($purple, 12%);
-    &:hover {
+    &:hover,
+    &.active {
       background-color: darken($purple, 5%) !important;
     }
   }
   &.pink {
     background-color: $pink;
     box-shadow: 0 2px 0px 0px darken($pink, 12%);
-    &:hover {
+    &:hover,
+    &.active {
       background-color: darken($pink, 5%) !important;
     }
   }
@@ -133,10 +144,16 @@
   margin-bottom: 1.5rem;
   font-size: 1.2rem;
   color: $dark_gray;
+  &.active {
+    box-shadow: none !important;
+    border: 1px solid $white;
+    pointer-events: none;
+  }
   &.gray {
     background-color: $medium_light_gray !important;
     box-shadow: 0 2px 0px 0px darken($medium_light_gray, 12%);
-    &:hover {
+    &:hover,
+    &.active {
       background-color: darken($medium_light_gray, 5%) !important;
     }
   }
