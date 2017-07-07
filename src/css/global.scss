@@ -8,6 +8,10 @@ body {
   display: none;
 }
 
+*::-webkit-scrollbar {
+  display: none !important;
+}
+
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button,
 input[type=date]::-webkit-inner-spin-button,
