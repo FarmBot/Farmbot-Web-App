@@ -27,13 +27,13 @@
     width: 0.8rem;
     height: 0.8rem;
     animation: rotate 0.8s infinite linear;
-    border: 1px solid #fff;
+    border: 1px solid $white;
     border-right-color: transparent;
     border-radius: 50%;
     float: right;
     margin: 0.2rem 0px 0 0.6rem;
   }
-  &:active:not(.fb-toggle-button) {
+  &:active {
     box-shadow: none !important;
     transform: translateY(2px);
   }
@@ -84,6 +84,7 @@
     }
   }
   &.orange {
+    color: $dark_gray;
     background-color: $orange;
     box-shadow: 0 2px 0px 0px darken($orange, 12%);
     &:hover {
@@ -131,6 +132,14 @@
   height: 3.5rem;
   margin-bottom: 1.5rem;
   font-size: 1.2rem;
+  color: $dark_gray;
+  &.gray {
+    background-color: $medium_light_gray !important;
+    box-shadow: 0 2px 0px 0px darken($medium_light_gray, 12%);
+    &:hover {
+      background-color: darken($medium_light_gray, 5%) !important;
+    }
+  }
   &:hover {
     .block-control {
       transition: all 0.2s ease-out;
@@ -160,11 +169,11 @@
   transition: all 0.4s ease;
   &.yellow {
     &:after {
-      content: '';
+      content: "";
       position: absolute;
       height: 1.6rem;
       width: 1.6rem;
-      background: white;
+      background: $white;
       border-radius: 50%;
       margin: 0 auto;
       left: 0;
@@ -173,7 +182,7 @@
       box-shadow: inset rgba(0, 0, 0, 0.03) 0px 0px 3px 3px;
     }
     &:before {
-      content: '';
+      content: "";
       position: absolute;
       height: 1.6rem;
       width: 1.6rem;
@@ -189,11 +198,11 @@
     text-align: left;
     padding-left: 0.6rem;
     &:after {
-      content: '';
+      content: "";
       position: absolute;
       height: 1.6rem;
       width: 1.6rem;
-      background: white;
+      background: $white;
       border-radius: 50%;
       top: 0.1rem;
       right: 0.2rem;
@@ -207,7 +216,7 @@
     text-align: right !important;
     padding-right: 0.8rem;
     &:after {
-      content: '';
+      content: "";
       position: absolute;
       height: 1.6rem;
       width: 1.6rem;
@@ -243,11 +252,5 @@
   }
   i {
     line-height: 5rem;
-  }
-  &.magenta {
-    box-shadow: 0 3px 0px 0px darken($magenta, 10%);
-    &:hover {
-      background: darken($magenta, 5%) !important;
-    }
   }
 }

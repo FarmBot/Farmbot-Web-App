@@ -24,8 +24,8 @@
   background: $dark_gray;
   letter-spacing: .05rem;
   padding: .75rem 1rem;
-  >button {
-    margin-right: 1rem;
+  >* {
+    margin-left: 1rem;
   }
   i.help-icon {
     display: inline;
