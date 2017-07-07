@@ -34,14 +34,24 @@ export class HotKeys extends React.Component<Props, {}> {
       },
       {
         combo: "ctrl + shift + right",
-        label: "Navigate right",
+        label: "Navigate Right",
         onKeyDown: () => push(right)
       },
       {
         combo: "ctrl + shift + left",
-        label: "Navigate left",
+        label: "Navigate Left",
         onKeyDown: () => push(left)
       },
+      {
+        combo: "ctrl + shift + p",
+        label: "Add Plant",
+        onKeyDown: () => push("/app/designer/plants/crop_search")
+      },
+      {
+        combo: "ctrl + shift + e",
+        label: "Add Farm Event",
+        onKeyDown: () => push("/app/designer/farm_events/add")
+      }
     ];
     return hotkeyMap;
   }
