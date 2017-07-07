@@ -27,56 +27,29 @@ export class HotKeys extends React.Component<Props, {}> {
     let right = "/app/" + (links[idx + 1] || links[0]).slug;
     let left = "/app/" + (links[idx - 1] || links[links.length - 1]).slug;
     let hotkeyMap: IHotkeyProps[] = [
-      // Mac
       {
-        combo: "cmd+shift+s",
-        label: "Mac Sync",
+        combo: "ctrl + shift + s",
+        label: "Sync",
         onKeyDown: () => dispatch(sync())
       },
       {
-        combo: "cmd+shift+right",
-        label: "Mac Navigate Right",
+        combo: "ctrl + shift + right",
+        label: "Navigate Right",
         onKeyDown: () => push(right)
       },
       {
-        combo: "cmd+shift+left",
-        label: "Mac Navigate Left",
+        combo: "ctrl + shift + left",
+        label: "Navigate Left",
         onKeyDown: () => push(left)
       },
       {
-        combo: "cmd+shift+p",
-        label: "Mac Add Plant",
+        combo: "ctrl + shift + p",
+        label: "Add Plant",
         onKeyDown: () => push("/app/designer/plants/crop_search")
       },
       {
-        combo: "cmd+shift+e",
-        label: "Mac Add Farm Event",
-        onKeyDown: () => push("/app/designer/farm_events/add")
-      },
-      // Universal
-      {
-        combo: "ctrl+shift+s",
-        label: "Universal Sync",
-        onKeyDown: () => dispatch(sync())
-      },
-      {
-        combo: "ctrl+shift+right",
-        label: "Universal Navigate Right",
-        onKeyDown: () => push(right)
-      },
-      {
-        combo: "ctrl+shift+left",
-        label: "Universal Navigate Left",
-        onKeyDown: () => push(left)
-      },
-      {
-        combo: "ctrl+shift+p",
-        label: "Universal Add Plant",
-        onKeyDown: () => push("/app/designer/plants/crop_search")
-      },
-      {
-        combo: "ctrl+shift+e",
-        label: "Universal Add Farm Event",
+        combo: "ctrl + shift + e",
+        label: "Add Farm Event",
         onKeyDown: () => push("/app/designer/farm_events/add")
       },
     ];
