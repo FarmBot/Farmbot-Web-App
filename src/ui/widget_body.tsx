@@ -3,7 +3,6 @@ import { JSXChildren } from "../util";
 
 interface WidgetBodyProps {
   children?: JSXChildren;
-  className?: string;
 }
 
 export function WidgetBody(props: WidgetBodyProps) {

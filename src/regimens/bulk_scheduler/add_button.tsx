@@ -4,7 +4,7 @@ import { AddButtonProps } from "./interfaces";
 export function AddButton({ active, click }: AddButtonProps) {
   if (!active) { return <div />; }
   return <button
-    className="fb-button green"
+    className="fb-button green add"
     onClick={click}
   >
     <i className="fa fa-plus" />

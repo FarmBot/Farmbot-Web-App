@@ -33,9 +33,7 @@ export function SyncButton({ user, bot, dispatch }: NavButtonProps) {
   let text = TEXT_MAPPING[sync_status] || "DISCONNECTED";
   return <button
     className={`nav-sync ${color} fb-button`}
-    onClick={() => {
-      dispatch(sync());
-    }}>
+    onClick={() => dispatch(sync())}>
     {text}
   </button>;
-};
+}

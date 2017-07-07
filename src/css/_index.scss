@@ -1,3 +1,5 @@
+// Temp stubs
+@import "temp";
 // Node Modules
 @import "../../node_modules/@blueprintjs/core/dist/blueprint.css";
 // Partials
@@ -6,21 +8,21 @@
 @import "fonts";
 // Global
 @import "global";
+// Mobile
+@import "mobile";
 // Components
-@import "blocks";
-@import "blueprint";
+@import "blueprint_overrides";
 @import "buttons";
-@import "devices";
 @import "events";
-@import "farm_designer";
 @import "farm_designer_mobile";
 @import "farm_designer_panels";
+@import "farm_designer";
 @import "front_page";
+@import "image_flipper";
 @import "inputs";
 @import "labels";
 @import "navbar";
 @import "regimen_editor_widget";
-@import "regimens";
 @import "sequences";
 @import "spinner";
 @import "status_ticker";
@@ -28,9 +30,5 @@
 @import "tables";
 @import "toastr";
 @import "tooltips";
-@import "tools";
-@import "weed_detector";
 @import "widget_move";
-@import "widget_tool_control";
 @import "widgets";
-@import "image_flipper";

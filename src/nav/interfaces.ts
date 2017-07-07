@@ -9,19 +9,18 @@ export interface NavButtonProps {
   onClick?: () => void;
 }
 
-export interface DropDownProps {
-  user: TaggedUser | undefined;
-  onClick?: () => void;
-}
-
-export interface NavBarState {
-  mobileNavExpanded?: boolean;
-  tickerExpanded?: boolean;
-}
-
 export interface NavBarProps {
   logs: Log[];
   bot: BotState;
   user: TaggedUser | undefined;
   dispatch: Function;
+}
+
+export interface NavBarState {
+  mobileMenuOpen: boolean;
+}
+
+export interface MobileMenuProps {
+  toggle: (property: keyof NavBarState) => any;
+  mobileMenuOpen: boolean;
 }

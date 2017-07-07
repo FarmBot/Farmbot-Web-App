@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as _ from "lodash";
 import { t } from "i18next";
 import { devices } from "../device";
 import { FWProps, FWState } from "./interfaces";
@@ -13,7 +14,6 @@ import {
   Col
 } from "../ui";
 import { betterCompact } from "../util";
-import * as _ from "lodash";
 
 export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   constructor() {
@@ -78,70 +78,75 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   }
 
   render() {
-    return <Widget className="farmware-widget">
-      <WidgetHeader title="Farmware" helpText={ToolTips.FARMWARE}>
-      </WidgetHeader>
-      <WidgetBody>
-        <MustBeOnline fallback="Not available when FarmBot is offline."
-          status={this.props.syncStatus}
-          lockOpen={process.env.NODE_ENV !== "production"}>
-          <Row>
-            <fieldset>
-              <Col xs={12}>
-                <input type="url"
-                  placeholder={"https://...."}
-                  value={this.state.packageUrl || ""}
-                  onChange={(e) => {
-                    this.setState({ packageUrl: e.currentTarget.value });
-                  }}
-                />
-              </Col>
-              <Col xs={12}>
-                <button
-                  className="fb-button green"
-                  onClick={this.install}
-                >
-                  {t("Install")}
-                </button>
-              </Col>
-            </fieldset>
-          </Row>
-          <Row>
-            <Col xs={12}>
-              <DeprecatedFBSelect list={this.fwList()}
-                onChange={(x) => {
-                  let selectedFarmware = x.value;
-                  if (_.isString(selectedFarmware)) {
-                    this.setState({ selectedFarmware });
-                  } else {
-                    throw new Error(`Bad farmware UUID: ${x.value}`);
-                  }
-                }}
-                placeholder="Installed Farmware Packages" />
-            </Col>
-            <Col xs={12}>
-              <button
-                className="fb-button red"
-                onClick={this.remove}
-              >
-                {t("Remove")}
-              </button>
-              <button
-                className="fb-button yellow"
-                onClick={this.update}
-              >
-                {t("Update")}
-              </button>
-              <button
-                className="fb-button green"
-                onClick={this.run}
-              >
-                {t("Run")}
-              </button>
-            </Col>
-          </Row>
-        </MustBeOnline>
-      </WidgetBody>
-    </Widget>;
+    return (
+      <Widget className="farmware-widget">
+        <WidgetHeader title="Farmware" helpText={ToolTips.FARMWARE} />
+        <WidgetBody>
+          <MustBeOnline
+            fallback="Not available when FarmBot is offline."
+            status={this.props.syncStatus}
+            lockOpen={process.env.NODE_ENV !== "production"}
+          >
+            <Row>
+              <fieldset>
+                <Col xs={12}>
+                  <input type="url"
+                    placeholder={"https://...."}
+                    value={this.state.packageUrl || ""}
+                    onChange={(e) => {
+                      this.setState({ packageUrl: e.currentTarget.value });
+                    }}
+                  />
+                </Col>
+                <Col xs={12}>
+                  <button
+                    className="fb-button green"
+                    onClick={this.install}
+                  >
+                    {t("Install")}
+                  </button>
+                </Col>
+              </fieldset>
+            </Row>
+            <Row>
+              <fieldset>
+                <Col xs={12}>
+                  <DeprecatedFBSelect list={this.fwList()}
+                    onChange={(x) => {
+                      let selectedFarmware = x.value;
+                      if (_.isString(selectedFarmware)) {
+                        this.setState({ selectedFarmware });
+                      } else {
+                        throw new Error(`Bad farmware UUID: ${x.value}`);
+                      }
+                    }}
+                    placeholder="Installed Farmware Packages" />
+                </Col>
+                <Col xs={12}>
+                  <button
+                    className="fb-button red"
+                    onClick={this.remove}
+                  >
+                    {t("Remove")}
+                  </button>
+                  <button
+                    className="fb-button yellow"
+                    onClick={this.update}
+                  >
+                    {t("Update")}
+                  </button>
+                  <button
+                    className="fb-button green"
+                    onClick={this.run}
+                  >
+                    {t("Run")}
+                  </button>
+                </Col>
+              </fieldset>
+            </Row>
+          </MustBeOnline>
+        </WidgetBody>
+      </Widget>
+    );
   }
 }

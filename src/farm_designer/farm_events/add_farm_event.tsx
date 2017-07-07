@@ -58,7 +58,7 @@ export class AddFarmEvent
           executable_id,
           executable_type
         }
-      })
+      });
       this.props.dispatch(action);
       this.setState({ uuid: action.payload.uuid });
     }

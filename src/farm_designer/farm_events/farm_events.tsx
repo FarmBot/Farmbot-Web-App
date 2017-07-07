@@ -47,7 +47,7 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
     return <div className="panel-container magenta-panel">
       <div className="panel-header magenta-panel">
         <div className="panel-tabs">
-          <Link to="/app/designer" className="mobile-only">
+          <Link to="/app/designer" className="visible-xs">
             {t("Designer")}
           </Link>
           <Link to="/app/designer/plants">
@@ -66,8 +66,8 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
 
           <Col xs={10}>
             <DeprecatedFBSelect list={[]}
-              onChange={(selectedOption) => {
-                this.props.push("/app/designer/farm_events/" + selectedOption.value);
+              onChange={option => {
+                this.props.push("/app/designer/farm_events/" + option.value);
               }}
             />
           </Col>
@@ -78,9 +78,9 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
         </Row>
 
         <Link to="/app/designer/farm_events/add">
-          <div className="plus-button magenta">
+          <button className="plus-button fb-button magenta">
             <i className="fa fa-2x fa-plus" />
-          </div>
+          </button>
         </Link>
 
       </div>

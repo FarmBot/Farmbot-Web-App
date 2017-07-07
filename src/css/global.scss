@@ -1,5 +1,9 @@
 /* Styles used throughout the frontend */
 
+body {
+  background: $gray;
+}
+
 .ticker-list::-webkit-scrollbar {
   display: none;
 }
@@ -17,22 +21,6 @@ input[type=time] {
   border-radius: 0;
 }
 
-@media (max-width: 830px) {
-  .app {
-    overflow: hidden !important;
-  }
-}
-
-body {
-  background: $gray !important;
-  &.freeze {
-    height: 100% !important;
-    overflow: hidden !important;
-    width: 100% !important;
-    position: fixed !important;
-  }
-}
-
 .char-limit {
   float: right;
   font-size: 1.4rem;
@@ -42,19 +30,18 @@ body {
   color: #fff;
 }
 
+fieldset {
+  button {
+    margin: 0.6rem 0 0 0.6rem;
+  }
+}
+
 .all-content-wrapper {
-  padding: 3rem 3rem 0rem 3rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
+  padding: 3rem 3rem 0;
   width: 100%;
   max-width: 160rem;
   animation: page-transition 0.2s ease-in-out;
-}
-
-@media (max-width: 767px) {
-  .all-content-wrapper {
-    padding: 2.5rem 0rem 0rem 0rem;
-  }
 }
 
 a {
@@ -182,10 +169,6 @@ a {
   }
 }
 
-.row {
-  max-width: 160rem;
-}
-
 .full-width {
   width: 100%;
 }
@@ -224,7 +207,7 @@ fieldset {
 }
 
 .clear-webcam-url-btn {
-  position: absolute;
+  position: absolute !important;
   left: 2rem;
   top: 6.2rem;
 }
@@ -233,23 +216,12 @@ fieldset {
   padding-left: 4rem !important;
 }
 
-ul {
-  padding-left: 15px;
-}
-
 .step-drag-ghost-image {
   max-width: 150px;
 }
 
 .step-drag-ghost-image-big {
   max-width: 400px;
-}
-
-.peripherals-widget,
-.tools-widget {
-  .widget-content .row {
-    margin-bottom: 0.8rem;
-  }
 }
 
 h3 {
@@ -283,13 +255,6 @@ input:disabled {
 ul {
   list-style-type: none !important;
   padding: 0;
-}
-
-.devices-pad {
-  p,
-  button {
-    margin-bottom: 1rem !important;
-  }
 }
 
 .select {
@@ -354,11 +319,10 @@ ul {
 .coming-soon:after {
   content: "Coming Soon!";
   background-color: $red;
-  width: 107%;
+  width: 100%;
   position: absolute;
   top: 25%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  left: 0;
   vertical-align: middle;
   text-align: center;
   font-size: 2.5rem;
@@ -371,8 +335,19 @@ ul {
   }
 }
 
+.add {
+  margin-top: -3rem;
+}
+
+.button-group {
+  float: right;
+  margin: -2rem 0 2rem;
+  button:not(:first-of-type) {
+    margin-right: 1rem;
+  }
+}
+
 .note {
-  margin-top: 4rem;
   font-style: italic;
   font-size: 1.2rem;
 }

@@ -82,6 +82,7 @@ export interface AddRegimenProps {
 export interface RegimensListProps {
   dispatch: Function;
   regimens: TaggedRegimen[];
+  regimen: TaggedRegimen | undefined;
 }
 
 export interface RegimensListState {

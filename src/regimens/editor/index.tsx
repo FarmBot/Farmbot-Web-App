@@ -54,23 +54,25 @@ export function RegimenEditorWidget({ current, dispatch, auth, calendar }:
         <i>{t("Regimen Editor")}</i>
       </h3>
       <ToolTip helpText={ToolTips.REGIMEN_EDITOR} />
-      {regimen && (
-        <SaveBtn
-          isDirty={isDirty}
-          isSaving={isSaving}
-          isSaved={isSaved}
-          onClick={save({ dispatch, regimen })}
-        />
-      )}
+      <div className="button-group">
+        {regimen && (
+          <SaveBtn
+            isDirty={isDirty}
+            isSaving={isSaving}
+            isSaved={isSaved}
+            onClick={save({ dispatch, regimen })}
+          />
+        )}
 
-      <CopyButton regimen={regimen} dispatch={dispatch} />
+        <CopyButton regimen={regimen} dispatch={dispatch} />
 
-      {regimen && (
-        <button className="fb-button red"
-          onClick={remove({ dispatch, regimen, baseUrl })}>
-          {t("Delete")}
-        </button>
-      )}
+        {regimen && (
+          <button className="fb-button red"
+            onClick={remove({ dispatch, regimen, baseUrl })}>
+            {t("Delete")}
+          </button>
+        )}
+      </div>
       <MiddleSection
         regimen={regimen}
         dispatch={dispatch}

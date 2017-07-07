@@ -19,7 +19,7 @@ export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
   }
 
   css() {
-    let css = "fb-toggle-button fb-button"
+    let css = "fb-toggle-button fb-button";
     if (this.props.disabled) { return css + " gray"; }
     let redCSS = css + " red";
     let greenCSS = css + " green";

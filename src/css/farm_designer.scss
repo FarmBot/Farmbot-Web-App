@@ -231,12 +231,6 @@
   }
 }
 
-@media(min-width: 568px) {
-  .event-time {
-    padding-left: 0;
-  }
-}
-
 .hovered-plant-copy {
   cursor: pointer;
   transform-origin: center;
@@ -417,17 +411,5 @@
       left: -4.6rem;
       top: 0.6rem;
     }
-  }
-}
-
-@keyframes pulse-and-rotate {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  50% {
-    transform: rotate(180deg) scale(1.2);
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
   }
 }

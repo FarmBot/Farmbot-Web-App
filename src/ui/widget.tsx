@@ -1,6 +1,5 @@
 import * as React from "react";
 import { JSXChildren } from "../util";
-// import { parseClassNames } from "./util";
 
 interface WidgetProps {
   children?: JSXChildren;
@@ -8,9 +7,9 @@ interface WidgetProps {
 }
 
 export function Widget(props: WidgetProps) {
-  let finalClass = `widget-wrapper `;
-  if (props.className) { finalClass += props.className; }
-  return <div className={finalClass}>
+  let className = `widget-wrapper `;
+  if (props.className) { className += props.className; }
+  return <div className={className}>
     {props.children}
   </div>;
 }

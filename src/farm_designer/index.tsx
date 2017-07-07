@@ -60,6 +60,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       showFarmbot
     } = this.state;
 
+    let designerTabClasses: string[] = ["active", "visible-xs"];
+
     return <div className="farm-designer">
 
       <GardenMapLegend
@@ -77,7 +79,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
 
       <div className="panel-header gray-panel designer-mobile-nav">
         <div className="panel-tabs">
-          <Link to="/app/designer" className="mobile-only active">
+          <Link to="/app/designer" className={designerTabClasses.join(" ")}>
             {t("Designer")}
           </Link>
           <Link to="/app/designer/plants">

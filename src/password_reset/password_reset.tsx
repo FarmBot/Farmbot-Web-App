@@ -65,7 +65,7 @@ export class PasswordReset extends React.Component<Props, State> {
             <div className="row">
               <form onSubmit={this.submit.bind(this)}>
                 <div className="col-sm-12">
-                  <div className="widget-content">
+                  <div className="widget-body">
                     <div className="input-group">
                       <label>{t("New Password")}</label>
                       <input type="password"

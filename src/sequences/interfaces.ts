@@ -57,6 +57,7 @@ export interface SequenceReducerState {
 
 export interface SequencesListProps {
   sequences: TaggedSequence[];
+  sequence: TaggedSequence | undefined;
   dispatch: Function;
   auth: AuthState | undefined;
 }
