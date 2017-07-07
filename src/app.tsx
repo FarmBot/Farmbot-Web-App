@@ -77,7 +77,7 @@ export default class App extends React.Component<AppProps, {}> {
   render() {
     let syncLoaded = this.isLoaded;
     return <div className="app">
-      <HotKeys />
+      <HotKeys dispatch={this.props.dispatch} />
       <NavBar
         user={this.props.user}
         bot={this.props.bot}

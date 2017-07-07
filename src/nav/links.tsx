@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link } from "react-router";
 import { t } from "i18next";
 
-const links = [
+export const links = [
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
   { name: "Controls", icon: "keyboard-o", slug: "controls" },
   { name: "Device", icon: "cog", slug: "device" },
