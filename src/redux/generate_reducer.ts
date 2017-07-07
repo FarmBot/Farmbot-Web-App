@@ -1,5 +1,6 @@
 import { ReduxAction } from "./interfaces";
 import { defensiveClone } from "../util";
+import { Actions } from "../constants";
 
 export function generateReducer<State>(initialState: State,
   /** For passing state down to children. */
@@ -20,7 +21,7 @@ export function generateReducer<State>(initialState: State,
 
   interface GeneratedReducer extends ActionHandler {
     /** Adds action handler for current reducer. */
-    add: <T>(name: string, fn: GenericActionHandler<T>) => GeneratedReducer;
+    add: <T>(name: Actions, fn: GenericActionHandler<T>) => GeneratedReducer;
     // Calms the type checker.
   }
 

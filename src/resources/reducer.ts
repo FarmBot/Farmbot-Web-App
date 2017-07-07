@@ -160,7 +160,7 @@ export let resourceReducer = generateReducer
       throw new Error("BAD UUID IN UPDATE_RESOURCE_OK");
     }
   })
-  .add<TaggedResource>("*_RESOURCE_NO", (s, { payload }) => {
+  .add<TaggedResource>(Actions._RESOURCE_NO, (s, { payload }) => {
     let uuid = payload.uuid;
     let tr = _.merge(findByUuid(s.index, uuid), payload);
     tr.dirty = true;
@@ -178,7 +178,7 @@ export let resourceReducer = generateReducer
     payload && isTaggedResource(source);
     return s;
   })
-  .add<EditResourceParams>("OVERWRITE_RESOURCE", (s, { payload }) => {
+  .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
     let uuid = payload.uuid;
     let original = findByUuid(s.index, uuid);
     original.body = payload.update as typeof original.body;
@@ -188,7 +188,7 @@ export let resourceReducer = generateReducer
     if (original.kind === "sequences") { setStepUuid(original); }
     return s;
   })
-  .add<TaggedResource>("INIT_RESOURCE", (s, { payload }) => {
+  .add<TaggedResource>(Actions.INIT_RESOURCE, (s, { payload }) => {
     let tr = payload;
     let uuid = tr.uuid;
     // TEMPORARY STUB:
@@ -199,6 +199,9 @@ export let resourceReducer = generateReducer
     // NOTE:      Remove this in June 2017.
     if (tr.kind === "logs" && (typeof tr.body.created_at === "string")) {
       tr.body.created_at = moment(tr.body.created_at).unix();
+    }
+    if (tr.kind == "sequences") {
+      setStepUuid(tr);
     }
     reindexResource(s.index, tr);
     if (tr.kind === "logs") {
@@ -269,8 +272,8 @@ function removeFromIndex(index: ResourceIndex, tr: TaggedResource) {
   let id = tr.body.id;
   index.all = index.all.filter(filterOutUuid(tr));
   index.byKind[tr.kind] = index.byKind[tr.kind].filter(filterOutUuid(tr));
-  delete index.byKindAndId[joinKindAndId(kind, id)]
-  delete index.byKindAndId[joinKindAndId(kind, 0)]
+  delete index.byKindAndId[joinKindAndId(kind, id)];
+  delete index.byKindAndId[joinKindAndId(kind, 0)];
   delete index.references[tr.uuid];
 }
 

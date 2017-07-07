@@ -17,6 +17,8 @@ import { save, edit, destroy } from "../api/crud";
 import { GetState } from "../redux/interfaces";
 import { ToolTips } from "../constants";
 import { get } from "lodash";
+import { TestButton } from "./test_button";
+import { warning } from "farmbot-toastr";
 
 let onDrop = (index: number, dispatch1: Function, sequence: TaggedSequence) =>
   (key: string) => {
@@ -39,12 +41,6 @@ let onDrop = (index: number, dispatch1: Function, sequence: TaggedSequence) =>
 let copy = function (dispatch: Function, sequence: TaggedSequence) {
   return (e: React.SyntheticEvent<HTMLButtonElement>) =>
     dispatch(copySequence(sequence));
-};
-
-export let performSeq = (dispatch: Function, s: TaggedSequence) => {
-  return () => {
-    dispatch(save(s.uuid)).then(() => execSequence(s.body));
-  };
 };
 
 export class SequenceEditorMiddleActive
@@ -76,12 +72,11 @@ export class SequenceEditorMiddleActive
           isSaved={isSaved}
           onClick={() => { dispatch(save(sequence.uuid)); }}
         />
-        <button
-          className="fb-button orange"
-          onClick={performSeq(dispatch, sequence)}
-        >
-          {t("Save & Run")}
-        </button>
+        <TestButton
+          syncStatus={this.props.syncStatus}
+          sequence={sequence}
+          onFail={warning}
+          onClick={() => execSequence(sequence.body)} />
         <button
           className="fb-button red"
           onClick={() => dispatch(destroy(sequence.uuid))}

@@ -417,7 +417,7 @@ export type JSXChildren = JSXChild[] | JSXChild;
  *        This is a work around until then. */
 export function hardRefresh() {
   // Change this string to trigger a force cache reset.
-  let HARD_RESET = "NEED_HARD_REFRESH4";
+  let HARD_RESET = "CACHE5";
   if (localStorage && sessionStorage) {
     if (!localStorage.getItem(HARD_RESET)) {
       console.warn("Performing hard reset of localstorage and JS cookies.");

@@ -20,6 +20,7 @@ export class Sequences extends React.Component<Props, {}> {
       </Col>
       <Col sm={6}>
         <SequenceEditorMiddle
+          syncStatus={this.props.syncStatus}
           dispatch={this.props.dispatch}
           sequences={this.props.sequences}
           sequence={this.props.sequence}
