@@ -16,19 +16,20 @@ import { TaggedSequence } from "../resources/tagged_resources";
 import { save, edit, destroy } from "../api/crud";
 import { GetState } from "../redux/interfaces";
 import { ToolTips } from "../constants";
+import { get } from "lodash";
 
-let onDrop = (index: number, dispatch: Function, sequence: TaggedSequence) =>
+let onDrop = (index: number, dispatch1: Function, sequence: TaggedSequence) =>
   (key: string) => {
-    dispatch(function (dispatch: Function, getState: GetState) {
-      let dataXferObj = dispatch(stepGet(key));
+    dispatch1(function (dispatch2: Function, getState: GetState) {
+      let dataXferObj = dispatch2(stepGet(key));
       let step = dataXferObj.value;
       switch (dataXferObj.intent) {
         case "step_splice":
-          return dispatch(splice({ step, sequence, index }));
+          return dispatch2(splice({ step, sequence, index }));
         case "step_move":
           let action =
             move({ step, sequence, to: index, from: dataXferObj.draggerId });
-          return dispatch(action);
+          return dispatch2(action);
         default:
           throw new Error("Got unexpected data transfer object.");
       }
@@ -98,23 +99,21 @@ export class SequenceEditorMiddleActive
         <Col xs={11}>
           <BlurableInput value={sequence.body.name}
             onCommit={(e) => {
-              dispatch(edit(sequence, { name: e.currentTarget.value }))
+              dispatch(edit(sequence, { name: e.currentTarget.value }));
             }} />
         </Col>
         <ColorPicker current={sequence.body.color}
           onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
       </Row>
       {(sequence.body.body || []).map((currentStep: SequenceBodyItem, index, arr) => {
-        /** HACK: If we wrote `key={index}` for this iterator, React's diff
-         * algorithm (probably?) loses track of which step has changed (and
-         * sometimes even mix up the state of completely different steps).
+        /** HACK: React's diff algorithm (probably?) can't keep track of steps
+         * via `index` alone- the content is too dynamic (copy/splice/pop/push)
          * To get around this, we add a `uuid` property to Steps that
-         * is guaranteed to be unique and allows React to diff the list
-         * correctly.
-         */
-        let wow = (currentStep as any).uuid || index;
+         * is guaranteed to be unique no matter where the step gets moved and
+         * allows React to diff the list correctly. */
+        let readThatCommentAbove = get(currentStep, "uuid", index);
         let currentSequence = sequence;
-        return <div key={wow}>
+        return <div key={readThatCommentAbove}>
           <DropArea callback={onDrop(index, dispatch, sequence)} />
           <StepDragger dispatch={dispatch}
             step={currentStep}
