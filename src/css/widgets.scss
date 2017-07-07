@@ -25,7 +25,7 @@
   background: $dark_gray;
   letter-spacing: .05rem;
   padding: .75rem 1rem;
-  >*:not(h5):not(i) {
+  >*:not(h5):not(.help-icon) {
     margin-left: 1rem;
   }
   i.help-icon {
