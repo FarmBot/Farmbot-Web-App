@@ -22,11 +22,11 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
     }
     return s;
   })
-  .add<string>("SELECT_SEQUENCE", function (s, { payload }) {
+  .add<string>(Actions.SELECT_SEQUENCE, function (s, { payload }) {
     s.current = payload;
     return s;
   })
-  .add<void>("RESOURCE_READY", function (s, a) {
+  .add<void>(Actions.RESOURCE_READY, function (s, a) {
     s.current = undefined;
     return s;
   });
