@@ -9,7 +9,7 @@ const SelectComponent = Select.ofType<DropDownItem>();
 
 type PossibleReferences =
   | "Sequences"
-  | "Regimens"
+  | "Regimens";
 
 interface ParentMenu {
   title: string;
@@ -65,7 +65,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
         rightIconName="double-caret-vertical"
         text={item ? item.label : t("(No selection)")}
       />
-    </SelectComponent>
+    </SelectComponent>;
   }
 
   private subMenu(params: ISelectItemRendererProps<DropDownItem>) {
@@ -75,7 +75,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
       key={item.label || index}
       onClick={handleClick}
       text={`${item.label}`}
-    />
+    />;
   }
 
   private default(params: ISelectItemRendererProps<DropDownItem>) {
@@ -85,7 +85,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
       key={item.label || index}
       onClick={handleClick}
       text={`${item.label}`}
-    />
+    />;
   }
 
   private filter(query: string, item: DropDownItem, index: number) {
@@ -95,7 +95,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
 
   private handleValueChange = (item: DropDownItem) => {
     this.props.onChange(item);
-    this.setState({ item })
+    this.setState({ item });
   }
 
 }

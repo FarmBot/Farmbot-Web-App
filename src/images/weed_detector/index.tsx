@@ -67,16 +67,13 @@ export class WeedDetector
   });
 
   render() {
-    return <Widget className="weed-detector-widget coming-soon">
+    return <Widget className="weed-detector-widget">
       <TitleBar
         onDeletionClick={this.clearWeeds}
         deletionProgress={this.state.deletionProgress}
-        onSave={() => { console.log("TODO"); }}
         onTest={this.test}
         title={"Weed Detector"}
-        help={t(ToolTips.WEED_DETECTOR)}
-        env={this.props.env}
-      />
+        help={t(ToolTips.WEED_DETECTOR)} />
       <WidgetBody>
         <Row>
           <Col sm={12}>
