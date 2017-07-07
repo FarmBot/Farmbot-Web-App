@@ -200,6 +200,9 @@ export let resourceReducer = generateReducer
     if (tr.kind === "logs" && (typeof tr.body.created_at === "string")) {
       tr.body.created_at = moment(tr.body.created_at).unix();
     }
+    if (tr.kind == "sequences") {
+      setStepUuid(tr);
+    }
     reindexResource(s.index, tr);
     if (tr.kind === "logs") {
       // Since logs don't come from the API all the time, they are the only

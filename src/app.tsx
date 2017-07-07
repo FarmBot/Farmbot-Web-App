@@ -21,8 +21,8 @@ init();
  * If the sync object takes more than 10s to load, the user will be granted
  * access into the app, but still warned.
  */
-const TIMEOUT_MESSAGE = `App could not be fully loaded, we recommend you try 
-refreshing the page.`;
+const TIMEOUT_MESSAGE = `App could not be fully loaded, we recommend you try
+ refreshing the page.`;
 
 interface AppProps {
   dispatch: Function;
@@ -68,7 +68,6 @@ export default class App extends React.Component<AppProps, {}> {
   componentDidMount() {
     setTimeout(() => {
       if (!this.isLoaded) {
-        this.props.dispatch({ type: "SYNC_TIMEOUT_EXCEEDED" });
         error(TIMEOUT_MESSAGE, "Warning");
       }
     }, 10000);

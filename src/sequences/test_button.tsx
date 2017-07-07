@@ -1,5 +1,4 @@
 import * as React from "react";
-import { performSeq } from "./sequence_editor_middle_active";
 import { t } from "i18next";
 import { SyncStatus } from "farmbot/dist";
 import { TaggedSequence } from "../resources/tagged_resources";

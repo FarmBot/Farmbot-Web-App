@@ -43,12 +43,6 @@ let copy = function (dispatch: Function, sequence: TaggedSequence) {
     dispatch(copySequence(sequence));
 };
 
-export let performSeq = (dispatch: Function, s: TaggedSequence) => {
-  return () => {
-    dispatch(save(s.uuid)).then(() => execSequence(s.body));
-  };
-};
-
 export class SequenceEditorMiddleActive
   extends React.Component<ActiveMiddleProps, {}> {
   render() {
@@ -82,7 +76,7 @@ export class SequenceEditorMiddleActive
           syncStatus={this.props.syncStatus}
           sequence={sequence}
           onFail={warning}
-          onClick={performSeq(dispatch, sequence)} />
+          onClick={() => execSequence(sequence.body)} />
         <button
           className="fb-button red"
           onClick={() => dispatch(destroy(sequence.uuid))}
