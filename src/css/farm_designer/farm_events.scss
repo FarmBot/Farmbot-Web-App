@@ -1,6 +1,64 @@
 .farm-event-panel {
   .fa-calendar {
     font-size: 2rem;
-    margin: 0.5rem 0 0 1rem;
+    margin: 0.5rem 0 0 1.6rem;
+  }
+  .panel-content {
+    padding: 6rem 1rem 6rem 0;
+  }
+}
+
+.farm-events {
+  margin-top: 1.8rem;
+}
+
+.farm-event {
+  display: flex;
+}
+
+.farm-event-date {
+  flex: 1;
+  text-align: center;
+}
+
+.farm-event-date-day {
+  font-size: 2rem;
+}
+
+.farm-event-data {
+  flex: 5;
+}
+
+.farm-event-data-executable {
+  margin-left: 1rem;
+}
+
+.farm-event-data-block {
+  display: flex;
+  padding: 0.8rem;
+  position: relative;
+  font-size: 1.2rem;
+  align-items: center;
+  background: $white;
+  border-bottom: 1px solid $gray;
+  &:hover {
+    i {
+      opacity: 1;
+    }
+  }
+  i {
+    position: absolute;
+    right: 0.8rem;
+    top: 1rem;
+    opacity: 0;
+  }
+  &:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 6rem;
+    bottom: 0;
+    width: 1px;
+    background: $gray;
   }
 }

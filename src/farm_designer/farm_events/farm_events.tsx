@@ -13,20 +13,16 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
     return this.props.calendarRows.map(item => {
       return (
         <div className="farm-event" key={item.sortKey}>
-
           <div className="farm-event-date">
             <div className="farm-event-date-month">
               {item.month}
             </div>
             <div className="farm-event-date-day">
-              {item.day}
+              <b>{item.day}</b>
             </div>
           </div>
-
           <div className="farm-event-data">
             {item.items.map((farmEvent, index) => {
-
-              console.log(farmEvent)
 
               let url = `/app/designer/farm_events/` +
                 (farmEvent.id || "UNSAVED_EVENT").toString();
