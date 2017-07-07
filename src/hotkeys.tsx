@@ -26,7 +26,7 @@ export class HotKeys extends React.Component<Props, {}> {
     let idx = _.findIndex(links, { slug });
     let right = "/app/" + (links[idx + 1] || links[0]).slug;
     let left = "/app/" + (links[idx - 1] || links[links.length - 1]).slug;
-    let HOTKEY_MAP: IHotkeyProps[] = [
+    let hotkeyMap: IHotkeyProps[] = [
       {
         combo: "ctrl + shift + s",
         label: "Sync",
@@ -43,7 +43,7 @@ export class HotKeys extends React.Component<Props, {}> {
         onKeyDown: () => push(left)
       },
     ];
-    return HOTKEY_MAP;
+    return hotkeyMap;
   }
 
   renderHotkeys() {
