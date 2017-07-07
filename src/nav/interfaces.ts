@@ -15,3 +15,12 @@ export interface NavBarProps {
   user: TaggedUser | undefined;
   dispatch: Function;
 }
+
+export interface NavBarState {
+  mobileMenuOpen: boolean;
+}
+
+export interface MobileMenuProps {
+  toggle: (property: keyof NavBarState) => any;
+  mobileMenuOpen: boolean;
+}

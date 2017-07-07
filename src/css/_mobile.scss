@@ -6,6 +6,31 @@
     padding: 3rem 0 0;
   }
   .nav-group {
-    padding: 0 1.6rem 2rem 0;
+    padding: 0 1.6rem 0 0 !important;
+  }
+  .mobile-menu-icon {
+    padding: 1.7rem 0 0 1.6rem;
+    font-size: 2rem;
+    color: $white;
+  }
+  .mobile-menu {
+    background: $dark_gray;
+    color: $white;
+    z-index: 9999;
+    height: 100vh;
+    outline: none;
+    animation: slide-in 0.2s;
+  }
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(-11rem)
+  }
+  90% {
+    transform: translateX(1rem)
+  }
+  100% {
+    transform: translateX(0)
   }
 }
