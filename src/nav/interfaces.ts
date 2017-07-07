@@ -18,9 +18,16 @@ export interface NavBarProps {
 
 export interface NavBarState {
   mobileMenuOpen: boolean;
+  tickerListOpen: boolean;
 }
 
 export interface MobileMenuProps {
   toggle: (property: keyof NavBarState) => any;
   mobileMenuOpen: boolean;
+}
+
+export interface TickerListProps {
+  toggle: (property: keyof NavBarState) => any;
+  logs: Log[]
+  tickerListOpen: boolean;
 }
