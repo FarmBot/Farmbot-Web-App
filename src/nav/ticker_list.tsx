@@ -7,7 +7,7 @@ import { Log } from "../interfaces";
 import { TickerListProps } from "./interfaces";
 
 let Ticker = (log: Log, index: number) => {
-  let time = moment.unix(log.created_at).local().format("h:mm a");
+  let time = moment.unix(log.created_at).local().format("MMM D, h:mma");
   let type = (log.meta || {}).type;
   return (
     // TODO: Should utilize log's `uuid` instead of index.
