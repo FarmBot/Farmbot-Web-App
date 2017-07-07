@@ -37,7 +37,7 @@ export class Plants extends React.Component<Props, State> {
     return <div className="panel-container green-panel plant-inventory-panel">
       <div className="panel-header green-panel">
         <div className="panel-tabs">
-          <Link to="/app/designer" className="mobile-only">
+          <Link to="/app/designer" className="visible-xs">
             {t("Designer")}
           </Link>
           <Link to="/app/designer/plants" className="active">

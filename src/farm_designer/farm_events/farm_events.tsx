@@ -47,7 +47,7 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
     return <div className="panel-container magenta-panel">
       <div className="panel-header magenta-panel">
         <div className="panel-tabs">
-          <Link to="/app/designer" className="mobile-only">
+          <Link to="/app/designer" className="visible-xs">
             {t("Designer")}
           </Link>
           <Link to="/app/designer/plants">

@@ -31,10 +31,11 @@ nav {
     display: none;
   }
   .nav-links a {
+    font-size: 1.2rem;
     white-space: nowrap;
     display: inline-block;
     padding: 2rem 1rem;
-    letter-spacing: 0.5px;
+    letter-spacing: 1.2px;
     position: relative;
     transition: font-weight 0.2s ease;
     &:hover {
