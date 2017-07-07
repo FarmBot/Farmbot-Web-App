@@ -4,11 +4,10 @@ import { JSXChildren } from "../util";
 
 interface WidgetFooterProps {
   children?: JSXChildren;
-  helpText?: string;
-  title: string;
 }
 
 export function WidgetFooter(props: WidgetFooterProps) {
   return <div className="widget-footer">
+    {props.children}
   </div>;
 }

@@ -26,31 +26,3 @@
     position: relative;
   }
 }
-
-.weed-detector-meta {
-  background: $dark_gray;
-  margin-left: -14px;
-  margin-right: -14px;
-  padding: 0.3rem 2rem 0;
-  margin-bottom: -2rem;
-  margin-top: 20px;
-  label {
-    font-weight: normal;
-    margin-right: 1rem;
-    color: $white;
-  }
-  span {
-    font-weight: bold;
-    color: $white;
-  }
-  .created-at {
-    display: inline-block;
-  }
-  .meta-coordinates {
-    float: right;
-    display: flex;
-    .coordinate:not(:last-of-type) {
-      margin-right: 1.8rem;
-    }
-  }
-}

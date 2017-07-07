@@ -18,6 +18,7 @@
 .widget-wrapper {
   box-shadow: 0px 0px 10px $gray;
   margin-bottom: 3rem;
+  position: relative;
 }
 
 .widget-header {
@@ -57,13 +58,6 @@
   }
 }
 
-.widget-body {
-  background: $off_white;
-  border-color: $light_gray;
-  color: $dark_gray;
-  padding: 1.25rem;
-}
-
 .help-icon:hover .help-text,
 .help-icon:active .help-text {
   opacity: 100;
@@ -71,4 +65,19 @@
   max-height: 200px;
   transition: 0.5s;
   transition-delay: 0.5s;
+}
+
+.widget-body {
+  background: $off_white;
+  border-color: $light_gray;
+  color: $dark_gray;
+  padding: 1.25rem;
+}
+
+.widget-footer {
+  background: $dark_gray;
+  padding: 0.5rem 1rem 0;
+  * {
+    color: $white;
+  }
 }
