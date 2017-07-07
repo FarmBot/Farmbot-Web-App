@@ -90,57 +90,6 @@
   width: 100%;
 }
 
-.farm-events {
-  margin-top: 5rem;
-  .farm-event {
-    &.has-passed {
-      color: $gray;
-    }
-    &:hover {
-      .edit-icon {
-        display: block;
-      }
-    }
-    &:before {
-      content: "";
-      position: absolute;
-      left: 28%;
-      top: 0;
-      bottom: 0;
-      width: 1px;
-      background: $gray;
-    }
-    position: relative;
-    font-size: 1.2rem;
-    padding: 0.8rem;
-    background: white;
-    border-bottom: 1px solid $gray;
-  }
-  .edit-icon {
-    display: none;
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
-    color: $gray;
-    &:hover {
-      color: $dark_gray;
-    }
-  }
-}
-
-.farm-event-wrapper {
-  margin-bottom: 1rem;
-  .farm-event-date-month {
-    font-size: 1.2rem;
-    text-align: center;
-  }
-  .farm-event-date-day {
-    font-size: 2rem;
-    font-weight: bold;
-    text-align: center;
-  }
-}
-
 .thin-search-wrapper {
   .text-input-wrapper {
     margin-bottom: 1rem;
