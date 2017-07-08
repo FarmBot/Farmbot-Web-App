@@ -19,7 +19,7 @@ export function TestButton({ onClick, onFail, syncStatus, sequence }: TestBtnPro
   let className = canTest ? "orange" : "gray";
 
   let clickHandler = () => (canTest) ?
-    onClick() : onFail(t("Sync device before running."));
+    onClick() : onFail(t("Save sequence and sync device before running."));
 
   return <button className={`fb-button ${className}`} onClick={clickHandler} >
     {t("Test")}

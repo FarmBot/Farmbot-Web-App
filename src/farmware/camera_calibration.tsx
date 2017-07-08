@@ -17,7 +17,7 @@ export class CameraCalibration extends
 
   render() {
     return (
-      <Widget className="weed-detector-widget coming-soon">
+      <Widget className="weed-detector-widget">
         <TitleBar
           title={"Camera Calibration"}
           help={t(ToolTips.CAMERA_CALIBRATION)}

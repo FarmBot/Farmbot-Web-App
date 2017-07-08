@@ -35,8 +35,7 @@ export class FBSelect extends React.Component<Props, {}> {
         items={this.props.list}
         onChange={this.props.onChange}
         placeholder={placeholder}
-        isFilterable={this.props.isFilterable}
-      />
+        isFilterable={this.props.isFilterable} />
     </div>;
   }
 }

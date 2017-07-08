@@ -9,7 +9,7 @@ const SelectComponent = Select.ofType<DropDownItem>();
 
 type PossibleReferences =
   | "Sequences"
-  | "Regimens"
+  | "Regimens";
 
 interface ParentMenu {
   title: string;
