@@ -12,8 +12,8 @@ describe("occurrence", () => {
     expect(t.executableId).toBe(fe.executable_id);
     expect(t.mmdd).toBe("0619");
     expect(t.sortKey).toBe(moment(TIME.MONDAY).unix());
-    expect(t.timeStr).toBe("01:30 am");
+    expect(t.timeStr).toBe("01:30am");
     expect(t.executableName).toBe(fe.executable.name);
     expect(t.id).toBe(fe.id);
   });
-})
+});
