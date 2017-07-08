@@ -28,7 +28,7 @@ export class WebcamPanel
     this.props.dispatch(edit(this.props.account, update));
   };
 
-  clearURL = () => {
+  resetURL = () => {
     axios
       .get(API.current.devicePath)
       .then((resp: HttpData<DeviceAccountSettings>) => {
@@ -39,6 +39,12 @@ export class WebcamPanel
       });
   }
 
+  clearURL = () => {
+    // TODO: This should set webcam_url to "", but the input box to "https://"
+    this.props.dispatch(edit(this.props.account, { webcam_url: "https://" }));
+    (document.querySelector(".webcam-url-input") as HTMLInputElement).focus();
+  }
+
   render() {
     let url = this.props.account.body.webcam_url || PLACEHOLDER_FARMBOT;
     let dirty = !!this.props.bot.dirty;
@@ -46,14 +52,33 @@ export class WebcamPanel
 
     return <Widget>
       <WidgetHeader title="Camera" helpText={ToolTips.WEBCAM_SAVE}>
-        {isEditing ?
+        {isEditing &&
           <button
             className="fb-button green"
             onClick={this.save}
           >
             {t("Save")}{this.props.account.dirty ? "*" : ""}
           </button>
-          :
+        }
+        {isEditing &&
+          <button
+            className="fb-button gray"
+            onClick={this.resetURL}
+          >
+            {t("Reset")}
+          </button>
+        }
+        {/*
+        {isEditing &&
+          <button
+            className="fb-button clear-webcam-url-btn"
+            onClick={this.clearURL}
+          >
+            <i className="fa fa-times"></i>
+          </button>
+        }
+        */}
+        {!isEditing &&
           <button
             className="fb-button gray"
             onClick={this.toggle}
@@ -65,12 +90,6 @@ export class WebcamPanel
       {isEditing &&
         <div>
           <label>{t("Set Webcam URL:")}</label>
-          <button
-            className="fb-button clear-webcam-url-btn"
-            onClick={this.clearURL}
-          >
-            <i className="fa fa-times"></i>
-          </button>
           <input
             type="text"
             onChange={e => this.edit({ webcam_url: e.currentTarget.value })}
