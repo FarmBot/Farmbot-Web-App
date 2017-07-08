@@ -69,10 +69,10 @@ export namespace OpenFarm {
   }
 
   export let cropUrl = "https://openfarm.cc/api/v1/crops";
+  export let browsingCropUrl = "https://openfarm.cc/crops/";
 }
 /** Returned by https://openfarm.cc/api/v1/crops?filter=q */
 export interface CropSearchResult {
   data: OpenFarm.Datum[];
   included: OpenFarm.Included[];
 }
-

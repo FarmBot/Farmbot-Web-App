@@ -85,7 +85,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
           {t("Edit on")}&nbsp;
         </span>
         <a
-          href={OpenFarm.cropUrl + result.crop.slug}
+          href={OpenFarm.browsingCropUrl + result.crop.slug}
           target="_blank">
           OpenFarm
         </a>
