@@ -34,7 +34,7 @@ You will need the following:
  0. `git clone https://github.com/FarmBot/Farmbot-Web-App`
  0. `cd Farmbot-Web-App`
  0. `bundle install`
- 0. `yarn install` or `npm install`
+ 0. `yarn install`
  0. **MOST IMPORTANT STEP**. Copy `config/database.example.yml` to `config/database.yml`. In GNU/Linux or Mac: `mv config/database.example.yml config/database.yml`. **Please read the instructions inside the file. Replace the example values provided with real world values.**
  0. Give permission to create a database*
  0. `rake db:create:all db:migrate db:seed`
