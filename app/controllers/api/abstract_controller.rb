@@ -10,6 +10,11 @@ module Api
     skip_before_action :verify_authenticity_token
     after_action :skip_set_cookies_header
     rescue_from(JWT::VerificationError) { |e| auth_err }
+
+    rescue_from(ActionDispatch::Http::Parameters::ParseError) do
+      sorry "That request was not valid JSON. Consider checking the request " +
+            "body with a JSON validator.."
+    end
     rescue_from(ActiveRecord::ValueTooLong) do
       sorry "Please use reasonable lengths on string inputs", 422
     end
