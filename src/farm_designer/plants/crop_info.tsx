@@ -2,7 +2,7 @@ import * as React from "react";
 import { BackArrow } from "../../ui";
 import { t } from "i18next";
 import * as _ from "lodash";
-import { DATA_URI, DEFAULT_ICON } from "../../open_farm/index";
+import { DATA_URI, DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
 import { CropInfoProps, DraggableEvent } from "../interfaces";
 import { history } from "../../history";
 import { connect } from "react-redux";
@@ -119,7 +119,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
                         {value ?
                           <div>
                             <img
-                              src={DATA_URI + value}
+                              src={svgToUrl(value)}
                               width={100}
                               height={100}
                             />

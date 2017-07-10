@@ -15,6 +15,7 @@ module Api
       sorry "That request was not valid JSON. Consider checking the request " +
             "body with a JSON validator.."
     end
+
     rescue_from(ActiveRecord::ValueTooLong) do
       sorry "Please use reasonable lengths on string inputs", 422
     end
