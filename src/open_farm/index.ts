@@ -34,7 +34,7 @@ export namespace OpenFarmAPI {
 /** PROBLEM: You have 100 lettuce plants. You don't want to download an SVG icon
  * 100 times.
  * SOLUTION: Cache stuff. */
-export function cachedIcon(slug: string): Promise<Readonly<OFCropAttrs>> {
+export function cachedCrop(slug: string): Promise<Readonly<OFCropAttrs>> {
   cache[slug] = cache[slug] || (axios
     .get(BASE + slug)
     .then(cacheTheIcon(slug), cacheTheIcon(slug)));

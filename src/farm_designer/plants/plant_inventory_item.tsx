@@ -1,7 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
 import * as moment from "moment";
-import { DEFAULT_ICON, cachedIcon, svgToUrl } from "../../open_farm/index";
+import { DEFAULT_ICON, cachedCrop, svgToUrl } from "../../open_farm/index";
 import { push } from "../../history";
 import { TaggedPlantPointer } from "../../resources/tagged_resources";
 
@@ -41,7 +41,7 @@ export class PlantInventoryItem extends
     let maybeGetCachedIcon = (e: IMGEvent) => {
       let OFS = tpp.body.openfarm_slug;
       let img = e.currentTarget;
-      OFS && cachedIcon(OFS)
+      OFS && cachedCrop(OFS)
         .then((crop) => {
           let i = svgToUrl(crop.svg_icon);
           i !== img.getAttribute("src") && img.setAttribute("src", i);

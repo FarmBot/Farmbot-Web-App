@@ -1,6 +1,6 @@
 import * as React from "react";
 import { GardenPlantProps, GardenPlantState } from "../interfaces";
-import { cachedIcon, DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
+import { cachedCrop, DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
 import { Circle } from "./circle";
 import { round, getXYFromQuadrant } from "./util";
 
@@ -11,7 +11,7 @@ export class GardenPlant extends
 
   componentDidMount() {
     let OFS = this.props.plant.body.openfarm_slug;
-    cachedIcon(OFS)
+    cachedCrop(OFS)
       .then(({ svg_icon }) => {
         this.setState({ icon: svgToUrl(svg_icon) });
       });
