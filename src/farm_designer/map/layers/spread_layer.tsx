@@ -29,7 +29,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
           /> : <g key={index} />;
       })
     }
-  </g>
+  </g>;
 }
 
 interface SpreadCircleProps {
@@ -38,13 +38,13 @@ interface SpreadCircleProps {
 }
 
 export function SpreadCircle(props: SpreadCircleProps) {
-  let { radius, x, y, spread } = props.plant.body;
+  let { radius, x, y } = props.plant.body;
   let { quadrant } = props;
   let { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
   return <circle
     cx={qx}
     cy={qy}
-    r={scale(spread || radius)}
+    r={scale(radius)}
     fillOpacity={0.2}
     fill={"green"}
     stroke={"green"}
