@@ -75,5 +75,13 @@ describe Api::PointsController do
       expect(json[:x]).to include("is required")
       expect(json[:name]).to eq(nil)
     end
+
+    it "handles bad data" do
+      sign_in user
+      SmarfDoc.note("This is what happens when you post bad JSON")
+      post :create, body: "{'x': 0}", params: { format: :json }
+      expect(response.status).to eq(422)
+      expect(json[:error]).to include("Please use _valid_ JSON."")
+    end
   end
 end

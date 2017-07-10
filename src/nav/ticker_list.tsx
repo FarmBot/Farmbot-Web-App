@@ -7,7 +7,7 @@ import { Log } from "../interfaces";
 import { TickerListProps } from "./interfaces";
 
 let Ticker = (log: Log, index: number) => {
-  let time = moment.unix(log.created_at).local().format("h:mm a");
+  let time = moment.unix(log.created_at).local().format("MMM D, h:mma");
   let type = (log.meta || {}).type;
   return (
     // TODO: Should utilize log's `uuid` instead of index.
@@ -33,7 +33,7 @@ export let TickerList = (props: TickerListProps) => {
       onClick={props.toggle("tickerListOpen")}
     >
       <div className="first-ticker">
-        {Ticker(firstTicker || { type: "" }, -1)}
+        {Ticker(firstTicker || {}, -1)}
       </div>
       <Collapse isOpen={props.tickerListOpen}>
         {props

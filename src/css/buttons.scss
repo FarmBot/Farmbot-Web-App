@@ -74,6 +74,10 @@
   &.gray {
     background-color: $medium_gray !important;
     box-shadow: 0 2px 0px 0px darken($medium_gray, 12%);
+    &:disabled,
+    &.disabled {
+      background: $gray !important;
+    }
     &:hover,
     &.active {
       background-color: darken($medium_gray, 5%) !important;

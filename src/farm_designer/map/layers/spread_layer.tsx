@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Component } from "react";
 import { TaggedPlantPointer } from "../../../resources/tagged_resources";
 import { BotOriginQuadrant } from "../../interfaces";
 import {
@@ -6,6 +7,7 @@ import {
   scale,
   getXYFromQuadrant
 } from "../util";
+import { cachedCrop } from "../../../open_farm/index";
 
 interface SpreadLayerProps {
   visible: boolean;
@@ -29,7 +31,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
           /> : <g key={index} />;
       })
     }
-  </g>
+  </g>;
 }
 
 interface SpreadCircleProps {
@@ -37,17 +39,31 @@ interface SpreadCircleProps {
   quadrant: BotOriginQuadrant;
 }
 
-export function SpreadCircle(props: SpreadCircleProps) {
-  let { radius, x, y, spread } = props.plant.body;
-  let { quadrant } = props;
-  let { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
-  return <circle
-    cx={qx}
-    cy={qy}
-    r={scale(spread || radius)}
-    fillOpacity={0.2}
-    fill={"green"}
-    stroke={"green"}
-    strokeWidth={"1.5"}
-  />;
+interface SpreadCircleState {
+  spread: number | undefined;
+}
+
+export class SpreadCircle extends Component<SpreadCircleProps, SpreadCircleState> {
+
+  state: SpreadCircleState = { spread: undefined };
+
+  componentDidMount() {
+    cachedCrop(this.props.plant.body.openfarm_slug)
+      .then(({ spread }) => this.setState({ spread }));
+  }
+
+  render() {
+    let { radius, x, y } = this.props.plant.body;
+    let { quadrant } = this.props;
+    let { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
+    return <circle
+      cx={qx}
+      cy={qy}
+      r={scale(this.state.spread || radius)}
+      fillOpacity={0.2}
+      fill={"green"}
+      stroke={"green"}
+      strokeWidth={"1.5"}
+    />;
+  }
 }

@@ -1,17 +1,20 @@
 import * as React from "react";
 import { GardenPlantProps, GardenPlantState } from "../interfaces";
-import { cachedIcon, DEFAULT_ICON } from "../../open_farm/index";
+import { cachedCrop, DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
 import { Circle } from "./circle";
 import { round, getXYFromQuadrant } from "./util";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
 
-  state: GardenPlantState = { icon: DEFAULT_ICON }
+  state: GardenPlantState = { icon: DEFAULT_ICON };
 
   componentDidMount() {
     let OFS = this.props.plant.body.openfarm_slug;
-    cachedIcon(OFS).then((icon: string) => this.setState({ icon }));
+    cachedCrop(OFS)
+      .then(({ svg_icon }) => {
+        this.setState({ icon: svgToUrl(svg_icon) });
+      });
   }
 
   render() {
@@ -42,6 +45,6 @@ export class GardenPlant extends
         x={qx - radius}
         y={qy - radius}
       />
-    </g>
+    </g>;
   }
 }

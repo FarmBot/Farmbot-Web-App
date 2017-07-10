@@ -105,14 +105,14 @@ export let resourceReducer = generateReducer
     if (resource
       && resource.body) {
       switch (resource.kind) {
-        case "device":
+        case "sequences":
+        case "device": // tslint:disable-line
         case "users":
         case "farm_events":
         case "logs":
         case "peripherals":
         case "crops":
         case "regimens":
-        case "sequences":
         case "tools":
         case "points":
           reindexResource(s.index, resource);
@@ -185,7 +185,6 @@ export let resourceReducer = generateReducer
     original.dirty = true;
     sanityCheck(original);
     payload && isTaggedResource(original);
-    if (original.kind === "sequences") { setStepUuid(original); }
     return s;
   })
   .add<TaggedResource>(Actions.INIT_RESOURCE, (s, { payload }) => {
@@ -199,9 +198,6 @@ export let resourceReducer = generateReducer
     // NOTE:      Remove this in June 2017.
     if (tr.kind === "logs" && (typeof tr.body.created_at === "string")) {
       tr.body.created_at = moment(tr.body.created_at).unix();
-    }
-    if (tr.kind == "sequences") {
-      setStepUuid(tr);
     }
     reindexResource(s.index, tr);
     if (tr.kind === "logs") {
@@ -295,6 +291,3 @@ function reindexResource(i: ResourceIndex, r: TaggedResource) {
   removeFromIndex(i, r);
   addToIndex(i, r.kind, r.body, r.uuid);
 }
-
-let setStepUuid = (s: TaggedSequence) => (s.body.body || [])
-  .map(x => _.set(x, "uuid", rando()));

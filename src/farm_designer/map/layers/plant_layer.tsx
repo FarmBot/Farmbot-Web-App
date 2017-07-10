@@ -7,7 +7,7 @@ import { defensiveClone } from "../../../util";
 
 let cropSpreadDict: CropSpreadDict = {};
 
-export function PlantLayer(p: PlantLayerProps) {
+export function PlantLayer(props: PlantLayerProps) {
   let {
     crops,
     plants,
@@ -17,7 +17,7 @@ export function PlantLayer(p: PlantLayerProps) {
     dragging,
     editing,
     botOriginQuadrant
-  } = p;
+  } = props;
 
   crops
     .filter(c => !!c.body.spread)
@@ -29,7 +29,6 @@ export function PlantLayer(p: PlantLayerProps) {
         .filter(x => !!x.body.id)
         .map(p => defensiveClone(p))
         .map(p => {
-          p.body.spread = cropSpreadDict[p.body.openfarm_slug] || p.body.radius;
           return p;
         })
         .map(p => {
@@ -38,26 +37,25 @@ export function PlantLayer(p: PlantLayerProps) {
             plantId: (p.body.id || "IMPOSSIBLE_ERR_NO_PLANT_ID").toString(),
             uuid: p.uuid,
             plant: p
-          }
+          };
         })
-        .map(props => {
-          let action = { type: "SELECT_PLANT", payload: props.uuid };
+        .map(p => {
+          let action = { type: "SELECT_PLANT", payload: p.uuid };
           return <Link className="plant-link-wrapper"
-            to={"/app/designer/plants/" + props.plantId}
-            id={props.plantId}
+            to={"/app/designer/plants/" + p.plantId}
+            id={p.plantId}
             onClick={_.noop}
-            key={props.plantId}>
+            key={p.plantId}>
             <GardenPlant
               quadrant={botOriginQuadrant}
-              plant={props.plant}
-              selected={props.selected}
-              dragging={props.selected && dragging && editing}
+              plant={p.plant}
+              selected={p.selected}
+              dragging={p.selected && dragging && editing}
               onClick={() => dispatch(action)}
-              dispatch={p.dispatch}
-            />
+              dispatch={props.dispatch} />
           </Link>;
         })}
-    </g>
+    </g>;
   } else {
     return <g />;
   }
