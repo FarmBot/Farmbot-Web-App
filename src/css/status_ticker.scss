@@ -27,6 +27,10 @@
 
 .status-ticker-wrapper {
   padding: 0.6rem 1rem 0;
+  transition: all 0.2s ease;
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
   .saucer {
     float: left;
     width: 1.6rem;
@@ -39,6 +43,11 @@
 .first-ticker {
   padding-bottom: 0.5rem;
   background: $black;
+  .status-ticker-wrapper {
+    &:hover {
+      background: initial;
+    }
+  }
   .status-ticker-created-at {
     margin-top: 0.4rem;
   }
@@ -46,6 +55,7 @@
 
 .status-ticker-created-at {
   float: right;
+  margin-top: 0.2rem;
 }
 
 // background: linear-gradient(to top, black 0%, transparent 30%);
