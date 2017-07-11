@@ -71,6 +71,6 @@ export class HoveredPlantLayer extends
       onClick={this.onClick}
       width={this.plantInfo.radius * 2}
       height={this.plantInfo.radius * 2}
-      xlinkHref={icon} />
+      xlinkHref={icon} />;
   }
 }

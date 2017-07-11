@@ -90,7 +90,7 @@ export function isTaggedResource(x: object): x is TaggedResource {
   return (isObject(x)
     && isString(get(x, "kind"))
     && isString(get(x, "uuid"))
-    && isObject(get(x, "body")))
+    && isObject(get(x, "body")));
 }
 
 let is = (r: ResourceName) => function isOfTag(x: object): x is TaggedResource {
@@ -126,13 +126,13 @@ export let isTaggedLog =
   (x: object): x is TaggedLog => is("logs")(x);
 export let isTaggedToolSlotPointer =
   (x: object): x is TaggedToolSlotPointer => {
-    return isTaggedPoint(x) && (x.body.pointer_type === "ToolSlot")
+    return isTaggedPoint(x) && (x.body.pointer_type === "ToolSlot");
   };
 export let isTaggedPlantPointer =
   (x: object): x is TaggedPlantPointer => {
-    return isTaggedPoint(x) && (x.body.pointer_type === "Plant")
+    return isTaggedPoint(x) && (x.body.pointer_type === "Plant");
   };
 export let isTaggedGenericPointer =
   (x: object): x is TaggedGenericPointer => {
-    return isTaggedPoint(x) && (x.body.pointer_type === "GenericPointer")
-  }
+    return isTaggedPoint(x) && (x.body.pointer_type === "GenericPointer");
+  };

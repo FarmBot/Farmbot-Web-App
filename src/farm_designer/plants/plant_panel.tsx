@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as _ from "lodash";
 import { t } from "i18next";
+import { Link } from "react-router";
 import { FormattedPlantInfo } from "./map_state_to_props";
 
 interface PlantPanelProps {
@@ -29,7 +30,10 @@ export function PlantPanel({ info, onDestroy }: PlantPanelProps) {
           {t("Plant Type")}:&nbsp;
         </b>
         <span>
-          {_.startCase(slug)}
+          <Link
+            to={`/app/designer/plants/crop_search/` + slug}>
+            {_.startCase(slug)}
+          </Link>
         </span>
       </li>
       <li>

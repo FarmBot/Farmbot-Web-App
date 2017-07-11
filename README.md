@@ -25,16 +25,16 @@ You will need the following:
 
  0. A Linux or Mac based machine. We do not support windows at this time.
  0. [Ruby 2.4.1](http://rvm.io/rvm/install)
- 1. [ImageMagick](https://www.imagemagick.org/script/index.php) (`brew install imagemagick` (Mac) or `sudo apt-get install imagemagick` (Ubuntu))
- 2. [Node JS > v6](https://nodejs.org/en/download/)
- 3. [`libpq-dev` and `postgresql`](http://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem/6040822#6040822)
+ 0. [ImageMagick](https://www.imagemagick.org/script/index.php) (`brew install imagemagick` (Mac) or `sudo apt-get install imagemagick` (Ubuntu))
+ 0. [Node JS > v6](https://nodejs.org/en/download/)
+ 0. [`libpq-dev` and `postgresql`](http://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem/6040822#6040822)
 
 ### Setup
 
  0. `git clone https://github.com/FarmBot/Farmbot-Web-App`
  0. `cd Farmbot-Web-App`
- 0. [Install `libpq-dev` and `postgresql`](http://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem/6040822#6040822)
  0. `bundle install`
+ 0. `yarn install`
  0. **MOST IMPORTANT STEP**. Copy `config/database.example.yml` to `config/database.yml`. In GNU/Linux or Mac: `mv config/database.example.yml config/database.yml`. **Please read the instructions inside the file. Replace the example values provided with real world values.**
  0. Give permission to create a database*
  0. `rake db:create:all db:migrate db:seed`
@@ -46,9 +46,8 @@ You will need the following:
 
 \*Give permission to `user` to create database:
 ```
-sudo -u postgres createuser user
 sudo -u postgres psql
-ALTER USER "user" WITH SUPERUSER;
+CREATE USER "user" WITH SUPERUSER;
 ```
 
 # Q: Is Dokku / Docker supported?

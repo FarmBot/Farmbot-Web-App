@@ -71,7 +71,6 @@ interface BasePoint {
   created_at?: string | undefined;
   updated_at?: string | undefined;
   radius: number;
-  spread?: number | undefined;
   x: number;
   y: number;
   z: number;

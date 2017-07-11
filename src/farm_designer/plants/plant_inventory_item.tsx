@@ -1,11 +1,11 @@
 import * as React from "react";
 import { t } from "i18next";
 import * as moment from "moment";
-import { DEFAULT_ICON, cachedIcon } from "../../open_farm/index";
+import { DEFAULT_ICON, cachedCrop, svgToUrl } from "../../open_farm/index";
 import { push } from "../../history";
 import { TaggedPlantPointer } from "../../resources/tagged_resources";
 
-type IMGEvent = React.SyntheticEvent<HTMLImageElement>
+type IMGEvent = React.SyntheticEvent<HTMLImageElement>;
 
 interface PlantInventoryItemProps {
   tpp: TaggedPlantPointer;
@@ -20,7 +20,7 @@ interface PlantInventoryItemState {
 export class PlantInventoryItem extends
   React.Component<PlantInventoryItemProps, PlantInventoryItemState> {
 
-  state: PlantInventoryItemState = { icon: "" }
+  state: PlantInventoryItemState = { icon: "" };
 
   render() {
     let plant = this.props.tpp.body;
@@ -41,12 +41,13 @@ export class PlantInventoryItem extends
     let maybeGetCachedIcon = (e: IMGEvent) => {
       let OFS = tpp.body.openfarm_slug;
       let img = e.currentTarget;
-      OFS && cachedIcon(OFS)
-        .then((i: string) => {
+      OFS && cachedCrop(OFS)
+        .then((crop) => {
+          let i = svgToUrl(crop.svg_icon);
           i !== img.getAttribute("src") && img.setAttribute("src", i);
           this.setState({ icon: i });
         });
-    }
+    };
 
     // Name given from OpenFarm's API.
     let label = plant.name || "Unknown plant";
