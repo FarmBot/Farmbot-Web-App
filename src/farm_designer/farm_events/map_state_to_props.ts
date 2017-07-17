@@ -24,10 +24,12 @@ export function mapStateToProps(state: Everything): FarmEventProps {
             .startOf("day")
             .add(ri.time_offset, "milliseconds");
           let o = occurrence(m2, fe);
-          let sequenceName = findSequenceById(state.resources.index, ri.sequence_id).body.name
-          o.displayName = fe.executable.name + '\n' + sequenceName
+          let seq = findSequenceById(state.resources.index, ri.sequence_id);
+          let sequenceName = seq.body.name;
+          o.heading = fe.executable.name;
+          o.subHeading = sequenceName;
           calendar.insert(o);
-        })
+        });
       }
     });
   });
