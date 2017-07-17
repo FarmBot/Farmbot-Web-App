@@ -123,7 +123,8 @@ export interface CalendarOccurrence {
   mmdd: string;
   sortKey: number;
   timeStr: string;
-  displayName: string;
+  heading: string;
+  subHeading?: string | undefined;
   executableId: number;
   id: number;
 }

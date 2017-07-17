@@ -12,7 +12,7 @@ export function occurrence(m: moment.Moment, fe: FarmEventWithExecutable):
     mmdd: m.format(Calendar.DATE_FORMAT),
     sortKey: m.unix(),
     timeStr: m.format("hh:mma"),
-    displayName: fe.executable.name || fe.executable_type,
+    heading: fe.executable.name || fe.executable_type,
     executableId: fe.executable_id || 0,
     id: fe.id || 0,
   };

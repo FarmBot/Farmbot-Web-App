@@ -26,12 +26,14 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
 
               let url = `/app/designer/farm_events/` +
                 (farmEvent.id || "UNSAVED_EVENT").toString();
-              let displayNameFields = farmEvent.displayName.split('\n');
-              let regimenName = null;
-              if (displayNameFields.length > 1) {
-                regimenName = <p style={{color:'gray'}}>{displayNameFields[0]}</p>;
+              let regimenName: JSX.Element;
+
+              if (farmEvent.subHeading) {
+                regimenName = <p style={{ color: "gray" }}>
+                  {farmEvent.heading}
+                </p>;
               } else {
-                regimenName = displayNameFields[0]
+                regimenName = <p>{farmEvent.heading}</p>;
               }
 
               return (
@@ -43,7 +45,7 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
                     {farmEvent.timeStr}
                   </div>
                   <div className="farm-event-data-executable">
-                    {displayNameFields[1]}
+                    {farmEvent.subHeading}
                     {regimenName}
                   </div>
                   <Link to={url}>
