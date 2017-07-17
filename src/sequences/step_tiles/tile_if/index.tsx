@@ -35,7 +35,7 @@ export const LHSOptions: DropDownItem[] = [
   { value: "x", label: "X position" },
   { value: "y", label: "Y Position" },
   { value: "z", label: "Z position" }
-].concat(range(0, 70).map(x => ({ value: `pin${x}`, label: `Pin ${x}` })))
+].concat(range(0, 70).map(x => ({ value: `pin${x}`, label: `Pin ${x}` })));
 
 export const operatorOptions: DropDownItem[] = [
   { value: "<", label: "is less than" },
@@ -53,7 +53,7 @@ export function seqDropDown(i: ResourceIndex) {
       if (_.isNumber(body.id)) {
         results.push({ label: body.name, value: body.id });
       }
-    })
+    });
   return results;
 }
 
@@ -63,12 +63,12 @@ export function initialValue(input: Execute | Nothing, index: ResourceIndex) {
       let id = input.args.sequence_id;
       let seq = findSequenceById(index, id).body;
       if (_.isNumber(seq.id)) {
-        return { label: seq.name, value: seq.id }
+        return { label: seq.name, value: seq.id };
       } else {
-        throw new Error("Failed seq id type assertion.")
+        throw new Error("Failed seq id type assertion.");
       }
     case "nothing":
-      return { label: "None", value: 0 }
+      return { label: "None", value: 0 };
     default:
       throw new Error("Only _else or _then");
   }
@@ -138,7 +138,7 @@ export let IfBlockDropDownHandler = (props: IfParams,
       let value = (block.kind === "execute") && block.args.sequence_id;
       let label = value && findSequenceById(props.resources, value).body.name;
       if (_.isNumber(value) && _.isString(label)) {
-        return { label, value }
+        return { label, value };
       } else {
         throw new Error("Failed type assertion");
       }
@@ -156,11 +156,11 @@ export let IfBlockDropDownHandler = (props: IfParams,
   function onChange(e: DropDownItem) {
     if (e.value) {
       let v = _.isNumber(e.value) && e.value;
-      v && overwriteStep({ kind: "execute", args: { sequence_id: v } })
+      v && overwriteStep({ kind: "execute", args: { sequence_id: v } });
     } else {
       overwriteStep({ kind: "nothing", args: {} });
     }
-  };
+  }
 
   return { onChange, selectedItem };
-}
+};

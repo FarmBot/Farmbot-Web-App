@@ -25,14 +25,20 @@ export const NULL_CHOICE: DropDownItem = Object.freeze({
 export class FBSelect extends React.Component<Props, {}> {
 
   get item() { return this.props.selectedItem || NULL_CHOICE; }
-
+  get list() {
+    if (this.props.allowEmpty) {
+      return this.props.list.concat(NULL_CHOICE);
+    } else {
+      return this.props.list;
+    }
+  }
   render() {
     let placeholder = this.props.placeholder || "Search...";
 
     return <div className="filter-search">
       <FilterSearch
         selectedItem={this.item}
-        items={this.props.list}
+        items={this.list}
         onChange={this.props.onChange}
         placeholder={placeholder}
         isFilterable={this.props.isFilterable} />

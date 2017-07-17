@@ -18,5 +18,5 @@ export function Then(props: IfParams) {
         onChange={onChange}
         selectedItem={selectedItem()} />
     </div>
-  </div>
+  </div>;
 }
