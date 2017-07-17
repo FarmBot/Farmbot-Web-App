@@ -168,7 +168,7 @@ export class EditFEForm extends React.Component<Props, State> {
         if (nextRun) {
           // TODO: Internationalizing this will be a challenge.
           success(`This Farm Event will run ${moment(nextRun).fromNow()}, but
-            you must first SYNC YOUR DEVICE. If you do not sync, the event will
+            you must first SYNC YOUR DEVICE. If you do not sync, the event will\
             not run.`);
           this.props.dispatch(maybeWarnAboutMissedTasks(frmEvnt, function () {
             alert(`You are scheduling a regimen to run today. Be aware that
