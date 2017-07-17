@@ -26,14 +26,17 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
 
               let url = `/app/designer/farm_events/` +
                 (farmEvent.id || "UNSAVED_EVENT").toString();
-              let regimenName: JSX.Element;
+              let heading: string;
+              let subHeading: JSX.Element;
 
-              if (farmEvent.subHeading) {
-                regimenName = <p style={{ color: "gray" }}>
-                  {farmEvent.heading}
+              if (farmEvent.childExecutableName) {
+                heading = farmEvent.childExecutableName;
+                subHeading = <p style={{ color: "gray" }}>
+                  {farmEvent.parentExecutableName}
                 </p>;
               } else {
-                regimenName = <p>{farmEvent.heading}</p>;
+                heading = farmEvent.parentExecutableName;
+                subHeading = <p />;
               }
 
               return (
@@ -45,8 +48,8 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
                     {farmEvent.timeStr}
                   </div>
                   <div className="farm-event-data-executable">
-                    {farmEvent.subHeading}
-                    {regimenName}
+                    {heading}
+                    {subHeading}
                   </div>
                   <Link to={url}>
                     <i className="fa fa-pencil-square-o edit-icon" />

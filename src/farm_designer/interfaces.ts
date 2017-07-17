@@ -64,7 +64,7 @@ export interface FarmEvent {
   executable_id: number;
   executable_type: ExecutableType;
   readonly calendar?: string[] | undefined;
-};
+}
 
 export interface MovePlantProps {
   deltaX: number;
@@ -123,8 +123,8 @@ export interface CalendarOccurrence {
   mmdd: string;
   sortKey: number;
   timeStr: string;
-  heading: string;
-  subHeading?: string | undefined;
+  parentExecutableName: string;
+  childExecutableName?: string | undefined;
   executableId: number;
   id: number;
 }

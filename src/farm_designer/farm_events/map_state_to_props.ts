@@ -26,8 +26,8 @@ export function mapStateToProps(state: Everything): FarmEventProps {
           let o = occurrence(m2, fe);
           let seq = findSequenceById(state.resources.index, ri.sequence_id);
           let sequenceName = seq.body.name;
-          o.heading = fe.executable.name;
-          o.subHeading = sequenceName;
+          o.parentExecutableName = fe.executable.name;
+          o.childExecutableName = sequenceName;
           calendar.insert(o);
         });
       }
