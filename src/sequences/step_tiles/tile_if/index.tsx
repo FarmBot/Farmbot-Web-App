@@ -143,7 +143,7 @@ export let IfBlockDropDownHandler = (props: IfParams,
         throw new Error("Failed type assertion");
       }
     }
-  }
+  };
 
   function overwriteStep(input: Execute | Nothing) {
     let update = defensiveClone(step);
