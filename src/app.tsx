@@ -87,7 +87,7 @@ export default class App extends React.Component<AppProps, {}> {
       />
       {!syncLoaded && <Spinner radius={33} strokeWidth={6} />}
       {syncLoaded && this.props.children}
-      <ControlsPopup />
+      <ControlsPopup dispatch={this.props.dispatch} />
     </div>;
   }
 }

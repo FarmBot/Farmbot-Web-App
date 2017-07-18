@@ -357,9 +357,9 @@ ul {
 }
 
 .controls-popup,
-.controls-popup-menu {
+.controls-popup-menu-outer {
   position: absolute;
-  background: blue;
+  background: $dark_gray;
   padding: 2rem;
   border-radius: 3rem;
   height: 6rem;
@@ -380,23 +380,29 @@ ul {
     margin-bottom: 2rem;
     transition: all 0.4s ease-in-out;
   }
-  &:hover {
+  &.open {
     i {
       transform: rotate(-225deg);
     }
-    .controls-popup-menu {
-      transition-delay: 1s;
-      opacity: 1;
+    .controls-popup-menu-outer {
       width: 26rem;
+    }
+    .controls-popup-menu-inner {
+      transition-delay: 0.2s;
+      opacity: 1;
     }
   }
 }
 
-.controls-popup-menu {
+.controls-popup-menu-inner {
+  transition: all 0.4s ease-in-out;
+  opacity: 0;
+}
+
+.controls-popup-menu-outer {
   transition: all 0.4s ease-in-out;
   right: 0;
   bottom: 0;
-  opacity: 0;
 }
 
 @keyframes page-transition {
