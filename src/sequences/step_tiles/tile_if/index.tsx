@@ -93,7 +93,7 @@ export function InnerIf(props: IfParams) {
               step={currentStep} />
             <i className="fa fa-arrows-v step-control" />
             <i className="fa fa-clone step-control"
-              onClick={() => splice(stuff)} />
+              onClick={() => dispatch(splice(stuff))} />
             <i className="fa fa-trash step-control"
               onClick={() => remove(stuff)} />
             <Help text={t(ToolTips.IF)} />
