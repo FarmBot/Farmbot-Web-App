@@ -154,9 +154,9 @@ export let IfBlockDropDownHandler = (props: IfParams,
   }
 
   function onChange(e: DropDownItem) {
-    if (e.value) {
-      let v = _.isNumber(e.value) && e.value;
-      v && overwriteStep({ kind: "execute", args: { sequence_id: v } });
+    if (e.value && _.isNumber(e.value)) {
+      let v = e.value;
+      overwriteStep({ kind: "execute", args: { sequence_id: v } });
     } else {
       overwriteStep({ kind: "nothing", args: {} });
     }

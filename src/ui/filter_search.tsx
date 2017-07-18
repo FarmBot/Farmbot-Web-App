@@ -73,7 +73,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
     return (
       <MenuItem
         className={"filter-search-item"}
-        key={item.label || index}
+        key={`${item.label}.${item.value}`}
         onClick={handleClick}
         text={`${item.label}`}
       />
