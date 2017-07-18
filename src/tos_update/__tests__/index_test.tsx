@@ -1,14 +1,22 @@
+jest.mock("../../util", function () {
+  return {
+    hardRefresh: () => { }
+  };
+});
+
+jest.mock("../../i18n", () => {
+  return {
+    detectLanguage: () => Promise.resolve({})
+  };
+});
+
 import * as React from "react";
 import { Wow } from "../index";
-
+import { mount, shallow } from "enzyme";
 describe("<Wow/>", () => {
   it("toggles server options", () => {
-    // let x = new Wow();
-    // x.props = {};
-    // x.setState({});
-    // expect(x.state.hideServerSettings).toBeFalsy();
-    // x.toggleServerOpts();
-    // expect(x.state.hideServerSettings).toBe(true);
-    expect(true).toBe(true);
+    let x = shallow(<Wow />);
+    let wow = x.instance() as Wow;
+    expect(x.instance().state).toBeTruthy();
   });
 });
