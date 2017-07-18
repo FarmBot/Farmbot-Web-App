@@ -26,6 +26,18 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
 
               let url = `/app/designer/farm_events/` +
                 (farmEvent.id || "UNSAVED_EVENT").toString();
+              let heading: string;
+              let subHeading: JSX.Element;
+
+              if (farmEvent.childExecutableName) {
+                heading = farmEvent.childExecutableName;
+                subHeading = <p style={{ color: "gray" }}>
+                  {farmEvent.parentExecutableName}
+                </p>;
+              } else {
+                heading = farmEvent.parentExecutableName;
+                subHeading = <p />;
+              }
 
               return (
                 <div
@@ -36,7 +48,8 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
                     {farmEvent.timeStr}
                   </div>
                   <div className="farm-event-data-executable">
-                    {farmEvent.executableName}
+                    {heading}
+                    {subHeading}
                   </div>
                   <Link to={url}>
                     <i className="fa fa-pencil-square-o edit-icon" />
