@@ -101,7 +101,7 @@
     },
     "setupFiles": [
       "./src/unmock_i18next.ts",
-      "./src/__test_support__/locastorage.js"
+      "./src/__test_support__/localstorage.js"
     ],
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
