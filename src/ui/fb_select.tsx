@@ -100,7 +100,7 @@ export class DeprecatedFBSelect extends React.Component<Readonly<SelectProps>, P
       } else {
         this.setState({ label: "", value: "" });
       }
-    };
+    }
     this.setState({ isOpen: (isOpen || false) });
   }
 
@@ -168,7 +168,7 @@ export class DeprecatedFBSelect extends React.Component<Readonly<SelectProps>, P
   }
 
   componentWillReceiveProps() {
-    setTimeout(() => this.forceUpdate(), 3)
+    setTimeout(() => this.forceUpdate(), 3);
   }
 
   render() {

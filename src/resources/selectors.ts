@@ -300,12 +300,6 @@ export function toArray(index: ResourceIndex) {
   });
 }
 
-/** Search for matching key/value pairs in the body of a resource. */
-export function where(index: ResourceIndex,
-  body: object): (TaggedResource | undefined)[] {
-  return _.filter(index.references, body);
-}
-
 /** GIVEN: a slot UUID.
  *  FINDS: Tool in that slot (if any) */
 export let currentToolInSlot = (index: ResourceIndex) =>
@@ -385,7 +379,6 @@ export let findSequenceById = (ri: ResourceIndex, sequence_id: number) => {
   }
 };
 
-
 export let findRegimenById = (ri: ResourceIndex, regimen_id: number) => {
   let regimen = byId("regimens")(ri, regimen_id);
   if (regimen && isTaggedRegimen(regimen) && sanityCheck(regimen)) {
@@ -399,12 +392,11 @@ export let findSlotById = byId<TaggedToolSlotPointer>("points");
 /** Find a Tool's corresponding Slot. */
 export let findSlotByToolId = (index: ResourceIndex, tool_id: number) => {
   let tool = findToolById(index, tool_id);
-  let filter = (x: TaggedResource) => {
-    if (x && isTaggedToolSlotPointer(x)) {
-      return x.body.tool_id === tool_id;
-    }
-  };
-  let tts = where(index, { tool_id: tool.body.id }).filter(filter)[0];
+  let query: any = { body: { tool_id: tool.body.id } };
+  let every = Object
+    .keys(index.references)
+    .map(x => index.references[x]);
+  let tts = _.find(every, query);
   if (tts && isTaggedToolSlotPointer(tts) && sanityCheck(tts)) {
     return tts;
   } else {

@@ -13,7 +13,7 @@ module Api
 
     rescue_from(ActionDispatch::Http::Parameters::ParseError) do
       sorry "That request was not valid JSON. Consider checking the request " +
-            "body with a JSON validator.."
+            "body with a JSON validator..", 422
     end
 
     rescue_from(ActiveRecord::ValueTooLong) do

@@ -13,7 +13,7 @@ describe("occurrence", () => {
     expect(t.mmdd).toBe("0619");
     expect(t.sortKey).toBe(moment(TIME.MONDAY).unix());
     expect(t.timeStr).toBe("01:30am");
-    expect(t.executableName).toBe(fe.executable.name);
+    expect(t.parentExecutableName).toBe(fe.executable.name);
     expect(t.id).toBe(fe.id);
   });
 });

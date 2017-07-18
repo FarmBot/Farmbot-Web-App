@@ -38,14 +38,14 @@ export function move({ step, sequence, to, from }: MoveParams) {
   // time to debug right now.
   if (from > to) {
     // wtf ?
-    seq.body = arrayMover(seq.body, from, to)
+    seq.body = arrayMover(seq.body, from, to);
   } else {
     seq.body.splice(to, 0, defensiveClone(copy));
     delete seq.body[from];
     seq.body = _.compact(seq.body);
   }
   return overwrite(sequence, next.body);
-};
+}
 
 interface CopyParams {
   step: Step;
@@ -60,7 +60,7 @@ export function splice({ step, sequence, index }: CopyParams) {
   seq.body = seq.body || [];
   seq.body.splice(index, 0, copy);
   return overwrite(sequence, next.body);
-};
+}
 
 interface RemoveParams {
   index: number;
@@ -90,12 +90,12 @@ export function updateStep(props: StepInputProps) {
       numericNonsense(val, stepCopy, field);
     } else {
       _.assign(stepCopy.args, { [field]: val });
-    };
+    }
 
     seqCopy.body[index] = stepCopy;
     dispatch(overwrite(sequence, seqCopy));
   };
-};
+}
 
 function numericNonsense(val: string, copy: CeleryNode, field: LegalArgString) {
   // Fix negative number issues.
@@ -118,14 +118,15 @@ export function renderCeleryNode(kind: LegalSequenceKind, props: StepParams) {
     case "find_home": return <TileFindHome {...props} />;
     default: return <div><hr /> ? Unknown step ? <hr /></div>;
   }
-};
+}
 
 let checkBranch = (branch: Execute | Nothing,
   step: If,
   sequence: TaggedSequence) => {
   return (branch.kind === "execute")
     && (branch.args.sequence_id === sequence.body.id);
-}
+};
+
 export function isRecursive(step: If, sequence: TaggedSequence) {
   return checkBranch(step.args._else, step, sequence)
     || checkBranch(step.args._then, step, sequence);
