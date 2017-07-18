@@ -17,6 +17,9 @@ describe("<Wow/>", () => {
   it("toggles server options", () => {
     let x = shallow(<Wow />);
     let wow = x.instance() as Wow;
-    expect(x.instance().state).toBeTruthy();
+    wow.toggleServerOpts();
+    expect(wow.state.hideServerSettings).toBeFalsy();
+    wow.toggleServerOpts();
+    expect(wow.state.hideServerSettings).toBeTruthy();
   });
 });
