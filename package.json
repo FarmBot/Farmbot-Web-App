@@ -96,6 +96,9 @@
     "webpack-notifier": "^1.5.0"
   },
   "jest": {
+    "moduleNameMapper": {
+      "^.*\\.scss$": "<rootDir>/src/__test_support__/stub.ts"
+    },
     "setupFiles": [
       "./src/unmock_i18next.ts",
       "./src/__test_support__/locastorage.js"

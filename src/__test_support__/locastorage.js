@@ -4,7 +4,7 @@
 // https://github.com/facebook/jest/issues/2098
 
 //browserMocks.js
-var localStorageMock = (function () {
+function localStorageMock() {
   var store = {};
 
   return {
@@ -19,8 +19,12 @@ var localStorageMock = (function () {
     }
   };
 
-})();
-
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
+};
+[
+  'localStorage',
+  'sessionStorage'
+].map(function (name) {
+  Object.defineProperty(window, name, {
+    value: localStorageMock()
+  });
 });
