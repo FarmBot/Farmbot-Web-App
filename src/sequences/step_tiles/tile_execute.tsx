@@ -63,7 +63,7 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
     return <FBSelect onChange={this.changeSelection}
       selectedItem={this.selectedSequence()}
       list={this.sequenceDropDownList()}
-      placeholder="Pick a sequence (or save a new one)" />
+      placeholder="Pick a sequence (or save a new one)" />;
   }
 
   selectedSequence = () => {
