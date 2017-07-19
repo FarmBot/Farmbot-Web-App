@@ -23,6 +23,9 @@ export function mapStateToProps(state: Everything): FarmEventProps {
             .clone()
             .startOf("day")
             .add(ri.time_offset, "milliseconds");
+          if (m2.isBefore(moment.now())) {
+            return;
+          }
           let o = occurrence(m2, fe);
           let seq = findSequenceById(state.resources.index, ri.sequence_id);
           let sequenceName = seq.body.name;

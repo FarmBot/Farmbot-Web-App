@@ -27,7 +27,7 @@ export class DropArea extends React.Component<DropAreaProps, DropAreaState> {
       onDragEnter={this.toggle}
       onDragOver={this.dragOver}
       onDrop={this.drop}
-      style={{ minHeight: "2.5rem" }} >
+      style={{ minHeight: "1.25rem" }} >
       {this.props.children}
     </div>;
   }
