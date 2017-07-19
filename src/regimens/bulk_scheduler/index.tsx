@@ -1,7 +1,6 @@
 import * as React from "react";
 import { BulkEditorProps } from "./interfaces";
 import { AddButton } from "./add_button";
-import { SequenceList } from "./sequence_list";
 import { WeekGrid } from "./week_grid";
 import { commitBulkEditor, setTimeOffset, setSequence } from "./actions";
 import { ToolTip, Row, Col, DropDownItem } from "../../ui/index";

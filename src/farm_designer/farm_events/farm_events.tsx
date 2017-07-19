@@ -3,9 +3,10 @@ import { Link } from "react-router";
 import { connect } from "react-redux";
 import { t } from "i18next";
 
-import { DeprecatedFBSelect, Row, Col } from "../../ui";
+import { Row, Col } from "../../ui";
 import { mapStateToProps } from "./map_state_to_props";
 import { FarmEventProps } from "../interfaces";
+import { FBSelect } from "../../ui/new_fb_select";
 
 @connect(mapStateToProps)
 export class FarmEvents extends React.Component<FarmEventProps, {}> {
@@ -87,7 +88,8 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
             </Col>
 
             <Col xs={10}>
-              <DeprecatedFBSelect list={[]}
+              <FBSelect list={[]}
+                selectedItem={undefined}
                 onChange={option => {
                   this.props.push("/app/designer/farm_events/" + option.value);
                 }}

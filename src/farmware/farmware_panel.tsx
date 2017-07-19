@@ -6,14 +6,15 @@ import { FWProps, FWState } from "./interfaces";
 import { MustBeOnline } from "../devices/must_be_online";
 import { ToolTips } from "../constants";
 import {
-  DeprecatedFBSelect,
   Widget,
   WidgetHeader,
   WidgetBody,
   Row,
-  Col
+  Col,
+  DropDownItem
 } from "../ui";
 import { betterCompact } from "../util";
+import { FBSelect } from "../ui/new_fb_select";
 
 export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   constructor() {
@@ -77,6 +78,10 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
     return choices;
   }
 
+  selectedItem = (): DropDownItem | undefined => {
+    let label = this.state.selectedFarmware;
+    if (label) { return { label, value: 0 }; }
+  }
   render() {
     return (
       <Widget className="farmware-widget">
@@ -111,7 +116,8 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
             <Row>
               <fieldset>
                 <Col xs={12}>
-                  <DeprecatedFBSelect list={this.fwList()}
+                  <FBSelect list={this.fwList()}
+                    selectedItem={this.selectedItem()}
                     onChange={(x) => {
                       let selectedFarmware = x.value;
                       if (_.isString(selectedFarmware)) {

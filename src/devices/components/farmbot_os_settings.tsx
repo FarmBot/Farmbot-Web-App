@@ -12,7 +12,6 @@ import {
 import { OsUpdateButton } from "./os_update_button";
 import { devices } from "../../device";
 import {
-  DeprecatedFBSelect,
   DropDownItem,
   Widget,
   WidgetHeader,
@@ -26,6 +25,7 @@ import { MustBeOnline } from "../must_be_online";
 import { ToolTips, Content } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
 import { timezoneMismatch } from "../timezones/guess_timezone";
+import { FBSelect } from "../../ui/new_fb_select";
 
 const CAMERA_CHOICES = [
   { label: "USB Camera", value: "USB" },
@@ -49,13 +49,16 @@ export class FarmbotOsSettings
     this.props.dispatch(saveAccountChanges);
   }
 
-  sendOffConfig = (e: DropDownItem) => {
-    let message = { "camera": JSON.stringify(e.value) };
-    info(t("Sending camera configuration..."), t("Sending"))
+  sendOffConfig = (selectedCamera: DropDownItem) => {
+    let message = { "camera": JSON.stringify(selectedCamera.value) };
+    info(t("Sending camera configuration..."), t("Sending"));
     devices
       .current
       .setUserEnv(message)
-      .then(() => success(t("Successfully configured camera!")))
+      .then(() => {
+        this.setState({ selectedCamera });
+        success(t("Successfully configured camera!"));
+      })
       .catch(() => error(t("An error occurred during configuration.")));
   }
 
@@ -232,9 +235,10 @@ export class FarmbotOsSettings
               </Col>
               <Col xs={7}>
                 <div>
-                  <DeprecatedFBSelect
+                  <FBSelect
                     allowEmpty={true}
                     list={CAMERA_CHOICES}
+                    selectedItem={this.state.selectedCamera}
                     placeholder="Select a camera..."
                     onChange={this.sendOffConfig} />
                 </div>
