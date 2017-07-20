@@ -40,7 +40,7 @@ export function timezoneMismatch(botTime: string | undefined,
   if (_.isString(botTime) && _.isString(userTime)) {
     return botTime.toUpperCase() !== userTime.toUpperCase();
   } else {
-    // Dont show warnings if TZ data is unavailable.
+    // Don't show warnings if TZ data is unavailable.
     return false;
   }
 }

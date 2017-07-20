@@ -21,7 +21,7 @@ module SequenceMigration
     VERSION        = "YOU MUST CHANGE THIS!!!"
 
     # I shouldn't need to do this, as this method comes with ActiveSupport, but
-    # its acting weird with autoloading right now :shipit:. TODO: See if there
+    # it's acting weird with autoloading right now :shipit:. TODO: See if there
     # is a way to automatically infer all classes
     def self.descendants
       [

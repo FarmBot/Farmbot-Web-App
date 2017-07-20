@@ -9,7 +9,7 @@ describe Device do
     expect(user.device).to be_kind_of(Device)
   end
 
-  it 'destroys dependant devices' do
+  it 'destroys dependent devices' do
     bot_id  = device.id
     user_id = user.id
     user.destroy
