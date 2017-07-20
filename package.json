@@ -8,14 +8,13 @@
     "url": "https://github.com/farmbot/farmbot-web-frontend"
   },
   "scripts": {
-    "coverage": "midori coverage/remapped/html/index.html",
+    "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "build": "node_modules/webpack/bin/webpack.js --config tools/webpack.config.prd.js --display-error-details",
     "start": "echo '===We use `npm run dev` now.==='",
     "heroku-postbuild": "./install_frontend.sh 2>&1",
     "dev": "PORT=3000 bundle exec foreman start --procfile=Procfile.dev",
     "webpack": "webpack-dev-server --config tools/webpack.config.dev.js --content-base public/ --host 0.0.0.0",
-    "test": "jest --coverage --no-cache && cat ./coverage/remapped/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "just_test": "jest --coverage --no-cache"
+    "test": "jest --coverage --no-cache"
   },
   "keywords": [
     "farmbot"
@@ -119,7 +118,8 @@
     ],
     "coverageReporters": [
       "html",
-      "json"
+      "json",
+      "lcov"
     ]
   }
 }
