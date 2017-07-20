@@ -9,7 +9,6 @@ before_script:
 - cp config/database.travis.yml config/database.yml
 - mkdir -p public/app
 - touch public/app/index.html
-- "./install_frontend.sh"
 - bundle install
 - bundle exec rake db:create db:migrate
 - yarn install
@@ -21,3 +20,4 @@ script:
 - export DB=postgresql
 - bundle exec rspec
 - npm run test
+- cat ./coverage/remapped/lcov.info | ./node_modules/coveralls/bin/coveralls.js
