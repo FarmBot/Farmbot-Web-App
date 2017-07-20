@@ -35,6 +35,11 @@ const CAMERA_CHOICES = [
 export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps, FarmbotOsState> {
 
+  state: FarmbotOsState = {
+    cameraStatus: "",
+    selectedCamera: undefined
+  };
+
   changeBot = (e: React.ChangeEvent<HTMLInputElement>) => {
     let { account, dispatch } = this.props;
     dispatch(changeDevice(account, { name: e.currentTarget.value }));
