@@ -1,0 +1,3 @@
+## other configuration excluded from example...
+exclude_paths:
+- "public/app-resources/languages"

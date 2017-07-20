@@ -16,10 +16,11 @@ describe("<ToolForm/>", () => {
       component: mount(<ToolForm dispatch={state.dispatch}
         tools={props.tools}
         toggle={toggle} />)
-    }
+    };
   }
   it("renders", () => {
     let test = bootstrapTest();
+
     expect(test.component.find("input").length)
       .toEqual(test.props.tools.length);
   });
