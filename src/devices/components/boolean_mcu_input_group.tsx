@@ -32,21 +32,21 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
     <Col xs={2}>
       <ToggleButton
         disabled={disableX}
-        toggleval={mcu_params[x]}
+        toggleValue={mcu_params[x]}
         toggleAction={() => settingToggle(x, bot)}
       />
     </Col>
     <Col xs={2}>
       <ToggleButton
         disabled={disableY}
-        toggleval={mcu_params[y]}
+        toggleValue={mcu_params[y]}
         toggleAction={() => settingToggle(y, bot)}
       />
     </Col>
     <Col xs={2}>
       <ToggleButton
         disabled={disableZ}
-        toggleval={mcu_params[z]}
+        toggleValue={mcu_params[z]}
         toggleAction={() => settingToggle(z, bot)}
       />
     </Col>

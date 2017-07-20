@@ -96,7 +96,7 @@
 //             var ordered = {};
 //             var fileContent;
 //             try {
-//                 //check the file can be openned
+//                 //check the file can be opened
 //                 var stats = fs.statSync(langFilePath);
 
 //                 // load the file
@@ -139,7 +139,7 @@
 //                     delete result[key];
 //                     result[key] = ordered[key];
 //                 }
-//                 // if the tag doesnt exist but a translation exists, 
+//                 // if the tag doesn't exist but a translation exists, 
 //                 // put the key/value at the end of the json
 //                 else {
 //                     unexistingTag[key] = ordered[key];

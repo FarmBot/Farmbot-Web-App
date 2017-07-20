@@ -6,14 +6,15 @@ import { FWProps, FWState } from "./interfaces";
 import { MustBeOnline } from "../devices/must_be_online";
 import { ToolTips } from "../constants";
 import {
-  DeprecatedFBSelect,
   Widget,
   WidgetHeader,
   WidgetBody,
   Row,
-  Col
+  Col,
+  DropDownItem
 } from "../ui";
 import { betterCompact } from "../util";
+import { FBSelect } from "../ui/new_fb_select";
 
 export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   constructor() {
@@ -48,7 +49,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
       .ifFarmwareSelected(label => devices
         .current
         .execScript(label)
-        .then(() => this.setState({ selectedFarmware: undefined })));
+        .then(() => this.setState({ selectedFarmware: label })));
   }
 
   install = () => {
@@ -75,6 +76,24 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
         return { value: fw.uuid, label };
       });
     return choices;
+  }
+
+  selectedItem = (): DropDownItem | undefined => {
+    let label = this.state.selectedFarmware;
+    if (label) { return { label, value: 0 }; }
+  }
+
+  fwDescription = (selectedUuid: string | undefined) => {
+    let { farmwares } = this.props;
+    let description = betterCompact(Object
+      .keys(farmwares)
+      .map(x => farmwares[x]))
+      .map((fw, i) => {
+        let isSelected = (fw.uuid == selectedUuid);
+        let label = isSelected ? fw.meta.description : "";
+        return label;
+      });
+    return description;
   }
 
   render() {
@@ -111,7 +130,8 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
             <Row>
               <fieldset>
                 <Col xs={12}>
-                  <DeprecatedFBSelect list={this.fwList()}
+                  <FBSelect list={this.fwList()}
+                    selectedItem={this.selectedItem()}
                     onChange={(x) => {
                       let selectedFarmware = x.value;
                       if (_.isString(selectedFarmware)) {
@@ -143,6 +163,11 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
                   </button>
                 </Col>
               </fieldset>
+            </Row>
+            <Row>
+              <Col xs={12}>
+                {this.fwDescription(this.state.selectedFarmware)}
+              </Col>
             </Row>
           </MustBeOnline>
         </WidgetBody>

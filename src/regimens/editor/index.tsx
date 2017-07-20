@@ -34,7 +34,7 @@ function remove({ regimen, dispatch }: DeleteButtonProps) {
       regimen && dispatch(deleteRegimen(regimen.uuid));
   } else {
     // Technically unreachable, but I'll keep TS happy...
-    throw new Error("Tried to delete non-existant regimen");
+    throw new Error("Tried to delete non-existent regimen");
   }
 }
 

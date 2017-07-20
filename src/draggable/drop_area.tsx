@@ -20,20 +20,15 @@ export class DropArea extends React.Component<DropAreaProps, DropAreaState> {
 
   render() {
     let isVisible = this.props.isLocked || this.state.isHovered;
-
+    let klass = isVisible ? "drag-drop-area" : "";
     return <div
+      className={klass}
       onDragLeave={this.toggle}
       onDragEnter={this.toggle}
-    >
-      {isVisible &&
-        <div
-          className="drag-drop-area"
-          onDragOver={this.dragOver}
-          onDrop={this.drop}
-        >
-          {this.props.children}
-        </div>
-      }
+      onDragOver={this.dragOver}
+      onDrop={this.drop}
+      style={{ minHeight: "1.25rem" }} >
+      {this.props.children}
     </div>;
   }
 }

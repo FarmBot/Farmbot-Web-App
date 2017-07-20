@@ -35,7 +35,7 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
         <p>{t("Auto Updates?")}</p>
       </Col>
       <Col xs={1}>
-        <ToggleButton toggleval={toggleVal}
+        <ToggleButton toggleValue={toggleVal}
           toggleAction={() => {
             let os_auto_update = !osUpdateBool ? 1 : 0;
             // TODO: This no longer needs to be a thunk

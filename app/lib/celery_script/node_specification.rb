@@ -1,5 +1,5 @@
 # Describes the allowed arguments and body types of CeleryScript node.
-# Eg: Which arguments does it take? Whic nodes can be placed in the body field?
+# Eg: Which arguments does it take? Which nodes can be placed in the body field?
 module CeleryScript
   class NodeSpecification
     attr_reader :name, :allowed_args, :allowed_body_types

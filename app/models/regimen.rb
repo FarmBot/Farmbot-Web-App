@@ -5,7 +5,7 @@
 # A regimen takes a SEQUENCES and repeats them over a fixed amount of time slots
 class Regimen < ActiveRecord::Base
   # Regimen gets pluralized strangely by Rails.
-  # Ocasionally to "regimans".
+  # Occasionally to "regimans".
   # This is the workaround.
   self.table_name = "regimens"
   validates :name, presence: true

@@ -197,7 +197,7 @@ export function hasKey<T>(base: (keyof T)[]) {
   };
 }
 
-/** Usefull for calculating uploads and progress bars for Promise.all */
+/** Useful for calculating uploads and progress bars for Promise.all */
 export class Progress {
   constructor(public total: number,
     public cb: ProgressCallback,

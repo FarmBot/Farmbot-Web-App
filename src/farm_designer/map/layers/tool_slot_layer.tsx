@@ -3,7 +3,7 @@ import { SlotWithTool } from "../../../resources/interfaces";
 import { ToolSlotPoint } from "../tool_slot_point";
 import { BotOriginQuadrant } from "../../interfaces";
 
-interface ToolSlotLayerProps {
+export interface ToolSlotLayerProps {
   visible: boolean;
   slots: SlotWithTool[];
   botOriginQuadrant: BotOriginQuadrant;

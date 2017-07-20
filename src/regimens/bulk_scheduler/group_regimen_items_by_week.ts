@@ -13,7 +13,7 @@ export function groupRegimenItemsByWeek(weeks: Week[], OFFSET: number,
 
   return weeks
     // Collect all of the true/false values in weekX.days. These indicate
-    // wether we should add a sequence on that day or not.
+    // whether we should add a sequence on that day or not.
     .map((week) =>
       keys.map((key) =>
         (week.days as { [day: string]: boolean })[key]))
@@ -29,7 +29,7 @@ export function groupRegimenItemsByWeek(weeks: Week[], OFFSET: number,
         // lol, In band signaling.
       });
     })// [[-1, 99999, -1, -1],[.....]]
-    // "flatten" the array into a 1d structure (its an array of
+    // "flatten" the array into a 1d structure (it's an array of
     // number arrays right now)
     .reduce((arr, acc) => acc.concat(arr))
     // Remove -1 values (days that don't execute a sequence).

@@ -11,7 +11,7 @@ module Api
     end
 
     private
-    # Dont proceed with login if they need to sign the EULA
+    # Don't proceed with login if they need to sign the EULA
     def maybe_halt_login(result)
       result.result[:user].try(:require_consent!) if result.success?
     end

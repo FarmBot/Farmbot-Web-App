@@ -12,6 +12,7 @@ export const NULL_DRAGGER_ID = 0xCAFEF00D;
  * 1. Adds an optional CSS class to the dragged "ghost image".
  * 2. Puts the step into the Redux store (and the drag event's dataTransfer)
  *    so that it can be pulled up when the "drop" event happens.
+ *
  * Example usage:
  *
  * <button draggable={true}
@@ -27,7 +28,7 @@ export let stepDragEventHandler = (dispatch: Function,
   (ev: React.DragEvent<HTMLElement>) => {
     addGhostImage(ev, ghostCss);
     dispatch(stepPut(step, ev, intent, draggerId));
-  }
+  };
 
 export function StepDragger({ dispatch,
   step,

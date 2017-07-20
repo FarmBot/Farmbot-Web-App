@@ -9,22 +9,16 @@ before_script:
 - cp config/database.travis.yml config/database.yml
 - mkdir -p public/app
 - touch public/app/index.html
-- "./install_frontend.sh"
 - bundle install
 - bundle exec rake db:create db:migrate
 - yarn install
 script:
 - export SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
-- export GCS_BUCKET=farmbot-team
-- export GCS_ID=XnqcumDRnrsFdJpX5glhFpZQKSJIjZ+/lPnWkPe/
-- export GCS_KEY=GOOGSDXDNLBL7DHPNZTT
 - export MQTT_HOST=example.com
 - export OS_UPDATE_SERVER=http://example.com
 - export FW_UPDATE_SERVER=http://example.com
 - export DB=postgresql
+- export COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG
 - bundle exec rspec
 - npm run test
-env:
-  global:
-  - secure: SLiSua1p+Q9Jcu+hhCIXFDSvXl6TGHJ3O1BXbMm2sP+AkFhCpOuD7lP9Eua95veQolece9rRSsyCOC2FWRxEoSxtP183h3X9i3Yr1kTv8pXrjuTEwPBMQ6koEtbBBl64rehpmfCWV9/gMr3u09zjS2hKKunvZiF5iIcHAmOPOzE=
-  - secure: Aviun4JOw9fOiAFFx23VolDku9itZLzBxYPxVP0GAaqSZwx4pINoslAIanOxvWBGo5X2PvE2L4wyMEukWrPY8N3saCgXRfTDU8NHLsGl50jScfgZKqzebWOVuSEtv8ZWK4KVgYkElTMWfw2NBIbBjaq7ZEbJO3A6AocptZ9jkxg=
+- npm run coverage

@@ -35,7 +35,7 @@ import { maybeWarnAboutMissedTasks } from "./util";
 import { TzWarning } from "./tz_warning";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
-/** Seperate each of the form fields into their own interface. Recombined later
+/** Separate each of the form fields into their own interface. Recombined later
  * on save.
  */
 interface FarmEventViewModel {

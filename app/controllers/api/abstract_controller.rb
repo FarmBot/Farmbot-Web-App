@@ -43,10 +43,6 @@ module Api
       render json: {error: CONSENT_REQUIRED}, status: 451
     end
 
-    rescue_from ActionDispatch::ParamsParser::ParseError do |exc|
-      sorry "You have a typo in your JSON.", 422
-    end
-
     rescue_from ActiveModel::RangeError do |_|
       sorry "One of those numbers was too big/small. " +
             "If you need larger numbers, let us know.", 422
