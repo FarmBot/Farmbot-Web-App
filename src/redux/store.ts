@@ -19,7 +19,7 @@ function prod() {
 
 export function configureStore(options = {}) {
   let store: Store = (ENV === "production" ? prod() : dev());
-  // Make store global in in case I need to probe it.
+  // Make store global in case I need to probe it.
   (window as any)["store"] = store;
   registerSubscribers(store);
   return store;
