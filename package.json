@@ -8,7 +8,7 @@
     "url": "https://github.com/farmbot/farmbot-web-frontend"
   },
   "scripts": {
-    "coverage": "cat ./coverage/remapped/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "build": "node_modules/webpack/bin/webpack.js --config tools/webpack.config.prd.js --display-error-details",
     "start": "echo '===We use `npm run dev` now.==='",
     "heroku-postbuild": "./install_frontend.sh 2>&1",
