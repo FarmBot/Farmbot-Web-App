@@ -14,7 +14,7 @@ export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
       "undefined": "🚫",
       "-1": "🚫"
     };
-    let togval = String(this.props.toggleval);
+    let togval = String(this.props.toggleValue);
     return captions[togval] || "---";
   }
 
@@ -35,7 +35,7 @@ export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
       "undefined": yellowCSS
     };
 
-    return cssClasses[String(this.props.toggleval)] || yellowCSS;
+    return cssClasses[String(this.props.toggleValue)] || yellowCSS;
   }
 
   render() {

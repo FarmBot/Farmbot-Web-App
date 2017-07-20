@@ -19,7 +19,7 @@ export function PeripheralList(props: PeripheralListProps) {
         </Col>
         <Col xs={4}>
           <ToggleButton
-            toggleval={value}
+            toggleValue={value}
             toggleAction={() => p.body.pin && pinToggle(p.body.pin)} />
         </Col>
       </Row>
