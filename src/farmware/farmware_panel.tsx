@@ -49,7 +49,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
       .ifFarmwareSelected(label => devices
         .current
         .execScript(label)
-        .then(() => this.setState({ selectedFarmware: undefined })));
+        .then(() => this.setState({ selectedFarmware: label })));
   }
 
   install = () => {
@@ -82,6 +82,20 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
     let label = this.state.selectedFarmware;
     if (label) { return { label, value: 0 }; }
   }
+
+  fwDescription = (selectedUuid: string | undefined) => {
+    let { farmwares } = this.props;
+    let description = betterCompact(Object
+      .keys(farmwares)
+      .map(x => farmwares[x]))
+      .map((fw, i) => {
+        let isSelected = (fw.uuid == selectedUuid);
+        let label = isSelected ? fw.meta.description : "";
+        return label;
+      });
+    return description;
+  }
+
   render() {
     return (
       <Widget className="farmware-widget">
@@ -149,6 +163,11 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
                   </button>
                 </Col>
               </fieldset>
+            </Row>
+            <Row>
+              <Col xs={12}>
+                {this.fwDescription(this.state.selectedFarmware)}
+              </Col>
             </Row>
           </MustBeOnline>
         </WidgetBody>
