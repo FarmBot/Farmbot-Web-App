@@ -94,9 +94,9 @@
   version "2.3.38"
   resolved "https://registry.yarnpkg.com/@types/i18next/-/i18next-2.3.38.tgz#eb9bd4f579aefb7a2e86b15e2b8024edaaf4a4c9"
 
-"@types/jest@^20.0.2":
-  version "20.0.2"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-20.0.2.tgz#86c751121fb53dbd39bb1a08c45083da13f2dc67"
+"@types/jest@^20.0.4":
+  version "20.0.4"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-20.0.4.tgz#91e2c76fbe90b3a719b5d689958f0495f005beb9"
 
 "@types/lodash@^4.14.68":
   version "4.14.68"

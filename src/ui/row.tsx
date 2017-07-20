@@ -1,7 +1,7 @@
 import * as React from "react";
 import { JSXChildren } from "../util";
 
-interface RowProps {
+interface RowProps extends React.HTMLProps<HTMLDivElement> {
   children?: JSXChildren;
   className?: string;
 }

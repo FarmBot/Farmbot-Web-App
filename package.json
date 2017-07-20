@@ -34,7 +34,7 @@
     "@types/handlebars": "^4.0.33",
     "@types/history": "^4.6.0",
     "@types/i18next": "^2.3.32",
-    "@types/jest": "^20.0.2",
+    "@types/jest": "^20.0.4",
     "@types/lodash": "^4.14.68",
     "@types/markdown-it": "^0.0.2",
     "@types/mqtt": "^0.0.34",
@@ -96,9 +96,12 @@
     "webpack-notifier": "^1.5.0"
   },
   "jest": {
+    "moduleNameMapper": {
+      "^.*\\.scss$": "<rootDir>/src/__test_support__/stub.ts"
+    },
     "setupFiles": [
       "./src/unmock_i18next.ts",
-      "./src/__test_support__/locastorage.js"
+      "./src/__test_support__/localstorage.js"
     ],
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"

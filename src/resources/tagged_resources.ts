@@ -77,7 +77,7 @@ export type TaggedUser = Resource<"users", User>;
 export type TaggedDevice = Resource<"device", DeviceAccountSettings>;
 
 /** Spot check to be certain a TaggedResource is what it says it is. */
-export function sanityCheck(x: object) {
+export function sanityCheck(x: object): x is TaggedResource {
   if (isTaggedResource(x)) {
     assertUuid(x.kind, x.uuid);
     return true;

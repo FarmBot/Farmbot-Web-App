@@ -16,6 +16,7 @@ import { PlantPointer } from "../interfaces";
 import { SlotWithTool } from "../resources/interfaces";
 import { BotState } from "../devices/interfaces";
 
+/** TODO: Use Enums */
 export type BotOriginQuadrant = 1 | 2 | 3 | 4;
 export type ZoomLevelPayl = 0.1 | -0.1;
 
@@ -64,7 +65,7 @@ export interface FarmEvent {
   executable_id: number;
   executable_type: ExecutableType;
   readonly calendar?: string[] | undefined;
-};
+}
 
 export interface MovePlantProps {
   deltaX: number;
@@ -123,7 +124,8 @@ export interface CalendarOccurrence {
   mmdd: string;
   sortKey: number;
   timeStr: string;
-  executableName: string;
+  parentExecutableName: string;
+  childExecutableName?: string | undefined;
   executableId: number;
   id: number;
 }

@@ -46,3 +46,7 @@ select {
   background: $white;
   width: 100%;
 }
+
+.filter-search-item-none::after {
+    content: "*";
+}

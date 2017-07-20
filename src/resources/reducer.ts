@@ -39,7 +39,7 @@ let consumerReducer = combineReducers<RestResources["consumers"]>({
   sequences,
   farm_designer,
   farmware
-} as any);
+} as any); // tslint:disable-line
 
 export function emptyState(): RestResources {
   return {
@@ -106,7 +106,7 @@ export let resourceReducer = generateReducer
       && resource.body) {
       switch (resource.kind) {
         case "sequences":
-        case "device": // tslint:disable-line
+        case "device":
         case "users":
         case "farm_events":
         case "logs":
@@ -190,15 +190,6 @@ export let resourceReducer = generateReducer
   .add<TaggedResource>(Actions.INIT_RESOURCE, (s, { payload }) => {
     let tr = payload;
     let uuid = tr.uuid;
-    // TEMPORARY STUB:
-    // Problem:   Old versions of FBOS send timestamp as 8601 string.
-    //            New versions send it as a unix timestamp
-    //            This creates backwards compat issues.
-    // SOLUTINON: Convert strings to unix timestamps at runtime.
-    // NOTE:      Remove this in June 2017.
-    if (tr.kind === "logs" && (typeof tr.body.created_at === "string")) {
-      tr.body.created_at = moment(tr.body.created_at).unix();
-    }
     reindexResource(s.index, tr);
     if (tr.kind === "logs") {
       // Since logs don't come from the API all the time, they are the only
@@ -250,7 +241,7 @@ function addToIndex<T>(index: ResourceIndex,
   kind: ResourceName,
   body: T,
   uuid: string) {
-  let tr: TaggedResource = { kind, body, uuid } as any; // TODO: Fix this :(
+  let tr: TaggedResource = { kind, body, uuid } as any;
   sanityCheck(tr);
   index.all.push(tr.uuid);
   index.byKind[tr.kind].push(tr.uuid);

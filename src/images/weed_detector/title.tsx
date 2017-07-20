@@ -55,12 +55,14 @@ export function TitleBar({
         className="fb-button green" >
         {t("Calibrate")}
       </button>
-      <Popover>
-        <i className="fa fa-cog" />
-        {(env && <WeedDetectorConfig
-          values={env}
-          onChange={envSave} />)}
-      </Popover>
+      <div hidden={!env}>
+        <Popover>
+          <i className="fa fa-cog" />
+          {(env && <WeedDetectorConfig
+            values={env}
+            onChange={envSave} />)}
+        </Popover>
+      </div>
     </WidgetHeader>
   );
 }

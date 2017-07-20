@@ -4,6 +4,7 @@ import { Button, Classes, MenuItem } from "@blueprintjs/core";
 import { ISelectItemRendererProps, Select } from "@blueprintjs/labs";
 
 import { DropDownItem } from "./fb_select";
+import { NULL_CHOICE } from "./new_fb_select";
 
 const SelectComponent = Select.ofType<DropDownItem>();
 
@@ -68,27 +69,34 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
     );
   }
 
-  private subMenu(params: ISelectItemRendererProps<DropDownItem>) {
+  private subMenu = (params: ISelectItemRendererProps<DropDownItem>) => {
     let { handleClick, item, index } = params;
     return (
       <MenuItem
-        className={"filter-search-item"}
-        key={item.label || index}
+        className={this.styleFor(item)}
+        key={`${item.label}.${item.value}`}
         onClick={handleClick}
         text={`${item.label}`}
       />
     );
   }
 
-  private default(params: ISelectItemRendererProps<DropDownItem>) {
+  styleFor(item: DropDownItem): string {
+    let styles = ["filter-search-item"];
+    if (Object.is(item, NULL_CHOICE)) {
+      styles.push("filter-search-item-none");
+    }
+    return styles.join(" ");
+  }
+
+  private default = (params: ISelectItemRendererProps<DropDownItem>) => {
     let { handleClick, item, index } = params;
     return (
       <MenuItem
-        className={"filter-search-item"}
+        className={this.styleFor(item)}
         key={item.label || index}
         onClick={handleClick}
-        text={`${item.label}`}
-      />
+        text={`${item.label}`} />
     );
   }
 

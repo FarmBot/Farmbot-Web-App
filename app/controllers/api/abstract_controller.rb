@@ -13,7 +13,7 @@ module Api
 
     rescue_from(ActionDispatch::Http::Parameters::ParseError) do
       sorry "That request was not valid JSON. Consider checking the request " +
-            "body with a JSON validator.."
+            "body with a JSON validator..", 422
     end
 
     rescue_from(ActiveRecord::ValueTooLong) do
@@ -41,10 +41,6 @@ module Api
 
     rescue_from Errors::LegalConsent do |exc|
       render json: {error: CONSENT_REQUIRED}, status: 451
-    end
-
-    rescue_from ActionDispatch::ParamsParser::ParseError do |exc|
-      sorry "You have a typo in your JSON.", 422
     end
 
     rescue_from ActiveModel::RangeError do |_|

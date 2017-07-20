@@ -7,7 +7,7 @@ import * as React from "react";
 import { Actions } from "../constants";
 export const STEP_DATATRANSFER_IDENTIFER = "farmbot/sequence-step";
 
-/** SIDE EFFECT-Y!! Stores a step into state.draggable.dataTransfer and
+/** SIDE EFFECT-Y!! Stores a step into store.draggable.dataTransfer and
  * attaches its lookup key to the event object. This allows you to retrieve
  * the step when the "drop" event occurs elsewhere */
 export function stepPut(value: Step,
