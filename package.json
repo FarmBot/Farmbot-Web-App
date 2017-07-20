@@ -118,7 +118,8 @@
     ],
     "coverageReporters": [
       "html",
-      "json"
+      "json",
+      "lcov"
     ]
   }
 }
