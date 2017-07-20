@@ -18,6 +18,7 @@ script:
 - export OS_UPDATE_SERVER=http://example.com
 - export FW_UPDATE_SERVER=http://example.com
 - export DB=postgresql
+- export COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG
 - bundle exec rspec
 - npm run test
-- cat ./coverage/remapped/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+- cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js
