@@ -1,5 +1,5 @@
 module FarmEvents
-  # Used to calculate next 60ish occurences or so of a FarmEvent.
+  # Used to calculate next 60ish occurrences or so of a FarmEvent.
   class GenerateCalendar < Mutations::Command
     NEVER = FarmEvent::NEVER.to_s
     TIME = { "minutely" => 60,
@@ -41,7 +41,7 @@ module FarmEvents
       return Montrose
         .every(every, options)
         .take(60)
-        .reject { |x| end_time ? x > (end_time + 1.second) : false  } # clear events beyon the end time
+        .reject { |x| end_time ? x > (end_time + 1.second) : false  } # clear events beyond the end time
         .reject { |x| x <= Time.now }                                 # Clear past events
     end
 

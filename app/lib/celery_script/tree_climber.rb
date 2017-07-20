@@ -24,7 +24,7 @@ module CeleryScript
   private
 
     def self.visit_node(node, callable)
-      if node.is_a?(AstNode) # Keep recursing if its not a leaf.
+      if node.is_a?(AstNode) # Keep recursing if it's not a leaf.
         callable.call(node)
         visit_each_arg(node, callable)
         visit_each_body_item(node, callable)

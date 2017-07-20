@@ -9,7 +9,7 @@ class DashboardController < ApplicationController
     render html: THE_FRONTEND_APP, layout: false
   end
 
-  # Hit by Certbot / Let's Encrypt when its time to verify control of domain.
+  # Hit by Certbot / Let's Encrypt when it's time to verify control of domain.
   def lets_encrypt
     render plain: ACME_SECRET
   end

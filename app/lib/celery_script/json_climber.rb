@@ -4,7 +4,7 @@ module CeleryScript
   # Don't use this on unverified data structures.
   class JSONClimber
     HASH_ONLY = "Expected a Hash."
-    NOT_NODE  = "Expected hash with atleast a `kind` and `args` prop."
+    NOT_NODE  = "Expected hash with at least a `kind` and `args` prop."
 
     def self.climb(thing, &callable)
       raise HASH_ONLY unless thing.is_a?(Hash)
