@@ -31,5 +31,5 @@ export function maybeWarnAboutMissedTasks(tfe: TaggedFarmEvent, cb: Function) {
       //         of missed tasks.
       (START_TIME.format(TIMEFMT) === NOW.format(TIMEFMT)) && cb();
     }
-  }
+  };
 }
