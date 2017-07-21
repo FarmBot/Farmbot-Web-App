@@ -63,6 +63,32 @@ export let regimensReducer = generateReducer<RegimenState>(initialState)
     s.weeks.pop();
     return s;
   })
+  .add<void>(Actions.DESELECT_ALL_DAYS, (s, a) => {
+    let newWeeks: Week[];
+    newWeeks = Object.assign([], s.weeks);
+    newWeeks.map(function (week, i) {
+      let neww: Week[];
+      [1, 2, 3, 4, 5, 6, 7].map(function (day) {
+        let lookup = `day${day}`;
+        (week.days as { [day: string]: boolean })[lookup] = false;
+      });
+    });
+    s.weeks = newWeeks;
+    return s;
+  })
+  .add<void>(Actions.SELECT_ALL_DAYS, (s, a) => {
+    let newWeeks: Week[];
+    newWeeks = Object.assign([], s.weeks);
+    newWeeks.map(function (week, i) {
+      let neww: Week[];
+      [1, 2, 3, 4, 5, 6, 7].map(function (day) {
+        let lookup = `day${day}`;
+        (week.days as { [day: string]: boolean })[lookup] = true;
+      });
+    });
+    s.weeks = newWeeks;
+    return s;
+  })
   .add<{ week: number, day: number }>(Actions.TOGGLE_DAY, (s, { payload }) => {
     let week = s.weeks[payload.week];
     let day = `day${payload.day}`;
