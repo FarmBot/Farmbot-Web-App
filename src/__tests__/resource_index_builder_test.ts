@@ -22,15 +22,17 @@ const STUB_RESOURCE: TaggedFarmEvent = {
   }
 };
 
-test("buildResourceIndex", () => {
+test("buildResourceIndex - base case", () => {
   let result1 = buildResourceIndex(FAKE_RESOURCES);
   let { index } = result1;
   const OK_LENGTH = FAKE_RESOURCES.length;
   expect(index.all.length).toBe(OK_LENGTH);
   expect(Object.keys(index.references).length).toBe(OK_LENGTH);
+});
 
-  let result2 = buildResourceIndex([STUB_RESOURCE]);
-  let fe = result2.index.references[result2.index.byKind.farm_events[0]];
+test("buildResourceIndex - add a FarmEvent", () => {
+  let db = buildResourceIndex([STUB_RESOURCE]);
+  let fe = db.index.references[db.index.byKind.farm_events[0]];
   expect(fe).toBeTruthy();
   if (fe && fe.kind === "farm_events") {
     let { body } = fe;
