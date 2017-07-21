@@ -9,7 +9,7 @@ export function WeekRow({ index, dispatch, week }: WeekRowProps) {
     {
       DAYS.map(function (day, i) {
         let id = `${index}-${day}`;
-        return <Day day={index + i + 1}
+        return <Day day={i + 1}
           week={index}
           dispatch={dispatch}
           id={id}
