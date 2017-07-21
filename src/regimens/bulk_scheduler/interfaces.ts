@@ -47,7 +47,7 @@ export interface SequenceListProps {
 export interface WeekGridProps {
   weeks: Week[];
   dispatch: Function;
-};
+}
 
 export interface WeekRowProps {
   week: Week;
@@ -62,4 +62,3 @@ export interface DayProps {
   id: string;
   active: boolean;
 }
-
