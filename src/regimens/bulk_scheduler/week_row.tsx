@@ -1,23 +1,20 @@
 import * as React from "react";
-import { WeekRowProps, DayProps } from "./interfaces";
+import { WeekRowProps, DayProps, DAYS } from "./interfaces";
 import { toggleDay } from "./actions";
 import { t } from "i18next";
-
-let DAYS = [1, 2, 3, 4, 5, 6, 7];
 
 export function WeekRow({ index, dispatch, week }: WeekRowProps) {
   return <div className="week-row">
     <label className="week-label">{t("Week")} {index + 1}</label>
     {
-      DAYS.map(function (day) {
+      DAYS.map(function (day, i) {
         let id = `${index}-${day}`;
-        let lookup = `day${day}`;
-        return <Day day={day}
-          week={index}
+        return <Day day={i}
+          week={i}
           dispatch={dispatch}
           id={id}
           key={id}
-          active={(week.days as { [day: string]: boolean })[lookup]} />;
+          active={week.days[day]} />;
       })
     }
   </div>;
