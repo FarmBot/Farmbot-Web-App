@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { Dictionary } from "farmbot";
-import { Week } from "./bulk_scheduler/interfaces";
+import { Week, DAYS } from "./bulk_scheduler/interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { TaggedResource, TaggedRegimen } from "../resources/tagged_resources";
 import { Actions } from "../constants";
@@ -64,29 +64,11 @@ export let regimensReducer = generateReducer<RegimenState>(initialState)
     return s;
   })
   .add<void>(Actions.DESELECT_ALL_DAYS, (s, a) => {
-    let newWeeks: Week[];
-    newWeeks = Object.assign([], s.weeks);
-    newWeeks.map(function (week, i) {
-      let neww: Week[];
-      [1, 2, 3, 4, 5, 6, 7].map(function (day) {
-        let lookup = `day${day}`;
-        (week.days as { [day: string]: boolean })[lookup] = false;
-      });
-    });
-    s.weeks = newWeeks;
+    s.weeks.map((week) => DAYS.map((key) => week.days[key] = false));
     return s;
   })
   .add<void>(Actions.SELECT_ALL_DAYS, (s, a) => {
-    let newWeeks: Week[];
-    newWeeks = Object.assign([], s.weeks);
-    newWeeks.map(function (week, i) {
-      let neww: Week[];
-      [1, 2, 3, 4, 5, 6, 7].map(function (day) {
-        let lookup = `day${day}`;
-        (week.days as { [day: string]: boolean })[lookup] = true;
-      });
-    });
-    s.weeks = newWeeks;
+    s.weeks.map((week) => DAYS.map((key) => week.days[key] = true));
     return s;
   })
   .add<{ week: number, day: number }>(Actions.TOGGLE_DAY, (s, { payload }) => {
