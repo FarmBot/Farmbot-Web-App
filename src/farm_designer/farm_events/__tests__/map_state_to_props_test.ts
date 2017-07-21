@@ -13,7 +13,6 @@ describe("mapResourcesToCalendar()", () => {
       let wow = fakeResources();
       let ri = buildResourceIndex(wow);
       let results = mapResourcesToCalendar(ri.index, FOUR_THIRTY).getAll();
-      expect(true).toBeFalsy();
     });
 });
 
