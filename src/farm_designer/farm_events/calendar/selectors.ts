@@ -47,7 +47,7 @@ export function joinFarmEventsToExecutable(input: ResourceIndex): FarmEventWithE
           }
       }
     } else {
-      throw new Error("Opps...");
+      throw new Error("Farmevent had no ID");
     }
   }));
 }

@@ -11,6 +11,7 @@ import { MotorsProps } from "../interfaces";
 import { Row, Col } from "../../../ui/index";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
+import { McuInputBox } from "../mcu_input_box";
 
 export function Motors({ dispatch, bot }: MotorsProps) {
 
@@ -33,8 +34,8 @@ export function Motors({ dispatch, bot }: MotorsProps) {
           <SpacePanelToolTip tooltip={t(ToolTips.MAX_MOVEMENT_RETRIES)} />
         </Col>
         <Col xs={6}>
-          <BotConfigInputBox
-            setting="max_movement_retries"
+          <McuInputBox
+            setting="param_mov_nr_retry"
             bot={bot}
             dispatch={dispatch} />
         </Col>
@@ -122,7 +123,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
         </Col>
         <Col xs={2}>
           <ToggleButton
-            toggleval={mcu_params.movement_secondary_motor_x}
+            toggleValue={mcu_params.movement_secondary_motor_x}
             toggleAction={() =>
               settingToggle("movement_secondary_motor_x", bot)}
           />
@@ -137,7 +138,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
         </Col>
         <Col xs={2}>
           <ToggleButton
-            toggleval={mcu_params.movement_secondary_motor_invert_x}
+            toggleValue={mcu_params.movement_secondary_motor_invert_x}
             toggleAction={() =>
               settingToggle("movement_secondary_motor_invert_x", bot)}
           />
