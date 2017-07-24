@@ -5,7 +5,7 @@ interface BIProps {
   onCommit(e: React.SyntheticEvent<HTMLInputElement>): void;
   min?: number;
   max?: number;
-  type?: "text" | "number" | "email" | "password" | "time" | "date";
+  type?: "text" | "number" | "email" | "password" | "time" | "date" | "hidden";
   name?: string;
   id?: string;
   /** Allow the user to empty out the form control. If unset, form control
