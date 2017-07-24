@@ -37,7 +37,7 @@ export interface DraggableState {
 
 /* Props for <DropArea /> */
 export interface DropAreaProps {
-  callback?: (key: string) => any;
+  callback?: (key: string) => void;
   isLocked?: boolean;
 }
 

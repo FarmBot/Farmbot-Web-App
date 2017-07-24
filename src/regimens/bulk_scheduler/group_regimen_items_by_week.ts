@@ -1,4 +1,4 @@
-import { Week } from "./interfaces";
+import { Week, DAYS } from "./interfaces";
 import { Sequence } from "../../sequences/interfaces";
 import { RegimenItem } from "../../regimens/interfaces";
 
@@ -9,14 +9,10 @@ export function groupRegimenItemsByWeek(weeks: Week[], OFFSET: number,
   const ONE_WEEK = 604800000;
   const ONE_DAY = 86400000;
 
-  let keys = ["day1", "day2", "day3", "day4", "day5", "day6", "day7"];
-
   return weeks
     // Collect all of the true/false values in weekX.days. These indicate
     // whether we should add a sequence on that day or not.
-    .map((week) =>
-      keys.map((key) =>
-        (week.days as { [day: string]: boolean })[key]))
+    .map((week) => DAYS.map((key) => week.days[key]))
     // [[true,false,false,true] . . . ]
     // Convert true values to an offset, in milliseconds from the
     // start point.
@@ -37,7 +33,7 @@ export function groupRegimenItemsByWeek(weeks: Week[], OFFSET: number,
     // Sort the array. Using a comparator function because failing to do so
     // results in funny execution times on day 0.
     .sort(function (a, b) {
-      if (a < b) { return -1; };
+      if (a < b) { return -1; }
       return (a > b) ? 1 : 0;
     })
     // Transform the sorted array of values into a regimenItem[] array.

@@ -16,16 +16,27 @@ export interface BulkEditorProps {
   dispatch: Function;
 }
 
+type WeekDay =
+  | "day1"
+  | "day2"
+  | "day3"
+  | "day4"
+  | "day5"
+  | "day6"
+  | "day7";
+
+export const DAYS: WeekDay[] = [
+  "day1",
+  "day2",
+  "day3",
+  "day4",
+  "day5",
+  "day6",
+  "day7"
+];
+
 export interface Week {
-  days: {
-    day1: boolean;
-    day2: boolean;
-    day3: boolean;
-    day4: boolean;
-    day5: boolean;
-    day6: boolean;
-    day7: boolean;
-  };
+  days: Record<WeekDay, boolean>;
 }
 
 export interface ToggleDayParams {
