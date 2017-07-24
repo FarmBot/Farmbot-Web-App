@@ -16,6 +16,7 @@ export function mapStateToProps(state: Everything): FarmEventProps {
   return { calendarRows, push };
 }
 
+/** TODO: Reduce complexity, but write *good* unit tests *before* refactoring.*/
 export function mapResourcesToCalendar(ri: ResourceIndex, unixNow = moment.now()): Calendar {
   let x = joinFarmEventsToExecutable(ri);
   let calendar = new Calendar();
@@ -30,13 +31,16 @@ export function mapResourcesToCalendar(ri: ResourceIndex, unixNow = moment.now()
             .clone()
             .startOf("day")
             .add(regi.time_offset, "milliseconds");
-          if (m2.isBefore(m)) { return; }
-          let o = occurrence(m2, fe);
-          let seq = findSequenceById(ri, regi.sequence_id);
-          let sequenceName = seq.body.name;
-          o.parentExecutableName = fe.executable.name;
-          o.childExecutableName = sequenceName;
-          calendar.insert(o);
+          if (m2.isBefore(m)) {
+            return;
+          } else {
+            let o = occurrence(m2, fe);
+            let seq = findSequenceById(ri, regi.sequence_id);
+            let sequenceName = seq.body.name;
+            o.parentExecutableName = fe.executable.name;
+            o.childExecutableName = sequenceName;
+            calendar.insert(o);
+          }
         });
       }
     });
