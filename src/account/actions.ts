@@ -9,7 +9,6 @@ export function deleteUser(payload: DeletionRequest): Thunk {
   return (dispatch, getState) => {
     let state = getState().auth;
     if (state) {
-      // https://github.com/mzabriskie/axios/issues/312
       axios({
         method: "delete",
         url: API.current.usersPath,

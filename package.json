@@ -91,7 +91,9 @@
     "yarn": "^0.27.5"
   },
   "devDependencies": {
+    "@types/moxios": "^0.4.2",
     "jscpd": "^0.6.10",
+    "moxios": "^0.4.0",
     "webpack-notifier": "^1.5.0"
   },
   "jest": {
