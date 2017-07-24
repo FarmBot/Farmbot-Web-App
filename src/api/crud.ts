@@ -17,6 +17,7 @@ import { ResourceIndex } from "../resources/interfaces";
 import { SequenceBodyItem } from "farmbot/dist";
 import * as _ from "lodash";
 import { Actions } from "../constants";
+let WHOAH = "COOL";
 
 export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
