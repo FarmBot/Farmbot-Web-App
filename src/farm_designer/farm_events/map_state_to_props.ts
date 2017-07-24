@@ -30,7 +30,7 @@ export function mapResourcesToCalendar(ri: ResourceIndex, unixNow = moment.now()
             .clone()
             .startOf("day")
             .add(regi.time_offset, "milliseconds");
-          if (m2.isBefore(unixNow)) { return; }
+          if (m2.isBefore(m)) { return; }
           let o = occurrence(m2, fe);
           let seq = findSequenceById(ri, regi.sequence_id);
           let sequenceName = seq.body.name;
