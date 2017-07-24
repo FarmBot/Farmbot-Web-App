@@ -21,13 +21,15 @@ export interface NavBarState {
   tickerListOpen: boolean;
 }
 
+type ToggleEventHandler = (e: React.MouseEvent<HTMLDivElement>) => void;
+
 export interface MobileMenuProps {
-  toggle: (property: keyof NavBarState) => any;
+  toggle: (property: keyof NavBarState) => ToggleEventHandler;
   mobileMenuOpen: boolean;
 }
 
 export interface TickerListProps {
-  toggle: (property: keyof NavBarState) => any;
+  toggle: (property: keyof NavBarState) => ToggleEventHandler;
   logs: Log[]
   tickerListOpen: boolean;
 }

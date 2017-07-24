@@ -8,6 +8,8 @@ import { bot } from "./fake_state/bot";
 import { config } from "./fake_state/config";
 import { draggable } from "./fake_state/draggable";
 import { resources } from "./fake_state/resources";
+import { createStore } from "redux";
+import { rootReducer } from "../redux/root_reducer";
 
 /** Factory function for empty state object. */
 export function fakeState(dispatcher: Function = noop): Everything {
@@ -22,4 +24,8 @@ export function fakeState(dispatcher: Function = noop): Everything {
     draggable,
     resources
   };
+}
+
+export function fakeStore() {
+  return createStore(rootReducer as any, fakeState());
 }

@@ -2,15 +2,53 @@ import * as React from "react";
 import { Link } from "react-router";
 import { connect } from "react-redux";
 import { t } from "i18next";
-
 import { Row, Col } from "../../ui";
 import { mapStateToProps } from "./map_state_to_props";
-import { FarmEventProps } from "../interfaces";
+import { FarmEventProps, CalendarOccurrence } from "../interfaces";
 import { FBSelect } from "../../ui/new_fb_select";
+import * as _ from "lodash";
 
-@connect(mapStateToProps)
-export class FarmEvents extends React.Component<FarmEventProps, {}> {
-  private renderCalendarRows() {
+export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
+  innerRows = (items: CalendarOccurrence[]) => {
+
+    return _(items)
+      .sortBy(x => x.sortKey)
+      .value()
+      .map((farmEvent, index) => {
+        let url = `/app/designer/farm_events/` + (farmEvent.id || "UNSAVED_EVENT").toString();
+        let heading: string;
+        let subHeading: JSX.Element;
+
+        if (farmEvent.childExecutableName) {
+          heading = farmEvent.childExecutableName;
+          subHeading = <p style={{ color: "gray" }}>
+            {farmEvent.parentExecutableName}
+          </p>;
+        } else {
+          heading = farmEvent.parentExecutableName;
+          subHeading = <p />;
+        }
+
+        return (
+          <div
+            className="farm-event-data-block"
+            key={`${farmEvent.sortKey}.${index}`}>
+            <div className="farm-event-data-time">
+              {farmEvent.timeStr}
+            </div>
+            <div className="farm-event-data-executable">
+              {heading}
+              {subHeading}
+            </div>
+            <Link to={url}>
+              <i className="fa fa-pencil-square-o edit-icon" />
+            </Link>
+          </div>
+        );
+      });
+  }
+
+  renderCalendarRows() {
     return this.props.calendarRows.map(item => {
       return (
         <div className="farm-event" key={item.sortKey}>
@@ -23,48 +61,14 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
             </div>
           </div>
           <div className="farm-event-data">
-            {item.items.map((farmEvent, index) => {
-
-              let url = `/app/designer/farm_events/` +
-                (farmEvent.id || "UNSAVED_EVENT").toString();
-              let heading: string;
-              let subHeading: JSX.Element;
-
-              if (farmEvent.childExecutableName) {
-                heading = farmEvent.childExecutableName;
-                subHeading = <p style={{ color: "gray" }}>
-                  {farmEvent.parentExecutableName}
-                </p>;
-              } else {
-                heading = farmEvent.parentExecutableName;
-                subHeading = <p />;
-              }
-
-              return (
-                <div
-                  className="farm-event-data-block"
-                  key={`${farmEvent.sortKey}.${index}`}
-                >
-                  <div className="farm-event-data-time">
-                    {farmEvent.timeStr}
-                  </div>
-                  <div className="farm-event-data-executable">
-                    {heading}
-                    {subHeading}
-                  </div>
-                  <Link to={url}>
-                    <i className="fa fa-pencil-square-o edit-icon" />
-                  </Link>
-                </div>
-              );
-            })}
+            {this.innerRows(item.items)}
           </div>
         </div>
       );
     });
   }
 
-  public render() {
+  render() {
     return (
       <div className="panel-container magenta-panel farm-event-panel">
         <div className="panel-header magenta-panel">
@@ -114,3 +118,9 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
     );
   }
 }
+
+/** This is intentional. It is not a hack or a work around.
+ * It greatly simplifies unit testing.
+ * See testing pattern noted here: https://github.com/airbnb/enzyme/issues/98
+ */
+export let FarmEvents = connect(mapStateToProps)(PureFarmEvents);

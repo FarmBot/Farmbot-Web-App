@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@blueprintjs/core@^1.18.0", "@blueprintjs/core@^1.22.0":
-  version "1.22.0"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.22.0.tgz#5da642fcc4d614d90c1b0f1864b30e3da9c08a9f"
+"@blueprintjs/core@^1.23.0", "@blueprintjs/core@^1.23.1":
+  version "1.23.1"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.23.1.tgz#0b2880ad142549f07e0fd3d626bbd9b51ed32419"
   dependencies:
     "@types/dom4" "^1.5.20"
     "@types/tether" "^1.1.27"
@@ -15,11 +15,11 @@
     tether "^1.4"
     tslib "^1.5.0"
 
-"@blueprintjs/labs@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/labs/-/labs-0.3.0.tgz#c3f006c046be98e4cfdcb28f3f58a0719dfa65a2"
+"@blueprintjs/labs@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/labs/-/labs-0.4.0.tgz#437dff2989d1f415d0bd295f6cd3e144af440138"
   dependencies:
-    "@blueprintjs/core" "^1.18.0"
+    "@blueprintjs/core" "^1.23.0"
     classnames "^2.2"
     pure-render-decorator "1.2.1"
     tslib "^1.5.0"
@@ -71,9 +71,9 @@
   version "1.5.20"
   resolved "https://registry.yarnpkg.com/@types/dom4/-/dom4-1.5.20.tgz#ccf636d3b794fe65a4191ebc7ff979a78efea6c2"
 
-"@types/enzyme@^2.8.1":
-  version "2.8.1"
-  resolved "https://registry.yarnpkg.com/@types/enzyme/-/enzyme-2.8.1.tgz#78b3c6c455b6b437898b54bff6d285d65323578d"
+"@types/enzyme@^2.8.4":
+  version "2.8.4"
+  resolved "https://registry.yarnpkg.com/@types/enzyme/-/enzyme-2.8.4.tgz#0a75487091978a77178920fa0437c0f13a8e2dcd"
   dependencies:
     "@types/cheerio" "*"
     "@types/react" "*"
@@ -82,9 +82,9 @@
   version "1.0.28"
   resolved "https://registry.yarnpkg.com/@types/fastclick/-/fastclick-1.0.28.tgz#db4b3f6f079235324b264338e229f9cdd98a6c4e"
 
-"@types/handlebars@^4.0.33":
-  version "4.0.33"
-  resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.33.tgz#ee45696b067e4bdf15c3956710a4c36c17d8f8f0"
+"@types/handlebars@^4.0.35":
+  version "4.0.35"
+  resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.35.tgz#409eb97a3ad6970daba4d586cb6afe3f5e082c01"
 
 "@types/history@^3":
   version "3.2.1"
@@ -102,13 +102,19 @@
   version "20.0.4"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-20.0.4.tgz#91e2c76fbe90b3a719b5d689958f0495f005beb9"
 
-"@types/lodash@^4.14.68":
-  version "4.14.68"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.68.tgz#754fbab68bd2bbb69547dc8ce7574f7012eed7f6"
+"@types/lodash@^4.14.71":
+  version "4.14.71"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.71.tgz#0dc383f78981216ac76e2f2c3afd998e0450e4c1"
 
 "@types/markdown-it@^0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@types/markdown-it/-/markdown-it-0.0.2.tgz#5d9ad19e6e6508cdd2f2596df86fd0aade598660"
+
+"@types/moxios@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@types/moxios/-/moxios-0.4.2.tgz#00d2b23b2a82b0e9debdf92161ad7b0968bed2ca"
+  dependencies:
+    axios "^0.16.1"
 
 "@types/mqtt@^0.0.34":
   version "0.0.34"
@@ -116,9 +122,9 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@^8.0.8":
-  version "8.0.8"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.8.tgz#0dc4ca2c6f6fc69baee16c5e928c4a627f517ada"
+"@types/node@*", "@types/node@^8.0.16":
+  version "8.0.16"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.16.tgz#5aa51abd72621a0ce53fb86bccd76825ee1b4ca9"
 
 "@types/react-color@^2.11.4":
   version "2.11.4"
@@ -132,9 +138,9 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-redux@^4.4.32":
-  version "4.4.45"
-  resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-4.4.45.tgz#afad851d8592119225aa6bcc402c7f6b9c7e4106"
+"@types/react-redux@^4.4.47":
+  version "4.4.47"
+  resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-4.4.47.tgz#12af1677116e08d413fe2620d0a85560c8a0536e"
   dependencies:
     "@types/react" "*"
     redux "^3.6.0"
@@ -146,9 +152,9 @@
     "@types/history" "^3"
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^15.0.35":
-  version "15.0.35"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.35.tgz#4672923cd502d03e1480d03816ebc5a719fb86da"
+"@types/react@*", "@types/react@^15.0.39":
+  version "15.0.39"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.39.tgz#5a820c75cabf4cbfa177a3ab5a9a0634c46b14d1"
 
 "@types/redux@^3.6.31":
   version "3.6.31"
@@ -386,7 +392,7 @@ aws4@^1.2.1:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.6.0.tgz#83ef5ca860b2b32e4a0deedee8c771b9db57471e"
 
-axios@^0.16.2:
+axios@^0.16.1, axios@^0.16.2:
   version "0.16.2"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.16.2.tgz#ba4f92f17167dfbab40983785454b9ac149c3c6d"
   dependencies:
@@ -867,7 +873,7 @@ cheerio@^0.22.0:
     lodash.reject "^4.4.0"
     lodash.some "^4.4.0"
 
-chokidar@^1.4.3:
+chokidar@^1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-1.7.0.tgz#798e689778151c8076b4b360e5edd28cda2bb468"
   dependencies:
@@ -986,9 +992,9 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
-codemirror@>=4.10.x:
-  version "5.25.2"
-  resolved "https://registry.yarnpkg.com/codemirror/-/codemirror-5.25.2.tgz#8c77677ca9c9248d757d3a07ed1e89a8404850b7"
+codemirror@5.27.4:
+  version "5.27.4"
+  resolved "https://registry.yarnpkg.com/codemirror/-/codemirror-5.27.4.tgz#0e817c839bfea9959dd16cd48ae14acc0e43c3b6"
 
 color-convert@^1.0.0, color-convert@^1.3.0:
   version "1.9.0"
@@ -1026,7 +1032,7 @@ colors@1.0.3, colors@1.0.x:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.0.3.tgz#0433f44d809680fdeb60ed260f1b0c262e82a40b"
 
-colors@^1.0.3, colors@^1.1.2, colors@~1.1.2:
+colors@^1.1.2, colors@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
 
@@ -3072,15 +3078,15 @@ jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
 
-jscpd@^0.6.10:
-  version "0.6.11"
-  resolved "https://registry.yarnpkg.com/jscpd/-/jscpd-0.6.11.tgz#3ac3fe808c6e4d7885c5f1fc76c1925f923c79c9"
+jscpd@^0.6.13:
+  version "0.6.13"
+  resolved "https://registry.yarnpkg.com/jscpd/-/jscpd-0.6.13.tgz#60b28c2dc0450072444058f5923f0105afcafe03"
   dependencies:
     blamer "^0.1.9"
     bluebird "^3.0.5"
     cli ">=0.10.x"
     cli-table "^0.3.1"
-    codemirror ">=4.10.x"
+    codemirror "5.27.4"
     colors "^1.1.2"
     glob ">=5.0.x"
     js-yaml ">=3.4.x"
@@ -3120,9 +3126,9 @@ jsesc@~0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-0.5.0.tgz#e7dee66e35d6fc16f710fe91d5cf69f70f08911d"
 
-json-loader@^0.5.4:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/json-loader/-/json-loader-0.5.4.tgz#8baa1365a632f58a3c46d20175fc6002c96e37de"
+json-loader@^0.5.4, json-loader@^0.5.7:
+  version "0.5.7"
+  resolved "https://registry.yarnpkg.com/json-loader/-/json-loader-0.5.7.tgz#dca14a70235ff82f0ac9a3abeb60d337a365185d"
 
 json-schema-traverse@^0.3.0:
   version "0.3.1"
@@ -3630,6 +3636,10 @@ mkdirp@0.3.0:
 moment@^2.18.1:
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
+
+moxios@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/moxios/-/moxios-0.4.0.tgz#fc0da2c65477d725ca6b9679d58370ed0c52f53b"
 
 mqtt-connection@^2.0.0:
   version "2.1.1"
@@ -4620,9 +4630,9 @@ react-addons-test-utils@^15.6.0:
   version "15.6.0"
   resolved "https://registry.yarnpkg.com/react-addons-test-utils/-/react-addons-test-utils-15.6.0.tgz#062d36117fe8d18f3ba5e06eb33383b0b85ea5b9"
 
-react-color@^2.13.1:
-  version "2.13.1"
-  resolved "https://registry.yarnpkg.com/react-color/-/react-color-2.13.1.tgz#8ea05094b7cd1a57f900d1c210b88132e72d460f"
+react-color@^2.13.4:
+  version "2.13.4"
+  resolved "https://registry.yarnpkg.com/react-color/-/react-color-2.13.4.tgz#43f1cc5e0b63ac37c9bb192a3bdce65b151f6c35"
   dependencies:
     lodash "^4.0.1"
     material-colors "^1.2.1"
@@ -4813,9 +4823,9 @@ redux-thunk@^2.0.1:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/redux-thunk/-/redux-thunk-2.2.0.tgz#e615a16e16b47a19a515766133d1e3e99b7852e5"
 
-redux@^3.6.0, redux@^3.7.1:
-  version "3.7.1"
-  resolved "https://registry.yarnpkg.com/redux/-/redux-3.7.1.tgz#bfc535c757d3849562ead0af18ac52122cd7268e"
+redux@^3.6.0, redux@^3.7.2:
+  version "3.7.2"
+  resolved "https://registry.yarnpkg.com/redux/-/redux-3.7.2.tgz#06b73123215901d25d065be342eb026bc1c8537b"
   dependencies:
     lodash "^4.2.1"
     lodash-es "^4.2.1"
@@ -5565,20 +5575,16 @@ ts-lint@^4.5.1:
     resolve "^1.1.7"
     tsutils "^1.1.0"
 
-ts-loader@^2.2.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-2.2.2.tgz#6ea98ebe384ee9ba4c891fea6de6d4e7d8134730"
+ts-loader@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-2.3.1.tgz#6edc603393c2775c40ad84e3420007f1c097eab0"
   dependencies:
-    colors "^1.0.3"
+    chalk "^2.0.1"
     enhanced-resolve "^3.0.0"
     loader-utils "^1.0.2"
     semver "^5.0.1"
 
-tslib@^1.5.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.7.0.tgz#6e8366695f72961252b35167b0dd4fbeeafba491"
-
-tslib@^1.7.1:
+tslib@^1.5.0, tslib@^1.7.1:
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.7.1.tgz#bc8004164691923a79fe8378bbeb3da2017538ec"
 
@@ -5642,9 +5648,9 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@^2.0.9, typescript@^2.1.5, typescript@^2.3.4, typescript@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.1.tgz#c3ccb16ddaa0b2314de031e7e6fee89e5ba346bc"
+typescript@^2.0.9, typescript@^2.1.5, typescript@^2.3.4, typescript@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.2.tgz#f8395f85d459276067c988aa41837a8f82870844"
 
 ua-parser-js@^0.7.9:
   version "0.7.12"
@@ -5830,12 +5836,12 @@ watch@~0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/watch/-/watch-0.10.0.tgz#77798b2da0f9910d595f1ace5b0c2258521f21dc"
 
-watchpack@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/watchpack/-/watchpack-1.3.1.tgz#7d8693907b28ce6013e7f3610aa2a1acf07dad87"
+watchpack@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/watchpack/-/watchpack-1.4.0.tgz#4a1472bcbb952bd0a9bb4036801f954dfb39faac"
   dependencies:
     async "^2.1.2"
-    chokidar "^1.4.3"
+    chokidar "^1.7.0"
     graceful-fs "^4.1.2"
 
 webidl-conversions@^3.0.0:
@@ -5910,9 +5916,9 @@ webpack-uglify-js-plugin@^1.1.9:
     uglify-js "^2.6.4"
     webpack-core "^0.6.8"
 
-webpack@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-3.1.0.tgz#ac0675e500db835f9ab2369d29ba096f51ad0731"
+webpack@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-3.3.0.tgz#ce2f9e076566aba91f74887133a883fd7da187bc"
   dependencies:
     acorn "^5.0.0"
     acorn-dynamic-import "^2.0.0"
@@ -5933,7 +5939,7 @@ webpack@^3.1.0:
     supports-color "^3.1.0"
     tapable "~0.2.5"
     uglifyjs-webpack-plugin "^0.4.6"
-    watchpack "^1.3.1"
+    watchpack "^1.4.0"
     webpack-sources "^1.0.1"
     yargs "^6.0.0"
 
