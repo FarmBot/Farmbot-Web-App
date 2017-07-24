@@ -3,12 +3,12 @@ import { connect } from "react-redux";
 
 import { DirectionButton } from "./controls/direction_button";
 
-interface State {
+export interface State {
   isOpen: boolean;
   stepSize: number;
 }
 
-interface Props {
+export interface Props {
   dispatch: Function;
 }
 

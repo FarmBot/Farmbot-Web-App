@@ -1,23 +1,26 @@
 import * as React from "react";
 import { ControlsPopup } from "../controls_popup";
-import { render } from "enzyme";
+import { mount } from "enzyme";
+import { State } from "../controls_popup";
+import { DirectionButton } from "../controls/direction_button";
 
 describe("<ControlsPopup />", () => {
+  let wrapper = mount(<ControlsPopup dispatch={jest.fn()} />);
+  let button = mount(<DirectionButton
+    axis="x"
+    direction="left"
+    isInverted={false}
+    steps={1000}
+  />);
 
-  // let popup = render(<ControlsPopup dispatch={}/>);
-  // let container = popup.find("controls-popupp");
+  it("Has a false initial state", () => {
+    expect(wrapper.state("isOpen")).toBeFalsy();
+  });
 
-  // it("Has correct amount of children elements", () => {
-  //   let divs = popup.find("div");
-  //   expect(divs.length).toEqual(1);
-  // });
-
-  // it("Has correct classname", () => {
-  //   expect(container).toBeTruthy();
-  // });
-
-  // it("Has public render", () => {
-  //   expect(popup).toHaveProperty("render");
-  // });
+  it("Toggles state", () => {
+    let parent = wrapper.find("div").first();
+    parent.simulate("click");
+    expect(wrapper.state("isOpen")).toBeTruthy();
+  });
 
 });
