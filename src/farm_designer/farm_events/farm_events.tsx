@@ -2,14 +2,12 @@ import * as React from "react";
 import { Link } from "react-router";
 import { connect } from "react-redux";
 import { t } from "i18next";
-
 import { Row, Col } from "../../ui";
 import { mapStateToProps } from "./map_state_to_props";
 import { FarmEventProps } from "../interfaces";
 import { FBSelect } from "../../ui/new_fb_select";
 
-@connect(mapStateToProps)
-export class FarmEvents extends React.Component<FarmEventProps, {}> {
+export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
   private renderCalendarRows() {
     return this.props.calendarRows.map(item => {
       return (
@@ -43,8 +41,7 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
               return (
                 <div
                   className="farm-event-data-block"
-                  key={`${farmEvent.sortKey}.${index}`}
-                >
+                  key={`${farmEvent.sortKey}.${index}`}>
                   <div className="farm-event-data-time">
                     {farmEvent.timeStr}
                   </div>
@@ -111,3 +108,9 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
     );
   }
 }
+
+/** This is intentional. It is not a hack or a work around.
+ * It greatly simplifies unit testing.
+ * See testing pattern noted here: https://github.com/airbnb/enzyme/issues/98
+ */
+export let FarmEvents = connect(mapStateToProps)(PureFarmEvents);
