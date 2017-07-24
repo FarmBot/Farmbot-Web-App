@@ -78,7 +78,7 @@ export interface MessageParams {
 
 export interface PickerProps {
   current: Color;
-  onChange?: (color: Color) => any;
+  onChange?: (color: Color) => void;
 }
 
 export interface PickerState {
