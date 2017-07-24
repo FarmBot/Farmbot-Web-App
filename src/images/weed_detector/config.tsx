@@ -50,7 +50,7 @@ export function WeedDetectorConfig(props: SettingsMenuProps) {
       <input
         type="checkbox"
         id="invert_hue_selection"
-        value={envGet("CAMERA_CALIBRATION_invert_hue_selection", props.values)}
+        checked={!!envGet("CAMERA_CALIBRATION_invert_hue_selection", props.values)}
         onChange={e => props.onChange("CAMERA_CALIBRATION_invert_hue_selection",
           e.currentTarget.checked ?
             SPECIAL_VALUES.TRUE : SPECIAL_VALUES.FALSE)}

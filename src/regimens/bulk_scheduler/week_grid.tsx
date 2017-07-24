@@ -1,7 +1,7 @@
 import * as React from "react";
 import { WeekRow } from "./week_row";
 import { WeekGridProps } from "./interfaces";
-import { pushWeek, popWeek } from "./actions";
+import { pushWeek, popWeek, deselectDays, selectDays } from "./actions";
 import { t } from "i18next";
 import { Row, Col } from "../../ui/index";
 
@@ -26,7 +26,15 @@ export function WeekGrid({ weeks, dispatch }: WeekGridProps) {
           onClick={() => dispatch(popWeek())}>
           <i className="fa fa-minus" /> {t("Week")}
         </button>
+        <button className="gray widget-control fb-button"
+          onClick={() => dispatch(deselectDays())}>
+          {t("Deselect all")}
+        </button>
+        <button className="gray widget-control fb-button"
+          onClick={() => dispatch(selectDays())}>
+          {t("Select all")}
+        </button>
       </Col>
     </Row>
-  </div>;
-};
+  </div >;
+}

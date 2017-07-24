@@ -1,5 +1,5 @@
 let mockErr = jest.fn();
-jest.mock("i18next", () => ({ t: (i: string) => i }))
+jest.mock("i18next", () => ({ t: (i: string) => i }));
 jest.mock("farmbot-toastr", () => ({ error: mockErr }));
 
 import { commitBulkEditor } from "../actions";

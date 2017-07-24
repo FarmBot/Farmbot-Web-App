@@ -2,7 +2,7 @@ import { isNaN, isNumber } from "lodash";
 import { t } from "i18next";
 import { error, warning } from "farmbot-toastr";
 import { ReduxAction, Thunk } from "../../redux/interfaces";
-import { ToggleDayParams } from "./interfaces";
+import { ToggleDayParams, Week } from "./interfaces";
 import { assertUuid, findSequence, findRegimen } from "../../resources/selectors";
 import { groupRegimenItemsByWeek } from "./group_regimen_items_by_week";
 import { defensiveClone } from "../../util";
@@ -18,6 +18,18 @@ export function pushWeek() {
 export function popWeek() {
   return {
     type: "POP_WEEK"
+  };
+}
+
+export function deselectDays() {
+  return {
+    type: "DESELECT_ALL_DAYS"
+  };
+}
+
+export function selectDays() {
+  return {
+    type: "SELECT_ALL_DAYS"
   };
 }
 

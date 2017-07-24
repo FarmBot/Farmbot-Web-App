@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { Dictionary } from "farmbot";
-import { Week } from "./bulk_scheduler/interfaces";
+import { Week, DAYS } from "./bulk_scheduler/interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { TaggedResource, TaggedRegimen } from "../resources/tagged_resources";
 import { Actions } from "../constants";
@@ -61,6 +61,14 @@ export let regimensReducer = generateReducer<RegimenState>(initialState)
   })
   .add<void>(Actions.POP_WEEK, (s, a) => {
     s.weeks.pop();
+    return s;
+  })
+  .add<void>(Actions.DESELECT_ALL_DAYS, (s, a) => {
+    s.weeks.map((week) => DAYS.map((key) => week.days[key] = false));
+    return s;
+  })
+  .add<void>(Actions.SELECT_ALL_DAYS, (s, a) => {
+    s.weeks.map((week) => DAYS.map((key) => week.days[key] = true));
     return s;
   })
   .add<{ week: number, day: number }>(Actions.TOGGLE_DAY, (s, { payload }) => {

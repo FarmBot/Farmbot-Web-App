@@ -1,10 +1,11 @@
-import { resourceReducer } from "../resources/reducer";
+import { resourceReducer, emptyState } from "../resources/reducer";
 import { TaggedResource } from "../resources/tagged_resources";
 import * as _ from "lodash";
 import { createStore } from "redux";
 import { RestResources } from "../resources/interfaces";
+import { ReduxAction } from "../redux/interfaces";
 
-let FAKE_RESOURCES: TaggedResource[] = [
+export let FAKE_RESOURCES: TaggedResource[] = [
   {
     "kind": "device",
     "body": {
@@ -265,14 +266,13 @@ let FAKE_RESOURCES: TaggedResource[] = [
 export
   function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES) {
   const KIND: keyof TaggedResource = "kind"; // Safety first, kids.
-  // TODO: Figure out why Redux typings broke after the 2.4 upgrade.
-  let store = createStore(resourceReducer as any);
-  _(resources)
+  return _(resources)
     .groupBy(KIND)
     .toPairs()
     .map((x: [(TaggedResource["kind"]), TaggedResource[]]) => x)
-    .map(y => ({ type: "RESOURCE_READY", payload: { name: y[0], data: y[1] } }))
-    .map(store.dispatch);
-
-  return store.getState() as RestResources;
+    .map(y => ({
+      type: "RESOURCE_READY",
+      payload: { name: y[0], data: y[1].map(x => x.body) }
+    }))
+    .reduce(resourceReducer, emptyState());
 }
