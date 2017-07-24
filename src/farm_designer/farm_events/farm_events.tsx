@@ -31,7 +31,6 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
       .sortBy(x => stringToMinutes(x.timeStr))
       .value()
       .map((farmEvent, index) => {
-        console.log(farmEvent.sortKey);
         let url = `/app/designer/farm_events/` + (farmEvent.id || "UNSAVED_EVENT").toString();
         let heading: string;
         let subHeading: JSX.Element;
