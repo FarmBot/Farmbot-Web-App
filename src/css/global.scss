@@ -368,6 +368,7 @@ ul {
 }
 
 .controls-popup {
+  display: none; // Display block when ready
   right: 6rem;
   bottom: 4rem;
   transition: all 0.4s ease-in-out;

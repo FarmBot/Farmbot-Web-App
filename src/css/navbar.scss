@@ -110,3 +110,51 @@ nav {
     }
   }
 }
+
+.nav-right {
+  .pt-tether-target-attached-bottom.pt-overlay-content {
+    margin-top: 1.6rem;
+    color: $white;
+  }
+  .pt-popover-target {
+    a {
+      color: $white;
+    }
+    .pt-popover-arrow-fill {
+      fill: $dark_gray;
+    }
+    .pt-popover-content {
+      background: $dark_gray;
+    }
+  }
+}
+
+@media screen and (max-device-width: 768px) {
+  .nav-right {
+    .pt-popover-target {
+      font-size: 2rem;
+      margin-top: 1.4rem;
+      margin-left: 2rem;
+      &:after {
+        content: "▾";
+      }
+    }
+    .nav-name {
+      display: none;
+    }
+  }
+  .pt-popover-content {
+    font-size: 1.2rem;
+  }
+  .mobile-menu.active {
+    .nav-links a {
+      display: block;
+      padding: 1rem;
+      &.active {
+        &:before {
+          background: transparent;
+        }
+      }
+    }
+  }
+}

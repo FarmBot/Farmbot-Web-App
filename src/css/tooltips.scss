@@ -56,6 +56,10 @@
 }
 
 .colorpicker {
+  background: $medium_gray;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
   margin: 0.4rem 0 0;
   position: relative;
   float: left;
@@ -63,6 +67,10 @@
   &.active {
     .colorpicker-body {
       top: 3rem;
+      right: -2rem;
+      opacity: 1;
+      pointer-events: all;
+      width: 11rem;
       opacity: 1;
       pointer-events: all;
       &:after {
@@ -90,7 +98,8 @@
   display: flex;
   flex-wrap: wrap;
   div {
-    padding: 0.4rem;
+    border-radius: 50%;
+    padding: 0.6rem;
     cursor: pointer;
   }
   &:after {
@@ -98,7 +107,7 @@
     position: absolute;
     content: "";
     top: 0;
-    right: 2.9rem;
+    right: 2rem;
     width: 0;
     height: 0;
     border-style: solid;
