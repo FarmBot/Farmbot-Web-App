@@ -1,13 +1,8 @@
 import * as React from "react";
 import { t } from "i18next";
 import { Row, Col } from "../../../ui/index";
-import { JSXChildren } from "../../../util";
 
-interface SpacePanelHeaderProps {
-  children?: JSXChildren;
-}
-
-export function SpacePanelHeader({ children }: SpacePanelHeaderProps) {
+export function SpacePanelHeader(props: {}) {
   return <Row>
     <Col xs={2} xsOffset={6}>
       <label>
@@ -24,5 +19,5 @@ export function SpacePanelHeader({ children }: SpacePanelHeaderProps) {
         {t("Z AXIS")}
       </label>
     </Col>
-  </Row>
+  </Row>;
 }

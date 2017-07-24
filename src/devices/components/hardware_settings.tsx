@@ -40,9 +40,7 @@ export class HardwareSettings extends
           status={bot.hardware.informational_settings.sync_status}
           lockOpen={process.env.NODE_ENV !== "production"}>
           <div className="label-headings">
-            <SpacePanelHeader>
-              {t("Advanced")}
-            </SpacePanelHeader>
+            <SpacePanelHeader />
           </div>
           <HomingAndCalibration
             dispatch={dispatch}
