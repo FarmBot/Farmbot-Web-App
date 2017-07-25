@@ -62,7 +62,7 @@ function destructureFarmEvent(fe: TaggedFarmEvent): FarmEventViewModel {
     time_unit: fe.body.time_unit,
     executable_type: fe.body.executable_type,
     executable_id: (fe.body.executable_id || "").toString()
-  }
+  };
 }
 
 /** Take a FormViewModel and recombine the fields into a Partial<FarmEvent>
@@ -98,13 +98,13 @@ interface State {
    * Example: Navigating away from the page while editing will discard changes.
    */
   localCopyDirty: boolean;
-};
+}
 
 export class EditFEForm extends React.Component<Props, State> {
 
   constructor() {
     super();
-    this.state = { fe: {}, localCopyDirty: false }
+    this.state = { fe: {}, localCopyDirty: false };
   }
 
   get isOneTime() { return this.fieldGet("time_unit") === "never"; }
@@ -114,12 +114,12 @@ export class EditFEForm extends React.Component<Props, State> {
   get viewModel() { return destructureFarmEvent(this.props.farmEvent); }
 
   get executable() {
-    let t = this.fieldGet("executable_type");
+    let et = this.fieldGet("executable_type");
     let id = parseInt(this.fieldGet("executable_id"));
-    if (t === "Sequence" || t === "Regimen") {
-      return this.props.findExecutable(t, id);
+    if (et === "Sequence" || et === "Regimen") {
+      return this.props.findExecutable(et, id);
     } else {
-      throw new Error(`${t} is not a valid executable_type`);
+      throw new Error(`${et} is not a valid executable_type`);
     }
   }
 
@@ -142,7 +142,7 @@ export class EditFEForm extends React.Component<Props, State> {
       value: this.executable.body.id || 0,
       label: this.executable.body.name,
       executable_type
-    }
+    };
   }
 
   fieldSet = (name: keyof State["fe"]) => (e: FormEvent) => {
@@ -175,7 +175,7 @@ export class EditFEForm extends React.Component<Props, State> {
               running a regimen too late in the day may result in skipped
               regimen tasks. Consider rescheduling this event to tomorrow if
               this is a concern.`);
-          }))
+          }));
         } else {
           error(`This Farm Event does not appear to have a valid run time.
             Perhaps you entered bad dates?`);
