@@ -4,6 +4,10 @@ body {
   background: $gray;
 }
 
+.widget-body .row {
+  margin-bottom: 1rem;
+}
+
 *::-webkit-scrollbar {
   display: none !important;
 }
