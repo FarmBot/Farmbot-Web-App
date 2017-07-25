@@ -154,13 +154,16 @@ export class FarmbotOsSettings
               </Col>
               <Col xs={3}>
                 <p>
-                  {t("Version")}
-                  {this
-                    .props
-                    .bot
-                    .hardware
-                    .informational_settings.controller_version
-                    || t(" unknown (offline)")}
+                  {t("Version {{ version }}", {
+                    version:
+                    this
+                      .props
+                      .bot
+                      .hardware
+                      .informational_settings.controller_version
+                    || t(" unknown (offline)")
+                  }
+                  )}
                 </p>
               </Col>
               <Col xs={7}>
