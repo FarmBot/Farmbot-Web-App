@@ -87,6 +87,8 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
 
         <div className="panel-content">
           <Row>
+            {/* Hidden until built out per Rory */}
+            {/*
             <Col xs={2}>
               <i className="fa fa-calendar"></i>
             </Col>
@@ -99,6 +101,7 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
                 }}
               />
             </Col>
+            */}
           </Row>
 
           <div className="farm-events">

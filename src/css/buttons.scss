@@ -152,6 +152,7 @@
     box-shadow: none !important;
     border: 1px solid $white;
     pointer-events: none;
+    transform: translateY(2px);
   }
   &.gray {
     background-color: $medium_light_gray !important;

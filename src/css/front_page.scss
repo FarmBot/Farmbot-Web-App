@@ -8,6 +8,9 @@ html {
   padding: 2rem;
   background: linear-gradient(-135deg, #089460, #159ACC);
   background-size: 400% 400%;
+  .widget-wrapper {
+    box-shadow: none;
+  }
   .forgot-password {
     color: $blue;
     font-size: 1rem;
@@ -15,7 +18,7 @@ html {
   h1,
   h2 {
     font-family: "Roboto", Arial, Helvetica, sans-serif;
-    font-weight: 300;
+    font-weight: 100;
     color: #f4f4f4;
     text-align: center;
   }

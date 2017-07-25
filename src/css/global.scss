@@ -42,7 +42,7 @@ fieldset {
 
 .all-content-wrapper {
   margin: 0 auto;
-  padding: 3rem 3rem 0;
+  padding: 11rem 3rem 0;
   width: 100%;
   max-width: 160rem;
   animation: page-transition 0.2s ease-in-out;
@@ -354,6 +354,56 @@ ul {
 .note {
   font-style: italic;
   font-size: 1.2rem;
+}
+
+.controls-popup,
+.controls-popup-menu-outer {
+  position: absolute;
+  background: $dark_gray;
+  padding: 2rem;
+  border-radius: 3rem;
+  height: 6rem;
+  width: 6rem;
+  cursor: pointer;
+}
+
+.controls-popup {
+  display: none; // Display block when ready
+  right: 6rem;
+  bottom: 4rem;
+  transition: all 0.4s ease-in-out;
+  color: $white;
+  i {
+    z-index: 1;
+    position: absolute;
+    font-size: 2.4rem;
+    top: 1.8rem;
+    margin-bottom: 2rem;
+    transition: all 0.4s ease-in-out;
+  }
+  &.open {
+    i {
+      transform: rotate(-225deg);
+    }
+    .controls-popup-menu-outer {
+      width: 26rem;
+    }
+    .controls-popup-menu-inner {
+      transition-delay: 0.2s;
+      opacity: 1;
+    }
+  }
+}
+
+.controls-popup-menu-inner {
+  transition: all 0.4s ease-in-out;
+  opacity: 0;
+}
+
+.controls-popup-menu-outer {
+  transition: all 0.4s ease-in-out;
+  right: 0;
+  bottom: 0;
 }
 
 @keyframes page-transition {

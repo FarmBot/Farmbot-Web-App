@@ -68,7 +68,7 @@ export class SequencesList extends
       kind: "sequences",
       uuid: "REDUCER_MUST_CHANGE_THIS",
       body: {
-        name: "new sequence " + (this.props.sequences.length + 1),
+        name: "new sequence " + (this.props.sequences.length),
         args: { version: -999 },
         color: "gray",
         kind: "sequence",
@@ -81,34 +81,39 @@ export class SequencesList extends
     let { sequences, dispatch } = this.props;
     let searchTerm = this.state.searchTerm.toLowerCase();
 
-    return <div className="sequence-list">
-      <h3>
-        <i>{t("Sequences")}</i>
-      </h3>
-      <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
-      <button
-        className="fb-button green add"
-        onClick={() => dispatch(init(this.emptySequence()))}
-      >
-        <i className="fa fa-plus" />
-      </button>
-      <input
-        onChange={this.onChange}
-        placeholder={t("Search Sequences...")}
-      />
-      <Row>
-        <Col xs={12}>
-          {
-            sortResourcesById(sequences)
-              .filter(seq => seq
-                .body
-                .name
-                .toLowerCase()
-                .includes(searchTerm))
-              .map(sequenceList(dispatch))
-          }
-        </Col>
-      </Row>
-    </div>;
+    return (
+      <div className="sequence-list">
+        <h3>
+          <i>{t("Sequences")}</i>
+        </h3>
+        <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
+        <button
+          className="fb-button green add"
+          onClick={() => {
+            dispatch(init(this.emptySequence()));
+            push("/app/sequences/new_sequence_" + (sequences.length++));
+          }}
+        >
+          <i className="fa fa-plus" />
+        </button>
+        <input
+          onChange={this.onChange}
+          placeholder={t("Search Sequences...")}
+        />
+        <Row>
+          <Col xs={12}>
+            {
+              sortResourcesById(sequences)
+                .filter(seq => seq
+                  .body
+                  .name
+                  .toLowerCase()
+                  .includes(searchTerm))
+                .map(sequenceList(dispatch))
+            }
+          </Col>
+        </Row>
+      </div>
+    );
   }
 }

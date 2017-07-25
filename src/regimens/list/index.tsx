@@ -32,18 +32,25 @@ export class RegimensList extends
 
   rows = () => {
     let searchTerm = this.state.searchTerm.toLowerCase();
-    return <Col xs={12}>
-      {sortResourcesById(this.props.regimens)
-        .filter(regimen => regimen.body.name.toLowerCase().includes(searchTerm))
-        .map((regimen, index) => {
-          return <RegimenListItem
-            index={index}
-            key={index}
-            regimen={regimen}
-            dispatch={this.props.dispatch}
-          />;
-        })}
-    </Col>;
+    return (
+      <Col xs={12}>
+        {sortResourcesById(this.props.regimens)
+          .filter(regimen => regimen
+            .body
+            .name
+            .toLowerCase()
+            .includes(searchTerm))
+          .map((regimen, index) => {
+            return <RegimenListItem
+              index={index}
+              key={index}
+              regimen={regimen}
+              dispatch={this.props.dispatch}
+              length={this.props.regimens.length}
+            />;
+          })}
+      </Col>
+    );
   }
 
   onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -51,19 +58,23 @@ export class RegimensList extends
   }
 
   render() {
-    return <div className="regimen-list">
-      <h3>
-        <i>{t("Regimens")}</i>
-      </h3>
-      <ToolTip helpText={ToolTips.REGIMEN_LIST} />
-      <AddRegimen dispatch={this.props.dispatch} />
-      <input
-        onChange={this.onChange}
-        placeholder={t("Search Regimens...")}
-      />
-      <Row>
-        {this.rows()}
-      </Row>
-    </div>;
+    let { dispatch, regimen, regimens } = this.props;
+
+    return (
+      <div className="regimen-list">
+        <h3>
+          <i>{t("Regimens")}</i>
+        </h3>
+        <ToolTip helpText={ToolTips.REGIMEN_LIST} />
+        <AddRegimen dispatch={dispatch} length={regimens.length} />
+        <input
+          onChange={this.onChange}
+          placeholder={t("Search Regimens...")}
+        />
+        <Row>
+          {this.rows()}
+        </Row>
+      </div>
+    );
   }
 }

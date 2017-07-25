@@ -24,20 +24,3 @@ export function selectRegimen(payload: TaggedRegimen) {
     throw new Error("Not a regimen.");
   }
 }
-
-let copy = 1;
-
-function emptyRegimen(): TaggedRegimen {
-  return {
-    kind: "regimens",
-    uuid: "NEVER",
-    dirty: true,
-    body: {
-      name: ("New regimen " + copy++),
-      color: "gray",
-      regimen_items: []
-    }
-  };
-}
-
-export let newRegimen = () => init(emptyRegimen());

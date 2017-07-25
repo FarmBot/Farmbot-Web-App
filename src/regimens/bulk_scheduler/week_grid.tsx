@@ -9,7 +9,9 @@ export function WeekGrid({ weeks, dispatch }: WeekGridProps) {
   return <div>
     <Row>
       <Col xs={12}>
-        <label className="center margin-top margin-left">Days</label>
+        <label className="regimen-days-label">
+          Days
+        </label>
         {weeks.map(function (week, i) {
           return <WeekRow key={i} index={i} week={week}
             dispatch={dispatch} />;
@@ -18,20 +20,28 @@ export function WeekGrid({ weeks, dispatch }: WeekGridProps) {
     </Row>
     <Row>
       <Col xs={12}>
-        <button className="green widget-control fb-button"
-          onClick={() => dispatch(pushWeek())}>
+        <button
+          className="green widget-control fb-button"
+          onClick={() => dispatch(pushWeek())}
+        >
           <i className="fa fa-plus" /> {t("Week")}
         </button>
-        <button className="red widget-control fb-button"
-          onClick={() => dispatch(popWeek())}>
+        <button
+          className="red widget-control fb-button"
+          onClick={() => dispatch(popWeek())}
+        >
           <i className="fa fa-minus" /> {t("Week")}
         </button>
-        <button className="gray widget-control fb-button"
-          onClick={() => dispatch(deselectDays())}>
+        <button
+          className="gray widget-control fb-button"
+          onClick={() => dispatch(deselectDays())}
+        >
           {t("Deselect all")}
         </button>
-        <button className="gray widget-control fb-button"
-          onClick={() => dispatch(selectDays())}>
+        <button
+          className="gray widget-control fb-button"
+          onClick={() => dispatch(selectDays())}
+        >
           {t("Select all")}
         </button>
       </Col>

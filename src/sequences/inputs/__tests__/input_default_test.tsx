@@ -60,6 +60,7 @@ describe("<InputDefault/>", () => {
     let x: jest.Mock<{}> = (updateStep as any).mock;
     let input = c.find("input").first();
     input.simulate("change");
+    input.simulate("blur");
     expect(dispatcher.mock.calls.length).toEqual(1);
     let action = dispatcher.mock.calls[0][0];
     let { payload } = action;
