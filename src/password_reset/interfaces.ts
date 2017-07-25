@@ -5,4 +5,4 @@ export interface State {
   serverPort?: string;
 }
 
-export interface Props { };
+export interface Props { }

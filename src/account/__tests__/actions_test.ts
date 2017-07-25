@@ -14,6 +14,7 @@ describe("deleteUser()", () => {
   });
 
   it("cancels the account", (done) => {
+    expect.assertions(2);
     API.setBaseUrl("http://example.com:80");
     let thunk = deleteUser({ password: "Foo!" });
     let dispatch = jest.fn();
