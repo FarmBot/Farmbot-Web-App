@@ -30,8 +30,17 @@ input[type=time] {
   font-size: 1.4rem;
 }
 
-.markdown * {
-  color: #fff;
+.markdown {
+  p {
+    color: #fff;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 67%;
+    white-space: nowrap;
+    display: inline-block;
+    text-transform: none;
+    margin-top: 0.3rem;
+  }
 }
 
 fieldset {

@@ -6,7 +6,6 @@
   z-index: 3;
   background: $black;
   opacity: 0.9;
-  padding-right: 3.4rem;
   cursor: pointer;
   .pt-collapse {
     overflow-y: scroll !important;
@@ -44,23 +43,31 @@
 .first-ticker {
   padding-bottom: 0.5rem;
   background: $black;
+  .markdown p {
+    font-weight: 600;
+  }
+  .status-ticker-created-at {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
   .status-ticker-wrapper {
     &:hover {
       background: initial;
     }
-  }
-  .status-ticker-created-at {
-    margin-top: 0.4rem;
   }
 }
 
 .status-ticker-created-at {
   float: right;
   margin-top: 0.2rem;
+  font-weight: 400;
 }
 
 // background: linear-gradient(to top, black 0%, transparent 30%);
-.status-ticker-message span {
-  -webkit-animation: flash 1.5s ease-in;
-  animation: flash 1.5s ease-in;
+.status-ticker-message {
+  display: inline;
+  span {
+    -webkit-animation: flash 1.5s ease-in;
+    animation: flash 1.5s ease-in;
+  }
 }
