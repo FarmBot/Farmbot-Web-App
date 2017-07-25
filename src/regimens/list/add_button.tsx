@@ -13,4 +13,3 @@ export function AddRegimen(props: AddRegimenProps) {
     {props.children || <i className="fa fa-plus" />}
   </button>;
 }
-

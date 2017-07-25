@@ -88,12 +88,12 @@
     "webpack": "^3.3.0",
     "webpack-uglify-js-plugin": "^1.1.9",
     "weinre": "^2.0.0-pre-I0Z7U9OV",
-    "yarn": "^0.27.5"
+    "yarn": "^0.27.5",
+    "@types/moxios": "^0.4.2",
+    "moxios": "^0.4.0"
   },
   "devDependencies": {
-    "@types/moxios": "^0.4.2",
     "jscpd": "^0.6.13",
-    "moxios": "^0.4.0",
     "webpack-notifier": "^1.5.0"
   },
   "jest": {
