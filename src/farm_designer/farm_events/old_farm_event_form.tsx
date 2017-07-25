@@ -230,15 +230,7 @@ export class EditFEForm extends React.Component<Props, State> {
           </Col>
         </Row>
         <label>
-          <input type="checkbox"
-            onChange={_.noop}
-            value={"false"} />
-          {t("Repeats?")}
-        </label>
-        <Row />
-        {/* CHRIS HELP -RC */}
-        <label>
-          {t("Every")}
+          {t("Repeats Every")}
         </label>
         <Row>
           <Col xs={4}>
