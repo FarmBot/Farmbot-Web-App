@@ -5,8 +5,7 @@ import { error as log, init as logInit } from "farmbot-toastr";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { State, Props } from "./interfaces";
-import { hardRefresh } from "../util";
-hardRefresh();
+
 export class PasswordReset extends React.Component<Props, State> {
   constructor() {
     super();
