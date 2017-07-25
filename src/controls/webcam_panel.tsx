@@ -12,8 +12,8 @@ import { createOK } from "../resources/actions";
 import axios from "axios";
 import { HttpData } from "../util";
 
-export class WebcamPanel
-  extends React.Component<Props, Partial<WebcamPanelState>> {
+export class WebcamPanel extends
+  React.Component<Props, Partial<WebcamPanelState>> {
 
   state: WebcamPanelState = { isEditing: false };
 
@@ -50,25 +50,26 @@ export class WebcamPanel
     let dirty = !!this.props.bot.dirty;
     let { isEditing } = this.state;
 
-    return <Widget>
-      <WidgetHeader title="Camera" helpText={ToolTips.WEBCAM_SAVE}>
-        {isEditing &&
-          <button
-            className="fb-button green"
-            onClick={this.save}
-          >
-            {t("Save")}{this.props.account.dirty ? "*" : ""}
-          </button>
-        }
-        {isEditing &&
-          <button
-            className="fb-button gray"
-            onClick={this.resetURL}
-          >
-            {t("Reset")}
-          </button>
-        }
-        {/*
+    return (
+      <Widget>
+        <WidgetHeader title="Camera" helpText={ToolTips.WEBCAM_SAVE}>
+          {isEditing &&
+            <button
+              className="fb-button green"
+              onClick={this.save}
+            >
+              {t("Save")}{this.props.account.dirty ? "*" : ""}
+            </button>
+          }
+          {isEditing &&
+            <button
+              className="fb-button gray"
+              onClick={this.resetURL}
+            >
+              {t("Reset")}
+            </button>
+          }
+          {/*
         {isEditing &&
           <button
             className="fb-button clear-webcam-url-btn"
@@ -78,27 +79,28 @@ export class WebcamPanel
           </button>
         }
         */}
-        {!isEditing &&
-          <button
-            className="fb-button gray"
-            onClick={this.toggle}
-          >
-            {t("Edit")}
-          </button>
+          {!isEditing &&
+            <button
+              className="fb-button gray"
+              onClick={this.toggle}
+            >
+              {t("Edit")}
+            </button>
+          }
+        </WidgetHeader>
+        {isEditing &&
+          <div>
+            <label>{t("Set Webcam URL:")}</label>
+            <input
+              type="text"
+              onChange={e => this.edit({ webcam_url: e.currentTarget.value })}
+              placeholder="https://"
+              value={this.props.account.body.webcam_url}
+              className="webcam-url-input" />
+          </div>
         }
-      </WidgetHeader>
-      {isEditing &&
-        <div>
-          <label>{t("Set Webcam URL:")}</label>
-          <input
-            type="text"
-            onChange={e => this.edit({ webcam_url: e.currentTarget.value })}
-            placeholder="https://"
-            value={this.props.account.body.webcam_url}
-            className="webcam-url-input" />
-        </div>
-      }
-      {showUrl(url, dirty)}
-    </Widget>;
+        {showUrl(url, dirty)}
+      </Widget>
+    );
   }
 }

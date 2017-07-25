@@ -230,6 +230,11 @@ fieldset {
   opacity: 0.20;
 }
 
+.webcam-stream-valid img {
+  min-width: 100%;
+  max-width: 100%;
+}
+
 .webcam-stream-unavailable text {
   width: 100%;
   position: absolute;
