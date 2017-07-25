@@ -9,12 +9,16 @@ describe("<AddRegimen/>", () => {
     return shallow(React.createElement(AddRegimen, props));
   }
   it("transfers class name", () => {
-    expect(btn({ className: "foo", dispatch: jest.fn() }).hasClass("foo")).toBeTruthy();
+    expect(btn({
+      className: "foo",
+      dispatch: jest.fn(),
+      length: 5
+    }).hasClass("foo")).toBeTruthy();
   });
 
   it("dispatches a new regimen onclick", () => {
     let dispatch = jest.fn();
-    let b = btn({ dispatch });
+    let b = btn({ dispatch, length });
     b.find("button").simulate("click");
     expect(dispatch.mock.calls.length).toEqual(1);
     let action = dispatch.mock.calls[0][0];

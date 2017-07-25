@@ -59,6 +59,7 @@ export interface Regimen {
 }
 
 export interface RegimenListItemProps {
+  length: number;
   regimen: TaggedRegimen;
   dispatch: Function;
   index: number;
@@ -77,6 +78,7 @@ export interface AddRegimenProps {
   dispatch: Function;
   className?: string;
   children?: JSXChildren;
+  length: number;
 }
 
 export interface RegimensListProps {
