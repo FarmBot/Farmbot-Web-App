@@ -1,5 +1,6 @@
 export * from "./back_arrow";
 export * from "./blurable_input";
+export * from "./color_picker";
 export * from "./column";
 export * from "./help";
 export * from "./page";

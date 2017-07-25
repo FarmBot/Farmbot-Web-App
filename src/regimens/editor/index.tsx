@@ -12,9 +12,13 @@ import { ToolTips } from "../../constants";
 
 function MiddleSection({ regimen, dispatch, calendar }: MiddleSectionProps) {
   if (regimen && isTaggedRegimen(regimen) && calendar) {
-    return <ActiveEditor dispatch={dispatch}
-      regimen={regimen}
-      calendar={calendar} />;
+    return (
+      <ActiveEditor
+        dispatch={dispatch}
+        regimen={regimen}
+        calendar={calendar}
+      />
+    );
   } else {
     return <EmptyEditor />;
   }
@@ -76,7 +80,8 @@ export function RegimenEditorWidget({ current, dispatch, auth, calendar }:
       <MiddleSection
         regimen={regimen}
         dispatch={dispatch}
-        calendar={calendar} />
+        calendar={calendar}
+      />
     </div >;
   } else {
     throw new Error("Must log in first");

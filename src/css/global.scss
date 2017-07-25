@@ -4,12 +4,23 @@ body {
   background: $gray;
 }
 
-.ticker-list::-webkit-scrollbar {
-  display: none;
-}
-
 *::-webkit-scrollbar {
   display: none !important;
+}
+
+.colorpicker-menu {
+  padding: 0;
+  .pt-popover-arrow-fill {
+    fill: $dark_gray;
+  }
+  .pt-popover-content {
+    width: 13rem;
+    background: $dark_gray;
+  }
+  div {
+    display: inline-block;
+    padding: 0.4rem;
+  }
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -47,6 +58,13 @@ fieldset {
   button {
     margin: 0.6rem 0 0 0.6rem;
   }
+}
+
+.saucer {
+  height: 2rem;
+  width: 2rem;
+  background: $dark_gray;
+  border-radius: 50%;
 }
 
 .all-content-wrapper {

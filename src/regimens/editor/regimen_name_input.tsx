@@ -1,7 +1,7 @@
 import * as React from "react";
 import { RegimenProps } from "../interfaces";
 import { t } from "i18next";
-import { ColorPicker } from "../../sequences/color_picker";
+import { ColorPicker } from "../../ui";
 import { Row, Col } from "../../ui/index";
 import { editRegimen } from "../actions";
 
@@ -18,15 +18,22 @@ function write({ dispatch, regimen }: RegimenProps):
 
 export function RegimenNameInput({ regimen, dispatch }: RegimenProps) {
   let value = (regimen && regimen.body.name) || "";
-  return <Row>
-    <Col xs={10}>
-      <input id="right-label"
-        placeholder={t("Regimen Name")}
-        type="text"
-        onChange={write({ dispatch, regimen })}
-        value={value} />
-    </Col>
-    <ColorPicker current={(regimen && regimen.body.color) || "gray"}
-      onChange={(color) => dispatch(editRegimen(regimen, { color }))} />
-  </Row>;
+  return (
+    <Row>
+      <Col xs={10}>
+        <input
+          placeholder={t("Regimen Name")}
+          type="text"
+          onChange={write({ dispatch, regimen })}
+          value={value}
+        />
+      </Col>
+      <Col xs={1}>
+        <ColorPicker
+          current={(regimen && regimen.body.color) || "gray"}
+          onChange={(color) => dispatch(editRegimen(regimen, { color }))}
+        />
+      </Col>
+    </Row>
+  );
 }

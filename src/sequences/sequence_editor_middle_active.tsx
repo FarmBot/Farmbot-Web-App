@@ -4,7 +4,7 @@ import { DataXferObj, ActiveMiddleProps } from "./interfaces";
 import { execSequence } from "../devices/actions";
 import { editCurrentSequence } from "./actions";
 import { renderCeleryNode, splice, move } from "./step_tiles/index";
-import { ColorPicker } from "./color_picker";
+import { ColorPicker } from "../ui";
 import { t } from "i18next";
 import { BlurableInput, Row, Col, SaveBtn, ToolTip } from "../ui";
 import { DropArea } from "../draggable/drop_area";
@@ -60,82 +60,86 @@ export class SequenceEditorMiddleActive
     let isDirty = sequence.dirty;
     let isSaved = !isSaving && !isDirty;
 
-    return <div className="sequence-editor">
-      <h3>
-        <i>{t("Sequence Editor")}</i>
-      </h3>
-      <ToolTip helpText={ToolTips.SEQUENCE_EDITOR} />
-      <div className="button-group">
-        <SaveBtn
-          isDirty={isDirty}
-          isSaving={isSaving}
-          isSaved={isSaved}
-          onClick={() => { dispatch(save(sequence.uuid)); }}
-        />
-        <TestButton
-          syncStatus={this.props.syncStatus}
-          sequence={sequence}
-          onFail={warning}
-          onClick={() => execSequence(sequence.body)} />
-        <button
-          className="fb-button red"
-          onClick={() => dispatch(destroy(sequence.uuid))}
-        >
-          {t("Delete")}
-        </button>
-        <button
-          className="fb-button yellow"
-          onClick={copy(dispatch, sequence)}
-        >
-          {t("Copy")}
-        </button>
+    return (
+      <div className="sequence-editor">
+        <h3>
+          <i>{t("Sequence Editor")}</i>
+        </h3>
+        <ToolTip helpText={ToolTips.SEQUENCE_EDITOR} />
+        <div className="button-group">
+          <SaveBtn
+            isDirty={isDirty}
+            isSaving={isSaving}
+            isSaved={isSaved}
+            onClick={() => { dispatch(save(sequence.uuid)); }}
+          />
+          <TestButton
+            syncStatus={this.props.syncStatus}
+            sequence={sequence}
+            onFail={warning}
+            onClick={() => execSequence(sequence.body)} />
+          <button
+            className="fb-button red"
+            onClick={() => dispatch(destroy(sequence.uuid))}
+          >
+            {t("Delete")}
+          </button>
+          <button
+            className="fb-button yellow"
+            onClick={copy(dispatch, sequence)}
+          >
+            {t("Copy")}
+          </button>
+        </div>
+        <Row>
+          <Col xs={10}>
+            <BlurableInput value={sequence.body.name}
+              onCommit={(e) => {
+                dispatch(edit(sequence, { name: e.currentTarget.value }));
+              }} />
+          </Col>
+          <Col xs={1}>
+            <ColorPicker current={sequence.body.color}
+              onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
+          </Col>
+        </Row>
+        {(sequence.body.body || []).map((currentStep: SequenceBodyItem, index, arr) => {
+          /** HACK: React's diff algorithm (probably?) can't keep track of steps
+           * via `index` alone- the content is too dynamic (copy/splice/pop/push)
+           * To get around this, we add a `uuid` property to Steps that
+           * is guaranteed to be unique no matter where the step gets moved and
+           * allows React to diff the list correctly. */
+          let readThatCommentAbove = get(currentStep, "uuid", index);
+          let currentSequence = sequence;
+          return <div key={readThatCommentAbove}>
+            <DropArea callback={onDrop(index, dispatch, sequence)} />
+            <StepDragger dispatch={dispatch}
+              step={currentStep}
+              ghostCss="step-drag-ghost-image-big"
+              intent="step_move"
+              draggerId={index}>
+              {renderCeleryNode(currentStep.kind as LegalSequenceKind, {
+                currentStep,
+                index,
+                dispatch: dispatch,
+                sequences: sequences,
+                currentSequence,
+                slots,
+                tools,
+                resources
+              })}
+            </StepDragger>
+          </div>;
+        })}
+        <Row>
+          <Col xs={12}>
+            <DropArea isLocked={true}
+              callback={fixThisToo}>
+              {t("DRAG COMMAND HERE")}
+            </DropArea>
+          </Col>
+        </Row>
       </div>
-      <Row>
-        <Col xs={11}>
-          <BlurableInput value={sequence.body.name}
-            onCommit={(e) => {
-              dispatch(edit(sequence, { name: e.currentTarget.value }));
-            }} />
-        </Col>
-        <ColorPicker current={sequence.body.color}
-          onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
-      </Row>
-      {(sequence.body.body || []).map((currentStep: SequenceBodyItem, index, arr) => {
-        /** HACK: React's diff algorithm (probably?) can't keep track of steps
-         * via `index` alone- the content is too dynamic (copy/splice/pop/push)
-         * To get around this, we add a `uuid` property to Steps that
-         * is guaranteed to be unique no matter where the step gets moved and
-         * allows React to diff the list correctly. */
-        let readThatCommentAbove = get(currentStep, "uuid", index);
-        let currentSequence = sequence;
-        return <div key={readThatCommentAbove}>
-          <DropArea callback={onDrop(index, dispatch, sequence)} />
-          <StepDragger dispatch={dispatch}
-            step={currentStep}
-            ghostCss="step-drag-ghost-image-big"
-            intent="step_move"
-            draggerId={index}>
-            {renderCeleryNode(currentStep.kind as LegalSequenceKind, {
-              currentStep,
-              index,
-              dispatch: dispatch,
-              sequences: sequences,
-              currentSequence,
-              slots,
-              tools,
-              resources
-            })}
-          </StepDragger>
-        </div>;
-      })}
-      <Row>
-        <Col xs={12}>
-          <DropArea isLocked={true}
-            callback={fixThisToo}>
-            {t("DRAG COMMAND HERE")}
-          </DropArea>
-        </Col>
-      </Row>
-    </div>;
+    );
   }
 }

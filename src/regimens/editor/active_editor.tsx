@@ -12,25 +12,27 @@ import { overwrite } from "../../api/crud";
  * actually edit).
  */
 export function ActiveEditor(props: ActiveEditorProps) {
-  return <div>
-    <RegimenNameInput regimen={props.regimen} dispatch={props.dispatch} />
-    <hr />
-    {props.calendar.map(function (group, index1) {
-      return <div className="regimen-day" key={index1}>
-        <label> {t("Day {{day}}", { day: group.day })} </label>
-        {group.items.map(function (row, index2) {
-          let { item, regimen } = row;
-          let click = () => props.dispatch(removeRegimenItem(item, regimen));
-          let klass = `${row.color} regimen-event`;
-          return <div className={klass} key={`${index1}.${index2}`}>
-            <span className="regimen-event-title">{row.name}</span>
-            <span className="regimen-event-time">{row.hhmm}</span>
-            <i className="fa fa-trash regimen-control" onClick={click} />
-          </div>;
-        })}
-      </div>;
-    })}
-  </div>;
+  return (
+    <div>
+      <RegimenNameInput regimen={props.regimen} dispatch={props.dispatch} />
+      <hr />
+      {props.calendar.map(function (group, index1) {
+        return <div className="regimen-day" key={index1}>
+          <label> {t("Day {{day}}", { day: group.day })} </label>
+          {group.items.map(function (row, index2) {
+            let { item, regimen } = row;
+            let click = () => props.dispatch(removeRegimenItem(item, regimen));
+            let klass = `${row.color} regimen-event`;
+            return <div className={klass} key={`${index1}.${index2}`}>
+              <span className="regimen-event-title">{row.name}</span>
+              <span className="regimen-event-time">{row.hhmm}</span>
+              <i className="fa fa-trash regimen-control" onClick={click} />
+            </div>;
+          })}
+        </div>;
+      })}
+    </div>
+  );
 }
 
 function removeRegimenItem(item: RegimenItem, r: TaggedRegimen) {
