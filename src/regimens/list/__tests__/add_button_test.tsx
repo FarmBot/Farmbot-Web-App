@@ -1,4 +1,6 @@
 jest.unmock("../../actions");
+let mockPush = jest.fn();
+jest.mock("../../../history", () => ({ push: mockPush }));
 import * as React from "react";
 import { AddRegimen } from "../add_button";
 import { AddRegimenProps } from "../../interfaces";
@@ -6,7 +8,7 @@ import { shallow } from "enzyme";
 
 describe("<AddRegimen/>", () => {
   function btn(props: AddRegimenProps) {
-    return shallow(React.createElement(AddRegimen, props));
+    return shallow(<AddRegimen {...props} />);
   }
   it("transfers class name", () => {
     expect(btn({
@@ -19,6 +21,7 @@ describe("<AddRegimen/>", () => {
   it("dispatches a new regimen onclick", () => {
     let dispatch = jest.fn();
     let b = btn({ dispatch, length });
+    expect(mockPush.mock.calls.length).toBe(0);
     b.find("button").simulate("click");
     expect(dispatch.mock.calls.length).toEqual(1);
     let action = dispatch.mock.calls[0][0];
