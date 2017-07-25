@@ -27,7 +27,7 @@ export const NavLinks = () => {
           className={`${classNames.join(" ")} ${isActive}`}
           key={link.slug}
         >
-          <i className={`fa fa-${link.icon}`} />
+          <i className={`fa fa-${link.icon} ${classNames.join(" ")}`} />
           {link.name}
         </Link>;
       })}

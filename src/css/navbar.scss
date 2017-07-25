@@ -27,9 +27,6 @@ nav {
   a {
     text-transform: uppercase;
     color: $gray;
-    i {
-      display: none;
-    }
   }
   .external-links {
     display: none;
@@ -153,12 +150,16 @@ nav {
   }
   .mobile-menu.active {
     .nav-links a {
-      display: block;
+      display: block !important;
       padding: 1rem;
       &.active {
         &:before {
           background: transparent;
         }
+      }
+      i {
+        display: inline-block !important;
+        margin-right: 1rem;
       }
     }
   }
