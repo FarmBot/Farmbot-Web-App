@@ -66,6 +66,7 @@
 // background: linear-gradient(to top, black 0%, transparent 30%);
 .status-ticker-message {
   display: inline;
+  letter-spacing: 0.1rem;
   span {
     -webkit-animation: flash 1.5s ease-in;
     animation: flash 1.5s ease-in;
