@@ -33,6 +33,11 @@ export interface Payl {
 
 export type Vector = Vector3;
 
+export interface AxisDisplayGroupProps {
+  bot: BotState;
+  label: string;
+}
+
 export interface AxisInputBoxGroupProps {
   onCommit: (v: Vector) => void;
   bot: BotState;

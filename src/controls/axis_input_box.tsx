@@ -1,6 +1,7 @@
 import * as React from "react";
 import { isNaN } from "lodash";
 import { AxisInputBoxProps, AxisInputBoxState } from "./interfaces";
+import { Col } from "../ui/index";
 
 export class AxisInputBox
   extends React.Component<AxisInputBoxProps, AxisInputBoxState> {
@@ -54,14 +55,16 @@ export class AxisInputBox
   }
 
   render() {
-    return <div className="col-xs-3">
-      <label>{this.props.label}</label>
-      <input className="move-input"
-        type="text"
-        style={this.style()}
-        onBlur={this.blur}
-        onChange={this.change}
-        value={this.whatToDisplay()} />
-    </div>;
+    return (
+      <Col xs={3}>
+        <label>{this.props.label}</label>
+        <input className="move-input"
+          type="text"
+          style={this.style()}
+          onBlur={this.blur}
+          onChange={this.change}
+          value={this.whatToDisplay()} />
+      </Col>
+    );
   }
 }
