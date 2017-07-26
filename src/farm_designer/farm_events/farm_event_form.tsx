@@ -250,7 +250,7 @@ export class EditFEForm extends React.Component<Props, State> {
           repeat={this.fieldGet("repeat")}
           endDate={this.fieldGet("endDate")}
           endTime={this.fieldGet("endTime")} />
-        < SaveBtn
+        <SaveBtn
           color="magenta"
           isDirty={isDirty}
           isSaving={isSaving}
