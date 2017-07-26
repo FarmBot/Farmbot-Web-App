@@ -4,7 +4,7 @@ body {
   background: $gray;
 }
 
-.widget-body .row {
+.widget-body .row:not(:last-child) {
   margin-bottom: 1rem;
 }
 

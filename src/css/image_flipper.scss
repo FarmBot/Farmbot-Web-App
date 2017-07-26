@@ -51,3 +51,14 @@
     right: 0;
   }
 }
+
+.photos-widget {
+  .widget-footer {
+    label {
+      font-weight: normal;
+    }
+    span {
+      font-weight: bold;
+    }
+  }
+}
