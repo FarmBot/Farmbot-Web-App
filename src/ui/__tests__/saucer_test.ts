@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Saucer } from "../Saucer";
+import { Saucer } from "../saucer";
 import { mount } from "enzyme";
 
 describe("<Saucer />", () => {
