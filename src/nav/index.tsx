@@ -5,7 +5,7 @@ import * as moment from "moment";
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "../devices/components/e_stop_btn";
 import { Session } from "../session";
-import { Markdown, Row, Col } from "../ui";
+import { Row, Col } from "../ui";
 import { history } from "../history";
 import { updatePageInfo } from "../util";
 import { SyncButton } from "./sync_button";

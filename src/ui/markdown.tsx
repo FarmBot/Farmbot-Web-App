@@ -20,8 +20,11 @@ interface MarkdownProps {
 
 export function Markdown(props: MarkdownProps) {
   let result = md.render(props.children);
-  return <span className="markdown"
-    dangerouslySetInnerHTML={{ __html: result }}>
-  </span>;
+  return (
+    <span
+      className="markdown"
+      dangerouslySetInnerHTML={{ __html: result }}
+    >
+    </span>
+  );
 }
-
