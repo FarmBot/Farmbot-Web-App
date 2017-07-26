@@ -103,11 +103,7 @@ interface State {
 }
 
 export class EditFEForm extends React.Component<Props, State> {
-
-  constructor() {
-    super();
-    this.state = { fe: {}, localCopyDirty: false };
-  }
+  state: State = { fe: {}, localCopyDirty: false };
 
   get isOneTime() { return this.fieldGet("timeUnit") === NEVER; }
 

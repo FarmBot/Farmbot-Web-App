@@ -43,7 +43,7 @@ import {
  */
 export interface TightlyCoupledFarmEventDropDown {
   label: string;
-  executable_type: "Regimen" | "Sequence";
+  executable_type: ExecutableType;
   value: number;
   heading?: undefined | boolean;
 }

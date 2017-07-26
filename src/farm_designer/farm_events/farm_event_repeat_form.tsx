@@ -6,7 +6,7 @@ import { betterMerge } from "../../util";
 import { repeatOptions } from "./map_state_to_props_add_edit";
 import { keyBy } from "lodash";
 import { TimeUnit } from "../interfaces";
-import { FarmEventViewModel } from "./farm_event_form";
+import { FarmEventViewModel } from "./edit_fe_form";
 
 type Ev = React.SyntheticEvent<HTMLInputElement>;
 type Key = keyof FarmEventViewModel;
