@@ -1,7 +1,7 @@
 import * as React from "react";
 
 interface BIProps {
-  value: string;
+  value: string | number;
   onCommit(e: React.SyntheticEvent<HTMLInputElement>): void;
   min?: number;
   max?: number;

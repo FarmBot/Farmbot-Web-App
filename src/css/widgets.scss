@@ -48,9 +48,9 @@
     padding: 0 0.3rem;
     opacity: 0;
     max-height: 0px;
-    overflow: hidden;
-    transition: 0.5s;
+    transition: all 0.5s ease;
     transition-delay: 0.2s;
+    pointer-events: none;
   }
   h5 {
     color: $gray;

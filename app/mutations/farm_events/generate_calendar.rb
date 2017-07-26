@@ -42,7 +42,7 @@ module FarmEvents
         .every(every, options)
         .take(60)
         .reject { |x| end_time ? x > (end_time + 1.second) : false  } # clear events beyond the end time
-        .reject { |x| x <= Time.now }                                 # Clear past events
+        .reject { |x| x <= Time.now } # Clear past events
     end
 
     def partial_calendar

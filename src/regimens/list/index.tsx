@@ -41,13 +41,15 @@ export class RegimensList extends
             .toLowerCase()
             .includes(searchTerm))
           .map((regimen, index) => {
-            return <RegimenListItem
-              index={index}
-              key={index}
-              regimen={regimen}
-              dispatch={this.props.dispatch}
-              length={this.props.regimens.length}
-            />;
+            return (
+              <RegimenListItem
+                index={index}
+                key={index}
+                regimen={regimen}
+                dispatch={this.props.dispatch}
+                length={this.props.regimens.length}
+              />
+            );
           })}
       </Col>
     );

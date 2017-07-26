@@ -5,7 +5,7 @@ import * as moment from "moment";
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "../devices/components/e_stop_btn";
 import { Session } from "../session";
-import { Markdown, Row, Col } from "../ui";
+import { Row, Col } from "../ui";
 import { history } from "../history";
 import { updatePageInfo } from "../util";
 import { SyncButton } from "./sync_button";
@@ -49,44 +49,50 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     let { mobileMenuOpen, tickerListOpen } = this.state;
     let { logs } = this.props;
 
-    return <div className="nav-wrapper">
-      <nav role="navigation">
-        <Row>
-          <Col xs={12}>
-            <div>
-              {TickerList({ logs, tickerListOpen, toggle })}
-              <div className="nav-group">
-                <div className="nav-left">
-                  <i
-                    className={menuIconClassNames.join(" ")}
-                    onClick={this.toggle("mobileMenuOpen")}
-                  />
-                  {MobileMenu({ toggle, mobileMenuOpen })}
-                  {NavLinks()}
-                </div>
-                <div className="nav-right">
-                  <Popover
-                    inline
-                    interactionKind={PopoverInteractionKind.HOVER}
-                    target={<div className="nav-name">{firstName}</div>}
-                    position={Position.BOTTOM_RIGHT}
-                    content={AdditionalMenu(this.logout)}
-                  />
-                  <EStopButton
-                    bot={this.props.bot}
-                    user={this.props.user}
-                  />
-                  <SyncButton
-                    bot={this.props.bot}
-                    user={this.props.user}
-                    dispatch={this.props.dispatch}
-                  />
+    return (
+      <div className="nav-wrapper">
+        <nav role="navigation">
+          <Row>
+            <Col xs={12}>
+              <div>
+                {TickerList({ logs, tickerListOpen, toggle })}
+                <div className="nav-group">
+                  <div className="nav-left">
+                    <i
+                      className={menuIconClassNames.join(" ")}
+                      onClick={this.toggle("mobileMenuOpen")}
+                    />
+                    <span className="mobile-menu-container">
+                      {MobileMenu({ toggle, mobileMenuOpen })}
+                    </span>
+                    <span className="top-menu-container">
+                      {NavLinks()}
+                    </span>
+                  </div>
+                  <div className="nav-right">
+                    <Popover
+                      inline
+                      interactionKind={PopoverInteractionKind.HOVER}
+                      target={<div className="nav-name">{firstName}</div>}
+                      position={Position.BOTTOM_RIGHT}
+                      content={AdditionalMenu(this.logout)}
+                    />
+                    <EStopButton
+                      bot={this.props.bot}
+                      user={this.props.user}
+                    />
+                    <SyncButton
+                      bot={this.props.bot}
+                      user={this.props.user}
+                      dispatch={this.props.dispatch}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </Col>
-        </Row>
-      </nav>
-    </div>;
+            </Col>
+          </Row>
+        </nav>
+      </div>
+    );
   }
 }
