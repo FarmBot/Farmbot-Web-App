@@ -7,7 +7,7 @@ import { StepButtonParams } from "../interfaces";
 import { Col } from "../../ui/index";
 import { TaggedSequence } from "../../resources/tagged_resources";
 
-let click = (dispatch: Function, step: Step, seq: TaggedSequence | undefined) =>
+let stepClick = (dispatch: Function, step: Step, seq: TaggedSequence | undefined) =>
   (event: React.FormEvent<HTMLButtonElement>) => {
     if (seq) {
       pushStep(step, dispatch, seq);
@@ -29,7 +29,7 @@ export function StepButton({ children, step, color, dispatch, current }:
       >
         <button
           className={`fb-button full-width block ${color}`}
-          onClick={click(dispatch, step, current)}
+          onClick={stepClick(dispatch, step, current)}
         >
           {children}
           <i className="fa fa-arrows block-control" />
