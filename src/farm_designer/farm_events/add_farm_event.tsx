@@ -54,7 +54,7 @@ export class AddFarmEvent
         body: {
           start_time: NOW,
           next_time: NOW,
-          time_unit: "hourly",
+          time_unit: "never",
           executable_id,
           executable_type
         }

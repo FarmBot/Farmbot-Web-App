@@ -30,12 +30,13 @@ import {
 import { DropDownItem } from "../../ui/fb_select";
 import { history } from "../../history";
 // TIL: https://stackoverflow.com/a/24900248/1064917
-import { betterMerge } from "../../util";
+import { betterMerge, fancyDebug } from "../../util";
 import { maybeWarnAboutMissedTasks } from "./util";
 import { TzWarning } from "./tz_warning";
 import { FarmEventRepeatForm } from "./farm_event_repeat_form";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
+const NEVER: TimeUnit = "never";
 /** Separate each of the form fields into their own interface. Recombined later
  * on save.
  */
@@ -108,7 +109,7 @@ export class EditFEForm extends React.Component<Props, State> {
     this.state = { fe: {}, localCopyDirty: false };
   }
 
-  get isOneTime() { return this.fieldGet("timeUnit") === "never"; }
+  get isOneTime() { return this.fieldGet("timeUnit") === NEVER; }
 
   get dispatch() { return this.props.dispatch; }
 
@@ -157,6 +158,18 @@ export class EditFEForm extends React.Component<Props, State> {
     return (this.state.fe[name] || this.viewModel[name] || "").toString();
   }
 
+  mergeState = (k: keyof FarmEventViewModel, v: string) => {
+    this.setState(betterMerge(this.state, {
+      fe: { [k]: v },
+      localCopyDirty: true
+    }));
+  }
+
+  toggleRepeat = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let { checked } = e.currentTarget;
+    this.mergeState("timeUnit", (!checked || this.isReg) ? "never" : "daily");
+  };
+
   commitViewModel = () => {
     let partial = recombine(betterMerge(this.viewModel, this.state.fe));
     this.dispatch(edit(this.props.farmEvent, partial));
@@ -187,14 +200,22 @@ export class EditFEForm extends React.Component<Props, State> {
         this.setState(betterMerge(this.state, { localCopyDirty: false }));
       });
   }
+  get isReg() {
+    return this.fieldGet("executable_type") === "Regimen";
+  }
 
   render() {
     let fe = this.props.farmEvent;
     let isSaving = fe.saving;
     let isDirty = fe.dirty || this.state.localCopyDirty;
     let isSaved = !isSaving && !isDirty;
-    let options = _.keyBy(this.props.repeatOptions, "value");
-    let noRepeat = this.fieldGet("executable_type") === "Regimen";
+    let repeats = this.fieldGet("timeUnit") !== NEVER;
+    let allowRepeat = (!this.isReg && repeats);
+    fancyDebug({
+      timeUnit: this.fieldGet("timeUnit"),
+      repeats,
+      allowRepeat
+    });
     return <div className="panel-container magenta-panel add-farm-event-panel">
       <div className="panel-header magenta-panel">
         <p className="panel-title"> <BackArrow /> {this.props.title} </p>
@@ -232,20 +253,17 @@ export class EditFEForm extends React.Component<Props, State> {
         </Row>
         <label>
           <input type="checkbox"
-            onChange={_.noop}
-            value={"false"} />
+            onChange={this.toggleRepeat}
+            disabled={this.isReg}
+            checked={repeats && !this.isReg} />
           {t("Repeats?")}
         </label>
         <Row />
         {/* CHRIS HELP -RC */}
         <FarmEventRepeatForm
-          disabled={noRepeat}
-          onChange={(k, v) => {
-            this.setState(betterMerge(this.state, {
-              fe: { [k]: v },
-              localCopyDirty: true
-            }));
-          }}
+          disabled={!allowRepeat}
+          hidden={!allowRepeat}
+          onChange={this.mergeState}
           timeUnit={this.fieldGet("timeUnit") as TimeUnit}
           repeat={this.fieldGet("repeat")}
           endDate={this.fieldGet("endDate")}
