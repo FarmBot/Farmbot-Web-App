@@ -30,21 +30,23 @@ import {
 import { DropDownItem } from "../../ui/fb_select";
 import { history } from "../../history";
 // TIL: https://stackoverflow.com/a/24900248/1064917
-import { betterMerge } from "../../util";
+import { betterMerge, fancyDebug } from "../../util";
 import { maybeWarnAboutMissedTasks } from "./util";
 import { TzWarning } from "./tz_warning";
+import { FarmEventRepeatForm } from "./farm_event_repeat_form";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
+const NEVER: TimeUnit = "never";
 /** Separate each of the form fields into their own interface. Recombined later
  * on save.
  */
-interface FarmEventViewModel {
-  start_date: string;
-  start_time: string;
-  end_date: string;
-  end_time: string;
+export interface FarmEventViewModel {
+  startDate: string;
+  startTime: string;
+  endDate: string;
+  endTime: string;
   repeat: string;
-  time_unit: string;
+  timeUnit: string;
   executable_type: string;
   executable_id: string;
 }
@@ -54,31 +56,31 @@ interface FarmEventViewModel {
  *                   a single "start_time" FarmEvent field. */
 function destructureFarmEvent(fe: TaggedFarmEvent): FarmEventViewModel {
   return {
-    start_date: formatDate((fe.body.start_time || new Date()).toString()),
-    start_time: formatTime((fe.body.start_time || new Date()).toString()),
-    end_date: formatDate((fe.body.end_time || new Date()).toString()),
-    end_time: formatTime((fe.body.end_time || new Date()).toString()),
+    startDate: formatDate((fe.body.start_time || new Date()).toString()),
+    startTime: formatTime((fe.body.start_time || new Date()).toString()),
+    endDate: formatDate((fe.body.end_time || new Date()).toString()),
+    endTime: formatTime((fe.body.end_time || new Date()).toString()),
     repeat: (fe.body.repeat || 1).toString(),
-    time_unit: fe.body.time_unit,
+    timeUnit: fe.body.time_unit,
     executable_type: fe.body.executable_type,
     executable_id: (fe.body.executable_id || "").toString()
-  }
+  };
 }
 
 /** Take a FormViewModel and recombine the fields into a Partial<FarmEvent>
  * that can be used to apply updates (such as a PUT request to the API). */
 function recombine(vm: FarmEventViewModel): Partial<TaggedFarmEvent["body"]> {
   return {
-    start_time: moment(vm.start_date + " " + vm.start_time).toISOString(),
-    end_time: moment(vm.end_date + " " + vm.end_time).toISOString(),
+    start_time: moment(vm.startDate + " " + vm.startTime).toISOString(),
+    end_time: moment(vm.endDate + " " + vm.endTime).toISOString(),
     repeat: parseInt(vm.repeat, 10),
-    time_unit: vm.time_unit as TimeUnit,
+    time_unit: vm.timeUnit as TimeUnit,
     executable_id: parseInt(vm.executable_id, 10),
     executable_type: vm.executable_type as ("Sequence" | "Regimen"),
   };
 }
 
-interface Props {
+export interface EditFEProps {
   deviceTimezone: string | undefined;
   executableOptions: TightlyCoupledFarmEventDropDown[];
   repeatOptions: DropDownItem[];
@@ -98,28 +100,24 @@ interface State {
    * Example: Navigating away from the page while editing will discard changes.
    */
   localCopyDirty: boolean;
-};
+}
 
-export class EditFEForm extends React.Component<Props, State> {
+export class EditFEForm extends React.Component<EditFEProps, State> {
+  state: State = { fe: {}, localCopyDirty: false };
 
-  constructor() {
-    super();
-    this.state = { fe: {}, localCopyDirty: false }
-  }
-
-  get isOneTime() { return this.fieldGet("time_unit") === "never"; }
+  get isOneTime() { return this.fieldGet("timeUnit") === NEVER; }
 
   get dispatch() { return this.props.dispatch; }
 
   get viewModel() { return destructureFarmEvent(this.props.farmEvent); }
 
   get executable() {
-    let t = this.fieldGet("executable_type");
+    let et = this.fieldGet("executable_type");
     let id = parseInt(this.fieldGet("executable_id"));
-    if (t === "Sequence" || t === "Regimen") {
-      return this.props.findExecutable(t, id);
+    if (et === "Sequence" || et === "Regimen") {
+      return this.props.findExecutable(et, id);
     } else {
-      throw new Error(`${t} is not a valid executable_type`);
+      throw new Error(`${et} is not a valid executable_type`);
     }
   }
 
@@ -142,7 +140,7 @@ export class EditFEForm extends React.Component<Props, State> {
       value: this.executable.body.id || 0,
       label: this.executable.body.name,
       executable_type
-    }
+    };
   }
 
   fieldSet = (name: keyof State["fe"]) => (e: FormEvent) => {
@@ -155,6 +153,18 @@ export class EditFEForm extends React.Component<Props, State> {
   fieldGet = (name: keyof State["fe"]): string => {
     return (this.state.fe[name] || this.viewModel[name] || "").toString();
   }
+
+  mergeState = (k: keyof FarmEventViewModel, v: string) => {
+    this.setState(betterMerge(this.state, {
+      fe: { [k]: v },
+      localCopyDirty: true
+    }));
+  }
+
+  toggleRepeat = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let { checked } = e.currentTarget;
+    this.mergeState("timeUnit", (!checked || this.isReg) ? "never" : "daily");
+  };
 
   commitViewModel = () => {
     let partial = recombine(betterMerge(this.viewModel, this.state.fe));
@@ -175,7 +185,7 @@ export class EditFEForm extends React.Component<Props, State> {
               running a regimen too late in the day may result in skipped
               regimen tasks. Consider rescheduling this event to tomorrow if
               this is a concern.`);
-          }))
+          }));
         } else {
           error(`This Farm Event does not appear to have a valid run time.
             Perhaps you entered bad dates?`);
@@ -186,14 +196,17 @@ export class EditFEForm extends React.Component<Props, State> {
         this.setState(betterMerge(this.state, { localCopyDirty: false }));
       });
   }
+  get isReg() {
+    return this.fieldGet("executable_type") === "Regimen";
+  }
 
   render() {
     let fe = this.props.farmEvent;
     let isSaving = fe.saving;
     let isDirty = fe.dirty || this.state.localCopyDirty;
     let isSaved = !isSaving && !isDirty;
-    let options = _.keyBy(this.props.repeatOptions, "value");
-
+    let repeats = this.fieldGet("timeUnit") !== NEVER;
+    let allowRepeat = (!this.isReg && repeats);
     return <div className="panel-container magenta-panel add-farm-event-panel">
       <div className="panel-header magenta-panel">
         <p className="panel-title"> <BackArrow /> {this.props.title} </p>
@@ -216,71 +229,36 @@ export class EditFEForm extends React.Component<Props, State> {
               type="date"
               className="add-event-start-date"
               name="start_date"
-              value={this.fieldGet("start_date")}
-              onCommit={this.fieldSet("start_date")}
+              value={this.fieldGet("startDate")}
+              onCommit={this.fieldSet("startDate")}
             />
           </Col>
           <Col xs={6}>
             <BlurableInput type="time"
               className="add-event-start-time"
               name="start_time"
-              value={this.fieldGet("start_time")}
-              onCommit={this.fieldSet("start_time")}
+              value={this.fieldGet("startTime")}
+              onCommit={this.fieldSet("startTime")}
             />
           </Col>
         </Row>
         <label>
-          {t("Repeats Every")}
+          <input type="checkbox"
+            onChange={this.toggleRepeat}
+            disabled={this.isReg}
+            checked={repeats && !this.isReg} />
+          {t("Repeats?")}
         </label>
-        <Row>
-          <Col xs={4}>
-            <BlurableInput
-              disabled={this.isOneTime}
-              placeholder="(Number)"
-              type="number"
-              className="add-event-repeat-frequency"
-              name="repeat"
-              value={this.fieldGet("repeat")}
-              onCommit={this.fieldSet("repeat")}
-            />
-          </Col>
-          <Col xs={8}>
-            <FBSelect
-              list={this.props.repeatOptions}
-              onChange={e => this.setState(betterMerge(this.state, {
-                fe: { time_unit: (e.value || "hourly").toString() },
-                localCopyDirty: true
-              }))}
-              selectedItem={options[this.fieldGet("time_unit")]}
-              isFilterable={false}
-            />
-          </Col>
-        </Row>
-        <label>
-          {t("Until")}
-        </label>
-        <Row>
-          <Col xs={6}>
-            <BlurableInput
-              disabled={this.isOneTime}
-              type="date"
-              className="add-event-end-date"
-              name="end_date"
-              value={this.fieldGet("end_date")}
-              onCommit={this.fieldSet("end_date")}
-            />
-          </Col>
-          <Col xs={6}>
-            <BlurableInput
-              disabled={this.isOneTime}
-              type="time"
-              name="end_time"
-              className="add-event-end-time"
-              value={this.fieldGet("end_time")}
-              onCommit={this.fieldSet("end_time")}
-            />
-          </Col>
-        </Row>
+        <Row />
+        {/* CHRIS HELP -RC */}
+        <FarmEventRepeatForm
+          disabled={!allowRepeat}
+          hidden={!allowRepeat}
+          onChange={this.mergeState}
+          timeUnit={this.fieldGet("timeUnit") as TimeUnit}
+          repeat={this.fieldGet("repeat")}
+          endDate={this.fieldGet("endDate")}
+          endTime={this.fieldGet("endTime")} />
         <SaveBtn
           color="magenta"
           isDirty={isDirty}

@@ -23,5 +23,5 @@ describe("<PlantPanel/>", () => {
     expect(txt).toContain("(12, 34)");
     el.find("button").simulate("click");
     expect(onDestroy.mock.calls.length).toEqual(1);
-  })
-})
+  });
+});

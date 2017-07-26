@@ -43,7 +43,7 @@ import {
  */
 export interface TightlyCoupledFarmEventDropDown {
   label: string;
-  executable_type: "Regimen" | "Sequence";
+  executable_type: ExecutableType;
   value: number;
   heading?: undefined | boolean;
 }
@@ -57,6 +57,15 @@ export let formatDate = (input: string) => {
   let iso = new Date(input).toISOString();
   return moment(iso).format("YYYY-MM-DD");
 };
+
+export let repeatOptions = [
+  { label: "Minutes", value: "minutely", name: "time_unit" },
+  { label: "Hours", value: "hourly", name: "time_unit" },
+  { label: "Days", value: "daily", name: "time_unit" },
+  { label: "Weeks", value: "weekly", name: "time_unit" },
+  { label: "Months", value: "monthly", name: "time_unit" },
+  { label: "Years", value: "yearly", name: "time_unit" }
+];
 
 export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps {
   let handleTime = (e: React.SyntheticEvent<HTMLInputElement>, currentISO: string) => {
@@ -93,21 +102,6 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
         throw new Error("Expected a name attribute from time field.");
     }
   };
-
-
-  let repeatOptions = [
-    { label: "Minutes", value: "minutely", name: "time_unit" },
-    { label: "Hours", value: "hourly", name: "time_unit" },
-    { label: "Days", value: "daily", name: "time_unit" },
-    { label: "Weeks", value: "weekly", name: "time_unit" },
-    { label: "Months", value: "monthly", name: "time_unit" },
-    { label: "Years", value: "yearly", name: "time_unit" },
-    {
-      label: "No Repeat (One Time Event)",
-      value: "never",
-      name: "time_unit"
-    }
-  ];
 
   let executableOptions: TightlyCoupledFarmEventDropDown[] = [];
 
@@ -163,16 +157,16 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     } else {
       history.push("/app/designer/farm_events");
     }
-  }
+  };
 
   let findExecutable = (kind: ExecutableType, id: number):
     TaggedSequence | TaggedRegimen => {
     switch (kind) {
-      case "Sequence": return findSequenceById(props.resources.index, id)
-      case "Regimen": return findRegimenById(props.resources.index, id)
+      case "Sequence": return findSequenceById(props.resources.index, id);
+      case "Regimen": return findRegimenById(props.resources.index, id);
       default: throw new Error("GOT A BAD `KIND` STRING");
     }
-  }
+  };
 
   return {
     deviceTimezone: getDeviceAccountSettings(props.resources.index)
