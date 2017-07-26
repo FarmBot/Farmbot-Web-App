@@ -33,7 +33,12 @@ describe("<FarmEventForm/>", () => {
     expect(i.isOneTime).toBe(false);
   });
 
-  it("has a dispatch");
+  it("has a dispatch", () => {
+    let p = props();
+    let i = mount<EditFEProps>(<EditFEForm {...p } />).instance() as EditFEForm;
+    expect(i.dispatch).toBe(p.dispatch);
+  });
+
   it("has a view model");
   it("has an executable");
   it("sets the executable");
