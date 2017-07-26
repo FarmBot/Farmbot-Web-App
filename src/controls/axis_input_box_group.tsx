@@ -37,23 +37,23 @@ export class AxisInputBoxGroup extends
   }
 
   render() {
-    let [x, y, z] = this.props.bot.hardware.location;
+    let { x, y, z } = this.state;
     return (
       <Row>
         <AxisInputBox
-          axis="x"
+          onChange={this.change}
+          axis={"x"}
           value={x}
-          onChange={this.change}
         />
         <AxisInputBox
-          axis="y"
+          onChange={this.change}
+          axis={"y"}
           value={y}
-          onChange={this.change}
         />
         <AxisInputBox
-          axis="z"
-          value={z}
           onChange={this.change}
+          axis={"y"}
+          value={y}
         />
         <Col xs={3}>
           <button
