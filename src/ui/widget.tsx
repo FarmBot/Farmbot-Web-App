@@ -9,7 +9,9 @@ interface WidgetProps {
 export function Widget(props: WidgetProps) {
   let className = `widget-wrapper `;
   if (props.className) { className += props.className; }
-  return <div className={className}>
-    {props.children}
-  </div>;
+  return (
+    <div className={className}>
+      {props.children}
+    </div>
+  );
 }

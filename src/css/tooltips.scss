@@ -1,27 +1,26 @@
 .help {
   display: inline;
   margin-left: 2rem;
+  .help-text {
+    display: none;
+  }
   &:hover,
   &:active {
     .help-text {
+      position: absolute;
+      z-index: 999;
+      padding: 2px;
+      font-style: normal;
+      background-color: $dark_gray;
+      color: $off_white;
+      border-radius: 3px;
+      padding: .5rem .8rem;
+      width: 250px;
+      left: 17rem;
+      bottom: -0.8rem;
       display: block;
     }
   }
-}
-
-.help-text {
-  position: absolute;
-  z-index: 999;
-  padding: 2px;
-  font-style: normal;
-  background-color: $dark_gray;
-  color: $off_white;
-  border-radius: 3px;
-  padding: .5rem .8rem;
-  width: 250px;
-  left: 17rem;
-  bottom: -0.8rem;
-  display: none;
 }
 
 .title-help {
@@ -53,85 +52,4 @@
 
 .title-help-icon {
   margin: 0 1rem;
-}
-
-.colorpicker {
-  background: $medium_gray;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  margin: 0.4rem 0 0;
-  position: relative;
-  float: left;
-  cursor: pointer;
-  &.active {
-    .colorpicker-body {
-      top: 3rem;
-      right: -2rem;
-      opacity: 1;
-      pointer-events: all;
-      width: 11rem;
-      opacity: 1;
-      pointer-events: all;
-      &:after {
-        top: -1rem;
-      }
-    }
-  }
-}
-
-.colorpicker-body {
-  opacity: 0;
-  top: 0;
-  position: absolute;
-  z-index: 999;
-  font-style: normal;
-  background-color: $dark_gray;
-  border-radius: 3px;
-  padding: 6px;
-  width: auto;
-  right: -2.8rem;
-  display: flex;
-  transition: all 0.3s ease;
-  pointer-events: none;
-  width: 12.4rem;
-  display: flex;
-  flex-wrap: wrap;
-  div {
-    border-radius: 50%;
-    padding: 0.6rem;
-    cursor: pointer;
-  }
-  &:after {
-    transition: all 0.6s ease;
-    position: absolute;
-    content: "";
-    top: 0;
-    right: 2rem;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    z-index: -1;
-    border-width: 0 10px 16px 10px;
-    border-color: transparent transparent $dark_gray transparent;
-  }
-}
-
-
-/* Mobile */
-
-@media (max-width: 568px) {
-  .colorpicker,
-  .colorpicker.active {
-    .colorpicker-body {
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      left: -14rem;
-      top: -2.5rem;
-      &:after {
-        transform: rotate(90deg);
-        top: 2.8rem;
-        right: -1.6rem;
-      }
-    }
-  }
 }

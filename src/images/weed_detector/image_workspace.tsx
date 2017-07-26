@@ -1,6 +1,6 @@
 import * as React from "react";
 import { FarmbotColorPicker } from "../farmbot_picker";
-import { BlurableInput } from "../../ui/index";
+import { BlurableInput, Row, Col } from "../../ui/index";
 import { ImageFlipper } from "../image_flipper";
 import { HSV } from "../interfaces";
 import { WeedDetectorSlider } from "./slider";
@@ -72,85 +72,91 @@ export class ImageWorkspace extends React.Component<Props, {}> {
   render() {
     let { H_LO, H_HI, S_LO, S_HI, V_LO, V_HI } = this.props;
 
-    return <div className="widget-content">
-      <div className="row">
-        <div className="col-md-6 col-sm-12">
-          <h4>
-            <i>{t("Color Range")}</i>
-          </h4>
-          <label htmlFor="hue">{t("HUE")}</label>
-          <WeedDetectorSlider
-            onRelease={this.onHslChange("H")}
-            lowest={RANGES.H.LOWEST}
-            highest={RANGES.H.HIGHEST}
-            lowValue={H_LO}
-            highValue={H_HI} />
-          <label htmlFor="saturation">{t("SATURATION")}</label>
-          <WeedDetectorSlider
-            onRelease={this.onHslChange("S")}
-            lowest={RANGES.S.LOWEST}
-            highest={RANGES.S.HIGHEST}
-            lowValue={S_LO}
-            highValue={S_HI} />
-          <label htmlFor="value">{t("VALUE")}</label>
-          <WeedDetectorSlider
-            onRelease={this.onHslChange("V")}
-            lowest={RANGES.V.LOWEST}
-            highest={RANGES.V.HIGHEST}
-            lowValue={V_LO}
-            highValue={V_HI} />
-        </div>
-        <div className="col-md-6 col-sm-12">
-          <FarmbotColorPicker
-            h={[H_LO, H_HI]}
-            s={[S_LO, S_HI]}
-            v={[V_LO, V_HI]} />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-md-12 col-sm-12">
-          <h4>
-            <i>{t("Processing Parameters")}</i>
-          </h4>
-        </div>
+    return (
+      <div className="widget-content">
+        <Row>
+          <Col xs={12} md={6}>
+            <h4>
+              <i>{t("Color Range")}</i>
+            </h4>
+            <label htmlFor="hue">{t("HUE")}</label>
+            <WeedDetectorSlider
+              onRelease={this.onHslChange("H")}
+              lowest={RANGES.H.LOWEST}
+              highest={RANGES.H.HIGHEST}
+              lowValue={H_LO}
+              highValue={H_HI} />
+            <label htmlFor="saturation">{t("SATURATION")}</label>
+            <WeedDetectorSlider
+              onRelease={this.onHslChange("S")}
+              lowest={RANGES.S.LOWEST}
+              highest={RANGES.S.HIGHEST}
+              lowValue={S_LO}
+              highValue={S_HI} />
+            <label htmlFor="value">{t("VALUE")}</label>
+            <WeedDetectorSlider
+              onRelease={this.onHslChange("V")}
+              lowest={RANGES.V.LOWEST}
+              highest={RANGES.V.HIGHEST}
+              lowValue={V_LO}
+              highValue={V_HI} />
+          </Col>
+          <Col xs={12} md={6}>
+            <FarmbotColorPicker
+              h={[H_LO, H_HI]}
+              s={[S_LO, S_HI]}
+              v={[V_LO, V_HI]} />
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>
+            <h4>
+              <i>{t("Processing Parameters")}</i>
+            </h4>
+          </Col>
 
-        <div className="col-md-4 col-sm-4">
-          <label>{t("BLUR")}</label>
-          <BlurableInput type="number"
-            min={RANGES.BLUR.LOWEST}
-            max={RANGES.BLUR.HIGHEST}
-            onCommit={this.numericChange("blur")}
-            value={"" + this.props.blur} />
-        </div>
+          <Col xs={4}>
+            <label>{t("BLUR")}</label>
+            <BlurableInput type="number"
+              min={RANGES.BLUR.LOWEST}
+              max={RANGES.BLUR.HIGHEST}
+              onCommit={this.numericChange("blur")}
+              value={"" + this.props.blur} />
+          </Col>
 
-        <div className="col-md-4 col-sm-4">
-          <label>{t("MORPH")}</label>
-          <BlurableInput type="number"
-            min={RANGES.MORPH.LOWEST}
-            max={RANGES.MORPH.HIGHEST}
-            onCommit={this.numericChange("morph")}
-            value={"" + this.props.morph} />
-        </div>
-        <div className="col-md-4 col-sm-4">
-          <label>{t("ITERATION")}</label>
-          <BlurableInput type="number"
-            min={RANGES.ITERATION.LOWEST}
-            max={RANGES.ITERATION.HIGHEST}
-            onCommit={this.numericChange("iteration")}
-            value={"" + this.props.iteration} />
-        </div>
+          <Col xs={4}>
+            <label>{t("MORPH")}</label>
+            <BlurableInput type="number"
+              min={RANGES.MORPH.LOWEST}
+              max={RANGES.MORPH.HIGHEST}
+              onCommit={this.numericChange("morph")}
+              value={"" + this.props.morph} />
+          </Col>
+          <Col xs={4}>
+            <label>{t("ITERATION")}</label>
+            <BlurableInput type="number"
+              min={RANGES.ITERATION.LOWEST}
+              max={RANGES.ITERATION.HIGHEST}
+              onCommit={this.numericChange("iteration")}
+              value={"" + this.props.iteration} />
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>
+            <button
+              className="green fb-button"
+              title="Scan this image for Weeds"
+              onClick={this.maybeProcessPhoto}
+              hidden={!this.props.images.length} >
+              {t("Scan for Weeds")}
+            </button>
+          </Col>
+        </Row>
+        <ImageFlipper
+          onFlip={this.props.onFlip}
+          images={this.props.images}
+          currentImage={this.props.currentImage} />
       </div>
-      <button
-        className="green fb-button"
-        title="Scan this image for Weeds"
-        onClick={this.maybeProcessPhoto}
-        hidden={!this.props.images.length} >
-        {t("Scan for Weeds")}
-      </button>
-      <ImageFlipper
-        onFlip={this.props.onFlip}
-        images={this.props.images}
-        currentImage={this.props.currentImage} />
-    </div>;
+    );
   }
 }

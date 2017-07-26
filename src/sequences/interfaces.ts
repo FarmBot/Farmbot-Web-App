@@ -76,15 +76,6 @@ export interface MessageParams {
   index: number;
 }
 
-export interface PickerProps {
-  current: Color;
-  onChange?: (color: Color) => void;
-}
-
-export interface PickerState {
-  isOpen: boolean;
-}
-
 export interface MoveAbsState {
   isToolSelected: boolean;
 }

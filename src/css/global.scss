@@ -4,12 +4,27 @@ body {
   background: $gray;
 }
 
-.ticker-list::-webkit-scrollbar {
-  display: none;
+.widget-body .row:not(:last-child) {
+  margin-bottom: 1rem;
 }
 
 *::-webkit-scrollbar {
   display: none !important;
+}
+
+.colorpicker-menu {
+  padding: 0;
+  .pt-popover-arrow-fill {
+    fill: $dark_gray;
+  }
+  .pt-popover-content {
+    width: 13rem;
+    background: $dark_gray;
+  }
+  div {
+    display: inline-block;
+    padding: 0.4rem;
+  }
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -30,8 +45,17 @@ input[type=time] {
   font-size: 1.4rem;
 }
 
-.markdown * {
-  color: #fff;
+.markdown {
+  p {
+    color: #fff;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 67%;
+    white-space: nowrap;
+    display: inline-block;
+    text-transform: none;
+    margin-top: 0.3rem;
+  }
 }
 
 fieldset {
@@ -40,9 +64,20 @@ fieldset {
   }
 }
 
+.saucer {
+  height: 2rem;
+  width: 2rem;
+  background: $dark_gray;
+  border-radius: 50%;
+  cursor: pointer;
+  &.active {
+    border: 2px solid white;
+  }
+}
+
 .all-content-wrapper {
   margin: 0 auto;
-  padding: 3rem 3rem 0;
+  padding: 11rem 3rem 0;
   width: 100%;
   max-width: 160rem;
   animation: page-transition 0.2s ease-in-out;
@@ -109,55 +144,14 @@ a {
   font-weight: bold;
 }
 
-@keyframes expand {
-  0% {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-  }
-  100% {
-    max-height: 300px;
-    overflow: shown;
-    opacity: 1;
-  }
-}
-
-@keyframes collapse {
-  0% {
-    max-height: 300px;
-    overflow: shown;
-    opacity: 1;
-  }
-  100% {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-  }
-}
-
 .hardware-widget {
-  overflow: hidden;
-  section {
-    overflow: hidden;
-  }
   h4 {
     cursor: pointer;
-  }
-  .is-open-false {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    // animation: collapse 0.4s normal forwards ease-in-out;
-  }
-  .is-open-true {
-    max-height: 300px;
-    overflow: shown;
-    opacity: 1;
-    // animation: expand 0.4s normal forwards ease-in-out;
   }
   .icon-toggle {
     font-size: 1.2rem;
     font-weight: bold;
+    vertical-align: middle;
     .fa {
       font-size: 1rem;
     }
@@ -197,6 +191,11 @@ fieldset {
 .webcam-stream-unavailable img {
   width: 100%;
   opacity: 0.20;
+}
+
+.webcam-stream-valid img {
+  min-width: 100%;
+  max-width: 100%;
 }
 
 .webcam-stream-unavailable text {
