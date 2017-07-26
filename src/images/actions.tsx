@@ -60,7 +60,7 @@ export function detectWeeds(imageId: number) {
     let processes = Object
       .keys(dictionary)
       .map(key => dictionary[key])
-      .filter(fw => fw.name === "take-photo")
+      .filter(fw => fw.name === "historical-plant-detection")
       .map(proc => {
         devices
           .current
