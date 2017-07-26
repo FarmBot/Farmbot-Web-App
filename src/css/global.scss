@@ -69,6 +69,10 @@ fieldset {
   width: 2rem;
   background: $dark_gray;
   border-radius: 50%;
+  cursor: pointer;
+  &.active {
+    border: 2px solid white;
+  }
 }
 
 .all-content-wrapper {

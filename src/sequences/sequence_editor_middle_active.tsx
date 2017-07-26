@@ -43,8 +43,8 @@ let copy = function (dispatch: Function, sequence: TaggedSequence) {
     dispatch(copySequence(sequence));
 };
 
-export class SequenceEditorMiddleActive
-  extends React.Component<ActiveMiddleProps, {}> {
+export class SequenceEditorMiddleActive extends
+  React.Component<ActiveMiddleProps, {}> {
   render() {
     let { sequences, dispatch, tools, sequence, slots, resources } = this.props;
     let fixThisToo = function (key: string) {
@@ -92,16 +92,16 @@ export class SequenceEditorMiddleActive
           </button>
         </div>
         <Row>
-          <Col xs={10}>
+          <Col xs={11}>
             <BlurableInput value={sequence.body.name}
               onCommit={(e) => {
                 dispatch(edit(sequence, { name: e.currentTarget.value }));
               }} />
           </Col>
-          <Col xs={1}>
-            <ColorPicker current={sequence.body.color}
-              onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
-          </Col>
+          <ColorPicker
+            current={sequence.body.color}
+            onChange={color => editCurrentSequence(dispatch, sequence, { color })}
+          />
         </Row>
         {(sequence.body.body || []).map((currentStep: SequenceBodyItem, index, arr) => {
           /** HACK: React's diff algorithm (probably?) can't keep track of steps

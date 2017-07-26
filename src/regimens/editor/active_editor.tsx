@@ -23,11 +23,13 @@ export function ActiveEditor(props: ActiveEditorProps) {
             let { item, regimen } = row;
             let click = () => props.dispatch(removeRegimenItem(item, regimen));
             let klass = `${row.color} regimen-event`;
-            return <div className={klass} key={`${index1}.${index2}`}>
-              <span className="regimen-event-title">{row.name}</span>
-              <span className="regimen-event-time">{row.hhmm}</span>
-              <i className="fa fa-trash regimen-control" onClick={click} />
-            </div>;
+            return (
+              <div className={klass} key={`${index1}.${index2}`}>
+                <span className="regimen-event-title">{row.name}</span>
+                <span className="regimen-event-time">{row.hhmm}</span>
+                <i className="fa fa-trash regimen-control" onClick={click} />
+              </div>
+            );
           })}
         </div>;
       })}

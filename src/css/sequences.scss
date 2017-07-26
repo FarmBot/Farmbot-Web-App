@@ -6,6 +6,10 @@
   min-height: 96vh;
   overflow-y: scroll;
   max-height: 96vh;
+  .pt-popover-target .saucer {
+    float: left;
+    margin-top: 0.4rem;
+  }
 }
 
 .step-button-cluster-widget,

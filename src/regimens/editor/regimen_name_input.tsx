@@ -20,7 +20,7 @@ export function RegimenNameInput({ regimen, dispatch }: RegimenProps) {
   let value = (regimen && regimen.body.name) || "";
   return (
     <Row>
-      <Col xs={10}>
+      <Col xs={11}>
         <input
           placeholder={t("Regimen Name")}
           type="text"
@@ -28,12 +28,10 @@ export function RegimenNameInput({ regimen, dispatch }: RegimenProps) {
           value={value}
         />
       </Col>
-      <Col xs={1}>
-        <ColorPicker
-          current={(regimen && regimen.body.color) || "gray"}
-          onChange={(color) => dispatch(editRegimen(regimen, { color }))}
-        />
-      </Col>
+      <ColorPicker
+        current={(regimen && regimen.body.color) || "gray"}
+        onChange={(color) => dispatch(editRegimen(regimen, { color }))}
+      />
     </Row>
   );
 }
