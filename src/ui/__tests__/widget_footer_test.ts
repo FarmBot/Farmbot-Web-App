@@ -1,10 +1,10 @@
 import * as React from "react";
-import { Markdown } from "../markdown";
+import { WidgetFooter } from "../widget_footer";
 import { mount } from "enzyme";
 
-describe("<Markdown />", () => {
+describe("<WidgetFooter />", () => {
   it("renders text", () => {
-    let result = mount(Markdown({ children: "nice" }));
+    let result = mount(WidgetFooter({ children: "nice" }));
     expect(result.html()).toContain("nice");
   });
 });

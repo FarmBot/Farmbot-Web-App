@@ -1,10 +1,10 @@
 import * as React from "react";
-import { Markdown } from "../markdown";
+import { Help } from "../help";
 import { mount } from "enzyme";
 
-describe("<Markdown />", () => {
+describe("<Help />", () => {
   it("renders text", () => {
-    let result = mount(Markdown({ children: "nice" }));
+    let result = mount(Help({ text: "nice" }));
     expect(result.html()).toContain("nice");
   });
 });
