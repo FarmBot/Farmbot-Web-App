@@ -14,29 +14,25 @@ export const links = [
   { name: "Farmware", icon: "crosshairs", slug: "farmware" }
 ];
 
-let linkClasses: string[] = ["hidden-xs"];
-let iconClasses: string[] = [
-  "hidden-sm",
-  "hidden-md",
-  "hidden-lg",
-  "hidden-xl"
-];
-
 export const NavLinks = () => {
   let currPath = history.getCurrentLocation().pathname;
-  return <div className="links">
-    <div className="nav-links">
-      {links.map(link => {
-        let isActive = currPath.includes(link.slug) ? "active" : "";
-        return <Link
-          to={"/app/" + link.slug}
-          className={`${linkClasses.join(" ")} ${isActive}`}
-          key={link.slug}
-        >
-          <i className={`fa fa-${link.icon} ${iconClasses.join(" ")}`} />
-          {link.name}
-        </Link>;
-      })}
+  return (
+    <div className="links">
+      <div className="nav-links">
+        {links.map(link => {
+          let isActive = currPath.includes(link.slug) ? "active" : "";
+          return (
+            <Link
+              to={"/app/" + link.slug}
+              className={`${isActive}`}
+              key={link.slug}
+            >
+              <i className={`fa fa-${link.icon}`} />
+              {link.name}
+            </Link>
+          );
+        })}
+      </div>
     </div>
-  </div>;
+  );
 };

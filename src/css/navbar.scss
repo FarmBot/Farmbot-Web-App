@@ -27,6 +27,9 @@ nav {
   a {
     text-transform: uppercase;
     color: $gray;
+    i {
+      display: none;
+    }
   }
   .external-links {
     display: none;
@@ -110,9 +113,6 @@ nav {
       }
     }
   }
-}
-
-.nav-right {
   .pt-tether-target-attached-bottom.pt-overlay-content {
     margin-top: 1.6rem;
     color: $white;
@@ -130,37 +130,20 @@ nav {
   }
 }
 
-@media screen and (max-device-width: 768px) {
-  .nav-right {
-    .pt-popover-target {
-      font-size: 2rem;
-      margin-top: 1.4rem;
-      margin-left: 2rem;
-      margin-right: 2.8rem;
-      &:after {
-        content: "▾";
-      }
+.mobile-menu {
+  .nav-links {
+    a {
+      display: block;
     }
-    .nav-name {
-      display: none;
+    i {
+      display: inline-block;
+      margin-right: 1rem;
     }
   }
-  .pt-popover-content {
-    font-size: 1.2rem;
-  }
-  .mobile-menu.active {
-    .nav-links a {
-      display: block !important;
-      padding: 1rem;
-      &.active {
-        &:before {
-          background: transparent;
-        }
-      }
-      i {
-        display: inline-block !important;
-        margin-right: 1rem;
-      }
-    }
+}
+
+@media (max-width: 768px) {
+  .top-menu-container .nav-links {
+    display: none;
   }
 }
