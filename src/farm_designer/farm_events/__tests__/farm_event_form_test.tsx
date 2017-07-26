@@ -3,6 +3,7 @@ import { fakeFarmEvent, fakeSequence } from "../../../__test_support__/fake_stat
 import { mount } from "enzyme";
 import { EditFEForm, EditFEProps, FarmEventViewModel } from "../edit_fe_form";
 import { isString } from "lodash";
+import { TightlyCoupledFarmEventDropDown } from "../map_state_to_props_add_edit";
 
 describe("<FarmEventForm/>", () => {
   let props = (): EditFEForm["props"] => ({
@@ -41,6 +42,8 @@ describe("<FarmEventForm/>", () => {
     let p = props();
     let i = instance(p);
     expect(i.dispatch).toBe(p.dispatch);
+    i.dispatch();
+    expect((p.dispatch as jest.Mock<{}>).mock.calls.length).toBe(1);
   });
 
   it("has a view model", () => {
@@ -62,13 +65,46 @@ describe("<FarmEventForm/>", () => {
     KEYS.map(key => expect(isString(vm[key])).toBe(true));
     expect(vm.repeat).toEqual("" + p.farmEvent.body.repeat);
   });
-  it("has an executable");
-  it("sets the executable");
-  it("gets a property of an executable");
-  it("sets a subfield of state.fe");
-  it("gets a subfield of state.fe");
-  it("merges state");
-  it("toggles repeat");
-  it("commits the view model");
-  it("knows if it has a regimen");
+
+  it("has an executable", () => {
+    let p = props();
+    let i = instance(p);
+    i.forceUpdate();
+    expect(i.executableGet().value).toEqual(fakeSequence().body.id);
+    expect(i.executableGet().label).toEqual(fakeSequence().body.name);
+  });
+
+  it("sets the executable", () => {
+    let p = props();
+    let i = instance(p);
+    i.forceUpdate();
+    expect(i.state.localCopyDirty).toBe(false);
+    let e = { value: "wow", executable_type: "Sequence" } as any;
+    i.executableSet(e);
+    i.forceUpdate();
+    expect(i.state.localCopyDirty).toBe(true);
+    expect(i.state.fe.executable_type).toEqual("Sequence");
+    expect(i.state.fe.executable_id).toEqual("wow");
+  });
+
+  it("gets executable info", () => {
+    let p = props();
+    let i = instance(p);
+    i.forceUpdate();
+    let exe = i.executableGet();
+    expect(exe.label).toBe("fake");
+    expect(exe.value).toBe(12);
+    expect(exe.executable_type).toBe("Sequence");
+  });
+
+  it("sets a subfield of state.fe", () => {
+    let p = props();
+    let i = instance(p);
+    i.forceUpdate();
+    expect(i.state.localCopyDirty).toBe(false);
+    i.fieldSet("repeat")(({ currentTarget: { value: "4" } } as any));
+    i.forceUpdate();
+    expect(i.state.localCopyDirty).toBe(true);
+    expect(i.state.fe.repeat).toEqual("4");
+  });
 });

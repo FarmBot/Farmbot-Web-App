@@ -134,7 +134,6 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   }
 
   executableGet = (): TightlyCoupledFarmEventDropDown => {
-    debugger;
     let executable_type: ExecutableType =
       (this.executable.kind === "sequences") ? "Sequence" : "Regimen";
     return {
