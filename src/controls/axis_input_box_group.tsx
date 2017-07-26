@@ -42,19 +42,16 @@ export class AxisInputBoxGroup extends
       <Row>
         <AxisInputBox
           axis="x"
-          label="X AXIS"
           value={x}
           onChange={this.change}
         />
         <AxisInputBox
           axis="y"
-          label="Y AXIS"
           value={y}
           onChange={this.change}
         />
         <AxisInputBox
           axis="z"
-          label="Z AXIS"
           value={z}
           onChange={this.change}
         />

@@ -57,13 +57,13 @@ export class AxisInputBox
   render() {
     return (
       <Col xs={3}>
-        <label>{this.props.label}</label>
         <input className="move-input"
           type="text"
           style={this.style()}
           onBlur={this.blur}
           onChange={this.change}
-          value={this.whatToDisplay()} />
+          value={this.whatToDisplay()}
+        />
       </Col>
     );
   }

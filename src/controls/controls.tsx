@@ -97,14 +97,26 @@ export class Controls extends React.Component<Props, {}> {
                     y_axis_inverted={y_axis_inverted}
                     z_axis_inverted={z_axis_inverted}
                   />
+                  <Row>
+                    <Col xs={3}>
+                      <label>{t("X AXIS")}</label>
+                    </Col>
+                    <Col xs={3}>
+                      <label>{t("Y AXIS")}</label>
+                    </Col>
+                    <Col xs={3}>
+                      <label>{t("Z AXIS")}</label>
+                    </Col>
+                  </Row>
                   <AxisDisplayGroup
                     bot={this.props.bot}
                     label={"Motor Coords."}
                   />
-                  {/* <AxisDisplayGroup
+                  {/* Waiting for support on this. -CV/GB
+                  <AxisDisplayGroup
                     bot={this.props.bot}
-                    label={"Encoder Coordinates"}
-                  />  */}
+                    label={"Encoder Coords."}
+                  />*/}
                   <AxisInputBoxGroup
                     bot={this.props.bot}
                     onCommit={input => moveAbs(input)}

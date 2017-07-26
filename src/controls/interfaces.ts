@@ -51,7 +51,6 @@ export interface AxisInputBoxGroupState {
 
 export interface AxisInputBoxProps {
   axis: Xyz;
-  label: string;
   value: number | undefined;
   onChange: (key: string, val: number | undefined) => void;
 }
