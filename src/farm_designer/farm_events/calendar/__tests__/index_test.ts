@@ -3,7 +3,7 @@ import * as moment from "moment";
 import { occurrence } from "../occurrence";
 import {
   TIME,
-  fake_fe
+  fakeFarmEventWithExecutable
 } from "../../../../__test_support__/farm_event_calendar_support";
 
 describe("calendar", () => {
@@ -15,8 +15,8 @@ describe("calendar", () => {
 
   it("inserts dates", () => {
     let calendar = new Calendar();
-    calendar.insert(occurrence(TIME.MONDAY, fake_fe()));
-    calendar.insert(occurrence(TIME.TUESDAY, fake_fe()));
+    calendar.insert(occurrence(TIME.MONDAY, fakeFarmEventWithExecutable()));
+    calendar.insert(occurrence(TIME.TUESDAY, fakeFarmEventWithExecutable()));
     expect(calendar.getAll().length).toEqual(2);
     expect(calendar.value).toBeInstanceOf(Object);
     expect(calendar.value["0619"]).toBeInstanceOf(Array);
@@ -25,7 +25,7 @@ describe("calendar", () => {
 
   it("finds by date", () => {
     let calendar = new Calendar();
-    let wow = occurrence(TIME.MONDAY, fake_fe());
+    let wow = occurrence(TIME.MONDAY, fakeFarmEventWithExecutable());
     calendar.insert(wow);
     expect(calendar.findByDate(TIME.FRIDAY)).toBeInstanceOf(Array);
     expect(calendar.findByDate(TIME.MONDAY)).toContain(wow);

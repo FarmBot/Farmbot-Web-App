@@ -12,7 +12,7 @@ export const TIME = {
   SATURDAY: moment("2017-06-24T06:30:00.000-05:00")
 };
 
-export let fake_fe = (): FarmEventWithExecutable => {
+export let fakeFarmEventWithExecutable = (): FarmEventWithExecutable => {
   return {
     id: 1,
     start_time: "---",

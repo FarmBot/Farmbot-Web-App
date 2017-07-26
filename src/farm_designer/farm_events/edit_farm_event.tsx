@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { mapStateToPropsAddEdit } from "./map_state_to_props_add_edit";
 import { history } from "../../history";
 import { TaggedFarmEvent } from "../../resources/tagged_resources";
-import { EditFEForm } from "./farm_event_form";
+import { EditFEForm } from "./edit_fe_form";
 import { t } from "i18next";
 
 @connect(mapStateToPropsAddEdit)
@@ -21,7 +21,7 @@ export class EditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
       executableOptions={this.props.executableOptions}
       dispatch={this.props.dispatch}
       findExecutable={this.props.findExecutable}
-      title={t("Edit Farm Event")} />
+      title={t("Edit Farm Event")} />;
   }
 
   render() {

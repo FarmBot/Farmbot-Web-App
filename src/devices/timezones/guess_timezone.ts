@@ -2,7 +2,7 @@ import * as _ from "lodash";
 /** Remove this in October 2017 - RC */
 let ONLY_ONCE = {
   need_to_talk: true
-}
+};
 
 export function inferTimezone(current: string | undefined): string {
   if (current) {
@@ -27,7 +27,7 @@ export function inferTimezone(current: string | undefined): string {
       "most users. Please select your timezone from the dropdown. Device " +
       "sync is recommended.");
     ONLY_ONCE.need_to_talk = false;
-  };
+  }
   return "UTC";
 }
 

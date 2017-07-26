@@ -2,12 +2,12 @@ import { occurrence } from "../occurrence";
 import * as moment from "moment";
 import {
   TIME,
-  fake_fe
+  fakeFarmEventWithExecutable
 } from "../../../../__test_support__/farm_event_calendar_support";
 
 describe("occurrence", () => {
   it("builds a single entry for the calendar", () => {
-    let fe = fake_fe();
+    let fe = fakeFarmEventWithExecutable();
     let t = occurrence(TIME.MONDAY, fe);
     expect(t.executableId).toBe(fe.executable_id);
     expect(t.mmdd).toBe("0619");

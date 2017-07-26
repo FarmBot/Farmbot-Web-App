@@ -4,7 +4,7 @@ import * as moment from "moment";
 import { connect } from "react-redux";
 import { mapStateToPropsAddEdit, } from "./map_state_to_props_add_edit";
 import { init } from "../../api/crud";
-import { EditFEForm } from "./farm_event_form";
+import { EditFEForm } from "./edit_fe_form";
 import { betterCompact } from "../../util";
 import { entries } from "../../resources/util";
 import { Link } from "react-router";
@@ -54,7 +54,7 @@ export class AddFarmEvent
         body: {
           start_time: NOW,
           next_time: NOW,
-          time_unit: "hourly",
+          time_unit: "never",
           executable_id,
           executable_type
         }
