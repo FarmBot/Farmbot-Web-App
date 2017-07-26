@@ -3,19 +3,10 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { CopyButton } from "../copy_button";
 import { TaggedRegimen } from "../../../resources/tagged_resources";
+import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 
 describe("Copy button", () => {
-  function fakeRegimen(): TaggedRegimen {
-    return {
-      uuid: "Whatever",
-      kind: "regimens",
-      body: {
-        name: "Foo",
-        color: "red",
-        regimen_items: []
-      }
-    };
-  }
+
   it("Initializes a new regimen on click", () => {
     let dispatch = jest.fn();
     let regimen = fakeRegimen();

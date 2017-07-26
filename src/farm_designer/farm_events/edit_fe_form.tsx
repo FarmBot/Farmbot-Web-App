@@ -80,7 +80,7 @@ function recombine(vm: FarmEventViewModel): Partial<TaggedFarmEvent["body"]> {
   };
 }
 
-interface Props {
+export interface EditFEProps {
   deviceTimezone: string | undefined;
   executableOptions: TightlyCoupledFarmEventDropDown[];
   repeatOptions: DropDownItem[];
@@ -102,7 +102,7 @@ interface State {
   localCopyDirty: boolean;
 }
 
-export class EditFEForm extends React.Component<Props, State> {
+export class EditFEForm extends React.Component<EditFEProps, State> {
   state: State = { fe: {}, localCopyDirty: false };
 
   get isOneTime() { return this.fieldGet("timeUnit") === NEVER; }
@@ -134,6 +134,7 @@ export class EditFEForm extends React.Component<Props, State> {
   }
 
   executableGet = (): TightlyCoupledFarmEventDropDown => {
+    debugger;
     let executable_type: ExecutableType =
       (this.executable.kind === "sequences") ? "Sequence" : "Regimen";
     return {
@@ -207,11 +208,6 @@ export class EditFEForm extends React.Component<Props, State> {
     let isSaved = !isSaving && !isDirty;
     let repeats = this.fieldGet("timeUnit") !== NEVER;
     let allowRepeat = (!this.isReg && repeats);
-    fancyDebug({
-      timeUnit: this.fieldGet("timeUnit"),
-      repeats,
-      allowRepeat
-    });
     return <div className="panel-container magenta-panel add-farm-event-panel">
       <div className="panel-header magenta-panel">
         <p className="panel-title"> <BackArrow /> {this.props.title} </p>

@@ -1,6 +1,7 @@
-import * as react from "react";
-import { EditFEForm } from "../edit_fe_form";
-import { fakeFarmEvent } from "../../../__test_support__/fake_state/resources";
+import * as React from "react";
+import { fakeFarmEvent, fakeSequence } from "../../../__test_support__/fake_state/resources";
+import { mount } from "enzyme";
+import { EditFEForm, EditFEProps } from "../edit_fe_form";
 
 describe("<FarmEventForm/>", () => {
   let props = (): EditFEForm["props"] => ({
@@ -9,7 +10,7 @@ describe("<FarmEventForm/>", () => {
     repeatOptions: [],
     farmEvent: fakeFarmEvent("Sequence", 12),
     dispatch: jest.fn(),
-    findExecutable: jest.fn(),
+    findExecutable: jest.fn(() => fakeSequence()),
     title: "title"
   });
   let context = { form: new EditFEForm(props()) };
@@ -24,7 +25,12 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("determines if it is a one time event", () => {
-    expect(context.form.isOneTime).toBe(true);
+    let el = mount<EditFEProps>(<EditFEForm {...props() } />);
+    let i = el.instance() as EditFEForm;
+    expect(i.isOneTime).toBe(true);
+    i.mergeState("timeUnit", "daily");
+    i.forceUpdate();
+    expect(i.isOneTime).toBe(false);
   });
 
   it("has a dispatch");
