@@ -144,55 +144,14 @@ a {
   font-weight: bold;
 }
 
-@keyframes expand {
-  0% {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-  }
-  100% {
-    max-height: 300px;
-    overflow: shown;
-    opacity: 1;
-  }
-}
-
-@keyframes collapse {
-  0% {
-    max-height: 300px;
-    overflow: shown;
-    opacity: 1;
-  }
-  100% {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-  }
-}
-
 .hardware-widget {
-  overflow: hidden;
-  section {
-    overflow: hidden;
-  }
   h4 {
     cursor: pointer;
-  }
-  .is-open-false {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    // animation: collapse 0.4s normal forwards ease-in-out;
-  }
-  .is-open-true {
-    max-height: 300px;
-    overflow: shown;
-    opacity: 1;
-    // animation: expand 0.4s normal forwards ease-in-out;
   }
   .icon-toggle {
     font-size: 1.2rem;
     font-weight: bold;
+    vertical-align: middle;
     .fa {
       font-size: 1rem;
     }
