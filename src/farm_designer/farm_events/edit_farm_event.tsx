@@ -21,7 +21,7 @@ export class EditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
       executableOptions={this.props.executableOptions}
       dispatch={this.props.dispatch}
       findExecutable={this.props.findExecutable}
-      title={t("Edit Farm Event")} />
+      title={t("Edit Farm Event")} />;
   }
 
   render() {

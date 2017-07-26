@@ -2,7 +2,7 @@ import * as React from "react";
 import { DropDownItem } from "./fb_select";
 import { FilterSearch } from "./filter_search";
 
-interface Props {
+export interface FBSelectProps {
   /** Value to show. */
   selectedItem: DropDownItem | undefined;
   /** Notifies component user that something was clicked. */
@@ -22,7 +22,7 @@ export const NULL_CHOICE: DropDownItem = Object.freeze({
   value: ""
 });
 
-export class FBSelect extends React.Component<Props, {}> {
+export class FBSelect extends React.Component<FBSelectProps, {}> {
 
   get item() { return this.props.selectedItem || NULL_CHOICE; }
   get list() {
