@@ -476,8 +476,8 @@ export function shortRevision() {
 }
 
 /** When needing to reference the url in some js universally or vice versa. */
-export function urlFriendly(unformattedString: string) {
-  return unformattedString.replace(/ /gi, "_").toLowerCase();
+export function urlFriendly(stringToFormat: string) {
+  return encodeURIComponent(stringToFormat.replace(/ /gi, "_").toLowerCase());
 }
 
 /** Get remainder of current url after the last "/". */
