@@ -4,26 +4,23 @@ import { Row, Col } from "../ui";
 import { AxisDisplayGroupProps } from "./interfaces";
 
 export let AxisDisplayGroup = ({ bot, label }: AxisDisplayGroupProps) => {
-  let [x, y, z] = bot.hardware.location;
+  let { x, y, z } = bot.hardware.location_data.position;
   return (
     <Row>
       <Col xs={3}>
         <input
           disabled
-          value={x}
-        />
+          value={x || ""} />
       </Col>
       <Col xs={3}>
         <input
           disabled
-          value={y}
-        />
+          value={y || ""} />
       </Col>
       <Col xs={3}>
         <input
           disabled
-          value={z}
-        />
+          value={z || ""} />
       </Col>
       <Col xs={3}>
         <label>
