@@ -6,7 +6,7 @@ import { TitleBar } from "./title";
 import { devices } from "../../device";
 import { Row, Col, Widget, WidgetBody } from "../../ui/index";
 import { t } from "i18next";
-import { resetWeedDetection, selectImage, detectWeeds } from "../actions";
+import { resetWeedDetection, selectImage, scanImage } from "../actions";
 import { Progress } from "../../util";
 import { HSV } from "../index";
 import { FarmwareProps } from "../../devices/interfaces";
@@ -43,14 +43,7 @@ export class WeedDetector
   };
 
   test = () => {
-    let settings = this.props.env;
-    let pairs = Object
-      .keys(settings)
-      .map<Pair>(function (label: keyof typeof settings, index) {
-        let value = JSON.stringify(settings[label]) || "null";
-        return { kind: "pair", args: { label, value } };
-      });
-    devices.current.execScript("plant-detection", pairs);
+    devices.current.execScript("plant-detection");
   }
 
   /** Maps <ImageWorkspace/> props to weed detector ENV vars. */
@@ -78,7 +71,7 @@ export class WeedDetector
         <Row>
           <Col sm={12}>
             <ImageWorkspace
-              onProcessPhoto={(id) => { this.props.dispatch(detectWeeds(id)); }}
+              onProcessPhoto={(id) => { this.props.dispatch(scanImage(id)); }}
               onFlip={(uuid) => this.props.dispatch(selectImage(uuid))}
               currentImage={this.props.currentImage}
               images={this.props.images}

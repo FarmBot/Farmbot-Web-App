@@ -8,4 +8,4 @@ export let translateImageWorkspaceAndSave = (map: Translation) => {
   return (key: Key, value: number) => {
     envSave(map[key], value);
   };
-}
+};

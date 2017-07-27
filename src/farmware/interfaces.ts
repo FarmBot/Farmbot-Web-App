@@ -31,6 +31,7 @@ export interface CameraCalibrationState {
 }
 
 export interface CameraCalibrationProps {
+  dispatch: Function;
   images: TaggedImage[];
   currentImage: TaggedImage | undefined;
   onProcessPhoto(id: number): void;
