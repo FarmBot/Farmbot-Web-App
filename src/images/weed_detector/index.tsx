@@ -46,9 +46,9 @@ export class WeedDetector
     let settings = this.props.env;
     let pairs = Object
       .keys(settings)
-      .map<Pair>(function (value: keyof typeof settings, index) {
-        let label = JSON.stringify(settings[value]) || "null";
-        return { kind: "pair", args: { value, label } };
+      .map<Pair>(function (label: keyof typeof settings, index) {
+        let value = JSON.stringify(settings[label]) || "null";
+        return { kind: "pair", args: { label, value } };
       });
     devices.current.execScript("plant-detection", pairs);
   }
