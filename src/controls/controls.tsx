@@ -119,8 +119,7 @@ export class Controls extends React.Component<Props, {}> {
                   />*/}
                   <AxisInputBoxGroup
                     bot={this.props.bot}
-                    onCommit={input => moveAbs(input)}
-                  />
+                    onCommit={input => moveAbs(input)} />
                 </MustBeOnline>
               </WidgetBody>
             </Widget>
