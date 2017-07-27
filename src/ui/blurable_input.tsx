@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as _ from "lodash";
 
 interface BIProps {
   value: string | number;
@@ -34,7 +35,8 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
   }
 
   focus = () => {
-    this.setState({ isEditing: true, buffer: this.props.value || "" });
+    let { value } = this.props;
+    this.setState({ isEditing: true, buffer: "" + (value || "") });
   }
 
   updateBuffer = (e: React.SyntheticEvent<HTMLInputElement>) => {
