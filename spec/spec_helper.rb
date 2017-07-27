@@ -7,6 +7,9 @@ SimpleCov.start do
   add_filter '/spec/'
   add_filter 'config/initializers'
 end
+
+require 'codecov'
+SimpleCov.formatter = SimpleCov::Formatter::Codecov
 require 'pry'
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'

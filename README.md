@@ -1,5 +1,6 @@
 [![codebeat badge](https://codebeat.co/badges/7b023dc5-6509-42af-ad6e-ec0b8262ef13)](https://codebeat.co/projects/github-com-rickcarlino-farmbot-web-app-master)
 [![Coverage Status](https://coveralls.io/repos/github/FarmBot/Farmbot-Web-App/badge.svg)](https://coveralls.io/github/FarmBot/Farmbot-Web-App)
+[![codecov](https://codecov.io/gh/FarmBot/Farmbot-Web-App/branch/master/graph/badge.svg)](https://codecov.io/gh/FarmBot/Farmbot-Web-App)
 
 # Q: Do I need this?
 
