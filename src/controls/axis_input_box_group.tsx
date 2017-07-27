@@ -41,6 +41,10 @@ export class AxisInputBoxGroup extends
 
   render() {
     let { x, y, z } = this.state;
+    console.group();
+    console.dir(this.vector);
+    console.dir({ x, y, z });
+    console.groupEnd();
     return (
       <Row>
         <AxisInputBox
