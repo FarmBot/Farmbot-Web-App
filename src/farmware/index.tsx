@@ -53,4 +53,4 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
       </Row>
     </Page>;
   }
-};
+}

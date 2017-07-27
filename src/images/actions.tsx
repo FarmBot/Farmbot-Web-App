@@ -52,21 +52,14 @@ export function resetWeedDetection(cb: ProgressCallback): Thunk {
   };
 }
 
-const value = "PLANT_DETECTION_selected_image";
+const label = "PLANT_DETECTION_selected_image";
 
 export function detectWeeds(imageId: number) {
   return function (dispatch: Function, getState: GetState) {
-    let dictionary = getState().bot.hardware.process_info.farmwares;
-    let processes = Object
-      .keys(dictionary)
-      .map(key => dictionary[key])
-      .filter(fw => fw.name === "take-photo")
-      .map(proc => {
-        devices
-          .current
-          .execScript(proc.uuid, [{
-            kind: "pair", args: { value, label: "" + imageId }
-          }]);
-      });
+    devices
+      .current
+      .execScript("historical-plant-detection", [{
+        kind: "pair", args: { label: label, value: "" + imageId }
+      }]);
   };
 }
