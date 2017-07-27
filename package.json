@@ -14,7 +14,8 @@
     "heroku-postbuild": "./install_frontend.sh 2>&1",
     "dev": "PORT=3000 bundle exec foreman start --procfile=Procfile.dev",
     "webpack": "webpack-dev-server --config tools/webpack.config.dev.js --content-base public/ --host 0.0.0.0",
-    "test": "jest --coverage --no-cache"
+    "test": "jest --coverage --no-cache",
+    "typecheck": "tsc --noEmit --jsx preserve"
   },
   "keywords": [
     "farmbot"
