@@ -43,23 +43,19 @@ export class AxisInputBoxGroup extends
         <AxisInputBox
           onChange={this.change}
           axis={"x"}
-          value={x}
-        />
+          value={x} />
         <AxisInputBox
           onChange={this.change}
           axis={"y"}
-          value={y}
-        />
+          value={y} />
         <AxisInputBox
           onChange={this.change}
-          axis={"y"}
-          value={y}
-        />
+          axis={"z"}
+          value={z} />
         <Col xs={3}>
           <button
             onClick={this.clicked}
-            className="full-width green go fb-button"
-          >
+            className="full-width green go fb-button" >
             {t("GO")}
           </button>
         </Col>
