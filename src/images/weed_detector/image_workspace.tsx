@@ -145,10 +145,10 @@ export class ImageWorkspace extends React.Component<Props, {}> {
           <Col xs={12}>
             <button
               className="green fb-button"
-              title="Scan this image for Weeds"
+              title="Scan this image"
               onClick={this.maybeProcessPhoto}
               hidden={!this.props.images.length} >
-              {t("Scan for Weeds")}
+              {t("Scan image")}
             </button>
           </Col>
         </Row>

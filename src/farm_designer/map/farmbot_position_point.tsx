@@ -16,9 +16,9 @@ export class VirtualFarmBot extends
   React.Component<VFBProps, Partial<VFBState>> {
 
   render() {
-    let [x, y, z] = this.props.bot.hardware.location;
+    let { x, y, z } = this.props.bot.hardware.location_data.position;
     let { quadrant } = this.props;
-    let { qx, qy } = getXYFromQuadrant(x, y, quadrant);
+    let { qx, qy } = getXYFromQuadrant((x || 0), (y || 0), quadrant);
     return <g>
       <rect
         x={qx - 10}
@@ -33,6 +33,6 @@ export class VirtualFarmBot extends
         r={35}
         fillOpacity={0.75}
         fill={"#434343"} />
-    </g>
+    </g>;
   }
 }

@@ -8,12 +8,24 @@ import { ToolTips } from "../constants";
 import { envSave } from "../images/weed_detector/remote_env/actions";
 import { WDENVKey } from "../images/weed_detector/remote_env/interfaces";
 import { devices } from "../device";
+import { selectImage } from "../images/actions";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, CameraCalibrationState> {
 
   calibrate = () => {
     devices.current.execScript("camera-calibration");
+  }
+
+  scanImage(imageId: number) {
+    devices
+      .current
+      .execScript("historical-camera-calibration", [{
+        kind: "pair", args: {
+          label: "CAMERA_CALIBRATION_selected_image",
+          value: "" + imageId
+        }
+      }]);
   }
 
   render() {
@@ -29,8 +41,8 @@ export class CameraCalibration extends
           <Row>
             <Col sm={12}>
               <ImageWorkspace
-                onProcessPhoto={this.props.onProcessPhoto}
-                onFlip={(u) => { console.log("TODO. Stub."); }}
+                onProcessPhoto={(id) => { this.scanImage(id); }}
+                onFlip={(uuid) => this.props.dispatch(selectImage(uuid))}
                 images={this.props.images}
                 currentImage={this.props.currentImage}
                 onChange={(key, value) => {

@@ -6,7 +6,6 @@ import { mapStateToProps } from "./state_to_props";
 import { Photos } from "./photos";
 import { CameraCalibration } from "./camera_calibration";
 import { FarmwareProps } from "../devices/interfaces";
-import { detectWeeds } from "../images/actions";
 import { WeedDetector } from "../images/weed_detector/index";
 import { envGet } from "../images/weed_detector/remote_env/selectors";
 
@@ -32,7 +31,8 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
       <Row>
         <Col xs={12} sm={5}>
           <CameraCalibration
-            onProcessPhoto={(id) => { this.props.dispatch(detectWeeds(id)); }}
+            dispatch={this.props.dispatch}
+            onProcessPhoto={() => { }}
             currentImage={this.props.currentImage}
             images={this.props.images}
             env={this.props.env}

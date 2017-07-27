@@ -36,7 +36,24 @@ let initialState: BotState = {
   },
   hardware: {
     mcu_params: {},
-    location: [-1, -1, -1],
+    jobs: {},
+    location_data: {
+      "position": {
+        x: undefined,
+        y: undefined,
+        z: undefined
+      },
+      "scaled_encoders": {
+        x: undefined,
+        y: undefined,
+        z: undefined
+      },
+      "raw_encoders": {
+        x: undefined,
+        y: undefined,
+        z: undefined
+      },
+    },
     pins: {},
     configuration: {},
     informational_settings: {},
@@ -107,6 +124,6 @@ export let botReducer = generateReducer<BotState>(initialState)
           JSON.stringify(localStorageBoolFetch(Z_AXIS_INVERTED)));
         return s;
       default:
-        throw new Error("Attempted to invert invalid jog button direction.")
+        throw new Error("Attempted to invert invalid jog button direction.");
     }
   });
