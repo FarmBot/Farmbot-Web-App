@@ -51,7 +51,7 @@ export function FarmEventRepeatForm(props: RepeatFormProps) {
         <Col xs={8}>
           <FBSelect
             list={repeatOptions}
-            onChange={(e) => onChange("repeat", "" + e.value)}
+            onChange={(e) => onChange("timeUnit", "" + e.value)}
             selectedItem={OPTN_LOOKUP[timeUnit] || OPTN_LOOKUP["daily"]}
             isFilterable={false} />
         </Col>
