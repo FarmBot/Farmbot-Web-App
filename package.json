@@ -14,7 +14,8 @@
     "heroku-postbuild": "./install_frontend.sh 2>&1",
     "dev": "PORT=3000 bundle exec foreman start --procfile=Procfile.dev",
     "webpack": "webpack-dev-server --config tools/webpack.config.dev.js --content-base public/ --host 0.0.0.0",
-    "test": "jest --coverage --no-cache"
+    "test": "jest --coverage --no-cache",
+    "typecheck": "tsc --noEmit --jsx preserve"
   },
   "keywords": [
     "farmbot"
@@ -36,6 +37,7 @@
     "@types/jest": "^20.0.4",
     "@types/lodash": "^4.14.71",
     "@types/markdown-it": "^0.0.2",
+    "@types/moxios": "^0.4.2",
     "@types/mqtt": "^0.0.34",
     "@types/node": "^8.0.16",
     "@types/react": "^15.0.39",
@@ -51,7 +53,7 @@
     "deep-freeze": "^0.0.1",
     "enzyme": "^2.9.1",
     "extract-text-webpack-plugin": "^2.1.2",
-    "farmbot": "4.1.0",
+    "farmbot": "4.2.1",
     "farmbot-toastr": "^1.0.3",
     "fastclick": "^1.0.6",
     "file-loader": "^0.11.2",
@@ -64,6 +66,7 @@
     "markdown-it": "^8.2.1",
     "markdown-it-emoji": "^1.4.0",
     "moment": "^2.18.1",
+    "moxios": "^0.4.0",
     "node-sass": "^4.5.3",
     "optimize-css-assets-webpack-plugin": "^2.0.0",
     "react": "^15.6.1",
@@ -88,8 +91,6 @@
     "webpack": "^3.3.0",
     "webpack-uglify-js-plugin": "^1.1.9",
     "weinre": "^2.0.0-pre-I0Z7U9OV",
-    "@types/moxios": "^0.4.2",
-    "moxios": "^0.4.0",
     "yarn": "^0.27.5"
   },
   "devDependencies": {
