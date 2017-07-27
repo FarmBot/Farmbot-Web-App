@@ -81,7 +81,9 @@ export class Photos extends React.Component<PhotosProps, {}> {
               </span>
             </div>
             : ""}
-          {this.metaDatas()}
+          <div className="image-metadatas">
+            {this.metaDatas()}
+          </div>
         </WidgetFooter>
       </Widget>
     );
