@@ -55,7 +55,7 @@ export function resetWeedDetection(cb: ProgressCallback): Thunk {
 const label = "PLANT_DETECTION_selected_image";
 
 export function scanImage(imageId: number) {
-  return function (dispatch: Function, getState: GetState) {
+  return function () {
     devices
       .current
       .execScript("historical-plant-detection", [{
