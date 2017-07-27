@@ -13,6 +13,7 @@ import {
 import {
   Row,
   Col,
+  Help
 } from "../../ui";
 import { StepInputBox } from "../inputs/step_input_box";
 import { t } from "i18next";
@@ -141,12 +142,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
               }))} />
             <i className="fa fa-trash step-control"
               onClick={() => remove({ dispatch, index, sequence: currentSequence })} />
-            <div className="help">
-              <i className="fa fa-question-circle help-icon" />
-              <div className="help-text">
-                {t(ToolTips.MOVE_ABSOLUTE)}
-              </div>
-            </div>
+            <Help text={t(ToolTips.MOVE_ABSOLUTE)} />
           </div>
         </Col>
       </Row>
