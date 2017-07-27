@@ -7,12 +7,13 @@ import { ImageWorkspace } from "../images/weed_detector/image_workspace";
 import { ToolTips } from "../constants";
 import { envSave } from "../images/weed_detector/remote_env/actions";
 import { WDENVKey } from "../images/weed_detector/remote_env/interfaces";
+import { devices } from "../device";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, CameraCalibrationState> {
 
   calibrate = () => {
-    console.log("TODO: Send RPC / farmware activation message here.");
+    devices.current.execScript("camera-calibration");
   }
 
   render() {

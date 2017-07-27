@@ -51,7 +51,7 @@ export function TitleBar({
       </button>
       <button
         hidden={!onCalibrate}
-        onClick={() => { }}
+        onClick={onCalibrate}
         className="fb-button green" >
         {t("Calibrate")}
       </button>
