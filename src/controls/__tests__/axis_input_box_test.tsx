@@ -16,8 +16,8 @@ describe("<AxisInputBox/>", () => {
     expect(el.find("input").first().props().value).toBe(0);
   });
 
-  it("renders -1 if undefined", () => {
+  it("renders '' if undefined", () => {
     let el = inputBoxWithValue(undefined);
-    expect(el.find("input").first().props().value).toBe(-1);
+    expect(el.find("input").first().props().value).toBe("");
   });
 });
