@@ -9,7 +9,6 @@ unless Rails.env == "production"
     Point.destroy_all
     Device.destroy_all
     User.destroy_all
-    binding.pry # Which resources are left? Do a query.
     Users::Create.run!(name:                  "Administrator",
                        email:                 "farmbot@farmbot.io",
                        password:              "password123",

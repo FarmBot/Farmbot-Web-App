@@ -18,7 +18,7 @@ class FarmEventSerializer < ActiveModel::Serializer
       .regimen_items
       .pluck(:time_offset)
       .map { |x| x / 1000 }
-      .map { |x| object.start_time + x } || []
+      .map { |x| object.start_time.midnight + x } || []
   end
 
   def sequence_calendar
