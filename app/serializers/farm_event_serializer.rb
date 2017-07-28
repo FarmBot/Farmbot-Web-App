@@ -13,12 +13,9 @@ class FarmEventSerializer < ActiveModel::Serializer
   private
 
   def regimen_calendar
-    object
-      .executable
-      .regimen_items
-      .pluck(:time_offset)
-      .map { |x| x / 1000 }
-      .map { |x| object.start_time.midnight + x } || []
+    # We don't use this right now- compute it yourself using
+    # my_farm_event.executable.regimen_items - RC July 2017
+    []
   end
 
   def sequence_calendar
