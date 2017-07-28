@@ -26,7 +26,7 @@ export function versionOK(stringyVersion = "0.0.0",
     return (majorOK && minorOK);
   }
 }
-let initialState: BotState = {
+export let initialState: BotState = {
   stepSize: 100,
   controlPanelState: {
     homing_and_calibration: false,
