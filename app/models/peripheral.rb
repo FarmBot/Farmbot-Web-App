@@ -1,7 +1,7 @@
 # Information about electronic devices attached to a bot's GPIO pins.
 # This is used for reference and is not used to directly control the device.
 # Examples: temperature probes, LEDs, etc.
-class Peripheral < ActiveRecord::Base
+class Peripheral < ApplicationRecord
   belongs_to :device
   validates :device, presence: true
   validates :pin, presence: true

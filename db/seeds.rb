@@ -1,6 +1,6 @@
 unless Rails.env == "production"
-    POINT_COUNT             = 2 # 70
-    PLANT_COUNT             = 2 # 100
+    POINT_COUNT             = 2
+    PLANT_COUNT             = 2
     DATE_RANGE_LO           = 1..3
     DATE_RANGE_HI           = 3..8
     ENV['MQTT_HOST']        = "blooper.io"
@@ -9,15 +9,16 @@ unless Rails.env == "production"
     Point.destroy_all
     Device.destroy_all
     User.destroy_all
+    binding.pry # Which resources are left? Do a query.
     Users::Create.run!(name:                  "Administrator",
-                       email:                 "notos@notos.com",
+                       email:                 "farmbot@farmbot.io",
                        password:              "password123",
                        password_confirmation: "password123",
                        agree_to_terms:        true)
-    no_tos = User.last
-    no_tos.agreed_to_terms_at = nil
-    no_tos.verified_at = Time.now
-    no_tos.save(validate: false)
+    signed_tos = User.last
+    signed_tos.agreed_to_terms_at = nil
+    signed_tos.verified_at = Time.now
+    signed_tos.save(validate: false)
     Users::Create.run!(name:                  "Administrator",
                        email:                 "admin@admin.com",
                        password:              "password123",
