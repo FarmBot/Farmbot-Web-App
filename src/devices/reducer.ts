@@ -26,7 +26,7 @@ export function versionOK(stringyVersion = "0.0.0",
     return (majorOK && minorOK);
   }
 }
-let initialState: BotState = {
+export let initialState: BotState = {
   stepSize: 100,
   controlPanelState: {
     homing_and_calibration: false,
@@ -71,15 +71,6 @@ let initialState: BotState = {
 };
 
 export let botReducer = generateReducer<BotState>(initialState)
-  .add<keyof ControlPanelState>(Actions.TOGGLE_CONTROL_PANEL_OPTION, (s, a) => {
-    s.controlPanelState[a.payload] = !s.controlPanelState[a.payload];
-    return s;
-  })
-  .add<number>(Actions.CHANGE_STEP_SIZE, (s, a) => {
-    return Object.assign({}, s, {
-      stepSize: a.payload
-    });
-  })
   .add<void>(Actions.SETTING_UPDATE_START, (s, a) => {
     s.isUpdating = true;
     return s;
@@ -88,14 +79,23 @@ export let botReducer = generateReducer<BotState>(initialState)
     s.isUpdating = false;
     return s;
   })
-  .add<HardwareState>(Actions.BOT_CHANGE, (s, { payload }) => {
-    let nextState = payload;
-    s.hardware = nextState;
-    versionOK(nextState.informational_settings.controller_version);
+  .add<number>(Actions.CHANGE_STEP_SIZE, (s, a) => {
+    return Object.assign({}, s, {
+      stepSize: a.payload
+    });
+  })
+  .add<keyof ControlPanelState>(Actions.TOGGLE_CONTROL_PANEL_OPTION, (s, a) => {
+    s.controlPanelState[a.payload] = !s.controlPanelState[a.payload];
     return s;
   })
   .add<string>(Actions.FETCH_OS_UPDATE_INFO_OK, (s, { payload }) => {
     s.currentOSVersion = payload;
+    return s;
+  })
+  .add<HardwareState>(Actions.BOT_CHANGE, (s, { payload }) => {
+    let nextState = payload;
+    s.hardware = nextState;
+    versionOK(nextState.informational_settings.controller_version);
     return s;
   })
   .add<string>(Actions.FETCH_FW_UPDATE_INFO_OK, (s, { payload }) => {

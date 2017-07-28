@@ -5,7 +5,7 @@
 #          SEQUENCE2 would break SEQUENCE1. Creating a SequenceDependency for
 #          SEQUENCE1 and SEQUENCE2 prevents accidental deletion. The user must
 #          now delete SEQUENCE2 prior to deleting SEQUENCE1.
-class SequenceDependency < ActiveRecord::Base
+class SequenceDependency < ApplicationRecord
   belongs_to :sequence
   validates_presence_of :sequence
   belongs_to :dependency, polymorphic: true

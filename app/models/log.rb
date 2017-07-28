@@ -1,6 +1,6 @@
 # A device will emit logs when events occur on the Raspberry Pi. Logs are then
 # read by clients. Logs are only created by devices.
-class Log < ActiveRecord::Base
+class Log < ApplicationRecord
   # Used by the frontend to pull most recent records. We don't currently support
   # pagination, but could later on.
   PAGE_SIZE = 25

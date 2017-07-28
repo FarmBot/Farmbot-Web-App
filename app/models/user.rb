@@ -1,5 +1,5 @@
 # A human
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   ENFORCE_TOS           = ENV.fetch("TOS_URL") { false }
   SKIP_EMAIL_VALIDATION = ENV.fetch("NO_EMAILS") { false }
   validates :email, uniqueness: true

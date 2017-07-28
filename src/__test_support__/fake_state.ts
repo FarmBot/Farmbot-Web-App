@@ -25,7 +25,3 @@ export function fakeState(dispatcher: Function = noop): Everything {
     resources
   };
 }
-
-export function fakeStore() {
-  return createStore(rootReducer as any, fakeState());
-}

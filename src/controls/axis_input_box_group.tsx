@@ -41,6 +41,7 @@ export class AxisInputBoxGroup extends
 
   render() {
     let { x, y, z } = this.state;
+
     return (
       <Row>
         <AxisInputBox

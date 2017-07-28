@@ -20,5 +20,6 @@ script:
 - export DB=postgresql
 - export COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG
 - bundle exec rspec
+- npm run typecheck
 - npm run test
 - npm run coverage
