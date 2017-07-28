@@ -1,6 +1,7 @@
 import { versionOK, botReducer, initialState } from "../reducer";
 import { Actions } from "../../constants";
 import { ControlPanelState } from "../interfaces";
+import { SyncStatus } from "farmbot/dist";
 
 describe("safeStringFetch", () => {
   it("Checks the correct version on update", () => {
@@ -51,10 +52,41 @@ describe("botRedcuer", () => {
   });
 
   it("fetches OS update info", () => {
-    let state = botReducer(initialState, {
+    let r = botReducer(initialState, {
       type: Actions.FETCH_OS_UPDATE_INFO_OK,
       payload: "1.2.3"
+    }).currentOSVersion;
+    expect(r).toBe("1.2.3");
+  });
+
+  it("sets sync status", () => {
+    let payload: SyncStatus = "locked";
+    let state = botReducer(initialState, {
+      type: Actions.SET_SYNC_STATUS,
+      payload
     });
-    expect(state.currentOSVersion).toBe("1.2.3");
+    expect(initialState.hardware.informational_settings.sync_status)
+      .not.toBe(payload);
+    expect(state.hardware.informational_settings.sync_status)
+      .toBe(payload);
+  });
+
+  it("inverts X/Y/Z", () => {
+    let action = { type: Actions.INVERT_JOG_BUTTON, payload: "Q" };
+    expect(() => { botReducer(initialState, action); }).toThrow();
+
+    action.payload = "x";
+    let result = botReducer(initialState, action);
+    expect(result.x_axis_inverted)
+      .toBe(!initialState.x_axis_inverted);
+
+    action.payload = "y";
+    expect(botReducer(initialState, action).y_axis_inverted)
+      .toBe(!initialState.y_axis_inverted);
+
+    action.payload = "z";
+    expect(botReducer(initialState, action).z_axis_inverted)
+      .toBe(!initialState.z_axis_inverted);
+
   });
 });
