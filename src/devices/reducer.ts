@@ -88,14 +88,14 @@ export let botReducer = generateReducer<BotState>(initialState)
     s.controlPanelState[a.payload] = !s.controlPanelState[a.payload];
     return s;
   })
+  .add<string>(Actions.FETCH_OS_UPDATE_INFO_OK, (s, { payload }) => {
+    s.currentOSVersion = payload;
+    return s;
+  })
   .add<HardwareState>(Actions.BOT_CHANGE, (s, { payload }) => {
     let nextState = payload;
     s.hardware = nextState;
     versionOK(nextState.informational_settings.controller_version);
-    return s;
-  })
-  .add<string>(Actions.FETCH_OS_UPDATE_INFO_OK, (s, { payload }) => {
-    s.currentOSVersion = payload;
     return s;
   })
   .add<string>(Actions.FETCH_FW_UPDATE_INFO_OK, (s, { payload }) => {

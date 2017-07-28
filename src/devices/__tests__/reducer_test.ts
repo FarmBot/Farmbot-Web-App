@@ -1,5 +1,6 @@
 import { versionOK, botReducer, initialState } from "../reducer";
 import { Actions } from "../../constants";
+import { ControlPanelState } from "../interfaces";
 
 describe("safeStringFetch", () => {
   it("Checks the correct version on update", () => {
@@ -37,5 +38,23 @@ describe("botRedcuer", () => {
       payload: 23
     });
     expect(state.stepSize).toBe(23);
+  });
+
+  it("toggles control panel options", () => {
+    let payload: keyof ControlPanelState = "danger_zone";
+    let state = botReducer(initialState, {
+      type: Actions.TOGGLE_CONTROL_PANEL_OPTION,
+      payload
+    });
+    expect(state.controlPanelState.danger_zone)
+      .toBe(!initialState.controlPanelState.danger_zone);
+  });
+
+  it("fetches OS update info", () => {
+    let state = botReducer(initialState, {
+      type: Actions.FETCH_OS_UPDATE_INFO_OK,
+      payload: "1.2.3"
+    });
+    expect(state.currentOSVersion).toBe("1.2.3");
   });
 });
