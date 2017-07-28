@@ -6,7 +6,7 @@ jest.mock("../../../../device", () => {
       }
     }
   };
-})
+});
 import { envSave } from "../actions";
 import { devices } from "../../../../device";
 

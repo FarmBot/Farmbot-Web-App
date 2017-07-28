@@ -1,14 +1,14 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Pair } from "farmbot";
-import { DetectorState } from "../interfaces";
+import { DetectorState, HSV } from "./interfaces";
 import { TitleBar } from "./title";
 import { devices } from "../../device";
 import { Row, Col, Widget, WidgetBody } from "../../ui/index";
 import { t } from "i18next";
-import { resetWeedDetection, selectImage, scanImage } from "../actions";
+import { resetWeedDetection, scanImage, test } from "./actions";
+import { selectImage } from "../images/actions";
 import { Progress } from "../../util";
-import { HSV } from "../index";
 import { FarmwareProps } from "../../devices/interfaces";
 import { mapStateToProps } from "../../farmware/state_to_props";
 import { ToolTips } from "../../constants";
@@ -64,7 +64,7 @@ export class WeedDetector
       <TitleBar
         onDeletionClick={this.clearWeeds}
         deletionProgress={this.state.deletionProgress}
-        onTest={this.test}
+        onTest={this.props.dispatch(test)}
         title={"Weed Detector"}
         help={t(ToolTips.WEED_DETECTOR)} />
       <WidgetBody>

@@ -1,7 +1,6 @@
-
-import { prepopulateEnv, envGet } from "../weed_detector/remote_env/selectors";
-import { DEFAULTS } from "../weed_detector/remote_env/constants";
-import { WD_ENV } from "../weed_detector/remote_env/interfaces";
+import { prepopulateEnv, envGet } from "../remote_env/selectors";
+import { DEFAULTS } from "../remote_env/constants";
+import { WD_ENV } from "../remote_env/interfaces";
 
 describe("populateEnv()", () => {
   it("sets values", () => {

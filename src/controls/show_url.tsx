@@ -1,6 +1,6 @@
 import * as React from "react";
 import { FallbackImg } from "../ui/fallback_img";
-import { PLACEHOLDER_FARMBOT } from "../images/index";
+import { PLACEHOLDER_FARMBOT } from "../farmware/images/image_flipper";
 import { t } from "i18next";
 
 export const showUrl = (url: string, dirty: boolean) => {

@@ -1,18 +1,8 @@
-import { TaggedImage } from "../resources/tagged_resources";
-import { WD_ENV } from "./weed_detector/remote_env/interfaces";
+import { WD_ENV } from "./remote_env/interfaces";
 
-export interface Image {
-  id: number;
-  device_id: number;
-  attachment_processed_at: string | undefined;
-  updated_at: string;
-  created_at: string;
-  attachment_url: string;
-  meta: {
-    x: number | undefined;
-    y: number | undefined;
-    z: number | undefined;
-  };
+export interface SettingsMenuProps {
+  values: Partial<WD_ENV>;
+  onChange(key: keyof WD_ENV, value: number): void;
 }
 
 /** Hue, Saturation, Value */
@@ -46,14 +36,4 @@ export interface EnvSliderProps {
 
 export interface EnvSliderState extends Partial<HiLo> {
   sliding: boolean;
-}
-
-export interface ImageFlipperProps {
-  onFlip(uuid: string | undefined): void;
-  images: TaggedImage[];
-  currentImage: TaggedImage | undefined;
-}
-
-export interface ImageFlipperState {
-  isLoaded: boolean;
 }

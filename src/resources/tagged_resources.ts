@@ -13,7 +13,7 @@ import { User } from "../auth/interfaces";
 import { assertUuid } from "./selectors";
 import { DeviceAccountSettings } from "../devices/interfaces";
 import { isObject, isString, get } from "lodash";
-import { Image } from "../images/interfaces";
+import { Image } from "../farmware/images/interfaces";
 
 export type ResourceName =
   | "users"

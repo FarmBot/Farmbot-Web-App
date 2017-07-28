@@ -2,7 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 import { Widget, WidgetHeader } from "../ui";
 import { WebcamPanelState, Props } from "./interfaces";
-import { PLACEHOLDER_FARMBOT } from "../images/index";
+import { PLACEHOLDER_FARMBOT } from "../farmware/images/image_flipper";
 import { showUrl } from "./show_url";
 import { ToolTips } from "../constants";
 import { overwrite, edit, save } from "../api/crud";
