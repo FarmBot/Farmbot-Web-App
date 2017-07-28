@@ -71,8 +71,12 @@ export let initialState: BotState = {
 };
 
 export let botReducer = generateReducer<BotState>(initialState)
-  .add<keyof ControlPanelState>(Actions.TOGGLE_CONTROL_PANEL_OPTION, (s, a) => {
-    s.controlPanelState[a.payload] = !s.controlPanelState[a.payload];
+  .add<void>(Actions.SETTING_UPDATE_START, (s, a) => {
+    s.isUpdating = true;
+    return s;
+  })
+  .add<void>(Actions.SETTING_UPDATE_END, (s, a) => {
+    s.isUpdating = false;
     return s;
   })
   .add<number>(Actions.CHANGE_STEP_SIZE, (s, a) => {
@@ -80,12 +84,8 @@ export let botReducer = generateReducer<BotState>(initialState)
       stepSize: a.payload
     });
   })
-  .add<void>(Actions.SETTING_UPDATE_START, (s, a) => {
-    s.isUpdating = true;
-    return s;
-  })
-  .add<void>(Actions.SETTING_UPDATE_END, (s, a) => {
-    s.isUpdating = false;
+  .add<keyof ControlPanelState>(Actions.TOGGLE_CONTROL_PANEL_OPTION, (s, a) => {
+    s.controlPanelState[a.payload] = !s.controlPanelState[a.payload];
     return s;
   })
   .add<HardwareState>(Actions.BOT_CHANGE, (s, { payload }) => {

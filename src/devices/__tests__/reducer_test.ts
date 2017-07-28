@@ -16,11 +16,26 @@ describe("safeStringFetch", () => {
 });
 
 describe("botRedcuer", () => {
-  it("Handles Actions.SETTING_UPDATE_START", () => {
-    let after = botReducer(initialState, {
+  it("Starts / stops an update", () => {
+    let step1 = botReducer(initialState, {
       type: Actions.SETTING_UPDATE_START,
       payload: undefined
     });
-    expect(after.isUpdating).toBe(true);
+    expect(step1.isUpdating).toBe(true);
+
+    let step2 = botReducer(step1, {
+      type: Actions.SETTING_UPDATE_END,
+      payload: undefined
+    });
+
+    expect(step2.isUpdating).toBe(false);
+  });
+
+  it("changes step size", () => {
+    let state = botReducer(initialState, {
+      type: Actions.CHANGE_STEP_SIZE,
+      payload: 23
+    });
+    expect(state.stepSize).toBe(23);
   });
 });
