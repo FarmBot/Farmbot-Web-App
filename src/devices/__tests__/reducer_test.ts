@@ -21,6 +21,6 @@ describe("botRedcuer", () => {
       type: Actions.SETTING_UPDATE_START,
       payload: undefined
     });
-    expect(after.isUpdating).toBe(false);
+    expect(after.isUpdating).toBe(true);
   });
 });
