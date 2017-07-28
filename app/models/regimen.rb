@@ -3,7 +3,7 @@
 # Examples: Water cabbage 3 times a day for 40 days, then twice a day for 20
 #           days after that.
 # A regimen takes a SEQUENCES and repeats them over a fixed amount of time slots
-class Regimen < ActiveRecord::Base
+class Regimen < ApplicationRecord
   # Regimen gets pluralized strangely by Rails.
   # Occasionally to "regimans".
   # This is the workaround.

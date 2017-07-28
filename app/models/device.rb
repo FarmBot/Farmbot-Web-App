@@ -1,5 +1,5 @@
 # Farmbot Device models all data related to an actual FarmBot in the real world.
-class Device < ActiveRecord::Base
+class Device < ApplicationRecord
   DEFAULT_MAX_LOGS   = 50
   DEFAULT_MAX_IMAGES = 100
   TIMEZONES          = TZInfo::Timezone.all_identifiers

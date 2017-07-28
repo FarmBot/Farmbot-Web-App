@@ -2,7 +2,7 @@
 # are executed at fixed intervals. FarmEvents are less flexible than Regimens
 # because they can only perform one sequence. Also unlike Regimens, they can run
 # forever.
-class FarmEvent < ActiveRecord::Base
+class FarmEvent < ApplicationRecord
   NEVER              = "never"
   UNITS_OF_TIME      = %w(never minutely hourly daily weekly monthly yearly)
   UNITS_OF_TIME      << NEVER
