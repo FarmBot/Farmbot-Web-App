@@ -32,7 +32,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
         tool_id: undefined,
         name: "Tool Slot"
       }
-    }
+    };
   }
 
   render() {
@@ -119,10 +119,10 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
                     <i className="fa fa-times" />
                   </button>
                 </Col>
-              </Row>
+              </Row>;
             })}
         </WidgetBody>
       </Widget>
-    </div>
+    </div>;
   }
 }
