@@ -1,7 +1,7 @@
 import { Everything } from "../interfaces";
 import { selectAllImages } from "../resources/selectors";
 import { FarmwareProps } from "../devices/interfaces";
-import { prepopulateEnv } from "../images/weed_detector/remote_env/selectors";
+import { prepopulateEnv } from "./weed_detector/remote_env/selectors";
 import * as _ from "lodash";
 
 export function mapStateToProps(props: Everything): FarmwareProps {
@@ -27,4 +27,3 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     images
   };
 }
-

@@ -18,7 +18,7 @@ describe("<Body/>", () => {
       H_HI: 8,
       S_HI: 10,
       V_HI: 12
-    }
+    };
   }
 
   it("triggers onChange() event", () => {
@@ -28,7 +28,7 @@ describe("<Body/>", () => {
     iw.props = props;
     iw.onHslChange("H")([4, 5]);
     expect(props.onChange).toHaveBeenCalledTimes(2);
-    expect(props.onChange).toHaveBeenCalledWith("H_HI", 5)
+    expect(props.onChange).toHaveBeenCalledWith("H_HI", 5);
     expect(props.onChange).toHaveBeenCalledWith("H_LO", 4);
   });
 });

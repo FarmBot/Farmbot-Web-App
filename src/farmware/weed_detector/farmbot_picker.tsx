@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Hue, Saturation } from "react-color/lib/components/common";
-import { FarmbotPickerProps } from "./index";
+import { FarmbotPickerProps } from "./interfaces";
 import * as _ from "lodash";
 
 /** Wrapper class around `react-color`'s `<Saturation />` and `<Hue />`.

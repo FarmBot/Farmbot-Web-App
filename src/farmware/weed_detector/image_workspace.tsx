@@ -1,8 +1,8 @@
 import * as React from "react";
-import { FarmbotColorPicker } from "../farmbot_picker";
+import { FarmbotColorPicker } from "./farmbot_picker";
 import { BlurableInput, Row, Col } from "../../ui/index";
-import { ImageFlipper } from "../image_flipper";
-import { HSV } from "../interfaces";
+import { ImageFlipper } from "../images/image_flipper";
+import { HSV } from "./interfaces";
 import { WeedDetectorSlider } from "./slider";
 import { TaggedImage } from "../../resources/tagged_resources";
 import { t } from "i18next";

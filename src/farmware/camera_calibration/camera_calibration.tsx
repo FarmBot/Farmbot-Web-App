@@ -1,47 +1,32 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Widget, Row, Col, WidgetBody } from "../ui/index";
+import { Widget, Row, Col, WidgetBody } from "../../ui/index";
 import { CameraCalibrationState, CameraCalibrationProps } from "./interfaces";
-import { TitleBar } from "../images/weed_detector/title";
-import { ImageWorkspace } from "../images/weed_detector/image_workspace";
-import { ToolTips } from "../constants";
-import { envSave } from "../images/weed_detector/remote_env/actions";
-import { WDENVKey } from "../images/weed_detector/remote_env/interfaces";
-import { devices } from "../device";
+import { TitleBar } from "../weed_detector/title";
+import { ImageWorkspace } from "../weed_detector/image_workspace";
+import { ToolTips } from "../../constants";
+import { envSave } from "../weed_detector/remote_env/actions";
+import { WDENVKey } from "../weed_detector/remote_env/interfaces";
+import { devices } from "../../device";
 import { selectImage } from "../images/actions";
+import { calibrate, scanImage } from "./actions";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, CameraCalibrationState> {
-
-  calibrate = () => {
-    devices.current.execScript("camera-calibration");
-  }
-
-  scanImage(imageId: number) {
-    devices
-      .current
-      .execScript("historical-camera-calibration", [{
-        kind: "pair", args: {
-          label: "CAMERA_CALIBRATION_selected_image",
-          value: "" + imageId
-        }
-      }]);
-  }
-
   render() {
     return (
       <Widget className="weed-detector-widget coming-soon">
         <TitleBar
           title={"Camera Calibration"}
           help={t(ToolTips.CAMERA_CALIBRATION)}
-          onCalibrate={this.calibrate}
+          onCalibrate={this.props.dispatch(calibrate)}
           env={this.props.env}
         />
         <WidgetBody>
           <Row>
             <Col sm={12}>
               <ImageWorkspace
-                onProcessPhoto={(id) => { this.scanImage(id); }}
+                onProcessPhoto={(id) => { this.props.dispatch(scanImage(id)); }}
                 onFlip={(uuid) => this.props.dispatch(selectImage(uuid))}
                 images={this.props.images}
                 currentImage={this.props.currentImage}

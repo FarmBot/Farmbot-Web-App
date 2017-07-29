@@ -1,4 +1,4 @@
-import { WeedDetectorSlider } from "../weed_detector/slider";
+import { WeedDetectorSlider } from "../slider";
 
 describe("Weed detector slider", () => {
   it("sets props", () => {

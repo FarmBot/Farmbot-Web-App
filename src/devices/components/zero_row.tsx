@@ -33,7 +33,7 @@ export function ZeroRow() {
     {AXES.map((axis) => {
       return <Col xs={2} key={axis}>
         <ZeroButton axis={axis} />
-      </Col>
+      </Col>;
     })}
   </Row>;
 }

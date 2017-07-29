@@ -15,7 +15,7 @@ import {
 } from "../resources/tagged_resources";
 import { RestResources } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
-import { WD_ENV } from "../images/weed_detector/remote_env/interfaces";
+import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import { DropDownItem } from "../ui/index";
 
 export interface Props {

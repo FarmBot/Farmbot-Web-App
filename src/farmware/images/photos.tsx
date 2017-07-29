@@ -3,14 +3,14 @@ import * as _ from "lodash";
 import * as moment from "moment";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
-import { Widget, WidgetHeader, WidgetBody } from "../ui/index";
-import { ImageFlipper } from "../images/index";
+import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
+import { ImageFlipper } from "./image_flipper";
 import { PhotosProps } from "./interfaces";
-import { devices } from "../device";
-import { ToolTips } from "../constants";
-import { selectImage } from "../images/actions";
-import { WidgetFooter } from "../ui/widget_footer";
-import { safeStringFetch } from "../util";
+import { devices } from "../../device";
+import { ToolTips } from "../../constants";
+import { selectImage } from "./actions";
+import { WidgetFooter } from "../../ui/widget_footer";
+import { safeStringFetch } from "../../util";
 
 interface MetaInfoProps {
   /** Default conversion is `attr_name ==> Attr Name`.
