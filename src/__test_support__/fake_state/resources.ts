@@ -1,6 +1,9 @@
 import { Everything } from "../../interfaces";
 import { buildResourceIndex } from "../resource_index_builder";
-import { TaggedFarmEvent, TaggedSequence, TaggedRegimen, TaggedImage } from "../../resources/tagged_resources";
+import {
+  TaggedFarmEvent, TaggedSequence, TaggedRegimen, TaggedImage,
+  TaggedTool, TaggedToolSlotPointer
+} from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
 
@@ -48,5 +51,24 @@ export function fakeImage(): TaggedImage {
     created_at: new Date().toISOString(),
     attachment_url: "https://i.redd.it/xz0e2kinm4cz.jpg",
     meta: { x: 0, y: 0, z: 0 }
+  });
+}
+
+export function fakeTool(): TaggedTool {
+  return fakeResource("tools", {
+    name: "Foo"
+  });
+}
+
+export function fakeToolSlot(): TaggedToolSlotPointer {
+  return fakeResource("points", {
+    name: "ToolSlot 1",
+    pointer_type: "ToolSlot",
+    tool_id: 1,
+    x: 10,
+    y: 10,
+    z: 10,
+    radius: 10,
+    meta: {}
   });
 }
