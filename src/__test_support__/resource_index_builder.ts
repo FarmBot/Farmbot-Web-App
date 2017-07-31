@@ -260,6 +260,15 @@ export let FAKE_RESOURCES: TaggedResource[] = [
       "status": "active"
     },
     "uuid": "tools.14.49"
+  },
+  {
+    "kind": "tools",
+    "body": {
+      "id": 15,
+      "name": "Berry Picking Tool",
+      "status": "inactive"
+    },
+    "uuid": "tools.15.50"
   }
 ];
 

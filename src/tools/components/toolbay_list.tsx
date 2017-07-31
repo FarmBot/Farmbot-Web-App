@@ -38,6 +38,6 @@ export class ToolBayList extends React.Component<ToolBayListProps, {}> {
           </Row>;
         })}
       </WidgetBody>
-    </Widget>
+    </Widget>;
   }
-};
+}

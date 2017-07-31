@@ -35,8 +35,8 @@ export function TileTakePhoto({ dispatch, currentStep, index, currentSequence }:
             <div className="row">
               <div className="col-xs-12">
                 <p>
-                  Photos are viewable from the <Link to="/app/device">
-                    devices page</Link>.
+                  Photos are viewable from the <Link to="/app/farmware">
+                    farmware page</Link>.
                 </p>
               </div>
             </div>
