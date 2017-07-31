@@ -40,6 +40,21 @@ export function Motors({ dispatch, bot }: MotorsProps) {
             dispatch={dispatch} />
         </Col>
       </Row>
+      <Row>
+        <Col xs={6}>
+          <label>
+            {t("E-Stop on Movement Error")}
+          </label>
+          <SpacePanelToolTip tooltip={t(ToolTips.E_STOP_ON_MOV_ERR)} />
+        </Col>
+        <Col xs={2}>
+          <ToggleButton
+            toggleValue={mcu_params.param_e_stop_on_mov_err}
+            toggleAction={() =>
+              settingToggle("param_e_stop_on_mov_err", bot)}
+          />
+        </Col>
+      </Row>
       <NumericMCUInputGroup
         name={t("Max Speed (steps/s)")}
         tooltip={t(ToolTips.MAX_SPEED)}
