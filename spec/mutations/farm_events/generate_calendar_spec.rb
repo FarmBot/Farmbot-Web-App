@@ -60,4 +60,29 @@ describe FarmEvents::GenerateCalendar do
     expect(calendar.length).to eq(1)
     expect(calendar.first).to eq(params[:start_time])
   end
+
+
+  idea = ->(start, interval_sec, lower, upper = (Time.now + 1.year)) {
+    # How many items must we skip to get to the first occurence?
+    skip_intervals    = ((lower - start) / interval_sec).ceil
+    # At what time does the first event occur?
+    first_item        = start + (skip_intervals * interval_sec).seconds
+    list = [first_item]
+    60.times do
+      item     = list.last + interval_sec.seconds
+      list.push(item) unless item > upper
+    end
+    return list
+  }
+
+  it 'trys new idea' do
+    monday   = (Time.now - 14.days).monday.midnight + 8.hours # 8am Monday
+    tuesday  = monday + 19.hours                              # 3am Tuesday
+    thursday = (monday + 3.days) + 10.hours                   # 18pm Thursday
+    interval = 4 * FarmEvents::GenerateCalendar::TIME["hourly"]
+    result1  = idea[monday, interval, tuesday, thursday]
+    expect(result1[0].tuesday?).to be(true)
+    expect(result1[0].hour).to be(4)
+    expect(result1.length).to be(16)
+  end
 end

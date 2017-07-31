@@ -2,13 +2,12 @@ module FarmEvents
   # Used to calculate next 60ish occurrences or so of a FarmEvent.
   class GenerateCalendar < Mutations::Command
     NEVER = FarmEvent::NEVER.to_s
-    TIME = { "minutely" => 60,
-             "hourly"   => 60 * 60,
-             "daily"    => 60 * 60 * 24,
-             "weekly"   => 60 * 60 * 24 * 7,
-             "monthly"  => 60 * 60 * 24 * 30, # Not perfect...
-             "yearly"   => 60 * 60 * 24 * 365 }
-
+    TIME  = { "minutely" => 60,
+              "hourly"   => 60 * 60,
+              "daily"    => 60 * 60 * 24,
+              "weekly"   => 60 * 60 * 24 * 7,
+              "monthly"  => 60 * 60 * 24 * 30, # Not perfect...
+              "yearly"   => 60 * 60 * 24 * 365 }
     UNIT_TRANSLATION = { "minutely" => :minutes,
                          "hourly"   => :hours,
                          "daily"    => :days,
@@ -36,8 +35,9 @@ module FarmEvents
 
     def full_calendar
       throw "NO NO NO!!!" if start_time && end_time && (start_time > end_time)
-      options = { starts: start_time }
-      options[:until] = end_time if end_time
+      options = { starts: start_time,
+                  until:  compute_endtime }
+
       return Montrose
         .every(every, options)
         .take(60)
@@ -59,6 +59,11 @@ module FarmEvents
 
     def in_future?
       start_time > Time.now
+    end
+
+    def compute_endtime
+      next_year = (Time.now + 1.year)
+      (end_time && (end_time < next_year)) ? end_time : next_year
     end
   end
 end
