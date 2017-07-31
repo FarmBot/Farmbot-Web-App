@@ -3,20 +3,29 @@ class FarmEventSerializer < ActiveModel::Serializer
              :executable_id, :executable_type, :calendar
 
   def calendar
+  def calendar
     case object.executable
       when Sequence then sequence_calendar
-      # We don't make calendars for Regimens- compute it yourself using
-      # my_farm_event.executable.regimen_items - RC July 2017
-      else []
+      when Regimen  then regimen_calendar
+      else throw "Dont know how to calendarize #{exe.class}"
     end
   end
 
   private
 
+  def regimen_calendar
+    object
+      .executable
+      .regimen_items
+      .pluck(:time_offset)
+      .map { |x| x / 1000 }
+      .map { |x| object.start_time.midnight + x } || []
+  end
+
   def sequence_calendar
     FarmEvents::GenerateCalendar
       .run!(origin:      object.start_time,
-            lower_limit: instance_options[:upper_limit] || object.start_time,
+            lower_limit: instance_options[:upper_limit] || Time.now,
             upper_limit: instance_options[:lower_limit] || object.end_time,
             repeat:      object.repeat,
             time_unit:   object.time_unit)
