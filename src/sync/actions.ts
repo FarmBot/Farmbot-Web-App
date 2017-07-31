@@ -7,7 +7,7 @@ import { Tool } from "../tools/interfaces";
 import { Regimen } from "../regimens/interfaces";
 import { Peripheral } from "../controls/peripherals/interfaces";
 import { FarmEvent } from "../farm_designer/interfaces";
-import { Image } from "../images/interfaces";
+import { Image } from "../farmware/images/interfaces";
 import { DeviceAccountSettings } from "../devices/interfaces";
 import { ResourceName } from "../resources/tagged_resources";
 import { User } from "../auth/interfaces";

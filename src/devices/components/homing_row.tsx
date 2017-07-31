@@ -30,7 +30,7 @@ export function HomingRow(props: HomingRowProps) {
           <LockableButton disabled={disabled} onClick={() => findHome(axis)}>
             {t("HOME {{axis}}", { axis })}
           </LockableButton>
-        </Col>
+        </Col>;
       })}
   </Row>;
 }

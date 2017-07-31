@@ -3,11 +3,11 @@ import { connect } from "react-redux";
 import { Page, Col, Row, Widget, WidgetHeader, WidgetBody } from "../ui/index";
 import { FarmwarePanel } from "./farmware_panel";
 import { mapStateToProps } from "./state_to_props";
-import { Photos } from "./photos";
-import { CameraCalibration } from "./camera_calibration";
+import { Photos } from "./images/photos";
+import { CameraCalibration } from "./camera_calibration/camera_calibration";
 import { FarmwareProps } from "../devices/interfaces";
-import { WeedDetector } from "../images/weed_detector/index";
-import { envGet } from "../images/weed_detector/remote_env/selectors";
+import { WeedDetector } from "./weed_detector/index";
+import { envGet } from "./weed_detector/remote_env/selectors";
 
 @connect(mapStateToProps)
 export class FarmwarePage extends React.Component<FarmwareProps, {}> {

@@ -37,7 +37,7 @@ export function TileExecuteScript({ dispatch, currentStep, index, currentSequenc
                 <div className="col-xs-12">
                   <label>{t("Package Name")}</label>
                   <input type="text" value={currentStep.args.label} disabled={true} />
-                  <small>NOTE: Support for customizable scripts is coming soon.</small>
+                  <small>NOTE: Support for farmware selection is coming soon.</small>
                 </div>
               </div>
             </div>

@@ -39,7 +39,7 @@ export function CalibrationRow(props: CalibrationRowProps) {
             onClick={() => calibrate(axis)}>
             {t("CALIBRATE {{axis}}", { axis })}
           </LockableButton>
-        </Col>
+        </Col>;
       })}
   </Row>;
 }
