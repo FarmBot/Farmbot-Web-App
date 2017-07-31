@@ -6,6 +6,7 @@ import { Calendar } from "./calendar/index";
 import { occurrence } from "./calendar/occurrence";
 import { findSequenceById } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
+import { FarmEventWithRegimen, FarmEventWithSequence } from "./calendar/interfaces";
 
 /** Prepares a FarmEvent[] for use with <FBSelect /> */
 export function mapStateToProps(state: Everything): FarmEventProps {
@@ -20,40 +21,39 @@ export function mapStateToProps(state: Everything): FarmEventProps {
 export function mapResourcesToCalendar(ri: ResourceIndex, unixNow = moment.now()): Calendar {
   let x = joinFarmEventsToExecutable(ri);
   let calendar = new Calendar();
-  console.group("WOW");
+  let addRegimenToCalendar = regimenCalendarAdder(ri);
+
   x.map(function (fe) {
-    console.dir(fe);
-    console.log("!!calendar = " + !!calendar);
-    console.log("Calendar is empty, so it doesn't even *try* to render the" +
-      "regimen items. We need to check fe.executable_type early, maybe?");
-    (fe.calendar || []).map(function (date) {
-      let m = moment(date);
-      calendar.insert(occurrence(m, fe));
-      console.log("Hmmm");
-      if (fe.executable_type === "Regimen") {
-        console.dir(fe.executable.regimen_items.length);
-        fe.executable.regimen_items.map((regi, i) => {
-          // Add the offset, give it a special name, push it into the calendar.
-          let m2 = m
-            .clone()
-            .startOf("day")
-            .add(regi.time_offset, "milliseconds");
-          if (m2.isBefore(m)) {
-            console.log("Bailed early");
-            return;
-          } else {
-            console.log("Kept going");
-            let o = occurrence(m2, fe);
-            let seq = findSequenceById(ri, regi.sequence_id);
-            let sequenceName = seq.body.name;
-            o.parentExecutableName = fe.executable.name;
-            o.childExecutableName = sequenceName;
-            calendar.insert(o);
-          }
-        });
-      }
-    });
+    switch (fe.executable_type) {
+      case "Regimen": return addRegimenToCalendar(fe, calendar);
+      case "Sequence": return addSequenceToCalendar(fe, calendar);
+      default: throw new Error(`Bad fe: ${JSON.stringify(fe)}`);
+    }
   });
-  console.groupEnd();
+
   return calendar;
 }
+export let regimenCalendarAdder = (index: ResourceIndex) =>
+  (f: FarmEventWithRegimen, c: Calendar) => {
+    let { regimen_items } = f.executable;
+    let fromEpoch = (ms: number) => moment(f.start_time)
+      .startOf("day")
+      .add(ms, "ms");
+    let now = moment();
+    regimen_items.map(ri => {
+      let time = fromEpoch(ri.time_offset);
+      if (time.isAfter(now)) {
+        let o = occurrence(time, f);
+        let seq = findSequenceById(index, ri.sequence_id);
+        o.parentExecutableName = f.executable.name;
+        o.childExecutableName = seq.body.name;
+        c.insert(o);
+      }
+    });
+  };
+
+export let addSequenceToCalendar = (f: FarmEventWithSequence, c: Calendar) => {
+  (f.calendar || [])
+    .map(date => moment(date))
+    .map(m => c.insert(occurrence(m, f)));
+};
