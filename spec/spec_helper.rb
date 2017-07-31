@@ -9,9 +9,12 @@ SimpleCov.start do
 end
 
 require 'codecov'
-SimpleCov.formatter = SimpleCov::Formatter::Codecov
+SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
+  SimpleCov::Formatter::HTMLFormatter,
+  SimpleCov::Formatter::Codecov,
+])
 require 'pry'
-# This file is copied to spec/ when you run 'rails generate rspec:install'
+
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
