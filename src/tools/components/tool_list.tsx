@@ -37,4 +37,4 @@ export class ToolList extends React.Component<ToolListProps, {}> {
       </WidgetBody>
     </Widget>;
   }
-};
+}

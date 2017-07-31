@@ -10,7 +10,11 @@ export let bot: Everything["bot"] = {
     "danger_zone": false
   },
   "hardware": {
-    "mcu_params": {},
+    "mcu_params": {
+      encoder_enabled_x: 1,
+      encoder_enabled_y: 1,
+      encoder_enabled_z: 0
+    },
     "jobs": {},
     "location_data": {
       "position": {
