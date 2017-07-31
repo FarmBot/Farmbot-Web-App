@@ -179,7 +179,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
           // TODO: Internationalizing this will be a challenge.
           success(`This Farm Event will run ${moment(nextRun).fromNow()}, but
             you must first SYNC YOUR DEVICE. If you do not sync, the event will\
-            not run.`.replace(/\s+/g, " "));
+            not run.`);
           this.props.dispatch(maybeWarnAboutMissedTasks(frmEvnt, function () {
             alert(`You are scheduling a regimen to run today. Be aware that
               running a regimen too late in the day may result in skipped
@@ -189,7 +189,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         } else {
           debugger;
           error(`This Farm Event does not appear to have a valid run time.
-            Perhaps you entered bad dates?`.replace(/\s+/g, " "));
+            Perhaps you entered bad dates?`);
         }
       })
       .catch(() => {
