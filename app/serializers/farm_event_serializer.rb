@@ -3,7 +3,6 @@ class FarmEventSerializer < ActiveModel::Serializer
              :executable_id, :executable_type, :calendar
 
   def calendar
-  def calendar
     case object.executable
       when Sequence then sequence_calendar
       when Regimen  then regimen_calendar
@@ -19,7 +18,8 @@ class FarmEventSerializer < ActiveModel::Serializer
       .regimen_items
       .pluck(:time_offset)
       .map { |x| x / 1000 }
-      .map { |x| object.start_time.midnight + x } || []
+      .map { |x| object.start_time.midnight + x }
+      .select { |x| x > Time.now } || []
   end
 
   def sequence_calendar
