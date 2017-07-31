@@ -187,6 +187,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
               this is a concern.`);
           }));
         } else {
+          debugger;
           error(`This Farm Event does not appear to have a valid run time.
             Perhaps you entered bad dates?`);
         }
