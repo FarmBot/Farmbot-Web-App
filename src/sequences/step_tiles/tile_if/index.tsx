@@ -90,7 +90,8 @@ export function InnerIf(props: IfParams) {
           <div className="step-header if-step">
             <StepTitleBar index={index}
               dispatch={dispatch}
-              step={currentStep} />
+              step={currentStep}
+              sequence={currentSequence} />
             <i className="fa fa-arrows-v step-control" />
             <i className="fa fa-clone step-control"
               onClick={() => dispatch(splice(stuff))} />

@@ -131,7 +131,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
       <Row>
         <Col sm={12}>
           <div className="step-header move-absolute-step">
-            <StepTitleBar index={index} dispatch={dispatch} step={currentStep} />
+            <StepTitleBar index={index} dispatch={dispatch} step={currentStep}
+              sequence={currentSequence} />
             <i className="fa fa-arrows-v step-control" />
             <i className="fa fa-clone step-control"
               onClick={() => dispatch(splice({
