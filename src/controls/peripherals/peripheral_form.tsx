@@ -38,7 +38,7 @@ export function PeripheralForm(props: PeripheralFormProps) {
             <i className="fa fa-minus" />
           </button>
         </Col>
-      </Row>
+      </Row>;
     })}
-  </div>
-};
+  </div>;
+}

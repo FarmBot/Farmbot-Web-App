@@ -61,11 +61,7 @@ export class SequenceEditorMiddleActive extends
     let isSaved = !isSaving && !isDirty;
 
     return (
-      <div className="sequence-editor">
-        <h3>
-          <i>{t("Sequence Editor")}</i>
-        </h3>
-        <ToolTip helpText={ToolTips.SEQUENCE_EDITOR} />
+      <div>
         <div className="button-group">
           <SaveBtn
             isDirty={isDirty}

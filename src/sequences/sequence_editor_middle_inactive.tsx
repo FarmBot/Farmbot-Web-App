@@ -2,12 +2,8 @@ import * as React from "react";
 import { Col } from "../ui/index";
 import { t } from "i18next";
 
-export function SequenceEditorMiddleInactive(props: {}) {
-  return (
-    <Col xs={12}>
-      <h4>
-        <i>{t("No sequence selected.")}</i>
-      </h4>
-    </Col>
-  );
+/** The bottom half of the Sequence editor panel (when no Sequence is selected). */
+export function SequenceEditorMiddleInactive({ }: {}) {
+  return <p>{t(`No Sequence selected. Click one in the Sequences
+        panel to edit, or click "+" to create a new one.`)}</p>;
 }
