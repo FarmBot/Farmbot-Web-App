@@ -44,7 +44,7 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
       .add(ms, "ms");
     regimen_items.map(ri => {
       let time = fromEpoch(ri.time_offset);
-      if (time.isAfter(now)) {
+      if (time.isAfter(now) || time.isAfter(startTime)) {
         let o = occurrence(time, f);
         let seq = findSequenceById(index, ri.sequence_id);
         o.parentExecutableName = f.executable.name;
@@ -54,6 +54,9 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
     });
   };
 
-export let addSequenceToCalendar = (f: FarmEventWithSequence, c: Calendar) => {
-  scheduleForFarmEvent(f).map(m => c.insert(occurrence(m, f)));
-};
+export let addSequenceToCalendar =
+  (f: FarmEventWithSequence, c: Calendar, now = moment()) => {
+    scheduleForFarmEvent(f)
+      .filter(m => m.isAfter(now))
+      .map(m => c.insert(occurrence(m, f)));
+  };
