@@ -19,7 +19,9 @@ class FarmEventSerializer < ActiveModel::Serializer
       .pluck(:time_offset)
       .map { |x| x / 1000 }
       .map { |x| object.start_time.midnight + x }
-      .select { |x| x > Time.now } || []
+      .map(&:utc)
+      .select { |x| !x.past? }
+      .map(&:as_json) || []
   end
 
   def sequence_calendar

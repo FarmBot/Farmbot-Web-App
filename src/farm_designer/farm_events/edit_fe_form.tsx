@@ -69,7 +69,7 @@ function destructureFarmEvent(fe: TaggedFarmEvent): FarmEventViewModel {
 
 /** Take a FormViewModel and recombine the fields into a Partial<FarmEvent>
  * that can be used to apply updates (such as a PUT request to the API). */
-function recombine(vm: FarmEventViewModel): Partial<TaggedFarmEvent["body"]> {
+export function recombine(vm: FarmEventViewModel): Partial<TaggedFarmEvent["body"]> {
   return {
     start_time: moment(vm.startDate + " " + vm.startTime).toISOString(),
     end_time: moment(vm.endDate + " " + vm.endTime).toISOString(),
@@ -184,9 +184,10 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             alert(`You are scheduling a regimen to run today. Be aware that
               running a regimen too late in the day may result in skipped
               regimen tasks. Consider rescheduling this event to tomorrow if
-              this is a concern.`);
+              this is a concern.`.replace(/\s+/g, " "));
           }));
         } else {
+          debugger;
           error(`This Farm Event does not appear to have a valid run time.
             Perhaps you entered bad dates?`);
         }
