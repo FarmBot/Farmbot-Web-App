@@ -15,7 +15,8 @@ export function TileTakePhoto({ dispatch, currentStep, index, currentSequence }:
           <div className="step-header take-photo-step">
             <StepTitleBar index={index}
               dispatch={dispatch}
-              step={currentStep} />
+              step={currentStep}
+              sequence={currentSequence} />
             <i className="fa fa-arrows-v step-control" />
             <i className="fa fa-clone step-control"
               onClick={() => dispatch(splice({
