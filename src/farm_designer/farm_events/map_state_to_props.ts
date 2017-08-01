@@ -37,10 +37,11 @@ export function mapResourcesToCalendar(ri: ResourceIndex, unixNow = moment.now()
 export let regimenCalendarAdder = (index: ResourceIndex) =>
   (f: FarmEventWithRegimen, c: Calendar) => {
     let { regimen_items } = f.executable;
-    let fromEpoch = (ms: number) => moment(f.start_time)
+    let startTime = moment(f.start_time);
+    let now = moment();
+    let fromEpoch = (ms: number) => startTime
       .startOf("day")
       .add(ms, "ms");
-    let now = moment();
     regimen_items.map(ri => {
       let time = fromEpoch(ri.time_offset);
       if (time.isAfter(now)) {
