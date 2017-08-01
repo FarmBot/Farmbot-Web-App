@@ -104,7 +104,11 @@ export function updateStepTitle(props: StepTitleBarProps) {
     let seqCopy = defensiveClone(sequence).body;
     let val = e.currentTarget.value;
     seqCopy.body = seqCopy.body || [];
-    _.assign(stepCopy, { comment: val });
+    if (val == "") {
+      delete stepCopy.comment;
+    } else {
+      stepCopy.comment = val;
+    }
     seqCopy.body[index] = stepCopy;
     dispatch(overwrite(sequence, seqCopy));
   };
