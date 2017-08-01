@@ -119,8 +119,10 @@ describe("<FarmEventForm/>", () => {
       "executable_type": "Regimen",
       "executable_id": "1"
     });
-    expect(result.start_time).toEqual("2017-08-01T13:35:00.000Z");
-    expect(result.end_time).toEqual("2017-08-01T13:33:00.000Z");
+    expect(result.start_time).toContain("2017-08-01");
+    expect(result.end_time).toContain("2017-08-01");
+    expect(result.start_time).toContain(":35:00.000");
+    expect(result.end_time).toContain(":33:00.000");
     expect(result.repeat).toBe(1);
     expect(result.time_unit).toBe("never");
     expect(result.executable_id).toBe(1);
