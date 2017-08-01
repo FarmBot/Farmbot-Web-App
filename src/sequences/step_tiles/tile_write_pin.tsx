@@ -15,7 +15,8 @@ export function TileWritePin({ dispatch, currentStep, index, currentSequence }: 
           <div className="step-header write-pin-step">
             <StepTitleBar index={index}
               dispatch={dispatch}
-              step={currentStep} />
+              step={currentStep}
+              sequence={currentSequence} />
             <i className="fa fa-arrows-v step-control" />
             <i className="fa fa-clone step-control"
               onClick={() => dispatch(splice({

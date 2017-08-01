@@ -15,7 +15,8 @@ export function TileWait({ dispatch, currentStep, index, currentSequence }: Step
           <div className="step-header wait-step">
             <StepTitleBar index={index}
               dispatch={dispatch}
-              step={currentStep} />
+              step={currentStep}
+              sequence={currentSequence} />
             <i className="fa fa-arrows-v step-control" />
             <i className="fa fa-clone step-control"
               onClick={() => dispatch(splice({
