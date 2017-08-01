@@ -2,7 +2,7 @@ import { scheduler } from "../scheduler";
 import * as moment from "moment";
 
 describe("scheduler", () => {
-  it("runs a schedule", () => {
+  it("runs every 4 hours, starting Tu, until Th w/ origin of Mo", () => {
     // 8am Monday
     let monday = moment()
       .add(14, "days")
@@ -44,4 +44,6 @@ describe("scheduler", () => {
     const REALITY = result1.map(x => x.format("hh:mma dd"));
     EXPECTED.map(x => expect(REALITY).toContain(x));
   });
+
+  it("handles 0 as a repeat value? What happens?");
 });

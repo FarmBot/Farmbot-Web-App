@@ -64,7 +64,6 @@ export interface FarmEvent {
   time_unit: TimeUnit;
   executable_id: number;
   executable_type: ExecutableType;
-  readonly calendar?: string[] | undefined;
 }
 
 export interface MovePlantProps {
