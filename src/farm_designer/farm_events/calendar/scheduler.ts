@@ -17,7 +17,9 @@ export function scheduler({ originTime,
   intervalSeconds,
   lowerBound,
   upperBound }: SchedulerProps): Moment[] {
-
+  if (!intervalSeconds) { // 0, NaN and friends
+    return [originTime];
+  }
   upperBound = upperBound || nextYear();
   // # How many items must we skip to get to the first occurence?
   let skip_intervals =
@@ -27,6 +29,7 @@ export function scheduler({ originTime,
     .clone()
     .add((skip_intervals * intervalSeconds), "seconds");
   let list = [first_item];
+
   times(60, () => {
     let x = last(list);
     if (x) {
@@ -62,10 +65,9 @@ interface ConversionProps {
 export function farmEventIntervalSeconds(repeat: number, unit: TimeUnit) {
   let momentUnit = LOOKUP[unit];
   if ((unit === NEVER) || !(momentUnit)) {
-    return moment.duration(repeat, momentUnit).asSeconds();
-  } else {
-    console.warn("Using 0 as an interval...");
     return 0;
+  } else {
+    return moment.duration(repeat, momentUnit).asSeconds();
   }
 }
 
@@ -82,15 +84,16 @@ export interface TimeLine {
 /** Takes a subset of FarmEvent<Sequence> data and generates a list of dates. */
 export function scheduleForFarmEvent({ start_time, end_time, repeat, time_unit }:
   TimeLine): Moment[] {
-  if (repeat && (time_unit !== NEVER)) {
-    return scheduler({
+  let i = repeat && farmEventIntervalSeconds(repeat, time_unit);
+  if (i && (time_unit !== NEVER)) {
+    let hmm = scheduler({
       originTime: moment(start_time),
       lowerBound: moment(start_time),
       upperBound: end_time ? moment(end_time) : nextYear(),
-      intervalSeconds: farmEventIntervalSeconds(repeat, time_unit)
+      intervalSeconds: i
     });
+    return hmm;
   } else {
-    console.warn("Repeat was undefined or 0. Hmm..");
-    return [];
+    return [moment(start_time)];
   }
 }
