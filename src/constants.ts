@@ -69,6 +69,10 @@ export namespace ToolTips {
   export const MAX_MOVEMENT_RETRIES =
     `Number of times to retry a movement before stopping.`;
 
+  export const E_STOP_ON_MOV_ERR =
+    `Emergency stop if movement is not complete after the maximum number of
+    retries.`;
+
   export const MAX_SPEED =
     `Maximum travel speed after acceleration in motor steps per second.`;
 
