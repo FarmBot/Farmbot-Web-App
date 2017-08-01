@@ -34,9 +34,10 @@ import { betterMerge, fancyDebug } from "../../util";
 import { maybeWarnAboutMissedTasks } from "./util";
 import { TzWarning } from "./tz_warning";
 import { FarmEventRepeatForm } from "./farm_event_repeat_form";
+import { scheduleForFarmEvent } from "./calendar/scheduler";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
-const NEVER: TimeUnit = "never";
+export const NEVER: TimeUnit = "never";
 /** Separate each of the form fields into their own interface. Recombined later
  * on save.
  */
@@ -174,10 +175,10 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
       .then(() => {
         history.push("/app/designer/farm_events");
         let frmEvnt = this.props.farmEvent;
-        let nextRun = frmEvnt.body.calendar && frmEvnt.body.calendar[0];
+        let nextRun = _.first(scheduleForFarmEvent(frmEvnt.body));
         if (nextRun) {
           // TODO: Internationalizing this will be a challenge.
-          success(`This Farm Event will run ${moment(nextRun).fromNow()}, but
+          success(`This Farm Event will run ${nextRun.fromNow()}, but
             you must first SYNC YOUR DEVICE. If you do not sync, the event will\
             not run.`);
           this.props.dispatch(maybeWarnAboutMissedTasks(frmEvnt, function () {

@@ -15,10 +15,7 @@ const STUB_RESOURCE: TaggedFarmEvent = {
     "repeat": 1,
     "time_unit": "never",
     "executable_id": 78,
-    "executable_type": "Regimen",
-    "calendar": [
-      "2017-07-21T00:30:00.000Z"
-    ]
+    "executable_type": "Regimen"
   }
 };
 
