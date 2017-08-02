@@ -4,7 +4,6 @@ import { InputDefault } from "../input_default";
 import { mount } from "enzyme";
 import { TaggedSequence } from "../../../resources/tagged_resources";
 import { MoveAbsolute } from "farmbot/dist";
-import { updateStep } from "../../step_tiles/index";
 import { Wrapper } from "../../../__test_support__/wrapper";
 
 describe("<InputDefault/>", () => {
