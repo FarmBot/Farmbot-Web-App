@@ -11,6 +11,8 @@ import { ResourceIndex } from "../../resources/interfaces";
 import { defensiveClone } from "../../util";
 import { overwrite } from "../../api/crud";
 import { FBSelect } from "../../ui/new_fb_select";
+import { StepIconGroup } from "../step_icon_group";
+import { StepTitleBar } from "./step_title_bar";
 
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
@@ -85,20 +87,23 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
         <div className="row">
           <div className="col-sm-12">
             <div className="step-header execute-step">
-              <input className="step-label" placeholder="Execute" />
-              <i className="fa fa-arrows-v step-control" />
-              <i className="fa fa-clone step-control"
-                onClick={() => dispatch(splice({
+              <StepTitleBar
+                step={currentStep}
+                index={index}
+                dispatch={dispatch}
+                sequence={currentSequence} />
+              <StepIconGroup
+                onClone={() => dispatch(splice({
                   index,
                   step: currentStep,
                   sequence: currentSequence
-                }))} />
-              <i className="fa fa-trash step-control"
-                onClick={() => remove({
+                }))}
+                onTrash={() => remove({
                   dispatch,
                   index,
                   sequence: currentSequence
-                })} />
+                })}
+                helpText={"Executes another sequence. Best used with `if` blocks"} />
             </div>
           </div>
         </div>
