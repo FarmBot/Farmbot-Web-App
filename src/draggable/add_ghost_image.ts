@@ -8,7 +8,7 @@ export function addGhostImage(
   ev: React.DragEvent<HTMLElement>,
   /** Optional CSS class to add to drag image. */
   cssClass = "") {
-  var el = ev.currentTarget.cloneNode(true) as HTMLElement;
+  let el = ev.currentTarget.cloneNode(true) as HTMLElement;
   // RELEVANT READING:
   // https://www.kryogenix.org/code/browser/custom-drag-image.html
   el.classList.add(cssClass);
@@ -21,7 +21,7 @@ export function addGhostImage(
   // Because of MS Edge.
   // I really could care less about IE, but edge seems
   // to be OK aside from this one issue.
-  let dt = (ev.dataTransfer as any);
+  let dt = ev.dataTransfer;
   if (dt && dt.setDragImage) {
     dt.setDragImage(el, 0, 0);
   }
