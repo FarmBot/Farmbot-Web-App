@@ -1,7 +1,7 @@
 import * as React from "react";
-import { ToolSlotLayer, ToolSlotLayerProps } from "../layers/tool_slot_layer";
-import { fakeResource } from "../../../__test_support__/fake_resource";
-import { ToolSlotPointer } from "../../../interfaces";
+import { ToolSlotLayer, ToolSlotLayerProps } from "../tool_slot_layer";
+import { fakeResource } from "../../../../__test_support__/fake_resource";
+import { ToolSlotPointer } from "../../../../interfaces";
 import { shallow } from "enzyme";
 
 describe("<ToolSlotLayer/>", () => {
@@ -28,7 +28,7 @@ describe("<ToolSlotLayer/>", () => {
     expect(result.find("ToolSlotPoint").length).toEqual(0);
   });
 
-  it("toggles visibility off", () => {
+  it("toggles visibility on", () => {
     let p = fakeProps();
     p.visible = true;
     let result = shallow(<ToolSlotLayer {...p } />);

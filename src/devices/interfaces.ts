@@ -80,6 +80,8 @@ export interface MoveRelProps {
 export type Xyz = "x" | "y" | "z";
 export type Axis = Xyz | "all";
 
+export type BotPosition = Record<Xyz, (number | undefined)>;
+
 export interface CalibrationButtonProps {
   disabled: boolean;
   axis: Axis;

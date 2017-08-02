@@ -1,11 +1,11 @@
 import * as React from "react";
 import { getXYFromQuadrant } from "./util";
 import { BotOriginQuadrant } from "../interfaces";
-import { BotState } from "../../devices/interfaces";
+import { BotPosition } from "../../devices/interfaces";
 
 interface VFBProps {
   quadrant: BotOriginQuadrant;
-  bot: BotState;
+  botPosition: BotPosition;
 }
 
 interface VFBState {
@@ -15,7 +15,7 @@ export class VirtualFarmBot extends
   React.Component<VFBProps, Partial<VFBState>> {
 
   render() {
-    let { x, y } = this.props.bot.hardware.location_data.position;
+    let { x, y } = this.props.botPosition;
     let { quadrant } = this.props;
     let { qx, qy } = getXYFromQuadrant((x || 0), (y || 0), quadrant);
     return <g>

@@ -1,4 +1,4 @@
-import { BotState, Xyz } from "../devices/interfaces";
+import { BotState, Xyz, BotPosition } from "../devices/interfaces";
 import { Vector3 } from "farmbot/dist";
 import { TaggedPeripheral, TaggedDevice } from "../resources/tagged_resources";
 import { RestResources } from "../resources/interfaces";
@@ -48,7 +48,7 @@ export type Vector = Vector3;
 export type EncoderDisplay = "raw_encoders" | "scaled_encoders";
 
 export interface AxisDisplayGroupProps {
-  position: Record<Xyz, number | undefined>;
+  position: BotPosition;
   label: string;
 }
 
