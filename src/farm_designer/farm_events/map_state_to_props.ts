@@ -40,6 +40,7 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
     let fromEpoch = (ms: number) => moment(f.start_time)
       .startOf("day")
       .add(ms, "ms");
+    c.insert(occurrence(moment(f.start_time), f));
     regimen_items.map(ri => {
       let time = fromEpoch(ri.time_offset);
       if (time.isAfter(now) && time.isAfter(moment(f.start_time))) {

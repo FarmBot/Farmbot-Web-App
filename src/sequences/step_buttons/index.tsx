@@ -12,7 +12,7 @@ let stepClick = (dispatch: Function, step: Step, seq: TaggedSequence | undefined
     if (seq) {
       pushStep(step, dispatch, seq);
     } else {
-      error("Select a sequence first")
+      error("Select a sequence first");
     }
   };
 

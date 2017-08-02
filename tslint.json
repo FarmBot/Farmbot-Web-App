@@ -65,6 +65,7 @@
     "no-trailing-whitespace": true,
     "no-unused-locals": true,
     "no-unused-parameters": true,
+    "no-unused-expression": true,
     "no-unused-variable": [
       true
     ],
