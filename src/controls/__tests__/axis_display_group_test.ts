@@ -1,4 +1,3 @@
-import * as React from "react";
 import { mount } from "enzyme";
 import { AxisDisplayGroup } from "../axis_display_group";
 import { bot } from "../../__test_support__/fake_state/bot";

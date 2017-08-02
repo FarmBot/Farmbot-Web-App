@@ -1,9 +1,8 @@
 import * as React from "react";
 import { fakeFarmEvent, fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
-import { EditFEForm, EditFEProps, FarmEventViewModel } from "../edit_fe_form";
+import { EditFEForm, EditFEProps, FarmEventViewModel, recombine } from "../edit_fe_form";
 import { isString } from "lodash";
-import { TightlyCoupledFarmEventDropDown } from "../map_state_to_props_add_edit";
 
 describe("<FarmEventForm/>", () => {
   let props = (): EditFEForm["props"] => ({
@@ -106,5 +105,26 @@ describe("<FarmEventForm/>", () => {
     i.forceUpdate();
     expect(i.state.localCopyDirty).toBe(true);
     expect(i.state.fe.repeat).toEqual("4");
+  });
+
+  it("Recombines local state back into a Partial<TaggedFarmEvent[\"body\"]>", () => {
+    let result = recombine({
+      "startDate": "2017-08-01",
+      "startTime": "08:35",
+      "endDate": "2017-08-01",
+      "endTime": "08:33",
+      "repeat": "1",
+      "timeUnit": "never",
+      "executable_type": "Regimen",
+      "executable_id": "1"
+    });
+    expect(result.start_time).toContain("2017-08-01");
+    expect(result.end_time).toContain("2017-08-01");
+    expect(result.start_time).toContain(":35:00.000");
+    expect(result.end_time).toContain(":33:00.000");
+    expect(result.repeat).toBe(1);
+    expect(result.time_unit).toBe("never");
+    expect(result.executable_id).toBe(1);
+    expect(result.executable_type).toBe("Regimen");
   });
 });

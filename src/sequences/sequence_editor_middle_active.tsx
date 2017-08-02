@@ -6,7 +6,7 @@ import { editCurrentSequence } from "./actions";
 import { renderCeleryNode, splice, move } from "./step_tiles/index";
 import { ColorPicker } from "../ui";
 import { t } from "i18next";
-import { BlurableInput, Row, Col, SaveBtn, ToolTip } from "../ui";
+import { BlurableInput, Row, Col, SaveBtn } from "../ui";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
 import { pushStep } from "./actions";
@@ -15,7 +15,6 @@ import { copySequence } from "./actions";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { save, edit, destroy } from "../api/crud";
 import { GetState } from "../redux/interfaces";
-import { ToolTips } from "../constants";
 import { get } from "lodash";
 import { TestButton } from "./test_button";
 import { warning } from "farmbot-toastr";
@@ -61,11 +60,7 @@ export class SequenceEditorMiddleActive extends
     let isSaved = !isSaving && !isDirty;
 
     return (
-      <div className="sequence-editor">
-        <h3>
-          <i>{t("Sequence Editor")}</i>
-        </h3>
-        <ToolTip helpText={ToolTips.SEQUENCE_EDITOR} />
+      <div>
         <div className="button-group">
           <SaveBtn
             isDirty={isDirty}

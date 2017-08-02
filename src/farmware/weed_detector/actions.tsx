@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import axios from "axios";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
-import { Thunk, GetState } from "../../redux/interfaces";
+import { Thunk } from "../../redux/interfaces";
 import { API } from "../../api";
 import { Progress, ProgressCallback, HttpData } from "../../util";
 import { GenericPointer } from "../../interfaces";

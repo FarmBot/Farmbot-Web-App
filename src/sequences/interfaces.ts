@@ -119,6 +119,7 @@ export interface StepTitleBarProps {
   step: SequenceBodyItem;
   index: number;
   dispatch: Function;
+  sequence: TaggedSequence;
 }
 
 export type CHANGE_STEP = "CHANGE_STEP";

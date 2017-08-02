@@ -1,5 +1,4 @@
 import axios from "axios";
-import { HttpData } from "./util";
 
 function generateUrl(langCode: string) {
   let lang = langCode.slice(0, 2);

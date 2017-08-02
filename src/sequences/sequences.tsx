@@ -1,13 +1,15 @@
 import * as React from "react";
+import { t } from "i18next";
 import { connect } from "react-redux";
 import { SequencesList } from "./sequences_list";
 import { StepButtonCluster } from "./step_button_cluster";
 import { SequenceEditorMiddle } from "./sequence_editor_middle";
 import { MobileSequencesNav } from "./mobile_nav";
 import { isMobile } from "../util";
-import { Page, Col } from "../ui/index";
+import { Page, Col, ToolTip } from "../ui/index";
 import { Props } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
+import { ToolTips } from "../constants";
 
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {
@@ -19,15 +21,21 @@ export class Sequences extends React.Component<Props, {}> {
           dispatch={this.props.dispatch} />
       </Col>
       <Col sm={6}>
-        <SequenceEditorMiddle
-          syncStatus={this.props.syncStatus}
-          dispatch={this.props.dispatch}
-          sequences={this.props.sequences}
-          sequence={this.props.sequence}
-          slots={this.props.slots}
-          tools={this.props.tools}
-          resources={this.props.resources}
-        />
+        <div className="sequence-editor">
+          <h3>
+            <i>{t("Sequence Editor")}</i>
+          </h3>
+          <ToolTip helpText={ToolTips.SEQUENCE_EDITOR} />
+          <SequenceEditorMiddle
+            syncStatus={this.props.syncStatus}
+            dispatch={this.props.dispatch}
+            sequences={this.props.sequences}
+            sequence={this.props.sequence}
+            slots={this.props.slots}
+            tools={this.props.tools}
+            resources={this.props.resources}
+          />
+        </div>
       </Col>
       {isMobile() && <MobileSequencesNav />}
       <Col sm={3}>
@@ -40,4 +48,4 @@ export class Sequences extends React.Component<Props, {}> {
       </Col>
     </Page>;
   }
-};
+}

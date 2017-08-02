@@ -15,7 +15,6 @@ import {
   Col,
   Help
 } from "../../ui";
-import { StepInputBox } from "../inputs/step_input_box";
 import { t } from "i18next";
 import { StepTitleBar } from "./step_title_bar";
 import {
@@ -34,6 +33,7 @@ import { Xyz } from "../../devices/interfaces";
 import { TileMoveAbsSelect } from "./tile_move_absolute/select";
 import { InputBox } from "./tile_move_absolute/input_box";
 import { ToolTips } from "../../constants";
+import { StepIconGroup } from "../step_icon_group";
 
 interface Args {
   location: Tool | Coordinate | Point;
@@ -132,17 +132,23 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
       <Row>
         <Col sm={12}>
           <div className="step-header move-absolute-step">
-            <StepTitleBar index={index} dispatch={dispatch} step={currentStep} />
-            <i className="fa fa-arrows-v step-control" />
-            <i className="fa fa-clone step-control"
-              onClick={() => dispatch(splice({
+            <StepTitleBar index={index} dispatch={dispatch} step={currentStep}
+              sequence={currentSequence} />
+            <StepIconGroup
+              onClone={() => dispatch(splice({
                 step: currentStep,
                 index,
                 sequence: currentSequence
+<<<<<<< HEAD
               }))} />
             <i className="fa fa-trash step-control"
               onClick={() => remove({ dispatch, index, sequence: currentSequence })} />
             <Help text={t(ToolTips.MOVE_ABSOLUTE)} />
+=======
+              }))}
+              onTrash={() => remove({ dispatch, index, sequence: currentSequence })}
+              helpText={t(ToolTips.MOVE_ABSOLUTE)} />
+>>>>>>> d4881d4c4c2f0e8d5fa29f95a5271cf5436f81dd
           </div>
         </Col>
       </Row>

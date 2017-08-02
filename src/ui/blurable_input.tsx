@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as _ from "lodash";
 
 interface BIProps {
   value: string | number;

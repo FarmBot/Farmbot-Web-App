@@ -1,51 +1,5 @@
 {
   "rules": {
-    "max-line-length": [
-      true,
-      100
-    ],
-    "no-inferrable-types": true,
-    "class-name": true,
-    "comment-format": [
-      true,
-      "check-space"
-    ],
-    "cyclomatic-complexity": [
-      true,
-      21
-    ],
-    "indent": [
-      true,
-      "spaces"
-    ],
-    "no-invalid-this": true,
-    "no-switch-case-fall-through": true,
-    "no-eval": true,
-    "no-any": true,
-    "no-duplicate-variable": true,
-    "no-arg": true,
-    "no-internal-module": true,
-    "no-trailing-whitespace": true,
-    "no-bitwise": true,
-    "no-var-requires": false,
-    "no-shadowed-variable": true,
-    "no-unused-locals": true,
-    "no-unused-parameters": true,
-    "no-consecutive-blank-lines": true,
-    "no-angle-bracket-type-assertion": true,
-    "eofline": true,
-    "one-line": [
-      true,
-      "check-catch",
-      "check-else",
-      "check-open-brace",
-      "check-whitespace"
-    ],
-    "quotemark": [
-      true,
-      "double",
-      "avoid-escape"
-    ],
     "semicolon": [
       true,
       "ignore-interfaces",
@@ -61,7 +15,63 @@
         "variable-declaration": "nospace"
       }
     ],
+    "max-line-length": [
+      true,
+      100
+    ],
+    "no-inferrable-types": true,
+    "class-name": true,
+    "comment-format": [
+      true,
+      "check-space"
+    ],
+    "cyclomatic-complexity": [
+      true,
+      14
+    ],
+    "indent": [
+      true,
+      "spaces"
+    ],
+    "one-line": [
+      true,
+      "check-catch",
+      "check-else",
+      "check-open-brace",
+      "check-whitespace"
+    ],
+    "quotemark": [
+      true,
+      "double",
+      "avoid-escape"
+    ],
     "curly": true,
+    "eofline": true,
+    "no-angle-bracket-type-assertion": true,
+    "no-any": true,
+    "no-arg": true,
+    "no-bitwise": true,
+    "no-conditional-assignment": true,
+    "no-consecutive-blank-lines": true,
+    "no-default-export": true,
+    "no-duplicate-variable": true,
+    "no-eval": true,
+    "no-for-in-array": true,
+    "no-internal-module": true,
+    "no-invalid-this": true,
+    "no-null-keyword": true,
+    "no-shadowed-variable": true,
+    "no-switch-case-fall-through": true,
+    "no-trailing-whitespace": true,
+    "no-unused-locals": true,
+    "no-unused-parameters": true,
+    "no-unused-expression": true,
+    "no-unused-variable": [
+      true
+    ],
+    "no-use-before-declare": true,
+    "no-var-keyword": true,
+    "no-var-requires": false,
     "whitespace": [
       true,
       "check-branch",

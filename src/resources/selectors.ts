@@ -27,8 +27,7 @@ import {
   TaggedToolSlotPointer,
   TaggedUser
 } from "./tagged_resources";
-import { CowardlyDictionary, betterCompact, sortResourcesById, betterMerge } from "../util";
-import { ToolSlotPointer } from "../interfaces";
+import { CowardlyDictionary, betterCompact, sortResourcesById } from "../util";
 type StringMap = CowardlyDictionary<string>;
 
 export let findId = (index: ResourceIndex, kind: ResourceName, id: number) => {

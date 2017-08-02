@@ -1,6 +1,5 @@
 import * as React from "react";
-import { isNaN } from "lodash";
-import { AxisInputBoxProps, AxisInputBoxState } from "./interfaces";
+import { AxisInputBoxProps } from "./interfaces";
 import { Col, BlurableInput } from "../ui/index";
 import { isUndefined } from "lodash";
 

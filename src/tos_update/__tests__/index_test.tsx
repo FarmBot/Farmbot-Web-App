@@ -12,7 +12,7 @@ jest.mock("../../i18n", () => {
 
 import * as React from "react";
 import { Wow } from "../index";
-import { mount, shallow } from "enzyme";
+import { shallow } from "enzyme";
 describe("<Wow/>", () => {
   it("toggles server options", () => {
     let x = shallow(<Wow />);

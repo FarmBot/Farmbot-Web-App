@@ -2,7 +2,7 @@ import * as React from "react";
 import {
   RangeSlider
 } from "@blueprintjs/core/dist/components/slider/rangeSlider";
-import { isNumber, get } from "lodash";
+import { get } from "lodash";
 
 interface SliderProps {
   onRelease(value: [number, number]): void;
@@ -32,10 +32,7 @@ export class WeedDetectorSlider extends React.Component<SliderProps, State> {
   render() {
     let {
       highest,
-      lowest,
-      lowValue,
-      highValue,
-      onRelease
+      lowest
     } = this.props;
 
     return <RangeSlider

@@ -1,6 +1,5 @@
 import axios from "axios";
 import { Dictionary } from "farmbot/dist";
-import * as _ from "lodash";
 import { HttpData } from "../util";
 
 const BASE = "https://openfarm.cc/api/v1/crops/";

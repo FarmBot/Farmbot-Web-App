@@ -2,7 +2,7 @@ import * as React from "react";
 import { SequenceBodyItem as Step } from "farmbot";
 import { NUMERIC_FIELDS } from "../interfaces";
 import { ExecuteBlock } from "./tile_execute";
-import { StepParams, StepInputProps } from "../interfaces";
+import { StepParams, StepInputProps, StepTitleBarProps } from "../interfaces";
 import { defensiveClone, move as arrayMover } from "../../util";
 import { TileIf } from "./tile_if";
 import { TileWait } from "./tile_wait";
@@ -31,7 +31,6 @@ export function move({ step, sequence, to, from }: MoveParams) {
   let next = defensiveClone(sequence);
   let seq = next.body;
   seq.body = seq.body || [];
-  let both = [from, to];
   // WEIRD EDGE CASE: TODO:
   // Works when from > to but not the other way around.
   // Wish I could use one function for both cases, but don't have
@@ -92,6 +91,23 @@ export function updateStep(props: StepInputProps) {
       _.assign(stepCopy.args, { [field]: val });
     }
 
+    seqCopy.body[index] = stepCopy;
+    dispatch(overwrite(sequence, seqCopy));
+  };
+}
+
+export function updateStepTitle(props: StepTitleBarProps) {
+  return (e: React.FormEvent<HTMLInputElement>) => {
+    let { dispatch, step, index, sequence } = props;
+    let stepCopy = defensiveClone(step);
+    let seqCopy = defensiveClone(sequence).body;
+    let val = e.currentTarget.value;
+    seqCopy.body = seqCopy.body || [];
+    if (val == "") {
+      delete stepCopy.comment;
+    } else {
+      stepCopy.comment = val;
+    }
     seqCopy.body[index] = stepCopy;
     dispatch(overwrite(sequence, seqCopy));
   };

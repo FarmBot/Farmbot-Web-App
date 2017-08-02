@@ -1,5 +1,4 @@
 import { Calendar } from "../index";
-import * as moment from "moment";
 import { occurrence } from "../occurrence";
 import {
   TIME,

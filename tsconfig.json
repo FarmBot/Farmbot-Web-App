@@ -11,6 +11,7 @@
     "experimentalDecorators": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
+    "noUnusedLocals": true,
     "allowUnreachableCode": false,
     "strictNullChecks": true,
     "sourceMap": true,

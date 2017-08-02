@@ -1,12 +1,11 @@
 import * as React from "react";
 import { StepTitleBar } from "./step_title_bar";
-import { Help } from "../../ui";
 import { splice, remove } from "./index";
 import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
-
+import { StepIconGroup } from "../step_icon_group";
 
 export function TileMoveRelative({ dispatch, currentStep, index, currentSequence }: StepParams) {
   return (<div>
@@ -16,17 +15,16 @@ export function TileMoveRelative({ dispatch, currentStep, index, currentSequence
           <div className="step-header move-relative-step">
             <StepTitleBar index={index}
               dispatch={dispatch}
-              step={currentStep} />
-            <i className="fa fa-arrows-v step-control" />
-            <i className="fa fa-clone step-control"
-              onClick={() => dispatch(splice({
+              step={currentStep}
+              sequence={currentSequence} />
+            <StepIconGroup
+              onClone={() => dispatch(splice({
                 step: currentStep,
                 index,
                 sequence: currentSequence
-              }))} />
-            <i className="fa fa-trash step-control"
-              onClick={() => remove({ dispatch, index, sequence: currentSequence })} />
-            <Help text={t(ToolTips.MOVE_RELATIVE)} />
+              }))}
+              onTrash={() => remove({ dispatch, index, sequence: currentSequence })}
+              helpText={t(ToolTips.MOVE_RELATIVE)} />
           </div>
         </div>
       </div>

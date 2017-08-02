@@ -1,5 +1,4 @@
 import { TaggedImage } from "../../resources/tagged_resources";
-import { SyncStatus, Dictionary, FarmwareManifest } from "farmbot/dist";
 import { WD_ENV } from "../weed_detector/remote_env/interfaces";
 
 export interface CameraCalibrationState {

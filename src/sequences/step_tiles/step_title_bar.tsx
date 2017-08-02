@@ -1,8 +1,10 @@
 import * as React from "react";
-import { SequenceBodyItem as Step, Dictionary } from "farmbot";
-import { addComment } from "../actions";
+import { SequenceBodyItem as Step } from "farmbot";
 import { t } from "i18next";
 import { CowardlyDictionary } from "../../util";
+import { StepTitleBarProps } from "../interfaces";
+import { BlurableInput } from "../../ui/index";
+import { updateStepTitle } from "./index";
 
 function translate(input: Step): string {
   // We load translations async. If I put this const outside of the function,
@@ -26,24 +28,12 @@ function translate(input: Step): string {
 
 }
 
-interface StepTitleBarProps {
-  step: Step;
-  index: number;
-  dispatch: Function;
-}
-
 export class StepTitleBar extends React.Component<StepTitleBarProps, {}> {
-
-  onChange(e: React.FormEvent<HTMLInputElement>) {
-    let target = e.currentTarget;
-    let { step, index, dispatch } = this.props;
-    dispatch(addComment(step, index, target.value));
-  }
-
   render() {
-    return <input className="step-label"
+    return <BlurableInput className="step-label"
       value={this.props.step.comment || ""}
       placeholder={translate(this.props.step)}
-      onChange={this.onChange.bind(this)} />;
-  };
-};
+      onCommit={updateStepTitle(this.props)}
+      allowEmpty={true} />;
+  }
+}

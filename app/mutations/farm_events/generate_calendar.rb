@@ -2,13 +2,12 @@ module FarmEvents
   # Used to calculate next 60ish occurrences or so of a FarmEvent.
   class GenerateCalendar < Mutations::Command
     NEVER = FarmEvent::NEVER.to_s
-    TIME = { "minutely" => 60,
-             "hourly"   => 60 * 60,
-             "daily"    => 60 * 60 * 24,
-             "weekly"   => 60 * 60 * 24 * 7,
-             "monthly"  => 60 * 60 * 24 * 30, # Not perfect...
-             "yearly"   => 60 * 60 * 24 * 365 }
-
+    TIME  = { "minutely" => 60,
+              "hourly"   => 60 * 60,
+              "daily"    => 60 * 60 * 24,
+              "weekly"   => 60 * 60 * 24 * 7,
+              "monthly"  => 60 * 60 * 24 * 30, # Not perfect...
+              "yearly"   => 60 * 60 * 24 * 365 }
     UNIT_TRANSLATION = { "minutely" => :minutes,
                          "hourly"   => :hours,
                          "daily"    => :days,
@@ -18,11 +17,12 @@ module FarmEvents
     required do
       integer :repeat
       string  :time_unit, in: FarmEvent::UNITS_OF_TIME
-      time    :start_time
+      time    :origin
+      time    :lower_limit
     end
 
     optional do
-      time    :end_time
+      time    :upper_limit
     end
 
     def execute
@@ -30,35 +30,45 @@ module FarmEvents
       # Is it in the future?
       # Then generate a calendar.
       # Otherwise, return a "partial calendar" that is either empty or (in the
-      # case of one-off events) has only one date in it (start_time).
-      (every ? full_calendar : partial_calendar)
+      # case of one-off events) has only one date in it (origin).
+      (is_repeating ? full_calendar : partial_calendar)
     end
 
     def full_calendar
-      throw "NO NO NO!!!" if start_time && end_time && (start_time > end_time)
-      options = { starts: start_time }
-      options[:until] = end_time if end_time
-      return Montrose
-        .every(every, options)
-        .take(60)
-        .reject { |x| end_time ? x > (end_time + 1.second) : false  } # clear events beyond the end time
-        .reject { |x| x <= Time.now } # Clear past events
+      interval_sec = TIME[time_unit] * repeat
+      upper        = compute_endtime
+      # How many items must we skip to get to the first occurence?
+      skip_intervals    = ((lower_limit - origin) / interval_sec).ceil
+      # At what time does the first event occur?
+      first_item        = origin + (skip_intervals * interval_sec).seconds
+      list = [first_item]
+      60.times do
+        item = list.last + interval_sec.seconds
+        list.push(item) unless (item >= upper) || (item <= Time.now)
+      end
+
+      return list
     end
 
     def partial_calendar
-      in_future? ? [start_time] : []
+      in_future? ? [lower_limit] : []
     end
 
     def the_unit
       UNIT_TRANSLATION[time_unit]
     end
 
-    def every
+    def is_repeating
       (the_unit != NEVER) && the_unit && repeat.send(the_unit)
     end
 
     def in_future?
-      start_time > Time.now
+      origin > Time.now
+    end
+
+    def compute_endtime
+      next_year = (Time.now + 1.year)
+      (upper_limit && (upper_limit < next_year)) ? upper_limit : next_year
     end
   end
 end

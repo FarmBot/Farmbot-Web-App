@@ -2,10 +2,9 @@ import * as React from "react";
 import { Link } from "react-router";
 import { connect } from "react-redux";
 import { t } from "i18next";
-import { Row, Col } from "../../ui";
+import { Row } from "../../ui";
 import { mapStateToProps } from "./map_state_to_props";
 import { FarmEventProps, CalendarOccurrence } from "../interfaces";
-import { FBSelect } from "../../ui/new_fb_select";
 import * as _ from "lodash";
 
 export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
@@ -19,13 +18,13 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
         let heading: string;
         let subHeading: JSX.Element;
 
-        if (farmEvent.childExecutableName) {
-          heading = farmEvent.childExecutableName;
+        if (farmEvent.subheading) {
+          heading = farmEvent.subheading;
           subHeading = <p style={{ color: "gray" }}>
-            {farmEvent.parentExecutableName}
+            {farmEvent.heading}
           </p>;
         } else {
-          heading = farmEvent.parentExecutableName;
+          heading = farmEvent.heading;
           subHeading = <p />;
         }
 
