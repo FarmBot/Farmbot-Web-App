@@ -44,6 +44,8 @@ export let bot: Everything["bot"] = {
   "x_axis_inverted": false,
   "y_axis_inverted": false,
   "z_axis_inverted": false,
+  "raw_encoders": false,
+  "scaled_encoders": false,
   "dirty": false,
   "currentOSVersion": "3.1.6"
 };

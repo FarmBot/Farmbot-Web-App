@@ -13,6 +13,18 @@ export interface Props {
   resources: RestResources;
 }
 
+export interface MoveProps {
+  dispatch: Function;
+  bot: BotState;
+  user: TaggedUser | undefined;
+}
+
+export interface WebcamPanelProps {
+  dispatch: Function;
+  bot: BotState;
+  account: TaggedDevice;
+}
+
 export interface WebcamPanelState {
   isEditing: boolean;
 }
@@ -33,8 +45,10 @@ export interface Payl {
 
 export type Vector = Vector3;
 
+export type EncoderDisplay = "raw_encoders" | "scaled_encoders";
+
 export interface AxisDisplayGroupProps {
-  bot: BotState;
+  position: Record<Xyz, number | undefined>;
   label: string;
 }
 
