@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Link } from "react-router";
-import { t } from "i18next";
 
 import { history } from "../history";
 

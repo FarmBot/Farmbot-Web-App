@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Help } from "../help";
 import { mount } from "enzyme";
 

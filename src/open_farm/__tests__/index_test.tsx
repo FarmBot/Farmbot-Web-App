@@ -19,7 +19,7 @@ jest.mock("axios", function () {
   };
 });
 
-import { cachedCrop, DATA_URI, OpenFarmAPI } from "../index";
+import { cachedCrop, OpenFarmAPI } from "../index";
 describe("cachedIcon()", () => {
   it("does an HTTP request if the icon can't be found locally", (done) => {
     cachedCrop("lettuce")

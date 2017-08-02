@@ -18,9 +18,9 @@ describe("<HomingRow />", () => {
   it("calls device", () => {
     let { mock } = devices.current.calibrate as jest.Mock<{}>;
     let result = mount(<CalibrationRow hardware={bot.hardware.mcu_params} />);
-    let thunkx = result.find("LockableButton").at(0).simulate("click");
-    let thunky = result.find("LockableButton").at(1).simulate("click");
-    let thunkz = result.find("LockableButton").at(2).simulate("click");
+    result.find("LockableButton").at(0).simulate("click");
+    result.find("LockableButton").at(1).simulate("click");
+    result.find("LockableButton").at(2).simulate("click");
     expect(mock.calls.length).toEqual(2);
     expect(mock.calls[0][0].axis).toEqual("x");
     expect(mock.calls[1][0].axis).toEqual("y");

@@ -1,4 +1,3 @@
-import * as React from "react";
 import { noop } from "lodash";
 import { Everything } from "../interfaces";
 import { location } from "./fake_state/location";
@@ -8,8 +7,6 @@ import { bot } from "./fake_state/bot";
 import { config } from "./fake_state/config";
 import { draggable } from "./fake_state/draggable";
 import { resources } from "./fake_state/resources";
-import { createStore } from "redux";
-import { rootReducer } from "../redux/root_reducer";
 
 /** Factory function for empty state object. */
 export function fakeState(dispatcher: Function = noop): Everything {

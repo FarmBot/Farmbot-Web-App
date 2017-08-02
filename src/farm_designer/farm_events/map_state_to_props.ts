@@ -7,11 +7,10 @@ import { occurrence } from "./calendar/occurrence";
 import { findSequenceById } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { FarmEventWithRegimen, FarmEventWithSequence } from "./calendar/interfaces";
-import { scheduler, farmEventIntervalSeconds, scheduleForFarmEvent } from "./calendar/scheduler";
+import { scheduleForFarmEvent } from "./calendar/scheduler";
 
 /** Prepares a FarmEvent[] for use with <FBSelect /> */
 export function mapStateToProps(state: Everything): FarmEventProps {
-  let x = joinFarmEventsToExecutable(state.resources.index);
   let push = (state && state.router && state.router.push) || (() => { });
   let calendar = mapResourcesToCalendar(state.resources.index, moment.now());
   let calendarRows = calendar.getAll();
@@ -37,13 +36,13 @@ export function mapResourcesToCalendar(ri: ResourceIndex, unixNow = moment.now()
 export let regimenCalendarAdder = (index: ResourceIndex) =>
   (f: FarmEventWithRegimen, c: Calendar) => {
     let { regimen_items } = f.executable;
+    let now = moment();
     let fromEpoch = (ms: number) => moment(f.start_time)
       .startOf("day")
       .add(ms, "ms");
-    let now = moment();
     regimen_items.map(ri => {
       let time = fromEpoch(ri.time_offset);
-      if (time.isAfter(now)) {
+      if (time.isAfter(now) && time.isAfter(moment(f.start_time))) {
         let o = occurrence(time, f);
         let seq = findSequenceById(index, ri.sequence_id);
         o.parentExecutableName = f.executable.name;
@@ -53,6 +52,9 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
     });
   };
 
-export let addSequenceToCalendar = (f: FarmEventWithSequence, c: Calendar) => {
-  scheduleForFarmEvent(f).map(m => c.insert(occurrence(m, f)));
-};
+export let addSequenceToCalendar =
+  (f: FarmEventWithSequence, c: Calendar, now = moment()) => {
+    scheduleForFarmEvent(f)
+      .filter(m => m.isAfter(now))
+      .map(m => c.insert(occurrence(m, f)));
+  };

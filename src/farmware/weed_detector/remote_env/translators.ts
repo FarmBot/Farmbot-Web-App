@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import { TRANSLATORS, DEFAULT_FORMATTER } from "./constants";
 import { WDENVKey } from "./interfaces";
 

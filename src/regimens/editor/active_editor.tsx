@@ -2,7 +2,7 @@ import * as React from "react";
 import { RegimenNameInput } from "./regimen_name_input";
 import { ActiveEditorProps } from "./interfaces";
 import { t } from "i18next";
-import { RegimenItem, RegimenItemCalendarRow } from "../interfaces";
+import { RegimenItem } from "../interfaces";
 import { TaggedRegimen } from "../../resources/tagged_resources";
 import { defensiveClone } from "../../util";
 import { overwrite } from "../../api/crud";

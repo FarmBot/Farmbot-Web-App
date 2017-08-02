@@ -1,8 +1,6 @@
 import { TaggedFarmEvent } from "../../resources/tagged_resources";
 import { GetState } from "../../redux/interfaces";
-import { findRegimenById } from "../../resources/selectors";
 import * as moment from "moment";
-import * as _ from "lodash";
 
 /**
  * PROBLEMS SOLVED:
@@ -17,13 +15,12 @@ import * as _ from "lodash";
  */
 export function maybeWarnAboutMissedTasks(tfe: TaggedFarmEvent, cb: Function) {
   return function (dispatch: Function, getState: GetState) {
-    let state = getState();
     let fe = tfe.body;
     // STEP 1: Only do this check if it is a Regimen -
     // sequences don't have this issue.
     if (fe.executable_type === "Regimen") {
-      var NOW = moment();
-      var START_TIME = moment(fe.start_time);
+      let NOW = moment();
+      let START_TIME = moment(fe.start_time);
       let TIMEFMT = "YYYY-MM-DD";
 
       // STEP 2: Continue checking if the farm event is supposed to run today.

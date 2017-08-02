@@ -7,7 +7,6 @@ import { error } from "farmbot-toastr";
 import { Color, UnsafeError } from "./interfaces";
 import { box } from "boxed_value";
 import { TaggedResource } from "./resources/tagged_resources";
-import { Session } from "./session";
 import { AxiosResponse } from "axios";
 import { history } from "./history";
 
@@ -18,6 +17,7 @@ export function getParam(name: string): string {
   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
   let regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
     r = regex.exec(location.search);
+  // tslint:disable-next-line:no-null-keyword
   return r === null ? "" : decodeURIComponent(r[1].replace(/\+/g, " "));
 }
 
@@ -261,7 +261,6 @@ export function smoothScrollToBottom() {
 }
 
 /** Fancy debug */
-var last = "";
 export function fancyDebug(t: any) {
   console.log(Object
     .keys(t)
@@ -381,11 +380,11 @@ export enum SemverResult {
 }
 // CREDIT: https://github.com/substack/semver-compare
 export function semverCompare(left: string, right: string): SemverResult {
-  var pa: Array<string | undefined> = left.split(".");
-  var pb: Array<string | undefined> = right.split(".");
-  for (var i = 0; i < 3; i++) {
-    var num_left = Number(pa[i]);
-    var num_right = Number(pb[i]);
+  let pa: Array<string | undefined> = left.split(".");
+  let pb: Array<string | undefined> = right.split(".");
+  for (let i = 0; i < 3; i++) {
+    let num_left = Number(pa[i]);
+    let num_right = Number(pb[i]);
 
     if (num_left > num_right) {
       return SemverResult.LEFT_IS_GREATER;
@@ -445,12 +444,12 @@ export function hardRefresh() {
  * NOTE: We will need to remove this if we ever add google analytics.
  *  -RC 23 jun 17 */
 function deleteAllCookies() {
-  var cookies = document.cookie.split(";");
+  let cookies = document.cookie.split(";");
 
-  for (var i = 0; i < cookies.length; i++) {
-    var cookie = cookies[i];
-    var eqPos = cookie.indexOf("=");
-    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+  for (let i = 0; i < cookies.length; i++) {
+    let cookie = cookies[i];
+    let eqPos = cookie.indexOf("=");
+    let name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
     document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
   }
 }

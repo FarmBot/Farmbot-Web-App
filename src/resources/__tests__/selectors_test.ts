@@ -1,7 +1,6 @@
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { findSlotByToolId } from "../selectors";
 import { resourceReducer } from "../reducer";
-import { Actions } from "../../constants";
 import { TaggedTool, TaggedToolSlotPointer } from "../tagged_resources";
 import { createOK } from "../actions";
 import { generateUuid } from "../util";

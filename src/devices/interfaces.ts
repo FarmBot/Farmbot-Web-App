@@ -1,6 +1,5 @@
 import { BotStateTree } from "farmbot";
 import {
-  ALLOWED_MESSAGE_TYPES,
   McuParamName,
   ConfigurationName,
   Dictionary,
@@ -34,17 +33,6 @@ export interface DeviceAccountSettings {
   name: string;
   webcam_url?: string;
   timezone?: string | undefined;
-};
-
-/** Meta information about a log message. */
-interface Meta {
-  type: ALLOWED_MESSAGE_TYPES;
-  /** Bot Position X */
-  x: number | undefined;
-  /** Bot Position Y */
-  y: number | undefined;
-  /** Bot Position Z */
-  z: number | undefined;
 }
 
 export interface BotState {

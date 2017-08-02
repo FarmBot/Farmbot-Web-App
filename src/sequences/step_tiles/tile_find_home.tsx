@@ -2,15 +2,14 @@ import * as React from "react";
 import { t } from "i18next";
 import { splice, remove } from "./index";
 import { StepTitleBar } from "./step_title_bar";
-import { Help } from "../../ui";
 import { FindHome, ALLOWED_AXIS } from "farmbot";
-import * as _ from "lodash";
 import { StepParams } from "../interfaces";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { ResourceIndex } from "../../resources/interfaces";
-import { edit, overwrite } from "../../api/crud";
+import { overwrite } from "../../api/crud";
 import { defensiveClone } from "../../util";
 import { ToolTips } from "../../constants";
+import { StepIconGroup } from "../step_icon_group";
 
 export function TileFindHome(props: StepParams) {
   if (props.currentStep.kind === "find_home") {
@@ -60,16 +59,14 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
                 dispatch={dispatch}
                 step={currentStep}
                 sequence={currentSequence} />
-              <i className="fa fa-arrows-v step-control" />
-              <i className="fa fa-clone step-control"
-                onClick={() => dispatch(splice({
+              <StepIconGroup
+                onTrash={() => remove({ dispatch, index, sequence: currentSequence })}
+                onClone={() => dispatch(splice({
                   step: currentStep,
                   sequence: currentSequence,
                   index
-                }))} />
-              <i className="fa fa-trash step-control"
-                onClick={() => remove({ dispatch, index, sequence: currentSequence })} />
-              <Help text={t(ToolTips.FIND_HOME)} />
+                }))}
+                helpText={t(ToolTips.FIND_HOME)} />
             </div>
           </div>
         </div>
@@ -81,8 +78,8 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
                   <div className="bottom-content">
                     <div className="channel-fields">
                       <form>
-                        {AXIS_CHOICES.map((axis, index) => {
-                          return <div key={index} style={{ display: "inline" }}>
+                        {AXIS_CHOICES.map((axis, i) => {
+                          return <div key={i} style={{ display: "inline" }}>
                             <label>
                               <input type="radio"
                                 value={axis}

@@ -34,7 +34,7 @@ export function generateReducer<State>(initialState: State,
     let clonedState = defensiveClone(state);
     let clonedAction = defensiveClone(action);
     let result: State = handler(clonedState, clonedAction);
-    result = (afterEach || NOOP)(defensiveClone(result), action)
+    result = (afterEach || NOOP)(defensiveClone(result), action);
     return defensiveClone(result);
   } as GeneratedReducer;
 

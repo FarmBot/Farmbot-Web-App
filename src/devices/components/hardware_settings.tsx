@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import { MCUFactoryReset } from "../actions";
 import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
 import { HardwareSettingsProps } from "../interfaces";

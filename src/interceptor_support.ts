@@ -1,4 +1,3 @@
-import * as Axios from "axios";
 import { ResourceName, DataChangeType, Dictionary } from "farmbot/dist";
 import { devices } from "./device";
 import { box } from "boxed_value";

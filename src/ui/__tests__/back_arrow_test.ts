@@ -1,4 +1,3 @@
-import * as React from "react";
 import { BackArrow } from "../back_arrow";
 import { mount } from "enzyme";
 

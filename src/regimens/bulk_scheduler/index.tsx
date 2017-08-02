@@ -47,7 +47,6 @@ export class BulkSchedulerWidget extends React.Component<BulkEditorProps, {}> {
   render() {
     let {
       dispatch,
-      selectedSequence,
       dailyOffsetMs,
       weeks,
       sequences

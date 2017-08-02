@@ -1,5 +1,4 @@
 /// <reference path="../typings/index.d.ts" />
-import * as React from "react";
 import { RootComponent } from "./routes";
 import { store } from "./redux/store";
 import { ready } from "./config/actions";

@@ -54,7 +54,6 @@ describe("scheduler", () => {
       "repeat": 2,
       "time_unit": "daily",
     };
-    let now = moment("2017-08-01T19:22:38.502Z");
     let intervalSeconds = farmEventIntervalSeconds(fakeEvent.repeat,
       fakeEvent.time_unit as TimeUnit);
     let result = scheduler({
@@ -85,7 +84,6 @@ it("schedules a FarmEvent", () => {
     "repeat": 2,
     "time_unit": "daily",
   };
-  let now = moment("2017-08-01T19:22:38.502Z");
   const EXPECTED = [
     moment("2017-08-01T17:30:00.000Z"),
     moment("2017-08-03T17:30:00.000Z"),

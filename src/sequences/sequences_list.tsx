@@ -1,12 +1,10 @@
 import * as React from "react";
 import { Link } from "react-router";
-import * as _ from "lodash";
 import { t } from "i18next";
-import { history, push } from "../history";
+import { push } from "../history";
 import { selectSequence } from "./actions";
 import { SequencesListProps, SequencesListState } from "./interfaces";
 import {
-  isMobile,
   sortResourcesById,
   urlFriendly,
   lastUrlChunk

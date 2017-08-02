@@ -1,9 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import * as _ from "lodash";
-import * as moment from "moment";
 import { ImageFlipperProps, ImageFlipperState } from "./interfaces";
-import { safeStringFetch } from "../../util";
 
 export const PLACEHOLDER_FARMBOT = "/placeholder_farmbot.jpg";
 

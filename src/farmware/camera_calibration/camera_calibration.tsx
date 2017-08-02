@@ -7,7 +7,6 @@ import { ImageWorkspace } from "../weed_detector/image_workspace";
 import { ToolTips } from "../../constants";
 import { envSave } from "../weed_detector/remote_env/actions";
 import { WDENVKey } from "../weed_detector/remote_env/interfaces";
-import { devices } from "../../device";
 import { selectImage } from "../images/actions";
 import { calibrate, scanImage } from "./actions";
 

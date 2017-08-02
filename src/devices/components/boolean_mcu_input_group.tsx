@@ -9,7 +9,6 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
 
   let {
     bot,
-    dispatch,
     tooltip,
     name,
     x,

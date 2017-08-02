@@ -1,8 +1,6 @@
 import "../../../unmock_i18next";
-import * as React from "react";
 import { ImageFlipper } from "../image_flipper";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
-import * as freeze from "deep-freeze";
 import { TaggedImage } from "../../../resources/tagged_resources";
 import { defensiveClone } from "../../../util";
 

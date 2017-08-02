@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Saucer } from "../saucer";
 import { mount } from "enzyme";
 

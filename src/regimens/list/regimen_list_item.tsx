@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router";
 import { RegimenListItemProps } from "../interfaces";
-import { isMobile, lastUrlChunk, urlFriendly } from "../../util";
+import { lastUrlChunk, urlFriendly } from "../../util";
 import { selectRegimen } from "../actions";
 import {
   TaggedRegimen,

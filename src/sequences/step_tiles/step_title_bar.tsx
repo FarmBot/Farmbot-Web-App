@@ -1,6 +1,5 @@
 import * as React from "react";
-import { SequenceBodyItem as Step, Dictionary } from "farmbot";
-import { addComment } from "../actions";
+import { SequenceBodyItem as Step } from "farmbot";
 import { t } from "i18next";
 import { CowardlyDictionary } from "../../util";
 import { StepTitleBarProps } from "../interfaces";

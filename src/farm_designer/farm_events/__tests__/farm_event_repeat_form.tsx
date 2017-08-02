@@ -2,7 +2,6 @@ import * as React from "react";
 import { RepeatFormProps, FarmEventRepeatForm } from "../farm_event_repeat_form";
 import { betterMerge } from "../../../util";
 import { shallow, ShallowWrapper, render } from "enzyme";
-import { FBSelectProps } from "../../../ui/new_fb_select";
 import { get } from "lodash";
 
 const DEFAULTS: RepeatFormProps = {

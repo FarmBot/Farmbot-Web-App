@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Widget } from "../widget";
 import { mount } from "enzyme";
 

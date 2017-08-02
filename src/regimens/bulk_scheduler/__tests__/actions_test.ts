@@ -9,7 +9,7 @@ describe("commitBulkEditor()", () => {
   it("does nothing if no regimen is selected", () => {
     let getState = () => fakeState();
     let dispatch = jest.fn();
-    let results = commitBulkEditor()(dispatch, getState);
+    commitBulkEditor()(dispatch, getState);
     expect(dispatch.mock.calls.length).toEqual(0);
     expect(mockErr.mock.calls.length).toEqual(1);
   });

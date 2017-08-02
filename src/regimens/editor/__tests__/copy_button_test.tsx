@@ -2,7 +2,6 @@ jest.unmock("../../../api/crud");
 import * as React from "react";
 import { mount } from "enzyme";
 import { CopyButton } from "../copy_button";
-import { TaggedRegimen } from "../../../resources/tagged_resources";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 
 describe("Copy button", () => {

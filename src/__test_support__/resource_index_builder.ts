@@ -1,9 +1,6 @@
 import { resourceReducer, emptyState } from "../resources/reducer";
 import { TaggedResource } from "../resources/tagged_resources";
 import * as _ from "lodash";
-import { createStore } from "redux";
-import { RestResources } from "../resources/interfaces";
-import { ReduxAction } from "../redux/interfaces";
 
 export let FAKE_RESOURCES: TaggedResource[] = [
   {

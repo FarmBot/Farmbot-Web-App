@@ -1,6 +1,6 @@
 import { formatEnvKey, parseEnvKey } from "../translators";
 import { SPECIAL_VALUES, getSpecialValue } from "../constants";
-import { WD_ENV, WDENVKey } from "../interfaces";
+import { WDENVKey } from "../interfaces";
 import { getDropdownSelection } from "../../selectors";
 import { prepopulateEnv } from "../selectors";
 
@@ -21,7 +21,7 @@ describe("getSpecialValue()", () => {
 
   it("crashes on malformed inputs", () => {
     expect(() => {
-      getSpecialValue("FOo_bar!!")
+      getSpecialValue("FOo_bar!!");
     }).toThrow();
   });
 });
