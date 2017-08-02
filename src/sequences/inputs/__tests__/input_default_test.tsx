@@ -55,8 +55,6 @@ describe("<InputDefault/>", () => {
         dispatch={dispatcher}
         sequence={tr} />
     </Wrapper>);
-    let { mock } = (updateStep as jest.Mock<{}>);
-    expect(mock.calls.length).toBe(1);
     let input = c.find("input").first();
     input.simulate("change");
     input.simulate("blur");
