@@ -73,7 +73,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
         // Guard against legacy Farmwares. Can be removed in a month.
         // -- RC June 2017.
         let label = hasVers ? `${fw.name} ${fw.meta.version}` : fw.name;
-        return { value: fw.uuid, label };
+        return { value: fw.name, label };
       });
     return choices;
   }
@@ -83,13 +83,13 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
     if (label) { return { label, value: 0 }; }
   }
 
-  fwDescription = (selectedUuid: string | undefined) => {
+  fwDescription = (selectedName: string | undefined) => {
     let { farmwares } = this.props;
     let description = betterCompact(Object
       .keys(farmwares)
       .map(x => farmwares[x]))
       .map((fw, i) => {
-        let isSelected = (fw.uuid == selectedUuid);
+        let isSelected = (fw.name == selectedName);
         let label = isSelected ? fw.meta.description : "";
         return label;
       });
@@ -137,7 +137,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
                       if (_.isString(selectedFarmware)) {
                         this.setState({ selectedFarmware });
                       } else {
-                        throw new Error(`Bad farmware UUID: ${x.value}`);
+                        throw new Error(`Bad farmware name: ${x.value}`);
                       }
                     }}
                     placeholder="Installed Farmware Packages" />
