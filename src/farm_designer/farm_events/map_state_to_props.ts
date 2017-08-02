@@ -40,7 +40,10 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
     let fromEpoch = (ms: number) => moment(f.start_time)
       .startOf("day")
       .add(ms, "ms");
-    c.insert(occurrence(moment(f.start_time), f));
+    let o = occurrence(moment(f.start_time), f);
+    o.childExecutableName = "START_TIME";
+    o.parentExecutableName = "start time";
+    c.insert(o);
     regimen_items.map(ri => {
       let time = fromEpoch(ri.time_offset);
       if (time.isAfter(now) && time.isAfter(moment(f.start_time))) {
