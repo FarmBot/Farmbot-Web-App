@@ -6,7 +6,7 @@ import * as _ from "lodash";
 
 let count = 0;
 export function generateUuid(id: number | undefined, kind: ResourceName) {
-  return `${joinKindAndId(kind, id)}.${count++}`
+  return `${joinKindAndId(kind, id)}.${count++}`;
 }
 
 export function arrayWrap<T>(input: T | (T[])): T[] {
