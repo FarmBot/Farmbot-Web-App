@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import * as React from "react";
 import { t } from "i18next";
-import { DropDownItem, Help } from "../../../ui";
+import { DropDownItem } from "../../../ui";
 import { TaggedSequence } from "../../../resources/tagged_resources";
 import { If, Execute, Nothing } from "farmbot/dist";
 import { ResourceIndex } from "../../../resources/interfaces";
@@ -16,6 +16,7 @@ import { overwrite } from "../../../api/crud";
 import { NULL_CHOICE } from "../../../ui/fb_select";
 import { range } from "lodash";
 import { ToolTips } from "../../../constants";
+import { StepIconGroup } from "../../step_icon_group";
 
 export interface IfParams {
   currentSequence: TaggedSequence;
@@ -92,12 +93,10 @@ export function InnerIf(props: IfParams) {
               dispatch={dispatch}
               step={currentStep}
               sequence={currentSequence} />
-            <i className="fa fa-arrows-v step-control" />
-            <i className="fa fa-clone step-control"
-              onClick={() => dispatch(splice(stuff))} />
-            <i className="fa fa-trash step-control"
-              onClick={() => remove(stuff)} />
-            <Help text={t(ToolTips.IF)} />
+            <StepIconGroup
+              onClone={() => dispatch(splice(stuff))}
+              onTrash={() => remove(stuff)}
+              helpText={t(ToolTips.IF)} />
             {recursive && (
               <span>
                 <i className="fa fa-exclamation-triangle"></i>
@@ -128,7 +127,7 @@ export function InnerIf(props: IfParams) {
 export let IfBlockDropDownHandler = (props: IfParams,
   key: "_else" | "_then") => {
 
-  let { dispatch, currentSequence, currentStep, index } = props;
+  let { dispatch, index } = props;
   let step = props.currentStep;
   let sequence = props.currentSequence;
   let block = step.args[key];

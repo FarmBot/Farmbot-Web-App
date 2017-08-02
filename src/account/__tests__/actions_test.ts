@@ -1,6 +1,6 @@
-import { deleteUser } from "../actions";
 import { API } from "../../api/api";
 import * as moxios from "moxios";
+import { deleteUser } from "../actions";
 
 describe("deleteUser()", () => {
   beforeEach(function () {
@@ -20,7 +20,7 @@ describe("deleteUser()", () => {
     let dispatch = jest.fn();
     let getState = jest.fn();
     getState.mockImplementation(() => ({ auth: {} }));
-    let result = thunk(dispatch, getState);
+    thunk(dispatch, getState);
     moxios.wait(function () {
       let request = moxios.requests.mostRecent();
       request.respondWith({

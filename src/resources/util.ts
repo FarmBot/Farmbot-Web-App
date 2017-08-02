@@ -4,7 +4,7 @@ import { Dictionary } from "farmbot/dist";
 import { betterCompact } from "../util";
 import * as _ from "lodash";
 
-var count = 0;
+let count = 0;
 export function generateUuid(id: number | undefined, kind: ResourceName) {
   return `${joinKindAndId(kind, id)}.${count++}`
 }

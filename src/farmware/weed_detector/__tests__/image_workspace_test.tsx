@@ -1,4 +1,3 @@
-import * as React from "react";
 import { ImageWorkspace } from "../image_workspace";
 
 describe("<Body/>", () => {

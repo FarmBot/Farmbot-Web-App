@@ -10,7 +10,7 @@ import {
 import { API } from "./api/index";
 import { AuthState } from "./auth/interfaces";
 import * as _ from "lodash";
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { AxiosRequestConfig, AxiosResponse } from "axios";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   let method = input.config.method;

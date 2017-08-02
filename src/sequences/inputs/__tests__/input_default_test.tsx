@@ -4,14 +4,11 @@ import { InputDefault } from "../input_default";
 import { mount } from "enzyme";
 import { TaggedSequence } from "../../../resources/tagged_resources";
 import { MoveAbsolute } from "farmbot/dist";
-import { updateStep } from "../../step_tiles/index";
-import { fakeState } from "../../../__test_support__/fake_state";
 import { Wrapper } from "../../../__test_support__/wrapper";
 
 describe("<InputDefault/>", () => {
   it("updates the step", () => {
     let dispatcher = jest.fn();
-    let state = fakeState();
     let step: MoveAbsolute = {
       "kind": "move_absolute",
       "args": {
@@ -57,7 +54,6 @@ describe("<InputDefault/>", () => {
         dispatch={dispatcher}
         sequence={tr} />
     </Wrapper>);
-    let x: jest.Mock<{}> = (updateStep as any).mock;
     let input = c.find("input").first();
     input.simulate("change");
     input.simulate("blur");

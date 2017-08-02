@@ -1,4 +1,3 @@
-import * as React from "react";
 import { ToolTip } from "../tooltip";
 import { mount } from "enzyme";
 

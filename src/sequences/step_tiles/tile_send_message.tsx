@@ -1,7 +1,7 @@
 import * as React from "react";
 import { splice, remove } from "./index";
 import { StepTitleBar } from "./step_title_bar";
-import { Help, DropDownItem } from "../../ui";
+import { DropDownItem } from "../../ui";
 import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
 import { SendMessage, ALLOWED_CHANNEL_NAMES } from "farmbot";
@@ -17,6 +17,7 @@ import {
   EACH_CHANNEL,
   channel
 } from "./tile_send_message_support";
+import { StepIconGroup } from "../step_icon_group";
 type ChannelName = ALLOWED_CHANNEL_NAMES;
 export function TileSendMessage(props: StepParams) {
   if (props.currentStep.kind === "send_message") {
@@ -41,16 +42,16 @@ interface SendMessageParams {
 
 class RefactoredSendMessage extends React.Component<SendMessageParams, {}> {
   get args() { return this.props.currentStep.args; }
-  get message() { return this.args.message };
-  get message_type() { return this.args.message_type }
+  get message() { return this.args.message; }
+  get message_type() { return this.args.message_type; }
   get step() { return this.props.currentStep; }
-  get dispatch() { return this.props.dispatch }
+  get dispatch() { return this.props.dispatch; }
   get sequence() { return this.props.currentSequence; }
-  get index() { return this.props.index }
+  get index() { return this.props.index; }
   get currentSelection() {
     return { label: _.capitalize(this.message_type), value: this.message_type };
-  };
-  get channels() { return (this.step.body || []).map(x => x.args.channel_name) }
+  }
+  get channels() { return (this.step.body || []).map(x => x.args.channel_name); }
   hasChannel = (name: ChannelName) => {
     return this.channels.includes(name);
   }
@@ -80,7 +81,7 @@ class RefactoredSendMessage extends React.Component<SendMessageParams, {}> {
       index: this.index,
       executor: (step: SendMessage) => {
         if (_.isString(x.value)) {
-          step.args.message_type = x.value
+          step.args.message_type = x.value;
         } else {
           throw new Error("Strings only in send_message.");
         }
@@ -100,16 +101,14 @@ class RefactoredSendMessage extends React.Component<SendMessageParams, {}> {
                 dispatch={dispatch}
                 step={currentStep}
                 sequence={currentSequence} />
-              <i className="fa fa-arrows-v step-control" />
-              <i className="fa fa-clone step-control"
-                onClick={() => dispatch(splice({
+              <StepIconGroup
+                onClone={() => dispatch(splice({
                   step: currentStep,
                   sequence: currentSequence,
                   index
-                }))} />
-              <i className="fa fa-trash step-control"
-                onClick={() => remove({ dispatch, index, sequence: currentSequence })} />
-              <Help text={t(ToolTips.SEND_MESSAGE)} />
+                }))}
+                onTrash={() => remove({ dispatch, index, sequence: currentSequence })}
+                helpText={t(ToolTips.SEND_MESSAGE)} />
             </div>
           </div>
         </div>

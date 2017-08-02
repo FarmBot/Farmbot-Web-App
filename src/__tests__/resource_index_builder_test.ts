@@ -2,7 +2,6 @@ import {
   buildResourceIndex,
   FAKE_RESOURCES
 } from "../__test_support__/resource_index_builder";
-import { betterCompact } from "../util";
 import { TaggedFarmEvent } from "../resources/tagged_resources";
 
 const STUB_RESOURCE: TaggedFarmEvent = {

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Page, Col, Row, Widget, WidgetHeader, WidgetBody } from "../ui/index";
+import { Page, Col, Row } from "../ui/index";
 import { FarmwarePanel } from "./farmware_panel";
 import { mapStateToProps } from "./state_to_props";
 import { Photos } from "./images/photos";

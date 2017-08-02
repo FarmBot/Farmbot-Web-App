@@ -1,10 +1,4 @@
-import * as moment from "moment";
-import {
-  NewCalendarItem,
-  FarmEventWithSequence,
-  FarmEventWithExecutable,
-  FarmEventWithRegimen
-} from "./interfaces";
+import { FarmEventWithExecutable } from "./interfaces";
 import { ResourceIndex } from "../../../resources/interfaces";
 import {
   selectAllFarmEvents,

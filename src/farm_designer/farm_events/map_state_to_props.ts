@@ -7,11 +7,10 @@ import { occurrence } from "./calendar/occurrence";
 import { findSequenceById } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { FarmEventWithRegimen, FarmEventWithSequence } from "./calendar/interfaces";
-import { scheduler, farmEventIntervalSeconds, scheduleForFarmEvent } from "./calendar/scheduler";
+import { scheduleForFarmEvent } from "./calendar/scheduler";
 
 /** Prepares a FarmEvent[] for use with <FBSelect /> */
 export function mapStateToProps(state: Everything): FarmEventProps {
-  let x = joinFarmEventsToExecutable(state.resources.index);
   let push = (state && state.router && state.router.push) || (() => { });
   let calendar = mapResourcesToCalendar(state.resources.index, moment.now());
   let calendarRows = calendar.getAll();

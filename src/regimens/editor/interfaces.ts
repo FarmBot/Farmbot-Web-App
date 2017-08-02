@@ -1,9 +1,7 @@
 import {
-  RegimenItem,
   RegimenProps,
   CalendarRow,
-  RegimenItemCalendarRow,
-  Regimen
+  RegimenItemCalendarRow
 } from "../interfaces";
 import { AuthState } from "../../auth/interfaces";
 import { BotState } from "../../devices/interfaces";
@@ -45,4 +43,4 @@ export interface CopyButtnProps {
 
 export interface DeleteButtonProps extends RegimenProps {
   baseUrl: string;
-};
+}

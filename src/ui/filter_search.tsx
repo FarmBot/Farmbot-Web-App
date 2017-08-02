@@ -70,7 +70,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
   }
 
   private subMenu = (params: ISelectItemRendererProps<DropDownItem>) => {
-    let { handleClick, item, index } = params;
+    let { handleClick, item } = params;
     return (
       <MenuItem
         className={this.styleFor(item)}

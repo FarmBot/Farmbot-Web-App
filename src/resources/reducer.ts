@@ -1,13 +1,11 @@
 import * as _ from "lodash";
-import * as moment from "moment";
 import { generateReducer } from "../redux/generate_reducer";
 import { RestResources, ResourceIndex } from "./interfaces";
 import {
   TaggedResource,
   ResourceName,
   sanityCheck,
-  isTaggedResource,
-  TaggedSequence
+  isTaggedResource
 } from "./tagged_resources";
 import { generateUuid, arrayWrap } from "./util";
 import { EditResourceParams } from "../api/interfaces";
@@ -32,7 +30,6 @@ import {
   farmwareState
 } from "../farmware/reducer";
 import { Actions } from "../constants";
-import { uuid as rando } from "farmbot/dist";
 
 let consumerReducer = combineReducers<RestResources["consumers"]>({
   regimens,

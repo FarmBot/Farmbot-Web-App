@@ -1,7 +1,5 @@
 import * as React from "react";
-import { Link } from "react-router";
 import { t } from "i18next";
-import * as moment from "moment";
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "../devices/components/e_stop_btn";
 import { Session } from "../session";
@@ -16,7 +14,6 @@ import { MobileMenu } from "./mobile_menu";
 import {
   Popover,
   Position,
-  Tooltip,
   PopoverInteractionKind
 } from "@blueprintjs/core/dist";
 

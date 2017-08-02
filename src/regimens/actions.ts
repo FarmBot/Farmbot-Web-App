@@ -1,5 +1,5 @@
 import { Regimen } from "./interfaces";
-import { destroy, save, init, edit } from "../api/crud";
+import { destroy, save, edit } from "../api/crud";
 import { TaggedRegimen, isTaggedRegimen } from "../resources/tagged_resources";
 
 export function editRegimen(r: TaggedRegimen | undefined,

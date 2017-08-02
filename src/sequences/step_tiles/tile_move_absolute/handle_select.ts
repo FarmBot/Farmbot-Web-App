@@ -2,7 +2,7 @@
  * figures out the corresponding Tool | Coordinate | Point */
 import { DropDownItem } from "../../../ui/index";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { KnownGroupTag, LocationData, CALLBACK } from "./interfaces";
+import { KnownGroupTag, LocationData } from "./interfaces";
 import { findPointerByTypeAndId, findToolById } from "../../../resources/selectors";
 
 /** Takes a DropDownItem and turns it into data suitable

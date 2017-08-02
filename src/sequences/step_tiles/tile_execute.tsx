@@ -53,9 +53,9 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
       .map(function (x) {
         let { id, name } = x.body;
         if (_.isNumber(id) && (id !== p.currentStep.args.sequence_id)) {
-          output.push({ label: name, value: id })
+          output.push({ label: name, value: id });
         }
-      })
+      });
     return output;
   }
 
@@ -71,7 +71,7 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
     let { sequence_id } = p.currentStep.args;
     if (sequence_id) {
       let s = findSequenceById(p.resources, sequence_id);
-      return { label: s.body.name, value: (s.body.id as number) }
+      return { label: s.body.name, value: (s.body.id as number) };
     } else {
       return undefined;
     }

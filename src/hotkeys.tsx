@@ -12,7 +12,6 @@ import {
 
 import { links } from "./nav/links";
 import { sync } from "./devices/actions";
-import { lastUrlChunk } from "./util";
 import { history, push } from "./history";
 import { Row, Col } from "./ui/index";
 

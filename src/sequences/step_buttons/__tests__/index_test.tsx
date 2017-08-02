@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StepButtonParams } from "../../interfaces";
 import { StepButton } from "../index";
-import { mount, shallow } from "enzyme";
+import { shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { ReduxAction } from "../../../redux/interfaces";
 import { EditResourceParams } from "../../../api/interfaces";

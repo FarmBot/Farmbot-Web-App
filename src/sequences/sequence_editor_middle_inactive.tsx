@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Col } from "../ui/index";
 import { t } from "i18next";
 
 /** The bottom half of the Sequence editor panel (when no Sequence is selected). */

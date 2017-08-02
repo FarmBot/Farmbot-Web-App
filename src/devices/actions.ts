@@ -1,7 +1,6 @@
 import { Farmbot } from "farmbot";
 import { t } from "i18next";
 import axios from "axios";
-import * as Axios from "axios";
 import * as _ from "lodash";
 import { success, warning, info, error } from "farmbot-toastr";
 import { devices } from "../device";
@@ -145,7 +144,6 @@ export let saveAccountChanges: Thunk = function (dispatch, getState) {
 };
 
 let commandErr = (noun = "Command") => () => {
-  let msg = noun + " request failed.";
   console.info("Took longer than 6 seconds: " + noun);
 };
 
@@ -373,10 +371,10 @@ const TOAST: ALLOWED_CHANNEL_NAMES = "toast";
 
 function maybeShowLog(log: Log) {
   let chanList = _.get(log, CHANNELS, ["ERROR FETCHING CHANNELS"]);
-  let t = log.meta.type as ALLOWED_MESSAGE_TYPES;
+  let m = log.meta.type as ALLOWED_MESSAGE_TYPES;
   const TITLE = "New message from bot";
   if (chanList.includes(TOAST)) {
-    switch (t) {
+    switch (m) {
       case "success":
         return success(log.message, TITLE);
       case "busy":

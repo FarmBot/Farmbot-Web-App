@@ -60,7 +60,7 @@ export class RegimensList extends
   }
 
   render() {
-    let { dispatch, regimen, regimens } = this.props;
+    let { dispatch, regimens } = this.props;
 
     return (
       <div className="regimen-list">

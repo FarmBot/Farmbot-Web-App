@@ -53,11 +53,6 @@ const LOOKUP: Record<TimeUnit, unitOfTime.Base> = {
   "yearly": "years",
 };
 
-interface ConversionProps {
-  repeat: number;
-  time_unit: TimeUnit;
-}
-
 /** GIVEN: A time unit (hourly, weekly, etc) and a repeat (number)
  *  RETURNS: Number of seconds for interval.
  *  EXAMPLE: f(2, "minutely") => 120;

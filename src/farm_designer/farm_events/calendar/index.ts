@@ -3,13 +3,6 @@ import { CalendarOccurrence, CalendarDay } from "../../interfaces";
 import * as moment from "moment";
 import * as _ from "lodash";
 
-interface CalendarData {
-  sortKey: number;
-  month: string;
-  day: number;
-  items: CalendarOccurrence[]
-}
-
 export class Calendar {
   /** We sort by this attribute. Left as const so that the comiler can catch
    * name changes. */

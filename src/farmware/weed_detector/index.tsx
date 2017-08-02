@@ -1,6 +1,5 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Pair } from "farmbot";
 import { DetectorState, HSV } from "./interfaces";
 import { TitleBar } from "./title";
 import { devices } from "../../device";
@@ -13,9 +12,8 @@ import { FarmwareProps } from "../../devices/interfaces";
 import { mapStateToProps } from "../../farmware/state_to_props";
 import { ToolTips } from "../../constants";
 import { ImageWorkspace } from "./image_workspace";
-import { WD_ENV, WDENVKey as ENVKey, WDENVKey } from "./remote_env/interfaces";
+import { WDENVKey as ENVKey } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";
-import { envSave } from "./remote_env/actions";
 import { translateImageWorkspaceAndSave } from "./actions";
 
 @connect(mapStateToProps)

@@ -1,4 +1,4 @@
-import { AuthState, User } from "../auth/interfaces";
+import { User } from "../auth/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
 
 export interface Props {

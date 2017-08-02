@@ -1,4 +1,3 @@
-import * as React from "react";
 import { WidgetFooter } from "../widget_footer";
 import { mount } from "enzyme";
 

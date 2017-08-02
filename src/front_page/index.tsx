@@ -1,4 +1,3 @@
-import * as React from "react";
 import { detectLanguage } from "../i18n";
 import { FrontPage } from "./front_page";
 import * as i18next from "i18next";
