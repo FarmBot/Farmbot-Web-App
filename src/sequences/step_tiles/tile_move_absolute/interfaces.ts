@@ -24,4 +24,3 @@ export type LocationData = MoveAbsolute["args"]["location"];
 
 /** Union of all possible `headingId` values in the move abs dropdown. */
 export type KnownGroupTag = PointType | typeof TOOL;
-
