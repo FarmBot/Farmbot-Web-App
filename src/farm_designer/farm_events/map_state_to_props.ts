@@ -36,14 +36,13 @@ export function mapResourcesToCalendar(ri: ResourceIndex, unixNow = moment.now()
 export let regimenCalendarAdder = (index: ResourceIndex) =>
   (f: FarmEventWithRegimen, c: Calendar) => {
     let { regimen_items } = f.executable;
-    let startTime = moment(f.start_time);
     let now = moment();
-    let fromEpoch = (ms: number) => startTime
+    let fromEpoch = (ms: number) => moment(f.start_time)
       .startOf("day")
       .add(ms, "ms");
     regimen_items.map(ri => {
       let time = fromEpoch(ri.time_offset);
-      if (time.isAfter(now)) {
+      if (time.isAfter(now) && time.isAfter(moment(f.start_time))) {
         let o = occurrence(time, f);
         let seq = findSequenceById(index, ri.sequence_id);
         o.parentExecutableName = f.executable.name;
