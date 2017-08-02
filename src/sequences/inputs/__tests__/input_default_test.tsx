@@ -4,6 +4,7 @@ import { InputDefault } from "../input_default";
 import { mount } from "enzyme";
 import { TaggedSequence } from "../../../resources/tagged_resources";
 import { MoveAbsolute } from "farmbot/dist";
+import { updateStep } from "../../step_tiles/index";
 import { Wrapper } from "../../../__test_support__/wrapper";
 
 describe("<InputDefault/>", () => {
@@ -54,6 +55,8 @@ describe("<InputDefault/>", () => {
         dispatch={dispatcher}
         sequence={tr} />
     </Wrapper>);
+    let { mock } = (updateStep as jest.Mock<{}>);
+    expect(mock.calls.length).toBe(1);
     let input = c.find("input").first();
     input.simulate("change");
     input.simulate("blur");
