@@ -16,6 +16,7 @@ export function stepPut(value: Step,
   draggerId: number):
   ReduxAction<DataXferBase> {
   let uuid = id();
+  console.log("dispatching step_put");
   ev.dataTransfer.setData(STEP_DATATRANSFER_IDENTIFER, uuid);
   return {
     type: Actions.PUT_DATA_XFER,
