@@ -54,6 +54,9 @@ export interface BotState {
   x_axis_inverted: boolean;
   y_axis_inverted: boolean;
   z_axis_inverted: boolean;
+  /** The display setting for encoder data on the controls page. */
+  raw_encoders: boolean;
+  scaled_encoders: boolean;
 }
 
 export interface BotProp {
@@ -76,6 +79,8 @@ export interface MoveRelProps {
 
 export type Xyz = "x" | "y" | "z";
 export type Axis = Xyz | "all";
+
+export type BotPosition = Record<Xyz, (number | undefined)>;
 
 export interface CalibrationButtonProps {
   disabled: boolean;
