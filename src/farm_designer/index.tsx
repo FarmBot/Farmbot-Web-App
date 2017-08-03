@@ -19,7 +19,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     showPoints: true,
     showSpread: false,
     showFarmbot: true
-  }
+  };
 
   componentDidMount() {
     this.updateBotOriginQuadrant(this.props.designer.botOriginQuadrant)();
@@ -109,10 +109,10 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           plants={this.props.plants}
           points={this.props.points}
           toolSlots={this.props.toolSlots}
-          bot={this.props.bot}
+          botPosition={this.props.bot.hardware.location_data.position}
           hoveredPlant={this.props.hoveredPlant}
         />
       </div>
-    </div>
+    </div>;
   }
 }

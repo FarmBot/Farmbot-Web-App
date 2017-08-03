@@ -1,7 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
 import { Widget, WidgetHeader } from "../ui";
-import { WebcamPanelState, Props } from "./interfaces";
+import { WebcamPanelState, WebcamPanelProps } from "./interfaces";
 import { PLACEHOLDER_FARMBOT } from "../farmware/images/image_flipper";
 import { showUrl } from "./show_url";
 import { ToolTips } from "../constants";
@@ -13,7 +13,7 @@ import axios from "axios";
 import { HttpData } from "../util";
 
 export class WebcamPanel extends
-  React.Component<Props, Partial<WebcamPanelState>> {
+  React.Component<WebcamPanelProps, Partial<WebcamPanelState>> {
 
   state: WebcamPanelState = { isEditing: false };
 
