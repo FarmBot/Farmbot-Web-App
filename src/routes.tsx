@@ -267,16 +267,6 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         }
       },
       {
-        path: "app/debug",
-        getComponent(_discard: void, cb: Function) {
-          import("./debug_area")
-            .then(module => cb(undefined, module.Debug))
-            .catch(function () {
-              debugger;
-            });
-        },
-      },
-      {
         path: "*",
         getComponent(_discard: void, cb: Function) {
           import("./404").then(
