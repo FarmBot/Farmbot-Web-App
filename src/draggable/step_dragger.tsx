@@ -43,8 +43,7 @@ export function StepDragger({ dispatch,
       step,
       ghostCss,
       intent,
-      draggerId)}
-    className="heyo">
+      draggerId)} >
     {children}
   </div>;
 }
