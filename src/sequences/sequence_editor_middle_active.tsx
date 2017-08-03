@@ -10,7 +10,7 @@ import { BlurableInput, Row, Col, SaveBtn } from "../ui";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
 import { pushStep } from "./actions";
-import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
+import { StepDragger } from "../draggable/step_dragger";
 import { copySequence } from "./actions";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { save, edit, destroy } from "../api/crud";
@@ -19,23 +19,24 @@ import { get } from "lodash";
 import { TestButton } from "./test_button";
 import { warning } from "farmbot-toastr";
 
-let onDrop = (index: number, dispatch1: Function, sequence: TaggedSequence) =>
-  (key: string) => {
-    dispatch1(function (dispatch2: Function, getState: GetState) {
-      let dataXferObj = dispatch2(stepGet(key));
-      let step = dataXferObj.value;
-      switch (dataXferObj.intent) {
-        case "step_splice":
-          return dispatch2(splice({ step, sequence, index }));
-        case "step_move":
-          let action =
-            move({ step, sequence, to: index, from: dataXferObj.draggerId });
-          return dispatch2(action);
-        default:
-          throw new Error("Got unexpected data transfer object.");
-      }
-    });
-  };
+let onDrop =
+  (index: number, dispatch1: Function, sequence: TaggedSequence) =>
+    (key: string) => {
+      dispatch1(function (dispatch2: Function, getState: GetState) {
+        let dataXferObj = dispatch2(stepGet(key));
+        let step = dataXferObj.value;
+        switch (dataXferObj.intent) {
+          case "step_splice":
+            return dispatch2(splice({ step, sequence, index }));
+          case "step_move":
+            let action =
+              move({ step, sequence, to: index, from: dataXferObj.draggerId });
+            return dispatch2(action);
+          default:
+            throw new Error("Got unexpected data transfer object.");
+        }
+      });
+    };
 
 let copy = function (dispatch: Function, sequence: TaggedSequence) {
   return (e: React.SyntheticEvent<HTMLButtonElement>) =>
@@ -48,11 +49,7 @@ export class SequenceEditorMiddleActive extends
     let { sequences, dispatch, tools, sequence, slots, resources } = this.props;
     let fixThisToo = function (key: string) {
       let xfer = dispatch(stepGet(key)) as DataXferObj;
-      if (xfer.draggerId === NULL_DRAGGER_ID) {
-        pushStep(xfer.value, dispatch, sequence);
-      } else {
-        pushStep(xfer.value, dispatch, sequence);
-      }
+      pushStep(xfer.value, dispatch, sequence);
     };
 
     let isSaving = sequence.saving;
@@ -110,7 +107,7 @@ export class SequenceEditorMiddleActive extends
             <DropArea callback={onDrop(index, dispatch, sequence)} />
             <StepDragger dispatch={dispatch}
               step={currentStep}
-              ghostCss="step-drag-ghost-image-big"
+              ghostCss="step-drag-ghost-image"
               intent="step_move"
               draggerId={index}>
               {renderCeleryNode(currentStep.kind as LegalSequenceKind, {
