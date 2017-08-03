@@ -1,13 +1,15 @@
 import * as React from "react";
 import axios from "axios";
 import { t } from "i18next";
+import * as _ from "lodash";
 import { error as log, success, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
 import { prettyPrintApiErrors, HttpData } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState } from "./interfaces";
-import * as _ from "lodash";
+import { Row, Col, Widget, WidgetHeader, WidgetBody } from "../ui/index";
+
 export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   constructor() {
     super();
@@ -132,7 +134,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
 
   render() {
     let buttonStylesUniqueToOnlyThisPage = {
-      marginTop: "1.5rem",
+      marginTop: "1rem",
       padding: ".5rem 1.6rem",
       fontSize: "1.2rem",
       borderBottom: "none"
@@ -141,177 +143,157 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     let { showServerOpts, forgotPassword } = this.state;
     let expandIcon = showServerOpts ? "minus" : "plus";
     let { toggleServerOpts } = this;
+
     return (
-      <div className="static-page">
-        <h1>
-          {t("Welcome to the FarmBot Web App")}
-        </h1>
-        <h2 className="fb-desktop-show">
-          {t("Setup, customize, and control FarmBot from your computer")}
-        </h2>
-        <h2 className="fb-tablet-show">
-          {t("Setup, customize, and control FarmBot from your tablet")}
-        </h2>
-        <h2 className="fb-mobile-show">
-          {t("Setup, customize, and control FarmBot from your smartphone")}
-        </h2>
-        <div className="image-login-wrapper">
-          <div className="image-wrapper">
-            <img className="fb-desktop-show"
-              src="/app-resources/img/farmbot-desktop.png" />
-            <img className="fb-tablet-show"
-              src="/app-resources/img/farmbot-tablet.png" />
-          </div>
-          <div className="all-content-wrapper login-wrapper">
-            {!forgotPassword && (
-              <div className="row">
-                <div className="widget-wrapper">
-                  <div className="row">
-                    <div className="col-sm-12">
-                      <div className="widget-header">
-                        <h5>{t("Login")}</h5>
-                        <i className={`fa fa-${expandIcon}`}
-                          onClick={toggleServerOpts}>
-                        </i>
-                      </div>
-                    </div>
+      <div className="front-page">
+        <Row>
+          <h1>{t("Welcome to the FarmBot Web App")}</h1>
+        </Row>
+
+        <Row>
+          <h2 className="hidden-xs hidden-sm hidden-md">
+            {t("Setup, customize, and control FarmBot from your computer")}
+          </h2>
+          <h2 className="hidden-xs hidden-lg hidden-xl">
+            {t("Setup, customize, and control FarmBot from your tablet")}
+          </h2>
+          <h2 className="hidden-md hidden-lg hidden-xl">
+            {t("Setup, customize, and control FarmBot from your smartphone")}
+          </h2>
+          <img
+            className="hidden-xs hidden-sm hidden-md"
+            src="/app-resources/img/farmbot-desktop.png"
+          />
+          <img
+            className="hidden-xs hidden-md hidden-lg hidden-xl"
+            src="/app-resources/img/farmbot-tablet.png"
+          />
+        </Row>
+
+        {!forgotPassword && (
+          <Widget>
+            <WidgetHeader title={"Login"}>
+              <button
+                className="fb-button gray"
+                onClick={toggleServerOpts}
+              >
+                <i className={`fa fa-${expandIcon}`} />
+              </button>
+            </WidgetHeader>
+            <WidgetBody>
+              <form onSubmit={this.submitLogin.bind(this)}>
+                <label>{t("Email")}</label>
+                <input
+                  type="email"
+                  onChange={this.set("email").bind(this)}
+                />
+                <label>{t("Password")}</label>
+                <input
+                  type="password"
+                  onChange={this.set("loginPassword").bind(this)}
+                />
+                <a
+                  className="forgot-password"
+                  onClick={this.toggleForgotPassword.bind(this)}
+                >
+                  {t("Forgot password?")}
+                </a>
+                {this.state.showServerOpts &&
+                  <div>
+                    <label>{t("Server URL")}</label>
+                    <input
+                      type="text"
+                      onChange={this.set("serverURL").bind(this)}
+                      value={this.state.serverURL}
+                    />
+                    <label>{t("Server Port")}</label>
+                    <input
+                      type="text"
+                      onChange={this.set("serverPort").bind(this)}
+                      value={this.state.serverPort}
+                    />
                   </div>
-                  <div className="row">
-                    <form onSubmit={this.submitLogin.bind(this)}>
-                      <div className="col-sm-12">
-                        <div className="widget-body">
-                          <div className="input-group">
-                            <label>{t("Email")}</label>
-                            <input type="email"
-                              onChange={this.set("email").bind(this)}>
-                            </input>
-                            <label>{t("Password")}</label>
-                            <input type="password"
-                              onChange={this.set("loginPassword").bind(this)}>
-                            </input>
-                            <a
-                              className="forgot-password"
-                              onClick={this.toggleForgotPassword.bind(this)}>
-                              {t("Forgot password?")}
-                            </a>
-                            {this.state.showServerOpts && (
-                              <div>
-                                <label>{t("Server URL")}</label>
-                                <input type="text"
-                                  onChange={this.set("serverURL").bind(this)}
-                                  value={this.state.serverURL}>
-                                </input>
-                                <label>{t("Server Port")}</label>
-                                <input type="text"
-                                  onChange={this.set("serverPort").bind(this)}
-                                  value={this.state.serverPort}>
-                                </input>
-                              </div>
-                            )}
-                          </div>
-                          <div className="row">
-                            <div className="col-xs-12">
-                              <button
-                                className="fb-button green"
-                                style={buttonStylesUniqueToOnlyThisPage}
-                              >
-                                {t("Login")}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
+                }
+                <Row>
+                  <button
+                    className="fb-button green"
+                    style={buttonStylesUniqueToOnlyThisPage}
+                  >
+                    {t("Login")}
+                  </button>
+                </Row>
+              </form>
+            </WidgetBody>
+          </Widget>
+        )}
+        {forgotPassword && (
+          <Widget>
+            <WidgetHeader title={"Create an Account"}>
+              <button
+                className="fb-button gray"
+                onClick={this.toggleForgotPassword.bind(this)}
+              >
+                {t("BACK")}
+              </button>
+            </WidgetHeader>
+            <WidgetBody>
+              <form onSubmit={this.submitForgotPassword.bind(this)}>
+                <label>{t("Enter Email")}</label>
+                <input
+                  type="email"
+                  onChange={this.set("email").bind(this)}
+                />
+                <button
+                  className="fb-button green"
+                  style={buttonStylesUniqueToOnlyThisPage}
+                >
+                  {t("Send Password reset")}
+                </button>
+              </form>
+            </WidgetBody>
+          </Widget>
+        )}
+        <div className="row">
+          <div className="widget-wrapper">
+            <div className="row">
+              <div className="col-sm-12">
+                <div className="widget-header">
+                  <h5> {t("Create An Account")} </h5>
                 </div>
               </div>
-            )}
-            {forgotPassword && (
-              <div className="row">
-                <div className="widget-wrapper">
-                  <div className="row">
-                    <div className="col-sm-12">
-                      <div className="widget-header">
-                        <h5>{t("Forgot Password")}</h5>
+            </div>
+            <div className="row">
+              <div className="col-sm-12">
+                <form onSubmit={this.submitRegistration.bind(this)} >
+                  <div className="widget-body">
+                    <div className="input-group">
+                      <label>{t("Email")} </label>
+                      <input type="email" onChange={this.set("regEmail").bind(this)} ></input>
+                      <label>{t("Name")}</label>
+                      <input type="text" onChange={this.set("regName").bind(this)}></input>
+                      <label>{t("Password")}</label>
+                      <input type="password"
+                        onChange={this.set("regPassword").bind(this)}>
+                      </input>
+                      <label>{t("Verify Password")}</label>
+                      <input type="password"
+                        onChange={
+                          this.set("regConfirmation").bind(this)}>
+                      </input>
+                      {this.maybeRenderTos()}
+                    </div>
+                    <div className="row">
+                      <div className="col-xs-12">
                         <button
-                          className="fb-button gray"
-                          onClick={this.toggleForgotPassword.bind(this)}
+                          className="fb-button green"
+                          style={buttonStylesUniqueToOnlyThisPage}
                         >
-                          {t("BACK")}
+                          {t("Create Account")}
                         </button>
                       </div>
                     </div>
                   </div>
-                  <div className="row">
-                    <form onSubmit={this.submitForgotPassword.bind(this)}>
-                      <div className="col-sm-12">
-                        <div className="widget-body">
-                          <div className="input-group">
-                            <label>{t("Enter Email")}</label>
-                            <input type="email"
-                              onChange={this.set("email").bind(this)}>
-                            </input>
-                          </div>
-                          <div className="row">
-                            <div className="col-xs-12">
-                              <button
-                                className="fb-button green"
-                                style={buttonStylesUniqueToOnlyThisPage}
-                              >
-                                {t("Send Password reset")}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            )}
-            <div className="row">
-              <div className="widget-wrapper">
-                <div className="row">
-                  <div className="col-sm-12">
-                    <div className="widget-header">
-                      <h5> {t("Create An Account")} </h5>
-                    </div>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-sm-12">
-                    <form onSubmit={this.submitRegistration.bind(this)} >
-                      <div className="widget-body">
-                        <div className="input-group">
-                          <label>{t("Email")} </label>
-                          <input type="email" onChange={this.set("regEmail").bind(this)} ></input>
-                          <label>{t("Name")}</label>
-                          <input type="text" onChange={this.set("regName").bind(this)}></input>
-                          <label>{t("Password")}</label>
-                          <input type="password"
-                            onChange={this.set("regPassword").bind(this)}>
-                          </input>
-                          <label>{t("Verify Password")}</label>
-                          <input type="password"
-                            onChange={
-                              this.set("regConfirmation").bind(this)}>
-                          </input>
-                          {this.maybeRenderTos()}
-                        </div>
-                        <div className="row">
-                          <div className="col-xs-12">
-                            <button
-                              className="fb-button green"
-                              style={buttonStylesUniqueToOnlyThisPage}
-                            >
-                              {t("Create Account")}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div>
+                </form>
               </div>
             </div>
           </div>
@@ -320,4 +302,3 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     );
   }
 }
-
