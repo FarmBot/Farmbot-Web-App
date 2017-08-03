@@ -139,16 +139,9 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
                 step: currentStep,
                 index,
                 sequence: currentSequence
-<<<<<<< HEAD
-              }))} />
-            <i className="fa fa-trash step-control"
-              onClick={() => remove({ dispatch, index, sequence: currentSequence })} />
-            <Help text={t(ToolTips.MOVE_ABSOLUTE)} />
-=======
               }))}
               onTrash={() => remove({ dispatch, index, sequence: currentSequence })}
               helpText={t(ToolTips.MOVE_ABSOLUTE)} />
->>>>>>> d4881d4c4c2f0e8d5fa29f95a5271cf5436f81dd
           </div>
         </Col>
       </Row>
