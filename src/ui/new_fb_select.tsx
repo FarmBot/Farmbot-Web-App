@@ -1,6 +1,5 @@
 import * as React from "react";
 import { DropDownItem } from "./fb_select";
-import { FilterSearch } from "./filter_search";
 
 export interface FBSelectProps {
   /** Value to show. */
@@ -33,13 +32,10 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
     }
   }
   render() {
-    return <div className="filter-search">
-      <FilterSearch
-        selectedItem={this.item}
-        items={this.list}
-        onChange={this.props.onChange}
-        isFilterable={this.props.isFilterable}
-      />
-    </div>;
+    return (
+      <div className="filter-search">
+
+      </div>
+    );
   }
 }

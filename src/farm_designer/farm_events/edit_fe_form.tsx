@@ -209,76 +209,78 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     let isSaved = !isSaving && !isDirty;
     let repeats = this.fieldGet("timeUnit") !== NEVER;
     let allowRepeat = (!this.isReg && repeats);
-    return <div className="panel-container magenta-panel add-farm-event-panel">
-      <div className="panel-header magenta-panel">
-        <p className="panel-title"> <BackArrow /> {this.props.title} </p>
-      </div>
-      <div className="panel-content">
-        <label>
-          {t("Sequence or Regimen")}
-        </label>
-        <FBSelect
-          list={this.props.executableOptions}
-          onChange={this.executableSet}
-          selectedItem={this.executableGet()}
-        />
-        <label>
-          {t("Starts")}
-        </label>
-        <Row>
-          <Col xs={6}>
-            <BlurableInput
-              type="date"
-              className="add-event-start-date"
-              name="start_date"
-              value={this.fieldGet("startDate")}
-              onCommit={this.fieldSet("startDate")}
+    return (
+      <div className="panel-container magenta-panel add-farm-event-panel">
+        <div className="panel-header magenta-panel">
+          <p className="panel-title"> <BackArrow /> {this.props.title} </p>
+        </div>
+        <div className="panel-content">
+          <label>
+            {t("Sequence or Regimen")}
+          </label>
+          <FBSelect
+            list={this.props.executableOptions}
+            onChange={this.executableSet}
+            selectedItem={this.executableGet()}
+          />
+          <label>
+            {t("Starts")}
+          </label>
+          <Row>
+            <Col xs={6}>
+              <BlurableInput
+                type="date"
+                className="add-event-start-date"
+                name="start_date"
+                value={this.fieldGet("startDate")}
+                onCommit={this.fieldSet("startDate")}
+              />
+            </Col>
+            <Col xs={6}>
+              <BlurableInput type="time"
+                className="add-event-start-time"
+                name="start_time"
+                value={this.fieldGet("startTime")}
+                onCommit={this.fieldSet("startTime")}
+              />
+            </Col>
+          </Row>
+          <label>
+            <input type="checkbox"
+              onChange={this.toggleRepeat}
+              disabled={this.isReg}
+              checked={repeats && !this.isReg}
             />
-          </Col>
-          <Col xs={6}>
-            <BlurableInput type="time"
-              className="add-event-start-time"
-              name="start_time"
-              value={this.fieldGet("startTime")}
-              onCommit={this.fieldSet("startTime")}
-            />
-          </Col>
-        </Row>
-        <label>
-          <input type="checkbox"
-            onChange={this.toggleRepeat}
-            disabled={this.isReg}
-            checked={repeats && !this.isReg} />
-          {t("Repeats?")}
-        </label>
-        <Row />
-        {/* CHRIS HELP -RC */}
-        <FarmEventRepeatForm
-          disabled={!allowRepeat}
-          hidden={!allowRepeat}
-          onChange={this.mergeState}
-          timeUnit={this.fieldGet("timeUnit") as TimeUnit}
-          repeat={this.fieldGet("repeat")}
-          endDate={this.fieldGet("endDate")}
-          endTime={this.fieldGet("endTime")} />
-        <SaveBtn
-          color="magenta"
-          isDirty={isDirty}
-          isSaving={isSaving}
-          isSaved={isSaved}
-          onClick={this.commitViewModel}
-        />
-        <button className="fb-button red"
-          onClick={() => {
-            this.dispatch(destroy(fe.uuid)).then(() => {
-              history.push("/app/designer/farm_events");
-              success("Deleted farm event.", "Deleted");
-            });
-          }}>
-          {t("Delete")}
-        </button>
-        <TzWarning deviceTimezone={this.props.deviceTimezone} />
+            &nbsp;{t("Repeats?")}
+          </label>
+          <FarmEventRepeatForm
+            disabled={!allowRepeat}
+            hidden={!allowRepeat}
+            onChange={this.mergeState}
+            timeUnit={this.fieldGet("timeUnit") as TimeUnit}
+            repeat={this.fieldGet("repeat")}
+            endDate={this.fieldGet("endDate")}
+            endTime={this.fieldGet("endTime")}
+          />
+          <SaveBtn
+            color="magenta"
+            isDirty={isDirty}
+            isSaving={isSaving}
+            isSaved={isSaved}
+            onClick={this.commitViewModel}
+          />
+          <button className="fb-button red"
+            onClick={() => {
+              this.dispatch(destroy(fe.uuid)).then(() => {
+                history.push("/app/designer/farm_events");
+                success("Deleted farm event.", "Deleted");
+              });
+            }}>
+            {t("Delete")}
+          </button>
+          <TzWarning deviceTimezone={this.props.deviceTimezone} />
+        </div>
       </div>
-    </div>;
+    );
   }
 }
