@@ -21,7 +21,7 @@ export function formatSelectedDropdown(ri: ResourceIndex, ld: LocationData): Dro
 function toolbar(ri: ResourceIndex, ld: Tool): DropDownItem {
   let tool = findToolById(ri, ld.args.tool_id).body;
   let label = dropDownName("Tool", tool.name);
-  return { label, value: tool.id || -999 }
+  return { label, value: tool.id || -999 };
 }
 
 function point(ri: ResourceIndex, ld: Point): DropDownItem {
@@ -39,7 +39,7 @@ function point(ri: ResourceIndex, ld: Point): DropDownItem {
       label = dropDownName(p.pointer_type, p.name, { x: p.x, y: p.y, z: p.z });
       break;
   }
-  return { label, value: p.id || -999 }
+  return { label, value: p.id || -999 };
 }
 
 function other() { return NULL_CHOICE; }

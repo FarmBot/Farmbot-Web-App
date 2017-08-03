@@ -13,6 +13,10 @@ export const links = [
   { name: "Farmware", icon: "crosshairs", slug: "farmware" }
 ];
 
+if (process.env.NODE_ENV !== "production") {
+  links.push({ name: "💾", icon: "leaf", slug: "debug" });
+}
+
 export const NavLinks = () => {
   let currPath = history.getCurrentLocation().pathname;
   return (

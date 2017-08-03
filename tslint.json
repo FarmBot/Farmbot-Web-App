@@ -63,11 +63,11 @@
     "no-shadowed-variable": true,
     "no-switch-case-fall-through": true,
     "no-trailing-whitespace": true,
-    "no-unused-locals": true,
-    "no-unused-parameters": true,
-    "no-unused-expression": true,
-    "no-unused-variable": [
-      true
+    "jsx-closing-bracket-location": [
+      1,
+      {
+        "selfClosing": "after-props"
+      }
     ],
     "no-use-before-declare": true,
     "no-var-keyword": true,

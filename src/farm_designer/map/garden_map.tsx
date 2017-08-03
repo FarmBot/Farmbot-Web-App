@@ -148,7 +148,7 @@ export class GardenMap extends
         <FarmBotLayer
           botOriginQuadrant={this.props.designer.botOriginQuadrant}
           visible={!!this.props.showFarmbot}
-          bot={this.props.bot}
+          botPosition={this.props.botPosition}
         />
         <HoveredPlantLayer
           isEditing={this.isEditing}

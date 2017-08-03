@@ -11,7 +11,7 @@ export function pushStep(step: SequenceBodyItem,
   sequence: TaggedSequence) {
   let next = defensiveClone(sequence);
   next.body.body = next.body.body || [];
-  next.body.body.push(defensiveClone(step))
+  next.body.body.push(defensiveClone(step));
   dispatch(overwrite(sequence, next.body));
 }
 
@@ -28,7 +28,7 @@ export function copySequence(payload: TaggedSequence) {
     copy.body.name = copy.body.name + ` copy ${count++}`;
     copy.uuid = "HEY REDUCER! Set this!";
     dispatch(init(copy));
-  }
+  };
 }
 
 export function moveStep(step: Step,
@@ -39,7 +39,7 @@ export function moveStep(step: Step,
       type: "MOVE_STEP",
       payload: { step, from, to }
     };
-  }
+  };
 }
 
 export function changeStepSelect(

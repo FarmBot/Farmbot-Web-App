@@ -89,4 +89,19 @@ describe("botRedcuer", () => {
       .toBe(!initialState.z_axis_inverted);
 
   });
+
+  it("toggles encoder data display", () => {
+    let action = { type: Actions.DISPLAY_ENCODER_DATA, payload: "Q" };
+    expect(() => { botReducer(initialState, action); }).toThrow();
+
+    action.payload = "raw_encoders";
+    let result = botReducer(initialState, action);
+    expect(result.raw_encoders)
+      .toBe(!initialState.raw_encoders);
+
+    action.payload = "scaled_encoders";
+    expect(botReducer(initialState, action).scaled_encoders)
+      .toBe(!initialState.scaled_encoders);
+
+  });
 });

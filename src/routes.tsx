@@ -20,7 +20,7 @@ interface RootComponentProps {
 
 let errorLoading = (cb: Function) => function handleError(err: object) {
   console.error("Dynamic page loading failed", err);
-  var container = document.getElementById("root");
+  let container = document.getElementById("root");
   let stack = _.get(err, "stack", "No stack.");
   if (container) {
     let message = _.get(err, "message", "No message available.");
@@ -44,7 +44,7 @@ let errorLoading = (cb: Function) => function handleError(err: object) {
       ${JSON.stringify({
         message,
         stack: stack.split("\n").join("<br/>")
-      }, null, "  ")}
+      }, undefined, "  ")}
     </pre>
     </div>
   `);
@@ -55,8 +55,8 @@ let errorLoading = (cb: Function) => function handleError(err: object) {
     localStorage.clear();
   }
   let y = document.querySelectorAll("link");
-  for (var x = 0; x < y.length; x++) {
-    var element = y[x];
+  for (let x = 0; x < y.length; x++) {
+    let element = y[x];
     element.remove();
   }
 };
@@ -64,7 +64,7 @@ let controlsRoute = {
   path: "app/controls",
   getComponent(_discard: void, cb: Function) {
     import("./controls/controls").then(
-      (module) => cb(null, module.Controls)
+      (module) => cb(undefined, module.Controls)
     ).catch(errorLoading(cb));
   }
 };
@@ -119,7 +119,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         path: "app/account",
         getComponent(_discard: void, cb: Function) {
           import("./account/index").then(
-            (module) => cb(null, module.Account)
+            (module) => cb(undefined, module.Account)
           ).catch(errorLoading(cb));
         }
       },
@@ -128,7 +128,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         path: "app/device",
         getComponent(_discard: void, cb: Function) {
           import("./devices/devices").then(
-            (module) => cb(null, module.Devices)
+            (module) => cb(undefined, module.Devices)
           ).catch(errorLoading(cb));
         }
       },
@@ -136,7 +136,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         path: "app/farmware",
         getComponent(_discard: void, cb: Function) {
           import("./farmware/index").then(
-            (module) => cb(null, module.FarmwarePage)
+            (module) => cb(undefined, module.FarmwarePage)
           ).catch(errorLoading(cb));
         }
       },
@@ -145,7 +145,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         onEnter: this.maybeReplaceDesignerModules.bind(this),
         getComponent(_discard: void, cb: Function) {
           import("./farm_designer/index").then(
-            (module) => cb(null, module.FarmDesigner)
+            (module) => cb(undefined, module.FarmDesigner)
           ).catch(errorLoading(cb));
         },
         childRoutes: [
@@ -153,7 +153,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             path: "plants",
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/plant_inventory").then(
-                (module) => cb(null, module.Plants)
+                (module) => cb(undefined, module.Plants)
               ).catch(errorLoading(cb));
             },
           },
@@ -161,7 +161,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             path: "plants/crop_search",
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/crop_catalog").then(
-                (module) => cb(null, module.CropCatalog)
+                (module) => cb(undefined, module.CropCatalog)
               ).catch(errorLoading(cb));
             },
           },
@@ -169,7 +169,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             path: "plants/crop_search/:crop",
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/crop_info").then(
-                (module) => cb(null, module.CropInfo)
+                (module) => cb(undefined, module.CropInfo)
               ).catch(errorLoading(cb));
             },
           },
@@ -177,7 +177,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             path: "plants/crop_search/:crop/add",
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/dnd_crop_mobile").then(
-                (module) => cb(null, module.DNDCropMobile)
+                (module) => cb(undefined, module.DNDCropMobile)
               ).catch(errorLoading(cb));
             },
           },
@@ -185,7 +185,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             path: "plants/:plant_id",
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/plant_info").then(
-                (module) => cb(null, module.PlantInfo)
+                (module) => cb(undefined, module.PlantInfo)
               ).catch(errorLoading(cb));
             },
           },
@@ -193,7 +193,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             path: "plants/:plant_id/edit",
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/edit_plant_info").then(
-                (module) => cb(null, module.EditPlantInfo)
+                (module) => cb(undefined, module.EditPlantInfo)
               ).catch(errorLoading(cb));
             },
           },
@@ -201,7 +201,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             path: "farm_events",
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/farm_events/farm_events").then(
-                (module) => cb(null, module.FarmEvents)
+                (module) => cb(undefined, module.FarmEvents)
               ).catch(errorLoading(cb));
             }
           },
@@ -209,7 +209,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             path: "farm_events/add",
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/farm_events/add_farm_event").then(
-                (module) => cb(null, module.AddFarmEvent)
+                (module) => cb(undefined, module.AddFarmEvent)
               ).catch(errorLoading(cb));
             }
           },
@@ -217,7 +217,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             path: "farm_events/:farm_event_id",
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/farm_events/edit_farm_event").then(
-                (module) => cb(null, module.EditFarmEvent)
+                (module) => cb(undefined, module.EditFarmEvent)
               ).catch(errorLoading(cb));
             }
           }
@@ -228,11 +228,11 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         getComponent(_discard: void, cb: Function) {
           if (!isMobile()) {
             import("./regimens/index").then(
-              (module) => cb(null, module.Regimens)
+              (module) => cb(undefined, module.Regimens)
             ).catch(errorLoading(cb));
           } else {
             import("./regimens/list/index").then(
-              (module) => cb(null, module.RegimensList)
+              (module) => cb(undefined, module.RegimensList)
             ).catch(errorLoading(cb));
           }
         },
@@ -241,7 +241,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         path: "app/regimens/:regimen",
         getComponent(_discard: void, cb: Function) {
           import("./regimens/index").then(
-            (module) => cb(null, module.Regimens)
+            (module) => cb(undefined, module.Regimens)
           ).catch(errorLoading(cb));
         }
       },
@@ -249,7 +249,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         path: "app/sequences",
         getComponent(_discard: void, cb: Function) {
           import("./sequences/sequences").then(
-            (module) => cb(null, module.Sequences)
+            (module) => cb(undefined, module.Sequences)
           ).catch(errorLoading(cb));
         },
       },
@@ -257,7 +257,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         path: "app/sequences/:sequence",
         getComponent(_discard: void, cb: Function) {
           import("./sequences/sequences").then(
-            (module) => cb(null, module.Sequences)
+            (module) => cb(undefined, module.Sequences)
           ).catch(errorLoading(cb));
         },
       },
@@ -265,15 +265,25 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         path: "app/tools",
         getComponent(_discard: void, cb: Function) {
           import("./tools/index").then(
-            (module) => cb(null, module.Tools)
+            (module) => cb(undefined, module.Tools)
           ).catch(errorLoading(cb));
         }
+      },
+      {
+        path: "app/debug",
+        getComponent(_discard: void, cb: Function) {
+          import("./debug_area")
+            .then(module => cb(undefined, module.Debug))
+            .catch(function () {
+              debugger;
+            });
+        },
       },
       {
         path: "*",
         getComponent(_discard: void, cb: Function) {
           import("./404").then(
-            (module) => cb(null, module.FourOhFour)
+            (module) => cb(undefined, module.FourOhFour)
           ).catch(errorLoading(cb));
         }
       }

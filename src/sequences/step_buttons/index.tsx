@@ -25,12 +25,10 @@ export function StepButton({ children, step, color, dispatch, current }:
         step={step}
         ghostCss="step-drag-ghost-image"
         intent="step_splice"
-        draggerId={NULL_DRAGGER_ID}
-      >
+        draggerId={NULL_DRAGGER_ID} >
         <button
           className={`fb-button full-width block ${color}`}
-          onClick={stepClick(dispatch, step, current)}
-        >
+          onClick={stepClick(dispatch, step, current)} >
           {children}
           <i className="fa fa-arrows block-control" />
         </button>

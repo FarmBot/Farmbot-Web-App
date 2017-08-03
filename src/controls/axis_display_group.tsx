@@ -4,8 +4,8 @@ import { Row, Col } from "../ui";
 import { AxisDisplayGroupProps } from "./interfaces";
 import { isUndefined } from "lodash";
 
-export let AxisDisplayGroup = ({ bot, label }: AxisDisplayGroupProps) => {
-  let { x, y, z } = bot.hardware.location_data.position;
+export let AxisDisplayGroup = ({ position, label }: AxisDisplayGroupProps) => {
+  let { x, y, z } = position;
   return (
     <Row>
       <Col xs={3}>

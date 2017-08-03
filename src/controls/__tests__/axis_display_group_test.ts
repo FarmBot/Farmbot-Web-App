@@ -1,10 +1,11 @@
 import { mount } from "enzyme";
 import { AxisDisplayGroup } from "../axis_display_group";
-import { bot } from "../../__test_support__/fake_state/bot";
-import { defensiveClone } from "../../util";
 
 describe("<AxisDisplayGroup />", () => {
-  let params = { bot, label: "Heyoo" };
+  let params = {
+    position: { x: undefined, y: undefined, z: undefined },
+    label: "Heyoo"
+  };
   let wrapper = mount(AxisDisplayGroup(params));
 
   it("has 3 inputs and a label", () => {
@@ -22,8 +23,11 @@ describe("<AxisDisplayGroup />", () => {
   });
 
   it("renders real values for ... real values", () => {
-    let props = { bot: defensiveClone(bot), label: "Heyoo" };
-    props.bot.hardware.location_data.position = {
+    let props = {
+      position: { x: 0, y: 0, z: 0 },
+      label: "Heyoo"
+    };
+    props.position = {
       x: 1,
       y: 2,
       z: 3
