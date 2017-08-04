@@ -1,6 +1,6 @@
 import * as React from "react";
 import { DropDownItem } from "./fb_select";
-import { Popover, Position, Menu, MenuItem } from "@blueprintjs/core/dist";
+import { FilterSearch } from "./filter_search";
 
 export interface FBSelectProps {
   /** Value to show. */
@@ -21,49 +21,50 @@ export const NULL_CHOICE: DropDownItem = Object.freeze({
   value: ""
 });
 
-interface MenuNode {
-  name: string;
-  child?: MenuNode | undefined;
-}
-
 export class FBSelect extends React.Component<FBSelectProps, {}> {
 
-  // get item() { return this.props.selectedItem || NULL_CHOICE; }
-  // get list() {
-  //   if (this.props.allowEmpty) {
-  //     return this.props.list.concat(NULL_CHOICE);
-  //   } else {
-  //     return this.props.list;
-  //   }
-  // }
-
-  idea(items: any[]): any {
-    return items.map((item, index) => {
-      if (item) {
-        return (
-          <MenuItem key={index} text={item.executable_type} />
-        );
-      }
-    });
-
-    // if (m.child) {
-    //   return <div>{m.name} (idea(m.child))</div>;
-    // } else {
-    //   return <div>{m.name}</div>;
-    // }
+  get item() { return this.props.selectedItem || NULL_CHOICE; }
+  get list() {
+    if (this.props.allowEmpty) {
+      return this.props.list.concat(NULL_CHOICE);
+    } else {
+      return this.props.list;
+    }
   }
 
   render() {
-    console.log(this.props.list);
     return (
       <div className="filter-search">
-        <Popover position={Position.BOTTOM_LEFT}>
-          <button className="fb-button green">Select...</button>
-          <Menu>
-            {this.idea(this.props.list)}
-          </Menu>
-        </Popover>
+        <FilterSearch
+          selectedItem={this.item}
+          items={this.list}
+          onChange={this.props.onChange}
+        />
       </div>
     );
   }
+
+  // recurse(items: DropDownItem[]): React.ReactElement<any> {
+  //   return items.map((item, index) => {
+  //     if (item) {
+  //       return (
+  //         <MenuItem key={index} text={item.executable_type} />
+  //       );
+  //     }
+  //   });
+  // }
+
+  // render() {
+  //   console.log(this.props.list);
+  //   return (
+  //     <div className="filter-search">
+  //       <Popover position={Position.BOTTOM_LEFT}>
+  //         <button className="fb-button green">Select...</button>
+  //         <Menu>
+  //           {this.recurse(this.props.list)}
+  //         </Menu>
+  //       </Popover>
+  //     </div>
+  //   );
+  // }
 }
