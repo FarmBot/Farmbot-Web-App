@@ -275,7 +275,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
           import("./debug_area")
             .then(module => cb(undefined, module.Debug))
             .catch(function () {
-              debugger;
+              // debugger;
             });
         },
       },

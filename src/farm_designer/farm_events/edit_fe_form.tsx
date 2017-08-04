@@ -188,7 +188,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
               this is a concern.`.replace(/\s+/g, " "));
           }));
         } else {
-          debugger;
+          // debugger;
           error(`This Farm Event does not appear to have a valid run time.
             Perhaps you entered bad dates?`);
         }
