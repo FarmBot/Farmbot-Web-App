@@ -2,6 +2,7 @@ import { AddEditFarmEventProps, ExecutableType } from "../interfaces";
 import { Everything } from "../../interfaces";
 import * as moment from "moment";
 import { t } from "i18next";
+import * as _ from "lodash";
 import { push, pathname } from "../../history";
 import {
   selectAllFarmEvents,
@@ -170,6 +171,15 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
   //         container.children.push(x);
   //     });
   //   });
+  let newExecutableOptions = executableOptions
+    .filter(x => !x.heading)
+    .map(x => {
+      return {
+        label: `${x.executable_type}: ${x.label}`,
+        value: x.value,
+        executable_type: (_.capitalize(x.executable_type) as ExecutableType)
+      };
+    });
   /* -------------------------- END ---------------------------------------*/
 
   let regimensById = indexRegimenById(props.resources.index);
@@ -204,7 +214,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     regimensById,
     sequencesById,
     farmEventsById,
-    executableOptions,
+    executableOptions: newExecutableOptions, // <-- Temp, see comment above.
     repeatOptions,
     formatDate,
     formatTime,
