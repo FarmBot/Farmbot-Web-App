@@ -5,7 +5,7 @@ import { t } from "i18next";
 import { GardenMap } from "./map/garden_map";
 import { Props, State, BotOriginQuadrant } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
-import { history } from "../history";
+import { pathname } from "../history";
 import { Plants } from "./plants/plant_inventory";
 import { GardenMapLegend } from "./map/garden_map_legend";
 import { isMobile } from "../util";
@@ -46,7 +46,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
      * This one just makes sure the designer can click it's panel tabs without
      * the other headers getting in the way. There's more re-usability in this.
      */
-    if (history.getCurrentLocation().pathname === "/app/designer") {
+    if (pathname === "/app/designer") {
       document.body.classList.add("designer-tab");
     } else {
       document.body.classList.remove("designer-tab");

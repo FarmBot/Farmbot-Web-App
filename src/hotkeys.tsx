@@ -12,7 +12,7 @@ import {
 
 import { links } from "./nav/links";
 import { sync } from "./devices/actions";
-import { history, push } from "./history";
+import { pathname, push } from "./history";
 import { Row, Col } from "./ui/index";
 
 interface Props {
@@ -111,7 +111,7 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
   }
 
   renderHotkeys() {
-    let slug = history.getCurrentLocation().pathname.split("/")[2];
+    let slug = pathname.split("/")[2];
     return <Hotkeys>
       {
         this.hotkeys(this.props.dispatch, slug)
