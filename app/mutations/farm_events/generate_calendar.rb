@@ -51,7 +51,7 @@ module FarmEvents
     end
 
     def partial_calendar
-      in_future? ? [lower_limit] : []
+      in_future? ? [origin] : []
     end
 
     def the_unit
