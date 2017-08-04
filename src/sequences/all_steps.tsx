@@ -12,6 +12,7 @@ interface AllStepsProps {
   onDrop(index: number, key: string): void;
   dispatch: Function;
   resources: ResourceIndex;
+  useUuid?: boolean;
 }
 
 export function AllSteps(props: AllStepsProps) {
@@ -25,7 +26,7 @@ export function AllSteps(props: AllStepsProps) {
        * allows React to diff the list correctly. */
       let readThatCommentAbove = get(currentStep, "uuid", index);
       console.log("ADD THIS BACK: " + readThatCommentAbove);
-      return <div key={index}>
+      return <div key={"wow" + index}>
         <DropArea callback={(key) => onDrop(index, key)} />
         <StepDragger
           dispatch={dispatch}
