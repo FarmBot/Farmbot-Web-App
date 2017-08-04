@@ -7,7 +7,7 @@ import { Row, Col } from "../ui";
 import { history } from "../history";
 import { updatePageInfo } from "../util";
 import { SyncButton } from "./sync_button";
-import { NavLinks } from "./links";
+import { NavLinks } from "./nav_links";
 import { TickerList } from "./ticker_list";
 import { AdditionalMenu } from "./additional_menu";
 import { MobileMenu } from "./mobile_menu";
