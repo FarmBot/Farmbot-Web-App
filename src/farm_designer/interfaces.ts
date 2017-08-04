@@ -14,7 +14,7 @@ import {
 } from "./farm_events/map_state_to_props_add_edit";
 import { PlantPointer } from "../interfaces";
 import { SlotWithTool } from "../resources/interfaces";
-import { BotState, BotPosition } from "../devices/interfaces";
+import { BotPosition } from "../devices/interfaces";
 
 /** TODO: Use Enums */
 export type BotOriginQuadrant = 1 | 2 | 3 | 4;
@@ -42,7 +42,7 @@ export interface Props {
   plants: TaggedPlantPointer[];
   toolSlots: SlotWithTool[];
   crops: TaggedCrop[];
-  bot: BotState;
+  botPosition: BotPosition;
 }
 
 export type TimeUnit =

@@ -9,7 +9,7 @@ import { StepSizeSelector } from "./step_size_selector";
 import { MustBeOnline } from "../devices/must_be_online";
 import { ToolTips } from "../constants";
 import { MoveProps, EncoderDisplay } from "./interfaces";
-import { Xyz } from "../devices/interfaces";
+import { Xyz, BotLocationData } from "../devices/interfaces";
 import { Popover, Position } from "@blueprintjs/core";
 import { AxisDisplayGroup } from "./axis_display_group";
 
@@ -30,10 +30,19 @@ export class Move extends React.Component<MoveProps, {}> {
     let zBtnColor = z_axis_inverted ? "green" : "red";
     let rawBtnColor = raw_encoders ? "green" : "red";
     let scaledBtnColor = scaled_encoders ? "green" : "red";
-    let location_data = this.props.bot.hardware.location_data;
-    let motor_coordinates = location_data.position;
-    let raw_encoders_data = location_data.raw_encoders;
-    let scaled_encoders_data = location_data.scaled_encoders;
+    let locationData: BotLocationData;
+    if (this.props.bot.hardware.location_data) {
+      locationData = this.props.bot.hardware.location_data;
+    } else {
+      locationData = {
+        position: { x: undefined, y: undefined, z: undefined },
+        raw_encoders: { x: undefined, y: undefined, z: undefined },
+        scaled_encoders: { x: undefined, y: undefined, z: undefined },
+      };
+    }
+    let motor_coordinates = locationData.position;
+    let raw_encoders_data = locationData.raw_encoders;
+    let scaled_encoders_data = locationData.scaled_encoders;
 
     return (
       <Widget>
@@ -146,7 +155,7 @@ export class Move extends React.Component<MoveProps, {}> {
                 label={"Scaled Encoder data"}
               />}
             <AxisInputBoxGroup
-              bot={this.props.bot}
+              position={motor_coordinates}
               onCommit={input => moveAbs(input)} />
           </MustBeOnline>
         </WidgetBody>

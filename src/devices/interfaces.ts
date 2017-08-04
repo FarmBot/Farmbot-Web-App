@@ -4,7 +4,8 @@ import {
   ConfigurationName,
   Dictionary,
   SyncStatus,
-  FarmwareManifest
+  FarmwareManifest,
+  LocationName
 } from "farmbot";
 import { AuthState } from "../auth/interfaces";
 import {
@@ -81,6 +82,7 @@ export type Xyz = "x" | "y" | "z";
 export type Axis = Xyz | "all";
 
 export type BotPosition = Record<Xyz, (number | undefined)>;
+export type BotLocationData = Record<LocationName, BotPosition> | undefined;
 
 export interface CalibrationButtonProps {
   disabled: boolean;
