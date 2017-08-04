@@ -284,7 +284,7 @@ export type CowardlyDictionary<T> = Dictionary<T | undefined>;
  */
 export const NOT_SAVED = -1;
 
-export function isUndefined(x: any): x is undefined {
+export function isUndefined(x: object | undefined): x is undefined {
   return _.isUndefined(x);
 }
 

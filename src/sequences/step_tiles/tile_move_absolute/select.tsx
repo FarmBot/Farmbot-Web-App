@@ -7,9 +7,12 @@ import { TileMoveAbsProps } from "./interfaces";
 
 export function TileMoveAbsSelect(props: TileMoveAbsProps) {
   let i = props.selectedItem;
-  return <FBSelect
-    allowEmpty={true}
-    list={generateList(props.resources)}
-    selectedItem={formatSelectedDropdown(props.resources, i)}
-    onChange={(x) => props.onChange(handleSelect(props.resources, x))} />;
+  return (
+    <FBSelect
+      allowEmpty={true}
+      list={generateList(props.resources)}
+      selectedItem={formatSelectedDropdown(props.resources, i)}
+      onChange={(x) => props.onChange(handleSelect(props.resources, x))}
+    />
+  );
 }

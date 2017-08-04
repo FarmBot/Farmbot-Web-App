@@ -10,9 +10,6 @@ import { Store } from "./redux/interfaces";
 import { ready } from "./config/actions";
 import { Session } from "./session";
 import { isMobile } from "./util";
-import { hardRefresh } from "./util";
-
-hardRefresh();
 
 interface RootComponentProps {
   store: Store;
@@ -268,16 +265,6 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             (module) => cb(undefined, module.Tools)
           ).catch(errorLoading(cb));
         }
-      },
-      {
-        path: "app/debug",
-        getComponent(_discard: void, cb: Function) {
-          import("./debug_area")
-            .then(module => cb(undefined, module.Debug))
-            .catch(function () {
-              debugger;
-            });
-        },
       },
       {
         path: "*",

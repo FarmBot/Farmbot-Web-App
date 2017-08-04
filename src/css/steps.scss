@@ -30,19 +30,13 @@
   }
 }
 
-@media (max-width: 600px) {
-  .step-wrapper {
-    // CHRIS: I disabled this to fix DnD - Rick
-    // margin-bottom: 1.5rem;
-  }
-}
-
 .step-header {
   letter-spacing: .05rem;
   padding: .75rem 1rem;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
   .pt-popover-target {
+    display: inline-block;
     float: right;
     margin-top: 0.1rem;
   }
