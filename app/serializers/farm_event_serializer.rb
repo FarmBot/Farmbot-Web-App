@@ -27,8 +27,8 @@ class FarmEventSerializer < ActiveModel::Serializer
   def sequence_calendar
     FarmEvents::GenerateCalendar
       .run!(origin:      object.start_time,
-            lower_limit: instance_options[:upper_limit] || Time.now,
-            upper_limit: instance_options[:lower_limit] || object.end_time,
+            lower_limit: Time.now,
+            upper_limit: object.end_time,
             repeat:      object.repeat,
             time_unit:   object.time_unit)
       .map(&:utc)

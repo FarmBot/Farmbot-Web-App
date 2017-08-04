@@ -40,14 +40,18 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
     let fromEpoch = (ms: number) => moment(f.start_time)
       .startOf("day")
       .add(ms, "ms");
+    let o = occurrence(moment(f.start_time), f);
+    o.heading = f.executable.name;
+    o.subheading = "";
+    c.insert(o);
     regimen_items.map(ri => {
       let time = fromEpoch(ri.time_offset);
       if (time.isAfter(now) && time.isAfter(moment(f.start_time))) {
-        let o = occurrence(time, f);
+        let oo = occurrence(time, f);
         let seq = findSequenceById(index, ri.sequence_id);
-        o.parentExecutableName = f.executable.name;
-        o.childExecutableName = seq.body.name;
-        c.insert(o);
+        oo.heading = f.executable.name;
+        oo.subheading = seq.body.name;
+        c.insert(oo);
       }
     });
   };

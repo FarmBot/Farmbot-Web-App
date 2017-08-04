@@ -19,9 +19,6 @@ describe("<TileWait/>", () => {
         currentStep={currentStep}
         dispatch={jest.fn()}
         index={0}
-        sequences={[]}
-        tools={[]}
-        slots={[]}
         resources={emptyState().index} />)
     };
   }

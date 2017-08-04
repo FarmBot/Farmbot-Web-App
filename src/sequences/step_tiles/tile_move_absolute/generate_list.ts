@@ -16,7 +16,7 @@ export function generateList(input: ResourceIndex): DropDownItem[] {
   let toolNameById = mapToolIdToName(input);
   let SORT_KEY: keyof DropDownItem = "headingId";
   let points = selectAllPoints(input)
-    .filter(x => (x.body.pointer_type !== "ToolSlot"))
+    .filter(x => (x.body.pointer_type !== "ToolSlot"));
   let toolDDI = selectAllTools(input)
     .filter(x => !!x.body.id)
     .map(t => formatTools(t));

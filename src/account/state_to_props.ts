@@ -20,4 +20,3 @@ export function mapStateToProps(props: Everything): Props {
     dispatch: () => { throw new Error("NEVER SHOULD HAPPEN"); }
   };
 }
-

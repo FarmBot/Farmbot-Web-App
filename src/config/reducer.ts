@@ -19,4 +19,3 @@ export let configReducer = generateReducer<ConfigState>(initialState)
     s.host = payload.host;
     return s;
   });
-

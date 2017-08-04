@@ -48,7 +48,7 @@ export class API {
 
   static parseURL(url: string): UrlInfo {
     // Such an amazing hack!
-    var info = document.createElement("a");
+    let info = document.createElement("a");
     info.href = url;
     return info;
   }

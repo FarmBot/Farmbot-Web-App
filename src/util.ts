@@ -284,7 +284,7 @@ export type CowardlyDictionary<T> = Dictionary<T | undefined>;
  */
 export const NOT_SAVED = -1;
 
-export function isUndefined(x: any): x is undefined {
+export function isUndefined(x: object | undefined): x is undefined {
   return _.isUndefined(x);
 }
 
@@ -411,48 +411,6 @@ export function semverCompare(left: string, right: string): SemverResult {
  * - RC 20 June 2016 */
 type JSXChild = JSX.Element | JSX.Element[] | Primitive | undefined;
 export type JSXChildren = JSXChild[] | JSXChild;
-
-/** HACK: Server side caching (or webpack) is not doing something right.
- *        This is a work around until then. */
-export function hardRefresh() {
-  // Change this string to trigger a force cache reset.
-  let HARD_RESET = "CACHE5";
-  if (localStorage && sessionStorage) {
-    if (!localStorage.getItem(HARD_RESET)) {
-      console.warn("Performing hard reset of localstorage and JS cookies.");
-      Object.keys(localStorage)
-        .concat(Object.keys(sessionStorage))
-        .filter(x => x !== "session") // Avoid endless logout loop.
-        .map(x => {
-          delete localStorage[x];
-          delete sessionStorage[x];
-        });
-      deleteAllCookies();
-      localStorage.setItem(HARD_RESET, "DONE");
-      window.location.reload(true);
-    } else {
-      console.warn("Not running hard reset. Key was present: " + HARD_RESET);
-    }
-  } else {
-    console.log("Local storage not supported.");
-  }
-}
-
-/** Tim reported some issues Chrome. I don't think it is cookie related,
- *  but to be extra certain, we clear all client side cookies when busting
- * cache.
- * NOTE: We will need to remove this if we ever add google analytics.
- *  -RC 23 jun 17 */
-function deleteAllCookies() {
-  let cookies = document.cookie.split(";");
-
-  for (let i = 0; i < cookies.length; i++) {
-    let cookie = cookies[i];
-    let eqPos = cookie.indexOf("=");
-    let name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-  }
-}
 
 export type Primitive = boolean | string | number;
 

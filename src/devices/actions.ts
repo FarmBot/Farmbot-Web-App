@@ -36,6 +36,14 @@ function incomingStatus(statusMessage: HardwareState) {
 function isLog(x: object): x is Log {
   return _.isObject(x) && _.isString(_.get(x, "message" as keyof Log));
 }
+let commandErr = (noun = "Command") => () => {
+  console.info("Took longer than 6 seconds: " + noun);
+};
+
+let commandOK = (noun = "Command") => () => {
+  let msg = noun + " request sent to device.";
+  success(msg, t("Request sent"));
+};
 
 export function checkControllerUpdates() {
   let noun = "Check for Updates";
@@ -141,15 +149,6 @@ export function execSequence(sequence: Sequence) {
 
 export let saveAccountChanges: Thunk = function (dispatch, getState) {
   return save(getDeviceAccountSettings(getState().resources.index));
-};
-
-let commandErr = (noun = "Command") => () => {
-  console.info("Took longer than 6 seconds: " + noun);
-};
-
-let commandOK = (noun = "Command") => () => {
-  let msg = noun + " request sent to device.";
-  success(msg, t("Request sent"));
 };
 
 export let fetchReleases =
