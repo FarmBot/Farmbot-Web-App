@@ -1,5 +1,8 @@
+import * as React from "react";
 import { AllSteps } from "../all_steps";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { shallow } from "enzyme";
+import { TaggedSequence } from "../../resources/tagged_resources";
 // import { TaggedSequence } from "../../resources/tagged_resources";
 
 describe("<AllSteps/>", () => {
@@ -18,7 +21,6 @@ describe("<AllSteps/>", () => {
             "z": 0,
             "speed": 800
           },
-          "uuid": "03840ac5-f7fb-4766-89cd-360cb5d7a224"
         },
         {
           "kind": "read_pin",
@@ -27,7 +29,6 @@ describe("<AllSteps/>", () => {
             "pin_mode": 0,
             "label": "---"
           },
-          "uuid": "5ddbffe9-a4ba-44b0-83f3-15ff1799db34"
         },
         {
           "kind": "write_pin",
@@ -36,7 +37,6 @@ describe("<AllSteps/>", () => {
             "pin_value": 0,
             "pin_mode": 0
           },
-          "uuid": "8d262198-5d48-4273-b261-8f8c88b7b781"
         }
       ],
       "args": {
@@ -46,19 +46,20 @@ describe("<AllSteps/>", () => {
       "kind": "sequence"
     },
     "uuid": "sequences.8.52"
-  } as any;
+  } as TaggedSequence;
 
   it("uses index as a key", () => {
-    let wow = AllSteps({
-      sequence: TEST_CASE,
-      onDrop: () => { },
-      dispatch: jest.fn(),
-      resources: buildResourceIndex([]).index,
-      useUuid: true
+    let el = shallow(<AllSteps
+      sequence={TEST_CASE}
+      onDrop={() => { }}
+      dispatch={jest.fn()}
+      resources={buildResourceIndex([]).index} />);
+    [
+      "TileMoveRelative",
+      "TileReadPin",
+      "TileWritePin"
+    ].map(q => {
+      expect(el.find(q).length).toEqual(1);
     });
-    let geeWiz = JSON.stringify(wow);
-    console.log(geeWiz);
-  });
-  it("uses UUID as a key", () => {
   });
 });

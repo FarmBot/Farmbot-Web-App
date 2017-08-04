@@ -12,7 +12,6 @@ interface AllStepsProps {
   onDrop(index: number, key: string): void;
   dispatch: Function;
   resources: ResourceIndex;
-  useUuid?: boolean;
 }
 
 export function AllSteps(props: AllStepsProps) {
