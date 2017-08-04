@@ -8,7 +8,6 @@ const INITIAL_STATE: DraggableState = {
 
 export let draggableReducer = generateReducer<DraggableState>(INITIAL_STATE)
   .add<DataXfer>(Actions.PUT_DATA_XFER, (s, { payload }) => {
-    console.log("Adding " + payload.uuid + " to state tree");
     s.dataTransfer[payload.uuid] = payload;
     return s;
   })
