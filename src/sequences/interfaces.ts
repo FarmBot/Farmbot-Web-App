@@ -150,11 +150,5 @@ export interface StepParams {
   currentStep: SequenceBodyItem;
   dispatch: Function;
   index: number;
-  /** @deprecated Use props.resources now. */
-  sequences: TaggedSequence[];
-  /** @deprecated Use props.resources now. */
-  tools: TaggedTool[];
-  /** @deprecated Use props.resources now. */
-  slots: TaggedToolSlotPointer[];
   resources: ResourceIndex;
 }

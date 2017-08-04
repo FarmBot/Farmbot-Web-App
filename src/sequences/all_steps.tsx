@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TaggedSequence, TaggedTool, TaggedToolSlotPointer } from "../resources/tagged_resources";
+import { TaggedSequence } from "../resources/tagged_resources";
 import { SequenceBodyItem, LegalSequenceKind } from "farmbot/dist";
 import { get } from "lodash";
 import { DropArea } from "../draggable/drop_area";
@@ -11,14 +11,7 @@ interface AllStepsProps {
   sequence: TaggedSequence;
   onDrop(index: number, key: string): void;
   dispatch: Function;
-  // /** @deprecated Use props.resources now. */
-  sequences: TaggedSequence[];
-  // /** @deprecated Use props.resources now. */
-  tools: TaggedTool[];
-  // /** @deprecated Use props.resources now. */
-  slots: TaggedToolSlotPointer[];
   resources: ResourceIndex;
-  // syncStatus: SyncStatus;
 }
 
 export function AllSteps(props: AllStepsProps) {
@@ -45,10 +38,7 @@ export function AllSteps(props: AllStepsProps) {
               currentStep,
               index,
               dispatch: dispatch,
-              sequences: props.sequences,
               currentSequence: sequence,
-              slots: props.slots,
-              tools: props.tools,
               resources: props.resources
             })}
           </div>
