@@ -4,7 +4,7 @@ import { t } from "i18next";
 import * as _ from "lodash";
 import { DATA_URI, DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
 import { CropInfoProps, DraggableEvent } from "../interfaces";
-import { pathname, push } from "../../history";
+import { history } from "../../history";
 import { connect } from "react-redux";
 import { findBySlug } from "../search_selectors";
 import { Everything } from "../../interfaces";
@@ -27,7 +27,7 @@ export function mapStateToProps(props: Everything): CropInfoProps {
 export class CropInfo extends React.Component<CropInfoProps, {}> {
 
   componentDidMount() {
-    let crop = pathname.split("/")[5];
+    let crop = history.getCurrentLocation().pathname.split("/")[5];
     OFSearch(crop)(this.props.dispatch);
   }
 
@@ -45,7 +45,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
   }
 
   render() {
-    let crop = pathname.split("/")[5];
+    let crop = history.getCurrentLocation().pathname.split("/")[5];
     let result =
       findBySlug(this.props.cropSearchResults, crop || "PLANT_NOT_FOUND");
 
@@ -61,7 +61,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
           <BackArrow /> {result.crop.name}
           <a
             className="right-button mobile-only"
-            onClick={() => push(basePath + crop + "/add")}>
+            onClick={() => history.push(basePath + crop + "/add")}>
             {t("Add to map")}
           </a>
         </p>

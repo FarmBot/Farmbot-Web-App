@@ -5,7 +5,7 @@ import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
 import { t } from "i18next";
 import { isMobile } from "../../util";
-import { pathname } from "../../history";
+import { history } from "../../history";
 import { DEFAULT_ICON } from "../../open_farm/index";
 import {
   CropInfoProps,
@@ -38,7 +38,7 @@ export class DNDCropMobile
   }
 
   render() {
-    let crop = pathname.split("/")[5];
+    let crop = history.getCurrentLocation().pathname.split("/")[5];
 
     let result =
       findBySlug(this.props.cropSearchResults,

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router";
 
-import { pathname } from "../history";
+import { history } from "../history";
 
 export const links = [
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
@@ -14,11 +14,12 @@ export const links = [
 ];
 
 export const NavLinks = () => {
+  let currPath = history.getCurrentLocation().pathname;
   return (
     <div className="links">
       <div className="nav-links">
         {links.map(link => {
-          let isActive = pathname.includes(link.slug) ? "active" : "";
+          let isActive = currPath.includes(link.slug) ? "active" : "";
           return (
             <Link
               to={"/app/" + link.slug}

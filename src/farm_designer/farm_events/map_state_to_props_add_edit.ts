@@ -2,8 +2,7 @@ import { AddEditFarmEventProps, ExecutableType } from "../interfaces";
 import { Everything } from "../../interfaces";
 import * as moment from "moment";
 import { t } from "i18next";
-import * as _ from "lodash";
-import { push, pathname } from "../../history";
+import { history } from "../../history";
 import {
   selectAllFarmEvents,
   indexRegimenById,
@@ -189,11 +188,12 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
   let farmEvents = selectAllFarmEvents(props.resources.index);
 
   let getFarmEvent = (): TaggedFarmEvent | undefined => {
-    let id = parseInt(pathname.split("/")[4]);
+    let url = history.getCurrentLocation().pathname;
+    let id = parseInt(url.split("/")[4]);
     if (id && hasId(props.resources.index, "farm_events", id)) {
       return findFarmEventById(props.resources.index, id);
     } else {
-      push("/app/designer/farm_events");
+      history.push("/app/designer/farm_events");
     }
   };
 

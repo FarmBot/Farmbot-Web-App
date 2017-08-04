@@ -3,7 +3,7 @@ import { Plant, DEFAULT_PLANT_RADIUS } from "../plant";
 import { movePlant } from "../actions";
 import * as moment from "moment";
 import { GardenMapProps, GardenMapState } from "../interfaces";
-import { pathname } from "../../history";
+import { history } from "../../history";
 import { initSave, save, edit } from "../../api/crud";
 import { TaggedPlantPointer } from "../../resources/tagged_resources";
 import {
@@ -65,7 +65,7 @@ export class GardenMap extends
       let zoomLvl = parseFloat(window.getComputedStyle(map).zoom || DRAG_ERROR);
       let { pageX, pageY } = e;
       // let box = el.getBoundingClientRect();
-      let crop = pathname.split("/")[5];
+      let crop = history.getCurrentLocation().pathname.split("/")[5];
       let OFEntry = this.findCrop(crop);
       let params: ScreenToGardenParams = {
         quadrant: this.props.designer.botOriginQuadrant,

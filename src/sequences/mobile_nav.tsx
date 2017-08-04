@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as _ from "lodash";
-import { pathname } from "../history";
+import { history } from "../history";
 
 export function MobileSequencesNav(props: {}) {
   // TODO: This is definitely not right, figure out query objects
-  let name = pathname.split("/")[3];
+  let name = history.getCurrentLocation().pathname.split("/")[3];
   return <div className="mobile-only sequences-mobile-nav col-md-3 col-sm-12">
     <div className="widget-wrapper">
       <div className="widget-header">

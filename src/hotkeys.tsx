@@ -12,7 +12,7 @@ import {
 
 import { links } from "./nav/links";
 import { sync } from "./devices/actions";
-import { pathname, push } from "./history";
+import { history, push } from "./history";
 import { Row, Col } from "./ui/index";
 
 interface Props {
@@ -111,24 +111,20 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
   }
 
   renderHotkeys() {
-    let slug = pathname.split("/")[2];
-    return (
-      <Hotkeys>
-        {
-          this.hotkeys(this.props.dispatch, slug)
-            .map(({ combo, label, onKeyDown }: IHotkeyProps, index: number) => {
-              return (
-                <Hotkey
-                  key={index}
-                  global={true}
-                  combo={combo}
-                  label={label}
-                  onKeyDown={onKeyDown}
-                />
-              );
-            })
-        }
-      </Hotkeys>
-    );
+    let slug = history.getCurrentLocation().pathname.split("/")[2];
+    return <Hotkeys>
+      {
+        this.hotkeys(this.props.dispatch, slug)
+          .map(({ combo, label, onKeyDown }: IHotkeyProps, index: number) => {
+            return <Hotkey
+              key={index}
+              global={true}
+              combo={combo}
+              label={label}
+              onKeyDown={onKeyDown}
+            />;
+          })
+      }
+    </Hotkeys>;
   }
 }
