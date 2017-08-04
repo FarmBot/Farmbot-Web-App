@@ -54,6 +54,7 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
   }
 
   render() {
+    console.log(this.props.list);
     return (
       <div className="filter-search">
         <Popover position={Position.BOTTOM_LEFT}>
