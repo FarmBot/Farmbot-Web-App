@@ -35,6 +35,11 @@
   padding: .75rem 1rem;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
+  .pt-popover-target {
+    display: inline-block;
+    float: right;
+    margin-top: 0.1rem;
+  }
    ::-webkit-input-placeholder {
     color: $dark_gray;
     font-weight: bold;
