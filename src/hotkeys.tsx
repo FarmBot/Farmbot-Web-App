@@ -112,19 +112,23 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
 
   renderHotkeys() {
     let slug = pathname.split("/")[2];
-    return <Hotkeys>
-      {
-        this.hotkeys(this.props.dispatch, slug)
-          .map(({ combo, label, onKeyDown }: IHotkeyProps, index: number) => {
-            return <Hotkey
-              key={index}
-              global={true}
-              combo={combo}
-              label={label}
-              onKeyDown={onKeyDown}
-            />;
-          })
-      }
-    </Hotkeys>;
+    return (
+      <Hotkeys>
+        {
+          this.hotkeys(this.props.dispatch, slug)
+            .map(({ combo, label, onKeyDown }: IHotkeyProps, index: number) => {
+              return (
+                <Hotkey
+                  key={index}
+                  global={true}
+                  combo={combo}
+                  label={label}
+                  onKeyDown={onKeyDown}
+                />
+              );
+            })
+        }
+      </Hotkeys>
+    );
   }
 }
