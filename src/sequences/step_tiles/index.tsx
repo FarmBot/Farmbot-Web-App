@@ -31,12 +31,7 @@ export function move({ step, sequence, to, from }: MoveParams) {
   let next = defensiveClone(sequence);
   let seq = next.body;
   seq.body = seq.body || [];
-  // WEIRD EDGE CASE: TODO:
-  // Works when from > to but not the other way around.
-  // Wish I could use one function for both cases, but don't have
-  // time to debug right now.
   if (from > to) {
-    // wtf ?
     seq.body = arrayMover(seq.body, from, to);
   } else {
     seq.body.splice(to, 0, defensiveClone(copy));

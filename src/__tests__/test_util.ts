@@ -11,6 +11,7 @@ import {
 describe("util", () => {
   describe("safeStringFetch", () => {
     let data = {
+      // tslint:disable-next-line:no-null-keyword
       "null": null,
       "undefined": undefined,
       "number": 0,

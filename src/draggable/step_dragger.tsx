@@ -24,11 +24,13 @@ export let stepDragEventHandler = (dispatch: Function,
   step: Step,
   ghostCss = "",
   intent: DataXferIntent,
-  draggerId: number) =>
-  (ev: React.DragEvent<HTMLElement>) => {
+  draggerId: number) => {
+  return (ev: React.DragEvent<HTMLElement>) => {
+    console.log("Running on drag event handler.");
     addGhostImage(ev, ghostCss);
     dispatch(stepPut(step, ev, intent, draggerId));
   };
+};
 
 export function StepDragger({ dispatch,
   step,
@@ -41,7 +43,7 @@ export function StepDragger({ dispatch,
       step,
       ghostCss,
       intent,
-      draggerId)}>
+      draggerId)} >
     {children}
   </div>;
 }

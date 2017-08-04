@@ -14,4 +14,3 @@ export function mapStateToProps(props: Everything): Props {
     images: selectAllImages(props.resources.index)
   };
 }
-

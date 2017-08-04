@@ -18,13 +18,13 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
         let heading: string;
         let subHeading: JSX.Element;
 
-        if (farmEvent.childExecutableName) {
-          heading = farmEvent.childExecutableName;
+        if (farmEvent.subheading) {
+          heading = farmEvent.subheading;
           subHeading = <p style={{ color: "gray" }}>
-            {farmEvent.parentExecutableName}
+            {farmEvent.heading}
           </p>;
         } else {
-          heading = farmEvent.parentExecutableName;
+          heading = farmEvent.heading;
           subHeading = <p />;
         }
 

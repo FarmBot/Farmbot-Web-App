@@ -20,4 +20,3 @@ export function mapStateToProps(props: Everything): Props {
     peripherals
   };
 }
-

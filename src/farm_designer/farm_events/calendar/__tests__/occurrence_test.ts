@@ -12,7 +12,7 @@ describe("occurrence", () => {
     expect(t.executableId).toBe(fe.executable_id);
     expect(t.mmdd).toBe("0619");
     expect(t.sortKey).toBe(moment(TIME.MONDAY).unix());
-    expect(t.parentExecutableName).toBe(fe.executable.name);
+    expect(t.heading).toBe(fe.executable.name);
     expect(t.id).toBe(fe.id);
   });
 });
