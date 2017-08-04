@@ -24,14 +24,13 @@ export function AllSteps(props: AllStepsProps) {
        * is guaranteed to be unique no matter where the step gets moved and
        * allows React to diff the list correctly. */
       let readThatCommentAbove = get(currentStep, "uuid", index);
-      console.log("Add this back later OK? " + readThatCommentAbove);
       return <div
         key={readThatCommentAbove}>
         <DropArea callback={(key) => onDrop(index, key)} />
         <StepDragger
           dispatch={dispatch}
           step={currentStep}
-          ghostCss="step-drag-ghost-image"
+          ghostCss="step-drag-ghost-image-big"
           intent="step_move"
           draggerId={index}>
           <div>
