@@ -23,10 +23,7 @@ export function AllSteps(props: AllStepsProps) {
        * To get around this, we add a `uuid` property to Steps that
        * is guaranteed to be unique no matter where the step gets moved and
        * allows React to diff the list correctly. */
-      let readThatCommentAbove = get(currentStep, "uuid", 0);
-      if (!readThatCommentAbove) {
-        throw new Error("BROKE.");
-      }
+      let readThatCommentAbove = get(currentStep, "uuid", index);
       return <div
         key={readThatCommentAbove}>
         <DropArea callback={(key) => onDrop(index, key)} />
