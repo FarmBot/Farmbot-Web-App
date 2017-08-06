@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Popover, Position, PopoverInteractionKind } from "@blueprintjs/core";
 
 interface HelpProps {
   text: string;
@@ -6,9 +7,13 @@ interface HelpProps {
 
 export function Help(props: HelpProps) {
   return (
-    <div className="help">
+    <Popover
+      position={Position.LEFT_TOP}
+      interactionKind={PopoverInteractionKind.HOVER}
+      popoverClassName={"help"}
+    >
       <i className="fa fa-question-circle help-icon"></i>
-      <div className="help-text">{props.text}</div>
-    </div>
+      <div>{props.text}</div>
+    </Popover>
   );
 }

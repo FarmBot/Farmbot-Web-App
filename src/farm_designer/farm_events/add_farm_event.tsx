@@ -73,7 +73,7 @@ export class AddFarmEvent
     </p>;
   }
 
-  /** User has executales to create FarmEvents with, has not loaded yet. */
+  /** User has executables to create FarmEvents with, has not loaded yet. */
   loading() {
     return <p>{t("Loading")}...</p>;
   }
@@ -85,14 +85,17 @@ export class AddFarmEvent
     //       to mapStateToProps instead of juggling arrays.
     let fe = uuid && this.props.farmEvents.filter(x => x.uuid === uuid)[0];
     if (fe) {
-      return <EditFEForm farmEvent={fe}
-        deviceTimezone={this.props.deviceTimezone}
-        repeatOptions={this.props.repeatOptions}
-        executableOptions={this.props.executableOptions}
-        dispatch={this.props.dispatch}
-        findExecutable={this.props.findExecutable}
-        title={t("Add Farm Event")}
-      />;
+      return (
+        <EditFEForm
+          farmEvent={fe}
+          deviceTimezone={this.props.deviceTimezone}
+          repeatOptions={this.props.repeatOptions}
+          executableOptions={this.props.executableOptions}
+          dispatch={this.props.dispatch}
+          findExecutable={this.props.findExecutable}
+          title={t("Add Farm Event")}
+        />
+      );
     } else {
       return ((this.executable) ? this.loading : this.none)();
     }
