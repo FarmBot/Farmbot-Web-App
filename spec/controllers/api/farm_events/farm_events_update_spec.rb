@@ -22,5 +22,17 @@ describe Api::FarmEventsController do
       expect(response.status).to eq(403)
       expect(json[:error]).to include('Not your farm_event')
     end
+
+    it 'sets end_time to self.start_time if no start_time is passed in' do
+      sign_in user
+      id = FactoryGirl.create(:farm_event, device: user.device).id
+      patch :update, params: { id: id,
+                               repeat: 1,
+                               time_unit: FarmEvent::NEVER }
+      fe = FarmEvent.find(id)
+      expect(response.status).to eq(200)
+      expect(json[:end_time]).to eq((fe.start_time + 1.minute).as_json)
+      expect(fe.end_time).to eq(fe.start_time + 1.minute)
+    end
   end
 end

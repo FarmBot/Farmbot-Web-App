@@ -8,8 +8,7 @@ import {
 } from "../resources/selectors";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { defensiveClone } from "../util";
-import { uuid as _uuid } from "farmbot/dist";
-import { set } from "lodash";
+import { set, get } from "lodash";
 
 export function mapStateToProps(props: Everything): Props {
   let uuid = props.resources.consumers.sequences.current;
@@ -28,6 +27,7 @@ export function mapStateToProps(props: Everything): Props {
     syncStatus
   };
 }
+let count = 0;
 
 /** CeleryScript nodes are hard to keep track of in the sequence editor because
  * there is so much splicing/shuffling/pushing/poping of body elements.
@@ -37,7 +37,8 @@ export function sequenceFix(s?: TaggedSequence):
   if (s) {
     let fixedSequence = defensiveClone(s);
     (fixedSequence.body.body || [])
-      .map(x => set(x, "uuid", _uuid()));
+      .filter(step => get(step, "uuid", false))
+      .map(step => set(step, "uuid", count++));
     return fixedSequence;
   }
 }
