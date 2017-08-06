@@ -10,7 +10,7 @@ import {
   Classes
 } from "@blueprintjs/core";
 
-import { links } from "./nav/links";
+import { links } from "./nav/nav_links";
 import { sync } from "./devices/actions";
 import { history, push } from "./history";
 import { Row, Col } from "./ui/index";

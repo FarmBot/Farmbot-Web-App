@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Overlay, Classes } from "@blueprintjs/core";
 
-import { NavLinks } from "./links";
+import { NavLinks } from "./nav_links";
 import { MobileMenuProps } from "./interfaces";
 
 let classes = [Classes.CARD, Classes.ELEVATION_4, "mobile-menu"];

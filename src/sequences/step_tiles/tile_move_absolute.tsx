@@ -12,7 +12,7 @@ import {
 } from "farmbot";
 import {
   Row,
-  Col,
+  Col
 } from "../../ui";
 import { t } from "i18next";
 import { StepTitleBar } from "./step_title_bar";
