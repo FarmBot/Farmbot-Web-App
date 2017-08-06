@@ -54,7 +54,7 @@ export interface AxisDisplayGroupProps {
 
 export interface AxisInputBoxGroupProps {
   onCommit: (v: Vector) => void;
-  bot: BotState;
+  position: BotPosition;
 }
 
 export interface AxisInputBoxGroupState {

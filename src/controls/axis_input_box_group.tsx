@@ -22,7 +22,7 @@ export class AxisInputBoxGroup extends
 
   get vector() {
     let { x, y, z } = this.state;
-    let p = this.props.bot.hardware.location_data.position;
+    let p = this.props.position;
     let x2 = p.x,
       y2 = p.y,
       z2 = p.z;

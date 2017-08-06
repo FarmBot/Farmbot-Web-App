@@ -43,7 +43,7 @@ You will need the following:
  0. **MOST IMPORTANT STEP**. Copy `config/database.example.yml` to `config/database.yml`. In GNU/Linux or Mac: `mv config/database.example.yml config/database.yml`. **Please read the instructions inside the file. Replace the example values provided with real world values.**
  0. Give permission to create a database*
  0. `rake db:create:all db:migrate db:seed`
- 0. (optional) Verify installation with `RAILS_ENV=test rake db:create db:migrate && rspec spec`.
+ 0. (optional) Verify installation with `RAILS_ENV=test rake db:create db:migrate && rspec spec` (API) and `npm run test` (Frontend).
  0. Start server with `npm run dev`. Make sure you set an `MQTT_HOST` entry in `application.yml` pointing to the IP address or domain of the (soon-to-be-installed) MQTT server. You will need to set that up next.
  0. Now that the API server is running, [provision an MQTT server](https://github.com/FarmBot/mqtt-gateway).
  0. Open [localhost:8080](http://localhost:8080). The application is now ready for use.
