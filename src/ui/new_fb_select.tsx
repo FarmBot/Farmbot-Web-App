@@ -43,28 +43,4 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
       </div>
     );
   }
-
-  // recurse(items: DropDownItem[]): React.ReactElement<any> {
-  //   return items.map((item, index) => {
-  //     if (item) {
-  //       return (
-  //         <MenuItem key={index} text={item.executable_type} />
-  //       );
-  //     }
-  //   });
-  // }
-
-  // render() {
-  //   console.log(this.props.list);
-  //   return (
-  //     <div className="filter-search">
-  //       <Popover position={Position.BOTTOM_LEFT}>
-  //         <button className="fb-button green">Select...</button>
-  //         <Menu>
-  //           {this.recurse(this.props.list)}
-  //         </Menu>
-  //       </Popover>
-  //     </div>
-  //   );
-  // }
 }
