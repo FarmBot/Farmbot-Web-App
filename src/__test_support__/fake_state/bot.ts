@@ -1,4 +1,3 @@
-
 import { Everything } from "../../interfaces";
 
 export let bot: Everything["bot"] = {

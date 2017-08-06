@@ -64,7 +64,6 @@ export function WeedDetectorConfig(props: SettingsMenuProps) {
       {t(`Calibration Object Separation along axis`)}
     </label>
     <FBSelect
-      isFilterable={false}
       onChange={setDDI("CAMERA_CALIBRATION_calibration_along_axis")}
       selectedItem={find("CAMERA_CALIBRATION_calibration_along_axis")}
       list={CALIBRATION_DROPDOWNS}
@@ -87,7 +86,6 @@ export function WeedDetectorConfig(props: SettingsMenuProps) {
       {t(`Origin Location in Image`)}
     </label>
     <FBSelect
-      isFilterable={false}
       list={ORIGIN_DROPDOWNS}
       onChange={setDDI("CAMERA_CALIBRATION_image_bot_origin_location")}
       selectedItem={find("CAMERA_CALIBRATION_image_bot_origin_location")}

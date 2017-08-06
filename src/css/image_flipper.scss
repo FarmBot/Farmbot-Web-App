@@ -54,11 +54,19 @@
 
 .photos-widget {
   .widget-footer {
+    display: flex;
+    justify-content: space-between;
     label {
       font-weight: normal;
     }
     span {
       font-weight: bold;
+    }
+  }
+  .image-metadatas {
+    display: flex;
+    label {
+      margin-left: 1rem;
     }
   }
 }

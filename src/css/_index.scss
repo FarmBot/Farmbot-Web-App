@@ -9,13 +9,13 @@
 // Global
 @import "global";
 @import "mobile";
+@import "blueprint_overrides";
 // Designer
 @import "farm_designer/farm_designer_mobile";
 @import "farm_designer/farm_designer_panels";
 @import "farm_designer/farm_designer";
 @import "farm_designer/farm_events";
 // Components
-@import "blueprint_overrides";
 @import "buttons";
 @import "events";
 @import "front_page";

@@ -13,7 +13,6 @@ export interface FBSelectProps {
   allowEmpty?: boolean;
   /** Text shown before user selection. */
   placeholder?: string | undefined;
-  isFilterable?: boolean | undefined;
 }
 
 /** Used as a placeholder for a selection of "none" when allowEmpty is true. */
@@ -32,16 +31,40 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
       return this.props.list;
     }
   }
-  render() {
-    let placeholder = this.props.placeholder || "Search...";
 
-    return <div className="filter-search">
-      <FilterSearch
-        selectedItem={this.item}
-        items={this.list}
-        onChange={this.props.onChange}
-        placeholder={placeholder}
-        isFilterable={this.props.isFilterable} />
-    </div>;
+  render() {
+    return (
+      <div className="filter-search">
+        <FilterSearch
+          selectedItem={this.item}
+          items={this.list}
+          onChange={this.props.onChange}
+        />
+      </div>
+    );
   }
+
+  // recurse(items: DropDownItem[]): React.ReactElement<any> {
+  //   return items.map((item, index) => {
+  //     if (item) {
+  //       return (
+  //         <MenuItem key={index} text={item.executable_type} />
+  //       );
+  //     }
+  //   });
+  // }
+
+  // render() {
+  //   console.log(this.props.list);
+  //   return (
+  //     <div className="filter-search">
+  //       <Popover position={Position.BOTTOM_LEFT}>
+  //         <button className="fb-button green">Select...</button>
+  //         <Menu>
+  //           {this.recurse(this.props.list)}
+  //         </Menu>
+  //       </Popover>
+  //     </div>
+  //   );
+  // }
 }
