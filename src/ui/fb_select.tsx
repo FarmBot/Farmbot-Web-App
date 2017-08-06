@@ -14,7 +14,7 @@ export interface DropDownItem {
   /** A unique ID to group headings by. */
   headingId?: string | undefined;
   /** This is just an idea. */
-  children?: DropDownItem[] | undefined
+  children?: DropDownItem[] | undefined;
 }
 
 export interface SelectProps {

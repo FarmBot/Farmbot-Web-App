@@ -27,6 +27,20 @@ body {
   }
 }
 
+.pt-popover.help {
+  .pt-popover-arrow {
+    display: none !important;
+  }
+  .pt-popover-arrow-fill {
+    fill: $dark_gray;
+  }
+  .pt-popover-content {
+    width: 32rem;
+    color: $white;
+    background: $dark_gray;
+  }
+}
+
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button,
 input[type=date]::-webkit-inner-spin-button,

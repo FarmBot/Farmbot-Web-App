@@ -23,9 +23,7 @@ interface Props {
   items: DropDownItem[];
   selectedItem: DropDownItem;
   onChange: (item: DropDownItem) => void;
-  placeholder?: string;
   isASubMenu?: boolean;
-  isFilterable: boolean | undefined;
 }
 
 interface State {
@@ -49,14 +47,12 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
 
   render() {
     const { item, minimal, ...flags } = this.state;
-    let renderer = this.props.isASubMenu ? this.default : this.subMenu;
     return (
       <SelectComponent
         {...flags}
-        filterable={this.props.isFilterable}
         items={this.props.items}
         itemPredicate={this.filter}
-        itemRenderer={renderer}
+        itemRenderer={this.default}
         noResults={<MenuItem disabled text="No results." />}
         onItemSelect={this.handleValueChange}
         popoverProps={{ popoverClassName: minimal ? Classes.MINIMAL : "" }}
@@ -66,18 +62,6 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
           text={item ? item.label : t("(No selection)")}
         />
       </SelectComponent>
-    );
-  }
-
-  private subMenu = (params: ISelectItemRendererProps<DropDownItem>) => {
-    let { handleClick, item } = params;
-    return (
-      <MenuItem
-        className={this.styleFor(item)}
-        key={`${item.label}.${item.value}`}
-        onClick={handleClick}
-        text={`${item.label}`}
-      />
     );
   }
 
