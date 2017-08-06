@@ -19,6 +19,8 @@ describe FarmEventSerializer do
 
   it "does not render `nil` and friends" do
     farm_event.executable = nil
-    expect{ FarmEventSerializer.new(farm_event).as_json }.to raise_error
+    expect{
+      FarmEventSerializer.new(farm_event).as_json
+    }.to raise_error(UncaughtThrowError)
   end
 end

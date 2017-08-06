@@ -78,8 +78,7 @@ describe("<FarmEventForm/>", () => {
     let i = instance(p);
     i.forceUpdate();
     expect(i.state.localCopyDirty).toBe(false);
-    let e = { value: "wow", executable_type: "Sequence" } as any;
-    i.executableSet(e);
+    i.executableSet({ value: "wow", label: "hey", headingId: "Sequence" });
     i.forceUpdate();
     expect(i.state.localCopyDirty).toBe(true);
     expect(i.state.fe.executable_type).toEqual("Sequence");
@@ -93,7 +92,7 @@ describe("<FarmEventForm/>", () => {
     let exe = i.executableGet();
     expect(exe.label).toBe("fake");
     expect(exe.value).toBe(12);
-    expect(exe.executable_type).toBe("Sequence");
+    expect(exe.headingId).toBe("Sequence");
   });
 
   it("sets a subfield of state.fe", () => {
