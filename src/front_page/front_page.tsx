@@ -145,7 +145,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     let { toggleServerOpts } = this;
 
     return (
-      <div className="front-page">
+      <div className="static-page">
         <Row>
           <Col xs={12}>
             <h1 className="text-center">
@@ -155,7 +155,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         </Row>
 
         <Row>
-          <h2>
+          <h2 className="text-center">
             <Col xs={12}>
               {t("Setup, customize, and control FarmBot from your")}
               &nbsp;
@@ -179,7 +179,6 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             src="/app-resources/img/farmbot-tablet.png"
           />
         </Row>
-
         {!forgotPassword && (
           <Widget>
             <WidgetHeader title={"Login"}>
@@ -225,12 +224,14 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                   </div>
                 }
                 <Row>
-                  <button
-                    className="fb-button green"
-                    style={buttonStylesUniqueToOnlyThisPage}
-                  >
-                    {t("Login")}
-                  </button>
+                  <Col xs={12}>
+                    <button
+                      className="fb-button green pull-right"
+                      style={buttonStylesUniqueToOnlyThisPage}
+                    >
+                      {t("Login")}
+                    </button>
+                  </Col>
                 </Row>
               </form>
             </WidgetBody>
