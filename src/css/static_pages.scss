@@ -1,6 +1,5 @@
 .static-page {
   * {
-    overflow: hidden;
     margin: 0 auto;
   }
   background: linear-gradient(-135deg, #089460, #159ACC);
@@ -21,7 +20,7 @@
     margin-top: 1rem !important;
     font-size: 2.2rem;
     line-height: 2.6rem;
-    margin-bottom: 1rem !important;
+    margin-bottom: 8rem !important;
   }
   .widget-wrapper {
     box-shadow: none;

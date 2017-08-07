@@ -183,62 +183,64 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
           />
         </Row>
         {!forgotPassword && (
-          <Widget>
-            <WidgetHeader title={"Login"}>
-              <button
-                className="fb-button gray"
-                onClick={toggleServerOpts}
-              >
-                <i className={`fa fa-${expandIcon}`} />
-              </button>
-            </WidgetHeader>
-            <WidgetBody>
-              <form onSubmit={this.submitLogin.bind(this)}>
-                <label>{t("Email")}</label>
-                <input
-                  type="email"
-                  onChange={this.set("email").bind(this)}
-                />
-                <label>{t("Password")}</label>
-                <input
-                  type="password"
-                  onChange={this.set("loginPassword").bind(this)}
-                />
-                <a
-                  className="forgot-password"
-                  onClick={this.toggleForgotPassword.bind(this)}
-                >
-                  {t("Forgot password?")}
-                </a>
-                {this.state.showServerOpts &&
-                  <div>
-                    <label>{t("Server URL")}</label>
+          <Row>
+            <Col xs={12}>
+              <Widget>
+                <WidgetHeader title={"Login"}>
+                  <button
+                    className="fb-button gray"
+                    onClick={toggleServerOpts}
+                  >
+                    <i className={`fa fa-${expandIcon}`} />
+                  </button>
+                </WidgetHeader>
+                <WidgetBody>
+                  <form onSubmit={this.submitLogin.bind(this)}>
+                    <label>{t("Email")}</label>
                     <input
-                      type="text"
-                      onChange={this.set("serverURL").bind(this)}
-                      value={this.state.serverURL}
+                      type="email"
+                      onChange={this.set("email").bind(this)}
                     />
-                    <label>{t("Server Port")}</label>
+                    <label>{t("Password")}</label>
                     <input
-                      type="text"
-                      onChange={this.set("serverPort").bind(this)}
-                      value={this.state.serverPort}
+                      type="password"
+                      onChange={this.set("loginPassword").bind(this)}
                     />
-                  </div>
-                }
-                <Row>
-                  <Col xs={12}>
-                    <button
-                      className="fb-button green pull-right"
-                      style={buttonStylesUniqueToOnlyThisPage}
+                    <a
+                      className="forgot-password"
+                      onClick={this.toggleForgotPassword.bind(this)}
                     >
-                      {t("Login")}
-                    </button>
-                  </Col>
-                </Row>
-              </form>
-            </WidgetBody>
-          </Widget>
+                      {t("Forgot password?")}
+                    </a>
+                    {this.state.showServerOpts &&
+                      <div>
+                        <label>{t("Server URL")}</label>
+                        <input
+                          type="text"
+                          onChange={this.set("serverURL").bind(this)}
+                          value={this.state.serverURL}
+                        />
+                        <label>{t("Server Port")}</label>
+                        <input
+                          type="text"
+                          onChange={this.set("serverPort").bind(this)}
+                          value={this.state.serverPort}
+                        />
+                      </div>
+                    }
+                    <Row>
+                      <button
+                        className="fb-button green pull-right"
+                        style={buttonStylesUniqueToOnlyThisPage}
+                      >
+                        {t("Login")}
+                      </button>
+                    </Row>
+                  </form>
+                </WidgetBody>
+              </Widget>
+            </Col>
+          </Row>
         )}
         {forgotPassword && (
           <Widget>
