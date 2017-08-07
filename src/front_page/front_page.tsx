@@ -150,7 +150,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
           <Col xs={12}>
             <h1 className="text-center">
               {t("Welcome to the")}
-              <br className="hidden-lg hidden-xl" />
+              <br className="hidden-sm hidden-md hidden-lg hidden-xl" />
               &nbsp;
               {t("FarmBot Web App")}
             </h1>
@@ -168,20 +168,20 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
               <span className="hidden-xs hidden-lg hidden-xl">
                 {t("tablet")}
               </span>
-              <span className="hidden-md hidden-lg hidden-xl">
+              <span className="hidden-sm hidden-md hidden-lg hidden-xl">
                 {t("smartphone")}
               </span>
             </Col>
           </h2>
-          <img
-            className="hidden-xs hidden-sm hidden-md"
-            src="/app-resources/img/farmbot-desktop.png"
-          />
-          <img
-            className="hidden-xs hidden-md hidden-lg hidden-xl"
-            src="/app-resources/img/farmbot-tablet.png"
-          />
         </Row>
+        <img
+          className="hidden-xs hidden-sm hidden-md"
+          src="/app-resources/img/farmbot-desktop.png"
+        />
+        <img
+          className="hidden-xs hidden-md hidden-lg hidden-xl img-fluid"
+          src="/app-resources/img/farmbot-tablet.png"
+        />
         {!forgotPassword && (
           <Row>
             <Col xs={12}>
