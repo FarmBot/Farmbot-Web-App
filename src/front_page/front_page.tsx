@@ -126,8 +126,22 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
               value={this.state.agreeToTerms ? "false" : "true"} />
           </div>
           <ul>
-            <li><a href={PRV_URL}>{t("Privacy Policy")}</a></li>
-            <li><a href={TOS_URL}>{t("Terms of Use")}</a></li>
+            <li>
+              <a
+                href={PRV_URL}
+                target="_blank"
+              >
+                {t("Privacy Policy")}
+              </a>
+            </li>
+            <li>
+              <a
+                href={TOS_URL}
+                target="_blank"
+              >
+                {t("Terms of Use")}
+              </a>
+            </li>
           </ul>
         </div>
       );
