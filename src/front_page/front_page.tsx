@@ -269,51 +269,52 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             </WidgetBody>
           </Widget>
         )}
-        <div className="row">
-          <div className="widget-wrapper">
-            <div className="row">
-              <div className="col-sm-12">
-                <div className="widget-header">
-                  <h5> {t("Create An Account")} </h5>
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-sm-12">
-                <form onSubmit={this.submitRegistration.bind(this)} >
-                  <div className="widget-body">
-                    <div className="input-group">
-                      <label>{t("Email")} </label>
-                      <input type="email" onChange={this.set("regEmail").bind(this)} ></input>
-                      <label>{t("Name")}</label>
-                      <input type="text" onChange={this.set("regName").bind(this)}></input>
-                      <label>{t("Password")}</label>
-                      <input type="password"
-                        onChange={this.set("regPassword").bind(this)}>
-                      </input>
-                      <label>{t("Verify Password")}</label>
-                      <input type="password"
-                        onChange={
-                          this.set("regConfirmation").bind(this)}>
-                      </input>
-                      {this.maybeRenderTos()}
-                    </div>
-                    <div className="row">
-                      <div className="col-xs-12">
-                        <button
-                          className="fb-button green"
-                          style={buttonStylesUniqueToOnlyThisPage}
-                        >
-                          {t("Create Account")}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+        <Row>
+          <Col xs={12}>
+            <Widget>
+              <WidgetHeader title={"Create An Account"} />
+              <WidgetBody>
+                <form onSubmit={this.submitRegistration.bind(this)}>
+                  <label>
+                    {t("Email")}
+                  </label>
+                  <input
+                    type="email"
+                    onChange={this.set("regEmail").bind(this)}
+                  />
+                  <label>
+                    {t("Name")}
+                  </label>
+                  <input
+                    type="text"
+                    onChange={this.set("regName").bind(this)}
+                  />
+                  <label>
+                    {t("Password")}
+                  </label>
+                  <input
+                    type="password"
+                    onChange={this.set("regPassword").bind(this)}
+                  />
+                  <label>{t("Verify Password")}</label>
+                  <input
+                    type="password"
+                    onChange={this.set("regConfirmation").bind(this)}
+                  />
+                  {this.maybeRenderTos()}
+                  <Row>
+                    <button
+                      className="fb-button green"
+                      style={buttonStylesUniqueToOnlyThisPage}
+                    >
+                      {t("Create Account")}
+                    </button>
+                  </Row>
                 </form>
-              </div>
-            </div>
-          </div>
-        </div>
+              </WidgetBody>
+            </Widget>
+          </Col>
+        </Row>
       </div>
     );
   }
