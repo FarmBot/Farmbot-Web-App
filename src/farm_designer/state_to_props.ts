@@ -6,6 +6,7 @@ import {
   joinToolsAndSlot,
   findPlant
 } from "../resources/selectors";
+import { BotPosition } from "../devices/interfaces";
 
 export function mapStateToProps(props: Everything) {
 
@@ -20,6 +21,13 @@ export function mapStateToProps(props: Everything) {
   let hoveredPlant = plantUUID ?
     findPlant(props.resources.index, plantUUID) : undefined;
 
+  let botPosition: BotPosition;
+  if (props.bot.hardware.location_data) {
+    botPosition = props.bot.hardware.location_data.position;
+  } else {
+    botPosition = { x: undefined, y: undefined, z: undefined };
+  }
+
   return {
     crops: selectAllCrops(props.resources.index),
     dispatch: props.dispatch,
@@ -30,6 +38,6 @@ export function mapStateToProps(props: Everything) {
     toolSlots: joinToolsAndSlot(props.resources.index),
     hoveredPlant,
     plants,
-    bot: props.bot
+    botPosition
   };
 }

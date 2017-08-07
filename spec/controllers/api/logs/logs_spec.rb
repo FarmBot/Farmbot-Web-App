@@ -65,7 +65,7 @@ describe Api::LogsController do
       expect(before_count + 3).to eq(Log.count)
     end
 
-    it 'does not bother saving `fun` logs' do
+    it 'does not bother saving `fun` or `debug` logs' do
       sign_in user
       Log.destroy_all
       before_count = Log.count
@@ -76,6 +76,9 @@ describe Api::LogsController do
               channels: ["toast"],
               message: "one" },
             { meta: { x: 1, y: 2, z: 3, type: "fun" }, # Ignored
+              channels: [],
+              message: "two" },
+            { meta: { x: 1, y: 2, z: 3, type: "debug" }, # Ignored
               channels: [],
               message: "two" },
             { meta: { x: 1, y: 2, z: 3, type: "info" },

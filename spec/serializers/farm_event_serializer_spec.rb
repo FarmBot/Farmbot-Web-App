@@ -10,15 +10,10 @@ describe FarmEventSerializer do
     fe
   end
 
-  it "renders a regimen" do
-    result = FarmEventSerializer.new(farm_event).as_json
-    cal = result[:calendar]
-    expect(cal.length).to be(1)
-    expect(cal.first).to eq((farm_event.start_time.midnight + 7.seconds).as_json)
-  end
-
   it "does not render `nil` and friends" do
     farm_event.executable = nil
-    expect{ FarmEventSerializer.new(farm_event).as_json }.to raise_error
+    expect{
+      FarmEventSerializer.new(farm_event).as_json
+    }.to raise_error(UncaughtThrowError)
   end
 end

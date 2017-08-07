@@ -9,8 +9,12 @@ module Api
                  .create(raw_json.last(current_device.max_log_count)
                                  .map    { |i| new_log(i) }
                                  .select { |i| i.success? } # <= Ignore rejects
-                                 .map    { |i| i.result } # Don't save jokes:
-                                 .select { |i| i.meta["type"] != "fun"}
+                                 .map    { |i| i.result }
+                                 .reject do |i|
+                                   # Don't save jokes or debug info:
+                                   t = i.meta["type"]
+                                   ["fun", "debug"].include?(t)
+                                 end
                                  .map    { |i| i.as_json })
                  .tap { |i| maybe_deliver(i) }
         render json: logs

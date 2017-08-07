@@ -9,12 +9,9 @@ import {
   TaggedPlantPointer,
   TaggedCrop,
 } from "../resources/tagged_resources";
-import {
-  TightlyCoupledFarmEventDropDown
-} from "./farm_events/map_state_to_props_add_edit";
 import { PlantPointer } from "../interfaces";
 import { SlotWithTool } from "../resources/interfaces";
-import { BotState, BotPosition } from "../devices/interfaces";
+import { BotPosition } from "../devices/interfaces";
 
 /** TODO: Use Enums */
 export type BotOriginQuadrant = 1 | 2 | 3 | 4;
@@ -42,7 +39,7 @@ export interface Props {
   plants: TaggedPlantPointer[];
   toolSlots: SlotWithTool[];
   crops: TaggedCrop[];
-  bot: BotState;
+  botPosition: BotPosition;
 }
 
 export type TimeUnit =
@@ -100,7 +97,7 @@ export type TaggedExecutable = TaggedSequence | TaggedRegimen;
 export type ExecutableQuery = (kind: ExecutableType, id: number) => TaggedExecutable;
 export interface AddEditFarmEventProps {
   deviceTimezone: string | undefined;
-  executableOptions: TightlyCoupledFarmEventDropDown[];
+  executableOptions: DropDownItem[];
   repeatOptions: DropDownItem[];
   farmEvents: TaggedFarmEvent[];
   regimensById: CowardlyDictionary<TaggedRegimen>;
