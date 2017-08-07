@@ -34,6 +34,7 @@ export interface DeviceAccountSettings {
   name: string;
   webcam_url?: string;
   timezone?: string | undefined;
+  last_seen?: string | undefined;
 }
 
 export interface BotState {
