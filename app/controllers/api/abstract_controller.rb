@@ -145,7 +145,8 @@ private
       if ua.include?("FARMBOTOS")
         actual_version = Gem::Version::new(ua.upcase.split("/").last.split(" ").first)
         if actual_version >= EXPECTED_VER
-          current_device.update_attributes(last_seen: Time.now) if current_device
+          device = current_user.try(:device)
+          device.update_attributes(last_seen: Time.now) if device
         else
           bad_version
         end
