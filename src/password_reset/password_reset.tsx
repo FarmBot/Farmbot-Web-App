@@ -5,6 +5,7 @@ import { error as log, init as logInit } from "farmbot-toastr";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { State, Props } from "./interfaces";
+import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui/index";
 
 export class PasswordReset extends React.Component<Props, State> {
   constructor() {
@@ -48,52 +49,58 @@ export class PasswordReset extends React.Component<Props, State> {
   }
 
   render() {
-    return <div className="static-page">
-      <h1>{t("Reset your password")}</h1>
-      <div className="all-content-wrapper">
-        <div className="row">
-          <div className={`widget-wrapper col-md-6 col-md-offset-3
-                        col-sm-6 col-sm-offset-3`}>
-            <div className="row">
-              <div className="col-sm-12">
-                <div className="widget-header">
-                  <h5>{t("Reset Password")}</h5>
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <form onSubmit={this.submit.bind(this)}>
-                <div className="col-sm-12">
-                  <div className="widget-body">
-                    <div className="input-group">
-                      <label>{t("New Password")}</label>
-                      <input type="password"
-                        onChange={this.set("password")
-                          .bind(this)}>
-                      </input>
-                      <label>
-                        {t("Confirm Password")}
-                      </label>
-                      <input type="password"
-                        onChange={this.set(
-                          "passwordConfirmation")
-                          .bind(this)}>
-                      </input>
-                    </div>
-                    <div className="row">
-                      <div className="col-xs-12">
-                        <button className="fb-button green">
+
+    let buttonStylesUniqueToOnlyThisPage = {
+      marginTop: "1rem",
+      padding: ".5rem 1.6rem",
+      fontSize: "1.2rem",
+      borderBottom: "none"
+    };
+
+    return (
+      <div className="static-page">
+        <div className="all-content-wrapper">
+          <h1 className="text-center">
+            {t("Reset your password")}
+          </h1>
+          <br />
+          <Row>
+            <Col xs={6} className="col-xs-push-3">
+              <Widget>
+                <WidgetHeader title={"Reset Password"} />
+                <WidgetBody>
+                  <form onSubmit={this.submit.bind(this)}>
+                    <label>
+                      {t("New Password")}
+                    </label>
+                    <input
+                      type="password"
+                      onChange={this.set("password").bind(this)}
+                    />
+                    <label>
+                      {t("Confirm Password")}
+                    </label>
+                    <input
+                      type="password"
+                      onChange={this.set("passwordConfirmation").bind(this)}
+                    />
+                    <Row>
+                      <Col xs={12}>
+                        <button
+                          className="fb-button green pull-right"
+                          style={buttonStylesUniqueToOnlyThisPage}
+                        >
                           {t("Reset")}
                         </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
+                      </Col>
+                    </Row>
+                  </form>
+                </WidgetBody>
+              </Widget>
+            </Col>
+          </Row>
         </div>
       </div>
-    </div>;
+    );
   }
 }
