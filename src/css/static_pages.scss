@@ -30,13 +30,16 @@
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 736px) {
   h2 {
-    margin-bottom: 8rem;
+    margin-bottom: 8rem !important;
   }
 }
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
   h2 {
-    margin-bottom: 0;
+    margin-bottom: 6rem !important;
+  }
+  .widget-wrapper:first-child {
+    margin-top: 1rem;
   }
 }
 

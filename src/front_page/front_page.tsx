@@ -195,12 +195,12 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
           src="/app-resources/img/farmbot-desktop.png"
         />
         <img
-          className="hidden-xs hidden-md hidden-lg hidden-xl img-fluid"
+          className="hidden-xs hidden-md hidden-lg hidden-xl col-sm-7"
           src="/app-resources/img/farmbot-tablet.png"
         />
-        {!forgotPassword && (
-          <Row>
-            <Col xs={12}>
+        <Row>
+          {!forgotPassword && (
+            <Col xs={12} sm={5}>
               <Widget>
                 <WidgetHeader title={"Login"}>
                   <button
@@ -264,37 +264,35 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                 </WidgetBody>
               </Widget>
             </Col>
-          </Row>
-        )}
-        {forgotPassword && (
-          <Widget>
-            <WidgetHeader title={"Create an Account"}>
-              <button
-                className="fb-button gray"
-                onClick={this.toggleForgotPassword.bind(this)}
-              >
-                {t("BACK")}
-              </button>
-            </WidgetHeader>
-            <WidgetBody>
-              <form onSubmit={this.submitForgotPassword.bind(this)}>
-                <label>{t("Enter Email")}</label>
-                <input
-                  type="email"
-                  onChange={this.set("email").bind(this)}
-                />
+          )}
+          {forgotPassword && (
+            <Widget>
+              <WidgetHeader title={"Create an Account"}>
                 <button
-                  className="fb-button green"
-                  style={buttonStylesUniqueToOnlyThisPage}
+                  className="fb-button gray"
+                  onClick={this.toggleForgotPassword.bind(this)}
                 >
-                  {t("Send Password reset")}
+                  {t("BACK")}
                 </button>
-              </form>
-            </WidgetBody>
-          </Widget>
-        )}
-        <Row>
-          <Col xs={12}>
+              </WidgetHeader>
+              <WidgetBody>
+                <form onSubmit={this.submitForgotPassword.bind(this)}>
+                  <label>{t("Enter Email")}</label>
+                  <input
+                    type="email"
+                    onChange={this.set("email").bind(this)}
+                  />
+                  <button
+                    className="fb-button green"
+                    style={buttonStylesUniqueToOnlyThisPage}
+                  >
+                    {t("Send Password reset")}
+                  </button>
+                </form>
+              </WidgetBody>
+            </Widget>
+          )}
+          <Col xs={12} sm={5}>
             <Widget>
               <WidgetHeader title={"Create An Account"} />
               <WidgetBody>
