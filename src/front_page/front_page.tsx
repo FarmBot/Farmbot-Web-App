@@ -74,7 +74,14 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
 
   submitRegistration(e: React.FormEvent<{}>) {
     e.preventDefault();
-    let { regEmail, regName, regPassword, regConfirmation, agreeToTerms } = this.state;
+    let {
+      regEmail,
+      regName,
+      regPassword,
+      regConfirmation,
+      agreeToTerms
+    } = this.state;
+
     let form = {
       user: {
         name: regName,
