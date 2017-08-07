@@ -267,31 +267,35 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
               </Col>
             )}
             {forgotPassword && (
-              <Widget>
-                <WidgetHeader title={"Create an Account"}>
-                  <button
-                    className="fb-button gray"
-                    onClick={this.toggleForgotPassword.bind(this)}
-                  >
-                    {t("BACK")}
-                  </button>
-                </WidgetHeader>
-                <WidgetBody>
-                  <form onSubmit={this.submitForgotPassword.bind(this)}>
-                    <label>{t("Enter Email")}</label>
-                    <input
-                      type="email"
-                      onChange={this.set("email").bind(this)}
-                    />
+              <Col xs={12} sm={5}>
+                <Widget>
+                  <WidgetHeader title={"Create an Account"}>
                     <button
-                      className="fb-button green"
-                      style={buttonStylesUniqueToOnlyThisPage}
+                      className="fb-button gray"
+                      onClick={this.toggleForgotPassword.bind(this)}
                     >
-                      {t("Send Password reset")}
+                      {t("BACK")}
                     </button>
-                  </form>
-                </WidgetBody>
-              </Widget>
+                  </WidgetHeader>
+                  <WidgetBody>
+                    <form onSubmit={this.submitForgotPassword.bind(this)}>
+                      <label>{t("Enter Email")}</label>
+                      <input
+                        type="email"
+                        onChange={this.set("email").bind(this)}
+                      />
+                      <Row>
+                        <button
+                          className="fb-button green"
+                          style={buttonStylesUniqueToOnlyThisPage}
+                        >
+                          {t("Send Password reset")}
+                        </button>
+                      </Row>
+                    </form>
+                  </WidgetBody>
+                </Widget>
+              </Col>
             )}
             <Col xs={12} sm={5}>
               <Widget>
