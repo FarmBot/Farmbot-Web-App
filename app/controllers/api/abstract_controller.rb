@@ -98,6 +98,7 @@ private
       case strategy
       when :jwt
         sign_in(Auth::FromJWT.run!(context).require_consent!)
+        mark_as_seen
       when :already_connected
         # Probably provided a cookie.
         # 9 times out of 10, it's a unit test.
@@ -140,16 +141,24 @@ private
     EXPECTED_VER = Gem::Version::new('4.0.0')
 
     def check_fbos_version
+      when_farmbot_os do
+        semver = pretty_ua.upcase.split("/").last.split(" ").first
+        bad_version unless Gem::Version::new(semver) >= EXPECTED_VER
+      end
+    end
+
+    def pretty_ua
       # "FARMBOTOS/3.1.0 (RPI3) RPI3 ()"
-      ua = (request.user_agent || "").upcase
-      if ua.include?("FARMBOTOS")
-        actual_version = Gem::Version::new(ua.upcase.split("/").last.split(" ").first)
-        if actual_version >= EXPECTED_VER
-          device = current_user.try(:device)
-          device.update_attributes(last_seen: Time.now) if device
-        else
-          bad_version
-        end
+      (request.user_agent || "").upcase
+    end
+
+    def when_farmbot_os
+      yield if pretty_ua.include?("FARMBOTOS")
+    end
+
+    def mark_as_seen
+      when_farmbot_os do
+        current_device.update_attributes(last_seen: Time.now)
       end
     end
   end
