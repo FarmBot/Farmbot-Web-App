@@ -147,18 +147,28 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     return (
       <div className="front-page">
         <Row>
-          <h1>{t("Welcome to the FarmBot Web App")}</h1>
+          <Col xs={12}>
+            <h1 className="text-center">
+              {t("Welcome to the FarmBot Web App")}
+            </h1>
+          </Col>
         </Row>
 
         <Row>
-          <h2 className="hidden-xs hidden-sm hidden-md">
-            {t("Setup, customize, and control FarmBot from your computer")}
-          </h2>
-          <h2 className="hidden-xs hidden-lg hidden-xl">
-            {t("Setup, customize, and control FarmBot from your tablet")}
-          </h2>
-          <h2 className="hidden-md hidden-lg hidden-xl">
-            {t("Setup, customize, and control FarmBot from your smartphone")}
+          <h2>
+            <Col xs={12}>
+              {t("Setup, customize, and control FarmBot from your")}
+              &nbsp;
+            <span className="hidden-xs hidden-sm hidden-md">
+                {t("computer")}
+              </span>
+              <span className="hidden-xs hidden-lg hidden-xl">
+                {t("tablet")}
+              </span>
+              <span className="hidden-md hidden-lg hidden-xl">
+                {t("smartphone")}
+              </span>
+            </Col>
           </h2>
           <img
             className="hidden-xs hidden-sm hidden-md"
