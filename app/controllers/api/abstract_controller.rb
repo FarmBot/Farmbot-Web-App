@@ -98,7 +98,6 @@ private
       case strategy
       when :jwt
         sign_in(Auth::FromJWT.run!(context).require_consent!)
-        mark_as_seen
       when :already_connected
         # Probably provided a cookie.
         # 9 times out of 10, it's a unit test.
@@ -108,6 +107,7 @@ private
       else
         auth_err
       end
+      mark_as_seen
     rescue Mutations::ValidationException => e
       errors = e.errors.message.merge(strategy: strategy)
       render json: {error: errors}, status: 401
@@ -158,7 +158,8 @@ private
 
     def mark_as_seen
       when_farmbot_os do
-        current_device.update_attributes(last_seen: Time.now)
+        d = current_user && current_user.device
+        d.update_attributes(last_seen: Time.now) if d
       end
     end
   end
