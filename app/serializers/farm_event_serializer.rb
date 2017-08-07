@@ -6,7 +6,7 @@ class FarmEventSerializer < ActiveModel::Serializer
   def calendar
     case object.executable
       when Sequence then sequence_calendar
-      when Regimen  then regimen_calendar
+      when Regimen  then []
       else
         msg = "Dont know how to calendarize #{object.executable.class}"
         throw BadExe.new(msg)
@@ -14,18 +14,6 @@ class FarmEventSerializer < ActiveModel::Serializer
   end
 
   private
-
-  def regimen_calendar
-    object
-      .executable
-      .regimen_items
-      .pluck(:time_offset)
-      .map { |x| x / 1000 }
-      .map { |x| object.start_time.midnight + x }
-      .map(&:utc)
-      .select { |x| !x.past? }
-      .map(&:as_json) || []
-  end
 
   def sequence_calendar
     FarmEvents::GenerateCalendar
