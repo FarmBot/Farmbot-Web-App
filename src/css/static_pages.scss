@@ -29,6 +29,11 @@
   .inner-width {
     max-width: 1024px;
   }
+  .forgot-password {
+    color: $blue;
+    margin-top: 0.6rem;
+    display: inline-block;
+  }
 }
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 736px) {
