@@ -149,7 +149,10 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         <Row>
           <Col xs={12}>
             <h1 className="text-center">
-              {t("Welcome to the FarmBot Web App")}
+              {t("Welcome to the")}
+              <br className="hidden-lg hidden-xl" />
+              &nbsp;
+              {t("FarmBot Web App")}
             </h1>
           </Col>
         </Row>

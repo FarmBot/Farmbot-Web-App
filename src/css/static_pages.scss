@@ -1,6 +1,34 @@
-@media only screen and (min-device-width: 320px) and (max-device-width: 736px) {
-  /* Mobile landscape and portrait */
+.static-page {
+  * {
+    overflow: hidden;
+    margin: 0 auto;
+  }
+  background: linear-gradient(-135deg, #089460, #159ACC);
+  background-size: 400% 400%;
+  padding-top: 1rem;
+  h1,
+  h2 {
+    font-family: "Roboto", Arial, Helvetica, sans-serif !important;
+    font-weight: 100 !important;
+    color: $white;
+    text-shadow: 0 0 25px rgba(0, 0, 0, 0.1), 0 0 25px rgba(0, 0, 0, 0.1);
+  }
+  h1 {
+    font-size: 3.4rem;
+    line-height: 3.6rem;
+  }
+  h2 {
+    margin-top: 1rem !important;
+    font-size: 2.2rem;
+    line-height: 2.6rem;
+    margin-bottom: 1rem !important;
+  }
+  .widget-wrapper {
+    box-shadow: none;
+  }
 }
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 736px) {}
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
   /* Tablet landscape and portrait */
