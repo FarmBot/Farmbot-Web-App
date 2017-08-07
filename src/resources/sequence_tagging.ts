@@ -49,12 +49,13 @@ export type StepTag = string;
 /** Property name where a unique ID is stored in a step. */
 const TAG_PROP = "uuid";
 
-/** Retrieves tag from a step object. Assumes that all steps have a tag.
+/** VERY IMPORTANT FUNCTION.
+ *  SEE HEADER AT TOP OF FILE.
+ * Retrieves tag from a step object. Assumes that all steps have a tag.
  * If no tag is found, crashes. */
 export function getStepTag(i: SequenceBodyItem): StepTag {
   let tag = get(i, TAG_PROP, "");
   if (tag) { return tag; }
-  debugger;
   throw new Error("No tag on step: " + i.kind);
 }
 

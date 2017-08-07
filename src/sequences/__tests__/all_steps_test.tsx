@@ -3,7 +3,7 @@ import { AllSteps } from "../all_steps";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { shallow } from "enzyme";
 import { TaggedSequence } from "../../resources/tagged_resources";
-// import { TaggedSequence } from "../../resources/tagged_resources";
+import { maybeTagSteps } from "../../resources/sequence_tagging";
 
 describe("<AllSteps/>", () => {
   const TEST_CASE = {
@@ -47,6 +47,8 @@ describe("<AllSteps/>", () => {
     },
     "uuid": "sequences.8.52"
   } as TaggedSequence;
+
+  maybeTagSteps(TEST_CASE);
 
   it("uses index as a key", () => {
     let el = shallow(<AllSteps
