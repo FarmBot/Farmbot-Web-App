@@ -17,8 +17,11 @@ export class LastSeen extends React.Component<LastSeenProps, {}> {
     }
 
     if (this.lastSeen) {
-      let TXT = "FarmBot was last seen on {{ lastSeen }}";
-      return t(TXT, { lastSeen: moment(this.lastSeen).local() });
+      let text = " FarmBot was last seen {{ lastSeen }}";
+      let data = {
+        lastSeen: moment(this.lastSeen).local().format("MMMM D, h:mma")
+      };
+      return t(text, data);
     } else {
       return t(" The device has never been seen. Most likely, " +
         "there is a network connectivity issue on the device's end.");
