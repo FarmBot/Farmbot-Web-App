@@ -1,0 +1,52 @@
+.static-page {
+  min-height: 100vh;
+  max-height: 100%;
+  * {
+    margin: 0 auto;
+  }
+  background: linear-gradient(-135deg, #089460, #159ACC);
+  background-size: 400% 400%;
+  padding-top: 1rem;
+  h1,
+  h2 {
+    font-family: "Roboto", Arial, Helvetica, sans-serif !important;
+    font-weight: 100 !important;
+    color: $white;
+    text-shadow: 0 0 25px rgba(0, 0, 0, 0.1), 0 0 25px rgba(0, 0, 0, 0.1);
+  }
+  h1 {
+    font-size: 3.4rem;
+    line-height: 3.6rem;
+  }
+  h2 {
+    margin-top: 1rem;
+    font-size: 2.2rem;
+    line-height: 2.6rem;
+  }
+  .widget-wrapper {
+    box-shadow: none;
+  }
+  .inner-width {
+    max-width: 1024px;
+  }
+  .forgot-password {
+    color: $blue;
+    margin-top: 0.6rem;
+    display: inline-block;
+  }
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 736px) {
+  h2 {
+    margin-bottom: 8rem !important;
+  }
+}
+
+@media only screen and (min-device-width: 768px) {
+  h2 {
+    margin-bottom: 6rem !important;
+  }
+  .widget-wrapper:first-child {
+    margin-top: 1rem;
+  }
+}
