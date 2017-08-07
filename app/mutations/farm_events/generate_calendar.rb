@@ -1,13 +1,14 @@
 module FarmEvents
   # Used to calculate next 60ish occurrences or so of a FarmEvent.
   class GenerateCalendar < Mutations::Command
-    NEVER = FarmEvent::NEVER.to_s
-    TIME  = { "minutely" => 60,
-              "hourly"   => 60 * 60,
-              "daily"    => 60 * 60 * 24,
-              "weekly"   => 60 * 60 * 24 * 7,
-              "monthly"  => 60 * 60 * 24 * 30, # Not perfect...
-              "yearly"   => 60 * 60 * 24 * 365 }
+    GRACE_PERIOD     = 5.minutes
+    NEVER            = FarmEvent::NEVER.to_s
+    TIME             = { "minutely" => 60,
+                         "hourly"   => 60 * 60,
+                         "daily"    => 60 * 60 * 24,
+                         "weekly"   => 60 * 60 * 24 * 7,
+                         "monthly"  => 60 * 60 * 24 * 30, # Not perfect...
+                         "yearly"   => 60 * 60 * 24 * 365 }
     UNIT_TRANSLATION = { "minutely" => :minutes,
                          "hourly"   => :hours,
                          "daily"    => :days,
@@ -35,8 +36,10 @@ module FarmEvents
     end
 
     def full_calendar
-      interval_sec = TIME[time_unit] * repeat
-      upper        = compute_endtime
+      interval_sec      = TIME[time_unit] * repeat
+      upper             = compute_endtime
+      # Current time, plus a 5 minute grace period.
+      now               = Time.now - GRACE_PERIOD
       # How many items must we skip to get to the first occurence?
       skip_intervals    = ((lower_limit - origin) / interval_sec).ceil
       # At what time does the first event occur?
@@ -44,7 +47,7 @@ module FarmEvents
       list = [first_item]
       60.times do
         item = list.last + interval_sec.seconds
-        list.push(item) unless (item >= upper) || (item <= Time.now)
+        list.push(item) unless (item >= upper) || (item <= now)
       end
 
       return list
@@ -63,7 +66,7 @@ module FarmEvents
     end
 
     def in_future?
-      origin > Time.now
+      origin > (Time.now - GRACE_PERIOD)
     end
 
     def compute_endtime
