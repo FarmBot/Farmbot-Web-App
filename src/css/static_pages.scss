@@ -19,17 +19,20 @@
     line-height: 3.6rem;
   }
   h2 {
-    margin-top: 1rem !important;
+    margin-top: 1rem;
     font-size: 2.2rem;
     line-height: 2.6rem;
-    margin-bottom: 8rem !important;
   }
   .widget-wrapper {
     box-shadow: none;
   }
 }
 
-@media only screen and (min-device-width: 320px) and (max-device-width: 736px) {}
+@media only screen and (min-device-width: 320px) and (max-device-width: 736px) {
+  h2 {
+    margin-bottom: 8rem !important;
+  }
+}
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
   /* Tablet landscape and portrait */

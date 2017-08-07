@@ -117,18 +117,20 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     const TOS_URL = process.env.TOS_URL;
     if (TOS_URL) {
       const PRV_URL = process.env.PRIV_URL;
-      return <div>
+      return (
         <div>
-          <label>{t("I agree to the terms of use")}</label>
-          <input type="checkbox"
-            onChange={this.set("agreeToTerms").bind(this)}
-            value={this.state.agreeToTerms ? "false" : "true"} />
+          <div>
+            <label>{t("I agree to the terms of use")}</label>
+            <input type="checkbox"
+              onChange={this.set("agreeToTerms").bind(this)}
+              value={this.state.agreeToTerms ? "false" : "true"} />
+          </div>
+          <ul>
+            <li><a href={PRV_URL}>{t("Privacy Policy")}</a></li>
+            <li><a href={TOS_URL}>{t("Terms of Use")}</a></li>
+          </ul>
         </div>
-        <ul>
-          <li><a href={PRV_URL}>{t("Privacy Policy")}</a></li>
-          <li><a href={TOS_URL}>{t("Terms of Use")}</a></li>
-        </ul>
-      </div>;
+      );
     }
   }
 
@@ -196,12 +198,16 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                 </WidgetHeader>
                 <WidgetBody>
                   <form onSubmit={this.submitLogin.bind(this)}>
-                    <label>{t("Email")}</label>
+                    <label>
+                      {t("Email")}
+                    </label>
                     <input
                       type="email"
                       onChange={this.set("email").bind(this)}
                     />
-                    <label>{t("Password")}</label>
+                    <label>
+                      {t("Password")}
+                    </label>
                     <input
                       type="password"
                       onChange={this.set("loginPassword").bind(this)}
@@ -214,13 +220,17 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                     </a>
                     {this.state.showServerOpts &&
                       <div>
-                        <label>{t("Server URL")}</label>
+                        <label>
+                          {t("Server URL")}
+                        </label>
                         <input
                           type="text"
                           onChange={this.set("serverURL").bind(this)}
                           value={this.state.serverURL}
                         />
-                        <label>{t("Server Port")}</label>
+                        <label>
+                          {t("Server Port")}
+                        </label>
                         <input
                           type="text"
                           onChange={this.set("serverPort").bind(this)}
