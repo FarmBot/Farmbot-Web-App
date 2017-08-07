@@ -41,7 +41,8 @@ let errorLoading = (cb: Function) => function handleError(err: object) {
       ${JSON.stringify({
         message,
         stack: stack.split("\n").join("<br/>")
-      }, undefined, "  ")}
+        // tslint:disable-next-line:no-null-keyword
+      }, null, "  ")}
     </pre>
     </div>
   `);

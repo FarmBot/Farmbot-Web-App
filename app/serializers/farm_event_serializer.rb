@@ -1,28 +1,19 @@
 class FarmEventSerializer < ActiveModel::Serializer
+  class BadExe < StandardError; end
   attributes :id, :start_time, :end_time, :repeat, :time_unit,
              :executable_id, :executable_type, :calendar
 
   def calendar
     case object.executable
       when Sequence then sequence_calendar
-      when Regimen  then regimen_calendar
-      else throw "Dont know how to calendarize #{exe.class}"
+      when Regimen  then []
+      else
+        msg = "Dont know how to calendarize #{object.executable.class}"
+        throw BadExe.new(msg)
     end
   end
 
   private
-
-  def regimen_calendar
-    object
-      .executable
-      .regimen_items
-      .pluck(:time_offset)
-      .map { |x| x / 1000 }
-      .map { |x| object.start_time.midnight + x }
-      .map(&:utc)
-      .select { |x| !x.past? }
-      .map(&:as_json) || []
-  end
 
   def sequence_calendar
     FarmEvents::GenerateCalendar

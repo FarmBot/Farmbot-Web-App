@@ -109,7 +109,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           plants={this.props.plants}
           points={this.props.points}
           toolSlots={this.props.toolSlots}
-          botPosition={this.props.bot.hardware.location_data.position}
+          botPosition={this.props.botPosition}
           hoveredPlant={this.props.hoveredPlant}
         />
       </div>

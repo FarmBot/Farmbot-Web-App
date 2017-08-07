@@ -30,6 +30,7 @@ import {
   farmwareState
 } from "../farmware/reducer";
 import { Actions } from "../constants";
+import { maybeTagSteps as dontTouchThis } from "./sequence_tagging";
 
 let consumerReducer = combineReducers<RestResources["consumers"]>({
   regimens,
@@ -113,6 +114,7 @@ export let resourceReducer = generateReducer
         case "tools":
         case "points":
           reindexResource(s.index, resource);
+          dontTouchThis(resource);
           s.index.references[resource.uuid] = resource;
           break;
         default:
@@ -151,6 +153,7 @@ export let resourceReducer = generateReducer
       tr.dirty = false;
       tr.saving = false;
       sanityCheck(tr);
+      dontTouchThis(tr);
       reindexResource(s.index, tr);
       return s;
     } else {
@@ -173,6 +176,7 @@ export let resourceReducer = generateReducer
       { dirty: true });
     sanityCheck(source);
     payload && isTaggedResource(source);
+    dontTouchThis(source);
     return s;
   })
   .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
@@ -182,6 +186,7 @@ export let resourceReducer = generateReducer
     original.dirty = true;
     sanityCheck(original);
     payload && isTaggedResource(original);
+    dontTouchThis(original);
     return s;
   })
   .add<TaggedResource>(Actions.INIT_RESOURCE, (s, { payload }) => {
@@ -196,6 +201,7 @@ export let resourceReducer = generateReducer
       findByUuid(s.index, uuid).dirty = true;
     }
     sanityCheck(tr);
+    dontTouchThis(tr);
     return s;
   })
   .add<TaggedResource>(Actions.SAVE_RESOURCE_START, (s, { payload }) => {
@@ -216,7 +222,10 @@ export let resourceReducer = generateReducer
     s.loaded.push(name);
     index.byKind[name].map(x => {
       let resource = index.references[x];
-      resource && removeFromIndex(index, resource);
+      if (resource) {
+        removeFromIndex(index, resource);
+        dontTouchThis(resource);
+      }
     });
     addAllToIndex(index, name, data);
     return s;
@@ -243,6 +252,7 @@ function addToIndex<T>(index: ResourceIndex,
   index.all.push(tr.uuid);
   index.byKind[tr.kind].push(tr.uuid);
   if (tr.body.id) { index.byKindAndId[tr.kind + "." + tr.body.id] = tr.uuid; }
+  dontTouchThis(tr);
   index.references[tr.uuid] = tr;
 }
 

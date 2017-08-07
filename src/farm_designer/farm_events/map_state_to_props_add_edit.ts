@@ -22,33 +22,7 @@ import {
   TaggedSequence,
   TaggedRegimen
 } from "../../resources/tagged_resources";
-// import { DropDownItem } from "../../ui/fb_select";
-
-/**
- * TODO: Not a fan of this one, but don't have time to refactor today.
- * DropDownItem[]s should not know what a Regimen is. - RC Apr '17.
- *
- * PROBLEM: Drop down item had an id of '6'. But that `id` could have been for a
- *          "regimen" or a "sequence". There's no way to diferentiate as a user
- *          of <FBSelect/>
- *
- * Fast Solution:  Tack extra information into DropDownItem. This results in
- *                 us needing to do type casts and coupling DropDownItem to
- *                 FarmEvent, which is unsafe and won't be totally obvious to
- *                 new devs.
- *
- * Ideal solution: Add a `parentHeading: string;` field to DropDownItem. It
- *                 would tell us which heading the DropDownItem came from. we
- *                 could infer the `executable_type` based on the heading it
- *                 was under. Then do a `groupBy` inside
- *                 of <FBSelect/>
- */
-export interface TightlyCoupledFarmEventDropDown {
-  label: string;
-  executable_type: ExecutableType;
-  value: number;
-  heading?: undefined | boolean;
-}
+import { DropDownItem } from "../../ui/fb_select";
 
 export let formatTime = (input: string) => {
   let iso = new Date(input).toISOString();
@@ -105,43 +79,37 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     }
   };
 
-  let executableOptions: TightlyCoupledFarmEventDropDown[] = [];
+  let executableOptions: DropDownItem[] = [];
 
-  // Rick, we should talk about these. -CV 8/3/2017
   executableOptions.push({
     label: t("REGIMENS"),
     heading: true,
     value: 0,
-    executable_type: "Regimen"
+    headingId: "Regimen"
   });
 
   selectAllRegimens(props.resources.index).map(regimen => {
-    // TODO: Remove executable_type from obj since it's
-    // not declared in the interface.
     if (regimen.kind === "regimens" && regimen.body.id) {
       executableOptions.push({
         label: regimen.body.name,
-        executable_type: "Regimen",
+        headingId: "Regimen",
         value: regimen.body.id
       });
     }
   });
 
-  // Rick, we should talk about these and make sure it's OK. -CV 8/3/2017
   executableOptions.push({
     label: t("SEQUENCES"),
     heading: true,
     value: 0,
-    executable_type: "Sequence"
+    headingId: "Sequence"
   });
 
   selectAllSequences(props.resources.index).map(sequence => {
-    // TODO: Remove executable_type from obj since it's
-    // not declared in the interface.
     if (sequence.kind === "sequences" && sequence.body.id) {
       executableOptions.push({
         label: sequence.body.name,
-        executable_type: "Sequence",
+        headingId: "Sequence",
         value: sequence.body.id
       });
     }
@@ -159,28 +127,15 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
    * better. I think it would be better to handle this at the source and keep
    * the ui logic less involved. -CV 8/3/2017
    * -------------------------- BEGIN -------------------------------------*/
-  // let newExecutableOptions: DropDownItem[] = [
-  //   { label: "Regimen", value: 0, children: [] },
-  //   { label: "Sequence", value: 0, children: [] }
-  // ];
-  // executableOptions
-  //   .filter(x => !x.heading)
-  //   .map(x => {
-  //     newExecutableOptions.map(container => {
-  //       x.executable_type === container.label && container.children &&
-  //         container.children.push(x);
-  //     });
-  //   });
   let newExecutableOptions = executableOptions
     .filter(x => !x.heading)
     .map(x => {
       return {
-        label: `${x.executable_type}: ${x.label}`,
+        label: `${x.headingId}: ${x.label}`,
         value: x.value,
-        executable_type: (_.capitalize(x.executable_type) as ExecutableType)
+        headingId: _.capitalize(x.headingId)
       };
     });
-  /* -------------------------- END ---------------------------------------*/
 
   let regimensById = indexRegimenById(props.resources.index);
   let sequencesById = indexSequenceById(props.resources.index);

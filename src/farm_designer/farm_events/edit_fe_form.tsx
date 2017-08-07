@@ -11,8 +11,7 @@ import {
 } from "../interfaces";
 import {
   formatTime,
-  formatDate,
-  TightlyCoupledFarmEventDropDown
+  formatDate
 } from "./map_state_to_props_add_edit";
 import {
   BackArrow,
@@ -35,6 +34,7 @@ import { maybeWarnAboutMissedTasks } from "./util";
 import { TzWarning } from "./tz_warning";
 import { FarmEventRepeatForm } from "./farm_event_repeat_form";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
+import { executableType } from "../util";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -83,7 +83,7 @@ export function recombine(vm: FarmEventViewModel): Partial<TaggedFarmEvent["body
 
 export interface EditFEProps {
   deviceTimezone: string | undefined;
-  executableOptions: TightlyCoupledFarmEventDropDown[];
+  executableOptions: DropDownItem[];
   repeatOptions: DropDownItem[];
   farmEvent: TaggedFarmEvent;
   dispatch: Function;
@@ -122,11 +122,11 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     }
   }
 
-  executableSet = (e: TightlyCoupledFarmEventDropDown) => {
+  executableSet = (e: DropDownItem) => {
     if (e.value) {
       this.setState(betterMerge(this.state, {
         fe: {
-          executable_type: e.executable_type,
+          executable_type: executableType(e.headingId),
           executable_id: (e.value || "").toString()
         },
         localCopyDirty: true
@@ -134,13 +134,13 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     }
   }
 
-  executableGet = (): TightlyCoupledFarmEventDropDown => {
-    let executable_type: ExecutableType =
+  executableGet = (): DropDownItem => {
+    let headingId: ExecutableType =
       (this.executable.kind === "sequences") ? "Sequence" : "Regimen";
     return {
       value: this.executable.body.id || 0,
       label: this.executable.body.name,
-      executable_type
+      headingId
     };
   }
 
