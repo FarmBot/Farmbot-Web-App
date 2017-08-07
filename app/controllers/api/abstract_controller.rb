@@ -144,7 +144,11 @@ private
       ua = (request.user_agent || "").upcase
       if ua.include?("FARMBOTOS")
         actual_version = Gem::Version::new(ua.upcase.split("/").last.split(" ").first)
-        bad_version unless actual_version >= EXPECTED_VER
+        if actual_version >= EXPECTED_VER
+          current_device.update_attributes(last_seen: Time.now) if current_device
+        else
+          bad_version
+        end
       end
     end
   end
