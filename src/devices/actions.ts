@@ -95,17 +95,13 @@ export function emergencyLock() {
     .then(commandOK(noun), commandErr(noun));
 }
 
-const REBOOT_CONF = `Are you sure you want to unlock the device?
-Device will reboot.`;
-
 export function emergencyUnlock() {
   let noun = "Emergency unlock";
-  if (confirm(REBOOT_CONF)) {
+  if (confirm(`Are you sure you want to unlock the device?`)) {
     devices
       .current
-      .reboot() // .emergencyUnlock is broke ATM RC 8 Jun 2017
-      // REMOVE NOOP WHEN YOU PUT BACK UNLOCK RC - June 8 2017
-      .then(commandOK(noun), _.noop);
+      .emergencyUnlock()
+      .then(commandOK(noun), commandErr(noun));
   }
 }
 
