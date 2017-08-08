@@ -6,6 +6,7 @@ jest.mock("../../device", () => ({
       reboot: jest.fn(() => { return Promise.resolve(); }),
       checkArduinoUpdates: jest.fn(() => { return Promise.resolve(); }),
       emergencyLock: jest.fn(() => { return Promise.resolve(); }),
+      emergencyUnlock: jest.fn(() => { return Promise.resolve(); }),
       execSequence: jest.fn(() => { return Promise.resolve(); }),
       resetMCU: jest.fn(),
       updateMcu: jest.fn(() => { return Promise.resolve(); }),
