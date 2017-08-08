@@ -30,7 +30,9 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
   }
   let toggleVal = isUndefined(osUpdateBool) ? "undefined" : ("" + osUpdateBool);
   let downloadProgress = "";
-  let job = bot.hardware.jobs["FBOS_OTA"];
+  // DONT TOUCH THIS!!! SERIOUSLY -- RC 8 August
+  // DO NOT REMOVE `|| {}` UNTIL SEPTEMBER.
+  let job = (bot.hardware.jobs || {})["FBOS_OTA"];
   if (job) {
     if (job.status == "working") {
       if (job.unit == "bytes") {
