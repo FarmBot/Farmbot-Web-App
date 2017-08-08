@@ -74,8 +74,9 @@ describe("emergencyLock() / emergencyUnlock", function () {
     expect(mock.calls.length).toEqual(1);
   });
 
-  it("calls emergencyLock", () => {
+  it("calls emergencyUnlock", () => {
     let { mock } = devices.current.emergencyUnlock as jest.Mock<{}>;
+    window.confirm = jest.fn(() => true);
     actions.emergencyUnlock();
     expect(mock.calls.length).toEqual(1);
   });
@@ -162,7 +163,7 @@ describe("homeAll()", function () {
 
 describe("isLog()", function () {
   it("knows if it is a log or not", () => {
-    expect(() => actions.isLog({})).toThrow();
+    expect(actions.isLog({})).toBe(false);
     expect(actions.isLog({ message: "foo" })).toBe(true);
   });
 });
