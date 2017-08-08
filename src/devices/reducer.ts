@@ -4,6 +4,7 @@ import { SyncStatus } from "farmbot/dist";
 import { localStorageBoolFetch } from "../util";
 import { Actions } from "../constants";
 import { EncoderDisplay } from "../controls/interfaces";
+import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 
 export const X_AXIS_INVERTED = "x_axis_inverted";
 export const Y_AXIS_INVERTED = "y_axis_inverted";
@@ -16,16 +17,16 @@ export const SCALED_ENCODERS = "scaled_encoders";
  * - RC 16 Jun 2017.
  */
 export function versionOK(stringyVersion = "0.0.0",
-  EXPECTED_MAJOR = 4,
-  EXPECTED_MINOR = 0) {
+  _EXPECTED_MAJOR = EXPECTED_MAJOR,
+  _EXPECTED_MINOR = EXPECTED_MINOR) {
   let [actual_major, actual_minor] = stringyVersion
     .split(".")
     .map(x => parseInt(x, 10));
-  if (actual_major > EXPECTED_MAJOR) {
+  if (actual_major > _EXPECTED_MAJOR) {
     return true;
   } else {
-    let majorOK = (actual_major == EXPECTED_MAJOR);
-    let minorOK = (actual_minor >= EXPECTED_MINOR);
+    let majorOK = (actual_major == _EXPECTED_MAJOR);
+    let minorOK = (actual_minor >= _EXPECTED_MINOR);
     return (majorOK && minorOK);
   }
 }
