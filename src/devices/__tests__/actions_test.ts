@@ -62,19 +62,6 @@ describe("reboot()", function () {
   });
 });
 
-describe("checkArduinoUpdates()", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
-  it("calls checkArduinoUpdates", () => {
-    let { mock } = devices.current.checkArduinoUpdates as jest.Mock<{}>;
-    actions.checkArduinoUpdates();
-    expect(mock.calls.length).toEqual(1);
-    // expect(mockOk.mock.calls.length).toEqual(1);
-  });
-});
-
 describe("emergencyLock()", function () {
   beforeEach(function () {
     jest.clearAllMocks();
