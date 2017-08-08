@@ -38,6 +38,7 @@ export interface DeviceAccountSettings {
 }
 
 export interface BotState {
+  connectedToMQTT: boolean;
   /** How many steps to move when the user presses a manual movement arrow */
   stepSize: number;
   /** The current os version on the github release api */

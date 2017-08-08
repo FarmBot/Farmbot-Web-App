@@ -25,6 +25,7 @@ import { getDeviceAccountSettings } from "../resources/selectors";
 import { TaggedDevice } from "../resources/tagged_resources";
 import { versionOK } from "./reducer";
 import { oneOf, HttpData } from "../util";
+import { Actions } from "../constants";
 
 const ON = 1, OFF = 0;
 type configKey = keyof McuParams;
@@ -268,6 +269,8 @@ export function connectDevice(token: string): ConnectDeviceReturn {
             { "LAST_CLIENT_CONNECTED": JSON.stringify(new Date()) }
           ))
           .catch(() => { });
+        bot.on("online", () => setMqttStatus(true));
+        bot.on("offline", () => setMqttStatus(true));
         bot.on("logs", function (msg: Log) {
           if (isLog(msg) && !oneOf(BAD_WORDS, msg.message.toUpperCase())) {
             maybeShowLog(msg);
@@ -383,3 +386,7 @@ export function setSyncStatus(payload: SyncStatus) {
 function badVersion() {
   info("You are running an old version of FarmBot OS.", "Please Update", "red");
 }
+
+export let setMqttStatus = (payload: boolean) => ({
+  action: Actions.SET_MQTT_STATUS, payload
+});

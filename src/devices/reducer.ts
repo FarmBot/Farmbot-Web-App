@@ -30,6 +30,7 @@ export function versionOK(stringyVersion = "0.0.0",
   }
 }
 export let initialState: BotState = {
+  connectedToMQTT: false,
   stepSize: 100,
   controlPanelState: {
     homing_and_calibration: false,
@@ -147,4 +148,8 @@ export let botReducer = generateReducer<BotState>(initialState)
       default:
         throw new Error("Attempted to toggle display of invalid data.");
     }
+  })
+  .add<boolean>(Actions.SET_MQTT_STATUS, (s, a) => {
+    s.connectedToMQTT = a.payload;
+    return s;
   });

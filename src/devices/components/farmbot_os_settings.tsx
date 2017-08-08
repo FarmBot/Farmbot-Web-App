@@ -128,6 +128,7 @@ export class FarmbotOsSettings
             <Col xs={10}>
               <p>
                 {`mqtt://${this.props.auth.token.unencoded.mqtt}`}
+                ({this.props.bot.connectedToMQTT ? "connected" : "offline"})
               </p>
             </Col>
           </Row>
