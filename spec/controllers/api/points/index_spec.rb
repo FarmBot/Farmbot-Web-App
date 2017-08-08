@@ -65,7 +65,7 @@ describe Api::PointsController do
 
     it "marks device as seen when they download points" do
       old_last_seen = user.device.last_seen
-      ua = "FarmbotOS/4.0.2 (host) host ()"
+      ua = "FarmbotOS/5.0.2 (host) host ()"
       allow(request).to receive(:user_agent).and_return(ua)
       request.env["HTTP_USER_AGENT"]   = ua
       request.headers["Authorization"] = "bearer #{auth_token}"

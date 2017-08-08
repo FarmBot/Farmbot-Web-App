@@ -29,6 +29,8 @@ import { Actions } from "../constants";
 
 const ON = 1, OFF = 0;
 type configKey = keyof McuParams;
+export const EXPECTED_MAJOR = 5;
+export const EXPECTED_MINOR = 0;
 
 function incomingStatus(statusMessage: HardwareState) {
   return { type: "BOT_CHANGE", payload: statusMessage };
@@ -106,7 +108,7 @@ export function sync(): Thunk {
       .bot
       .hardware
       .informational_settings
-      .controller_version, 4, 0);
+      .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
     if (IS_OK) {
       dispatch(setSyncStatus("syncing"));
       devices
@@ -287,7 +289,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
               .bot
               .hardware
               .informational_settings
-              .controller_version, 4, 0);
+              .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
             if (!IS_OK) { badVersion(); }
             NEED_VERSION_CHECK = false;
           }
