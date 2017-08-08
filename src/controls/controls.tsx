@@ -13,7 +13,7 @@ export class Controls extends React.Component<Props, {}> {
     return (
       <Page className="controls">
         <Row>
-          <Col xs={12} sm={6} md={4} mdOffset={1}>
+          <Col xs={12} sm={6} md={5} mdOffset={1}>
             <Move bot={this.props.bot}
               user={this.props.user}
               dispatch={this.props.dispatch} />

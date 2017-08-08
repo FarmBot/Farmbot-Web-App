@@ -142,17 +142,17 @@ export class Move extends React.Component<MoveProps, {}> {
             </Row>
             <AxisDisplayGroup
               position={motor_coordinates}
-              label={"Motor Coords."}
+              label={"Motor Coordinates (mm)"}
             />
+            {scaled_encoders &&
+              <AxisDisplayGroup
+                position={scaled_encoders_data}
+                label={"Scaled Encoder (steps)"}
+              />}
             {raw_encoders &&
               <AxisDisplayGroup
                 position={raw_encoders_data}
                 label={"Raw Encoder data"}
-              />}
-            {scaled_encoders &&
-              <AxisDisplayGroup
-                position={scaled_encoders_data}
-                label={"Scaled Encoder data"}
               />}
             <AxisInputBoxGroup
               position={motor_coordinates}
