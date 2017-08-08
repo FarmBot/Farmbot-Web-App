@@ -2,6 +2,7 @@ import { versionOK, botReducer, initialState } from "../reducer";
 import { Actions } from "../../constants";
 import { ControlPanelState } from "../interfaces";
 import { SyncStatus } from "farmbot/dist";
+import { setMqttStatus } from "../actions";
 
 describe("safeStringFetch", () => {
   it("Checks the correct version on update", () => {
@@ -103,5 +104,12 @@ describe("botRedcuer", () => {
     expect(botReducer(initialState, action).scaled_encoders)
       .toBe(!initialState.scaled_encoders);
 
+  });
+
+  it("toggles MQTT status", () => {
+    let state = botReducer(initialState, setMqttStatus(false));
+    expect(state.connectedToMQTT).toBe(false);
+    state = botReducer(initialState, setMqttStatus(true));
+    expect(state.connectedToMQTT).toBe(true);
   });
 });

@@ -6,6 +6,7 @@ jest.mock("../../device", () => ({
       reboot: jest.fn(() => { return Promise.resolve(); }),
       checkArduinoUpdates: jest.fn(() => { return Promise.resolve(); }),
       emergencyLock: jest.fn(() => { return Promise.resolve(); }),
+      emergencyUnlock: jest.fn(() => { return Promise.resolve(); }),
       execSequence: jest.fn(() => { return Promise.resolve(); }),
       resetMCU: jest.fn(),
       updateMcu: jest.fn(() => { return Promise.resolve(); }),
@@ -62,20 +63,7 @@ describe("reboot()", function () {
   });
 });
 
-describe("checkArduinoUpdates()", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
-  it("calls checkArduinoUpdates", () => {
-    let { mock } = devices.current.checkArduinoUpdates as jest.Mock<{}>;
-    actions.checkArduinoUpdates();
-    expect(mock.calls.length).toEqual(1);
-    // expect(mockOk.mock.calls.length).toEqual(1);
-  });
-});
-
-describe("emergencyLock()", function () {
+describe("emergencyLock() / emergencyUnlock", function () {
   beforeEach(function () {
     jest.clearAllMocks();
   });
@@ -84,7 +72,13 @@ describe("emergencyLock()", function () {
     let { mock } = devices.current.emergencyLock as jest.Mock<{}>;
     actions.emergencyLock();
     expect(mock.calls.length).toEqual(1);
-    // expect(mockOk.mock.calls.length).toEqual(1);
+  });
+
+  it("calls emergencyUnlock", () => {
+    let { mock } = devices.current.emergencyUnlock as jest.Mock<{}>;
+    window.confirm = jest.fn(() => true);
+    actions.emergencyUnlock();
+    expect(mock.calls.length).toEqual(1);
   });
 });
 
@@ -99,6 +93,13 @@ describe("execSequence()", function () {
     expect(mock.calls.length).toEqual(1);
     expect(mock.calls[0][0]).toEqual(12);
     // expect(mockOk.mock.calls.length).toEqual(1);
+  });
+  it("implodes when executing unsaved sequences", () => {
+    let { mock } = devices.current.execSequence as jest.Mock<{}>;
+    let ok = fakeSequence().body;
+    ok.id = undefined;
+    expect(() => actions.execSequence(ok)).toThrow();
+    expect(mock.calls.length).toEqual(0);
   });
 });
 
@@ -157,5 +158,19 @@ describe("homeAll()", function () {
     expect(argList[0].axis).toEqual("all");
     expect(argList[0].speed).toEqual(100);
     // expect(mockOk.mock.calls.length).toEqual(1);
+  });
+});
+
+describe("isLog()", function () {
+  it("knows if it is a log or not", () => {
+    expect(actions.isLog({})).toBe(false);
+    expect(actions.isLog({ message: "foo" })).toBe(true);
+  });
+});
+
+describe("toggleControlPanel()", function () {
+  it("toggles", () => {
+    let action = actions.toggleControlPanel("homing_and_calibration");
+    expect(action.payload).toEqual("homing_and_calibration");
   });
 });

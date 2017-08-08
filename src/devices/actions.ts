@@ -25,6 +25,7 @@ import { getDeviceAccountSettings } from "../resources/selectors";
 import { TaggedDevice } from "../resources/tagged_resources";
 import { versionOK } from "./reducer";
 import { oneOf, HttpData } from "../util";
+import { Actions } from "../constants";
 
 const ON = 1, OFF = 0;
 type configKey = keyof McuParams;
@@ -33,7 +34,7 @@ function incomingStatus(statusMessage: HardwareState) {
   return { type: "BOT_CHANGE", payload: statusMessage };
 }
 
-function isLog(x: object): x is Log {
+export function isLog(x: object): x is Log {
   return _.isObject(x) && _.isString(_.get(x, "message" as keyof Log));
 }
 let commandErr = (noun = "Command") => () => {
@@ -76,14 +77,6 @@ export function reboot() {
   devices
     .current
     .reboot()
-    .then(commandOK(noun), commandErr(noun));
-}
-
-export function checkArduinoUpdates() {
-  let noun = "Check Firmware Updates";
-  devices
-    .current
-    .checkArduinoUpdates()
     .then(commandOK(noun), commandErr(noun));
 }
 
@@ -265,6 +258,14 @@ export function connectDevice(token: string): ConnectDeviceReturn {
   return (dispatch: Function, getState: GetState) => {
     let secure = location.protocol === "https:";
     let bot = new Farmbot({ token, secure });
+    bot.on("online", () => {
+      dispatch(setMqttStatus(true));
+      console.log("ONLINE");
+    });
+    bot.on("offline", () => {
+      dispatch(setMqttStatus(false));
+      console.log("OFFLINE");
+    });
     return bot
       .connect()
       .then(() => {
@@ -391,3 +392,7 @@ export function setSyncStatus(payload: SyncStatus) {
 function badVersion() {
   info("You are running an old version of FarmBot OS.", "Please Update", "red");
 }
+
+export let setMqttStatus = (payload: boolean) => ({
+  type: Actions.SET_MQTT_STATUS, payload
+});

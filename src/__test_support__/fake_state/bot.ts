@@ -1,6 +1,7 @@
 import { Everything } from "../../interfaces";
 
 export let bot: Everything["bot"] = {
+  "connectedToMQTT": true,
   "stepSize": 100,
   "controlPanelState": {
     "homing_and_calibration": false,
