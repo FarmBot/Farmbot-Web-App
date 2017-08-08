@@ -37,7 +37,8 @@ function incomingStatus(statusMessage: HardwareState) {
 export function isLog(x: object): x is Log {
   return _.isObject(x) && _.isString(_.get(x, "message" as keyof Log));
 }
-let commandErr = (noun = "Command") => () => {
+let commandErr = (noun = "Command") => (x: any) => {
+  console.dir(x);
   console.info("Took longer than 6 seconds: " + noun);
 };
 
@@ -258,14 +259,8 @@ export function connectDevice(token: string): ConnectDeviceReturn {
   return (dispatch: Function, getState: GetState) => {
     let secure = location.protocol === "https:";
     let bot = new Farmbot({ token, secure });
-    bot.on("online", () => {
-      dispatch(setMqttStatus(true));
-      console.log("ONLINE");
-    });
-    bot.on("offline", () => {
-      dispatch(setMqttStatus(false));
-      console.log("OFFLINE");
-    });
+    bot.on("online", () => dispatch(setMqttStatus(true)));
+    bot.on("offline", () => dispatch(setMqttStatus(false)));
     return bot
       .connect()
       .then(() => {
