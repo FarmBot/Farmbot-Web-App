@@ -26,6 +26,7 @@ import { ToolTips, Content } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
 import { timezoneMismatch } from "../timezones/guess_timezone";
 import { FBSelect } from "../../ui/new_fb_select";
+import { LastSeen } from "./last_seen_widget";
 
 const CAMERA_CHOICES = [
   { label: "USB Camera", value: "USB" },
@@ -81,6 +82,12 @@ export class FarmbotOsSettings
     } else {
       return "";
     }
+  }
+
+  lastSeen = () => {
+    return <LastSeen
+      onClick={() => this.props.dispatch(save(this.props.account.uuid))}
+      device={this.props.account} />;
   }
 
   render() {
@@ -142,6 +149,7 @@ export class FarmbotOsSettings
               </div>
             </Col>
           </Row>
+          <this.lastSeen />
           <MustBeOnline
             fallback="Some settings are not available when FarmBot is offline."
             status={this.props.bot.hardware.informational_settings.sync_status}

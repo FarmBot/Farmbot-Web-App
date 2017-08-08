@@ -107,6 +107,7 @@ private
       else
         auth_err
       end
+      mark_as_seen
     rescue Mutations::ValidationException => e
       errors = e.errors.message.merge(strategy: strategy)
       render json: {error: errors}, status: 401
@@ -140,11 +141,25 @@ private
     EXPECTED_VER = Gem::Version::new('4.0.0')
 
     def check_fbos_version
+      when_farmbot_os do
+        semver = pretty_ua.upcase.split("/").last.split(" ").first
+        bad_version unless Gem::Version::new(semver) >= EXPECTED_VER
+      end
+    end
+
+    def pretty_ua
       # "FARMBOTOS/3.1.0 (RPI3) RPI3 ()"
-      ua = (request.user_agent || "").upcase
-      if ua.include?("FARMBOTOS")
-        actual_version = Gem::Version::new(ua.upcase.split("/").last.split(" ").first)
-        bad_version unless actual_version >= EXPECTED_VER
+      (request.user_agent || "").upcase
+    end
+
+    def when_farmbot_os
+      yield if pretty_ua.include?("FARMBOTOS")
+    end
+
+    def mark_as_seen
+      when_farmbot_os do
+        d = current_user && current_user.device
+        d.update_attributes(last_seen: Time.now) if d
       end
     end
   end
