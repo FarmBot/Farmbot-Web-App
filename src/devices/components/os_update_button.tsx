@@ -29,6 +29,25 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
     buttonStr = "Can't Connect to release server";
   }
   let toggleVal = isUndefined(osUpdateBool) ? "undefined" : ("" + osUpdateBool);
+  let downloadProgress = "";
+  let job = bot.hardware.jobs["FBOS_OTA"];
+  if (job) {
+    if (job.status == "working") {
+      if (job.unit == "bytes") {
+        let kiloBytes = Math.round(job.bytes / 1024);
+        let megaBytes = Math.round(job.bytes / 1048576);
+        if (kiloBytes < 1) {
+          downloadProgress = job.bytes + "B";
+        } else if (megaBytes < 1) {
+          downloadProgress = kiloBytes + "kB";
+        } else {
+          downloadProgress = megaBytes + "MB";
+        }
+      } else if (job.unit == "percent") {
+        downloadProgress = job.percent + "%";
+      }
+    }
+  }
   return <div className="updates">
     <Row>
       <Col xs={4}>
@@ -48,7 +67,7 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
           className={"fb-button " + buttonColor}
           onClick={() => checkControllerUpdates()}
         >
-          {buttonStr}
+          {downloadProgress || buttonStr}
         </button>
       </Col>
     </Row>

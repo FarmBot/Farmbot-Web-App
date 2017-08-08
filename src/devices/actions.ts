@@ -285,7 +285,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
             throw new Error("Refusing to display log: " + JSON.stringify(msg));
           }
         });
-        bot.on("status", function (msg: BotStateTree) {
+        bot.on("status", _.throttle(function (msg: BotStateTree) {
           dispatch(incomingStatus(msg));
           if (NEED_VERSION_CHECK) {
             let IS_OK = versionOK(getState()
@@ -297,7 +297,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
             NEED_VERSION_CHECK = false;
           }
 
-        });
+        }, 500));
 
         let alreadyToldYou = false;
         bot.on("malformed", function () {

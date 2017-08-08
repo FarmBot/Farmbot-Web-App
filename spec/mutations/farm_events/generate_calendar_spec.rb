@@ -52,14 +52,24 @@ describe FarmEvents::GenerateCalendar do
     expect(calendar.length).to be < 7
   end
 
-  it 'schedules one-off events: origin < lower_limit' do
-    params   = { origin:      Time.now - 1.day,
-                 lower_limit: Time.now + 1.day,
+  it 'schedules one-off events: origin < lower_limit outside of grace period' do
+    params   = { origin:      Time.now - 6.minutes,
+                 lower_limit: Time.now,
                  upper_limit: nil,
                  repeat:      1,
                  time_unit:   FarmEvent::NEVER }
     calendar = FarmEvents::GenerateCalendar.run!(params)
     expect(calendar.length).to eq(0)
+  end
+
+  it 'schedules one-off events: origin < lower_limit within grace period' do
+    params   = { origin:      Time.now - 2.minutes,
+                 lower_limit: Time.now,
+                 upper_limit: nil,
+                 repeat:      1,
+                 time_unit:   FarmEvent::NEVER }
+    calendar = FarmEvents::GenerateCalendar.run!(params)
+    expect(calendar.length).to eq(1)
   end
 
     it 'schedules one-off events: origin = lower_limit' do
