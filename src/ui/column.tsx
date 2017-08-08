@@ -29,7 +29,7 @@ interface ColumnProps {
 export function Col(props: ColumnProps) {
   let classNames = parseClassNames(props, null);
   return <div
-    className={classNames}
+    className={classNames + " " + (props.className || "")}
     hidden={!!props.hidden}
   >
     {props.children}
