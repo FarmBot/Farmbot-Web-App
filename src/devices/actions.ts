@@ -258,6 +258,14 @@ export function connectDevice(token: string): ConnectDeviceReturn {
   return (dispatch: Function, getState: GetState) => {
     let secure = location.protocol === "https:";
     let bot = new Farmbot({ token, secure });
+    bot.on("online", () => {
+      dispatch(setMqttStatus(true));
+      console.log("ONLINE");
+    });
+    bot.on("offline", () => {
+      dispatch(setMqttStatus(false));
+      console.log("OFFLINE");
+    });
     return bot
       .connect()
       .then(() => {
@@ -269,8 +277,6 @@ export function connectDevice(token: string): ConnectDeviceReturn {
             { "LAST_CLIENT_CONNECTED": JSON.stringify(new Date()) }
           ))
           .catch(() => { });
-        bot.on("online", () => setMqttStatus(true));
-        bot.on("offline", () => setMqttStatus(true));
         bot.on("logs", function (msg: Log) {
           if (isLog(msg) && !oneOf(BAD_WORDS, msg.message.toUpperCase())) {
             maybeShowLog(msg);
@@ -388,5 +394,5 @@ function badVersion() {
 }
 
 export let setMqttStatus = (payload: boolean) => ({
-  action: Actions.SET_MQTT_STATUS, payload
+  type: Actions.SET_MQTT_STATUS, payload
 });
