@@ -62,7 +62,7 @@ describe("reboot()", function () {
   });
 });
 
-describe("emergencyLock()", function () {
+describe("emergencyLock() / emergencyUnlock", function () {
   beforeEach(function () {
     jest.clearAllMocks();
   });
@@ -71,7 +71,12 @@ describe("emergencyLock()", function () {
     let { mock } = devices.current.emergencyLock as jest.Mock<{}>;
     actions.emergencyLock();
     expect(mock.calls.length).toEqual(1);
-    // expect(mockOk.mock.calls.length).toEqual(1);
+  });
+
+  it("calls emergencyLock", () => {
+    let { mock } = devices.current.emergencyUnlock as jest.Mock<{}>;
+    actions.emergencyUnlock();
+    expect(mock.calls.length).toEqual(1);
   });
 });
 
@@ -86,6 +91,13 @@ describe("execSequence()", function () {
     expect(mock.calls.length).toEqual(1);
     expect(mock.calls[0][0]).toEqual(12);
     // expect(mockOk.mock.calls.length).toEqual(1);
+  });
+  it("implodes when executing unsaved sequences", () => {
+    let { mock } = devices.current.execSequence as jest.Mock<{}>;
+    let ok = fakeSequence().body;
+    ok.id = undefined;
+    expect(() => actions.execSequence(ok)).toThrow();
+    expect(mock.calls.length).toEqual(0);
   });
 });
 
@@ -144,5 +156,19 @@ describe("homeAll()", function () {
     expect(argList[0].axis).toEqual("all");
     expect(argList[0].speed).toEqual(100);
     // expect(mockOk.mock.calls.length).toEqual(1);
+  });
+});
+
+describe("isLog()", function () {
+  it("knows if it is a log or not", () => {
+    expect(() => actions.isLog({})).toThrow();
+    expect(actions.isLog({ message: "foo" })).toBe(true);
+  });
+});
+
+describe("toggleControlPanel()", function () {
+  it("toggles", () => {
+    let action = actions.toggleControlPanel("homing_and_calibration");
+    expect(action.payload).toEqual("homing_and_calibration");
   });
 });

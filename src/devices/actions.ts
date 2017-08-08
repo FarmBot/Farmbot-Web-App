@@ -34,7 +34,7 @@ function incomingStatus(statusMessage: HardwareState) {
   return { type: "BOT_CHANGE", payload: statusMessage };
 }
 
-function isLog(x: object): x is Log {
+export function isLog(x: object): x is Log {
   return _.isObject(x) && _.isString(_.get(x, "message" as keyof Log));
 }
 let commandErr = (noun = "Command") => () => {
