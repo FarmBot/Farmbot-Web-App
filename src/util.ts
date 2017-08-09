@@ -450,7 +450,6 @@ export function hardRefresh() {
   let HARD_RESET = "CACHE38434343";
   if (localStorage && sessionStorage) {
     if (!localStorage.getItem(HARD_RESET)) {
-      alert("Please perform a hard refresh (CTRL+SHIFT+R on most machines).");
       console.warn("Performing hard reset of localstorage and JS cookies.");
       Object.keys(localStorage)
         .concat(Object.keys(sessionStorage))
