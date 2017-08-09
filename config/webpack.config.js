@@ -1,10 +1,14 @@
 // Example webpack configuration with asset fingerprinting in production.
 'use strict';
-var path = require('path');
-var webpack = require('webpack');
+var path = require("path");
+var webpack = require("webpack");
+var exec = require("child_process").exec;
+var execSync = require("child_process").execSync;
+var webpack = require("webpack");
+var fs = require("fs");
 var StatsPlugin = require('stats-webpack-plugin');
-var devServerPort = 3808;
-var production = process.env.NODE_ENV === 'production';
+var production = process.env.TARGET === 'production';
+
 var VERSION = JSON.stringify(process.env.BUILT_AT
   || process.env.HEROKU_SLUG_COMMIT
   || "NONE");
@@ -25,8 +29,7 @@ var config = {
     // must match config.webpack.output_dir
     path: path.join(__dirname, '..', 'public', 'webpack'),
     publicPath: '/webpack/',
-
-    filename: production ? '[name]-[chunkhash].js' : '[name].js'
+    filename: '[name].js'
   },
   // Shared loaders for prod and dev.
   module: {
@@ -79,6 +82,6 @@ var config = {
     })]
 };
 
-require(production ? "webpack.prod" : "webpack.dev")(conf);
+require(production ? "./webpack.prod" : "./webpack.dev")(config);
 
 module.exports = config;
