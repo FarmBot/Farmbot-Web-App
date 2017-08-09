@@ -1,29 +1,20 @@
-global.WEBPACK_ENV = "production";
-var VERSION = JSON.stringify(process.env.BUILT_AT
-  || process.env.HEROKU_SLUG_COMMIT
-  || "NONE");
-var webpack = require("webpack");
-var exec = require("child_process").execSync;
-var path = require("path");
-
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
-var OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-var UglifyJsPlugin = require("webpack-uglify-js-plugin");
-
-var generateConfig = require("./webpack.config.base");
-var FarmBotRenderer = require("./farmBotRenderer");
-
-c = function () {
-
-  var conf = generateConfig();
-
+module.exports = function (config) {
+  config.plugins.push(
+    new webpack.NoErrorsPlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      compressor: { warnings: false },
+      sourceMap: false
+    }),
+    new webpack.DefinePlugin({
+      'process.env': { NODE_ENV: JSON.stringify('production') }
+    }),
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.OccurenceOrderPlugin()
+  );
   conf.module.rules.push({
     test: [/\.scss$/, /\.css$/],
     loader: ExtractTextPlugin.extract("css-loader!sass-loader")
   });
-
-  conf.output.filename = "dist/[name].[chunkhash].js";
-
   // PLUGINS:
   [
     new webpack.DefinePlugin({
@@ -32,8 +23,8 @@ c = function () {
     new ExtractTextPlugin({
       // Temporary hotfix for some issues on staging.
       // - RC 12 MAY 17
-      filename: "dist/styles.css",
-      // filename: "dist/styles.[chunkhash].css",
+      // filename: "dist/styles.css",
+      filename: "dist/[name].[chunkhash].css",
       disable: false,
       allChunks: true
     }),
@@ -54,8 +45,4 @@ c = function () {
     })
   ].forEach(function (x) { conf.plugins.push(x) });
 
-  return conf;
-
 }
-
-module.exports = c();
