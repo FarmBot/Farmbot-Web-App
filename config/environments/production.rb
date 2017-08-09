@@ -25,7 +25,7 @@ FarmBot::Application.configure do
                                          address:   ENV['SMTP_HOST'],
                                          user_name: uname,
                                          password:  pw }
-  config.webpack.public_path = "public"
+  config.webpack.public_path = nil
   config.webpack.config_file = "tools/webpack.config.prd.js"
   config.webpack.static_manifest_path = "public/manifest.json"
 end

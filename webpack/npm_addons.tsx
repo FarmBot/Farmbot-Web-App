@@ -6,5 +6,6 @@ declare var SHORT_REVISION: string;
 SHORT_REVISION = process.env.SHORT_REVISION || "";
 
 if (process.env.NPM_ADDON) {
-  require(process.env.NPM_ADDON as string);
+  let wow = process.env.NPM_ADDON as string;
+  require(wow);
 }
