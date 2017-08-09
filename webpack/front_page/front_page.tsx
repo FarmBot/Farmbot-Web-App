@@ -4,12 +4,12 @@ import { t } from "i18next";
 import * as _ from "lodash";
 import { error as log, success, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
-import { prettyPrintApiErrors, HttpData, hardRefresh } from "../util";
+import { prettyPrintApiErrors, HttpData } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState } from "./interfaces";
 import { Row, Col, Widget, WidgetHeader, WidgetBody } from "../ui/index";
-hardRefresh();
+
 export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   constructor() {
     super();

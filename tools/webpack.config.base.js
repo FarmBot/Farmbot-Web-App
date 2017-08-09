@@ -117,6 +117,7 @@ module.exports = function () {
 
     // Webpack Dev Server.
     devServer: {
+      port: 3808,
       historyApiFallback: {
         rewrites: [
           { from: /\/app\//, to: "/app/index.html" },

@@ -21,7 +21,7 @@ export class API {
 
     // ATTEMPT 1: Most devs running a webpack server on localhost
     //            run the API on port 3000.
-    if (location.port === "8080") { return "3000"; }
+    if (location.port === "3808") { return "3000"; }
 
     // ATTEMPT 2: If they provide an explicit port (as in ://localhost:3000)
     //            use that port.

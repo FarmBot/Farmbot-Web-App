@@ -46,7 +46,7 @@ You will need the following:
  0. (optional) Verify installation with `RAILS_ENV=test rake db:create db:migrate && rspec spec` (API) and `npm run test` (Frontend).
  0. Start server with `npm run dev`. Make sure you set an `MQTT_HOST` entry in `application.yml` pointing to the IP address or domain of the (soon-to-be-installed) MQTT server. You will need to set that up next.
  0. Now that the API server is running, [provision an MQTT server](https://github.com/FarmBot/mqtt-gateway).
- 0. Open [localhost:8080](http://localhost:8080). The application is now ready for use.
+ 0. Open [localhost:3808](http://localhost:3808). The application is now ready for use.
  0. [Raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new?title=Installation%20Failure) if you hit problems with any of these steps. *We can't fix issues we don't know about.*
 
 \*Give permission to `user` to create database:
