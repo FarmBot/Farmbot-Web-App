@@ -81,6 +81,7 @@
     "redux-immutable-state-invariant": "^2.0.0",
     "redux-thunk": "^2.0.1",
     "sass-loader": "^6.0.6",
+    "stats-webpack-plugin": "^0.6.1",
     "style-loader": "^0.18.2",
     "ts-jest": "^20.0.7",
     "ts-lint": "^4.5.1",

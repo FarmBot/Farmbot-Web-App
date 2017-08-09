@@ -11,4 +11,5 @@ FarmBot::Application.configure do
   config.eager_load = false
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = { :address => "localhost", :port => 1025 }
+  config.webpack.public_path = nil
 end

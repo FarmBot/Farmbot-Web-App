@@ -5,8 +5,13 @@ class DashboardController < ApplicationController
   THE_FRONTEND_APP = File.read(HAS_FE ? FE_PATH : FE_FALLBACK).html_safe
   ACME_SECRET      = ENV["ACME_SECRET"]
 
-  def index
-    render html: THE_FRONTEND_APP, layout: false
+  def main_app
+    # render html: THE_FRONTEND_APP, layout: false
+    render :main_app, layout: false
+  end
+
+  def front_page
+    render :front_page, layout: false
   end
 
   # Hit by Certbot / Let's Encrypt when it's time to verify control of domain.

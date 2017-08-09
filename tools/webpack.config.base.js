@@ -4,6 +4,7 @@ var exec = require("child_process").exec;
 var execSync = require("child_process").execSync;
 var webpack = require("webpack");
 var fs = require("fs");
+var StatsPlugin = require('stats-webpack-plugin');
 
 var FarmBotRenderer = require("./farmBotRenderer");
 var VERSION = JSON.stringify(process.env.BUILT_AT
@@ -59,6 +60,14 @@ module.exports = function () {
 
     // Shared plugins for prod and dev.
     plugins: [
+      new StatsPlugin('manifest.json', {
+        // We only need assetsByChunkName
+        chunkModules: false,
+        source: false,
+        chunks: false,
+        modules: false,
+        assets: true
+      }),
       new webpack.DefinePlugin({
         "process.env.SHORT_REVISION": VERSION
       }),
@@ -78,46 +87,13 @@ module.exports = function () {
       new webpack.DefinePlugin({
         "process.env.PRIV_URL": JSON
           .stringify(process.env.PRIV_URL || false).toString()
-      }),
-      new FarmBotRenderer({
-        isProd: isProd,
-        path: path.resolve(__dirname, "../webpack/static/app_index.hbs"),
-        filename: "index.html",
-        outputPath: path.resolve(__dirname, "../public/app/")
-      }),
-      new FarmBotRenderer({
-        isProd: isProd,
-        path: path.resolve(__dirname, "../webpack/static/front_page.hbs"),
-        filename: "index.html",
-        outputPath: path.resolve(__dirname, "../public/"),
-        include: "front_page"
-      }),
-      new FarmBotRenderer({
-        isProd: isProd,
-        path: path.resolve(__dirname, "../webpack/static/verification.hbs"),
-        filename: "verify.html",
-        outputPath: path.resolve(__dirname, "../public/"),
-        include: "verification"
-      }),
-      new FarmBotRenderer({
-        isProd: isProd,
-        path: path.resolve(__dirname, "../webpack/static/password_reset.hbs"),
-        filename: "password_reset.html",
-        outputPath: path.resolve(__dirname, "../public/"),
-        include: "password_reset"
-      }),
-      new FarmBotRenderer({
-        isProd: isProd,
-        path: path.resolve(__dirname, "../webpack/static/tos_update.hbs"),
-        filename: "tos_update.html",
-        outputPath: path.resolve(__dirname, "../public/"),
-        include: "tos_update"
       })
     ],
 
     // Webpack Dev Server.
     devServer: {
       port: 3808,
+      publicPath: "/",
       historyApiFallback: {
         rewrites: [
           { from: /\/app\//, to: "/app/index.html" },
