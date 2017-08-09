@@ -149,7 +149,7 @@ export let fetchReleases =
       .get(url)
       .then((resp: HttpData<GithubRelease>) => {
         let version = resp.data.tag_name;
-        let versionWithoutV = version.slice(1, version.length);
+        let versionWithoutV = version.toLowerCase().replace("v", "");
         dispatch({
           type: "FETCH_OS_UPDATE_INFO_OK",
           payload: versionWithoutV
