@@ -101,11 +101,11 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "^.*\\.scss$": "<rootDir>/src/__test_support__/stub.ts"
+      "^.*\\.scss$": "<rootDir>/webpack/__test_support__/stub.ts"
     },
     "setupFiles": [
-      "./src/unmock_i18next.ts",
-      "./src/__test_support__/localstorage.js"
+      "./webpack/unmock_i18next.ts",
+      "./webpack/__test_support__/localstorage.js"
     ],
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
@@ -119,7 +119,7 @@
     "mapCoverage": true,
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.{ts,tsx}"
+      "webpack/**/*.{ts,tsx}"
     ],
     "coverageReporters": [
       "html",
