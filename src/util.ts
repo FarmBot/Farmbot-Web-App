@@ -447,7 +447,7 @@ export function lastUrlChunk() {
  - *        This is a work around until then. */
 export function hardRefresh() {
   // Change this string to trigger a force cache reset.
-  let HARD_RESET = "CACHE99";
+  let HARD_RESET = "CACHE38434343";
   if (localStorage && sessionStorage) {
     if (!localStorage.getItem(HARD_RESET)) {
       console.warn("Performing hard reset of localstorage and JS cookies.");
