@@ -26,4 +26,5 @@ FarmBot::Application.configure do
                                          user_name: uname,
                                          password:  pw }
   config.webpack.public_path = nil
+  config.webpack.config_file = "tools/webpack.config.prd.js"
 end
