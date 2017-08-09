@@ -3,7 +3,7 @@ import { render } from "react-dom";
 import { t } from "i18next";
 import * as _ from "lodash";
 import { Dictionary } from "farmbot";
-import { error, info } from "farmbot-toastr";
+import { error } from "farmbot-toastr";
 import { Color, UnsafeError } from "./interfaces";
 import { box } from "boxed_value";
 import { TaggedResource } from "./resources/tagged_resources";
@@ -450,7 +450,7 @@ export function hardRefresh() {
   let HARD_RESET = "CACHE38434343";
   if (localStorage && sessionStorage) {
     if (!localStorage.getItem(HARD_RESET)) {
-      info("Please perform a hard refresh (CTRL+SHIFT+R)");
+      alert("Please perform a hard refresh (CTRL+SHIFT+R on most machines).");
       console.warn("Performing hard reset of localstorage and JS cookies.");
       Object.keys(localStorage)
         .concat(Object.keys(sessionStorage))
