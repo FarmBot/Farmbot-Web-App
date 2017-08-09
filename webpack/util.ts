@@ -77,7 +77,7 @@ function safelyFetchErrors(err: AxiosErrorResponse): Dictionary<string> {
  * is a pure function so a new array will be returned, instead of altering the
  * array argument.
  * SOURCE:
- *   https://github.com/granteagon/move/blob/master/src/index.js */
+ *   https://github.com/granteagon/move/blob/master/webpack/index.js */
 export function move<T>(array: T[], fromIndex: number, toIndex: number) {
 
   let item = array[fromIndex];

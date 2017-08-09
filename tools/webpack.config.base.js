@@ -23,11 +23,11 @@ var isProd = !!(global.WEBPACK_ENV === "production");
 module.exports = function () {
   return {
     entry: {
-      "bundle": path.resolve(__dirname, "../src/entry.tsx"),
-      "front_page": "./src/front_page/index.tsx",
-      "verification": "./src/verification.ts",
-      "password_reset": "./src/password_reset/index.tsx",
-      "tos_update": "./src/tos_update/index.tsx"
+      "bundle": path.resolve(__dirname, "../webpack/entry.tsx"),
+      "front_page": "./webpack/front_page/index.tsx",
+      "verification": "./webpack/verification.ts",
+      "password_reset": "./webpack/password_reset/index.tsx",
+      "tos_update": "./webpack/tos_update/index.tsx"
     },
     output: {
       path: path.resolve(__dirname, "../public"),
@@ -81,34 +81,34 @@ module.exports = function () {
       }),
       new FarmBotRenderer({
         isProd: isProd,
-        path: path.resolve(__dirname, "../src/static/app_index.hbs"),
+        path: path.resolve(__dirname, "../webpack/static/app_index.hbs"),
         filename: "index.html",
         outputPath: path.resolve(__dirname, "../public/app/")
       }),
       new FarmBotRenderer({
         isProd: isProd,
-        path: path.resolve(__dirname, "../src/static/front_page.hbs"),
+        path: path.resolve(__dirname, "../webpack/static/front_page.hbs"),
         filename: "index.html",
         outputPath: path.resolve(__dirname, "../public/"),
         include: "front_page"
       }),
       new FarmBotRenderer({
         isProd: isProd,
-        path: path.resolve(__dirname, "../src/static/verification.hbs"),
+        path: path.resolve(__dirname, "../webpack/static/verification.hbs"),
         filename: "verify.html",
         outputPath: path.resolve(__dirname, "../public/"),
         include: "verification"
       }),
       new FarmBotRenderer({
         isProd: isProd,
-        path: path.resolve(__dirname, "../src/static/password_reset.hbs"),
+        path: path.resolve(__dirname, "../webpack/static/password_reset.hbs"),
         filename: "password_reset.html",
         outputPath: path.resolve(__dirname, "../public/"),
         include: "password_reset"
       }),
       new FarmBotRenderer({
         isProd: isProd,
-        path: path.resolve(__dirname, "../src/static/tos_update.hbs"),
+        path: path.resolve(__dirname, "../webpack/static/tos_update.hbs"),
         filename: "tos_update.html",
         outputPath: path.resolve(__dirname, "../public/"),
         include: "tos_update"

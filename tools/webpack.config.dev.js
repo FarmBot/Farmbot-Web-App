@@ -8,7 +8,7 @@ var WebpackNotifierPlugin = require("webpack-notifier");
 
 var generateConfig = require("./webpack.config.base");
 var exec = require("child_process").execSync;
-var configPath = path.resolve(__dirname, "../src/config.json");
+var configPath = path.resolve(__dirname, "../webpack/config.json");
 var FarmBotRenderer = require("./farmBotRenderer");
 
 global.WEBPACK_ENV = "development";
