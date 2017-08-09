@@ -17,6 +17,6 @@ chmod +x node_modules/webpack/bin/webpack.js
 
 echo "=========   Running `npm run build`"
 npm run build 2>&1
-
+rake webpack:compile
 # Move it over to the rails /public directory and install deps
 mkdir public/ -p
