@@ -34,6 +34,7 @@ export interface DirectionButtonProps {
   direction: "up" | "down" | "left" | "right";
   isInverted: boolean;
   steps: number;
+  disabled: boolean | undefined;
 }
 
 export interface Payl {

@@ -5,6 +5,7 @@ import { JogMovementControlsProps } from "./interfaces";
 
 export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
   render() {
+    let arduinoBusy = this.props.bot.hardware.informational_settings.busy;
     return <table className="jog-table" style={{ border: 0 }}>
       <tbody>
         <tr>
@@ -17,6 +18,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
               direction="up"
               isInverted={this.props.y_axis_inverted}
               steps={this.props.bot.stepSize || 1000}
+              disabled={arduinoBusy}
             />
           </td>
           <td />
@@ -27,6 +29,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
               direction="up"
               isInverted={this.props.z_axis_inverted}
               steps={this.props.bot.stepSize || 1000}
+              disabled={arduinoBusy}
             />
           </td>
         </tr>
@@ -44,6 +47,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
               direction="left"
               isInverted={this.props.x_axis_inverted}
               steps={this.props.bot.stepSize || 1000}
+              disabled={arduinoBusy}
             />
           </td>
           <td>
@@ -52,6 +56,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
               direction="down"
               isInverted={this.props.y_axis_inverted}
               steps={this.props.bot.stepSize || 1000}
+              disabled={arduinoBusy}
             />
           </td>
           <td>
@@ -60,6 +65,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
               direction="right"
               isInverted={this.props.x_axis_inverted}
               steps={this.props.bot.stepSize || 1000}
+              disabled={arduinoBusy}
             />
           </td>
           <td />
@@ -69,6 +75,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
               direction="down"
               isInverted={this.props.z_axis_inverted}
               steps={this.props.bot.stepSize || 1000}
+              disabled={arduinoBusy}
             />
           </td>
         </tr>
