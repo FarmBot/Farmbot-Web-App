@@ -59,6 +59,7 @@ public/index.html
 public/password_reset.html
 public/tos_update.html
 public/verify.html
+public/webpack/*
 public/webpack
 public/dist
 rdoc

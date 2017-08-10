@@ -4,7 +4,6 @@ import { store } from "./redux/store";
 import { ready } from "./config/actions";
 import { detectLanguage } from "./i18n";
 import * as i18next from "i18next";
-import "./npm_addons";
 import { stopIE, attachToRoot, shortRevision } from "./util";
 
 stopIE();

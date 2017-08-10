@@ -9,7 +9,6 @@ import { prettyPrintApiErrors } from "../util";
 import { detectLanguage } from "../i18n";
 import { API } from "../api";
 import "../css/_index.scss";
-import "../npm_addons";
 import { HttpData } from "../util";
 interface Props { }
 interface State {
