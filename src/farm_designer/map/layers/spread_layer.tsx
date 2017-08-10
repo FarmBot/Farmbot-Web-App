@@ -43,11 +43,12 @@ interface SpreadCircleState {
   spread: number | undefined;
 }
 
-export class SpreadCircle extends Component<SpreadCircleProps, SpreadCircleState> {
+export class SpreadCircle extends
+  Component<SpreadCircleProps, SpreadCircleState> {
 
   state: SpreadCircleState = { spread: undefined };
 
-  componentDidMount() {
+  componentWillReceiveProps() {
     cachedCrop(this.props.plant.body.openfarm_slug)
       .then(({ spread }) => this.setState({ spread }));
   }
@@ -56,14 +57,16 @@ export class SpreadCircle extends Component<SpreadCircleProps, SpreadCircleState
     let { radius, x, y } = this.props.plant.body;
     let { quadrant } = this.props;
     let { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
-    return <circle
-      cx={qx}
-      cy={qy}
-      r={scale(this.state.spread || radius)}
-      fillOpacity={0.2}
-      fill={"green"}
-      stroke={"green"}
-      strokeWidth={"1.5"}
-    />;
+    return (
+      <circle
+        cx={qx}
+        cy={qy}
+        r={scale(this.state.spread || radius)}
+        fillOpacity={0.2}
+        fill={"green"}
+        stroke={"green"}
+        strokeWidth={"1.5"}
+      />
+    );
   }
 }
