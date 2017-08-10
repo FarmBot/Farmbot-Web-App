@@ -25,8 +25,10 @@ describe("<TickerList />", () => {
         toggle={jest.fn()}
       />
     );
-    expect(wrapper.text()).toContain("Farmbot is up and Running!");
-    expect(wrapper.text()).toContain("Aug 2, 12:50pm");
+    let labels = wrapper.find("label");
+    expect(labels.length).toEqual(2);
+    expect(labels.at(0).text()).toContain("Farmbot is up and Running!");
+    expect(labels.at(1).text()).toEqual("Aug 2, 12:50pm");
   });
 
   it("shows empty log message", () => {
@@ -37,7 +39,9 @@ describe("<TickerList />", () => {
         toggle={jest.fn()}
       />
     );
-    expect(wrapper.text()).toContain("No logs yet.");
+    let labels = wrapper.find("label");
+    expect(labels.length).toEqual(2);
+    expect(labels.at(0).text()).toContain("No logs yet.");
   });
 
   it("opens ticker", () => {
@@ -48,6 +52,11 @@ describe("<TickerList />", () => {
         toggle={jest.fn()}
       />
     );
-    expect(wrapper.text()).toContain("Aug 2, 12:50pmFarmbot is up and Running!");
+    let labels = wrapper.find("label");
+    expect(labels.length).toEqual(4);
+    expect(labels.at(0).text()).toContain("Farmbot is up and Running!");
+    expect(labels.at(1).text()).toEqual("Aug 2, 12:50pm");
+    expect(labels.at(2).text()).toContain("Farmbot is up and Running!");
+    expect(labels.at(3).text()).toEqual("Aug 2, 12:50pm");
   });
 });
