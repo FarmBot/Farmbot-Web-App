@@ -6,6 +6,7 @@ import { Row } from "../../ui";
 import { mapStateToProps } from "./map_state_to_props";
 import { FarmEventProps, CalendarOccurrence } from "../interfaces";
 import * as _ from "lodash";
+import * as moment from "moment";
 
 export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
   innerRows = (items: CalendarOccurrence[]) => {
@@ -47,8 +48,10 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
       });
   }
 
-  renderCalendarRows() {
-    return this.props.calendarRows.map(item => {
+  renderCalendarRowsInYear(year: number) {
+    return this.props.calendarRows.filter((day) => {
+      return day.year == year;
+    }).map(item => {
       return (
         <div className="farm-event" key={item.sortKey}>
           <div className="farm-event-date">
@@ -64,6 +67,19 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
           </div>
         </div>
       );
+    });
+  }
+
+  renderCalendarRows() {
+    let years = _.uniq(_.map(this.props.calendarRows, "year"));
+    return years.map(year => {
+      return (
+        <div key={moment(year, "YY").unix()}>
+          <div className="farm-event-year">
+            20{year}
+          </div>
+          {this.renderCalendarRowsInYear(year)}
+        </div>);
     });
   }
 
