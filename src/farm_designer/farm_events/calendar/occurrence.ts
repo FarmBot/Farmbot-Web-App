@@ -9,7 +9,7 @@ import { Calendar } from "./index";
 export function occurrence(m: moment.Moment, fe: FarmEventWithExecutable):
   CalendarOccurrence {
   return {
-    mmdd: m.format(Calendar.DATE_FORMAT),
+    mmddyy: m.format(Calendar.DATE_FORMAT),
     sortKey: m.unix(),
     timeStr: m.format("hh:mma"),
     heading: fe.executable.name || fe.executable_type,

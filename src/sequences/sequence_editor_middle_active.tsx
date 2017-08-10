@@ -93,6 +93,7 @@ export class SequenceEditorMiddleActive extends
             onChange={color => editCurrentSequence(dispatch, sequence, { color })}
           />
         </Row>
+        <hr style={{ marginBottom: 0 }} />
         <AllSteps onDrop={onDrop(dispatch, sequence)} {...this.props} />
         <Row>
           <Col xs={12}>

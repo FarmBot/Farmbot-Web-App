@@ -32,11 +32,12 @@ export let fakeFarmEventWithExecutable = (): FarmEventWithExecutable => {
 export let calendarRows = [
   {
     "sortKey": 1500922800,
+    "year": 17,
     "month": "Jul",
     "day": 24,
     "items": [
       {
-        "mmdd": "0724",
+        "mmddyy": "072417",
         "sortKey": 1500922800,
         "timeStr": "02:00pm",
         "heading": "Every 4 hours",
@@ -45,7 +46,7 @@ export let calendarRows = [
         "id": 79
       },
       {
-        "mmdd": "0724",
+        "mmddyy": "072417",
         "sortKey": 1500915900,
         "timeStr": "12:05pm",
         "heading": "Every 4 hours",
@@ -55,7 +56,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0724",
+        "mmddyy": "072417",
         "sortKey": 1500930300,
         "timeStr": "04:05pm",
         "heading": "Every 4 hours",
@@ -65,7 +66,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0724",
+        "mmddyy": "072417",
         "sortKey": 1500922800,
         "timeStr": "02:00pm",
         "heading": "Every 4 hours",
@@ -75,7 +76,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0724",
+        "mmddyy": "072417",
         "sortKey": 1500944400,
         "timeStr": "08:00pm",
         "heading": "Every 4 hours",
@@ -88,11 +89,12 @@ export let calendarRows = [
   },
   {
     "sortKey": 1501009200,
+    "year": 17,
     "month": "Jul",
     "day": 25,
     "items": [
       {
-        "mmdd": "0725",
+        "mmddyy": "072517",
         "sortKey": 1501009200,
         "timeStr": "02:00pm",
         "heading": "Every 4 hours",
@@ -101,7 +103,7 @@ export let calendarRows = [
         "id": 79
       },
       {
-        "mmdd": "0725",
+        "mmddyy": "072517",
         "sortKey": 1500959100,
         "timeStr": "12:05am",
         "heading": "Every 4 hours",
@@ -111,7 +113,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0725",
+        "mmddyy": "072517",
         "sortKey": 1500973500,
         "timeStr": "04:05am",
         "heading": "Every 4 hours",
@@ -121,7 +123,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0725",
+        "mmddyy": "072517",
         "sortKey": 1500987900,
         "timeStr": "08:05am",
         "heading": "Every 4 hours",
@@ -131,7 +133,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0725",
+        "mmddyy": "072517",
         "sortKey": 1501002300,
         "timeStr": "12:05pm",
         "heading": "Every 4 hours",
@@ -141,7 +143,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0725",
+        "mmddyy": "072517",
         "sortKey": 1501016700,
         "timeStr": "04:05pm",
         "heading": "Every 4 hours",
@@ -151,7 +153,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0725",
+        "mmddyy": "072517",
         "sortKey": 1501009200,
         "timeStr": "02:00pm",
         "heading": "Every 4 hours",
@@ -161,7 +163,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0725",
+        "mmddyy": "072517",
         "sortKey": 1501030800,
         "timeStr": "08:00pm",
         "heading": "Every 4 hours",
@@ -174,11 +176,12 @@ export let calendarRows = [
   },
   {
     "sortKey": 1501095600,
+    "year": 17,
     "month": "Jul",
     "day": 26,
     "items": [
       {
-        "mmdd": "0726",
+        "mmddyy": "072617",
         "sortKey": 1501095600,
         "timeStr": "02:00pm",
         "heading": "Every 4 hours",
@@ -187,7 +190,7 @@ export let calendarRows = [
         "id": 79
       },
       {
-        "mmdd": "0726",
+        "mmddyy": "072617",
         "sortKey": 1501045500,
         "timeStr": "12:05am",
         "heading": "Every 4 hours",
@@ -197,7 +200,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0726",
+        "mmddyy": "072617",
         "sortKey": 1501059900,
         "timeStr": "04:05am",
         "heading": "Every 4 hours",
@@ -207,7 +210,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0726",
+        "mmddyy": "072617",
         "sortKey": 1501074300,
         "timeStr": "08:05am",
         "heading": "Every 4 hours",
@@ -217,7 +220,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0726",
+        "mmddyy": "072617",
         "sortKey": 1501088700,
         "timeStr": "12:05pm",
         "heading": "Every 4 hours",
@@ -227,7 +230,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0726",
+        "mmddyy": "072617",
         "sortKey": 1501103100,
         "timeStr": "04:05pm",
         "heading": "Every 4 hours",
@@ -237,7 +240,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0726",
+        "mmddyy": "072617",
         "sortKey": 1501095600,
         "timeStr": "02:00pm",
         "heading": "Every 4 hours",
@@ -247,7 +250,7 @@ export let calendarRows = [
         "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
-        "mmdd": "0726",
+        "mmddyy": "072617",
         "sortKey": 1501117200,
         "timeStr": "08:00pm",
         "heading": "Every 4 hours",

@@ -7,7 +7,7 @@ export class Calendar {
   /** We sort by this attribute. Left as const so that the comiler can catch
    * name changes. */
   static SORT_KEY: keyof CalendarDay = "sortKey";
-  static DATE_FORMAT = "MMDD";
+  static DATE_FORMAT = "MMDDYY";
   static MONTHS: Readonly<Dictionary<string>> = {
     "12": "Dec",
     "11": "Nov",
@@ -26,7 +26,7 @@ export class Calendar {
   constructor(public value: Dictionary<CalendarOccurrence[]> = {}) { }
 
   insert(occur: CalendarOccurrence) {
-    let k = occur.mmdd;
+    let k = occur.mmddyy;
     this.value[k] = this.value[k] || [];
     this.value[k].push(occur);
   }
@@ -41,8 +41,9 @@ export class Calendar {
         let item = items[0];
         return {
           sortKey: item.sortKey,
-          month: Calendar.MONTHS[item.mmdd.slice(0, 2)] || "???",
-          day: parseInt(item.mmdd.slice(2, 4)),
+          year: parseInt(item.mmddyy.slice(4, 6)),
+          month: Calendar.MONTHS[item.mmddyy.slice(0, 2)] || "???",
+          day: parseInt(item.mmddyy.slice(2, 4)),
           items
         };
       });

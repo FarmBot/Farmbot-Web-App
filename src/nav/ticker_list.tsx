@@ -26,14 +26,18 @@ let Ticker = (log: Log, index: number) => {
 };
 
 export let TickerList = (props: TickerListProps) => {
-  let firstTicker: Log = props.logs[0];
+  let firstTicker: Log = props.logs.filter(
+    log => !log.message.toLowerCase().includes("filtered"))[0];
+  let noLogs: Log = {
+    message: "No logs yet.", meta: { type: "" }, channels: [], created_at: NaN
+  };
   return (
     <div
       className="ticker-list"
       onClick={props.toggle("tickerListOpen")}
     >
       <div className="first-ticker">
-        {Ticker(firstTicker || {}, -1)}
+        {Ticker(firstTicker || noLogs, -1)}
       </div>
       <Collapse isOpen={props.tickerListOpen}>
         {props
