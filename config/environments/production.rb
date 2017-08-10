@@ -25,6 +25,4 @@ FarmBot::Application.configure do
                                          address:   ENV['SMTP_HOST'],
                                          user_name: uname,
                                          password:  pw }
-  config.output.publicPath = '/webpack/';
-
 end
