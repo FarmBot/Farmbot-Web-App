@@ -6,7 +6,7 @@ import { ISelectItemRendererProps, Select } from "@blueprintjs/labs";
 import { DropDownItem } from "./fb_select";
 import { NULL_CHOICE } from "./new_fb_select";
 
-const SelectComponent = Select.ofType<DropDownItem>();
+const SelectComponent = Select.ofType<DropDownItem | undefined>();
 
 type PossibleReferences =
   | "Sequences"
@@ -89,9 +89,11 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
       .indexOf(query.toLowerCase()) >= 0;
   }
 
-  private handleValueChange = (item: DropDownItem) => {
-    this.props.onChange(item);
-    this.setState({ item });
+  private handleValueChange = (item: DropDownItem | undefined) => {
+    if (item) {
+      this.props.onChange(item);
+      this.setState({ item });
+    }
   }
 
 }
