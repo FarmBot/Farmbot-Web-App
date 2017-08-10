@@ -4,9 +4,8 @@
   * {
     margin: 0 auto;
   }
-  background: linear-gradient(-135deg, #089460, #159ACC);
-  background-size: 400% 400%;
-  padding-top: 1rem;
+  background: linear-gradient(-135deg, #6DB1EC, #35A274);
+  padding-top: 4rem;
   h1,
   h2 {
     font-family: "Roboto", Arial, Helvetica, sans-serif !important;
@@ -23,15 +22,17 @@
     font-size: 2.2rem;
     line-height: 2.6rem;
   }
+  input {
+    margin-bottom: 1rem;
+  }
   .widget-wrapper {
-    box-shadow: none;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   }
   .inner-width {
     max-width: 1024px;
   }
   .forgot-password {
     color: $blue;
-    margin-top: 0.6rem;
     display: inline-block;
   }
 }
