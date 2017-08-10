@@ -117,7 +117,7 @@ export interface AddEditFarmEventProps {
  * CalendarDay.
  */
 export interface CalendarOccurrence {
-  mmdd: string;
+  mmddyy: string;
   sortKey: number;
   timeStr: string;
   heading: string;
@@ -130,6 +130,7 @@ export interface CalendarOccurrence {
 export interface CalendarDay {
   /** Unix timestamp. Used as a unique key in JSX and for sorting. */
   sortKey: number;
+  year: number;
   month: string;
   day: number;
   /** Every event that will execute on that day. */

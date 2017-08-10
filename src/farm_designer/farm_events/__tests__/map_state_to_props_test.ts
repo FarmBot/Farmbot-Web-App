@@ -13,6 +13,7 @@ describe("mapResourcesToCalendar()", () => {
       let results = mapResourcesToCalendar(ri.index, TWO_O_EIGHT).getAll();
       expect(results.length).toBe(1);
       let item1 = results[0];
+      expect(item1.year).toBe(17);
       expect(item1.month).toBe("Jul");
       expect(item1.day).toBe(17);
     });

@@ -46,29 +46,32 @@ describe("<PeripheralList/>", function () {
     },
     2: {
       mode: 0,
-      value: 1
+      value: 0
     }
   };
 
   it("renders a list of peripherals, in sorted order", function () {
-    let node = <PeripheralList dispatch={() => { }}
+    let wrapper = mount(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
-      pins={pins} />;
-    let labels = mount(node).find("label");
+      pins={pins} />);
+    let labels = wrapper.find("label");
+    let buttons = wrapper.find("button");
     let first = labels.first();
     expect(first.text()).toBeTruthy();
     expect(first.text()).toEqual("GPIO 2");
+    expect(buttons.first().text()).toEqual("off");
     let last = labels.last();
     expect(last.text()).toBeTruthy();
     expect(last.text()).toEqual("GPIO 13 - LED");
+    expect(buttons.last().text()).toEqual("on");
   });
 
   it("toggles pins", () => {
     let { mock } = devices.current.togglePin as jest.Mock<{}>;
-    let node = <PeripheralList dispatch={() => { }}
+    let wrapper = mount(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
-      pins={pins} />;
-    let toggle = mount(node).find("ToggleButton");
+      pins={pins} />);
+    let toggle = wrapper.find("ToggleButton");
     toggle.first().simulate("click");
     expect(mock.calls.length).toEqual(1);
     expect(mock.calls[0][0].pin_number).toEqual(2);

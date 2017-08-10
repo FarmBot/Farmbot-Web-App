@@ -1,16 +1,20 @@
 import * as React from "react";
-import * as i18next from "i18next";
+import { t } from "i18next";
 import { ToggleButtonProps } from "./interfaces";
+import { isUndefined } from "util";
 
 export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
   caption() {
+    let useNoYes = isUndefined(this.props.noYes) ? true : this.props.noYes;
+    let noOff = useNoYes ? t("no") : t("off");
+    let yesOn = useNoYes ? t("yes") : t("on");
     let captions: { [s: string]: string | undefined } = {
-      "0": i18next.t("no"),
-      "false": i18next.t("no"),
-      "off": i18next.t("no"),
-      "1": i18next.t("yes"),
-      "true": i18next.t("yes"),
-      "on": i18next.t("yes"),
+      "0": noOff,
+      "false": noOff,
+      "off": noOff,
+      "1": yesOn,
+      "true": yesOn,
+      "on": yesOn,
       "undefined": "🚫",
       "-1": "🚫"
     };

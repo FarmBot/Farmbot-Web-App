@@ -67,6 +67,9 @@
   &:hover {
     background-color: darken($medium_gray, 5%);
   }
+  &:disabled {
+    border-bottom: none;
+  }
 }
 
 // ABSOLUTE MOVES
