@@ -71,29 +71,6 @@ module.exports = {
       modules: false,
       assets: true
     }),
-    new webpack.DefinePlugin({
-      "process.env.SHORT_REVISION": VERSION
-    }),
-    // FarmBot Inc related.
-    new webpack.DefinePlugin({
-      "process.env.NPM_ADDON": JSON.stringify(
-        process.env.NPM_ADDON || false).toString()
-    }),
-    // Conditionally add "terms of service"
-    // Eg: Servers run by FarmBot, Inc.
-    new webpack.DefinePlugin({
-      "process.env.TOS_URL": JSON
-        .stringify(process.env.TOS_URL || false).toString()
-    }),
-    // Conditionally add privacy policy.
-    // Eg: Servers run by FarmBot, Inc.
-    new webpack.DefinePlugin({
-      "process.env.PRIV_URL": JSON
-        .stringify(process.env.PRIV_URL || false).toString()
-    }),
-    new webpack.DefinePlugin({
-      "process.env.NODE_ENV": JSON.stringify("production")
-    }),
     new ExtractTextPlugin({
       // Temporary hotfix for some issues on staging.
       // - RC 12 MAY 17

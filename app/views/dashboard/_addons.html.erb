@@ -1,5 +1,6 @@
 <script>
 let hasInclude = !!Array.prototype.includes
+// Only run code on official FarmBot servers:
 if(hasInclude && window.location.host.includes("farmbot")) {
   console.log("Loading rollbar...");
   var _rollbarConfig = {
@@ -11,7 +12,7 @@ if(hasInclude && window.location.host.includes("farmbot")) {
           client: {
               javascript: {
                   source_map_enabled: true,
-                  code_version: "<%= ENV.fetch("HEROKU_SLUG_COMMIT", "NONE") %>",
+                  code_version: process.env.SHORT_REVISION,
                   guess_uncaught_frames: true
               }
           }
