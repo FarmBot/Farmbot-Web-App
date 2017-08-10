@@ -1,12 +1,12 @@
 class DashboardController < ApplicationController
-  FE_PATH          = "public/app/index.html"
-  FE_FALLBACK      = "app/views/fe_fallback.html"
-  HAS_FE           = File.file? FE_PATH
-  THE_FRONTEND_APP = File.read(HAS_FE ? FE_PATH : FE_FALLBACK).html_safe
-  ACME_SECRET      = ENV["ACME_SECRET"]
-
-  def index
-    render html: THE_FRONTEND_APP, layout: false
+  ACME_SECRET           = ENV["ACME_SECRET"]
+  LONG_REVISION         = ENV["BUILT_AT"] || ENV["HEROKU_SLUG_COMMIT"] || "NONE"
+  $FRONTEND_SHARED_DATA = { NODE_ENV:       Rails.env || "development",
+                            TOS_URL:        ENV.fetch("TOS_URL", ""),
+                            LONG_REVISIONL: LONG_REVISION,
+                            SHORT_REVISION: LONG_REVISION.first(8) }.to_json
+  [:main_app, :front_page, :tos_update, :verify, :password_reset].map do |actn|
+    define_method(actn) { render actn, layout: false }
   end
 
   # Hit by Certbot / Let's Encrypt when it's time to verify control of domain.

@@ -267,6 +267,8 @@ GEM
     url (0.3.2)
     warden (1.2.7)
       rack (>= 1.0)
+    webpack-rails (0.9.10)
+      railties (>= 3.2.0)
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
@@ -306,6 +308,7 @@ DEPENDENCIES
   smarf_doc!
   thin
   tzinfo
+  webpack-rails
 
 RUBY VERSION
    ruby 2.4.1p111

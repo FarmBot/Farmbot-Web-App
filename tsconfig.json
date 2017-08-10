@@ -19,7 +19,8 @@
   },
   "exclude": [
     "node_modules",
-    "typings"
+    "typings",
+    "public"
   ],
   "compileOnSave": false,
   "buildOnSave": false

@@ -1,3 +1,5 @@
-api: rails s -e development -p 3000 -b 0.0.0.0
-wrk: rake jobs:work
-fe: npm run webpack
+# Run Rails & Webpack concurrently
+# Example file from webpack-rails gem
+rails: rails s -e development -p 3000 -b 0.0.0.0
+webpack: ./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
+worker: rake jobs:work

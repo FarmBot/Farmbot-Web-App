@@ -1,0 +1,15 @@
+<meta charset="UTF-8">
+<script>
+// IMPORTANT!!!!
+// ALWAYS LOAD THIS *FIRST*
+window.globalConfig = <%= raw($FRONTEND_SHARED_DATA) %> // SEE COMMENTS!;
+// READ COMMENT ABOVE
+</script>
+<%= render "addons" %>
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i" rel="stylesheet">
+<% if Rails.env.development? &&  %>
+  <script src="http://<%= ENV["API_HOST"] %>:8081/target/target-script-min.js#anonymous"></script>
+<% end %>

@@ -26,7 +26,7 @@ gem "pg"
 gem "polymorphic_constraints"
 gem "tzinfo" # For validation of user selected timezone names
 gem "foreman"
-
+gem "webpack-rails"
 # Error reporting tools.
 # Active on the "official" FarmBot server, set the appropriate ENV
 # vars if you wish to use them on your own servers.

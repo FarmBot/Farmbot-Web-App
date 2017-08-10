@@ -36,7 +36,20 @@ FarmBot::Application.routes.draw do
   get "/api/storage_auth" => "api/images#storage_auth", as: :storage_auth
   # You can set FORCE_SSL when you're done.
   get "/.well-known/acme-challenge/:id" => "dashboard#lets_encrypt", as: :lets_encrypt
-  # Hacks for HTML5 push state routing:
-  get "/app"                            => 'dashboard#index', as: :dashboard
-  match "/app/*path", to: 'dashboard#index', via: :all # Loads /app/index.html
+
+  # =======================================================================
+  # NON-API (USER FACING) URLS:
+  # =======================================================================
+
+  get "/" => 'dashboard#front_page',
+    as: :front_page
+  get "/app" => 'dashboard#main_app',
+    as: :dashboard
+  match "/app/*path",
+    to: 'dashboard#main_app',
+    via: :all
+  get "/password_reset/*token" => 'dashboard#password_reset',
+    as: :password_reset
+  get "/verify" => 'dashboard#verify',
+    as: :verify
 end
