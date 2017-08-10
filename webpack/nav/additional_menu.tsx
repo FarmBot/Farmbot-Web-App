@@ -27,7 +27,7 @@ export const AdditionalMenu = (logout: () => void) => {
         href="https://github.com/FarmBot/Farmbot-Web-App"
         target="_blank"
       >
-        {(process.env.SHORT_REVISION || "NONE").slice(0, 8)}
+        {(globalConfig.SHORT_REVISION || "NONE").slice(0, 8)}
       </a>
     </div>
   </div>;

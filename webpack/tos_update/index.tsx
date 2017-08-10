@@ -87,7 +87,7 @@ export class Wow extends React.Component<Props, Partial<State>> {
   }
 
   render() {
-    if (!process.env.TOS_URL && !process.env.PRIV_URL) {
+    if (!globalConfig.TOS_URL && !globalConfig.PRIV_URL) {
       return <div className="static-page">
         <div className="all-content-wrapper">
           <div className="row">
@@ -154,13 +154,13 @@ export class Wow extends React.Component<Props, Partial<State>> {
                       <hr />
                       <ul>
                         <li>
-                          <a href={process.env.TOS_URL}>
+                          <a href={globalConfig.TOS_URL}>
                             {t("Terms of Service")}
                           </a>
                           <span className="fa fa-external-link"></span>
                         </li>
                         <li>
-                          <a href={process.env.PRIV_URL}>
+                          <a href={globalConfig.PRIV_URL}>
                             {t("Privacy Policy")}
                           </a>
                           <span className="fa fa-external-link">

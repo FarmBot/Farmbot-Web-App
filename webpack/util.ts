@@ -429,7 +429,7 @@ export interface HttpData<T> extends AxiosResponse {
 export interface HttpPromise<T> extends Promise<HttpData<T>> { }
 
 export function shortRevision() {
-  return (process.env.SHORT_REVISION || "NONE").slice(0, 8);
+  return (globalConfig.SHORT_REVISION || "NONE").slice(0, 8);
 }
 
 /** When needing to reference the url in some js universally or vice versa. */

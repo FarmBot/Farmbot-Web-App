@@ -10,9 +10,6 @@ var production = process.env.RAILS_ENV === 'production';
 var StatsPlugin = require('stats-webpack-plugin');
 var UglifyJsPlugin = require("webpack-uglify-js-plugin");
 var webpack = require("webpack");
-var VERSION = JSON.stringify(process.env.BUILT_AT
-  || process.env.HEROKU_SLUG_COMMIT
-  || "NONE");
 
 console.log("INSIDE DEV MODE WEBPACK CONFIG!");
 
@@ -65,6 +62,9 @@ module.exports = {
       chunks: false,
       modules: false,
       assets: true
+    }),
+    new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify("production")
     })
   ]
 }

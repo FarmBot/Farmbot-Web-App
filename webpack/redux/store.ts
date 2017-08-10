@@ -4,7 +4,7 @@ import { rootReducer } from "./root_reducer";
 import { registerSubscribers } from "./subscribers";
 import { getMiddleware } from "./middlewares";
 
-let ENV = process.env.NODE_ENV as string;
+let ENV = process.env.NODE_ENV || "development";
 
 function dev() {
   store = createStore(rootReducer as any,

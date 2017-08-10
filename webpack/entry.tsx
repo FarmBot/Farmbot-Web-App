@@ -5,7 +5,7 @@ import { ready } from "./config/actions";
 import { detectLanguage } from "./i18n";
 import * as i18next from "i18next";
 import { stopIE, attachToRoot, shortRevision } from "./util";
-console.log("...");
+
 stopIE();
 
 let r = shortRevision();
