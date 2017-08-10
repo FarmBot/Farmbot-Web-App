@@ -121,11 +121,6 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   }
 
   maybeRenderTos() {
-    console.group();
-    console.log(globalConfig.TOS_URL || "NOT_SET");
-    console.log(globalConfig.PRIV_URL || "NOT_SET");
-    console.groupEnd();
-
     const TOS_URL = globalConfig.TOS_URL;
     if (TOS_URL) {
       const PRV_URL = globalConfig.PRIV_URL;

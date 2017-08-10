@@ -12,7 +12,7 @@ if(hasInclude && window.location.host.includes("farmbot")) {
           client: {
               javascript: {
                   source_map_enabled: true,
-                  code_version: process.env.SHORT_REVISION,
+                  code_version: globalConfig.SHORT_REVISION,
                   guess_uncaught_frames: true
               }
           }
