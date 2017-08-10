@@ -92,4 +92,5 @@ export interface ToggleButtonProps {
   toggleAction: () => void;
   toggleValue: number | string | undefined;
   disabled?: boolean | undefined;
+  noYes?: boolean;
 }
