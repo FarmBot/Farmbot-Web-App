@@ -10,6 +10,7 @@ var OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 var UglifyJsPlugin = require("webpack-uglify-js-plugin");
 
 module.exports = function (config) {
+  console.log("INSIDE PRODUCTION WEBPACK CONFIG!");
   config.output.filename = '[name]-[chunkhash].js';
   // PLUGINS:
   [
