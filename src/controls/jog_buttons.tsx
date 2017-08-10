@@ -2,10 +2,12 @@ import * as React from "react";
 import { DirectionButton } from "./direction_button";
 import { homeAll } from "../devices/actions";
 import { JogMovementControlsProps } from "./interfaces";
+import * as _ from "lodash";
 
 export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
   render() {
-    let arduinoBusy = this.props.bot.hardware.informational_settings.busy;
+    // TODO: Add this to interface in FBJS - RC 10-aug-17
+    let arduinoBusy = _.get(this.props.bot.hardware.informational_settings, "busy", false);
     return <table className="jog-table" style={{ border: 0 }}>
       <tbody>
         <tr>
