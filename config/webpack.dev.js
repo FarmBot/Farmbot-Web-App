@@ -1,3 +1,4 @@
+var devServerPort = 3808;
 module.exports = function (config) {
   config
     .module
