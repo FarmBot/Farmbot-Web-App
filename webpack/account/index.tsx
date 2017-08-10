@@ -35,33 +35,42 @@ export class Account extends React.Component<Props, State> {
   }
 
   render() {
-    return <Page className="account">
-      <Col xs={12} sm={6} smOffset={3}>
-        <Row>
-          <Settings name={this.state.name || ""}
-            email={this.state.email || ""}
-            set={this.set}
-            save={() => this.props.saveUser(this.props.dispatch, this.state)} />
-        </Row>
-        <Row>
-          <ChangePassword
-            password={this.state.password || ""}
-            new_password={this.state.new_password || ""}
-            new_password_confirmation=
-            {this.state.new_password_confirmation || ""}
-            set={this.set}
-            save={this.savePassword} />
-        </Row>
-        <Row>
-          <DeleteAccount
-            deletion_confirmation=
-            {this.state.deletion_confirmation || ""}
-            set={this.set}
-            save={() => this
-            .props
-            .enactDeletion(this.props.dispatch, this.state.deletion_confirmation)} />
-        </Row>
-      </Col>
-    </Page>;
+    console.log(this.props.user)
+    return (
+      <Page className="account">
+        <Col xs={12} sm={6} smOffset={3}>
+          <Row>
+            <Settings
+              name={this.state.name || ""}
+              email={this.state.email || ""}
+              set={this.set}
+              save={() => this.props.saveUser(this.props.dispatch, this.state)}
+            />
+          </Row>
+          <Row>
+            <ChangePassword
+              password={this.state.password || ""}
+              new_password={this.state.new_password || ""}
+              new_password_confirmation=
+              {this.state.new_password_confirmation || ""}
+              set={this.set}
+              save={this.savePassword}
+              user={this.props.user}
+            />
+          </Row>
+          <Row>
+            <DeleteAccount
+              deletion_confirmation=
+              {this.state.deletion_confirmation || ""}
+              set={this.set}
+              save={() => this
+                .props
+                .enactDeletion(this.props.dispatch,
+                this.state.deletion_confirmation)}
+            />
+          </Row>
+        </Col>
+      </Page>
+    );
   }
 }

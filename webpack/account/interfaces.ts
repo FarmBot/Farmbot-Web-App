@@ -32,6 +32,7 @@ export interface DeleteAccountPropTypes {
 }
 
 export interface ChangePwPropTypes {
+  user: TaggedUser;
   password: string | undefined;
   new_password: string | undefined;
   new_password_confirmation: string | undefined;
