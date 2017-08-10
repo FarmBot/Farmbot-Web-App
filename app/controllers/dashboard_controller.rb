@@ -14,6 +14,10 @@ class DashboardController < ApplicationController
     render :front_page, layout: false
   end
 
+  def password_reset
+    render :password_reset, layout: false
+  end
+
   # Hit by Certbot / Let's Encrypt when it's time to verify control of domain.
   def lets_encrypt
     render plain: ACME_SECRET
