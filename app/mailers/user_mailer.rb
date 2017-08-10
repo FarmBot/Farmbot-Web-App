@@ -4,7 +4,7 @@ class UserMailer < ApplicationMailer
       @user_name = user.name
       @the_url   = "http:" +
                    $API_URL +
-                   "/verify.html?token=" +
+                   "/verify?token=" +
                    user.verification_token
       throw "Bad registration?" unless @the_url.present?
       mail(to: @user.email, subject: 'Welcome to The FarmBot Web App!')

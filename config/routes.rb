@@ -50,4 +50,6 @@ FarmBot::Application.routes.draw do
     via: :all
   get "/password_reset/:token" => 'dashboard#password_reset',
     as: :password_reset
+  get "/verify" => 'dashboard#verify',
+    as: :verify
 end

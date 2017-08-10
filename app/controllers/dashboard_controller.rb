@@ -5,7 +5,7 @@ class DashboardController < ApplicationController
                             TOS_URL:        ENV.fetch("TOS_URL", ""),
                             LONG_REVISIONL: LONG_REVISION,
                             SHORT_REVISION: LONG_REVISION.first(8) }.to_json
-  [:main_app, :front_page, :tos_update].map do |action|
+  [:main_app, :front_page, :tos_update, :verify].map do |action|
     define_method(action) { render action, layout: false }
   end
 
