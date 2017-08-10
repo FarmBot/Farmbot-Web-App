@@ -66,7 +66,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         window.location.href = "/app/controls";
       }).catch((error: Error) => {
         if (_.get(error, "response.status") === 451) {
-          window.location.href = "/tos_update.html";
+          window.location.href = "/tos_update";
         }
         log(prettyPrintApiErrors(error as {}));
       });

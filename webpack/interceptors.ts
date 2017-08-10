@@ -46,7 +46,7 @@ export function responseRejected(x: SafeError | undefined) {
         // DONT REFACTOR: I want to use alert() because it's blocking.
         alert(t("The terms of service have recently changed. You must " +
           "accept the new terms of service to continue using the site."));
-        window.location.href = "/tos_update.html";
+        window.location.href = "/tos_update";
         break;
     }
     return Promise.reject(x);
