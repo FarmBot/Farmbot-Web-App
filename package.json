@@ -100,6 +100,14 @@
     "webpack-notifier": "^1.5.0"
   },
   "jest": {
+    "globals": {
+      "globalConfig": {
+        "NODE_ENV": "production",
+        "TOS_URL": "https://farmbot.io/tos/",
+        "LONG_REVISION": "35c0dbd681282735472c22c764f45a3ab278ae81",
+        "SHORT_REVISION": "35c0dbd6"
+      }
+    },
     "moduleNameMapper": {
       "^.*\\.scss$": "<rootDir>/webpack/__test_support__/stub.ts"
     },
