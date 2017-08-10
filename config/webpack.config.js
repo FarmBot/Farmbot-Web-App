@@ -8,6 +8,11 @@ var webpack = require("webpack");
 var fs = require("fs");
 var StatsPlugin = require('stats-webpack-plugin');
 var production = process.env.RAILS_ENV === 'production';
+if (production) {
+  console.log("RUNNING WEBPACK FOR PRODUCTION MODE ==============");
+} else {
+  console.log("RUNNING WEBPACK FOR DEVELOPMENT MODE ==============");
+}
 
 var VERSION = JSON.stringify(process.env.BUILT_AT
   || process.env.HEROKU_SLUG_COMMIT
