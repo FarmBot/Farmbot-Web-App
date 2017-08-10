@@ -296,7 +296,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                           className="fb-button green"
                           style={buttonStylesUniqueToOnlyThisPage}
                         >
-                          {t("Send Password reset")}
+                          {t("Reset Password")}
                         </button>
                       </Row>
                     </form>

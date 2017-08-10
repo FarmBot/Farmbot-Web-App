@@ -34,6 +34,7 @@ export interface DirectionButtonProps {
   direction: "up" | "down" | "left" | "right";
   isInverted: boolean;
   steps: number;
+  disabled: boolean | undefined;
 }
 
 export interface Payl {
@@ -91,4 +92,5 @@ export interface ToggleButtonProps {
   toggleAction: () => void;
   toggleValue: number | string | undefined;
   disabled?: boolean | undefined;
+  noYes?: boolean;
 }

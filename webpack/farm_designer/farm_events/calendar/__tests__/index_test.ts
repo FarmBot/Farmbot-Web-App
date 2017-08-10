@@ -18,8 +18,8 @@ describe("calendar", () => {
     calendar.insert(occurrence(TIME.TUESDAY, fakeFarmEventWithExecutable()));
     expect(calendar.getAll().length).toEqual(2);
     expect(calendar.value).toBeInstanceOf(Object);
-    expect(calendar.value["0619"]).toBeInstanceOf(Array);
-    expect(calendar.value["0620"]).toBeInstanceOf(Array);
+    expect(calendar.value["061917"]).toBeInstanceOf(Array);
+    expect(calendar.value["062017"]).toBeInstanceOf(Array);
   });
 
   it("finds by date", () => {

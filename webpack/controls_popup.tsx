@@ -36,24 +36,28 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
               direction="up"
               isInverted={false}
               steps={this.state.stepSize}
+              disabled={false}
             />
             <DirectionButton
               axis="x"
               direction="left"
               isInverted={false}
               steps={this.state.stepSize}
+              disabled={false}
             />
             <DirectionButton
               axis="y"
               direction="down"
               isInverted={false}
               steps={this.state.stepSize}
+              disabled={false}
             />
             <DirectionButton
               axis="z"
               direction="right"
               isInverted={false}
               steps={this.state.stepSize}
+              disabled={false}
             />
           </div>
         </div>
