@@ -1,0 +1,29 @@
+.designer-mobile-nav {
+  display: none;
+}
+
+.panel-header {
+  position: fixed;
+  width: 300px;
+  z-index: 3;
+  .panel-header-description {
+    font-size: 1.2rem;
+    padding: 0 1.4rem 1rem;
+  }
+}
+
+.crop-info-panel {
+  .panel-header {
+    background-size: 144% !important;
+    background-repeat: no-repeat !important;
+    background-position: top center !important;
+    position: inherit;
+    .back-arrow {
+      margin-top: -0.2rem;
+      vertical-align: bottom;
+    }
+  }
+  .panel-content {
+    padding: 2rem 1rem 6rem;
+  }
+}
