@@ -7,7 +7,7 @@ var execSync = require("child_process").execSync;
 var webpack = require("webpack");
 var fs = require("fs");
 var StatsPlugin = require('stats-webpack-plugin');
-var production = process.env.TARGET === 'production';
+var production = process.env.RAILS_ENV === 'production';
 
 var VERSION = JSON.stringify(process.env.BUILT_AT
   || process.env.HEROKU_SLUG_COMMIT
