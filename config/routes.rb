@@ -48,7 +48,7 @@ FarmBot::Application.routes.draw do
   match "/app/*path",
     to: 'dashboard#main_app',
     via: :all
-  get "/password_reset/:token" => 'dashboard#password_reset',
+  get "/password_reset/*token" => 'dashboard#password_reset',
     as: :password_reset
   get "/verify" => 'dashboard#verify',
     as: :verify
