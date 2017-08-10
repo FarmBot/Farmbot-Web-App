@@ -11,7 +11,7 @@ if(hasInclude && window.location.host.includes("farmbot")) {
           client: {
               javascript: {
                   source_map_enabled: true,
-                  code_version: SHORT_REVISION,
+                  code_version: <%= ENV.fetch("HEROKU_SLUG_COMMIT", "NONE").to_json %>,
                   guess_uncaught_frames: true
               }
           }
