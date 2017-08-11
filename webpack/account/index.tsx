@@ -23,11 +23,17 @@ export class Account extends React.Component<Props, State> {
 
   set = (event: React.FormEvent<HTMLInputElement>) => {
     let { name, value } = event.currentTarget;
-    this.setState({ [name]: value, isModified: true });
+    this.setState({ [name]: value });
   }
 
   savePassword = () => {
     this.props.saveUser(this.props.dispatch, this.state);
+
+    this.setState({
+      password: "",
+      new_password: "",
+      new_password_confirmation: ""
+    });
   }
 
   render() {
