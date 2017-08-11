@@ -17,6 +17,7 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
     disableX,
     disableY,
     disableZ,
+    caution,
     displayAlert
   } = props;
 
@@ -27,6 +28,8 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
       <Col xs={6}>
         <label>
           {name}
+          {caution &&
+            <i className="fa fa-exclamation-triangle caution-icon" />}
         </label>
         <SpacePanelToolTip tooltip={tooltip} />
       </Col>

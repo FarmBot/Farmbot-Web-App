@@ -21,6 +21,7 @@ export interface BooleanMCUInputGroupProps {
   disableX?: boolean | undefined;
   disableY?: boolean | undefined;
   disableZ?: boolean | undefined;
+  caution?: boolean | undefined;
   displayAlert?: string | undefined;
 }
 
