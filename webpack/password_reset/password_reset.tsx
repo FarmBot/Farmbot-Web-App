@@ -65,7 +65,7 @@ export class PasswordReset extends React.Component<Props, State> {
           </h1>
           <br />
           <Row>
-            <Col xs={6} className="col-xs-push-3">
+            <Col xs={12} sm={6} className="col-sm-push-3">
               <Widget>
                 <WidgetHeader title={"Reset Password"} />
                 <WidgetBody>
