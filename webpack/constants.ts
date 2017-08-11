@@ -271,6 +271,12 @@ export namespace Content {
     break or otherwise hinder your usage of the rest of the app. This feature may
     disappear or break at any time.`;
 
+  // Home on boot warning
+  export const HOME_ON_BOOT_WARNING =
+    `Warning! This will perform homing on all axes when the device powers on.
+    Encoders or endstops must be enabled. It is recommended to make sure
+    homing works properly before enabling this feature.`;
+
 }
 
 export enum Actions {

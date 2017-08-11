@@ -17,7 +17,7 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
     disableX,
     disableY,
     disableZ,
-    isExperimental
+    displayAlert
   } = props;
 
   let { mcu_params } = bot.hardware;
@@ -34,21 +34,21 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
         <ToggleButton
           disabled={disableX}
           toggleValue={mcu_params[x]}
-          toggleAction={() => settingToggle(x, bot, (isExperimental || false))}
+          toggleAction={() => settingToggle(x, bot, displayAlert)}
         />
       </Col>
       <Col xs={2}>
         <ToggleButton
           disabled={disableY}
           toggleValue={mcu_params[y]}
-          toggleAction={() => settingToggle(y, bot, (isExperimental || false))}
+          toggleAction={() => settingToggle(y, bot, displayAlert)}
         />
       </Col>
       <Col xs={2}>
         <ToggleButton
           disabled={disableZ}
           toggleValue={mcu_params[z]}
-          toggleAction={() => settingToggle(z, bot, (isExperimental || false))}
+          toggleAction={() => settingToggle(z, bot, displayAlert)}
         />
       </Col>
     </Row>

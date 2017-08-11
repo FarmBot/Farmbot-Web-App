@@ -37,7 +37,6 @@ export function EncodersAndEndStops(props: EncodersProps) {
         z={"encoder_use_for_pos_z"}
         dispatch={dispatch}
         bot={bot}
-        isExperimental
       />
       <BooleanMCUInputGroup
         name={t("Invert Encoders")}
