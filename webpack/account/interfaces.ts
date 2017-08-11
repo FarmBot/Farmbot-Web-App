@@ -17,6 +17,7 @@ export interface UserInfo {
   new_password_confirmation: string;
   /** User must enter password confirmation to delete their account. */
   deletion_confirmation: string;
+  isModified: boolean;
 }
 
 export type State = Partial<UserInfo>;

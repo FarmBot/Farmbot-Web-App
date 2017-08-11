@@ -1,31 +1,34 @@
 import * as React from "react";
 import { t } from "i18next";
-import * as _ from "lodash";
 import {
   BlurableInput,
   Widget,
   WidgetHeader,
-  WidgetBody,
-  SaveBtn
+  WidgetBody
 } from "../../ui";
 import { ChangePwPropTypes } from "../interfaces";
 
 export class ChangePassword extends React.Component<ChangePwPropTypes, {}> {
   render() {
-    let { set, save, password, new_password, user } = this.props;
+    let { set, save, password, new_password } = this.props;
     let npc = this.props.new_password_confirmation;
     let npcString = "new_password_confirmation";
-    let cleared = _.isEmpty(password) &&
-      _.isEmpty(new_password) && _.isEmpty(npc);
+
     return (
       <Widget>
         <WidgetHeader title="Change Password">
-          <SaveBtn
+          {/* <SaveBtn
             onClick={save}
             isDirty={user.dirty}
             isSaving={user.saving}
             isSaved={cleared}
-          />
+          /> */}
+          <button
+            onClick={save}
+            className="fb-button green"
+          >
+            {t("Save")}
+          </button>
         </WidgetHeader>
         <WidgetBody>
           <form>

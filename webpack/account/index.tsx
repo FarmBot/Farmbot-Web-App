@@ -9,7 +9,9 @@ import { mapStateToProps } from "./state_to_props";
 export class Account extends React.Component<Props, State> {
   constructor(props: Props) {
     super();
-    this.state = {};
+    this.state = {
+      isModified: false
+    };
   }
 
   componentDidMount() {
@@ -21,21 +23,14 @@ export class Account extends React.Component<Props, State> {
 
   set = (event: React.FormEvent<HTMLInputElement>) => {
     let { name, value } = event.currentTarget;
-    this.setState({ [name]: value });
+    this.setState({ [name]: value, isModified: true });
   }
 
   savePassword = () => {
     this.props.saveUser(this.props.dispatch, this.state);
-
-    this.setState({
-      password: "",
-      new_password: "",
-      new_password_confirmation: ""
-    });
   }
 
   render() {
-    console.log(this.props.user)
     return (
       <Page className="account">
         <Col xs={12} sm={6} smOffset={3}>
