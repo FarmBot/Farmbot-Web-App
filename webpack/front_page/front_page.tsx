@@ -276,7 +276,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             {forgotPassword && (
               <Col xs={12} sm={5}>
                 <Widget>
-                  <WidgetHeader title={"Create an Account"}>
+                  <WidgetHeader title={"Reset Password"}>
                     <button
                       className="fb-button gray"
                       onClick={this.toggleForgotPassword.bind(this)}
