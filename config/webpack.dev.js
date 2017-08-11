@@ -51,6 +51,8 @@ module.exports = {
   },
   devServer: {
     port: devServerPort,
+    disableHostCheck: true,
+    host: "0.0.0.0",
     headers: { 'Access-Control-Allow-Origin': '*' }
   },
   plugins: [
