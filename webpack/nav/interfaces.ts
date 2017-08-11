@@ -33,3 +33,7 @@ export interface TickerListProps {
   logs: Log[]
   tickerListOpen: boolean;
 }
+
+export interface NavLinksProps {
+  toggle: (property: keyof NavBarState) => ToggleEventHandler;
+}

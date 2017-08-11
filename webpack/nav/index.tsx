@@ -5,7 +5,7 @@ import { EStopButton } from "../devices/components/e_stop_btn";
 import { Session } from "../session";
 import { Row, Col } from "../ui";
 import { history } from "../history";
-import { updatePageInfo } from "../util";
+import { updatePageInfo, isMobile } from "../util";
 import { SyncButton } from "./sync_button";
 import { NavLinks } from "./nav_links";
 import { TickerList } from "./ticker_list";
@@ -31,7 +31,10 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   render() {
     let hasName = this.props.user && this.props.user.body.name;
-    let firstName = hasName ? `${hasName.split(" ")[0]} ▾` : `${t("Menu")} ▾`;
+
+    let firstName = hasName && !isMobile() ?
+      `${hasName.split(" ")[0]} ▾` : `${t("Menu")} ▾`;
+
     let menuIconClassNames: string[] = [
       "fa", "fa-bars", "visible-xs-inline-block", "mobile-menu-icon"
     ];
@@ -63,7 +66,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                       {MobileMenu({ toggle, mobileMenuOpen })}
                     </span>
                     <span className="top-menu-container">
-                      {NavLinks()}
+                      {NavLinks({ toggle })}
                     </span>
                   </div>
                   <div className="nav-right">

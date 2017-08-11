@@ -12,6 +12,10 @@ body {
   display: none !important;
 }
 
+.pt-overlay-backdrop {
+  z-index: 9999 !important;
+}
+
 .colorpicker-menu {
   padding: 0;
   .pt-popover-arrow-fill {
