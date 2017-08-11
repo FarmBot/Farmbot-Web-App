@@ -25,7 +25,7 @@ import { getDeviceAccountSettings } from "../resources/selectors";
 import { TaggedDevice } from "../resources/tagged_resources";
 import { versionOK } from "./reducer";
 import { oneOf, HttpData } from "../util";
-import { Actions, Content } from "../constants";
+import { Actions } from "../constants";
 
 const ON = 1, OFF = 0;
 type configKey = keyof McuParams;
@@ -203,9 +203,9 @@ export function botConfigChange(key: configKey, value: number) {
 }
 
 export function settingToggle(
-  name: configKey, bot: BotState, isExperimental: boolean
+  name: configKey, bot: BotState, displayAlert: string | undefined
 ) {
-  if (isExperimental) { alert(Content.EXPERIMENTAL_WARNING); }
+  if (displayAlert) { alert(displayAlert.replace(/\s+/g, " ")); }
   let noun = "Setting toggle";
   return devices
     .current

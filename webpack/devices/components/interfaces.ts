@@ -21,7 +21,7 @@ export interface BooleanMCUInputGroupProps {
   disableX?: boolean | undefined;
   disableY?: boolean | undefined;
   disableZ?: boolean | undefined;
-  isExperimental?: boolean | undefined;
+  displayAlert?: string | undefined;
 }
 
 export interface CalibrationRowProps {
