@@ -16,38 +16,41 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
     z,
     disableX,
     disableY,
-    disableZ
+    disableZ,
+    isExperimental
   } = props;
 
   let { mcu_params } = bot.hardware;
 
-  return <Row>
-    <Col xs={6}>
-      <label>
-        {name}
-      </label>
-      <SpacePanelToolTip tooltip={tooltip} />
-    </Col>
-    <Col xs={2}>
-      <ToggleButton
-        disabled={disableX}
-        toggleValue={mcu_params[x]}
-        toggleAction={() => settingToggle(x, bot)}
-      />
-    </Col>
-    <Col xs={2}>
-      <ToggleButton
-        disabled={disableY}
-        toggleValue={mcu_params[y]}
-        toggleAction={() => settingToggle(y, bot)}
-      />
-    </Col>
-    <Col xs={2}>
-      <ToggleButton
-        disabled={disableZ}
-        toggleValue={mcu_params[z]}
-        toggleAction={() => settingToggle(z, bot)}
-      />
-    </Col>
-  </Row>;
+  return (
+    <Row>
+      <Col xs={6}>
+        <label>
+          {name}
+        </label>
+        <SpacePanelToolTip tooltip={tooltip} />
+      </Col>
+      <Col xs={2}>
+        <ToggleButton
+          disabled={disableX}
+          toggleValue={mcu_params[x]}
+          toggleAction={() => settingToggle(x, bot, (isExperimental || false))}
+        />
+      </Col>
+      <Col xs={2}>
+        <ToggleButton
+          disabled={disableY}
+          toggleValue={mcu_params[y]}
+          toggleAction={() => settingToggle(y, bot, (isExperimental || false))}
+        />
+      </Col>
+      <Col xs={2}>
+        <ToggleButton
+          disabled={disableZ}
+          toggleValue={mcu_params[z]}
+          toggleAction={() => settingToggle(z, bot, (isExperimental || false))}
+        />
+      </Col>
+    </Row>
+  );
 }

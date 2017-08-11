@@ -265,6 +265,12 @@ export namespace Content {
     to your device once it is back online and paired with your web app
     account.`;
 
+  // Experimental Warning
+  export const EXPERIMENTAL_WARNING =
+    `Warning! This is an EXPERIMENTAL feature. This feature may be broken and may
+    break or otherwise hinder your usage of the rest of the app. This feature may
+    disappear or break at any time.`;
+
 }
 
 export enum Actions {
