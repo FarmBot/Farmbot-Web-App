@@ -227,6 +227,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                       </label>
                       <input
                         type="email"
+                        value={this.state.email}
                         onChange={this.set("email").bind(this)}
                       />
                       <label>
@@ -291,6 +292,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                       <label>{t("Enter Email")}</label>
                       <input
                         type="email"
+                        value={this.state.email}
                         onChange={this.set("email").bind(this)}
                       />
                       <Row>
