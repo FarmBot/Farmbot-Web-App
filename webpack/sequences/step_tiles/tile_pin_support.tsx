@@ -3,7 +3,6 @@ import * as _ from "lodash";
 import { WritePin, SequenceBodyItem } from "farmbot";
 import { DropDownItem } from "../../ui/index";
 import { StepParams } from "../interfaces";
-import { isUndefined } from "../../util";
 
 export const PIN_MODES = [
   { value: 1, label: "Analog" },
@@ -21,19 +20,17 @@ export function currentSelection(currentStep: SequenceBodyItem) {
 }
 
 export function setPinMode(
-  x: DropDownItem | undefined, { dispatch, currentStep, index, currentSequence }: StepParams) {
-  if (!isUndefined(x)) {
-    dispatch(editStep({
-      sequence: currentSequence,
-      step: currentStep,
-      index: index,
-      executor: (step: WritePin) => {
-        if (_.isNumber(x.value)) {
-          step.args.pin_mode = x.value;
-        } else {
-          throw new Error("Numbers only in pin_mode.");
-        }
+  x: DropDownItem, { dispatch, currentStep, index, currentSequence }: StepParams) {
+  dispatch(editStep({
+    sequence: currentSequence,
+    step: currentStep,
+    index: index,
+    executor: (step: WritePin) => {
+      if (_.isNumber(x.value)) {
+        step.args.pin_mode = x.value;
+      } else {
+        throw new Error("Numbers only in pin_mode.");
       }
-    }));
-  }
+    }
+  }));
 }
