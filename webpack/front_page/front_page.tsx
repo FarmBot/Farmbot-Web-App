@@ -36,6 +36,8 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       serverURL: API.fetchHostName(),
       serverPort: API.inferPort()
     });
+    // RICK CHECK ME ON THIS PLZ -CV
+    if (Session.get()) { window.location.href = "/app/controls"; }
   }
 
   set = (name: keyof FrontPageState) =>
