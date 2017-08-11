@@ -56,6 +56,7 @@ export interface AxisDisplayGroupProps {
 export interface AxisInputBoxGroupProps {
   onCommit: (v: Vector) => void;
   position: BotPosition;
+  disabled: boolean | undefined;
 }
 
 export interface AxisInputBoxGroupState {
@@ -85,6 +86,7 @@ export interface JogMovementControlsProps {
   y_axis_inverted: boolean;
   z_axis_inverted: boolean;
   bot: BotState;
+  disabled: boolean | undefined;
 }
 
 export interface ToggleButtonProps {
