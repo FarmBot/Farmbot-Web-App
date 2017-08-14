@@ -11,16 +11,19 @@ jest.mock("../../device", () => ({
       resetMCU: jest.fn(),
       updateMcu: jest.fn(() => { return Promise.resolve(); }),
       togglePin: jest.fn(() => { return Promise.resolve(); }),
-      home: jest.fn(() => { return Promise.resolve(); })
+      home: jest.fn(() => { return Promise.resolve(); }),
+      sync: jest.fn(() => { return Promise.resolve(); })
     }
   }
 }));
 let mockOk = jest.fn();
-jest.mock("farmbot-toastr", () => ({ success: mockOk }));
+let mockInfo = jest.fn();
+jest.mock("farmbot-toastr", () => ({ success: mockOk, info: mockInfo }));
 
 import * as actions from "../actions";
 import { devices } from "../../device";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { fakeState } from "../../__test_support__/fake_state";
 
 describe("checkControllerUpdates()", function () {
   beforeEach(function () {
@@ -79,6 +82,21 @@ describe("emergencyLock() / emergencyUnlock", function () {
     window.confirm = jest.fn(() => true);
     actions.emergencyUnlock();
     expect(mock.calls.length).toEqual(1);
+  });
+});
+
+describe("sync()", function () {
+  beforeEach(function () {
+    jest.clearAllMocks();
+  });
+
+  it("doesn't call sync: disconnected", () => {
+    let { mock } = devices.current.sync as jest.Mock<{}>;
+    let getState = () => fakeState();
+    actions.sync()(jest.fn(), getState);
+    expect(mock.calls.length).toEqual(0);
+    let expectedMessage = ["FarmBot is not connected.", "Disconnected", "red"];
+    expect(mockInfo).toBeCalledWith(...expectedMessage);
   });
 });
 
