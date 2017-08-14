@@ -59,8 +59,6 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
         <ToggleButton toggleValue={toggleVal}
           toggleAction={() => {
             let os_auto_update = !osUpdateBool ? 1 : 0;
-            // TODO: This no longer needs to be a thunk
-            //       since it does not change redux state.
             updateConfig({ os_auto_update })(noop);
           }} />
       </Col>

@@ -11,4 +11,7 @@ describe Sequence do
     expect { Sequence.create!(optns) }.to raise_error(ActiveRecord::RecordInvalid)
   end
 
+  it "picks random values" do
+    3.times { expect(Sequence.random).to be_kind_of(Sequence) }
+  end
 end

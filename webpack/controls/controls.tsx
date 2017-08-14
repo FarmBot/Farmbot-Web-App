@@ -6,13 +6,16 @@ import { mapStateToProps } from "./state_to_props";
 import { WebcamPanel } from "./webcam_panel";
 import { Props } from "./interfaces";
 import { Move } from "./move";
-import * as _ from "lodash";
 
 @connect(mapStateToProps)
 export class Controls extends React.Component<Props, {}> {
   render() {
-    // TODO: Add this to interface in FBJS - RC 10-aug-17
-    let arduinoBusy = _.get(this.props.bot.hardware.informational_settings, "busy", false);
+    let arduinoBusy = !!this
+      .props
+      .bot
+      .hardware
+      .informational_settings
+      .busy;
     return (
       <Page className="controls">
         <Row>

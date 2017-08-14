@@ -1,7 +1,6 @@
 FarmBot::Application.routes.draw do
 
   namespace :api, defaults: {format: :json}, constraints: { format: 'json' } do
-    resources :tool_bays,     only: [:index]
     resources :images,        only: [:create, :destroy, :show, :index]
     resources :regimens,      only: [:create, :destroy, :index, :update]
     resources :peripherals,   only: [:create, :destroy, :index, :update]
@@ -40,16 +39,10 @@ FarmBot::Application.routes.draw do
   # =======================================================================
   # NON-API (USER FACING) URLS:
   # =======================================================================
-
-  get "/" => 'dashboard#front_page',
-    as: :front_page
-  get "/app" => 'dashboard#main_app',
-    as: :dashboard
-  match "/app/*path",
-    to: 'dashboard#main_app',
-    via: :all
+  get "/" => 'dashboard#front_page', as: :front_page
+  get "/app" => 'dashboard#main_app', as: :dashboard
+  match "/app/*path", to: 'dashboard#main_app', via: :all
   get "/password_reset/*token" => 'dashboard#password_reset',
     as: :password_reset
-  get "/verify" => 'dashboard#verify',
-    as: :verify
+  get "/verify" => 'dashboard#verify', as: :verify
 end

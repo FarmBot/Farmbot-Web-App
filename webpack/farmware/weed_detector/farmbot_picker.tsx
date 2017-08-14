@@ -19,21 +19,21 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
   }
 
   hueCSS = (): React.CSSProperties => {
-    // TODO: Investigate if this is a bug with our code or @types/react:
-    //       CC @Chris
-    let position: any = "relative";
-    let width = "100%";
-    let paddingBottom = "10%";
-    let overflow: any = "hidden";
-    return { position, width, paddingBottom, overflow };
+    return {
+      position: "relative",
+      width: "100%",
+      paddingBottom: "10%",
+      overflow: "hidden"
+    };
   }
 
   saturationCSS = (): React.CSSProperties => {
-    let position: any = "relative";
-    let width = "100%";
-    let paddingBottom = "35%";
-    let overflow: any = "hidden";
-    return { position, width, paddingBottom, overflow };
+    return {
+      position: "relative",
+      width: "100%",
+      paddingBottom: "35%",
+      overflow: "hidden"
+    };
   }
 
   hueboxCSS = (): React.CSSProperties => {
@@ -79,7 +79,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
       <div style={{ width: "100%", paddingBottom: "15%" }} />
       <div style={this.hueCSS()}>
         <Hue
-          {...dontTouchThis as any}
+          {...dontTouchThis}
           pointer={this.customPointer}
           onChange={_.noop} />
         <div style={this.hueboxCSS()} />
@@ -87,7 +87,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
       <div style={{ width: "100%", paddingBottom: "2%" }} />
       <div style={this.saturationCSS()}>
         <Saturation
-          {...dontTouchThis as any}
+          {...dontTouchThis}
           pointer={this.customPointer}
           onChange={_.noop} />
         <div style={this.saturationboxCSS()} />

@@ -61,7 +61,10 @@ export let initialState: BotState = {
     },
     pins: {},
     configuration: {},
-    informational_settings: {},
+    informational_settings: {
+      busy: false,
+      locked: false
+    },
     user_env: {},
     process_info: {
       farmwares: {},

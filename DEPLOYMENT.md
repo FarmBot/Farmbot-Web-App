@@ -3,7 +3,9 @@
 If you want to run a server on a LAN for personal use, this is the easiest and cheapest option.
 
 **Simplicity:** :heart::heart::heart:
+
 **Reliability:** :broken_heart:
+
 **Affordability:** :heart::heart::heart:
 
  1. Follow the [developer setup guide](https://github.com/FarmBot/Farmbot-Web-App#developer-setup).
@@ -13,10 +15,12 @@ If you want to run a server on a LAN for personal use, this is the easiest and c
 **DEPRECATION NOTICE / PULL REQUESTS WELCOME**: We no longer deploy the server using Dokku. The instructions related to MariaDB are out of date (we use Postgresql now). **If you wish to use Dokku** we would be happy to help you along the way. Please raise an issue if you would like to help with updating the deployment docs.
 
 **Simplicity:** :broken_heart:
+
 **Reliability:** :heart::heart:
+
 **Affordability:** :heart::heart:
 
-0. Provision a fresh Ubuntu 16 server. We recommend DigitalOcean's "Ubuntu 16 docker" image. Make sure you have at least 1gb of memory. **Don't use the Dokku image that Digital Ocean provides**. It is out of date and will not support this application.
+0. Provision a fresh Ubuntu 16 server. We recommend DigitalOcean's "Ubuntu 16 Docker" image. Make sure you have at least 1gb of memory. **Don't use the Dokku image that Digital Ocean provides**. It is out of date and will not support this application.
 1. [Install the latest version of Dokku onto the machine](https://github.com/dokku/dokku#installing)
 2. Visit the server's URL in a browser. Follow the directions on screen to setup Dokku.
 3. `git remote add my_server dokku@my_server_name:my_app_name`
@@ -42,7 +46,9 @@ If you want to run a server on a LAN for personal use, this is the easiest and c
 # Deployment Using Heroku (good)
 
 **Simplicity:** :heart::heart::heart::heart:
+
 **Reliability:** :heart::heart::heart::heart:
+
 **Affordability:** :broken_heart:
 
  1. Deploy as you would normally [deploy to Heroku](https://devcenter.heroku.com/articles/getting-started-with-rails4#deploy-your-application-to-heroku)
@@ -62,7 +68,7 @@ Wait until you see this message and **DO NOT CONTINUE**:
 
 ```
 Make sure your web server displays the following content at
-http://yourdomain.io/.well-known/acme-challenge/SOME-LONG-URL before continuing:
+http://YOUR_DOMAIN/.well-known/acme-challenge/SOME-LONG-URL before continuing:
 
 ya6k1edW38z-CopyThisValueNow!!!
 
@@ -77,7 +83,7 @@ You should see this:
 ```
 IMPORTANT NOTES:
  - Congratulations! Your certificate and chain have been saved at
-   /etc/letsencrypt/live/yourdomain.io/fullchain.pem
+   /etc/letsencrypt/live/YOUR_DOMAIN/fullchain.pem
 ```
 
 **Heroku Users**: Run the following snippet to submit the certs to Heroku:
@@ -85,18 +91,15 @@ IMPORTANT NOTES:
 **First time:**
 
 ```
-heroku certs:add /etc/letsencrypt/live/yourdomain.io/fullchain.pem /etc/letsencrypt/live/yourdomain.io/privkey.pem
+heroku certs:add /etc/letsencrypt/live/YOUR_DOMAIN/fullchain.pem /etc/letsencrypt/live/YOUR_DOMAIN/privkey.pem
 ```
 
 **After that:**
 
 ```
-sudo heroku certs:update /etc/letsencrypt/live/staging.farmbot.io/fullchain.pem /etc/letsencrypt/live/staging.farmbot.io/privkey.pem --app=farmbot-staging
+sudo heroku certs:update /etc/letsencrypt/live/YOUR_DOMAIN/fullchain.pem /etc/letsencrypt/live/YOUR_DOMAIN/privkey.pem --app=HEROKU_APP_NAME
 ```
 Heroku will then give you instructions on which DNS records you must create.
-
-**Dokku Users**: FarmBot, Inc. no longer uses Dokku. As such, our ability to troubleshoot problems is limited.
-Please [raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new) to receive community support.
 
 # Renew SSL Certificates
 
@@ -106,7 +109,7 @@ Please [raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new) t
 ```
 
 Make sure your web server displays the following content at
-http://staging.farmbot.io/.well-known/acme-challenge/<CODE_HERE> before continuing:
+http://YOUR_DOMAIN/.well-known/acme-challenge/<CODE_HERE> before continuing:
 
 3tFAi5c7tJK-YOURS\_WILL\_BE\_DIFFERENT
 
@@ -119,7 +122,7 @@ heroku config:set ACME_SECRET=THAT_BIG_CODE_FROM_PREVIOUS_STEP --app=YOUR_APP_HE
 
 ```
   - Congratulations! Your certificate and chain have been saved at
-   /etc/letsencrypt/live/staging.farmbot.io/fullchain.pem.
+   /etc/letsencrypt/live/YOUR_DOMAIN/fullchain.pem.
 ```
 
  4. (Heroku users only) `sudo heroku certs:update /etc/letsencrypt/live/YOUR_DOMAIN_HERE/fullchain.pem /etc/letsencrypt/live/YOUR_DOMAIN_HERE/privkey.pem`

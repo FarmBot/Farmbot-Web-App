@@ -1,5 +1,6 @@
 class DashboardController < ApplicationController
-  ACME_SECRET           = ENV["ACME_SECRET"]
+  NO_ENV                = "NO ACME_SECRET SET"
+  ACME_SECRET           = ENV["ACME_SECRET"] || "NO ACME_SECRET SET"
   LONG_REVISION         = ENV["BUILT_AT"] || ENV["HEROKU_SLUG_COMMIT"] || "NONE"
   $FRONTEND_SHARED_DATA = { NODE_ENV:       Rails.env || "development",
                             TOS_URL:        ENV.fetch("TOS_URL", ""),

@@ -3,7 +3,6 @@ import { t } from "i18next";
 import { emergencyLock, emergencyUnlock } from "../actions";
 import { EStopButtonProps } from "../interfaces";
 import { SyncStatus } from "farmbot/dist";
-import { get } from "lodash";
 // Leave this here. Type checker will notify us if we ever need to change
 // this string.
 const LOCKED: SyncStatus = "locked";
@@ -12,8 +11,7 @@ export class EStopButton extends React.Component<EStopButtonProps, {}> {
   render() {
     let i = this.props.bot.hardware.informational_settings;
     let { sync_status } = i;
-    // TODO: ADD `.locked` to FBJS interface!
-    let lock1 = get(i, "locked", false);
+    let lock1 = !!i.locked;
     let lock2 = sync_status === LOCKED;
     let isLocked = lock1 || lock2;
     let toggleEmergencyLock = isLocked ? emergencyUnlock : emergencyLock;
