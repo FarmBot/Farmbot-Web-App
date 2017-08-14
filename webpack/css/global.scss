@@ -126,6 +126,11 @@ a {
   }
 }
 
+.caution-icon {
+  pointer-events: none;
+  margin-left: 1rem;
+}
+
 .select-search-container {
   input {
     cursor: pointer;

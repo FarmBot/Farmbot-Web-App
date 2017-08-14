@@ -1,7 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
-import { ToolTips, Content } from "../../../constants";
+import { ToolTips } from "../../../constants";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { HomingRow } from "../homing_row";
 import { CalibrationRow } from "../calibration_row";
@@ -45,7 +45,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         z={"movement_home_at_boot_z"}
         dispatch={dispatch}
         bot={bot}
-        displayAlert={Content.HOME_ON_BOOT_WARNING}
+        caution={true}
       />
       <BooleanMCUInputGroup
         name={t("Stop at Home")}
