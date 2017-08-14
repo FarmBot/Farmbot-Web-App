@@ -12,14 +12,16 @@ import {
 import { PlantPointer } from "../interfaces";
 import { SlotWithTool } from "../resources/interfaces";
 import { BotPosition } from "../devices/interfaces";
+import { isNumber } from "lodash";
 
 /** TODO: Use Enums */
 export type BotOriginQuadrant = 1 | 2 | 3 | 4;
 export type ZoomLevelPayl = 0.1 | -0.1;
 
-export function isBotOriginQuadrant(mystery: any):
+type Mystery = BotOriginQuadrant | number | undefined;
+export function isBotOriginQuadrant(mystery: Mystery):
   mystery is BotOriginQuadrant {
-  return [1, 2, 3, 4].includes(mystery);
+  return isNumber(mystery) && [1, 2, 3, 4].includes(mystery);
 }
 
 export interface State {
