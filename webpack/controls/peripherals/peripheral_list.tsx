@@ -6,7 +6,7 @@ import { PeripheralListProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
 
 export function PeripheralList(props: PeripheralListProps) {
-  let { pins } = props;
+  let { pins, disabled } = props;
   return <div>
     {sortResourcesById(props.peripherals).map(p => {
       let value = (pins[p.body.pin || -1] || { value: undefined }).value;
@@ -21,7 +21,8 @@ export function PeripheralList(props: PeripheralListProps) {
           <ToggleButton
             toggleValue={value}
             toggleAction={() => p.body.pin && pinToggle(p.body.pin)}
-            noYes={false} />
+            noYes={false}
+            disabled={disabled} />
         </Col>
       </Row>;
     })}

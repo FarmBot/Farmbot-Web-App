@@ -122,7 +122,15 @@ export function sync(): Thunk {
           dispatch(setSyncStatus("sync_error"));
         });
     } else {
-      badVersion();
+      if (getState()
+        .bot
+        .hardware
+        .informational_settings
+        .controller_version) {
+        badVersion();
+      } else {
+        info("FarmBot is not connected.", "Disconnected", "red");
+      }
     }
   };
 }

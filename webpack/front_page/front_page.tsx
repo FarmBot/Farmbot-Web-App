@@ -118,7 +118,11 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         success("Email has been sent.", "Forgot Password");
         this.setState({ forgotPassword: false });
       }).catch(error => {
-        log(prettyPrintApiErrors(error));
+        let errorMessage = prettyPrintApiErrors(error);
+        if (errorMessage.toLowerCase().includes("not found")) {
+          errorMessage = "That email address is not associated with an account.";
+        }
+        log(errorMessage);
       });
   }
 
