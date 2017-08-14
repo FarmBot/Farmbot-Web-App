@@ -5,6 +5,7 @@ import { splice, remove } from "./index";
 import { t } from "i18next";
 import { ToolTips } from "../../constants";
 import { StepIconGroup } from "../step_icon_group";
+import { StepInputBox } from "../inputs/step_input_box";
 
 export function TileExecuteScript({ dispatch, currentStep, index, currentSequence }: StepParams) {
   if (currentStep.kind === "execute_script") {
@@ -35,8 +36,11 @@ export function TileExecuteScript({ dispatch, currentStep, index, currentSequenc
               <div className="row">
                 <div className="col-xs-12">
                   <label>{t("Package Name")}</label>
-                  <input type="text" value={currentStep.args.label} disabled={true} />
-                  <small>NOTE: Support for farmware selection is coming soon.</small>
+                  <StepInputBox dispatch={dispatch}
+                    index={index}
+                    step={currentStep}
+                    sequence={currentSequence}
+                    field="label" />
                 </div>
               </div>
             </div>
