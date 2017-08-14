@@ -53,7 +53,8 @@ describe("<PeripheralList/>", function () {
   it("renders a list of peripherals, in sorted order", function () {
     let wrapper = mount(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
-      pins={pins} />);
+      pins={pins}
+      disabled={false} />);
     let labels = wrapper.find("label");
     let buttons = wrapper.find("button");
     let first = labels.first();
@@ -70,7 +71,8 @@ describe("<PeripheralList/>", function () {
     let { mock } = devices.current.togglePin as jest.Mock<{}>;
     let wrapper = mount(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
-      pins={pins} />);
+      pins={pins}
+      disabled={false} />);
     let toggle = wrapper.find("ToggleButton");
     toggle.first().simulate("click");
     expect(mock.calls.length).toEqual(1);
@@ -78,5 +80,17 @@ describe("<PeripheralList/>", function () {
     toggle.last().simulate("click");
     expect(mock.calls.length).toEqual(2);
     expect(mock.calls[1][0].pin_number).toEqual(13);
+  });
+
+  it("pins toggles are disabled", () => {
+    let { mock } = devices.current.togglePin as jest.Mock<{}>;
+    let wrapper = mount(<PeripheralList dispatch={() => { }}
+      peripherals={peripherals}
+      pins={pins}
+      disabled={true} />);
+    let toggle = wrapper.find("ToggleButton");
+    toggle.first().simulate("click");
+    toggle.last().simulate("click");
+    expect(mock.calls.length).toEqual(0);
   });
 });

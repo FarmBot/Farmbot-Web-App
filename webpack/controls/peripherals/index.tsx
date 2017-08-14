@@ -42,7 +42,7 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
   }
 
   showPins = () => {
-    let { peripherals, dispatch, bot } = this.props;
+    let { peripherals, dispatch, bot, disabled } = this.props;
 
     let pins = bot.hardware.pins;
     if (this.state.isEditing) {
@@ -51,7 +51,8 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
     } else {
       return <PeripheralList peripherals={peripherals}
         dispatch={dispatch}
-        pins={pins} />;
+        pins={pins}
+        disabled={disabled} />;
     }
   }
 

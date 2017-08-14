@@ -4,6 +4,7 @@ import { API } from "../api";
 import { DeletionRequest } from "./interfaces";
 import { toastErrors, HttpData } from "../util";
 import { Session } from "../session";
+import { UnsafeError } from "../interfaces";
 
 export function deleteUser(payload: DeletionRequest): Thunk {
   return (dispatch, getState) => {
@@ -19,7 +20,9 @@ export function deleteUser(payload: DeletionRequest): Thunk {
           alert("We're sorry to see you go. :(");
           Session.clear(true);
         })
-        .catch(toastErrors);
+        .catch((err: UnsafeError) => {
+          toastErrors({ err });
+        });
     } else {
       throw new Error("Impossible");
     }

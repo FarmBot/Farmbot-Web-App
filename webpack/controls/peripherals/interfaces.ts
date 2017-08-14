@@ -20,4 +20,5 @@ export interface PeripheralListProps {
   dispatch: Function;
   peripherals: TaggedPeripheral[];
   pins: Pins;
+  disabled: boolean | undefined;
 }

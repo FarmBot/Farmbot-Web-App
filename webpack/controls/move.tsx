@@ -12,7 +12,6 @@ import { MoveProps, EncoderDisplay } from "./interfaces";
 import { Xyz, BotLocationData } from "../devices/interfaces";
 import { Popover, Position } from "@blueprintjs/core";
 import { AxisDisplayGroup } from "./axis_display_group";
-import * as _ from "lodash";
 
 export class Move extends React.Component<MoveProps, {}> {
 
@@ -44,8 +43,6 @@ export class Move extends React.Component<MoveProps, {}> {
     let motor_coordinates = locationData.position;
     let raw_encoders_data = locationData.raw_encoders;
     let scaled_encoders_data = locationData.scaled_encoders;
-    // TODO: Add this to interface in FBJS - RC 10-aug-17
-    let arduinoBusy = _.get(this.props.bot.hardware.informational_settings, "busy", false);
 
     return (
       <Widget>
@@ -131,7 +128,7 @@ export class Move extends React.Component<MoveProps, {}> {
               x_axis_inverted={x_axis_inverted}
               y_axis_inverted={y_axis_inverted}
               z_axis_inverted={z_axis_inverted}
-              disabled={arduinoBusy}
+              disabled={this.props.disabled}
             />
             <Row>
               <Col xs={3}>
@@ -161,7 +158,7 @@ export class Move extends React.Component<MoveProps, {}> {
             <AxisInputBoxGroup
               position={motor_coordinates}
               onCommit={input => moveAbs(input)}
-              disabled={arduinoBusy} />
+              disabled={this.props.disabled} />
           </MustBeOnline>
         </WidgetBody>
       </Widget>

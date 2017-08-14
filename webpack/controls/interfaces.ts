@@ -17,6 +17,7 @@ export interface MoveProps {
   dispatch: Function;
   bot: BotState;
   user: TaggedUser | undefined;
+  disabled: boolean | undefined;
 }
 
 export interface WebcamPanelProps {

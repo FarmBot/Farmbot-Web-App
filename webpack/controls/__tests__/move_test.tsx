@@ -8,7 +8,8 @@ describe("<Move />", () => {
   it("has default elements", () => {
     let wrapper = mount(<Move dispatch={jest.fn()}
       bot={fakeBot}
-      user={undefined} />);
+      user={undefined}
+      disabled={false} />);
     let txt = wrapper.text().toLowerCase();
     expect(txt).toContain("move amount (mm)");
     expect(txt).toContain("110100100010000");
@@ -21,7 +22,8 @@ describe("<Move />", () => {
     fakeBot.raw_encoders = true;
     let wrapper = mount(<Move dispatch={jest.fn()}
       bot={fakeBot}
-      user={undefined} />);
+      user={undefined}
+      disabled={false} />);
     let txt = wrapper.text().toLowerCase();
     expect(txt).toContain("raw");
     expect(txt).not.toContain("scaled");
@@ -32,7 +34,8 @@ describe("<Move />", () => {
     fakeBot.scaled_encoders = true;
     let wrapper = mount(<Move dispatch={jest.fn()}
       bot={fakeBot}
-      user={undefined} />);
+      user={undefined}
+      disabled={false} />);
     let txt = wrapper.text().toLowerCase();
     expect(txt).toContain("raw");
     expect(txt).toContain("scaled");
