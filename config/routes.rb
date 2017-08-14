@@ -1,7 +1,6 @@
 FarmBot::Application.routes.draw do
 
   namespace :api, defaults: {format: :json}, constraints: { format: 'json' } do
-    resources :tool_bays,     only: [:index]
     resources :images,        only: [:create, :destroy, :show, :index]
     resources :regimens,      only: [:create, :destroy, :index, :update]
     resources :peripherals,   only: [:create, :destroy, :index, :update]

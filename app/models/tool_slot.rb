@@ -3,7 +3,6 @@
 # etc.
 class ToolSlot < ApplicationRecord
   belongs_to :tool
-  belongs_to :tool_bay # <== DELETE THIS ASAP!!!!
   has_one :point, as: :pointer#, dependent: :destroy
   # has_many  :sequence_dependencies, dependent: :destroy, as: :dependency
   validates_uniqueness_of :tool,
