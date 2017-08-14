@@ -3,7 +3,9 @@
 If you want to run a server on a LAN for personal use, this is the easiest and cheapest option.
 
 **Simplicity:** :heart::heart::heart:
+
 **Reliability:** :broken_heart:
+
 **Affordability:** :heart::heart::heart:
 
  1. Follow the [developer setup guide](https://github.com/FarmBot/Farmbot-Web-App#developer-setup).
@@ -13,7 +15,9 @@ If you want to run a server on a LAN for personal use, this is the easiest and c
 **DEPRECATION NOTICE / PULL REQUESTS WELCOME**: We no longer deploy the server using Dokku. The instructions related to MariaDB are out of date (we use Postgresql now). **If you wish to use Dokku** we would be happy to help you along the way. Please raise an issue if you would like to help with updating the deployment docs.
 
 **Simplicity:** :broken_heart:
+
 **Reliability:** :heart::heart:
+
 **Affordability:** :heart::heart:
 
 0. Provision a fresh Ubuntu 16 server. We recommend DigitalOcean's "Ubuntu 16 Docker" image. Make sure you have at least 1gb of memory. **Don't use the Dokku image that Digital Ocean provides**. It is out of date and will not support this application.
@@ -42,7 +46,9 @@ If you want to run a server on a LAN for personal use, this is the easiest and c
 # Deployment Using Heroku (good)
 
 **Simplicity:** :heart::heart::heart::heart:
+
 **Reliability:** :heart::heart::heart::heart:
+
 **Affordability:** :broken_heart:
 
  1. Deploy as you would normally [deploy to Heroku](https://devcenter.heroku.com/articles/getting-started-with-rails4#deploy-your-application-to-heroku)
