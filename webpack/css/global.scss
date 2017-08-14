@@ -12,6 +12,10 @@ body {
   display: none !important;
 }
 
+.pt-overlay-backdrop {
+  z-index: 9999 !important;
+}
+
 .colorpicker-menu {
   padding: 0;
   .pt-popover-arrow-fill {
@@ -64,7 +68,7 @@ input[type=time] {
     color: #fff;
     text-overflow: ellipsis;
     overflow: hidden;
-    width: 67%;
+    width: 50%;
     white-space: nowrap;
     display: inline-block;
     text-transform: none;
@@ -120,6 +124,11 @@ a {
   &.fa-gear {
     color: $white;
   }
+}
+
+.caution-icon {
+  pointer-events: none;
+  margin-left: 1rem;
 }
 
 .select-search-container {

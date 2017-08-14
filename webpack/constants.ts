@@ -46,7 +46,9 @@ export namespace ToolTips {
 
   export const FIND_HOME_ON_BOOT =
     `If encoders or end-stops are enabled, find the home position when the
-    device powers on.`;
+    device powers on. Warning! This will perform homing on all axes when the
+    device powers on. Encoders or endstops must be enabled. It is recommended
+    to make sure homing works properly before enabling this feature.`;
 
   export const STOP_AT_HOME =
     `Stop at the home location of the axis.`;
@@ -264,6 +266,12 @@ export namespace Content {
     or settings from your web app account, allowing you to do a complete restore
     to your device once it is back online and paired with your web app
     account.`;
+
+  // Experimental Warning
+  export const EXPERIMENTAL_WARNING =
+    `Warning! This is an EXPERIMENTAL feature. This feature may be broken and may
+    break or otherwise hinder your usage of the rest of the app. This feature may
+    disappear or break at any time.`;
 
 }
 

@@ -45,6 +45,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         z={"movement_home_at_boot_z"}
         dispatch={dispatch}
         bot={bot}
+        caution={true}
       />
       <BooleanMCUInputGroup
         name={t("Stop at Home")}

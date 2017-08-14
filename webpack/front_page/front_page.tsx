@@ -36,6 +36,8 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       serverURL: API.fetchHostName(),
       serverPort: API.inferPort()
     });
+    // RICK CHECK ME ON THIS PLZ -CV
+    if (Session.get()) { window.location.href = "/app/controls"; }
   }
 
   set = (name: keyof FrontPageState) =>
@@ -229,6 +231,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                       </label>
                       <input
                         type="email"
+                        value={this.state.email}
                         onChange={this.set("email").bind(this)}
                       />
                       <label>
@@ -280,7 +283,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             {forgotPassword && (
               <Col xs={12} sm={5}>
                 <Widget>
-                  <WidgetHeader title={"Create an Account"}>
+                  <WidgetHeader title={"Reset Password"}>
                     <button
                       className="fb-button gray"
                       onClick={this.toggleForgotPassword.bind(this)}
@@ -293,6 +296,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                       <label>{t("Enter Email")}</label>
                       <input
                         type="email"
+                        value={this.state.email}
                         onChange={this.set("email").bind(this)}
                       />
                       <Row>

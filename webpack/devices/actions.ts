@@ -210,7 +210,10 @@ export function botConfigChange(key: configKey, value: number) {
     .then(_.noop, commandErr(noun));
 }
 
-export function settingToggle(name: configKey, bot: BotState) {
+export function settingToggle(
+  name: configKey, bot: BotState, displayAlert: string | undefined
+) {
+  if (displayAlert) { alert(displayAlert.replace(/\s+/g, " ")); }
   let noun = "Setting toggle";
   return devices
     .current
