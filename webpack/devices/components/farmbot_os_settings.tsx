@@ -122,20 +122,6 @@ export class FarmbotOsSettings
           <Row>
             <Col xs={2}>
               <label>
-                {t("NETWORK")}
-              </label>
-            </Col>
-            <Col xs={10}>
-              <p>
-                {this.props.bot.connectedToMQTT ?
-                  "connected to " : "OFFLINE! "}
-                {`mqtt://${this.props.auth.token.unencoded.mqtt}`}
-              </p>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={2}>
-              <label>
                 {t("TIME ZONE")}
               </label>
             </Col>
@@ -149,6 +135,20 @@ export class FarmbotOsSettings
                   onUpdate={this.handleTimezone}
                 />
               </div>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={2}>
+              <label>
+                {t("NETWORK")}
+              </label>
+            </Col>
+            <Col xs={10}>
+              <p>
+                {this.props.bot.connectedToMQTT ?
+                  "connected to " : "OFFLINE! "}
+                {`mqtt://${this.props.auth.token.unencoded.mqtt}`}
+              </p>
             </Col>
           </Row>
           <this.lastSeen />
