@@ -59,6 +59,7 @@ export class AxisInputBoxGroup extends
         <Col xs={3}>
           <button
             onClick={this.clicked}
+            disabled={this.props.disabled || false}
             className="full-width green go fb-button" >
             {t("GO")}
           </button>
