@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { mapStateToPropsAddEdit, } from "./map_state_to_props_add_edit";
 import { init } from "../../api/crud";
 import { EditFEForm } from "./edit_fe_form";
-import { betterCompact } from "../../util";
+import { betterCompact, JSXChildren } from "../../util";
 import { entries } from "../../resources/util";
 import { Link } from "react-router";
 import {
@@ -13,6 +13,7 @@ import {
   TaggedExecutable,
   ExecutableType
 } from "../interfaces";
+import { BackArrow } from "../../ui/index";
 
 interface State {
   uuid: string;
@@ -68,14 +69,29 @@ export class AddFarmEvent
   none() {
     return <p>
       {t("You haven't made any regimens or sequences yet. Please create a")}
-      <Link to="/app/sequences">{t("sequence")}</Link> {t(" or")}
-      <Link to="/app/regimen">{t("regimen")}</Link> {t("first.")}
+      <Link to="/app/sequences">{t(" sequence")}</Link> {t(" or")}
+      <Link to="/app/regimens">{t(" regimen")}</Link> {t("first.")}
     </p>;
   }
 
   /** User has executables to create FarmEvents with, has not loaded yet. */
   loading() {
     return <p>{t("Loading")}...</p>;
+  }
+
+  placeholderTemplate(children: JSXChildren) {
+    return (
+      <div className="panel-container magenta-panel add-farm-event-panel">
+        <div className="panel-header magenta-panel">
+          <p className="panel-title"> <BackArrow /> {t("No Executables")} </p>
+        </div>
+        <div className="panel-content">
+          <label>
+            {children}
+          </label>
+        </div>
+      </div>
+    );
   }
 
   render() {
@@ -97,7 +113,8 @@ export class AddFarmEvent
         />
       );
     } else {
-      return ((this.executable) ? this.loading : this.none)();
+      return this
+        .placeholderTemplate(((this.executable) ? this.loading : this.none)());
     }
   }
 }

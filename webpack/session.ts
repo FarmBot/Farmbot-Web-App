@@ -19,7 +19,6 @@ export namespace Session {
         throw new Error("Expected object or undefined");
       }
     } catch (error) {
-      clear();
       return undefined;
     }
   }

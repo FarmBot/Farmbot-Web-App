@@ -51,7 +51,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
           <ToggleButton
             toggleValue={mcu_params.param_e_stop_on_mov_err}
             toggleAction={() =>
-              settingToggle("param_e_stop_on_mov_err", bot)}
+              settingToggle("param_e_stop_on_mov_err", bot, undefined)}
           />
         </Col>
       </Row>
@@ -140,7 +140,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
           <ToggleButton
             toggleValue={mcu_params.movement_secondary_motor_x}
             toggleAction={() =>
-              settingToggle("movement_secondary_motor_x", bot)}
+              settingToggle("movement_secondary_motor_x", bot, undefined)}
           />
         </Col>
       </Row>
@@ -155,7 +155,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
           <ToggleButton
             toggleValue={mcu_params.movement_secondary_motor_invert_x}
             toggleAction={() =>
-              settingToggle("movement_secondary_motor_invert_x", bot)}
+              settingToggle("movement_secondary_motor_invert_x", bot, undefined)}
           />
         </Col>
       </Row>

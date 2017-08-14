@@ -43,7 +43,7 @@ export function getMouseXY(e: MouseEvent): GetMouseXYPayl {
   let mx = (clientX + scrollLeft - clientLeft) - LEFT_MENU_WIDTH;
   let my = (clientY + scrollTop - clientTop) - TOP_NAV_HEIGHT;
 
-  return { mx, my }
+  return { mx, my };
 
 }
 
@@ -108,5 +108,5 @@ export function getXYFromQuadrant(
   return {
     qx: calculateXBasedOnQuadrant({ value: x, quadrant: q }),
     qy: calculateYBasedOnQuadrant({ value: y, quadrant: q })
-  }
+  };
 }

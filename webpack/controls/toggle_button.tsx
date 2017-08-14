@@ -44,11 +44,14 @@ export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
 
   render() {
     let cb = () => !this.props.disabled && this.props.toggleAction();
-    return <button
-      disabled={!!this.props.disabled}
-      className={this.css()}
-      onClick={cb}>
-      {this.caption()}
-    </button>;
+    return (
+      <button
+        disabled={!!this.props.disabled}
+        className={this.css()}
+        onClick={cb}
+      >
+        {this.caption()}
+      </button>
+    );
   }
 }
