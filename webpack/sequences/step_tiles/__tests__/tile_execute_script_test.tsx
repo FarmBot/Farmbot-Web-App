@@ -32,7 +32,5 @@ describe("<TileExecuteScript/>", () => {
     expect(inputs.first().props().placeholder).toEqual("Run Farmware");
     expect(labels.at(0).text()).toEqual("Package Name");
     expect(inputs.at(1).props().value).toEqual("farmware-to-execute");
-    expect(inputs.at(1).props().disabled).toBeTruthy();
-    expect(block.find("small").text()).toContain("farmware selection");
   });
 });
