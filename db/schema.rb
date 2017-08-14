@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170807143633) do
+ActiveRecord::Schema.define(version: 20170814084814) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -107,7 +107,7 @@ ActiveRecord::Schema.define(version: 20170807143633) do
   end
 
   create_table "points", id: :serial, force: :cascade do |t|
-    t.float "radius", default: 25.0, null: false
+    t.float "radius", default: 50.0, null: false
     t.float "x", null: false
     t.float "y", null: false
     t.float "z", default: 0.0, null: false
