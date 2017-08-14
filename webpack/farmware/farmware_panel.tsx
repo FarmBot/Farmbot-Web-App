@@ -90,7 +90,9 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
       .map(x => farmwares[x]))
       .map((fw, i) => {
         let isSelected = (fw.name == selectedName);
-        let label = isSelected ? fw.meta.description : "";
+        // Rollbar 356. I think this was caused by a user on an ancient version
+        // of FBOS. Remove in September '17. - RC 13 August.
+        let label = isSelected ? (fw.meta || {}).description : "";
         return label;
       });
     return description;
