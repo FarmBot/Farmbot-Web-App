@@ -3,7 +3,7 @@ import * as moment from "moment";
 import * as _ from "lodash";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
-import { TaggedFarmEvent } from "../../resources/tagged_resources";
+import { TaggedFarmEvent, SpecialStatus } from "../../resources/tagged_resources";
 import {
   TimeUnit,
   ExecutableQuery,
@@ -100,11 +100,11 @@ interface State {
    *
    * Example: Navigating away from the page while editing will discard changes.
    */
-  localCopyDirty: boolean;
+  localCopySpecialStatus: SpecialStatus | undefined;
 }
 
 export class EditFEForm extends React.Component<EditFEProps, State> {
-  state: State = { fe: {}, localCopyDirty: false };
+  state: State = { fe: {}, localCopySpecialStatus: undefined };
 
   get isOneTime() { return this.fieldGet("timeUnit") === NEVER; }
 
@@ -203,9 +203,6 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   render() {
     let fe = this.props.farmEvent;
-    let isSaving = fe.saving;
-    let isDirty = fe.dirty || this.state.localCopyDirty;
-    let isSaved = !isSaving && !isDirty;
     let repeats = this.fieldGet("timeUnit") !== NEVER;
     let allowRepeat = (!this.isReg && repeats);
     return (
@@ -263,11 +260,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
           />
           <SaveBtn
             color="magenta"
-            isDirty={isDirty}
-            isSaving={isSaving}
-            isSaved={isSaved}
-            onClick={this.commitViewModel}
-          />
+            onClick={this.commitViewModel} />
           <button className="fb-button red"
             onClick={() => {
               this.dispatch(destroy(fe.uuid)).then(() => {
