@@ -53,7 +53,7 @@ export class SequenceEditorMiddleActive extends
     return (
       <div>
         <div className="button-group">
-          <SaveBtn status={sequence.status}
+          <SaveBtn status={sequence.specialStatus}
             onClick={() => { dispatch(save(sequence.uuid)); }} />
           <TestButton
             syncStatus={this.props.syncStatus}

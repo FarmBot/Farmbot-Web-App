@@ -14,6 +14,7 @@ import {
   ExecutableType
 } from "../interfaces";
 import { BackArrow } from "../../ui/index";
+import { SpecialStatus } from "../../resources/tagged_resources";
 
 interface State {
   uuid: string;
@@ -49,8 +50,7 @@ export class AddFarmEvent
       let NOW = moment().toISOString();
       let action = init({
         kind: "farm_events",
-        dirty: true,
-        saving: false,
+        specialStatus: SpecialStatus.DIRTY,
         uuid: "---",
         body: {
           start_time: NOW,

@@ -1,12 +1,12 @@
 import * as React from "react";
 import { t } from "i18next";
-import { SaveStatus } from "../resources/tagged_resources";
+import { SpecialStatus } from "../resources/tagged_resources";
 
 interface SaveBtnProps {
   /** Callback */
   onClick?: (e: React.MouseEvent<{}>) => void;
   /** Defaults to a "saved" status if set to `undefined` */
-  status: SaveStatus | undefined;
+  status: SpecialStatus | undefined;
   dirtyText?: string;
   /** Optional alternative to "SAVING" */
   savingText?: string;
@@ -23,19 +23,19 @@ const spinner = <span className="btn-spinner" />;
 
 export function SaveBtn(props: SaveBtnProps) {
   let STATUS_TRANSLATION = {
-    [SaveStatus.DIRTY]: "is-dirty",
-    [SaveStatus.SAVING]: "is-saving"
+    [SpecialStatus.DIRTY]: "is-dirty",
+    [SpecialStatus.SAVING]: "is-saving"
   };
 
   let CAPTIONS = {
-    [SaveStatus.DIRTY]: t((props.dirtyText || "Save ") + " *"),
-    [SaveStatus.SAVING]: t(props.savingText || "Saving")
+    [SpecialStatus.DIRTY]: t((props.dirtyText || "Save ") + " *"),
+    [SpecialStatus.SAVING]: t(props.savingText || "Saving")
   };
 
   let { savedText, onClick, hidden } = props;
   let statusClass = STATUS_TRANSLATION[props.status || ""] || "is-saved";
   let klass = `${props.color || "green"} ${statusClass} save-btn fb-button`;
-  const spinnerEl = (props.status === SaveStatus.SAVING) ?
+  const spinnerEl = (props.status === SpecialStatus.SAVING) ?
     spinner : "";
 
   return <button onClick={onClick} hidden={!!hidden} className={klass} >

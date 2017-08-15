@@ -288,7 +288,12 @@ export function connectDevice(token: string): ConnectDeviceReturn {
         bot.on("logs", function (msg: Log) {
           if (isLog(msg) && !oneOf(BAD_WORDS, msg.message.toUpperCase())) {
             maybeShowLog(msg);
-            dispatch(init({ kind: "logs", uuid: "MUST_CHANGE", body: msg }));
+            dispatch(init({
+              kind: "logs",
+              specialStatus: undefined,
+              uuid: "MUST_CHANGE",
+              body: msg
+            }));
           } else {
             throw new Error("Refusing to display log: " + JSON.stringify(msg));
           }

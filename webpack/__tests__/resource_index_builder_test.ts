@@ -7,7 +7,7 @@ import { TaggedFarmEvent } from "../resources/tagged_resources";
 const STUB_RESOURCE: TaggedFarmEvent = {
   "uuid": "farm_events.0.435",
   "kind": "farm_events",
-  "status": undefined,
+  "specialStatus": undefined,
   "body": {
     "id": 217,
     "start_time": "2017-07-21T00:30:00.000Z",

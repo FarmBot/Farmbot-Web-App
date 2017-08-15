@@ -5,7 +5,7 @@ import * as _ from "lodash";
 export let FAKE_RESOURCES: TaggedResource[] = [
   {
     "kind": "device",
-    "status": undefined,
+    "specialStatus": undefined,
     "body": {
       "id": 415,
       "name": "wispy-firefly-846",
@@ -14,7 +14,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "device.415.0"
   },
   {
-    "status": undefined,
+    "specialStatus": undefined,
     "kind": "farm_events",
     "body": {
       "id": 21,
@@ -35,7 +35,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "farm_events.21.1"
   },
   {
-    "status": undefined,
+    "specialStatus": undefined,
     "kind": "farm_events",
     "body": {
       "id": 22,
@@ -53,7 +53,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "farm_events.22.2"
   },
   {
-    "status": undefined,
+    "specialStatus": undefined,
     "kind": "images",
     "body": {
       "id": 415,
@@ -71,7 +71,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "images.415.3"
   },
   {
-    "status": undefined,
+    "specialStatus": undefined,
     "kind": "images",
     "body": {
       "id": 414,
@@ -89,7 +89,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "images.414.4"
   },
   {
-    "status": undefined,
+    "specialStatus": undefined,
     "kind": "peripherals",
     "body": {
       "id": 11,
@@ -100,7 +100,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "peripherals.11.5"
   },
   {
-    "status": undefined,
+    "specialStatus": undefined,
     "kind": "points",
     "body": {
       "id": 1392,
@@ -121,7 +121,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "points.1392.6"
   },
   {
-    "status": undefined,
+    "specialStatus": undefined,
     "kind": "points",
     "body": {
       "id": 1393,
@@ -142,7 +142,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "points.1393.7"
   },
   {
-    "status": undefined,
+    "specialStatus": undefined,
     "kind": "points",
     "body": {
       "id": 1394,
@@ -163,7 +163,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "points.1394.8"
   },
   {
-    "status": undefined,
+    "specialStatus": undefined,
     "kind": "points",
     "body": {
       "id": 1395,
@@ -185,7 +185,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   },
   {
     "kind": "points",
-    "status": undefined,
+    "specialStatus": undefined,
     "body": {
       "id": 1396,
       "created_at": "2017-05-24T20:41:20.112Z",
@@ -205,7 +205,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "points.1396.10"
   },
   {
-    "status": undefined,
+    "specialStatus": undefined,
     "kind": "regimens",
     "body": {
       "id": 11,
@@ -225,11 +225,12 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   },
   {
     "kind": "sequences",
-    "status": undefined,
+    "specialStatus": undefined,
     "body": {
       "id": 23,
       "name": "Goto 0, 0, 0",
       "color": "gray",
+      "status": undefined,
       "body": [
         {
           "kind": "move_absolute",
@@ -263,6 +264,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "sequences.23.47"
   },
   {
+    "specialStatus": undefined,
     "kind": "tools",
     "body": {
       "id": 14,
@@ -272,6 +274,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "tools.14.49"
   },
   {
+    "specialStatus": undefined,
     "kind": "tools",
     "body": {
       "id": 15,

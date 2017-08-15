@@ -14,7 +14,8 @@ import { assertUuid } from "./selectors";
 import { DeviceAccountSettings } from "../devices/interfaces";
 import { isObject, isString, get } from "lodash";
 import { Image } from "../farmware/images/interfaces";
-
+import { betterCompact } from "../util";
+import * as _ from "lodash";
 export type ResourceName =
   | "users"
   | "device"
@@ -37,11 +38,31 @@ export interface TaggedResourceBase {
    */
   uuid: string;
   body: object;
-  status: SaveStatus | undefined;
+  /** Indicates if the resource is saved, saving or dirty.
+   * `undefined` denotes that the resource is saved. */
+  specialStatus: SpecialStatus | undefined;
 }
 
-export enum SaveStatus { DIRTY = "DIRTY", SAVING = "SAVING" }
+/** Denotes special status of resource */
+export enum SpecialStatus {
+  /** The local copy is different than the one on the remote end. */
+  DIRTY = "DIRTY",
+  /** The local copy is being saved on the remote end right now? */
+  SAVING = "SAVING"
+}
 
+/** Given an array of TaggedResources, returns the most "important" special status.
+ * Ex: If one item in the array is `DIRTY`, return `DIRTY`.
+ * Ex: If all are saved and un-changed, return `undefined`. */
+export function getArrayStatus(i: TaggedResource[]): SpecialStatus | undefined {
+  let r = betterCompact(_(i).map(x => x.specialStatus).uniq().value());
+  if (r.length) {
+    return (r.includes(SpecialStatus.SAVING)) ?
+      SpecialStatus.SAVING : SpecialStatus.DIRTY;
+  } else {
+    return;
+  }
+}
 export interface Resource<T extends ResourceName, U extends object>
   extends TaggedResourceBase {
   kind: T;

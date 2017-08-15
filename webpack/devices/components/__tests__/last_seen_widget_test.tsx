@@ -2,6 +2,7 @@ import * as React from "react";
 import { fakeResource } from "../../../__test_support__/fake_resource";
 import { LastSeen } from "../last_seen_widget";
 import { mount } from "enzyme";
+import { SpecialStatus } from "../../../resources/tagged_resources";
 describe("<LastSeen/>", () => {
   let resource = () => fakeResource("device", {
     id: 1,
@@ -10,7 +11,7 @@ describe("<LastSeen/>", () => {
   });
   it("blinks when loading", () => {
     let r = resource();
-    r.saving = true;
+    r.specialStatus = SpecialStatus.SAVING;
     let cb = jest.fn();
     let el = mount(<LastSeen device={r} onClick={cb} />);
     expect(el.text()).toContain("Loading");

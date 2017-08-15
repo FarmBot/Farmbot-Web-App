@@ -26,14 +26,10 @@ export class HardwareSettings extends
             status={bot.hardware.informational_settings.sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <SaveBtn
-              isDirty={false}
-              isSaving={bot.isUpdating}
-              isSaved={!bot.isUpdating}
               dirtyText={" "}
               savingText={"Updating..."}
               savedText={"saved"}
-              hidden={false}
-            />
+              hidden={false} />
           </MustBeOnline>
         </WidgetHeader>
         <WidgetBody>

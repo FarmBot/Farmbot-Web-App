@@ -58,7 +58,7 @@ export class WebcamPanel extends
               className="fb-button green"
               onClick={this.save}
             >
-              {t("Save")}{this.props.account.dirty ? "*" : ""}
+              {t("Save")}{this.props.account.specialStatus ? "" : "*"}
             </button>
           }
           {isEditing &&
