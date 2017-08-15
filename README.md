@@ -130,3 +130,12 @@ $.ajax({
 # Want to Help?
 
 [Low Hanging Fruit](https://github.com/FarmBot/Farmbot-Web-App/search?utf8=%E2%9C%93&q=todo). [Raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new?title=Question%20about%20a%20TODO) if you have any questions.
+
+## Translating the web app into your language
+
+Thanks for your interest in internationalizing the FarmBot web app! To add translations:		
+		
+1. Fork this repo		
+0. Navigate to `/public/app-resources/languages` and run the command `node _helper.js yy` where `yy` is your language's [language code](http://www.science.co.il/Language/Locale-codes.php). Eg: `ru` for Russian.
+0. Edit the translations in the file created in the previous step: `"phrase": "translated phrase"`.
+0. When you have updated or added new translations, commit/push your changes and submit a pull request.
