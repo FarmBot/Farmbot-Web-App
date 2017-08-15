@@ -15,6 +15,7 @@ import { edit, destroy, saveAll, init } from "../../api/crud";
 import { FBSelect } from "../../ui/new_fb_select";
 import { ToolBayHeader } from "./toolbay_header";
 import { ToolTips } from "../../constants";
+import * as _ from "lodash";
 
 export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
 
@@ -38,14 +39,22 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
   render() {
     let { toggle, dispatch, toolSlots, position } = this.props;
 
+    let positionIsDefined =
+      _.isNumber(position.x) && _.isNumber(position.y) && _.isNumber(position.z)
+
     function useCurrentPosition(slot: TaggedToolSlotPointer) {
-      dispatch(edit(slot, { x: position.x }));
-      dispatch(edit(slot, { y: position.y }));
-      dispatch(edit(slot, { z: position.z }));
+      if (positionIsDefined) {
+        dispatch(edit(slot, { x: position.x, y: position.y, z: position.z }));
+      }
     }
 
-    let positionButtonTitle =
-      `use current location (${position.x}, ${position.y}, ${position.z})`;
+    let positionButtonTitle: string;
+    if (positionIsDefined) {
+      positionButtonTitle =
+        `use current location (${position.x}, ${position.y}, ${position.z})`;
+    } else {
+      positionButtonTitle = "use current location (unknown)"
+    }
 
     let isSaving = toolSlots && toolSlots
       .filter(x => x.saving).length !== 0;

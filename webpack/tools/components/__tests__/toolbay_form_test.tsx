@@ -42,10 +42,10 @@ describe("<ToolBayForm/>", () => {
     let buttons = test.component.find("button");
     expect(buttons.length).toEqual(6);
     buttons.at(3).simulate("click");
-    let argList = test.dispatch.mock.calls;
-    expect(argList[0][0].payload.update.x).toEqual(1);
-    expect(argList[1][0].payload.update.y).toEqual(2);
-    expect(argList[2][0].payload.update.z).toEqual(3);
+    let argList = test.dispatch.mock.calls[0][0].payload.update;
+    expect(argList.x).toEqual(1);
+    expect(argList.y).toEqual(2);
+    expect(argList.z).toEqual(3);
   });
 
 });
