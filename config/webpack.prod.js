@@ -5,6 +5,7 @@ var path = require("path");
 var genConfig = require("./webpack.base");
 var UglifyJsPlugin = require("webpack-uglify-js-plugin");
 var OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+var webpack = require("webpack");
 
 var conf = genConfig();
 
@@ -16,15 +17,6 @@ conf.output = {
 };
 
 [
-  // must match config.webpack.manifest_filename
-  new StatsPlugin('manifest.json', {
-    // We only need assetsByChunkName
-    chunkModules: false,
-    source: false,
-    chunks: false,
-    modules: false,
-    assets: true
-  }),
   new ExtractTextPlugin({
     // Temporary hotfix for some issues on staging.
     // - RC 12 MAY 17

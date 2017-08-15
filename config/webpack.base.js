@@ -1,20 +1,9 @@
-var devServerPort = 3808;
-var exec = require("child_process").exec;
-var execSync = require("child_process").execSync;
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
-var fs = require("fs");
-var OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-var path = require("path");
-var path = require("path");
-var production = process.env.RAILS_ENV === 'production';
 var StatsPlugin = require('stats-webpack-plugin');
-var UglifyJsPlugin = require("webpack-uglify-js-plugin");
-var webpack = require("webpack");
 
 module.exports = function () {
   return {
     entry: {
-      "bundle": path.resolve(__dirname, "../webpack/entry.tsx"),
+      "bundle": "./webpack/entry.tsx",
       "front_page": "./webpack/front_page/index.tsx",
       "verification": "./webpack/verification.ts",
       "password_reset": "./webpack/password_reset/index.tsx",
@@ -27,7 +16,10 @@ module.exports = function () {
           test: [/\.scss$/, /\.css$/],
           use: ["style-loader", "css-loader", "sass-loader"]
         },
-        { test: /\.tsx?$/, use: "ts-loader" },
+        {
+          test: /\.tsx?$/,
+          use: "ts-loader"
+        },
         {
           test: [/\.woff$/, /\.woff2$/, /\.ttf$/],
           use: "url-loader"
@@ -43,7 +35,6 @@ module.exports = function () {
       extensions: [".js", ".ts", ".tsx", ".css", ".scss", ".json"]
     },
     plugins: [
-      // must match config.webpack.manifest_filename
       new StatsPlugin('manifest.json', {
         // We only need assetsByChunkName
         chunkModules: false,
