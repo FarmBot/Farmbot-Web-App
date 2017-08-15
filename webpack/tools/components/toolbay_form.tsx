@@ -15,6 +15,7 @@ import { edit, destroy, saveAll, init } from "../../api/crud";
 import { FBSelect } from "../../ui/new_fb_select";
 import { ToolBayHeader } from "./toolbay_header";
 import { ToolTips } from "../../constants";
+import * as _ from "lodash";
 
 export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
 
@@ -36,7 +37,24 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
   }
 
   render() {
-    let { toggle, dispatch, toolSlots } = this.props;
+    let { toggle, dispatch, toolSlots, position } = this.props;
+
+    let positionIsDefined =
+      _.isNumber(position.x) && _.isNumber(position.y) && _.isNumber(position.z)
+
+    function useCurrentPosition(slot: TaggedToolSlotPointer) {
+      if (positionIsDefined) {
+        dispatch(edit(slot, { x: position.x, y: position.y, z: position.z }));
+      }
+    }
+
+    let positionButtonTitle: string;
+    if (positionIsDefined) {
+      positionButtonTitle =
+        `use current location (${position.x}, ${position.y}, ${position.z})`;
+    } else {
+      positionButtonTitle = "use current location (unknown)"
+    }
 
     let isSaving = toolSlots && toolSlots
       .filter(x => x.saving).length !== 0;
@@ -59,7 +77,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
             isSaving={isSaving}
             isSaved={!isDirty && !isSaving}
             onClick={() => {
-              dispatch(saveAll(toolSlots, () => { toggle(); }))
+              dispatch(saveAll(toolSlots, () => { toggle(); }));
             }}
           />
           <button
@@ -75,6 +93,12 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
               return <Row key={index}>
                 <Col xs={2}>
                   <label>{index + 1}</label>
+                  <button
+                    className="blue fb-button"
+                    title={positionButtonTitle}
+                    onClick={() => useCurrentPosition(slot)}>
+                    <i className="fa fa-crosshairs" />
+                  </button>
                 </Col>
                 <Col xs={2}>
                   <BlurableInput
