@@ -5,14 +5,8 @@ import { SaveStatus } from "../resources/tagged_resources";
 interface SaveBtnProps {
   /** Callback */
   onClick?: (e: React.MouseEvent<{}>) => void;
+  /** Defaults to a "saved" status if set to `undefined` */
   status: SaveStatus | undefined;
-  // /** If resource has been edited and not yet saved */
-  // isDirty?: boolean;
-  // /** If resource is currently being saved */
-  // isSaving?: boolean;
-  // /** If resource has been saved */
-  // isSaved?: boolean;
-  /** Optional alternative to "SAVE" */
   dirtyText?: string;
   /** Optional alternative to "SAVING" */
   savingText?: string;
@@ -25,7 +19,7 @@ interface SaveBtnProps {
 }
 
 /** Animation during saving action */
-const btnSpinner = <span className="btn-spinner" />;
+const spinner = <span className="btn-spinner" />;
 
 export function SaveBtn(props: SaveBtnProps) {
   let STATUS_TRANSLATION = {
@@ -33,22 +27,18 @@ export function SaveBtn(props: SaveBtnProps) {
     [SaveStatus.SAVING]: "is-saving"
   };
 
-  let CAPTION_TRANSLATION = {
-    [SaveStatus.DIRTY]: (t(dirtyText || "Save ") + " *"),
-    [SaveStatus.SAVING]: (t(savingText || "Saving"))
+  let CAPTIONS = {
+    [SaveStatus.DIRTY]: t((props.dirtyText || "Save ") + " *"),
+    [SaveStatus.SAVING]: t(props.savingText || "Saving")
   };
 
-  let { dirtyText, savingText, savedText } = props;
-  let status = "" + (props.status || "");
-  let statusClass = STATUS_TRANSLATION[status] || "is-saved";
-  let btnColor = props.color || "green";
+  let { savedText, onClick, hidden } = props;
+  let statusClass = STATUS_TRANSLATION[props.status || ""] || "is-saved";
+  let klass = `${props.color || "green"} ${statusClass} save-btn fb-button`;
+  const spinnerEl = (props.status === SaveStatus.SAVING) ?
+    spinner : "";
 
-  return <button
-    onClick={props.onClick}
-    hidden={!!props.hidden}
-    className={`${btnColor} ${statusClass} save-btn fb-button`}
-  >
-    {(t(savedText || "Saved ") + " ✔")} {isSaving && btnSpinner}
-
+  return <button onClick={onClick} hidden={!!hidden} className={klass} >
+    {CAPTIONS["" + status] || (t(savedText || "Saved ") + " ✔")} {spinnerEl}
   </button>;
 }

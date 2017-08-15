@@ -40,10 +40,7 @@ export interface TaggedResourceBase {
   status: SaveStatus | undefined;
 }
 
-export enum SaveStatus {
-  DIRTY = 1,
-  SAVING = 2
-}
+export enum SaveStatus { DIRTY = "DIRTY", SAVING = "SAVING" }
 
 export interface Resource<T extends ResourceName, U extends object>
   extends TaggedResourceBase {

@@ -24,11 +24,7 @@ export class ChangePassword extends React.Component<ChangePwPropTypes, {}> {
     return (
       <Widget>
         <WidgetHeader title="Change Password">
-          <SaveBtn
-            onClick={onClick}
-            isDirty={user.dirty}
-            isSaving={user.saving}
-            isSaved={cleared} />
+          <SaveBtn onClick={onClick} status={user.status} />
         </WidgetHeader>
         <WidgetBody>
           <form>

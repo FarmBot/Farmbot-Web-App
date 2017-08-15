@@ -3,6 +3,7 @@ import {
   ResourceName,
   isTaggedResource,
   TaggedSequence,
+  SaveStatus,
 } from "../resources/tagged_resources";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { API } from "./index";
@@ -64,7 +65,7 @@ export function editStep({ step, sequence, index, executor }: EditStepProps) {
 /** Initialize (but don't save) an indexed / tagged resource. */
 export function init(resource: TaggedResource): ReduxAction<TaggedResource> {
   resource.body.id = 0;
-  resource.dirty = true;
+  resource.status = SaveStatus.DIRTY;
   /** Technically, this happens in the reducer, but I like to be extra safe. */
   resource.uuid = generateUuid(resource.body.id, resource.kind);
   return { type: Actions.INIT_RESOURCE, payload: resource };

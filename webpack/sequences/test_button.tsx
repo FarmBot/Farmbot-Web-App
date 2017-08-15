@@ -14,7 +14,7 @@ export interface TestBtnProps {
 
 export function TestButton({ onClick, onFail, syncStatus, sequence }: TestBtnProps) {
   let isSynced = syncStatus === "synced";
-  let isSaved = !sequence.dirty;
+  let isSaved = !sequence.status;
   let canTest = isSynced && isSaved;
   let className = canTest ? "orange" : "gray";
 
