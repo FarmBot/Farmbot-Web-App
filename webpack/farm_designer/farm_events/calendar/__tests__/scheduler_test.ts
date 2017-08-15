@@ -46,34 +46,6 @@ describe("scheduler", () => {
     EXPECTED.map(x => expect(REALITY).toContain(x));
   });
 
-  it("handles UTC", () => {
-    pending();
-    let fakeEvent = {
-      "start_time": "2017-08-01T17:30:00.000Z",
-      "end_time": "2017-08-07T05:00:00.000Z",
-      "repeat": 2,
-      "time_unit": "daily",
-    };
-    let intervalSeconds = farmEventIntervalSeconds(fakeEvent.repeat,
-      fakeEvent.time_unit as TimeUnit);
-    let result = scheduler({
-      originTime: moment(fakeEvent.start_time),
-      lowerBound: moment(fakeEvent.start_time),
-      upperBound: moment(fakeEvent.end_time),
-      intervalSeconds
-    });
-
-    const EXPECTED = [
-      moment("2017-08-03T17:30:00.000Z"),
-      moment("2017-08-05T17:30:00.000Z")
-    ];
-
-    expect(result.length).toEqual(2);
-    EXPECTED.map((expectation, index) => {
-      expect(expectation.isSame(result[index])).toBeTruthy();
-    });
-  });
-
   it("handles 0 as a repeat value? What happens?");
 });
 
