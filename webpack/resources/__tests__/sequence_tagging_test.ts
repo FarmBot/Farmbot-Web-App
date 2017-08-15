@@ -6,6 +6,7 @@ describe("maybeTagSteps()", () => {
   const UNTAGGED_SEQUENCE: TaggedSequence = {
     "kind": "sequences",
     "uuid": "whatever",
+    "specialStatus": undefined,
     "body": {
       "id": 8,
       "name": "Goto 0, 0, 0",

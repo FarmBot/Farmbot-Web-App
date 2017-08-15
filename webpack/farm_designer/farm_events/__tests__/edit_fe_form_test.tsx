@@ -26,7 +26,6 @@ describe("<FarmEventForm/>", () => {
 
   it("sets defaults", () => {
     expect(context.form.state.fe).toMatchObject({});
-    expect(context.form.state.localCopyDirty).toBeFalsy();
   });
 
   it("determines if it is a one time event", () => {
@@ -77,10 +76,8 @@ describe("<FarmEventForm/>", () => {
     let p = props();
     let i = instance(p);
     i.forceUpdate();
-    expect(i.state.localCopyDirty).toBe(false);
     i.executableSet({ value: "wow", label: "hey", headingId: "Sequence" });
     i.forceUpdate();
-    expect(i.state.localCopyDirty).toBe(true);
     expect(i.state.fe.executable_type).toEqual("Sequence");
     expect(i.state.fe.executable_id).toEqual("wow");
   });
@@ -99,10 +96,8 @@ describe("<FarmEventForm/>", () => {
     let p = props();
     let i = instance(p);
     i.forceUpdate();
-    expect(i.state.localCopyDirty).toBe(false);
     i.fieldSet("repeat")(({ currentTarget: { value: "4" } } as any));
     i.forceUpdate();
-    expect(i.state.localCopyDirty).toBe(true);
     expect(i.state.fe.repeat).toEqual("4");
   });
 

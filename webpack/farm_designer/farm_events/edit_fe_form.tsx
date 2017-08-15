@@ -3,7 +3,7 @@ import * as moment from "moment";
 import * as _ from "lodash";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
-import { TaggedFarmEvent, SpecialStatus } from "../../resources/tagged_resources";
+import { TaggedFarmEvent } from "../../resources/tagged_resources";
 import {
   TimeUnit,
   ExecutableQuery,
@@ -100,11 +100,10 @@ interface State {
    *
    * Example: Navigating away from the page while editing will discard changes.
    */
-  localCopySpecialStatus: SpecialStatus | undefined;
 }
 
 export class EditFEForm extends React.Component<EditFEProps, State> {
-  state: State = { fe: {}, localCopySpecialStatus: undefined };
+  state: State = { fe: {} };
 
   get isOneTime() { return this.fieldGet("timeUnit") === NEVER; }
 
@@ -259,6 +258,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             endTime={this.fieldGet("endTime")}
           />
           <SaveBtn
+            status={fe.specialStatus}
             color="magenta"
             onClick={this.commitViewModel} />
           <button className="fb-button red"

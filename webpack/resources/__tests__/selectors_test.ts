@@ -9,6 +9,7 @@ const TOOL_ID = 99;
 const SLOT_ID = 100;
 const fakeTool: TaggedTool = {
   kind: "tools",
+  specialStatus: undefined,
   uuid: generateUuid(TOOL_ID, "tools"),
   body: {
     name: "yadda yadda",
@@ -17,6 +18,7 @@ const fakeTool: TaggedTool = {
 };
 const fakeSlot: TaggedToolSlotPointer = {
   kind: "points",
+  specialStatus: undefined,
   uuid: generateUuid(SLOT_ID, "points"),
   body: {
     tool_id: TOOL_ID,

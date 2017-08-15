@@ -22,7 +22,7 @@ export function RegimenListItem({ regimen, dispatch }: RegimenListItemProps) {
       className={style.join(" ")}
       onClick={select(dispatch, regimen)}
     >
-      {name} {regimen.dirty && ("*")}
+      {name} {regimen.specialStatus && ("*")}
     </button>
   </Link>;
 }

@@ -24,7 +24,7 @@ let sequenceList = (dispatch: Function) =>
     ];
     lastUrlChunk() === urlFriendly(ts.body.name) && css.push("active");
     let click = () => dispatch(selectSequence(ts.uuid));
-    let name = ts.body.name + (ts.dirty ? "*" : "");
+    let name = ts.body.name + (ts.specialStatus ? "*" : "");
     let { uuid } = ts;
     return <Link
       to={`/app/sequences/${urlFriendly(ts.body.name) || ""}`}
@@ -65,6 +65,7 @@ export class SequencesList extends
     return {
       kind: "sequences",
       uuid: "REDUCER_MUST_CHANGE_THIS",
+      specialStatus: undefined,
       body: {
         name: "new sequence " + (this.props.sequences.length),
         args: { version: -999 },

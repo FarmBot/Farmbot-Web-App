@@ -8,6 +8,7 @@ import { maybeTagSteps } from "../../resources/sequence_tagging";
 describe("<AllSteps/>", () => {
   const TEST_CASE = {
     "kind": "sequences",
+    "specialStatus": undefined,
     "body": {
       "id": 8,
       "name": "Goto 0, 0, 0",
