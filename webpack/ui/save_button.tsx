@@ -1,15 +1,17 @@
 import * as React from "react";
 import { t } from "i18next";
+import { SaveStatus } from "../resources/tagged_resources";
 
 interface SaveBtnProps {
   /** Callback */
   onClick?: (e: React.MouseEvent<{}>) => void;
-  /** If resource has been edited and not yet saved */
-  isDirty?: boolean;
-  /** If resource is currently being saved */
-  isSaving?: boolean;
-  /** If resource has been saved */
-  isSaved?: boolean;
+  status: SaveStatus | undefined;
+  // /** If resource has been edited and not yet saved */
+  // isDirty?: boolean;
+  // /** If resource is currently being saved */
+  // isSaving?: boolean;
+  // /** If resource has been saved */
+  // isSaved?: boolean;
   /** Optional alternative to "SAVE" */
   dirtyText?: string;
   /** Optional alternative to "SAVING" */
@@ -26,14 +28,19 @@ interface SaveBtnProps {
 const btnSpinner = <span className="btn-spinner" />;
 
 export function SaveBtn(props: SaveBtnProps) {
-  let { isDirty, isSaving, isSaved, dirtyText, savingText, savedText } = props;
+  let STATUS_TRANSLATION = {
+    [SaveStatus.DIRTY]: "is-dirty",
+    [SaveStatus.SAVING]: "is-saving"
+  };
 
-  /** Determines class for styling based on state of resource */
-  let statusClass = "";
-  if (isDirty) { statusClass = "is-dirty"; }
-  if (isSaving) { statusClass = "is-saving"; }
-  if (isSaved) { statusClass = "is-saved"; }
+  let CAPTION_TRANSLATION = {
+    [SaveStatus.DIRTY]: (t(dirtyText || "Save ") + " *"),
+    [SaveStatus.SAVING]: (t(savingText || "Saving"))
+  };
 
+  let { dirtyText, savingText, savedText } = props;
+  let status = "" + (props.status || "");
+  let statusClass = STATUS_TRANSLATION[status] || "is-saved";
   let btnColor = props.color || "green";
 
   return <button
@@ -41,16 +48,7 @@ export function SaveBtn(props: SaveBtnProps) {
     hidden={!!props.hidden}
     className={`${btnColor} ${statusClass} save-btn fb-button`}
   >
-
-    {/** Dirty */}
-    {isDirty && !isSaving && (t(dirtyText || "Save ") + " *")}
-
-    {/** Saving */}
-    {isSaving && (t(savingText || "Saving"))} {isSaving && btnSpinner}
-
-    {/** Saved */}
-    {isSaved && (t(savedText || "Saved ") + " ✔")}
+    {(t(savedText || "Saved ") + " ✔")} {isSaving && btnSpinner}
 
   </button>;
 }
-

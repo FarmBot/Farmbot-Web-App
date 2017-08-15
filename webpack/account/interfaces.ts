@@ -28,8 +28,8 @@ export interface DeletionRequest {
 
 export interface DeleteAccountPropTypes {
   deletion_confirmation: string | undefined;
-  set: React.EventHandler<React.FormEvent<HTMLInputElement>>;
-  save: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
+  onChange: React.EventHandler<React.FormEvent<HTMLInputElement>>;
+  onClick: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
 }
 
 export interface ChangePwPropTypes {
@@ -37,8 +37,8 @@ export interface ChangePwPropTypes {
   password: string | undefined;
   new_password: string | undefined;
   new_password_confirmation: string | undefined;
-  set: React.EventHandler<React.FormEvent<HTMLInputElement>>;
-  save: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
+  onChange: React.EventHandler<React.FormEvent<HTMLInputElement>>;
+  onClick: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
 }
 
 export interface SettingsPropTypes {

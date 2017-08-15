@@ -4,31 +4,31 @@ import {
   BlurableInput,
   Widget,
   WidgetHeader,
-  WidgetBody
+  WidgetBody,
+  SaveBtn
 } from "../../ui";
 import { ChangePwPropTypes } from "../interfaces";
 
 export class ChangePassword extends React.Component<ChangePwPropTypes, {}> {
   render() {
-    let { set, save, password, new_password } = this.props;
+    let {
+      onChange,
+      onClick,
+      password,
+      new_password,
+      user
+    } = this.props;
     let npc = this.props.new_password_confirmation;
     let npcString = "new_password_confirmation";
 
     return (
       <Widget>
         <WidgetHeader title="Change Password">
-          {/* <SaveBtn
-            onClick={save}
+          <SaveBtn
+            onClick={onClick}
             isDirty={user.dirty}
             isSaving={user.saving}
-            isSaved={cleared}
-          /> */}
-          <button
-            onClick={save}
-            className="fb-button green"
-          >
-            {t("Save")}
-          </button>
+            isSaved={cleared} />
         </WidgetHeader>
         <WidgetBody>
           <form>
@@ -37,7 +37,7 @@ export class ChangePassword extends React.Component<ChangePwPropTypes, {}> {
             </label>
             <BlurableInput
               allowEmpty={true}
-              onCommit={set}
+              onCommit={onChange}
               name="password"
               value={password || ""}
               type="password"
@@ -47,7 +47,7 @@ export class ChangePassword extends React.Component<ChangePwPropTypes, {}> {
             </label>
             <BlurableInput
               allowEmpty={true}
-              onCommit={set}
+              onCommit={onChange}
               name="new_password"
               value={new_password || ""}
               type="password"
@@ -57,7 +57,7 @@ export class ChangePassword extends React.Component<ChangePwPropTypes, {}> {
             </label>
             <BlurableInput
               allowEmpty={true}
-              onCommit={set}
+              onCommit={onChange}
               name={npcString}
               value={npc || ""}
               type="password"

@@ -37,8 +37,12 @@ export interface TaggedResourceBase {
    */
   uuid: string;
   body: object;
-  dirty?: boolean | undefined;
-  saving?: boolean | undefined;
+  status: SaveStatus | undefined;
+}
+
+export enum SaveStatus {
+  DIRTY = 1,
+  SAVING = 2
 }
 
 export interface Resource<T extends ResourceName, U extends object>
