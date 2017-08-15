@@ -3,6 +3,7 @@ import {
   TaggedTool,
   TaggedToolSlotPointer,
 } from "../resources/tagged_resources";
+import { BotPosition } from "../devices/interfaces";
 
 export interface ToolsState {
   editingTools: boolean;
@@ -19,6 +20,7 @@ export interface Props {
   dispatch: Function;
   isActive: (tool: TaggedTool) => boolean;
   changeToolSlot(t: TaggedToolSlotPointer, dispatch: Function): (d: DropDownItem) => void;
+  botPosition: BotPosition;
 }
 
 export interface Tool {
@@ -36,6 +38,7 @@ export interface ToolBayListProps {
 export interface ToolBayFormProps {
   dispatch: Function;
   toolSlots: TaggedToolSlotPointer[];
+  position: BotPosition;
   toggle(): void;
   getToolOptions(): DropDownItem[];
   getChosenToolOption(uuid: string): DropDownItem;

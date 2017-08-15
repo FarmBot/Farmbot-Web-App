@@ -36,7 +36,16 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
   }
 
   render() {
-    let { toggle, dispatch, toolSlots } = this.props;
+    let { toggle, dispatch, toolSlots, position } = this.props;
+
+    function useCurrentPosition(slot: TaggedToolSlotPointer) {
+      dispatch(edit(slot, { x: position.x }));
+      dispatch(edit(slot, { y: position.y }));
+      dispatch(edit(slot, { z: position.z }));
+    }
+
+    let positionButtonTitle =
+      `use current location (${position.x}, ${position.y}, ${position.z})`;
 
     let isSaving = toolSlots && toolSlots
       .filter(x => x.saving).length !== 0;
@@ -59,7 +68,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
             isSaving={isSaving}
             isSaved={!isDirty && !isSaving}
             onClick={() => {
-              dispatch(saveAll(toolSlots, () => { toggle(); }))
+              dispatch(saveAll(toolSlots, () => { toggle(); }));
             }}
           />
           <button
@@ -75,6 +84,12 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
               return <Row key={index}>
                 <Col xs={2}>
                   <label>{index + 1}</label>
+                  <button
+                    className="blue fb-button"
+                    title={positionButtonTitle}
+                    onClick={() => useCurrentPosition(slot)}>
+                    <i className="fa fa-crosshairs" />
+                  </button>
                 </Col>
                 <Col xs={2}>
                   <BlurableInput

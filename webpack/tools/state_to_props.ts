@@ -74,7 +74,8 @@ export function mapStateToProps(props: Everything): Props {
     getToolByToolSlotUUID,
     changeToolSlot,
     isActive,
-    dispatch: _.noop
+    dispatch: _.noop,
+    botPosition: props.bot.hardware.location_data.position
   };
 
 }
