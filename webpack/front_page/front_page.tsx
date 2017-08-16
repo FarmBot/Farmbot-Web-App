@@ -174,6 +174,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     let expandIcon = showServerOpts ? "minus" : "plus";
     let { toggleServerOpts } = this;
 
+    // If the user is already logged in, don't show this page.
     if (!Session.get()) {
       return (
         <div className="static-page">
