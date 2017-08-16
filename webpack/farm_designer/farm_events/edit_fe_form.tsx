@@ -236,7 +236,8 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
               />
             </Col>
             <Col xs={6}>
-              <BlurableInput type="time"
+              <BlurableInput
+                type="time"
                 className="add-event-start-time"
                 name="start_time"
                 value={this.fieldGet("startTime")}
