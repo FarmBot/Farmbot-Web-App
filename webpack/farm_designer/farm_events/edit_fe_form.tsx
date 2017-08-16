@@ -147,7 +147,6 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   }
 
   fieldSet = (name: keyof State["fe"]) => (e: FormEvent) => {
-    console.log(SpecialStatus.DIRTY);
     this.setState(betterMerge(this.state, {
       fe: { [name]: e.currentTarget.value },
       specialStatusLocal: SpecialStatus.DIRTY

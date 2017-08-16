@@ -171,7 +171,7 @@ export let resourceReducer = generateReducer
     let { update } = payload;
     let source = _.merge<TaggedResource>(findByUuid(s.index, uuid),
       { body: update },
-      { dirty: true });
+      { specialStatus: SpecialStatus.DIRTY });
     sanityCheck(source);
     payload && isTaggedResource(source);
     dontTouchThis(source);

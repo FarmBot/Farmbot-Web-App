@@ -143,7 +143,7 @@ describe("<FarmEventForm/>", () => {
       dispatch={jest.fn()}
       repeatOptions={repeatOptions} />);
     el.update();
-    let txt = el.text().replace(/\s+/g, " ");;
+    let txt = el.text().replace(/\s+/g, " ");
     expect(txt).toContain("Save *");
   });
 });
