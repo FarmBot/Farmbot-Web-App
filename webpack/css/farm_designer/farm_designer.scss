@@ -209,17 +209,18 @@
 
 .garden-map-legend {
   position: fixed;
-  top: 11rem;
-  right: -12rem;
+  top: 110px;
+  right: -120px;
   transition: all 0.4s ease;
   box-shadow: 0px 1px 4px #555;
+  max-width: 336px;
   &.active {
-    transform: translateX(-14rem);
+    transform: translateX(-140px);
   }
   .content {
     background: $light_green;
-    padding: 1rem;
-    border-radius: 0.5rem;
+    padding: 10px;
+    border-radius: 5px;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;

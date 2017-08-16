@@ -36,7 +36,6 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       serverURL: API.fetchHostName(),
       serverPort: API.inferPort()
     });
-    // RICK CHECK ME ON THIS PLZ -CV
     if (Session.get()) { window.location.href = "/app/controls"; }
   }
 
@@ -120,7 +119,8 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       }).catch(error => {
         let errorMessage = prettyPrintApiErrors(error);
         if (errorMessage.toLowerCase().includes("not found")) {
-          errorMessage = "That email address is not associated with an account.";
+          errorMessage =
+            `That email address is not associated with an account.`;
         }
         log(errorMessage);
       });
@@ -136,7 +136,8 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             <label>{t("I agree to the terms of use")}</label>
             <input type="checkbox"
               onChange={this.set("agreeToTerms").bind(this)}
-              value={this.state.agreeToTerms ? "false" : "true"} />
+              value={this.state.agreeToTerms ? "false" : "true"}
+            />
           </div>
           <ul>
             <li>
