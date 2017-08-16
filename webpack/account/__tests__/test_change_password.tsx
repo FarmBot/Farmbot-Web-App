@@ -1,12 +1,12 @@
 import * as React from "react";
 import { mount } from "enzyme";
 import { ChangePassword } from "../components";
-import { ChangePwPropTypes } from "../interfaces";
+import { ChangePWProps } from "../interfaces";
 import { taggedUser } from "../../__test_support__/user";
 
 describe("<ChangePassword/>", function () {
   it("saves new user password", function () {
-    let props: ChangePwPropTypes = {
+    let props: ChangePWProps = {
       password: "wow",
       new_password: "wow",
       new_password_confirmation: "wow",
