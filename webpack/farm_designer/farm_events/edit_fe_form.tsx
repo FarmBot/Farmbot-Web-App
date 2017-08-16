@@ -3,7 +3,7 @@ import * as moment from "moment";
 import * as _ from "lodash";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
-import { TaggedFarmEvent } from "../../resources/tagged_resources";
+import { TaggedFarmEvent, SpecialStatus } from "../../resources/tagged_resources";
 import {
   TimeUnit,
   ExecutableQuery,
@@ -100,10 +100,11 @@ interface State {
    *
    * Example: Navigating away from the page while editing will discard changes.
    */
+  specialStatusLocal: SpecialStatus | undefined;
 }
 
 export class EditFEForm extends React.Component<EditFEProps, State> {
-  state: State = { fe: {} };
+  state: State = { fe: {}, specialStatusLocal: undefined };
 
   get isOneTime() { return this.fieldGet("timeUnit") === NEVER; }
 
@@ -123,13 +124,14 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   executableSet = (e: DropDownItem) => {
     if (e.value) {
-      this.setState(betterMerge(this.state, {
+      let update: Partial<State> = {
         fe: {
           executable_type: executableType(e.headingId),
           executable_id: (e.value || "").toString()
         },
-        localCopyDirty: true
-      }));
+        specialStatusLocal: SpecialStatus.DIRTY
+      };
+      this.setState(betterMerge(this.state, update));
     }
   }
 
@@ -145,9 +147,10 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   }
 
   fieldSet = (name: keyof State["fe"]) => (e: FormEvent) => {
+    console.log(SpecialStatus.DIRTY);
     this.setState(betterMerge(this.state, {
       fe: { [name]: e.currentTarget.value },
-      localCopyDirty: true
+      specialStatusLocal: SpecialStatus.DIRTY
     }));
   }
 
@@ -158,7 +161,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   mergeState = (k: keyof FarmEventViewModel, v: string) => {
     this.setState(betterMerge(this.state, {
       fe: { [k]: v },
-      localCopyDirty: true
+      specialStatusLocal: SpecialStatus.DIRTY
     }));
   }
 
@@ -173,6 +176,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     this
       .dispatch(save(this.props.farmEvent.uuid))
       .then(() => {
+        this.setState({ specialStatusLocal: undefined });
         history.push("/app/designer/farm_events");
         let frmEvnt = this.props.farmEvent;
         let nextRun = _.first(scheduleForFarmEvent(frmEvnt.body));
@@ -194,7 +198,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
       })
       .catch(() => {
         error("Unable to save farm event.");
-        this.setState(betterMerge(this.state, { localCopyDirty: false }));
+        this.setState({ specialStatusLocal: SpecialStatus.DIRTY });
       });
   }
   get isReg() {
@@ -205,6 +209,10 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     let fe = this.props.farmEvent;
     let repeats = this.fieldGet("timeUnit") !== NEVER;
     let allowRepeat = (!this.isReg && repeats);
+    console.log({
+      local: this.state.specialStatusLocal,
+      remote: this.props.farmEvent.specialStatus
+    });
     return (
       <div className="panel-container magenta-panel add-farm-event-panel">
         <div className="panel-header magenta-panel">
@@ -259,7 +267,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             endTime={this.fieldGet("endTime")}
           />
           <SaveBtn
-            status={fe.specialStatus}
+            status={fe.specialStatus || this.state.specialStatusLocal}
             color="magenta"
             onClick={this.commitViewModel} />
           <button className="fb-button red"

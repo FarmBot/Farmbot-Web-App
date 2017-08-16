@@ -3,7 +3,6 @@ import { fakeFarmEvent, fakeSequence } from "../../../__test_support__/fake_stat
 import { mount } from "enzyme";
 import { EditFEForm, EditFEProps, FarmEventViewModel, recombine } from "../edit_fe_form";
 import { isString } from "lodash";
-import { SpecialStatus } from "../../../resources/tagged_resources";
 import { repeatOptions } from "../map_state_to_props_add_edit";
 
 describe("<FarmEventForm/>", () => {
