@@ -4,6 +4,7 @@ import { mount } from "enzyme";
 import { EditFEForm, EditFEProps, FarmEventViewModel, recombine } from "../edit_fe_form";
 import { isString } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
+import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<FarmEventForm/>", () => {
   let props = (): EditFEForm["props"] => ({
@@ -125,8 +126,10 @@ describe("<FarmEventForm/>", () => {
 
   it("renders the correct save button text when adding", () => {
     let seq = fakeSequence();
+    let fe = fakeFarmEvent("Sequence", seq.body.id || 0);
+    fe.specialStatus = SpecialStatus.DIRTY;
     let el = mount(<EditFEForm
-      farmEvent={fakeFarmEvent("Sequence", seq.body.id || 0)}
+      farmEvent={fe}
       title=""
       deviceTimezone="America/Chicago"
       executableOptions={[
@@ -139,6 +142,8 @@ describe("<FarmEventForm/>", () => {
       findExecutable={jest.fn(() => seq)}
       dispatch={jest.fn()}
       repeatOptions={repeatOptions} />);
-    expect(el.text()).toContain("SAVE *");
+    el.update();
+    let txt = el.text().replace(/\s+/g, " ");;
+    expect(txt).toContain("Save *");
   });
 });

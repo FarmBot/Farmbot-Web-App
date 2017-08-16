@@ -209,10 +209,6 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     let fe = this.props.farmEvent;
     let repeats = this.fieldGet("timeUnit") !== NEVER;
     let allowRepeat = (!this.isReg && repeats);
-    console.log({
-      local: this.state.specialStatusLocal,
-      remote: this.props.farmEvent.specialStatus
-    });
     return (
       <div className="panel-container magenta-panel add-farm-event-panel">
         <div className="panel-header magenta-panel">
