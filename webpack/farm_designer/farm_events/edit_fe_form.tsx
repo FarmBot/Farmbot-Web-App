@@ -135,7 +135,8 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   executableGet = (): DropDownItem => {
     let headingId: ExecutableType =
-      (this.executable.kind === "sequences") ? "Sequence" : "Regimen";
+      (this.executable.kind === "sequences") ?
+        "Sequence" : "Regimen";
     return {
       value: this.executable.body.id || 0,
       label: this.executable.body.name,

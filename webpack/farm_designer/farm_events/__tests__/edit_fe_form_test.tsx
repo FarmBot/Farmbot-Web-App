@@ -125,19 +125,9 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("renders the correct save button text when adding", () => {
+    let seq = fakeSequence();
     let el = mount(<EditFEForm
-      farmEvent={{
-        "kind": "farm_events",
-        "body": {
-          "start_time": "2017-08-16T13:16:06.640Z",
-          "time_unit": "never",
-          "executable_id": 10,
-          "executable_type": "Sequence",
-          "id": 0
-        },
-        "uuid": "farm_events.0.116",
-        "specialStatus": SpecialStatus.DIRTY
-      }}
+      farmEvent={fakeFarmEvent("Sequence", seq.body.id || 0)}
       title=""
       deviceTimezone="America/Chicago"
       executableOptions={[
@@ -147,7 +137,7 @@ describe("<FarmEventForm/>", () => {
           "headingId": "Sequence"
         }
       ]}
-      findExecutable={jest.fn()}
+      findExecutable={jest.fn(() => seq)}
       dispatch={jest.fn()}
       repeatOptions={repeatOptions} />);
     expect(el.text()).toContain("SAVE *");

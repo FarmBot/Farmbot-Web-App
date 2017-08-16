@@ -39,6 +39,6 @@ export function SaveBtn(props: SaveBtnProps) {
     spinner : "";
 
   return <button onClick={onClick} hidden={!!hidden} className={klass} >
-    {CAPTIONS["" + status] || (t(savedText || "Saved ") + " ✔")} {spinnerEl}
+    {CAPTIONS["" + props.status] || (t(savedText || "Saved ") + " ✔")} {spinnerEl}
   </button>;
 }
