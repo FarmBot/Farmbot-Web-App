@@ -29,7 +29,7 @@ function save({ regimen, dispatch }: RegimenProps) {
     return (event: React.FormEvent<{}>) => {
       dispatch(saveRegimen(regimen.uuid));
     };
-  } else { throw new Error("Tried to save regimen, but there wasn't one."); };
+  } else { throw new Error("Tried to save regimen, but there wasn't one."); }
 }
 
 function remove({ regimen, dispatch }: DeleteButtonProps) {
@@ -49,10 +49,6 @@ export function RegimenEditorWidget({ current, dispatch, auth, calendar }:
     let baseUrl = (auth.token && auth.token.unencoded.iss) ||
       "CANT_FETCH_TOKEN_ISS";
 
-    let isSaving = regimen && regimen.saving;
-    let isDirty = regimen && regimen.dirty;
-    let isSaved = !isSaving && !isDirty;
-
     return <div className="regimen-editor">
       <h3>
         <i>{t("Regimen Editor")}</i>
@@ -61,9 +57,7 @@ export function RegimenEditorWidget({ current, dispatch, auth, calendar }:
       <div className="button-group">
         {regimen && (
           <SaveBtn
-            isDirty={isDirty}
-            isSaving={isSaving}
-            isSaved={isSaved}
+            status={regimen.specialStatus}
             onClick={save({ dispatch, regimen })}
           />
         )}

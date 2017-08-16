@@ -50,19 +50,11 @@ export class SequenceEditorMiddleActive extends
       pushStep(xfer.value, dispatch, sequence);
     };
 
-    let isSaving = sequence.saving;
-    let isDirty = sequence.dirty;
-    let isSaved = !isSaving && !isDirty;
-
     return (
       <div>
         <div className="button-group">
-          <SaveBtn
-            isDirty={isDirty}
-            isSaving={isSaving}
-            isSaved={isSaved}
-            onClick={() => { dispatch(save(sequence.uuid)); }}
-          />
+          <SaveBtn status={sequence.specialStatus}
+            onClick={() => { dispatch(save(sequence.uuid)); }} />
           <TestButton
             syncStatus={this.props.syncStatus}
             sequence={sequence}

@@ -33,6 +33,7 @@ describe("<InputDefault/>", () => {
     };
 
     let tr: TaggedSequence = {
+      "specialStatus": undefined,
       "kind": "sequences",
       "body": {
         "id": 74,

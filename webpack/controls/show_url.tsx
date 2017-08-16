@@ -22,6 +22,6 @@ export const showUrl = (url: string, dirty: boolean) => {
       return <FallbackImg className="webcam-stream"
         src={url}
         fallback={PLACEHOLDER_FARMBOT} />;
-    };
-  };
+    }
+  }
 };

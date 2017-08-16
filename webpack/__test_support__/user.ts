@@ -13,6 +13,7 @@ export let user: User = {
 export let taggedUser: TaggedUser = {
   kind: "users",
   uuid: "1234-5678",
+  specialStatus: undefined,
   body: {
     created_at: "2016-10-05T03:02:58.000Z",
     device_id: 2,

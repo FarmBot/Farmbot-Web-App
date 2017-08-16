@@ -3,6 +3,7 @@ import {
   ResourceName,
   isTaggedResource,
   TaggedSequence,
+  SpecialStatus,
 } from "../resources/tagged_resources";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { API } from "./index";
@@ -64,7 +65,7 @@ export function editStep({ step, sequence, index, executor }: EditStepProps) {
 /** Initialize (but don't save) an indexed / tagged resource. */
 export function init(resource: TaggedResource): ReduxAction<TaggedResource> {
   resource.body.id = 0;
-  resource.dirty = true;
+  resource.specialStatus = SpecialStatus.DIRTY;
   /** Technically, this happens in the reducer, but I like to be extra safe. */
   resource.uuid = generateUuid(resource.body.id, resource.kind);
   return { type: Actions.INIT_RESOURCE, payload: resource };
@@ -122,8 +123,9 @@ export function saveAll(input: TaggedResource[],
   callback: () => void = _.noop,
   errBack: (err: UnsafeError) => void = _.noop) {
   return function (dispatch: Function, getState: GetState) {
-    /** Perf issues maybe? RC - Mar 2017 */
-    let p = input.filter(x => x.dirty).map(tts => dispatch(save(tts.uuid)));
+    let p = input
+      .filter(x => x.specialStatus === SpecialStatus.DIRTY)
+      .map(tts => dispatch(save(tts.uuid)));
     Promise.all(p).then(callback, errBack);
   };
 }

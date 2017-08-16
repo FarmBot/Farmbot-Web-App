@@ -8,6 +8,7 @@ describe("<PeripheralForm/>", function () {
   const peripherals: TaggedPeripheral[] = [
     {
       uuid: "peripherals.2.2",
+      specialStatus: undefined,
       kind: "peripherals",
       body: {
         id: 2,
@@ -17,6 +18,7 @@ describe("<PeripheralForm/>", function () {
     },
     {
       uuid: "peripherals.1.1",
+      specialStatus: undefined,
       kind: "peripherals",
       body: {
         id: 1,

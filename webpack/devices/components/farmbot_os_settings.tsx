@@ -92,19 +92,13 @@ export class FarmbotOsSettings
 
   render() {
     let { account } = this.props;
-    let isSaving = account && account.saving;
-    let isDirty = account && account.dirty;
-    let isSaved = !isSaving && !isDirty;
 
     return <Widget className="device-widget">
       <form onSubmit={this.saveBot.bind(this)}>
         <WidgetHeader title="Device" helpText={ToolTips.OS_SETTINGS}>
           <SaveBtn
-            isDirty={isDirty}
-            isSaving={isSaving}
-            isSaved={isSaved}
-            onClick={this.updateBot}
-          />
+            status={account.specialStatus}
+            onClick={this.updateBot} />
         </WidgetHeader>
         <WidgetBody>
           <Row>

@@ -1,14 +1,14 @@
 import * as React from "react";
 import { AddRegimenProps } from "../interfaces";
 import { push } from "../../history";
-import { TaggedRegimen } from "../../resources/tagged_resources";
+import { TaggedRegimen, SpecialStatus } from "../../resources/tagged_resources";
 import { init } from "../../api/crud";
 
 function emptyRegimen(length: number): TaggedRegimen {
   return {
     kind: "regimens",
     uuid: "NEVER",
-    dirty: true,
+    specialStatus: SpecialStatus.DIRTY,
     body: {
       name: ("New regimen " + (length++)),
       color: "gray",

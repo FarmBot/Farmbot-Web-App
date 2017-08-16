@@ -10,14 +10,14 @@ describe("<ChangePassword/>", function () {
       password: "wow",
       new_password: "wow",
       new_password_confirmation: "wow",
-      set: jest.fn(),
-      save: jest.fn(),
+      onChange: jest.fn(),
+      onClick: jest.fn(),
       user: taggedUser
     };
     let dom = mount(<ChangePassword {...props} />);
-    expect(props.save).not.toHaveBeenCalled();
+    expect(props.onClick).not.toHaveBeenCalled();
     dom.find("button").simulate("click");
-    expect(props.save).toHaveBeenCalled();
+    expect(props.onClick).toHaveBeenCalled();
     expect(dom.html()).toContain("password");
   });
 });

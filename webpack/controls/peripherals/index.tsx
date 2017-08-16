@@ -6,7 +6,7 @@ import { PeripheralForm } from "./peripheral_form";
 import { Widget, WidgetBody, WidgetHeader, SaveBtn } from "../../ui";
 import { PeripheralsProps } from "../../devices/interfaces";
 import { PeripheralState } from "./interfaces";
-import { TaggedPeripheral } from "../../resources/tagged_resources";
+import { TaggedPeripheral, getArrayStatus } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import * as _ from "lodash";
@@ -59,6 +59,7 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
   emptyPeripheral = (): TaggedPeripheral => {
     return {
       uuid: "WILL_BE_CHANGED_BY_REDUCER",
+      specialStatus: undefined,
       kind: "peripherals",
       body: { pin: 0, label: "New Peripheral" }
     };
@@ -68,28 +69,20 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
     let { dispatch, peripherals } = this.props;
     let { isEditing } = this.state;
 
-    let isSaving = peripherals && peripherals
-      .filter(x => x.saving).length !== 0;
-
-    let isDirty = peripherals && peripherals
-      .filter(x => x.dirty).length !== 0;
-
-    let isSaved = !isSaving && !isDirty;
+    let status = getArrayStatus(peripherals);
 
     return <Widget className="peripherals-widget">
       <WidgetHeader title={"Peripherals"} helpText={ToolTips.PERIPHERALS}>
         <button
           className="fb-button gray"
           onClick={this.toggle}
-          hidden={!isSaved}>
+          hidden={!!status}>
           {!isEditing && t("Edit")}
           {isEditing && t("Back")}
         </button>
         <SaveBtn
           hidden={!isEditing}
-          isDirty={isDirty}
-          isSaving={isSaving}
-          isSaved={isSaved}
+          status={status}
           onClick={this.maybeSave}
         />
         <button

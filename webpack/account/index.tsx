@@ -7,12 +7,7 @@ import { mapStateToProps } from "./state_to_props";
 
 @connect(mapStateToProps)
 export class Account extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super();
-    this.state = {
-      isModified: false
-    };
-  }
+  state: State = { isModified: false };
 
   componentDidMount() {
     if (this.props.user) {
@@ -45,8 +40,7 @@ export class Account extends React.Component<Props, State> {
               name={this.state.name || ""}
               email={this.state.email || ""}
               set={this.set}
-              save={() => this.props.saveUser(this.props.dispatch, this.state)}
-            />
+              save={() => this.props.saveUser(this.props.dispatch, this.state)} />
           </Row>
           <Row>
             <ChangePassword
@@ -54,21 +48,19 @@ export class Account extends React.Component<Props, State> {
               new_password={this.state.new_password || ""}
               new_password_confirmation=
               {this.state.new_password_confirmation || ""}
-              set={this.set}
-              save={this.savePassword}
-              user={this.props.user}
-            />
+              onChange={this.set}
+              onClick={this.savePassword}
+              user={this.props.user} />
           </Row>
           <Row>
             <DeleteAccount
               deletion_confirmation=
               {this.state.deletion_confirmation || ""}
-              set={this.set}
-              save={() => this
+              onChange={this.set}
+              onClick={() => this
                 .props
                 .enactDeletion(this.props.dispatch,
-                this.state.deletion_confirmation)}
-            />
+                this.state.deletion_confirmation)} />
           </Row>
         </Col>
       </Page>
