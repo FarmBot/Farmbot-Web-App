@@ -12,6 +12,7 @@ import { SpacePanelHeader } from "./hardware_settings/space_panel_header";
 import {
   HomingAndCalibration
 } from "./hardware_settings/homing_and_calibration";
+import { SpecialStatus } from "../../resources/tagged_resources";
 
 export class HardwareSettings extends
   React.Component<HardwareSettingsProps, {}> {
@@ -26,14 +27,11 @@ export class HardwareSettings extends
             status={bot.hardware.informational_settings.sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <SaveBtn
-              isDirty={false}
-              isSaving={bot.isUpdating}
-              isSaved={!bot.isUpdating}
+              status={bot.isUpdating ? SpecialStatus.SAVING : undefined}
               dirtyText={" "}
               savingText={"Updating..."}
               savedText={"saved"}
-              hidden={false}
-            />
+              hidden={false} />
           </MustBeOnline>
         </WidgetHeader>
         <WidgetBody>

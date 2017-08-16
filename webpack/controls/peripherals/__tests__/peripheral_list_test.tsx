@@ -22,6 +22,7 @@ describe("<PeripheralList/>", function () {
     {
       uuid: "peripherals.2.2",
       kind: "peripherals",
+      specialStatus: undefined,
       body: {
         id: 2,
         pin: 13,
@@ -31,6 +32,7 @@ describe("<PeripheralList/>", function () {
     {
       uuid: "peripherals.1.1",
       kind: "peripherals",
+      specialStatus: undefined,
       body: {
         id: 1,
         pin: 2,

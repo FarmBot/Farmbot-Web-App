@@ -5,7 +5,8 @@ import {
   TaggedResource,
   ResourceName,
   sanityCheck,
-  isTaggedResource
+  isTaggedResource,
+  SpecialStatus
 } from "./tagged_resources";
 import { generateUuid, arrayWrap } from "./util";
 import { EditResourceParams } from "../api/interfaces";
@@ -98,8 +99,7 @@ export let resourceReducer = generateReducer
   })
   .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
     let resource = payload;
-    resource.dirty = false;
-    resource.saving = false;
+    resource.specialStatus = undefined;
     if (resource
       && resource.body) {
       switch (resource.kind) {
@@ -150,8 +150,7 @@ export let resourceReducer = generateReducer
     s.index.references[uuid] = payload;
     let tr = s.index.references[uuid];
     if (tr) {
-      tr.dirty = false;
-      tr.saving = false;
+      tr.specialStatus = undefined;
       sanityCheck(tr);
       dontTouchThis(tr);
       reindexResource(s.index, tr);
@@ -163,8 +162,7 @@ export let resourceReducer = generateReducer
   .add<TaggedResource>(Actions._RESOURCE_NO, (s, { payload }) => {
     let uuid = payload.uuid;
     let tr = _.merge(findByUuid(s.index, uuid), payload);
-    tr.dirty = true;
-    tr.saving = false;
+    tr.specialStatus = undefined;
     sanityCheck(tr);
     return s;
   })
@@ -173,7 +171,7 @@ export let resourceReducer = generateReducer
     let { update } = payload;
     let source = _.merge<TaggedResource>(findByUuid(s.index, uuid),
       { body: update },
-      { dirty: true });
+      { specialStatus: SpecialStatus.DIRTY });
     sanityCheck(source);
     payload && isTaggedResource(source);
     dontTouchThis(source);
@@ -183,7 +181,7 @@ export let resourceReducer = generateReducer
     let uuid = payload.uuid;
     let original = findByUuid(s.index, uuid);
     original.body = payload.update as typeof original.body;
-    original.dirty = true;
+    original.specialStatus = undefined;
     sanityCheck(original);
     payload && isTaggedResource(original);
     dontTouchThis(original);
@@ -196,9 +194,9 @@ export let resourceReducer = generateReducer
     if (tr.kind === "logs") {
       // Since logs don't come from the API all the time, they are the only
       // resource (right now) that can have an id of `undefined` and not dirty.
-      findByUuid(s.index, uuid).dirty = false;
+      findByUuid(s.index, uuid).specialStatus = undefined;
     } else {
-      findByUuid(s.index, uuid).dirty = true;
+      findByUuid(s.index, uuid).specialStatus = SpecialStatus.DIRTY;
     }
     sanityCheck(tr);
     dontTouchThis(tr);
@@ -206,7 +204,7 @@ export let resourceReducer = generateReducer
   })
   .add<TaggedResource>(Actions.SAVE_RESOURCE_START, (s, { payload }) => {
     let resource = findByUuid(s.index, payload.uuid);
-    resource.saving = true;
+    resource.specialStatus = SpecialStatus.SAVING;
     if (!resource.body.id) { delete resource.body.id; }
     return s;
   })
@@ -247,7 +245,8 @@ function addToIndex<T>(index: ResourceIndex,
   kind: ResourceName,
   body: T,
   uuid: string) {
-  let tr: TaggedResource = { kind, body, uuid } as any;
+  let tr: TaggedResource =
+    { kind, body, uuid, status: undefined } as any;
   sanityCheck(tr);
   index.all.push(tr.uuid);
   index.byKind[tr.kind].push(tr.uuid);

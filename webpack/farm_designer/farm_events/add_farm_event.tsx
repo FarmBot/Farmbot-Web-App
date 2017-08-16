@@ -14,6 +14,7 @@ import {
   ExecutableType
 } from "../interfaces";
 import { BackArrow } from "../../ui/index";
+import { SpecialStatus } from "../../resources/tagged_resources";
 
 interface State {
   uuid: string;
@@ -49,12 +50,10 @@ export class AddFarmEvent
       let NOW = moment().toISOString();
       let action = init({
         kind: "farm_events",
-        dirty: true,
-        saving: false,
+        specialStatus: SpecialStatus.DIRTY,
         uuid: "---",
         body: {
           start_time: NOW,
-          next_time: NOW,
           time_unit: "never",
           executable_id,
           executable_type
@@ -109,8 +108,7 @@ export class AddFarmEvent
           executableOptions={this.props.executableOptions}
           dispatch={this.props.dispatch}
           findExecutable={this.props.findExecutable}
-          title={t("Add Farm Event")}
-        />
+          title={t("Add Farm Event")} />
       );
     } else {
       return this

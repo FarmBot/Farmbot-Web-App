@@ -77,7 +77,7 @@ export class GardenMap extends
       let p: TaggedPlantPointer = {
         kind: "points",
         uuid: "--never",
-        dirty: true,
+        specialStatus: undefined,
         body: Plant({
           x,
           y,

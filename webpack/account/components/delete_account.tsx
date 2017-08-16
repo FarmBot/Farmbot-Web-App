@@ -13,7 +13,7 @@ import { Content } from "../../constants";
 
 export class DeleteAccount extends React.Component<DeleteAccountPropTypes, {}> {
   render() {
-    let { set, deletion_confirmation, save } = this.props;
+    let { onChange, deletion_confirmation, onClick } = this.props;
     return <Widget>
       <WidgetHeader title="Delete Account" />
       <WidgetBody>
@@ -33,7 +33,7 @@ export class DeleteAccount extends React.Component<DeleteAccountPropTypes, {}> {
             </Col>
             <Col xs={8}>
               <BlurableInput
-                onCommit={set}
+                onCommit={onChange}
                 name="deletion_confirmation"
                 allowEmpty={true}
                 value={deletion_confirmation || ""}
@@ -41,7 +41,7 @@ export class DeleteAccount extends React.Component<DeleteAccountPropTypes, {}> {
             </Col>
             <Col xs={4}>
               <button
-                onClick={save}
+                onClick={onClick}
                 className="red fb-button"
                 type="button"
               >

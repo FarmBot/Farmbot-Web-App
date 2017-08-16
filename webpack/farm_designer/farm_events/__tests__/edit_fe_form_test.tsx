@@ -3,6 +3,8 @@ import { fakeFarmEvent, fakeSequence } from "../../../__test_support__/fake_stat
 import { mount } from "enzyme";
 import { EditFEForm, EditFEProps, FarmEventViewModel, recombine } from "../edit_fe_form";
 import { isString } from "lodash";
+import { repeatOptions } from "../map_state_to_props_add_edit";
+import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<FarmEventForm/>", () => {
   let props = (): EditFEForm["props"] => ({
@@ -26,7 +28,6 @@ describe("<FarmEventForm/>", () => {
 
   it("sets defaults", () => {
     expect(context.form.state.fe).toMatchObject({});
-    expect(context.form.state.localCopyDirty).toBeFalsy();
   });
 
   it("determines if it is a one time event", () => {
@@ -77,10 +78,8 @@ describe("<FarmEventForm/>", () => {
     let p = props();
     let i = instance(p);
     i.forceUpdate();
-    expect(i.state.localCopyDirty).toBe(false);
     i.executableSet({ value: "wow", label: "hey", headingId: "Sequence" });
     i.forceUpdate();
-    expect(i.state.localCopyDirty).toBe(true);
     expect(i.state.fe.executable_type).toEqual("Sequence");
     expect(i.state.fe.executable_id).toEqual("wow");
   });
@@ -99,10 +98,8 @@ describe("<FarmEventForm/>", () => {
     let p = props();
     let i = instance(p);
     i.forceUpdate();
-    expect(i.state.localCopyDirty).toBe(false);
     i.fieldSet("repeat")(({ currentTarget: { value: "4" } } as any));
     i.forceUpdate();
-    expect(i.state.localCopyDirty).toBe(true);
     expect(i.state.fe.repeat).toEqual("4");
   });
 
@@ -125,5 +122,28 @@ describe("<FarmEventForm/>", () => {
     expect(result.time_unit).toBe("never");
     expect(result.executable_id).toBe(1);
     expect(result.executable_type).toBe("Regimen");
+  });
+
+  it("renders the correct save button text when adding", () => {
+    let seq = fakeSequence();
+    let fe = fakeFarmEvent("Sequence", seq.body.id || 0);
+    fe.specialStatus = SpecialStatus.DIRTY;
+    let el = mount(<EditFEForm
+      farmEvent={fe}
+      title=""
+      deviceTimezone="America/Chicago"
+      executableOptions={[
+        {
+          "label": "Sequence: Every Node",
+          "value": 11,
+          "headingId": "Sequence"
+        }
+      ]}
+      findExecutable={jest.fn(() => seq)}
+      dispatch={jest.fn()}
+      repeatOptions={repeatOptions} />);
+    el.update();
+    let txt = el.text().replace(/\s+/g, " ");
+    expect(txt).toContain("Save *");
   });
 });

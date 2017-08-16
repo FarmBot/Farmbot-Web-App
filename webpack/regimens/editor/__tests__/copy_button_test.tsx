@@ -3,6 +3,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { CopyButton } from "../copy_button";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
+import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("Copy button", () => {
 
@@ -17,7 +18,7 @@ describe("Copy button", () => {
     expect(typeof action).toEqual("object");
     expect(action.type).toEqual("INIT_RESOURCE");
     let reg = action.payload.body;
-    expect(action.payload.dirty).toBeTruthy();
+    expect(action.payload.specialStatus).toBe(SpecialStatus.DIRTY);
     expect(reg.name).toContain("Foo copy");
   });
 
