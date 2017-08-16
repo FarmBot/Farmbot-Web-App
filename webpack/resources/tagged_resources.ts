@@ -52,8 +52,7 @@ export enum SpecialStatus {
 }
 
 /** Given an array of TaggedResources, returns the most "important" special status.
- * Ex: If one item in the array is `DIRTY`, return `DIRTY`.
- * Ex: If all are saved and un-changed, return `undefined`. */
+ * the hierarchy is SAVED => DIRTY => SAVING  */
 export function getArrayStatus(i: TaggedResource[]): SpecialStatus | undefined {
   let r = betterCompact(_(i).map(x => x.specialStatus).uniq().value());
   if (r.length) {

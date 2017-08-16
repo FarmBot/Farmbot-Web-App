@@ -12,7 +12,7 @@ interface LastSeenProps {
 export class LastSeen extends React.Component<LastSeenProps, {}> {
   get lastSeen() { return this.props.device.body.last_seen; }
   show = (): string => {
-    if (!this.props.device.specialStatus) {
+    if (this.props.device.specialStatus) {
       return t("Loading...");
     }
 
