@@ -54,7 +54,6 @@ export class AddFarmEvent
         uuid: "---",
         body: {
           start_time: NOW,
-          next_time: NOW,
           time_unit: "never",
           executable_id,
           executable_type
@@ -109,8 +108,7 @@ export class AddFarmEvent
           executableOptions={this.props.executableOptions}
           dispatch={this.props.dispatch}
           findExecutable={this.props.findExecutable}
-          title={t("Add Farm Event")}
-        />
+          title={t("Add Farm Event")} />
       );
     } else {
       return this

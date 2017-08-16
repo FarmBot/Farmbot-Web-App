@@ -3,6 +3,8 @@ import { fakeFarmEvent, fakeSequence } from "../../../__test_support__/fake_stat
 import { mount } from "enzyme";
 import { EditFEForm, EditFEProps, FarmEventViewModel, recombine } from "../edit_fe_form";
 import { isString } from "lodash";
+import { SpecialStatus } from "../../../resources/tagged_resources";
+import { repeatOptions } from "../map_state_to_props_add_edit";
 
 describe("<FarmEventForm/>", () => {
   let props = (): EditFEForm["props"] => ({
@@ -120,5 +122,34 @@ describe("<FarmEventForm/>", () => {
     expect(result.time_unit).toBe("never");
     expect(result.executable_id).toBe(1);
     expect(result.executable_type).toBe("Regimen");
+  });
+
+  it("renders the correct save button text when adding", () => {
+    let el = mount(<EditFEForm
+      farmEvent={{
+        "kind": "farm_events",
+        "body": {
+          "start_time": "2017-08-16T13:16:06.640Z",
+          "time_unit": "never",
+          "executable_id": 10,
+          "executable_type": "Sequence",
+          "id": 0
+        },
+        "uuid": "farm_events.0.116",
+        "specialStatus": SpecialStatus.DIRTY
+      }}
+      title=""
+      deviceTimezone="America/Chicago"
+      executableOptions={[
+        {
+          "label": "Sequence: Every Node",
+          "value": 11,
+          "headingId": "Sequence"
+        }
+      ]}
+      findExecutable={jest.fn()}
+      dispatch={jest.fn()}
+      repeatOptions={repeatOptions} />);
+    expect(el.text()).toContain("SAVE *");
   });
 });

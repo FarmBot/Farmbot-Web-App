@@ -20,7 +20,6 @@ describe("<HomingRow />", () => {
   //       Result string is "HOME {{axis}}HOME {{axis}}HOME {{axis}}"
   //       Console example (result is "HOME {{ax}}"):
   //         let ax = "x";
-  //         console.log(t("HOME {{ax}}", { ax }));
   // it("renders three buttons", () => {
   //   const wrapper = mount(<HomingRow hardware={bot.hardware.mcu_params} />);
   //   let txt = wrapper.text();
