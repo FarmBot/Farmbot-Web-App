@@ -273,7 +273,12 @@ export function connectDevice(token: string): ConnectDeviceReturn {
     let secure = location.protocol === "https:";
     let bot = new Farmbot({ token, secure });
     bot.on("online", () => dispatch(setMqttStatus(true)));
-    bot.on("offline", () => dispatch(setMqttStatus(false)));
+    bot.on("offline", () => {
+      dispatch(setMqttStatus(false));
+      error(t("Your web browser is unable to connect to the message broker " +
+        "(MQTT). You might be behind a firewall or disconnected from the " +
+        "Internet. Check your network settings."));
+    });
     return bot
       .connect()
       .then(() => {
