@@ -181,7 +181,7 @@ export let resourceReducer = generateReducer
     let uuid = payload.uuid;
     let original = findByUuid(s.index, uuid);
     original.body = payload.update as typeof original.body;
-    original.specialStatus = undefined;
+    original.specialStatus = SpecialStatus.DIRTY;
     sanityCheck(original);
     payload && isTaggedResource(original);
     dontTouchThis(original);
