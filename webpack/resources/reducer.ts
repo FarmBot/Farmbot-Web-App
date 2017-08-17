@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import { merge } from "lodash";
 import { generateReducer } from "../redux/generate_reducer";
 import { RestResources, ResourceIndex } from "./interfaces";
 import {
@@ -161,7 +161,7 @@ export let resourceReducer = generateReducer
   })
   .add<TaggedResource>(Actions._RESOURCE_NO, (s, { payload }) => {
     let uuid = payload.uuid;
-    let tr = _.merge(findByUuid(s.index, uuid), payload);
+    let tr = merge(findByUuid(s.index, uuid), payload);
     tr.specialStatus = undefined;
     sanityCheck(tr);
     return s;
@@ -169,7 +169,7 @@ export let resourceReducer = generateReducer
   .add<EditResourceParams>(Actions.EDIT_RESOURCE, (s, { payload }) => {
     let uuid = payload.uuid;
     let { update } = payload;
-    let source = _.merge<TaggedResource>(findByUuid(s.index, uuid),
+    let source = merge<TaggedResource>(findByUuid(s.index, uuid),
       { body: update },
       { specialStatus: SpecialStatus.DIRTY });
     sanityCheck(source);

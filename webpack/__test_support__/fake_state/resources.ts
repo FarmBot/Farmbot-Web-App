@@ -2,7 +2,7 @@ import { Everything } from "../../interfaces";
 import { buildResourceIndex } from "../resource_index_builder";
 import {
   TaggedFarmEvent, TaggedSequence, TaggedRegimen, TaggedImage,
-  TaggedTool, TaggedToolSlotPointer
+  TaggedTool, TaggedToolSlotPointer, TaggedUser
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
@@ -57,6 +57,17 @@ export function fakeImage(): TaggedImage {
 export function fakeTool(): TaggedTool {
   return fakeResource("tools", {
     name: "Foo"
+  });
+}
+
+export function fakeUser(): TaggedUser {
+  return fakeResource("users", {
+    id: 456,
+    device_id: 789,
+    name: "Fake User 123",
+    email: "fake@fake.com",
+    created_at: "---",
+    updated_at: "---"
   });
 }
 

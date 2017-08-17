@@ -8,12 +8,14 @@ import {
   Col,
   Row
 } from "../../ui";
-import { DeleteAccountPropTypes } from "../interfaces";
+import { DeleteAccountProps, DeleteAccountState } from "../interfaces";
 import { Content } from "../../constants";
 
-export class DeleteAccount extends React.Component<DeleteAccountPropTypes, {}> {
+export class DeleteAccount extends
+  React.Component<DeleteAccountProps, DeleteAccountState> {
+  state: DeleteAccountState = { password: "" };
+
   render() {
-    let { onChange, deletion_confirmation, onClick } = this.props;
     return <Widget>
       <WidgetHeader title="Delete Account" />
       <WidgetBody>
@@ -33,18 +35,18 @@ export class DeleteAccount extends React.Component<DeleteAccountPropTypes, {}> {
             </Col>
             <Col xs={8}>
               <BlurableInput
-                onCommit={onChange}
-                name="deletion_confirmation"
+                onCommit={(e) => {
+                  this.setState({ password: e.currentTarget.value });
+                }}
                 allowEmpty={true}
-                value={deletion_confirmation || ""}
+                value={this.state.password}
                 type="password" />
             </Col>
             <Col xs={4}>
               <button
-                onClick={onClick}
+                onClick={() => this.props.onClick(this.state.password)}
                 className="red fb-button"
-                type="button"
-              >
+                type="button" >
                 {t("Delete Account")}
               </button>
             </Col>

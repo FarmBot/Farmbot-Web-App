@@ -4,46 +4,30 @@ import { TaggedUser } from "../resources/tagged_resources";
 export interface Props {
   user: TaggedUser;
   dispatch: Function;
-  saveUser(dispatch: Function, update: Partial<User>): void;
-  enactDeletion(dispatch: Function, deletion_confirmation: string | undefined): void;
 }
 
 /** JSON form that gets POSTed to the API when user updates their info. */
-export interface UserInfo {
-  name: string;
-  email: string;
+export interface UserInfo extends Record<keyof User, string> {
   password: string;
   new_password: string;
   new_password_confirmation: string;
-  /** User must enter password confirmation to delete their account. */
-  deletion_confirmation: string;
-  isModified: boolean;
+  password_deletion_confirmation: string;
 }
-
-export type State = Partial<UserInfo>;
 
 export interface DeletionRequest {
   password: string;
 }
 
-export interface DeleteAccountPropTypes {
-  deletion_confirmation: string | undefined;
-  onChange: React.EventHandler<React.FormEvent<HTMLInputElement>>;
-  onClick: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
+export interface DeleteAccountProps {
+  onClick(pw: string): void;
 }
 
-export interface ChangePwPropTypes {
-  user: TaggedUser;
-  password: string | undefined;
-  new_password: string | undefined;
-  new_password_confirmation: string | undefined;
-  onChange: React.EventHandler<React.FormEvent<HTMLInputElement>>;
-  onClick: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
+export interface DeleteAccountState {
+  password: string;
 }
 
 export interface SettingsPropTypes {
-  name: string;
-  email: string;
-  set: React.EventHandler<React.FormEvent<HTMLInputElement>>;
-  save: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
+  user: TaggedUser;
+  onChange: React.EventHandler<React.FormEvent<HTMLInputElement>>;
+  onSave: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
 }
