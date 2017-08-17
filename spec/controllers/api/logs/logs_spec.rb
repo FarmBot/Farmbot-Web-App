@@ -131,8 +131,6 @@ describe Api::LogsController do
       expect(LogDispatch.where(sent_at: nil).count).to eq(0)
     end
 
-    it "batches multiple messages"
-
     it "handles bug that Connor reported" do
       sign_in user
       empty_mail_bag

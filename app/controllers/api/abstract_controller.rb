@@ -126,6 +126,9 @@ private
       if outcome.success?
         render options.merge(json: outcome.result)
       else
+        Rollbar.info("Mutation error",
+                     errors: outcome.errors.message,
+                     user: current_user)
         render options.merge(json: outcome.errors.message, status: 422)
       end
     end

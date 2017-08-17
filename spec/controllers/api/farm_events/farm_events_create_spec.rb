@@ -35,8 +35,6 @@ describe Api::FarmEventsController do
       expect(json.keys).to include(:farm_event)
     end
 
-    it 'cant use other peoples executables'
-    it 'provides a bad executable'
     it 'creates a one-off FarmEvent' do
       sign_in user
       r = FactoryGirl.create(:regimen, device: user.device)
