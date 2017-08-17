@@ -1,20 +1,16 @@
 import * as React from "react";
 import { t } from "i18next";
-import { BlurableInput, Widget, WidgetHeader, WidgetBody } from "../../ui";
+import { BlurableInput, Widget, WidgetHeader, WidgetBody, SaveBtn } from "../../ui";
 import { SettingsPropTypes } from "../interfaces";
 
 export class Settings extends React.Component<SettingsPropTypes, {}> {
   render() {
-    let { name, email, set, save } = this.props;
+    let { user, onChange, onSave } = this.props;
     return <Widget>
       <WidgetHeader title="Account Settings">
-        <button
-          className="green fb-button"
-          type="button"
-          onClick={save}
-        >
-          {t("SAVE")}
-        </button>
+        <SaveBtn
+          onClick={onSave}
+          status={this.props.user.specialStatus} />
       </WidgetHeader>
       <WidgetBody>
         <form>
@@ -22,18 +18,18 @@ export class Settings extends React.Component<SettingsPropTypes, {}> {
             {t("Your Name")}
           </label>
           <BlurableInput
-            onCommit={set}
+            onCommit={onChange}
             name="name"
-            value={name || ""}
+            value={user.body.name || ""}
             type="text"
           />
           <label>
             {t("Email")}
           </label>
           <BlurableInput
-            onCommit={set}
+            onCommit={onChange}
             name="email"
-            value={email || ""}
+            value={user.body.email || ""}
             type="email"
           />
         </form>

@@ -4,25 +4,20 @@ import { Settings, DeleteAccount, ChangePassword } from "./components";
 import { State, Props } from "./interfaces";
 import { Page, Row, Col } from "../ui";
 import { mapStateToProps } from "./state_to_props";
+import { User } from "../auth/interfaces";
 
 @connect(mapStateToProps)
 export class Account extends React.Component<Props, State> {
-  state: State = { isModified: false };
+  state: State = {};
 
-  componentDidMount() {
-    if (this.props.user) {
-      let { name, email } = this.props.user.body;
-      this.setState({ name, email });
+  set = (name: (keyof User)) =>
+    (event: React.FormEvent<HTMLInputElement>) => {
+      let { value } = event.currentTarget;
+      this.setState({ [name]: value });
     }
-  }
-
-  set = (event: React.FormEvent<HTMLInputElement>) => {
-    let { name, value } = event.currentTarget;
-    this.setState({ [name]: value });
-  }
 
   savePassword = () => {
-    this.props.saveUser(this.props.dispatch, this.state);
+    this.props.saveUser(this.props.dispatch, this.state as User);
 
     this.setState({
       password: "",
@@ -37,10 +32,9 @@ export class Account extends React.Component<Props, State> {
         <Col xs={12} sm={6} smOffset={3}>
           <Row>
             <Settings
-              name={this.state.name || ""}
-              email={this.state.email || ""}
-              set={this.set}
-              save={() => this.props.saveUser(this.props.dispatch, this.state)} />
+              user={this.props.user}
+              onChange={this.set}
+              onSave={() => this.props.saveUser(this.props.dispatch, this.state)} />
           </Row>
           <Row>
             <ChangePassword

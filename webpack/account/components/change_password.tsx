@@ -7,9 +7,9 @@ import {
   WidgetBody,
   SaveBtn
 } from "../../ui";
-import { ChangePwPropTypes } from "../interfaces";
+import { ChangePWProps } from "../interfaces";
 
-export class ChangePassword extends React.Component<ChangePwPropTypes, {}> {
+export class ChangePassword extends React.Component<ChangePWProps, {}> {
   render() {
     let {
       onChange,
