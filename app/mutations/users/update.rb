@@ -1,8 +1,6 @@
 module Users
   class Update < Mutations::Command
-    PASSWORD_PROBLEMS = "Changing a password requires a valid `password`,"\
-                        " `new_password` and a matching "\
-                        "`new_password_confirmation`"
+    PASSWORD_PROBLEMS = "Password and confirmation(s) must match."
     EMAIL_IN_USE      = "That email is already registered"
     required { model :user, class: User }
 

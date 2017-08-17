@@ -3,7 +3,6 @@ import { TaggedUser } from "../resources/tagged_resources";
 
 export let user: User = {
   created_at: "2016-10-05T03:02:58.000Z",
-  device_id: 2,
   email: "farmbot1@farmbot.io",
   id: 2,
   name: "FarmBot 1",
@@ -16,7 +15,6 @@ export let taggedUser: TaggedUser = {
   specialStatus: undefined,
   body: {
     created_at: "2016-10-05T03:02:58.000Z",
-    device_id: 2,
     email: "farmbot1@farmbot.io",
     id: 2,
     name: "FarmBot 1",

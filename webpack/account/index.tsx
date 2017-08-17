@@ -1,35 +1,39 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Settings, DeleteAccount, ChangePassword } from "./components";
-import { State, Props } from "./interfaces";
+import { Props } from "./interfaces";
 import { Page, Row, Col } from "../ui";
 import { mapStateToProps } from "./state_to_props";
+import { User } from "../auth/interfaces";
+import { edit, save } from "../api/crud";
+import { updateNO } from "../resources/actions";
+import { deleteUser } from "./actions";
+import { success } from "farmbot-toastr/dist";
+
+type State = Partial<User>;
+
+let KEYS: (keyof User)[] = ["id", "name", "email", "created_at", "updated_at"];
+
+let isKey = (x: string): x is keyof User => KEYS.includes(x as keyof User);
 
 @connect(mapStateToProps)
 export class Account extends React.Component<Props, State> {
-  state: State = { isModified: false };
+  state: State = {};
 
-  componentDidMount() {
-    if (this.props.user) {
-      let { name, email } = this.props.user.body;
-      this.setState({ name, email });
+  onChange = (e: React.FormEvent<HTMLInputElement>) => {
+    let { name, value } = e.currentTarget;
+    if (isKey(name)) {
+      this.setState({ [name]: value });
+      this.props.dispatch(edit(this.props.user, this.state));
+    } else {
+      throw new Error("Bad key: " + name);
     }
-  }
+  };
 
-  set = (event: React.FormEvent<HTMLInputElement>) => {
-    let { name, value } = event.currentTarget;
-    this.setState({ [name]: value });
-  }
-
-  savePassword = () => {
-    this.props.saveUser(this.props.dispatch, this.state);
-
-    this.setState({
-      password: "",
-      new_password: "",
-      new_password_confirmation: ""
-    });
-  }
+  onSave = () => this
+    .props
+    .dispatch(save(this.props.user.uuid))
+    .then(() => success("saved"), updateNO);
 
   render() {
     return (
@@ -37,30 +41,19 @@ export class Account extends React.Component<Props, State> {
         <Col xs={12} sm={6} smOffset={3}>
           <Row>
             <Settings
-              name={this.state.name || ""}
-              email={this.state.email || ""}
-              set={this.set}
-              save={() => this.props.saveUser(this.props.dispatch, this.state)} />
+              user={this.props.user}
+              onChange={this.onChange}
+              onSave={this.onSave} />
           </Row>
           <Row>
-            <ChangePassword
-              password={this.state.password || ""}
-              new_password={this.state.new_password || ""}
-              new_password_confirmation=
-              {this.state.new_password_confirmation || ""}
-              onChange={this.set}
-              onClick={this.savePassword}
-              user={this.props.user} />
+            <ChangePassword />
           </Row>
           <Row>
             <DeleteAccount
-              deletion_confirmation=
-              {this.state.deletion_confirmation || ""}
-              onChange={this.set}
-              onClick={() => this
+              onClick={(password) => this
                 .props
-                .enactDeletion(this.props.dispatch,
-                this.state.deletion_confirmation)} />
+                .dispatch(deleteUser({ password }))}
+            />
           </Row>
         </Col>
       </Page>
