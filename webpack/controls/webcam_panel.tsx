@@ -69,16 +69,6 @@ export class WebcamPanel extends
               {t("Reset")}
             </button>
           }
-          {/*
-        {isEditing &&
-          <button
-            className="fb-button clear-webcam-url-btn"
-            onClick={this.clearURL}
-          >
-            <i className="fa fa-times"></i>
-          </button>
-        }
-        */}
           {!isEditing &&
             <button
               className="fb-button gray"
