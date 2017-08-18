@@ -3,7 +3,6 @@ import { t } from "i18next";
 import { info, error, success } from "farmbot-toastr";
 import { FarmbotOsProps, FarmbotOsState } from "../interfaces";
 import {
-  changeDevice,
   saveAccountChanges,
   reboot,
   powerOff,
@@ -20,7 +19,7 @@ import {
   Col,
   SaveBtn
 } from "../../ui/index";
-import { save } from "../../api/crud";
+import { save, edit } from "../../api/crud";
 import { MustBeOnline } from "../must_be_online";
 import { ToolTips, Content } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
@@ -43,7 +42,7 @@ export class FarmbotOsSettings
 
   changeBot = (e: React.ChangeEvent<HTMLInputElement>) => {
     let { account, dispatch } = this.props;
-    dispatch(changeDevice(account, { name: e.currentTarget.value }));
+    dispatch(edit(account, { name: e.currentTarget.value }));
   }
 
   saveBot(e: React.MouseEvent<{}>) {
@@ -70,7 +69,7 @@ export class FarmbotOsSettings
 
   handleTimezone = (timezone: string) => {
     let { account, dispatch } = this.props;
-    dispatch(changeDevice(account, { timezone }));
+    dispatch(edit(account, { timezone }));
     dispatch(save(account.uuid));
   }
 

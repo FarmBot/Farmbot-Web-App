@@ -7,7 +7,7 @@ import { devices } from "../device";
 import { Log } from "../interfaces";
 import { GithubRelease, MoveRelProps } from "./interfaces";
 import { Thunk, GetState } from "../redux/interfaces";
-import { DeviceAccountSettings, BotState } from "../devices/interfaces";
+import { BotState } from "../devices/interfaces";
 import {
   McuParams,
   Configuration,
@@ -20,7 +20,7 @@ import { Sequence } from "../sequences/interfaces";
 import { HardwareState, ControlPanelState } from "../devices/interfaces";
 import { API } from "../api/index";
 import { User } from "../auth/interfaces";
-import { init, edit } from "../api/crud";
+import { init } from "../api/crud";
 import { getDeviceAccountSettings } from "../resources/selectors";
 import { TaggedDevice } from "../resources/tagged_resources";
 import { versionOK } from "./reducer";
@@ -187,14 +187,6 @@ export function save(input: TaggedDevice) {
  */
 export function toggleControlPanel(payload: keyof ControlPanelState) {
   return { type: "TOGGLE_CONTROL_PANEL_OPTION", payload };
-}
-
-export function changeDevice(device: TaggedDevice,
-  update: Partial<DeviceAccountSettings>): Thunk {
-  return function (dispatch, getState) {
-    dispatch(edit(device, update));
-    dispatch(save(getDeviceAccountSettings(getState().resources.index)));
-  };
 }
 
 export function MCUFactoryReset() {
