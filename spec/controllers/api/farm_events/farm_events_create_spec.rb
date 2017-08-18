@@ -15,7 +15,7 @@ describe Api::FarmEventsController do
       input = { executable_id: sequence.id,
                 executable_type: sequence.class.name,
                 start_time: (Time.now + 1.minute).as_json,
-                end_time: '2099-02-17T18:19:20.000Z',
+                end_time: '2029-02-17T18:19:20.000Z',
                 repeat: 4,
                 time_unit: 'minutely' }
       before = FarmEvent.count
@@ -26,8 +26,8 @@ describe Api::FarmEventsController do
 
     it 'handles missing farm_event id' do
       sign_in user
-      input = { start_time: '2085-02-17T15:16:17.000Z',
-                end_time: '2099-02-17T18:19:20.000Z',
+      input = { start_time: '2025-02-17T15:16:17.000Z',
+                end_time: '2029-02-17T18:19:20.000Z',
                 repeat: 4,
                 time_unit: 'minutely' }
       post :create, params: input
