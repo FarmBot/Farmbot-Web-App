@@ -68,7 +68,7 @@ describe Api::FarmEventsController do
     it 'disallows FarmEvents too far in the future' do
       sign_in user
       r = FactoryGirl.create(:regimen, device: user.device)
-      input = { "end_time": (Time.now + 40.years).as_json,
+      input = { "end_time": "+099999-08-18T13:54:00.000Z",
                 "time_unit": "never",
                 "executable_id": r.id,
                 "executable_type": "Regimen",

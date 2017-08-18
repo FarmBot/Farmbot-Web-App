@@ -28,7 +28,6 @@ module FarmEvents
       p = inputs.merge(executable: executable)
       # Needs to be set this way for cleanup operations:
       p[:end_time] = (p[:start_time] + 1.minute) if is_one_time_event
-      binding.pry
       FarmEvent.create!(p)
     end
 

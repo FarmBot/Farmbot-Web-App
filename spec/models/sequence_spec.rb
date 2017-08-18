@@ -12,6 +12,7 @@ describe Sequence do
   end
 
   it "picks random values" do
+    FactoryGirl.create(:sequence)
     3.times { expect(Sequence.random).to be_kind_of(Sequence) }
   end
 end
