@@ -16,6 +16,7 @@ FarmBot::Application.routes.draw do
     resource :tokens,         only: [:create]
     resource :users,          only: [:create, :update, :destroy, :show]
     resource :device,         only: [:show, :destroy, :create, :update]
+    resource :webcam_feed,    only: [:show, :destroy, :create, :update]
     resources :password_resets, only: [:create, :update]
     put "/password_resets"     => "password_resets#update", as: :whatever
     put "/users/verify/:token" => "users#verify",           as: :users_verify
