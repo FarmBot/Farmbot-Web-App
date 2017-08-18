@@ -14,10 +14,11 @@ class Device < ApplicationRecord
   has_many  :peripherals,      dependent: :destroy
   has_many  :tools,            dependent: :destroy
   has_many  :images,           dependent: :destroy
-  validates :name,             uniqueness: true
   validates :timezone,         inclusion: { in: TIMEZONES,
                                             message: BAD_TZ,
                                             allow_nil: true }
+  validates_presence_of :name
+
   # Give the user back the amount of logs they are allowed to view.
   def limited_log_list
     logs.all.last(max_log_count || DEFAULT_MAX_LOGS)
