@@ -34,5 +34,14 @@ describe Api::FarmEventsController do
       expect(json[:end_time]).to eq((fe.start_time + 1.minute).as_json)
       expect(fe.end_time).to eq(fe.start_time + 1.minute)
     end
+
+    it 'disallows start/end times that are outside of a 20 year window' do
+      sign_in user
+      id = FactoryGirl.create(:farm_event, device: user.device).id
+      patch :update, params: { id:       id,
+                               end_time: "+045633-08-18T13:25:00.000Z" }
+      expect(response.status).to eq(422)
+      expect(json[:end_time]).to include("too far in the future")
+    end
   end
 end

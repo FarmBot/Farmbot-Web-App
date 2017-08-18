@@ -14,4 +14,6 @@ class Regimen < ApplicationRecord
 
   has_many   :regimen_items, dependent: :destroy
   belongs_to :device
+  validates  :device, presence: true
+
 end

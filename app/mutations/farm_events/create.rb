@@ -14,8 +14,8 @@ module FarmEvents
     end
 
     optional do
-      time :start_time, default: Time.current
-      time :end_time
+      time :start_time, default: Time.current, after: Time.now - 20.years
+      time :end_time, before: Time.now + 20.years
     end
 
     def validate

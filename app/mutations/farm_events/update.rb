@@ -12,8 +12,8 @@ module FarmEvents
     optional do
       integer :repeat,    min: 1
       string  :time_unit, in: FarmEvent::UNITS_OF_TIME
-      time    :start_time
-      time    :end_time
+      time    :start_time, after: Time.now - 20.years
+      time    :end_time, before: Time.now + 20.years
     end
 
     def validate

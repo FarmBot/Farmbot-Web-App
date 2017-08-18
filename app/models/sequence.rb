@@ -38,6 +38,7 @@ class Sequence < ActiveRecord::Base
   [ :name, :kind ].each { |n| validates n, presence: true }
   validates :color, inclusion: { in: COLORS }
   validates :name, uniqueness: { scope: :device }
+  validates  :device, presence: true
 
   after_find :maybe_migrate
 

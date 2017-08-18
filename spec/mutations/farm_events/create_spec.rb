@@ -4,8 +4,8 @@ describe FarmEvents::Create do
   let(:seq) { FactoryGirl.create(:sequence) }
   it 'Builds a farm_event' do
     device = seq.device
-    start_time = '2087-02-17T15:16:17.000Z'
-    end_time = '2099-02-17T18:19:20.000Z'
+    start_time = '2027-02-17T15:16:17.000Z'
+    end_time = '2029-02-17T18:19:20.000Z'
     farm_event = FarmEvents::Create.run!(device:          device,
                                          executable_id:   seq.id,
                                          executable_type: seq.class.name,
@@ -35,6 +35,25 @@ describe FarmEvents::Create do
                                          repeat:          4,
                                          time_unit:       'minutely')
     expect(farm_event.errors["end_time"]).to be
-    expect(farm_event.errors["end_time"].message).to include(FarmEvents::Create::BACKWARDS_END_TIME)
+    expect(farm_event.errors["end_time"].message)
+      .to include(FarmEvents::Create::BACKWARDS_END_TIME)
+  end
+
+
+
+  it "disallows creation of farm events with 5 digit years" do
+    device = seq.device
+    start_time = "+099999-08-18T12:32:00.000Z"
+    end_time   = "+099999-08-19T12:32:00.000Z"
+    farm_event = FarmEvents::Create.run(device:          device,
+                                         executable_id:   seq.id,
+                                         executable_type: seq.class.name,
+                                         executable:      seq,
+                                         end_time:        end_time,
+                                         start_time:      start_time,
+                                         repeat:          4,
+                                         time_unit:       'minutely')
+    expect(farm_event.errors.message_list.join)
+      .to include("too far in the future")
   end
 end
