@@ -7,6 +7,7 @@ describe Api::WebcamFeedsController do
   it 'shows a webcam feed- even if you dont have one' do
     sign_in user
     expect(user.device.webcam_feed).to be(nil)
+    user.device.update_attributes!(webcam_url: nil)
     get :show, format: :json
     expect(response.status).to eq(200)
     expect(user.device.reload.webcam_feed).to be
