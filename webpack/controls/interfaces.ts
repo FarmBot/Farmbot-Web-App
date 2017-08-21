@@ -97,3 +97,10 @@ export interface ToggleButtonProps {
   disabled?: boolean | undefined;
   noYes?: boolean;
 }
+
+export interface WebcamFeed {
+  id: number;
+  url: string;
+  updated_at: string;
+  created_at: string;
+}

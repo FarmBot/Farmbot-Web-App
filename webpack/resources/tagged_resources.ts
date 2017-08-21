@@ -16,6 +16,7 @@ import { isObject, isString, get } from "lodash";
 import { Image } from "../farmware/images/interfaces";
 import { betterCompact } from "../util";
 import * as _ from "lodash";
+import { WebcamFeed } from "../controls/interfaces";
 export type ResourceName =
   | "users"
   | "device"
@@ -28,7 +29,8 @@ export type ResourceName =
   | "regimens"
   | "sequences"
   | "tools"
-  | "users";
+  | "users"
+  | "webcam_feed";
 
 export interface TaggedResourceBase {
   kind: ResourceName;
@@ -81,7 +83,8 @@ export type TaggedResource =
   | TaggedSequence
   | TaggedTool
   | TaggedToolSlotPointer
-  | TaggedUser;
+  | TaggedUser
+  | TaggedWebcamFeed;
 
 export type TaggedRegimen = Resource<"regimens", Regimen>;
 export type TaggedTool = Resource<"tools", Tool>;
@@ -96,6 +99,7 @@ export type TaggedPlantPointer = Resource<"points", PlantPointer>;
 export type TaggedToolSlotPointer = Resource<"points", ToolSlotPointer>;
 export type TaggedUser = Resource<"users", User>;
 export type TaggedDevice = Resource<"device", DeviceAccountSettings>;
+export type TaggedWebcamFeed = Resource<"webcam_feed", WebcamFeed>;
 
 /** Spot check to be certain a TaggedResource is what it says it is. */
 export function sanityCheck(x: object): x is TaggedResource {
