@@ -4,16 +4,9 @@ ruby "2.4.1"
 gem "rails",  "~> 5.1.3"
 gem "thin"
 gem "rails_12factor"
-# START RAILS 5.1 "SPECIAL" VERSIONS ===================================.,_
-# TODO: Get off of this version once Devise folks ship a 5.1 release.
-#       - RC 12 May 17
-gem "devise", git: "https://github.com/plataformatec/devise"
-gem 'delayed_job', git: 'https://github.com/gogovan/delayed_job',
-                   branch: 'rails-5.1'
-gem 'delayed_job_active_record',
-    git: 'https://github.com/gogovan/delayed_job_active_record',
-    branch: 'rails-5.1'
-# END TEMPORARY RAILS 5.1 GEMS =========================================-"`
+gem "devise"
+gem "delayed_job"
+gem "delayed_job_active_record"
 gem "jwt"
 gem "mutations"
 gem "active_model_serializers"
@@ -34,7 +27,7 @@ gem "rollbar", "~> 2.15.0"
 gem "skylight"
 
 group :development, :test do
-  gem 'codecov', require: false
+  gem "codecov", require: false
   gem "database_cleaner"
   gem "pry"
   gem "factory_girl_rails"
