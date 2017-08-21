@@ -25,7 +25,8 @@ import {
   TaggedSequence,
   TaggedTool,
   TaggedToolSlotPointer,
-  TaggedUser
+  TaggedUser,
+  TaggedWebcamFeed
 } from "./tagged_resources";
 import { CowardlyDictionary, betterCompact, sortResourcesById } from "../util";
 type StringMap = CowardlyDictionary<string>;
@@ -436,6 +437,25 @@ export function getDeviceAccountSettings(index: ResourceIndex) {
     throw new Error(`
     PROBLEM: Expected getDeviceAccountSettings() to return exactly 1 device.
     We got some other number back, indicating a hazardous condition.`);
+  }
+}
+
+export function getFeed(index: ResourceIndex): TaggedWebcamFeed {
+  let list = index.byKind.webcam_feed;
+  let uuid = list[0];
+  let device = index.references[uuid || -1];
+  switch (list.length) {
+    case 0:
+      throw new Error("Missing webcam feed");
+    case 1:
+      if (device && device.kind === "webcam_feed") {
+        sanityCheck(device);
+        return device;
+      } else {
+        throw new Error("Malformed webcam feed");
+      }
+    default:
+      throw new Error("Too many webcam feeds. Expected exactly 1.");
   }
 }
 

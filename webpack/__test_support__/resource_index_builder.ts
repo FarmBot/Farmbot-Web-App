@@ -8,8 +8,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "specialStatus": undefined,
     "body": {
       "id": 415,
-      "name": "wispy-firefly-846",
-      "webcam_url": undefined
+      "name": "wispy-firefly-846"
     },
     "uuid": "device.415.0"
   },

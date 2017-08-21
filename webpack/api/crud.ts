@@ -141,7 +141,8 @@ export function urlFor(tag: ResourceName) {
     users: API.current.usersPath,
     device: API.current.devicePath,
     images: API.current.imagesPath,
-    logs: API.current.logsPath
+    logs: API.current.logsPath,
+    webcam_feed: API.current.webcamFeedPath
   };
   let url = OPTIONS[tag];
   if (url) {

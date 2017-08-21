@@ -27,6 +27,10 @@ FarmBot::Application.routes.draw do
   patch "/device/:id" => "devices#update", as: :patch_device_redirect
   put   "/users/:id"  => "users#update",   as: :put_users_redirect
   patch "/users/:id"  => "users#update",   as: :patch_users_redirect
+  put   "/webcam_feed/:id"  => "webcam_feeds#update",
+    as: :put_webcam_feed_redirect
+  patch "/webcam_feed/:id"  => "webcam_feeds#update",
+    as: :patch_webcam_feed_redirect
 
   end
 

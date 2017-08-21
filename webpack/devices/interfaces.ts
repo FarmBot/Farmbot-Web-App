@@ -32,7 +32,6 @@ export interface Props {
 export interface DeviceAccountSettings {
   id: number;
   name: string;
-  webcam_url?: string;
   timezone?: string | undefined;
   last_seen?: string | undefined;
 }
