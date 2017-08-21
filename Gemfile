@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 ruby "2.4.1"
 
-gem "rails",  "~> 5.1"
+gem "rails",  "~> 5.1.3"
 gem "thin"
 gem "rails_12factor"
 # START RAILS 5.1 "SPECIAL" VERSIONS ===================================.,_
@@ -30,7 +30,7 @@ gem "webpack-rails"
 # Error reporting tools.
 # Active on the "official" FarmBot server, set the appropriate ENV
 # vars if you wish to use them on your own servers.
-gem "rollbar"
+gem "rollbar", "~> 2.15.0"
 gem "skylight"
 
 group :development, :test do
