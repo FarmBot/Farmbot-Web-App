@@ -104,16 +104,17 @@ export let resourceReducer = generateReducer
     if (resource
       && resource.body) {
       switch (resource.kind) {
-        case "sequences":
+        case "crops":
         case "device":
-        case "users":
         case "farm_events":
         case "logs":
         case "peripherals":
-        case "crops":
-        case "regimens":
-        case "tools":
         case "points":
+        case "regimens":
+        case "sequences":
+        case "tools":
+        case "users":
+        case "webcam_feed":
           reindexResource(s.index, resource);
           dontTouchThis(resource);
           s.index.references[resource.uuid] = resource;
@@ -129,16 +130,17 @@ export let resourceReducer = generateReducer
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
     let resource = payload;
     switch (resource.kind) {
+      case "crops":
       case "device":
-      case "users":
       case "farm_events":
       case "logs":
       case "peripherals":
-      case "crops":
+      case "points":
       case "regimens":
       case "sequences":
       case "tools":
-      case "points":
+      case "users":
+      case "webcam_feed":
         removeFromIndex(s.index, resource);
         break;
       default:
