@@ -107,11 +107,13 @@ describe("execSequence()", function () {
 
   it("calls execSequence", () => {
     let { mock } = devices.current.execSequence as jest.Mock<{}>;
-    actions.execSequence(fakeSequence().body);
+    let s = fakeSequence().body;
+    actions.execSequence(s);
     expect(mock.calls.length).toEqual(1);
-    expect(mock.calls[0][0]).toEqual(12);
+    expect(mock.calls[0][0]).toEqual(s.id);
     // expect(mockOk.mock.calls.length).toEqual(1);
   });
+
   it("implodes when executing unsaved sequences", () => {
     let { mock } = devices.current.execSequence as jest.Mock<{}>;
     let ok = fakeSequence().body;

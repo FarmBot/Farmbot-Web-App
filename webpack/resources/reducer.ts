@@ -52,6 +52,7 @@ export function emptyState(): RestResources {
     index: {
       all: [],
       byKind: {
+        webcam_feed: [],
         device: [],
         farm_events: [],
         images: [],

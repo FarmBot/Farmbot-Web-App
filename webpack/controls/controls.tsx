@@ -34,7 +34,7 @@ export class Controls extends React.Component<Props, {}> {
           </Col>
           <Col xs={12} sm={6}>
             <WebcamPanel bot={this.props.bot}
-              account={this.props.account}
+              feed={this.props.feed}
               dispatch={this.props.dispatch} />
           </Col>
         </Row>

@@ -12,6 +12,7 @@ import { DeviceAccountSettings } from "../devices/interfaces";
 import { ResourceName } from "../resources/tagged_resources";
 import { User } from "../auth/interfaces";
 import { HttpData } from "../util";
+import { WebcamFeed } from "../controls/interfaces";
 
 export interface ResourceReadyPayl {
   name: ResourceName;
@@ -36,6 +37,7 @@ export function fetchSyncData(dispatch: Function) {
 
   fetch<User>("users", API.current.usersPath);
   fetch<DeviceAccountSettings>("device", API.current.devicePath);
+  fetch<WebcamFeed>("webcam_feed", API.current.webcamFeedPath);
   fetch<FarmEvent[]>("farm_events", API.current.farmEventsPath);
   fetch<Image[]>("images", API.current.imagesPath);
   fetch<Log[]>("logs", API.current.logsPath);

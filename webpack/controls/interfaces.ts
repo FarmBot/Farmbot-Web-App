@@ -1,13 +1,16 @@
 import { BotState, Xyz, BotPosition } from "../devices/interfaces";
 import { Vector3 } from "farmbot/dist";
-import { TaggedPeripheral, TaggedDevice } from "../resources/tagged_resources";
 import { RestResources } from "../resources/interfaces";
-import { TaggedUser } from "../resources/tagged_resources";
+import {
+  TaggedUser,
+  TaggedWebcamFeed,
+  TaggedPeripheral
+} from "../resources/tagged_resources";
 
 export interface Props {
   dispatch: Function;
   bot: BotState;
-  account: TaggedDevice;
+  feed: TaggedWebcamFeed;
   user: TaggedUser | undefined;
   peripherals: TaggedPeripheral[];
   resources: RestResources;
@@ -23,7 +26,7 @@ export interface MoveProps {
 export interface WebcamPanelProps {
   dispatch: Function;
   bot: BotState;
-  account: TaggedDevice;
+  feed: TaggedWebcamFeed;
 }
 
 export interface WebcamPanelState {
@@ -96,4 +99,11 @@ export interface ToggleButtonProps {
   toggleValue: number | string | undefined;
   disabled?: boolean | undefined;
   noYes?: boolean;
+}
+
+export interface WebcamFeed {
+  id: number;
+  url: string;
+  updated_at: string;
+  created_at: string;
 }

@@ -25,7 +25,8 @@ import {
   TaggedSequence,
   TaggedTool,
   TaggedToolSlotPointer,
-  TaggedUser
+  TaggedUser,
+  TaggedWebcamFeed
 } from "./tagged_resources";
 import { CowardlyDictionary, betterCompact, sortResourcesById } from "../util";
 type StringMap = CowardlyDictionary<string>;
@@ -436,6 +437,19 @@ export function getDeviceAccountSettings(index: ResourceIndex) {
     throw new Error(`
     PROBLEM: Expected getDeviceAccountSettings() to return exactly 1 device.
     We got some other number back, indicating a hazardous condition.`);
+  }
+}
+
+export function getFeed(index: ResourceIndex): TaggedWebcamFeed {
+  let list = index.byKind.webcam_feed;
+  let uuid = list[0];
+  let feed = index.references[uuid || -1];
+  let onlyOne = list.length === 1;
+  if (onlyOne && feed && feed.kind === "webcam_feed") {
+    sanityCheck(feed);
+    return feed;
+  } else {
+    throw new Error("Problem loading webcam feed");
   }
 }
 

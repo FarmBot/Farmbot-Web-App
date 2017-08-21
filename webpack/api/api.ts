@@ -124,4 +124,6 @@ export class API {
   get pointSearchPath() { return `${this.pointsPath}/search/`; }
   /** /api/logs */
   get logsPath() { return `${this.baseUrl}/api/logs/`; }
+  /** /api/webcam_feed */
+  get webcamFeedPath() { return `${this.baseUrl}/api/webcam_feed/`; }
 }

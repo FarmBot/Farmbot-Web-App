@@ -1,7 +1,7 @@
 import { Everything } from "../interfaces";
 import {
   selectAllPeripherals,
-  getDeviceAccountSettings
+  getFeed
 } from "../resources/selectors";
 import { Props } from "./interfaces";
 import { maybeFetchUser } from "../resources/selectors";
@@ -12,7 +12,7 @@ export function mapStateToProps(props: Everything): Props {
   let resources = props.resources;
 
   return {
-    account: getDeviceAccountSettings(resources.index),
+    feed: getFeed(resources.index),
     dispatch: props.dispatch,
     bot: props.bot,
     user: maybeFetchUser(props.resources.index),
