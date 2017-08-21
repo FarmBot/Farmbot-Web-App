@@ -5,11 +5,7 @@ import { WebcamPanelState, WebcamPanelProps, WebcamFeed } from "./interfaces";
 import { PLACEHOLDER_FARMBOT } from "../farmware/images/image_flipper";
 import { showUrl } from "./show_url";
 import { ToolTips } from "../constants";
-import { overwrite, edit, save } from "../api/crud";
-import { API } from "../api/api";
-import { createOK } from "../resources/actions";
-import axios from "axios";
-import { HttpData } from "../util";
+import { edit, save } from "../api/crud";
 
 export class WebcamPanel extends
   React.Component<WebcamPanelProps, Partial<WebcamPanelState>> {
@@ -26,17 +22,6 @@ export class WebcamPanel extends
   edit = (update: Partial<WebcamFeed>) => {
     this.props.dispatch(edit(this.props.feed, update));
   };
-
-  resetURL = () => {
-    axios
-      .get(API.current.webcamFeedPath)
-      .then((resp: HttpData<WebcamFeed>) => {
-        // TODO: We're starting to hit use cases where we need edit/undo.
-        //       Revisit this one when undo/redo is implemented.
-        this.props.dispatch(overwrite(this.props.feed, resp.data));
-        this.props.dispatch(createOK(this.props.feed));
-      });
-  }
 
   clearURL = () => {
     // TODO: This should set url to "", but the input box to "https://"
@@ -58,14 +43,6 @@ export class WebcamPanel extends
               onClick={this.save}
             >
               {t("Save")}{this.props.feed.specialStatus ? "" : "*"}
-            </button>
-          }
-          {isEditing &&
-            <button
-              className="fb-button gray"
-              onClick={this.resetURL}
-            >
-              {t("Reset")}
             </button>
           }
           {!isEditing &&
