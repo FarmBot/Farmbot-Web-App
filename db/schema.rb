@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170814084814) do
+ActiveRecord::Schema.define(version: 20170818163411) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -107,7 +107,7 @@ ActiveRecord::Schema.define(version: 20170814084814) do
   end
 
   create_table "points", id: :serial, force: :cascade do |t|
-    t.float "radius", default: 50.0, null: false
+    t.float "radius", default: 25.0, null: false
     t.float "x", null: false
     t.float "y", null: false
     t.float "z", default: 0.0, null: false
@@ -201,6 +201,14 @@ ActiveRecord::Schema.define(version: 20170814084814) do
     t.index ["agreed_to_terms_at"], name: "index_users_on_agreed_to_terms_at"
     t.index ["device_id"], name: "index_users_on_device_id"
     t.index ["email"], name: "index_users_on_email", unique: true
+  end
+
+  create_table "webcam_feeds", force: :cascade do |t|
+    t.bigint "device_id"
+    t.string "url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_webcam_feeds_on_device_id"
   end
 
   add_foreign_key "log_dispatches", "devices"
