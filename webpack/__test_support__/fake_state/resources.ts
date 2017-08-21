@@ -2,12 +2,13 @@ import { Everything } from "../../interfaces";
 import { buildResourceIndex } from "../resource_index_builder";
 import {
   TaggedFarmEvent, TaggedSequence, TaggedRegimen, TaggedImage,
-  TaggedTool, TaggedToolSlotPointer, TaggedUser
+  TaggedTool, TaggedToolSlotPointer, TaggedUser, TaggedWebcamFeed
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
 
 export let resources: Everything["resources"] = buildResourceIndex();
+let idCounter = 1;
 
 export function fakeSequence(): TaggedSequence {
   return fakeResource("sequences", {
@@ -44,7 +45,7 @@ export function fakeFarmEvent(exe_type: ExecutableType,
 
 export function fakeImage(): TaggedImage {
   return fakeResource("images", {
-    id: 23,
+    id: idCounter++,
     device_id: 46,
     attachment_processed_at: undefined,
     updated_at: new Date().toISOString(),
@@ -62,7 +63,7 @@ export function fakeTool(): TaggedTool {
 
 export function fakeUser(): TaggedUser {
   return fakeResource("users", {
-    id: 456,
+    id: idCounter++,
     device_id: 789,
     name: "Fake User 123",
     email: "fake@fake.com",
@@ -81,5 +82,14 @@ export function fakeToolSlot(): TaggedToolSlotPointer {
     z: 10,
     radius: 10,
     meta: {}
+  });
+}
+
+export function fakeWebcamFeed(): TaggedWebcamFeed {
+  return fakeResource("webcam_feed", {
+    id: idCounter++,
+    created_at: "---",
+    updated_at: "---",
+    url: "http://i.imgur.com/iAOUmEB.jpg"
   });
 }

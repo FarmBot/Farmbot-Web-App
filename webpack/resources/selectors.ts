@@ -443,19 +443,13 @@ export function getDeviceAccountSettings(index: ResourceIndex) {
 export function getFeed(index: ResourceIndex): TaggedWebcamFeed {
   let list = index.byKind.webcam_feed;
   let uuid = list[0];
-  let device = index.references[uuid || -1];
-  switch (list.length) {
-    case 0:
-      throw new Error("Missing webcam feed");
-    case 1:
-      if (device && device.kind === "webcam_feed") {
-        sanityCheck(device);
-        return device;
-      } else {
-        throw new Error("Malformed webcam feed");
-      }
-    default:
-      throw new Error("Too many webcam feeds. Expected exactly 1.");
+  let feed = index.references[uuid || -1];
+  let onlyOne = list.length === 1;
+  if (onlyOne && feed && feed.kind === "webcam_feed") {
+    sanityCheck(feed);
+    return feed;
+  } else {
+    throw new Error("Problem loading webcam feed");
   }
 }
 
