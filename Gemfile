@@ -23,7 +23,7 @@ gem "webpack-rails"
 # Error reporting tools.
 # Active on the "official" FarmBot server, set the appropriate ENV
 # vars if you wish to use them on your own servers.
-gem "rollbar", "~> 2.15.0"
+gem "rollbar"
 gem "skylight"
 
 group :development, :test do
