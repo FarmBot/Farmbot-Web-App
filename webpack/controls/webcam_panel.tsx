@@ -29,7 +29,7 @@ export class WebcamPanel extends
 
   resetURL = () => {
     axios
-      .get(API.current.devicePath)
+      .get(API.current.webcamFeedPath)
       .then((resp: HttpData<WebcamFeed>) => {
         // TODO: We're starting to hit use cases where we need edit/undo.
         //       Revisit this one when undo/redo is implemented.
@@ -78,7 +78,7 @@ export class WebcamPanel extends
           }
         </WidgetHeader>
         {isEditing &&
-          <div>
+          <div className="widget-body">
             <label>{t("Set Webcam URL:")}</label>
             <input
               type="text"
