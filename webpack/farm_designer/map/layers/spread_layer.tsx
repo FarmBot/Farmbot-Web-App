@@ -2,11 +2,7 @@ import * as React from "react";
 import { Component } from "react";
 import { TaggedPlantPointer } from "../../../resources/tagged_resources";
 import { BotOriginQuadrant } from "../../interfaces";
-import {
-  round,
-  scale,
-  getXYFromQuadrant
-} from "../util";
+import { round, scale, getXYFromQuadrant } from "../util";
 import { cachedCrop } from "../../../open_farm/index";
 
 interface SpreadLayerProps {
@@ -18,20 +14,23 @@ interface SpreadLayerProps {
 
 export function SpreadLayer(props: SpreadLayerProps) {
   let { plants, visible, currentPlant, botOriginQuadrant } = props;
-
-  return <g>
-    {
-      plants.map((p, index) => {
-        let isSelected = p === currentPlant;
-        return (visible || isSelected) ?
-          <SpreadCircle
-            plant={p}
-            key={index}
-            quadrant={botOriginQuadrant}
-          /> : <g key={index} />;
-      })
-    }
-  </g>;
+  return (
+    <g>
+      {
+        plants.map((p, index) => {
+          let isSelected = p === currentPlant;
+          return (visible || isSelected) ?
+            <SpreadCircle
+              plant={p}
+              key={index}
+              quadrant={botOriginQuadrant}
+            />
+            :
+            <g key={index} />;
+        })
+      }
+    </g>
+  );
 }
 
 interface SpreadCircleProps {
@@ -48,7 +47,7 @@ export class SpreadCircle extends
 
   state: SpreadCircleState = { spread: undefined };
 
-  componentWillReceiveProps() {
+  componentDidMount() {
     cachedCrop(this.props.plant.body.openfarm_slug)
       .then(({ spread }) => this.setState({ spread }));
   }
