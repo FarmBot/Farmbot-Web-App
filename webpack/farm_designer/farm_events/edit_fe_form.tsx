@@ -29,7 +29,7 @@ import {
 import { DropDownItem } from "../../ui/fb_select";
 import { history } from "../../history";
 // TIL: https://stackoverflow.com/a/24900248/1064917
-import { betterMerge } from "../../util";
+import { betterMerge, fancyDebug } from "../../util";
 import { maybeWarnAboutMissedTasks } from "./util";
 import { TzWarning } from "./tz_warning";
 import { FarmEventRepeatForm } from "./farm_event_repeat_form";
@@ -71,11 +71,13 @@ function destructureFarmEvent(fe: TaggedFarmEvent): FarmEventViewModel {
 /** Take a FormViewModel and recombine the fields into a Partial<FarmEvent>
  * that can be used to apply updates (such as a PUT request to the API). */
 export function recombine(vm: FarmEventViewModel): Partial<TaggedFarmEvent["body"]> {
+  // Make sure that `repeat` is set to `never` when dealing with regimens.
+  let isReg = vm.executable_type === "Regimen";
   return {
     start_time: moment(vm.startDate + " " + vm.startTime).toISOString(),
     end_time: moment(vm.endDate + " " + vm.endTime).toISOString(),
-    repeat: parseInt(vm.repeat, 10),
-    time_unit: vm.timeUnit as TimeUnit,
+    repeat: parseInt(vm.repeat, 10) || 1,
+    time_unit: (isReg ? "never" : vm.timeUnit) as TimeUnit,
     executable_id: parseInt(vm.executable_id, 10),
     executable_type: vm.executable_type as ("Sequence" | "Regimen"),
   };
