@@ -1,6 +1,5 @@
 module Api
   class LogsController < Api::AbstractController
-    include Skylight::Helpers
 
     def create
     case raw_json
@@ -30,7 +29,6 @@ module Api
       end
     end
 
-    instrument_method
     def index
       render json: current_device.limited_log_list
     end

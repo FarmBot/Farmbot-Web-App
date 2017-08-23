@@ -1,6 +1,5 @@
 module Sequences
   module CeleryScriptValidators
-    include Skylight::Helpers
 
     NO_TRANSACTION   = "You need to do this in a transaction"
     ARGS_OF_INTEREST = { "tool_id"     => Tool,
@@ -17,7 +16,6 @@ module Sequences
       :comment
     ]
 
-    instrument_method
     def validate_sequence
       # TODO: The code below strips out unneeded attributes, or attributes that
       # are not part of CeleryScript. We're only stripping attributes out of the
