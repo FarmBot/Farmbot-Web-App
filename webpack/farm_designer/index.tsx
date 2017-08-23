@@ -74,8 +74,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         showPlants={showPlants}
         showPoints={showPoints}
         showSpread={showSpread}
-        showFarmbot={showFarmbot}
-      />
+        showFarmbot={showFarmbot} />
 
       <div className="panel-header gray-panel designer-mobile-nav">
         <div className="panel-tabs">
@@ -110,8 +109,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           points={this.props.points}
           toolSlots={this.props.toolSlots}
           botPosition={this.props.botPosition}
-          hoveredPlant={this.props.hoveredPlant}
-        />
+          hoveredPlant={this.props.hoveredPlant} />
       </div>
     </div>;
   }

@@ -123,13 +123,11 @@ export class GardenMap extends
           botOriginQuadrant={this.props.designer.botOriginQuadrant}
           plants={this.props.plants}
           currentPlant={this.getPlant()}
-          visible={!!this.props.showSpread}
-        />
+          visible={!!this.props.showSpread} />
         <PointLayer
           botOriginQuadrant={this.props.designer.botOriginQuadrant}
           visible={!!this.props.showPoints}
-          points={this.props.points}
-        />
+          points={this.props.points} />
         <PlantLayer
           botOriginQuadrant={this.props.designer.botOriginQuadrant}
           dispatch={this.props.dispatch}
@@ -138,26 +136,22 @@ export class GardenMap extends
           crops={this.props.crops}
           currentPlant={this.getPlant()}
           dragging={!!this.state.isDragging}
-          editing={!!this.isEditing}
-        />
+          editing={!!this.isEditing} />
         <ToolSlotLayer
           botOriginQuadrant={this.props.designer.botOriginQuadrant}
           visible={!!this.props.showFarmbot}
-          slots={this.props.toolSlots}
-        />
+          slots={this.props.toolSlots} />
         <FarmBotLayer
           botOriginQuadrant={this.props.designer.botOriginQuadrant}
           visible={!!this.props.showFarmbot}
-          botPosition={this.props.botPosition}
-        />
+          botPosition={this.props.botPosition} />
         <HoveredPlantLayer
           isEditing={this.isEditing}
           botOriginQuadrant={this.props.designer.botOriginQuadrant}
           currentPlant={this.getPlant()}
           designer={this.props.designer}
           dispatch={this.props.dispatch}
-          hoveredPlant={this.props.hoveredPlant}
-        />
+          hoveredPlant={this.props.hoveredPlant} />
       </svg>
     </div>;
   }

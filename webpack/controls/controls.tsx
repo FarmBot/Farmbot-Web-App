@@ -29,8 +29,7 @@ export class Controls extends React.Component<Props, {}> {
               peripherals={this.props.peripherals}
               dispatch={this.props.dispatch}
               resources={this.props.resources}
-              disabled={arduinoBusy}
-            />
+              disabled={arduinoBusy} />
           </Col>
           <Col xs={12} sm={6}>
             <WebcamPanel bot={this.props.bot}

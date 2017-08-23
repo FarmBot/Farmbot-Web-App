@@ -23,8 +23,7 @@ export function Markdown(props: MarkdownProps) {
   return (
     <span
       className="markdown"
-      dangerouslySetInnerHTML={{ __html: result }}
-    >
+      dangerouslySetInnerHTML={{ __html: result }}>
     </span>
   );
 }

@@ -17,15 +17,13 @@ export class Devices extends React.Component<Props, {}> {
               account={this.props.deviceAccount}
               dispatch={this.props.dispatch}
               bot={this.props.bot}
-              auth={this.props.auth}
-            />
+              auth={this.props.auth} />
           </Col>
           <Col xs={12} sm={6}>
             <HardwareSettings
               controlPanelState={this.props.bot.controlPanelState}
               dispatch={this.props.dispatch}
-              bot={this.props.bot}
-            />
+              bot={this.props.bot} />
           </Col>
         </Row>
       </Page>;

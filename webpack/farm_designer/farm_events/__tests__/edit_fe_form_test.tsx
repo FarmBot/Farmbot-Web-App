@@ -103,6 +103,21 @@ describe("<FarmEventForm/>", () => {
     expect(i.state.fe.repeat).toEqual("4");
   });
 
+  it("sets regimen repeat to `never` as needed", () => {
+    let result = recombine({
+      "startDate": "2017-08-01",
+      "startTime": "08:35",
+      "endDate": "2017-08-01",
+      "endTime": "08:33",
+      "repeat": "1",
+      "timeUnit": "daily",
+      "executable_type": "Regimen",
+      "executable_id": "1"
+    });
+    expect(result.time_unit).toEqual("never");
+    expect(result.time_unit).not.toEqual("daily");
+  });
+
   it("Recombines local state back into a Partial<TaggedFarmEvent[\"body\"]>", () => {
     let result = recombine({
       "startDate": "2017-08-01",

@@ -82,8 +82,7 @@ export class WeedDetector
               S_LO={envGet("WEED_DETECTOR_S_LO", this.props.env)}
               S_HI={envGet("WEED_DETECTOR_S_HI", this.props.env)}
               V_LO={envGet("WEED_DETECTOR_V_LO", this.props.env)}
-              V_HI={envGet("WEED_DETECTOR_V_HI", this.props.env)}
-            />
+              V_HI={envGet("WEED_DETECTOR_V_HI", this.props.env)} />
           </Col>
         </Row>
       </WidgetBody>

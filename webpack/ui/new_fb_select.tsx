@@ -38,8 +38,7 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
         <FilterSearch
           selectedItem={this.item}
           items={this.list}
-          onChange={this.props.onChange}
-        />
+          onChange={this.props.onChange} />
       </div>
     );
   }

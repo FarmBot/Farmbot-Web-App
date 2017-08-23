@@ -89,7 +89,7 @@ describe("util", () => {
           }
         }
       });
-      expect(result).toEqual("Email: can't be blank.");
+      expect(result).toEqual("Email: can't be blank");
     });
   });
 

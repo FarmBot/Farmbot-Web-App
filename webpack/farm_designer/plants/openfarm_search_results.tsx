@@ -30,8 +30,7 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
             <div
               className="plant-catalog-image"
               style={{ background: `url(${image}) top center no-repeat` }}
-              draggable={false}
-            />
+              draggable={false} />
           </div>
         </Link>;
       })}

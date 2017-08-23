@@ -23,10 +23,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
             <SpreadCircle
               plant={p}
               key={index}
-              quadrant={botOriginQuadrant}
-            />
-            :
-            <g key={index} />;
+              quadrant={botOriginQuadrant} /> : <g key={index} />;
         })
       }
     </g>
@@ -64,8 +61,7 @@ export class SpreadCircle extends
         fillOpacity={0.2}
         fill={"green"}
         stroke={"green"}
-        strokeWidth={"1.5"}
-      />
+        strokeWidth={"1.5"} />
     );
   }
 }

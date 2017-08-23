@@ -17,7 +17,8 @@ const label_ops: Record<ALLOWED_OPS, string> = {
   "<": "is less than",
   "is": "is",
   "not": "is not"
-}
+};
+
 export function If_(props: IfParams) {
   let {
     dispatch,
@@ -49,8 +50,7 @@ export function If_(props: IfParams) {
         list={LHSOptions}
         placeholder="Left hand side"
         onChange={updateField("lhs")}
-        selectedItem={LHSOptions.filter(x => x.value === lhs)[0] || NULL_CHOICE}
-      />
+        selectedItem={LHSOptions.filter(x => x.value === lhs)[0] || NULL_CHOICE} />
     </Col>
     <Col xs={4}>
       <label>{t("Operator")}</label>

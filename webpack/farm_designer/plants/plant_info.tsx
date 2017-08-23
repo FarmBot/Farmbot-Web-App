@@ -20,8 +20,7 @@ export class PlantInfo extends PlantInfoBase {
           <Link to="/app/designer/plants" className="back-arrow">
             <i
               className="fa fa-arrow-left"
-              onClick={() => this.props.dispatch(action)}
-            />
+              onClick={() => this.props.dispatch(action)} />
           </Link>
           <span className="title">
             {name}
@@ -38,7 +37,7 @@ export class PlantInfo extends PlantInfoBase {
   }
 
   render() {
-    let plant_info = this.plant && this.plant
+    let plant_info = this.plant && this.plant;
     return plant_info ? this.default(plant_info) : this.fallback();
   }
 }

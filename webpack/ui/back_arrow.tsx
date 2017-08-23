@@ -6,4 +6,4 @@ export function BackArrow() {
       <i className="fa fa-arrow-left"></i>
     </a>
   );
-};
+}

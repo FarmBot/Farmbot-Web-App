@@ -11,4 +11,3 @@ export function parseEnvKey(key: WDENVKey, value: string) {
   return (TRANSLATORS[key] || DEFAULT_FORMATTER)
     .parse(key, value);
 }
-

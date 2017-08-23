@@ -17,8 +17,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
               direction="up"
               isInverted={this.props.y_axis_inverted}
               steps={this.props.bot.stepSize || 1000}
-              disabled={this.props.disabled}
-            />
+              disabled={this.props.disabled} />
           </td>
           <td />
           <td />
@@ -28,8 +27,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
               direction="up"
               isInverted={this.props.z_axis_inverted}
               steps={this.props.bot.stepSize || 1000}
-              disabled={this.props.disabled}
-            />
+              disabled={this.props.disabled} />
           </td>
         </tr>
         <tr>
@@ -37,8 +35,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
             <button
               className="i fa fa-home arrow-button fb-button"
               onClick={() => homeAll(100)}
-              disabled={this.props.disabled || false}
-            />
+              disabled={this.props.disabled || false} />
           </td>
           <td />
           <td>
@@ -47,8 +44,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
               direction="left"
               isInverted={this.props.x_axis_inverted}
               steps={this.props.bot.stepSize || 1000}
-              disabled={this.props.disabled}
-            />
+              disabled={this.props.disabled} />
           </td>
           <td>
             <DirectionButton
@@ -56,8 +52,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
               direction="down"
               isInverted={this.props.y_axis_inverted}
               steps={this.props.bot.stepSize || 1000}
-              disabled={this.props.disabled}
-            />
+              disabled={this.props.disabled} />
           </td>
           <td>
             <DirectionButton
@@ -65,8 +60,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
               direction="right"
               isInverted={this.props.x_axis_inverted}
               steps={this.props.bot.stepSize || 1000}
-              disabled={this.props.disabled}
-            />
+              disabled={this.props.disabled} />
           </td>
           <td />
           <td>
@@ -75,8 +69,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
               direction="down"
               isInverted={this.props.z_axis_inverted}
               steps={this.props.bot.stepSize || 1000}
-              disabled={this.props.disabled}
-            />
+              disabled={this.props.disabled} />
           </td>
         </tr>
         <tr>

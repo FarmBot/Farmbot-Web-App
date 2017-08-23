@@ -22,26 +22,22 @@ export function WeekGrid({ weeks, dispatch }: WeekGridProps) {
       <Col xs={12}>
         <button
           className="green widget-control fb-button"
-          onClick={() => dispatch(pushWeek())}
-        >
+          onClick={() => dispatch(pushWeek())}>
           <i className="fa fa-plus" /> {t("Week")}
         </button>
         <button
           className="red widget-control fb-button"
-          onClick={() => dispatch(popWeek())}
-        >
+          onClick={() => dispatch(popWeek())}>
           <i className="fa fa-minus" /> {t("Week")}
         </button>
         <button
           className="gray widget-control fb-button"
-          onClick={() => dispatch(deselectDays())}
-        >
+          onClick={() => dispatch(deselectDays())}>
           {t("Deselect all")}
         </button>
         <button
           className="gray widget-control fb-button"
-          onClick={() => dispatch(selectDays())}
-        >
+          onClick={() => dispatch(selectDays())}>
           {t("Select all")}
         </button>
       </Col>

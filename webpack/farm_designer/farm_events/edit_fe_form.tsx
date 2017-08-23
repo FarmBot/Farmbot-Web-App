@@ -71,11 +71,13 @@ function destructureFarmEvent(fe: TaggedFarmEvent): FarmEventViewModel {
 /** Take a FormViewModel and recombine the fields into a Partial<FarmEvent>
  * that can be used to apply updates (such as a PUT request to the API). */
 export function recombine(vm: FarmEventViewModel): Partial<TaggedFarmEvent["body"]> {
+  // Make sure that `repeat` is set to `never` when dealing with regimens.
+  let isReg = vm.executable_type === "Regimen";
   return {
     start_time: moment(vm.startDate + " " + vm.startTime).toISOString(),
     end_time: moment(vm.endDate + " " + vm.endTime).toISOString(),
-    repeat: parseInt(vm.repeat, 10),
-    time_unit: vm.timeUnit as TimeUnit,
+    repeat: parseInt(vm.repeat, 10) || 1,
+    time_unit: (isReg ? "never" : vm.timeUnit) as TimeUnit,
     executable_id: parseInt(vm.executable_id, 10),
     executable_type: vm.executable_type as ("Sequence" | "Regimen"),
   };
@@ -220,8 +222,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
           <FBSelect
             list={this.props.executableOptions}
             onChange={this.executableSet}
-            selectedItem={this.executableGet()}
-          />
+            selectedItem={this.executableGet()} />
           <label>
             {t("Starts")}
           </label>
@@ -232,8 +233,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
                 className="add-event-start-date"
                 name="start_date"
                 value={this.fieldGet("startDate")}
-                onCommit={this.fieldSet("startDate")}
-              />
+                onCommit={this.fieldSet("startDate")} />
             </Col>
             <Col xs={6}>
               <BlurableInput
@@ -241,16 +241,14 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
                 className="add-event-start-time"
                 name="start_time"
                 value={this.fieldGet("startTime")}
-                onCommit={this.fieldSet("startTime")}
-              />
+                onCommit={this.fieldSet("startTime")} />
             </Col>
           </Row>
           <label>
             <input type="checkbox"
               onChange={this.toggleRepeat}
               disabled={this.isReg}
-              checked={repeats && !this.isReg}
-            />
+              checked={repeats && !this.isReg} />
             &nbsp;{t("Repeats?")}
           </label>
           <FarmEventRepeatForm
@@ -260,8 +258,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             timeUnit={this.fieldGet("timeUnit") as TimeUnit}
             repeat={this.fieldGet("repeat")}
             endDate={this.fieldGet("endDate")}
-            endTime={this.fieldGet("endTime")}
-          />
+            endTime={this.fieldGet("endTime")} />
           <SaveBtn
             status={fe.specialStatus || this.state.specialStatusLocal}
             color="magenta"

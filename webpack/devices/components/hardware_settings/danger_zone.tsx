@@ -15,8 +15,7 @@ export function DangerZone(props: DangerZoneProps) {
       bool={danger_zone}
       title={"Danger Zone"}
       name={"danger_zone"}
-      dispatch={dispatch}
-    />
+      dispatch={dispatch} />
     <Collapse isOpen={!!danger_zone}>
       <Row>
         <Col xs={4}>
@@ -37,8 +36,7 @@ export function DangerZone(props: DangerZoneProps) {
         <Col xs={2}>
           <button
             className="fb-button red"
-            onClick={onReset}
-          >
+            onClick={onReset}>
             {t("RESET")}
           </button>
         </Col>

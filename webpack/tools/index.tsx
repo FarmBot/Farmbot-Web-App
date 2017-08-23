@@ -24,8 +24,7 @@ export class Tools extends React.Component<Props, Partial<ToolsState>> {
               toggle={this.toggle("editingBays")}
               dispatch={this.props.dispatch}
               getToolByToolSlotUUID={this.props.getToolByToolSlotUUID}
-              getToolSlots={this.props.getToolSlots}
-            />}
+              getToolSlots={this.props.getToolSlots} />}
           {isEditingBays &&
             <ToolBayForm
               toggle={this.toggle("editingBays")}
@@ -35,8 +34,7 @@ export class Tools extends React.Component<Props, Partial<ToolsState>> {
               getToolSlots={this.props.getToolSlots}
               getChosenToolOption={this.props.getChosenToolOption}
               getToolOptions={this.props.getToolOptions}
-              changeToolSlot={this.props.changeToolSlot}
-            />}
+              changeToolSlot={this.props.changeToolSlot} />}
         </Col>
         <Col sm={5}>
           {!isEditingTools &&
@@ -44,14 +42,12 @@ export class Tools extends React.Component<Props, Partial<ToolsState>> {
               isActive={this.props.isActive}
               toggle={this.toggle("editingTools")}
               dispatch={this.props.dispatch}
-              tools={this.props.tools}
-            />}
+              tools={this.props.tools} />}
           {isEditingTools &&
             <ToolForm
               toggle={this.toggle("editingTools")}
               dispatch={this.props.dispatch}
-              tools={this.props.tools}
-            />}
+              tools={this.props.tools} />}
         </Col>
       </Row>
     </Page>;

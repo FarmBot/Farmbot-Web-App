@@ -58,7 +58,7 @@ export function toastErrors({ err }: UnsafeError) {
  *  pairs returned by the /api/xyz endpoint. */
 export function prettyPrintApiErrors(err: AxiosErrorResponse) {
   return _.map(safelyFetchErrors(err),
-    (v, k) => `${(k || "").split("_").join(" ")}: ${v.toString()}.`.toLowerCase())
+    (v, k) => `${(k || "").split("_").join(" ")}: ${v.toString()}`.toLowerCase())
     .map(str => _.capitalize(str)).join(" ");
 }
 
@@ -69,7 +69,10 @@ function safelyFetchErrors(err: AxiosErrorResponse): Dictionary<string> {
   } else {
     console.log(t("Last error message wasn't formatted like an API error."));
     console.dir(err);
-    return { problem: t("Farmbot Web App hit an unhandled exception.") };
+    return {
+      error: t("Your web browser is unable to communicate with the " +
+        "web app server. Make sure you are connected to the Internet.")
+    };
   }
 }
 

@@ -63,8 +63,7 @@ export class Plants extends React.Component<Props, State> {
               .map(p => <PlantInventoryItem
                 key={p.uuid}
                 tpp={p}
-                dispatch={this.props.dispatch}
-              />)
+                dispatch={this.props.dispatch} />)
           }
         </div>
 
@@ -78,4 +77,4 @@ export class Plants extends React.Component<Props, State> {
 
     </div>;
   }
-};
+}

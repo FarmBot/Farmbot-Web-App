@@ -51,23 +51,19 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
           <LayerToggle
             value={showPlants}
             label={t("Plants?")}
-            onClick={toggle("showPlants")}
-          />
+            onClick={toggle("showPlants")} />
           <LayerToggle
             value={showPoints}
             label={t("Points?")}
-            onClick={toggle("showPoints")}
-          />
+            onClick={toggle("showPoints")} />
           <LayerToggle
             value={showSpread}
             label={t("Spread?")}
-            onClick={toggle("showSpread")}
-          />
+            onClick={toggle("showSpread")} />
           <LayerToggle
             value={showFarmbot}
             label={t("FarmBot?")}
-            onClick={toggle("showFarmbot")}
-          />
+            onClick={toggle("showFarmbot")} />
         </div>
         <div className="farmbot-origin">
           <label>
@@ -76,20 +72,16 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
           <div className="quadrants">
             <div
               className={"quadrant " + (botOriginQuadrant === 2 && "selected")}
-              onClick={updateBotOriginQuadrant(2)}
-            />
+              onClick={updateBotOriginQuadrant(2)} />
             <div
               className={"quadrant " + (botOriginQuadrant === 1 && "selected")}
-              onClick={updateBotOriginQuadrant(1)}
-            />
+              onClick={updateBotOriginQuadrant(1)} />
             <div
               className={"quadrant " + (botOriginQuadrant === 3 && "selected")}
-              onClick={updateBotOriginQuadrant(3)}
-            />
+              onClick={updateBotOriginQuadrant(3)} />
             <div
               className={"quadrant " + (botOriginQuadrant === 4 && "selected")}
-              onClick={updateBotOriginQuadrant(4)}
-            />
+              onClick={updateBotOriginQuadrant(4)} />
           </div>
         </div>
       </div>

@@ -39,14 +39,12 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
       <div>
         <Overlay
           isOpen={this.state.guideOpen}
-          onClose={this.toggle("guideOpen")}
-        >
+          onClose={this.toggle("guideOpen")}>
           <div className={hotkeyGuideClasses}>
             <h3>{t("Hotkeys")}</h3>
             <i
               className="fa fa-times"
-              onClick={this.toggle("guideOpen")}
-            />
+              onClick={this.toggle("guideOpen")} />
             {
               this.hotkeys(this.props.dispatch, "")
                 .map(hotkey => {
@@ -121,8 +119,7 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
               global={true}
               combo={combo}
               label={label}
-              onKeyDown={onKeyDown}
-            />;
+              onKeyDown={onKeyDown} />;
           })
       }
     </Hotkeys>;

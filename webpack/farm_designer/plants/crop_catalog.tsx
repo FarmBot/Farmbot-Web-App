@@ -44,8 +44,7 @@ export class CropCatalog extends React.Component<CropCatalogProps, {}> {
                 value={this.props.cropSearchQuery}
                 onChange={this.handleChange}
                 className="search"
-                placeholder="Search OpenFarm"
-              />
+                placeholder="Search OpenFarm" />
             </div>
           </div>
         </div>

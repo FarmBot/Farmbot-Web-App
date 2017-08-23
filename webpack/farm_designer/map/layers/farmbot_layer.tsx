@@ -14,7 +14,6 @@ export function FarmBotLayer(props: FarmBotLayerProps) {
   return visible ? <g>
     <VirtualFarmBot
       quadrant={botOriginQuadrant}
-      botPosition={props.botPosition}
-    />
+      botPosition={props.botPosition} />
   </g> : <g />; // fallback
 }

@@ -25,5 +25,5 @@ export const MESSAGE_STATUSES = [
 ];
 
 export function channel(channel_name: ALLOWED_CHANNEL_NAMES): Channel {
-  return { kind: "channel", args: { channel_name } }
+  return { kind: "channel", args: { channel_name } };
 }

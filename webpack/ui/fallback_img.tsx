@@ -47,8 +47,7 @@ export class FallbackImg extends React.Component<Props, State> {
       <div className="webcam-stream-valid">
         <img
           onError={() => this.setState({ needsFallback: true })}
-          src={this.props.src}
-        />
+          src={this.props.src} />
       </div>
     );
   }

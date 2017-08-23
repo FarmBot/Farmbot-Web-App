@@ -16,8 +16,7 @@ export function PointLayer(props: PointLayerProps) {
       <GardenPoint
         point={p}
         key={p.body.id}
-        quadrant={botOriginQuadrant}
-      />
-    )}}
+        quadrant={botOriginQuadrant} />
+    )}
   </g> : <g />; // fallback
 }

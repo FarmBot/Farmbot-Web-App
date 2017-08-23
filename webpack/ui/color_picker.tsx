@@ -25,8 +25,7 @@ export class ColorPicker extends React.Component<PickerProps, {}> {
     return (
       <Popover
         position={Position.BOTTOM}
-        popoverClassName="colorpicker-menu gray"
-      >
+        popoverClassName="colorpicker-menu gray">
         <Saucer color={this.props.current} />
         <div>
           {colors.map((color, inx) => this.renderColors(color, inx))}

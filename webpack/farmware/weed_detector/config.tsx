@@ -53,13 +53,11 @@ export function WeedDetectorConfig(props: SettingsMenuProps) {
         checked={!!envGet("CAMERA_CALIBRATION_invert_hue_selection", props.values)}
         onChange={e => props.onChange("CAMERA_CALIBRATION_invert_hue_selection",
           e.currentTarget.checked ?
-            SPECIAL_VALUES.TRUE : SPECIAL_VALUES.FALSE)}
-      />
+            SPECIAL_VALUES.TRUE : SPECIAL_VALUES.FALSE)} />
     </div>
     <NumberBox
       conf={"CAMERA_CALIBRATION_calibration_object_separation"}
-      label={t(`Calibration Object Separation`)}
-    />
+      label={t(`Calibration Object Separation`)} />
     <label>
       {t(`Calibration Object Separation along axis`)}
     </label>
@@ -72,14 +70,12 @@ export function WeedDetectorConfig(props: SettingsMenuProps) {
       <Col xs={6}>
         <NumberBox
           conf={"CAMERA_CALIBRATION_camera_offset_x"}
-          label={t(`Camera Offset X`)}
-        />
+          label={t(`Camera Offset X`)} />
       </Col>
       <Col xs={6}>
         <NumberBox
           conf={"CAMERA_CALIBRATION_camera_offset_y"}
-          label={t(`Camera Offset Y`)}
-        />
+          label={t(`Camera Offset Y`)} />
       </Col>
     </Row>
     <label htmlFor="image_bot_origin_location">
@@ -89,20 +85,17 @@ export function WeedDetectorConfig(props: SettingsMenuProps) {
       list={ORIGIN_DROPDOWNS}
       onChange={setDDI("CAMERA_CALIBRATION_image_bot_origin_location")}
       selectedItem={find("CAMERA_CALIBRATION_image_bot_origin_location")}
-      placeholder="Select..."
-    />
+      placeholder="Select..." />
     <Row>
       <Col xs={6}>
         <NumberBox
           conf={"CAMERA_CALIBRATION_coord_scale"}
-          label={t(`Pixel coordinate scale`)}
-        />
+          label={t(`Pixel coordinate scale`)} />
       </Col>
       <Col xs={6}>
         <NumberBox
           conf={"CAMERA_CALIBRATION_total_rotation_angle"}
-          label={t(`Camera rotation`)}
-        />
+          label={t(`Camera rotation`)} />
       </Col>
     </Row>
   </div>;

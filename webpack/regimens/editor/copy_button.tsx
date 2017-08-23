@@ -14,7 +14,7 @@ export function CopyButton({ dispatch, regimen }: CopyButtnProps) {
     </button>;
   } else {
     return <span />;
-  };
+  }
 }
 
 let count = 1;

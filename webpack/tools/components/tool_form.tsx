@@ -61,8 +61,7 @@ export class ToolForm extends React.Component<ToolFormProps, {}> {
                 value={tool.body.name || "Error getting Name"}
                 onCommit={(e) => {
                   dispatch(edit(tool, { name: e.currentTarget.value }));
-                }}
-              />
+                }} />
             </Col>
             <Col xs={2}>
               <button

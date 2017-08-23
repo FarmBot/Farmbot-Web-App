@@ -16,12 +16,10 @@ export function RegimenListItem({ regimen, dispatch }: RegimenListItemProps) {
 
   return <Link
     to={`/app/regimens/${urlFriendly(name)}`}
-    key={regimen.uuid}
-  >
+    key={regimen.uuid}>
     <button
       className={style.join(" ")}
-      onClick={select(dispatch, regimen)}
-    >
+      onClick={select(dispatch, regimen)}>
       {name} {regimen.specialStatus && ("*")}
     </button>
   </Link>;

@@ -14,8 +14,7 @@ describe("NavBar", () => {
         logs={[log]}
         bot={bot}
         user={taggedUser}
-        dispatch={jest.fn()}
-      />
+        dispatch={jest.fn()} />
     );
 
     expect(wrapper.hasClass("nav-wrapper")).toBeTruthy();

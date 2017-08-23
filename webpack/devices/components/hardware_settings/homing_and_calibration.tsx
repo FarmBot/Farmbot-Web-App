@@ -28,8 +28,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
       title={"Homing and Calibration"}
       name={"homing_and_calibration"}
       dispatch={dispatch}
-      bool={homing_and_calibration}
-    />
+      bool={homing_and_calibration} />
     <Collapse isOpen={!!homing_and_calibration}>
       <HomingRow hardware={mcu_params} />
       <CalibrationRow hardware={mcu_params} />
@@ -45,8 +44,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         z={"movement_home_at_boot_z"}
         dispatch={dispatch}
         bot={bot}
-        caution={true}
-      />
+        caution={true} />
       <BooleanMCUInputGroup
         name={t("Stop at Home")}
         tooltip={t(ToolTips.STOP_AT_HOME)}
@@ -54,8 +52,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         y={"movement_stop_at_home_y"}
         z={"movement_stop_at_home_z"}
         dispatch={dispatch}
-        bot={bot}
-      />
+        bot={bot} />
       <BooleanMCUInputGroup
         name={t("Stop at Max")}
         tooltip={t(ToolTips.STOP_AT_MAX)}
@@ -63,8 +60,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         y={"movement_stop_at_max_y"}
         z={"movement_stop_at_max_z"}
         dispatch={dispatch}
-        bot={bot}
-      />
+        bot={bot} />
       <BooleanMCUInputGroup
         name={t("Negative Coordinates Only")}
         tooltip={t(ToolTips.NEGATIVE_COORDINATES_ONLY)}
@@ -72,8 +68,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         y={"movement_home_up_y"}
         z={"movement_home_up_z"}
         dispatch={dispatch}
-        bot={bot}
-      />
+        bot={bot} />
       <NumericMCUInputGroup
         name={t("Axis Length (steps)")}
         tooltip={t(ToolTips.LENGTH)}
@@ -81,8 +76,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         y={"movement_axis_nr_steps_y"}
         z={"movement_axis_nr_steps_z"}
         bot={bot}
-        dispatch={dispatch}
-      />
+        dispatch={dispatch} />
       <NumericMCUInputGroup
         name={t("Timeout after (seconds)")}
         tooltip={t(ToolTips.TIMEOUT_AFTER)}
@@ -90,8 +84,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         y={"movement_timeout_y"}
         z={"movement_timeout_z"}
         bot={bot}
-        dispatch={dispatch}
-      />
+        dispatch={dispatch} />
     </Collapse>
   </section>;
 }

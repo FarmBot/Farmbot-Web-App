@@ -23,8 +23,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
       bool={motors}
       title={"Motors"}
       name={"motors"}
-      dispatch={dispatch}
-    />
+      dispatch={dispatch} />
     <Collapse isOpen={!!motors}>
       <Row>
         <Col xs={6}>
@@ -51,8 +50,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
           <ToggleButton
             toggleValue={mcu_params.param_e_stop_on_mov_err}
             toggleAction={() =>
-              settingToggle("param_e_stop_on_mov_err", bot, undefined)}
-          />
+              settingToggle("param_e_stop_on_mov_err", bot, undefined)} />
         </Col>
       </Row>
       <NumericMCUInputGroup
@@ -62,8 +60,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
         y={"movement_max_spd_y"}
         z={"movement_max_spd_z"}
         bot={bot}
-        dispatch={dispatch}
-      />
+        dispatch={dispatch} />
       <NumericMCUInputGroup
         name={t("Minimum Speed (steps/s)")}
         tooltip={t(ToolTips.MIN_SPEED)}
@@ -71,8 +68,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
         y={"movement_min_spd_y"}
         z={"movement_min_spd_z"}
         bot={bot}
-        dispatch={dispatch}
-      />
+        dispatch={dispatch} />
       <NumericMCUInputGroup
         name={t("Accelerate for (steps)")}
         tooltip={t(ToolTips.ACCELERATE_FOR)}
@@ -80,8 +76,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
         y={"movement_steps_acc_dec_y"}
         z={"movement_steps_acc_dec_z"}
         bot={bot}
-        dispatch={dispatch}
-      />
+        dispatch={dispatch} />
       <Row>
         <Col xs={6}>
           <label>
@@ -93,22 +88,19 @@ export function Motors({ dispatch, bot }: MotorsProps) {
           <BotConfigInputBox
             setting="steps_per_mm_x"
             bot={bot}
-            dispatch={dispatch}
-          />
+            dispatch={dispatch} />
         </Col>
         <Col xs={2}>
           <BotConfigInputBox
             setting="steps_per_mm_y"
             bot={bot}
-            dispatch={dispatch}
-          />
+            dispatch={dispatch} />
         </Col>
         <Col xs={2}>
           <BotConfigInputBox
             setting="steps_per_mm_z"
             bot={bot}
-            dispatch={dispatch}
-          />
+            dispatch={dispatch} />
         </Col>
       </Row>
       <BooleanMCUInputGroup
@@ -118,8 +110,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
         y={"movement_keep_active_y"}
         z={"movement_keep_active_z"}
         dispatch={dispatch}
-        bot={bot}
-      />
+        bot={bot} />
       <BooleanMCUInputGroup
         name={t("Invert Motors")}
         tooltip={t(ToolTips.INVERT_MOTORS)}
@@ -127,8 +118,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
         y={"movement_invert_motor_y"}
         z={"movement_invert_motor_z"}
         dispatch={dispatch}
-        bot={bot}
-      />
+        bot={bot} />
       <Row>
         <Col xs={6}>
           <label>
@@ -140,8 +130,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
           <ToggleButton
             toggleValue={mcu_params.movement_secondary_motor_x}
             toggleAction={() =>
-              settingToggle("movement_secondary_motor_x", bot, undefined)}
-          />
+              settingToggle("movement_secondary_motor_x", bot, undefined)} />
         </Col>
       </Row>
       <Row>
@@ -155,8 +144,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
           <ToggleButton
             toggleValue={mcu_params.movement_secondary_motor_invert_x}
             toggleAction={() =>
-              settingToggle("movement_secondary_motor_invert_x", bot, undefined)}
-          />
+              settingToggle("movement_secondary_motor_invert_x", bot, undefined)} />
         </Col>
       </Row>
     </Collapse>

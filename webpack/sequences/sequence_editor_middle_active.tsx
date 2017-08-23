@@ -62,14 +62,12 @@ export class SequenceEditorMiddleActive extends
             onClick={() => execSequence(sequence.body)} />
           <button
             className="fb-button red"
-            onClick={() => dispatch(destroy(sequence.uuid))}
-          >
+            onClick={() => dispatch(destroy(sequence.uuid))}>
             {t("Delete")}
           </button>
           <button
             className="fb-button yellow"
-            onClick={copy(dispatch, sequence)}
-          >
+            onClick={copy(dispatch, sequence)}>
             {t("Copy")}
           </button>
         </div>
@@ -82,8 +80,7 @@ export class SequenceEditorMiddleActive extends
           </Col>
           <ColorPicker
             current={sequence.body.color}
-            onChange={color => editCurrentSequence(dispatch, sequence, { color })}
-          />
+            onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
         </Row>
         <hr style={{ marginBottom: 0 }} />
         <AllSteps onDrop={onDrop(dispatch, sequence)} {...this.props} />

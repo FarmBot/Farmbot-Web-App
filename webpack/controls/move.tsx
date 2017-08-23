@@ -61,8 +61,7 @@ export class Move extends React.Component<MoveProps, {}> {
                 </label>
                 <button
                   className={"fb-button fb-toggle-button " + xBtnColor}
-                  onClick={this.toggle("x")}
-                />
+                  onClick={this.toggle("x")} />
               </fieldset>
               <fieldset>
                 <label>
@@ -70,8 +69,7 @@ export class Move extends React.Component<MoveProps, {}> {
                 </label>
                 <button
                   className={"fb-button fb-toggle-button " + yBtnColor}
-                  onClick={this.toggle("y")}
-                />
+                  onClick={this.toggle("y")} />
               </fieldset>
               <fieldset>
                 <label>
@@ -79,8 +77,7 @@ export class Move extends React.Component<MoveProps, {}> {
                 </label>
                 <button
                   className={"fb-button fb-toggle-button " + zBtnColor}
-                  onClick={this.toggle("z")}
-                />
+                  onClick={this.toggle("z")} />
               </fieldset>
               <label>
                 {t("Display Encoder Data")}
@@ -91,8 +88,7 @@ export class Move extends React.Component<MoveProps, {}> {
                 </label>
                 <button
                   className={"fb-button fb-toggle-button " + rawBtnColor}
-                  onClick={this.toggle_encoder_data("raw_encoders")}
-                />
+                  onClick={this.toggle_encoder_data("raw_encoders")} />
               </fieldset>
               <fieldset>
                 <label>
@@ -100,15 +96,13 @@ export class Move extends React.Component<MoveProps, {}> {
                 </label>
                 <button
                   className={"fb-button fb-toggle-button " + scaledBtnColor}
-                  onClick={this.toggle_encoder_data("scaled_encoders")}
-                />
+                  onClick={this.toggle_encoder_data("scaled_encoders")} />
               </fieldset>
             </div>
           </Popover>
           <EStopButton
             bot={this.props.bot}
-            user={this.props.user}
-          />
+            user={this.props.user} />
         </WidgetHeader>
         <WidgetBody>
           <MustBeOnline
@@ -121,15 +115,13 @@ export class Move extends React.Component<MoveProps, {}> {
             <StepSizeSelector
               choices={[1, 10, 100, 1000, 10000]}
               selector={num => this.props.dispatch(changeStepSize(num))}
-              selected={this.props.bot.stepSize}
-            />
+              selected={this.props.bot.stepSize} />
             <JogButtons
               bot={this.props.bot}
               x_axis_inverted={x_axis_inverted}
               y_axis_inverted={y_axis_inverted}
               z_axis_inverted={z_axis_inverted}
-              disabled={this.props.disabled}
-            />
+              disabled={this.props.disabled} />
             <Row>
               <Col xs={3}>
                 <label>{t("X AXIS")}</label>
@@ -143,18 +135,15 @@ export class Move extends React.Component<MoveProps, {}> {
             </Row>
             <AxisDisplayGroup
               position={motor_coordinates}
-              label={"Motor Coordinates (mm)"}
-            />
+              label={"Motor Coordinates (mm)"} />
             {scaled_encoders &&
               <AxisDisplayGroup
                 position={scaled_encoders_data}
-                label={"Scaled Encoder (steps)"}
-              />}
+                label={"Scaled Encoder (steps)"} />}
             {raw_encoders &&
               <AxisDisplayGroup
                 position={raw_encoders_data}
-                label={"Raw Encoder data"}
-              />}
+                label={"Raw Encoder data"} />}
             <AxisInputBoxGroup
               position={motor_coordinates}
               onCommit={input => moveAbs(input)}

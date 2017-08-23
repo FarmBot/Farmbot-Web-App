@@ -17,7 +17,7 @@ export function prepopulateEnv(env: Dictionary<string | undefined>): WD_ENV {
       val = initial;
     } else {
       val = "" + DEFAULTS[key];
-    };
+    }
     output[key] = parseEnvKey(key, val);
   });
   return output;

@@ -17,8 +17,7 @@ export function PeripheralForm(props: PeripheralFormProps) {
             onChange={(e) => {
               let { value } = e.currentTarget;
               dispatch(edit(p, { label: value }));
-            }}
-          />
+            }} />
         </Col>
         <Col xs={4}>
           <input type="number"
@@ -33,8 +32,7 @@ export function PeripheralForm(props: PeripheralFormProps) {
         <Col xs={2}>
           <button
             className="red fb-button"
-            onClick={() => { dispatch(destroy(p.uuid)); }}
-          >
+            onClick={() => { dispatch(destroy(p.uuid)); }}>
             <i className="fa fa-minus" />
           </button>
         </Col>
