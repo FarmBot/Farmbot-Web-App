@@ -206,10 +206,6 @@ export interface DraggableEvent {
   };
 }
 
-export interface OFSearchProps {
-  cropSearchResults: CropLiveSearchResult[];
-}
-
 export interface HoveredPlantPayl {
   /* Use UUID here to prevent denormalization? */
   plantUUID: string | undefined;
