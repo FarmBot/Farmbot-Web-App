@@ -116,107 +116,107 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/account",
         getComponent(_discard: void, cb: Function) {
-          import("./account/index").then(
-            (module) => cb(undefined, module.Account)
-          ).catch(errorLoading(cb));
+          import("./account/index")
+            .then(module => cb(undefined, module.Account))
+            .catch(errorLoading(cb));
         }
       },
       controlsRoute,
       {
         path: "app/device",
         getComponent(_discard: void, cb: Function) {
-          import("./devices/devices").then(
-            (module) => cb(undefined, module.Devices)
-          ).catch(errorLoading(cb));
+          import("./devices/devices")
+            .then(module => cb(undefined, module.Devices))
+            .catch(errorLoading(cb));
         }
       },
       {
         path: "app/farmware",
         getComponent(_discard: void, cb: Function) {
-          import("./farmware/index").then(
-            (module) => cb(undefined, module.FarmwarePage)
-          ).catch(errorLoading(cb));
+          import("./farmware/index")
+            .then(module => cb(undefined, module.FarmwarePage))
+            .catch(errorLoading(cb));
         }
       },
       {
         path: "app/designer",
         onEnter: this.maybeReplaceDesignerModules.bind(this),
         getComponent(_discard: void, cb: Function) {
-          import("./farm_designer/index").then(
-            (module) => cb(undefined, module.FarmDesigner)
-          ).catch(errorLoading(cb));
+          import("./farm_designer/index")
+            .then(module => cb(undefined, module.FarmDesigner))
+            .catch(errorLoading(cb));
         },
         childRoutes: [
           {
             path: "plants",
             getComponent(_discard: void, cb: Function) {
-              import("./farm_designer/plants/plant_inventory").then(
-                (module) => cb(undefined, module.Plants)
-              ).catch(errorLoading(cb));
+              import("./farm_designer/plants/plant_inventory")
+                .then(module => cb(undefined, module.Plants))
+                .catch(errorLoading(cb));
             },
           },
           {
             path: "plants/crop_search",
             getComponent(_discard: void, cb: Function) {
-              import("./farm_designer/plants/crop_catalog").then(
-                (module) => cb(undefined, module.CropCatalog)
-              ).catch(errorLoading(cb));
+              import("./farm_designer/plants/crop_catalog")
+                .then(module => cb(undefined, module.CropCatalog))
+                .catch(errorLoading(cb));
             },
           },
           {
             path: "plants/crop_search/:crop",
             getComponent(_discard: void, cb: Function) {
-              import("./farm_designer/plants/crop_info").then(
-                (module) => cb(undefined, module.CropInfo)
-              ).catch(errorLoading(cb));
+              import("./farm_designer/plants/crop_info")
+                .then(module => cb(undefined, module.CropInfo))
+                .catch(errorLoading(cb));
             },
           },
           {
             path: "plants/crop_search/:crop/add",
             getComponent(_discard: void, cb: Function) {
-              import("./farm_designer/plants/dnd_crop_mobile").then(
-                (module) => cb(undefined, module.DNDCropMobile)
-              ).catch(errorLoading(cb));
+              import("./farm_designer/plants/dnd_crop_mobile")
+                .then(module => cb(undefined, module.DNDCropMobile))
+                .catch(errorLoading(cb));
             },
           },
           {
             path: "plants/:plant_id",
             getComponent(_discard: void, cb: Function) {
-              import("./farm_designer/plants/plant_info").then(
-                (module) => cb(undefined, module.PlantInfo)
-              ).catch(errorLoading(cb));
+              import("./farm_designer/plants/plant_info")
+                .then(module => cb(undefined, module.PlantInfo))
+                .catch(errorLoading(cb));
             },
           },
           {
             path: "plants/:plant_id/edit",
             getComponent(_discard: void, cb: Function) {
-              import("./farm_designer/plants/edit_plant_info").then(
-                (module) => cb(undefined, module.EditPlantInfo)
-              ).catch(errorLoading(cb));
+              import("./farm_designer/plants/edit_plant_info")
+                .then(module => cb(undefined, module.EditPlantInfo))
+                .catch(errorLoading(cb));
             },
           },
           {
             path: "farm_events",
             getComponent(_discard: void, cb: Function) {
-              import("./farm_designer/farm_events/farm_events").then(
-                (module) => cb(undefined, module.FarmEvents)
-              ).catch(errorLoading(cb));
+              import("./farm_designer/farm_events/farm_events")
+                .then(module => cb(undefined, module.FarmEvents))
+                .catch(errorLoading(cb));
             }
           },
           {
             path: "farm_events/add",
             getComponent(_discard: void, cb: Function) {
-              import("./farm_designer/farm_events/add_farm_event").then(
-                (module) => cb(undefined, module.AddFarmEvent)
-              ).catch(errorLoading(cb));
+              import("./farm_designer/farm_events/add_farm_event")
+                .then(module => cb(undefined, module.AddFarmEvent))
+                .catch(errorLoading(cb));
             }
           },
           {
             path: "farm_events/:farm_event_id",
             getComponent(_discard: void, cb: Function) {
-              import("./farm_designer/farm_events/edit_farm_event").then(
-                (module) => cb(undefined, module.EditFarmEvent)
-              ).catch(errorLoading(cb));
+              import("./farm_designer/farm_events/edit_farm_event")
+                .then(module => cb(undefined, module.EditFarmEvent))
+                .catch(errorLoading(cb));
             }
           }
         ]
@@ -225,60 +225,68 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         path: "app/regimens",
         getComponent(_discard: void, cb: Function) {
           if (!isMobile()) {
-            import("./regimens/index").then(
-              (module) => cb(undefined, module.Regimens)
-            ).catch(errorLoading(cb));
+            import("./regimens/index")
+              .then(module => cb(undefined, module.Regimens))
+              .catch(errorLoading(cb));
           } else {
-            import("./regimens/list/index").then(
-              (module) => cb(undefined, module.RegimensList)
-            ).catch(errorLoading(cb));
+            import("./regimens/list/index")
+              .then(module => cb(undefined, module.RegimensList))
+              .catch(errorLoading(cb));
           }
         },
       },
       {
         path: "app/regimens/:regimen",
         getComponent(_discard: void, cb: Function) {
-          import("./regimens/index").then(
-            (module) => cb(undefined, module.Regimens)
-          ).catch(errorLoading(cb));
+          import("./regimens/index")
+            .then(module => cb(undefined, module.Regimens))
+            .catch(errorLoading(cb));
         }
       },
       {
         path: "app/sequences",
         getComponent(_discard: void, cb: Function) {
-          import("./sequences/sequences").then(
-            (module) => cb(undefined, module.Sequences)
-          ).catch(errorLoading(cb));
+          import("./sequences/sequences")
+            .then(module => cb(undefined, module.Sequences))
+            .catch(errorLoading(cb));
         },
       },
       {
         path: "app/sequences/:sequence",
         getComponent(_discard: void, cb: Function) {
-          import("./sequences/sequences").then(
-            (module) => cb(undefined, module.Sequences)
-          ).catch(errorLoading(cb));
+          import("./sequences/sequences")
+            .then(module => cb(undefined, module.Sequences))
+            .catch(errorLoading(cb));
         },
       },
       {
         path: "app/tools",
         getComponent(_discard: void, cb: Function) {
-          import("./tools/index").then(
-            (module) => cb(undefined, module.Tools)
-          ).catch(errorLoading(cb));
+          import("./tools/index")
+            .then(module => cb(undefined, module.Tools))
+            .catch(errorLoading(cb));
         }
       },
       {
         path: "*",
         getComponent(_discard: void, cb: Function) {
-          import("./404").then(
-            (module) => cb(undefined, module.FourOhFour)
-          ).catch(errorLoading(cb));
+          import("./404")
+            .then(module => cb(undefined, module.FourOhFour))
+            .catch(errorLoading(cb));
         }
       }
     ]
   };
 
   render() {
+    // ==== TEMPORARY HACK. TODO: Add a before hook, if such a thing exists in
+    // React Router. Or switch routing libs.
+    let notLoggedIn = !Session.get();
+    let restrictedArea = window.location.pathname.includes("/app/");
+    if (notLoggedIn && restrictedArea) {
+      window.location.href = "/";
+    }
+    // ==== END HACK ====
     return <Provider store={_store}>
       <Router history={history}>
         {this.routes}
