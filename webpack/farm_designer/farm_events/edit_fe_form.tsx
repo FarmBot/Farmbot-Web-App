@@ -29,7 +29,7 @@ import {
 import { DropDownItem } from "../../ui/fb_select";
 import { history } from "../../history";
 // TIL: https://stackoverflow.com/a/24900248/1064917
-import { betterMerge, fancyDebug } from "../../util";
+import { betterMerge } from "../../util";
 import { maybeWarnAboutMissedTasks } from "./util";
 import { TzWarning } from "./tz_warning";
 import { FarmEventRepeatForm } from "./farm_event_repeat_form";
