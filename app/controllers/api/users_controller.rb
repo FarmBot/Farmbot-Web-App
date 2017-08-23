@@ -1,10 +1,8 @@
 module Api
   class UsersController < Api::AbstractController
-    include Skylight::Helpers
 
     skip_before_action :authenticate_user!, only: [:create, :verify]
 
-    instrument_method
     def create
       mutate Users::Create.run(user_params)
     end

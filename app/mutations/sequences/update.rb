@@ -1,6 +1,5 @@
 module Sequences
   class Update < Mutations::Command
-    include Skylight::Helpers
     include CeleryScriptValidators
 
     required do
@@ -14,13 +13,11 @@ module Sequences
       string :color, in: Sequence::COLORS
     end
 
-    instrument_method
     def validate
       validate_sequence
       raise Errors::Forbidden unless device.sequences.include?(sequence)
     end
 
-    instrument_method
     def execute
       ActiveRecord::Base.transaction do
         sequence.args["is_outdated"] = false

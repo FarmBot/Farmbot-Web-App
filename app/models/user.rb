@@ -26,6 +26,6 @@ class User < ApplicationRecord
   end
 
   def verified?
-    SKIP_EMAIL_VALIDATION ? !!verified_at : true
+    SKIP_EMAIL_VALIDATION ? true : !!verified_at
   end
 end
