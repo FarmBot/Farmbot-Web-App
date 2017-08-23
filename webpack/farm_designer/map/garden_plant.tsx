@@ -31,8 +31,7 @@ export class GardenPlant extends
         x={qx}
         y={qy}
         r={radius}
-        selected={selected}
-      />
+        selected={selected} />
 
       <image
         className={"plant-image is-chosen-" + selected}
@@ -43,8 +42,7 @@ export class GardenPlant extends
         height={radius * 2}
         width={radius * 2}
         x={qx - radius}
-        y={qy - radius}
-      />
+        y={qy - radius} />
     </g>;
   }
 }

@@ -125,8 +125,7 @@ export class FarmbotOsSettings
               <div>
                 <TimezoneSelector
                   currentTimezone={this.props.account.body.timezone}
-                  onUpdate={this.handleTimezone}
-                />
+                  onUpdate={this.handleTimezone} />
               </div>
             </Col>
           </Row>
@@ -189,8 +188,7 @@ export class FarmbotOsSettings
                 <button
                   className="fb-button yellow"
                   type="button"
-                  onClick={reboot}
-                >
+                  onClick={reboot}>
                   {t("RESTART")}
                 </button>
               </Col>
@@ -211,8 +209,7 @@ export class FarmbotOsSettings
                 <button
                   className="fb-button red"
                   type="button"
-                  onClick={powerOff}
-                >
+                  onClick={powerOff}>
                   {t("SHUTDOWN")}
                 </button>
               </Col>
@@ -232,8 +229,7 @@ export class FarmbotOsSettings
                 <button
                   className="fb-button red"
                   type="button"
-                  onClick={factoryReset}
-                >
+                  onClick={factoryReset}>
                   {t("FACTORY RESET")}
                 </button>
               </Col>

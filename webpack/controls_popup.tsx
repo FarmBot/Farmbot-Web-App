@@ -26,8 +26,7 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
     return (
       <div
         className={"controls-popup " + isOpen}
-        onClick={this.toggle("isOpen")}
-      >
+        onClick={this.toggle("isOpen")}>
         <i className="fa fa-plus" />
         <div className="controls-popup-menu-outer">
           <div className="controls-popup-menu-inner">
@@ -36,29 +35,25 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
               direction="up"
               isInverted={false}
               steps={this.state.stepSize}
-              disabled={false}
-            />
+              disabled={false} />
             <DirectionButton
               axis="x"
               direction="left"
               isInverted={false}
               steps={this.state.stepSize}
-              disabled={false}
-            />
+              disabled={false} />
             <DirectionButton
               axis="y"
               direction="down"
               isInverted={false}
               steps={this.state.stepSize}
-              disabled={false}
-            />
+              disabled={false} />
             <DirectionButton
               axis="z"
               direction="right"
               isInverted={false}
               steps={this.state.stepSize}
-              disabled={false}
-            />
+              disabled={false} />
           </div>
         </div>
       </div>

@@ -19,8 +19,7 @@ export class CameraCalibration extends
           title={"Camera Calibration"}
           help={t(ToolTips.CAMERA_CALIBRATION)}
           onCalibrate={this.props.dispatch(calibrate)}
-          env={this.props.env}
-        />
+          env={this.props.env} />
         <WidgetBody>
           <Row>
             <Col sm={12}>
@@ -51,8 +50,7 @@ export class CameraCalibration extends
                 V_LO={this.props.V_LO}
                 H_HI={this.props.H_HI}
                 S_HI={this.props.S_HI}
-                V_HI={this.props.V_HI}
-              />
+                V_HI={this.props.V_HI} />
             </Col>
           </Row>
         </WidgetBody>

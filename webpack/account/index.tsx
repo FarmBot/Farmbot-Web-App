@@ -52,8 +52,7 @@ export class Account extends React.Component<Props, State> {
             <DeleteAccount
               onClick={(password) => this
                 .props
-                .dispatch(deleteUser({ password }))}
-            />
+                .dispatch(deleteUser({ password }))} />
           </Row>
         </Col>
       </Page>

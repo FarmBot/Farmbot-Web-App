@@ -13,7 +13,7 @@ const LOOKUP: { [name: string]: DropDownItem } = {
   [Encoder.differential]: { label: "Differential", value: Encoder.differential },
   [Encoder.quadrature]: { label: "Single-Ended", value: Encoder.quadrature },
   DEFAULT: { label: "---", value: Encoder.unknown }
-}
+};
 
 const OPTIONS = [LOOKUP[Encoder.differential], LOOKUP[Encoder.quadrature]];
 
@@ -38,7 +38,7 @@ export function EncoderType(props: EncoderTypeProps) {
     } else {
       throw new Error("Got bad encoder type in device panel.");
     }
-  }
+  };
   return <tr>
     <td>
       <label>{t("ENCODER TYPE")}</label>

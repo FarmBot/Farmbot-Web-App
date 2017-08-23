@@ -29,8 +29,7 @@ let sequenceList = (dispatch: Function) =>
     return <Link
       to={`/app/sequences/${urlFriendly(ts.body.name) || ""}`}
       key={uuid}
-      onClick={click}
-    >
+      onClick={click} >
       <button className={css.join(" ")}>
         {name}
       </button>
@@ -91,14 +90,12 @@ export class SequencesList extends
           onClick={() => {
             dispatch(init(this.emptySequence()));
             push("/app/sequences/new_sequence_" + (sequences.length++));
-          }}
-        >
+          }}>
           <i className="fa fa-plus" />
         </button>
         <input
           onChange={this.onChange}
-          placeholder={t("Search Sequences...")}
-        />
+          placeholder={t("Search Sequences...")} />
         <Row>
           <Col xs={12}>
             {

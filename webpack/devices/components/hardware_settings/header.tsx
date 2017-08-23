@@ -18,5 +18,5 @@ export let Header = (props: Props) => {
     <span className="icon-toggle">
       &nbsp;&nbsp;[<i className={`fa fa-${icon_string}`} />]
     </span>
-  </h4>
-}
+  </h4>;
+};

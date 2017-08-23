@@ -60,8 +60,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                   <div className="nav-left">
                     <i
                       className={menuIconClassNames.join(" ")}
-                      onClick={this.toggle("mobileMenuOpen")}
-                    />
+                      onClick={this.toggle("mobileMenuOpen")} />
                     <span className="mobile-menu-container">
                       {MobileMenu({ toggle, mobileMenuOpen })}
                     </span>
@@ -75,17 +74,14 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                       interactionKind={PopoverInteractionKind.HOVER}
                       target={<div className="nav-name">{firstName}</div>}
                       position={Position.BOTTOM_RIGHT}
-                      content={AdditionalMenu(this.logout)}
-                    />
+                      content={AdditionalMenu(this.logout)} />
                     <EStopButton
                       bot={this.props.bot}
-                      user={this.props.user}
-                    />
+                      user={this.props.user} />
                     <SyncButton
                       bot={this.props.bot}
                       user={this.props.user}
-                      dispatch={this.props.dispatch}
-                    />
+                      dispatch={this.props.dispatch} />
                   </div>
                 </div>
               </div>

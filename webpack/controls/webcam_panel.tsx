@@ -40,16 +40,14 @@ export class WebcamPanel extends
           {isEditing &&
             <button
               className="fb-button green"
-              onClick={this.save}
-            >
+              onClick={this.save}>
               {t("Save")}{this.props.feed.specialStatus ? "" : "*"}
             </button>
           }
           {!isEditing &&
             <button
               className="fb-button gray"
-              onClick={this.toggle}
-            >
+              onClick={this.toggle}>
               {t("Edit")}
             </button>
           }

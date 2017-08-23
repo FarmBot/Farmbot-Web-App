@@ -20,22 +20,19 @@ export function NumericMCUInputGroup(props: NumericMCUInputGroupProps) {
       <McuInputBox
         setting={x}
         bot={bot}
-        dispatch={dispatch}
-      />
+        dispatch={dispatch} />
     </Col>
     <Col xs={2}>
       <McuInputBox
         setting={y}
         bot={bot}
-        dispatch={dispatch}
-      />
+        dispatch={dispatch} />
     </Col>
     <Col xs={2}>
       <McuInputBox
         setting={z}
         bot={bot}
-        dispatch={dispatch}
-      />
+        dispatch={dispatch} />
     </Col>
   </Row>;
 }

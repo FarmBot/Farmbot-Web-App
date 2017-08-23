@@ -16,11 +16,8 @@ export function InputDefault({
   let notUndefied = (isString(raw) || isNumber(raw));
   let val = notUndefied ? raw : "";
 
-  return (
-    <BlurableInput
-      type={type_ || "text"}
-      value={val}
-      onCommit={updateStep({ dispatch, step, field, index, sequence })}
-    />
-  );
+  return <BlurableInput
+    type={type_ || "text"}
+    value={val}
+    onCommit={updateStep({ dispatch, step, field, index, sequence })} />;
 }

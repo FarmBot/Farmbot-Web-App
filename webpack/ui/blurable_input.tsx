@@ -55,7 +55,6 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
       type={this.props.type || "text"}
       disabled={this.props.disabled}
       className={this.props.className}
-      placeholder={this.props.placeholder}
-    />;
+      placeholder={this.props.placeholder} />;
   }
 }

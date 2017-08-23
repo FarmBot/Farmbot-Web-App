@@ -83,8 +83,7 @@ export default class App extends React.Component<AppProps, {}> {
         user={this.props.user}
         bot={this.props.bot}
         dispatch={this.props.dispatch}
-        logs={this.props.logs}
-      />
+        logs={this.props.logs} />
       {!syncLoaded && <Spinner radius={33} strokeWidth={6} />}
       {syncLoaded && this.props.children}
       <ControlsPopup dispatch={this.props.dispatch} />

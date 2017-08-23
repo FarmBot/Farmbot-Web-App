@@ -27,7 +27,7 @@ export const SPECIAL_VALUE_DDI = {
     label: "Bottom Right",
     value: SPECIAL_VALUES.BOTTOM_RIGHT
   },
-}
+};
 
 export const CALIBRATION_DROPDOWNS: DropDownItem[] = [
   SPECIAL_VALUE_DDI[SPECIAL_VALUES.X],

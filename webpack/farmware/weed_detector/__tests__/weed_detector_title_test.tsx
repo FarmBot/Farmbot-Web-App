@@ -14,7 +14,8 @@ describe("<TitleBar/>", () => {
       title: "Test",
       help: "help text",
       env: {}
-    }
+    };
+
     let tb = mount(<TitleBar {...props} />);
     expect(tb.text().toLowerCase()).toContain("clear weeds");
     tb.setProps({ deletionProgress: "10%" });

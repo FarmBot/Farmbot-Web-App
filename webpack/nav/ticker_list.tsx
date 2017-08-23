@@ -34,8 +34,7 @@ export let TickerList = (props: TickerListProps) => {
   return (
     <div
       className="ticker-list"
-      onClick={props.toggle("tickerListOpen")}
-    >
+      onClick={props.toggle("tickerListOpen")} >
       <div className="first-ticker">
         {Ticker(firstTicker || noLogs, -1)}
       </div>

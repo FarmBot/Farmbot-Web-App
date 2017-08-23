@@ -40,7 +40,6 @@ export class TimezoneSelector extends React.Component<TZSelectorProps, {}> {
     return <FBSelect
       list={CHOICES}
       selectedItem={this.selectedItem()}
-      onChange={this.itemSelected}
-    />;
+      onChange={this.itemSelected} />;
   }
 }

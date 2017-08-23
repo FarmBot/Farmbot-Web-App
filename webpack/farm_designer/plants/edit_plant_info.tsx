@@ -3,10 +3,9 @@ import { connect } from "react-redux";
 import { t } from "i18next";
 import { BackArrow } from "../../ui";
 import { TaggedPlantPointer } from "../../resources/tagged_resources";
-import { mapStateToProps, formatPlantInfo } from "./map_state_to_props"
+import { mapStateToProps, formatPlantInfo } from "./map_state_to_props";
 import { PlantInfoBase } from "./plant_info_base";
 import { PlantPanel } from "./plant_panel";
-
 
 @connect(mapStateToProps)
 export class EditPlantInfo extends PlantInfoBase {

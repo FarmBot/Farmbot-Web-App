@@ -24,8 +24,7 @@ export class DirectionButton extends React.Component<DirectionButtonProps, {}> {
         onClick={this.sendCommand}
         className={klass}
         title={title}
-        disabled={disabled || false}
-      />
+        disabled={disabled || false} />
     );
   }
 }

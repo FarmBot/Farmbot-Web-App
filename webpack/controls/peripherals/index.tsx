@@ -83,8 +83,7 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
         <SaveBtn
           hidden={!isEditing}
           status={status}
-          onClick={this.maybeSave}
-        />
+          onClick={this.maybeSave} />
         <button
           hidden={!isEditing}
           className="fb-button green"

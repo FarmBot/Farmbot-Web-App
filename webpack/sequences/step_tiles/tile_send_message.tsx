@@ -125,8 +125,7 @@ class RefactoredSendMessage extends React.Component<SendMessageParams, {}> {
                     step={currentStep}
                     sequence={currentSequence}
                     index={index}
-                    field="message"
-                  />
+                    field="message" />
                   <div className="bottom-content">
                     <div className="channel-options">
                       <FBSelect

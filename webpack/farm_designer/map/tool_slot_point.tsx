@@ -44,6 +44,6 @@ export class ToolSlotPoint extends
         fill={"#434343"}>
         {this.slot.tool ? this.slot.tool.body.name : "no tool"}
       </text>
-    </g>
+    </g>;
   }
 }

@@ -70,8 +70,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
             status={toolSlotStatus}
             onClick={() => {
               dispatch(saveAll(toolSlots, () => { toggle(); }));
-            }}
-          />
+            }} />
           <button
             className="green fb-button"
             onClick={() => { dispatch(init(this.emptyToolSlot())); }}>
@@ -98,8 +97,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
                     onCommit={(e) => {
                       dispatch(edit(slot, { x: parseInt(e.currentTarget.value, 10) }));
                     }}
-                    type="number"
-                  />
+                    type="number" />
                 </Col>
                 <Col xs={2}>
                   <BlurableInput
@@ -107,8 +105,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
                     onCommit={(e) => {
                       dispatch(edit(slot, { y: parseInt(e.currentTarget.value, 10) }));
                     }}
-                    type="number"
-                  />
+                    type="number" />
                 </Col>
                 <Col xs={2}>
                   <BlurableInput
@@ -116,8 +113,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
                     onCommit={(e) => {
                       dispatch(edit(slot, { z: parseInt(e.currentTarget.value, 10) }));
                     }}
-                    type="number"
-                  />
+                    type="number" />
                 </Col>
                 <Col xs={3}>
                   <FBSelect
@@ -125,8 +121,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
                     selectedItem={this.props.getChosenToolOption(slot.uuid)}
                     allowEmpty={true}
                     onChange={this.props.changeToolSlot(slot,
-                      this.props.dispatch)}
-                  />
+                      this.props.dispatch)} />
                 </Col>
                 <Col xs={1}>
                   <button

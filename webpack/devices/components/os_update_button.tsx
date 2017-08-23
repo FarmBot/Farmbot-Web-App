@@ -65,8 +65,7 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
       <Col xs={7}>
         <button
           className={"fb-button " + buttonColor}
-          onClick={() => checkControllerUpdates()}
-        >
+          onClick={() => checkControllerUpdates()}>
           {downloadProgress || buttonStr}
         </button>
       </Col>

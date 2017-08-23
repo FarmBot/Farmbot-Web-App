@@ -75,21 +75,18 @@ export class PasswordReset extends React.Component<Props, State> {
                     </label>
                     <input
                       type="password"
-                      onChange={this.set("password").bind(this)}
-                    />
+                      onChange={this.set("password").bind(this)} />
                     <label>
                       {t("Confirm New Password")}
                     </label>
                     <input
                       type="password"
-                      onChange={this.set("passwordConfirmation").bind(this)}
-                    />
+                      onChange={this.set("passwordConfirmation").bind(this)} />
                     <Row>
                       <Col xs={12}>
                         <button
                           className="fb-button green pull-right"
-                          style={buttonStylesUniqueToOnlyThisPage}
-                        >
+                          style={buttonStylesUniqueToOnlyThisPage}>
                           {t("Reset")}
                         </button>
                       </Col>

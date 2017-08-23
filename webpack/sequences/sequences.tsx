@@ -33,8 +33,7 @@ export class Sequences extends React.Component<Props, {}> {
             sequence={this.props.sequence}
             slots={this.props.slots}
             tools={this.props.tools}
-            resources={this.props.resources}
-          />
+            resources={this.props.resources} />
         </div>
       </Col>
       {isMobile() && <MobileSequencesNav />}
@@ -43,8 +42,7 @@ export class Sequences extends React.Component<Props, {}> {
           dispatch={this.props.dispatch}
           auth={this.props.auth}
           sequence={this.props.sequence}
-          sequences={this.props.sequences}
-        />
+          sequences={this.props.sequences} />
       </Col>
     </Page>;
   }

@@ -38,8 +38,8 @@ export class HsvSlider extends React.Component<EnvSliderProps, EnvSliderState> {
 
   get name(): HSV {
     switch (this.props.name) {
-      case "H": case "S": case "V": this.props.name
-      default: throw new Error("HSV is bad.")
+      case "H": case "S": case "V": return this.props.name;
+      default: throw new Error("HSV is bad.");
     }
   }
 

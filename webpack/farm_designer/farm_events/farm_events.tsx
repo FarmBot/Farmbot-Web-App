@@ -102,21 +102,6 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
 
         <div className="panel-content">
           <Row>
-            {/* Hidden until built out per Rory */}
-            {/*
-            <Col xs={2}>
-              <i className="fa fa-calendar"></i>
-            </Col>
-
-            <Col xs={10}>
-              <FBSelect list={[]}
-                selectedItem={undefined}
-                onChange={option => {
-                  this.props.push("/app/designer/farm_events/" + option.value);
-                }}
-              />
-            </Col>
-            */}
           </Row>
 
           <div className="farm-events">

@@ -16,8 +16,7 @@ function MiddleSection({ regimen, dispatch, calendar }: MiddleSectionProps) {
       <ActiveEditor
         dispatch={dispatch}
         regimen={regimen}
-        calendar={calendar}
-      />
+        calendar={calendar} />
     );
   } else {
     return <EmptyEditor />;
@@ -58,8 +57,7 @@ export function RegimenEditorWidget({ current, dispatch, auth, calendar }:
         {regimen && (
           <SaveBtn
             status={regimen.specialStatus}
-            onClick={save({ dispatch, regimen })}
-          />
+            onClick={save({ dispatch, regimen })} />
         )}
 
         <CopyButton regimen={regimen} dispatch={dispatch} />
@@ -74,8 +72,7 @@ export function RegimenEditorWidget({ current, dispatch, auth, calendar }:
       <MiddleSection
         regimen={regimen}
         dispatch={dispatch}
-        calendar={calendar}
-      />
+        calendar={calendar} />
     </div >;
   } else {
     throw new Error("Must log in first");

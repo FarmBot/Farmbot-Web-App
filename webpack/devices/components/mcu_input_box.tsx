@@ -42,7 +42,6 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
     return <BlurableInput
       type="number"
       value={this.value}
-      onCommit={this.commit}
-    />;
+      onCommit={this.commit} />;
   }
 }

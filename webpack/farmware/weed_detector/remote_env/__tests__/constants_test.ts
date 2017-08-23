@@ -15,7 +15,7 @@ describe("DEFAULT_FORMATTER", () => {
 
   it("parses OK inputs (number)", () => {
     let result = DEFAULT_FORMATTER.parse("CAMERA_CALIBRATION_blur", "23");
-    expect(result).toEqual(23)
+    expect(result).toEqual(23);
   });
 
   it("parses OK inputs (special)", () => {

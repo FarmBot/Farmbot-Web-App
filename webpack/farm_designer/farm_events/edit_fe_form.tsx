@@ -222,8 +222,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
           <FBSelect
             list={this.props.executableOptions}
             onChange={this.executableSet}
-            selectedItem={this.executableGet()}
-          />
+            selectedItem={this.executableGet()} />
           <label>
             {t("Starts")}
           </label>
@@ -234,8 +233,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
                 className="add-event-start-date"
                 name="start_date"
                 value={this.fieldGet("startDate")}
-                onCommit={this.fieldSet("startDate")}
-              />
+                onCommit={this.fieldSet("startDate")} />
             </Col>
             <Col xs={6}>
               <BlurableInput
@@ -243,16 +241,14 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
                 className="add-event-start-time"
                 name="start_time"
                 value={this.fieldGet("startTime")}
-                onCommit={this.fieldSet("startTime")}
-              />
+                onCommit={this.fieldSet("startTime")} />
             </Col>
           </Row>
           <label>
             <input type="checkbox"
               onChange={this.toggleRepeat}
               disabled={this.isReg}
-              checked={repeats && !this.isReg}
-            />
+              checked={repeats && !this.isReg} />
             &nbsp;{t("Repeats?")}
           </label>
           <FarmEventRepeatForm
@@ -262,8 +258,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             timeUnit={this.fieldGet("timeUnit") as TimeUnit}
             repeat={this.fieldGet("repeat")}
             endDate={this.fieldGet("endDate")}
-            endTime={this.fieldGet("endTime")}
-          />
+            endTime={this.fieldGet("endTime")} />
           <SaveBtn
             status={fe.specialStatus || this.state.specialStatusLocal}
             color="magenta"

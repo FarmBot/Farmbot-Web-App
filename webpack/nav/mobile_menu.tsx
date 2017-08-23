@@ -12,8 +12,7 @@ export let MobileMenu = (props: MobileMenuProps) => {
     <div>
       <Overlay
         isOpen={props.mobileMenuOpen}
-        onClose={props.toggle("mobileMenuOpen")}
-      >
+        onClose={props.toggle("mobileMenuOpen")}>
         <div className={`${classes.join(" ")} ${isActive}`}>
           {NavLinks({ toggle: props.toggle })}
         </div>

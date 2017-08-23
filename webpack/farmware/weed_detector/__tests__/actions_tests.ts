@@ -12,7 +12,6 @@ import { devices } from "../../../device";
 import { translateImageWorkspaceAndSave } from "../actions";
 import { scanImage, test } from "../actions";
 
-
 describe("actions", () => {
   beforeEach(function () {
     jest.clearAllMocks();

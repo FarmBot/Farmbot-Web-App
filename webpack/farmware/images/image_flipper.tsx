@@ -21,14 +21,12 @@ export class ImageFlipper extends
             <p>{t(`Image loading (try refreshing)`)}</p>
             <img
               className="image-flipper-image"
-              src={PLACEHOLDER_FARMBOT}
-            />
+              src={PLACEHOLDER_FARMBOT} />
           </div>)}
         <img
           onLoad={() => this.setState({ isLoaded: true })}
           className={`image-flipper-image is-loaded-${this.state.isLoaded}`}
-          src={url}
-        />
+          src={url} />
       </div>;
     } else {
       return <div className="no-flipper-image-container">
@@ -36,8 +34,7 @@ export class ImageFlipper extends
           Once you do, they will show up here.`)}</p>
         <img
           className="image-flipper-image"
-          src={PLACEHOLDER_FARMBOT}
-        />
+          src={PLACEHOLDER_FARMBOT} />
       </div>;
     }
   }
@@ -59,14 +56,12 @@ export class ImageFlipper extends
         {image}
         <button
           onClick={this.go(1)}
-          className="image-flipper-left fb-button"
-        >
+          className="image-flipper-left fb-button">
           {t("Prev")}
         </button>
         <button
           onClick={this.go(-1)}
-          className="image-flipper-right fb-button"
-        >
+          className="image-flipper-right fb-button">
           {t("Next")}
         </button>
       </div>

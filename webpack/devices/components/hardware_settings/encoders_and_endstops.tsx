@@ -17,8 +17,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
       bool={encoders_and_endstops}
       title={"Encoders and Endstops"}
       name={"encoders_and_endstops"}
-      dispatch={dispatch}
-    />
+      dispatch={dispatch} />
     <Collapse isOpen={!!encoders_and_endstops}>
       <BooleanMCUInputGroup
         name={t("Enable Encoders")}
@@ -27,8 +26,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"encoder_enabled_y"}
         z={"encoder_enabled_z"}
         dispatch={dispatch}
-        bot={bot}
-      />
+        bot={bot} />
       <BooleanMCUInputGroup
         name={t("Use Encoders for Positioning")}
         tooltip={t(ToolTips.ENCODER_POSITIONING)}
@@ -36,8 +34,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"encoder_use_for_pos_y"}
         z={"encoder_use_for_pos_z"}
         dispatch={dispatch}
-        bot={bot}
-      />
+        bot={bot} />
       <BooleanMCUInputGroup
         name={t("Invert Encoders")}
         tooltip={t(ToolTips.INVERT_ENCODERS)}
@@ -45,8 +42,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"encoder_invert_y"}
         z={"encoder_invert_z"}
         dispatch={dispatch}
-        bot={bot}
-      />
+        bot={bot} />
       <NumericMCUInputGroup
         name={t("Max Missed Steps")}
         tooltip={t(ToolTips.MAX_MISSED_STEPS)}
@@ -54,8 +50,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"encoder_missed_steps_max_y"}
         z={"encoder_missed_steps_max_z"}
         bot={bot}
-        dispatch={dispatch}
-      />
+        dispatch={dispatch} />
       <NumericMCUInputGroup
         name={t("Encoder Missed Step Decay")}
         tooltip={t(ToolTips.ENCODER_MISSED_STEP_DECAY)}
@@ -63,8 +58,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"encoder_missed_steps_decay_y"}
         z={"encoder_missed_steps_decay_z"}
         bot={bot}
-        dispatch={dispatch}
-      />
+        dispatch={dispatch} />
       <NumericMCUInputGroup
         name={t("Encoder Scaling")}
         tooltip={t(ToolTips.ENCODER_SCALING)}
@@ -72,8 +66,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"encoder_scaling_y"}
         z={"encoder_scaling_z"}
         bot={bot}
-        dispatch={dispatch}
-      />
+        dispatch={dispatch} />
       <BooleanMCUInputGroup
         name={t("Enable Endstops")}
         tooltip={t(ToolTips.ENABLE_ENDSTOPS)}
@@ -81,8 +74,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"movement_enable_endpoints_y"}
         z={"movement_enable_endpoints_z"}
         dispatch={dispatch}
-        bot={bot}
-      />
+        bot={bot} />
       <BooleanMCUInputGroup
         name={t("Invert Endstops")}
         tooltip={t(ToolTips.INVERT_ENDPOINTS)}
@@ -90,8 +82,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"movement_invert_endpoints_y"}
         z={"movement_invert_endpoints_z"}
         dispatch={dispatch}
-        bot={bot}
-      />
+        bot={bot} />
     </Collapse>
   </section>;
 }

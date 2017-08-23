@@ -47,8 +47,7 @@ export class RegimensList extends
                 key={index}
                 regimen={regimen}
                 dispatch={this.props.dispatch}
-                length={this.props.regimens.length}
-              />
+                length={this.props.regimens.length} />
             );
           })}
       </Col>
@@ -71,8 +70,7 @@ export class RegimensList extends
         <AddRegimen dispatch={dispatch} length={regimens.length} />
         <input
           onChange={this.onChange}
-          placeholder={t("Search Regimens...")}
-        />
+          placeholder={t("Search Regimens...")} />
         <Row>
           {this.rows()}
         </Row>

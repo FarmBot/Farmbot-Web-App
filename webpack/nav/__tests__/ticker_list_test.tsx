@@ -22,8 +22,7 @@ describe("<TickerList />", () => {
       <TickerList
         logs={[log]}
         tickerListOpen={false}
-        toggle={jest.fn()}
-      />
+        toggle={jest.fn()} />
     );
     let labels = wrapper.find("label");
     expect(labels.length).toEqual(2);
@@ -41,8 +40,7 @@ describe("<TickerList />", () => {
       <TickerList
         logs={[]}
         tickerListOpen={false}
-        toggle={jest.fn()}
-      />
+        toggle={jest.fn()} />
     );
     let labels = wrapper.find("label");
     expect(labels.length).toEqual(2);
@@ -54,8 +52,7 @@ describe("<TickerList />", () => {
       <TickerList
         logs={[log, log]}
         tickerListOpen={true}
-        toggle={jest.fn()}
-      />
+        toggle={jest.fn()} />
     );
     let labels = wrapper.find("label");
     expect(labels.length).toEqual(4);

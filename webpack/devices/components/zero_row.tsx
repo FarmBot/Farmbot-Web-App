@@ -11,8 +11,7 @@ const AXES: Axis[] = ["x", "y", "z"];
 export function ZeroButton({ axis }: { axis: Axis }) {
   return <button
     className="fb-button yellow"
-    onClick={() => zero(axis)}
-  >
+    onClick={() => zero(axis)} >
     {t("zero {{axis}}", { axis })}
   </button>;
 }

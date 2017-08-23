@@ -30,7 +30,7 @@ interface HoveredPlantLayerState { isHovered: boolean; }
 export class HoveredPlantLayer extends
   React.Component<HoveredPlantLayerProps, Partial<HoveredPlantLayerState>> {
 
-  state: HoveredPlantLayerState = { isHovered: false }
+  state: HoveredPlantLayerState = { isHovered: false };
 
   onClick = () => {
     let plant = this.props.hoveredPlant;

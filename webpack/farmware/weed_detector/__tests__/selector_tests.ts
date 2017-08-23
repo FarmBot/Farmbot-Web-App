@@ -42,5 +42,5 @@ describe("envGet()", () => {
     let result = envGet("CAMERA_CALIBRATION_calibration_object_separation",
       myEnv);
     expect(result).toEqual(29);
-  })
-})
+  });
+});

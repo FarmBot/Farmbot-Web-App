@@ -59,8 +59,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
         <WidgetHeader helpText={ToolTips.PHOTOS} title={"Photos"}>
           <button
             className="fb-button gray"
-            onClick={this.takePhoto}
-          >
+            onClick={this.takePhoto}>
             {t("Take Photo")}
           </button>
         </WidgetHeader>
@@ -68,8 +67,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
           <ImageFlipper
             onFlip={id => { this.props.dispatch(selectImage(id)); }}
             currentImage={this.props.currentImage}
-            images={this.props.images}
-          />
+            images={this.props.images} />
         </WidgetBody>
         <WidgetFooter>
           {/** Separated from <MetaInfo /> for stylistic purposes. */}

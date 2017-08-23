@@ -16,8 +16,7 @@ export function ToolSlotLayer(props: ToolSlotLayerProps) {
       <ToolSlotPoint
         key={slot.toolSlot.uuid}
         slot={slot}
-        quadrant={botOriginQuadrant}
-      />
+        quadrant={botOriginQuadrant} />
     )}
   </g> : <g />; // fallback
 }

@@ -29,8 +29,7 @@ export const NavLinks = (props: NavLinksProps) => {
               to={"/app/" + link.slug}
               className={`${isActive}`}
               key={link.slug}
-              onClick={maybeToggle()}
-            >
+              onClick={maybeToggle()}>
               <i className={`fa fa-${link.icon}`} />
               {link.name}
             </Link>

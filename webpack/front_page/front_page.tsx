@@ -136,23 +136,20 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             <label>{t("I agree to the terms of use")}</label>
             <input type="checkbox"
               onChange={this.set("agreeToTerms").bind(this)}
-              value={this.state.agreeToTerms ? "false" : "true"}
-            />
+              value={this.state.agreeToTerms ? "false" : "true"} />
           </div>
           <ul>
             <li>
               <a
                 href={PRV_URL}
-                target="_blank"
-              >
+                target="_blank">
                 {t("Privacy Policy")}
               </a>
             </li>
             <li>
               <a
                 href={TOS_URL}
-                target="_blank"
-              >
+                target="_blank">
                 {t("Terms of Use")}
               </a>
             </li>
@@ -209,12 +206,10 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             </Row>
             <img
               className="hidden-xs hidden-sm col-md-7"
-              src="/app-resources/img/farmbot-desktop.png"
-            />
+              src="/app-resources/img/farmbot-desktop.png" />
             <img
               className="hidden-xs hidden-md hidden-lg hidden-xl col-sm-7"
-              src="/app-resources/img/farmbot-tablet.png"
-            />
+              src="/app-resources/img/farmbot-tablet.png" />
             <Row>
               {!forgotPassword && (
                 <Col xs={12} sm={5}>
@@ -222,8 +217,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                     <WidgetHeader title={"Login"}>
                       <button
                         className="fb-button gray"
-                        onClick={toggleServerOpts}
-                      >
+                        onClick={toggleServerOpts} >
                         <i className={`fa fa-${expandIcon}`} />
                       </button>
                     </WidgetHeader>
@@ -235,19 +229,16 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                         <input
                           type="email"
                           value={this.state.email}
-                          onChange={this.set("email").bind(this)}
-                        />
+                          onChange={this.set("email").bind(this)} />
                         <label>
                           {t("Password")}
                         </label>
                         <input
                           type="password"
-                          onChange={this.set("loginPassword").bind(this)}
-                        />
+                          onChange={this.set("loginPassword").bind(this)} />
                         <a
                           className="forgot-password"
-                          onClick={this.toggleForgotPassword.bind(this)}
-                        >
+                          onClick={this.toggleForgotPassword.bind(this)} >
                           {t("Forgot password?")}
                         </a>
                         {this.state.showServerOpts &&
@@ -258,23 +249,20 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                             <input
                               type="text"
                               onChange={this.set("serverURL").bind(this)}
-                              value={this.state.serverURL}
-                            />
+                              value={this.state.serverURL} />
                             <label>
                               {t("Server Port")}
                             </label>
                             <input
                               type="text"
                               onChange={this.set("serverPort").bind(this)}
-                              value={this.state.serverPort}
-                            />
+                              value={this.state.serverPort} />
                           </div>
                         }
                         <Row>
                           <button
                             className="fb-button green pull-right"
-                            style={buttonStylesUniqueToOnlyThisPage}
-                          >
+                            style={buttonStylesUniqueToOnlyThisPage} >
                             {t("Login")}
                           </button>
                         </Row>
@@ -289,8 +277,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                     <WidgetHeader title={"Reset Password"}>
                       <button
                         className="fb-button gray"
-                        onClick={this.toggleForgotPassword.bind(this)}
-                      >
+                        onClick={this.toggleForgotPassword.bind(this)} >
                         {t("BACK")}
                       </button>
                     </WidgetHeader>
@@ -300,13 +287,11 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                         <input
                           type="email"
                           value={this.state.email}
-                          onChange={this.set("email").bind(this)}
-                        />
+                          onChange={this.set("email").bind(this)} />
                         <Row>
                           <button
                             className="fb-button green"
-                            style={buttonStylesUniqueToOnlyThisPage}
-                          >
+                            style={buttonStylesUniqueToOnlyThisPage}>
                             {t("Reset Password")}
                           </button>
                         </Row>
@@ -325,33 +310,28 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                       </label>
                       <input
                         type="email"
-                        onChange={this.set("regEmail").bind(this)}
-                      />
+                        onChange={this.set("regEmail").bind(this)} />
                       <label>
                         {t("Name")}
                       </label>
                       <input
                         type="text"
-                        onChange={this.set("regName").bind(this)}
-                      />
+                        onChange={this.set("regName").bind(this)} />
                       <label>
                         {t("Password")}
                       </label>
                       <input
                         type="password"
-                        onChange={this.set("regPassword").bind(this)}
-                      />
+                        onChange={this.set("regPassword").bind(this)} />
                       <label>{t("Verify Password")}</label>
                       <input
                         type="password"
-                        onChange={this.set("regConfirmation").bind(this)}
-                      />
+                        onChange={this.set("regConfirmation").bind(this)} />
                       {this.maybeRenderTos()}
                       <Row>
                         <button
                           className="fb-button green"
-                          style={buttonStylesUniqueToOnlyThisPage}
-                        >
+                          style={buttonStylesUniqueToOnlyThisPage}>
                           {t("Create Account")}
                         </button>
                       </Row>

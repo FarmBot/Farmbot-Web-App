@@ -44,21 +44,17 @@ export class HardwareSettings extends
             </div>
             <HomingAndCalibration
               dispatch={dispatch}
-              bot={bot}
-            />
+              bot={bot} />
             <Motors
               dispatch={dispatch}
-              bot={bot}
-            />
+              bot={bot} />
             <EncodersAndEndStops
               dispatch={dispatch}
-              bot={bot}
-            />
+              bot={bot} />
             <DangerZone
               dispatch={dispatch}
               bot={bot}
-              onReset={MCUFactoryReset}
-            />
+              onReset={MCUFactoryReset} />
           </MustBeOnline>
         </WidgetBody>
       </Widget>

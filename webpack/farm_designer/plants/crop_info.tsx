@@ -75,8 +75,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
             onDragStart={this.handleDragStart}
             draggable={true}
             src={result.image}
-            data-icon-url={result.crop.svg_icon}
-          />
+            data-icon-url={result.crop.svg_icon} />
           <div className="crop-info-overlay">
             {t("Drag and drop into map")}
           </div>
@@ -121,8 +120,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
                             <img
                               src={svgToUrl(value)}
                               width={100}
-                              height={100}
-                            />
+                              height={100} />
                           </div>
                           :
                           <span>

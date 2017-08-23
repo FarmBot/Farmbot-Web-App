@@ -106,8 +106,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
           <MustBeOnline
             fallback="Not available when FarmBot is offline."
             status={this.props.syncStatus}
-            lockOpen={process.env.NODE_ENV !== "production"}
-          >
+            lockOpen={process.env.NODE_ENV !== "production"}>
             <Row>
               <fieldset>
                 <Col xs={12}>
@@ -116,14 +115,12 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
                     value={this.state.packageUrl || ""}
                     onChange={(e) => {
                       this.setState({ packageUrl: e.currentTarget.value });
-                    }}
-                  />
+                    }} />
                 </Col>
                 <Col xs={12}>
                   <button
                     className="fb-button green"
-                    onClick={this.install}
-                  >
+                    onClick={this.install}>
                     {t("Install")}
                   </button>
                 </Col>
@@ -147,20 +144,17 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
                 <Col xs={12}>
                   <button
                     className="fb-button red"
-                    onClick={this.remove}
-                  >
+                    onClick={this.remove}>
                     {t("Remove")}
                   </button>
                   <button
                     className="fb-button yellow"
-                    onClick={this.update}
-                  >
+                    onClick={this.update}>
                     {t("Update")}
                   </button>
                   <button
                     className="fb-button green"
-                    onClick={this.run}
-                  >
+                    onClick={this.run}>
                     {t("Run")}
                   </button>
                 </Col>

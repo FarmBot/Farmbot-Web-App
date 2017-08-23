@@ -16,4 +16,4 @@ export function StepInputBox(props: StepInputProps) {
     default:
       return <InputUnknown {...props } />;
   }
-};
+}

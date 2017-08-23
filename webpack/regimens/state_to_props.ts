@@ -79,4 +79,3 @@ let createRows = (index: ResourceIndex, dispatch: Function, regimen: TaggedRegim
     let day = Math.floor(duration(time_offset).asDays()) + 1;
     return { name, hhmm, color, day, dispatch, regimen, item, sortKey: time_offset };
   };
-
