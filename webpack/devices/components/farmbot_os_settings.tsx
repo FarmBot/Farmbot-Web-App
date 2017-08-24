@@ -32,13 +32,32 @@ const CAMERA_CHOICES = [
   { label: "Raspberry Pi Camera", value: "RPI" }
 ];
 
+const CAMERA_CHOICES_DDI = {
+  [CAMERA_CHOICES[0].value]: {
+    label: CAMERA_CHOICES[0].label,
+    value: CAMERA_CHOICES[0].value
+  },
+  [CAMERA_CHOICES[1].value]: {
+    label: CAMERA_CHOICES[1].label,
+    value: CAMERA_CHOICES[1].value
+  }
+};
+
 export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps, FarmbotOsState> {
 
   state: FarmbotOsState = {
-    cameraStatus: "",
-    selectedCamera: undefined
+    cameraStatus: ""
   };
+
+  selectedCamera(): DropDownItem | undefined {
+    let cameraSelection = undefined;
+    let camera = this.props.bot.hardware.user_env["camera"];
+    if (camera) {
+      cameraSelection = CAMERA_CHOICES_DDI[JSON.parse(camera)];
+    }
+    return cameraSelection;
+  }
 
   changeBot = (e: React.ChangeEvent<HTMLInputElement>) => {
     let { account, dispatch } = this.props;
@@ -61,7 +80,6 @@ export class FarmbotOsSettings
       .current
       .setUserEnv(message)
       .then(() => {
-        this.setState({ selectedCamera });
         success(t("Successfully configured camera!"));
       })
       .catch(() => error(t("An error occurred during configuration.")));
@@ -245,7 +263,7 @@ export class FarmbotOsSettings
                   <FBSelect
                     allowEmpty={true}
                     list={CAMERA_CHOICES}
-                    selectedItem={this.state.selectedCamera}
+                    selectedItem={this.selectedCamera()}
                     placeholder="Select a camera..."
                     onChange={this.sendOffConfig} />
                 </div>
