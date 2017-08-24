@@ -84,4 +84,12 @@ describe("<OsUpdateButton/>", () => {
     let osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UPDATE");
   });
+  it("is disabled", () => {
+    let { mock } = devices.current.checkUpdates as jest.Mock<{}>;
+    bot.hardware.jobs = { "FBOS_OTA": { status: "working", percent: 10, unit: "percent" } };
+    let buttons = mount(<OsUpdateButton bot={bot} />);
+    let osUpdateButton = buttons.find("button").last();
+    osUpdateButton.simulate("click");
+    expect(mock.calls.length).toEqual(0);
+  });
 });

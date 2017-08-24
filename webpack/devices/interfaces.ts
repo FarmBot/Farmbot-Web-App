@@ -96,7 +96,11 @@ export interface FarmbotOsProps {
   dispatch: Function;
 }
 
-export interface FarmbotOsState {
+export interface CameraSelectionProps {
+  env: Dictionary<string | undefined>
+}
+
+export interface CameraSelectionState {
   cameraStatus: "" | "sending" | "done" | "error";
 }
 
