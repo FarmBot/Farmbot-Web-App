@@ -41,8 +41,8 @@ export class FallbackImg extends React.Component<Props, State> {
   }
 
   dontFallback = () => {
-    let imgProps = defensiveClone(this.props);
-    delete (imgProps as any).fallback; // React will complain otherwise.
+    let imgProps: Props = defensiveClone(this.props);
+    delete imgProps.fallback;
     return (
       <div className="webcam-stream-valid">
         <img
