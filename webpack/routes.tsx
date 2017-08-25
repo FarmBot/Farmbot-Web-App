@@ -70,14 +70,14 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
 
   requireAuth(_discard: RouterState, replace: RedirectFunction) {
     let { store } = this.props;
-    if (Session.get()) { // has a previous session in cache
+    if (Session.getAll()) { // has a previous session in cache
       if (store.getState().auth) { // Has session, logged in.
         return;
       } else { // Has session but not logged in (returning visitor).
         store.dispatch(ready());
       }
     } else { // Not logged in yet.
-      Session.clear(true);
+      Session.clear();
     }
   }
 
@@ -281,7 +281,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
   render() {
     // ==== TEMPORARY HACK. TODO: Add a before hook, if such a thing exists in
     // React Router. Or switch routing libs.
-    let notLoggedIn = !Session.get();
+    let notLoggedIn = !Session.getAll();
     let restrictedArea = window.location.pathname.includes("/app/");
     if (notLoggedIn && restrictedArea) {
       window.location.href = "/";

@@ -1,16 +1,10 @@
 import { BotState, HardwareState, Xyz, ControlPanelState } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { SyncStatus } from "farmbot/dist";
-import { localStorageBoolFetch } from "../util";
 import { Actions } from "../constants";
 import { EncoderDisplay } from "../controls/interfaces";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
-
-export const X_AXIS_INVERTED = "x_axis_inverted";
-export const Y_AXIS_INVERTED = "y_axis_inverted";
-export const Z_AXIS_INVERTED = "z_axis_inverted";
-export const RAW_ENCODERS = "raw_encoders";
-export const SCALED_ENCODERS = "scaled_encoders";
+import { Session, BooleanSetting } from "../session";
 
 /**
  * TODO: Refactor this method to use semverCompare() now that it is a thing.
@@ -73,11 +67,11 @@ export let initialState: BotState = {
   dirty: false,
   currentOSVersion: undefined,
   currentFWVersion: undefined,
-  x_axis_inverted: !localStorageBoolFetch(X_AXIS_INVERTED),
-  y_axis_inverted: !localStorageBoolFetch(Y_AXIS_INVERTED),
-  z_axis_inverted: !localStorageBoolFetch(Z_AXIS_INVERTED),
-  raw_encoders: !localStorageBoolFetch(RAW_ENCODERS),
-  scaled_encoders: !localStorageBoolFetch(SCALED_ENCODERS)
+  x_axis_inverted: !Session.getBool(BooleanSetting.X_AXIS_INVERTED),
+  y_axis_inverted: !Session.getBool(BooleanSetting.Y_AXIS_INVERTED),
+  z_axis_inverted: !Session.getBool(BooleanSetting.Z_AXIS_INVERTED),
+  raw_encoders: !Session.getBool(BooleanSetting.RAW_ENCODERS),
+  scaled_encoders: !Session.getBool(BooleanSetting.SCALED_ENCODERS),
 };
 
 export let botReducer = generateReducer<BotState>(initialState)
@@ -120,18 +114,15 @@ export let botReducer = generateReducer<BotState>(initialState)
     switch (payload) {
       case "x":
         s.x_axis_inverted = !s.x_axis_inverted;
-        localStorage.setItem(X_AXIS_INVERTED,
-          JSON.stringify(localStorageBoolFetch(X_AXIS_INVERTED)));
+        Session.setBool(BooleanSetting.X_AXIS_INVERTED, s.x_axis_inverted);
         return s;
       case "y":
         s.y_axis_inverted = !s.y_axis_inverted;
-        localStorage.setItem(Y_AXIS_INVERTED,
-          JSON.stringify(localStorageBoolFetch(Y_AXIS_INVERTED)));
+        Session.setBool(BooleanSetting.Y_AXIS_INVERTED, s.y_axis_inverted);
         return s;
       case "z":
         s.z_axis_inverted = !s.z_axis_inverted;
-        localStorage.setItem(Z_AXIS_INVERTED,
-          JSON.stringify(localStorageBoolFetch(Z_AXIS_INVERTED)));
+        Session.setBool(BooleanSetting.Z_AXIS_INVERTED, s.z_axis_inverted);
         return s;
       default:
         throw new Error("Attempted to invert invalid jog button direction.");
@@ -141,13 +132,11 @@ export let botReducer = generateReducer<BotState>(initialState)
     switch (payload) {
       case "raw_encoders":
         s.raw_encoders = !s.raw_encoders;
-        localStorage.setItem(RAW_ENCODERS,
-          JSON.stringify(localStorageBoolFetch(RAW_ENCODERS)));
+        Session.setBool(BooleanSetting.RAW_ENCODERS, s.raw_encoders);
         return s;
       case "scaled_encoders":
         s.scaled_encoders = !s.scaled_encoders;
-        localStorage.setItem(SCALED_ENCODERS,
-          JSON.stringify(localStorageBoolFetch(SCALED_ENCODERS)));
+        Session.setBool(BooleanSetting.SCALED_ENCODERS, s.scaled_encoders);
         return s;
       default:
         throw new Error("Attempted to toggle display of invalid data.");

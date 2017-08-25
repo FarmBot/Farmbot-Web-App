@@ -30,7 +30,7 @@ export function didLogin(authState: AuthState, dispatch: Function) {
 function onLogin(dispatch: Function) {
   return (response: HttpData<AuthState>) => {
     let { data } = response;
-    Session.put(data);
+    Session.replace(data);
     didLogin(data, dispatch);
     push("/app/controls");
   };
@@ -126,8 +126,8 @@ export function logout() {
   // In those cases, seeing a logout message may confuse the user.
   // To circumvent this, we must check if the user had a token.
   // If there was infact a token, we can safely show the message.
-  if (Session.get()) { success("You have been logged out."); }
-  Session.clear(true);
+  if (Session.getAll()) { success("You have been logged out."); }
+  Session.clear();
   // Technically this is unreachable code:
   return {
     type: "LOGOUT",

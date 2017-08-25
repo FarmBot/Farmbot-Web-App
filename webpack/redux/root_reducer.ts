@@ -23,7 +23,7 @@ export function rootReducer(
   state: any,
   action: ReduxAction<{}>) {
   if (action.type === Actions.LOGOUT) {
-    Session.clear(true);
+    Session.clear();
   }
   // TODO: Get rid of this nasty type case / hack. Resulted from TSC 2.4 upgrade
   // - RC 30 JUN 17

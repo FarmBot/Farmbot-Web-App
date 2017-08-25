@@ -13,7 +13,7 @@ export async function verify() {
   const url = API.fetchBrowserLocation();
   try {
     let r: HttpData<AuthState> = await axios.put(url + "/api/users/verify/" + token);
-    Session.put(r.data);
+    Session.replace(r.data);
     window.location.href = window.location.origin + "/app/controls";
   } catch (e) {
     document.write(`

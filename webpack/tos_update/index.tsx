@@ -52,7 +52,7 @@ export class Wow extends React.Component<Props, Partial<State>> {
     axios
       .post(API.current.tokensPath, payload)
       .then((resp: HttpData<AuthState>) => {
-        Session.put(resp.data);
+        Session.replace(resp.data);
         window.location.href = "/app/controls";
       })
       .catch(error => {
