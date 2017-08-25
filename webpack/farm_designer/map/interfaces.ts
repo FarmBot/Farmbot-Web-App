@@ -13,6 +13,7 @@ export interface PlantLayerProps {
   crops: TaggedCrop[];
   dispatch: Function;
   botOriginQuadrant: BotOriginQuadrant;
+  zoomLvl: number;
 }
 
 export interface CropSpreadDict {

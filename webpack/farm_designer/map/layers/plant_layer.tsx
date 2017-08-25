@@ -52,7 +52,8 @@ export function PlantLayer(props: PlantLayerProps) {
               selected={p.selected}
               dragging={p.selected && dragging && editing}
               onClick={() => dispatch(action)}
-              dispatch={props.dispatch} />
+              dispatch={props.dispatch}
+              zoomLvl={props.zoomLvl} />
           </Link>;
         })}
     </g>;
