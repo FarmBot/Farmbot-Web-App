@@ -136,7 +136,8 @@ export class GardenMap extends
           crops={this.props.crops}
           currentPlant={this.getPlant()}
           dragging={!!this.state.isDragging}
-          editing={!!this.isEditing} />
+          editing={!!this.isEditing}
+          zoomLvl={this.props.zoomLvl} />
         <ToolSlotLayer
           botOriginQuadrant={this.props.designer.botOriginQuadrant}
           visible={!!this.props.showFarmbot}

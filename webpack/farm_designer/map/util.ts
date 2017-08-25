@@ -2,8 +2,8 @@ import { BotOriginQuadrant, isBotOriginQuadrant } from "../interfaces";
 
 const SNAP = 10;
 const SCALE_FACTOR = 9.8;
-const FARMBOT_DEFAULT_LENGTH = 3002;
-const FARMBOT_DEFAULT_WIDTH = 1502;
+const FARMBOT_DEFAULT_LENGTH = 3000;
+const FARMBOT_DEFAULT_WIDTH = 1500;
 const LEFT_MENU_WIDTH = 320;
 const TOP_NAV_HEIGHT = 110;
 
