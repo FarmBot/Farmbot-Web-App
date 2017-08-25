@@ -1,7 +1,13 @@
 jest.unmock("../../auth/actions");
 const actions = require("../../auth/actions");
 let didLogin = jest.fn();
-jest.mock("../../session", () => ({ Session: { get: () => false } }));
+jest.mock("../../session", () => ({
+  Session: {
+    getNum: () => undefined,
+    getBool: () => undefined,
+    getAll: () => undefined
+  }
+}));
 actions.didLogin = didLogin;
 import { ready } from "../actions";
 

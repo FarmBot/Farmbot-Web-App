@@ -4,7 +4,8 @@ import { SyncStatus } from "farmbot/dist";
 import { Actions } from "../constants";
 import { EncoderDisplay } from "../controls/interfaces";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
-import { Session, BooleanSetting } from "../session";
+import { Session } from "../session";
+import { BooleanSetting } from "../session_keys";
 
 /**
  * TODO: Refactor this method to use semverCompare() now that it is a thing.

@@ -10,7 +10,8 @@ import {
 import { cloneDeep } from "lodash";
 import { TaggedResource } from "../resources/tagged_resources";
 import { Actions } from "../constants";
-import { Session, NumericSetting } from "../session";
+import { Session } from "../session";
+import { NumericSetting } from "../session_keys";
 
 let botOriginVal = Session.getNum(NumericSetting.BOT_ORIGIN_QUADRANT);
 let botOriginQuadrant = isBotOriginQuadrant(botOriginVal) ? botOriginVal : 2;

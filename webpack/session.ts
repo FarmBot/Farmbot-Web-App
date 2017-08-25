@@ -1,19 +1,7 @@
 import { AuthState } from "./auth/interfaces";
 import { box } from "boxed_value";
 import { get, isNumber } from "lodash";
-
-export enum BooleanSetting {
-  X_AXIS_INVERTED = "x_axis_inverted",
-  Y_AXIS_INVERTED = "y_axis_inverted",
-  Z_AXIS_INVERTED = "z_axis_inverted",
-  RAW_ENCODERS = "raw_encoders",
-  SCALED_ENCODERS = "scaled_encoders"
-}
-
-export enum NumericSetting {
-  BOT_ORIGIN_QUADRANT = "bot_origin_quadrant",
-  ZOOM_LEVEL = "zoom_level",
-}
+import { BooleanSetting, NumericSetting } from "./session_keys";
 
 export namespace Session {
   const KEY = "session";
