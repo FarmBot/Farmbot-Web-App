@@ -168,6 +168,7 @@ export interface GardenMapState {
   botOriginQuadrant: BotOriginQuadrant;
   pageX: number | undefined;
   pageY: number | undefined;
+  activeDragXY: BotPosition | undefined;
 }
 
 export interface GardenPlantProps {
@@ -178,6 +179,7 @@ export interface GardenPlantProps {
   dragging: boolean;
   onClick: (plant: Readonly<TaggedPlantPointer>) => void;
   zoomLvl: number;
+  activeDragXY: BotPosition | undefined;
 }
 
 export interface GardenPlantState {
