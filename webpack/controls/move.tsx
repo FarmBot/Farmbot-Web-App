@@ -22,14 +22,14 @@ export class Move extends React.Component<MoveProps, {}> {
     this.props.dispatch({ type: "DISPLAY_ENCODER_DATA", payload: name });
 
   render() {
-    let { sync_status } = this.props.bot.hardware.informational_settings;
-    let { x_axis_inverted, y_axis_inverted, z_axis_inverted,
+    const { sync_status } = this.props.bot.hardware.informational_settings;
+    const { x_axis_inverted, y_axis_inverted, z_axis_inverted,
       raw_encoders, scaled_encoders } = this.props.bot;
-    let xBtnColor = x_axis_inverted ? "green" : "red";
-    let yBtnColor = y_axis_inverted ? "green" : "red";
-    let zBtnColor = z_axis_inverted ? "green" : "red";
-    let rawBtnColor = raw_encoders ? "green" : "red";
-    let scaledBtnColor = scaled_encoders ? "green" : "red";
+    const xBtnColor = x_axis_inverted ? "green" : "red";
+    const yBtnColor = y_axis_inverted ? "green" : "red";
+    const zBtnColor = z_axis_inverted ? "green" : "red";
+    const rawBtnColor = raw_encoders ? "green" : "red";
+    const scaledBtnColor = scaled_encoders ? "green" : "red";
     let locationData: BotLocationData;
     if (this.props.bot.hardware.location_data) {
       locationData = this.props.bot.hardware.location_data;
@@ -40,9 +40,9 @@ export class Move extends React.Component<MoveProps, {}> {
         scaled_encoders: { x: undefined, y: undefined, z: undefined },
       };
     }
-    let motor_coordinates = locationData.position;
-    let raw_encoders_data = locationData.raw_encoders;
-    let scaled_encoders_data = locationData.scaled_encoders;
+    const motor_coordinates = locationData.position;
+    const raw_encoders_data = locationData.raw_encoders;
+    const scaled_encoders_data = locationData.scaled_encoders;
 
     return (
       <Widget>

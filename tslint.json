@@ -56,7 +56,6 @@
     "no-default-export": true,
     "no-duplicate-variable": true,
     "no-eval": true,
-    "no-for-in-array": true,
     "no-internal-module": true,
     "no-invalid-this": true,
     "no-null-keyword": true,
@@ -69,9 +68,11 @@
         "selfClosing": "after-props"
       }
     ],
-    "no-use-before-declare": true,
     "no-var-keyword": true,
     "no-var-requires": false,
+    "deprecation": true,
+    "use-isnan": true,
+    "prefer-const": true,
     "whitespace": [
       true,
       "check-branch",
