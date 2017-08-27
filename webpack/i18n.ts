@@ -1,4 +1,6 @@
 import axios from "axios";
+import { Session } from "./session";
+import { BooleanSetting } from "./session_keys";
 
 function generateUrl(langCode: string) {
   let lang = langCode.slice(0, 2);
@@ -15,8 +17,10 @@ function getUserLang(langCode = "en_us") {
 
 export function detectLanguage() {
   return getUserLang(navigator.language).then(function (lang) {
-    // TODO: Possibly requires optimization using Webpack chunking.
-    let langi = require("../public/app-resources/languages/" + lang + ".js");
+    // NOTE: Some international users prefer using the app in English.
+    //       This preference is stored in `DISABLE_I18N`.
+    let choice = Session.getBool(BooleanSetting.DISABLE_I18N) ? "en" : lang;
+    let langi = require("../public/app-resources/languages/" + choice + ".js");
     return {
       nsSeparator: "",
       keySeparator: "",
