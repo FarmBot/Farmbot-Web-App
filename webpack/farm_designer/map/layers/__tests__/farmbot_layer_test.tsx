@@ -21,8 +21,8 @@ describe("<FarmBotLayer/>", () => {
     let p = fakeProps();
     p.botOriginQuadrant = 1;
     let result = shallow(<FarmBotLayer {...p } />);
-    expect(result.html()).toContain("<rect x=\"2992\" y=\"0\" width=\"20\" height=\"1500\"");
-    expect(result.html()).toContain("<circle cx=\"3002\" cy=\"0\" r=\"35\"");
+    expect(result.html()).toContain("<rect x=\"2990\" y=\"0\" width=\"20\" height=\"1500\"");
+    expect(result.html()).toContain("<circle cx=\"3000\" cy=\"0\" r=\"35\"");
   });
 
   it("shows in correct location for quadrant 2", () => {
@@ -38,15 +38,15 @@ describe("<FarmBotLayer/>", () => {
     p.botOriginQuadrant = 3;
     let result = shallow(<FarmBotLayer {...p } />);
     expect(result.html()).toContain("<rect x=\"-10\" y=\"0\" width=\"20\" height=\"1500\"");
-    expect(result.html()).toContain("<circle cx=\"0\" cy=\"1502\" r=\"35\"");
+    expect(result.html()).toContain("<circle cx=\"0\" cy=\"1500\" r=\"35\"");
   });
 
   it("shows in correct location for quadrant 4", () => {
     let p = fakeProps();
     p.botOriginQuadrant = 4;
     let result = shallow(<FarmBotLayer {...p } />);
-    expect(result.html()).toContain("<rect x=\"2992\" y=\"0\" width=\"20\" height=\"1500\"");
-    expect(result.html()).toContain("<circle cx=\"3002\" cy=\"1502\" r=\"35\"");
+    expect(result.html()).toContain("<rect x=\"2990\" y=\"0\" width=\"20\" height=\"1500\"");
+    expect(result.html()).toContain("<circle cx=\"3000\" cy=\"1500\" r=\"35\"");
   });
 
   it("changes location", () => {

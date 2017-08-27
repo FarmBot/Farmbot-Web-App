@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import { t } from "i18next";
 import { Link } from "react-router";
 import { FormattedPlantInfo } from "./map_state_to_props";
+import { round } from "../map/util";
 
 interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -11,6 +12,7 @@ interface PlantPanelProps {
 
 export function PlantPanel({ info, onDestroy }: PlantPanelProps) {
   let { name, slug, plantedAt, daysOld, x, y, uuid } = info;
+  if (onDestroy) { x = round(x); y = round(y); }
   let destroy = () => onDestroy && onDestroy(uuid);
   return <div className="panel-content">
     <label>
@@ -58,7 +60,7 @@ export function PlantPanel({ info, onDestroy }: PlantPanelProps) {
         </b>
         <span>
           ({x}, {y})
-          </span>
+        </span>
       </li>
     </ul>
     <div>

@@ -2,7 +2,7 @@ import { Everything } from "../../interfaces";
 import { buildResourceIndex } from "../resource_index_builder";
 import {
   TaggedFarmEvent, TaggedSequence, TaggedRegimen, TaggedImage,
-  TaggedTool, TaggedToolSlotPointer, TaggedUser, TaggedWebcamFeed
+  TaggedTool, TaggedToolSlotPointer, TaggedUser, TaggedWebcamFeed, TaggedPlantPointer
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
@@ -82,6 +82,19 @@ export function fakeToolSlot(): TaggedToolSlotPointer {
     z: 10,
     radius: 10,
     meta: {}
+  });
+}
+
+export function fakePlant(): TaggedPlantPointer {
+  return fakeResource("points", {
+    name: "Strawberry Plant 1",
+    pointer_type: "Plant",
+    x: 100,
+    y: 200,
+    z: 0,
+    radius: 25,
+    meta: {},
+    openfarm_slug: "strawberry"
   });
 }
 

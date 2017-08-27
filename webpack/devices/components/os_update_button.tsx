@@ -30,11 +30,13 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
   }
   let toggleVal = isUndefined(osUpdateBool) ? "undefined" : ("" + osUpdateBool);
   let downloadProgress = "";
+  let disabled = false;
   // DONT TOUCH THIS!!! SERIOUSLY -- RC 8 August
   // DO NOT REMOVE `|| {}` UNTIL SEPTEMBER.
   let job = (bot.hardware.jobs || {})["FBOS_OTA"];
   if (job) {
     if (job.status == "working") {
+      disabled = true;
       if (job.unit == "bytes") {
         let kiloBytes = Math.round(job.bytes / 1024);
         let megaBytes = Math.round(job.bytes / 1048576);
@@ -48,6 +50,8 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
       } else if (job.unit == "percent") {
         downloadProgress = job.percent + "%";
       }
+    } else {
+      disabled = false;
     }
   }
   return <div className="updates">
@@ -65,6 +69,7 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
       <Col xs={7}>
         <button
           className={"fb-button " + buttonColor}
+          disabled={disabled}
           onClick={() => checkControllerUpdates()}>
           {downloadProgress || buttonStr}
         </button>

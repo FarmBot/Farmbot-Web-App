@@ -1,7 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import { info, error, success } from "farmbot-toastr";
-import { FarmbotOsProps, FarmbotOsState } from "../interfaces";
+import { FarmbotOsProps } from "../interfaces";
 import {
   saveAccountChanges,
   reboot,
@@ -9,9 +8,7 @@ import {
   factoryReset
 } from "../actions";
 import { OsUpdateButton } from "./os_update_button";
-import { devices } from "../../device";
 import {
-  DropDownItem,
   Widget,
   WidgetHeader,
   WidgetBody,
@@ -24,21 +21,11 @@ import { MustBeOnline } from "../must_be_online";
 import { ToolTips, Content } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
 import { timezoneMismatch } from "../timezones/guess_timezone";
-import { FBSelect } from "../../ui/new_fb_select";
 import { LastSeen } from "./last_seen_widget";
-
-const CAMERA_CHOICES = [
-  { label: "USB Camera", value: "USB" },
-  { label: "Raspberry Pi Camera", value: "RPI" }
-];
+import { CameraSelection } from "./camera_selection";
 
 export class FarmbotOsSettings
-  extends React.Component<FarmbotOsProps, FarmbotOsState> {
-
-  state: FarmbotOsState = {
-    cameraStatus: "",
-    selectedCamera: undefined
-  };
+  extends React.Component<FarmbotOsProps> {
 
   changeBot = (e: React.ChangeEvent<HTMLInputElement>) => {
     let { account, dispatch } = this.props;
@@ -52,19 +39,6 @@ export class FarmbotOsSettings
 
   updateBot = (e: React.MouseEvent<{}>) => {
     this.props.dispatch(saveAccountChanges);
-  }
-
-  sendOffConfig = (selectedCamera: DropDownItem) => {
-    let message = { "camera": JSON.stringify(selectedCamera.value) };
-    info(t("Sending camera configuration..."), t("Sending"));
-    devices
-      .current
-      .setUserEnv(message)
-      .then(() => {
-        this.setState({ selectedCamera });
-        success(t("Successfully configured camera!"));
-      })
-      .catch(() => error(t("An error occurred during configuration.")));
   }
 
   handleTimezone = (timezone: string) => {
@@ -234,23 +208,8 @@ export class FarmbotOsSettings
                 </button>
               </Col>
             </Row>
-            <Row>
-              <Col xs={2}>
-                <label>
-                  {t("CAMERA")}
-                </label>
-              </Col>
-              <Col xs={7}>
-                <div>
-                  <FBSelect
-                    allowEmpty={true}
-                    list={CAMERA_CHOICES}
-                    selectedItem={this.state.selectedCamera}
-                    placeholder="Select a camera..."
-                    onChange={this.sendOffConfig} />
-                </div>
-              </Col>
-            </Row>
+            <CameraSelection
+              env={this.props.bot.hardware.user_env} />
           </MustBeOnline>
         </WidgetBody>
       </form>

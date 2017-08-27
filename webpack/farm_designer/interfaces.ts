@@ -160,6 +160,7 @@ export interface GardenMapProps {
   hoveredPlant: TaggedPlantPointer | undefined;
   crops: TaggedCrop[];
   botPosition: BotPosition;
+  zoomLvl: number;
 }
 
 export interface GardenMapState {
@@ -167,6 +168,7 @@ export interface GardenMapState {
   botOriginQuadrant: BotOriginQuadrant;
   pageX: number | undefined;
   pageY: number | undefined;
+  activeDragXY: BotPosition | undefined;
 }
 
 export interface GardenPlantProps {
@@ -176,6 +178,8 @@ export interface GardenPlantProps {
   selected: boolean;
   dragging: boolean;
   onClick: (plant: Readonly<TaggedPlantPointer>) => void;
+  zoomLvl: number;
+  activeDragXY: BotPosition | undefined;
 }
 
 export interface GardenPlantState {

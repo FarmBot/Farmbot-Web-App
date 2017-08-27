@@ -16,7 +16,6 @@ import {
 import { RestResources } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
-import { DropDownItem } from "../ui/index";
 
 export interface Props {
   auth: AuthState | undefined;
@@ -97,8 +96,11 @@ export interface FarmbotOsProps {
   dispatch: Function;
 }
 
-export interface FarmbotOsState {
-  selectedCamera: DropDownItem | undefined;
+export interface CameraSelectionProps {
+  env: Dictionary<string | undefined>
+}
+
+export interface CameraSelectionState {
   cameraStatus: "" | "sending" | "done" | "error";
 }
 

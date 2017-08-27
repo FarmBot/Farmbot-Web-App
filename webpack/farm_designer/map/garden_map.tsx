@@ -36,7 +36,10 @@ export class GardenMap extends
       this.props.dispatch(edit(p, { x: round(p.body.x), y: round(p.body.y) }));
       this.props.dispatch(save(p.uuid));
     }
-    this.setState({ isDragging: false, pageX: 0, pageY: 0 });
+    this.setState({
+      isDragging: false, pageX: 0, pageY: 0,
+      activeDragXY: { x: undefined, y: undefined, z: undefined }
+    });
   }
 
   startDrag = (): void => this.setState({ isDragging: true });
@@ -102,7 +105,10 @@ export class GardenMap extends
       let { qx, qy } = getXYFromQuadrant(e.pageX, e.pageY, botOriginQuadrant);
       let deltaX = Math.round((qx - (this.state.pageX || qx)) / zoomLvl);
       let deltaY = Math.round((qy - (this.state.pageY || qy)) / zoomLvl);
-      this.setState({ pageX: qx, pageY: qy });
+      this.setState({
+        pageX: qx, pageY: qy,
+        activeDragXY: { x: plant.body.x + deltaX, y: plant.body.y + deltaY, z: 0 }
+      });
       this.props.dispatch(movePlant({ deltaX, deltaY, plant }));
     }
   }
@@ -136,7 +142,9 @@ export class GardenMap extends
           crops={this.props.crops}
           currentPlant={this.getPlant()}
           dragging={!!this.state.isDragging}
-          editing={!!this.isEditing} />
+          editing={!!this.isEditing}
+          zoomLvl={this.props.zoomLvl}
+          activeDragXY={this.state.activeDragXY} />
         <ToolSlotLayer
           botOriginQuadrant={this.props.designer.botOriginQuadrant}
           visible={!!this.props.showFarmbot}

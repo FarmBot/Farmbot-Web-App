@@ -3,6 +3,7 @@ import {
   TaggedCrop
 } from "../../resources/tagged_resources";
 import { State, BotOriginQuadrant } from "../interfaces";
+import { BotPosition } from "../../devices/interfaces";
 
 export interface PlantLayerProps {
   plants: TaggedPlantPointer[];
@@ -13,6 +14,8 @@ export interface PlantLayerProps {
   crops: TaggedCrop[];
   dispatch: Function;
   botOriginQuadrant: BotOriginQuadrant;
+  zoomLvl: number;
+  activeDragXY: BotPosition | undefined;
 }
 
 export interface CropSpreadDict {

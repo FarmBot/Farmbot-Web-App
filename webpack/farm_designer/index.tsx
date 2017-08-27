@@ -109,7 +109,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           points={this.props.points}
           toolSlots={this.props.toolSlots}
           botPosition={this.props.botPosition}
-          hoveredPlant={this.props.hoveredPlant} />
+          hoveredPlant={this.props.hoveredPlant}
+          zoomLvl={Math.round(this.props.designer.zoomLevel * 10) / 10} />
       </div>
     </div>;
   }
