@@ -38,16 +38,16 @@ export class Wow extends React.Component<Props, Partial<State>> {
   }
 
   set = (name: keyof State) => (event: React.FormEvent<HTMLInputElement>) => {
-    let state: { [name: string]: State[keyof State] } = {};
+    const state: { [name: string]: State[keyof State] } = {};
     state[name] = (event.currentTarget).value;
     this.setState(state);
   };
 
   submit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
-    let { email, password, agree_to_terms } = this.state;
-    let payload = { user: { email, password, agree_to_terms } };
-    let url = `//${this.state.serverHost}:${this.state.serverPort}`;
+    const { email, password, agree_to_terms } = this.state;
+    const payload = { user: { email, password, agree_to_terms } };
+    const url = `//${this.state.serverHost}:${this.state.serverPort}`;
     API.setBaseUrl(url);
     axios
       .post(API.current.tokensPath, payload)
@@ -81,7 +81,7 @@ export class Wow extends React.Component<Props, Partial<State>> {
 
   componentDidMount() {
     logInit();
-    let body = t("Before logging in, you must agree to our latest Terms" +
+    const body = t("Before logging in, you must agree to our latest Terms" +
       " of Service and Privacy Policy");
     log(body, "New Terms of Service");
   }
@@ -188,18 +188,18 @@ export class Wow extends React.Component<Props, Partial<State>> {
 }
 
 detectLanguage().then((config) => {
-  init(config, (err, t) => {
-    let node = document.createElement("DIV");
+  init(config, (err, t2) => {
+    const node = document.createElement("DIV");
     node.id = "root";
     document.body.appendChild(node);
 
-    let reactElem = React.createElement(Wow, {});
-    let domElem = document.getElementById("root");
+    const reactElem = React.createElement(Wow, {});
+    const domElem = document.getElementById("root");
 
     if (domElem) {
       render(reactElem, domElem);
     } else {
-      throw new Error(t("Add a div with id `root` to the page first."));
+      throw new Error(t2("Add a div with id `root` to the page first."));
     }
   });
 });

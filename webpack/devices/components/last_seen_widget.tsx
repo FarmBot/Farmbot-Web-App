@@ -17,8 +17,8 @@ export class LastSeen extends React.Component<LastSeenProps, {}> {
     }
 
     if (this.lastSeen) {
-      let text = " FarmBot was last seen {{ lastSeen }}";
-      let data = {
+      const text = " FarmBot was last seen {{ lastSeen }}";
+      const data = {
         lastSeen: moment(this.lastSeen).local().format("MMMM D, h:mma")
       };
       return t(text, data);

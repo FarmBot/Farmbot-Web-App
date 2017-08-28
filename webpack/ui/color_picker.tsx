@@ -12,25 +12,21 @@ interface PickerProps {
 export class ColorPicker extends React.Component<PickerProps, {}> {
 
   private renderColors(color: Color, key: number) {
-    let isActive = color === this.props.current;
-    let cb = this.props.onChange || function () { };
-    return (
-      <div key={key} onClick={() => cb(color)} >
-        <Saucer color={color} active={isActive} />
-      </div>
-    );
+    const isActive = color === this.props.current;
+    const cb = this.props.onChange || function () { };
+    return <div key={key} onClick={() => cb(color)} >
+      <Saucer color={color} active={isActive} />
+    </div>;
   }
 
   public render() {
-    return (
-      <Popover
-        position={Position.BOTTOM}
-        popoverClassName="colorpicker-menu gray">
-        <Saucer color={this.props.current} />
-        <div>
-          {colors.map((color, inx) => this.renderColors(color, inx))}
-        </div>
-      </Popover>
-    );
+    return <Popover
+      position={Position.BOTTOM}
+      popoverClassName="colorpicker-menu gray">
+      <Saucer color={this.props.current} />
+      <div>
+        {colors.map((color, inx) => this.renderColors(color, inx))}
+      </div>
+    </Popover>;
   }
 }

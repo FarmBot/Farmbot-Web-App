@@ -8,7 +8,7 @@ import { UnsafeError } from "../interfaces";
 
 export function deleteUser(payload: DeletionRequest): Thunk {
   return (dispatch, getState) => {
-    let state = getState().auth;
+    const state = getState().auth;
     if (state) {
       axios({
         method: "delete",

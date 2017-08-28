@@ -24,7 +24,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
 
   /** Keep null checking DRY for this.state.selectedFarmware */
   ifFarmwareSelected = (cb: (label: string) => void) => {
-    let { selectedFarmware } = this.state;
+    const { selectedFarmware } = this.state;
     selectedFarmware ? cb(selectedFarmware) : alert("Select a farmware first.");
   }
 
@@ -64,35 +64,35 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   }
 
   fwList = () => {
-    let { farmwares } = this.props;
-    let choices = betterCompact(Object
+    const { farmwares } = this.props;
+    const choices = betterCompact(Object
       .keys(farmwares)
       .map(x => farmwares[x]))
       .map((fw, i) => {
-        let hasVers = (fw.meta && _.isString(fw.meta.version));
+        const hasVers = (fw.meta && _.isString(fw.meta.version));
         // Guard against legacy Farmwares. Can be removed in a month.
         // -- RC June 2017.
-        let label = hasVers ? `${fw.name} ${fw.meta.version}` : fw.name;
+        const label = hasVers ? `${fw.name} ${fw.meta.version}` : fw.name;
         return { value: fw.name, label };
       });
     return choices;
   }
 
   selectedItem = (): DropDownItem | undefined => {
-    let label = this.state.selectedFarmware;
+    const label = this.state.selectedFarmware;
     if (label) { return { label, value: 0 }; }
   }
 
   fwDescription = (selectedName: string | undefined) => {
-    let { farmwares } = this.props;
-    let description = betterCompact(Object
+    const { farmwares } = this.props;
+    const description = betterCompact(Object
       .keys(farmwares)
       .map(x => farmwares[x]))
       .map((fw, i) => {
-        let isSelected = (fw.name == selectedName);
+        const isSelected = (fw.name == selectedName);
         // Rollbar 356. I think this was caused by a user on an ancient version
         // of FBOS. Remove in September '17. - RC 13 August.
-        let label = isSelected ? (fw.meta || {}).description : "";
+        const label = isSelected ? (fw.meta || {}).description : "";
         return label;
       });
     return description;
@@ -132,7 +132,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
                   <FBSelect list={this.fwList()}
                     selectedItem={this.selectedItem()}
                     onChange={(x) => {
-                      let selectedFarmware = x.value;
+                      const selectedFarmware = x.value;
                       if (_.isString(selectedFarmware)) {
                         this.setState({ selectedFarmware });
                       } else {

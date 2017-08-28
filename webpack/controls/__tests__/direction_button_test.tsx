@@ -5,7 +5,7 @@ jest.mock("../../device", () => ({
     }
   }
 }));
-let mockOk = jest.fn();
+const mockOk = jest.fn();
 jest.mock("farmbot-toastr", () => ({ success: mockOk }));
 
 import * as React from "react";
@@ -19,7 +19,7 @@ describe("<DirectionButton/>", function () {
     jest.clearAllMocks();
     buttonProps.disabled = false;
   });
-  let buttonProps: DirectionButtonProps = {
+  const buttonProps: DirectionButtonProps = {
     axis: "y",
     direction: "up",
     isInverted: false,
@@ -28,25 +28,25 @@ describe("<DirectionButton/>", function () {
   };
 
   it("calls move command", () => {
-    let { mock } = devices.current.moveRelative as jest.Mock<{}>;
-    let btn = mount(<DirectionButton {...buttonProps} />);
+    const { mock } = devices.current.moveRelative as jest.Mock<{}>;
+    const btn = mount(<DirectionButton {...buttonProps} />);
     btn.simulate("click");
     expect(mock.calls.length).toEqual(1);
   });
 
   it("is disabled", () => {
-    let { mock } = devices.current.moveRelative as jest.Mock<{}>;
+    const { mock } = devices.current.moveRelative as jest.Mock<{}>;
     buttonProps.disabled = true;
-    let btn = mount(<DirectionButton {...buttonProps} />);
+    const btn = mount(<DirectionButton {...buttonProps} />);
     btn.simulate("click");
     expect(mock.calls.length).toEqual(0);
   });
 
   it("call has correct args", () => {
-    let { mock } = devices.current.moveRelative as jest.Mock<{}>;
-    let btn = mount(<DirectionButton {...buttonProps} />);
+    const { mock } = devices.current.moveRelative as jest.Mock<{}>;
+    const btn = mount(<DirectionButton {...buttonProps} />);
     btn.simulate("click");
-    let argList = mock.calls[0][0];
+    const argList = mock.calls[0][0];
     expect(argList.x).toEqual(0);
     expect(argList.y).toEqual(-1000);
     expect(argList.z).toEqual(0);

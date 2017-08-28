@@ -5,7 +5,7 @@ jest.mock("../../device", () => ({
     }
   }
 }));
-let mockOk = jest.fn();
+const mockOk = jest.fn();
 jest.mock("farmbot-toastr", () => ({ success: mockOk }));
 
 import * as React from "react";
@@ -20,7 +20,7 @@ describe("<JogButtons/>", function () {
     jest.clearAllMocks();
     jogButtonProps.disabled = false;
   });
-  let jogButtonProps: JogMovementControlsProps = {
+  const jogButtonProps: JogMovementControlsProps = {
     bot: bot,
     x_axis_inverted: false,
     y_axis_inverted: false,
@@ -29,25 +29,25 @@ describe("<JogButtons/>", function () {
   };
 
   it("calls home command", () => {
-    let { mock } = devices.current.home as jest.Mock<{}>;
-    let jogButtons = mount(<JogButtons {...jogButtonProps} />);
+    const { mock } = devices.current.home as jest.Mock<{}>;
+    const jogButtons = mount(<JogButtons {...jogButtonProps} />);
     jogButtons.find("button").at(2).simulate("click");
     expect(mock.calls.length).toEqual(1);
   });
 
   it("is disabled", () => {
-    let { mock } = devices.current.home as jest.Mock<{}>;
+    const { mock } = devices.current.home as jest.Mock<{}>;
     jogButtonProps.disabled = true;
-    let jogButtons = mount(<JogButtons {...jogButtonProps} />);
+    const jogButtons = mount(<JogButtons {...jogButtonProps} />);
     jogButtons.find("button").at(2).simulate("click");
     expect(mock.calls.length).toEqual(0);
   });
 
   it("call has correct args", () => {
-    let { mock } = devices.current.home as jest.Mock<{}>;
-    let jogButtons = mount(<JogButtons {...jogButtonProps} />);
+    const { mock } = devices.current.home as jest.Mock<{}>;
+    const jogButtons = mount(<JogButtons {...jogButtonProps} />);
     jogButtons.find("button").at(2).simulate("click");
-    let argList = mock.calls[0][0];
+    const argList = mock.calls[0][0];
     expect(argList.axis).toEqual("all");
     expect(argList.speed).toEqual(100);
   });

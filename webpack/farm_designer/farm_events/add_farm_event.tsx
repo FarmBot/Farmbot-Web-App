@@ -44,11 +44,11 @@ export class AddFarmEvent
 
   componentDidMount() {
     if (this.executable) {
-      let executable_type: ExecutableType =
+      const executable_type: ExecutableType =
         (this.executable.kind === "sequences") ? "Sequence" : "Regimen";
-      let executable_id = this.executable.body.id || 1;
-      let NOW = moment().toISOString();
-      let action = init({
+      const executable_id = this.executable.body.id || 1;
+      const NOW = moment().toISOString();
+      const action = init({
         kind: "farm_events",
         specialStatus: SpecialStatus.DIRTY,
         uuid: "---",
@@ -94,11 +94,11 @@ export class AddFarmEvent
   }
 
   render() {
-    let { uuid } = this.state;
+    const { uuid } = this.state;
     // Legacy leftover from pre-TaggedResource era.
     // TODO: Proper fix where we add a `findFarmEvent` selector
     //       to mapStateToProps instead of juggling arrays.
-    let fe = uuid && this.props.farmEvents.filter(x => x.uuid === uuid)[0];
+    const fe = uuid && this.props.farmEvents.filter(x => x.uuid === uuid)[0];
     if (fe) {
       return (
         <EditFEForm

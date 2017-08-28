@@ -30,9 +30,9 @@ export class WebcamPanel extends
   }
 
   render() {
-    let url = this.props.feed.body.url || PLACEHOLDER_FARMBOT;
-    let dirty = !!this.props.bot.dirty;
-    let { isEditing } = this.state;
+    const url = this.props.feed.body.url || PLACEHOLDER_FARMBOT;
+    const dirty = !!this.props.bot.dirty;
+    const { isEditing } = this.state;
 
     return (
       <Widget>

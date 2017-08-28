@@ -9,9 +9,9 @@ import { parseEnvKey } from "./translators";
  * fully formed set of environment variables. When a variable is missing, it is
  * replaced with a default value. */
 export function prepopulateEnv(env: Dictionary<string | undefined>): WD_ENV {
-  let output = defensiveClone(DEFAULTS);
+  const output = defensiveClone(DEFAULTS);
   EVERY_KEY.map(key => {
-    let initial = env[key];
+    const initial = env[key];
     let val: string;
     if (_.isString(initial)) {
       val = initial;

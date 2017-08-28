@@ -9,9 +9,9 @@ import {
 } from "../../resources/tagged_resources";
 
 export function RegimenListItem({ regimen, dispatch }: RegimenListItemProps) {
-  let name = regimen.body.name || "";
-  let color = (regimen.body.color) || "gray";
-  let style = [`block`, `full-width`, `fb-button`, `${color}`];
+  const name = regimen.body.name || "";
+  const color = (regimen.body.color) || "gray";
+  const style = [`block`, `full-width`, `fb-button`, `${color}`];
   lastUrlChunk() === urlFriendly(name) && style.push("active");
 
   return <Link

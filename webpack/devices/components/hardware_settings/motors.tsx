@@ -15,8 +15,8 @@ import { McuInputBox } from "../mcu_input_box";
 
 export function Motors({ dispatch, bot }: MotorsProps) {
 
-  let { mcu_params } = bot.hardware;
-  let { motors } = bot.controlPanelState;
+  const { mcu_params } = bot.hardware;
+  const { motors } = bot.controlPanelState;
 
   return <section>
     <Header

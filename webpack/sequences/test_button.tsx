@@ -13,12 +13,12 @@ export interface TestBtnProps {
 }
 
 export function TestButton({ onClick, onFail, syncStatus, sequence }: TestBtnProps) {
-  let isSynced = syncStatus === "synced";
-  let isSaved = !sequence.specialStatus;
-  let canTest = isSynced && isSaved;
-  let className = canTest ? "orange" : "gray";
+  const isSynced = syncStatus === "synced";
+  const isSaved = !sequence.specialStatus;
+  const canTest = isSynced && isSaved;
+  const className = canTest ? "orange" : "gray";
 
-  let clickHandler = () => (canTest) ?
+  const clickHandler = () => (canTest) ?
     onClick() : onFail(t("Save sequence and sync device before running."));
 
   return <button className={`fb-button ${className}`} onClick={clickHandler} >

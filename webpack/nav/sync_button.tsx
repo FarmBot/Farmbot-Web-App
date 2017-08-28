@@ -29,8 +29,8 @@ export function SyncButton({ user, bot, dispatch }: NavButtonProps) {
   }
   let { sync_status } = bot.hardware.informational_settings;
   sync_status = sync_status || "unknown";
-  let color = COLOR_MAPPING[sync_status] || "red";
-  let text = TEXT_MAPPING[sync_status] || "DISCONNECTED";
+  const color = COLOR_MAPPING[sync_status] || "red";
+  const text = TEXT_MAPPING[sync_status] || "DISCONNECTED";
   return (
     <button
       className={`nav-sync ${color} fb-button`}

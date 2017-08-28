@@ -23,6 +23,7 @@ const KEYS: McuParamName[] = [
   "encoder_type_z"
 ];
 
+// tslint:disable-next-line:no-any
 function isEncoderValue(x: any): x is Encoder { return !!Encoder[x]; }
 
 function findByType(input: number | string | undefined) {
@@ -30,9 +31,9 @@ function findByType(input: number | string | undefined) {
 }
 
 export function EncoderType(props: EncoderTypeProps) {
-  let { hardware } = props;
-  let handleChange = (key: McuParamName) => (d: DropDownItem) => {
-    let val = d.value;
+  const { hardware } = props;
+  const handleChange = (key: McuParamName) => (d: DropDownItem) => {
+    const val = d.value;
     if (isEncoderValue(val)) {
       props.onChange(key, val);
     } else {

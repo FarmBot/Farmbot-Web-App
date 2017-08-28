@@ -9,7 +9,7 @@ describe("<ToggleButton/>", function () {
 
   it("calls toggle action", () => {
     const toggle = jest.fn();
-    let toggleButton = mount(<ToggleButton
+    const toggleButton = mount(<ToggleButton
       toggleValue={0}
       toggleAction={() => toggle()} />);
     toggleButton.simulate("click");
@@ -17,21 +17,21 @@ describe("<ToggleButton/>", function () {
   });
 
   it("displays no", () => {
-    let toggleButton = mount(<ToggleButton
+    const toggleButton = mount(<ToggleButton
       toggleValue={0}
       toggleAction={jest.fn()} />);
     expect(toggleButton.text()).toBe("no");
   });
 
   it("displays yes", () => {
-    let toggleButton = mount(<ToggleButton
+    const toggleButton = mount(<ToggleButton
       toggleValue={1}
       toggleAction={jest.fn()} />);
     expect(toggleButton.text()).toBe("yes");
   });
 
   it("displays off", () => {
-    let toggleButton = mount(<ToggleButton
+    const toggleButton = mount(<ToggleButton
       toggleValue={0}
       toggleAction={jest.fn()}
       noYes={false} />);
@@ -39,7 +39,7 @@ describe("<ToggleButton/>", function () {
   });
 
   it("displays on", () => {
-    let toggleButton = mount(<ToggleButton
+    const toggleButton = mount(<ToggleButton
       toggleValue={1}
       toggleAction={jest.fn()}
       noYes={false} />);
@@ -47,7 +47,7 @@ describe("<ToggleButton/>", function () {
   });
 
   it("displays 🚫", () => {
-    let toggleButton = mount(<ToggleButton
+    const toggleButton = mount(<ToggleButton
       toggleValue={undefined}
       toggleAction={jest.fn()}
       noYes={false} />);

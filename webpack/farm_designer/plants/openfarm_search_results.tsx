@@ -18,7 +18,7 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
   render() {
     return <div>
       {this.props.cropSearchResults.map(resp => {
-        let { crop, image } = resp;
+        const { crop, image } = resp;
         return <Link
           key={resp.crop.slug}
           draggable={false}

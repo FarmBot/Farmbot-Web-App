@@ -4,7 +4,7 @@ import { mount } from "enzyme";
 
 describe("<ToolBayHeader />", () => {
   it("renders", () => {
-    let header = mount(<ToolBayHeader />);
+    const header = mount(<ToolBayHeader />);
     expect(header.text()).toEqual("SlotXYZTool");
   });
 });

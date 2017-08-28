@@ -22,12 +22,12 @@ export interface RepeatFormProps {
   endTime: string;
 }
 
-let indexKey: keyof DropDownItem = "value";
+const indexKey: keyof DropDownItem = "value";
 const OPTN_LOOKUP = keyBy(repeatOptions, indexKey);
 
 export function FarmEventRepeatForm(props: RepeatFormProps) {
-  let { disabled, onChange, repeat, endDate, endTime, timeUnit } = props;
-  let changeHandler =
+  const { disabled, onChange, repeat, endDate, endTime, timeUnit } = props;
+  const changeHandler =
     (key: Key) => (e: Ev) => onChange(key, e.currentTarget.value);
   if (props.hidden) {
     return <div />;

@@ -12,7 +12,7 @@ import { envGet } from "./remote_env/selectors";
 import { SPECIAL_VALUES } from "./remote_env/constants";
 
 export function WeedDetectorConfig(props: SettingsMenuProps) {
-  let NumberBox = ({ conf, label }: {
+  const NumberBox = ({ conf, label }: {
     conf: keyof WD_ENV;
     label: string;
   }) => {
@@ -28,7 +28,7 @@ export function WeedDetectorConfig(props: SettingsMenuProps) {
     </div>;
   };
 
-  let setDDI = (k: keyof WD_ENV) => (d: DropDownItem) => {
+  const setDDI = (k: keyof WD_ENV) => (d: DropDownItem) => {
     if (_.isNumber(d.value)) {
       props.onChange(k, d.value);
     } else {
@@ -36,9 +36,9 @@ export function WeedDetectorConfig(props: SettingsMenuProps) {
     }
   };
 
-  let find = (needle: keyof WD_ENV): DropDownItem => {
-    let wow = envGet(needle, props.values);
-    let ok = SPECIAL_VALUE_DDI[wow];
+  const find = (needle: keyof WD_ENV): DropDownItem => {
+    const wow = envGet(needle, props.values);
+    const ok = SPECIAL_VALUE_DDI[wow];
     return ok || NULL_CHOICE;
   };
 

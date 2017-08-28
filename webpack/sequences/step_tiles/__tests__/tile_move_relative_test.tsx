@@ -27,9 +27,9 @@ describe("<TileMoveRelative/>", () => {
   }
 
   it("renders inputs", () => {
-    let block = bootstrapTest().component;
-    let inputs = block.find("input");
-    let labels = block.find("label");
+    const block = bootstrapTest().component;
+    const inputs = block.find("input");
+    const labels = block.find("label");
     expect(inputs.length).toEqual(4);
     expect(labels.length).toEqual(3);
     expect(inputs.first().props().placeholder).toEqual("Move Relative");

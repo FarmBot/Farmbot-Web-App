@@ -10,7 +10,7 @@ export interface ToolSlotLayerProps {
 }
 
 export function ToolSlotLayer(props: ToolSlotLayerProps) {
-  let { slots, visible, botOriginQuadrant } = props;
+  const { slots, visible, botOriginQuadrant } = props;
   return visible ? <g>
     {slots.map(slot =>
       <ToolSlotPoint

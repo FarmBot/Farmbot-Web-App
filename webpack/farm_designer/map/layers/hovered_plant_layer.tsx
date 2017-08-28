@@ -33,10 +33,10 @@ export class HoveredPlantLayer extends
   state: HoveredPlantLayerState = { isHovered: false };
 
   onClick = () => {
-    let plant = this.props.hoveredPlant;
+    const plant = this.props.hoveredPlant;
     if (plant) {
       push("/app/designer/plants/" + (plant.body.id));
-      let action = { type: "SELECT_PLANT", payload: plant.uuid };
+      const action = { type: "SELECT_PLANT", payload: plant.uuid };
       this.props.dispatch(action);
     }
   }
@@ -47,18 +47,18 @@ export class HoveredPlantLayer extends
   /** Safe fallbacks if no hovered plant is found. */
   get plantInfo() {
     if (this.props.hoveredPlant) {
-      let { x, y, radius } = this.props.hoveredPlant.body;
+      const { x, y, radius } = this.props.hoveredPlant.body;
       return { x, y, radius };
     } else {
       return { x: 0, y: 0, radius: 1 };
     }
   }
   render() {
-    let { icon } = this.props.designer.hoveredPlant;
-    let { botOriginQuadrant } = this.props;
-    let { x, y } = this.plantInfo;
-    let { qx, qy } = getXYFromQuadrant(round(x), round(y), botOriginQuadrant);
-    let scaleFactor = (this.state.isHovered) ? "1.3, 1.3" : "1, 1";
+    const { icon } = this.props.designer.hoveredPlant;
+    const { botOriginQuadrant } = this.props;
+    const { x, y } = this.plantInfo;
+    const { qx, qy } = getXYFromQuadrant(round(x), round(y), botOriginQuadrant);
+    const scaleFactor = (this.state.isHovered) ? "1.3, 1.3" : "1, 1";
 
     return <image
       visibility={this.props.isEditing ? "visible" : "hidden"}

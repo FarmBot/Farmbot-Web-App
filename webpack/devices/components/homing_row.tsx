@@ -11,10 +11,10 @@ import { SpacePanelToolTip } from "./space_panel_tool_tip";
 import { Row, Col } from "../../ui/index";
 
 const speed = Farmbot.defaults.speed;
-let findHome = (axis: Axis) => devices.current.findHome({ speed, axis });
+const findHome = (axis: Axis) => devices.current.findHome({ speed, axis });
 
 export function HomingRow(props: HomingRowProps) {
-  let { hardware } = props;
+  const { hardware } = props;
 
   return <Row>
     <Col xs={6}>
@@ -25,7 +25,7 @@ export function HomingRow(props: HomingRowProps) {
     </Col>
     {axisTrackingStatus(hardware)
       .map((row) => {
-        let { axis, disabled } = row;
+        const { axis, disabled } = row;
         return <Col xs={2} key={axis}>
           <LockableButton disabled={disabled} onClick={() => findHome(axis)}>
             {t("HOME {{axis}}", { axis })}

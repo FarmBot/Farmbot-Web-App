@@ -4,7 +4,7 @@ import { t } from "i18next";
 import { FBSelect } from "../../../ui/new_fb_select";
 
 export function Then(props: IfParams) {
-  let { onChange, selectedItem } = IfBlockDropDownHandler(props, "_then");
+  const { onChange, selectedItem } = IfBlockDropDownHandler(props, "_then");
   return <div>
     <div className="col-xs-12 col-md-12">
       <h4>THEN...</h4>

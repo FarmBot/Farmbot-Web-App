@@ -15,7 +15,7 @@ export function stepPut(value: Step,
   intent: DataXferIntent,
   draggerId: number):
   ReduxAction<DataXferBase> {
-  let uuid = id();
+  const uuid = id();
   ev.dataTransfer.setData(STEP_DATATRANSFER_IDENTIFER, uuid);
   return {
     type: Actions.PUT_DATA_XFER,
@@ -35,7 +35,7 @@ export function stepGet(uuid: string) {
   return function (dispatch: Function,
     getState: () => Everything):
     DataXfer {
-    let obj = getState().draggable.dataTransfer[uuid];
+    const obj = getState().draggable.dataTransfer[uuid];
     if (obj && obj.intent) {
       dispatch({ type: "DROP_DATA_XFER", payload: uuid });
       return obj;

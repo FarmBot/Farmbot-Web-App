@@ -13,14 +13,14 @@ describe("<StepTitleBar/>", () => {
       }
     };
     const dispatch = jest.fn();
-    let block = mount(<StepTitleBar
+    const block = mount(<StepTitleBar
       step={currentStep}
       index={0}
       dispatch={dispatch}
       sequence={fakeSequence()} />);
-    let inputs = block.find("input");
+    const inputs = block.find("input");
     expect(inputs.length).toEqual(1);
-    let title = inputs.first();
+    const title = inputs.first();
     expect(title.props().value).toEqual("");
     expect(title.props().placeholder).toEqual("Wait");
     title.simulate("blur");
@@ -34,14 +34,14 @@ describe("<StepTitleBar/>", () => {
       },
       comment: "new title"
     };
-    let block = mount(<StepTitleBar
+    const block = mount(<StepTitleBar
       step={currentStep}
       index={0}
       dispatch={jest.fn()}
       sequence={fakeSequence()} />);
-    let inputs = block.find("input");
+    const inputs = block.find("input");
     expect(inputs.length).toEqual(1);
-    let title = inputs.first();
+    const title = inputs.first();
     expect(title.props().value).toEqual("new title");
   });
 });

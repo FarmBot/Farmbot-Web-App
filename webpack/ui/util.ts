@@ -11,9 +11,9 @@ interface Props {
   xlOffset?: number;
 }
 
-export function parseClassNames(props: Props, base: string | null) {
+export function parseClassNames(props: Props, base?: string) {
 
-  let classNames: string[] = [];
+  const classNames: string[] = [];
   if (base) { classNames.push(base); }
 
   if (props.xs) { classNames.push(`col-xs-${props.xs}`); }

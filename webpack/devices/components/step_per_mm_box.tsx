@@ -18,8 +18,8 @@ export class BotConfigInputBox extends React.Component<StepsPerMMBoxProps, {}> {
 
   change = (key: ConfigurationName, dispatch: Function) => {
     return (event: React.FormEvent<HTMLInputElement>) => {
-      let next = parseInt(event.currentTarget.value, 10);
-      let current = this.config[this.setting];
+      const next = parseInt(event.currentTarget.value, 10);
+      const current = this.config[this.setting];
       if (!_.isNaN(next) && (next !== current)) {
         dispatch(updateConfig({ [key]: next }));
       }
@@ -27,8 +27,8 @@ export class BotConfigInputBox extends React.Component<StepsPerMMBoxProps, {}> {
   }
 
   render() {
-    let hmm = this.config[this.setting];
-    let value = (_.isNumber(hmm) || _.isBoolean(hmm)) ? hmm.toString() : "";
+    const hmm = this.config[this.setting];
+    const value = (_.isNumber(hmm) || _.isBoolean(hmm)) ? hmm.toString() : "";
 
     return <BlurableInput
       type="number"

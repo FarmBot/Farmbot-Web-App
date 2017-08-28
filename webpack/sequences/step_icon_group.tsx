@@ -8,7 +8,7 @@ interface StepIconBarProps {
 }
 
 export function StepIconGroup(props: StepIconBarProps) {
-  let { onClone, onTrash, helpText } = props;
+  const { onClone, onTrash, helpText } = props;
 
   return <span>
     <i className="fa fa-arrows-v step-control" />

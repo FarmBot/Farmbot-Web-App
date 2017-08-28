@@ -38,9 +38,9 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
   }
 
   render() {
-    let { toggle, dispatch, toolSlots, position } = this.props;
+    const { toggle, dispatch, toolSlots, position } = this.props;
 
-    let positionIsDefined =
+    const positionIsDefined =
       _.isNumber(position.x) && _.isNumber(position.y) && _.isNumber(position.z);
 
     function useCurrentPosition(slot: TaggedToolSlotPointer) {
@@ -56,7 +56,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
     } else {
       positionButtonTitle = "use current location (unknown)";
     }
-    let toolSlotStatus = getArrayStatus(toolSlots);
+    const toolSlotStatus = getArrayStatus(toolSlots);
     return <div>
       <Widget>
         <WidgetHeader helpText={ToolTips.TOOLBAY_LIST} title="Tool Slots">

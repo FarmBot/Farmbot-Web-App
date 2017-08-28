@@ -10,9 +10,9 @@ export const PIN_MODES = [
 ];
 
 export function currentSelection(currentStep: SequenceBodyItem) {
-  let step = currentStep as WritePin;
-  let pinMode = step.args.pin_mode;
-  let modes: { [s: string]: string } = {
+  const step = currentStep as WritePin;
+  const pinMode = step.args.pin_mode;
+  const modes: { [s: string]: string } = {
     0: "Digital",
     1: "Analog"
   };

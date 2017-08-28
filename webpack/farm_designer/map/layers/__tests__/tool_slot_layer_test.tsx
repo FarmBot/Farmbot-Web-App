@@ -6,7 +6,7 @@ import { shallow } from "enzyme";
 
 describe("<ToolSlotLayer/>", () => {
   function fakeProps(): ToolSlotLayerProps {
-    let ts: ToolSlotPointer = {
+    const ts: ToolSlotPointer = {
       pointer_type: "ToolSlot",
       tool_id: undefined,
       name: "Name",
@@ -16,7 +16,7 @@ describe("<ToolSlotLayer/>", () => {
       z: 3,
       meta: {}
     };
-    let toolSlot = fakeResource("points", ts);
+    const toolSlot = fakeResource("points", ts);
     return {
       visible: false,
       slots: [{ toolSlot, tool: undefined }],
@@ -24,14 +24,14 @@ describe("<ToolSlotLayer/>", () => {
     };
   }
   it("toggles visibility off", () => {
-    let result = shallow(<ToolSlotLayer {...fakeProps() } />);
+    const result = shallow(<ToolSlotLayer {...fakeProps() } />);
     expect(result.find("ToolSlotPoint").length).toEqual(0);
   });
 
   it("toggles visibility on", () => {
-    let p = fakeProps();
+    const p = fakeProps();
     p.visible = true;
-    let result = shallow(<ToolSlotLayer {...p } />);
+    const result = shallow(<ToolSlotLayer {...p } />);
     expect(result.find("ToolSlotPoint").length).toEqual(1);
   });
 });

@@ -14,13 +14,13 @@ describe("scanImage()", () => {
     jest.clearAllMocks();
   });
   it("calls out to the device", () => {
-    let { mock } = devices.current.execScript as jest.Mock<{}>;
+    const { mock } = devices.current.execScript as jest.Mock<{}>;
     // Run function to invoke side effects
-    let thunk = scanImage(4);
+    const thunk = scanImage(4);
     thunk();
     // Ensure the side effects were the ones we expected.
     expect(mock.calls.length).toEqual(1);
-    let argList = mock.calls[0];
+    const argList = mock.calls[0];
     expect(argList[0]).toEqual("historical-camera-calibration");
     expect(argList[1]).toBeInstanceOf(Array);
     expect(argList[1][0].kind).toBe("pair");
@@ -35,13 +35,13 @@ describe("calibrate()", () => {
     jest.clearAllMocks();
   });
   it("calls out to the device", () => {
-    let { mock } = devices.current.execScript as jest.Mock<{}>;
+    const { mock } = devices.current.execScript as jest.Mock<{}>;
     // Run function to invoke side effects
-    let thunk = calibrate();
+    const thunk = calibrate();
     thunk();
     // Ensure the side effects were the ones we expected.
     expect(mock.calls.length).toEqual(1);
-    let argList = mock.calls[0];
+    const argList = mock.calls[0];
     expect(argList[0]).toEqual("camera-calibration");
     expect(argList[1]).toBeUndefined();
   });

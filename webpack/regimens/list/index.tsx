@@ -17,7 +17,7 @@ export class RegimensList extends
   };
 
   componentDidMount() {
-    let { dispatch, regimen, regimens } = this.props;
+    const { dispatch, regimen, regimens } = this.props;
 
     regimen && urlFriendly(regimen.body.name) &&
       push("/app/regimens/" + urlFriendly(regimen.body.name));
@@ -31,7 +31,7 @@ export class RegimensList extends
   }
 
   rows = () => {
-    let searchTerm = this.state.searchTerm.toLowerCase();
+    const searchTerm = this.state.searchTerm.toLowerCase();
     return (
       <Col xs={12}>
         {sortResourcesById(this.props.regimens)
@@ -59,7 +59,7 @@ export class RegimensList extends
   }
 
   render() {
-    let { dispatch, regimens } = this.props;
+    const { dispatch, regimens } = this.props;
 
     return (
       <div className="regimen-list">

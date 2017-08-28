@@ -13,10 +13,10 @@ import { Actions } from "../constants";
 import { Session } from "../session";
 import { NumericSetting } from "../session_keys";
 
-let botOriginVal = Session.getNum(NumericSetting.BOT_ORIGIN_QUADRANT);
-let botOriginQuadrant = isBotOriginQuadrant(botOriginVal) ? botOriginVal : 2;
-let zoomLevelVal = Session.getNum(NumericSetting.ZOOM_LEVEL);
-let zoomLevel = zoomLevelVal ? zoomLevelVal : 1;
+const botOriginVal = Session.getNum(NumericSetting.BOT_ORIGIN_QUADRANT);
+const botOriginQuadrant = isBotOriginQuadrant(botOriginVal) ? botOriginVal : 2;
+const zoomLevelVal = Session.getNum(NumericSetting.ZOOM_LEVEL);
+const zoomLevel = zoomLevelVal ? zoomLevelVal : 1;
 
 export let initialState: DesignerState = {
   selectedPlant: undefined,
@@ -32,7 +32,7 @@ export let initialState: DesignerState = {
 
 export let designer = generateReducer<DesignerState>(initialState)
   .add<string>(Actions.SEARCH_QUERY_CHANGE, (s, { payload }) => {
-    let state = cloneDeep(s);
+    const state = cloneDeep(s);
     state.cropSearchQuery = payload;
     return state;
   })
@@ -50,13 +50,13 @@ export let designer = generateReducer<DesignerState>(initialState)
     return s;
   })
   .add<ZoomLevelPayl>(Actions.UPDATE_MAP_ZOOM_LEVEL, (s, { payload }) => {
-    let value = s.zoomLevel + payload;
+    const value = s.zoomLevel + payload;
     s.zoomLevel = value;
     Session.setNum(NumericSetting.ZOOM_LEVEL, value);
     return s;
   })
   .add<CropLiveSearchResult[]>(Actions.OF_SEARCH_RESULTS_OK, (s, a) => {
-    let state = cloneDeep(s);
+    const state = cloneDeep(s);
     state.cropSearchResults = a.payload;
     return state;
   })

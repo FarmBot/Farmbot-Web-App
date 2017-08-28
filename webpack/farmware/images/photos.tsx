@@ -18,12 +18,13 @@ interface MetaInfoProps {
    */
   label?: string;
   attr: string;
+  // tslint:disable-next-line:no-any
   obj: any; /** Really, it's OK here! See safeStringFetch */
 }
 
 function MetaInfo({ obj, attr, label }: MetaInfoProps) {
-  let top = label || _.startCase(attr.split("_").join());
-  let bottom = safeStringFetch(obj, attr);
+  const top = label || _.startCase(attr.split("_").join());
+  const bottom = safeStringFetch(obj, attr);
   return (
     <div>
       <label>{top}:&nbsp;&nbsp;</label>
@@ -35,15 +36,15 @@ function MetaInfo({ obj, attr, label }: MetaInfoProps) {
 export class Photos extends React.Component<PhotosProps, {}> {
 
   takePhoto = () => {
-    let ok = () => success(t("Processing now. Refresh page to see result."));
-    let no = () => error("Error taking photo");
+    const ok = () => success(t("Processing now. Refresh page to see result."));
+    const no = () => error("Error taking photo");
     devices.current.takePhoto().then(ok, no);
   }
 
   metaDatas() {
-    let i = this.props.currentImage;
+    const i = this.props.currentImage;
     if (i) {
-      let { meta } = i.body;
+      const { meta } = i.body;
       return Object.keys(meta).sort().map(function (key, index) {
         return <MetaInfo key={index} attr={key} obj={meta} />;
       });
@@ -53,7 +54,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
   }
 
   render() {
-    let image = this.props.currentImage;
+    const image = this.props.currentImage;
     return (
       <Widget className="photos-widget">
         <WidgetHeader helpText={ToolTips.PHOTOS} title={"Photos"}>

@@ -5,10 +5,10 @@ import { isUndefined } from "util";
 
 export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
   caption() {
-    let useNoYes = isUndefined(this.props.noYes) ? true : this.props.noYes;
-    let noOff = useNoYes ? t("no") : t("off");
-    let yesOn = useNoYes ? t("yes") : t("on");
-    let captions: { [s: string]: string | undefined } = {
+    const useNoYes = isUndefined(this.props.noYes) ? true : this.props.noYes;
+    const noOff = useNoYes ? t("no") : t("off");
+    const yesOn = useNoYes ? t("yes") : t("on");
+    const captions: { [s: string]: string | undefined } = {
       "0": noOff,
       "false": noOff,
       "off": noOff,
@@ -18,18 +18,18 @@ export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
       "undefined": "🚫",
       "-1": "🚫"
     };
-    let togval = String(this.props.toggleValue);
+    const togval = String(this.props.toggleValue);
     return captions[togval] || "---";
   }
 
   css() {
-    let css = "fb-toggle-button fb-button";
+    const css = "fb-toggle-button fb-button";
     if (this.props.disabled) { return css + " gray"; }
-    let redCSS = css + " red";
-    let greenCSS = css + " green";
-    let yellowCSS = css + " yellow";
+    const redCSS = css + " red";
+    const greenCSS = css + " green";
+    const yellowCSS = css + " yellow";
 
-    let cssClasses: { [s: string]: string | undefined } = {
+    const cssClasses: { [s: string]: string | undefined } = {
       "0": redCSS,
       "false": redCSS,
       "off": redCSS,
@@ -43,7 +43,7 @@ export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
   }
 
   render() {
-    let cb = () => !this.props.disabled && this.props.toggleAction();
+    const cb = () => !this.props.disabled && this.props.toggleAction();
     return (
       <button
         disabled={!!this.props.disabled}

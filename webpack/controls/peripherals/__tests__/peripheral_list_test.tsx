@@ -53,29 +53,29 @@ describe("<PeripheralList/>", function () {
   };
 
   it("renders a list of peripherals, in sorted order", function () {
-    let wrapper = mount(<PeripheralList dispatch={() => { }}
+    const wrapper = mount(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
       pins={pins}
       disabled={false} />);
-    let labels = wrapper.find("label");
-    let buttons = wrapper.find("button");
-    let first = labels.first();
+    const labels = wrapper.find("label");
+    const buttons = wrapper.find("button");
+    const first = labels.first();
     expect(first.text()).toBeTruthy();
     expect(first.text()).toEqual("GPIO 2");
     expect(buttons.first().text()).toEqual("off");
-    let last = labels.last();
+    const last = labels.last();
     expect(last.text()).toBeTruthy();
     expect(last.text()).toEqual("GPIO 13 - LED");
     expect(buttons.last().text()).toEqual("on");
   });
 
   it("toggles pins", () => {
-    let { mock } = devices.current.togglePin as jest.Mock<{}>;
-    let wrapper = mount(<PeripheralList dispatch={() => { }}
+    const { mock } = devices.current.togglePin as jest.Mock<{}>;
+    const wrapper = mount(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
       pins={pins}
       disabled={false} />);
-    let toggle = wrapper.find("ToggleButton");
+    const toggle = wrapper.find("ToggleButton");
     toggle.first().simulate("click");
     expect(mock.calls.length).toEqual(1);
     expect(mock.calls[0][0].pin_number).toEqual(2);
@@ -85,12 +85,12 @@ describe("<PeripheralList/>", function () {
   });
 
   it("pins toggles are disabled", () => {
-    let { mock } = devices.current.togglePin as jest.Mock<{}>;
-    let wrapper = mount(<PeripheralList dispatch={() => { }}
+    const { mock } = devices.current.togglePin as jest.Mock<{}>;
+    const wrapper = mount(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
       pins={pins}
       disabled={true} />);
-    let toggle = wrapper.find("ToggleButton");
+    const toggle = wrapper.find("ToggleButton");
     toggle.first().simulate("click");
     toggle.last().simulate("click");
     expect(mock.calls.length).toEqual(0);

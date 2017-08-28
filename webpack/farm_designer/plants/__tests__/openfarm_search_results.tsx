@@ -4,7 +4,7 @@ import { OpenFarmResults, SearchResultProps } from "../openfarm_search_results";
 
 describe("<OpenFarmResults/>", () => {
   it("renders OpenFarmSearchResults", () => {
-    let props: SearchResultProps = {
+    const props: SearchResultProps = {
       cropSearchResults: [
         {
           crop: {
@@ -22,8 +22,8 @@ describe("<OpenFarmResults/>", () => {
         },
       ]
     };
-    let el = mount(<OpenFarmResults {...props} />);
-    let text = el.text();
+    const el = mount(<OpenFarmResults {...props} />);
+    const text = el.text();
     expect(text).toContain(props.cropSearchResults[0].crop.name);
     expect(text).toContain(props.cropSearchResults[1].crop.name);
     expect(el.find("Link").length).toEqual(props.cropSearchResults.length);

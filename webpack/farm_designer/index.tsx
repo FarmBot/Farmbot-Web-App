@@ -36,7 +36,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     this.props.dispatch({ type: "UPDATE_MAP_ZOOM_LEVEL", payload });
 
   childComponent(props: Props) {
-    let fallback = isMobile() ? undefined : React.createElement(Plants, props);
+    const fallback = isMobile() ? undefined : React.createElement(Plants, props);
     return this.props.children || fallback;
   }
 
@@ -52,7 +52,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       document.body.classList.remove("designer-tab");
     }
 
-    let {
+    const {
       legendMenuOpen,
       showPlants,
       showPoints,
@@ -60,7 +60,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       showFarmbot
     } = this.state;
 
-    let designerTabClasses: string[] = ["active", "visible-xs"];
+    const designerTabClasses: string[] = ["active", "visible-xs"];
 
     return <div className="farm-designer">
 

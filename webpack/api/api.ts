@@ -48,7 +48,7 @@ export class API {
 
   static parseURL(url: string): UrlInfo {
     // Such an amazing hack!
-    let info = document.createElement("a");
+    const info = document.createElement("a");
     info.href = url;
     return info;
   }
@@ -86,7 +86,7 @@ export class API {
   private readonly host: string;
 
   constructor(input: string) {
-    let url = API.parseURL(input);
+    const url = API.parseURL(input);
     this.protocol = url.protocol as ProtocolString;
     this.hostname = url.hostname;
     this.port = url.port;

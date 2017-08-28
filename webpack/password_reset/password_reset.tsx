@@ -28,15 +28,15 @@ export class PasswordReset extends React.Component<Props, State> {
   }
 
   set = (name: string) => (event: React.FormEvent<HTMLInputElement>) => {
-    let state: { [name: string]: string } = {};
+    const state: { [name: string]: string } = {};
     state[name] = (event.currentTarget).value;
     this.setState(state);
   };
 
   submit(e: React.SyntheticEvent<HTMLInputElement>) {
     e.preventDefault();
-    let { password, passwordConfirmation } = this.state;
-    let token = window.location.href.split("/").pop();
+    const { password, passwordConfirmation } = this.state;
+    const token = window.location.href.split("/").pop();
     axios.put(API.current.passwordResetPath, {
       id: token,
       password,
@@ -50,7 +50,7 @@ export class PasswordReset extends React.Component<Props, State> {
 
   render() {
 
-    let buttonStylesUniqueToOnlyThisPage = {
+    const buttonStylesUniqueToOnlyThisPage = {
       marginTop: "1rem",
       padding: ".5rem 1.6rem",
       fontSize: "1.2rem",

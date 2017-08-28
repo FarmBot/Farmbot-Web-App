@@ -30,10 +30,10 @@ describe("<TestButton/>", () => {
   }
 
   it("doesnt fire if unsaved", () => {
-    let props = fakeProps();
+    const props = fakeProps();
     props.sequence.specialStatus = SpecialStatus.DIRTY;
-    let result = mount(<TestButton {...props} />);
-    let btn = result.find("button");
+    const result = mount(<TestButton {...props} />);
+    const btn = result.find("button");
     btn.simulate("click");
     expect(btn.hasClass("gray")).toBeTruthy();
     expect(props.onFail).toHaveBeenCalled();
@@ -41,12 +41,12 @@ describe("<TestButton/>", () => {
   });
 
   it("doesnt fire if unsynced", () => {
-    let props = fakeProps();
+    const props = fakeProps();
     props.syncStatus = "sync_now";
     props.sequence.specialStatus = undefined;
     props.sequence.body.id = 1;
-    let result = mount(<TestButton {...props} />);
-    let btn = result.find("button");
+    const result = mount(<TestButton {...props} />);
+    const btn = result.find("button");
     btn.simulate("click");
     expect(btn.hasClass("gray")).toBeTruthy();
     expect(props.onFail).toHaveBeenCalled();
@@ -54,12 +54,12 @@ describe("<TestButton/>", () => {
   });
 
   it("does fire if saved and synced", () => {
-    let props = fakeProps();
+    const props = fakeProps();
     props.syncStatus = "synced";
     props.sequence.specialStatus = undefined;
     props.sequence.body.id = 1;
-    let result = mount(<TestButton {...props} />);
-    let btn = result.find("button");
+    const result = mount(<TestButton {...props} />);
+    const btn = result.find("button");
     btn.simulate("click");
     expect(btn.hasClass("orange")).toBeTruthy();
     expect(props.onFail).not.toHaveBeenCalled();

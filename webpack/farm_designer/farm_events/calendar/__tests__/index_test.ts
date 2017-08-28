@@ -7,13 +7,13 @@ import {
 
 describe("calendar", () => {
   it("constructs itself with defaults", () => {
-    let calendar = new Calendar();
+    const calendar = new Calendar();
     expect(calendar.getAll().length).toEqual(0);
     expect(calendar.value).toEqual({});
   });
 
   it("inserts dates", () => {
-    let calendar = new Calendar();
+    const calendar = new Calendar();
     calendar.insert(occurrence(TIME.MONDAY, fakeFarmEventWithExecutable()));
     calendar.insert(occurrence(TIME.TUESDAY, fakeFarmEventWithExecutable()));
     expect(calendar.getAll().length).toEqual(2);
@@ -23,8 +23,8 @@ describe("calendar", () => {
   });
 
   it("finds by date", () => {
-    let calendar = new Calendar();
-    let wow = occurrence(TIME.MONDAY, fakeFarmEventWithExecutable());
+    const calendar = new Calendar();
+    const wow = occurrence(TIME.MONDAY, fakeFarmEventWithExecutable());
     calendar.insert(wow);
     expect(calendar.findByDate(TIME.FRIDAY)).toBeInstanceOf(Array);
     expect(calendar.findByDate(TIME.MONDAY)).toContain(wow);

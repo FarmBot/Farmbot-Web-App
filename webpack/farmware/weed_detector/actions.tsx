@@ -24,14 +24,14 @@ export function resetWeedDetection(cb: ProgressCallback): Thunk {
   return async function (dispatch, getState) {
     const URL = API.current.pointSearchPath;
     try {
-      let resp: HttpData<GenericPointer[]> = await axios.post(URL, QUERY);
-      let ids = resp.data.map(x => x.id);
+      const resp: HttpData<GenericPointer[]> = await axios.post(URL, QUERY);
+      const ids = resp.data.map(x => x.id);
       // If you delete too many points, you will violate the URL length
       // limitation of 2,083. Chunking helps fix that.
-      let chunks = _.chunk(ids, 179 /* Prime numbers, why not? */);
-      let prog = new Progress(chunks.length, cb);
+      const chunks = _.chunk(ids, 179 /* Prime numbers, why not? */);
+      const prog = new Progress(chunks.length, cb);
       prog.inc();
-      let promises = chunks.map(function (chunk) {
+      const promises = chunks.map(function (chunk) {
         return axios
           .delete(API.current.pointsPath + chunk.join(","))
           .then(function (x) {

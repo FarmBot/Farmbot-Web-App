@@ -8,8 +8,8 @@ import { Wrapper } from "../../../__test_support__/wrapper";
 
 describe("<InputDefault/>", () => {
   it("updates the step", () => {
-    let dispatcher = jest.fn();
-    let step: MoveAbsolute = {
+    const dispatcher = jest.fn();
+    const step: MoveAbsolute = {
       "kind": "move_absolute",
       "args": {
         "location": {
@@ -32,7 +32,7 @@ describe("<InputDefault/>", () => {
       }
     };
 
-    let tr: TaggedSequence = {
+    const tr: TaggedSequence = {
       "specialStatus": undefined,
       "kind": "sequences",
       "body": {
@@ -47,7 +47,7 @@ describe("<InputDefault/>", () => {
       },
       "uuid": "sequences.74.145"
     };
-    let c = mount(<Wrapper>
+    const c = mount(<Wrapper>
       <InputDefault
         index={0}
         field="speed"
@@ -55,12 +55,12 @@ describe("<InputDefault/>", () => {
         dispatch={dispatcher}
         sequence={tr} />
     </Wrapper>);
-    let input = c.find("input").first();
+    const input = c.find("input").first();
     input.simulate("change");
     input.simulate("blur");
     expect(dispatcher.mock.calls.length).toEqual(1);
-    let action = dispatcher.mock.calls[0][0];
-    let { payload } = action;
+    const action = dispatcher.mock.calls[0][0];
+    const { payload } = action;
     expect(action.type).toEqual("OVERWRITE_RESOURCE");
     expect(payload.uuid).toContain("sequences");
     expect(payload.update.name).toEqual(tr.body.name);

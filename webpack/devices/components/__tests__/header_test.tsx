@@ -4,8 +4,8 @@ import { shallow } from "enzyme";
 
 describe("<Header/>", () => {
   it("renders", () => {
-    let fn = jest.fn();
-    let el = shallow(<Header
+    const fn = jest.fn();
+    const el = shallow(<Header
       title="FOO"
       bool={true}
       name={"motors"}

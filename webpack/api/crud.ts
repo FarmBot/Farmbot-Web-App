@@ -53,8 +53,8 @@ interface EditStepProps {
  * of `edit()` or `overwrite`. */
 export function editStep({ step, sequence, index, executor }: EditStepProps) {
   // https://en.wikipedia.org/wiki/NeXTSTEP
-  let nextStep = defensiveClone(step);
-  let nextSeq = defensiveClone(sequence);
+  const nextStep = defensiveClone(step);
+  const nextSeq = defensiveClone(sequence);
   // Let the developer safely perform mutations here:
   executor(nextStep);
   nextSeq.body.body = nextSeq.body.body || [];
@@ -73,18 +73,18 @@ export function init(resource: TaggedResource): ReduxAction<TaggedResource> {
 
 export function initSave(resource: TaggedResource) {
   return function (dispatch: Function, getState: GetState) {
-    let action = init(resource);
+    const action = init(resource);
     if (resource.body.id === 0) { delete resource.body.id; }
     dispatch(action);
-    let nextState = getState().resources.index;
-    let tr = findByUuid(nextState, action.payload.uuid);
+    const nextState = getState().resources.index;
+    const tr = findByUuid(nextState, action.payload.uuid);
     return dispatch(save(tr.uuid));
   };
 }
 
 export function save(uuid: string) {
   return function (dispatch: Function, getState: GetState) {
-    let resource = findByUuid(getState().resources.index, uuid);
+    const resource = findByUuid(getState().resources.index, uuid);
     dispatch({ type: "SAVE_RESOURCE_START", payload: resource });
     return dispatch(update(uuid));
   };
@@ -98,8 +98,8 @@ function update(uuid: string) {
 
 export function destroy(uuid: string) {
   return function (dispatch: Function, getState: GetState) {
-    let resource = findByUuid(getState().resources.index, uuid);
-    let maybeProceed = confirmationChecker(resource);
+    const resource = findByUuid(getState().resources.index, uuid);
+    const maybeProceed = confirmationChecker(resource);
     return maybeProceed(() => {
       if (resource.body.id) {
         return axios
@@ -123,7 +123,7 @@ export function saveAll(input: TaggedResource[],
   callback: () => void = _.noop,
   errBack: (err: UnsafeError) => void = _.noop) {
   return function (dispatch: Function, getState: GetState) {
-    let p = input
+    const p = input
       .filter(x => x.specialStatus === SpecialStatus.DIRTY)
       .map(tts => dispatch(save(tts.uuid)));
     Promise.all(p).then(callback, errBack);
@@ -144,7 +144,7 @@ export function urlFor(tag: ResourceName) {
     logs: API.current.logsPath,
     webcam_feed: API.current.webcamFeedPath
   };
-  let url = OPTIONS[tag];
+  const url = OPTIONS[tag];
   if (url) {
     return url;
   } else {
@@ -157,8 +157,8 @@ export function urlFor(tag: ResourceName) {
 function updateViaAjax(index: ResourceIndex,
   uuid: string,
   dispatch: Function) {
-  let resource = findByUuid(index, uuid);
-  let { body, kind } = resource;
+  const resource = findByUuid(index, uuid);
+  const { body, kind } = resource;
   let verb: "post" | "put";
   let url = urlFor(kind);
   if (body.id) {
@@ -169,9 +169,9 @@ function updateViaAjax(index: ResourceIndex,
   }
   return axios[verb](url, body)
     .then(function (resp: HttpData<typeof resource.body>) {
-      let r1 = defensiveClone(resource);
-      let r2 = { body: defensiveClone(resp.data) };
-      let newTR = _.assign({}, r1, r2);
+      const r1 = defensiveClone(resource);
+      const r2 = { body: defensiveClone(resp.data) };
+      const newTR = _.assign({}, r1, r2);
       if (isTaggedResource(newTR)) {
         dispatch(updateOK(newTR));
       } else {
@@ -184,14 +184,14 @@ function updateViaAjax(index: ResourceIndex,
     });
 }
 
-let MUST_CONFIRM_LIST: ResourceName[] = [
+const MUST_CONFIRM_LIST: ResourceName[] = [
   "farm_events",
   "points",
   "sequences",
   "regimens"
 ];
 
-let confirmationChecker = (resource: TaggedResource) =>
+const confirmationChecker = (resource: TaggedResource) =>
   <T>(proceed: () => T): T | undefined => {
     if (MUST_CONFIRM_LIST.includes(resource.kind)) {
       if (confirm("Are you sure you want to delete this item?")) {

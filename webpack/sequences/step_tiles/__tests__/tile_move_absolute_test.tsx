@@ -40,10 +40,10 @@ describe("<TileMoveAbsolute/>", () => {
   }
 
   it("renders inputs", () => {
-    let block = bootstrapTest().component;
-    let inputs = block.find("input");
-    let labels = block.find("label");
-    let buttons = block.find("button");
+    const block = bootstrapTest().component;
+    const inputs = block.find("input");
+    const labels = block.find("label");
+    const buttons = block.find("button");
     expect(inputs.length).toEqual(7);
     expect(labels.length).toEqual(7);
     expect(buttons.length).toEqual(1);

@@ -15,9 +15,9 @@ export class VirtualFarmBot extends
   React.Component<VFBProps, Partial<VFBState>> {
 
   render() {
-    let { x, y } = this.props.botPosition;
-    let { quadrant } = this.props;
-    let { qx, qy } = getXYFromQuadrant((x || 0), (y || 0), quadrant);
+    const { x, y } = this.props.botPosition;
+    const { quadrant } = this.props;
+    const { qx, qy } = getXYFromQuadrant((x || 0), (y || 0), quadrant);
     return <g>
       <rect
         x={qx - 10}

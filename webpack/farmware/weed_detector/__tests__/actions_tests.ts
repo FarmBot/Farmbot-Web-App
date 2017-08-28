@@ -19,7 +19,7 @@ describe("actions", () => {
   it("Saves environment variables", () => {
     /** This test is just here to make sure that envSave() is actually
      * triggering side effects. */
-    let translator = translateImageWorkspaceAndSave({
+    const translator = translateImageWorkspaceAndSave({
       "iteration": "WEED_DETECTOR_iteration",
       "morph": "WEED_DETECTOR_morph",
       "blur": "WEED_DETECTOR_blur",
@@ -42,13 +42,13 @@ describe("scanImage()", () => {
     jest.clearAllMocks();
   });
   it("calls out to the device", () => {
-    let { mock } = devices.current.execScript as jest.Mock<{}>;
+    const { mock } = devices.current.execScript as jest.Mock<{}>;
     // Run function to invoke side effects
-    let thunk = scanImage(5);
+    const thunk = scanImage(5);
     thunk();
     // Ensure the side effects were the ones we expected.
     expect(mock.calls.length).toEqual(1);
-    let argList = mock.calls[0];
+    const argList = mock.calls[0];
     expect(argList[0]).toEqual("historical-plant-detection");
     expect(argList[1]).toBeInstanceOf(Array);
     expect(argList[1][0].kind).toBe("pair");
@@ -63,13 +63,13 @@ describe("test()", () => {
     jest.clearAllMocks();
   });
   it("calls out to the device", () => {
-    let { mock } = devices.current.execScript as jest.Mock<{}>;
+    const { mock } = devices.current.execScript as jest.Mock<{}>;
     // Run function to invoke side effects
-    let thunk = test();
+    const thunk = test();
     thunk();
     // Ensure the side effects were the ones we expected.
     expect(mock.calls.length).toEqual(1);
-    let argList = mock.calls[0];
+    const argList = mock.calls[0];
     expect(argList[0]).toEqual("plant-detection");
     expect(argList[1]).toBeUndefined();
   });

@@ -90,7 +90,7 @@ class RefactoredSendMessage extends React.Component<SendMessageParams, {}> {
   };
 
   render() {
-    let { dispatch, index, currentStep, currentSequence } = this.props;
+    const { dispatch, index, currentStep, currentSequence } = this.props;
 
     return <div>
       <div className="step-wrapper">

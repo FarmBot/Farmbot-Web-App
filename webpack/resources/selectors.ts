@@ -33,7 +33,7 @@ type StringMap = CowardlyDictionary<string>;
 
 export let findId = (index: ResourceIndex, kind: ResourceName, id: number) => {
 
-  let uuid = index.byKindAndId[joinKindAndId(kind, id)];
+  const uuid = index.byKindAndId[joinKindAndId(kind, id)];
   assertUuid(kind, uuid);
   if (uuid) {
     return uuid;
@@ -50,10 +50,10 @@ export function findResourceById(index: ResourceIndex, kind: ResourceName,
 export let isKind = (name: ResourceName) => (tr: TaggedResource) => tr.kind === name;
 
 function findAll(index: ResourceIndex, name: ResourceName) {
-  let results: TaggedResource[] = [];
+  const results: TaggedResource[] = [];
 
   index.byKind[name].map(function (uuid) {
-    let item = index.references[uuid];
+    const item = index.references[uuid];
     (item && isTaggedResource(item) && results.push(item));
   });
   return sortResourcesById(results);
@@ -80,7 +80,7 @@ export function groupPointsByType(index: ResourceIndex) {
 export function findPointerByTypeAndId(index: ResourceIndex,
   type_: string,
   id: number) {
-  let p = selectAllPoints(index)
+  const p = selectAllPoints(index)
     .filter(({ body }) => (body.id === id) && (body.pointer_type === type_))[0];
   if (p) {
     return p;
@@ -93,20 +93,20 @@ export function findPointerByTypeAndId(index: ResourceIndex,
 
 export function selectAllGenericPointers(index: ResourceIndex):
   TaggedGenericPointer[] {
-  let genericPointers = selectAllPoints(index)
+  const genericPointers = selectAllPoints(index)
     .map(p => (isTaggedGenericPointer(p)) ? p : undefined);
   return betterCompact(genericPointers);
 }
 
 export function selectAllPlantPointers(index: ResourceIndex): TaggedPlantPointer[] {
-  let genericPointers = selectAllPoints(index)
+  const genericPointers = selectAllPoints(index)
     .map(p => (isTaggedPlantPointer(p)) ? p : undefined);
   return betterCompact(genericPointers);
 }
 
 export function selectAllToolSlotPointers(index: ResourceIndex):
   TaggedToolSlotPointer[] {
-  let genericPointers = selectAllPoints(index)
+  const genericPointers = selectAllPoints(index)
     .map(p => (isTaggedToolSlotPointer(p)) ? p : undefined);
   return betterCompact(genericPointers);
 }
@@ -130,10 +130,10 @@ interface Finder<T> {
  * Pass in a `ResourceName` and it will add all the relevant checks.
  * WARNING: WILL THROW ERRORS IF RESOURCE NOT FOUND!
  */
-let find = (r: ResourceName) =>
+const find = (r: ResourceName) =>
   function findResource(i: ResourceIndex, u: string) {
     assertUuid(r, u);
-    let result = i.references[u];
+    const result = i.references[u];
     if (result && isTaggedResource(result) && sanityCheck(result)) {
       return result as TaggedResource;
     } else {
@@ -144,7 +144,7 @@ let find = (r: ResourceName) =>
   };
 
 export function findToolSlot(i: ResourceIndex, uuid: string): TaggedToolSlotPointer {
-  let ts = selectAllToolSlotPointers(i).filter(x => x.uuid === uuid)[0];
+  const ts = selectAllToolSlotPointers(i).filter(x => x.uuid === uuid)[0];
   if (ts) {
     return ts;
   } else {
@@ -159,7 +159,7 @@ export let findPoints = find("points") as Finder<TaggedPlantPointer>;
 
 export function findPlant(i: ResourceIndex, uuid: string):
   TaggedPlantPointer {
-  let point = findPoints(i, uuid);
+  const point = findPoints(i, uuid);
   if (point && sanityCheck(point) && point.body.pointer_type === "Plant") {
     return point;
   } else {
@@ -167,7 +167,7 @@ export function findPlant(i: ResourceIndex, uuid: string):
   }
 }
 export function selectCurrentToolSlot(index: ResourceIndex, uuid: string) {
-  let x = index.references[uuid];
+  const x = index.references[uuid];
   if (x && isTaggedToolSlotPointer(x)) {
     return x;
   } else {
@@ -195,7 +195,7 @@ export function getRegimenByUUID(index: ResourceIndex, uuid: string) {
 export function getSequenceByUUID(index: ResourceIndex,
   uuid: string): TaggedSequence {
   assertUuid("sequences", uuid);
-  let result = index.references[uuid];
+  const result = index.references[uuid];
   if (result && isTaggedSequence(result)) {
     return result;
   } else {
@@ -208,11 +208,11 @@ export function selectAllSequences(index: ResourceIndex) {
 }
 
 export function indexSequenceById(index: ResourceIndex) {
-  let output: CowardlyDictionary<TaggedSequence> = {};
-  let uuids = index.byKind.sequences;
+  const output: CowardlyDictionary<TaggedSequence> = {};
+  const uuids = index.byKind.sequences;
   uuids.map(uuid => {
     assertUuid("sequences", uuid);
-    let sequence = index.references[uuid];
+    const sequence = index.references[uuid];
     if (sequence && isTaggedSequence(sequence) && sequence.body.id) {
       output[sequence.body.id] = sequence;
     }
@@ -221,12 +221,12 @@ export function indexSequenceById(index: ResourceIndex) {
 }
 
 export function indexRegimenById(index: ResourceIndex) {
-  let output: CowardlyDictionary<TaggedRegimen> = {};
+  const output: CowardlyDictionary<TaggedRegimen> = {};
 
-  let uuids = index.byKind.regimens;
+  const uuids = index.byKind.regimens;
   uuids.map(uuid => {
     assertUuid("regimens", uuid);
-    let regimen = index.references[uuid];
+    const regimen = index.references[uuid];
     if (regimen && isTaggedRegimen(regimen) && regimen.body.id) {
       output[regimen.body.id] = regimen;
     }
@@ -235,12 +235,12 @@ export function indexRegimenById(index: ResourceIndex) {
 }
 
 export function indexFarmEventById(index: ResourceIndex) {
-  let output: CowardlyDictionary<TaggedFarmEvent> = {};
+  const output: CowardlyDictionary<TaggedFarmEvent> = {};
 
-  let uuids = index.byKind.farm_events;
+  const uuids = index.byKind.farm_events;
   uuids.map(uuid => {
     assertUuid("farm_events", uuid);
-    let farmEvent = index.references[uuid];
+    const farmEvent = index.references[uuid];
     if (farmEvent && isTaggedFarmEvent(farmEvent) && farmEvent.body.id) {
       output[farmEvent.body.id] = farmEvent;
     }
@@ -249,12 +249,12 @@ export function indexFarmEventById(index: ResourceIndex) {
 }
 
 export function indexByToolId(index: ResourceIndex) {
-  let output: CowardlyDictionary<TaggedTool> = {};
+  const output: CowardlyDictionary<TaggedTool> = {};
 
-  let uuids = index.byKind.tools;
+  const uuids = index.byKind.tools;
   uuids.map(uuid => {
     assertUuid("tools", uuid);
-    let Tool = index.references[uuid];
+    const Tool = index.references[uuid];
     if (Tool && isTaggedTool(Tool) && Tool.body.id) {
       output[Tool.body.id] = Tool;
     }
@@ -263,12 +263,12 @@ export function indexByToolId(index: ResourceIndex) {
 }
 
 export function indexBySlotId(index: ResourceIndex) {
-  let output: CowardlyDictionary<TaggedToolSlotPointer> = {};
+  const output: CowardlyDictionary<TaggedToolSlotPointer> = {};
 
-  let uuids = index.byKind.points;
+  const uuids = index.byKind.points;
   uuids.map(uuid => {
     assertUuid("points", uuid);
-    let tool_slot = index.references[uuid];
+    const tool_slot = index.references[uuid];
     if (tool_slot && isTaggedToolSlotPointer(tool_slot) && tool_slot.body.id) {
       output[tool_slot.body.id] = tool_slot;
     }
@@ -291,7 +291,7 @@ export function assertUuid(expected: ResourceName, actual: string | undefined) {
 
 export function toArray(index: ResourceIndex) {
   return index.all.map(function (uuid) {
-    let tr = index.references[uuid];
+    const tr = index.references[uuid];
     if (tr) {
       return tr;
     } else {
@@ -304,12 +304,12 @@ export function toArray(index: ResourceIndex) {
  *  FINDS: Tool in that slot (if any) */
 export let currentToolInSlot = (index: ResourceIndex) =>
   (toolSlotUUID: string): TaggedTool | undefined => {
-    let currentSlot = selectCurrentToolSlot(index, toolSlotUUID);
+    const currentSlot = selectCurrentToolSlot(index, toolSlotUUID);
     if (currentSlot
       && currentSlot.kind === "points") {
-      let toolUUID = index
+      const toolUUID = index
         .byKindAndId[joinKindAndId("tools", currentSlot.body.tool_id)];
-      let tool = index.references[toolUUID || "NOPE!"];
+      const tool = index.references[toolUUID || "NOPE!"];
       if (tool && isTaggedTool(tool)) {
         return tool;
       }
@@ -318,21 +318,21 @@ export let currentToolInSlot = (index: ResourceIndex) =>
 
 /** FINDS: all tagged resources with particular ID */
 export function findAllById(i: ResourceIndex, ids: number[], k: ResourceName) {
-  let output: TaggedResource[] = [];
+  const output: TaggedResource[] = [];
   findAll(i, k).map(x => x.kind === k ? output.push(x) : "");
   return output;
 }
 
 /** FINDS: All tools that are in use. */
 export function toolsInUse(index: ResourceIndex): TaggedTool[] {
-  let ids = betterCompact(selectAllToolSlotPointers(index).map(ts => ts.body.tool_id));
+  const ids = betterCompact(selectAllToolSlotPointers(index).map(ts => ts.body.tool_id));
   return findAllById(index, ids, "tools") as TaggedTool[];
 }
 
 export let byId = <T extends TaggedResource>(name: ResourceName) =>
   (index: ResourceIndex, id: number): T | undefined => {
-    let tools = findAll(index, name);
-    let f = (x: TaggedResource) => (x.kind === name) && (x.body.id === id);
+    const tools = findAll(index, name);
+    const f = (x: TaggedResource) => (x.kind === name) && (x.body.id === id);
     // Maybe we should add a throw here?
     return tools.filter(f)[0] as T | undefined;
   };
@@ -342,18 +342,18 @@ export function hasId(ri: ResourceIndex, k: ResourceName, id: number): boolean {
 }
 
 export let findFarmEventById = (ri: ResourceIndex, fe_id: number) => {
-  let fe = byId("farm_events")(ri, fe_id);
+  const fe = byId("farm_events")(ri, fe_id);
   if (fe && isTaggedFarmEvent(fe) && sanityCheck(fe)) {
     return fe;
   } else {
-    let e = new Error(`Bad farm_event id: ${fe_id}`);
+    const e = new Error(`Bad farm_event id: ${fe_id}`);
     throw e;
   }
 };
 
 export let maybeFindToolById = (ri: ResourceIndex, tool_id?: number):
   TaggedTool | undefined => {
-  let tool = tool_id && byId("tools")(ri, tool_id);
+  const tool = tool_id && byId("tools")(ri, tool_id);
   if (tool && isTaggedTool(tool) && sanityCheck(tool)) {
     return tool;
   } else {
@@ -362,7 +362,7 @@ export let maybeFindToolById = (ri: ResourceIndex, tool_id?: number):
 };
 
 export let findToolById = (ri: ResourceIndex, tool_id: number) => {
-  let tool = maybeFindToolById(ri, tool_id);
+  const tool = maybeFindToolById(ri, tool_id);
   if (tool) {
     return tool;
   } else {
@@ -371,7 +371,7 @@ export let findToolById = (ri: ResourceIndex, tool_id: number) => {
 };
 
 export let findSequenceById = (ri: ResourceIndex, sequence_id: number) => {
-  let sequence = byId("sequences")(ri, sequence_id);
+  const sequence = byId("sequences")(ri, sequence_id);
   if (sequence && isTaggedSequence(sequence) && sanityCheck(sequence)) {
     return sequence;
   } else {
@@ -380,7 +380,7 @@ export let findSequenceById = (ri: ResourceIndex, sequence_id: number) => {
 };
 
 export let findRegimenById = (ri: ResourceIndex, regimen_id: number) => {
-  let regimen = byId("regimens")(ri, regimen_id);
+  const regimen = byId("regimens")(ri, regimen_id);
   if (regimen && isTaggedRegimen(regimen) && sanityCheck(regimen)) {
     return regimen;
   } else {
@@ -391,12 +391,12 @@ export let findRegimenById = (ri: ResourceIndex, regimen_id: number) => {
 export let findSlotById = byId<TaggedToolSlotPointer>("points");
 /** Find a Tool's corresponding Slot. */
 export let findSlotByToolId = (index: ResourceIndex, tool_id: number) => {
-  let tool = findToolById(index, tool_id);
-  let query: any = { body: { tool_id: tool.body.id } };
-  let every = Object
+  const tool = findToolById(index, tool_id);
+  const query: any = { body: { tool_id: tool.body.id } };
+  const every = Object
     .keys(index.references)
     .map(x => index.references[x]);
-  let tts = _.find(every, query);
+  const tts = _.find(every, query);
   if (tts && isTaggedToolSlotPointer(tts) && sanityCheck(tts)) {
     return tts;
   } else {
@@ -415,21 +415,21 @@ export function maybeGetSequence(index: ResourceIndex,
 
 export function maybeGetRegimen(index: ResourceIndex,
   uuid: string | undefined): TaggedRegimen | undefined {
-  let tr = uuid && getRegimenByUUID(index, uuid);
+  const tr = uuid && getRegimenByUUID(index, uuid);
   if (tr && isTaggedRegimen(tr)) { return tr; }
 }
 
 /** Unlike other findById methods, this one allows undefined (missed) values */
 export function maybeFindPlantById(index: ResourceIndex, id: number) {
-  let uuid = index.byKindAndId[joinKindAndId("points", id)];
-  let resource = index.references[uuid || "nope"];
+  const uuid = index.byKindAndId[joinKindAndId("points", id)];
+  const resource = index.references[uuid || "nope"];
   if (resource && isTaggedPlantPointer(resource)) { return resource; }
 }
 
 export function getDeviceAccountSettings(index: ResourceIndex) {
-  let list = index.byKind.device;
-  let uuid = list[0];
-  let device = index.references[uuid || -1];
+  const list = index.byKind.device;
+  const uuid = list[0];
+  const device = index.references[uuid || -1];
   if ((list.length === 1) && device && device.kind === "device") {
     sanityCheck(device);
     return device;
@@ -441,10 +441,10 @@ export function getDeviceAccountSettings(index: ResourceIndex) {
 }
 
 export function getFeed(index: ResourceIndex): TaggedWebcamFeed {
-  let list = index.byKind.webcam_feed;
-  let uuid = list[0];
-  let feed = index.references[uuid || -1];
-  let onlyOne = list.length === 1;
+  const list = index.byKind.webcam_feed;
+  const uuid = list[0];
+  const feed = index.references[uuid || -1];
+  const onlyOne = list.length === 1;
   if (onlyOne && feed && feed.kind === "webcam_feed") {
     sanityCheck(feed);
     return feed;
@@ -455,9 +455,9 @@ export function getFeed(index: ResourceIndex): TaggedWebcamFeed {
 
 export function maybeFetchUser(index: ResourceIndex):
   TaggedUser | undefined {
-  let list = index.byKind.users;
-  let uuid = list[0];
-  let user = index.references[uuid || -1];
+  const list = index.byKind.users;
+  const uuid = list[0];
+  const user = index.references[uuid || -1];
 
   if (user && sanityCheck(user) && list.length > 1) {
     throw new Error("Index is broke. Expected exactly 1 user.");
@@ -469,7 +469,7 @@ export function maybeFetchUser(index: ResourceIndex):
   }
 }
 export function getUserAccountSettings(index: ResourceIndex): TaggedUser {
-  let user = maybeFetchUser(index);
+  const user = maybeFetchUser(index);
   if (user) {
     return user;
   } else {
@@ -502,7 +502,7 @@ export function mapToolIdToName(input: ResourceIndex) {
 /** I dislike this method. */
 export function findToolBySlotId(input: ResourceIndex, tool_slot_id: number):
   TaggedTool | undefined {
-  let wow = input
+  const wow = input
     .byKind
     .points
     .map(x => input.references[x])

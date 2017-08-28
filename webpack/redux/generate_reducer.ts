@@ -25,14 +25,14 @@ export function generateReducer<State>(initialState: State,
     // Calms the type checker.
   }
 
-  let actionHandlers: ActionHandlerDict = {};
+  const actionHandlers: ActionHandlerDict = {};
 
-  let reducer: GeneratedReducer = function <T>(state = initialState,
+  const reducer: GeneratedReducer = function <T>(state = initialState,
     action: ReduxAction<T>): State {
-    let NOOP: ActionHandler = (s, a) => s;
-    let handler = (actionHandlers[action.type] || NOOP);
-    let clonedState = defensiveClone(state);
-    let clonedAction = defensiveClone(action);
+    const NOOP: ActionHandler = (s, a) => s;
+    const handler = (actionHandlers[action.type] || NOOP);
+    const clonedState = defensiveClone(state);
+    const clonedAction = defensiveClone(action);
     let result: State = handler(clonedState, clonedAction);
     result = (afterEach || NOOP)(defensiveClone(result), action);
     return defensiveClone(result);

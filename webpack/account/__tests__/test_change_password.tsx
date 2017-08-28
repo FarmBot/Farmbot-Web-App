@@ -8,7 +8,7 @@ import { API } from "../../api/api";
 describe("<ChangePassword/>", function () {
 
   function testCase() {
-    let el = mount(<ChangePassword />);
+    const el = mount(<ChangePassword />);
     return {
       el,
       instance(): ChangePassword { return el.instance() as ChangePassword; }
@@ -16,7 +16,7 @@ describe("<ChangePassword/>", function () {
   }
 
   it("clears the form", function () {
-    let { el, instance } = testCase();
+    const { el, instance } = testCase();
     // let inst = el.instance() as ChangePassword;
     el.setState({
       status: SpecialStatus.DIRTY,
@@ -31,7 +31,7 @@ describe("<ChangePassword/>", function () {
   });
 
   it("doesnt fire maybeClearForm() if form is filled", () => {
-    let { el, instance } = testCase();
+    const { el, instance } = testCase();
     el.setState({
       status: SpecialStatus.DIRTY,
       form: { ...instance().state.form, password: "X" }
@@ -45,7 +45,7 @@ describe("<ChangePassword/>", function () {
   });
 
   it("it does fire maybeClearForm() when form is empty.", () => {
-    let { el, instance } = testCase();
+    const { el, instance } = testCase();
     el.setState({
       status: SpecialStatus.DIRTY,
       form: {
@@ -60,11 +60,13 @@ describe("<ChangePassword/>", function () {
   });
 
   it("sets a field", () => {
-    let { el, instance } = testCase();
+    const { el, instance } = testCase();
+    // tslint:disable-next-line:no-any
     instance().set("password")({ currentTarget: { value: "foo" } } as any);
     el.update();
     expect(instance().state.form.password).toBe("foo");
   });
+
   describe("AJAX", () => {
     beforeEach(function () {
       // import and pass your custom axios instance to this method
@@ -77,11 +79,11 @@ describe("<ChangePassword/>", function () {
     });
 
     it("saves (KO)", (done) => {
-      let { instance } = testCase();
+      const { instance } = testCase();
       API.setBaseUrl("localhost");
       instance().save();
       moxios.wait(function () {
-        let request = moxios.requests.mostRecent();
+        const request = moxios.requests.mostRecent();
         request.respondWith({
           status: 422,
           response: { bad: "data" }
@@ -95,11 +97,11 @@ describe("<ChangePassword/>", function () {
     });
 
     it("saves (OK)", (done) => {
-      let { instance } = testCase();
+      const { instance } = testCase();
       API.setBaseUrl("localhost");
       instance().save();
       moxios.wait(function () {
-        let request = moxios.requests.mostRecent();
+        const request = moxios.requests.mostRecent();
         request.respondWith({
           status: 200,
           response: {}

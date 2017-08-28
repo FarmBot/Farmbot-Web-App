@@ -6,12 +6,12 @@ import { fakeUser } from "../../__test_support__/fake_state/resources";
 
 describe("<Settings/>", function () {
   it("saves user settings", function () {
-    let props: SettingsPropTypes = {
+    const props: SettingsPropTypes = {
       user: fakeUser(),
       onChange: jest.fn(),
       onSave: jest.fn()
     };
-    let dom = mount(<Settings {...props} />);
+    const dom = mount(<Settings {...props} />);
     expect(props.onSave).not.toHaveBeenCalled();
     dom.find("button").simulate("click");
     expect(props.onSave).toHaveBeenCalled();

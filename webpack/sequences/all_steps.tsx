@@ -16,15 +16,15 @@ interface AllStepsProps {
 
 export class AllSteps extends React.Component<AllStepsProps, {}> {
   render() {
-    let { sequence, onDrop, dispatch } = this.props;
-    let items = (sequence.body.body || [])
+    const { sequence, onDrop, dispatch } = this.props;
+    const items = (sequence.body.body || [])
       .map((currentStep: SequenceBodyItem, index, arr) => {
         /** HACK: React's diff algorithm (probably?) can't keep track of steps
          * via `index` alone- the content is too dynamic (copy/splice/pop/push)
          * To get around this, we add a `uuid` property to Steps that
          * is guaranteed to be unique no matter where the step gets moved and
          * allows React to diff the list correctly. */
-        let readThatCommentAbove = getStepTag(currentStep);
+        const readThatCommentAbove = getStepTag(currentStep);
         return <div
           key={readThatCommentAbove}>
           <DropArea callback={(key) => onDrop(index, key)} />

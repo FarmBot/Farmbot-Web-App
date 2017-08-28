@@ -8,8 +8,8 @@ import { maybeFetchUser } from "../resources/selectors";
 import * as _ from "lodash";
 
 export function mapStateToProps(props: Everything): Props {
-  let peripherals = _.uniq(selectAllPeripherals(props.resources.index));
-  let resources = props.resources;
+  const peripherals = _.uniq(selectAllPeripherals(props.resources.index));
+  const resources = props.resources;
 
   return {
     feed: getFeed(resources.index),

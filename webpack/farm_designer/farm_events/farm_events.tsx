@@ -15,7 +15,7 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
       .sortBy(x => x.sortKey)
       .value()
       .map((farmEvent, index) => {
-        let url = `/app/designer/farm_events/` + (farmEvent.id || "UNSAVED_EVENT").toString();
+        const url = `/app/designer/farm_events/` + (farmEvent.id || "UNSAVED_EVENT").toString();
         let heading: string;
         let subHeading: JSX.Element;
 
@@ -71,7 +71,7 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
   }
 
   renderCalendarRows() {
-    let years = _.uniq(_.map(this.props.calendarRows, "year"));
+    const years = _.uniq(_.map(this.props.calendarRows, "year"));
     return years.map(year => {
       return (
         <div key={moment(year, "YY").unix()}>

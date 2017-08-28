@@ -4,7 +4,7 @@ import { PeripheralForm } from "../peripheral_form";
 import { TaggedPeripheral } from "../../../resources/tagged_resources";
 
 describe("<PeripheralForm/>", function () {
-  let dispatch = jest.fn();
+  const dispatch = jest.fn();
   const peripherals: TaggedPeripheral[] = [
     {
       uuid: "peripherals.2.2",
@@ -29,10 +29,10 @@ describe("<PeripheralForm/>", function () {
   ];
 
   it("renders a list of editable peripherals, in sorted order", function () {
-    let form = mount(<PeripheralForm dispatch={dispatch}
+    const form = mount(<PeripheralForm dispatch={dispatch}
       peripherals={peripherals} />);
-    let inputs = form.find("input");
-    let buttons = form.find("button");
+    const inputs = form.find("input");
+    const buttons = form.find("button");
     expect(inputs.at(0).props().value).toEqual("GPIO 2");
     inputs.at(0).simulate("change");
     expect(inputs.at(1).props().value).toEqual("2");

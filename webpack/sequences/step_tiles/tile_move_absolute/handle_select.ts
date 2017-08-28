@@ -8,13 +8,13 @@ import { findPointerByTypeAndId, findToolById } from "../../../resources/selecto
 /** Takes a DropDownItem and turns it into data suitable
  * for MoveAbsolute["args"]["location"] */
 export let handleSelect = (index: ResourceIndex, input: DropDownItem): LocationData => {
-  let tag = input.headingId as KnownGroupTag;
-  let id = parseInt("" + input.value);
+  const tag = input.headingId as KnownGroupTag;
+  const id = parseInt("" + input.value);
   switch (tag) {
     case "ToolSlot":
     case "GenericPointer":
     case "Plant":
-      let p = findPointerByTypeAndId(index, tag, id);
+      const p = findPointerByTypeAndId(index, tag, id);
       if (p && p.body.id) {
         return {
           kind: "point",
@@ -24,7 +24,7 @@ export let handleSelect = (index: ResourceIndex, input: DropDownItem): LocationD
         return bail("Bad point_id: " + JSON.stringify(p));
       }
     case "Tool":
-      let tool_id = findToolById(index, id)
+      const tool_id = findToolById(index, id)
         .body
         .id || bail("No id");
       return { kind: "tool", args: { tool_id } };

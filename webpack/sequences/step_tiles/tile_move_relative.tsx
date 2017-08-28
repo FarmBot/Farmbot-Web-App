@@ -8,7 +8,7 @@ import { ToolTips } from "../../constants";
 import { StepIconGroup } from "../step_icon_group";
 
 export function TileMoveRelative({ dispatch, currentStep, index, currentSequence }: StepParams) {
-  return (<div>
+  return <div>
     <div className="step-wrapper">
       <div className="row">
         <div className="col-sm-12">
@@ -69,5 +69,5 @@ export function TileMoveRelative({ dispatch, currentStep, index, currentSequence
         </div>
       </div>
     </div>
-  </div>);
+  </div>;
 }

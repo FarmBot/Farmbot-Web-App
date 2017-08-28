@@ -22,14 +22,14 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
   }
 
   maybeSave = () => {
-    let { peripherals } = this.props;
-    let pinNums = peripherals.map(x => x.body.pin);
-    let positivePins = pinNums.filter(x => x && x > 0);
-    let smallPins = pinNums.filter(x => x && x < 1000);
+    const { peripherals } = this.props;
+    const pinNums = peripherals.map(x => x.body.pin);
+    const positivePins = pinNums.filter(x => x && x > 0);
+    const smallPins = pinNums.filter(x => x && x < 1000);
     // I hate adding client side validation, but this is a wonky endpoint - RC.
-    let allAreUniq = _.uniq(pinNums).length === pinNums.length;
-    let allArePositive = positivePins.length === pinNums.length;
-    let allAreSmall = smallPins.length === pinNums.length;
+    const allAreUniq = _.uniq(pinNums).length === pinNums.length;
+    const allArePositive = positivePins.length === pinNums.length;
+    const allAreSmall = smallPins.length === pinNums.length;
     if (allAreUniq && allArePositive) {
       if (allAreSmall) {
         this.props.dispatch(saveAll(this.props.peripherals, this.toggle));
@@ -42,9 +42,9 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
   }
 
   showPins = () => {
-    let { peripherals, dispatch, bot, disabled } = this.props;
+    const { peripherals, dispatch, bot, disabled } = this.props;
 
-    let pins = bot.hardware.pins;
+    const pins = bot.hardware.pins;
     if (this.state.isEditing) {
       return <PeripheralForm peripherals={peripherals}
         dispatch={dispatch} />;
@@ -66,10 +66,10 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
   }
 
   render() {
-    let { dispatch, peripherals } = this.props;
-    let { isEditing } = this.state;
+    const { dispatch, peripherals } = this.props;
+    const { isEditing } = this.state;
 
-    let status = getArrayStatus(peripherals);
+    const status = getArrayStatus(peripherals);
 
     return <Widget className="peripherals-widget">
       <WidgetHeader title={"Peripherals"} helpText={ToolTips.PERIPHERALS}>

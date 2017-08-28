@@ -2,7 +2,7 @@ import { WeedDetectorSlider } from "../slider";
 
 describe("Weed detector slider", () => {
   it("sets props", () => {
-    let results = new WeedDetectorSlider({
+    const results = new WeedDetectorSlider({
       onRelease: jest.fn(),
       highest: 99,
       lowest: 1,

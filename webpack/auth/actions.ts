@@ -29,7 +29,7 @@ export function didLogin(authState: AuthState, dispatch: Function) {
 // We need to handle OK logins for numerous use cases (Ex: login & registration)
 function onLogin(dispatch: Function) {
   return (response: HttpData<AuthState>) => {
-    let { data } = response;
+    const { data } = response;
     Session.replace(data);
     didLogin(data, dispatch);
     push("/app/controls");
@@ -70,7 +70,7 @@ export function register(name: string,
   confirmation: string,
   url: string): Thunk {
   return dispatch => {
-    let p = requestRegistration(name,
+    const p = requestRegistration(name,
       email,
       password,
       confirmation,
@@ -98,7 +98,7 @@ function requestRegistration(name: string,
   password: string,
   confirmation: string,
   url: string) {
-  let form = {
+  const form = {
     user: {
       email: email,
       password: password,
@@ -113,7 +113,7 @@ function requestRegistration(name: string,
 function requestToken(email: string,
   password: string,
   url: string) {
-  let payload = { user: { email: email, password: password } };
+  const payload = { user: { email: email, password: password } };
   // Set the base URL once here.
   // It will get set once more when we get the "iss" claim from the JWT.
   API.setBaseUrl(url);

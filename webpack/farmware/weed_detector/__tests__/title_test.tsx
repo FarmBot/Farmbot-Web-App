@@ -5,8 +5,8 @@ import { get } from "lodash";
 
 describe("<TitleBar/>", () => {
   it("hides elements when call bakcs are not provided", () => {
-    let props = { title: "WOW!", help: "COOL!" };
-    let el = mount(<TitleBar {...props} />);
+    const props = { title: "WOW!", help: "COOL!" };
+    const el = mount(<TitleBar {...props} />);
     expect(el.text()).toContain(props.title);
     expect(el.text()).toContain(props.help);
     el.find("button").forEach(html => {

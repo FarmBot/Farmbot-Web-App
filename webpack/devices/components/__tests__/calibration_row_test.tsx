@@ -16,8 +16,8 @@ describe("<HomingRow />", () => {
     jest.clearAllMocks();
   });
   it("calls device", () => {
-    let { mock } = devices.current.calibrate as jest.Mock<{}>;
-    let result = mount(<CalibrationRow hardware={bot.hardware.mcu_params} />);
+    const { mock } = devices.current.calibrate as jest.Mock<{}>;
+    const result = mount(<CalibrationRow hardware={bot.hardware.mcu_params} />);
     result.find("LockableButton").at(0).simulate("click");
     result.find("LockableButton").at(1).simulate("click");
     result.find("LockableButton").at(2).simulate("click");

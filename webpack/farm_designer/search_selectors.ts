@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import { CropLiveSearchResult } from "./interfaces";
 
 export function findBySlug(crops: CropLiveSearchResult[], slug?: string): CropLiveSearchResult {
-  let crop = _(crops).find((result) => result.crop.slug === slug);
+  const crop = _(crops).find((result) => result.crop.slug === slug);
   return crop || {
     crop: {
       name: "name",

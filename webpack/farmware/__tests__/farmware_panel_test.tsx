@@ -29,9 +29,9 @@ describe("<FarmwarePanel/>", () => {
   }
 
   it("calls install", () => {
-    let { mock } = devices.current.installFarmware as jest.Mock<{}>;
-    let panel = bootstrapTest();
-    let buttons = panel.component.find("button");
+    const { mock } = devices.current.installFarmware as jest.Mock<{}>;
+    const panel = bootstrapTest();
+    const buttons = panel.component.find("button");
     expect(buttons.at(0).text()).toEqual("Install");
     panel.component.setState({ packageUrl: "install this" });
     buttons.at(0).simulate("click");
@@ -40,9 +40,9 @@ describe("<FarmwarePanel/>", () => {
   });
 
   it("calls update", () => {
-    let { mock } = devices.current.updateFarmware as jest.Mock<{}>;
-    let panel = bootstrapTest();
-    let buttons = panel.component.find("button");
+    const { mock } = devices.current.updateFarmware as jest.Mock<{}>;
+    const panel = bootstrapTest();
+    const buttons = panel.component.find("button");
     expect(buttons.at(3).text()).toEqual("Update");
     panel.component.setState({ selectedFarmware: "update this" });
     buttons.at(3).simulate("click");
@@ -51,9 +51,9 @@ describe("<FarmwarePanel/>", () => {
   });
 
   it("calls remove", () => {
-    let { mock } = devices.current.removeFarmware as jest.Mock<{}>;
-    let panel = bootstrapTest();
-    let buttons = panel.component.find("button");
+    const { mock } = devices.current.removeFarmware as jest.Mock<{}>;
+    const panel = bootstrapTest();
+    const buttons = panel.component.find("button");
     expect(buttons.at(2).text()).toEqual("Remove");
     panel.component.setState({ selectedFarmware: "remove this" });
     buttons.at(2).simulate("click");
@@ -62,9 +62,9 @@ describe("<FarmwarePanel/>", () => {
   });
 
   it("calls run", () => {
-    let { mock } = devices.current.execScript as jest.Mock<{}>;
-    let panel = bootstrapTest();
-    let buttons = panel.component.find("button");
+    const { mock } = devices.current.execScript as jest.Mock<{}>;
+    const panel = bootstrapTest();
+    const buttons = panel.component.find("button");
     expect(buttons.at(4).text()).toEqual("Run");
     panel.component.setState({ selectedFarmware: "run this" });
     buttons.at(4).simulate("click");

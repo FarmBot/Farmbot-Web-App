@@ -20,7 +20,7 @@ describe("<LangToggle/>", () => {
         }
       };
     });
-    let el = mount(<LangToggle />);
+    const el = mount(<LangToggle />);
     expect(Session.getBool(BooleanSetting.DISABLE_I18N)).toBeFalsy();
     expect(el.text().toLocaleLowerCase()).toContain("set page to english");
     el.find("a").first().simulate("click");

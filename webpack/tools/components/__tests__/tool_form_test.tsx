@@ -7,9 +7,9 @@ import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<ToolForm/>", () => {
   function bootstrapTest() {
-    let state = fakeState();
-    let toggle = jest.fn();
-    let props = mapStateToProps(state);
+    const state = fakeState();
+    const toggle = jest.fn();
+    const props = mapStateToProps(state);
     return {
       state,
       toggle,
@@ -20,16 +20,16 @@ describe("<ToolForm/>", () => {
     };
   }
   it("renders", () => {
-    let test = bootstrapTest();
+    const test = bootstrapTest();
 
     expect(test.component.find("input").length)
       .toEqual(test.props.tools.length);
   });
   it("shows a DIRTY flag when any of the tools are dirty", () => {
-    let test = bootstrapTest();
+    const test = bootstrapTest();
     test.props.tools[0].specialStatus = SpecialStatus.DIRTY;
     test.component.update();
-    let txt = test.component.text().replace(/\s+/g, " ");
+    const txt = test.component.text().replace(/\s+/g, " ");
     expect(txt).toContain("Save *");
   });
 });

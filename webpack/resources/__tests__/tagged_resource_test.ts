@@ -2,9 +2,9 @@ import { fakeTool } from "../../__test_support__/fake_state/resources";
 import { SpecialStatus, getArrayStatus } from "../tagged_resources";
 
 describe("getArrayStatus()", () => {
-  let toolArray = () => [fakeTool(), fakeTool(), fakeTool()];
+  const toolArray = () => [fakeTool(), fakeTool(), fakeTool()];
   it("picks SAVING above all else", () => {
-    let arr = toolArray();
+    const arr = toolArray();
     arr[0].specialStatus = undefined;
     arr[1].specialStatus = SpecialStatus.DIRTY;
     arr[2].specialStatus = SpecialStatus.SAVING;
@@ -12,7 +12,7 @@ describe("getArrayStatus()", () => {
   });
 
   it("picks DIRTY over undefined", () => {
-    let arr = toolArray();
+    const arr = toolArray();
     arr[0].specialStatus = undefined;
     arr[1].specialStatus = SpecialStatus.DIRTY;
     arr[2].specialStatus = undefined;
@@ -20,7 +20,7 @@ describe("getArrayStatus()", () => {
   });
 
   it("picks undefined as a last resort", () => {
-    let arr = toolArray();
+    const arr = toolArray();
     arr[0].specialStatus = undefined;
     arr[1].specialStatus = undefined;
     arr[2].specialStatus = undefined;

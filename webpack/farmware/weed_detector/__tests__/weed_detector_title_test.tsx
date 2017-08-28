@@ -5,7 +5,7 @@ import { TitleBar } from "../title";
 
 describe("<TitleBar/>", () => {
   it("Has a progress bar", () => {
-    let props = {
+    const props = {
       onSave: jest.fn(),
       onTest: jest.fn(),
       onSettingToggle: jest.fn(),
@@ -16,7 +16,7 @@ describe("<TitleBar/>", () => {
       env: {}
     };
 
-    let tb = mount(<TitleBar {...props} />);
+    const tb = mount(<TitleBar {...props} />);
     expect(tb.text().toLowerCase()).toContain("clear weeds");
     tb.setProps({ deletionProgress: "10%" });
     expect(tb.text().toLowerCase()).toContain("10%");

@@ -18,7 +18,7 @@ export class TimezoneSelector extends React.Component<TZSelectorProps, {}> {
   }
 
   componentDidMount() {
-    let tz = inferTimezone(this.props.currentTimezone);
+    const tz = inferTimezone(this.props.currentTimezone);
     if (!this.props.currentTimezone) {
       // Nasty hack to prepopulate data of users who have yet to set a TZ.
       this.props.onUpdate(tz);
@@ -26,7 +26,7 @@ export class TimezoneSelector extends React.Component<TZSelectorProps, {}> {
   }
 
   selectedItem = (): DropDownItem => {
-    let tz = inferTimezone(this.props.currentTimezone);
+    const tz = inferTimezone(this.props.currentTimezone);
     return { label: tz, value: tz };
   }
 

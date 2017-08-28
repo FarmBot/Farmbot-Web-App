@@ -10,7 +10,7 @@ import { FBSelect } from "../../ui/new_fb_select";
 import { setPinMode, currentSelection, PIN_MODES } from "./tile_pin_support";
 
 export function TileWritePin(props: StepParams) {
-  let { dispatch, currentStep, index, currentSequence } = props;
+  const { dispatch, currentStep, index, currentSequence } = props;
   return (<div>
     <div className="step-wrapper">
       <div className="row">

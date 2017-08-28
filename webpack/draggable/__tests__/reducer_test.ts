@@ -20,19 +20,19 @@ describe("draggableReducer", () => {
   }
 
   it("puts a step", () => {
-    let payload = { uuid: "FOO" };
-    let action = { type: Actions.PUT_DATA_XFER, payload };
-    let nextState = draggableReducer(emptyState(), action);
-    let dt = nextState.dataTransfer;
+    const payload = { uuid: "FOO" };
+    const action = { type: Actions.PUT_DATA_XFER, payload };
+    const nextState = draggableReducer(emptyState(), action);
+    const dt = nextState.dataTransfer;
     expect(Object.keys(dt)).toContain(payload.uuid);
-    let entry = dt[payload.uuid];
+    const entry = dt[payload.uuid];
     expect(entry && entry.uuid).toEqual(payload.uuid);
   });
 
   it("drops a step", () => {
-    let payload = "BAR";
-    let action = { type: Actions.DROP_DATA_XFER, payload };
-    let nextState = draggableReducer(emptyState(), action);
+    const payload = "BAR";
+    const action = { type: Actions.DROP_DATA_XFER, payload };
+    const nextState = draggableReducer(emptyState(), action);
     expect(Object.keys(nextState.dataTransfer).length)
       .toEqual(0);
   });

@@ -17,7 +17,7 @@ function write({ dispatch, regimen }: RegimenProps):
 }
 
 export function RegimenNameInput({ regimen, dispatch }: RegimenProps) {
-  let value = (regimen && regimen.body.name) || "";
+  const value = (regimen && regimen.body.name) || "";
   return (
     <Row>
       <Col xs={11}>

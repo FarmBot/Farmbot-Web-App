@@ -17,13 +17,13 @@ export const links = [
 ];
 
 export const NavLinks = (props: NavLinksProps) => {
-  let currPath = history.getCurrentLocation().pathname;
-  let maybeToggle = () => isMobile() ? props.toggle("mobileMenuOpen") : _.noop;
+  const currPath = history.getCurrentLocation().pathname;
+  const maybeToggle = () => isMobile() ? props.toggle("mobileMenuOpen") : _.noop;
   return (
     <div className="links">
       <div className="nav-links">
         {links.map(link => {
-          let isActive = currPath.includes(link.slug) ? "active" : "";
+          const isActive = currPath.includes(link.slug) ? "active" : "";
           return (
             <Link
               to={"/app/" + link.slug}

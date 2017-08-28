@@ -22,14 +22,15 @@ describe("<StepButton/>", () => {
   }
 
   it("clicks it", () => {
-    let p = props();
-    let el = shallow<StepButtonParams>(<StepButton {...p } />);
+    const p = props();
+    const el = shallow<StepButtonParams>(<StepButton {...p } />);
     el.find("button").simulate("click");
     let action: ReduxAction<EditResourceParams>;
     action = (p.dispatch as jest.Mock<{}>).mock.calls[0][0];
     expect(action).toBeTruthy();
     expect(action.type).toBe("OVERWRITE_RESOURCE");
     if (p.current && p.current.body.body) {
+      // tslint:disable-next-line:no-any
       expect((action.payload.update as any).body[0]).toMatchObject(p.step);
     } else {
       fail("No");

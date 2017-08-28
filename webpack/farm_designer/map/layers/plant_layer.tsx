@@ -5,10 +5,10 @@ import { GardenPlant } from "../garden_plant";
 import { PlantLayerProps, CropSpreadDict } from "../interfaces";
 import { defensiveClone } from "../../../util";
 
-let cropSpreadDict: CropSpreadDict = {};
+const cropSpreadDict: CropSpreadDict = {};
 
 export function PlantLayer(props: PlantLayerProps) {
-  let {
+  const {
     crops,
     plants,
     dispatch,
@@ -40,7 +40,7 @@ export function PlantLayer(props: PlantLayerProps) {
           };
         })
         .map(p => {
-          let action = { type: "SELECT_PLANT", payload: p.uuid };
+          const action = { type: "SELECT_PLANT", payload: p.uuid };
           return <Link className="plant-link-wrapper"
             to={"/app/designer/plants/" + p.plantId}
             id={p.plantId}

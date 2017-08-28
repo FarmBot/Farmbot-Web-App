@@ -12,15 +12,15 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
   get key() { return this.props.setting; }
 
   get value() {
-    let v = this.props.bot.hardware.mcu_params[this.key];
+    const v = this.props.bot.hardware.mcu_params[this.key];
     return _.isUndefined(v) ? "" : (v || 0).toString();
   }
 
   commit = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    let { value } = e.currentTarget;
-    let actuallyDifferent = this.value !== value;
+    const { value } = e.currentTarget;
+    const actuallyDifferent = this.value !== value;
     if (actuallyDifferent) {
-      let result = clampUnsignedInteger(value);
+      const result = clampUnsignedInteger(value);
       switch (result.outcome) {
         case "ok":
           break;

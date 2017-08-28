@@ -11,17 +11,17 @@ import { scheduleForFarmEvent } from "./calendar/scheduler";
 
 /** Prepares a FarmEvent[] for use with <FBSelect /> */
 export function mapStateToProps(state: Everything): FarmEventProps {
-  let push = (state && state.router && state.router.push) || (() => { });
-  let calendar = mapResourcesToCalendar(state.resources.index, moment.now());
-  let calendarRows = calendar.getAll();
+  const push = (state && state.router && state.router.push) || (() => { });
+  const calendar = mapResourcesToCalendar(state.resources.index, moment.now());
+  const calendarRows = calendar.getAll();
   return { calendarRows, push };
 }
 
 /** TODO: Reduce complexity, but write *good* unit tests *before* refactoring.*/
 export function mapResourcesToCalendar(ri: ResourceIndex, unixNow = moment.now()): Calendar {
-  let x = joinFarmEventsToExecutable(ri);
-  let calendar = new Calendar();
-  let addRegimenToCalendar = regimenCalendarAdder(ri);
+  const x = joinFarmEventsToExecutable(ri);
+  const calendar = new Calendar();
+  const addRegimenToCalendar = regimenCalendarAdder(ri);
 
   x.map(function (fe) {
     switch (fe.executable_type) {
@@ -35,20 +35,20 @@ export function mapResourcesToCalendar(ri: ResourceIndex, unixNow = moment.now()
 }
 export let regimenCalendarAdder = (index: ResourceIndex) =>
   (f: FarmEventWithRegimen, c: Calendar) => {
-    let { regimen_items } = f.executable;
-    let now = moment();
-    let fromEpoch = (ms: number) => moment(f.start_time)
+    const { regimen_items } = f.executable;
+    const now = moment();
+    const fromEpoch = (ms: number) => moment(f.start_time)
       .startOf("day")
       .add(ms, "ms");
-    let o = occurrence(moment(f.start_time), f);
+    const o = occurrence(moment(f.start_time), f);
     o.heading = f.executable.name;
     o.subheading = "";
     c.insert(o);
     regimen_items.map(ri => {
-      let time = fromEpoch(ri.time_offset);
+      const time = fromEpoch(ri.time_offset);
       if (time.isAfter(now) && time.isAfter(moment(f.start_time))) {
-        let oo = occurrence(time, f);
-        let seq = findSequenceById(index, ri.sequence_id);
+        const oo = occurrence(time, f);
+        const seq = findSequenceById(index, ri.sequence_id);
         oo.heading = f.executable.name;
         oo.subheading = seq.body.name;
         c.insert(oo);

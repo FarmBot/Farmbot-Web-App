@@ -45,7 +45,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
   get resources() { return this.props.resources; }
   get step() { return this.props.currentStep; }
   get tool(): TaggedTool | undefined {
-    let l = this.args.location;
+    const l = this.args.location;
     if (l && l.kind === "tool" && l.args.tool_id) {
       return findToolById(this.resources, l.args.tool_id);
     }
@@ -73,8 +73,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
   }
 
   get xyzDisabled(): boolean {
-    let isPoint = this.args.location.kind === "point";
-    let isTool = this.args.location.kind === "tool";
+    const isPoint = this.args.location.kind === "point";
+    const isTool = this.args.location.kind === "tool";
     return !!(isPoint || isTool);
   }
 
@@ -83,8 +83,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
   }
 
   updateArgs = (update: Partial<Args>) => {
-    let copy = defensiveClone(this.props.currentSequence).body;
-    let step = (copy.body || [])[this.props.index];
+    const copy = defensiveClone(this.props.currentSequence).body;
+    const step = (copy.body || [])[this.props.index];
     if (step && step.kind === "move_absolute") {
       // TODO: Hacky...Something off with the copying here
       delete step.args.location.args;
@@ -97,7 +97,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
 
   getAxisValue = (axis: Xyz): string => {
     let number: number | undefined;
-    let l = this.args.location;
+    const l = this.args.location;
     switch (l.kind) {
       case "coordinate":
         number = l.args[axis];
@@ -106,7 +106,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
         number = (this.slot) ? this.slot.body[axis] : undefined;
         break;
       case "point":
-        let { pointer_id, pointer_type } = l.args;
+        const { pointer_id, pointer_type } = l.args;
         number = findPointerByTypeAndId(this.resources,
           pointer_type,
           pointer_id).body[axis];
@@ -116,13 +116,13 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
 
   updateInputValue = (axis: Xyz, place: LocationArg) =>
     (e: React.SyntheticEvent<HTMLInputElement>) => {
-      let num = parseInt(e.currentTarget.value, 10);
-      let update = { [place]: { args: { [axis]: num } } };
+      const num = parseInt(e.currentTarget.value, 10);
+      const update = { [place]: { args: { [axis]: num } } };
       this.updateArgs(_.merge({}, this.args, update));
     }
 
   render() {
-    let { currentStep, dispatch, index, currentSequence } = this.props;
+    const { currentStep, dispatch, index, currentSequence } = this.props;
     if (currentSequence && !isTaggedSequence(currentSequence)) {
       throw new Error("WHOOPS!");
     }

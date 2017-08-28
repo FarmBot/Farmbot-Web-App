@@ -6,9 +6,9 @@ import { Markdown } from "../ui/index";
 import { Log } from "../interfaces";
 import { TickerListProps } from "./interfaces";
 
-let Ticker = (log: Log, index: number) => {
-  let time = moment.unix(log.created_at).local().format("MMM D, h:mma");
-  let type = (log.meta || {}).type;
+const Ticker = (log: Log, index: number) => {
+  const time = moment.unix(log.created_at).local().format("MMM D, h:mma");
+  const type = (log.meta || {}).type;
   return (
     // TODO: Should utilize log's `uuid` instead of index.
     <div key={index} className="status-ticker-wrapper">
@@ -26,9 +26,9 @@ let Ticker = (log: Log, index: number) => {
 };
 
 export let TickerList = (props: TickerListProps) => {
-  let firstTicker: Log = props.logs.filter(
+  const firstTicker: Log = props.logs.filter(
     log => !log.message.toLowerCase().includes("filtered"))[0];
-  let noLogs: Log = {
+  const noLogs: Log = {
     message: "No logs yet.", meta: { type: "" }, channels: [], created_at: NaN
   };
   return (
@@ -43,7 +43,7 @@ export let TickerList = (props: TickerListProps) => {
           .logs
           .filter((log, index) => index !== 0)
           .map((log: Log, index: number) => {
-            let isFiltered = log.message.toLowerCase().includes("filtered");
+            const isFiltered = log.message.toLowerCase().includes("filtered");
             if (!isFiltered) { return Ticker(log, index); }
           })}
       </Collapse>

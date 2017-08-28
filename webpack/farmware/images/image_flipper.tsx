@@ -11,7 +11,7 @@ export class ImageFlipper extends
 
   imageJSX = () => {
     if (this.props.images.length > 0) {
-      let i = this.props.currentImage || this.props.images[0];
+      const i = this.props.currentImage || this.props.images[0];
       let url: string;
       url = (i.body.attachment_processed_at) ?
         i.body.attachment_url : PLACEHOLDER_FARMBOT;
@@ -40,17 +40,17 @@ export class ImageFlipper extends
   }
 
   go = (increment: -1 | 1) => () => {
-    let { images, currentImage } = this.props;
-    let uuids = images.map(x => x.uuid);
-    let currentIndex = currentImage ? uuids.indexOf(currentImage.uuid) : 0;
-    let nextIndex = currentIndex + increment;
-    let tooHigh = nextIndex > (uuids.length - 1);
-    let tooLow = nextIndex < 0;
+    const { images, currentImage } = this.props;
+    const uuids = images.map(x => x.uuid);
+    const currentIndex = currentImage ? uuids.indexOf(currentImage.uuid) : 0;
+    const nextIndex = currentIndex + increment;
+    const tooHigh = nextIndex > (uuids.length - 1);
+    const tooLow = nextIndex < 0;
     if (!tooHigh && !tooLow) { this.props.onFlip(uuids[nextIndex]); }
   }
 
   render() {
-    let image = this.imageJSX();
+    const image = this.imageJSX();
     return (
       <div className="image-flipper">
         {image}

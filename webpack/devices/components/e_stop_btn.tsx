@@ -9,14 +9,14 @@ const LOCKED: SyncStatus = "locked";
 
 export class EStopButton extends React.Component<EStopButtonProps, {}> {
   render() {
-    let i = this.props.bot.hardware.informational_settings;
-    let { sync_status } = i;
-    let lock1 = !!i.locked;
-    let lock2 = sync_status === LOCKED;
-    let isLocked = lock1 || lock2;
-    let toggleEmergencyLock = isLocked ? emergencyUnlock : emergencyLock;
-    let emergencyLockStatusColor = isLocked ? "yellow" : "red";
-    let emergencyLockStatusText = isLocked ? "UNLOCK" : "E-STOP";
+    const i = this.props.bot.hardware.informational_settings;
+    const { sync_status } = i;
+    const lock1 = !!i.locked;
+    const lock2 = sync_status === LOCKED;
+    const isLocked = lock1 || lock2;
+    const toggleEmergencyLock = isLocked ? emergencyUnlock : emergencyLock;
+    const emergencyLockStatusColor = isLocked ? "yellow" : "red";
+    const emergencyLockStatusText = isLocked ? "UNLOCK" : "E-STOP";
 
     if (this.props.user) {
       return <button

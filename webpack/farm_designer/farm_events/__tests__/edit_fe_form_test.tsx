@@ -7,7 +7,7 @@ import { repeatOptions } from "../map_state_to_props_add_edit";
 import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<FarmEventForm/>", () => {
-  let props = (): EditFEForm["props"] => ({
+  const props = (): EditFEForm["props"] => ({
     deviceTimezone: undefined,
     executableOptions: [],
     repeatOptions: [],
@@ -20,7 +20,7 @@ describe("<FarmEventForm/>", () => {
   function instance(p: EditFEProps) {
     return mount<EditFEProps>(<EditFEForm {...p } />).instance() as EditFEForm;
   }
-  let context = { form: new EditFEForm(props()) };
+  const context = { form: new EditFEForm(props()) };
 
   beforeEach(() => {
     context.form = new EditFEForm(props());
@@ -31,7 +31,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("determines if it is a one time event", () => {
-    let i = instance(props());
+    const i = instance(props());
     expect(i.isOneTime).toBe(true);
     i.mergeState("timeUnit", "daily");
     i.forceUpdate();
@@ -39,19 +39,19 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("has a dispatch", () => {
-    let p = props();
-    let i = instance(p);
+    const p = props();
+    const i = instance(p);
     expect(i.dispatch).toBe(p.dispatch);
     i.dispatch();
     expect((p.dispatch as jest.Mock<{}>).mock.calls.length).toBe(1);
   });
 
   it("has a view model", () => {
-    let p = props();
-    let i = instance(p);
+    const p = props();
+    const i = instance(p);
     i.forceUpdate();
-    let vm = i.viewModel;
-    let KEYS: (keyof FarmEventViewModel)[] = [
+    const vm = i.viewModel;
+    const KEYS: (keyof FarmEventViewModel)[] = [
       "startDate",
       "startTime",
       "endDate",
@@ -67,16 +67,16 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("has an executable", () => {
-    let p = props();
-    let i = instance(p);
+    const p = props();
+    const i = instance(p);
     i.forceUpdate();
     expect(i.executableGet().value).toEqual(fakeSequence().body.id);
     expect(i.executableGet().label).toEqual(fakeSequence().body.name);
   });
 
   it("sets the executable", () => {
-    let p = props();
-    let i = instance(p);
+    const p = props();
+    const i = instance(p);
     i.forceUpdate();
     i.executableSet({ value: "wow", label: "hey", headingId: "Sequence" });
     i.forceUpdate();
@@ -85,26 +85,27 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("gets executable info", () => {
-    let p = props();
-    let i = instance(p);
+    const p = props();
+    const i = instance(p);
     i.forceUpdate();
-    let exe = i.executableGet();
+    const exe = i.executableGet();
     expect(exe.label).toBe("fake");
     expect(exe.value).toBe(12);
     expect(exe.headingId).toBe("Sequence");
   });
 
   it("sets a subfield of state.fe", () => {
-    let p = props();
-    let i = instance(p);
+    const p = props();
+    const i = instance(p);
     i.forceUpdate();
+    // tslint:disable-next-line:no-any
     i.fieldSet("repeat")(({ currentTarget: { value: "4" } } as any));
     i.forceUpdate();
     expect(i.state.fe.repeat).toEqual("4");
   });
 
   it("sets regimen repeat to `never` as needed", () => {
-    let result = recombine({
+    const result = recombine({
       "startDate": "2017-08-01",
       "startTime": "08:35",
       "endDate": "2017-08-01",
@@ -119,7 +120,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("Recombines local state back into a Partial<TaggedFarmEvent[\"body\"]>", () => {
-    let result = recombine({
+    const result = recombine({
       "startDate": "2017-08-01",
       "startTime": "08:35",
       "endDate": "2017-08-01",
@@ -140,10 +141,10 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("renders the correct save button text when adding", () => {
-    let seq = fakeSequence();
-    let fe = fakeFarmEvent("Sequence", seq.body.id || 0);
+    const seq = fakeSequence();
+    const fe = fakeFarmEvent("Sequence", seq.body.id || 0);
     fe.specialStatus = SpecialStatus.DIRTY;
-    let el = mount(<EditFEForm
+    const el = mount(<EditFEForm
       farmEvent={fe}
       title=""
       deviceTimezone="America/Chicago"
@@ -158,7 +159,7 @@ describe("<FarmEventForm/>", () => {
       dispatch={jest.fn()}
       repeatOptions={repeatOptions} />);
     el.update();
-    let txt = el.text().replace(/\s+/g, " ");
+    const txt = el.text().replace(/\s+/g, " ");
     expect(txt).toContain("Save *");
   });
 });

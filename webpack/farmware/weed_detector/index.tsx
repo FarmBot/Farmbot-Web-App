@@ -25,8 +25,8 @@ export class WeedDetector
   }
 
   clearWeeds = () => {
-    let progress = (p: Readonly<Progress>) => {
-      let percentage = `${Math.round((p.completed / p.total) * 100)} %`;
+    const progress = (p: Readonly<Progress>) => {
+      const percentage = `${Math.round((p.completed / p.total) * 100)} %`;
       this.setState({ deletionProgress: p.isDone ? "" : percentage });
     };
     this.props.dispatch(resetWeedDetection(progress));

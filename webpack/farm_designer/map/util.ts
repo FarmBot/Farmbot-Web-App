@@ -37,24 +37,24 @@ interface GetMouseXYPayl {
  */
 export function getMouseXY(e: MouseEvent): GetMouseXYPayl {
 
-  let { clientX, clientY } = e;
-  let { scrollLeft, scrollTop, clientLeft, clientTop } = document.body;
+  const { clientX, clientY } = e;
+  const { scrollLeft, scrollTop, clientLeft, clientTop } = document.body;
 
-  let mx = (clientX + scrollLeft - clientLeft) - LEFT_MENU_WIDTH;
-  let my = (clientY + scrollTop - clientTop) - TOP_NAV_HEIGHT;
+  const mx = (clientX + scrollLeft - clientLeft) - LEFT_MENU_WIDTH;
+  const my = (clientY + scrollTop - clientTop) - TOP_NAV_HEIGHT;
 
   return { mx, my };
 
 }
 
 export function translateScreenToGarden(params: ScreenToGardenParams) {
-  let { pageX, pageY, zoomLvl, quadrant } = params;
+  const { pageX, pageY, zoomLvl, quadrant } = params;
 
-  let rawX = round((pageX - 320) / zoomLvl);
-  let rawY = round((pageY - 110) / zoomLvl);
+  const rawX = round((pageX - 320) / zoomLvl);
+  const rawY = round((pageY - 110) / zoomLvl);
 
-  let x = calculateXBasedOnQuadrant({ value: rawX, quadrant });
-  let y = calculateYBasedOnQuadrant({ value: rawY, quadrant });
+  const x = calculateXBasedOnQuadrant({ value: rawX, quadrant });
+  const y = calculateYBasedOnQuadrant({ value: rawY, quadrant });
 
   return { x, y };
 }
@@ -65,7 +65,7 @@ interface CalculateQuadrantParams {
 }
 
 function calculateXBasedOnQuadrant(params: CalculateQuadrantParams) {
-  let { value, quadrant } = params;
+  const { value, quadrant } = params;
   if (isBotOriginQuadrant(quadrant)) {
     switch (quadrant) {
       case 1:
@@ -83,7 +83,7 @@ function calculateXBasedOnQuadrant(params: CalculateQuadrantParams) {
 }
 
 function calculateYBasedOnQuadrant(params: CalculateQuadrantParams) {
-  let { value, quadrant } = params;
+  const { value, quadrant } = params;
   if (isBotOriginQuadrant(quadrant)) {
     switch (quadrant) {
       case 3:

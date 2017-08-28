@@ -32,7 +32,7 @@ export class CameraSelection
 
   selectedCamera(): DropDownItem | undefined {
     let cameraSelection = undefined;
-    let camera = this.props.env["camera"];
+    const camera = this.props.env["camera"];
     if (camera) {
       cameraSelection = CAMERA_CHOICES_DDI[JSON.parse(camera)];
     }
@@ -40,7 +40,7 @@ export class CameraSelection
   }
 
   sendOffConfig = (selectedCamera: DropDownItem) => {
-    let message = { "camera": JSON.stringify(selectedCamera.value) };
+    const message = { "camera": JSON.stringify(selectedCamera.value) };
     info(t("Sending camera configuration..."), t("Sending"));
     devices
       .current

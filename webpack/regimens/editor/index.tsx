@@ -44,8 +44,8 @@ function remove({ regimen, dispatch }: DeleteButtonProps) {
 export function RegimenEditorWidget({ current, dispatch, auth, calendar }:
   RegimenEditorWidgetProps) {
   if (auth) {
-    let regimen = current;
-    let baseUrl = (auth.token && auth.token.unencoded.iss) ||
+    const regimen = current;
+    const baseUrl = (auth.token && auth.token.unencoded.iss) ||
       "CANT_FETCH_TOKEN_ISS";
 
     return <div className="regimen-editor">

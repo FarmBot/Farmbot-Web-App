@@ -35,33 +35,41 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
 
   /** Called on blur. */
   maybeCommit = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    let shouldPassToParent = (this.state.buffer || (this.props.allowEmpty));
+    const shouldPassToParent = (this.state.buffer || (this.props.allowEmpty));
     if (shouldPassToParent) { this.props.onCommit(e); }
     this.setState({ isEditing: false, buffer: "" });
   }
 
   focus = () => {
-    let { value } = this.props;
+    const { value } = this.props;
     this.setState({ isEditing: true, buffer: "" + (value || "") });
   }
 
   updateBuffer = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    let buffer = e.currentTarget.value;
+    const buffer = e.currentTarget.value;
     this.setState({ buffer });
   }
 
+  defaultProps = () => {
+    const value = this.state.isEditing ?
+      this.state.buffer : this.props.value;
+    return {
+      value: value,
+      hidden: !!this.props.hidden,
+      onFocus: this.focus,
+      onChange: this.updateBuffer,
+      onSubmit: this.maybeCommit,
+      onBlur: this.maybeCommit,
+      name: this.props.name,
+      id: this.props.id,
+      type: this.props.type || "text",
+      disabled: this.props.disabled,
+      className: this.props.className,
+      placeholder: this.props.placeholder,
+    };
+  }
+
   render() {
-    let value = this.state.isEditing ? this.state.buffer : this.props.value;
-    return <input value={value}
-      hidden={!!this.props.hidden}
-      onFocus={this.focus}
-      onChange={this.updateBuffer}
-      onBlur={this.maybeCommit}
-      name={this.props.name}
-      id={this.props.id}
-      type={this.props.type || "text"}
-      disabled={this.props.disabled}
-      className={this.props.className}
-      placeholder={this.props.placeholder} />;
+    return <input {...this.defaultProps() } />;
   }
 }

@@ -56,7 +56,7 @@ export enum SpecialStatus {
 /** Given an array of TaggedResources, returns the most "important" special status.
  * the hierarchy is SAVED => DIRTY => SAVING  */
 export function getArrayStatus(i: TaggedResource[]): SpecialStatus | undefined {
-  let r = betterCompact(_(i).map(x => x.specialStatus).uniq().value());
+  const r = betterCompact(_(i).map(x => x.specialStatus).uniq().value());
   if (r.length) {
     return (r.includes(SpecialStatus.SAVING)) ?
       SpecialStatus.SAVING : SpecialStatus.DIRTY;
@@ -118,8 +118,8 @@ export function isTaggedResource(x: object): x is TaggedResource {
     && isObject(get(x, "body")));
 }
 
-let is = (r: ResourceName) => function isOfTag(x: object): x is TaggedResource {
-  let safe = (sanityCheck(x) && isTaggedResource(x) && x.kind == r);
+const is = (r: ResourceName) => function isOfTag(x: object): x is TaggedResource {
+  const safe = (sanityCheck(x) && isTaggedResource(x) && x.kind == r);
   if (!safe) {
     if (x) {
       throw new Error("Possible bad index");
@@ -133,7 +133,7 @@ export type PointerType =
   | TaggedGenericPointer
   | TaggedPlantPointer;
 
-function isTaggedPoint(x: any): x is PointerType {
+function isTaggedPoint(x: {}): x is PointerType {
   return (is("points")(x)) && (x.kind === "points");
 }
 

@@ -16,12 +16,12 @@ import { randomColor } from "../util";
 import * as _ from "lodash";
 
 export function mapStateToProps(props: Everything): Props {
-  let { resources, dispatch, bot } = props;
-  let { weeks, dailyOffsetMs, selectedSequenceUUID, currentRegimen } =
+  const { resources, dispatch, bot } = props;
+  const { weeks, dailyOffsetMs, selectedSequenceUUID, currentRegimen } =
     resources.consumers.regimens;
-  let { index } = resources;
-  let current = maybeGetRegimen(index, currentRegimen);
-  let calendar = current ?
+  const { index } = resources;
+  const current = maybeGetRegimen(index, currentRegimen);
+  const calendar = current ?
     generateCalendar(current, index, dispatch) : [];
 
   return {
@@ -49,11 +49,11 @@ const SORT_KEY: keyof RegimenItemCalendarRow = "sortKey";
 function generateCalendar(regimen: TaggedRegimen,
   index: ResourceIndex,
   dispatch: Function): CalendarRow[] {
-  let mapper = createRows(index, dispatch, regimen);
-  let rows = regimen.body.regimen_items.map(mapper);
-  let dict = _.groupBy(rows, "day");
-  let makeRows = (day: string): CalendarRow => ({ day: day, items: dict[day] });
-  let days = _(dict)
+  const mapper = createRows(index, dispatch, regimen);
+  const rows = regimen.body.regimen_items.map(mapper);
+  const dict = _.groupBy(rows, "day");
+  const makeRows = (day: string): CalendarRow => ({ day: day, items: dict[day] });
+  const days = _(dict)
     .keys()
     .map(x => parseInt(x))
     .sort((a, b) => a - b)
@@ -67,15 +67,15 @@ function generateCalendar(regimen: TaggedRegimen,
     });
 }
 
-let createRows = (index: ResourceIndex, dispatch: Function, regimen: TaggedRegimen) =>
+const createRows = (index: ResourceIndex, dispatch: Function, regimen: TaggedRegimen) =>
   (item: RegimenItem): RegimenItemCalendarRow => {
-    let uuid = findId(index, "sequences", item.sequence_id);
-    let sequence = findSequence(index, uuid);
-    let { time_offset } = item;
-    let d = duration(time_offset);
-    let { name } = sequence.body;
-    let color = sequence.body.color || randomColor();
-    let hhmm = moment({ hour: d.hours(), minute: d.minutes() }).format(FMT);
-    let day = Math.floor(duration(time_offset).asDays()) + 1;
+    const uuid = findId(index, "sequences", item.sequence_id);
+    const sequence = findSequence(index, uuid);
+    const { time_offset } = item;
+    const d = duration(time_offset);
+    const { name } = sequence.body;
+    const color = sequence.body.color || randomColor();
+    const hhmm = moment({ hour: d.hours(), minute: d.minutes() }).format(FMT);
+    const day = Math.floor(duration(time_offset).asDays()) + 1;
     return { name, hhmm, color, day, dispatch, regimen, item, sortKey: time_offset };
   };

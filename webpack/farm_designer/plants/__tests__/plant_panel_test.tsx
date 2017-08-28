@@ -3,7 +3,7 @@ import { PlantPanel } from "../plant_panel";
 import { shallow } from "enzyme";
 
 describe("<PlantPanel/>", () => {
-  let info = {
+  const info = {
     x: 12,
     y: 34,
     id: undefined,
@@ -15,9 +15,9 @@ describe("<PlantPanel/>", () => {
   };
 
   it("renders: editing", () => {
-    let onDestroy = jest.fn();
-    let el = shallow(<PlantPanel info={info} onDestroy={onDestroy} />);
-    let txt = el.text().toLowerCase();
+    const onDestroy = jest.fn();
+    const el = shallow(<PlantPanel info={info} onDestroy={onDestroy} />);
+    const txt = el.text().toLowerCase();
     expect(txt).toContain("1 days old");
     expect(txt).toContain("(10, 30)");
     el.find("button").simulate("click");
@@ -25,8 +25,8 @@ describe("<PlantPanel/>", () => {
   });
 
   it("renders", () => {
-    let el = shallow(<PlantPanel info={info} />);
-    let txt = el.text().toLowerCase();
+    const el = shallow(<PlantPanel info={info} />);
+    const txt = el.text().toLowerCase();
     expect(txt).toContain("1 days old");
     expect(txt).toContain("(12, 34)");
   });

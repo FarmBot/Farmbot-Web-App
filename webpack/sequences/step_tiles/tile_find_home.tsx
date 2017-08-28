@@ -40,15 +40,15 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
   };
 
   handleUpdate = (axis: ALLOWED_AXIS) => {
-    let update = defensiveClone(this.props.currentStep);
-    let nextSequence = defensiveClone(this.props.currentSequence).body;
+    const update = defensiveClone(this.props.currentStep);
+    const nextSequence = defensiveClone(this.props.currentSequence).body;
     update.args.axis = axis;
     (nextSequence.body || [])[this.props.index] = update;
     this.props.dispatch(overwrite(this.props.currentSequence, nextSequence));
   }
 
   render() {
-    let { dispatch, index, currentStep, currentSequence } = this.props;
+    const { dispatch, index, currentStep, currentSequence } = this.props;
 
     return <div>
       <div className="step-wrapper">
@@ -84,7 +84,7 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
                               <input type="radio"
                                 value={axis}
                                 onChange={(e) => {
-                                  let nextVal =
+                                  const nextVal =
                                     e.currentTarget.value as typeof axis;
                                   this.handleUpdate(nextVal);
                                 }}

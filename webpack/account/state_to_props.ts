@@ -3,7 +3,7 @@ import { Props } from "./interfaces";
 import { getUserAccountSettings } from "../resources/selectors";
 
 export function mapStateToProps(props: Everything): Props {
-  let user = getUserAccountSettings(props.resources.index);
+  const user = getUserAccountSettings(props.resources.index);
 
   return {
     user,

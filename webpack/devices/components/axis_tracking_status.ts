@@ -19,8 +19,8 @@ interface AxisStatus {
  * to proceed with certain actions that could damage the bot.
  */
 export function axisTrackingStatus(h: McuParams): AxisStatus[] {
-  let stats = enabledAxisMap(h);
-  let mapper = (a: keyof typeof stats) => ({ axis: a, disabled: !stats[a] });
+  const stats = enabledAxisMap(h);
+  const mapper = (a: keyof typeof stats) => ({ axis: a, disabled: !stats[a] });
   return Object.keys(stats).map(mapper);
 }
 
