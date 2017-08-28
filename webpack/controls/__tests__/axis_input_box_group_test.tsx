@@ -7,16 +7,16 @@ describe("<AxisInputBoxGroup />", () => {
     jest.clearAllMocks();
   });
 
-  let props = {
+  const props = {
     position: { x: undefined, y: undefined, z: undefined },
     onCommit: jest.fn(),
     disabled: false
   };
 
   it("has 3 inputs and a button", () => {
-    let wrapper = mount(<AxisInputBoxGroup {...props} />);
+    const wrapper = mount(<AxisInputBoxGroup {...props} />);
     expect(wrapper.find("input").length).toEqual(3);
-    let buttons = wrapper.find("button");
+    const buttons = wrapper.find("button");
     expect(buttons.length).toEqual(1);
     expect(buttons.text().toLowerCase()).toEqual("go");
     buttons.simulate("click");
@@ -26,7 +26,7 @@ describe("<AxisInputBoxGroup />", () => {
 
   it("button is disabled", () => {
     props.disabled = true;
-    let wrapper = mount(<AxisInputBoxGroup {...props} />);
+    const wrapper = mount(<AxisInputBoxGroup {...props} />);
     wrapper.find("button").simulate("click");
     expect(props.onCommit).not.toHaveBeenCalled();
   });

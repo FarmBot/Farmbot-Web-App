@@ -10,7 +10,7 @@ interface PointLayerProps {
 }
 
 export function PointLayer(props: PointLayerProps) {
-  let { visible, points, botOriginQuadrant } = props;
+  const { visible, points, botOriginQuadrant } = props;
   return visible ? <g>
     {points.map(p =>
       <GardenPoint

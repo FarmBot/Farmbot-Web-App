@@ -3,7 +3,7 @@ import { mount } from "enzyme";
 
 describe("<WidgetFooter />", () => {
   it("renders text", () => {
-    let result = mount(WidgetFooter({ children: "nice" }));
+    const result = mount(WidgetFooter({ children: "nice" }));
     expect(result.html()).toContain("nice");
   });
 });

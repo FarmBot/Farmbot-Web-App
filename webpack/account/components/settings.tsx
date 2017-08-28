@@ -5,7 +5,7 @@ import { SettingsPropTypes } from "../interfaces";
 
 export class Settings extends React.Component<SettingsPropTypes, {}> {
   render() {
-    let { user, onChange, onSave } = this.props;
+    const { user, onChange, onSave } = this.props;
     return <Widget>
       <WidgetHeader title="Account Settings">
         <SaveBtn

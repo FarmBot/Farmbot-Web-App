@@ -15,13 +15,13 @@ import * as moment from "moment";
  */
 export function maybeWarnAboutMissedTasks(tfe: TaggedFarmEvent, cb: Function) {
   return function (dispatch: Function, getState: GetState) {
-    let fe = tfe.body;
+    const fe = tfe.body;
     // STEP 1: Only do this check if it is a Regimen -
     // sequences don't have this issue.
     if (fe.executable_type === "Regimen") {
-      let NOW = moment();
-      let START_TIME = moment(fe.start_time);
-      let TIMEFMT = "YYYY-MM-DD";
+      const NOW = moment();
+      const START_TIME = moment(fe.start_time);
+      const TIMEFMT = "YYYY-MM-DD";
 
       // STEP 2: Continue checking if the farm event is supposed to run today.
       //         since running a farmevent the day it is scheduled runs a risk

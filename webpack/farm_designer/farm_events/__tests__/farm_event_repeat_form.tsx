@@ -35,8 +35,8 @@ function getProp(el: ShallowWrapper<{}, {}>, query: string, prop: string) {
 
 describe("<FarmEventRepeatForm/>", () => {
   it("shows proper values", () => {
-    let p = props();
-    let el = shallow<RepeatFormProps>(<FarmEventRepeatForm {...p } />);
+    const p = props();
+    const el = shallow<RepeatFormProps>(<FarmEventRepeatForm {...p } />);
     expect(formVal(el, Selectors.REPEAT)).toEqual(p.repeat);
     expect(formVal(el, Selectors.END_DATE)).toEqual(p.endDate);
     expect(formVal(el, Selectors.END_TIME)).toEqual(p.endTime);
@@ -44,17 +44,17 @@ describe("<FarmEventRepeatForm/>", () => {
   });
 
   it("defaults to `daily` when a bad input it passed", () => {
-    let p = props();
+    const p = props();
     p.timeUnit = "never";
-    let el = shallow<RepeatFormProps>(<FarmEventRepeatForm {...p } />);
+    const el = shallow<RepeatFormProps>(<FarmEventRepeatForm {...p } />);
     expect(formVal(el, Selectors.REPEAT)).toEqual(p.repeat);
     expect(getProp(el, "FBSelect", "selectedItem.value")).toEqual("daily");
   });
 
   it("disables all inputs via the `disabled` prop", () => {
-    let p = props();
+    const p = props();
     p.disabled = true;
-    let el = shallow<RepeatFormProps>(<FarmEventRepeatForm {...p } />);
+    const el = shallow<RepeatFormProps>(<FarmEventRepeatForm {...p } />);
     expect(getProp(el, Selectors.END_DATE, "disabled")).toBeTruthy();
     expect(getProp(el, Selectors.END_TIME, "disabled")).toBeTruthy();
     expect(getProp(el, Selectors.REPEAT, "disabled")).toBeTruthy();
@@ -62,9 +62,9 @@ describe("<FarmEventRepeatForm/>", () => {
   });
 
   it("hides", () => {
-    let p = props();
+    const p = props();
     p.hidden = true;
-    let el = render(<FarmEventRepeatForm {...p } />);
+    const el = render(<FarmEventRepeatForm {...p } />);
     expect(el.text()).toEqual("");
   });
 });

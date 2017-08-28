@@ -10,7 +10,7 @@ export interface FarmBotLayerProps {
 }
 
 export function FarmBotLayer(props: FarmBotLayerProps) {
-  let { visible, botOriginQuadrant } = props;
+  const { visible, botOriginQuadrant } = props;
   return visible ? <g>
     <VirtualFarmBot
       quadrant={botOriginQuadrant}

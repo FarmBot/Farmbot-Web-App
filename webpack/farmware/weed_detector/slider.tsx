@@ -30,7 +30,7 @@ export class WeedDetectorSlider extends React.Component<SliderProps, State> {
   };
 
   render() {
-    let {
+    const {
       highest,
       lowest
     } = this.props;

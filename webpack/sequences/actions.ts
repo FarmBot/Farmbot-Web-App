@@ -9,7 +9,7 @@ import { defensiveClone } from "../util";
 export function pushStep(step: SequenceBodyItem,
   dispatch: Function,
   sequence: TaggedSequence) {
-  let next = defensiveClone(sequence);
+  const next = defensiveClone(sequence);
   next.body.body = next.body.body || [];
   next.body.body.push(defensiveClone(step));
   dispatch(overwrite(sequence, next.body));
@@ -23,7 +23,7 @@ export function editCurrentSequence(dispatch: Function, seq: TaggedSequence,
 let count = 1;
 export function copySequence(payload: TaggedSequence) {
   return function (dispatch: Function, getState: GetState) {
-    let copy = defensiveClone(payload);
+    const copy = defensiveClone(payload);
     copy.body.id = undefined;
     copy.body.name = copy.body.name + ` copy ${count++}`;
     copy.uuid = "HEY REDUCER! Set this!";

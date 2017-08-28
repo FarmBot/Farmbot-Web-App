@@ -14,7 +14,7 @@ export function arrayWrap<T>(input: T | (T[])): T[] {
 }
 
 export function entries<T>(input: Dictionary<T | undefined>): T[] {
-  let x = Object.keys(input).map(key => input[key]);
-  let y = betterCompact(x);
+  const x = Object.keys(input).map(key => input[key]);
+  const y = betterCompact(x);
   return y;
 }

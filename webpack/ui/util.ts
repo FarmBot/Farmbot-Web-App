@@ -13,7 +13,7 @@ interface Props {
 
 export function parseClassNames(props: Props, base: string | null) {
 
-  let classNames: string[] = [];
+  const classNames: string[] = [];
   if (base) { classNames.push(base); }
 
   if (props.xs) { classNames.push(`col-xs-${props.xs}`); }

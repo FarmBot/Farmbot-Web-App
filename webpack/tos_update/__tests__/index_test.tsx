@@ -15,8 +15,8 @@ import { Wow } from "../index";
 import { shallow } from "enzyme";
 describe("<Wow/>", () => {
   it("toggles server options", () => {
-    let x = shallow(<Wow />);
-    let wow = x.instance() as Wow;
+    const x = shallow(<Wow />);
+    const wow = x.instance() as Wow;
     wow.toggleServerOpts();
     expect(wow.state.hideServerSettings).toBeFalsy();
     wow.toggleServerOpts();

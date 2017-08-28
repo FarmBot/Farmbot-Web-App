@@ -8,8 +8,8 @@ import { ToolTips } from "../../constants";
 
 export class ToolBayList extends React.Component<ToolBayListProps, {}> {
   render() {
-    let toggle = () => this.props.toggle();
-    let { getToolSlots, getToolByToolSlotUUID } = this.props;
+    const toggle = () => this.props.toggle();
+    const { getToolSlots, getToolByToolSlotUUID } = this.props;
 
     return <Widget>
       <WidgetHeader helpText={ToolTips.TOOLBAY_LIST} title={"ToolBay 1"}>
@@ -22,8 +22,8 @@ export class ToolBayList extends React.Component<ToolBayListProps, {}> {
       <WidgetBody>
         <ToolBayHeader />
         {getToolSlots().map((slot: TaggedToolSlotPointer, index: number) => {
-          let tool = getToolByToolSlotUUID(slot.uuid);
-          let name = (tool && tool.body.name) || "None";
+          const tool = getToolByToolSlotUUID(slot.uuid);
+          const name = (tool && tool.body.name) || "None";
           return <Row key={slot.body.id}>
             <Col xs={2}>
               <label>{index + 1}</label>

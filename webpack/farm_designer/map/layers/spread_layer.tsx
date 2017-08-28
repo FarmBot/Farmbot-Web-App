@@ -13,12 +13,12 @@ interface SpreadLayerProps {
 }
 
 export function SpreadLayer(props: SpreadLayerProps) {
-  let { plants, visible, currentPlant, botOriginQuadrant } = props;
+  const { plants, visible, currentPlant, botOriginQuadrant } = props;
   return (
     <g>
       {
         plants.map((p, index) => {
-          let isSelected = p === currentPlant;
+          const isSelected = p === currentPlant;
           return (visible || isSelected) ?
             <SpreadCircle
               plant={p}
@@ -50,9 +50,9 @@ export class SpreadCircle extends
   }
 
   render() {
-    let { radius, x, y } = this.props.plant.body;
-    let { quadrant } = this.props;
-    let { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
+    const { radius, x, y } = this.props.plant.body;
+    const { quadrant } = this.props;
+    const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
     return (
       <circle
         cx={qx}

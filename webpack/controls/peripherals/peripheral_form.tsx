@@ -5,7 +5,7 @@ import { PeripheralFormProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
 
 export function PeripheralForm(props: PeripheralFormProps) {
-  let { dispatch, peripherals } = props;
+  const { dispatch, peripherals } = props;
 
   return <div>
     {sortResourcesById(peripherals).map(p => {
@@ -15,7 +15,7 @@ export function PeripheralForm(props: PeripheralFormProps) {
             placeholder="Label"
             value={p.body.label}
             onChange={(e) => {
-              let { value } = e.currentTarget;
+              const { value } = e.currentTarget;
               dispatch(edit(p, { label: value }));
             }} />
         </Col>
@@ -24,8 +24,8 @@ export function PeripheralForm(props: PeripheralFormProps) {
             value={(p.body.pin || "").toString()}
             placeholder="Pin #"
             onChange={(e) => {
-              let { value } = e.currentTarget;
-              let update: Partial<typeof p.body> = { pin: parseInt(value, 10) };
+              const { value } = e.currentTarget;
+              const update: Partial<typeof p.body> = { pin: parseInt(value, 10) };
               dispatch(edit(p, update));
             }} />
         </Col>

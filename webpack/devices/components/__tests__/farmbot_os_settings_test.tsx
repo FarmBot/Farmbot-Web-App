@@ -8,7 +8,7 @@ import { AuthState } from "../../../auth/interfaces";
 
 describe("<FarmbotOsSettings/>", () => {
   it("renders settings", () => {
-    let osSettings = mount(<FarmbotOsSettings
+    const osSettings = mount(<FarmbotOsSettings
       account={fakeResource("device", { id: 0, name: "" })}
       dispatch={jest.fn()}
       bot={bot}

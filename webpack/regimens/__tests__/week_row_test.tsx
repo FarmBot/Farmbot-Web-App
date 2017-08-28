@@ -25,7 +25,7 @@ function weekProps(p?: Partial<WeekRowProps>): WeekRowProps {
 describe("<WeekRow/>", () => {
   it("renders week 1 day numbers", () => {
     const wrapper = render(<WeekRow {...weekProps() } />);
-    let txt = wrapper.text();
+    const txt = wrapper.text();
     expect(txt).toEqual("Week 11234567");
   });
 });
@@ -33,7 +33,7 @@ describe("<WeekRow/>", () => {
 describe("<WeekRow/>", () => {
   it("renders week 2 day numbers", () => {
     const wrapper = render(<WeekRow {...weekProps({ index: 1 }) } />);
-    let txt = wrapper.text();
+    const txt = wrapper.text();
     expect(txt).toEqual("Week 2891011121314");
   });
 });

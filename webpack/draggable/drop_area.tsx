@@ -12,8 +12,8 @@ export class DropArea extends React.Component<DropAreaProps, DropAreaState> {
 
   drop = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
-    let key = e.dataTransfer.getData(STEP_DATATRANSFER_IDENTIFER);
-    let fn = this.props.callback;
+    const key = e.dataTransfer.getData(STEP_DATATRANSFER_IDENTIFER);
+    const fn = this.props.callback;
     if (fn) {
       fn(key);
     }
@@ -25,8 +25,8 @@ export class DropArea extends React.Component<DropAreaProps, DropAreaState> {
   };
 
   render() {
-    let isVisible = this.props.isLocked || this.state.isHovered;
-    let klass = isVisible ? "drag-drop-area" : "";
+    const isVisible = this.props.isLocked || this.state.isHovered;
+    const klass = isVisible ? "drag-drop-area" : "";
     return <div
       className={klass}
       onDragLeave={this.toggle}

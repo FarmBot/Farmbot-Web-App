@@ -9,8 +9,8 @@ import { Collapse } from "@blueprintjs/core";
 
 export function EncodersAndEndStops(props: EncodersProps) {
 
-  let { encoders_and_endstops } = props.bot.controlPanelState;
-  let { dispatch, bot } = props;
+  const { encoders_and_endstops } = props.bot.controlPanelState;
+  const { dispatch, bot } = props;
 
   return <section>
     <Header

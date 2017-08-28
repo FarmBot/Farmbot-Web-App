@@ -15,8 +15,8 @@ describe("<HomingRow />", () => {
     jest.clearAllMocks();
   });
   it("calls device", () => {
-    let { mock } = devices.current.setZero as jest.Mock<{}>;
-    let result = mount(<ZeroRow />);
+    const { mock } = devices.current.setZero as jest.Mock<{}>;
+    const result = mount(<ZeroRow />);
     result.find("ZeroButton").at(0).simulate("click");
     result.find("ZeroButton").at(1).simulate("click");
     result.find("ZeroButton").at(2).simulate("click");

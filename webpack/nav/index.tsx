@@ -30,24 +30,24 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     this.setState({ [name]: !this.state[name] });
 
   render() {
-    let hasName = this.props.user && this.props.user.body.name;
+    const hasName = this.props.user && this.props.user.body.name;
 
-    let firstName = hasName && !isMobile() ?
+    const firstName = hasName && !isMobile() ?
       `${hasName.split(" ")[0]} ▾` : `${t("Menu")} ▾`;
 
-    let menuIconClassNames: string[] = [
+    const menuIconClassNames: string[] = [
       "fa", "fa-bars", "visible-xs-inline-block", "mobile-menu-icon"
     ];
 
     /** The way our app is laid out, we'll pretty much always want this bit. */
-    let pageName = history.getCurrentLocation().pathname.split("/")[2] || "";
+    const pageName = history.getCurrentLocation().pathname.split("/")[2] || "";
 
     /** Change document meta title on every route change. */
     updatePageInfo(pageName);
 
-    let { toggle } = this;
-    let { mobileMenuOpen, tickerListOpen } = this.state;
-    let { logs } = this.props;
+    const { toggle } = this;
+    const { mobileMenuOpen, tickerListOpen } = this.state;
+    const { logs } = this.props;
 
     return (
       <div className="nav-wrapper">

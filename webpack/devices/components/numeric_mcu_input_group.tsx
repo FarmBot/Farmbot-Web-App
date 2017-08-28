@@ -7,7 +7,7 @@ import { Col } from "../../ui/index";
 
 export function NumericMCUInputGroup(props: NumericMCUInputGroupProps) {
 
-  let { bot, dispatch, tooltip, name, x, y, z } = props;
+  const { bot, dispatch, tooltip, name, x, y, z } = props;
 
   return <Row>
     <Col xs={6}>

@@ -5,7 +5,7 @@ import { TickerList } from "../ticker_list";
 import { Log } from "../../interfaces";
 
 describe("<TickerList />", () => {
-  let log: Log = {
+  const log: Log = {
     id: 1234567,
     message: "Farmbot is up and Running!",
     meta: {
@@ -18,13 +18,13 @@ describe("<TickerList />", () => {
   };
 
   it("shows log message and datetime", () => {
-    let wrapper = mount(
+    const wrapper = mount(
       <TickerList
         logs={[log]}
         tickerListOpen={false}
         toggle={jest.fn()} />
     );
-    let labels = wrapper.find("label");
+    const labels = wrapper.find("label");
     expect(labels.length).toEqual(2);
     expect(labels.at(0).text()).toContain("Farmbot is up and Running!");
     expect(labels.at(1).text()).toContain("Aug 2");
@@ -36,25 +36,25 @@ describe("<TickerList />", () => {
   });
 
   it("shows empty log message", () => {
-    let wrapper = mount(
+    const wrapper = mount(
       <TickerList
         logs={[]}
         tickerListOpen={false}
         toggle={jest.fn()} />
     );
-    let labels = wrapper.find("label");
+    const labels = wrapper.find("label");
     expect(labels.length).toEqual(2);
     expect(labels.at(0).text()).toContain("No logs yet.");
   });
 
   it("opens ticker", () => {
-    let wrapper = mount(
+    const wrapper = mount(
       <TickerList
         logs={[log, log]}
         tickerListOpen={true}
         toggle={jest.fn()} />
     );
-    let labels = wrapper.find("label");
+    const labels = wrapper.find("label");
     expect(labels.length).toEqual(4);
     expect(labels.at(0).text()).toContain("Farmbot is up and Running!");
     expect(labels.at(1).text()).toContain("Aug 2");

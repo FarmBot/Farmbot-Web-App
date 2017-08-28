@@ -9,10 +9,10 @@ import {
 import { getStepTag } from "../resources/sequence_tagging";
 
 export function mapStateToProps(props: Everything): Props {
-  let uuid = props.resources.consumers.sequences.current;
-  let syncStatus =
+  const uuid = props.resources.consumers.sequences.current;
+  const syncStatus =
     props.bot.hardware.informational_settings.sync_status || "unknown";
-  let sequence =
+  const sequence =
     (uuid) ? findSequence(props.resources.index, uuid) : undefined;
 
   if (sequence) {

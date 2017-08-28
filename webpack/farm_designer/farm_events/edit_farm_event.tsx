@@ -25,7 +25,7 @@ export class EditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
   }
 
   render() {
-    let fe = this.props.getFarmEvent();
+    const fe = this.props.getFarmEvent();
     return fe ? this.renderForm(fe) : this.redirect();
   }
 }

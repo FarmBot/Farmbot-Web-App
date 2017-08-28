@@ -25,9 +25,9 @@ export class ToolForm extends React.Component<ToolFormProps, {}> {
   }
 
   render() {
-    let toggle = () => this.props.toggle();
-    let { dispatch, tools } = this.props;
-    let specialStatus = getArrayStatus(tools);
+    const toggle = () => this.props.toggle();
+    const { dispatch, tools } = this.props;
+    const specialStatus = getArrayStatus(tools);
     return <Widget>
       <WidgetHeader helpText={ToolTips.TOOL_LIST} title="Tools">
         <button

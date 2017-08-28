@@ -21,12 +21,12 @@ export let mwConfig: MiddlewareConfig[] = [
 ];
 
 export function getMiddleware(env: EnvName) {
-  let middlewareFns = mwConfig
+  const middlewareFns = mwConfig
     .filter(function (mwc) { return (mwc.env === env) || (mwc.env === "*"); })
     .map((mwc) => mwc.fn);
-  let dtCompose = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+  const dtCompose = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
   const composeEnhancers = dtCompose || compose;
-  let middlewares = applyMiddleware(...middlewareFns);
+  const middlewares = applyMiddleware(...middlewareFns);
 
   return composeEnhancers(middlewares);
 }

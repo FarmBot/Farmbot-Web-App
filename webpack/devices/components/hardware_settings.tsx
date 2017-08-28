@@ -18,7 +18,7 @@ export class HardwareSettings extends
   React.Component<HardwareSettingsProps, {}> {
 
   render() {
-    let { bot, dispatch } = this.props;
+    const { bot, dispatch } = this.props;
 
     return (
       <Widget className="hardware-widget">

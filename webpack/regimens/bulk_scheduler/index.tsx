@@ -14,7 +14,7 @@ import { NULL_CHOICE, FBSelect } from "../../ui/new_fb_select";
 
 export class BulkSchedulerWidget extends React.Component<BulkEditorProps, {}> {
   selected = (): DropDownItem => {
-    let s = this.props.selectedSequence;
+    const s = this.props.selectedSequence;
     if (s && s.body.id) {
       return {
         label: s.body.name,
@@ -45,13 +45,13 @@ export class BulkSchedulerWidget extends React.Component<BulkEditorProps, {}> {
   }
 
   render() {
-    let {
+    const {
       dispatch,
       dailyOffsetMs,
       weeks,
       sequences
     } = this.props;
-    let active = !!(sequences && sequences.length);
+    const active = !!(sequences && sequences.length);
     return <div className="bulk-scheduler">
       <h3>
         <i>{t("Scheduler")}</i>
@@ -89,9 +89,9 @@ export class BulkSchedulerWidget extends React.Component<BulkEditorProps, {}> {
 
 function msToTime(ms: number) {
   if (_.isNumber(ms)) {
-    let d = duration(ms);
-    let h = _.padStart(d.hours().toString(), 2, "0");
-    let m = _.padStart(d.minutes().toString(), 2, "0");
+    const d = duration(ms);
+    const h = _.padStart(d.hours().toString(), 2, "0");
+    const m = _.padStart(d.minutes().toString(), 2, "0");
     return `${h}:${m}`;
   } else {
     return "00:01";
@@ -99,7 +99,7 @@ function msToTime(ms: number) {
 }
 
 function timeToMs(input: string) {
-  let [hours, minutes] = input
+  const [hours, minutes] = input
     .split(":")
     .map((n: string) => parseInt(n, 10));
   return ((hours * 60) + (minutes)) * 60 * 1000;

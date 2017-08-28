@@ -8,10 +8,10 @@ import { get } from "lodash";
 
 describe("<PureFarmEvents/>", () => {
   it("sorts items correctly", () => {
-    let push = jest.fn();
-    let results = render(<PureFarmEvents push={push}
+    const push = jest.fn();
+    const results = render(<PureFarmEvents push={push}
       calendarRows={calendarRows} />);
-    let rows = results
+    const rows = results
       .find(".farm-event-data-time")
       .toArray()
       .map(x => x.children)

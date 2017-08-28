@@ -19,7 +19,7 @@ const expected =
 
 describe("axisTrackingStatus()", () => {
   it("returns axis status", () => {
-    let result = axisTrackingStatus(bot.hardware.mcu_params);
+    const result = axisTrackingStatus(bot.hardware.mcu_params);
     expect(result).toEqual(expected);
   });
 });

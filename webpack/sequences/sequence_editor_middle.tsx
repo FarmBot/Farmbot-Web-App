@@ -7,7 +7,7 @@ import { SequenceEditorMiddleActive } from "./sequence_editor_middle_active";
 export class SequenceEditorMiddle
   extends React.Component<SequenceEditorMiddleProps, {}> {
   render() {
-    let {
+    const {
       dispatch,
       sequence,
       sequences,

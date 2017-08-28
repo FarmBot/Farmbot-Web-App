@@ -16,13 +16,13 @@ describe("deleteUser()", () => {
   it("cancels the account", (done) => {
     expect.assertions(2);
     API.setBaseUrl("http://example.com:80");
-    let thunk = deleteUser({ password: "Foo!" });
-    let dispatch = jest.fn();
-    let getState = jest.fn();
+    const thunk = deleteUser({ password: "Foo!" });
+    const dispatch = jest.fn();
+    const getState = jest.fn();
     getState.mockImplementation(() => ({ auth: {} }));
     thunk(dispatch, getState);
     moxios.wait(function () {
-      let request = moxios.requests.mostRecent();
+      const request = moxios.requests.mostRecent();
       request.respondWith({
         status: 200,
         response: {}

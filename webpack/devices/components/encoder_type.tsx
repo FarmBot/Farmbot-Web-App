@@ -30,9 +30,9 @@ function findByType(input: number | string | undefined) {
 }
 
 export function EncoderType(props: EncoderTypeProps) {
-  let { hardware } = props;
-  let handleChange = (key: McuParamName) => (d: DropDownItem) => {
-    let val = d.value;
+  const { hardware } = props;
+  const handleChange = (key: McuParamName) => (d: DropDownItem) => {
+    const val = d.value;
     if (isEncoderValue(val)) {
       props.onChange(key, val);
     } else {

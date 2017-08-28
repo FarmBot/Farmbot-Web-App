@@ -11,8 +11,8 @@ export let famrwareReducer = generateReducer<FarmwareState>(farmwareState)
     return s;
   })
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
-    let thatUUID = payload.uuid;
-    let thisUUID = s.currentImage;
+    const thatUUID = payload.uuid;
+    const thisUUID = s.currentImage;
     if (thisUUID === thatUUID) { s.currentImage = undefined; }
     return s;
   });

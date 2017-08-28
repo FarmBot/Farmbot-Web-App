@@ -22,19 +22,19 @@ interface SaveBtnProps {
 const spinner = <span className="btn-spinner" />;
 
 export function SaveBtn(props: SaveBtnProps) {
-  let STATUS_TRANSLATION = {
+  const STATUS_TRANSLATION = {
     [SpecialStatus.DIRTY]: "is-dirty",
     [SpecialStatus.SAVING]: "is-saving"
   };
 
-  let CAPTIONS = {
+  const CAPTIONS = {
     [SpecialStatus.DIRTY]: t((props.dirtyText || "Save ") + " *"),
     [SpecialStatus.SAVING]: t(props.savingText || "Saving")
   };
 
-  let { savedText, onClick, hidden } = props;
-  let statusClass = STATUS_TRANSLATION[props.status || ""] || "is-saved";
-  let klass = `${props.color || "green"} ${statusClass} save-btn fb-button`;
+  const { savedText, onClick, hidden } = props;
+  const statusClass = STATUS_TRANSLATION[props.status || ""] || "is-saved";
+  const klass = `${props.color || "green"} ${statusClass} save-btn fb-button`;
   const spinnerEl = (props.status === SpecialStatus.SAVING) ?
     spinner : "";
 

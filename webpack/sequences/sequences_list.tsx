@@ -14,18 +14,18 @@ import { TaggedSequence } from "../resources/tagged_resources";
 import { init } from "../api/crud";
 import { ToolTips } from "../constants";
 
-let sequenceList = (dispatch: Function) =>
+const sequenceList = (dispatch: Function) =>
   (ts: TaggedSequence, index: number) => {
-    let css = [
+    const css = [
       `fb-button`,
       `block`,
       `full-width`,
       `${ts.body.color || "purple"}`
     ];
     lastUrlChunk() === urlFriendly(ts.body.name) && css.push("active");
-    let click = () => dispatch(selectSequence(ts.uuid));
-    let name = ts.body.name + (ts.specialStatus ? "*" : "");
-    let { uuid } = ts;
+    const click = () => dispatch(selectSequence(ts.uuid));
+    const name = ts.body.name + (ts.specialStatus ? "*" : "");
+    const { uuid } = ts;
     return <Link
       to={`/app/sequences/${urlFriendly(ts.body.name) || ""}`}
       key={uuid}
@@ -44,7 +44,7 @@ export class SequencesList extends
   };
 
   componentDidMount() {
-    let { dispatch, sequence, sequences } = this.props;
+    const { dispatch, sequence, sequences } = this.props;
 
     sequence && urlFriendly(sequence.body.name) &&
       push("/app/sequences/" + urlFriendly(sequence.body.name));
@@ -76,8 +76,8 @@ export class SequencesList extends
   }
 
   render() {
-    let { sequences, dispatch } = this.props;
-    let searchTerm = this.state.searchTerm.toLowerCase();
+    const { sequences, dispatch } = this.props;
+    const searchTerm = this.state.searchTerm.toLowerCase();
 
     return (
       <div className="sequence-list">

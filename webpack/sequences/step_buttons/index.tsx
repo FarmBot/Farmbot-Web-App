@@ -7,7 +7,7 @@ import { StepButtonParams } from "../interfaces";
 import { Col } from "../../ui/index";
 import { TaggedSequence } from "../../resources/tagged_resources";
 
-let stepClick = (dispatch: Function, step: Step, seq: TaggedSequence | undefined) =>
+const stepClick = (dispatch: Function, step: Step, seq: TaggedSequence | undefined) =>
   (event: React.FormEvent<HTMLButtonElement>) => {
     if (seq) {
       pushStep(step, dispatch, seq);

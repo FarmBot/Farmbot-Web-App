@@ -28,7 +28,7 @@ export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps> {
 
   changeBot = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let { account, dispatch } = this.props;
+    const { account, dispatch } = this.props;
     dispatch(edit(account, { name: e.currentTarget.value }));
   }
 
@@ -42,13 +42,13 @@ export class FarmbotOsSettings
   }
 
   handleTimezone = (timezone: string) => {
-    let { account, dispatch } = this.props;
+    const { account, dispatch } = this.props;
     dispatch(edit(account, { timezone }));
     dispatch(save(account.uuid));
   }
 
   maybeWarnTz = () => {
-    let wrongTZ = timezoneMismatch(this.props.account.body.timezone);
+    const wrongTZ = timezoneMismatch(this.props.account.body.timezone);
     if (wrongTZ) {
       return `Note: The selected timezone for your FarmBot is different than
         your local browser time.`;
@@ -64,7 +64,7 @@ export class FarmbotOsSettings
   }
 
   render() {
-    let { account } = this.props;
+    const { account } = this.props;
 
     return <Widget className="device-widget">
       <form onSubmit={this.saveBot.bind(this)}>

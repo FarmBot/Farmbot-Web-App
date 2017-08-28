@@ -29,7 +29,7 @@ export class CameraCalibration extends
                 images={this.props.images}
                 currentImage={this.props.currentImage}
                 onChange={(key, value) => {
-                  let MAPPING: Record<typeof key, WDENVKey> = {
+                  const MAPPING: Record<typeof key, WDENVKey> = {
                     "iteration": "CAMERA_CALIBRATION_iteration",
                     "morph": "CAMERA_CALIBRATION_morph",
                     "blur": "CAMERA_CALIBRATION_blur",

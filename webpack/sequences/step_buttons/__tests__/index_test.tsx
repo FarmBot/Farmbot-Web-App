@@ -22,8 +22,8 @@ describe("<StepButton/>", () => {
   }
 
   it("clicks it", () => {
-    let p = props();
-    let el = shallow<StepButtonParams>(<StepButton {...p } />);
+    const p = props();
+    const el = shallow<StepButtonParams>(<StepButton {...p } />);
     el.find("button").simulate("click");
     let action: ReduxAction<EditResourceParams>;
     action = (p.dispatch as jest.Mock<{}>).mock.calls[0][0];

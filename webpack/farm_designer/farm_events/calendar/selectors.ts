@@ -8,17 +8,17 @@ import {
 import { betterCompact } from "../../../util";
 
 export function joinFarmEventsToExecutable(input: ResourceIndex): FarmEventWithExecutable[] {
-  let farmEvents = selectAllFarmEvents(input);
-  let sequenceById = indexSequenceById(input);
-  let regimenById = indexRegimenById(input);
+  const farmEvents = selectAllFarmEvents(input);
+  const sequenceById = indexSequenceById(input);
+  const regimenById = indexRegimenById(input);
 
   return betterCompact(farmEvents.map(function (fe) {
-    let body = fe.body;
-    let id = fe.body.executable_id;
+    const body = fe.body;
+    const id = fe.body.executable_id;
     if (id) {
       switch (body.executable_type) {
         case "Sequence":
-          let executable1 = sequenceById[id];
+          const executable1 = sequenceById[id];
           if (executable1) {
             return {
               ...body,
@@ -29,7 +29,7 @@ export function joinFarmEventsToExecutable(input: ResourceIndex): FarmEventWithE
             throw new Error("Bad executable ID (sequence): " + id);
           }
         case "Regimen":
-          let executable2 = regimenById[id];
+          const executable2 = regimenById[id];
           if (executable2) {
             return {
               ...body,

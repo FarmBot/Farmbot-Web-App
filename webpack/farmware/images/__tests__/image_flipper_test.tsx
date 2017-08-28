@@ -5,20 +5,20 @@ import { TaggedImage } from "../../../resources/tagged_resources";
 import { defensiveClone } from "../../../util";
 
 describe("<ImageFlipper/>", () => {
-  let images: TaggedImage[] = [];
+  const images: TaggedImage[] = [];
 
   fakeImages.forEach((item, index) => {
-    let image = defensiveClone(item);
+    const image = defensiveClone(item);
     image.uuid = `Position ${index}`;
     images.push(image);
   });
 
   it("defaults to index 0", () => {
-    let onFlip = jest.fn();
-    let x = new ImageFlipper();
-    let currentImage = undefined;
+    const onFlip = jest.fn();
+    const x = new ImageFlipper();
+    const currentImage = undefined;
     x.props = { images, currentImage, onFlip };
-    let up = x.go(1);
+    const up = x.go(1);
     up();
     expect(onFlip).toHaveBeenCalledWith(images[1].uuid);
   });

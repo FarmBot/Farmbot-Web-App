@@ -18,9 +18,9 @@ export function groupRegimenItemsByWeek(weeks: Week[], OFFSET: number,
     // start point.
     // Convert false values to -1.
     .map((weekArray, weekNum) => {
-      let tweeks = ONE_WEEK * (weekNum);
+      const tweeks = ONE_WEEK * (weekNum);
       return weekArray.map((shouldExecute, dayNum) => {
-        let days = ONE_DAY * dayNum;
+        const days = ONE_DAY * dayNum;
         return (shouldExecute) ? (tweeks + days + OFFSET) : -1;
         // lol, In band signaling.
       });

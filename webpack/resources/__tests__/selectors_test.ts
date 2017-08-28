@@ -37,17 +37,17 @@ const fakeSlot: TaggedToolSlotPointer = {
 
 describe("findSlotByToolId", () => {
   it("returns undefined when not found", () => {
-    let state = resourceReducer(buildResourceIndex(), createOK(fakeTool));
+    const state = resourceReducer(buildResourceIndex(), createOK(fakeTool));
     expect(state.index.byKindAndId["tools." + fakeTool.body.id]);
-    let result = findSlotByToolId(state.index, TOOL_ID);
+    const result = findSlotByToolId(state.index, TOOL_ID);
     expect(result).toBeFalsy();
   });
 
   it("returns something when there is a match", () => {
-    let initialState = buildResourceIndex();
-    let state = [createOK(fakeTool), createOK(fakeSlot)]
+    const initialState = buildResourceIndex();
+    const state = [createOK(fakeTool), createOK(fakeSlot)]
       .reduce(resourceReducer, initialState);
-    let result = findSlotByToolId(state.index, TOOL_ID);
+    const result = findSlotByToolId(state.index, TOOL_ID);
     expect(result).toBeTruthy();
     if (result) { expect(result.kind).toBe("points"); }
   });
@@ -60,8 +60,8 @@ describe("getFeed", () => {
   });
 
   it("finds the only WebcamFeed", () => {
-    let feed = fakeWebcamFeed();
-    let state = [{
+    const feed = fakeWebcamFeed();
+    const state = [{
       type: Actions.RESOURCE_READY,
       payload: {
         name: "webcam_feed",

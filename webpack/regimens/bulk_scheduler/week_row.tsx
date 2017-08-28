@@ -8,7 +8,7 @@ export function WeekRow({ index, dispatch, week }: WeekRowProps) {
     <label className="week-label">{t("Week")} {index + 1}</label>
     {
       DAYS.map(function (day, i) {
-        let id = `${index}-${day}`;
+        const id = `${index}-${day}`;
         return <Day day={i + 1}
           week={index}
           dispatch={dispatch}
@@ -20,7 +20,7 @@ export function WeekRow({ index, dispatch, week }: WeekRowProps) {
   </div>;
 }
 
-let select = (dispatch: Function, day: number, week: number) => () =>
+const select = (dispatch: Function, day: number, week: number) => () =>
   dispatch(toggleDay({ day, week }));
 
 function Day({ day, id, dispatch, week, active }: DayProps) {

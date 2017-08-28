@@ -44,7 +44,7 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
 
   set = (key: keyof PasswordForm) =>
     (e: React.SyntheticEvent<HTMLInputElement>) => {
-      let wow = {
+      const wow = {
         status: SpecialStatus.DIRTY,
         form: { ...this.state.form, [key]: e.currentTarget.value }
       };

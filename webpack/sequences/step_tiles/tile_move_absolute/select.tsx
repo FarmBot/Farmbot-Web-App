@@ -6,7 +6,7 @@ import { formatSelectedDropdown } from "./format_selected_dropdown";
 import { TileMoveAbsProps } from "./interfaces";
 
 export function TileMoveAbsSelect(props: TileMoveAbsProps) {
-  let i = props.selectedItem;
+  const i = props.selectedItem;
   return (
     <FBSelect
       allowEmpty={true}

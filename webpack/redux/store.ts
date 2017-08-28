@@ -4,7 +4,7 @@ import { rootReducer } from "./root_reducer";
 import { registerSubscribers } from "./subscribers";
 import { getMiddleware } from "./middlewares";
 
-let ENV = process.env.NODE_ENV || "development";
+const ENV = process.env.NODE_ENV || "development";
 
 function dev() {
   store = createStore(rootReducer as any,
@@ -18,7 +18,7 @@ function prod() {
 }
 
 export function configureStore(options = {}) {
-  let store: Store = (ENV === "production" ? prod() : dev());
+  const store: Store = (ENV === "production" ? prod() : dev());
   // Make store global in case I need to probe it.
   (window as any)["store"] = store;
   registerSubscribers(store);

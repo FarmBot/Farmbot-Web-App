@@ -64,7 +64,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
   }
 
   styleFor(item: DropDownItem): string {
-    let styles = ["filter-search-item"];
+    const styles = ["filter-search-item"];
     if (Object.is(item, NULL_CHOICE)) {
       styles.push("filter-search-item-none");
     }
@@ -72,7 +72,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
   }
 
   private default = (params: ISelectItemRendererProps<DropDownItem>) => {
-    let { handleClick, item, index } = params;
+    const { handleClick, item, index } = params;
     return (
       <MenuItem
         className={this.styleFor(item)}

@@ -13,11 +13,11 @@ import { TOOL } from "./interfaces";
 import * as _ from "lodash";
 
 export function generateList(input: ResourceIndex): DropDownItem[] {
-  let toolNameById = mapToolIdToName(input);
-  let SORT_KEY: keyof DropDownItem = "headingId";
-  let points = selectAllPoints(input)
+  const toolNameById = mapToolIdToName(input);
+  const SORT_KEY: keyof DropDownItem = "headingId";
+  const points = selectAllPoints(input)
     .filter(x => (x.body.pointer_type !== "ToolSlot"));
-  let toolDDI = selectAllTools(input)
+  const toolDDI = selectAllTools(input)
     .filter(x => !!x.body.id)
     .map(t => formatTools(t));
   return _(points)
@@ -35,13 +35,13 @@ export const NAME_MAP: Record<PointerTypeName, string> = {
   "ToolSlot": "Tool Slot",
 };
 
-let formatPoint = (toolNames: CowardlyDictionary<string>) =>
+const formatPoint = (toolNames: CowardlyDictionary<string>) =>
   (p: PointerType) => {
     let { id, pointer_type, name, x, y, z } = p.body;
 
     // Special formatting rules for tool slots
     if (p.body.pointer_type === "ToolSlot") {
-      let tool = (p.body.tool_id && toolNames[p.body.tool_id]) || undefined;
+      const tool = (p.body.tool_id && toolNames[p.body.tool_id]) || undefined;
       name = tool ? `using '${tool}'` : "no tool";
     }
 
@@ -52,8 +52,8 @@ let formatPoint = (toolNames: CowardlyDictionary<string>) =>
     };
   };
 
-let formatTools = (t: TaggedTool) => {
-  let { id, name } = t.body;
+const formatTools = (t: TaggedTool) => {
+  const { id, name } = t.body;
 
   return {
     label: dropDownName("Tool", (name || "untitled")),
@@ -64,7 +64,7 @@ let formatTools = (t: TaggedTool) => {
 
 /** Uniformly generate a label for things that have an X/Y/Z value. */
 export function dropDownName(kind: string, name: string, v?: Vector3) {
-  let formattedKind = _.get(NAME_MAP, kind, kind);
+  const formattedKind = _.get(NAME_MAP, kind, kind);
   let label = `${formattedKind}: ${name || "untitled"}`;
   if (v) { label += ` (${v.x}, ${v.y}, ${v.z}) `; }
   return label;

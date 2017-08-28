@@ -52,7 +52,7 @@ describe("<AllSteps/>", () => {
   maybeTagSteps(TEST_CASE);
 
   it("uses index as a key", () => {
-    let el = shallow(<AllSteps
+    const el = shallow(<AllSteps
       sequence={TEST_CASE}
       onDrop={() => { }}
       dispatch={jest.fn()}

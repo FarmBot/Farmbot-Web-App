@@ -24,7 +24,7 @@ export function mapStateToProps(props: Everything): CropCatalogProps {
 export class CropCatalog extends React.Component<CropCatalogProps, {}> {
 
   handleChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    let { value } = e.currentTarget;
+    const { value } = e.currentTarget;
     this.props.OFSearch(value)(this.props.dispatch);
   }
 

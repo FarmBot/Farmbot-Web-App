@@ -7,8 +7,8 @@ import { TaggedPlantPointer } from "../../resources/tagged_resources";
 import * as _ from "lodash";
 
 export function mapStateToProps(props: Everything): EditPlantInfoProps {
-  let findPlant = (id: string | undefined) => {
-    let num = parseInt(id || "NOPE", 10);
+  const findPlant = (id: string | undefined) => {
+    const num = parseInt(id || "NOPE", 10);
     if (_.isNumber(num) && !_.isNaN(num)) {
       return maybeFindPlantById(props.resources.index, num);
     }
@@ -37,11 +37,11 @@ export interface FormattedPlantInfo {
 }
 
 export function formatPlantInfo(rsrc: TaggedPlantPointer): FormattedPlantInfo {
-  let p = rsrc.body;
-  let t = p.created_at ? moment(p.created_at) : moment();
-  let currentDay = moment();
-  let plantedAt = p.created_at || moment();
-  let daysOld = currentDay.diff(moment(plantedAt), "days") + 1;
+  const p = rsrc.body;
+  const t = p.created_at ? moment(p.created_at) : moment();
+  const currentDay = moment();
+  const plantedAt = p.created_at || moment();
+  const daysOld = currentDay.diff(moment(plantedAt), "days") + 1;
   return {
     slug: p.openfarm_slug,
     id: p.id,

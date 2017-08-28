@@ -35,11 +35,11 @@ interface ExecBlockParams {
 }
 export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}> {
   changeSelection = (input: DropDownItem) => {
-    let { props } = this;
+    const { props } = this;
     if (_.isNumber(input.value)) {
-      let step2 = defensiveClone(props.currentStep);
+      const step2 = defensiveClone(props.currentStep);
       step2.args.sequence_id = input.value;
-      let seq2 = defensiveClone(props.currentSequence);
+      const seq2 = defensiveClone(props.currentSequence);
       seq2.body.body = seq2.body.body || [];
       seq2.body.body[props.index] = step2;
       props.dispatch(overwrite(props.currentSequence, seq2.body));
@@ -49,11 +49,11 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
   }
 
   sequenceDropDownList = () => {
-    let p = this.props;
-    let output: DropDownItem[] = [];
+    const p = this.props;
+    const output: DropDownItem[] = [];
     selectAllSequences(p.resources)
       .map(function (x) {
-        let { id, name } = x.body;
+        const { id, name } = x.body;
         if (_.isNumber(id) && (id !== p.currentStep.args.sequence_id)) {
           output.push({ label: name, value: id });
         }
@@ -69,10 +69,10 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
   }
 
   selectedSequence = () => {
-    let p = this.props;
-    let { sequence_id } = p.currentStep.args;
+    const p = this.props;
+    const { sequence_id } = p.currentStep.args;
     if (sequence_id) {
-      let s = findSequenceById(p.resources, sequence_id);
+      const s = findSequenceById(p.resources, sequence_id);
       return { label: s.body.name, value: (s.body.id as number) };
     } else {
       return undefined;
@@ -80,8 +80,8 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
   }
 
   render() {
-    let props = this.props;
-    let { dispatch, currentStep, index, currentSequence } = props;
+    const props = this.props;
+    const { dispatch, currentStep, index, currentSequence } = props;
     return (<div>
       <div className="step-wrapper">
         <div className="row">

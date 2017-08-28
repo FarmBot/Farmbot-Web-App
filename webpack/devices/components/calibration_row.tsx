@@ -16,7 +16,7 @@ function calibrate(axis: Axis) {
 
 export function CalibrationRow(props: CalibrationRowProps) {
 
-  let { hardware } = props;
+  const { hardware } = props;
 
   return <Row>
     <Col xs={6}>
@@ -32,7 +32,7 @@ export function CalibrationRow(props: CalibrationRowProps) {
     </Col>
     {axisTrackingStatus(hardware)
       .map(row => {
-        let { axis, disabled } = row;
+        const { axis, disabled } = row;
         return <Col xs={2} key={axis}>
           <LockableButton
             disabled={disabled}

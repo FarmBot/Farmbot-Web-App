@@ -17,7 +17,7 @@ interface State {
 }
 
 function mapStateToProps(props: Everything): Props {
-  let plants = selectAllPlantPointers(props.resources.index);
+  const plants = selectAllPlantPointers(props.resources.index);
   return {
     plants,
     dispatch: props.dispatch

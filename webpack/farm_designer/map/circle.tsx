@@ -10,8 +10,8 @@ interface CircleProps {
 }
 
 export function Circle(props: CircleProps) {
-  let { x, y, r, selected } = props;
-  let cn = props.className;
+  const { x, y, r, selected } = props;
+  const cn = props.className;
   return <circle
     className={"is-chosen-" + !!selected + " " + (cn ? cn : "")}
     cx={x}

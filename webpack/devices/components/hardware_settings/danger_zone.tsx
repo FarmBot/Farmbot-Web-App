@@ -7,8 +7,8 @@ import { Collapse } from "@blueprintjs/core";
 
 export function DangerZone(props: DangerZoneProps) {
 
-  let { dispatch, bot, onReset } = props;
-  let { danger_zone } = bot.controlPanelState;
+  const { dispatch, bot, onReset } = props;
+  const { danger_zone } = bot.controlPanelState;
 
   return <section>
     <Header

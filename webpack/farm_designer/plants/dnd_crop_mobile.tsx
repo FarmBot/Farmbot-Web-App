@@ -25,7 +25,7 @@ export class DNDCropMobile
 
   handleDragStart(e: DraggableEvent) {
     // TODO: Take suggestions from the community about user preference
-    let img = document.createElement("img");
+    const img = document.createElement("img");
     // Stub until we figure out dynamic drag images
     img.src = DEFAULT_ICON;
 
@@ -38,14 +38,14 @@ export class DNDCropMobile
   }
 
   render() {
-    let crop = history.getCurrentLocation().pathname.split("/")[5];
+    const crop = history.getCurrentLocation().pathname.split("/")[5];
 
-    let result =
+    const result =
       findBySlug(this.props.cropSearchResults,
         crop || "PLANT_NOT_FOUND");
 
     /** rgba arguments are a more mobile-friendly way apply filters */
-    let backgroundURL = isMobile() ? `linear-gradient(
+    const backgroundURL = isMobile() ? `linear-gradient(
       rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${result.image})` : "";
 
     return <div className={`panel-container green-panel
@@ -82,8 +82,8 @@ export class DNDCropMobile
                 .omit(["slug", "processing_pictures", "description"])
                 .toPairs()
                 .map((pair: string, i: number) => {
-                  let key = pair[0];
-                  let value = pair[1];
+                  const key = pair[0];
+                  const value = pair[1];
                   return <li key={i}>
                     <strong>
                       {_.startCase(key) + ": "}

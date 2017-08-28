@@ -5,7 +5,7 @@ import { GardenMapLegendProps } from "./interfaces";
 
 export function GardenMapLegend(props: GardenMapLegendProps) {
 
-  let {
+  const {
     zoom,
     toggle,
     updateBotOriginQuadrant,
@@ -18,9 +18,9 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
     showFarmbot
   } = props;
 
-  let plusBtnClass = (zoomLvl && zoomLvl >= 1.8) ? "disabled" : "";
-  let minusBtnClass = (zoomLvl && zoomLvl <= 0.4) ? "disabled" : "";
-  let menuClass = legendMenuOpen ? "active" : "";
+  const plusBtnClass = (zoomLvl && zoomLvl >= 1.8) ? "disabled" : "";
+  const minusBtnClass = (zoomLvl && zoomLvl <= 0.4) ? "disabled" : "";
+  const menuClass = legendMenuOpen ? "active" : "";
 
   return (
     <div

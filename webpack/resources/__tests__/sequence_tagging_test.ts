@@ -29,7 +29,7 @@ describe("maybeTagSteps()", () => {
     },
   };
   it("adds a UUID property to steps", () => {
-    let body = UNTAGGED_SEQUENCE.body.body || [];
+    const body = UNTAGGED_SEQUENCE.body.body || [];
     expect(body.length).toEqual(1);
     expect(get(body[0], "uuid")).not.toBeDefined();
     expect(() => {

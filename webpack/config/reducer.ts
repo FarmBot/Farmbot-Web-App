@@ -3,7 +3,7 @@ import { ChangeApiHost, ChangeApiPort, ConfigState } from "./interfaces";
 import { API } from "../api";
 import { Actions } from "../constants";
 
-let initialState: ConfigState = {
+const initialState: ConfigState = {
   host: location.hostname,
   // It gets annoying to manually change the port # in dev mode.
   // I automatically point to port 3000 on local.

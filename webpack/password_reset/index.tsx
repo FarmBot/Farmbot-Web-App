@@ -7,12 +7,12 @@ import "../css/_index.scss";
 
 detectLanguage().then((config) => {
   i18next.init(config, (err, t) => {
-    let node = document.createElement("DIV");
+    const node = document.createElement("DIV");
     node.id = "root";
     document.body.appendChild(node);
 
-    let reactElem = React.createElement(PasswordReset, {});
-    let domElem = document.getElementById("root");
+    const reactElem = React.createElement(PasswordReset, {});
+    const domElem = document.getElementById("root");
 
     if (domElem) {
       render(reactElem, domElem);

@@ -9,7 +9,7 @@ import { taggedUser } from "../../__test_support__/user";
 describe("NavBar", () => {
 
   it("has correct parent classname", () => {
-    let wrapper = mount(
+    const wrapper = mount(
       <NavBar
         logs={[log]}
         bot={bot}

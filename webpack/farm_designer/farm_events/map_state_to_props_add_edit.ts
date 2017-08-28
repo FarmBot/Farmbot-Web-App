@@ -25,12 +25,12 @@ import {
 import { DropDownItem } from "../../ui/fb_select";
 
 export let formatTime = (input: string) => {
-  let iso = new Date(input).toISOString();
+  const iso = new Date(input).toISOString();
   return moment(iso).format("HH:mm");
 };
 
 export let formatDate = (input: string) => {
-  let iso = new Date(input).toISOString();
+  const iso = new Date(input).toISOString();
   return moment(iso).format("YYYY-MM-DD");
 };
 
@@ -44,19 +44,19 @@ export let repeatOptions = [
 ];
 
 export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps {
-  let handleTime = (e: React.SyntheticEvent<HTMLInputElement>, currentISO: string) => {
-    let incomingTime = e.currentTarget.value.split(":");
-    let hours = parseInt(incomingTime[0]) || 0;
-    let minutes = parseInt(incomingTime[1]) || 0;
+  const handleTime = (e: React.SyntheticEvent<HTMLInputElement>, currentISO: string) => {
+    const incomingTime = e.currentTarget.value.split(":");
+    const hours = parseInt(incomingTime[0]) || 0;
+    const minutes = parseInt(incomingTime[1]) || 0;
 
     switch (e.currentTarget.name) {
       case "start_time":
         // Put the current ISO established by the date field into a var
-        let currentStartISO = new Date((currentISO || "").toString())
+        const currentStartISO = new Date((currentISO || "").toString())
           .toISOString();
 
         // Set the time of the already existing iso string
-        let newStartISO = moment(currentStartISO)
+        const newStartISO = moment(currentStartISO)
           .set("hours", hours)
           .set("minutes", minutes)
           .toISOString();
@@ -64,10 +64,10 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
         return newStartISO;
 
       case "end_time":
-        let currentEndISO = new Date((currentISO || "").toString())
+        const currentEndISO = new Date((currentISO || "").toString())
           .toISOString();
 
-        let newEndISO = moment(currentEndISO)
+        const newEndISO = moment(currentEndISO)
           .set("hours", hours)
           .set("minutes", minutes)
           .toISOString();
@@ -79,7 +79,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     }
   };
 
-  let executableOptions: DropDownItem[] = [];
+  const executableOptions: DropDownItem[] = [];
 
   executableOptions.push({
     label: t("REGIMENS"),
@@ -127,7 +127,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
    * better. I think it would be better to handle this at the source and keep
    * the ui logic less involved. -CV 8/3/2017
    * -------------------------- BEGIN -------------------------------------*/
-  let newExecutableOptions = executableOptions
+  const newExecutableOptions = executableOptions
     .filter(x => !x.heading)
     .map(x => {
       return {
@@ -137,15 +137,15 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
       };
     });
 
-  let regimensById = indexRegimenById(props.resources.index);
-  let sequencesById = indexSequenceById(props.resources.index);
-  let farmEventsById = indexFarmEventById(props.resources.index);
+  const regimensById = indexRegimenById(props.resources.index);
+  const sequencesById = indexSequenceById(props.resources.index);
+  const farmEventsById = indexFarmEventById(props.resources.index);
 
-  let farmEvents = selectAllFarmEvents(props.resources.index);
+  const farmEvents = selectAllFarmEvents(props.resources.index);
 
-  let getFarmEvent = (): TaggedFarmEvent | undefined => {
-    let url = history.getCurrentLocation().pathname;
-    let id = parseInt(url.split("/")[4]);
+  const getFarmEvent = (): TaggedFarmEvent | undefined => {
+    const url = history.getCurrentLocation().pathname;
+    const id = parseInt(url.split("/")[4]);
     if (id && hasId(props.resources.index, "farm_events", id)) {
       return findFarmEventById(props.resources.index, id);
     } else {
@@ -153,7 +153,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     }
   };
 
-  let findExecutable = (kind: ExecutableType, id: number):
+  const findExecutable = (kind: ExecutableType, id: number):
     TaggedSequence | TaggedRegimen => {
     switch (kind) {
       case "Sequence": return findSequenceById(props.resources.index, id);

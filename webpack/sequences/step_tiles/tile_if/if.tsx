@@ -20,19 +20,19 @@ const label_ops: Record<ALLOWED_OPS, string> = {
 };
 
 export function If_(props: IfParams) {
-  let {
+  const {
     dispatch,
     currentStep,
     index
   } = props;
-  let step = props.currentStep;
-  let sequence = props.currentSequence;
-  let { op, lhs } = currentStep.args;
+  const step = props.currentStep;
+  const sequence = props.currentSequence;
+  const { op, lhs } = currentStep.args;
   function updateField(field: "lhs" | "op") {
     return (e: DropDownItem) => {
-      let stepCopy = defensiveClone(step);
-      let seqCopy = defensiveClone(sequence).body;
-      let val = e.value;
+      const stepCopy = defensiveClone(step);
+      const seqCopy = defensiveClone(sequence).body;
+      const val = e.value;
       seqCopy.body = seqCopy.body || [];
       if (_.isString(val)) { stepCopy.args[field] = val; }
       seqCopy.body[index] = stepCopy;

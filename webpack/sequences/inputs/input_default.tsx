@@ -12,9 +12,9 @@ export function InputDefault({
   type_,
   index
 }: StepInputProps) {
-  let raw = (step.args as any)[field];
-  let notUndefied = (isString(raw) || isNumber(raw));
-  let val = notUndefied ? raw : "";
+  const raw = (step.args as any)[field];
+  const notUndefied = (isString(raw) || isNumber(raw));
+  const val = notUndefied ? raw : "";
 
   return <BlurableInput
     type={type_ || "text"}

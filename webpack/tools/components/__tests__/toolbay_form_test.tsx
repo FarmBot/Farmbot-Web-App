@@ -6,10 +6,10 @@ import { fakeState } from "../../../__test_support__/fake_state";
 
 describe("<ToolBayForm/>", () => {
   function bootstrapTest() {
-    let state = fakeState();
-    let toggle = jest.fn();
-    let props = mapStateToProps(state);
-    let dispatch = jest.fn();
+    const state = fakeState();
+    const toggle = jest.fn();
+    const props = mapStateToProps(state);
+    const dispatch = jest.fn();
     return {
       state,
       toggle,
@@ -28,8 +28,8 @@ describe("<ToolBayForm/>", () => {
   }
 
   it("renders ToolSlot", () => {
-    let test = bootstrapTest();
-    let inputs = test.component.find("input");
+    const test = bootstrapTest();
+    const inputs = test.component.find("input");
     expect(inputs.length).toEqual(3);
     expect(test.component.text()).toContain("Trench Digging Tool");
     expect(inputs.at(0).props().value).toEqual("10");
@@ -38,11 +38,11 @@ describe("<ToolBayForm/>", () => {
   });
 
   it("fills inputs with bot position", () => {
-    let test = bootstrapTest();
-    let buttons = test.component.find("button");
+    const test = bootstrapTest();
+    const buttons = test.component.find("button");
     expect(buttons.length).toEqual(6);
     buttons.at(3).simulate("click");
-    let argList = test.dispatch.mock.calls[0][0].payload.update;
+    const argList = test.dispatch.mock.calls[0][0].payload.update;
     expect(argList.x).toEqual(1);
     expect(argList.y).toEqual(2);
     expect(argList.z).toEqual(3);

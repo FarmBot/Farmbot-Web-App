@@ -8,32 +8,32 @@ import { SpecialStatus } from "../../../resources/tagged_resources";
 describe("Copy button", () => {
 
   it("Initializes a new regimen on click", () => {
-    let dispatch = jest.fn();
-    let regimen = fakeRegimen();
-    let el = mount(<CopyButton dispatch={dispatch} regimen={regimen} />);
+    const dispatch = jest.fn();
+    const regimen = fakeRegimen();
+    const el = mount(<CopyButton dispatch={dispatch} regimen={regimen} />);
     expect(el.find("button").length).toBe(1);
     el.simulate("click");
     expect(dispatch.mock.calls.length).toBe(1);
-    let action = dispatch.mock.calls[0][0];
+    const action = dispatch.mock.calls[0][0];
     expect(typeof action).toEqual("object");
     expect(action.type).toEqual("INIT_RESOURCE");
-    let reg = action.payload.body;
+    const reg = action.payload.body;
     expect(action.payload.specialStatus).toBe(SpecialStatus.DIRTY);
     expect(reg.name).toContain("Foo copy");
   });
 
   it("Render a button when given a regimen", () => {
-    let dispatch = jest.fn();
-    let regimen = fakeRegimen();
-    let el = mount(<CopyButton dispatch={dispatch} regimen={regimen} />);
+    const dispatch = jest.fn();
+    const regimen = fakeRegimen();
+    const el = mount(<CopyButton dispatch={dispatch} regimen={regimen} />);
     expect(el.find("button").length).toBe(1);
     el.simulate("click");
     expect(dispatch.mock.calls.length).toBe(1);
   });
 
   it("renders nothing if not given a regimen", () => {
-    let dispatch = jest.fn();
-    let el = mount(<CopyButton dispatch={dispatch} />);
+    const dispatch = jest.fn();
+    const el = mount(<CopyButton dispatch={dispatch} />);
     expect(el.find("button").length).toBe(0);
     el.simulate("click");
     expect(dispatch.mock.calls.length).toBe(0);

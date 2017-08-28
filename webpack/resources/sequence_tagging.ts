@@ -54,7 +54,7 @@ const TAG_PROP = "uuid";
  * Retrieves tag from a step object. Assumes that all steps have a tag.
  * If no tag is found, crashes. */
 export function getStepTag(i: SequenceBodyItem): StepTag {
-  let tag = get(i, TAG_PROP, "");
+  const tag = get(i, TAG_PROP, "");
   if (tag) { return tag; }
   throw new Error("No tag on step: " + i.kind);
 }

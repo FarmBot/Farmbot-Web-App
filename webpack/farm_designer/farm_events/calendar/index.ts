@@ -26,19 +26,19 @@ export class Calendar {
   constructor(public value: Dictionary<CalendarOccurrence[]> = {}) { }
 
   insert(occur: CalendarOccurrence) {
-    let k = occur.mmddyy;
+    const k = occur.mmddyy;
     this.value[k] = this.value[k] || [];
     this.value[k].push(occur);
   }
 
   getAll(): CalendarDay[] {
-    let all = Object
+    const all = Object
       .keys(this.value)
       .map(x => this.value[x])
       .filter(x => !!x)        // Poor man's compact() function.
       .filter(x => !!x.length) // Don't bother rendering empty days.
       .map((items): CalendarDay => {
-        let item = items[0];
+        const item = items[0];
         return {
           sortKey: item.sortKey,
           year: parseInt(item.mmddyy.slice(4, 6)),

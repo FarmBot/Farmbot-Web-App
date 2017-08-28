@@ -28,8 +28,8 @@ describe("<HomingRow />", () => {
   //   });
   // });
   it("calls device", () => {
-    let { mock } = devices.current.findHome as jest.Mock<{}>;
-    let result = mount(<HomingRow hardware={bot.hardware.mcu_params} />);
+    const { mock } = devices.current.findHome as jest.Mock<{}>;
+    const result = mount(<HomingRow hardware={bot.hardware.mcu_params} />);
     result.find("LockableButton").at(0).simulate("click");
     result.find("LockableButton").at(1).simulate("click");
     result.find("LockableButton").at(2).simulate("click");

@@ -14,7 +14,7 @@ export class GardenPlant extends
   state: GardenPlantState = { icon: DEFAULT_ICON };
 
   componentDidMount() {
-    let OFS = this.props.plant.body.openfarm_slug;
+    const OFS = this.props.plant.body.openfarm_slug;
     cachedCrop(OFS)
       .then(({ svg_icon }) => {
         this.setState({ icon: svgToUrl(svg_icon) });
@@ -22,23 +22,23 @@ export class GardenPlant extends
   }
 
   render() {
-    let { selected, dragging, plant, onClick, dispatch,
+    const { selected, dragging, plant, onClick, dispatch,
       quadrant, zoomLvl, activeDragXY } = this.props;
-    let { radius, x, y } = plant.body;
-    let { icon } = this.state;
+    const { radius, x, y } = plant.body;
+    const { icon } = this.state;
 
-    let scale = 1 + Math.round(15 * (1.8 - zoomLvl)) / 10; // scale factor
+    const scale = 1 + Math.round(15 * (1.8 - zoomLvl)) / 10; // scale factor
 
-    let action = { type: "TOGGLE_HOVERED_PLANT", payload: { plant, icon } };
-    let { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
-    let gardenCoord = getXYFromQuadrant(qx, qy, quadrant);
+    const action = { type: "TOGGLE_HOVERED_PLANT", payload: { plant, icon } };
+    const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
+    const gardenCoord = getXYFromQuadrant(qx, qy, quadrant);
 
     let horizAlign = false;
     let vertAlign = false;
-    let alpha = dragging ? 0.4 : 1.0;
+    const alpha = dragging ? 0.4 : 1.0;
     if (activeDragXY && !isUndefined(activeDragXY.x) && !isUndefined(activeDragXY.y)) {
       // Plant editing (dragging) is occuring
-      let activeXY = { qx: round(activeDragXY.x), qy: round(activeDragXY.y) };
+      const activeXY = { qx: round(activeDragXY.x), qy: round(activeDragXY.y) };
       if (activeXY.qx == gardenCoord.qx) {
         // The plant is aligned vertically with the dragged plant
         vertAlign = true;

@@ -4,21 +4,21 @@ import { WD_ENV } from "../remote_env/interfaces";
 
 describe("populateEnv()", () => {
   it("sets values", () => {
-    let env = { CAMERA_CALIBRATION_calibration_object_separation: "12" };
-    let result = prepopulateEnv(env);
+    const env = { CAMERA_CALIBRATION_calibration_object_separation: "12" };
+    const result = prepopulateEnv(env);
     expect(result.CAMERA_CALIBRATION_calibration_object_separation).toEqual(12);
   });
 
   it("Falls back on defaults", () => {
-    let result = prepopulateEnv({});
-    let actual = result.CAMERA_CALIBRATION_calibration_object_separation;
-    let expected = DEFAULTS.CAMERA_CALIBRATION_calibration_object_separation;
+    const result = prepopulateEnv({});
+    const actual = result.CAMERA_CALIBRATION_calibration_object_separation;
+    const expected = DEFAULTS.CAMERA_CALIBRATION_calibration_object_separation;
     expect(actual).toEqual(expected);
   });
 });
 
 describe("envGet()", () => {
-  let myEnv: Partial<WD_ENV> = {
+  const myEnv: Partial<WD_ENV> = {
     "CAMERA_CALIBRATION_H_LO": 30,
     "CAMERA_CALIBRATION_S_LO": 50,
     "CAMERA_CALIBRATION_V_LO": 50,
@@ -39,7 +39,7 @@ describe("envGet()", () => {
   };
 
   it("grabs current value", () => {
-    let result = envGet("CAMERA_CALIBRATION_calibration_object_separation",
+    const result = envGet("CAMERA_CALIBRATION_calibration_object_separation",
       myEnv);
     expect(result).toEqual(29);
   });

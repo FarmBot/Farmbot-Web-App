@@ -11,11 +11,11 @@ const POINT_STYLES = {
 };
 
 export function GardenPoint(props: GardenPointProps) {
-  let { point, quadrant } = props;
-  let { x, y } = point.body;
-  let styles = defensiveClone(POINT_STYLES);
+  const { point, quadrant } = props;
+  const { x, y } = point.body;
+  const styles = defensiveClone(POINT_STYLES);
   styles.stroke = point.body.meta.color || "green";
-  let { qx, qy } = getXYFromQuadrant(x, y, quadrant);
+  const { qx, qy } = getXYFromQuadrant(x, y, quadrant);
   return <g>
     <circle cx={qx} cy={qy} r={point.body.radius} {...styles} />
     <circle cx={qx} cy={qy} r={2} {...styles} />

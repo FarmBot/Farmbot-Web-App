@@ -10,7 +10,7 @@ interface ToolTipProps {
 
 export function ToolTip(props: ToolTipProps) {
   let { className, helpText } = props;
-  let cn = className ? className += " title-help" : "title-help";
+  const cn = className ? className += " title-help" : "title-help";
   return <div className={cn}>
     <i className="fa fa-question-circle title-help-icon" />
     <div className="title-help-text">

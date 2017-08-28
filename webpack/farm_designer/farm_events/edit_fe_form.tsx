@@ -72,7 +72,7 @@ function destructureFarmEvent(fe: TaggedFarmEvent): FarmEventViewModel {
  * that can be used to apply updates (such as a PUT request to the API). */
 export function recombine(vm: FarmEventViewModel): Partial<TaggedFarmEvent["body"]> {
   // Make sure that `repeat` is set to `never` when dealing with regimens.
-  let isReg = vm.executable_type === "Regimen";
+  const isReg = vm.executable_type === "Regimen";
   return {
     start_time: moment(vm.startDate + " " + vm.startTime).toISOString(),
     end_time: moment(vm.endDate + " " + vm.endTime).toISOString(),
@@ -115,8 +115,8 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   get viewModel() { return destructureFarmEvent(this.props.farmEvent); }
 
   get executable() {
-    let et = this.fieldGet("executable_type");
-    let id = parseInt(this.fieldGet("executable_id"));
+    const et = this.fieldGet("executable_type");
+    const id = parseInt(this.fieldGet("executable_id"));
     if (et === "Sequence" || et === "Regimen") {
       return this.props.findExecutable(et, id);
     } else {
@@ -126,7 +126,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   executableSet = (e: DropDownItem) => {
     if (e.value) {
-      let update: Partial<State> = {
+      const update: Partial<State> = {
         fe: {
           executable_type: executableType(e.headingId),
           executable_id: (e.value || "").toString()
@@ -138,7 +138,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   }
 
   executableGet = (): DropDownItem => {
-    let headingId: ExecutableType =
+    const headingId: ExecutableType =
       (this.executable.kind === "sequences") ?
         "Sequence" : "Regimen";
     return {
@@ -167,20 +167,20 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   }
 
   toggleRepeat = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let { checked } = e.currentTarget;
+    const { checked } = e.currentTarget;
     this.mergeState("timeUnit", (!checked || this.isReg) ? "never" : "daily");
   };
 
   commitViewModel = () => {
-    let partial = recombine(betterMerge(this.viewModel, this.state.fe));
+    const partial = recombine(betterMerge(this.viewModel, this.state.fe));
     this.dispatch(edit(this.props.farmEvent, partial));
     this
       .dispatch(save(this.props.farmEvent.uuid))
       .then(() => {
         this.setState({ specialStatusLocal: undefined });
         history.push("/app/designer/farm_events");
-        let frmEvnt = this.props.farmEvent;
-        let nextRun = _.first(scheduleForFarmEvent(frmEvnt.body));
+        const frmEvnt = this.props.farmEvent;
+        const nextRun = _.first(scheduleForFarmEvent(frmEvnt.body));
         if (nextRun) {
           // TODO: Internationalizing this will be a challenge.
           success(`This Farm Event will run ${nextRun.fromNow()}, but
@@ -207,9 +207,9 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   }
 
   render() {
-    let fe = this.props.farmEvent;
-    let repeats = this.fieldGet("timeUnit") !== NEVER;
-    let allowRepeat = (!this.isReg && repeats);
+    const fe = this.props.farmEvent;
+    const repeats = this.fieldGet("timeUnit") !== NEVER;
+    const allowRepeat = (!this.isReg && repeats);
     return (
       <div className="panel-container magenta-panel add-farm-event-panel">
         <div className="panel-header magenta-panel">

@@ -20,7 +20,7 @@ export function CopyButton({ dispatch, regimen }: CopyButtnProps) {
 let count = 1;
 function copy(regimen: TaggedRegimen | undefined) {
   if (regimen) {
-    let r = defensiveClone(regimen);
+    const r = defensiveClone(regimen);
     r.body.name = r.body.name + " copy " + (count++);
     return regimen && init(r);
   }

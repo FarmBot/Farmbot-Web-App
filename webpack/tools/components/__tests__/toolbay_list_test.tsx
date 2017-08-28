@@ -6,9 +6,9 @@ import { fakeState } from "../../../__test_support__/fake_state";
 
 describe("<ToolBayList />", () => {
   function bootstrapTest() {
-    let state = fakeState();
-    let toggle = jest.fn();
-    let props = mapStateToProps(state);
+    const state = fakeState();
+    const toggle = jest.fn();
+    const props = mapStateToProps(state);
     return {
       state,
       toggle,
@@ -20,7 +20,7 @@ describe("<ToolBayList />", () => {
     };
   }
   it("renders", () => {
-    let test = bootstrapTest();
+    const test = bootstrapTest();
     expect(test.component.text()).toContain("1101010Trench Digging Tool");
   });
 });

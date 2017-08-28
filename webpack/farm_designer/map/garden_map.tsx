@@ -31,7 +31,7 @@ export class GardenMap extends
   }
 
   endDrag = () => {
-    let p = this.getPlant();
+    const p = this.getPlant();
     if (p) {
       this.props.dispatch(edit(p, { x: round(p.body.x), y: round(p.body.y) }));
       this.props.dispatch(save(p.uuid));
@@ -61,23 +61,23 @@ export class GardenMap extends
 
   handleDrop = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
-    let el = document.querySelector("#drop-area > svg");
-    let map = document.querySelector(".farm-designer-map");
-    let page = document.querySelector(".farm-designer");
+    const el = document.querySelector("#drop-area > svg");
+    const map = document.querySelector(".farm-designer-map");
+    const page = document.querySelector(".farm-designer");
     if (el && map && page) {
-      let zoomLvl = parseFloat(window.getComputedStyle(map).zoom || DRAG_ERROR);
-      let { pageX, pageY } = e;
+      const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || DRAG_ERROR);
+      const { pageX, pageY } = e;
       // let box = el.getBoundingClientRect();
-      let crop = history.getCurrentLocation().pathname.split("/")[5];
-      let OFEntry = this.findCrop(crop);
-      let params: ScreenToGardenParams = {
+      const crop = history.getCurrentLocation().pathname.split("/")[5];
+      const OFEntry = this.findCrop(crop);
+      const params: ScreenToGardenParams = {
         quadrant: this.props.designer.botOriginQuadrant,
         pageX: pageX + page.scrollLeft,
         pageY: pageY + map.scrollTop * zoomLvl,
         zoomLvl
       };
-      let { x, y } = translateScreenToGarden(params);
-      let p: TaggedPlantPointer = {
+      const { x, y } = translateScreenToGarden(params);
+      const p: TaggedPlantPointer = {
         kind: "points",
         uuid: "--never",
         specialStatus: undefined,
@@ -97,14 +97,14 @@ export class GardenMap extends
   }
 
   drag = (e: React.MouseEvent<SVGElement>) => {
-    let plant = this.getPlant();
-    let map = document.querySelector(".farm-designer-map");
-    let { botOriginQuadrant } = this.props.designer;
+    const plant = this.getPlant();
+    const map = document.querySelector(".farm-designer-map");
+    const { botOriginQuadrant } = this.props.designer;
     if (this.isEditing && this.state.isDragging && plant && map) {
-      let zoomLvl = parseFloat(window.getComputedStyle(map).zoom || DRAG_ERROR);
-      let { qx, qy } = getXYFromQuadrant(e.pageX, e.pageY, botOriginQuadrant);
-      let deltaX = Math.round((qx - (this.state.pageX || qx)) / zoomLvl);
-      let deltaY = Math.round((qy - (this.state.pageY || qy)) / zoomLvl);
+      const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || DRAG_ERROR);
+      const { qx, qy } = getXYFromQuadrant(e.pageX, e.pageY, botOriginQuadrant);
+      const deltaX = Math.round((qx - (this.state.pageX || qx)) / zoomLvl);
+      const deltaY = Math.round((qy - (this.state.pageY || qy)) / zoomLvl);
       this.setState({
         pageX: qx, pageY: qy,
         activeDragXY: { x: plant.body.x + deltaX, y: plant.body.y + deltaY, z: 0 }

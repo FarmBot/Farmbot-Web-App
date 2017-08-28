@@ -46,7 +46,7 @@ export class HsvSlider extends React.Component<EnvSliderProps, EnvSliderState> {
   /** Triggered on componentDidMount() and when the user snaps the slider to a
    * position. */
   onRelease = () => {
-    let cb = this.props.onChange;
+    const cb = this.props.onChange;
     if (cb) { cb(this.name, [this.lo, this.hi]); }
     this.setState({ sliding: false });
   }
@@ -62,7 +62,7 @@ export class HsvSlider extends React.Component<EnvSliderProps, EnvSliderState> {
 
   /** The slider's high value */
   get hi() {
-    let { hi } = this.state;
+    const { hi } = this.state;
     if (this.state.sliding) {
       return hi || 1;
     } else {
@@ -72,7 +72,7 @@ export class HsvSlider extends React.Component<EnvSliderProps, EnvSliderState> {
 
   /** The slider's low value */
   get lo() {
-    let { lo } = this.state;
+    const { lo } = this.state;
     if (this.state.sliding) {
       return lo || 1;
     } else {

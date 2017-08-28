@@ -9,11 +9,11 @@ import * as _ from "lodash";
 import { Row, Col } from "../../ui/index";
 
 export let OsUpdateButton = ({ bot }: BotProp) => {
-  let osUpdateBool = bot.hardware.configuration.os_auto_update;
+  const osUpdateBool = bot.hardware.configuration.os_auto_update;
   let buttonStr = "Can't Connect to bot";
   let buttonColor = "yellow";
-  let { currentOSVersion } = bot;
-  let { controller_version } = bot.hardware.informational_settings;
+  const { currentOSVersion } = bot;
+  const { controller_version } = bot.hardware.informational_settings;
   if (_.isString(currentOSVersion) && _.isString(controller_version)) {
     switch (semverCompare(currentOSVersion, controller_version)) {
       case SemverResult.RIGHT_IS_GREATER:
@@ -28,18 +28,18 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
   } else {
     buttonStr = "Can't Connect to release server";
   }
-  let toggleVal = isUndefined(osUpdateBool) ? "undefined" : ("" + osUpdateBool);
+  const toggleVal = isUndefined(osUpdateBool) ? "undefined" : ("" + osUpdateBool);
   let downloadProgress = "";
   let disabled = false;
   // DONT TOUCH THIS!!! SERIOUSLY -- RC 8 August
   // DO NOT REMOVE `|| {}` UNTIL SEPTEMBER.
-  let job = (bot.hardware.jobs || {})["FBOS_OTA"];
+  const job = (bot.hardware.jobs || {})["FBOS_OTA"];
   if (job) {
     if (job.status == "working") {
       disabled = true;
       if (job.unit == "bytes") {
-        let kiloBytes = Math.round(job.bytes / 1024);
-        let megaBytes = Math.round(job.bytes / 1048576);
+        const kiloBytes = Math.round(job.bytes / 1024);
+        const megaBytes = Math.round(job.bytes / 1048576);
         if (kiloBytes < 1) {
           downloadProgress = job.bytes + "B";
         } else if (megaBytes < 1) {
@@ -62,7 +62,7 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
       <Col xs={1}>
         <ToggleButton toggleValue={toggleVal}
           toggleAction={() => {
-            let os_auto_update = !osUpdateBool ? 1 : 0;
+            const os_auto_update = !osUpdateBool ? 1 : 0;
             updateConfig({ os_auto_update })(noop);
           }} />
       </Col>

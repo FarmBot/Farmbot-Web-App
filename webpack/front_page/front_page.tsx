@@ -41,7 +41,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
 
   set = (name: keyof FrontPageState) =>
     (event: React.FormEvent<HTMLInputElement>) => {
-      let state: { [name: string]: string } = {};
+      const state: { [name: string]: string } = {};
       state[name] = (event.currentTarget).value;
       // WHY THE 2 ms timeout you ask????
       // There was a bug reported in Firefox.
@@ -52,8 +52,8 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
 
   submitLogin(e: React.FormEvent<{}>) {
     e.preventDefault();
-    let { email, loginPassword, showServerOpts } = this.state;
-    let payload = { user: { email, password: loginPassword } };
+    const { email, loginPassword, showServerOpts } = this.state;
+    const payload = { user: { email, password: loginPassword } };
     let url: string;
     if (showServerOpts) {
       url = `//${this.state.serverURL}:${this.state.serverPort}`;
@@ -75,7 +75,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
 
   submitRegistration(e: React.FormEvent<{}>) {
     e.preventDefault();
-    let {
+    const {
       regEmail,
       regName,
       regPassword,
@@ -83,7 +83,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       agreeToTerms
     } = this.state;
 
-    let form = {
+    const form = {
       user: {
         name: regName,
         email: regEmail,
@@ -93,7 +93,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       }
     };
     axios.post(API.current.usersPath, form).then(() => {
-      let m = "Almost done! Check your email for the verification link.";
+      const m = "Almost done! Check your email for the verification link.";
       success(t(m));
     }).catch(error => {
       log(prettyPrintApiErrors(error));
@@ -110,8 +110,8 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
 
   submitForgotPassword(e: React.SyntheticEvent<HTMLInputElement>) {
     e.preventDefault();
-    let { email } = this.state;
-    let data = { email };
+    const { email } = this.state;
+    const data = { email };
     axios.post(API.current.passwordResetPath, data)
       .then(() => {
         success("Email has been sent.", "Forgot Password");
@@ -160,15 +160,15 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   }
 
   defaultContent() {
-    let { showServerOpts, forgotPassword } = this.state;
-    let buttonStylesUniqueToOnlyThisPage = {
+    const { showServerOpts, forgotPassword } = this.state;
+    const buttonStylesUniqueToOnlyThisPage = {
       marginTop: "1rem",
       padding: ".5rem 1.6rem",
       fontSize: "1.2rem",
       borderBottom: "none"
     };
-    let expandIcon = showServerOpts ? "minus" : "plus";
-    let { toggleServerOpts } = this;
+    const expandIcon = showServerOpts ? "minus" : "plus";
+    const { toggleServerOpts } = this;
     return (
       <div className="static-page">
         <Row>

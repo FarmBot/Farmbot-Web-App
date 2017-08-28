@@ -10,7 +10,7 @@ import {
 } from "../util";
 describe("util", () => {
   describe("safeStringFetch", () => {
-    let data = {
+    const data = {
       // tslint:disable-next-line:no-null-keyword
       "null": null,
       "undefined": undefined,
@@ -47,8 +47,8 @@ describe("util", () => {
 
   describe("betterCompact", () => {
     it("removes falsy values", () => {
-      let before = [{}, {}, undefined];
-      let after = betterCompact(before);
+      const before = [{}, {}, undefined];
+      const after = betterCompact(before);
       expect(after.length).toBe(2);
       expect(after).not.toContain(undefined);
     });
@@ -56,8 +56,8 @@ describe("util", () => {
 
   describe("defensiveClone", () => {
     it("deep clones any serializable object", () => {
-      let origin = { a: "b", c: 2, d: [{ e: { f: "g" } }] };
-      let child = defensiveClone(origin);
+      const origin = { a: "b", c: 2, d: [{ e: { f: "g" } }] };
+      const child = defensiveClone(origin);
       origin.a = "--";
       origin.c = 0;
       origin.d[0].e.f = "--";
@@ -82,7 +82,7 @@ describe("util", () => {
 
   describe("prettyPrintApiErrors", () => {
     it("handles properly formatted API error messages", () => {
-      let result = prettyPrintApiErrors({
+      const result = prettyPrintApiErrors({
         response: {
           data: {
             email: "can't be blank"

@@ -39,18 +39,18 @@ function incomingStatus(statusMessage: HardwareState) {
 export function isLog(x: object): x is Log {
   return _.isObject(x) && _.isString(_.get(x, "message" as keyof Log));
 }
-let commandErr = (noun = "Command") => (x: any) => {
+const commandErr = (noun = "Command") => (x: any) => {
   console.dir(x);
   console.info("Took longer than 6 seconds: " + noun);
 };
 
-let commandOK = (noun = "Command") => () => {
-  let msg = noun + " request sent to device.";
+const commandOK = (noun = "Command") => () => {
+  const msg = noun + " request sent to device.";
   success(msg, t("Request sent"));
 };
 
 export function checkControllerUpdates() {
-  let noun = "Check for Updates";
+  const noun = "Check for Updates";
   devices
     .current
     .checkUpdates()
@@ -58,7 +58,7 @@ export function checkControllerUpdates() {
 }
 
 export function powerOff() {
-  let noun = "Power Off Bot";
+  const noun = "Power Off Bot";
   devices
     .current
     .powerOff()
@@ -76,7 +76,7 @@ export function factoryReset() {
 }
 
 export function reboot() {
-  let noun = "Reboot Bot";
+  const noun = "Reboot Bot";
   devices
     .current
     .reboot()
@@ -84,7 +84,7 @@ export function reboot() {
 }
 
 export function emergencyLock() {
-  let noun = "Emergency stop";
+  const noun = "Emergency stop";
   devices
     .current
     .emergencyLock()
@@ -92,7 +92,7 @@ export function emergencyLock() {
 }
 
 export function emergencyUnlock() {
-  let noun = "Emergency unlock";
+  const noun = "Emergency unlock";
   if (confirm(`Are you sure you want to unlock the device?`)) {
     devices
       .current
@@ -102,9 +102,9 @@ export function emergencyUnlock() {
 }
 
 export function sync(): Thunk {
-  let noun = "Sync";
+  const noun = "Sync";
   return function (dispatch, getState) {
-    let IS_OK = versionOK(getState()
+    const IS_OK = versionOK(getState()
       .bot
       .hardware
       .informational_settings
@@ -156,8 +156,8 @@ export let fetchReleases =
     axios
       .get(url)
       .then((resp: HttpData<GithubRelease>) => {
-        let version = resp.data.tag_name;
-        let versionWithoutV = version.toLowerCase().replace("v", "");
+        const version = resp.data.tag_name;
+        const versionWithoutV = version.toLowerCase().replace("v", "");
         dispatch({
           type: "FETCH_OS_UPDATE_INFO_OK",
           payload: versionWithoutV
@@ -194,7 +194,7 @@ export function MCUFactoryReset() {
 }
 
 export function botConfigChange(key: configKey, value: number) {
-  let noun = "Setting toggle";
+  const noun = "Setting toggle";
 
   return devices
     .current
@@ -206,7 +206,7 @@ export function settingToggle(
   name: configKey, bot: BotState, displayAlert: string | undefined
 ) {
   if (displayAlert) { alert(displayAlert.replace(/\s+/g, " ")); }
-  let noun = "Setting toggle";
+  const noun = "Setting toggle";
   return devices
     .current
     .updateMcu({
@@ -239,7 +239,7 @@ export function pinToggle(pin_number: number) {
 }
 
 export function homeAll(speed: number) {
-  let noun = "'Home All' command";
+  const noun = "'Home All' command";
   devices
     .current
     .home({ axis: "all", speed })
@@ -247,7 +247,7 @@ export function homeAll(speed: number) {
 }
 
 function readStatus() {
-  let noun = "'Read Status' command";
+  const noun = "'Read Status' command";
   return devices
     .current
     .readStatus()
@@ -262,8 +262,8 @@ type ConnectDeviceReturn = {} | ((dispatch: Function) => void);
 const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
 export function connectDevice(token: string): ConnectDeviceReturn {
   return (dispatch: Function, getState: GetState) => {
-    let secure = location.protocol === "https:";
-    let bot = new Farmbot({ token, secure });
+    const secure = location.protocol === "https:";
+    const bot = new Farmbot({ token, secure });
     bot.on("online", () => dispatch(setMqttStatus(true)));
     bot.on("offline", () => {
       dispatch(setMqttStatus(false));
@@ -298,7 +298,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
         bot.on("status", _.throttle(function (msg: BotStateTree) {
           dispatch(incomingStatus(msg));
           if (NEED_VERSION_CHECK) {
-            let IS_OK = versionOK(getState()
+            const IS_OK = versionOK(getState()
               .bot
               .hardware
               .informational_settings
@@ -328,22 +328,22 @@ function fetchDeviceErr(err: Error) {
   };
 }
 
-let startUpdate = (dispatch: Function) => {
+const startUpdate = (dispatch: Function) => {
   dispatch({ type: "SETTING_UPDATE_START", payload: undefined });
 };
 
-let updateOK = (dispatch: Function, noun: string) => {
+const updateOK = (dispatch: Function, noun: string) => {
   dispatch({ type: "SETTING_UPDATE_END", payload: undefined });
   commandOK(noun);
 };
 
-let updateNO = (dispatch: Function, noun: string) => {
+const updateNO = (dispatch: Function, noun: string) => {
   dispatch({ type: "SETTING_UPDATE_END", payload: undefined });
   commandErr(noun);
 };
 
 export function updateMCU(key: configKey, val: string) {
-  let noun = "configuration update";
+  const noun = "configuration update";
   return function (dispatch: Function) {
     startUpdate(dispatch);
     devices
@@ -355,7 +355,7 @@ export function updateMCU(key: configKey, val: string) {
 }
 
 export function updateConfig(config: Configuration) {
-  let noun = "Update Config";
+  const noun = "Update Config";
   return function (dispatch: Function) {
     devices
       .current
@@ -376,8 +376,8 @@ const CHANNELS: keyof Log = "channels";
 const TOAST: ALLOWED_CHANNEL_NAMES = "toast";
 
 function maybeShowLog(log: Log) {
-  let chanList = _.get(log, CHANNELS, ["ERROR FETCHING CHANNELS"]);
-  let m = log.meta.type as ALLOWED_MESSAGE_TYPES;
+  const chanList = _.get(log, CHANNELS, ["ERROR FETCHING CHANNELS"]);
+  const m = log.meta.type as ALLOWED_MESSAGE_TYPES;
   const TITLE = "New message from bot";
   if (chanList.includes(TOAST)) {
     switch (m) {

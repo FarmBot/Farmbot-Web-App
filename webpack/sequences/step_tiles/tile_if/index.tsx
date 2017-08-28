@@ -47,10 +47,10 @@ export const operatorOptions: DropDownItem[] = [
 ];
 
 export function seqDropDown(i: ResourceIndex) {
-  let results: DropDownItem[] = [];
+  const results: DropDownItem[] = [];
   selectAllSequences(i)
     .map(function (x) {
-      let { body } = x;
+      const { body } = x;
       if (_.isNumber(body.id)) {
         results.push({ label: body.name, value: body.id });
       }
@@ -61,8 +61,8 @@ export function seqDropDown(i: ResourceIndex) {
 export function initialValue(input: Execute | Nothing, index: ResourceIndex) {
   switch (input.kind) {
     case "execute":
-      let id = input.args.sequence_id;
-      let seq = findSequenceById(index, id).body;
+      const id = input.args.sequence_id;
+      const seq = findSequenceById(index, id).body;
       if (_.isNumber(seq.id)) {
         return { label: seq.name, value: seq.id };
       } else {
@@ -76,14 +76,14 @@ export function initialValue(input: Execute | Nothing, index: ResourceIndex) {
 }
 
 export function InnerIf(props: IfParams) {
-  let {
+  const {
     index,
     dispatch,
     currentStep,
     currentSequence
   } = props;
-  let stuff = { dispatch, step: currentStep, sequence: currentSequence, index };
-  let recursive = isRecursive(currentStep, currentSequence);
+  const stuff = { dispatch, step: currentStep, sequence: currentSequence, index };
+  const recursive = isRecursive(currentStep, currentSequence);
   return <div>
     <div className="step-wrapper">
       <div className="row">
@@ -127,16 +127,16 @@ export function InnerIf(props: IfParams) {
 export let IfBlockDropDownHandler = (props: IfParams,
   key: "_else" | "_then") => {
 
-  let { dispatch, index } = props;
-  let step = props.currentStep;
-  let sequence = props.currentSequence;
-  let block = step.args[key];
-  let selectedItem = () => {
+  const { dispatch, index } = props;
+  const step = props.currentStep;
+  const sequence = props.currentSequence;
+  const block = step.args[key];
+  const selectedItem = () => {
     if (block.kind === "nothing") {
       return NULL_CHOICE;
     } else {
-      let value = (block.kind === "execute") && block.args.sequence_id;
-      let label = value && findSequenceById(props.resources, value).body.name;
+      const value = (block.kind === "execute") && block.args.sequence_id;
+      const label = value && findSequenceById(props.resources, value).body.name;
       if (_.isNumber(value) && _.isString(label)) {
         return { label, value };
       } else {
@@ -146,8 +146,8 @@ export let IfBlockDropDownHandler = (props: IfParams,
   };
 
   function overwriteStep(input: Execute | Nothing) {
-    let update = defensiveClone(step);
-    let nextSequence = defensiveClone(sequence).body;
+    const update = defensiveClone(step);
+    const nextSequence = defensiveClone(sequence).body;
     update.args[key] = input;
     (nextSequence.body || [])[index] = update;
     dispatch(overwrite(sequence, nextSequence));
@@ -155,7 +155,7 @@ export let IfBlockDropDownHandler = (props: IfParams,
 
   function onChange(e: DropDownItem) {
     if (e.value && _.isNumber(e.value)) {
-      let v = e.value;
+      const v = e.value;
       overwriteStep({ kind: "execute", args: { sequence_id: v } });
     } else {
       overwriteStep({ kind: "nothing", args: {} });

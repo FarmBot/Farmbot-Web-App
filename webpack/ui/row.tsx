@@ -7,7 +7,7 @@ interface RowProps extends React.HTMLProps<HTMLDivElement> {
 }
 
 export function Row(props: RowProps) {
-  let className = props.className ? props.className += " row" : "row";
+  const className = props.className ? props.className += " row" : "row";
   return <div className={className}>
     {props.children}
   </div>;

@@ -10,7 +10,7 @@ import { PlantPanel } from "./plant_panel";
 @connect(mapStateToProps)
 export class EditPlantInfo extends PlantInfoBase {
   default = (plant_info: TaggedPlantPointer) => {
-    let info = formatPlantInfo(plant_info);
+    const info = formatPlantInfo(plant_info);
     return <div className="panel-container green-panel" >
       <div className="panel-header green-panel">
         <p className="panel-title">
@@ -25,7 +25,7 @@ export class EditPlantInfo extends PlantInfoBase {
   }
 
   render() {
-    let plant_info = this.plant;
+    const plant_info = this.plant;
     return plant_info ? this.default(plant_info) : this.fallback();
   }
 }

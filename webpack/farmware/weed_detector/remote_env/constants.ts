@@ -123,8 +123,8 @@ export const TRANSLATORS: FormatTranslationMap = {};
 export function getSpecialValue(key: string | number):
   SPECIAL_VALUES {
 
-  let k = _.snakeCase(("" + key).toUpperCase()).toUpperCase();
-  let v = _.get(SPECIAL_VALUES, k, NaN);
+  const k = _.snakeCase(("" + key).toUpperCase()).toUpperCase();
+  const v = _.get(SPECIAL_VALUES, k, NaN);
 
   if (_.isUndefined(v) || _.isNaN(v)) {
     throw new Error("Not a SPECIAL_VALUE: " + k);

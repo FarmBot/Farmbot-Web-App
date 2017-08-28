@@ -10,7 +10,7 @@ function dontStopThem() { }
 /** Subscribe to the store. Stop the user from exiting if any part of the
  * state tree contains `dirty` resources. */
 export function dontExitIfBrowserIsOnHold(state: Everything) {
-  let unsavedWork =
+  const unsavedWork =
     !!all(state.resources.index)
       .filter(r => r.specialStatus === SpecialStatus.DIRTY)
       .length;
@@ -32,7 +32,7 @@ export let subscriptions: Subscription[] = [
 ];
 
 export function registerSubscribers(store: Store) {
-  let ENV_LIST = [process.env.NODE_ENV, "*"];
+  const ENV_LIST = [process.env.NODE_ENV, "*"];
   subscriptions.forEach(function (s) {
     if (ENV_LIST.includes(s.env)) {
       store.subscribe(() => s.fn(store.getState()));

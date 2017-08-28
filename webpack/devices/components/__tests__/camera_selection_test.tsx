@@ -5,8 +5,8 @@ jest.mock("../../../device", () => ({
     }
   }
 }));
-let mockInfo = jest.fn();
-let mockError = jest.fn();
+const mockInfo = jest.fn();
+const mockError = jest.fn();
 jest.mock("farmbot-toastr", () => ({ info: mockInfo, error: mockError }));
 
 import * as React from "react";
@@ -20,20 +20,20 @@ describe("<CameraSelection/>", () => {
   });
 
   it("doesn't render camera", () => {
-    let cameraSelection = mount(<CameraSelection
+    const cameraSelection = mount(<CameraSelection
       env={{}} />);
     expect(cameraSelection.find("button").text()).toEqual("None");
   });
 
   it("renders camera", () => {
-    let cameraSelection = mount(<CameraSelection
+    const cameraSelection = mount(<CameraSelection
       env={{ "camera": "\"RPI\"" }} />);
     expect(cameraSelection.find("button").text()).toEqual("Raspberry Pi Camera");
   });
 
   it("changes camera", () => {
-    let { mock } = devices.current.setUserEnv as jest.Mock<{}>;
-    let cameraSelection = shallow(<CameraSelection
+    const { mock } = devices.current.setUserEnv as jest.Mock<{}>;
+    const cameraSelection = shallow(<CameraSelection
       env={{}} />);
     cameraSelection.find("FBSelect")
       .simulate("change", { label: "My Camera", value: "mycamera" });

@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 /** Remove this in October 2017 - RC */
-let ONLY_ONCE = {
+const ONLY_ONCE = {
   need_to_talk: true
 };
 
@@ -8,7 +8,7 @@ export function inferTimezone(current: string | undefined): string {
   if (current) {
     return current;
   }
-  let browserTime = maybeResolveTZ();
+  const browserTime = maybeResolveTZ();
   if (browserTime) {
     if (ONLY_ONCE.need_to_talk) {
       alert("This account did not have a timezone set. " +

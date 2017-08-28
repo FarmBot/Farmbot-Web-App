@@ -7,7 +7,7 @@ import { BooleanMCUInputGroupProps } from "./interfaces";
 
 export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
 
-  let {
+  const {
     bot,
     tooltip,
     name,
@@ -21,7 +21,7 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
     displayAlert
   } = props;
 
-  let { mcu_params } = bot.hardware;
+  const { mcu_params } = bot.hardware;
 
   return (
     <Row>

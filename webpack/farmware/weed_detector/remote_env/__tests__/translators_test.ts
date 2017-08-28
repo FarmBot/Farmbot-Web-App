@@ -63,20 +63,20 @@ describe("formatEnvKey()", () => {
 
 describe("parseEnvKey()", () => {
   it("makes stuff a number again", () => {
-    let val = "\"Y\"";
-    let r = parseEnvKey("CAMERA_CALIBRATION_calibration_along_axis", val);
+    const val = "\"Y\"";
+    const r = parseEnvKey("CAMERA_CALIBRATION_calibration_along_axis", val);
     expect(r).toEqual(SPECIAL_VALUES.Y);
   });
 });
 
 describe("getDropdownSelection()", () => {
   it("unpacks special string values", () => {
-    let key: WDENVKey = "CAMERA_CALIBRATION_calibration_along_axis";
-    let stubs = { [key]: "\"Y\"" };
-    let fakeEnv = prepopulateEnv(stubs);
+    const key: WDENVKey = "CAMERA_CALIBRATION_calibration_along_axis";
+    const stubs = { [key]: "\"Y\"" };
+    const fakeEnv = prepopulateEnv(stubs);
     expect(fakeEnv[key]).toEqual(SPECIAL_VALUES.Y);
-    let finder = getDropdownSelection(fakeEnv);
-    let result = finder(key);
+    const finder = getDropdownSelection(fakeEnv);
+    const result = finder(key);
     expect(result.value).toEqual(SPECIAL_VALUES.Y);
   });
 });

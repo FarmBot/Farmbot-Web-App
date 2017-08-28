@@ -25,14 +25,14 @@ export interface SyncResponse {
 }
 
 export function fetchSyncData(dispatch: Function) {
-  let fetch = <T>(name: ResourceName, url: string, type = "RESOURCE_READY") =>
+  const fetch = <T>(name: ResourceName, url: string, type = "RESOURCE_READY") =>
     axios
       .get(url)
       .then((r: HttpData<T>): SyncResponse => dispatch({
         type, payload: { name, data: r.data }
       }), fail);
 
-  let fail = () => warning("Please try refreshing the page.",
+  const fail = () => warning("Please try refreshing the page.",
     "Error downloading data");
 
   fetch<User>("users", API.current.usersPath);

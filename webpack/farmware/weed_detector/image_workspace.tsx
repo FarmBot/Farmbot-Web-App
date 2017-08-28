@@ -40,7 +40,7 @@ interface Props extends NumericValues {
 }
 
 /** Mapping of HSV values to FBOS Env variables. */
-let CHANGE_MAP: Record<HSV, [NumericKeyName, NumericKeyName]> = {
+const CHANGE_MAP: Record<HSV, [NumericKeyName, NumericKeyName]> = {
   H: ["H_LO", "H_HI"],
   S: ["S_LO", "S_HI"],
   V: ["V_LO", "V_HI"]
@@ -54,7 +54,7 @@ export class ImageWorkspace extends React.Component<Props, {}> {
     };
 
   maybeProcessPhoto = () => {
-    let img = this.props.currentImage || this.props.images[0];
+    const img = this.props.currentImage || this.props.images[0];
     if (img && img.body.id) {
       this.props.onProcessPhoto(img.body.id);
     }
@@ -64,12 +64,12 @@ export class ImageWorkspace extends React.Component<Props, {}> {
    * for (H|S|L)_LO */
   onHslChange = (key: keyof typeof CHANGE_MAP) =>
     (values: [number, number]) => {
-      let keys = CHANGE_MAP[key];
+      const keys = CHANGE_MAP[key];
       [0, 1].map(i => this.props.onChange(keys[i], values[i]));
     };
 
   render() {
-    let { H_LO, H_HI, S_LO, S_HI, V_LO, V_HI } = this.props;
+    const { H_LO, H_HI, S_LO, S_HI, V_LO, V_HI } = this.props;
 
     return (
       <div className="widget-content">

@@ -13,15 +13,15 @@ import { Collapse } from "@blueprintjs/core";
 
 export function HomingAndCalibration(props: HomingAndCalibrationProps) {
 
-  let { dispatch, bot } = props;
-  let { mcu_params } = bot.hardware;
-  let { homing_and_calibration } = props.bot.controlPanelState;
+  const { dispatch, bot } = props;
+  const { mcu_params } = bot.hardware;
+  const { homing_and_calibration } = props.bot.controlPanelState;
 
   /**
    * Tells us if X/Y/Z have a means of checking their position.
    * FARMBOT WILL CRASH INTO WALLS IF THIS IS WRONG! BE CAREFUL.
    */
-  let enabled = enabledAxisMap(mcu_params);
+  const enabled = enabledAxisMap(mcu_params);
 
   return <section>
     <Header

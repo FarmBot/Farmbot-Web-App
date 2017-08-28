@@ -6,7 +6,7 @@ const BASE = "https://openfarm.cc/api/v1/crops/";
 export const DATA_URI = "data:image/svg+xml;utf8,";
 export const DEFAULT_ICON = "/app-resources/img/generic-plant.svg";
 
-let cache: Dictionary<Promise<Readonly<OFCropAttrs>>> = {};
+const cache: Dictionary<Promise<Readonly<OFCropAttrs>>> = {};
 
 export interface OFCropAttrs {
   svg_icon?: string | undefined;
@@ -40,7 +40,7 @@ export function cachedCrop(slug: string): Promise<Readonly<OFCropAttrs>> {
   return cache[slug];
 }
 
-let cacheTheIcon = (slug: string) =>
+const cacheTheIcon = (slug: string) =>
   (resp: HttpData<OFCropResponse>): Readonly<OFCropAttrs> => {
     if (resp
       && resp.data

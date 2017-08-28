@@ -4,10 +4,10 @@ import { Overlay, Classes } from "@blueprintjs/core";
 import { NavLinks } from "./nav_links";
 import { MobileMenuProps } from "./interfaces";
 
-let classes = [Classes.CARD, Classes.ELEVATION_4, "mobile-menu"];
+const classes = [Classes.CARD, Classes.ELEVATION_4, "mobile-menu"];
 
 export let MobileMenu = (props: MobileMenuProps) => {
-  let isActive = props.mobileMenuOpen ? "active" : "inactive";
+  const isActive = props.mobileMenuOpen ? "active" : "inactive";
   return (
     <div>
       <Overlay

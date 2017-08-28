@@ -11,7 +11,7 @@ interface SchedulerProps {
   upperBound?: Moment;
 }
 
-let nextYear = () => moment(moment().add(1, "year"));
+const nextYear = () => moment(moment().add(1, "year"));
 
 export function scheduler({ originTime,
   intervalSeconds,
@@ -22,18 +22,18 @@ export function scheduler({ originTime,
   }
   upperBound = upperBound || nextYear();
   // # How many items must we skip to get to the first occurence?
-  let skip_intervals =
+  const skip_intervals =
     Math.ceil((lowerBound.unix() - originTime.unix()) / intervalSeconds);
   // # At what time does the first event occur?
-  let first_item = originTime
+  const first_item = originTime
     .clone()
     .add((skip_intervals * intervalSeconds), "seconds");
-  let list = [first_item];
+  const list = [first_item];
 
   times(60, () => {
-    let x = last(list);
+    const x = last(list);
     if (x) {
-      let item = x.clone().add(intervalSeconds, "seconds");
+      const item = x.clone().add(intervalSeconds, "seconds");
       if (item.isBefore(upperBound)) {
         list.push(item);
       }
@@ -58,7 +58,7 @@ const LOOKUP: Record<TimeUnit, unitOfTime.Base> = {
  *  EXAMPLE: f(2, "minutely") => 120;
  */
 export function farmEventIntervalSeconds(repeat: number, unit: TimeUnit) {
-  let momentUnit = LOOKUP[unit];
+  const momentUnit = LOOKUP[unit];
   if ((unit === NEVER) || !(momentUnit)) {
     return 0;
   } else {
@@ -79,9 +79,9 @@ export interface TimeLine {
 /** Takes a subset of FarmEvent<Sequence> data and generates a list of dates. */
 export function scheduleForFarmEvent({ start_time, end_time, repeat, time_unit }:
   TimeLine): Moment[] {
-  let i = repeat && farmEventIntervalSeconds(repeat, time_unit);
+  const i = repeat && farmEventIntervalSeconds(repeat, time_unit);
   if (i && (time_unit !== NEVER)) {
-    let hmm = scheduler({
+    const hmm = scheduler({
       originTime: moment(start_time),
       lowerBound: moment(start_time),
       upperBound: end_time ? moment(end_time) : nextYear(),

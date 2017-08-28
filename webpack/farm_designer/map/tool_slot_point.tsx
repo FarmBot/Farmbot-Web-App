@@ -22,9 +22,9 @@ export class ToolSlotPoint extends
   get slot() { return this.props.slot; }
 
   render() {
-    let { x, y } = this.slot.toolSlot.body;
-    let { quadrant } = this.props;
-    let { qx, qy } = getXYFromQuadrant(x, y, quadrant);
+    const { x, y } = this.slot.toolSlot.body;
+    const { quadrant } = this.props;
+    const { qx, qy } = getXYFromQuadrant(x, y, quadrant);
     return <g>
       <circle key={this.slot.toolSlot.uuid}
         onMouseOver={() => this.setState({ hovered: true })}

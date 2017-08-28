@@ -24,9 +24,9 @@ describe("<ExecuteBlock/>", () => {
   }
 
   it("renders inputs", () => {
-    let block = bootstrapTest().component;
-    let inputs = block.find("input");
-    let labels = block.find("label");
+    const block = bootstrapTest().component;
+    const inputs = block.find("input");
+    const labels = block.find("label");
     expect(inputs.length).toEqual(1);
     expect(labels.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Execute Sequence");

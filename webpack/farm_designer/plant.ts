@@ -5,7 +5,7 @@ export const DEFAULT_PLANT_RADIUS = 25;
 
 /** Factory function for Plant types. */
 export function Plant(options: PlantOptions): PlantPointer {
-  let openfarm_slug = options.openfarm_slug || "not-set";
+  const openfarm_slug = options.openfarm_slug || "not-set";
   return {
     id: options.id,
     pointer_type: "Plant",
