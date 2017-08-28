@@ -23,6 +23,7 @@ const KEYS: McuParamName[] = [
   "encoder_type_z"
 ];
 
+// tslint:disable-next-line:no-any
 function isEncoderValue(x: any): x is Encoder { return !!Encoder[x]; }
 
 function findByType(input: number | string | undefined) {

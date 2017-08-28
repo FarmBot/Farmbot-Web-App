@@ -20,7 +20,7 @@ export let reducers = combineReducers({
  * "normal" reducer this is the place to do it */
 export function rootReducer(
   /** Sorry for the `any` here. */
-  state: any,
+  state: Everything,
   action: ReduxAction<{}>) {
   if (action.type === Actions.LOGOUT) {
     Session.clear();

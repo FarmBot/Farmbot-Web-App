@@ -133,7 +133,7 @@ export type PointerType =
   | TaggedGenericPointer
   | TaggedPlantPointer;
 
-function isTaggedPoint(x: any): x is PointerType {
+function isTaggedPoint(x: {}): x is PointerType {
   return (is("points")(x)) && (x.kind === "points");
 }
 

@@ -20,11 +20,13 @@ export let mwConfig: MiddlewareConfig[] = [
   }
 ];
 
+declare var __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: Function;
+
 export function getMiddleware(env: EnvName) {
   const middlewareFns = mwConfig
     .filter(function (mwc) { return (mwc.env === env) || (mwc.env === "*"); })
     .map((mwc) => mwc.fn);
-  const dtCompose = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+  const dtCompose = __REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
   const composeEnhancers = dtCompose || compose;
   const middlewares = applyMiddleware(...middlewareFns);
 

@@ -98,6 +98,7 @@ describe("<FarmEventForm/>", () => {
     const p = props();
     const i = instance(p);
     i.forceUpdate();
+    // tslint:disable-next-line:no-any
     i.fieldSet("repeat")(({ currentTarget: { value: "4" } } as any));
     i.forceUpdate();
     expect(i.state.fe.repeat).toEqual("4");

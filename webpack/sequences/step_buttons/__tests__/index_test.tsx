@@ -30,6 +30,7 @@ describe("<StepButton/>", () => {
     expect(action).toBeTruthy();
     expect(action.type).toBe("OVERWRITE_RESOURCE");
     if (p.current && p.current.body.body) {
+      // tslint:disable-next-line:no-any
       expect((action.payload.update as any).body[0]).toMatchObject(p.step);
     } else {
       fail("No");

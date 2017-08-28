@@ -61,10 +61,12 @@ describe("<ChangePassword/>", function () {
 
   it("sets a field", () => {
     const { el, instance } = testCase();
+    // tslint:disable-next-line:no-any
     instance().set("password")({ currentTarget: { value: "foo" } } as any);
     el.update();
     expect(instance().state.form.password).toBe("foo");
   });
+
   describe("AJAX", () => {
     beforeEach(function () {
       // import and pass your custom axios instance to this method

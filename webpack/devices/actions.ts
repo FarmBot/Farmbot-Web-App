@@ -39,7 +39,7 @@ function incomingStatus(statusMessage: HardwareState) {
 export function isLog(x: object): x is Log {
   return _.isObject(x) && _.isString(_.get(x, "message" as keyof Log));
 }
-const commandErr = (noun = "Command") => (x: any) => {
+const commandErr = (noun = "Command") => (x: {}) => {
   console.dir(x);
   console.info("Took longer than 6 seconds: " + noun);
 };

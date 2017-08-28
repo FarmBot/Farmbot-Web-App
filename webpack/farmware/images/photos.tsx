@@ -18,6 +18,7 @@ interface MetaInfoProps {
    */
   label?: string;
   attr: string;
+  // tslint:disable-next-line:no-any
   obj: any; /** Really, it's OK here! See safeStringFetch */
 }
 

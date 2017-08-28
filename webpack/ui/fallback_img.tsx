@@ -17,10 +17,10 @@ export class FallbackImg extends React.Component<Props, State> {
   state: State = { needsFallback: false };
 
   get imgProps() {
-    const imProps: ImgTag = defensiveClone(this.props);
+    const imProps: Props = defensiveClone(this.props);
     // React will complain at runtime if <img/> has extra props.
     // Typescript will compile at compile if I don't use `any` here:
-    delete (imProps as any).fallback;
+    delete imProps.fallback;
     return imProps;
   }
 
