@@ -62,6 +62,7 @@ export function mapStateToProps(props: Everything): Props {
       // THIS IS IMPORTANT:
       // If you remove the `any`, the tool will be serialized wrong and
       // cause errors.
+      // tslint:disable-next-line:no-null-keyword no-any
       const tool_id = d.value ? d.value : (null as any);
       dispatch(edit(t, { tool_id }));
     };

@@ -188,7 +188,7 @@ export class Wow extends React.Component<Props, Partial<State>> {
 }
 
 detectLanguage().then((config) => {
-  init(config, (err, t) => {
+  init(config, (err, t2) => {
     const node = document.createElement("DIV");
     node.id = "root";
     document.body.appendChild(node);
@@ -199,7 +199,7 @@ detectLanguage().then((config) => {
     if (domElem) {
       render(reactElem, domElem);
     } else {
-      throw new Error(t("Add a div with id `root` to the page first."));
+      throw new Error(t2("Add a div with id `root` to the page first."));
     }
   });
 });

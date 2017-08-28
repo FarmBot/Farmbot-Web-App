@@ -11,7 +11,7 @@ interface Props {
   xlOffset?: number;
 }
 
-export function parseClassNames(props: Props, base: string | null) {
+export function parseClassNames(props: Props, base?: string) {
 
   const classNames: string[] = [];
   if (base) { classNames.push(base); }

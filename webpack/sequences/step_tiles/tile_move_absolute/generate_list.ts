@@ -37,7 +37,8 @@ export const NAME_MAP: Record<PointerTypeName, string> = {
 
 const formatPoint = (toolNames: CowardlyDictionary<string>) =>
   (p: PointerType) => {
-    let { id, pointer_type, name, x, y, z } = p.body;
+    const { id, pointer_type, x, y, z } = p.body;
+    let { name } = p.body;
 
     // Special formatting rules for tool slots
     if (p.body.pointer_type === "ToolSlot") {

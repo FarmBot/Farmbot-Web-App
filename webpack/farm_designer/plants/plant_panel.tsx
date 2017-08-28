@@ -11,7 +11,8 @@ interface PlantPanelProps {
 }
 
 export function PlantPanel({ info, onDestroy }: PlantPanelProps) {
-  let { name, slug, plantedAt, daysOld, x, y, uuid } = info;
+  const { name, slug, plantedAt, daysOld, uuid } = info;
+  let { x, y } = info;
   if (onDestroy) { x = round(x); y = round(y); }
   const destroy = () => onDestroy && onDestroy(uuid);
   return <div className="panel-content">

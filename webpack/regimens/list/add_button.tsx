@@ -20,7 +20,8 @@ function emptyRegimen(length: number): TaggedRegimen {
 export function AddRegimen(props: AddRegimenProps) {
   props.className ? props.className : "";
   const classes = "fb-button green add " + props.className;
-  let { dispatch, length } = props;
+  let { length } = props;
+  const { dispatch } = props;
   return (
     <button
       className={classes}

@@ -18,11 +18,11 @@ function prod() {
 }
 
 export function configureStore(options = {}) {
-  const store: Store = (ENV === "production" ? prod() : dev());
+  const store2: Store = (ENV === "production" ? prod() : dev());
   // Make store global in case I need to probe it.
-  (window as any)["store"] = store;
-  registerSubscribers(store);
-  return store;
+  (window as any)["store"] = store2;
+  registerSubscribers(store2);
+  return store2;
 }
 
 export let store = configureStore();

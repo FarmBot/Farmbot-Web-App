@@ -48,6 +48,7 @@
     "curly": true,
     "eofline": true,
     "no-angle-bracket-type-assertion": true,
+    "no-any": true,
     "no-arg": true,
     "no-bitwise": true,
     "no-conditional-assignment": true,
