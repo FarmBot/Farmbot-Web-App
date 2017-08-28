@@ -30,7 +30,16 @@ export interface LoginProps {
 }
 
 export class Login extends React.Component<LoginProps, {}> {
+  /** PROBLEM: <BlurableInput /> only updates when when `blur` event happens.
+   *           * No update when you push return key- that's a submit event.
+   * SOLUTION: Intercept the `submit` event and forcibly focus on a hidden
+   *           input control, thereby triggering the blur event across all
+   *           fields.
+   */
   private hiddenFieldRef: HTMLElement | undefined = undefined;
+
+  /** CSS to hide the fake input field used to change focus. */
+  HIDE_ME = { background: "transparent", border: "none", display: "node" };
 
   render() {
     const {
@@ -60,12 +69,14 @@ export class Login extends React.Component<LoginProps, {}> {
         <WidgetBody>
           <form onSubmit={(e) => {
             e.preventDefault();
+            /** Force focus on fake input. Triggers blur on all inputs. */
             this.hiddenFieldRef && this.hiddenFieldRef.focus();
-            setTimeout(() => onSubmit(e), 1);
+            /** Give React time to update stuff before triggering callback. */
+            setTimeout(() => onSubmit(e), 3);
           }}>
             <div style={{ width: 1, height: 1, overflow: "hidden" }}>
-              <input type="checkbox"
-                style={{ background: "transparent", border: "none", display: "node" }}
+              <input type="text"
+                style={this.HIDE_ME}
                 ref={(x) => x && (this.hiddenFieldRef = x)} />
             </div>
             <label>
