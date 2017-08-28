@@ -21,9 +21,9 @@ export class AxisInputBoxGroup extends
   }
 
   get vector() {
-    let { x, y, z } = this.state;
-    let p = this.props.position;
-    let x2 = p.x,
+    const { x, y, z } = this.state;
+    const p = this.props.position;
+    const x2 = p.x,
       y2 = p.y,
       z2 = p.z;
 
@@ -40,31 +40,29 @@ export class AxisInputBoxGroup extends
   }
 
   render() {
-    let { x, y, z } = this.state;
+    const { x, y, z } = this.state;
 
-    return (
-      <Row>
-        <AxisInputBox
-          onChange={this.change}
-          axis={"x"}
-          value={x} />
-        <AxisInputBox
-          onChange={this.change}
-          axis={"y"}
-          value={y} />
-        <AxisInputBox
-          onChange={this.change}
-          axis={"z"}
-          value={z} />
-        <Col xs={3}>
-          <button
-            onClick={this.clicked}
-            disabled={this.props.disabled || false}
-            className="full-width green go fb-button" >
-            {t("GO")}
-          </button>
-        </Col>
-      </Row>
-    );
+    return <Row>
+      <AxisInputBox
+        onChange={this.change}
+        axis={"x"}
+        value={x} />
+      <AxisInputBox
+        onChange={this.change}
+        axis={"y"}
+        value={y} />
+      <AxisInputBox
+        onChange={this.change}
+        axis={"z"}
+        value={z} />
+      <Col xs={3}>
+        <button
+          onClick={this.clicked}
+          disabled={this.props.disabled || false}
+          className="full-width green go fb-button" >
+          {t("GO")}
+        </button>
+      </Col>
+    </Row>;
   }
 }

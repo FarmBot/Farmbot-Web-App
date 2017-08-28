@@ -1,7 +1,7 @@
 import * as React from "react";
 import { JSXChildren } from "../util";
-let emoji = require("markdown-it-emoji");
-let md = require("markdown-it")({
+const emoji = require("markdown-it-emoji");
+const md = require("markdown-it")({
   /** Enable HTML tags in source */
   html: true,
   /** Convert '\n' in paragraphs into <br> */
@@ -19,11 +19,9 @@ interface MarkdownProps {
 }
 
 export function Markdown(props: MarkdownProps) {
-  let result = md.render(props.children);
-  return (
-    <span
-      className="markdown"
-      dangerouslySetInnerHTML={{ __html: result }}>
-    </span>
-  );
+  const result = md.render(props.children);
+  return <span
+    className="markdown"
+    dangerouslySetInnerHTML={{ __html: result }}>
+  </span>;
 }

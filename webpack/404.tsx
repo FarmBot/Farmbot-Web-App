@@ -9,14 +9,12 @@ const STYLES = {
 
 export class FourOhFour extends React.Component<{}, {}> {
   render() {
-    return (
-      <div className="404">
-        <div className="all-content-wrapper">
-          <h1 style={STYLES}>
-            {t("Page Not Found.")}
-          </h1>
-        </div>
+    return <div className="404">
+      <div className="all-content-wrapper">
+        <h1 style={STYLES}>
+          {t("Page Not Found.")}
+        </h1>
       </div>
-    );
+    </div>;
   }
 }

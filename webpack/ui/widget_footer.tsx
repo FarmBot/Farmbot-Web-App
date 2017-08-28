@@ -6,9 +6,7 @@ interface WidgetFooterProps {
 }
 
 export function WidgetFooter(props: WidgetFooterProps) {
-  return (
-    <div className="widget-footer">
-      {props.children}
-    </div>
-  );
+  return <div className="widget-footer">
+    {props.children}
+  </div>;
 }

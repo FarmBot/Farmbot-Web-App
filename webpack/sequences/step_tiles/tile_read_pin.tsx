@@ -10,8 +10,8 @@ import { FBSelect } from "../../ui/new_fb_select";
 import { setPinMode, currentSelection, PIN_MODES } from "./tile_pin_support";
 
 export function TileReadPin(props: StepParams) {
-  let { dispatch, currentStep, index, currentSequence } = props;
-  return (<div>
+  const { dispatch, currentStep, index, currentSequence } = props;
+  return <div>
     <div className="step-wrapper">
       <div className="row">
         <div className="col-sm-12">
@@ -63,5 +63,5 @@ export function TileReadPin(props: StepParams) {
         </div>
       </div>
     </div>
-  </div>);
+  </div>;
 }
