@@ -10,7 +10,7 @@ import { Session } from "../session";
 import { FrontPageState } from "./interfaces";
 import { Row, Col, Widget, WidgetHeader, WidgetBody, BlurableInput } from "../ui/index";
 import { LoginProps, Login } from "./login";
-import { ForgotPassword } from "./forgot_password";
+import { ForgotPassword, ForgotPasswordProps } from "./forgot_password";
 
 export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   constructor() {
@@ -110,7 +110,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     this.setState({ forgotPassword: !this.state.forgotPassword });
   }
 
-  submitForgotPassword = (e: React.SyntheticEvent<HTMLInputElement>) => {
+  submitForgotPassword = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { email } = this.state;
     const data = { email };
@@ -161,8 +161,8 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     }
   }
 
-  loginPanelProps = (): LoginProps => {
-    return {
+  loginPanel = () => {
+    const props: LoginProps = {
       email: this.state.email || "",
       onEmailChange: this.set("email"),
       loginPassword: this.state.loginPassword || "",
@@ -176,6 +176,17 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       onToggleForgotPassword: this.toggleForgotPassword,
       onSubmit: this.submitLogin,
     };
+    return <Login {...props} />;
+  }
+
+  forgotPasswordPanel = () => {
+    const props: ForgotPasswordProps = {
+      onToggleForgotPassword: this.toggleForgotPassword,
+      onSubmit: this.submitForgotPassword,
+      email: this.state.email || "",
+      onEmailChange: this.set("email"),
+    };
+    return <ForgotPassword {...props} />;
   }
 
   defaultContent() {
@@ -218,8 +229,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             className="hidden-xs hidden-md hidden-lg hidden-xl col-sm-7"
             src="/app-resources/img/farmbot-tablet.png" />
           <Row>
-            {forgotPassword ?
-              <Login {...this.loginPanelProps() } /> : <ForgotPassword />}
+            {!forgotPassword ? this.loginPanel() : this.forgotPasswordPanel()}
             <Col xs={12} sm={5}>
               <Widget>
                 <WidgetHeader title={"Create An Account"} />
@@ -254,8 +264,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
                     {this.maybeRenderTos()}
                     <Row>
                       <button
-                        className="fb-button green"
-                        style={buttonStylesUniqueToOnlyThisPage}>
+                        className="fb-button green front-page-button">
                         {t("Create Account")}
                       </button>
                     </Row>

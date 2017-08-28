@@ -2,12 +2,11 @@ import * as React from "react";
 import { Col, Widget, WidgetHeader, WidgetBody, BlurableInput, Row } from "../ui/index";
 import { t } from "i18next";
 
-interface X<T> extends React.SyntheticEvent<T> { }
-interface ForgotPasswordProps {
+export interface ForgotPasswordProps {
   onToggleForgotPassword(e: React.MouseEvent<HTMLButtonElement>): void;
   onSubmit(e: React.FormEvent<HTMLFormElement>): void;
   email: string;
-  onEmailChange(e: X<HTMLInputElement>): void;
+  onEmailChange(e: React.SyntheticEvent<HTMLInputElement>): void;
 }
 
 export function ForgotPassword(props: ForgotPasswordProps) {
@@ -27,7 +26,7 @@ export function ForgotPassword(props: ForgotPasswordProps) {
         </button>
       </WidgetHeader>
       <WidgetBody>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={(e) => onSubmit}>
           <label>{t("Enter Email")}</label>
           <BlurableInput
             type="email"

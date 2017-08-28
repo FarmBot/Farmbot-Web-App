@@ -92,7 +92,7 @@ export function Login(props: LoginProps) {
             </div>
           }
           <Row>
-            <button className="fb-button green pull-right  front-page-button">
+            <button className="fb-button green pull-right front-page-button">
               {t("Login")}
             </button>
           </Row>
