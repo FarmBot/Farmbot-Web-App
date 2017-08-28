@@ -30,6 +30,8 @@ export interface LoginProps {
 }
 
 export class Login extends React.Component<LoginProps, {}> {
+  private hiddenFieldRef: HTMLElement | undefined = undefined;
+
   render() {
     const {
       email,
@@ -56,7 +58,16 @@ export class Login extends React.Component<LoginProps, {}> {
           </button>
         </WidgetHeader>
         <WidgetBody>
-          <form onSubmit={onSubmit}>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            this.hiddenFieldRef && this.hiddenFieldRef.focus();
+            setTimeout(() => onSubmit(e), 1);
+          }}>
+            <div style={{ width: 1, height: 1, overflow: "hidden" }}>
+              <input type="checkbox"
+                style={{ background: "transparent", border: "none", display: "node" }}
+                ref={(x) => x && (this.hiddenFieldRef = x)} />
+            </div>
             <label>
               {t("Email")}
             </label>
