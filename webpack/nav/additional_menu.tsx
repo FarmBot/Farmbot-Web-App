@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router";
 import { t } from "i18next";
+import { LangToggle } from "./lang_toggle";
 
 export const AdditionalMenu = (logout: () => void) => {
   return <div className="nav-additional-menu">
@@ -8,6 +9,7 @@ export const AdditionalMenu = (logout: () => void) => {
       <i className="fa fa-cog"></i>
       {t("Account Settings")}
     </Link>
+    <LangToggle />
     <div>
       <a
         href="https://software.farmbot.io/docs/the-farmbot-web-app"

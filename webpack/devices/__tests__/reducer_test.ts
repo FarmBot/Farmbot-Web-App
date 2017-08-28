@@ -20,13 +20,13 @@ describe("safeStringFetch", () => {
 
 describe("botRedcuer", () => {
   it("Starts / stops an update", () => {
-    let step1 = botReducer(initialState, {
+    const step1 = botReducer(initialState, {
       type: Actions.SETTING_UPDATE_START,
       payload: undefined
     });
     expect(step1.isUpdating).toBe(true);
 
-    let step2 = botReducer(step1, {
+    const step2 = botReducer(step1, {
       type: Actions.SETTING_UPDATE_END,
       payload: undefined
     });
@@ -35,7 +35,7 @@ describe("botRedcuer", () => {
   });
 
   it("changes step size", () => {
-    let state = botReducer(initialState, {
+    const state = botReducer(initialState, {
       type: Actions.CHANGE_STEP_SIZE,
       payload: 23
     });
@@ -43,8 +43,8 @@ describe("botRedcuer", () => {
   });
 
   it("toggles control panel options", () => {
-    let payload: keyof ControlPanelState = "danger_zone";
-    let state = botReducer(initialState, {
+    const payload: keyof ControlPanelState = "danger_zone";
+    const state = botReducer(initialState, {
       type: Actions.TOGGLE_CONTROL_PANEL_OPTION,
       payload
     });
@@ -53,7 +53,7 @@ describe("botRedcuer", () => {
   });
 
   it("fetches OS update info", () => {
-    let r = botReducer(initialState, {
+    const r = botReducer(initialState, {
       type: Actions.FETCH_OS_UPDATE_INFO_OK,
       payload: "1.2.3"
     }).currentOSVersion;
@@ -61,8 +61,8 @@ describe("botRedcuer", () => {
   });
 
   it("sets sync status", () => {
-    let payload: SyncStatus = "locked";
-    let state = botReducer(initialState, {
+    const payload: SyncStatus = "locked";
+    const state = botReducer(initialState, {
       type: Actions.SET_SYNC_STATUS,
       payload
     });
@@ -73,36 +73,34 @@ describe("botRedcuer", () => {
   });
 
   it("inverts X/Y/Z", () => {
-    let action = { type: Actions.INVERT_JOG_BUTTON, payload: "Q" };
-    expect(() => { botReducer(initialState, action); }).toThrow();
+    const action = { type: Actions.INVERT_JOG_BUTTON, payload: "Q" };
 
     action.payload = "x";
-    let result = botReducer(initialState, action);
-    expect(result.x_axis_inverted)
-      .toBe(!initialState.x_axis_inverted);
+    const result = botReducer(initialState, action);
+    expect(result.axis_inversion.x)
+      .toBe(!initialState.axis_inversion.x);
 
     action.payload = "y";
-    expect(botReducer(initialState, action).y_axis_inverted)
-      .toBe(!initialState.y_axis_inverted);
+    expect(botReducer(initialState, action).axis_inversion.y)
+      .toBe(!initialState.axis_inversion.y);
 
     action.payload = "z";
-    expect(botReducer(initialState, action).z_axis_inverted)
-      .toBe(!initialState.z_axis_inverted);
+    expect(botReducer(initialState, action).axis_inversion.z)
+      .toBe(!initialState.axis_inversion.z);
 
   });
 
   it("toggles encoder data display", () => {
-    let action = { type: Actions.DISPLAY_ENCODER_DATA, payload: "Q" };
-    expect(() => { botReducer(initialState, action); }).toThrow();
+    const action = { type: Actions.DISPLAY_ENCODER_DATA, payload: "Q" };
 
     action.payload = "raw_encoders";
-    let result = botReducer(initialState, action);
-    expect(result.raw_encoders)
-      .toBe(!initialState.raw_encoders);
+    const result = botReducer(initialState, action);
+    expect(result.encoder_visibility.raw_encoders)
+      .toBe(!initialState.encoder_visibility.raw_encoders);
 
     action.payload = "scaled_encoders";
-    expect(botReducer(initialState, action).scaled_encoders)
-      .toBe(!initialState.scaled_encoders);
+    expect(botReducer(initialState, action).encoder_visibility.scaled_encoders)
+      .toBe(!initialState.encoder_visibility.scaled_encoders);
 
   });
 

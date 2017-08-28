@@ -12,24 +12,33 @@ import { MoveProps, EncoderDisplay } from "./interfaces";
 import { Xyz, BotLocationData } from "../devices/interfaces";
 import { Popover, Position } from "@blueprintjs/core";
 import { AxisDisplayGroup } from "./axis_display_group";
+import { Session } from "../session";
+import { INVERSION_MAPPING, ENCODER_MAPPING } from "../devices/reducer";
 
 export class Move extends React.Component<MoveProps, {}> {
 
-  toggle = (name: Xyz) => () =>
+  toggle = (name: Xyz) => () => {
+    Session.invertBool(INVERSION_MAPPING[name]);
     this.props.dispatch({ type: "INVERT_JOG_BUTTON", payload: name });
+  };
 
-  toggle_encoder_data = (name: EncoderDisplay) => () =>
+  toggle_encoder_data =
+  (name: EncoderDisplay) => () => {
+    Session.invertBool(ENCODER_MAPPING[name]);
     this.props.dispatch({ type: "DISPLAY_ENCODER_DATA", payload: name });
+  }
 
   render() {
-    let { sync_status } = this.props.bot.hardware.informational_settings;
-    let { x_axis_inverted, y_axis_inverted, z_axis_inverted,
-      raw_encoders, scaled_encoders } = this.props.bot;
-    let xBtnColor = x_axis_inverted ? "green" : "red";
-    let yBtnColor = y_axis_inverted ? "green" : "red";
-    let zBtnColor = z_axis_inverted ? "green" : "red";
-    let rawBtnColor = raw_encoders ? "green" : "red";
-    let scaledBtnColor = scaled_encoders ? "green" : "red";
+    const { sync_status } = this.props.bot.hardware.informational_settings;
+    const x_axis_inverted = this.props.bot.axis_inversion.x;
+    const y_axis_inverted = this.props.bot.axis_inversion.y;
+    const z_axis_inverted = this.props.bot.axis_inversion.z;
+    const { raw_encoders, scaled_encoders } = this.props.bot.encoder_visibility;
+    const xBtnColor = x_axis_inverted ? "green" : "red";
+    const yBtnColor = y_axis_inverted ? "green" : "red";
+    const zBtnColor = z_axis_inverted ? "green" : "red";
+    const rawBtnColor = raw_encoders ? "green" : "red";
+    const scaledBtnColor = scaled_encoders ? "green" : "red";
     let locationData: BotLocationData;
     if (this.props.bot.hardware.location_data) {
       locationData = this.props.bot.hardware.location_data;
@@ -40,9 +49,9 @@ export class Move extends React.Component<MoveProps, {}> {
         scaled_encoders: { x: undefined, y: undefined, z: undefined },
       };
     }
-    let motor_coordinates = locationData.position;
-    let raw_encoders_data = locationData.raw_encoders;
-    let scaled_encoders_data = locationData.scaled_encoders;
+    const motor_coordinates = locationData.position;
+    const raw_encoders_data = locationData.raw_encoders;
+    const scaled_encoders_data = locationData.scaled_encoders;
 
     return (
       <Widget>

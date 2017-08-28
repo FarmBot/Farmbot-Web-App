@@ -16,6 +16,7 @@ import {
 import { RestResources } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
+import { EncoderDisplay } from "../controls/interfaces";
 
 export interface Props {
   auth: AuthState | undefined;
@@ -52,12 +53,9 @@ export interface BotState {
   isUpdating?: boolean;
   controlPanelState: ControlPanelState;
   /** The inversions for the jog buttons on the controls page. */
-  x_axis_inverted: boolean;
-  y_axis_inverted: boolean;
-  z_axis_inverted: boolean;
+  axis_inversion: Record<Xyz, boolean>;
   /** The display setting for encoder data on the controls page. */
-  raw_encoders: boolean;
-  scaled_encoders: boolean;
+  encoder_visibility: Record<EncoderDisplay, boolean>;
 }
 
 export interface BotProp {

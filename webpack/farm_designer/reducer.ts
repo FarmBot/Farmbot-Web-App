@@ -9,16 +9,13 @@ import {
 } from "./interfaces";
 import { cloneDeep } from "lodash";
 import { TaggedResource } from "../resources/tagged_resources";
-import { localStorageNumFetch } from "../util";
 import { Actions } from "../constants";
+import { Session } from "../session";
+import { NumericSetting } from "../session_keys";
 
-export const BOT_ORIGIN_QUADRANT = "bot_origin_quadrant";
-export const ZOOM_LEVEL = "zoom_level";
-
-let botOriginVal = localStorageNumFetch(BOT_ORIGIN_QUADRANT);
+let botOriginVal = Session.getNum(NumericSetting.BOT_ORIGIN_QUADRANT);
 let botOriginQuadrant = isBotOriginQuadrant(botOriginVal) ? botOriginVal : 2;
-
-let zoomLevelVal = localStorageNumFetch(ZOOM_LEVEL);
+let zoomLevelVal = Session.getNum(NumericSetting.ZOOM_LEVEL);
 let zoomLevel = zoomLevelVal ? zoomLevelVal : 1;
 
 export let initialState: DesignerState = {
@@ -48,14 +45,14 @@ export let designer = generateReducer<DesignerState>(initialState)
     return s;
   })
   .add<BotOriginQuadrant>(Actions.UPDATE_BOT_ORIGIN_QUADRANT, (s, a) => {
-    localStorage.setItem(BOT_ORIGIN_QUADRANT, JSON.stringify(a.payload));
+    Session.setNum(NumericSetting.BOT_ORIGIN_QUADRANT, a.payload);
     s.botOriginQuadrant = a.payload;
     return s;
   })
   .add<ZoomLevelPayl>(Actions.UPDATE_MAP_ZOOM_LEVEL, (s, { payload }) => {
     let value = s.zoomLevel + payload;
     s.zoomLevel = value;
-    localStorage.setItem(ZOOM_LEVEL, value.toString());
+    Session.setNum(NumericSetting.ZOOM_LEVEL, value);
     return s;
   })
   .add<CropLiveSearchResult[]>(Actions.OF_SEARCH_RESULTS_OK, (s, a) => {

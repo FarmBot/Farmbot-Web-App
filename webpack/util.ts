@@ -146,16 +146,6 @@ export function safeStringFetch(obj: any, key: string): string {
   }
 }
 
-export function localStorageNumFetch(key: string): number | undefined {
-  let output = JSON.parse(_.get(localStorage, key, "null"));
-  return (_.isNumber(output)) ? output : undefined;
-}
-
-export function localStorageBoolFetch(key: string): boolean {
-  let output = JSON.parse(_.get(localStorage, key, "false"));
-  return !output;
-}
-
 /** We don't support IE. This method stops users from trying to use the site.
  * It's unfortunate that we need to do this, but the site simply won't work on
  * old browsers and our error logs were getting full of IE related bugs. */

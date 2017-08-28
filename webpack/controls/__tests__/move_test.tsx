@@ -4,13 +4,13 @@ import { Move } from "../move";
 import { bot } from "../../__test_support__/fake_state/bot";
 
 describe("<Move />", () => {
-  let fakeBot = bot;
+  const fakeBot = bot;
   it("has default elements", () => {
-    let wrapper = mount(<Move dispatch={jest.fn()}
+    const wrapper = mount(<Move dispatch={jest.fn()}
       bot={fakeBot}
       user={undefined}
       disabled={false} />);
-    let txt = wrapper.text().toLowerCase();
+    const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("move amount (mm)");
     expect(txt).toContain("110100100010000");
     expect(txt).toContain("x axisy axisz axis");
@@ -19,24 +19,24 @@ describe("<Move />", () => {
   });
 
   it("has only raw encoder data display", () => {
-    fakeBot.raw_encoders = true;
-    let wrapper = mount(<Move dispatch={jest.fn()}
+    fakeBot.encoder_visibility.raw_encoders = true;
+    const wrapper = mount(<Move dispatch={jest.fn()}
       bot={fakeBot}
       user={undefined}
       disabled={false} />);
-    let txt = wrapper.text().toLowerCase();
+    const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("raw");
     expect(txt).not.toContain("scaled");
   });
 
   it("has both encoder data displays", () => {
-    fakeBot.raw_encoders = true;
-    fakeBot.scaled_encoders = true;
-    let wrapper = mount(<Move dispatch={jest.fn()}
+    fakeBot.encoder_visibility.raw_encoders = true;
+    fakeBot.encoder_visibility.scaled_encoders = true;
+    const wrapper = mount(<Move dispatch={jest.fn()}
       bot={fakeBot}
       user={undefined}
       disabled={false} />);
-    let txt = wrapper.text().toLowerCase();
+    const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("raw");
     expect(txt).toContain("scaled");
   });

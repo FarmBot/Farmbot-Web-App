@@ -24,7 +24,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     tickerListOpen: false
   };
 
-  logout = () => Session.clear(true);
+  logout = () => Session.clear();
 
   toggle = (name: keyof NavBarState) => () =>
     this.setState({ [name]: !this.state[name] });
