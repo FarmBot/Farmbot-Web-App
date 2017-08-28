@@ -29,75 +29,77 @@ export interface LoginProps {
   onServerPortChange(e: React.SyntheticEvent<HTMLInputElement>): void;
 }
 
-export function Login(props: LoginProps) {
-  const {
-    email,
-    loginPassword,
-    onEmailChange,
-    onSubmit,
-    onLoginPasswordChange,
-    onServerPortChange,
-    onServerURLChange,
-    serverPort,
-    serverURL,
-    showServerOpts,
-    onToggleForgotPassword,
-    onToggleServerOpts,
-  } = props;
-  const expandIcon = showServerOpts ? "minus" : "plus";
-  return <Col xs={12} sm={5}>
-    <Widget>
-      <WidgetHeader title={"Login"}>
-        <button
-          className="fb-button gray"
-          onClick={onToggleServerOpts} >
-          <i className={`fa fa-${expandIcon}`} />
-        </button>
-      </WidgetHeader>
-      <WidgetBody>
-        <form onSubmit={onSubmit}>
-          <label>
-            {t("Email")}
-          </label>
-          <BlurableInput
-            type="email"
-            value={email || ""}
-            onCommit={onEmailChange} />
-          <label>
-            {t("Password")}
-          </label>
-          <BlurableInput
-            type="password"
-            value={loginPassword || ""}
-            onCommit={onLoginPasswordChange} />
-          <a className="forgot-password" onClick={onToggleForgotPassword} >
-            {t("Forgot password?")}
-          </a>
-          {showServerOpts &&
-            <div>
-              <label>
-                {t("Server URL")}
-              </label>
-              <BlurableInput
-                type="text"
-                onCommit={onServerURLChange}
-                value={serverURL || ""} />
-              <label>
-                {t("Server Port")}
-              </label>
-              <BlurableInput
-                type="text"
-                onCommit={onServerPortChange}
-                value={serverPort || ""} />
-            </div>
-          }
-          <Row>
-            <button className="fb-button green pull-right front-page-button">
-              {t("Login")}
-            </button>
-          </Row>
-        </form>
-      </WidgetBody>
-    </Widget>
-  </Col>;
+export class Login extends React.Component<LoginProps, {}> {
+  render() {
+    const {
+      email,
+      loginPassword,
+      onEmailChange,
+      onSubmit,
+      onLoginPasswordChange,
+      onServerPortChange,
+      onServerURLChange,
+      serverPort,
+      serverURL,
+      showServerOpts,
+      onToggleForgotPassword,
+      onToggleServerOpts,
+    } = this.props;
+    const expandIcon = showServerOpts ? "minus" : "plus";
+    return <Col xs={12} sm={5}>
+      <Widget>
+        <WidgetHeader title={"Login"}>
+          <button
+            className="fb-button gray"
+            onClick={onToggleServerOpts} >
+            <i className={`fa fa-${expandIcon}`} />
+          </button>
+        </WidgetHeader>
+        <WidgetBody>
+          <form onSubmit={onSubmit}>
+            <label>
+              {t("Email")}
+            </label>
+            <BlurableInput
+              type="email"
+              value={email || ""}
+              onCommit={onEmailChange} />
+            <label>
+              {t("Password")}
+            </label>
+            <BlurableInput
+              type="password"
+              value={loginPassword || ""}
+              onCommit={onLoginPasswordChange} />
+            <a className="forgot-password" onClick={onToggleForgotPassword} >
+              {t("Forgot password?")}
+            </a>
+            {showServerOpts &&
+              <div>
+                <label>
+                  {t("Server URL")}
+                </label>
+                <BlurableInput
+                  type="text"
+                  onCommit={onServerURLChange}
+                  value={serverURL || ""} />
+                <label>
+                  {t("Server Port")}
+                </label>
+                <BlurableInput
+                  type="text"
+                  onCommit={onServerPortChange}
+                  value={serverPort || ""} />
+              </div>
+            }
+            <Row>
+              <button className="fb-button green pull-right front-page-button">
+                {t("Login")}
+              </button>
+            </Row>
+          </form>
+        </WidgetBody>
+      </Widget>
+    </Col>;
+  }
 }
