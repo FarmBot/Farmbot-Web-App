@@ -191,91 +191,89 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
 
   defaultContent() {
     const { forgotPassword } = this.state;
-    return (
-      <div className="static-page">
-        <Row>
-          <Col xs={12}>
-            <h1 className="text-center">
-              {t("Welcome to the")}
-              <br className="hidden-sm hidden-md hidden-lg hidden-xl" />
-              &nbsp;
+    return <div className="static-page">
+      <Row>
+        <Col xs={12}>
+          <h1 className="text-center">
+            {t("Welcome to the")}
+            <br className="hidden-sm hidden-md hidden-lg hidden-xl" />
+            &nbsp;
               {t("FarmBot Web App")}
-            </h1>
+          </h1>
+        </Col>
+      </Row>
+
+      <div className="inner-width">
+        <Row>
+          <h2 className="text-center">
+            <Col xs={12}>
+              {t("Setup, customize, and control FarmBot from your")}
+              &nbsp;
+            <span className="hidden-xs hidden-sm hidden-md">
+                {t("computer")}
+              </span>
+              <span className="hidden-xs hidden-lg hidden-xl">
+                {t("tablet")}
+              </span>
+              <span className="hidden-sm hidden-md hidden-lg hidden-xl">
+                {t("smartphone")}
+              </span>
+            </Col>
+          </h2>
+        </Row>
+        <img
+          className="hidden-xs hidden-sm col-md-7"
+          src="/app-resources/img/farmbot-desktop.png" />
+        <img
+          className="hidden-xs hidden-md hidden-lg hidden-xl col-sm-7"
+          src="/app-resources/img/farmbot-tablet.png" />
+        <Row>
+          {!forgotPassword ? this.loginPanel() : this.forgotPasswordPanel()}
+          <Col xs={12} sm={5}>
+            <Widget>
+              <WidgetHeader title={"Create An Account"} />
+              <WidgetBody>
+                <form onSubmit={this.submitRegistration}>
+                  <label>
+                    {t("Email")}
+                  </label>
+                  <BlurableInput
+                    type="email"
+                    value={this.state.regEmail || ""}
+                    onCommit={this.set("regEmail")} />
+                  <label>
+                    {t("Name")}
+                  </label>
+                  <BlurableInput
+                    type="text"
+                    value={this.state.regName || ""}
+                    onCommit={this.set("regName")} />
+                  <label>
+                    {t("Password")}
+                  </label>
+                  <BlurableInput
+                    type="password"
+                    value={this.state.regPassword || ""}
+                    onCommit={this.set("regPassword")} />
+                  <label>{t("Verify Password")}</label>
+                  <BlurableInput
+                    type="password"
+                    value={this.state.regConfirmation || ""}
+                    onCommit={this.set("regConfirmation")} />
+                  {this.maybeRenderTos()}
+                  <Row>
+                    <button
+                      className="fb-button green front-page-button">
+                      {t("Create Account")}
+                    </button>
+                  </Row>
+                </form>
+              </WidgetBody>
+            </Widget>
           </Col>
         </Row>
-
-        <div className="inner-width">
-          <Row>
-            <h2 className="text-center">
-              <Col xs={12}>
-                {t("Setup, customize, and control FarmBot from your")}
-                &nbsp;
-            <span className="hidden-xs hidden-sm hidden-md">
-                  {t("computer")}
-                </span>
-                <span className="hidden-xs hidden-lg hidden-xl">
-                  {t("tablet")}
-                </span>
-                <span className="hidden-sm hidden-md hidden-lg hidden-xl">
-                  {t("smartphone")}
-                </span>
-              </Col>
-            </h2>
-          </Row>
-          <img
-            className="hidden-xs hidden-sm col-md-7"
-            src="/app-resources/img/farmbot-desktop.png" />
-          <img
-            className="hidden-xs hidden-md hidden-lg hidden-xl col-sm-7"
-            src="/app-resources/img/farmbot-tablet.png" />
-          <Row>
-            {!forgotPassword ? this.loginPanel() : this.forgotPasswordPanel()}
-            <Col xs={12} sm={5}>
-              <Widget>
-                <WidgetHeader title={"Create An Account"} />
-                <WidgetBody>
-                  <form onSubmit={this.submitRegistration}>
-                    <label>
-                      {t("Email")}
-                    </label>
-                    <BlurableInput
-                      type="email"
-                      value={this.state.regEmail || ""}
-                      onCommit={this.set("regEmail")} />
-                    <label>
-                      {t("Name")}
-                    </label>
-                    <BlurableInput
-                      type="text"
-                      value={this.state.regName || ""}
-                      onCommit={this.set("regName")} />
-                    <label>
-                      {t("Password")}
-                    </label>
-                    <BlurableInput
-                      type="password"
-                      value={this.state.regPassword || ""}
-                      onCommit={this.set("regPassword")} />
-                    <label>{t("Verify Password")}</label>
-                    <BlurableInput
-                      type="password"
-                      value={this.state.regConfirmation || ""}
-                      onCommit={this.set("regConfirmation")} />
-                    {this.maybeRenderTos()}
-                    <Row>
-                      <button
-                        className="fb-button green front-page-button">
-                        {t("Create Account")}
-                      </button>
-                    </Row>
-                  </form>
-                </WidgetBody>
-              </Widget>
-            </Col>
-          </Row>
-        </div>
       </div>
-    );
+    </div>;
   }
 
   render() { return Session.getAll() ? <div /> : this.defaultContent(); }
