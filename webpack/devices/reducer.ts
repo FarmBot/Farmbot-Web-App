@@ -14,14 +14,14 @@ import { BooleanSetting } from "../session_keys";
 export function versionOK(stringyVersion = "0.0.0",
   _EXPECTED_MAJOR = EXPECTED_MAJOR,
   _EXPECTED_MINOR = EXPECTED_MINOR) {
-  let [actual_major, actual_minor] = stringyVersion
+  const [actual_major, actual_minor] = stringyVersion
     .split(".")
     .map(x => parseInt(x, 10));
   if (actual_major > _EXPECTED_MAJOR) {
     return true;
   } else {
-    let majorOK = (actual_major == _EXPECTED_MAJOR);
-    let minorOK = (actual_minor >= _EXPECTED_MINOR);
+    const majorOK = (actual_major == _EXPECTED_MAJOR);
+    const minorOK = (actual_minor >= _EXPECTED_MINOR);
     return (majorOK && minorOK);
   }
 }
@@ -68,11 +68,11 @@ export let initialState: BotState = {
   dirty: false,
   currentOSVersion: undefined,
   currentFWVersion: undefined,
-  x_axis_inverted: !Session.getBool(BooleanSetting.X_AXIS_INVERTED),
-  y_axis_inverted: !Session.getBool(BooleanSetting.Y_AXIS_INVERTED),
-  z_axis_inverted: !Session.getBool(BooleanSetting.Z_AXIS_INVERTED),
-  raw_encoders: !Session.getBool(BooleanSetting.RAW_ENCODERS),
-  scaled_encoders: !Session.getBool(BooleanSetting.SCALED_ENCODERS),
+  x_axis_inverted: Session.getBool(BooleanSetting.X_AXIS_INVERTED),
+  y_axis_inverted: Session.getBool(BooleanSetting.Y_AXIS_INVERTED),
+  z_axis_inverted: Session.getBool(BooleanSetting.Z_AXIS_INVERTED),
+  raw_encoders: Session.getBool(BooleanSetting.RAW_ENCODERS),
+  scaled_encoders: Session.getBool(BooleanSetting.SCALED_ENCODERS),
 };
 
 export let botReducer = generateReducer<BotState>(initialState)
@@ -98,7 +98,7 @@ export let botReducer = generateReducer<BotState>(initialState)
     return s;
   })
   .add<HardwareState>(Actions.BOT_CHANGE, (s, { payload }) => {
-    let nextState = payload;
+    const nextState = payload;
     s.hardware = nextState;
     versionOK(nextState.informational_settings.controller_version);
     return s;
