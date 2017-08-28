@@ -23,8 +23,10 @@ export class Move extends React.Component<MoveProps, {}> {
 
   render() {
     const { sync_status } = this.props.bot.hardware.informational_settings;
-    const { x_axis_inverted, y_axis_inverted, z_axis_inverted,
-      raw_encoders, scaled_encoders } = this.props.bot;
+    const x_axis_inverted = this.props.bot.axis_inversion.x;
+    const y_axis_inverted = this.props.bot.axis_inversion.y;
+    const z_axis_inverted = this.props.bot.axis_inversion.z;
+    const { raw_encoders, scaled_encoders } = this.props.bot.encoder_visibility;
     const xBtnColor = x_axis_inverted ? "green" : "red";
     const yBtnColor = y_axis_inverted ? "green" : "red";
     const zBtnColor = z_axis_inverted ? "green" : "red";

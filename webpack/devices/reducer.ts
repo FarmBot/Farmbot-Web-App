@@ -68,11 +68,26 @@ export let initialState: BotState = {
   dirty: false,
   currentOSVersion: undefined,
   currentFWVersion: undefined,
-  x_axis_inverted: Session.getBool(BooleanSetting.X_AXIS_INVERTED),
-  y_axis_inverted: Session.getBool(BooleanSetting.Y_AXIS_INVERTED),
-  z_axis_inverted: Session.getBool(BooleanSetting.Z_AXIS_INVERTED),
-  raw_encoders: Session.getBool(BooleanSetting.RAW_ENCODERS),
-  scaled_encoders: Session.getBool(BooleanSetting.SCALED_ENCODERS),
+  axis_inversion: {
+    x: Session.getBool(BooleanSetting.X_AXIS_INVERTED),
+    y: Session.getBool(BooleanSetting.Y_AXIS_INVERTED),
+    z: Session.getBool(BooleanSetting.Z_AXIS_INVERTED),
+  },
+  encoder_visibility: {
+    raw_encoders: Session.getBool(BooleanSetting.RAW_ENCODERS),
+    scaled_encoders: Session.getBool(BooleanSetting.SCALED_ENCODERS),
+  }
+};
+
+const INVERSION_MAPPING: Record<Xyz, BooleanSetting> = {
+  x: BooleanSetting.X_AXIS_INVERTED,
+  y: BooleanSetting.Y_AXIS_INVERTED,
+  z: BooleanSetting.Z_AXIS_INVERTED,
+};
+
+const ENCODER_MAPPING: Record<EncoderDisplay, BooleanSetting> = {
+  raw_encoders: BooleanSetting.RAW_ENCODERS,
+  scaled_encoders: BooleanSetting.SCALED_ENCODERS,
 };
 
 export let botReducer = generateReducer<BotState>(initialState)
@@ -112,36 +127,14 @@ export let botReducer = generateReducer<BotState>(initialState)
     return s;
   })
   .add<Xyz>(Actions.INVERT_JOG_BUTTON, (s, { payload }) => {
-    switch (payload) {
-      case "x":
-        s.x_axis_inverted = !s.x_axis_inverted;
-        Session.setBool(BooleanSetting.X_AXIS_INVERTED, s.x_axis_inverted);
-        return s;
-      case "y":
-        s.y_axis_inverted = !s.y_axis_inverted;
-        Session.setBool(BooleanSetting.Y_AXIS_INVERTED, s.y_axis_inverted);
-        return s;
-      case "z":
-        s.z_axis_inverted = !s.z_axis_inverted;
-        Session.setBool(BooleanSetting.Z_AXIS_INVERTED, s.z_axis_inverted);
-        return s;
-      default:
-        throw new Error("Attempted to invert invalid jog button direction.");
-    }
+    s.axis_inversion[payload] = !s.axis_inversion[payload];
+    Session.setBool(INVERSION_MAPPING[payload], s.axis_inversion[payload]);
+    return s;
   })
   .add<EncoderDisplay>(Actions.DISPLAY_ENCODER_DATA, (s, { payload }) => {
-    switch (payload) {
-      case "raw_encoders":
-        s.raw_encoders = !s.raw_encoders;
-        Session.setBool(BooleanSetting.RAW_ENCODERS, s.raw_encoders);
-        return s;
-      case "scaled_encoders":
-        s.scaled_encoders = !s.scaled_encoders;
-        Session.setBool(BooleanSetting.SCALED_ENCODERS, s.scaled_encoders);
-        return s;
-      default:
-        throw new Error("Attempted to toggle display of invalid data.");
-    }
+    s.encoder_visibility[payload] = !s.encoder_visibility[payload];
+    Session.setBool(ENCODER_MAPPING[payload], s.encoder_visibility[payload]);
+    return s;
   })
   .add<boolean>(Actions.SET_MQTT_STATUS, (s, a) => {
     s.connectedToMQTT = a.payload;
