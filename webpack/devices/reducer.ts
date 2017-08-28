@@ -79,13 +79,16 @@ export let initialState: BotState = {
   }
 };
 
-const INVERSION_MAPPING: Record<Xyz, BooleanSetting> = {
+/** Translate X/Y/Z to the name that is used in `localStorage` */
+export const INVERSION_MAPPING: Record<Xyz, BooleanSetting> = {
   x: BooleanSetting.X_AXIS_INVERTED,
   y: BooleanSetting.Y_AXIS_INVERTED,
   z: BooleanSetting.Z_AXIS_INVERTED,
 };
 
-const ENCODER_MAPPING: Record<EncoderDisplay, BooleanSetting> = {
+/** Translate `encode_visibility` key name to the name that is
+ * used in `localStorage` */
+export const ENCODER_MAPPING: Record<EncoderDisplay, BooleanSetting> = {
   raw_encoders: BooleanSetting.RAW_ENCODERS,
   scaled_encoders: BooleanSetting.SCALED_ENCODERS,
 };
@@ -128,12 +131,10 @@ export let botReducer = generateReducer<BotState>(initialState)
   })
   .add<Xyz>(Actions.INVERT_JOG_BUTTON, (s, { payload }) => {
     s.axis_inversion[payload] = !s.axis_inversion[payload];
-    Session.setBool(INVERSION_MAPPING[payload], s.axis_inversion[payload]);
     return s;
   })
   .add<EncoderDisplay>(Actions.DISPLAY_ENCODER_DATA, (s, { payload }) => {
     s.encoder_visibility[payload] = !s.encoder_visibility[payload];
-    Session.setBool(ENCODER_MAPPING[payload], s.encoder_visibility[payload]);
     return s;
   })
   .add<boolean>(Actions.SET_MQTT_STATUS, (s, a) => {

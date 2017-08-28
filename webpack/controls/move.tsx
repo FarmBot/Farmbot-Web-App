@@ -12,14 +12,21 @@ import { MoveProps, EncoderDisplay } from "./interfaces";
 import { Xyz, BotLocationData } from "../devices/interfaces";
 import { Popover, Position } from "@blueprintjs/core";
 import { AxisDisplayGroup } from "./axis_display_group";
+import { Session } from "../session";
+import { INVERSION_MAPPING, ENCODER_MAPPING } from "../devices/reducer";
 
 export class Move extends React.Component<MoveProps, {}> {
 
-  toggle = (name: Xyz) => () =>
+  toggle = (name: Xyz) => () => {
+    Session.invertBool(INVERSION_MAPPING[name]);
     this.props.dispatch({ type: "INVERT_JOG_BUTTON", payload: name });
+  };
 
-  toggle_encoder_data = (name: EncoderDisplay) => () =>
+  toggle_encoder_data =
+  (name: EncoderDisplay) => () => {
+    Session.invertBool(ENCODER_MAPPING[name]);
     this.props.dispatch({ type: "DISPLAY_ENCODER_DATA", payload: name });
+  }
 
   render() {
     const { sync_status } = this.props.bot.hardware.informational_settings;

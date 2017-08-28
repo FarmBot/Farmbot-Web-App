@@ -24,7 +24,7 @@ export namespace Session {
   /** Fetch the previous session. */
   export function getAll(): AuthState | undefined {
     try {
-      let v: AuthState = JSON.parse(localStorage[KEY]);
+      const v: AuthState = JSON.parse(localStorage[KEY]);
       if (box(v).kind === "object") {
         return v;
       } else {
@@ -52,10 +52,14 @@ export namespace Session {
     localStorage.setItem(key, JSON.stringify(val));
   }
 
+  export function invertBool(key: BooleanSetting) {
+    Session.setBool(key, !Session.getBool(key));
+  }
+
   /** Extract numeric settings from `localStorage`. Returns `undefined` when
    * none are found. */
   export function getNum(key: NumericSetting): number | undefined {
-    let output = JSON.parse(get(localStorage, key, "null"));
+    const output = JSON.parse(get(localStorage, key, "null"));
     return (isNumber(output)) ? output : undefined;
   }
 
