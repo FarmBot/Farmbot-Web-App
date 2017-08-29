@@ -34,3 +34,11 @@ export interface GardenMapLegendProps {
   showSpread: boolean;
   showFarmbot: boolean;
 }
+
+export interface DragHelpersProps {
+  dragging: boolean;
+  plant: Readonly<TaggedPlantPointer>;
+  quadrant: BotOriginQuadrant;
+  zoomLvl: number;
+  activeDragXY: BotPosition | undefined;
+}

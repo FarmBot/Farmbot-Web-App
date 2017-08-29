@@ -23,7 +23,7 @@ describe("<ToolBayForm/>", () => {
         getChosenToolOption={props.getChosenToolOption}
         getToolOptions={props.getToolOptions}
         changeToolSlot={props.changeToolSlot}
-        position={{ x: 1, y: 2, z: 3 }} />)
+        botPosition={{ x: 1, y: 2, z: 3 }} />)
     };
   }
 
