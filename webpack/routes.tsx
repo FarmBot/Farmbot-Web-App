@@ -90,13 +90,6 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       replace(`${next.location.pathname}/plants`);
     }
   }
-
-  // replaceSequencesModules(next: RouterState, replace: RedirectFunction) {
-  //   if (next.location.pathname === "/app/sequences" && isMobile()) {
-  //     replace(`${next.location.pathname}/`);
-  //   }
-  // };
-
   /*
     /app                => App
     /app/account        => Account
