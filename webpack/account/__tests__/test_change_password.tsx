@@ -5,7 +5,7 @@ import { getProp } from "../../__test_support__/helpers";
 import { SpecialStatus } from "../../resources/tagged_resources";
 import * as moxios from "moxios";
 import { API } from "../../api/api";
-describe("<ChangePassword/>", function () {
+xdescribe("<ChangePassword/>", function () {
 
   function testCase() {
     const el = mount(<ChangePassword />);

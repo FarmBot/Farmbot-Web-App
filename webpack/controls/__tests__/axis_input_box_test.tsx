@@ -3,7 +3,7 @@ import { AxisInputBox } from "../axis_input_box";
 import { mount } from "enzyme";
 import { Xyz } from "farmbot/dist";
 
-describe("<AxisInputBox/>", () => {
+xdescribe("<AxisInputBox/>", () => {
   function inputBoxWithValue(value: number | undefined) {
     const axis: Xyz = "x";
     const props = { axis, value, onChange: jest.fn() };
