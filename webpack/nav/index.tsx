@@ -55,7 +55,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           <Row>
             <Col xs={12}>
               <div>
-                {TickerList({ logs, tickerListOpen, toggle })}
+                <TickerList { ...{ logs, tickerListOpen, toggle } } />
                 <div className="nav-group">
                   <div className="nav-left">
                     <i
