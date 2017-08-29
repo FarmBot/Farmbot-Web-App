@@ -15,7 +15,7 @@ import { JogMovementControlsProps } from "../interfaces";
 import { devices } from "../../device";
 import { bot } from "../../__test_support__/fake_state/bot";
 
-describe("<JogButtons/>", function () {
+xdescribe("<JogButtons/>", function () {
   beforeEach(function () {
     jest.clearAllMocks();
     jogButtonProps.disabled = false;

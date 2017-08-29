@@ -2,7 +2,7 @@ import { API } from "../../api/api";
 import * as moxios from "moxios";
 import { deleteUser } from "../actions";
 
-describe("deleteUser()", () => {
+xdescribe("deleteUser()", () => {
   beforeEach(function () {
     // import and pass your custom axios instance to this method
     moxios.install();

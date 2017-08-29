@@ -1,7 +1,7 @@
 import { mount } from "enzyme";
 import { AxisDisplayGroup } from "../axis_display_group";
 
-describe("<AxisDisplayGroup />", () => {
+xdescribe("<AxisDisplayGroup />", () => {
   const params = {
     position: { x: undefined, y: undefined, z: undefined },
     label: "Heyoo"
