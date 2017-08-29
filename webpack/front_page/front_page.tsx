@@ -9,6 +9,8 @@ import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState } from "./interfaces";
 import { Row, Col, Widget, WidgetHeader, WidgetBody, BlurableInput } from "../ui/index";
+import { LoginProps, Login } from "./login";
+import { ForgotPassword, ForgotPasswordProps } from "./forgot_password";
 
 export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   constructor() {
@@ -26,7 +28,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       forgotPassword: false,
       agreeToTerms: false
     };
-    this.toggleServerOpts = this.toggleServerOpts.bind(this);
+    this.toggleServerOpts = this.toggleServerOpts;
   }
 
   componentDidMount() {
@@ -50,7 +52,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       setTimeout(() => this.setState(state), 2);
     };
 
-  submitLogin(e: React.FormEvent<{}>) {
+  submitLogin = (e: React.FormEvent<{}>) => {
     e.preventDefault();
     const { email, loginPassword, showServerOpts } = this.state;
     const payload = { user: { email, password: loginPassword } };
@@ -73,7 +75,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       });
   }
 
-  submitRegistration(e: React.FormEvent<{}>) {
+  submitRegistration = (e: React.FormEvent<{}>) => {
     e.preventDefault();
     const {
       regEmail,
@@ -100,15 +102,15 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     });
   }
 
-  toggleServerOpts() {
+  toggleServerOpts = () => {
     this.setState({ showServerOpts: !this.state.showServerOpts });
   }
 
-  toggleForgotPassword() {
+  toggleForgotPassword = () => {
     this.setState({ forgotPassword: !this.state.forgotPassword });
   }
 
-  submitForgotPassword(e: React.SyntheticEvent<HTMLInputElement>) {
+  submitForgotPassword = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { email } = this.state;
     const data = { email };
@@ -126,7 +128,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       });
   }
 
-  maybeRenderTos() {
+  maybeRenderTos = () => {
     const TOS_URL = globalConfig.TOS_URL;
     if (TOS_URL) {
       const PRV_URL = globalConfig.PRIV_URL;
@@ -135,7 +137,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
           <div>
             <label>{t("I agree to the terms of use")}</label>
             <input type="checkbox"
-              onChange={this.set("agreeToTerms").bind(this)}
+              onChange={this.set("agreeToTerms")}
               value={this.state.agreeToTerms ? "false" : "true"} />
           </div>
           <ul>
@@ -159,191 +161,119 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     }
   }
 
-  defaultContent() {
-    const { showServerOpts, forgotPassword } = this.state;
-    const buttonStylesUniqueToOnlyThisPage = {
-      marginTop: "1rem",
-      padding: ".5rem 1.6rem",
-      fontSize: "1.2rem",
-      borderBottom: "none"
+  loginPanel = () => {
+    const props: LoginProps = {
+      email: this.state.email || "",
+      onEmailChange: this.set("email"),
+      loginPassword: this.state.loginPassword || "",
+      onLoginPasswordChange: this.set("loginPassword"),
+      serverURL: this.state.serverURL || "",
+      onServerURLChange: this.set("serverURL"),
+      serverPort: this.state.serverPort || "",
+      onServerPortChange: this.set("serverPort"),
+      showServerOpts: !!this.state.showServerOpts,
+      onToggleServerOpts: this.toggleServerOpts,
+      onToggleForgotPassword: this.toggleForgotPassword,
+      onSubmit: this.submitLogin,
     };
-    const expandIcon = showServerOpts ? "minus" : "plus";
-    const { toggleServerOpts } = this;
-    return (
-      <div className="static-page">
-        <Row>
-          <Col xs={12}>
-            <h1 className="text-center">
-              {t("Welcome to the")}
-              <br className="hidden-sm hidden-md hidden-lg hidden-xl" />
-              &nbsp;
+    return <Login {...props} />;
+  }
+
+  forgotPasswordPanel = () => {
+    const props: ForgotPasswordProps = {
+      onToggleForgotPassword: this.toggleForgotPassword,
+      onSubmit: this.submitForgotPassword,
+      email: this.state.email || "",
+      onEmailChange: this.set("email"),
+    };
+    return <ForgotPassword {...props} />;
+  }
+
+  defaultContent() {
+    const { forgotPassword } = this.state;
+    return <div className="static-page">
+      <Row>
+        <Col xs={12}>
+          <h1 className="text-center">
+            {t("Welcome to the")}
+            <br className="hidden-sm hidden-md hidden-lg hidden-xl" />
+            &nbsp;
               {t("FarmBot Web App")}
-            </h1>
+          </h1>
+        </Col>
+      </Row>
+
+      <div className="inner-width">
+        <Row>
+          <h2 className="text-center">
+            <Col xs={12}>
+              {t("Setup, customize, and control FarmBot from your")}
+              &nbsp;
+            <span className="hidden-xs hidden-sm hidden-md">
+                {t("computer")}
+              </span>
+              <span className="hidden-xs hidden-lg hidden-xl">
+                {t("tablet")}
+              </span>
+              <span className="hidden-sm hidden-md hidden-lg hidden-xl">
+                {t("smartphone")}
+              </span>
+            </Col>
+          </h2>
+        </Row>
+        <img
+          className="hidden-xs hidden-sm col-md-7"
+          src="/app-resources/img/farmbot-desktop.png" />
+        <img
+          className="hidden-xs hidden-md hidden-lg hidden-xl col-sm-7"
+          src="/app-resources/img/farmbot-tablet.png" />
+        <Row>
+          {!forgotPassword ? this.loginPanel() : this.forgotPasswordPanel()}
+          <Col xs={12} sm={5}>
+            <Widget>
+              <WidgetHeader title={"Create An Account"} />
+              <WidgetBody>
+                <form onSubmit={this.submitRegistration}>
+                  <label>
+                    {t("Email")}
+                  </label>
+                  <BlurableInput
+                    type="email"
+                    value={this.state.regEmail || ""}
+                    onCommit={this.set("regEmail")} />
+                  <label>
+                    {t("Name")}
+                  </label>
+                  <BlurableInput
+                    type="text"
+                    value={this.state.regName || ""}
+                    onCommit={this.set("regName")} />
+                  <label>
+                    {t("Password")}
+                  </label>
+                  <BlurableInput
+                    type="password"
+                    value={this.state.regPassword || ""}
+                    onCommit={this.set("regPassword")} />
+                  <label>{t("Verify Password")}</label>
+                  <BlurableInput
+                    type="password"
+                    value={this.state.regConfirmation || ""}
+                    onCommit={this.set("regConfirmation")} />
+                  {this.maybeRenderTos()}
+                  <Row>
+                    <button
+                      className="fb-button green front-page-button">
+                      {t("Create Account")}
+                    </button>
+                  </Row>
+                </form>
+              </WidgetBody>
+            </Widget>
           </Col>
         </Row>
-
-        <div className="inner-width">
-          <Row>
-            <h2 className="text-center">
-              <Col xs={12}>
-                {t("Setup, customize, and control FarmBot from your")}
-                &nbsp;
-            <span className="hidden-xs hidden-sm hidden-md">
-                  {t("computer")}
-                </span>
-                <span className="hidden-xs hidden-lg hidden-xl">
-                  {t("tablet")}
-                </span>
-                <span className="hidden-sm hidden-md hidden-lg hidden-xl">
-                  {t("smartphone")}
-                </span>
-              </Col>
-            </h2>
-          </Row>
-          <img
-            className="hidden-xs hidden-sm col-md-7"
-            src="/app-resources/img/farmbot-desktop.png" />
-          <img
-            className="hidden-xs hidden-md hidden-lg hidden-xl col-sm-7"
-            src="/app-resources/img/farmbot-tablet.png" />
-          <Row>
-            {!forgotPassword && (
-              <Col xs={12} sm={5}>
-                <Widget>
-                  <WidgetHeader title={"Login"}>
-                    <button
-                      className="fb-button gray"
-                      onClick={toggleServerOpts} >
-                      <i className={`fa fa-${expandIcon}`} />
-                    </button>
-                  </WidgetHeader>
-                  <WidgetBody>
-                    <form onSubmit={this.submitLogin.bind(this)}>
-                      <label>
-                        {t("Email")}
-                      </label>
-                      <BlurableInput
-                        type="email"
-                        value={this.state.email || ""}
-                        onCommit={this.set("email").bind(this)} />
-                      <label>
-                        {t("Password")}
-                      </label>
-                      <BlurableInput
-                        type="password"
-                        value={this.state.loginPassword || ""}
-                        onCommit={this.set("loginPassword").bind(this)} />
-                      <a
-                        className="forgot-password"
-                        onClick={this.toggleForgotPassword.bind(this)} >
-                        {t("Forgot password?")}
-                      </a>
-                      {this.state.showServerOpts &&
-                        <div>
-                          <label>
-                            {t("Server URL")}
-                          </label>
-                          <BlurableInput
-                            type="text"
-                            onCommit={this.set("serverURL").bind(this)}
-                            value={this.state.serverURL || ""} />
-                          <label>
-                            {t("Server Port")}
-                          </label>
-                          <BlurableInput
-                            type="text"
-                            onCommit={this.set("serverPort").bind(this)}
-                            value={this.state.serverPort || ""} />
-                        </div>
-                      }
-                      <Row>
-                        <button
-                          className="fb-button green pull-right"
-                          style={buttonStylesUniqueToOnlyThisPage} >
-                          {t("Login")}
-                        </button>
-                      </Row>
-                    </form>
-                  </WidgetBody>
-                </Widget>
-              </Col>
-            )}
-            {forgotPassword && (
-              <Col xs={12} sm={5}>
-                <Widget>
-                  <WidgetHeader title={"Reset Password"}>
-                    <button
-                      className="fb-button gray"
-                      onClick={this.toggleForgotPassword.bind(this)} >
-                      {t("BACK")}
-                    </button>
-                  </WidgetHeader>
-                  <WidgetBody>
-                    <form onSubmit={this.submitForgotPassword.bind(this)}>
-                      <label>{t("Enter Email")}</label>
-                      <BlurableInput
-                        type="email"
-                        value={this.state.email || ""}
-                        onCommit={this.set("email").bind(this)} />
-                      <Row>
-                        <button
-                          className="fb-button green"
-                          style={buttonStylesUniqueToOnlyThisPage}>
-                          {t("Reset Password")}
-                        </button>
-                      </Row>
-                    </form>
-                  </WidgetBody>
-                </Widget>
-              </Col>
-            )}
-            <Col xs={12} sm={5}>
-              <Widget>
-                <WidgetHeader title={"Create An Account"} />
-                <WidgetBody>
-                  <form onSubmit={this.submitRegistration.bind(this)}>
-                    <label>
-                      {t("Email")}
-                    </label>
-                    <BlurableInput
-                      type="email"
-                      value={this.state.regEmail || ""}
-                      onCommit={this.set("regEmail").bind(this)} />
-                    <label>
-                      {t("Name")}
-                    </label>
-                    <BlurableInput
-                      type="text"
-                      value={this.state.regName || ""}
-                      onCommit={this.set("regName").bind(this)} />
-                    <label>
-                      {t("Password")}
-                    </label>
-                    <BlurableInput
-                      type="password"
-                      value={this.state.regPassword || ""}
-                      onCommit={this.set("regPassword").bind(this)} />
-                    <label>{t("Verify Password")}</label>
-                    <BlurableInput
-                      type="password"
-                      value={this.state.regConfirmation || ""}
-                      onCommit={this.set("regConfirmation").bind(this)} />
-                    {this.maybeRenderTos()}
-                    <Row>
-                      <button
-                        className="fb-button green"
-                        style={buttonStylesUniqueToOnlyThisPage}>
-                        {t("Create Account")}
-                      </button>
-                    </Row>
-                  </form>
-                </WidgetBody>
-              </Widget>
-            </Col>
-          </Row>
-        </div>
       </div>
-    );
+    </div>;
   }
 
   render() { return Session.getAll() ? <div /> : this.defaultContent(); }

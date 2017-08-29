@@ -10,7 +10,7 @@ import { mount } from "enzyme";
 import { ZeroRow } from "../zero_row";
 import { devices } from "../../../device";
 
-describe("<HomingRow />", () => {
+xdescribe("<HomingRow />", () => {
   beforeEach(function () {
     jest.clearAllMocks();
   });
