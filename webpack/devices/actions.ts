@@ -328,8 +328,11 @@ function fetchDeviceErr(err: Error) {
   };
 }
 
-const startUpdate = (dispatch: Function) => {
-  dispatch({ type: "SETTING_UPDATE_START", payload: undefined });
+const startUpdate = () => {
+  return {
+    type: Actions.SETTING_UPDATE_START,
+    payload: undefined
+  };
 };
 
 const updateOK = (dispatch: Function, noun: string) => {
@@ -345,7 +348,7 @@ const updateNO = (dispatch: Function, noun: string) => {
 export function updateMCU(key: configKey, val: string) {
   const noun = "configuration update";
   return function (dispatch: Function) {
-    startUpdate(dispatch);
+    dispatch(startUpdate());
     devices
       .current
       .updateMcu({ [key]: val })
