@@ -19,7 +19,7 @@ module FarmEvents
 
     # Temporary hack to join farm event,
     # regimen and the decision to destroy it.
-    Info = Struct.new(:fe, :reg, :do_destroy)
+    Info = Struct.new(:fe, :reg, :should_destroy?)
 
     def temporary_hack
       # Delete all farmevents
@@ -31,10 +31,10 @@ module FarmEvents
         .map do |x|
           reg_items      = x.executable.regimen_items || RegimenItem.none
           max_offset     = (reg_items.pluck(:time_offset).max || 0)
-          should_destroy = ((x.end_time + max_offset) < DateTime.now)
+          should_destroy = ((x.end_time + (max_offset / 1000)) < DateTime.now)
           Info.new(x, x.executable, should_destroy)
         end
-        .select { |x| x.do_destroy }
+        .select { |x| x.should_destroy? }
         .map    { |x| x.fe.destroy! }
     end
   end
