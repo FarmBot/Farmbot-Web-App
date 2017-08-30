@@ -85,10 +85,33 @@ export function initSave(resource: TaggedResource) {
 export function save(uuid: string) {
   return function (dispatch: Function, getState: GetState) {
     const resource = findByUuid(getState().resources.index, uuid);
-    dispatch({ type: "SAVE_RESOURCE_START", payload: resource });
+    dispatch({ type: Actions.SAVE_RESOURCE_START, payload: resource });
     return dispatch(update(uuid));
   };
 }
+
+export function refresh(resource: TaggedResource) {
+  return function (dispatch: Function, getState: GetState) {
+    dispatch({ type: Actions.REFRESH_RESOURCE_START, payload: resource });
+    axios
+      .get(urlFor(resource.kind) + resource.body.id || "")
+      .then((resp: HttpData<typeof resource.body>) => {
+        const r1 = defensiveClone(resource);
+        const r2 = { body: defensiveClone(resp.data) };
+        const newTR = _.assign({}, r1, r2);
+        if (isTaggedResource(newTR)) {
+          dispatch(refreshOK(newTR));
+        } else {
+          throw new Error("Just saved a malformed TR.");
+        }
+      })
+      .catch(function (err: UnsafeError) {
+        dispatch(refreshNO({ err, uuid: resource.uuid }));
+        return Promise.reject(err);
+      });
+  };
+}
+
 
 function update(uuid: string) {
   return function (dispatch: Function, getState: GetState) {

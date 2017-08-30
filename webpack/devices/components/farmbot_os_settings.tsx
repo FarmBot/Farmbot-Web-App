@@ -16,7 +16,7 @@ import {
   Col,
   SaveBtn
 } from "../../ui/index";
-import { save, edit } from "../../api/crud";
+import { save, edit, refresh } from "../../api/crud";
 import { MustBeOnline } from "../must_be_online";
 import { ToolTips, Content } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
@@ -59,7 +59,7 @@ export class FarmbotOsSettings
 
   lastSeen = () => {
     return <LastSeen
-      onClick={() => this.props.dispatch(save(this.props.account.uuid))}
+      onClick={() => this.props.dispatch(refresh(this.props.account))}
       device={this.props.account} />;
   }
 

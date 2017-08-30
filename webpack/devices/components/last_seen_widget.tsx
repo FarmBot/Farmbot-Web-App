@@ -37,7 +37,8 @@ export class LastSeen extends React.Component<LastSeenProps, {}> {
       </Col>
       <Col xs={7}>
         <p>
-          <i className="fa fa-refresh" onClick={this.props.onClick}></i>{this.show()}
+          <i className="fa fa-refresh" onClick={this.props.onClick}></i>
+          {this.show()}
         </p>
       </Col>
     </Row>;
