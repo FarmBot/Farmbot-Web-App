@@ -6,42 +6,61 @@ import { McuParams } from "farmbot/dist";
  *   server side and handling things from there. For now, I will perform data
  *   validations on the frontend. Lets try to keep as much of the functionality
  *   in this file and focus on ease of deletion.
+ *
+ *   - RC 30 Aug 17
  */
 
+type Result =
+  | { outcome: "OK", errorMessage: undefined }
+  | { outcome: "NO", errorMessage: string };
 /** Determines if it is safe to update a key/value pair, given the current
- * MCU state object. */
-type Validation = (key: ConfigKey, val: number, state: McuParams) => boolean;
+ * MCU state object.
+ *
+ * Returns a string error message on failure. Otherwise returns undefined*/
+type Validation =
+  (key: ConfigKey, val: number, state: McuParams) => Result;
 /** A lookup dictionary for finding edge cases that require special validation
  * rules. If no entry is found, no validation is required. */
 type EdgeCaseList = Partial<Record<ConfigKey, Validation>>;
+export const OK: Result = { outcome: "OK", errorMessage: undefined };
+export const NO =
+  (errorMessage: string): Result => ({ outcome: "NO", errorMessage });
+
+export enum McuErrors {
+  TOO_HIGH = "Too high",
+  TOO_LOW = "Too low",
+  DEFAULT = "That is not a valid value"
+}
 
 /** Builds a function that compares a key/value update pair against a current
- * MCU value. */
+* MCU value. */
 export const greaterThan =
-  (compareAgainst: ConfigKey) =>
-    (key: ConfigKey, val: number, state: McuParams) => {
-      const right = state[compareAgainst] || 0;
-      const left = val;
-      return (left > right);
+  (compareAgainst: ConfigKey, errorMessage = McuErrors.TOO_LOW) =>
+    (key: ConfigKey, val: number, state: McuParams): Result => {
+      const minimum = state[compareAgainst] || 0;
+      return (val > minimum) ? OK : NO(errorMessage);
     };
 
 /** Builds a function that compares a key/value update pair against a current
  * MCU value. */
 export const lessThan =
-  (compareAgainst: ConfigKey) =>
-    (key: ConfigKey, val: number, state: McuParams) => {
-      const right = state[compareAgainst] || 0;
-      const left = val;
-      return (left < right);
+  (compareAgainst: ConfigKey, errorMessage = McuErrors.TOO_HIGH) =>
+    (key: ConfigKey, val: number, state: McuParams): Result => {
+      const minimum = state[compareAgainst] || 0;
+      return (val < minimum) ? OK : NO(errorMessage);
     };
 
+/** A lookup dictionary for special cases that need special handling.
+ * Eg: `movement_max_spd_x` needs to validate that it is higher than
+ *     `movement_min_spd_x`.
+ */
 const edgeCases: EdgeCaseList = {
-  movement_max_spd_x: greaterThan("movement_min_spd_x"),
-  movement_max_spd_y: greaterThan("movement_min_spd_y"),
-  movement_max_spd_z: greaterThan("movement_min_spd_z"),
-  movement_min_spd_x: lessThan("movement_max_spd_x"),
-  movement_min_spd_y: lessThan("movement_max_spd_y"),
-  movement_min_spd_z: lessThan("movement_max_spd_z"),
+  movement_max_spd_x: greaterThan("movement_min_spd_x", McuErrors.TOO_LOW),
+  movement_max_spd_y: greaterThan("movement_min_spd_y", McuErrors.TOO_LOW),
+  movement_max_spd_z: greaterThan("movement_min_spd_z", McuErrors.TOO_LOW),
+  movement_min_spd_x: lessThan("movement_max_spd_x", McuErrors.TOO_HIGH),
+  movement_min_spd_y: lessThan("movement_max_spd_y", McuErrors.TOO_HIGH),
+  movement_min_spd_z: lessThan("movement_max_spd_z", McuErrors.TOO_HIGH),
 };
 
 export const mcuParamValidator =
@@ -57,8 +76,12 @@ export const mcuParamValidator =
   (key: ConfigKey, val: number, state: Partial<McuParams>) =>
     /** Executes one of two callbacks, based on the results of an
      * MCU validation. */
-    (ok: Function, no?: Function) => {
+    (ok: () => void, no?: (message: string) => void): void => {
       const validator = edgeCases[key];
-      const isValid = validator ? validator(key, val, state) : true;
-      (isValid) ? ok() : (no && no());
+      const result = validator && validator(key, val, state);
+      if (result && result.outcome === "NO") {
+        return (no && no(result.errorMessage));
+      } else {
+        return ok();
+      }
     };
