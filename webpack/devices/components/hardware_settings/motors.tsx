@@ -53,6 +53,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
               settingToggle("param_e_stop_on_mov_err", bot, undefined)} />
         </Col>
       </Row>
+      {/* Hmmm... */}
       <NumericMCUInputGroup
         name={t("Max Speed (steps/s)")}
         tooltip={t(ToolTips.MAX_SPEED)}

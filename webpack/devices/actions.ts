@@ -4,7 +4,7 @@ import axios from "axios";
 import * as _ from "lodash";
 import { success, warning, info, error } from "farmbot-toastr";
 import { devices } from "../device";
-import { Log } from "../interfaces";
+import { Log, Everything } from "../interfaces";
 import { GithubRelease, MoveRelProps } from "./interfaces";
 import { Thunk, GetState } from "../redux/interfaces";
 import { BotState } from "../devices/interfaces";
@@ -26,9 +26,10 @@ import { TaggedDevice } from "../resources/tagged_resources";
 import { versionOK } from "./reducer";
 import { oneOf, HttpData } from "../util";
 import { Actions } from "../constants";
+import { mcuParamValidator } from "./update_interceptor";
 
 const ON = 1, OFF = 0;
-type configKey = keyof McuParams;
+export type ConfigKey = keyof McuParams;
 export const EXPECTED_MAJOR = 5;
 export const EXPECTED_MINOR = 0;
 
@@ -193,7 +194,7 @@ export function MCUFactoryReset() {
   return devices.current.resetMCU();
 }
 
-export function botConfigChange(key: configKey, value: number) {
+export function botConfigChange(key: ConfigKey, value: number) {
   const noun = "Setting toggle";
 
   return devices
@@ -203,7 +204,7 @@ export function botConfigChange(key: configKey, value: number) {
 }
 
 export function settingToggle(
-  name: configKey, bot: BotState, displayAlert: string | undefined
+  name: ConfigKey, bot: BotState, displayAlert: string | undefined
 ) {
   if (displayAlert) { alert(displayAlert.replace(/\s+/g, " ")); }
   const noun = "Setting toggle";
@@ -328,8 +329,11 @@ function fetchDeviceErr(err: Error) {
   };
 }
 
-const startUpdate = (dispatch: Function) => {
-  dispatch({ type: "SETTING_UPDATE_START", payload: undefined });
+const startUpdate = () => {
+  return {
+    type: Actions.SETTING_UPDATE_START,
+    payload: undefined
+  };
 };
 
 const updateOK = (dispatch: Function, noun: string) => {
@@ -342,15 +346,24 @@ const updateNO = (dispatch: Function, noun: string) => {
   commandErr(noun);
 };
 
-export function updateMCU(key: configKey, val: string) {
+export function updateMCU(key: ConfigKey, val: string) {
   const noun = "configuration update";
-  return function (dispatch: Function) {
-    startUpdate(dispatch);
-    devices
-      .current
-      .updateMcu({ [key]: val })
-      .then(() => updateOK(dispatch, noun))
-      .catch(() => updateNO(dispatch, noun));
+  return function (dispatch: Function, getState: () => Everything) {
+    const state = getState().bot.hardware.mcu_params;
+
+    function proceed() {
+      dispatch(startUpdate());
+      devices
+        .current
+        .updateMcu({ [key]: val })
+        .then(() => updateOK(dispatch, noun))
+        .catch(() => updateNO(dispatch, noun));
+    }
+
+    const dont = (err: string) => warning(err);
+
+    const validate = mcuParamValidator(key, parseInt(val, 10), state);
+    validate(proceed, dont);
   };
 }
 
