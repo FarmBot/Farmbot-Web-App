@@ -9,16 +9,29 @@ import { history } from "../history";
 import { Plants } from "./plants/plant_inventory";
 import { GardenMapLegend } from "./map/garden_map_legend";
 import { isMobile } from "../util";
+import { Session, safeBooleanSettting } from "../session";
+import { NumericSetting, BooleanSetting } from "../session_keys";
+import { isUndefined } from "lodash";
 
 @connect(mapStateToProps)
 export class FarmDesigner extends React.Component<Props, Partial<State>> {
 
+  initializeSetting = (name: keyof State, defaultValue: boolean): boolean => {
+    const currentValue = Session.getBool(safeBooleanSettting(name));
+    if (isUndefined(currentValue)) {
+      Session.setBool(safeBooleanSettting(name), defaultValue);
+      return defaultValue;
+    } else {
+      return currentValue;
+    }
+  }
+
   state: State = {
-    legendMenuOpen: false,
-    showPlants: true,
-    showPoints: true,
-    showSpread: false,
-    showFarmbot: true
+    legendMenuOpen: this.initializeSetting(BooleanSetting.legendMenuOpen, false),
+    showPlants: this.initializeSetting(BooleanSetting.showPlants, true),
+    showPoints: this.initializeSetting(BooleanSetting.showPoints, true),
+    showSpread: this.initializeSetting(BooleanSetting.showSpread, false),
+    showFarmbot: this.initializeSetting(BooleanSetting.showFarmbot, true),
   };
 
   componentDidMount() {
@@ -26,14 +39,22 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     this.updateZoomLevel(0)();
   }
 
-  toggle = (name: keyof State) => () =>
+  toggle = (name: keyof State) => () => {
     this.setState({ [name]: !this.state[name] });
+    Session.invertBool(safeBooleanSettting(name));
+  }
 
-  updateBotOriginQuadrant = (payload: BotOriginQuadrant) => () =>
+  updateBotOriginQuadrant = (payload: BotOriginQuadrant) => () => {
+    Session.setNum(NumericSetting.BOT_ORIGIN_QUADRANT, payload);
     this.props.dispatch({ type: "UPDATE_BOT_ORIGIN_QUADRANT", payload });
+  }
 
-  updateZoomLevel = (payload: number) => () =>
+  updateZoomLevel = (zoomIncrement: number) => () => {
+    const payload =
+      (Session.getNum(NumericSetting.ZOOM_LEVEL) || 1) + zoomIncrement;
+    Session.setNum(NumericSetting.ZOOM_LEVEL, payload);
     this.props.dispatch({ type: "UPDATE_MAP_ZOOM_LEVEL", payload });
+  }
 
   childComponent(props: Props) {
     const fallback = isMobile() ? undefined : React.createElement(Plants, props);

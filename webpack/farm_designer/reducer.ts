@@ -45,14 +45,11 @@ export let designer = generateReducer<DesignerState>(initialState)
     return s;
   })
   .add<BotOriginQuadrant>(Actions.UPDATE_BOT_ORIGIN_QUADRANT, (s, a) => {
-    Session.setNum(NumericSetting.BOT_ORIGIN_QUADRANT, a.payload);
     s.botOriginQuadrant = a.payload;
     return s;
   })
-  .add<ZoomLevelPayl>(Actions.UPDATE_MAP_ZOOM_LEVEL, (s, { payload }) => {
-    const value = s.zoomLevel + payload;
-    s.zoomLevel = value;
-    Session.setNum(NumericSetting.ZOOM_LEVEL, value);
+  .add<ZoomLevelPayl>(Actions.UPDATE_MAP_ZOOM_LEVEL, (s, a) => {
+    s.zoomLevel = a.payload;
     return s;
   })
   .add<CropLiveSearchResult[]>(Actions.OF_SEARCH_RESULTS_OK, (s, a) => {
