@@ -188,7 +188,8 @@ const MUST_CONFIRM_LIST: ResourceName[] = [
   "farm_events",
   "points",
   "sequences",
-  "regimens"
+  "regimens",
+  "images"
 ];
 
 const confirmationChecker = (resource: TaggedResource) =>

@@ -22,7 +22,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
     return {
       position: "relative",
       width: "100%",
-      paddingBottom: "10%",
+      paddingBottom: "4rem",
       overflow: "hidden"
     };
   }
@@ -31,7 +31,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
     return {
       position: "relative",
       width: "100%",
-      paddingBottom: "35%",
+      paddingBottom: "12rem",
       overflow: "hidden"
     };
   }
@@ -76,7 +76,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
       hsl: { h: H_AVG, s: 0, l: 0 }
     };
     return <div>
-      <div style={{ width: "100%", paddingBottom: "15%" }} />
+      <div style={{ width: "100%", paddingBottom: "5rem" }} />
       <div style={this.hueCSS()}>
         <Hue
           {...dontTouchThis}
@@ -84,7 +84,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
           onChange={_.noop} />
         <div style={this.hueboxCSS()} />
       </div>
-      <div style={{ width: "100%", paddingBottom: "2%" }} />
+      <div style={{ width: "100%", paddingBottom: "1rem" }} />
       <div style={this.saturationCSS()}>
         <Saturation
           {...dontTouchThis}
