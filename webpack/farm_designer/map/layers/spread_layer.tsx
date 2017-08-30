@@ -22,8 +22,8 @@ export function SpreadLayer(props: SpreadLayerProps) {
           return (visible || isSelected) ?
             <SpreadCircle
               plant={p}
-              key={index}
-              quadrant={botOriginQuadrant} /> : <g key={index} />;
+              key={p.uuid}
+              quadrant={botOriginQuadrant} /> : <g key={p.uuid} />;
         })
       }
     </g>
