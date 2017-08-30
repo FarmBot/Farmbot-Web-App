@@ -27,8 +27,8 @@ export const NO =
   (errorMessage: string): Result => ({ outcome: "NO", errorMessage });
 
 export enum McuErrors {
-  TOO_HIGH = "Too high",
-  TOO_LOW = "Too low",
+  TOO_HIGH = "Minimum speed should always be lower than maximum",
+  TOO_LOW = "Maximum speed should always be higher than maximum",
   DEFAULT = "That is not a valid value"
 }
 
