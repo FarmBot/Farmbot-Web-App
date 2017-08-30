@@ -4,7 +4,7 @@ import axios from "axios";
 import * as _ from "lodash";
 import { success, warning, info, error } from "farmbot-toastr";
 import { devices } from "../device";
-import { Log } from "../interfaces";
+import { Log, Everything } from "../interfaces";
 import { GithubRelease, MoveRelProps } from "./interfaces";
 import { Thunk, GetState } from "../redux/interfaces";
 import { BotState } from "../devices/interfaces";
@@ -26,6 +26,7 @@ import { TaggedDevice } from "../resources/tagged_resources";
 import { versionOK } from "./reducer";
 import { oneOf, HttpData } from "../util";
 import { Actions } from "../constants";
+import { mcuParamValidator } from "./update_interceptor";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -347,14 +348,23 @@ const updateNO = (dispatch: Function, noun: string) => {
 
 export function updateMCU(key: ConfigKey, val: string) {
   const noun = "configuration update";
-  return function (dispatch: Function) {
-    console.log("Maybe I need to intercept this.");
-    dispatch(startUpdate());
-    devices
-      .current
-      .updateMcu({ [key]: val })
-      .then(() => updateOK(dispatch, noun))
-      .catch(() => updateNO(dispatch, noun));
+  return function (dispatch: Function, getState: () => Everything) {
+    const state = getState().bot.hardware.mcu_params;
+    function proceed() {
+      dispatch(startUpdate());
+      devices
+        .current
+        .updateMcu({ [key]: val })
+        .then(() => updateOK(dispatch, noun))
+        .catch(() => updateNO(dispatch, noun));
+    }
+
+    function dont() {
+
+    }
+
+    const validate = mcuParamValidator(key, parseInt(val, 10), state);
+    validate(proceed, dont);
   };
 }
 
