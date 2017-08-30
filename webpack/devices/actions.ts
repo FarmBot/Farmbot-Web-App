@@ -28,7 +28,7 @@ import { oneOf, HttpData } from "../util";
 import { Actions } from "../constants";
 
 const ON = 1, OFF = 0;
-type configKey = keyof McuParams;
+export type ConfigKey = keyof McuParams;
 export const EXPECTED_MAJOR = 5;
 export const EXPECTED_MINOR = 0;
 
@@ -193,7 +193,7 @@ export function MCUFactoryReset() {
   return devices.current.resetMCU();
 }
 
-export function botConfigChange(key: configKey, value: number) {
+export function botConfigChange(key: ConfigKey, value: number) {
   const noun = "Setting toggle";
 
   return devices
@@ -203,7 +203,7 @@ export function botConfigChange(key: configKey, value: number) {
 }
 
 export function settingToggle(
-  name: configKey, bot: BotState, displayAlert: string | undefined
+  name: ConfigKey, bot: BotState, displayAlert: string | undefined
 ) {
   if (displayAlert) { alert(displayAlert.replace(/\s+/g, " ")); }
   const noun = "Setting toggle";
@@ -345,9 +345,10 @@ const updateNO = (dispatch: Function, noun: string) => {
   commandErr(noun);
 };
 
-export function updateMCU(key: configKey, val: string) {
+export function updateMCU(key: ConfigKey, val: string) {
   const noun = "configuration update";
   return function (dispatch: Function) {
+    console.log("Maybe I need to intercept this.");
     dispatch(startUpdate());
     devices
       .current
