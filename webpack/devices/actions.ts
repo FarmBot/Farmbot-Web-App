@@ -350,6 +350,7 @@ export function updateMCU(key: ConfigKey, val: string) {
   const noun = "configuration update";
   return function (dispatch: Function, getState: () => Everything) {
     const state = getState().bot.hardware.mcu_params;
+
     function proceed() {
       dispatch(startUpdate());
       devices
@@ -359,9 +360,7 @@ export function updateMCU(key: ConfigKey, val: string) {
         .catch(() => updateNO(dispatch, noun));
     }
 
-    function dont() {
-
-    }
+    const dont = (err: string) => warning(err);
 
     const validate = mcuParamValidator(key, parseInt(val, 10), state);
     validate(proceed, dont);
