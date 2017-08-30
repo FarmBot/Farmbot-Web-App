@@ -13,7 +13,7 @@ import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
-let fastClick = require("fastclick");
+const fastClick = require("fastclick");
 fastClick.attach(document.body);
 
 /** For the logger module */
@@ -60,7 +60,7 @@ const MUST_LOAD: ResourceName[] = [
 ];
 
 @connect(mapStateToProps)
-export default class App extends React.Component<AppProps, {}> {
+export class App extends React.Component<AppProps, {}> {
 
   get isLoaded() {
     return (MUST_LOAD.length ===
@@ -76,7 +76,7 @@ export default class App extends React.Component<AppProps, {}> {
   }
 
   render() {
-    let syncLoaded = this.isLoaded;
+    const syncLoaded = this.isLoaded;
     return <div className="app">
       <HotKeys dispatch={this.props.dispatch} />
       <NavBar

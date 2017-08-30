@@ -3,7 +3,7 @@ import * as React from "react";
 import { Provider } from "react-redux";
 import * as _ from "lodash";
 import { Router, RedirectFunction, RouterState } from "react-router";
-import App from "./app";
+import { App } from "./app";
 import { store as _store } from "./redux/store";
 import { history } from "./history";
 import { Store } from "./redux/interfaces";
@@ -15,12 +15,12 @@ interface RootComponentProps {
   store: Store;
 }
 
-let errorLoading = (cb: Function) => function handleError(err: object) {
+const errorLoading = (cb: Function) => function handleError(err: object) {
   console.error("Dynamic page loading failed", err);
-  let container = document.getElementById("root");
-  let stack = _.get(err, "stack", "No stack.");
+  const container = document.getElementById("root");
+  const stack = _.get(err, "stack", "No stack.");
   if (container) {
-    let message = _.get(err, "message", "No message available.");
+    const message = _.get(err, "message", "No message available.");
     _.get(window, "Rollbar.error", (_x: string) => { })(message);
     container.innerHTML = (`
     <div>
@@ -52,13 +52,13 @@ let errorLoading = (cb: Function) => function handleError(err: object) {
     // Clear cache for end users, but not developers.
     localStorage.clear();
   }
-  let y = document.querySelectorAll("link");
+  const y = document.querySelectorAll("link");
   for (let x = 0; x < y.length; x++) {
-    let element = y[x];
+    const element = y[x];
     element.remove();
   }
 };
-let controlsRoute = {
+const controlsRoute = {
   path: "app/controls",
   getComponent(_discard: void, cb: Function) {
     import("./controls/controls").then(
@@ -69,7 +69,7 @@ let controlsRoute = {
 export class RootComponent extends React.Component<RootComponentProps, {}> {
 
   requireAuth(_discard: RouterState, replace: RedirectFunction) {
-    let { store } = this.props;
+    const { store } = this.props;
     if (Session.getAll()) { // has a previous session in cache
       if (store.getState().auth) { // Has session, logged in.
         return;
@@ -90,13 +90,6 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       replace(`${next.location.pathname}/plants`);
     }
   }
-
-  // replaceSequencesModules(next: RouterState, replace: RedirectFunction) {
-  //   if (next.location.pathname === "/app/sequences" && isMobile()) {
-  //     replace(`${next.location.pathname}/`);
-  //   }
-  // };
-
   /*
     /app                => App
     /app/account        => Account
@@ -281,8 +274,8 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
   render() {
     // ==== TEMPORARY HACK. TODO: Add a before hook, if such a thing exists in
     // React Router. Or switch routing libs.
-    let notLoggedIn = !Session.getAll();
-    let restrictedArea = window.location.pathname.includes("/app/");
+    const notLoggedIn = !Session.getAll();
+    const restrictedArea = window.location.pathname.includes("/app/");
     if (notLoggedIn && restrictedArea) {
       window.location.href = "/";
     }
