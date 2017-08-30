@@ -7,6 +7,7 @@ import { isUndefined, noop } from "lodash";
 import { semverCompare, SemverResult } from "../../util";
 import * as _ from "lodash";
 import { Row, Col } from "../../ui/index";
+import { JobProgress } from "farmbot/dist";
 
 export let OsUpdateButton = ({ bot }: BotProp) => {
   const osUpdateBool = bot.hardware.configuration.os_auto_update;
@@ -29,31 +30,32 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
     buttonStr = "Can't Connect to release server";
   }
   const toggleVal = isUndefined(osUpdateBool) ? "undefined" : ("" + osUpdateBool);
-  let downloadProgress = "";
-  let disabled = false;
+
   // DONT TOUCH THIS!!! SERIOUSLY -- RC 8 August
   // DO NOT REMOVE `|| {}` UNTIL SEPTEMBER.
-  const job = (bot.hardware.jobs || {})["FBOS_OTA"];
-  if (job) {
-    if (job.status == "working") {
-      disabled = true;
-      if (job.unit == "bytes") {
-        const kiloBytes = Math.round(job.bytes / 1024);
-        const megaBytes = Math.round(job.bytes / 1048576);
-        if (kiloBytes < 1) {
-          downloadProgress = job.bytes + "B";
-        } else if (megaBytes < 1) {
-          downloadProgress = kiloBytes + "kB";
-        } else {
-          downloadProgress = megaBytes + "MB";
-        }
-      } else if (job.unit == "percent") {
-        downloadProgress = job.percent + "%";
+  const osUpdateJob = (bot.hardware.jobs || {})["FBOS_OTA"];
+
+  const isWorking = (job: JobProgress | undefined) => job && (job.status == "working");
+
+  function downloadProgress(job: JobProgress | undefined) {
+    if (job && isWorking(job)) {
+      switch (job.unit) {
+        case ("bytes"):
+          const kiloBytes = Math.round(job.bytes / 1024);
+          const megaBytes = Math.round(job.bytes / 1048576);
+          if (kiloBytes < 1) {
+            return job.bytes + "B";
+          } else if (megaBytes < 1) {
+            return kiloBytes + "kB";
+          } else {
+            return megaBytes + "MB";
+          }
+        case ("percent"):
+          return job.percent + "%";
       }
-    } else {
-      disabled = false;
     }
   }
+
   return <div className="updates">
     <Row>
       <Col xs={4}>
@@ -69,9 +71,9 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
       <Col xs={7}>
         <button
           className={"fb-button " + buttonColor}
-          disabled={disabled}
+          disabled={isWorking(osUpdateJob)}
           onClick={() => checkControllerUpdates()}>
-          {downloadProgress || buttonStr}
+          {downloadProgress(osUpdateJob) || buttonStr}
         </button>
       </Col>
     </Row>

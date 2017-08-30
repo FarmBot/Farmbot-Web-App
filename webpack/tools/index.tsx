@@ -29,7 +29,7 @@ export class Tools extends React.Component<Props, Partial<ToolsState>> {
             <ToolBayForm
               toggle={this.toggle("editingBays")}
               dispatch={this.props.dispatch}
-              position={this.props.botPosition}
+              botPosition={this.props.botPosition}
               toolSlots={this.props.toolSlots}
               getToolSlots={this.props.getToolSlots}
               getChosenToolOption={this.props.getChosenToolOption}

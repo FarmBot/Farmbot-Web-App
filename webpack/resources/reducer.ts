@@ -141,6 +141,7 @@ export let resourceReducer = generateReducer
       case "tools":
       case "users":
       case "webcam_feed":
+      case "images":
         removeFromIndex(s.index, resource);
         break;
       default:

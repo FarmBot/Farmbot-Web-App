@@ -11,6 +11,7 @@ import { ToolTips } from "../../constants";
 import { selectImage } from "./actions";
 import { WidgetFooter } from "../../ui/widget_footer";
 import { safeStringFetch } from "../../util";
+import { destroy } from "../../api/crud";
 
 interface MetaInfoProps {
   /** Default conversion is `attr_name ==> Attr Name`.
@@ -53,6 +54,15 @@ export class Photos extends React.Component<PhotosProps, {}> {
     }
   }
 
+  destroy = () => {
+    const img = this.props.currentImage || this.props.images[0];
+    if (img && img.uuid) {
+      this.props.dispatch(destroy(img.uuid))
+        .then(() => success("Image Deleted.", "Success"))
+        .catch(() => error("Could not delete image.", "Error"));
+    }
+  }
+
   render() {
     const image = this.props.currentImage;
     return (
@@ -62,6 +72,11 @@ export class Photos extends React.Component<PhotosProps, {}> {
             className="fb-button gray"
             onClick={this.takePhoto}>
             {t("Take Photo")}
+          </button>
+          <button
+            className="fb-button red"
+            onClick={() => this.destroy()}>
+            {t("Delete Photo")}
           </button>
         </WidgetHeader>
         <WidgetBody>
