@@ -22,6 +22,8 @@ export interface ImageFlipperProps {
 
 export interface ImageFlipperState {
   isLoaded: boolean;
+  disablePrev: boolean;
+  disableNext: boolean;
 }
 
 export interface PhotosProps {
