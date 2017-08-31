@@ -11,7 +11,7 @@ module Users
 
     def execute
       UserMailer.welcome_email(user).deliver_later
-      {message: SENT}
+      {user: SENT}
     end
   end
 end

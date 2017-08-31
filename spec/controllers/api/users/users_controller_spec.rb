@@ -125,7 +125,7 @@ describe Api::UsersController do
     end
 
     it 'refuses to send token to a user if they are already verified' do
-      verified = User.create!(email:                 "foo@bar.com",
+      verified = User.create!(email:                 Faker::Internet.email,
                               password:              "password123",
                               password_confirmation: "password123",
                               verified_at:           Time.now)
@@ -137,11 +137,11 @@ describe Api::UsersController do
     end
 
     it 'refuses to send token to a user if they are already verified' do
-      unverified = User.create!(email:                 "foo@bar.com",
+      unverified = User.create!(email:                 Faker::Internet.email,
                                 password:              "password123",
                                 password_confirmation: "password123")
 
-      post :resend_verification, params: { id: verified.email }
+      post :resend_verification, params: { id: unverified.email }
       expect(response.status).to eq(200)
       expect(json[:user]).to include(Users::ResendVerification::SENT)
     end
