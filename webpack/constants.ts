@@ -257,6 +257,10 @@ export namespace Content {
     will be overwritten with the new account's data. If the account is brand
     new, then FarmBot will become a blank slate.`.replace(/\s+/g, " ");
 
+  export const TYPE_PASSWORD_TO_DELETE =
+    `If you are sure you want to delete your account, type in
+    your password below to continue.`.replace(/\s+/g, " ");
+
   // Device
   export const FACTORY_RESET_WARNING =
     `Factory resetting your FarmBot will destroy all data on the device,
@@ -277,6 +281,18 @@ export namespace Content {
     `Warning: Farmbot could not guess your timezone. We have defaulted your
     timezone to UTC, which is less than ideal for most users. Please select
     your timezone from the dropdown. Device sync is recommended.`.replace(/\s+/g, " ");
+
+  export const DIFFERENT_TZ_WARNING =
+    `Note: The selected timezone for your FarmBot is different than
+    your local browser time.`.replace(/\s+/g, " ");
+
+  export const RESTART_FARMBOT =
+    `This will restart FarmBot's Raspberry Pi and controller
+    software.`.replace(/\s+/g, " ");
+
+  export const SHUTDOWN_FARMBOT =
+    `This will shutdown FarmBot's Raspberry Pi. To turn it
+    back on, unplug FarmBot and plug it back in.`.replace(/\s+/g, " ");
 
   // Hardware Settings
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
@@ -307,6 +323,16 @@ export namespace Content {
     `The terms of service have recently changed. You must accept the new
     terms of service to continue using the site.`.replace(/\s+/g, " ");
 
+  // Sequences
+  export const NO_SEQUENCE_SELECTED =
+    `No Sequence selected. Click one in the Sequences panel to edit, or
+    click "+" to create a new one.`.replace(/\s+/g, " ");
+
+  // Regimens
+  export const NO_REGIMEN_SELECTED =
+    `No Regimen selected. Click one in the Regimens panel to edit, or
+    click "+" in the Regimens panel to create a new one.`.replace(/\s+/g, " ");
+
   // Farm Events
   export const REGIMEN_TODAY_SKIPPED_ITEM_RISK =
     `You are scheduling a regimen to run today. Be aware that
@@ -317,6 +343,11 @@ export namespace Content {
   export const INVALID_RUN_TIME =
     `This Farm Event does not appear to have a valid run time.
     Perhaps you entered bad dates?`.replace(/\s+/g, " ");
+
+  export const FARM_EVENT_TZ_WARNING =
+    `Note: Times displayed according to local browser time, which
+    is currently different from your device timezone setting (on the
+    Device page).`.replace(/\s+/g, " ");
 }
 
 export enum Actions {
