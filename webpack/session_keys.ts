@@ -13,6 +13,6 @@ export enum BooleanSetting {
 }
 
 export enum NumericSetting {
-  BOT_ORIGIN_QUADRANT = "bot_origin_quadrant",
-  ZOOM_LEVEL = "zoom_level"
+  botOriginQuadrant = "botOriginQuadrant",
+  zoomLevel = "zoomLevel"
 }

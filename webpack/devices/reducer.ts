@@ -69,13 +69,13 @@ export let initialState: BotState = {
   currentOSVersion: undefined,
   currentFWVersion: undefined,
   axis_inversion: {
-    x: Session.getBool(BooleanSetting.X_AXIS_INVERTED) || false,
-    y: Session.getBool(BooleanSetting.Y_AXIS_INVERTED) || false,
-    z: Session.getBool(BooleanSetting.Z_AXIS_INVERTED) || false,
+    x: !!Session.getBool(BooleanSetting.X_AXIS_INVERTED),
+    y: !!Session.getBool(BooleanSetting.Y_AXIS_INVERTED),
+    z: !!Session.getBool(BooleanSetting.Z_AXIS_INVERTED),
   },
   encoder_visibility: {
-    raw_encoders: Session.getBool(BooleanSetting.RAW_ENCODERS) || false,
-    scaled_encoders: Session.getBool(BooleanSetting.SCALED_ENCODERS) || false,
+    raw_encoders: !!Session.getBool(BooleanSetting.RAW_ENCODERS),
+    scaled_encoders: !!Session.getBool(BooleanSetting.SCALED_ENCODERS),
   }
 };
 
