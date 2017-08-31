@@ -256,6 +256,7 @@ const mutateSpecialStatus =
       throw new Error("Refreshed a non-existent resource");
     }
   };
+
 interface HasID {
   id?: number | undefined;
 }

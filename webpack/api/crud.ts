@@ -90,11 +90,12 @@ export function save(uuid: string) {
   };
 }
 
-export function refresh(resource: TaggedResource) {
+export function refresh(resource: TaggedResource, urlNeedsId = false) {
   return function (dispatch: Function) {
     dispatch(refreshStart(resource.uuid));
+    const endPart = "" + urlNeedsId ? resource.body.id : "";
     axios
-      .get(urlFor(resource.kind) + resource.body.id || "")
+      .get(urlFor(resource.kind) + endPart)
       .then((resp: HttpData<typeof resource.body>) => {
         const r1 = defensiveClone(resource);
         const r2 = { body: defensiveClone(resp.data) };
