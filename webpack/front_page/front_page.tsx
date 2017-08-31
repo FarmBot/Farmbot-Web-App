@@ -11,6 +11,7 @@ import { FrontPageState } from "./interfaces";
 import { Row, Col, Widget, WidgetHeader, WidgetBody, BlurableInput } from "../ui/index";
 import { LoginProps, Login } from "./login";
 import { ForgotPassword, ForgotPasswordProps } from "./forgot_password";
+import { ResendVerification } from "./resend_verification";
 
 export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   constructor() {
@@ -25,8 +26,8 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       showServerOpts: false,
       serverURL: "",
       serverPort: "",
-      forgotPassword: false,
-      agreeToTerms: false
+      agreeToTerms: false,
+      activePanel: "login"
     };
     this.toggleServerOpts = this.toggleServerOpts;
   }
@@ -68,10 +69,17 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         Session.replace(resp.data);
         window.location.href = "/app/controls";
       }).catch((error: Error) => {
-        if (_.get(error, "response.status") === 451) {
-          window.location.href = "/tos_update";
+        switch (_.get(error, "response.status")) {
+          case 451: // TOS was updated; User must agree to terms.
+            window.location.href = "/tos_update";
+            break;
+          case 403: // User did not click verification email link.
+            log(t("Account Not Verified"));
+            this.setState({ activePanel: "resendVerificationEmail" });
+            break;
+          default:
+            log(prettyPrintApiErrors(error as {}));
         }
-        log(prettyPrintApiErrors(error as {}));
       });
   }
 
@@ -107,7 +115,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   }
 
   toggleForgotPassword = () => {
-    this.setState({ forgotPassword: !this.state.forgotPassword });
+    this.setState({ activePanel: "forgotPassword" });
   }
 
   submitForgotPassword = (e: React.FormEvent<HTMLFormElement>) => {
@@ -117,7 +125,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     axios.post(API.current.passwordResetPath, data)
       .then(() => {
         success(t("Email has been sent."), t("Forgot Password"));
-        this.setState({ forgotPassword: false });
+        this.setState({ activePanel: "login" });
       }).catch(error => {
         let errorMessage = prettyPrintApiErrors(error);
         if (errorMessage.toLowerCase().includes("not found")) {
@@ -189,8 +197,32 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     return <ForgotPassword {...props} />;
   }
 
+  resendVerificationPanel = () => {
+    const goBack = () => this.setState({ activePanel: "login" });
+    return <ResendVerification
+      ok={(resp) => {
+        success(t("Verification email resent. Please check your email!"));
+        goBack();
+      }}
+      no={() => {
+        log(t("Unable to resend verification email. " +
+          "Are you already verified?"));
+        goBack();
+      }}
+      email={this.state.email || ""} />;
+  }
+
+  activePanel = () => {
+    switch (this.state.activePanel) {
+      case "forgotPassword": return this.forgotPasswordPanel();
+      case "resendVerificationEmail": return this.resendVerificationPanel();
+      case "login":
+      default:
+        return this.loginPanel();
+    }
+  }
+
   defaultContent() {
-    const { forgotPassword } = this.state;
     return <div className="static-page">
       <Row>
         <Col xs={12}>
@@ -228,7 +260,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
           className="hidden-xs hidden-md hidden-lg hidden-xl col-sm-7"
           src="/app-resources/img/farmbot-tablet.png" />
         <Row>
-          {!forgotPassword ? this.loginPanel() : this.forgotPasswordPanel()}
+          <this.activePanel />
           <Col xs={12} sm={5}>
             <Widget>
               <WidgetHeader title={"Create An Account"} />

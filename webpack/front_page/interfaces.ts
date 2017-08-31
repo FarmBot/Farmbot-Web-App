@@ -8,7 +8,10 @@ export interface FrontPageState {
   showServerOpts?: boolean;
   serverURL?: string;
   serverPort?: string;
-  forgotPassword?: boolean;
   forgotPasswordEmail?: string;
   agreeToTerms: boolean;
+  activePanel:
+  | "login"           /** Render default login panel */
+  | "forgotPassword"  /** Render forgotten password pane */
+  | "resendVerificationEmail"          /** Render the "resend verification" panel. */;
 }

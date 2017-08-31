@@ -130,7 +130,10 @@ describe Api::UsersController do
                               password_confirmation: "password123",
                               verified_at:           Time.now)
 
-      post :resend_verification, params: { id: verified.email }
+      post :resend_verification,
+           params: { email: verified.email },
+           format: :json
+
       expect(response.status).to eq(422)
       expect(json[:user])
         .to include(Users::ResendVerification::ALREADY_VERIFIED)
@@ -141,7 +144,10 @@ describe Api::UsersController do
                                 password:              "password123",
                                 password_confirmation: "password123")
 
-      post :resend_verification, params: { id: unverified.email }
+      post :resend_verification,
+           params: { email: unverified.email },
+           format: :json
+
       expect(response.status).to eq(200)
       expect(json[:user]).to include(Users::ResendVerification::SENT)
     end

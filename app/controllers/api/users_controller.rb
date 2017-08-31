@@ -26,7 +26,7 @@ module Api
 
     def resend_verification
       mutate Users::ResendVerification
-        .run(user: User.find_by!(email: params[:id]))
+        .run(user: User.find_by!(email: params[:email]))
     end
 
     private

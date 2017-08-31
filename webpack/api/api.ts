@@ -106,6 +106,10 @@ export class API {
   get devicePath() { return `${this.baseUrl}/api/device/`; }
   /** /api/users/ */
   get usersPath() { return `${this.baseUrl}/api/users/`; }
+  /** /api/users/resend_verification?id=EMAIL */
+  get userResendConfirmationPath() {
+    return this.usersPath + "/resend_verification";
+  }
   /** /api/peripherals/ */
   get peripheralsPath() { return `${this.baseUrl}/api/peripherals/`; }
   /** /api/farm_events/ */
