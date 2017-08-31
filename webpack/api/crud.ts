@@ -8,7 +8,7 @@ import {
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { API } from "./index";
 import axios from "axios";
-import { updateOK, updateNO, destroyOK, destroyNO } from "../resources/actions";
+import { updateOK, updateNO, destroyOK, destroyNO, GeneralizedError } from "../resources/actions";
 import { UnsafeError } from "../interfaces";
 import { findByUuid } from "../resources/reducer";
 import { generateUuid } from "../resources/util";
@@ -112,6 +112,13 @@ export function refresh(resource: TaggedResource) {
   };
 }
 
+function refreshOK(payload: TaggedResource): ReduxAction<TaggedResource> {
+  return { type: Actions.REFRESH_RESOURCE_OK, payload };
+}
+
+function refreshNO(payload: GeneralizedError): ReduxAction<GeneralizedError> {
+  return { type: Actions.REFRESH_RESOURCE_NO, payload };
+}
 
 function update(uuid: string) {
   return function (dispatch: Function, getState: GetState) {

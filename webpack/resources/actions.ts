@@ -15,13 +15,15 @@ export function destroyOK(payload: TaggedResource) {
   return { type: Actions.DESTROY_RESOURCE_OK, payload };
 }
 
+export interface GeneralizedError {
+  err: UnsafeError;
+  uuid: string;
+}
 /** Generalized error handler when there are not special error handling
  * requirements */
-function generalizedError(payload: UnsafeError) {
+function generalizedError(payload: GeneralizedError) {
   toastErrors(payload);
-  return {
-    type: "*_RESOURCE_NO", payload
-  };
+  return { type: "*_RESOURCE_NO", payload };
 }
 
 export let destroyNO = generalizedError;
