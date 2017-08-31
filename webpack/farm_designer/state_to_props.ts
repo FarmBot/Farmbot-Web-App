@@ -6,7 +6,8 @@ import {
   joinToolsAndSlot,
   findPlant
 } from "../resources/selectors";
-import { BotPosition } from "../devices/interfaces";
+import { BotPosition, StepsPerMmXY } from "../devices/interfaces";
+import { isNumber } from "lodash";
 
 export function mapStateToProps(props: Everything) {
 
@@ -28,6 +29,14 @@ export function mapStateToProps(props: Everything) {
     botPosition = { x: undefined, y: undefined, z: undefined };
   }
 
+  function stepsPerMmXY(): StepsPerMmXY {
+    const config = props.bot.hardware.configuration;
+    if (isNumber(config.steps_per_mm_x) && isNumber(config.steps_per_mm_y)) {
+      return { x: config.steps_per_mm_x, y: config.steps_per_mm_y };
+    }
+    return { x: undefined, y: undefined };
+  }
+
   return {
     crops: selectAllCrops(props.resources.index),
     dispatch: props.dispatch,
@@ -38,6 +47,8 @@ export function mapStateToProps(props: Everything) {
     toolSlots: joinToolsAndSlot(props.resources.index),
     hoveredPlant,
     plants,
-    botPosition
+    botPosition,
+    botMcuParams: props.bot.hardware.mcu_params,
+    stepsPerMmXY: stepsPerMmXY()
   };
 }

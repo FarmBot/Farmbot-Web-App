@@ -82,6 +82,8 @@ export type Axis = Xyz | "all";
 export type BotPosition = Record<Xyz, (number | undefined)>;
 export type BotLocationData = Record<LocationName, BotPosition> | undefined;
 
+export type StepsPerMmXY = Record<"x" | "y", (number | undefined)>;
+
 export interface CalibrationButtonProps {
   disabled: boolean;
   axis: Axis;
