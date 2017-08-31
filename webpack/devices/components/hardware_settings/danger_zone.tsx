@@ -4,6 +4,7 @@ import { DangerZoneProps } from "../interfaces";
 import { Row, Col } from "../../../ui/index";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
+import { Content } from "../../../constants";
 
 export function DangerZone(props: DangerZoneProps) {
 
@@ -25,8 +26,7 @@ export function DangerZone(props: DangerZoneProps) {
         </Col>
         <Col xs={6}>
           <p>
-            {t(`Restoring hardware parameter defaults will destroy the
-                current settings, resetting them to default values.`)}
+            {t(Content.RESTORE_DEFAULT_HARDWARE_SETTINGS)}
             <br />
             <b>
               {t("Will reboot device.")}

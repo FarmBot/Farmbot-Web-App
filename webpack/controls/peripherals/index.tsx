@@ -34,10 +34,10 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
       if (allAreSmall) {
         this.props.dispatch(saveAll(this.props.peripherals, this.toggle));
       } else {
-        error("Pin numbers must be less than 1000.");
+        error(t("Pin numbers must be less than 1000."));
       }
     } else {
-      error("Pin numbers are required and must be positive and unique.");
+      error(t("Pin numbers are required and must be positive and unique."));
     }
   }
 

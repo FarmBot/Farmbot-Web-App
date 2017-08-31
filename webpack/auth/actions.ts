@@ -126,7 +126,7 @@ export function logout() {
   // In those cases, seeing a logout message may confuse the user.
   // To circumvent this, we must check if the user had a token.
   // If there was infact a token, we can safely show the message.
-  if (Session.getAll()) { success("You have been logged out."); }
+  if (Session.getAll()) { success(t("You have been logged out.")); }
   Session.clear();
   // Technically this is unreachable code:
   return {

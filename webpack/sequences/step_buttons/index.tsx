@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import { SequenceBodyItem as Step } from "farmbot";
 import { error } from "farmbot-toastr";
 import { StepDragger, NULL_DRAGGER_ID } from "../../draggable/step_dragger";
@@ -12,7 +13,7 @@ const stepClick = (dispatch: Function, step: Step, seq: TaggedSequence | undefin
     if (seq) {
       pushStep(step, dispatch, seq);
     } else {
-      error("Select a sequence first");
+      error(t("Select a sequence first"));
     }
   };
 

@@ -59,7 +59,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
         .installFarmware(this.state.packageUrl)
         .then(() => this.setState({ packageUrl: "" }));
     } else {
-      alert("Enter a URL");
+      alert(t("Enter a URL"));
     }
   }
 

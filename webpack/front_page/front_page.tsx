@@ -116,7 +116,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     const data = { email };
     axios.post(API.current.passwordResetPath, data)
       .then(() => {
-        success("Email has been sent.", "Forgot Password");
+        success(t("Email has been sent."), t("Forgot Password"));
         this.setState({ forgotPassword: false });
       }).catch(error => {
         let errorMessage = prettyPrintApiErrors(error);
@@ -124,7 +124,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
           errorMessage =
             `That email address is not associated with an account.`;
         }
-        log(errorMessage);
+        log(t(errorMessage));
       });
   }
 
