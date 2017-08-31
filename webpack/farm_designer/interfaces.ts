@@ -30,6 +30,8 @@ export interface State {
   showPoints: boolean;
   showSpread: boolean;
   showFarmbot: boolean;
+  botOriginQuadrant: BotOriginQuadrant;
+  zoomLevel: number;
 }
 
 export interface Props {
@@ -89,8 +91,6 @@ export interface Crop {
 export interface DesignerState {
   selectedPlant: string | undefined;
   hoveredPlant: HoveredPlantPayl;
-  botOriginQuadrant: BotOriginQuadrant;
-  zoomLevel: number;
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
 }
@@ -161,6 +161,7 @@ export interface GardenMapProps {
   crops: TaggedCrop[];
   botPosition: BotPosition;
   zoomLvl: number;
+  botOriginQuadrant: BotOriginQuadrant;
 }
 
 export interface GardenMapState {

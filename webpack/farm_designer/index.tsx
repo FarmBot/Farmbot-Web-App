@@ -3,37 +3,68 @@ import { connect } from "react-redux";
 import { Link } from "react-router";
 import { t } from "i18next";
 import { GardenMap } from "./map/garden_map";
-import { Props, State, BotOriginQuadrant } from "./interfaces";
+import { Props, State, BotOriginQuadrant, isBotOriginQuadrant } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { history } from "../history";
 import { Plants } from "./plants/plant_inventory";
 import { GardenMapLegend } from "./map/garden_map_legend";
 import { isMobile } from "../util";
+import { Session, safeBooleanSettting } from "../session";
+import { NumericSetting, BooleanSetting } from "../session_keys";
+import { isUndefined } from "lodash";
 
 @connect(mapStateToProps)
 export class FarmDesigner extends React.Component<Props, Partial<State>> {
 
+  initializeSetting = (name: keyof State, defaultValue: boolean): boolean => {
+    const currentValue = Session.getBool(safeBooleanSettting(name));
+    if (isUndefined(currentValue)) {
+      Session.setBool(safeBooleanSettting(name), defaultValue);
+      return defaultValue;
+    } else {
+      return currentValue;
+    }
+  }
+
+  getBotOriginQuadrant = (): BotOriginQuadrant => {
+    const value = Session.getNum(NumericSetting.botOriginQuadrant);
+    return isBotOriginQuadrant(value) ? value : 2;
+  }
+
+  getZoomLevel = (): number => {
+    return Session.getNum(NumericSetting.zoomLevel) || 1;
+  }
+
   state: State = {
-    legendMenuOpen: false,
-    showPlants: true,
-    showPoints: true,
-    showSpread: false,
-    showFarmbot: true
+    legendMenuOpen: this.initializeSetting(BooleanSetting.legendMenuOpen, false),
+    showPlants: this.initializeSetting(BooleanSetting.showPlants, true),
+    showPoints: this.initializeSetting(BooleanSetting.showPoints, true),
+    showSpread: this.initializeSetting(BooleanSetting.showSpread, false),
+    showFarmbot: this.initializeSetting(BooleanSetting.showFarmbot, true),
+    botOriginQuadrant: this.getBotOriginQuadrant(),
+    zoomLevel: this.getZoomLevel()
   };
 
   componentDidMount() {
-    this.updateBotOriginQuadrant(this.props.designer.botOriginQuadrant)();
+    this.updateBotOriginQuadrant(this.state.botOriginQuadrant)();
     this.updateZoomLevel(0)();
   }
 
-  toggle = (name: keyof State) => () =>
+  toggle = (name: keyof State) => () => {
     this.setState({ [name]: !this.state[name] });
+    Session.invertBool(safeBooleanSettting(name));
+  }
 
-  updateBotOriginQuadrant = (payload: BotOriginQuadrant) => () =>
-    this.props.dispatch({ type: "UPDATE_BOT_ORIGIN_QUADRANT", payload });
+  updateBotOriginQuadrant = (payload: BotOriginQuadrant) => () => {
+    this.setState({ botOriginQuadrant: payload });
+    Session.setNum(NumericSetting.botOriginQuadrant, payload);
+  }
 
-  updateZoomLevel = (payload: number) => () =>
-    this.props.dispatch({ type: "UPDATE_MAP_ZOOM_LEVEL", payload });
+  updateZoomLevel = (zoomIncrement: number) => () => {
+    const payload = this.getZoomLevel() + zoomIncrement;
+    this.setState({ zoomLevel: payload });
+    Session.setNum(NumericSetting.zoomLevel, payload);
+  }
 
   childComponent(props: Props) {
     const fallback = isMobile() ? undefined : React.createElement(Plants, props);
@@ -57,7 +88,9 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       showPlants,
       showPoints,
       showSpread,
-      showFarmbot
+      showFarmbot,
+      botOriginQuadrant,
+      zoomLevel
     } = this.state;
 
     const designerTabClasses: string[] = ["active", "visible-xs"];
@@ -68,8 +101,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         zoom={this.updateZoomLevel}
         toggle={this.toggle}
         updateBotOriginQuadrant={this.updateBotOriginQuadrant}
-        botOriginQuadrant={this.props.designer.botOriginQuadrant}
-        zoomLvl={this.props.designer.zoomLevel}
+        botOriginQuadrant={botOriginQuadrant}
+        zoomLvl={zoomLevel}
         legendMenuOpen={legendMenuOpen}
         showPlants={showPlants}
         showPoints={showPoints}
@@ -95,7 +128,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
 
       <div
         className="farm-designer-map"
-        style={{ zoom: this.props.designer.zoomLevel }}>
+        style={{ zoom: zoomLevel }}>
         <GardenMap
           showPoints={showPoints}
           showPlants={showPlants}
@@ -110,7 +143,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           toolSlots={this.props.toolSlots}
           botPosition={this.props.botPosition}
           hoveredPlant={this.props.hoveredPlant}
-          zoomLvl={Math.round(this.props.designer.zoomLevel * 10) / 10} />
+          zoomLvl={Math.round(zoomLevel * 10) / 10}
+          botOriginQuadrant={botOriginQuadrant} />
       </div>
     </div>;
   }

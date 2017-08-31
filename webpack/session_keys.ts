@@ -4,10 +4,15 @@ export enum BooleanSetting {
   Z_AXIS_INVERTED = "z_axis_inverted",
   RAW_ENCODERS = "raw_encoders",
   SCALED_ENCODERS = "scaled_encoders",
-  DISABLE_I18N = "disable_i18n"
+  DISABLE_I18N = "disable_i18n",
+  legendMenuOpen = "legendMenuOpen",
+  showPlants = "showPlants",
+  showPoints = "showPoints",
+  showSpread = "showSpread",
+  showFarmbot = "showFarmbot"
 }
 
 export enum NumericSetting {
-  BOT_ORIGIN_QUADRANT = "bot_origin_quadrant",
-  ZOOM_LEVEL = "zoom_level"
+  botOriginQuadrant = "botOriginQuadrant",
+  zoomLevel = "zoomLevel"
 }
