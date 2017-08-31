@@ -106,7 +106,7 @@ export class API {
   get devicePath() { return `${this.baseUrl}/api/device/`; }
   /** /api/users/ */
   get usersPath() { return `${this.baseUrl}/api/users/`; }
-  /** /api/users/resend_verification?id=EMAIL */
+  /** /api/users/resend_verification */
   get userResendConfirmationPath() {
     return this.usersPath + "/resend_verification";
   }

@@ -139,7 +139,7 @@ describe Api::UsersController do
         .to include(Users::ResendVerification::ALREADY_VERIFIED)
     end
 
-    it 'refuses to send token to a user if they are already verified' do
+    it 're-sends verification email' do
       unverified = User.create!(email:                 Faker::Internet.email,
                                 password:              "password123",
                                 password_confirmation: "password123")

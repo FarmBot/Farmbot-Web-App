@@ -11,7 +11,7 @@ export interface FrontPageState {
   forgotPasswordEmail?: string;
   agreeToTerms: boolean;
   activePanel:
-  | "login"           /** Render default login panel */
-  | "forgotPassword"  /** Render forgotten password pane */
-  | "resendVerificationEmail"          /** Render the "resend verification" panel. */;
+  | "resendVerificationEmail" /** Render the "resend verification" panel. */
+  | "login"                   /** Render default login panel */
+  | "forgotPassword"          /** Render forgotten password pane */;
 }

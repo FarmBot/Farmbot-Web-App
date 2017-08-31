@@ -114,9 +114,8 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     this.setState({ showServerOpts: !this.state.showServerOpts });
   }
 
-  toggleForgotPassword = () => {
-    this.setState({ activePanel: "forgotPassword" });
-  }
+  toggleForgotPassword = () => this.setState({ activePanel: "forgotPassword" });
+
 
   submitForgotPassword = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
