@@ -231,8 +231,31 @@ export let resourceReducer = generateReducer
     });
     addAllToIndex(index, name, data);
     return s;
+  })
+  .add<string>(Actions.REFRESH_RESOURCE_START, (s, a) => {
+    mutateSpecialStatus(a.payload, s.index, SpecialStatus.SAVING);
+    return s;
+  })
+  .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, a) => {
+    s.index.references[a.payload.uuid] = a.payload;
+    mutateSpecialStatus(a.payload.uuid, s.index, undefined);
+    return s;
+  })
+  .add<string>(Actions.REFRESH_RESOURCE_NO, (s, a) => {
+    mutateSpecialStatus(a.payload, s.index, undefined);
+    return s;
   });
 
+/** Helper method to change the `specialStatus` of a resource in the index */
+const mutateSpecialStatus =
+  (uuid: string, index: ResourceIndex, status: SpecialStatus | undefined) => {
+    const resource = index.references[uuid];
+    if (resource) {
+      resource.specialStatus = status;
+    } else {
+      throw new Error("Refreshed a non-existent resource");
+    }
+  };
 interface HasID {
   id?: number | undefined;
 }
