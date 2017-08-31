@@ -1,6 +1,6 @@
 import { AuthState } from "./auth/interfaces";
 import { box } from "boxed_value";
-import { get, isNumber } from "lodash";
+import { get, isNumber, isBoolean } from "lodash";
 import { BooleanSetting, NumericSetting } from "./session_keys";
 
 /** The `Session` namespace is a wrapper for `localStorage`.
@@ -42,9 +42,11 @@ export namespace Session {
     window.location.href = window.location.origin;
   }
 
-  /** Fetch a *boolean* value from localstorage. */
-  export function getBool(key: BooleanSetting): boolean {
-    return JSON.parse(localStorage.getItem(key) || "false");
+  /** Fetch a *boolean* value from localstorage. Returns `undefined` when
+   * none are found.*/
+  export function getBool(key: BooleanSetting): boolean | undefined {
+    const output = JSON.parse(localStorage.getItem(key) || "null");
+    return (isBoolean(output)) ? output : undefined;
   }
 
   /** Store a boolean value in `localStorage` */
@@ -66,5 +68,19 @@ export namespace Session {
   /** Set a numeric value in `localStorage`. */
   export function setNum(key: NumericSetting, val: number): void {
     localStorage.setItem(key, JSON.stringify(val));
+  }
+}
+
+const isBooleanSetting =
+  // tslint:disable-next-line:no-any
+  (x: any): x is BooleanSetting => {
+    return !!BooleanSetting[x];
+  };
+
+export function safeBooleanSettting(name: string): BooleanSetting {
+  if (isBooleanSetting(name)) {
+    return name;
+  } else {
+    throw new Error(`Expected BooleanSetting but got '${name}'`);
   }
 }

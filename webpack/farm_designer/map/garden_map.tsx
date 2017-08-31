@@ -71,7 +71,7 @@ export class GardenMap extends
       const crop = history.getCurrentLocation().pathname.split("/")[5];
       const OFEntry = this.findCrop(crop);
       const params: ScreenToGardenParams = {
-        quadrant: this.props.designer.botOriginQuadrant,
+        quadrant: this.props.botOriginQuadrant,
         pageX: pageX + page.scrollLeft,
         pageY: pageY + map.scrollTop * zoomLvl,
         zoomLvl
@@ -99,7 +99,7 @@ export class GardenMap extends
   drag = (e: React.MouseEvent<SVGElement>) => {
     const plant = this.getPlant();
     const map = document.querySelector(".farm-designer-map");
-    const { botOriginQuadrant } = this.props.designer;
+    const { botOriginQuadrant } = this.props;
     if (this.isEditing && this.state.isDragging && plant && map) {
       const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || DRAG_ERROR);
       const { qx, qy } = getXYFromQuadrant(e.pageX, e.pageY, botOriginQuadrant);
@@ -126,16 +126,16 @@ export class GardenMap extends
         onMouseDown={this.startDrag}
         onMouseMove={this.drag}>
         <SpreadLayer
-          botOriginQuadrant={this.props.designer.botOriginQuadrant}
+          botOriginQuadrant={this.props.botOriginQuadrant}
           plants={this.props.plants}
           currentPlant={this.getPlant()}
           visible={!!this.props.showSpread} />
         <PointLayer
-          botOriginQuadrant={this.props.designer.botOriginQuadrant}
+          botOriginQuadrant={this.props.botOriginQuadrant}
           visible={!!this.props.showPoints}
           points={this.props.points} />
         <PlantLayer
-          botOriginQuadrant={this.props.designer.botOriginQuadrant}
+          botOriginQuadrant={this.props.botOriginQuadrant}
           dispatch={this.props.dispatch}
           visible={!!this.props.showPlants}
           plants={this.props.plants}
@@ -146,16 +146,16 @@ export class GardenMap extends
           zoomLvl={this.props.zoomLvl}
           activeDragXY={this.state.activeDragXY} />
         <ToolSlotLayer
-          botOriginQuadrant={this.props.designer.botOriginQuadrant}
+          botOriginQuadrant={this.props.botOriginQuadrant}
           visible={!!this.props.showFarmbot}
           slots={this.props.toolSlots} />
         <FarmBotLayer
-          botOriginQuadrant={this.props.designer.botOriginQuadrant}
+          botOriginQuadrant={this.props.botOriginQuadrant}
           visible={!!this.props.showFarmbot}
           botPosition={this.props.botPosition} />
         <HoveredPlantLayer
           isEditing={this.isEditing}
-          botOriginQuadrant={this.props.designer.botOriginQuadrant}
+          botOriginQuadrant={this.props.botOriginQuadrant}
           currentPlant={this.getPlant()}
           designer={this.props.designer}
           dispatch={this.props.dispatch}
