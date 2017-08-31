@@ -91,8 +91,8 @@ export function save(uuid: string) {
 }
 
 export function refresh(resource: TaggedResource) {
-  return function (dispatch: Function, getState: GetState) {
-    dispatch({ type: Actions.REFRESH_RESOURCE_START, payload: resource });
+  return function (dispatch: Function) {
+    dispatch(refreshStart(resource.uuid));
     axios
       .get(urlFor(resource.kind) + resource.body.id || "")
       .then((resp: HttpData<typeof resource.body>) => {
@@ -106,10 +106,15 @@ export function refresh(resource: TaggedResource) {
         }
       })
       .catch(function (err: UnsafeError) {
-        dispatch(refreshNO({ err, uuid: resource.uuid }));
+        const action = refreshNO({ err, uuid: resource.uuid });
+        dispatch(action);
         return Promise.reject(err);
       });
   };
+}
+
+function refreshStart(uuid: string): ReduxAction<string> {
+  return { type: Actions.REFRESH_RESOURCE_START, payload: uuid };
 }
 
 function refreshOK(payload: TaggedResource): ReduxAction<TaggedResource> {
