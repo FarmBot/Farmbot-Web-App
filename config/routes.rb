@@ -14,7 +14,9 @@ FarmBot::Application.routes.draw do
     end
     resource :public_key,     only: [:show]
     resource :tokens,         only: [:create]
-    resource :users,          only: [:create, :update, :destroy, :show]
+    resource :users,          only: [:create, :update, :destroy, :show] do
+      post :resend_verification, on: :member
+    end
     resource :device,         only: [:show, :destroy, :create, :update]
     resource :webcam_feed,    only: [:show, :update]
     resources :password_resets, only: [:create, :update]

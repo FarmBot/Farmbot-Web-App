@@ -123,4 +123,26 @@ describe Api::UsersController do
       expect(json[:password]).to include("do not match")
       expect(response.status).to eq(422)
     end
+
+    it 'refuses to send token to a user if they are already verified' do
+      verified = User.create!(email:                 "foo@bar.com",
+                              password:              "password123",
+                              password_confirmation: "password123",
+                              verified_at:           Time.now)
+
+      post :resend_verification, params: { id: verified.email }
+      expect(response.status).to eq(422)
+      expect(json[:user])
+        .to include(Users::ResendVerification::ALREADY_VERIFIED)
+    end
+
+    it 'refuses to send token to a user if they are already verified' do
+      unverified = User.create!(email:                 "foo@bar.com",
+                                password:              "password123",
+                                password_confirmation: "password123")
+
+      post :resend_verification, params: { id: verified.email }
+      expect(response.status).to eq(200)
+      expect(json[:user]).to include(Users::ResendVerification::SENT)
+    end
 end
