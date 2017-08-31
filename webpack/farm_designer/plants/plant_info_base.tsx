@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import { EditPlantInfoProps } from "../interfaces";
 import { history } from "../../history";
 import { destroy } from "../../api/crud";
@@ -17,7 +18,7 @@ export abstract class PlantInfoBase extends
   destroy = (plantUUID: string) => {
     this.props.dispatch(destroy(plantUUID))
       .then(() => history.push("/app/designer/plants"))
-      .catch(() => error("Could not delete plant.", "Error"));
+      .catch(() => error(t("Could not delete plant."), t("Error")));
   }
 
   fallback = () => {

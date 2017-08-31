@@ -11,7 +11,7 @@ export let METHOD_MAP: Dictionary<DataChangeType> = {
 };
 export let METHODS = ["post", "put", "patch", "delete"];
 export let RESOURCES: ResourceName[] = [
-  "images", "plants", "regimens", "peripherals", "logs", "sequences",
+  "plants", "regimens", "peripherals", "logs", "sequences",
   "farm_events", "tool_slots", "tools", "points", "device"];
 
 // PROBLEM:       The bot doesn't know if the user has changed any of the data.

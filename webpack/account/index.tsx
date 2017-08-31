@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import { connect } from "react-redux";
 import { Settings, DeleteAccount, ChangePassword } from "./components";
 import { Props } from "./interfaces";
@@ -33,7 +34,7 @@ export class Account extends React.Component<Props, State> {
   onSave = () => this
     .props
     .dispatch(save(this.props.user.uuid))
-    .then(() => success("saved"), updateNO);
+    .then(() => success(t("saved")), updateNO);
 
   render() {
     return <Page className="account">

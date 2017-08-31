@@ -38,7 +38,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
 
   takePhoto = () => {
     const ok = () => success(t("Processing now. Refresh page to see result."));
-    const no = () => error("Error taking photo");
+    const no = () => error(t("Error taking photo"));
     devices.current.takePhoto().then(ok, no);
   }
 
@@ -58,8 +58,8 @@ export class Photos extends React.Component<PhotosProps, {}> {
     const img = this.props.currentImage || this.props.images[0];
     if (img && img.uuid) {
       this.props.dispatch(destroy(img.uuid))
-        .then(() => success("Image Deleted.", "Success"))
-        .catch(() => error("Could not delete image.", "Error"));
+        .then(() => success(t("Image Deleted."), t("Success")))
+        .catch(() => error(t("Could not delete image."), t("Error")));
     }
   }
 

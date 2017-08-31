@@ -1,4 +1,5 @@
-import * as React from "react";
+import * as React from "react";
+import { t } from "i18next";
 import { connect } from "react-redux";
 import * as _ from "lodash";
 import { init, error } from "farmbot-toastr";
@@ -11,20 +12,14 @@ import { ResourceName, TaggedUser } from "./resources/tagged_resources";
 import { selectAllLogs, maybeFetchUser } from "./resources/selectors";
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
+import { Content } from "./constants";
 
-/** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
+/** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
 const fastClick = require("fastclick");
 fastClick.attach(document.body);
 
-/** For the logger module */
+/** For the logger module */
 init();
-
-/**
- * If the sync object takes more than 10s to load, the user will be granted
- * access into the app, but still warned.
- */
-const TIMEOUT_MESSAGE = `App could not be fully loaded, we recommend you try
- refreshing the page.`;
 
 interface AppProps {
   dispatch: Function;
@@ -67,10 +62,14 @@ export class App extends React.Component<AppProps, {}> {
       _.intersection(this.props.loaded, MUST_LOAD).length);
   }
 
+  /**
+ * If the sync object takes more than 10s to load, the user will be granted
+ * access into the app, but still warned.
+ */
   componentDidMount() {
     setTimeout(() => {
       if (!this.isLoaded) {
-        error(TIMEOUT_MESSAGE, "Warning");
+        error(t(Content.APP_LOAD_TIMEOUT_MESSAGE), t("Warning"));
       }
     }, 10000);
   }

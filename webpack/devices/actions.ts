@@ -25,7 +25,7 @@ import { getDeviceAccountSettings } from "../resources/selectors";
 import { TaggedDevice } from "../resources/tagged_resources";
 import { versionOK } from "./reducer";
 import { oneOf, HttpData } from "../util";
-import { Actions } from "../constants";
+import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
 
 const ON = 1, OFF = 0;
@@ -130,7 +130,7 @@ export function sync(): Thunk {
         .controller_version) {
         badVersion();
       } else {
-        info("FarmBot is not connected.", "Disconnected", "red");
+        info(t("FarmBot is not connected."), t("Disconnected"), "red");
       }
     }
   };
@@ -178,7 +178,7 @@ export function save(input: TaggedDevice) {
     return axios
       .put(API.current.devicePath, input.body)
       .then((resp: HttpData<User>) => dispatch({ type: "SAVE_DEVICE_OK", payload: resp.data }))
-      .catch(resp => error("Error saving device settings."));
+      .catch(resp => error(t("Error saving device settings.")));
   };
 }
 
@@ -268,9 +268,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
     bot.on("online", () => dispatch(setMqttStatus(true)));
     bot.on("offline", () => {
       dispatch(setMqttStatus(false));
-      error(t("Your web browser is unable to connect to the message broker " +
-        "(MQTT). You might be behind a firewall or disconnected from the " +
-        "Internet. Check your network settings."));
+      error(t(Content.MQTT_DISCONNECTED));
     });
     return bot
       .connect()
@@ -313,8 +311,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
         let alreadyToldYou = false;
         bot.on("malformed", function () {
           if (!alreadyToldYou) {
-            warning(t(`FarmBot sent a malformed message. You may need to upgrade
-            FarmBot OS. Please upgrade FarmBot OS and log back in.`));
+            warning(t(Content.MALFORMED_MESSAGE_REC_UPGRADE));
             alreadyToldYou = true;
           }
         });
@@ -413,7 +410,7 @@ export function setSyncStatus(payload: SyncStatus) {
 }
 
 function badVersion() {
-  info("You are running an old version of FarmBot OS.", "Please Update", "red");
+  info(t("You are running an old version of FarmBot OS."), t("Please Update"), "red");
 }
 
 export let setMqttStatus = (payload: boolean) => ({

@@ -11,6 +11,7 @@ import { API } from "./api/index";
 import { AuthState } from "./auth/interfaces";
 import * as _ from "lodash";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
+import { Content } from "./constants";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   let method = input.config.method;
@@ -44,8 +45,7 @@ export function responseRejected(x: SafeError | undefined) {
         break;
       case 451:
         // DONT REFACTOR: I want to use alert() because it's blocking.
-        alert(t("The terms of service have recently changed. You must " +
-          "accept the new terms of service to continue using the site."));
+        alert(t(Content.TOS_UPDATE));
         window.location.href = "/tos_update";
         break;
     }

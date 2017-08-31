@@ -35,6 +35,7 @@ import { TzWarning } from "./tz_warning";
 import { FarmEventRepeatForm } from "./farm_event_repeat_form";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
 import { executableType } from "../util";
+import { Content } from "../../constants";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -184,21 +185,17 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         if (nextRun) {
           // TODO: Internationalizing this will be a challenge.
           success(`This Farm Event will run ${nextRun.fromNow()}, but
-            you must first SYNC YOUR DEVICE. If you do not sync, the event will\
-            not run.`);
+            you must first SYNC YOUR DEVICE. If you do not sync, the event will
+            not run.`.replace(/\s+/g, " "));
           this.props.dispatch(maybeWarnAboutMissedTasks(frmEvnt, function () {
-            alert(`You are scheduling a regimen to run today. Be aware that
-              running a regimen too late in the day may result in skipped
-              regimen tasks. Consider rescheduling this event to tomorrow if
-              this is a concern.`.replace(/\s+/g, " "));
+            alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK));
           }));
         } else {
-          error(`This Farm Event does not appear to have a valid run time.
-            Perhaps you entered bad dates?`);
+          error(t(Content.INVALID_RUN_TIME));
         }
       })
       .catch(() => {
-        error("Unable to save farm event.");
+        error(t("Unable to save farm event."));
         this.setState({ specialStatusLocal: SpecialStatus.DIRTY });
       });
   }
@@ -267,7 +264,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             onClick={() => {
               this.dispatch(destroy(fe.uuid)).then(() => {
                 history.push("/app/designer/farm_events");
-                success("Deleted farm event.", "Deleted");
+                success(t("Deleted farm event."), t("Deleted"));
               });
             }}>
             {t("Delete")}
