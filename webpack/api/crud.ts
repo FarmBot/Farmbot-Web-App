@@ -114,15 +114,15 @@ export function refresh(resource: TaggedResource, urlNeedsId = false) {
   };
 }
 
-function refreshStart(uuid: string): ReduxAction<string> {
+export function refreshStart(uuid: string): ReduxAction<string> {
   return { type: Actions.REFRESH_RESOURCE_START, payload: uuid };
 }
 
-function refreshOK(payload: TaggedResource): ReduxAction<TaggedResource> {
+export function refreshOK(payload: TaggedResource): ReduxAction<TaggedResource> {
   return { type: Actions.REFRESH_RESOURCE_OK, payload };
 }
 
-function refreshNO(payload: GeneralizedError): ReduxAction<GeneralizedError> {
+export function refreshNO(payload: GeneralizedError): ReduxAction<GeneralizedError> {
   return { type: Actions.REFRESH_RESOURCE_NO, payload };
 }
 

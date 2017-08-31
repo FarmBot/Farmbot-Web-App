@@ -69,28 +69,28 @@ export let initialState: BotState = {
   currentOSVersion: undefined,
   currentFWVersion: undefined,
   axis_inversion: {
-    x: !!Session.getBool(BooleanSetting.X_AXIS_INVERTED),
-    y: !!Session.getBool(BooleanSetting.Y_AXIS_INVERTED),
-    z: !!Session.getBool(BooleanSetting.Z_AXIS_INVERTED),
+    x: !!Session.getBool(BooleanSetting.xAxisInverted),
+    y: !!Session.getBool(BooleanSetting.yAxisInverted),
+    z: !!Session.getBool(BooleanSetting.zAxisInverted),
   },
   encoder_visibility: {
-    raw_encoders: !!Session.getBool(BooleanSetting.RAW_ENCODERS),
-    scaled_encoders: !!Session.getBool(BooleanSetting.SCALED_ENCODERS),
+    raw_encoders: !!Session.getBool(BooleanSetting.rawEncoders),
+    scaled_encoders: !!Session.getBool(BooleanSetting.scaledEncoders),
   }
 };
 
 /** Translate X/Y/Z to the name that is used in `localStorage` */
 export const INVERSION_MAPPING: Record<Xyz, BooleanSetting> = {
-  x: BooleanSetting.X_AXIS_INVERTED,
-  y: BooleanSetting.Y_AXIS_INVERTED,
-  z: BooleanSetting.Z_AXIS_INVERTED,
+  x: BooleanSetting.xAxisInverted,
+  y: BooleanSetting.yAxisInverted,
+  z: BooleanSetting.zAxisInverted,
 };
 
 /** Translate `encode_visibility` key name to the name that is
  * used in `localStorage` */
 export const ENCODER_MAPPING: Record<EncoderDisplay, BooleanSetting> = {
-  raw_encoders: BooleanSetting.RAW_ENCODERS,
-  scaled_encoders: BooleanSetting.SCALED_ENCODERS,
+  raw_encoders: BooleanSetting.rawEncoders,
+  scaled_encoders: BooleanSetting.scaledEncoders,
 };
 
 export let botReducer = generateReducer<BotState>(initialState)

@@ -3,8 +3,8 @@ import { Session } from "./session";
 import { BooleanSetting } from "./session_keys";
 
 function generateUrl(langCode: string) {
-  let lang = langCode.slice(0, 2);
-  let url = "//" + location.host.split(":")
+  const lang = langCode.slice(0, 2);
+  const url = "//" + location.host.split(":")
   [0] + ":" + location.port + "/app-resources/languages/" + lang + ".js";
   return url;
 }
@@ -19,8 +19,8 @@ export function detectLanguage() {
   return getUserLang(navigator.language).then(function (lang) {
     // NOTE: Some international users prefer using the app in English.
     //       This preference is stored in `DISABLE_I18N`.
-    let choice = Session.getBool(BooleanSetting.DISABLE_I18N) ? "en" : lang;
-    let langi = require("../public/app-resources/languages/" + choice + ".js");
+    const choice = Session.getBool(BooleanSetting.disableI18n) ? "en" : lang;
+    const langi = require("../public/app-resources/languages/" + choice + ".js");
     return {
       nsSeparator: "",
       keySeparator: "",

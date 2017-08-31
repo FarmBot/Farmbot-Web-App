@@ -32,6 +32,7 @@ import {
 } from "../farmware/reducer";
 import { Actions } from "../constants";
 import { maybeTagSteps as dontTouchThis } from "./sequence_tagging";
+import { GeneralizedError } from "./actions";
 
 const consumerReducer = combineReducers<RestResources["consumers"]>({
   regimens,
@@ -241,8 +242,8 @@ export let resourceReducer = generateReducer
     mutateSpecialStatus(a.payload.uuid, s.index, undefined);
     return s;
   })
-  .add<string>(Actions.REFRESH_RESOURCE_NO, (s, a) => {
-    mutateSpecialStatus(a.payload, s.index, undefined);
+  .add<GeneralizedError>(Actions.REFRESH_RESOURCE_NO, (s, a) => {
+    mutateSpecialStatus(a.payload.uuid, s.index, undefined);
     return s;
   });
 

@@ -21,11 +21,11 @@ describe("<LangToggle/>", () => {
       };
     });
     const el = mount(<LangToggle />);
-    expect(Session.getBool(BooleanSetting.DISABLE_I18N)).toBeFalsy();
+    expect(Session.getBool(BooleanSetting.disableI18n)).toBeFalsy();
     expect(el.text().toLocaleLowerCase()).toContain("set page to english");
     el.find("a").first().simulate("click");
     el.update();
-    expect(Session.getBool(BooleanSetting.DISABLE_I18N)).toBeTruthy();
+    expect(Session.getBool(BooleanSetting.disableI18n)).toBeTruthy();
     expect(el.text().toLocaleLowerCase()).not.toContain("set page to english");
     expect(el.text().toLocaleLowerCase()).toContain("internationalize page");
   });
