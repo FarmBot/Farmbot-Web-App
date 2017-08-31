@@ -1,5 +1,4 @@
 export enum BooleanSetting {
-  /** TODO: Convert these guys to a consistentCase before submitting PR. -RC */
   xAxisInverted = "xAxisInverted",
   yAxisInverted = "yAxisInverted",
   zAxisInverted = "zAxisInverted",
