@@ -8,7 +8,7 @@ import {
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { API } from "./index";
 import axios from "axios";
-import { updateOK, updateNO, destroyOK, destroyNO } from "../resources/actions";
+import { updateOK, updateNO, destroyOK, destroyNO, GeneralizedError } from "../resources/actions";
 import { UnsafeError } from "../interfaces";
 import { findByUuid } from "../resources/reducer";
 import { generateUuid } from "../resources/util";
@@ -85,9 +85,45 @@ export function initSave(resource: TaggedResource) {
 export function save(uuid: string) {
   return function (dispatch: Function, getState: GetState) {
     const resource = findByUuid(getState().resources.index, uuid);
-    dispatch({ type: "SAVE_RESOURCE_START", payload: resource });
+    dispatch({ type: Actions.SAVE_RESOURCE_START, payload: resource });
     return dispatch(update(uuid));
   };
+}
+
+export function refresh(resource: TaggedResource, urlNeedsId = false) {
+  return function (dispatch: Function) {
+    dispatch(refreshStart(resource.uuid));
+    const endPart = "" + urlNeedsId ? resource.body.id : "";
+    axios
+      .get(urlFor(resource.kind) + endPart)
+      .then((resp: HttpData<typeof resource.body>) => {
+        const r1 = defensiveClone(resource);
+        const r2 = { body: defensiveClone(resp.data) };
+        const newTR = _.assign({}, r1, r2);
+        if (isTaggedResource(newTR)) {
+          dispatch(refreshOK(newTR));
+        } else {
+          throw new Error("Just saved a malformed TR.");
+        }
+      })
+      .catch(function (err: UnsafeError) {
+        const action = refreshNO({ err, uuid: resource.uuid });
+        dispatch(action);
+        return Promise.reject(err);
+      });
+  };
+}
+
+export function refreshStart(uuid: string): ReduxAction<string> {
+  return { type: Actions.REFRESH_RESOURCE_START, payload: uuid };
+}
+
+export function refreshOK(payload: TaggedResource): ReduxAction<TaggedResource> {
+  return { type: Actions.REFRESH_RESOURCE_OK, payload };
+}
+
+export function refreshNO(payload: GeneralizedError): ReduxAction<GeneralizedError> {
+  return { type: Actions.REFRESH_RESOURCE_NO, payload };
 }
 
 function update(uuid: string) {

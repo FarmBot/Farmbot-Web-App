@@ -14,11 +14,11 @@ export class LangToggle extends React.Component<Props, State> {
   state: State = {};
 
   toggle = () => {
-    Session.setBool(BooleanSetting.DISABLE_I18N, !this.disabled());
+    Session.setBool(BooleanSetting.disableI18n, !this.disabled());
     this.setState({ clicked: true });
   };
 
-  disabled = () => Session.getBool(BooleanSetting.DISABLE_I18N);
+  disabled = () => Session.getBool(BooleanSetting.disableI18n);
 
   verbiage() {
     return (this.disabled() ? "Internationalize Page" : "Set Page to English");
