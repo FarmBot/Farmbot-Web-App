@@ -14,7 +14,7 @@ class DashboardController < ApplicationController
     render :tos_update, layout: false
   end
 
-  [:main_app, :front_page, :tos_update, :verify, :password_reset].map do |actn|
+  [:main_app, :front_page, :verify, :password_reset].map do |actn|
     define_method(actn) { render actn, layout: false }
   end
 
