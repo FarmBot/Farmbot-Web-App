@@ -11,25 +11,29 @@ import { Actions } from "../../constants";
 
 export function pushWeek() {
   return {
-    type: "PUSH_WEEK"
+    type: Actions.PUSH_WEEK,
+    payload: undefined
   };
 }
 
 export function popWeek() {
   return {
-    type: "POP_WEEK"
+    type: Actions.POP_WEEK,
+    payload: undefined
   };
 }
 
 export function deselectDays() {
   return {
-    type: "DESELECT_ALL_DAYS"
+    type: Actions.DESELECT_ALL_DAYS,
+    payload: undefined
   };
 }
 
 export function selectDays() {
   return {
-    type: "SELECT_ALL_DAYS"
+    type: Actions.SELECT_ALL_DAYS,
+    payload: undefined
   };
 }
 
@@ -39,13 +43,13 @@ export function setTimeOffset(ms: number) {
     warning("Time is not properly formatted.", "Bad Input");
     throw new Error("Bad time input on regimen page: " + JSON.stringify(ms));
   } else {
-    return { type: "SET_TIME_OFFSET", payload: ms };
+    return { type: Actions.SET_TIME_OFFSET, payload: ms };
   }
 }
 
 export function toggleDay({ week, day }: ToggleDayParams) {
   return {
-    type: "TOGGLE_DAY",
+    type: Actions.TOGGLE_DAY,
     payload: {
       week,
       day
