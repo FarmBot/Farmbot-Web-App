@@ -4,6 +4,7 @@ import { mount } from "enzyme";
 import { Props } from "../interfaces";
 import { store } from "../../redux/store";
 import { GardenMapLegendProps } from "../map/interfaces";
+import { bot } from "../../__test_support__/fake_state/bot";
 
 describe("<FarmDesigner/>", () => {
   function fakeProps(): Props {
@@ -24,7 +25,9 @@ describe("<FarmDesigner/>", () => {
       plants: [],
       toolSlots: [],
       crops: [],
-      botPosition: { x: undefined, y: undefined, z: undefined }
+      botPosition: { x: undefined, y: undefined, z: undefined },
+      botMcuParams: bot.hardware.mcu_params,
+      stepsPerMmXY: { x: undefined, y: undefined }
     };
   }
 

@@ -11,8 +11,9 @@ import {
 } from "../resources/tagged_resources";
 import { PlantPointer } from "../interfaces";
 import { SlotWithTool } from "../resources/interfaces";
-import { BotPosition } from "../devices/interfaces";
+import { BotPosition, StepsPerMmXY } from "../devices/interfaces";
 import { isNumber } from "lodash";
+import { McuParams } from "farmbot/dist";
 
 /** TODO: Use Enums */
 export type BotOriginQuadrant = 1 | 2 | 3 | 4;
@@ -44,6 +45,8 @@ export interface Props {
   toolSlots: SlotWithTool[];
   crops: TaggedCrop[];
   botPosition: BotPosition;
+  botMcuParams: McuParams;
+  stepsPerMmXY: StepsPerMmXY;
 }
 
 export type TimeUnit =
@@ -160,6 +163,8 @@ export interface GardenMapProps {
   hoveredPlant: TaggedPlantPointer | undefined;
   crops: TaggedCrop[];
   botPosition: BotPosition;
+  botMcuParams: McuParams;
+  stepsPerMmXY: StepsPerMmXY;
   zoomLvl: number;
   botOriginQuadrant: BotOriginQuadrant;
 }

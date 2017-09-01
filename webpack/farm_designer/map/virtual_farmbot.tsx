@@ -3,7 +3,7 @@ import { getXYFromQuadrant } from "./util";
 import { BotOriginQuadrant } from "../interfaces";
 import { BotPosition } from "../../devices/interfaces";
 
-interface VFBProps {
+export interface VFBProps {
   quadrant: BotOriginQuadrant;
   botPosition: BotPosition;
 }

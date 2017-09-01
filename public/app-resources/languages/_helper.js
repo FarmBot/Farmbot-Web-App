@@ -28,8 +28,10 @@ var HelperNamespace = (function () {
     function searchInFile(path) {
         /* some tags could be missed in this regex
            We detect all the tags in the code
-           regex is matching '.t("")' or '{t("")}' or ' t("")' or '(t("")' */
-        var REGEX = /[\.|\{|(|\s]t\(\"([\w|\s|\{|\}|\(|\)]*)[\"|,].*\)/g;
+           regex is matching:
+           '.t("")' or '{t("")' or ' t("")' or '(t("")' or
+           '.t(``)' or '{t(``)' or ' t(``)' or '(t(``)'*/
+        var REGEX = /[.{(\s]t\(["`]([\w\s{}().,:'\-=\\?!]*)["`].*\)/g;
 
         var fs = fs || require('fs')
         // load the file
@@ -38,7 +40,7 @@ var HelperNamespace = (function () {
         //match all the groups
         var match = REGEX.exec(fileContent);
         while (match != null) {
-            strArray.push(match[1])
+            strArray.push(match[1].replace(/\s+/g, " "))
             match = REGEX.exec(fileContent);
         }
         return strArray;
