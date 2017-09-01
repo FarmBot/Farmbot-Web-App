@@ -22,8 +22,7 @@ export class DeleteAccount extends
         <div>
           {t(Content.ACCOUNT_DELETE_WARNING)}
           <br /><br />
-          {t(`If you are sure you want to delete your account, type in
-              your password below to continue.`)}
+          {t(Content.TYPE_PASSWORD_TO_DELETE)}
           <br /><br />
         </div>
         <form>

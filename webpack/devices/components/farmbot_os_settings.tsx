@@ -50,8 +50,7 @@ export class FarmbotOsSettings
   maybeWarnTz = () => {
     const wrongTZ = timezoneMismatch(this.props.account.body.timezone);
     if (wrongTZ) {
-      return `Note: The selected timezone for your FarmBot is different than
-        your local browser time.`;
+      return Content.DIFFERENT_TZ_WARNING;
     } else {
       return "";
     }
@@ -154,8 +153,7 @@ export class FarmbotOsSettings
               </Col>
               <Col xs={7}>
                 <p>
-                  {t(`This will restart FarmBot's Raspberry
-                    Pi and controller software.`)}
+                  {t(Content.RESTART_FARMBOT)}
                 </p>
               </Col>
               <Col xs={3}>
@@ -175,8 +173,7 @@ export class FarmbotOsSettings
               </Col>
               <Col xs={7}>
                 <p>
-                  {t(`This will shutdown FarmBot's Raspberry Pi. To turn it
-                    back on, unplug FarmBot and plug it back in.`)}
+                  {t(Content.SHUTDOWN_FARMBOT)}
                 </p>
               </Col>
               <Col xs={3}>

@@ -142,6 +142,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           points={this.props.points}
           toolSlots={this.props.toolSlots}
           botPosition={this.props.botPosition}
+          botMcuParams={this.props.botMcuParams}
+          stepsPerMmXY={this.props.stepsPerMmXY}
           hoveredPlant={this.props.hoveredPlant}
           zoomLvl={Math.round(zoomLevel * 10) / 10}
           botOriginQuadrant={botOriginQuadrant} />
