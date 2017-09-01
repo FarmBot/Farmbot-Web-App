@@ -1,10 +1,13 @@
 
-import { regimensReducer } from "../reducer";
+import { regimensReducer, RegimenState } from "../reducer";
 import { Actions } from "../../constants";
+import { popWeek, pushWeek, selectDays, deselectDays } from "../bulk_scheduler/actions";
+import { defensiveClone } from "../../util";
 
-const STATE = {
+const STATE: RegimenState = {
   "dailyOffsetMs": 300000,
   "selectedSequenceUUID": "sequences.71.167",
+  "currentRegimen": "regimens.4.56",
   "weeks": [
     {
       "days": {
@@ -30,32 +33,54 @@ describe("Regimens reducer", () => {
 
 describe("selectDays()", () => {
   it("selects all days", () => {
-    const ACTION = { type: Actions.SELECT_ALL_DAYS, payload: undefined };
-    const nextState = regimensReducer(STATE, ACTION);
+    const nextState = regimensReducer(STATE, selectDays());
     expect(nextState.weeks[0].days["day7"]).toBeTruthy();
   });
 });
 
 describe("deselectDays()", () => {
   it("deselects all days", () => {
-    const ACTION = { type: Actions.DESELECT_ALL_DAYS, payload: undefined };
-    const nextState = regimensReducer(STATE, ACTION);
+    const nextState = regimensReducer(STATE, deselectDays());
     expect(nextState.weeks[0].days["day6"]).toBeFalsy();
   });
 });
 
 describe("pushWeek()", () => {
   it("add a week", () => {
-    const ACTION = { type: Actions.PUSH_WEEK, payload: undefined };
-    const nextState = regimensReducer(STATE, ACTION);
+    const nextState = regimensReducer(STATE, pushWeek());
     expect(nextState.weeks.length).toEqual(2);
   });
 });
 
 describe("popWeek()", () => {
-  it("remove a week", () => {
-    const ACTION = { type: Actions.POP_WEEK, payload: undefined };
-    const nextState = regimensReducer(STATE, ACTION);
+  it("removes a week", () => {
+    const nextState = regimensReducer(STATE, popWeek());
     expect(nextState.weeks.length).toEqual(0);
+  });
+});
+
+describe("DESTROY_RESOURCE_OK", () => {
+  it("resets selectedSequenceUUID", () => {
+    const uuid = STATE.selectedSequenceUUID;
+    if (uuid) {
+      const action = { type: Actions.DESTROY_RESOURCE_OK, payload: { uuid } };
+      const nextState = regimensReducer(STATE, action);
+      expect(nextState.selectedSequenceUUID).toBe(undefined);
+    } else {
+      fail();
+    }
+  });
+});
+
+describe("INIT_RESOURCE", () => {
+  it("sets currentRegimen", () => {
+    const state = defensiveClone(STATE);
+    state.currentRegimen = undefined;
+    const action = {
+      type: Actions.INIT_RESOURCE,
+      payload: { uuid: "regimens.4.56", kind: "regimens" }
+    };
+    const nextState = regimensReducer(STATE, action);
+    expect(nextState.currentRegimen).toBe(action.payload.uuid);
   });
 });
