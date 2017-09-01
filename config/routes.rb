@@ -49,6 +49,7 @@ FarmBot::Application.routes.draw do
   # =======================================================================
   get "/" => 'dashboard#front_page', as: :front_page
   get "/app" => 'dashboard#main_app', as: :dashboard
+  get "/tos_update" => 'dashboard#tos_update', as: :tos_update
   match "/app/*path", to: 'dashboard#main_app', via: :all
   get "/password_reset/*token" => 'dashboard#password_reset',
     as: :password_reset
