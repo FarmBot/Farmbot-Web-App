@@ -23,46 +23,48 @@ describe("<ImageFlipper/>", () => {
 
   it("defaults to index 0 and flips up", () => {
     const onFlip = jest.fn();
-    const x = new ImageFlipper();
     const currentImage = undefined;
     const images = prepareImages(fakeImages);
-    x.props = { images, currentImage, onFlip };
-    const up = x.go(1);
+    const props = { images, currentImage, onFlip };
+    const x = mount(<ImageFlipper {...props} />);
+    const up = (x.instance() as ImageFlipper).go(1);
     up();
     expect(onFlip).toHaveBeenCalledWith(images[1].uuid);
   });
 
   it("flips down", () => {
     const onFlip = jest.fn();
-    const x = new ImageFlipper();
     const images = prepareImages(fakeImages);
     const currentImage = images[1];
-    x.props = { images, currentImage, onFlip };
-    const down = x.go(-1);
+    const props = { images, currentImage, onFlip };
+    const x = mount(<ImageFlipper {...props} />);
+    const down = (x.instance() as ImageFlipper).go(-1);
     down();
     expect(onFlip).toHaveBeenCalledWith(images[0].uuid);
   });
 
   it("stops at upper end", () => {
     const onFlip = jest.fn();
-    const x = new ImageFlipper();
     const images = prepareImages(fakeImages);
     const currentImage = images[2];
-    x.props = { images, currentImage, onFlip };
-    const up = x.go(1);
+    const props = { images, currentImage, onFlip };
+    const x = mount(<ImageFlipper {...props} />);
+    const up = (x.instance() as ImageFlipper).go(1);
     up();
     expect(onFlip).not.toHaveBeenCalled();
   });
 
   it("stops at lower end", () => {
-    const onFlip = jest.fn();
-    const x = new ImageFlipper();
     const images = prepareImages(fakeImages);
-    const currentImage = images[0];
-    x.props = { images, currentImage, onFlip };
-    const down = x.go(-1);
+    const props = {
+      images,
+      currentImage: images[0],
+      onFlip: jest.fn()
+    };
+    const x = mount(<ImageFlipper {...props} />);
+    const down = (x.instance() as ImageFlipper).go(-1);
     down();
-    expect(onFlip).not.toHaveBeenCalled();
+    expect(props.onFlip).not.toHaveBeenCalled();
   });
 
   it("disables flippers when no images", () => {
@@ -91,6 +93,7 @@ describe("<ImageFlipper/>", () => {
     const currentImage = undefined;
     const props = { images, currentImage, onFlip };
     const wrapper = mount(<ImageFlipper {...props} />);
+    wrapper.update();
     expect(wrapper.find("button").first().props().disabled).toBeFalsy();
     expect(wrapper.find("button").last().props().disabled).toBeTruthy();
   });
