@@ -19,11 +19,12 @@ describe("resend_verification.tsx - failure case", () => {
     const props = {
       ok: jest.fn(),
       no: jest.fn(),
+      onGoBack: jest.fn(),
       email: "foo@bar.com"
     };
     const el = mount(<ResendVerification {...props} />);
     expect.assertions(3);
-    el.find("button").first().simulate("click");
+    el.find("button").last().simulate("click");
     const { calls } = props.no.mock;
     setImmediate(() => {
       expect(props.ok.mock.calls.length).toEqual(0);

@@ -11,6 +11,7 @@ interface Props {
   ok(resp: AxiosResponse): void;
   /** Callback when resend fails */
   no(error: UnsafeError): void;
+  onGoBack(): void;
 }
 
 interface State {
@@ -30,7 +31,13 @@ export class ResendVerification extends React.Component<Props, State> {
   render() {
     return <Col xs={12} sm={5}>
       <Widget>
-        <WidgetHeader title={t("Account Not Verified")} />
+        <WidgetHeader title={t("Account Not Verified")}>
+          <button onClick={this.props.onGoBack}
+            type="button"
+            className="fb-button gray pull-right front-page-button">
+            {t("back")}
+          </button>
+        </WidgetHeader>
         <WidgetBody>
           <form>
             <Row>
