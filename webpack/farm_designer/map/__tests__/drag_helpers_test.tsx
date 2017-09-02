@@ -122,4 +122,27 @@ describe("<DragHelpers/>", () => {
     expect(indicator.props().fill).toEqual("#ee6666");
   });
 
+  it("renders horizontal and vertical alignment indicators in quadrant 4", () => {
+    const p = fakeProps();
+    p.quadrant = 4;
+    p.dragging = false;
+    p.plant.body.id = 6;
+    p.plant.body.x = 100;
+    p.plant.body.y = 100;
+    p.activeDragXY = { x: 100, y: 100, z: 0 };
+    const wrapper = shallow(<DragHelpers {...p } />);
+    const indicator = wrapper.find("#alignment-indicator");
+    const masterSegment = indicator.find("#alignment-indicator-segment-6");
+    const segmentProps = masterSegment.find("rect").props();
+    expect(segmentProps.x).toEqual(2865);
+    expect(segmentProps.y).toEqual(1399);
+    const segments = indicator.find("use");
+    expect(segments.length).toEqual(4);
+    expect(segments.at(0).props().transform).toEqual("rotate(0, 2900, 1400)");
+    expect(segments.at(1).props().transform).toEqual("rotate(180, 2900, 1400)");
+    expect(segments.at(2).props().transform).toEqual("rotate(90, 2900, 1400)");
+    expect(segments.at(3).props().transform).toEqual("rotate(270, 2900, 1400)");
+    expect(indicator.props().fill).toEqual("#ee6666");
+  });
+
 });
