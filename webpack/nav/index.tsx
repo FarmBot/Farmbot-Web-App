@@ -36,7 +36,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       `${hasName.split(" ")[0]} ▾` : `${t("Menu")} ▾`;
 
     const menuIconClassNames: string[] = [
-      "fa", "fa-bars", "visible-xs-inline-block", "mobile-menu-icon"
+      "fa", "fa-bars", "mobile-menu-icon"
     ];
 
     /** The way our app is laid out, we'll pretty much always want this bit. */

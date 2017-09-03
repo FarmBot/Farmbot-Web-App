@@ -67,8 +67,7 @@ export function powerOff() {
 }
 
 export function factoryReset() {
-  if (!confirm(`WAIT! This will erase EVERYTHING stored on your device SD card.
-  Are you sure?`)) {
+  if (!confirm(t(Content.FACTORY_RESET_ALERT))) {
     return;
   }
   devices

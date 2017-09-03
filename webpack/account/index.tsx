@@ -11,21 +11,17 @@ import { updateNO } from "../resources/actions";
 import { deleteUser } from "./actions";
 import { success } from "farmbot-toastr/dist";
 
-type State = Partial<User>;
-
 const KEYS: (keyof User)[] = ["id", "name", "email", "created_at", "updated_at"];
 
 const isKey = (x: string): x is keyof User => KEYS.includes(x as keyof User);
 
 @connect(mapStateToProps)
-export class Account extends React.Component<Props, State> {
-  state: State = {};
+export class Account extends React.Component<Props, {}> {
 
   onChange = (e: React.FormEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
     if (isKey(name)) {
-      this.setState({ [name]: value });
-      this.props.dispatch(edit(this.props.user, this.state));
+      this.props.dispatch(edit(this.props.user, { [name]: value }));
     } else {
       throw new Error("Bad key: " + name);
     }

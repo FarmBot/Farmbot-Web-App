@@ -60,14 +60,13 @@ export function DragHelpers(props: DragHelpersProps) {
   const scale = 1 + Math.round(15 * (1.8 - zoomLvl)) / 10; // scale factor
 
   const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
-  const gardenCoord = getXYFromQuadrant(qx, qy, quadrant);
-  const plantPosition: BotPosition = { x: qx, y: qy, z: 0 };
+  const gardenCoord: BotPosition = { x, y, z: 0 };
 
   return <g id="drag-helpers" fill={GRAY}>
     {dragging && // Active plant
       <text id="coordinates-tooltip"
         x={qx} y={qy} dy={-20 * scale} fontSize={1.25 * scale + "rem"}>
-        {gardenCoord.qx}, {gardenCoord.qy}
+        {gardenCoord.x}, {gardenCoord.y}
       </text>}
     {dragging && // Active plant
       <g id="long-crosshair">
@@ -103,7 +102,7 @@ export function DragHelpers(props: DragHelpersProps) {
               height={2 * scale} />
           </g>
         </defs>
-        {rotationArray(getAlignment(activeDragXY, plantPosition)).map(rotation => {
+        {rotationArray(getAlignment(activeDragXY, gardenCoord)).map(rotation => {
           return (
             <use key={rotation.toString()}
               xlinkHref={"#alignment-indicator-segment-" + plant.body.id}

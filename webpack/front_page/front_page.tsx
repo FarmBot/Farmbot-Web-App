@@ -186,8 +186,9 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   }
 
   forgotPasswordPanel = () => {
+    const goBack = () => this.setState({ activePanel: "login" });
     const props: ForgotPasswordProps = {
-      onToggleForgotPassword: this.toggleForgotPassword,
+      onGoBack: goBack,
       onSubmit: this.submitForgotPassword,
       email: this.state.email || "",
       onEmailChange: this.set("email"),
@@ -198,7 +199,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   resendVerificationPanel = () => {
     const goBack = () => this.setState({ activePanel: "login" });
     return <ResendVerification
-      onGoBack={() => this.setState({ activePanel: "login" })}
+      onGoBack={goBack}
       ok={(resp) => {
         success(t("Verification email resent. Please check your email!"));
         goBack();

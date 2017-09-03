@@ -4,8 +4,6 @@ import { connect } from "react-redux";
 import { SequencesList } from "./sequences_list";
 import { StepButtonCluster } from "./step_button_cluster";
 import { SequenceEditorMiddle } from "./sequence_editor_middle";
-import { MobileSequencesNav } from "./mobile_nav";
-import { isMobile } from "../util";
 import { Page, Col, ToolTip } from "../ui/index";
 import { Props } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
@@ -36,7 +34,7 @@ export class Sequences extends React.Component<Props, {}> {
             resources={this.props.resources} />
         </div>
       </Col>
-      {isMobile() && <MobileSequencesNav />}
+      {/* {isMobile() && <MobileSequencesNav />} */}
       <Col sm={3}>
         <SequencesList
           dispatch={this.props.dispatch}

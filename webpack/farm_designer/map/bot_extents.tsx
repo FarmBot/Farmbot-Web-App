@@ -35,7 +35,8 @@ export class BotExtents extends
     const homeLength = getXYFromQuadrant(homeLengthX, homeLengthY, quadrant);
     const homeZero = getXYFromQuadrant(2, 2, quadrant);
 
-    return <g id="extents" strokeWidth="5" strokeLinecap="square" stroke="#434343">
+    return <g id="extents"
+      strokeWidth="4" strokeLinecap="square" stroke="rgba(0, 0, 0, 0.2)" strokeDasharray="12">
       <g id="home-lines">
         {stopAtHomeX &&
           <line x1={homeZero.qx} y1={homeZero.qy} x2={homeZero.qx} y2={homeLength.qy} />
