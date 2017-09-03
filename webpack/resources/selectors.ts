@@ -449,7 +449,7 @@ export function getFeed(index: ResourceIndex): TaggedWebcamFeed {
     sanityCheck(feed);
     return feed;
   } else {
-    throw new Error("Problem loading webcam feed");
+    throw new Error(`Problem loading webcam feed. Got ${onlyOne}` + JSON.stringify(feed));
   }
 }
 
