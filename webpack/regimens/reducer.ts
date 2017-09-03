@@ -41,8 +41,6 @@ export let regimensReducer = generateReducer<RegimenState>(initialState)
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
     switch (payload.uuid) {
       case s.selectedSequenceUUID:
-        s.selectedSequenceUUID = undefined;
-        break;
       case s.currentRegimen:
         s.selectedSequenceUUID = undefined;
         break;
