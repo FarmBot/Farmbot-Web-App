@@ -3,8 +3,6 @@ import { BulkSchedulerWidget } from "./bulk_scheduler/index";
 import { RegimensList } from "./list/index";
 import { RegimenEditorWidget } from "./editor/index";
 import { connect } from "react-redux";
-import { isMobile } from "../util";
-import { MobileRegimensNav } from "./mobile_nav";
 import { Props } from "./interfaces";
 import { Page, Row, Col } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
@@ -31,7 +29,7 @@ export class Regimens extends React.Component<Props, {}> {
             calendar={this.props.calendar}
             current={this.props.current} />
         </Col>
-        {isMobile() && <MobileRegimensNav />}
+        {/* {isMobile() && <MobileRegimensNav />} */}
         <Col xs={12} md={3}>
           <RegimensList
             dispatch={this.props.dispatch}
