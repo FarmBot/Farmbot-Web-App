@@ -61,6 +61,8 @@ export function Motors({ dispatch, bot }: MotorsProps) {
         z={"movement_max_spd_z"}
         bot={bot}
         dispatch={dispatch} />
+      {/*
+      This works. Uncomment when it is time to relase. -RC.
       <NumericMCUInputGroup
         name={t("Homing Speed (steps/s)")}
         tooltip={t(ToolTips.MAX_SPEED)}
@@ -68,7 +70,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
         y={"movement_home_spd_y"}
         z={"movement_home_spd_z"}
         bot={bot}
-        dispatch={dispatch} />
+        dispatch={dispatch} /> */}
       <NumericMCUInputGroup
         name={t("Minimum Speed (steps/s)")}
         tooltip={t(ToolTips.MIN_SPEED)}
