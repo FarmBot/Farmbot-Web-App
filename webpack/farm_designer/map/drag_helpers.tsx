@@ -60,7 +60,7 @@ export function DragHelpers(props: DragHelpersProps) {
   const scale = 1 + Math.round(15 * (1.8 - zoomLvl)) / 10; // scale factor
 
   const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
-  const gardenCoord: BotPosition = { x, y, z: 0 };
+  const gardenCoord: BotPosition = { x: round(x), y: round(y), z: 0 };
 
   return <g id="drag-helpers" fill={GRAY}>
     {dragging && // Active plant
