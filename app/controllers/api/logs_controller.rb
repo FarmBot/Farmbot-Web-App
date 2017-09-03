@@ -1,6 +1,11 @@
 module Api
   class LogsController < Api::AbstractController
 
+    # This is one of the "oddball" endpoints for the FarmBot API.
+    # It is unique because it allows batch creation of logs.
+    # When creating in batches, it is a "best effort" approach.
+    # If some logs fail to save, they will fail silently.
+    # As a matter of policy, not all log types are stored in the DB.
     def create
     case raw_json
     when Array
@@ -33,6 +38,7 @@ module Api
       render json: current_device.limited_log_list
     end
 
+    # Clears out *all* logs.
     def destroy
       render json: current_device.logs.destroy_all && ""
     end

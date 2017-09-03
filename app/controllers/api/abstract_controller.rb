@@ -1,5 +1,9 @@
 module Api
+  # A controller that contains all of the helper methods and shared logic for
+  # all API endpoints.
   class AbstractController < ApplicationController
+    # This error is thrown when you try to use a non-JSON request body on an
+    # endpoint that requires JSON.
     class OnlyJson < Exception; end;
     CONSENT_REQUIRED = "all device users must agree to terms of service."
 
@@ -47,6 +51,7 @@ module Api
       sorry "One of those numbers was too big/small. " +
             "If you need larger numbers, let us know.", 422
     end
+
 private
 
     def clean_expired_farm_events
@@ -142,7 +147,7 @@ private
     end
 
     EXPECTED_VER = Gem::Version::new('5.0.0')
-
+    # This is how we lock old versions of FBOS out of the API:
     def check_fbos_version
       when_farmbot_os do
         semver = pretty_ua.upcase.split("/").last.split(" ").first
@@ -150,15 +155,19 @@ private
       end
     end
 
+    # Format the user agent header in a way that is easier for us to parse.
     def pretty_ua
       # "FARMBOTOS/3.1.0 (RPI3) RPI3 ()"
       (request.user_agent || "").upcase
     end
 
+    # Conditionally execute a block when the request was made by a FarmBot
     def when_farmbot_os
       yield if pretty_ua.include?("FARMBOTOS")
     end
 
+    # Devices have a `last_seen` field to assist users with debugging.
+    # We update this column every time an FBOS device talks to the API.
     def mark_as_seen
       when_farmbot_os do
         d = current_user && current_user.device
