@@ -36,6 +36,8 @@ describe("<DragHelpers/>", () => {
   it("renders coordinates tooltip while dragging", () => {
     const p = fakeProps();
     p.dragging = true;
+    p.plant.body.x = 104;
+    p.plant.body.y = 199;
     const wrapper = shallow(<DragHelpers {...p } />);
     expect(wrapper.find("text").length).toEqual(1);
     expect(wrapper.find("text").text()).toEqual("100, 200");
