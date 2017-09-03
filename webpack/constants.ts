@@ -274,6 +274,13 @@ export namespace Content {
     to your device once it is back online and paired with your web app
     account.`.replace(/\s+/g, " ");
 
+  export const FACTORY_RESET_ALERT =
+    `Warning: This will erase all data stored on your FarmBot's SD card,
+    requiring you to reconfigure FarmBot so that it can reconnect to your
+    WiFi network and a web app account. Factory resetting the device will
+    not delete data stored in your web app account. Are you sure you wish
+    to continue?`.replace(/\s+/g, " ");
+
   export const TIMEZONE_GUESS_BROWSER =
     `This account did not have a timezone set. Farmbot requires a timezone to
     operate. We have updated your timezone settings based on your browser.
