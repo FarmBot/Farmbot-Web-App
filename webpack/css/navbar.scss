@@ -142,8 +142,14 @@ nav {
   }
 }
 
-@media (max-width: 768px) {
+@media screen and (max-width: 974px) {
   .top-menu-container .nav-links {
     display: none;
+  }
+}
+
+@media screen and (min-width: 975px) {
+  .mobile-menu-icon {
+    display: none !important;
   }
 }
