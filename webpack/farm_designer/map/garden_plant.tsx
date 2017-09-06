@@ -4,7 +4,6 @@ import { cachedCrop, DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
 import { Circle } from "./circle";
 import { round, getXYFromQuadrant } from "./util";
 import { DragHelpers } from "./drag_helpers";
-import { SpreadOverlapHelper } from "./spread_overlap_helper";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
@@ -30,13 +29,6 @@ export class GardenPlant extends
     const alpha = dragging ? 0.4 : 1.0;
 
     return <g>
-
-      <SpreadOverlapHelper
-        dragging={dragging}
-        plant={plant}
-        quadrant={quadrant}
-        zoomLvl={zoomLvl}
-        activeDragXY={activeDragXY} />
 
       <Circle
         className="plant-indicator"
