@@ -202,13 +202,18 @@
 }
 
 .plant-indicator.is-chosen-true {
-  animation: popcorn 0.2s 1 cubic-bezier(0, 0, 0, 0.9), pulse-and-rotate 4s 0.2s infinite linear;
+  animation: plant-selection-pop 0.2s 1 cubic-bezier(0, 0, 0, 0.9), pulse-and-rotate 4s 0.2s infinite linear;
   transform-origin: center;
 }
 
 .plant-image {
-  animation: plant-growth 0.2s cubic-bezier(0, 0, 0, 1.4);
+  animation: plant-growth 0.25s cubic-bezier(0, 0, 0, 1.4);
   transform-origin: bottom;
+}
+
+.spread {
+  animation: spread-pop 0.2s cubic-bezier(0, 0, 0, 1);
+  transform-origin: center;
 }
 
 .garden-map-legend {

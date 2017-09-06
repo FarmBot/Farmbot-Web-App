@@ -55,6 +55,7 @@ export class SpreadCircle extends
     const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
     return (
       <circle
+        className="spread"
         cx={qx}
         cy={qy}
         r={scale(this.state.spread || radius)}
