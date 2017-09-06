@@ -1,9 +1,7 @@
 .toast-container {
   position: fixed;
-  top: 10vh;
-  right: 2vw;
-  width: 300px;
-  height: 100vh;
+  bottom: 0px;
+  width: 100%;
   z-index: 999999;
   pointer-events: none;
 }
@@ -15,44 +13,40 @@
   cursor: pointer;
   min-height: 6rem;
   position: relative;
-  margin-bottom: 1rem;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 400px;
   color: $off_white;
   font-size: 1.2rem;
   opacity: 0;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: none;
+  border-radius: 3px;
   -webkit-font-smoothing: antialiased;
   transition: all 0.2s ease;
   &:hover {
-    border: 1px solid #555;
     transition: all 0.2s ease;
     color: $white;
     box-shadow: 0px 2px 6px #555;
   }
   &.active {
-    transition: all 0.4s ease;
+    transition: all 0.25s ease;
     opacity: 1;
   }
   &.poof {
-    transition: all 0.8s ease;
+    transition: all 0.25s ease;
     opacity: 0;
     pointer-events: none;
   }
   &.yellow {
-    .toast-title {
-      color: $dark_gray;
-    }
-    .toast-message {
+    .toast-title, .toast-message {
       color: $dark_gray;
     }
   }
-  &.blue {
-    .toast-title {
-      color: $off_white;
-    }
-  }
+  &.blue,
   &.green,
   &.red {
-    .toast-title {
+    .toast-title, .toast-message {
       color: $off_white;
     }
   }
