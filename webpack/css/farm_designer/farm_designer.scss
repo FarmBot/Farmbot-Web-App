@@ -150,7 +150,7 @@
   }
   .plant-search-item {
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.5rem 1rem;
     &:hover {
       background: darken($light_green, 10%);
       transition: background 0.2s ease;
