@@ -390,40 +390,44 @@ ul {
 }
 
 .controls-popup {
-  display: none; // Display block when ready
-  right: 6rem;
-  bottom: 4rem;
-  transition: all 0.4s ease-in-out;
-  color: $white;
+  right: 4rem;
+  bottom: 3rem;
+  color: $off_white;
   i {
     z-index: 1;
     position: absolute;
     font-size: 2.4rem;
     top: 1.8rem;
     margin-bottom: 2rem;
-    transition: all 0.4s ease-in-out;
+    transition: all 0.25s ease-in-out;
   }
   &.open {
     i {
-      transform: rotate(-225deg);
+      transform: rotate(-135deg);
     }
     .controls-popup-menu-outer {
-      width: 26rem;
+      transition: all 0.1s 0s ease-in-out;
+      width: 27rem;
+      padding: 0.6rem 5rem 0rem 0rem;
     }
     .controls-popup-menu-inner {
-      transition-delay: 0.2s;
+      transition-delay: 0.25s!important;
       opacity: 1;
     }
+  }
+  .arrow-button {
+    margin: 5px;
   }
 }
 
 .controls-popup-menu-inner {
-  transition: all 0.4s ease-in-out;
+  transition: all 0.1s 0s ease-in-out;
   opacity: 0;
 }
 
 .controls-popup-menu-outer {
-  transition: all 0.4s ease-in-out;
+  transition: all 0.1 s ease-in-out;
+  transition-delay: 0.2s!important;
   right: 0;
   bottom: 0;
 }
