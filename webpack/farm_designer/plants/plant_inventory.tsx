@@ -54,7 +54,8 @@ export class Plants extends React.Component<Props, State> {
         <div className="thin-search-wrapper">
           <div className="text-input-wrapper">
             <i className="fa fa-search"></i>
-            <input type="text" onChange={this.update} />
+            <input type="text" onChange={this.update}
+              placeholder={t("Search your plants...")} />
           </div>
           {
             this.props.plants

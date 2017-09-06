@@ -92,7 +92,7 @@
 
 .thin-search-wrapper {
   .text-input-wrapper {
-    margin-bottom: 1rem;
+    margin: 1rem;
     position: relative;
     border-bottom: 1px solid #000;
     &:before,
@@ -126,7 +126,7 @@
       background: transparent !important;
     }
     &::-webkit-input-placeholder {
-      color: #000;
+      color: #999;
     }
   }
   .select-results-container {
@@ -150,8 +150,7 @@
   }
   .plant-search-item {
     cursor: pointer;
-    height: 4rem;
-    margin-bottom: 1rem;
+    padding: 0.5rem;
     &:hover {
       background: darken($light_green, 10%);
       transition: background 0.2s ease;
