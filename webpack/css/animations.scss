@@ -54,6 +54,24 @@
   }
 }
 
+@keyframes overlap-warning {
+  0% {
+    transform: scale(1);
+    fill-opacity: 0.15;
+    stroke-opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.03);
+    fill-opacity: 0.2;
+    stroke-opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    fill-opacity: 0.15;
+    stroke-opacity: 0.6 ;
+  }
+}
+
 @keyframes slide-up {
   0% {
     transform: translateY(0px);
