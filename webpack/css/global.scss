@@ -382,7 +382,6 @@ ul {
 .controls-popup-menu-outer {
   position: absolute;
   background: $dark_gray;
-  padding: 2rem;
   border-radius: 3rem;
   height: 6rem;
   width: 6rem;
@@ -395,15 +394,23 @@ ul {
   color: $off_white;
   i {
     z-index: 1;
+    width: 6rem;
+    height: 6rem;
+    border-radius: 3rem;
+    padding: 18px 20px;
     position: absolute;
     font-size: 2.4rem;
-    top: 1.8rem;
-    margin-bottom: 2rem;
     transition: all 0.25s ease-in-out;
+    &:hover {
+      background-color: rgba(0,0,0,0.2);
+    }
   }
   &.open {
     i {
       transform: rotate(-135deg);
+      &:hover {
+        background-color: rgba(0,0,0,0);
+      }
     }
     .controls-popup-menu-outer {
       transition: all 0.1s 0s ease-in-out;
