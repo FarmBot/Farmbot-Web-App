@@ -29,6 +29,9 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   toggle = (name: keyof NavBarState) => () =>
     this.setState({ [name]: !this.state[name] });
 
+  close = (name: keyof NavBarState) => () =>
+    this.setState({ [name]: false });
+
   render() {
     const hasName = this.props.user && this.props.user.body.name;
 
@@ -45,7 +48,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     /** Change document meta title on every route change. */
     updatePageInfo(pageName);
 
-    const { toggle } = this;
+    const { toggle, close } = this;
     const { mobileMenuOpen, tickerListOpen } = this.state;
     const { logs } = this.props;
 
@@ -62,10 +65,10 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                       className={menuIconClassNames.join(" ")}
                       onClick={this.toggle("mobileMenuOpen")} />
                     <span className="mobile-menu-container">
-                      {MobileMenu({ toggle, mobileMenuOpen })}
+                      {MobileMenu({ close, mobileMenuOpen })}
                     </span>
                     <span className="top-menu-container">
-                      {NavLinks({ toggle })}
+                      {NavLinks({ close })}
                     </span>
                   </div>
                   <div className="nav-right">
