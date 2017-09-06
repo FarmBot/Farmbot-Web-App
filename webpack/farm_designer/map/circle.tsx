@@ -17,7 +17,7 @@ export function Circle(props: CircleProps) {
     cx={x}
     cy={y}
     r={selected ? r*1.2 : 0}
-    stroke="rgba(256,256,256,0.75)"
+    stroke="rgba(256,256,256,0.7)"
     strokeWidth={selected ? 2 : 0}
     strokeDasharray={selected ? 5 : 0}
     fill="rgba(256,256,256,0.25)"

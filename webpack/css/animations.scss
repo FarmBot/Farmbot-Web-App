@@ -9,13 +9,22 @@
 
 @keyframes pulse-and-rotate {
   0% {
-    transform: rotate(0deg) scale(1);
+    transform: rotate(0deg) scale(1.2);
   }
   50% {
-    transform: rotate(180deg) scale(1.2);
+    transform: rotate(180deg) scale(1);
   }
   100% {
-    transform: rotate(360deg) scale(1);
+    transform: rotate(360deg) scale(1.2);
+  }
+}
+
+@keyframes popcorn {
+  0% {
+    transform: rotate(270deg) scale(0.2);
+  }
+  100% {
+    transform: rotate(360deg) scale(1.2);
   }
 }
 
