@@ -233,7 +233,7 @@
     transform: translateX(-140px);
   }
   .content {
-    background: $light_green;
+    background: rgba(256, 256, 256, .75);
     padding: 10px;
     border-radius: 5px;
     display: flex;
@@ -250,9 +250,6 @@
     .plus-button {
       position: initial;
       margin: 0 auto;
-    }
-    .fb-toggle-button {
-      height: 1.8rem;
     }
   }
   .toggle-buttons {
