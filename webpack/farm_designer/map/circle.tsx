@@ -16,10 +16,10 @@ export function Circle(props: CircleProps) {
     className={"is-chosen-" + !!selected + " " + (cn ? cn : "")}
     cx={x}
     cy={y}
-    r={selected ? r : 0}
-    stroke="green"
-    strokeWidth={selected ? 4 : 0}
-    strokeDasharray={selected ? 8 : 0}
-    fill="none"
+    r={selected ? r*1.2 : 0}
+    stroke="rgba(256,256,256,0.7)"
+    strokeWidth={selected ? 2 : 0}
+    strokeDasharray={selected ? 5 : 0}
+    fill="rgba(256,256,256,0.25)"
   />;
 }

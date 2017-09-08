@@ -29,6 +29,7 @@ export class GardenPlant extends
     const alpha = dragging ? 0.4 : 1.0;
 
     return <g>
+
       <Circle
         className="plant-indicator"
         x={qx}

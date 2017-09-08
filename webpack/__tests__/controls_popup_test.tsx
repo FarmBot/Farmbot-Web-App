@@ -10,7 +10,7 @@ describe("<ControlsPopup />", () => {
   });
 
   it("Toggles state", () => {
-    const parent = wrapper.find("div").first();
+    const parent = wrapper.find("i").first();
     parent.simulate("click");
     expect(wrapper.state("isOpen")).toBeTruthy();
   });
