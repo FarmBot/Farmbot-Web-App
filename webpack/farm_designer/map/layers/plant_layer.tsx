@@ -4,6 +4,7 @@ import * as _ from "lodash";
 import { GardenPlant } from "../garden_plant";
 import { PlantLayerProps, CropSpreadDict } from "../interfaces";
 import { defensiveClone } from "../../../util";
+import { history } from "../../../history";
 
 const cropSpreadDict: CropSpreadDict = {};
 
@@ -24,6 +25,9 @@ export function PlantLayer(props: PlantLayerProps) {
     .filter(c => !!c.body.spread)
     .map(c => cropSpreadDict[c.body.slug] = c.body.spread);
 
+  const maybeNoPointer = history.getCurrentLocation().pathname.split("/")[6] == "add"
+    ? { "pointerEvents": "none" } : {};
+
   if (visible) {
     return <g>
       {plants
@@ -43,6 +47,7 @@ export function PlantLayer(props: PlantLayerProps) {
         .map(p => {
           const action = { type: "SELECT_PLANT", payload: p.uuid };
           return <Link className="plant-link-wrapper"
+            style={maybeNoPointer}
             to={"/app/designer/plants/" + p.plantId}
             id={p.plantId}
             onClick={_.noop}

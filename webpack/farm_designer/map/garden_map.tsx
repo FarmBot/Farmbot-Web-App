@@ -64,7 +64,7 @@ export class GardenMap extends
     return findBySlug(this.props.designer.cropSearchResults || [], slug);
   }
 
-  handleDrop = (e: React.DragEvent<HTMLElement>) => {
+  handleDrop = (e: React.DragEvent<HTMLElement> | React.MouseEvent<SVGElement>) => {
     e.preventDefault();
     const el = document.querySelector("div.drop-area svg[id='drop-area-svg']");
     const map = document.querySelector(".farm-designer-map");
@@ -72,7 +72,6 @@ export class GardenMap extends
     if (el && map && page) {
       const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || DRAG_ERROR);
       const { pageX, pageY } = e;
-      // let box = el.getBoundingClientRect();
       const crop = history.getCurrentLocation().pathname.split("/")[5];
       const OFEntry = this.findCrop(crop);
       const params: ScreenToGardenParams = {
@@ -103,6 +102,12 @@ export class GardenMap extends
       }
     } else {
       throw new Error("never");
+    }
+  }
+
+  click = (e: React.MouseEvent<SVGElement>) => {
+    if (history.getCurrentLocation().pathname.split("/")[6] == "add") {
+      this.handleDrop(e);
     }
   }
 
@@ -147,11 +152,12 @@ export class GardenMap extends
           plantAreaOffset={this.props.gridOffset} />
         <svg
           id="drop-area-svg"
-          x={100} y={100}
+          x={this.props.gridOffset.x} y={this.props.gridOffset.y}
           width={this.props.gridSize.x} height={this.props.gridSize.y}
           onMouseUp={this.endDrag}
           onMouseDown={this.startDrag}
-          onMouseMove={this.drag}>
+          onMouseMove={this.drag}
+          onClick={this.click}>
           <Grid
             mapTransformProps={mapTransformProps} />
           <SpreadLayer

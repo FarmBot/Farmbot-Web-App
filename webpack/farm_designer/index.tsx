@@ -15,8 +15,8 @@ import { isUndefined } from "lodash";
 import { AxisNumberProperty } from "./map/interfaces";
 import { getBotSize } from "./map/util";
 
-export const defaultAxisLength: AxisNumberProperty = { x: 2800, y: 1300 };
-export const gridOffset: AxisNumberProperty = { x: 100, y: 100 };
+export const defaultAxisLength: AxisNumberProperty = { x: 2900, y: 1400 };
+export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 
 @connect(mapStateToProps)
 export class FarmDesigner extends React.Component<Props, Partial<State>> {

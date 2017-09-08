@@ -4,17 +4,31 @@ import { BackArrow } from "../../ui";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
 import { t } from "i18next";
-import { isMobile } from "../../util";
 import { history } from "../../history";
-import { DEFAULT_ICON } from "../../open_farm/index";
+import { DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
 import {
   CropInfoProps,
   DNDCropMobileState,
-  DraggableEvent
+  DraggableEvent,
+  CropCatalogProps
 } from "../interfaces";
 import { findBySlug } from "../search_selectors";
+import { OFSearch } from "../util";
 
-@connect((state: Everything) => state)
+export function mapStateToProps(props: Everything): CropCatalogProps {
+  return {
+    OFSearch,
+    cropSearchQuery: props.resources.consumers.farm_designer.cropSearchQuery,
+    dispatch: Function,
+    cropSearchResults: props
+      .resources
+      .consumers
+      .farm_designer
+      .cropSearchResults || []
+  };
+}
+
+@connect(mapStateToProps)
 /** DND => "drag and drop" */
 export class DNDCropMobile
   extends React.Component<CropInfoProps, DNDCropMobileState> {
@@ -24,9 +38,7 @@ export class DNDCropMobile
   }
 
   handleDragStart(e: DraggableEvent) {
-    // TODO: Take suggestions from the community about user preference
     const img = document.createElement("img");
-    // Stub until we figure out dynamic drag images
     img.src = DEFAULT_ICON;
 
     // Because of Android and MS Edge.
@@ -39,14 +51,13 @@ export class DNDCropMobile
 
   render() {
     const crop = history.getCurrentLocation().pathname.split("/")[5];
-
     const result =
-      findBySlug(this.props.cropSearchResults,
-        crop || "PLANT_NOT_FOUND");
+      findBySlug(this.props.cropSearchResults, crop || "PLANT_NOT_FOUND");
 
-    /** rgba arguments are a more mobile-friendly way apply filters */
-    const backgroundURL = isMobile() ? `linear-gradient(
-      rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${result.image})` : "";
+    const basePath = "/app/designer/plants/crop_search/";
+
+    const backgroundURL = `linear-gradient(
+      rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${result.image})`;
 
     return <div className={`panel-container green-panel
     dnd-crop-mobile-panel is-dragging-${this.state.isDragging}`}>
@@ -55,44 +66,24 @@ export class DNDCropMobile
         <p className="panel-title">
           <BackArrow /> {result.crop.name}
           <a className="right-button"
-            onClick={() => { }}>
-            {t("Save and finish")}
+            onClick={() => history.push(basePath + crop)}>
+            {t("Done")}
           </a>
         </p>
         <div className="panel-header-description">
-          <img alt={t("plant icon")}
+          <img className="crop-drag-info-image"
+            alt={t("plant icon")}
+            width={100}
+            height={100}
             draggable={true}
-            src={DEFAULT_ICON}
+            src={svgToUrl(result.crop.svg_icon)}
             onTouchStart={this.toggleDesignerView.bind(this)}
             onTouchEnd={this.toggleDesignerView.bind(this)}
             onTouchMove={this.handleDragStart.bind(this)} />
-          <b>{t("Drag and drop")}</b> {t(`the icon onto the map. You can add
-          multiple plants and make adjustments as many times as you need to
-          before you save and finish.`)}
-        </div>
-      </div>
-      <div className="panel-content">
-        <div className="object-list">
-          <label>
-            {t("Crop Info")}
-          </label>
-          <ul>
-            {
-              _(result.crop)
-                .omit(["slug", "processing_pictures", "description"])
-                .toPairs()
-                .map((pair: string, i: number) => {
-                  const key = pair[0];
-                  const value = pair[1];
-                  return <li key={i}>
-                    <strong>
-                      {_.startCase(key) + ": "}
-                    </strong>
-                    {value || "Not set"}
-                  </li>;
-                }).value()
-            }
-          </ul>
+          <b>{t("Drag and drop")}</b> {t("the icon onto the map or ")}
+          <b>{t("CLICK anywhere within the grid")}</b> {t(`to add the plant
+          to the map. You can add the plant as many times as you need to
+          before pressing DONE to finish.`)}
         </div>
       </div>
     </div>;

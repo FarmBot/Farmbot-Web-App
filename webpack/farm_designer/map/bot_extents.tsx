@@ -11,10 +11,10 @@ export function BotExtents(props: BotExtentsProps) {
 
   return <g
     id="extents"
-    strokeWidth="4"
+    strokeWidth={4}
     strokeLinecap="square"
     stroke="rgba(0, 0, 0, 0.2)"
-    strokeDasharray="12">
+    strokeDasharray={12}>
     <g id="home-lines">
       {stopAtHome.x &&
         <line

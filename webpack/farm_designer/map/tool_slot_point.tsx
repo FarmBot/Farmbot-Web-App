@@ -29,7 +29,7 @@ export class ToolSlotPoint extends
     const toolName = this.slot.tool ? this.slot.tool.body.name : "no tool";
     const seedBin = _.includes(toolName.toLowerCase(), "seed bin");
     const seedTray = _.includes(toolName.toLowerCase(), "seed tray");
-    const seedTrayRect = getXYFromQuadrant(x - 25, y - 25, quadrant, gridSize);
+    const seedTrayRect = getXYFromQuadrant(x, y, quadrant, gridSize);
     return <g>
       <defs>
         <radialGradient id="SeedBinGradient">
@@ -66,7 +66,7 @@ export class ToolSlotPoint extends
             cx={qx} cy={qy} r={35}
             fill="rgba(128, 128, 128, 0.8)" />
           <rect
-            x={seedTrayRect.qx} y={seedTrayRect.qy}
+            x={seedTrayRect.qx - 25} y={seedTrayRect.qy - 25}
             width={50} height={50}
             fill="url(#SeedTrayPattern)" />
           {this.state.hovered &&
