@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { DirectionButton } from "./controls/direction_button";
+import { Xyz } from "./devices/interfaces";
 
 export interface State {
   isOpen: boolean;
@@ -9,6 +10,7 @@ export interface State {
 
 export interface Props {
   dispatch: Function;
+  axisInversion: Record<Xyz, boolean>;
 }
 
 export class ControlsPopup extends React.Component<Props, Partial<State>> {
@@ -32,27 +34,27 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
           <DirectionButton
             axis="x"
             direction="right"
-            isInverted={false}
+            isInverted={this.props.axisInversion.x}
             steps={this.state.stepSize}
-            disabled={false} />
+            disabled={!isOpen} />
           <DirectionButton
             axis="y"
             direction="up"
-            isInverted={false}
+            isInverted={this.props.axisInversion.y}
             steps={this.state.stepSize}
-            disabled={false} />
+            disabled={!isOpen} />
           <DirectionButton
             axis="y"
             direction="down"
-            isInverted={false}
+            isInverted={this.props.axisInversion.y}
             steps={this.state.stepSize}
-            disabled={false} />
+            disabled={!isOpen} />
           <DirectionButton
             axis="x"
             direction="left"
-            isInverted={false}
+            isInverted={this.props.axisInversion.x}
             steps={this.state.stepSize}
-            disabled={false} />
+            disabled={!isOpen} />
         </div>
       </div>
     </div>;

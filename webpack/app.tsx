@@ -21,7 +21,7 @@ fastClick.attach(document.body);
 /** For the logger module */
 init();
 
-interface AppProps {
+export interface AppProps {
   dispatch: Function;
   loaded: ResourceName[];
   logs: Log[];
@@ -76,6 +76,7 @@ export class App extends React.Component<AppProps, {}> {
 
   render() {
     const syncLoaded = this.isLoaded;
+    const currentPath = window.location.pathname;
     return <div className="app">
       <HotKeys dispatch={this.props.dispatch} />
       <NavBar
@@ -85,7 +86,12 @@ export class App extends React.Component<AppProps, {}> {
         logs={this.props.logs} />
       {!syncLoaded && <Spinner radius={33} strokeWidth={6} />}
       {syncLoaded && this.props.children}
-      <ControlsPopup dispatch={this.props.dispatch} />
+      {!currentPath.startsWith("/app/controls") &&
+        !currentPath.startsWith("/app/account") &&
+        !currentPath.startsWith("/app/regimens") &&
+        <ControlsPopup
+          dispatch={this.props.dispatch}
+          axisInversion={this.props.bot.axis_inversion} />}
     </div>;
   }
 }
