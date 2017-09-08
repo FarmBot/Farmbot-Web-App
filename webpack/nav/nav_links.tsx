@@ -25,7 +25,7 @@ export const NavLinks = (props: NavLinksProps) => {
               to={"/app/" + link.slug}
               className={`${isActive}`}
               key={link.slug}
-              onClick={props.toggle("mobileMenuOpen")}>
+              onClick={props.close("mobileMenuOpen")}>
               <i className={`fa fa-${link.icon}`} />
               {link.name}
             </Link>
