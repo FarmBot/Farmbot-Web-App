@@ -15,7 +15,7 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
 
   state: State = {
     isOpen: false,
-    stepSize: 1000
+    stepSize: 100
   };
 
   toggle = (property: keyof State) => () =>
@@ -24,20 +24,20 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
   public render() {
     const isOpen = this.state.isOpen ? "open" : "";
     return <div
-      className={"controls-popup " + isOpen}
-      onClick={this.toggle("isOpen")}>
-      <i className="fa fa-plus" />
+      className={"controls-popup " + isOpen}>
+      <i className="fa fa-crosshairs"
+        onClick={this.toggle("isOpen")} />
       <div className="controls-popup-menu-outer">
         <div className="controls-popup-menu-inner">
           <DirectionButton
-            axis="z"
-            direction="up"
+            axis="x"
+            direction="right"
             isInverted={false}
             steps={this.state.stepSize}
             disabled={false} />
           <DirectionButton
-            axis="x"
-            direction="left"
+            axis="y"
+            direction="up"
             isInverted={false}
             steps={this.state.stepSize}
             disabled={false} />
@@ -48,8 +48,8 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
             steps={this.state.stepSize}
             disabled={false} />
           <DirectionButton
-            axis="z"
-            direction="right"
+            axis="x"
+            direction="left"
             isInverted={false}
             steps={this.state.stepSize}
             disabled={false} />

@@ -50,11 +50,13 @@ export class SpreadCircle extends
   }
 
   render() {
-    const { radius, x, y } = this.props.plant.body;
+    const { radius, x, y, id } = this.props.plant.body;
     const { quadrant, gridSize } = this.props.mapTransformProps;
     const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
     return (
       <circle
+        className="spread"
+        id={"spread-" + id}
         cx={qx}
         cy={qy}
         r={scale(this.state.spread || radius)}
