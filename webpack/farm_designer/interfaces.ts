@@ -14,6 +14,7 @@ import { SlotWithTool } from "../resources/interfaces";
 import { BotPosition, StepsPerMmXY } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import { McuParams } from "farmbot/dist";
+import { AxisNumberProperty, BotSize } from "./map/interfaces";
 
 /** TODO: Use Enums */
 export type BotOriginQuadrant = 1 | 2 | 3 | 4;
@@ -74,6 +75,7 @@ export interface MovePlantProps {
   deltaX: number;
   deltaY: number;
   plant: TaggedPlantPointer;
+  gridSize: AxisNumberProperty;
 }
 
 /**
@@ -163,10 +165,12 @@ export interface GardenMapProps {
   hoveredPlant: TaggedPlantPointer | undefined;
   crops: TaggedCrop[];
   botPosition: BotPosition;
-  botMcuParams: McuParams;
-  stepsPerMmXY: StepsPerMmXY;
+  botSize: BotSize;
+  stopAtHome: Record<"x" | "y", boolean>;
   zoomLvl: number;
   botOriginQuadrant: BotOriginQuadrant;
+  gridSize: AxisNumberProperty;
+  gridOffset: AxisNumberProperty;
 }
 
 export interface GardenMapState {
@@ -175,26 +179,6 @@ export interface GardenMapState {
   pageX: number | undefined;
   pageY: number | undefined;
   activeDragXY: BotPosition | undefined;
-}
-
-export interface GardenPlantProps {
-  quadrant: BotOriginQuadrant;
-  dispatch: Function;
-  plant: Readonly<TaggedPlantPointer>;
-  selected: boolean;
-  dragging: boolean;
-  onClick: (plant: Readonly<TaggedPlantPointer>) => void;
-  zoomLvl: number;
-  activeDragXY: BotPosition | undefined;
-}
-
-export interface GardenPlantState {
-  icon: string;
-}
-
-export interface GardenPointProps {
-  quadrant: BotOriginQuadrant;
-  point: TaggedGenericPointer;
 }
 
 export type PlantOptions = Partial<PlantPointer>;

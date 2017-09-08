@@ -7,11 +7,14 @@ import { fakePlant } from "../../../__test_support__/fake_state/resources";
 describe("<DragHelpers/>", () => {
   function fakeProps(): DragHelpersProps {
     return {
-      quadrant: 2,
+      mapTransformProps: {
+        quadrant: 2, gridSize: { x: 3000, y: 1500 }
+      },
       plant: fakePlant(),
       dragging: false,
       zoomLvl: 1.8,
-      activeDragXY: { x: undefined, y: undefined, z: undefined }
+      activeDragXY: { x: undefined, y: undefined, z: undefined },
+      plantAreaOffset: { x: 100, y: 100 }
     };
   }
 
@@ -126,7 +129,7 @@ describe("<DragHelpers/>", () => {
 
   it("renders horizontal and vertical alignment indicators in quadrant 4", () => {
     const p = fakeProps();
-    p.quadrant = 4;
+    p.mapTransformProps.quadrant = 4;
     p.dragging = false;
     p.plant.body.id = 6;
     p.plant.body.x = 100;

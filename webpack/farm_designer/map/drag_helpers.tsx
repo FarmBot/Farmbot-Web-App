@@ -1,6 +1,6 @@
 import * as React from "react";
 import { DragHelpersProps } from "./interfaces";
-import { round, getXYFromQuadrant } from "./util";
+import { round, getXYFromQuadrant, getMapSize } from "./util";
 import { isUndefined } from "util";
 import { BotPosition } from "../../devices/interfaces";
 
@@ -54,12 +54,16 @@ export function DragHelpers(props: DragHelpersProps) {
     }
   }
 
-  const { dragging, plant, quadrant, zoomLvl, activeDragXY } = props;
+  const {
+    dragging, plant, zoomLvl, activeDragXY, mapTransformProps, plantAreaOffset
+   } = props;
+  const { quadrant, gridSize } = mapTransformProps;
+  const mapSize = getMapSize(gridSize, plantAreaOffset);
   const { radius, x, y } = plant.body;
 
   const scale = 1 + Math.round(15 * (1.8 - zoomLvl)) / 10; // scale factor
 
-  const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
+  const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
   const gardenCoord: BotPosition = { x: round(x), y: round(y), z: 0 };
 
   return <g id="drag-helpers" fill={GRAY}>
@@ -70,8 +74,8 @@ export function DragHelpers(props: DragHelpersProps) {
       </text>}
     {dragging && // Active plant
       <g id="long-crosshair">
-        <rect x={qx - 0.5} y={0} width={1} height={1500} />
-        <rect x={0} y={qy - 0.5} width={3000} height={1} />
+        <rect x={qx - 0.5} y={-plantAreaOffset.y} width={1} height={mapSize.y} />
+        <rect x={-plantAreaOffset.x} y={qy - 0.5} width={mapSize.x} height={1} />
       </g>}
     {dragging && // Active plant
       <g id="short-crosshair">

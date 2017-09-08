@@ -16,7 +16,8 @@ export function PlantLayer(props: PlantLayerProps) {
     currentPlant,
     dragging,
     editing,
-    botOriginQuadrant
+    mapTransformProps,
+    plantAreaOffset
   } = props;
 
   crops
@@ -47,14 +48,15 @@ export function PlantLayer(props: PlantLayerProps) {
             onClick={_.noop}
             key={p.plantId}>
             <GardenPlant
-              quadrant={botOriginQuadrant}
+              mapTransformProps={mapTransformProps}
               plant={p.plant}
               selected={p.selected}
               dragging={p.selected && dragging && editing}
               onClick={() => dispatch(action)}
               dispatch={props.dispatch}
               zoomLvl={props.zoomLvl}
-              activeDragXY={props.activeDragXY} />
+              activeDragXY={props.activeDragXY}
+              plantAreaOffset={plantAreaOffset} />
           </Link>;
         })}
     </g>;

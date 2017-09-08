@@ -1,19 +1,19 @@
 import * as React from "react";
 import { Component } from "react";
 import { TaggedPlantPointer } from "../../../resources/tagged_resources";
-import { BotOriginQuadrant } from "../../interfaces";
 import { round, scale, getXYFromQuadrant } from "../util";
 import { cachedCrop } from "../../../open_farm/index";
+import { MapTransformProps } from "../interfaces";
 
 interface SpreadLayerProps {
   visible: boolean;
   plants: TaggedPlantPointer[];
   currentPlant: TaggedPlantPointer | undefined;
-  botOriginQuadrant: BotOriginQuadrant;
+  mapTransformProps: MapTransformProps;
 }
 
 export function SpreadLayer(props: SpreadLayerProps) {
-  const { plants, visible, currentPlant, botOriginQuadrant } = props;
+  const { plants, visible, currentPlant, mapTransformProps } = props;
   return (
     <g>
       {
@@ -23,7 +23,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
             <SpreadCircle
               plant={p}
               key={p.uuid}
-              quadrant={botOriginQuadrant} /> : <g key={p.uuid} />;
+              mapTransformProps={mapTransformProps} /> : <g key={p.uuid} />;
         })
       }
     </g>
@@ -32,7 +32,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
 
 interface SpreadCircleProps {
   plant: TaggedPlantPointer;
-  quadrant: BotOriginQuadrant;
+  mapTransformProps: MapTransformProps;
 }
 
 interface SpreadCircleState {
@@ -51,8 +51,8 @@ export class SpreadCircle extends
 
   render() {
     const { radius, x, y } = this.props.plant.body;
-    const { quadrant } = this.props;
-    const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
+    const { quadrant, gridSize } = this.props.mapTransformProps;
+    const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
     return (
       <circle
         cx={qx}

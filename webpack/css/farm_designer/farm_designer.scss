@@ -5,7 +5,6 @@
 }
 
 .farm-designer-map {
-  background-color: #CA8;
   min-width: 100%;
   display: inline-block;
   padding: 11rem 2rem 2rem 31.8rem;
@@ -20,18 +19,17 @@
 }
 
 .drop-area {
-  // Light grid lines every 10px, heavier grid every 100px
-  background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, 0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 2px, transparent 2px);
-  background-size: 10px 10px, 10px 10px, 100px 100px, 100px 100px;
-  overflow: scroll;
-  height: 1500px;
-  max-height: 1500px;
-  width: 3000px;
-  max-width: 3000px;
   svg {
     width: 100%;
     height: 100%;
+    overflow: visible;
   }
+}
+
+#drop-area-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
 .crop-drag-info-image {
