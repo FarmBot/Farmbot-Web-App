@@ -101,12 +101,14 @@ export class GardenMap extends
         this.props.dispatch(initSave(p));
       }
     } else {
-      throw new Error("never");
+      throw new Error(`Missing 'drop-area-svg', 'farm-designer-map', or
+      'farm-designer' while trying to add a plant.`);
     }
   }
 
   click = (e: React.MouseEvent<SVGElement>) => {
     if (history.getCurrentLocation().pathname.split("/")[6] == "add") {
+      // In 'click-to-add' mode
       this.handleDrop(e);
     }
   }

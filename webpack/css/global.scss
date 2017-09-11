@@ -388,12 +388,13 @@ ul {
   right: 4rem;
   bottom: 3rem;
   cursor: pointer;
+  z-index: 2;
 }
 
 .controls-popup {
   color: $off_white;
   i {
-    z-index: 1;
+    z-index: 3;
     width: 6rem;
     height: 6rem;
     border-radius: 3rem;

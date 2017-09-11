@@ -189,10 +189,6 @@ export interface EditPlantInfoProps {
   findPlant(stringyID: string | undefined): TaggedPlantPointer | undefined;
 }
 
-export interface DNDCropMobileState {
-  isDragging: boolean;
-}
-
 export interface DraggableEvent {
   currentTarget: HTMLImageElement;
   dataTransfer: {

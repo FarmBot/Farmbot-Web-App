@@ -1,15 +1,12 @@
 import * as React from "react";
-import * as _ from "lodash";
 import { BackArrow } from "../../ui";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
 import { t } from "i18next";
 import { history } from "../../history";
-import { DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
+import { svgToUrl } from "../../open_farm/index";
 import {
   CropInfoProps,
-  DNDCropMobileState,
-  DraggableEvent,
   CropCatalogProps
 } from "../interfaces";
 import { findBySlug } from "../search_selectors";
@@ -29,25 +26,8 @@ export function mapStateToProps(props: Everything): CropCatalogProps {
 }
 
 @connect(mapStateToProps)
-/** DND => "drag and drop" */
-export class DNDCropMobile
-  extends React.Component<CropInfoProps, DNDCropMobileState> {
-  constructor() {
-    super();
-    this.state = { isDragging: false };
-  }
-
-  handleDragStart(e: DraggableEvent) {
-    const img = document.createElement("img");
-    img.src = DEFAULT_ICON;
-
-    // Because of Android and MS Edge.
-    _.get(e, "dataTransfer.setDragImage", _.noop)(img, 50, 50);
-  }
-
-  toggleDesignerView() {
-    this.setState({ isDragging: !this.state.isDragging });
-  }
+export class AddPlant
+  extends React.Component<CropInfoProps, {}> {
 
   render() {
     const crop = history.getCurrentLocation().pathname.split("/")[5];
@@ -59,8 +39,8 @@ export class DNDCropMobile
     const backgroundURL = `linear-gradient(
       rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${result.image})`;
 
-    return <div className={`panel-container green-panel
-    dnd-crop-mobile-panel is-dragging-${this.state.isDragging}`}>
+    return <div
+      className={"panel-container green-panel"}>
       <div className="panel-header green-panel"
         style={{ background: backgroundURL }}>
         <p className="panel-title">
@@ -76,10 +56,7 @@ export class DNDCropMobile
             width={100}
             height={100}
             draggable={true}
-            src={svgToUrl(result.crop.svg_icon)}
-            onTouchStart={this.toggleDesignerView.bind(this)}
-            onTouchEnd={this.toggleDesignerView.bind(this)}
-            onTouchMove={this.handleDragStart.bind(this)} />
+            src={svgToUrl(result.crop.svg_icon)} />
           <b>{t("Drag and drop")}</b> {t("the icon onto the map or ")}
           <b>{t("CLICK anywhere within the grid")}</b> {t(`to add the plant
           to the map. You can add the plant as many times as you need to
