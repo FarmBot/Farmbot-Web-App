@@ -1,9 +1,13 @@
-import { BotOriginQuadrant, isBotOriginQuadrant } from "../interfaces";
+import {
+  BotOriginQuadrant,
+  isBotOriginQuadrant
+} from "../interfaces";
+import { McuParams } from "farmbot";
+import { StepsPerMmXY } from "../../devices/interfaces";
+import { CheckedAxisLength, AxisNumberProperty, BotSize } from "./interfaces";
 
 const SNAP = 10;
 const SCALE_FACTOR = 9.8;
-const FARMBOT_DEFAULT_LENGTH = 3000;
-const FARMBOT_DEFAULT_WIDTH = 1500;
 const LEFT_MENU_WIDTH = 320;
 const TOP_NAV_HEIGHT = 110;
 
@@ -24,6 +28,7 @@ export interface ScreenToGardenParams {
   pageX: number;
   pageY: number;
   zoomLvl: number;
+  gridSize: AxisNumberProperty;
 }
 
 interface GetMouseXYPayl {
@@ -48,13 +53,13 @@ export function getMouseXY(e: MouseEvent): GetMouseXYPayl {
 }
 
 export function translateScreenToGarden(params: ScreenToGardenParams) {
-  const { pageX, pageY, zoomLvl, quadrant } = params;
+  const { pageX, pageY, zoomLvl, quadrant, gridSize } = params;
 
   const rawX = round((pageX - 320) / zoomLvl);
   const rawY = round((pageY - 110) / zoomLvl);
 
-  const x = calculateXBasedOnQuadrant({ value: rawX, quadrant });
-  const y = calculateYBasedOnQuadrant({ value: rawY, quadrant });
+  const x = calculateXBasedOnQuadrant({ value: rawX, quadrant, gridAxisLength: gridSize.x });
+  const y = calculateYBasedOnQuadrant({ value: rawY, quadrant, gridAxisLength: gridSize.y });
 
   return { x, y };
 }
@@ -62,15 +67,16 @@ export function translateScreenToGarden(params: ScreenToGardenParams) {
 interface CalculateQuadrantParams {
   value: number;
   quadrant: BotOriginQuadrant;
+  gridAxisLength: number;
 }
 
 function calculateXBasedOnQuadrant(params: CalculateQuadrantParams) {
-  const { value, quadrant } = params;
+  const { value, quadrant, gridAxisLength } = params;
   if (isBotOriginQuadrant(quadrant)) {
     switch (quadrant) {
       case 1:
       case 4:
-        return FARMBOT_DEFAULT_LENGTH - value;
+        return gridAxisLength - value;
       case 2:
       case 3:
         return value;
@@ -83,12 +89,12 @@ function calculateXBasedOnQuadrant(params: CalculateQuadrantParams) {
 }
 
 function calculateYBasedOnQuadrant(params: CalculateQuadrantParams) {
-  const { value, quadrant } = params;
+  const { value, quadrant, gridAxisLength } = params;
   if (isBotOriginQuadrant(quadrant)) {
     switch (quadrant) {
       case 3:
       case 4:
-        return FARMBOT_DEFAULT_WIDTH - value;
+        return gridAxisLength - value;
       case 1:
       case 2:
         return value;
@@ -103,10 +109,47 @@ function calculateYBasedOnQuadrant(params: CalculateQuadrantParams) {
 export function getXYFromQuadrant(
   x: number,
   y: number,
-  q: BotOriginQuadrant
+  q: BotOriginQuadrant,
+  gridSize: AxisNumberProperty
 ): { qx: number, qy: number } {
   return {
-    qx: calculateXBasedOnQuadrant({ value: x, quadrant: q }),
-    qy: calculateYBasedOnQuadrant({ value: y, quadrant: q })
+    qx: calculateXBasedOnQuadrant({ value: x, quadrant: q, gridAxisLength: gridSize.x }),
+    qy: calculateYBasedOnQuadrant({ value: y, quadrant: q, gridAxisLength: gridSize.y })
+  };
+}
+
+export function getBotSize(
+  botMcuParams: McuParams,
+  stepsPerMmXY: StepsPerMmXY,
+  defaultLength: AxisNumberProperty
+): BotSize {
+  const stopAtMaxXY = {
+    x: !!botMcuParams.movement_stop_at_max_x,
+    y: !!botMcuParams.movement_stop_at_max_y
+  };
+  const axisLengthXY = {
+    x: botMcuParams.movement_axis_nr_steps_x || 0,
+    y: botMcuParams.movement_axis_nr_steps_y || 0
+  };
+
+  const getAxisLength = (axis: "x" | "y"): CheckedAxisLength => {
+    const axisStepsPerMm = stepsPerMmXY[axis];
+    if (axisStepsPerMm && axisLengthXY[axis] !== 0 && stopAtMaxXY[axis]) {
+      return { value: axisLengthXY[axis] / axisStepsPerMm, isDefault: false };
+    } else {
+      return { value: defaultLength[axis], isDefault: true };
+    }
+  };
+
+  return { x: getAxisLength("x"), y: getAxisLength("y") };
+}
+
+export function getMapSize(
+  gridSize: AxisNumberProperty,
+  gridOffset: AxisNumberProperty
+): AxisNumberProperty {
+  return {
+    x: gridSize.x + gridOffset.x * 2,
+    y: gridSize.y + gridOffset.y * 2
   };
 }

@@ -1,8 +1,9 @@
 import * as React from "react";
 import { TaggedPlantPointer } from "../../../resources/tagged_resources";
-import { DesignerState, BotOriginQuadrant } from "../../interfaces";
+import { DesignerState } from "../../interfaces";
 import { getXYFromQuadrant, round } from "../util";
 import { push } from "../../../history";
+import { MapTransformProps } from "../interfaces";
 
 /**
  * PROBLEM: The plants are rendered via svg in a certain order. When a user
@@ -19,10 +20,10 @@ import { push } from "../../../history";
 interface HoveredPlantLayerProps {
   currentPlant: TaggedPlantPointer | undefined;
   designer: DesignerState;
-  botOriginQuadrant: BotOriginQuadrant;
   hoveredPlant: TaggedPlantPointer | undefined;
   dispatch: Function;
   isEditing: boolean;
+  mapTransformProps: MapTransformProps;
 }
 
 interface HoveredPlantLayerState { isHovered: boolean; }
@@ -55,9 +56,9 @@ export class HoveredPlantLayer extends
   }
   render() {
     const { icon } = this.props.designer.hoveredPlant;
-    const { botOriginQuadrant } = this.props;
+    const { quadrant, gridSize } = this.props.mapTransformProps;
     const { x, y } = this.plantInfo;
-    const { qx, qy } = getXYFromQuadrant(round(x), round(y), botOriginQuadrant);
+    const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
     const scaleFactor = (this.state.isHovered) ? "1.3, 1.3" : "1, 1";
 
     return <image

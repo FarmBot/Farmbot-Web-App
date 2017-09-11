@@ -60,7 +60,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
         <p className="panel-title">
           <BackArrow /> {result.crop.name}
           <a
-            className="right-button mobile-only"
+            className="right-button"
             onClick={() => history.push(basePath + crop + "/add")}>
             {t("Add to map")}
           </a>

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { GardenPlantProps, GardenPlantState } from "../interfaces";
+import { GardenPlantProps, GardenPlantState } from "./interfaces";
 import { cachedCrop, DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
 import { Circle } from "./circle";
 import { round, getXYFromQuadrant } from "./util";
@@ -20,12 +20,13 @@ export class GardenPlant extends
 
   render() {
     const { selected, dragging, plant, onClick, dispatch,
-      quadrant, zoomLvl, activeDragXY } = this.props;
+      zoomLvl, activeDragXY, mapTransformProps, plantAreaOffset } = this.props;
+    const { quadrant, gridSize } = mapTransformProps;
     const { radius, x, y } = plant.body;
     const { icon } = this.state;
 
     const action = { type: "TOGGLE_HOVERED_PLANT", payload: { plant, icon } };
-    const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant);
+    const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
     const alpha = dragging ? 0.4 : 1.0;
 
     return <g>
@@ -52,9 +53,10 @@ export class GardenPlant extends
       <DragHelpers
         dragging={dragging}
         plant={plant}
-        quadrant={quadrant}
+        mapTransformProps={mapTransformProps}
         zoomLvl={zoomLvl}
-        activeDragXY={activeDragXY} />
+        activeDragXY={activeDragXY}
+        plantAreaOffset={plantAreaOffset} />
     </g>;
   }
 }

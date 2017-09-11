@@ -12,6 +12,11 @@ import { isMobile } from "../util";
 import { Session, safeBooleanSettting } from "../session";
 import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined } from "lodash";
+import { AxisNumberProperty } from "./map/interfaces";
+import { getBotSize } from "./map/util";
+
+export const defaultAxisLength: AxisNumberProperty = { x: 2900, y: 1400 };
+export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 
 @connect(mapStateToProps)
 export class FarmDesigner extends React.Component<Props, Partial<State>> {
@@ -95,6 +100,24 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
 
     const designerTabClasses: string[] = ["active", "visible-xs"];
 
+    const botSize = getBotSize(
+      this.props.botMcuParams, this.props.stepsPerMmXY, defaultAxisLength);
+    /**
+     * The next line uses a default for map size (from the top of this file.
+     * To render the map according to device axis length, replace the line
+     * with the next one.
+     * It is recommend to only consider this once device settings are
+     * stored in the API to avoid the map changing size when the device
+     * is offline. Alternatively, this could be a user option (toggle).
+     */
+    const gridSize = defaultAxisLength;
+    // const gridSize = { x: botSize.x.value, y: botSize.y.value };
+
+    const stopAtHome = {
+      x: !!this.props.botMcuParams.movement_stop_at_home_x,
+      y: !!this.props.botMcuParams.movement_stop_at_home_y
+    };
+
     return <div className="farm-designer">
 
       <GardenMapLegend
@@ -142,11 +165,13 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           points={this.props.points}
           toolSlots={this.props.toolSlots}
           botPosition={this.props.botPosition}
-          botMcuParams={this.props.botMcuParams}
-          stepsPerMmXY={this.props.stepsPerMmXY}
+          botSize={botSize}
+          stopAtHome={stopAtHome}
           hoveredPlant={this.props.hoveredPlant}
           zoomLvl={Math.round(zoomLevel * 10) / 10}
-          botOriginQuadrant={botOriginQuadrant} />
+          botOriginQuadrant={botOriginQuadrant}
+          gridSize={gridSize}
+          gridOffset={gridOffset} />
       </div>
     </div>;
   }

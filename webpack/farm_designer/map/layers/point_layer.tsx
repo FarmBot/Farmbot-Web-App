@@ -1,22 +1,22 @@
 import * as React from "react";
 import { TaggedGenericPointer } from "../../../resources/tagged_resources";
 import { GardenPoint } from "../garden_point";
-import { BotOriginQuadrant } from "../../interfaces";
+import { MapTransformProps } from "../interfaces";
 
 interface PointLayerProps {
   visible: boolean;
   points: TaggedGenericPointer[];
-  botOriginQuadrant: BotOriginQuadrant;
+  mapTransformProps: MapTransformProps;
 }
 
 export function PointLayer(props: PointLayerProps) {
-  const { visible, points, botOriginQuadrant } = props;
+  const { visible, points, mapTransformProps } = props;
   return visible ? <g>
     {points.map(p =>
       <GardenPoint
         point={p}
         key={p.body.id}
-        quadrant={botOriginQuadrant} />
+        mapTransformProps={mapTransformProps} />
     )}
   </g> : <g />; // fallback
 }

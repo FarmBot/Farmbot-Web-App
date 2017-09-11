@@ -30,13 +30,11 @@ describe("checkControllerUpdates()", function () {
     jest.clearAllMocks();
   });
 
-  it("calls checkUpdates", () => {
+  it("calls checkUpdates", async () => {
     const { mock } = devices.current.checkUpdates as jest.Mock<{}>;
-    actions.checkControllerUpdates();
+    await actions.checkControllerUpdates();
     expect(mock.calls.length).toEqual(1);
-    // TODO: It would be nice if this worked to check for sent toasts.
-    //       See expectations for each test in comments below.
-    // expect(mockOk.mock.calls.length).toEqual(1);
+    expect(mockOk.mock.calls.length).toEqual(1);
   });
 });
 
@@ -45,11 +43,11 @@ describe("powerOff()", function () {
     jest.clearAllMocks();
   });
 
-  it("calls powerOff", () => {
+  it("calls powerOff", async () => {
     const { mock } = devices.current.powerOff as jest.Mock<{}>;
-    actions.powerOff();
+    await actions.powerOff();
     expect(mock.calls.length).toEqual(1);
-    // expect(mockOk.mock.calls.length).toEqual(1);
+    expect(mockOk.mock.calls.length).toEqual(1);
   });
 });
 
@@ -58,11 +56,11 @@ describe("reboot()", function () {
     jest.clearAllMocks();
   });
 
-  it("calls reboot", () => {
+  it("calls reboot", async () => {
     const { mock } = devices.current.reboot as jest.Mock<{}>;
-    actions.reboot();
+    await actions.reboot();
     expect(mock.calls.length).toEqual(1);
-    // expect(mockOk.mock.calls.length).toEqual(1);
+    expect(mockOk.mock.calls.length).toEqual(1);
   });
 });
 
@@ -105,13 +103,13 @@ describe("execSequence()", function () {
     jest.clearAllMocks();
   });
 
-  it("calls execSequence", () => {
+  it("calls execSequence", async () => {
     const { mock } = devices.current.execSequence as jest.Mock<{}>;
     const s = fakeSequence().body;
-    actions.execSequence(s);
+    await actions.execSequence(s);
     expect(mock.calls.length).toEqual(1);
     expect(mock.calls[0][0]).toEqual(s.id);
-    // expect(mockOk.mock.calls.length).toEqual(1);
+    expect(mockOk.mock.calls.length).toEqual(1);
   });
 
   it("implodes when executing unsaved sequences", () => {
@@ -132,7 +130,6 @@ describe("MCUFactoryReset()", function () {
     const { mock } = devices.current.resetMCU as jest.Mock<{}>;
     actions.MCUFactoryReset();
     expect(mock.calls.length).toEqual(1);
-    // expect(mockOk.mock.calls.length).toEqual(1);
   });
 });
 
@@ -141,12 +138,12 @@ describe("botConfigChange()", function () {
     jest.clearAllMocks();
   });
 
-  it("calls updateMcu", () => {
+  it("calls updateMcu", async () => {
     const { mock } = devices.current.updateMcu as jest.Mock<{}>;
-    actions.botConfigChange("encoder_enabled_x", 0);
+    await actions.botConfigChange("encoder_enabled_x", 0);
     expect(mock.calls.length).toEqual(1);
     expect(mock.calls[0][0]).toEqual({ "encoder_enabled_x": 0 });
-    // expect(mockOk.mock.calls.length).toEqual(0);
+    expect(mockOk.mock.calls.length).toEqual(0);
   });
 });
 
@@ -155,13 +152,13 @@ describe("pinToggle()", function () {
     jest.clearAllMocks();
   });
 
-  it("calls togglePin", () => {
+  it("calls togglePin", async () => {
     const { mock } = devices.current.togglePin as jest.Mock<{}>;
-    actions.pinToggle(5);
+    await actions.pinToggle(5);
     expect(mock.calls.length).toEqual(1);
     const argList = mock.calls[0];
     expect(argList[0].pin_number).toEqual(5);
-    // expect(mockOk.mock.calls.length).toEqual(0);
+    expect(mockOk.mock.calls.length).toEqual(0);
   });
 });
 
@@ -170,14 +167,14 @@ describe("homeAll()", function () {
     jest.clearAllMocks();
   });
 
-  it("calls home", () => {
+  it("calls home", async () => {
     const { mock } = devices.current.home as jest.Mock<{}>;
-    actions.homeAll(100);
+    await actions.homeAll(100);
     expect(mock.calls.length).toEqual(1);
     const argList = mock.calls[0];
     expect(argList[0].axis).toEqual("all");
     expect(argList[0].speed).toEqual(100);
-    // expect(mockOk.mock.calls.length).toEqual(1);
+    expect(mockOk.mock.calls.length).toEqual(1);
   });
 });
 
