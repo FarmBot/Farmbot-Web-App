@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Component } from "react";
 import { TaggedPlantPointer } from "../../../resources/tagged_resources";
-import { round, scale, getXYFromQuadrant } from "../util";
+import { round, getXYFromQuadrant } from "../util";
 import { cachedCrop } from "../../../open_farm/index";
 import { MapTransformProps } from "../interfaces";
 
@@ -59,7 +59,9 @@ export class SpreadCircle extends
         id={"spread-" + id}
         cx={qx}
         cy={qy}
-        r={scale(this.state.spread || radius)}
+        // Convert `spread` from diameter in cm to radius in mm.
+        // `radius * 10` is the default value for spread.
+        r={(this.state.spread || radius) / 2 * 10}
         fillOpacity={0.2}
         fill={"green"}
         stroke={"green"}

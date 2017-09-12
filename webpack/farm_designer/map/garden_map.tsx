@@ -24,6 +24,7 @@ import { SpreadLayer } from "./layers/spread_layer";
 import { ToolSlotLayer } from "./layers/tool_slot_layer";
 import { HoveredPlantLayer } from "./layers/hovered_plant_layer";
 import { FarmBotLayer } from "./layers/farmbot_layer";
+import { cachedCrop } from "../../open_farm/index";
 
 const DRAG_ERROR = `ERROR - Couldn't get zoom level of garden map, check the
   handleDrop() or drag() method in garden_map.tsx`;
@@ -43,11 +44,24 @@ export class GardenMap extends
     }
     this.setState({
       isDragging: false, pageX: 0, pageY: 0,
-      activeDragXY: { x: undefined, y: undefined, z: undefined }
+      activeDragXY: { x: undefined, y: undefined, z: undefined },
+      activeDragSpread: undefined
     });
   }
 
-  startDrag = (): void => this.setState({ isDragging: true });
+  setActiveSpread(slug: string) {
+    return cachedCrop(slug)
+      .then(({ spread }) =>
+        this.setState({ activeDragSpread: (spread || 0) * 10 }));
+  }
+
+  startDrag = (): void => {
+    this.setState({ isDragging: true });
+    const plant = this.getPlant();
+    if (plant) {
+      this.setActiveSpread(plant.body.openfarm_slug);
+    }
+  }
 
   get isEditing(): boolean { return location.pathname.includes("edit"); }
 
@@ -182,6 +196,7 @@ export class GardenMap extends
             editing={!!this.isEditing}
             zoomLvl={this.props.zoomLvl}
             activeDragXY={this.state.activeDragXY}
+            activeDragSpread={this.state.activeDragSpread}
             plantAreaOffset={this.props.gridOffset} />
           <ToolSlotLayer
             mapTransformProps={mapTransformProps}

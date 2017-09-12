@@ -7,13 +7,8 @@ import { StepsPerMmXY } from "../../devices/interfaces";
 import { CheckedAxisLength, AxisNumberProperty, BotSize } from "./interfaces";
 
 const SNAP = 10;
-const SCALE_FACTOR = 9.8;
 const LEFT_MENU_WIDTH = 320;
 const TOP_NAV_HEIGHT = 110;
-
-export function scale(radius = 0) {
-  return (radius * SCALE_FACTOR / 2);
-}
 
 /**
  * Used for snapping.

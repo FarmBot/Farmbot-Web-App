@@ -179,6 +179,7 @@ export interface GardenMapState {
   pageX: number | undefined;
   pageY: number | undefined;
   activeDragXY: BotPosition | undefined;
+  activeDragSpread: number | undefined;
 }
 
 export type PlantOptions = Partial<PlantPointer>;

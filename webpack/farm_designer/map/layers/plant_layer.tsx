@@ -61,6 +61,7 @@ export function PlantLayer(props: PlantLayerProps) {
               dispatch={props.dispatch}
               zoomLvl={props.zoomLvl}
               activeDragXY={props.activeDragXY}
+              activeDragSpread={props.activeDragSpread}
               plantAreaOffset={plantAreaOffset} />
           </Link>;
         })}
