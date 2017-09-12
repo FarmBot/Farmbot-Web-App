@@ -17,6 +17,7 @@ export interface PlantLayerProps {
   mapTransformProps: MapTransformProps;
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
+  activeDragSpread: number | undefined;
   plantAreaOffset: AxisNumberProperty;
 }
 
@@ -51,6 +52,7 @@ export interface GardenPlantProps {
   onClick: (plant: Readonly<TaggedPlantPointer>) => void;
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
+  activeDragSpread: number | undefined;
   plantAreaOffset: AxisNumberProperty;
 }
 
@@ -99,4 +101,13 @@ export interface VirtualFarmBotProps {
 
 export interface FarmBotLayerProps extends VirtualFarmBotProps, BotExtentsProps {
   visible: boolean;
+}
+
+export interface SpreadOverlapHelperProps {
+  dragging: boolean;
+  plant: Readonly<TaggedPlantPointer>;
+  mapTransformProps: MapTransformProps;
+  zoomLvl: number;
+  activeDragXY: BotPosition | undefined;
+  activeDragSpread: number | undefined;
 }
