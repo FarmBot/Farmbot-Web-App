@@ -209,6 +209,11 @@
   transform-origin: bottom;
 }
 
+.soil-cloud {
+  animation: soil-poof 0.5s cubic-bezier(0, 0, 0, 1);
+  transform-origin: center;
+}
+
 .spread {
   animation: spread-pop 0.2s cubic-bezier(0, 0, 0, 1);
   transform-origin: center;
