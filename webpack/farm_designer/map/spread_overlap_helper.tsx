@@ -102,10 +102,10 @@ export class SpreadOverlapHelper extends
     const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
     const gardenCoord: BotPosition = { x: round(x), y: round(y), z: 0 };
 
-    // Convert `spread` from diameter in cm to radius in mm.
-    // `radius * 10` is the default value for spread.
-    const activeSpreadRadius = (activeDragSpread || radius * 10) / 2;
-    const inactiveSpreadRadius = (this.state.inactiveSpread || radius * 10) / 2;
+    // Convert spread diameter to radius (in mm)
+    const activeSpreadRadius = (activeDragSpread || 0) / 2;
+    // `radius * 10` is the default value for spread diameter (in mm).
+    const inactiveSpreadRadius = (this.state.inactiveSpread || (radius * 10)) / 2;
 
     const overlapData = getOverlap(activeDragXY, gardenCoord);
     const debug = false; // change to true to show % overlap values
@@ -119,10 +119,11 @@ export class SpreadOverlapHelper extends
         if (normalized < 255) { // green to yellow
           const r = Math.min(normalized, 255);
           const g = Math.min(100 + normalized, 255); // dark instead of bright green
-          return `rgb(${r}, ${g}, 0)`;
+          const a = Math.min(0.3, Math.round(0.5 * normalized / 510 * 100) / 100);
+          return `rgba(${r}, ${g}, 0, ${a})`;
         } else { // yellow to red
           const g = Math.min(255 * 2 - normalized, 255);
-          return `rgb(255, ${g}, 0)`;
+          return `rgba(255, ${g}, 0, 0.3)`;
         }
       } else {
         return "none";
@@ -136,9 +137,7 @@ export class SpreadOverlapHelper extends
           cx={qx}
           cy={qy}
           r={inactiveSpreadRadius * 0.95}
-          fill={getColor()}
-
-          fillOpacity={0.3} />}
+          fill={getColor()} />}
       {debug && !dragging &&
         overlapValues()}
     </g>;

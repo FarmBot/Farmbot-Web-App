@@ -50,9 +50,12 @@ export class GardenMap extends
   }
 
   setActiveSpread(slug: string) {
+    const selectedPlant = this.props.selectedPlant;
+    const defaultSpreadCm = selectedPlant ? selectedPlant.body.radius : 0;
     return cachedCrop(slug)
       .then(({ spread }) =>
-        this.setState({ activeDragSpread: (spread || 0) * 10 }));
+        this.setState({ activeDragSpread: (spread || defaultSpreadCm) * 10 })
+      );
   }
 
   startDrag = (): void => {

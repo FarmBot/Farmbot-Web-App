@@ -65,7 +65,7 @@ export class SpreadCircle extends
         cx={qx}
         cy={qy}
         // Convert `spread` from diameter in cm to radius in mm.
-        // `radius * 10` is the default value for spread.
+        // `radius * 10` is the default value for spread diameter (in mm).
         r={(this.state.spread || radius) / 2 * 10}
         fill={"url(#SpreadGradient)"} />
     </g>;
