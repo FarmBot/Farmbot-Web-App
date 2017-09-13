@@ -9,13 +9,15 @@
 
 @keyframes pulse-and-rotate {
   0% {
-    transform: rotate(0deg) scale(1.2);
+    transform: scale(1.2);
+    stroke-dashoffset: 0;
   }
   50% {
-    transform: rotate(180deg) scale(1);
+    transform: scale(1);
   }
   100% {
-    transform: rotate(360deg) scale(1.2);
+    transform: scale(1.2);
+    stroke-dashoffset: -200;
   }
 }
 
@@ -41,16 +43,25 @@
   }
 }
 
+@keyframes soil-poof {
+  0% {
+    transform: scale(0);
+    fill-opacity: 0.5;
+  }
+  100% {
+    transform: scale(2.5);
+    fill-opacity: 0;
+  }
+}
+
 @keyframes spread-pop {
   0% {
     transform: scale(0.9);
     fill-opacity: 0;
-    stroke-opacity: 0;
   }
   100% {
     transform: scale(1);
-    fill-opacity: 0.2;
-    stroke-opacity: 1;
+    fill-opacity: 1;
   }
 }
 

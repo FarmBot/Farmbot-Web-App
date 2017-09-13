@@ -33,6 +33,14 @@ export class GardenPlant extends
 
     return <g>
 
+      <circle
+        className="soil-cloud"
+        cx={qx}
+        cy={qy}
+        r={radius}
+        fill="#90612f"
+        fillOpacity="0" />
+
       <SpreadOverlapHelper
         dragging={dragging}
         plant={plant}

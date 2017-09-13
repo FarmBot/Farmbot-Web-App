@@ -16,6 +16,13 @@ export function SpreadLayer(props: SpreadLayerProps) {
   const { plants, visible, currentPlant, mapTransformProps } = props;
   return (
     <g>
+      <defs>
+        <radialGradient id="SpreadGradient">
+          <stop offset="90%" stopColor="rgba(0, 0, 0, 0.08)" />
+          <stop offset="100%" stopColor="rgba(0, 0, 0, 0)" />
+        </radialGradient>
+      </defs>
+
       {
         plants.map((p, index) => {
           const isSelected = p === currentPlant;
@@ -53,7 +60,7 @@ export class SpreadCircle extends
     const { radius, x, y, id } = this.props.plant.body;
     const { quadrant, gridSize } = this.props.mapTransformProps;
     const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
-    return (
+    return <g>
       <circle
         className="spread"
         id={"spread-" + id}
@@ -62,10 +69,7 @@ export class SpreadCircle extends
         // Convert `spread` from diameter in cm to radius in mm.
         // `radius * 10` is the default value for spread.
         r={(this.state.spread || radius) / 2 * 10}
-        fillOpacity={0.2}
-        fill={"green"}
-        stroke={"green"}
-        strokeWidth={"1.5"} />
-    );
+        fill={"url(#SpreadGradient)"} />
+      </g>;
   }
 }
