@@ -7,6 +7,7 @@ import { init, error } from "farmbot-toastr";
 import { NavBar } from "./nav";
 import { Everything, Log } from "./interfaces";
 import { Spinner } from "./spinner";
+import { LoadingPlant } from "./loading-plant";
 import { BotState } from "./devices/interfaces";
 import { ResourceName, TaggedUser } from "./resources/tagged_resources";
 import { selectAllLogs, maybeFetchUser } from "./resources/selectors";
@@ -84,7 +85,7 @@ export class App extends React.Component<AppProps, {}> {
         bot={this.props.bot}
         dispatch={this.props.dispatch}
         logs={this.props.logs} />
-      {!syncLoaded && <Spinner radius={33} strokeWidth={6} />}
+      {!syncLoaded && <LoadingPlant />}
       {syncLoaded && this.props.children}
       {!currentPath.startsWith("/app/controls") &&
         !currentPath.startsWith("/app/account") &&
