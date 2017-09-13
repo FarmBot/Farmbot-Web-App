@@ -28,7 +28,8 @@ describe("<SpreadOverlapHelper/>", () => {
     // Overlap: -650mm (default spread = radius * 10 = 250mm)
     // Percentage overlap of inactive plant: 0%
     const wrapper = shallow(<SpreadOverlapHelper {...p } />);
-    expect(wrapper.find(".overlap-circle").props().fill).toEqual("none");
+    const indicator = wrapper.find(".overlap-circle").props();
+    expect(indicator.fill).toEqual("none");
   });
 
   it("renders gray overlap indicator: 4%", () => {
@@ -38,7 +39,8 @@ describe("<SpreadOverlapHelper/>", () => {
     // Overlap: 10mm (default spread = radius * 10 = 250mm)
     // Percentage overlap of inactive plant: 4%
     const wrapper = shallow(<SpreadOverlapHelper {...p } />);
-    expect(wrapper.find(".overlap-circle").props().fill).toEqual("gray");
+    const indicator = wrapper.find(".overlap-circle").props();
+    expect(indicator.fill).toEqual("rgb(41, 141, 0)"); // "green"
   });
 
   it("renders yellow overlap indicator: 20%", () => {
@@ -48,7 +50,8 @@ describe("<SpreadOverlapHelper/>", () => {
     // Overlap: 50mm (default spread = radius * 10 = 250mm)
     // Percentage overlap of inactive plant: 20%
     const wrapper = shallow(<SpreadOverlapHelper {...p } />);
-    expect(wrapper.find(".overlap-circle").props().fill).toEqual("yellow");
+    const indicator = wrapper.find(".overlap-circle").props();
+    expect(indicator.fill).toEqual("rgb(204, 255, 0)"); // "yellow"
   });
 
   it("renders orange overlap indicator: 40%", () => {
@@ -58,7 +61,8 @@ describe("<SpreadOverlapHelper/>", () => {
     // Overlap: 100mm (default spread = radius * 10 = 250mm)
     // Percentage overlap of inactive plant: 40%
     const wrapper = shallow(<SpreadOverlapHelper {...p } />);
-    expect(wrapper.find(".overlap-circle").props().fill).toEqual("orange");
+    const indicator = wrapper.find(".overlap-circle").props();
+    expect(indicator.fill).toEqual("rgb(255, 102, 0)"); // "orange"
   });
 
   it("renders red overlap indicator: 50%", () => {
@@ -68,7 +72,8 @@ describe("<SpreadOverlapHelper/>", () => {
     // Overlap: 125mm (default spread = radius * 10 = 250mm)
     // Percentage overlap of inactive plant: 50%
     const wrapper = shallow(<SpreadOverlapHelper {...p } />);
-    expect(wrapper.find(".overlap-circle").props().fill).toEqual("red");
+    const indicator = wrapper.find(".overlap-circle").props();
+    expect(indicator.fill).toEqual("rgb(255, 20, 0)"); // "red"
   });
 
   it("renders red overlap indicator: 80%", () => {
@@ -78,7 +83,8 @@ describe("<SpreadOverlapHelper/>", () => {
     // Overlap: 200mm (default spread = radius * 10 = 250mm)
     // Percentage overlap of inactive plant: 80%
     const wrapper = shallow(<SpreadOverlapHelper {...p } />);
-    expect(wrapper.find(".overlap-circle").props().fill).toEqual("red");
+    const indicator = wrapper.find(".overlap-circle").props();
+    expect(indicator.fill).toEqual("rgb(255, 0, 0)"); // "red"
   });
 
   it("renders red overlap indicator: 100%", () => {
@@ -88,7 +94,8 @@ describe("<SpreadOverlapHelper/>", () => {
     // Overlap: 250mm (default spread = radius * 10 = 250mm)
     // Percentage overlap of inactive plant: 100%
     const wrapper = shallow(<SpreadOverlapHelper {...p } />);
-    expect(wrapper.find(".overlap-circle").props().fill).toEqual("red");
+    const indicator = wrapper.find(".overlap-circle").props();
+    expect(indicator.fill).toEqual("rgb(255, 0, 0)"); // "red"
   });
 
 });

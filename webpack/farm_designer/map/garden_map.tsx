@@ -153,7 +153,6 @@ export class GardenMap extends
     };
     return <div
       className="drop-area"
-      id="drop-area"
       style={{
         height: mapSize.y + "px", maxHeight: mapSize.y + "px",
         width: mapSize.x + "px", maxWidth: mapSize.x + "px"

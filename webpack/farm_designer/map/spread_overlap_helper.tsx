@@ -7,7 +7,7 @@ import { cachedCrop } from "../../open_farm/index";
 
 enum Overlap {
   NONE = "none",
-  SOME = "gray",
+  SOME = "green",
   SMALL = "yellow",
   MEDIUM = "orange",
   LARGE = "red",
@@ -87,6 +87,9 @@ export class SpreadOverlapHelper extends
           <text x={qx} y={qy} dy={-50}>
             {"Inactive: " + percentage(inactiveSpread) + "%"}
           </text>
+          <text x={qx} y={qy} dy={25}>
+            {overlapData.color}
+          </text>
         </g>;
       } else {
         return <g />;
@@ -107,16 +110,35 @@ export class SpreadOverlapHelper extends
     const overlapData = getOverlap(activeDragXY, gardenCoord);
     const debug = false; // change to true to show % overlap values
 
+    function getColor() {
+      // Smoothly vary color based on overlap from dark green > yellow > orange > red
+      if (overlapData.value > 0) {
+        const normalized = Math.round(
+          Math.max(0, Math.min(inactiveSpreadRadius, overlapData.value))
+          / (inactiveSpreadRadius) * 255 * 2);
+        if (normalized < 255) { // green to yellow
+          const r = Math.min(normalized, 255);
+          const g = Math.min(100 + normalized, 255); // dark instead of bright green
+          return `rgb(${r}, ${g}, 0)`;
+        } else { // yellow to red
+          const g = Math.min(255 * 2 - normalized, 255);
+          return `rgb(255, ${g}, 0)`;
+        }
+      } else {
+        return "none";
+      }
+    }
+
     return <g id="overlap-circle">
       {!dragging && // Non-active plants
         <circle
           className="overlap-circle"
           cx={qx}
           cy={qy}
-          r={inactiveSpreadRadius}
-          fill={overlapData.color}
-          stroke={overlapData.color}
-          fillOpacity="0.3" />}
+          r={inactiveSpreadRadius * 0.95}
+          fill={getColor()}
+
+          fillOpacity={0.3} />}
       {debug && !dragging &&
         overlapValues()}
     </g>;

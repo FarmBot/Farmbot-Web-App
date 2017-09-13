@@ -17,7 +17,7 @@ import { MapTransformProps } from "../interfaces";
  * achieve this effect.
  */
 
-interface HoveredPlantLayerProps {
+export interface HoveredPlantLayerProps {
   currentPlant: TaggedPlantPointer | undefined;
   designer: DesignerState;
   hoveredPlant: TaggedPlantPointer | undefined;
@@ -61,17 +61,19 @@ export class HoveredPlantLayer extends
     const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
     const scaleFactor = (this.state.isHovered) ? "1.3, 1.3" : "1, 1";
 
-    return <image
-      visibility={this.props.isEditing ? "visible" : "hidden"}
-      style={{ transform: "scale(" + scaleFactor + ")" }}
-      className={"hovered-plant-copy"}
-      x={qx - (this.plantInfo.radius)}
-      y={qy - (this.plantInfo.radius)}
-      onMouseEnter={this.toggle("isHovered")}
-      onMouseLeave={this.toggle("isHovered")}
-      onClick={this.onClick}
-      width={this.plantInfo.radius * 2}
-      height={this.plantInfo.radius * 2}
-      xlinkHref={icon} />;
+    return <g id="hovered-plant-icon">
+      <image
+        visibility={this.props.isEditing ? "visible" : "hidden"}
+        style={{ transform: "scale(" + scaleFactor + ")" }}
+        className={"hovered-plant-copy"}
+        x={qx - (this.plantInfo.radius)}
+        y={qy - (this.plantInfo.radius)}
+        onMouseEnter={this.toggle("isHovered")}
+        onMouseLeave={this.toggle("isHovered")}
+        onClick={this.onClick}
+        width={this.plantInfo.radius * 2}
+        height={this.plantInfo.radius * 2}
+        xlinkHref={icon} />
+    </g>;
   }
 }

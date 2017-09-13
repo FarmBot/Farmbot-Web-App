@@ -11,12 +11,13 @@ export interface ToolSlotLayerProps {
 
 export function ToolSlotLayer(props: ToolSlotLayerProps) {
   const { slots, visible, mapTransformProps } = props;
-  return visible ? <g>
-    {slots.map(slot =>
-      <ToolSlotPoint
-        key={slot.toolSlot.uuid}
-        slot={slot}
-        mapTransformProps={mapTransformProps} />
-    )}
-  </g> : <g />; // fallback
+  return <g id="toolslot-layer">
+    {visible &&
+      slots.map(slot =>
+        <ToolSlotPoint
+          key={slot.toolSlot.uuid}
+          slot={slot}
+          mapTransformProps={mapTransformProps} />
+      )}
+  </g>;
 }

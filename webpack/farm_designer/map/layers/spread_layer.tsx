@@ -5,7 +5,7 @@ import { round, getXYFromQuadrant } from "../util";
 import { cachedCrop } from "../../../open_farm/index";
 import { MapTransformProps } from "../interfaces";
 
-interface SpreadLayerProps {
+export interface SpreadLayerProps {
   visible: boolean;
   plants: TaggedPlantPointer[];
   currentPlant: TaggedPlantPointer | undefined;
@@ -13,24 +13,22 @@ interface SpreadLayerProps {
 }
 
 export function SpreadLayer(props: SpreadLayerProps) {
-  const { plants, visible, currentPlant, mapTransformProps } = props;
+  const { plants, visible, mapTransformProps } = props;
   return (
-    <g>
+    <g id="spread-layer">
       <defs>
         <radialGradient id="SpreadGradient">
-          <stop offset="90%" stopColor="rgba(0, 0, 0, 0.08)" />
-          <stop offset="100%" stopColor="rgba(0, 0, 0, 0)" />
+          <stop offset="90%" stopColor="rgba(85, 50, 10, 0.1)" />
+          <stop offset="100%" stopColor="rgba(85, 50, 10, 0)" />
         </radialGradient>
       </defs>
 
-      {
+      {visible &&
         plants.map((p, index) => {
-          const isSelected = p === currentPlant;
-          return (visible || isSelected) ?
-            <SpreadCircle
-              plant={p}
-              key={p.uuid}
-              mapTransformProps={mapTransformProps} /> : <g key={p.uuid} />;
+          return <SpreadCircle
+            plant={p}
+            key={p.uuid}
+            mapTransformProps={mapTransformProps} />;
         })
       }
     </g>
@@ -60,7 +58,7 @@ export class SpreadCircle extends
     const { radius, x, y, id } = this.props.plant.body;
     const { quadrant, gridSize } = this.props.mapTransformProps;
     const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
-    return <g>
+    return <g id={"spread-" + id}>
       <circle
         className="spread"
         id={"spread-" + id}
@@ -70,6 +68,6 @@ export class SpreadCircle extends
         // `radius * 10` is the default value for spread.
         r={(this.state.spread || radius) / 2 * 10}
         fill={"url(#SpreadGradient)"} />
-      </g>;
+    </g>;
   }
 }
