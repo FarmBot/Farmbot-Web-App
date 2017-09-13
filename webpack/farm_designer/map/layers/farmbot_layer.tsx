@@ -7,7 +7,7 @@ export function FarmBotLayer(props: FarmBotLayerProps) {
   const {
     visible, stopAtHome, botSize, plantAreaOffset, mapTransformProps
    } = props;
-  return visible ? <g>
+  return visible ? <g id="farmbot-layer">
     <VirtualFarmBot
       mapTransformProps={mapTransformProps}
       botPosition={props.botPosition}
@@ -16,5 +16,5 @@ export function FarmBotLayer(props: FarmBotLayerProps) {
       mapTransformProps={mapTransformProps}
       stopAtHome={stopAtHome}
       botSize={botSize} />
-  </g> : <g />; // fallback
+  </g> : <g id="farmbot-layer" />;
 }

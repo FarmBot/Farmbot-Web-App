@@ -28,9 +28,9 @@ export function PlantLayer(props: PlantLayerProps) {
   const maybeNoPointer = history.getCurrentLocation().pathname.split("/")[6] == "add"
     ? { "pointerEvents": "none" } : {};
 
-  if (visible) {
-    return <g>
-      {plants
+  return <g id="plant-layer">
+    {visible &&
+      plants
         .filter(x => !!x.body.id)
         .map(p => defensiveClone(p))
         .map(p => {
@@ -65,8 +65,5 @@ export function PlantLayer(props: PlantLayerProps) {
               plantAreaOffset={plantAreaOffset} />
           </Link>;
         })}
-    </g>;
-  } else {
-    return <g />;
-  }
+  </g>;
 }

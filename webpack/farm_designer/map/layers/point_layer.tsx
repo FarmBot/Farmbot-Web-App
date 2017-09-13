@@ -3,7 +3,7 @@ import { TaggedGenericPointer } from "../../../resources/tagged_resources";
 import { GardenPoint } from "../garden_point";
 import { MapTransformProps } from "../interfaces";
 
-interface PointLayerProps {
+export interface PointLayerProps {
   visible: boolean;
   points: TaggedGenericPointer[];
   mapTransformProps: MapTransformProps;
@@ -11,12 +11,13 @@ interface PointLayerProps {
 
 export function PointLayer(props: PointLayerProps) {
   const { visible, points, mapTransformProps } = props;
-  return visible ? <g>
-    {points.map(p =>
-      <GardenPoint
-        point={p}
-        key={p.body.id}
-        mapTransformProps={mapTransformProps} />
-    )}
-  </g> : <g />; // fallback
+  return <g id="point-layer">
+    {visible &&
+      points.map(p =>
+        <GardenPoint
+          point={p}
+          key={p.body.id}
+          mapTransformProps={mapTransformProps} />
+      )}
+  </g>;
 }
