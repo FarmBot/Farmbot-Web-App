@@ -28,9 +28,40 @@ describe("<ToolSlotPoint/>", () => {
     expect(wrapper.find("text").text()).toEqual("Foo");
   });
 
+  it("displays 'no tool'", () => {
+    const p = fakeProps();
+    p.slot.tool = undefined;
+    const wrapper = shallow(<ToolSlotPoint {...p } />);
+    wrapper.setState({ hovered: true });
+    expect(wrapper.find("text").text()).toEqual("no tool");
+  });
+
   it("doesn't display tool name", () => {
     const wrapper = shallow(<ToolSlotPoint {...fakeProps() } />);
     expect(wrapper.find("text").props().visibility).toEqual("hidden");
+  });
+
+  it("renders special tool styling: bin", () => {
+    const p = fakeProps();
+    if (p.slot.tool) { p.slot.tool.body.name = "Seed Bin"; }
+    const wrapper = shallow(<ToolSlotPoint {...p } />);
+    const elements = wrapper.find("#seed-bin").find("circle");
+    expect(elements.length).toEqual(2);
+    expect(elements.last().props().fill).toEqual("url(#SeedBinGradient)");
+    wrapper.setState({ hovered: true });
+    expect(wrapper.find("#seed-bin").find("circle").length).toEqual(3);
+  });
+
+  it("renders special tool styling: tray", () => {
+    const p = fakeProps();
+    if (p.slot.tool) { p.slot.tool.body.name = "Seed Tray"; }
+    const wrapper = shallow(<ToolSlotPoint {...p } />);
+    const elements = wrapper.find("#seed-tray");
+    expect(elements.find("circle").length).toEqual(1);
+    expect(elements.find("rect").length).toEqual(1);
+    expect(elements.find("rect").props().fill).toEqual("url(#SeedTrayPattern)");
+    wrapper.setState({ hovered: true });
+    expect(wrapper.find("#seed-tray").find("circle").length).toEqual(2);
   });
 
 });
