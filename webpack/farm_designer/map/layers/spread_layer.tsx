@@ -4,16 +4,24 @@ import { TaggedPlantPointer } from "../../../resources/tagged_resources";
 import { round, getXYFromQuadrant } from "../util";
 import { cachedCrop } from "../../../open_farm/index";
 import { MapTransformProps } from "../interfaces";
+import { SpreadOverlapHelper } from "../spread_overlap_helper";
+import { BotPosition } from "../../../devices/interfaces";
 
 export interface SpreadLayerProps {
   visible: boolean;
   plants: TaggedPlantPointer[];
   currentPlant: TaggedPlantPointer | undefined;
   mapTransformProps: MapTransformProps;
+  dragging: boolean;
+  zoomLvl: number;
+  activeDragXY: BotPosition | undefined;
+  activeDragSpread: number | undefined;
+  editing: boolean;
 }
 
 export function SpreadLayer(props: SpreadLayerProps) {
-  const { plants, visible, mapTransformProps } = props;
+  const { plants, visible, mapTransformProps, currentPlant,
+    dragging, zoomLvl, activeDragXY, activeDragSpread, editing } = props;
   return (
     <g id="spread-layer">
       <defs>
@@ -23,13 +31,26 @@ export function SpreadLayer(props: SpreadLayerProps) {
         </radialGradient>
       </defs>
 
-      {visible &&
-        plants.map((p, index) => {
-          return <SpreadCircle
+
+      {plants.map((p, index) => {
+        const selected = !!(currentPlant && (p.uuid === currentPlant.uuid));
+        return <g id={"spread-components-" + p.body.id} key={p.uuid}>
+          {visible &&
+            <SpreadCircle
+              plant={p}
+              key={"spread-" + p.uuid}
+              mapTransformProps={mapTransformProps}
+              selected={selected} />}
+          <SpreadOverlapHelper
+            key={"overlap-" + p.uuid}
+            dragging={selected && dragging && editing}
             plant={p}
-            key={p.uuid}
-            mapTransformProps={mapTransformProps} />;
-        })
+            mapTransformProps={mapTransformProps}
+            zoomLvl={zoomLvl}
+            activeDragXY={activeDragXY}
+            activeDragSpread={activeDragSpread} />
+        </g>;
+      })
       }
     </g>
   );
@@ -38,6 +59,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
 interface SpreadCircleProps {
   plant: TaggedPlantPointer;
   mapTransformProps: MapTransformProps;
+  selected: boolean;
 }
 
 interface SpreadCircleState {
@@ -56,18 +78,21 @@ export class SpreadCircle extends
 
   render() {
     const { radius, x, y, id } = this.props.plant.body;
-    const { quadrant, gridSize } = this.props.mapTransformProps;
+    const { selected, mapTransformProps } = this.props;
+    const { quadrant, gridSize } = mapTransformProps;
     const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
+
     return <g id={"spread-" + id}>
-      <circle
-        className="spread"
-        id={"spread-" + id}
-        cx={qx}
-        cy={qy}
-        // Convert `spread` from diameter in cm to radius in mm.
-        // `radius * 10` is the default value for spread diameter (in mm).
-        r={(this.state.spread || radius) / 2 * 10}
-        fill={"url(#SpreadGradient)"} />
+      {!selected &&
+        <circle
+          className="spread"
+          id={"spread-" + id}
+          cx={qx}
+          cy={qy}
+          // Convert `spread` from diameter in cm to radius in mm.
+          // `radius * 10` is the default value for spread diameter (in mm).
+          r={(this.state.spread || radius) / 2 * 10}
+          fill={"url(#SpreadGradient)"} />}
     </g>;
   }
 }

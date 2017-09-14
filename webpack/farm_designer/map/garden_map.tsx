@@ -25,6 +25,7 @@ import { ToolSlotLayer } from "./layers/tool_slot_layer";
 import { HoveredPlantLayer } from "./layers/hovered_plant_layer";
 import { FarmBotLayer } from "./layers/farmbot_layer";
 import { cachedCrop } from "../../open_farm/index";
+import { DragHelperLayer } from "./layers/drag_helper_layer";
 
 const DRAG_ERROR = `ERROR - Couldn't get zoom level of garden map, check the
   handleDrop() or drag() method in garden_map.tsx`;
@@ -59,10 +60,12 @@ export class GardenMap extends
   }
 
   startDrag = (): void => {
-    this.setState({ isDragging: true });
-    const plant = this.getPlant();
-    if (plant) {
-      this.setActiveSpread(plant.body.openfarm_slug);
+    if (this.isEditing) {
+      this.setState({ isDragging: true });
+      const plant = this.getPlant();
+      if (plant) {
+        this.setActiveSpread(plant.body.openfarm_slug);
+      }
     }
   }
 
@@ -71,11 +74,18 @@ export class GardenMap extends
   getPlant = (): TaggedPlantPointer | undefined => this.props.selectedPlant;
 
   handleDragOver = (e: React.DragEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
+    if (!this.isEditing &&
+      history.getCurrentLocation().pathname.split("/")[4] == "crop_search") {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+    }
   }
 
-  handleDragEnter = (e: React.DragEvent<HTMLElement>) => e.preventDefault();
+  handleDragEnter = (e: React.DragEvent<HTMLElement>) => {
+    if (history.getCurrentLocation().pathname.split("/")[4] == "crop_search") {
+      e.preventDefault();
+    }
+  }
 
   findCrop(slug?: string) {
     return findBySlug(this.props.designer.cropSearchResults || [], slug);
@@ -115,7 +125,9 @@ export class GardenMap extends
             radius: DEFAULT_PLANT_RADIUS
           })
         };
-        this.props.dispatch(initSave(p));
+        if (p.body.name != "name" && p.body.openfarm_slug != "slug") {
+          this.props.dispatch(initSave(p));
+        }
       }
     } else {
       throw new Error(`Missing 'drop-area-svg', 'farm-designer-map', or
@@ -162,7 +174,9 @@ export class GardenMap extends
       }}
       onDrop={this.handleDrop}
       onDragEnter={this.handleDragEnter}
-      onDragOver={this.handleDragOver}>
+      onDragOver={this.handleDragOver}
+      onMouseLeave={this.endDrag}
+      onDragEnd={this.endDrag}>
       <svg
         id="map-background-svg">
         <MapBackground
@@ -182,7 +196,12 @@ export class GardenMap extends
             mapTransformProps={mapTransformProps}
             plants={this.props.plants}
             currentPlant={this.getPlant()}
-            visible={!!this.props.showSpread} />
+            visible={!!this.props.showSpread}
+            dragging={!!this.state.isDragging}
+            zoomLvl={this.props.zoomLvl}
+            activeDragXY={this.state.activeDragXY}
+            activeDragSpread={this.state.activeDragSpread}
+            editing={!!this.isEditing} />
           <PointLayer
             mapTransformProps={mapTransformProps}
             visible={!!this.props.showPoints}
@@ -197,9 +216,7 @@ export class GardenMap extends
             dragging={!!this.state.isDragging}
             editing={!!this.isEditing}
             zoomLvl={this.props.zoomLvl}
-            activeDragXY={this.state.activeDragXY}
-            activeDragSpread={this.state.activeDragSpread}
-            plantAreaOffset={this.props.gridOffset} />
+            activeDragXY={this.state.activeDragXY} />
           <ToolSlotLayer
             mapTransformProps={mapTransformProps}
             visible={!!this.props.showFarmbot}
@@ -212,12 +229,21 @@ export class GardenMap extends
             botSize={this.props.botSize}
             plantAreaOffset={this.props.gridOffset} />
           <HoveredPlantLayer
+            visible={!!this.props.showPlants}
             isEditing={this.isEditing}
             mapTransformProps={mapTransformProps}
             currentPlant={this.getPlant()}
             designer={this.props.designer}
-            dispatch={this.props.dispatch}
-            hoveredPlant={this.props.hoveredPlant} />
+            hoveredPlant={this.props.hoveredPlant}
+            dragging={!!this.state.isDragging} />
+          <DragHelperLayer
+            mapTransformProps={mapTransformProps}
+            currentPlant={this.getPlant()}
+            dragging={!!this.state.isDragging}
+            editing={!!this.isEditing}
+            zoomLvl={this.props.zoomLvl}
+            activeDragXY={this.state.activeDragXY}
+            plantAreaOffset={this.props.gridOffset} />
         </svg>
       </svg>
     </div>;

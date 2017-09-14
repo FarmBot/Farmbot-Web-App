@@ -11,7 +11,12 @@ describe("<SpreadLayer/>", () => {
       currentPlant: undefined,
       mapTransformProps: {
         quadrant: 2, gridSize: { x: 3000, y: 1500 }
-      }
+      },
+      dragging: false,
+      zoomLvl: 1.8,
+      activeDragXY: { x: undefined, y: undefined, z: undefined },
+      activeDragSpread: undefined,
+      editing: false
     };
   }
 
