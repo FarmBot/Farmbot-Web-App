@@ -65,6 +65,9 @@ describe("<GardenPlant/>", () => {
   it("starts drag and sets activeSpread", async () => {
     const wrapper = shallow(<GardenMap {...fakeProps() } />);
     expect(wrapper.state()).toEqual({});
+    Object.defineProperty(location, "pathname", {
+      value: "/edit/"
+    });
     await wrapper.find("#drop-area-svg").simulate("mouseDown");
     expect(wrapper.state()).toEqual({
       activeDragSpread: 1000,

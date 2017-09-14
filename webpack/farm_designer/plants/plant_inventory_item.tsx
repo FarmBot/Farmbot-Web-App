@@ -27,9 +27,24 @@ export class PlantInventoryItem extends
     const { tpp, dispatch } = this.props;
     const plantId = (plant.id || "ERR_NO_PLANT_ID").toString();
 
-    const toggle = () => {
-      const { icon } = this.state;
-      dispatch({ type: "TOGGLE_HOVERED_PLANT", payload: { plant: tpp, icon } });
+    const toggle = (action: "enter" | "leave") => {
+      switch (action) {
+        case "enter":
+          const { icon } = this.state;
+          dispatch({
+            type: "TOGGLE_HOVERED_PLANT", payload: {
+              plantUUID: tpp.uuid, icon
+            }
+          });
+          break;
+        case "leave":
+          dispatch({
+            type: "TOGGLE_HOVERED_PLANT", payload: {
+              plantUUID: undefined, icon: undefined
+            }
+          });
+          break;
+      }
     };
 
     const click = () => {
@@ -60,8 +75,8 @@ export class PlantInventoryItem extends
     return <div
       className="plant-search-item"
       key={plantId}
-      onMouseEnter={toggle}
-      onMouseLeave={toggle}
+      onMouseEnter={() => toggle("enter")}
+      onMouseLeave={() => toggle("leave")}
       onClick={click}>
       <img
         className="plant-search-item-image"

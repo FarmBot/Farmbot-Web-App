@@ -67,7 +67,7 @@ export class SpreadOverlapHelper extends
         // should be thought of as a tool checking the inactive plants, not
         // the plant being edited. Dragging a plant with a small spread into
         // the area of a plant with large spread will illustrate this point.
-        return evaluateOverlap(overlap, inactiveSpreadRadius);
+        return evaluateOverlap(overlap, comparisonRadius);
       }
       return { color: Overlap.NONE, value: 0 };
     }
@@ -108,14 +108,20 @@ export class SpreadOverlapHelper extends
     const inactiveSpreadRadius = (this.state.inactiveSpread || (radius * 10)) / 2;
 
     const overlapData = getOverlap(activeDragXY, gardenCoord);
+    // Radius to use to evaluate overlap severity.
+    // For impact of active plant on inactive plants, use `inactiveSpreadRadius`
+    // For impact of inactive plants on active plant, use `activeSpreadRadius`
+    // For worst case, use `Math.min(activeSpreadRadius, inactiveSpreadRadius)`
+    // For lesser case, use `Math.max(activeSpreadRadius, inactiveSpreadRadius)`
+    const comparisonRadius = inactiveSpreadRadius;
     const debug = false; // change to true to show % overlap values
 
     function getColor() {
       // Smoothly vary color based on overlap from dark green > yellow > orange > red
       if (overlapData.value > 0) {
         const normalized = Math.round(
-          Math.max(0, Math.min(inactiveSpreadRadius, overlapData.value))
-          / (inactiveSpreadRadius) * 255 * 2);
+          Math.max(0, Math.min(comparisonRadius, overlapData.value))
+          / (comparisonRadius) * 255 * 2);
         if (normalized < 255) { // green to yellow
           const r = Math.min(normalized, 255);
           const g = Math.min(100 + normalized, 255); // dark instead of bright green
@@ -130,7 +136,7 @@ export class SpreadOverlapHelper extends
       }
     }
 
-    return <g id="overlap-circle">
+    return <g id="overlap-indicator">
       {!dragging && // Non-active plants
         <circle
           className="overlap-circle"

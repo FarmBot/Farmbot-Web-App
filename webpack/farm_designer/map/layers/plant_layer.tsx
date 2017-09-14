@@ -17,8 +17,7 @@ export function PlantLayer(props: PlantLayerProps) {
     currentPlant,
     dragging,
     editing,
-    mapTransformProps,
-    plantAreaOffset
+    mapTransformProps
   } = props;
 
   crops
@@ -45,7 +44,6 @@ export function PlantLayer(props: PlantLayerProps) {
           };
         })
         .map(p => {
-          const action = { type: "SELECT_PLANT", payload: p.uuid };
           return <Link className="plant-link-wrapper"
             style={maybeNoPointer}
             to={"/app/designer/plants/" + p.plantId}
@@ -53,16 +51,14 @@ export function PlantLayer(props: PlantLayerProps) {
             onClick={_.noop}
             key={p.plantId}>
             <GardenPlant
+              uuid={p.uuid}
               mapTransformProps={mapTransformProps}
               plant={p.plant}
               selected={p.selected}
               dragging={p.selected && dragging && editing}
-              onClick={() => dispatch(action)}
-              dispatch={props.dispatch}
+              dispatch={dispatch}
               zoomLvl={props.zoomLvl}
-              activeDragXY={props.activeDragXY}
-              activeDragSpread={props.activeDragSpread}
-              plantAreaOffset={plantAreaOffset} />
+              activeDragXY={props.activeDragXY} />
           </Link>;
         })}
   </g>;

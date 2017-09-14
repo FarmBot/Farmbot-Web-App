@@ -88,6 +88,7 @@ export function fakeToolSlot(): TaggedToolSlotPointer {
 
 export function fakePlant(): TaggedPlantPointer {
   return fakeResource("points", {
+    id: idCounter++,
     name: "Strawberry Plant 1",
     pointer_type: "Plant",
     x: 100,
