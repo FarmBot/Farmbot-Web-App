@@ -1,5 +1,13 @@
 import * as React from "react";
-import { SpreadOverlapHelper } from "../spread_overlap_helper";
+import {
+  SpreadOverlapHelper,
+  getDiscreteColor,
+  getContinuousColor,
+  getRadius,
+  SpreadOption,
+  getOverlap,
+  overlapText
+} from "../spread_overlap_helper";
 import { shallow } from "enzyme";
 import { SpreadOverlapHelperProps } from "../interfaces";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
@@ -97,6 +105,43 @@ describe("<SpreadOverlapHelper/>", () => {
     const wrapper = shallow(<SpreadOverlapHelper {...p } />);
     const indicator = wrapper.find(".overlap-circle").props();
     expect(indicator.fill).toEqual("rgba(255, 0, 0, 0.3)"); // "red"
+  });
+
+});
+
+describe("SpreadOverlapHelper functions", () => {
+
+  it("getDiscreteColor()", () => {
+    expect(getDiscreteColor(10, 100)).toEqual("green");
+    expect(getDiscreteColor(20, 100)).toEqual("green");
+  });
+
+  it("getContinuousColor()", () => {
+    expect(getContinuousColor(10, 100)).toEqual("rgba(51, 151, 0, 0.05)");
+    expect(getContinuousColor(20, 100)).toEqual("rgba(102, 202, 0, 0.1)");
+  });
+
+  it("getRadius()", () => {
+    const spreadData = { active: 100, inactive: 200 };
+    expect(getRadius(SpreadOption.ActivePlant, spreadData)).toEqual(100);
+    expect(getRadius(SpreadOption.InactivePlant, spreadData)).toEqual(200);
+    expect(getRadius(SpreadOption.WorseCase, spreadData)).toEqual(100);
+    expect(getRadius(SpreadOption.LesserCase, spreadData)).toEqual(200);
+  });
+
+  it("getOverlap()", () => {
+    const activePlant = { x: 50, y: 50, z: 0 };
+    const inactivePlant = { x: 50, y: 300, z: 0 };
+    const spreadData = { active: 100, inactive: 200 };
+    expect(getOverlap(activePlant, inactivePlant, spreadData)).toEqual(50);
+  });
+
+  it("overlapText()", () => {
+    const spreadData = { active: 100, inactive: 200 };
+    const svgText = shallow(overlapText(100, 100, 150, spreadData));
+    expect(svgText.text()).toContain("Active: 80%");
+    expect(svgText.text()).toContain("Inactive: 40%");
+    expect(svgText.text()).toContain("orange");
   });
 
 });

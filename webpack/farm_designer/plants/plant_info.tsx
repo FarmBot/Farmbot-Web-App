@@ -44,7 +44,7 @@ export class PlantInfo extends PlantInfoBase {
   }
 
   render() {
-    const plant_info = this.plant && this.plant;
+    const plant_info = this.plant;
     return plant_info ? this.default(plant_info) : this.fallback();
   }
 }
