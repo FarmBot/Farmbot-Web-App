@@ -10,6 +10,9 @@ import { Props } from "./interfaces";
 export class Devices extends React.Component<Props, {}> {
   render() {
     if (this.props.auth) {
+      if (!!0) { // TS Hack to test stuff.
+        throw new Error("Does this not work in prod?");
+      }
       return <Page className="devices">
         <Row>
           <Col xs={12} sm={6}>
