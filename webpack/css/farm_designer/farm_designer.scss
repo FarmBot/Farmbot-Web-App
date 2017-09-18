@@ -23,7 +23,13 @@
     width: 100%;
     height: 100%;
     overflow: visible;
+    text {
+      pointer-events: none;
+    }
+    text::selection {
+      background: none;
   }
+}
 }
 
 #drop-area-svg {
@@ -217,6 +223,7 @@
 .spread {
   animation: spread-pop 0.2s cubic-bezier(0, 0, 0, 1);
   transform-origin: center;
+  pointer-events: none;
 }
 
 .garden-map-legend {

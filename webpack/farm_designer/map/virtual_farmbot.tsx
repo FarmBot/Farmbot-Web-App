@@ -8,15 +8,15 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
   const { quadrant, gridSize } = mapTransformProps;
   const mapSize = getMapSize(gridSize, plantAreaOffset);
   const { qx, qy } = getXYFromQuadrant((x || 0), (y || 0), quadrant, gridSize);
-  return <g>
-    <rect
+  return <g id="virtual-farmbot">
+    <rect id="gantry"
       x={qx - 10}
       y={-plantAreaOffset.y}
       width={20}
       height={mapSize.y}
       fillOpacity={0.75}
       fill={"#434343"} />
-    <circle
+    <circle id="UTM"
       cx={qx}
       cy={qy}
       r={35}

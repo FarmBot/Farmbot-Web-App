@@ -2,13 +2,15 @@ jest.mock("fastclick", () => ({
   attach: jest.fn(),
 }));
 
+jest.mock("react-redux", () => ({
+  connect: jest.fn()
+}));
+
 import * as React from "react";
 import { App, AppProps } from "../app";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
 import { fakeUser } from "../__test_support__/fake_state/resources";
-import { createStore } from "redux";
-import { reducers } from "../redux/root_reducer";
 
 describe("<App />: Controls Pop-Up", () => {
   function fakeProps(): AppProps {
@@ -26,8 +28,7 @@ describe("<App />: Controls Pop-Up", () => {
       Object.defineProperty(location, "pathname", {
         value: "/app/" + page, configurable: true
       });
-      const wrapper = mount(<App {...fakeProps() } />,
-        { context: { store: createStore(reducers) } });
+      const wrapper = mount(<App {...fakeProps() } />);
       if (exists) {
         expect(wrapper.html()).toContain("controls-popup");
       } else {
@@ -61,24 +62,21 @@ describe.skip("<App />: Loading", () => {
   }
 
   it("MUST_LOADs not loaded", () => {
-    const wrapper = mount(<App {...fakeProps() } />,
-      { context: { store: createStore(reducers) } });
+    const wrapper = mount(<App {...fakeProps() } />);
     expect(wrapper.html()).toContain("spinner");
   });
 
   it("MUST_LOADs partially loaded", () => {
     const p = fakeProps();
     p.loaded = ["sequences"];
-    const wrapper = mount(<App {...p } />,
-      { context: { store: createStore(reducers) } });
+    const wrapper = mount(<App {...p } />);
     expect(wrapper.html()).toContain("spinner");
   });
 
   it("MUST_LOADs loaded", () => {
     const p = fakeProps();
     p.loaded = ["sequences", "regimens", "farm_events", "points"];
-    const wrapper = mount(<App {...p } />,
-      { context: { store: createStore(reducers) } });
+    const wrapper = mount(<App {...p } />);
     expect(wrapper.html()).not.toContain("spinner");
   });
 });
@@ -95,15 +93,13 @@ describe("<App />: NavBar", () => {
   }
 
   it("displays links", () => {
-    const wrapper = mount(<App {...fakeProps() } />,
-      { context: { store: createStore(reducers) } });
+    const wrapper = mount(<App {...fakeProps() } />);
     expect(wrapper.text())
       .toContain("Farm DesignerControlsDeviceSequencesRegimensToolsFarmware");
   });
 
   it("displays ticker", () => {
-    const wrapper = mount(<App {...fakeProps() } />,
-      { context: { store: createStore(reducers) } });
+    const wrapper = mount(<App {...fakeProps() } />);
     expect(wrapper.text()).toContain("No logs yet.");
   });
 });
