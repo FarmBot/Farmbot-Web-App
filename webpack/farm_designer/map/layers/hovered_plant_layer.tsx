@@ -43,7 +43,7 @@ export class HoveredPlantLayer extends
     const { id, x, y, radius } = this.plantInfo;
     const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
     const hovered = !!this.props.designer.hoveredPlant.icon;
-    const scaledRadius = radius * 1.3;
+    const scaledRadius = currentPlant ? radius : radius * 1.2;
     const alpha = dragging ? 0.4 : 1.0;
 
     return <g id="hovered-plant-layer">
