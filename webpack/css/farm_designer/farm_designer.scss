@@ -5,7 +5,6 @@
 }
 
 .farm-designer-map {
-  background-color: #CA8;
   min-width: 100%;
   display: inline-block;
   padding: 11rem 2rem 2rem 31.8rem;
@@ -20,18 +19,23 @@
 }
 
 .drop-area {
-  // Light grid lines every 10px, heavier grid every 100px
-  background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, 0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 2px, transparent 2px);
-  background-size: 10px 10px, 10px 10px, 100px 100px, 100px 100px;
-  overflow: scroll;
-  height: 1500px;
-  max-height: 1500px;
-  width: 3000px;
-  max-width: 3000px;
   svg {
     width: 100%;
     height: 100%;
+    overflow: visible;
+    text {
+      pointer-events: none;
+    }
+    text::selection {
+      background: none;
   }
+}
+}
+
+#drop-area-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
 .crop-drag-info-image {
@@ -92,7 +96,7 @@
 
 .thin-search-wrapper {
   .text-input-wrapper {
-    margin-bottom: 1rem;
+    margin: 1rem;
     position: relative;
     border-bottom: 1px solid #000;
     &:before,
@@ -126,7 +130,7 @@
       background: transparent !important;
     }
     &::-webkit-input-placeholder {
-      color: #000;
+      color: #999;
     }
   }
   .select-results-container {
@@ -150,8 +154,7 @@
   }
   .plant-search-item {
     cursor: pointer;
-    height: 4rem;
-    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
     &:hover {
       background: darken($light_green, 10%);
       transition: background 0.2s ease;
@@ -194,23 +197,40 @@
   }
   &:hover {
     image {
+      transform: scale(1.1);
       &.is-chosen-true {
-        transform: scale(1, 1);
+        transform: scale(1);
       }
     }
   }
 }
 
 .plant-indicator.is-chosen-true {
-  border: 3px dashed $green;
-  animation: pulse-and-rotate 4s infinite linear;
-  transform-origin: center
+  animation: plant-selection-pop 0.2s 1 cubic-bezier(0, 0, 0, 0.9), pulse-and-rotate 4s 0.2s infinite linear;
+  transform-origin: center;
+}
+
+.plant-image {
+  animation: plant-growth 0.25s cubic-bezier(0, 0, 0, 1.4);
+  transform-origin: bottom;
+}
+
+.soil-cloud {
+  animation: soil-poof 0.5s cubic-bezier(0, 0, 0, 1);
+  transform-origin: center;
+}
+
+.spread {
+  animation: spread-pop 0.2s cubic-bezier(0, 0, 0, 1);
+  transform-origin: center;
+  pointer-events: none;
 }
 
 .garden-map-legend {
   position: fixed;
   top: 110px;
   right: -120px;
+  z-index: 2;
   transition: all 0.4s ease;
   box-shadow: 0px 1px 4px #555;
   max-width: 120px;
@@ -218,7 +238,7 @@
     transform: translateX(-140px);
   }
   .content {
-    background: $light_green;
+    background: rgba(256, 256, 256, .75);
     padding: 10px;
     border-radius: 5px;
     display: flex;
@@ -235,9 +255,6 @@
     .plus-button {
       position: initial;
       margin: 0 auto;
-    }
-    .fb-toggle-button {
-      height: 1.8rem;
     }
   }
   .toggle-buttons {

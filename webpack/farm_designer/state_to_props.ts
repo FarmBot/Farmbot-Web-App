@@ -3,8 +3,7 @@ import {
   selectAllGenericPointers,
   selectAllPlantPointers,
   selectAllCrops,
-  joinToolsAndSlot,
-  findPlant
+  joinToolsAndSlot
 } from "../resources/selectors";
 import { BotPosition, StepsPerMmXY } from "../devices/interfaces";
 import { isNumber } from "lodash";
@@ -19,8 +18,7 @@ export function mapStateToProps(props: Everything) {
       .farm_designer
       .selectedPlant)[0];
   const { plantUUID } = props.resources.consumers.farm_designer.hoveredPlant;
-  const hoveredPlant = plantUUID ?
-    findPlant(props.resources.index, plantUUID) : undefined;
+  const hoveredPlant = plants.filter(x => x.uuid === plantUUID)[0];
 
   let botPosition: BotPosition;
   if (props.bot.hardware.location_data) {

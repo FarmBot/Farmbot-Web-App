@@ -140,6 +140,12 @@
       background-color: darken($pink, 5%) !important;
     }
   }
+  &.zoom {
+    padding: 8px 12px;
+    &.zoom-out {
+      margin-right: 10px;
+    }
+  }
 }
 
 .block {

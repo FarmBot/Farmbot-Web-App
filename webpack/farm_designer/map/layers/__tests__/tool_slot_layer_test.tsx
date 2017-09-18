@@ -20,7 +20,9 @@ describe("<ToolSlotLayer/>", () => {
     return {
       visible: false,
       slots: [{ toolSlot, tool: undefined }],
-      botOriginQuadrant: 1
+      mapTransformProps: {
+        quadrant: 1, gridSize: { x: 3000, y: 1500 }
+      }
     };
   }
   it("toggles visibility off", () => {

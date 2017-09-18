@@ -380,52 +380,62 @@ ul {
 
 .controls-popup,
 .controls-popup-menu-outer {
-  position: absolute;
+  position: fixed;
   background: $dark_gray;
-  padding: 2rem;
   border-radius: 3rem;
   height: 6rem;
   width: 6rem;
+  right: 4rem;
+  bottom: 3rem;
   cursor: pointer;
+  z-index: 2;
 }
 
 .controls-popup {
-  display: none; // Display block when ready
-  right: 6rem;
-  bottom: 4rem;
-  transition: all 0.4s ease-in-out;
-  color: $white;
+  color: $off_white;
   i {
-    z-index: 1;
-    position: absolute;
+    z-index: 3;
+    width: 6rem;
+    height: 6rem;
+    border-radius: 3rem;
+    padding: 18px 20px;
+    position: fixed;
     font-size: 2.4rem;
-    top: 1.8rem;
-    margin-bottom: 2rem;
-    transition: all 0.4s ease-in-out;
+    transition: all 0.25s ease-in-out;
+    &:hover {
+      background-color: rgba(0,0,0,0.2);
+    }
   }
   &.open {
     i {
-      transform: rotate(-225deg);
+      transform: rotate(-135deg);
+      &:hover {
+        background-color: rgba(0,0,0,0);
+      }
     }
     .controls-popup-menu-outer {
-      width: 26rem;
+      transition: all 0.1s 0s ease-in-out;
+      width: 27rem;
+      padding: 0.6rem 5rem 0rem 0rem;
     }
     .controls-popup-menu-inner {
-      transition-delay: 0.2s;
+      transition-delay: 0.25s!important;
       opacity: 1;
     }
+  }
+  .arrow-button {
+    margin: 5px;
   }
 }
 
 .controls-popup-menu-inner {
-  transition: all 0.4s ease-in-out;
+  transition: all 0.1s 0s ease-in-out;
   opacity: 0;
 }
 
 .controls-popup-menu-outer {
-  transition: all 0.4s ease-in-out;
-  right: 0;
-  bottom: 0;
+  transition: all 0.1 s ease-in-out;
+  transition-delay: 0.2s!important;
 }
 
 @keyframes page-transition {

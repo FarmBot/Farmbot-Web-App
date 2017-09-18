@@ -7,11 +7,14 @@ import { fakePlant } from "../../../__test_support__/fake_state/resources";
 describe("<DragHelpers/>", () => {
   function fakeProps(): DragHelpersProps {
     return {
-      quadrant: 2,
+      mapTransformProps: {
+        quadrant: 2, gridSize: { x: 3000, y: 1500 }
+      },
       plant: fakePlant(),
       dragging: false,
       zoomLvl: 1.8,
-      activeDragXY: { x: undefined, y: undefined, z: undefined }
+      activeDragXY: { x: undefined, y: undefined, z: undefined },
+      plantAreaOffset: { x: 100, y: 100 }
     };
   }
 
@@ -36,6 +39,8 @@ describe("<DragHelpers/>", () => {
   it("renders coordinates tooltip while dragging", () => {
     const p = fakeProps();
     p.dragging = true;
+    p.plant.body.x = 104;
+    p.plant.body.y = 199;
     const wrapper = shallow(<DragHelpers {...p } />);
     expect(wrapper.find("text").length).toEqual(1);
     expect(wrapper.find("text").text()).toEqual("100, 200");
@@ -119,6 +124,29 @@ describe("<DragHelpers/>", () => {
     expect(segments.length).toEqual(2);
     expect(segments.at(0).props().transform).toEqual("rotate(0, 100, 100)");
     expect(segments.at(1).props().transform).toEqual("rotate(180, 100, 100)");
+    expect(indicator.props().fill).toEqual("#ee6666");
+  });
+
+  it("renders horizontal and vertical alignment indicators in quadrant 4", () => {
+    const p = fakeProps();
+    p.mapTransformProps.quadrant = 4;
+    p.dragging = false;
+    p.plant.body.id = 6;
+    p.plant.body.x = 100;
+    p.plant.body.y = 100;
+    p.activeDragXY = { x: 100, y: 100, z: 0 };
+    const wrapper = shallow(<DragHelpers {...p } />);
+    const indicator = wrapper.find("#alignment-indicator");
+    const masterSegment = indicator.find("#alignment-indicator-segment-6");
+    const segmentProps = masterSegment.find("rect").props();
+    expect(segmentProps.x).toEqual(2865);
+    expect(segmentProps.y).toEqual(1399);
+    const segments = indicator.find("use");
+    expect(segments.length).toEqual(4);
+    expect(segments.at(0).props().transform).toEqual("rotate(0, 2900, 1400)");
+    expect(segments.at(1).props().transform).toEqual("rotate(180, 2900, 1400)");
+    expect(segments.at(2).props().transform).toEqual("rotate(90, 2900, 1400)");
+    expect(segments.at(3).props().transform).toEqual("rotate(270, 2900, 1400)");
     expect(indicator.props().fill).toEqual("#ee6666");
   });
 

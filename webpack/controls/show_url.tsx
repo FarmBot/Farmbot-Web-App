@@ -13,7 +13,7 @@ export const showUrl = (url: string, dirty: boolean) => {
           src={url}
           fallback={PLACEHOLDER_FARMBOT} />
         <text>
-          {t("Camera stream not available.")}
+          {t("Webcam stream not available.")}
           <br />
           {t("Press ")}<b>{t("EDIT")}</b>{t(" to add a stream.")}
         </text>

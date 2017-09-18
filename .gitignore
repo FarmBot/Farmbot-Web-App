@@ -62,6 +62,7 @@ public/verify.html
 public/webpack/*
 public/webpack
 public/dist
+public/system
 rdoc
 rerun.txt
 secret.json

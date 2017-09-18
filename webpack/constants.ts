@@ -13,8 +13,9 @@ export namespace ToolTips {
     absolute movement. Tip: Press the Home button when you are done so FarmBot
     is ready to get back to work.`;
 
-  export const WEBCAM_SAVE =
-    `Press the edit button to update and save your webcam URL.`;
+  export const WEBCAM =
+    `If you have a webcam, you can view the video stream in this widget.
+    Press the edit button to update and save your webcam URL.`;
 
   export const PERIPHERALS =
     `Use these toggle switches to control FarmBot's peripherals in realtime. To
@@ -79,11 +80,11 @@ export namespace ToolTips {
     `Maximum travel speed after acceleration in motor steps per second.`;
 
   export const HOME_SPEED =
-    `Maximum travel speed after acceleration in motor steps per second for homing.`;
+    `Homing and calibration travel speed in motor steps per second.`;
 
   export const MIN_SPEED =
-    `Minimum movement speed. Also used for homing, calibration, and movements
-    across home.`;
+    `Minimum movement speed in motor steps per second. Also used for homing
+     and calibration.`;
 
   export const ACCELERATE_FOR =
     `Number of steps used for acceleration and deceleration.`;
@@ -273,6 +274,13 @@ export namespace Content {
     or settings from your web app account, allowing you to do a complete restore
     to your device once it is back online and paired with your web app
     account.`.replace(/\s+/g, " ");
+
+  export const FACTORY_RESET_ALERT =
+    `Warning: This will erase all data stored on your FarmBot's SD card,
+    requiring you to reconfigure FarmBot so that it can reconnect to your
+    WiFi network and a web app account. Factory resetting the device will
+    not delete data stored in your web app account. Are you sure you wish
+    to continue?`.replace(/\s+/g, " ");
 
   export const TIMEZONE_GUESS_BROWSER =
     `This account did not have a timezone set. Farmbot requires a timezone to

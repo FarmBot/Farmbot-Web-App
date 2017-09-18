@@ -1,5 +1,5 @@
 import * as React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 
 import { NavBar } from "../index";
 import { bot } from "../../__test_support__/fake_state/bot";
@@ -18,5 +18,18 @@ describe("NavBar", () => {
     );
 
     expect(wrapper.hasClass("nav-wrapper")).toBeTruthy();
+  });
+
+  it("closes nav menu", () => {
+    const wrapper = shallow(<NavBar
+      logs={[log]}
+      bot={bot}
+      user={taggedUser}
+      dispatch={jest.fn()} />);
+    const link = wrapper.find("Link").first();
+    link.simulate("click");
+    expect(wrapper.state().mobileMenuOpen).toBeFalsy();
+    link.simulate("click");
+    expect(wrapper.state().mobileMenuOpen).toBeFalsy();
   });
 });

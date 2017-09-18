@@ -1,22 +1,23 @@
 import * as React from "react";
 import { SlotWithTool } from "../../../resources/interfaces";
 import { ToolSlotPoint } from "../tool_slot_point";
-import { BotOriginQuadrant } from "../../interfaces";
+import { MapTransformProps } from "../interfaces";
 
 export interface ToolSlotLayerProps {
   visible: boolean;
   slots: SlotWithTool[];
-  botOriginQuadrant: BotOriginQuadrant;
+  mapTransformProps: MapTransformProps;
 }
 
 export function ToolSlotLayer(props: ToolSlotLayerProps) {
-  const { slots, visible, botOriginQuadrant } = props;
-  return visible ? <g>
-    {slots.map(slot =>
-      <ToolSlotPoint
-        key={slot.toolSlot.uuid}
-        slot={slot}
-        quadrant={botOriginQuadrant} />
-    )}
-  </g> : <g />; // fallback
+  const { slots, visible, mapTransformProps } = props;
+  return <g id="toolslot-layer">
+    {visible &&
+      slots.map(slot =>
+        <ToolSlotPoint
+          key={slot.toolSlot.uuid}
+          slot={slot}
+          mapTransformProps={mapTransformProps} />
+      )}
+  </g>;
 }

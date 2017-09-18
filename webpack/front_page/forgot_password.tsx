@@ -3,7 +3,7 @@ import { Col, Widget, WidgetHeader, WidgetBody, BlurableInput, Row } from "../ui
 import { t } from "i18next";
 
 export interface ForgotPasswordProps {
-  onToggleForgotPassword(e: React.MouseEvent<HTMLButtonElement>): void;
+  onGoBack(e: React.MouseEvent<HTMLButtonElement>): void;
   onSubmit(e: React.FormEvent<HTMLFormElement>): void;
   email: string;
   onEmailChange(e: React.SyntheticEvent<HTMLInputElement>): void;
@@ -11,7 +11,7 @@ export interface ForgotPasswordProps {
 
 export function ForgotPassword(props: ForgotPasswordProps) {
   const {
-    onToggleForgotPassword,
+    onGoBack,
     onSubmit,
     email,
     onEmailChange,
@@ -21,7 +21,7 @@ export function ForgotPassword(props: ForgotPasswordProps) {
       <WidgetHeader title={"Reset Password"}>
         <button
           className="fb-button gray"
-          onClick={onToggleForgotPassword} >
+          onClick={onGoBack} >
           {t("BACK")}
         </button>
       </WidgetHeader>

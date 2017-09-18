@@ -30,7 +30,6 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
         <Col xs={12} sm={5}>
           <CameraCalibration
             dispatch={this.props.dispatch}
-            onProcessPhoto={() => { }}
             currentImage={this.props.currentImage}
             images={this.props.images}
             env={this.props.env}

@@ -28,19 +28,21 @@ For a list of example API requests and responses, see our [reference documentati
 
 You will need the following:
 
- 0. A Linux or Mac based machine. We do not support windows at this time.
+ 1. A Linux or Mac based machine. We do not support windows at this time.
  0. [Ruby 2.4.1](http://rvm.io/rvm/install)
  0. [ImageMagick](https://www.imagemagick.org/script/index.php) (`brew install imagemagick` (Mac) or `sudo apt-get install imagemagick` (Ubuntu))
  0. [Node JS > v6](https://nodejs.org/en/download/)
- 0. [`libpq-dev` and `postgresql`](http://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem/6040822#6040822)
+ 0. [`libpq-dev` and `postgresql`](http://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem/6040822#6040822) and `postgresql-contrib`
+ 0. `gem install bundler`
 
 ### Setup
 
- 0. `git clone https://github.com/FarmBot/Farmbot-Web-App`
+ 1. `git clone https://github.com/FarmBot/Farmbot-Web-App`
  0. `cd Farmbot-Web-App`
  0. `bundle install`
  0. `yarn install`
- 0. **MOST IMPORTANT STEP**. Copy `config/database.example.yml` to `config/database.yml` via `mv config/database.example.yml config/database.yml`. **Please read the instructions inside the file. Replace the example values provided with real world values.**
+ 0. Database config: Copy `config/database.example.yml` to `config/database.yml` via `cp config/database.example.yml config/database.yml`
+ 0. App config: **MOST IMPORTANT STEP**. Copy `config/application.example.yml` to `config/application.yml` via `mv config/application.example.yml config/application.yml`. **Please read the instructions inside the file. Replace the example values provided with real world values.**
  0. Give permission to create a database*
  0. `rake db:create:all db:migrate db:seed`
  0. (optional) Verify installation with `RAILS_ENV=test rake db:create db:migrate && rspec spec` (API) and `npm run test` (Frontend).
@@ -133,9 +135,9 @@ $.ajax({
 
 ## Translating the web app into your language
 
-Thanks for your interest in internationalizing the FarmBot web app! To add translations:		
-		
-1. Fork this repo		
+Thanks for your interest in internationalizing the FarmBot web app! To add translations:
+
+1. Fork this repo
 0. Navigate to `/public/app-resources/languages` and run the command `node _helper.js yy` where `yy` is your language's [language code](http://www.science.co.il/Language/Locale-codes.php). Eg: `ru` for Russian.
 0. Edit the translations in the file created in the previous step: `"phrase": "translated phrase"`.
 0. When you have updated or added new translations, commit/push your changes and submit a pull request.
