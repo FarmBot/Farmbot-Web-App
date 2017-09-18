@@ -18,7 +18,11 @@ FarmBot::Application.routes.draw do
       post :resend_verification, on: :member
     end
     resource :device,         only: [:show, :destroy, :create, :update]
-    resource :webcam_feed,    only: [:show, :update]
+    resources :webcam_feeds,  only: [:create,
+                                     :show,
+                                     :index,
+                                     :update,
+                                     :destroy]
     resources :password_resets, only: [:create, :update]
     put "/password_resets"     => "password_resets#update", as: :whatever
     put "/users/verify/:token" => "users#verify",           as: :users_verify
