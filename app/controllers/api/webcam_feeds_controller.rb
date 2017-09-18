@@ -14,8 +14,8 @@ module Api
     def update
       # URL is the only updateable field- write a mutation when there is real
       # business logic to deal with - RC.
-      webcam_feed.update_attributes!(url: params[:url])
-      render json: webcam_feed
+      webcam.update_attributes!(url: params[:url])
+      render json: webcam
     end
 
   private
