@@ -17,8 +17,6 @@ export interface PlantLayerProps {
   mapTransformProps: MapTransformProps;
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
-  activeDragSpread: number | undefined;
-  plantAreaOffset: AxisNumberProperty;
 }
 
 export interface CropSpreadDict {
@@ -49,11 +47,9 @@ export interface GardenPlantProps {
   plant: Readonly<TaggedPlantPointer>;
   selected: boolean;
   dragging: boolean;
-  onClick: (plant: Readonly<TaggedPlantPointer>) => void;
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
-  activeDragSpread: number | undefined;
-  plantAreaOffset: AxisNumberProperty;
+  uuid: string;
 }
 
 export interface GardenPlantState {

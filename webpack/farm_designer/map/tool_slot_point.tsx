@@ -5,7 +5,7 @@ import { getXYFromQuadrant } from "./util";
 import { MapTransformProps } from "./interfaces";
 import * as _ from "lodash";
 
-interface TSPProps {
+export interface TSPProps {
   slot: SlotWithTool;
   mapTransformProps: MapTransformProps;
 }
@@ -24,14 +24,14 @@ export class ToolSlotPoint extends
   get slot() { return this.props.slot; }
 
   render() {
-    const { x, y } = this.slot.toolSlot.body;
+    const { id, x, y } = this.slot.toolSlot.body;
     const { quadrant, gridSize } = this.props.mapTransformProps;
     const { qx, qy } = getXYFromQuadrant(x, y, quadrant, gridSize);
     const toolName = this.slot.tool ? this.slot.tool.body.name : "no tool";
     const seedBin = _.includes(toolName.toLowerCase(), "seed bin");
     const seedTray = _.includes(toolName.toLowerCase(), "seed tray");
     const seedTrayRect = getXYFromQuadrant(x, y, quadrant, gridSize);
-    return <g>
+    return <g id={"toolslot-" + id}>
       <defs>
         <radialGradient id="SeedBinGradient">
           <stop offset="5%" stopColor="rgba(0, 0, 0, 0.3)" />

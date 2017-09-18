@@ -19,10 +19,19 @@ describe("<FarmBotLayer/>", () => {
       plantAreaOffset: { x: 100, y: 100 }
     };
   }
+
+  it("shows layer elements", () => {
+    const p = fakeProps();
+    const result = shallow(<FarmBotLayer {...p } />);
+    const layer = result.find("#farmbot-layer");
+    expect(layer.find("#virtual-farmbot")).toBeTruthy();
+    expect(layer.find("#extents")).toBeTruthy();
+  });
+
   it("toggles visibility off", () => {
     const p = fakeProps();
     p.visible = false;
     const result = shallow(<FarmBotLayer {...p } />);
-    expect(result.html()).toEqual("<g></g>");
+    expect(result.html()).toEqual("<g id=\"farmbot-layer\"></g>");
   });
 });

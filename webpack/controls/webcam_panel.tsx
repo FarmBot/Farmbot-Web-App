@@ -36,7 +36,7 @@ export class WebcamPanel extends
 
     return (
       <Widget>
-        <WidgetHeader title="Camera" helpText={ToolTips.WEBCAM_SAVE}>
+        <WidgetHeader title="Webcam" helpText={ToolTips.WEBCAM}>
           {isEditing &&
             <button
               className="fb-button green"

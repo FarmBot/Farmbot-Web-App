@@ -13,12 +13,10 @@ describe("<GardenPlant/>", () => {
       plant: fakePlant(),
       selected: false,
       dragging: false,
-      onClick: jest.fn(),
       dispatch: jest.fn(),
       zoomLvl: 1.8,
       activeDragXY: { x: undefined, y: undefined, z: undefined },
-      activeDragSpread: undefined,
-      plantAreaOffset: { x: 100, y: 100 }
+      uuid: ""
     };
   }
 
@@ -26,8 +24,6 @@ describe("<GardenPlant/>", () => {
     const wrapper = shallow(<GardenPlant {...fakeProps() } />);
     expect(wrapper.find("image").length).toEqual(1);
     expect(wrapper.find("image").props().opacity).toEqual(1);
-    expect(wrapper.find("Circle").length).toEqual(1);
-    expect(wrapper.find("Circle").props().selected).toBeFalsy();
     expect(wrapper.find("text").length).toEqual(0);
     expect(wrapper.find("rect").length).toBeLessThanOrEqual(1);
     expect(wrapper.find("use").length).toEqual(0);

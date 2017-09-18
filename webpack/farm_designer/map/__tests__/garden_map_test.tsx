@@ -6,6 +6,10 @@ jest.mock("../../../history", () => ({
   }
 }));
 
+jest.mock("../../../open_farm/index", () => ({
+  cachedCrop: jest.fn(() => { return Promise.resolve({ spread: 100 }); })
+}));
+
 import * as React from "react";
 import { GardenMap } from "../garden_map";
 import { shallow } from "enzyme";
@@ -19,7 +23,7 @@ describe("<GardenPlant/>", () => {
       showPlants: true,
       showSpread: false,
       showFarmbot: false,
-      selectedPlant: undefined,
+      selectedPlant: fakePlant(),
       crops: [],
       dispatch: jest.fn(),
       designer: {
@@ -56,6 +60,32 @@ describe("<GardenPlant/>", () => {
     // This action will successfully add a plant when in-app. `Throw` is used here
     // because `document.querySelector(` doesn't work while testing. Effectively,
     // this test checks that the function to add a plant is run.
+  });
+
+  it("starts drag and sets activeSpread", async () => {
+    const wrapper = shallow(<GardenMap {...fakeProps() } />);
+    expect(wrapper.state()).toEqual({});
+    Object.defineProperty(location, "pathname", {
+      value: "/edit/"
+    });
+    await wrapper.find("#drop-area-svg").simulate("mouseDown");
+    expect(wrapper.state()).toEqual({
+      activeDragSpread: 1000,
+      isDragging: true
+    });
+  });
+
+  it("ends drag", () => {
+    const wrapper = shallow(<GardenMap {...fakeProps() } />);
+    expect(wrapper.state()).toEqual({});
+    wrapper.find("#drop-area-svg").simulate("mouseUp");
+    expect(wrapper.state()).toEqual({
+      "activeDragSpread": undefined,
+      "activeDragXY": { "x": undefined, "y": undefined, "z": undefined },
+      "isDragging": false,
+      "pageX": 0,
+      "pageY": 0
+    });
   });
 
 });
