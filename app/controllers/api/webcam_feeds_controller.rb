@@ -3,7 +3,7 @@
 module Api
   class WebcamFeedsController < Api::AbstractController
     def create
-      raise "Nope."
+      mutate WebcamFeeds::Create.run(params.as_json, device: current_device)
     end
 
     def index
@@ -19,7 +19,7 @@ module Api
     end
 
     def destroy
-      raise "Nope."
+      render json: webcam.destroy! && ""
     end
 
   private

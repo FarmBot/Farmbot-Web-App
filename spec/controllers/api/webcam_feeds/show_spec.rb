@@ -7,8 +7,8 @@ describe Api::WebcamFeedsController do
   it 'shows webcam feeds' do
     sign_in user
     expect(user.device.webcam_feeds.length).to be(0)
-    WebcamFeed.create! name: "Name!", device: user.device, url: "Url!"
-    get :show, format: :json
+    x = WebcamFeed.create! name: "Name!", device: user.device, url: "Url!"
+    get :show, format: :json, params: { id: x.id }
     expect(response.status).to eq(200)
     expect(user.device.webcam_feeds.reload.first).to be
     expect(json[:url]).to eq("Url!")
