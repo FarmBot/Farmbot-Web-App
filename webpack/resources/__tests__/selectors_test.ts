@@ -53,10 +53,9 @@ describe("findSlotByToolId", () => {
   });
 });
 
-describe("getFeed", () => {
-  it("throws when no WebcamFeeds are found", () => {
-    expect(() => getFeeds(emptyState().index))
-      .toThrow("Problem loading webcam feed");
+describe("getFeeds", () => {
+  it("returns empty array", () => {
+    expect(getFeeds(emptyState().index).length).toBe(0);
   });
 
   it("finds the only WebcamFeed", () => {
