@@ -6,18 +6,15 @@ import { WebcamPanelProps } from "./interfaces";
 const noop = () => alert("TODO");
 
 export function Show(props: WebcamPanelProps) {
+  const unsaved = !!props.feeds.filter(x => x.specialStatus !== undefined).length;
   return (
     <Widget>
       <WidgetHeader title="Webcam" helpText={ToolTips.WEBCAM}>
         <button
-          className="fb-button green"
-          onClick={noop}>
-          {t("Save")}*
-        </button>
-        <button
           className="fb-button gray"
           onClick={props.onToggle}>
           {t("Edit")}
+          {unsaved ? "*" : ""}
         </button>
       </WidgetHeader>
       <div className="widget-body">
