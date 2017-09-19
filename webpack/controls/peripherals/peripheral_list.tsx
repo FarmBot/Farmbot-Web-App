@@ -8,10 +8,9 @@ export function PeripheralList(props: PeripheralListProps) {
   const { pins, disabled } = props;
   return <div>
     {sortResourcesById(props.peripherals).map(p => {
-      const value = "" + (pins[p.body.pin || -1] || "");
       return <KeyValShowRow key={p.uuid}
         label={p.body.label}
-        value={value || ""}
+        value={"" + (pins[p.body.pin || -1] || { value: undefined }).value}
         onClick={() => p.body.pin && pinToggle(p.body.pin)}
         disabled={!!disabled} />;
     })}
