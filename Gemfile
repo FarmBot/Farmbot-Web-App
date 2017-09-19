@@ -1,7 +1,7 @@
 source "https://rubygems.org"
-ruby "2.4.1"
+ruby "2.4.2"
 
-gem "rails",  "~> 5.1.3"
+gem "rails"
 gem "thin"
 gem "rails_12factor"
 gem "devise"
@@ -31,9 +31,9 @@ group :development, :test do
   gem "database_cleaner"
   gem "pry"
   gem "factory_girl_rails"
-  gem "faker"
+  gem "faker", "~> 1.8.4"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
-  gem "rails-erd"
+  gem "rails-erd", "1.5.2"
   # TODO: Upgrade versions when they fix this stuff:
   # https://stackoverflow.com/questions/43983466
   #   /controller-test-emits-debug-failure-messages-after-rails-5-1-upgrade
