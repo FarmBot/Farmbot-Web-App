@@ -15,7 +15,7 @@ describe Api::WebcamFeedsController do
     get :index, format: :json
     expect(response.status).to eq(200)
     expect(json.length).to eq(2)
-    expect(user.device.webcam_feeds.first).to be
-    expect(json[0][:url]).to eq(1)
+    expect(user.device.webcam_feeds.reload.first).to be
+    expect(json[0][:url]).to eq("1")
   end
 end

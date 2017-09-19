@@ -2,6 +2,9 @@
 # and settings. Most notably seen in the "webcam" panel of the frontend app.
 module Api
   class WebcamFeedsController < Api::AbstractController
+    def create
+      raise "Nope."
+    end
 
     def index
       render json: webcams
@@ -12,13 +15,15 @@ module Api
     end
 
     def update
-      # URL is the only updateable field- write a mutation when there is real
-      # business logic to deal with - RC.
-      webcam.update_attributes!(url: params[:url])
-      render json: webcam
+      mutate WebcamFeeds::Update.run(params.as_json, feed: webcam)
+    end
+
+    def destroy
+      raise "Nope."
     end
 
   private
+
     def webcam
       webcams.find(params[:id])
     end
