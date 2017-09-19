@@ -10,7 +10,9 @@ export function PeripheralList(props: PeripheralListProps) {
     {sortResourcesById(props.peripherals).map(p => {
       return <KeyValShowRow key={p.uuid}
         label={p.body.label}
+        labelPlaceholder=""
         value={"" + (pins[p.body.pin || -1] || { value: undefined }).value}
+        valuePlaceholder=""
         onClick={() => p.body.pin && pinToggle(p.body.pin)}
         disabled={!!disabled} />;
     })}

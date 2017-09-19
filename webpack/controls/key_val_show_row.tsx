@@ -4,7 +4,9 @@ import { ToggleButton } from "./toggle_button";
 
 export interface KeyValRowProps {
   label: string;
+  labelPlaceholder: string;
   value: string;
+  valuePlaceholder: string;
   onClick(): void;
   disabled: boolean;
 }

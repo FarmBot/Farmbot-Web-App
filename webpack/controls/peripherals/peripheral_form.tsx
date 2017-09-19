@@ -17,7 +17,9 @@ export function PeripheralForm(props: PeripheralFormProps) {
           const { value } = e.currentTarget;
           dispatch(edit(p, { label: value }));
         }}
+        labelPlaceholder="Name"
         value={(p.body.pin || "").toString()}
+        valuePlaceholder="Pin #"
         onValueChange={(e) => {
           const { value } = e.currentTarget;
           const update: Partial<typeof p.body> = { pin: parseInt(value, 10) };

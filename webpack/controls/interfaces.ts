@@ -92,9 +92,9 @@ export interface ToggleButtonProps {
 }
 
 export interface WebcamFeed {
-  id: number;
+  id?: number;
   url: string;
   name: string;
-  updated_at: string;
-  created_at: string;
+  updated_at?: string;
+  created_at?: string;
 }

@@ -14,7 +14,9 @@ export function Edit(props: WebcamPanelProps) {
       onValueChange={(e) => props.edit(wcf, { url: e.currentTarget.value })}
       disabled={true}
       value={wcf.body.url}
+      valuePlaceholder={"HTTP://..."}
       label={wcf.body.name}
+      labelPlaceholder={"Feed Name"}
       valueType="string" />;
   });
   const unsaved = props
@@ -23,6 +25,11 @@ export function Edit(props: WebcamPanelProps) {
   return (
     <Widget>
       <WidgetHeader title="Edit" helpText={ToolTips.WEBCAM}>
+        <button
+          className="fb-button green"
+          onClick={props.init}>
+          <i className="fa fa-plus" />
+        </button>
         <button
           className="fb-button green"
           onClick={() => { unsaved.map(x => props.save(x)); }}>

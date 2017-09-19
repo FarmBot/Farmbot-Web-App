@@ -2,8 +2,8 @@ import * as React from "react";
 import { Show } from "./show";
 import { Edit } from "./edit";
 import { WebcamPanelProps } from "./interfaces";
-import { TaggedWebcamFeed } from "../../resources/tagged_resources";
-import { edit, save, destroy } from "../../api/crud";
+import { TaggedWebcamFeed, SpecialStatus } from "../../resources/tagged_resources";
+import { edit, save, destroy, init } from "../../api/crud";
 
 type S = {
   activeMenu: "edit" | "show"
@@ -14,6 +14,15 @@ type P = {
   dispatch: Function;
 };
 
+const EMPTY_FEED: TaggedWebcamFeed = {
+  kind: "webcam_feed",
+  specialStatus: SpecialStatus.DIRTY,
+  uuid: "",
+  body: {
+    url: "",
+    name: ""
+  }
+};
 export class WebcamPanel extends React.Component<P, S> {
 
   state: S = { activeMenu: "show" };
@@ -22,6 +31,7 @@ export class WebcamPanel extends React.Component<P, S> {
     return {
       onToggle: () => this.setState({ activeMenu }),
       feeds: this.props.feeds,
+      init: () => this.props.dispatch(init(EMPTY_FEED)),
       edit: (tr, update) => this.props.dispatch(edit(tr, update)),
       save: (tr) => { this.props.dispatch(save(tr.uuid)); },
       destroy: (tr) => { this.props.dispatch(destroy(tr.uuid)); }
