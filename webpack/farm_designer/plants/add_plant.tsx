@@ -5,18 +5,11 @@ import { connect } from "react-redux";
 import { t } from "i18next";
 import { history } from "../../history";
 import { svgToUrl } from "../../open_farm/index";
-import {
-  CropInfoProps,
-  CropCatalogProps
-} from "../interfaces";
+import { CropLiveSearchResult } from "../interfaces";
 import { findBySlug } from "../search_selectors";
-import { OFSearch } from "../util";
 
-export function mapStateToProps(props: Everything): CropCatalogProps {
+export function mapStateToProps(props: Everything): AddPlantProps {
   return {
-    OFSearch,
-    cropSearchQuery: props.resources.consumers.farm_designer.cropSearchQuery,
-    dispatch: Function,
     cropSearchResults: props
       .resources
       .consumers
@@ -25,9 +18,13 @@ export function mapStateToProps(props: Everything): CropCatalogProps {
   };
 }
 
+export interface AddPlantProps {
+  cropSearchResults: CropLiveSearchResult[];
+}
+
 @connect(mapStateToProps)
 export class AddPlant
-  extends React.Component<CropInfoProps, {}> {
+  extends React.Component<AddPlantProps, {}> {
 
   render() {
     const crop = history.getCurrentLocation().pathname.split("/")[5];
