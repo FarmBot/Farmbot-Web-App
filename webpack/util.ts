@@ -9,20 +9,19 @@ import { box } from "boxed_value";
 import { TaggedResource } from "./resources/tagged_resources";
 import { AxiosResponse } from "axios";
 import { history } from "./history";
-import { errorLoading } from "./routes";
 
 // http://stackoverflow.com/a/901144/1064917
 // Grab a query string param by name, because react-router-redux doesn't
 // support query strings yet.
 export function getParam(name: string): string {
   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-  const regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+  let regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
     r = regex.exec(location.search);
   // tslint:disable-next-line:no-null-keyword
   return r === null ? "" : decodeURIComponent(r[1].replace(/\+/g, " "));
 }
 
-export const colors: Array<Color> = [
+export let colors: Array<Color> = [
   "blue",
   "green",
   "yellow",
@@ -39,7 +38,7 @@ export function randomColor(): Color {
 }
 
 export function defensiveClone<T>(target: T): T {
-  const jsonString = JSON.stringify(target);
+  let jsonString = JSON.stringify(target);
   return JSON.parse(jsonString || "null");
 }
 
@@ -84,9 +83,9 @@ function safelyFetchErrors(err: AxiosErrorResponse): Dictionary<string> {
  *   https://github.com/granteagon/move/blob/master/webpack/index.js */
 export function move<T>(array: T[], fromIndex: number, toIndex: number) {
 
-  const item = array[fromIndex];
-  const length = array.length;
-  const diff = fromIndex - toIndex;
+  let item = array[fromIndex];
+  let length = array.length;
+  let diff = fromIndex - toIndex;
 
   if (diff > 0) {
     // move left
@@ -130,8 +129,8 @@ export function isMobile() {
  *         * All other types raise a runtime exception (Objects, functions,
  *           Array, Symbol, etc)
  */
-export function safeStringFetch(obj: object, key: string): string {
-  const boxed = box(_.get(obj, key));
+export function safeStringFetch(obj: any, key: string): string {
+  let boxed = box(obj[key]);
   switch (boxed.kind) {
     case "undefined":
     case "null":
@@ -142,7 +141,7 @@ export function safeStringFetch(obj: object, key: string): string {
     case "boolean":
       return (boxed.value) ? "true" : "false";
     default:
-      const msg = t(`Numbers strings and null only (got ${boxed.kind}).`);
+      let msg = t(`Numbers strings and null only (got ${boxed.kind}).`);
       throw new Error(msg);
   }
 }
@@ -159,16 +158,16 @@ export function stopIE() {
     window.location.href = "https://www.google.com/chrome/";
   }
   try {
-    const REQUIRED_GLOBALS = ["Promise", "console", "WebSocket", "Intl"];
+    let REQUIRED_GLOBALS = ["Promise", "console", "WebSocket", "Intl"];
     // Can't use Array.proto.map because IE.
     // Can't translate the text because IE (no promises)
-    for (let i = 0; i < REQUIRED_GLOBALS.length; i++) {
+    for (var i = 0; i < REQUIRED_GLOBALS.length; i++) {
       if (!window.hasOwnProperty(REQUIRED_GLOBALS[i])) {
         flunk();
       }
     }
-    const REQUIRED_ARRAY_METHODS = ["includes", "map", "filter"];
-    for (let i = 0; i < REQUIRED_ARRAY_METHODS.length; i++) {
+    let REQUIRED_ARRAY_METHODS = ["includes", "map", "filter"];
+    for (i = 0; i < REQUIRED_ARRAY_METHODS.length; i++) {
       if (!Array.prototype.hasOwnProperty(REQUIRED_ARRAY_METHODS[i])) {
         flunk();
       }
@@ -180,6 +179,15 @@ export function stopIE() {
 
 export function pick<T, K extends keyof T>(target: T, key: K): T[K] {
   return target[key];
+}
+
+/** _Safely_ check a value at runtime to know if it can be used for square
+ * bracket access.
+ */
+export function hasKey<T>(base: (keyof T)[]) {
+  return (target: T | any): target is keyof T => {
+    return base.includes(target);
+  };
 }
 
 /** Useful for calculating uploads and progress bars for Promise.all */
@@ -208,16 +216,16 @@ export type ProgressCallback = (p: Readonly<Progress>) => void;
  * Native DOM methods just aren't standardized enough yet,
  * so this is an implementation without libs or polyfills. */
 export function smoothScrollToBottom() {
-  const body = document.body;
-  const html = document.documentElement;
+  let body = document.body;
+  let html = document.documentElement;
 
   // Not all browsers for mobile/desktop compute height the same, this fixes it.
-  const height = Math.max(body.scrollHeight, body.offsetHeight,
+  let height = Math.max(body.scrollHeight, body.offsetHeight,
     html.clientHeight, html.scrollHeight, html.offsetHeight);
 
-  const startY = window.pageYOffset;
-  const stopY = height;
-  const distance = stopY > startY ? stopY - startY : startY - stopY;
+  let startY = window.pageYOffset;
+  let stopY = height;
+  let distance = stopY > startY ? stopY - startY : startY - stopY;
   if (distance < 100) {
     scrollTo(0, stopY);
     return;
@@ -227,7 +235,7 @@ export function smoothScrollToBottom() {
   // Numbers too low will cause jarring ui bugs.
   let speed = Math.round(distance / 14);
   if (speed >= 6) { speed = 14; }
-  const step = Math.round(distance / 25);
+  let step = Math.round(distance / 25);
   let leapY = stopY > startY ? startY + step : startY - step;
   let timer = 0;
   if (stopY > startY) {
@@ -246,13 +254,13 @@ export function smoothScrollToBottom() {
 }
 
 /** Fancy debug */
-export function fancyDebug(u: object) {
+export function fancyDebug(t: any) {
   console.log(Object
-    .keys(u)
-    .map(key => [key, _.get(u, key, "")])
+    .keys(t)
+    .map(key => [key, t[key]])
     .map((x) => {
-      const key = _.padStart(x[0], 20, " ");
-      const val = (JSON.stringify(x[1]) || "Nothing").slice(0, 52);
+      let key = _.padStart(x[0], 20, " ");
+      let val = (JSON.stringify(x[1]) || "Nothing").slice(0, 52);
 
       return `${key} => ${val}`;
     })
@@ -277,7 +285,7 @@ export function isUndefined(x: object | undefined): x is undefined {
  * knows what's going on.
  */
 export function betterCompact<T>(input: (T | undefined)[]): T[] {
-  const output: T[] = [];
+  let output: T[] = [];
   input.forEach(x => x ? output.push(x) : "");
   return output;
 }
@@ -297,7 +305,7 @@ export function betterMerge<T, U>(target: T, update: U): T & U {
 export function betterParseNum(num: string | undefined,
   fallback: number): number {
   try {
-    const maybe = JSON.parse("" + num);
+    let maybe = JSON.parse("" + num);
     if (_.isNumber(maybe) && !_.isNaN(maybe)) {
       return maybe;
     }
@@ -321,19 +329,15 @@ export function updatePageInfo(pageName: string) {
 
 export function attachToRoot<P>(type: React.ComponentClass<P>,
   props?: React.Attributes & P) {
-  const node = document.createElement("DIV");
+  let node = document.createElement("DIV");
   node.id = "root";
   document.body.appendChild(node);
 
-  const reactElem = React.createElement(type, props);
-  const domElem = document.getElementById("root");
+  let reactElem = React.createElement(type, props);
+  let domElem = document.getElementById("root");
 
   if (domElem) {
-    try {
-      render(reactElem, domElem);
-    } catch (error) {
-      errorLoading(_.noop);
-    }
+    render(reactElem, domElem);
   } else {
     throw new Error(t("Add a <div> with id `root` to the page first."));
   }
@@ -352,7 +356,7 @@ export type ClampResult = High | Low | Malformed | Ok;
 /** Handle all the possible ways a user could give us bad data or cause an
  * integer overflow in the firmware. */
 export function clampUnsignedInteger(input: string): ClampResult {
-  const result = Math.round(parseInt(input, 10));
+  let result = Math.round(parseInt(input, 10));
 
   // Clamp to prevent overflow.
   if (_.isNaN(result)) { return { outcome: "malformed", result: undefined }; }
@@ -369,11 +373,11 @@ export enum SemverResult {
 }
 // CREDIT: https://github.com/substack/semver-compare
 export function semverCompare(left: string, right: string): SemverResult {
-  const pa: Array<string | undefined> = left.split(".");
-  const pb: Array<string | undefined> = right.split(".");
+  let pa: Array<string | undefined> = left.split(".");
+  let pb: Array<string | undefined> = right.split(".");
   for (let i = 0; i < 3; i++) {
-    const num_left = Number(pa[i]);
-    const num_right = Number(pb[i]);
+    let num_left = Number(pa[i]);
+    let num_right = Number(pb[i]);
 
     if (num_left > num_right) {
       return SemverResult.LEFT_IS_GREATER;
@@ -428,6 +432,6 @@ export function urlFriendly(stringToFormat: string) {
 
 /** Get remainder of current url after the last "/". */
 export function lastUrlChunk() {
-  const p = history.getCurrentLocation().pathname;
+  let p = history.getCurrentLocation().pathname;
   return p.split("/")[p.split("/").length - 1];
 }

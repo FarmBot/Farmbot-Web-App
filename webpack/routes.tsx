@@ -15,15 +15,14 @@ interface RootComponentProps {
   store: Store;
 }
 
-export const errorLoading =
-  (cb: Function) => function handleError(err: object) {
-    console.error("Dynamic page loading failed", err);
-    const container = document.getElementById("root");
-    const stack = _.get(err, "stack", "No stack.");
-    if (container) {
-      const message = _.get(err, "message", "No message available.");
-      _.get(window, "Rollbar.error", (_x: string) => { })(message);
-      container.innerHTML = (`
+const errorLoading = (cb: Function) => function handleError(err: object) {
+  console.error("Dynamic page loading failed", err);
+  const container = document.getElementById("root");
+  const stack = _.get(err, "stack", "No stack.");
+  if (container) {
+    const message = _.get(err, "message", "No message available.");
+    _.get(window, "Rollbar.error", (_x: string) => { })(message);
+    container.innerHTML = (`
     <div>
       <h1> Something went wrong! </h1>
       <p>We hit an internal error while rendering this page.</p>
@@ -40,25 +39,25 @@ export const errorLoading =
       <pre>
       <br/>
       ${JSON.stringify({
-          message,
-          stack: stack.split("\n").join("<br/>")
-          // tslint:disable-next-line:no-null-keyword
-        }, null, "  ")}
+        message,
+        stack: stack.split("\n").join("<br/>")
+        // tslint:disable-next-line:no-null-keyword
+      }, null, "  ")}
     </pre>
     </div>
   `);
-    }
-    sessionStorage.clear();
-    if (!location.hostname.includes("localhost")) {
-      // Clear cache for end users, but not developers.
-      localStorage.clear();
-    }
-    const y = document.querySelectorAll("link");
-    for (let x = 0; x < y.length; x++) {
-      const element = y[x];
-      element.remove();
-    }
-  };
+  }
+  sessionStorage.clear();
+  if (!location.hostname.includes("localhost")) {
+    // Clear cache for end users, but not developers.
+    localStorage.clear();
+  }
+  const y = document.querySelectorAll("link");
+  for (let x = 0; x < y.length; x++) {
+    const element = y[x];
+    element.remove();
+  }
+};
 const controlsRoute = {
   path: "app/controls",
   getComponent(_discard: void, cb: Function) {
