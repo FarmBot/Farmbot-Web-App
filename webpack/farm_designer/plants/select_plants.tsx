@@ -33,9 +33,10 @@ export class SelectPlants
   extends React.Component<SelectPlantsProps, {}> {
 
   destroySelected = (plantUUIDs: string[]) => {
-    if (plantUUIDs) {
+    if (plantUUIDs &&
+      confirm(`Are you sure you want to delete ${plantUUIDs.length} plants?`)) {
       plantUUIDs.map(uuid => {
-        this.props.dispatch(destroy(uuid))
+        this.props.dispatch(destroy(uuid, true))
           .catch(() => error(t("Could not delete plant."), t("Error")));
       });
       history.push("/app/designer/plants");
