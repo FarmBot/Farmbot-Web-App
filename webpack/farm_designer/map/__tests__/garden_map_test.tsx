@@ -27,7 +27,7 @@ describe("<GardenPlant/>", () => {
       crops: [],
       dispatch: jest.fn(),
       designer: {
-        selectedPlant: "",
+        selectedPlants: undefined,
         hoveredPlant: {
           plantUUID: "",
           icon: ""

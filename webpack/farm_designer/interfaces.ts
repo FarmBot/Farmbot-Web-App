@@ -15,6 +15,7 @@ import { BotPosition, StepsPerMmXY } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import { McuParams } from "farmbot/dist";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
+import { SelectionBoxData } from "./map/selection_box";
 
 /** TODO: Use Enums */
 export type BotOriginQuadrant = 1 | 2 | 3 | 4;
@@ -94,7 +95,7 @@ export interface Crop {
 }
 
 export interface DesignerState {
-  selectedPlant: string | undefined;
+  selectedPlants: string[] | undefined;
   hoveredPlant: HoveredPlantPayl;
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
@@ -180,6 +181,7 @@ export interface GardenMapState {
   pageY: number | undefined;
   activeDragXY: BotPosition | undefined;
   activeDragSpread: number | undefined;
+  selectionBox: SelectionBoxData | undefined;
 }
 
 export type PlantOptions = Partial<PlantPointer>;

@@ -4,12 +4,11 @@ jest.mock("react-redux", () => ({
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { AddPlant } from "../add_plant";
+import { AddPlant, AddPlantProps } from "../add_plant";
 
 describe("<AddPlant />", () => {
   it("renders", () => {
-    const props = {
-      OFSearch: jest.fn(),
+    const props: AddPlantProps = {
       cropSearchResults: [{
         image: "a",
         crop: {
@@ -23,8 +22,7 @@ describe("<AddPlant />", () => {
           processing_pictures: 1,
           svg_icon: "fake_mint_svg"
         }
-      }],
-      dispatch: jest.fn(),
+      }]
     };
     Object.defineProperty(location, "pathname", {
       value: "//app/plants/crop_search/mint/add"

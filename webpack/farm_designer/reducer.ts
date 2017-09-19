@@ -9,7 +9,7 @@ import { TaggedResource } from "../resources/tagged_resources";
 import { Actions } from "../constants";
 
 export let initialState: DesignerState = {
-  selectedPlant: undefined,
+  selectedPlants: undefined,
   hoveredPlant: {
     plantUUID: undefined,
     icon: ""
@@ -24,8 +24,8 @@ export let designer = generateReducer<DesignerState>(initialState)
     state.cropSearchQuery = payload;
     return state;
   })
-  .add<string | undefined>(Actions.SELECT_PLANT, (s, { payload }) => {
-    s.selectedPlant = payload;
+  .add<string[] | undefined>(Actions.SELECT_PLANT, (s, { payload }) => {
+    s.selectedPlants = payload;
     return s;
   })
   .add<HoveredPlantPayl>(Actions.TOGGLE_HOVERED_PLANT, (s, { payload }) => {
@@ -38,6 +38,6 @@ export let designer = generateReducer<DesignerState>(initialState)
     return state;
   })
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
-    if (payload.uuid === s.selectedPlant) { s.selectedPlant = undefined; }
+    s.selectedPlants = undefined;
     return s;
   });

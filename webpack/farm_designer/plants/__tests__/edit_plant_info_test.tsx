@@ -30,8 +30,10 @@ describe("<EditPlantInfo />", () => {
         push={jest.fn()}
         dispatch={dispatch}
         findPlant={fakePlant} />);
-    expect(wrapper.find("button").props().hidden).toBeFalsy();
-    wrapper.find("button").simulate("click");
+    const deleteButton = wrapper.find("button").first();
+    expect(deleteButton.props().hidden).toBeFalsy();
+    expect(deleteButton.text()).toEqual("Delete");
+    deleteButton.simulate("click");
     expect(dispatch).toHaveBeenCalled();
   });
 
