@@ -1,0 +1,80 @@
+jest.mock("react-redux", () => ({
+  connect: jest.fn()
+}));
+
+import * as React from "react";
+import { mount } from "enzyme";
+import { SelectPlants, SelectPlantsProps } from "../select_plants";
+import { fakePlant } from "../../../__test_support__/fake_state/resources";
+
+describe("<SelectPlants />", () => {
+  beforeEach(function () {
+    jest.clearAllMocks();
+    Object.defineProperty(location, "pathname", {
+      value: "//app/plants/select"
+    });
+  });
+
+  function fakeProps(): SelectPlantsProps {
+    const plant1 = fakePlant();
+    plant1.uuid = "plant.1";
+    plant1.body.name = "Strawberry";
+    const plant2 = fakePlant();
+    plant2.uuid = "plant.2";
+    plant2.body.name = "Blueberry";
+    return {
+      selected: ["plant.1"],
+      plants: [plant1, plant2],
+      dispatch: jest.fn(),
+    };
+  }
+
+  it("displays selected plant", () => {
+    const wrapper = mount(<SelectPlants {...fakeProps() } />);
+    expect(wrapper.text()).toContain("Strawberry");
+    expect(wrapper.text()).toContain("Delete");
+  });
+
+  it("displays multiple selected plants", () => {
+    const p = fakeProps();
+    p.selected = ["plant.1", "plant.2"];
+    const wrapper = mount(<SelectPlants {...p} />);
+    expect(wrapper.text()).toContain("Strawberry");
+    expect(wrapper.text()).toContain("Blueberry");
+    expect(wrapper.text()).toContain("Delete");
+  });
+
+  it("displays no selected plants: selection empty", () => {
+    const p = fakeProps();
+    p.selected = [];
+    const wrapper = mount(<SelectPlants {...p} />);
+    expect(wrapper.text()).not.toContain("Strawberry Plant");
+  });
+
+  it("displays no selected plants: selection invalid", () => {
+    const p = fakeProps();
+    p.selected = ["not a uuid"];
+    const wrapper = mount(<SelectPlants {...p} />);
+    expect(wrapper.text()).not.toContain("Strawberry Plant");
+  });
+
+  it("selects all", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn();
+    const wrapper = mount(<SelectPlants {...p} />);
+    const selectAllButton = wrapper.find("button").at(1);
+    expect(selectAllButton.text()).toEqual("Select all");
+    selectAllButton.simulate("click");
+    expect(p.dispatch).toHaveBeenCalled();
+  });
+
+  it("selects none", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn();
+    const wrapper = mount(<SelectPlants {...p} />);
+    const selectNoneButton = wrapper.find("button").at(2);
+    expect(selectNoneButton.text()).toEqual("Select none");
+    selectNoneButton.simulate("click");
+    expect(p.dispatch).toHaveBeenCalled();
+  });
+});

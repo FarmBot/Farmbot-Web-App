@@ -11,12 +11,10 @@ import { isNumber } from "lodash";
 export function mapStateToProps(props: Everything) {
 
   const plants = selectAllPlantPointers(props.resources.index);
-  const selectedPlant = plants
-    .filter(x => x.uuid === props
-      .resources
-      .consumers
-      .farm_designer
-      .selectedPlant)[0];
+  const maybeSelectedPlants = props.resources.consumers.farm_designer.selectedPlants;
+  const selectedPlant = maybeSelectedPlants
+    ? plants.filter(x => x.uuid === maybeSelectedPlants[0])[0]
+    : undefined;
   const { plantUUID } = props.resources.consumers.farm_designer.hoveredPlant;
   const hoveredPlant = plants.filter(x => x.uuid === plantUUID)[0];
 

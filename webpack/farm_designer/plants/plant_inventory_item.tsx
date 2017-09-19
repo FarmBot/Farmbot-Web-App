@@ -49,7 +49,7 @@ export class PlantInventoryItem extends
 
     const click = () => {
       push("/app/designer/plants/" + plantId);
-      dispatch({ type: "SELECT_PLANT", payload: tpp.uuid });
+      dispatch({ type: "SELECT_PLANT", payload: [tpp.uuid] });
     };
 
     // See `cachedIcon` for more details on this.

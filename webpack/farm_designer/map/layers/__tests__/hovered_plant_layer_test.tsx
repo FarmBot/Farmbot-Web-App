@@ -10,7 +10,7 @@ describe("<HoveredPlantLayer/>", () => {
       dragging: false,
       currentPlant: undefined,
       designer: {
-        selectedPlant: undefined,
+        selectedPlants: undefined,
         hoveredPlant: {
           plantUUID: undefined,
           icon: ""
@@ -33,8 +33,8 @@ describe("<HoveredPlantLayer/>", () => {
     const icon = wrapper.find("image").props();
     expect(icon.visibility).toBeTruthy();
     expect(icon.opacity).toEqual(1);
-    expect(icon.x).toEqual(67.5);
-    expect(icon.width).toEqual(65);
+    expect(icon.x).toEqual(70);
+    expect(icon.width).toEqual(60);
   });
 
   it("shows selected plant indicators", () => {
