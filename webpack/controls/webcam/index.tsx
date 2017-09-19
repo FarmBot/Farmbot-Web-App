@@ -1,40 +1,37 @@
 import * as React from "react";
-import { t } from "i18next";
-import { Widget, WidgetHeader } from "../../ui/index";
-import { ToolTips } from "../../constants";
+import { Show } from "./show";
+import { Edit } from "./edit";
+import { WebcamPanelProps } from "./interfaces";
+import { TaggedWebcamFeed } from "../../resources/tagged_resources";
+import { edit, save, destroy } from "../../api/crud";
 
-type S = {};
-type P = {};
-const noop = () => alert("TODO");
+type S = {
+  activeMenu: "edit" | "show"
+};
+
+type P = {
+  feeds: TaggedWebcamFeed[];
+  dispatch: Function;
+};
+
 export class WebcamPanel extends React.Component<P, S> {
 
-  state: S = {};
+  state: S = { activeMenu: "show" };
+
+  childProps = (activeMenu: "edit" | "show"): WebcamPanelProps => {
+    return {
+      onToggle: () => this.setState({ activeMenu }),
+      feeds: this.props.feeds,
+      edit: (tr, update) => this.props.dispatch(edit(tr, update)),
+      save: (tr) => { this.props.dispatch(save(tr.uuid)); },
+      destroy: (tr) => { this.props.dispatch(destroy(tr.uuid)); }
+    };
+  }
 
   render() {
-    return (
-      <Widget>
-        <WidgetHeader title="Webcam" helpText={ToolTips.WEBCAM}>
-          <button
-            className="fb-button green"
-            onClick={noop}>
-            {t("Save")}*
-          </button>
-          <button
-            className="fb-button gray"
-            onClick={noop}>
-            {t("Edit")}
-          </button>
-        </WidgetHeader>
-        <div className="widget-body">
-          <label>{t("Set Webcam URL:")}</label>
-          <input
-            type="text"
-            onChange={noop}
-            placeholder="https://"
-            value={undefined}
-            className="webcam-url-input" />
-        </div>
-      </Widget>
-    );
+    switch (this.state.activeMenu) {
+      case "show": return <Show {...this.childProps("edit") } />;
+      default: return <Edit {...this.childProps("show") } />;
+    }
   }
 }

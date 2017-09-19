@@ -1,31 +1,35 @@
 import * as React from "react";
 import { Row, Col } from "../ui/index";
-import { ToggleButton } from "./toggle_button";
+import { KeyValRowProps } from "./key_val_show_row";
 
-interface KeyValRowProps {
-  label: string;
-  value: string;
-  onClick(): void;
-  disabled: boolean;
+interface Props extends KeyValRowProps {
+  onLabelChange(e: React.ChangeEvent<HTMLInputElement>): void;
+  onValueChange(e: React.ChangeEvent<HTMLInputElement>): void;
+  valueType: "number" | "string";
 }
 
 /** A row containing two textboxes and a delete button. Useful for maintaining
  * lists of things (peripherals, feeds, tools etc). */
-export function KeyValEditRow(p: KeyValRowProps) {
-  const { label, value, disabled, onClick } = p;
+export function KeyValEditRow(p: Props) {
   return <Row>
-    <Col xs={4}>
-      <label>{label}</label>
+    <Col xs={6}>
+      <input type="text"
+        placeholder="Label"
+        value={p.label}
+        onChange={p.onLabelChange} />
     </Col>
     <Col xs={4}>
-      <p>{label}</p>
+      <input type={p.valueType}
+        value={p.value}
+        placeholder="Pin #"
+        onChange={p.onValueChange} />
     </Col>
-    <Col xs={4}>
-      <ToggleButton
-        toggleValue={value}
-        toggleAction={onClick}
-        noYes={false}
-        disabled={disabled} />
+    <Col xs={2}>
+      <button
+        className="red fb-button"
+        onClick={p.onClick}>
+        <i className="fa fa-minus" />
+      </button>
     </Col>
   </Row>;
 }

@@ -31,7 +31,7 @@ export class Controls extends React.Component<Props, {}> {
             disabled={arduinoBusy} />
         </Col>
         <Col xs={12} sm={6}>
-          <WebcamPanel />
+          <WebcamPanel feeds={this.props.feeds} dispatch={this.props.dispatch} />
         </Col>
       </Row>
     </Page>;
