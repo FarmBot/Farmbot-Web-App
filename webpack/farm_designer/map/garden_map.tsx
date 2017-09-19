@@ -26,6 +26,8 @@ import { HoveredPlantLayer } from "./layers/hovered_plant_layer";
 import { FarmBotLayer } from "./layers/farmbot_layer";
 import { cachedCrop } from "../../open_farm/index";
 import { DragHelperLayer } from "./layers/drag_helper_layer";
+import { AxisNumberProperty } from "./interfaces";
+import { SelectionBox, SelectionBoxData } from "./selection_box";
 
 const DRAG_ERROR = `ERROR - Couldn't get zoom level of garden map, check the
   handleDrop() or drag() method in garden_map.tsx`;
@@ -46,7 +48,8 @@ export class GardenMap extends
     this.setState({
       isDragging: false, pageX: 0, pageY: 0,
       activeDragXY: { x: undefined, y: undefined, z: undefined },
-      activeDragSpread: undefined
+      activeDragSpread: undefined,
+      selectionBox: undefined
     });
   }
 
@@ -59,7 +62,29 @@ export class GardenMap extends
       );
   }
 
-  startDrag = (): void => {
+  getGardenCoordinates(
+    e: React.DragEvent<HTMLElement> | React.MouseEvent<SVGElement>
+  ): AxisNumberProperty | undefined {
+    const el = document.querySelector("div.drop-area svg[id='drop-area-svg']");
+    const map = document.querySelector(".farm-designer-map");
+    const page = document.querySelector(".farm-designer");
+    if (el && map && page) {
+      const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || DRAG_ERROR);
+      const { pageX, pageY } = e;
+      const params: ScreenToGardenParams = {
+        quadrant: this.props.botOriginQuadrant,
+        pageX: pageX + page.scrollLeft - this.props.gridOffset.x * zoomLvl,
+        pageY: pageY + map.scrollTop * zoomLvl - this.props.gridOffset.y * zoomLvl,
+        zoomLvl,
+        gridSize: this.props.gridSize
+      };
+      return translateScreenToGarden(params);
+    } else {
+      return undefined;
+    }
+  }
+
+  startDrag = (e: React.MouseEvent<SVGElement>): void => {
     if (this.isEditing) {
       this.setState({ isDragging: true });
       const plant = this.getPlant();
@@ -67,11 +92,25 @@ export class GardenMap extends
         this.setActiveSpread(plant.body.openfarm_slug);
       }
     }
+    if (location.pathname.includes("select")) {
+      const gardenCoords = this.getGardenCoordinates(e);
+      if (gardenCoords) {
+        this.setState({
+          selectionBox: {
+            x0: gardenCoords.x, y0: gardenCoords.y, x1: undefined, y1: undefined
+          }
+        });
+      }
+      this.props.dispatch({ type: "SELECT_PLANT", payload: undefined });
+    }
   }
 
   get isEditing(): boolean { return location.pathname.includes("edit"); }
 
-  getPlant = (): TaggedPlantPointer | undefined => this.props.selectedPlant;
+  getPlant = (): TaggedPlantPointer | undefined =>
+    history.getCurrentLocation().pathname.split("/")[4] != "select"
+      ? this.props.selectedPlant
+      : undefined;
 
   handleDragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!this.isEditing &&
@@ -93,22 +132,11 @@ export class GardenMap extends
 
   handleDrop = (e: React.DragEvent<HTMLElement> | React.MouseEvent<SVGElement>) => {
     e.preventDefault();
-    const el = document.querySelector("div.drop-area svg[id='drop-area-svg']");
-    const map = document.querySelector(".farm-designer-map");
-    const page = document.querySelector(".farm-designer");
-    if (el && map && page) {
-      const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || DRAG_ERROR);
-      const { pageX, pageY } = e;
+    const gardenCoords = this.getGardenCoordinates(e);
+    if (gardenCoords) {
       const crop = history.getCurrentLocation().pathname.split("/")[5];
       const OFEntry = this.findCrop(crop);
-      const params: ScreenToGardenParams = {
-        quadrant: this.props.botOriginQuadrant,
-        pageX: pageX + page.scrollLeft - this.props.gridOffset.x * zoomLvl,
-        pageY: pageY + map.scrollTop * zoomLvl - this.props.gridOffset.y * zoomLvl,
-        zoomLvl,
-        gridSize: this.props.gridSize
-      };
-      const { x, y } = translateScreenToGarden(params);
+      const { x, y } = gardenCoords;
       if (x < 0 || y < 0 || x > this.props.gridSize.x || y > this.props.gridSize.y) {
         error(t("Outside of planting area. Plants must be placed within the grid."));
       } else {
@@ -142,6 +170,20 @@ export class GardenMap extends
     }
   }
 
+  getSelected(box: SelectionBoxData) {
+    const selected = this.props.plants.filter((p) => {
+      if (box && box.x0 && box.y0 && box.x1 && box.y1) {
+        return (
+          p.body.x >= Math.min(box.x0, box.x1) &&
+          p.body.x <= Math.max(box.x0, box.x1) &&
+          p.body.y >= Math.min(box.y0, box.y1) &&
+          p.body.y <= Math.max(box.y0, box.y1)
+        );
+      }
+    }).map(p => { return p.uuid; });
+    return selected.length > 0 ? selected : undefined;
+  }
+
   drag = (e: React.MouseEvent<SVGElement>) => {
     const plant = this.getPlant();
     const map = document.querySelector(".farm-designer-map");
@@ -157,6 +199,19 @@ export class GardenMap extends
         activeDragXY: { x: plant.body.x + deltaX, y: plant.body.y + deltaY, z: 0 }
       });
       this.props.dispatch(movePlant({ deltaX, deltaY, plant, gridSize }));
+    }
+    if (this.state.selectionBox && location.pathname.includes("select")) {
+      const current = this.getGardenCoordinates(e);
+      if (current) {
+        const box = this.state.selectionBox;
+        this.props.dispatch({
+          type: "SELECT_PLANT",
+          payload: this.getSelected(this.state.selectionBox)
+        });
+        this.setState({
+          selectionBox: { x0: box.x0, y0: box.y0, x1: current.x, y1: current.y }
+        });
+      }
     }
   }
 
@@ -245,6 +300,8 @@ export class GardenMap extends
             zoomLvl={this.props.zoomLvl}
             activeDragXY={this.state.activeDragXY}
             plantAreaOffset={this.props.gridOffset} />
+          {this.state.selectionBox &&
+            <SelectionBox selectionBox={this.state.selectionBox} />}
         </svg>
       </svg>
     </div>;

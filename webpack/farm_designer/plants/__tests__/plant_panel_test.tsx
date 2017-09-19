@@ -20,7 +20,7 @@ describe("<PlantPanel/>", () => {
     const txt = el.text().toLowerCase();
     expect(txt).toContain("1 days old");
     expect(txt).toContain("(10, 30)");
-    el.find("button").simulate("click");
+    el.find("button").first().simulate("click");
     expect(onDestroy.mock.calls.length).toEqual(1);
   });
 

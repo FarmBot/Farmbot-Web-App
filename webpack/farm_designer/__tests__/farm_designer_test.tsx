@@ -12,7 +12,7 @@ describe("<FarmDesigner/>", () => {
       dispatch: jest.fn(),
       selectedPlant: undefined,
       designer: {
-        selectedPlant: undefined,
+        selectedPlants: undefined,
         hoveredPlant: {
           plantUUID: undefined,
           icon: ""

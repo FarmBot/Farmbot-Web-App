@@ -1,0 +1,33 @@
+import * as React from "react";
+import { SelectionBox, SelectionBoxProps } from "../selection_box";
+import { shallow } from "enzyme";
+
+describe("<SelectionBox/>", () => {
+  function fakeProps(): SelectionBoxProps {
+    return {
+      selectionBox: {
+        x0: 40,
+        y0: 30,
+        x1: 240,
+        y1: 130
+      }
+    };
+  }
+
+  it("renders selection box", () => {
+    const wrapper = shallow(<SelectionBox {...fakeProps() } />);
+    const boxProps = wrapper.find("rect").props();
+    expect(boxProps.x).toEqual(40);
+    expect(boxProps.y).toEqual(30);
+    expect(boxProps.width).toEqual(200);
+    expect(boxProps.height).toEqual(100);
+  });
+
+  it("doesn't render selection box: partially undefined", () => {
+    const p = fakeProps();
+    p.selectionBox.x1 = undefined;
+    const wrapper = shallow(<SelectionBox {...p } />);
+    expect(wrapper.html()).toEqual("<g id=\"selection-box\"></g>");
+  });
+
+});

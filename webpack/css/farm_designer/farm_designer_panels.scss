@@ -121,11 +121,21 @@
       color: $white;
     }
   }
+  button {
+    margin-left: 5px;
+  }
 }
 
 .plant-inventory-panel {
   .panel-content {
     padding: 5rem 1.4rem;
+  }
+}
+
+.plant-selection-panel {
+  .panel-content {
+    padding: 10rem 1.4rem;
+    pointer-events: none;
   }
 }
 

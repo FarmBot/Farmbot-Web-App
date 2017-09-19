@@ -18,6 +18,8 @@ describe("<PlantInfo />", () => {
     expect(wrapper.text()).toContain("Strawberry Plant 1");
     expect(wrapper.text().replace(/\s+/g, " "))
       .toContain("Plant Type: Strawberry");
-    expect(wrapper.find("button").props().hidden).toBeTruthy();
+    const buttons = wrapper.find("button");
+    expect(buttons.first().props().hidden).toBeTruthy();
+    expect(buttons.last().props().hidden).toBeTruthy();
   });
 });

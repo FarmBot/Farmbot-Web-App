@@ -4,6 +4,7 @@ import { t } from "i18next";
 import { Link } from "react-router";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { round } from "../map/util";
+import { history } from "../../history";
 
 interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -74,6 +75,13 @@ export function PlantPanel({ info, onDestroy }: PlantPanelProps) {
       hidden={!onDestroy}
       onClick={destroy} >
       {t("Delete")}
+    </button>
+    <button
+      className="fb-button gray"
+      style={{ marginRight: "10px" }}
+      hidden={!onDestroy}
+      onClick={() => history.push("/app/designer/plants/select")} >
+      {t("Delete multiple")}
     </button>
   </div>;
 }

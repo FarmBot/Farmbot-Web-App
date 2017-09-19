@@ -18,7 +18,7 @@ export class GardenPlant extends
   }
 
   click = () => {
-    this.props.dispatch({ type: "SELECT_PLANT", payload: this.props.uuid });
+    this.props.dispatch({ type: "SELECT_PLANT", payload: [this.props.uuid] });
     this.props.dispatch({
       type: "TOGGLE_HOVERED_PLANT", payload: {
         plantUUID: this.props.uuid, icon: this.state.icon
