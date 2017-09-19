@@ -440,17 +440,17 @@ export function getDeviceAccountSettings(index: ResourceIndex) {
   }
 }
 
-export function getFeed(index: ResourceIndex): TaggedWebcamFeed {
+export function getFeeds(index: ResourceIndex): TaggedWebcamFeed[] {
   const list = index.byKind.webcam_feed;
-  const uuid = list[0];
-  const feed = index.references[uuid || -1];
-  const onlyOne = list.length === 1;
-  if (onlyOne && feed && feed.kind === "webcam_feed") {
-    sanityCheck(feed);
-    return feed;
-  } else {
-    throw new Error(`Problem loading webcam feed. Got ${onlyOne}` + JSON.stringify(feed));
-  }
+  const output: TaggedWebcamFeed[] = [];
+  list.forEach(y => {
+    const x = index.references[y];
+    if (x && x.kind === "webcam_feed") {
+      sanityCheck(x);
+      output.push(x);
+    }
+  });
+  return output;
 }
 
 export function maybeFetchUser(index: ResourceIndex):
