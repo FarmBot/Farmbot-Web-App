@@ -38,7 +38,7 @@ export function Edit(props: WebcamPanelProps) {
         <button
           className="fb-button gray"
           onClick={props.onToggle}>
-          {t("Show")}
+          {t("View")}
         </button>
       </WidgetHeader>
       <div className="widget-body">
