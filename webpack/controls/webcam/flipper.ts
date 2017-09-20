@@ -1,15 +1,10 @@
 import { clamp } from "lodash";
 
-/** Callback used in class Flipper<T>. Called when you flip up or down.
- * Useful for calling `setState` or `forceUpdate` when the flipper value
- * changes. */
-type FlipFN = <T>(next: T | undefined, index: number) => void;
-
 /** Improved array that is useful for up/down situations such as the webcam
  * feed flipper UI. TODO: This can be re-used for farmware image viewer. */
 export class Flipper<T> {
   private go = (n: number) =>
-    (cb: FlipFN) => {
+    (cb: (next: T | undefined, index: number) => void) => {
       this.inc(n);
       cb(this.current, this.index);
     }
