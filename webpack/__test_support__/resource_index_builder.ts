@@ -285,7 +285,8 @@ export let FAKE_RESOURCES: TaggedResource[] = [
 ];
 
 export
-  function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES) {
+  function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
+  state = emptyState()) {
   const KIND: keyof TaggedResource = "kind"; // Safety first, kids.
   return _(resources)
     .groupBy(KIND)
@@ -295,5 +296,5 @@ export
       type: "RESOURCE_READY",
       payload: { name: y[0], data: y[1].map(x => x.body) }
     }))
-    .reduce(resourceReducer, emptyState());
+    .reduce(resourceReducer, state);
 }
