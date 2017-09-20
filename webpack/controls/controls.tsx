@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Peripherals } from "./peripherals";
 import { Row, Page, Col } from "../ui";
 import { mapStateToProps } from "./state_to_props";
-import { WebcamPanel } from "./webcam_panel";
+import { WebcamPanel } from "./webcam";
 import { Props } from "./interfaces";
 import { Move } from "./move";
 
@@ -31,9 +31,7 @@ export class Controls extends React.Component<Props, {}> {
             disabled={arduinoBusy} />
         </Col>
         <Col xs={12} sm={6}>
-          <WebcamPanel bot={this.props.bot}
-            feed={this.props.feed}
-            dispatch={this.props.dispatch} />
+          <WebcamPanel feeds={this.props.feeds} dispatch={this.props.dispatch} />
         </Col>
       </Row>
     </Page>;

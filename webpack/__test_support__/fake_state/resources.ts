@@ -114,10 +114,12 @@ export function fakePoint(): TaggedGenericPointer {
 }
 
 export function fakeWebcamFeed(): TaggedWebcamFeed {
+  const id = idCounter++;
   return fakeResource("webcam_feed", {
-    id: idCounter++,
+    id,
     created_at: "---",
     updated_at: "---",
-    url: "http://i.imgur.com/iAOUmEB.jpg"
+    url: "http://i.imgur.com/iAOUmEB.jpg",
+    name: "wcf #" + id
   });
 }

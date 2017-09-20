@@ -15,7 +15,13 @@ class DashboardController < ApplicationController
   end
 
   [:main_app, :front_page, :verify, :password_reset].map do |actn|
-    define_method(actn) { render actn, layout: false }
+    define_method(actn) do
+      begin
+        render actn, layout: false
+      rescue ActionView::MissingTemplate => q
+        raise ActionController::RoutingError, "Bad URL in dashboard"
+      end
+    end
   end
 
   # Hit by Certbot / Let's Encrypt when it's time to verify control of domain.

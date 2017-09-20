@@ -6,6 +6,7 @@ module Api
 
     def index
       query = { device: current_device }
+      # TODO: This is a legacy API from the Angular 1.0 days, I think. Remove.
       query.merge!(farm_event_id: params[:farm_event_id]) if params[:farm_event_id]
       sequences = Sequence.where(query)
       render json: sequences

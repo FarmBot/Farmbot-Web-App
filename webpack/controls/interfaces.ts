@@ -10,7 +10,7 @@ import {
 export interface Props {
   dispatch: Function;
   bot: BotState;
-  feed: TaggedWebcamFeed;
+  feeds: TaggedWebcamFeed[];
   user: TaggedUser | undefined;
   peripherals: TaggedPeripheral[];
   resources: RestResources;
@@ -21,16 +21,6 @@ export interface MoveProps {
   bot: BotState;
   user: TaggedUser | undefined;
   disabled: boolean | undefined;
-}
-
-export interface WebcamPanelProps {
-  dispatch: Function;
-  bot: BotState;
-  feed: TaggedWebcamFeed;
-}
-
-export interface WebcamPanelState {
-  isEditing: boolean;
 }
 
 export interface DirectionButtonProps {
@@ -102,8 +92,9 @@ export interface ToggleButtonProps {
 }
 
 export interface WebcamFeed {
-  id: number;
+  id?: number;
   url: string;
-  updated_at: string;
-  created_at: string;
+  name: string;
+  updated_at?: string;
+  created_at?: string;
 }

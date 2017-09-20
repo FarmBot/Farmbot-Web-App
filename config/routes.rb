@@ -18,7 +18,11 @@ FarmBot::Application.routes.draw do
       post :resend_verification, on: :member
     end
     resource :device,         only: [:show, :destroy, :create, :update]
-    resource :webcam_feed,    only: [:show, :update]
+    resources :webcam_feeds,  only: [:create,
+                                     :show,
+                                     :index,
+                                     :update,
+                                     :destroy]
     resources :password_resets, only: [:create, :update]
     put "/password_resets"     => "password_resets#update", as: :whatever
     put "/users/verify/:token" => "users#verify",           as: :users_verify
@@ -47,10 +51,13 @@ FarmBot::Application.routes.draw do
   # =======================================================================
   # NON-API (USER FACING) URLS:
   # =======================================================================
-  get "/" => 'dashboard#front_page', as: :front_page
-  get "/app" => 'dashboard#main_app', as: :dashboard
+  get "/"           => 'dashboard#front_page', as: :front_page
+  get "/app"        => 'dashboard#main_app',   as: :dashboard
   get "/tos_update" => 'dashboard#tos_update', as: :tos_update
-  match "/app/*path", to: 'dashboard#main_app', via: :all
+  match "/app/*path",
+          to: 'dashboard#main_app',
+          via: :all,
+          constraints: { format: 'html' }
   get "/password_reset/*token" => 'dashboard#password_reset',
     as: :password_reset
   get "/verify" => 'dashboard#verify', as: :verify

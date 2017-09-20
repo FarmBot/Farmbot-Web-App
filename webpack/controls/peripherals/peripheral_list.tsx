@@ -1,30 +1,20 @@
 import * as React from "react";
-import { ToggleButton } from "../toggle_button";
 import { pinToggle } from "../../devices/actions";
-import { Row, Col } from "../../ui";
 import { PeripheralListProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
+import { KeyValShowRow } from "../key_val_show_row";
 
 export function PeripheralList(props: PeripheralListProps) {
   const { pins, disabled } = props;
   return <div>
     {sortResourcesById(props.peripherals).map(p => {
-      const value = (pins[p.body.pin || -1] || { value: undefined }).value;
-      return <Row key={p.uuid}>
-        <Col xs={4}>
-          <label>{p.body.label}</label>
-        </Col>
-        <Col xs={4}>
-          <p>{p.body.pin}</p>
-        </Col>
-        <Col xs={4}>
-          <ToggleButton
-            toggleValue={value}
-            toggleAction={() => p.body.pin && pinToggle(p.body.pin)}
-            noYes={false}
-            disabled={disabled} />
-        </Col>
-      </Row>;
+      return <KeyValShowRow key={p.uuid}
+        label={p.body.label}
+        labelPlaceholder=""
+        value={"" + (pins[p.body.pin || -1] || { value: undefined }).value}
+        valuePlaceholder=""
+        onClick={() => p.body.pin && pinToggle(p.body.pin)}
+        disabled={!!disabled} />;
     })}
   </div>;
 }

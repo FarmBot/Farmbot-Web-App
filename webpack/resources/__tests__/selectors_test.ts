@@ -1,5 +1,5 @@
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { findSlotByToolId, getFeed } from "../selectors";
+import { findSlotByToolId, getFeeds } from "../selectors";
 import { resourceReducer, emptyState } from "../reducer";
 import { TaggedTool, TaggedToolSlotPointer } from "../tagged_resources";
 import { createOK } from "../actions";
@@ -53,10 +53,9 @@ describe("findSlotByToolId", () => {
   });
 });
 
-describe("getFeed", () => {
-  it("throws when no WebcamFeeds are found", () => {
-    expect(() => getFeed(emptyState().index))
-      .toThrow("Problem loading webcam feed");
+describe("getFeeds", () => {
+  it("returns empty array", () => {
+    expect(getFeeds(emptyState().index).length).toBe(0);
   });
 
   it("finds the only WebcamFeed", () => {
@@ -68,6 +67,6 @@ describe("getFeed", () => {
         data: feed
       }
     }].reduce(resourceReducer, emptyState());
-    expect(getFeed(state.index).body).toEqual(feed);
+    expect(getFeeds(state.index)[0].body).toEqual(feed);
   });
 });

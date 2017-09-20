@@ -97,7 +97,9 @@ unless Rails.env == "production"
           executable_id: Sequence.where(device: u.device).order("RANDOM()").first.id,
           executable_type: "Sequence")
     end
-
+    WebcamFeeds::Create.run!(device: u.device,
+                            name: "My Feed 1",
+                            url: "https://nature.nps.gov/air/webcams/parks/yosecam/yose.jpg")
     ts = ToolSlots::Create.run!(device: u.device,
                                 tool_id: t.id,
                                 name: "Slot One.",

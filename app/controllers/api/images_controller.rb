@@ -1,4 +1,8 @@
 module Api
+  # The API follows this workflow when creating a new image:
+  # 1. Upload image to an S3 "untrusted" bucket (gets deleted quite often)
+  # 2. POST the URL from step 1 (or any URL) to ImagesController#Create
+  # 3. Image is transfered to the "trusted bucket".
   class ImagesController < Api::AbstractController
 
     BUCKET = ENV.fetch("GCS_BUCKET") { "YOU_MUST_CONFIG_GOOGLE_CLOUD_STORAGE" }
@@ -21,6 +25,8 @@ module Api
       render json: image.destroy! && ""
     end
 
+    # Creates a "policy object" + meta data so that users may upload an image to
+    # Google Cloud Storage.
     def storage_auth
       # Creates a 1 hour authorization for a user to upload an image file to a
       # Google Cloud Storage bucket.
@@ -45,6 +51,7 @@ module Api
 
   private
 
+    # The image URL in the "untrusted bucket" in Google Cloud Storage
     def random_filename
       @range ||= "temp1/#{SecureRandom.uuid}.jpg"
     end

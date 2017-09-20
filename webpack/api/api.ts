@@ -129,5 +129,5 @@ export class API {
   /** /api/logs */
   get logsPath() { return `${this.baseUrl}/api/logs/`; }
   /** /api/webcam_feed */
-  get webcamFeedPath() { return `${this.baseUrl}/api/webcam_feed/`; }
+  get webcamFeedPath() { return `${this.baseUrl}/api/webcam_feeds/`; }
 }
