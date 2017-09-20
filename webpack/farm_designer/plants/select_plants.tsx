@@ -80,6 +80,12 @@ export class SelectPlants
             {t("Select none")}
           </button>
         </div>
+
+        <div className="panel-header-description">
+          {"Drag a box around the plants you would like to select. " +
+            "Press the back arrow to exit."}
+        </div>
+
       </div>
 
       <div className="panel-content">

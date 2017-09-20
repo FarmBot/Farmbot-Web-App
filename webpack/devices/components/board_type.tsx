@@ -3,15 +3,15 @@ import { Row, Col } from "../../ui/index";
 import { t } from "i18next";
 
 export interface BoardTypeProps {
-  currentFWVersion: string | undefined;
+  firmwareVersion: string | undefined;
 }
 
 export class BoardType
   extends React.Component<BoardTypeProps, {}> {
 
   getBoardType() {
-    if (this.props.currentFWVersion) {
-      const boardIdentifier = this.props.currentFWVersion.slice(-1);
+    if (this.props.firmwareVersion) {
+      const boardIdentifier = this.props.firmwareVersion.slice(-1);
       switch (boardIdentifier) {
         case "R":
           return "Arduino/RAMPS";

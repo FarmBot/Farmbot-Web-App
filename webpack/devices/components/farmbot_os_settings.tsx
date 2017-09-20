@@ -209,7 +209,8 @@ export class FarmbotOsSettings
             <CameraSelection
               env={this.props.bot.hardware.user_env} />
             <BoardType
-              currentFWVersion={this.props.bot.currentFWVersion} />
+              firmwareVersion={this.props.bot.hardware
+                .informational_settings.firmware_version} />
           </MustBeOnline>
         </WidgetBody>
       </form>
