@@ -2,7 +2,7 @@ import * as React from "react";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
 import { Show } from "../show";
-import { props } from "./helpers";
+import { props } from "../test_helpers";
 
 describe("<Show/>", () => {
   it("Renders feed title", () => {

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
-import { props } from "./helpers";
+import { props } from "../test_helpers";
 import { Edit } from "../edit";
 import { get } from "lodash";
 import { SpecialStatus } from "../../../resources/tagged_resources";
