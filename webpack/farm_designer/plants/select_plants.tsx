@@ -8,6 +8,7 @@ import { selectAllPlantPointers } from "../../resources/selectors";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { destroy } from "../../api/crud";
 import { error } from "farmbot-toastr";
+import { BackArrow } from "../../ui/index";
 
 export function mapStateToProps(props: Everything) {
   const plants = selectAllPlantPointers(props.resources.index);
@@ -53,10 +54,7 @@ export class SelectPlants
       className="panel-container green-panel plant-selection-panel">
       <div className="panel-header green-panel">
         <p className="panel-title">
-          <a className="back-arrow"
-            onClick={() => history.push("/app/designer/plants")}>
-            <i className="fa fa-arrow-left"></i>
-          </a>
+          <BackArrow />
           Select plants
         </p>
 
