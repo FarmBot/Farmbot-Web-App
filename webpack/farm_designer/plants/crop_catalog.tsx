@@ -6,6 +6,7 @@ import { t } from "i18next";
 import { OpenFarmResults } from "./openfarm_search_results";
 import { CropCatalogProps } from "../interfaces";
 import { OFSearch } from "../util";
+import * as _ from "lodash";
 
 export function mapStateToProps(props: Everything): CropCatalogProps {
   return {
@@ -23,9 +24,14 @@ export function mapStateToProps(props: Everything): CropCatalogProps {
 @connect(mapStateToProps)
 export class CropCatalog extends React.Component<CropCatalogProps, {}> {
 
+  debouncedOFSearch = _.debounce((searchTerm: string) => {
+    this.props.OFSearch(searchTerm)(this.props.dispatch);
+  }, 500);
+
   handleChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
-    this.props.OFSearch(value)(this.props.dispatch);
+    this.props.dispatch({ type: "SEARCH_QUERY_CHANGE", payload: value });
+    this.debouncedOFSearch(value);
   }
 
   render() {
@@ -43,6 +49,7 @@ export class CropCatalog extends React.Component<CropCatalogProps, {}> {
               <input
                 value={this.props.cropSearchQuery}
                 onChange={this.handleChange}
+                onKeyPress={this.handleChange}
                 className="search"
                 placeholder={t("Search OpenFarm...")} />
             </div>
