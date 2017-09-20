@@ -14,8 +14,16 @@ describe DashboardController do
     it "renders the terms of service" do
       get :tos_update
       expect(response.status).to eq(200)
-      # Delaying this part until webpack-rails workflow is found -RC
-      # expect(response.body).to include("webpack/tos_update.js")
+    end
+
+    it "renders the terms of service" do
+      get :front_page
+      expect(response.status).to eq(200)
+    end
+
+    it "renders the terms of service" do
+      expect { get :main_app, params: {path: "nope.jpg"} }
+        .to raise_error(ActionController::RoutingError)
     end
   end
 end
