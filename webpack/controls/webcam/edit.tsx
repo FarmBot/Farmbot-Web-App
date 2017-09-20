@@ -4,10 +4,15 @@ import { t } from "i18next";
 import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
 import { KeyValEditRow } from "../key_val_edit_row";
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus, TaggedWebcamFeed } from "../../resources/tagged_resources";
+import * as _ from "lodash";
+
+export function sortedFeeds(feeds: TaggedWebcamFeed[]): TaggedWebcamFeed[] {
+  return _.sortBy(feeds, (f) => { return f.body.id || Infinity; });
+}
 
 export function Edit(props: WebcamPanelProps) {
-  const rows = props.feeds.map(wcf => {
+  const rows = sortedFeeds(props.feeds).map(wcf => {
     return <KeyValEditRow key={wcf.uuid}
       onClick={() => props.destroy(wcf)}
       onLabelChange={(e) => props.edit(wcf, { name: e.currentTarget.value })}

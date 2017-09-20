@@ -6,6 +6,7 @@ import { WebcamPanelProps } from "./interfaces";
 import { PLACEHOLDER_FARMBOT } from "../../farmware/images/image_flipper";
 import { Flipper } from "./flipper";
 import { FallbackImg } from "../../ui/fallback_img";
+import { sortedFeeds } from "./edit";
 
 type State = {
   /** Current index in the webcam feed list.
@@ -42,7 +43,7 @@ export class Show extends React.Component<WebcamPanelProps, State> {
       .feeds
       .filter(x => x.specialStatus !== undefined)
       .length;
-    const feeds = this.props.feeds.map(x => x.body);
+    const feeds = sortedFeeds(this.props.feeds).map(x => x.body);
     const flipper = new Flipper(feeds, FALLBACK_FEED, this.state.current);
     const title = flipper.current.name || "Webcam Feeds";
     const msg = this.getMessage(flipper.current.url);
