@@ -5,6 +5,7 @@ import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
 import { PLACEHOLDER_FARMBOT } from "../../farmware/images/image_flipper";
 import { Flipper } from "./flipper";
+import { FallbackImg } from "../../ui/fallback_img";
 
 type State = {
   /** Current index in the webcam feed list.
@@ -19,6 +20,19 @@ const FALLBACK_FEED = { name: "", url: PLACEHOLDER_FARMBOT };
 
 export class Show extends React.Component<WebcamPanelProps, State> {
   NO_FEED = t(`No webcams yet. Click the edit button to add a feed URL.`);
+  PLACEHOLDER_FEED = t(`Click the edit button to add or edit a feed URL.`);
+
+  getMessage(currentUrl: string) {
+    if (this.props.feeds.length) {
+      if (currentUrl.includes(PLACEHOLDER_FARMBOT)) {
+        return this.PLACEHOLDER_FEED;
+      } else {
+        return "";
+      }
+    } else {
+      return this.NO_FEED;
+    }
+  }
 
   state: State = { current: 0 };
 
@@ -30,8 +44,9 @@ export class Show extends React.Component<WebcamPanelProps, State> {
       .length;
     const feeds = this.props.feeds.map(x => x.body);
     const flipper = new Flipper(feeds, FALLBACK_FEED, this.state.current);
-    const msg = this.props.feeds.length ? "" : this.NO_FEED;
     const title = flipper.current.name || "Webcam Feeds";
+    const msg = this.getMessage(flipper.current.url);
+    const imageClass = msg.length > 0 ? "no-flipper-image-container" : "";
     return (
       <Widget>
         <WidgetHeader title={title} helpText={ToolTips.WEBCAM}>
@@ -44,11 +59,11 @@ export class Show extends React.Component<WebcamPanelProps, State> {
         </WidgetHeader>
         <div className="widget-body">
           <div className="image-flipper">
-            <div className="no-flipper-image-container">
+            <div className={imageClass}>
               <p>{msg}</p>
-              <img
-                className="image-flipper-image"
-                src={flipper.current.url} />
+              <FallbackImg className="image-flipper-image"
+                src={flipper.current.url}
+                fallback={PLACEHOLDER_FARMBOT} />
             </div>
             <button
               onClick={() => flipper.down((_, current) => this.setState({ current }))}
