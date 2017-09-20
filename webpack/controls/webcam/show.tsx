@@ -67,12 +67,14 @@ export class Show extends React.Component<WebcamPanelProps, State> {
             </div>
             <button
               onClick={() => flipper.down((_, current) => this.setState({ current }))}
+              hidden={feeds.length < 2}
               disabled={false}
               className="image-flipper-left fb-button">
               {t("Prev")}
             </button>
             <button
               onClick={() => flipper.up((_, current) => this.setState({ current }))}
+              hidden={feeds.length < 2}
               disabled={false}
               className="image-flipper-right fb-button">
               {t("Next")}
