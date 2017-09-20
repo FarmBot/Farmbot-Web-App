@@ -9,7 +9,12 @@ export const PIN_MODES = [
   { value: 0, label: "Digital" }
 ];
 
-export function currentSelection(currentStep: SequenceBodyItem) {
+export const PIN_VALUES = [
+  { value: 1, label: "ON" },
+  { value: 0, label: "OFF" }
+];
+
+export function currentModeSelection(currentStep: SequenceBodyItem) {
   const step = currentStep as WritePin;
   const pinMode = step.args.pin_mode;
   const modes: { [s: string]: string } = {
@@ -17,6 +22,16 @@ export function currentSelection(currentStep: SequenceBodyItem) {
     1: "Analog"
   };
   return { label: modes[pinMode], value: pinMode };
+}
+
+export function currentValueSelection(currentStep: SequenceBodyItem) {
+  const step = currentStep as WritePin;
+  const pinValue = step.args.pin_value;
+  const values: { [s: string]: string } = {
+    0: "OFF",
+    1: "ON"
+  };
+  return { label: values[pinValue], value: pinValue };
 }
 
 export function setPinMode(
@@ -28,8 +43,28 @@ export function setPinMode(
     executor: (step: WritePin) => {
       if (_.isNumber(x.value)) {
         step.args.pin_mode = x.value;
+        // To force ON/OFF display in digital mode, uncomment these lines:
+        // if (x.value === 0) {
+        //   step.args.pin_value = Math.min(1, step.args.pin_value);
+        // }
       } else {
         throw new Error("Numbers only in pin_mode.");
+      }
+    }
+  }));
+}
+
+export function setPinValue(
+  x: DropDownItem, { dispatch, currentStep, index, currentSequence }: StepParams) {
+  dispatch(editStep({
+    sequence: currentSequence,
+    step: currentStep,
+    index: index,
+    executor: (step: WritePin) => {
+      if (_.isNumber(x.value)) {
+        step.args.pin_value = x.value;
+      } else {
+        throw new Error("Numbers only in pin_value.");
       }
     }
   }));
