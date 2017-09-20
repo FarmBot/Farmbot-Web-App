@@ -23,6 +23,7 @@ import { TimezoneSelector } from "../timezones/timezone_selector";
 import { timezoneMismatch } from "../timezones/guess_timezone";
 import { LastSeen } from "./last_seen_widget";
 import { CameraSelection } from "./camera_selection";
+import { BoardType } from "./board_type";
 
 export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps> {
@@ -207,6 +208,8 @@ export class FarmbotOsSettings
             </Row>
             <CameraSelection
               env={this.props.bot.hardware.user_env} />
+            <BoardType
+              currentFWVersion={this.props.bot.currentFWVersion} />
           </MustBeOnline>
         </WidgetBody>
       </form>
