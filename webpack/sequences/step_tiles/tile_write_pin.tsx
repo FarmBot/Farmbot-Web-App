@@ -7,10 +7,29 @@ import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import { StepIconGroup } from "../step_icon_group";
 import { FBSelect } from "../../ui/new_fb_select";
-import { setPinMode, currentSelection, PIN_MODES } from "./tile_pin_support";
+import {
+  setPinMode, PIN_MODES, setPinValue, currentValueSelection,
+  PIN_VALUES, currentModeSelection
+} from "./tile_pin_support";
 
 export function TileWritePin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
+  const pinValueField = () => {
+    if (currentStep.kind === "write_pin") {
+      if (!(currentStep.args.pin_mode === 0) || currentStep.args.pin_value > 1) {
+        return <StepInputBox dispatch={dispatch}
+          step={currentStep}
+          sequence={currentSequence}
+          index={index}
+          field="pin_value" />;
+      } else {
+        return <FBSelect
+          onChange={(x) => setPinValue(x, props)}
+          selectedItem={currentValueSelection(currentStep)}
+          list={PIN_VALUES} />;
+      }
+    }
+  };
   return (<div>
     <div className="step-wrapper">
       <div className="row">
@@ -45,17 +64,13 @@ export function TileWritePin(props: StepParams) {
               </div>
               <div className="col-xs-6 col-md-3">
                 <label>{t("Value")}</label>
-                <StepInputBox dispatch={dispatch}
-                  step={currentStep}
-                  sequence={currentSequence}
-                  index={index}
-                  field="pin_value" />
+                {pinValueField()}
               </div>
               <div className="col-xs-6 col-md-3">
                 <label>{t("Pin Mode")}</label>
                 <FBSelect
                   onChange={(x) => setPinMode(x, props)}
-                  selectedItem={currentSelection(currentStep)}
+                  selectedItem={currentModeSelection(currentStep)}
                   list={PIN_MODES} />
               </div>
             </div>

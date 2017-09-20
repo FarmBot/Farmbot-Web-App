@@ -21,6 +21,7 @@ export let translateImageWorkspaceAndSave = (map: Translation) => {
 };
 
 export function resetWeedDetection(cb: ProgressCallback): Thunk {
+  // TODO: Generalize and add to api/crud.ts
   return async function (dispatch, getState) {
     const URL = API.current.pointSearchPath;
     try {

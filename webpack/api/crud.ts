@@ -132,10 +132,10 @@ function update(uuid: string) {
   };
 }
 
-export function destroy(uuid: string) {
+export function destroy(uuid: string, force = false) {
   return function (dispatch: Function, getState: GetState) {
     const resource = findByUuid(getState().resources.index, uuid);
-    const maybeProceed = confirmationChecker(resource);
+    const maybeProceed = confirmationChecker(resource, force);
     return maybeProceed(() => {
       if (resource.body.id) {
         return axios

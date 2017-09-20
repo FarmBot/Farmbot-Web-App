@@ -7,11 +7,10 @@ import { ExecutableType } from "./interfaces";
 
 const url = (q: string) => `${OpenFarm.cropUrl}?include=pictures&filter=${q}`;
 type X = HttpPromise<CropSearchResult>;
-const openFarmSearchQuery = _.throttle((q: string): X => axios.get(url(q)), 800);
+const openFarmSearchQuery = (q: string): X => axios.get(url(q));
 
 export let OFSearch = (searchTerm: string) =>
   (dispatch: Function) => {
-    dispatch({ type: "SEARCH_QUERY_CHANGE", payload: searchTerm });
     openFarmSearchQuery(searchTerm)
       .then(resp => {
         const images: { [key: string]: string } = {};

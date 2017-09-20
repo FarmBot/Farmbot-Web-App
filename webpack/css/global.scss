@@ -68,7 +68,7 @@ input[type=time] {
     color: #fff;
     text-overflow: ellipsis;
     overflow: hidden;
-    width: 50%;
+    width: calc(100% - 13rem);
     white-space: nowrap;
     display: inline-block;
     text-transform: none;
