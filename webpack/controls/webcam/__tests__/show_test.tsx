@@ -1,22 +1,10 @@
 import * as React from "react";
-import { WebcamPanelProps } from "../interfaces";
-import { TaggedWebcamFeed } from "../../../resources/tagged_resources";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
 import { Show } from "../show";
+import { props } from "./helpers";
 
 describe("<Show/>", () => {
-  const props = (feeds: TaggedWebcamFeed[]): WebcamPanelProps => {
-    return {
-      onToggle: jest.fn(),
-      feeds,
-      init: jest.fn(),
-      edit: jest.fn(),
-      save: jest.fn(),
-      destroy: jest.fn(),
-    };
-  };
-
   it("Renders feed title", () => {
     const feed1 = fakeWebcamFeed();
     const feed2 = fakeWebcamFeed();
