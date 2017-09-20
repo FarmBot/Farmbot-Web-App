@@ -16,6 +16,6 @@ describe Api::WebcamFeedsController do
     expect(response.status).to eq(200)
     expect(json.length).to eq(2)
     expect(user.device.webcam_feeds.reload.first).to be
-    expect(json[0][:url]).to eq("1")
+    expect(json.length).to eg(2)
   end
 end
