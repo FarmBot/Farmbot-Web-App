@@ -59,13 +59,16 @@ describe("<PeripheralList/>", function () {
       disabled={false} />);
     const labels = wrapper.find("label");
     const buttons = wrapper.find("button");
+    const pinNumbers = wrapper.find("p");
     const first = labels.first();
     expect(first.text()).toBeTruthy();
     expect(first.text()).toEqual("GPIO 2");
+    expect(pinNumbers.first().text()).toEqual("2");
     expect(buttons.first().text()).toEqual("off");
     const last = labels.last();
     expect(last.text()).toBeTruthy();
     expect(last.text()).toEqual("GPIO 13 - LED");
+    expect(pinNumbers.last().text()).toEqual("13");
     expect(buttons.last().text()).toEqual("on");
   });
 
