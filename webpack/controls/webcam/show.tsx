@@ -19,6 +19,16 @@ type State = {
 
 const FALLBACK_FEED = { name: "", url: PLACEHOLDER_FARMBOT };
 
+export function IndexIndicator(props: { i: number, total: number }): JSX.Element {
+  const percentWidth = 100 / props.total;
+  return props.total > 1 ? <div
+    className="index-indicator"
+    style={{
+      width: `${percentWidth}%`,
+      left: `calc(-10px + ${props.i} * ${percentWidth}%)`
+    }} /> : <div />;
+}
+
 export class Show extends React.Component<WebcamPanelProps, State> {
   NO_FEED = t(`No webcams yet. Click the edit button to add a feed URL.`);
   PLACEHOLDER_FEED = t(`Click the edit button to add or edit a feed URL.`);
@@ -57,6 +67,7 @@ export class Show extends React.Component<WebcamPanelProps, State> {
             {t("Edit")}
             {unsaved ? "*" : ""}
           </button>
+          <IndexIndicator i={this.state.current} total={feeds.length} />
         </WidgetHeader>
         <div className="widget-body">
           <div className="image-flipper">

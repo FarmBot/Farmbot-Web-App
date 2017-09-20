@@ -217,8 +217,11 @@ fieldset {
 }
 
 .webcam-stream-valid img {
-  min-width: 100%;
+  display: flex;
   max-width: 100%;
+  margin: auto;
+  max-height: 650px;
+  min-height: 300px;
 }
 
 .webcam-stream-unavailable text {

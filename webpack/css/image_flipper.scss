@@ -75,3 +75,12 @@
     }
   }
 }
+
+.index-indicator {
+  position: absolute;
+  background: $white;
+  height: 3px;
+  top: 3rem;
+  bottom: 0;
+  right: 0;
+}
