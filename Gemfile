@@ -31,9 +31,9 @@ group :development, :test do
   gem "database_cleaner"
   gem "pry"
   gem "factory_girl_rails"
-  gem "faker", "~> 1.8.4"
+  gem "faker"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
-  gem "rails-erd", "1.5.2"
+  gem "rails-erd"
   # TODO: Upgrade versions when they fix this stuff:
   # https://stackoverflow.com/questions/43983466
   #   /controller-test-emits-debug-failure-messages-after-rails-5-1-upgrade

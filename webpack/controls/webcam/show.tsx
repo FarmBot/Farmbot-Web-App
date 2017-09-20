@@ -3,35 +3,38 @@ import { Widget, WidgetHeader } from "../../ui/index";
 import { t } from "i18next";
 import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
-import { clamp } from "lodash";
 import { PLACEHOLDER_FARMBOT } from "../../farmware/images/image_flipper";
+import { Flipper } from "./flipper";
 
 type State = {
-  /** We might need to move this in to Redux and use a UUID instead of an index,
+  /** Current index in the webcam feed list.
+   *
+   * We might need to move this in to Redux and use a UUID instead of an index,
    * depending on user needs.
    */
   current: number;
 };
 
-export class Show extends React.Component<WebcamPanelProps, State> {
+const FALLBACK_FEED = { name: "", url: PLACEHOLDER_FARMBOT };
 
-  state: State = {
-    current: 0
-  };
+export class Show extends React.Component<WebcamPanelProps, State> {
+  NO_FEED = t(`No webcams yet. Click the edit button to add a feed URL.`);
+
+  state: State = { current: 0 };
 
   render() {
     const { props } = this;
-    const unsaved = !!props.feeds.filter(x => x.specialStatus !== undefined).length;
-    const f = this.props.feeds.map(x => x.body);
-    const flipper = new Flipper(f, {
-      name: "Missing",
-      url: PLACEHOLDER_FARMBOT
-    }, this.state.current);
-    const msg = this.props.feeds.length ?
-      "" : t(`No webcams yet. Click the edit button to add a feed URL.`);
+    const unsaved = !!props
+      .feeds
+      .filter(x => x.specialStatus !== undefined)
+      .length;
+    const feeds = this.props.feeds.map(x => x.body);
+    const flipper = new Flipper(feeds, FALLBACK_FEED, this.state.current);
+    const msg = this.props.feeds.length ? "" : this.NO_FEED;
+    const title = flipper.current.name || "Webcam Feeds";
     return (
       <Widget>
-        <WidgetHeader title="Webcams" helpText={ToolTips.WEBCAM}>
+        <WidgetHeader title={title} helpText={ToolTips.WEBCAM}>
           <button
             className="fb-button gray"
             onClick={props.onToggle}>
@@ -64,30 +67,4 @@ export class Show extends React.Component<WebcamPanelProps, State> {
       </Widget>
     );
   }
-}
-
-class Flipper<T> {
-  private go = (n: number) =>
-    (cb: (next: T | undefined, index: number) => void) => {
-      this.inc(n);
-      console.log("HEY" + this.index);
-      cb(this.current, this.index);
-    }
-
-  private inc = (num: number) => {
-    const i = this.index;
-    this.index = clamp(i + num, 0, this.list.length - 1);
-    return this.index;
-  }
-
-  get current(): T { return this.list[this.index] || this.fallback; }
-
-  constructor(public list: T[],
-    public fallback: T,
-    private index: number,
-  ) { }
-
-  up = this.go(1);
-  down = this.go(-1);
-
 }
