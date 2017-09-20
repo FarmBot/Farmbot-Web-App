@@ -22,6 +22,7 @@ export abstract class PlantInfoBase extends
   }
 
   fallback = () => {
+    history.push("/app/designer/plants");
     return <span>Redirecting...</span>;
   }
 
