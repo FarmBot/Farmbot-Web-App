@@ -6,7 +6,7 @@ import { WritePin } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
 
 describe("<TileWritePin/>", () => {
-  function bootstrapTest() {
+  function fakeProps() {
     const currentStep: WritePin = {
       kind: "write_pin",
       args: {
@@ -16,20 +16,19 @@ describe("<TileWritePin/>", () => {
       }
     };
     return {
-      component: mount(<TileWritePin
-        currentSequence={fakeSequence()}
-        currentStep={currentStep}
-        dispatch={jest.fn()}
-        index={0}
-        resources={emptyState().index} />)
+      currentSequence: fakeSequence(),
+      currentStep: currentStep,
+      dispatch: jest.fn(),
+      index: 0,
+      resources: emptyState().index
     };
   }
 
-  it("renders inputs", () => {
-    const block = bootstrapTest().component;
-    const inputs = block.find("input");
-    const labels = block.find("label");
-    const buttons = block.find("button");
+  it("renders inputs: Analog", () => {
+    const wrapper = mount(<TileWritePin {...fakeProps() } />);
+    const inputs = wrapper.find("input");
+    const labels = wrapper.find("label");
+    const buttons = wrapper.find("button");
     expect(inputs.length).toEqual(3);
     expect(labels.length).toEqual(3);
     expect(buttons.length).toEqual(1);
@@ -40,5 +39,25 @@ describe("<TileWritePin/>", () => {
     expect(inputs.at(2).props().value).toEqual(2);
     expect(labels.at(2).text()).toEqual("Pin Mode");
     expect(buttons.at(0).text()).toEqual("Analog");
+  });
+
+  it("renders inputs: Digital", () => {
+    const p = fakeProps();
+    p.currentStep.args.pin_mode = 0;
+    p.currentStep.args.pin_value = 1;
+    const wrapper = mount(<TileWritePin {...p} />);
+    const inputs = wrapper.find("input");
+    const labels = wrapper.find("label");
+    const buttons = wrapper.find("button");
+    expect(inputs.length).toEqual(2);
+    expect(labels.length).toEqual(3);
+    expect(buttons.length).toEqual(2);
+    expect(inputs.first().props().placeholder).toEqual("Write Pin");
+    expect(labels.at(0).text()).toEqual("Pin Number");
+    expect(inputs.at(1).props().value).toEqual(3);
+    expect(labels.at(1).text()).toEqual("Value");
+    expect(buttons.at(0).text()).toEqual("ON");
+    expect(labels.at(2).text()).toEqual("Pin Mode");
+    expect(buttons.at(1).text()).toEqual("Digital");
   });
 });
