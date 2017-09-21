@@ -17,10 +17,18 @@ describe("Flipper<T>", () => {
       expect(index).toBe(1);
       expect(item && item.value).toBe(1);
     });
-    times(10, () => f.up(noop));
+    times(3, () => f.up(noop));
     f.up((item, index) => {
       expect(index).toBe(2);
       expect(item && item.value).toBe(2);
+    });
+  });
+
+  it("goes up and wraps", () => {
+    const f = new Flipper<Item>(items(), { value: -1 }, 2);
+    f.up((item, index) => {
+      expect(index).toBe(0);
+      expect(item && item.value).toBe(0);
     });
   });
 
@@ -39,10 +47,14 @@ describe("Flipper<T>", () => {
       expect(index).toBe(1);
       expect(item && item.value).toBe(1);
     });
-    times(10, () => f.down(noop));
+  });
+
+  it("goes down and wraps", () => {
+    const f = new Flipper<Item>(items(), { value: -1 }, 0);
     f.down((item, index) => {
-      expect(index).toBe(0);
-      expect(item && item.value).toBe(0);
+      expect(index).toBe(2);
+      expect(item && item.value).toBe(2);
     });
   });
+
 });

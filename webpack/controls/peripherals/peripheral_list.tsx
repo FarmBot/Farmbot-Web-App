@@ -11,7 +11,8 @@ export function PeripheralList(props: PeripheralListProps) {
       return <KeyValShowRow key={p.uuid}
         label={p.body.label}
         labelPlaceholder=""
-        value={"" + (pins[p.body.pin || -1] || { value: undefined }).value}
+        value={"" + p.body.pin}
+        toggleValue={(pins[p.body.pin || -1] || { value: undefined }).value}
         valuePlaceholder=""
         onClick={() => p.body.pin && pinToggle(p.body.pin)}
         disabled={!!disabled} />;

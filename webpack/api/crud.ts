@@ -228,10 +228,10 @@ const MUST_CONFIRM_LIST: ResourceName[] = [
   "images"
 ];
 
-const confirmationChecker = (resource: TaggedResource, force = true) =>
+const confirmationChecker = (resource: TaggedResource, force = false) =>
   <T>(proceed: () => T): T | undefined => {
     if (MUST_CONFIRM_LIST.includes(resource.kind)) {
-      if (!force && confirm("Are you sure you want to delete this item?")) {
+      if (force || confirm("Are you sure you want to delete this item?")) {
         return proceed();
       } else {
         return undefined;

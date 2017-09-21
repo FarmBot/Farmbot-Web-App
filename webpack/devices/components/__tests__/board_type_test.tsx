@@ -18,7 +18,7 @@ describe("<BoardType/>", () => {
   it("Other", () => {
     const wrapper = mount(<BoardType
       firmwareVersion={"4.0.2"} />);
-    expect(wrapper.text()).toContain("unknown");
+    expect(wrapper.text()).toContain("Present");
   });
 
   it("Unknown", () => {

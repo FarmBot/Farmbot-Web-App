@@ -18,7 +18,7 @@ export class BoardType
         case "F":
           return "Farmduino";
         default:
-          return "unknown";
+          return "Present";
       }
     } else {
       return "unknown";
@@ -29,7 +29,7 @@ export class BoardType
     return <Row>
       <Col xs={2}>
         <label>
-          {t("HARDWARE")}
+          {t("FIRMWARE")}
         </label>
       </Col>
       <Col xs={7}>

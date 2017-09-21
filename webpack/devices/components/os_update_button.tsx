@@ -61,14 +61,14 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
       <Col xs={4}>
         <p>{t("Auto Updates?")}</p>
       </Col>
-      <Col xs={1}>
+      <Col xs={3}>
         <ToggleButton toggleValue={toggleVal}
           toggleAction={() => {
             const os_auto_update = !osUpdateBool ? 1 : 0;
             updateConfig({ os_auto_update })(noop);
           }} />
       </Col>
-      <Col xs={7}>
+      <Col xs={5}>
         <button
           className={"fb-button " + buttonColor}
           disabled={isWorking(osUpdateJob)}
