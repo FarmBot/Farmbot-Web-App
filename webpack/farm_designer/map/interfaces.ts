@@ -87,6 +87,7 @@ export interface MapBackgroundProps {
 
 export interface GridProps {
   mapTransformProps: MapTransformProps;
+  dispatch: Function;
 }
 
 export interface VirtualFarmBotProps {

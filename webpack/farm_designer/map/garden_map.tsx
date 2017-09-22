@@ -247,7 +247,8 @@ export class GardenMap extends
           onMouseMove={this.drag}
           onClick={this.click}>
           <Grid
-            mapTransformProps={mapTransformProps} />
+            mapTransformProps={mapTransformProps}
+            dispatch={this.props.dispatch} />
           <SpreadLayer
             mapTransformProps={mapTransformProps}
             plants={this.props.plants}
