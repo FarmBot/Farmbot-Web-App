@@ -68,8 +68,8 @@ SENDGRID_USERNAME: "Used by FarmBot, Inc"
 # For email delivery. Who is your email host?
 SMTP_HOST: "smtp.sendgrid.net"
 # Optional with default of 587
-SMTP_PORT: 587
+SMTP_PORT: "587"
 # Set this if you don't want to deal with email verification of new users.
 # (self hosted users)
-NO_EMAILS: TRUE
+NO_EMAILS: "TRUE"
 
