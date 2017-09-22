@@ -27,7 +27,7 @@ import { shallow } from "enzyme";
 describe("<CropInfo />", () => {
   it("renders", () => {
     Object.defineProperty(location, "pathname", {
-      value: "//app/plants/crop_search/mint"
+      value: "/app/designer/plants/crop_search/mint"
     });
     const wrapper = shallow(
       <CropInfo

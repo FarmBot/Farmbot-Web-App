@@ -11,7 +11,7 @@ describe("<SelectPlants />", () => {
   beforeEach(function () {
     jest.clearAllMocks();
     Object.defineProperty(location, "pathname", {
-      value: "//app/plants/select"
+      value: "/app/designer/plants/select"
     });
   });
 

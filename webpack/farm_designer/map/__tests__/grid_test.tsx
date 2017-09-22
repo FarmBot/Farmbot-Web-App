@@ -3,9 +3,15 @@ jest.mock("../../../history", () => ({
   history: {
     push: mockHistory,
     getCurrentLocation: jest.fn()
-      .mockImplementationOnce(() => { return { pathname: "//app/plants" } })
-      .mockImplementationOnce(() => { return { pathname: "//app/plants/1/edit" } })
-      .mockImplementationOnce(() => { return { pathname: "//app/plants/1" } })
+      .mockImplementationOnce(() => {
+        return { pathname: "/app/designer/plants" }
+      })
+      .mockImplementationOnce(() => {
+        return { pathname: "/app/designer/plants/1/edit" }
+      })
+      .mockImplementationOnce(() => {
+        return { pathname: "/app/designer/plants/1" }
+      })
   }
 }));
 
