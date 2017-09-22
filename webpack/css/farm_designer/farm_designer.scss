@@ -38,6 +38,10 @@
   overflow: visible;
 }
 
+.drop-area-background a {
+  cursor: default !important;
+}
+
 .crop-drag-info-image {
   width: 100%;
   background-color: $translucent;

@@ -247,7 +247,8 @@ export class GardenMap extends
           onMouseMove={this.drag}
           onClick={this.click}>
           <Grid
-            mapTransformProps={mapTransformProps} />
+            mapTransformProps={mapTransformProps}
+            dispatch={this.props.dispatch} />
           <SpreadLayer
             mapTransformProps={mapTransformProps}
             plants={this.props.plants}
@@ -276,7 +277,8 @@ export class GardenMap extends
           <ToolSlotLayer
             mapTransformProps={mapTransformProps}
             visible={!!this.props.showFarmbot}
-            slots={this.props.toolSlots} />
+            slots={this.props.toolSlots}
+            dispatch={this.props.dispatch} />
           <FarmBotLayer
             mapTransformProps={mapTransformProps}
             visible={!!this.props.showFarmbot}
@@ -301,7 +303,9 @@ export class GardenMap extends
             activeDragXY={this.state.activeDragXY}
             plantAreaOffset={this.props.gridOffset} />
           {this.state.selectionBox &&
-            <SelectionBox selectionBox={this.state.selectionBox} />}
+            <SelectionBox
+            selectionBox={this.state.selectionBox}
+            mapTransformProps={mapTransformProps} />}
         </svg>
       </svg>
     </div>;

@@ -25,7 +25,7 @@ describe("<AddPlant />", () => {
       }]
     };
     Object.defineProperty(location, "pathname", {
-      value: "//app/plants/crop_search/mint/add"
+      value: "/app/designer/plants/crop_search/mint/add"
     });
     const wrapper = mount(<AddPlant {...props} />);
     expect(wrapper.text()).toContain("Mint");

@@ -1,19 +1,25 @@
 import * as React from "react";
+import { MapTransformProps } from "./interfaces";
+import { getXYFromQuadrant, round } from "./util";
 
 export type SelectionBoxData =
   Record<"x0" | "y0" | "x1" | "y1", number | undefined>;
 
 export interface SelectionBoxProps {
-  selectionBox: SelectionBoxData
+  selectionBox: SelectionBoxData;
+  mapTransformProps: MapTransformProps;
 }
 
 export function SelectionBox(props: SelectionBoxProps) {
   const { x0, y0, x1, y1 } = props.selectionBox;
+  const { quadrant, gridSize } = props.mapTransformProps;
   if (x0 && y0 && x1 && y1) {
-    const x = Math.min(x0, x1);
-    const y = Math.min(y0, y1);
-    const width = Math.max(x0, x1) - x;
-    const height = Math.max(y0, y1) - y;
+    const initial = getXYFromQuadrant(round(x0), round(y0), quadrant, gridSize);
+    const drag = getXYFromQuadrant(round(x1), round(y1), quadrant, gridSize);
+    const x = Math.min(initial.qx, drag.qx);
+    const y = Math.min(initial.qy, drag.qy);
+    const width = Math.max(initial.qx, drag.qx) - x;
+    const height = Math.max(initial.qy, drag.qy) - y;
     return <g id="selection-box">
       <rect
         x={x}
