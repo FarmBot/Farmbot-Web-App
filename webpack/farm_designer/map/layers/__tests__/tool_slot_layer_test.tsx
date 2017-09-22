@@ -1,3 +1,17 @@
+const mockHistory = jest.fn();
+jest.mock("../../../../history", () => ({
+  history: {
+    push: mockHistory,
+    getCurrentLocation: jest.fn()
+      .mockImplementationOnce(() => {
+        return { pathname: "/app/designer/plants/1" }
+      })
+      .mockImplementationOnce(() => {
+        return { pathname: "/app/designer/plants" }
+      })
+  }
+}));
+
 import * as React from "react";
 import { ToolSlotLayer, ToolSlotLayerProps } from "../tool_slot_layer";
 import { fakeResource } from "../../../../__test_support__/fake_resource";
@@ -22,7 +36,8 @@ describe("<ToolSlotLayer/>", () => {
       slots: [{ toolSlot, tool: undefined }],
       mapTransformProps: {
         quadrant: 1, gridSize: { x: 3000, y: 1500 }
-      }
+      },
+      dispatch: jest.fn()
     };
   }
   it("toggles visibility off", () => {
@@ -36,4 +51,19 @@ describe("<ToolSlotLayer/>", () => {
     const result = shallow(<ToolSlotLayer {...p } />);
     expect(result.find("ToolSlotPoint").length).toEqual(1);
   });
+
+  it("navigates to tools page", async () => {
+    const p = fakeProps();
+    const wrapper = shallow(<ToolSlotLayer {...p } />);
+    const tools = wrapper.find("g").first();
+    await tools.simulate("click") // not on main map page
+    expect(mockHistory).not.toHaveBeenCalled();
+    expect(p.dispatch).not.toHaveBeenCalled();
+    await tools.simulate("click") // on main map page
+    expect(mockHistory).toHaveBeenCalledWith("/app/tools");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: undefined, type: "SELECT_PLANT"
+    });
+  });
+
 });

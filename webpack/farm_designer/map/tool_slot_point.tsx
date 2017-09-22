@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Link } from "react-router";
 import { SlotWithTool } from "../../resources/interfaces";
 import { getXYFromQuadrant } from "./util";
 import { MapTransformProps } from "./interfaces";
@@ -42,9 +41,6 @@ export class ToolSlotPoint extends
           <circle cx={6} cy={6} r={5} fill="url(#SeedBinGradient)" />
         </pattern>
       </defs>
-
-      <Link className="tool-link-wrapper"
-      to={"/app/tools"}>
 
       {seedBin &&
         <g id="seed-bin" key={this.slot.toolSlot.uuid}
@@ -89,7 +85,7 @@ export class ToolSlotPoint extends
           fillOpacity={0.5}
           fill={this.state.hovered ? "#434343" : "#666666"} />
       }
-      </Link>
+
       <text
         visibility={this.state.hovered ? "visible" : "hidden"}
         x={qx}
