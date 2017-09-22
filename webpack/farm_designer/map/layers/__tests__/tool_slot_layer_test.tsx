@@ -1,14 +1,7 @@
 const mockHistory = jest.fn();
 jest.mock("../../../../history", () => ({
   history: {
-    push: mockHistory,
-    getCurrentLocation: jest.fn()
-      .mockImplementationOnce(() => {
-        return { pathname: "/app/designer/plants/1" }
-      })
-      .mockImplementationOnce(() => {
-        return { pathname: "/app/designer/plants" }
-      })
+    push: mockHistory
   }
 }));
 
@@ -19,6 +12,10 @@ import { ToolSlotPointer } from "../../../../interfaces";
 import { shallow } from "enzyme";
 
 describe("<ToolSlotLayer/>", () => {
+  beforeEach(function () {
+    jest.clearAllMocks();
+  });
+
   function fakeProps(): ToolSlotLayerProps {
     const ts: ToolSlotPointer = {
       pointer_type: "ToolSlot",
@@ -53,17 +50,29 @@ describe("<ToolSlotLayer/>", () => {
   });
 
   it("navigates to tools page", async () => {
+    Object.defineProperty(location, "pathname", {
+      value: "/app/designer/plants", configurable: true
+    });
     const p = fakeProps();
     const wrapper = shallow(<ToolSlotLayer {...p } />);
     const tools = wrapper.find("g").first();
-    await tools.simulate("click") // not on main map page
-    expect(mockHistory).not.toHaveBeenCalled();
-    expect(p.dispatch).not.toHaveBeenCalled();
-    await tools.simulate("click") // on main map page
+    await tools.simulate("click")
     expect(mockHistory).toHaveBeenCalledWith("/app/tools");
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: undefined, type: "SELECT_PLANT"
     });
+  });
+
+  it("doesn't navigate to tools page", async () => {
+    Object.defineProperty(location, "pathname", {
+      value: "/app/designer/plants/1", configurable: true
+    });
+    const p = fakeProps();
+    const wrapper = shallow(<ToolSlotLayer {...p } />);
+    const tools = wrapper.find("g").first();
+    await tools.simulate("click")
+    expect(mockHistory).not.toHaveBeenCalled();
+    expect(p.dispatch).not.toHaveBeenCalled();
   });
 
 });

@@ -12,16 +12,16 @@ export interface ToolSlotLayerProps {
 }
 
 export function ToolSlotLayer(props: ToolSlotLayerProps) {
+  const pathArray = location.pathname.split("/");
+  const canClickTool = !(pathArray[3] === "plants" && pathArray.length > 4);
   function goToToolsPage() {
-    if (history.getCurrentLocation().pathname === "/app/designer/plants") {
+    if (canClickTool) {
       props.dispatch({ type: "SELECT_PLANT", payload: undefined });
       return Promise.resolve().then(() => history.push("/app/tools"))
     }
   }
   const { slots, visible, mapTransformProps } = props;
-  const cursor = location.pathname === "/app/designer/plants"
-    ? "pointer"
-    : "default"
+  const cursor = canClickTool ? "pointer" : "default";
   return <g
     id="toolslot-layer"
     onClick={goToToolsPage}
