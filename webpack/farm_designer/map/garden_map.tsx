@@ -303,7 +303,9 @@ export class GardenMap extends
             activeDragXY={this.state.activeDragXY}
             plantAreaOffset={this.props.gridOffset} />
           {this.state.selectionBox &&
-            <SelectionBox selectionBox={this.state.selectionBox} />}
+            <SelectionBox
+            selectionBox={this.state.selectionBox}
+            mapTransformProps={mapTransformProps} />}
         </svg>
       </svg>
     </div>;

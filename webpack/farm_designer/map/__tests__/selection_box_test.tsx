@@ -10,6 +10,9 @@ describe("<SelectionBox/>", () => {
         y0: 30,
         x1: 240,
         y1: 130
+      },
+      mapTransformProps: {
+        quadrant: 2, gridSize: { x: 3000, y: 1500 }
       }
     };
   }
@@ -28,6 +31,17 @@ describe("<SelectionBox/>", () => {
     p.selectionBox.x1 = undefined;
     const wrapper = shallow(<SelectionBox {...p } />);
     expect(wrapper.html()).toEqual("<g id=\"selection-box\"></g>");
+  });
+
+  it("renders selection box: quadrant 4", () => {
+    const p = fakeProps();
+    p.mapTransformProps.quadrant = 4;
+    const wrapper = shallow(<SelectionBox {...p } />);
+    const boxProps = wrapper.find("rect").props();
+    expect(boxProps.x).toEqual(2760);
+    expect(boxProps.y).toEqual(1370);
+    expect(boxProps.width).toEqual(200);
+    expect(boxProps.height).toEqual(100);
   });
 
 });
