@@ -9,7 +9,10 @@ module Api
     def create
       if_properly_formatted do |auth_params|
         klass = (auth_params[:credentials]) ? CREDS : NO_CREDS
-        mutate klass.run(auth_params).tap { |result| maybe_halt_login(result) }
+        mutate klass
+          .run(auth_params)
+          .tap { |result| maybe_halt_login(result) }
+          .tap { |result| mark_as_seen(result.result[:user].device) }
       end
     end
 
