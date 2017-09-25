@@ -1,8 +1,8 @@
 class AbstractJwtToken
 
-  PRIVATE_KEY  = KeyGen.current
-  PUBLIC_KEY   = KeyGen.current.public_key
-  ALG          = 'RS256'
+  PRIVATE_KEY = KeyGen.current
+  PUBLIC_KEY  = KeyGen.current.public_key
+  ALG         = 'RS256'
 
   attr_accessor :encoded, :unencoded
 

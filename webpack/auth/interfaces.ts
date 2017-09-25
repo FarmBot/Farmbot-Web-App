@@ -8,8 +8,6 @@ export interface AuthState {
 }
 
 export interface UnencodedToken {
-  // /** SUBJECT - The user's email. STOP USING THIS! */
-  // sub: string;
   /** ISSUED AT */
   iat: number;
   /** JSON TOKEN IDENTIFIER - a serial number for the token. */
@@ -20,8 +18,6 @@ export interface UnencodedToken {
   exp: number;
   /** MQTT server address */
   mqtt: string;
-  /** BOT UNIQUE IDENTIFIER */
-  bot: string;
   /** Where to download RPi software */
   os_update_server: string;
   /** Where to download firmware. */
