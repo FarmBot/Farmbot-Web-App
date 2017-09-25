@@ -9,30 +9,19 @@ import { ConnectivityPanel, StatusRowProps } from "./connectivity_panel";
 import * as moment from "moment";
 import { isUndefined } from "lodash";
 
-interface State {
-  online: boolean;
-}
-
 @connect(mapStateToProps)
-export class Devices extends React.Component<Props, State> {
-  state = { online: false };
+export class Devices extends React.Component<Props, {}> {
+  state = { online: navigator.onLine };
   get rowData(): StatusRowProps[] {
     const mqttUrl = this.props.auth && this.props.auth.token.unencoded.mqtt;
     const mqttConnected = this.props.bot.connectedToMQTT;
     const lastSeen = this.props.deviceAccount.body.last_seen;
+    const timstmp = this.props.bot.hardware.user_env["LAST_CLIENT_CONNECTED"];
     return [
-      botToMQTT(),
+      botToMQTT(timstmp),
       botToAPI(lastSeen ? moment(lastSeen) : undefined, moment()),
-      browserToAPI(this.state.online),
       browserToMQTT(mqttUrl, mqttConnected)
     ];
-  }
-
-  componentDidMount() {
-    window.addEventListener("online", () =>
-      this.setState({ online: true }));
-    window.addEventListener("offline", () =>
-      this.setState({ online: false }));
   }
 
   render() {
@@ -69,40 +58,41 @@ const HOUR = 1000 * 60 * 60;
 const TWO_HOURS = HOUR * 2;
 function botToAPI(lastSeen: moment.Moment | undefined,
   now = moment()): StatusRowProps {
-  // less than 1 hour == probably OK
-  // 1 -- 2 hours == questionable
-  // > 2 bad!
+  const status: StatusRowProps = {
+    from: "Bot",
+    connectionStatus: undefined,
+    to: "API",
+    children: "?"
+  };
+
   const diff = lastSeen && lastSeen.diff(now);
+
   if (isUndefined(diff) || (diff > TWO_HOURS)) {
-    return {
-      from: "TODO",
-      to: "TODO",
-      children: "TODO"
-    };
+    status.connectionStatus = false;
+    status.children = "Have not heard from bot in over 2 hours.";
   } else {
-    return {
-      from: "TODO",
-      to: "TODO",
-      children: "TODO"
-    };
-
+    status.connectionStatus = true;
+    const t = moment(lastSeen).fromNow();
+    status.children = `Bot sent message to server ${t}`;
   }
+
+  return status;
 }
 
-function botToMQTT(): StatusRowProps {
-  return {
-    from: "TODO",
-    to: "TODO",
-    children: "TODO"
+function botToMQTT(lastSeen: string | undefined): StatusRowProps {
+  const output: StatusRowProps = {
+    from: "Bot",
+    to: "MQTT",
+    connectionStatus: false,
+    children: "We are not seeing any realtime messages from the bot right now."
   };
-}
 
-function browserToAPI(isOnline: boolean): StatusRowProps {
-  return {
-    from: "TODO",
-    to: "TODO",
-    children: "TODO"
-  };
+  if (lastSeen) {
+    output.connectionStatus = true;
+    output.children = `Connected ${moment(new Date(JSON.parse(lastSeen))).fromNow()}`;
+  }
+
+  return output;
 }
 
 function browserToMQTT(mqttUrl: string | undefined, online?: boolean): StatusRowProps {
