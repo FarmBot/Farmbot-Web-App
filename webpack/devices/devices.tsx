@@ -58,22 +58,29 @@ const HOUR = 1000 * 60 * 60;
 const TWO_HOURS = HOUR * 2;
 function botToAPI(lastSeen: moment.Moment | undefined,
   now = moment()): StatusRowProps {
+  // TODO: Complexity is getting high on this one.
+  // Refactor if more business requirements are added.
+  const diff = lastSeen && now.diff(lastSeen);
+  const ago = moment(lastSeen).fromNow();
   const status: StatusRowProps = {
     from: "Bot",
-    connectionStatus: undefined,
     to: "API",
+    connectionStatus: undefined,
     children: "?"
   };
 
-  const diff = lastSeen && lastSeen.diff(now);
-
-  if (isUndefined(diff) || (diff > TWO_HOURS)) {
+  if (isUndefined(diff)) {
     status.connectionStatus = false;
-    status.children = "Have not heard from bot in over 2 hours.";
+    status.children = "We have not seen messages from FarmBot yet.";
+  }
+
+  if (diff && (diff > TWO_HOURS)) {
+    status.connectionStatus = false;
+    status.children =
+      `Have not heard from bot in ${ago}.`;
   } else {
     status.connectionStatus = true;
-    const t = moment(lastSeen).fromNow();
-    status.children = `Bot sent message to server ${t}`;
+    status.children = `Last seen ${ago}.`;
   }
 
   return status;

@@ -25,6 +25,14 @@ export class ConnectivityPanel extends React.Component<Props, State> {
           .props
           .rowData
           .map((x, y) => <ConnectivityRow {...x} key={y} />)}
+        <Row>
+          <Col xs={12}>
+            <h3>Diagnosis</h3>
+            <p>
+              We will interpret results and stuff here.
+            </p>
+          </Col>
+        </Row>
       </WidgetBody>
     </Widget>;
   }
