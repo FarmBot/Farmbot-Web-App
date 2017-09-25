@@ -7,7 +7,7 @@ module Auth
     def execute
       token  = SessionToken.decode!(just_the_token)
       claims = token.unencoded
-      sub    = claims['sub']
+      sub    = claims["sub"]
       case sub
       when Integer then User.find(sub)
       # HISTORICAL CONTEXT: We once used emails as a `sub` field. At the time,
