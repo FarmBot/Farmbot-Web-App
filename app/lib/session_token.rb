@@ -22,7 +22,7 @@ class SessionToken < AbstractJwtToken
     end
 
     self.new([{
-             sub:  user.email,
+             sub:  user.id,
              iat:  iat,
              jti:  SecureRandom.uuid, # Used for revokation if need be.
              iss:  iss,
