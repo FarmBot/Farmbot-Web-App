@@ -11,8 +11,7 @@ export let auth: Everything["auth"] = {
       "os_update_server": "https://api.github.com/repos/farmbot/" +
       "farmbot_os/releases/latest",
       "fw_update_server": "https://api.github.com/repos/FarmBot/" +
-      "farmbot-arduino-firmware/releases/latest",
-      "bot": "device_403"
+      "farmbot-arduino-firmware/releases/latest"
     },
     "encoded": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhZG1pbk" +
     "BhZG1pbi5jb20iLCJpYXQiOjE0OTU1NjkwODQsImp0aSI6ImIzODkxNWNhLTNkN2Et" +
