@@ -29,7 +29,6 @@ class SessionToken < AbstractJwtToken
              exp:  exp,
              mqtt: MQTT,
              os_update_server: OS_RELEASE,
-             fw_update_server: FW_RELEASE,
              bot:  "device_#{user.device.id}"}])
   end
 
