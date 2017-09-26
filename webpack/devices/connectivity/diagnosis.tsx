@@ -11,14 +11,14 @@ export function Diagnosis(props: DiagnosisProps) {
   return <div>
     <h3>Diagnosis</h3>
     <p>
-      {inferHelpText(props)}
+      {diagnose(props)}
     </p>
   </div>;
 }
 
 // I don't like this at all. If anyone has a cleaner solution,
 // I'd love to hear it. Implements a "truth table".
-function inferHelpText(x: DiagnosisProps) {
+export function diagnose(x: DiagnosisProps) {
   const userMQFlag = x.userMQTT ? 0b001 : 0;
   const botAPIFlag = x.botAPI ? 0b10 : 0;
   const botMQFlag = x.botMQTT ? 0b100 : 0;
