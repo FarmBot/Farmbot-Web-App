@@ -29,7 +29,7 @@ export class Devices extends React.Component<Props, {}> {
 
   /** Shuffle these around to change the ordering of the status table. */
   get rowData(): StatusRowProps[] {
-    return [this.flags.botMQTT, this.flags.botAPI, this.flags.userMQTT];
+    return [this.flags.userMQTT, this.flags.botMQTT, this.flags.botAPI];
   }
 
   render() {
