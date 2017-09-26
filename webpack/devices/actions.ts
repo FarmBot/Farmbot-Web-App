@@ -264,9 +264,15 @@ export function connectDevice(token: string): ConnectDeviceReturn {
   return (dispatch: Function, getState: GetState) => {
     const secure = location.protocol === "https:";
     const bot = new Farmbot({ token, secure });
-    bot.on("online", () => dispatch(setMqttStatus(true)));
+    bot.on("online", () => {
+      bot.setUserEnv({ "LAST_CLIENT_CONNECTED": JSON.stringify(new Date()) });
+      dispatch(setMqttStatus(true));
+    });
     bot.on("offline", () => {
       dispatch(setMqttStatus(false));
+      bot.setUserEnv(
+        { "LAST_CLIENT_CONNECTED": "" }
+      );
       error(t(Content.MQTT_DISCONNECTED));
     });
     return bot
