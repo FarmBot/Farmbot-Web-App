@@ -19,13 +19,16 @@ export class ConnectivityPanel extends React.Component<Props, State> {
     return <Widget className="device-widget">
       <WidgetHeader
         title={t("Connectivity")}
-        helpText={t("Diagnose connectivity issues with FarmBot and the browser.")} />
+        helpText={t("Diagnose connectivity issues with FarmBot and the browser.")}>
+
+      </WidgetHeader>
       <WidgetBody>
         <ConnectivityRow from="from" to="to" />
         {this
           .props
           .rowData
           .map((x, y) => <ConnectivityRow {...x} key={y} />)}
+        <hr />
         <Row>
           <Col xs={12}>
             {this.props.children}
@@ -71,4 +74,16 @@ function ConnectivityRow(props: StatusRowProps) {
       </p>
     </Col>
   </Row>;
+}
+
+interface RetryBtnProps {
+  flags: boolean[];
+}
+export function RetryBtn(props: RetryBtnProps) {
+  const failures = props.flags.includes(false);
+  const color = failures ? "red" : "green";
+
+  return <button className={color + " fb-button"}>
+    Run Again
+</button>;
 }

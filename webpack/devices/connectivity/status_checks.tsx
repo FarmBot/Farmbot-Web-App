@@ -3,7 +3,7 @@ import * as moment from "moment";
 import { StatusRowProps } from "./index";
 
 const HOUR = 1000 * 60 * 60;
-const TWO_HOURS = HOUR * 2;
+const SIX_HOURS = HOUR * 6;
 
 export function botToAPI(lastSeen: moment.Moment | undefined,
   now = moment()): StatusRowProps {
@@ -23,7 +23,7 @@ export function botToAPI(lastSeen: moment.Moment | undefined,
     status.children = "We have not seen messages from FarmBot yet.";
   }
 
-  if (diff && (diff > TWO_HOURS)) {
+  if (diff && (diff > SIX_HOURS)) {
     status.connectionStatus = false;
     status.children =
       `Last heard from bot ${ago}.`;
