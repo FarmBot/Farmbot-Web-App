@@ -19,10 +19,9 @@ export namespace DiagnosticMessages {
     "issue is resolvable by refreshing the browser";
 
   export const WIFI_OR_CONFIG = "Your browser is connected correctly, but " +
-    "we have no record of FarmBot ever connecting to the internet. This " +
-    "usually happens because of a bad WiFi signal in the garden or because " +
-    "you entered a bad password during configuration. A loss of power is " +
-    "also possible.";
+    "we have no recent record of FarmBot ever connecting to the internet. " +
+    "This usually happens because of a bad WiFi signal in the garden, a bad " +
+    "password during configuration, or a very long power outage.";
   export const WEBSOCKET_ISSUES = "FarmBot appears to be currently connected " +
     "to the internet (last seen at <date/time>), but also appears to be " +
     "behind a firewall and is unable to send and receive messages with your " +
