@@ -47,15 +47,15 @@ export interface StatusRowProps {
 }
 
 const iconLookup: CowardlyDictionary<string> = {
-  true: "fa fa-thumbs-up",
-  false: "fa fa-thumbs-down"
+  true: "saucer green active",
+  false: "saucer red active"
 };
 
 function ConnectivityRow(props: StatusRowProps) {
-  const className = iconLookup["" + props.connectionStatus] || "fa fa-question";
+  const className = iconLookup["" + props.connectionStatus] || "saucer yellow active";
   return <Row>
     <Col xs={1}>
-      <i className={className}></i>
+      <div className={className}></div>
     </Col>
     <Col xs={1}>
       <p>
