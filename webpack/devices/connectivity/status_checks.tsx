@@ -1,6 +1,6 @@
 import { isUndefined } from "lodash";
 import * as moment from "moment";
-import { StatusRowProps } from "./index";
+import { StatusRowProps } from "./connectivity_row";
 
 const HOUR = 1000 * 60 * 60;
 const SIX_HOURS = HOUR * 6;

@@ -264,15 +264,9 @@ export function connectDevice(token: string): ConnectDeviceReturn {
   return (dispatch: Function, getState: GetState) => {
     const secure = location.protocol === "https:";
     const bot = new Farmbot({ token, secure });
-    bot.on("online", () => {
-      bot.setUserEnv({ "LAST_CLIENT_CONNECTED": JSON.stringify(new Date()) });
-      dispatch(setMqttStatus(true));
-    });
+    bot.on("online", () => dispatch(setMqttStatus(true)));
     bot.on("offline", () => {
       dispatch(setMqttStatus(false));
-      bot.setUserEnv(
-        { "LAST_CLIENT_CONNECTED": "" }
-      );
       error(t(Content.MQTT_DISCONNECTED));
     });
     return bot
@@ -287,6 +281,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
           ))
           .catch(() => { });
         bot.on("logs", function (msg: Log) {
+          dispatch(setMqttStatus(true));
           if (isLog(msg) && !oneOf(BAD_WORDS, msg.message.toUpperCase())) {
             maybeShowLog(msg);
             dispatch(init({
@@ -300,6 +295,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
           }
         });
         bot.on("status", _.throttle(function (msg: BotStateTree) {
+          dispatch(setMqttStatus(true));
           dispatch(incomingStatus(msg));
           if (NEED_VERSION_CHECK) {
             const IS_OK = versionOK(getState()
@@ -315,6 +311,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
 
         let alreadyToldYou = false;
         bot.on("malformed", function () {
+          dispatch(setMqttStatus(true));
           if (!alreadyToldYou) {
             warning(t(Content.MALFORMED_MESSAGE_REC_UPGRADE));
             alreadyToldYou = true;

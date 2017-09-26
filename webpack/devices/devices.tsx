@@ -6,9 +6,11 @@ import { Page, Col, Row } from "../ui";
 import { mapStateToProps } from "./state_to_props";
 import { Props } from "./interfaces";
 import * as moment from "moment";
-import { StatusRowProps, ConnectivityPanel } from "./connectivity/index";
+import { ConnectivityPanel } from "./connectivity/index";
 import { botToMQTT, botToAPI, browserToMQTT } from "./connectivity/status_checks";
 import { Diagnosis, DiagnosisProps } from "./connectivity/diagnosis";
+import { StatusRowProps } from "./connectivity/connectivity_row";
+import { refresh } from "../api/crud";
 
 @connect(mapStateToProps)
 export class Devices extends React.Component<Props, {}> {
@@ -32,6 +34,12 @@ export class Devices extends React.Component<Props, {}> {
     return [this.flags.userMQTT, this.flags.botMQTT, this.flags.botAPI];
   }
 
+  refresh = () => {
+    this
+      .props
+      .dispatch(refresh(this.props.deviceAccount));
+  };
+
   render() {
     if (this.props.auth) {
       return <Page className="devices">
@@ -52,7 +60,10 @@ export class Devices extends React.Component<Props, {}> {
         </Row>
         <Row>
           <Col xs={12} sm={6}>
-            <ConnectivityPanel rowData={this.rowData}>
+            <ConnectivityPanel
+              status={this.props.deviceAccount.specialStatus}
+              onRefresh={this.refresh}
+              rowData={this.rowData}>
               <Diagnosis
                 botMQTT={!!this.flags.botMQTT.connectionStatus}
                 botAPI={!!this.flags.botAPI.connectionStatus}
