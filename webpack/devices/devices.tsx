@@ -5,23 +5,31 @@ import { FarmbotOsSettings } from "./components/farmbot_os_settings";
 import { Page, Col, Row } from "../ui";
 import { mapStateToProps } from "./state_to_props";
 import { Props } from "./interfaces";
-import { ConnectivityPanel, StatusRowProps } from "./connectivity_panel";
 import * as moment from "moment";
-import { isUndefined } from "lodash";
+import { StatusRowProps, ConnectivityPanel } from "./connectivity/index";
+import { botToMQTT, botToAPI, browserToMQTT } from "./connectivity/status_checks";
+import { Diagnosis, DiagnosisProps } from "./connectivity/diagnosis";
 
 @connect(mapStateToProps)
 export class Devices extends React.Component<Props, {}> {
   state = { online: navigator.onLine };
-  get rowData(): StatusRowProps[] {
+
+  /** A record of all the things we know about connectivity right now. */
+  get flags(): Record<keyof DiagnosisProps, StatusRowProps> {
     const mqttUrl = this.props.auth && this.props.auth.token.unencoded.mqtt;
     const mqttConnected = this.props.bot.connectedToMQTT;
     const lastSeen = this.props.deviceAccount.body.last_seen;
-    const timstmp = this.props.bot.hardware.user_env["LAST_CLIENT_CONNECTED"];
-    return [
-      botToMQTT(timstmp),
-      botToAPI(lastSeen ? moment(lastSeen) : undefined, moment()),
-      browserToMQTT(mqttUrl, mqttConnected)
-    ];
+    const timstamp = this.props.bot.hardware.user_env["LAST_CLIENT_CONNECTED"];
+    return {
+      botMQTT: botToMQTT(timstamp),
+      botAPI: botToAPI(lastSeen ? moment(lastSeen) : undefined, moment()),
+      userMQTT: browserToMQTT(mqttUrl, mqttConnected)
+    };
+  }
+
+  /** Shuffle these around to change the ordering of the status table. */
+  get rowData(): StatusRowProps[] {
+    return [this.flags.botMQTT, this.flags.botAPI, this.flags.userMQTT];
   }
 
   render() {
@@ -44,7 +52,12 @@ export class Devices extends React.Component<Props, {}> {
         </Row>
         <Row>
           <Col xs={12} sm={6}>
-            <ConnectivityPanel rowData={this.rowData} />
+            <ConnectivityPanel rowData={this.rowData}>
+              <Diagnosis
+                botMQTT={!!this.flags.botMQTT.connectionStatus}
+                botAPI={!!this.flags.botAPI.connectionStatus}
+                userMQTT={!!this.flags.userMQTT.connectionStatus} />
+            </ConnectivityPanel>
           </Col>
         </Row>
       </Page>;
@@ -52,62 +65,4 @@ export class Devices extends React.Component<Props, {}> {
       throw new Error("Log in first");
     }
   }
-}
-
-const HOUR = 1000 * 60 * 60;
-const TWO_HOURS = HOUR * 2;
-function botToAPI(lastSeen: moment.Moment | undefined,
-  now = moment()): StatusRowProps {
-  // TODO: Complexity is getting high on this one.
-  // Refactor if more business requirements are added.
-  const diff = lastSeen && now.diff(lastSeen);
-  const ago = moment(lastSeen).fromNow();
-  const status: StatusRowProps = {
-    from: "Bot",
-    to: "API",
-    connectionStatus: undefined,
-    children: "?"
-  };
-
-  if (isUndefined(diff)) {
-    status.connectionStatus = false;
-    status.children = "We have not seen messages from FarmBot yet.";
-  }
-
-  if (diff && (diff > TWO_HOURS)) {
-    status.connectionStatus = false;
-    status.children =
-      `Have not heard from bot in ${ago}.`;
-  } else {
-    status.connectionStatus = true;
-    status.children = `Last seen ${ago}.`;
-  }
-
-  return status;
-}
-
-function botToMQTT(lastSeen: string | undefined): StatusRowProps {
-  const output: StatusRowProps = {
-    from: "Bot",
-    to: "MQTT",
-    connectionStatus: false,
-    children: "We are not seeing any realtime messages from the bot right now."
-  };
-
-  if (lastSeen) {
-    output.connectionStatus = true;
-    output.children = `Connected ${moment(new Date(JSON.parse(lastSeen))).fromNow()}`;
-  }
-
-  return output;
-}
-
-function browserToMQTT(mqttUrl: string | undefined, online?: boolean): StatusRowProps {
-  const url = `mqtt://${mqttUrl}`;
-  return {
-    from: "Browser",
-    to: "MQTT",
-    children: online ? ("Connected to  " + url) : "Unable to connect",
-    connectionStatus: online
-  };
 }
