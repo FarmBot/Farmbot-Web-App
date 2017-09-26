@@ -56,7 +56,7 @@ export function browserToMQTT(mqttUrl: string | undefined, online?: boolean): St
   return {
     from: "Browser",
     to: "MQTT",
-    children: online ? ("Connected to  " + url) : "Unable to connect",
+    children: online ? ("Connected to " + url) : "Unable to connect",
     connectionStatus: online
   };
 }
