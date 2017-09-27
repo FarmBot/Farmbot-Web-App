@@ -281,6 +281,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
           ))
           .catch(() => { });
         bot.on("logs", function (msg: Log) {
+          dispatch(setMqttStatus(true));
           if (isLog(msg) && !oneOf(BAD_WORDS, msg.message.toUpperCase())) {
             maybeShowLog(msg);
             dispatch(init({
@@ -294,6 +295,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
           }
         });
         bot.on("status", _.throttle(function (msg: BotStateTree) {
+          dispatch(setMqttStatus(true));
           dispatch(incomingStatus(msg));
           if (NEED_VERSION_CHECK) {
             const IS_OK = versionOK(getState()
@@ -309,6 +311,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
 
         let alreadyToldYou = false;
         bot.on("malformed", function () {
+          dispatch(setMqttStatus(true));
           if (!alreadyToldYou) {
             warning(t(Content.MALFORMED_MESSAGE_REC_UPGRADE));
             alreadyToldYou = true;
