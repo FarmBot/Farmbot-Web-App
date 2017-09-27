@@ -12,9 +12,7 @@ module Api
         mutate klass
           .run(auth_params)
           .tap { |result| maybe_halt_login(result) }
-          .tap do |result|
-            mark_as_seen(result.result[:user].device) if result.result
-          end
+          .tap { |result| mark_as_seen(result.result[:user].device) if result.result }
       end
     end
 
