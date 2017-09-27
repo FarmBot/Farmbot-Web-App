@@ -435,3 +435,5 @@ export function lastUrlChunk() {
   let p = history.getCurrentLocation().pathname;
   return p.split("/")[p.split("/").length - 1];
 }
+
+export const trim = (i: string): string => i.replace(/\s+/g, " ");

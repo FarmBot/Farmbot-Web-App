@@ -22,7 +22,7 @@ describe("<PlantInventoryItem />", () => {
     expect(dispatch).toBeCalledWith({
       payload: {
         icon: "",
-        plantUUID: "points.1.16"
+        plantUUID: "points.1.17"
       },
       type: "TOGGLE_HOVERED_PLANT"
     });
