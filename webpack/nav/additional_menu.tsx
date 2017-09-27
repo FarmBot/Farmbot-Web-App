@@ -11,8 +11,7 @@ export const AdditionalMenu = (logout: () => void) => {
     </Link>
     <LangToggle />
     <div>
-      <a
-        href="https://software.farmbot.io/docs/the-farmbot-web-app"
+      <a href="https://software.farmbot.io/docs/the-farmbot-web-app"
         target="_blank">
         <i className="fa fa-file-text-o"></i>{t("Documentation")}
       </a>
