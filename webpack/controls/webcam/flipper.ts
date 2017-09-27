@@ -1,3 +1,5 @@
+import { clamp } from "lodash";
+
 /** Improved array that is useful for up/down situations such as the webcam
  * feed flipper UI. */
 
@@ -9,16 +11,7 @@ export class Flipper<T> {
     }
 
   private inc = (num: number) => {
-    const i = this.index;
-    const maxIndex = this.list.length - 1;
-    const newIndex = i + num;
-    if (newIndex < 0) {
-      this.index = maxIndex;
-    } else if (newIndex > maxIndex) {
-      this.index = 0;
-    } else {
-      this.index = newIndex;
-    }
+    this.index = clamp(this.index + num, 0, this.list.length - 1);
     return this.index;
   }
 
