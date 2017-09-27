@@ -1,15 +1,39 @@
-import { browserToMQTT } from "../status_checks";
+import { browserToMQTT, botToMQTT, botToAPI } from "../status_checks";
+import * as moment from "moment";
 
 describe("botToAPI()", () => {
-  it("handles connectivity");
-  it("handles unknown connectivity");
-  it("handles loss of connectivity");
+  it("handles connectivity", () => {
+    const result = botToAPI(moment().subtract(4, "minutes"), moment());
+    expect(result.connectionStatus).toBeTruthy();
+    expect(result.children).toContain("Last seen 4 minutes ago.");
+  });
+
+  it("handles loss of connectivity", () => {
+    const result = botToAPI(moment().subtract(4, "days"), moment());
+    expect(result.connectionStatus).toBeFalsy();
+    expect(result.children).toContain("Last seen 4 days ago.");
+  });
+
+  it("handles unknown connectivity", () => {
+    const result = botToAPI(undefined, moment());
+    expect(result.connectionStatus).toBeFalsy();
+    expect(result.children).toContain("not seen messages from FarmBot yet.");
+  });
 });
 
 describe("botToMQTT()", () => {
-  it("handles connectivity");
-  it("handles unknown connectivity");
-  it("handles loss of connectivity");
+  it("handles connectivity", () => {
+    const result = botToMQTT("\"2017-09-27T07:52:37.003-05:00\"");
+    expect(result.connectionStatus).toBeTruthy();
+    expect(result.children).toContain("Connected ");
+    expect(result.children).toContain(" ago");
+  });
+
+  it("handles loss of connectivity", () => {
+    const result = botToMQTT(undefined);
+    expect(result.connectionStatus).toBeFalsy();
+    expect(result.children).toContain("not seeing any");
+  });
 });
 
 describe("browserToMQTT()", () => {

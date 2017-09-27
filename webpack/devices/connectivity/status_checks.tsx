@@ -7,35 +7,26 @@ const SIX_HOURS = HOUR * 6;
 
 export function botToAPI(lastSeen: moment.Moment | undefined,
   now = moment()): StatusRowProps {
-  // TODO: Complexity is getting high on this one.
-  // Refactor if more business requirements are added.
-  const diff = lastSeen && now.diff(lastSeen);
-  const ago = moment(lastSeen).fromNow();
+
   const status: StatusRowProps = {
     from: "Bot",
     to: "API",
-    connectionStatus: undefined,
-    children: "?"
+    connectionStatus: false,
+    children: "We have not seen messages from FarmBot yet."
   };
 
-  if (isUndefined(diff)) {
-    status.connectionStatus = false;
-    status.children = "We have not seen messages from FarmBot yet.";
-  }
+  const diff = lastSeen && now.diff(lastSeen);
 
-  if (diff && (diff > SIX_HOURS)) {
-    status.connectionStatus = false;
-    status.children =
-      `Last heard from bot ${ago}.`;
-  } else {
-    status.connectionStatus = true;
-    status.children = `Last seen ${ago}.`;
+  if (!isUndefined(diff)) {
+    status.connectionStatus = (diff < SIX_HOURS); // This is a guess.
+    status.children = `Last seen ${moment(lastSeen).fromNow()}.`;
   }
 
   return status;
 }
 
-export function botToMQTT(lastSeen: string | undefined): StatusRowProps {
+export function botToMQTT(lastSeen: string | undefined,
+  now = moment()): StatusRowProps {
   const output: StatusRowProps = {
     from: "Bot",
     to: "MQTT",
@@ -45,7 +36,8 @@ export function botToMQTT(lastSeen: string | undefined): StatusRowProps {
 
   if (lastSeen) {
     output.connectionStatus = true;
-    output.children = `Connected ${moment(new Date(JSON.parse(lastSeen))).fromNow()}`;
+    const ago = moment(new Date(JSON.parse(lastSeen))).fromNow();
+    output.children = `Connected ${ago}`;
   }
 
   return output;
