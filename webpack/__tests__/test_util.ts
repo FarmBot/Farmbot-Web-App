@@ -6,7 +6,8 @@ import {
   safeStringFetch,
   oneOf,
   semverCompare,
-  SemverResult
+  SemverResult,
+  trim
 } from "../util";
 describe("util", () => {
   describe("safeStringFetch", () => {
@@ -133,5 +134,14 @@ describe("util", () => {
       expect(semverCompare("2.0.2", "1.1.9"))
         .toBe(SemverResult.LEFT_IS_GREATER);
     });
+  });
+});
+
+describe("trim()", () => {
+  it("formats whitespace", () => {
+    const string = `foo
+      bar`;
+    const formattedString = trim(string);
+    expect(formattedString).toEqual("foo bar");
   });
 });

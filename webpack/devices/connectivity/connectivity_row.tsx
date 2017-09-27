@@ -1,6 +1,7 @@
 import * as React from "react";
 import { CowardlyDictionary } from "../../util";
 import { Row, Col } from "../../ui/index";
+import { isUndefined } from "lodash";
 
 /** Data model for a single row within the <ConnectivityPanel /> */
 export interface StatusRowProps {
@@ -11,27 +12,37 @@ export interface StatusRowProps {
 }
 
 const iconLookup: CowardlyDictionary<string> = {
-  true: "saucer green active",
-  false: "saucer red active"
+  true: "green",
+  false: "red"
 };
 
 export function ConnectivityRow(props: StatusRowProps) {
-  const className = iconLookup["" + props.connectionStatus] || "saucer yellow active";
+  const classColor = iconLookup["" + props.connectionStatus] || "grey";
+  const getTitle = () => {
+    if (isUndefined(props.connectionStatus)) {
+      return "Status";
+    } else if (props.connectionStatus) {
+      return "Ok";
+    } else {
+      return "Error";
+    }
+  }
   return <Row>
     <Col xs={1}>
-      <div className={className}></div>
+      <div className={"saucer active " + classColor} title={getTitle()} />
+      <div className={"saucer-connector " + classColor} />
     </Col>
-    <Col xs={1}>
+    <Col xs={2}>
       <p>
         {props.from}
       </p>
     </Col>
-    <Col xs={1}>
+    <Col xs={2}>
       <p>
         {props.to}
       </p>
     </Col>
-    <Col xs={9}>
+    <Col xs={7}>
       <p>
         {props.children}
       </p>
