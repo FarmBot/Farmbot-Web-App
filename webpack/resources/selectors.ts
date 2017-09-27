@@ -473,8 +473,9 @@ export function getUserAccountSettings(index: ResourceIndex): TaggedUser {
   if (user) {
     return user;
   } else {
+    debugger;
     throw new Error(`PROBLEM: Expected getUserAccountSettings() to return
-    exactly 1 device. We got some other number back, indicating a hazardous
+    exactly 1 user. We got some other number back, indicating a hazardous
     condition.`);
   }
 }
