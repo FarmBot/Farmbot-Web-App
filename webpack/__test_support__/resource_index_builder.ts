@@ -4,6 +4,18 @@ import * as _ from "lodash";
 
 export let FAKE_RESOURCES: TaggedResource[] = [
   {
+    "kind": "users",
+    "body": {
+      "id": 152,
+      "name": "FarmBot 1",
+      "email": "farmbot1@farmbot.io",
+      "created_at": "2017-09-03T20:01:40.336Z",
+      "updated_at": "2017-09-27T14:00:47.326Z",
+    },
+    "specialStatus": undefined,
+    "uuid": "users.152.44"
+  },
+  {
     "kind": "device",
     "specialStatus": undefined,
     "body": {
