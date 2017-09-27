@@ -28,6 +28,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  experimental_features: boolean;
   created_at?: string;
   updated_at?: string;
 }

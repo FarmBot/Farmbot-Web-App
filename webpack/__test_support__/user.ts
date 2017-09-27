@@ -6,6 +6,7 @@ export let user: User = {
   email: "farmbot1@farmbot.io",
   id: 2,
   name: "FarmBot 1",
+  experimental_features: false,
   updated_at: "2017-08-04T19:53:29.724Z"
 };
 
@@ -18,6 +19,7 @@ export let taggedUser: TaggedUser = {
     email: "farmbot1@farmbot.io",
     id: 2,
     name: "FarmBot 1",
+    experimental_features: false,
     updated_at: "2017-08-04T19:53:29.724Z"
   }
 };
