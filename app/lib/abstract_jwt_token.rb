@@ -8,7 +8,7 @@ class AbstractJwtToken
 
   def initialize(payload)
     @unencoded = payload[0]
-    @encoded   = JWT.encode(payload[0], PRIVATE_KEY, ALG)
+    @encoded   = JWT.encode(payload[0], PRIVATE_KEY, ALG, {typ: "JWT"})
   end
 
   def self.decode!(token)

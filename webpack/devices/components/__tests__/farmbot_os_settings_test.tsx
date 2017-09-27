@@ -17,7 +17,6 @@ describe("<FarmbotOsSettings/>", () => {
     expect(osSettings.find("button").length).toBe(8);
     expect(osSettings.text()).toContain("NAME");
     expect(osSettings.text()).toContain("TIME ZONE");
-    expect(osSettings.text()).toContain("NETWORK");
     expect(osSettings.text()).toContain("LAST SEEN");
     expect(osSettings.text()).toContain("FARMBOT OS");
     expect(osSettings.text()).toContain("RESTART FARMBOT");
