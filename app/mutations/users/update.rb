@@ -5,12 +5,11 @@ module Users
     required { model :user, class: User }
 
     optional do
-      string  :email
-      string  :name
-      string  :password
-      string  :new_password
-      string  :new_password_confirmation
-      boolean :experimental_features
+      string :email
+      string :name
+      string :password
+      string :new_password
+      string :new_password_confirmation
     end
 
     def validate

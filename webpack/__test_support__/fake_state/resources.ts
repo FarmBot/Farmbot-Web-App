@@ -68,7 +68,6 @@ export function fakeUser(): TaggedUser {
     device_id: 789,
     name: "Fake User 123",
     email: "fake@fake.com",
-    experimental_features: false,
     created_at: "---",
     updated_at: "---"
   });

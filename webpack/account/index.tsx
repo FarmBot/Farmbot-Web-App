@@ -12,7 +12,7 @@ import { deleteUser } from "./actions";
 import { success } from "farmbot-toastr/dist";
 
 const KEYS: (keyof User)[] = ["id", "name", "email", "created_at",
-  "updated_at", "experimental_features"];
+  "updated_at"];
 
 const isKey = (x: string): x is keyof User => KEYS.includes(x as keyof User);
 
