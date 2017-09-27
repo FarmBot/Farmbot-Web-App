@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui/index";
+import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
 import { t } from "i18next";
 import { ConnectivityRow, StatusRowProps } from "./connectivity_row";
 import { RetryBtn } from "./retry_btn";
@@ -34,12 +34,8 @@ export class ConnectivityPanel extends React.Component<Props, State> {
         <ConnectivityRow from="from" to="to" />
         {rowData
           .map((x, y) => <ConnectivityRow {...x} key={y} />)}
-        <hr />
-        <Row>
-          <Col xs={12}>
-            {this.props.children}
-          </Col>
-        </Row>
+        <hr className={"connectivity-diagnosis"} />
+        {this.props.children}
       </WidgetBody>
     </Widget>;
   }

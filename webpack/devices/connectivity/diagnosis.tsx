@@ -1,5 +1,6 @@
 import * as React from "react";
 import { DiagnosticMessages } from "./diagnostic_messages";
+import { Col, Row } from "../../ui/index";
 
 export interface DiagnosisProps {
   botMQTT: boolean;
@@ -8,11 +9,24 @@ export interface DiagnosisProps {
 }
 
 export function Diagnosis(props: DiagnosisProps) {
+  const diagnosisStatus = props.userMQTT && props.botAPI && props.botMQTT;
+  const diagnosisColor = diagnosisStatus ? "green" : "red";
+  const title = diagnosisStatus ? "Ok" : "Error";
   return <div>
-    <h3>Diagnosis</h3>
-    <p>
-      {diagnose(props)}
-    </p>
+    <div className={"connectivity-diagnosis"}>
+      <h4>Diagnosis</h4>
+    </div>
+    <Row>
+      <Col xs={1}>
+        <div className={"saucer active " + diagnosisColor} title={title} />
+        <div className={"saucer-connector last " + diagnosisColor} />
+      </Col>
+      <Col xs={10}>
+        <p>
+          {diagnose(props)}
+        </p>
+      </Col>
+    </Row>
   </div>;
 }
 
