@@ -9,7 +9,10 @@ export enum BooleanSetting {
   showPlants = "showPlants",
   showPoints = "showPoints",
   showSpread = "showSpread",
-  showFarmbot = "showFarmbot"
+  showFarmbot = "showFarmbot",
+
+  /** "Labs" feature names. */
+  weedDetector = "weedDetector",
 }
 
 export enum NumericSetting {
