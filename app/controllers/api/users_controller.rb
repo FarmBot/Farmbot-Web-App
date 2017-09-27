@@ -43,6 +43,7 @@ module Api
        password_confirmation:     user[:password_confirmation],
        new_password:              user[:new_password],
        new_password_confirmation: user[:new_password_confirmation],
+       experimental_features:     user[:experimental_features],
        agree_to_terms:            user[:agree_to_terms]}
     end
   end

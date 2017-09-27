@@ -11,7 +11,8 @@ import { updateNO } from "../resources/actions";
 import { deleteUser } from "./actions";
 import { success } from "farmbot-toastr/dist";
 
-const KEYS: (keyof User)[] = ["id", "name", "email", "created_at", "updated_at"];
+const KEYS: (keyof User)[] = ["id", "name", "email", "created_at",
+  "updated_at", "experimental_features"];
 
 const isKey = (x: string): x is keyof User => KEYS.includes(x as keyof User);
 

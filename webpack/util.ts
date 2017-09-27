@@ -437,3 +437,13 @@ export function lastUrlChunk() {
 }
 
 export const trim = (i: string): string => i.replace(/\s+/g, " ");
+
+export function coerceToBool(val?: Primitive): boolean {
+  switch (("" + val).toLowerCase()) {
+    case "true":
+    case "1":
+      return true;
+    default:
+      return false;
+  }
+}
