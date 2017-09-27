@@ -87,10 +87,29 @@ fieldset {
   width: 2rem;
   background: $dark_gray;
   border-radius: 50%;
+  position: relative;
+  z-index: 2;
   cursor: pointer;
   &.active {
     border: 2px solid white;
   }
+}
+
+.saucer-connector {
+  height: 3rem;
+  width: 1rem;
+  position: absolute;
+  z-index: 1;
+  margin-left: 0.5rem;
+  margin-top: -1rem;
+  &.last {
+    margin-top: -9rem;
+    height: 8rem;
+  }
+}
+
+.connectivity-diagnosis {
+  margin-left: 3rem;
 }
 
 .all-content-wrapper {
