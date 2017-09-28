@@ -26,7 +26,7 @@ export function ConnectivityRow(props: StatusRowProps) {
     } else {
       return "Error";
     }
-  }
+  };
   return <Row>
     <Col xs={1}>
       <div className={"saucer active " + classColor} title={getTitle()} />

@@ -1,4 +1,4 @@
-import { browserToMQTT, botToMQTT, botToAPI } from "../status_checks";
+import { browserToMQTT, botToMQTT, botToAPI, botToFirmware } from "../status_checks";
 import * as moment from "moment";
 
 describe("botToAPI()", () => {
@@ -38,20 +38,34 @@ describe("botToMQTT()", () => {
 
 describe("browserToMQTT()", () => {
   it("handles connectivity", () => {
-    const output = browserToMQTT("localhost", true);
+    const output = browserToMQTT(true);
     expect(output.connectionStatus).toBe(true);
-    expect(output.children).toContain("Connected to mqtt://localhost");
+    expect(output.children).toContain("Connected");
   });
 
   it("handles unknown connectivity", () => {
-    const output = browserToMQTT("localhost", undefined);
+    const output = browserToMQTT(undefined);
     expect(output.connectionStatus).toBe(undefined);
     expect(output.children).toContain("Unable to connect");
   });
 
   it("handles lack of connectivity", () => {
-    const output = browserToMQTT("localhost", false);
+    const output = browserToMQTT(false);
     expect(output.connectionStatus).toBe(false);
     expect(output.children).toContain("Unable to connect");
+  });
+});
+
+describe("botToFirmware()", () => {
+  it("handles connectivity", () => {
+    const output = botToFirmware("0.0.0.R");
+    expect(output.connectionStatus).toBe(true);
+    expect(output.children).toContain("Connected");
+  });
+
+  it("handles lack of connectivity", () => {
+    const output = botToFirmware("Arduino Disconnected!");
+    expect(output.connectionStatus).toBe(false);
+    expect(output.children).toContain("Disconnected");
   });
 });

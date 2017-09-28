@@ -15,7 +15,7 @@ export class PlantInfo extends PlantInfoBase {
       this.props.dispatch({ type: "SELECT_PLANT", payload: undefined });
       this.props.dispatch({
         type: "TOGGLE_HOVERED_PLANT", payload: {
-          plantUUID: undefined, icon: undefined
+          plantUUID: undefined, icon: ""
         }
       });
     };

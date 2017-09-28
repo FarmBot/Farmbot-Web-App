@@ -21,9 +21,15 @@ describe("<BoardType/>", () => {
     expect(wrapper.text()).toContain("Present");
   });
 
-  it("Unknown", () => {
+  it("Undefined", () => {
     const wrapper = mount(<BoardType
       firmwareVersion={undefined} />);
+    expect(wrapper.text()).toContain("unknown");
+  });
+
+  it("Disconnected", () => {
+    const wrapper = mount(<BoardType
+      firmwareVersion={"Arduino Disconnected!"} />);
     expect(wrapper.text()).toContain("unknown");
   });
 });

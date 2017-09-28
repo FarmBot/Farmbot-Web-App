@@ -4,17 +4,16 @@ jest.mock("../../../history", () => ({
     push: mockHistory,
     getCurrentLocation: jest.fn()
       .mockImplementationOnce(() => {
-        return { pathname: "/app/designer/plants" }
+        return { pathname: "/app/designer/plants" };
       })
       .mockImplementationOnce(() => {
-        return { pathname: "/app/designer/plants/1/edit" }
+        return { pathname: "/app/designer/plants/1/edit" };
       })
       .mockImplementationOnce(() => {
-        return { pathname: "/app/designer/plants/1" }
+        return { pathname: "/app/designer/plants/1" };
       })
   }
 }));
-
 
 import * as React from "react";
 import { Grid } from "../grid";
@@ -48,13 +47,13 @@ describe("<Grid/>", () => {
     const p = fakeProps();
     const wrapper = shallow(<Grid {...p } />);
     const gridArea = wrapper.find("g").first();
-    gridArea.simulate("click") // no plant info open
+    gridArea.simulate("click"); // no plant info open
     expect(mockHistory).not.toHaveBeenCalled();
     expect(p.dispatch).not.toHaveBeenCalled();
-    gridArea.simulate("click") // plant edit open
+    gridArea.simulate("click"); // plant edit open
     expect(mockHistory).not.toHaveBeenCalled();
     expect(p.dispatch).not.toHaveBeenCalled();
-    gridArea.simulate("click") // plant info open
+    gridArea.simulate("click"); // plant info open
     expect(mockHistory).toHaveBeenCalledWith("/app/designer/plants");
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: undefined, type: "SELECT_PLANT"

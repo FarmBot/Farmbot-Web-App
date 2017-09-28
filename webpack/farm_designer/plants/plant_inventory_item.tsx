@@ -40,7 +40,7 @@ export class PlantInventoryItem extends
         case "leave":
           dispatch({
             type: "TOGGLE_HOVERED_PLANT", payload: {
-              plantUUID: undefined, icon: undefined
+              plantUUID: undefined, icon: ""
             }
           });
           break;

@@ -37,7 +37,7 @@ describe("<PlantInventoryItem />", () => {
     wrapper.simulate("mouseLeave");
     expect(dispatch).toBeCalledWith({
       payload: {
-        icon: undefined,
+        icon: "",
         plantUUID: undefined
       },
       type: "TOGGLE_HOVERED_PLANT"
