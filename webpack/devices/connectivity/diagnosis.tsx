@@ -6,12 +6,17 @@ export interface DiagnosisProps {
   botMQTT: boolean;
   botAPI: boolean;
   userMQTT: boolean;
+  botFirmware: boolean;
 }
 
 export function Diagnosis(props: DiagnosisProps) {
-  const diagnosisStatus = props.userMQTT && props.botAPI && props.botMQTT;
+  const diagnosisStatus =
+    props.userMQTT && props.botAPI && props.botMQTT && props.botFirmware;
   const diagnosisColor = diagnosisStatus ? "green" : "red";
   const title = diagnosisStatus ? "Ok" : "Error";
+  const fwConnectionMessage = props.botFirmware
+    ? ""
+    : DiagnosticMessages.ARDUINO_DISCONNECTED;
   return <div>
     <div className={"connectivity-diagnosis"}>
       <h4>Diagnosis</h4>
@@ -21,9 +26,12 @@ export function Diagnosis(props: DiagnosisProps) {
         <div className={"saucer active " + diagnosisColor} title={title} />
         <div className={"saucer-connector last " + diagnosisColor} />
       </Col>
-      <Col xs={10}>
+      <Col xs={10} className={"connectivity-diagnosis"}>
         <p>
           {diagnose(props)}
+        </p>
+        <p>
+          {fwConnectionMessage}
         </p>
       </Col>
     </Row>
@@ -60,7 +68,14 @@ export function diagnose(x: DiagnosisProps) {
       return DiagnosticMessages.INACTIVE;
 
     case 0b111: // Code 7
-      return DiagnosticMessages.OK;
+      if (x.botFirmware) {
+        return DiagnosticMessages.OK;
+      } else {
+        // Arduino is disconnected, but everything else is ok. Display the
+        // Arduino connectivity message (which is appended to every error
+        // code message when disconnected) instead of the OK message.
+        return "";
+      }
 
     default: // all others -
       return DiagnosticMessages.MISC;

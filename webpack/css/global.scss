@@ -109,7 +109,12 @@ fieldset {
 }
 
 .connectivity-diagnosis {
-  margin-left: 3rem;
+  h4 {
+    margin-left: 3rem;
+  }
+  p {
+    padding-bottom: 1rem;
+  }
 }
 
 .all-content-wrapper {

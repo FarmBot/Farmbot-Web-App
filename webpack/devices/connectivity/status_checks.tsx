@@ -51,3 +51,14 @@ export function browserToMQTT(online?: boolean): StatusRowProps {
     connectionStatus: online
   };
 }
+
+export function botToFirmware(version: string | undefined): StatusRowProps {
+  const online = !isUndefined(version) && !version.includes("Disconnected");
+  const boardIdentifier = version ? version.slice(-1) : "undefined";
+  return {
+    from: "Raspberry Pi",
+    to: boardIdentifier === "F" ? "Farmduino" : "Arduino",
+    children: online ? "Connected." : "Disconnected.",
+    connectionStatus: online
+  };
+}

@@ -17,6 +17,8 @@ export class BoardType
           return "Arduino/RAMPS";
         case "F":
           return "Farmduino";
+        case "!":
+          return "unknown";
         default:
           return "Present";
       }
