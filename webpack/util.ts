@@ -432,3 +432,14 @@ export function lastUrlChunk() {
 }
 
 export const trim = (i: string): string => i.replace(/\s+/g, " ");
+
+/** When you have a ridiculously long chain of flags and need to convert it
+ * into a binary integer. */
+export function bitArray(...values: boolean[]) {
+  return values
+    .map((x): number => x ? 1 : 0)
+    .reduce((res, x) => {
+      // tslint:disable-next-line:no-bitwise
+      return res << 1 | x;
+    });
+}

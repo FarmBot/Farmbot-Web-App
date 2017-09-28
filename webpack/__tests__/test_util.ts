@@ -7,7 +7,8 @@ import {
   oneOf,
   semverCompare,
   SemverResult,
-  trim
+  trim,
+  bitArray
 } from "../util";
 describe("util", () => {
   describe("safeStringFetch", () => {
@@ -143,5 +144,14 @@ describe("trim()", () => {
       bar`;
     const formattedString = trim(string);
     expect(formattedString).toEqual("foo bar");
+  });
+});
+
+describe("bitArray", () => {
+  it("converts flags to numbers", () => {
+    expect(bitArray(true)).toBe(0b1);
+    expect(bitArray(true, false)).toBe(0b10);
+    expect(bitArray(false, true)).toBe(0b01);
+    expect(bitArray(true, true)).toBe(0b11);
   });
 });
