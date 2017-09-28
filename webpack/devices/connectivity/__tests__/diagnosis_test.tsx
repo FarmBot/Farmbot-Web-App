@@ -12,16 +12,6 @@ describe("<Diagnosis/>", () => {
       botFirmware={true} />);
     expect(el.text()).toContain(DiagnosticMessages.OK);
   });
-
-  it("renders help text: Arduino disconnected", () => {
-    const el = render(<Diagnosis
-      botMQTT={true}
-      botAPI={true}
-      userMQTT={true}
-      botFirmware={false} />);
-    expect(el.text()).not.toContain(DiagnosticMessages.OK);
-    expect(el.text()).toContain(DiagnosticMessages.ARDUINO_DISCONNECTED);
-  });
 });
 
 describe("diagnose()", () => {
@@ -34,13 +24,21 @@ describe("diagnose()", () => {
   }
 
   it("explains problems", () => {
-    testDiagnosis(DiagnosticMessages.OK, true, true, true, true);
-    testDiagnosis(DiagnosticMessages.INACTIVE, true, false, true, true);
-    testDiagnosis(DiagnosticMessages.REMOTE_FIREWALL, false, true, true, true);
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, false, true, false, true);
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, false, false, true);
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, true, false, true);
-    testDiagnosis(DiagnosticMessages.WIFI_OR_CONFIG, false, false, true, true);
-    testDiagnosis(DiagnosticMessages.TOTAL_BREAKAGE, false, false, false, true);
+    testDiagnosis(DiagnosticMessages.OK, true, true, true, true); // 15
+    testDiagnosis(DiagnosticMessages.ARDUINO_DISCONNECTED, true, true, true, false); // 14
+    testDiagnosis(DiagnosticMessages.ARDUINO_DISCONNECTED, true, false, true, false); // 10
+    testDiagnosis(DiagnosticMessages.INACTIVE, true, false, true, true); // 11
+    testDiagnosis(DiagnosticMessages.REMOTE_FIREWALL, false, true, true, true); // 7
+    testDiagnosis(DiagnosticMessages.REMOTE_FIREWALL, false, true, true, false); // 6
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, false, true, false, true); // 5
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, false, true, false, false); // 4
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, false, false, true); // 9
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, false, false, false); // 8
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, true, false, true); // 13
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, true, false, false); // 12
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, false, false, false, true); // 1
+    testDiagnosis(DiagnosticMessages.WIFI_OR_CONFIG, false, false, true, true); // 3
+    testDiagnosis(DiagnosticMessages.WIFI_OR_CONFIG, false, false, true, false); // 2
+    testDiagnosis(DiagnosticMessages.TOTAL_BREAKAGE, false, false, false, false); // 0
   });
 });
