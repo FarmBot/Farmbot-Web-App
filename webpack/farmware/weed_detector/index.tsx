@@ -15,6 +15,7 @@ import { ImageWorkspace } from "./image_workspace";
 import { WDENVKey as ENVKey } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";
 import { translateImageWorkspaceAndSave } from "./actions";
+import { comingSoon } from "../coming_soon";
 
 @connect(mapStateToProps)
 export class WeedDetector
@@ -58,7 +59,8 @@ export class WeedDetector
   });
 
   render() {
-    return <Widget className="weed-detector-widget coming-soon">
+    const classname = "weed-detector-widget" + comingSoon();
+    return <Widget className={classname}>
       <TitleBar
         onDeletionClick={this.clearWeeds}
         deletionProgress={this.state.deletionProgress}

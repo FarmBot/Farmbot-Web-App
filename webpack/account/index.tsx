@@ -10,6 +10,7 @@ import { edit, save } from "../api/crud";
 import { updateNO } from "../resources/actions";
 import { deleteUser } from "./actions";
 import { success } from "farmbot-toastr/dist";
+import { LabsFeatures } from "./labs/labs_features";
 
 const KEYS: (keyof User)[] = ["id", "name", "email", "created_at", "updated_at"];
 
@@ -49,6 +50,9 @@ export class Account extends React.Component<Props, {}> {
             onClick={(password) => this
               .props
               .dispatch(deleteUser({ password }))} />
+        </Row>
+        <Row>
+          <LabsFeatures />
         </Row>
       </Col>
     </Page>;

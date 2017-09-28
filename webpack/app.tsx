@@ -42,6 +42,8 @@ function mapStateToProps(props: Everything): AppProps {
     loaded: props.resources.loaded
   };
 }
+/** Time at which the app gives up and asks the user to refresh */
+const LOAD_TIME_FAILURE_MS = 25000;
 
 /**
  * Relational resources that *must* load before app starts.
@@ -71,7 +73,7 @@ export class App extends React.Component<AppProps, {}> {
       if (!this.isLoaded) {
         error(t(Content.APP_LOAD_TIMEOUT_MESSAGE), t("Warning"));
       }
-    }, 10000);
+    }, LOAD_TIME_FAILURE_MS);
   }
 
   render() {

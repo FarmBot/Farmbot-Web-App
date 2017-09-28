@@ -21,7 +21,6 @@ export class Flipper<T> {
     }
     return this.index;
   }
-
   /** Retrieve the currently viewed item. Returns a fallback when unable to find
    * an element. */
   get current(): T { return this.list[this.index] || this.fallback; }

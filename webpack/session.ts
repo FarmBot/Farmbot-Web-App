@@ -50,12 +50,13 @@ export namespace Session {
   }
 
   /** Store a boolean value in `localStorage` */
-  export function setBool(key: BooleanSetting, val: boolean): void {
+  export function setBool(key: BooleanSetting, val: boolean): boolean {
     localStorage.setItem(key, JSON.stringify(val));
+    return val;
   }
 
-  export function invertBool(key: BooleanSetting) {
-    Session.setBool(key, !Session.getBool(key));
+  export function invertBool(key: BooleanSetting): boolean {
+    return Session.setBool(key, !Session.getBool(key));
   }
 
   /** Extract numeric settings from `localStorage`. Returns `undefined` when
