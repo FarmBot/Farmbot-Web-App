@@ -12,7 +12,7 @@ export function Grid(props: GridProps) {
       props.dispatch({ type: "SELECT_PLANT", payload: undefined });
       props.dispatch({
         type: "TOGGLE_HOVERED_PLANT", payload: {
-          icon: undefined,
+          icon: "",
           plantUUID: undefined
         }
       });
