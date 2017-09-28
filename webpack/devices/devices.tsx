@@ -18,14 +18,13 @@ export class Devices extends React.Component<Props, {}> {
 
   /** A record of all the things we know about connectivity right now. */
   get flags(): Record<keyof DiagnosisProps, StatusRowProps> {
-    const mqttUrl = this.props.auth && this.props.auth.token.unencoded.mqtt;
     const mqttConnected = this.props.bot.connectedToMQTT;
     const lastSeen = this.props.deviceAccount.body.last_seen;
-    const timstamp = this.props.bot.hardware.user_env["LAST_CLIENT_CONNECTED"];
+    const timestamp = this.props.bot.hardware.user_env["LAST_CLIENT_CONNECTED"];
     return {
-      botMQTT: botToMQTT(timstamp),
+      botMQTT: botToMQTT(timestamp),
       botAPI: botToAPI(lastSeen ? moment(lastSeen) : undefined, moment()),
-      userMQTT: browserToMQTT(mqttUrl, mqttConnected)
+      userMQTT: browserToMQTT(mqttConnected)
     };
   }
 

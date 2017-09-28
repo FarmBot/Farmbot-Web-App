@@ -11,7 +11,7 @@ describe("<ConnectivityPanel/>", () => {
         from: "A",
         to: "B",
         connectionStatus: false,
-        children: "Cant do things with stuff."
+        children: "Can't do things with stuff."
       }
     ];
     const testCase = <ConnectivityPanel
@@ -22,6 +22,6 @@ describe("<ConnectivityPanel/>", () => {
     </ConnectivityPanel>;
     const el = render(testCase);
     expect(el.text()).toContain("I am a child");
-    expect(el.text()).toContain(rowData[0].children)
+    expect(el.text()).toContain(rowData[0].children);
   });
 });
