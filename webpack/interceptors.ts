@@ -12,9 +12,11 @@ import { AuthState } from "./auth/interfaces";
 import * as _ from "lodash";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Content } from "./constants";
+import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
-  let method = input.config.method;
+  const method = input.config.method;
+  dispatchNetworkUp();
   if (method && METHODS.includes(method)) {
     notifyBotOfChanges(input.config.url, METHOD_MAP[method]);
   }
@@ -22,17 +24,17 @@ export function responseFulfilled(input: AxiosResponse): AxiosResponse {
 }
 
 export function responseRejected(x: SafeError | undefined) {
-
   if (x && isSafeError(x)) {
-    let a = ![451, 401, 422].includes(x.response.status);
-    let b = x.response.status > 399;
+    dispatchNetworkUp();
+    const a = ![451, 401, 422].includes(x.response.status);
+    const b = x.response.status > 399;
     // Openfarm API was sending too many 404's.
-    let c = !_.get(x, "response.config.url", "").includes("openfarm.cc/");
+    const c = !_.get(x, "response.config.url", "").includes("openfarm.cc/");
 
     if (a && b && c) {
       setTimeout(() => {
         // Explicitly throw error so error reporting tool will save it.
-        let msg = `Bad response: ${x.response.status} ${JSON.stringify(x.response)}`;
+        const msg = `Bad response: ${x.response.status} ${JSON.stringify(x.response)}`;
         throw new Error(msg);
       }, 1);
     }
@@ -51,18 +53,18 @@ export function responseRejected(x: SafeError | undefined) {
     }
     return Promise.reject(x);
   } else {
-    console.warn("GOT MALFORMED HTTP REJECTION?? This shouldn't happen!");
+    dispatchNetworkDown();
     return Promise.reject(x);
   }
 }
 
 export function requestFulfilled(auth: AuthState) {
   return (config: AxiosRequestConfig) => {
-    let req = config.url || "";
-    let isAPIRequest = req.includes(API.current.baseUrl);
+    const req = config.url || "";
+    const isAPIRequest = req.includes(API.current.baseUrl);
     if (isAPIRequest) {
       config.headers = config.headers || {};
-      let headers = (config.headers as
+      const headers = (config.headers as
         { Authorization: string | undefined });
       headers.Authorization = auth.token.encoded || "CANT_FIND_TOKEN";
     }

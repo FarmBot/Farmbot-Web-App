@@ -8,9 +8,9 @@ import { Props } from "./interfaces";
 import * as moment from "moment";
 import { ConnectivityPanel } from "./connectivity/index";
 import {
-  botToMQTT, botToAPI, browserToMQTT, botToFirmware
+  botToMQTT, botToAPI, browserToMQTT, botToFirmware, browserToAPI
 } from "./connectivity/status_checks";
-import { Diagnosis, DiagnosisProps } from "./connectivity/diagnosis";
+import { Diagnosis, DiagnosisName } from "./connectivity/diagnosis";
 import { StatusRowProps } from "./connectivity/connectivity_row";
 import { refresh } from "../api/crud";
 
@@ -19,27 +19,29 @@ export class Devices extends React.Component<Props, {}> {
   state = { online: navigator.onLine };
 
   /** A record of all the things we know about connectivity right now. */
-  get flags(): Record<keyof DiagnosisProps, StatusRowProps> {
+  get flags(): Record<DiagnosisName, StatusRowProps> {
     const mqttConnected = this.props.bot.connectedToMQTT;
     const lastSeen = this.props.deviceAccount.body.last_seen;
     const timestamp = this.props.bot.hardware.user_env["LAST_CLIENT_CONNECTED"];
     const fwVersion = this.props.bot.hardware
       .informational_settings.firmware_version;
     return {
+      userMQTT: browserToMQTT(mqttConnected),
+      userAPI: browserToAPI(this.props.connectivity),
       botMQTT: botToMQTT(timestamp),
       botAPI: botToAPI(lastSeen ? moment(lastSeen) : undefined, moment()),
-      userMQTT: browserToMQTT(mqttConnected),
-      botFirmware: botToFirmware(fwVersion)
+      botFirmware: botToFirmware(fwVersion),
     };
   }
 
   /** Shuffle these around to change the ordering of the status table. */
   get rowData(): StatusRowProps[] {
     return [
+      this.flags.userAPI,
       this.flags.userMQTT,
       this.flags.botMQTT,
       this.flags.botAPI,
-      this.flags.botFirmware
+      this.flags.botFirmware,
     ];
   }
 
@@ -74,9 +76,10 @@ export class Devices extends React.Component<Props, {}> {
               onRefresh={this.refresh}
               rowData={this.rowData}>
               <Diagnosis
+                userAPI={!!this.flags.userAPI}
+                userMQTT={!!this.flags.userMQTT.connectionStatus}
                 botMQTT={!!this.flags.botMQTT.connectionStatus}
                 botAPI={!!this.flags.botAPI.connectionStatus}
-                userMQTT={!!this.flags.userMQTT.connectionStatus}
                 botFirmware={!!this.flags.botFirmware.connectionStatus} />
             </ConnectivityPanel>
           </Col>

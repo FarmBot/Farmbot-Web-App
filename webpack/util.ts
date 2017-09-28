@@ -67,8 +67,6 @@ function safelyFetchErrors(err: AxiosErrorResponse): Dictionary<string> {
   if (err && err.response && err.response.data) {
     return err.response.data;
   } else {
-    console.log(t("Last error message wasn't formatted like an API error."));
-    console.dir(err);
     return {
       error: t("Your web browser is unable to communicate with the " +
         "web app server. Make sure you are connected to the Internet.")
@@ -434,3 +432,14 @@ export function lastUrlChunk() {
 }
 
 export const trim = (i: string): string => i.replace(/\s+/g, " ");
+
+/** When you have a ridiculously long chain of flags and need to convert it
+ * into a binary integer. */
+export function bitArray(...values: boolean[]) {
+  return values
+    .map((x): number => x ? 1 : 0)
+    .reduce((res, x) => {
+      // tslint:disable-next-line:no-bitwise
+      return res << 1 | x;
+    });
+}

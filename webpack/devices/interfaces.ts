@@ -17,8 +17,10 @@ import { RestResources } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import { EncoderDisplay } from "../controls/interfaces";
+import { APIStatus } from "../connectivity/interfaces";
 
 export interface Props {
+  connectivity?: APIStatus;
   auth: AuthState | undefined;
   bot: BotState;
   deviceAccount: TaggedDevice;
