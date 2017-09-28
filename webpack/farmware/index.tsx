@@ -8,10 +8,13 @@ import { CameraCalibration } from "./camera_calibration/camera_calibration";
 import { FarmwareProps } from "../devices/interfaces";
 import { WeedDetector } from "./weed_detector/index";
 import { envGet } from "./weed_detector/remote_env/selectors";
+import { Session } from "../session";
+import { BooleanSetting } from "../session_keys";
 
 @connect(mapStateToProps)
 export class FarmwarePage extends React.Component<FarmwareProps, {}> {
   render() {
+    const showDetector = Session.getBool(BooleanSetting.weedDetector);
     return <Page className="farmware">
       <Row>
         <Col xs={12} sm={7}>
@@ -28,7 +31,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
       </Row>
       <Row>
         <Col xs={12} sm={5}>
-          <CameraCalibration
+          {showDetector && <CameraCalibration
             dispatch={this.props.dispatch}
             currentImage={this.props.currentImage}
             images={this.props.images}
@@ -41,10 +44,10 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
             V_LO={envGet("CAMERA_CALIBRATION_V_LO", this.props.env)}
             H_HI={envGet("CAMERA_CALIBRATION_H_HI", this.props.env)}
             S_HI={envGet("CAMERA_CALIBRATION_S_HI", this.props.env)}
-            V_HI={envGet("CAMERA_CALIBRATION_V_HI", this.props.env)} />
+            V_HI={envGet("CAMERA_CALIBRATION_V_HI", this.props.env)} />}
         </Col>
         <Col xs={12} sm={5} smOffset={1}>
-          <WeedDetector {...this.props} />
+          {showDetector && <WeedDetector {...this.props} />}
         </Col>
       </Row>
     </Page>;
