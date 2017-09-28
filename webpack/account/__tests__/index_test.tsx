@@ -9,7 +9,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { mapStateToProps } from "../state_to_props";
 import { mount } from "enzyme";
 import { Account } from "../index";
-import { edit, save } from "../../api/crud";
+import { edit } from "../../api/crud";
 
 describe("<Account />", () => {
   it("handles the onChange event - bad input", () => {
