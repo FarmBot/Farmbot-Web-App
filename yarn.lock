@@ -131,6 +131,10 @@
   version "8.0.26"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.26.tgz#4d58be925306fd22b1141085535a0268b8beb189"
 
+"@types/offline-js@^0.7.28":
+  version "0.7.28"
+  resolved "https://registry.yarnpkg.com/@types/offline-js/-/offline-js-0.7.28.tgz#a0c08deecc8194993f5a59376f04c2571f2c36f1"
+
 "@types/react-color@^2.13.0":
   version "2.13.0"
   resolved "https://registry.yarnpkg.com/@types/react-color/-/react-color-2.13.0.tgz#88d8e94c556ac90f3169633bda6b47eecbf61ed4"
@@ -4032,6 +4036,10 @@ object.values@^1.0.4:
 obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.1.tgz#104124b6c602c6796881a042541d36db43a5264e"
+
+offline-js@^0.7.19:
+  version "0.7.19"
+  resolved "https://registry.yarnpkg.com/offline-js/-/offline-js-0.7.19.tgz#60b68b6dccf3cd5528b5c8577280dceebdebab99"
 
 on-finished@~2.3.0:
   version "2.3.0"
