@@ -12,9 +12,11 @@ import { AuthState } from "./auth/interfaces";
 import * as _ from "lodash";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Content } from "./constants";
+import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   const method = input.config.method;
+  dispatchNetworkUp();
   if (method && METHODS.includes(method)) {
     notifyBotOfChanges(input.config.url, METHOD_MAP[method]);
   }
@@ -23,6 +25,7 @@ export function responseFulfilled(input: AxiosResponse): AxiosResponse {
 
 export function responseRejected(x: SafeError | undefined) {
   if (x && isSafeError(x)) {
+    dispatchNetworkUp();
     const a = ![451, 401, 422].includes(x.response.status);
     const b = x.response.status > 399;
     // Openfarm API was sending too many 404's.
@@ -50,7 +53,7 @@ export function responseRejected(x: SafeError | undefined) {
     }
     return Promise.reject(x);
   } else {
-    console.error("YOU ARE PROBABLY OFFLINE RIGHT NOW");
+    dispatchNetworkDown();
     return Promise.reject(x);
   }
 }

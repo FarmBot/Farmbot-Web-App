@@ -27,7 +27,7 @@ export class Devices extends React.Component<Props, {}> {
       .informational_settings.firmware_version;
     return {
       userMQTT: browserToMQTT(mqttConnected),
-      userAPI: browserToAPI(),
+      userAPI: browserToAPI(this.props.connectivity),
       botMQTT: botToMQTT(timestamp),
       botAPI: botToAPI(lastSeen ? moment(lastSeen) : undefined, moment()),
       botFirmware: botToFirmware(fwVersion),

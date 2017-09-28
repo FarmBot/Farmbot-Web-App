@@ -1,6 +1,7 @@
 import { isUndefined } from "lodash";
 import * as moment from "moment";
 import { StatusRowProps } from "./connectivity_row";
+import { APIStatus } from "../../connectivity/interfaces";
 
 const HOUR = 1000 * 60 * 60;
 const SIX_HOURS = HOUR * 6;
@@ -63,12 +64,14 @@ export function botToFirmware(version: string | undefined): StatusRowProps {
   };
 }
 
-export function browserToAPI(): StatusRowProps {
-  const online = false;
+const UNKNOWN = "Waiting for response from network";
+
+export function browserToAPI(status?: APIStatus): StatusRowProps {
   return {
     from: "Browser",
     to: "Internet",
-    children: online ? "Online." : "Offline.",
-    connectionStatus: online
+    children: status ?
+      `Last seen ${moment(new Date(status.at)).fromNow()}` : UNKNOWN,
+    connectionStatus: !!(status && status.state === "up")
   };
 }
