@@ -39,5 +39,6 @@ export let designer = generateReducer<DesignerState>(initialState)
   })
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
     s.selectedPlants = undefined;
+    s.hoveredPlant = { plantUUID: undefined, icon: "" };
     return s;
   });

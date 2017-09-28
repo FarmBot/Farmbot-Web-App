@@ -34,7 +34,7 @@ export class ConnectivityPanel extends React.Component<Props, State> {
         <ConnectivityRow from="from" to="to" />
         {rowData
           .map((x, y) => <ConnectivityRow {...x} key={y} />)}
-        <hr className={"connectivity-diagnosis"} />
+        <hr style={{ marginLeft: "3rem" }} />
         {this.props.children}
       </WidgetBody>
     </Widget>;

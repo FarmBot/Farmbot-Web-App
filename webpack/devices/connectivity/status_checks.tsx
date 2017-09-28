@@ -10,7 +10,7 @@ export function botToAPI(lastSeen: moment.Moment | undefined,
 
   const status: StatusRowProps = {
     from: "Bot",
-    to: "API",
+    to: "Web App",
     connectionStatus: false,
     children: "We have not seen messages from FarmBot yet."
   };
@@ -29,7 +29,7 @@ export function botToMQTT(lastSeen: string | undefined,
   now = moment()): StatusRowProps {
   const output: StatusRowProps = {
     from: "Bot",
-    to: "MQTT",
+    to: "Message Broker",
     connectionStatus: false,
     children: "We are not seeing any realtime messages from the bot right now."
   };
@@ -37,18 +37,28 @@ export function botToMQTT(lastSeen: string | undefined,
   if (lastSeen) {
     output.connectionStatus = true;
     const ago = moment(new Date(JSON.parse(lastSeen))).fromNow();
-    output.children = `Connected ${ago}`;
+    output.children = `Connected ${ago}.`;
   }
 
   return output;
 }
 
-export function browserToMQTT(mqttUrl: string | undefined, online?: boolean): StatusRowProps {
-  const url = `mqtt://${mqttUrl}`;
+export function browserToMQTT(online?: boolean): StatusRowProps {
   return {
     from: "Browser",
-    to: "MQTT",
-    children: online ? ("Connected to " + url) : "Unable to connect",
+    to: "Message Broker",
+    children: online ? "Connected." : "Unable to connect.",
+    connectionStatus: online
+  };
+}
+
+export function botToFirmware(version: string | undefined): StatusRowProps {
+  const online = !isUndefined(version) && !version.includes("Disconnected");
+  const boardIdentifier = version ? version.slice(-1) : "undefined";
+  return {
+    from: "Raspberry Pi",
+    to: boardIdentifier === "F" ? "Farmduino" : "Arduino",
+    children: online ? "Connected." : "Disconnected.",
     connectionStatus: online
   };
 }

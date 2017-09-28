@@ -56,11 +56,8 @@ describe("<ToolSlotLayer/>", () => {
     const p = fakeProps();
     const wrapper = shallow(<ToolSlotLayer {...p } />);
     const tools = wrapper.find("g").first();
-    await tools.simulate("click")
+    await tools.simulate("click");
     expect(mockHistory).toHaveBeenCalledWith("/app/tools");
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: undefined, type: "SELECT_PLANT"
-    });
   });
 
   it("doesn't navigate to tools page", async () => {
@@ -70,7 +67,7 @@ describe("<ToolSlotLayer/>", () => {
     const p = fakeProps();
     const wrapper = shallow(<ToolSlotLayer {...p } />);
     const tools = wrapper.find("g").first();
-    await tools.simulate("click")
+    await tools.simulate("click");
     expect(mockHistory).not.toHaveBeenCalled();
     expect(p.dispatch).not.toHaveBeenCalled();
   });
