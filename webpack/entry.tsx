@@ -8,7 +8,7 @@ import { stopIE, attachToRoot, shortRevision } from "./util";
 
 stopIE();
 
-let r = shortRevision();
+const r = shortRevision();
 console.log(r);
 
 detectLanguage().then((config) => {

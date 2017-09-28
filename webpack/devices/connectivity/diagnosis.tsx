@@ -45,6 +45,5 @@ export function diagnose(x: DiagnosisProps) {
     x.userMQTT,
     x.botFirmware);
   const errMsg = TRUTH_TABLE[errorCode] || DiagnosticMessages.MISC;
-  console.log(`Err code ${errorCode} (${errorCode.toString(2)})`);
   return `${t(errMsg)} (code ${errorCode})`;
 }
