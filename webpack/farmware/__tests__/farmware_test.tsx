@@ -2,6 +2,12 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
+jest.mock("../../session", () => ({
+  Session: {
+    getBool: () => true // Simulate opt-in to beta features.
+  }
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { FarmwarePage } from "../index";
