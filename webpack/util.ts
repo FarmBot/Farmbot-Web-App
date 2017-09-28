@@ -15,7 +15,7 @@ import { history } from "./history";
 // support query strings yet.
 export function getParam(name: string): string {
   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-  let regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+  const regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
     r = regex.exec(location.search);
   // tslint:disable-next-line:no-null-keyword
   return r === null ? "" : decodeURIComponent(r[1].replace(/\+/g, " "));
@@ -38,7 +38,7 @@ export function randomColor(): Color {
 }
 
 export function defensiveClone<T>(target: T): T {
-  let jsonString = JSON.stringify(target);
+  const jsonString = JSON.stringify(target);
   return JSON.parse(jsonString || "null");
 }
 
@@ -135,8 +135,8 @@ export function isMobile() {
  *         * All other types raise a runtime exception (Objects, functions,
  *           Array, Symbol, etc)
  */
-export function safeStringFetch(obj: any, key: string): string {
-  let boxed = box(obj[key]);
+export function safeStringFetch(obj: {}, key: string): string {
+  const boxed = box(obj[key]);
   switch (boxed.kind) {
     case "undefined":
     case "null":
@@ -147,7 +147,7 @@ export function safeStringFetch(obj: any, key: string): string {
     case "boolean":
       return (boxed.value) ? "true" : "false";
     default:
-      let msg = t(`Numbers strings and null only (got ${boxed.kind}).`);
+      const msg = t(`Numbers strings and null only (got ${boxed.kind}).`);
       throw new Error(msg);
   }
 }
@@ -164,15 +164,15 @@ export function stopIE() {
     window.location.href = "https://www.google.com/chrome/";
   }
   try {
-    let REQUIRED_GLOBALS = ["Promise", "console", "WebSocket", "Intl"];
+    const REQUIRED_GLOBALS = ["Promise", "console", "WebSocket", "Intl"];
     // Can't use Array.proto.map because IE.
     // Can't translate the text because IE (no promises)
-    for (var i = 0; i < REQUIRED_GLOBALS.length; i++) {
+    for (let i = 0; i < REQUIRED_GLOBALS.length; i++) {
       if (!window.hasOwnProperty(REQUIRED_GLOBALS[i])) {
         flunk();
       }
     }
-    let REQUIRED_ARRAY_METHODS = ["includes", "map", "filter"];
+    const REQUIRED_ARRAY_METHODS = ["includes", "map", "filter"];
     for (i = 0; i < REQUIRED_ARRAY_METHODS.length; i++) {
       if (!Array.prototype.hasOwnProperty(REQUIRED_ARRAY_METHODS[i])) {
         flunk();
@@ -191,7 +191,7 @@ export function pick<T, K extends keyof T>(target: T, key: K): T[K] {
  * bracket access.
  */
 export function hasKey<T>(base: (keyof T)[]) {
-  return (target: T | any): target is keyof T => {
+  return (target: T | {}): target is keyof T => {
     return base.includes(target);
   };
 }
@@ -222,16 +222,16 @@ export type ProgressCallback = (p: Readonly<Progress>) => void;
  * Native DOM methods just aren't standardized enough yet,
  * so this is an implementation without libs or polyfills. */
 export function smoothScrollToBottom() {
-  let body = document.body;
-  let html = document.documentElement;
+  const body = document.body;
+  const html = document.documentElement;
 
   // Not all browsers for mobile/desktop compute height the same, this fixes it.
-  let height = Math.max(body.scrollHeight, body.offsetHeight,
+  const height = Math.max(body.scrollHeight, body.offsetHeight,
     html.clientHeight, html.scrollHeight, html.offsetHeight);
 
-  let startY = window.pageYOffset;
-  let stopY = height;
-  let distance = stopY > startY ? stopY - startY : startY - stopY;
+  const startY = window.pageYOffset;
+  const stopY = height;
+  const distance = stopY > startY ? stopY - startY : startY - stopY;
   if (distance < 100) {
     scrollTo(0, stopY);
     return;
@@ -241,7 +241,7 @@ export function smoothScrollToBottom() {
   // Numbers too low will cause jarring ui bugs.
   let speed = Math.round(distance / 14);
   if (speed >= 6) { speed = 14; }
-  let step = Math.round(distance / 25);
+  const step = Math.round(distance / 25);
   let leapY = stopY > startY ? startY + step : startY - step;
   let timer = 0;
   if (stopY > startY) {
@@ -260,13 +260,13 @@ export function smoothScrollToBottom() {
 }
 
 /** Fancy debug */
-export function fancyDebug(t: any) {
+export function fancyDebug(t: {}) {
   console.log(Object
     .keys(t)
     .map(key => [key, t[key]])
     .map((x) => {
-      let key = _.padStart(x[0], 20, " ");
-      let val = (JSON.stringify(x[1]) || "Nothing").slice(0, 52);
+      const key = _.padStart(x[0], 20, " ");
+      const val = (JSON.stringify(x[1]) || "Nothing").slice(0, 52);
 
       return `${key} => ${val}`;
     })
@@ -291,7 +291,7 @@ export function isUndefined(x: object | undefined): x is undefined {
  * knows what's going on.
  */
 export function betterCompact<T>(input: (T | undefined)[]): T[] {
-  let output: T[] = [];
+  const output: T[] = [];
   input.forEach(x => x ? output.push(x) : "");
   return output;
 }
@@ -311,7 +311,7 @@ export function betterMerge<T, U>(target: T, update: U): T & U {
 export function betterParseNum(num: string | undefined,
   fallback: number): number {
   try {
-    let maybe = JSON.parse("" + num);
+    const maybe = JSON.parse("" + num);
     if (_.isNumber(maybe) && !_.isNaN(maybe)) {
       return maybe;
     }
@@ -335,12 +335,12 @@ export function updatePageInfo(pageName: string) {
 
 export function attachToRoot<P>(type: React.ComponentClass<P>,
   props?: React.Attributes & P) {
-  let node = document.createElement("DIV");
+  const node = document.createElement("DIV");
   node.id = "root";
   document.body.appendChild(node);
 
-  let reactElem = React.createElement(type, props);
-  let domElem = document.getElementById("root");
+  const reactElem = React.createElement(type, props);
+  const domElem = document.getElementById("root");
 
   if (domElem) {
     render(reactElem, domElem);
@@ -362,7 +362,7 @@ export type ClampResult = High | Low | Malformed | Ok;
 /** Handle all the possible ways a user could give us bad data or cause an
  * integer overflow in the firmware. */
 export function clampUnsignedInteger(input: string): ClampResult {
-  let result = Math.round(parseInt(input, 10));
+  const result = Math.round(parseInt(input, 10));
 
   // Clamp to prevent overflow.
   if (_.isNaN(result)) { return { outcome: "malformed", result: undefined }; }
@@ -379,11 +379,11 @@ export enum SemverResult {
 }
 // CREDIT: https://github.com/substack/semver-compare
 export function semverCompare(left: string, right: string): SemverResult {
-  let pa: Array<string | undefined> = left.split(".");
-  let pb: Array<string | undefined> = right.split(".");
+  const pa: Array<string | undefined> = left.split(".");
+  const pb: Array<string | undefined> = right.split(".");
   for (let i = 0; i < 3; i++) {
-    let num_left = Number(pa[i]);
-    let num_right = Number(pb[i]);
+    const num_left = Number(pa[i]);
+    const num_right = Number(pb[i]);
 
     if (num_left > num_right) {
       return SemverResult.LEFT_IS_GREATER;
@@ -438,19 +438,8 @@ export function urlFriendly(stringToFormat: string) {
 
 /** Get remainder of current url after the last "/". */
 export function lastUrlChunk() {
-  let p = history.getCurrentLocation().pathname;
+  const p = history.getCurrentLocation().pathname;
   return p.split("/")[p.split("/").length - 1];
 }
 
 export const trim = (i: string): string => i.replace(/\s+/g, " ");
-/** GIVEN: "true", true, "false", false, 1, 0
- *  RETURNS: true or false. */
-export function coerceToBool(val?: Primitive): boolean {
-  switch (("" + val).toLowerCase()) {
-    case "true":
-    case "1":
-      return true;
-    default:
-      return false;
-  }
-}
