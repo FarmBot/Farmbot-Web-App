@@ -12,12 +12,8 @@ interface Props {
   status: SpecialStatus | undefined;
 }
 
-interface State {
-
-}
-
-export class ConnectivityPanel extends React.Component<Props, State> {
-  state: State = {};
+export class ConnectivityPanel extends React.Component<Props, {}> {
+  state = {};
 
   render() {
     const { rowData } = this.props;

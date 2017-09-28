@@ -6,9 +6,10 @@ import { render } from "enzyme";
 describe("<Diagnosis/>", () => {
   it("renders help text", () => {
     const el = render(<Diagnosis
+      userMQTT={true}
+      userAPI={true}
       botMQTT={true}
       botAPI={true}
-      userMQTT={true}
       botFirmware={true} />);
     expect(el.text()).toContain(DiagnosticMessages.OK);
   });
@@ -20,7 +21,13 @@ describe("diagnose()", () => {
     botAPI: boolean,
     userMQTT: boolean,
     botFirmware: boolean) {
-    expect(diagnose({ botMQTT, botAPI, userMQTT, botFirmware })).toContain(msg);
+    expect(diagnose({
+      botMQTT,
+      botAPI,
+      userMQTT,
+      botFirmware,
+      userAPI: true
+    })).toContain(msg);
   }
 
   it("explains problems", () => {

@@ -2,12 +2,14 @@ import * as React from "react";
 import { DiagnosticMessages } from "./diagnostic_messages";
 import { Col, Row } from "../../ui/index";
 
-export interface DiagnosisProps {
-  botMQTT: boolean;
-  botAPI: boolean;
-  userMQTT: boolean;
-  botFirmware: boolean;
-}
+export type DiagnosisName =
+  | "userAPI"
+  | "botMQTT"
+  | "botAPI"
+  | "userMQTT"
+  | "botFirmware";
+
+export type DiagnosisProps = Record<DiagnosisName, boolean>;
 
 export function Diagnosis(props: DiagnosisProps) {
   const diagnosisStatus =

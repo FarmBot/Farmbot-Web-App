@@ -62,3 +62,13 @@ export function botToFirmware(version: string | undefined): StatusRowProps {
     connectionStatus: online
   };
 }
+
+export function browserToAPI(): StatusRowProps {
+  const online = false;
+  return {
+    from: "Browser",
+    to: "Internet",
+    children: online ? "Online." : "Offline.",
+    connectionStatus: online
+  };
+}
