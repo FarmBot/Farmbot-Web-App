@@ -3,17 +3,8 @@ import { WidgetHeader, Widget, WidgetBody } from "../../ui/index";
 import { LabsFeaturesList } from "./labs_features_list_ui";
 import { maybeToggleFeature } from "./labs_features_list_data";
 
-interface Props {
-
-}
-
-interface State {
-
-}
-
-export class LabsFeatures extends React.Component<Props, State> {
-
-  state: State = {};
+export class LabsFeatures extends React.Component<{}, {}> {
+  state = {};
 
   render() {
     return <Widget className="peripherals-widget">
