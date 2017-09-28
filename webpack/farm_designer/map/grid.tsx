@@ -10,7 +10,13 @@ export function Grid(props: GridProps) {
     if (!isNaN(parseInt(currentPath.split("/").slice(-1)[0]))) {
       // A plant is selected and plant info is open. Unselect and close it.
       props.dispatch({ type: "SELECT_PLANT", payload: undefined });
-      history.push("/app/designer/plants")
+      props.dispatch({
+        type: "TOGGLE_HOVERED_PLANT", payload: {
+          icon: undefined,
+          plantUUID: undefined
+        }
+      });
+      history.push("/app/designer/plants");
     }
   }
 

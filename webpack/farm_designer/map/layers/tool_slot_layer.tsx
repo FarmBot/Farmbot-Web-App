@@ -16,8 +16,7 @@ export function ToolSlotLayer(props: ToolSlotLayerProps) {
   const canClickTool = !(pathArray[3] === "plants" && pathArray.length > 4);
   function goToToolsPage() {
     if (canClickTool) {
-      props.dispatch({ type: "SELECT_PLANT", payload: undefined });
-      return Promise.resolve().then(() => history.push("/app/tools"))
+      history.push("/app/tools");
     }
   }
   const { slots, visible, mapTransformProps } = props;
