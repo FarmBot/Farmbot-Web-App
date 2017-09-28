@@ -8,7 +8,6 @@ jest.mock("../../../session", () => {
         return mockStorj[k];
       },
       invertBool: (k: string) => {
-        console.log(`${k} will go from ${mockStorj[k]} to ${!mockStorj[k]}`);
         mockStorj[k] = !mockStorj[k];
         return mockStorj[k];
       }

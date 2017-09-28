@@ -425,4 +425,7 @@ export enum Actions {
   // Farmware
   SELECT_IMAGE = "SELECT_IMAGE",
 
+  // Network
+  NETWORK_UP = "NETWORK_UP",
+  NETWORK_DOWN = "NETWORK_DOWN"
 }

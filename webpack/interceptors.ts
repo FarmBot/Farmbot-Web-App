@@ -22,10 +22,6 @@ export function responseFulfilled(input: AxiosResponse): AxiosResponse {
 }
 
 export function responseRejected(x: SafeError | undefined) {
-  if (x && _.isUndefined(x.response)) {
-    console.error("YOU ARE PROBABLY OFFLINE RIGHT NOW");
-    Promise.reject(x);
-  }
   if (x && isSafeError(x)) {
     const a = ![451, 401, 422].includes(x.response.status);
     const b = x.response.status > 399;
@@ -54,7 +50,7 @@ export function responseRejected(x: SafeError | undefined) {
     }
     return Promise.reject(x);
   } else {
-    console.warn("GOT MALFORMED HTTP REJECTION?? This shouldn't happen!");
+    console.error("YOU ARE PROBABLY OFFLINE RIGHT NOW");
     return Promise.reject(x);
   }
 }

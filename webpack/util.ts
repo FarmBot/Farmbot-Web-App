@@ -67,8 +67,7 @@ function safelyFetchErrors(err: AxiosErrorResponse): Dictionary<string> {
   if (err && err.response && err.response.data) {
     return err.response.data;
   } else {
-    console.log(t("Last error message wasn't formatted like an API error."));
-    console.dir(err);
+    console.log("TODO: Set status to `offline` here?");
     return {
       error: t("Your web browser is unable to communicate with the " +
         "web app server. Make sure you are connected to the Internet.")
