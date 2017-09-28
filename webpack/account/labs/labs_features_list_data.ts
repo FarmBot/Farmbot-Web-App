@@ -13,7 +13,7 @@ export interface LabsFeature {
 export const fetchLabFeatures = (): LabsFeature[] => ([
   {
     name: "Weed Detection",
-    description: "Plots points of weeds in the garden.",
+    description: "Plots the location of weeds on the garden map.",
     storageKey: BooleanSetting.weedDetector,
     value: false
   }
