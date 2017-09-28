@@ -1,6 +1,6 @@
-import { BooleanSetting } from "../session_keys";
-import { Session } from "../session";
-import { Content } from "../constants";
+import { Content } from "../../constants";
+import { Session } from "../../session";
+import { BooleanSetting } from "../../session_keys";
 
 export interface LabsFeature {
   name: string;

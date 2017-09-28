@@ -10,7 +10,7 @@ import { edit, save } from "../api/crud";
 import { updateNO } from "../resources/actions";
 import { deleteUser } from "./actions";
 import { success } from "farmbot-toastr/dist";
-import { LabsFeatures } from "./labs_features";
+import { LabsFeatures } from "./labs/labs_features";
 
 const KEYS: (keyof User)[] = ["id", "name", "email", "created_at", "updated_at"];
 

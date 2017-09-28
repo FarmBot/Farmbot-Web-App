@@ -136,7 +136,7 @@ export function isMobile() {
  *           Array, Symbol, etc)
  */
 export function safeStringFetch(obj: {}, key: string): string {
-  const boxed = box(obj[key]);
+  const boxed = box((obj as Dictionary<{}>)[key]);
   switch (boxed.kind) {
     case "undefined":
     case "null":
@@ -173,7 +173,7 @@ export function stopIE() {
       }
     }
     const REQUIRED_ARRAY_METHODS = ["includes", "map", "filter"];
-    for (i = 0; i < REQUIRED_ARRAY_METHODS.length; i++) {
+    for (let i = 0; i < REQUIRED_ARRAY_METHODS.length; i++) {
       if (!Array.prototype.hasOwnProperty(REQUIRED_ARRAY_METHODS[i])) {
         flunk();
       }
@@ -185,15 +185,6 @@ export function stopIE() {
 
 export function pick<T, K extends keyof T>(target: T, key: K): T[K] {
   return target[key];
-}
-
-/** _Safely_ check a value at runtime to know if it can be used for square
- * bracket access.
- */
-export function hasKey<T>(base: (keyof T)[]) {
-  return (target: T | {}): target is keyof T => {
-    return base.includes(target);
-  };
 }
 
 /** Useful for calculating uploads and progress bars for Promise.all */
@@ -260,10 +251,10 @@ export function smoothScrollToBottom() {
 }
 
 /** Fancy debug */
-export function fancyDebug(t: {}) {
+export function fancyDebug(d: {}) {
   console.log(Object
-    .keys(t)
-    .map(key => [key, t[key]])
+    .keys(d)
+    .map(key => [key, (d as Dictionary<string>)[key]])
     .map((x) => {
       const key = _.padStart(x[0], 20, " ");
       const val = (JSON.stringify(x[1]) || "Nothing").slice(0, 52);
