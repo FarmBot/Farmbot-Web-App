@@ -1,18 +1,27 @@
-import { connectivityReducer } from "../reducer";
+import { connectivityReducer, DEFAULT_STATE } from "../reducer";
 import { networkUp, networkDown } from "../actions";
 
 describe("connectivityReducer", () => {
   it("goes up", () => {
-    const state = connectivityReducer(undefined, networkUp());
+    const state = connectivityReducer(DEFAULT_STATE, networkUp("user.mqtt"));
     expect(state).toBeDefined();
-    expect(state && state.state).toBe("up");
-    expect(state && state.at).toBeTruthy();
+    const x = state && state["user.mqtt"];
+    if (x) {
+      expect(x.state).toBe("up");
+      expect(x.at).toBeTruthy();
+    } else {
+      fail();
+    }
   });
 
   it("goes down", () => {
-    const state = connectivityReducer(undefined, networkDown());
-    expect(state).toBeDefined();
-    expect(state && state.state).toBe("down");
-    expect(state && state.at).toBeTruthy();
+    const state = connectivityReducer(DEFAULT_STATE, networkDown("user.api"));
+    const x = state && state["user.api"];
+    if (x) {
+      expect(x.state).toBe("down");
+      expect(x.at).toBeTruthy();
+    } else {
+      fail();
+    }
   });
 });
