@@ -34,7 +34,7 @@ DatabaseCleaner.clean
 
 RSpec.configure do |config|
   config.color = true
-  config.fail_fast = 1
+  config.fail_fast = 10
   config.backtrace_exclusion_patterns = [/gems/]
 
   config.include Helpers
@@ -50,6 +50,13 @@ RSpec.configure do |config|
       SmarfDoc.finish!
     end
   end
+end
+
+def run_jobs_now
+  delay_jobs = Delayed::Worker.delay_jobs
+  Delayed::Worker.delay_jobs = false
+  yield
+  Delayed::Worker.delay_jobs = delay_jobs
 end
 
 # Reassign constants without getting a bunch of warnings to STDOUT.

@@ -136,10 +136,12 @@ describe Api::LogsController do
       empty_mail_bag
       Log.destroy_all
       LogDispatch.destroy_all
-      post :create,
-           body: JSON_EXAMPLE,
-           params: {format: :json}
-      expect(last_email).to eq(nil)
+      run_jobs_now do
+        post :create,
+             body: JSON_EXAMPLE,
+             params: {format: :json}
+        expect(last_email).to eq(nil)
+      end
     end
   end
 end

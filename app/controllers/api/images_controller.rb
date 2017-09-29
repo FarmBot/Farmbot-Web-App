@@ -22,7 +22,8 @@ module Api
     end
 
     def destroy
-      render json: image.destroy! && ""
+      image.delay.destroy!
+      render json: ""
     end
 
     # Creates a "policy object" + meta data so that users may upload an image to
@@ -76,7 +77,7 @@ module Api
     end
 
     def image
-      Image.where(device: current_device).find(params[:id])
+      @image ||= Image.where(device: current_device).find(params[:id])
     end
   end
 end

@@ -55,7 +55,9 @@ describe Api::ImagesController do
         sign_in user
         image = FactoryGirl.create(:image, device: user.device)
         before_count = Image.count
-        delete :destroy, params: { id: image.id }
+        run_jobs_now do
+          delete :destroy, params: { id: image.id }
+        end
         expect(response.status).to eq(200)
         expect(Image.count).to be < before_count
       end
