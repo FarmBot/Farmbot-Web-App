@@ -66,7 +66,7 @@ export function botToFirmware(version: string | undefined): StatusRowProps {
 
 const UNKNOWN = "Waiting for response from network";
 
-export function browserToAPI(status?: ConnectionStatus): StatusRowProps {
+export function browserToAPI(status?: ConnectionStatus | undefined): StatusRowProps {
   return {
     from: "Browser",
     to: "Internet",

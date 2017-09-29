@@ -20,7 +20,7 @@ import { EncoderDisplay } from "../controls/interfaces";
 import { ConnectionStatus } from "../connectivity/interfaces";
 
 export interface Props {
-  connectivity?: ConnectionStatus;
+  connectivity: ConnectionStatus | undefined;
   auth: AuthState | undefined;
   bot: BotState;
   deviceAccount: TaggedDevice;
