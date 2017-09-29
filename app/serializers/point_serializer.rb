@@ -16,14 +16,6 @@ class PointSerializer < ActiveModel::Serializer
     object.z.round
   end
 
-  def plant?
-    object.pointer.is_a? Plant
-  end
-
-  def tool_slot?
-    object.pointer.is_a? ToolSlot
-  end
-
   def openfarm_slug
     object.pointer.openfarm_slug
   end
@@ -34,5 +26,13 @@ class PointSerializer < ActiveModel::Serializer
 
   def meta
     object.meta || {}
+  end
+
+  def plant?
+    object.pointer.is_a? Plant
+  end
+
+  def tool_slot?
+    object.pointer.is_a? ToolSlot
   end
 end

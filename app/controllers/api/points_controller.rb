@@ -58,7 +58,7 @@ module Api
     end
 
     def points
-      Point.where(device_params)
+      Point.includes(:pointer).where(device_params)
     end
 
     def device_params
