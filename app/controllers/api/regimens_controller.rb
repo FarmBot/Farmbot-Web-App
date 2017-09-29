@@ -1,5 +1,6 @@
 module Api
   class RegimensController < Api::AbstractController
+    include Skylight::Helpers
     before_action :clean_expired_farm_events, only: [:destroy]
 
     def index
@@ -10,6 +11,7 @@ module Api
       mutate Regimens::Create.run(params.as_json, regimen_params)
     end
 
+    instrument_method
     def update
       mutate Regimens::Update.run(params.as_json,
                                   regimen_params,
