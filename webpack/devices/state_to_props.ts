@@ -7,7 +7,7 @@ import {
 
 export function mapStateToProps(props: Everything): Props {
   return {
-    connectivity: props.connectivity,
+    connectivity: props.connectivity["user.api"],
     deviceAccount: getDeviceAccountSettings(props.resources.index),
     auth: props.auth,
     bot: props.bot,

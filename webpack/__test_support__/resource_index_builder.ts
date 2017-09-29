@@ -1,6 +1,7 @@
 import { resourceReducer, emptyState } from "../resources/reducer";
 import { TaggedResource } from "../resources/tagged_resources";
 import * as _ from "lodash";
+import { Actions } from "../constants";
 
 export let FAKE_RESOURCES: TaggedResource[] = [
   {
@@ -305,7 +306,7 @@ export
     .toPairs()
     .map((x: [(TaggedResource["kind"]), TaggedResource[]]) => x)
     .map(y => ({
-      type: "RESOURCE_READY",
+      type: Actions.RESOURCE_READY,
       payload: { name: y[0], data: y[1].map(x => x.body) }
     }))
     .reduce(resourceReducer, state);
