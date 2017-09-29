@@ -1,11 +1,13 @@
 module Api
   class TokensController < Api::AbstractController
+    include Skylight::Helpers
     skip_before_action :authenticate_user!, only: :create
     skip_before_action :check_fbos_version, only: :create
     CREDS    = Auth::CreateTokenFromCredentials
     NO_CREDS = Auth::CreateToken
     NO_USER_ATTR = "API requets need a `user` attribute that is a JSON object."
 
+    instrument_method
     def create
       if_properly_formatted do |auth_params|
         klass = (auth_params[:credentials]) ? CREDS : NO_CREDS

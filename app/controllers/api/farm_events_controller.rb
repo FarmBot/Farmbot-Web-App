@@ -1,7 +1,9 @@
 module Api
   class FarmEventsController < Api::AbstractController
+    include Skylight::Helpers
     before_action :clean_expired_farm_events, only: [:index]
 
+    instrument_method
     def index
       render json: current_device.farm_events
     end
