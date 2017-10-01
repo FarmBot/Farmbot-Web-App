@@ -10,6 +10,7 @@ export function botToAPI(lastSeen: moment.Moment | undefined,
   now = moment()): StatusRowProps {
 
   const status: StatusRowProps = {
+    connectionName: "botAPI",
     from: "Bot",
     to: "Web App",
     connectionStatus: false,
@@ -29,6 +30,7 @@ export function botToAPI(lastSeen: moment.Moment | undefined,
 export function botToMQTT(lastSeen: string | undefined,
   now = moment()): StatusRowProps {
   const output: StatusRowProps = {
+    connectionName: "botMQTT",
     from: "Bot",
     to: "Message Broker",
     connectionStatus: false,
@@ -46,6 +48,7 @@ export function botToMQTT(lastSeen: string | undefined,
 
 export function browserToMQTT(online?: boolean): StatusRowProps {
   return {
+    connectionName: "browserMQTT",
     from: "Browser",
     to: "Message Broker",
     children: online ? "Connected." : "Unable to connect.",
@@ -57,6 +60,7 @@ export function botToFirmware(version: string | undefined): StatusRowProps {
   const online = !isUndefined(version) && !version.includes("Disconnected");
   const boardIdentifier = version ? version.slice(-1) : "undefined";
   return {
+    connectionName: "botFirmware",
     from: "Raspberry Pi",
     to: boardIdentifier === "F" ? "Farmduino" : "Arduino",
     children: online ? "Connected." : "Disconnected.",
@@ -68,6 +72,7 @@ const UNKNOWN = "Waiting for response from network";
 
 export function browserToAPI(status?: ConnectionStatus | undefined): StatusRowProps {
   return {
+    connectionName: "browserAPI",
     from: "Browser",
     to: "Internet",
     children: status ?

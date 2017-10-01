@@ -1,17 +1,28 @@
 import * as React from "react";
 import { diagnose, Diagnosis } from "../diagnosis";
 import { DiagnosticMessages } from "../diagnostic_messages";
-import { render } from "enzyme";
+import { mount } from "enzyme";
 
 describe("<Diagnosis/>", () => {
   it("renders help text", () => {
-    const el = render(<Diagnosis
+    const el = mount(<Diagnosis
       userMQTT={true}
       userAPI={true}
       botMQTT={true}
       botAPI={true}
       botFirmware={true} />);
     expect(el.text()).toContain(DiagnosticMessages.OK);
+    expect(el.find(".saucer").hasClass("green")).toBeTruthy();
+  });
+
+  it("renders diagnosis error color", () => {
+    const el = mount(<Diagnosis
+      userMQTT={true}
+      userAPI={true}
+      botMQTT={true}
+      botAPI={true}
+      botFirmware={false} />);
+    expect(el.find(".saucer").hasClass("red")).toBeTruthy();
   });
 });
 

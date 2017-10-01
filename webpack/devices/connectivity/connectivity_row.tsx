@@ -8,6 +8,9 @@ export interface StatusRowProps {
   from: string;
   to: string;
   children?: React.ReactChild;
+  connectionName?: string;
+  hover?: Function;
+  hoveredConnection?: string | undefined;
 }
 
 const iconLookup: CowardlyDictionary<string> = {
@@ -16,7 +19,9 @@ const iconLookup: CowardlyDictionary<string> = {
 };
 
 export function ConnectivityRow(props: StatusRowProps) {
-  const classColor = iconLookup["" + props.connectionStatus] || "grey";
+  const colorClass = iconLookup["" + props.connectionStatus] || "grey";
+  const hoverClass = props.hoveredConnection === props.connectionName ? "hover" : "";
+  const hoverOver = props.hover ? props.hover : () => { };
 
   const getTitle = () => {
     switch (props.connectionStatus) {
@@ -28,8 +33,11 @@ export function ConnectivityRow(props: StatusRowProps) {
 
   return <Row>
     <Col xs={1}>
-      <div className={"saucer active " + classColor} title={getTitle()} />
-      <div className={"saucer-connector " + classColor} />
+      <div className={`saucer active ${colorClass} ${hoverClass}`}
+        title={getTitle()}
+        onMouseEnter={hoverOver(props.connectionName)}
+        onMouseLeave={hoverOver(undefined)} />
+      <div className={`saucer-connector ${colorClass}`} />
     </Col>
     <Col xs={2}>
       <p>
