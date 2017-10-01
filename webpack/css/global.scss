@@ -93,6 +93,9 @@ fieldset {
   &.active {
     border: 2px solid white;
   }
+  &.hover {
+    border: 2px solid $dark_gray;
+  }
 }
 
 .saucer-connector {
@@ -106,6 +109,12 @@ fieldset {
     margin-top: -9rem;
     height: 8rem;
   }
+}
+
+.connector-hover-area {
+  visibility: hidden;
+  stroke: white;
+  pointer-events: all;
 }
 
 .connectivity-diagnosis {

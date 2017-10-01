@@ -7,9 +7,9 @@ import { t } from "i18next";
 
 export type DiagnosisName =
   | "userAPI"
+  | "userMQTT"
   | "botMQTT"
   | "botAPI"
-  | "userMQTT"
   | "botFirmware";
 
 export type DiagnosisProps = Record<DiagnosisName, boolean>;
@@ -40,9 +40,9 @@ export function Diagnosis(props: DiagnosisProps) {
 export function diagnose(x: DiagnosisProps) {
   const errorCode = bitArray(
     x.userAPI,
+    x.userMQTT,
     x.botMQTT,
     x.botAPI,
-    x.userMQTT,
     x.botFirmware);
   const errMsg = TRUTH_TABLE[errorCode] || DiagnosticMessages.MISC;
   return `${t(errMsg)} (code ${errorCode})`;
