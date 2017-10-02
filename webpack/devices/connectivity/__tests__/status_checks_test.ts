@@ -26,18 +26,18 @@ describe("botToAPI()", () => {
 });
 
 describe("botToMQTT()", () => {
+  const DEFAULT_STATE: ConnectionStatus = {
+    at: "2017-09-27T07:52:37.003-05:00",
+    state: "up"
+  };
   function stat(input: Partial<ConnectionStatus> = {}): ConnectionStatus {
-    return betterMerge({
-      from: "bot",
-      to: "mqtt",
-      at: "2017-09-27T07:52:37.003-05:00",
-      stat: "up"
-    }, input as ConnectionStatus);
+    return betterMerge(DEFAULT_STATE, input as ConnectionStatus);
   }
   it("handles connectivity", () => {
-    const result = botToMQTT(stat());
+    const input = stat();
+    const result = botToMQTT(input);
     expect(result.connectionStatus).toBeTruthy();
-    expect(result.children).toContain("Connected ");
+    expect(result.children).toContain("Last message seen ");
     expect(result.children).toContain(" ago");
   });
 
