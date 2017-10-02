@@ -33,7 +33,7 @@ describe("botRedcuer", () => {
     expect(step2.isUpdating).toBe(false);
   });
 
-  it("changes step size", () => {
+  fit("changes step size", () => {
     const state = botReducer(initialState, {
       type: Actions.CHANGE_STEP_SIZE,
       payload: 23

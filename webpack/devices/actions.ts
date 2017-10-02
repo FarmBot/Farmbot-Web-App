@@ -257,7 +257,6 @@ function readStatus() {
 
 let NEED_VERSION_CHECK = true;
 const bothUp = () => {
-  console.log("NO!");
   dispatchNetworkUp("user.mqtt");
   dispatchNetworkUp("bot.mqtt");
 };
@@ -304,7 +303,6 @@ export function connectDevice(token: string): ConnectDeviceReturn {
             // TODO:             Make a `bot/device_123/offline` channel.
             const died =
               msg.message.includes("is offline") && msg.meta.type === "error";
-            console.log(msg.message);
             died && dispatchNetworkDown("bot.mqtt");
           } else {
             throw new Error("Refusing to display log: " + JSON.stringify(msg));
