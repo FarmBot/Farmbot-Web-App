@@ -3,6 +3,7 @@ import { Actions } from "../constants";
 import { ConnectionState, EdgeStatus } from "./interfaces";
 
 export const DEFAULT_STATE: ConnectionState = {
+  "bot.mqtt": undefined,
   "user.mqtt": undefined,
   "user.api": undefined,
 };

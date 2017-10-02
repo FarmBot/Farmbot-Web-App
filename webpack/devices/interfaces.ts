@@ -20,7 +20,9 @@ import { EncoderDisplay } from "../controls/interfaces";
 import { ConnectionStatus } from "../connectivity/interfaces";
 
 export interface Props {
-  connectivity: ConnectionStatus | undefined;
+  userToApi: ConnectionStatus | undefined;
+  userToMqtt: ConnectionStatus | undefined;
+  botToMqtt: ConnectionStatus | undefined;
   auth: AuthState | undefined;
   bot: BotState;
   deviceAccount: TaggedDevice;
@@ -39,7 +41,6 @@ export interface DeviceAccountSettings {
 }
 
 export interface BotState {
-  connectedToMQTT: boolean;
   /** How many steps to move when the user presses a manual movement arrow */
   stepSize: number;
   /** The current os version on the github release api */
