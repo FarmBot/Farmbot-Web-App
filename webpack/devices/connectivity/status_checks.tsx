@@ -28,7 +28,7 @@ export function botToAPI(stat: string | undefined,
     connectionName: "botAPI",
     from: "Bot",
     to: "Web App",
-    connectionStatus: stat ? (now.diff(moment(stat)) > SIX_HOURS) : false,
+    connectionStatus: stat ? (now.diff(moment(stat)) < SIX_HOURS) : false,
     children: stat ? `Last message seen ${ago(stat)}.` : NOT_SEEN
   };
 }

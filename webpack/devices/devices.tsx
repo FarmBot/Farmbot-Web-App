@@ -5,7 +5,6 @@ import { FarmbotOsSettings } from "./components/farmbot_os_settings";
 import { Page, Col, Row } from "../ui";
 import { mapStateToProps } from "./state_to_props";
 import { Props } from "./interfaces";
-import * as moment from "moment";
 import { ConnectivityPanel } from "./connectivity/index";
 import {
   botToMQTT, botToAPI, browserToMQTT, botToFirmware, browserToAPI
