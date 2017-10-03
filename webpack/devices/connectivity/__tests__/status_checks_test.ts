@@ -1,5 +1,9 @@
-import { browserToMQTT, botToMQTT, botToAPI, botToFirmware } from "../status_checks";
+import {
+  browserToMQTT, botToMQTT, botToAPI, botToFirmware, browserToAPI
+} from "../status_checks";
 import * as moment from "moment";
+import { ConnectionStatus } from "../../../connectivity/interfaces";
+import { betterMerge } from "../../../util";
 
 describe("botToAPI()", () => {
   it("handles connectivity", () => {
@@ -22,10 +26,18 @@ describe("botToAPI()", () => {
 });
 
 describe("botToMQTT()", () => {
+  const DEFAULT_STATE: ConnectionStatus = {
+    at: "2017-09-27T07:52:37.003-05:00",
+    state: "up"
+  };
+  function stat(input: Partial<ConnectionStatus> = {}): ConnectionStatus {
+    return betterMerge(DEFAULT_STATE, input as ConnectionStatus);
+  }
   it("handles connectivity", () => {
-    const result = botToMQTT("\"2017-09-27T07:52:37.003-05:00\"");
+    const input = stat();
+    const result = botToMQTT(input);
     expect(result.connectionStatus).toBeTruthy();
-    expect(result.children).toContain("Connected ");
+    expect(result.children).toContain("Last message seen ");
     expect(result.children).toContain(" ago");
   });
 
@@ -60,12 +72,49 @@ describe("botToFirmware()", () => {
   it("handles connectivity", () => {
     const output = botToFirmware("0.0.0.R");
     expect(output.connectionStatus).toBe(true);
+    expect(output.to).toContain("Arduino");
     expect(output.children).toContain("Connected");
+  });
+
+  it("returns board name", () => {
+    const output = botToFirmware("0.0.0.F");
+    expect(output.to).toContain("Farmduino");
+  });
+
+  it("board undefined", () => {
+    const output = botToFirmware(undefined);
+    expect(output.to).toContain("Arduino");
   });
 
   it("handles lack of connectivity", () => {
     const output = botToFirmware("Arduino Disconnected!");
     expect(output.connectionStatus).toBe(false);
     expect(output.children).toContain("Disconnected");
+  });
+});
+
+describe("browserToAPI()", () => {
+  it("handles connectivity", () => {
+    const result = browserToAPI({
+      state: "up",
+      at: moment().toISOString()
+    });
+    expect(result.connectionStatus).toBeTruthy();
+    expect(result.children).toContain("Last seen a few seconds ago");
+  });
+
+  it("handles loss of connectivity", () => {
+    const result = browserToAPI({
+      state: "down",
+      at: moment().toISOString()
+    });
+    expect(result.connectionStatus).toBeFalsy();
+    expect(result.children).toContain("Last seen a few seconds ago");
+  });
+
+  it("handles unknown connectivity", () => {
+    const result = browserToAPI(undefined);
+    expect(result.connectionStatus).toBeFalsy();
+    expect(result.children).toContain("Waiting for response from network");
   });
 });

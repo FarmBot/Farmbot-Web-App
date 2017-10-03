@@ -1,15 +1,18 @@
 import { Actions } from "../constants";
+import { Edge, EdgeStatus } from "./interfaces";
+import { ReduxAction } from "../redux/interfaces";
 
-export function networkUp(payload = (new Date()).toJSON()) {
-  return {
-    type: Actions.NETWORK_UP,
-    payload
-  };
-}
+type NetChange = ReduxAction<EdgeStatus>;
 
-export function networkDown(payload = (new Date()).toJSON()) {
-  return {
-    type: Actions.NETWORK_DOWN,
-    payload
-  };
-}
+const change =
+  (state: "up" | "down") =>
+    (name: Edge, at = (new Date()).toJSON()): NetChange => {
+      return {
+        type: Actions.NETWORK_EDGE_CHANGE,
+        payload: { name, status: { state, at } }
+      };
+    };
+
+export const networkUp = change("up");
+
+export let networkDown = change("down");

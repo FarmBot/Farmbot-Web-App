@@ -1,5 +1,9 @@
 jest.mock("axios", () => ({
-  default: { get: () => Promise.resolve({ data: {} }) }
+  default: {
+    get: () => {
+      return Promise.resolve({ data: {} });
+    }
+  }
 }));
 
 jest.mock("../../resources/tagged_resources", () => ({
@@ -35,11 +39,19 @@ describe("refresh()", () => {
     thunk(dispatch);
     setImmediate(() => {
       expect(mock.calls.length).toEqual(2);
+      // Test call to refesh();
+      const firstCall = mock.calls[0][0];
+      const dispatchAction1 = get(firstCall, "type", "NO TYPE FOUND");
+      expect(dispatchAction1).toBe(Actions.REFRESH_RESOURCE_START);
+      const dispatchPayload1 = get(firstCall, "payload", "NO TYPE FOUND");
+      expect(dispatchPayload1).toBe(device1.uuid);
       const secondCall = mock.calls[1][0];
-      expect(get(secondCall, "type", "NO TYPE FOUND"))
-        .toEqual(Actions.REFRESH_RESOURCE_NO);
-      expect(get(secondCall, "payload.err.message", "NO ERR MSG FOUND"))
-        .toEqual("Just saved a malformed TR.");
+      const dispatchAction2 = get(secondCall, "type", "NO TYPE FOUND");
+      expect(dispatchAction2).toEqual(Actions.REFRESH_RESOURCE_NO);
+      const dispatchPayl = get(secondCall,
+        "payload.err.message",
+        "NO ERR MSG FOUND");
+      expect(dispatchPayl).toEqual("Unable to refresh");
       done();
     });
   });

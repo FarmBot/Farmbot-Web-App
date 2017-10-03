@@ -24,6 +24,9 @@ import * as actions from "../actions";
 import { devices } from "../../device";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
+import { setSyncStatus, changeStepSize } from "../actions";
+import { SyncStatus } from "farmbot";
+import { Actions } from "../../constants";
 
 describe("checkControllerUpdates()", function () {
   beforeEach(function () {
@@ -189,5 +192,23 @@ describe("toggleControlPanel()", function () {
   it("toggles", () => {
     const action = actions.toggleControlPanel("homing_and_calibration");
     expect(action.payload).toEqual("homing_and_calibration");
+  });
+});
+
+describe("setSyncStatus()", () => {
+  it("returns a redux action", () => {
+    const payload: SyncStatus = "locked";
+    const result = setSyncStatus(payload);
+    expect(result.type).toBe(Actions.SET_SYNC_STATUS);
+    expect(result.payload).toBe(payload);
+  });
+});
+
+describe("changeStepSize()", () => {
+  it("returns a redux action", () => {
+    const payload = 23;
+    const result = changeStepSize(payload);
+    expect(result.type).toBe(Actions.CHANGE_STEP_SIZE);
+    expect(result.payload).toBe(payload);
   });
 });

@@ -103,13 +103,9 @@ export function refresh(resource: TaggedResource, urlNeedsId = false) {
         if (isTaggedResource(newTR)) {
           dispatch(refreshOK(newTR));
         } else {
-          throw new Error("Just saved a malformed TR.");
+          const action = refreshNO({ err: { message: "Unable to refresh" }, uuid: resource.uuid });
+          dispatch(action);
         }
-      })
-      .catch(function (err: UnsafeError) {
-        const action = refreshNO({ err, uuid: resource.uuid });
-        dispatch(action);
-        return Promise.reject(err);
       });
   };
 }

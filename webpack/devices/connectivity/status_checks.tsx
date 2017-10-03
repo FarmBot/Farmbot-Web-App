@@ -1,7 +1,7 @@
 import { isUndefined } from "lodash";
 import * as moment from "moment";
 import { StatusRowProps } from "./connectivity_row";
-import { APIStatus } from "../../connectivity/interfaces";
+import { ConnectionStatus } from "../../connectivity/interfaces";
 
 const HOUR = 1000 * 60 * 60;
 const SIX_HOURS = HOUR * 6;
@@ -10,6 +10,7 @@ export function botToAPI(lastSeen: moment.Moment | undefined,
   now = moment()): StatusRowProps {
 
   const status: StatusRowProps = {
+    connectionName: "botAPI",
     from: "Bot",
     to: "Web App",
     connectionStatus: false,
@@ -26,26 +27,21 @@ export function botToAPI(lastSeen: moment.Moment | undefined,
   return status;
 }
 
-export function botToMQTT(lastSeen: string | undefined,
-  now = moment()): StatusRowProps {
-  const output: StatusRowProps = {
+const NOT_SEEN = "We are not seeing any realtime messages from the bot right now.";
+export function botToMQTT(stat: ConnectionStatus | undefined): StatusRowProps {
+  return {
+    connectionName: "botMQTT",
     from: "Bot",
     to: "Message Broker",
-    connectionStatus: false,
-    children: "We are not seeing any realtime messages from the bot right now."
+    connectionStatus: !!(stat && stat.state === "up"),
+    children: stat ?
+      `Last message seen ${moment(new Date(stat.at)).fromNow()}.` : NOT_SEEN
   };
-
-  if (lastSeen) {
-    output.connectionStatus = true;
-    const ago = moment(new Date(JSON.parse(lastSeen))).fromNow();
-    output.children = `Connected ${ago}.`;
-  }
-
-  return output;
 }
 
 export function browserToMQTT(online?: boolean): StatusRowProps {
   return {
+    connectionName: "browserMQTT",
     from: "Browser",
     to: "Message Broker",
     children: online ? "Connected." : "Unable to connect.",
@@ -57,6 +53,7 @@ export function botToFirmware(version: string | undefined): StatusRowProps {
   const online = !isUndefined(version) && !version.includes("Disconnected");
   const boardIdentifier = version ? version.slice(-1) : "undefined";
   return {
+    connectionName: "botFirmware",
     from: "Raspberry Pi",
     to: boardIdentifier === "F" ? "Farmduino" : "Arduino",
     children: online ? "Connected." : "Disconnected.",
@@ -66,8 +63,9 @@ export function botToFirmware(version: string | undefined): StatusRowProps {
 
 const UNKNOWN = "Waiting for response from network";
 
-export function browserToAPI(status?: APIStatus): StatusRowProps {
+export function browserToAPI(status?: ConnectionStatus | undefined): StatusRowProps {
   return {
+    connectionName: "browserAPI",
     from: "Browser",
     to: "Internet",
     children: status ?

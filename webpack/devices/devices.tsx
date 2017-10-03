@@ -20,16 +20,17 @@ export class Devices extends React.Component<Props, {}> {
 
   /** A record of all the things we know about connectivity right now. */
   get flags(): Record<DiagnosisName, StatusRowProps> {
-    const mqttConnected = this.props.bot.connectedToMQTT;
-    const lastSeen = this.props.deviceAccount.body.last_saw_api;
-    const timestamp = this.props.bot.hardware.user_env["LAST_CLIENT_CONNECTED"];
+    const mqttConnected =
+      this.props.userToMqtt && this.props.userToMqtt.state === "up";
+    const botApiTimestamp = this.props.deviceAccount.body.last_saw_api;
     const fwVersion = this.props.bot.hardware
       .informational_settings.firmware_version;
+
     return {
       userMQTT: browserToMQTT(mqttConnected),
-      userAPI: browserToAPI(this.props.connectivity),
-      botMQTT: botToMQTT(timestamp),
-      botAPI: botToAPI(lastSeen ? moment(lastSeen) : undefined, moment()),
+      userAPI: browserToAPI(this.props.userToApi),
+      botMQTT: botToMQTT(this.props.botToMqtt),
+      botAPI: botToAPI(botApiTimestamp ? moment(botApiTimestamp) : undefined, moment()),
       botFirmware: botToFirmware(fwVersion),
     };
   }
