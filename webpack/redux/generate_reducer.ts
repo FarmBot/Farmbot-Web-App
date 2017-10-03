@@ -1,45 +1,52 @@
 import { ReduxAction } from "./interfaces";
 import { defensiveClone } from "../util";
 import { Actions } from "../constants";
+import { Dictionary } from "farmbot";
 
-export function generateReducer<State>(initialState: State,
+/** A function that responds to a particular action from within a
+ * generated reducer. */
+interface ActionHandler<State, Payl = any> {
+  (state: State, action: ReduxAction<Payl>): State;
+}
+
+// tslint:disable-next-line:no-any
+export function generateReducer<State, U = any>(initialState: State,
   /** For passing state down to children. */
-  afterEach?: (s: State, a: ReduxAction<any>) => State) {
-  /** A function that responds to a particular action from within a
-   * generated reducer. */
-  interface ActionHandler {
-    (state: State, action: ReduxAction<any>): State;
-  }
+  afterEach?: (s: State, a: ReduxAction<U>) => State) {
 
-  interface GenericActionHandler<T> {
-    (state: State, action: ReduxAction<T>): State;
-  }
+  type ActionHandlerDict = Dictionary<ActionHandler<State>>;
 
-  interface ActionHandlerDict {
-    [actionHandler: string]: ActionHandler;
-  }
-
-  interface GeneratedReducer extends ActionHandler {
+  interface GeneratedReducer extends ActionHandler<State> {
     /** Adds action handler for current reducer. */
-    add: <T>(name: Actions, fn: GenericActionHandler<T>) => GeneratedReducer;
+    add: <T>(name: Actions, fn: ActionHandler<State, T>) => GeneratedReducer;
     // Calms the type checker.
   }
 
   const actionHandlers: ActionHandlerDict = {};
 
-  const reducer: GeneratedReducer = function <T>(state = initialState,
-    action: ReduxAction<T>): State {
-    const NOOP: ActionHandler = (s, a) => s;
-    const handler = (actionHandlers[action.type] || NOOP);
-    const clonedState = defensiveClone(state);
-    const clonedAction = defensiveClone(action);
-    let result: State = handler(clonedState, clonedAction);
-    result = (afterEach || NOOP)(defensiveClone(result), action);
-    return defensiveClone(result);
-  } as GeneratedReducer;
+  const NOOP: ActionHandler<State> = (s, a) => s;
 
-  reducer.add = function addHandler<T>(name: string,
-    fn: GenericActionHandler<T>) {
+  const reducer: GeneratedReducer =
+    ((state = initialState, action: ReduxAction<any>): State => {
+
+      // Find the handler in the dictionary, or use the NOOP.
+      const handler = (actionHandlers[action.type] || NOOP);
+
+      // Defensivly clone the action and state to avoid accidental mutations.
+      const clonedState = defensiveClone(state);
+      const clonedAction = defensiveClone(action);
+
+      // Run the reducer.
+      let result: State = handler(clonedState, clonedAction);
+
+      // Give the "afterEach" reducer a chance to run.
+      result = (afterEach || NOOP)(defensiveClone(result), action);
+
+      // TODO: Do I really need to clone this?
+      return defensiveClone(result);
+    }) as GeneratedReducer;
+
+  reducer.add = <X>(name: string, fn: ActionHandler<State, X>) => {
     actionHandlers[name] = fn;
     return reducer;
   };

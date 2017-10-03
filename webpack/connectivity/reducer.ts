@@ -1,13 +1,16 @@
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
-import { APIStatus } from "./interfaces";
+import { ConnectionState, EdgeStatus } from "./interfaces";
 
-type State = APIStatus | undefined;
+export const DEFAULT_STATE: ConnectionState = {
+  "bot.mqtt": undefined,
+  "user.mqtt": undefined,
+  "user.api": undefined,
+};
 
-export let connectivityReducer = generateReducer<State>(undefined)
-  .add<string>(Actions.NETWORK_UP, (s, { payload }) => {
-    return { state: "up", at: payload };
-  })
-  .add<string>(Actions.NETWORK_DOWN, (s, { payload }) => {
-    return { state: "down", at: payload };
-  });
+export let connectivityReducer =
+  generateReducer<ConnectionState>(DEFAULT_STATE)
+    .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
+      s[payload.name] = payload.status;
+      return s;
+    });

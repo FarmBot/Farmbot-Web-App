@@ -17,10 +17,12 @@ import { RestResources } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import { EncoderDisplay } from "../controls/interfaces";
-import { APIStatus } from "../connectivity/interfaces";
+import { ConnectionStatus } from "../connectivity/interfaces";
 
 export interface Props {
-  connectivity?: APIStatus;
+  userToApi: ConnectionStatus | undefined;
+  userToMqtt: ConnectionStatus | undefined;
+  botToMqtt: ConnectionStatus | undefined;
   auth: AuthState | undefined;
   bot: BotState;
   deviceAccount: TaggedDevice;
@@ -36,10 +38,10 @@ export interface DeviceAccountSettings {
   name: string;
   timezone?: string | undefined;
   last_seen?: string | undefined;
+  last_seen_mq?: string | undefined;
 }
 
 export interface BotState {
-  connectedToMQTT: boolean;
   /** How many steps to move when the user presses a manual movement arrow */
   stepSize: number;
   /** The current os version on the github release api */

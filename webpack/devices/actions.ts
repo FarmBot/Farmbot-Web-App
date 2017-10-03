@@ -27,6 +27,7 @@ import { versionOK } from "./reducer";
 import { oneOf, HttpData } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
+import { dispatchNetworkUp, dispatchNetworkDown } from "../connectivity/index";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -255,6 +256,10 @@ function readStatus() {
 }
 
 let NEED_VERSION_CHECK = true;
+const bothUp = () => {
+  dispatchNetworkUp("user.mqtt");
+  dispatchNetworkUp("bot.mqtt");
+};
 // Already filtering messages in FarmBot OS and the API- this is just for
 // an additional layer of safety. If sensitive data ever hits a client, it will
 // be reported to ROllbar for investigation.
@@ -264,9 +269,9 @@ export function connectDevice(token: string): ConnectDeviceReturn {
   return (dispatch: Function, getState: GetState) => {
     const secure = location.protocol === "https:";
     const bot = new Farmbot({ token, secure });
-    bot.on("online", () => dispatch(setMqttStatus(true)));
+    bot.on("online", () => dispatchNetworkUp("user.mqtt"));
     bot.on("offline", () => {
-      dispatch(setMqttStatus(false));
+      dispatchNetworkDown("user.mqtt");
       error(t(Content.MQTT_DISCONNECTED));
     });
     return bot
@@ -281,7 +286,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
           ))
           .catch(() => { });
         bot.on("logs", function (msg: Log) {
-          dispatch(setMqttStatus(true));
+          bothUp();
           if (isLog(msg) && !oneOf(BAD_WORDS, msg.message.toUpperCase())) {
             maybeShowLog(msg);
             dispatch(init({
@@ -290,12 +295,21 @@ export function connectDevice(token: string): ConnectDeviceReturn {
               uuid: "MUST_CHANGE",
               body: msg
             }));
+            // CORRECT SOLUTION: Give each device its own topic for publishing
+            //                   MQTT last will message.
+            // FAST SOLUTION:    We would need to re-publish FBJS and FBOS to
+            //                   change topic structure. Instead, we will use
+            //                   inband signalling (for now).
+            // TODO:             Make a `bot/device_123/offline` channel.
+            const died =
+              msg.message.includes("is offline") && msg.meta.type === "error";
+            died && dispatchNetworkDown("bot.mqtt");
           } else {
             throw new Error("Refusing to display log: " + JSON.stringify(msg));
           }
         });
         bot.on("status", _.throttle(function (msg: BotStateTree) {
-          dispatch(setMqttStatus(true));
+          bothUp();
           dispatch(incomingStatus(msg));
           if (NEED_VERSION_CHECK) {
             const IS_OK = versionOK(getState()
@@ -311,7 +325,7 @@ export function connectDevice(token: string): ConnectDeviceReturn {
 
         let alreadyToldYou = false;
         bot.on("malformed", function () {
-          dispatch(setMqttStatus(true));
+          bothUp();
           if (!alreadyToldYou) {
             warning(t(Content.MALFORMED_MESSAGE_REC_UPGRADE));
             alreadyToldYou = true;
@@ -414,7 +428,3 @@ export function setSyncStatus(payload: SyncStatus) {
 function badVersion() {
   info(t("You are running an old version of FarmBot OS."), t("Please Update"), "red");
 }
-
-export let setMqttStatus = (payload: boolean) => ({
-  type: Actions.SET_MQTT_STATUS, payload
-});
