@@ -21,7 +21,6 @@ export function didLogin(authState: AuthState, dispatch: Function) {
   API.setBaseUrl(authState.token.unencoded.iss);
   dispatch(fetchReleases(authState.token.unencoded.os_update_server));
   dispatch(loginOk(authState));
-
   Sync.fetchSyncData(dispatch);
   dispatch(connectDevice(authState.token.encoded));
 }
