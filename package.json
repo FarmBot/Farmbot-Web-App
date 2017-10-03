@@ -55,7 +55,7 @@
     "deep-freeze": "^0.0.1",
     "enzyme": "^2.9.1",
     "extract-text-webpack-plugin": "^3.0.0",
-    "farmbot": "5.0.1-rc2",
+    "farmbot": "5.0.0",
     "farmbot-toastr": "^1.0.3",
     "fastclick": "^1.0.6",
     "file-loader": "^0.11.2",
