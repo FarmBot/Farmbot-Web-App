@@ -7,21 +7,23 @@ import { betterMerge } from "../../../util";
 
 describe("botToAPI()", () => {
   it("handles connectivity", () => {
-    const result = botToAPI(moment().subtract(4, "minutes"), moment());
+    const at = moment().subtract(4, "minutes").toJSON();
+    const result = botToAPI({ at, state: "up" });
     expect(result.connectionStatus).toBeTruthy();
-    expect(result.children).toContain("Last seen 4 minutes ago.");
+    expect(result.children).toContain("Last message seen 4 minutes ago.");
   });
 
   it("handles loss of connectivity", () => {
-    const result = botToAPI(moment().subtract(4, "days"), moment());
+    const at = moment().subtract(4, "days").toJSON();
+    const result = botToAPI({ at, state: "down" });
     expect(result.connectionStatus).toBeFalsy();
-    expect(result.children).toContain("Last seen 4 days ago.");
+    expect(result.children).toContain("Last message seen 4 days ago.");
   });
 
   it("handles unknown connectivity", () => {
     const result = botToAPI(undefined, moment());
     expect(result.connectionStatus).toBeFalsy();
-    expect(result.children).toContain("not seen messages from FarmBot yet.");
+    expect(result.children).toContain("No messages seen yet.");
   });
 });
 
@@ -44,27 +46,27 @@ describe("botToMQTT()", () => {
   it("handles loss of connectivity", () => {
     const result = botToMQTT(undefined);
     expect(result.connectionStatus).toBeFalsy();
-    expect(result.children).toContain("not seeing any");
+    expect(result.children).toContain("No messages seen yet.");
   });
 });
-
+const NOW = moment().toJSON();
 describe("browserToMQTT()", () => {
   it("handles connectivity", () => {
-    const output = browserToMQTT(true);
+    const output = browserToMQTT({ state: "up", at: NOW });
     expect(output.connectionStatus).toBe(true);
-    expect(output.children).toContain("Connected");
+    expect(output.children).toContain("Last message seen a few seconds ago.");
   });
 
   it("handles unknown connectivity", () => {
     const output = browserToMQTT(undefined);
     expect(output.connectionStatus).toBe(undefined);
-    expect(output.children).toContain("Unable to connect");
+    expect(output.children).toContain("No messages seen yet.");
   });
 
   it("handles lack of connectivity", () => {
-    const output = browserToMQTT(false);
+    const output = browserToMQTT({ state: "down", at: NOW });
     expect(output.connectionStatus).toBe(false);
-    expect(output.children).toContain("Unable to connect");
+    expect(output.children).toContain("Last message seen a few seconds ago.");
   });
 });
 
@@ -100,7 +102,7 @@ describe("browserToAPI()", () => {
       at: moment().toISOString()
     });
     expect(result.connectionStatus).toBeTruthy();
-    expect(result.children).toContain("Last seen a few seconds ago");
+    expect(result.children).toContain("Last message seen a few seconds ago.");
   });
 
   it("handles loss of connectivity", () => {
@@ -109,12 +111,12 @@ describe("browserToAPI()", () => {
       at: moment().toISOString()
     });
     expect(result.connectionStatus).toBeFalsy();
-    expect(result.children).toContain("Last seen a few seconds ago");
+    expect(result.children).toContain("Last message seen a few seconds ago");
   });
 
   it("handles unknown connectivity", () => {
     const result = browserToAPI(undefined);
     expect(result.connectionStatus).toBeFalsy();
-    expect(result.children).toContain("Waiting for response from network");
+    expect(result.children).toContain("No messages seen yet.");
   });
 });
