@@ -2,6 +2,8 @@ import {
   browserToMQTT, botToMQTT, botToAPI, botToFirmware, browserToAPI
 } from "../status_checks";
 import * as moment from "moment";
+import { ConnectionStatus } from "../../../connectivity/interfaces";
+import { betterMerge } from "../../../util";
 
 describe("botToAPI()", () => {
   it("handles connectivity", () => {
@@ -24,10 +26,18 @@ describe("botToAPI()", () => {
 });
 
 describe("botToMQTT()", () => {
+  const DEFAULT_STATE: ConnectionStatus = {
+    at: "2017-09-27T07:52:37.003-05:00",
+    state: "up"
+  };
+  function stat(input: Partial<ConnectionStatus> = {}): ConnectionStatus {
+    return betterMerge(DEFAULT_STATE, input as ConnectionStatus);
+  }
   it("handles connectivity", () => {
-    const result = botToMQTT("\"2017-09-27T07:52:37.003-05:00\"");
+    const input = stat();
+    const result = botToMQTT(input);
     expect(result.connectionStatus).toBeTruthy();
-    expect(result.children).toContain("Connected ");
+    expect(result.children).toContain("Last message seen ");
     expect(result.children).toContain(" ago");
   });
 

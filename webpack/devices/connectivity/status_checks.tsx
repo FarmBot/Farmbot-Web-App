@@ -27,23 +27,16 @@ export function botToAPI(lastSeen: moment.Moment | undefined,
   return status;
 }
 
-export function botToMQTT(lastSeen: string | undefined,
-  now = moment()): StatusRowProps {
-  const output: StatusRowProps = {
+const NOT_SEEN = "We are not seeing any realtime messages from the bot right now.";
+export function botToMQTT(stat: ConnectionStatus | undefined): StatusRowProps {
+  return {
     connectionName: "botMQTT",
     from: "Bot",
     to: "Message Broker",
-    connectionStatus: false,
-    children: "We are not seeing any realtime messages from the bot right now."
+    connectionStatus: !!(stat && stat.state === "up"),
+    children: stat ?
+      `Last message seen ${moment(new Date(stat.at)).fromNow()}.` : NOT_SEEN
   };
-
-  if (lastSeen) {
-    output.connectionStatus = true;
-    const ago = moment(new Date(JSON.parse(lastSeen))).fromNow();
-    output.children = `Connected ${ago}.`;
-  }
-
-  return output;
 }
 
 export function browserToMQTT(online?: boolean): StatusRowProps {

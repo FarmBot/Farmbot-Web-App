@@ -15,7 +15,7 @@ describe("<PasswordReset/>", () => {
     moxios.uninstall();
   });
 
-  fit("resets the users password", (done) => {
+  it("resets the users password", (done) => {
     expect.assertions(5);
     const el = mount(<PasswordReset />);
     el.setState({

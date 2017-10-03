@@ -1,8 +1,18 @@
 import { resourceReducer, emptyState } from "../resources/reducer";
-import { TaggedResource } from "../resources/tagged_resources";
+import { TaggedResource, TaggedDevice } from "../resources/tagged_resources";
 import * as _ from "lodash";
 import { Actions } from "../constants";
-
+export function fakeDevice(): TaggedDevice {
+  return {
+    "kind": "device",
+    "specialStatus": undefined,
+    "body": {
+      "id": 415,
+      "name": "wispy-firefly-846"
+    },
+    "uuid": "device.415.0"
+  };
+}
 export let FAKE_RESOURCES: TaggedResource[] = [
   {
     "kind": "users",
@@ -16,15 +26,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "specialStatus": undefined,
     "uuid": "users.152.44"
   },
-  {
-    "kind": "device",
-    "specialStatus": undefined,
-    "body": {
-      "id": 415,
-      "name": "wispy-firefly-846"
-    },
-    "uuid": "device.415.0"
-  },
+  fakeDevice(),
   {
     "specialStatus": undefined,
     "kind": "farm_events",

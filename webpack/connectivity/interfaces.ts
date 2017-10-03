@@ -11,7 +11,10 @@ export interface EdgeStatus {
 
 /** Name of a connection between two points. "." can be read as "to".
  * Example: "user.mqtt" => "User to MQTT". */
-export type Edge = "user.mqtt" | "user.api";
+export type Edge =
+  | "bot.mqtt"
+  | "user.mqtt"
+  | "user.api";
 
 /** Mapping of known connection status.
  * An `undefined` value means we don't know. */

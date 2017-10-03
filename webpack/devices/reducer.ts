@@ -26,7 +26,6 @@ export function versionOK(stringyVersion = "0.0.0",
   }
 }
 export let initialState: BotState = {
-  connectedToMQTT: false,
   stepSize: 100,
   controlPanelState: {
     homing_and_calibration: false,
@@ -135,9 +134,5 @@ export let botReducer = generateReducer<BotState>(initialState)
   })
   .add<EncoderDisplay>(Actions.DISPLAY_ENCODER_DATA, (s, { payload }) => {
     s.encoder_visibility[payload] = !s.encoder_visibility[payload];
-    return s;
-  })
-  .add<boolean>(Actions.SET_MQTT_STATUS, (s, a) => {
-    s.connectedToMQTT = a.payload;
     return s;
   });
