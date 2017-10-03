@@ -6,8 +6,8 @@ module Devices
 
     optional do
       string  :name
-      string  :webcam_url, empty: true
       string  :timezone#, in: Device::TIMEZONES
+      time    :last_saw_mq
     end
 
     def execute
