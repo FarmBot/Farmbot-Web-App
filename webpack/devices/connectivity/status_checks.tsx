@@ -18,25 +18,19 @@ function lastSeen(stat: ConnectionStatus | undefined): string {
 }
 
 function statusOf(stat: ConnectionStatus | undefined): boolean | undefined {
-  return stat ? (stat.state == "up") : undefined;
+  return (stat && stat.state == "up");
 }
 
-export function botToAPI(stat: ConnectionStatus | undefined,
+export function botToAPI(stat: string | undefined,
   now = moment()): StatusRowProps {
 
-  const status: StatusRowProps = {
+  return {
     connectionName: "botAPI",
     from: "Bot",
     to: "Web App",
-    connectionStatus: statusOf(stat),
-    children: lastSeen(stat)
+    connectionStatus: stat ? (now.diff(moment(stat)) > SIX_HOURS) : false,
+    children: stat ? `Last message seen ${ago(stat)}.` : NOT_SEEN
   };
-
-  if (stat && (now.diff(moment(stat.at)) > SIX_HOURS)) {
-    status.connectionStatus = false;
-  }
-
-  return status;
 }
 
 export function botToMQTT(stat: ConnectionStatus | undefined): StatusRowProps {

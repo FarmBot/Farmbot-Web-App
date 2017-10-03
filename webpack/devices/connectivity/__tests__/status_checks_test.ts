@@ -7,15 +7,14 @@ import { betterMerge } from "../../../util";
 
 describe("botToAPI()", () => {
   it("handles connectivity", () => {
-    const at = moment().subtract(4, "minutes").toJSON();
-    const result = botToAPI({ at, state: "up" });
+    const result = botToAPI(moment().subtract(4, "minutes").toJSON());
     expect(result.connectionStatus).toBeTruthy();
+
     expect(result.children).toContain("Last message seen 4 minutes ago.");
   });
 
   it("handles loss of connectivity", () => {
-    const at = moment().subtract(4, "days").toJSON();
-    const result = botToAPI({ at, state: "down" });
+    const result = botToAPI(moment().subtract(4, "days").toJSON());
     expect(result.connectionStatus).toBeFalsy();
     expect(result.children).toContain("Last message seen 4 days ago.");
   });
