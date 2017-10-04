@@ -11,7 +11,7 @@ export function botToAPI(lastSeen: moment.Moment | undefined,
 
   const status: StatusRowProps = {
     connectionName: "botAPI",
-    from: "Bot",
+    from: "FarmBot",
     to: "Web App",
     connectionStatus: false,
     children: "We have not seen messages from FarmBot yet."
@@ -31,7 +31,7 @@ const NOT_SEEN = "We are not seeing any realtime messages from the bot right now
 export function botToMQTT(stat: ConnectionStatus | undefined): StatusRowProps {
   return {
     connectionName: "botMQTT",
-    from: "Bot",
+    from: "FarmBot",
     to: "Message Broker",
     connectionStatus: !!(stat && stat.state === "up"),
     children: stat ?

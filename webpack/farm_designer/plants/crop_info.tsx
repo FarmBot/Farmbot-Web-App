@@ -1,5 +1,4 @@
 import * as React from "react";
-import { BackArrow } from "../../ui";
 import { t } from "i18next";
 import * as _ from "lodash";
 import { DATA_URI, DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
@@ -58,7 +57,9 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
       <div className="panel-header green-panel"
         style={{ background: backgroundURL }}>
         <p className="panel-title">
-          <BackArrow /> {result.crop.name}
+          <i className="fa fa-arrow-left plant-panel-back-arrow"
+            onClick={() => history.push(basePath)} />
+          {result.crop.name}
           <a
             className="right-button"
             onClick={() => history.push(basePath + crop + "/add")}>
