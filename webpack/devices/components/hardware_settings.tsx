@@ -24,6 +24,7 @@ export class HardwareSettings extends
       <Widget className="hardware-widget">
         <WidgetHeader title="Hardware" helpText={ToolTips.HW_SETTINGS}>
           <MustBeOnline
+            hideBanner={true}
             status={bot.hardware.informational_settings.sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <SaveBtn
@@ -36,7 +37,6 @@ export class HardwareSettings extends
         </WidgetHeader>
         <WidgetBody>
           <MustBeOnline
-            fallback="Device is offline."
             status={bot.hardware.informational_settings.sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <div className="label-headings">

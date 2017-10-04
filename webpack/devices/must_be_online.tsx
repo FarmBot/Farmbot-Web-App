@@ -6,14 +6,15 @@ import { JSXChildren } from "../util";
 export interface MBOProps {
   status: SyncStatus | undefined;
   lockOpen?: boolean;
-  fallback?: string | undefined;
+  hideBanner?: boolean;
   children?: JSXChildren;
 }
 
-export function MustBeOnline({ children, lockOpen, fallback, status }: MBOProps) {
+export function MustBeOnline({ children, hideBanner, lockOpen, status }: MBOProps) {
+  const banner = !hideBanner ? "banner" : "";
   if (lockOpen || (status && (status !== "unknown"))) {
     return <div> {children} </div>;
   } else {
-    return <div> {fallback || ""} </div>;
+    return <div className={`unavailable ${banner}`}> {children} </div>;
   }
 }

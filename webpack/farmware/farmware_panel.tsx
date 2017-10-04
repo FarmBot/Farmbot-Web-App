@@ -104,7 +104,6 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
         <WidgetHeader title="Farmware" helpText={ToolTips.FARMWARE} />
         <WidgetBody>
           <MustBeOnline
-            fallback="Not available when FarmBot is offline."
             status={this.props.syncStatus}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <Row>

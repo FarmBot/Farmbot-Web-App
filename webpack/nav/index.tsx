@@ -21,7 +21,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   state: NavBarState = {
     mobileMenuOpen: false,
-    tickerListOpen: false
+    tickerListOpen: false,
+    accountMenuOpen: false
   };
 
   logout = () => Session.clear();
@@ -49,7 +50,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     updatePageInfo(pageName);
 
     const { toggle, close } = this;
-    const { mobileMenuOpen, tickerListOpen } = this.state;
+    const { mobileMenuOpen, tickerListOpen, accountMenuOpen } = this.state;
     const { logs } = this.props;
 
     return (
@@ -75,9 +76,15 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                     <Popover
                       inline
                       interactionKind={PopoverInteractionKind.HOVER}
-                      target={<div className="nav-name">{firstName}</div>}
+                      target={
+                        <div className="nav-name"
+                          onClick={this.toggle("accountMenuOpen")}>
+                          {firstName}
+                        </div>}
                       position={Position.BOTTOM_RIGHT}
-                      content={AdditionalMenu(this.logout)} />
+                      content={AdditionalMenu({ logout: this.logout, close })}
+                      isOpen={accountMenuOpen}
+                      onClose={this.close("accountMenuOpen")} />
                     <EStopButton
                       bot={this.props.bot}
                       user={this.props.user} />

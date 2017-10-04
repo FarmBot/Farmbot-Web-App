@@ -391,9 +391,26 @@ ul {
 }
 
 .unavailable {
-  @extend .coming-soon;
-  &:after {
-    content: "Not available when device is offline.";
+  position: relative;
+  width: 100%;
+  height: 100%;
+  opacity: 0.40;
+  pointer-events: none;
+  &.banner {
+    &:after {
+      content: "Not available when device is offline.";
+      padding: 0.5rem;
+      background-color: $dark_gray;
+      opacity: 0.90;
+      color: $off_white;
+      font-size: 1.8rem;
+      position: absolute;
+      vertical-align: middle;
+      text-align: center;
+      top: 25%;
+      left: -2.5%;
+      width: 105%;
+    }
   }
 }
 

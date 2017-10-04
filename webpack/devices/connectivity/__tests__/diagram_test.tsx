@@ -58,7 +58,7 @@ describe("<ConnectivityDiagram/>", () => {
   it("renders diagram", () => {
     const wrapper = mount(<ConnectivityDiagram {...fakeProps() } />);
     expect(wrapper.text())
-      .toContain("BrowserWeb AppMessage BrokerBotRaspberry PiF");
+      .toContain("BrowserWeb AppMessage BrokerFarmBotRaspberry PiF");
   });
 
   it("hover", () => {
