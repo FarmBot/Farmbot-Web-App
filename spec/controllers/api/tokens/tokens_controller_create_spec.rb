@@ -29,7 +29,7 @@ describe Api::TokensController do
       expect(before).to eq(after)
     end
 
-    it 'bumps last_saw_api when it is a bot' do
+    it 'bumps last_saw_api and issues BOT AUD when it is a bot' do
       ua = "FARMBOTOS/99.99.99 (RPI3) RPI3 (1.1.1)"
       allow(request).to receive(:user_agent).and_return(ua)
       request.env["HTTP_USER_AGENT"] = ua
@@ -39,6 +39,27 @@ describe Api::TokensController do
       after = user.device.reload.last_saw_api
       expect(after).to be
       expect(after).to be > before
+      expect(json.dig(:token, :unencoded, :aud)).to be
+      expect(json.dig(:token, :unencoded, :aud))
+        .to eq(AbstractJwtToken::BOT_AUD)
+    end
+
+    it "issues a 'HUMAN' AUD to browsers" do
+      payload = {user: {email: user.email, password: "password"}}
+      allow_any_instance_of(Api::TokensController)
+        .to receive(:xhr?).and_return(true)
+      post :create, params: payload
+      expect(json.dig(:token, :unencoded, :aud)).to be
+      expect(json.dig(:token, :unencoded, :aud))
+        .to eq(AbstractJwtToken::HUMAN_AUD)
+    end
+
+    it "issues a '?' AUD to all others" do
+      payload = {user: {email: user.email, password: "password"}}
+      post :create, params: payload
+      expect(json.dig(:token, :unencoded, :aud)).to be
+      expect(json.dig(:token, :unencoded, :aud))
+        .to eq(AbstractJwtToken::UNKNOWN_AUD)
     end
   end
 end

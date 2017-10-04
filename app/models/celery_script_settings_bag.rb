@@ -5,8 +5,7 @@
 # the rug. Shoving configuration into a module is not a design pattern. Feedback
 # welcome for refactoring of this code.
 module CeleryScriptSettingsBag
-  DIGITAL, ANALOG       = 0, 1
-  ALLOWED_PIN_MODES     = [DIGITAL, ANALOG]
+  ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
                              sync check_updates power_off reboot toggle_pin
                              config_update calibrate execute move_absolute
@@ -133,9 +132,6 @@ module CeleryScriptSettingsBag
       .defineArg(:_then,           [:execute, :nothing])
       .defineArg(:_else,           [:execute, :nothing])
       .defineArg(:url,             [String])
-      .defineNode(:install_farmware,[:url])
-      .defineNode(:update_farmware, [:package])
-      .defineNode(:remove_farmware, [:package])
       .defineNode(:nothing,        [])
       .defineNode(:tool,           [:tool_id])
       .defineNode(:coordinate,     [:x, :y, :z])
@@ -174,6 +170,10 @@ module CeleryScriptSettingsBag
       .defineNode(:take_photo,        [], [])
       .defineNode(:data_update,       [:value], [:pair])
       .defineNode(:point,             [:pointer_type, :pointer_id], [])
+      .defineNode(:install_farmware,  [:url])
+      .defineNode(:update_farmware,   [:package])
+      .defineNode(:remove_farmware,   [:package])
+      .defineNode(:install_first_party_farmware, [:url])
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
   def self.within(array, node)

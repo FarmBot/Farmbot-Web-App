@@ -26,8 +26,12 @@ module Api
 
     def guess_aud_claim
       when_farmbot_os { return AbstractJwtToken::BOT_AUD }
-      return AbstractJwtToken::HUMAN_AUD if request.xhr?
+      return AbstractJwtToken::HUMAN_AUD if xhr?
       AbstractJwtToken::UNKNOWN_AUD
+    end
+
+    def xhr? # I only wrote this because `request.xhr?` refused to be stubbed
+      request.xhr?
     end
 
     def if_properly_formatted
