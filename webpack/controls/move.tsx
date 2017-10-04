@@ -115,7 +115,7 @@ export class Move extends React.Component<MoveProps, {}> {
         </WidgetHeader>
         <WidgetBody>
           <MustBeOnline
-            fallback="Bot is offline."
+            fallback="FarmBot is offline."
             lockOpen={process.env.NODE_ENV !== "production"}
             status={sync_status}>
             <label className="text-center">
