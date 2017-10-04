@@ -7,7 +7,7 @@ import { isUndefined, noop } from "lodash";
 import { semverCompare, SemverResult } from "../../util";
 import * as _ from "lodash";
 import { Row, Col } from "../../ui/index";
-import { JobProgress } from "farmbot/dist";
+import { JobProgress, Configuration } from "farmbot/dist";
 
 export let OsUpdateButton = ({ bot }: BotProp) => {
   const osUpdateBool = bot.hardware.configuration.os_auto_update;
@@ -64,8 +64,10 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
       <Col xs={3}>
         <ToggleButton toggleValue={toggleVal}
           toggleAction={() => {
-            const os_auto_update = !osUpdateBool ? 1 : 0;
-            updateConfig({ os_auto_update })(noop);
+            const os_auto_update: Configuration = {
+              os_auto_update: !osUpdateBool ? 1 : 0
+            };
+            updateConfig(os_auto_update)(noop);
           }} />
       </Col>
       <Col xs={5}>
