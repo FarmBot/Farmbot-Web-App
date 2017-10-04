@@ -1,10 +1,29 @@
 import * as React from "react";
-import { Row, Col } from "../../ui/index";
+import { Row, Col, DropDownItem } from "../../ui/index";
 import { t } from "i18next";
+import { FBSelect } from "../../ui/new_fb_select";
+import { devices } from "../../device";
+import { info, success, error } from "farmbot-toastr";
 
 export interface BoardTypeProps {
   firmwareVersion: string | undefined;
 }
+
+const FIRMWARE_CHOICES = [
+  { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
+  { label: "Farmduino (Genesis v1.3)", value: "farmduino" }
+];
+
+const FIRMWARE_CHOICES_DDI = {
+  [FIRMWARE_CHOICES[0].value]: {
+    label: FIRMWARE_CHOICES[0].label,
+    value: FIRMWARE_CHOICES[0].value
+  },
+  [FIRMWARE_CHOICES[1].value]: {
+    label: FIRMWARE_CHOICES[1].label,
+    value: FIRMWARE_CHOICES[1].value
+  }
+};
 
 export class BoardType
   extends React.Component<BoardTypeProps, {}> {
@@ -27,6 +46,35 @@ export class BoardType
     }
   }
 
+  selectedBoard(): DropDownItem | undefined {
+    const board = this.getBoardType();
+    switch (board) {
+      case "Arduino/RAMPS":
+      case "Present":
+        return FIRMWARE_CHOICES_DDI["arduino"];
+      case "Farmduino":
+        return FIRMWARE_CHOICES_DDI["farmduino"];
+      default:
+        return undefined;
+    }
+  }
+
+  sendOffConfig = (selectedBoard: DropDownItem) => {
+    if (selectedBoard) {
+      const firmware = selectedBoard.value;
+      info(t("Sending firmware configuration..."), t("Sending"));
+      devices
+        .current
+        // TODO: remove type assertion when farmbot-js is updated
+        // tslint:disable-next-line:no-any
+        .updateConfig({ firmware_hardware: firmware as any })
+        .then(() => {
+          success(t("Successfully configured firmware!"));
+        })
+        .catch(() => error(t("An error occurred during configuration.")));
+    }
+  }
+
   render() {
     return <Row>
       <Col xs={2}>
@@ -35,9 +83,14 @@ export class BoardType
         </label>
       </Col>
       <Col xs={7}>
-        <p>
-          {this.getBoardType()}
-        </p>
+        <div>
+          <FBSelect
+            allowEmpty={true}
+            list={FIRMWARE_CHOICES}
+            selectedItem={this.selectedBoard()}
+            placeholder={this.getBoardType()}
+            onChange={this.sendOffConfig} />
+        </div>
       </Col>
     </Row>;
   }
