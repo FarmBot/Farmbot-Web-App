@@ -173,7 +173,7 @@ module CeleryScriptSettingsBag
       .defineNode(:install_farmware,  [:url])
       .defineNode(:update_farmware,   [:package])
       .defineNode(:remove_farmware,   [:package])
-      .defineNode(:install_first_party_farmware, [:url])
+      .defineNode(:install_first_party_farmware, [])
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
   def self.within(array, node)
