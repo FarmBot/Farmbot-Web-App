@@ -1,13 +1,7 @@
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
-import { ConnectionState, EdgeStatus } from "./interfaces";
-import { DeviceAccountSettings } from "../devices/interfaces";
+import { ConnectionState, EdgeStatus, ResourceReady } from "./interfaces";
 import { computeBestTime } from "./reducer_support";
-
-interface ResourceReady {
-  name: string,
-  data: [DeviceAccountSettings];
-}
 
 export const DEFAULT_STATE: ConnectionState = {
   "bot.mqtt": undefined,

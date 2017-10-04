@@ -9,7 +9,7 @@ unavoidable. */
 
 export let dispatchNetworkUp =
   (edge: Edge, at = (new Date()).toJSON()) => {
-    store.dispatch(networkUp(edge, at));
+    return store.dispatch(networkUp(edge, at));
   };
 
 export let dispatchNetworkDown =

@@ -1,3 +1,5 @@
+import { DeviceAccountSettings } from "../devices/interfaces";
+
 /** Description of a connection between two points on the network. */
 export interface ConnectionStatus {
   state: "up" | "down";
@@ -15,6 +17,11 @@ export type Edge =
   | "bot.mqtt"
   | "user.mqtt"
   | "user.api";
+
+export interface ResourceReady {
+  name: string,
+  data: [DeviceAccountSettings];
+}
 
 /** Mapping of known connection status.
  * An `undefined` value means we don't know. */

@@ -22,6 +22,9 @@ export function computeBestTime(cs: ConnectionStatus | undefined,
   // Only use the `last_saw_mq` time if it is more recent than the local
   // timestamp.
   // don't bother guessing if info is unavailable
-  return isString(lastSawMq) ?
-    { at: maxDate(m(cs && cs.at ? cs.at : lastSawMq), m(lastSawMq)), state: getStatus(cs) } : cs;
+  const guess: ConnectionStatus = {
+    at: maxDate(m(cs ? cs.at : lastSawMq), m(lastSawMq)),
+    state: getStatus(cs)
+  };
+  return isString(lastSawMq) ? guess : cs;
 }

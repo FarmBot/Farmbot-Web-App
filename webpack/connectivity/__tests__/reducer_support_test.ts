@@ -16,6 +16,8 @@ describe("computeBestTime()", () => {
   it("returns same input when `last_saw_mq` is unavailable", () => {
     expect(computeBestTime(undefined, undefined)).toBe(undefined);
     expect(computeBestTime(STUB, undefined)).toBe(STUB);
+    const hmm = computeBestTime(undefined, LATER);
+    expect(hmm && hmm.at).toEqual(LATER_JSON);
   });
 
   it("computes best time when enough information is present", () => {
@@ -28,6 +30,10 @@ describe("maxDate()", () => {
   it("picks the max time, regardless of position", () => {
     expect(maxDate(moment(NOW), moment(LATER))).toBe(LATER_JSON);
     expect(maxDate(moment(LATER), moment(NOW))).toBe(LATER_JSON);
+  });
+
+  it("picks dates[0] when there is a tie", () => {
+    expect(maxDate(moment(LATER), moment(LATER))).toBe(LATER_JSON);
   });
 });
 
