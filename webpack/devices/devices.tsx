@@ -5,7 +5,6 @@ import { FarmbotOsSettings } from "./components/farmbot_os_settings";
 import { Page, Col, Row } from "../ui";
 import { mapStateToProps } from "./state_to_props";
 import { Props } from "./interfaces";
-import * as moment from "moment";
 import { ConnectivityPanel } from "./connectivity/index";
 import {
   botToMQTT, botToAPI, browserToMQTT, botToFirmware, browserToAPI
@@ -20,17 +19,14 @@ export class Devices extends React.Component<Props, {}> {
 
   /** A record of all the things we know about connectivity right now. */
   get flags(): Record<DiagnosisName, StatusRowProps> {
-    const mqttConnected =
-      this.props.userToMqtt && this.props.userToMqtt.state === "up";
-    const botApiTimestamp = this.props.deviceAccount.body.last_seen;
     const fwVersion = this.props.bot.hardware
       .informational_settings.firmware_version;
 
     return {
-      userMQTT: browserToMQTT(mqttConnected),
+      userMQTT: browserToMQTT(this.props.userToMqtt),
       userAPI: browserToAPI(this.props.userToApi),
       botMQTT: botToMQTT(this.props.botToMqtt),
-      botAPI: botToAPI(botApiTimestamp ? moment(botApiTimestamp) : undefined, moment()),
+      botAPI: botToAPI(this.props.deviceAccount.body.last_saw_api),
       botFirmware: botToFirmware(fwVersion),
     };
   }

@@ -316,7 +316,7 @@ export namespace Content {
     refreshing the page.`.replace(/\s+/g, " ");
 
   export const MQTT_DISCONNECTED =
-    `Your web browser is unable to connect to the message broker (MQTT).
+    `Your web browser is unable to connect to the message broker.
     You might be behind a firewall or disconnected from the Internet. Check
     your network settings.`.replace(/\s+/g, " ");
 

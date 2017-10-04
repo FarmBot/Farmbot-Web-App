@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BackArrow } from "../../ui";
+import { history } from "../../history";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
 import { t } from "i18next";
@@ -38,7 +38,9 @@ export class CropCatalog extends React.Component<CropCatalogProps, {}> {
     return <div className="panel-container green-panel crop-catalog-panel">
       <div className="panel-header green-panel">
         <p className="panel-title">
-          <BackArrow /> {t("Choose a crop")}
+          <i className="fa fa-arrow-left plant-panel-back-arrow"
+            onClick={() => history.push("/app/designer/plants")} />
+          {t("Choose a crop")}
         </p>
       </div>
       <div className="panel-top">

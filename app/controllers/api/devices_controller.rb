@@ -23,12 +23,5 @@ module Api
       Devices::Destroy.run!(user: current_user, device: current_device)
       render json: "", status: 204
     end
-
-    private
-
-      # Only allow a trusted parameter "white list" through.
-      def device_params
-        { name:  params[:name] }
-      end
   end
 end

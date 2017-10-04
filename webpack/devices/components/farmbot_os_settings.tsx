@@ -105,7 +105,6 @@ export class FarmbotOsSettings
           </Row>
           <this.lastSeen />
           <MustBeOnline
-            fallback="Some settings are not available when FarmBot is offline."
             status={this.props.bot.hardware.informational_settings.sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <Row>

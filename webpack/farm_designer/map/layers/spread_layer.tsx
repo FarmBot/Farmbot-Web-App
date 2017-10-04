@@ -26,8 +26,8 @@ export function SpreadLayer(props: SpreadLayerProps) {
     <g id="spread-layer">
       <defs>
         <radialGradient id="SpreadGradient">
-          <stop offset="90%" stopColor="rgba(85, 50, 10, 0.1)" />
-          <stop offset="100%" stopColor="rgba(85, 50, 10, 0)" />
+          <stop offset="90%" stopColor="rgb(85, 50, 10)" stopOpacity={0.1} />
+          <stop offset="100%" stopColor="rgb(85, 50, 10)" stopOpacity={0} />
         </radialGradient>
       </defs>
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170918173928) do
+ActiveRecord::Schema.define(version: 20171003144428) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,7 +37,8 @@ ActiveRecord::Schema.define(version: 20170918173928) do
     t.integer "max_log_count", default: 100
     t.integer "max_images_count", default: 100
     t.string "timezone", limit: 280
-    t.datetime "last_seen"
+    t.datetime "last_saw_api"
+    t.datetime "last_saw_mq"
     t.index ["timezone"], name: "index_devices_on_timezone"
   end
 
