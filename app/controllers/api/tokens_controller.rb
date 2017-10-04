@@ -24,6 +24,16 @@ module Api
       result.result[:user].try(:require_consent!) if result.success?
     end
 
+    def guess_aud_claim
+      when_farmbot_os { return AbstractJwtToken::BOT_AUD }
+      return AbstractJwtToken::HUMAN_AUD if xhr?
+      AbstractJwtToken::UNKNOWN_AUD
+    end
+
+    def xhr? # I only wrote this because `request.xhr?` refused to be stubbed
+      request.xhr?
+    end
+
     def if_properly_formatted
       user = params.as_json.deep_symbolize_keys.fetch(:user, {})
       # If data handling for this method gets any more complicated,
@@ -33,7 +43,8 @@ module Api
                 password:       user[:password],
                 credentials:    user[:credentials],
                 agree_to_terms: !!user[:agree_to_terms],
-                host:           $API_URL })
+                host:           $API_URL,
+                aud:            guess_aud_claim })
       else
         render json: {error: NO_USER_ATTR}, status: 422
       end

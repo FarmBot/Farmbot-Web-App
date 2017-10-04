@@ -10,7 +10,7 @@ module Users
       # Prevent token reuse:
       user.verification_token = ""
       user.save!
-      SessionToken.as_json(user.reload)
+      SessionToken.as_json(user.reload, AbstractJwtToken::HUMAN_AUD)
     end
 
 private
