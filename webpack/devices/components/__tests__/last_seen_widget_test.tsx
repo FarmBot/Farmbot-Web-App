@@ -7,7 +7,7 @@ describe("<LastSeen/>", () => {
   const resource = () => fakeResource("device", {
     id: 1,
     name: "foo",
-    last_seen: ""
+    last_saw_api: ""
   });
   it("blinks when loading", () => {
     const r = resource();
@@ -27,7 +27,7 @@ describe("<LastSeen/>", () => {
   it("tells you when the device was last seen", () => {
     const r = resource();
     const cb = jest.fn();
-    r.body.last_seen = "2017-08-07T19:40:01.487Z";
+    r.body.last_saw_api = "2017-08-07T19:40:01.487Z";
     const el = mount(<LastSeen device={r} onClick={cb} />);
     expect(el.text()).toContain("FarmBot was last seen");
   });

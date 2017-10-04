@@ -166,11 +166,11 @@ private
       yield if pretty_ua.include?("FARMBOTOS")
     end
 
-    # Devices have a `last_seen` field to assist users with debugging.
+    # Devices have a `last_saw_api` field to assist users with debugging.
     # We update this column every time an FBOS device talks to the API.
     def mark_as_seen(entity = (current_user && current_user.device))
       when_farmbot_os do
-        entity.update_attributes(last_seen: Time.now) if entity
+        entity.update_attributes(last_saw_api: Time.now) if entity
       end
     end
   end

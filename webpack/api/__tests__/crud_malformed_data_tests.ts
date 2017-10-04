@@ -29,7 +29,7 @@ describe("refresh()", () => {
         "id": 6,
         "name": "summer-pond-726",
         "timezone": "America/Chicago",
-        "last_seen": "2017-08-30T20:42:35.854Z"
+        "last_saw_api": "2017-08-30T20:42:35.854Z"
       },
     };
 

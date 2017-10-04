@@ -4,48 +4,54 @@ import { StatusRowProps } from "./connectivity_row";
 import { ConnectionStatus } from "../../connectivity/interfaces";
 
 const HOUR = 1000 * 60 * 60;
+
 const SIX_HOURS = HOUR * 6;
 
-export function botToAPI(lastSeen: moment.Moment | undefined,
+const NOT_SEEN = "No messages seen yet.";
+
+function ago(input: string) {
+  return moment(new Date(input)).fromNow();
+}
+
+function lastSeen(stat: ConnectionStatus | undefined): string {
+  return stat ? `Last message seen ${ago(stat.at)}.` : NOT_SEEN;
+}
+
+function statusOf(stat: ConnectionStatus | undefined): boolean | undefined {
+  return (stat && stat.state == "up");
+}
+
+export function botToAPI(stat: string | undefined,
   now = moment()): StatusRowProps {
 
-  const status: StatusRowProps = {
+  return {
     connectionName: "botAPI",
     from: "FarmBot",
     to: "Web App",
-    connectionStatus: false,
-    children: "We have not seen messages from FarmBot yet."
+    connectionStatus: stat ? (now.diff(moment(stat)) < SIX_HOURS) : false,
+    children: stat ? `Last message seen ${ago(stat)}.` : NOT_SEEN
   };
-
-  const diff = lastSeen && now.diff(lastSeen);
-
-  if (!isUndefined(diff)) {
-    status.connectionStatus = (diff < SIX_HOURS); // This is a guess.
-    status.children = `Last seen ${moment(lastSeen).fromNow()}.`;
-  }
-
-  return status;
 }
 
-const NOT_SEEN = "We are not seeing any realtime messages from the bot right now.";
 export function botToMQTT(stat: ConnectionStatus | undefined): StatusRowProps {
   return {
     connectionName: "botMQTT",
     from: "FarmBot",
     to: "Message Broker",
-    connectionStatus: !!(stat && stat.state === "up"),
-    children: stat ?
-      `Last message seen ${moment(new Date(stat.at)).fromNow()}.` : NOT_SEEN
+    connectionStatus: statusOf(stat),
+    children: lastSeen(stat)
   };
 }
 
-export function browserToMQTT(online?: boolean): StatusRowProps {
+export function browserToMQTT(status:
+  ConnectionStatus | undefined): StatusRowProps {
+
   return {
     connectionName: "browserMQTT",
     from: "Browser",
     to: "Message Broker",
-    children: online ? "Connected." : "Unable to connect.",
-    connectionStatus: online
+    children: lastSeen(status),
+    connectionStatus: statusOf(status)
   };
 }
 
@@ -61,15 +67,12 @@ export function botToFirmware(version: string | undefined): StatusRowProps {
   };
 }
 
-const UNKNOWN = "Waiting for response from network";
-
 export function browserToAPI(status?: ConnectionStatus | undefined): StatusRowProps {
   return {
     connectionName: "browserAPI",
     from: "Browser",
     to: "Internet",
-    children: status ?
-      `Last seen ${moment(new Date(status.at)).fromNow()}` : UNKNOWN,
-    connectionStatus: !!(status && status.state === "up")
+    children: lastSeen(status),
+    connectionStatus: statusOf(status)
   };
 }

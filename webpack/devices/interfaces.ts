@@ -37,8 +37,8 @@ export interface DeviceAccountSettings {
   id: number;
   name: string;
   timezone?: string | undefined;
-  last_seen?: string | undefined;
-  last_seen_mq?: string | undefined;
+  last_saw_api?: string | undefined;
+  last_saw_mq?: string | undefined;
 }
 
 export interface BotState {

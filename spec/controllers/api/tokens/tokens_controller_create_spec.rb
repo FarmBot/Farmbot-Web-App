@@ -21,22 +21,22 @@ describe Api::TokensController do
       expect(json[:error]).to include(err_msg)
     end
 
-    it 'does not bump last_seen if it is not a bot' do
+    it 'does not bump last_saw_api if it is not a bot' do
       payload = {user: {email: user.email, password: "password"}}
-      before  = user.device.last_seen
+      before  = user.device.last_saw_api
       post :create, params: payload
-      after   = user.device.reload.last_seen
+      after   = user.device.reload.last_saw_api
       expect(before).to eq(after)
     end
 
-    it 'bumps last_seen when it is a bot' do
+    it 'bumps last_saw_api when it is a bot' do
       ua = "FARMBOTOS/99.99.99 (RPI3) RPI3 (1.1.1)"
       allow(request).to receive(:user_agent).and_return(ua)
       request.env["HTTP_USER_AGENT"] = ua
       payload = {user: {email: user.email, password: "password"}}
-      before  = user.device.last_seen || Time.now
+      before  = user.device.last_saw_api || Time.now
       post :create, params: payload
-      after = user.device.reload.last_seen
+      after = user.device.reload.last_saw_api
       expect(after).to be
       expect(after).to be > before
     end
