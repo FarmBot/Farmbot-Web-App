@@ -17,12 +17,11 @@ export function getStatus(cs: ConnectionStatus | undefined): "up" | "down" {
  * the two is most relevant. It is a heuristic process that gives up when
  * unable to make a determination. */
 export function computeBestTime(cs: ConnectionStatus | undefined,
-  lastSawMq: string | undefined,
-  now = m()): ConnectionStatus | undefined {
+  lastSawMq: string | undefined): ConnectionStatus | undefined {
 
   // Only use the `last_saw_mq` time if it is more recent than the local
   // timestamp.
   // don't bother guessing if info is unavailable
   return isString(lastSawMq) ?
-    { at: maxDate(now, m(lastSawMq)), state: getStatus(cs) } : cs;
+    { at: maxDate(m(cs && cs.at ? cs.at : lastSawMq), m(lastSawMq)), state: getStatus(cs) } : cs;
 }
