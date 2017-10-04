@@ -19,6 +19,7 @@ export interface NavBarProps {
 export interface NavBarState {
   mobileMenuOpen: boolean;
   tickerListOpen: boolean;
+  accountMenuOpen: boolean;
 }
 
 type ToggleEventHandler = (e: React.MouseEvent<HTMLDivElement>) => void;
@@ -36,4 +37,9 @@ export interface TickerListProps {
 
 export interface NavLinksProps {
   close: (property: keyof NavBarState) => ToggleEventHandler;
+}
+
+export interface AccountMenuProps {
+  close: (property: keyof NavBarState) => ToggleEventHandler;
+  logout: () => void;
 }

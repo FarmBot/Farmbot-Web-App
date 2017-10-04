@@ -15,7 +15,8 @@ export namespace DiagnosticMessages {
     connected to the internet (or have been recently). Try rebooting FarmBot
     and refreshing the browser. If the issue persists, something may be
     preventing FarmBot from accessing the message broker (used to communicate
-    with your web browser in real-time). Is a firewall blocking port 8888?`);
+    with your web browser in real-time). If you are on a company or school
+    network, a firewall may be blocking port 1883.`);
 
   export const WIFI_OR_CONFIG = trim(`Your browser is connected correctly,
     but we have no recent record of FarmBot connecting to the internet.

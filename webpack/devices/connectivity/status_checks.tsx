@@ -26,7 +26,7 @@ export function botToAPI(stat: string | undefined,
 
   return {
     connectionName: "botAPI",
-    from: "Bot",
+    from: "FarmBot",
     to: "Web App",
     connectionStatus: stat ? (now.diff(moment(stat)) < SIX_HOURS) : false,
     children: stat ? `Last message seen ${ago(stat)}.` : NOT_SEEN
@@ -36,7 +36,7 @@ export function botToAPI(stat: string | undefined,
 export function botToMQTT(stat: ConnectionStatus | undefined): StatusRowProps {
   return {
     connectionName: "botMQTT",
-    from: "Bot",
+    from: "FarmBot",
     to: "Message Broker",
     connectionStatus: statusOf(stat),
     children: lastSeen(stat)
