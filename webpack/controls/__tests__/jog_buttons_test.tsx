@@ -2,6 +2,7 @@ jest.mock("../../device", () => ({
   devices: {
     current: {
       home: jest.fn(() => { return Promise.resolve(); }),
+      takePhoto: jest.fn(() => { return Promise.resolve(); }),
     }
   }
 }));
@@ -31,7 +32,7 @@ describe("<JogButtons/>", function () {
   it("calls home command", () => {
     const { mock } = devices.current.home as jest.Mock<{}>;
     const jogButtons = mount(<JogButtons {...jogButtonProps} />);
-    jogButtons.find("button").at(2).simulate("click");
+    jogButtons.find("button").at(3).simulate("click");
     expect(mock.calls.length).toEqual(1);
   });
 
@@ -39,16 +40,23 @@ describe("<JogButtons/>", function () {
     const { mock } = devices.current.home as jest.Mock<{}>;
     jogButtonProps.disabled = true;
     const jogButtons = mount(<JogButtons {...jogButtonProps} />);
-    jogButtons.find("button").at(2).simulate("click");
+    jogButtons.find("button").at(3).simulate("click");
     expect(mock.calls.length).toEqual(0);
   });
 
   it("call has correct args", () => {
     const { mock } = devices.current.home as jest.Mock<{}>;
     const jogButtons = mount(<JogButtons {...jogButtonProps} />);
-    jogButtons.find("button").at(2).simulate("click");
+    jogButtons.find("button").at(3).simulate("click");
     const argList = mock.calls[0][0];
     expect(argList.axis).toEqual("all");
     expect(argList.speed).toEqual(100);
+  });
+
+  it("takes photo", () => {
+    const takePhoto = devices.current.takePhoto as jest.Mock<{}>;
+    const jogButtons = mount(<JogButtons {...jogButtonProps} />);
+    jogButtons.find("button").at(0).simulate("click");
+    expect(takePhoto).toHaveBeenCalled();
   });
 });
