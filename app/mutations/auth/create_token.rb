@@ -9,6 +9,9 @@ module Auth
 
     optional do
       boolean :agree_to_terms
+      string :aud,
+        in: AbstractJwtToken::ALLOWED_AUD,
+        default: AbstractJwtToken::UNKNOWN_AUD
     end
 
     def validate
@@ -21,7 +24,7 @@ module Auth
 
     def execute
       @user.update_attributes(agreed_to_terms_at: Time.now) if agree_to_terms
-      SessionToken.as_json(@user)
+      SessionToken.as_json(@user, aud)
     end
 
     private

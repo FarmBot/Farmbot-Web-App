@@ -3,7 +3,9 @@ class AbstractJwtToken
   PRIVATE_KEY = KeyGen.current
   PUBLIC_KEY  = KeyGen.current.public_key
   ALG         = 'RS256'
-  ALLOWED_AUD = ["bot", "human"]
+  ALLOWED_AUD = [ BOT_AUD     = "bot",
+                  HUMAN_AUD   = "human",
+                  UNKNOWN_AUD = "?" ]
 
   attr_accessor :encoded, :unencoded
 

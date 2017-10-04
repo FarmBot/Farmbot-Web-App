@@ -14,7 +14,8 @@ class SessionToken < AbstractJwtToken
   def self.issue_to(user,
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
-                    iss: $API_URL)
+                    iss: $API_URL,
+                    aud: AbstractJwtToken::UNKNOWN_AUD)
 
     unless user.verified?
       raise Errors::Forbidden, MUST_VERIFY
@@ -22,6 +23,7 @@ class SessionToken < AbstractJwtToken
     end
 
     self.new([{
+             aud: aud,
              sub:  user.id,
              iat:  iat,
              jti:  SecureRandom.uuid, # Used for revokation if need be.
@@ -33,7 +35,8 @@ class SessionToken < AbstractJwtToken
              bot:  "device_#{user.device.id}"}])
   end
 
-  def self.as_json(user)
-    {token: SessionToken.issue_to(user, iss: $API_URL), user: user}
+  def self.as_json(user, aud)
+    { token: SessionToken.issue_to(user, iss: $API_URL, aud: aud),
+      user: user }
   end
 end
