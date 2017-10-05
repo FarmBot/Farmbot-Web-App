@@ -2,6 +2,7 @@ import { Content } from "../../constants";
 import { Session } from "../../session";
 import { BooleanSetting } from "../../session_keys";
 import { trim } from "../../util";
+import { t } from "i18next";
 
 export interface LabsFeature {
   name: string;
@@ -14,17 +15,23 @@ export interface LabsFeature {
 
 export const fetchLabFeatures = (): LabsFeature[] => ([
   {
-    name: "Hide Webcam Widget",
-    description: trim(`If not using a webcam, use this setting to remove the
-      widget from the Controls page.`),
-    storageKey: BooleanSetting.hideWebcamWidget,
+    name: t("Disable Web App internationalization"),
+    description: t("Set Web App to English."),
+    storageKey: BooleanSetting.disableI18n,
     value: false
   },
   {
-    name: "Confirm Sequence Step Deletion",
-    description: trim(`Show a confirmation dialog when the sequence delete step
-      icon is pressed.`),
+    name: t("Confirm Sequence step deletion"),
+    description: trim(t(`Show a confirmation dialog when the sequence delete step
+      icon is pressed.`)),
     storageKey: BooleanSetting.confirmStepDeletion,
+    value: false
+  },
+  {
+    name: t("Hide Webcam widget"),
+    description: trim(t(`If not using a webcam, use this setting to remove the
+      widget from the Controls page.`)),
+    storageKey: BooleanSetting.hideWebcamWidget,
     value: false
   }
 ].map(fetchRealValue));
