@@ -9,6 +9,11 @@ class SessionToken < AbstractJwtToken
   OS_RELEASE   = ENV.fetch("OS_UPDATE_SERVER") { DEFAULT_OS }
   FW_RELEASE   = ENV.fetch("FW_UPDATE_SERVER") { DEFAULT_FW }
   MQTT         = ENV.fetch("MQTT_HOST")
+  MQTT_WS      = ENV.fetch("MQTT_WS") do
+    protocol =  ENV["FORCE_SSL"] ? "wss://" : "ws://"
+    host     =  ENV.fetch("MQTT_HOST")
+    "#{protocol}#{host}:3002/ws"
+  end
   EXPIRY       = 40.days
 
   def self.issue_to(user,
@@ -22,17 +27,17 @@ class SessionToken < AbstractJwtToken
       Rollbar.info("Verification Error", email: user.email)
     end
 
-    self.new([{
-             aud: aud,
-             sub:  user.id,
-             iat:  iat,
-             jti:  SecureRandom.uuid, # Used for revokation if need be.
-             iss:  iss,
-             exp:  exp,
-             mqtt: MQTT,
-             os_update_server: OS_RELEASE,
-             fw_update_server: "DEPRECATED",
-             bot:  "device_#{user.device.id}"}])
+    self.new([{ aud:              aud,
+                sub:              user.id,
+                iat:              iat,
+                jti:              SecureRandom.uuid,
+                iss:              iss,
+                exp:              exp,
+                mqtt:             MQTT,
+                mqtt_ws:          MQTT_WS,
+                os_update_server: OS_RELEASE,
+                fw_update_server: "DEPRECATED",
+                bot:              "device_#{user.device.id}" }])
   end
 
   def self.as_json(user, aud)
