@@ -82,7 +82,7 @@ describe("maybeToggleFeature()", () => {
 describe("fetchLabFeatures", () => {
   it("basically just initializes stuff", () => {
     const val = fetchLabFeatures();
-    expect(val.length).toBe(1);
+    expect(val.length).toBe(2);
     expect(val[0].value).toBeFalsy();
   });
 });

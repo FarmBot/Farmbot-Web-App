@@ -19,6 +19,13 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
       widget from the Controls page.`),
     storageKey: BooleanSetting.hideWebcamWidget,
     value: false
+  },
+  {
+    name: "Confirm Sequence Step Deletion",
+    description: trim(`Show a confirmation dialog when the sequence delete step
+      icon is pressed.`),
+    storageKey: BooleanSetting.confirmStepDeletion,
+    value: false
   }
 ].map(fetchRealValue));
 
