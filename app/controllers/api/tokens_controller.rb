@@ -3,9 +3,14 @@ module Api
     include Skylight::Helpers
     skip_before_action :authenticate_user!, only: :create
     skip_before_action :check_fbos_version, only: :create
-    CREDS    = Auth::CreateTokenFromCredentials
-    NO_CREDS = Auth::CreateToken
+    CREDS        = Auth::CreateTokenFromCredentials
+    NO_CREDS     = Auth::CreateToken
     NO_USER_ATTR = "API requets need a `user` attribute that is a JSON object."
+
+    # Give you the same token, but reloads all claims except `exp`
+    def show
+      mutate Auth::ReloadToken.run(jwt: request.headers["Authorization"])
+    end
 
     instrument_method
     def create

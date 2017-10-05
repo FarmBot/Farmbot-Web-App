@@ -13,7 +13,7 @@ FarmBot::Application.routes.draw do
         post :search, on: :collection
     end
     resource :public_key,     only: [:show]
-    resource :tokens,         only: [:create]
+    resource :tokens,         only: [:create, :show]
     resource :users,          only: [:create, :update, :destroy, :show] do
       post :resend_verification, on: :member
     end
