@@ -27,7 +27,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
         </Col>
       </Row>
       <Row>
-        <Col xs={12} sm={5}>
+        <Col xs={12} sm={6}>
           <CameraCalibration
             dispatch={this.props.dispatch}
             currentImage={this.props.currentImage}
@@ -43,7 +43,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
             S_HI={envGet("CAMERA_CALIBRATION_S_HI", this.props.env)}
             V_HI={envGet("CAMERA_CALIBRATION_V_HI", this.props.env)} />
         </Col>
-        <Col xs={12} sm={5} smOffset={1}>
+        <Col xs={12} sm={6}>
           <WeedDetector {...this.props} />
         </Col>
       </Row>
