@@ -6,6 +6,8 @@ import { MapTransformProps } from "../interfaces";
 import { SpreadCircle } from "./spread_layer";
 import { Circle } from "../circle";
 import * as _ from "lodash";
+import { Session } from "../../../session";
+import { BooleanSetting } from "../../../session_keys";
 
 /**
  * For showing the map plant hovered in the plant panel.
@@ -45,6 +47,7 @@ export class HoveredPlantLayer extends
     const hovered = !!this.props.designer.hoveredPlant.icon;
     const scaledRadius = currentPlant ? radius : radius * 1.2;
     const alpha = dragging ? 0.4 : 1.0;
+    const animate = Session.getBool(BooleanSetting.plantAnimations);
 
     return <g id="hovered-plant-layer">
       {this.props.visible && hovered &&
@@ -58,7 +61,7 @@ export class HoveredPlantLayer extends
                 selected={false} />
 
               <Circle
-                className="plant-indicator"
+                className={animate ? "plant-indicator" : ""}
                 x={qx}
                 y={qy}
                 r={radius}

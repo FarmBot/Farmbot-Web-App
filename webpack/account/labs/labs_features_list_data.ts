@@ -48,6 +48,12 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
     for a map with four times the area.`)),
     storageKey: BooleanSetting.mapXL,
     value: false
+  },
+  {
+    name: t("Display plant animations"),
+    description: trim(t(`Turn on plant animations in the Farm Designer.`)),
+    storageKey: BooleanSetting.plantAnimations,
+    value: true
   }
 ].map(fetchRealValue));
 
