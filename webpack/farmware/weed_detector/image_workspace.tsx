@@ -37,6 +37,7 @@ interface Props extends NumericValues {
   currentImage: TaggedImage | undefined;
   images: TaggedImage[];
   onChange(key: NumericKeyName, value: number): void;
+  invertHue?: boolean;
 }
 
 /** Mapping of HSV values to FBOS Env variables. */
@@ -104,7 +105,8 @@ export class ImageWorkspace extends React.Component<Props, {}> {
             <FarmbotColorPicker
               h={[H_LO, H_HI]}
               s={[S_LO, S_HI]}
-              v={[V_LO, V_HI]} />
+              v={[V_LO, V_HI]}
+              invertHue={this.props.invertHue} />
           </Col>
         </Row>
         <Row>

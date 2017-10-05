@@ -1,3 +1,11 @@
+jest.mock("../../../../session", () => {
+  return {
+    Session: {
+      getBool: () => { return true; }
+    }
+  };
+});
+
 import * as React from "react";
 import { PlantLayer } from "../plant_layer";
 import { shallow } from "enzyme";

@@ -66,6 +66,17 @@ export function nodeLabel(
   </text>;
 }
 
+export function getConnectionColor(status: boolean | undefined) {
+  const colorOk = "#6a4";
+  const colorError = "#e66";
+  // const colorUnknown = "#fd6";
+  switch (status) {
+    case undefined: return colorError; // change to colorUnknown when ready
+    case true: return colorOk;
+    default: return colorError;
+  }
+}
+
 export function getLineProps(
   fromName: DiagramNodes, toName: DiagramNodes): SVGLineCoordinates {
   const fromPosition = diagramPositions[fromName];
@@ -89,9 +100,6 @@ export function Connector(props: ConnectorProps): JSX.Element {
   const {
     connectionData, from, to, hover, hoveredConnection, customLineProps
   } = props;
-  const colorOk = "#6a4";
-  const colorError = "#e66";
-  const color = connectionData.connectionStatus ? colorOk : colorError;
   const lineProps = customLineProps ? customLineProps : getLineProps(from, to);
   const hoverIndicatorColor =
     hoveredConnection === connectionData.connectionName
@@ -108,7 +116,7 @@ export function Connector(props: ConnectorProps): JSX.Element {
     <line id="connector-color"
       x1={lineProps.x1} y1={lineProps.y1} x2={lineProps.x2} y2={lineProps.y2}
       strokeWidth={5}
-      stroke={color}
+      stroke={getConnectionColor(connectionData.connectionStatus)}
     />
     <line className="connector-hover-area"
       x1={lineProps.x1} y1={lineProps.y1} x2={lineProps.x2} y2={lineProps.y2}

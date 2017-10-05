@@ -18,6 +18,9 @@ import { CeleryNode, LegalSequenceKind, LegalArgString, If, Execute, Nothing } f
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
+import { t } from "i18next";
+import { Session } from "../../session";
+import { BooleanSetting } from "../../session_keys";
 
 interface MoveParams {
   step: Step;
@@ -63,12 +66,15 @@ interface RemoveParams {
 }
 
 export function remove({ dispatch, index, sequence }: RemoveParams) {
-  const original = sequence;
-  const update = defensiveClone(original);
-  update.body.body = (update.body.body || []);
-  delete update.body.body[index];
-  update.body.body = _.compact(update.body.body);
-  dispatch(overwrite(original, update.body));
+  if (!Session.getBool(BooleanSetting.confirmStepDeletion) ||
+    confirm(t("Are you sure you want to delete this step?"))) {
+    const original = sequence;
+    const update = defensiveClone(original);
+    update.body.body = (update.body.body || []);
+    delete update.body.body[index];
+    update.body.body = _.compact(update.body.body);
+    dispatch(overwrite(original, update.body));
+  }
 }
 
 export function updateStep(props: StepInputProps) {

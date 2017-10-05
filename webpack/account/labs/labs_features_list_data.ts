@@ -1,6 +1,8 @@
 import { Content } from "../../constants";
 import { Session } from "../../session";
 import { BooleanSetting } from "../../session_keys";
+import { trim } from "../../util";
+import { t } from "i18next";
 
 export interface LabsFeature {
   name: string;
@@ -8,23 +10,62 @@ export interface LabsFeature {
   /** Entry for localStorage. Must be unique. */
   storageKey: BooleanSetting;
   value: boolean;
+  experimental?: boolean;
 }
 
 export const fetchLabFeatures = (): LabsFeature[] => ([
   {
-    name: "Weed Detection",
-    description: "Plots the location of weeds on the garden map.",
-    storageKey: BooleanSetting.weedDetector,
+    name: t("Disable Web App internationalization"),
+    description: t("Set Web App to English."),
+    storageKey: BooleanSetting.disableI18n,
     value: false
+  },
+  {
+    name: t("Confirm Sequence step deletion"),
+    description: trim(t(`Show a confirmation dialog when the sequence delete step
+      icon is pressed.`)),
+    storageKey: BooleanSetting.confirmStepDeletion,
+    value: false
+  },
+  {
+    name: t("Hide Webcam widget"),
+    description: trim(t(`If not using a webcam, use this setting to remove the
+      widget from the Controls page.`)),
+    storageKey: BooleanSetting.hideWebcamWidget,
+    value: false
+  },
+  {
+    name: t("Dynamic map size"),
+    description: trim(t(`Change the Farm Designer map size based on axis length.
+      A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
+      the HARDWARE widget.`)),
+    storageKey: BooleanSetting.dynamicMap,
+    value: false
+  },
+  {
+    name: t("Double default map dimensions"),
+    description: trim(t(`Double the default dimensions of the Farm Designer map
+    for a map with four times the area.`)),
+    storageKey: BooleanSetting.mapXL,
+    value: false
+  },
+  {
+    name: t("Display plant animations"),
+    description: trim(t(`Turn on plant animations in the Farm Designer.`)),
+    storageKey: BooleanSetting.plantAnimations,
+    value: true
   }
 ].map(fetchRealValue));
 
 /** Always allow toggling from true => false (deactivate).
  * Require a disclaimer when going from false => true (activate). */
-export const maybeToggleFeature = (x: LabsFeature): LabsFeature | undefined => {
-  return (x.value || window.confirm(Content.EXPERIMENTAL_WARNING)) ?
-    toggleFeatureValue(x) : undefined;
-};
+export const maybeToggleFeature =
+  (x: LabsFeature): LabsFeature | undefined => {
+    return (x.value
+      || !x.experimental
+      || window.confirm(Content.EXPERIMENTAL_WARNING)) ?
+      toggleFeatureValue(x) : undefined;
+  };
 
 /** Stub this when testing if need be. */
 const fetchVal = (k: BooleanSetting) => !!Session.getBool(k);

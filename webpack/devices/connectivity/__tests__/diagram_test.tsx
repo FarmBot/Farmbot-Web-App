@@ -8,7 +8,8 @@ import {
   nodeLabel,
   getTextPosition,
   getLineProps,
-  DiagramNodes
+  DiagramNodes,
+  getConnectionColor
 } from "../diagram";
 
 describe("<ConnectivityDiagram/>", () => {
@@ -95,6 +96,18 @@ describe("getLineProps()", () => {
   it("returns fallback", () => {
     expect(getLineProps("na" as DiagramNodes, "na" as DiagramNodes))
       .toEqual({ x1: 0, x2: 0, y1: 0, y2: 0 });
+  });
+});
+
+describe("getConnectionColor()", () => {
+  it("unknown", () => {
+    expect(getConnectionColor(undefined)).toEqual("#e66");
+  });
+  it("error", () => {
+    expect(getConnectionColor(false)).toEqual("#e66");
+  });
+  it("ok", () => {
+    expect(getConnectionColor(true)).toEqual("#6a4");
   });
 });
 

@@ -10,7 +10,16 @@ describe("mapStateToProps()", () => {
 
   it("currentImage undefined", () => {
     const props = mapStateToProps(fakeState());
-    expect(props.currentImage).toBeFalsy();
+    expect(props.currentImage).toEqual(props.images[0]);
+  });
+
+  it("currentImage defined", () => {
+    const state = fakeState();
+    const secondImageUUID = state.resources.index.byKind.images[1];
+    state.resources.consumers.farmware.currentImage = secondImageUUID;
+    const props = mapStateToProps(state);
+    const currentImageUUID = props.currentImage ? props.currentImage.uuid : "";
+    expect(currentImageUUID).toEqual(secondImageUUID);
   });
 
 });

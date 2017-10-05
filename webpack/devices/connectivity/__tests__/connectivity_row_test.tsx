@@ -9,9 +9,20 @@ describe("<ConnectivityRow/>", () => {
     expect(el.find("." + color).length).toBe(2);
   }
 
-  it("renders saucer colors", () => {
+  it("renders saucer color: error", () => {
     expectCSS("red", false);
-    expectCSS("grey", undefined);
+  });
+
+  it("renders saucer color: unknown", () => {
+    expectCSS("red", undefined);
+  });
+
+  it("renders saucer color: ok", () => {
     expectCSS("green", true);
+  });
+
+  it("renders saucer color: header", () => {
+    const el = render(<ConnectivityRow from="from" to="to" />);
+    expect(el.find(".grey").length).toBe(1);
   });
 });

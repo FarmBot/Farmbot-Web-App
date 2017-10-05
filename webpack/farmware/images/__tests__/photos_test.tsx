@@ -28,6 +28,22 @@ describe("<Photos/>", () => {
     return images;
   }
 
+  it("shows photo", () => {
+    const dispatch = jest.fn();
+    const images = prepareImages(fakeImages);
+    const currentImage = images[1];
+    const props = { images, currentImage, dispatch };
+    const wrapper = mount(<Photos {...props} />);
+    expect(wrapper.text()).toContain("Created At:June 1st, 2017");
+    expect(wrapper.text()).toContain("X:632Y:347Z:164");
+  });
+
+  it("no photos", () => {
+    const props = { images: [], currentImage: undefined, dispatch: jest.fn() };
+    const wrapper = mount(<Photos {...props} />);
+    expect(wrapper.text()).toContain("Image:No meta data.");
+  });
+
   it("deletes photo", () => {
     const { mock } = destroy as jest.Mock<{}>;
     const dispatch = jest.fn(() => { return Promise.resolve(); });
