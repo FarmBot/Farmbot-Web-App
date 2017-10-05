@@ -28,7 +28,7 @@ function MetaInfo({ obj, attr, label }: MetaInfoProps) {
   const bottom = safeStringFetch(obj, attr);
   return (
     <div>
-      <label>{top}:&nbsp;&nbsp;</label>
+      <label>{top}:</label>
       <span>{bottom || "unknown"}</span>
     </div>
   );
@@ -88,8 +88,8 @@ export class Photos extends React.Component<PhotosProps, {}> {
         <WidgetFooter>
           {/** Separated from <MetaInfo /> for stylistic purposes. */}
           {image ?
-            <div>
-              <label>{t("Created At")}</label>
+            <div className="image-created-at">
+              <label>{t("Created At:")}</label>
               <span>
                 {moment(image.body.created_at).format("MMMM Do, YYYY h:mma")}
               </span>

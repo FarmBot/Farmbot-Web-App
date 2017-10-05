@@ -10,8 +10,10 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     .reverse()
     .value();
 
+  const firstImage = images[0];
   const currentImage = images
-    .filter(i => i.uuid === props.resources.consumers.farmware.currentImage)[0];
+    .filter(i => i.uuid === props.resources.consumers.farmware.currentImage)[0]
+    || firstImage;
   const { farmwares } = props.bot.hardware.process_info;
   const syncStatus = props
     .bot
