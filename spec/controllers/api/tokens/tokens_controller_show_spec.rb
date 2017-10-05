@@ -10,7 +10,7 @@ describe Api::TokensController do
 
     before(:each) do
       request.headers["Authorization"] = "bearer #{auth_token.encoded}"
-      sleep 1 # So IAT is different.
+      sleep 1 # To create unique IAT values.
       get :show
     end
 
@@ -25,6 +25,9 @@ describe Api::TokensController do
       expect(new_claims[:aud]).to eq(old_claims[:aud])
       # New IAT
       expect(new_claims[:iat]).not_to eq(old_claims[:iat])
+      # If this crashes, the base64 encoding is broke.
+      expect(JSON.parse(Base64.decode64(json[:token][:encoded].split(".")[1])))
+        .to be_kind_of(Hash)
     end
   end
 end

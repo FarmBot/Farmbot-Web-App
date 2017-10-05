@@ -275,7 +275,6 @@ export function connectDevice(oldToken: string): ConnectDeviceReturn {
       return ath && maybeRefreshToken(ath)
         .then(({ token }) => {
           const secure = location.protocol === "https:";
-          debugger;
           const bot = new Farmbot({ token: token.encoded, secure });
           bot.on("online", () => dispatchNetworkUp("user.mqtt"));
           bot.on("offline", () => {
