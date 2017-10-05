@@ -5,7 +5,7 @@ class AbstractJwtToken
   ALG         = 'RS256'
   ALLOWED_AUD = [ BOT_AUD     = "bot",
                   HUMAN_AUD   = "human",
-                  UNKNOWN_AUD = "?" ]
+                  UNKNOWN_AUD = "unknown" ]
 
   attr_accessor :encoded, :unencoded
 

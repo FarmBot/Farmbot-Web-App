@@ -28,6 +28,7 @@ import { oneOf, HttpData } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
 import { dispatchNetworkUp, dispatchNetworkDown } from "../connectivity/index";
+import { maybeRefreshToken } from "../refresh_token";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -262,76 +263,84 @@ const bothUp = () => {
 };
 // Already filtering messages in FarmBot OS and the API- this is just for
 // an additional layer of safety. If sensitive data ever hits a client, it will
-// be reported to ROllbar for investigation.
+// be reported to Rollbar for investigation.
 type ConnectDeviceReturn = {} | ((dispatch: Function) => void);
 const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
-export function connectDevice(token: string): ConnectDeviceReturn {
+export function connectDevice(oldToken: string): ConnectDeviceReturn {
   return (dispatch: Function, getState: GetState) => {
-    const secure = location.protocol === "https:";
-    const bot = new Farmbot({ token, secure });
-    bot.on("online", () => dispatchNetworkUp("user.mqtt"));
-    bot.on("offline", () => {
-      dispatchNetworkDown("user.mqtt");
-      error(t(Content.MQTT_DISCONNECTED));
-    });
-    return bot
-      .connect()
-      .then(() => {
-        devices.online = true;
-        devices.current = bot;
-        _.set(window, "current_bot", bot);
-        readStatus()
-          .then(() => bot.setUserEnv(
-            { "LAST_CLIENT_CONNECTED": JSON.stringify(new Date()) }
-          ))
-          .catch(() => { });
-        bot.on("logs", function (msg: Log) {
-          bothUp();
-          if (isLog(msg) && !oneOf(BAD_WORDS, msg.message.toUpperCase())) {
-            maybeShowLog(msg);
-            dispatch(init({
-              kind: "logs",
-              specialStatus: undefined,
-              uuid: "MUST_CHANGE",
-              body: msg
-            }));
-            // CORRECT SOLUTION: Give each device its own topic for publishing
-            //                   MQTT last will message.
-            // FAST SOLUTION:    We would need to re-publish FBJS and FBOS to
-            //                   change topic structure. Instead, we will use
-            //                   inband signalling (for now).
-            // TODO:             Make a `bot/device_123/offline` channel.
-            const died =
-              msg.message.includes("is offline") && msg.meta.type === "error";
-            died && dispatchNetworkDown("bot.mqtt");
-          } else {
-            throw new Error("Refusing to display log: " + JSON.stringify(msg));
-          }
-        });
-        bot.on("status", _.throttle(function (msg: BotStateTree) {
-          bothUp();
-          dispatch(incomingStatus(msg));
-          if (NEED_VERSION_CHECK) {
-            const IS_OK = versionOK(getState()
-              .bot
-              .hardware
-              .informational_settings
-              .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
-            if (!IS_OK) { badVersion(); }
-            NEED_VERSION_CHECK = false;
-          }
+    const ath = getState().auth;
+    if (!ath) {
+      throw new Error("SOmehow managed to get here before auth was ready.");
+    } else {
+      return ath && maybeRefreshToken(ath)
+        .then(({ token }) => {
+          const secure = location.protocol === "https:";
+          const bot = new Farmbot({ token: token.encoded, secure });
+          bot.on("online", () => dispatchNetworkUp("user.mqtt"));
+          bot.on("offline", () => {
+            dispatchNetworkDown("user.mqtt");
+            error(t(Content.MQTT_DISCONNECTED));
+          });
+          return bot
+            .connect()
+            .then(() => {
+              devices.online = true;
+              devices.current = bot;
+              _.set(window, "current_bot", bot);
+              readStatus()
+                .then(() => bot.setUserEnv(
+                  { "LAST_CLIENT_CONNECTED": JSON.stringify(new Date()) }
+                ))
+                .catch(() => { });
+              bot.on("logs", function (msg: Log) {
+                bothUp();
+                if (isLog(msg) && !oneOf(BAD_WORDS, msg.message.toUpperCase())) {
+                  maybeShowLog(msg);
+                  dispatch(init({
+                    kind: "logs",
+                    specialStatus: undefined,
+                    uuid: "MUST_CHANGE",
+                    body: msg
+                  }));
+                  // CORRECT SOLUTION: Give each device its own topic for publishing
+                  //                   MQTT last will message.
+                  // FAST SOLUTION:    We would need to re-publish FBJS and FBOS to
+                  //                   change topic structure. Instead, we will use
+                  //                   inband signalling (for now).
+                  // TODO:             Make a `bot/device_123/offline` channel.
+                  const died =
+                    msg.message.includes("is offline") && msg.meta.type === "error";
+                  died && dispatchNetworkDown("bot.mqtt");
+                } else {
+                  throw new Error("Refusing to display log: " + JSON.stringify(msg));
+                }
+              });
+              bot.on("status", _.throttle(function (msg: BotStateTree) {
+                bothUp();
+                dispatch(incomingStatus(msg));
+                if (NEED_VERSION_CHECK) {
+                  const IS_OK = versionOK(getState()
+                    .bot
+                    .hardware
+                    .informational_settings
+                    .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
+                  if (!IS_OK) { badVersion(); }
+                  NEED_VERSION_CHECK = false;
+                }
 
-        }, 500));
+              }, 500));
 
-        let alreadyToldYou = false;
-        bot.on("malformed", function () {
-          bothUp();
-          if (!alreadyToldYou) {
-            warning(t(Content.MALFORMED_MESSAGE_REC_UPGRADE));
-            alreadyToldYou = true;
-          }
+              let alreadyToldYou = false;
+              bot.on("malformed", function () {
+                bothUp();
+                if (!alreadyToldYou) {
+                  warning(t(Content.MALFORMED_MESSAGE_REC_UPGRADE));
+                  alreadyToldYou = true;
+                }
+              });
+            }, (err) => dispatch(fetchDeviceErr(err)));
         });
-      }, (err) => dispatch(fetchDeviceErr(err)));
+    }
   };
 }
 

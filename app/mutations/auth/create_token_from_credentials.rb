@@ -21,7 +21,7 @@ module Auth
     end
 
     def execute
-      SessionToken.as_json(user)
+      SessionToken.as_json(user, AbstractJwtToken::BOT_AUD)
     end
 
 private
