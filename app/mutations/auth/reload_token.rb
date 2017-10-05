@@ -11,11 +11,6 @@ module Auth
                                     aud: claims["aud"],
                                     exp: security_criticial_danger)
       return { token: token }
-
-    rescue JWT::DecodeError
-      nope
-    rescue ActiveRecord::RecordNotFound
-      nope
     end
 
     def claims

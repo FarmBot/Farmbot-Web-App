@@ -21,7 +21,7 @@ module Auth
       when String then User.find_by!(email: sub)
       else raise "SUB was neither string nor number"
       end
-    rescue JWT::DecodeError
+    rescue JWT::DecodeError, ActiveRecord::RecordNotFound
       add_error :jwt, :decode_error, "JSON Web Token is not valid."
     end
 

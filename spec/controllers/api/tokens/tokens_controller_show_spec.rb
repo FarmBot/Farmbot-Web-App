@@ -8,13 +8,10 @@ describe Api::TokensController do
     let(:user) { FactoryGirl.create(:user, password: "password") }
     let(:auth_token) { SessionToken.issue_to(user) }
 
-    before(:each) do
+    it 'creates a new token' do
       request.headers["Authorization"] = "bearer #{auth_token.encoded}"
       sleep 1 # To create unique IAT values.
       get :show
-    end
-
-    it 'creates a new token' do
       expect(response.status).to eq(200)
       new_claims = json[:token][:unencoded]
       old_claims = auth_token.unencoded
@@ -28,6 +25,12 @@ describe Api::TokensController do
       # If this crashes, the base64 encoding is broke.
       expect(JSON.parse(Base64.decode64(json[:token][:encoded].split(".")[1])))
         .to be_kind_of(Hash)
+    end
+
+    it 'denies bad tokens' do
+      request.headers["Authorization"] = "bearer #{auth_token.encoded + "no..."}"
+      get :show
+      expect(json.dig(:error, :jwt)).to include("not valid")
     end
   end
 end
