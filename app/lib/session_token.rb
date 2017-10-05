@@ -9,6 +9,8 @@ class SessionToken < AbstractJwtToken
   OS_RELEASE   = ENV.fetch("OS_UPDATE_SERVER") { DEFAULT_OS }
   FW_RELEASE   = ENV.fetch("FW_UPDATE_SERVER") { DEFAULT_FW }
   MQTT         = ENV.fetch("MQTT_HOST")
+  # If you are not using the standard MQTT broker (eg: you use a 3rd party
+  # MQTT vendor), you will need to change this line.
   MQTT_WS      = ENV.fetch("MQTT_WS") do
     protocol =  ENV["FORCE_SSL"] ? "wss://" : "ws://"
     host     =  ENV.fetch("MQTT_HOST")
