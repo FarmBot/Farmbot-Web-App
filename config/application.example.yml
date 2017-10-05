@@ -72,4 +72,7 @@ SMTP_PORT: "587"
 # Set this if you don't want to deal with email verification of new users.
 # (self hosted users)
 NO_EMAILS: "TRUE"
-
+# Self hosting users can delete this line.
+# If you are not using the standard MQTT broker (eg: you use a 3rd party
+# MQTT vendor), you will need to change this line.
+MQTT_WS: "ws://DELETE_OR_CHANGE_THIS_LINE/ws"
