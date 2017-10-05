@@ -33,6 +33,21 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
       widget from the Controls page.`)),
     storageKey: BooleanSetting.hideWebcamWidget,
     value: false
+  },
+  {
+    name: t("Dynamic map size"),
+    description: trim(t(`Change the Farm Designer map size based on axis length.
+      A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
+      the HARDWARE widget.`)),
+    storageKey: BooleanSetting.dynamicMap,
+    value: false
+  },
+  {
+    name: t("Double default map dimensions"),
+    description: trim(t(`Double the default dimensions of the Farm Designer map
+    for a map with four times the area.`)),
+    storageKey: BooleanSetting.mapXL,
+    value: false
   }
 ].map(fetchRealValue));
 

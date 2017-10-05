@@ -12,10 +12,26 @@ import { isMobile } from "../util";
 import { Session, safeBooleanSettting } from "../session";
 import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined } from "lodash";
-import { AxisNumberProperty } from "./map/interfaces";
+import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { getBotSize } from "./map/util";
 
-export const defaultAxisLength: AxisNumberProperty = { x: 2900, y: 1400 };
+export const getDefaultAxisLength = (): AxisNumberProperty => {
+  if (Session.getBool(BooleanSetting.mapXL)) {
+    return { x: 5900, y: 2900 };
+  } else {
+    return { x: 2900, y: 1400 };
+  }
+};
+
+export const getGridSize = (botSize: BotSize) => {
+  if (Session.getBool(BooleanSetting.dynamicMap)) {
+    // Render the map size according to device axis length.
+    return { x: botSize.x.value, y: botSize.y.value };
+  }
+  // Use a default map size.
+  return getDefaultAxisLength();
+};
+
 export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 
 @connect(mapStateToProps)
@@ -101,17 +117,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     const designerTabClasses: string[] = ["active", "visible-xs"];
 
     const botSize = getBotSize(
-      this.props.botMcuParams, this.props.stepsPerMmXY, defaultAxisLength);
-    /**
-     * The next line uses a default for map size (from the top of this file.
-     * To render the map according to device axis length, replace the line
-     * with the next one.
-     * It is recommend to only consider this once device settings are
-     * stored in the API to avoid the map changing size when the device
-     * is offline. Alternatively, this could be a user option (toggle).
-     */
-    const gridSize = defaultAxisLength;
-    // const gridSize = { x: botSize.x.value, y: botSize.y.value };
+      this.props.botMcuParams, this.props.stepsPerMmXY, getDefaultAxisLength());
 
     const stopAtHome = {
       x: !!this.props.botMcuParams.movement_stop_at_home_x,
@@ -170,7 +176,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           hoveredPlant={this.props.hoveredPlant}
           zoomLvl={Math.round(zoomLevel * 10) / 10}
           botOriginQuadrant={botOriginQuadrant}
-          gridSize={gridSize}
+          gridSize={getGridSize(botSize)}
           gridOffset={gridOffset} />
       </div>
     </div>;

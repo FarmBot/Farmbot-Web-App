@@ -15,6 +15,8 @@ export enum BooleanSetting {
   disableI18n = "disableI18n",
   confirmStepDeletion = "confirmStepDeletion",
   hideWebcamWidget = "hideWebcamWidget",
+  dynamicMap = "dynamicMap",
+  mapXL = "mapXL",
 }
 
 export enum NumericSetting {
