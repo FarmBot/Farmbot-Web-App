@@ -9,12 +9,11 @@ import { envSave } from "../weed_detector/remote_env/actions";
 import { WDENVKey } from "../weed_detector/remote_env/interfaces";
 import { selectImage } from "../images/actions";
 import { calibrate, scanImage } from "./actions";
-import { comingSoon } from "../coming_soon";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, CameraCalibrationState> {
   render() {
-    const classname = "weed-detector-widget" + comingSoon();
+    const classname = "weed-detector-widget";
     return (
       <Widget className={classname}>
         <TitleBar
