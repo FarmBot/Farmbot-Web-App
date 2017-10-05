@@ -3,7 +3,8 @@ import { Row, Col, DropDownItem } from "../../ui/index";
 import { t } from "i18next";
 import { FBSelect } from "../../ui/new_fb_select";
 import { devices } from "../../device";
-import { info, success, error } from "farmbot-toastr";
+import { info, error } from "farmbot-toastr";
+import { FirmwareHardware } from "farmbot";
 
 export interface BoardTypeProps {
   firmwareVersion: string | undefined;
@@ -60,17 +61,18 @@ export class BoardType
   }
 
   sendOffConfig = (selectedBoard: DropDownItem) => {
-    if (selectedBoard) {
-      const firmware = selectedBoard.value;
+    // tslint:disable-next-line:no-any
+    const isFwHardwareValue = (x?: any): x is FirmwareHardware => {
+      const values: FirmwareHardware[] = ["arduino", "farmduino"];
+      return !!values.includes(x as FirmwareHardware);
+    };
+
+    const firmware_hardware = selectedBoard.value;
+    if (selectedBoard && isFwHardwareValue(firmware_hardware)) {
       info(t("Sending firmware configuration..."), t("Sending"));
       devices
         .current
-        // TODO: remove type assertion when farmbot-js is updated
-        // tslint:disable-next-line:no-any
-        .updateConfig({ firmware_hardware: firmware as any })
-        .then(() => {
-          success(t("Successfully configured firmware!"));
-        })
+        .updateConfig({ firmware_hardware })
         .catch(() => error(t("An error occurred during configuration.")));
     }
   }

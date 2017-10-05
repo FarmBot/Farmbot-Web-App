@@ -9,7 +9,6 @@ describe("AdditionalMenu", () => {
       close={jest.fn()} />);
     const text = wrapper.text();
     expect(text).toContain("Account Settings");
-    expect(text).toContain("Set Page to English");
     expect(text).toContain("Documentation");
     expect(text).toContain("Logout");
     expect(text).toContain("VERSION");

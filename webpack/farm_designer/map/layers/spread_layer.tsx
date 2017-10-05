@@ -6,6 +6,8 @@ import { cachedCrop } from "../../../open_farm/index";
 import { MapTransformProps } from "../interfaces";
 import { SpreadOverlapHelper } from "../spread_overlap_helper";
 import { BotPosition } from "../../../devices/interfaces";
+import { Session } from "../../../session";
+import { BooleanSetting } from "../../../session_keys";
 
 export interface SpreadLayerProps {
   visible: boolean;
@@ -81,11 +83,12 @@ export class SpreadCircle extends
     const { selected, mapTransformProps } = this.props;
     const { quadrant, gridSize } = mapTransformProps;
     const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
+    const animate = Session.getBool(BooleanSetting.plantAnimations);
 
     return <g id={"spread-" + id}>
       {!selected &&
         <circle
-          className="spread"
+          className={"spread " + (animate ? "animate" : "")}
           id={"spread-" + id}
           cx={qx}
           cy={qy}

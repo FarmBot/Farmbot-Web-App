@@ -3,6 +3,8 @@ import { GardenPlantProps, GardenPlantState } from "./interfaces";
 import { cachedCrop, DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
 import { round, getXYFromQuadrant } from "./util";
 import { DragHelpers } from "./drag_helpers";
+import { Session } from "../../session";
+import { BooleanSetting } from "../../session_keys";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
@@ -35,21 +37,23 @@ export class GardenPlant extends
 
     const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
     const alpha = dragging ? 0.4 : 1.0;
+    const animate = Session.getBool(BooleanSetting.plantAnimations);
 
     return <g id={"plant-" + id}>
 
-      <circle
-        className="soil-cloud"
-        cx={qx}
-        cy={qy}
-        r={radius}
-        fill="#90612f"
-        fillOpacity="0" />
+      {animate &&
+        <circle
+          className="soil-cloud"
+          cx={qx}
+          cy={qy}
+          r={radius}
+          fill="#90612f"
+          fillOpacity="0" />}
 
       <g id="plant-icon">
         <image
           visibility={dragging ? "hidden" : "visible"}
-          className={"plant-image is-chosen-" + selected}
+          className={`plant-image is-chosen-${selected} ${animate ? "animate" : ""}`}
           opacity={alpha}
           xlinkHref={icon}
           onClick={this.click}

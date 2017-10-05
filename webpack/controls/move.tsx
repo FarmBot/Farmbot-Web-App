@@ -93,19 +93,19 @@ export class Move extends React.Component<MoveProps, {}> {
               </label>
               <fieldset>
                 <label>
-                  {t("Raw encoder position")}
-                </label>
-                <button
-                  className={"fb-button fb-toggle-button " + rawBtnColor}
-                  onClick={this.toggle_encoder_data("raw_encoders")} />
-              </fieldset>
-              <fieldset>
-                <label>
                   {t("Scaled encoder position")}
                 </label>
                 <button
                   className={"fb-button fb-toggle-button " + scaledBtnColor}
                   onClick={this.toggle_encoder_data("scaled_encoders")} />
+              </fieldset>
+              <fieldset>
+                <label>
+                  {t("Raw encoder position")}
+                </label>
+                <button
+                  className={"fb-button fb-toggle-button " + rawBtnColor}
+                  onClick={this.toggle_encoder_data("raw_encoders")} />
               </fieldset>
             </div>
           </Popover>

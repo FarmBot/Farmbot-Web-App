@@ -9,12 +9,12 @@ import { envSave } from "../weed_detector/remote_env/actions";
 import { WDENVKey } from "../weed_detector/remote_env/interfaces";
 import { selectImage } from "../images/actions";
 import { calibrate, scanImage } from "./actions";
-import { comingSoon } from "../coming_soon";
+import { envGet } from "../weed_detector/remote_env/selectors";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, CameraCalibrationState> {
   render() {
-    const classname = "weed-detector-widget" + comingSoon();
+    const classname = "weed-detector-widget";
     return (
       <Widget className={classname}>
         <TitleBar
@@ -52,7 +52,10 @@ export class CameraCalibration extends
                 V_LO={this.props.V_LO}
                 H_HI={this.props.H_HI}
                 S_HI={this.props.S_HI}
-                V_HI={this.props.V_HI} />
+                V_HI={this.props.V_HI}
+                invertHue={!!envGet(
+                  "CAMERA_CALIBRATION_invert_hue_selection",
+                  this.props.env)} />
             </Col>
           </Row>
         </WidgetBody>

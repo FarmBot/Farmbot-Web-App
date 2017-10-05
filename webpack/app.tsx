@@ -6,7 +6,7 @@ import { init, error } from "farmbot-toastr";
 
 import { NavBar } from "./nav";
 import { Everything, Log } from "./interfaces";
-import { LoadingPlant } from "./loading-plant";
+import { LoadingPlant } from "./loading_plant";
 import { BotState } from "./devices/interfaces";
 import { ResourceName, TaggedUser } from "./resources/tagged_resources";
 import { selectAllLogs, maybeFetchUser } from "./resources/selectors";

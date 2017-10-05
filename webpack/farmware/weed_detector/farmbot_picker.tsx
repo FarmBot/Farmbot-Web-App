@@ -6,13 +6,46 @@ import * as _ from "lodash";
 /** Wrapper class around `react-color`'s `<Saturation />` and `<Hue />`.
  *  Add an extra white box feature for showing user weed detection settings.
  */
-export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> {
-  BASE_CSS: React.CSSProperties = {
-    position: "absolute",
-    border: "2px solid white",
-    boxShadow: "0 0 2px 2px rgba(0, 0, 0, 0.3) inset"
-  };
 
+const selectedCSS: React.CSSProperties = {
+  position: "absolute",
+  border: "2px solid white",
+  boxShadow: "0 0 5px 2px rgba(0, 0, 0, 0.3)",
+  zIndex: 2
+};
+
+const unselectedCSS: React.CSSProperties = {
+  position: "absolute",
+  borderWidth: "5px 0 5px 0",
+  borderColor: "#f4f4f4",
+  borderStyle: "solid",
+  background: "rgba(0, 0, 0, 0.3)",
+  boxShadow: "0 0 15px 2px rgba(0, 0, 0, 0.3) inset"
+};
+
+export function getHueBoxes(
+  hue: number[], inverted: boolean): React.CSSProperties[] {
+  /**
+   *  d0     d1     d2     d3  <- divider positions
+   *  .--------------------.
+   *  | box0 | box1 | box2 |
+   *  '--------------------'
+   *     w0     w1     w2     <- widths
+   */
+  function n(h: number) { return ((h * 2) / 360) * 100; } // normalize
+  const d = [0, n(Math.min(...hue)), n(Math.max(...hue)), 100];
+  const boxWidths = [d[1], d[2] - d[1], d[3] - d[2]];
+  const selected = [inverted, !inverted, inverted];
+  return boxWidths.map(function (w, i) {
+    const [top, height, left, width] =
+      [0, 100, d[i], w].map(x => `${Math.round(x)}%`);
+    return {
+      top, height, left, width, ...(selected[i] ? selectedCSS : unselectedCSS)
+    };
+  });
+}
+
+export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> {
   constructor() {
     super();
     this.state = {};
@@ -23,7 +56,6 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
       position: "relative",
       width: "100%",
       paddingBottom: "4rem",
-      overflow: "hidden"
     };
   }
 
@@ -34,16 +66,6 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
       paddingBottom: "12rem",
       overflow: "hidden"
     };
-  }
-
-  hueboxCSS = (): React.CSSProperties => {
-    const l = ((this.props.h[0] * 2) / 360) * 100;
-    const w = ((this.props.h[1] * 2) / 360) * 100 - l;
-    const width = `${w}%`;
-    const left = `${l}%`;
-    const height = "100%";
-    const top = 0;
-    return { ...this.BASE_CSS, width, height, top, left };
   }
 
   saturationboxCSS = (): React.CSSProperties => {
@@ -58,7 +80,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
 
     const [width, height, left, top] = [w, h, l, t].map(x => `${x}%`);
 
-    return { ...this.BASE_CSS, width, height, top, left };
+    return { ...selectedCSS, width, height, top, left };
   }
 
   customPointer = () => <div />;
@@ -75,17 +97,18 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
       hsv: { h: H_AVG, s: 0, v: 0 },
       hsl: { h: H_AVG, s: 0, l: 0 }
     };
-    return <div>
+    return <div id="farmbot-color-picker">
       <div style={{ width: "100%", paddingBottom: "5rem" }} />
-      <div style={this.hueCSS()}>
+      <div id="hue" style={this.hueCSS()}>
         <Hue
           {...dontTouchThis}
           pointer={this.customPointer}
           onChange={_.noop} />
-        <div style={this.hueboxCSS()} />
+        {getHueBoxes(this.props.h, !!this.props.invertHue)
+          .map((box, i) => <div key={i} style={box} />)}
       </div>
       <div style={{ width: "100%", paddingBottom: "1rem" }} />
-      <div style={this.saturationCSS()}>
+      <div id="saturation" style={this.saturationCSS()}>
         <Saturation
           {...dontTouchThis}
           pointer={this.customPointer}

@@ -215,8 +215,10 @@
 }
 
 .plant-image {
-  animation: plant-growth 0.25s cubic-bezier(0, 0, 0, 1.4);
   transform-origin: bottom;
+  &.animate {
+    animation: plant-growth 0.25s cubic-bezier(0, 0, 0, 1.4);
+  }
 }
 
 .soil-cloud {
@@ -225,9 +227,11 @@
 }
 
 .spread {
-  animation: spread-pop 0.2s cubic-bezier(0, 0, 0, 1);
   transform-origin: center;
   pointer-events: none;
+  &.animate {
+    animation: spread-pop 0.2s cubic-bezier(0, 0, 0, 1);
+  }
 }
 
 .garden-map-legend {

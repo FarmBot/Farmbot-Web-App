@@ -72,6 +72,15 @@
     display: flex;
     label {
       margin-left: 1rem;
+      margin-right: 0.5rem;
+    }
+  }
+  .image-created-at {
+    span {
+    white-space: nowrap;
+    }
+    label {
+      margin-right: 0.5rem;
     }
   }
 }

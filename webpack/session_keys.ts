@@ -4,7 +4,6 @@ export enum BooleanSetting {
   zAxisInverted = "zAxisInverted",
   rawEncoders = "rawEncoders",
   scaledEncoders = "scaledEncoders",
-  disableI18n = "disableI18n",
   legendMenuOpen = "legendMenuOpen",
   showPlants = "showPlants",
   showPoints = "showPoints",
@@ -13,6 +12,12 @@ export enum BooleanSetting {
 
   /** "Labs" feature names. */
   weedDetector = "weedDetector",
+  disableI18n = "disableI18n",
+  confirmStepDeletion = "confirmStepDeletion",
+  hideWebcamWidget = "hideWebcamWidget",
+  dynamicMap = "dynamicMap",
+  mapXL = "mapXL",
+  plantAnimations = "plantAnimations",
 }
 
 export enum NumericSetting {
