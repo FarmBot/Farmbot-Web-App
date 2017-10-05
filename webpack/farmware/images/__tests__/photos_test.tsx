@@ -35,7 +35,7 @@ describe("<Photos/>", () => {
     const props = { images, currentImage, dispatch };
     const wrapper = mount(<Photos {...props} />);
     expect(wrapper.text()).toContain("Created At:June 1st, 2017");
-    expect(wrapper.text()).toContain(":14amX:632Y:347Z:164");
+    expect(wrapper.text()).toContain("X:632Y:347Z:164");
   });
 
   it("no photos", () => {
