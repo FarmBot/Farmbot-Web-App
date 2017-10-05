@@ -6,11 +6,11 @@ module Auth
 
     def execute
       # Prevent never ending sessions.
-      security_criticial_never_increase_exp = claims["exp"]
-
-      SessionToken.issue_to(user,
-        aud: claims["aud"],
-        exp: security_criticial_never_increase_exp)
+      security_criticial_danger = claims["exp"]
+      token = SessionToken.issue_to(user,
+                                    aud: claims["aud"],
+                                    exp: security_criticial_danger)
+      return { token: token }
 
     rescue JWT::DecodeError
       nope

@@ -16,7 +16,7 @@ describe Api::TokensController do
 
     it 'creates a new token' do
       expect(response.status).to eq(200)
-      new_claims = json[:unencoded]
+      new_claims = json[:token][:unencoded]
       old_claims = auth_token.unencoded
       # Not new EXP
       expect(new_claims[:exp]).to eq(old_claims[:exp])
