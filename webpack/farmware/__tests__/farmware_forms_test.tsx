@@ -10,8 +10,9 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { FarmwareForms } from "../farmware_forms";
 import { devices } from "../../device";
+import { FarmwareManifest, Dictionary } from "farmbot";
 
-function fakeFarmwares() {
+function fakeFarmwares(): Dictionary<FarmwareManifest | undefined> {
   return {
     "farmware_0": {
       name: "My Farmware",
@@ -20,6 +21,7 @@ function fakeFarmwares() {
       args: ["my_farmware.fth"],
       url: "https://",
       path: "my_farmware",
+      config: [],
       meta: {
         min_os_version_major: "3",
         description: "Does things.",
