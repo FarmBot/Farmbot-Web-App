@@ -13,6 +13,7 @@ export enum BooleanSetting {
 
   /** "Labs" feature names. */
   weedDetector = "weedDetector",
+  hideWebcamWidget = "hideWebcamWidget",
 }
 
 export enum NumericSetting {

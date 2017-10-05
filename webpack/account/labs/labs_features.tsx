@@ -8,8 +8,8 @@ export class LabsFeatures extends React.Component<{}, {}> {
 
   render() {
     return <Widget className="peripherals-widget">
-      <WidgetHeader title={"Experimental Features"}
-        helpText={"Unstable features to try out (beta)."}>
+      <WidgetHeader title={"App Settings"}
+        helpText={"Customize your web app experience."}>
       </WidgetHeader>
       <WidgetBody>
         <LabsFeaturesList onToggle={(x) => {

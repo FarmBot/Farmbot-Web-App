@@ -26,7 +26,8 @@ describe("maybeToggleFeature()", () => {
       name: "Example",
       value: false,
       description: "I stub this.",
-      storageKey: BooleanSetting.weedDetector
+      storageKey: BooleanSetting.weedDetector,
+      experimental: true
     };
     const out = maybeToggleFeature(data);
     expect(data.value).toBeFalsy();
@@ -40,7 +41,8 @@ describe("maybeToggleFeature()", () => {
       name: "Example1",
       value: (mockStorj[BooleanSetting.weedDetector] = false),
       description: "I stub this.",
-      storageKey: BooleanSetting.weedDetector
+      storageKey: BooleanSetting.weedDetector,
+      experimental: true
     };
     const out = maybeToggleFeature(data);
     out ?
@@ -55,11 +57,25 @@ describe("maybeToggleFeature()", () => {
       name: "Example",
       value: (mockStorj[BooleanSetting.weedDetector] = true),
       description: "I stub this.",
-      storageKey: BooleanSetting.weedDetector
+      storageKey: BooleanSetting.weedDetector,
+      experimental: true
     });
     expect(conf).not.toHaveBeenCalled();
     output ?
       expect(output.value).toBeFalsy() : fail("`output` should be defined.");
+  });
+
+  it("updates a `LabsFeature` when consent is not required", () => {
+    const data: LabsFeature = {
+      name: "Example1",
+      value: (mockStorj[BooleanSetting.weedDetector] = false),
+      description: "I stub this.",
+      storageKey: BooleanSetting.weedDetector
+    };
+    const out = maybeToggleFeature(data);
+    out ?
+      expect(out.value).toBeTruthy() : fail("out === undefined. Thats bad");
+    expect(out).toBeTruthy();
   });
 });
 

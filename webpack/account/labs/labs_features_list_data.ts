@@ -1,6 +1,7 @@
 import { Content } from "../../constants";
 import { Session } from "../../session";
 import { BooleanSetting } from "../../session_keys";
+import { trim } from "../../util";
 
 export interface LabsFeature {
   name: string;
@@ -8,23 +9,28 @@ export interface LabsFeature {
   /** Entry for localStorage. Must be unique. */
   storageKey: BooleanSetting;
   value: boolean;
+  experimental?: boolean;
 }
 
 export const fetchLabFeatures = (): LabsFeature[] => ([
   {
-    name: "",
-    description: "",
-    storageKey: "",
+    name: "Hide Webcam Widget",
+    description: trim(`If not using a webcam, use this setting to remove the
+      widget from the Controls page.`),
+    storageKey: BooleanSetting.hideWebcamWidget,
     value: false
   }
 ].map(fetchRealValue));
 
 /** Always allow toggling from true => false (deactivate).
  * Require a disclaimer when going from false => true (activate). */
-export const maybeToggleFeature = (x: LabsFeature): LabsFeature | undefined => {
-  return (x.value || window.confirm(Content.EXPERIMENTAL_WARNING)) ?
-    toggleFeatureValue(x) : undefined;
-};
+export const maybeToggleFeature =
+  (x: LabsFeature): LabsFeature | undefined => {
+    return (x.value
+      || !x.experimental
+      || window.confirm(Content.EXPERIMENTAL_WARNING)) ?
+      toggleFeatureValue(x) : undefined;
+  };
 
 /** Stub this when testing if need be. */
 const fetchVal = (k: BooleanSetting) => !!Session.getBool(k);
