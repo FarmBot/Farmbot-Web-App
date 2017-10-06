@@ -12,12 +12,11 @@ NO_API_HOST         = "You need to set API_HOST to a real IP address or " +
 TEMPLATE_FILE       = "./mqtt/rabbitmq.config.erb"
 TEMPLATE            = File.read(TEMPLATE_FILE)
 RENDERER            = ERB.new(TEMPLATE)
-PROTO               = ENV["FORCE_SSL"] ? "http://" : "https://"
-HOST                = ENV.fetch("API_HOST") { exit NO_API_HOST }
+PROTO               = ENV["FORCE_SSL"] ? "https:" : "http:"
 VHOST               = ENV.fetch("MQTT_VHOST") { "/" }
 
-puts "=== Building JWY plugin config"
-farmbot_api_key_url = "#{PROTO}#{HOST}/api/public_key"
+puts "=== Building JWT plugin config"
+farmbot_api_key_url = "#{PROTO}#{$API_URL}/api/public_key"
 farmbot_vhost       = VHOST
 
 # Write the config file.
