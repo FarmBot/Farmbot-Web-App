@@ -67,12 +67,13 @@ export function mapStateToProps(props: Everything): Props {
       dispatch(edit(t, { tool_id }));
     };
 
-  let botPosition: BotPosition;
-  if (props.bot.hardware.location_data) {
-    botPosition = props.bot.hardware.location_data.position;
-  } else {
-    botPosition = { x: undefined, y: undefined, z: undefined };
-  }
+
+  const getBotPosition = (): BotPosition => {
+    if (props.bot.hardware.location_data) {
+      return props.bot.hardware.location_data.position;
+    }
+    return { x: undefined, y: undefined, z: undefined };
+  };
 
   return {
     toolSlots,
@@ -84,7 +85,7 @@ export function mapStateToProps(props: Everything): Props {
     changeToolSlot,
     isActive,
     dispatch: _.noop,
-    botPosition
+    botPosition: getBotPosition()
   };
 
 }

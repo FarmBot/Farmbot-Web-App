@@ -1,5 +1,3 @@
-// Temp stubs
-@import "temp";
 // Node Modules
 @import "../../node_modules/@blueprintjs/core/dist/blueprint.css";
 @import "../../node_modules/@blueprintjs/datetime/dist/blueprint-datetime.css";
@@ -16,24 +14,25 @@
 @import "farm_designer/farm_designer_panels";
 @import "farm_designer/farm_designer";
 @import "farm_designer/farm_events";
+// Sequences and Regimens
+@import "sequences";
+@import "regimens";
+// App loading animations
+@import "spinner";
+@import "loading_plant";
 // Components
 @import "buttons";
-@import "events";
-@import "front_page";
 @import "hotkeys";
 @import "image_flipper";
 @import "inputs";
+@import "steps"; // must be imported after "inputs"
 @import "labels";
-@import "loading-plant";
 @import "navbar";
-@import "regimen_editor_widget";
-@import "sequences";
-@import "spinner";
 @import "static_pages";
 @import "status_ticker";
-@import "steps";
 @import "tables";
 @import "toastr";
 @import "tooltips";
 @import "widget_move";
 @import "widgets";
+@import "scrollbar";

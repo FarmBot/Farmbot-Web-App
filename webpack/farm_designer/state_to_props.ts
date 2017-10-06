@@ -18,12 +18,12 @@ export function mapStateToProps(props: Everything) {
   const { plantUUID } = props.resources.consumers.farm_designer.hoveredPlant;
   const hoveredPlant = plants.filter(x => x.uuid === plantUUID)[0];
 
-  let botPosition: BotPosition;
-  if (props.bot.hardware.location_data) {
-    botPosition = props.bot.hardware.location_data.position;
-  } else {
-    botPosition = { x: undefined, y: undefined, z: undefined };
-  }
+  const getBotPosition = (): BotPosition => {
+    if (props.bot.hardware.location_data) {
+      return props.bot.hardware.location_data.position;
+    }
+    return { x: undefined, y: undefined, z: undefined };
+  };
 
   function stepsPerMmXY(): StepsPerMmXY {
     const config = props.bot.hardware.configuration;
@@ -43,7 +43,7 @@ export function mapStateToProps(props: Everything) {
     toolSlots: joinToolsAndSlot(props.resources.index),
     hoveredPlant,
     plants,
-    botPosition,
+    botPosition: getBotPosition(),
     botMcuParams: props.bot.hardware.mcu_params,
     stepsPerMmXY: stepsPerMmXY()
   };

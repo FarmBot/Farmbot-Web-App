@@ -145,22 +145,24 @@ export function StepButtonCluster({ dispatch, current }: StepButtonProps) {
     </StepButton>
   ];
 
-  return <div className="step-button-cluster-widget">
+  return <div className="step-button-cluster-panel">
     <h3>
       <i>{t("Commands")}</i>
     </h3>
     <ToolTip helpText={ToolTips.SEQUENCE_COMMANDS} />
     <div>
       <Row>
-        {
-          ALL_THE_BUTTONS.map(function (el, inx) {
-            return <div key={inx} onClick={
-              // Follows user down the page as they add sequences.
-              () => { smoothScrollToBottom(); }}>
-              {el}
-            </div>;
-          })
-        }
+        <div className="step-button-cluster">
+          {
+            ALL_THE_BUTTONS.map(function (el, inx) {
+              return <div key={inx} onClick={
+                // Follows user down the page as they add sequences.
+                () => { smoothScrollToBottom(); }}>
+                {el}
+              </div>;
+            })
+          }
+        </div>
       </Row>
     </div>
   </div>;

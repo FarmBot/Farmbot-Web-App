@@ -8,7 +8,7 @@ interface SpinnerProps {
 
 // TODO: Keep accurate proportions when scaling up or down
 export function Spinner(props: SpinnerProps) {
-  let { radius, strokeWidth } = props;
+  const { radius, strokeWidth } = props;
   return <div className="spinner-container">
     <svg className="spinner"
       width={`${radius * 2}px`}

@@ -12,10 +12,12 @@ import { overwrite } from "../../api/crud";
  * actually edit).
  */
 export function ActiveEditor(props: ActiveEditorProps) {
-  return (
-    <div>
+  return <div className="regimen-editor-content">
+    <div className="regimen-editor-tools">
       <RegimenNameInput regimen={props.regimen} dispatch={props.dispatch} />
       <hr />
+    </div>
+    <div className="regimen">
       {props.calendar.map(function (group, index1) {
         return <div className="regimen-day" key={index1}>
           <label> {t("Day {{day}}", { day: group.day })} </label>
@@ -34,7 +36,7 @@ export function ActiveEditor(props: ActiveEditorProps) {
         </div>;
       })}
     </div>
-  );
+  </div>;
 }
 
 function removeRegimenItem(item: RegimenItem, r: TaggedRegimen) {

@@ -1,31 +1,72 @@
-.sequence-editor,
-.regimen-editor {
+.sequence-editor-panel,
+.regimen-editor-panel {
+  height: calc(100vh - 5rem);
   background: $light_gray;
   margin: -3rem -1.5rem -6rem;
+  @media screen and (max-width: 768px) {
+    margin-bottom: 3rem;
+  }
   padding: 3rem 1.5rem 8rem;
-  min-height: 96vh;
-  overflow-y: scroll;
-  max-height: 96vh;
+  overflow: hidden;
   .pt-popover-target .saucer {
     float: left;
     margin-top: 0.4rem;
   }
+  @media screen and (max-width: 974px) {
+    h3 {
+      margin-bottom: 2.5rem;
+    }
+  }
 }
 
-.step-button-cluster-widget,
-.sequence-list,
-.regimen-list {
-  overflow-y: scroll;
+.sequence-editor-content,
+.regimen-editor-content {
+  margin-right: -15px;
+}
+
+.sequence-editor-tools,
+.regimen-editor-tools {
+  margin-right: 15px;
+}
+
+.sequence,
+.regimen {
+  width: 100%;
+  height: calc(100vh - 25rem);
+  overflow-y: auto;
   overflow-x: hidden;
-  max-height: 82vh;
+  margin-top: 15px;
 }
 
+.sequence-steps {
+  margin-right: 15px;
+}
+
+.step-button-cluster,
 .sequence-list,
 .regimen-list {
-  padding-top: 0.4rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: calc(100vh - 21rem);
 }
 
-.sequence-list input,
-.regimen-list input {
+.step-button-cluster,
+.sequence-list {
+  margin-right: -15px;
+}
+
+.sequence-list-items {
+  margin-right: 15px;
+}
+
+.sequence-list-panel,
+.regimen-list-panel {
+  padding-top: 0.4rem;
+  margin-bottom: 3rem;
+  margin-right: 5px;
+}
+
+.sequence-list-panel input,
+.regimen-list-panel input {
   margin-bottom: 1rem;
 }

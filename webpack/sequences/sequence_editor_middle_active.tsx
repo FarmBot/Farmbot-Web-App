@@ -51,47 +51,51 @@ export class SequenceEditorMiddleActive extends
     };
 
     return (
-      <div>
-        <div className="button-group">
-          <SaveBtn status={sequence.specialStatus}
-            onClick={() => { dispatch(save(sequence.uuid)); }} />
-          <TestButton
-            syncStatus={this.props.syncStatus}
-            sequence={sequence}
-            onFail={warning}
-            onClick={() => execSequence(sequence.body)} />
-          <button
-            className="fb-button red"
-            onClick={() => dispatch(destroy(sequence.uuid))}>
-            {t("Delete")}
-          </button>
-          <button
-            className="fb-button yellow"
-            onClick={copy(dispatch, sequence)}>
-            {t("Copy")}
-          </button>
+      <div className="sequence-editor-content">
+        <div className="sequence-editor-tools">
+          <div className="button-group">
+            <SaveBtn status={sequence.specialStatus}
+              onClick={() => { dispatch(save(sequence.uuid)); }} />
+            <TestButton
+              syncStatus={this.props.syncStatus}
+              sequence={sequence}
+              onFail={warning}
+              onClick={() => execSequence(sequence.body)} />
+            <button
+              className="fb-button red"
+              onClick={() => dispatch(destroy(sequence.uuid))}>
+              {t("Delete")}
+            </button>
+            <button
+              className="fb-button yellow"
+              onClick={copy(dispatch, sequence)}>
+              {t("Copy")}
+            </button>
+          </div>
+          <Row>
+            <Col xs={11}>
+              <BlurableInput value={sequence.body.name}
+                onCommit={(e) => {
+                  dispatch(edit(sequence, { name: e.currentTarget.value }));
+                }} />
+            </Col>
+            <ColorPicker
+              current={sequence.body.color}
+              onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
+          </Row>
+          <hr style={{ marginBottom: 0 }} />
         </div>
-        <Row>
-          <Col xs={11}>
-            <BlurableInput value={sequence.body.name}
-              onCommit={(e) => {
-                dispatch(edit(sequence, { name: e.currentTarget.value }));
-              }} />
-          </Col>
-          <ColorPicker
-            current={sequence.body.color}
-            onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
-        </Row>
-        <hr style={{ marginBottom: 0 }} />
-        <AllSteps onDrop={onDrop(dispatch, sequence)} {...this.props} />
-        <Row>
-          <Col xs={12}>
-            <DropArea isLocked={true}
-              callback={fixThisToo}>
-              {t("DRAG COMMAND HERE")}
-            </DropArea>
-          </Col>
-        </Row>
+        <div className="sequence">
+          <AllSteps onDrop={onDrop(dispatch, sequence)} {...this.props} />
+          <Row>
+            <Col xs={12}>
+              <DropArea isLocked={true}
+                callback={fixThisToo}>
+                {t("DRAG COMMAND HERE")}
+              </DropArea>
+            </Col>
+          </Row>
+        </div>
       </div>
     );
   }

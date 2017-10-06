@@ -8,10 +8,6 @@ body {
   margin-bottom: 1rem;
 }
 
-*::-webkit-scrollbar {
-  display: none !important;
-}
-
 .pt-overlay-backdrop {
   z-index: 9999 !important;
 }
@@ -193,6 +189,7 @@ a {
   color: $gray;
   font-weight: bold;
   margin: 0.75rem 0;
+  margin-right: 15px;
   padding: 1.25rem;
   background: $off_white;
   text-align: center;
@@ -334,7 +331,8 @@ ul {
     right: 0;
     z-index: 2;
     max-height: 15rem;
-    overflow-y: scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
     &.is-open-false {
       display: none;
     }

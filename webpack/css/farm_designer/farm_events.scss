@@ -9,12 +9,17 @@
 }
 
 .farm-events {
+  max-height: calc(100vh - 19rem);
+  overflow-y: auto;
+  overflow-x: hidden;
   margin-top: 1.8rem;
+  margin-right: -10px;
 }
 
 .farm-event {
   display: flex;
   margin-top: 1rem;
+  margin-right: 10px;
 }
 
 .farm-event-year {
@@ -75,4 +80,8 @@
   .note {
     margin-top: 4rem;
   }
+}
+
+.add-event-repeat-frequency {
+  min-height: 34px;
 }

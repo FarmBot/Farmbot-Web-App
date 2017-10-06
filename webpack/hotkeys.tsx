@@ -23,7 +23,7 @@ interface State {
   guideOpen: boolean;
 }
 
-let hotkeyGuideClasses = [
+const hotkeyGuideClasses = [
   "hotkey-guide",
   "pt-card",
   Classes.ELEVATION_4
@@ -70,10 +70,10 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
     this.setState({ [property]: !this.state[property] });
 
   hotkeys(dispatch: Function, slug: string) {
-    let idx = _.findIndex(links, { slug });
-    let right = "/app/" + (links[idx + 1] || links[0]).slug;
-    let left = "/app/" + (links[idx - 1] || links[links.length - 1]).slug;
-    let hotkeyMap: IHotkeyProps[] = [
+    const idx = _.findIndex(links, { slug });
+    const right = "/app/" + (links[idx + 1] || links[0]).slug;
+    const left = "/app/" + (links[idx - 1] || links[links.length - 1]).slug;
+    const hotkeyMap: IHotkeyProps[] = [
       {
         combo: "ctrl + shift + s",
         label: "Sync",
@@ -109,7 +109,7 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
   }
 
   renderHotkeys() {
-    let slug = history.getCurrentLocation().pathname.split("/")[2];
+    const slug = history.getCurrentLocation().pathname.split("/")[2];
     return <Hotkeys>
       {
         this.hotkeys(this.props.dispatch, slug)

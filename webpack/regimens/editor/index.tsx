@@ -48,7 +48,7 @@ export function RegimenEditorWidget({ current, dispatch, auth, calendar }:
     const baseUrl = (auth.token && auth.token.unencoded.iss) ||
       "CANT_FETCH_TOKEN_ISS";
 
-    return <div className="regimen-editor">
+    return <div className="regimen-editor-panel">
       <h3>
         <i>{t("Regimen Editor")}</i>
       </h3>

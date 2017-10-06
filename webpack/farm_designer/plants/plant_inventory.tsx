@@ -57,15 +57,17 @@ export class Plants extends React.Component<Props, State> {
             <input type="text" onChange={this.update}
               placeholder={t("Search your plants...")} />
           </div>
-          {
-            this.props.plants
-              .filter(p => p.body.name.toLowerCase()
-                .includes(this.state.searchTerm.toLowerCase()))
-              .map(p => <PlantInventoryItem
-                key={p.uuid}
-                tpp={p}
-                dispatch={this.props.dispatch} />)
-          }
+          <div className="plant-panel-content">
+            {
+              this.props.plants
+                .filter(p => p.body.name.toLowerCase()
+                  .includes(this.state.searchTerm.toLowerCase()))
+                .map(p => <PlantInventoryItem
+                  key={p.uuid}
+                  tpp={p}
+                  dispatch={this.props.dispatch} />)
+            }
+          </div>
         </div>
 
       </div>
