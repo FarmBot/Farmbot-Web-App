@@ -20,8 +20,6 @@ export interface UnencodedToken {
   mqtt: string;
   /** Where to download RPi software */
   os_update_server: string;
-  /** Where to download firmware. */
-  fw_update_server: string;
 }
 
 export interface User {

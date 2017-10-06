@@ -71,3 +71,5 @@ test/tmp
 test/version_tmp
 tmp
 verify.*.js*
+mqtt_server/rabbitmq
+mqtt_server/conf/rabbitmq.config

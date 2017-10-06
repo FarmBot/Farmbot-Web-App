@@ -21,8 +21,7 @@ const fakeAuth = (jti = "456"): AuthState => ({
       iss: "---",
       exp: 456,
       mqtt: "---",
-      os_update_server: "---",
-      fw_update_server: "---"
+      os_update_server: "---"
     }
   }
 });

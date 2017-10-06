@@ -1,0 +1,14 @@
+.sw?
+.*.sw?
+*.beam
+/.erlang.mk/
+/cover/
+/deps/
+/doc/
+/ebin/
+/logs/
+/plugins/
+
+test/config_schema_SUITE_data/schema/
+
+rabbit_auth_backend_jwt.d

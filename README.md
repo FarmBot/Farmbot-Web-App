@@ -16,8 +16,6 @@ If you are a developer interested in contributing or would like to provision you
 
 This repo contains FarmBot's web based user interface, as well as a RESTful JSON API. The API stores data such as user account information, plant data, authorization tokens and a variety of other resources.
 
-The key responsibility of the API is *information and permissions management*. This should not be confused with device control, which is done via [MQTT](https://github.com/FarmBot/mqtt-gateway).
-
 # Q: Can I see some example API requests?
 
 For a list of example API requests and responses, see our [reference documentation](https://gist.github.com/RickCarlino/10db2df375d717e9efdd3c2d9d8932af). If you wish to write an add-on application that uses the FarmBot API, please let us know in an issue. We are happy to answer any specific questions you may have.
@@ -47,8 +45,8 @@ You will need the following:
  0. `rake db:create:all db:migrate db:seed`
  0. (optional) Verify installation with `RAILS_ENV=test rake db:create db:migrate && rspec spec` (API) and `npm run test` (Frontend).
  0. Start server with `npm run dev`. Make sure you set an `MQTT_HOST` entry in `application.yml` pointing to the IP address or domain of the (soon-to-be-installed) MQTT server. You will need to set that up next.
+ 0. Bootstrap the MQTT server via `rails mqtt:setup`.
  0. Open [localhost:3000](http://localhost:3000).
- 0. Although you can now try things out in your browser, you will still need to [provision an MQTT server](https://github.com/FarmBot/mqtt-gateway) before you can control a FarmBot.
  0. [Raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new?title=Installation%20Failure) if you hit problems with any of these steps. *We can't fix issues we don't know about.*
 
 \*Give permission to `user` to create database:

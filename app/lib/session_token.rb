@@ -7,7 +7,6 @@ class SessionToken < AbstractJwtToken
   DEFAULT_FW = "https://api.github.com/repos/FarmBot/farmbot-arduino-firmware/"\
                "releases/latest"
   OS_RELEASE   = ENV.fetch("OS_UPDATE_SERVER") { DEFAULT_OS }
-  FW_RELEASE   = ENV.fetch("FW_UPDATE_SERVER") { DEFAULT_FW }
   MQTT         = ENV.fetch("MQTT_HOST")
   # If you are not using the standard MQTT broker (eg: you use a 3rd party
   # MQTT vendor), you will need to change this line.
