@@ -18,15 +18,13 @@ describe("<HomingRow />", () => {
   // TODO: fix this test
   //       Code being run is {t("HOME {{axis}}", { axis })}
   //       Result string is "HOME {{axis}}HOME {{axis}}HOME {{axis}}"
-  //       Console example (result is "HOME {{ax}}"):
-  //         let ax = "x";
-  // it("renders three buttons", () => {
-  //   const wrapper = mount(<HomingRow hardware={bot.hardware.mcu_params} />);
-  //   let txt = wrapper.text();
-  //   ["X", "Y", "Z"].map(function (axis) {
-  //     expect(txt).toContain(`HOME ${axis}`);
-  //   });
-  // });
+  xit("renders three buttons", () => {
+    const wrapper = mount(<HomingRow hardware={bot.hardware.mcu_params} />);
+    const txt = wrapper.text();
+    ["X", "Y", "Z"].map(function (axis) {
+      expect(txt).toContain(`HOME ${axis}`);
+    });
+  });
   it("calls device", () => {
     const { mock } = devices.current.findHome as jest.Mock<{}>;
     const result = mount(<HomingRow hardware={bot.hardware.mcu_params} />);

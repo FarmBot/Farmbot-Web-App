@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Widget, WidgetHeader } from "./ui";
+import { Widget, WidgetHeader } from "../ui";
 
 /*
  * Widget to display if the desired widget fails to load.

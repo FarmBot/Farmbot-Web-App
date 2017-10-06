@@ -17,19 +17,19 @@
 // Sequences and Regimens
 @import "sequences";
 @import "regimens";
+// App loading animations
+@import "spinner";
+@import "loading_plant";
 // Components
 @import "buttons";
-@import "events";
 @import "hotkeys";
 @import "image_flipper";
 @import "inputs";
+@import "steps"; // must be imported after "inputs"
 @import "labels";
-@import "loading_plant";
 @import "navbar";
-@import "spinner";
 @import "static_pages";
 @import "status_ticker";
-@import "steps";
 @import "tables";
 @import "toastr";
 @import "tooltips";
