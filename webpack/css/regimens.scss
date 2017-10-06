@@ -1,6 +1,21 @@
-// Styles for the Regimen Editor Widget
+// Bulk Scheduler
+.bulk-scheduler {
+  @media screen and (max-width: 768px) {
+    margin-bottom: 3rem;
+  }
+  .week-grid-meta-buttons {
+    margin-top: 1rem;
+    button {
+      margin-left: 1rem;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+// Regimen Editor
 .regimen-day {
   margin: 1.5rem 0;
+  margin-right: 10px;
 }
 
 .regimen-event {
@@ -32,3 +47,5 @@
   margin-left: 50%;
   margin-top: 2rem;
 }
+
+// Regimen List styles in sequences.scss

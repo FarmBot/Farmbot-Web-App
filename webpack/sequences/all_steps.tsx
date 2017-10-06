@@ -25,7 +25,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
          * is guaranteed to be unique no matter where the step gets moved and
          * allows React to diff the list correctly. */
         const readThatCommentAbove = getStepTag(currentStep);
-        return <div
+        return <div className="sequence-steps"
           key={readThatCommentAbove}>
           <DropArea callback={(key) => onDrop(index, key)} />
           <StepDragger

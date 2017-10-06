@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { HardwareSettings } from "./components/hardware_settings";
 import { FarmbotOsSettings } from "./components/farmbot_os_settings";
-import { Page, Col, Row } from "../ui";
+import { Page, Col } from "../ui";
 import { mapStateToProps } from "./state_to_props";
 import { Props } from "./interfaces";
 import { ConnectivityPanel } from "./connectivity/index";
@@ -51,36 +51,30 @@ export class Devices extends React.Component<Props, {}> {
   render() {
     if (this.props.auth) {
       return <Page className="devices">
-        <Row>
-          <Col xs={12} sm={6}>
-            <FarmbotOsSettings
-              account={this.props.deviceAccount}
-              dispatch={this.props.dispatch}
-              bot={this.props.bot}
-              auth={this.props.auth} />
-          </Col>
-          <Col xs={12} sm={6}>
-            <HardwareSettings
-              controlPanelState={this.props.bot.controlPanelState}
-              dispatch={this.props.dispatch}
-              bot={this.props.bot} />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12} sm={6}>
-            <ConnectivityPanel
-              status={this.props.deviceAccount.specialStatus}
-              onRefresh={this.refresh}
-              rowData={this.rowData}>
-              <Diagnosis
-                userAPI={!!this.flags.userAPI}
-                userMQTT={!!this.flags.userMQTT.connectionStatus}
-                botMQTT={!!this.flags.botMQTT.connectionStatus}
-                botAPI={!!this.flags.botAPI.connectionStatus}
-                botFirmware={!!this.flags.botFirmware.connectionStatus} />
-            </ConnectivityPanel>
-          </Col>
-        </Row>
+        <Col xs={12} sm={6}>
+          <FarmbotOsSettings
+            account={this.props.deviceAccount}
+            dispatch={this.props.dispatch}
+            bot={this.props.bot}
+            auth={this.props.auth} />
+          <ConnectivityPanel
+            status={this.props.deviceAccount.specialStatus}
+            onRefresh={this.refresh}
+            rowData={this.rowData}>
+            <Diagnosis
+              userAPI={!!this.flags.userAPI}
+              userMQTT={!!this.flags.userMQTT.connectionStatus}
+              botMQTT={!!this.flags.botMQTT.connectionStatus}
+              botAPI={!!this.flags.botAPI.connectionStatus}
+              botFirmware={!!this.flags.botFirmware.connectionStatus} />
+          </ConnectivityPanel>
+        </Col>
+        <Col xs={12} sm={6}>
+          <HardwareSettings
+            controlPanelState={this.props.bot.controlPanelState}
+            dispatch={this.props.dispatch}
+            bot={this.props.bot} />
+        </Col>
       </Page>;
     } else {
       throw new Error("Log in first");

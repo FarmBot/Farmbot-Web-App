@@ -26,14 +26,16 @@ const sequenceList = (dispatch: Function) =>
     const click = () => dispatch(selectSequence(ts.uuid));
     const name = ts.body.name + (ts.specialStatus ? "*" : "");
     const { uuid } = ts;
-    return <Link
-      to={`/app/sequences/${urlFriendly(ts.body.name) || ""}`}
-      key={uuid}
-      onClick={click} >
-      <button className={css.join(" ")}>
-        {name}
-      </button>
-    </Link>;
+    return <div className="sequence-list-items">
+      <Link
+        to={`/app/sequences/${urlFriendly(ts.body.name) || ""}`}
+        key={uuid}
+        onClick={click} >
+        <button className={css.join(" ")}>
+          {name}
+        </button>
+      </Link>
+    </div>;
   };
 
 export class SequencesList extends
@@ -80,7 +82,7 @@ export class SequencesList extends
     const searchTerm = this.state.searchTerm.toLowerCase();
 
     return (
-      <div className="sequence-list">
+      <div className="sequence-list-panel">
         <h3>
           <i>{t("Sequences")}</i>
         </h3>
@@ -98,15 +100,17 @@ export class SequencesList extends
           placeholder={t("Search Sequences...")} />
         <Row>
           <Col xs={12}>
-            {
-              sortResourcesById(sequences)
-                .filter(seq => seq
-                  .body
-                  .name
-                  .toLowerCase()
-                  .includes(searchTerm))
-                .map(sequenceList(dispatch))
-            }
+            <div className="sequence-list">
+              {
+                sortResourcesById(sequences)
+                  .filter(seq => seq
+                    .body
+                    .name
+                    .toLowerCase()
+                    .includes(searchTerm))
+                  .map(sequenceList(dispatch))
+              }
+            </div>
           </Col>
         </Row>
       </div>

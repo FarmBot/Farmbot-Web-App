@@ -18,6 +18,7 @@
 }
 
 .panel-container {
+  overflow: hidden;
   &.green-panel {
     background-color: $light_green;
   }
@@ -158,6 +159,12 @@
     color: $black;
     text-decoration: underline !important;
   }
+}
+
+.plant-panel-content {
+  max-height: calc(100vh - 19rem);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .add-farm-event-panel {
