@@ -1,7 +1,6 @@
 namespace :mqtt do
   desc "Bootstraps the MQTT config file"
-  task setup: :environment do
-    require_relative '../../mqtt/build_config.rb'
+  task start: :environment do
+    require_relative '../../mqtt/server.rb'
   end
-
 end
