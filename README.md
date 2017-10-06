@@ -8,13 +8,13 @@
 
 # Q: Do I need this?
 
-This repository is intended for *software developers* who wish to modify the [Farmbot Web App](http://my.farmbot.io/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.io/). Running a server is a non-trivial task which will require an intermediate background in Ruby, SQL and Linux system administration.
+This repository is intended for *software developers* who wish to modify the [Farmbot Web App](http://my.farmbot.io/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.io/). Running a server is *a non-trivial task with security implications*. It requires an intermediate background in Ruby, SQL and Linux system administration.
 
 If you are a developer interested in contributing or would like to provision your own server, you are in the right place.
 
 # Q: What is the Farmbot Web App?
 
-This repo contains FarmBot's web based user interface, as well as a RESTful JSON API. The API stores data such as user account information, plant data, authorization tokens and a variety of other resources.
+This repo contains FarmBot's web based user interface, a RESTful JSON API and a Dockerized MQTT server. The API stores data such as user account information, plant data, authorization tokens and a variety of other resources. The MQTT server facilitates realtime messaging from the browser to the device.
 
 # Q: Can I see some example API requests?
 
@@ -27,6 +27,7 @@ For a list of example API requests and responses, see our [reference documentati
 You will need the following:
 
  1. A Linux or Mac based machine. We do not support windows at this time.
+ 0. [Docker 17.06.0-ce or greater](https://docs.docker.com/engine/installation/)
  0. [Ruby 2.4.1](http://rvm.io/rvm/install)
  0. [ImageMagick](https://www.imagemagick.org/script/index.php) (`brew install imagemagick` (Mac) or `sudo apt-get install imagemagick` (Ubuntu))
  0. [Node JS > v6](https://nodejs.org/en/download/)
@@ -44,8 +45,7 @@ You will need the following:
  0. Give permission to create a database*
  0. `rake db:create:all db:migrate db:seed`
  0. (optional) Verify installation with `RAILS_ENV=test rake db:create db:migrate && rspec spec` (API) and `npm run test` (Frontend).
- 0. Start server with `npm run dev`. Make sure you set an `MQTT_HOST` entry in `application.yml` pointing to the IP address or domain of the (soon-to-be-installed) MQTT server. You will need to set that up next.
- 0. Bootstrap the MQTT server via `rails mqtt:setup`.
+ 0. Start server with `npm run dev`. Make sure you set an `MQTT_HOST` entry in `application.yml` pointing to the IP address or domain of  MQTT server. If you are not running the MQTT server on a separate machine, `MQTT_HOST` and `API_HOST` will point to the same server.
  0. Open [localhost:3000](http://localhost:3000).
  0. [Raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new?title=Installation%20Failure) if you hit problems with any of these steps. *We can't fix issues we don't know about.*
 
