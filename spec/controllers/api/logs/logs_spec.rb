@@ -121,14 +121,16 @@ describe Api::LogsController do
       body         = { meta: { x: 1, y: 2, z: 3, type: "info" },
                        channels: ["email"],
                        message: "Heyoooo" }.to_json
-      post :create, body: body, params: {format: :json}
-      after_count = LogDispatch.count
-      expect(response.status).to eq(200)
-      expect(last_email).to be
-      expect(last_email.body.to_s).to include("Heyoooo")
-      expect(last_email.to).to include(user.email)
-      expect(before_count).to be < after_count
-      expect(LogDispatch.where(sent_at: nil).count).to eq(0)
+      run_jobs_now do
+        post :create, body: body, params: {format: :json}
+        after_count = LogDispatch.count
+        expect(response.status).to eq(200)
+        expect(last_email).to be
+        expect(last_email.body.to_s).to include("Heyoooo")
+        expect(last_email.to).to include(user.email)
+        expect(before_count).to be < after_count
+        expect(LogDispatch.where(sent_at: nil).count).to eq(0)
+      end
     end
 
     it "handles bug that Connor reported" do
