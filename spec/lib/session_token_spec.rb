@@ -40,4 +40,11 @@ describe SessionToken do
     expect(result.success?).to be(false)
     expect(result.errors.values.first.message).to include("is not valid")
   end
+
+  it "doesn't mint tokens for unverified users" do
+    user.update_attributes!(verified_at: nil)
+    expect {
+      SessionToken.issue_to(user, iat: 000, exp: 1, iss: "//lycos.com:9867")
+    }.to raise_error(Errors::Forbidden)
+  end
 end

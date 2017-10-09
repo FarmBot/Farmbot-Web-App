@@ -1,3 +1,9 @@
+# Notes About This File
+
+Parts of this document may be out of date or reflect practices that are no longer relevant to the latest version of the Web App.
+
+Please raise an issue if you hit any issues during deployment.
+
 # Run on a Local Machine (fast)
 
 If you want to run a server on a LAN for personal use, this is the easiest and cheapest option.
