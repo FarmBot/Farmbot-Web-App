@@ -24,21 +24,26 @@ module Api
     end
 
     private
+
     # Don't proceed with login if they need to sign the EULA
+    instrument_method
     def maybe_halt_login(result)
       result.result[:user].try(:require_consent!) if result.success?
     end
 
+    instrument_method
     def guess_aud_claim
       when_farmbot_os { return AbstractJwtToken::BOT_AUD }
       return AbstractJwtToken::HUMAN_AUD if xhr?
       AbstractJwtToken::UNKNOWN_AUD
     end
 
+    instrument_method
     def xhr? # I only wrote this because `request.xhr?` refused to be stubbed
       request.xhr?
     end
 
+    instrument_method
     def if_properly_formatted
       user = params.as_json.deep_symbolize_keys.fetch(:user, {})
       # If data handling for this method gets any more complicated,
