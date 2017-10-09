@@ -20,16 +20,10 @@ module Logs
       end
     end
 
-    optional do
-    end
-
-    def validate
-    end
-
     def execute
       Log
         .create(clean_logs)
-        .tap { |i| LogDispatch.delay.deliver(device, i) }
+        .tap { |i| LogDispatch.deliver(device, i) }
     end
 
   private

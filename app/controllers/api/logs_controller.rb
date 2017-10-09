@@ -40,7 +40,7 @@ private
     end
 
     def maybe_deliver(log_or_logs)
-      LogDispatch.delay.deliver(current_device, log_or_logs)
+      LogDispatch.deliver(current_device, log_or_logs)
     end
   end
 end
