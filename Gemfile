@@ -24,12 +24,13 @@ gem "webpack-rails"
 # Active on the "official" FarmBot server, set the appropriate ENV
 # vars if you wish to use them on your own servers.
 gem "rollbar"
-gem "skylight"
+gem "skylight", "1.4.0"
 
 group :development, :test do
   gem "codecov", require: false
   gem "database_cleaner"
   gem "pry"
+  gem "pry-rails"
   gem "factory_girl_rails"
   gem "faker"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
