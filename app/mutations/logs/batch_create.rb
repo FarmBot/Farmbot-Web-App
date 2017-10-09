@@ -23,7 +23,7 @@ module Logs
     def execute
       Log
         .create(clean_logs)
-        .tap { |i| LogDispatch.deliver(device, i) }
+        .tap { |i| LogDispatch.delay.deliver(device, i) }
     end
 
   private

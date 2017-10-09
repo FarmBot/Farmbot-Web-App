@@ -70,22 +70,24 @@ describe Api::LogsController do
       Log.destroy_all
       before_count = Log.count
       dispatch_before = LogDispatch.count
-      post :create,
-           body: [
-            { meta: { x: 1, y: 2, z: 3, type: "info" },
-              channels: ["toast"],
-              message: "one" },
-            { meta: { x: 1, y: 2, z: 3, type: "fun" }, # Ignored
-              channels: [],
-              message: "two" },
-            { meta: { x: 1, y: 2, z: 3, type: "debug" }, # Ignored
-              channels: [],
-              message: "two" },
-            { meta: { x: 1, y: 2, z: 3, type: "info" },
-              channels: ["email"],
-              message: "three" },
-           ].to_json,
-           params: {format: :json}
+      run_jobs_now do
+        post :create,
+             body: [
+              { meta: { x: 1, y: 2, z: 3, type: "info" },
+                channels: ["toast"],
+                message: "one" },
+              { meta: { x: 1, y: 2, z: 3, type: "fun" }, # Ignored
+                channels: [],
+                message: "two" },
+              { meta: { x: 1, y: 2, z: 3, type: "debug" }, # Ignored
+                channels: [],
+                message: "two" },
+              { meta: { x: 1, y: 2, z: 3, type: "info" },
+                channels: ["email"],
+                message: "three" },
+             ].to_json,
+             params: {format: :json}
+      end
       expect(response.status).to eq(200)
       expect(before_count + 2).to eq(Log.count)
       expect(dispatch_before + 1).to eq(LogDispatch.count)

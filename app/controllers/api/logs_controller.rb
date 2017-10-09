@@ -9,17 +9,9 @@ module Api
     # As a matter of policy, not all log types are stored in the DB.
     def create
       case raw_json
-      when Array then mutate Logs::BatchCreate.run(device: current_device,
-                                                   logs:   raw_json)
-      when Hash
-          outcome = new_log(raw_json)
-          if outcome.success?
-            outcome.result.save!
-            maybe_deliver(outcome.result)
-          end
-          return mutate outcome
-      else
-        sorry "Post a JSON array or object.", 422
+      when Array then handle_many_logs
+      when Hash  then handle_single_log
+      else; sorry "Post a JSON array or object.", 422
       end
     end
 
@@ -34,6 +26,19 @@ module Api
     end
 
 private
+
+    def handle_many_logs
+      mutate Logs::BatchCreate.run(device: current_device, logs: raw_json)
+    end
+
+    def handle_single_log
+      outcome = new_log(raw_json)
+      if outcome.success?
+        outcome.result.save!
+        maybe_deliver(outcome.result)
+      end
+      mutate outcome
+    end
 
     def new_log(input)
       Logs::Create.run(input, device: current_device)
