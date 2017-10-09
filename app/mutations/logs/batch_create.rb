@@ -21,25 +21,24 @@ module Logs
     end
 
     def execute
-      Log.delay.create(clean_logs)
+      BatchLogDispatchJob.perform_later(device, clean_logs)
       return clean_logs
     end
 
   private
 
     def clean_logs
-      # .tap    { |i| LogDispatch.delay.deliver(device, i) }
       @clean_logs ||= logs
-        .last(device.max_log_count)
-        .map    { |i| Logs::Create.run(i, device: device) }
-        .select { |i| i.success? } # <= Ignore rejects
-        .map    { |i| i.result }
-        .reject do |i|
-          # Don't save jokes or debug info:
-          t = i.meta["type"]
-          ["fun", "debug"].include?(t)
-        end
-        .map    { |i| i.as_json }
+      .last(device.max_log_count)
+      .map    { |i| Logs::Create.run(i, device: device) }
+      .select { |i| i.success? } # <= Ignore rejects
+      .map    { |i| i.result }
+      .reject do |i|
+        # Don't save jokes or debug info:
+        t = i.meta["type"]
+        ["fun", "debug"].include?(t)
+      end
+      .map    { |i| i.as_json.except("id") }
     end
   end
 end

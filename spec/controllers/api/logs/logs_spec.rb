@@ -70,6 +70,7 @@ describe Api::LogsController do
     it 'does not bother saving `fun` or `debug` logs' do
       sign_in user
       Log.destroy_all
+      LogDispatch.destroy_all
       before_count = Log.count
       dispatch_before = LogDispatch.count
       run_jobs_now do
@@ -89,10 +90,10 @@ describe Api::LogsController do
                 message: "three" },
              ].to_json,
              params: {format: :json}
+        expect(response.status).to   eq(200)
+        expect(Log.count).to         eq(before_count + 2)
+        expect(LogDispatch.count).to eq(dispatch_before + 1)
       end
-      expect(response.status).to eq(200)
-      expect(before_count + 2).to eq(Log.count)
-      expect(dispatch_before + 1).to eq(LogDispatch.count)
     end
 
     it 'Runs compaction when the logs pile up' do
