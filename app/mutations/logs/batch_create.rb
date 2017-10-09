@@ -21,14 +21,14 @@ module Logs
     end
 
     def execute
-      Log
-        .create(clean_logs)
-        .tap { |i| LogDispatch.delay.deliver(device, i) }
+      Log.delay.create(clean_logs)
+      return clean_logs
     end
 
   private
 
     def clean_logs
+      # .tap    { |i| LogDispatch.delay.deliver(device, i) }
       @clean_logs ||= logs
         .last(device.max_log_count)
         .map    { |i| Logs::Create.run(i, device: device) }

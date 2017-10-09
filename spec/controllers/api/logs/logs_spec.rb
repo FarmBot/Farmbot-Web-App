@@ -48,19 +48,21 @@ describe Api::LogsController do
     it 'creates many logs (with an Array)' do
       sign_in user
       before_count = Log.count
-      post :create,
-           body: [
-            { meta: { x: 1, y: 2, z: 3, type: "info" },
-              channels: ["toast"],
-              message: "one" },
-            { meta: { x: 1, y: 2, z: 3, type: "info" },
-              channels: ["toast"],
-              message: "two" },
-            { meta: { x: 1, y: 2, z: 3, type: "info" },
-              channels: ["toast"],
-              message: "three" },
-           ].to_json,
-           params: {format: :json}
+      run_jobs_now do
+        post :create,
+             body: [
+              { meta: { x: 1, y: 2, z: 3, type: "info" },
+                channels: ["toast"],
+                message: "one" },
+              { meta: { x: 1, y: 2, z: 3, type: "info" },
+                channels: ["toast"],
+                message: "two" },
+              { meta: { x: 1, y: 2, z: 3, type: "info" },
+                channels: ["toast"],
+                message: "three" },
+             ].to_json,
+             params: {format: :json}
+      end
       expect(response.status).to eq(200)
       expect(before_count + 3).to eq(Log.count)
     end
@@ -94,15 +96,24 @@ describe Api::LogsController do
     end
 
     it 'Runs compaction when the logs pile up' do
-      stub = {
-        meta: { x: 1, y: 2, z: 3, type: "info" }, channels: ["toast"],
-              message: "one" }
       payl = []
-      100.times { payl.push(stub) }
+      100.times do
+        payl.push({ meta: { x: 1,
+                            y: 2,
+                            z: 3,
+                            type: "info"
+                          },
+                    channels: ["toast"],
+                    message: "one" })
+      end
       sign_in user
       user.device.update_attributes!(max_log_count: 15)
+      LogDispatch.destroy_all
+      Log.destroy_all
       before_count = Log.count
-      post :create, body: payl.to_json, params: {format: :json}
+      run_jobs_now do
+        post :create, body: payl.to_json, params: {format: :json}
+      end
       expect(response.status).to eq(200)
       expect(json.length).to eq(user.device.max_log_count)
     end
