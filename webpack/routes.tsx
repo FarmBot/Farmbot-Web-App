@@ -283,7 +283,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
     // ==== TEMPORARY HACK. TODO: Add a before hook, if such a thing exists in
     // React Router. Or switch routing libs.
     const notLoggedIn = !Session.getAll();
-    const restrictedArea = window.location.pathname.includes("/app/");
+    const restrictedArea = window.location.pathname.includes("/app");
     if (notLoggedIn && restrictedArea) {
       window.location.href = "/";
     }
