@@ -9,6 +9,14 @@ jest.mock("../../index", () => ({
   dispatchNetworkUp: jest.fn()
 }));
 
+const mockDevice = {
+  readStatus: jest.fn(() => Promise.resolve()),
+};
+
+jest.mock("../../../device", () => ({
+  getDevice: () => (mockDevice)
+}));
+
 import { HardwareState } from "../../../devices/interfaces";
 import {
   incomingStatus,
@@ -16,13 +24,22 @@ import {
   showLogOnScreen,
   TITLE,
   bothUp,
-  initLog
+  initLog,
+  readStatus
 } from "../../connect_device";
 import { Actions } from "../../../constants";
 import { Log } from "../../../interfaces";
 import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES } from "farmbot";
 import { success, error, info } from "farmbot-toastr";
 import { dispatchNetworkUp } from "../../index";
+import { getDevice } from "../../../device";
+
+describe("readStatus()", () => {
+  it("forces a read_status request to FarmBot", () => {
+    readStatus();
+    expect(getDevice().readStatus).toHaveBeenCalled();
+  });
+});
 
 describe("incomingStatus", () => {
   it("creates an action", () => {

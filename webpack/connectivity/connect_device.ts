@@ -72,7 +72,7 @@ export const bothUp = () => {
   dispatchNetworkUp("bot.mqtt");
 };
 
-function readStatus() {
+export function readStatus() {
   const noun = "'Read Status' command";
   return getDevice()
     .readStatus()
@@ -107,7 +107,9 @@ const onStatus = (dispatch: Function, getState: GetState) =>
 
 const onSent = (/** The MQTT Client Object (bot.client) */ client: {}) =>
   (any: {}) => {
-    get(client, "connected", false) ?
+    const theValue = get(client, "connected", false);
+    console.log("VALUE IS: " + theValue);
+    theValue ?
       dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
   };
 
