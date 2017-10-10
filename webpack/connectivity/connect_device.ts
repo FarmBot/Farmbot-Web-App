@@ -14,6 +14,7 @@ import { oneOf, bail } from "../util";
 import { init } from "../api/crud";
 import { versionOK } from "../devices/reducer";
 import { Token } from "../auth/interfaces";
+
 /** Welcome to one of the oldest pieces of FarmBot's software stack. */
 const AUTH_NOT_READY = "Somehow managed to get here before auth was ready.";
 const CHANNELS: keyof Log = "channels";
@@ -38,26 +39,29 @@ export function incomingStatus(statusMessage: HardwareState) {
  * supplied callback */
 export function ifToastWorthy(log: Log | undefined,
   cb: (log: Log) => void) {
-  const chanList = get(log, CHANNELS, ["ERROR FETCHING CHANNELS"]);
+  const chanList = get(log || {}, CHANNELS, ["ERROR FETCHING CHANNELS"]);
   return log && chanList.includes(TOAST) ? cb(log) : noop();
 }
 
-function maybeShowLog(mystery: Log | undefined) {
-  ifToastWorthy(mystery, (log) => {
-    switch (log.meta.type) {
-      case "success":
-        return success(log.message, TITLE);
-      case "busy":
-      case "warn":
-      case "error":
-        return error(log.message, TITLE);
-      case "fun":
-      case "info":
-      default:
-        return info(log.message, TITLE);
-    }
-  });
+/** Take a log message (of type toast) and determines the correct kind of toast
+ * to execute. */
+export function showLogOnScreen(log: Log) {
+  switch (log.meta.type) {
+    case "success":
+      return success(log.message, TITLE);
+    case "busy":
+    case "warn":
+    case "error":
+      return error(log.message, TITLE);
+    case "fun":
+    case "info":
+    default:
+      return info(log.message, TITLE);
+  }
 }
+
+const maybeShowLog =
+  (mystery: Log | undefined) => ifToastWorthy(mystery, showLogOnScreen);
 
 const bothUp = () => {
   dispatchNetworkUp("user.mqtt");

@@ -15,20 +15,25 @@ describe("incomingStatus", () => {
 
 describe("ifToast", () => {
   function log(meta_type: ALLOWED_MESSAGE_TYPES,
-    chan: ALLOWED_CHANNEL_NAMES = "toast"): Log {
+    channels: ALLOWED_CHANNEL_NAMES[] = ["toast"]): Log {
     return {
       message: "toasty!",
       meta: { type: meta_type },
-      channels: [chan],
+      channels,
       created_at: -1
     };
   }
 
   it("skips irrelevant channels like `email`", () => {
     const callback = jest.fn();
-    ifToastWorthy(log("success", "email"), callback);
+    ifToastWorthy(log("success", ["email"]), callback);
     expect(callback).not.toHaveBeenCalled();
   });
 
-  it("does not toast others");
+  it("executes callback only for `toast` types", () => {
+    const callback = jest.fn();
+    const fakeToast = log("success", ["toast", "email"]);
+    ifToastWorthy(fakeToast, callback);
+    expect(callback).toHaveBeenCalledWith(fakeToast);
+  });
 });
