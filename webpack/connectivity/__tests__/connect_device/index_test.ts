@@ -10,7 +10,7 @@ import { incomingStatus, ifToastWorthy, showLogOnScreen, TITLE } from "../../con
 import { Actions } from "../../../constants";
 import { Log } from "../../../interfaces";
 import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES } from "farmbot";
-import { success, error, info, warning } from "farmbot-toastr";
+import { success, error, info } from "farmbot-toastr";
 
 describe("incomingStatus", () => {
   it("creates an action", () => {
