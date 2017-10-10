@@ -137,7 +137,6 @@ function onMalformed() {
     HACKY_FLAGS.alreadyToldUserAboutMalformedMsg = true;
   }
 }
-
 const onOnline = () => dispatchNetworkUp("user.mqtt");
 
 const attachEventListeners =
