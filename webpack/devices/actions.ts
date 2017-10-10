@@ -1,4 +1,3 @@
-import { Farmbot } from "farmbot";
 import { t } from "i18next";
 import axios from "axios";
 import * as _ from "lodash";
@@ -11,33 +10,23 @@ import { BotState } from "../devices/interfaces";
 import {
   McuParams,
   Configuration,
-  BotStateTree,
-  ALLOWED_CHANNEL_NAMES,
-  ALLOWED_MESSAGE_TYPES,
   SyncStatus
 } from "farmbot";
 import { Sequence } from "../sequences/interfaces";
-import { HardwareState, ControlPanelState } from "../devices/interfaces";
+import { ControlPanelState } from "../devices/interfaces";
 import { API } from "../api/index";
 import { User } from "../auth/interfaces";
-import { init } from "../api/crud";
 import { getDeviceAccountSettings } from "../resources/selectors";
 import { TaggedDevice } from "../resources/tagged_resources";
 import { versionOK } from "./reducer";
-import { oneOf, HttpData } from "../util";
+import { HttpData } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
-import { dispatchNetworkUp, dispatchNetworkDown } from "../connectivity/index";
-import { maybeRefreshToken } from "../refresh_token";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
 export const EXPECTED_MAJOR = 5;
 export const EXPECTED_MINOR = 0;
-
-function incomingStatus(statusMessage: HardwareState) {
-  return { type: "BOT_CHANGE", payload: statusMessage };
-}
 
 export function isLog(x: object): x is Log {
   return _.isObject(x) && _.isString(_.get(x, "message" as keyof Log));
@@ -47,7 +36,7 @@ const commandErr = (noun = "Command") => (x: {}) => {
   console.info("Took longer than 6 seconds: " + noun);
 };
 
-const commandOK = (noun = "Command") => () => {
+export const commandOK = (noun = "Command") => () => {
   const msg = noun + " request sent to device.";
   success(msg, t("Request sent"));
 };
@@ -248,109 +237,6 @@ export function homeAll(speed: number) {
     .then(commandOK(noun), commandErr(noun));
 }
 
-function readStatus() {
-  const noun = "'Read Status' command";
-  return devices
-    .current
-    .readStatus()
-    .then(() => { commandOK(noun); }, () => { });
-}
-
-let NEED_VERSION_CHECK = true;
-const bothUp = () => {
-  dispatchNetworkUp("user.mqtt");
-  dispatchNetworkUp("bot.mqtt");
-};
-// Already filtering messages in FarmBot OS and the API- this is just for
-// an additional layer of safety. If sensitive data ever hits a client, it will
-// be reported to Rollbar for investigation.
-type ConnectDeviceReturn = {} | ((dispatch: Function) => void);
-const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
-export function connectDevice(oldToken: string): ConnectDeviceReturn {
-  return (dispatch: Function, getState: GetState) => {
-    const ath = getState().auth;
-    if (!ath) {
-      throw new Error("SOmehow managed to get here before auth was ready.");
-    } else {
-      return ath && maybeRefreshToken(ath)
-        .then(({ token }) => {
-          const secure = location.protocol === "https:";
-          const bot = new Farmbot({ token: token.encoded, secure });
-          bot.on("online", () => dispatchNetworkUp("user.mqtt"));
-          bot.on("offline", () => {
-            dispatchNetworkDown("user.mqtt");
-            error(t(Content.MQTT_DISCONNECTED));
-          });
-          return bot
-            .connect()
-            .then(() => {
-              devices.online = true;
-              devices.current = bot;
-              _.set(window, "current_bot", bot);
-              readStatus()
-                .then(() => bot.setUserEnv(
-                  { "LAST_CLIENT_CONNECTED": JSON.stringify(new Date()) }
-                ))
-                .catch(() => { });
-              bot.on("logs", function (msg: Log) {
-                bothUp();
-                if (isLog(msg) && !oneOf(BAD_WORDS, msg.message.toUpperCase())) {
-                  maybeShowLog(msg);
-                  dispatch(init({
-                    kind: "logs",
-                    specialStatus: undefined,
-                    uuid: "MUST_CHANGE",
-                    body: msg
-                  }));
-                  // CORRECT SOLUTION: Give each device its own topic for publishing
-                  //                   MQTT last will message.
-                  // FAST SOLUTION:    We would need to re-publish FBJS and FBOS to
-                  //                   change topic structure. Instead, we will use
-                  //                   inband signalling (for now).
-                  // TODO:             Make a `bot/device_123/offline` channel.
-                  const died =
-                    msg.message.includes("is offline") && msg.meta.type === "error";
-                  died && dispatchNetworkDown("bot.mqtt");
-                } else {
-                  throw new Error("Refusing to display log: " + JSON.stringify(msg));
-                }
-              });
-              bot.on("status", _.throttle(function (msg: BotStateTree) {
-                bothUp();
-                dispatch(incomingStatus(msg));
-                if (NEED_VERSION_CHECK) {
-                  const IS_OK = versionOK(getState()
-                    .bot
-                    .hardware
-                    .informational_settings
-                    .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
-                  if (!IS_OK) { badVersion(); }
-                  NEED_VERSION_CHECK = false;
-                }
-
-              }, 500));
-
-              let alreadyToldYou = false;
-              bot.on("malformed", function () {
-                bothUp();
-                if (!alreadyToldYou) {
-                  warning(t(Content.MALFORMED_MESSAGE_REC_UPGRADE));
-                  alreadyToldYou = true;
-                }
-              });
-            }, (err) => dispatch(fetchDeviceErr(err)));
-        });
-    }
-  };
-}
-
-function fetchDeviceErr(err: Error) {
-  return {
-    type: "FETCH_DEVICE_ERR",
-    payload: err
-  };
-}
-
 const startUpdate = () => {
   return {
     type: Actions.SETTING_UPDATE_START,
@@ -407,33 +293,10 @@ export function changeStepSize(integer: number) {
   };
 }
 
-const CHANNELS: keyof Log = "channels";
-const TOAST: ALLOWED_CHANNEL_NAMES = "toast";
-
-function maybeShowLog(log: Log) {
-  const chanList = _.get(log, CHANNELS, ["ERROR FETCHING CHANNELS"]);
-  const m = log.meta.type as ALLOWED_MESSAGE_TYPES;
-  const TITLE = "New message from bot";
-  if (chanList.includes(TOAST)) {
-    switch (m) {
-      case "success":
-        return success(log.message, TITLE);
-      case "busy":
-      case "warn":
-      case "error":
-        return error(log.message, TITLE);
-      case "fun":
-      case "info":
-      default:
-        return info(log.message, TITLE);
-    }
-  }
-}
-
 export function setSyncStatus(payload: SyncStatus) {
   return { type: "SET_SYNC_STATUS", payload };
 }
 
-function badVersion() {
+export function badVersion() {
   info(t("You are running an old version of FarmBot OS."), t("Please Update"), "red");
 }
