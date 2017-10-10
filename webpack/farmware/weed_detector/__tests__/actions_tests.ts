@@ -1,11 +1,10 @@
+const mockDevice = {
+  setUserEnv: jest.fn(),
+  execScript: jest.fn()
+};
 jest.mock("../../../device", () => {
   return {
-    devices: {
-      current: {
-        setUserEnv: jest.fn(),
-        execScript: jest.fn()
-      }
-    }
+    getDevice: () => (mockDevice)
   };
 });
 import { getDevice } from "../../../device";

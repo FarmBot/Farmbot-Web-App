@@ -1,9 +1,9 @@
+const mockDevice = {
+  execScript: jest.fn()
+};
+
 jest.mock("../../device", () => ({
-  devices: {
-    current: {
-      execScript: jest.fn()
-    }
-  }
+  getDevice: () => (mockDevice)
 }));
 
 import * as React from "react";

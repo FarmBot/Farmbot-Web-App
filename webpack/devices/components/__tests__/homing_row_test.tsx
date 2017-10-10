@@ -1,9 +1,9 @@
+const mockDevice = {
+  findHome: jest.fn()
+};
+
 jest.mock("../../../device", () => ({
-  devices: {
-    current: {
-      findHome: jest.fn()
-    }
-  }
+  getDevice: () => (mockDevice)
 }));
 import * as React from "react";
 import { mount } from "enzyme";

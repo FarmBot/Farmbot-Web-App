@@ -1,12 +1,8 @@
 jest.mock("../../../../device", () => {
-  return {
-    devices: {
-      current: {
-        setUserEnv: jest.fn()
-      }
-    }
-  };
+  const mock = { setUserEnv: jest.fn() };
+  return { getDevice: () => mock };
 });
+
 import { envSave } from "../actions";
 import { getDevice } from "../../../../device";
 

@@ -1,9 +1,8 @@
+const mockDevice = {
+  checkUpdates: jest.fn(() => { return Promise.resolve(); }),
+};
 jest.mock("../../../device", () => ({
-  devices: {
-    current: {
-      checkUpdates: jest.fn(() => { return Promise.resolve(); }),
-    }
-  }
+  getDevice: () => (mockDevice)
 }));
 const mockOk = jest.fn();
 jest.mock("farmbot-toastr", () => ({ success: mockOk }));

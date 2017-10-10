@@ -1,10 +1,10 @@
+const mockDevice = {
+  home: jest.fn(() => { return Promise.resolve(); }),
+  takePhoto: jest.fn(() => { return Promise.resolve(); }),
+};
+
 jest.mock("../../device", () => ({
-  devices: {
-    current: {
-      home: jest.fn(() => { return Promise.resolve(); }),
-      takePhoto: jest.fn(() => { return Promise.resolve(); }),
-    }
-  }
+  getDevice: () => (mockDevice)
 }));
 const mockOk = jest.fn();
 jest.mock("farmbot-toastr", () => ({ success: mockOk }));

@@ -1,9 +1,8 @@
+const mockDevice = {
+  togglePin: jest.fn(() => { return Promise.resolve(); })
+};
 jest.mock("../../../device", () => ({
-  devices: {
-    current: {
-      togglePin: jest.fn(() => { return Promise.resolve(); })
-    }
-  }
+  getDevice: () => (mockDevice)
 }));
 
 import * as React from "react";

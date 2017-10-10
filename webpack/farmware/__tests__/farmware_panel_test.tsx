@@ -1,12 +1,12 @@
+const mockDevice = {
+  installFarmware: jest.fn(() => { return Promise.resolve(); }),
+  updateFarmware: jest.fn(() => { return Promise.resolve(); }),
+  removeFarmware: jest.fn(() => { return Promise.resolve(); }),
+  execScript: jest.fn(() => { return Promise.resolve(); })
+};
+
 jest.mock("../../device", () => ({
-  devices: {
-    current: {
-      installFarmware: jest.fn(() => { return Promise.resolve(); }),
-      updateFarmware: jest.fn(() => { return Promise.resolve(); }),
-      removeFarmware: jest.fn(() => { return Promise.resolve(); }),
-      execScript: jest.fn(() => { return Promise.resolve(); })
-    }
-  }
+  getDevice: () => (mockDevice)
 }));
 
 import * as React from "react";

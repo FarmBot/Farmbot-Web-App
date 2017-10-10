@@ -1,19 +1,21 @@
+const mockDevice = {
+  checkUpdates: jest.fn(() => { return Promise.resolve(); }),
+  powerOff: jest.fn(() => { return Promise.resolve(); }),
+  reboot: jest.fn(() => { return Promise.resolve(); }),
+  checkArduinoUpdates: jest.fn(() => { return Promise.resolve(); }),
+  emergencyLock: jest.fn(() => { return Promise.resolve(); }),
+  emergencyUnlock: jest.fn(() => { return Promise.resolve(); }),
+  execSequence: jest.fn(() => { return Promise.resolve(); }),
+  resetMCU: jest.fn(),
+  updateMcu: jest.fn(() => { return Promise.resolve(); }),
+  togglePin: jest.fn(() => { return Promise.resolve(); }),
+  home: jest.fn(() => { return Promise.resolve(); }),
+  sync: jest.fn(() => { return Promise.resolve(); })
+};
+
 jest.mock("../../device", () => ({
-  devices: {
-    current: {
-      checkUpdates: jest.fn(() => { return Promise.resolve(); }),
-      powerOff: jest.fn(() => { return Promise.resolve(); }),
-      reboot: jest.fn(() => { return Promise.resolve(); }),
-      checkArduinoUpdates: jest.fn(() => { return Promise.resolve(); }),
-      emergencyLock: jest.fn(() => { return Promise.resolve(); }),
-      emergencyUnlock: jest.fn(() => { return Promise.resolve(); }),
-      execSequence: jest.fn(() => { return Promise.resolve(); }),
-      resetMCU: jest.fn(),
-      updateMcu: jest.fn(() => { return Promise.resolve(); }),
-      togglePin: jest.fn(() => { return Promise.resolve(); }),
-      home: jest.fn(() => { return Promise.resolve(); }),
-      sync: jest.fn(() => { return Promise.resolve(); })
-    }
+  getDevice: () => {
+    return mockDevice;
   }
 }));
 const mockOk = jest.fn();

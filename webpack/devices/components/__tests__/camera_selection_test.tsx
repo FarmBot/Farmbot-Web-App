@@ -1,9 +1,8 @@
+const mockDevice = {
+  setUserEnv: jest.fn(() => { return Promise.resolve(); }),
+};
 jest.mock("../../../device", () => ({
-  devices: {
-    current: {
-      setUserEnv: jest.fn(() => { return Promise.resolve(); }),
-    }
-  }
+  getDevice: () => (mockDevice)
 }));
 const mockInfo = jest.fn();
 const mockError = jest.fn();

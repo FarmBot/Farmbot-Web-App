@@ -1,9 +1,8 @@
+const mockDevice = {
+  calibrate: jest.fn()
+};
 jest.mock("../../../device", () => ({
-  devices: {
-    current: {
-      calibrate: jest.fn()
-    }
-  }
+  getDevice: () => (mockDevice)
 }));
 import * as React from "react";
 import { mount } from "enzyme";

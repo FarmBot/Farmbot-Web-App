@@ -1,9 +1,8 @@
+const mockDevice = {
+  execScript: jest.fn()
+};
 jest.mock("../../../device", () => ({
-  devices: {
-    current: {
-      execScript: jest.fn() // jest.fn() will capture all calls to itself.
-    }
-  }
+  getDevice: () => (mockDevice)
 }));
 
 import { calibrate, scanImage } from "../actions";
