@@ -29,7 +29,7 @@ export let TickerList = (props: TickerListProps) => {
   const firstTicker: Log = props.logs.filter(
     log => !log.message.toLowerCase().includes("filtered"))[0];
   const noLogs: Log = {
-    message: "No logs yet.", meta: { type: "" }, channels: [], created_at: NaN
+    message: "No logs yet.", meta: { type: "success" }, channels: [], created_at: NaN
   };
   return (
     <div

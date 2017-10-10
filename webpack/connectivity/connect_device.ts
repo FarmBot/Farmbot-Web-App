@@ -1,7 +1,7 @@
 import { devices } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "../interfaces";
-import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot, BotStateTree } from "farmbot";
+import { ALLOWED_CHANNEL_NAMES, Farmbot, BotStateTree } from "farmbot";
 import { get, set, throttle, noop } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
@@ -28,19 +28,23 @@ const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
 let alreadyToldYou = false;
 const mq = "user.mqtt";
 
-function incomingStatus(statusMessage: HardwareState) {
+/** Action creator that is called when FarmBot OS emits a status update.
+ * Coordinate updates, movement, etc.*/
+export function incomingStatus(statusMessage: HardwareState) {
   return { type: Actions.BOT_CHANGE, payload: statusMessage };
 }
 
-function ifToast(log: Log, cb: (m: ALLOWED_MESSAGE_TYPES) => void) {
+/** Determine if an incoming log is a toast message. If it is, execute the
+ * supplied callback */
+export function ifToastWorthy(log: Log | undefined,
+  cb: (log: Log) => void) {
   const chanList = get(log, CHANNELS, ["ERROR FETCHING CHANNELS"]);
-  return chanList.includes(TOAST) ?
-    cb(log.meta.type as ALLOWED_MESSAGE_TYPES) : noop();
+  return log && chanList.includes(TOAST) ? cb(log) : noop();
 }
 
-function maybeShowLog(log: Log) {
-  ifToast(log, (m) => {
-    switch (m) {
+function maybeShowLog(mystery: Log | undefined) {
+  ifToastWorthy(mystery, (log) => {
+    switch (log.meta.type) {
       case "success":
         return success(log.message, TITLE);
       case "busy":
@@ -68,39 +72,37 @@ function readStatus() {
     .then(() => { commandOK(noun); }, () => { });
 }
 
-export function connectDevice(oldToken: string): ConnectDeviceReturn {
-  return (dispatch: Function, getState: GetState) => {
-    const ath = getState().auth;
-    const ok = doConnect(dispatch, getState);
-
-    ath ? (maybeRefreshToken(ath).then(ok)) : bail(AUTH_NOT_READY);
-  };
-}
-
 const onOffline = () => {
   dispatchNetworkDown("user.mqtt");
   error(t(Content.MQTT_DISCONNECTED));
 };
 
-const doConnect = (dispatch: Function, getState: GetState) =>
-  ({
-   token }: { token: Token }) => {
-    const secure = location.protocol === "https:";
-    const bot = new Farmbot({ token: token.encoded, secure });
-    bot.on("online", onOnline);
-    bot.on("offline", onOffline);
-    return bot
-      .connect()
-      .then(bootstrapAllTheThings(bot, dispatch, getState), noop);
-  };
+const changeLastClientConnected = (bot: Farmbot) => () => {
+  bot.setUserEnv({
+    "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
+  });
+};
 
-function onMalformed() {
-  bothUp();
-  if (!alreadyToldYou) {
-    warning(t(Content.MALFORMED_MESSAGE_REC_UPGRADE));
-    alreadyToldYou = true;
-  }
-}
+const onStatus = (dispatch: Function, getState: GetState) =>
+  (throttle(function (msg: BotStateTree) {
+    bothUp();
+    dispatch(incomingStatus(msg));
+    if (NEED_VERSION_CHECK) {
+      const IS_OK = versionOK(getState()
+        .bot
+        .hardware
+        .informational_settings
+        .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
+      if (!IS_OK) { badVersion(); }
+      NEED_VERSION_CHECK = false;
+    }
+  }, 500));
+
+const onSent = (/** The MQTT Client Object (bot.client) */ client: {}) =>
+  (any: {}) => {
+    const netState = (get(client, "connected", false));
+    netState ? dispatchNetworkUp(mq) : dispatchNetworkDown(mq);
+  };
 
 const onLogs = (dispatch: Function) => (msg: Log) => {
   bothUp();
@@ -126,34 +128,13 @@ const onLogs = (dispatch: Function) => (msg: Log) => {
   }
 };
 
-const onSent = (/** The MQTT Client Object (bot.client) */ client: {}) =>
-  (any: {}) => {
-    const netState = (get(client, "connected", false));
-    netState ? dispatchNetworkUp(mq) : dispatchNetworkDown(mq);
-  };
-
-const onStatus = (dispatch: Function, getState: GetState) =>
-  (throttle(function (msg: BotStateTree) {
-    bothUp();
-    dispatch(incomingStatus(msg));
-    if (NEED_VERSION_CHECK) {
-      const IS_OK = versionOK(getState()
-        .bot
-        .hardware
-        .informational_settings
-        .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
-      if (!IS_OK) { badVersion(); }
-      NEED_VERSION_CHECK = false;
-    }
-  }, 500));
-
-const onOnline = () => dispatchNetworkUp("user.mqtt");
-
-const changeLastClientConnected = (bot: Farmbot) => () => {
-  bot.setUserEnv({
-    "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
-  });
-};
+function onMalformed() {
+  bothUp();
+  if (!alreadyToldYou) {
+    warning(t(Content.MALFORMED_MESSAGE_REC_UPGRADE));
+    alreadyToldYou = true;
+  }
+}
 
 const bootstrapAllTheThings =
   (bot: Farmbot, dispatch: Function, getState: GetState) => () => {
@@ -166,3 +147,26 @@ const bootstrapAllTheThings =
     readStatus().then(changeLastClientConnected(bot), noop);
     set(window, "current_bot", bot);
   };
+
+const onOnline = () => dispatchNetworkUp("user.mqtt");
+
+const doConnect = (dispatch: Function, getState: GetState) =>
+  ({
+   token }: { token: Token }) => {
+    const secure = location.protocol === "https:";
+    const bot = new Farmbot({ token: token.encoded, secure });
+    bot.on("online", onOnline);
+    bot.on("offline", onOffline);
+    return bot
+      .connect()
+      .then(bootstrapAllTheThings(bot, dispatch, getState), noop);
+  };
+
+export function connectDevice(oldToken: string): ConnectDeviceReturn {
+  return (dispatch: Function, getState: GetState) => {
+    const ath = getState().auth;
+    const ok = doConnect(dispatch, getState);
+
+    ath ? (maybeRefreshToken(ath).then(ok)) : bail(AUTH_NOT_READY);
+  };
+}
