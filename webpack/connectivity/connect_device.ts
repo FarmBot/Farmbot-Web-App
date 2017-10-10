@@ -19,7 +19,7 @@ import { Token } from "../auth/interfaces";
 const AUTH_NOT_READY = "Somehow managed to get here before auth was ready.";
 const CHANNELS: keyof Log = "channels";
 const TOAST: ALLOWED_CHANNEL_NAMES = "toast";
-const TITLE = "New message from bot";
+export const TITLE = "New message from bot";
 let NEED_VERSION_CHECK = true;
 // Already filtering messages in FarmBot OS and the API- this is just for
 // an additional layer of safety. If sensitive data ever hits a client, it will
