@@ -141,7 +141,8 @@ function onMalformed() {
 const onOnline = () => dispatchNetworkUp("user.mqtt");
 
 const attachEventListeners =
-  (bot: Farmbot, dispatch: Function, getState: GetState) => () => {
+  (bot: Farmbot, dispatch: Function, getState: GetState) => {
+    bot.on("*", function () { console.log(arguments); });
     bot.on("online", onOnline);
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));

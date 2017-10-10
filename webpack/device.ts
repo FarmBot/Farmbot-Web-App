@@ -15,6 +15,11 @@ export function fetchNewDevice(oldToken: AuthState): Promise<Farmbot> {
     .then(({ token }) => {
       device = new Farmbot({ token: token.encoded, secure });
       set(window, "current_bot", device);
-      return device;
+      return device
+        .connect()
+        .then(() => {
+          console.log(2);
+          return device;
+        }, () => bail("NO CONNECT"));
     });
 }
