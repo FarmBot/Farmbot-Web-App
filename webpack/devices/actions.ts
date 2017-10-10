@@ -2,7 +2,7 @@ import { t } from "i18next";
 import axios from "axios";
 import * as _ from "lodash";
 import { success, warning, info, error } from "farmbot-toastr";
-import { devices } from "../device";
+import { getDevice } from "../device";
 import { Log, Everything } from "../interfaces";
 import { GithubRelease, MoveRelProps } from "./interfaces";
 import { Thunk, GetState } from "../redux/interfaces";
@@ -43,16 +43,14 @@ export const commandOK = (noun = "Command") => () => {
 
 export function checkControllerUpdates() {
   const noun = "Check for Updates";
-  devices
-    .current
+  getDevice()
     .checkUpdates()
     .then(commandOK(noun), commandErr(noun));
 }
 
 export function powerOff() {
   const noun = "Power Off Bot";
-  devices
-    .current
+  getDevice()
     .powerOff()
     .then(commandOK(noun), commandErr(noun));
 }
@@ -61,23 +59,19 @@ export function factoryReset() {
   if (!confirm(t(Content.FACTORY_RESET_ALERT))) {
     return;
   }
-  devices
-    .current
-    .resetOS();
+  getDevice().resetOS();
 }
 
 export function reboot() {
   const noun = "Reboot Bot";
-  devices
-    .current
+  getDevice()
     .reboot()
     .then(commandOK(noun), commandErr(noun));
 }
 
 export function emergencyLock() {
   const noun = "Emergency stop";
-  devices
-    .current
+  getDevice()
     .emergencyLock()
     .then(commandOK(noun), commandErr(noun));
 }
@@ -85,8 +79,7 @@ export function emergencyLock() {
 export function emergencyUnlock() {
   const noun = "Emergency unlock";
   if (confirm(`Are you sure you want to unlock the device?`)) {
-    devices
-      .current
+    getDevice()
       .emergencyUnlock()
       .then(commandOK(noun), commandErr(noun));
   }
@@ -102,8 +95,7 @@ export function sync(): Thunk {
       .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
     if (IS_OK) {
       dispatch(setSyncStatus("syncing"));
-      devices
-        .current
+      getDevice()
         .sync()
         .then(() => {
           commandOK(noun);
@@ -129,8 +121,7 @@ export function sync(): Thunk {
 export function execSequence(sequence: Sequence) {
   const noun = "Sequence execution";
   if (sequence.id) {
-    return devices
-      .current
+    return getDevice()
       .execSequence(sequence.id)
       .then(commandOK(noun), commandErr(noun));
   } else {
@@ -181,14 +172,13 @@ export function toggleControlPanel(payload: keyof ControlPanelState) {
 }
 
 export function MCUFactoryReset() {
-  return devices.current.resetMCU();
+  return getDevice().resetMCU();
 }
 
 export function botConfigChange(key: ConfigKey, value: number) {
   const noun = "Setting toggle";
 
-  return devices
-    .current
+  return getDevice()
     .updateMcu({ [key]: value })
     .then(_.noop, commandErr(noun));
 }
@@ -198,8 +188,7 @@ export function settingToggle(
 ) {
   if (displayAlert) { alert(displayAlert.replace(/\s+/g, " ")); }
   const noun = "Setting toggle";
-  return devices
-    .current
+  return getDevice()
     .updateMcu({
       [name]: ((bot.hardware.mcu_params)[name] === 0) ? ON : OFF
     })
@@ -207,32 +196,28 @@ export function settingToggle(
 }
 
 export function moveRelative(props: MoveRelProps) {
-  return devices
-    .current
+  return getDevice()
     .moveRelative(props)
     .then(_.noop, commandErr("Relative movement"));
 }
 
 export function moveAbs(props: MoveRelProps) {
   const noun = "Absolute movement";
-  return devices
-    .current
+  return getDevice()
     .moveAbsolute(props)
     .then(_.noop, commandErr(noun));
 }
 
 export function pinToggle(pin_number: number) {
   const noun = "Setting toggle";
-  return devices
-    .current
+  return getDevice()
     .togglePin({ pin_number })
     .then(_.noop, commandErr(noun));
 }
 
 export function homeAll(speed: number) {
   const noun = "'Home All' command";
-  devices
-    .current
+  getDevice()
     .home({ axis: "all", speed })
     .then(commandOK(noun), commandErr(noun));
 }
@@ -261,8 +246,7 @@ export function updateMCU(key: ConfigKey, val: string) {
 
     function proceed() {
       dispatch(startUpdate());
-      devices
-        .current
+      getDevice()
         .updateMcu({ [key]: val })
         .then(() => updateOK(dispatch, noun))
         .catch(() => updateNO(dispatch, noun));
@@ -278,8 +262,7 @@ export function updateMCU(key: ConfigKey, val: string) {
 export function updateConfig(config: Configuration) {
   const noun = "Update Config";
   return function (dispatch: Function) {
-    devices
-      .current
+    getDevice()
       .updateConfig(config)
       .then(() => updateOK(dispatch, noun))
       .catch(() => updateNO(dispatch, noun));

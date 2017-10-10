@@ -1,25 +1,12 @@
 import { Farmbot } from "farmbot";
+import { bail } from "./util";
+import { set } from "lodash";
 
-interface Devices {
-  online: boolean;
-  current: Farmbot;
+let device: Farmbot;
+
+export const getDevice = (): Farmbot => (device || bail("NO DEVICE SET"));
+
+export function setDevice(bot: Farmbot): Farmbot {
+  set(window, "current_bot", bot);
+  return device = bot;
 }
-
-function NullBot(): Farmbot {
-  // Allow me to explain: I'm following the null object pattern to prevent nil
-  // checks all over the app. That way, all of our "if undefined" logic is in
-  // one place and NullBot satisfies the same interface as a real bot.
-  const funnyConfigObject = {
-    token: `0.${btoa("\"NOT_SET\"")}.0`,
-    secure: false
-  };
-  let bot = new Farmbot(funnyConfigObject);
-  bot.connect = () => Promise.reject(`Tried to connect to null bot.
-    You probably meant to set a bot first.`);
-  return bot;
-}
-
-export var devices: Devices = {
-  online: false,
-  current: NullBot()
-};

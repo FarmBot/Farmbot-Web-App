@@ -12,7 +12,7 @@ import * as React from "react";
 import { OsUpdateButton } from "../os_update_button";
 import { mount } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { devices } from "../../../device";
+import { getDevice } from "../../../device";
 
 describe("<OsUpdateButton/>", () => {
   beforeEach(function () {
@@ -40,7 +40,7 @@ describe("<OsUpdateButton/>", () => {
     expect(osUpdateButton.text()).toBe("UPDATE");
   });
   it("calls checkUpdates", () => {
-    const { mock } = devices.current.checkUpdates as jest.Mock<{}>;
+    const { mock } = getDevice().checkUpdates as jest.Mock<{}>;
     const buttons = mount(<OsUpdateButton bot={bot} />);
     const osUpdateButton = buttons.find("button").last();
     osUpdateButton.simulate("click");
@@ -85,7 +85,7 @@ describe("<OsUpdateButton/>", () => {
     expect(osUpdateButton.text()).toBe("UPDATE");
   });
   it("is disabled", () => {
-    const { mock } = devices.current.checkUpdates as jest.Mock<{}>;
+    const { mock } = getDevice().checkUpdates as jest.Mock<{}>;
     bot.hardware.jobs = { "FBOS_OTA": { status: "working", percent: 10, unit: "percent" } };
     const buttons = mount(<OsUpdateButton bot={bot} />);
     const osUpdateButton = buttons.find("button").last();

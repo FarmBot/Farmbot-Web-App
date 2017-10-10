@@ -8,7 +8,7 @@ jest.mock("../../../../device", () => {
   };
 });
 import { envSave } from "../actions";
-import { devices } from "../../../../device";
+import { getDevice } from "../../../../device";
 
 describe("actions", () => {
   it("Saves environment variables", () => {
@@ -16,8 +16,8 @@ describe("actions", () => {
      * triggering side effects. */
     jest.clearAllMocks();
     envSave("CAMERA_CALIBRATION_blur", 24);
-    expect(devices.current.setUserEnv).toHaveBeenCalledTimes(1);
-    expect(devices.current.setUserEnv)
+    expect(getDevice().setUserEnv).toHaveBeenCalledTimes(1);
+    expect(getDevice().setUserEnv)
       .toHaveBeenLastCalledWith({ "CAMERA_CALIBRATION_blur": "24" });
   });
 });

@@ -11,7 +11,7 @@ import { mount } from "enzyme";
 import { PeripheralList } from "../peripheral_list";
 import { TaggedPeripheral } from "../../../resources/tagged_resources";
 import { Pins } from "farmbot/dist";
-import { devices } from "../../../device";
+import { getDevice } from "../../../device";
 
 describe("<PeripheralList/>", function () {
   beforeEach(function () {
@@ -73,7 +73,7 @@ describe("<PeripheralList/>", function () {
   });
 
   it("toggles pins", () => {
-    const { mock } = devices.current.togglePin as jest.Mock<{}>;
+    const { mock } = getDevice().togglePin as jest.Mock<{}>;
     const wrapper = mount(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
       pins={pins}
@@ -88,7 +88,7 @@ describe("<PeripheralList/>", function () {
   });
 
   it("pins toggles are disabled", () => {
-    const { mock } = devices.current.togglePin as jest.Mock<{}>;
+    const { mock } = getDevice().togglePin as jest.Mock<{}>;
     const wrapper = mount(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
       pins={pins}

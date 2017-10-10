@@ -1,8 +1,8 @@
-import { devices } from "../device";
+import { setDevice, getDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "../interfaces";
 import { ALLOWED_CHANNEL_NAMES, Farmbot, BotStateTree } from "farmbot";
-import { get, set, throttle, noop } from "lodash";
+import { get, throttle, noop } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
 import { GetState } from "../redux/interfaces";
@@ -27,7 +27,7 @@ let NEED_VERSION_CHECK = true;
 type ConnectDeviceReturn = {} | ((dispatch: Function) => void);
 const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
 let alreadyToldYou = false;
-const mq = "user.mqtt";
+const secure = location.protocol === "https:";
 
 /** Action creator that is called when FarmBot OS emits a status update.
  * Coordinate updates, movement, etc.*/
@@ -70,8 +70,7 @@ const bothUp = () => {
 
 function readStatus() {
   const noun = "'Read Status' command";
-  return devices
-    .current
+  return getDevice()
     .readStatus()
     .then(() => { commandOK(noun); }, () => { });
 }
@@ -104,8 +103,8 @@ const onStatus = (dispatch: Function, getState: GetState) =>
 
 const onSent = (/** The MQTT Client Object (bot.client) */ client: {}) =>
   (any: {}) => {
-    const netState = (get(client, "connected", false));
-    netState ? dispatchNetworkUp(mq) : dispatchNetworkDown(mq);
+    get(client, "connected", false) ?
+      dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
   };
 
 const onLogs = (dispatch: Function) => (msg: Log) => {
@@ -140,30 +139,25 @@ function onMalformed() {
   }
 }
 
-const bootstrapAllTheThings =
+const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => () => {
-    devices.online = true;
-    devices.current = bot;
+    readStatus().then(changeLastClientConnected(bot), noop);
+    bot.on("online", onOnline);
+    bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));
     bot.on("logs", onLogs(dispatch));
     bot.on("status", onStatus(dispatch, getState));
     bot.on("malformed", onMalformed);
-    readStatus().then(changeLastClientConnected(bot), noop);
-    set(window, "current_bot", bot);
   };
 
 const onOnline = () => dispatchNetworkUp("user.mqtt");
 
 const doConnect = (dispatch: Function, getState: GetState) =>
-  ({
-   token }: { token: Token }) => {
-    const secure = location.protocol === "https:";
-    const bot = new Farmbot({ token: token.encoded, secure });
-    bot.on("online", onOnline);
-    bot.on("offline", onOffline);
+  ({ token }: { token: Token }) => {
+    const bot = setDevice(new Farmbot({ token: token.encoded, secure }));
     return bot
       .connect()
-      .then(bootstrapAllTheThings(bot, dispatch, getState), noop);
+      .then(attachEventListeners(bot, dispatch, getState), onOffline);
   };
 
 export function connectDevice(oldToken: string): ConnectDeviceReturn {
@@ -174,3 +168,6 @@ export function connectDevice(oldToken: string): ConnectDeviceReturn {
     ath ? (maybeRefreshToken(ath).then(ok)) : bail(AUTH_NOT_READY);
   };
 }
+
+// 1. Refresh the token, maybe.
+//

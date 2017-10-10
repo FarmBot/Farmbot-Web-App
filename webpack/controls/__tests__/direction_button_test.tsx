@@ -12,7 +12,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { DirectionButton } from "../direction_button";
 import { DirectionButtonProps } from "../interfaces";
-import { devices } from "../../device";
+import { getDevice } from "../../device";
 
 describe("<DirectionButton/>", function () {
   beforeEach(function () {
@@ -28,14 +28,14 @@ describe("<DirectionButton/>", function () {
   };
 
   it("calls move command", () => {
-    const { mock } = devices.current.moveRelative as jest.Mock<{}>;
+    const { mock } = getDevice().moveRelative as jest.Mock<{}>;
     const btn = mount(<DirectionButton {...buttonProps} />);
     btn.simulate("click");
     expect(mock.calls.length).toEqual(1);
   });
 
   it("is disabled", () => {
-    const { mock } = devices.current.moveRelative as jest.Mock<{}>;
+    const { mock } = getDevice().moveRelative as jest.Mock<{}>;
     buttonProps.disabled = true;
     const btn = mount(<DirectionButton {...buttonProps} />);
     btn.simulate("click");
@@ -43,7 +43,7 @@ describe("<DirectionButton/>", function () {
   });
 
   it("call has correct args", () => {
-    const { mock } = devices.current.moveRelative as jest.Mock<{}>;
+    const { mock } = getDevice().moveRelative as jest.Mock<{}>;
     const btn = mount(<DirectionButton {...buttonProps} />);
     btn.simulate("click");
     const argList = mock.calls[0][0];

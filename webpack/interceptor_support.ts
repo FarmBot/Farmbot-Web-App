@@ -1,5 +1,5 @@
 import { ResourceName, DataChangeType, Dictionary } from "farmbot/dist";
-import { devices } from "./device";
+import { getDevice } from "./device";
 import { box } from "boxed_value";
 import * as _ from "lodash";
 
@@ -23,7 +23,7 @@ export function notifyBotOfChanges(url: string | undefined, action: DataChangeTy
     url.split("/").filter((chunk: ResourceName) => {
       return RESOURCES.includes(chunk);
     }).map(async function (resource: ResourceName) {
-      devices.current.dataUpdate(action, { [resource]: inferUpdateId(url) });
+      getDevice().dataUpdate(action, { [resource]: inferUpdateId(url) });
     });
   }
 }

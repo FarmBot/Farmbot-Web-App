@@ -3,7 +3,7 @@ import { Widget, WidgetHeader, WidgetBody, Col } from "../ui/index";
 import { t } from "i18next";
 import { FarmwareManifest, Dictionary } from "farmbot";
 import { betterCompact } from "../util";
-import { devices } from "../device";
+import { getDevice } from "../device";
 
 interface FarmwareFormsProps {
   farmwares: Dictionary<FarmwareManifest | undefined>;
@@ -38,7 +38,7 @@ export function FarmwareForms(props: FarmwareFormsProps): JSX.Element {
                 + farmware.meta.version : ""}>
               <button
                 className="fb-button gray"
-                onClick={() => devices.current.execScript(farmware.name)}>
+                onClick={() => getDevice().execScript(farmware.name)}>
                 {t("Run")}
               </button>
             </WidgetHeader>

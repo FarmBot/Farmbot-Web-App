@@ -8,7 +8,7 @@ jest.mock("../../../device", () => {
     }
   };
 });
-import { devices } from "../../../device";
+import { getDevice } from "../../../device";
 import { translateImageWorkspaceAndSave } from "../actions";
 import { scanImage, test } from "../actions";
 
@@ -31,8 +31,8 @@ describe("actions", () => {
       "V_LO": "WEED_DETECTOR_V_LO"
     });
     translator("H_HI", 45);
-    expect(devices.current.setUserEnv).toHaveBeenCalledTimes(1);
-    expect(devices.current.setUserEnv)
+    expect(getDevice().setUserEnv).toHaveBeenCalledTimes(1);
+    expect(getDevice().setUserEnv)
       .toHaveBeenLastCalledWith({ "WEED_DETECTOR_H_HI": "45" });
   });
 });
@@ -42,7 +42,7 @@ describe("scanImage()", () => {
     jest.clearAllMocks();
   });
   it("calls out to the device", () => {
-    const { mock } = devices.current.execScript as jest.Mock<{}>;
+    const { mock } = getDevice().execScript as jest.Mock<{}>;
     // Run function to invoke side effects
     const thunk = scanImage(5);
     thunk();
@@ -63,7 +63,7 @@ describe("test()", () => {
     jest.clearAllMocks();
   });
   it("calls out to the device", () => {
-    const { mock } = devices.current.execScript as jest.Mock<{}>;
+    const { mock } = getDevice().execScript as jest.Mock<{}>;
     // Run function to invoke side effects
     const thunk = test();
     thunk();

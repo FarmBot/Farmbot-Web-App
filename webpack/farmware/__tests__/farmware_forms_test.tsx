@@ -9,7 +9,7 @@ jest.mock("../../device", () => ({
 import * as React from "react";
 import { mount } from "enzyme";
 import { FarmwareForms } from "../farmware_forms";
-import { devices } from "../../device";
+import { getDevice } from "../../device";
 import { FarmwareManifest, Dictionary } from "farmbot";
 
 function fakeFarmwares(): Dictionary<FarmwareManifest | undefined> {
@@ -43,7 +43,7 @@ describe("<FarmwareForms/>", () => {
   });
 
   it("runs", () => {
-    const runFarmware = devices.current.execScript as jest.Mock<{}>;
+    const runFarmware = getDevice().execScript as jest.Mock<{}>;
     const wrapper = mount(<FarmwareForms farmwares={fakeFarmwares()} />);
     const run = wrapper.find("button").first();
     run.simulate("click");

@@ -9,7 +9,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { HomingRow } from "../homing_row";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { devices } from "../../../device";
+import { getDevice } from "../../../device";
 
 describe("<HomingRow />", () => {
   beforeEach(function () {
@@ -26,7 +26,7 @@ describe("<HomingRow />", () => {
     });
   });
   it("calls device", () => {
-    const { mock } = devices.current.findHome as jest.Mock<{}>;
+    const { mock } = getDevice().findHome as jest.Mock<{}>;
     const result = mount(<HomingRow hardware={bot.hardware.mcu_params} />);
     result.find("LockableButton").at(0).simulate("click");
     result.find("LockableButton").at(1).simulate("click");

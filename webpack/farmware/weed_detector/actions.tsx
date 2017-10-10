@@ -6,7 +6,7 @@ import { Thunk } from "../../redux/interfaces";
 import { API } from "../../api";
 import { Progress, ProgressCallback, HttpData } from "../../util";
 import { GenericPointer } from "../../interfaces";
-import { devices } from "../../device";
+import { getDevice } from "../../device";
 import { WDENVKey } from "./remote_env/interfaces";
 import { NumericValues } from "./image_workspace";
 import { envSave } from "./remote_env/actions";
@@ -64,8 +64,7 @@ const label = "PLANT_DETECTION_selected_image";
 
 export function scanImage(imageId: number) {
   return function () {
-    devices
-      .current
+    getDevice()
       .execScript("historical-plant-detection", [{
         kind: "pair", args: { label: label, value: "" + imageId }
       }]);
@@ -74,6 +73,6 @@ export function scanImage(imageId: number) {
 
 export function test() {
   return function () {
-    devices.current.execScript("plant-detection");
+    getDevice().execScript("plant-detection");
   };
 }

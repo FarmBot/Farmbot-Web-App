@@ -2,7 +2,7 @@ import * as React from "react";
 import { DirectionButton } from "./direction_button";
 import { homeAll } from "../devices/actions";
 import { JogMovementControlsProps } from "./interfaces";
-import { devices } from "../device";
+import { getDevice } from "../device";
 
 export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
   render() {
@@ -12,7 +12,7 @@ export class JogButtons extends React.Component<JogMovementControlsProps, {}> {
           <td>
             <button
               className="i fa fa-camera arrow-button fb-button"
-              onClick={() => devices.current.takePhoto()} />
+              onClick={() => getDevice().takePhoto()} />
           </td>
           <td />
           <td />
