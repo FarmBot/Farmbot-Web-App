@@ -5,12 +5,24 @@ jest.mock("farmbot-toastr", () => ({
   warning: jest.fn()
 }));
 
+jest.mock("../../index", () => ({
+  dispatchNetworkUp: jest.fn()
+}));
+
 import { HardwareState } from "../../../devices/interfaces";
-import { incomingStatus, ifToastWorthy, showLogOnScreen, TITLE } from "../../connect_device";
+import {
+  incomingStatus,
+  ifToastWorthy,
+  showLogOnScreen,
+  TITLE,
+  bothUp,
+  initLog
+} from "../../connect_device";
 import { Actions } from "../../../constants";
 import { Log } from "../../../interfaces";
 import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES } from "farmbot";
 import { success, error, info } from "farmbot-toastr";
+import { dispatchNetworkUp } from "../../index";
 
 describe("incomingStatus", () => {
   it("creates an action", () => {
@@ -67,5 +79,27 @@ describe("showLogOnScreen", () => {
 
   it("routes `success` to toastr.success()", () => {
     assertToastr(["success"], success);
+  });
+});
+
+describe("initLog", () => {
+  it("creates a Redux action (new log)", () => {
+    const log = fakeLog("error");
+    const action = initLog(log);
+    expect(action.payload.kind).toBe("logs");
+    // expect(action.payload.specialStatus).toBe(undefined);
+    if (action.payload.kind === "logs") {
+      expect(action.payload.body.message).toBe(log.message);
+    } else {
+      fail();
+    }
+  });
+});
+
+describe("bothUp()", () => {
+  it("marks MQTT and API as up", () => {
+    bothUp();
+    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt");
+    expect(dispatchNetworkUp).toHaveBeenCalledWith("bot.mqtt");
   });
 });

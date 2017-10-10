@@ -19,7 +19,7 @@ import { User } from "../auth/interfaces";
 import { getDeviceAccountSettings } from "../resources/selectors";
 import { TaggedDevice } from "../resources/tagged_resources";
 import { versionOK } from "./reducer";
-import { HttpData } from "../util";
+import { HttpData, oneOf } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
 
@@ -27,9 +27,22 @@ const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
 export const EXPECTED_MAJOR = 5;
 export const EXPECTED_MINOR = 0;
+// Already filtering messages in FarmBot OS and the API- this is just for
+// an additional layer of safety. If sensitive data ever hits a client, it will
+// be reported to Rollbar for investigation.
+const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
 
-export function isLog(x: object): x is Log {
-  return _.isObject(x) && _.isString(_.get(x, "message" as keyof Log));
+// tslint:disable-next-line:no-any
+export function isLog(x: any): x is Log {
+  const yup = _.isObject(x) && _.isString(_.get(x, "message" as keyof Log));
+  if (yup) {
+    if (oneOf(BAD_WORDS, x.message.toUpperCase())) {// SECURITY CRITICAL CODE.
+      throw new Error("Refusing to display log: " + JSON.stringify(x));
+    }
+    return true;
+  } else {
+    return false;
+  }
 }
 const commandErr = (noun = "Command") => (x: {}) => {
   console.dir(x);
