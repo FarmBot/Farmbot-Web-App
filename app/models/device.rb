@@ -15,9 +15,9 @@ class Device < ApplicationRecord
   has_many  :tools,        dependent: :destroy
   has_many  :images,       dependent: :destroy
   has_many  :webcam_feeds, dependent: :destroy
-  validates :timezone,    inclusion: { in: TIMEZONES,
-                                       message: BAD_TZ,
-                                       allow_nil: true }
+  validates :timezone,     inclusion: { in: TIMEZONES,
+                                        message: BAD_TZ,
+                                        allow_nil: true }
   validates_presence_of :name
 
   # Give the user back the amount of logs they are allowed to view.

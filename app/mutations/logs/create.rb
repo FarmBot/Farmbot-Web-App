@@ -9,7 +9,9 @@ module Logs
     end
 
     optional do
-      array :channels, class: String
+      array :channels,
+            class: String,
+            in: CeleryScriptSettingsBag::ALLOWED_CHANNEL_NAMES
       hash :meta do
         integer :x
         integer :y
