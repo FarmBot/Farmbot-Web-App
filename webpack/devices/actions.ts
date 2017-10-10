@@ -146,7 +146,7 @@ export let fetchReleases =
         });
       })
       .catch((ferror) => {
-        error(t("Could not download firmware update information."));
+        error(t("Could not download FarmBot OS update information."));
         dispatch({
           type: "FETCH_OS_UPDATE_INFO_ERROR",
           payload: ferror

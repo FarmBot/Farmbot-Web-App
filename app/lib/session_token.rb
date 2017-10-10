@@ -4,8 +4,6 @@ class SessionToken < AbstractJwtToken
   MUST_VERIFY  = "Verify account first"
   DEFAULT_OS   = "https://api.github.com/repos/" \
                  "farmbot/farmbot_os/releases/latest"
-  DEFAULT_FW   = "https://api.github.com/repos/FarmBot/farmbot-"\
-                 "arduino-firmware/releases/latest"
   OS_RELEASE   = ENV.fetch("OS_UPDATE_SERVER") { DEFAULT_OS }
   MQTT         = ENV.fetch("MQTT_HOST")
   # If you are not using the standard MQTT broker (eg: you use a 3rd party
