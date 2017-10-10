@@ -45,7 +45,7 @@ export class Devices extends React.Component<Props, {}> {
 
   refresh = () => {
     this.props.dispatch(refresh(this.props.deviceAccount));
-    getDevice().getState();
+    getDevice().readStatus();
   };
 
   render() {

@@ -23,7 +23,7 @@ export function didLogin(authState: AuthState, dispatch: Function) {
   dispatch(fetchReleases(authState.token.unencoded.os_update_server));
   dispatch(loginOk(authState));
   Sync.fetchSyncData(dispatch);
-  dispatch(connectDevice(authState.token.encoded));
+  dispatch(connectDevice(authState));
 }
 
 // We need to handle OK logins for numerous use cases (Ex: login & registration)

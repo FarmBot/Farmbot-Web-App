@@ -18,7 +18,7 @@ module CeleryScriptSettingsBag
   RESOURCE_NAME         = %w(images plants regimens peripherals
                              corpuses logs sequences farm_events
                              tool_slots tools points tokens users device)
-  ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun)
+  ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email)
   ALLOWED_DATA_TYPES    = %w(string integer)
   ALLOWED_OPS           = %w(< > is not is_undefined)

@@ -5,7 +5,7 @@ class Log < ApplicationRecord
   # pagination, but could later on.
   PAGE_SIZE = 25
   # self.meta[:type] is used by the bot and the frontend as a sort of
-  TYPES     = %w(success busy warn error info fun debug)
+  TYPES     = CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES
   # The means by which the message will be sent. Ex: frontend toast notification
   serialize  :channels
   belongs_to :device
