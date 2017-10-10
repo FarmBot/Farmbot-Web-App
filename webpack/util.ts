@@ -443,3 +443,7 @@ export function bitArray(...values: boolean[]) {
       return res << 1 | x;
     });
 }
+
+export function bail(message: string): never {
+  throw new Error(message);
+}

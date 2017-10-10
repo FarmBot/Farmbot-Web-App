@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as _ from "lodash";
 import { t } from "i18next";
-import { devices } from "../device";
+import { getDevice } from "../device";
 import { FWProps, FWState } from "./interfaces";
 import { MustBeOnline } from "../devices/must_be_online";
 import { ToolTips } from "../constants";
@@ -30,32 +30,28 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
 
   update = () => {
     this
-      .ifFarmwareSelected(label => devices
-        .current
+      .ifFarmwareSelected(label => getDevice()
         .updateFarmware(label)
         .then(() => this.setState({ selectedFarmware: undefined })));
   }
 
   remove = () => {
     this
-      .ifFarmwareSelected(label => devices
-        .current
+      .ifFarmwareSelected(label => getDevice()
         .removeFarmware(label)
         .then(() => this.setState({ selectedFarmware: undefined })));
   }
 
   run = () => {
     this
-      .ifFarmwareSelected(label => devices
-        .current
+      .ifFarmwareSelected(label => getDevice()
         .execScript(label)
         .then(() => this.setState({ selectedFarmware: label })));
   }
 
   install = () => {
     if (this.state.packageUrl) {
-      devices
-        .current
+      getDevice()
         .installFarmware(this.state.packageUrl)
         .then(() => this.setState({ packageUrl: "" }));
     } else {

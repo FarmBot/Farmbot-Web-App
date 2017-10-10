@@ -2,7 +2,7 @@ import * as React from "react";
 import { Row, Col, DropDownItem } from "../../ui/index";
 import { t } from "i18next";
 import { FBSelect } from "../../ui/new_fb_select";
-import { devices } from "../../device";
+import { getDevice } from "../../device";
 import { info, error } from "farmbot-toastr";
 import { FirmwareHardware } from "farmbot";
 
@@ -70,8 +70,7 @@ export class BoardType
     const firmware_hardware = selectedBoard.value;
     if (selectedBoard && isFwHardwareValue(firmware_hardware)) {
       info(t("Sending firmware configuration..."), t("Sending"));
-      devices
-        .current
+      getDevice()
         .updateConfig({ firmware_hardware })
         .catch(() => error(t("An error occurred during configuration.")));
     }

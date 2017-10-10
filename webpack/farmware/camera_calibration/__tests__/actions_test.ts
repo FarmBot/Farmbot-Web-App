@@ -1,20 +1,19 @@
+const mockDevice = {
+  execScript: jest.fn()
+};
 jest.mock("../../../device", () => ({
-  devices: {
-    current: {
-      execScript: jest.fn() // jest.fn() will capture all calls to itself.
-    }
-  }
+  getDevice: () => (mockDevice)
 }));
 
 import { calibrate, scanImage } from "../actions";
-import { devices } from "../../../device";
+import { getDevice } from "../../../device";
 
 describe("scanImage()", () => {
   beforeEach(function () {
     jest.clearAllMocks();
   });
   it("calls out to the device", () => {
-    const { mock } = devices.current.execScript as jest.Mock<{}>;
+    const { mock } = getDevice().execScript as jest.Mock<{}>;
     // Run function to invoke side effects
     const thunk = scanImage(4);
     thunk();
@@ -35,7 +34,7 @@ describe("calibrate()", () => {
     jest.clearAllMocks();
   });
   it("calls out to the device", () => {
-    const { mock } = devices.current.execScript as jest.Mock<{}>;
+    const { mock } = getDevice().execScript as jest.Mock<{}>;
     // Run function to invoke side effects
     const thunk = calibrate();
     thunk();

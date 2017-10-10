@@ -1,7 +1,7 @@
 import axios from "axios";
 import { t } from "i18next";
 import { error, success } from "farmbot-toastr";
-import { connectDevice, fetchReleases } from "../devices/actions";
+import { fetchReleases } from "../devices/actions";
 import { push } from "../history";
 import { AuthState } from "./interfaces";
 import { ReduxAction, Thunk } from "../redux/interfaces";
@@ -16,6 +16,7 @@ import {
   requestFulfilled
 } from "../interceptors";
 import { Actions } from "../constants";
+import { connectDevice } from "../connectivity/connect_device";
 
 export function didLogin(authState: AuthState, dispatch: Function) {
   API.setBaseUrl(authState.token.unencoded.iss);
@@ -81,13 +82,7 @@ export function register(name: string,
 
 /** Handle user registration errors. */
 export function onRegistrationErr(dispatch: Function) {
-  return (err: UnsafeError) => {
-    toastErrors(err);
-    dispatch({
-      type: "REGISTRATION_ERROR",
-      payload: err
-    });
-  };
+  return (err: UnsafeError) => toastErrors(err);
 }
 
 /** Build a JSON object in preparation for an HTTP POST
@@ -129,7 +124,7 @@ export function logout() {
   Session.clear();
   // Technically this is unreachable code:
   return {
-    type: "LOGOUT",
+    type: Actions.LOGOUT,
     payload: {}
   };
 }

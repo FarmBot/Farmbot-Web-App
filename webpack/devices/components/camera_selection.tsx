@@ -4,7 +4,7 @@ import { t } from "i18next";
 import { CameraSelectionProps, CameraSelectionState } from "../interfaces";
 import { DropDownItem } from "../../ui/index";
 import { info, success, error } from "farmbot-toastr/dist";
-import { devices } from "../../device";
+import { getDevice } from "../../device";
 import { FBSelect } from "../../ui/new_fb_select";
 
 const CAMERA_CHOICES = [
@@ -42,8 +42,7 @@ export class CameraSelection
   sendOffConfig = (selectedCamera: DropDownItem) => {
     const message = { "camera": JSON.stringify(selectedCamera.value) };
     info(t("Sending camera configuration..."), t("Sending"));
-    devices
-      .current
+    getDevice()
       .setUserEnv(message)
       .then(() => {
         success(t("Successfully configured camera!"));

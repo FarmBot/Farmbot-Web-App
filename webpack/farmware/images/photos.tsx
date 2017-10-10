@@ -6,7 +6,7 @@ import { success, error } from "farmbot-toastr";
 import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
 import { ImageFlipper } from "./image_flipper";
 import { PhotosProps } from "./interfaces";
-import { devices } from "../../device";
+import { getDevice } from "../../device";
 import { ToolTips } from "../../constants";
 import { selectImage } from "./actions";
 import { WidgetFooter } from "../../ui/widget_footer";
@@ -39,7 +39,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
   takePhoto = () => {
     const ok = () => success(t("Processing now. Refresh page to see result."));
     const no = () => error(t("Error taking photo"));
-    devices.current.takePhoto().then(ok, no);
+    getDevice().takePhoto().then(ok, no);
   }
 
   metaDatas() {

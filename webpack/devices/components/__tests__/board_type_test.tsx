@@ -1,9 +1,9 @@
+const mockDevice = {
+  updateConfig: jest.fn(() => { return Promise.resolve(); })
+};
+
 jest.mock("../../../device", () => ({
-  devices: {
-    current: {
-      updateConfig: jest.fn(() => { return Promise.resolve(); })
-    }
-  }
+  getDevice: () => (mockDevice)
 }));
 const mockToast = jest.fn();
 jest.mock("farmbot-toastr", () => ({
@@ -15,7 +15,7 @@ jest.mock("farmbot-toastr", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { BoardType } from "../board_type";
-import { devices } from "../../../device";
+import { getDevice } from "../../../device";
 
 describe("<BoardType/>", () => {
   it("Farmduino", () => {
@@ -49,7 +49,7 @@ describe("<BoardType/>", () => {
   });
 
   it("calls updateConfig", () => {
-    const updateConfig = devices.current.updateConfig as jest.Mock<{}>;
+    const updateConfig = getDevice().updateConfig as jest.Mock<{}>;
     const wrapper = shallow(<BoardType
       firmwareVersion={"Arduino Disconnected!"} />);
     wrapper.find("FBSelect").simulate("change",

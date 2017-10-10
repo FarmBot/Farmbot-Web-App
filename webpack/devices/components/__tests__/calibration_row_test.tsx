@@ -1,22 +1,21 @@
+const mockDevice = {
+  calibrate: jest.fn()
+};
 jest.mock("../../../device", () => ({
-  devices: {
-    current: {
-      calibrate: jest.fn()
-    }
-  }
+  getDevice: () => (mockDevice)
 }));
 import * as React from "react";
 import { mount } from "enzyme";
 import { CalibrationRow } from "../calibration_row";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { devices } from "../../../device";
+import { getDevice } from "../../../device";
 
 describe("<HomingRow />", () => {
   beforeEach(function () {
     jest.clearAllMocks();
   });
   it("calls device", () => {
-    const { mock } = devices.current.calibrate as jest.Mock<{}>;
+    const { mock } = getDevice().calibrate as jest.Mock<{}>;
     const result = mount(<CalibrationRow hardware={bot.hardware.mcu_params} />);
     result.find("LockableButton").at(0).simulate("click");
     result.find("LockableButton").at(1).simulate("click");

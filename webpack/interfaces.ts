@@ -1,7 +1,7 @@
 import { AuthState } from "./auth/interfaces";
 import { ConfigState } from "./config/interfaces";
 import { BotState } from "./devices/interfaces";
-import { Color as FarmBotJsColor } from "farmbot";
+import { Color as FarmBotJsColor, ALLOWED_MESSAGE_TYPES } from "farmbot";
 import { DraggableState } from "./draggable/interfaces";
 import { PeripheralState } from "./controls/peripherals/interfaces";
 import { RestResources } from "./resources/interfaces";
@@ -25,7 +25,7 @@ export interface SelectOptionsParams {
 export interface Log {
   id?: number | undefined;
   message: string;
-  meta: { type: string; };
+  meta: { type: ALLOWED_MESSAGE_TYPES; };
   channels: string[];
   created_at: number;
 }

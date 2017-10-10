@@ -4,6 +4,7 @@ import { DropDownItem } from "../../../ui/index";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { KnownGroupTag, LocationData } from "./interfaces";
 import { findPointerByTypeAndId, findToolById } from "../../../resources/selectors";
+import { bail } from "../../../util";
 
 /** Takes a DropDownItem and turns it into data suitable
  * for MoveAbsolute["args"]["location"] */
@@ -32,7 +33,3 @@ export let handleSelect = (index: ResourceIndex, input: DropDownItem): LocationD
       return { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };
   }
 };
-
-function bail(msg: string): never {
-  throw new Error(msg);
-}

@@ -1,17 +1,17 @@
+const mockDevice = {
+  installFarmware: jest.fn(() => { return Promise.resolve(); }),
+  updateFarmware: jest.fn(() => { return Promise.resolve(); }),
+  removeFarmware: jest.fn(() => { return Promise.resolve(); }),
+  execScript: jest.fn(() => { return Promise.resolve(); })
+};
+
 jest.mock("../../device", () => ({
-  devices: {
-    current: {
-      installFarmware: jest.fn(() => { return Promise.resolve(); }),
-      updateFarmware: jest.fn(() => { return Promise.resolve(); }),
-      removeFarmware: jest.fn(() => { return Promise.resolve(); }),
-      execScript: jest.fn(() => { return Promise.resolve(); })
-    }
-  }
+  getDevice: () => (mockDevice)
 }));
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { devices } from "../../device";
+import { getDevice } from "../../device";
 import { FarmwarePanel } from "../farmware_panel";
 
 describe("<FarmwarePanel/>", () => {
@@ -29,7 +29,7 @@ describe("<FarmwarePanel/>", () => {
   }
 
   it("calls install", () => {
-    const { mock } = devices.current.installFarmware as jest.Mock<{}>;
+    const { mock } = getDevice().installFarmware as jest.Mock<{}>;
     const panel = bootstrapTest();
     const buttons = panel.component.find("button");
     expect(buttons.at(0).text()).toEqual("Install");
@@ -40,7 +40,7 @@ describe("<FarmwarePanel/>", () => {
   });
 
   it("calls update", () => {
-    const { mock } = devices.current.updateFarmware as jest.Mock<{}>;
+    const { mock } = getDevice().updateFarmware as jest.Mock<{}>;
     const panel = bootstrapTest();
     const buttons = panel.component.find("button");
     expect(buttons.at(3).text()).toEqual("Update");
@@ -51,7 +51,7 @@ describe("<FarmwarePanel/>", () => {
   });
 
   it("calls remove", () => {
-    const { mock } = devices.current.removeFarmware as jest.Mock<{}>;
+    const { mock } = getDevice().removeFarmware as jest.Mock<{}>;
     const panel = bootstrapTest();
     const buttons = panel.component.find("button");
     expect(buttons.at(2).text()).toEqual("Remove");
@@ -62,7 +62,7 @@ describe("<FarmwarePanel/>", () => {
   });
 
   it("calls run", () => {
-    const { mock } = devices.current.execScript as jest.Mock<{}>;
+    const { mock } = getDevice().execScript as jest.Mock<{}>;
     const panel = bootstrapTest();
     const buttons = panel.component.find("button");
     expect(buttons.at(4).text()).toEqual("Run");
