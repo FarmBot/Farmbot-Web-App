@@ -10,9 +10,9 @@
   "scripts": {
     "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "build": "TARGET=production bundle exec rake webpack:compile",
-    "start": "echo '===We use `npm run dev` now.==='",
+    "start": "echo '===We use `rails api:start` now.==='",
     "heroku-postbuild": "webpack --config=./config/webpack.prod.js",
-    "dev": "PORT=3000 bundle exec foreman start --procfile=Procfile.dev",
+    "dev": "echo '===We use `rails api:start` now.==='",
     "webpack": "./node_modules/.bin/webpack-dev-server --config config/webpack.config.js --host 0.0.0.0",
     "test": "jest --coverage --no-cache",
     "typecheck": "tsc --noEmit --jsx preserve"
