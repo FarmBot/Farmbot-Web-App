@@ -1,7 +1,7 @@
 jest.mock("../../../../session", () => {
   return {
     Session: {
-      getBool: () => { return true; }
+      getBool: () => { return false; }
     }
   };
 });

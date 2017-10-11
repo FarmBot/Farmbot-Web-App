@@ -17,7 +17,7 @@ export enum BooleanSetting {
   hideWebcamWidget = "hideWebcamWidget",
   dynamicMap = "dynamicMap",
   mapXL = "mapXL",
-  plantAnimations = "plantAnimations",
+  disableAnimations = "disableAnimations",
 }
 
 export enum NumericSetting {
