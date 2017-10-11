@@ -13,8 +13,15 @@
     margin-top: 0.4rem;
   }
   @media screen and (max-width: 974px) {
+    h3, p {
+      margin-left: 15px;
+      margin-right: 15px;
+    }
     h3 {
       margin-bottom: 2.5rem;
+    }
+    .button-group {
+      margin-right: 15px;
     }
   }
 }
@@ -22,11 +29,18 @@
 .sequence-editor-content,
 .regimen-editor-content {
   margin-right: -15px;
+  @media screen and (max-width: 974px) {
+    margin-left: 15px;
+    margin-right: 0;
+  }
 }
 
 .sequence-editor-tools,
 .regimen-editor-tools {
   margin-right: 15px;
+  @media screen and (max-width: 974px) {
+    margin-right: 10px;
+  }
 }
 
 .sequence,
@@ -47,12 +61,26 @@
 .regimen-list {
   overflow-y: auto;
   overflow-x: hidden;
-  height: calc(100vh - 21rem);
+  max-height: calc(100vh - 21rem);
 }
 
 .step-button-cluster,
 .sequence-list {
   margin-right: -15px;
+}
+
+.step-button-cluster-panel {
+  @media screen and (max-width: 974px) {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+}
+
+.step-button-cluster {
+  @media screen and (max-width: 974px) {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 
 .sequence-list-items {
@@ -64,6 +92,10 @@
   padding-top: 0.4rem;
   margin-bottom: 3rem;
   margin-right: 5px;
+  @media screen and (max-width: 974px) {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
 }
 
 .sequence-list-panel input,
