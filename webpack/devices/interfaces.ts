@@ -136,6 +136,7 @@ export interface PeripheralsProps {
 export interface FarmwareProps {
   dispatch: Function;
   env: Partial<WD_ENV>;
+  user_env: Record<string, string | undefined>;
   images: TaggedImage[];
   currentImage: TaggedImage | undefined;
   syncStatus: SyncStatus;

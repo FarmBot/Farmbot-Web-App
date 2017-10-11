@@ -19,6 +19,7 @@ describe("<FarmwarePage />", () => {
       farmwares: {},
       syncStatus: "unknown",
       env: {},
+      user_env: {},
       dispatch: jest.fn(),
       currentImage: undefined,
       images: []

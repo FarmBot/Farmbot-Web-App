@@ -36,6 +36,7 @@ describe("<GardenPlant/>", () => {
   }
 
   it("renders plant", () => {
+    mockStorj[BooleanSetting.disableAnimations] = true;
     const wrapper = shallow(<GardenPlant {...fakeProps() } />);
     expect(wrapper.find("image").length).toEqual(1);
     expect(wrapper.find("image").props().opacity).toEqual(1);
@@ -46,7 +47,7 @@ describe("<GardenPlant/>", () => {
   });
 
   it("renders plant animations", () => {
-    mockStorj[BooleanSetting.plantAnimations] = true;
+    mockStorj[BooleanSetting.disableAnimations] = false;
     const wrapper = shallow(<GardenPlant {...fakeProps() } />);
     expect(wrapper.find(".soil-cloud").length).toEqual(1);
     expect(wrapper.find(".animate").length).toEqual(1);
