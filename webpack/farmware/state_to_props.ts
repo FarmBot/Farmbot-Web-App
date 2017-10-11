@@ -24,6 +24,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     farmwares,
     syncStatus,
     env: prepopulateEnv(props.bot.hardware.user_env),
+    user_env: props.bot.hardware.user_env,
     dispatch: props.dispatch,
     currentImage,
     images

@@ -9,11 +9,12 @@ interface LabsFeaturesListProps {
 export function LabsFeaturesList(props: LabsFeaturesListProps) {
   return <div>
     {fetchLabFeatures().map((p, i) => {
+      const displayValue = p.displayInvert ? !p.value : p.value;
       return <KeyValShowRow key={i}
         label={p.name}
         labelPlaceholder=""
         value={p.description}
-        toggleValue={p.value ? 1 : 0}
+        toggleValue={displayValue ? 1 : 0}
         valuePlaceholder=""
         onClick={() => props.onToggle(p)}
         disabled={false} />;

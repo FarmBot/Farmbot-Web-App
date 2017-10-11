@@ -19,6 +19,7 @@ import { BooleanSetting } from "../session_keys";
 
 describe("<LoadingPlant/>", () => {
   it("renders loading text", () => {
+    mockStorj[BooleanSetting.disableAnimations] = true;
     const wrapper = shallow(<LoadingPlant />);
     expect(wrapper.find(".loading-plant").length).toEqual(0);
     expect(wrapper.find(".loading-plant-text").props().y).toEqual(150);
@@ -27,7 +28,7 @@ describe("<LoadingPlant/>", () => {
   });
 
   it("renders loading animation", () => {
-    mockStorj[BooleanSetting.plantAnimations] = true;
+    mockStorj[BooleanSetting.disableAnimations] = false;
     const wrapper = shallow(<LoadingPlant />);
     expect(wrapper.find(".loading-plant")).toBeTruthy();
     const circleProps = wrapper.find(".loading-plant-circle").props();
