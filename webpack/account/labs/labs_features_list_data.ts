@@ -11,14 +11,16 @@ export interface LabsFeature {
   storageKey: BooleanSetting;
   value: boolean;
   experimental?: boolean;
+  displayInvert?: boolean;
 }
 
 export const fetchLabFeatures = (): LabsFeature[] => ([
   {
-    name: t("Disable Web App internationalization"),
-    description: t("Set Web App to English."),
+    name: t("Internationalize Web App"),
+    description: t("Turn off to set Web App to English."),
     storageKey: BooleanSetting.disableI18n,
-    value: false
+    value: false,
+    displayInvert: true
   },
   {
     name: t("Confirm Sequence step deletion"),
@@ -51,9 +53,10 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
   },
   {
     name: t("Display plant animations"),
-    description: trim(t(`Turn on plant animations in the Farm Designer.`)),
-    storageKey: BooleanSetting.plantAnimations,
-    value: true
+    description: trim(t(`Enable plant animations in the Farm Designer.`)),
+    storageKey: BooleanSetting.disableAnimations,
+    value: false,
+    displayInvert: true
   }
 ].map(fetchRealValue));
 
