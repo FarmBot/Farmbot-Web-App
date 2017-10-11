@@ -37,7 +37,7 @@ export class GardenPlant extends
 
     const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
     const alpha = dragging ? 0.4 : 1.0;
-    const animate = Session.getBool(BooleanSetting.plantAnimations);
+    const animate = !Session.getBool(BooleanSetting.disableAnimations);
 
     return <g id={"plant-" + id}>
 
