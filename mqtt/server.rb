@@ -1,7 +1,9 @@
 require 'erb'
 puts "=== Retrieving container info"
+PLUGIN_PATH         = "mqtt/jwt_plugin/plugins/rabbit_auth_backend*"
+PLUGIN_IS_BUILT     = Dir[PLUGIN_PATH].any?
 DOCKER_IMG_NAME     = "farmbot-mqtt"
-IS_BUILT            = `cd mqtt; sudo docker images`.include?(DOCKER_IMG_NAME)
+IMG_IS_BUILT        = `cd mqtt; sudo docker images`.include?(DOCKER_IMG_NAME)
 
 puts "=== Setting config data"
 CONFIG_PATH         = "./mqtt/conf"
@@ -22,18 +24,27 @@ farmbot_vhost       = VHOST
 # Write the config file.
 File.write(CONFIG_OUTPUT, RENDERER.result(binding))
 
+# Maybe re-build the auth plugin
+if !PLUGIN_IS_BUILT
+  puts "=== Building JWT auth backend plugin from source."
+  sh "cd mqtt/jwt_plugin/; make dist"
+end
+
 # Re-init docker stuff
 
-puts "=== Stopping any pre-existing farmbot containers"
-`cd mqtt; sudo docker rm $(sudo docker ps -a -f "name=farmbot-mqtt" -q)`
+processes = `sudo docker ps -a -f "name=farmbot-mqtt" -q`
+if processes.present?
+  puts "=== Stopping pre-existing farmbot containers"
+  sh "cd mqtt; sudo docker rm #{processes}"
+end
 
-if IS_BUILT
+if IMG_IS_BUILT
   puts "=== Destroying old docker images"
-  `cd mqtt; sudo docker rmi #{DOCKER_IMG_NAME} --force`
+  sh "cd mqtt; sudo docker rmi #{DOCKER_IMG_NAME} --force"
 end
 
 puts "=== Building docker image"
-`cd mqtt; sudo docker build -t farmbot-mqtt .`
+sh "cd mqtt; sudo docker build -t farmbot-mqtt ."
 
 puts "=== Starting MQTT"
 exec [
