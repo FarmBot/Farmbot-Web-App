@@ -2,6 +2,7 @@ require 'erb'
 puts "=== Retrieving container info"
 PLUGIN_PATH         = "mqtt/jwt_plugin/plugins/rabbit_auth_backend*"
 PLUGIN_IS_BUILT     = Dir[PLUGIN_PATH].any?
+FORCE_REBUILD       = ENV["FORCE_REBUILD"].present?
 DOCKER_IMG_NAME     = "farmbot-mqtt"
 IMG_IS_BUILT        = `cd mqtt; sudo docker images`.include?(DOCKER_IMG_NAME)
 
@@ -18,14 +19,17 @@ PROTO               = ENV["FORCE_SSL"] ? "https:" : "http:"
 VHOST               = ENV.fetch("MQTT_VHOST") { "/" }
 
 puts "=== Building JWT plugin config"
-farmbot_api_key_url = "#{PROTO}#{$API_URL}/api/public_key"
+farmbot_api_key_url = ENV.fetch("API_PUBLIC_KEY_PATH") do
+  "#{PROTO}#{$API_URL}/api/public_key"
+end
+
 farmbot_vhost       = VHOST
 
 # Write the config file.
 File.write(CONFIG_OUTPUT, RENDERER.result(binding))
 
 # Maybe re-build the auth plugin
-if !PLUGIN_IS_BUILT
+if !PLUGIN_IS_BUILT || FORCE_REBUILD
   puts "=== Building JWT auth backend plugin from source."
   sh "cd mqtt/jwt_plugin/; make dist"
 end

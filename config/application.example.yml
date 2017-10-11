@@ -75,3 +75,7 @@ NO_EMAILS: "TRUE"
 # If you are not using the standard MQTT broker (eg: you use a 3rd party
 # MQTT vendor), you will need to change this line.
 MQTT_WS: "ws://DELETE_OR_CHANGE_THIS_LINE/ws"
+# ENV var used by FarmBot employees when building different versions of the JWT
+# auth backend plugin.
+# Can be deleted safely.
+API_PUBLIC_KEY_PATH: "http://changeme.io/api/public_key"
