@@ -26,7 +26,8 @@ File.write(CONFIG_OUTPUT, RENDERER.result(binding))
 
 # Maybe re-build the auth plugin
 if !PLUGIN_IS_BUILT
-  puts "=== Building JWT auth backend plugin from source."
+  puts "=== Building JWT auth backend plugin from source. " +
+       "This will take a while, but should only happen once."
   sh "cd mqtt/jwt_plugin/; make dist"
 end
 
