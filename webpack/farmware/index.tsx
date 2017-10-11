@@ -8,7 +8,7 @@ import { CameraCalibration } from "./camera_calibration/camera_calibration";
 import { FarmwareProps } from "../devices/interfaces";
 import { WeedDetector } from "./weed_detector/index";
 import { envGet } from "./weed_detector/remote_env/selectors";
-// import { FarmwareForms } from "./farmware_forms";
+import { FarmwareForms } from "./farmware_forms";
 
 @connect(mapStateToProps)
 export class FarmwarePage extends React.Component<FarmwareProps, {}> {
@@ -48,7 +48,8 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           <WeedDetector {...this.props} />
         </Col>
       </Row>
-      {/* <FarmwareForms farmwares={this.props.farmwares} /> */}
+      <FarmwareForms farmwares={this.props.farmwares}
+        user_env={this.props.user_env} />
     </Page>;
   }
 }
