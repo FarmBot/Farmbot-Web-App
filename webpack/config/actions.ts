@@ -6,6 +6,7 @@ import { Session } from "../session";
 export function ready(): Thunk {
   return (dispatch, getState) => {
     const state = Session.getAll() || getState().auth;
+    console.log("HELLO?");
     if (state) {
       didLogin(state, dispatch);
     }
