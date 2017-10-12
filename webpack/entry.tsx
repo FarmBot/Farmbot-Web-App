@@ -6,15 +6,15 @@ import { RootComponent } from "./routes";
 import { store } from "./redux/store";
 import { ready } from "./config/actions";
 import { detectLanguage } from "./i18n";
-import * as i18next from "i18next";
 import { stopIE, attachToRoot, shortRevision } from "./util";
+import { init } from "i18next";
 
 stopIE();
 
 console.log(shortRevision());
 
-detectLanguage().then((config) => {
-  i18next.init(config, (err, t) => {
+detectLanguage().then(function (config) {
+  init(config, (err, t) => {
     attachToRoot(RootComponent, { store });
     store.dispatch(ready());
   });
