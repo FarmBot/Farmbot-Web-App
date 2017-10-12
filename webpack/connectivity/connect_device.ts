@@ -108,7 +108,6 @@ const onStatus = (dispatch: Function, getState: GetState) =>
 const onSent = (/** The MQTT Client Object (bot.client) */ client: {}) =>
   (any: {}) => {
     const theValue = get(client, "connected", false);
-    console.log("VALUE IS: " + theValue);
     theValue ?
       dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
   };
@@ -141,7 +140,6 @@ const onOnline = () => dispatchNetworkUp("user.mqtt");
 
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
-    bot.on("*", function () { console.log(arguments); });
     bot.on("online", onOnline);
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));
