@@ -17,5 +17,3 @@ detectLanguage().then((config) => {
     store.dispatch(ready());
   });
 });
-
-console.log("Should trigger rebuild.");
