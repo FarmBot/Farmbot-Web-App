@@ -18,7 +18,6 @@ export function fetchNewDevice(oldToken: AuthState): Promise<Farmbot> {
       return device
         .connect()
         .then(() => {
-          console.log(2);
           return device;
         }, () => bail("NO CONNECT"));
     });
