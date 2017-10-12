@@ -18,36 +18,13 @@ If you want to run a server on a LAN for personal use, this is the easiest and c
 
 # Deployment to Dokku (cheap)
 
-**DEPRECATION NOTICE / PULL REQUESTS WELCOME**: We no longer deploy the server using Dokku. The instructions related to MariaDB are out of date (we use Postgresql now). **If you wish to use Dokku** we would be happy to help you along the way. Please raise an issue if you would like to help with updating the deployment docs.
-
 **Simplicity:** :broken_heart:
 
 **Reliability:** :heart::heart:
 
 **Affordability:** :heart::heart:
 
-0. Provision a fresh Ubuntu 16 server. We recommend DigitalOcean's "Ubuntu 16 Docker" image. Make sure you have at least 1gb of memory. **Don't use the Dokku image that Digital Ocean provides**. It is out of date and will not support this application.
-1. [Install the latest version of Dokku onto the machine](https://github.com/dokku/dokku#installing)
-2. Visit the server's URL in a browser. Follow the directions on screen to setup Dokku.
-3. `git remote add my_server dokku@my_server_name:my_app_name`
-4. Install mariaDB plugin: [instructions](https://github.com/dokku/dokku-postgres).
-5. Create the Dokku app (if you didn't do it already). `ssh dokku@my_server_name apps:create my_app_name`.
-6. Give Dokku a place to store RSA keys: `ssh dokku@my_server_name storage:mount my_app_name /var/lib/dokku/data/keys:/keys`.
-
-(Out of date. Help welcome)~~7. Create a databse: `ssh dokku@my_server_name mariadb:create my_db_name`~~
-
-(Out of date. Help welcome)~~8. Link the DB: `ssh dokku@my_server_name mariadb:link my_db_name my_app_name`~~
-
-9. Set ENV vars to real values (See full instructions in the README)
-
-10. `ssh dokku@my_server_name config:set my_app_name DEVISE_SECRET=$(rake secret) API_HOST=yourdomain.com API_PORT=1234`
-11. Deploy the app: `git push dokku@my_server_name:my_app_name master `
-12. (optional) In case of failure, redeploy after performing the following:
-  * `dokku trace on` (sets dokku to debug mode).
-  * `dokku config:set --global CURL_TIMEOUT=600`
-  * `dokku config:set --global CURL_CONNECT_TIMEOUT=30`
-16. Migrate the database: `ssh dokku@my_server_name run my_app_name rake db:setup`
-17. Your API is ready to go! You probably need to deploy the MQTT server next.
+Although Dokku is a great way to set up a server for personal use, it is not the primary deployment method at FarmBot, Inc. As such, our ability to troubleshoot Dokku related issues is limited. We are currently updating the Dokku deployment instructions to reflect the latest server setup. It is a work in progress. See `dokku.sh` for instructions.
 
 # Deployment Using Heroku (good)
 
