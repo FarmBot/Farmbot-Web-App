@@ -9,7 +9,7 @@ import { history } from "./history";
 import { Store } from "./redux/interfaces";
 import { ready } from "./config/actions";
 import { Session } from "./session";
-import { isMobile, attachToRoot, goHome } from "./util";
+import { isMobile, attachToRoot } from "./util";
 import { Callback } from "i18next";
 
 interface RootComponentProps {
@@ -292,7 +292,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
     const notLoggedIn = !Session.fetchStoredToken();
     const restrictedArea = window.location.pathname.includes("/app");
     if (notLoggedIn && restrictedArea) {
-      goHome();
+      Session.clear();
     }
     // ==== END HACK ====
     return <Provider store={_store}>

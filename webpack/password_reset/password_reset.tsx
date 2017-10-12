@@ -2,10 +2,11 @@ import * as React from "react";
 import axios from "axios";
 import { t } from "i18next";
 import { error as log, init as logInit } from "farmbot-toastr";
-import { prettyPrintApiErrors, goHome } from "../util";
+import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { State, Props } from "./interfaces";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui/index";
+import { Session } from "../session";
 
 export class PasswordReset extends React.Component<Props, State> {
   constructor() {
@@ -41,11 +42,11 @@ export class PasswordReset extends React.Component<Props, State> {
       id: token,
       password,
       password_confirmation: passwordConfirmation,
-    }).then(() => {
-      goHome();
-    }).catch((error: string) => {
-      log(prettyPrintApiErrors(error as {}));
-    });
+    })
+      .then(Session.clear)
+      .catch((error: string) => {
+        log(prettyPrintApiErrors(error as {}));
+      });
   }
 
   render() {

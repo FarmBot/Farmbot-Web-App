@@ -36,10 +36,11 @@ export namespace Session {
   }
 
   /** Clear localstorage and sessionstorage. */
-  export function clear() {
+  export function clear(): never {
     localStorage.clear();
     sessionStorage.clear();
     window.location.href = window.location.origin;
+    throw new Error("session cleared");
   }
 
   /** Fetch a *boolean* value from localstorage. Returns `undefined` when

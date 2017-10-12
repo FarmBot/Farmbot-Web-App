@@ -449,12 +449,6 @@ export function bail(message: string): never {
   throw new Error(message);
 }
 
-export const goHome = (): never => {
-  Session.clear();
-  window.location.href = "/";
-  return bail("Going to home page.");
-};
-
 // Thanks,
 // https://italonascimento.github.io
 //   /applying-a-timeout-to-your-promises/#implementing-the-timeout

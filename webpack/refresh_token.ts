@@ -1,8 +1,9 @@
 import axios from "axios";
 import { API } from "./api/index";
 import { AuthState } from "./auth/interfaces";
-import { HttpData, goHome } from "./util";
+import { HttpData } from "./util";
 import { setToken } from "./auth/actions";
+import { Session } from "./session";
 
 type Resp = HttpData<AuthState>;
 
@@ -17,5 +18,5 @@ const ok = (x: Resp) => {
 export let maybeRefreshToken = (old: AuthState): Promise<AuthState> => {
   API.setBaseUrl(old.token.unencoded.iss);
   setToken(old); // Precaution: The Axios interceptors might not be set yet.
-  return axios.get(API.current.tokensPath).then(ok, goHome);
+  return axios.get(API.current.tokensPath).then(ok, Session.clear);
 };

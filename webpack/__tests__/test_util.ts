@@ -9,8 +9,7 @@ import {
   SemverResult,
   trim,
   bitArray,
-  withTimeout,
-  goHome
+  withTimeout
 } from "../util";
 describe("util", () => {
   describe("safeStringFetch", () => {
@@ -175,9 +174,3 @@ describe("withTimeout()", () => {
       }, fail);
   });
 });
-
-// describe("goHome()", () => {
-//   it("clears the session and sends user to '/'", () => {
-//     goHome();
-//   });
-// });

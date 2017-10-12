@@ -2,7 +2,7 @@ import { didLogin, setToken } from "../auth/actions";
 import { Thunk } from "../redux/interfaces";
 import { Session } from "../session";
 import { maybeRefreshToken } from "../refresh_token";
-import { goHome, withTimeout } from "../util";
+import { withTimeout } from "../util";
 import { AuthState } from "../auth/interfaces";
 
 export const storeToken =
@@ -24,9 +24,9 @@ export function ready(): Thunk {
     const auth = Session.fetchStoredToken() || getState().auth;
     if (auth) {
       withTimeout(MAX_TOKEN_WAIT_TIME, maybeRefreshToken(auth))
-        .then(storeToken(auth, dispatch), goHome);
+        .then(storeToken(auth, dispatch), Session.clear);
     } else {
-      goHome();
+      Session.clear();
     }
   };
 }
