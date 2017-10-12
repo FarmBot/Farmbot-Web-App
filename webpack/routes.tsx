@@ -9,7 +9,8 @@ import { history } from "./history";
 import { Store } from "./redux/interfaces";
 import { ready } from "./config/actions";
 import { Session } from "./session";
-import { isMobile } from "./util";
+import { isMobile, attachToRoot } from "./util";
+import { Callback } from "i18next";
 
 interface RootComponentProps {
   store: Store;
@@ -66,6 +67,12 @@ const controlsRoute = {
     ).catch(errorLoading(cb));
   }
 };
+
+export const attachAppToDom: Callback = (err, t) => {
+  attachToRoot(RootComponent, { store: _store });
+  _store.dispatch(ready());
+};
+
 export class RootComponent extends React.Component<RootComponentProps, {}> {
 
   requireAuth(_discard: RouterState, replace: RedirectFunction) {
