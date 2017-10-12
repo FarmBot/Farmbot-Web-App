@@ -37,9 +37,8 @@ DATABASE_URL: "postgres://USERNAME:PASSWORD@URL:PORT/DB_NAME"
 DEVISE_SECRET: "Used for devise. Use `rake secret` to generate a new value."
 # Most personal server users can delete this.
 FORCE_SSL: "Remove this if not using HTTPS://"
-# Firmware update server. Use default if you don't have a special use case.
+# FarmBot OS update server. Use default if you don't have a special use case.
 # Off grid servers may have issues connecting to our update URL.
-FW_UPDATE_SERVER: "https://api.github.com/repos/FarmBot/farmbot-arduino-firmware/releases/latest"
 OS_UPDATE_SERVER: "https://api.github.com/repos/farmbot/farmbot_os/releases/latest"
 # Google Cloud Storage API Bucket for image data.
 # Deleting this will save to disk.
@@ -76,3 +75,10 @@ NO_EMAILS: "TRUE"
 # If you are not using the standard MQTT broker (eg: you use a 3rd party
 # MQTT vendor), you will need to change this line.
 MQTT_WS: "ws://DELETE_OR_CHANGE_THIS_LINE/ws"
+# ENV var used by FarmBot employees when building different versions of the JWT
+# auth backend plugin.
+# Can be deleted safely.
+API_PUBLIC_KEY_PATH: "http://changeme.io/api/public_key"
+# If you are using a shared RabbitMQ server and need to use a VHost other than
+# "/", change this ENV var.
+MQTT_VHOST: "/"

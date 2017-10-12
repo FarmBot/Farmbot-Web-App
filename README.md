@@ -36,7 +36,7 @@ You will need the following:
 
 ### Setup
 
- 1. `git clone https://github.com/FarmBot/Farmbot-Web-App`
+ 1. `git clone https://github.com/FarmBot/Farmbot-Web-App --depth=10`
  0. `cd Farmbot-Web-App`
  0. `bundle install`
  0. `yarn install`

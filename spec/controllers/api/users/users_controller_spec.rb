@@ -138,17 +138,20 @@ describe Api::UsersController do
       expect(json[:user])
         .to include(Users::ResendVerification::ALREADY_VERIFIED)
     end
+    unless ENV["NO_EMAILS"]
+      it 're-sends verification email' do
+        unverified = User.create!(email:                 Faker::Internet.email,
+                                  password:              "password123",
+                                  password_confirmation: "password123")
 
-    it 're-sends verification email' do
-      unverified = User.create!(email:                 Faker::Internet.email,
-                                password:              "password123",
-                                password_confirmation: "password123")
+        post :resend_verification,
+            params: { email: unverified.email },
+            format: :json
 
-      post :resend_verification,
-           params: { email: unverified.email },
-           format: :json
-
-      expect(response.status).to eq(200)
-      expect(json[:user]).to include(Users::ResendVerification::SENT)
+        expect(response.status).to eq(200)
+        expect(json[:user]).to include(Users::ResendVerification::SENT)
+      end
+    else
+      puts "Skipping test because NO_EMAILS was enabled."
     end
 end
