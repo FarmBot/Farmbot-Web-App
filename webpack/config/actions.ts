@@ -5,11 +5,10 @@ import { maybeRefreshToken } from "../refresh_token";
 import { withTimeout } from "../util";
 import { AuthState } from "../auth/interfaces";
 
-export const storeToken =
-  (auth: AuthState, dispatch: Function) => () => {
-    dispatch(setToken(auth));
-    didLogin(auth, dispatch);
-  };
+export const storeToken = (auth: AuthState, dispatch: Function) => () => {
+  dispatch(setToken(auth));
+  didLogin(auth, dispatch);
+};
 
 /** Amount of time we're willing to wait before concluding that the token is bad
  * or the API is down. */

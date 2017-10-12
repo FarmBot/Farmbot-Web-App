@@ -39,7 +39,7 @@ export namespace Session {
   export function clear(): never {
     localStorage.clear();
     sessionStorage.clear();
-    window.location.href = window.location.origin;
+    // window.location.href = window.location.origin;
     throw new Error("session cleared");
   }
 

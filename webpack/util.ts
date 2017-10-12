@@ -9,7 +9,6 @@ import { box } from "boxed_value";
 import { TaggedResource } from "./resources/tagged_resources";
 import { AxiosResponse } from "axios";
 import { history } from "./history";
-import { Session } from "./session";
 
 // http://stackoverflow.com/a/901144/1064917
 // Grab a query string param by name, because react-router-redux doesn't
@@ -236,14 +235,14 @@ export function smoothScrollToBottom() {
   let timer = 0;
   if (stopY > startY) {
     for (let i = startY; i < stopY; i += step) {
-      setTimeout("window.scrollTo(0, " + leapY + ")", timer * speed);
+      setTimeout(() => window.scrollTo(0, leapY), timer * speed);
       leapY += step;
       if (leapY > stopY) { leapY = stopY; }
       timer++;
     } return;
   }
   for (let i = startY; i > stopY; i -= step) {
-    setTimeout("window.scrollTo(0, " + leapY + ")", timer * speed);
+    setTimeout(() => window.scrollTo(0, leapY), timer * speed);
     leapY -= step; if (leapY < stopY) { leapY = stopY; }
     timer++;
   }
