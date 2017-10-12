@@ -21,7 +21,7 @@ import { connectDevice } from "../connectivity/connect_device";
 export function didLogin(authState: AuthState, dispatch: Function) {
   API.setBaseUrl(authState.token.unencoded.iss);
   dispatch(fetchReleases(authState.token.unencoded.os_update_server));
-  dispatch(loginOk(authState));
+  dispatch(setToken(authState));
   Sync.fetchSyncData(dispatch);
   dispatch(connectDevice(authState));
 }
@@ -30,7 +30,7 @@ export function didLogin(authState: AuthState, dispatch: Function) {
 function onLogin(dispatch: Function) {
   return (response: HttpData<AuthState>) => {
     const { data } = response;
-    Session.replace(data);
+    Session.replaceToken(data);
     didLogin(data, dispatch);
     push("/app/controls");
   };
@@ -53,12 +53,12 @@ function loginErr() {
 /** Very important. Once called, all outbound HTTP requests will
  * have a JSON Web Token attached to their "Authorization" header,
  * thereby granting access to the API. */
-export function loginOk(auth: AuthState): ReduxAction<AuthState> {
+export function setToken(auth: AuthState): ReduxAction<AuthState> {
   axios.interceptors.response.use(responseFulfilled, responseRejected);
   axios.interceptors.request.use(requestFulfilled(auth));
 
   return {
-    type: Actions.LOGIN_OK,
+    type: Actions.REPLACE_TOKEN,
     payload: auth
   };
 }
@@ -120,7 +120,10 @@ export function logout() {
   // In those cases, seeing a logout message may confuse the user.
   // To circumvent this, we must check if the user had a token.
   // If there was infact a token, we can safely show the message.
-  if (Session.getAll()) { success(t("You have been logged out.")); }
+  if (Session.fetchStoredToken()) {
+    success(t("You have been logged out."));
+  }
+
   Session.clear();
   // Technically this is unreachable code:
   return {

@@ -9,6 +9,7 @@ import { box } from "boxed_value";
 import { TaggedResource } from "./resources/tagged_resources";
 import { AxiosResponse } from "axios";
 import { history } from "./history";
+import { Session } from "./session";
 
 // http://stackoverflow.com/a/901144/1064917
 // Grab a query string param by name, because react-router-redux doesn't
@@ -446,4 +447,26 @@ export function bitArray(...values: boolean[]) {
 
 export function bail(message: string): never {
   throw new Error(message);
+}
+
+export const goHome = (): never => {
+  Session.clear();
+  window.location.href = "/";
+  return bail("Going to home page.");
+};
+
+// Thanks,
+// https://italonascimento.github.io
+//   /applying-a-timeout-to-your-promises/#implementing-the-timeout
+export function withTimeout<T>(ms: number, promise: Promise<T>) {
+  // Create a promise that rejects in <ms> milliseconds
+  const timeout = new Promise((resolve, reject) => {
+    const id = setTimeout(() => {
+      clearTimeout(id);
+      reject(`Timed out in  ${ms} ms.`);
+    }, ms);
+  });
+
+  // Returns a race between our timeout and the passed in promise
+  return Promise.race([promise, timeout]);
 }

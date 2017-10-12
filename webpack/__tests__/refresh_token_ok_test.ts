@@ -24,7 +24,7 @@ import { AuthState } from "../auth/interfaces";
 import { maybeRefreshToken } from "../refresh_token";
 import { API } from "../api/index";
 
-API.setBaseUrl("http://whateer.party");
+API.setBaseUrl("http://whatever.party");
 
 describe("maybeRefreshToken()", () => {
   it("gives you back your token when things fail", (done) => {

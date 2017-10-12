@@ -17,12 +17,12 @@ export namespace Session {
   const KEY = "session";
 
   /** Replace the contents of session storage. */
-  export function replace(nextState: AuthState) {
+  export function replaceToken(nextState: AuthState) {
     localStorage[KEY] = JSON.stringify(nextState);
   }
 
   /** Fetch the previous session. */
-  export function getAll(): AuthState | undefined {
+  export function fetchStoredToken(): AuthState | undefined {
     try {
       const v: AuthState = JSON.parse(localStorage[KEY]);
       if (box(v).kind === "object") {
@@ -74,9 +74,7 @@ export namespace Session {
 
 const isBooleanSetting =
   // tslint:disable-next-line:no-any
-  (x: any): x is BooleanSetting => {
-    return !!BooleanSetting[x];
-  };
+  (x: any): x is BooleanSetting => !!BooleanSetting[x];
 
 export function safeBooleanSettting(name: string): BooleanSetting {
   if (isBooleanSetting(name)) {

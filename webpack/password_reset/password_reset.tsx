@@ -2,7 +2,7 @@ import * as React from "react";
 import axios from "axios";
 import { t } from "i18next";
 import { error as log, init as logInit } from "farmbot-toastr";
-import { prettyPrintApiErrors } from "../util";
+import { prettyPrintApiErrors, goHome } from "../util";
 import { API } from "../api";
 import { State, Props } from "./interfaces";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui/index";
@@ -42,7 +42,7 @@ export class PasswordReset extends React.Component<Props, State> {
       password,
       password_confirmation: passwordConfirmation,
     }).then(() => {
-      window.location.href = "/";
+      goHome();
     }).catch((error: string) => {
       log(prettyPrintApiErrors(error as {}));
     });

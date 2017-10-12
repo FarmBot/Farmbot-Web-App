@@ -33,7 +33,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   }
 
   componentDidMount() {
-    if (Session.getAll()) { window.location.href = "/app/controls"; }
+    if (Session.fetchStoredToken()) { window.location.href = "/app/controls"; }
     logInit();
     API.setBaseUrl(API.fetchBrowserLocation());
     this.setState({
@@ -66,7 +66,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     API.setBaseUrl(url);
     axios.post(API.current.tokensPath, payload)
       .then((resp: HttpData<AuthState>) => {
-        Session.replace(resp.data);
+        Session.replaceToken(resp.data);
         window.location.href = "/app/controls";
       }).catch((error: Error) => {
         switch (_.get(error, "response.status")) {
@@ -308,5 +308,5 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     </div>;
   }
 
-  render() { return Session.getAll() ? <div /> : this.defaultContent(); }
+  render() { return Session.fetchStoredToken() ? <div /> : this.defaultContent(); }
 }

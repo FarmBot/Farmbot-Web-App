@@ -8,8 +8,7 @@ conf.output = {
   // must match config.webpack.output_dir
   path: path.join(__dirname, '..', 'public', 'webpack'),
   publicPath: '//localhost:' + devServerPort + '/webpack/',
-  filename: '[name].js',
-  watch: true
+  filename: '[name].js'
 };
 
 conf.devServer = {
