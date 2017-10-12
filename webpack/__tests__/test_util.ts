@@ -8,7 +8,9 @@ import {
   semverCompare,
   SemverResult,
   trim,
-  bitArray
+  bitArray,
+  withTimeout,
+  goHome
 } from "../util";
 describe("util", () => {
   describe("safeStringFetch", () => {
@@ -155,3 +157,27 @@ describe("bitArray", () => {
     expect(bitArray(true, true)).toBe(0b11);
   });
 });
+
+describe("withTimeout()", () => {
+  it("rejects promises that do not meet a particular deadline", (done) => {
+    const p = new Promise(res => setTimeout(() => res("Done"), 10));
+    withTimeout(1, p).then(fail, (y) => {
+      expect(y).toContain("Timed out");
+      done();
+    });
+  });
+
+  it("resolves promises that meet a particular deadline", (done) => {
+    withTimeout(10, new Promise(res => setTimeout(() => res("Done"), 1)))
+      .then(y => {
+        expect(y).toContain("Done");
+        done();
+      }, fail);
+  });
+});
+
+// describe("goHome()", () => {
+//   it("clears the session and sends user to '/'", () => {
+//     goHome();
+//   });
+// });

@@ -14,8 +14,13 @@ const mockAuth = (jti = "456"): AuthState => ({
 
 jest.mock("axios", () => ({
   default: {
-    get() {
-      return Promise.resolve({ data: mockAuth("000") });
+    interceptors: {
+      response: {
+        use: jest.fn()
+      },
+      get() {
+        return Promise.resolve({ data: mockAuth("000") });
+      }
     }
   }
 }));

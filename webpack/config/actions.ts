@@ -11,7 +11,7 @@ export const storeToken =
     didLogin(auth, dispatch);
   };
 
-/** Amount of time were willing to wait before concluding that the token is bad
+/** Amount of time we're willing to wait before concluding that the token is bad
  * or the API is down. */
 const MAX_TOKEN_WAIT_TIME = 10000;
 
