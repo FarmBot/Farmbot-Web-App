@@ -15,14 +15,18 @@ conf.output = {
   path: path.join(__dirname, '..', 'public', 'webpack'),
   publicPath: '/webpack/',
   filename: '[name]-[chunkhash].js',
-  chunkFilename: '[name]-[chunkhash].chunk.js'
+  chunkFilename: '[id].chunk.js'
 };
 
 [
   new webpack.optimize.CommonsChunkPlugin({
-    names: Object.keys(conf.entry),
-    minChunks: Infinity
+    name: "commons",
+    filename: "commons.js"
   }),
+  // new webpack.optimize.CommonsChunkPlugin({
+  //   names: Object.keys(conf.entry),
+  //   minChunks: Infinity
+  // }),
   new ExtractTextPlugin({
     // Temporary hotfix for some issues on staging.
     // - RC 12 MAY 17
