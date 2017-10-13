@@ -62,9 +62,9 @@ const errorLoading = (cb: Function) => function handleError(err: object) {
 const controlsRoute = {
   path: "app/controls",
   getComponent(_discard: void, cb: Function) {
-    import( /* webpackChunkName: "controls" */ "./controls/controls").then(
-      (module) => cb(undefined, module.Controls)
-    ).catch(errorLoading(cb));
+    import("./controls/controls")
+      .then((module) => cb(undefined, module.Controls))
+      .catch(errorLoading(cb));
   }
 };
 
@@ -116,7 +116,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/account",
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "accounts_index" */  "./account/index")
+          import("./account/index")
             .then(module => cb(undefined, module.Account))
             .catch(errorLoading(cb));
         }
@@ -125,7 +125,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/device",
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "devices_devices" */  "./devices/devices")
+          import("./devices/devices")
             .then(module => cb(undefined, module.Devices))
             .catch(errorLoading(cb));
         }
@@ -133,7 +133,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/farmware",
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "farmwares_index" */  "./farmware/index")
+          import("./farmware/index")
             .then(module => cb(undefined, module.FarmwarePage))
             .catch(errorLoading(cb));
         }
@@ -142,7 +142,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         path: "app/designer",
         onEnter: this.maybeReplaceDesignerModules.bind(this),
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "fd_index" */  "./farm_designer/index")
+          import("./farm_designer/index")
             .then(module => cb(undefined, module.FarmDesigner))
             .catch(errorLoading(cb));
         },
@@ -150,9 +150,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
           {
             path: "plants",
             getComponent(_discard: void, cb: Function) {
-              import(
-                /* webpackChunkName: "fd_plants_plant_inventory" */
-                "./farm_designer/plants/plant_inventory")
+              import("./farm_designer/plants/plant_inventory")
                 .then(module => cb(undefined, module.Plants))
                 .catch(errorLoading(cb));
             },
@@ -160,9 +158,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
           {
             path: "plants/crop_search",
             getComponent(_discard: void, cb: Function) {
-              import(
-                /* webpackChunkName: "fd_plants_crop_catalog" */
-                "./farm_designer/plants/crop_catalog")
+              import("./farm_designer/plants/crop_catalog")
                 .then(module => cb(undefined, module.CropCatalog))
                 .catch(errorLoading(cb));
             },
@@ -170,9 +166,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
           {
             path: "plants/crop_search/:crop",
             getComponent(_discard: void, cb: Function) {
-              import(
-                /* webpackChunkName: "fd_plants_crop_info" */
-                "./farm_designer/plants/crop_info")
+              import("./farm_designer/plants/crop_info")
                 .then(module => cb(undefined, module.CropInfo))
                 .catch(errorLoading(cb));
             },
@@ -180,9 +174,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
           {
             path: "plants/crop_search/:crop/add",
             getComponent(_discard: void, cb: Function) {
-              import(
-                /* webpackChunkName: "fd_plants_add_plants" */
-                "./farm_designer/plants/add_plant")
+              import("./farm_designer/plants/add_plant")
                 .then(module => cb(undefined, module.AddPlant))
                 .catch(errorLoading(cb));
             },
@@ -190,9 +182,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
           {
             path: "plants/select",
             getComponent(_discard: void, cb: Function) {
-              import(
-                /* webpackChunkName: "fd_plants_select_plants" */
-                "./farm_designer/plants/select_plants")
+              import("./farm_designer/plants/select_plants")
                 .then(module => cb(undefined, module.SelectPlants))
                 .catch(errorLoading(cb));
             },
@@ -200,9 +190,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
           {
             path: "plants/:plant_id",
             getComponent(_discard: void, cb: Function) {
-              import(
-                /* webpackChunkName: "fd_plants_plant_info" */
-                "./farm_designer/plants/plant_info")
+              import("./farm_designer/plants/plant_info")
                 .then(module => cb(undefined, module.PlantInfo))
                 .catch(errorLoading(cb));
             },
@@ -210,9 +198,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
           {
             path: "plants/:plant_id/edit",
             getComponent(_discard: void, cb: Function) {
-              import(
-                /* webpackChunkName: "fd_plants_edit_plant_info" */
-                "./farm_designer/plants/edit_plant_info")
+              import("./farm_designer/plants/edit_plant_info")
                 .then(module => cb(undefined, module.EditPlantInfo))
                 .catch(errorLoading(cb));
             },
@@ -220,9 +206,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
           {
             path: "farm_events",
             getComponent(_discard: void, cb: Function) {
-              import(
-                /* webpackChunkName: "fd_farm_events_farm_events" */
-                "./farm_designer/farm_events/farm_events")
+              import("./farm_designer/farm_events/farm_events")
                 .then(module => cb(undefined, module.FarmEvents))
                 .catch(errorLoading(cb));
             }
@@ -230,9 +214,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
           {
             path: "farm_events/add",
             getComponent(_discard: void, cb: Function) {
-              import(
-                /* webpackChunkName: "fd_farm_events_add_farm_event" */
-                "./farm_designer/farm_events/add_farm_event")
+              import("./farm_designer/farm_events/add_farm_event")
                 .then(module => cb(undefined, module.AddFarmEvent))
                 .catch(errorLoading(cb));
             }
@@ -240,9 +222,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
           {
             path: "farm_events/:farm_event_id",
             getComponent(_discard: void, cb: Function) {
-              import(
-                /* webpackChunkName: "fd_farm_events_edit_farm_event" */
-                "./farm_designer/farm_events/edit_farm_event")
+              import("./farm_designer/farm_events/edit_farm_event")
                 .then(module => cb(undefined, module.EditFarmEvent))
                 .catch(errorLoading(cb));
             }
@@ -253,11 +233,11 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         path: "app/regimens",
         getComponent(_discard: void, cb: Function) {
           if (!isMobile()) {
-            import( /* webpackChunkName: "regimens_index" */  "./regimens/index")
+            import("./regimens/index")
               .then(module => cb(undefined, module.Regimens))
               .catch(errorLoading(cb));
           } else {
-            import( /* webpackChunkName: "regimens_list_index" */  "./regimens/list/index")
+            import("./regimens/list/index")
               .then(module => cb(undefined, module.RegimensList))
               .catch(errorLoading(cb));
           }
@@ -266,7 +246,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/regimens/:regimen",
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "regimens_index" */  "./regimens/index")
+          import("./regimens/index")
             .then(module => cb(undefined, module.Regimens))
             .catch(errorLoading(cb));
         }
@@ -274,7 +254,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/sequences",
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "sequences_sequences" */  "./sequences/sequences")
+          import("./sequences/sequences")
             .then(module => cb(undefined, module.Sequences))
             .catch(errorLoading(cb));
         },
@@ -282,7 +262,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/sequences/:sequence",
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "sequences_sequences" */  "./sequences/sequences")
+          import("./sequences/sequences")
             .then(module => cb(undefined, module.Sequences))
             .catch(errorLoading(cb));
         },
@@ -290,7 +270,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/tools",
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "tools_index" */  "./tools/index")
+          import("./tools/index")
             .then(module => cb(undefined, module.Tools))
             .catch(errorLoading(cb));
         }
@@ -298,7 +278,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "*",
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "four_oh_four" */  "./404")
+          import("./404")
             .then(module => cb(undefined, module.FourOhFour))
             .catch(errorLoading(cb));
         }
