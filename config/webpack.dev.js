@@ -24,8 +24,4 @@ conf.devServer = {
   headers: { 'Access-Control-Allow-Origin': '*' }
 };
 
-conf.plugins.push(new webpack.optimize.CommonsChunkPlugin({
-  names: Object.keys(conf.entry),
-  minChunks: Infinity
-}))
 module.exports = conf;
