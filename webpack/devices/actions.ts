@@ -184,6 +184,10 @@ export function toggleControlPanel(payload: keyof ControlPanelState) {
   return { type: "TOGGLE_CONTROL_PANEL_OPTION", payload };
 }
 
+export function bulkToggleControlPanel(payload: boolean) {
+  return { type: "BULK_TOGGLE_CONTROL_PANEL", payload };
+}
+
 export function MCUFactoryReset() {
   return getDevice().resetMCU();
 }

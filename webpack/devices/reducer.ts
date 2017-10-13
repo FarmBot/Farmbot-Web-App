@@ -110,6 +110,13 @@ export let botReducer = generateReducer<BotState>(initialState)
     s.controlPanelState[a.payload] = !s.controlPanelState[a.payload];
     return s;
   })
+  .add<boolean>(Actions.BULK_TOGGLE_CONTROL_PANEL, (s, a) => {
+    s.controlPanelState.homing_and_calibration = a.payload;
+    s.controlPanelState.motors = a.payload;
+    s.controlPanelState.encoders_and_endstops = a.payload;
+    s.controlPanelState.danger_zone = a.payload;
+    return s;
+  })
   .add<string>(Actions.FETCH_OS_UPDATE_INFO_OK, (s, { payload }) => {
     s.currentOSVersion = payload;
     return s;

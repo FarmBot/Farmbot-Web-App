@@ -26,7 +26,7 @@ const sequenceList = (dispatch: Function) =>
     const click = () => dispatch(selectSequence(ts.uuid));
     const name = ts.body.name + (ts.specialStatus ? "*" : "");
     const { uuid } = ts;
-    return <div className="sequence-list-items">
+    return <div className="sequence-list-items" key={uuid}>
       <Link
         to={`/app/sequences/${urlFriendly(ts.body.name) || ""}`}
         key={uuid}
