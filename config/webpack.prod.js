@@ -6,27 +6,22 @@ var genConfig = require("./webpack.base");
 var UglifyJsPlugin = require("webpack-uglify-js-plugin");
 var OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 var webpack = require("webpack");
-console.log("==== PROD.JS")
 
 var conf = genConfig();
 
 conf.output = {
-  // must match config.webpack.output_dir
   path: path.join(__dirname, '..', 'public', 'webpack'),
   publicPath: '/webpack/',
   filename: '[name]-[chunkhash].js',
   chunkFilename: '[id].chunk.js'
 };
-
+var hmm = Object.keys(conf.entry);
+hmm.push("commons"); // What is this? Why?
 [
   new webpack.optimize.CommonsChunkPlugin({
-    name: "commons",
-    filename: "commons.js"
+    names: hmm,
+    minChunks: Infinity
   }),
-  // new webpack.optimize.CommonsChunkPlugin({
-  //   names: Object.keys(conf.entry),
-  //   minChunks: Infinity
-  // }),
   new ExtractTextPlugin({
     // Temporary hotfix for some issues on staging.
     // - RC 12 MAY 17

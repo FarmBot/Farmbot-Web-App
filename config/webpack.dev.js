@@ -2,7 +2,9 @@ var devServerPort = 3808;
 var path = require("path");
 var genConfig = require("./webpack.base");
 var conf = genConfig();
-console.log("==== DEV.JS")
+var webpack = require("webpack");
+
+console.log("==== DEV.JS");
 
 conf.output = {
   // must match config.webpack.output_dir
@@ -22,4 +24,8 @@ conf.devServer = {
   headers: { 'Access-Control-Allow-Origin': '*' }
 };
 
+conf.plugins.push(new webpack.optimize.CommonsChunkPlugin({
+  names: Object.keys(conf.entry),
+  minChunks: Infinity
+}))
 module.exports = conf;
