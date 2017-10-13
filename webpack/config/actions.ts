@@ -5,10 +5,15 @@ import { maybeRefreshToken } from "../refresh_token";
 import { withTimeout } from "../util";
 import { AuthState } from "../auth/interfaces";
 
-export const storeToken = (auth: AuthState, dispatch: Function) => () => {
-  dispatch(setToken(auth));
-  didLogin(auth, dispatch);
-};
+export const storeToken =
+  (old: AuthState, dispatch: Function) => (knew: AuthState | undefined) => {
+    const t = knew || old;
+    if (!knew) {
+      console.warn("Failed to refresh token. Something is wrong.");
+    }
+    dispatch(setToken(t));
+    didLogin(t, dispatch);
+  };
 
 /** Amount of time we're willing to wait before concluding that the token is bad
  * or the API is down. */
@@ -22,8 +27,10 @@ export function ready(): Thunk {
   return (dispatch, getState) => {
     const auth = Session.fetchStoredToken() || getState().auth;
     if (auth) {
-      withTimeout(MAX_TOKEN_WAIT_TIME, maybeRefreshToken(auth))
-        .then(storeToken(auth, dispatch), Session.clear);
+      const ok = storeToken(auth, dispatch);
+      const no = () => ok(undefined);
+
+      withTimeout(MAX_TOKEN_WAIT_TIME, maybeRefreshToken(auth)).then(ok, no);
     } else {
       Session.clear();
     }

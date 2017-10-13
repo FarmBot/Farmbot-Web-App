@@ -32,7 +32,7 @@ export function fetchSyncData(dispatch: Function) {
         type, payload: { name, data: r.data }
       }), fail);
 
-  const fail = () => warning("Please try refreshing the page.",
+  const fail = () => warning("Please try refreshing the page or logging in again.",
     "Error downloading data");
 
   fetch<User>("users", API.current.usersPath);
