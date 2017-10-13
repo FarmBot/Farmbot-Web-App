@@ -6,6 +6,7 @@ var genConfig = require("./webpack.base");
 var UglifyJsPlugin = require("webpack-uglify-js-plugin");
 var OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 var webpack = require("webpack");
+console.log("==== PROD.JS")
 
 var conf = genConfig();
 
@@ -17,6 +18,10 @@ conf.output = {
 };
 
 [
+  new webpack.optimize.CommonsChunkPlugin({
+    names: Object.keys(conf.entry),
+    minChunks: Infinity
+  }),
   new ExtractTextPlugin({
     // Temporary hotfix for some issues on staging.
     // - RC 12 MAY 17

@@ -1,4 +1,5 @@
 var StatsPlugin = require('stats-webpack-plugin');
+console.log("==== BASE.JS")
 
 module.exports = function () {
   return {
