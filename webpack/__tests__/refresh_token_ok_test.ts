@@ -34,8 +34,12 @@ describe("maybeRefreshToken()", () => {
   it("gives you back your token when things fail", (done) => {
     maybeRefreshToken(mockAuth("111"))
       .then((nextToken) => {
-        expect(nextToken.token.unencoded.jti).toEqual("000");
-        done();
+        if (nextToken) {
+          expect(nextToken.token.unencoded.jti).toEqual("000");
+          done();
+        } else {
+          fail();
+        }
       });
   });
 });
