@@ -15,12 +15,11 @@ conf.output = {
   filename: '[name]-[chunkhash].js',
   chunkFilename: '[id].chunk.js'
 };
-var hmm = Object.keys(conf.entry);
-hmm.push("commons"); // What is this? Why?
+
 [
   new webpack.optimize.CommonsChunkPlugin({
-    names: hmm,
-    minChunks: Infinity
+    filename: "commons.js",
+    name: "commons"
   }),
   new ExtractTextPlugin({
     // Temporary hotfix for some issues on staging.
