@@ -1,11 +1,11 @@
 import * as React from "react";
-import { render } from "react-dom";
-import { detectLanguage } from "../i18n";
-import { PasswordReset } from "./password_reset";
-import * as i18next from "i18next";
 import "../css/_index.scss";
+import { detectLanguage } from "../i18n";
 
-detectLanguage().then((config) => {
+detectLanguage().then(async (config) => {
+  const i18next = await import("i18next");
+  const { render } = await import("react-dom");
+  const { PasswordReset } = await import("./password_reset");
   i18next.init(config, (err, t) => {
     const node = document.createElement("DIV");
     node.id = "root";

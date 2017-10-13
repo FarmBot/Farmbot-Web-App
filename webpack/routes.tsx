@@ -253,11 +253,11 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         path: "app/regimens",
         getComponent(_discard: void, cb: Function) {
           if (!isMobile()) {
-            import( /* webpackChunkName: "QQQ" */  "./regimens/index")
+            import( /* webpackChunkName: "regimens_index" */  "./regimens/index")
               .then(module => cb(undefined, module.Regimens))
               .catch(errorLoading(cb));
           } else {
-            import( /* webpackChunkName: "QQQ" */  "./regimens/list/index")
+            import( /* webpackChunkName: "regimens_list_index" */  "./regimens/list/index")
               .then(module => cb(undefined, module.RegimensList))
               .catch(errorLoading(cb));
           }
@@ -266,7 +266,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/regimens/:regimen",
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "QQQ" */  "./regimens/index")
+          import( /* webpackChunkName: "regimens_index" */  "./regimens/index")
             .then(module => cb(undefined, module.Regimens))
             .catch(errorLoading(cb));
         }
@@ -274,7 +274,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/sequences",
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "QQQ" */  "./sequences/sequences")
+          import( /* webpackChunkName: "sequences_sequences" */  "./sequences/sequences")
             .then(module => cb(undefined, module.Sequences))
             .catch(errorLoading(cb));
         },
@@ -282,7 +282,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/sequences/:sequence",
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "QQQ" */  "./sequences/sequences")
+          import( /* webpackChunkName: "sequences_sequences" */  "./sequences/sequences")
             .then(module => cb(undefined, module.Sequences))
             .catch(errorLoading(cb));
         },
@@ -290,7 +290,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/tools",
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "QQQ" */  "./tools/index")
+          import( /* webpackChunkName: "tools_index" */  "./tools/index")
             .then(module => cb(undefined, module.Tools))
             .catch(errorLoading(cb));
         }
@@ -298,7 +298,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "*",
         getComponent(_discard: void, cb: Function) {
-          import( /* webpackChunkName: "QQQ" */  "./404")
+          import( /* webpackChunkName: "four_oh_four" */  "./404")
             .then(module => cb(undefined, module.FourOhFour))
             .catch(errorLoading(cb));
         }
