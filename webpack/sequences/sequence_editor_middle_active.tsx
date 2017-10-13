@@ -17,7 +17,7 @@ import { TestButton } from "./test_button";
 import { warning } from "farmbot-toastr";
 import { AllSteps } from "./all_steps";
 
-const onDrop =
+export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
     (index: number, key: string) => {
       dispatch1(function (dispatch2: Function, getState: GetState) {
