@@ -146,6 +146,10 @@
       margin-right: 10px;
     }
   }
+  &.no-float {
+    float: none;
+    margin-right: 1rem;
+  }
 }
 
 .block {

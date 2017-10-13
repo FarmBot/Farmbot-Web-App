@@ -1,5 +1,5 @@
 import * as React from "react";
-import { MCUFactoryReset } from "../actions";
+import { MCUFactoryReset, bulkToggleControlPanel } from "../actions";
 import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
 import { HardwareSettingsProps } from "../interfaces";
 import { MustBeOnline } from "../must_be_online";
@@ -36,6 +36,16 @@ export class HardwareSettings extends
           </MustBeOnline>
         </WidgetHeader>
         <WidgetBody>
+          <button
+            className={"fb-button gray no-float"}
+            onClick={() => dispatch(bulkToggleControlPanel(true))}>
+            Expand All
+          </button>
+          <button
+            className={"fb-button gray no-float"}
+            onClick={() => dispatch(bulkToggleControlPanel(false))}>
+            Collapse All
+          </button>
           <MustBeOnline
             status={bot.hardware.informational_settings.sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>

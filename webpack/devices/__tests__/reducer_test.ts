@@ -2,6 +2,7 @@ import { versionOK, botReducer, initialState } from "../reducer";
 import { Actions } from "../../constants";
 import { ControlPanelState } from "../interfaces";
 import { SyncStatus } from "farmbot/dist";
+import * as _ from "lodash";
 
 describe("safeStringFetch", () => {
   it("Checks the correct version on update", () => {
@@ -49,6 +50,14 @@ describe("botRedcuer", () => {
     });
     expect(state.controlPanelState.danger_zone)
       .toBe(!initialState.controlPanelState.danger_zone);
+  });
+
+  it("bulk toggles control panel options", () => {
+    const state = botReducer(initialState, {
+      type: Actions.BULK_TOGGLE_CONTROL_PANEL,
+      payload: true
+    });
+    _.values(state.controlPanelState).map(value => expect(value).toBeTruthy());
   });
 
   it("fetches OS update info", () => {
