@@ -19,7 +19,8 @@ conf.output = {
 [
   new webpack.optimize.CommonsChunkPlugin({
     filename: "commons.js",
-    name: "commons"
+    name: "commons",
+    async: true
   }),
   new ExtractTextPlugin({
     // Temporary hotfix for some issues on staging.
