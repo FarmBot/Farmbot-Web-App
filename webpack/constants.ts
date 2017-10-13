@@ -379,7 +379,7 @@ export enum Actions {
   REFRESH_RESOURCE_NO = "REFRESH_RESOURCE_NO",
 
   // Auth
-  LOGIN_OK = "LOGIN_OK",
+  REPLACE_TOKEN = "LOGIN_OK",
 
   // Config
   CHANGE_API_PORT = "CHANGE_API_PORT",

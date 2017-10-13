@@ -12,7 +12,8 @@ module CeleryScriptSettingsBag
                              move_relative write_pin read_pin send_message
                              factory_reset execute_script set_user_env wait
                              add_point install_farmware update_farmware zero
-                             remove_farmware take_photo data_update find_home)
+                             remove_farmware take_photo data_update find_home
+                             install_first_party_farmware)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
   RESOURCE_NAME         = %w(images plants regimens peripherals

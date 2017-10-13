@@ -1,38 +1,47 @@
 jest.mock("axios", () => ({
   default: {
-    get() {
-      return Promise.reject("NO");
-    }
+    interceptors: {
+      response: { use: jest.fn() },
+      request: { use: jest.fn() }
+    },
+    get() { return Promise.reject("NO"); }
   }
 }));
 
-import { AuthState } from "../auth/interfaces";
+jest.mock("../session", () => {
+  return {
+    Session: {
+      clear: jest.fn(),
+      getBool: jest.fn(),
+    }
+  };
+});
+
 import { maybeRefreshToken } from "../refresh_token";
 import { API } from "../api/index";
+import { Session } from "../session";
 
 API.setBaseUrl("http://blah.whatever.party");
 
-const fakeAuth = (jti = "456"): AuthState => ({
-  token: {
-    encoded: "---",
-    unencoded: {
-      iat: 123,
-      jti,
-      iss: "---",
-      exp: 456,
-      mqtt: "---",
-      os_update_server: "---"
-    }
-  }
-});
-
 describe("maybeRefreshToken()", () => {
 
-  it("gives you the old token when it cant find a new one", (done) => {
-    maybeRefreshToken(fakeAuth("111"))
-      .then((nextToken) => {
-        expect(nextToken.token.unencoded.jti).toEqual("111");
-        done();
-      });
+  it("logs you out when a refresh fails", (done) => {
+    const t = {
+      token: {
+        encoded: "---",
+        unencoded: {
+          iat: 123,
+          jti: "111",
+          iss: "---",
+          exp: 456,
+          mqtt: "---",
+          os_update_server: "---"
+        }
+      }
+    };
+    maybeRefreshToken(t).then(() => {
+      expect(Session.clear).toHaveBeenCalled();
+      done();
+    });
   });
 });

@@ -9,7 +9,8 @@ import { history } from "./history";
 import { Store } from "./redux/interfaces";
 import { ready } from "./config/actions";
 import { Session } from "./session";
-import { isMobile } from "./util";
+import { isMobile, attachToRoot } from "./util";
+import { Callback } from "i18next";
 
 interface RootComponentProps {
   store: Store;
@@ -66,11 +67,17 @@ const controlsRoute = {
     ).catch(errorLoading(cb));
   }
 };
+
+export const attachAppToDom: Callback = (err, t) => {
+  attachToRoot(RootComponent, { store: _store });
+  _store.dispatch(ready());
+};
+
 export class RootComponent extends React.Component<RootComponentProps, {}> {
 
   requireAuth(_discard: RouterState, replace: RedirectFunction) {
     const { store } = this.props;
-    if (Session.getAll()) { // has a previous session in cache
+    if (Session.fetchStoredToken()) { // has a previous session in cache
       if (store.getState().auth) { // Has session, logged in.
         return;
       } else { // Has session but not logged in (returning visitor).
@@ -282,10 +289,10 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
   render() {
     // ==== TEMPORARY HACK. TODO: Add a before hook, if such a thing exists in
     // React Router. Or switch routing libs.
-    const notLoggedIn = !Session.getAll();
+    const notLoggedIn = !Session.fetchStoredToken();
     const restrictedArea = window.location.pathname.includes("/app");
     if (notLoggedIn && restrictedArea) {
-      window.location.href = "/";
+      Session.clear();
     }
     // ==== END HACK ====
     return <Provider store={_store}>

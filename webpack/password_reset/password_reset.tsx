@@ -6,6 +6,7 @@ import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { State, Props } from "./interfaces";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui/index";
+import { Session } from "../session";
 
 export class PasswordReset extends React.Component<Props, State> {
   constructor() {
@@ -41,11 +42,11 @@ export class PasswordReset extends React.Component<Props, State> {
       id: token,
       password,
       password_confirmation: passwordConfirmation,
-    }).then(() => {
-      window.location.href = "/";
-    }).catch((error: string) => {
-      log(prettyPrintApiErrors(error as {}));
-    });
+    })
+      .then(Session.clear)
+      .catch((error: string) => {
+        log(prettyPrintApiErrors(error as {}));
+      });
   }
 
   render() {

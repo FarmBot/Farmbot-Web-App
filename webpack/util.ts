@@ -235,14 +235,14 @@ export function smoothScrollToBottom() {
   let timer = 0;
   if (stopY > startY) {
     for (let i = startY; i < stopY; i += step) {
-      setTimeout("window.scrollTo(0, " + leapY + ")", timer * speed);
+      setTimeout(() => window.scrollTo(0, leapY), timer * speed);
       leapY += step;
       if (leapY > stopY) { leapY = stopY; }
       timer++;
     } return;
   }
   for (let i = startY; i > stopY; i -= step) {
-    setTimeout("window.scrollTo(0, " + leapY + ")", timer * speed);
+    setTimeout(() => window.scrollTo(0, leapY), timer * speed);
     leapY -= step; if (leapY < stopY) { leapY = stopY; }
     timer++;
   }
@@ -446,4 +446,20 @@ export function bitArray(...values: boolean[]) {
 
 export function bail(message: string): never {
   throw new Error(message);
+}
+
+// Thanks,
+// https://italonascimento.github.io
+//   /applying-a-timeout-to-your-promises/#implementing-the-timeout
+export function withTimeout<T>(ms: number, promise: Promise<T>) {
+  // Create a promise that rejects in <ms> milliseconds
+  const timeout = new Promise((resolve, reject) => {
+    const id = setTimeout(() => {
+      clearTimeout(id);
+      reject(`Timed out in  ${ms} ms.`);
+    }, ms);
+  });
+
+  // Returns a race between our timeout and the passed in promise
+  return Promise.race([promise, timeout]);
 }

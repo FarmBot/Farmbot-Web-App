@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Session } from "./session";
 import { BooleanSetting } from "./session_keys";
+import { InitOptions } from "i18next";
 
 function generateUrl(langCode: string) {
   const lang = langCode.slice(0, 2);
@@ -15,17 +16,18 @@ function getUserLang(langCode = "en_us") {
     .catch((error) => { return "en"; });
 }
 
-export function detectLanguage() {
-  return getUserLang(navigator.language).then(function (lang) {
-    // NOTE: Some international users prefer using the app in English.
-    //       This preference is stored in `DISABLE_I18N`.
-    const choice = Session.getBool(BooleanSetting.disableI18n) ? "en" : lang;
-    const langi = require("../public/app-resources/languages/" + choice + ".js");
-    return {
-      nsSeparator: "",
-      keySeparator: "",
-      lng: lang,
-      resources: { [lang]: { translation: langi } }
-    };
-  });
+function generateI18nConfig(lang: string): InitOptions {
+  // NOTE: Some users prefer English over i18nized version.
+  const choice = Session.getBool(BooleanSetting.disableI18n) ? "en" : lang;
+  const langi = require("../public/app-resources/languages/" + choice + ".js");
+
+  return {
+    nsSeparator: "",
+    keySeparator: "",
+    lng: lang,
+    resources: { [lang]: { translation: langi } }
+  };
 }
+
+export const detectLanguage =
+  () => getUserLang(navigator.language).then(generateI18nConfig);
