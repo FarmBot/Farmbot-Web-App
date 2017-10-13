@@ -18,7 +18,6 @@ conf.output = {
 
 [
   new webpack.optimize.CommonsChunkPlugin({
-    filename: "commons.js",
     name: "commons",
     async: true
   }),
