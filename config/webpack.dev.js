@@ -4,8 +4,6 @@ var genConfig = require("./webpack.base");
 var conf = genConfig();
 var webpack = require("webpack");
 
-console.log("==== DEV.JS");
-
 conf.output = {
   // must match config.webpack.output_dir
   path: path.join(__dirname, '..', 'public', 'webpack'),

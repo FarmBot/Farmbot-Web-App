@@ -5,6 +5,5 @@ var production = [
 ].includes('production');
 
 var configFile = production ? "./webpack.prod" : "./webpack.dev";
-console.log("==== CONFIG.JS")
 
 module.exports = require(configFile);
