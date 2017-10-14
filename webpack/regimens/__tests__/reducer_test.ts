@@ -84,3 +84,42 @@ describe("INIT_RESOURCE", () => {
     expect(nextState.currentRegimen).toBe(action.payload.uuid);
   });
 });
+
+describe("SELECT_REGIMEN", () => {
+  it("sets currentRegimen", () => {
+    const state = defensiveClone(STATE);
+    state.currentRegimen = undefined;
+    const action = {
+      type: Actions.SELECT_REGIMEN,
+      payload: { uuid: "regimens.4.56", kind: "regimens" }
+    };
+    const nextState = regimensReducer(STATE, action);
+    expect(nextState.currentRegimen).toBe(action.payload.uuid);
+  });
+});
+
+describe("SET_SEQUENCE", () => {
+  it("sets selectedSequenceUUID", () => {
+    const state = defensiveClone(STATE);
+    state.selectedSequenceUUID = undefined;
+    const action = {
+      type: Actions.SET_SEQUENCE,
+      payload: "sequence"
+    };
+    const nextState = regimensReducer(STATE, action);
+    expect(nextState.selectedSequenceUUID).toBe(action.payload);
+  });
+});
+
+describe("SET_TIME_OFFSET", () => {
+  it("sets dailyOffsetMs", () => {
+    const state = defensiveClone(STATE);
+    state.dailyOffsetMs = NaN;
+    const action = {
+      type: Actions.SET_TIME_OFFSET,
+      payload: 100
+    };
+    const nextState = regimensReducer(STATE, action);
+    expect(nextState.dailyOffsetMs).toBe(action.payload);
+  });
+});
