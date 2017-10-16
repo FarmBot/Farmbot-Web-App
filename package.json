@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@blueprintjs/core": "^1.29.0",
+    "@blueprintjs/datetime": "^1.22.0",
     "@blueprintjs/labs": "^0.4.0",
     "@types/enzyme": "^2.8.9",
     "@types/fastclick": "^1.0.28",
