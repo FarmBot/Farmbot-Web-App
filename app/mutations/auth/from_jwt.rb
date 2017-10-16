@@ -9,9 +9,7 @@ module Auth
       claims = token.unencoded
       User.find_by_email_or_id(claims["sub"])
     rescue JWT::DecodeError, ActiveRecord::RecordNotFound, User::BadSub
-      add_error :jwt,
-                :decode_error,
-                Auth::ReloadToken::BAD_SUB
+      add_error :jwt, :decode_error, Auth::ReloadToken::BAD_SUB
     end
 
     def just_the_token

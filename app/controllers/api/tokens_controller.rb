@@ -9,14 +9,7 @@ module Api
 
     # Give you the same token, but reloads all claims except `exp`
     def show
-      jwt = request.headers["Authorization"]
-      if jwt
-        mutate Auth::ReloadToken.run(jwt: jwt)
-      else # Temporary debug breakpoint.
-        Rollbar.warn "The user tried to refresh their token, but " +
-        "we could not find it in the `Authorization` header."
-        sorry Auth::ReloadToken::BAD_SUB, 422
-      end
+      mutate Auth::ReloadToken.run(jwt: request.headers["Authorization"])
     end
 
     instrument_method
