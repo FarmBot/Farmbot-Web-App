@@ -13,9 +13,9 @@ module Api
       if jwt
         mutate Auth::ReloadToken.run(jwt: jwt)
       else # Temporary debug breakpoint.
-        Rollbar.warn "The user tried to refresh their token, but they " +
+        Rollbar.warn "The user tried to refresh their token, but " +
         "we could not find it in the `Authorization` header."
-        sorry "Please try logging in again.", 422
+        sorry Auth::ReloadToken::BAD_SUB, 422
       end
     end
 

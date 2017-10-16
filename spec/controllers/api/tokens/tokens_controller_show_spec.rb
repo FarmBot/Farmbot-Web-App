@@ -30,7 +30,8 @@ describe Api::TokensController do
     it 'denies bad tokens' do
       request.headers["Authorization"] = "bearer #{auth_token.encoded + "no..."}"
       get :show
-      expect(json.dig(:error, :jwt)).to include("not valid")
+      expect(json.dig(:error, :jwt))
+        .to eq(Auth::ReloadToken::BAD_SUB)
     end
   end
 end

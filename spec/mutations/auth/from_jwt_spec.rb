@@ -26,8 +26,8 @@ describe Auth::FromJWT do
   end
 
   it "crashes when sub is neither string nor Integer" do
-    t       = fake[1.23]
-    bad_sub = "SUB was neither string nor number"
-    expect { Auth::FromJWT.run!(jwt: t) }.to raise_error(bad_sub)
+    expect {
+      Auth::FromJWT.run!(jwt: fake[1.23])
+    }.to raise_error(Auth::ReloadToken::BAD_SUB)
   end
 end
