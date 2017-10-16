@@ -3,7 +3,7 @@ import { buildResourceIndex } from "../resource_index_builder";
 import {
   TaggedFarmEvent, TaggedSequence, TaggedRegimen, TaggedImage,
   TaggedTool, TaggedToolSlotPointer, TaggedUser, TaggedWebcamFeed,
-  TaggedPlantPointer, TaggedGenericPointer
+  TaggedPlantPointer, TaggedGenericPointer, TaggedPeripheral
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
@@ -121,5 +121,13 @@ export function fakeWebcamFeed(): TaggedWebcamFeed {
     updated_at: "---",
     url: "http://i.imgur.com/iAOUmEB.jpg",
     name: "wcf #" + id
+  });
+}
+
+export function fakePeripheral(): TaggedPeripheral {
+  return fakeResource("peripherals", {
+    id: idCounter++,
+    label: "Pin 0",
+    pin: 0
   });
 }
