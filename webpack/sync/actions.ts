@@ -47,16 +47,3 @@ export function fetchSyncData(dispatch: Function) {
   fetch<Sequence[]>("sequences", API.current.sequencesPath);
   fetch<Tool[]>("tools", API.current.toolsPath);
 }
-
-export function fetchSyncDataOk(payload: {}) {
-  return {
-    type: "FETCH_SYNC_OK", payload
-  };
-}
-
-export function fetchSyncDataNo(err: Error) {
-  return {
-    type: "FETCH_SYNC_NO",
-    payload: {}
-  };
-}

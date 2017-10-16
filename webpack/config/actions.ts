@@ -6,9 +6,9 @@ import { withTimeout } from "../util";
 import { AuthState } from "../auth/interfaces";
 
 export const storeToken =
-  (old: AuthState, dispatch: Function) => (knew: AuthState | undefined) => {
-    const t = knew || old;
-    if (!knew) {
+  (old: AuthState, dispatch: Function) => (_new: AuthState | undefined) => {
+    const t = _new || old;
+    if (!_new) {
       console.warn("Failed to refresh token. Something is wrong.");
     }
     dispatch(setToken(t));
@@ -29,8 +29,8 @@ export function ready(): Thunk {
     if (auth) {
       const ok = storeToken(auth, dispatch);
       const no = () => ok(undefined);
-
-      withTimeout(MAX_TOKEN_WAIT_TIME, maybeRefreshToken(auth)).then(ok, no);
+      const p = maybeRefreshToken(auth);
+      withTimeout(MAX_TOKEN_WAIT_TIME, p).then(ok, no);
     } else {
       Session.clear();
     }

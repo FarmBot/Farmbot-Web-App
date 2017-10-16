@@ -19,7 +19,6 @@ jest.mock("../session", () => {
 
 import { maybeRefreshToken } from "../refresh_token";
 import { API } from "../api/index";
-import { Session } from "../session";
 
 API.setBaseUrl("http://blah.whatever.party");
 
