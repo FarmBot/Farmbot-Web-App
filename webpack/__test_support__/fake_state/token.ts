@@ -1,6 +1,6 @@
-import { Everything } from "../../interfaces";
+import { AuthState } from "../../auth/interfaces";
 
-export let auth: Everything["auth"] = {
+export let auth: AuthState = {
   "token": {
     "unencoded": {
       "iat": 1495569084,
