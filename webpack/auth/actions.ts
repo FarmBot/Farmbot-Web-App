@@ -70,13 +70,8 @@ export function register(name: string,
   confirmation: string,
   url: string): Thunk {
   return dispatch => {
-    const p = requestRegistration(name,
-      email,
-      password,
-      confirmation,
-      url);
-    return p.then(onLogin(dispatch),
-      onRegistrationErr(dispatch));
+    return requestRegistration(name, email, password, confirmation)
+      .then(onLogin(dispatch), onRegistrationErr(dispatch));
   };
 }
 
@@ -87,24 +82,17 @@ export function onRegistrationErr(dispatch: Function) {
 
 /** Build a JSON object in preparation for an HTTP POST
  *  to registration endpoint */
-function requestRegistration(name: string,
+export function requestRegistration(name: string,
   email: string,
   password: string,
-  confirmation: string,
-  url: string) {
-  const form = {
-    user: {
-      email: email,
-      password: password,
-      password_confirmation: confirmation,
-      name: name
-    }
-  };
+  password_confirmation: string) {
+
+  const form = { user: { email, password, password_confirmation, name } };
   return axios.post(API.current.usersPath, form);
 }
 
 /** Fetch API token if already registered. */
-function requestToken(email: string,
+export function requestToken(email: string,
   password: string,
   url: string) {
   const payload = { user: { email: email, password: password } };

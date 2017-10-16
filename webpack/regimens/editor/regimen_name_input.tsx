@@ -5,7 +5,7 @@ import { ColorPicker } from "../../ui";
 import { Row, Col } from "../../ui/index";
 import { editRegimen } from "../actions";
 
-function write({ dispatch, regimen }: RegimenProps):
+export function write({ dispatch, regimen }: RegimenProps):
   React.EventHandler<React.FormEvent<{}>> {
   if (regimen) {
     return (event: React.FormEvent<HTMLInputElement>) => {

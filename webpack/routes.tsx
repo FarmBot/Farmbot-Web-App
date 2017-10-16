@@ -62,9 +62,9 @@ const errorLoading = (cb: Function) => function handleError(err: object) {
 const controlsRoute = {
   path: "app/controls",
   getComponent(_discard: void, cb: Function) {
-    import("./controls/controls").then(
-      (module) => cb(undefined, module.Controls)
-    ).catch(errorLoading(cb));
+    import("./controls/controls")
+      .then((module) => cb(undefined, module.Controls))
+      .catch(errorLoading(cb));
   }
 };
 

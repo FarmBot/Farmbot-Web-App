@@ -461,5 +461,5 @@ export function withTimeout<T>(ms: number, promise: Promise<T>) {
   });
 
   // Returns a race between our timeout and the passed in promise
-  return Promise.race([promise, timeout]);
+  return Promise.race([promise, timeout]) as Promise<T>;
 }

@@ -3,8 +3,6 @@ require 'spec_helper'
 describe DashboardController do
   include Devise::Test::ControllerHelpers
 
-  # render_views Delaying this part until webpack-rails workflow is found -RC
-
   describe 'ACME endpoint' do
     it "has a fallback" do
       process :lets_encrypt, method: :get, params: { id: "FOO" }
