@@ -42,7 +42,6 @@ import { success } from "farmbot-toastr";
 import { API } from "../../api/api";
 import axios from "axios";
 import { AuthState } from "../interfaces";
-import { fetchReleases } from "../../devices/actions";
 
 describe("logout()", () => {
   it("displays the toast if you are logged out", () => {
