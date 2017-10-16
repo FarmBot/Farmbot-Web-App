@@ -20,7 +20,6 @@ export let auth: AuthState = {
     "XV6SGE624zdr7S7mQ6uj7qpa2LMH4P37R3BIB26G7E8xDcVOGqL5Oiwr9DPajBX3zd" +
     "hXSbH3k4PyxqvPOLYso-R7kjfpOnfFCMfMZLW8TQtg-yj82zs93RP2DHOOx-jxek69" +
     "tmgNyP3FJaoWHwHW7bXOEv09p3dhNVTCSVNKD9LZczLpuXV7U4oSmL6KLkbzsM6G0P" +
-
     "9rrbJ9ASYaOw"
   }
 };
