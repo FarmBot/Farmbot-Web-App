@@ -31,11 +31,12 @@ jest.mock("../../api/api", () => ({
 }));
 
 import { Session } from "../../session";
-import { logout, requestToken, requestRegistration } from "../actions";
+import { logout, requestToken, requestRegistration, didLogin } from "../actions";
 import { Actions } from "../../constants";
 import { success } from "farmbot-toastr";
 import { API } from "../../api/api";
 import axios from "axios";
+import { AuthState } from "../interfaces";
 
 describe("logout()", () => {
   it("displays the toast if you are logged out", () => {
@@ -76,5 +77,22 @@ describe("requestRegistration", () => {
 
     expect(resp.data.foo).toEqual("bar");
     expect(axios.post).toHaveBeenCalledWith("/api/userStub", { user: inputs });
+  });
+});
+
+describe("didLogin()", () => {
+  it("bootstraps the user session", () => {
+    const mockToken: AuthState = {
+      token: {
+        encoded: "---",
+        unencoded: {
+          iss: "iss",
+          os_update_server: "os_update_server"
+        }
+      }
+    };
+    const result = didLogin(mockToken, jest.fn());
+    expect(result).toBeTruthy();
+    fail();
   });
 });
