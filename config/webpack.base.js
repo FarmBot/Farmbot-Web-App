@@ -8,6 +8,25 @@ module.exports = function () {
       "verification": "./webpack/verification.ts",
       "password_reset": "./webpack/password_reset/index.tsx",
       "tos_update": "./webpack/tos_update/index.tsx"
+      // "vendor": [
+      //   "axios",
+      //   "boxed_value",
+      //   "farmbot",
+      //   "farmbot-toastr",
+      //   "fastclick",
+      //   "i18next",
+      //   "lodash",
+      //   "markdown-it",
+      //   "markdown-it-emoji",
+      //   "moment",
+      //   "react",
+      //   "react-color",
+      //   "react-dom",
+      //   "react-redux",
+      //   "react-router",
+      //   "redux",
+      //   "redux-thunk"
+      // ]
     },
     devtool: "eval",
     module: {
