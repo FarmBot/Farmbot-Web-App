@@ -39,8 +39,8 @@ describe("maybeRefreshToken()", () => {
         }
       }
     };
-    maybeRefreshToken(t).then(() => {
-      expect(Session.clear).toHaveBeenCalled();
+    maybeRefreshToken(t).then((result) => {
+      expect(result).toBeUndefined();
       done();
     });
   });
