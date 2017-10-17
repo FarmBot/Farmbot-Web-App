@@ -2,7 +2,7 @@ class UserMailer < ApplicationMailer
     def welcome_email(user)
       @user      = user
       @user_name = user.name
-      @the_url   = "http:" + $API_URL + "/verify?token=" + user.verification_token
+      @the_url   = "http:" + $API_URL + "/verify?token=" + user.confirmation_token
       throw "Bad registration?" unless @the_url.present?
       mail(to: @user.email, subject: 'Welcome to The FarmBot Web App!')
     end

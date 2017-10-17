@@ -102,7 +102,7 @@ describe Api::UsersController do
           expect(ActionMailer::Base.deliveries.length).to be > old_email_count
           msg = ActionMailer::Base.deliveries.last
           expect(msg.to.first).to eq(email)
-          expect(msg.body.parts.first.to_s).to include(user.verification_token)
+          expect(msg.body.parts.first.to_s).to include(user.confirmation_token)
           expect(User.count).to eq(original_count + 1)
           expect(user.name).to eq("Frank")
           expect(user.email).to eq(email)

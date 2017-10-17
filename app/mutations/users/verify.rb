@@ -8,14 +8,14 @@ module Users
     def execute
       user.verified_at = Time.now
       # Prevent token reuse:
-      user.verification_token = ""
+      user.confirmation_token = ""
       user.save!
       SessionToken.as_json(user.reload, AbstractJwtToken::HUMAN_AUD)
     end
 
 private
     def user
-      @user ||= User.find_by!(verification_token: token)
+      @user ||= User.find_by!(confirmation_token: token)
     end
   end
 end

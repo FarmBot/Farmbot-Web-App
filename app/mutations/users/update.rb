@@ -20,11 +20,16 @@ module Users
     end
 
     def execute
-      user.update_attributes!(inputs.except(:user))
+      maybe_update_email
+      user.update_attributes!(inputs.except(:user, :email))
       user.reload
     end
 
 private
+
+    def maybe_update_email
+      raise "TODO"
+    end
 
     def confirm_new_password
         valid_pw   = user.valid_password?(password)
