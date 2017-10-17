@@ -5,6 +5,14 @@ import { Session } from "./session";
 import { AuthState } from "./auth/interfaces";
 
 /** Keep track of this in rollbar to prevent global registration failures. */
+export const ALREADY_VERIFIED =
+  `<p>
+   You are already verified. We will now forward you to the main application.
+ </p>
+ <p>
+   If you are still unable to access the app, try logging in again or
+   <a href="http://forum.farmbot.org/"> asking for help on the FarmBot Forum.</a>
+ </p>`;
 const ALREADY_VERIFIED_MSG = "TRIED TO RE-VERIFY";
 
 export const FAILURE_PAGE =
@@ -56,5 +64,6 @@ export function fail(err: AxiosError | undefined) {
 
 const alreadyVerified = () => {
   window.location.href = "/app/controls";
+  document.write(ALREADY_VERIFIED);
   throw new Error(ALREADY_VERIFIED_MSG);
 };
