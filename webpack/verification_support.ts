@@ -7,13 +7,6 @@ import { AuthState } from "./auth/interfaces";
 /** Keep track of this in rollbar to prevent global registration failures. */
 const ALREADY_VERIFIED_MSG = "TRIED TO RE-VERIFY";
 
-export const ALREADY_VERIFIED_PAGE =
-  `<p>
-    This account is already verified.
-    Please try logging in again or asking for help
-    <a href="http://forum.farmbot.org/"> ask for help on the FarmBot Forum.</a>.
-  </p>`;
-
 export const FAILURE_PAGE =
   `<p>
      We were unable to verify your account.
@@ -53,10 +46,15 @@ interface AxiosError extends Error {
 export function fail(err: AxiosError | undefined) {
   switch (err && err.response && err.response.status) {
     case 409:
-      document.write(ALREADY_VERIFIED_PAGE);
-      throw new Error(ALREADY_VERIFIED_MSG);
+      alreadyVerified();
+      break;
     default:
       document.write(FAILURE_PAGE);
       throw new Error(FAILURE_MSG);
   }
 }
+
+const alreadyVerified = () => {
+  window.location.href = "/app/controls";
+  throw new Error(ALREADY_VERIFIED_MSG);
+};
