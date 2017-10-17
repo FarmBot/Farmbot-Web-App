@@ -35,13 +35,15 @@ describe("<PlantLayer/>", () => {
     const wrapper = shallow(<PlantLayer {...p } />);
     const layer = wrapper.find("#plant-layer");
     expect(layer.find(".plant-link-wrapper").length).toEqual(1);
-    expect(layer.html()).toContain("soil-cloud");
-    expect(layer.html()).toContain("plant-icon");
-    expect(layer.html()).toContain("image visibility=\"visible\"");
-    expect(layer.html()).toContain("/app-resources/img/generic-plant.svg");
-    expect(layer.html()).toContain("height=\"50\" width=\"50\" x=\"75\" y=\"175\"");
-    expect(layer.html()).toContain("drag-helpers");
-    expect(layer.html()).toContain("plant-icon");
+    ["soil-cloud",
+      "plant-icon",
+      "image visibility=\"visible\"",
+      "/app-resources/img/generic-plant.svg",
+      "height=\"50\" width=\"50\" x=\"75\" y=\"175\"",
+      "drag-helpers",
+      "plant-icon"
+    ].map(string =>
+      expect(layer.html()).toContain(string));
   });
 
   it("toggles visibility off", () => {

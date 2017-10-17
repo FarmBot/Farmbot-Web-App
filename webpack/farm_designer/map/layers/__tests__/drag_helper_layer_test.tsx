@@ -21,10 +21,11 @@ describe("<DragHelperLayer/>", () => {
   it("shows drag helpers", () => {
     const p = fakeProps();
     const wrapper = shallow(<DragHelperLayer {...p } />);
-    expect(wrapper.html()).toContain("drag-helpers");
-    expect(wrapper.html()).toContain("coordinates-tooltip");
-    expect(wrapper.html()).toContain("long-crosshair");
-    expect(wrapper.html()).toContain("short-crosshair");
+    ["drag-helpers",
+      "coordinates-tooltip",
+      "long-crosshair",
+      "short-crosshair"].map(string =>
+        expect(wrapper.html()).toContain(string));
   });
 
   it("doesn't show drag helpers", () => {

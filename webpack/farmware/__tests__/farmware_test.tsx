@@ -25,9 +25,11 @@ describe("<FarmwarePage />", () => {
       images: []
     };
     const wrapper = mount(<FarmwarePage {...props} />);
-    expect(wrapper.text()).toContain("Take Photo");
-    expect(wrapper.text()).toContain("Farmware");
-    expect(wrapper.text()).toContain("Camera Calibration");
-    expect(wrapper.text()).toContain("Weed Detector");
+    ["Take Photo",
+      "Farmware",
+      "Camera Calibration",
+      "Weed Detector"
+    ].map(string =>
+      expect(wrapper.text()).toContain(string));
   });
 });

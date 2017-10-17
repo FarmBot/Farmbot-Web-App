@@ -13,8 +13,12 @@ describe("<PlantInventory />", () => {
       <Plants
         plants={[fakePlant()]}
         dispatch={jest.fn()} />);
-    expect(wrapper.text()).toContain("DesignerPlantsFarm Events");
-    expect(wrapper.text()).toContain("Strawberry Plant 11 days old");
+    ["Designer",
+      "Plants",
+      "Farm Events",
+      "Strawberry Plant",
+      "11 days old"
+    ].map(string => expect(wrapper.text()).toContain(string));
     expect(wrapper.find("input").props().placeholder)
       .toEqual("Search your plants...");
   });

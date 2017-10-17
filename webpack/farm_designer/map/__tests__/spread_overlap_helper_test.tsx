@@ -139,9 +139,8 @@ describe("SpreadOverlapHelper functions", () => {
   it("overlapText()", () => {
     const spreadData = { active: 100, inactive: 200 };
     const svgText = shallow(overlapText(100, 100, 150, spreadData));
-    expect(svgText.text()).toContain("Active: 80%");
-    expect(svgText.text()).toContain("Inactive: 40%");
-    expect(svgText.text()).toContain("orange");
+    ["Active: 80%", "Inactive: 40%", "orange"].map(string =>
+      expect(svgText.text()).toContain(string));
   });
 
 });

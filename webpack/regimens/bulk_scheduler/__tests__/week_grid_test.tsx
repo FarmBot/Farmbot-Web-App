@@ -27,7 +27,8 @@ describe("<WeekGrid />", () => {
     const wrapper = mount(<WeekGrid {...props} />);
     const buttons = wrapper.find("button");
     expect(buttons.length).toEqual(4);
-    expect(wrapper.text()).toContain("DaysWeek 11234567");
+    ["Days", "Week 1", "1234567"].map(string =>
+      expect(wrapper.text()).toContain(string));
   });
 
   function checkAction(position: number, text: string, type: Actions) {

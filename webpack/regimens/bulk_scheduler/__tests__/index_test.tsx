@@ -37,16 +37,17 @@ describe("<BulkSchedulerWidget />", () => {
     const wrapper = mount(<BulkSchedulerWidget {...fakeProps() } />);
     const buttons = wrapper.find("button");
     expect(buttons.length).toEqual(6);
-    expect(wrapper.text()).toContain("Scheduler");
-    expect(wrapper.text())
-      .toContain("SequenceFake SequenceTimeDaysWeek 11234567");
+    ["Scheduler", "Sequence", "Fake Sequence", "Time",
+      "Days", "Week 1", "1234567"].map(string =>
+        expect(wrapper.text()).toContain(string));
   });
 
   it("renders without sequence selected", () => {
     const p = fakeProps();
     p.selectedSequence = undefined;
     const wrapper = mount(<BulkSchedulerWidget {...p } />);
-    expect(wrapper.text()).toContain("SequenceNoneTime");
+    ["Sequence", "None", "Time"].map(string =>
+      expect(wrapper.text()).toContain(string));
   });
 
   it("changes time", () => {

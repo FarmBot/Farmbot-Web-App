@@ -127,7 +127,7 @@ export function fakeWebcamFeed(): TaggedWebcamFeed {
 export function fakePeripheral(): TaggedPeripheral {
   return fakeResource("peripherals", {
     id: idCounter++,
-    label: "Pin 0",
-    pin: 0
+    label: "Fake Pin",
+    pin: 1
   });
 }

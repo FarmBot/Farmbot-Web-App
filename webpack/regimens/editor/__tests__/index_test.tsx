@@ -47,17 +47,16 @@ describe("<RegimenEditorWidget />", () => {
 
   it("active editor", () => {
     const wrapper = mount(<RegimenEditorWidget {...fakeProps() } />);
-    expect(wrapper.text()).toContain("Regimen Editor");
-    expect(wrapper.text()).toContain("Delete");
-    expect(wrapper.text()).toContain("Item 010:00");
+    ["Regimen Editor", "Delete", "Item 0", "10:00"].map(string =>
+      expect(wrapper.text()).toContain(string));
   });
 
   it("empty editor", () => {
     const props = fakeProps();
     props.current = undefined;
     const wrapper = mount(<RegimenEditorWidget {...props} />);
-    expect(wrapper.text()).toContain("Regimen Editor");
-    expect(wrapper.text()).toContain("No Regimen selected.");
+    ["Regimen Editor", "No Regimen selected."].map(string =>
+      expect(wrapper.text()).toContain(string));
   });
 
   it("error: not logged in", () => {

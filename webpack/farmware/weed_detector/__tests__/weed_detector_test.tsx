@@ -19,12 +19,14 @@ describe("<WeedDetector />", () => {
       images: []
     };
     const wrapper = mount(<WeedDetector {...props} />);
-    expect(wrapper.text()).toContain("Weed Detector");
-    expect(wrapper.text()).toContain("Color Range");
-    expect(wrapper.text()).toContain("HUE01793090");
-    expect(wrapper.text()).toContain("SATURATION025550255");
-    expect(wrapper.text()).toContain("VALUE025550255");
-    expect(wrapper.text()).toContain("Processing Parameters");
-    expect(wrapper.text()).toContain("Scan image");
+    ["Weed Detector",
+      "Color Range",
+      "HUE01793090",
+      "SATURATION025550255",
+      "VALUE025550255",
+      "Processing Parameters",
+      "Scan image"
+    ].map(string =>
+      expect(wrapper.text()).toContain(string));
   });
 });

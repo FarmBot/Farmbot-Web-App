@@ -28,8 +28,8 @@ describe("<ActiveEditor />", () => {
 
   it("renders", () => {
     const wrapper = mount(<ActiveEditor {...props} />);
-    expect(wrapper.text()).toContain("Day");
-    expect(wrapper.text()).toContain("Item 010:00");
+    ["Day", "Item 0", "10:00"].map(string =>
+      expect(wrapper.text()).toContain(string));
   });
 
   it("removes regimen item", () => {
