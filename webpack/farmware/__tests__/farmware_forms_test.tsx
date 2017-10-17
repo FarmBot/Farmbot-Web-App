@@ -49,9 +49,8 @@ describe("<FarmwareForms/>", () => {
     const wrapper = mount(<FarmwareForms
       farmwares={fakeFarmwares()}
       user_env={{}} />);
-    expect(wrapper.text()).toContain("My Farmware");
-    expect(wrapper.text()).toContain("version: 0.0.0");
-    expect(wrapper.text()).toContain("Does things.");
+    ["My Farmware", "version: 0.0.0", "Does things."].map(string =>
+      expect(wrapper.text()).toContain(string));
     expect(wrapper.find("label").last().text()).toContain("Config 1");
     expect(wrapper.find("input").props().value).toEqual("4");
   });

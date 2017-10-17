@@ -73,9 +73,11 @@ export function commitBulkEditor(): Thunk {
       // Proceed only if they selected a sequence from the drop down.
       if (selectedSequenceUUID) {
         const seq = findSequence(res.index, selectedSequenceUUID).body;
-        const regimenItems = groupRegimenItemsByWeek(weeks, dailyOffsetMs, seq);
+        const regimenItems = weeks.length > 0
+          ? groupRegimenItemsByWeek(weeks, dailyOffsetMs, seq)
+          : undefined;
         // Proceed only if days are selcted in the scheduler.
-        if (regimenItems.length > 0) {
+        if (regimenItems && regimenItems.length > 0) {
           const reg = findRegimen(res.index, currentRegimen);
           const update = defensiveClone(reg).body;
           update.regimen_items = update.regimen_items.concat(regimenItems);

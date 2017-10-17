@@ -1,24 +1,24 @@
 import * as React from "react";
-import { shallow, mount } from "enzyme";
+import { mount } from "enzyme";
+import { AddButtonProps } from "../interfaces";
 import { AddButton } from "../add_button";
 
-describe("<AddButton/>", () => {
-  it("renders a <div> when inactive", () => {
-    const props = { active: false, click: jest.fn() };
-    const el = shallow(<AddButton {...props} />);
-    expect(el).toBeTruthy();
-    expect(el.length).toBe(1);
-    expect(el.find("div").length).toBe(1);
-    expect(el.find("button").length).toBe(0);
+describe("<AddButton />", () => {
+  it("renders an add button when active", () => {
+    const props: AddButtonProps = { active: true, click: jest.fn() };
+    const wrapper = mount(<AddButton {...props} />);
+    const button = wrapper.find("button");
+    ["green", "add"].map(klass => {
+      expect(button.hasClass(klass)).toBeTruthy();
+    });
+    expect(wrapper.find("i").hasClass("fa-plus")).toBeTruthy();
+    button.simulate("click");
+    expect(props.click).toHaveBeenCalled();
   });
 
-  it("renders an add button when active", () => {
-    const props = { active: true, click: jest.fn() };
-    const el = mount(<AddButton {...props} />);
-    expect(el).toBeTruthy();
-    const btn = el.find("button");
-    expect(btn.length).toBe(1);
-    btn.simulate("click");
-    expect(props.click).toHaveBeenCalled();
+  it("renders a <div> when inactive", () => {
+    const props: AddButtonProps = { active: false, click: jest.fn() };
+    const wrapper = mount(<AddButton {...props} />);
+    expect(wrapper.html()).toEqual("<div></div>");
   });
 });
