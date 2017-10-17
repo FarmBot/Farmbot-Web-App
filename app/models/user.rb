@@ -1,5 +1,6 @@
 # A human
 class User < ApplicationRecord
+  class AlreadyVerified < StandardError; end
   ENFORCE_TOS           = ENV.fetch("TOS_URL") { false }
   SKIP_EMAIL_VALIDATION = ENV.fetch("NO_EMAILS") { false }
   validates :email, uniqueness: true

@@ -13,6 +13,9 @@ module Api
     before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
     after_action :skip_set_cookies_header
+
+    rescue_from(User::AlreadyVerified) { sorry "Already verified.", 409 }
+
     rescue_from(JWT::VerificationError) { |e| auth_err }
 
     rescue_from(ActionDispatch::Http::Parameters::ParseError) do
@@ -23,6 +26,7 @@ module Api
     rescue_from(ActiveRecord::ValueTooLong) do
       sorry "Please use reasonable lengths on string inputs", 422
     end
+
     rescue_from Errors::Forbidden do |exc|
       sorry "You can't perform that action. #{exc.message}", 403
     end
