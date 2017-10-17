@@ -34,7 +34,7 @@ describe SessionToken do
   end
 
   it "doesn't honor expired tokens" do
-    user.update_attributes!(verified_at: Time.now)
+    user.update_attributes!(confirmed_at: Time.now)
     token  = SessionToken.issue_to(user, iat: 000, exp: 1, iss: "//lycos.com:9867")
     result = Auth::FromJWT.run(jwt: token.encoded)
     expect(result.success?).to be(false)
@@ -42,7 +42,7 @@ describe SessionToken do
   end
   unless ENV["NO_EMAILS"]
     it "doesn't mint tokens for unverified users" do
-      user.update_attributes!(verified_at: nil)
+      user.update_attributes!(confirmed_at: nil)
       expect {
         SessionToken.issue_to(user, iat: 000, exp: 1, iss: "//lycos.com:9867")
       }.to raise_error(Errors::Forbidden)

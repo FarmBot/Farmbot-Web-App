@@ -128,7 +128,7 @@ describe Api::UsersController do
       verified = User.create!(email:                 Faker::Internet.email,
                               password:              "password123",
                               password_confirmation: "password123",
-                              verified_at:           Time.now)
+                              confirmed_at:           Time.now)
 
       post :resend_verification,
            params: { email: verified.email },

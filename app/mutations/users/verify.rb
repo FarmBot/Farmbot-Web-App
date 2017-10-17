@@ -6,7 +6,7 @@ module Users
     end
 
     def execute
-      user.verified_at = Time.now
+      user.confirmed_at = Time.now
       # Prevent token reuse:
       user.confirmation_token = ""
       user.save!
