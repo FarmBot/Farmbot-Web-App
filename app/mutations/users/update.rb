@@ -20,15 +20,18 @@ module Users
     end
 
     def execute
-      maybe_update_email
+      update_email if email.present?
       user.update_attributes!(inputs.except(:user, :email))
       user.reload
     end
 
 private
 
-    def maybe_update_email
-      raise "TODO"
+    def update_email
+      user.reset_confirmation_token
+      user.unconfirmed_email = email
+      user.save!
+      UserMailer.email_update(user).deliver_later
     end
 
     def confirm_new_password

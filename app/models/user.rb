@@ -13,7 +13,11 @@ class User < ApplicationRecord
   before_validation :set_defaults
 
   def set_defaults
-    self.confirmation_token ||= SecureRandom.uuid
+    self.confirmation_token ||= self.reset_confirmation_token
+  end
+
+  def reset_confirmation_token
+    self.confirmation_token = SecureRandom.uuid
   end
 
   def must_consent?
