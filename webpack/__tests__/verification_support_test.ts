@@ -23,16 +23,26 @@ jest.mock("../api/api", () => ({
   }
 }));
 
-import { fail, FAILURE_PAGE, attempt } from "../verification_support";
+import {
+  fail,
+  FAILURE_PAGE,
+  attempt,
+  ALREADY_VERIFIED_PAGE
+} from "../verification_support";
 import { API } from "../api/api";
 import { Session } from "../session";
 import axios from "axios";
 import { getParam } from "../util";
 
 describe("fail()", () => {
-  it("writes a failure message", () => {
+  it("writes a failure message - base case", () => {
     expect(fail).toThrow();
     expect(document.documentElement.outerHTML).toContain(FAILURE_PAGE);
+  });
+
+  it("writes a failure message - base case", () => {
+    expect(() => fail({ response: { status: 409 } } as any)).toThrow();
+    expect(document.documentElement.outerHTML).toContain(ALREADY_VERIFIED_PAGE);
   });
 });
 

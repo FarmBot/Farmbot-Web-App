@@ -5,7 +5,7 @@ import { Session } from "./session";
 import { AuthState } from "./auth/interfaces";
 
 /** Keep track of this in rollbar to prevent global registration failures. */
-export const ALREADY_VERIFIED_MSG = "TRIED TO RE-VERIFY";
+const ALREADY_VERIFIED_MSG = "TRIED TO RE-VERIFY";
 
 export const ALREADY_VERIFIED_PAGE =
   `<p>
