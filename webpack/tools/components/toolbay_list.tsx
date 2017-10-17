@@ -24,7 +24,7 @@ export class ToolBayList extends React.Component<ToolBayListProps, {}> {
         {getToolSlots().map((slot: TaggedToolSlotPointer, index: number) => {
           const tool = getToolByToolSlotUUID(slot.uuid);
           const name = (tool && tool.body.name) || "None";
-          return <Row key={slot.body.id}>
+          return <Row key={slot.uuid}>
             <Col xs={2}>
               <label>{index + 1}</label>
             </Col>

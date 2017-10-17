@@ -17,7 +17,7 @@ describe("<SequencesList />", () => {
       sequences={[fakeSequence1, fakeSequence2]} />);
     expect(wrapper.find("input").first().props().placeholder)
       .toContain("Search Sequences");
-    expect(wrapper.text()).toContain("Sequence 1");
-    expect(wrapper.text()).toContain("Sequence 2");
+    ["Sequence 1", "Sequence 2"].map(string =>
+      expect(wrapper.text()).toContain(string));
   });
 });

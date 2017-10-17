@@ -21,12 +21,14 @@ describe("<CameraCalibration/>", () => {
       V_HI: 9
     };
     const wrapper = mount(<CameraCalibration {...props} />);
-    expect(wrapper.text()).toContain("Camera Calibration");
-    expect(wrapper.text()).toContain("Color Range");
-    expect(wrapper.text()).toContain("HUE017947");
-    expect(wrapper.text()).toContain("SATURATION025558");
-    expect(wrapper.text()).toContain("VALUE025569");
-    expect(wrapper.text()).toContain("Processing Parameters");
-    expect(wrapper.text()).toContain("Scan image");
+    ["Camera Calibration",
+      "Color Range",
+      "HUE017947",
+      "SATURATION025558",
+      "VALUE025569",
+      "Processing Parameters",
+      "Scan image"
+    ].map(string =>
+      expect(wrapper.text()).toContain(string));
   });
 });

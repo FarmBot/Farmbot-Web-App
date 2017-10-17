@@ -28,7 +28,7 @@ export class ToolList extends React.Component<ToolListProps, {}> {
           </Col>
         </Row>
         {tools.map((tool: TaggedTool) => {
-          return <Row key={tool.body.id}>
+          return <Row key={tool.uuid}>
             <Col xs={8}>
               {tool.body.name || "Name not found"}
             </Col>

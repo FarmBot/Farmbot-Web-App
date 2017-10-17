@@ -38,9 +38,8 @@ describe("<SelectPlants />", () => {
     const p = fakeProps();
     p.selected = ["plant.1", "plant.2"];
     const wrapper = mount(<SelectPlants {...p} />);
-    expect(wrapper.text()).toContain("Strawberry");
-    expect(wrapper.text()).toContain("Blueberry");
-    expect(wrapper.text()).toContain("Delete");
+    ["Strawberry", "Blueberry", "Delete"].map(string =>
+      expect(wrapper.text()).toContain(string));
   });
 
   it("displays no selected plants: selection empty", () => {
