@@ -2,7 +2,7 @@ jest.mock("../util", () => ({ getParam: () => "STUB_PARAM" }));
 
 jest.mock("axios", () => ({
   default: {
-    put: () => ({ data: { FAKE_TOKEN: true } })
+    put: jest.fn(() => ({ data: { FAKE_TOKEN: true } }))
   }
 }));
 
