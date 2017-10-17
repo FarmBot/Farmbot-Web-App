@@ -3,7 +3,6 @@ import { API } from "./api/index";
 import { AuthState } from "./auth/interfaces";
 import { HttpData } from "./util";
 import { setToken } from "./auth/actions";
-import { Session } from "./session";
 
 type Resp = HttpData<AuthState>;
 
@@ -15,8 +14,11 @@ const ok = (x: Resp) => {
 
 /** Grab a new token from the API (won't extend token's exp. date).
  * Redirect to home page on failure. */
-export let maybeRefreshToken = (old: AuthState): Promise<AuthState> => {
-  API.setBaseUrl(old.token.unencoded.iss);
-  setToken(old); // Precaution: The Axios interceptors might not be set yet.
-  return axios.get(API.current.tokensPath).then(ok, Session.clear);
-};
+export let maybeRefreshToken
+  = (old: AuthState): Promise<AuthState | undefined> => {
+    API.setBaseUrl(old.token.unencoded.iss);
+    setToken(old); // Precaution: The Axios interceptors might not be set yet.
+    return axios
+      .get(API.current.tokensPath)
+      .then(ok, () => Promise.resolve(undefined));
+  };

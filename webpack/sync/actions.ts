@@ -32,7 +32,7 @@ export function fetchSyncData(dispatch: Function) {
         type, payload: { name, data: r.data }
       }), fail);
 
-  const fail = () => warning("Please try refreshing the page.",
+  const fail = () => warning("Please try refreshing the page or logging in again.",
     "Error downloading data");
 
   fetch<User>("users", API.current.usersPath);
@@ -46,17 +46,4 @@ export function fetchSyncData(dispatch: Function) {
   fetch<Regimen[]>("regimens", API.current.regimensPath);
   fetch<Sequence[]>("sequences", API.current.sequencesPath);
   fetch<Tool[]>("tools", API.current.toolsPath);
-}
-
-export function fetchSyncDataOk(payload: {}) {
-  return {
-    type: "FETCH_SYNC_OK", payload
-  };
-}
-
-export function fetchSyncDataNo(err: Error) {
-  return {
-    type: "FETCH_SYNC_NO",
-    payload: {}
-  };
 }

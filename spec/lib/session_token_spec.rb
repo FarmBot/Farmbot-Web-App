@@ -38,8 +38,10 @@ describe SessionToken do
     token  = SessionToken.issue_to(user, iat: 000, exp: 1, iss: "//lycos.com:9867")
     result = Auth::FromJWT.run(jwt: token.encoded)
     expect(result.success?).to be(false)
-    expect(result.errors.values.first.message).to include("is not valid")
+    expect(result.errors.values.first.message)
+      .to eq(Auth::ReloadToken::BAD_SUB)
   end
+
   unless ENV["NO_EMAILS"]
     it "doesn't mint tokens for unverified users" do
       user.update_attributes!(verified_at: nil)

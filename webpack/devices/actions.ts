@@ -154,7 +154,7 @@ export let fetchReleases =
         const version = resp.data.tag_name;
         const versionWithoutV = version.toLowerCase().replace("v", "");
         dispatch({
-          type: "FETCH_OS_UPDATE_INFO_OK",
+          type: Actions.FETCH_OS_UPDATE_INFO_OK,
           payload: versionWithoutV
         });
       })

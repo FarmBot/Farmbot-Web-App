@@ -4,7 +4,7 @@ import { AddButtonProps } from "../interfaces";
 import { AddButton } from "../add_button";
 
 describe("<AddButton />", () => {
-  it("renders", () => {
+  it("renders an add button when active", () => {
     const props: AddButtonProps = { active: true, click: jest.fn() };
     const wrapper = mount(<AddButton {...props} />);
     const button = wrapper.find("button");
@@ -16,7 +16,7 @@ describe("<AddButton />", () => {
     expect(props.click).toHaveBeenCalled();
   });
 
-  it("doesn't render", () => {
+  it("renders a <div> when inactive", () => {
     const props: AddButtonProps = { active: false, click: jest.fn() };
     const wrapper = mount(<AddButton {...props} />);
     expect(wrapper.html()).toEqual("<div></div>");

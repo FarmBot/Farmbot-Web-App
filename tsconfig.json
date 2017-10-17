@@ -6,7 +6,8 @@
       "es2017.object"
     ],
     "target": "es5",
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "node",
     "jsx": "react",
     "experimentalDecorators": true,
     "noImplicitAny": true,
