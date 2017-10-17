@@ -1,13 +1,9 @@
-import { Everything } from "../../interfaces";
+import { AuthState } from "../../auth/interfaces";
 
-export let auth: Everything["auth"] = {
+export let auth: AuthState = {
   "token": {
     "unencoded": {
-      "iat": 1495569084,
-      "jti": "b38915ca-3d7a-4754-8152-d4306b88504c",
       "iss": "//localhost:3000",
-      "exp": 1499025084,
-      "mqtt": "10.0.0.6",
       "os_update_server": "https://api.github.com/repos/farmbot/" +
       "farmbot_os/releases/latest"
     },
@@ -24,7 +20,6 @@ export let auth: Everything["auth"] = {
     "XV6SGE624zdr7S7mQ6uj7qpa2LMH4P37R3BIB26G7E8xDcVOGqL5Oiwr9DPajBX3zd" +
     "hXSbH3k4PyxqvPOLYso-R7kjfpOnfFCMfMZLW8TQtg-yj82zs93RP2DHOOx-jxek69" +
     "tmgNyP3FJaoWHwHW7bXOEv09p3dhNVTCSVNKD9LZczLpuXV7U4oSmL6KLkbzsM6G0P" +
-
     "9rrbJ9ASYaOw"
   }
 };

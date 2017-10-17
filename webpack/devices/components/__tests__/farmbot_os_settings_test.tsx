@@ -15,14 +15,8 @@ describe("<FarmbotOsSettings/>", () => {
       auth={fakeState().auth as AuthState} />);
     expect(osSettings.find("input").length).toBe(1);
     expect(osSettings.find("button").length).toBe(9);
-    expect(osSettings.text()).toContain("NAME");
-    expect(osSettings.text()).toContain("TIME ZONE");
-    expect(osSettings.text()).toContain("LAST SEEN");
-    expect(osSettings.text()).toContain("FARMBOT OS");
-    expect(osSettings.text()).toContain("RESTART FARMBOT");
-    expect(osSettings.text()).toContain("SHUTDOWN FARMBOT");
-    expect(osSettings.text()).toContain("FACTORY RESET");
-    expect(osSettings.text()).toContain("CAMERA");
-    expect(osSettings.text()).toContain("FIRMWARE");
+    ["NAME", "TIME ZONE", "LAST SEEN", "FARMBOT OS", "RESTART FARMBOT",
+      "SHUTDOWN FARMBOT", "FACTORY RESET", "CAMERA", "FIRMWARE"].map(string =>
+        expect(osSettings.text()).toContain(string));
   });
 });

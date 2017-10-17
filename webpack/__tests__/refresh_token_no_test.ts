@@ -19,7 +19,6 @@ jest.mock("../session", () => {
 
 import { maybeRefreshToken } from "../refresh_token";
 import { API } from "../api/index";
-import { Session } from "../session";
 
 API.setBaseUrl("http://blah.whatever.party");
 
@@ -30,8 +29,6 @@ describe("maybeRefreshToken()", () => {
       token: {
         encoded: "---",
         unencoded: {
-          iat: 123,
-          jti: "111",
           iss: "---",
           exp: 456,
           mqtt: "---",
@@ -39,8 +36,8 @@ describe("maybeRefreshToken()", () => {
         }
       }
     };
-    maybeRefreshToken(t).then(() => {
-      expect(Session.clear).toHaveBeenCalled();
+    maybeRefreshToken(t).then((result) => {
+      expect(result).toBeUndefined();
       done();
     });
   });

@@ -10,6 +10,7 @@ window.globalConfig = <%= raw($FRONTEND_SHARED_DATA) %> // SEE COMMENTS!;
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i" rel="stylesheet">
+<%= javascript_include_tag *webpack_asset_paths("commons") %>
 <% if false %>
   <script async src="http://<%= ENV["API_HOST"] %>:8080/target/target-script-min.js#anonymous">
   </script>

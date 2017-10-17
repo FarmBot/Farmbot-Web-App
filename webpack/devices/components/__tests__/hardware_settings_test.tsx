@@ -3,6 +3,7 @@ import { mount } from "enzyme";
 import { HardwareSettings } from "../hardware_settings";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { ControlPanelState } from "../../interfaces";
+import { Actions } from "../../../constants";
 
 describe("<HardwareSettings />", () => {
   beforeEach(() => {
@@ -23,9 +24,8 @@ describe("<HardwareSettings />", () => {
       controlPanelState={panelState()}
       dispatch={jest.fn()}
       bot={fakeState().bot} />);
-    expect(wrapper.text().toLowerCase()).toContain("expand all");
-    expect(wrapper.text().toLowerCase()).toContain("x axis");
-    expect(wrapper.text().toLowerCase()).toContain("motors");
+    ["expand all", "x axis", "motors"].map(string =>
+      expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   function checkDispatch(
@@ -46,14 +46,17 @@ describe("<HardwareSettings />", () => {
   }
 
   it("expands all", () => {
-    checkDispatch("button", 1, "expand all", "BULK_TOGGLE_CONTROL_PANEL", true);
+    checkDispatch("button", 1, "expand all",
+      Actions.BULK_TOGGLE_CONTROL_PANEL, true);
   });
 
   it("collapses all", () => {
-    checkDispatch("button", 2, "collapse all", "BULK_TOGGLE_CONTROL_PANEL", false);
+    checkDispatch("button", 2, "collapse all",
+      Actions.BULK_TOGGLE_CONTROL_PANEL, false);
   });
 
   it("toggles motor category", () => {
-    checkDispatch("h4", 1, "motors", "TOGGLE_CONTROL_PANEL_OPTION", "motors");
+    checkDispatch("h4", 1, "motors",
+      Actions.TOGGLE_CONTROL_PANEL_OPTION, "motors");
   });
 });

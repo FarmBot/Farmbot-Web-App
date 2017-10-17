@@ -30,7 +30,26 @@ describe Api::TokensController do
     it 'denies bad tokens' do
       request.headers["Authorization"] = "bearer #{auth_token.encoded + "no..."}"
       get :show
-      expect(json.dig(:error, :jwt)).to include("not valid")
+      expect(json.dig(:error, :jwt)).to eq(Auth::ReloadToken::BAD_SUB)
+    end
+
+    it 'handles bad `sub` claims' do
+      # Simulate a legacy API token.
+      token = AbstractJwtToken.new([{
+        aud:              AbstractJwtToken::HUMAN_AUD,
+        sub:              "this_is_wrong@example.com",
+        iat:              Time.now.to_i,
+        jti:              SecureRandom.uuid,
+        iss:              "whatever",
+        exp:              (Time.now + 40.days).to_i,
+        mqtt:             "",
+        mqtt_ws:          "",
+        os_update_server: "",
+        bot:              "device_#{user.device.id}" }])
+      request.headers["Authorization"] = "bearer #{token.encoded}"
+      get :show
+      expect(response.status).to be(401)
+      expect(json[:error].values).to include(Auth::ReloadToken::BAD_SUB)
     end
   end
 end
