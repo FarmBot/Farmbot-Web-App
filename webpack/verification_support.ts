@@ -3,6 +3,7 @@ import axios from "axios";
 import { API } from "./api/api";
 import { Session } from "./session";
 import { AuthState } from "./auth/interfaces";
+
 export const FAILURE_PAGE =
   `<p>
      We were unable to verify your account.
@@ -20,10 +21,11 @@ export const verify = async () => { try { attempt(); } catch (e) { fail(); } };
 
 export async function attempt() {
   API.setBaseUrl(API.fetchBrowserLocation());
-  const r: HttpData<AuthState> =
+  type Resp = HttpData<AuthState>;
+  const r: Resp =
     await axios.put(API.current.verificationPath(getParam("token")));
   Session.replaceToken(r.data);
-  window.location.href = window.location.origin + "/app/controls";
+  window.location.href = API.current.baseUrl + "/app/controls";
 }
 
 export function fail() {
