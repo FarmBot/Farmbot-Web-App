@@ -10,7 +10,7 @@ describe Api::UsersController do
       put :verify, params: params
       user.reload
       expect(user.verification_token).to eq(params[:token])
-      expect(user.verified_at).to be
-      expect(user.verified_at - Time.now).to be < 3
+      expect(user.confirmed_at).to be
+      expect(user.confirmed_at - Time.now).to be < 3
     end
 end

@@ -7,7 +7,7 @@ module Users
     end
 
     def execute
-      user.verified_at = Time.now
+      user.confirmed_at = Time.now
       user.save!
       SessionToken.as_json(user.reload, AbstractJwtToken::HUMAN_AUD)
     end
@@ -15,7 +15,7 @@ module Users
 private
 
     def prevent_token_reuse
-      raise User::AlreadyVerified if user.verified_at.present?
+      raise User::AlreadyVerified if user.confirmed_at.present?
     end
 
     def user

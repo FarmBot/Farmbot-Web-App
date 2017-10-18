@@ -1,4 +1,6 @@
 class UserMailer < ApplicationMailer
+    RESET_PATH         = "http:%s/verify?token=%s"
+    NOTHING_TO_CONFIRM = "FAILED EMAIL CHANGE"
     # Make sure the user gave us a valid email.
     def welcome_email(user)
       @user      = user
@@ -17,8 +19,11 @@ class UserMailer < ApplicationMailer
     # Much like welcome_email, it is used to check email validity.
     # Triggered after the user tries update the `email` attr in Users#update.
     def email_update(user)
+      raise NOTHING_TO_CONFIRM unless user.unconfirmed_email.present?
       @user    = user
-      @the_url = "http:#{$API_URL}/verify?token=#{user.confirmation_token}"
-      mail(to: @user.email, subject: 'FarmBot Email Update Instructions')
+      @the_url = RESET_PATH % [$API_URL, user.confirmation_token]
+
+      mail(to:      @user.unconfirmed_email,
+           subject: 'FarmBot Email Update Instructions')
     end
 end

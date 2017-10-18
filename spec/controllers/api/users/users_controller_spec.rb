@@ -112,7 +112,7 @@ describe Api::UsersController do
     end
 
     it 'can not re-verify' do
-      user.update_attributes(verified_at: Time.now)
+      user.update_attributes(confirmed_at: Time.now)
       sign_in user
       put :verify, params: { token: user.verification_token }, format: :json
       expect(response.status).to eq(409)
