@@ -1,13 +1,13 @@
 module Users
   class Verify < Mutations::Command
-    required { string :token, min_length: 5 }
+    required { model :user, class: User }
 
     def validate
       prevent_token_reuse
     end
 
     def execute
-      user.verified_at = Time.now
+      user.confirmed_at = Time.now
       user.save!
       SessionToken.as_json(user.reload, AbstractJwtToken::HUMAN_AUD)
     end
@@ -15,11 +15,7 @@ module Users
 private
 
     def prevent_token_reuse
-      raise User::AlreadyVerified if user.verified_at.present?
-    end
-
-    def user
-      @user ||= User.find_by!(verification_token: token)
+      raise User::AlreadyVerified if user.confirmed_at.present?
     end
   end
 end

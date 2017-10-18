@@ -63,7 +63,9 @@ export function fail(err: AxiosError | undefined) {
 }
 
 const alreadyVerified = () => {
-  window.location.href = "/app/controls";
+  // Wait 2 seconds to let the user know what's going on.
+  setTimeout(() => window.location.href = "/app/controls", 2000);
   document.write(ALREADY_VERIFIED);
+  // Throw an error to keep track of stats (may be a sign of a system outage)
   throw new Error(ALREADY_VERIFIED_MSG);
 };

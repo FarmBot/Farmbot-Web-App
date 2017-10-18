@@ -37,7 +37,9 @@ describe Api::UsersController do
       patch :update, params: input
       expect(response.status).to eq(200)
       expect(json[:name]).to eq("Ricky McRickerson")
-      expect(json[:email]).to eq("rick@rick.com")
+      # Updates to user email require confirmation.
+      expect(json[:email]).not_to eq(input[:email])
+      expect(json[:email]).to eq(user.email)
     end
 
     it 'updates password' do
@@ -102,7 +104,7 @@ describe Api::UsersController do
           expect(ActionMailer::Base.deliveries.length).to be > old_email_count
           msg = ActionMailer::Base.deliveries.last
           expect(msg.to.first).to eq(email)
-          expect(msg.body.parts.first.to_s).to include(user.verification_token)
+          expect(msg.body.parts.first.to_s).to include(user.confirmation_token)
           expect(User.count).to eq(original_count + 1)
           expect(user.name).to eq("Frank")
           expect(user.email).to eq(email)
@@ -112,9 +114,9 @@ describe Api::UsersController do
     end
 
     it 'can not re-verify' do
-      user.update_attributes(verified_at: Time.now)
+      user.update_attributes(confirmed_at: Time.now)
       sign_in user
-      put :verify, params: { token: user.verification_token }, format: :json
+      put :verify, params: { token: user.confirmation_token }, format: :json
       expect(response.status).to eq(409)
     end
 
@@ -135,7 +137,7 @@ describe Api::UsersController do
       verified = User.create!(email:                 Faker::Internet.email,
                               password:              "password123",
                               password_confirmation: "password123",
-                              verified_at:           Time.now)
+                              confirmed_at:           Time.now)
 
       post :resend_verification,
            params: { email: verified.email },

@@ -20,11 +20,28 @@ module Users
     end
 
     def execute
-      user.update_attributes!(inputs.except(:user))
+      set_unconfirmed_email if email.present?
+      excludable = [:user]
+      excludable.push(:email) unless skip_email_stuff
+      user.update_attributes!(inputs.except(:user, :email))
       user.reload
     end
 
 private
+
+    # Self hosted users will often not have an email server.
+    # We can update emails immediately in those circumstances.
+    def skip_email_stuff
+      @skip_email_stuff ||= !!ENV["NO_EMAILS"]
+    end
+
+    def set_unconfirmed_email
+      return if skip_email_stuff
+      user.reset_confirmation_token
+      user.unconfirmed_email = email
+      user.save!
+      UserMailer.email_update(user).deliver_later
+    end
 
     def confirm_new_password
         valid_pw   = user.valid_password?(password)

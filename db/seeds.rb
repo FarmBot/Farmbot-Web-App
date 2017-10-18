@@ -15,7 +15,7 @@ unless Rails.env == "production"
                        agree_to_terms:        true)
     signed_tos = User.last
     signed_tos.agreed_to_terms_at = nil
-    signed_tos.verified_at = Time.now
+    signed_tos.confirmed_at = Time.now
     signed_tos.save(validate: false)
     Users::Create.run!(name:                  "Administrator",
                        email:                 "admin@admin.com",
@@ -23,7 +23,7 @@ unless Rails.env == "production"
                        password_confirmation: "password123",
                        agree_to_terms:        true)
     u = User.last
-    u.update_attributes(verified_at: Time.now)
+    u.update_attributes(confirmed_at: Time.now)
     Log.transaction do
       FactoryGirl.create_list(:log, 35, device: u.device)
     end

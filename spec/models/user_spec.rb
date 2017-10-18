@@ -6,7 +6,7 @@ describe User do
   end
 
   describe 'SKIP_EMAIL_VALIDATION' do
-    let (:user) { FactoryGirl.create(:user, verified_at: nil) }
+    let (:user) { FactoryGirl.create(:user, confirmed_at: nil) }
 
     it 'considers al users verified when set to `true`' do
       const_reassign(User, :SKIP_EMAIL_VALIDATION, true)

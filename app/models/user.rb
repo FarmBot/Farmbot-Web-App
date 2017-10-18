@@ -14,7 +14,11 @@ class User < ApplicationRecord
   before_validation :set_defaults
 
   def set_defaults
-    self.verification_token ||= SecureRandom.uuid
+    self.confirmation_token ||= self.reset_confirmation_token
+  end
+
+  def reset_confirmation_token
+    self.confirmation_token = SecureRandom.uuid
   end
 
   def must_consent?
@@ -27,7 +31,7 @@ class User < ApplicationRecord
   end
 
   def verified?
-    SKIP_EMAIL_VALIDATION ? true : !!verified_at
+    SKIP_EMAIL_VALIDATION ? true : !!confirmed_at
   end
 
   BAD_SUB = "SUB was neither string nor number"
