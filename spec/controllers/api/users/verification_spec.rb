@@ -13,4 +13,13 @@ describe Api::UsersController do
       expect(user.confirmed_at).to be
       expect(user.confirmed_at - Time.now).to be < 3
     end
+
+    it 'verifies email changes' do
+      email = "foo@bar.com"
+      user.update_attributes!(unconfirmed_email: "foo@bar.com")
+      params =  { token: user.confirmation_token }
+      put :verify, params: params
+      expect(user.reload.unconfirmed_email).to be nil
+      expect(user.email).to eq email
+    end
 end
