@@ -1,4 +1,5 @@
 class UserMailer < ApplicationMailer
+    # Make sure the user gave us a valid email.
     def welcome_email(user)
       @user      = user
       @user_name = user.name
@@ -13,10 +14,11 @@ class UserMailer < ApplicationMailer
       mail(to: @user.email, subject: 'FarmBot Password Reset Instructions')
     end
 
+    # Much like welcome_email, it is used to check email validity.
+    # Triggered after the user tries update the `email` attr in Users#update.
     def email_update(user)
-      @user  = user
-      @host  = $API_URL
-      raise "TODO: This."
+      @user    = user
+      @the_url = "http:#{$API_URL}/verify?token=#{user.confirmation_token}"
       mail(to: @user.email, subject: 'FarmBot Email Update Instructions')
     end
 end
