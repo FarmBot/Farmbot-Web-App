@@ -130,4 +130,6 @@ export class API {
   get logsPath() { return `${this.baseUrl}/api/logs/`; }
   /** /api/webcam_feed */
   get webcamFeedPath() { return `${this.baseUrl}/api/webcam_feeds/`; }
+  /** /api/users/verify/:token */
+  verificationPath = (token: string) => ("/api/users/verify/" + token);
 }
