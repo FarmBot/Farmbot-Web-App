@@ -20,14 +20,14 @@ module Users
     end
 
     def execute
-      update_email if email.present?
+      set_unconfirmed_email if email.present?
       user.update_attributes!(inputs.except(:user, :email))
       user.reload
     end
 
 private
 
-    def update_email
+    def set_unconfirmed_email
       user.reset_confirmation_token
       user.unconfirmed_email = email
       user.save!
