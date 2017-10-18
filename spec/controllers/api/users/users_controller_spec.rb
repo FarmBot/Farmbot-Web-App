@@ -37,7 +37,9 @@ describe Api::UsersController do
       patch :update, params: input
       expect(response.status).to eq(200)
       expect(json[:name]).to eq("Ricky McRickerson")
-      expect(json[:email]).to eq("rick@rick.com")
+      # Updates to user email require confirmation.
+      expect(json[:email]).not_to eq(input[:email])
+      expect(json[:email]).to eq(user.email)
     end
 
     it 'updates password' do
@@ -114,7 +116,7 @@ describe Api::UsersController do
     it 'can not re-verify' do
       user.update_attributes(confirmed_at: Time.now)
       sign_in user
-      put :verify, params: { token: user.verification_token }, format: :json
+      put :verify, params: { token: user.confirmation_token }, format: :json
       expect(response.status).to eq(409)
     end
 
