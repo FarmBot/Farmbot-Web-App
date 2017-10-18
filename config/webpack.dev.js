@@ -3,7 +3,6 @@ var path = require("path");
 var genConfig = require("./webpack.base");
 var conf = genConfig();
 
-
 conf.output = {
   // must match config.webpack.output_dir
   path: path.join(__dirname, '..', 'public', 'webpack'),
