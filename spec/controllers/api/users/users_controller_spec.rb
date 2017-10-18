@@ -111,6 +111,13 @@ describe Api::UsersController do
       end
     end
 
+    it 'can not re-verify' do
+      user.update_attributes(verified_at: Time.now)
+      sign_in user
+      put :verify, params: { token: user.verification_token }, format: :json
+      expect(response.status).to eq(409)
+    end
+
     it 'handles password confirmation mismatch' do
       email = Faker::Internet.email
       original_count = User.count

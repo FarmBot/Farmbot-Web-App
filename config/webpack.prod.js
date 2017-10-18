@@ -19,7 +19,18 @@ conf.output = {
 [
   new webpack.optimize.CommonsChunkPlugin({
     name: "commons",
-    async: true
+    chunks: [
+      "bundle",
+      "front_page",
+      "verification",
+      "password_reset",
+      "tos_update"
+    ],
+    minChunks: ({ resource }) => (
+      resource &&
+      resource.indexOf('node_modules') >= 0 &&
+      resource.match(/\.js$/)
+    ),
   }),
   new ExtractTextPlugin({
     // Temporary hotfix for some issues on staging.

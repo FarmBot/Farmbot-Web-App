@@ -1,14 +1,7 @@
-const mockAuth = (jti = "456"): AuthState => ({
+const mockAuth = (iss = "987"): AuthState => ({
   token: {
     encoded: "---",
-    unencoded: {
-      iat: 123,
-      jti,
-      iss: "---",
-      exp: 456,
-      mqtt: "---",
-      os_update_server: "---"
-    }
+    unencoded: { iss, os_update_server: "---" }
   }
 });
 
@@ -34,8 +27,12 @@ describe("maybeRefreshToken()", () => {
   it("gives you back your token when things fail", (done) => {
     maybeRefreshToken(mockAuth("111"))
       .then((nextToken) => {
-        expect(nextToken.token.unencoded.jti).toEqual("000");
-        done();
+        if (nextToken) {
+          expect(nextToken.token.unencoded.iss).toEqual("000");
+          done();
+        } else {
+          fail();
+        }
       });
   });
 });

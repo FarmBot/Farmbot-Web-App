@@ -2,6 +2,7 @@ import * as React from "react";
 import { PlantInventoryItem } from "../plant_inventory_item";
 import { shallow } from "enzyme";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import { Actions } from "../../../constants";
 
 describe("<PlantInventoryItem />", () => {
   it("renders", () => {
@@ -24,7 +25,7 @@ describe("<PlantInventoryItem />", () => {
         icon: "",
         plantUUID: "points.1.17"
       },
-      type: "TOGGLE_HOVERED_PLANT"
+      type: Actions.TOGGLE_HOVERED_PLANT
     });
   });
 
@@ -40,7 +41,7 @@ describe("<PlantInventoryItem />", () => {
         icon: "",
         plantUUID: undefined
       },
-      type: "TOGGLE_HOVERED_PLANT"
+      type: Actions.TOGGLE_HOVERED_PLANT
     });
   });
 });
