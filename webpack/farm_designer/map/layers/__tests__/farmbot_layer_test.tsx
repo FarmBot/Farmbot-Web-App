@@ -7,7 +7,11 @@ describe("<FarmBotLayer/>", () => {
   function fakeProps(): FarmBotLayerProps {
     return {
       visible: true,
-      botPosition: { x: 0, y: 0, z: 0 },
+      botLocationData: {
+        position: { x: undefined, y: undefined, z: undefined },
+        scaled_encoders: { x: undefined, y: undefined, z: undefined },
+        raw_encoders: { x: undefined, y: undefined, z: undefined },
+      },
       mapTransformProps: {
         quadrant: 1, gridSize: { x: 3000, y: 1500 }
       },

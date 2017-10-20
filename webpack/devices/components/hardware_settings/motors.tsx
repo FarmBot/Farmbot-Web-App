@@ -12,11 +12,54 @@ import { Row, Col } from "../../../ui/index";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { McuInputBox } from "../mcu_input_box";
+import { minFwVersionCheck } from "../../../util";
+
+export function StepsPerMmSettings({ dispatch, bot }: MotorsProps) {
+  const { firmware_version } = bot.hardware.informational_settings;
+  if (minFwVersionCheck(firmware_version, "5.0.5")) {
+    return <NumericMCUInputGroup
+      name={t("Steps per MM")}
+      tooltip={t(ToolTips.STEPS_PER_MM)}
+      x={"movement_step_per_mm_x"}
+      y={"movement_step_per_mm_y"}
+      z={"movement_step_per_mm_z"}
+      bot={bot}
+      dispatch={dispatch} />;
+  } else {
+    return <Row>
+      <Col xs={6}>
+        <label>
+          {t("Steps per MM")}
+        </label>
+        <SpacePanelToolTip tooltip={t(ToolTips.STEPS_PER_MM)} />
+      </Col>
+      <Col xs={2}>
+        <BotConfigInputBox
+          setting="steps_per_mm_x"
+          bot={bot}
+          dispatch={dispatch} />
+      </Col>
+      <Col xs={2}>
+        <BotConfigInputBox
+          setting="steps_per_mm_y"
+          bot={bot}
+          dispatch={dispatch} />
+      </Col>
+      <Col xs={2}>
+        <BotConfigInputBox
+          setting="steps_per_mm_z"
+          bot={bot}
+          dispatch={dispatch} />
+      </Col>
+    </Row>;
+  }
+}
 
 export function Motors({ dispatch, bot }: MotorsProps) {
 
   const { mcu_params } = bot.hardware;
   const { motors } = bot.controlPanelState;
+  const { firmware_version } = bot.hardware.informational_settings;
 
   return <section>
     <Header
@@ -61,16 +104,15 @@ export function Motors({ dispatch, bot }: MotorsProps) {
         z={"movement_max_spd_z"}
         bot={bot}
         dispatch={dispatch} />
-      {/*
-      This works. Uncomment when it is time to relase. -RC.
-      <NumericMCUInputGroup
-        name={t("Homing Speed (steps/s)")}
-        tooltip={t(ToolTips.HOME_SPEED)}
-        x={"movement_home_spd_x"}
-        y={"movement_home_spd_y"}
-        z={"movement_home_spd_z"}
-        bot={bot}
-        dispatch={dispatch} /> */}
+      {minFwVersionCheck(firmware_version, "5.0.5") &&
+        <NumericMCUInputGroup
+          name={t("Homing Speed (steps/s)")}
+          tooltip={t(ToolTips.HOME_SPEED)}
+          x={"movement_home_spd_x"}
+          y={"movement_home_spd_y"}
+          z={"movement_home_spd_z"}
+          bot={bot}
+          dispatch={dispatch} />}
       <NumericMCUInputGroup
         name={t("Minimum Speed (steps/s)")}
         tooltip={t(ToolTips.MIN_SPEED)}
@@ -87,32 +129,9 @@ export function Motors({ dispatch, bot }: MotorsProps) {
         z={"movement_steps_acc_dec_z"}
         bot={bot}
         dispatch={dispatch} />
-      <Row>
-        <Col xs={6}>
-          <label>
-            {t("Steps per MM")}
-          </label>
-          <SpacePanelToolTip tooltip={t(ToolTips.STEPS_PER_MM)} />
-        </Col>
-        <Col xs={2}>
-          <BotConfigInputBox
-            setting="steps_per_mm_x"
-            bot={bot}
-            dispatch={dispatch} />
-        </Col>
-        <Col xs={2}>
-          <BotConfigInputBox
-            setting="steps_per_mm_y"
-            bot={bot}
-            dispatch={dispatch} />
-        </Col>
-        <Col xs={2}>
-          <BotConfigInputBox
-            setting="steps_per_mm_z"
-            bot={bot}
-            dispatch={dispatch} />
-        </Col>
-      </Row>
+      <StepsPerMmSettings
+        dispatch={dispatch}
+        bot={bot} />
       <BooleanMCUInputGroup
         name={t("Always Power Motors")}
         tooltip={t(ToolTips.ALWAYS_POWER_MOTORS)}

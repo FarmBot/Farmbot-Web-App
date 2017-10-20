@@ -318,7 +318,8 @@ export namespace Content {
   export const MQTT_DISCONNECTED =
     `Your web browser is unable to connect to the message broker.
     You might be behind a firewall or disconnected from the Internet. Check
-    your network settings.`.replace(/\s+/g, " ");
+    your network settings.
+    View Device > Connectivity for more details.`.replace(/\s+/g, " ");
 
   export const MALFORMED_MESSAGE_REC_UPGRADE =
     `FarmBot sent a malformed message. You may need to upgrade

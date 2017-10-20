@@ -18,6 +18,8 @@ export enum BooleanSetting {
   dynamicMap = "dynamicMap",
   mapXL = "mapXL",
   disableAnimations = "disableAnimations",
+  displayTrail = "displayTrail",
+  encoderFigure = "encoderFigure",
 }
 
 export enum NumericSetting {
