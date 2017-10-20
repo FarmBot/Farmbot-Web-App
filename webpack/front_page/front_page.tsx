@@ -18,6 +18,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   constructor() {
     super();
     this.state = {
+      registrationSent: false,
       regEmail: "",
       regName: "",
       regPassword: "",
@@ -106,6 +107,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     axios.post(API.current.usersPath, form).then(() => {
       const m = "Almost done! Check your email for the verification link.";
       success(t(m));
+      this.setState({ registrationSent: true });
     }).catch(error => {
       log(prettyPrintApiErrors(error));
     });
@@ -264,7 +266,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
           <this.activePanel />
           <CreateAccount
             submitRegistration={this.submitRegistration}
-            sent={false}
+            sent={!!this.state.registrationSent}
             get={(key) => this.state[key]}
             set={(key, val) => this.setState({ [key]: val })}>
             {this.maybeRenderTos()}

@@ -8,9 +8,9 @@ type RegKeyName =
   | "regName"
   | "regPassword";
 
-type KeySetter = (key: RegKeyName, val: string) => void;
+type KeySetter = (keyName: RegKeyName, val: string) => void;
 
-type KeyGetter = (key: RegKeyName) => string | undefined;
+type KeyGetter = (keyName: RegKeyName) => string | undefined;
 
 interface CreateAccountProps {
   children?: React.ReactChild
@@ -27,7 +27,7 @@ type FieldType =
 
 interface RegistrationFieldProps {
   label: string;
-  key: RegKeyName;
+  keyName: RegKeyName; /** "key" is reserved by React. */
   set: KeySetter;
   get: KeyGetter;
   type: FieldType;
@@ -42,7 +42,7 @@ export function RegistrationField(props: RegistrationFieldProps) {
   const p = {
     value: (props.get(name) || ""),
     onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => {
-      props.set(props.key, e.currentTarget.value);
+      props.set(props.keyName, e.currentTarget.value);
     }
   };
 
@@ -54,13 +54,14 @@ export function RegistrationField(props: RegistrationFieldProps) {
 
 export const fieldGenerator =
   (set: KeySetter, get: KeyGetter) =>
-    (label: string, key: RegKeyName, type: FieldType = "text") => {
+    (label: string, keyName: RegKeyName, type: FieldType = "text") => {
       return <RegistrationField
         label={label}
         type={type}
-        key={key}
+        keyName={keyName}
         set={set}
-        get={get} />;
+        get={get}
+        key={label} />;
     };
 
 export function MustRegister(props: CreateAccountProps) {
@@ -72,9 +73,9 @@ export function MustRegister(props: CreateAccountProps) {
         field("Email", "regEmail", "email"),
         field("Name", "regName"),
         field("Password", "regPassword", "password"),
-        field("Verify Password", "regConfirmation", "password"),
-        props.children
+        field("Verify Password", "regConfirmation", "password")
       ]}
+      {props.children}
       <Row>
         <button
           className="fb-button green front-page-button">
