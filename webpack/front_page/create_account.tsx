@@ -25,56 +25,43 @@ type FieldType =
   | "password"
   | "text";
 
-interface RegistrationFieldProps {
+interface FormFieldProps {
   label: string;
-  keyName: RegKeyName; /** "key" is reserved by React. */
-  set: KeySetter;
-  get: KeyGetter;
-  type: FieldType;
+  type?: FieldType;
+  value: string;
+  onCommit(val: string): void;
 }
 
 export function DidRegister(props: CreateAccountProps) {
   return <p> TODO </p>;
 }
 
-export function RegistrationField(props: RegistrationFieldProps) {
-  const label = t(props.label);
-  const p = {
-    value: (props.get(name) || ""),
-    onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => {
-      props.set(props.keyName, e.currentTarget.value);
-    }
-  };
+export const FormField = (props: FormFieldProps) => <div>
+  <label> {t(props.label)} </label>
+  <BlurableInput
+    value={props.value}
+    type={props.type || "text"}
+    onCommit={(e) => props.onCommit(e.currentTarget.value)} />
+</div>;
 
-  return <div>
-    <label> {label} </label>
-    <BlurableInput {...p} type={props.type || "text"} />
-  </div>;
-}
-
-export const fieldGenerator =
-  (set: KeySetter, get: KeyGetter) =>
-    (label: string, keyName: RegKeyName, type: FieldType = "text") => {
-      return <RegistrationField
-        label={label}
-        type={type}
-        keyName={keyName}
-        set={set}
-        get={get}
-        key={label} />;
-    };
+const FIELDS: { label: string, type: FieldType, keyName: RegKeyName }[] = [
+  { label: "Email", type: "email", keyName: "regEmail" },
+  { label: "Name", type: "text", keyName: "regName" },
+  { label: "Password", type: "password", keyName: "regPassword" },
+  { label: "Verify Password", type: "password", keyName: "regConfirmation" },
+];
 
 export function MustRegister(props: CreateAccountProps) {
-  const field = fieldGenerator(props.set, props.get);
-
   return <WidgetBody>
     <form onSubmit={props.submitRegistration}>
-      {[
-        field("Email", "regEmail", "email"),
-        field("Name", "regName"),
-        field("Password", "regPassword", "password"),
-        field("Verify Password", "regConfirmation", "password")
-      ]}
+      {FIELDS.map((f) => {
+        return <FormField
+          key={f.label}
+          label={f.label}
+          type={f.type}
+          value={props.get(f.keyName) || ""}
+          onCommit={(val) => props.set(f.keyName, val)} />;
+      })}
       {props.children}
       <Row>
         <button
@@ -87,11 +74,11 @@ export function MustRegister(props: CreateAccountProps) {
 }
 
 export function CreateAccount(props: CreateAccountProps) {
-  const Form = props.sent ? DidRegister : MustRegister;
+  const RelevantForm = props.sent ? DidRegister : MustRegister;
   return <Col xs={12} sm={5}>
     <Widget>
       <WidgetHeader title={"Create An Account"} />
-      {<Form {...props} />}
+      <RelevantForm {...props} />
     </Widget>
   </Col>;
 }

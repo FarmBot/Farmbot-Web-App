@@ -267,8 +267,14 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
           <CreateAccount
             submitRegistration={this.submitRegistration}
             sent={!!this.state.registrationSent}
-            get={(key) => this.state[key]}
-            set={(key, val) => this.setState({ [key]: val })}>
+            get={(key) => {
+              console.log("GET", { [key]: this.state[key] });
+              return this.state[key];
+            }}
+            set={(key, val) => {
+              console.log("SET", { [key]: val });
+              this.setState({ [key]: val });
+            }}>
             {this.maybeRenderTos()}
           </CreateAccount>
         </Row>
