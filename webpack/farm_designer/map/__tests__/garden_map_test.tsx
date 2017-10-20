@@ -38,7 +38,11 @@ describe("<GardenPlant/>", () => {
       plants: [],
       points: [],
       toolSlots: [],
-      botPosition: { x: 0, y: 0, z: 0 },
+      botLocationData: {
+        position: { x: 0, y: 0, z: 0 },
+        scaled_encoders: { x: undefined, y: undefined, z: undefined },
+        raw_encoders: { x: undefined, y: undefined, z: undefined },
+      },
       botSize: {
         x: { value: 3000, isDefault: true },
         y: { value: 1500, isDefault: true }

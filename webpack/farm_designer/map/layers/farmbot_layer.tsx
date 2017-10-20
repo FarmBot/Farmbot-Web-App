@@ -10,7 +10,7 @@ export function FarmBotLayer(props: FarmBotLayerProps) {
   return visible ? <g id="farmbot-layer">
     <VirtualFarmBot
       mapTransformProps={mapTransformProps}
-      botPosition={props.botPosition}
+      botLocationData={props.botLocationData}
       plantAreaOffset={plantAreaOffset} />
     <BotExtents
       mapTransformProps={mapTransformProps}

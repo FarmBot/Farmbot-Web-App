@@ -4,7 +4,7 @@ import {
   TaggedGenericPointer
 } from "../../resources/tagged_resources";
 import { State, BotOriginQuadrant } from "../interfaces";
-import { BotPosition } from "../../devices/interfaces";
+import { BotPosition, BotLocationData } from "../../devices/interfaces";
 
 export interface PlantLayerProps {
   plants: TaggedPlantPointer[];
@@ -92,7 +92,7 @@ export interface GridProps {
 
 export interface VirtualFarmBotProps {
   mapTransformProps: MapTransformProps;
-  botPosition: BotPosition;
+  botLocationData: BotLocationData;
   plantAreaOffset: AxisNumberProperty;
 }
 

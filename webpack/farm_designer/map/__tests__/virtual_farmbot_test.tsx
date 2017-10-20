@@ -21,7 +21,11 @@ import { Dictionary } from "farmbot";
 describe("<VirtualFarmBot/>", () => {
   function fakeProps(): VirtualFarmBotProps {
     return {
-      botPosition: { x: 0, y: 0, z: 0 },
+      botLocationData: {
+        position: { x: 0, y: 0, z: 0 },
+        scaled_encoders: { x: undefined, y: undefined, z: undefined },
+        raw_encoders: { x: undefined, y: undefined, z: undefined },
+      },
       mapTransformProps: {
         quadrant: 1, gridSize: { x: 3000, y: 1500 }
       },
@@ -70,9 +74,11 @@ describe("<VirtualFarmBot/>", () => {
   it("changes location", () => {
     const p = fakeProps();
     p.mapTransformProps.quadrant = 2;
-    p.botPosition = { x: 100, y: 200, z: 0 };
+    p.botLocationData.position = { x: 100, y: 200, z: 0 };
     const result = shallow(<VirtualFarmBot {...p } />);
-    expect(result.find("#gantry").props().x).toEqual(90);
+    const gantry = result.find("#gantry");
+    expect(gantry.length).toEqual(1);
+    expect(gantry.props().x).toEqual(90);
     const UTM = result.find("circle").props();
     expect(UTM.cx).toEqual(100);
     expect(UTM.cy).toEqual(200);
@@ -101,5 +107,24 @@ describe("<VirtualFarmBot/>", () => {
       strokeWidth: 2,
       x1: 0, x2: 4, y1: 0, y2: 4
     });
+  });
+
+  it("shows encoder position", () => {
+    mockStorj["encoderFigure"] = true;
+    const p = fakeProps();
+    p.mapTransformProps.quadrant = 2;
+    p.botLocationData.position = { x: 100, y: 200, z: 0 };
+    p.botLocationData.scaled_encoders = { x: 300, y: 400, z: 0 };
+    const wrapper = shallow(<VirtualFarmBot {...p } />);
+    expect(wrapper.find("#gantry").first().props().x).toEqual(90);
+    expect(wrapper.find("#gantry").last().props().x).toEqual(290);
+    const motorsUTM = wrapper.find("circle").first().props();
+    expect(motorsUTM.cx).toEqual(100);
+    expect(motorsUTM.cy).toEqual(200);
+    expect(motorsUTM.fillOpacity).toEqual(0.75);
+    const encodersUTM = wrapper.find("circle").last().props();
+    expect(encodersUTM.cx).toEqual(300);
+    expect(encodersUTM.cy).toEqual(400);
+    expect(encodersUTM.fillOpacity).toEqual(0.25);
   });
 });
