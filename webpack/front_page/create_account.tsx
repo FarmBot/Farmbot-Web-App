@@ -1,6 +1,9 @@
 import * as React from "react";
 import { WidgetBody, Col, Widget, WidgetHeader, Row, BlurableInput } from "../ui/index";
 import { t } from "i18next";
+import { ResendPanelBody, resendEmail } from "./resend_verification";
+import { success, error } from "farmbot-toastr";
+import { bail } from "../util";
 
 type RegKeyName =
   | "regConfirmation"
@@ -30,10 +33,6 @@ interface FormFieldProps {
   type?: FieldType;
   value: string;
   onCommit(val: string): void;
-}
-
-export function DidRegister(props: CreateAccountProps) {
-  return <p> TODO </p>;
 }
 
 export const FormField = (props: FormFieldProps) => <div>
@@ -71,6 +70,22 @@ export function MustRegister(props: CreateAccountProps) {
       </Row>
     </form>
   </WidgetBody>;
+}
+
+const MISSING_EMAIL = "User tried to resend to their registration email, " +
+  "but none was found.";
+
+function sendEmail(email: string) {
+  const ok = () => success(t("Email sent."));
+  const no = () => error(t("Unable to send email."));
+
+  return resendEmail(email).then(ok, no);
+}
+
+export function DidRegister(props: CreateAccountProps) {
+  const email = props.get("regEmail");
+  return email ?
+    <ResendPanelBody onClick={() => sendEmail(email)} /> : bail(MISSING_EMAIL);
 }
 
 export function CreateAccount(props: CreateAccountProps) {

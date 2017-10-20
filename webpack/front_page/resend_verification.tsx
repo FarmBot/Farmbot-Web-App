@@ -22,12 +22,6 @@ export class ResendVerification extends React.Component<Props, State> {
 
   state: State = {};
 
-  tryToResend = () => {
-    axios
-      .post(API.current.userResendConfirmationPath, { email: this.props.email })
-      .then(this.props.ok, this.props.no);
-  };
-
   render() {
     return <Col xs={12} sm={5}>
       <Widget>
@@ -38,26 +32,35 @@ export class ResendVerification extends React.Component<Props, State> {
             {t("back")}
           </button>
         </WidgetHeader>
-        <WidgetBody>
-          <form>
-            <Row>
-              <p>
-                {t("Please check your email for the verification link.")}
-              </p>
-              <p>
-                {t("You may click the button below to resend the email.")}
-              </p>
-            </Row>
-            <Row>
-              <button onClick={this.tryToResend}
-                type="button"
-                className="fb-button green pull-right front-page-button">
-                {t("Resend Verification Email")}
-              </button>
-            </Row>
-          </form>
-        </WidgetBody>
+        <ResendPanelBody onClick={() => resendEmail(this.props.email)
+          .then(this.props.ok, this.props.no)} />
       </Widget>
     </Col>;
   }
+}
+
+export function resendEmail(email: string) {
+  return axios.post(API.current.userResendConfirmationPath, { email });
+}
+
+export function ResendPanelBody(props: { onClick(): void; }) {
+  return <WidgetBody>
+    <form>
+      <Row>
+        <p>
+          {t("Please check your email for the verification link.")}
+        </p>
+        <p>
+          {t("You may click the button below to resend the email.")}
+        </p>
+      </Row>
+      <Row>
+        <button onClick={props.onClick}
+          type="button"
+          className="fb-button green pull-right front-page-button">
+          {t("Resend Verification Email")}
+        </button>
+      </Row>
+    </form>
+  </WidgetBody>;
 }
