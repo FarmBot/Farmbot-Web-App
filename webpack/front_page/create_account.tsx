@@ -30,7 +30,7 @@ type FieldType =
 
 interface FormFieldProps {
   label: string;
-  type?: FieldType;
+  type: FieldType;
   value: string;
   onCommit(val: string): void;
 }
@@ -39,7 +39,7 @@ export const FormField = (props: FormFieldProps) => <div>
   <label> {t(props.label)} </label>
   <BlurableInput
     value={props.value}
-    type={props.type || "text"}
+    type={props.type}
     onCommit={(e) => props.onCommit(e.currentTarget.value)} />
 </div>;
 
@@ -50,17 +50,23 @@ const FIELDS: { label: string, type: FieldType, keyName: RegKeyName }[] = [
   { label: "Verify Password", type: "password", keyName: "regConfirmation" },
 ];
 
+/** Helper function to make life easier when testing.
+ * Renders a list of input boxes on the registration panel form. */
+const renderFormFields = (get: KeyGetter, set: KeySetter) => {
+  return FIELDS.map((f) => {
+    return <FormField
+      key={f.label}
+      label={f.label}
+      type={f.type}
+      value={get(f.keyName) || ""}
+      onCommit={(val) => set(f.keyName, val)} />;
+  });
+};
+
 export function MustRegister(props: CreateAccountProps) {
   return <WidgetBody>
     <form onSubmit={props.submitRegistration}>
-      {FIELDS.map((f) => {
-        return <FormField
-          key={f.label}
-          label={f.label}
-          type={f.type}
-          value={props.get(f.keyName) || ""}
-          onCommit={(val) => props.set(f.keyName, val)} />;
-      })}
+      {renderFormFields(props.get, props.set)}
       {props.children}
       <Row>
         <button
