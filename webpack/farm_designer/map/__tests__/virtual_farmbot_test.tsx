@@ -1,8 +1,22 @@
+const mockStorj: Dictionary<boolean> = {};
+
+jest.mock("../../../session", () => {
+  return {
+    Session: {
+      getBool: (k: string) => {
+        mockStorj[k] = !!mockStorj[k];
+        return mockStorj[k];
+      },
+    }
+  };
+});
+
 import * as React from "react";
 import { VirtualFarmBot } from "../virtual_farmbot";
 import { shallow } from "enzyme";
 import { VirtualFarmBotProps } from "../interfaces";
 import { BotOriginQuadrant } from "../../interfaces";
+import { Dictionary } from "farmbot";
 
 describe("<VirtualFarmBot/>", () => {
   function fakeProps(): VirtualFarmBotProps {
@@ -62,5 +76,30 @@ describe("<VirtualFarmBot/>", () => {
     const UTM = result.find("circle").props();
     expect(UTM.cx).toEqual(100);
     expect(UTM.cy).toEqual(200);
+  });
+
+  it("shows trail", () => {
+    mockStorj["displayTrail"] = true;
+    sessionStorage["virtualTrail"] = JSON.stringify([
+      { x: 1, y: 1 }, { x: 2, y: 2 }, { x: 3, y: 3 }, { x: 4, y: 4 }]);
+    const p = fakeProps();
+    p.mapTransformProps.quadrant = 2;
+    const wrapper = shallow(<VirtualFarmBot {...p } />);
+    const lines = wrapper.find("#trail").find("line");
+    expect(lines.length).toEqual(4);
+    expect(lines.first().props()).toEqual({
+      id: "trail-line-1",
+      stroke: "red",
+      strokeOpacity: 0.25,
+      strokeWidth: 0.5,
+      x1: 2, x2: 1, y1: 2, y2: 1
+    });
+    expect(lines.last().props()).toEqual({
+      id: "trail-line-4",
+      stroke: "red",
+      strokeOpacity: 1,
+      strokeWidth: 2,
+      x1: 0, x2: 4, y1: 0, y2: 4
+    });
   });
 });
