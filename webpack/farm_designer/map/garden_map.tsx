@@ -282,7 +282,7 @@ export class GardenMap extends
           <FarmBotLayer
             mapTransformProps={mapTransformProps}
             visible={!!this.props.showFarmbot}
-            botPosition={this.props.botPosition}
+            botLocationData={this.props.botLocationData}
             stopAtHome={this.props.stopAtHome}
             botSize={this.props.botSize}
             plantAreaOffset={this.props.gridOffset} />
@@ -304,8 +304,8 @@ export class GardenMap extends
             plantAreaOffset={this.props.gridOffset} />
           {this.state.selectionBox &&
             <SelectionBox
-            selectionBox={this.state.selectionBox}
-            mapTransformProps={mapTransformProps} />}
+              selectionBox={this.state.selectionBox}
+              mapTransformProps={mapTransformProps} />}
         </svg>
       </svg>
     </div>;

@@ -463,3 +463,17 @@ export function withTimeout<T>(ms: number, promise: Promise<T>) {
   // Returns a race between our timeout and the passed in promise
   return Promise.race([promise, timeout]) as Promise<T>;
 }
+
+export function minFwVersionCheck(current: string | undefined, min: string) {
+  if (_.isString(current)) {
+    switch (semverCompare(current.slice(0, -1), min)) {
+      case SemverResult.LEFT_IS_GREATER:
+      case SemverResult.EQUAL:
+        return true;
+      default:
+        return false;
+    }
+  } else {
+    return false;
+  }
+}

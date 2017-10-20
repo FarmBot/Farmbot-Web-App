@@ -9,7 +9,8 @@ import {
   SemverResult,
   trim,
   bitArray,
-  withTimeout
+  withTimeout,
+  minFwVersionCheck
 } from "../util";
 describe("util", () => {
   describe("safeStringFetch", () => {
@@ -172,5 +173,18 @@ describe("withTimeout()", () => {
         expect(y).toContain("Done");
         done();
       }, fail);
+  });
+});
+
+describe("minFwVersionCheck()", () => {
+  it("firmware version meets or exceeds minimum", () => {
+    expect(minFwVersionCheck("1.0.1R", "1.0.1")).toBeTruthy();
+    expect(minFwVersionCheck("1.0.2F", "1.0.1")).toBeTruthy();
+  });
+
+  it("firmware version doesn't meet minimum", () => {
+    expect(minFwVersionCheck("1.0.0R", "1.0.1")).toBeFalsy();
+    expect(minFwVersionCheck(undefined, "1.0.1")).toBeFalsy();
+    expect(minFwVersionCheck("1.0.0", "1.0.1")).toBeFalsy();
   });
 });

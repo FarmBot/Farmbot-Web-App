@@ -11,7 +11,7 @@ import {
 } from "../resources/tagged_resources";
 import { PlantPointer } from "../interfaces";
 import { SlotWithTool } from "../resources/interfaces";
-import { BotPosition, StepsPerMmXY } from "../devices/interfaces";
+import { BotPosition, StepsPerMmXY, BotLocationData } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import { McuParams } from "farmbot/dist";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
@@ -46,7 +46,7 @@ export interface Props {
   plants: TaggedPlantPointer[];
   toolSlots: SlotWithTool[];
   crops: TaggedCrop[];
-  botPosition: BotPosition;
+  botLocationData: BotLocationData;
   botMcuParams: McuParams;
   stepsPerMmXY: StepsPerMmXY;
 }
@@ -165,7 +165,7 @@ export interface GardenMapProps {
   selectedPlant: TaggedPlantPointer | undefined;
   hoveredPlant: TaggedPlantPointer | undefined;
   crops: TaggedCrop[];
-  botPosition: BotPosition;
+  botLocationData: BotLocationData;
   botSize: BotSize;
   stopAtHome: Record<"x" | "y", boolean>;
   zoomLvl: number;
