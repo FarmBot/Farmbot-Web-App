@@ -12,11 +12,12 @@ jest.mock("../resend_verification", () => {
       .fn()
       .mockReturnValueOnce(Promise.resolve("")) // success case
       .mockReturnValueOnce(Promise.reject(""))  // failure case
+      .mockReturnValueOnce(Promise.resolve(""))
   };
 });
 
 import * as React from "react";
-import { FormField, sendEmail, DidRegister } from "../create_account";
+import { FormField, sendEmail, DidRegister, MustRegister, CreateAccount } from "../create_account";
 import { shallow } from "enzyme";
 import { BlurableInput } from "../../ui/index";
 import { success, error } from "farmbot-toastr";
@@ -60,11 +61,15 @@ describe("<DidRegister/>", () => {
     const props = {
       submitRegistration: jest.fn(),
       sent: false,
-      get: jest.fn(() => "OK"),
+      get: jest.fn(() => "example2@earthlink.net"),
       set: jest.fn()
     };
+
     const el = shallow(<DidRegister {...props} />);
-    expect(el.find(ResendPanelBody).length).toEqual(1);
+    const rpb = el.find(ResendPanelBody);
+    expect(rpb.length).toEqual(1);
+    rpb.simulate("click");
+    expect(resendEmail).toHaveBeenCalledWith("example2@earthlink.net");
   });
 
   it("bail()s on missing email", () => {
@@ -79,6 +84,33 @@ describe("<DidRegister/>", () => {
   });
 });
 
+describe("<MustRegister/>", () => {
+  it("renders the expected components", () => {
+    const el = shallow(<MustRegister submitRegistration={jest.fn()}
+      sent={false}
+      get={jest.fn()}
+      set={jest.fn()} />);
+    expect(el.find(FormField).length).toEqual(4);
+    expect(el.html().toLowerCase()).toContain("create account");
+  });
+});
+
 describe("<CreateAccount/>", () => {
-  it("renders <DidRegister/> when props.sent === true"); // Use shallow
+  it("renders <DidRegister/> when props.sent === true", () => {
+    const el = shallow(<CreateAccount submitRegistration={jest.fn()}
+      sent={true}
+      get={jest.fn()}
+      set={jest.fn()} />);
+    expect(el.find(DidRegister).length).toEqual(1);
+    expect(el.find(MustRegister).length).toEqual(0);
+  });
+
+  it("renders <MustRegister/> when props.sent === false", () => {
+    const el = shallow(<CreateAccount submitRegistration={jest.fn()}
+      sent={false}
+      get={jest.fn()}
+      set={jest.fn()} />);
+    expect(el.find(DidRegister).length).toEqual(0);
+    expect(el.find(MustRegister).length).toEqual(1);
+  });
 });
