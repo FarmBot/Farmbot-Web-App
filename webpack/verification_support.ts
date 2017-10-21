@@ -17,7 +17,9 @@ const ALREADY_VERIFIED_MSG = "TRIED TO RE-VERIFY";
 
 export const FAILURE_PAGE =
   `<p>
-     We were unable to verify your account.
+     This verification link is not valid. Most likely you either copy/pasted
+     the link incorrectly or are trying to use an old link. Please use the most
+     recent email verification link that was sent to you.
    </p>
    <p>
      Please try again or <a href="http://forum.farmbot.org/"> ask for help on
