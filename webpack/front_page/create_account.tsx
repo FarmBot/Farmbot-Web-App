@@ -1,9 +1,10 @@
 import * as React from "react";
 import { WidgetBody, Col, Widget, WidgetHeader, Row, BlurableInput } from "../ui/index";
 import { t } from "i18next";
-import { ResendPanelBody, resendEmail } from "./resend_verification";
+import { resendEmail } from "./resend_verification";
 import { success, error } from "farmbot-toastr";
 import { bail } from "../util";
+import { ResendPanelBody } from "./resend_panel_body";
 
 type RegKeyName =
   | "regConfirmation"
@@ -81,7 +82,7 @@ export function MustRegister(props: CreateAccountProps) {
 const MISSING_EMAIL = "User tried to resend to their registration email, " +
   "but none was found.";
 
-function sendEmail(email: string) {
+export function sendEmail(email: string) {
   const ok = () => success(t("Email sent."));
   const no = () => error(t("Unable to send email."));
 

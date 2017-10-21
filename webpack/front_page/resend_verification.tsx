@@ -1,9 +1,10 @@
-import { Col, Widget, WidgetHeader, WidgetBody, Row } from "../ui/index";
+import { Col, Widget, WidgetHeader } from "../ui/index";
 import { t } from "i18next";
 import axios, { AxiosResponse } from "axios";
 import * as React from "react";
 import { API } from "../api/index";
 import { UnsafeError } from "../interfaces";
+import { ResendPanelBody } from "./resend_panel_body";
 
 interface Props {
   email: string;
@@ -41,26 +42,4 @@ export class ResendVerification extends React.Component<Props, State> {
 
 export function resendEmail(email: string) {
   return axios.post(API.current.userResendConfirmationPath, { email });
-}
-
-export function ResendPanelBody(props: { onClick(): void; }) {
-  return <WidgetBody>
-    <form>
-      <Row>
-        <p>
-          {t("Please check your email for the verification link.")}
-        </p>
-        <p>
-          {t("You may click the button below to resend the email.")}
-        </p>
-      </Row>
-      <Row>
-        <button onClick={props.onClick}
-          type="button"
-          className="fb-button green pull-right front-page-button">
-          {t("Resend Verification Email")}
-        </button>
-      </Row>
-    </form>
-  </WidgetBody>;
 }
