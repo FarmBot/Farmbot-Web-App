@@ -4,7 +4,7 @@ describe Api::PointsController do
   include Devise::Test::ControllerHelpers
 
   describe("#show") do
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
     let(:device) { user.device }
 
     it 'renders a tool slot' do

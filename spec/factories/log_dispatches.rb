@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :log_dispatch do
     device
     log

@@ -23,9 +23,9 @@ BODY = [
 ]
 
 describe "Migration from version 0 or nil" do
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { FactoryBot.create(:user) }
   let(:device) { user.device }
-  let(:seq) { FactoryGirl.create(:sequence, device: device, body: BODY) }
+  let(:seq) { FactoryBot.create(:sequence, device: device, body: BODY) }
 
   it 'Updates `move_absolute` nodes' do
       Sequences::Migrate.run!(device: device, sequence: seq)

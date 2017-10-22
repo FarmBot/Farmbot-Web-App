@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe SessionToken do
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { FactoryBot.create(:user) }
 
   FAKE_TOKEN = [
         { "sub"  => "admin@admin.com",

@@ -4,11 +4,11 @@ describe Api::FarmEventsController do
   include Devise::Test::ControllerHelpers
 
   describe '#destroy' do
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     it 'deletes a farm_event' do
       sign_in user
-      farm_event = FactoryGirl.create(:farm_event, device: user.device)
+      farm_event = FactoryBot.create(:farm_event, device: user.device)
       before = FarmEvent.count
       delete :destroy, params: { id: farm_event.id }
 
@@ -18,7 +18,7 @@ describe Api::FarmEventsController do
 
     it 'prevents unauthorized deletion' do
       sign_in user
-      farm_event = FactoryGirl.create(:farm_event)
+      farm_event = FactoryBot.create(:farm_event)
       delete :destroy, params: { id: farm_event.id }
       before = FarmEvent.count
 

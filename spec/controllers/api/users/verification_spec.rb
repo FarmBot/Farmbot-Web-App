@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Api::UsersController do
-  let(:user) { FactoryGirl.create(:user, confirmed_at: nil) }
+  let(:user) { FactoryBot.create(:user, confirmed_at: nil) }
   include Devise::Test::ControllerHelpers
 
     it 'creates a new user' do

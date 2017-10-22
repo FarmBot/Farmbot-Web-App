@@ -8,9 +8,9 @@ describe Api::SequencesController do
   include Devise::Test::ControllerHelpers
 
   describe '#destroy' do
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
     let(:device) { user.device }
-    let(:sequence) { FactoryGirl.create(:sequence, device: device) }
+    let(:sequence) { FactoryBot.create(:sequence, device: device) }
 
     it 'destroys a sequence' do
       sign_in user
@@ -23,7 +23,7 @@ describe Api::SequencesController do
 
     it 'doesnt destroy other peoples sequence' do
       sign_in user
-      other_persons = FactoryGirl.create(:sequence)
+      other_persons = FactoryBot.create(:sequence)
       input = { id: other_persons.id }
       delete :destroy, params: input
       expect(response.status).to eq(403)

@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Auth::FromJWT do
-  let(:user)  { FactoryGirl.create(:user) }
+  let(:user)  { FactoryBot.create(:user) }
   let(:token) { SessionToken.issue_to(user).encoded }
   fake = -> (sub) {
     AbstractJwtToken.new([{ sub:              sub,

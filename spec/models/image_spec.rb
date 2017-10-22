@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Image do
-    let(:device) { FactoryGirl.create(:device) }
+    let(:device) { FactoryBot.create(:device) }
 
     it 'adds URL attachments' do
       image = Image.create(device: device)

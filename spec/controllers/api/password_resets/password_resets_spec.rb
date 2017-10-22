@@ -3,7 +3,7 @@ describe Api::PasswordResetsController do
   include Devise::Test::ControllerHelpers
 
   describe '#create' do
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     it 'resets password for a user' do
       params = { email: user.email }

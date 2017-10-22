@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Sequences::Create do
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { FactoryBot.create(:user) }
   let(:device) { user.device }
   let(:body) { sequence_body_for(user) }
 

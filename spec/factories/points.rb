@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :point do
     radius 1.5
     x { rand(1...550) }

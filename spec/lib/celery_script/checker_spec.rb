@@ -9,7 +9,7 @@ describe CeleryScript::Checker do
         version: 0
       },
       comment: "Properly formatted, syntactically valid sequence.",
-      body: sequence_body_for(FactoryGirl.create(:sequence))
+      body: sequence_body_for(FactoryBot.create(:sequence))
     }.deep_symbolize_keys
   end
 

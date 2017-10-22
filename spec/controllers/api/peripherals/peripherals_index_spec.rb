@@ -5,12 +5,12 @@ describe Api::PeripheralsController do
 
   describe '#index' do
 
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     it 'lists all Peripherals for a user' do
       sign_in user
 
-      peripherals = FactoryGirl.create_list(:peripheral, 2, device_id: user.device.id)
+      peripherals = FactoryBot.create_list(:peripheral, 2, device_id: user.device.id)
       peripheral_ids = user.device.peripherals
                        .map(&:id)
                        .sort

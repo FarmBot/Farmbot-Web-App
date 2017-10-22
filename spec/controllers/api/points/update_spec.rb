@@ -3,9 +3,9 @@ require 'spec_helper'
 describe Api::PointsController do
   include Devise::Test::ControllerHelpers
   describe '#update' do
-    let(:device) { FactoryGirl.create(:device) }
-    let(:user) { FactoryGirl.create(:user, device: device) }
-    let!(:point) { FactoryGirl.create(:point, device: device) }
+    let(:device) { FactoryBot.create(:device) }
+    let(:user) { FactoryBot.create(:user, device: device) }
+    let!(:point) { FactoryBot.create(:point, device: device) }
 
     it 'updates a point' do
       sign_in user

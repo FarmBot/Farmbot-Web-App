@@ -10,7 +10,7 @@ BIG_WARNING = <<~HEREDOC
 HEREDOC
 
 describe Api::UsersController do
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { FactoryBot.create(:user) }
   include Devise::Test::ControllerHelpers
     it 'errors if you try to delete with the wrong password' do
       sign_in user

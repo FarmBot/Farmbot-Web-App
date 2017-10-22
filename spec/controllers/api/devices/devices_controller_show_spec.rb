@@ -4,7 +4,7 @@ describe Api::DevicesController do
 
   include Devise::Test::ControllerHelpers
 
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { FactoryBot.create(:user) }
 
   describe '#show' do
     it 'handles deviceless requests' do

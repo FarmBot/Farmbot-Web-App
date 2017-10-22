@@ -1,6 +1,6 @@
 require 'spec_helper'
 describe Sequence do
-  let(:regimen) { FactoryGirl.create(:regimen) }
+  let(:regimen) { FactoryBot.create(:regimen) }
 
   it "Enforces uniqueness of names" do
     Sequence.destroy_all
@@ -12,7 +12,7 @@ describe Sequence do
   end
 
   it "picks random values" do
-    FactoryGirl.create(:sequence)
+    FactoryBot.create(:sequence)
     3.times { expect(Sequence.random).to be_kind_of(Sequence) }
   end
 end

@@ -5,12 +5,12 @@ describe Api::FarmEventsController do
 
   describe '#index' do
 
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     it 'lists all farm_events for a user' do
       sign_in user
 
-      farm_events = FactoryGirl.create_list(:farm_event, 2, device_id: user.device.id)
+      farm_events = FactoryBot.create_list(:farm_event, 2, device_id: user.device.id)
       farm_event_ids = user.device.farm_events
                        .map(&:id)
                        .sort
@@ -22,7 +22,7 @@ describe Api::FarmEventsController do
 
     it 'cleans up old farm events' do
       sign_in user
-      farm_events = FactoryGirl.create_list(:farm_event,
+      farm_events = FactoryBot.create_list(:farm_event,
                                             2,
                                             device_id: user.device.id,
                                             end_time:  Date.yesterday - 1.day)

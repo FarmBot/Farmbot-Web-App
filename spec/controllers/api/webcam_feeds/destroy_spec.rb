@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Api::WebcamFeedsController do
   include Devise::Test::ControllerHelpers
   describe '#destroy' do
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     it 'destroy a webcam feed' do
       sign_in user

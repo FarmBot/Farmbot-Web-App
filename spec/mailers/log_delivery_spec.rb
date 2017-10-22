@@ -1,8 +1,8 @@
 require "spec_helper"
 
 describe LogDeliveryMailer, type: :mailer do
-    let(:device)          { FactoryGirl.create(:device) }
-    let!(:log_dispatches) { FactoryGirl.create(:log_dispatch, device: device) }
+    let(:device)          { FactoryBot.create(:device) }
+    let!(:log_dispatches) { FactoryBot.create(:log_dispatch, device: device) }
 
     it "throttles excess requests" do
       LogDispatch.max_per_hour = -1 # Throttle it all

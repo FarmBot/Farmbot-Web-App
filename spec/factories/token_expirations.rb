@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :token_expiration do
     sub "MyString"
     exp ""

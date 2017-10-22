@@ -6,7 +6,7 @@ describe Api::DevicesController do
 
   describe '#show' do
 
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     it 'returns all the users devices, as JSON' do
       sign_in user

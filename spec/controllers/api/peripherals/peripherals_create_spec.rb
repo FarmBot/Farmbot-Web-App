@@ -4,7 +4,7 @@ describe Api::PeripheralsController do
   include Devise::Test::ControllerHelpers
 
   describe '#create' do
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     it 'makes a Peripheral' do
       sign_in user

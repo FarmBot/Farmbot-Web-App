@@ -3,8 +3,8 @@ JSON_EXAMPLE = File.read("spec/controllers/api/logs/connor_fixture.json")
 
 describe Api::LogsController do
   include Devise::Test::ControllerHelpers
-  let(:user) { FactoryGirl.create(:user) }
-  let!(:logs) { FactoryGirl.create_list(:log, 5, device: user.device) }
+  let(:user) { FactoryBot.create(:user) }
+  let!(:logs) { FactoryBot.create_list(:log, 5, device: user.device) }
 
   describe '#index' do
     it 'lists last x logs' do

@@ -2,10 +2,10 @@ require "spec_helper"
 
 describe FarmEventSerializer do
   let(:farm_event) do
-    fe = FactoryGirl.build(:farm_event, start_time: Time.now + 5.days)
-    fe.executable = FactoryGirl.build(:regimen, device: fe.device)
+    fe = FactoryBot.build(:farm_event, start_time: Time.now + 5.days)
+    fe.executable = FactoryBot.build(:regimen, device: fe.device)
     fe.save!
-    FactoryGirl.create(:regimen_item, regimen:     fe.executable,
+    FactoryBot.create(:regimen_item, regimen:     fe.executable,
                                       time_offset: 7000)
     fe
   end

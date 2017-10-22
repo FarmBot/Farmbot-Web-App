@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "Celery Script `point` node" do
-  let(:plant) { FactoryGirl.create(:plant_point).pointer }
+  let(:plant) { FactoryBot.create(:plant_point).pointer }
   let(:hash) do
     { kind: "sequence",
       args: { version:4 },

@@ -34,7 +34,7 @@ describe CeleryScript::Corpus do
       args: {
         location: {
           kind: "tool",
-          args: { tool_id: FactoryGirl.create(:tool).id }
+          args: { tool_id: FactoryBot.create(:tool).id }
         },
         offset: {
           kind: "coordinate",

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Auth::FromJWT do
-  let(:user)  { FactoryGirl.create(:user) }
+  let(:user)  { FactoryBot.create(:user) }
 
 
   def fake_credentials(email, password)
@@ -20,7 +20,7 @@ describe Auth::FromJWT do
 
   it 'accepts good credentials' do
     pw      = "password123"
-    user    = FactoryGirl.create(:user, password: pw)
+    user    = FactoryBot.create(:user, password: pw)
     email   = user.email
     creds   = fake_credentials(email, pw)
     results = Auth::CreateTokenFromCredentials.run!(credentials: creds)

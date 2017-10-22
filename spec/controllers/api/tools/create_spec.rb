@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Api::ToolsController do
   include Devise::Test::ControllerHelpers
   describe '#create' do
-    let(:user) { FactoryGirl.create(:user) }
-    let(:tool_slot) { FactoryGirl.create(:tool_slot) }
+    let(:user) { FactoryBot.create(:user) }
+    let(:tool_slot) { FactoryBot.create(:tool_slot) }
 
     it 'creates a new tool' do
       sign_in user

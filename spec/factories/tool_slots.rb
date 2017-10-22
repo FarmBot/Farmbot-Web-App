@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :tool_slot do
     tool
   end

@@ -5,8 +5,8 @@ describe Api::RegimensController do
   include Devise::Test::ControllerHelpers
 
   describe '#update' do
-    let(:user) { FactoryGirl.create(:user) }
-    let(:sequence) { FactoryGirl.create(:sequence, device: user.device) }
+    let(:user) { FactoryBot.create(:user) }
+    let(:sequence) { FactoryBot.create(:sequence, device: user.device) }
     it 'updates an old regimen' do
       sign_in user
 

@@ -32,8 +32,8 @@ module Helpers
     else
       raise "No #{mystery.class}"
     end
-    sid = FactoryGirl.create(:sequence, device: device).id
-    tid = FactoryGirl.create(:tool, device: device).id
+    sid = FactoryBot.create(:sequence, device: device).id
+    tid = FactoryBot.create(:tool, device: device).id
     str = AST_FIXTURE
            .gsub(MAGIC_NUMBER_SEQ_ID, sid.to_s)
            .gsub(MAGIC_NUMBER_TOOL_ID, tid.to_s)

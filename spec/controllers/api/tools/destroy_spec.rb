@@ -3,11 +3,11 @@ require 'spec_helper'
 describe Api::ToolsController do
   include Devise::Test::ControllerHelpers
   describe '#destroy' do
-    let(:user) { FactoryGirl.create(:user) }
-    let(:tool_slot) { FactoryGirl.create(:tool_slot) }
+    let(:user) { FactoryBot.create(:user) }
+    let(:tool_slot) { FactoryBot.create(:tool_slot) }
     let!(:tool) {
         Point.destroy_all
-        FactoryGirl.create(:tool,
+        FactoryBot.create(:tool,
                            tool_slot: tool_slot,
                            device: user.device) }
 
