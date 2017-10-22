@@ -16,6 +16,7 @@ export function ForgotPassword(props: ForgotPasswordProps) {
     email,
     onEmailChange,
   } = props;
+
   return <Col xs={12} sm={5}>
     <Widget>
       <WidgetHeader title={"Reset Password"}>
@@ -26,7 +27,7 @@ export function ForgotPassword(props: ForgotPasswordProps) {
         </button>
       </WidgetHeader>
       <WidgetBody>
-        <form onSubmit={(e) => onSubmit}>
+        <form onSubmit={onSubmit}>
           <label>{t("Enter Email")}</label>
           <BlurableInput
             type="email"

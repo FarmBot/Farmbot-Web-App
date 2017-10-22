@@ -8,15 +8,17 @@ import { prettyPrintApiErrors, HttpData } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState } from "./interfaces";
-import { Row, Col, Widget, WidgetHeader, WidgetBody, BlurableInput } from "../ui/index";
+import { Row, Col } from "../ui/index";
 import { LoginProps, Login } from "./login";
 import { ForgotPassword, ForgotPasswordProps } from "./forgot_password";
 import { ResendVerification } from "./resend_verification";
+import { CreateAccount } from "./create_account";
 
 export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   constructor() {
     super();
     this.state = {
+      registrationSent: false,
       regEmail: "",
       regName: "",
       regPassword: "",
@@ -105,6 +107,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     axios.post(API.current.usersPath, form).then(() => {
       const m = "Almost done! Check your email for the verification link.";
       success(t(m));
+      this.setState({ registrationSent: true });
     }).catch(error => {
       log(prettyPrintApiErrors(error));
     });
@@ -261,48 +264,13 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
           src="/app-resources/img/farmbot-tablet.png" />
         <Row>
           <this.activePanel />
-          <Col xs={12} sm={5}>
-            <Widget>
-              <WidgetHeader title={"Create An Account"} />
-              <WidgetBody>
-                <form onSubmit={this.submitRegistration}>
-                  <label>
-                    {t("Email")}
-                  </label>
-                  <BlurableInput
-                    type="email"
-                    value={this.state.regEmail || ""}
-                    onCommit={this.set("regEmail")} />
-                  <label>
-                    {t("Name")}
-                  </label>
-                  <BlurableInput
-                    type="text"
-                    value={this.state.regName || ""}
-                    onCommit={this.set("regName")} />
-                  <label>
-                    {t("Password")}
-                  </label>
-                  <BlurableInput
-                    type="password"
-                    value={this.state.regPassword || ""}
-                    onCommit={this.set("regPassword")} />
-                  <label>{t("Verify Password")}</label>
-                  <BlurableInput
-                    type="password"
-                    value={this.state.regConfirmation || ""}
-                    onCommit={this.set("regConfirmation")} />
-                  {this.maybeRenderTos()}
-                  <Row>
-                    <button
-                      className="fb-button green front-page-button">
-                      {t("Create Account")}
-                    </button>
-                  </Row>
-                </form>
-              </WidgetBody>
-            </Widget>
-          </Col>
+          <CreateAccount
+            submitRegistration={this.submitRegistration}
+            sent={!!this.state.registrationSent}
+            get={(key) => this.state[key]}
+            set={(key, val) => this.setState({ [key]: val })}>
+            {this.maybeRenderTos()}
+          </CreateAccount>
         </Row>
       </div>
     </div>;
