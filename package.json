@@ -15,6 +15,7 @@
     "dev": "echo '===We use `rails api:start` now.==='",
     "webpack": "./node_modules/.bin/webpack-dev-server --config config/webpack.dev.js --host 0.0.0.0",
     "test": "jest --coverage --no-cache",
+    "test-fast": "jest --no-coverage --cache",
     "typecheck": "./node_modules/.bin/tsc --noEmit --jsx preserve"
   },
   "keywords": [

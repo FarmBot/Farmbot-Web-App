@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "enzyme";
+import { shallow } from "enzyme";
 import { MustBeOnline } from "../must_be_online";
 
 describe("<MustBeOnline/>", function () {
@@ -7,7 +7,7 @@ describe("<MustBeOnline/>", function () {
     const elem = <MustBeOnline status="unknown">
       <span>Covered</span>
     </MustBeOnline>;
-    const overlay = render(elem).find("div");
+    const overlay = shallow(elem).find("div");
     expect(overlay.hasClass("unavailable")).toBeTruthy();
   });
 
@@ -15,7 +15,7 @@ describe("<MustBeOnline/>", function () {
     const elem = <MustBeOnline status={undefined}>
       <span>Covered</span>
     </MustBeOnline>;
-    const overlay = render(elem).find("div");
+    const overlay = shallow(elem).find("div");
     expect(overlay.hasClass("unavailable")).toBeTruthy();
     expect(overlay.hasClass("banner")).toBeTruthy();
   });
@@ -24,7 +24,7 @@ describe("<MustBeOnline/>", function () {
     const elem = <MustBeOnline status="unknown" lockOpen={true}>
       <span>Uncovered</span>
     </MustBeOnline>;
-    const overlay = render(elem).find("div");
+    const overlay = shallow(elem).find("div");
     expect(overlay.hasClass("unavailable")).toBeFalsy();
     expect(overlay.hasClass("banner")).toBeFalsy();
   });
@@ -33,7 +33,7 @@ describe("<MustBeOnline/>", function () {
     const elem = <MustBeOnline status="unknown" hideBanner={true}>
       <span>Uncovered</span>
     </MustBeOnline>;
-    const overlay = render(elem).find("div");
+    const overlay = shallow(elem).find("div");
     expect(overlay.hasClass("unavailable")).toBeTruthy();
     expect(overlay.hasClass("banner")).toBeFalsy();
   });

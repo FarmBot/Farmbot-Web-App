@@ -1,6 +1,6 @@
 import * as React from "react";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
-import { mount } from "enzyme";
+import { shallow } from "enzyme";
 import { props } from "../test_helpers";
 import { Edit } from "../edit";
 import { get } from "lodash";
@@ -12,7 +12,7 @@ describe("<Edit/>", () => {
     const feed2 = fakeWebcamFeed();
     feed1.specialStatus = SpecialStatus.DIRTY;
     const p = props([feed1, feed2]);
-    const el = mount(<Edit {...p} />);
+    const el = shallow(<Edit {...p} />);
     const inputs = el
       .find("input")
       .map(x => x.get(0))
