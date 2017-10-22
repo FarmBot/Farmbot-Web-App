@@ -39,8 +39,8 @@ export let incomingStatus = (statusMessage: HardwareState) =>
 export function ifToastWorthy(log: Log, cb: (log: Log) => void) {
   const CHANNELS: keyof Log = "channels";
   const TOAST: ALLOWED_CHANNEL_NAMES = "toast";
-  const chanList = get(log, CHANNELS, ["ERROR FETCHING CHANNELS"]);
-  return log && chanList.includes(TOAST) ? cb(log) : noop();
+  const chanList: string[] = log[CHANNELS] || ["ERROR FETCHING CHANNELS"];
+  return log && (chanList.includes(TOAST) ? cb(log) : noop());
 }
 
 /** Take a log message (of type toast) and determines the correct kind of toast

@@ -9,16 +9,22 @@ const url = (q: string) => `${OpenFarm.cropUrl}?include=pictures&filter=${q}`;
 type X = HttpPromise<CropSearchResult>;
 const openFarmSearchQuery = (q: string): X => axios.get(url(q));
 
+interface IdURL {
+  id: string;
+  url: string;
+}
+
+const FALLBACK: OpenFarm.Included[] = [];
 export let OFSearch = (searchTerm: string) =>
   (dispatch: Function) => {
     openFarmSearchQuery(searchTerm)
       .then(resp => {
         const images: { [key: string]: string } = {};
-        _.get<OpenFarm.Included[]>(resp, "data.included", [])
-          .map(item => {
+        _.get(resp, "data.included", FALLBACK)
+          .map((item: OpenFarm.Included) => {
             return { id: item.id, url: item.attributes.thumbnail_url };
           })
-          .map((val, acc) => images[val.id] = val.url);
+          .map((val: IdURL) => images[val.id] = val.url);
         const payload = resp.data.data.map(datum => {
           const crop = datum.attributes;
           const id = _.get(datum, "relationships.pictures.data[0].id", "");

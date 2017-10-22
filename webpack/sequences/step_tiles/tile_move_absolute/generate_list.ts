@@ -17,8 +17,8 @@ export function generateList(input: ResourceIndex): DropDownItem[] {
   const SORT_KEY: keyof DropDownItem = "headingId";
   const points = selectAllPoints(input)
     .filter(x => (x.body.pointer_type !== "ToolSlot"));
-  const toolDDI = selectAllTools(input)
-    .filter(x => !!x.body.id)
+  const toolDDI: DropDownItem[] = selectAllTools(input)
+    .filter((x: TaggedTool) => !!x.body.id)
     .map(t => formatTools(t));
   return _(points)
     .map(formatPoint(toolNameById))
@@ -36,7 +36,7 @@ export const NAME_MAP: Record<PointerTypeName, string> = {
 };
 
 const formatPoint = (toolNames: CowardlyDictionary<string>) =>
-  (p: PointerType) => {
+  (p: PointerType): DropDownItem => {
     const { id, pointer_type, x, y, z } = p.body;
     let { name } = p.body;
 

@@ -174,7 +174,7 @@ export let resourceReducer = generateReducer
   .add<EditResourceParams>(Actions.EDIT_RESOURCE, (s, { payload }) => {
     const uuid = payload.uuid;
     const { update } = payload;
-    const source = merge<TaggedResource>(findByUuid(s.index, uuid),
+    const source: TaggedResource = merge(findByUuid(s.index, uuid),
       { body: update },
       { specialStatus: SpecialStatus.DIRTY });
     sanityCheck(source);

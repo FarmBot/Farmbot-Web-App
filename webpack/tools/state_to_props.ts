@@ -41,7 +41,8 @@ export function mapStateToProps(props: Everything): Props {
 
   const activeTools = _(toolSlots).map(x => x.body.tool_id).compact().value();
 
-  const isActive = (t: TaggedTool) => activeTools.includes(t.body.id);
+  const isActive =
+    (t: TaggedTool) => !!(t.body.id && activeTools.includes(t.body.id));
 
   const getToolByToolSlotUUID = currentToolInSlot(props.resources.index);
 
@@ -66,7 +67,6 @@ export function mapStateToProps(props: Everything): Props {
       const tool_id = d.value ? d.value : (null as any);
       dispatch(edit(t, { tool_id }));
     };
-
 
   const getBotPosition = (): BotPosition => {
     if (props.bot.hardware.location_data) {
