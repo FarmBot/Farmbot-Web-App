@@ -1,7 +1,7 @@
 
 describe Tool do
   describe 'names' do
-    let(:tool) { FactoryGirl.create(:tool) }
+    let(:tool) { FactoryBot.create(:tool) }
     it 'must be unique' do
       tool2 = Tool.create(name: tool.name, device: tool.device)
       expect(tool2.valid?).to be(false)

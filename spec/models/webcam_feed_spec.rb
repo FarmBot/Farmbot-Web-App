@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe WebcamFeed do
-  let(:feed) { FactoryGirl.create(:webcam_feed) }
+  let(:feed) { FactoryBot.create(:webcam_feed) }
 
   it "requires a URL" do
     result = feed.update_attributes(url: nil)

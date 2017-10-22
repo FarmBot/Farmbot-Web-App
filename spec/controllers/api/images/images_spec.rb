@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Api::ImagesController do
   include Devise::Test::ControllerHelpers
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { FactoryBot.create(:user) }
 
   describe '#index' do
     it 'shows only the max images allowed' do
@@ -10,7 +10,7 @@ describe Api::ImagesController do
       device = user.device
       # Using the *real* value (10) was super slow (~30 seconds)
       device.update_attributes!(max_images_count: 1)
-      FactoryGirl.create_list(:image, 2, device: user.device)
+      FactoryBot.create_list(:image, 2, device: user.device)
       get :index
       expect(response.status).to eq(200)
       expect(json.length).to eq(device.max_images_count)
@@ -21,7 +21,7 @@ describe Api::ImagesController do
   describe '#show' do
     it 'shows image meta data' do
       sign_in user
-      image = FactoryGirl.create(:image, device: user.device)
+      image = FactoryBot.create(:image, device: user.device)
       get :show, params: { id: image.id }
       expect(response.status).to eq(200)
       expect(json[:id]).to eq(image.id)
@@ -53,7 +53,7 @@ describe Api::ImagesController do
     describe '#delete' do
       it 'deletes an image' do
         sign_in user
-        image = FactoryGirl.create(:image, device: user.device)
+        image = FactoryBot.create(:image, device: user.device)
         before_count = Image.count
         run_jobs_now do
           delete :destroy, params: { id: image.id }

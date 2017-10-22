@@ -5,7 +5,7 @@ describe Api::FarmEventsController do
 
   describe 'Bot authentication' do
 
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
     let(:device) { user.device }
 
     it 'tells you why you failed to auth' do

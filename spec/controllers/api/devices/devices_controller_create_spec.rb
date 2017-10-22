@@ -6,8 +6,8 @@ describe Api::DevicesController do
 
   describe '#create' do
 
-    let!(:user) { FactoryGirl.create(:user) }
-    let!(:user2) { FactoryGirl.create(:user) }
+    let!(:user) { FactoryBot.create(:user) }
+    let!(:user2) { FactoryBot.create(:user) }
 
     it 'creates a new device for a user' do
       sign_in user

@@ -3,9 +3,9 @@ require 'spec_helper'
 describe Api::ToolsController do
   include Devise::Test::ControllerHelpers
   describe '#update' do
-    let(:user) { FactoryGirl.create(:user) }
-    let(:tool_slot) { FactoryGirl.create(:tool_slot) }
-    let!(:tool) { FactoryGirl.create(:tool,
+    let(:user) { FactoryBot.create(:user) }
+    let(:tool_slot) { FactoryBot.create(:tool_slot) }
+    let!(:tool) { FactoryBot.create(:tool,
                     tool_slot: tool_slot,
                     device: user.device) }
 

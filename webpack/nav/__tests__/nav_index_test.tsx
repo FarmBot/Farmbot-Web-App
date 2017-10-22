@@ -1,5 +1,5 @@
 import * as React from "react";
-import { mount, shallow } from "enzyme";
+import { shallow } from "enzyme";
 
 import { NavBar } from "../index";
 import { bot } from "../../__test_support__/fake_state/bot";
@@ -9,7 +9,7 @@ import { taggedUser } from "../../__test_support__/user";
 describe("NavBar", () => {
 
   it("has correct parent classname", () => {
-    const wrapper = mount(
+    const wrapper = shallow(
       <NavBar
         logs={[log]}
         bot={bot}

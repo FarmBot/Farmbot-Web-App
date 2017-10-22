@@ -6,13 +6,13 @@ describe Api::SequencesController do
 
   describe '#update' do
 
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     it 'refreshes sequence dependencies on update' do
       SequenceDependency.destroy_all
       old_count = SequenceDependency.count
       sign_in user
-      sequence = FactoryGirl.create(:sequence, device: user.device)
+      sequence = FactoryBot.create(:sequence, device: user.device)
       input = { id: sequence.id,
                 sequence: { name: "Scare Birds",
                             body: nodes } }
@@ -27,7 +27,7 @@ describe Api::SequencesController do
 
     it 'updates existing sequences' do
       sign_in user
-      sequence = FactoryGirl.create(:sequence, device: user.device)
+      sequence = FactoryBot.create(:sequence, device: user.device)
       input = { sequence: { name: "Scare Birds" } }
       params = { id: sequence.id }
       patch :update,

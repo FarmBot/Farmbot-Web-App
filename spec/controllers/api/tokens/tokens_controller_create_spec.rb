@@ -5,7 +5,7 @@ describe Api::TokensController do
   include Devise::Test::ControllerHelpers
 
   describe '#create' do
-    let(:user) { FactoryGirl.create(:user, password: "password") }
+    let(:user) { FactoryBot.create(:user, password: "password") }
     it 'creates a new token' do
       payload = {user: {email: user.email, password: "password"}}
       post :create, params: payload

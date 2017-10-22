@@ -9,11 +9,11 @@ describe Api::SequencesController do
       request.headers["accept"] = 'application/json'
     end
 
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     it 'lists all sequences for a user' do
       sign_in user
-      sequences = FactoryGirl
+      sequences = FactoryBot
                     .create_list(:sequence, 2, device: user.device)
                     .map(&:id)
                     .sort

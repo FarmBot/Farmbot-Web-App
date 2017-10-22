@@ -13,10 +13,10 @@ module FarmBot
     I18n.enforce_available_locales = false
     config.generators do |g|
       g.template_engine :erb
-      g.test_framework :rspec, :fixture_replacement => :factory_girl, :views => false, :helper => false
+      g.test_framework :rspec, :fixture_replacement => :factory_bot, :views => false, :helper => false
       g.view_specs false
       g.helper_specs false
-      g.fixture_replacement :factory_girl, :dir => 'spec/factories'
+      g.fixture_replacement :factory_bot, :dir => 'spec/factories'
     end
     config.autoload_paths << Rails.root.join('lib')
     config.autoload_paths << Rails.root.join('lib/sequence_migrations')

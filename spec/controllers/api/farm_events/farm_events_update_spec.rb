@@ -4,11 +4,11 @@ describe Api::FarmEventsController do
   include Devise::Test::ControllerHelpers
 
   describe '#update' do
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     it 'allows authorized modification' do
       sign_in user
-      id = FactoryGirl.create(:farm_event, device: user.device).id
+      id = FactoryBot.create(:farm_event, device: user.device).id
       input = { id: id, farm_event: { repeat: 66 } }
       patch :update, params: input
       expect(response.status).to eq(200)
@@ -16,7 +16,7 @@ describe Api::FarmEventsController do
 
     it 'prevents unauthorized modification' do
       sign_in user
-      id = FactoryGirl.create(:farm_event).id
+      id = FactoryBot.create(:farm_event).id
       input = { id: id, repeat: 66 }
       patch :update, params: input
       expect(response.status).to eq(403)
@@ -25,7 +25,7 @@ describe Api::FarmEventsController do
 
     it 'sets end_time to self.start_time if no start_time is passed in' do
       sign_in user
-      id = FactoryGirl.create(:farm_event, device: user.device).id
+      id = FactoryBot.create(:farm_event, device: user.device).id
       patch :update, params: { id: id,
                                repeat: 1,
                                time_unit: FarmEvent::NEVER }
@@ -37,7 +37,7 @@ describe Api::FarmEventsController do
 
     it 'disallows start/end times that are outside of a 20 year window' do
       sign_in user
-      id = FactoryGirl.create(:farm_event, device: user.device).id
+      id = FactoryBot.create(:farm_event, device: user.device).id
       patch :update, params: { id:       id,
                                end_time: "+045633-08-18T13:25:00.000Z" }
       expect(response.status).to eq(422)

@@ -3,9 +3,9 @@ require 'spec_helper'
 describe Api::PointsController do
   include Devise::Test::ControllerHelpers
   describe '#index' do
-    let(:device) { FactoryGirl.create(:device) }
+    let(:device) { FactoryBot.create(:device) }
     let(:user)  do
-      FactoryGirl.create(:user, device: device, password: "password123")
+      FactoryBot.create(:user, device: device, password: "password123")
     end
     let(:auth_token) do
       Auth::CreateToken
@@ -14,7 +14,7 @@ describe Api::PointsController do
 
     it 'lists points' do
       sign_in user
-      FactoryGirl.create_list(:point, 3, device: device)
+      FactoryBot.create_list(:point, 3, device: device)
       get :index
       expect(response.status).to eq(200)
       expect(json.length).to eq(3)
@@ -57,7 +57,7 @@ describe Api::PointsController do
       allow(request).to receive(:user_agent).and_return(ua)
       request.env["HTTP_USER_AGENT"] = ua
       sign_in user
-      FactoryGirl.create_list(:point, 1, device: device)
+      FactoryBot.create_list(:point, 1, device: device)
       get :index
       expect(response.status).to eq(426)
       expect(json[:error]).to include("Upgrade to latest FarmBot OS")
@@ -69,7 +69,7 @@ describe Api::PointsController do
       allow(request).to receive(:user_agent).and_return(ua)
       request.env["HTTP_USER_AGENT"]   = ua
       request.headers["Authorization"] = "bearer #{auth_token}"
-      FactoryGirl.create_list(:point, 1, device: device)
+      FactoryBot.create_list(:point, 1, device: device)
       get :index
       new_last_saw_api = user.device.reload.last_saw_api
       expect(response.status).to eq(200)

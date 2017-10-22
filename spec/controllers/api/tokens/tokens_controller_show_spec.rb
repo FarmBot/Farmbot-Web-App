@@ -5,7 +5,7 @@ describe Api::TokensController do
   include Devise::Test::ControllerHelpers
 
   describe '#show' do
-    let(:user) { FactoryGirl.create(:user, password: "password") }
+    let(:user) { FactoryBot.create(:user, password: "password") }
     let(:auth_token) { SessionToken.issue_to(user) }
 
     it 'creates a new token' do

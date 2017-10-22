@@ -8,8 +8,8 @@ describe Api::DevicesController do
 
   describe '#update' do
 
-    let(:user) { FactoryGirl.create(:user) }
-    let(:user2) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
+    let(:user2) { FactoryBot.create(:user) }
 
     it 'updates a Device' do
       sign_in user

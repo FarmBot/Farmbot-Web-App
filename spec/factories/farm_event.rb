@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :farm_event do
     start_time { Date.yesterday - [*(1..5)].sample.days }
     end_time { Date.today + 1.minute + ([*(1..5)].sample).days }

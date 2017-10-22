@@ -1,6 +1,6 @@
 describe SequenceDependency do
-  let(:parent) { FactoryGirl.create(:sequence) }
-  let(:child1) { FactoryGirl.create(:sequence) }
+  let(:parent) { FactoryBot.create(:sequence) }
+  let(:child1) { FactoryBot.create(:sequence) }
   let(:child2) do
     Point.create!(x:       1,
                   y:       2,

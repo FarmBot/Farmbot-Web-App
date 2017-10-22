@@ -1,7 +1,7 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
+# Read about factories at https://github.com/thoughtbot/factory_bot
 require 'securerandom'
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :device do
     name  { Haikunator.haikunate(1000) }
     webcam_url { Faker::Company.logo }

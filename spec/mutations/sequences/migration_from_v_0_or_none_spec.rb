@@ -80,10 +80,10 @@ BODY2 = [
       }
   ]
 describe "Migration from version 0 or nil" do
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { FactoryBot.create(:user) }
   let(:device) { user.device }
-  let(:seq1) { FactoryGirl.create(:sequence, device: device, body: BODY1) }
-  let(:seq2) { FactoryGirl.create(:sequence, device: device, body: BODY2) }
+  let(:seq1) { FactoryBot.create(:sequence, device: device, body: BODY1) }
+  let(:seq2) { FactoryBot.create(:sequence, device: device, body: BODY2) }
 
   it 'handles nodes without a body' do
       # BEFORE:

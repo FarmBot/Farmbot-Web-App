@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Device do
-  let(:device){ FactoryGirl.create(:device, users: [FactoryGirl.create(:user)])}
+  let(:device){ FactoryBot.create(:device, users: [FactoryBot.create(:user)])}
   let(:user)  { device.users.first }
 
   it 'is associated with a user' do

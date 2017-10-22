@@ -25,7 +25,7 @@ unless Rails.env == "production"
     u = User.last
     u.update_attributes(confirmed_at: Time.now)
     Log.transaction do
-      FactoryGirl.create_list(:log, 35, device: u.device)
+      FactoryBot.create_list(:log, 35, device: u.device)
     end
     [ "https://via.placeholder.com/350x250?text=Image%20Zero",
       "https://i.imgur.com/XvFBGA4.jpg",

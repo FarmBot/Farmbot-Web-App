@@ -5,7 +5,7 @@ describe Api::RegimensController do
   include Devise::Test::ControllerHelpers
 
   describe '#index' do
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     it 'retrieves all regimina' do
       regimen = Regimen.create!(name: SecureRandom.hex, device: user.device)
@@ -18,7 +18,7 @@ describe Api::RegimensController do
 
     it 'doesnt fetch other peoples regimens' do
       regimen = Regimen.create!(name: SecureRandom.hex, device: user.device)
-      other_person = FactoryGirl.create(:user)
+      other_person = FactoryBot.create(:user)
       sign_in other_person
       process :index, method: :get
       expect(response.status).to eq(200)

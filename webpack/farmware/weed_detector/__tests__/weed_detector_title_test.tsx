@@ -1,4 +1,4 @@
-import "../../../unmock_i18next";
+import "../../../__test_support__/unmock_i18next";
 import * as React from "react";
 import { mount } from "enzyme";
 import { TitleBar } from "../title";

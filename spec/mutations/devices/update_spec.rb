@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Devices::Update do
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
     let(:device) { user.device }
 
 

@@ -4,11 +4,11 @@
 #   include Devise::Test::ControllerHelpers
 
 #   describe '#update' do
-#     let(:user) { FactoryGirl.create(:user) }
+#     let(:user) { FactoryBot.create(:user) }
 
 #     it 'allows authorized modification' do
 #       sign_in user
-#       id = FactoryGirl.create(:peripheral, device: user.device).id
+#       id = FactoryBot.create(:peripheral, device: user.device).id
 #       input = { id: id, pin: 9 }
 #       patch :update, input
 #       expect(response.status).to eq(200)
@@ -17,7 +17,7 @@
 
 #     it 'prevents unauthorized modification' do
 #       sign_in user
-#       id = FactoryGirl.create(:peripheral).id
+#       id = FactoryBot.create(:peripheral).id
 #       input = { id: id, pin: 9 }
 #       patch :update, input
 #       expect(response.status).to eq(403)

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Api::PointsController do
   include Devise::Test::ControllerHelpers
   describe '#create' do
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
     let(:device) { user.device }
 
     it 'creates a tool slot' do

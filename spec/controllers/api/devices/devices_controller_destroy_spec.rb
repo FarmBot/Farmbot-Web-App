@@ -6,7 +6,7 @@ describe Api::DevicesController do
 
   describe '#destroy' do
 
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     it 'destroys a Device' do
       sign_in user

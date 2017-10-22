@@ -17,7 +17,7 @@ module Api
     end
 
     def verify
-      user  = User.find_by!(confirmation_token: params[:token])
+      user  = params[:token] && User.find_by!(confirmation_token: params[:token])
       # Two use cases:                  re-confirmation   Email change
       klass = user.unconfirmed_email? ? Users::Reverify : Users::Verify
       mutate klass.run(user: user)

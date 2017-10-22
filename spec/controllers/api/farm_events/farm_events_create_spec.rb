@@ -4,9 +4,9 @@ describe Api::FarmEventsController do
   include Devise::Test::ControllerHelpers
 
   describe '#create' do
-    let(:user) { FactoryGirl.create(:user) }
-    let(:sequence) { FactoryGirl.create(:sequence) }
-    let(:regimen) { FactoryGirl.create(:regimen, device: user.device) }
+    let(:user) { FactoryBot.create(:user) }
+    let(:sequence) { FactoryBot.create(:sequence) }
+    let(:regimen) { FactoryBot.create(:regimen, device: user.device) }
 
     it 'makes a farm_event' do
       sign_in user
@@ -37,7 +37,7 @@ describe Api::FarmEventsController do
 
     it 'creates a one-off FarmEvent' do
       sign_in user
-      r = FactoryGirl.create(:regimen, device: user.device)
+      r = FactoryBot.create(:regimen, device: user.device)
       input = { "start_time": (Time.now + 1.hour).to_json.gsub("\"", ""),
                 "next_time": "2017-06-05T18:33:04.342Z",
                 "time_unit": "never",
@@ -53,7 +53,7 @@ describe Api::FarmEventsController do
 
     it 'disallows FarmEvents too far in the past' do
       sign_in user
-      r = FactoryGirl.create(:regimen, device: user.device)
+      r = FactoryBot.create(:regimen, device: user.device)
       input = { "start_time": (Time.now - 40.years).as_json,
                 "time_unit": "never",
                 "executable_id": r.id,
@@ -67,7 +67,7 @@ describe Api::FarmEventsController do
 
     it 'disallows FarmEvents too far in the future' do
       sign_in user
-      r = FactoryGirl.create(:regimen, device: user.device)
+      r = FactoryBot.create(:regimen, device: user.device)
       input = { "end_time": "+099999-08-18T13:54:00.000Z",
                 "time_unit": "never",
                 "executable_id": r.id,

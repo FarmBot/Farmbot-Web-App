@@ -31,7 +31,7 @@ group :development, :test do
   gem "database_cleaner"
   gem "pry"
   gem "pry-rails"
-  gem "factory_girl_rails"
+  gem "factory_bot_rails" # 4.8.0
   gem "faker"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
   gem "rails-erd"

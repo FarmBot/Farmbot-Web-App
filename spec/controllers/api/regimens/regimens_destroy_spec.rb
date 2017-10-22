@@ -3,8 +3,8 @@ describe Api::RegimensController do
   include Devise::Test::ControllerHelpers
 
   describe '#index' do
-    let(:user) { FactoryGirl.create(:user) }
-    let!(:regimen) { FactoryGirl.create(:regimen, device: user.device) }
+    let(:user) { FactoryBot.create(:user) }
+    let!(:regimen) { FactoryBot.create(:regimen, device: user.device) }
 
     it 'retrieves all regimina' do
       sign_in user

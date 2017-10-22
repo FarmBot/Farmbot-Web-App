@@ -9,7 +9,7 @@ describe Api::SequencesController do
   include Devise::Test::ControllerHelpers
 
   describe '#create' do
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
     let(:nodes) { sequence_body_for(user) }
 
     it 'handles a well formed AST in the body attribute' do
@@ -77,7 +77,7 @@ describe Api::SequencesController do
     end
 
     it 'tracks Points' do
-      point = FactoryGirl.create(:point, device: user.device)
+      point = FactoryBot.create(:point, device: user.device)
       SequenceDependency.delete_all
       Sequence.delete_all
       old_count = SequenceDependency.count

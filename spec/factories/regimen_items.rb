@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :regimen_item do
     regimen
     after(:build) do |s|

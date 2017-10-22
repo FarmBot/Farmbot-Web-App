@@ -10,9 +10,9 @@ describe Api::PointsController do
           "offset":{ "kind":"coordinate", "args":{ "x":0, "y":0, "z":0 } },
           "speed":800}}]
     HEREDOC
-    let(:device) { FactoryGirl.create(:device) }
-    let(:user) { FactoryGirl.create(:user, device: device) }
-    let!(:point) { FactoryGirl.create(:point, device: device) }
+    let(:device) { FactoryBot.create(:device) }
+    let(:user) { FactoryBot.create(:user, device: device) }
+    let!(:point) { FactoryBot.create(:point, device: device) }
     let(:plant) {
       Point.create!(x:       10,
                     y:       20,
@@ -58,7 +58,7 @@ describe Api::PointsController do
 
     it 'performs batch deletion' do
       sign_in user
-      points       = FactoryGirl.create_list(:point, 6, device: user.device)
+      points       = FactoryBot.create_list(:point, 6, device: user.device)
       before_count = Point.count
       delete :destroy, params: { id: points.map(&:id).join(",") }
       expect(Point.count).to eq(before_count - 6)

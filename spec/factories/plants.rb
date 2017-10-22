@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :plant do
     openfarm_slug "lettuce"
     point

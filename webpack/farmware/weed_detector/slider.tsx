@@ -2,7 +2,8 @@ import * as React from "react";
 import {
   RangeSlider
 } from "@blueprintjs/core/dist/components/slider/rangeSlider";
-import { get } from "lodash";
+import { get, isNumber } from "lodash";
+import { bail } from "../../util";
 
 interface SliderProps {
   onRelease(value: [number, number]): void;
@@ -18,8 +19,9 @@ interface State {
 }
 
 export class WeedDetectorSlider extends React.Component<SliderProps, State> {
-  valueFor(i: (keyof State) & (keyof SliderProps)) {
-    return get(this.state, i, undefined) || get(this.props, i, undefined) || 0;
+  valueFor(i: (keyof State) & (keyof SliderProps)): number {
+    const z = get(this.state, i, get(this.props, i, 0));
+    return isNumber(z) ? z : bail("NaN");
   }
 
   onRelease = (i: [number, number]) => {

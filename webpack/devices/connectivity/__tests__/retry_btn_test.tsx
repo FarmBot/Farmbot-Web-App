@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "enzyme";
+import { shallow } from "enzyme";
 import { RetryBtn } from "../retry_btn";
 import { SpecialStatus } from "../../../resources/tagged_resources";
 
@@ -10,7 +10,7 @@ describe("<RetryBtn/>", () => {
       onClick: jest.fn(),
       status: undefined
     };
-    const el = render(<RetryBtn {...props} />);
+    const el = shallow(<RetryBtn {...props} />);
     expect(el.find(".green").length).toBe(1);
     expect(el.find(".yellow").length).toBe(0);
     expect(el.find(".red").length).toBe(0);
@@ -22,7 +22,7 @@ describe("<RetryBtn/>", () => {
       onClick: jest.fn(),
       status: SpecialStatus.SAVING
     };
-    const el = render(<RetryBtn {...props} />);
+    const el = shallow(<RetryBtn {...props} />);
     expect(el.find(".green").length).toBe(0);
     expect(el.find(".yellow").length).toBe(1);
     expect(el.find(".red").length).toBe(0);
@@ -34,7 +34,7 @@ describe("<RetryBtn/>", () => {
       onClick: jest.fn(),
       status: undefined
     };
-    const el = render(<RetryBtn {...props} />);
+    const el = shallow(<RetryBtn {...props} />);
     expect(el.find(".green").length).toBe(0);
     expect(el.find(".yellow").length).toBe(0);
     expect(el.find(".red").length).toBe(1);

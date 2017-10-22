@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Api::WebcamFeedsController do
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { FactoryBot.create(:user) }
   include Devise::Test::ControllerHelpers
 
   it 'creates a webcam feed' do

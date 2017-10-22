@@ -3,9 +3,9 @@ require 'spec_helper'
 describe Api::PeripheralsController do
   include Devise::Test::ControllerHelpers
   describe '#destroy' do
-    let(:user) { FactoryGirl.create(:user) }
-    let(:peripheral) { FactoryGirl.create(:peripheral, device: user.device) }
-  
+    let(:user) { FactoryBot.create(:user) }
+    let(:peripheral) { FactoryBot.create(:peripheral, device: user.device) }
+
     it 'deletes a Peripheral' do
       sign_in user
       peripheral
@@ -17,7 +17,7 @@ describe Api::PeripheralsController do
 
     it 'prevents unauthorized deletion' do
       sign_in user
-      peripheral = FactoryGirl.create(:peripheral)
+      peripheral = FactoryBot.create(:peripheral)
       delete :destroy, params: { id: peripheral.id }
       before = Peripheral.count
       expect(response.status).to eq(403)

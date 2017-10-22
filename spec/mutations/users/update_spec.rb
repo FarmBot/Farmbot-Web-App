@@ -9,7 +9,7 @@ describe Users::Update do
                        password_confirmation: "password12345",
                        agree_to_terms:        true)
    u  = User.last
-   u2 = FactoryGirl.create(:user)
+   u2 = FactoryBot.create(:user)
    Users::Update.run!(user: u, email: u.email)
    result = Users::Update.run(user: u, email: u2.email)
    expect(result.success?).to be(false)
