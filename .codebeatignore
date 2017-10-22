@@ -1,2 +1,4 @@
 webpack/**/*__test*
 **__test**
+**__tests__**
+**test**
