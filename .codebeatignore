@@ -1,1 +1,6 @@
-*__test*
+webpack/**/*__test*
+webpack/**/*test*.ts
+webpack/**/*test*.tsx
+**__test**
+**__tests__**
+**test**

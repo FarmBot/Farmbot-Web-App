@@ -13,7 +13,7 @@ type Key = keyof FarmEventViewModel;
 export interface RepeatFormProps {
   /** Should the form controls be grayed out? */
   disabled: boolean;
-  /** Should the form be show _at all_? */
+  /** Should the form be shown _at all_? */
   hidden: boolean;
   onChange(key: Key, value: string): void;
   timeUnit: TimeUnit;
