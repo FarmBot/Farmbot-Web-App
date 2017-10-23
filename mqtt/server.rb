@@ -52,16 +52,14 @@ puts "=== Building docker image"
 sh "cd mqtt; sudo docker build -t farmbot-mqtt ."
 
 puts "=== Starting MQTT"
+
 exec [
   'cd mqtt;',
   'sudo docker run',
-  '-p "15672:15672"',
-  '-p "5672:5672"',
-  '-p "3002:15675"',
-  '-p "8883:8883"',
-  '-p "1883:1883"',
+  '-p "5672:5672"',        # AMQP (RabbitMQ)
+  '-p "1883:1883"',        # MQTT
+  '-p "8883:8883"',        # MQTT over TLS/SSL
+  '-p "3002:15675"',       # MQTT over WebSockets
   '--name "farmbot-mqtt"',
-  '-v "$(pwd)/conf:/etc/rabbitmq"',
-  '-v "$(pwd)/rabbitmq:/var/lib/rabbitmq"',
   'farmbot-mqtt'
 ].join(" ")
