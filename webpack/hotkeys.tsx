@@ -1,6 +1,10 @@
 import * as React from "react";
 import * as _ from "lodash";
 import { t } from "i18next";
+import { links } from "./nav/nav_links";
+import { sync } from "./devices/actions";
+import { history, push } from "./history";
+import { Row, Col } from "./ui/index";
 import {
   Hotkey,
   Hotkeys,
@@ -9,11 +13,6 @@ import {
   Overlay,
   Classes
 } from "@blueprintjs/core";
-
-import { links } from "./nav/nav_links";
-import { sync } from "./devices/actions";
-import { history, push } from "./history";
-import { Row, Col } from "./ui/index";
 
 interface Props {
   dispatch: Function;
