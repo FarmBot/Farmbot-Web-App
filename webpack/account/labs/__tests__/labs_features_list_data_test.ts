@@ -16,7 +16,7 @@ jest.mock("../../../session", () => {
 });
 
 import { Dictionary } from "farmbot";
-import { fetchLabFeatures, maybeToggleFeature, LabsFeature } from "../labs_features_list_data";
+import { maybeToggleFeature, LabsFeature } from "../labs_features_list_data";
 import { BooleanSetting } from "../../../session_keys";
 
 describe("maybeToggleFeature()", () => {
@@ -76,19 +76,5 @@ describe("maybeToggleFeature()", () => {
     out ?
       expect(out.value).toBeTruthy() : fail("out === undefined. Thats bad");
     expect(out).toBeTruthy();
-  });
-});
-
-describe("fetchLabFeatures", () => {
-  it("basically just initializes stuff", () => {
-    const val = fetchLabFeatures();
-    expect(val.length).toBe(6);
-    expect(val[0].value).toBeFalsy();
-    const { callback } = val[0];
-    if (callback) {
-      expect(callback()).not.toThrowError();
-    } else {
-      expect(callback).toBeDefined();
-    }
   });
 });
