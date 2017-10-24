@@ -2,7 +2,7 @@
 # represent one of the most complicated systems in FarmBot. Sequences implement
 # most of the functionality of a programming language such a variables and
 # conditional logic.
-class Sequence < ActiveRecord::Base
+class Sequence < ApplicationRecord
   # Does some extra magic for serialized columns for us, such as providing a
   # default value and making hashes have indifferent access.
   class CustomSerializer
