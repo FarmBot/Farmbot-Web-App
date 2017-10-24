@@ -7,7 +7,7 @@ DOCKER_IMG_NAME = "farmbot-mqtt"
 IMG_IS_BUILT    = `cd mqtt; sudo docker images`.include?(DOCKER_IMG_NAME)
 
 puts "=== Setting config data"
-CONFIG_PATH     = "./mqtt/conf"
+CONFIG_PATH     = "./mqtt"
 CONFIG_FILENAME = "rabbitmq.config"
 CONFIG_OUTPUT   = "#{CONFIG_PATH}/#{CONFIG_FILENAME}"
 NO_API_HOST     = "You need to set API_HOST to a real IP address or " +
@@ -23,21 +23,13 @@ farmbot_api_key_url = ENV.fetch("API_PUBLIC_KEY_PATH") do
   "#{PROTO}#{$API_URL}/api/public_key"
 end
 
-farmbot_vhost       = VHOST
-
 # Write the config file.
 File.write(CONFIG_OUTPUT, RENDERER.result(binding))
-
-# Maybe re-build the auth plugin
-if !PLUGIN_IS_BUILT || FORCE_REBUILD
-  puts "=== Building JWT auth backend plugin from source. " +
-      "This will take a while, but should only happen once."
-  sh "cd mqtt/jwt_plugin/; make dist"
-end
 
 # Re-init docker stuff
 
 processes = `sudo docker ps -a -f "name=farmbot-mqtt" -q`
+
 if processes.present?
   puts "=== Stopping pre-existing farmbot containers"
   sh "cd mqtt; sudo docker rm #{processes}"
@@ -56,10 +48,10 @@ puts "=== Starting MQTT"
 exec [
   'cd mqtt;',
   'sudo docker run',
-  '-p "5672:5672"',        # AMQP (RabbitMQ)
-  '-p "1883:1883"',        # MQTT
-  '-p "8883:8883"',        # MQTT over TLS/SSL
-  '-p "3002:15675"',       # MQTT over WebSockets
+  '-p "5672:5672"',  # AMQP (RabbitMQ)
+  '-p "1883:1883"',  # MQTT
+  '-p "8883:8883"',  # MQTT over TLS/SSL
+  '-p "3002:15675"', # MQTT over WebSockets
   '--name "farmbot-mqtt"',
   'farmbot-mqtt'
 ].join(" ")
