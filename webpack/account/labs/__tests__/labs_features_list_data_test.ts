@@ -84,5 +84,11 @@ describe("fetchLabFeatures", () => {
     const val = fetchLabFeatures();
     expect(val.length).toBe(6);
     expect(val[0].value).toBeFalsy();
+    const { callback } = val[0];
+    if (callback) {
+      expect(callback()).not.toThrowError();
+    } else {
+      expect(callback).toBeDefined();
+    }
   });
 });
