@@ -47,13 +47,12 @@ export class AddFarmEvent
       const executable_type: ExecutableType =
         (this.executable.kind === "sequences") ? "Sequence" : "Regimen";
       const executable_id = this.executable.body.id || 1;
-      const NOW = moment().toISOString();
       const action = init({
         kind: "farm_events",
         specialStatus: SpecialStatus.DIRTY,
         uuid: "---",
         body: {
-          start_time: NOW,
+          start_time: moment().add(3, "minutes").toISOString(),
           time_unit: "never",
           executable_id,
           executable_type
