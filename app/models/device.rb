@@ -5,6 +5,9 @@ class Device < ApplicationRecord
   TIMEZONES          = TZInfo::Timezone.all_identifiers
   BAD_TZ             = "%{value} is not a valid timezone"
 
+  # TODO: ADD DOCUMENTATION FOR THIS BECAUSE IT IS IMPORTANT
+  cattr_accessor :current
+
   has_many  :users
   has_many  :farm_events,  dependent: :destroy
   has_many  :points,       dependent: :destroy
@@ -31,20 +34,13 @@ class Device < ApplicationRecord
 
   # Send a realtime message to a logged in user.
   def tell(message, chan = "toast")
-    opts = { device: self,
-             message: message,
-             created_at: Time.now,
-             channels: [chan],
-             meta: { type: "info" }}
-    log  = Log.new(opts)
+    log  = Log.new({ device:     self,
+                     message:    message,
+                     created_at: Time.now,
+                     channels:   [chan],
+                     meta:       { type: "info" } })
     json = LogSerializer.new(log).as_json.to_json
 
-    Bunny
-      .new
-      .start
-      .create_channel
-      .topic("amq.topic", auto_delete: true)
-      .publish(json, routing_key: "bot.device_#{self.id}.logs")
+    Transport.send(json, self.id, "logs")
   end
-
 end
