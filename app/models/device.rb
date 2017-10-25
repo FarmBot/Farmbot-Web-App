@@ -28,4 +28,23 @@ class Device < ApplicationRecord
   def auth_token
     SessionToken.as_json(self.users.first)[:token].encoded
   end
+
+  # Send a realtime message to a logged in user.
+  def tell(message, chan = "toast")
+    opts = { device: self,
+             message: message,
+             created_at: Time.now,
+             channels: [chan],
+             meta: { type: "info" }}
+    log  = Log.new(opts)
+    json = LogSerializer.new(log).as_json.to_json
+
+    Bunny
+      .new
+      .start
+      .create_channel
+      .topic("amq.topic", auto_delete: true)
+      .publish(json, routing_key: "bot.device_#{self.id}.logs")
+  end
+
 end
