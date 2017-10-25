@@ -8,7 +8,6 @@ import { mapStateToProps } from "./state_to_props";
 import { history } from "../history";
 import { Plants } from "./plants/plant_inventory";
 import { GardenMapLegend } from "./map/garden_map_legend";
-import { isMobile } from "../util";
 import { Session, safeBooleanSettting } from "../session";
 import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined } from "lodash";
@@ -88,7 +87,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
   }
 
   childComponent(props: Props) {
-    const fallback = isMobile() ? undefined : React.createElement(Plants, props);
+    const fallback = React.createElement(Plants, props);
     return this.props.children || fallback;
   }
 

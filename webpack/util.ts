@@ -111,21 +111,6 @@ export function move<T>(array: T[], fromIndex: number, toIndex: number) {
   }
 }
 
-export function isMobile() {
-  if (window &&
-    window.innerWidth <= 568 && window.innerHeight <= 600 &&
-    navigator.userAgent.match(/Android/i)
-    || navigator.userAgent.match(/webOS/i)
-    || navigator.userAgent.match(/iPhone/i)
-    || navigator.userAgent.match(/iPod/i)
-    || navigator.userAgent.match(/BlackBerry/i)
-    || navigator.userAgent.match(/Windows Phone/i)
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-}
 /** USAGE: DYNAMICALLY plucks `obj[key]`.
  *         * `undefined` becomes `""`
  *         * `number` types are coerced to strings (Eg: "5").

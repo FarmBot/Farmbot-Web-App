@@ -9,7 +9,7 @@ import { history } from "./history";
 import { Store } from "./redux/interfaces";
 import { ready } from "./config/actions";
 import { Session } from "./session";
-import { isMobile, attachToRoot } from "./util";
+import { attachToRoot } from "./util";
 import { Callback } from "i18next";
 
 interface RootComponentProps {
@@ -93,7 +93,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
    * Open to revision.
    */
   maybeReplaceDesignerModules(next: RouterState, replace: RedirectFunction) {
-    if (next.location.pathname === "/app/designer" && !isMobile()) {
+    if (next.location.pathname === "/app/designer") {
       replace(`${next.location.pathname}/plants`);
     }
   }
@@ -232,15 +232,9 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/regimens",
         getComponent(_discard: void, cb: Function) {
-          if (!isMobile()) {
-            import("./regimens/index")
-              .then(module => cb(undefined, module.Regimens))
-              .catch(errorLoading(cb));
-          } else {
-            import("./regimens/list/index")
-              .then(module => cb(undefined, module.RegimensList))
-              .catch(errorLoading(cb));
-          }
+          import("./regimens/index")
+            .then(module => cb(undefined, module.Regimens))
+            .catch(errorLoading(cb));
         },
       },
       {
