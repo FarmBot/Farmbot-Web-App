@@ -12,6 +12,9 @@ export interface LabsFeature {
   value: boolean;
   experimental?: boolean;
   displayInvert?: boolean;
+  /** If the feature requires any special logic after being flipped, add it
+   * here. */
+  callback?(): void;
 }
 
 export const fetchLabFeatures = (): LabsFeature[] => ([
@@ -20,7 +23,8 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
     description: t("Turn off to set Web App to English."),
     storageKey: BooleanSetting.disableI18n,
     value: false,
-    displayInvert: true
+    displayInvert: true,
+    callback: () => window.location.reload()
   },
   {
     name: t("Confirm Sequence step deletion"),
