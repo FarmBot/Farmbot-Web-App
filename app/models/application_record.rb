@@ -14,6 +14,10 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast_changes(changes)
-    Transport.send(self.as_json.to_json, Device.current, "sync") if Device.current
+    payload = {
+    kind: self.class.name,
+    body: self.as_json
+    }.to_json
+    Transport.send(payload, Device.current.id, "sync") if Device.current
   end
 end
