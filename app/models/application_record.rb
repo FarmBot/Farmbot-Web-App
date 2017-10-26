@@ -24,7 +24,8 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast_payload
-    { body: destroyed? ? "null" : self.as_json }.to_json
+    body = (destroyed? ? nil : self).as_json
+    { body: body }.to_json
   end
 
   def chan_name
