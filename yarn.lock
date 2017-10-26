@@ -109,12 +109,6 @@
   dependencies:
     axios "^0.16.1"
 
-"@types/mqtt@^2.5.0":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@types/mqtt/-/mqtt-2.5.0.tgz#bc54c2d53f509282168da4a9af865de95bee5101"
-  dependencies:
-    mqtt "*"
-
 "@types/node@^6.0.46":
   version "6.0.90"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.90.tgz#0ed74833fa1b73dcdb9409dcb1c97ec0a8b13b02"
@@ -2009,6 +2003,13 @@ farmbot@5.0.1:
     mqtt "^2.13.1"
     typescript "^2.4.2"
 
+"farmbot@https://github.com/RickCarlino/farmbot-js.git":
+  version "5.0.1"
+  resolved "https://github.com/RickCarlino/farmbot-js.git#d27f640d15cada92fa5d2cfa28957c0fe2530a3d"
+  dependencies:
+    mqtt "^2.13.1"
+    typescript "^2.4.2"
+
 fast-deep-equal@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-0.1.0.tgz#5c6f4599aba6b333ee3342e2ed978672f1001f8d"
@@ -3799,7 +3800,7 @@ mqtt-packet@^5.4.0:
     process-nextick-args "^1.0.7"
     safe-buffer "^5.1.0"
 
-mqtt@*, mqtt@^2.13.1:
+mqtt@^2.13.1:
   version "2.13.1"
   resolved "https://registry.yarnpkg.com/mqtt/-/mqtt-2.13.1.tgz#d83c7c5d9dc37864a363453f61fb5e1523c0144a"
   dependencies:

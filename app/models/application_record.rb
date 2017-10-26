@@ -33,6 +33,7 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast!
+    Thread.new { `play ~/tada.wav` }
     Transport.send(broadcast_payload, Device.current.id, chan_name)
   end
 end

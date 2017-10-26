@@ -31,10 +31,16 @@ import {
 import { CowardlyDictionary, betterCompact, sortResourcesById } from "../util";
 type StringMap = CowardlyDictionary<string>;
 
-export let findId = (index: ResourceIndex, kind: ResourceName, id: number) => {
-
+export let getUuid = (index: ResourceIndex, kind: ResourceName, id: number) => {
   const uuid = index.byKindAndId[joinKindAndId(kind, id)];
-  assertUuid(kind, uuid);
+  if (uuid) {
+    assertUuid(kind, uuid);
+    return uuid;
+  }
+};
+
+export let findId = (index: ResourceIndex, kind: ResourceName, id: number) => {
+  const uuid = getUuid(index, kind, id);
   if (uuid) {
     return uuid;
   } else {
