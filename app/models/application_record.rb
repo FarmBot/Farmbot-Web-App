@@ -14,7 +14,7 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def maybe_broadcast(*args_)
-    self.broadcast_changes(changes) if broadcast?
+    self.broadcast! if broadcast?
   end
 
   def broadcast_payload
@@ -25,7 +25,7 @@ class ApplicationRecord < ActiveRecord::Base
     "sync.#{self.class.name}.#{self.id}"
   end
 
-  def broadcast_changes(changes)
-    Transport.send(broadcast_payload, Device.current.id)
+  def broadcast!
+    Transport.send(broadcast_payload, Device.current.id, chan_name)
   end
 end
