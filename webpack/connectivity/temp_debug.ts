@@ -2,6 +2,7 @@ import { GetState } from "../redux/interfaces";
 import { snakeCase } from "lodash";
 import { getUuid } from "../resources/selectors";
 import { ResourceName } from "../resources/tagged_resources";
+import { initSave } from "../api/crud";
 
 interface UpdateMqttData {
   status: "UPDATE"
@@ -59,11 +60,24 @@ function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
   }
 }
 
-function handleCreate(data: UpdateMqttData) {
+function handleCreate(data: UpdateMqttData,
+  dispatch: Function,
+  getState: GetState) {
+
+  dispatch(initSave({
+    kind: (data.kind as any),
+    uuid: "NO NO NO",
+    specialStatus: undefined,
+    body: (data.body as any) // I trust you, API...
+  }));
   console.log("INSERT");
 }
 
-function handleUpdate(data: UpdateMqttData) {
+function handleUpdate(data: UpdateMqttData,
+  dispatch: Function,
+  getState: GetState,
+  uuid: string) {
+
   console.log("UPDATE");
 }
 
@@ -84,11 +98,15 @@ export const TempDebug =
     (chan: string, payload: Buffer) => {
       const data = routeMqttData(chan, payload);
       switch (data.status) {
-        case "UPDATE":
-          const uuid = getUuid(getState().resources.index, data.kind, data.id);
-          return (uuid ? handleCreate : handleUpdate)(data);
         case "ERR": return handleErr(data);
         case "SKIP": return handleSkip();
         case "DELETE": return handleDelete(data);
+        case "UPDATE":
+          const uuid = getUuid(getState().resources.index, data.kind, data.id);
+          if (uuid) {
+            return handleUpdate(data, dispatch, getState, uuid);
+          } else {
+            return handleCreate(data, dispatch, getState);
+          }
       }
     };

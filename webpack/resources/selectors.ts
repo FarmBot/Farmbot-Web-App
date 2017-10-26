@@ -36,6 +36,8 @@ export let getUuid = (index: ResourceIndex, kind: ResourceName, id: number) => {
   if (uuid) {
     assertUuid(kind, uuid);
     return uuid;
+  } else {
+    debugger;
   }
 };
 
