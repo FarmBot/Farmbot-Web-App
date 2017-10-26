@@ -20,6 +20,7 @@ export class CameraCalibration extends
         <TitleBar
           title={"Camera Calibration"}
           help={t(ToolTips.CAMERA_CALIBRATION)}
+          docs={"farmware#section-weed-detector"}
           onCalibrate={this.props.dispatch(calibrate)}
           env={this.props.env} />
         <WidgetBody>

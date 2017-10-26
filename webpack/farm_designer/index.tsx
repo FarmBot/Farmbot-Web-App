@@ -81,7 +81,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
   }
 
   updateZoomLevel = (zoomIncrement: number) => () => {
-    const payload = this.getZoomLevel() + zoomIncrement;
+    const payload = Math.round((this.getZoomLevel() + zoomIncrement) * 10) / 10;
     this.setState({ zoomLevel: payload });
     Session.setNum(NumericSetting.zoomLevel, payload);
   }
@@ -173,7 +173,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           botSize={botSize}
           stopAtHome={stopAtHome}
           hoveredPlant={this.props.hoveredPlant}
-          zoomLvl={Math.round(zoomLevel * 10) / 10}
+          zoomLvl={zoomLevel}
           botOriginQuadrant={botOriginQuadrant}
           gridSize={getGridSize(botSize)}
           gridOffset={gridOffset} />

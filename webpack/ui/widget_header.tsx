@@ -5,6 +5,7 @@ import { JSXChildren } from "../util";
 interface WidgetHeaderProps {
   children?: JSXChildren;
   helpText?: string;
+  docPage?: string;
   title: string;
 }
 
@@ -16,6 +17,13 @@ export function WidgetHeader(props: WidgetHeaderProps) {
       <i className="fa fa-question-circle help-icon">
         <div className="help-text">
           {props.helpText}
+          {props.docPage &&
+            <a
+              href={"https://software.farmbot.io/docs/" + props.docPage}
+              target="_blank">
+              {" " + t("Documentation")}
+              <i className="fa fa-external-link" />
+            </a>}
         </div>
       </i>
     }

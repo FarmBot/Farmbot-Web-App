@@ -15,6 +15,20 @@ import {
 } from "../ui";
 import { betterCompact } from "../util";
 import { FBSelect } from "../ui/new_fb_select";
+import { Popover, Position } from "@blueprintjs/core";
+
+export function FarmwareConfigMenu() {
+  return <div>
+    <fieldset>
+      <label>
+        {t("Install first-party farmwares")}
+      </label>
+      <button
+        className="fb-button gray fa fa-download"
+        onClick={getDevice().installFirstPartyFarmware} />
+    </fieldset>
+  </div>;
+}
 
 export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   constructor() {
@@ -97,7 +111,14 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   render() {
     return (
       <Widget className="farmware-widget">
-        <WidgetHeader title="Farmware" helpText={ToolTips.FARMWARE} />
+        <WidgetHeader
+          title="Farmware"
+          helpText={ToolTips.FARMWARE}>
+          <Popover position={Position.BOTTOM_RIGHT}>
+            <i className="fa fa-gear" />
+            <FarmwareConfigMenu />
+          </Popover>
+        </WidgetHeader>
         <WidgetBody>
           <MustBeOnline
             status={this.props.syncStatus}
