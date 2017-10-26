@@ -2,7 +2,8 @@ const mockDevice = {
   installFarmware: jest.fn(() => { return Promise.resolve(); }),
   updateFarmware: jest.fn(() => { return Promise.resolve(); }),
   removeFarmware: jest.fn(() => { return Promise.resolve(); }),
-  execScript: jest.fn(() => { return Promise.resolve(); })
+  execScript: jest.fn(() => { return Promise.resolve(); }),
+  installFirstPartyFarmware: jest.fn(),
 };
 
 jest.mock("../../device", () => ({
@@ -12,7 +13,7 @@ jest.mock("../../device", () => ({
 import * as React from "react";
 import { mount } from "enzyme";
 import { getDevice } from "../../device";
-import { FarmwarePanel } from "../farmware_panel";
+import { FarmwarePanel, FarmwareConfigMenu } from "../farmware_panel";
 
 describe("<FarmwarePanel/>", () => {
   beforeEach(() => {
@@ -70,5 +71,16 @@ describe("<FarmwarePanel/>", () => {
     buttons.at(4).simulate("click");
     expect(mock.calls.length).toEqual(1);
     expect(mock.calls[0][0]).toEqual("run this");
+  });
+});
+
+describe("<FarmwareConfigMenu />", () => {
+  it("calls install 1st party farmwares", () => {
+    const firstParty = getDevice().installFirstPartyFarmware;
+    const wrapper = mount(<FarmwareConfigMenu />);
+    const button = wrapper.find("button");
+    expect(button.hasClass("fa-download")).toBeTruthy();
+    button.simulate("click");
+    expect(firstParty).toHaveBeenCalled();
   });
 });
