@@ -18,4 +18,8 @@ class LogDispatch < ApplicationRecord
       .log_digest(device)
       .deliver_later
   end
+
+  def broadcast?
+    false
+  end
 end

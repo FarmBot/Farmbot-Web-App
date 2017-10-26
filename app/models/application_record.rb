@@ -8,16 +8,24 @@ class ApplicationRecord < ActiveRecord::Base
                      "updated_at",
                      "created_at" ]
 
+  def broadcast?
+    Device.current &&
+      !self.saved_changes.except(*self.class::DONT_BROADCAST).empty?
+  end
+
   def maybe_broadcast(*args_)
-    changes = self.saved_changes.except(*self.class::DONT_BROADCAST)
-    self.broadcast_changes(changes) unless changes.empty?
+    self.broadcast_changes(changes) if broadcast?
+  end
+
+  def broadcast_payload
+    { body: self.as_json }.to_json
+  end
+
+  def chan_name
+    "sync.#{self.class.name}.#{self.id}"
   end
 
   def broadcast_changes(changes)
-    payload = {
-    kind: self.class.name,
-    body: self.as_json
-    }.to_json
-    Transport.send(payload, Device.current.id, "sync") if Device.current
+    Transport.send(broadcast_payload, Device.current.id)
   end
 end

@@ -9,4 +9,8 @@ class SequenceDependency < ApplicationRecord
   belongs_to :sequence
   validates_presence_of :sequence
   belongs_to :dependency, polymorphic: true
+
+  def broadcast?
+    false
+  end
 end
