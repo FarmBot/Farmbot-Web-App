@@ -53,18 +53,18 @@ export function emptyState(): RestResources {
     index: {
       all: [],
       byKind: {
-        webcam_feed: [],
-        device: [],
-        farm_events: [],
-        images: [],
-        logs: [],
-        peripherals: [],
-        crops: [],
-        points: [],
-        regimens: [],
-        sequences: [],
-        tools: [],
-        users: []
+        WebcamFeed: [],
+        Device: [],
+        FarmEvent: [],
+        Image: [],
+        Log: [],
+        Peripheral: [],
+        Crop: [],
+        Point: [],
+        Regimen: [],
+        Sequence: [],
+        Tool: [],
+        User: []
       },
       byKindAndId: {},
       references: {}

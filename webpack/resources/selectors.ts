@@ -209,7 +209,7 @@ export function selectAllSequences(index: ResourceIndex) {
 
 export function indexSequenceById(index: ResourceIndex) {
   const output: CowardlyDictionary<TaggedSequence> = {};
-  const uuids = index.byKind.sequences;
+  const uuids = index.byKind.Sequence;
   uuids.map(uuid => {
     assertUuid("Sequence", uuid);
     const sequence = index.references[uuid];
@@ -223,7 +223,7 @@ export function indexSequenceById(index: ResourceIndex) {
 export function indexRegimenById(index: ResourceIndex) {
   const output: CowardlyDictionary<TaggedRegimen> = {};
 
-  const uuids = index.byKind.regimens;
+  const uuids = index.byKind.Regimen;
   uuids.map(uuid => {
     assertUuid("Regimen", uuid);
     const regimen = index.references[uuid];
@@ -237,7 +237,7 @@ export function indexRegimenById(index: ResourceIndex) {
 export function indexFarmEventById(index: ResourceIndex) {
   const output: CowardlyDictionary<TaggedFarmEvent> = {};
 
-  const uuids = index.byKind.farm_events;
+  const uuids = index.byKind.FarmEvent;
   uuids.map(uuid => {
     assertUuid("FarmEvent", uuid);
     const farmEvent = index.references[uuid];
@@ -251,7 +251,7 @@ export function indexFarmEventById(index: ResourceIndex) {
 export function indexByToolId(index: ResourceIndex) {
   const output: CowardlyDictionary<TaggedTool> = {};
 
-  const uuids = index.byKind.tools;
+  const uuids = index.byKind.Tool;
   uuids.map(uuid => {
     assertUuid("Tool", uuid);
     const Tool = index.references[uuid];
@@ -265,7 +265,7 @@ export function indexByToolId(index: ResourceIndex) {
 export function indexBySlotId(index: ResourceIndex) {
   const output: CowardlyDictionary<TaggedToolSlotPointer> = {};
 
-  const uuids = index.byKind.points;
+  const uuids = index.byKind.Point;
   uuids.map(uuid => {
     assertUuid("Point", uuid);
     const tool_slot = index.references[uuid];
@@ -427,7 +427,7 @@ export function maybeFindPlantById(index: ResourceIndex, id: number) {
 }
 
 export function getDeviceAccountSettings(index: ResourceIndex) {
-  const list = index.byKind.device;
+  const list = index.byKind.Device;
   const uuid = list[0];
   const device = index.references[uuid || -1];
   if ((list.length === 1) && device && device.kind === "Device") {
@@ -441,7 +441,7 @@ export function getDeviceAccountSettings(index: ResourceIndex) {
 }
 
 export function getFeeds(index: ResourceIndex): TaggedWebcamFeed[] {
-  const list = index.byKind.webcam_feed;
+  const list = index.byKind.WebcamFeed;
   const output: TaggedWebcamFeed[] = [];
   list.forEach(y => {
     const x = index.references[y];
@@ -455,7 +455,7 @@ export function getFeeds(index: ResourceIndex): TaggedWebcamFeed[] {
 
 export function maybeFetchUser(index: ResourceIndex):
   TaggedUser | undefined {
-  const list = index.byKind.users;
+  const list = index.byKind.User;
   const uuid = list[0];
   const user = index.references[uuid || -1];
 
@@ -504,7 +504,7 @@ export function findToolBySlotId(input: ResourceIndex, tool_slot_id: number):
   TaggedTool | undefined {
   const wow = input
     .byKind
-    .points
+    .Point
     .map(x => input.references[x])
     .map((x) => {
       if (x

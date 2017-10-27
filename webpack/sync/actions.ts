@@ -1,6 +1,6 @@
 import axios from "axios";
 import { warning } from "farmbot-toastr";
-import { Log, AnyPointer } from "../interfaces";
+import { Log, Point } from "../interfaces";
 import { API } from "../api";
 import { Sequence } from "../sequences/interfaces";
 import { Tool } from "../tools/interfaces";
@@ -42,7 +42,7 @@ export function fetchSyncData(dispatch: Function) {
   fetch<Image[]>("Image", API.current.imagesPath);
   fetch<Log[]>("Log", API.current.logsPath);
   fetch<Peripheral[]>("Peripheral", API.current.peripheralsPath);
-  fetch<AnyPointer[]>("Point", API.current.pointsPath);
+  fetch<Point[]>("Point", API.current.pointsPath);
   fetch<Regimen[]>("Regimen", API.current.regimensPath);
   fetch<Sequence[]>("Sequence", API.current.sequencesPath);
   fetch<Tool[]>("Tool", API.current.toolsPath);

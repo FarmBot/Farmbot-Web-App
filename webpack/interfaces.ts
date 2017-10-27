@@ -54,7 +54,7 @@ export interface Everything {
   bot: BotState;
   location: Location;
   draggable: DraggableState;
-  peripherals: PeripheralState;
+  Peripheral: PeripheralState;
   resources: RestResources;
   router: {
     push(url?: string): void;
@@ -97,12 +97,12 @@ export interface GenericPointer extends BasePoint {
   pointer_type: "GenericPointer";
 }
 
-export type AnyPointer =
+export type Point =
   | GenericPointer
   | ToolSlotPointer
   | PlantPointer;
 
-export type PointerTypeName = AnyPointer["pointer_type"];
+export type PointerTypeName = Point["pointer_type"];
 
 export const POINTER_NAMES: Readonly<PointerTypeName>[] = [
   "Plant",

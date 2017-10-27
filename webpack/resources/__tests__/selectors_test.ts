@@ -38,7 +38,7 @@ const fakeSlot: TaggedToolSlotPointer = {
 describe("findSlotByToolId", () => {
   it("returns undefined when not found", () => {
     const state = resourceReducer(buildResourceIndex(), createOK(fakeTool));
-    expect(state.index.byKindAndId["tools." + fakeTool.body.id]);
+    expect(state.index.byKindAndId["Tool." + fakeTool.body.id]);
     const result = findSlotByToolId(state.index, TOOL_ID);
     expect(result).toBeFalsy();
   });

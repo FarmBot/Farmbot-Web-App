@@ -1,7 +1,7 @@
 import { noop } from "lodash";
 import { Everything } from "../interfaces";
 import { location } from "./fake_state/location";
-import { peripherals } from "./fake_state/peripherals";
+import { peripherals as Peripheral } from "./fake_state/peripherals";
 import { auth } from "./fake_state/token";
 import { bot } from "./fake_state/bot";
 import { config } from "./fake_state/config";
@@ -17,7 +17,7 @@ export function fakeState(dispatcher: Function = noop): Everything {
     dispatch: jest.fn(),
     router: { push: jest.fn() },
     location,
-    peripherals,
+    Peripheral,
     auth,
     bot,
     config,

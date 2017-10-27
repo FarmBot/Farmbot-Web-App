@@ -31,9 +31,7 @@ export type ResourceName =
   | "Tool"
   | "User"
   | "WebcamFeed"
-  | "GenericPointer"
-  | "PlantPointer"
-  | "ToolSlotPointer";
+  | "Point";
 console.log("RICK REMOVE GenericPointer PlantPointer ToolSlotPointer before PR");
 export interface TaggedResourceBase {
   kind: ResourceName;
@@ -74,18 +72,16 @@ export interface Resource<T extends ResourceName, U extends object>
 }
 
 export type TaggedResource =
+  | TaggedPoint
   | TaggedCrop
   | TaggedDevice
   | TaggedFarmEvent
-  | TaggedGenericPointer
   | TaggedImage
   | TaggedLog
   | TaggedPeripheral
-  | TaggedPlantPointer
   | TaggedRegimen
   | TaggedSequence
   | TaggedTool
-  | TaggedToolSlotPointer
   | TaggedUser
   | TaggedWebcamFeed;
 
@@ -97,9 +93,15 @@ export type TaggedFarmEvent = Resource<"FarmEvent", FarmEvent>;
 export type TaggedImage = Resource<"Image", Image>;
 export type TaggedLog = Resource<"Log", Log>;
 export type TaggedPeripheral = Resource<"Peripheral", Peripheral>;
-export type TaggedGenericPointer = Resource<"GenericPointer", GenericPointer>;
-export type TaggedPlantPointer = Resource<"PlantPointer", PlantPointer>;
-export type TaggedToolSlotPointer = Resource<"ToolSlotPointer", ToolSlotPointer>;
+
+type PointUnion = GenericPointer | PlantPointer | ToolSlotPointer;
+
+export type TaggedGenericPointer = Resource<"Point", GenericPointer>;
+export type TaggedPlantPointer = Resource<"Point", PlantPointer>;
+export type TaggedToolSlotPointer = Resource<"Point", ToolSlotPointer>;
+
+export type TaggedPoint = Resource<"Point", PointUnion>;
+
 export type TaggedUser = Resource<"User", User>;
 export type TaggedDevice = Resource<"Device", DeviceAccountSettings>;
 export type TaggedWebcamFeed = Resource<"WebcamFeed", WebcamFeed>;
