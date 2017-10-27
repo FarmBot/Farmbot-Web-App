@@ -14,12 +14,12 @@ describe("editRegimen()", () => {
   it("calls edit", () => {
     const dispatch = jest.fn();
     const regimen = fakeRegimen();
-    regimen.uuid = "regimens";
+    regimen.uuid = "Regimen";
     editRegimen(regimen, {})(dispatch);
     expect(dispatch).toHaveBeenCalledWith({
       payload: {
         update: {},
-        uuid: "regimens"
+        uuid: "Regimen"
       },
       type: Actions.EDIT_RESOURCE
     });
@@ -36,7 +36,7 @@ describe("saveRegimen()", () => {
     expect(dispatch).toHaveBeenCalledWith({
       payload: {
         body: { color: "red", name: "Foo", regimen_items: [] },
-        kind: "regimens",
+        kind: "Regimen",
         uuid: state.resources.index.all[0]
       },
       type: Actions.SAVE_RESOURCE_START
@@ -65,7 +65,7 @@ describe("deleteRegimen()", () => {
     expect(dispatch).toHaveBeenCalledWith({
       payload: {
         body: { color: "red", name: "Foo", regimen_items: [] },
-        kind: "regimens",
+        kind: "Regimen",
         uuid: state.resources.index.all[0]
       },
       type: Actions.DESTROY_RESOURCE_OK
@@ -76,13 +76,13 @@ describe("deleteRegimen()", () => {
 describe("selectRegimen()", () => {
   it("selects regimen", () => {
     const regimen = fakeRegimen();
-    regimen.uuid = "regimens";
+    regimen.uuid = "Regimen";
     const action = selectRegimen(regimen);
     expect(action).toEqual({
       payload: {
         body: { color: "red", name: "Foo", regimen_items: [] },
-        kind: "regimens",
-        uuid: "regimens"
+        kind: "Regimen",
+        uuid: "Regimen"
       },
       type: Actions.SELECT_REGIMEN
     });

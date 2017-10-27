@@ -15,7 +15,7 @@ describe("mapStateToProps()", () => {
     const fakeResources: TaggedResource[] = [
       {
         "specialStatus": undefined,
-        "kind": "regimens",
+        "kind": "Regimen",
         "body": {
           "id": 1,
           "name": "Test Regimen",
@@ -32,7 +32,7 @@ describe("mapStateToProps()", () => {
         "uuid": "N/A"
       },
       {
-        "kind": "sequences",
+        "kind": "Sequence",
         "specialStatus": undefined,
         "body": {
           "id": 1,

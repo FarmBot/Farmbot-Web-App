@@ -49,7 +49,7 @@ export interface RegimenProps {
   dispatch: Function;
 }
 
-/** A list of "sequences" scheduled after a starting point (epoch). */
+/** A list of "Sequence" scheduled after a starting point (epoch). */
 export interface Regimen {
   id?: number;
   /** Friendly identifier for humans to easily identify regimens. */

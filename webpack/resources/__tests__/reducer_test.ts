@@ -10,7 +10,7 @@ describe("resource reducer", () => {
     const sequence = state.index.references[uuid] as TaggedSequence;
     expect(sequence).toBeTruthy();
 
-    expect(sequence.kind).toBe("sequences");
+    expect(sequence.kind).toBe("Sequence");
     const next = resourceReducer(state, overwrite(sequence, {
       name: "wow",
       body: []
@@ -25,7 +25,7 @@ describe("resource reducer", () => {
     const device = state.index.references[uuid] as TaggedSequence;
     expect(device).toBeTruthy();
 
-    expect(device.kind).toBe("device");
+    expect(device.kind).toBe("Device");
     const afterStart = resourceReducer(state, refreshStart(device.uuid));
     const dev2 = afterStart.index.references[uuid] as TaggedDevice;
     expect(dev2.specialStatus).toBe(SpecialStatus.SAVING);

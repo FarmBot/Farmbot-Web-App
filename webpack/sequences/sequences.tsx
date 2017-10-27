@@ -12,7 +12,7 @@ import { ToolTips } from "../constants";
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {
   render() {
-    return <Page className="sequences">
+    return <Page className="Sequence">
       <Row>
         <Col sm={3}>
           <SequencesList

@@ -2,7 +2,7 @@ import { TaggedImage } from "../../resources/tagged_resources";
 
 export let fakeImages: TaggedImage[] = [
   {
-    "kind": "images",
+    "kind": "Image",
     "specialStatus": undefined,
     "body": {
       "id": 9,
@@ -20,7 +20,7 @@ export let fakeImages: TaggedImage[] = [
     "uuid": "images.9.3"
   },
   {
-    "kind": "images",
+    "kind": "Image",
     "specialStatus": undefined,
     "body": {
       "id": 8,
@@ -38,7 +38,7 @@ export let fakeImages: TaggedImage[] = [
     "uuid": "images.8.4"
   },
   {
-    "kind": "images",
+    "kind": "Image",
     "specialStatus": undefined,
     "body": {
       "id": 7,

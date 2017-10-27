@@ -9,7 +9,7 @@ describe("<PeripheralForm/>", function () {
     {
       uuid: "peripherals.2.2",
       specialStatus: undefined,
-      kind: "peripherals",
+      kind: "Peripheral",
       body: {
         id: 2,
         pin: 13,
@@ -19,7 +19,7 @@ describe("<PeripheralForm/>", function () {
     {
       uuid: "peripherals.1.1",
       specialStatus: undefined,
-      kind: "peripherals",
+      kind: "Peripheral",
       body: {
         id: 1,
         pin: 2,

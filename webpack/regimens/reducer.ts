@@ -48,7 +48,7 @@ export let regimensReducer = generateReducer<RegimenState>(initialState)
     return s;
   })
   .add<TaggedResource>(Actions.INIT_RESOURCE, (s, { payload }) => {
-    if (payload.kind === "regimens") {
+    if (payload.kind === "Regimen") {
       s.currentRegimen = payload.uuid;
     }
     return s;

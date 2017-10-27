@@ -20,7 +20,7 @@ describe("commitBulkEditor()", () => {
     const fakeResources: TaggedResource[] = [
       {
         "specialStatus": undefined,
-        "kind": "regimens",
+        "kind": "Regimen",
         "body": {
           "id": 1,
           "name": "Test Regimen",
@@ -37,7 +37,7 @@ describe("commitBulkEditor()", () => {
         "uuid": "N/A"
       },
       {
-        "kind": "sequences",
+        "kind": "Sequence",
         "specialStatus": undefined,
         "body": {
           "id": 1,
@@ -146,9 +146,9 @@ describe("toggleDay()", () => {
 
 describe("setSequence()", () => {
   it("returns action", () => {
-    const action = setSequence("sequences");
+    const action = setSequence("Sequence");
     expect(action).toEqual({
-      payload: "sequences",
+      payload: "Sequence",
       type: Actions.SET_SEQUENCE
     });
   });

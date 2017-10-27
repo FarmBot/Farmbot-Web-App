@@ -27,7 +27,7 @@ describe("<ToolSlotLayer/>", () => {
       z: 3,
       meta: {}
     };
-    const toolSlot = fakeResource("points", ts);
+    const toolSlot = fakeResource("Point", ts);
     return {
       visible: false,
       slots: [{ toolSlot, tool: undefined }],

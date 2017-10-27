@@ -18,20 +18,23 @@ import { betterCompact } from "../util";
 import * as _ from "lodash";
 import { WebcamFeed } from "../controls/interfaces";
 export type ResourceName =
-  | "users"
-  | "device"
-  | "farm_events"
-  | "images"
-  | "logs"
-  | "peripherals"
-  | "crops"
-  | "points"
-  | "regimens"
-  | "sequences"
-  | "tools"
-  | "users"
-  | "webcam_feed";
-
+  | "User"
+  | "Device"
+  | "FarmEvent"
+  | "Image"
+  | "Log"
+  | "Peripheral"
+  | "Crop"
+  | "Point"
+  | "Regimen"
+  | "Sequence"
+  | "Tool"
+  | "User"
+  | "WebcamFeed"
+  | "GenericPointer"
+  | "PlantPointer"
+  | "ToolSlotPointer";
+console.log("RICK REMOVE GenericPointer PlantPointer ToolSlotPointer before PR");
 export interface TaggedResourceBase {
   kind: ResourceName;
   /** Unique identifier and index key.
@@ -86,20 +89,20 @@ export type TaggedResource =
   | TaggedUser
   | TaggedWebcamFeed;
 
-export type TaggedRegimen = Resource<"regimens", Regimen>;
-export type TaggedTool = Resource<"tools", Tool>;
-export type TaggedSequence = Resource<"sequences", Sequence>;
-export type TaggedCrop = Resource<"crops", Crop>;
-export type TaggedFarmEvent = Resource<"farm_events", FarmEvent>;
-export type TaggedImage = Resource<"images", Image>;
-export type TaggedLog = Resource<"logs", Log>;
-export type TaggedPeripheral = Resource<"peripherals", Peripheral>;
-export type TaggedGenericPointer = Resource<"points", GenericPointer>;
-export type TaggedPlantPointer = Resource<"points", PlantPointer>;
-export type TaggedToolSlotPointer = Resource<"points", ToolSlotPointer>;
-export type TaggedUser = Resource<"users", User>;
-export type TaggedDevice = Resource<"device", DeviceAccountSettings>;
-export type TaggedWebcamFeed = Resource<"webcam_feed", WebcamFeed>;
+export type TaggedRegimen = Resource<"Regimen", Regimen>;
+export type TaggedTool = Resource<"Tool", Tool>;
+export type TaggedSequence = Resource<"Sequence", Sequence>;
+export type TaggedCrop = Resource<"Crop", Crop>;
+export type TaggedFarmEvent = Resource<"FarmEvent", FarmEvent>;
+export type TaggedImage = Resource<"Image", Image>;
+export type TaggedLog = Resource<"Log", Log>;
+export type TaggedPeripheral = Resource<"Peripheral", Peripheral>;
+export type TaggedGenericPointer = Resource<"GenericPointer", GenericPointer>;
+export type TaggedPlantPointer = Resource<"PlantPointer", PlantPointer>;
+export type TaggedToolSlotPointer = Resource<"ToolSlotPointer", ToolSlotPointer>;
+export type TaggedUser = Resource<"User", User>;
+export type TaggedDevice = Resource<"Device", DeviceAccountSettings>;
+export type TaggedWebcamFeed = Resource<"WebcamFeed", WebcamFeed>;
 
 /** Spot check to be certain a TaggedResource is what it says it is. */
 export function sanityCheck(x: object): x is TaggedResource {
@@ -134,21 +137,21 @@ export type PointerType =
   | TaggedPlantPointer;
 
 function isTaggedPoint(x: {}): x is PointerType {
-  return (is("points")(x)) && (x.kind === "points");
+  return (is("Point")(x)) && (x.kind === "Point");
 }
 
 export let isTaggedRegimen =
-  (x: object): x is TaggedRegimen => is("regimens")(x);
+  (x: object): x is TaggedRegimen => is("Regimen")(x);
 export let isTaggedSequence =
-  (x: object): x is TaggedSequence => is("sequences")(x);
+  (x: object): x is TaggedSequence => is("Sequence")(x);
 export let isTaggedTool =
-  (x: object): x is TaggedTool => is("tools")(x);
+  (x: object): x is TaggedTool => is("Tool")(x);
 export let isTaggedCrop =
-  (x: object): x is TaggedCrop => is("crops")(x);
+  (x: object): x is TaggedCrop => is("Crop")(x);
 export let isTaggedFarmEvent =
-  (x: object): x is TaggedFarmEvent => is("farm_events")(x);
+  (x: object): x is TaggedFarmEvent => is("FarmEvent")(x);
 export let isTaggedLog =
-  (x: object): x is TaggedLog => is("logs")(x);
+  (x: object): x is TaggedLog => is("Log")(x);
 export let isTaggedToolSlotPointer =
   (x: object): x is TaggedToolSlotPointer => {
     return isTaggedPoint(x) && (x.body.pointer_type === "ToolSlot");

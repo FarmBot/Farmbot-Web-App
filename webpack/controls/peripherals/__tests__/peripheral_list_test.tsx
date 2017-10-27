@@ -20,7 +20,7 @@ describe("<PeripheralList/>", function () {
   const peripherals: TaggedPeripheral[] = [
     {
       uuid: "peripherals.2.2",
-      kind: "peripherals",
+      kind: "Peripheral",
       specialStatus: undefined,
       body: {
         id: 2,
@@ -30,7 +30,7 @@ describe("<PeripheralList/>", function () {
     },
     {
       uuid: "peripherals.1.1",
-      kind: "peripherals",
+      kind: "Peripheral",
       specialStatus: undefined,
       body: {
         id: 1,

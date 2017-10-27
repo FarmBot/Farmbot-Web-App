@@ -23,7 +23,7 @@ describe("refresh()", () => {
   it("rejects malformed API data", (done) => {
     const device1: TaggedDevice = {
       "uuid": "device.6.1",
-      "kind": "device",
+      "kind": "Device",
       "specialStatus": undefined,
       "body": {
         "id": 6,

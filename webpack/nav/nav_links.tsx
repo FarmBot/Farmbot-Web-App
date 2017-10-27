@@ -6,10 +6,10 @@ import { NavLinksProps } from "./interfaces";
 export const links = [
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
   { name: "Controls", icon: "keyboard-o", slug: "controls" },
-  { name: "Device", icon: "cog", slug: "device" },
-  { name: "Sequences", icon: "server", slug: "sequences" },
-  { name: "Regimens", icon: "calendar-check-o", slug: "regimens" },
-  { name: "Tools", icon: "wrench", slug: "tools" },
+  { name: "Device", icon: "cog", slug: "Device" },
+  { name: "Sequence", icon: "server", slug: "Sequence" },
+  { name: "Regimen", icon: "calendar-check-o", slug: "Regimen" },
+  { name: "Tool", icon: "wrench", slug: "Tool" },
   { name: "Farmware", icon: "crosshairs", slug: "farmware" }
 ];
 

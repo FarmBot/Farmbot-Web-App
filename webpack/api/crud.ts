@@ -217,11 +217,11 @@ function updateViaAjax(index: ResourceIndex,
 }
 
 const MUST_CONFIRM_LIST: ResourceName[] = [
-  "farm_events",
-  "points",
-  "sequences",
-  "regimens",
-  "images"
+  "FarmEvent",
+  "Point",
+  "Sequence",
+  "Regimen",
+  "Image"
 ];
 
 const confirmationChecker = (resource: TaggedResource, force = false) =>

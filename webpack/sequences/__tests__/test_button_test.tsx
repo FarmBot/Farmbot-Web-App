@@ -6,7 +6,7 @@ import { mount } from "enzyme";
 describe("<TestButton/>", () => {
   function fakeSequence(): TaggedSequence {
     return {
-      "kind": "sequences",
+      "kind": "Sequence",
       "specialStatus": undefined,
       "body": {
         "name": "Goto 0, 0, 0",

@@ -10,18 +10,18 @@ import { Actions } from "../../constants";
 const TOOL_ID = 99;
 const SLOT_ID = 100;
 const fakeTool: TaggedTool = {
-  kind: "tools",
+  kind: "Tool",
   specialStatus: undefined,
-  uuid: generateUuid(TOOL_ID, "tools"),
+  uuid: generateUuid(TOOL_ID, "Tool"),
   body: {
     name: "yadda yadda",
     id: TOOL_ID
   }
 };
 const fakeSlot: TaggedToolSlotPointer = {
-  kind: "points",
+  kind: "Point",
   specialStatus: undefined,
-  uuid: generateUuid(SLOT_ID, "points"),
+  uuid: generateUuid(SLOT_ID, "Point"),
   body: {
     tool_id: TOOL_ID,
     pointer_type: "ToolSlot",
@@ -49,7 +49,7 @@ describe("findSlotByToolId", () => {
       .reduce(resourceReducer, initialState);
     const result = findSlotByToolId(state.index, TOOL_ID);
     expect(result).toBeTruthy();
-    if (result) { expect(result.kind).toBe("points"); }
+    if (result) { expect(result.kind).toBe("Point"); }
   });
 });
 
@@ -63,7 +63,7 @@ describe("getFeeds", () => {
     const state = [{
       type: Actions.RESOURCE_READY,
       payload: {
-        name: "webcam_feed",
+        name: "WebcamFeed",
         data: feed
       }
     }].reduce(resourceReducer, emptyState());

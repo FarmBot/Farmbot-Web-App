@@ -78,7 +78,7 @@ describe("INIT_RESOURCE", () => {
     state.currentRegimen = undefined;
     const action = {
       type: Actions.INIT_RESOURCE,
-      payload: { uuid: "regimens.4.56", kind: "regimens" }
+      payload: { uuid: "regimens.4.56", kind: "Regimen" }
     };
     const nextState = regimensReducer(STATE, action);
     expect(nextState.currentRegimen).toBe(action.payload.uuid);
@@ -91,7 +91,7 @@ describe("SELECT_REGIMEN", () => {
     state.currentRegimen = undefined;
     const action = {
       type: Actions.SELECT_REGIMEN,
-      payload: { uuid: "regimens.4.56", kind: "regimens" }
+      payload: { uuid: "regimens.4.56", kind: "Regimen" }
     };
     const nextState = regimensReducer(STATE, action);
     expect(nextState.currentRegimen).toBe(action.payload.uuid);

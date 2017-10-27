@@ -40,11 +40,11 @@ describe("<App />: Controls Pop-Up", () => {
   controlsPopUp("designer", true);
   controlsPopUp("designer/plants", true);
   controlsPopUp("controls", false);
-  controlsPopUp("device", true);
-  controlsPopUp("sequences", true);
+  controlsPopUp("Device", true);
+  controlsPopUp("Sequence", true);
   controlsPopUp("sequences/for_regimens", true);
-  controlsPopUp("regimens", false);
-  controlsPopUp("tools", true);
+  controlsPopUp("Regimen", false);
+  controlsPopUp("Tool", true);
   controlsPopUp("farmware", true);
   controlsPopUp("account", false);
 
@@ -68,14 +68,14 @@ describe.skip("<App />: Loading", () => {
 
   it("MUST_LOADs partially loaded", () => {
     const p = fakeProps();
-    p.loaded = ["sequences"];
+    p.loaded = ["Sequence"];
     const wrapper = mount(<App {...p } />);
     expect(wrapper.html()).toContain("spinner");
   });
 
   it("MUST_LOADs loaded", () => {
     const p = fakeProps();
-    p.loaded = ["sequences", "regimens", "farm_events", "points"];
+    p.loaded = ["Sequence", "Regimen", "FarmEvent", "Point"];
     const wrapper = mount(<App {...p } />);
     expect(wrapper.html()).not.toContain("spinner");
   });

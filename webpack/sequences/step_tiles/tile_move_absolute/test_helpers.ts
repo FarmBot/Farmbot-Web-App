@@ -6,7 +6,7 @@ export function fakeResourceIndex(): ResourceIndex {
   const fakeResources: TaggedResource[] = [
     {
       "specialStatus": undefined,
-      "kind": "points",
+      "kind": "Point",
       "body": {
         "id": 1,
         "meta": {},
@@ -22,7 +22,7 @@ export function fakeResourceIndex(): ResourceIndex {
     },
     {
       "specialStatus": undefined,
-      "kind": "points",
+      "kind": "Point",
       "body": {
         "id": 2,
         "meta": {},
@@ -37,7 +37,7 @@ export function fakeResourceIndex(): ResourceIndex {
     },
     {
       "specialStatus": undefined,
-      "kind": "points",
+      "kind": "Point",
       "body": {
         "id": 3,
         "meta": {},
@@ -53,7 +53,7 @@ export function fakeResourceIndex(): ResourceIndex {
     },
     {
       "specialStatus": undefined,
-      "kind": "tools",
+      "kind": "Tool",
       "body": {
         "id": 1,
         "name": "Generic Tool",

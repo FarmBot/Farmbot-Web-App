@@ -9,8 +9,8 @@ import { NULL_CHOICE } from "./new_fb_select";
 const SelectComponent = Select.ofType<DropDownItem | undefined>();
 
 type PossibleReferences =
-  | "Sequences"
-  | "Regimens";
+  | "Sequence"
+  | "Regimen";
 
 interface ParentMenu {
   title: string;

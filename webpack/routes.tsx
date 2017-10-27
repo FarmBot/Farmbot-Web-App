@@ -204,7 +204,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             },
           },
           {
-            path: "farm_events",
+            path: "FarmEvent",
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/farm_events/farm_events")
                 .then(module => cb(undefined, module.FarmEvents))

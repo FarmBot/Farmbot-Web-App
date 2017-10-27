@@ -10,7 +10,7 @@ import { mapStateToProps } from "./state_to_props";
 @connect(mapStateToProps)
 export class Regimens extends React.Component<Props, {}> {
   render() {
-    return <Page className="regimens">
+    return <Page className="Regimen">
       <Row>
         <Col sm={3}>
           <RegimensList

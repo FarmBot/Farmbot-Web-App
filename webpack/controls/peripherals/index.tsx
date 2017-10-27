@@ -60,7 +60,7 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
     return {
       uuid: "WILL_BE_CHANGED_BY_REDUCER",
       specialStatus: undefined,
-      kind: "peripherals",
+      kind: "Peripheral",
       body: { pin: 0, label: "New Peripheral" }
     };
   }
@@ -72,7 +72,7 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
     const status = getArrayStatus(peripherals);
 
     return <Widget className="peripherals-widget">
-      <WidgetHeader title={"Peripherals"} helpText={ToolTips.PERIPHERALS}>
+      <WidgetHeader title={"Peripheral"} helpText={ToolTips.PERIPHERALS}>
         <button
           className="fb-button gray"
           onClick={this.toggle}

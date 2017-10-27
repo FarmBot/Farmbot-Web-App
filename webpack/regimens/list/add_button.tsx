@@ -6,7 +6,7 @@ import { init } from "../../api/crud";
 
 function emptyRegimen(length: number): TaggedRegimen {
   return {
-    kind: "regimens",
+    kind: "Regimen",
     uuid: "NEVER",
     specialStatus: SpecialStatus.DIRTY,
     body: {

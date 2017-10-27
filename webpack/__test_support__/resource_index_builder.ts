@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import { Actions } from "../constants";
 export function fakeDevice(): TaggedDevice {
   return {
-    "kind": "device",
+    "kind": "Device",
     "specialStatus": undefined,
     "body": {
       "id": 415,
@@ -15,7 +15,7 @@ export function fakeDevice(): TaggedDevice {
 }
 export let FAKE_RESOURCES: TaggedResource[] = [
   {
-    "kind": "users",
+    "kind": "User",
     "body": {
       "id": 152,
       "name": "FarmBot 1",
@@ -29,7 +29,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   fakeDevice(),
   {
     "specialStatus": undefined,
-    "kind": "farm_events",
+    "kind": "FarmEvent",
     "body": {
       "id": 21,
       "start_time": "2017-05-22T05:00:00.000Z",
@@ -50,7 +50,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   },
   {
     "specialStatus": undefined,
-    "kind": "farm_events",
+    "kind": "FarmEvent",
     "body": {
       "id": 22,
       "start_time": "2017-05-22T05:00:00.000Z",
@@ -68,7 +68,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   },
   {
     "specialStatus": undefined,
-    "kind": "images",
+    "kind": "Image",
     "body": {
       "id": 415,
       "device_id": 415,
@@ -86,7 +86,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   },
   {
     "specialStatus": undefined,
-    "kind": "images",
+    "kind": "Image",
     "body": {
       "id": 414,
       "device_id": 415,
@@ -104,7 +104,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   },
   {
     "specialStatus": undefined,
-    "kind": "peripherals",
+    "kind": "Peripheral",
     "body": {
       "id": 11,
       "pin": 13,
@@ -115,7 +115,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   },
   {
     "specialStatus": undefined,
-    "kind": "points",
+    "kind": "Point",
     "body": {
       "id": 1392,
       "created_at": "2017-05-24T20:41:19.804Z",
@@ -136,7 +136,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   },
   {
     "specialStatus": undefined,
-    "kind": "points",
+    "kind": "Point",
     "body": {
       "id": 1393,
       "created_at": "2017-05-24T20:41:19.822Z",
@@ -157,7 +157,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   },
   {
     "specialStatus": undefined,
-    "kind": "points",
+    "kind": "Point",
     "body": {
       "id": 1394,
       "created_at": "2017-05-24T20:41:19.855Z",
@@ -178,7 +178,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   },
   {
     "specialStatus": undefined,
-    "kind": "points",
+    "kind": "Point",
     "body": {
       "id": 1395,
       "created_at": "2017-05-24T20:41:19.889Z",
@@ -198,7 +198,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "points.1395.9"
   },
   {
-    "kind": "points",
+    "kind": "Point",
     "specialStatus": undefined,
     "body": {
       "id": 1396,
@@ -220,7 +220,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   },
   {
     "specialStatus": undefined,
-    "kind": "regimens",
+    "kind": "Regimen",
     "body": {
       "id": 11,
       "name": "Test Regimen 456",
@@ -238,7 +238,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
     "uuid": "regimens.11.46"
   },
   {
-    "kind": "sequences",
+    "kind": "Sequence",
     "specialStatus": undefined,
     "body": {
       "id": 23,
@@ -279,7 +279,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   },
   {
     "specialStatus": undefined,
-    "kind": "tools",
+    "kind": "Tool",
     "body": {
       "id": 14,
       "name": "Trench Digging Tool",
@@ -289,7 +289,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [
   },
   {
     "specialStatus": undefined,
-    "kind": "tools",
+    "kind": "Tool",
     "body": {
       "id": 15,
       "name": "Berry Picking Tool",

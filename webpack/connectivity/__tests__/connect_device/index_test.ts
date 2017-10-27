@@ -103,9 +103,9 @@ describe("initLog", () => {
   it("creates a Redux action (new log)", () => {
     const log = fakeLog("error");
     const action = initLog(log);
-    expect(action.payload.kind).toBe("logs");
+    expect(action.payload.kind).toBe("Log");
     // expect(action.payload.specialStatus).toBe(undefined);
-    if (action.payload.kind === "logs") {
+    if (action.payload.kind === "Log") {
       expect(action.payload.body.message).toBe(log.message);
     } else {
       fail();

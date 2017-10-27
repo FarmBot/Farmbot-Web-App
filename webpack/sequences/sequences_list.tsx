@@ -64,7 +64,7 @@ export class SequencesList extends
 
   emptySequence = (): TaggedSequence => {
     return {
-      kind: "sequences",
+      kind: "Sequence",
       uuid: "REDUCER_MUST_CHANGE_THIS",
       specialStatus: undefined,
       body: {
@@ -84,7 +84,7 @@ export class SequencesList extends
     return (
       <div className="sequence-list-panel">
         <h3>
-          <i>{t("Sequences")}</i>
+          <i>{t("Sequence")}</i>
         </h3>
         <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
         <button

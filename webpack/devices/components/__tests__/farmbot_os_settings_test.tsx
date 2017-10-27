@@ -9,7 +9,7 @@ import { AuthState } from "../../../auth/interfaces";
 describe("<FarmbotOsSettings/>", () => {
   it("renders settings", () => {
     const osSettings = mount(<FarmbotOsSettings
-      account={fakeResource("device", { id: 0, name: "" })}
+      account={fakeResource("Device", { id: 0, name: "" })}
       dispatch={jest.fn()}
       bot={bot}
       auth={fakeState().auth as AuthState} />);

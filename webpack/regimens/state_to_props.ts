@@ -69,7 +69,7 @@ function generateCalendar(regimen: TaggedRegimen,
 
 const createRows = (index: ResourceIndex, dispatch: Function, regimen: TaggedRegimen) =>
   (item: RegimenItem): RegimenItemCalendarRow => {
-    const uuid = findId(index, "sequences", item.sequence_id);
+    const uuid = findId(index, "Sequence", item.sequence_id);
     const sequence = findSequence(index, uuid);
     const { time_offset } = item;
     const d = duration(time_offset);

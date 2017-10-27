@@ -27,7 +27,7 @@ describe("<AddRegimen/>", () => {
     const action = dispatch.mock.calls[0][0];
     expect(action.type).toEqual("INIT_RESOURCE");
     expect(action.payload).toBeTruthy();
-    expect(action.payload.kind).toEqual("regimens");
+    expect(action.payload.kind).toEqual("Regimen");
   });
 
   it("has children (or defaults)");

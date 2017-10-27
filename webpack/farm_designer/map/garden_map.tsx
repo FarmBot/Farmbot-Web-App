@@ -141,7 +141,7 @@ export class GardenMap extends
         error(t("Outside of planting area. Plants must be placed within the grid."));
       } else {
         const p: TaggedPlantPointer = {
-          kind: "points",
+          kind: "Point",
           uuid: "--never",
           specialStatus: undefined,
           body: Plant({

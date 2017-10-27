@@ -6,7 +6,7 @@ import { TaggedFarmEvent } from "../resources/tagged_resources";
 
 const STUB_RESOURCE: TaggedFarmEvent = {
   "uuid": "farm_events.0.435",
-  "kind": "farm_events",
+  "kind": "FarmEvent",
   "specialStatus": undefined,
   "body": {
     "id": 217,
@@ -31,7 +31,7 @@ test("buildResourceIndex - add a FarmEvent", () => {
   const db = buildResourceIndex([STUB_RESOURCE]);
   const fe = db.index.references[db.index.byKind.farm_events[0]];
   expect(fe).toBeTruthy();
-  if (fe && fe.kind === "farm_events") {
+  if (fe && fe.kind === "FarmEvent") {
     const { body } = fe;
     expect(body).toEqual(STUB_RESOURCE.body);
   } else {

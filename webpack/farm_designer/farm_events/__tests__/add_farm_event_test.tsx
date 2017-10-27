@@ -19,7 +19,7 @@ describe("<AddFarmEvent />", () => {
     const sequence = fakeSequence();
     sequence.body.id = 1;
     const farmEvent = fakeFarmEvent("Sequence", 1);
-    farmEvent.uuid = "farm_events";
+    farmEvent.uuid = "FarmEvent";
     return {
       deviceTimezone: "",
       dispatch: jest.fn(),
@@ -39,7 +39,7 @@ describe("<AddFarmEvent />", () => {
 
   it("renders", () => {
     const wrapper = mount(<AddFarmEvent {...fakeProps() } />);
-    wrapper.setState({ uuid: "farm_events" });
+    wrapper.setState({ uuid: "FarmEvent" });
     ["Add Farm Event", "Sequence or Regimen", "fake"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
