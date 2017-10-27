@@ -33,8 +33,8 @@ export class ToolSlotPoint extends
     return <g id={"toolslot-" + id}>
       <defs>
         <radialGradient id="SeedBinGradient">
-          <stop offset="5%" stopColor="rgba(0, 0, 0, 0.3)" />
-          <stop offset="95%" stopColor="rgba(0, 0, 0, 0.1)" />
+          <stop offset="5%" stopColor="rgb(0, 0, 0)" stopOpacity={0.3} />
+          <stop offset="95%" stopColor="rgb(0, 0, 0)" stopOpacity={0.1} />
         </radialGradient>
         <pattern id="SeedTrayPattern"
           x={0} y={0} width={0.25} height={0.25}>

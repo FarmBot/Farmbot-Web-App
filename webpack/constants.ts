@@ -360,6 +360,11 @@ export namespace Content {
     `Note: Times displayed according to local browser time, which
     is currently different from your device timezone setting (on the
     Device page).`.replace(/\s+/g, " ");
+
+  export const FIRST_PARTY_WARNING =
+    `Are you sure you want to delete this first party farmware?
+    Doing so will limit the functionality of your FarmBot and
+    may cause unexpected behavior.`.replace(/\s+/g, " ");
 }
 
 export enum Actions {

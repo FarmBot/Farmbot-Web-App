@@ -8,7 +8,6 @@ import { mapStateToProps } from "./state_to_props";
 import { history } from "../history";
 import { Plants } from "./plants/plant_inventory";
 import { GardenMapLegend } from "./map/garden_map_legend";
-import { isMobile } from "../util";
 import { Session, safeBooleanSettting } from "../session";
 import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined } from "lodash";
@@ -82,13 +81,13 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
   }
 
   updateZoomLevel = (zoomIncrement: number) => () => {
-    const payload = this.getZoomLevel() + zoomIncrement;
+    const payload = Math.round((this.getZoomLevel() + zoomIncrement) * 10) / 10;
     this.setState({ zoomLevel: payload });
     Session.setNum(NumericSetting.zoomLevel, payload);
   }
 
   childComponent(props: Props) {
-    const fallback = isMobile() ? undefined : React.createElement(Plants, props);
+    const fallback = React.createElement(Plants, props);
     return this.props.children || fallback;
   }
 
@@ -174,7 +173,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           botSize={botSize}
           stopAtHome={stopAtHome}
           hoveredPlant={this.props.hoveredPlant}
-          zoomLvl={Math.round(zoomLevel * 10) / 10}
+          zoomLvl={zoomLevel}
           botOriginQuadrant={botOriginQuadrant}
           gridSize={getGridSize(botSize)}
           gridOffset={gridOffset} />

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DataXferObj, ActiveMiddleProps } from "./interfaces";
+import { ActiveMiddleProps } from "./interfaces";
 import { execSequence } from "../devices/actions";
 import { editCurrentSequence } from "./actions";
 import { splice, move } from "./step_tiles/index";
@@ -8,7 +8,6 @@ import { t } from "i18next";
 import { BlurableInput, Row, Col, SaveBtn } from "../ui";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
-import { pushStep } from "./actions";
 import { copySequence } from "./actions";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { save, edit, destroy } from "../api/crud";
@@ -20,20 +19,22 @@ import { AllSteps } from "./all_steps";
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
     (index: number, key: string) => {
-      dispatch1(function (dispatch2: Function, getState: GetState) {
-        const dataXferObj = dispatch2(stepGet(key));
-        const step = dataXferObj.value;
-        switch (dataXferObj.intent) {
-          case "step_splice":
-            return dispatch2(splice({ step, sequence, index }));
-          case "step_move":
-            const action =
-              move({ step, sequence, to: index, from: dataXferObj.draggerId });
-            return dispatch2(action);
-          default:
-            throw new Error("Got unexpected data transfer object.");
-        }
-      });
+      if (key.length > 0) {
+        dispatch1(function (dispatch2: Function, getState: GetState) {
+          const dataXferObj = dispatch2(stepGet(key));
+          const step = dataXferObj.value;
+          switch (dataXferObj.intent) {
+            case "step_splice":
+              return dispatch2(splice({ step, sequence, index }));
+            case "step_move":
+              const action =
+                move({ step, sequence, to: index, from: dataXferObj.draggerId });
+              return dispatch2(action);
+            default:
+              throw new Error("Got unexpected data transfer object.");
+          }
+        });
+      }
     };
 
 const copy = function (dispatch: Function, sequence: TaggedSequence) {
@@ -45,10 +46,6 @@ export class SequenceEditorMiddleActive extends
   React.Component<ActiveMiddleProps, {}> {
   render() {
     const { dispatch, sequence } = this.props;
-    const fixThisToo = function (key: string) {
-      const xfer = dispatch(stepGet(key)) as DataXferObj;
-      pushStep(xfer.value, dispatch, sequence);
-    };
 
     return (
       <div className="sequence-editor-content">
@@ -90,7 +87,7 @@ export class SequenceEditorMiddleActive extends
           <Row>
             <Col xs={12}>
               <DropArea isLocked={true}
-                callback={fixThisToo}>
+                callback={(key) => onDrop(dispatch, sequence)(Infinity, key)}>
                 {t("DRAG COMMAND HERE")}
               </DropArea>
             </Col>

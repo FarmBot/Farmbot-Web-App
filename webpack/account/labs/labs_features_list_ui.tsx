@@ -16,7 +16,10 @@ export function LabsFeaturesList(props: LabsFeaturesListProps) {
         value={p.description}
         toggleValue={displayValue ? 1 : 0}
         valuePlaceholder=""
-        onClick={() => props.onToggle(p)}
+        onClick={() => {
+          props.onToggle(p);
+          p.callback && p.callback();
+        }}
         disabled={false} />;
     })}
   </div>;

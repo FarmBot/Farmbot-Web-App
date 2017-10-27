@@ -5,7 +5,7 @@ import { EStopButton } from "../devices/components/e_stop_btn";
 import { Session } from "../session";
 import { Row, Col } from "../ui";
 import { history } from "../history";
-import { updatePageInfo, isMobile } from "../util";
+import { updatePageInfo } from "../util";
 import { SyncButton } from "./sync_button";
 import { NavLinks } from "./nav_links";
 import { TickerList } from "./ticker_list";
@@ -36,7 +36,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   render() {
     const hasName = this.props.user && this.props.user.body.name;
 
-    const firstName = hasName && !isMobile() ?
+    const firstName = hasName ?
       `${hasName.split(" ")[0]} ▾` : `${t("Menu")} ▾`;
 
     const menuIconClassNames: string[] = [

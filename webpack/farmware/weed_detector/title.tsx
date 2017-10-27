@@ -17,6 +17,7 @@ interface Props {
   title: string;
   help: string;
   env?: Partial<WD_ENV>;
+  docs?: string;
 }
 
 export function TitleBar({
@@ -27,10 +28,11 @@ export function TitleBar({
   onCalibrate,
   env,
   title,
-  help
+  help,
+  docs
 }: Props) {
   return (
-    <WidgetHeader helpText={help} title={title}>
+    <WidgetHeader helpText={help} title={title} docPage={docs}>
       <button
         hidden={!onSave}
         onClick={onSave}
