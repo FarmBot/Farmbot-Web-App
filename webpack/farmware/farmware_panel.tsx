@@ -2,9 +2,11 @@ import * as React from "react";
 import * as _ from "lodash";
 import { t } from "i18next";
 import { getDevice } from "../device";
-import { FWProps, FWState } from "./interfaces";
+import {
+  FWProps, FWState, FarmwareConfigMenuProps
+} from "./interfaces";
 import { MustBeOnline } from "../devices/must_be_online";
-import { ToolTips } from "../constants";
+import { ToolTips, Content } from "../constants";
 import {
   Widget,
   WidgetHeader,
@@ -16,16 +18,30 @@ import {
 import { betterCompact } from "../util";
 import { FBSelect } from "../ui/new_fb_select";
 import { Popover, Position } from "@blueprintjs/core";
+import { getFirstPartyFarmwareList } from "./actions";
 
-export function FarmwareConfigMenu() {
+export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
+  const listBtnColor = props.show ? "green" : "red";
   return <div>
+    <label>
+      {t("First-party Farmware")}
+    </label>
     <fieldset>
       <label>
-        {t("Install first-party farmwares")}
+        {t("Reinstall")}
       </label>
       <button
         className="fb-button gray fa fa-download"
-        onClick={getDevice().installFirstPartyFarmware} />
+        onClick={getDevice().installFirstPartyFarmware}
+        disabled={props.firstPartyFwsInstalled} />
+    </fieldset>
+    <fieldset>
+      <label>
+        {t("Show in list")}
+      </label>
+      <button
+        className={"fb-button fb-toggle-button " + listBtnColor}
+        onClick={props.toggle} />
     </fieldset>
   </div>;
 }
@@ -33,7 +49,11 @@ export function FarmwareConfigMenu() {
 export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   constructor() {
     super();
-    this.state = {};
+    this.state = { showFirstParty: false };
+  }
+
+  componentDidMount() {
+    getFirstPartyFarmwareList(this.setFirstPartyList);
   }
 
   /** Keep null checking DRY for this.state.selectedFarmware */
@@ -51,9 +71,15 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
 
   remove = () => {
     this
-      .ifFarmwareSelected(label => getDevice()
-        .removeFarmware(label)
-        .then(() => this.setState({ selectedFarmware: undefined })));
+      .ifFarmwareSelected(label => {
+        const { firstPartyList } = this.state;
+        const isFirstParty = firstPartyList && firstPartyList.includes(label);
+        if (!isFirstParty || confirm(Content.FIRST_PARTY_WARNING)) {
+          getDevice()
+            .removeFarmware(label)
+            .then(() => this.setState({ selectedFarmware: undefined }));
+        }
+      });
   }
 
   run = () => {
@@ -73,11 +99,31 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
     }
   }
 
+  setFirstPartyList = (firstPartyList: string[]) => {
+    this.setState({ firstPartyList });
+  }
+
+  toggleFirstPartyDisplay = () => {
+    this.setState({ showFirstParty: !this.state.showFirstParty });
+  }
+
+  firstPartyFarmwaresPresent = (firstPartyList: string[] | undefined) => {
+    const fws = this.props.farmwares;
+    const farmwareList = betterCompact(Object.keys(fws)
+      .map(x => fws[x]).map(x => x ? x.name : ""));
+    const allPresent = _.every(
+      firstPartyList, (value) => farmwareList.includes(value));
+    return allPresent;
+  }
+
   fwList = () => {
     const { farmwares } = this.props;
+    const { firstPartyList, showFirstParty } = this.state;
     const choices = betterCompact(Object
       .keys(farmwares)
       .map(x => farmwares[x]))
+      .filter(x => (firstPartyList && !showFirstParty)
+        ? !firstPartyList.includes(x.name) : x)
       .map((fw, i) => {
         const hasVers = (fw.meta && _.isString(fw.meta.version));
         // Guard against legacy Farmwares. Can be removed in a month.
@@ -116,7 +162,11 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
           helpText={ToolTips.FARMWARE}>
           <Popover position={Position.BOTTOM_RIGHT}>
             <i className="fa fa-gear" />
-            <FarmwareConfigMenu />
+            <FarmwareConfigMenu
+              show={this.state.showFirstParty}
+              toggle={this.toggleFirstPartyDisplay}
+              firstPartyFwsInstalled={
+                this.firstPartyFarmwaresPresent(this.state.firstPartyList)} />
           </Popover>
         </WidgetHeader>
         <WidgetBody>
