@@ -7,9 +7,9 @@ export const links = [
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
   { name: "Controls", icon: "keyboard-o", slug: "controls" },
   { name: "Device", icon: "cog", slug: "device" },
-  { name: "Sequence", icon: "server", slug: "sequences" },
-  { name: "Regimen", icon: "calendar-check-o", slug: "regimens" },
-  { name: "Tool", icon: "wrench", slug: "tools" },
+  { name: "Sequences", icon: "server", slug: "sequences" },
+  { name: "Regimens", icon: "calendar-check-o", slug: "regimens" },
+  { name: "Tools", icon: "wrench", slug: "tools" },
   { name: "Farmware", icon: "crosshairs", slug: "farmware" }
 ];
 
