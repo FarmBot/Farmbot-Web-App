@@ -171,7 +171,7 @@ const tr9: TaggedPoint = {
       "created_by": "plant-detection"
     },
     "name": "untitled",
-    "pointer_type": "Point",
+    "pointer_type": "GenericPointer",
     "radius": 6,
     "x": 1245,
     "y": 637,
@@ -192,7 +192,7 @@ const tr10: TaggedPoint = {
       "created_by": "plant-detection"
     },
     "name": "untitled",
-    "pointer_type": "Point",
+    "pointer_type": "GenericPointer",
     "radius": 10,
     "x": 490,
     "y": 421,
@@ -212,7 +212,7 @@ const tr11: TaggedPoint = {
 
     },
     "name": "Slot One.",
-    "pointer_type": "Tool",
+    "pointer_type": "ToolSlot",
     "radius": 25,
     "x": 10,
     "y": 10,
