@@ -45,7 +45,7 @@ describe("<InputDefault/>", () => {
         },
         "kind": "sequence"
       },
-      "uuid": "sequences.74.145"
+      "uuid": "Sequence.74.145"
     };
     const c = mount(<Wrapper>
       <InputDefault

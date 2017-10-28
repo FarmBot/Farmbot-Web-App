@@ -22,7 +22,7 @@ describe("refresh()", () => {
   // 1. Enters the `catch` block.
   it("rejects malformed API data", (done) => {
     const device1: TaggedDevice = {
-      "uuid": "device.6.1",
+      "uuid": "Device.6.1",
       "kind": "Device",
       "specialStatus": undefined,
       "body": {

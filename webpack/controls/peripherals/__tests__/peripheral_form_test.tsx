@@ -7,7 +7,7 @@ describe("<PeripheralForm/>", function () {
   const dispatch = jest.fn();
   const peripherals: TaggedPeripheral[] = [
     {
-      uuid: "peripherals.2.2",
+      uuid: "Peripheral.2.2",
       specialStatus: undefined,
       kind: "Peripheral",
       body: {
@@ -17,7 +17,7 @@ describe("<PeripheralForm/>", function () {
       }
     },
     {
-      uuid: "peripherals.1.1",
+      uuid: "Peripheral.1.1",
       specialStatus: undefined,
       kind: "Peripheral",
       body: {

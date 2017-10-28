@@ -40,11 +40,11 @@ describe("<App />: Controls Pop-Up", () => {
   controlsPopUp("designer", true);
   controlsPopUp("designer/plants", true);
   controlsPopUp("controls", false);
-  controlsPopUp("Device", true);
-  controlsPopUp("Sequence", true);
+  controlsPopUp("device", true);
+  controlsPopUp("sequences", true);
   controlsPopUp("sequences/for_regimens", true);
-  controlsPopUp("Regimen", false);
-  controlsPopUp("Tool", true);
+  controlsPopUp("regimens", false);
+  controlsPopUp("tools", true);
   controlsPopUp("farmware", true);
   controlsPopUp("account", false);
 

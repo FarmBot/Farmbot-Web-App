@@ -17,7 +17,7 @@ export let fakeImages: TaggedImage[] = [
         "z": 164
       }
     },
-    "uuid": "images.9.3"
+    "uuid": "Image.9.3"
   },
   {
     "kind": "Image",
@@ -35,7 +35,7 @@ export let fakeImages: TaggedImage[] = [
         "z": 164
       }
     },
-    "uuid": "images.8.4"
+    "uuid": "Image.8.4"
   },
   {
     "kind": "Image",
@@ -53,6 +53,6 @@ export let fakeImages: TaggedImage[] = [
         "z": 53
       }
     },
-    "uuid": "images.7.5"
+    "uuid": "Image.7.5"
   }
 ];

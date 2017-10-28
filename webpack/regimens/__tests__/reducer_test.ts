@@ -6,8 +6,8 @@ import { defensiveClone } from "../../util";
 
 const STATE: RegimenState = {
   "dailyOffsetMs": 300000,
-  "selectedSequenceUUID": "sequences.71.167",
-  "currentRegimen": "regimens.4.56",
+  "selectedSequenceUUID": "Sequence.71.167",
+  "currentRegimen": "Regimen.4.56",
   "weeks": [
     {
       "days": {
@@ -78,7 +78,7 @@ describe("INIT_RESOURCE", () => {
     state.currentRegimen = undefined;
     const action = {
       type: Actions.INIT_RESOURCE,
-      payload: { uuid: "regimens.4.56", kind: "Regimen" }
+      payload: { uuid: "Regimen.4.56", kind: "Regimen" }
     };
     const nextState = regimensReducer(STATE, action);
     expect(nextState.currentRegimen).toBe(action.payload.uuid);
@@ -91,7 +91,7 @@ describe("SELECT_REGIMEN", () => {
     state.currentRegimen = undefined;
     const action = {
       type: Actions.SELECT_REGIMEN,
-      payload: { uuid: "regimens.4.56", kind: "Regimen" }
+      payload: { uuid: "Regimen.4.56", kind: "Regimen" }
     };
     const nextState = regimensReducer(STATE, action);
     expect(nextState.currentRegimen).toBe(action.payload.uuid);

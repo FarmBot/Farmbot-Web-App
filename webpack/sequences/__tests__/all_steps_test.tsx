@@ -46,7 +46,7 @@ describe("<AllSteps/>", () => {
       },
       "kind": "sequence"
     },
-    "uuid": "sequences.8.52"
+    "uuid": "Sequence.8.52"
   } as TaggedSequence;
 
   maybeTagSteps(TEST_CASE);

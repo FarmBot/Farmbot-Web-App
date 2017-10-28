@@ -82,7 +82,7 @@ const tr4: TaggedResource = {
       "z": 144
     }
   },
-  "uuid": "images.415.3"
+  "uuid": "Image.415.3"
 };
 
 const tr5: TaggedResource = {
@@ -101,7 +101,7 @@ const tr5: TaggedResource = {
       "z": 165
     }
   },
-  "uuid": "images.414.4"
+  "uuid": "Image.414.4"
 };
 
 const tr6: TaggedResource = {
@@ -113,7 +113,7 @@ const tr6: TaggedResource = {
     "mode": 0,
     "label": "LED"
   },
-  "uuid": "peripherals.11.5"
+  "uuid": "Peripheral.11.5"
 };
 
 const tr7: TaggedPoint = {
@@ -135,7 +135,7 @@ const tr7: TaggedPoint = {
     "z": 0,
     "openfarm_slug": "radish"
   },
-  "uuid": "points.1392.6"
+  "uuid": "Point.1392.6"
 };
 
 const tr8: TaggedPoint = {
@@ -156,7 +156,7 @@ const tr8: TaggedPoint = {
     "z": 0,
     "openfarm_slug": "garlic"
   },
-  "uuid": "points.1393.7"
+  "uuid": "Point.1393.7"
 };
 
 const tr9: TaggedPoint = {
@@ -177,7 +177,7 @@ const tr9: TaggedPoint = {
     "y": 637,
     "z": 5
   },
-  "uuid": "points.1394.8"
+  "uuid": "Point.1394.8"
 };
 
 const tr10: TaggedPoint = {
@@ -198,7 +198,7 @@ const tr10: TaggedPoint = {
     "y": 421,
     "z": 5
   },
-  "uuid": "points.1395.9"
+  "uuid": "Point.1395.9"
 };
 
 const tr11: TaggedPoint = {
@@ -219,7 +219,7 @@ const tr11: TaggedPoint = {
     "z": 10,
     "tool_id": 14
   },
-  "uuid": "points.1396.10"
+  "uuid": "Point.1396.10"
 };
 
 const tr12: TaggedResource = {
@@ -239,7 +239,7 @@ const tr12: TaggedResource = {
       }
     ]
   },
-  "uuid": "regimens.11.46"
+  "uuid": "Regimen.11.46"
 };
 
 const tr13: TaggedResource = {
