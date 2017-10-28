@@ -32,7 +32,7 @@ export type ResourceName =
   | "User"
   | "WebcamFeed"
   | "Point";
-console.log("RICK REMOVE GenericPointer PlantPointer ToolSlotPointer before PR");
+
 export interface TaggedResourceBase {
   kind: ResourceName;
   /** Unique identifier and index key.
