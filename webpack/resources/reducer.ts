@@ -53,18 +53,18 @@ export function emptyState(): RestResources {
     index: {
       all: [],
       byKind: {
-        webcam_feed: [],
-        device: [],
-        farm_events: [],
-        images: [],
-        logs: [],
-        peripherals: [],
-        crops: [],
-        points: [],
-        regimens: [],
-        sequences: [],
-        tools: [],
-        users: []
+        WebcamFeed: [],
+        Device: [],
+        FarmEvent: [],
+        Image: [],
+        Log: [],
+        Peripheral: [],
+        Crop: [],
+        Point: [],
+        Regimen: [],
+        Sequence: [],
+        Tool: [],
+        User: []
       },
       byKindAndId: {},
       references: {}
@@ -105,17 +105,17 @@ export let resourceReducer = generateReducer
     if (resource
       && resource.body) {
       switch (resource.kind) {
-        case "crops":
-        case "device":
-        case "farm_events":
-        case "logs":
-        case "peripherals":
-        case "points":
-        case "regimens":
-        case "sequences":
-        case "tools":
-        case "users":
-        case "webcam_feed":
+        case "Crop":
+        case "Device":
+        case "FarmEvent":
+        case "Log":
+        case "Peripheral":
+        case "Point":
+        case "Regimen":
+        case "Sequence":
+        case "Tool":
+        case "User":
+        case "WebcamFeed":
           reindexResource(s.index, resource);
           dontTouchThis(resource);
           s.index.references[resource.uuid] = resource;
@@ -131,18 +131,18 @@ export let resourceReducer = generateReducer
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
     const resource = payload;
     switch (resource.kind) {
-      case "crops":
-      case "device":
-      case "farm_events":
-      case "logs":
-      case "peripherals":
-      case "points":
-      case "regimens":
-      case "sequences":
-      case "tools":
-      case "users":
-      case "webcam_feed":
-      case "images":
+      case "Crop":
+      case "Device":
+      case "FarmEvent":
+      case "Log":
+      case "Peripheral":
+      case "Point":
+      case "Regimen":
+      case "Sequence":
+      case "Tool":
+      case "User":
+      case "WebcamFeed":
+      case "Image":
         removeFromIndex(s.index, resource);
         break;
       default:
@@ -196,7 +196,7 @@ export let resourceReducer = generateReducer
     const tr = payload;
     const uuid = tr.uuid;
     reindexResource(s.index, tr);
-    if (tr.kind === "logs") {
+    if (tr.kind === "Log") {
       // Since logs don't come from the API all the time, they are the only
       // resource (right now) that can have an id of `undefined` and not dirty.
       findByUuid(s.index, uuid).specialStatus = undefined;

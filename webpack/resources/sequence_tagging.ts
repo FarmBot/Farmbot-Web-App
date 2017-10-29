@@ -71,5 +71,5 @@ export let tagAllSteps = (i: SequenceBodyItem[]) => i.map(setStepTag);
  * Used by Redux within the `resource` reducer. Given a TaggedResource,
  * idempotently adds `UUID` property to all steps in all sequences. */
 export function maybeTagSteps(x: TaggedResource) {
-  if (x && (x.kind === "sequences")) { tagAllSteps(x.body.body || []); }
+  if (x && (x.kind === "Sequence")) { tagAllSteps(x.body.body || []); }
 }

@@ -34,7 +34,7 @@ describe("<InputDefault/>", () => {
 
     const tr: TaggedSequence = {
       "specialStatus": undefined,
-      "kind": "sequences",
+      "kind": "Sequence",
       "body": {
         "id": 74,
         "name": "Goto 0, 0, 0",
@@ -45,7 +45,7 @@ describe("<InputDefault/>", () => {
         },
         "kind": "sequence"
       },
-      "uuid": "sequences.74.145"
+      "uuid": "Sequence.74.145"
     };
     const c = mount(<Wrapper>
       <InputDefault
@@ -62,7 +62,7 @@ describe("<InputDefault/>", () => {
     const action = dispatcher.mock.calls[0][0];
     const { payload } = action;
     expect(action.type).toEqual("OVERWRITE_RESOURCE");
-    expect(payload.uuid).toContain("sequences");
+    expect(payload.uuid).toContain("Sequence");
     expect(payload.update.name).toEqual(tr.body.name);
   });
 });

@@ -12,7 +12,7 @@ export let resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
 
 export function fakeSequence(): TaggedSequence {
-  return fakeResource("sequences", {
+  return fakeResource("Sequence", {
     args: { version: 4 },
     id: 12,
     color: "red",
@@ -23,7 +23,7 @@ export function fakeSequence(): TaggedSequence {
 }
 
 export function fakeRegimen(): TaggedRegimen {
-  return fakeResource("regimens", {
+  return fakeResource("Regimen", {
     name: "Foo",
     color: "red",
     regimen_items: []
@@ -32,7 +32,7 @@ export function fakeRegimen(): TaggedRegimen {
 
 export function fakeFarmEvent(exe_type: ExecutableType,
   exe_id: number): TaggedFarmEvent {
-  return fakeResource("farm_events", {
+  return fakeResource("FarmEvent", {
     "id": 21,
     "start_time": "2017-05-22T05:00:00.000Z",
     "end_time": "2017-05-30T05:00:00.000Z",
@@ -45,7 +45,7 @@ export function fakeFarmEvent(exe_type: ExecutableType,
 }
 
 export function fakeImage(): TaggedImage {
-  return fakeResource("images", {
+  return fakeResource("Image", {
     id: idCounter++,
     device_id: 46,
     attachment_processed_at: undefined,
@@ -57,13 +57,13 @@ export function fakeImage(): TaggedImage {
 }
 
 export function fakeTool(): TaggedTool {
-  return fakeResource("tools", {
+  return fakeResource("Tool", {
     name: "Foo"
   });
 }
 
 export function fakeUser(): TaggedUser {
-  return fakeResource("users", {
+  return fakeResource("User", {
     id: idCounter++,
     device_id: 789,
     name: "Fake User 123",
@@ -74,7 +74,7 @@ export function fakeUser(): TaggedUser {
 }
 
 export function fakeToolSlot(): TaggedToolSlotPointer {
-  return fakeResource("points", {
+  return fakeResource("Point", {
     name: "ToolSlot 1",
     pointer_type: "ToolSlot",
     tool_id: 1,
@@ -87,7 +87,7 @@ export function fakeToolSlot(): TaggedToolSlotPointer {
 }
 
 export function fakePlant(): TaggedPlantPointer {
-  return fakeResource("points", {
+  return fakeResource("Point", {
     id: idCounter++,
     name: "Strawberry Plant 1",
     pointer_type: "Plant",
@@ -101,7 +101,7 @@ export function fakePlant(): TaggedPlantPointer {
 }
 
 export function fakePoint(): TaggedGenericPointer {
-  return fakeResource("points", {
+  return fakeResource("Point", {
     id: idCounter++,
     name: "Point 1",
     pointer_type: "GenericPointer",
@@ -115,7 +115,7 @@ export function fakePoint(): TaggedGenericPointer {
 
 export function fakeWebcamFeed(): TaggedWebcamFeed {
   const id = idCounter++;
-  return fakeResource("webcam_feed", {
+  return fakeResource("WebcamFeed", {
     id,
     created_at: "---",
     updated_at: "---",
@@ -125,7 +125,7 @@ export function fakeWebcamFeed(): TaggedWebcamFeed {
 }
 
 export function fakePeripheral(): TaggedPeripheral {
-  return fakeResource("peripherals", {
+  return fakeResource("Peripheral", {
     id: idCounter++,
     label: "Fake Pin",
     pin: 1

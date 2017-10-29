@@ -15,7 +15,7 @@ type P = {
 };
 
 const EMPTY_FEED: TaggedWebcamFeed = {
-  kind: "webcam_feed",
+  kind: "WebcamFeed",
   specialStatus: SpecialStatus.DIRTY,
   uuid: "",
   body: {

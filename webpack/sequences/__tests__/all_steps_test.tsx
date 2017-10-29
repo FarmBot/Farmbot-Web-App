@@ -7,7 +7,7 @@ import { maybeTagSteps } from "../../resources/sequence_tagging";
 
 describe("<AllSteps/>", () => {
   const TEST_CASE = {
-    "kind": "sequences",
+    "kind": "Sequence",
     "specialStatus": undefined,
     "body": {
       "id": 8,
@@ -46,7 +46,7 @@ describe("<AllSteps/>", () => {
       },
       "kind": "sequence"
     },
-    "uuid": "sequences.8.52"
+    "uuid": "Sequence.8.52"
   } as TaggedSequence;
 
   maybeTagSteps(TEST_CASE);

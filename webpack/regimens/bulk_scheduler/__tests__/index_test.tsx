@@ -68,9 +68,9 @@ describe("<BulkSchedulerWidget />", () => {
     p.dispatch = jest.fn();
     const wrapper = shallow(<BulkSchedulerWidget {...p } />);
     const sequenceInput = wrapper.find("FBSelect").first();
-    sequenceInput.simulate("change", { value: "sequences" });
+    sequenceInput.simulate("change", { value: "Sequence" });
     expect(p.dispatch).toHaveBeenCalledWith({
-      payload: "sequences",
+      payload: "Sequence",
       type: Actions.SET_SEQUENCE
     });
   });

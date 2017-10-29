@@ -27,7 +27,7 @@ describe("<Sequences/>", () => {
 
   it("renders", () => {
     const wrapper = shallow(<Sequences {...fakeProps() } />);
-    expect(wrapper.html()).toContain("Sequences");
+    expect(wrapper.html()).toContain("Sequence");
     expect(wrapper.html()).toContain("Sequence Editor");
     expect(wrapper.html()).toContain(ToolTips.SEQUENCE_EDITOR);
     expect(wrapper.html()).toContain("Commands");

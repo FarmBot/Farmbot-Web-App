@@ -16,7 +16,7 @@ describe("<RegimensList />", () => {
   }
   it("renders", () => {
     const wrapper = mount(<RegimensList {...fakeProps() } />);
-    expect(wrapper.text()).toContain("Regimens");
+    expect(wrapper.text()).toContain("Regimen");
     expect(wrapper.text()).toContain("Fake Regimen Fake Regimen");
   });
 

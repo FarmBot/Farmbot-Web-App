@@ -68,14 +68,14 @@ describe.skip("<App />: Loading", () => {
 
   it("MUST_LOADs partially loaded", () => {
     const p = fakeProps();
-    p.loaded = ["sequences"];
+    p.loaded = ["Sequence"];
     const wrapper = mount(<App {...p } />);
     expect(wrapper.html()).toContain("spinner");
   });
 
   it("MUST_LOADs loaded", () => {
     const p = fakeProps();
-    p.loaded = ["sequences", "regimens", "farm_events", "points"];
+    p.loaded = ["Sequence", "Regimen", "FarmEvent", "Point"];
     const wrapper = mount(<App {...p } />);
     expect(wrapper.html()).not.toContain("spinner");
   });

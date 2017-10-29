@@ -164,17 +164,17 @@ export function saveAll(input: TaggedResource[],
 
 export function urlFor(tag: ResourceName) {
   const OPTIONS: Partial<Record<ResourceName, string>> = {
-    sequences: API.current.sequencesPath,
-    tools: API.current.toolsPath,
-    farm_events: API.current.farmEventsPath,
-    regimens: API.current.regimensPath,
-    peripherals: API.current.peripheralsPath,
-    points: API.current.pointsPath,
-    users: API.current.usersPath,
-    device: API.current.devicePath,
-    images: API.current.imagesPath,
-    logs: API.current.logsPath,
-    webcam_feed: API.current.webcamFeedPath
+    Sequence: API.current.sequencesPath,
+    Tool: API.current.toolsPath,
+    FarmEvent: API.current.farmEventsPath,
+    Regimen: API.current.regimensPath,
+    Peripheral: API.current.peripheralsPath,
+    Point: API.current.pointsPath,
+    User: API.current.usersPath,
+    Device: API.current.devicePath,
+    Image: API.current.imagesPath,
+    Log: API.current.logsPath,
+    WebcamFeed: API.current.webcamFeedPath
   };
   const url = OPTIONS[tag];
   if (url) {
@@ -217,11 +217,11 @@ function updateViaAjax(index: ResourceIndex,
 }
 
 const MUST_CONFIRM_LIST: ResourceName[] = [
-  "farm_events",
-  "points",
-  "sequences",
-  "regimens",
-  "images"
+  "FarmEvent",
+  "Point",
+  "Sequence",
+  "Regimen",
+  "Image"
 ];
 
 const confirmationChecker = (resource: TaggedResource, force = false) =>

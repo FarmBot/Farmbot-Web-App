@@ -10,7 +10,7 @@ export let user: User = {
 };
 
 export let taggedUser: TaggedUser = {
-  kind: "users",
+  kind: "User",
   uuid: "1234-5678",
   specialStatus: undefined,
   body: {

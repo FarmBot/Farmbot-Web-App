@@ -45,10 +45,10 @@ export class AddFarmEvent
   componentDidMount() {
     if (this.executable) {
       const executable_type: ExecutableType =
-        (this.executable.kind === "sequences") ? "Sequence" : "Regimen";
+        (this.executable.kind === "Sequence") ? "Sequence" : "Regimen";
       const executable_id = this.executable.body.id || 1;
       const action = init({
-        kind: "farm_events",
+        kind: "FarmEvent",
         specialStatus: SpecialStatus.DIRTY,
         uuid: "---",
         body: {
