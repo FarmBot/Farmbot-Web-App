@@ -1,25 +1,33 @@
 import { t } from "i18next";
 import { error } from "farmbot-toastr";
-import {
-  METHODS,
-  notifyBotOfChanges,
-  METHOD_MAP,
-  SafeError,
-  isSafeError
-} from "./interceptor_support";
 import { API } from "./api/index";
 import { AuthState } from "./auth/interfaces";
 import * as _ from "lodash";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Content } from "./constants";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";
+import { box } from "boxed_value";
+import { UnsafeError } from "./interfaces";
+
+/** The input of an axios error interceptor is an "any" type.
+ * Sometimes it will be a real Axios error, other times it will not be.
+ */
+export interface SafeError {
+  response: {
+    status: number;
+  };
+}
+
+/** Prevents hard-to-find NPEs and type errors inside of interceptors. */
+export function isSafeError(x: SafeError | UnsafeError): x is SafeError {
+  return !!(
+    (box(x).kind === "object") &&
+    (box(x.response).kind === "object") &&
+    (box(x.response.status).kind === "number"));
+}
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
-  const method = input.config.method;
   dispatchNetworkUp("user.api");
-  if (method && METHODS.includes(method)) {
-    notifyBotOfChanges(input.config.url, METHOD_MAP[method]);
-  }
   return input;
 }
 
