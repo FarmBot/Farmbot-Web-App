@@ -87,7 +87,7 @@ const afterEach = (state: RestResources, a: ReduxAction<object>) => {
 /** Responsible for all RESTful resources. */
 export let resourceReducer = generateReducer
   <RestResources>(initialState, afterEach)
-  .add<ResourceReadyPayl>(Actions.SAVE_SPECIAL_RESOURCE, (s, { payload }) => {
+  .add<ResourceReadyPayl>(Actions.SAVE_OPENFARM_RESOURCE, (s, { payload }) => {
     const data = arrayWrap(payload);
     const kind = payload.name;
     data.map((body: ResourceReadyPayl) => {
@@ -192,7 +192,7 @@ export let resourceReducer = generateReducer
     dontTouchThis(original);
     return s;
   })
-  .add<TaggedResource>(Actions.INIT_RESOURCE, (s, { payload }) => {
+  .add<TaggedResource>(Actions.INIT_RESOURCE, (s: RestResources, { payload }) => {
     const tr = payload;
     const uuid = tr.uuid;
     reindexResource(s.index, tr);

@@ -1,8 +1,8 @@
 import { GetState } from "../redux/interfaces";
-import { snakeCase } from "lodash";
-import { getUuid } from "../resources/selectors";
+import { maybeDetermineUuid } from "../resources/selectors";
 import { ResourceName } from "../resources/tagged_resources";
-import { initSave } from "../api/crud";
+import { ResourceIndex } from "../resources/interfaces";
+import { createOK } from "../resources/actions";
 
 interface UpdateMqttData {
   status: "UPDATE"
@@ -47,7 +47,7 @@ function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
   if (parts.length !== 5) { return { status: "ERR", reason: Reason.BAD_CHAN }; }
 
   const id = parseInt(parts.pop() || "0", 10);
-  const kind = snakeCase(parts.pop()) as ResourceName | undefined;
+  const kind = parts.pop() as ResourceName | undefined;
   const { body } = JSON.parse((payload).toString()) as { body: {} | null };
 
   if (!kind) { return { status: "ERR", reason: Reason.BAD_KIND }; }
@@ -62,20 +62,22 @@ function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
 
 function handleCreate(data: UpdateMqttData,
   dispatch: Function,
-  getState: GetState) {
+  index: ResourceIndex) {
 
-  dispatch(initSave({
+  console.log("Need to raw create resource here...");
+  dispatch(createOK({
     kind: (data.kind as any),
     uuid: "NO NO NO",
     specialStatus: undefined,
     body: (data.body as any) // I trust you, API...
   }));
+
   console.log("INSERT");
 }
 
 function handleUpdate(data: UpdateMqttData,
   dispatch: Function,
-  getState: GetState,
+  index: ResourceIndex,
   uuid: string) {
 
   console.log("UPDATE");
@@ -102,11 +104,12 @@ export const TempDebug =
         case "SKIP": return handleSkip();
         case "DELETE": return handleDelete(data);
         case "UPDATE":
-          const uuid = getUuid(getState().resources.index, data.kind, data.id);
+          const { index } = getState().resources;
+          const uuid = maybeDetermineUuid(index, data.kind, data.id);
           if (uuid) {
-            return handleUpdate(data, dispatch, getState, uuid);
+            return handleUpdate(data, dispatch, index, uuid);
           } else {
-            return handleCreate(data, dispatch, getState);
+            return handleCreate(data, dispatch, index);
           }
       }
     };

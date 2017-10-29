@@ -31,18 +31,22 @@ import {
 import { CowardlyDictionary, betterCompact, sortResourcesById } from "../util";
 type StringMap = CowardlyDictionary<string>;
 
-export let getUuid = (index: ResourceIndex, kind: ResourceName, id: number) => {
-  const uuid = index.byKindAndId[joinKindAndId(kind, id)];
-  if (uuid) {
-    assertUuid(kind, uuid);
-    return uuid;
-  } else {
-    debugger;
-  }
-};
+/** Similar to findId(), but does not throw exceptions. Do NOT use this method
+ * unless there is actually a reason for the resource to not have a UUID.
+ * `findId()` is more appropriate 99% of the time because it can spot
+ * referential integrity issues. */
+export let maybeDetermineUuid =
+  (index: ResourceIndex, kind: ResourceName, id: number) => {
+    const kni = joinKindAndId(kind, id);
+    const uuid = index.byKindAndId[kni];
+    if (uuid) {
+      assertUuid(kind, uuid);
+      return uuid;
+    }
+  };
 
 export let findId = (index: ResourceIndex, kind: ResourceName, id: number) => {
-  const uuid = getUuid(index, kind, id);
+  const uuid = maybeDetermineUuid(index, kind, id);
   if (uuid) {
     return uuid;
   } else {

@@ -5,7 +5,8 @@ import { TaggedResource } from "./tagged_resources";
 /** HISTORICAL NOTES:
  *   This file is the result of some very subtle bugs relating to dynamic
  *   children in React components on the sequence editor page. Simply put, the
- *   sequence editor needs a way to uniquely identify each step when rendering.
+ *   sequence editor needs a way to uniquely identify each sequence step when
+ *   rendering a sequence.
  *
  * PROBLEM:
  * - React needs a unique `key` prop when iterating over UI list elements.
