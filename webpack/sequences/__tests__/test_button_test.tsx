@@ -6,7 +6,7 @@ import { mount } from "enzyme";
 describe("<TestButton/>", () => {
   function fakeSequence(): TaggedSequence {
     return {
-      "kind": "sequences",
+      "kind": "Sequence",
       "specialStatus": undefined,
       "body": {
         "name": "Goto 0, 0, 0",
@@ -15,7 +15,7 @@ describe("<TestButton/>", () => {
         "args": { "version": 4 },
         "kind": "sequence"
       },
-      "uuid": "sequences.23.47"
+      "uuid": "Sequence.23.47"
     };
   }
 

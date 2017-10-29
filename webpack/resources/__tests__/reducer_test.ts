@@ -6,11 +6,11 @@ import { SpecialStatus, TaggedSequence, TaggedDevice } from "../tagged_resources
 describe("resource reducer", () => {
   it("marks resources as DIRTY when reducing OVERWRITE_RESOURCE", () => {
     const state = fakeState().resources;
-    const uuid = state.index.byKind.sequences[0];
+    const uuid = state.index.byKind.Sequence[0];
     const sequence = state.index.references[uuid] as TaggedSequence;
     expect(sequence).toBeTruthy();
 
-    expect(sequence.kind).toBe("sequences");
+    expect(sequence.kind).toBe("Sequence");
     const next = resourceReducer(state, overwrite(sequence, {
       name: "wow",
       body: []
@@ -21,11 +21,11 @@ describe("resource reducer", () => {
 
   it("marks resources as SAVING when reducing REFRESH_RESOURCE_START", () => {
     const state = fakeState().resources;
-    const uuid = state.index.byKind.device[0];
+    const uuid = state.index.byKind.Device[0];
     const device = state.index.references[uuid] as TaggedSequence;
     expect(device).toBeTruthy();
 
-    expect(device.kind).toBe("device");
+    expect(device.kind).toBe("Device");
     const afterStart = resourceReducer(state, refreshStart(device.uuid));
     const dev2 = afterStart.index.references[uuid] as TaggedDevice;
     expect(dev2.specialStatus).toBe(SpecialStatus.SAVING);

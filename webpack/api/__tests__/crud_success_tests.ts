@@ -25,8 +25,8 @@ describe("successful refresh()", () => {
   // 3. Actually replaces resource.
   it("re-downloads an existing resource", (done) => {
     const device1: TaggedDevice = {
-      "uuid": "device.6.1",
-      "kind": "device",
+      "uuid": "Device.6.1",
+      "kind": "Device",
       "specialStatus": undefined,
       "body": {
         "id": 6,

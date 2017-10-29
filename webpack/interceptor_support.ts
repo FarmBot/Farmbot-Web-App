@@ -1,7 +1,8 @@
-import { ResourceName, DataChangeType, Dictionary } from "farmbot/dist";
+import { DataChangeType, Dictionary } from "farmbot/dist";
 import { getDevice } from "./device";
 import { box } from "boxed_value";
 import * as _ from "lodash";
+import { ResourceName } from "./resources/tagged_resources";
 
 export let METHOD_MAP: Dictionary<DataChangeType> = {
   "post": "add",
@@ -10,9 +11,17 @@ export let METHOD_MAP: Dictionary<DataChangeType> = {
   "delete": "remove"
 };
 export let METHODS = ["post", "put", "patch", "delete"];
+
 export let RESOURCES: ResourceName[] = [
-  "plants", "regimens", "peripherals", "logs", "sequences",
-  "farm_events", "tool_slots", "tools", "points", "device"];
+  "Point",
+  "Regimen",
+  "Peripheral",
+  "Log",
+  "Sequence",
+  "FarmEvent",
+  "Point",
+  "Device"
+];
 
 // PROBLEM:       The bot doesn't know if the user has changed any of the data.
 // GOOD SOLUTION: Create a push notification system on the API.

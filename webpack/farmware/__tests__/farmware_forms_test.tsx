@@ -1,5 +1,6 @@
 const mockDevice = {
-  execScript: jest.fn()
+  execScript: jest.fn(),
+  setUserEnv: jest.fn()
 };
 
 jest.mock("../../device", () => ({
@@ -7,32 +8,10 @@ jest.mock("../../device", () => ({
 }));
 
 import * as React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { FarmwareForms } from "../farmware_forms";
 import { getDevice } from "../../device";
-import { FarmwareManifest, Dictionary } from "farmbot";
-
-function fakeFarmwares(): Dictionary<FarmwareManifest | undefined> {
-  return {
-    "farmware_0": {
-      name: "My Farmware",
-      uuid: "farmware_0",
-      executable: "forth",
-      args: ["my_farmware.fth"],
-      url: "https://",
-      path: "my_farmware",
-      config: [{ name: "config_1", label: "Config 1", value: "4" }],
-      meta: {
-        min_os_version_major: "3",
-        description: "Does things.",
-        language: "forth",
-        version: "0.0.0",
-        author: "me",
-        zip: "https://"
-      }
-    }
-  };
-}
+import { fakeFarmwares } from "../../__test_support__/fake_farmwares";
 
 describe("<FarmwareForms/>", () => {
   it("doesn't render", () => {
@@ -69,5 +48,17 @@ describe("<FarmwareForms/>", () => {
     expect(pairs.kind).toEqual("pair");
     expect(pairs.args)
       .toEqual({ "label": "my_farmware_config_1", "value": "4" });
+  });
+
+  it("sets env", () => {
+    const setUserEnv = getDevice().setUserEnv;
+    const wrapper = shallow(<FarmwareForms
+      farmwares={fakeFarmwares()}
+      user_env={{}} />);
+    const input = wrapper.find("BlurableInput").first();
+    input.simulate("commit", { currentTarget: { value: "changed value" } });
+    expect(setUserEnv).toBeCalledWith({
+      "my_farmware_config_1": "changed value"
+    });
   });
 });

@@ -50,10 +50,10 @@ const LOAD_TIME_FAILURE_MS = 25000;
  * App will crash at load time if they are not pre-loaded.
  */
 const MUST_LOAD: ResourceName[] = [
-  "sequences",
-  "regimens",
-  "farm_events",
-  "points"
+  "Sequence",
+  "Regimen",
+  "FarmEvent",
+  "Point"
 ];
 
 @connect(mapStateToProps)

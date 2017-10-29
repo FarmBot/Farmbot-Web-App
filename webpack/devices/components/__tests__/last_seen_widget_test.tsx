@@ -4,7 +4,7 @@ import { LastSeen } from "../last_seen_widget";
 import { mount } from "enzyme";
 import { SpecialStatus } from "../../../resources/tagged_resources";
 describe("<LastSeen/>", () => {
-  const resource = () => fakeResource("device", {
+  const resource = () => fakeResource("Device", {
     id: 1,
     name: "foo",
     last_saw_api: ""

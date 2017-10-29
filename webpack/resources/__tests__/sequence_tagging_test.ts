@@ -4,7 +4,7 @@ import { maybeTagSteps, getStepTag } from "../sequence_tagging";
 
 describe("maybeTagSteps()", () => {
   const UNTAGGED_SEQUENCE: TaggedSequence = {
-    "kind": "sequences",
+    "kind": "Sequence",
     "uuid": "whatever",
     "specialStatus": undefined,
     "body": {

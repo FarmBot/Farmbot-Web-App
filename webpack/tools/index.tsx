@@ -16,7 +16,7 @@ export class Tools extends React.Component<Props, Partial<ToolsState>> {
   render() {
     const isEditingBays = this.state.editingBays;
     const isEditingTools = this.state.editingTools;
-    return <Page className="tools">
+    return <Page className="Tool">
       <Row>
         <Col sm={7}>
           {!isEditingBays &&

@@ -44,12 +44,12 @@ describe("<SequenceEditorMiddleActive/>", () => {
 
   it("deletes", () => {
     clickButton(2, "Delete");
-    expect(mockDestroy).toHaveBeenCalledWith("sequences.0.16");
+    expect(mockDestroy).toHaveBeenCalledWith("Sequence.0.16");
   });
 
   it("copies", () => {
     clickButton(3, "Copy");
-    expect(mockCopy.mock.calls[0][0].uuid).toEqual("sequences.1.33");
+    expect(mockCopy.mock.calls[0][0].uuid).toEqual("Sequence.1.33");
   });
 
   it("has drag area", () => {
@@ -65,7 +65,7 @@ describe("onDrop()", () => {
 
   it("step_splice", () => {
     const dispatch = jest.fn();
-    onDrop(dispatch, fakeSequence())(0, "");
+    onDrop(dispatch, fakeSequence())(0, "fakeUuid");
     dispatch.mock.calls[0][0](() => {
       return { value: 1, intent: "step_splice", draggerId: 2 };
     });
@@ -76,7 +76,7 @@ describe("onDrop()", () => {
 
   it("step_move", () => {
     const dispatch = jest.fn();
-    onDrop(dispatch, fakeSequence())(3, "");
+    onDrop(dispatch, fakeSequence())(3, "fakeUuid");
     dispatch.mock.calls[0][0](() => {
       return { value: 4, intent: "step_move", draggerId: 5 };
     });
@@ -84,5 +84,11 @@ describe("onDrop()", () => {
     expect(argsList.step).toEqual(4);
     expect(argsList.to).toEqual(3);
     expect(argsList.from).toEqual(5);
+  });
+
+  it("not a valid step object", () => {
+    const dispatch = jest.fn();
+    onDrop(dispatch, fakeSequence())(0, "");
+    expect(dispatch).not.toHaveBeenCalled();
   });
 });

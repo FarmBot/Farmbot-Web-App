@@ -82,14 +82,14 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
   const executableOptions: DropDownItem[] = [];
 
   executableOptions.push({
-    label: t("REGIMENS"),
+    label: t("Regimen"),
     heading: true,
     value: 0,
     headingId: "Regimen"
   });
 
   selectAllRegimens(props.resources.index).map(regimen => {
-    if (regimen.kind === "regimens" && regimen.body.id) {
+    if (regimen.kind === "Regimen" && regimen.body.id) {
       executableOptions.push({
         label: regimen.body.name,
         headingId: "Regimen",
@@ -99,14 +99,14 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
   });
 
   executableOptions.push({
-    label: t("SEQUENCES"),
+    label: t("Sequence"),
     heading: true,
     value: 0,
     headingId: "Sequence"
   });
 
   selectAllSequences(props.resources.index).map(sequence => {
-    if (sequence.kind === "sequences" && sequence.body.id) {
+    if (sequence.kind === "Sequence" && sequence.body.id) {
       executableOptions.push({
         label: sequence.body.name,
         headingId: "Sequence",
@@ -146,7 +146,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
   const getFarmEvent = (): TaggedFarmEvent | undefined => {
     const url = history.getCurrentLocation().pathname;
     const id = parseInt(url.split("/")[4]);
-    if (id && hasId(props.resources.index, "farm_events", id)) {
+    if (id && hasId(props.resources.index, "FarmEvent", id)) {
       return findFarmEventById(props.resources.index, id);
     } else {
       history.push("/app/designer/farm_events");

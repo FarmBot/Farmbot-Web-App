@@ -62,7 +62,7 @@ export function showLogOnScreen(log: Log) {
 }
 
 export const initLog = (log: Log): ReduxAction<TaggedResource> => init({
-  kind: "logs",
+  kind: "Log",
   specialStatus: undefined,
   uuid: "MUST_CHANGE",
   body: log
@@ -144,7 +144,7 @@ const attachEventListeners =
     bot.on("online", onOnline);
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));
-    bot.on("logs", onLogs(dispatch));
+    bot.on("Log", onLogs(dispatch));
     bot.on("status", onStatus(dispatch, getState));
     bot.on("malformed", onMalformed);
     readStatus().then(changeLastClientConnected(bot), noop);

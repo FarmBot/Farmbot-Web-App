@@ -26,7 +26,7 @@ describe("<Regimens />", () => {
       calendar: []
     };
     const wrapper = mount(<Regimens {...fakeProps } />);
-    ["Regimens", "Regimen Editor", "Scheduler"].map(string =>
+    ["Regimen", "Regimen Editor", "Scheduler"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 });
