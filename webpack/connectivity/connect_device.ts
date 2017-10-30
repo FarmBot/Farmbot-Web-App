@@ -66,7 +66,7 @@ export const initLog = (log: Log): ReduxAction<TaggedResource> => init({
   specialStatus: undefined,
   uuid: "MUST_CHANGE",
   body: log
-});
+}, true);
 
 export const bothUp = () => {
   dispatchNetworkUp("user.mqtt");
@@ -144,7 +144,7 @@ const attachEventListeners =
     bot.on("online", onOnline);
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));
-    bot.on("Log", onLogs(dispatch));
+    bot.on("logs", onLogs(dispatch));
     bot.on("status", onStatus(dispatch, getState));
     bot.on("malformed", onMalformed);
     readStatus().then(changeLastClientConnected(bot), noop);

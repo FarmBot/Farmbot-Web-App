@@ -194,15 +194,7 @@ export let resourceReducer = generateReducer
   })
   .add<TaggedResource>(Actions.INIT_RESOURCE, (s: RestResources, { payload }) => {
     const tr = payload;
-    const uuid = tr.uuid;
     reindexResource(s.index, tr);
-    if (tr.kind === "Log") {
-      // Since logs don't come from the API all the time, they are the only
-      // resource (right now) that can have an id of `undefined` and not dirty.
-      findByUuid(s.index, uuid).specialStatus = undefined;
-    } else {
-      findByUuid(s.index, uuid).specialStatus = SpecialStatus.DIRTY;
-    }
     sanityCheck(tr);
     dontTouchThis(tr);
     return s;

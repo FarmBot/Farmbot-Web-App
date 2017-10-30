@@ -63,10 +63,12 @@ export function editStep({ step, sequence, index, executor }: EditStepProps) {
 }
 
 /** Initialize (but don't save) an indexed / tagged resource. */
-export function init(resource: TaggedResource): ReduxAction<TaggedResource> {
-  resource.body.id = 0;
-  resource.specialStatus = SpecialStatus.DIRTY;
-  /** Technically, this happens in the reducer, but I like to be extra safe. */
+export function init(resource: TaggedResource,
+  /** Set to "true" when you want an `undefined` SpecialStatus. */
+  clean = false): ReduxAction<TaggedResource> {
+  resource.body.id = resource.body.id || 0;
+  resource.specialStatus = clean ? undefined : SpecialStatus.DIRTY;
+  /** Don't touch this- very important! */
   resource.uuid = generateUuid(resource.body.id, resource.kind);
   return { type: Actions.INIT_RESOURCE, payload: resource };
 }
