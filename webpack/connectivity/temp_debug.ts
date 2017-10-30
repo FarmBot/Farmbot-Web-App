@@ -65,7 +65,7 @@ const asTaggedResource =
     return {
       // tslint:disable-next-line:no-any
       kind: (data.kind as any),
-      uuid: "NO NO NO",
+      uuid,
       specialStatus: undefined,
       // tslint:disable-next-line:no-any
       body: (data.body as any) // I trust you, API...
