@@ -7,7 +7,8 @@ class ApplicationRecord < ActiveRecord::Base
                      "last_sign_in_at",
                      "sign_in_count",
                      "updated_at",
-                     "created_at" ]
+                     "created_at",
+                     "last_sign_in_ip" ]
 
   # Determine if the changes to the model are worth broadcasting or not.
   # Reduces network noise.
