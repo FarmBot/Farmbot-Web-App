@@ -159,6 +159,7 @@ export let resourceReducer = generateReducer
       sanityCheck(tr);
       dontTouchThis(tr);
       reindexResource(s.index, tr);
+      console.log("HMMM: " + s.index.byKind.Tool.length);
       return s;
     } else {
       throw new Error("BAD UUID IN UPDATE_RESOURCE_OK");
@@ -198,6 +199,7 @@ export let resourceReducer = generateReducer
     s.index.references[tr.uuid] = tr;
     sanityCheck(tr);
     dontTouchThis(tr);
+    console.log("HMMM: " + s.index.byKind.Tool.length);
     return s;
   })
   .add<TaggedResource>(Actions.SAVE_RESOURCE_START, (s, { payload }) => {
@@ -281,7 +283,9 @@ export function joinKindAndId(kind: ResourceName, id: number | undefined) {
   return `${kind}.${id || 0}`;
 }
 
-const filterOutUuid = (tr: TaggedResource) => (uuid: string) => uuid !== tr.uuid;
+const filterOutUuid =
+  (tr: TaggedResource) => (uuid: string) => uuid !== tr.uuid;
+
 function removeFromIndex(index: ResourceIndex, tr: TaggedResource) {
   const { kind } = tr;
   const id = tr.body.id;

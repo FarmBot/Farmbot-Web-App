@@ -2,7 +2,7 @@ import { GetState } from "../redux/interfaces";
 import { maybeDetermineUuid } from "../resources/selectors";
 import { ResourceName, TaggedResource } from "../resources/tagged_resources";
 import { destroyOK } from "../resources/actions";
-import { init, overwrite } from "../api/crud";
+import { overwrite } from "../api/crud";
 import { fancyDebug } from "../util";
 
 interface UpdateMqttData {
@@ -61,25 +61,21 @@ function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
   }
 }
 
-const asTaggedResource =
-  (data: UpdateMqttData, uuid: string): TaggedResource => {
-    return {
-      // tslint:disable-next-line:no-any
-      kind: (data.kind as any),
-      uuid,
-      specialStatus: undefined,
-      // tslint:disable-next-line:no-any
-      body: (data.body as any) // I trust you, API...
-    };
+const asTaggedResource = (data: UpdateMqttData, uuid: string): TaggedResource => {
+  return {
+    // tslint:disable-next-line:no-any
+    kind: (data.kind as any),
+    uuid,
+    specialStatus: undefined,
+    // tslint:disable-next-line:no-any
+    body: (data.body as any) // I trust you, API...
   };
-
-const handleCreate =
-  (data: UpdateMqttData) => init(asTaggedResource(data, "IS SET LATER"), true);
+};
 
 const handleUpdate =
   (d: UpdateMqttData, uid: string) => {
     const tr = asTaggedResource(d, uid);
-    overwrite(tr, tr.body);
+    return overwrite(tr, tr.body);
   };
 
 const handleErr = (d: BadMqttData) => console.log("DATA VALIDATION ERROR!", d);
@@ -104,6 +100,11 @@ export const TempDebug =
         case "UPDATE":
           const { index } = getState().resources;
           const uuid = maybeDetermineUuid(index, data.kind, data.id);
-          return dispatch(uuid ? handleUpdate(data, uuid) : handleCreate(data));
+
+          if (uuid) {
+            return dispatch(handleUpdate(data, uuid));
+          } else {
+            console.log("This branch is broke.");
+          }
       }
     };
