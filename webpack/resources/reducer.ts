@@ -195,6 +195,7 @@ export let resourceReducer = generateReducer
   .add<TaggedResource>(Actions.INIT_RESOURCE, (s: RestResources, { payload }) => {
     const tr = payload;
     reindexResource(s.index, tr);
+    s.index.references[tr.uuid] = tr;
     sanityCheck(tr);
     dontTouchThis(tr);
     return s;
