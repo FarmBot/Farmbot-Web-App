@@ -1,8 +1,9 @@
 import { GetState } from "../redux/interfaces";
 import { maybeDetermineUuid } from "../resources/selectors";
 import { ResourceName, TaggedResource } from "../resources/tagged_resources";
-import { updateOK, destroyOK } from "../resources/actions";
-import { init } from "../api/crud";
+import { destroyOK } from "../resources/actions";
+import { init, overwrite } from "../api/crud";
+import { fancyDebug } from "../util";
 
 interface UpdateMqttData {
   status: "UPDATE"
@@ -76,7 +77,10 @@ const handleCreate =
   (data: UpdateMqttData) => init(asTaggedResource(data, "IS SET LATER"), true);
 
 const handleUpdate =
-  (d: UpdateMqttData, uid: string) => updateOK(asTaggedResource(d, uid));
+  (d: UpdateMqttData, uid: string) => {
+    const tr = asTaggedResource(d, uid);
+    overwrite(tr, tr.body);
+  };
 
 const handleErr = (d: BadMqttData) => console.log("DATA VALIDATION ERROR!", d);
 
@@ -86,6 +90,9 @@ export const TempDebug =
   (dispatch: Function, getState: GetState) =>
     (chan: string, payload: Buffer) => {
       const data = routeMqttData(chan, payload);
+
+      if (data.status !== "SKIP") { fancyDebug(data); }
+
       switch (data.status) {
         case "ERR": return handleErr(data);
         case "SKIP": return handleSkip();
