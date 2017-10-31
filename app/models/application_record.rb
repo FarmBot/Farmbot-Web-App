@@ -26,7 +26,12 @@ class ApplicationRecord < ActiveRecord::Base
 
   def broadcast_payload
     body = (destroyed? ? nil : self).as_json
-    { body: body }.to_json
+    {
+      args: {
+        label: (Device.current_jwt || {})[:jti] || "UNKNOWN"
+      },
+      body: body
+    }.to_json
   end
 
   def chan_name

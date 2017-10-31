@@ -5,9 +5,6 @@ class Device < ApplicationRecord
   TIMEZONES          = TZInfo::Timezone.all_identifiers
   BAD_TZ             = "%{value} is not a valid timezone"
 
-  # TODO: ADD DOCUMENTATION FOR THIS BECAUSE IT IS IMPORTANT
-  cattr_accessor :current
-
   has_many  :users
   has_many  :farm_events,  dependent: :destroy
   has_many  :points,       dependent: :destroy
@@ -42,5 +39,13 @@ class Device < ApplicationRecord
     json = LogSerializer.new(log).as_json.to_json
 
     Transport.send(json, self.id, "logs")
+  end
+
+  def self.current
+    Thread.current[:device]
+  end
+
+  def self.current_jwt
+    Thread.current[:jwt]
   end
 end
