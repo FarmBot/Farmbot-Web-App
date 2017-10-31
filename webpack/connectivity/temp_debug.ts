@@ -3,12 +3,14 @@ import { maybeDetermineUuid } from "../resources/selectors";
 import { ResourceName, TaggedResource } from "../resources/tagged_resources";
 import { destroyOK } from "../resources/actions";
 import { overwrite, init } from "../api/crud";
+import { fancyDebug } from "../util";
 
 interface UpdateMqttData {
   status: "UPDATE"
   kind: ResourceName;
   id: number;
   body: object;
+  sessionId: string;
 }
 
 interface DeleteMqttData {
@@ -38,6 +40,14 @@ enum Reason {
   BAD_CHAN = "Expected exactly 5 segments in channel"
 }
 
+interface SyncPayload {
+  args: { label: string; };
+  body: object | undefined;
+}
+
+function decodeBinary(payload: Buffer): SyncPayload {
+  return JSON.parse((payload).toString());
+}
 function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
   /** Skip irrelevant messages */
   if (!chan.includes("sync")) { return { status: "SKIP" }; }
@@ -48,13 +58,13 @@ function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
 
   const id = parseInt(parts.pop() || "0", 10);
   const kind = parts.pop() as ResourceName | undefined;
-  const { body } = JSON.parse((payload).toString()) as { body: {} | null };
+  const { body, args } = decodeBinary(payload);
 
   if (!kind) { return { status: "ERR", reason: Reason.BAD_KIND }; }
   if (!id) { return { status: "ERR", reason: Reason.BAD_ID }; }
 
   if (body) {
-    return { status: "UPDATE", body, kind: kind, id };
+    return { status: "UPDATE", body, kind: kind, id, sessionId: args.label };
   } else {
     return { status: "DELETE", kind: kind, id }; // 'null' body means delete.
   }
@@ -113,22 +123,18 @@ function whoah(dispatch: Function,
   getState: GetState,
   data: UpdateMqttData,
   backoff = 200) {
-  const { index } = getState().resources;
+  const state = getState();
+  const { index } = state.resources;
+  const jti: string =
+    (state.auth && (state.auth.token.unencoded as any)["jti"]) || "";
+  fancyDebug({ jti, ...data });
+
   const uuid = maybeDetermineUuid(index, data.kind, data.id);
   if (uuid) {
-    console.log(`Got ${data.kind} ${data.id} after ${backoff}ms`);
     return dispatch(handleUpdate(data, uuid));
   } else {
-    // NOTE: This does not mean "300ms have elapsed".
-    // It means (200+250+312)ms have elapsed.
-    if (backoff > 300) {
-      console.log(`I give up on ${data.kind} ${data.id} after ${backoff}ms.`);
+    if (data.sessionId !== jti) { // Ignores local echo.
       dispatch(handleCreate(data));
-    } else {
-      setTimeout(() => {
-        console.log(`Retrying ${data.kind} ${data.id} (${backoff}ms)...`);
-        whoah(dispatch, getState, data, backoff * 1.25); // Recurse
-      }, backoff);
     }
   }
 }

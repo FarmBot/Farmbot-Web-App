@@ -25,12 +25,11 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast_payload
-    body = (destroyed? ? nil : self).as_json
     {
       args: {
         label: (Device.current_jwt || {})[:jti] || "UNKNOWN"
       },
-      body: body
+      body: (destroyed? ? nil : self).as_json
     }.to_json
   end
 

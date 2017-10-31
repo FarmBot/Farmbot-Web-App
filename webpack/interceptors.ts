@@ -8,6 +8,7 @@ import { Content } from "./constants";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";
 import { box } from "boxed_value";
 import { UnsafeError } from "./interfaces";
+import { store } from "./redux/store";
 
 /** The input of an axios error interceptor is an "any" type.
  * Sometimes it will be a real Axios error, other times it will not be.
@@ -72,9 +73,9 @@ export function requestFulfilled(auth: AuthState) {
     const isAPIRequest = req.includes(API.current.baseUrl);
     if (isAPIRequest) {
       config.headers = config.headers || {};
-      const headers = (config.headers as
-        { Authorization: string | undefined });
-      headers.Authorization = auth.token.encoded || "CANT_FIND_TOKEN";
+      const headers: { Authorization: string | undefined } = (config.headers);
+      const authn = store.getState().auth;
+      headers.Authorization = authn ? authn.token.encoded : "CANT_FIND_TOKEN";
     }
     return config;
   };
