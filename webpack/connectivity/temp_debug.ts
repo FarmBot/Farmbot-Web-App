@@ -2,7 +2,7 @@ import { GetState } from "../redux/interfaces";
 import { maybeDetermineUuid } from "../resources/selectors";
 import { ResourceName, TaggedResource } from "../resources/tagged_resources";
 import { destroyOK } from "../resources/actions";
-import { overwrite } from "../api/crud";
+import { overwrite, init } from "../api/crud";
 
 interface UpdateMqttData {
   status: "UPDATE"
@@ -71,6 +71,8 @@ const asTaggedResource = (data: UpdateMqttData, uuid: string): TaggedResource =>
   };
 };
 
+const handleCreate =
+  (data: UpdateMqttData) => init(asTaggedResource(data, "IS SET LATER"), true);
 const handleUpdate =
   (d: UpdateMqttData, uid: string) => {
     const tr = asTaggedResource(d, uid);
@@ -104,23 +106,28 @@ export const TempDebug =
     };
 
 // Here be dragons.
+// The ultimate problem: We need to know if the incoming data update was created
+// by us or some other user. That information lets us know if we are UPDATEing
+// data or INSERTing data.
 function whoah(dispatch: Function,
   getState: GetState,
   data: UpdateMqttData,
-  backoff = 400) {
+  backoff = 200) {
   const { index } = getState().resources;
   const uuid = maybeDetermineUuid(index, data.kind, data.id);
   if (uuid) {
     console.log(`Got ${data.kind} ${data.id} after ${backoff}ms`);
     return dispatch(handleUpdate(data, uuid));
   } else {
-    if (backoff > 4000) {
+    // NOTE: This does not mean "300ms have elapsed".
+    // It means (200+250+312)ms have elapsed.
+    if (backoff > 300) {
       console.log(`I give up on ${data.kind} ${data.id} after ${backoff}ms.`);
+      dispatch(handleCreate(data));
     } else {
       setTimeout(() => {
         console.log(`Retrying ${data.kind} ${data.id} (${backoff}ms)...`);
-        dispatch({ type: "DATA_RACE" });
-        whoah(dispatch, getState, data, backoff * 1.5);
+        whoah(dispatch, getState, data, backoff * 1.25); // Recurse
       }, backoff);
     }
   }
