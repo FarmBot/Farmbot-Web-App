@@ -57,11 +57,13 @@ export interface FarmEventViewModel {
  * USE CASE EXAMPLE: We have a "date" and "time" field that are created from
  *                   a single "start_time" FarmEvent field. */
 function destructureFarmEvent(fe: TaggedFarmEvent): FarmEventViewModel {
+  const three = moment().add(3, "minutes").toISOString();
+  const six = moment().add(6, "minutes").toISOString()
   return {
-    startDate: formatDate((fe.body.start_time || new Date()).toString()),
-    startTime: formatTime((fe.body.start_time || new Date()).toString()),
-    endDate: formatDate((fe.body.end_time || new Date()).toString()),
-    endTime: formatTime((fe.body.end_time || new Date()).toString()),
+    startDate: formatDate((fe.body.start_time || three).toString()),
+    startTime: formatTime((fe.body.start_time || three).toString()),
+    endDate: formatDate((fe.body.end_time || six).toString()),
+    endTime: formatTime((fe.body.end_time || six).toString()),
     repeat: (fe.body.repeat || 1).toString(),
     timeUnit: fe.body.time_unit,
     executable_type: fe.body.executable_type,
