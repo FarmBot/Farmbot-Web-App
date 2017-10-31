@@ -7,7 +7,9 @@ module Transport
              "amqp://guest:guest@localhost:5672"
 
   def self.connection
-    @connection ||= Bunny.new(AMQP_URL, read_timeout: 10, heartbeat: 10).start
+    @connection ||= Bunny
+      .new(AMQP_URL, read_timeout: 10, heartbeat: 10)
+      .start
   end
 
   def self.topic

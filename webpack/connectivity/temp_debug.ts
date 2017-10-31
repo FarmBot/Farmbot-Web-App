@@ -3,7 +3,6 @@ import { maybeDetermineUuid } from "../resources/selectors";
 import { ResourceName, TaggedResource } from "../resources/tagged_resources";
 import { destroyOK } from "../resources/actions";
 import { overwrite } from "../api/crud";
-import { fancyDebug } from "../util";
 
 interface UpdateMqttData {
   status: "UPDATE"
@@ -87,8 +86,6 @@ export const TempDebug =
     (chan: string, payload: Buffer) => {
       const data = routeMqttData(chan, payload);
 
-      if (data.status !== "SKIP") { fancyDebug(data); }
-
       switch (data.status) {
         case "ERR": return handleErr(data);
         case "SKIP": return handleSkip();
@@ -96,15 +93,35 @@ export const TempDebug =
           const { id, kind } = data;
           const i = getState().resources.index;
           const r = i.references[maybeDetermineUuid(i, kind, id) || "NO"];
-          return r && dispatch(destroyOK(r));
-        case "UPDATE":
-          const { index } = getState().resources;
-          const uuid = maybeDetermineUuid(index, data.kind, data.id);
-
-          if (uuid) {
-            return dispatch(handleUpdate(data, uuid));
+          if (r) {
+            return dispatch(destroyOK(r));
           } else {
-            console.log("This branch is broke.");
+            return;
           }
+        case "UPDATE":
+          whoah(dispatch, getState, data);
       }
     };
+
+// Here be dragons.
+function whoah(dispatch: Function,
+  getState: GetState,
+  data: UpdateMqttData,
+  backoff = 400) {
+  const { index } = getState().resources;
+  const uuid = maybeDetermineUuid(index, data.kind, data.id);
+  if (uuid) {
+    console.log(`Got ${data.kind} ${data.id} after ${backoff}ms`);
+    return dispatch(handleUpdate(data, uuid));
+  } else {
+    if (backoff > 4000) {
+      console.log(`I give up on ${data.kind} ${data.id} after ${backoff}ms.`);
+    } else {
+      setTimeout(() => {
+        console.log(`Retrying ${data.kind} ${data.id} (${backoff}ms)...`);
+        dispatch({ type: "DATA_RACE" });
+        whoah(dispatch, getState, data, backoff * 1.5);
+      }, backoff);
+    }
+  }
+}
