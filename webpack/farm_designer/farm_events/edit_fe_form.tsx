@@ -57,8 +57,7 @@ export interface FarmEventViewModel {
  * USE CASE EXAMPLE: We have a "date" and "time" field that are created from
  *                   a single "start_time" FarmEvent field. */
 function destructureFarmEvent(fe: TaggedFarmEvent): FarmEventViewModel {
-  const three = moment().add(3, "minutes").toISOString();
-  const six = moment().add(6, "minutes").toISOString()
+
   return {
     startDate: formatDate((fe.body.start_time || three).toString()),
     startTime: formatTime((fe.body.start_time || three).toString()),
