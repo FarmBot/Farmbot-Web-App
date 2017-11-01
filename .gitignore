@@ -15,5 +15,8 @@ node_modules
 node_modules/
 public/dist
 public/webpack
+# For self hosted users...
+public/system
+package-lock.json
 public/webpack/*
 tmp

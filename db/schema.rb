@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171017200333) do
+ActiveRecord::Schema.define(version: 20171031184914) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,7 +33,6 @@ ActiveRecord::Schema.define(version: 20171017200333) do
 
   create_table "devices", id: :serial, force: :cascade do |t|
     t.string "name"
-    t.string "webcam_url"
     t.integer "max_log_count", default: 100
     t.integer "max_images_count", default: 100
     t.string "timezone", limit: 280
@@ -202,7 +201,6 @@ ActiveRecord::Schema.define(version: 20171017200333) do
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
     t.index ["agreed_to_terms_at"], name: "index_users_on_agreed_to_terms_at"
-    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["device_id"], name: "index_users_on_device_id"
     t.index ["email"], name: "index_users_on_email", unique: true
   end

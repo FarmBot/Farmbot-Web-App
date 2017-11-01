@@ -1,7 +1,15 @@
 import * as React from "react";
 
-export function BackArrow() {
-  return <a href="javascript:history.back()" className="back-arrow">
+interface BackArrowProps {
+  onClick?(): void;
+}
+export function BackArrow(props: BackArrowProps) {
+  const onClick = () => {
+    history.back();
+    props.onClick && props.onClick();
+  };
+
+  return <a onClick={onClick} className="back-arrow">
     <i className="fa fa-arrow-left"></i>
   </a>;
 }

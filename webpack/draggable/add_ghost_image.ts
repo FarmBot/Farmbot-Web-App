@@ -11,7 +11,7 @@ export function addGhostImage(
   const el = ev.currentTarget.cloneNode(true) as HTMLElement;
   // RELEVANT READING:
   // https://www.kryogenix.org/code/browser/custom-drag-image.html
-  el.classList.add(cssClass);
+  cssClass && el.classList.add(cssClass);
   el.style.left = "-30000px";
   el.style.position = "absolute";
   document.body.addEventListener("dragend", function () {
@@ -19,7 +19,7 @@ export function addGhostImage(
   });
   document.body.appendChild(el);
   // Because of MS Edge.
-  // I really could care less about IE, but edge seems
+  // I really could'nt care less about IE, but edge seems
   // to be OK aside from this one issue.
   const dt = ev.dataTransfer;
   if (dt && dt.setDragImage) {

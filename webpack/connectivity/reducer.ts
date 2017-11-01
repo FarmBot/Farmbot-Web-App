@@ -22,4 +22,11 @@ export let connectivityReducer =
         s["bot.mqtt"] = computeBestTime(s["bot.mqtt"], d && d.last_saw_mq);
       }
       return s;
+    })
+    .add<Actions.RESET_NETWORK>(Actions.RESET_NETWORK, (s, a) => {
+      type Keys = (keyof ConnectionState)[];
+      const keys: Keys = ["bot.mqtt", "user.mqtt", "user.api"];
+      keys.map(x => (s[x] = undefined));
+
+      return s;
     });
