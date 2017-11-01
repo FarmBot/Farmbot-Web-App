@@ -28,7 +28,8 @@ describe("<VirtualFarmBot/>", () => {
       mapTransformProps: {
         quadrant: 1, gridSize: { x: 3000, y: 1500 }
       },
-      plantAreaOffset: { x: 100, y: 100 }
+      plantAreaOffset: { x: 100, y: 100 },
+      peripherals: []
     };
   }
 

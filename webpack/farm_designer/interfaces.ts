@@ -49,6 +49,7 @@ export interface Props {
   botLocationData: BotLocationData;
   botMcuParams: McuParams;
   stepsPerMmXY: StepsPerMmXY;
+  peripherals: { label: string, value: boolean }[];
 }
 
 export type TimeUnit =
@@ -172,6 +173,7 @@ export interface GardenMapProps {
   botOriginQuadrant: BotOriginQuadrant;
   gridSize: AxisNumberProperty;
   gridOffset: AxisNumberProperty;
+  peripherals: { label: string, value: boolean }[];
 }
 
 export interface GardenMapState {
