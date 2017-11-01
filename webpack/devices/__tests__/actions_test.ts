@@ -31,7 +31,6 @@ import { setSyncStatus, changeStepSize, resetNetwork, resetConnectionInfo } from
 import { SyncStatus } from "farmbot";
 import { Actions } from "../../constants";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
-import { refresh } from "../../api/crud";
 
 describe("checkControllerUpdates()", function () {
   beforeEach(function () {
