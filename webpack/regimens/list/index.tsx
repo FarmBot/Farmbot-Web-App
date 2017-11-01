@@ -64,7 +64,7 @@ export class RegimensList extends
     return (
       <div className="regimen-list-panel">
         <h3>
-          <i>{t("Regimen")}</i>
+          <i>{t("Regimens")}</i>
         </h3>
         <ToolTip helpText={ToolTips.REGIMEN_LIST} />
         <AddRegimen dispatch={dispatch} length={regimens.length} />

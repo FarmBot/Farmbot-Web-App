@@ -29,7 +29,7 @@ export class ToolForm extends React.Component<ToolFormProps, {}> {
     const { dispatch, tools } = this.props;
     const specialStatus = getArrayStatus(tools);
     return <Widget>
-      <WidgetHeader helpText={ToolTips.TOOL_LIST} title="Tool">
+      <WidgetHeader helpText={ToolTips.TOOL_LIST} title="Tools">
         <button
           className="fb-button gray"
           onClick={() => { toggle(); }}
