@@ -43,4 +43,5 @@ dokku trace on                                     # sets dokku to debug mode
 dokku config:set --global CURL_TIMEOUT=600         # Prevent timeouts
 dokku config:set --global CURL_CONNECT_TIMEOUT=30  # Same thing
 
-# TODO: Write RabbitMQ setup documentation
+# TODO: We currently do not have setup instructions for RabbitMQ. Please submit
+#       a pull request if you wish to contribute RabbitMQ setup instructions.
