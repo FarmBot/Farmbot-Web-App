@@ -12,5 +12,7 @@ describe("addGhostImage()", () => {
     } as any;
     const result = addGhostImage(fake);
     expect(result.style.left).toEqual("-30000px");
+    expect(result.style.position).toEqual("absolute");
+    expect(result.style.left).toEqual("-30000px");
   });
 });
