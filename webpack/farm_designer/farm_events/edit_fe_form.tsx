@@ -24,7 +24,8 @@ import { FBSelect } from "../../ui/new_fb_select";
 import {
   destroy,
   save,
-  edit
+  edit,
+  refresh
 } from "../../api/crud";
 import { DropDownItem } from "../../ui/fb_select";
 import { history } from "../../history";
@@ -36,6 +37,7 @@ import { FarmEventRepeatForm } from "./farm_event_repeat_form";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
 import { executableType } from "../util";
 import { Content } from "../../constants";
+import { destroyOK } from "../../resources/actions";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -59,10 +61,10 @@ export interface FarmEventViewModel {
 function destructureFarmEvent(fe: TaggedFarmEvent): FarmEventViewModel {
 
   return {
-    startDate: formatDate((fe.body.start_time || three).toString()),
-    startTime: formatTime((fe.body.start_time || three).toString()),
-    endDate: formatDate((fe.body.end_time || six).toString()),
-    endTime: formatTime((fe.body.end_time || six).toString()),
+    startDate: formatDate((fe.body.start_time).toString()),
+    startTime: formatTime((fe.body.start_time).toString()),
+    endDate: formatDate((fe.body.end_time || new Date()).toString()),
+    endTime: formatTime((fe.body.end_time || new Date()).toString()),
     repeat: (fe.body.repeat || 1).toString(),
     timeUnit: fe.body.time_unit,
     executable_type: fe.body.executable_type,
@@ -211,7 +213,24 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     return (
       <div className="panel-container magenta-panel add-farm-event-panel">
         <div className="panel-header magenta-panel">
-          <p className="panel-title"> <BackArrow /> {this.props.title} </p>
+          <p className="panel-title">
+            <BackArrow onClick={() => {
+
+              if (!this.props.farmEvent.body.id) {
+                // Throw out unsaved farmevents.
+                this.props.dispatch(destroyOK(this.props.farmEvent));
+              } else {
+                if (this.props.farmEvent.specialStatus) {
+                  const doSave = confirm("Unsaved changes. Save now?");
+                  const action = doSave ? save(fe.uuid) : refresh(fe);
+                  this.props.dispatch(action);
+                } else {
+                  console.log("Hmm...");
+                }
+              }
+            }} />
+            {this.props.title}
+          </p>
         </div>
         <div className="panel-content">
           <label>
