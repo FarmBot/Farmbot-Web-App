@@ -303,7 +303,7 @@ export function badVersion() {
 }
 
 /** Change all device statuses to "unknown" */
-function resetNetwork(): ReduxAction<{}> {
+export function resetNetwork(): ReduxAction<{}> {
   return { type: Actions.RESET_NETWORK, payload: {} };
 }
 

@@ -10,7 +10,8 @@ const mockDevice = {
   updateMcu: jest.fn(() => { return Promise.resolve(); }),
   togglePin: jest.fn(() => { return Promise.resolve(); }),
   home: jest.fn(() => { return Promise.resolve(); }),
-  sync: jest.fn(() => { return Promise.resolve(); })
+  sync: jest.fn(() => { return Promise.resolve(); }),
+  readStatus: jest.fn(() => Promise.resolve())
 };
 
 jest.mock("../../device", () => ({
@@ -26,9 +27,11 @@ import * as actions from "../actions";
 import { getDevice } from "../../device";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
-import { setSyncStatus, changeStepSize } from "../actions";
+import { setSyncStatus, changeStepSize, resetNetwork, resetConnectionInfo } from "../actions";
 import { SyncStatus } from "farmbot";
 import { Actions } from "../../constants";
+import { fakeDevice } from "../../__test_support__/resource_index_builder";
+import { refresh } from "../../api/crud";
 
 describe("checkControllerUpdates()", function () {
   beforeEach(function () {
@@ -212,5 +215,24 @@ describe("changeStepSize()", () => {
     const result = changeStepSize(payload);
     expect(result.type).toBe(Actions.CHANGE_STEP_SIZE);
     expect(result.payload).toBe(payload);
+  });
+});
+
+describe("resetNetwork()", () => {
+  it("renders correct info", () => {
+    const result = resetNetwork();
+    expect(result.payload).toEqual({});
+    expect(result.type).toEqual(Actions.RESET_NETWORK);
+  });
+});
+
+describe("resetConnectionInfo()", () => {
+  it("dispatches the right actions", () => {
+    const mock1 = jest.fn();
+    const d = fakeDevice();
+    resetConnectionInfo(d)(mock1, jest.fn());
+    expect(mock1).toHaveBeenCalledWith(resetNetwork());
+    expect(mock1).toHaveBeenCalledWith(resetNetwork());
+    expect(mockDevice.readStatus).toHaveBeenCalled();
   });
 });
