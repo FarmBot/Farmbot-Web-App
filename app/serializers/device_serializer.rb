@@ -1,5 +1,5 @@
 class DeviceSerializer < ActiveModel::Serializer
-  attributes :id, :name, :webcam_url, :timezone, :last_saw_api, :last_saw_mq,
+  attributes :id, :name, :timezone, :last_saw_api, :last_saw_mq,
     :last_seen
 
   def last_seen

@@ -7,7 +7,6 @@ describe Api::WebcamFeedsController do
   it 'shows webcam feeds' do
     sign_in user
     expect(user.device.webcam_feeds.length).to be(0)
-    user.device.update_attributes!(webcam_url: nil)
     2.times do |num|
       x = "feed " + num.to_s
       WebcamFeed.create! name: x, device: user.device, url: num
