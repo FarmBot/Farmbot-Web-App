@@ -21,7 +21,7 @@ interface State {
 export class WeedDetectorSlider extends React.Component<SliderProps, State> {
   valueFor(i: (keyof State) & (keyof SliderProps)): number {
     const z = get(this.state, i, get(this.props, i, 0));
-    return isNumber(z) ? z : bail("NaN");
+    return isNumber(z) ? z : bail("Something other than number");
   }
 
   onRelease = (i: [number, number]) => {

@@ -72,7 +72,7 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
     const status = getArrayStatus(peripherals);
 
     return <Widget className="peripherals-widget">
-      <WidgetHeader title={"Peripheral"} helpText={ToolTips.PERIPHERALS}>
+      <WidgetHeader title={"Peripherals"} helpText={ToolTips.PERIPHERALS}>
         <button
           className="fb-button gray"
           onClick={this.toggle}

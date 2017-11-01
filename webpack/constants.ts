@@ -31,8 +31,7 @@ export namespace ToolTips {
     Changing these settings to extreme values can cause hardware malfunction.
     Make sure to test any new settings before letting your FarmBot use them
     unsupervised. Tip: Recalibrate FarmBot after changing settings and test a
-    few sequences to verify that everything works as expected. Note: Currently
-    not all settings can be changed.`;
+    few sequences to verify that everything works as expected.`;
 
   // Hardware Settings: Homing and Calibration
   export const HOMING =
@@ -210,10 +209,8 @@ export namespace ToolTips {
     `Execute a sequence if a condition is satisfied. If the condition is not
     satisfied, chose to do nothing or execute a different sequence.`;
 
-  export const EXECUTE_SCRIPT =
-    `The Run Farmware step runs a Farmware package. The weed detection script
-    is the only script supported at the moment, but user definable script
-    support is coming soon!`;
+  export const EXECUTE_SCRIPT = `The Run Farmware step runs a Farmware package.
+   Visit the Farmware page to install and manage Farmware.`;
 
   export const TAKE_PHOTO =
     `Snaps a photo using the device camera. Select the camera type on the
