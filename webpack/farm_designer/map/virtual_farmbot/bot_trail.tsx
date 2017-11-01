@@ -6,9 +6,14 @@ import { BotPosition } from "../../../devices/interfaces";
 
 type TrailRecord = Record<"x" | "y", number | undefined>;
 
+export enum VirtualTrail {
+  records = "virtualTrailRecords",
+  length = "virtualTrailLength"
+}
+
 function getNewTrailArray(update: TrailRecord): TrailRecord[] {
-  const key = "virtualTrail"; // sessionStorage location
-  const trailLength = _.get(sessionStorage, key + "Length", 100);
+  const key = VirtualTrail.records; // sessionStorage location
+  const trailLength = _.get(sessionStorage, VirtualTrail.length, 100);
   const arr = JSON.parse(_.get(sessionStorage, key, "[]")); // get array
   if (arr.length > (trailLength - 1)) { arr.shift(); } // max length reached
   if (!_.isEqual(_.last(arr), update)) { arr.push(update); } // unique addition

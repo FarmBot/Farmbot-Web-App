@@ -1,10 +1,10 @@
 import * as React from "react";
 import { shallow } from "enzyme";
-import { BotTrail, BotTrailProps } from "../bot_trail";
+import { BotTrail, BotTrailProps, VirtualTrail } from "../bot_trail";
 
 describe("<BotTrail/>", () => {
   function fakeProps(): BotTrailProps {
-    sessionStorage["virtualTrail"] = JSON.stringify([
+    sessionStorage[VirtualTrail.records] = JSON.stringify([
       { x: 0, y: 0 }, { x: 1, y: 1 }, { x: 2, y: 2 }, { x: 3, y: 3 },
       { x: 4, y: 4 }]);
     return {
@@ -16,7 +16,7 @@ describe("<BotTrail/>", () => {
   }
 
   it("shows custom length trail", () => {
-    sessionStorage["virtualTrailLength"] = JSON.stringify(5);
+    sessionStorage[VirtualTrail.length] = JSON.stringify(5);
     const p = fakeProps();
     p.mapTransformProps.quadrant = 2;
     const wrapper = shallow(<BotTrail {...p } />);
@@ -39,14 +39,14 @@ describe("<BotTrail/>", () => {
   });
 
   it("shows default length trail", () => {
-    sessionStorage["virtualTrailLength"] = undefined;
+    sessionStorage[VirtualTrail.length] = undefined;
     const wrapper = shallow(<BotTrail {...fakeProps() } />);
     const lines = wrapper.find("#trail").find("line");
     expect(lines.length).toEqual(5);
   });
 
   it("doesn't store duplicate last trail point", () => {
-    sessionStorage["virtualTrailLength"] = undefined;
+    sessionStorage[VirtualTrail.length] = undefined;
     const p = fakeProps();
     p.position = { x: 4, y: 4, z: 0 };
     const wrapper = shallow(<BotTrail {...p } />);
