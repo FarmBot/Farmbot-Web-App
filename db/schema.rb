@@ -202,7 +202,6 @@ ActiveRecord::Schema.define(version: 20171017200333) do
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
     t.index ["agreed_to_terms_at"], name: "index_users_on_agreed_to_terms_at"
-    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["device_id"], name: "index_users_on_device_id"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
