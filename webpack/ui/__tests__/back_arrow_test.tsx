@@ -1,9 +1,10 @@
+import * as React from "react";
 import { BackArrow } from "../back_arrow";
 import { mount } from "enzyme";
 
 describe("<BackArrow />", () => {
   it("renders", () => {
-    const element = mount(<BackArrow/>);
+    const element = mount(<BackArrow />);
     expect(element).toBeTruthy();
     expect(element.hasClass("back-arrow")).toBeTruthy();
     expect(element.find("i").at(0).hasClass("fa-arrow-left"))

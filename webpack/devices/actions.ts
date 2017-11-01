@@ -5,7 +5,7 @@ import { success, warning, info, error } from "farmbot-toastr";
 import { getDevice } from "../device";
 import { Log, Everything } from "../interfaces";
 import { GithubRelease, MoveRelProps } from "./interfaces";
-import { Thunk, GetState } from "../redux/interfaces";
+import { Thunk, GetState, ReduxAction } from "../redux/interfaces";
 import { BotState } from "../devices/interfaces";
 import {
   McuParams,
@@ -22,6 +22,7 @@ import { versionOK } from "./reducer";
 import { HttpData, oneOf } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
+import { refresh } from "../api/crud";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -288,7 +289,7 @@ export function updateConfig(config: Configuration) {
 
 export function changeStepSize(integer: number) {
   return {
-    type: "CHANGE_STEP_SIZE",
+    type: Actions.CHANGE_STEP_SIZE,
     payload: integer
   };
 }
@@ -299,4 +300,17 @@ export function setSyncStatus(payload: SyncStatus) {
 
 export function badVersion() {
   info(t("You are running an old version of FarmBot OS."), t("Please Update"), "red");
+}
+
+/** Change all device statuses to "unknown" */
+function resetNetwork(): ReduxAction<{}> {
+  return { type: Actions.RESET_NETWORK, payload: {} };
+}
+
+export function resetConnectionInfo(dev: TaggedDevice) {
+  return function (dispatch: Function, state: GetState) {
+    dispatch(resetNetwork());
+    dispatch(refresh(dev));
+    getDevice().readStatus();
+  };
 }
