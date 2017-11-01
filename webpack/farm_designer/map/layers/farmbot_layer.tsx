@@ -1,5 +1,5 @@
 import * as React from "react";
-import { VirtualFarmBot } from "../virtual_farmbot";
+import { VirtualFarmBot } from "../virtual_farmbot/index";
 import { BotExtents } from "../bot_extents";
 import { FarmBotLayerProps } from "../interfaces";
 
