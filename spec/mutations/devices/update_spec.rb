@@ -7,7 +7,6 @@ describe Devices::Update do
 
   it 'updates an existing device' do
     previous_name = device.name
-    previous_webcam_url = device.webcam_url
     p = { last_saw_mq: Time.now.utc, name:  Haikunator.haikunate(1000) }
     Devices::Update.run!({device: device}, p)
     device.reload

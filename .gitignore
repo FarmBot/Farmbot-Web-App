@@ -15,7 +15,7 @@ node_modules
 node_modules/
 public/dist
 public/webpack
-# Self hosted users...
+# For self hosted users...
 public/system
 package-lock.json
 public/webpack/*

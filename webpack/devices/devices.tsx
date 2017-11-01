@@ -11,8 +11,7 @@ import {
 } from "./connectivity/status_checks";
 import { Diagnosis, DiagnosisName } from "./connectivity/diagnosis";
 import { StatusRowProps } from "./connectivity/connectivity_row";
-import { refresh } from "../api/crud";
-import { getDevice } from "../device";
+import { resetConnectionInfo } from "./actions";
 
 @connect(mapStateToProps)
 export class Devices extends React.Component<Props, {}> {
@@ -44,8 +43,7 @@ export class Devices extends React.Component<Props, {}> {
   }
 
   refresh = () => {
-    this.props.dispatch(refresh(this.props.deviceAccount));
-    getDevice().readStatus();
+    this.props.dispatch(resetConnectionInfo(this.props.deviceAccount));
   };
 
   render() {
