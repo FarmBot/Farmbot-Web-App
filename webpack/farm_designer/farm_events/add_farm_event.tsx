@@ -52,6 +52,7 @@ export class AddFarmEvent
         specialStatus: SpecialStatus.DIRTY,
         uuid: "---",
         body: {
+          end_time: moment().add(63, "minutes").toISOString(),
           start_time: moment().add(3, "minutes").toISOString(),
           time_unit: "never",
           executable_id,

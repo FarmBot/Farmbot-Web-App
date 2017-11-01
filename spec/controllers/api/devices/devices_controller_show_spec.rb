@@ -19,8 +19,7 @@ describe Api::DevicesController do
       sign_in user
       get :show, params: {}, session: { format: :json }
       { id:         Integer,
-        name:       String,
-        webcam_url: String }.each do |name, klass|
+        name:       String }.each do |name, klass|
           expect(json[name]).to be_an_instance_of(klass)
         end
 
