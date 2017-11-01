@@ -8,14 +8,14 @@ import { BotOriginQuadrant } from "../interfaces";
 
 type TrailRecord = Record<"x" | "y", number | undefined>;
 
-function getNewTrailArray(update: TrailRecord) {
+function getNewTrailArray(update: TrailRecord): TrailRecord[] {
   const key = "virtualTrail"; // sessionStorage location
-  const trailLength = 100;
+  const trailLength = _.get(sessionStorage, key + "Length", 100);
   const arr = JSON.parse(_.get(sessionStorage, key, "[]")); // get array
   if (arr.length > (trailLength - 1)) { arr.shift(); } // max length reached
   if (!_.isEqual(_.last(arr), update)) { arr.push(update); } // unique addition
   sessionStorage.setItem(key, JSON.stringify(arr)); // save array
-  return arr;
+  return _.takeRight(arr, trailLength);
 }
 
 function botTrail(
