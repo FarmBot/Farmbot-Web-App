@@ -74,8 +74,9 @@ export function requestFulfilled(auth: AuthState) {
     if (isAPIRequest) {
       config.headers = config.headers || {};
       const headers: { Authorization: string | undefined } = (config.headers);
-      const authn = store.getState().auth;
-      headers.Authorization = authn ? authn.token.encoded : "CANT_FIND_TOKEN";
+      // Try to use most recent auth object if possible.
+      const authn = store.getState().auth || auth;
+      headers.Authorization = authn.token.encoded;
     }
     return config;
   };
