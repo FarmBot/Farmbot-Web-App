@@ -32,4 +32,11 @@ describe("<Sequences/>", () => {
     expect(wrapper.html()).toContain(ToolTips.SEQUENCE_EDITOR);
     expect(wrapper.html()).toContain("Commands");
   });
+
+  it("step command cluster is hidden", () => {
+    const p = fakeProps();
+    p.sequence = undefined;
+    const wrapper = shallow(<Sequences {...p } />);
+    expect(wrapper.text()).not.toContain("Commands");
+  });
 });

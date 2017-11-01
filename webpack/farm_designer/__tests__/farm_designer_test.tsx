@@ -29,9 +29,10 @@ describe("<FarmDesigner/>", () => {
         position: { x: undefined, y: undefined, z: undefined },
         scaled_encoders: { x: undefined, y: undefined, z: undefined },
         raw_encoders: { x: undefined, y: undefined, z: undefined },
-    },
+      },
       botMcuParams: bot.hardware.mcu_params,
-      stepsPerMmXY: { x: undefined, y: undefined }
+      stepsPerMmXY: { x: undefined, y: undefined },
+      peripherals: []
     };
   }
 

@@ -94,6 +94,7 @@ export interface VirtualFarmBotProps {
   mapTransformProps: MapTransformProps;
   botLocationData: BotLocationData;
   plantAreaOffset: AxisNumberProperty;
+  peripherals: { label: string, value: boolean }[];
 }
 
 export interface FarmBotLayerProps extends VirtualFarmBotProps, BotExtentsProps {

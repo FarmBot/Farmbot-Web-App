@@ -3,10 +3,12 @@ import {
   selectAllGenericPointers,
   selectAllPlantPointers,
   selectAllCrops,
-  joinToolsAndSlot
+  joinToolsAndSlot,
+  selectAllPeripherals
 } from "../resources/selectors";
 import { BotLocationData, StepsPerMmXY } from "../devices/interfaces";
 import { isNumber } from "lodash";
+import * as _ from "lodash";
 
 export function mapStateToProps(props: Everything) {
 
@@ -37,6 +39,16 @@ export function mapStateToProps(props: Everything) {
     return { x: undefined, y: undefined };
   }
 
+  const peripherals = _.uniq(selectAllPeripherals(props.resources.index))
+    .map(x => {
+      const label = x.body.label;
+      const pinStatus = x.body.pin
+        ? props.bot.hardware.pins[x.body.pin]
+        : undefined;
+      const value = pinStatus ? !!pinStatus.value : false;
+      return { label, value };
+    });
+
   return {
     crops: selectAllCrops(props.resources.index),
     dispatch: props.dispatch,
@@ -49,6 +61,7 @@ export function mapStateToProps(props: Everything) {
     plants,
     botLocationData: getBotLocationData(),
     botMcuParams: props.bot.hardware.mcu_params,
-    stepsPerMmXY: stepsPerMmXY()
+    stepsPerMmXY: stepsPerMmXY(),
+    peripherals
   };
 }

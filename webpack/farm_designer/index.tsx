@@ -176,7 +176,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           zoomLvl={zoomLevel}
           botOriginQuadrant={botOriginQuadrant}
           gridSize={getGridSize(botSize)}
-          gridOffset={gridOffset} />
+          gridOffset={gridOffset}
+          peripherals={this.props.peripherals} />
       </div>
     </div>;
   }
