@@ -1,17 +1,19 @@
 import * as React from "react";
-import { VirtualFarmBot } from "../virtual_farmbot";
+import { VirtualFarmBot } from "../virtual_farmbot/index";
 import { BotExtents } from "../bot_extents";
 import { FarmBotLayerProps } from "../interfaces";
 
 export function FarmBotLayer(props: FarmBotLayerProps) {
   const {
-    visible, stopAtHome, botSize, plantAreaOffset, mapTransformProps
+    visible, stopAtHome, botSize, plantAreaOffset, mapTransformProps,
+    peripherals
    } = props;
   return visible ? <g id="farmbot-layer">
     <VirtualFarmBot
       mapTransformProps={mapTransformProps}
       botLocationData={props.botLocationData}
-      plantAreaOffset={plantAreaOffset} />
+      plantAreaOffset={plantAreaOffset}
+      peripherals={peripherals} />
     <BotExtents
       mapTransformProps={mapTransformProps}
       stopAtHome={stopAtHome}

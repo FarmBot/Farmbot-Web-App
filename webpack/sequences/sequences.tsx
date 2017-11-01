@@ -8,10 +8,13 @@ import { Page, Col, ToolTip, Row } from "../ui/index";
 import { Props } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { ToolTips } from "../constants";
+import { isTaggedSequence } from "../resources/tagged_resources";
 
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {
   render() {
+    const { sequence } = this.props;
+    const sequenceSelected = sequence && isTaggedSequence(sequence);
     return <Page className="Sequence">
       <Row>
         <Col sm={3}>
@@ -38,9 +41,10 @@ export class Sequences extends React.Component<Props, {}> {
           </div>
         </Col>
         <Col sm={3}>
-          <StepButtonCluster
-            current={this.props.sequence}
-            dispatch={this.props.dispatch} />
+          {sequenceSelected &&
+           <StepButtonCluster
+              current={this.props.sequence}
+              dispatch={this.props.dispatch} />}
         </Col>
       </Row>
     </Page>;

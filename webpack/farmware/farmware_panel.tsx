@@ -32,7 +32,7 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
       </label>
       <button
         className="fb-button gray fa fa-download"
-        onClick={getDevice().installFirstPartyFarmware}
+        onClick={() => getDevice().installFirstPartyFarmware()}
         disabled={props.firstPartyFwsInstalled} />
     </fieldset>
     <fieldset>

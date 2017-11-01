@@ -285,7 +285,8 @@ export class GardenMap extends
             botLocationData={this.props.botLocationData}
             stopAtHome={this.props.stopAtHome}
             botSize={this.props.botSize}
-            plantAreaOffset={this.props.gridOffset} />
+            plantAreaOffset={this.props.gridOffset}
+            peripherals={this.props.peripherals} />
           <HoveredPlantLayer
             visible={!!this.props.showPlants}
             isEditing={this.isEditing}
