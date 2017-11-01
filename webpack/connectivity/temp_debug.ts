@@ -93,11 +93,11 @@ const handleErr = (d: BadMqttData) => console.log("DATA VALIDATION ERROR!", d);
 
 const handleSkip = () => console.log("SKIP");
 
-export const TempDebug =
+export const tempDebug =
   (dispatch: Function, getState: GetState) =>
     (chan: string, payload: Buffer) => {
       const data = routeMqttData(chan, payload);
-
+      console.log("??");
       switch (data.status) {
         case "ERR": return handleErr(data);
         case "SKIP": return handleSkip();
@@ -130,6 +130,10 @@ function whoah(dispatch: Function,
   fancyDebug({ jti, ...data });
 
   const uuid = maybeDetermineUuid(index, data.kind, data.id);
+  fancyDebug({
+    mine: jti,
+    theirs: data.sessionId
+  });
   if (uuid) {
     return dispatch(handleUpdate(data, uuid));
   } else {
