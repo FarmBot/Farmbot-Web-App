@@ -7,7 +7,9 @@ module Auth
     def execute
       token  = SessionToken.decode!(just_the_token)
       claims = token.unencoded
-      User.find_by_email_or_id(claims["sub"])
+      Thread.current[:jwt] = claims.deep_symbolize_keys
+      User
+        .find_by_email_or_id(claims["sub"])
     rescue JWT::DecodeError, ActiveRecord::RecordNotFound, User::BadSub
       add_error :jwt, :decode_error, Auth::ReloadToken::BAD_SUB
     end

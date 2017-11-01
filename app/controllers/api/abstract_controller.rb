@@ -89,7 +89,13 @@ private
     end
 
     def current_device
-      @current_device ||= (current_user.try(:device) || no_device)
+      if @current_device
+        @current_device
+      else
+        @current_device = (current_user.try(:device) || no_device)
+        Thread.current[:device] = @current_device # Mutable state eww
+        @current_device
+      end
     end
 
     def no_device

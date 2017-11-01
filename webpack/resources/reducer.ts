@@ -87,7 +87,7 @@ const afterEach = (state: RestResources, a: ReduxAction<object>) => {
 /** Responsible for all RESTful resources. */
 export let resourceReducer = generateReducer
   <RestResources>(initialState, afterEach)
-  .add<ResourceReadyPayl>(Actions.SAVE_SPECIAL_RESOURCE, (s, { payload }) => {
+  .add<ResourceReadyPayl>(Actions.SAVE_OPENFARM_RESOURCE, (s, { payload }) => {
     const data = arrayWrap(payload);
     const kind = payload.name;
     data.map((body: ResourceReadyPayl) => {
@@ -192,17 +192,10 @@ export let resourceReducer = generateReducer
     dontTouchThis(original);
     return s;
   })
-  .add<TaggedResource>(Actions.INIT_RESOURCE, (s, { payload }) => {
+  .add<TaggedResource>(Actions.INIT_RESOURCE, (s: RestResources, { payload }) => {
     const tr = payload;
-    const uuid = tr.uuid;
     reindexResource(s.index, tr);
-    if (tr.kind === "Log") {
-      // Since logs don't come from the API all the time, they are the only
-      // resource (right now) that can have an id of `undefined` and not dirty.
-      findByUuid(s.index, uuid).specialStatus = undefined;
-    } else {
-      findByUuid(s.index, uuid).specialStatus = SpecialStatus.DIRTY;
-    }
+    s.index.references[tr.uuid] = tr;
     sanityCheck(tr);
     dontTouchThis(tr);
     return s;
@@ -288,7 +281,9 @@ export function joinKindAndId(kind: ResourceName, id: number | undefined) {
   return `${kind}.${id || 0}`;
 }
 
-const filterOutUuid = (tr: TaggedResource) => (uuid: string) => uuid !== tr.uuid;
+const filterOutUuid =
+  (tr: TaggedResource) => (uuid: string) => uuid !== tr.uuid;
+
 function removeFromIndex(index: ResourceIndex, tr: TaggedResource) {
   const { kind } = tr;
   const id = tr.body.id;
