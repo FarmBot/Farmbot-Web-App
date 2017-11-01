@@ -24,8 +24,7 @@ import { FBSelect } from "../../ui/new_fb_select";
 import {
   destroy,
   save,
-  edit,
-  refresh
+  edit
 } from "../../api/crud";
 import { DropDownItem } from "../../ui/fb_select";
 import { history } from "../../history";
@@ -215,18 +214,10 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         <div className="panel-header magenta-panel">
           <p className="panel-title">
             <BackArrow onClick={() => {
-
               if (!this.props.farmEvent.body.id) {
                 // Throw out unsaved farmevents.
                 this.props.dispatch(destroyOK(this.props.farmEvent));
-              } else {
-                if (this.props.farmEvent.specialStatus) {
-                  const doSave = confirm("Unsaved changes. Save now?");
-                  const action = doSave ? save(fe.uuid) : refresh(fe);
-                  this.props.dispatch(action);
-                } else {
-                  console.log("Hmm...");
-                }
+                return;
               }
             }} />
             {this.props.title}
