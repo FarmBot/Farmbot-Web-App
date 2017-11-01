@@ -36,6 +36,10 @@ You will need the following:
 
 ### Setup
 
+**NOTE:** A step-by-step setup guide for Ubuntu 17 users can be found [here](https://github.com/FarmBot/Farmbot-Web-App/blob/master/ubuntu_example.md)
+
+Setup for non-Ubuntu users after installing the dependencies listed above:
+
  1. `git clone https://github.com/FarmBot/Farmbot-Web-App --depth=10`
  0. `cd Farmbot-Web-App`
  0. `bundle install`
