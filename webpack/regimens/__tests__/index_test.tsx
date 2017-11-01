@@ -2,6 +2,10 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
+jest.mock("../../history", () => ({
+  push: () => jest.fn()
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { Regimens } from "../index";
@@ -9,15 +13,16 @@ import { Props } from "../interfaces";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { auth } from "../../__test_support__/fake_state/token";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { fakeRegimen } from "../../__test_support__/fake_state/resources";
 
 describe("<Regimens />", () => {
-  it("renders", () => {
-    const fakeProps: Props = {
+  function fakeProps(): Props {
+    return {
       dispatch: jest.fn(),
       sequences: [],
       resources: buildResourceIndex([]).index,
       auth,
-      current: undefined,
+      current: fakeRegimen(),
       regimens: [],
       selectedSequence: undefined,
       dailyOffsetMs: 1000,
@@ -25,8 +30,18 @@ describe("<Regimens />", () => {
       bot,
       calendar: []
     };
-    const wrapper = mount(<Regimens {...fakeProps } />);
+  }
+
+  it("renders", () => {
+    const wrapper = mount(<Regimens {...fakeProps() } />);
     ["Regimen", "Regimen Editor", "Scheduler"].map(string =>
       expect(wrapper.text()).toContain(string));
+  });
+
+  it("scheduler is hidden", () => {
+    const p = fakeProps();
+    p.current = undefined;
+    const wrapper = mount(<Regimens {...p } />);
+    expect(wrapper.text()).not.toContain("Scheduler");
   });
 });
