@@ -20,7 +20,7 @@ conf.output = {
   new webpack.optimize.CommonsChunkPlugin({
     name: "commons",
     chunks: [
-      "bundle",
+      "new_bundle",
       "front_page",
       "verification",
       "password_reset",
