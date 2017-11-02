@@ -18,7 +18,7 @@ conf.output = {
 
 [
   new webpack.optimize.CommonsChunkPlugin({
-    name: "commons",
+    name: "new_commons",
     chunks: [
       "new_bundle",
       "front_page",
