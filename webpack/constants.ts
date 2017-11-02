@@ -209,9 +209,8 @@ export namespace ToolTips {
     `Execute a sequence if a condition is satisfied. If the condition is not
     satisfied, chose to do nothing or execute a different sequence.`;
 
-  export const EXECUTE_SCRIPT =
-    `The Run Farmware step runs a Farmware package. Visit the Farmware page to
-     install and manage Farmware.`;
+  export const EXECUTE_SCRIPT = `The Run Farmware step runs a Farmware package.
+   Visit the Farmware page to install and manage Farmware.`;
 
   export const TAKE_PHOTO =
     `Snaps a photo using the device camera. Select the camera type on the

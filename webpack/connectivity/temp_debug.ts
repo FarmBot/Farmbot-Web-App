@@ -3,7 +3,6 @@ import { maybeDetermineUuid } from "../resources/selectors";
 import { ResourceName, TaggedResource } from "../resources/tagged_resources";
 import { destroyOK } from "../resources/actions";
 import { overwrite, init } from "../api/crud";
-import { fancyDebug } from "../util";
 
 interface UpdateMqttData {
   status: "UPDATE"
