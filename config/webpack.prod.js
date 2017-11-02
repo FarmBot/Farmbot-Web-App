@@ -17,22 +17,22 @@ conf.output = {
 };
 
 [
-  new webpack.optimize.CommonsChunkPlugin({
-    name: "new_commons",
-    chunks: [
-      "new_bundle",
-      "front_page",
-      "verification",
-      "password_reset",
-      "tos_update"
-    ],
-    async: true,
-    minChunks: ({ resource }) => (
-      resource &&
-      resource.indexOf('node_modules') >= 0 &&
-      resource.match(/\.js$/)
-    ),
-  }),
+  // new webpack.optimize.CommonsChunkPlugin({
+  //   name: "new_commons",
+  //   chunks: [
+  //     "new_bundle",
+  //     "front_page",
+  //     "verification",
+  //     "password_reset",
+  //     "tos_update"
+  //   ],
+  //   async: true,
+  //   minChunks: ({ resource }) => (
+  //     resource &&
+  //     resource.indexOf('node_modules') >= 0 &&
+  //     resource.match(/\.js$/)
+  //   ),
+  // }),
   new ExtractTextPlugin({
     // Temporary hotfix for some issues on staging.
     // - RC 12 MAY 17
