@@ -26,6 +26,7 @@ conf.output = {
       "password_reset",
       "tos_update"
     ],
+    async: true,
     minChunks: ({ resource }) => (
       resource &&
       resource.indexOf('node_modules') >= 0 &&
