@@ -17,7 +17,6 @@ conf.output = {
 };
 
 [
-  w
   new ExtractTextPlugin({
     // Temporary hotfix for some issues on staging.
     // - RC 12 MAY 17
