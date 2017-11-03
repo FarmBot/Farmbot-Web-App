@@ -3,6 +3,7 @@ import { maybeDetermineUuid } from "../resources/selectors";
 import { ResourceName, TaggedResource } from "../resources/tagged_resources";
 import { destroyOK } from "../resources/actions";
 import { overwrite, init } from "../api/crud";
+import { fancyDebug } from "../util";
 
 interface UpdateMqttData {
   status: "UPDATE"
@@ -124,13 +125,13 @@ function handleCreateOrUpdate(dispatch: Function,
 
 const handleErr = (d: BadMqttData) => console.log("DATA VALIDATION ERROR!", d);
 
-const handleSkip = () => console.log("SKIP");
+const handleSkip = () => { };
 
 export const tempDebug =
   (dispatch: Function, getState: GetState) =>
     (chan: string, payload: Buffer) => {
       const data = routeMqttData(chan, payload);
-
+      fancyDebug(data);
       switch (data.status) {
         case "ERR": return handleErr(data);
         case "SKIP": return handleSkip();
@@ -141,7 +142,7 @@ export const tempDebug =
           if (r) {
             return dispatch(destroyOK(r));
           } else {
-            return;
+            return; // Ignore deletions of untracked resources
           }
         case "UPDATE":
           handleCreateOrUpdate(dispatch, getState, data);
