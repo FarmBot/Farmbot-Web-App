@@ -82,11 +82,45 @@ const asTaggedResource = (data: UpdateMqttData, uuid: string): TaggedResource =>
 
 const handleCreate =
   (data: UpdateMqttData) => init(asTaggedResource(data, "IS SET LATER"), true);
+
 const handleUpdate =
   (d: UpdateMqttData, uid: string) => {
     const tr = asTaggedResource(d, uid);
     return overwrite(tr, tr.body);
   };
+
+function handleCreateOrUpdate(dispatch: Function,
+  getState: GetState,
+  data: UpdateMqttData,
+  backoff = 200) {
+  const state = getState();
+  const { index } = state.resources;
+  const uuid = maybeDetermineUuid(index, data.kind, data.id);
+
+  if (uuid) {
+    return dispatch(handleUpdate(data, uuid));
+  } else {
+    // Here be dragons.
+    // PROBLEM:  You see incoming `UPDATE` messages.
+    //           How do you know if it is a new record or an update to
+    //           an existing?
+    // SOLUTION: Every inbound message has a `sessionId` that matches the `jwt`
+    //           of your JSON Web Token. If the `sessionId` is equal to your
+    //           JWT, then you can disregard the sync message- you probably
+    //           already got the data when your AJAX request finished.
+    // The ultimate problem: We need to know if the incoming data update was created
+    // by us or some other user. That information lets us know if we are UPDATEing
+    // data or INSERTing data.
+    const jti: string =
+      (state.auth && (state.auth.token.unencoded as any)["jti"]) || "";
+    if (data.sessionId !== jti) { // Ignores local echo.
+      console.log("Acting on sync data");
+      dispatch(handleCreate(data));
+    } else {
+      console.log("Ignoring echo");
+    }
+  }
+}
 
 const handleErr = (d: BadMqttData) => console.log("DATA VALIDATION ERROR!", d);
 
@@ -110,30 +144,6 @@ export const tempDebug =
             return;
           }
         case "UPDATE":
-          whoah(dispatch, getState, data);
+          handleCreateOrUpdate(dispatch, getState, data);
       }
     };
-
-// Here be dragons.
-// The ultimate problem: We need to know if the incoming data update was created
-// by us or some other user. That information lets us know if we are UPDATEing
-// data or INSERTing data.
-function whoah(dispatch: Function,
-  getState: GetState,
-  data: UpdateMqttData,
-  backoff = 200) {
-  const state = getState();
-  const { index } = state.resources;
-  const jti: string =
-    (state.auth && (state.auth.token.unencoded as any)["jti"]) || "";
-
-  const uuid = maybeDetermineUuid(index, data.kind, data.id);
-
-  if (uuid) {
-    return dispatch(handleUpdate(data, uuid));
-  } else {
-    if (data.sessionId !== jti) { // Ignores local echo.
-      dispatch(handleCreate(data));
-    }
-  }
-}
