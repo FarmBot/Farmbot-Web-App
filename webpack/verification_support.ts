@@ -56,15 +56,14 @@ interface AxiosError extends Error {
 export function fail(err: AxiosError | undefined) {
   switch (err && err.response && err.response.status) {
     case 409:
-      alreadyVerified();
-      break;
+      return alreadyVerified();
     default:
       document.write(FAILURE_PAGE);
       throw new Error(FAILURE_MSG);
   }
 }
 
-const alreadyVerified = () => {
+const alreadyVerified = (): never => {
   // Wait 2 seconds to let the user know what's going on.
   setTimeout(() => window.location.href = "/app/controls", 2000);
   document.write(ALREADY_VERIFIED);
