@@ -289,10 +289,14 @@ function removeFromIndex(index: ResourceIndex, tr: TaggedResource) {
   const { kind } = tr;
   const id = tr.body.id;
   index.all = index.all.filter(filterOutUuid(tr));
-  index.byKind[tr.kind] = index.byKind[tr.kind].filter(filterOutUuid(tr));
-  delete index.byKindAndId[joinKindAndId(kind, id)];
-  delete index.byKindAndId[joinKindAndId(kind, 0)];
-  delete index.references[tr.uuid];
+  if (index.byKind[tr.kind]) {
+    index.byKind[tr.kind] = index.byKind[tr.kind].filter(filterOutUuid(tr));
+    delete index.byKindAndId[joinKindAndId(kind, id)];
+    delete index.byKindAndId[joinKindAndId(kind, 0)];
+    delete index.references[tr.uuid];
+  } else {
+    console.log("No index found for tr.kind: " + tr.kind);
+  }
 }
 
 function whoops(origin: string, kind: string) {
