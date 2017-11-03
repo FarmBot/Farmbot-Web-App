@@ -95,19 +95,22 @@ export function move<T>(array: T[], fromIndex: number, toIndex: number) {
   const length = array.length;
   const diff = fromIndex - toIndex;
   switch (threeWayComparison(diff, 0)) {
-    case -1: return [
-      ...array.slice(0, fromIndex),
-      ...array.slice(fromIndex + 1, toIndex + 1),
-      item,
-      ...array.slice(toIndex + 1, length)
-    ];
-    case 1: return [
-      ...array.slice(0, toIndex),
-      item,
-      ...array.slice(toIndex, fromIndex),
-      ...array.slice(fromIndex + 1, length)
-    ];
-    default: return array;
+    case Comparison.LOW:
+      return [
+        ...array.slice(0, fromIndex),
+        ...array.slice(fromIndex + 1, toIndex + 1),
+        item,
+        ...array.slice(toIndex + 1, length)
+      ];
+    case Comparison.HIGH:
+      return [
+        ...array.slice(0, toIndex),
+        item,
+        ...array.slice(toIndex, fromIndex),
+        ...array.slice(fromIndex + 1, length)
+      ];
+    default:
+      return array;
   }
 }
 

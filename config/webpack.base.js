@@ -3,7 +3,7 @@ var StatsPlugin = require('stats-webpack-plugin');
 module.exports = function () {
   return {
     entry: {
-      "bundle": "./webpack/entry.tsx",
+      "nov_bundle": "./webpack/entry.tsx",
       "front_page": "./webpack/front_page/index.tsx",
       "verification": "./webpack/verification.ts",
       "password_reset": "./webpack/password_reset/index.tsx",

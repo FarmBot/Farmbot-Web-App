@@ -3,6 +3,7 @@
 *.log
 *.pem
 /tmp
+# For self hosted users...
 api_docs.md
 config/application.yml
 config/database.yml
@@ -13,10 +14,9 @@ log/*.log
 mqtt/rabbitmq.config
 node_modules
 node_modules/
-public/dist
-public/webpack
-# For self hosted users...
-public/system
 package-lock.json
+public/dist
+public/system
+public/webpack
 public/webpack/*
 tmp

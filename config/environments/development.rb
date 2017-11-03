@@ -1,6 +1,5 @@
 FarmBot::Application.configure do
   config.action_controller.perform_caching = false
-  config.action_controller.perform_caching = false
   config.action_mailer.default_url_options = {
     host: Rails.application.routes.default_url_options[:host],
     port: Rails.application.routes.default_url_options[:port]
