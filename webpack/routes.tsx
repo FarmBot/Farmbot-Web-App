@@ -21,7 +21,15 @@ function errorLoading(err: object) {
   const container = document.getElementById("root");
   const stack = _.get(err, "stack", "No stack.");
   const message = _.get(err, "message", "No message available.");
-  _.get(window, "Rollbar.error", (_x: string) => { })(message);
+
+  Rollbar && Rollbar.error && Rollbar.error(message);
+
+  let msg: string;
+  try {
+    msg = JSON.stringify({ message, stack });
+  } catch (error) {
+    msg = "Failed to extract error.";
+  }
   if (container) {
     container.innerHTML = (`
     <div>
@@ -39,11 +47,7 @@ function errorLoading(err: object) {
       <hr/>
       <pre>
       <br/>
-      ${JSON.stringify({
-        message,
-        stack: stack.split("\n").join("<br/>")
-        // tslint:disable-next-line:no-null-keyword
-      }, null, "  ")}
+      ${msg}
     </pre>
     </div>
   `);
