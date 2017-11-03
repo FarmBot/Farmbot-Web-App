@@ -7,7 +7,9 @@ class ApplicationRecord < ActiveRecord::Base
                      "last_sign_in_at",
                      "last_sign_in_ip",
                      "sign_in_count",
-                     "updated_at",
+                    #  HACK: Regimens and RegimenItems won't sync if you
+                    #  activate this line:
+                    #  "updated_at",
                      "current_sign_in_at" ]
 
   # Determine if the changes to the model are worth broadcasting or not.

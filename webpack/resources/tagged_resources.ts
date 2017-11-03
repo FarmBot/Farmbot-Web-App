@@ -21,10 +21,10 @@ export type ResourceName =
   | "Crop" // OK
   | "Device" // OK
   | "FarmEvent" // OK
-  | "Image"
-  | "Log"
   | "Peripheral" // OK
-  | "Plant" //ok
+  | "Plant" // ok
+  | "Log" // OK
+  | "Image"
   | "Point"
   | "Regimen"
   | "Sequence"
