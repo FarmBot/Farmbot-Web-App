@@ -49,7 +49,7 @@ module Api
       # If data handling for this method gets any more complicated,
       # extract into a mutation.
       if(user.is_a?(Hash))
-        yield({ email:          user.fetch(:email, "").downcase,
+        yield({ email:          (user[:email] || "").downcase,
                 password:       user[:password],
                 credentials:    user[:credentials],
                 agree_to_terms: !!user[:agree_to_terms],
