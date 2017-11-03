@@ -57,6 +57,7 @@ export function emptyState(): RestResources {
         Device: [],
         FarmEvent: [],
         Image: [],
+        Plant: [],
         Log: [],
         Peripheral: [],
         Crop: [],

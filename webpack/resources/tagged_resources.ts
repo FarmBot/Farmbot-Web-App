@@ -18,20 +18,19 @@ import { betterCompact } from "../util";
 import * as _ from "lodash";
 import { WebcamFeed } from "../controls/interfaces";
 export type ResourceName =
-  | "User"
+  | "Crop"
   | "Device"
   | "FarmEvent"
   | "Image"
   | "Log"
   | "Peripheral"
-  | "Crop"
+  | "Plant"
   | "Point"
   | "Regimen"
   | "Sequence"
   | "Tool"
   | "User"
-  | "WebcamFeed"
-  | "Point";
+  | "WebcamFeed";
 
 export interface TaggedResourceBase {
   kind: ResourceName;
