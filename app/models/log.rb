@@ -21,4 +21,8 @@ class Log < ApplicationRecord
     self.meta ||= {}
     self.meta[:type] ||= "info"
   end
+
+  def broadcast? # Logs get their own special channel. Don't echo twice!
+    Device.current && (destroyed? || notable_changes?)
+  end
 end

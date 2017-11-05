@@ -93,7 +93,7 @@ private
         @current_device
       else
         @current_device = (current_user.try(:device) || no_device)
-        Thread.current[:device] = @current_device # Mutable state eww
+        Device.current  = @current_device # Mutable state eww
         @current_device
       end
     end

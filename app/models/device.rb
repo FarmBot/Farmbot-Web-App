@@ -45,7 +45,15 @@ class Device < ApplicationRecord
     Thread.current[:device]
   end
 
+  def self.current=(dev)
+    Thread.current[:device] = dev
+  end
+
   def self.current_jwt
     Thread.current[:jwt]
+  end
+
+  def self.mine # For development mode debugging.
+    User.find_by(email: "admin@admin.com").device
   end
 end

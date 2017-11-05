@@ -2,14 +2,16 @@
 # change protocols
 module Transport
 
-  AMQP_URL = ENV['CLOUDAMQP_URL'] ||
-             ENV['RABBITMQ_URL']  ||
-             "amqp://guest:guest@localhost:5672"
+  AMQP_URL     = ENV['CLOUDAMQP_URL'] ||
+                 ENV['RABBITMQ_URL']  ||
+                 "amqp://guest:guest@localhost:5672"
+
+  AMQP_OPTIONS = { read_timeout: 10,
+                   heartbeat:    10,
+                   log_level:    'info' }
 
   def self.connection
-    @connection ||= Bunny
-      .new(AMQP_URL, read_timeout: 10, heartbeat: 10)
-      .start
+    @connection ||= Bunny.new(AMQP_URL, AMQP_OPTIONS).start
   end
 
   def self.topic
@@ -20,6 +22,6 @@ module Transport
   end
 
   def self.send(message, id, channel)
-      topic.publish(message, routing_key: "bot.device_#{id}.#{channel}")
+    topic.publish(message, routing_key: "bot.device_#{id}.#{channel}")
   end
 end
