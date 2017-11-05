@@ -40,6 +40,9 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast!
-    Transport.send(broadcast_payload, Device.current.id, chan_name)
+    AutoSyncJob.perform_later(broadcast_payload,
+                              Device.current.id,
+                              chan_name,
+                              Time.now.utc.to_i)
   end
 end

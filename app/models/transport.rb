@@ -22,6 +22,6 @@ module Transport
   end
 
   def self.send(message, id, channel)
-    AutoSyncJob.perform_later(message, id, channel)
+    topic.publish(message, routing_key: "bot.device_#{id}.#{channel}")
   end
 end
