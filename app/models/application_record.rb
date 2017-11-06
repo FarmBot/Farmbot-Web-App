@@ -41,9 +41,12 @@ class ApplicationRecord < ActiveRecord::Base
     }.to_json
   end
 
+  def klass_name_as_string
+    (SPECIAL_NAMES[self.class] || self.class.name)
+  end
+
   def chan_name
-    klass = self.class
-    "sync.#{(SPECIAL_NAMES[klass] || klass.name)}.#{self.id}"
+    "sync.#{klass_name_as_string}.#{self.id}"
   end
 
   def broadcast!

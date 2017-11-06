@@ -42,15 +42,15 @@ class Device < ApplicationRecord
   end
 
   def self.current
-    Thread.current[:device]
+    RequestStore.current[:device]
   end
 
   def self.current=(dev)
-    Thread.current[:device] = dev
+    RequestStore.current[:device] = dev
   end
 
   def self.current_jwt
-    Thread.current[:jwt]
+    RequestStore.current[:jwt]
   end
 
   def self.mine # For development mode debugging.

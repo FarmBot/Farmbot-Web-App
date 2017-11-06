@@ -26,6 +26,7 @@ gem "webpack-rails"
 gem "rollbar"
 gem "skylight", "1.4.0"
 gem "bunny"
+gem "request_store"
 
 group :development, :test do
   gem "codecov", require: false
