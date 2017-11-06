@@ -60,9 +60,12 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
+    amq-protocol (2.2.0)
     arel (8.0.0)
     bcrypt (3.1.11)
     builder (3.2.3)
+    bunny (2.7.2)
+      amq-protocol (>= 2.2.0)
     case_transform (0.2)
       activesupport
     choice (0.2.0)
@@ -264,6 +267,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers
+  bunny
   codecov
   database_cleaner
   delayed_job
