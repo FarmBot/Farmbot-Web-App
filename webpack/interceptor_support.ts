@@ -23,8 +23,8 @@ export let RESOURCES: ResourceName[] = [
   "Device"
 ];
 
-/** Temporary stub until auto_sync rollout */
-export const LEGACY_RESOURCE_NAMES = [
+/** Temporary stub until auto_sync rollout. TODO: Remove */
+export const TEMP_LEGACY_RESOURCE_NAMES = [
   "device",
   "farm_events",
   "logs",
@@ -44,7 +44,7 @@ export const LEGACY_RESOURCE_NAMES = [
 export function notifyBotOfChanges(url: string | undefined, action: DataChangeType) {
   if (url) {
     url.split("/").filter((chunk: ResourceName) => {
-      return LEGACY_RESOURCE_NAMES.includes(chunk);
+      return TEMP_LEGACY_RESOURCE_NAMES.includes(chunk);
     }).map(async function (resource: ResourceName) {
       getDevice().dataUpdate(action, { [resource]: inferUpdateId(url) });
     });
