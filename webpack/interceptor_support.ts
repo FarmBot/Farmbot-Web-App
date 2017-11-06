@@ -23,6 +23,20 @@ export let RESOURCES: ResourceName[] = [
   "Device"
 ];
 
+/** Temporary stub until auto_sync rollout */
+export const LEGACY_RESOURCE_NAMES = [
+  "device",
+  "farm_events",
+  "logs",
+  "peripherals",
+  "plants",
+  "points",
+  "regimens",
+  "sequences",
+  "tool_slots",
+  "tools"
+];
+
 // PROBLEM:       The bot doesn't know if the user has changed any of the data.
 // GOOD SOLUTION: Create a push notification system on the API.
 // FAST SOLUTION: Ping the bot every time we push "save" or "update".
@@ -30,7 +44,7 @@ export let RESOURCES: ResourceName[] = [
 export function notifyBotOfChanges(url: string | undefined, action: DataChangeType) {
   if (url) {
     url.split("/").filter((chunk: ResourceName) => {
-      return RESOURCES.includes(chunk);
+      return LEGACY_RESOURCE_NAMES.includes(chunk);
     }).map(async function (resource: ResourceName) {
       getDevice().dataUpdate(action, { [resource]: inferUpdateId(url) });
     });
