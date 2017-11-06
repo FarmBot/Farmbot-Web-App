@@ -1,3 +1,4 @@
+require "bunny"
 # A wrapper around AMQP to stay DRY. Will make life easier if we ever need to
 # change protocols
 module Transport
