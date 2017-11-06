@@ -12,6 +12,12 @@ import { Session } from "./session";
 import { attachToRoot } from "./util";
 import { Callback } from "i18next";
 
+const key = "Nov 6 15:22";
+if (!localStorage[key]) {
+  localStorage[key] = JSON.stringify("X");
+  location.reload(true);
+}
+
 interface RootComponentProps {
   store: Store;
 }
