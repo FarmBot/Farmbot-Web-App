@@ -1,11 +1,11 @@
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { TaggedResource } from "../../../resources/tagged_resources";
+import { TaggedResource, SpecialStatus } from "../../../resources/tagged_resources";
 
 export function fakeResourceIndex(): ResourceIndex {
   const fakeResources: TaggedResource[] = [
     {
-      "specialStatus": undefined,
+      "specialStatus": SpecialStatus.SAVED,
       "kind": "Point",
       "body": {
         "id": 1,
@@ -21,7 +21,7 @@ export function fakeResourceIndex(): ResourceIndex {
       "uuid": "plant"
     },
     {
-      "specialStatus": undefined,
+      "specialStatus": SpecialStatus.SAVED,
       "kind": "Point",
       "body": {
         "id": 2,
@@ -36,7 +36,7 @@ export function fakeResourceIndex(): ResourceIndex {
       "uuid": "point"
     },
     {
-      "specialStatus": undefined,
+      "specialStatus": SpecialStatus.SAVED,
       "kind": "Point",
       "body": {
         "id": 3,
@@ -52,7 +52,7 @@ export function fakeResourceIndex(): ResourceIndex {
       "uuid": "toolslot"
     },
     {
-      "specialStatus": undefined,
+      "specialStatus": SpecialStatus.SAVED,
       "kind": "Tool",
       "body": {
         "id": 1,

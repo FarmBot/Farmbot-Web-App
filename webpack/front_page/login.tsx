@@ -68,6 +68,7 @@ export class Login extends React.Component<LoginProps, {}> {
         </WidgetHeader>
         <WidgetBody>
           <form onSubmit={(e) => {
+            e.persist();
             e.preventDefault();
             /** Force focus on fake input. Triggers blur on all inputs. */
             this.hiddenFieldRef && this.hiddenFieldRef.focus();

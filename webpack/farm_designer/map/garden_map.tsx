@@ -7,7 +7,7 @@ import * as moment from "moment";
 import { GardenMapProps, GardenMapState } from "../interfaces";
 import { history } from "../../history";
 import { initSave, save, edit } from "../../api/crud";
-import { TaggedPlantPointer } from "../../resources/tagged_resources";
+import { TaggedPlantPointer, SpecialStatus } from "../../resources/tagged_resources";
 import {
   translateScreenToGarden,
   round,
@@ -143,7 +143,7 @@ export class GardenMap extends
         const p: TaggedPlantPointer = {
           kind: "Point",
           uuid: "--never",
-          specialStatus: undefined,
+          specialStatus: SpecialStatus.SAVED,
           body: Plant({
             x,
             y,

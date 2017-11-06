@@ -1,6 +1,6 @@
 import { GetState } from "../redux/interfaces";
 import { maybeDetermineUuid } from "../resources/selectors";
-import { ResourceName, TaggedResource } from "../resources/tagged_resources";
+import { ResourceName, TaggedResource, SpecialStatus } from "../resources/tagged_resources";
 import { destroyOK } from "../resources/actions";
 import { overwrite, init } from "../api/crud";
 import { fancyDebug } from "../util";
@@ -75,7 +75,7 @@ const asTaggedResource = (data: UpdateMqttData, uuid: string): TaggedResource =>
     // tslint:disable-next-line:no-any
     kind: (data.kind as any),
     uuid,
-    specialStatus: undefined,
+    specialStatus: SpecialStatus.SAVED,
     // tslint:disable-next-line:no-any
     body: (data.body as any) // I trust you, API...
   };
@@ -87,7 +87,7 @@ const handleCreate =
 const handleUpdate =
   (d: UpdateMqttData, uid: string) => {
     const tr = asTaggedResource(d, uid);
-    return overwrite(tr, tr.body);
+    return overwrite(tr, tr.body, undefined);
   };
 
 function handleCreateOrUpdate(dispatch: Function,
@@ -126,6 +126,7 @@ function handleCreateOrUpdate(dispatch: Function,
 const handleErr = (d: BadMqttData) => console.log("DATA VALIDATION ERROR!", d);
 
 const handleSkip = () => { };
+
 
 export const tempDebug =
   (dispatch: Function, getState: GetState) =>

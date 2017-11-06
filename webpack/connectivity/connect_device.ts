@@ -18,7 +18,7 @@ import {
 import { init } from "../api/crud";
 import { versionOK } from "../devices/reducer";
 import { AuthState } from "../auth/interfaces";
-import { TaggedResource } from "../resources/tagged_resources";
+import { TaggedResource, SpecialStatus } from "../resources/tagged_resources";
 import { tempDebug } from "./temp_debug";
 
 export const TITLE = "New message from bot";
@@ -63,7 +63,7 @@ export function showLogOnScreen(log: Log) {
 
 export const initLog = (log: Log): ReduxAction<TaggedResource> => init({
   kind: "Log",
-  specialStatus: undefined,
+  specialStatus: SpecialStatus.SAVED,
   uuid: "MUST_CHANGE",
   body: log
 }, true);

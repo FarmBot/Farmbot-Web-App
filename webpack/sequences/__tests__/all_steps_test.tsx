@@ -2,13 +2,13 @@ import * as React from "react";
 import { AllSteps } from "../all_steps";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { shallow } from "enzyme";
-import { TaggedSequence } from "../../resources/tagged_resources";
+import { TaggedSequence, SpecialStatus } from "../../resources/tagged_resources";
 import { maybeTagSteps } from "../../resources/sequence_tagging";
 
 describe("<AllSteps/>", () => {
   const TEST_CASE = {
     "kind": "Sequence",
-    "specialStatus": undefined,
+    "specialStatus": SpecialStatus.SAVED,
     "body": {
       "id": 8,
       "name": "Goto 0, 0, 0",

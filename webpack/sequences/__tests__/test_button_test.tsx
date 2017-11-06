@@ -7,7 +7,7 @@ describe("<TestButton/>", () => {
   function fakeSequence(): TaggedSequence {
     return {
       "kind": "Sequence",
-      "specialStatus": undefined,
+      "specialStatus": SpecialStatus.SAVED,
       "body": {
         "name": "Goto 0, 0, 0",
         "color": "gray",
@@ -43,7 +43,7 @@ describe("<TestButton/>", () => {
   it("doesnt fire if unsynced", () => {
     const props = fakeProps();
     props.syncStatus = "sync_now";
-    props.sequence.specialStatus = undefined;
+    props.sequence.specialStatus = SpecialStatus.SAVED;
     props.sequence.body.id = 1;
     const result = mount(<TestButton {...props} />);
     const btn = result.find("button");
@@ -56,7 +56,7 @@ describe("<TestButton/>", () => {
   it("does fire if saved and synced", () => {
     const props = fakeProps();
     props.syncStatus = "synced";
-    props.sequence.specialStatus = undefined;
+    props.sequence.specialStatus = SpecialStatus.SAVED;
     props.sequence.body.id = 1;
     const result = mount(<TestButton {...props} />);
     const btn = result.find("button");

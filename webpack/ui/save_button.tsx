@@ -5,8 +5,7 @@ import { SpecialStatus } from "../resources/tagged_resources";
 interface SaveBtnProps {
   /** Callback */
   onClick?: (e: React.MouseEvent<{}>) => void;
-  /** Defaults to a "saved" status if set to `undefined` */
-  status: SpecialStatus | undefined;
+  status: SpecialStatus;
   dirtyText?: string;
   /** Optional alternative to "SAVING" */
   savingText?: string;

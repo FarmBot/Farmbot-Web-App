@@ -28,7 +28,7 @@ export class HardwareSettings extends
             status={bot.hardware.informational_settings.sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <SaveBtn
-              status={bot.isUpdating ? SpecialStatus.SAVING : undefined}
+              status={bot.isUpdating ? SpecialStatus.SAVING : SpecialStatus.SAVED}
               dirtyText={" "}
               savingText={"Updating..."}
               savedText={"saved"}

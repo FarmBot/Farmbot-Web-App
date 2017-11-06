@@ -10,7 +10,7 @@ import {
   lastUrlChunk
 } from "../util";
 import { Row, Col, ToolTip } from "../ui/index";
-import { TaggedSequence } from "../resources/tagged_resources";
+import { TaggedSequence, SpecialStatus } from "../resources/tagged_resources";
 import { init } from "../api/crud";
 import { ToolTips } from "../constants";
 
@@ -66,7 +66,7 @@ export class SequencesList extends
     return {
       kind: "Sequence",
       uuid: "REDUCER_MUST_CHANGE_THIS",
-      specialStatus: undefined,
+      specialStatus: SpecialStatus.SAVED,
       body: {
         name: "new sequence " + (this.props.sequences.length),
         args: { version: -999 },

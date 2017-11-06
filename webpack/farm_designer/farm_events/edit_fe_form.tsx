@@ -105,11 +105,11 @@ interface State {
    *
    * Example: Navigating away from the page while editing will discard changes.
    */
-  specialStatusLocal: SpecialStatus | undefined;
+  specialStatusLocal: SpecialStatus;
 }
 
 export class EditFEForm extends React.Component<EditFEProps, State> {
-  state: State = { fe: {}, specialStatusLocal: undefined };
+  state: State = { fe: {}, specialStatusLocal: SpecialStatus.SAVED };
 
   get isOneTime() { return this.fieldGet("timeUnit") === NEVER; }
 
@@ -180,7 +180,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     this
       .dispatch(save(this.props.farmEvent.uuid))
       .then(() => {
-        this.setState({ specialStatusLocal: undefined });
+        this.setState({ specialStatusLocal: SpecialStatus.SAVED });
         history.push("/app/designer/farm_events");
         const frmEvnt = this.props.farmEvent;
         const nextRun = _.first(scheduleForFarmEvent(frmEvnt.body));

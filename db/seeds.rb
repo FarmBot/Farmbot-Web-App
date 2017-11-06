@@ -1,4 +1,5 @@
 unless Rails.env == "production"
+    User.destroy_all
     POINT_COUNT             = 2
     PLANT_COUNT             = 2
     DATE_RANGE_LO           = 1..3

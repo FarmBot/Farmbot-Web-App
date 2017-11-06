@@ -102,7 +102,7 @@ export let resourceReducer = generateReducer
   })
   .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
     const resource = payload;
-    resource.specialStatus = undefined;
+    resource.specialStatus = SpecialStatus.SAVED;
     if (resource
       && resource.body) {
       switch (resource.kind) {
@@ -156,7 +156,7 @@ export let resourceReducer = generateReducer
     s.index.references[uuid] = payload;
     const tr = s.index.references[uuid];
     if (tr) {
-      tr.specialStatus = undefined;
+      tr.specialStatus = SpecialStatus.SAVED;
       sanityCheck(tr);
       dontTouchThis(tr);
       reindexResource(s.index, tr);
@@ -168,7 +168,7 @@ export let resourceReducer = generateReducer
   .add<TaggedResource>(Actions._RESOURCE_NO, (s, { payload }) => {
     const uuid = payload.uuid;
     const tr = merge(findByUuid(s.index, uuid), payload);
-    tr.specialStatus = undefined;
+    tr.specialStatus = SpecialStatus.SAVED;
     sanityCheck(tr);
     return s;
   })
@@ -187,7 +187,7 @@ export let resourceReducer = generateReducer
     const uuid = payload.uuid;
     const original = findByUuid(s.index, uuid);
     original.body = payload.update as typeof original.body;
-    original.specialStatus = SpecialStatus.DIRTY;
+    original.specialStatus = payload.specialStatus;
     sanityCheck(original);
     payload && isTaggedResource(original);
     dontTouchThis(original);
@@ -243,7 +243,7 @@ export let resourceReducer = generateReducer
 
 /** Helper method to change the `specialStatus` of a resource in the index */
 const mutateSpecialStatus =
-  (uuid: string, index: ResourceIndex, status: SpecialStatus | undefined) => {
+  (uuid: string, index: ResourceIndex, status = SpecialStatus.SAVED) => {
     const resource = index.references[uuid];
     if (resource) {
       resource.specialStatus = status;

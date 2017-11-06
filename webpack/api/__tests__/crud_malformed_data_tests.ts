@@ -11,7 +11,7 @@ jest.mock("../../resources/tagged_resources", () => ({
 }));
 
 import { refresh } from "../crud";
-import { TaggedDevice } from "../../resources/tagged_resources";
+import { TaggedDevice, SpecialStatus } from "../../resources/tagged_resources";
 import { API } from "../index";
 import { get } from "lodash";
 import { Actions } from "../../constants";
@@ -24,7 +24,7 @@ describe("refresh()", () => {
     const device1: TaggedDevice = {
       "uuid": "Device.6.1",
       "kind": "Device",
-      "specialStatus": undefined,
+      "specialStatus": SpecialStatus.SAVED,
       "body": {
         "id": 6,
         "name": "summer-pond-726",

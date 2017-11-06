@@ -1,14 +1,14 @@
 import * as React from "react";
 import { mount } from "enzyme";
 import { PeripheralForm } from "../peripheral_form";
-import { TaggedPeripheral } from "../../../resources/tagged_resources";
+import { TaggedPeripheral, SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<PeripheralForm/>", function () {
   const dispatch = jest.fn();
   const peripherals: TaggedPeripheral[] = [
     {
       uuid: "Peripheral.2.2",
-      specialStatus: undefined,
+      specialStatus: SpecialStatus.SAVED,
       kind: "Peripheral",
       body: {
         id: 2,
@@ -18,7 +18,7 @@ describe("<PeripheralForm/>", function () {
     },
     {
       uuid: "Peripheral.1.1",
-      specialStatus: undefined,
+      specialStatus: SpecialStatus.SAVED,
       kind: "Peripheral",
       body: {
         id: 1,

@@ -8,7 +8,7 @@ jest.mock("../../../device", () => ({
 import * as React from "react";
 import { mount } from "enzyme";
 import { PeripheralList } from "../peripheral_list";
-import { TaggedPeripheral } from "../../../resources/tagged_resources";
+import { TaggedPeripheral, SpecialStatus } from "../../../resources/tagged_resources";
 import { Pins } from "farmbot/dist";
 import { getDevice } from "../../../device";
 
@@ -21,7 +21,7 @@ describe("<PeripheralList/>", function () {
     {
       uuid: "Peripheral.2.2",
       kind: "Peripheral",
-      specialStatus: undefined,
+      specialStatus: SpecialStatus.SAVED,
       body: {
         id: 2,
         pin: 13,
@@ -31,7 +31,7 @@ describe("<PeripheralList/>", function () {
     {
       uuid: "Peripheral.1.1",
       kind: "Peripheral",
-      specialStatus: undefined,
+      specialStatus: SpecialStatus.SAVED,
       body: {
         id: 1,
         pin: 2,

@@ -20,7 +20,7 @@ interface PasswordForm {
 }
 
 interface ChangePWState {
-  status: SpecialStatus | undefined;
+  status: SpecialStatus;
   form: PasswordForm
 }
 const EMPTY_FORM = {
@@ -31,7 +31,7 @@ const EMPTY_FORM = {
 
 export class ChangePassword extends React.Component<{}, ChangePWState> {
   state: ChangePWState = {
-    status: undefined,
+    status: SpecialStatus.SAVED,
     form: EMPTY_FORM
   };
 
@@ -40,7 +40,7 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
   maybeClearForm = () => wowFixMe(EMPTY_FORM, this.state.form) ?
     this.clearForm() : false;
 
-  clearForm = () => this.setState({ status: undefined, form: EMPTY_FORM });
+  clearForm = () => this.setState({ status: SpecialStatus.SAVED, form: EMPTY_FORM });
 
   set = (key: keyof PasswordForm) =>
     (e: React.SyntheticEvent<HTMLInputElement>) => {

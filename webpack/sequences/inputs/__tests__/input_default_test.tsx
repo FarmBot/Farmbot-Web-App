@@ -2,7 +2,7 @@ jest.unmock("../../step_tiles/index");
 import * as React from "react";
 import { InputDefault } from "../input_default";
 import { mount } from "enzyme";
-import { TaggedSequence } from "../../../resources/tagged_resources";
+import { TaggedSequence, SpecialStatus } from "../../../resources/tagged_resources";
 import { MoveAbsolute } from "farmbot/dist";
 import { Wrapper } from "../../../__test_support__/wrapper";
 
@@ -33,7 +33,7 @@ describe("<InputDefault/>", () => {
     };
 
     const tr: TaggedSequence = {
-      "specialStatus": undefined,
+      "specialStatus": SpecialStatus.SAVED,
       "kind": "Sequence",
       "body": {
         "id": 74,

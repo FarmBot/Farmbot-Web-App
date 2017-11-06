@@ -1,5 +1,5 @@
 import { User } from "../auth/interfaces";
-import { TaggedUser } from "../resources/tagged_resources";
+import { TaggedUser, SpecialStatus } from "../resources/tagged_resources";
 
 export let user: User = {
   created_at: "2016-10-05T03:02:58.000Z",
@@ -12,7 +12,7 @@ export let user: User = {
 export let taggedUser: TaggedUser = {
   kind: "User",
   uuid: "1234-5678",
-  specialStatus: undefined,
+  specialStatus: SpecialStatus.SAVED,
   body: {
     created_at: "2016-10-05T03:02:58.000Z",
     email: "farmbot1@farmbot.io",

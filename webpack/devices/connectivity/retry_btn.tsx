@@ -4,7 +4,7 @@ import { SpecialStatus } from "../../resources/tagged_resources";
 interface RetryBtnProps {
   flags: boolean[];
   onClick(): void;
-  status: SpecialStatus | undefined;
+  status: SpecialStatus;
 }
 
 export function RetryBtn(props: RetryBtnProps) {

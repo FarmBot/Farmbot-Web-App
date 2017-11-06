@@ -23,19 +23,24 @@ export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
   return {
     type: Actions.EDIT_RESOURCE,
-    payload: { uuid: tr.uuid, update: changes }
+    payload: {
+      uuid: tr.uuid,
+      update: changes,
+      specialStatus: SpecialStatus.DIRTY
+    }
   };
 }
 
 /** Rather than update (patch) a TaggedResource, this method will overwrite
  * everything within the `.body` property. */
 export function overwrite(tr: TaggedResource,
-  changeset: typeof tr.body):
+  changeset: typeof tr.body,
+  specialStatus = SpecialStatus.SAVED):
   ReduxAction<EditResourceParams> {
 
   return {
     type: Actions.OVERWRITE_RESOURCE,
-    payload: { uuid: tr.uuid, update: changeset }
+    payload: { uuid: tr.uuid, update: changeset, specialStatus }
   };
 }
 
@@ -67,7 +72,7 @@ export function init(resource: TaggedResource,
   /** Set to "true" when you want an `undefined` SpecialStatus. */
   clean = false): ReduxAction<TaggedResource> {
   resource.body.id = resource.body.id || 0;
-  resource.specialStatus = clean ? undefined : SpecialStatus.DIRTY;
+  resource.specialStatus = SpecialStatus[clean ? "SAVED" : "DIRTY"];
   /** Don't touch this- very important! */
   resource.uuid = generateUuid(resource.body.id, resource.kind);
   return { type: Actions.INIT_RESOURCE, payload: resource };
