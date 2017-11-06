@@ -12,6 +12,12 @@ class ApplicationRecord < ActiveRecord::Base
                     #  "updated_at",
                      "current_sign_in_at" ]
 
+  # Sometimes the Ruby class name does not match up with the FBOS/FBJS/FE name.
+  # Entering a class into this dictionary allows for special cases.
+  SPECIAL_NAMES = {
+    GenericPointer  => "Point"
+  }
+
   # Determine if the changes to the model are worth broadcasting or not.
   # Reduces network noise.
   def notable_changes?
@@ -36,7 +42,8 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def chan_name
-    "sync.#{self.class.name}.#{self.id}"
+    klass = self.class
+    "sync.#{(SPECIAL_NAMES[klass] || klass.name)}.#{self.id}"
   end
 
   def broadcast!
