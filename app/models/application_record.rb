@@ -40,11 +40,9 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast!
-    puts "`broadcast!` is stubbed"
-    # AutoSyncJob.perform_later({}, 2, "sync.Device.3", Time.now.utc.to_i)
-    # AutoSyncJob.perform_later(broadcast_payload,
-    #                           Device.current.id,
-    #                           chan_name,
-    #                           Time.now.utc.to_i)
+    AutoSyncJob.perform_later(broadcast_payload,
+                              Device.current.id,
+                              chan_name,
+                              Time.now.utc.to_i)
   end
 end

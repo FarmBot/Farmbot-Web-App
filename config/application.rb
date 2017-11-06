@@ -8,7 +8,7 @@ Bundler.require(:default, Rails.env)
 module FarmBot
   class Application < Rails::Application
 
-    config.active_job.queue_adapter = :sneakers
+    config.active_job.queue_adapter = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
     config.generators do |g|
@@ -34,10 +34,5 @@ module FarmBot
     Rails.application.routes.default_url_options[:port] = ENV["API_PORT"] || 3000
     # ¯\_(ツ)_/¯
     $API_URL = "//#{ Rails.application.routes.default_url_options[:host] }:#{ Rails.application.routes.default_url_options[:port] }"
-
-    Sneakers.configure(amqp:          'amqp://localhost',
-                       vhost:         '/',
-                       exchange:      'sneakers',
-                       exchange_type: :direct)
   end
 end

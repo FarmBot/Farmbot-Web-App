@@ -25,7 +25,6 @@ gem "webpack-rails"
 # vars if you wish to use them on your own servers.
 gem "rollbar"
 gem "skylight", "1.4.0"
-gem "sneakers"
 
 group :development, :test do
   gem "codecov", require: false
