@@ -38,7 +38,7 @@ class Device < ApplicationRecord
                      meta:       { type: "info" } })
     json = LogSerializer.new(log).as_json.to_json
 
-    Transport.send(json, self.id, "logs")
+    Transport.amqp_send(json, self.id, "logs")
   end
 
   def self.current

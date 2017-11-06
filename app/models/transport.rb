@@ -16,7 +16,7 @@ module Transport
                  .topic("amq.topic", auto_delete: true)
   end
 
-  def self.send(message, id, channel)
+  def self.amqp_send(message, id, channel)
     topic.publish(message, routing_key: "bot.device_#{id}.#{channel}")
   end
 end
