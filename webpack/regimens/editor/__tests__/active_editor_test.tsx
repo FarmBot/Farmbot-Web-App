@@ -41,7 +41,7 @@ describe("<ActiveEditor />", () => {
           color: "red", name: "Foo", regimen_items: []
         },
         uuid: "Regimen.1.17",
-        specialStatus: ""
+        specialStatus: "DIRTY"
       },
       type: Actions.OVERWRITE_RESOURCE
     });
