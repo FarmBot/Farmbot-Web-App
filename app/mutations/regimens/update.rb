@@ -25,8 +25,8 @@ module Regimens
         regimen.update_attributes!(inputs.slice(:name, :color, :regimen_items))
       end
 
+      regimen.broadcast!
       regimen
-
     rescue ActiveRecord::RecordInvalid => e
       offender = e.record.as_json.slice("time_offset", "sequence_id").to_s
       add_error :regimen_items,
