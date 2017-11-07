@@ -12,12 +12,6 @@ class ApplicationRecord < ActiveRecord::Base
                     #  "updated_at",
                      "current_sign_in_at" ]
 
-  # Sometimes the Ruby class name does not match up with the FBOS/FBJS/FE name.
-  # Entering a class into this dictionary allows for special cases.
-  SPECIAL_NAMES = {
-    GenericPointer  => "Point"
-  }
-
   # Determine if the changes to the model are worth broadcasting or not.
   # Reduces network noise.
   def notable_changes?
@@ -33,20 +27,23 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast_payload
+    body = (destroyed? ?
+      nil : ActiveModel::Serializer.serializer_for(self).new(self))
     {
       args: {
         label: (Device.current_jwt || {})[:jti] || "UNKNOWN"
       },
-      body: (destroyed? ? nil : self).as_json
+      body: body.as_json
     }.to_json
   end
 
-  def klass_name_as_string
-    (SPECIAL_NAMES[self.class] || self.class.name)
+  # Overridable
+  def name_used_when_syncing
+    self.class.name
   end
 
   def chan_name
-    "sync.#{klass_name_as_string}.#{self.id}"
+    "sync.#{name_used_when_syncing}.#{self.id}"
   end
 
   def broadcast!

@@ -127,7 +127,6 @@ const handleErr = (d: BadMqttData) => console.log("DATA VALIDATION ERROR!", d);
 
 const handleSkip = () => { };
 
-
 export const tempDebug =
   (dispatch: Function, getState: GetState) =>
     (chan: string, payload: Buffer) => {
