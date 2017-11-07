@@ -1,4 +1,8 @@
 unless Rails.env == "production"
+    ToolSlot.destroy_all
+    Tool.destroy_all
+    Point.destroy_all
+
     User.destroy_all
     POINT_COUNT             = 2
     PLANT_COUNT             = 2

@@ -54,6 +54,7 @@ class Device < ApplicationRecord
   end
 
   def self.mine # For development mode debugging.
-    User.find_by(email: "admin@admin.com").device
+    raise "NO" unless Rails.env.development?
+    Device.current = User.find_by!(email: "admin@admin.com").device
   end
 end
