@@ -13,8 +13,4 @@ class Point < ApplicationRecord
   validates_presence_of :pointer
   validates_presence_of :device
   accepts_nested_attributes_for :pointer
-
-  def name_used_when_syncing
-    (pointer.is_a?(GenericPointer) ? "Point" : pointer_type).tap { |x| Thread.new { `espeak #{x}`} }
-  end
 end
