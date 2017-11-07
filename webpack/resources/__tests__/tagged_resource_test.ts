@@ -24,6 +24,6 @@ describe("getArrayStatus()", () => {
     arr[0].specialStatus = SpecialStatus.SAVED;
     arr[1].specialStatus = SpecialStatus.SAVED;
     arr[2].specialStatus = SpecialStatus.SAVED;
-    expect(getArrayStatus(arr)).toBe(undefined);
+    expect(getArrayStatus(arr)).toBe(SpecialStatus.SAVED);
   });
 });

@@ -56,7 +56,7 @@ describe("<ChangePassword/>", function () {
     });
     instance().maybeClearForm();
     el.update();
-    expect(instance().state.status).toBe(undefined);
+    expect(instance().state.status).toBe(SpecialStatus.SAVED);
   });
 
   it("sets a field", () => {

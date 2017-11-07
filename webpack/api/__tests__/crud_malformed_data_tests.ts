@@ -24,7 +24,7 @@ describe("refresh()", () => {
     const device1: TaggedDevice = {
       "uuid": "Device.6.1",
       "kind": "Device",
-      "specialStatus": SpecialStatus.SAVED,
+      "specialStatus": "" as SpecialStatus,
       "body": {
         "id": 6,
         "name": "summer-pond-726",

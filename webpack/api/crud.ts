@@ -35,7 +35,7 @@ export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
  * everything within the `.body` property. */
 export function overwrite(tr: TaggedResource,
   changeset: typeof tr.body,
-  specialStatus = SpecialStatus.SAVED):
+  specialStatus = SpecialStatus.DIRTY):
   ReduxAction<EditResourceParams> {
 
   return {
