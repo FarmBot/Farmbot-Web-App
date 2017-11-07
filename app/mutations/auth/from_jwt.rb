@@ -8,8 +8,9 @@ module Auth
       token  = SessionToken.decode!(just_the_token)
       claims = token.unencoded
       RequestStore.store[:jwt] = claims.deep_symbolize_keys
-      User
-        .find_by_email_or_id(claims["sub"])
+      u = User.includes(:device).find_by_email_or_id(claims["sub"])
+      Device.current = u.device
+      u
     rescue JWT::DecodeError, ActiveRecord::RecordNotFound, User::BadSub
       add_error :jwt, :decode_error, Auth::ReloadToken::BAD_SUB
     end

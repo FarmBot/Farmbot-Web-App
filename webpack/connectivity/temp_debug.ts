@@ -87,7 +87,7 @@ const handleCreate =
 const handleUpdate =
   (d: UpdateMqttData, uid: string) => {
     const tr = asTaggedResource(d, uid);
-    return overwrite(tr, tr.body, undefined);
+    return overwrite(tr, tr.body, SpecialStatus.SAVED);
   };
 
 function handleCreateOrUpdate(dispatch: Function,
