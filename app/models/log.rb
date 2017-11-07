@@ -23,6 +23,6 @@ class Log < ApplicationRecord
   end
 
   def broadcast? # Logs get their own special channel. Don't echo twice!
-    Device.current && (destroyed? || notable_changes?)
+    false
   end
 end
