@@ -1,4 +1,4 @@
-import { DataChangeType, Dictionary } from "farmbot/dist";
+import { DataChangeType, Dictionary, toPairs, rpcRequest } from "farmbot/dist";
 import { getDevice } from "./device";
 import { box } from "boxed_value";
 import * as _ from "lodash";
@@ -37,16 +37,18 @@ export const TEMP_LEGACY_RESOURCE_NAMES = [
   "tools"
 ];
 
-// PROBLEM:       The bot doesn't know if the user has changed any of the data.
-// GOOD SOLUTION: Create a push notification system on the API.
-// FAST SOLUTION: Ping the bot every time we push "save" or "update".
-//                Our hope is to eventually move this logic into the API.
+// LEGACY API. This was a temporary solution that was superceded by the auto
+// sync feature. End of life: 1 Jan 2018
 export function notifyBotOfChanges(url: string | undefined, action: DataChangeType) {
   if (url) {
     url.split("/").filter((chunk: ResourceName) => {
       return TEMP_LEGACY_RESOURCE_NAMES.includes(chunk);
     }).map(async function (resource: ResourceName) {
-      getDevice().dataUpdate(action, { [resource]: inferUpdateId(url) });
+      getDevice().publish(rpcRequest([{
+        kind: "data_update" as any,
+        body: toPairs({ [resource]: inferUpdateId(url) }),
+        args: { [resource]: inferUpdateId(url) }
+      }]));
     });
   }
 }

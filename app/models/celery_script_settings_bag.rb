@@ -11,9 +11,9 @@ module CeleryScriptSettingsBag
                              config_update calibrate execute move_absolute
                              move_relative write_pin read_pin send_message
                              factory_reset execute_script set_user_env wait
-                             add_point install_farmware update_farmware zero
-                             remove_farmware take_photo data_update find_home
-                             install_first_party_farmware)
+                             install_farmware update_farmware take_photo zero
+                             install_first_party_farmware remove_farmware
+                             find_home)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
   RESOURCE_NAME         = %w(images plants regimens peripherals
@@ -167,9 +167,7 @@ module CeleryScriptSettingsBag
       .defineNode(:factory_reset,     [:package], [])
       .defineNode(:execute_script,    [:label], [:pair])
       .defineNode(:set_user_env,      [], [:pair])
-      .defineNode(:add_point,         [:location], [:pair])
       .defineNode(:take_photo,        [], [])
-      .defineNode(:data_update,       [:value], [:pair])
       .defineNode(:point,             [:pointer_type, :pointer_id], [])
       .defineNode(:install_farmware,  [:url])
       .defineNode(:update_farmware,   [:package])
