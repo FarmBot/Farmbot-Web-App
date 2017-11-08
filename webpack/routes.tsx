@@ -278,6 +278,14 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         }
       },
       {
+        path: "app/logs",
+        getComponent(_discard: void, cb: Function) {
+          import("./logs/index")
+            .then(module => cb(undefined, module.Logs))
+            .catch(errorLoading);
+        }
+      },
+      {
         path: "*",
         getComponent(_discard: void, cb: Function) {
           import("./404")
