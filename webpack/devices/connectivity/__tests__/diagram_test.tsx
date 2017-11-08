@@ -11,6 +11,7 @@ import {
   DiagramNodes,
   getConnectionColor
 } from "../diagram";
+import { Color } from "../../../ui/colors";
 
 describe("<ConnectivityDiagram/>", () => {
   function fakeProps(): ConnectivityDiagramProps {
@@ -101,13 +102,13 @@ describe("getLineProps()", () => {
 
 describe("getConnectionColor()", () => {
   it("unknown", () => {
-    expect(getConnectionColor(undefined)).toEqual("#e66");
+    expect(getConnectionColor(undefined)).toEqual(Color.red);
   });
   it("error", () => {
-    expect(getConnectionColor(false)).toEqual("#e66");
+    expect(getConnectionColor(false)).toEqual(Color.red);
   });
   it("ok", () => {
-    expect(getConnectionColor(true)).toEqual("#6a4");
+    expect(getConnectionColor(true)).toEqual(Color.green);
   });
 });
 
@@ -134,12 +135,12 @@ describe("<Connector/>", () => {
     expect(lines.length).toEqual(3);
     expect(lines.at(0).props())
       .toEqual({
-        id: "connector-border", stroke: "white", strokeWidth: 9,
+        id: "connector-border", stroke: Color.white, strokeWidth: 9,
         x1: -25, x2: -50, y1: -55, y2: -20
       });
     expect(lines.at(1).props())
       .toEqual({
-        id: "connector-color", stroke: "#e66", strokeWidth: 5,
+        id: "connector-color", stroke: Color.red, strokeWidth: 5,
         x1: -25, x2: -50, y1: -55, y2: -20
       });
     expect(lines.at(2).props())
@@ -154,6 +155,6 @@ describe("<Connector/>", () => {
     const p = fakeProps();
     p.connectionData.connectionStatus = true;
     const wrapper = mount(<Connector {...p } />);
-    expect(wrapper.find("line").at(1).props().stroke).toEqual("#6a4");
+    expect(wrapper.find("line").at(1).props().stroke).toEqual(Color.green);
   });
 });

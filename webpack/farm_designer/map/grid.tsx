@@ -3,6 +3,7 @@ import { GridProps } from "./interfaces";
 import { getXYFromQuadrant } from "./util";
 import * as _ from "lodash";
 import { history } from "../../history";
+import { Color } from "../../ui/colors";
 
 export function Grid(props: GridProps) {
   function closePlantInfo() {
@@ -27,12 +28,14 @@ export function Grid(props: GridProps) {
   const yLabel = getXYFromQuadrant(-11, 18, quadrant, gridSize);
   return <g className="drop-area-background" onClick={closePlantInfo}>
     <defs>
-      <pattern id="minor_grid" width={10} height={10} patternUnits="userSpaceOnUse">
+      <pattern id="minor_grid"
+        width={10} height={10} patternUnits="userSpaceOnUse">
         <path d="M10,0 L0,0 L0,10" strokeWidth={1}
           fill="none" stroke="rgba(0, 0, 0, 0.15)" />
       </pattern>
 
-      <pattern id={"major_grid"} width={100} height={100} patternUnits="userSpaceOnUse">
+      <pattern id={"major_grid"}
+        width={100} height={100} patternUnits="userSpaceOnUse">
         <path d="M100,0 L0,0 0,100" strokeWidth={2}
           fill="none" stroke="rgba(0, 0, 0, 0.15)" />
       </pattern>
@@ -40,26 +43,30 @@ export function Grid(props: GridProps) {
       <marker id="arrow"
         markerWidth={10} markerHeight={10} refX={0} refY={2} orient="auto"
         markerUnits="strokeWidth">
-        <path d="M0,0 L0,4 L5,2 z" fill="#333" />
+        <path d="M0,0 L0,4 L5,2 z" fill={Color.gridGray} />
       </marker>
     </defs>
 
     <g id="grid">
-      <rect id="fill" width={gridSize.x} height={gridSize.y} fill="#CA8" />
-      <rect id="minor-grid" width={gridSize.x} height={gridSize.y} fill="url(#minor_grid)" />
-      <rect id="major-grid" width={gridSize.x} height={gridSize.y} fill="url(#major_grid)" />
+      <rect id="fill"
+        width={gridSize.x} height={gridSize.y} fill={Color.gridSoil} />
+      <rect id="minor-grid"
+        width={gridSize.x} height={gridSize.y} fill="url(#minor_grid)" />
+      <rect id="major-grid"
+        width={gridSize.x} height={gridSize.y} fill="url(#major_grid)" />
       <rect id="border" width={gridSize.x} height={gridSize.y} fill="none"
         stroke="rgba(0,0,0,0.3)" strokeWidth={2} />
     </g>
 
     <g id="origin-marker">
-      <circle cx={origin.qx} cy={origin.qy} r={4} fill="#333" />
+      <circle cx={origin.qx} cy={origin.qy} r={4} fill={Color.gridGray} />
       <g id="axis-labels" fontFamily="Arial" fontSize="10"
         textAnchor="middle" dominantBaseline="central">
         <text x={xLabel.qx} y={xLabel.qy}>X</text>
         <text x={yLabel.qx} y={yLabel.qy}>Y</text>
       </g>
-      <g id="axis-arrows" stroke="#333" strokeWidth="3" markerEnd="url(#arrow)">
+      <g id="axis-arrows"
+        stroke={Color.gridGray} strokeWidth="3" markerEnd="url(#arrow)">
         <line x1={origin.qx} y1={origin.qy} x2={arrowEnd.qx} y2={origin.qy} />
         <line x1={origin.qx} y1={origin.qy} x2={origin.qx} y2={arrowEnd.qy} />
       </g>

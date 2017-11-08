@@ -5,6 +5,7 @@ import { round, getXYFromQuadrant } from "./util";
 import { DragHelpers } from "./drag_helpers";
 import { Session } from "../../session";
 import { BooleanSetting } from "../../session_keys";
+import { Color } from "../../ui/colors";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
@@ -47,7 +48,7 @@ export class GardenPlant extends
           cx={qx}
           cy={qy}
           r={radius}
-          fill="#90612f"
+          fill={Color.soilCloud}
           fillOpacity="0" />}
 
       <g id="plant-icon">

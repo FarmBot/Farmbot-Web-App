@@ -3,6 +3,7 @@ import { SlotWithTool } from "../../resources/interfaces";
 import { getXYFromQuadrant } from "./util";
 import { MapTransformProps } from "./interfaces";
 import * as _ from "lodash";
+import { Color } from "../../ui/colors";
 
 export interface TSPProps {
   slot: SlotWithTool;
@@ -83,7 +84,7 @@ export class ToolSlotPoint extends
           cy={qy}
           r={35}
           fillOpacity={0.5}
-          fill={this.state.hovered ? "#434343" : "#666666"} />
+          fill={this.state.hovered ? Color.darkGray : Color.mediumGray} />
       }
 
       <text
@@ -93,7 +94,7 @@ export class ToolSlotPoint extends
         dx={40}
         dy={10}
         fontSize={24}
-        fill={"#434343"}>
+        fill={Color.darkGray}>
         {toolName}
       </text>
     </g>;

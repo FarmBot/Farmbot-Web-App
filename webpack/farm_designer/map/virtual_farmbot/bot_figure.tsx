@@ -2,6 +2,7 @@ import * as React from "react";
 import { AxisNumberProperty, MapTransformProps } from "../interfaces";
 import { getMapSize, getXYFromQuadrant } from "../util";
 import { BotPosition } from "../../../devices/interfaces";
+import { Color } from "../../../ui/colors";
 
 export interface BotFigureProps {
   name: string;
@@ -17,7 +18,7 @@ export function BotFigure(props: BotFigureProps) {
   const mapSize = getMapSize(gridSize, plantAreaOffset);
   const positionQ = getXYFromQuadrant(
     (position.x || 0), (position.y || 0), quadrant, gridSize);
-  const color = eStopStatus ? "#e82f2f" : "#434343";
+  const color = eStopStatus ? Color.virtualRed : Color.darkGray;
   const opacity = name.includes("encoder") ? 0.25 : 0.75;
   return <g id={name}>
     <rect id="gantry"

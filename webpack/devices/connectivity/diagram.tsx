@@ -1,6 +1,7 @@
 import * as React from "react";
 import { StatusRowProps } from "./connectivity_row";
 import { CowardlyDictionary } from "../../util";
+import { Color } from "../../ui/colors";
 
 export interface ConnectivityDiagramProps {
   rowData: StatusRowProps[];
@@ -67,9 +68,9 @@ export function nodeLabel(
 }
 
 export function getConnectionColor(status: boolean | undefined) {
-  const colorOk = "#6a4";
-  const colorError = "#e66";
-  // const colorUnknown = "#fd6";
+  const colorOk = Color.green;
+  const colorError = Color.red;
+  // const colorUnknown = Color.yellow;
   switch (status) {
     case undefined: return colorError; // change to colorUnknown when ready
     case true: return colorOk;
@@ -103,8 +104,8 @@ export function Connector(props: ConnectorProps): JSX.Element {
   const lineProps = customLineProps ? customLineProps : getLineProps(from, to);
   const hoverIndicatorColor =
     hoveredConnection === connectionData.connectionName
-      ? "#434343"
-      : "white";
+      ? Color.darkGray
+      : Color.white;
   return <g
     id={connectionData.connectionName + "-connector"}
     strokeLinecap="round">

@@ -2,6 +2,7 @@ import * as React from "react";
 import { shallow } from "enzyme";
 import { BotOriginQuadrant } from "../../../interfaces";
 import { BotFigure, BotFigureProps } from "../bot_figure";
+import { Color } from "../../../../ui/colors";
 
 describe("<BotFigure/>", () => {
   function fakeProps(): BotFigureProps {
@@ -32,7 +33,7 @@ describe("<BotFigure/>", () => {
         y: -100,
         width: 20,
         height: 1700,
-        fill: "#434343",
+        fill: Color.darkGray,
         fillOpacity: opacity
       };
       const gantryProps = result.find("rect").props();
@@ -43,7 +44,7 @@ describe("<BotFigure/>", () => {
         cx: expected.x,
         cy: expected.y,
         r: 35,
-        fill: "#434343",
+        fill: Color.darkGray,
         fillOpacity: opacity
       };
       const UTMProps = result.find("circle").props();
@@ -74,6 +75,6 @@ describe("<BotFigure/>", () => {
     const p = fakeProps();
     p.eStopStatus = true;
     const wrapper = shallow(<BotFigure {...p } />);
-    expect(wrapper.find("#gantry").props().fill).toEqual("#e82f2f");
+    expect(wrapper.find("#gantry").props().fill).toEqual(Color.virtualRed);
   });
 });
