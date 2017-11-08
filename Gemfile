@@ -25,7 +25,7 @@ gem "webpack-rails"
 # vars if you wish to use them on your own servers.
 gem "rollbar"
 gem "skylight", "1.4.0"
-gem "bunny"
+gem "sneakers"
 gem "request_store"
 
 group :development, :test do

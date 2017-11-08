@@ -5,26 +5,18 @@ import { WebcamPanelProps } from "./interfaces";
 import { TaggedWebcamFeed, SpecialStatus } from "../../resources/tagged_resources";
 import { edit, save, destroy, init } from "../../api/crud";
 
-type S = {
-  activeMenu: "edit" | "show"
-};
+type S = { activeMenu: "edit" | "show" };
 
-type P = {
-  feeds: TaggedWebcamFeed[];
-  dispatch: Function;
-};
+type P = { feeds: TaggedWebcamFeed[]; dispatch: Function; };
 
 const EMPTY_FEED: TaggedWebcamFeed = {
   kind: "WebcamFeed",
   specialStatus: SpecialStatus.DIRTY,
   uuid: "",
-  body: {
-    url: "",
-    name: ""
-  }
+  body: { url: "", name: "" }
 };
-export class WebcamPanel extends React.Component<P, S> {
 
+export class WebcamPanel extends React.Component<P, S> {
   state: S = { activeMenu: "show" };
 
   childProps = (activeMenu: "edit" | "show"): WebcamPanelProps => {
@@ -39,9 +31,10 @@ export class WebcamPanel extends React.Component<P, S> {
   }
 
   render() {
-    switch (this.state.activeMenu) {
-      case "show": return <Show {...this.childProps("edit") } />;
-      default: return <Edit {...this.childProps("show") } />;
+    if (this.state.activeMenu === "show") {
+      return <Show {...this.childProps("edit") } />;
+    } else {
+      return <Edit {...this.childProps("show") } />;
     }
   }
 }
