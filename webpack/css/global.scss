@@ -500,3 +500,27 @@ ul {
   margin: auto;
   margin-top: 10%;
 }
+
+.logs {
+  .row {
+    @media screen and (max-width: 974px) {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+}
+
+.logs-table {
+  background: $white;
+  div {
+    float: left;
+    margin-right: 10px;
+  }
+  thead {
+    background: $gray;
+  }
+  td {
+    box-shadow: inset 1px 0 0 0 $gray !important;
+    color: $dark_gray !important;
+  }
+}

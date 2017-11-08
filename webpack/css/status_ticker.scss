@@ -72,3 +72,10 @@
     animation: flash 1.5s ease-in;
   }
 }
+
+.logs-page-link {
+  text-align: center;
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
