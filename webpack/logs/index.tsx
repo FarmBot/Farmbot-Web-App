@@ -8,6 +8,7 @@ import { t } from "i18next";
 import { Popover, Position } from "@blueprintjs/core";
 import * as _ from "lodash";
 import { LogsTableProps, LogsState, LogsFilterMenuProps, LogsProps } from "./interfaces";
+import { ToolTips } from "../constants";
 
 export const formatLogTime = (created_at: number) =>
   moment.unix(created_at).local().format("MMM D, h:mma");
@@ -89,18 +90,29 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
   toggle = (name: keyof LogsState) =>
     () => this.setState({ [name]: !this.state[name] });
 
+  get filterActive() {
+    const filterKeys = Object.keys(this.state)
+      .filter(x => !(x === "autoscroll"));
+    const filterValues = filterKeys
+      .map((key: keyof LogsState) => this.state[key]);
+    return !filterValues.every(x => x);
+  }
+
   render() {
+    const filterBtnColor = this.filterActive ? "green" : "gray";
     return <Page className="logs">
       <Row>
-        <Col xs={10}>
+        <Col xs={11}>
           <h3>
             <i>{t("Logs")}</i>
           </h3>
-          <ToolTip helpText={"View and filter log messages."} />
+          <ToolTip helpText={ToolTips.LOGS} />
         </Col>
-        <Col xs={2}>
+        <Col xs={1}>
           <Popover position={Position.BOTTOM_RIGHT}>
-            <i className="fa fa-gear" style={{ float: "right" }} />
+            <button className={`fb-button ${filterBtnColor}`}>
+              {this.filterActive ? t("Filters active") : t("filter")}
+            </button>
             <LogsFilterMenu toggle={this.toggle} state={this.state} />
           </Popover>
         </Col>

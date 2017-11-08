@@ -4,8 +4,7 @@ export interface LogsProps {
   logs: Log[]
 }
 
-export interface LogsState {
-  autoscroll: boolean;
+export interface Filters {
   success: boolean;
   busy: boolean;
   warn: boolean;
@@ -13,6 +12,10 @@ export interface LogsState {
   info: boolean;
   fun: boolean;
   debug: boolean;
+}
+
+export interface LogsState extends Filters {
+  autoscroll: boolean;
 }
 
 export interface LogsTableProps {
