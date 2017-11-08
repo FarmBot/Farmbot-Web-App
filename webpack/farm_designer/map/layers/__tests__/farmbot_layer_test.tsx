@@ -21,7 +21,8 @@ describe("<FarmBotLayer/>", () => {
         y: { value: 1500, isDefault: true }
       },
       plantAreaOffset: { x: 100, y: 100 },
-      peripherals: []
+      peripherals: [],
+      eStopStatus: false
     };
   }
 

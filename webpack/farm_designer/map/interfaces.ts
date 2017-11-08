@@ -95,6 +95,7 @@ export interface VirtualFarmBotProps {
   botLocationData: BotLocationData;
   plantAreaOffset: AxisNumberProperty;
   peripherals: { label: string, value: boolean }[];
+  eStopStatus: boolean;
 }
 
 export interface FarmBotLayerProps extends VirtualFarmBotProps, BotExtentsProps {

@@ -70,4 +70,10 @@ describe("<BotFigure/>", () => {
     expect(UTM.cy).toEqual(200);
   });
 
+  it("changes color on e-stop", () => {
+    const p = fakeProps();
+    p.eStopStatus = true;
+    const wrapper = shallow(<BotFigure {...p } />);
+    expect(wrapper.find("#gantry").props().fill).toEqual("#e82f2f");
+  });
 });

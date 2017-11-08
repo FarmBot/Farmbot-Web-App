@@ -32,7 +32,8 @@ describe("<FarmDesigner/>", () => {
       },
       botMcuParams: bot.hardware.mcu_params,
       stepsPerMmXY: { x: undefined, y: undefined },
-      peripherals: []
+      peripherals: [],
+      eStopStatus: false
     };
   }
 
