@@ -37,7 +37,7 @@ function MetaInfo({ obj, attr, label }: MetaInfoProps) {
 export class Photos extends React.Component<PhotosProps, {}> {
 
   takePhoto = () => {
-    const ok = () => success(t("Processing now. Refresh page to see result."));
+    const ok = () => success(t("Processing now. Results usually available in one minute."));
     const no = () => error(t("Error taking photo"));
     getDevice().takePhoto().then(ok, no);
   }

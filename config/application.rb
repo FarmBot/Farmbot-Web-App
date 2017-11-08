@@ -9,12 +9,8 @@ Bundler.require(:default, Rails.env)
 module FarmBot
   class Application < Rails::Application
     if ENV["CLOUDAMQP_URL"]
-      Rollbar.info("Rick- AMQP is activated.")
       config.active_job.queue_adapter = :sneakers
-      Sneakers.configure(amqp:          ENV["CLOUDAMQP_URL"],
-                         vhost:         URI::parse(ENV["CLOUDAMQP_URL"]).path.gsub("/", ""),
-                         exchange:      'sneakers',
-                         exchange_type: :direct)
+      Sneakers.configure(connection: Transport.connection)
     else
       config.active_job.queue_adapter = :delayed_job
     end
