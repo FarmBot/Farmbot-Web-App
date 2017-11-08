@@ -55,12 +55,13 @@ describe("<TickerList />", () => {
         toggle={jest.fn()} />
     );
     const labels = wrapper.find("label");
-    expect(labels.length).toEqual(4);
+    expect(labels.length).toEqual(5);
     expect(labels.at(0).text()).toContain("Farmbot is up and Running!");
     expect(labels.at(1).text()).toContain("Aug 2");
     expect(labels.at(1).text()).toContain(":50pm");
     expect(labels.at(2).text()).toContain("Farmbot is up and Running!");
     expect(labels.at(3).text()).toContain("Aug 2");
     expect(labels.at(3).text()).toContain(":50pm");
+    expect(labels.at(4).text()).toEqual("Filter logs");
   });
 });
