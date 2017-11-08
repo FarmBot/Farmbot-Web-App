@@ -8,10 +8,16 @@ Bundler.require(:default, Rails.env)
 
 module FarmBot
   class Application < Rails::Application
-
-    config.active_job.queue_adapter = :delayed_job
-    # config.active_job.queue_adapter = :sneakers
-    # Sneakers.configure(amqp: Transport::AMQP_URL)
+    if ENV["CLOUDAMQP_URL"]
+      Rollbar.info("Rick- AMQP is activated.")
+      config.active_job.queue_adapter = :sneakers
+      Sneakers.configure(amqp:          ENV["CLOUDAMQP_URL"],
+                         vhost:         URI::parse(ENV["CLOUDAMQP_URL"]).path.gsub("/", ""),
+                         exchange:      'sneakers',
+                         exchange_type: :direct)
+    else
+      config.active_job.queue_adapter = :delayed_job
+    end
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
     config.generators do |g|
