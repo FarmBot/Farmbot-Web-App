@@ -9,8 +9,9 @@ Bundler.require(:default, Rails.env)
 module FarmBot
   class Application < Rails::Application
 
-    config.active_job.queue_adapter = :sneakers
-    Sneakers.configure(amqp: Transport::AMQP_URL)
+    config.active_job.queue_adapter = :delayed_job
+    # config.active_job.queue_adapter = :sneakers
+    # Sneakers.configure(amqp: Transport::AMQP_URL)
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
     config.generators do |g|
