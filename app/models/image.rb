@@ -43,8 +43,6 @@ class Image < ApplicationRecord
     content_type: ["image/jpg", "image/jpeg", "image/png", "image/gif"]
 
   def set_attachment_by_url(url)
-    # Image.new.set_attachment_by_url("http://i.imgur.com/OhLresv.png").save!
-    Device.current  = self.device
     self.attachment = open(url)
     self.attachment_processed_at = Time.now
     self

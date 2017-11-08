@@ -49,12 +49,18 @@ class Device < ApplicationRecord
     RequestStore.store[:device] = dev
   end
 
-  def self.current_jwt
-    RequestStore.store[:jwt]
+  # Sets Device.current to `self` and returns it to the previous value when
+  #  finished running block. Usually this is unecessary, but may be required in
+  # background jobs. If you are not receiving auto_sync data on your client,
+  # you probably need to use this method.
+  def auto_sync_transaction
+    prev           = Device.current
+    Device.current = self
+    yield
+    Device.current = prev
   end
 
-  def self.mine # For development mode debugging.
-    raise "NO" unless Rails.env.development?
-    Device.current = User.find_by!(email: "admin@admin.com").device
+  def self.current_jwt
+    RequestStore.store[:jwt]
   end
 end

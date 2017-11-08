@@ -2,13 +2,10 @@ class CreateAttachmentFromUrlJob < ApplicationJob
   queue_as :default
 
   def perform(image:, attachment_url:)
-    Device.current = image.device
-    image.set_attachment_by_url(attachment_url)
-    image.save!
-    Device.current = nil
-  rescue => e
-    Rollbar.error('ERROR PROCESSING IMAGE!!', e)
-    raise e
+    image.device.auto_sync_transaction do
+      image.set_attachment_by_url(attachment_url)
+      image.save!
+    end
   end
 
   def max_attempts
