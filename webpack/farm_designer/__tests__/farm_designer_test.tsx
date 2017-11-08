@@ -1,8 +1,11 @@
+jest.mock("react-redux", () => ({
+  connect: jest.fn()
+}));
+
 import * as React from "react";
 import { FarmDesigner } from "../index";
 import { mount } from "enzyme";
 import { Props } from "../interfaces";
-import { store } from "../../redux/store";
 import { GardenMapLegendProps } from "../map/interfaces";
 import { bot } from "../../__test_support__/fake_state/bot";
 
@@ -39,7 +42,7 @@ describe("<FarmDesigner/>", () => {
 
   it("loads default map settings", () => {
     localStorage["showPoints"] = "false";
-    const wrapper = mount(<FarmDesigner { ...fakeProps() } />, { context: { store } });
+    const wrapper = mount(<FarmDesigner { ...fakeProps() } />);
     const legendProps = wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
     expect(legendProps.zoomLvl).toEqual(1);
     expect(legendProps.legendMenuOpen).toBeFalsy();
@@ -52,5 +55,11 @@ describe("<FarmDesigner/>", () => {
     const gardenMapProps = wrapper.find("GardenMap").props() as any;
     expect(gardenMapProps.gridSize.x).toEqual(2900);
     expect(gardenMapProps.gridSize.y).toEqual(1400);
+  });
+
+  it("renders nav titles", () => {
+    const wrapper = mount(<FarmDesigner { ...fakeProps() } />);
+    ["Designer", "Plants", "Farm Events"].map(string =>
+      expect(wrapper.text()).toContain(string));
   });
 });

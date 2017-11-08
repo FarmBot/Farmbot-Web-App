@@ -28,7 +28,7 @@ describe("<Peripherals />", () => {
 
   it("renders", () => {
     const wrapper = mount(<Peripherals {...fakeProps() } />);
-    ["Peripheral", "Edit", "Save", "Fake Pin", "1"].map(string =>
+    ["Peripherals", "Edit", "Save", "Fake Pin", "1"].map(string =>
       expect(wrapper.text()).toContain(string));
     const saveButton = wrapper.find("button").at(1);
     expect(saveButton.text()).toContain("Save");
