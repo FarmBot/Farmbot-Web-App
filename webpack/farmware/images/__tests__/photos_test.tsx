@@ -28,6 +28,12 @@ describe("<Photos/>", () => {
     return images;
   }
 
+  it("renders title", () => {
+    const wrapper = mount(<Photos
+      images={[]} currentImage={undefined} dispatch={jest.fn()} />);
+    expect(wrapper.text()).toContain("Photos");
+  });
+
   it("shows photo", () => {
     const dispatch = jest.fn();
     const images = prepareImages(fakeImages);

@@ -6,6 +6,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { Logs, LogsFilterMenu } from "../index";
 import { Log } from "../../interfaces";
+import { ToolTips } from "../../constants";
 
 describe("<Logs />", () => {
   function fakeLogs(): Log[] {
@@ -31,16 +32,22 @@ describe("<Logs />", () => {
 
   it("renders", () => {
     const wrapper = mount(<Logs logs={fakeLogs()} />);
-    ["Logs", "View and filter log messages.", "Type", "Message", "Time", "Info",
+    ["Logs", ToolTips.LOGS, "Type", "Message", "Time", "Info",
       "Fake log message 1", "Success", "Fake log message 2"]
       .map(string =>
         expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
+    const filterBtn = wrapper.find("button").first();
+    expect(filterBtn.text().toLowerCase()).toEqual("filter");
+    expect(filterBtn.hasClass("gray")).toBeTruthy();
   });
 
   it("filters logs", () => {
     const wrapper = mount(<Logs logs={fakeLogs()} />);
     wrapper.setState({ info: false });
     expect(wrapper.text()).not.toContain("Fake log message 1");
+    const filterBtn = wrapper.find("button").first();
+    expect(filterBtn.text().toLowerCase()).toEqual("filters active");
+    expect(filterBtn.hasClass("green")).toBeTruthy();
   });
 });
 

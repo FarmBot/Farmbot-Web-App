@@ -62,6 +62,7 @@ export function mapStateToProps(props: Everything) {
     botLocationData: getBotLocationData(),
     botMcuParams: props.bot.hardware.mcu_params,
     stepsPerMmXY: stepsPerMmXY(),
-    peripherals
+    peripherals,
+    eStopStatus: props.bot.hardware.informational_settings.locked
   };
 }

@@ -84,7 +84,7 @@ export class SequencesList extends
     return (
       <div className="sequence-list-panel">
         <h3>
-          <i>{t("Sequence")}</i>
+          <i>{t("Sequences")}</i>
         </h3>
         <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
         <button

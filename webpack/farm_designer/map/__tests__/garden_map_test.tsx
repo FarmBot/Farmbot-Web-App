@@ -53,7 +53,8 @@ describe("<GardenPlant/>", () => {
       botOriginQuadrant: 2,
       gridSize: { x: 1000, y: 1000 },
       gridOffset: { x: 100, y: 100 },
-      peripherals: []
+      peripherals: [],
+      eStopStatus: false
     };
   }
 

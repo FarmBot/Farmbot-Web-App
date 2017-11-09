@@ -3,6 +3,7 @@ import { DragHelpers } from "../drag_helpers";
 import { shallow } from "enzyme";
 import { DragHelpersProps } from "../interfaces";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import { Color } from "../../../ui/colors";
 
 describe("<DragHelpers/>", () => {
   function fakeProps(): DragHelpersProps {
@@ -33,7 +34,7 @@ describe("<DragHelpers/>", () => {
     expect(wrapper.find("#long-crosshair").length).toEqual(1);
     expect(wrapper.find("#short-crosshair").length).toEqual(1);
     expect(wrapper.find("#alignment-indicator").find("use").length).toBe(0);
-    expect(wrapper.find("#drag-helpers").props().fill).toEqual("#434343");
+    expect(wrapper.find("#drag-helpers").props().fill).toEqual(Color.darkGray);
   });
 
   it("renders coordinates tooltip while dragging", () => {
@@ -109,7 +110,7 @@ describe("<DragHelpers/>", () => {
     expect(segments.at(0).props().xlinkHref).toEqual("#alignment-indicator-segment-5");
     expect(segments.at(0).props().transform).toEqual("rotate(90, 100, 100)");
     expect(segments.at(1).props().transform).toEqual("rotate(270, 100, 100)");
-    expect(indicators.props().fill).toEqual("#ee6666");
+    expect(indicators.props().fill).toEqual(Color.red);
   });
 
   it("renders horizontal alignment indicators", () => {
@@ -124,7 +125,7 @@ describe("<DragHelpers/>", () => {
     expect(segments.length).toEqual(2);
     expect(segments.at(0).props().transform).toEqual("rotate(0, 100, 100)");
     expect(segments.at(1).props().transform).toEqual("rotate(180, 100, 100)");
-    expect(indicator.props().fill).toEqual("#ee6666");
+    expect(indicator.props().fill).toEqual(Color.red);
   });
 
   it("renders horizontal and vertical alignment indicators in quadrant 4", () => {
@@ -147,7 +148,7 @@ describe("<DragHelpers/>", () => {
     expect(segments.at(1).props().transform).toEqual("rotate(180, 2900, 1400)");
     expect(segments.at(2).props().transform).toEqual("rotate(90, 2900, 1400)");
     expect(segments.at(3).props().transform).toEqual("rotate(270, 2900, 1400)");
-    expect(indicator.props().fill).toEqual("#ee6666");
+    expect(indicator.props().fill).toEqual(Color.red);
   });
 
 });

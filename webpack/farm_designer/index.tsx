@@ -177,7 +177,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           botOriginQuadrant={botOriginQuadrant}
           gridSize={getGridSize(botSize)}
           gridOffset={gridOffset}
-          peripherals={this.props.peripherals} />
+          peripherals={this.props.peripherals}
+          eStopStatus={this.props.eStopStatus} />
       </div>
     </div>;
   }

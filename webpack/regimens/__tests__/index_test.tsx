@@ -34,7 +34,7 @@ describe("<Regimens />", () => {
 
   it("renders", () => {
     const wrapper = mount(<Regimens {...fakeProps() } />);
-    ["Regimen", "Regimen Editor", "Scheduler"].map(string =>
+    ["Regimens", "Regimen Editor", "Scheduler"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 
