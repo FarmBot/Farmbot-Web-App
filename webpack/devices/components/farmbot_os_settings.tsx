@@ -22,6 +22,7 @@ import { AutoUpdateRow } from "./fbos_settings/auto_update_row";
 import { RestartRow } from "./fbos_settings/restart_row";
 import { ShutdownRow } from "./fbos_settings/shutdown_row";
 import { FactoryResetRow } from "./fbos_settings/factory_reset_row";
+import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 
 export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps> {
@@ -106,13 +107,14 @@ export class FarmbotOsSettings
           </Row>
           <this.lastSeen />
           <MustBeOnline
-            status={this.props.bot.hardware.informational_settings.sync_status}
+            status={hardware.informational_settings.sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <AutoUpdateRow bot={this.props.bot} controller_version={controller_version} />
             <RestartRow />
             <ShutdownRow />
             <FactoryResetRow />
-            <CameraSelection env={this.props.bot.hardware.user_env} />
+            <AutoSyncRow currentValue={hardware.configuration.auto_sync} />
+            <CameraSelection env={hardware.user_env} />
             <BoardType firmwareVersion={firmware_version} />
           </MustBeOnline>
         </WidgetBody>

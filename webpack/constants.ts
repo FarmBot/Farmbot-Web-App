@@ -1,3 +1,5 @@
+import { trim } from "./util";
+
 /**
  * Seems like a better idea to keep content and tooltips centralized. If we have
  * the ability to keep the app safer from possible accidental breakages by
@@ -300,6 +302,12 @@ export namespace Content {
   export const RESTART_FARMBOT =
     `This will restart FarmBot's Raspberry Pi and controller
     software.`.replace(/\s+/g, " ");
+
+  export const AUTO_SYNC = trim(`When enabled, device resources such as
+  sequences and regimens will be sent to the device automatically. This removes
+  the need to push "SYNC" after making changes in the web app. Changes to
+  running sequences and regimens while auto sync is enabled will result in
+  instantaneous change.`);
 
   export const SHUTDOWN_FARMBOT =
     `This will shutdown FarmBot's Raspberry Pi. To turn it
