@@ -94,6 +94,7 @@ export interface EditFEProps {
   dispatch: Function;
   findExecutable: ExecutableQuery;
   title: string;
+  deleteBtn?: boolean;
 }
 
 interface State {
@@ -271,7 +272,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             status={fe.specialStatus || this.state.specialStatusLocal}
             color="magenta"
             onClick={this.commitViewModel} />
-          <button className="fb-button red"
+          <button className="fb-button red" hidden={!this.props.deleteBtn}
             onClick={() => {
               this.dispatch(destroy(fe.uuid)).then(() => {
                 history.push("/app/designer/farm_events");

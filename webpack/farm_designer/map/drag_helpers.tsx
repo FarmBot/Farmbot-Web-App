@@ -3,9 +3,7 @@ import { DragHelpersProps } from "./interfaces";
 import { round, getXYFromQuadrant, getMapSize } from "./util";
 import { isUndefined } from "util";
 import { BotPosition } from "../../devices/interfaces";
-
-const GRAY = "#434343";
-const RED = "#ee6666";
+import { Color } from "../../ui/colors";
 
 enum Alignment {
   NONE = "not aligned",
@@ -66,7 +64,7 @@ export function DragHelpers(props: DragHelpersProps) {
   const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
   const gardenCoord: BotPosition = { x: round(x), y: round(y), z: 0 };
 
-  return <g id="drag-helpers" fill={GRAY}>
+  return <g id="drag-helpers" fill={Color.darkGray}>
     {dragging && // Active plant
       <text id="coordinates-tooltip"
         x={qx} y={qy} dy={-20 * scale} fontSize={1.25 * scale + "rem"}>
@@ -96,7 +94,7 @@ export function DragHelpers(props: DragHelpersProps) {
         })}
       </g>}
     {!dragging && // Non-active plants
-      <g id="alignment-indicator" fill={RED}>
+      <g id="alignment-indicator" fill={Color.red}>
         <defs>
           <g id={"alignment-indicator-segment-" + plant.body.id}>
             <rect

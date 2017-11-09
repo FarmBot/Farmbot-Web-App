@@ -2,6 +2,7 @@ import * as React from "react";
 import { Hue, Saturation } from "react-color/lib/components/common";
 import { FarmbotPickerProps } from "./interfaces";
 import * as _ from "lodash";
+import { Color } from "../../ui/colors";
 
 /** Wrapper class around `react-color`'s `<Saturation />` and `<Hue />`.
  *  Add an extra white box feature for showing user weed detection settings.
@@ -17,7 +18,7 @@ const selectedCSS: React.CSSProperties = {
 const unselectedCSS: React.CSSProperties = {
   position: "absolute",
   borderWidth: "5px 0 5px 0",
-  borderColor: "#f4f4f4",
+  borderColor: Color.offWhite,
   borderStyle: "solid",
   background: "rgba(0, 0, 0, 0.3)",
   boxShadow: "0 0 15px 2px rgba(0, 0, 0, 0.3) inset"

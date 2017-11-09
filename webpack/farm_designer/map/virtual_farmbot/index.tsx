@@ -7,7 +7,9 @@ import { BotTrail } from "./bot_trail";
 import { BotPeripherals } from "./bot_peripherals";
 
 export function VirtualFarmBot(props: VirtualFarmBotProps) {
-  const { mapTransformProps, plantAreaOffset, peripherals } = props;
+  const {
+    mapTransformProps, plantAreaOffset, peripherals, eStopStatus
+  } = props;
   const displayTrail = Session.getBool(BooleanSetting.displayTrail);
   const encoderFigure = Session.getBool(BooleanSetting.encoderFigure);
 
@@ -20,7 +22,8 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
     <BotFigure name={"motor-position"}
       position={props.botLocationData.position}
       mapTransformProps={mapTransformProps}
-      plantAreaOffset={plantAreaOffset} />
+      plantAreaOffset={plantAreaOffset}
+      eStopStatus={eStopStatus} />
     {encoderFigure &&
       <BotFigure name={"encoder-position"}
         position={props.botLocationData.scaled_encoders}

@@ -31,7 +31,7 @@ describe("<Tools />", () => {
       "ToolBay 1",
       "SlotXYZ",
       "Tool1101010Foo",
-      "Tool",
+      "Tools",
       "Tool NameStatus",
       "Fooactive"];
     strings.map(string => expect(txt).toContain(string));

@@ -243,6 +243,9 @@ export namespace ToolTips {
     that you can put your Tools in, which should be reflective of your real
     FarmBot hardware configuration.`;
 
+  // Logs
+  export const LOGS =
+    `View and filter log messages.`;
 }
 
 export namespace Content {
