@@ -1,9 +1,9 @@
 import { store } from "../redux/store";
 import { networkUp, networkDown } from "./actions";
 import { Edge } from "./interfaces";
-import { debounce } from "lodash";
+import { throttle } from "lodash";
 
-/** Debounce calls to these functions to avoid unnecessary re-paints. */
+/** throttle calls to these functions to avoid unnecessary re-paints. */
 const SLOWDOWN_TIME = 1500;
 
 /* ABOUT THIS FILE: These functions allow us to mark the network as up or
@@ -12,11 +12,11 @@ directly importing `store`, but in this particular instance it might be
 unavoidable. */
 
 export let dispatchNetworkUp =
-  debounce((edge: Edge, at = (new Date()).toJSON()) => {
+  throttle((edge: Edge, at = (new Date()).toJSON()) => {
     return store.dispatch(networkUp(edge, at));
   }, SLOWDOWN_TIME);
 
 export let dispatchNetworkDown =
-  debounce((edge: Edge, at = (new Date()).toJSON()) => {
+  throttle((edge: Edge, at = (new Date()).toJSON()) => {
     return store.dispatch(networkDown(edge, at));
   }, SLOWDOWN_TIME);
