@@ -64,7 +64,7 @@ export class FarmbotOsSettings
   }
 
   // TODO: Delete this function on 1 Jan 2018. This is a backwards compatibility
-  //       fix. - RC
+  //       fix because old FBOS breaks when `auto_sync` is toggled. - RC
   maybeShowAutoSync = () => {
     const { auto_sync } = this.props.bot.hardware.configuration;
     const isDevMode = location.host.includes("localhost"); // Enable in dev.

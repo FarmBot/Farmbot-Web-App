@@ -18,12 +18,12 @@ import { betterCompact } from "../util";
 import * as _ from "lodash";
 import { WebcamFeed } from "../controls/interfaces";
 export type ResourceName =
-  | "Crop" // OK
-  | "Device" // OK
-  | "FarmEvent" // OK
-  | "Peripheral" // OK
-  | "Plant" // ok
-  | "Log" // OK
+  | "Crop"
+  | "Device"
+  | "FarmEvent"
+  | "Peripheral"
+  | "Plant"
+  | "Log"
   | "Image"
   | "Point"
   | "Regimen"

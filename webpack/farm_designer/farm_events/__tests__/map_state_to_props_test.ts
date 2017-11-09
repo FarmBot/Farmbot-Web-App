@@ -49,7 +49,7 @@ describe("mapStateToProps()", () => {
     return state;
   }
 
-  fit("returns calendar rows", () => {
+  it("returns calendar rows", () => {
     const testTime = moment().startOf("hour").valueOf();
     const { calendarRows, push } = mapStateToProps(testState(testTime));
 

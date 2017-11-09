@@ -4,8 +4,6 @@ webpack: ./node_modules/.bin/webpack-dev-server --config config/webpack.config.j
 worker:  rake jobs:work
 # mqtt:  rails mqtt:start
 
-
-
 # UNCOMMENT THIS LINE IF YOU ARE DOING MOBILE TESTING:
 # Get started with `npm install weinre -g`
 # Learn more at https://people.apache.org/~pmuellr/weinre/docs/latest/

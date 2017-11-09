@@ -19,7 +19,7 @@ import { init } from "../api/crud";
 import { versionOK } from "../devices/reducer";
 import { AuthState } from "../auth/interfaces";
 import { TaggedResource, SpecialStatus } from "../resources/tagged_resources";
-import { tempDebug } from "./temp_debug";
+import { tempDebug } from "./auto_sync";
 
 export const TITLE = "New message from bot";
 
