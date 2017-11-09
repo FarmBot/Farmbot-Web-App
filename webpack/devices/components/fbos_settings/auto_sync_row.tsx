@@ -6,10 +6,10 @@ import { Content } from "../../../constants";
 import { updateConfig } from "../../actions";
 import { noop } from "lodash";
 
-interface AutoSyncRowProps { currentValue: number | undefined; }
+interface AutoSyncRowProps { currentValue: boolean; }
 
 export function AutoSyncRow(props: AutoSyncRowProps) {
-  const auto_sync = props.currentValue === 1 ? 0 : 1;
+  const auto_sync = !props.currentValue;
   return <Row>
     <Col xs={2}>
       <label>
@@ -22,10 +22,8 @@ export function AutoSyncRow(props: AutoSyncRowProps) {
       </p>
     </Col>
     <Col xs={3}>
-      <ToggleButton toggleValue={props.currentValue || 0}
-        toggleAction={() => {
-          updateConfig({ auto_sync })(noop);
-        }} />
+      <ToggleButton toggleValue={props.currentValue}
+        toggleAction={() => updateConfig({ auto_sync })(noop)} />
     </Col>
   </Row>;
 }

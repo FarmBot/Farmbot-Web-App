@@ -86,7 +86,7 @@ export interface JogMovementControlsProps {
 export interface ToggleButtonProps {
   /** Function that is executed when the toggle button is clicked */
   toggleAction: () => void;
-  toggleValue: number | string | undefined;
+  toggleValue: number | string | boolean | undefined;
   disabled?: boolean | undefined;
   noYes?: boolean;
 }

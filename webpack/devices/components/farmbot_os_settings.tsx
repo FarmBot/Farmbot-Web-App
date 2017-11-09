@@ -23,6 +23,7 @@ import { RestartRow } from "./fbos_settings/restart_row";
 import { ShutdownRow } from "./fbos_settings/shutdown_row";
 import { FactoryResetRow } from "./fbos_settings/factory_reset_row";
 import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
+import { isUndefined } from "lodash";
 
 export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps> {
@@ -60,6 +61,19 @@ export class FarmbotOsSettings
     return <LastSeen
       onClick={() => this.props.dispatch(refresh(this.props.account))}
       device={this.props.account} />;
+  }
+
+  // TODO: Delete this function on 1 Jan 2018. This is a backwards compatibility
+  //       fix. - RC
+  maybeShowAutoSync = () => {
+    const { auto_sync } = this.props.bot.hardware.configuration;
+    const isDevMode = location.host.includes("localhost"); // Enable in dev.
+    // Old FBOS => no auto_sync option => breaks when toggled.
+    const properFbosVersion = !isUndefined(auto_sync);
+
+    if (isDevMode || properFbosVersion) {
+      return <AutoSyncRow currentValue={!!auto_sync} />;
+    }
   }
 
   render() {
@@ -113,7 +127,7 @@ export class FarmbotOsSettings
             <RestartRow />
             <ShutdownRow />
             <FactoryResetRow />
-            <AutoSyncRow currentValue={hardware.configuration.auto_sync} />
+            {this.maybeShowAutoSync()}
             <CameraSelection env={hardware.user_env} />
             <BoardType firmwareVersion={firmware_version} />
           </MustBeOnline>
