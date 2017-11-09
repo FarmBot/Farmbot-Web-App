@@ -1,13 +1,13 @@
 import * as React from "react";
-import { BotProp } from "../interfaces";
 import { t } from "i18next";
-import { ToggleButton } from "../../controls/toggle_button";
-import { checkControllerUpdates, updateConfig } from "../actions";
 import { isUndefined, noop } from "lodash";
-import { semverCompare, SemverResult } from "../../util";
 import * as _ from "lodash";
-import { Row, Col } from "../../ui/index";
 import { JobProgress, Configuration } from "farmbot/dist";
+import { SemverResult, semverCompare } from "../../../util";
+import { BotProp } from "../../interfaces";
+import { Row, Col } from "../../../ui/index";
+import { ToggleButton } from "../../../controls/toggle_button";
+import { updateConfig, checkControllerUpdates } from "../../actions";
 
 export let OsUpdateButton = ({ bot }: BotProp) => {
   const osUpdateBool = bot.hardware.configuration.os_auto_update;

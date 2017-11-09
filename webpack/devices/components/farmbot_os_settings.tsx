@@ -1,13 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
 import { FarmbotOsProps } from "../interfaces";
-import {
-  saveAccountChanges,
-  reboot,
-  powerOff,
-  factoryReset
-} from "../actions";
-import { OsUpdateButton } from "./os_update_button";
+import { saveAccountChanges } from "../actions";
 import {
   Widget,
   WidgetHeader,
@@ -24,6 +18,10 @@ import { timezoneMismatch } from "../timezones/guess_timezone";
 import { LastSeen } from "./last_seen_widget";
 import { CameraSelection } from "./camera_selection";
 import { BoardType } from "./board_type";
+import { AutoUpdateRow } from "./fbos_settings/auto_update_row";
+import { RestartRow } from "./fbos_settings/restart_row";
+import { ShutdownRow } from "./fbos_settings/shutdown_row";
+import { FactoryResetRow } from "./fbos_settings/factory_reset_row";
 
 export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps> {
@@ -65,6 +63,9 @@ export class FarmbotOsSettings
 
   render() {
     const { account } = this.props;
+    const { hardware } = this.props.bot;
+    const { firmware_version } = hardware.informational_settings;
+    const { controller_version } = hardware.informational_settings;
 
     return <Widget className="device-widget">
       <form onSubmit={this.saveBot.bind(this)}>
@@ -107,95 +108,12 @@ export class FarmbotOsSettings
           <MustBeOnline
             status={this.props.bot.hardware.informational_settings.sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>
-            <Row>
-              <Col xs={2}>
-                <label>
-                  {t("FARMBOT OS")}
-                </label>
-              </Col>
-              <Col xs={3}>
-                <p>
-                  {t("Version {{ version }}", {
-                    version:
-                    this
-                      .props
-                      .bot
-                      .hardware
-                      .informational_settings.controller_version
-                    || t(" unknown (offline)")
-                  }
-                  )}
-                </p>
-              </Col>
-              <Col xs={7}>
-                <OsUpdateButton bot={this.props.bot} />
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={2}>
-                <label>
-                  {t("RESTART FARMBOT")}
-                </label>
-              </Col>
-              <Col xs={7}>
-                <p>
-                  {t(Content.RESTART_FARMBOT)}
-                </p>
-              </Col>
-              <Col xs={3}>
-                <button
-                  className="fb-button yellow"
-                  type="button"
-                  onClick={reboot}>
-                  {t("RESTART")}
-                </button>
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={2}>
-                <label>
-                  {t("SHUTDOWN FARMBOT")}
-                </label>
-              </Col>
-              <Col xs={7}>
-                <p>
-                  {t(Content.SHUTDOWN_FARMBOT)}
-                </p>
-              </Col>
-              <Col xs={3}>
-                <button
-                  className="fb-button red"
-                  type="button"
-                  onClick={powerOff}>
-                  {t("SHUTDOWN")}
-                </button>
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={2}>
-                <label>
-                  {t("Factory Reset")}
-                </label>
-              </Col>
-              <Col xs={7}>
-                <p>
-                  {t(Content.FACTORY_RESET_WARNING)}
-                </p>
-              </Col>
-              <Col xs={3}>
-                <button
-                  className="fb-button red"
-                  type="button"
-                  onClick={factoryReset}>
-                  {t("FACTORY RESET")}
-                </button>
-              </Col>
-            </Row>
-            <CameraSelection
-              env={this.props.bot.hardware.user_env} />
-            <BoardType
-              firmwareVersion={this.props.bot.hardware
-                .informational_settings.firmware_version} />
+            <AutoUpdateRow bot={this.props.bot} controller_version={controller_version} />
+            <RestartRow />
+            <ShutdownRow />
+            <FactoryResetRow />
+            <CameraSelection env={this.props.bot.hardware.user_env} />
+            <BoardType firmwareVersion={firmware_version} />
           </MustBeOnline>
         </WidgetBody>
       </form>
