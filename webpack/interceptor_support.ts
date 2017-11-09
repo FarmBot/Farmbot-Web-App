@@ -1,4 +1,4 @@
-import { DataChangeType, Dictionary, toPairs, rpcRequest } from "farmbot/dist";
+import { DataChangeType, Dictionary, toPairs, rpcRequest, Pair } from "farmbot/dist";
 import { getDevice } from "./device";
 import { box } from "boxed_value";
 import * as _ from "lodash";
@@ -39,16 +39,28 @@ export const TEMP_LEGACY_RESOURCE_NAMES = [
 
 // LEGACY API. This was a temporary solution that was superceded by the auto
 // sync feature. End of life: 1 Jan 2018
+interface DataUpdateEndOfLife {
+  kind: "data_update";
+  args: {
+    value: string;
+  };
+  comment?: string | undefined;
+  body?: Pair[] | undefined;
+}
+
+// LEGACY API. This was a temporary solution that was superceded by the auto
+// sync feature. End of life: 1 Jan 2018
 export function notifyBotOfChanges(url: string | undefined, action: DataChangeType) {
   if (url) {
     url.split("/").filter((chunk: ResourceName) => {
       return TEMP_LEGACY_RESOURCE_NAMES.includes(chunk);
     }).map(async function (resource: ResourceName) {
-      getDevice().publish(rpcRequest([{
-        kind: "data_update" as any,
-        body: toPairs({ [resource]: inferUpdateId(url) }),
-        args: { [resource]: inferUpdateId(url) }
-      }]));
+      const data_update: DataUpdateEndOfLife = {
+        kind: "data_update",
+        args: { value: action },
+        body: toPairs({ [resource]: inferUpdateId(url) })
+      };
+      getDevice().publish(rpcRequest([data_update as any]));
     });
   }
 }
