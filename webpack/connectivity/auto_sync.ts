@@ -1,9 +1,8 @@
 import { GetState } from "../redux/interfaces";
 import { maybeDetermineUuid } from "../resources/selectors";
 import { ResourceName, TaggedResource, SpecialStatus } from "../resources/tagged_resources";
-import { destroyOK } from "../resources/actions";
 import { overwrite, init } from "../api/crud";
-import { fancyDebug } from "../util";
+import { handleInbound } from "./auto_sync_handle_inbound";
 
 export interface UpdateMqttData {
   status: "UPDATE"
@@ -13,22 +12,22 @@ export interface UpdateMqttData {
   sessionId: string;
 }
 
-interface DeleteMqttData {
+export interface DeleteMqttData {
   status: "DELETE"
   kind: ResourceName;
   id: number;
 }
 
-interface BadMqttData {
+export interface BadMqttData {
   status: "ERR";
   reason: string;
 }
 
-interface SkipMqttData {
+export interface SkipMqttData {
   status: "SKIP";
 }
 
-type MqttDataResult =
+export type MqttDataResult =
   | UpdateMqttData
   | DeleteMqttData
   | SkipMqttData
@@ -120,28 +119,8 @@ export function handleCreateOrUpdate(dispatch: Function,
   }
 }
 
-const handleErr = (d: BadMqttData) => console.log("DATA VALIDATION ERROR!", d);
-
-const handleSkip = () => { };
-
-export const tempDebug =
+export const autoSync =
   (dispatch: Function, getState: GetState) =>
     (chan: string, payload: Buffer) => {
-      const data = routeMqttData(chan, payload);
-      fancyDebug(data);
-      switch (data.status) {
-        case "ERR": return handleErr(data);
-        case "SKIP": return handleSkip();
-        case "DELETE":
-          const { id, kind } = data;
-          const i = getState().resources.index;
-          const r = i.references[maybeDetermineUuid(i, kind, id) || "NO"];
-          if (r) {
-            return dispatch(destroyOK(r));
-          } else {
-            return; // Ignore deletions of untracked resources
-          }
-        case "UPDATE":
-          handleCreateOrUpdate(dispatch, getState, data);
-      }
+      handleInbound(dispatch, getState, routeMqttData(chan, payload));
     };

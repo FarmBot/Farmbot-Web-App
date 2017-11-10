@@ -19,7 +19,7 @@ import { init } from "../api/crud";
 import { versionOK } from "../devices/reducer";
 import { AuthState } from "../auth/interfaces";
 import { TaggedResource, SpecialStatus } from "../resources/tagged_resources";
-import { tempDebug } from "./auto_sync";
+import { autoSync } from "./auto_sync";
 
 export const TITLE = "New message from bot";
 
@@ -148,7 +148,7 @@ const attachEventListeners =
     bot.on("status", onStatus(dispatch, getState));
     bot.on("malformed", onMalformed);
     readStatus().then(changeLastClientConnected(bot), noop);
-    bot.client.on("message", tempDebug(dispatch, getState));
+    bot.client.on("message", autoSync(dispatch, getState));
   };
 
 /** Connect to MQTT and attach all relevant event handlers. */
