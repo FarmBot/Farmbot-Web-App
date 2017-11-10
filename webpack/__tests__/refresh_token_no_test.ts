@@ -29,6 +29,7 @@ describe("maybeRefreshToken()", () => {
       token: {
         encoded: "---",
         unencoded: {
+          jti: "---",
           iss: "---",
           exp: 456,
           mqtt: "---",

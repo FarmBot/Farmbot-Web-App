@@ -1,7 +1,7 @@
 const mockAuth = (iss = "987"): AuthState => ({
   token: {
     encoded: "---",
-    unencoded: { iss, os_update_server: "---" }
+    unencoded: { iss, os_update_server: "---", jti: "---" }
   }
 });
 

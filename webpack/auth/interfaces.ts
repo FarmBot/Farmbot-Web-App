@@ -10,10 +10,10 @@ export interface AuthState {
 export interface UnencodedToken {
   /** ISSUER - Where token came from (API URL). */
   iss: string;
-  /** MQTT server address */
-  // mqtt: string;
   /** Where to download RPi software */
   os_update_server: string;
+  /** JSON Token Identifier- auto sync needs this to hear its echo on MQTT */
+  jti: string;
 }
 
 export interface User {

@@ -3,6 +3,7 @@ import { AuthState } from "../../auth/interfaces";
 export let auth: AuthState = {
   "token": {
     "unencoded": {
+      "jti": "xyz",
       "iss": "//localhost:3000",
       "os_update_server": "https://api.github.com/repos/farmbot/" +
       "farmbot_os/releases/latest"

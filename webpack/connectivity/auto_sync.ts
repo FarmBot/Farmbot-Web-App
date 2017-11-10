@@ -5,7 +5,7 @@ import { destroyOK } from "../resources/actions";
 import { overwrite, init } from "../api/crud";
 import { fancyDebug } from "../util";
 
-interface UpdateMqttData {
+export interface UpdateMqttData {
   status: "UPDATE"
   kind: ResourceName;
   id: number;
@@ -34,21 +34,22 @@ type MqttDataResult =
   | SkipMqttData
   | BadMqttData;
 
-enum Reason {
+export enum Reason {
   BAD_KIND = "missing `kind`",
   BAD_ID = "No ID or invalid ID.",
   BAD_CHAN = "Expected exactly 5 segments in channel"
 }
 
-interface SyncPayload {
+export interface SyncPayload {
   args: { label: string; };
   body: object | undefined;
 }
 
-function decodeBinary(payload: Buffer): SyncPayload {
+export function decodeBinary(payload: Buffer): SyncPayload {
   return JSON.parse((payload).toString());
 }
-function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
+
+export function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
   /** Skip irrelevant messages */
   if (!chan.includes("sync")) { return { status: "SKIP" }; }
 
@@ -57,11 +58,8 @@ function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
   if (parts.length !== 5) { return { status: "ERR", reason: Reason.BAD_CHAN }; }
 
   const id = parseInt(parts.pop() || "0", 10);
-  const kind = parts.pop() as ResourceName | undefined;
+  const kind = parts.pop() as ResourceName;
   const { body, args } = decodeBinary(payload);
-
-  if (!kind) { return { status: "ERR", reason: Reason.BAD_KIND }; }
-  if (!id) { return { status: "ERR", reason: Reason.BAD_ID }; }
 
   if (body) {
     return { status: "UPDATE", body, kind: kind, id, sessionId: args.label };
@@ -70,7 +68,7 @@ function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
   }
 }
 
-const asTaggedResource = (data: UpdateMqttData, uuid: string): TaggedResource => {
+export const asTaggedResource = (data: UpdateMqttData, uuid: string): TaggedResource => {
   return {
     // tslint:disable-next-line:no-any
     kind: (data.kind as any),
@@ -81,23 +79,22 @@ const asTaggedResource = (data: UpdateMqttData, uuid: string): TaggedResource =>
   };
 };
 
-const handleCreate =
+export const handleCreate =
   (data: UpdateMqttData) => init(asTaggedResource(data, "IS SET LATER"), true);
 
-const handleUpdate =
+export const handleUpdate =
   (d: UpdateMqttData, uid: string) => {
     const tr = asTaggedResource(d, uid);
     return overwrite(tr, tr.body, SpecialStatus.SAVED);
   };
 
-function handleCreateOrUpdate(dispatch: Function,
+export function handleCreateOrUpdate(dispatch: Function,
   getState: GetState,
-  data: UpdateMqttData,
-  backoff = 200) {
+  data: UpdateMqttData) {
+
   const state = getState();
   const { index } = state.resources;
   const uuid = maybeDetermineUuid(index, data.kind, data.id);
-
   if (uuid) {
     return dispatch(handleUpdate(data, uuid));
   } else {
@@ -112,13 +109,13 @@ function handleCreateOrUpdate(dispatch: Function,
     // The ultimate problem: We need to know if the incoming data update was created
     // by us or some other user. That information lets us know if we are UPDATEing
     // data or INSERTing data.
-    const jti: string =
-      (state.auth && (state.auth.token.unencoded as any)["jti"]) || "";
-    if (data.sessionId !== jti) { // Ignores local echo.
-      console.log("Acting on sync data");
-      dispatch(handleCreate(data));
-    } else {
+    const jti = state.auth && state.auth.token.unencoded.jti;
+    debugger;
+    if (data.sessionId === jti) { // Ignore local echo?
       console.log("Ignoring echo");
+    } else {
+      dispatch(handleCreate(data));
+      console.log("Acting on sync data");
     }
   }
 }
