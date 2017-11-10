@@ -1,10 +1,7 @@
 import {
-  SyncPayload,
   decodeBinary,
   routeMqttData,
-  Reason,
   asTaggedResource,
-  UpdateMqttData,
   handleCreate,
   handleUpdate,
   handleCreateOrUpdate
@@ -13,6 +10,7 @@ import { SpecialStatus } from "../../resources/tagged_resources";
 import { Actions } from "../../constants";
 import { fakeState } from "../../__test_support__/fake_state";
 import { GetState } from "../../redux/interfaces";
+import { SyncPayload, UpdateMqttData, Reason } from "../interfaces";
 
 function toBinary(input: object): Buffer {
   return Buffer.from(JSON.stringify(input), "utf8");

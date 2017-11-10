@@ -3,46 +3,7 @@ import { maybeDetermineUuid } from "../resources/selectors";
 import { ResourceName, TaggedResource, SpecialStatus } from "../resources/tagged_resources";
 import { overwrite, init } from "../api/crud";
 import { handleInbound } from "./auto_sync_handle_inbound";
-
-export interface UpdateMqttData {
-  status: "UPDATE"
-  kind: ResourceName;
-  id: number;
-  body: object;
-  sessionId: string;
-}
-
-export interface DeleteMqttData {
-  status: "DELETE"
-  kind: ResourceName;
-  id: number;
-}
-
-export interface BadMqttData {
-  status: "ERR";
-  reason: string;
-}
-
-export interface SkipMqttData {
-  status: "SKIP";
-}
-
-export type MqttDataResult =
-  | UpdateMqttData
-  | DeleteMqttData
-  | SkipMqttData
-  | BadMqttData;
-
-export enum Reason {
-  BAD_KIND = "missing `kind`",
-  BAD_ID = "No ID or invalid ID.",
-  BAD_CHAN = "Expected exactly 5 segments in channel"
-}
-
-export interface SyncPayload {
-  args: { label: string; };
-  body: object | undefined;
-}
+import { SyncPayload, MqttDataResult, Reason, UpdateMqttData } from "./interfaces";
 
 export function decodeBinary(payload: Buffer): SyncPayload {
   return JSON.parse((payload).toString());
@@ -67,16 +28,17 @@ export function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
   }
 }
 
-export const asTaggedResource = (data: UpdateMqttData, uuid: string): TaggedResource => {
-  return {
-    // tslint:disable-next-line:no-any
-    kind: (data.kind as any),
-    uuid,
-    specialStatus: SpecialStatus.SAVED,
-    // tslint:disable-next-line:no-any
-    body: (data.body as any) // I trust you, API...
+export const asTaggedResource =
+  (data: UpdateMqttData, uuid: string): TaggedResource => {
+    return {
+      // tslint:disable-next-line:no-any
+      kind: (data.kind as any),
+      uuid,
+      specialStatus: SpecialStatus.SAVED,
+      // tslint:disable-next-line:no-any
+      body: (data.body as any) // I trust you, API...
+    };
   };
-};
 
 export const handleCreate =
   (data: UpdateMqttData) => init(asTaggedResource(data, "IS SET LATER"), true);
@@ -111,10 +73,9 @@ export function handleCreateOrUpdate(dispatch: Function,
     const jti = state.auth && state.auth.token.unencoded.jti;
     debugger;
     if (data.sessionId === jti) { // Ignore local echo?
-      console.log("Ignoring echo");
+      // console.log("Ignoring echo");
     } else {
       dispatch(handleCreate(data));
-      console.log("Acting on sync data");
     }
   }
 }
