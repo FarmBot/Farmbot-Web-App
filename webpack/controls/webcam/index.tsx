@@ -21,7 +21,15 @@ export class WebcamPanel extends React.Component<P, S> {
 
   childProps = (activeMenu: "edit" | "show"): WebcamPanelProps => {
     return {
-      onToggle: () => this.setState({ activeMenu }),
+      onToggle: () => {
+        this
+          .props
+          .feeds
+          .filter(x => x.specialStatus !== SpecialStatus.SAVED)
+          .map(resource => resource.uuid)
+          .map(uuid => this.props.dispatch(save(uuid)));
+        this.setState({ activeMenu });
+      },
       feeds: this.props.feeds,
       init: () => this.props.dispatch(init(EMPTY_FEED)),
       edit: (tr, update) => this.props.dispatch(edit(tr, update)),

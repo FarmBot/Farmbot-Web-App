@@ -49,10 +49,6 @@ export class Show extends React.Component<WebcamPanelProps, State> {
 
   render() {
     const { props } = this;
-    const unsaved = !!props
-      .feeds
-      .filter(x => x.specialStatus !== undefined)
-      .length;
     const feeds = sortedFeeds(this.props.feeds).map(x => x.body);
     const flipper = new Flipper(feeds, FALLBACK_FEED, this.state.current);
     const title = flipper.current.name || "Webcam Feeds";
@@ -65,7 +61,6 @@ export class Show extends React.Component<WebcamPanelProps, State> {
             className="fb-button gray"
             onClick={props.onToggle}>
             {t("Edit")}
-            {unsaved ? "*" : ""}
           </button>
           <IndexIndicator i={this.state.current} total={feeds.length} />
         </WidgetHeader>
