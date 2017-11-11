@@ -16,18 +16,33 @@ const EMPTY_FEED: TaggedWebcamFeed = {
   body: { url: "", name: "" }
 };
 
+const preToggleCleanup = (dispatch: Function) => (f: TaggedWebcamFeed) => {
+  const { uuid } = f;
+  const { name, url, id } = f.body;
+
+  if (!name || !url || !id) {
+    // Delete empty or unsaved records
+    dispatch(destroy(uuid, true));
+    return;
+  }
+
+  if (f.specialStatus !== SpecialStatus.SAVED) {
+    // Stash unsaved to preexisting records
+    dispatch(save(uuid));
+    return;
+  }
+};
+
 export class WebcamPanel extends React.Component<P, S> {
   state: S = { activeMenu: "show" };
 
   childProps = (activeMenu: "edit" | "show"): WebcamPanelProps => {
+
     return {
       onToggle: () => {
-        this
-          .props
-          .feeds
-          .filter(x => x.specialStatus !== SpecialStatus.SAVED)
-          .map(resource => resource.uuid)
-          .map(uuid => this.props.dispatch(save(uuid)));
+        const { feeds, dispatch } = this.props;
+        feeds.map(preToggleCleanup(dispatch));
+
         this.setState({ activeMenu });
       },
       feeds: this.props.feeds,
