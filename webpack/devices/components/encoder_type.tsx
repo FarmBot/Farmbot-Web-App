@@ -4,7 +4,7 @@ import { t } from "i18next";
 import { FBSelect } from "../../ui/new_fb_select";
 import { DropDownItem } from "../../ui/fb_select";
 
-interface EncoderTypeProps {
+export interface EncoderTypeProps {
   hardware: McuParams;
   onChange(key: McuParamName, value: Encoder): void;
 }

@@ -23,19 +23,24 @@ export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
   return {
     type: Actions.EDIT_RESOURCE,
-    payload: { uuid: tr.uuid, update: changes }
+    payload: {
+      uuid: tr.uuid,
+      update: changes,
+      specialStatus: SpecialStatus.DIRTY
+    }
   };
 }
 
 /** Rather than update (patch) a TaggedResource, this method will overwrite
  * everything within the `.body` property. */
 export function overwrite(tr: TaggedResource,
-  changeset: typeof tr.body):
+  changeset: typeof tr.body,
+  specialStatus = SpecialStatus.DIRTY):
   ReduxAction<EditResourceParams> {
 
   return {
     type: Actions.OVERWRITE_RESOURCE,
-    payload: { uuid: tr.uuid, update: changeset }
+    payload: { uuid: tr.uuid, update: changeset, specialStatus }
   };
 }
 
@@ -63,10 +68,12 @@ export function editStep({ step, sequence, index, executor }: EditStepProps) {
 }
 
 /** Initialize (but don't save) an indexed / tagged resource. */
-export function init(resource: TaggedResource): ReduxAction<TaggedResource> {
-  resource.body.id = 0;
-  resource.specialStatus = SpecialStatus.DIRTY;
-  /** Technically, this happens in the reducer, but I like to be extra safe. */
+export function init(resource: TaggedResource,
+  /** Set to "true" when you want an `undefined` SpecialStatus. */
+  clean = false): ReduxAction<TaggedResource> {
+  resource.body.id = resource.body.id || 0;
+  resource.specialStatus = SpecialStatus[clean ? "SAVED" : "DIRTY"];
+  /** Don't touch this- very important! */
   resource.uuid = generateUuid(resource.body.id, resource.kind);
   return { type: Actions.INIT_RESOURCE, payload: resource };
 }

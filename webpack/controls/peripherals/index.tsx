@@ -6,7 +6,7 @@ import { PeripheralForm } from "./peripheral_form";
 import { Widget, WidgetBody, WidgetHeader, SaveBtn } from "../../ui";
 import { PeripheralsProps } from "../../devices/interfaces";
 import { PeripheralState } from "./interfaces";
-import { TaggedPeripheral, getArrayStatus } from "../../resources/tagged_resources";
+import { TaggedPeripheral, getArrayStatus, SpecialStatus } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import * as _ from "lodash";
@@ -59,7 +59,7 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
   emptyPeripheral = (): TaggedPeripheral => {
     return {
       uuid: "WILL_BE_CHANGED_BY_REDUCER",
-      specialStatus: undefined,
+      specialStatus: SpecialStatus.SAVED,
       kind: "Peripheral",
       body: { pin: 0, label: "New Peripheral" }
     };

@@ -109,12 +109,6 @@
   dependencies:
     axios "^0.16.1"
 
-"@types/mqtt@^2.5.0":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@types/mqtt/-/mqtt-2.5.0.tgz#bc54c2d53f509282168da4a9af865de95bee5101"
-  dependencies:
-    mqtt "*"
-
 "@types/node@^6.0.46":
   version "6.0.90"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.90.tgz#0ed74833fa1b73dcdb9409dcb1c97ec0a8b13b02"
@@ -2002,9 +1996,9 @@ farmbot-toastr@^1.0.0, farmbot-toastr@^1.0.3:
     farmbot-toastr "^1.0.0"
     typescript "^2.3.4"
 
-farmbot@5.0.2-rc2:
-  version "5.0.2-rc2"
-  resolved "https://registry.yarnpkg.com/farmbot/-/farmbot-5.0.2-rc2.tgz#47b6c85428de2dd3d8865b1b88b7097308099445"
+farmbot@5.0.2-rc7:
+  version "5.0.2-rc7"
+  resolved "https://registry.yarnpkg.com/farmbot/-/farmbot-5.0.2-rc7.tgz#46635b76c117a654d708412a91f6bcb4c788eae9"
   dependencies:
     mqtt "^2.13.1"
     typescript "^2.4.2"
@@ -3799,7 +3793,7 @@ mqtt-packet@^5.4.0:
     process-nextick-args "^1.0.7"
     safe-buffer "^5.1.0"
 
-mqtt@*, mqtt@^2.13.1:
+mqtt@^2.13.1:
   version "2.13.1"
   resolved "https://registry.yarnpkg.com/mqtt/-/mqtt-2.13.1.tgz#d83c7c5d9dc37864a363453f61fb5e1523c0144a"
   dependencies:

@@ -57,6 +57,7 @@ export function emptyState(): RestResources {
         Device: [],
         FarmEvent: [],
         Image: [],
+        Plant: [],
         Log: [],
         Peripheral: [],
         Crop: [],
@@ -87,7 +88,7 @@ const afterEach = (state: RestResources, a: ReduxAction<object>) => {
 /** Responsible for all RESTful resources. */
 export let resourceReducer = generateReducer
   <RestResources>(initialState, afterEach)
-  .add<ResourceReadyPayl>(Actions.SAVE_SPECIAL_RESOURCE, (s, { payload }) => {
+  .add<ResourceReadyPayl>(Actions.SAVE_OPENFARM_RESOURCE, (s, { payload }) => {
     const data = arrayWrap(payload);
     const kind = payload.name;
     data.map((body: ResourceReadyPayl) => {
@@ -101,7 +102,7 @@ export let resourceReducer = generateReducer
   })
   .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
     const resource = payload;
-    resource.specialStatus = undefined;
+    resource.specialStatus = SpecialStatus.SAVED;
     if (resource
       && resource.body) {
       switch (resource.kind) {
@@ -155,7 +156,7 @@ export let resourceReducer = generateReducer
     s.index.references[uuid] = payload;
     const tr = s.index.references[uuid];
     if (tr) {
-      tr.specialStatus = undefined;
+      tr.specialStatus = SpecialStatus.SAVED;
       sanityCheck(tr);
       dontTouchThis(tr);
       reindexResource(s.index, tr);
@@ -167,7 +168,7 @@ export let resourceReducer = generateReducer
   .add<TaggedResource>(Actions._RESOURCE_NO, (s, { payload }) => {
     const uuid = payload.uuid;
     const tr = merge(findByUuid(s.index, uuid), payload);
-    tr.specialStatus = undefined;
+    tr.specialStatus = SpecialStatus.SAVED;
     sanityCheck(tr);
     return s;
   })
@@ -186,23 +187,16 @@ export let resourceReducer = generateReducer
     const uuid = payload.uuid;
     const original = findByUuid(s.index, uuid);
     original.body = payload.update as typeof original.body;
-    original.specialStatus = SpecialStatus.DIRTY;
+    original.specialStatus = payload.specialStatus;
     sanityCheck(original);
     payload && isTaggedResource(original);
     dontTouchThis(original);
     return s;
   })
-  .add<TaggedResource>(Actions.INIT_RESOURCE, (s, { payload }) => {
+  .add<TaggedResource>(Actions.INIT_RESOURCE, (s: RestResources, { payload }) => {
     const tr = payload;
-    const uuid = tr.uuid;
     reindexResource(s.index, tr);
-    if (tr.kind === "Log") {
-      // Since logs don't come from the API all the time, they are the only
-      // resource (right now) that can have an id of `undefined` and not dirty.
-      findByUuid(s.index, uuid).specialStatus = undefined;
-    } else {
-      findByUuid(s.index, uuid).specialStatus = SpecialStatus.DIRTY;
-    }
+    s.index.references[tr.uuid] = tr;
     sanityCheck(tr);
     dontTouchThis(tr);
     return s;
@@ -249,7 +243,7 @@ export let resourceReducer = generateReducer
 
 /** Helper method to change the `specialStatus` of a resource in the index */
 const mutateSpecialStatus =
-  (uuid: string, index: ResourceIndex, status: SpecialStatus | undefined) => {
+  (uuid: string, index: ResourceIndex, status = SpecialStatus.SAVED) => {
     const resource = index.references[uuid];
     if (resource) {
       resource.specialStatus = status;
@@ -288,15 +282,21 @@ export function joinKindAndId(kind: ResourceName, id: number | undefined) {
   return `${kind}.${id || 0}`;
 }
 
-const filterOutUuid = (tr: TaggedResource) => (uuid: string) => uuid !== tr.uuid;
+const filterOutUuid =
+  (tr: TaggedResource) => (uuid: string) => uuid !== tr.uuid;
+
 function removeFromIndex(index: ResourceIndex, tr: TaggedResource) {
   const { kind } = tr;
   const id = tr.body.id;
   index.all = index.all.filter(filterOutUuid(tr));
-  index.byKind[tr.kind] = index.byKind[tr.kind].filter(filterOutUuid(tr));
-  delete index.byKindAndId[joinKindAndId(kind, id)];
-  delete index.byKindAndId[joinKindAndId(kind, 0)];
-  delete index.references[tr.uuid];
+  if (index.byKind[tr.kind]) {
+    index.byKind[tr.kind] = index.byKind[tr.kind].filter(filterOutUuid(tr));
+    delete index.byKindAndId[joinKindAndId(kind, id)];
+    delete index.byKindAndId[joinKindAndId(kind, 0)];
+    delete index.references[tr.uuid];
+  } else {
+    console.log("No index found for tr.kind: " + tr.kind);
+  }
 }
 
 function whoops(origin: string, kind: string) {

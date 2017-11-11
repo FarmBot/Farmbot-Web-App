@@ -1,11 +1,14 @@
 import { resourceReducer, emptyState } from "../resources/reducer";
-import { TaggedResource, TaggedDevice, TaggedPoint } from "../resources/tagged_resources";
+import {
+  TaggedResource, TaggedDevice, TaggedPoint,
+  SpecialStatus
+} from "../resources/tagged_resources";
 import * as _ from "lodash";
 import { Actions } from "../constants";
 export function fakeDevice(): TaggedDevice {
   return {
     "kind": "Device",
-    "specialStatus": undefined,
+    "specialStatus": SpecialStatus.SAVED,
     "body": {
       "id": 415,
       "name": "wispy-firefly-846"
@@ -22,11 +25,11 @@ const tr1: TaggedResource = {
     "created_at": "2017-09-03T20:01:40.336Z",
     "updated_at": "2017-09-27T14:00:47.326Z",
   },
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "uuid": "User.152.44"
 };
 const tr2: TaggedResource = {
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "kind": "FarmEvent",
   "body": {
     "id": 21,
@@ -48,7 +51,7 @@ const tr2: TaggedResource = {
 };
 
 const tr3: TaggedResource = {
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "kind": "FarmEvent",
   "body": {
     "id": 22,
@@ -67,7 +70,7 @@ const tr3: TaggedResource = {
 };
 
 const tr4: TaggedResource = {
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "kind": "Image",
   "body": {
     "id": 415,
@@ -86,7 +89,7 @@ const tr4: TaggedResource = {
 };
 
 const tr5: TaggedResource = {
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "kind": "Image",
   "body": {
     "id": 414,
@@ -105,7 +108,7 @@ const tr5: TaggedResource = {
 };
 
 const tr6: TaggedResource = {
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "kind": "Peripheral",
   "body": {
     "id": 11,
@@ -117,7 +120,7 @@ const tr6: TaggedResource = {
 };
 
 const tr7: TaggedPoint = {
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "kind": "Point",
   "body": {
     "id": 1392,
@@ -139,7 +142,7 @@ const tr7: TaggedPoint = {
 };
 
 const tr8: TaggedPoint = {
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "kind": "Point",
   "body": {
     "id": 1393,
@@ -160,7 +163,7 @@ const tr8: TaggedPoint = {
 };
 
 const tr9: TaggedPoint = {
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "kind": "Point",
   "body": {
     "id": 1394,
@@ -181,7 +184,7 @@ const tr9: TaggedPoint = {
 };
 
 const tr10: TaggedPoint = {
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "kind": "Point",
   "body": {
     "id": 1395,
@@ -203,7 +206,7 @@ const tr10: TaggedPoint = {
 
 const tr11: TaggedPoint = {
   "kind": "Point",
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "body": {
     "id": 1396,
     "created_at": "2017-05-24T20:41:20.112Z",
@@ -223,7 +226,7 @@ const tr11: TaggedPoint = {
 };
 
 const tr12: TaggedResource = {
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "kind": "Regimen",
   "body": {
     "id": 11,
@@ -244,7 +247,7 @@ const tr12: TaggedResource = {
 
 const tr13: TaggedResource = {
   "kind": "Sequence",
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "body": {
     "id": 23,
     "name": "Goto 0, 0, 0",
@@ -284,7 +287,7 @@ const tr13: TaggedResource = {
 };
 
 const tr14: TaggedResource = {
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "kind": "Tool",
   "body": {
     "id": 14,
@@ -295,7 +298,7 @@ const tr14: TaggedResource = {
 };
 
 const tr15: TaggedResource = {
-  "specialStatus": undefined,
+  "specialStatus": SpecialStatus.SAVED,
   "kind": "Tool",
   "body": {
     "id": 15,

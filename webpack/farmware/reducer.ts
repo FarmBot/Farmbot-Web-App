@@ -6,6 +6,12 @@ import { Actions } from "../constants";
 export let farmwareState: FarmwareState = { currentImage: undefined };
 
 export let famrwareReducer = generateReducer<FarmwareState>(farmwareState)
+  .add<TaggedResource>(Actions.INIT_RESOURCE, (s, { payload }) => {
+    if (payload.kind === "Image") {
+      s.currentImage = payload.uuid;
+    }
+    return s;
+  })
   .add<string>(Actions.SELECT_IMAGE, (s, { payload }) => {
     s.currentImage = payload;
     return s;

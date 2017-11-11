@@ -21,9 +21,9 @@ describe("mapStateToProps()", () => {
         .diff(moment(time).clone().startOf("day"), "milliseconds")
     }];
 
-    const getFutureTime = (t: number, value: number, label: string) =>
-      // tslint:disable-next-line:no-any
-      moment(t).add(value as any, label).toISOString();
+    const getFutureTime =
+      (t: number, value: number, label: string) =>
+        moment(t).add(value as any, label).toISOString();
 
     const sequenceFarmEvent = fakeFarmEvent("Sequence", 1);
     sequenceFarmEvent.body.id = 1;

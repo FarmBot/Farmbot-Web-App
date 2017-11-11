@@ -10,7 +10,7 @@ interface Props {
   onRefresh(): void;
   rowData: StatusRowProps[];
   children?: React.ReactChild;
-  status: SpecialStatus | undefined;
+  status: SpecialStatus;
 }
 
 interface ConnectivityState {

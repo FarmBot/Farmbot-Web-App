@@ -1,6 +1,6 @@
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
-import { TaggedResource } from "../../resources/tagged_resources";
+import { TaggedResource, SpecialStatus } from "../../resources/tagged_resources";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 
 describe("mapStateToProps()", () => {
@@ -14,7 +14,7 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     const fakeResources: TaggedResource[] = [
       {
-        "specialStatus": undefined,
+        "specialStatus": SpecialStatus.SAVED,
         "kind": "Regimen",
         "body": {
           "id": 1,
@@ -33,7 +33,7 @@ describe("mapStateToProps()", () => {
       },
       {
         "kind": "Sequence",
-        "specialStatus": undefined,
+        "specialStatus": SpecialStatus.SAVED,
         "body": {
           "id": 1,
           "name": "Test Sequence",

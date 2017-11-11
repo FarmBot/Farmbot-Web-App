@@ -1,4 +1,4 @@
-import { DataChangeType, Dictionary } from "farmbot/dist";
+import { DataChangeType, Dictionary, toPairs, rpcRequest, Pair } from "farmbot/dist";
 import { getDevice } from "./device";
 import { box } from "boxed_value";
 import * as _ from "lodash";
@@ -23,16 +23,44 @@ export let RESOURCES: ResourceName[] = [
   "Device"
 ];
 
-// PROBLEM:       The bot doesn't know if the user has changed any of the data.
-// GOOD SOLUTION: Create a push notification system on the API.
-// FAST SOLUTION: Ping the bot every time we push "save" or "update".
-//                Our hope is to eventually move this logic into the API.
+/** Temporary stub until auto_sync rollout. TODO: Remove */
+export const TEMP_LEGACY_RESOURCE_NAMES = [
+  "device",
+  "farm_events",
+  "logs",
+  "peripherals",
+  "plants",
+  "points",
+  "regimens",
+  "sequences",
+  "tool_slots",
+  "tools"
+];
+
+// LEGACY API. This was a temporary solution that was superceded by the auto
+// sync feature. End of life: 1 Jan 2018
+interface DataUpdateEndOfLife {
+  kind: "data_update";
+  args: {
+    value: string;
+  };
+  comment?: string | undefined;
+  body?: Pair[] | undefined;
+}
+
+// LEGACY API. This was a temporary solution that was superceded by the auto
+// sync feature. End of life: 1 Jan 2018
 export function notifyBotOfChanges(url: string | undefined, action: DataChangeType) {
   if (url) {
     url.split("/").filter((chunk: ResourceName) => {
-      return RESOURCES.includes(chunk);
+      return TEMP_LEGACY_RESOURCE_NAMES.includes(chunk);
     }).map(async function (resource: ResourceName) {
-      getDevice().dataUpdate(action, { [resource]: inferUpdateId(url) });
+      const data_update: DataUpdateEndOfLife = {
+        kind: "data_update",
+        args: { value: action },
+        body: toPairs({ [resource]: inferUpdateId(url) })
+      };
+      getDevice().publish(rpcRequest([data_update as any]));
     });
   }
 }

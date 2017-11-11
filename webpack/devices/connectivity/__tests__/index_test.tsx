@@ -3,6 +3,7 @@ import { render, mount } from "enzyme";
 import { ConnectivityPanel } from "../index";
 import { StatusRowProps } from "../connectivity_row";
 import * as _ from "lodash";
+import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<ConnectivityPanel/>", () => {
   function test() {
@@ -20,7 +21,7 @@ describe("<ConnectivityPanel/>", () => {
       component: <ConnectivityPanel
         onRefresh={onRefresh}
         rowData={rowData}
-        status={undefined}>
+        status={SpecialStatus.SAVED}>
         <p>I am a child component.</p>
       </ConnectivityPanel>,
       rowData: rowData

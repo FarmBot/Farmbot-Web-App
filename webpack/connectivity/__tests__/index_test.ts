@@ -6,7 +6,11 @@ const mockRedux = {
 };
 
 jest.mock("../../redux/store", () => mockRedux);
-
+jest.mock("lodash", () => {
+  return {
+    throttle: (x: Function) => x
+  };
+});
 import { dispatchNetworkUp, dispatchNetworkDown } from "../index";
 import { networkUp, networkDown } from "../actions";
 const NOW = (new Date()).toJSON();

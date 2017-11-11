@@ -8,7 +8,7 @@ describe("<RetryBtn/>", () => {
     const props = {
       flags: [true],
       onClick: jest.fn(),
-      status: undefined
+      status: SpecialStatus.SAVED
     };
     const el = shallow(<RetryBtn {...props} />);
     expect(el.find(".green").length).toBe(1);
@@ -32,7 +32,7 @@ describe("<RetryBtn/>", () => {
     const props = {
       flags: [true, false],
       onClick: jest.fn(),
-      status: undefined
+      status: SpecialStatus.SAVED
     };
     const el = shallow(<RetryBtn {...props} />);
     expect(el.find(".green").length).toBe(0);

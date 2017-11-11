@@ -90,7 +90,7 @@ describe("didLogin()", () => {
     const mockToken: AuthState = {
       token: {
         encoded: "---",
-        unencoded: { iss: "iss", os_update_server: "os_update_server" }
+        unencoded: { iss: "iss", os_update_server: "os_update_server", jti: "---" }
       }
     };
     const dispatch = jest.fn();

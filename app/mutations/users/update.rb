@@ -32,7 +32,7 @@ private
     # Self hosted users will often not have an email server.
     # We can update emails immediately in those circumstances.
     def skip_email_stuff
-      @skip_email_stuff ||= !!ENV["NO_EMAILS"]
+      @skip_email_stuff ||= !!ENV["NO_EMAILS"] || (email == user.email)
     end
 
     def set_unconfirmed_email

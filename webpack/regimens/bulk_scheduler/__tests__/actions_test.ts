@@ -5,7 +5,7 @@ jest.mock("farmbot-toastr", () => ({ error: mockErr, warning: mockErr }));
 import { commitBulkEditor, setTimeOffset, toggleDay, setSequence } from "../actions";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
-import { TaggedResource } from "../../../resources/tagged_resources";
+import { TaggedResource, SpecialStatus } from "../../../resources/tagged_resources";
 import { Actions } from "../../../constants";
 import { Everything } from "../../../interfaces";
 import { ToggleDayParams } from "../interfaces";
@@ -19,7 +19,7 @@ describe("commitBulkEditor()", () => {
     const state = fakeState();
     const fakeResources: TaggedResource[] = [
       {
-        "specialStatus": undefined,
+        "specialStatus": SpecialStatus.SAVED,
         "kind": "Regimen",
         "body": {
           "id": 1,
@@ -38,7 +38,7 @@ describe("commitBulkEditor()", () => {
       },
       {
         "kind": "Sequence",
-        "specialStatus": undefined,
+        "specialStatus": SpecialStatus.SAVED,
         "body": {
           "id": 1,
           "name": "Test Sequence",

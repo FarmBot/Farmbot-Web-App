@@ -3,6 +3,7 @@ import { fakeRegimen } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import { fakeState } from "../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { SpecialStatus } from "../../resources/tagged_resources";
 
 describe("editRegimen()", () => {
   it("doesn't call edit", () => {
@@ -19,7 +20,8 @@ describe("editRegimen()", () => {
     expect(dispatch).toHaveBeenCalledWith({
       payload: {
         update: {},
-        uuid: "Regimen"
+        uuid: "Regimen",
+        specialStatus: SpecialStatus.DIRTY
       },
       type: Actions.EDIT_RESOURCE
     });
@@ -82,7 +84,8 @@ describe("selectRegimen()", () => {
       payload: {
         body: { color: "red", name: "Foo", regimen_items: [] },
         kind: "Regimen",
-        uuid: "Regimen"
+        uuid: "Regimen",
+        specialStatus: ""
       },
       type: Actions.SELECT_REGIMEN
     });

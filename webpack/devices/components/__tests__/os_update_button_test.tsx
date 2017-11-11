@@ -8,10 +8,10 @@ const mockOk = jest.fn();
 jest.mock("farmbot-toastr", () => ({ success: mockOk }));
 
 import * as React from "react";
-import { OsUpdateButton } from "../os_update_button";
 import { mount } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { getDevice } from "../../../device";
+import { OsUpdateButton } from "../fbos_settings/os_update_button";
 
 describe("<OsUpdateButton/>", () => {
   beforeEach(function () {

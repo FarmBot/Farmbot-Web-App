@@ -1,7 +1,7 @@
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { findSlotByToolId, getFeeds } from "../selectors";
 import { resourceReducer, emptyState } from "../reducer";
-import { TaggedTool, TaggedToolSlotPointer } from "../tagged_resources";
+import { TaggedTool, TaggedToolSlotPointer, SpecialStatus } from "../tagged_resources";
 import { createOK } from "../actions";
 import { generateUuid } from "../util";
 import { fakeWebcamFeed } from "../../__test_support__/fake_state/resources";
@@ -11,7 +11,7 @@ const TOOL_ID = 99;
 const SLOT_ID = 100;
 const fakeTool: TaggedTool = {
   kind: "Tool",
-  specialStatus: undefined,
+  specialStatus: SpecialStatus.SAVED,
   uuid: generateUuid(TOOL_ID, "Tool"),
   body: {
     name: "yadda yadda",
@@ -20,7 +20,7 @@ const fakeTool: TaggedTool = {
 };
 const fakeSlot: TaggedToolSlotPointer = {
   kind: "Point",
-  specialStatus: undefined,
+  specialStatus: SpecialStatus.SAVED,
   uuid: generateUuid(SLOT_ID, "Point"),
   body: {
     tool_id: TOOL_ID,

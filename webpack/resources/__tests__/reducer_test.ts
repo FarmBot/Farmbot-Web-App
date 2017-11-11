@@ -33,12 +33,12 @@ describe("resource reducer", () => {
     // SCENARIO: REFRESH_START ===> REFRESH_OK
     const afterOk = resourceReducer(afterStart, refreshOK(device));
     const dev3 = afterOk.index.references[uuid] as TaggedDevice;
-    expect(dev3.specialStatus).toBe(undefined);
+    expect(dev3.specialStatus).toBe(SpecialStatus.SAVED);
 
     // SCENARIO: REFRESH_START ===> REFRESH_NO
     const afterNo =
       resourceReducer(afterStart, refreshNO({ err: "X", uuid: dev3.uuid }));
     const dev4 = afterNo.index.references[uuid] as TaggedDevice;
-    expect(dev4.specialStatus).toBe(undefined);
+    expect(dev4.specialStatus).toBe(SpecialStatus.SAVED);
   });
 });

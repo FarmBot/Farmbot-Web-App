@@ -6,4 +6,8 @@ class ToolSlot < ApplicationRecord
   has_one :point, as: :pointer
   IN_USE = "already in use by another tool slot"
   validates_uniqueness_of :tool, allow_blank: true, allow_nil: true, message: IN_USE
+
+  def broadcast?
+    false
+  end
 end

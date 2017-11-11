@@ -5,7 +5,7 @@ describe("getArrayStatus()", () => {
   const toolArray = () => [fakeTool(), fakeTool(), fakeTool()];
   it("picks SAVING above all else", () => {
     const arr = toolArray();
-    arr[0].specialStatus = undefined;
+    arr[0].specialStatus = SpecialStatus.SAVED;
     arr[1].specialStatus = SpecialStatus.DIRTY;
     arr[2].specialStatus = SpecialStatus.SAVING;
     expect(getArrayStatus(arr)).toBe(SpecialStatus.SAVING);
@@ -13,17 +13,17 @@ describe("getArrayStatus()", () => {
 
   it("picks DIRTY over undefined", () => {
     const arr = toolArray();
-    arr[0].specialStatus = undefined;
+    arr[0].specialStatus = SpecialStatus.SAVED;
     arr[1].specialStatus = SpecialStatus.DIRTY;
-    arr[2].specialStatus = undefined;
+    arr[2].specialStatus = SpecialStatus.SAVED;
     expect(getArrayStatus(arr)).toBe(SpecialStatus.DIRTY);
   });
 
   it("picks undefined as a last resort", () => {
     const arr = toolArray();
-    arr[0].specialStatus = undefined;
-    arr[1].specialStatus = undefined;
-    arr[2].specialStatus = undefined;
-    expect(getArrayStatus(arr)).toBe(undefined);
+    arr[0].specialStatus = SpecialStatus.SAVED;
+    arr[1].specialStatus = SpecialStatus.SAVED;
+    arr[2].specialStatus = SpecialStatus.SAVED;
+    expect(getArrayStatus(arr)).toBe(SpecialStatus.SAVED);
   });
 });

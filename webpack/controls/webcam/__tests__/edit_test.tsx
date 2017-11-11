@@ -20,7 +20,7 @@ describe("<Edit/>", () => {
     expect(el.html()).toContain("Save*");
     el.find("button").at(1).simulate("click");
     expect(p.save).toHaveBeenCalledWith(feed1);
-    feed1.specialStatus = undefined;
+    feed1.specialStatus = SpecialStatus.SAVED;
     el.update();
     expect(el.text()).not.toContain("Save*");
   });

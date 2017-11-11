@@ -1,4 +1,4 @@
-import { TaggedSequence } from "../tagged_resources";
+import { TaggedSequence, SpecialStatus } from "../tagged_resources";
 import { get } from "lodash";
 import { maybeTagSteps, getStepTag } from "../sequence_tagging";
 
@@ -6,7 +6,7 @@ describe("maybeTagSteps()", () => {
   const UNTAGGED_SEQUENCE: TaggedSequence = {
     "kind": "Sequence",
     "uuid": "whatever",
-    "specialStatus": undefined,
+    "specialStatus": SpecialStatus.SAVED,
     "body": {
       "id": 8,
       "name": "Goto 0, 0, 0",

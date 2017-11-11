@@ -18,20 +18,19 @@ import { betterCompact } from "../util";
 import * as _ from "lodash";
 import { WebcamFeed } from "../controls/interfaces";
 export type ResourceName =
-  | "User"
+  | "Crop"
   | "Device"
   | "FarmEvent"
-  | "Image"
-  | "Log"
   | "Peripheral"
-  | "Crop"
+  | "Plant"
+  | "Log"
+  | "Image"
   | "Point"
   | "Regimen"
   | "Sequence"
   | "Tool"
   | "User"
-  | "WebcamFeed"
-  | "Point";
+  | "WebcamFeed";
 
 export interface TaggedResourceBase {
   kind: ResourceName;
@@ -43,7 +42,7 @@ export interface TaggedResourceBase {
   body: object;
   /** Indicates if the resource is saved, saving or dirty.
    * `undefined` denotes that the resource is saved. */
-  specialStatus: SpecialStatus | undefined;
+  specialStatus: SpecialStatus;
 }
 
 /** Denotes special status of resource */
@@ -51,18 +50,21 @@ export enum SpecialStatus {
   /** The local copy is different than the one on the remote end. */
   DIRTY = "DIRTY",
   /** The local copy is being saved on the remote end right now? */
-  SAVING = "SAVING"
+  SAVING = "SAVING",
+  /** API and FE are in sync. Using "" for now because its falsey like old
+   * `undefined` value */
+  SAVED = ""
 }
 
 /** Given an array of TaggedResources, returns the most "important" special status.
  * the hierarchy is SAVED => DIRTY => SAVING  */
-export function getArrayStatus(i: TaggedResource[]): SpecialStatus | undefined {
+export function getArrayStatus(i: TaggedResource[]): SpecialStatus {
   const r = betterCompact(_(i).map(x => x.specialStatus).uniq().value());
   if (r.length) {
     return (r.includes(SpecialStatus.SAVING)) ?
       SpecialStatus.SAVING : SpecialStatus.DIRTY;
   } else {
-    return;
+    return SpecialStatus.SAVED;
   }
 }
 export interface Resource<T extends ResourceName, U extends object>

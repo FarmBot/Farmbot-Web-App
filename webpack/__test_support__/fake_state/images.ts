@@ -1,9 +1,9 @@
-import { TaggedImage } from "../../resources/tagged_resources";
+import { TaggedImage, SpecialStatus } from "../../resources/tagged_resources";
 
 export let fakeImages: TaggedImage[] = [
   {
     "kind": "Image",
-    "specialStatus": undefined,
+    "specialStatus": SpecialStatus.SAVED,
     "body": {
       "id": 9,
       "device_id": 8,
@@ -21,7 +21,7 @@ export let fakeImages: TaggedImage[] = [
   },
   {
     "kind": "Image",
-    "specialStatus": undefined,
+    "specialStatus": SpecialStatus.SAVED,
     "body": {
       "id": 8,
       "device_id": 8,
@@ -39,7 +39,7 @@ export let fakeImages: TaggedImage[] = [
   },
   {
     "kind": "Image",
-    "specialStatus": undefined,
+    "specialStatus": SpecialStatus.SAVED,
     "body": {
       "id": 7,
       "device_id": 8,

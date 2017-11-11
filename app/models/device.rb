@@ -25,7 +25,42 @@ class Device < ApplicationRecord
     logs.all.last(max_log_count || DEFAULT_MAX_LOGS)
   end
 
-  def auth_token
-    SessionToken.as_json(self.users.first)[:token].encoded
+  # def auth_token
+  #   SessionToken.as_json(self.users.first)[:token].encoded
+  # end
+
+  # # Send a realtime message to a logged in user.
+  # def tell(message, chan = "toast")
+  #   log  = Log.new({ device:     self,
+  #                    message:    message,
+  #                    created_at: Time.now,
+  #                    channels:   [chan],
+  #                    meta:       { type: "info" } })
+  #   json = LogSerializer.new(log).as_json.to_json
+
+  #   Transport.amqp_send(json, self.id, "logs")
+  # end
+
+  def self.current
+    RequestStore.store[:device]
+  end
+
+  def self.current=(dev)
+    RequestStore.store[:device] = dev
+  end
+
+  # Sets Device.current to `self` and returns it to the previous value when
+  #  finished running block. Usually this is unecessary, but may be required in
+  # background jobs. If you are not receiving auto_sync data on your client,
+  # you probably need to use this method.
+  def auto_sync_transaction
+    prev           = Device.current
+    Device.current = self
+    yield
+    Device.current = prev
+  end
+
+  def self.current_jwt
+    RequestStore.store[:jwt]
   end
 end
