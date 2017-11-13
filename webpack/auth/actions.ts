@@ -54,8 +54,8 @@ function loginErr() {
  * have a JSON Web Token attached to their "Authorization" header,
  * thereby granting access to the API. */
 export function setToken(auth: AuthState): ReduxAction<AuthState> {
-  axios.interceptors.response.use(responseFulfilled, responseRejected);
   axios.interceptors.request.use(requestFulfilled(auth));
+  axios.interceptors.response.use(responseFulfilled, responseRejected);
 
   return {
     type: Actions.REPLACE_TOKEN,

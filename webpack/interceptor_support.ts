@@ -69,14 +69,14 @@ export function notifyBotOfChanges(url: string | undefined, action: DataChangeTy
  * notifications. */
 function inferUpdateId(url: string) {
   try {
-    let ids = url
+    const ids = url
       .split("/")
       .filter(x => !x.includes(",")) // Don't allow batch endpoints to participate.
       .map(x => parseInt(x, 10))
       .filter(x => !_.isNaN(x));
-    let id: number | undefined = ids[0];
-    let isNum = _.isNumber(id);
-    let onlyOne = ids.length === 1;
+    const id: number | undefined = ids[0];
+    const isNum = _.isNumber(id);
+    const onlyOne = ids.length === 1;
     return (isNum && onlyOne) ? ("" + id) : "*";
   } catch (error) { // Don't crash - just keep moving along. This is a temp patch.
     return "*";
