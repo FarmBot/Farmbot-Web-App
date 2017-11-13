@@ -19,7 +19,8 @@ describe("<App />: Controls Pop-Up", () => {
       loaded: [],
       logs: [],
       user: fakeUser(),
-      bot: bot
+      bot: bot,
+      consistent: true
     };
   }
 
@@ -57,7 +58,8 @@ describe.skip("<App />: Loading", () => {
       loaded: [],
       logs: [],
       user: fakeUser(),
-      bot: bot
+      bot: bot,
+      consistent: true
     };
   }
 
@@ -88,7 +90,8 @@ describe("<App />: NavBar", () => {
       loaded: [],
       logs: [],
       user: fakeUser(),
-      bot: bot
+      bot: bot,
+      consistent: true
     };
   }
 

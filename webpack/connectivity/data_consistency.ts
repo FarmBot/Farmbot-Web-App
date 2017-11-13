@@ -1,18 +1,9 @@
 import { AxiosRequestConfig } from "axios";
-import { get, set } from "lodash";
-import { uuid } from "farmbot";
+import { store } from "../redux/store";
+import { Actions } from "../constants";
 
-const WHERE_WE_STORE_REQUEST_ID = "__FARMBOT_REQUEST_ID__";
-
-function getRequestId(conf: AxiosRequestConfig): string {
-  return get(conf, WHERE_WE_STORE_REQUEST_ID);
-}
-
-export function setRequestId(conf: AxiosRequestConfig): string {
-  const u = uuid();
-  set(conf, [WHERE_WE_STORE_REQUEST_ID], u);
-  return u;
-}
+const outstandingRequests: Set<AxiosRequestConfig> = new Set();
+(window as any)["outstanding_requests"] = outstandingRequests;
 
 /**
 * PROBLEM:  You save a sequence and click "RUN" very fast. The remote device
@@ -45,19 +36,27 @@ export function setRequestId(conf: AxiosRequestConfig): string {
 *     and friends.
 */
 export function startTracking(conf: AxiosRequestConfig) {
-  const id = setRequestId(conf);
-  if (id) {
-    console.log(`START TRACKING ${conf.url}`);
-  } else {
-    throw new Error("NO ID");
-  }
+  outstandingRequests.add(conf);
+  toggleConsistency(false);
+  setTimeout(() => {
+    stopTracking(conf);
+  }, 3000);
 }
 
 export function stopTracking(conf: AxiosRequestConfig) {
-  const id = getRequestId(conf);
-  if (id) {
-    console.log(`STOP TRACKING ${conf.url}`);
-  } else {
-    throw new Error("NO ID");
+  outstandingRequests.delete(conf);
+  if (outstandingRequests.size < 1) {
+    toggleConsistency(true);
   }
 }
+
+export const toggleConsistency = (payload: boolean) => {
+  const current = store.getState().connectivity.consistent === payload;
+  const state = payload ? "consistent" : "inconsistent";
+  if (current) {
+    console.log(`Already ${state}`);
+  } else {
+    console.log(`Flipping to ${state} state`);
+    store.dispatch({ type: Actions.SET_CONSISTENCY, payload });
+  }
+};

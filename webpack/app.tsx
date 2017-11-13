@@ -27,6 +27,7 @@ export interface AppProps {
   logs: Log[];
   user: TaggedUser | undefined;
   bot: BotState;
+  consistent: boolean;
 }
 
 function mapStateToProps(props: Everything): AppProps {
@@ -39,7 +40,8 @@ function mapStateToProps(props: Everything): AppProps {
       .sortBy("created_at")
       .reverse()
       .value(),
-    loaded: props.resources.loaded
+    loaded: props.resources.loaded,
+    consistent: props.connectivity.consistent
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -82,6 +84,7 @@ export class App extends React.Component<AppProps, {}> {
     return <div className="app">
       <HotKeys dispatch={this.props.dispatch} />
       <NavBar
+        consistent={this.props.consistent}
         user={this.props.user}
         bot={this.props.bot}
         dispatch={this.props.dispatch}
