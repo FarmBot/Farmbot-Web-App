@@ -4,11 +4,11 @@ class ApplicationRecord < ActiveRecord::Base
   after_destroy :maybe_broadcast
 
   DONT_BROADCAST = [ "created_at",
+                     "current_sign_in_at",
                      "last_sign_in_at",
                      "last_sign_in_ip",
                      "sign_in_count",
-                     "updated_at",
-                     "current_sign_in_at" ]
+                     "updated_at", ]
 
   # Determine if the changes to the model are worth broadcasting or not.
   # Reduces network noise.
