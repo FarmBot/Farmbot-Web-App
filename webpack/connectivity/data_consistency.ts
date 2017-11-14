@@ -50,5 +50,4 @@ export function stopTracking(uuid: string) {
   if (outstandingRequests.size === 0) {
     store.dispatch({ type: Actions.SET_CONSISTENCY, payload: true });
   }
-  console.dir(outstandingRequests);
 }
