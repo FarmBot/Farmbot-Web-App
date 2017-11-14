@@ -3,7 +3,7 @@ import { t } from "i18next";
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "../devices/components/e_stop_btn";
 import { Session } from "../session";
-import { Row, Col } from "../ui";
+import { Row, Col, Saucer } from "../ui";
 import { history } from "../history";
 import { updatePageInfo } from "../util";
 import { SyncButton } from "./sync_button";
@@ -34,17 +34,10 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     this.setState({ [name]: false });
 
   syncButton = () => {
-    if (this.props.consistent) {
-      return <SyncButton
-        bot={this.props.bot}
-        user={this.props.user}
-        dispatch={this.props.dispatch} />;
-    } else {
-      return <button className="nav-sync red fb-button"
-        onClick={() => { }}>
-        {t("Saving...")}
-      </button>;
-    }
+    return <SyncButton
+      bot={this.props.bot}
+      user={this.props.user}
+      dispatch={this.props.dispatch} />;
   }
   render() {
     const hasName = this.props.user && this.props.user.body.name;

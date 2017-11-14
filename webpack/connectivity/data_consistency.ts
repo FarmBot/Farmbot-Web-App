@@ -1,8 +1,8 @@
-import { AxiosRequestConfig } from "axios";
+import { getDevice } from "../device";
 import { store } from "../redux/store";
 import { Actions } from "../constants";
 
-const outstandingRequests: Set<AxiosRequestConfig> = new Set();
+const outstandingRequests: Set<string> = new Set();
 (window as any)["outstanding_requests"] = outstandingRequests;
 
 /**
@@ -35,28 +35,20 @@ const outstandingRequests: Set<AxiosRequestConfig> = new Set();
 *     this and we could track data operations the same way a `exec_sequence`
 *     and friends.
 */
-export function startTracking(conf: AxiosRequestConfig) {
-  outstandingRequests.add(conf);
-  toggleConsistency(false);
-  setTimeout(() => {
-    stopTracking(conf);
-  }, 3000);
-}
-
-export function stopTracking(conf: AxiosRequestConfig) {
-  outstandingRequests.delete(conf);
-  if (outstandingRequests.size < 1) {
-    toggleConsistency(true);
+export function startTracking(uuid: string | undefined) {
+  if (uuid) {
+    store.dispatch({ type: Actions.SET_CONSISTENCY, payload: false });
+    outstandingRequests.add(uuid);
+    const stop = () => stopTracking(uuid);
+    getDevice().on(uuid, stop);
+    setTimeout(stop, 5000);
   }
 }
 
-export const toggleConsistency = (payload: boolean) => {
-  const current = store.getState().connectivity.consistent === payload;
-  const state = payload ? "consistent" : "inconsistent";
-  if (current) {
-    console.log(`Already ${state}`);
-  } else {
-    console.log(`Flipping to ${state} state`);
-    store.dispatch({ type: Actions.SET_CONSISTENCY, payload });
+export function stopTracking(uuid: string) {
+  outstandingRequests.delete(uuid);
+  if (outstandingRequests.size === 0) {
+    store.dispatch({ type: Actions.SET_CONSISTENCY, payload: true });
   }
-};
+  console.dir(outstandingRequests);
+}

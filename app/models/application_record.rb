@@ -28,9 +28,7 @@ class ApplicationRecord < ActiveRecord::Base
     body = (destroyed? ?
       nil : ActiveModel::Serializer.serializer_for(self).new(self))
     {
-      args: {
-        label: (Device.current_jwt || {})[:jti] || "UNKNOWN"
-      },
+      args: { label: Transport.current_request_id },
       body: body.as_json
     }.to_json
   end

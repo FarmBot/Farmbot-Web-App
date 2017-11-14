@@ -9,7 +9,7 @@ module Api
 
     respond_to :json
     before_action :check_fbos_version
-    before_action :set_default_response_format
+    before_action :set_default_stuff
     before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
     after_action :skip_set_cookies_header
@@ -79,8 +79,16 @@ private
       x.is_a?(Array) ? x.map(&:deep_symbolize_keys!) : x.deep_symbolize_keys!
     end
 
-    def set_default_response_format
-      request.format = "json"
+    REQ_ID = "X-Request-Id"
+
+    def set_default_stuff
+
+      request.format                 = "json"
+      id                             = response.headers[REQ_ID] || SecureRandom.uuid
+      response.headers[REQ_ID]       = id
+      # # IMPORTANT: We need to hoist X-Request-Id to a global so that it is
+      # #            accessible for use with auto_sync.
+      Transport.set_current_request_id(response.headers[REQ_ID])
     end
 
     # Disable cookies. This is an API!
