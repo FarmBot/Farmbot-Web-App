@@ -5,12 +5,14 @@ jest.mock("react-redux", () => ({
 import * as React from "react";
 import { mount } from "enzyme";
 import { Logs, LogsFilterMenu } from "../index";
-import { Log } from "../../interfaces";
 import { ToolTips } from "../../constants";
+import { TaggedLog, SpecialStatus } from "../../resources/tagged_resources";
+import { Log } from "../../interfaces";
+import { generateUuid } from "../../resources/util";
 
 describe("<Logs />", () => {
-  function fakeLogs(): Log[] {
-    return [{
+  function fakeLogs(): TaggedLog[] {
+    const logs: Log[] = [{
       id: 1,
       created_at: -1,
       message: "Fake log message 1",
@@ -28,6 +30,14 @@ describe("<Logs />", () => {
       },
       channels: []
     }];
+    return logs.map((body: Log): TaggedLog => {
+      return {
+        kind: "Log",
+        uuid: generateUuid(body.id, "Log"),
+        specialStatus: SpecialStatus.SAVED,
+        body
+      };
+    });
   }
 
   it("renders", () => {

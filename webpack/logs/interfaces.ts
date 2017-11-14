@@ -1,7 +1,7 @@
-import { Log } from "../interfaces";
+import { TaggedLog } from "../resources/tagged_resources";
 
 export interface LogsProps {
-  logs: Log[]
+  logs: TaggedLog[]
 }
 
 export interface Filters {
@@ -19,7 +19,7 @@ export interface LogsState extends Filters {
 }
 
 export interface LogsTableProps {
-  logs: Log[];
+  logs: TaggedLog[];
   state: LogsState;
 }
 

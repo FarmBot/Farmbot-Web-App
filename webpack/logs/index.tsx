@@ -3,12 +3,12 @@ import * as moment from "moment";
 import { connect } from "react-redux";
 import { Col, Row, Page, ToolTip } from "../ui";
 import { mapStateToProps } from "./state_to_props";
-import { Log } from "../interfaces";
 import { t } from "i18next";
 import { Popover, Position } from "@blueprintjs/core";
 import * as _ from "lodash";
 import { LogsTableProps, LogsState, LogsFilterMenuProps, LogsProps } from "./interfaces";
 import { ToolTips } from "../constants";
+import { TaggedLog } from "../resources/tagged_resources";
 
 export const formatLogTime = (created_at: number) =>
   moment.unix(created_at).local().format("MMM D, h:mma");
@@ -24,21 +24,22 @@ const LogsTable = (props: LogsTableProps) => {
       </tr>
     </thead>
     <tbody>
-      {props.logs.map((log: Log) => {
-        const isFiltered = log.message.toLowerCase().includes("filtered");
+      {props.logs.map((log: TaggedLog) => {
+        const isFiltered = log.body.message.toLowerCase().includes("filtered");
         if (!isFiltered) { return LogsRow(log, props.state); }
       })}
     </tbody>
   </table>;
 };
 
-const LogsRow = (log: Log, state: LogsState) => {
+const LogsRow = (tlog: TaggedLog, state: LogsState) => {
+  const log = tlog.body;
   const time = formatLogTime(log.created_at);
   const type = (log.meta || {}).type;
   const filtered = state[type as keyof LogsState];
   const displayLog = _.isUndefined(filtered) || filtered;
   return displayLog ?
-    <tr key={log.id}>
+    <tr key={tlog.uuid}>
       <td>
         <div className={`saucer ${type}`} />
         {_.startCase(type)}

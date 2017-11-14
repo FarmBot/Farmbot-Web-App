@@ -7,8 +7,7 @@ export function mapStateToProps(props: Everything): LogsProps {
 
   return {
     logs: _(selectAllLogs(props.resources.index))
-      .map(x => x.body)
-      .sortBy("created_at")
+      .sortBy("body.created_at")
       .reverse()
       .value()
   };
