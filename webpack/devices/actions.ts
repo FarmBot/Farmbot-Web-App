@@ -7,11 +7,7 @@ import { Log, Everything } from "../interfaces";
 import { GithubRelease, MoveRelProps } from "./interfaces";
 import { Thunk, GetState, ReduxAction } from "../redux/interfaces";
 import { BotState } from "../devices/interfaces";
-import {
-  McuParams,
-  Configuration,
-  SyncStatus
-} from "farmbot";
+import { McuParams, Configuration } from "farmbot";
 import { Sequence } from "../sequences/interfaces";
 import { ControlPanelState } from "../devices/interfaces";
 import { API } from "../api/index";
@@ -108,15 +104,12 @@ export function sync(): Thunk {
       .informational_settings
       .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
     if (IS_OK) {
-      dispatch(setSyncStatus("syncing"));
       getDevice()
         .sync()
         .then(() => {
           commandOK(noun);
-          dispatch(setSyncStatus("synced"));
         }).catch(() => {
           commandErr(noun);
-          dispatch(setSyncStatus("sync_error"));
         });
     } else {
       if (getState()
@@ -292,10 +285,6 @@ export function changeStepSize(integer: number) {
     type: Actions.CHANGE_STEP_SIZE,
     payload: integer
   };
-}
-
-export function setSyncStatus(payload: SyncStatus) {
-  return { type: "SET_SYNC_STATUS", payload };
 }
 
 export function badVersion() {

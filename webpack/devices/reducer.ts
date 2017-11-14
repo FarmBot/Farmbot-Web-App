@@ -1,6 +1,5 @@
 import { BotState, HardwareState, Xyz, ControlPanelState } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
-import { SyncStatus } from "farmbot/dist";
 import { Actions } from "../constants";
 import { EncoderDisplay } from "../controls/interfaces";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
@@ -129,10 +128,6 @@ export let botReducer = generateReducer<BotState>(initialState)
   })
   .add<string>(Actions.FETCH_FW_UPDATE_INFO_OK, (s, { payload }) => {
     s.currentFWVersion = payload;
-    return s;
-  })
-  .add<SyncStatus>(Actions.SET_SYNC_STATUS, (s, { payload }) => {
-    s.hardware.informational_settings.sync_status = payload;
     return s;
   })
   .add<Xyz>(Actions.INVERT_JOG_BUTTON, (s, { payload }) => {

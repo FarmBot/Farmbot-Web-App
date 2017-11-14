@@ -1,7 +1,6 @@
 import { versionOK, botReducer, initialState } from "../reducer";
 import { Actions } from "../../constants";
 import { ControlPanelState } from "../interfaces";
-import { SyncStatus } from "farmbot/dist";
 import * as _ from "lodash";
 
 describe("safeStringFetch", () => {
@@ -66,18 +65,6 @@ describe("botRedcuer", () => {
       payload: "1.2.3"
     }).currentOSVersion;
     expect(r).toBe("1.2.3");
-  });
-
-  it("sets sync status", () => {
-    const payload: SyncStatus = "locked";
-    const state = botReducer(initialState, {
-      type: Actions.SET_SYNC_STATUS,
-      payload
-    });
-    expect(initialState.hardware.informational_settings.sync_status)
-      .not.toBe(payload);
-    expect(state.hardware.informational_settings.sync_status)
-      .toBe(payload);
   });
 
   it("inverts X/Y/Z", () => {

@@ -10,8 +10,7 @@ class ApplicationRecord < ActiveRecord::Base
                      "sign_in_count",
                      "updated_at",
                      "last_seen",
-                     "last_saw_api"
-                    ]
+                     "last_saw_api" ]
 
   # Determine if the changes to the model are worth broadcasting or not.
   # Reduces network noise.
