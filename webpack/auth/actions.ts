@@ -7,7 +7,7 @@ import { AuthState } from "./interfaces";
 import { ReduxAction, Thunk } from "../redux/interfaces";
 import * as Sync from "../sync/actions";
 import { API } from "../api";
-import { toastErrors, HttpData } from "../util";
+import { HttpData } from "../util";
 import { Session } from "../session";
 import { UnsafeError } from "../interfaces";
 import {
@@ -17,6 +17,7 @@ import {
 } from "../interceptors";
 import { Actions } from "../constants";
 import { connectDevice } from "../connectivity/connect_device";
+import { toastErrors } from "../toast_errors";
 
 export function didLogin(authState: AuthState, dispatch: Function) {
   API.setBaseUrl(authState.token.unencoded.iss);
@@ -45,9 +46,9 @@ export function login(username: string, password: string, url: string): Thunk {
   };
 }
 
-function loginErr() {
+export function loginErr() {
   error(t("Login failed."));
-  return { type: "LOGIN_ERR" };
+  return { type: Actions.LOGIN_ERROR };
 }
 
 /** Very important. Once called, all outbound HTTP requests will

@@ -3,8 +3,7 @@ import { render } from "react-dom";
 import { t } from "i18next";
 import * as _ from "lodash";
 import { Dictionary } from "farmbot";
-import { error } from "farmbot-toastr";
-import { Color, UnsafeError } from "./interfaces";
+import { Color } from "./interfaces";
 import { box } from "boxed_value";
 import { TaggedResource } from "./resources/tagged_resources";
 import { AxiosResponse } from "axios";
@@ -48,10 +47,6 @@ export interface AxiosErrorResponse {
       [reason: string]: string
     };
   };
-}
-
-export function toastErrors({ err }: UnsafeError) {
-  return error(prettyPrintApiErrors(err));
 }
 
 /** Concats and capitalizes all of the error key/value

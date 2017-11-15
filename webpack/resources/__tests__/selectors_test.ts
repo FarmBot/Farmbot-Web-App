@@ -1,11 +1,12 @@
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { findSlotByToolId, getFeeds } from "../selectors";
+import { findSlotByToolId, getFeeds, selectAllLogs } from "../selectors";
 import { resourceReducer, emptyState } from "../reducer";
 import { TaggedTool, TaggedToolSlotPointer, SpecialStatus } from "../tagged_resources";
 import { createOK } from "../actions";
 import { generateUuid } from "../util";
 import { fakeWebcamFeed } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
+import * as _ from "lodash";
 
 const TOOL_ID = 99;
 const SLOT_ID = 100;
@@ -68,5 +69,15 @@ describe("getFeeds", () => {
       }
     }].reduce(resourceReducer, emptyState());
     expect(getFeeds(state.index)[0].body).toEqual(feed);
+  });
+});
+
+describe("selectAllLogs", () => {
+  it("stays truthful to its name by finding all logs", () => {
+    const results = selectAllLogs(buildResourceIndex().index);
+    expect(results.length).toBeGreaterThan(0);
+    const kinds = _(results).map("kind").uniq().value();
+    expect(kinds.length).toEqual(1);
+    expect(kinds[0]).toEqual("Log");
   });
 });

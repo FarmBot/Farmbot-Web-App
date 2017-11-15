@@ -394,6 +394,7 @@ export enum Actions {
 
   // Auth
   REPLACE_TOKEN = "REPLACE_TOKEN",
+  LOGIN_ERROR = "LOGIN_ERR",
 
   // Config
   CHANGE_API_PORT = "CHANGE_API_PORT",

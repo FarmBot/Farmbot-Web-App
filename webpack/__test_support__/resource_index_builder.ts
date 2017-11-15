@@ -1,7 +1,8 @@
 import { resourceReducer, emptyState } from "../resources/reducer";
 import {
   TaggedResource, TaggedDevice, TaggedPoint,
-  SpecialStatus
+  SpecialStatus,
+  TaggedLog
 } from "../resources/tagged_resources";
 import * as _ from "lodash";
 import { Actions } from "../constants";
@@ -308,8 +309,22 @@ const tr15: TaggedResource = {
   "uuid": "Tool.15.50"
 };
 
+const log: TaggedLog = {
+  kind: "Log",
+  specialStatus: SpecialStatus.SAVED,
+  body: {
+    id: 1091396, created_at: 1510010193,
+    message: "Farmbot Movement complete.",
+    meta: {
+      type: "success"
+    },
+    channels: []
+  },
+  uuid: "Log.1091396.70"
+};
+
 export let FAKE_RESOURCES: TaggedResource[] = [tr1, fakeDevice(), tr2, tr3, tr4,
-  tr5, tr6, tr7, tr8, tr9, tr10, tr11, tr12, tr13, tr14, tr15];
+  tr5, tr6, tr7, tr8, tr9, tr10, tr11, tr12, tr13, tr14, tr15, log];
 
 export
   function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,

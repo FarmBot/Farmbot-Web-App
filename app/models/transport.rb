@@ -24,7 +24,7 @@ module Transport
   # We need to hoist the Rack X-Request-ID to a global state so that it can
   # be used as a unique identifier for AMQP messages.
   def self.current_request_id
-    RequestStore.store.fetch(:current_request_id) || "NONE"
+    RequestStore.store[:current_request_id] || "NONE"
   end
 
   def self.set_current_request_id(uuid)
