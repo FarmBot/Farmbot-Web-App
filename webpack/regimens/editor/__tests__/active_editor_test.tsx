@@ -40,7 +40,7 @@ describe("<ActiveEditor />", () => {
         update: {
           color: "red", name: "Foo", regimen_items: []
         },
-        uuid: "Regimen.1.17",
+        uuid: "Regimen.1.18",
         specialStatus: "DIRTY"
       },
       type: Actions.OVERWRITE_RESOURCE

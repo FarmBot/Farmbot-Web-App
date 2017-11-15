@@ -46,12 +46,12 @@ describe("<SequenceEditorMiddleActive/>", () => {
 
   it("deletes", () => {
     clickButton(2, "Delete");
-    expect(mockDestroy).toHaveBeenCalledWith("Sequence.0.16");
+    expect(mockDestroy).toHaveBeenCalledWith("Sequence.0.17");
   });
 
   it("copies", () => {
     clickButton(3, "Copy");
-    expect(mockCopy.mock.calls[0][0].uuid).toEqual("Sequence.1.33");
+    expect(mockCopy.mock.calls[0][0].uuid).toEqual("Sequence.1.35");
   });
 
   it("has drag area", () => {
