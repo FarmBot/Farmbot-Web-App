@@ -27,7 +27,7 @@ export function TestButton(p: TestBtnProps) {
   } = p;
   const isSynced = syncStatus === "synced";
   const isSaved = !sequence.specialStatus;
-  const canTest = (isSynced && isSaved) && (autoSyncEnabled && !consistent);
+  const canTest = (isSynced && isSaved) && (!autoSyncEnabled || !consistent);
   const className = canTest ? "orange" : "gray";
 
   const clickHandler = () => (canTest) ?
