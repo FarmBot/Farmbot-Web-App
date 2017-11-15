@@ -8,26 +8,25 @@ const outstandingRequests: Set<string> = new Set();
 /**
 * PROBLEM:  You save a sequence and click "RUN" very fast. The remote device
 *           did not have time to download the new sequence and so it crashes
-*           with a "sequence not found error".
-*
-*           This is strictly a frontend consern. We really don't want the FE to
-*           serve as a mediator between the device and the end user. It causes
-*           all sorts of consistency issues and hard-to-catch errors. This is a
-*           local client issue and we want the issue to stay local instead of
-*           applying hacks to different parts of the stack.
+*           with a "sequence not found error". This is a result of an
+*           inconsistency between the local FE and FBOS.
 *
 * SOLUTION:
 *
-*   - When you send an AJAX request, put a UUID onto a heap of "outbound
-*     request occurences"
-*   - When the request comes back, regardless of the outcome, remove that
-*     particular UUID from the heap. ("graveful removal")
-*   - If the request takes longer than 5 seconds, remove it from the heap also
-*     to prevent accidental lockups. ("forceful removal")
-*   - If the outbound heap has `0` records, you can (probably) assume that the
-*     Bot, API and client are in a consistent state.
+*   - On all AJAX requests, the API attaches an `X-Request-Id` header (UUID).
+*   - On all auto_sync messages, the API attaches the same UUID under
+*     msg.args.label
+*   - When FBOS gets an auto_sync message, it replies with an `rpc_ok` message
+*     that has the same `label` as the API requeset.
+*   - We keep a list of `outstandingRequests` filled with such UUIDs.
+*   - When we get an `rpc_ok` from farmbot, we remove it from the list.
+*   - If the request takes longer than 5 seconds, remove it from the list also
+*     to prevent accidental UX issues. ("forceful removal")
+*   - When `outstandingRequests.size === 0`, you can (probably) assume that the
+*     Bot, API and client are in a consistent state. It is safe to perform data
+*     intensive operations.
 *
-* LONG TERM SOLUTION:
+* LONG TERM SOLUTION: TODO:
 *
 *   - We should consider moving CRUD operations into FarmBotJS and provide
 *     developers a unified API that handles these things.

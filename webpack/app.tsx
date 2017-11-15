@@ -92,7 +92,6 @@ export class App extends React.Component<AppProps, {}> {
         logs={this.props.logs} />
       {!syncLoaded && <LoadingPlant />}
       {syncLoaded && this.props.children}
-      {this.props.consistent ? "" : <Saucer />}
       {!currentPath.startsWith("/app/controls") &&
         !currentPath.startsWith("/app/account") &&
         !currentPath.startsWith("/app/regimens") &&
