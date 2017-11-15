@@ -31,7 +31,9 @@ describe("<SequenceEditorMiddleActive/>", () => {
       sequences: [],
       tools: [],
       resources: buildResourceIndex(FAKE_RESOURCES).index,
-      syncStatus: "synced"
+      syncStatus: "synced",
+      consistent: true,
+      autoSyncEnabled: false
     };
   }
 

@@ -25,7 +25,9 @@ describe("<TestButton/>", () => {
       onClick: jest.fn(),
       onFail: jest.fn(),
       sequence: fakeSequence(),
-      syncStatus: "synced"
+      syncStatus: "synced",
+      consistent: true,
+      autoSyncEnabled: false
     };
   }
 

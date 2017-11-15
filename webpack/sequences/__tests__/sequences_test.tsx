@@ -21,7 +21,9 @@ describe("<Sequences/>", () => {
       tools: [],
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
-      auth
+      auth,
+      consistent: true,
+      autoSyncEnabled: false
     };
   }
 
