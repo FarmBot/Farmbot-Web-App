@@ -24,7 +24,9 @@ export class SequenceEditorMiddle
         sequences={sequences}
         tools={tools}
         resources={resources}
-        syncStatus={syncStatus} />;
+        syncStatus={syncStatus}
+        consistent={true}
+        autoSyncEnabled={false} />;
     } else {
       return <SequenceEditorMiddleInactive />;
     }

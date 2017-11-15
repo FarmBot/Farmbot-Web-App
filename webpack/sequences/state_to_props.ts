@@ -29,6 +29,8 @@ export function mapStateToProps(props: Everything): Props {
     sequence: sequence,
     auth: props.auth,
     resources: props.resources.index,
-    syncStatus
+    syncStatus,
+    consistent: props.connectivity.consistent,
+    autoSyncEnabled: !!props.bot.hardware.configuration.auto_sync
   };
 }

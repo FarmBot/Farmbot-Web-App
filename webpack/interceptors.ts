@@ -13,17 +13,21 @@ import * as _ from "lodash";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Content } from "./constants";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";
+import { startTracking } from "./connectivity/data_consistency";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   const method = input.config.method;
   dispatchNetworkUp("user.api");
+
   if (method && METHODS.includes(method)) {
     notifyBotOfChanges(input.config.url, METHOD_MAP[method]);
+    startTracking(input.headers["x-request-id"]);
   }
   return input;
 }
 
 export function responseRejected(x: SafeError | undefined) {
+  console.log("DING");
   if (x && isSafeError(x)) {
     dispatchNetworkUp("user.api");
     const a = ![451, 401, 422].includes(x.response.status);

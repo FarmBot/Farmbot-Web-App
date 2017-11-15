@@ -69,8 +69,6 @@ describe("handleCreateOrUpdate", () => {
     const fakeId = Object.values(index.byKind.Sequence)[0].split(".")[1];
     myPayload.id = parseInt(fakeId, 10);
     myPayload.kind = "Sequence";
-    // const uuid = maybeDetermineUuid(index, myPayload.kind, myPayload.id);
-    // debugger;
     handleCreateOrUpdate(dispatch, getState, myPayload);
     expect(dispatch).toHaveBeenCalled();
     expect(dispatch.mock.calls[0][0].type).toBe(Actions.OVERWRITE_RESOURCE);

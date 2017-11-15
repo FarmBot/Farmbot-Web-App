@@ -33,6 +33,12 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   close = (name: keyof NavBarState) => () =>
     this.setState({ [name]: false });
 
+  syncButton = () => {
+    return <SyncButton
+      bot={this.props.bot}
+      user={this.props.user}
+      dispatch={this.props.dispatch} />;
+  }
   render() {
     const hasName = this.props.user && this.props.user.body.name;
 
@@ -88,10 +94,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                     <EStopButton
                       bot={this.props.bot}
                       user={this.props.user} />
-                    <SyncButton
-                      bot={this.props.bot}
-                      user={this.props.user}
-                      dispatch={this.props.dispatch} />
+                    {this.syncButton()}
                   </div>
                 </div>
               </div>

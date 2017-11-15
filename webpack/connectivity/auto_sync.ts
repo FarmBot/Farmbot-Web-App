@@ -71,7 +71,6 @@ export function handleCreateOrUpdate(dispatch: Function,
     // by us or some other user. That information lets us know if we are UPDATEing
     // data or INSERTing data.
     const jti = state.auth && state.auth.token.unencoded.jti;
-    debugger;
     if (data.sessionId === jti) { // Ignore local echo?
       // console.log("Ignoring echo");
     } else {

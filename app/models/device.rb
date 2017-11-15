@@ -59,8 +59,4 @@ class Device < ApplicationRecord
     yield
     Device.current = prev
   end
-
-  def self.current_jwt
-    RequestStore.store[:jwt]
-  end
 end

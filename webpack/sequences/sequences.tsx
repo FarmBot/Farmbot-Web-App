@@ -37,12 +37,14 @@ export class Sequences extends React.Component<Props, {}> {
               sequence={this.props.sequence}
               slots={this.props.slots}
               tools={this.props.tools}
-              resources={this.props.resources} />
+              resources={this.props.resources}
+              consistent={this.props.consistent}
+              autoSyncEnabled={this.props.autoSyncEnabled} />
           </div>
         </Col>
         <Col sm={3}>
           {sequenceSelected &&
-           <StepButtonCluster
+            <StepButtonCluster
               current={this.props.sequence}
               dispatch={this.props.dispatch} />}
         </Col>

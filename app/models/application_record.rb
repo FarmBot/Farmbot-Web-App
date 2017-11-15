@@ -4,6 +4,9 @@ class ApplicationRecord < ActiveRecord::Base
   after_destroy :maybe_broadcast
 
   DONT_BROADCAST = [ "created_at",
+                     "last_saw_api",
+                     "last_saw_mq",
+                     "last_seen",
                      "last_sign_in_at",
                      "last_sign_in_ip",
                      "sign_in_count",
@@ -28,9 +31,7 @@ class ApplicationRecord < ActiveRecord::Base
     body = (destroyed? ?
       nil : ActiveModel::Serializer.serializer_for(self).new(self))
     {
-      args: {
-        label: (Device.current_jwt || {})[:jti] || "UNKNOWN"
-      },
+      args: { label: Transport.current_request_id },
       body: body.as_json
     }.to_json
   end

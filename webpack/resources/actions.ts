@@ -1,7 +1,7 @@
 import { TaggedResource } from "./tagged_resources";
 import { UnsafeError } from "../interfaces";
-import { toastErrors } from "../util";
 import { Actions } from "../constants";
+import { toastErrors } from "../toast_errors";
 
 export function createOK(payload: TaggedResource) {
   return { type: Actions.SAVE_RESOURCE_OK, payload };
@@ -21,7 +21,7 @@ export interface GeneralizedError {
 }
 /** Generalized error handler when there are not special error handling
  * requirements */
-function generalizedError(payload: GeneralizedError) {
+export function generalizedError(payload: GeneralizedError) {
   toastErrors(payload);
   return { type: "*_RESOURCE_NO", payload };
 }

@@ -27,8 +27,7 @@ import * as actions from "../actions";
 import { getDevice } from "../../device";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
-import { setSyncStatus, changeStepSize, resetNetwork, resetConnectionInfo } from "../actions";
-import { SyncStatus } from "farmbot";
+import { changeStepSize, resetNetwork, resetConnectionInfo } from "../actions";
 import { Actions } from "../../constants";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
@@ -196,15 +195,6 @@ describe("toggleControlPanel()", function () {
   it("toggles", () => {
     const action = actions.toggleControlPanel("homing_and_calibration");
     expect(action.payload).toEqual("homing_and_calibration");
-  });
-});
-
-describe("setSyncStatus()", () => {
-  it("returns a redux action", () => {
-    const payload: SyncStatus = "locked";
-    const result = setSyncStatus(payload);
-    expect(result.type).toBe(Actions.SET_SYNC_STATUS);
-    expect(result.payload).toBe(payload);
   });
 });
 

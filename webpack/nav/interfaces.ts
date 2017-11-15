@@ -10,6 +10,7 @@ export interface NavButtonProps {
 }
 
 export interface NavBarProps {
+  consistent: boolean;
   logs: Log[];
   bot: BotState;
   user: TaggedUser | undefined;

@@ -71,7 +71,7 @@ describe("<RegimenEditorWidget />", () => {
     const deleteButton = wrapper.find("button").at(2);
     expect(deleteButton.text()).toContain("Delete");
     deleteButton.simulate("click");
-    expect(mockDestroy).toHaveBeenCalledWith("Regimen.6.22");
+    expect(mockDestroy).toHaveBeenCalledWith("Regimen.6.23");
   });
 
   it("saves regimen", () => {
@@ -79,6 +79,6 @@ describe("<RegimenEditorWidget />", () => {
     const saveeButton = wrapper.find("button").at(0);
     expect(saveeButton.text()).toContain("Save");
     saveeButton.simulate("click");
-    expect(mockSave).toHaveBeenCalledWith("Regimen.8.24");
+    expect(mockSave).toHaveBeenCalledWith("Regimen.8.25");
   });
 });

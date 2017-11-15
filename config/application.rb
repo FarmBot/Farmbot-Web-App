@@ -26,6 +26,7 @@ module FarmBot
         resource '/api/*',
                  headers: :any,
                  methods: [:get, :post, :delete, :put, :patch, :options, :head],
+                 expose: "X-Request-Id",
                  credentials: false, # No cookies.
                  max_age: 0
       end

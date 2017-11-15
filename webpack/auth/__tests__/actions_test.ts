@@ -35,13 +35,26 @@ jest.mock("../../api/api", () => ({
   }
 }));
 
+jest.mock("../../toast_errors", () => {
+  return { toastErrors: jest.fn() };
+});
+
 import { Session } from "../../session";
-import { logout, requestToken, requestRegistration, didLogin } from "../actions";
+import {
+  logout,
+  requestToken,
+  requestRegistration,
+  didLogin,
+  loginErr,
+  onRegistrationErr
+} from "../actions";
 import { Actions } from "../../constants";
-import { success } from "farmbot-toastr";
+import { success, error } from "farmbot-toastr";
 import { API } from "../../api/api";
 import axios from "axios";
 import { AuthState } from "../interfaces";
+import { UnsafeError } from "../../interfaces";
+import { toastErrors } from "../../toast_errors";
 
 describe("logout()", () => {
   it("displays the toast if you are logged out", () => {
@@ -101,5 +114,21 @@ describe("didLogin()", () => {
     expect(API.setBaseUrl).toHaveBeenCalledWith(iss);
     const actions = dispatch.mock.calls.map(x => x && x[0] && x[0].type);
     expect(actions).toContain(Actions.REPLACE_TOKEN);
+  });
+});
+
+describe("loginErr()", () => {
+  it("creates a LOGIN_ERR action", () => {
+    const result = loginErr();
+    expect(result.type).toEqual(Actions.LOGIN_ERROR);
+    expect(error).toHaveBeenCalledWith("Login failed.");
+  });
+});
+
+describe("onRegistrationErr()", () => {
+  it("calls toast when needed", () => {
+    const err: UnsafeError = {};
+    onRegistrationErr(jest.fn())(err);
+    expect(toastErrors).toHaveBeenCalledWith(err);
   });
 });

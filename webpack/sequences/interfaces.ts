@@ -24,6 +24,8 @@ export interface Props {
   auth: AuthState | undefined;
   resources: ResourceIndex;
   syncStatus: SyncStatus;
+  consistent: boolean;
+  autoSyncEnabled: boolean;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -37,11 +39,15 @@ export interface SequenceEditorMiddleProps {
   slots: TaggedToolSlotPointer[];
   resources: ResourceIndex;
   syncStatus: SyncStatus;
+  consistent: boolean;
+  autoSyncEnabled: boolean;
 }
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
   sequence: TaggedSequence;
   syncStatus: SyncStatus;
+  consistent: boolean;
+  autoSyncEnabled: boolean;
 }
 
 export type CHANNEL_NAME = "toast" | "ticker";
