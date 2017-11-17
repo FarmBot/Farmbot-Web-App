@@ -132,10 +132,9 @@
       "html",
       "json",
       "lcov"
-    ],
-    "engines": {
-      "node": ">=8.9.0"
-    },
-    "engineStrict": true
+    ]
+  },
+  "engines": {
+    "node": ">=8.9.0"
   }
 }
