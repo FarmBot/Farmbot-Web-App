@@ -97,6 +97,12 @@ export const ENCODER_MAPPING: Record<EncoderDisplay, BooleanSetting> = {
 export let botReducer = generateReducer<BotState>(initialState)
   .add<boolean>(Actions.SET_CONSISTENCY, (s, a) => {
     s.consistent = a.payload;
+    s.hardware.informational_settings.sync_status = maybeNegateStatus({
+      consistent: s.consistent,
+      syncStatus: s.hardware.informational_settings.sync_status,
+      fbosVersion: s.hardware.informational_settings.controller_version,
+      autoSync: !!s.hardware.configuration.auto_sync
+    });
     return s;
   })
   .add<void>(Actions.SETTING_UPDATE_START, (s, a) => {

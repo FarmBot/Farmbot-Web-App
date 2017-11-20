@@ -51,7 +51,13 @@ export interface OverrideHints {
 
 /** Sometimes we can't trust what FBOS tells us. */
 export function maybeNegateStatus(x: OverrideHints): SyncStatus | undefined {
-  const { consistent, syncStatus, fbosVersion, autoSync } = x;
+  const {
+    consistent,
+    /** The bot's __CURRENT__ sync status. */
+    syncStatus,
+    fbosVersion,
+    autoSync
+  } = x;
 
   /** No need to override if data is consistent. */
   if (consistent) {
