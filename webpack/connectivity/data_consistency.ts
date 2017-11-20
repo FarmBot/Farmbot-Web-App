@@ -1,6 +1,6 @@
 import { getDevice } from "../device";
-// import { store } from "../redux/store";
-// import { Actions } from "../constants";
+import { store } from "../redux/store";
+import { Actions } from "../constants";
 import { semverCompare, SemverResult } from "../util";
 import { SyncStatus } from "farmbot";
 
@@ -44,7 +44,7 @@ const MAX_WAIT = 2000;
 *     and friends.
 */
 export function startTracking(uuid = PLACEHOLDER) {
-  // store.dispatch({ type: Actions.SET_CONSISTENCY, payload: false });
+  store.dispatch({ type: Actions.SET_CONSISTENCY, payload: false });
   outstandingRequests.add(uuid);
   const stop = () => stopTracking(uuid);
   getDevice().on(uuid, stop);
@@ -55,7 +55,7 @@ export function stopTracking(uuid: string) {
   outstandingRequests.delete(uuid);
   outstandingRequests.delete(PLACEHOLDER);
   if (outstandingRequests.size === 0) {
-    // store.dispatch({ type: Actions.SET_CONSISTENCY, payload: true });
+    store.dispatch({ type: Actions.SET_CONSISTENCY, payload: true });
   }
 }
 
