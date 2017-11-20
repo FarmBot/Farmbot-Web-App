@@ -60,7 +60,7 @@ export function maybeNegateStatus(x: OverrideHints): SyncStatus | undefined {
 
   switch (determineStrategy({ autoSync, fbosVersion })) {
     case SyncStrat.AUTO:
-      return "syncing";
+      return consistent ? "synced" : "syncing";
     case SyncStrat.LEGACY:
     case SyncStrat.MANUAL:
       return "sync_now";

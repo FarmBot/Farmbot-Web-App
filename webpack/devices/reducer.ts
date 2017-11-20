@@ -25,6 +25,7 @@ export function versionOK(stringyVersion = "0.0.0",
     return (majorOK && minorOK);
   }
 }
+
 export let initialState: BotState = {
   consistent: true,
   stepSize: 100,
