@@ -28,6 +28,7 @@ export interface AppProps {
   user: TaggedUser | undefined;
   bot: BotState;
   consistent: boolean;
+  autoSyncEnabled: boolean;
 }
 
 function mapStateToProps(props: Everything): AppProps {
@@ -41,7 +42,8 @@ function mapStateToProps(props: Everything): AppProps {
       .reverse()
       .value(),
     loaded: props.resources.loaded,
-    consistent: props.connectivity.consistent
+    consistent: !!(props.bot || {}).consistent,
+    autoSyncEnabled: !!props.bot.hardware.configuration.auto_sync
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -88,7 +90,9 @@ export class App extends React.Component<AppProps, {}> {
         user={this.props.user}
         bot={this.props.bot}
         dispatch={this.props.dispatch}
-        logs={this.props.logs} />
+        logs={this.props.logs}
+        autoSyncEnabled={this.props.autoSyncEnabled}
+      />
       {!syncLoaded && <LoadingPlant />}
       {syncLoaded && this.props.children}
       {!currentPath.startsWith("/app/controls") &&

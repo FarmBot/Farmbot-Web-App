@@ -60,6 +60,9 @@ export interface BotState {
   axis_inversion: Record<Xyz, boolean>;
   /** The display setting for encoder data on the controls page. */
   encoder_visibility: Record<EncoderDisplay, boolean>;
+  /** Have all API requests been acknowledged by external services? This flag
+   * lets us know if it is safe to do data critical tasks with the bot */
+  consistent: boolean;
 }
 
 export interface BotProp {

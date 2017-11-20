@@ -5,6 +5,7 @@ import { ToggleButton } from "../../../controls/toggle_button";
 import { Content } from "../../../constants";
 import { updateConfig } from "../../actions";
 import { noop } from "lodash";
+import { getDevice } from "../../../device";
 
 interface AutoSyncRowProps { currentValue: boolean; }
 
@@ -23,7 +24,10 @@ export function AutoSyncRow(props: AutoSyncRowProps) {
     </Col>
     <Col xs={3}>
       <ToggleButton toggleValue={props.currentValue}
-        toggleAction={() => updateConfig({ auto_sync })(noop)} />
+        toggleAction={() => {
+          updateConfig({ auto_sync })(noop);
+          getDevice().sync();
+        }} />
     </Col>
   </Row>;
 }

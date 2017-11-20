@@ -37,7 +37,9 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     return <SyncButton
       bot={this.props.bot}
       user={this.props.user}
-      dispatch={this.props.dispatch} />;
+      dispatch={this.props.dispatch}
+      consistent={this.props.consistent}
+      autoSyncEnabled={this.props.autoSyncEnabled} />;
   }
   render() {
     const hasName = this.props.user && this.props.user.body.name;

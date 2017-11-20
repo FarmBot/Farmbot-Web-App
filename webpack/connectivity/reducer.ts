@@ -6,16 +6,11 @@ import { computeBestTime } from "./reducer_support";
 export const DEFAULT_STATE: ConnectionState = {
   "bot.mqtt": undefined,
   "user.mqtt": undefined,
-  "user.api": undefined,
-  consistent: true
+  "user.api": undefined
 };
 
 export let connectivityReducer =
   generateReducer<ConnectionState>(DEFAULT_STATE)
-    .add<boolean>(Actions.SET_CONSISTENCY, (s, { payload }) => {
-      s.consistent = payload;
-      return s;
-    })
     .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
       s[payload.name] = payload.status;
       return s;

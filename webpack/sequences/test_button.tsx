@@ -9,25 +9,13 @@ export interface TestBtnProps {
   /** Callback fired is NOT synced. */
   onFail(message: string): void;
   syncStatus: SyncStatus;
-  /** Are there uncommited data operations that need broadcasted to other
-   * entities on the network? */
-  consistent: boolean;
-  autoSyncEnabled: boolean;
   sequence: TaggedSequence;
 }
 
-export function TestButton(p: TestBtnProps) {
-  const {
-    onClick,
-    onFail,
-    syncStatus,
-    sequence,
-    autoSyncEnabled,
-    consistent
-  } = p;
+export function TestButton({ onClick, onFail, syncStatus, sequence }: TestBtnProps) {
   const isSynced = syncStatus === "synced";
   const isSaved = !sequence.specialStatus;
-  const canTest = (isSynced && isSaved) && (!autoSyncEnabled || !consistent);
+  const canTest = isSynced && isSaved;
   const className = canTest ? "orange" : "gray";
 
   const clickHandler = () => (canTest) ?

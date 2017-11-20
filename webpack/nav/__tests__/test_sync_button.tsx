@@ -11,7 +11,9 @@ describe("<SyncButton/>", function () {
     const dispatcher = jest.fn();
     const result = shallow(<SyncButton user={undefined}
       dispatch={dispatcher}
-      bot={FAKE_BOT_STATE} />);
+      bot={FAKE_BOT_STATE}
+      consistent={true}
+      autoSyncEnabled={true} />);
     expect(result.hasClass("nav-sync")).toBeFalsy();
     expect(result.html()).toEqual("<span></span>");
   });

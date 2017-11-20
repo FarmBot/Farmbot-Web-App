@@ -57,9 +57,7 @@ export class SequenceEditorMiddleActive extends
               syncStatus={this.props.syncStatus}
               sequence={sequence}
               onFail={warning}
-              onClick={() => execSequence(sequence.body)}
-              consistent={this.props.consistent}
-              autoSyncEnabled={this.props.autoSyncEnabled} />
+              onClick={() => execSequence(sequence.body)} />
             <button
               className="fb-button red"
               onClick={() => dispatch(destroy(sequence.uuid))}>
