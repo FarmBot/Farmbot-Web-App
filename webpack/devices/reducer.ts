@@ -5,6 +5,7 @@ import { EncoderDisplay } from "../controls/interfaces";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 import { Session } from "../session";
 import { BooleanSetting } from "../session_keys";
+import { maybeNegateStatus } from "../connectivity/data_consistency";
 
 /**
  * TODO: Refactor this method to use semverCompare() now that it is a thing.
@@ -93,6 +94,10 @@ export const ENCODER_MAPPING: Record<EncoderDisplay, BooleanSetting> = {
 };
 
 export let botReducer = generateReducer<BotState>(initialState)
+  .add<boolean>(Actions.SET_CONSISTENCY, (s, a) => {
+    s.consistent = a.payload;
+    return s;
+  })
   .add<void>(Actions.SETTING_UPDATE_START, (s, a) => {
     s.isUpdating = true;
     return s;
@@ -121,11 +126,18 @@ export let botReducer = generateReducer<BotState>(initialState)
     s.currentOSVersion = payload;
     return s;
   })
-  .add<HardwareState>(Actions.BOT_CHANGE, (s, { payload }) => {
-    const nextState = payload;
-    s.hardware = nextState;
-    versionOK(nextState.informational_settings.controller_version);
-    return s;
+  .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
+    state.hardware = payload;
+    const { informational_settings } = state.hardware;
+    const nextSyncStatus = maybeNegateStatus({
+      consistent: state.consistent,
+      syncStatus: informational_settings.sync_status,
+      fbosVersion: informational_settings.controller_version,
+      autoSync: !!state.hardware.configuration.auto_sync
+    });
+    versionOK(informational_settings.controller_version);
+    state.hardware.informational_settings.sync_status = nextSyncStatus;
+    return state;
   })
   .add<string>(Actions.FETCH_FW_UPDATE_INFO_OK, (s, { payload }) => {
     s.currentFWVersion = payload;
