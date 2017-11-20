@@ -5,7 +5,7 @@ import { EncoderDisplay } from "../controls/interfaces";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 import { Session } from "../session";
 import { BooleanSetting } from "../session_keys";
-import { maybeNegateStatus } from "../connectivity/maybe_negate_status";
+import { maybeNegateStatus, maybeNegateConsistency } from "../connectivity/maybe_negate_status";
 
 /**
  * TODO: Refactor this method to use semverCompare() now that it is a thing.
@@ -136,12 +136,17 @@ export let botReducer = generateReducer<BotState>(initialState)
   .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
     state.hardware = payload;
     const { informational_settings } = state.hardware;
-    const nextSyncStatus = maybeNegateStatus({
+    const info = {
       consistent: state.consistent,
       syncStatus: informational_settings.sync_status,
       fbosVersion: informational_settings.controller_version,
       autoSync: !!state.hardware.configuration.auto_sync
-    });
+    };
+    state.consistent = maybeNegateConsistency(info);
+    info.consistent = state.consistent;
+
+    const nextSyncStatus = maybeNegateStatus(info);
+
     versionOK(informational_settings.controller_version);
     state.hardware.informational_settings.sync_status = nextSyncStatus;
     return state;

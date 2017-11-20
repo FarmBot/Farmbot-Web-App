@@ -74,3 +74,18 @@ export function maybeNegateStatus(x: OverrideHints): SyncStatus | undefined {
       return "unknown";
   }
 }
+
+/** Legacy bots dont have enough info to unset their `consistency` flag.
+ * TODO: Delete this method in January 2018.
+ */
+export function maybeNegateConsistency(x: OverrideHints): boolean {
+  const { autoSync, fbosVersion, consistent, syncStatus } = x;
+  switch (determineStrategy({ autoSync, fbosVersion })) {
+    case SyncStrat.LEGACY:
+      // Manually flip `consistent` off when bot sends `syncing` msg.
+      // All others can be handled as usual.
+      return (syncStatus === "syncing") ? false : consistent;
+    default:
+      return consistent;
+  }
+}
