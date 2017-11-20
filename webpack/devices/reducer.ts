@@ -5,7 +5,7 @@ import { EncoderDisplay } from "../controls/interfaces";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 import { Session } from "../session";
 import { BooleanSetting } from "../session_keys";
-import { maybeNegateStatus } from "../connectivity/data_consistency";
+// import { maybeNegateStatus } from "../connectivity/data_consistency";
 
 /**
  * TODO: Refactor this method to use semverCompare() now that it is a thing.
@@ -129,14 +129,14 @@ export let botReducer = generateReducer<BotState>(initialState)
   .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
     state.hardware = payload;
     const { informational_settings } = state.hardware;
-    const nextSyncStatus = maybeNegateStatus({
-      consistent: state.consistent,
-      syncStatus: informational_settings.sync_status,
-      fbosVersion: informational_settings.controller_version,
-      autoSync: !!state.hardware.configuration.auto_sync
-    });
+    // const nextSyncStatus = maybeNegateStatus({
+    //   consistent: state.consistent,
+    //   syncStatus: informational_settings.sync_status,
+    //   fbosVersion: informational_settings.controller_version,
+    //   autoSync: !!state.hardware.configuration.auto_sync
+    // });
     versionOK(informational_settings.controller_version);
-    state.hardware.informational_settings.sync_status = nextSyncStatus;
+    // state.hardware.informational_settings.sync_status = nextSyncStatus;
     return state;
   })
   .add<string>(Actions.FETCH_FW_UPDATE_INFO_OK, (s, { payload }) => {
