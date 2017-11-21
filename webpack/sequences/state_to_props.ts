@@ -30,7 +30,7 @@ export function mapStateToProps(props: Everything): Props {
     auth: props.auth,
     resources: props.resources.index,
     syncStatus,
-    consistent: props.connectivity.consistent,
+    consistent: props.bot.consistent,
     autoSyncEnabled: !!props.bot.hardware.configuration.auto_sync
   };
 }

@@ -5,6 +5,7 @@ import { EncoderDisplay } from "../controls/interfaces";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 import { Session } from "../session";
 import { BooleanSetting } from "../session_keys";
+import { maybeNegateStatus, maybeNegateConsistency } from "../connectivity/maybe_negate_status";
 
 /**
  * TODO: Refactor this method to use semverCompare() now that it is a thing.
@@ -24,7 +25,9 @@ export function versionOK(stringyVersion = "0.0.0",
     return (majorOK && minorOK);
   }
 }
+
 export let initialState: BotState = {
+  consistent: true,
   stepSize: 100,
   controlPanelState: {
     homing_and_calibration: false,
@@ -92,6 +95,16 @@ export const ENCODER_MAPPING: Record<EncoderDisplay, BooleanSetting> = {
 };
 
 export let botReducer = generateReducer<BotState>(initialState)
+  .add<boolean>(Actions.SET_CONSISTENCY, (s, a) => {
+    s.consistent = a.payload;
+    s.hardware.informational_settings.sync_status = maybeNegateStatus({
+      consistent: s.consistent,
+      syncStatus: s.hardware.informational_settings.sync_status,
+      fbosVersion: s.hardware.informational_settings.controller_version,
+      autoSync: !!s.hardware.configuration.auto_sync
+    });
+    return s;
+  })
   .add<void>(Actions.SETTING_UPDATE_START, (s, a) => {
     s.isUpdating = true;
     return s;
@@ -120,11 +133,23 @@ export let botReducer = generateReducer<BotState>(initialState)
     s.currentOSVersion = payload;
     return s;
   })
-  .add<HardwareState>(Actions.BOT_CHANGE, (s, { payload }) => {
-    const nextState = payload;
-    s.hardware = nextState;
-    versionOK(nextState.informational_settings.controller_version);
-    return s;
+  .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
+    state.hardware = payload;
+    const { informational_settings } = state.hardware;
+    const info = {
+      consistent: state.consistent,
+      syncStatus: informational_settings.sync_status,
+      fbosVersion: informational_settings.controller_version,
+      autoSync: !!state.hardware.configuration.auto_sync
+    };
+    state.consistent = maybeNegateConsistency(info);
+    info.consistent = state.consistent;
+
+    const nextSyncStatus = maybeNegateStatus(info);
+
+    versionOK(informational_settings.controller_version);
+    state.hardware.informational_settings.sync_status = nextSyncStatus;
+    return state;
   })
   .add<string>(Actions.FETCH_FW_UPDATE_INFO_OK, (s, { payload }) => {
     s.currentFWVersion = payload;

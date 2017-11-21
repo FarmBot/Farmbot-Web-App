@@ -20,7 +20,8 @@ describe("<App />: Controls Pop-Up", () => {
       logs: [],
       user: fakeUser(),
       bot: bot,
-      consistent: true
+      consistent: true,
+      autoSyncEnabled: true
     };
   }
 
@@ -53,14 +54,16 @@ describe("<App />: Controls Pop-Up", () => {
 
 describe.skip("<App />: Loading", () => {
   function fakeProps(): AppProps {
-    return {
+    const p: AppProps = {
       dispatch: jest.fn(),
       loaded: [],
       logs: [],
       user: fakeUser(),
       bot: bot,
-      consistent: true
+      consistent: true,
+      autoSyncEnabled: true
     };
+    return p;
   }
 
   it("MUST_LOADs not loaded", () => {
@@ -91,7 +94,8 @@ describe("<App />: NavBar", () => {
       logs: [],
       user: fakeUser(),
       bot: bot,
-      consistent: true
+      consistent: true,
+      autoSyncEnabled: true
     };
   }
 

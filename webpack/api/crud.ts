@@ -18,6 +18,7 @@ import { ResourceIndex } from "../resources/interfaces";
 import { SequenceBodyItem } from "farmbot/dist";
 import * as _ from "lodash";
 import { Actions } from "../constants";
+import { maybeStartTracking } from "./maybe_start_tracking";
 
 export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
@@ -131,6 +132,7 @@ export function refreshNO(payload: GeneralizedError): ReduxAction<GeneralizedErr
 
 function update(uuid: string) {
   return function (dispatch: Function, getState: GetState) {
+    maybeStartTracking(uuid);
     return updateViaAjax(getState().resources.index, uuid, dispatch);
   };
 }
@@ -141,6 +143,7 @@ export function destroy(uuid: string, force = false) {
     const maybeProceed = confirmationChecker(resource, force);
     return maybeProceed(() => {
       if (resource.body.id) {
+        maybeStartTracking(uuid);
         return axios
           .delete(urlFor(resource.kind) + resource.body.id)
           .then(function (resp: HttpData<typeof resource.body>) {
@@ -164,7 +167,11 @@ export function saveAll(input: TaggedResource[],
   return function (dispatch: Function, getState: GetState) {
     const p = input
       .filter(x => x.specialStatus === SpecialStatus.DIRTY)
-      .map(tts => dispatch(save(tts.uuid)));
+      .map(tts => tts.uuid)
+      .map(uuid => {
+        maybeStartTracking(uuid);
+        return dispatch(save(uuid));
+      });
     Promise.all(p).then(callback, errBack);
   };
 }
@@ -206,6 +213,7 @@ function updateViaAjax(index: ResourceIndex,
   } else {
     verb = "post";
   }
+  maybeStartTracking(uuid);
   return axios[verb](url, body)
     .then(function (resp: HttpData<typeof resource.body>) {
       const r1 = defensiveClone(resource);
@@ -214,6 +222,7 @@ function updateViaAjax(index: ResourceIndex,
       if (isTaggedResource(newTR)) {
         dispatch(updateOK(newTR));
       } else {
+        debugger;
         throw new Error("Just saved a malformed TR.");
       }
     })

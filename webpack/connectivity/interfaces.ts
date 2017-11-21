@@ -24,15 +24,11 @@ export interface ResourceReady {
   data: [DeviceAccountSettings];
 }
 
-type StatusRecord = Record<Edge, ConnectionStatus | undefined>;
+type ConnectionRecord = Record<Edge, ConnectionStatus | undefined>;
+
 /** Mapping of known connection status.
  * An `undefined` value means we don't know. */
-export interface ConnectionState extends StatusRecord {
-  /** Have all API requests been acknowledged by external services?
-   * This flag lets us know if it is safe to do data critical tasks with the bot
-   */
-  consistent: boolean;
-}
+export interface ConnectionState extends ConnectionRecord { }
 
 export interface UpdateMqttData {
   status: "UPDATE"

@@ -3,6 +3,7 @@ import { getDevice } from "./device";
 import { box } from "boxed_value";
 import * as _ from "lodash";
 import { ResourceName } from "./resources/tagged_resources";
+import { startTracking } from "./connectivity/data_consistency";
 
 export let METHOD_MAP: Dictionary<DataChangeType> = {
   "post": "add",
@@ -24,7 +25,7 @@ export let RESOURCES: ResourceName[] = [
 ];
 
 /** Temporary stub until auto_sync rollout. TODO: Remove */
-export const TEMP_LEGACY_RESOURCE_NAMES = [
+export const RESOURNCE_NAME_IN_URL = [
   "device",
   "farm_events",
   "logs",
@@ -50,11 +51,14 @@ interface DataUpdateEndOfLife {
 
 // LEGACY API. This was a temporary solution that was superceded by the auto
 // sync feature. End of life: 1 Jan 2018
-export function notifyBotOfChanges(url: string | undefined, action: DataChangeType) {
+export function notifyBotOfChanges(url: string | undefined,
+  action: DataChangeType, uuid: string) {
   if (url) {
     url.split("/").filter((chunk: ResourceName) => {
-      return TEMP_LEGACY_RESOURCE_NAMES.includes(chunk);
+      return RESOURNCE_NAME_IN_URL.includes(chunk);
     }).map(async function (resource: ResourceName) {
+      console.log("Found the bug right here.");
+      startTracking(uuid);
       const data_update: DataUpdateEndOfLife = {
         kind: "data_update",
         args: { value: action },

@@ -72,7 +72,6 @@ export function handleCreateOrUpdate(dispatch: Function,
     // data or INSERTing data.
     const jti = state.auth && state.auth.token.unencoded.jti;
     if (data.sessionId === jti) { // Ignore local echo?
-      // console.log("Ignoring echo");
     } else {
       dispatch(handleCreate(data));
     }

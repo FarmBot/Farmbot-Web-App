@@ -42,8 +42,6 @@ export function isLog(x: any): x is Log {
   }
 }
 const commandErr = (noun = "Command") => (x: {}) => {
-  console.dir(x);
-  console.info("Took longer than 6 seconds: " + noun);
 };
 
 export const commandOK = (noun = "Command") => () => {

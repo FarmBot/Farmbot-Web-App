@@ -15,7 +15,8 @@ describe("NavBar", () => {
         logs={[log]}
         bot={bot}
         user={taggedUser}
-        dispatch={jest.fn()} />
+        dispatch={jest.fn()}
+        autoSyncEnabled={false} />
     );
 
     expect(wrapper.hasClass("nav-wrapper")).toBeTruthy();
@@ -27,7 +28,8 @@ describe("NavBar", () => {
       logs={[log]}
       bot={bot}
       user={taggedUser}
-      dispatch={jest.fn()} />);
+      dispatch={jest.fn()}
+      autoSyncEnabled={false} />);
     const link = wrapper.find("Link").first();
     link.simulate("click");
     expect(wrapper.state().mobileMenuOpen).toBeFalsy();

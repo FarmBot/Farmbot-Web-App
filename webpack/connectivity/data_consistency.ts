@@ -2,9 +2,16 @@ import { getDevice } from "../device";
 import { store } from "../redux/store";
 import { Actions } from "../constants";
 
-const outstandingRequests: Set<string> = new Set();
+export const outstandingRequests: Set<string> = new Set();
 (window as any)["outstanding_requests"] = outstandingRequests;
-
+/** Use this when you need to throw the FE into an inconsistent state, but dont
+ * have a real UUID available. It will be removed when a "real" UUID comes
+ * along. This is necesary for creating an instantaneous "syncing..." label. */
+const PLACEHOLDER = "PLACEHOLDER";
+/** Max wait in MS before clearing out.
+ * I based this figure off of our highest "problem response time" in production
+ * plus an additional 25%. */
+const MAX_WAIT = 2000;
 /**
 * PROBLEM:  You save a sequence and click "RUN" very fast. The remote device
 *           did not have time to download the new sequence and so it crashes
@@ -34,18 +41,19 @@ const outstandingRequests: Set<string> = new Set();
 *     this and we could track data operations the same way a `exec_sequence`
 *     and friends.
 */
-export function startTracking(uuid: string | undefined) {
-  if (uuid) {
-    store.dispatch({ type: Actions.SET_CONSISTENCY, payload: false });
-    outstandingRequests.add(uuid);
-    const stop = () => stopTracking(uuid);
-    getDevice().on(uuid, stop);
-    setTimeout(stop, 5000);
-  }
+export function startTracking(uuid = PLACEHOLDER) {
+  console.log(`Track ${uuid}`);
+  store.dispatch({ type: Actions.SET_CONSISTENCY, payload: false });
+  outstandingRequests.add(uuid);
+  const stop = () => stopTracking(uuid);
+  getDevice().on(uuid, stop);
+  setTimeout(stop, MAX_WAIT);
 }
 
 export function stopTracking(uuid: string) {
   outstandingRequests.delete(uuid);
+  outstandingRequests.delete(PLACEHOLDER);
+  console.log(`Untrack ${uuid}. outstandingRequests.size === ${outstandingRequests.size}`);
   if (outstandingRequests.size === 0) {
     store.dispatch({ type: Actions.SET_CONSISTENCY, payload: true });
   }

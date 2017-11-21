@@ -23,7 +23,7 @@ export interface GeneralizedError {
  * requirements */
 export function generalizedError(payload: GeneralizedError) {
   toastErrors(payload);
-  return { type: "*_RESOURCE_NO", payload };
+  return { type: Actions._RESOURCE_NO, payload };
 }
 
 export let destroyNO = generalizedError;

@@ -6,6 +6,8 @@ export interface NavButtonProps {
   user: TaggedUser | undefined;
   dispatch: Function;
   bot: BotState;
+  consistent: boolean;
+  autoSyncEnabled: boolean;
   onClick?: () => void;
 }
 
@@ -15,6 +17,7 @@ export interface NavBarProps {
   bot: BotState;
   user: TaggedUser | undefined;
   dispatch: Function;
+  autoSyncEnabled: boolean;
 }
 
 export interface NavBarState {
