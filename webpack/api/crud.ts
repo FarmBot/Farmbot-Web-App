@@ -255,6 +255,7 @@ const DONT_CARE: ResourceName[] = [
   "Log",
   "Image",
   "WebcamFeed",
+  "User"
 ];
 
 function maybeStartTracking(uuid: string) {
