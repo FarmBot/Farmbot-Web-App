@@ -42,6 +42,7 @@ const MAX_WAIT = 2000;
 *     and friends.
 */
 export function startTracking(uuid = PLACEHOLDER) {
+  console.log(`Track ${uuid}`);
   store.dispatch({ type: Actions.SET_CONSISTENCY, payload: false });
   outstandingRequests.add(uuid);
   const stop = () => stopTracking(uuid);
@@ -52,6 +53,7 @@ export function startTracking(uuid = PLACEHOLDER) {
 export function stopTracking(uuid: string) {
   outstandingRequests.delete(uuid);
   outstandingRequests.delete(PLACEHOLDER);
+  console.log(`Untrack ${uuid}. outstandingRequests.size === ${outstandingRequests.size}`);
   if (outstandingRequests.size === 0) {
     store.dispatch({ type: Actions.SET_CONSISTENCY, payload: true });
   }
