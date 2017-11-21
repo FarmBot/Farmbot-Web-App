@@ -2,7 +2,7 @@ import { getDevice } from "../device";
 import { store } from "../redux/store";
 import { Actions } from "../constants";
 
-const outstandingRequests: Set<string> = new Set();
+export const outstandingRequests: Set<string> = new Set();
 (window as any)["outstanding_requests"] = outstandingRequests;
 /** Use this when you need to throw the FE into an inconsistent state, but dont
  * have a real UUID available. It will be removed when a "real" UUID comes
