@@ -12,7 +12,8 @@ import { Session } from "./session";
 import { attachToRoot } from "./util";
 import { Callback } from "i18next";
 
-const key = "Nov 6 15:22";
+const key = "Nov 21 13:16";
+
 if (!localStorage[key]) {
   localStorage[key] = JSON.stringify("X");
   location.reload(true);
