@@ -79,7 +79,7 @@ describe("maybeNegateStatus()", () => {
     expect(result).toEqual("unknown");
   });
 
-  fit("return `SYNC_NOW` for inconsistent legacy devices", () => {
+  it("return `SYNC_NOW` for inconsistent legacy devices", () => {
     const result = maybeNegateStatus({
       consistent: false,
       syncStatus: "unknown",
@@ -88,5 +88,11 @@ describe("maybeNegateStatus()", () => {
     });
 
     expect(result).toEqual("sync_now");
+  });
+});
+
+describe("maybeNegateConsistency()", () => {
+  it("sets consistency to `true` when bot is `syncing` (legacy mode)", () => {
+
   });
 });
