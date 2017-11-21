@@ -1,7 +1,8 @@
 import {
   determineStrategy,
   SyncStrat,
-  maybeNegateStatus
+  maybeNegateStatus,
+  maybeNegateConsistency
 } from "../maybe_negate_status";
 
 describe("determineStrategy()", () => {
@@ -39,7 +40,7 @@ describe("maybeNegateStatus()", () => {
   it("returns `synced` when consistent on AUTO mode", () => {
     const result = maybeNegateStatus({
       consistent: true,
-      syncStatus: "unknown",
+      syncStatus: "synced",
       fbosVersion: "6.0.0",
       autoSync: true,
     });
@@ -93,6 +94,44 @@ describe("maybeNegateStatus()", () => {
 
 describe("maybeNegateConsistency()", () => {
   it("sets consistency to `true` when bot is `syncing` (legacy mode)", () => {
+    const result = maybeNegateConsistency({
+      autoSync: false,
+      fbosVersion: "0.0.1",
+      syncStatus: "syncing",
+      consistent: false
+    });
+    expect(result).toBe(true);
+  });
 
+  it("returns original value when Legacy && !syncing", () => {
+    expect(maybeNegateConsistency({
+      autoSync: false,
+      fbosVersion: "0.0.1",
+      syncStatus: "unknown",
+      consistent: false
+    })).toBe(false);
+
+    expect(maybeNegateConsistency({
+      autoSync: false,
+      fbosVersion: "0.0.1",
+      syncStatus: "unknown",
+      consistent: true
+    })).toBe(true);
+  });
+
+  it("Skips this step for non-legacy versions", () => {
+    expect(maybeNegateConsistency({
+      autoSync: false,
+      fbosVersion: "6.0.0",
+      syncStatus: "unknown",
+      consistent: true
+    })).toBe(true);
+
+    expect(maybeNegateConsistency({
+      autoSync: false,
+      fbosVersion: "6.0.0",
+      syncStatus: "unknown",
+      consistent: false
+    })).toBe(false);
   });
 });
