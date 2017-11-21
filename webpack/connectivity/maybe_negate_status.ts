@@ -4,9 +4,9 @@ import { SyncStatus } from "farmbot";
 /** There are a bunch of ways we need to handle data consistency management
  * depending on a number of factors. */
 export enum SyncStrat {
-  /** Auto sync is enabled. */
+  /** Auto sync is enabled by user. */
   AUTO,
-  /** Auto sync is not enabled */
+  /** Auto sync is not enabled by user*/
   MANUAL,
   /** Device does not support auto_sync in any way. */
   LEGACY,
@@ -17,14 +17,16 @@ export enum SyncStrat {
 /** Highest version lacking auto sync. Remove in January 2018 -RC */
 const TOO_OLD = "5.0.6";
 
+/** "Hints" for figuring out which of the 4 strategies is appropriate. */
 interface StratHints {
+  /** Not always available if device is offline. */
   fbosVersion?: string;
   autoSync: boolean;
 }
 
 export function determineStrategy(x: StratHints): SyncStrat {
   const { fbosVersion, autoSync } = x;
-  /** First pass: Is it even on right now? */
+  /** First pass: Is it even on right now? Don't investigate further if so. */
   if (!fbosVersion) {
     console.log("Chose 'offline' strategy.");
     return SyncStrat.OFFLINE;
@@ -69,7 +71,7 @@ export function maybeNegateStatus(x: OverrideHints): SyncStatus | undefined {
       return consistent ? "synced" : "syncing";
     case SyncStrat.LEGACY:
     case SyncStrat.MANUAL:
-      return "sync_now";
+      return consistent ? x.syncStatus : "sync_now";
     case SyncStrat.OFFLINE:
       return "unknown";
   }
