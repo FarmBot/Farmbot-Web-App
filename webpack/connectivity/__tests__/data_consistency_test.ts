@@ -14,7 +14,7 @@ jest.mock("../../redux/store", () => {
 import { getDevice } from "../../device";
 import { store } from "../../redux/store";
 import { Actions } from "../../constants";
-import { startTracking, outstandingRequests } from "../data_consistency";
+import { startTracking, outstandingRequests, stopTracking } from "../data_consistency";
 
 describe("startTracking", () => {
   it("dispatches actions / event handlers", () => {
@@ -25,5 +25,16 @@ describe("startTracking", () => {
       .toHaveBeenCalledWith({ type: Actions.SET_CONSISTENCY, payload: false });
     expect(getDevice().on).toHaveBeenCalledWith(uuid, expect.anything());
     expect(outstandingRequests.size).toBe(b4 + 1);
+  });
+});
+
+describe("stopTracking", () => {
+  it("dispatches actions / event handlers", () => {
+    const uuid = "~UUID~";
+    const b4 = outstandingRequests.size;
+    stopTracking(uuid);
+    expect(store.dispatch)
+      .toHaveBeenCalledWith({ type: Actions.SET_CONSISTENCY, payload: true });
+    expect(outstandingRequests.size).toBe(b4 - 1);
   });
 });
