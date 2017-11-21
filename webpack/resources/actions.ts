@@ -2,7 +2,7 @@ import { TaggedResource } from "./tagged_resources";
 import { UnsafeError } from "../interfaces";
 import { Actions } from "../constants";
 import { toastErrors } from "../toast_errors";
-import { stopTracking } from "../connectivity/data_consistency";
+// import { stopTracking } from "../connectivity/data_consistency";
 
 export function createOK(payload: TaggedResource) {
   return { type: Actions.SAVE_RESOURCE_OK, payload };
