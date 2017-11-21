@@ -59,16 +59,14 @@ export function maybeNegateStatus(x: OverrideHints): SyncStatus | undefined {
   } = x;
 
   /** No need to override if data is consistent. */
-  if (consistent) {
-    return syncStatus;
-  }
+  if (consistent) { return syncStatus; }
 
   switch (determineStrategy({ autoSync, fbosVersion })) {
     case SyncStrat.AUTO:
-      return consistent ? "synced" : "syncing";
+      return "syncing";
     case SyncStrat.LEGACY:
     case SyncStrat.MANUAL:
-      return consistent ? x.syncStatus : "sync_now";
+      return "sync_now";
     case SyncStrat.OFFLINE:
       return "unknown";
   }
