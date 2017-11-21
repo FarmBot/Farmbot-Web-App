@@ -86,7 +86,7 @@ export function maybeNegateConsistency(x: OverrideHints): boolean {
     case SyncStrat.LEGACY:
       // Manually flip `consistent` off when bot sends `syncing` msg.
       // All others can be handled as usual.
-      return (syncStatus === "syncing") ? false : consistent;
+      return (syncStatus === "syncing") ? true : consistent;
     default:
       return consistent;
   }
