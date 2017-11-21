@@ -13,15 +13,14 @@ import * as _ from "lodash";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Content } from "./constants";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";
-import { startTracking } from "./connectivity/data_consistency";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   const method = input.config.method;
   dispatchNetworkUp("user.api");
 
   if (method && METHODS.includes(method)) {
-    notifyBotOfChanges(input.config.url, METHOD_MAP[method]);
-    startTracking(input.headers["x-request-id"]);
+    const uuid = input.headers["x-request-id"] || "NONE";
+    notifyBotOfChanges(input.config.url, METHOD_MAP[method], uuid);
   }
   return input;
 }
