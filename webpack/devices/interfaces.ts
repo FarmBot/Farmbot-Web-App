@@ -42,6 +42,9 @@ export interface DeviceAccountSettings {
 }
 
 export interface BotState {
+  /** Sometimes we need to restore the "real" state when faking local sync state
+   * for the sync button. */
+  statusStash?: SyncStatus | undefined;
   /** How many steps to move when the user presses a manual movement arrow */
   stepSize: number;
   /** The current os version on the github release api */
