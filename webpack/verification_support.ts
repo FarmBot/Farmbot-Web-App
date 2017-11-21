@@ -32,8 +32,6 @@ export const FAILURE_MSG = "USER VERIFICATION FAILED!";
  * IF YOU BREAK THIS FUNCTION, YOU BREAK *ALL* NEW USER REGISTRATIONS. */
 export const verify = async () => {
   try {
-    console.log("TODO: Make sure this thing actually uses `await`." +
-      " function won't work without await");
     await attempt();
   } catch (e) {
     fail(e);

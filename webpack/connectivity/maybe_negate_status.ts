@@ -28,19 +28,16 @@ export function determineStrategy(x: StratHints): SyncStrat {
   const { fbosVersion, autoSync } = x;
   /** First pass: Is it even on right now? Don't investigate further if so. */
   if (!fbosVersion) {
-    console.log("Chose 'offline' strategy.");
     return SyncStrat.OFFLINE;
   }
 
   /** Second pass: Is it an old version? */
   if (semverCompare(TOO_OLD, fbosVersion) !== SemverResult.RIGHT_IS_GREATER) {
-    console.log("Chose 'legacy' strategy.");
     return SyncStrat.LEGACY;
   }
 
   /** Third pass: Is auto_sync enabled? */
   const strat = autoSync ? "AUTO" : "MANUAL";
-  console.log(`Chose '${strat}' strategy.`);
   return SyncStrat[strat];
 }
 

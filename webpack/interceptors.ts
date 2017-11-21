@@ -27,7 +27,6 @@ export function responseFulfilled(input: AxiosResponse): AxiosResponse {
 }
 
 export function responseRejected(x: SafeError | undefined) {
-  console.log("DING");
   if (x && isSafeError(x)) {
     dispatchNetworkUp("user.api");
     const a = ![451, 401, 422].includes(x.response.status);
