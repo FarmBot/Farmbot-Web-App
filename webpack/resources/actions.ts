@@ -24,7 +24,8 @@ export interface GeneralizedError {
  * requirements */
 export const generalizedError = (payload: GeneralizedError) => {
   toastErrors(payload);
-  stopTracking(payload.uuid);
+  console.log("L-O-O-K");
+  // stopTracking(payload.uuid);
   return { type: Actions._RESOURCE_NO, payload };
 };
 
