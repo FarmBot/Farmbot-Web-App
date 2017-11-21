@@ -22,6 +22,7 @@ function copy(regimen: TaggedRegimen | undefined) {
   if (regimen) {
     const r = defensiveClone(regimen);
     r.body.name = r.body.name + " copy " + (count++);
+    r.body.id = undefined;
     return regimen && init(r);
   }
 }
