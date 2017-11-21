@@ -18,7 +18,7 @@ import { ResourceIndex } from "../resources/interfaces";
 import { SequenceBodyItem } from "farmbot/dist";
 import * as _ from "lodash";
 import { Actions } from "../constants";
-import { startTracking } from "../connectivity/data_consistency";
+import { maybeStartTracking } from "./maybe_start_tracking";
 
 export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
@@ -222,6 +222,7 @@ function updateViaAjax(index: ResourceIndex,
       if (isTaggedResource(newTR)) {
         dispatch(updateOK(newTR));
       } else {
+        debugger;
         throw new Error("Just saved a malformed TR.");
       }
     })
@@ -250,15 +251,3 @@ const confirmationChecker = (resource: TaggedResource, force = false) =>
     }
     return proceed();
   };
-
-const DONT_CARE: ResourceName[] = [
-  "Log",
-  "Image",
-  "WebcamFeed",
-  "User"
-];
-
-function maybeStartTracking(uuid: string) {
-  const forgetAboutIt = DONT_CARE.includes(uuid.split(".")[0] as ResourceName);
-  return forgetAboutIt || startTracking();
-}
