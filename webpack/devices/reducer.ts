@@ -136,6 +136,8 @@ export let botReducer = generateReducer<BotState>(initialState)
   .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
     state.hardware = payload;
     const { informational_settings } = state.hardware;
+    console.group();
+    console.log(`Sync status is ${informational_settings.sync_status}`);
     const info = {
       consistent: state.consistent,
       syncStatus: informational_settings.sync_status,
@@ -149,6 +151,8 @@ export let botReducer = generateReducer<BotState>(initialState)
 
     versionOK(informational_settings.controller_version);
     state.hardware.informational_settings.sync_status = nextSyncStatus;
+    console.log(`Now it is ${nextSyncStatus}`);
+    console.groupEnd();
     return state;
   })
   .add<string>(Actions.FETCH_FW_UPDATE_INFO_OK, (s, { payload }) => {
