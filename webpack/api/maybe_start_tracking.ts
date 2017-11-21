@@ -1,7 +1,7 @@
 import { ResourceName } from "../resources/tagged_resources";
 import { startTracking } from "../connectivity/data_consistency";
 
-const DONT_CARE: ResourceName[] = [
+const BLACKLIST: ResourceName[] = [
   "Log",
   "Image",
   "WebcamFeed",
@@ -9,6 +9,11 @@ const DONT_CARE: ResourceName[] = [
 ];
 
 export function maybeStartTracking(uuid: string) {
-  const forgetAboutIt = DONT_CARE.includes(uuid.split(".")[0] as ResourceName);
-  return forgetAboutIt || startTracking();
+  const ignore = BLACKLIST.includes(uuid.split(".")[0] as ResourceName);
+  console.log(`
+  ${JSON.stringify(BLACKLIST)}.includes(${JSON.stringify(uuid.split(".")[0])})
+  => ${JSON.stringify(ignore)}
+  `);
+  ignore || console.log("Will track");
+  return ignore || startTracking();
 }
