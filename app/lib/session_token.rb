@@ -14,6 +14,7 @@ class SessionToken < AbstractJwtToken
     "#{protocol}#{host}:3002/ws"
   end
   EXPIRY       = 40.days
+  VHOST        = ENV.fetch("MQTT_VHOST") { "/" }
 
   def self.issue_to(user,
                     iat: Time.now.to_i,
@@ -36,11 +37,13 @@ class SessionToken < AbstractJwtToken
                 mqtt_ws:          MQTT_WS,
                 os_update_server: OS_RELEASE,
                 fw_update_server: "DEPRECATED",
-                bot:              "device_#{user.device.id}" }])
+                bot:              "device_#{user.device.id}",
+                vhost:            VHOST }])
   end
 
   def self.as_json(user, aud)
-    { token: SessionToken.issue_to(user, iss: $API_URL, aud: aud),
-      user: user }
+    { token: SessionToken.issue_to(user,
+      iss:   $API_URL, aud: aud),
+      user:  user }
   end
 end
