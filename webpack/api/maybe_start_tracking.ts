@@ -10,5 +10,5 @@ const BLACKLIST: ResourceName[] = [
 
 export function maybeStartTracking(uuid: string) {
   const ignore = BLACKLIST.includes(uuid.split(".")[0] as ResourceName);
-  return ignore || startTracking();
+  return ignore || startTracking(uuid);
 }
