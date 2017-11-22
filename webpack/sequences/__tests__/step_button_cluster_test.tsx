@@ -14,4 +14,17 @@ describe("<StepButtonCluster />", () => {
     commands.map(command =>
       expect(wrapper.text().toLowerCase()).toContain(command));
   });
+
+  it("has correct drag data", () => {
+    const dispatch = jest.fn();
+    const wrapper = mount(<StepButtonCluster
+      dispatch={dispatch}
+      current={undefined} />);
+    const stepButton = wrapper.find("div").last();
+    expect(stepButton.text().toLowerCase()).toEqual("take photo");
+    stepButton.simulate("dragStart", { dataTransfer: { setData: jest.fn() } });
+    const [[{ type, payload }]] = dispatch.mock.calls;
+    expect(type).toEqual("PUT_DATA_XFER");
+    expect(payload.value.kind).toEqual("take_photo");
+  });
 });
