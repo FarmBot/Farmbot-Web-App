@@ -16,7 +16,7 @@ export function TestButton({ onClick, onFail, syncStatus, sequence }: TestBtnPro
   const isSynced = syncStatus === "synced";
   const isSaved = !sequence.specialStatus;
   const canTest = isSynced && isSaved;
-  const className = canTest ? "orange" : "gray";
+  const className = canTest ? "orange" : "pseudo-disabled";
 
   const clickHandler = () => (canTest) ?
     onClick() : onFail(t("Save sequence and sync device before running."));

@@ -57,7 +57,6 @@ export function notifyBotOfChanges(url: string | undefined,
     url.split("/").filter((chunk: ResourceName) => {
       return RESOURNCE_NAME_IN_URL.includes(chunk);
     }).map(async function (resource: ResourceName) {
-      console.log("Found the bug right here.");
       startTracking(uuid);
       const data_update: DataUpdateEndOfLife = {
         kind: "data_update",

@@ -1,8 +1,6 @@
 jest.mock("../../../history", () => ({
-  history: {
-    getCurrentLocation: () => {
-      return { pathname: "/app/designer/plants/crop_search/aplant/add" };
-    }
+  getPathArray: () => {
+    return "/app/designer/plants/crop_search/aplant/add".split("/");
   }
 }));
 

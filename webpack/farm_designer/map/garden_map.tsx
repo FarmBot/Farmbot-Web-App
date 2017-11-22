@@ -5,7 +5,7 @@ import { Plant, DEFAULT_PLANT_RADIUS } from "../plant";
 import { movePlant } from "../actions";
 import * as moment from "moment";
 import { GardenMapProps, GardenMapState } from "../interfaces";
-import { history } from "../../history";
+import { getPathArray } from "../../history";
 import { initSave, save, edit } from "../../api/crud";
 import { TaggedPlantPointer, SpecialStatus } from "../../resources/tagged_resources";
 import {
@@ -108,20 +108,19 @@ export class GardenMap extends
   get isEditing(): boolean { return location.pathname.includes("edit"); }
 
   getPlant = (): TaggedPlantPointer | undefined =>
-    history.getCurrentLocation().pathname.split("/")[4] != "select"
+    getPathArray()[4] != "select"
       ? this.props.selectedPlant
       : undefined;
 
   handleDragOver = (e: React.DragEvent<HTMLElement>) => {
-    if (!this.isEditing &&
-      history.getCurrentLocation().pathname.split("/")[4] == "crop_search") {
+    if (!this.isEditing && getPathArray()[4] == "crop_search") {
       e.preventDefault();
       e.dataTransfer.dropEffect = "move";
     }
   }
 
   handleDragEnter = (e: React.DragEvent<HTMLElement>) => {
-    if (history.getCurrentLocation().pathname.split("/")[4] == "crop_search") {
+    if (getPathArray()[4] == "crop_search") {
       e.preventDefault();
     }
   }
@@ -134,7 +133,7 @@ export class GardenMap extends
     e.preventDefault();
     const gardenCoords = this.getGardenCoordinates(e);
     if (gardenCoords) {
-      const crop = history.getCurrentLocation().pathname.split("/")[5];
+      const crop = getPathArray()[5];
       const OFEntry = this.findCrop(crop);
       const { x, y } = gardenCoords;
       if (x < 0 || y < 0 || x > this.props.gridSize.x || y > this.props.gridSize.y) {
@@ -164,7 +163,7 @@ export class GardenMap extends
   }
 
   click = (e: React.MouseEvent<SVGElement>) => {
-    if (history.getCurrentLocation().pathname.split("/")[6] == "add") {
+    if (getPathArray()[6] == "add") {
       // In 'click-to-add' mode
       this.handleDrop(e);
     }

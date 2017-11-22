@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router";
-import { history } from "../history";
 import { NavLinksProps } from "./interfaces";
+import { getPathArray } from "../history";
 
 export const links = [
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
@@ -14,12 +14,12 @@ export const links = [
 ];
 
 export const NavLinks = (props: NavLinksProps) => {
-  const currPath = history.getCurrentLocation().pathname;
+  const currPageSlug = getPathArray()[2];
   return (
     <div className="links">
       <div className="nav-links">
         {links.map(link => {
-          const isActive = currPath.includes(link.slug) ? "active" : "";
+          const isActive = (currPageSlug === link.slug) ? "active" : "";
           return (
             <Link
               to={"/app/" + link.slug}

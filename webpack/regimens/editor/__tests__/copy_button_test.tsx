@@ -1,3 +1,8 @@
+const mockPush = jest.fn();
+jest.mock("../../../history", () => ({
+  push: (url: string) => mockPush(url)
+}));
+
 jest.unmock("../../../api/crud");
 import * as React from "react";
 import { mount } from "enzyme";
@@ -20,6 +25,7 @@ describe("Copy button", () => {
     const reg = action.payload.body;
     expect(action.payload.specialStatus).toBe(SpecialStatus.DIRTY);
     expect(reg.name).toContain("Foo copy");
+    expect(mockPush).toHaveBeenCalledWith("/app/regimens/foo_copy_1");
   });
 
   it("Render a button when given a regimen", () => {

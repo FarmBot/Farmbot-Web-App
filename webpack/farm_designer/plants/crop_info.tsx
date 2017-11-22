@@ -3,7 +3,7 @@ import { t } from "i18next";
 import * as _ from "lodash";
 import { DATA_URI, DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
 import { CropInfoProps, DraggableEvent } from "../interfaces";
-import { history } from "../../history";
+import { history, getPathArray } from "../../history";
 import { connect } from "react-redux";
 import { findBySlug } from "../search_selectors";
 import { Everything } from "../../interfaces";
@@ -26,7 +26,7 @@ export function mapStateToProps(props: Everything): CropInfoProps {
 export class CropInfo extends React.Component<CropInfoProps, {}> {
 
   componentDidMount() {
-    const crop = history.getCurrentLocation().pathname.split("/")[5];
+    const crop = getPathArray()[5];
     OFSearch(crop)(this.props.dispatch);
   }
 
@@ -44,7 +44,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
   }
 
   render() {
-    const crop = history.getCurrentLocation().pathname.split("/")[5];
+    const crop = getPathArray()[5];
     const result =
       findBySlug(this.props.cropSearchResults, crop || "PLANT_NOT_FOUND");
 
