@@ -222,7 +222,6 @@ function updateViaAjax(index: ResourceIndex,
       if (isTaggedResource(newTR)) {
         dispatch(updateOK(newTR));
       } else {
-        debugger;
         throw new Error("Just saved a malformed TR.");
       }
     })

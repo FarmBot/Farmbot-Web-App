@@ -162,4 +162,22 @@ export let botReducer = generateReducer<BotState>(initialState)
   .add<EncoderDisplay>(Actions.DISPLAY_ENCODER_DATA, (s, { payload }) => {
     s.encoder_visibility[payload] = !s.encoder_visibility[payload];
     return s;
+  })
+  .add<void>(Actions._RESOURCE_NO, (s, a) => {
+    /** Panic and restore syncStatus to what it was before operation failed. */
+    if (s.consistent && (s.statusStash !== "syncing")) {
+      s.hardware.informational_settings.sync_status = s.statusStash;
+    }
+    return s;
+  })
+  .add<void>(Actions.STASH_STATUS, (s, a) => {
+    /** Store syncStatus when transitioning from consistent to inconsistent. */
+    s.statusStash = s.hardware.informational_settings.sync_status;
+    return s;
   });
+  // .add<void>(Actions.UNSTASH_STATUS, (s, a) => {
+  //   if (s.consistent && (s.statusStash !== "syncing")) {
+  //     s.hardware.informational_settings.sync_status = s.statusStash;
+  //   }
+  //   return s;
+  // });

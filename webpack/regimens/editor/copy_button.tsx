@@ -24,6 +24,7 @@ function copy(regimen: TaggedRegimen | undefined) {
     const r = defensiveClone(regimen);
     r.body.name = r.body.name + " copy " + (count++);
     push("/app/regimens/" + urlFriendly(r.body.name));
+    r.body.id = undefined;
     return regimen && init(r);
   }
 }
