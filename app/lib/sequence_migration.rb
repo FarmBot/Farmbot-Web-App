@@ -29,7 +29,8 @@ module SequenceMigration
         UpdateChannelNames,
         AddToolsToMoveAbs,
         UpdateIfStatement,
-        CleanupArgNames
+        CleanupArgNames,
+        SequenceSpeedChange
       ]
     end
 
