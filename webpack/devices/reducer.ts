@@ -175,9 +175,3 @@ export let botReducer = generateReducer<BotState>(initialState)
     s.statusStash = s.hardware.informational_settings.sync_status;
     return s;
   });
-  // .add<void>(Actions.UNSTASH_STATUS, (s, a) => {
-  //   if (s.consistent && (s.statusStash !== "syncing")) {
-  //     s.hardware.informational_settings.sync_status = s.statusStash;
-  //   }
-  //   return s;
-  // });
