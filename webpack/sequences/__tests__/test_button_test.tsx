@@ -35,7 +35,7 @@ describe("<TestButton/>", () => {
     const result = mount(<TestButton {...props} />);
     const btn = result.find("button");
     btn.simulate("click");
-    expect(btn.hasClass("gray")).toBeTruthy();
+    expect(btn.hasClass("pseudo-disabled")).toBeTruthy();
     expect(props.onFail).toHaveBeenCalled();
     expect(props.onClick).not.toHaveBeenCalled();
   });
@@ -48,7 +48,7 @@ describe("<TestButton/>", () => {
     const result = mount(<TestButton {...props} />);
     const btn = result.find("button");
     btn.simulate("click");
-    expect(btn.hasClass("gray")).toBeTruthy();
+    expect(btn.hasClass("pseudo-disabled")).toBeTruthy();
     expect(props.onFail).toHaveBeenCalled();
     expect(props.onClick).not.toHaveBeenCalled();
   });
