@@ -42,8 +42,10 @@ export interface DeviceAccountSettings {
 }
 
 export interface BotState {
-  /** Sometimes we need to restore the "real" state when faking local sync state
-   * for the sync button. */
+  /** The browser optimistically overwrites FBOS sync status to "syncing..."
+   * to reduce UI latency. When AJAX/sync operations fail, we need
+   * a mechanism to rollback the update to the previous value. We store the
+   * value of the status prior to the update here for safety */
   statusStash?: SyncStatus | undefined;
   /** How many steps to move when the user presses a manual movement arrow */
   stepSize: number;
