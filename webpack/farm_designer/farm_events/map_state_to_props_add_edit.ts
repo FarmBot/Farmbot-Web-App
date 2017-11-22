@@ -3,7 +3,7 @@ import { Everything } from "../../interfaces";
 import * as moment from "moment";
 import * as _ from "lodash";
 import { t } from "i18next";
-import { history } from "../../history";
+import { history, getPathArray } from "../../history";
 import {
   selectAllFarmEvents,
   indexRegimenById,
@@ -144,8 +144,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
   const farmEvents = selectAllFarmEvents(props.resources.index);
 
   const getFarmEvent = (): TaggedFarmEvent | undefined => {
-    const url = history.getCurrentLocation().pathname;
-    const id = parseInt(url.split("/")[4]);
+    const id = parseInt(getPathArray()[4]);
     if (id && hasId(props.resources.index, "FarmEvent", id)) {
       return findFarmEventById(props.resources.index, id);
     } else {

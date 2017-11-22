@@ -1,18 +1,18 @@
 const mockHistory = jest.fn();
 jest.mock("../../../history", () => ({
   history: {
-    push: mockHistory,
-    getCurrentLocation: jest.fn()
-      .mockImplementationOnce(() => {
-        return { pathname: "/app/designer/plants" };
-      })
-      .mockImplementationOnce(() => {
-        return { pathname: "/app/designer/plants/1/edit" };
-      })
-      .mockImplementationOnce(() => {
-        return { pathname: "/app/designer/plants/1" };
-      })
-  }
+    push: mockHistory
+  },
+  getPathArray: jest.fn()
+    .mockImplementationOnce(() => {
+      return "/app/designer/plants".split("/");
+    })
+    .mockImplementationOnce(() => {
+      return "/app/designer/plants/1/edit".split("/");
+    })
+    .mockImplementationOnce(() => {
+      return "/app/designer/plants/1".split("/");
+    })
 }));
 
 import * as React from "react";

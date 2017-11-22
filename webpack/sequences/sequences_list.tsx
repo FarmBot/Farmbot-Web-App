@@ -13,6 +13,7 @@ import { Row, Col, ToolTip } from "../ui/index";
 import { TaggedSequence, SpecialStatus } from "../resources/tagged_resources";
 import { init } from "../api/crud";
 import { ToolTips } from "../constants";
+import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 
 const sequenceList = (dispatch: Function) =>
   (ts: TaggedSequence, index: number) => {
@@ -27,14 +28,24 @@ const sequenceList = (dispatch: Function) =>
     const name = ts.body.name + (ts.specialStatus ? "*" : "");
     const { uuid } = ts;
     return <div className="sequence-list-items" key={uuid}>
-      <Link
-        to={`/app/sequences/${urlFriendly(ts.body.name) || ""}`}
-        key={uuid}
-        onClick={click} >
-        <button className={css.join(" ")}>
-          {name}
-        </button>
-      </Link>
+      <StepDragger
+        dispatch={dispatch}
+        step={{
+          kind: "execute",
+          args: { sequence_id: ts.body.id || 0 }
+        }}
+        ghostCss="step-drag-ghost-image"
+        intent="step_splice"
+        draggerId={NULL_DRAGGER_ID}>
+        <Link
+          to={`/app/sequences/${urlFriendly(ts.body.name) || ""}`}
+          key={uuid}
+          onClick={click} >
+          <button className={css.join(" ")}>
+            {name}
+          </button>
+        </Link>
+      </StepDragger>
     </div>;
   };
 

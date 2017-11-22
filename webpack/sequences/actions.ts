@@ -5,6 +5,8 @@ import { GetState } from "../redux/interfaces";
 import { edit, init, overwrite } from "../api/crud";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { defensiveClone } from "../util";
+import { push } from "../history";
+import { urlFriendly } from "../util";
 
 export function pushStep(step: SequenceBodyItem,
   dispatch: Function,
@@ -28,6 +30,7 @@ export function copySequence(payload: TaggedSequence) {
     copy.body.name = copy.body.name + ` copy ${count++}`;
     copy.uuid = "HEY REDUCER! Set this!";
     dispatch(init(copy));
+    push("/app/sequences/" + urlFriendly(copy.body.name));
   };
 }
 

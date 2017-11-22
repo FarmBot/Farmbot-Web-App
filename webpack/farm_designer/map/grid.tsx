@@ -2,13 +2,12 @@ import * as React from "react";
 import { GridProps } from "./interfaces";
 import { getXYFromQuadrant } from "./util";
 import * as _ from "lodash";
-import { history } from "../../history";
+import { history, getPathArray } from "../../history";
 import { Color } from "../../ui/colors";
 
 export function Grid(props: GridProps) {
   function closePlantInfo() {
-    const currentPath = history.getCurrentLocation().pathname;
-    if (!isNaN(parseInt(currentPath.split("/").slice(-1)[0]))) {
+    if (!isNaN(parseInt(getPathArray().slice(-1)[0]))) {
       // A plant is selected and plant info is open. Unselect and close it.
       props.dispatch({ type: "SELECT_PLANT", payload: undefined });
       props.dispatch({

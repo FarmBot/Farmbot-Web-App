@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import { t } from "i18next";
 import { links } from "./nav/nav_links";
 import { sync } from "./devices/actions";
-import { history, push } from "./history";
+import { push, getPathArray } from "./history";
 import { Row, Col } from "./ui/index";
 import {
   Hotkey,
@@ -108,7 +108,7 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
   }
 
   renderHotkeys() {
-    const slug = history.getCurrentLocation().pathname.split("/")[2];
+    const slug = getPathArray()[2];
     return <Hotkeys>
       {
         this.hotkeys(this.props.dispatch, slug)

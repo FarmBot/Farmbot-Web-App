@@ -3,7 +3,8 @@ import { CopyButtnProps } from "./interfaces";
 import { t } from "i18next";
 import { init } from "../../api/crud";
 import { TaggedRegimen } from "../../resources/tagged_resources";
-import { defensiveClone } from "../../util";
+import { defensiveClone, urlFriendly } from "../../util";
+import { push } from "../../history";
 
 export function CopyButton({ dispatch, regimen }: CopyButtnProps) {
   if (regimen) {
@@ -22,6 +23,7 @@ function copy(regimen: TaggedRegimen | undefined) {
   if (regimen) {
     const r = defensiveClone(regimen);
     r.body.name = r.body.name + " copy " + (count++);
+    push("/app/regimens/" + urlFriendly(r.body.name));
     r.body.id = undefined;
     return regimen && init(r);
   }
