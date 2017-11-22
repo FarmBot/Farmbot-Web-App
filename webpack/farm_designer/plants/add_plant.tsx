@@ -3,7 +3,7 @@ import { BackArrow } from "../../ui";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
 import { t } from "i18next";
-import { history } from "../../history";
+import { history, getPathArray } from "../../history";
 import { svgToUrl } from "../../open_farm/index";
 import { CropLiveSearchResult } from "../interfaces";
 import { findBySlug } from "../search_selectors";
@@ -27,7 +27,7 @@ export class AddPlant
   extends React.Component<AddPlantProps, {}> {
 
   render() {
-    const crop = history.getCurrentLocation().pathname.split("/")[5];
+    const crop = getPathArray()[5];
     const result =
       findBySlug(this.props.cropSearchResults, crop || "PLANT_NOT_FOUND");
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
 import { EditPlantInfoProps } from "../interfaces";
-import { history } from "../../history";
+import { history, getPathArray } from "../../history";
 import { destroy } from "../../api/crud";
 import { error } from "farmbot-toastr";
 
@@ -10,7 +10,7 @@ export abstract class PlantInfoBase extends
 
   get stringyID() {
     // TODO: ("We should put this into a query object incase the URL changes")
-    return history.getCurrentLocation().pathname.split("/")[4] || "";
+    return getPathArray()[4] || "";
   }
 
   get plant() { return this.props.findPlant(this.stringyID); }

@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import { GardenPlant } from "../garden_plant";
 import { PlantLayerProps, CropSpreadDict } from "../interfaces";
 import { defensiveClone } from "../../../util";
-import { history } from "../../../history";
+import { getPathArray } from "../../../history";
 
 const cropSpreadDict: CropSpreadDict = {};
 
@@ -24,9 +24,8 @@ export function PlantLayer(props: PlantLayerProps) {
     .filter(c => !!c.body.spread)
     .map(c => cropSpreadDict[c.body.slug] = c.body.spread);
 
-  const pathName = history.getCurrentLocation().pathname;
-  const clickToAddMode = pathName.split("/")[6] == "add";
-  const selectMode = pathName.split("/")[4] == "select";
+  const clickToAddMode = getPathArray()[6] == "add";
+  const selectMode = getPathArray()[4] == "select";
   const maybeNoPointer = (clickToAddMode || selectMode)
     ? { "pointerEvents": "none" } : {};
 

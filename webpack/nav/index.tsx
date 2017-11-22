@@ -4,7 +4,7 @@ import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "../devices/components/e_stop_btn";
 import { Session } from "../session";
 import { Row, Col } from "../ui";
-import { history } from "../history";
+import { getPathArray } from "../history";
 import { updatePageInfo } from "../util";
 import { SyncButton } from "./sync_button";
 import { NavLinks } from "./nav_links";
@@ -52,7 +52,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     ];
 
     /** The way our app is laid out, we'll pretty much always want this bit. */
-    const pageName = history.getCurrentLocation().pathname.split("/")[2] || "";
+    const pageName = getPathArray()[2] || "";
 
     /** Change document meta title on every route change. */
     updatePageInfo(pageName);
