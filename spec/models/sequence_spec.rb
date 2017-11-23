@@ -13,6 +13,6 @@ describe Sequence do
 
   it "picks random values" do
     FactoryBot.create(:sequence)
-    3.times { expect(Sequence.random).to be_kind_of(Sequence) }
+    5.times { expect(Sequence.random).to be_kind_of(Sequence) }
   end
 end

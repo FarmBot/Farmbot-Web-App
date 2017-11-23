@@ -11,9 +11,11 @@ module SequenceMigration
                       "find_home" ]
 
       def up
-        CeleryScript::TreeClimber.travel(sequence.body, ->(n) {
-          # binding.pry
-        })
+        sequence
+          .body
+          .map do |x|
+            x[:args][:speed] = 100 if MUST_BE_100.include?(x.try(:[], :kind))
+          end
       end
   end
 end
