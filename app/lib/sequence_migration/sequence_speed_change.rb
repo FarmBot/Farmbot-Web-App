@@ -12,7 +12,7 @@ module SequenceMigration
 
       def up
         CeleryScript::TreeClimber.travel(sequence.body, ->(n) {
-          binding.pry
+          # binding.pry
         })
       end
   end

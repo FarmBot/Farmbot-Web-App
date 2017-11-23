@@ -17,25 +17,29 @@ module SequenceMigration
     # MAGIC NUMBER. Assume that versionless sequences are "legacy" sequences
     # from a time before versioning. Since the lowest migration version is 0, a
     # version of -1 will require all migrations to run.
-    LEGACY_VERSION = -1
-    VERSION        = "YOU MUST CHANGE THIS!!!"
-
+    LEGACY_VERSION                             = -1
+    VERSION                                    = "YOU MUST CHANGE THIS!!!"
+    # When we last ran a compaction (22 NOV 17), the highest version number was
+    # this:
+    HIGHEST_VERSION_AT_TIME_OF_LAST_COMPACTION = 4
     # I shouldn't need to do this, as this method comes with ActiveSupport, but
     # it's acting weird with autoloading right now :shipit:. TODO: See if there
     # is a way to automatically infer all classes
     def self.descendants
-      [
-        AddVersionInfo,
-        UpdateChannelNames,
-        AddToolsToMoveAbs,
-        UpdateIfStatement,
-        CleanupArgNames,
-        SequenceSpeedChange
-      ]
+      []
     end
 
     def self.latest_version
-      self.descendants.map{ |k| k::VERSION }.max
+      self
+        .descendants
+        .map  { |k| k::VERSION }
+        .tap  { |x| x.push(HIGHEST_VERSION_AT_TIME_OF_LAST_COMPACTION) }
+        .each { |v|
+          if v < HIGHEST_VERSION_AT_TIME_OF_LAST_COMPACTION
+            raise "VERSION TOO LOW"
+          end
+        }
+        .max
     end
 
     attr_accessor :sequence

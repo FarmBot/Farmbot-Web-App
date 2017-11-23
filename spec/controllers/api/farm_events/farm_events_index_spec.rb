@@ -10,7 +10,9 @@ describe Api::FarmEventsController do
     it 'lists all farm_events for a user' do
       sign_in user
 
-      farm_events = FactoryBot.create_list(:farm_event, 2, device_id: user.device.id)
+      farm_events    = FactoryBot.create_list(:farm_event,
+                                              2,
+                                              device_id: user.device.id)
       farm_event_ids = user.device.farm_events
                        .map(&:id)
                        .sort

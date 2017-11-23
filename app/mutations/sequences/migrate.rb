@@ -17,7 +17,6 @@ module Sequences
       ours   = SequenceMigration::Base.latest_version
       if theirs != ours
         SequenceMigration::Base.generate_list(sequence).map(&:run)
-        binding.pry
         sequence.args["is_outdated"] = true
       end
       sequence

@@ -1,6 +1,5 @@
 module Regimens
   class Update < Mutations::Command
-    include Skylight::Helpers
 
     required do
       model :device, class: Device
@@ -15,7 +14,6 @@ module Regimens
       end
     end
 
-    instrument_method
     def execute
       ActiveRecord::Base.transaction do
         regimen.regimen_items.destroy_all
