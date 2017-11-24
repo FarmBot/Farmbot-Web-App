@@ -1,11 +1,8 @@
 module Api
   class SequencesController < Api::AbstractController
-    include Skylight::Helpers
-
     before_action :authorize_user, except: [:index, :create]
     before_action :clean_expired_farm_events, only: [:destroy]
 
-    instrument_method
     def index
       query = { device: current_device }
       # TODO: This is a legacy API from the Angular 1.0 days, I think. Remove.

@@ -1,7 +1,5 @@
 module Api
   class LogsController < Api::AbstractController
-    include Skylight::Helpers
-
     # This is one of the "oddball" endpoints for the FarmBot API.
     # It is unique because it allows batch creation of logs.
     # When creating in batches, it is a "best effort" approach.
@@ -15,7 +13,6 @@ module Api
       end
     end
 
-    instrument_method
     def index
       render json: current_device.limited_log_list
     end
