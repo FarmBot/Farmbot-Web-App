@@ -24,7 +24,7 @@ import { SpreadLayer } from "./layers/spread_layer";
 import { ToolSlotLayer } from "./layers/tool_slot_layer";
 import { HoveredPlantLayer } from "./layers/hovered_plant_layer";
 import { FarmBotLayer } from "./layers/farmbot_layer";
-import { cachedCrop } from "../../open_farm/index";
+import { cachedCrop } from "../../open_farm/icons";
 import { DragHelperLayer } from "./layers/drag_helper_layer";
 import { AxisNumberProperty } from "./interfaces";
 import { SelectionBox, SelectionBoxData } from "./selection_box";

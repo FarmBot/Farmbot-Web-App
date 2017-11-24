@@ -3,7 +3,7 @@ import { SpreadOverlapHelperProps } from "./interfaces";
 import { round, getXYFromQuadrant } from "./util";
 import { isUndefined } from "util";
 import { BotPosition } from "../../devices/interfaces";
-import { cachedCrop } from "../../open_farm/index";
+import { cachedCrop } from "../../open_farm/icons";
 
 enum OverlapColor {
   NONE = "none",

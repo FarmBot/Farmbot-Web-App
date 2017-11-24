@@ -4,7 +4,7 @@ jest.mock("../../../history", () => ({
   }
 }));
 
-jest.mock("../../../open_farm/index", () => ({
+jest.mock("../../../open_farm/icons", () => ({
   cachedCrop: jest.fn(() => { return Promise.resolve({ spread: 100 }); })
 }));
 

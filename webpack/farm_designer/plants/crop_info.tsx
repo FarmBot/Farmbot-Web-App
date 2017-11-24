@@ -1,7 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
 import * as _ from "lodash";
-import { DATA_URI, DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
+import { DATA_URI, DEFAULT_ICON, svgToUrl } from "../../open_farm/icons";
 import { CropInfoProps, DraggableEvent } from "../interfaces";
 import { history, getPathArray } from "../../history";
 import { connect } from "react-redux";

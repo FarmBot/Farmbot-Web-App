@@ -4,7 +4,7 @@ import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
 import { t } from "i18next";
 import { history, getPathArray } from "../../history";
-import { svgToUrl } from "../../open_farm/index";
+import { svgToUrl } from "../../open_farm/icons";
 import { CropLiveSearchResult } from "../interfaces";
 import { findBySlug } from "../search_selectors";
 
