@@ -9,10 +9,8 @@ export function StepInputBox(props: StepInputProps) {
     case "pin_mode": case "pin_number": case "pin_value": case "rhs":
     case "sequence_id":
     case "x": case "y": case "z":
-      return <InputDefault {...props} />;
-    // This is a stub due to some bugs found in the 4.0.0 release.
     case "speed":
-      return <InputDefault {...props} type_={"hidden"} />;
+      return <InputDefault {...props} />;
     default:
       return <InputUnknown {...props } />;
   }

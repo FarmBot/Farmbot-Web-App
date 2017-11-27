@@ -33,6 +33,7 @@ import { TileMoveAbsSelect } from "./tile_move_absolute/select";
 import { InputBox } from "./tile_move_absolute/input_box";
 import { ToolTips } from "../../constants";
 import { StepIconGroup } from "../step_icon_group";
+import { StepInputBox } from "../inputs/step_input_box";
 
 interface Args {
   location: Tool | Coordinate | Point;
@@ -182,10 +183,9 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
                   {t("Z (mm)")}
                 </InputBox>
               </Col>
-            </Row>
-            {/*<Col xs={3}>
+              <Col xs={3}>
                 <label>
-                  {t("Speed")}
+                  {t("Speed (%)")}
                 </label>
                 <StepInputBox
                   field={"speed"}
@@ -193,7 +193,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
                   index={index}
                   dispatch={this.props.dispatch}
                   sequence={this.props.currentSequence} />
-              </Col>*/}
+              </Col>
+            </Row>
             <Row>
               <Col xs={3}>
                 <InputBox
