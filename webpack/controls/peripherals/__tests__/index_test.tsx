@@ -71,4 +71,24 @@ describe("<Peripherals />", () => {
     save.simulate("click");
     expect(p.dispatch).toHaveBeenCalled();
   });
+
+  it("adds empty peripheral", () => {
+    const p = fakeProps();
+    const wrapper = mount(<Peripherals {...p } />);
+    wrapper.setState({ isEditing: true });
+    const add = wrapper.find("button").at(2);
+    expect(add.text()).toEqual("");
+    add.simulate("click");
+    expect(p.dispatch).toHaveBeenCalled();
+  });
+
+  it("adds farmduino peripherals", () => {
+    const p = fakeProps();
+    const wrapper = mount(<Peripherals {...p } />);
+    wrapper.setState({ isEditing: true });
+    const add = wrapper.find("button").at(3);
+    expect(add.text()).toEqual("Farmduino");
+    add.simulate("click");
+    expect(p.dispatch).toHaveBeenCalledTimes(5);
+  });
 });

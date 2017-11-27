@@ -65,6 +65,22 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
     };
   }
 
+  farmduinoPeripherals = (dispatch: Function) => {
+    function newPeripheral(pin: number, label: string) {
+      dispatch(init({
+        uuid: "WILL_BE_CHANGED_BY_REDUCER",
+        specialStatus: SpecialStatus.SAVED,
+        kind: "Peripheral",
+        body: { pin, label }
+      }));
+    }
+    newPeripheral(7, "Lighting");
+    newPeripheral(8, "Water");
+    newPeripheral(9, "Vacuum");
+    newPeripheral(10, "Peripheral 4");
+    newPeripheral(12, "Peripheral 5");
+  }
+
   render() {
     const { dispatch, peripherals } = this.props;
     const { isEditing } = this.state;
@@ -91,6 +107,14 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
           onClick={() => { dispatch(init(this.emptyPeripheral())); }}>
           <i className="fa fa-plus" />
         </button>
+        <button
+          hidden={!isEditing}
+          className="fb-button green"
+          type="button"
+          onClick={() => this.farmduinoPeripherals(dispatch)}>
+          <i className="fa fa-plus" style={{ marginRight: "0.5rem" }} />
+          Farmduino
+          </button>
       </WidgetHeader>
       <WidgetBody>
         {this.showPins()}
