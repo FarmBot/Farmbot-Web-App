@@ -25,7 +25,7 @@ import {
   initialState as designerState
 } from "../farm_designer/reducer";
 import { ResourceReadyPayl } from "../sync/actions";
-import { OFCropResponse } from "../open_farm/index";
+import { OFCropResponse } from "../open_farm/icons";
 import {
   famrwareReducer as farmware,
   farmwareState

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { GardenPlantProps, GardenPlantState } from "./interfaces";
-import { cachedCrop, DEFAULT_ICON, svgToUrl } from "../../open_farm/index";
+import { cachedCrop, DEFAULT_ICON, svgToUrl } from "../../open_farm/icons";
 import { round, getXYFromQuadrant } from "./util";
 import { DragHelpers } from "./drag_helpers";
 import { Session } from "../../session";

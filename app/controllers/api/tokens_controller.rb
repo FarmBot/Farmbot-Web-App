@@ -1,6 +1,5 @@
 module Api
   class TokensController < Api::AbstractController
-    include Skylight::Helpers
     skip_before_action :authenticate_user!, only: :create
     skip_before_action :check_fbos_version, only: :create
     CREDS        = Auth::CreateTokenFromCredentials
@@ -12,7 +11,6 @@ module Api
       mutate Auth::ReloadToken.run(jwt: request.headers["Authorization"])
     end
 
-    instrument_method
     def create
       if_properly_formatted do |auth_params|
         klass = (auth_params[:credentials]) ? CREDS : NO_CREDS
@@ -26,24 +24,20 @@ module Api
     private
 
     # Don't proceed with login if they need to sign the EULA
-    instrument_method
     def maybe_halt_login(result)
       result.result[:user].try(:require_consent!) if result.success?
     end
 
-    instrument_method
     def guess_aud_claim
       when_farmbot_os { return AbstractJwtToken::BOT_AUD }
       return AbstractJwtToken::HUMAN_AUD if xhr?
       AbstractJwtToken::UNKNOWN_AUD
     end
 
-    instrument_method
     def xhr? # I only wrote this because `request.xhr?` refused to be stubbed
       request.xhr?
     end
 
-    instrument_method
     def if_properly_formatted
       user = params.as_json.deep_symbolize_keys.fetch(:user, {})
       # If data handling for this method gets any more complicated,

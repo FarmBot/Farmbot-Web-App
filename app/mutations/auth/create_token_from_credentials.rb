@@ -1,6 +1,5 @@
 module Auth
   class CreateTokenFromCredentials < Mutations::Command
-    include Skylight::Helpers
 
     PRIVATE_KEY = KeyGen.current
     BAD_KEY     = "You are most likely on the wrong server env. That's not a "\
@@ -12,7 +11,6 @@ module Auth
       string :credentials
     end
 
-    instrument_method
     def validate
       cipher_text = Base64.decode64(credentials)
       plain_text  = PRIVATE_KEY.private_decrypt(cipher_text)
@@ -23,14 +21,12 @@ module Auth
       whoops!(BAD_KEY)
     end
 
-    instrument_method
     def execute
       SessionToken.as_json(user, AbstractJwtToken::BOT_AUD)
     end
 
 private
 
-    instrument_method
     def whoops!(reason = "Bad email or password.")
       add_error :auth, :*, reason
     end

@@ -46,27 +46,15 @@ class Sequence < ApplicationRecord
   before_validation :set_defaults
 
   def set_defaults
+    self.args ||= {}
+    self.args["version"] ||= SequenceMigration::Base.latest_version
     self.color ||= "gray"
     self.kind ||= "sequence"
   end
 
   def maybe_migrate
     # spot check with Sequence.order("RANDOM()").first.maybe_migrate
-    if self.device
-      Sequences::Migrate.run!(sequence: self, device: self.device)
-    else
-      puts "IF YOU CAN SEE THIS, INVESTIGATE NOW. - RC"
-      Rollbar.info "Hazardous condition!" +
-        "Sequence: #{self.id || "unsaved"} does not have a device. HOW!?!"
-    end
-  end
-
-  # Helper used for QAing stuff on staging. Grabs a random sequence from the
-  # database, runs a migration (does not save) and prints to screen.
-  def self.spot_check
-    s = random
-    puts "Sequence ##{s.id} ========="
-    puts s.maybe_migrate.body.to_yaml
+    Sequences::Migrate.run!(sequence: self, device: self.device)
   end
 
   def self.random

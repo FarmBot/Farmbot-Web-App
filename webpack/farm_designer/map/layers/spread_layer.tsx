@@ -2,7 +2,7 @@ import * as React from "react";
 import { Component } from "react";
 import { TaggedPlantPointer } from "../../../resources/tagged_resources";
 import { round, getXYFromQuadrant } from "../util";
-import { cachedCrop } from "../../../open_farm/index";
+import { cachedCrop } from "../../../open_farm/icons";
 import { MapTransformProps } from "../interfaces";
 import { SpreadOverlapHelper } from "../spread_overlap_helper";
 import { BotPosition } from "../../../devices/interfaces";

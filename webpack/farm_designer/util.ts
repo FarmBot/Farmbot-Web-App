@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as _ from "lodash";
 import { OpenFarm, CropSearchResult } from "./openfarm";
-import { DEFAULT_ICON } from "../open_farm/index";
+import { DEFAULT_ICON } from "../open_farm/icons";
 import { HttpPromise } from "../util";
 import { ExecutableType } from "./interfaces";
 

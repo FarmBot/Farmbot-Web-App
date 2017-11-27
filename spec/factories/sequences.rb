@@ -6,7 +6,9 @@ FactoryBot.define do
     color { Sequence::COLORS.sample }
     device
     kind "sequence"
-    args({})
+    args({
+      version: 4 # Hard coding it for now - RC Nov 22
+    })
     body([])
   end
 end

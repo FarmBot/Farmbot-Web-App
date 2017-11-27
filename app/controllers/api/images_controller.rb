@@ -4,8 +4,6 @@ module Api
   # 2. POST the URL from step 1 (or any URL) to ImagesController#Create
   # 3. Image is transfered to the "trusted bucket".
   class ImagesController < Api::AbstractController
-    include Skylight::Helpers
-
     BUCKET = ENV.fetch("GCS_BUCKET") { "YOU_MUST_CONFIG_GOOGLE_CLOUD_STORAGE" }
     KEY    = ENV.fetch("GCS_KEY") { "" }
     SECRET = ENV.fetch("GCS_ID") { "" }
@@ -14,7 +12,6 @@ module Api
         mutate Images::Create.run({device: current_device}, raw_json)
     end
 
-    instrument_method
     def index
       mutate Images::Fetch.run(device: current_device)
     end
