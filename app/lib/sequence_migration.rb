@@ -14,6 +14,8 @@
 #           automagically run if the API determines a sequence is out of date.
 module SequenceMigration
   class Base
+    UP_IS_REQUIRED = "You forgot to implement an `up()`" +
+                     " method on your migration"
     # When we last ran a compaction (22 NOV 17), the highest version number was
     # this:
     HIGHEST_VERSION_AT_TIME_OF_LAST_COMPACTION = 4
@@ -33,11 +35,6 @@ module SequenceMigration
       self
         .descendants
         .map  { |k| k::VERSION }
-        .each { |v|
-          if v < HIGHEST_VERSION_AT_TIME_OF_LAST_COMPACTION
-            raise "VERSION TOO LOW"
-          end
-        }
         .max
     end
 
@@ -62,7 +59,7 @@ module SequenceMigration
     end
 
     def up
-      throw "You forgot to implement an `up()` method on your migration"
+      raise UP_IS_REQUIRED
     end
 
     def run

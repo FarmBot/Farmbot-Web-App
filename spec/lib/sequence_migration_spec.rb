@@ -44,6 +44,14 @@ FIXTURE = JSON.parse('[
   }
 ]')
 
+class MockMigration < SequenceMigration::Base
+  VERSION = -9
+end
+
+class MockMigrationTwo < SequenceMigration::Base
+  VERSION = 1
+end
+
 describe SequenceMigration do
   it 'has a latest version' do
       expect(SequenceMigration::Base.latest_version).to eq(5)
@@ -62,5 +70,26 @@ describe SequenceMigration do
     expect(s.body[0]["args"]["speed"]).to eq(100)
     expect(s.body[1]["args"]["speed"]).to eq(100)
     expect(s.body[2]["args"]["speed"]).to eq(100)
+  end
+
+  it 'warns developers that `up()` is required' do
+    base = SequenceMigration::Base.new(FactoryBot.create(:sequence))
+    expect { base.up }.to raise_error(SequenceMigration::Base::UP_IS_REQUIRED)
+  end
+
+  it 'checks for appropriate version number when running `before()`' do
+    base = MockMigration.new(FactoryBot.build(:sequence))
+    expect { base.before }
+      .to raise_error("Version must be -10 to run MockMigration. Got: 4")
+  end
+
+  it 'sorts migrations by version number' do
+    allow(SequenceMigration::Base)
+      .to receive(:descendants) { [MockMigration, MockMigrationTwo] }
+    sequence                 = FactoryBot.build(:sequence)
+    sequence.args["version"] = -10
+    result                   = SequenceMigration::Base.generate_list(sequence)
+    expect(result.first).to be_kind_of(MockMigration)
+    expect(result.last).to  be_kind_of(MockMigrationTwo)
   end
 end

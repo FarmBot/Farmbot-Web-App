@@ -57,14 +57,6 @@ class Sequence < ApplicationRecord
     Sequences::Migrate.run!(sequence: self, device: self.device)
   end
 
-  # Helper used for QAing stuff on staging. Grabs a random sequence from the
-  # database, runs a migration (does not save) and prints to screen.
-  def self.spot_check
-    s = random
-    puts "Sequence ##{s.id} ========="
-    puts s.maybe_migrate.body.to_yaml
-  end
-
   def self.random
     Sequence.order("RANDOM()").first
   end
