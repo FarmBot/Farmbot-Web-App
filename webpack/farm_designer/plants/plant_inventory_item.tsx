@@ -28,23 +28,13 @@ export class PlantInventoryItem extends
     const plantId = (plant.id || "ERR_NO_PLANT_ID").toString();
 
     const toggle = (action: "enter" | "leave") => {
-      switch (action) {
-        case "enter":
-          const { icon } = this.state;
-          dispatch({
-            type: "TOGGLE_HOVERED_PLANT", payload: {
-              plantUUID: tpp.uuid, icon
-            }
-          });
-          break;
-        case "leave":
-          dispatch({
-            type: "TOGGLE_HOVERED_PLANT", payload: {
-              plantUUID: undefined, icon: ""
-            }
-          });
-          break;
-      }
+      const { icon } = this.state, isEnter = action === "enter";
+      dispatch({
+        type: "TOGGLE_HOVERED_PLANT", payload: {
+          plantUUID: (isEnter ? tpp.uuid : undefined),
+          icon: (isEnter ? icon : "")
+        }
+      });
     };
 
     const click = () => {
