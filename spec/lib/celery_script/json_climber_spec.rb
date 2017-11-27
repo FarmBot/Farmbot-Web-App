@@ -8,6 +8,7 @@ fixture = {
     }
   ]
 }
+
 describe "JSONClimber" do
   it 'Climbs JSON' do
     results = []
