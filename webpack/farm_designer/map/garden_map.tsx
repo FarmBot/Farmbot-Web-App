@@ -41,9 +41,7 @@ export class GardenMap extends
 
   endDrag = () => {
     const p = this.getPlant();
-    if (p) {
-      // BUG: This gets called every time the mouse leaves the browser window
-      //      area, leading to excessive API calls.
+    if (p && this.state.isDragging) {
       this.props.dispatch(edit(p, { x: round(p.body.x), y: round(p.body.y) }));
       this.props.dispatch(save(p.uuid));
     }
