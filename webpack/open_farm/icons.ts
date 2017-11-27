@@ -57,10 +57,23 @@ function localStorageIconSet(icon: OFIcon): void {
   localStorage[STORAGE_KEY] = JSON.stringify(dictionary);
 }
 
+/** PROBLEM: HTTP requests get fired too fast. If you have 10 garlic plants,
+ * and the garlic icon is not cached locally, and you try to render 10 garlic
+ * icons in the first 100ms, and HTTP requests take more than 100ms, you will
+ * end up performing 10 HTTP requests at application start time. Not very
+ * efficient */
+const promiseCache: Dictionary<Promise<Readonly<OFCropAttrs>>> = {};
+
 function HTTPIconFetch(slug: string) {
-  return axios
-    .get(BASE + slug)
-    .then(cacheTheIcon(slug), cacheTheIcon(slug));
+  const url = BASE + slug;
+  if (promiseCache[url]) {
+    return promiseCache[url];
+  } else {
+    promiseCache[url] = axios
+      .get(url)
+      .then(cacheTheIcon(slug), cacheTheIcon(slug));
+    return promiseCache[url];
+  }
 }
 
 /** PROBLEM: You have 100 lettuce plants. You don't want to download an SVG icon
