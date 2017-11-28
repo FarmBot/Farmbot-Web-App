@@ -37,6 +37,7 @@ class SessionToken < AbstractJwtToken
                 mqtt_ws:          MQTT_WS,
                 os_update_server: OS_RELEASE,
                 fw_update_server: "DEPRECATED",
+                interim_email:    user.email, # Dont use this for anything ever -RC
                 bot:              "device_#{user.device.id}",
                 vhost:            VHOST }])
   end
