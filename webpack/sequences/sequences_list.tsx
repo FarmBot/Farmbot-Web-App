@@ -80,7 +80,7 @@ export class SequencesList extends
       specialStatus: SpecialStatus.SAVED,
       body: {
         name: "new sequence " + (this.props.sequences.length),
-        args: { version: -999 },
+        args: { version: -999, label: "WIP" },
         color: "gray",
         kind: "sequence",
         body: []
