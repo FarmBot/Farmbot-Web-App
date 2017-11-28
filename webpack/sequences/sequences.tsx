@@ -33,10 +33,7 @@ export class Sequences extends React.Component<Props, {}> {
             <SequenceEditorMiddle
               syncStatus={this.props.syncStatus}
               dispatch={this.props.dispatch}
-              sequences={this.props.sequences}
               sequence={this.props.sequence}
-              slots={this.props.slots}
-              tools={this.props.tools}
               resources={this.props.resources}
               consistent={this.props.consistent}
               autoSyncEnabled={this.props.autoSyncEnabled} />

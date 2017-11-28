@@ -10,19 +10,13 @@ export class SequenceEditorMiddle
     const {
       dispatch,
       sequence,
-      sequences,
-      tools,
-      slots,
       resources,
       syncStatus
     } = this.props;
     if (sequence && isTaggedSequence(sequence)) {
       return <SequenceEditorMiddleActive
-        slots={slots}
         dispatch={dispatch}
         sequence={sequence}
-        sequences={sequences}
-        tools={tools}
         resources={resources}
         syncStatus={syncStatus}
         consistent={true}
