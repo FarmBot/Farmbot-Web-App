@@ -2,7 +2,6 @@ var devServerPort = 3808;
 var path = require("path");
 var genConfig = require("./webpack.base");
 var conf = genConfig();
-console.log(" =========== THIS IS DEV =========================");
 
 conf.output = {
   // must match config.webpack.output_dir

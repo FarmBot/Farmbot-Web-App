@@ -16,7 +16,6 @@ conf.output = {
   chunkFilename: '[id].chunk.js'
 };
 
-console.log(" =========== THIS IS PROD (good) =========================");
 [
   new ExtractTextPlugin({
     filename: "dist/[name].[chunkhash].css",
@@ -29,15 +28,12 @@ console.log(" =========== THIS IS PROD (good) =========================");
     cssProcessorOptions: { discardComments: { removeAll: true } },
     canPrint: true
   }),
-  new UglifyJsPlugin({
-    cacheFolder: path.resolve(__dirname, "../public/dist/cached_uglify/"),
-    debug: true,
-    minimize: true,
-    sourceMap: true,
-    screw_ie8: true,
-    output: { comments: false },
-    compressor: { warnings: false }
-  }),
+  // new UglifyJsPlugin({
+  //   cacheFolder: path.resolve(__dirname, "../public/dist/cached_uglify/"),
+  //   compress: true,
+  //   comments: false,
+  //   mangle: true
+  // }),
   new webpack.DefinePlugin({
     "process.env.NODE_ENV": JSON.stringify("production")
   })
