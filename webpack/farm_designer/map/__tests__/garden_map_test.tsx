@@ -80,9 +80,11 @@ describe("<GardenPlant/>", () => {
   });
 
   it("ends drag", () => {
-    const wrapper = shallow(<GardenMap {...fakeProps() } />);
+    const p = fakeProps();
+    const wrapper = shallow(<GardenMap {...p } />);
     expect(wrapper.state()).toEqual({});
     wrapper.find("#drop-area-svg").simulate("mouseUp");
+    expect(p.dispatch).not.toHaveBeenCalled();
     expect(wrapper.state()).toEqual({
       "activeDragSpread": undefined,
       "activeDragXY": { "x": undefined, "y": undefined, "z": undefined },
@@ -90,6 +92,10 @@ describe("<GardenPlant/>", () => {
       "pageX": 0,
       "pageY": 0
     });
+    wrapper.setState({ isDragging: true });
+    wrapper.find("#drop-area-svg").simulate("mouseUp");
+    expect(p.dispatch).toHaveBeenCalled();
+    expect(wrapper.state().isDragging).toBeFalsy();
   });
 
 });
