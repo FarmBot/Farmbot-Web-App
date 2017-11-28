@@ -42,7 +42,8 @@ describe("<AllSteps/>", () => {
       ],
       "args": {
         "is_outdated": false,
-        "version": 4
+        "version": 4,
+        "label": "WIP"
       },
       "kind": "sequence"
     },

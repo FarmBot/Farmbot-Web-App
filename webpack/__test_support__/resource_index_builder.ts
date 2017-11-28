@@ -280,7 +280,8 @@ const tr13: TaggedResource = {
     ],
     "args": {
       "is_outdated": false,
-      "version": 4
+      "version": 4,
+      "label": "foo"
     },
     "kind": "sequence"
   },

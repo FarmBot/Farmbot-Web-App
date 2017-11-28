@@ -41,7 +41,8 @@ describe("<InputDefault/>", () => {
         "color": "gray",
         "body": [step],
         "args": {
-          "version": 4
+          "version": 4,
+          "label": "WIP"
         },
         "kind": "sequence"
       },
