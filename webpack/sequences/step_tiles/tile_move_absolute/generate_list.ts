@@ -1,7 +1,6 @@
 import { ResourceIndex } from "../../../resources/interfaces";
 import {
   selectAllPoints,
-  selectAllTools,
   mapToolIdToName,
   selectAllToolSlotPointers
 } from "../../../resources/selectors";
@@ -29,9 +28,7 @@ export function generateList(input: ResourceIndex): DropDownItem[] {
   const SORT_KEY: keyof DropDownItem = "headingId";
   const points = selectAllPoints(input)
     .filter(x => (x.body.pointer_type !== "ToolSlot"));
-  const toolDDI: DropDownItem[] = selectAllTools(input)
-    .filter((x: TaggedTool) => !!x.body.id)
-    .map(t => formatTools(t));
+  const toolDDI: DropDownItem[] = activeTools(input).map(t => formatTools(t));
   return _(points)
     .map(formatPoint(toolNameById))
     .sortBy(SORT_KEY)
