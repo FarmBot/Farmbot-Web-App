@@ -17,6 +17,7 @@ class DashboardController < ApplicationController
   [:main_app, :front_page, :verify, :password_reset].map do |actn|
     define_method(actn) do
       begin
+        expires_now
         render actn, layout: false
       rescue ActionView::MissingTemplate => q
         raise ActionController::RoutingError, "Bad URL in dashboard"
