@@ -28,7 +28,8 @@ export class PlantInventoryItem extends
     const plantId = (plant.id || "ERR_NO_PLANT_ID").toString();
 
     const toggle = (action: "enter" | "leave") => {
-      const { icon } = this.state, isEnter = action === "enter";
+      const { icon } = this.state;
+      const isEnter = action === "enter";
       dispatch({
         type: "TOGGLE_HOVERED_PLANT", payload: {
           plantUUID: (isEnter ? tpp.uuid : undefined),
