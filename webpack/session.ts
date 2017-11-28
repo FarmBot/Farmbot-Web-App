@@ -40,7 +40,7 @@ export namespace Session {
     localStorage.clear();
     sessionStorage.clear();
     window.location.href = window.location.origin || "/";
-    throw new Error("session cleared");
+    return undefined as never;
   }
 
   /** Fetch a *boolean* value from localstorage. Returns `undefined` when

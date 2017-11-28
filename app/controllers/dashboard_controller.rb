@@ -17,6 +17,9 @@ class DashboardController < ApplicationController
   [:main_app, :front_page, :verify, :password_reset].map do |actn|
     define_method(actn) do
       begin
+        response.headers["Cache-Control"] = "no-cache, no-store"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
         render actn, layout: false
       rescue ActionView::MissingTemplate => q
         raise ActionController::RoutingError, "Bad URL in dashboard"
