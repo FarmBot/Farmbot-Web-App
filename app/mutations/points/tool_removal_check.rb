@@ -14,9 +14,6 @@ module Points
 
     def validate
       nope! if still_in_use?
-      # Are they trying to change tool_id?
-      # Are they trying to detach a tool?
-      # Was the tool in use?
     end
 
     def execute
