@@ -45,6 +45,7 @@ module CeleryScriptSettingsBag
   BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
   BAD_POINTER_ID        = "Bad point ID: %s"
   BAD_POINTER_TYPE      = '"%s" is not a type of point. Allowed values: %s'
+  BAD_SPEED             = "Speed must be a percentage between 1-100"
 
   Corpus = CeleryScript::Corpus
       .new
@@ -114,7 +115,9 @@ module CeleryScriptSettingsBag
       .defineArg(:y,               [Integer])
       .defineArg(:z,               [Integer])
       .defineArg(:radius,          [Integer])
-      .defineArg(:speed,           [Integer])
+      .defineArg(:speed,           [Integer]) do |node|
+        node.invalidate!(BAD_SPEED) unless node.value.between?(1, 100)
+      end
       .defineArg(:pin_number,      [Integer])
       .defineArg(:pin_value,       [Integer])
       .defineArg(:milliseconds,    [Integer])

@@ -29,11 +29,15 @@ module Api
     end
 
     def update
+      # TODO: Make sure user does not remove tool from slot if in use by
+      # sequence
       mutate Points::Update.run(raw_json, { point: point }, device_params)
     end
 
     def destroy
       ids = params[:id].to_s.split(",")
+      # TODO: Need to Join points -> tools -> sequence deps
+      # TODO: Check if tool_slots are in use by sequences still.
       mutate Points::Destroy.run({ points: points.find(ids) }, device_params)
     end
 
