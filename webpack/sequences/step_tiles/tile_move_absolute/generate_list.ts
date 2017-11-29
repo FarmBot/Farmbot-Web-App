@@ -1,25 +1,34 @@
 import { ResourceIndex } from "../../../resources/interfaces";
 import {
   selectAllPoints,
-  selectAllTools,
-  mapToolIdToName
+  mapToolIdToName,
+  selectAllToolSlotPointers
 } from "../../../resources/selectors";
-import { CowardlyDictionary } from "../../../util";
+import { CowardlyDictionary, betterCompact } from "../../../util";
 import { PointerTypeName } from "../../../interfaces";
 import { PointerType, TaggedTool } from "../../../resources/tagged_resources";
 import { DropDownItem } from "../../../ui/index";
 import { Vector3 } from "farmbot/dist";
 import { TOOL } from "./interfaces";
 import * as _ from "lodash";
+import { joinKindAndId } from "../../../resources/reducer";
+
+export function activeTools(resources: ResourceIndex) {
+  const Tool: TaggedTool["kind"] = "Tool";
+  const slots = selectAllToolSlotPointers(resources);
+
+  const { byKindAndId, references } = resources;
+  return betterCompact(slots
+    .map(x => references[byKindAndId[joinKindAndId(Tool, x.body.tool_id)] || ""])
+    .map(tool => (tool && tool.kind === "Tool") ? tool : undefined));
+}
 
 export function generateList(input: ResourceIndex): DropDownItem[] {
   const toolNameById = mapToolIdToName(input);
   const SORT_KEY: keyof DropDownItem = "headingId";
   const points = selectAllPoints(input)
     .filter(x => (x.body.pointer_type !== "ToolSlot"));
-  const toolDDI: DropDownItem[] = selectAllTools(input)
-    .filter((x: TaggedTool) => !!x.body.id)
-    .map(t => formatTools(t));
+  const toolDDI: DropDownItem[] = activeTools(input).map(t => formatTools(t));
   return _(points)
     .map(formatPoint(toolNameById))
     .sortBy(SORT_KEY)

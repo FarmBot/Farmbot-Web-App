@@ -8,11 +8,8 @@ import { fakeSequence } from "../../__test_support__/fake_state/resources";
 describe("<SequenceEditorMiddle/>", () => {
   function fakeProps(): SequenceEditorMiddleProps {
     return {
-      slots: [],
       dispatch: jest.fn(),
       sequence: fakeSequence(),
-      sequences: [],
-      tools: [],
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
       consistent: true,
