@@ -1,31 +1,30 @@
 import * as React from "react";
 import { ToolForm } from "../tool_form";
-import { render } from "enzyme";
-import { mapStateToProps } from "../../state_to_props";
-import { fakeState } from "../../../__test_support__/fake_state";
+import { mount } from "enzyme";
+import { fakeTool } from "../../../__test_support__/fake_state/resources";
 
 describe("<ToolForm/>", () => {
-  function bootstrapTest() {
-    const state = fakeState();
-    const toggle = jest.fn();
-    const props = mapStateToProps(state);
+  function fakeProps() {
     return {
-      state,
-      toggle,
-      props,
-      component: render(<ToolForm dispatch={state.dispatch}
-        tools={props.tools}
-        toggle={toggle} />)
+      dispatch: jest.fn(),
+      toggle: jest.fn(),
+      tools: [fakeTool(), fakeTool()]
     };
   }
+
   it("renders", () => {
-    const test = bootstrapTest();
-    // FAILED
-    expect(test.component.find("input").length)
-      .toEqual(test.props.tools.length);
+    const p = fakeProps();
+    const wrapper = mount(<ToolForm {...p} />);
+    expect(wrapper.find("input").length).toEqual(p.tools.length);
   });
 
-  it("shows a DIRTY flag when any of the tools are dirty", () => {
-    pending("Might not need this test- seems to be testing getArrayStatus()");
+  it("adds stock tools", () => {
+    const p = fakeProps();
+    const wrapper = mount(<ToolForm {...p} />);
+    const add = wrapper.find("button").at(3);
+    expect(add.text()).toEqual("Stock Tools");
+    add.simulate("click");
+    expect(p.dispatch).toHaveBeenCalledTimes(6);
   });
+
 });

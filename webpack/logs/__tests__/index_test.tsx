@@ -59,6 +59,17 @@ describe("<Logs />", () => {
     expect(filterBtn.text().toLowerCase()).toEqual("filters active");
     expect(filterBtn.hasClass("green")).toBeTruthy();
   });
+
+  it("shows position", () => {
+    const logs = fakeLogs();
+    logs[0].body.meta.x = 100;
+    logs[1].body.meta.x = 0;
+    logs[1].body.meta.y = 1;
+    logs[1].body.meta.z = 2;
+    const wrapper = mount(<Logs logs={logs} />);
+    expect(wrapper.text()).toContain("Unknown");
+    expect(wrapper.text()).toContain("0, 1, 2");
+  });
 });
 
 describe("<LogsFilterMenu />", () => {

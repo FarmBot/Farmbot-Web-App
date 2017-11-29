@@ -19,7 +19,7 @@ const LogsTable = (props: LogsTableProps) => {
       <tr>
         <th><label>{t("Type")}</label></th>
         <th><label>{t("Message")}</label></th>
-        {/* <th><label>{t("Position (x, y, z)")}</label></th> */}
+        <th><label>{t("Position (x, y, z)")}</label></th>
         <th><label>{t("Time")}</label></th>
       </tr>
     </thead>
@@ -38,6 +38,7 @@ const LogsRow = (tlog: TaggedLog, state: LogsState) => {
   const type = (log.meta || {}).type;
   const filtered = state[type as keyof LogsState];
   const displayLog = _.isUndefined(filtered) || filtered;
+  const { x, y, z } = log.meta;
   return displayLog ?
     <tr key={tlog.uuid}>
       <td>
@@ -47,7 +48,13 @@ const LogsRow = (tlog: TaggedLog, state: LogsState) => {
       <td>
         {log.message || "Loading"}
       </td>
-      {/* <td>0, 0, 0</td> // TODO: display log position data*/}
+      <td>
+        {
+          (_.isNumber(x) && _.isNumber(y) && _.isNumber(z))
+            ? `${x}, ${y}, ${z}`
+            : "Unknown"
+        }
+      </td>
       <td>
         {time}
       </td>
