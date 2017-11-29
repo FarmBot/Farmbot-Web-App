@@ -8,7 +8,7 @@ describe Api::PointsController do
       "args":{
           "location":{ "kind":"tool", "args":{ "tool_id": --- } },
           "offset":{ "kind":"coordinate", "args":{ "x":0, "y":0, "z":0 } },
-          "speed":800}}]
+          "speed":100}}]
     HEREDOC
     let(:device) { FactoryBot.create(:device) }
     let(:user) { FactoryBot.create(:user, device: device) }

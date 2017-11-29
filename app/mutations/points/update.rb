@@ -22,6 +22,7 @@ module Points
                         .tools
                         .pluck(:id)
                         .include?(tool_id))
+      prevent_removal_of_in_use_tools
     end
 
     def execute
@@ -40,6 +41,21 @@ module Points
     def maybe_update_pointer
       p = point.pointer
       p && p.assign_attributes(inputs.slice(:tool_id, :openfarm_slug))
+    end
+
+    def has_new_tool_id?
+      raw_inputs.key?("tool_id")
+    end
+
+    def prevent_removal_of_in_use_tools
+      results = Points::ToolRemovalCheck.run(point:             point,
+                                             attempting_change: has_new_tool_id?,
+                                             next_tool_id:      tool_id)
+      ok      = results.success?
+      results
+        .errors
+        .values
+        .map { |e| add_error e.symbolic, e.symbolic, e.message } unless ok
     end
   end
 end

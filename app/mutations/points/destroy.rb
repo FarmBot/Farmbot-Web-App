@@ -11,7 +11,6 @@ module Points
     STILL_IN_USE  = "Can't delete point because the following sequences "\
                     "are still using it: %s"
 
-    "Sequence 'foo' still needs to use 'bar' named 'baz'"
     required do
       model :device, class: Device
       array :points,  class: Point
@@ -36,22 +35,28 @@ private
     end
 
     def still_in_use
-      # What do we need to check?
-      #   * Point in use?
-      #   * Tool in use?
       @still_in_use ||= calculate_deps
+    end
+
+    def all_deps
+      @all_deps ||= SequenceDependency.where(ALL_SEQ_DEPS, device.id)
     end
 
     # point => tool_slot => tool
     def calculate_deps
-      SequenceDependency
-        .where(ALL_SEQ_DEPS, device.id)
-        .where(dependency_type: "Point")
-        .where(dependency_id: points.pluck(:id))
+      all_deps
+        .where(dependency_type: "Point", dependency_id: points.pluck(:id)) # NEXT: Add an "OR" for tracking tools
+        .or(refactor_plz)
         .map(&:sequence)
     end
 
-    def points_in_use
+    def refactor_plz
+      all_deps.where(dependency_type: "Tool",
+                     dependency_id: points
+                                      .select { |p| p.pointer_type == "ToolSlot" }
+                                      .map(&:pointer)
+                                      .map(&:tool)
+                                      .map(&:id))
     end
   end
 end
