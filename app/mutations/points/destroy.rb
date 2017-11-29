@@ -34,7 +34,7 @@ private
       end
     end
 
-    def still_in_usew
+    def still_in_use
       @still_in_use ||= calculate_deps
     end
 
