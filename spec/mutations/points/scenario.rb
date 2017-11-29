@@ -18,15 +18,16 @@ module Points
     def initialize(hash = nil)
       super(hash)
       self.device    = FactoryBot.create(:device)
-      self.tool      = Tools::Create.run!(device: self.device, name: "X")
+      self.tool      = Tools::Create.run!(device: self.device,
+                                          name: "Scenario Tool")
       self.tool_slot = ToolSlots::Create.run!(device: self.device,
-                                              name:   "Y",
+                                              name:   "Scenario Tool Slot",
                                               x:      0,
                                               y:      0,
                                               z:      0)
       self.sequence  = Sequences::Create.run!(device: self.device,
                                               body:   self.body,
-                                              name:   "Z")
+                                              name:   "Scenariod Sequence")
       Points::Update.run!(device:  self.device,
                           point:   self.tool_slot,
                           tool_id: self.tool.id)
