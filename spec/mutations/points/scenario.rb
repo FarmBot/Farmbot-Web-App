@@ -27,7 +27,7 @@ module Points
                                               z:      0)
       self.sequence  = Sequences::Create.run!(device: self.device,
                                               body:   self.body,
-                                              name:   "Scenariod Sequence")
+                                              name:   "Scenario Sequence")
       Points::Update.run!(device:  self.device,
                           point:   self.tool_slot,
                           tool_id: self.tool.id)
