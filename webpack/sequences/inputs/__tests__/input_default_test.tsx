@@ -40,10 +40,7 @@ describe("<InputDefault/>", () => {
         "name": "Goto 0, 0, 0",
         "color": "gray",
         "body": [step],
-        "args": {
-          "version": 4,
-          "label": "WIP"
-        },
+        "args": { "version": 4 },
         "kind": "sequence"
       },
       "uuid": "Sequence.74.145"

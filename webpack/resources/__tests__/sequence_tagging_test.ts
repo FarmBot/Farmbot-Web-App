@@ -23,8 +23,7 @@ describe("maybeTagSteps()", () => {
         }
       ],
       "args": {
-        "version": 4,
-        "label": "WIP"
+        "version": 4
       },
       "kind": "sequence"
     },

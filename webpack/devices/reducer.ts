@@ -59,7 +59,10 @@ export let initialState: BotState = {
     configuration: {},
     informational_settings: {
       busy: false,
-      locked: false
+      locked: false,
+      commit: "---",
+      target: "---",
+      env: "---"
     },
     user_env: {},
     process_info: {
