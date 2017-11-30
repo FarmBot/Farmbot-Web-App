@@ -1,3 +1,20 @@
+// STAGE 1: = = = = = = =
+//   ARGS TO ADD:
+//     X "locals" (sequence),
+//     X "data_type" (parameter_declaration)
+//
+//   NODES TO ADD:
+//     X "identifier" (label),
+//     X "parameter_declaration" (label, data_type)
+//     X "scope_declaration"(contains parameter_declaration),
+//
+// Stage 2: = = = = = = = =
+//   NODES TO ADD:
+//     "local_declaration" (label, data_value),
+//
+//   ARGS TO ADD:
+//     "data_value" (local_declaration)
+//
 {
   "kind": "sequence",
   "args": {
@@ -11,14 +28,14 @@
           "kind": "local_declaration", // <= New node
           "args": {
             "label": "parent",
-            "value": "POINT_LITERAL_OR_WHATEVER_GOES_HERE"
+            "data_value": "POINT_LITERAL_OR_WHATEVER_GOES_HERE"
           }
         },
         { // SCENARIO B: Defer assignment to parent, only set expected (eventual) type
           "kind": "parameter_declaration", // <= New node
           "args": {
             "label": "parent",
-            "value": "EXPECTED_KIND_GOES_HERE"
+            "data_type": "EXPECTED_KIND_GOES_HERE"
           }
         }
       ]

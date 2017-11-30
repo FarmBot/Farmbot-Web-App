@@ -21,11 +21,11 @@ module CeleryScriptSettingsBag
                              tool_slots tools points tokens users device)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email)
-  ALLOWED_DATA_TYPES    = %w(string integer)
+  ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
+  ALLOWED_DATA_TYPES    = %w(tool coordinate point)
   ALLOWED_OPS           = %w(< > is not is_undefined)
   ALLOWED_AXIS          = %w(x y z all)
   ALLOWED_LHS           = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
-  ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
   STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
                              send_message execute _if execute_script take_photo
                              find_home)
@@ -136,6 +136,12 @@ module CeleryScriptSettingsBag
       .defineArg(:_then,           [:execute, :nothing])
       .defineArg(:_else,           [:execute, :nothing])
       .defineArg(:url,             [String])
+      .defineArg(:locals,          [:scope_declaration])
+      .defineArg(:data_type,       [String]) do |node|
+        within(ALLOWED_AXIS, node) do |v|
+          BAD_DATA_TYPE % [v.to_s, ALLOWED_DATA_TYPES.inspect]
+        end
+      end
       .defineNode(:nothing,        [])
       .defineNode(:tool,           [:tool_id])
       .defineNode(:coordinate,     [:x, :y, :z])
@@ -175,8 +181,10 @@ module CeleryScriptSettingsBag
       .defineNode(:install_farmware,  [:url])
       .defineNode(:update_farmware,   [:package])
       .defineNode(:remove_farmware,   [:package])
+      .defineNode(:scope_declaration, [], [:parameter_declaration])
+      .defineNode(:identifier, [:label])
       .defineNode(:install_first_party_farmware, [])
-  # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
+      # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
   def self.within(array, node)
     val = node&.value
