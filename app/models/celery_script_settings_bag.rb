@@ -136,7 +136,7 @@ module CeleryScriptSettingsBag
       .defineArg(:_then,           [:execute, :nothing])
       .defineArg(:_else,           [:execute, :nothing])
       .defineArg(:url,             [String])
-      .defineArg(:locals,          [:scope_declaration])
+      .defineArg(:locals,          [:scope_declaration, :nothing])
       .defineArg(:data_type,       [String]) do |node|
         within(ALLOWED_AXIS, node) do |v|
           BAD_DATA_TYPE % [v.to_s, ALLOWED_DATA_TYPES.inspect]
