@@ -10,7 +10,7 @@
           "z": 0
         }
       },
-      "speed": 800,
+      "speed": 100,
       "location": {
         "args": {
           "tool_id": __TOOL_ID__
@@ -25,7 +25,7 @@
       "x": 4,
       "y": 5,
       "z": 6,
-      "speed": 800
+      "speed": 100
     }
   },
   {
@@ -102,7 +102,7 @@
           "z": 0
         }
       },
-      "speed": 800,
+      "speed": 100,
       "location": {
         "args": {
           "x": 1,
