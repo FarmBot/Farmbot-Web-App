@@ -46,10 +46,10 @@ class Sequence < ApplicationRecord
   before_validation :set_defaults
 
   def set_defaults
-    self.args ||= {}
+    self.args            ||= {}
     self.args["version"] ||= SequenceMigration::Base.latest_version
-    self.color ||= "gray"
-    self.kind ||= "sequence"
+    self.color           ||= "gray"
+    self.kind            ||= "sequence"
   end
 
   def maybe_migrate
