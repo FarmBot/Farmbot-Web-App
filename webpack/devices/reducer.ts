@@ -36,6 +36,7 @@ export let initialState: BotState = {
     danger_zone: false
   },
   hardware: {
+    gpio_registry: {},
     mcu_params: {},
     jobs: {},
     location_data: {
