@@ -13,7 +13,7 @@ module CeleryScriptSettingsBag
                              factory_reset execute_script set_user_env wait
                              install_farmware update_farmware take_photo zero
                              install_first_party_farmware remove_farmware
-                             find_home)
+                             find_home register_gpio unregister_gpio)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
   RESOURCE_NAME         = %w(images plants regimens peripherals
@@ -166,7 +166,7 @@ module CeleryScriptSettingsBag
       .defineNode(:rpc_error,         [:label], [:explanation])
       .defineNode(:calibrate,         [:axis], [])
       .defineNode(:pair,              [:label, :value], [])
-      .defineNode(:register_gpio,     [:pin_number])
+      .defineNode(:register_gpio,     [:pin_number, :sequence_id])
       .defineNode(:unregister_gpio,   [:pin_number])
       .defineNode(:config_update,     [:package], [:pair])
       .defineNode(:factory_reset,     [:package], [])
