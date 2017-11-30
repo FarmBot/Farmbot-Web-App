@@ -166,6 +166,8 @@ module CeleryScriptSettingsBag
       .defineNode(:rpc_error,         [:label], [:explanation])
       .defineNode(:calibrate,         [:axis], [])
       .defineNode(:pair,              [:label, :value], [])
+      .defineNode(:register_gpio,     [:pin_number])
+      .defineNode(:unregister_gpio,   [:pin_number])
       .defineNode(:config_update,     [:package], [:pair])
       .defineNode(:factory_reset,     [:package], [])
       .defineNode(:execute_script,    [:label], [:pair])

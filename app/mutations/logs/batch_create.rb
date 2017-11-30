@@ -10,10 +10,12 @@ module Logs
                   class: String,
                   in: CeleryScriptSettingsBag::ALLOWED_CHANNEL_NAMES
             hash :meta do
-              integer :x
-              integer :y
-              integer :z
               string :type, in: Log::TYPES
+              optional do
+                integer :x
+                integer :y
+                integer :z
+              end
             end
           end
         end
