@@ -6,6 +6,7 @@ module CeleryScript
     MISSING_ARG = "Expected node '%s' to have a '%s', but got: %s."
     EXTRA_ARGS  = "'%s' has unexpected arguments: %s. Allowed arguments: %s"
     BAD_LEAF    = "Expected leaf '%s' within '%s' to be one of: %s but got %s"
+    BAD_PAIRING = BAD_LEAF
     MALFORMED   = "Expected '%s' to be a node or leaf, but it was neither"
     BAD_BODY    = "Body of '%s' node contains '%s' node. "\
                   "Expected one of: %s"
@@ -18,6 +19,8 @@ module CeleryScript
     end
 
     def run!
+      puts "\n"
+      puts "Traveling..."
       CeleryScript::TreeClimber.travel(tree, method(:validate).to_proc)
       tree
     end
@@ -40,6 +43,8 @@ module CeleryScript
     private
 
     def validate(node)
+      p = node.try(:parent).try(:kind) || "root"
+      puts "  validate #{p} => #{node.kind}"
       validate_body(node)
       validate_node(node)
     end
@@ -66,6 +71,7 @@ module CeleryScript
             msgs = "nothing" if msgs.length < 1
           msg = MISSING_ARG % [node.kind, arg, msgs]
           raise TypeCheckError, msg
+          puts "I probably need to validate that the descending pairs are correct here..."
           end
         end
       has      = node.args.keys.map(&:to_sym) # Either bigger or equal.
@@ -76,15 +82,39 @@ module CeleryScript
       end
     end
 
-    def check_arg_validity(expectation, node)
-      case node
+    def check_arg_validity(key, value)
+      case value
       when AstNode
+        validate_node_pairing(key, value)
       when AstLeaf
-        check_leaf(node)
+        validate_leaf_pairing(key, value)
+        check_leaf(value)
       else
-        malformed_node!(expectation)
+        malformed_node!(key)
       end
-      run_additional_validations(node, expectation)
+      run_additional_validations(value, key)
+    end
+
+    def validate_node_pairing(key, value)
+      puts "    Checking node pair #{key} => #{value.try(:kind) || value.inspect.first(20)}..."
+      actual  = value.kind
+      allowed = corpus.fetchArg(key).allowed_values.map(&:to_s)
+      ok      = allowed.include?(actual)
+      raise TypeCheckError, (BAD_LEAF % [ value.kind,
+                                          value.parent.kind,
+                                          allowed.inspect,
+                                          actual.inspect ]) unless ok
+    end
+
+    def validate_leaf_pairing(key, value)
+      puts "    Checking leaf pair #{key} => #{value.try(:kind) || value.inspect.first(20)}..."
+      actual  = value.value.class
+      allowed = corpus.fetchArg(key).allowed_values
+      ok      = allowed.include?(actual)
+      raise TypeCheckError, (BAD_LEAF % [ value.kind,
+                                          value.parent.kind,
+                                          allowed.inspect,
+                                          actual.inspect]) unless ok
     end
 
     def bad_body_kind(prnt, child, i, ok)
@@ -94,10 +124,11 @@ module CeleryScript
     def check_leaf(node)
       allowed = corpus.values(node)
       actual = node.value.class
-      puts node.kind.to_s
       unless allowed.include?(actual)
-        raise TypeCheckError, (BAD_LEAF % [node.kind, node.parent.kind,
-                                           allowed.inspect, actual.inspect])
+        raise TypeCheckError, (BAD_LEAF % [ node.kind,
+                                            node.parent.kind,
+                                            allowed.inspect,
+                                            actual.inspect])
       end
     end
 

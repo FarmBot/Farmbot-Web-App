@@ -3,7 +3,6 @@
 module CeleryScript
   class TreeClimber
     def self.travel(node, callable)
-      binding.pry
       visit_node(node, callable)
       nil
     end
@@ -29,8 +28,6 @@ module CeleryScript
         callable.call(node)
         visit_each_arg(node, callable)
         visit_each_body_item(node, callable)
-      else
-        binding.pry
       end
     end
 
