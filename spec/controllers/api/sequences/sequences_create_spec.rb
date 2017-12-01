@@ -76,6 +76,31 @@ describe Api::SequencesController do
       expect(validated_count).to eq(new_count)
     end
 
+    it 'doesnt allow nonsense in `sequence.args.locals`' do
+      input = { name: "Scare Birds",
+                body: [],
+                # Intentional nonsense to check validation logic.
+                args: { locals: { kind: "wait", args: { milliseconds: 5000 } } }
+              }
+
+      sign_in user
+      post :create, body: input.to_json, params: {format: :json}
+      expect(response.status).to eq(422)
+    end
+
+    it 'strips excess `args`' do
+      pending
+      input = { name: "Scare Birds",
+                body: [],
+                # Intentional nonsense to check validation logic.
+                args: { foo: "BAR" } }
+
+      sign_in user
+      post :create, body: input.to_json, params: {format: :json}
+      expect(response.status).to eq(200)
+      expect(sequence.last.args[:foo]).to eq(nil)
+    end
+
     it 'tracks Points' do
       point = FactoryBot.create(:point, device: user.device)
       SequenceDependency.delete_all

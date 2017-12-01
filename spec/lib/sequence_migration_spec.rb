@@ -64,7 +64,6 @@ describe SequenceMigration do
     expect(s.body[0]["args"]["speed"]).to eq(200)
     expect(s.body[1]["args"]["speed"]).to eq(200)
     expect(s.body[2]["args"]["speed"]).to eq(200)
-    expect(s.args["locals"]).to eq(nil)
 
     s.maybe_migrate
 

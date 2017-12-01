@@ -3,7 +3,9 @@
 # most of the functionality of a programming language such a variables and
 # conditional logic.
 class Sequence < ApplicationRecord
-  NOTHING = { "kind" => "nothing", "args" => {} }
+  NOTHING      = { "kind" => "nothing", "args" => {} }
+  DEFAULT_ARGS = { "locals"  => NOTHING,
+                   "version" => SequenceMigration::Base.latest_version }
   # Does some extra magic for serialized columns for us, such as providing a
   # default value and making hashes have indifferent access.
   class CustomSerializer
@@ -47,9 +49,7 @@ class Sequence < ApplicationRecord
   before_validation :set_defaults
 
   def set_defaults
-    self.args            ||= {}
-    self.args["version"] ||= SequenceMigration::Base.latest_version
-    self.args["locals"]  ||= NOTHING
+    self.args              = {}.merge(DEFAULT_ARGS).merge(self.args)
     self.color           ||= "gray"
     self.kind            ||= "sequence"
   end

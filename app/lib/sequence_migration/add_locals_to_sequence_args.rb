@@ -6,7 +6,6 @@ module SequenceMigration
       CREATED_ON  = "NOVEMBER 30 2017"
 
       def up
-        binding.pry
         sequence.args["locals"] ||= Sequence::NOTHING
       end
   end

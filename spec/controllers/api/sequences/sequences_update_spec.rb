@@ -8,6 +8,8 @@ describe Api::SequencesController do
 
     let(:user) { FactoryBot.create(:user) }
 
+    it 'doesnt allow nonsense in `sequence.args.locals`'
+
     it 'refreshes sequence dependencies on update' do
       SequenceDependency.destroy_all
       old_count = SequenceDependency.count
