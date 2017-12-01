@@ -3,6 +3,7 @@
 # most of the functionality of a programming language such a variables and
 # conditional logic.
 class Sequence < ApplicationRecord
+  NOTHING = { "kind" => "nothing", "args" => {} }
   # Does some extra magic for serialized columns for us, such as providing a
   # default value and making hashes have indifferent access.
   class CustomSerializer
@@ -48,6 +49,7 @@ class Sequence < ApplicationRecord
   def set_defaults
     self.args            ||= {}
     self.args["version"] ||= SequenceMigration::Base.latest_version
+    self.args["locals"]  ||= NOTHING
     self.color           ||= "gray"
     self.kind            ||= "sequence"
   end
