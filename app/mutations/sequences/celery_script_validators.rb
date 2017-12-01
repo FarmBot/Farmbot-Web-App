@@ -22,20 +22,22 @@ module Sequences
       # first level, though. I would like to recursively strip out "noise" via
       # CeleryScript::JSONClimber. I am holding off for now in the name of time.
       (inputs[:body] || []).map! { |x| x.slice(*ALLOWED_NODE_KEYS) }
-      inputs[:args] = Sequence::DEFAULT_ARGS.merge(inputs[:args] || {})
       add_error :body, :syntax_error, checker.error.message if !checker.valid?
     end
 
+    def symbolized_input
+      @symbolized_input ||= inputs.symbolize_keys.slice(:body, :kind, :args)
+    end
+
     def seq
-      @seq ||= {body: [], args: {}, kind: "sequence"}
-                .merge(inputs.symbolize_keys.slice(:body, :kind, :args))
+      @seq ||= {body: [],
+                args: Sequence::DEFAULT_ARGS.merge(inputs[:args] || {}),
+                kind: "sequence" }.merge(symbolized_input)
     end
 
     def reload_dependencies(sequence)
         must_be_in_transaction
-        SequenceDependency
-          .where(sequence: sequence)
-          .destroy_all
+        SequenceDependency.where(sequence: sequence).destroy_all
 
         SequenceDependency.create!(deps(sequence))
     end
