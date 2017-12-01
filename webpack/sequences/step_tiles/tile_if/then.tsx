@@ -7,7 +7,7 @@ export function Then(props: IfParams) {
   const { onChange, selectedItem } = IfBlockDropDownHandler(props, "_then");
   return <div>
     <div className="col-xs-12 col-md-12">
-      <h4>THEN...</h4>
+      <h4>{t("THEN...")}</h4>
     </div>
     <div className="col-xs-12 col-md-12">
       <label>{t("Execute Sequence")}</label>

@@ -11,7 +11,10 @@ import {
   bitArray,
   withTimeout,
   minFwVersionCheck,
-  move
+  move,
+  shortRevision,
+  clampUnsignedInteger,
+  isUndefined
 } from "../util";
 describe("util", () => {
   describe("safeStringFetch", () => {
@@ -123,6 +126,9 @@ describe("util", () => {
 
       expect(semverCompare("1.1.9", "2.0.2"))
         .toBe(SemverResult.RIGHT_IS_GREATER);
+
+      expect(semverCompare("", "1.0.0"))
+        .toBe(SemverResult.RIGHT_IS_GREATER);
     });
 
     it("knows when LEFT_IS_GREATER", () => {
@@ -136,6 +142,9 @@ describe("util", () => {
         .toBe(SemverResult.LEFT_IS_GREATER);
 
       expect(semverCompare("2.0.2", "1.1.9"))
+        .toBe(SemverResult.LEFT_IS_GREATER);
+
+      expect(semverCompare("1.0.0", ""))
         .toBe(SemverResult.LEFT_IS_GREATER);
     });
   });
@@ -205,5 +214,46 @@ describe("move()", () => {
 
     const case3 = move(fixture, 0, 0);
     expect(case3).toEqual(fixture);
+  });
+});
+
+describe("shortRevision()", () => {
+  it("none", () => {
+    globalConfig.SHORT_REVISION = "";
+    const short = shortRevision();
+    expect(short).toEqual("NONE");
+  });
+
+  it("slices", () => {
+    globalConfig.SHORT_REVISION = "0123456789";
+    const short = shortRevision();
+    expect(short).toEqual("01234567");
+  });
+});
+
+describe("clampUnsignedInteger()", () => {
+  function clampTest(
+    input: string, output: number | undefined, message: string) {
+    it(message, () => {
+      const result = clampUnsignedInteger(input);
+      expect(result.outcome).toEqual(message);
+      expect(result.result).toEqual(output);
+    });
+  }
+  clampTest("nope", undefined, "malformed");
+  clampTest("100000", 32000, "high");
+  clampTest("-100000", 0, "low");
+  clampTest("1000", 1000, "ok");
+});
+
+describe("isUndefined()", () => {
+  it("undefined", () => {
+    const result = isUndefined(undefined);
+    expect(result).toBeTruthy();
+  });
+
+  it("defined", () => {
+    const result = isUndefined({});
+    expect(result).toBeFalsy();
   });
 });

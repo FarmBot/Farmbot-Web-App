@@ -100,7 +100,7 @@ export function InnerIf(props: IfParams) {
             {recursive && (
               <span>
                 <i className="fa fa-exclamation-triangle"></i>
-                &nbsp;Recursive condition.
+                &nbsp;{t("Recursive condition.")}
               </span>
             )}
           </div>

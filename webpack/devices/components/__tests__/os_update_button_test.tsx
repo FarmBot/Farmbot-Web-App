@@ -10,7 +10,6 @@ jest.mock("farmbot-toastr", () => ({ success: mockOk }));
 import * as React from "react";
 import { mount } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { getDevice } from "../../../device";
 import { OsUpdateButton } from "../fbos_settings/os_update_button";
 
 describe("<OsUpdateButton/>", () => {
@@ -39,30 +38,24 @@ describe("<OsUpdateButton/>", () => {
     expect(osUpdateButton.text()).toBe("UPDATE");
   });
   it("calls checkUpdates", () => {
-    const { mock } = getDevice().checkUpdates as jest.Mock<{}>;
     const buttons = mount(<OsUpdateButton bot={bot} />);
     const osUpdateButton = buttons.find("button").last();
     osUpdateButton.simulate("click");
-    expect(mock.calls.length).toEqual(1);
+    expect(mockDevice.checkUpdates).toHaveBeenCalledTimes(1);
   });
-  it("shows update progress: bytes", () => {
-    bot.hardware.jobs = { "FBOS_OTA": { status: "working", bytes: 300, unit: "bytes" } };
-    const buttons = mount(<OsUpdateButton bot={bot} />);
-    const osUpdateButton = buttons.find("button").last();
-    expect(osUpdateButton.text()).toBe("300B");
-  });
-  it("shows update progress: kilobytes", () => {
-    bot.hardware.jobs = { "FBOS_OTA": { status: "working", bytes: 30000, unit: "bytes" } };
-    const buttons = mount(<OsUpdateButton bot={bot} />);
-    const osUpdateButton = buttons.find("button").last();
-    expect(osUpdateButton.text()).toBe("29kB");
-  });
-  it("shows update progress: megabytes", () => {
-    bot.hardware.jobs = { "FBOS_OTA": { status: "working", bytes: 3e6, unit: "bytes" } };
-    const buttons = mount(<OsUpdateButton bot={bot} />);
-    const osUpdateButton = buttons.find("button").last();
-    expect(osUpdateButton.text()).toBe("3MB");
-  });
+
+  function bytesProgressTest(unit: string, progress: number, text: string) {
+    it(`shows update progress: ${unit}`, () => {
+      bot.hardware.jobs = { "FBOS_OTA": { status: "working", bytes: progress, unit: "bytes" } };
+      const buttons = mount(<OsUpdateButton bot={bot} />);
+      const osUpdateButton = buttons.find("button").last();
+      expect(osUpdateButton.text()).toBe(text);
+    });
+  }
+  bytesProgressTest("bytes", 300, "300B");
+  bytesProgressTest("kilobytes", 30000, "29kB");
+  bytesProgressTest("megabytes", 3e6, "3MB");
+
   it("shows update progress: percent", () => {
     bot.hardware.jobs = { "FBOS_OTA": { status: "working", percent: 10, unit: "percent" } };
     const buttons = mount(<OsUpdateButton bot={bot} />);
@@ -84,11 +77,10 @@ describe("<OsUpdateButton/>", () => {
     expect(osUpdateButton.text()).toBe("UPDATE");
   });
   it("is disabled", () => {
-    const { mock } = getDevice().checkUpdates as jest.Mock<{}>;
     bot.hardware.jobs = { "FBOS_OTA": { status: "working", percent: 10, unit: "percent" } };
     const buttons = mount(<OsUpdateButton bot={bot} />);
     const osUpdateButton = buttons.find("button").last();
     osUpdateButton.simulate("click");
-    expect(mock.calls.length).toEqual(0);
+    expect(mockDevice.checkUpdates).not.toHaveBeenCalled();
   });
 });
