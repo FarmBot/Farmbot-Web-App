@@ -94,6 +94,7 @@ module CeleryScript
     def check_leaf(node)
       allowed = corpus.values(node)
       actual = node.value.class
+      puts node.kind.to_s
       unless allowed.include?(actual)
         raise TypeCheckError, (BAD_LEAF % [node.kind, node.parent.kind,
                                            allowed.inspect, actual.inspect])
