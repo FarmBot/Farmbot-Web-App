@@ -86,6 +86,7 @@ describe Api::SequencesController do
       sign_in user
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
+      expect(sequence.last.args["locals"]["kind"]).not.to be("wait")
     end
 
     it 'strips excess `args`' do

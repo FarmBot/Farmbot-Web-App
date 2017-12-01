@@ -29,16 +29,9 @@ module Sequences
       @symbolized_input ||= inputs.symbolize_keys.slice(:body, :kind, :args)
     end
 
-    def seq
-      @seq ||= {body: [],
-                args: Sequence::DEFAULT_ARGS.merge(inputs[:args] || {}),
-                kind: "sequence" }.merge(symbolized_input)
-    end
-
     def reload_dependencies(sequence)
         must_be_in_transaction
         SequenceDependency.where(sequence: sequence).destroy_all
-
         SequenceDependency.create!(deps(sequence))
     end
 
@@ -48,7 +41,16 @@ module Sequences
     end
 
     def tree
-      @tree = CeleryScript::AstNode.new(**seq)
+      hmm = {
+        kind: "sequence",
+        body: symbolized_input[:body],
+        args: {
+          version: SequenceMigration::Base.latest_version,
+          locals:  symbolized_input
+                    .deep_symbolize_keys
+                    .dig(:args, :locals) || Sequence::NOTHING
+        }}
+      @tree = CeleryScript::AstNode.new(**hmm)
     end
 
     def corpus
