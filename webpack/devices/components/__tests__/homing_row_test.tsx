@@ -9,7 +9,6 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { HomingRow } from "../homing_row";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { getDevice } from "../../../device";
 
 describe("<HomingRow />", () => {
   beforeEach(function () {
@@ -26,13 +25,10 @@ describe("<HomingRow />", () => {
     });
   });
   it("calls device", () => {
-    const { mock } = getDevice().findHome as jest.Mock<{}>;
     const result = mount(<HomingRow hardware={bot.hardware.mcu_params} />);
-    result.find("LockableButton").at(0).simulate("click");
-    result.find("LockableButton").at(1).simulate("click");
-    result.find("LockableButton").at(2).simulate("click");
-    expect(mock.calls.length).toEqual(2);
-    expect(mock.calls[0][0].axis).toEqual("x");
-    expect(mock.calls[1][0].axis).toEqual("y");
+    [0, 1, 2].map(i =>
+      result.find("LockableButton").at(i).simulate("click"));
+    [{ axis: "x", speed: 100 }, { axis: "y", speed: 100 }].map(x =>
+      expect(mockDevice.findHome).toHaveBeenCalledWith(x));
   });
 });

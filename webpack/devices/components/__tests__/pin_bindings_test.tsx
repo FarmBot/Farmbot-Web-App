@@ -73,7 +73,7 @@ describe("<PinBindings/>", () => {
     expect(buttons.last().text()).toEqual("BIND");
     wrapper.setState({ pinNumberInput: 1, sequenceIdInput: 2 });
     buttons.last().simulate("click");
-    dispatch.mock.calls[0][0](dispatch);
+    dispatch.mock.calls[0][0](jest.fn());
     expect(mockDevice.registerGpio).toHaveBeenCalledWith({
       pin_number: 1, sequence_id: 2
     });

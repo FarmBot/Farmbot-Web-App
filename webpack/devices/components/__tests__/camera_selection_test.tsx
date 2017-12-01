@@ -10,7 +10,6 @@ jest.mock("farmbot-toastr", () => ({ info: mockInfo, error: mockError }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { getDevice } from "../../../device";
 import { CameraSelection } from "../camera_selection";
 
 describe("<CameraSelection/>", () => {
@@ -31,12 +30,12 @@ describe("<CameraSelection/>", () => {
   });
 
   it("changes camera", () => {
-    const { mock } = getDevice().setUserEnv as jest.Mock<{}>;
-    const cameraSelection = shallow(<CameraSelection
-      env={{}} />);
+    const cameraSelection = shallow(<CameraSelection env={{}} />);
     cameraSelection.find("FBSelect")
       .simulate("change", { label: "My Camera", value: "mycamera" });
-    expect(mockInfo.mock.calls[0][0]).toEqual("Sending camera configuration...");
-    expect(mock.calls[0][0]).toEqual({ "camera": "\"mycamera\"" });
+    expect(mockInfo)
+      .toHaveBeenCalledWith("Sending camera configuration...", "Sending");
+    expect(mockDevice.setUserEnv)
+      .toHaveBeenCalledWith({ camera: "\"mycamera\"" });
   });
 });

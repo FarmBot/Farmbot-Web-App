@@ -32,9 +32,7 @@ describe("<ToolBayForm/>", () => {
     const inputs = test.component.find("input");
     expect(inputs.length).toEqual(3);
     expect(test.component.text()).toContain("Trench Digging Tool");
-    expect(inputs.at(0).props().value).toEqual("10");
-    expect(inputs.at(1).props().value).toEqual("10");
-    expect(inputs.at(2).props().value).toEqual("10");
+    [0, 1, 2].map(i => expect(inputs.at(i).props().value).toEqual("10"));
   });
 
   it("fills inputs with bot position", () => {

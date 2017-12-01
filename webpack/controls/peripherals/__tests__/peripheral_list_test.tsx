@@ -10,7 +10,6 @@ import { mount } from "enzyme";
 import { PeripheralList } from "../peripheral_list";
 import { TaggedPeripheral, SpecialStatus } from "../../../resources/tagged_resources";
 import { Pins } from "farmbot/dist";
-import { getDevice } from "../../../device";
 
 describe("<PeripheralList/>", function () {
   beforeEach(function () {
@@ -72,22 +71,19 @@ describe("<PeripheralList/>", function () {
   });
 
   it("toggles pins", () => {
-    const { mock } = getDevice().togglePin as jest.Mock<{}>;
     const wrapper = mount(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
       pins={pins}
       disabled={false} />);
     const toggle = wrapper.find("ToggleButton");
     toggle.first().simulate("click");
-    expect(mock.calls.length).toEqual(1);
-    expect(mock.calls[0][0].pin_number).toEqual(2);
+    expect(mockDevice.togglePin).toHaveBeenCalledWith({ pin_number: 2 });
     toggle.last().simulate("click");
-    expect(mock.calls.length).toEqual(2);
-    expect(mock.calls[1][0].pin_number).toEqual(13);
+    expect(mockDevice.togglePin).toHaveBeenLastCalledWith({ pin_number: 13 });
+    expect(mockDevice.togglePin).toHaveBeenCalledTimes(2);
   });
 
   it("pins toggles are disabled", () => {
-    const { mock } = getDevice().togglePin as jest.Mock<{}>;
     const wrapper = mount(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
       pins={pins}
@@ -95,6 +91,6 @@ describe("<PeripheralList/>", function () {
     const toggle = wrapper.find("ToggleButton");
     toggle.first().simulate("click");
     toggle.last().simulate("click");
-    expect(mock.calls.length).toEqual(0);
+    expect(mockDevice.togglePin).not.toHaveBeenCalled();
   });
 });
