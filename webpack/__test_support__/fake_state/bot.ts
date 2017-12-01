@@ -10,6 +10,7 @@ export let bot: Everything["bot"] = {
     "danger_zone": false
   },
   "hardware": {
+    "gpio_registry": {},
     "mcu_params": {
       encoder_enabled_x: 1,
       encoder_enabled_y: 1,
@@ -37,7 +38,10 @@ export let bot: Everything["bot"] = {
     "configuration": {},
     "informational_settings": {
       busy: false,
-      locked: false
+      locked: false,
+      commit: "---",
+      target: "---",
+      env: "---"
     },
     "user_env": {},
     "process_info": {

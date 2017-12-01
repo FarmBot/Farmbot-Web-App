@@ -277,6 +277,27 @@ export function updateConfig(config: Configuration) {
   };
 }
 
+export function registerGpioPin(
+  pinBinding: { pin_number: number, sequence_id: number }) {
+  const noun = "Register GPIO Pin";
+  return function (dispatch: Function) {
+    getDevice()
+      .registerGpio(pinBinding)
+      .then(() => updateOK(dispatch, noun))
+      .catch(() => updateNO(dispatch, noun));
+  };
+}
+
+export function unregisterGpioPin(pin_number: number) {
+  const noun = "Unregister GPIO Pin";
+  return function (dispatch: Function) {
+    getDevice()
+      .unregisterGpio({ pin_number })
+      .then(() => updateOK(dispatch, noun))
+      .catch(() => updateNO(dispatch, noun));
+  };
+}
+
 export function changeStepSize(integer: number) {
   return {
     type: Actions.CHANGE_STEP_SIZE,

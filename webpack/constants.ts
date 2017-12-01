@@ -35,6 +35,9 @@ export namespace ToolTips {
     unsupervised. Tip: Recalibrate FarmBot after changing settings and test a
     few sequences to verify that everything works as expected.`;
 
+  export const PIN_BINDINGS =
+    `Assign a sequence to execute when a Raspberry Pi GPIO pin is activated.`;
+
   // Hardware Settings: Homing and Calibration
   export const HOMING =
     `(Alpha) If encoders or end-stops are enabled, home axis (find zero).`;

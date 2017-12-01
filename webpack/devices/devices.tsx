@@ -12,6 +12,7 @@ import {
 import { Diagnosis, DiagnosisName } from "./connectivity/diagnosis";
 import { StatusRowProps } from "./connectivity/connectivity_row";
 import { resetConnectionInfo } from "./actions";
+import { PinBindings } from "./components/pin_bindings";
 
 @connect(mapStateToProps)
 export class Devices extends React.Component<Props, {}> {
@@ -73,6 +74,11 @@ export class Devices extends React.Component<Props, {}> {
               controlPanelState={this.props.bot.controlPanelState}
               dispatch={this.props.dispatch}
               bot={this.props.bot} />
+            {this.props.bot.hardware.gpio_registry &&
+              <PinBindings
+                dispatch={this.props.dispatch}
+                bot={this.props.bot}
+                resources={this.props.resources} />}
           </Col>
         </Row>
       </Page>;
