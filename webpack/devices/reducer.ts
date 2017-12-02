@@ -33,7 +33,8 @@ export let initialState: BotState = {
     homing_and_calibration: false,
     motors: false,
     encoders_and_endstops: false,
-    danger_zone: false
+    danger_zone: false,
+    power_and_reset: false
   },
   hardware: {
     gpio_registry: {},

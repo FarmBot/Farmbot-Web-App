@@ -10,7 +10,8 @@ export const links = [
   { name: "Sequences", icon: "server", slug: "sequences" },
   { name: "Regimens", icon: "calendar-check-o", slug: "regimens" },
   { name: "Tools", icon: "wrench", slug: "tools" },
-  { name: "Farmware", icon: "crosshairs", slug: "farmware" }
+  { name: "Farmware", icon: "crosshairs", slug: "farmware" },
+  { name: "Logs", icon: "list", slug: "logs" },
 ];
 
 export const NavLinks = (props: NavLinksProps) => {

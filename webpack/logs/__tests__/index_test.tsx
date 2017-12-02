@@ -4,11 +4,12 @@ jest.mock("react-redux", () => ({
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { Logs, LogsFilterMenu } from "../index";
+import { Logs } from "../index";
 import { ToolTips } from "../../constants";
 import { TaggedLog, SpecialStatus } from "../../resources/tagged_resources";
 import { Log } from "../../interfaces";
 import { generateUuid } from "../../resources/util";
+import { bot } from "../../__test_support__/fake_state/bot";
 
 describe("<Logs />", () => {
   function fakeLogs(): TaggedLog[] {
@@ -41,7 +42,7 @@ describe("<Logs />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<Logs logs={fakeLogs()} />);
+    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} />);
     ["Logs", ToolTips.LOGS, "Type", "Message", "Time", "Info",
       "Fake log message 1", "Success", "Fake log message 2"]
       .map(string =>
@@ -52,7 +53,7 @@ describe("<Logs />", () => {
   });
 
   it("filters logs", () => {
-    const wrapper = mount(<Logs logs={fakeLogs()} />);
+    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} />);
     wrapper.setState({ info: false });
     expect(wrapper.text()).not.toContain("Fake log message 1");
     const filterBtn = wrapper.find("button").first();
@@ -66,31 +67,15 @@ describe("<Logs />", () => {
     logs[1].body.meta.x = 0;
     logs[1].body.meta.y = 1;
     logs[1].body.meta.z = 2;
-    const wrapper = mount(<Logs logs={logs} />);
+    const wrapper = mount(<Logs logs={logs} bot={bot} />);
     expect(wrapper.text()).toContain("Unknown");
     expect(wrapper.text()).toContain("0, 1, 2");
   });
-});
 
-describe("<LogsFilterMenu />", () => {
-  const fakeState = {
-    autoscroll: true, success: true, busy: true, warn: true,
-    error: true, info: true, fun: true, debug: true
-  };
-  it("renders", () => {
-    const wrapper = mount(
-      <LogsFilterMenu toggle={jest.fn()} state={fakeState} />);
-    ["success", "busy", "warn", "error", "info", "fun", "debug"]
-      .map(string =>
-        expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
-    expect(wrapper.text()).not.toContain("autscroll");
-  });
-
-  it("filters logs", () => {
-    const toggle = jest.fn();
-    const wrapper = mount(
-      <LogsFilterMenu toggle={(x) => () => toggle(x)} state={fakeState} />);
-    wrapper.find("button").first().simulate("click");
-    expect(toggle).toHaveBeenCalledWith("success");
+  it("shows verbosity", () => {
+    const logs = fakeLogs();
+    logs[0].body.meta.verbosity = 999;
+    const wrapper = mount(<Logs logs={logs} bot={bot} />);
+    expect(wrapper.text()).toContain(999);
   });
 });
