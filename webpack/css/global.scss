@@ -509,6 +509,25 @@ ul {
       margin-right: 0;
     }
   }
+  .settings-menu-button {
+    float: right;
+    margin-left: 1rem;
+    margin-top: 0.25rem;
+  }
+}
+
+.logs-settings-menu {
+  label {
+    margin-top: 7px;
+  }
+  .saucer {
+    float: left;
+    margin-right: 10px;
+  }
+  .pt-popover-target {
+    display: inline;
+    margin-left: 1rem;
+  }
 }
 
 .logs-table {

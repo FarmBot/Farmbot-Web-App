@@ -1,14 +1,23 @@
+const mockDevice = {
+  updateConfig: jest.fn(() => { return Promise.resolve(); }),
+};
+jest.mock("../../device", () => ({
+  getDevice: () => (mockDevice)
+}));
+
 jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { Logs, LogsFilterMenu } from "../index";
+import { Logs, LogsFilterMenu, LogsSettingsMenu } from "../index";
 import { ToolTips } from "../../constants";
 import { TaggedLog, SpecialStatus } from "../../resources/tagged_resources";
 import { Log } from "../../interfaces";
 import { generateUuid } from "../../resources/util";
+import { bot } from "../../__test_support__/fake_state/bot";
+import { ConfigurationName } from "farmbot";
 
 describe("<Logs />", () => {
   function fakeLogs(): TaggedLog[] {
@@ -41,7 +50,7 @@ describe("<Logs />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<Logs logs={fakeLogs()} />);
+    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} />);
     ["Logs", ToolTips.LOGS, "Type", "Message", "Time", "Info",
       "Fake log message 1", "Success", "Fake log message 2"]
       .map(string =>
@@ -52,7 +61,7 @@ describe("<Logs />", () => {
   });
 
   it("filters logs", () => {
-    const wrapper = mount(<Logs logs={fakeLogs()} />);
+    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} />);
     wrapper.setState({ info: false });
     expect(wrapper.text()).not.toContain("Fake log message 1");
     const filterBtn = wrapper.find("button").first();
@@ -66,7 +75,7 @@ describe("<Logs />", () => {
     logs[1].body.meta.x = 0;
     logs[1].body.meta.y = 1;
     logs[1].body.meta.z = 2;
-    const wrapper = mount(<Logs logs={logs} />);
+    const wrapper = mount(<Logs logs={logs} bot={bot} />);
     expect(wrapper.text()).toContain("Unknown");
     expect(wrapper.text()).toContain("0, 1, 2");
   });
@@ -93,4 +102,25 @@ describe("<LogsFilterMenu />", () => {
     wrapper.find("button").first().simulate("click");
     expect(toggle).toHaveBeenCalledWith("success");
   });
+});
+
+describe("<LogsSettingsMenu />", () => {
+  it("renders", () => {
+    const wrapper = mount(<LogsSettingsMenu {...bot} />);
+    ["begin", "steps", "complete"].map(string =>
+      expect(wrapper.text().toLowerCase()).toContain(string));
+  });
+
+  function testSettingToggle(setting: ConfigurationName, position: number) {
+    it("toggles setting", () => {
+      bot.hardware.configuration[setting] = false;
+      const wrapper = mount(<LogsSettingsMenu {...bot} />);
+      wrapper.find("button").at(position).simulate("click");
+      expect(mockDevice.updateConfig)
+        .toHaveBeenCalledWith({ [setting]: true });
+    });
+  }
+  testSettingToggle("sequence_init_log", 0);
+  testSettingToggle("sequence_body_log", 1);
+  testSettingToggle("sequence_complete_log", 2);
 });

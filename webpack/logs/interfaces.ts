@@ -1,7 +1,9 @@
 import { TaggedLog } from "../resources/tagged_resources";
+import { BotState } from "../devices/interfaces";
 
 export interface LogsProps {
-  logs: TaggedLog[]
+  logs: TaggedLog[];
+  bot: BotState;
 }
 
 export interface Filters {

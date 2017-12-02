@@ -1,14 +1,20 @@
 import * as React from "react";
 import * as moment from "moment";
 import { connect } from "react-redux";
-import { Col, Row, Page, ToolTip } from "../ui";
+import { Col, Row, Page, ToolTip, Help } from "../ui";
 import { mapStateToProps } from "./state_to_props";
 import { t } from "i18next";
 import { Popover, Position } from "@blueprintjs/core";
 import * as _ from "lodash";
-import { LogsTableProps, LogsState, LogsFilterMenuProps, LogsProps } from "./interfaces";
+import {
+  LogsTableProps, LogsState, LogsFilterMenuProps, LogsProps
+} from "./interfaces";
 import { ToolTips } from "../constants";
 import { TaggedLog } from "../resources/tagged_resources";
+import { ToggleButton } from "../controls/toggle_button";
+import { noop } from "lodash";
+import { updateConfig } from "../devices/actions";
+import { BotState } from "../devices/interfaces";
 
 export const formatLogTime = (created_at: number) =>
   moment.unix(created_at).local().format("MMM D, h:mma");
@@ -63,14 +69,13 @@ const LogsRow = (tlog: TaggedLog, state: LogsState) => {
 
 export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
   const btnColor = (x: keyof LogsState) => props.state[x] ? "green" : "red";
-  return <div>
+  return <div className={"logs-settings-menu"}>
     {Object.keys(props.state)
       .filter(x => { if (!(x == "autoscroll")) { return x; } })
       .map((logType: keyof LogsState) => {
         return <fieldset key={logType}>
-          <label style={{ marginTop: "7px" }}>
-            <div className={`saucer ${logType}`}
-              style={{ float: "left", marginRight: "10px" }} />
+          <label>
+            <div className={`saucer ${logType}`} />
             {_.startCase(logType)}
           </label>
           <button
@@ -78,6 +83,47 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
             onClick={props.toggle(logType)} />
         </fieldset>;
       })}
+  </div>;
+};
+
+export const LogsSettingsMenu = (bot: BotState) => {
+  const {
+    sequence_init_log, sequence_body_log, sequence_complete_log
+  } = bot.hardware.configuration;
+  return <div className={"logs-settings-menu"}>
+    {t("Create logs for sequence:")}
+    <fieldset>
+      <label>
+        {t("Begin")}
+      </label>
+      <Help text={t(ToolTips.SEQUENCE_LOG_BEGIN)} />
+      <ToggleButton toggleValue={sequence_init_log}
+        toggleAction={() => {
+          updateConfig({ sequence_init_log: !sequence_init_log })(noop);
+        }} />
+    </fieldset>
+    <fieldset>
+      <label>
+        {t("Steps")}
+      </label>
+      <Help text={t(ToolTips.SEQUENCE_LOG_STEP)} />
+      <ToggleButton toggleValue={sequence_body_log}
+        toggleAction={() => {
+          updateConfig({ sequence_body_log: !sequence_body_log })(noop);
+        }} />
+    </fieldset>
+    <fieldset>
+      <label>
+        {t("Complete")}
+      </label>
+      <Help text={t(ToolTips.SEQUENCE_LOG_END)} />
+      <ToggleButton toggleValue={sequence_complete_log}
+        toggleAction={() => {
+          updateConfig({
+            sequence_complete_log: !sequence_complete_log
+          })(noop);
+        }} />
+    </fieldset>
   </div>;
 };
 
@@ -117,12 +163,20 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
           <ToolTip helpText={ToolTips.LOGS} />
         </Col>
         <Col xs={1}>
-          <Popover position={Position.BOTTOM_RIGHT}>
-            <button className={`fb-button ${filterBtnColor}`}>
-              {this.filterActive ? t("Filters active") : t("filter")}
-            </button>
-            <LogsFilterMenu toggle={this.toggle} state={this.state} />
-          </Popover>
+          <div className={"settings-menu-button"}>
+            <Popover position={Position.BOTTOM_RIGHT}>
+              <i className="fa fa-gear" />
+              <LogsSettingsMenu {...this.props.bot} />
+            </Popover>
+          </div>
+          <div className={"settings-menu-button"}>
+            <Popover position={Position.BOTTOM_RIGHT}>
+              <button className={`fb-button ${filterBtnColor}`}>
+                {this.filterActive ? t("Filters active") : t("filter")}
+              </button>
+              <LogsFilterMenu toggle={this.toggle} state={this.state} />
+            </Popover>
+          </div>
         </Col>
       </Row>
       <Row>

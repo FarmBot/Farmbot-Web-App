@@ -251,6 +251,15 @@ export namespace ToolTips {
   // Logs
   export const LOGS =
     `View and filter log messages.`;
+
+  export const SEQUENCE_LOG_BEGIN =
+    `Send a log message upon the start of sequence execution.`;
+
+  export const SEQUENCE_LOG_STEP =
+    `Send a log message for each sequence step.`;
+
+  export const SEQUENCE_LOG_END =
+    `Send a log message upon the end of sequence execution.`;
 }
 
 export namespace Content {
