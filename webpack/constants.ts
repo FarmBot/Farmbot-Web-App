@@ -287,6 +287,15 @@ export namespace Content {
     not delete data stored in your web app account. Are you sure you wish
     to continue?`.replace(/\s+/g, " ");
 
+  export const AUTO_FACTORY_RESET =
+    `Automatically factory reset when the WiFi network cannot be detected.
+    Useful for typos during FarmBot OS configuration or network changes.`
+      .replace(/\s+/g, " ");
+
+  export const AUTO_FACTORY_RESET_PERIOD =
+    `Time in minutes to attempt connecting to WiFi before a factory reset.`
+      .replace(/\s+/g, " ");
+
   export const TIMEZONE_GUESS_BROWSER =
     `This account did not have a timezone set. Farmbot requires a timezone to
     operate. We have updated your timezone settings based on your browser.

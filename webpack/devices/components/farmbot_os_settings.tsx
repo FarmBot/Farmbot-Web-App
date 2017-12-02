@@ -19,11 +19,9 @@ import { LastSeen } from "./last_seen_widget";
 import { CameraSelection } from "./camera_selection";
 import { BoardType } from "./board_type";
 import { AutoUpdateRow } from "./fbos_settings/auto_update_row";
-import { RestartRow } from "./fbos_settings/restart_row";
-import { ShutdownRow } from "./fbos_settings/shutdown_row";
-import { FactoryResetRow } from "./fbos_settings/factory_reset_row";
 import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { isUndefined } from "lodash";
+import { PowerAndReset } from "./fbos_settings/power_and_reset";
 
 export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps> {
@@ -124,12 +122,12 @@ export class FarmbotOsSettings
             status={hardware.informational_settings.sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <AutoUpdateRow bot={this.props.bot} controller_version={controller_version} />
-            <RestartRow />
-            <ShutdownRow />
-            <FactoryResetRow />
             {this.maybeShowAutoSync()}
             <CameraSelection env={hardware.user_env} />
             <BoardType firmwareVersion={firmware_version} />
+            <PowerAndReset
+              bot={this.props.bot}
+              dispatch={this.props.dispatch} />
           </MustBeOnline>
         </WidgetBody>
       </form>
