@@ -71,4 +71,11 @@ describe("<Logs />", () => {
     expect(wrapper.text()).toContain("Unknown");
     expect(wrapper.text()).toContain("0, 1, 2");
   });
+
+  it("shows verbosity", () => {
+    const logs = fakeLogs();
+    logs[0].body.meta.verbosity = 999;
+    const wrapper = mount(<Logs logs={logs} bot={bot} />);
+    expect(wrapper.text()).toContain(999);
+  });
 });
