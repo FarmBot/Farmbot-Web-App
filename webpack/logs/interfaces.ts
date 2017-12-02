@@ -1,5 +1,6 @@
 import { TaggedLog } from "../resources/tagged_resources";
 import { BotState } from "../devices/interfaces";
+import { ConfigurationName } from "farmbot";
 
 export interface LogsProps {
   logs: TaggedLog[];
@@ -30,4 +31,11 @@ type ToggleEventHandler = (e: React.MouseEvent<HTMLButtonElement>) => void;
 export interface LogsFilterMenuProps {
   toggle: (property: keyof LogsState) => ToggleEventHandler;
   state: LogsState;
+}
+
+export interface LogSettingProps {
+  label: string;
+  setting: ConfigurationName;
+  toolTip: string;
+  value: boolean | undefined;
 }

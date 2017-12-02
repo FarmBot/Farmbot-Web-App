@@ -6,6 +6,21 @@ import { ToolTips } from "../../constants";
 import { ToggleButton } from "../../controls/toggle_button";
 import { updateConfig } from "../../devices/actions";
 import { noop } from "lodash";
+import { LogSettingProps } from "../interfaces";
+
+const LogSetting = (props: LogSettingProps) => {
+  const { label, setting, toolTip, value } = props;
+  return <fieldset>
+    <label>
+      {t(label)}
+    </label>
+    <Help text={t(toolTip)} />
+    <ToggleButton toggleValue={value}
+      toggleAction={() => {
+        updateConfig({ [setting]: !value })(noop);
+      }} />
+  </fieldset>;
+};
 
 export const LogsSettingsMenu = (bot: BotState) => {
   const {
@@ -13,37 +28,20 @@ export const LogsSettingsMenu = (bot: BotState) => {
   } = bot.hardware.configuration;
   return <div className={"logs-settings-menu"}>
     {t("Create logs for sequence:")}
-    <fieldset>
-      <label>
-        {t("Begin")}
-      </label>
-      <Help text={t(ToolTips.SEQUENCE_LOG_BEGIN)} />
-      <ToggleButton toggleValue={sequence_init_log}
-        toggleAction={() => {
-          updateConfig({ sequence_init_log: !sequence_init_log })(noop);
-        }} />
-    </fieldset>
-    <fieldset>
-      <label>
-        {t("Steps")}
-      </label>
-      <Help text={t(ToolTips.SEQUENCE_LOG_STEP)} />
-      <ToggleButton toggleValue={sequence_body_log}
-        toggleAction={() => {
-          updateConfig({ sequence_body_log: !sequence_body_log })(noop);
-        }} />
-    </fieldset>
-    <fieldset>
-      <label>
-        {t("Complete")}
-      </label>
-      <Help text={t(ToolTips.SEQUENCE_LOG_END)} />
-      <ToggleButton toggleValue={sequence_complete_log}
-        toggleAction={() => {
-          updateConfig({
-            sequence_complete_log: !sequence_complete_log
-          })(noop);
-        }} />
-    </fieldset>
+    <LogSetting
+      label={"Begin"}
+      setting={"sequence_init_log"}
+      toolTip={ToolTips.SEQUENCE_LOG_BEGIN}
+      value={sequence_init_log} />
+    <LogSetting
+      label={"Steps"}
+      setting={"sequence_body_log"}
+      toolTip={ToolTips.SEQUENCE_LOG_STEP}
+      value={sequence_body_log} />
+    <LogSetting
+      label={"Complete"}
+      setting={"sequence_complete_log"}
+      toolTip={ToolTips.SEQUENCE_LOG_END}
+      value={sequence_complete_log} />
   </div>;
 };
