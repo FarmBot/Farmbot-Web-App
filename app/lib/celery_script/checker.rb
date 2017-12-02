@@ -19,8 +19,6 @@ module CeleryScript
     end
 
     def run!
-      puts "\n"
-      puts "Traveling..."
       CeleryScript::TreeClimber.travel(tree, method(:validate).to_proc)
       tree
     end
@@ -44,7 +42,6 @@ module CeleryScript
 
     def validate(node)
       p = node.try(:parent).try(:kind) || "root"
-      puts "  validate #{p} => #{node.kind}"
       validate_body(node)
       validate_node(node)
     end
@@ -71,7 +68,6 @@ module CeleryScript
             msgs = "nothing" if msgs.length < 1
           msg = MISSING_ARG % [node.kind, arg, msgs]
           raise TypeCheckError, msg
-          puts "I probably need to validate that the descending pairs are correct here..."
           end
         end
       has      = node.args.keys.map(&:to_sym) # Either bigger or equal.
@@ -96,7 +92,6 @@ module CeleryScript
     end
 
     def validate_node_pairing(key, value)
-      puts "    Checking node pair #{key} => #{value.try(:kind) || value.inspect.first(20)}..."
       actual  = value.kind
       allowed = corpus.fetchArg(key).allowed_values.map(&:to_s)
       ok      = allowed.include?(actual)
@@ -107,7 +102,6 @@ module CeleryScript
     end
 
     def validate_leaf_pairing(key, value)
-      puts "    Checking leaf pair #{key} => #{value.try(:kind) || value.inspect.first(20)}..."
       actual  = value.value.class
       allowed = corpus.fetchArg(key).allowed_values
       ok      = allowed.include?(actual)

@@ -90,7 +90,6 @@ describe Api::SequencesController do
     end
 
     it 'strips excess `args`' do
-      pending
       input = { name: "Scare Birds",
                 body: [],
                 # Intentional nonsense to check validation logic.
@@ -99,7 +98,8 @@ describe Api::SequencesController do
       sign_in user
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(200)
-      expect(sequence.last.args[:foo]).to eq(nil)
+      expect(json[:args][:foo]).to be(nil)
+      expect(Sequence.last.args[:foo]).to eq(nil)
     end
 
     it 'tracks Points' do
