@@ -102,6 +102,86 @@ describe Api::SequencesController do
       expect(Sequence.last.args[:foo]).to eq(nil)
     end
 
+    it 'disallows typo `data_types` in `locals` declaration' do
+      input = {
+        name: "Scare Birds",
+        body: [],
+        # Intentional nonsense to check validation logic.
+        args: {
+          locals: {
+            kind: "scope_declaration",
+            args: {},
+            body: [
+              {
+                kind: "parameter_declaration",
+                args: {
+                  label: "parent",
+                  data_type: "PlantSpelledBackwards"
+                }
+              }
+            ]
+          }
+        }
+      }
+
+      sign_in user
+      post :create, body: input.to_json, params: {format: :json}
+      expect(response.status).to eq(422)
+      expect(json[:body]).to include("not a valid data_type")
+    end
+
+    it 'disallows erroneous `data_types` in `locals` declaration' do
+      input = {
+        name: "Scare Birds",
+        body: [],
+        # Intentional nonsense to check validation logic.
+        args: {
+          locals: {
+            kind: "scope_declaration",
+            args: {},
+            body: [
+              { kind: "wait", args: { milliseconds: 5000 } }
+            ]
+          }
+        }
+      }
+
+      sign_in user
+      post :create, body: input.to_json, params: {format: :json}
+      expect(response.status).to eq(422)
+      expect(json[:body])
+        .to include("Expected one of: [:parameter_declaration]")
+    end
+
+    it 'allows declaration of a variable named `parent`' do
+      input = {
+        name: "Scare Birds",
+        body: [],
+        # Intentional nonsense to check validation logic.
+        args: {
+          locals: {
+            kind: "scope_declaration",
+            args: {},
+            body: [
+              {
+                kind: "parameter_declaration",
+                args: {
+                  label: "parent",
+                  data_type: "point"
+                }
+              }
+            ]
+          }
+        }
+      }
+
+      sign_in user
+      post :create, body: input.to_json, params: {format: :json}
+      expect(response.status).to eq(200)
+      expect(Sequence.last.args.dig("locals", "body", 0, "args", "label"))
+        .to eq("parent")
+    end
+
     it 'tracks Points' do
       point = FactoryBot.create(:point, device: user.device)
       SequenceDependency.delete_all

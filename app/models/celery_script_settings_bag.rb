@@ -27,8 +27,8 @@ module CeleryScriptSettingsBag
   ALLOWED_AXIS          = %w(x y z all)
   ALLOWED_LHS           = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
   STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
-                             send_message execute _if execute_script take_photo
-                             find_home)
+                            send_message execute _if execute_script take_photo
+                            find_home)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
@@ -38,6 +38,7 @@ module CeleryScriptSettingsBag
   BAD_OP                = 'Can not put "%s" into an operand (OP) argument. '\
                           'Allowed values: %s'
   BAD_CHANNEL_NAME      = '"%s" is not a valid channel_name. Allowed values: %s'
+  BAD_DATA_TYPE         = '"%s" is not a valid data_type. Allowed values: %s'
   BAD_MESSAGE_TYPE      = '"%s" is not a valid message_type. Allowed values: %s'
   BAD_MESSAGE           = "Messages must be between 1 and 300 characters"
   BAD_TOOL_ID           = 'Tool #%s does not exist.'
@@ -138,7 +139,7 @@ module CeleryScriptSettingsBag
       .defineArg(:url,             [String])
       .defineArg(:locals,          [:scope_declaration, :nothing])
       .defineArg(:data_type,       [String]) do |node|
-        within(ALLOWED_AXIS, node) do |v|
+        within(ALLOWED_DATA_TYPES, node) do |v|
           BAD_DATA_TYPE % [v.to_s, ALLOWED_DATA_TYPES.inspect]
         end
       end
@@ -185,6 +186,7 @@ module CeleryScriptSettingsBag
       .defineNode(:remove_farmware,   [:package])
       .defineNode(:scope_declaration, [], [:parameter_declaration])
       .defineNode(:identifier, [:label])
+      .defineNode(:parameter_declaration, [:label, :data_type], [])
       .defineNode(:install_first_party_farmware, [])
       # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.

@@ -6,7 +6,6 @@ module CeleryScript
     MISSING_ARG = "Expected node '%s' to have a '%s', but got: %s."
     EXTRA_ARGS  = "'%s' has unexpected arguments: %s. Allowed arguments: %s"
     BAD_LEAF    = "Expected leaf '%s' within '%s' to be one of: %s but got %s"
-    BAD_PAIRING = BAD_LEAF
     MALFORMED   = "Expected '%s' to be a node or leaf, but it was neither"
     BAD_BODY    = "Body of '%s' node contains '%s' node. "\
                   "Expected one of: %s"
