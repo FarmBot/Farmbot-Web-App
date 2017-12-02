@@ -41,7 +41,8 @@ describe("mapStateToProps()", () => {
           "body": [{ kind: "wait", args: { milliseconds: 100 } }],
           "args": {
             "version": 4,
-            "label": "WIP"
+            "label": "WIP",
+            locals: { kind: "nothing", args: {} },
           },
           "kind": "sequence"
         },
