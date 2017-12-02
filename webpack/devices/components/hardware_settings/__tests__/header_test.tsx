@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Header } from "../hardware_settings/header";
+import { Header } from "../header";
 import { shallow } from "enzyme";
 
 describe("<Header/>", () => {

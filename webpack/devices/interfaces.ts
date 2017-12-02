@@ -121,6 +121,7 @@ export interface StepsPerMMBoxProps {
   bot: BotState;
   setting: ConfigurationName;
   dispatch: Function;
+  disabled?: boolean;
 }
 
 export interface McuInputBoxProps {
@@ -163,4 +164,5 @@ export interface ControlPanelState {
   motors: boolean;
   encoders_and_endstops: boolean;
   danger_zone: boolean;
+  power_and_reset: boolean;
 }

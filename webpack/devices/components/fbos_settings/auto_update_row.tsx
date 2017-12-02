@@ -3,10 +3,20 @@ import { Row, Col } from "../../../ui/index";
 import { t } from "i18next";
 import { OsUpdateButton } from "./os_update_button";
 import { BotState } from "../../interfaces";
+import { Popover, Position } from "@blueprintjs/core";
 
 interface AutoUpdateRowProps {
   controller_version: string | undefined;
   bot: BotState;
+}
+
+export function FbosDetails(bot: BotState) {
+  const { env, commit, target } = bot.hardware.informational_settings;
+  return <div>
+    <p><b>Environment: </b>{env}</p>
+    <p><b>Commit: </b>{commit}</p>
+    <p><b>Target: </b>{target}</p>
+  </div>;
 }
 
 export function AutoUpdateRow(props: AutoUpdateRowProps) {
@@ -18,9 +28,12 @@ export function AutoUpdateRow(props: AutoUpdateRowProps) {
       </label>
     </Col>
     <Col xs={3}>
-      <p>
-        {t("Version {{ version }}", { version })}
-      </p>
+      <Popover position={Position.TOP_LEFT}>
+        <p>
+          {t("Version {{ version }}", { version })}
+        </p>
+        <FbosDetails {...props.bot} />
+      </Popover>
     </Col>
     <Col xs={7}>
       <OsUpdateButton bot={props.bot} />

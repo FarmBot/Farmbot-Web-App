@@ -88,6 +88,12 @@ fieldset {
   &.hover {
     border: 2px solid $dark_gray;
   }
+  p {
+    font-weight: 900;
+    color: $white;
+    margin-left: 0.7rem;
+    margin-top: 0.3rem;
+  }
 }
 
 .saucer-connector {
@@ -193,7 +199,8 @@ a {
   font-weight: bold;
 }
 
-.hardware-widget {
+.hardware-widget,
+.device-widget {
   h4 {
     cursor: pointer;
   }
@@ -508,6 +515,25 @@ ul {
       margin-right: 0;
     }
   }
+  .settings-menu-button {
+    float: right;
+    margin-left: 1rem;
+    margin-top: 0.25rem;
+  }
+}
+
+.logs-settings-menu {
+  label {
+    margin-top: 7px;
+  }
+  .saucer {
+    float: left;
+    margin-right: 10px;
+  }
+  .pt-popover-target {
+    display: inline;
+    margin-left: 1rem;
+  }
 }
 
 .logs-table {
@@ -522,5 +548,7 @@ ul {
   td {
     box-shadow: inset 1px 0 0 0 $gray !important;
     color: $dark_gray !important;
+    min-width: 106px;
+    word-break: break-word;
   }
 }

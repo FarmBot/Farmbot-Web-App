@@ -30,6 +30,7 @@ export interface Log {
     x?: number;
     y?: number;
     z?: number;
+    verbosity?: number;
   };
   channels: string[];
   created_at: number;
