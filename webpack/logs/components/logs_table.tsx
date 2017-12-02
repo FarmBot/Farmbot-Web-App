@@ -15,7 +15,11 @@ const LogsRow = (tlog: TaggedLog, state: LogsState) => {
   return displayLog ?
     <tr key={tlog.uuid}>
       <td>
-        <div className={`saucer ${type}`} />
+        <div className={`saucer ${type}`}>
+          <p>
+            {log.meta.verbosity}
+          </p>
+        </div>
         {_.startCase(type)}
       </td>
       <td>

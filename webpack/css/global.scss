@@ -88,6 +88,12 @@ fieldset {
   &.hover {
     border: 2px solid $dark_gray;
   }
+  p {
+    font-weight: 900;
+    color: $white;
+    margin-left: 0.7rem;
+    margin-top: 0.3rem;
+  }
 }
 
 .saucer-connector {
@@ -542,5 +548,7 @@ ul {
   td {
     box-shadow: inset 1px 0 0 0 $gray !important;
     color: $dark_gray !important;
+    min-width: 106px;
+    word-break: break-word;
   }
 }
