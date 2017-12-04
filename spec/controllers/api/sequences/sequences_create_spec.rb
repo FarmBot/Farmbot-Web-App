@@ -17,9 +17,7 @@ describe Api::SequencesController do
       input = { name: "Scare Birds",
                 body: nodes }
       sequence_body_for(user)
-      post :create,
-           body: input.to_json,
-           params: {format: :json}
+      post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(200)
       expect(json[:args]).to be_kind_of(Hash)
       expect(json[:body]).to be_kind_of(Array)
@@ -33,9 +31,7 @@ describe Api::SequencesController do
       input[:body].first[:uuid] = SecureRandom.uuid
       input[:body].first["uuid"] = SecureRandom.uuid
       sequence_body_for(user)
-      post :create,
-           body: input.to_json,
-           params: {format: :json}
+      post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(200)
       expect(json[:args]).to be_kind_of(Hash)
       expect(json[:body]).to be_kind_of(Array)
@@ -98,7 +94,7 @@ describe Api::SequencesController do
       sign_in user
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(200)
-      expect(json[:args][:foo]).to be(nil)
+      expect(json[:args][:foo]).to eq(nil)
       expect(Sequence.last.args[:foo]).to eq(nil)
     end
 
@@ -208,7 +204,7 @@ describe Api::SequencesController do
       sign_in user
       input = {
                 name: "Unbound Variable Exception",
-                args: { scope: { kind: "nothing", args: {} } },
+                args: { locals: { kind: "nothing", args: {} } },
                 body: [
                   {
                     kind: "move_absolute",
@@ -231,6 +227,38 @@ describe Api::SequencesController do
       expect(json[:body]).to eq("Unbound variable: parent")
     end
 
-    it 'prevents type errors from bad identifier / binding combos'
+    it 'prevents type errors from bad identifier / binding combos' do
+      $lol = true
+      sign_in user
+      input = { name: "type mismatch",
+                args: {
+                  locals: {
+                    kind: "scope_declaration",
+                    args: {},
+                    body: [
+                      {
+                        kind: "parameter_declaration",
+                        args: { label: "parent", data_type: "wait" }
+                      }
+                    ]
+                  }
+                },
+                body: [
+                  { kind: "move_absolute",
+                    args: {
+                      location: { kind: "identifier", args: { label: "parent" } },
+                      offset:   {
+                        kind: "coordinate",
+                        args: { x: 0, y: 0, z: 0 }
+                      },
+                      speed:    100,
+                    }
+                  }
+                ]
+              }
+      post :create, body: input.to_json, params: {format: :json}
+      expect(response.status).to eq(422)
+      expect(json[:body]).to include("not a valid data_type")
+    end
   end
 end

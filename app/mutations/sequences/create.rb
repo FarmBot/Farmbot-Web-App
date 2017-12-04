@@ -12,8 +12,12 @@ module Sequences
       string :color, in: Sequence::COLORS
       hash :args do
         optional do
-          hash :locals do
-            duck :*, methods: [] # Let CeleryScript lib do the type checking...
+          optional do
+            hash :locals do
+              optional do
+                duck :*, methods: [:[], :[]=], default: {}
+              end
+            end
           end
         end
       end

@@ -144,14 +144,23 @@ module CeleryScript
 
     # Calling this method with only one paramter
     # indicates a starting condition 🏁
-    def resolve_variable!(identifier, origin = identifier)
-      case identifier.parent
+    def resolve_variable!(node, origin = node)
+      if (node === origin) && node.kind != "identifier"
+        raise "You can only resolve `identifiers` nodes."
+      end
+
+      argss = node.args
+      kind  = (argss["locals"] || argss[:locals])&.kind
+      puts ("="*4)+(kind) if kind
+      if (kind == "scope_declaration")
+        binding.pry
+      end
+
+      case node.parent
       when AstNode
-        scope = identifier.args["scope"]
-        binding.pry if scope
+        # sequence: Check the `scope` arg
         # Keep recursing if we can't find a scope on this node.
-        resolve_variable!(identifier.parent, origin)
-      # sequence: Check the `scope` arg
+        resolve_variable!(node.parent, origin)
       when nil # We've got an unbound variable.
         origin.invalidate!(UNBOUND_VAR % origin.args["label"].value)
       else

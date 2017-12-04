@@ -41,15 +41,16 @@ module Sequences
     end
 
     def tree
-      hmm = {
+      hmm  = {
         kind: "sequence",
         body: symbolized_input[:body],
         args: {
           version: SequenceMigration::Base.latest_version,
           locals:  symbolized_input
-                    .deep_symbolize_keys
-                    .dig(:args, :locals) || Sequence::NOTHING
-        }}
+            .deep_symbolize_keys
+            .dig(:args, :locals) || Sequence::NOTHING
+        }
+      }
       @tree = CeleryScript::AstNode.new(**hmm)
     end
 
