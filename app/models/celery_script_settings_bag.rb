@@ -13,7 +13,8 @@ module CeleryScriptSettingsBag
                              factory_reset execute_script set_user_env wait
                              install_farmware update_farmware take_photo zero
                              install_first_party_farmware remove_farmware
-                             find_home register_gpio unregister_gpio)
+                             find_home register_gpio unregister_gpio
+                             set_servo_angle)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
   RESOURCE_NAME         = %w(images plants regimens peripherals
