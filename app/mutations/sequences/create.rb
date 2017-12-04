@@ -12,11 +12,9 @@ module Sequences
       string :color, in: Sequence::COLORS
       hash :args do
         optional do
-          optional do
-            hash :locals do
-              optional do
-                duck :*, methods: [:[], :[]=], default: {}
-              end
+          hash :locals do
+            optional do
+              duck :*, methods: [:[], :[]=], default: {}
             end
           end
         end
