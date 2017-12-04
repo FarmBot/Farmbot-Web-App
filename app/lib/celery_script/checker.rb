@@ -39,6 +39,16 @@ module CeleryScript
       e
     end
 
+    def check_leaf(node)
+      allowed  = corpus.values(node)
+      actual   = node.value.class
+      ok_leaf  = allowed.include?(actual)
+      raise TypeCheckError, (BAD_LEAF % [ node.kind,
+                                          node.parent.kind,
+                                          allowed.inspect,
+                                          actual.inspect]) unless ok_leaf
+    end
+
     private
 
     def validate(node)
@@ -132,17 +142,6 @@ module CeleryScript
 
     def bad_body_kind(prnt, child, i, ok)
       raise TypeCheckError, (BAD_BODY % [prnt.kind, child.kind, ok.inspect])
-    end
-
-    def check_leaf(node)
-      allowed = corpus.values(node)
-      actual = node.value.class
-      unless allowed.include?(actual)
-        raise TypeCheckError, (BAD_LEAF % [ node.kind,
-                                            node.parent.kind,
-                                            allowed.inspect,
-                                            actual.inspect])
-      end
     end
 
     def malformed_node!(expectation)
