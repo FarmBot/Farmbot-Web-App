@@ -10,6 +10,7 @@ module CeleryScript
     BAD_BODY    = "Body of '%s' node contains '%s' node. "\
                   "Expected one of: %s"
     UNBOUND_VAR = "Unbound variable: %s"
+    T_MISMATCH  = "Type mismatch. %s must be one of: %s. Got: %s"
 
     attr_reader :tree, :corpus
 
@@ -98,9 +99,17 @@ module CeleryScript
       if (actual == "identifier")
         allowed_types  = allowed.without("identifier")
         # Resolve the identifier.
-        resolved_value = resolve_variable!(value)
-        # Did it reolve?
-        #   YES: Make sure it resolves to a `kind` from the list above.
+        # Someday, we might need to use the return value to perform more
+        # in depth type checking. We're not there yet, though.
+        # data_type =
+          resolve_variable!(value).args[:data_type].value
+        # if !allowed_types.include?(data_type)
+        #   # Did it reolve?
+        #   #   YES: Make sure it resolves to a `kind` from the list above.
+        #   value.invalidate!(T_MISMATCH % [value.args["label"].value,
+        #                                     allowed_types,
+        #                                     data_type])
+        # end
       end
       ok      = allowed.include?(actual)
       raise TypeCheckError, (BAD_LEAF % [ value.kind,
@@ -145,15 +154,14 @@ module CeleryScript
     # Calling this method with only one paramter
     # indicates a starting condition 🏁
     def resolve_variable!(node, origin = node)
-      if (node === origin) && node.kind != "identifier"
-        raise "You can only resolve `identifiers` nodes."
-      end
+      locals = (node.args["locals"] || node.args[:locals])
 
-      argss = node.args
-      kind  = (argss["locals"] || argss[:locals])&.kind
-      puts ("="*4)+(kind) if kind
-      if (kind == "scope_declaration")
-        binding.pry
+      if locals&.kind === "scope_declaration"
+        label  = (origin.args["label"] || origin.args[:label])&.value
+        result = locals
+          .body
+          .find{ |x| (x.args[:label] || x.args["label"])&.value == label }
+        return result if result
       end
 
       case node.parent
@@ -163,12 +171,7 @@ module CeleryScript
         resolve_variable!(node.parent, origin)
       when nil # We've got an unbound variable.
         origin.invalidate!(UNBOUND_VAR % origin.args["label"].value)
-      else
-        raise "Invariant"
       end
-    end
-
-    def maybe_extract_scope
     end
   end
 end

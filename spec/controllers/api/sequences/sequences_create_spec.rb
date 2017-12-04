@@ -152,8 +152,6 @@ describe Api::SequencesController do
     it 'allows declaration of a variable named `parent`' do
       input = {
         name: "Scare Birds",
-        body: [],
-        # Intentional nonsense to check validation logic.
         args: {
           locals: {
             kind: "scope_declaration",
@@ -168,7 +166,17 @@ describe Api::SequencesController do
               }
             ]
           }
-        }
+        },
+        body: [
+          {
+            kind: "move_absolute",
+            args: {
+              location: { kind: "identifier", args: { label: "parent" } },
+              offset:   { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+              speed:    100,
+            }
+          }
+        ]
       }
 
       sign_in user
