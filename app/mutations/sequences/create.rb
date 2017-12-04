@@ -10,6 +10,15 @@ module Sequences
 
     optional do
       string :color, in: Sequence::COLORS
+      hash :args do
+        optional do
+          hash :locals do
+            optional do
+              duck :*, methods: [:[], :[]=], default: {}
+            end
+          end
+        end
+      end
     end
 
     def validate

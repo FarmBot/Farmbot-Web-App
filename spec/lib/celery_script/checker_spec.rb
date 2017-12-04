@@ -6,6 +6,7 @@ describe CeleryScript::Checker do
     {
       kind: "sequence",
       args: {
+        locals: Sequence::NOTHING,
         version: 0
       },
       comment: "Properly formatted, syntactically valid sequence.",
@@ -60,6 +61,14 @@ describe CeleryScript::Checker do
     hash[:body][0][:args][:location][:args][:x] = "supposed to be an Integer"
     result = checker.run
     expect(result.message).to eq("Expected leaf 'x' within 'coordinate' to"\
-                                 " be one of: [Integer] but got String")
+                                  " be one of: [Integer] but got String")
+  end
+
+  it "finds a bad leaf" do
+    parent = CeleryScript::AstNode.new(parent = nil, args: {}, kind: "nothing")
+    expect {
+      checker.check_leaf CeleryScript::AstLeaf.new(parent, 6, :location)
+    }.to raise_error(CeleryScript::TypeCheckError)
+
   end
 end

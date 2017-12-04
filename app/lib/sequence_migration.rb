@@ -28,7 +28,7 @@ module SequenceMigration
     # it's acting weird with autoloading right now :shipit:. TODO: See if there
     # is a way to automatically infer all classes
     def self.descendants
-      [SequenceSpeedChange]
+      [SequenceSpeedChange, AddLocalsToSequenceArgs]
     end
 
     def self.latest_version

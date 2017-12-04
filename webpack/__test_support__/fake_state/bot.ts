@@ -42,7 +42,8 @@ export let bot: Everything["bot"] = {
       locked: false,
       commit: "---",
       target: "---",
-      env: "---"
+      env: "---",
+      node_name: "afluent avocado"
     },
     "user_env": {},
     "process_info": {
