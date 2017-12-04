@@ -8,7 +8,7 @@ import { CowardlyDictionary, betterCompact } from "../../../util";
 import { PointerTypeName } from "../../../interfaces";
 import { PointerType, TaggedTool } from "../../../resources/tagged_resources";
 import { DropDownItem } from "../../../ui/index";
-import { Vector3, Identifier } from "farmbot/dist";
+import { Vector3 } from "farmbot/dist";
 import { TOOL } from "./interfaces";
 import * as _ from "lodash";
 import { joinKindAndId } from "../../../resources/reducer";
