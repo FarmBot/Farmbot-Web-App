@@ -177,6 +177,7 @@ module CeleryScriptSettingsBag
       .defineNode(:install_farmware,  [:url])
       .defineNode(:update_farmware,   [:package])
       .defineNode(:remove_farmware,   [:package])
+      .defineNode(:set_servo_angle,   [:pin_number, :pin_value], [])
       .defineNode(:install_first_party_farmware, [])
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
@@ -185,3 +186,4 @@ module CeleryScriptSettingsBag
     node.invalidate!(yield(val)) if !array.include?(val)
   end
 end
+# {kind: "set_servo_angle", args: {pin_number: 4 | 5, pin_value: 0..360}}
