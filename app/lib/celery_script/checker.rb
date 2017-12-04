@@ -9,6 +9,7 @@ module CeleryScript
     MALFORMED   = "Expected '%s' to be a node or leaf, but it was neither"
     BAD_BODY    = "Body of '%s' node contains '%s' node. "\
                   "Expected one of: %s"
+    UNBOUND_VAR = "Unbound variable: %s"
 
     attr_reader :tree, :corpus
 
@@ -93,6 +94,14 @@ module CeleryScript
     def validate_node_pairing(key, value)
       actual  = value.kind
       allowed = corpus.fetchArg(key).allowed_values.map(&:to_s)
+      # It would be safe to run type checking here.
+      if (actual == "identifier")
+        allowed_types  = allowed.without("identifier")
+        # Resolve the identifier.
+        resolved_value = resolve_variable!(value)
+        # Did it reolve?
+        #   YES: Make sure it resolves to a `kind` from the list above.
+      end
       ok      = allowed.include?(actual)
       raise TypeCheckError, (BAD_LEAF % [ value.kind,
                                           value.parent.kind,
@@ -131,6 +140,26 @@ module CeleryScript
 
     def run_additional_validations(node, expectation)
       corpus.validator(expectation).call(node, TypeCheckError, corpus)
+    end
+
+    # Calling this method with only one paramter
+    # indicates a starting condition 🏁
+    def resolve_variable!(identifier, origin = identifier)
+      case identifier.parent
+      when AstNode
+        scope = identifier.args["scope"]
+        binding.pry if scope
+        # Keep recursing if we can't find a scope on this node.
+        resolve_variable!(identifier.parent, origin)
+      # sequence: Check the `scope` arg
+      when nil # We've got an unbound variable.
+        origin.invalidate!(UNBOUND_VAR % origin.args["label"].value)
+      else
+        raise "Invariant"
+      end
+    end
+
+    def maybe_extract_scope
     end
   end
 end

@@ -132,7 +132,7 @@ module CeleryScriptSettingsBag
         tooLong   = notString || node.value.length > 300
         node.invalidate! BAD_MESSAGE if (tooShort || tooLong)
       end
-      .defineArg(:location,        [:tool, :coordinate, :point])
+      .defineArg(:location,        [:tool, :coordinate, :point, :identifier])
       .defineArg(:offset,          [:coordinate])
       .defineArg(:_then,           [:execute, :nothing])
       .defineArg(:_else,           [:execute, :nothing])

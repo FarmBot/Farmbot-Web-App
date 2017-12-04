@@ -194,8 +194,8 @@ describe Api::SequencesController do
                 body: HAS_POINTS["body"] }
       sequence_body_for(user)
       post :create,
-           body: input.to_json,
-           params: {format: :json}
+          body: input.to_json,
+          params: {format: :json}
       expect(response.status).to eq(200)
       new_count       = SequenceDependency.count
       validated_count = SequenceDependency.where(sequence_id: json[:id]).count
@@ -203,5 +203,34 @@ describe Api::SequencesController do
       expect(validated_count).to eq(new_count)
       expect(SequenceDependency.last.dependency.id).to eq(point.id)
     end
+
+    it 'prevents unbound variables' do
+      sign_in user
+      input = {
+                name: "Unbound Variable Exception",
+                args: { scope: { kind: "nothing", args: {} } },
+                body: [
+                  {
+                    kind: "move_absolute",
+                    args: {
+                      location: {
+                        kind: "identifier",
+                        args: { label: "parent" }
+                      },
+                      offset:   {
+                        kind: "coordinate",
+                        args: { x: 0, y: 0, z: 0 }
+                      },
+                      speed:    100,
+                    }
+                  }
+                ]
+              }
+      post :create, body: input.to_json, params: {format: :json}
+      expect(response.status).to eq(422)
+      expect(json[:body]).to eq("Unbound variable: parent")
+    end
+
+    it 'prevents type errors from bad identifier / binding combos'
   end
 end

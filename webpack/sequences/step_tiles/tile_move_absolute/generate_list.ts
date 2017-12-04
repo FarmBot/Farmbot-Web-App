@@ -8,7 +8,7 @@ import { CowardlyDictionary, betterCompact } from "../../../util";
 import { PointerTypeName } from "../../../interfaces";
 import { PointerType, TaggedTool } from "../../../resources/tagged_resources";
 import { DropDownItem } from "../../../ui/index";
-import { Vector3 } from "farmbot/dist";
+import { Vector3, Identifier } from "farmbot/dist";
 import { TOOL } from "./interfaces";
 import * as _ from "lodash";
 import { joinKindAndId } from "../../../resources/reducer";
@@ -23,6 +23,13 @@ export function activeTools(resources: ResourceIndex) {
     .map(tool => (tool && tool.kind === "Tool") ? tool : undefined));
 }
 
+// const PARENT: Identifier = { kind: "identifier", args: { label: "parent" } };
+const PARENT_DDI: DropDownItem = {
+  label: "Parent",
+  value: "parent",
+  headingId: "identifier",
+};
+
 export function generateList(input: ResourceIndex): DropDownItem[] {
   const toolNameById = mapToolIdToName(input);
   const SORT_KEY: keyof DropDownItem = "headingId";
@@ -34,6 +41,7 @@ export function generateList(input: ResourceIndex): DropDownItem[] {
     .sortBy(SORT_KEY)
     .reverse()
     .concat(toolDDI)
+    .concat([PARENT_DDI])
     .filter(x => parseInt("" + x.value) > 0)
     .value();
 }
