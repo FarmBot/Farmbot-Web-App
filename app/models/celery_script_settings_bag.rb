@@ -13,7 +13,8 @@ module CeleryScriptSettingsBag
                              factory_reset execute_script set_user_env wait
                              install_farmware update_farmware take_photo zero
                              install_first_party_farmware remove_farmware
-                             find_home register_gpio unregister_gpio)
+                             find_home register_gpio unregister_gpio
+                             set_servo_angle)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
   RESOURCE_NAME         = %w(images plants regimens peripherals
@@ -21,14 +22,14 @@ module CeleryScriptSettingsBag
                              tool_slots tools points tokens users device)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email)
-  ALLOWED_DATA_TYPES    = %w(string integer)
+  ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
+  ALLOWED_DATA_TYPES    = %w(tool coordinate point)
   ALLOWED_OPS           = %w(< > is not is_undefined)
   ALLOWED_AXIS          = %w(x y z all)
   ALLOWED_LHS           = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
-  ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
   STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
-                             send_message execute _if execute_script take_photo
-                             find_home)
+                            send_message execute _if execute_script take_photo
+                            find_home)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
@@ -38,6 +39,7 @@ module CeleryScriptSettingsBag
   BAD_OP                = 'Can not put "%s" into an operand (OP) argument. '\
                           'Allowed values: %s'
   BAD_CHANNEL_NAME      = '"%s" is not a valid channel_name. Allowed values: %s'
+  BAD_DATA_TYPE         = '"%s" is not a valid data_type. Allowed values: %s'
   BAD_MESSAGE_TYPE      = '"%s" is not a valid message_type. Allowed values: %s'
   BAD_MESSAGE           = "Messages must be between 1 and 300 characters"
   BAD_TOOL_ID           = 'Tool #%s does not exist.'
@@ -131,11 +133,17 @@ module CeleryScriptSettingsBag
         tooLong   = notString || node.value.length > 300
         node.invalidate! BAD_MESSAGE if (tooShort || tooLong)
       end
-      .defineArg(:location,        [:tool, :coordinate, :point])
+      .defineArg(:location,        [:tool, :coordinate, :point, :identifier])
       .defineArg(:offset,          [:coordinate])
       .defineArg(:_then,           [:execute, :nothing])
       .defineArg(:_else,           [:execute, :nothing])
       .defineArg(:url,             [String])
+      .defineArg(:locals,          [:scope_declaration, :nothing])
+      .defineArg(:data_type,       [String]) do |node|
+        within(ALLOWED_DATA_TYPES, node) do |v|
+          BAD_DATA_TYPE % [v.to_s, ALLOWED_DATA_TYPES.inspect]
+        end
+      end
       .defineNode(:nothing,        [])
       .defineNode(:tool,           [:tool_id])
       .defineNode(:coordinate,     [:x, :y, :z])
@@ -148,7 +156,7 @@ module CeleryScriptSettingsBag
       .defineNode(:send_message,   [:message, :message_type], [:channel])
       .defineNode(:execute,        [:sequence_id])
       .defineNode(:_if,            [:lhs, :op, :rhs, :_then, :_else], [:pair])
-      .defineNode(:sequence,          [:version], STEPS)
+      .defineNode(:sequence,          [:version, :locals], STEPS)
       .defineNode(:home,              [:speed, :axis], [])
       .defineNode(:find_home,         [:speed, :axis], [])
       .defineNode(:zero,              [:axis], [])
@@ -177,6 +185,10 @@ module CeleryScriptSettingsBag
       .defineNode(:install_farmware,  [:url])
       .defineNode(:update_farmware,   [:package])
       .defineNode(:remove_farmware,   [:package])
+      .defineNode(:scope_declaration, [], [:parameter_declaration])
+      .defineNode(:identifier, [:label])
+      .defineNode(:parameter_declaration, [:label, :data_type], [])
+      .defineNode(:set_servo_angle,   [:pin_number, :pin_value], [])
       .defineNode(:install_first_party_farmware, [])
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
@@ -185,3 +197,4 @@ module CeleryScriptSettingsBag
     node.invalidate!(yield(val)) if !array.include?(val)
   end
 end
+# {kind: "set_servo_angle", args: {pin_number: 4 | 5, pin_value: 0..360}}

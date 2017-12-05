@@ -23,6 +23,13 @@ export function activeTools(resources: ResourceIndex) {
     .map(tool => (tool && tool.kind === "Tool") ? tool : undefined));
 }
 
+// const PARENT: Identifier = { kind: "identifier", args: { label: "parent" } };
+// const PARENT_DDI: DropDownItem = {
+//   label: "Parent",
+//   value: "parent",
+//   headingId: "identifier",
+// };
+
 export function generateList(input: ResourceIndex): DropDownItem[] {
   const toolNameById = mapToolIdToName(input);
   const SORT_KEY: keyof DropDownItem = "headingId";
@@ -34,6 +41,7 @@ export function generateList(input: ResourceIndex): DropDownItem[] {
     .sortBy(SORT_KEY)
     .reverse()
     .concat(toolDDI)
+    // .concat([PARENT_DDI])
     .filter(x => parseInt("" + x.value) > 0)
     .value();
 }

@@ -8,7 +8,8 @@ import {
   Tool,
   Coordinate,
   LegalSequenceKind,
-  Point
+  Point,
+  Identifier
 } from "farmbot";
 import {
   Row,
@@ -36,7 +37,7 @@ import { StepIconGroup } from "../step_icon_group";
 import { StepInputBox } from "../inputs/step_input_box";
 
 interface Args {
-  location: Tool | Coordinate | Point;
+  location: Tool | Coordinate | Point | Identifier;
   speed: number;
   offset: Coordinate;
 }
@@ -65,11 +66,13 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
       throw new Error("Impossible celery node detected.");
     }
   }
+
   get location(): Tool | Coordinate {
-    if (this.args.location.kind !== "point") {
+    if (this.args.location.kind !== "point"
+      && this.args.location.kind !== "identifier") {
       return this.args.location;
     } else {
-      throw new Error("A `point` node snuck in. Still WIP");
+      throw new Error("A `point` or `identifier` node snuck in. Still WIP");
     }
   }
 

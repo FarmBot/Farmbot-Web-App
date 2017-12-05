@@ -13,7 +13,11 @@ let idCounter = 1;
 
 export function fakeSequence(): TaggedSequence {
   return fakeResource("Sequence", {
-    args: { version: 4, label: "WIP" },
+    args: {
+      version: 4,
+      label: "WIP",
+      locals: { kind: "nothing", args: {} },
+    },
     id: 12,
     color: "red",
     name: "fake",

@@ -11,6 +11,13 @@ module Sequences
       duck :body, methods: [:[], :[]=, :each, :map]
       string :name
       string :color, in: Sequence::COLORS
+      hash :args do
+        optional do
+          hash :locals do
+            duck :*, methods: [] # Let CeleryScript lib do the type checking...
+          end
+        end
+      end
     end
 
     def validate

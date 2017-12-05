@@ -2,9 +2,9 @@ module Sequences
   module CeleryScriptValidators
 
     NO_TRANSACTION   = "You need to do this in a transaction"
-    ARGS_OF_INTEREST = { "tool_id"     => Tool,
-                         "sequence_id" => Sequence,
-                         "pointer_id"  => Point }
+    ARGS_OF_INTEREST = {"tool_id"     => Tool,
+                        "sequence_id" => Sequence,
+                        "pointer_id"  => Point }
     ALLOWED_NODE_KEYS = [
       "body",
       "kind",
@@ -25,20 +25,13 @@ module Sequences
       add_error :body, :syntax_error, checker.error.message if !checker.valid?
     end
 
-    def seq
-      @seq ||= {body: [],
-                args: { version: SequenceMigration::Base.latest_version },
-                kind: "sequence"}.merge(inputs.symbolize_keys.slice(:body,
-                                                                    :kind,
-                                                                    :args))
+    def symbolized_input
+      @symbolized_input ||= inputs.symbolize_keys.slice(:body, :kind, :args)
     end
 
     def reload_dependencies(sequence)
         must_be_in_transaction
-        SequenceDependency
-          .where(sequence: sequence)
-          .destroy_all
-
+        SequenceDependency.where(sequence: sequence).destroy_all
         SequenceDependency.create!(deps(sequence))
     end
 
@@ -48,7 +41,17 @@ module Sequences
     end
 
     def tree
-      @tree = CeleryScript::AstNode.new(**seq)
+      hmm  = {
+        kind: "sequence",
+        body: symbolized_input[:body],
+        args: {
+          version: SequenceMigration::Base.latest_version,
+          locals:  symbolized_input
+            .deep_symbolize_keys
+            .dig(:args, :locals) || Sequence::NOTHING
+        }
+      }
+      @tree = CeleryScript::AstNode.new(**hmm)
     end
 
     def corpus

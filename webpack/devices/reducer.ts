@@ -64,7 +64,8 @@ export let initialState: BotState = {
       locked: false,
       commit: "---",
       target: "---",
-      env: "---"
+      env: "---",
+      node_name: "affluent_avocado"
     },
     user_env: {},
     process_info: {

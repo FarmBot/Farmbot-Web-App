@@ -4,7 +4,7 @@ describe "Celery Script `point` node" do
   let(:plant) { FactoryBot.create(:plant_point).pointer }
   let(:hash) do
     { kind: "sequence",
-      args: { version:4 },
+      args: Sequence::DEFAULT_ARGS,
       body: [
         {
           kind:"move_absolute",
