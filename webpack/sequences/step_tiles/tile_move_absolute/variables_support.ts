@@ -5,11 +5,7 @@ import {
   Nothing,
   ScopeDeclarationBodyItem
 } from "farmbot";
-import {
-  isObject as obj,
-  isString as strn,
-  uniqBy
-} from "lodash";
+import { isObject as obj, isString as strn, uniqBy } from "lodash";
 import { defensiveClone } from "../../../util";
 
 /** A less strict version of a CeleryScript node used for

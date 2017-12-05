@@ -80,6 +80,9 @@ export class SequenceEditorMiddleActive extends
               current={sequence.body.color}
               onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
           </Row>
+          <pre>
+            {JSON.stringify(sequence.body.args.locals)}
+          </pre>
           <hr style={{ marginBottom: 0 }} />
         </div>
         <div className="sequence">
