@@ -3,9 +3,10 @@
 # most of the functionality of a programming language such a variables and
 # conditional logic.
 class Sequence < ApplicationRecord
-  NOTHING      = { kind: "nothing", args: {} }
-  DEFAULT_ARGS = {locals: NOTHING,
-                  version: SequenceMigration::Base.latest_version }
+  NOTHING           = { kind: "nothing", args: {} }
+  SCOPE_DECLARATION = { kind: "scope_declaration", args: {} }
+  DEFAULT_ARGS      = { locals: SCOPE_DECLARATION,
+                        version: SequenceMigration::Base.latest_version }
   # Does some extra magic for serialized columns for us, such as providing a
   # default value and making hashes have indifferent access.
   class CustomSerializer

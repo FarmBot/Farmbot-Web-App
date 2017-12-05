@@ -15,7 +15,10 @@ class SessionToken < AbstractJwtToken
   end
   EXPIRY       = 40.days
   VHOST        = ENV.fetch("MQTT_VHOST") { "/" }
-
+  # If version <= this, you can't just fast forward to the latest FBOS version.
+  FBOS_CUTOFF  = Gem::Version.new("5.0.8")
+  # If you have a really, really old FBOS
+  OLD_OS_URL   = "https://api.github.com/repos/farmbot/farmbot_os/releases/8772352"
   def self.issue_to(user,
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
@@ -27,7 +30,7 @@ class SessionToken < AbstractJwtToken
       Rollbar.info("Verification Error", email: user.email)
       raise Errors::Forbidden, MUST_VERIFY
     end
-
+    url = (fbos_version <= FBOS_CUTOFF) ? OLD_OS_URL : OS_RELEASE
     self.new([{ aud:              aud,
                 sub:              user.id,
                 iat:              iat,
@@ -36,7 +39,7 @@ class SessionToken < AbstractJwtToken
                 exp:              exp,
                 mqtt:             MQTT,
                 mqtt_ws:          MQTT_WS,
-                os_update_server: OS_RELEASE,
+                os_update_server: url,
                 fw_update_server: "DEPRECATED",
                 interim_email:    user.email, # Dont use this for anything ever -RC
                 bot:              "device_#{user.device.id}",
