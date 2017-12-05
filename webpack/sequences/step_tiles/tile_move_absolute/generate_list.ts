@@ -24,11 +24,11 @@ export function activeTools(resources: ResourceIndex) {
 }
 
 // const PARENT: Identifier = { kind: "identifier", args: { label: "parent" } };
-const PARENT_DDI: DropDownItem = {
-  label: "Parent",
-  value: "parent",
-  headingId: "identifier",
-};
+// const PARENT_DDI: DropDownItem = {
+//   label: "Parent",
+//   value: "parent",
+//   headingId: "identifier",
+// };
 
 export function generateList(input: ResourceIndex): DropDownItem[] {
   const toolNameById = mapToolIdToName(input);
@@ -41,7 +41,7 @@ export function generateList(input: ResourceIndex): DropDownItem[] {
     .sortBy(SORT_KEY)
     .reverse()
     .concat(toolDDI)
-    .concat([PARENT_DDI])
+    // .concat([PARENT_DDI])
     .filter(x => parseInt("" + x.value) > 0)
     .value();
 }
