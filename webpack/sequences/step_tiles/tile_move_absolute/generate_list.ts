@@ -30,7 +30,6 @@ const PARENT_DDI: DropDownItem = {
 };
 
 export function generateList(input: ResourceIndex): DropDownItem[] {
-  console.log("Hmm?");
   const toolNameById = mapToolIdToName(input);
   const SORT_KEY: keyof DropDownItem = "headingId";
   const points = selectAllPoints(input)

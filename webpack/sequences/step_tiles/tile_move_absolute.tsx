@@ -9,7 +9,8 @@ import {
   Coordinate,
   LegalSequenceKind,
   Point,
-  Identifier
+  Identifier,
+  MoveAbsolute
 } from "farmbot";
 import {
   Row,
@@ -68,9 +69,9 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
   }
 
   get xyzDisabled(): boolean {
-    const isPoint = this.args.location.kind === "point";
-    const isTool = this.args.location.kind === "tool";
-    return !!(isPoint || isTool);
+    type Keys = MoveAbsolute["args"]["location"]["kind"];
+    const choices: Keys[] = ["point", "tool", "identifier"];
+    return !!choices.includes(this.args.location.kind);
   }
 
   getOffsetValue = (val: Xyz) => {
@@ -78,6 +79,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
   }
 
   updateArgs = (update: Partial<Args>) => {
+    console.dir(update);
     const copy = defensiveClone(this.props.currentSequence).body;
     const step = (copy.body || [])[this.props.index];
     if (step && step.kind === "move_absolute") {
