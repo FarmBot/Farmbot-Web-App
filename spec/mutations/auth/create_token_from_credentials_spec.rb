@@ -12,7 +12,8 @@ describe Auth::FromJWT do
   end
 
   it 'rejects bad credentials' do
-    results = Auth::CreateTokenFromCredentials.run(credentials: "FOO" )
+    results = Auth::CreateTokenFromCredentials
+      .run(credentials: "FOO", fbos_version: Gem::Version.new("999.9.9"))
     expect(results.success?).to eq(false)
     expect(results.errors.message_list)
       .to include(Auth::CreateTokenFromCredentials::BAD_KEY)
@@ -23,7 +24,8 @@ describe Auth::FromJWT do
     user    = FactoryBot.create(:user, password: pw)
     email   = user.email
     creds   = fake_credentials(email, pw)
-    results = Auth::CreateTokenFromCredentials.run!(credentials: creds)
+    results = Auth::CreateTokenFromCredentials
+      .run!(credentials: creds, fbos_version: Gem::Version.new("999.9.9"))
     expect(results[:token]).to be_kind_of(SessionToken)
     expect(results[:user]).to eq(user)
   end

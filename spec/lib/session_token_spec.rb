@@ -30,12 +30,18 @@ describe SessionToken do
   end
 
   it 'issues a token to a user' do
-    SessionToken.issue_to(user, iat: 000, exp: 456, iss: "//lycos.com:9867")
+    SessionToken.issue_to(user, iat: 000,
+                                exp: 456,
+                                iss: "//lycos.com:9867",
+                                fbos_version: Gem::Version.new("9.9.9"))
   end
 
   it "doesn't honor expired tokens" do
     user.update_attributes!(confirmed_at: Time.now)
-    token  = SessionToken.issue_to(user, iat: 000, exp: 1, iss: "//lycos.com:9867")
+    token  = SessionToken.issue_to(user, iat: 000,
+                                         exp: 1,
+                                         iss: "//lycos.com:9867",
+                                         fbos_version: Gem::Version.new("9.9.9"))
     result = Auth::FromJWT.run(jwt: token.encoded)
     expect(result.success?).to be(false)
     expect(result.errors.values.first.message)
@@ -46,7 +52,10 @@ describe SessionToken do
     it "doesn't mint tokens for unverified users" do
       user.update_attributes!(confirmed_at: nil)
       expect {
-        SessionToken.issue_to(user, iat: 000, exp: 1, iss: "//lycos.com:9867")
+        SessionToken.issue_to(user, iat: 000,
+                                    exp: 1,
+                                    iss: "//lycos.com:9867",
+                                    fbos_version: Gem::Version.new("9.9.9"))
       }.to raise_error(Errors::Forbidden)
     end
   else

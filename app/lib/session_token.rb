@@ -20,7 +20,8 @@ class SessionToken < AbstractJwtToken
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
                     iss: $API_URL,
-                    aud: AbstractJwtToken::UNKNOWN_AUD)
+                    aud: AbstractJwtToken::UNKNOWN_AUD,
+                    fbos_version:) # Gem::Version
 
     unless user.verified?
       Rollbar.info("Verification Error", email: user.email)
@@ -42,9 +43,10 @@ class SessionToken < AbstractJwtToken
                 vhost:            VHOST }])
   end
 
-  def self.as_json(user, aud)
-    { token: SessionToken.issue_to(user,
-      iss:   $API_URL, aud: aud),
+  def self.as_json(user, aud, fbos_version)
+    { token: SessionToken.issue_to(user, iss: $API_URL,
+                                         aud: aud,
+                                         fbos_version: fbos_version),
       user:  user }
   end
 end
