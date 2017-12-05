@@ -67,15 +67,6 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
     }
   }
 
-  get location(): Tool | Coordinate {
-    if (this.args.location.kind !== "point"
-      && this.args.location.kind !== "identifier") {
-      return this.args.location;
-    } else {
-      throw new Error("A `point` or `identifier` node snuck in. Still WIP");
-    }
-  }
-
   get xyzDisabled(): boolean {
     const isPoint = this.args.location.kind === "point";
     const isTool = this.args.location.kind === "tool";
@@ -114,6 +105,9 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
         number = findPointerByTypeAndId(this.resources,
           pointer_type,
           pointer_id).body[axis];
+        break;
+      case "identifier":
+        number = 0;
     }
     return (number || 0).toString();
   }
