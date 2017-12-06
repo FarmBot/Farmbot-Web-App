@@ -42,7 +42,7 @@ describe("mapStateToProps()", () => {
           "args": {
             "version": 4,
             "label": "WIP",
-            locals: { kind: "nothing", args: {} },
+            "locals": { "kind": "scope_declaration", "args": {} },
           },
           "kind": "sequence"
         },

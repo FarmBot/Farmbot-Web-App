@@ -82,7 +82,7 @@ export class SequencesList extends
         name: "new sequence " + (this.props.sequences.length),
         args: {
           version: -999,
-          locals: { kind: "nothing", args: {} },
+          locals: { kind: "scope_declaration", args: {} },
         },
         color: "gray",
         kind: "sequence",
