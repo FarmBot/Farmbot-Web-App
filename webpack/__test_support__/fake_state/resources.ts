@@ -16,7 +16,7 @@ export function fakeSequence(): TaggedSequence {
     args: {
       version: 4,
       label: "WIP",
-      locals: { kind: "nothing", args: {} },
+      locals: { kind: "scope_declaration", args: {} },
     },
     id: 12,
     color: "red",

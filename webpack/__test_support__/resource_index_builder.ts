@@ -282,7 +282,7 @@ const tr13: TaggedResource = {
       "is_outdated": false,
       "version": 4,
       "label": "foo",
-      "locals": { kind: "nothing", args: {} },
+      "locals": { kind: "scope_declaration", args: {} },
     },
     "kind": "sequence"
   },
