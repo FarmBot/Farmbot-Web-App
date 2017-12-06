@@ -8,13 +8,14 @@ class LogService
 
     # Legacy bots will double save logs if we don't do this:
     major_version = (log.dig("meta", "major_version") || 0).to_i
-
+    m = log["message"] || "Empty message"
     if(major_version >= 6)
+      puts "Got non-legacy log!: #{m}"
       device_id = delivery_info.routing_key.split(".")[1].gsub("device_", "").to_i
       log[:device] = Device.find(device_id)
       Logs::Create.run!(log).save!
     else
-      puts "Ignoring legacy log."
+      puts "Ignoring legacy log: #{m}"
     end
   end
 end
