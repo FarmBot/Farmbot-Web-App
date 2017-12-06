@@ -5,6 +5,7 @@ module Auth
     required do
       string :email
       string :password
+      model  :fbos_version, class: Gem::Version
     end
 
     optional do
@@ -24,7 +25,7 @@ module Auth
 
     def execute
       @user.update_attributes(agreed_to_terms_at: Time.now) if agree_to_terms
-      SessionToken.as_json(@user, aud)
+      SessionToken.as_json(@user, aud, fbos_version)
     end
 
     private

@@ -212,7 +212,7 @@ describe Api::SequencesController do
       sign_in user
       input = {
                 name: "Unbound Variable Exception",
-                args: { locals: { kind: "nothing", args: {} } },
+                args: { locals: Sequence::SCOPE_DECLARATION },
                 body: [
                   {
                     kind: "move_absolute",

@@ -48,7 +48,7 @@ module Sequences
           version: SequenceMigration::Base.latest_version,
           locals:  symbolized_input
             .deep_symbolize_keys
-            .dig(:args, :locals) || Sequence::NOTHING
+            .dig(:args, :locals) || Sequence::SCOPE_DECLARATION
         }
       }
       @tree = CeleryScript::AstNode.new(**hmm)

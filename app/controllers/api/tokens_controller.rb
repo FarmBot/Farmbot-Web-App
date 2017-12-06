@@ -8,7 +8,8 @@ module Api
 
     # Give you the same token, but reloads all claims except `exp`
     def show
-      mutate Auth::ReloadToken.run(jwt: request.headers["Authorization"])
+      mutate Auth::ReloadToken.run(jwt:          request.headers["Authorization"],
+                                   fbos_version: fbos_version)
     end
 
     def create
@@ -48,7 +49,9 @@ module Api
                 credentials:    user[:credentials],
                 agree_to_terms: !!user[:agree_to_terms],
                 host:           $API_URL,
-                aud:            guess_aud_claim })
+                aud:            guess_aud_claim,
+                fbos_version:   fbos_version
+              })
       else
         render json: {error: NO_USER_ATTR}, status: 422
       end
