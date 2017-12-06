@@ -8,8 +8,10 @@ describe Api::PointsController do
       FactoryBot.create(:user, device: device, password: "password123")
     end
     let(:auth_token) do
-      Auth::CreateToken
-        .run!(email: user.email, password: "password123")[:token].encoded
+      params = {email:        user.email,
+                password:     "password123",
+                fbos_version: Gem::Version.new("999.9.9")}
+      Auth::CreateToken.run!(params)[:token].encoded
     end
 
     it 'lists points' do

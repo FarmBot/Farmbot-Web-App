@@ -159,9 +159,9 @@ module CeleryScript
 
       if locals&.kind === "scope_declaration"
         label  = (origin.args["label"] || origin.args[:label])&.value
-        result = locals
-          .body
-          .find{ |x| (x.args[:label] || x.args["label"])&.value == label }
+        result = (locals.body || []).select do |x|
+          (x.args[:label] || x.args["label"])&.value == label
+        end.first
         return result if result
       end
 

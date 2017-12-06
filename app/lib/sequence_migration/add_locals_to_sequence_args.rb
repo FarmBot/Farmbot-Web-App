@@ -6,7 +6,7 @@ module SequenceMigration
       CREATED_ON  = "NOVEMBER 30 2017"
 
       def up
-        sequence.args["locals"] ||= Sequence::NOTHING
+        sequence.args["locals"] ||= Sequence::SCOPE_DECLARATION
       end
   end
 end

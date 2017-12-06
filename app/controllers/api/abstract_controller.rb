@@ -166,11 +166,20 @@ private
     end
 
     EXPECTED_VER = Gem::Version::new('5.0.0')
+
+    # Try to extract FarmBot OS version from user agent.
+    # If none found, return lowest allowable version + 1 "tiny" bump to prevent
+    # lockouts.
+    def fbos_version
+      when_farmbot_os do
+        Gem::Version::new(pretty_ua.upcase.split("/").last.split(" ").first)
+      end || EXPECTED_VER.bump
+    end
+
     # This is how we lock old versions of FBOS out of the API:
     def check_fbos_version
       when_farmbot_os do
-        semver = pretty_ua.upcase.split("/").last.split(" ").first
-        bad_version unless Gem::Version::new(semver) >= EXPECTED_VER
+        bad_version unless fbos_version >= EXPECTED_VER
       end
     end
 

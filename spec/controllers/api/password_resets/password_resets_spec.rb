@@ -19,15 +19,16 @@ describe Api::PasswordResetsController do
     end
 
     it 'resets password using a reset token' do
-      params = { password:              "xpassword123",
-                 password_confirmation: "xpassword123",
-                 id:                    PasswordResetToken
+      params = {password:              "xpassword123",
+                password_confirmation: "xpassword123",
+                fbos_version:          Gem::Version.new("999.9.9"),
+                id:                    PasswordResetToken
                                           .issue_to(user)
                                           .encoded }
       put :update, params: params
       expect(user
-             .reload
-             .valid_password?(params[:password])).to eq(true)
+              .reload
+              .valid_password?(params[:password])).to eq(true)
       expect(response.status).to eq(200)
       expect(json.keys).to include(:token)
       expect(json.keys).to include(:user)

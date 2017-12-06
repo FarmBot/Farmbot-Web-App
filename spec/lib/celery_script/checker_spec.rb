@@ -6,7 +6,7 @@ describe CeleryScript::Checker do
     {
       kind: "sequence",
       args: {
-        locals: Sequence::NOTHING,
+        locals: Sequence::SCOPE_DECLARATION,
         version: 0
       },
       comment: "Properly formatted, syntactically valid sequence.",

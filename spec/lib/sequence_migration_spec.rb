@@ -70,7 +70,7 @@ describe SequenceMigration do
     expect(s.body[0]["args"]["speed"]).to eq(100)
     expect(s.body[1]["args"]["speed"]).to eq(100)
     expect(s.body[2]["args"]["speed"]).to eq(100)
-    expect(s.args.dig("locals","kind")).to eq("nothing")
+    expect(s.args.dig("locals","kind")).to eq("scope_declaration")
   end
 
   it 'warns developers that `up()` is required' do
