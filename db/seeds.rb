@@ -10,7 +10,7 @@ unless Rails.env == "production"
     DATE_RANGE_LO           = 1..3
     DATE_RANGE_HI           = 3..8
     ENV['MQTT_HOST']        = "blooper.io"
-    ENV['OS_UPDATE_SERVER'] = "http://blah.com"
+    ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
     Point.destroy_all
     Device.destroy_all
     User.destroy_all
