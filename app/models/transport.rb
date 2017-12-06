@@ -14,7 +14,7 @@ module Transport
     @log_channel ||=  self.connection
                           .create_channel
                           .queue("", exclusive: true)
-                          .bind("amq.topic", routing_key: "bot.#")
+                          .bind("amq.topic", routing_key: "bot.*.logs")
   end
 
   def self.topic
