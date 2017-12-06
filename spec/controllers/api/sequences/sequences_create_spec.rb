@@ -145,8 +145,9 @@ describe Api::SequencesController do
       sign_in user
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
-      expect(json[:body])
-        .to include("Expected one of: [:parameter_declaration]")
+      expctd =
+        "Expected one of: [:parameter_declaration, :variable_declaration]"
+      expect(json[:body]).to include(expctd)
     end
 
     it 'allows declaration of a variable named `parent`' do
