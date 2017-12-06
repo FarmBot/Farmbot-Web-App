@@ -65,7 +65,7 @@ export let initialState: BotState = {
       commit: "---",
       target: "---",
       env: "---",
-      node_name: "affluent_avocado"
+      node_name: "---"
     },
     user_env: {},
     process_info: {
