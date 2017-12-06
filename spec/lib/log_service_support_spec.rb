@@ -13,6 +13,26 @@ describe LogService do
   device_id          = FactoryBot.create(:device).id
   fake_delivery_info = FakeDeliveryInfo.new("bot.device_#{device_id}.logs")
 
+  class FakeLogChan
+    attr_reader :subcribe_calls
+
+    def initialize
+      @subcribe_calls = 0
+    end
+
+    def subscribe(*)
+      @subcribe_calls += 1
+    end
+  end
+
+  it "calls .subscribe() on Transport." do
+    fakee = FakeLogChan.new
+    allow(Transport).to receive(:log_channel) { fakee }
+    expect(fakee.subcribe_calls).to eq(0)
+    load "lib/log_service.rb"
+    expect(fakee.subcribe_calls).to eq(1)
+  end
+
   it "creates new messages in the DB when called" do
     Log.destroy_all
     b4 = Log.count
