@@ -16,7 +16,7 @@ class SessionToken < AbstractJwtToken
   EXPIRY       = 40.days
   VHOST        = ENV.fetch("MQTT_VHOST") { "/" }
   # If version <= this, you can't just fast forward to the latest FBOS version.
-  FBOS_CUTOFF  = Gem::Version.new("5.0.8")
+  FBOS_CUTOFF  = Gem::Version.new("5.0.6")
   # If you have a really, really old FBOS
   OLD_OS_URL   = "https://api.github.com/repos/farmbot/farmbot_os/releases/8772352"
   def self.issue_to(user,

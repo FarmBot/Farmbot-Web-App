@@ -36,6 +36,20 @@ describe SessionToken do
                                 fbos_version: Gem::Version.new("9.9.9"))
   end
 
+  it 'conditionally sets `os_update_server`' do
+    test_case = -> (ver) do
+      SessionToken
+        .issue_to(user, fbos_version: Gem::Version.new(ver))
+        .unencoded[:os_update_server]
+    end
+
+    expect(test_case["0.0.0"]).to eq(SessionToken::OLD_OS_URL)
+    expect(test_case["5.0.6"]).to eq(SessionToken::OLD_OS_URL)
+    expect(test_case["5.0.7"]).to eq(SessionToken::OS_RELEASE)
+    expect(test_case["5.0.8"]).to eq(SessionToken::OS_RELEASE)
+    expect(test_case["5.1.0"]).to eq(SessionToken::OS_RELEASE)
+  end
+
   it "doesn't honor expired tokens" do
     user.update_attributes!(confirmed_at: Time.now)
     token  = SessionToken.issue_to(user, iat: 000,
