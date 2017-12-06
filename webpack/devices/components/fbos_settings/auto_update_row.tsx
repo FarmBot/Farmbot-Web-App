@@ -11,11 +11,15 @@ interface AutoUpdateRowProps {
 }
 
 export function FbosDetails(bot: BotState) {
-  const { env, commit, target } = bot.hardware.informational_settings;
+  const {
+     env, commit, target, node_name, firmware_version
+  } = bot.hardware.informational_settings;
   return <div>
     <p><b>Environment: </b>{env}</p>
     <p><b>Commit: </b>{commit}</p>
     <p><b>Target: </b>{target}</p>
+    <p><b>Node name: </b>{node_name}</p>
+    <p><b>Firmware: </b>{firmware_version}</p>
   </div>;
 }
 

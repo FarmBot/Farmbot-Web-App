@@ -43,7 +43,7 @@ export let bot: Everything["bot"] = {
       commit: "---",
       target: "---",
       env: "---",
-      node_name: "afluent avocado"
+      node_name: "---"
     },
     "user_env": {},
     "process_info": {
