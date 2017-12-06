@@ -2,7 +2,7 @@
 rails:   rails s -e development -p 3000 -b 0.0.0.0
 webpack: ./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
 worker:  rake jobs:work
-# mqtt:  rails mqtt:start
+# logger: rails r lib/log_service.rb
 
 # UNCOMMENT THIS LINE IF YOU ARE DOING MOBILE TESTING:
 # Get started with `npm install weinre -g`

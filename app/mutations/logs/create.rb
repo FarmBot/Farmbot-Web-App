@@ -18,6 +18,9 @@ module Logs
           integer :x
           integer :y
           integer :z
+          integer :verbosity
+          integer :major_version
+          integer :minor_version
         end
       end
     end
