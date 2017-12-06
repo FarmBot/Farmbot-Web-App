@@ -5,7 +5,10 @@ module Auth
     attr_reader :user
     BAD_SUB = "Please log out and try again."
 
-    required { string :jwt }
+    required do
+      string :jwt
+      model :fbos_version, class: Gem::Version
+    end
 
     def validate
       @user = User.find_by_email_or_id(claims["sub"])
@@ -14,8 +17,9 @@ module Auth
     def execute
       security_criticial_danger = claims["exp"] # Stop infinite sessions
       token = SessionToken.issue_to(user,
-                                    aud: claims["aud"],
-                                    exp: security_criticial_danger)
+                                    aud:          claims["aud"],
+                                    exp:          security_criticial_danger,
+                                    fbos_version: fbos_version)
       return { token: token }
     end
 
