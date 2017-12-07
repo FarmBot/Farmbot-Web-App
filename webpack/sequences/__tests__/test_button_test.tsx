@@ -14,7 +14,7 @@ describe("<TestButton/>", () => {
         "body": [],
         "args": {
           "version": 4,
-          "locals": { kind: "nothing", args: {} },
+          "locals": { kind: "scope_declaration", args: {} },
         },
         "kind": "sequence"
       },

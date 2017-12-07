@@ -41,7 +41,7 @@ describe("<AllSteps/>", () => {
         }
       ],
       "args": {
-        "locals": { kind: "nothing", args: {} },
+        "locals": { kind: "scope_declaration", args: {} },
         "is_outdated": false,
         "version": 4,
         "label": "WIP"
