@@ -9,8 +9,6 @@ import { LocationData } from "./step_tiles/tile_move_absolute/interfaces";
 import { overwrite } from "../api/crud";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { defensiveClone } from "../util";
-import { DropDownItem } from "../ui/index";
-import { formatSelectedDropdown } from "./step_tiles/tile_move_absolute/format_selected_dropdown";
 
 type LocalVariable = ParameterDeclaration | VariableDeclaration;
 
