@@ -180,6 +180,6 @@ const guessVecFromLabel =
       .map(x => parseInt(x, 10))
       .filter(x => !isNaN(x));
     if (vec.length === 3) {
-      return { x: vec[0], y: vec[0], z: vec[0] };
+      return { x: vec[0], y: vec[1], z: vec[2] };
     }
   };
