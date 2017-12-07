@@ -8,7 +8,6 @@ class LogService
 
     # Legacy bots will double save logs if we don't do this:
     major_version = (log.dig("meta", "major_version") || 0).to_i
-    puts log["message"]
     if(major_version >= 6)
       device_id = delivery_info.routing_key.split(".")[1].gsub("device_", "").to_i
       log[:device] = Device.find(device_id)
