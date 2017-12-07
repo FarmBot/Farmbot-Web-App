@@ -40,13 +40,13 @@ export const LocalsList =
     }
   };
 
+type OnChange = (data_type: LocationData) => void;
+
 interface ParentVariableFormProps {
   parent: VariableDeclaration;
   resources: ResourceIndex;
-  onChange(data_type: LocationData): void;
+  onChange: OnChange;
 }
-
-const todo = () => new Error("Not yet done.");
 
 /** TODO: Write amazing unit tests for this. */
 const guessVecFromLabel =
@@ -86,6 +86,19 @@ function guessXYZ(label: string, local: VariableDeclaration): Vector3 {
 
   return { x: 0, y: 0, z: 0 };
 }
+
+const changeAxis =
+  (axis: keyof Vector3, onChange: OnChange, data_type: LocationData) =>
+    (e: React.SyntheticEvent<HTMLInputElement>) => {
+      if (data_type.kind === "coordinate") {
+        const nextDT = defensiveClone(data_type);
+        nextDT.args[axis] = parseInt(e.currentTarget.value, 10);
+        onChange(nextDT);
+      } else {
+        throw new Error("Never not coord");
+      }
+    };
+
 function ParentVariableForm({ parent, resources, onChange }: ParentVariableFormProps) {
   const { data_value } = parent.args;
   const ddiLabel = formatSelectedDropdown(resources, data_value);
@@ -103,7 +116,7 @@ function ParentVariableForm({ parent, resources, onChange }: ParentVariableFormP
     <Row>
       <Col xs={4}>
         <InputBox
-          onCommit={todo}
+          onCommit={changeAxis("x", onChange, data_value)}
           disabled={isDisabled}
           name="location-x-variabledeclr"
           value={"" + x}>
@@ -112,7 +125,7 @@ function ParentVariableForm({ parent, resources, onChange }: ParentVariableFormP
       </Col>
       <Col xs={4}>
         <InputBox
-          onCommit={todo}
+          onCommit={changeAxis("y", onChange, data_value)}
           disabled={isDisabled}
           name="location-y-variabledeclr"
           value={"" + y}>
@@ -121,7 +134,7 @@ function ParentVariableForm({ parent, resources, onChange }: ParentVariableFormP
       </Col>
       <Col xs={4}>
         <InputBox
-          onCommit={todo}
+          onCommit={changeAxis("z", onChange, data_value)}
           name="location-z-variabledeclr"
           disabled={isDisabled}
           value={"" + z}>
