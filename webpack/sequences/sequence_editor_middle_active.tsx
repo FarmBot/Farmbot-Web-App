@@ -82,7 +82,7 @@ export class SequenceEditorMiddleActive extends
               onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
           </Row>
           <LocalsList
-            locals={sequence.body.args.locals}
+            sequence={this.props.sequence}
             resources={this.props.resources}
             dispatch={this.props.dispatch} />
           <hr style={{ marginBottom: 0 }} />

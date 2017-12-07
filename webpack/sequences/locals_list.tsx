@@ -1,49 +1,83 @@
 import * as React from "react";
 import {
-  ScopeDeclaration,
   ParameterDeclaration,
   VariableDeclaration
 } from "farmbot";
 import { TileMoveAbsSelect } from "./step_tiles/tile_move_absolute/select";
-import { InputBox } from "./step_tiles/tile_move_absolute/input_box";
 import { ResourceIndex } from "../resources/interfaces";
-import { t } from "i18next";
+import { LocationData } from "./step_tiles/tile_move_absolute/interfaces";
+import { overwrite } from "../api/crud";
+import { TaggedSequence } from "../resources/tagged_resources";
+import { defensiveClone } from "../util";
 
 type LocalVariable = ParameterDeclaration | VariableDeclaration;
 
 interface LocalsListProps {
-  locals: ScopeDeclaration;
+  sequence: TaggedSequence;
   resources: ResourceIndex;
   dispatch: Function;
 }
 
-export function LocalsList({ resources, locals }: LocalsListProps) {
-  const parent = extractParent(locals.body);
-  return parent ?
-    <ParentVariableForm parent={parent} resources={resources} /> : <div />;
-}
+export const LocalsList =
+  ({ resources, sequence, dispatch }: LocalsListProps) => {
+    const parent = extractParent(sequence.body.args.locals.body);
+    if (parent) {
+      return <ParentVariableForm
+        parent={parent}
+        resources={resources}
+        onChange={handleVariableChange(dispatch, sequence)} />;
+    } else {
+      return <div />;
+    }
+  };
 
 interface ParentVariableFormProps {
   parent: VariableDeclaration;
   resources: ResourceIndex;
+  onChange(data_type: LocationData): void;
 }
 
-const todo = () => { throw new Error("TODO: This thing."); };
-
-function ParentVariableForm({ parent, resources }: ParentVariableFormProps) {
+function ParentVariableForm({ parent, resources, onChange }: ParentVariableFormProps) {
   return <div>
-    <pre>{JSON.stringify(parent.args.data_value)}</pre>
+    <pre>{JSON.stringify(parent.args.data_value.args)}</pre>
     <h5>Import Coordinates From</h5>
     <TileMoveAbsSelect
       /** Disable `parent` from showing up in the list. */
       additionalItems={[]}
       resources={resources}
-      selectedItem={parent.args.data_value}
-      onChange={todo} />
-    {t("X (mm)")}
-    <InputBox onCommit={todo} disabled={false} name="location-x" value={"0"} />
+      selectedItem={{
+        kind: "identifier",
+        args: {
+          label: parent.args.data_value.kind,
+          value: 0
+        }
+      }}
+      onChange={onChange} />
   </div>;
 }
+
+const handleVariableChange =
+  (dispatch: Function, sequence: TaggedSequence) => (data_value: LocationData) => {
+    switch (data_value.kind) {
+      case "tool":
+      case "point":
+      case "coordinate":
+        const nextSeq: typeof sequence.body = defensiveClone(sequence.body);
+        nextSeq.args.locals = {
+          kind: "scope_declaration",
+          args: {},
+          body: [
+            {
+              kind: "variable_declaration",
+              args: { label: "parent", data_value }
+            }
+          ]
+        };
+        return dispatch(overwrite(sequence, nextSeq));
+      default:
+        throw new Error("We don't support re-binding of variables yet.");
+    }
+  };
 
 function extractParent(list?: LocalVariable[]): VariableDeclaration | undefined {
   const p = list && list.filter(x => x.args.label === "parent")[0];
