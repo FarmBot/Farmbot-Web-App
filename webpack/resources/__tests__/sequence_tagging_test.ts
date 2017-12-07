@@ -23,7 +23,7 @@ describe("maybeTagSteps()", () => {
         }
       ],
       "args": {
-        "locals": { kind: "nothing", args: {} },
+        "locals": { kind: "scope_declaration", args: {} },
         "version": 4
       },
       "kind": "sequence"
