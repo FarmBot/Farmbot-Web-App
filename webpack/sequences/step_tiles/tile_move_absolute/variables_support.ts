@@ -76,8 +76,7 @@ export const collectAllVariables =
 const generateDeclarationsFromIdentifiers = (s: Sequence) => {
   const { locals } = s.args;
   const lookup: Dictionary<ScopeDeclarationBodyItem | undefined> = {};
-  (locals.kind == "nothing") ?
-    "" : (locals.body || []).map(x => (lookup[x.args.label] = x));
+  (locals.body || []).map(x => (lookup[x.args.label] = x));
 
   return (identifier: Identifier): ScopeDeclarationBodyItem => {
     return lookup[identifier.args.label] || {
@@ -93,12 +92,8 @@ export const recomputeLocalVarDeclaration = (input: Sequence): Sequence => {
   const output = defensiveClone(input);
   const identifiers = collectAllVariables(output);
 
-  if (identifiers.length < 1) {
-    input.args.locals = NOTHING;
-  } else {
-    const body = identifiers.map(generateDeclarationsFromIdentifiers(input));
-    input.args.locals = { kind: "scope_declaration", args: {}, body };
-  }
+  const body = identifiers.map(generateDeclarationsFromIdentifiers(input));
+  input.args.locals = { kind: "scope_declaration", args: {}, body };
 
   return input;
 };

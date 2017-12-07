@@ -29,28 +29,28 @@ const Q: MoveAbsolute = {
   }
 };
 
-const NOTHING: Sequence["args"] = {
+const EMPTY_SEQ_ARGS: Sequence["args"] = {
   version: 6,
-  locals: { kind: "nothing", args: {} }
+  locals: { kind: "scope_declaration", args: {} }
 };
 
 // USE CASE 1: Empty / new sequence.
-const sequence1: Sequence = { kind: "sequence", args: NOTHING, body: [] };
+const sequence1: Sequence = { kind: "sequence", args: EMPTY_SEQ_ARGS, body: [] };
 
 // USE CASE 2: Single variable
-const sequence2: Sequence = { kind: "sequence", args: NOTHING, body: [PARENT] };
+const sequence2: Sequence = { kind: "sequence", args: EMPTY_SEQ_ARGS, body: [PARENT] };
 
 // USE CASE 3: Multiple unique variables
 const sequence3: Sequence = {
   kind: "sequence",
-  args: NOTHING,
+  args: EMPTY_SEQ_ARGS,
   body: [PARENT, PARENT2]
 };
 
 // USE CASE 4: Duplicate variables
 const sequence4: Sequence = {
   kind: "sequence",
-  args: NOTHING,
+  args: EMPTY_SEQ_ARGS,
   body: [PARENT, PARENT]
 };
 
