@@ -80,8 +80,11 @@ const generateDeclarationsFromIdentifiers = (s: Sequence) => {
 
   return (identifier: Identifier): ScopeDeclarationBodyItem => {
     return lookup[identifier.args.label] || {
-      kind: "parameter_declaration",
-      args: { label: identifier.args.label, data_type: "point" }
+      kind: "variable_declaration",
+      args: {
+        label: identifier.args.label,
+        data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+      }
     };
   };
 };
@@ -97,6 +100,3 @@ export const recomputeLocalVarDeclaration = (input: Sequence): Sequence => {
 
   return input;
 };
-
-console.log("TODO: Call this in the reducer every time a `sequence.body` " +
-  "gets changed.");

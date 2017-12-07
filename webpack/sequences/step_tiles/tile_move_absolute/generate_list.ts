@@ -23,13 +23,14 @@ export function activeTools(resources: ResourceIndex) {
     .map(tool => (tool && tool.kind === "Tool") ? tool : undefined));
 }
 
-const PARENT_DDI: DropDownItem = {
+export const PARENT_DDI: DropDownItem[] = [{
   label: "Parent",
   value: "parent",
   headingId: "identifier",
-};
+}];
 
-export function generateList(input: ResourceIndex): DropDownItem[] {
+export function generateList(input: ResourceIndex,
+  additionalItems: DropDownItem[]): DropDownItem[] {
   const toolNameById = mapToolIdToName(input);
   const SORT_KEY: keyof DropDownItem = "headingId";
   const points = selectAllPoints(input)
@@ -41,7 +42,7 @@ export function generateList(input: ResourceIndex): DropDownItem[] {
     .reverse()
     .concat(toolDDI)
     .filter(x => parseInt("" + x.value) > 0)
-    .concat([PARENT_DDI])
+    .concat(additionalItems)
     .value();
 }
 
