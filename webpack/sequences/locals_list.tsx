@@ -86,6 +86,29 @@ const guesFromDataType =
   (x: DataValue): Vector3 | undefined => (x.kind === "coordinate") ?
     x.args : undefined;
 
+/** GLORIOUS hack: We spend a *lot* of time in the sequence editor looking up
+* resource x/y/z. It's resource intensive and often hard to understand.
+* Instead of adding more selectors and complexity, we make a "best effort"
+* attempt to read the resource's `x`, `y`, `z` that are cached (as strings)
+* in the drop down label.
+*
+* String manipulation is bad, but I think it is warranted here: */
+const guessVecFromLabel =
+  (label: string): Vector3 | undefined => {
+    const step1 = label
+      .trim()
+      .replace(")", "")
+      .replace(/^\s+|\s+$/g, "")
+      .split(/\(|\,/);
+    const vec = step1
+      .slice(Math.max(step1.length - 3, 1))
+      .map(x => parseInt(x, 10))
+      .filter(x => !isNaN(x));
+    if (vec.length === 3) {
+      return { x: vec[0], y: vec[1], z: vec[2] };
+    }
+  };
+
 /** Given a dropdown label and a local variable declaration, tries to guess the
 * X/Y/Z value of the declared variable. If unable to guess,
 * returns (0, 0, 0) */
@@ -158,28 +181,5 @@ export const LocalsList =
         onChange={handleVariableChange(dispatch, sequence)} />;
     } else {
       return <div />;
-    }
-  };
-
-/** GLORIOUS hack: We spend a *lot* of time in the sequence editor looking up
-* resource x/y/z. It's resource intensive and often hard to understand.
-* Instead of adding more selectors and complexity, we make a "best effort"
-* attempt to read the resource's `x`, `y`, `z` that are cached (as strings)
-* in the drop down label.
-*
-* String manipulation is bad, but I think it is warranted here: */
-const guessVecFromLabel =
-  (label: string): Vector3 | undefined => {
-    const step1 = label
-      .trim()
-      .replace(")", "")
-      .replace(/^\s+|\s+$/g, "")
-      .split(/\(|\,/);
-    const vec = step1
-      .slice(Math.max(step1.length - 3, 1))
-      .map(x => parseInt(x, 10))
-      .filter(x => !isNaN(x));
-    if (vec.length === 3) {
-      return { x: vec[0], y: vec[1], z: vec[2] };
     }
   };

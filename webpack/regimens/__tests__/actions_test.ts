@@ -3,7 +3,8 @@ import { fakeRegimen } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import { fakeState } from "../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus, TaggedRegimen } from "../../resources/tagged_resources";
+import { ReduxAction } from "../../redux/interfaces";
 
 describe("editRegimen()", () => {
   it("doesn't call edit", () => {
@@ -36,11 +37,7 @@ describe("saveRegimen()", () => {
     const getState = () => state;
     saveRegimen(state.resources.index.all[0])(dispatch, getState);
     expect(dispatch).toHaveBeenCalledWith({
-      payload: {
-        body: { color: "red", name: "Foo", regimen_items: [] },
-        kind: "Regimen",
-        uuid: state.resources.index.all[0]
-      },
+      payload: state.resources.index.references[state.resources.index.all[0]],
       type: Actions.SAVE_RESOURCE_START
     });
   });
@@ -65,11 +62,7 @@ describe("deleteRegimen()", () => {
     (global as any).confirm = () => true;
     deleteRegimen(state.resources.index.all[0])(dispatch, getState);
     expect(dispatch).toHaveBeenCalledWith({
-      payload: {
-        body: { color: "red", name: "Foo", regimen_items: [] },
-        kind: "Regimen",
-        uuid: state.resources.index.all[0]
-      },
+      payload: state.resources.index.references[state.resources.index.all[0]],
       type: Actions.DESTROY_RESOURCE_OK
     });
   });

@@ -144,7 +144,7 @@ describe("recomputeLocals", () => {
 
   it("Doesn't crash on variable-less sequences", () => {
     const result = recomputeLocalVarDeclaration(sequence7);
-    expect(result.args.locals.kind).toBe("nothing");
+    expect(result.args.locals.kind).toBe("scope_declaration");
     expect((result.args.locals.body || []).length).toBe(0);
   });
 });
