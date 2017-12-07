@@ -20,6 +20,8 @@ import { FBSelect } from "../ui/new_fb_select";
 import { isNaN } from "lodash";
 
 type LocalVariable = ParameterDeclaration | VariableDeclaration;
+type OnChange = (data_type: LocationData) => void;
+type DataValue = VariableDeclaration["args"]["data_value"];
 
 interface LocalsListProps {
   sequence: TaggedSequence;
@@ -27,66 +29,46 @@ interface LocalsListProps {
   dispatch: Function;
 }
 
-export const LocalsList =
-  ({ resources, sequence, dispatch }: LocalsListProps) => {
-    const parent = extractParent(sequence.body.args.locals.body);
-    if (parent) {
-      return <ParentVariableForm
-        parent={parent}
-        resources={resources}
-        onChange={handleVariableChange(dispatch, sequence)} />;
-    } else {
-      return <div />;
-    }
-  };
-
-type OnChange = (data_type: LocationData) => void;
-
 interface ParentVariableFormProps {
   parent: VariableDeclaration;
   resources: ResourceIndex;
   onChange: OnChange;
 }
 
-/** TODO: Write amazing unit tests for this. */
-const guessVecFromLabel =
-  (label: string): Vector3 | undefined => {
-    const step1 = label
-      .trim()
-      .replace(")", "")
-      .replace(/^\s+|\s+$/g, "")
-      .split(/\(|\,/);
-    const vec = step1
-      .slice(Math.max(step1.length - 3, 1))
-      .map(x => parseInt(x, 10))
-      .filter(x => !isNaN(x));
-    if (vec.length === 3) {
-      return { x: vec[0], y: vec[0], z: vec[0] };
+/** Given an array of variable declarations (or undefined), finds the "parent"
+ * special identifier */
+const extractParent =
+  (list?: LocalVariable[]): VariableDeclaration | undefined => {
+    const p = list && list.filter(x => x.args.label === "parent")[0];
+    return (p && p.kind === "variable_declaration") ? p : undefined;
+  };
+
+/** Returns the event handler that gets called when you edit the X/Y/Z*/
+const handleVariableChange =
+  (dispatch: Function, sequence: TaggedSequence) => (data_value: LocationData) => {
+    switch (data_value.kind) {
+      case "tool":
+      case "point":
+      case "coordinate":
+        const nextSeq: typeof sequence.body = defensiveClone(sequence.body);
+        nextSeq.args.locals = {
+          kind: "scope_declaration",
+          args: {},
+          body: [
+            {
+              kind: "variable_declaration",
+              args: { label: "parent", data_value }
+            }
+          ]
+        };
+        return dispatch(overwrite(sequence, nextSeq));
+      default:
+        throw new Error("We don't support re-binding of variables yet.");
     }
   };
 
-function guessXYZ(label: string, local: VariableDeclaration): Vector3 {
-  /** GLORIOUS hack: We spend a *lot* of time in the sequence editor looking up
-   * resource x/y/z. It's resource intensive and often hard to understand.
-   * Instead of adding more selectors and complexity, we make a "best effort"
-   * attempt to read the resource's `x`, `y`, `z` that are cached (as strings)
-   * in the drop down label.
-   *
-   * String manipulation is bad, but I think it is warranted here: */
-
-  /** Atempt 1: Try to pull x/y/z out of label to
-   * avoid traversing resource index */
-  const attempt1 = guessVecFromLabel(label);
-  if (attempt1) {
-    return attempt1;
-  }
-
-  const x = local.args.data_value;
-  if (x.kind === "coordinate") { return x.args; }
-
-  return { x: 0, y: 0, z: 0 };
-}
-
+/** Callback generator called when user changes the x/y/z of a variable in the
+ * sequence generator. */
 const changeAxis =
   (axis: keyof Vector3, onChange: OnChange, data_type: LocationData) =>
     (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -99,6 +81,25 @@ const changeAxis =
       }
     };
 
+/** If variable is a coordinate, just use the coordinates. */
+const guesFromDataType =
+  (x: DataValue): Vector3 | undefined => (x.kind === "coordinate") ?
+    x.args : undefined;
+
+/** Given a dropdown label and a local variable declaration, tries to guess the
+* X/Y/Z value of the declared variable. If unable to guess,
+* returns (0, 0, 0) */
+function guessXYZ(label: string, local: VariableDeclaration): Vector3 {
+  /** Atempt 1: Try to pull x/y/z out of label to
+   * avoid traversing resource index */
+
+  return guessVecFromLabel(label)
+    || guesFromDataType(local.args.data_value)
+    || { x: 0, y: 0, z: 0 };
+}
+
+/** When sequence.args.locals actually has variables, render this form.
+ * Allows the user to chose the value of the `parent` variable, etc. */
 function ParentVariableForm({ parent, resources, onChange }: ParentVariableFormProps) {
   const { data_value } = parent.args;
   const ddiLabel = formatSelectedDropdown(resources, data_value);
@@ -145,30 +146,40 @@ function ParentVariableForm({ parent, resources, onChange }: ParentVariableFormP
   </div>;
 }
 
-const handleVariableChange =
-  (dispatch: Function, sequence: TaggedSequence) => (data_value: LocationData) => {
-    switch (data_value.kind) {
-      case "tool":
-      case "point":
-      case "coordinate":
-        const nextSeq: typeof sequence.body = defensiveClone(sequence.body);
-        nextSeq.args.locals = {
-          kind: "scope_declaration",
-          args: {},
-          body: [
-            {
-              kind: "variable_declaration",
-              args: { label: "parent", data_value }
-            }
-          ]
-        };
-        return dispatch(overwrite(sequence, nextSeq));
-      default:
-        throw new Error("We don't support re-binding of variables yet.");
+/** List of local variable declarations for a sequence. If no variables are
+ * found, shows nothing. */
+export const LocalsList =
+  ({ resources, sequence, dispatch }: LocalsListProps) => {
+    const parent = extractParent(sequence.body.args.locals.body);
+    if (parent) {
+      return <ParentVariableForm
+        parent={parent}
+        resources={resources}
+        onChange={handleVariableChange(dispatch, sequence)} />;
+    } else {
+      return <div />;
     }
   };
 
-function extractParent(list?: LocalVariable[]): VariableDeclaration | undefined {
-  const p = list && list.filter(x => x.args.label === "parent")[0];
-  return (p && p.kind === "variable_declaration") ? p : undefined;
-}
+/** GLORIOUS hack: We spend a *lot* of time in the sequence editor looking up
+* resource x/y/z. It's resource intensive and often hard to understand.
+* Instead of adding more selectors and complexity, we make a "best effort"
+* attempt to read the resource's `x`, `y`, `z` that are cached (as strings)
+* in the drop down label.
+*
+* String manipulation is bad, but I think it is warranted here: */
+const guessVecFromLabel =
+  (label: string): Vector3 | undefined => {
+    const step1 = label
+      .trim()
+      .replace(")", "")
+      .replace(/^\s+|\s+$/g, "")
+      .split(/\(|\,/);
+    const vec = step1
+      .slice(Math.max(step1.length - 3, 1))
+      .map(x => parseInt(x, 10))
+      .filter(x => !isNaN(x));
+    if (vec.length === 3) {
+      return { x: vec[0], y: vec[0], z: vec[0] };
+    }
+  };
