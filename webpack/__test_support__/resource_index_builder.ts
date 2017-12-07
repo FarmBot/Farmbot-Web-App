@@ -274,7 +274,7 @@ const tr13: TaggedResource = {
               "z": 0
             }
           },
-          "speed": 800
+          "speed": 100
         }
       }
     ],

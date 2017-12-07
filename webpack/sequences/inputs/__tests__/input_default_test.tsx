@@ -28,7 +28,7 @@ describe("<InputDefault/>", () => {
             "z": 0
           }
         },
-        "speed": 800
+        "speed": 100
       }
     };
 
