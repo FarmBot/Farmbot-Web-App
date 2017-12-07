@@ -8,13 +8,12 @@ import { DropDownItem } from "../../../ui/index";
 
 interface TileMoveAbsSelectProps extends TileMoveAbsProps {
   additionalItems?: DropDownItem[];
-  hideNone?: boolean;
 }
 
 export function TileMoveAbsSelect(props: TileMoveAbsSelectProps) {
   const i = props.selectedItem;
   return <FBSelect
-    allowEmpty={!!props.hideNone}
+    allowEmpty={true}
     list={generateList(props.resources, props.additionalItems || PARENT_DDI)}
     selectedItem={formatSelectedDropdown(props.resources, i)}
     onChange={(x) => props.onChange(handleSelect(props.resources, x))} />;

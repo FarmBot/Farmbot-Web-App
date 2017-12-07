@@ -108,7 +108,7 @@ function ParentVariableForm({ parent, resources, onChange }: ParentVariableFormP
     <br /> {/** Lol */}
     <h5>Import Coordinates From</h5>
     <FBSelect
-      allowEmpty={false}
+      allowEmpty={true}
       list={generateList(resources, [])}
       selectedItem={ddiLabel}
       onChange={(ddi) => onChange(handleSelect(resources, ddi))} />
