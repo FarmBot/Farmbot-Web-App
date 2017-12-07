@@ -49,23 +49,23 @@ interface ParentVariableFormProps {
 const todo = () => new Error("Not yet done.");
 
 /** TODO: Write amazing unit tests for this. */
-function guessVecFromLabel(label: string): Vector3 | undefined {
-  const step1 = label
-    .trim()
-    .replace(")", "")
-    .replace(/^\s+|\s+$/g, "")
-    .split(/\(|\,/);
-  const vec = step1
-    .slice(Math.max(step1.length - 3, 1))
-    .map(x => parseInt(x, 10))
-    .filter(x => !isNaN(x));
-  if (vec.length === 3) {
-    return { x: vec[0], y: vec[0], z: vec[0] };
-  }
+const guessVecFromLabel =
+  (label: string): Vector3 | undefined => {
+    const step1 = label
+      .trim()
+      .replace(")", "")
+      .replace(/^\s+|\s+$/g, "")
+      .split(/\(|\,/);
+    const vec = step1
+      .slice(Math.max(step1.length - 3, 1))
+      .map(x => parseInt(x, 10))
+      .filter(x => !isNaN(x));
+    if (vec.length === 3) {
+      return { x: vec[0], y: vec[0], z: vec[0] };
+    }
+  };
 
-}
-
-function guessXYZ(label: string): Vector3 {
+function guessXYZ(label: string, local: VariableDeclaration): Vector3 {
   /** GLORIOUS hack: We spend a *lot* of time in the sequence editor looking up
    * resource x/y/z. It's resource intensive and often hard to understand.
    * Instead of adding more selectors and complexity, we make a "best effort"
@@ -80,12 +80,17 @@ function guessXYZ(label: string): Vector3 {
   if (attempt1) {
     return attempt1;
   }
+
+  const x = local.args.data_value;
+  if (x.kind === "coordinate") { return x.args; }
+
   return { x: 0, y: 0, z: 0 };
 }
 function ParentVariableForm({ parent, resources, onChange }: ParentVariableFormProps) {
   const { data_value } = parent.args;
   const ddiLabel = formatSelectedDropdown(resources, data_value);
-  const { x, y, z } = guessXYZ(ddiLabel.label);
+  const { x, y, z } = guessXYZ(ddiLabel.label, parent);
+  const isDisabled = parent.args.data_value.kind !== "coordinate";
   return <div>
     <br /> {/** Lol */}
     <h5>Import Coordinates From</h5>
@@ -99,7 +104,7 @@ function ParentVariableForm({ parent, resources, onChange }: ParentVariableFormP
       <Col xs={4}>
         <InputBox
           onCommit={todo}
-          disabled={true}
+          disabled={isDisabled}
           name="location-x-variabledeclr"
           value={"" + x}>
           {t("X (mm)")}
@@ -108,7 +113,7 @@ function ParentVariableForm({ parent, resources, onChange }: ParentVariableFormP
       <Col xs={4}>
         <InputBox
           onCommit={todo}
-          disabled={true}
+          disabled={isDisabled}
           name="location-y-variabledeclr"
           value={"" + y}>
           {t("Y (mm)")}
@@ -118,7 +123,7 @@ function ParentVariableForm({ parent, resources, onChange }: ParentVariableFormP
         <InputBox
           onCommit={todo}
           name="location-z-variabledeclr"
-          disabled={true}
+          disabled={isDisabled}
           value={"" + z}>
           {t("Z (mm)")}
         </InputBox>

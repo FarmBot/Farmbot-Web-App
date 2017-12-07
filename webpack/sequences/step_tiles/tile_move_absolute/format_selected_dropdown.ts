@@ -14,8 +14,9 @@ export function formatSelectedDropdown(ri: ResourceIndex, ld: LocationData): Dro
   switch (ld.kind) {
     case "tool": return toolbar(ri, ld);
     case "point": return point(ri, ld);
-    case "coordinate": default: return other();
+    case "coordinate": return { label: "Specific location", value: 0 };
     case "identifier": return PARENT_DDI[0];
+    default: return other();
   }
 }
 
