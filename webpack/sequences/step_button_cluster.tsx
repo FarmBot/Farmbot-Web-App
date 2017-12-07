@@ -95,7 +95,7 @@ export function StepButtonCluster({ dispatch, current }: StepButtonProps) {
         kind: "find_home",
         args: {
           axis: "all",
-          speed: 800
+          speed: 100
         }
       }}
       color="blue">
