@@ -114,7 +114,7 @@ module CeleryScript
         # Currently we just need `resolve_variable!` to
         # catch unbound identifiers
         # data_type =
-          resolve_variable!(value).args[:data_type].value
+          resolve_variable!(value)#.args[:data_type].value
         # if !allowed_types.include?(data_type)
         #   # Did it reolve?
         #   #   YES: Make sure it resolves to a `kind` from the list above.
