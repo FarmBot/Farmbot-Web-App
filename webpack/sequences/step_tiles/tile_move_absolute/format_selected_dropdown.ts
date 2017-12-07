@@ -11,7 +11,6 @@ import { DropDownItem } from "../../../ui/fb_select";
 import { Point, Tool } from "farmbot/dist";
 
 export function formatSelectedDropdown(ri: ResourceIndex, ld: LocationData): DropDownItem {
-  console.log("==================" + ld.kind);
   switch (ld.kind) {
     case "tool": return toolbar(ri, ld);
     case "point": return point(ri, ld);

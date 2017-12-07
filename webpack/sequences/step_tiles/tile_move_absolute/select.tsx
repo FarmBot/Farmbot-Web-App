@@ -10,6 +10,7 @@ interface TileMoveAbsSelectProps extends TileMoveAbsProps {
   additionalItems?: DropDownItem[];
   hideNone?: boolean;
 }
+
 export function TileMoveAbsSelect(props: TileMoveAbsSelectProps) {
   const i = props.selectedItem;
   return <FBSelect
