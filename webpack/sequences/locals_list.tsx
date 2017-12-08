@@ -47,29 +47,32 @@ export const extractParent =
     return (p && p.kind === "variable_declaration") ? p : undefined;
   };
 
+/** Takes a sequence and data_value. Turn the data_value into the sequence's new
+ * `parent` variable. This is a _pure function_. */
+export const setParent = (sequence: TaggedSequence, data_value: LocationData) => {
+  switch (data_value.kind) {
+    case "tool":
+    case "point":
+    case "coordinate":
+      const nextSeq: typeof sequence.body = defensiveClone(sequence.body);
+      nextSeq.args.locals = {
+        kind: "scope_declaration",
+        args: {},
+        body: [
+          { kind: "variable_declaration", args: { label: "parent", data_value } }
+        ]
+      };
+      return nextSeq;
+    default:
+      throw new Error("We don't support re-binding of variables yet.");
+  }
+};
+
 /** Returns the event handler that gets called when you edit the X/Y/Z*/
-const handleVariableChange =
-  (dispatch: Function, sequence: TaggedSequence) => (data_value: LocationData) => {
-    switch (data_value.kind) {
-      case "tool":
-      case "point":
-      case "coordinate":
-        const nextSeq: typeof sequence.body = defensiveClone(sequence.body);
-        nextSeq.args.locals = {
-          kind: "scope_declaration",
-          args: {},
-          body: [
-            {
-              kind: "variable_declaration",
-              args: { label: "parent", data_value }
-            }
-          ]
-        };
-        return dispatch(overwrite(sequence, nextSeq));
-      default:
-        throw new Error("We don't support re-binding of variables yet.");
-    }
-  };
+export const handleVariableChange =
+  (dispatch: Function, sequence: TaggedSequence) =>
+    (data_value: LocationData) =>
+      dispatch(overwrite(sequence, setParent(sequence, data_value)));
 
 /** Callback generator called when user changes the x/y/z of a variable in the
  * sequence generator. */
