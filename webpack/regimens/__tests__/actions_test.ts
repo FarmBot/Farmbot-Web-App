@@ -3,8 +3,7 @@ import { fakeRegimen } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import { fakeState } from "../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { SpecialStatus, TaggedRegimen } from "../../resources/tagged_resources";
-import { ReduxAction } from "../../redux/interfaces";
+import { SpecialStatus } from "../../resources/tagged_resources";
 
 describe("editRegimen()", () => {
   it("doesn't call edit", () => {

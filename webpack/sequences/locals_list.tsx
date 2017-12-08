@@ -37,9 +37,13 @@ interface ParentVariableFormProps {
 
 /** Given an array of variable declarations (or undefined), finds the "parent"
  * special identifier */
-const extractParent =
+export const extractParent =
   (list?: LocalVariable[]): VariableDeclaration | undefined => {
-    const p = list && list.filter(x => x.args.label === "parent")[0];
+    const p = (list || []).filter(x => {
+      const isParent = x.args.label === "parent";
+      const isVar = x.kind === "variable_declaration";
+      return isVar && isParent;
+    })[0];
     return (p && p.kind === "variable_declaration") ? p : undefined;
   };
 

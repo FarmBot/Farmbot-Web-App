@@ -1,8 +1,7 @@
 import * as React from "react";
 import { mount } from "enzyme";
-import { PasswordReset } from "../password_reset";
+import { PasswordReset, State } from "../password_reset";
 import * as moxios from "moxios";
-import { State } from "../interfaces";
 
 describe("<PasswordReset/>", () => {
   beforeEach(function () {
