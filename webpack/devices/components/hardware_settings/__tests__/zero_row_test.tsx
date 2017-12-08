@@ -1,7 +1,7 @@
 const mockDevice = {
   setZero: jest.fn()
 };
-jest.mock("../../../device", () => ({
+jest.mock("../../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 import * as React from "react";

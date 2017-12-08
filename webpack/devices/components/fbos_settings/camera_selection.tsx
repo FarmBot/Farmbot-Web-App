@@ -1,11 +1,13 @@
 import * as React from "react";
-import { Row, Col } from "../../ui/index";
+import { DropDownItem, Row, Col } from "../../../ui/index";
 import { t } from "i18next";
-import { CameraSelectionProps, CameraSelectionState } from "../interfaces";
-import { DropDownItem } from "../../ui/index";
+import {
+  CameraSelectionProps, CameraSelectionState
+} from "../../interfaces";
 import { info, success, error } from "farmbot-toastr/dist";
-import { getDevice } from "../../device";
-import { FBSelect } from "../../ui/new_fb_select";
+import { getDevice } from "../../../device";
+import { FBSelect } from "../../../ui/new_fb_select";
+import { ColWidth } from "../farmbot_os_settings";
 
 const CAMERA_CHOICES = [
   { label: "USB Camera", value: "USB" },
@@ -50,12 +52,12 @@ export class CameraSelection
 
   render() {
     return <Row>
-      <Col xs={2}>
+      <Col xs={ColWidth.label}>
         <label>
           {t("CAMERA")}
         </label>
       </Col>
-      <Col xs={7}>
+      <Col xs={ColWidth.description}>
         <div>
           <FBSelect
             allowEmpty={false}

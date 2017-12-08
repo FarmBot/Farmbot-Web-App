@@ -1,10 +1,11 @@
 import * as React from "react";
-import { Row, Col, DropDownItem } from "../../ui/index";
+import { Row, Col, DropDownItem } from "../../../ui/index";
 import { t } from "i18next";
-import { FBSelect } from "../../ui/new_fb_select";
-import { getDevice } from "../../device";
+import { FBSelect } from "../../../ui/new_fb_select";
+import { getDevice } from "../../../device";
 import { info, error } from "farmbot-toastr";
 import { FirmwareHardware } from "farmbot";
+import { ColWidth } from "../farmbot_os_settings";
 
 export interface BoardTypeProps {
   firmwareVersion: string | undefined;
@@ -78,12 +79,12 @@ export class BoardType
 
   render() {
     return <Row>
-      <Col xs={2}>
+      <Col xs={ColWidth.label}>
         <label>
           {t("FIRMWARE")}
         </label>
       </Col>
-      <Col xs={7}>
+      <Col xs={ColWidth.description}>
         <div>
           <FBSelect
             allowEmpty={true}
