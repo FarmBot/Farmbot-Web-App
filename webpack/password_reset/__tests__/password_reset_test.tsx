@@ -41,4 +41,17 @@ describe("<PasswordReset/>", () => {
       });
     });
   });
+
+  it("Has a form set()ter", () => {
+    const el = mount(<PasswordReset />);
+    const i = el.instance() as PasswordReset;
+    const field = "password";
+    const value = "password123";
+    const fn = i.set(field);
+    i.setState = jest.fn(i.setState);
+    type E = React.FormEvent<HTMLInputElement>;
+    const e = { currentTarget: { value } } as E;
+    fn(e as E);
+    expect(i.setState).toHaveBeenCalledWith({ [field]: value });
+  });
 });
