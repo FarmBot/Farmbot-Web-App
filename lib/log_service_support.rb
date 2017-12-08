@@ -19,9 +19,6 @@ class LogService
       if save?(log)
         log[:device] = Device.find(device_id)
         Logs::Create.run!(log).save!
-        puts "Saved: #{payload}"
-      else
-        puts "Discard: #{payload}"
       end
     end
   end
