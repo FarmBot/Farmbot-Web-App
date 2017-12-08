@@ -264,6 +264,5 @@ describe("<LocalsList/>", () => {
     };
     const el = shallow(<LocalsList {...props} />);
     expect(el.find(ParentVariableForm).length).toBe(1);
-
   });
 });
