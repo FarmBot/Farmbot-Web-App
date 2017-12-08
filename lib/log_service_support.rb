@@ -4,6 +4,17 @@ class LogService
     !!(t && !Log::DISCARD.include?(t))
   end
 
+  # Prevent logs table from growing out of proportion. For now, it is
+  # randomly to every third request for performance.
+  def self.maybe_clear_logs(device)
+    Device
+      .logs
+      .find(:all,
+            order: 'created_at DESC',
+            limit: device.max_log_count || DEFAULT_MAX_LOGS)
+      .destroy_all if rand(0..3) == 3
+  end
+
   def self.process(delivery_info, payload)
     # { "meta"=>{"z"=>0, "y"=>0, "x"=>0, "type"=>"info", "major_version"=>6},
     #   "message"=>"HQ FarmBot TEST 123 Pin 13 is 0",
@@ -13,12 +24,14 @@ class LogService
 
     # Legacy bots will double save logs if we don't do this:
     major_version = (log.dig("meta", "major_version") || 0).to_i
-    puts log["message"]
+    puts log["message"] if Rails.env.production?
     if(major_version >= 6)
       device_id = delivery_info.routing_key.split(".")[1].gsub("device_", "").to_i
       if save?(log)
-        log[:device] = Device.find(device_id)
-        Logs::Create.run!(log).save!
+        device       = Device.find(device_id)
+        Logs::Create.run!(log, device: device).save!
+        maybe_clear_logs(device)
+        LogDispatch.deliver(device, log)
       end
     end
   end
