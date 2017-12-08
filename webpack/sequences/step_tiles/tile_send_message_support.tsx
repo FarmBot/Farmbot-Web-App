@@ -24,6 +24,29 @@ export const MESSAGE_STATUSES = [
   { value: "info", label: "Info" }
 ];
 
+export const MESSAGE_STATUSES_DDI = {
+  [MESSAGE_STATUSES[0].value]: {
+    label: MESSAGE_STATUSES[0].label,
+    value: MESSAGE_STATUSES[0].value
+  },
+  [MESSAGE_STATUSES[1].value]: {
+    label: MESSAGE_STATUSES[1].label,
+    value: MESSAGE_STATUSES[1].value
+  },
+  [MESSAGE_STATUSES[2].value]: {
+    label: MESSAGE_STATUSES[2].label,
+    value: MESSAGE_STATUSES[2].value
+  },
+  [MESSAGE_STATUSES[3].value]: {
+    label: MESSAGE_STATUSES[3].label,
+    value: MESSAGE_STATUSES[3].value
+  },
+  [MESSAGE_STATUSES[4].value]: {
+    label: MESSAGE_STATUSES[4].label,
+    value: MESSAGE_STATUSES[4].value
+  }
+};
+
 export function channel(channel_name: ALLOWED_CHANNEL_NAMES): Channel {
   return { kind: "channel", args: { channel_name } };
 }
