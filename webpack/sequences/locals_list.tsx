@@ -76,7 +76,7 @@ export const handleVariableChange =
 
 /** Callback generator called when user changes the x/y/z of a variable in the
  * sequence generator. */
-const changeAxis =
+export const changeAxis =
   (axis: keyof Vector3, onChange: OnChange, data_type: LocationData) =>
     (e: React.SyntheticEvent<HTMLInputElement>) => {
       if (data_type.kind === "coordinate") {
@@ -89,7 +89,7 @@ const changeAxis =
     };
 
 /** If variable is a coordinate, just use the coordinates. */
-const guesFromDataType =
+export const guessFromDataType =
   (x: DataValue): Vector3 | undefined => (x.kind === "coordinate") ?
     x.args : undefined;
 
@@ -100,7 +100,7 @@ const guesFromDataType =
 * in the drop down label.
 *
 * String manipulation is bad, but I think it is warranted here: */
-const guessVecFromLabel =
+export const guessVecFromLabel =
   (label: string): Vector3 | undefined => {
     const step1 = label
       .trim()
@@ -111,22 +111,18 @@ const guessVecFromLabel =
       .slice(Math.max(step1.length - 3, 1))
       .map(x => parseInt(x, 10))
       .filter(x => !isNaN(x));
-    if (vec.length === 3) {
-      return { x: vec[0], y: vec[1], z: vec[2] };
-    }
+
+    return (vec.length === 3) ?
+      { x: vec[0], y: vec[1], z: vec[2] } : undefined;
   };
 
+/** Return this when unable to correctly guess coordinate values */
+const BAD = { x: 0, y: 0, z: 0 };
 /** Given a dropdown label and a local variable declaration, tries to guess the
 * X/Y/Z value of the declared variable. If unable to guess,
 * returns (0, 0, 0) */
-function guessXYZ(label: string, local: VariableDeclaration): Vector3 {
-  /** Atempt 1: Try to pull x/y/z out of label to
-   * avoid traversing resource index */
-
-  return guessVecFromLabel(label)
-    || guesFromDataType(local.args.data_value)
-    || { x: 0, y: 0, z: 0 };
-}
+export const guessXYZ = (label: string, local: VariableDeclaration): Vector3 =>
+  guessVecFromLabel(label) || guessFromDataType(local.args.data_value) || BAD;
 
 /** When sequence.args.locals actually has variables, render this form.
  * Allows the user to chose the value of the `parent` variable, etc. */
