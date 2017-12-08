@@ -23,13 +23,13 @@ type LocalVariable = ParameterDeclaration | VariableDeclaration;
 type OnChange = (data_type: LocationData) => void;
 type DataValue = VariableDeclaration["args"]["data_value"];
 
-interface LocalsListProps {
+export interface LocalsListProps {
   sequence: TaggedSequence;
   resources: ResourceIndex;
   dispatch: Function;
 }
 
-interface ParentVariableFormProps {
+export interface ParentVariableFormProps {
   parent: VariableDeclaration;
   resources: ResourceIndex;
   onChange: OnChange;
@@ -126,51 +126,52 @@ export const guessXYZ = (label: string, local: VariableDeclaration): Vector3 =>
 
 /** When sequence.args.locals actually has variables, render this form.
  * Allows the user to chose the value of the `parent` variable, etc. */
-function ParentVariableForm({ parent, resources, onChange }: ParentVariableFormProps) {
-  const { data_value } = parent.args;
-  const ddiLabel = formatSelectedDropdown(resources, data_value);
-  const { x, y, z } = guessXYZ(ddiLabel.label, parent);
-  const isDisabled = parent.args.data_value.kind !== "coordinate";
-  return <div>
-    <br /> {/** Lol */}
-    <h5>Import Coordinates From</h5>
-    <FBSelect
-      allowEmpty={true}
-      list={generateList(resources, [])}
-      selectedItem={ddiLabel}
-      onChange={(ddi) => onChange(handleSelect(resources, ddi))} />
-    <br /> {/** Lol */}
-    <Row>
-      <Col xs={4}>
-        <InputBox
-          onCommit={changeAxis("x", onChange, data_value)}
-          disabled={isDisabled}
-          name="location-x-variabledeclr"
-          value={"" + x}>
-          {t("X (mm)")}
-        </InputBox>
-      </Col>
-      <Col xs={4}>
-        <InputBox
-          onCommit={changeAxis("y", onChange, data_value)}
-          disabled={isDisabled}
-          name="location-y-variabledeclr"
-          value={"" + y}>
-          {t("Y (mm)")}
-        </InputBox>
-      </Col>
-      <Col xs={4}>
-        <InputBox
-          onCommit={changeAxis("z", onChange, data_value)}
-          name="location-z-variabledeclr"
-          disabled={isDisabled}
-          value={"" + z}>
-          {t("Z (mm)")}
-        </InputBox>
-      </Col>
-    </Row>
-  </div>;
-}
+export const ParentVariableForm =
+  ({ parent, resources, onChange }: ParentVariableFormProps) => {
+    const { data_value } = parent.args;
+    const ddiLabel = formatSelectedDropdown(resources, data_value);
+    const { x, y, z } = guessXYZ(ddiLabel.label, parent);
+    const isDisabled = parent.args.data_value.kind !== "coordinate";
+    return <div>
+      <br /> {/** Lol */}
+      <h5>Import Coordinates From</h5>
+      <FBSelect
+        allowEmpty={true}
+        list={generateList(resources, [])}
+        selectedItem={ddiLabel}
+        onChange={(ddi) => onChange(handleSelect(resources, ddi))} />
+      <br /> {/** Lol */}
+      <Row>
+        <Col xs={4}>
+          <InputBox
+            onCommit={changeAxis("x", onChange, data_value)}
+            disabled={isDisabled}
+            name="location-x-variabledeclr"
+            value={"" + x}>
+            {t("X (mm)")}
+          </InputBox>
+        </Col>
+        <Col xs={4}>
+          <InputBox
+            onCommit={changeAxis("y", onChange, data_value)}
+            disabled={isDisabled}
+            name="location-y-variabledeclr"
+            value={"" + y}>
+            {t("Y (mm)")}
+          </InputBox>
+        </Col>
+        <Col xs={4}>
+          <InputBox
+            onCommit={changeAxis("z", onChange, data_value)}
+            name="location-z-variabledeclr"
+            disabled={isDisabled}
+            value={"" + z}>
+            {t("Z (mm)")}
+          </InputBox>
+        </Col>
+      </Row>
+    </div>;
+  }
 
 /** List of local variable declarations for a sequence. If no variables are
  * found, shows nothing. */

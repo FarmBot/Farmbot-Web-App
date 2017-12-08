@@ -1,11 +1,40 @@
-import { extractParent, handleVariableChange, setParent, changeAxis, guessFromDataType, guessVecFromLabel } from "../locals_list";
-import { VariableDeclaration, ParameterDeclaration, Tool, Point, Coordinate } from "farmbot";
+import * as React from "react";
+import {
+  extractParent,
+  handleVariableChange,
+  setParent,
+  changeAxis,
+  guessFromDataType,
+  guessVecFromLabel,
+  guessXYZ,
+  ParentVariableFormProps,
+  ParentVariableForm,
+  LocalsListProps,
+  LocalsList
+} from "../locals_list";
+import {
+  VariableDeclaration,
+  ParameterDeclaration,
+  Tool,
+  Point,
+  Coordinate
+} from "farmbot";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { overwrite } from "../../api/crud";
 import { defensiveClone } from "../../util";
+import { shallow } from "enzyme";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { FBSelect } from "../../ui/new_fb_select";
+import { InputBox } from "../step_tiles/tile_move_absolute/input_box";
+import { generateList } from "../step_tiles/tile_move_absolute/generate_list";
+import { handleSelect } from "../step_tiles/tile_move_absolute/handle_select";
 
-const coord: Coordinate = { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };
+const coord: Coordinate = { kind: "coordinate", args: { x: 1, y: 2, z: 3 } };
 const tool: Tool = { kind: "tool", args: { tool_id: 4 } };
+const goodVar: VariableDeclaration = {
+  kind: "variable_declaration",
+  args: { label: "parent", data_value: coord }
+};
 
 describe("extractParent()", () => {
   const irrelevant: VariableDeclaration = {
@@ -16,11 +45,6 @@ describe("extractParent()", () => {
   const bad: ParameterDeclaration = {
     kind: "parameter_declaration",
     args: { label: "parent", data_type: "coordinate" }
-  };
-
-  const good: VariableDeclaration = {
-    kind: "variable_declaration",
-    args: { label: "parent", data_value: coord }
   };
 
   it("returns undefined on empty arrays", () => {
@@ -37,7 +61,7 @@ describe("extractParent()", () => {
   });
 
   it("returns parent when there is one", () => {
-    const result = extractParent([bad, good, irrelevant]);
+    const result = extractParent([bad, goodVar, irrelevant]);
     expect(result).toBeTruthy();
     if (result) {
       expect(result.kind).toBe("variable_declaration");
@@ -47,7 +71,6 @@ describe("extractParent()", () => {
 });
 
 describe("setParent()", () => {
-  const dispatch = jest.fn();
   const point: Point = {
     kind: "point",
     args: { pointer_type: "point", pointer_id: 5 }
@@ -161,5 +184,86 @@ describe("guessVecFromLabel()", () => {
         fail("No result obtained.");
       }
     });
+  });
+});
+
+describe("guessXYZ", () => {
+  it("Gives labels precedence", () => {
+    const result =
+      guessXYZ("Plant: Point_1512679072 (20, 50, 0)", goodVar);
+    expect(result.x).toEqual(20);
+    expect(result.y).toEqual(50);
+    expect(result.z).toEqual(0);
+  });
+
+  it("Gives labels precedence", () => {
+    const result =
+      guessXYZ("None", goodVar);
+    const target = goodVar.args.data_value;
+    if (target.kind === "coordinate") {
+      expect(result.x).toEqual(target.args.x);
+      expect(result.y).toEqual(target.args.y);
+      expect(result.z).toEqual(target.args.z);
+    } else {
+      fail();
+    }
+  });
+
+  it("falls back to 0,0,0 on all other cases", () => {
+    const result = guessXYZ("None", {
+      kind: "variable_declaration",
+      args: { label: "parent", data_value: tool }
+    });
+    expect(Object.values(result)).toEqual([0, 0, 0]);
+  });
+});
+
+describe("<ParentVariableForm/>", () => {
+  it("renders correct UI components", () => {
+    const props: ParentVariableFormProps = {
+      parent: goodVar,
+      resources: buildResourceIndex().index,
+      onChange: jest.fn()
+    };
+
+    const el = shallow(<ParentVariableForm {...props} />);
+    const selects = el.find(FBSelect);
+    const inputs = el.find(InputBox);
+
+    expect(selects.length).toBe(1);
+    const p = selects.first().props();
+    expect(p.allowEmpty).toBe(true);
+    const choices = generateList(props.resources, []);
+    expect(p.list).toEqual(choices);
+    const choice = choices[0];
+    p.onChange(choice);
+    expect(props.onChange)
+      .toHaveBeenCalledWith(handleSelect(props.resources, choice));
+    expect(inputs.length).toBe(3);
+  });
+});
+
+describe("<LocalsList/>", () => {
+  const props: LocalsListProps = {
+    sequence: fakeSequence(),
+    resources: buildResourceIndex().index,
+    dispatch: jest.fn()
+  };
+
+  it("renders nothing", () => {
+    props.sequence.body.args.locals = { kind: "scope_declaration", args: {} };
+    const el = shallow(<LocalsList {...props} />);
+    expect(el.find(ParentVariableForm).length).toBe(0);
+  });
+
+  it("renders something", () => {
+    props.sequence.body.args.locals = {
+      kind: "scope_declaration",
+      args: {},
+      body: [goodVar]
+    };
+    const el = shallow(<LocalsList {...props} />);
+    expect(el.find(ParentVariableForm).length).toBe(1);
+
   });
 });
