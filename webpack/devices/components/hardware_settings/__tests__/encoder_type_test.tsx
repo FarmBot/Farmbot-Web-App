@@ -1,7 +1,7 @@
 import * as React from "react";
 import { EncoderType, EncoderTypeProps } from "../encoder_type";
 import { shallow } from "enzyme";
-import { FBSelect } from "../../../ui/new_fb_select";
+import { FBSelect } from "../../../../ui/new_fb_select";
 
 describe("<EncoderType/>", () => {
   it("renders default content", () => {

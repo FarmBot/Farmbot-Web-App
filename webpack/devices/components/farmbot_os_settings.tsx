@@ -15,13 +15,19 @@ import { MustBeOnline } from "../must_be_online";
 import { ToolTips, Content } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
 import { timezoneMismatch } from "../timezones/guess_timezone";
-import { LastSeen } from "./last_seen_widget";
-import { CameraSelection } from "./camera_selection";
-import { BoardType } from "./board_type";
+import { LastSeen } from "./fbos_settings/last_seen_row";
+import { CameraSelection } from "./fbos_settings/camera_selection";
+import { BoardType } from "./fbos_settings/board_type";
 import { AutoUpdateRow } from "./fbos_settings/auto_update_row";
 import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { isUndefined } from "lodash";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
+
+export enum ColWidth {
+  label = 3,
+  description = 7,
+  button = 2
+}
 
 export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps> {
@@ -89,24 +95,24 @@ export class FarmbotOsSettings
         </WidgetHeader>
         <WidgetBody>
           <Row>
-            <Col xs={2}>
+            <Col xs={ColWidth.label}>
               <label>
                 {t("NAME")}
               </label>
             </Col>
-            <Col xs={10}>
+            <Col xs={9}>
               <input name="name"
                 onChange={this.changeBot}
                 value={this.props.account.body.name} />
             </Col>
           </Row>
           <Row>
-            <Col xs={2}>
+            <Col xs={ColWidth.label}>
               <label>
                 {t("TIME ZONE")}
               </label>
             </Col>
-            <Col xs={7}>
+            <Col xs={ColWidth.description}>
               <div className="note">
                 {this.maybeWarnTz()}
               </div>

@@ -1,12 +1,12 @@
 import * as React from "react";
 import { t } from "i18next";
-import { getDevice } from "../../device";
-import { Axis } from "../interfaces";
-import { LockableButton } from "./lockable_button";
-import { axisTrackingStatus } from "./axis_tracking_status";
-import { ToolTips } from "../../constants";
-import { Row, Col } from "../../ui/index";
-import { CalibrationRowProps } from "./interfaces";
+import { getDevice } from "../../../device";
+import { Axis } from "../../interfaces";
+import { LockableButton } from "../lockable_button";
+import { axisTrackingStatus } from "../axis_tracking_status";
+import { ToolTips } from "../../../constants";
+import { Row, Col } from "../../../ui/index";
+import { CalibrationRowProps } from "../interfaces";
 
 function calibrate(axis: Axis) {
   getDevice()

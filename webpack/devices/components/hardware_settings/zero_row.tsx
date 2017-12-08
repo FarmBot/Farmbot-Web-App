@@ -1,9 +1,9 @@
 import * as React from "react";
 import { t } from "i18next";
-import { getDevice } from "../../device";
-import { Axis } from "../interfaces";
-import { ToolTips } from "../../constants";
-import { Row, Col } from "../../ui/index";
+import { getDevice } from "../../../device";
+import { Axis } from "../../interfaces";
+import { ToolTips } from "../../../constants";
+import { Row, Col } from "../../../ui/index";
 
 const zero = (axis: Axis) => getDevice().setZero(axis);
 const AXES: Axis[] = ["x", "y", "z"];

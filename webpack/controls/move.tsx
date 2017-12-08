@@ -14,6 +14,7 @@ import { Popover, Position } from "@blueprintjs/core";
 import { AxisDisplayGroup } from "./axis_display_group";
 import { Session } from "../session";
 import { INVERSION_MAPPING, ENCODER_MAPPING } from "../devices/reducer";
+import { minFwVersionCheck } from "../util";
 
 export class Move extends React.Component<MoveProps, {}> {
 
@@ -29,7 +30,9 @@ export class Move extends React.Component<MoveProps, {}> {
   }
 
   render() {
-    const { sync_status } = this.props.bot.hardware.informational_settings;
+    const {
+      sync_status, firmware_version
+    } = this.props.bot.hardware.informational_settings;
     const x_axis_inverted = this.props.bot.axis_inversion.x;
     const y_axis_inverted = this.props.bot.axis_inversion.y;
     const z_axis_inverted = this.props.bot.axis_inversion.z;
@@ -52,6 +55,10 @@ export class Move extends React.Component<MoveProps, {}> {
     const motor_coordinates = locationData.position;
     const raw_encoders_data = locationData.raw_encoders;
     const scaled_encoders_data = locationData.scaled_encoders;
+    const scaled_encoder_label =
+      minFwVersionCheck(firmware_version, "5.0.5")
+        ? "Scaled Encoder (mm)"
+        : "Scaled Encoder (steps)";
 
     return (
       <Widget>
@@ -147,7 +154,7 @@ export class Move extends React.Component<MoveProps, {}> {
             {scaled_encoders &&
               <AxisDisplayGroup
                 position={scaled_encoders_data}
-                label={"Scaled Encoder (steps)"} />}
+                label={scaled_encoder_label} />}
             {raw_encoders &&
               <AxisDisplayGroup
                 position={raw_encoders_data}

@@ -1,7 +1,7 @@
 const mockDevice = {
   setUserEnv: jest.fn(() => { return Promise.resolve(); }),
 };
-jest.mock("../../../device", () => ({
+jest.mock("../../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 const mockInfo = jest.fn();
@@ -20,7 +20,7 @@ describe("<CameraSelection/>", () => {
   it("doesn't render camera", () => {
     const cameraSelection = mount(<CameraSelection
       env={{}} />);
-    expect(cameraSelection.find("button").text()).toEqual("None");
+    expect(cameraSelection.find("button").text()).toEqual("USB Camera");
   });
 
   it("renders camera", () => {

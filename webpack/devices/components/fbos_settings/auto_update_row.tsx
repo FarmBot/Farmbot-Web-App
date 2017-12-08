@@ -4,6 +4,7 @@ import { t } from "i18next";
 import { OsUpdateButton } from "./os_update_button";
 import { BotState } from "../../interfaces";
 import { Popover, Position } from "@blueprintjs/core";
+import { ColWidth } from "../farmbot_os_settings";
 
 interface AutoUpdateRowProps {
   controller_version: string | undefined;
@@ -26,12 +27,12 @@ export function FbosDetails(bot: BotState) {
 export function AutoUpdateRow(props: AutoUpdateRowProps) {
   const version = props.controller_version || t(" unknown (offline)");
   return <Row>
-    <Col xs={2}>
+    <Col xs={ColWidth.label}>
       <label>
         {t("FARMBOT OS")}
       </label>
     </Col>
-    <Col xs={3}>
+    <Col xs={2}>
       <Popover position={Position.TOP_LEFT}>
         <p>
           {t("Version {{ version }}", { version })}

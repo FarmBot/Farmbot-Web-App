@@ -2,7 +2,7 @@ const mockDevice = {
   updateConfig: jest.fn(() => { return Promise.resolve(); })
 };
 
-jest.mock("../../../device", () => ({
+jest.mock("../../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 const mockToast = jest.fn();
@@ -15,7 +15,7 @@ jest.mock("farmbot-toastr", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { BoardType } from "../board_type";
-import { getDevice } from "../../../device";
+import { getDevice } from "../../../../device";
 
 describe("<BoardType/>", () => {
   it("Farmduino", () => {
