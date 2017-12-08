@@ -29,9 +29,10 @@ class LogService
       device_id = delivery_info.routing_key.split(".")[1].gsub("device_", "").to_i
       if save?(log)
         device       = Device.find(device_id)
-        Logs::Create.run!(log, device: device).save!
+        db_log = Logs::Create.run!(log, device: device)
+        db_log.save!
         maybe_clear_logs(device)
-        LogDispatch.deliver(device, log)
+        LogDispatch.deliver(device, db_log)
       end
     end
   end
