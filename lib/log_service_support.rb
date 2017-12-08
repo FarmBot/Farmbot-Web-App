@@ -7,7 +7,7 @@ class LogService
   # Prevent logs table from growing out of proportion. For now, it is
   # randomly to every third request for performance.
   def self.maybe_clear_logs(device)
-    Device
+    device
       .logs
       .find(:all,
             order: 'created_at DESC',
