@@ -5,6 +5,8 @@
 # the rug. Shoving configuration into a module is not a design pattern. Feedback
 # welcome for refactoring of this code.
 module CeleryScriptSettingsBag
+  # List of all celery script nodes that can be used as a varaible...
+  ANY_VARIABLE          = [:tool, :coordinate, :point, :identifier]
   ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
                              sync check_updates power_off reboot toggle_pin
@@ -56,8 +58,8 @@ module CeleryScriptSettingsBag
         klass  = Point::POINTER_KINDS[p_type]
         # Don't try to validate if `pointer_type` is wrong.
         # That's a different respnsiblity.
-        if(klass)
-          bad_node = !klass.exists?(node.value)
+        if klass
+          bad_node = !Point.exists?(node.value)
           node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
         end
       end
@@ -133,12 +135,13 @@ module CeleryScriptSettingsBag
         tooLong   = notString || node.value.length > 300
         node.invalidate! BAD_MESSAGE if (tooShort || tooLong)
       end
-      .defineArg(:location,        [:tool, :coordinate, :point, :identifier])
+      .defineArg(:location,        ANY_VARIABLE)
       .defineArg(:offset,          [:coordinate])
       .defineArg(:_then,           [:execute, :nothing])
       .defineArg(:_else,           [:execute, :nothing])
       .defineArg(:url,             [String])
       .defineArg(:locals,          [:scope_declaration])
+      .defineArg(:data_value,      ANY_VARIABLE)
       .defineArg(:data_type,       [String]) do |node|
         within(ALLOWED_DATA_TYPES, node) do |v|
           BAD_DATA_TYPE % [v.to_s, ALLOWED_DATA_TYPES.inspect]
@@ -185,8 +188,9 @@ module CeleryScriptSettingsBag
       .defineNode(:install_farmware,  [:url])
       .defineNode(:update_farmware,   [:package])
       .defineNode(:remove_farmware,   [:package])
-      .defineNode(:scope_declaration, [], [:parameter_declaration])
-      .defineNode(:identifier, [:label])
+      .defineNode(:scope_declaration, [], [:parameter_declaration, :variable_declaration])
+      .defineNode(:identifier,            [:label])
+      .defineNode(:variable_declaration,  [:label, :data_value], [])
       .defineNode(:parameter_declaration, [:label, :data_type], [])
       .defineNode(:set_servo_angle,   [:pin_number, :pin_value], [])
       .defineNode(:install_first_party_farmware, [])

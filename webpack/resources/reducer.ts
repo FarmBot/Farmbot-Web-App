@@ -6,7 +6,8 @@ import {
   ResourceName,
   sanityCheck,
   isTaggedResource,
-  SpecialStatus
+  SpecialStatus,
+  TaggedSequence
 } from "./tagged_resources";
 import { generateUuid, arrayWrap } from "./util";
 import { EditResourceParams } from "../api/interfaces";
@@ -33,6 +34,9 @@ import {
 import { Actions } from "../constants";
 import { maybeTagSteps as dontTouchThis } from "./sequence_tagging";
 import { GeneralizedError } from "./actions";
+import {
+  recomputeLocalVarDeclaration
+} from "../sequences/step_tiles/tile_move_absolute/variables_support";
 
 const consumerReducer = combineReducers<RestResources["consumers"]>({
   regimens,
@@ -175,12 +179,14 @@ export let resourceReducer = generateReducer
   .add<EditResourceParams>(Actions.EDIT_RESOURCE, (s, { payload }) => {
     const uuid = payload.uuid;
     const { update } = payload;
-    const source: TaggedResource = merge(findByUuid(s.index, uuid),
+    const oldResource = findByUuid(s.index, uuid);
+    const source: TaggedResource = merge(oldResource,
       { body: update },
       { specialStatus: SpecialStatus.DIRTY });
     sanityCheck(source);
     payload && isTaggedResource(source);
     dontTouchThis(source);
+    maybeRecalculateLocalSequenceVariables(source);
     return s;
   })
   .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
@@ -190,6 +196,7 @@ export let resourceReducer = generateReducer
     original.specialStatus = payload.specialStatus;
     sanityCheck(original);
     payload && isTaggedResource(original);
+    maybeRecalculateLocalSequenceVariables(original);
     dontTouchThis(original);
     return s;
   })
@@ -269,7 +276,7 @@ function addToIndex<T>(index: ResourceIndex,
   body: T,
   uuid: string) {
   const tr: TaggedResource =
-    { kind, body, uuid, status: undefined } as any;
+    { kind, body, uuid, status: SpecialStatus.SAVED } as any;
   sanityCheck(tr);
   index.all.push(tr.uuid);
   index.byKind[tr.kind].push(tr.uuid);
@@ -316,4 +323,16 @@ export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
 function reindexResource(i: ResourceIndex, r: TaggedResource) {
   removeFromIndex(i, r);
   addToIndex(i, r.kind, r.body, r.uuid);
+}
+
+/** If the body of a sequence changes, we need to re-traverse the tree to pull
+ * out relevant variable names. We try to avoid this via diffing. */
+function maybeRecalculateLocalSequenceVariables(next: TaggedResource) {
+  (next.kind === "Sequence") && doRecalculateLocalSequenceVariables(next);
+}
+
+function doRecalculateLocalSequenceVariables(next: TaggedSequence) {
+  const recomputed = recomputeLocalVarDeclaration(next.body);
+  next.body.args = recomputed.args;
+  next.body.body = recomputed.body;
 }
