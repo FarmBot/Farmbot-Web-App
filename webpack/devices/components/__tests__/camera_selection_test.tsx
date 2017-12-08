@@ -20,7 +20,7 @@ describe("<CameraSelection/>", () => {
   it("doesn't render camera", () => {
     const cameraSelection = mount(<CameraSelection
       env={{}} />);
-    expect(cameraSelection.find("button").text()).toEqual("None");
+    expect(cameraSelection.find("button").text()).toEqual("USB Camera");
   });
 
   it("renders camera", () => {

@@ -30,13 +30,11 @@ export class CameraSelection
     cameraStatus: ""
   };
 
-  selectedCamera(): DropDownItem | undefined {
-    let cameraSelection = undefined;
+  selectedCamera(): DropDownItem {
     const camera = this.props.env["camera"];
-    if (camera) {
-      cameraSelection = CAMERA_CHOICES_DDI[JSON.parse(camera)];
-    }
-    return cameraSelection;
+    return camera
+      ? CAMERA_CHOICES_DDI[JSON.parse(camera)]
+      : CAMERA_CHOICES_DDI["USB"];
   }
 
   sendOffConfig = (selectedCamera: DropDownItem) => {
@@ -60,7 +58,7 @@ export class CameraSelection
       <Col xs={7}>
         <div>
           <FBSelect
-            allowEmpty={true}
+            allowEmpty={false}
             list={CAMERA_CHOICES}
             selectedItem={this.selectedCamera()}
             placeholder="Select a camera..."
