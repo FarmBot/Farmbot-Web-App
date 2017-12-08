@@ -16,7 +16,7 @@ const Ticker = (log: Log, index: number) => {
       <div className={`saucer ${type}`} />
       <label className="status-ticker-message">
         <Markdown>
-          {log.message || "Loading"}
+          {log.message.replace(/\s+/g, " ") || "Loading"}
         </Markdown>
       </label>
       <label className="status-ticker-created-at">

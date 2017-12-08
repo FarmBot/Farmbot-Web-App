@@ -1,8 +1,9 @@
 import * as React from "react";
-import { Row, Col } from "../../ui/index";
+import { Row, Col } from "../../../ui/index";
 import { t } from "i18next";
 import * as moment from "moment";
-import { TaggedDevice } from "../../resources/tagged_resources";
+import { TaggedDevice } from "../../../resources/tagged_resources";
+import { ColWidth } from "../farmbot_os_settings";
 
 interface LastSeenProps {
   onClick?(): void;
@@ -30,12 +31,12 @@ export class LastSeen extends React.Component<LastSeenProps, {}> {
 
   render() {
     return <Row>
-      <Col xs={2}>
+      <Col xs={ColWidth.label}>
         <label>
           {t("LAST SEEN")}
         </label>
       </Col>
-      <Col xs={7}>
+      <Col xs={ColWidth.description}>
         <p>
           <i className="fa fa-refresh" onClick={this.props.onClick}></i>
           {this.show()}

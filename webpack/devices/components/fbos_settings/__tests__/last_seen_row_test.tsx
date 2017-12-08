@@ -1,8 +1,8 @@
 import * as React from "react";
-import { fakeResource } from "../../../__test_support__/fake_resource";
-import { LastSeen } from "../last_seen_widget";
+import { fakeResource } from "../../../../__test_support__/fake_resource";
+import { LastSeen } from "../last_seen_row";
 import { mount } from "enzyme";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "../../../../resources/tagged_resources";
 describe("<LastSeen/>", () => {
   const resource = () => fakeResource("Device", {
     id: 1,
