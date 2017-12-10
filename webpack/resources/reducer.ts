@@ -276,7 +276,7 @@ function addToIndex<T>(index: ResourceIndex,
   body: T,
   uuid: string) {
   const tr: TaggedResource =
-    { kind, body, uuid, status: SpecialStatus.SAVED } as any;
+    { kind, body, uuid, specialStatus: SpecialStatus.SAVED } as any;
   sanityCheck(tr);
   index.all.push(tr.uuid);
   index.byKind[tr.kind].push(tr.uuid);
