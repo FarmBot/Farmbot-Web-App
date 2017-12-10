@@ -44,6 +44,7 @@ describe SessionToken do
     end
 
     expect(test_case["0.0.0"]).to eq(SessionToken::OLD_OS_URL)
+    expect(test_case["5.0.5"]).to eq(SessionToken::OLD_OS_URL)
     expect(test_case["5.0.6"]).to eq(SessionToken::OLD_OS_URL)
     expect(test_case["5.0.7"]).to eq(SessionToken::OS_RELEASE)
     expect(test_case["5.0.8"]).to eq(SessionToken::OS_RELEASE)
