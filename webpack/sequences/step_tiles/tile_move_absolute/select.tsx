@@ -1,17 +1,20 @@
 import * as React from "react";
 import { FBSelect } from "../../../ui/new_fb_select";
-import { generateList } from "./generate_list";
+import { generateList, PARENT_DDI } from "./generate_list";
 import { handleSelect } from "./handle_select";
 import { formatSelectedDropdown } from "./format_selected_dropdown";
 import { TileMoveAbsProps } from "./interfaces";
+import { DropDownItem } from "../../../ui/index";
 
-export function TileMoveAbsSelect(props: TileMoveAbsProps) {
+interface TileMoveAbsSelectProps extends TileMoveAbsProps {
+  additionalItems?: DropDownItem[];
+}
+
+export function TileMoveAbsSelect(props: TileMoveAbsSelectProps) {
   const i = props.selectedItem;
-  return (
-    <FBSelect
-      allowEmpty={true}
-      list={generateList(props.resources)}
-      selectedItem={formatSelectedDropdown(props.resources, i)}
-      onChange={(x) => props.onChange(handleSelect(props.resources, x))} />
-  );
+  return <FBSelect
+    allowEmpty={true}
+    list={generateList(props.resources, props.additionalItems || PARENT_DDI)}
+    selectedItem={formatSelectedDropdown(props.resources, i)}
+    onChange={(x) => props.onChange(handleSelect(props.resources, x))} />;
 }

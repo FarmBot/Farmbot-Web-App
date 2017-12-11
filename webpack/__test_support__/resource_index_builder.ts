@@ -253,7 +253,6 @@ const tr13: TaggedResource = {
     "id": 23,
     "name": "Goto 0, 0, 0",
     "color": "gray",
-    "status": undefined,
     "body": [
       {
         "kind": "move_absolute",
