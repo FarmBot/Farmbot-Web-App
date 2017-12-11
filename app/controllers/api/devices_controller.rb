@@ -25,7 +25,7 @@ module Api
     end
 
     def dump
-      mutate Devices::Dump.run!(device: current_device)
+      mutate Devices::Dump.run(device: current_device)
     end
   end
 end
