@@ -45,18 +45,19 @@ private
     # point => tool_slot => tool
     def calculate_deps
       all_deps
-        .where(dependency_type: "Point", dependency_id: points.pluck(:id)) # NEXT: Add an "OR" for tracking tools
+        .where(dependency_type: "Point", dependency_id: points.pluck(:id))
         .or(refactor_plz)
         .map(&:sequence)
     end
 
     def refactor_plz
+      deps = points
+        .select { |p| p.pointer_type == "ToolSlot" }
+        .map    { |x| x&.pointer&.tool&.id }
+        .compact
+
       all_deps.where(dependency_type: "Tool",
-                     dependency_id: points
-                                      .select { |p| p.pointer_type == "ToolSlot" }
-                                      .map(&:pointer)
-                                      .map(&:tool)
-                                      .pluck(:id))
+                     dependency_id: deps)
     end
   end
 end
