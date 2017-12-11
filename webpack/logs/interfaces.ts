@@ -8,13 +8,13 @@ export interface LogsProps {
 }
 
 export interface Filters {
-  success: boolean;
-  busy: boolean;
-  warn: boolean;
-  error: boolean;
-  info: boolean;
-  fun: boolean;
-  debug: boolean;
+  success: number;
+  busy: number;
+  warn: number;
+  error: number;
+  info: number;
+  fun: number;
+  debug: number;
 }
 
 export interface LogsState extends Filters {
@@ -27,15 +27,23 @@ export interface LogsTableProps {
 }
 
 type ToggleEventHandler = (e: React.MouseEvent<HTMLButtonElement>) => void;
+type SetNumSetting = (property: keyof LogsState) => (value: number) => void;
 
 export interface LogsFilterMenuProps {
   toggle: (property: keyof LogsState) => ToggleEventHandler;
   state: LogsState;
+  setFilterLevel: SetNumSetting;
 }
 
 export interface LogSettingProps {
   label: string;
   setting: ConfigurationName;
   toolTip: string;
-  value: boolean | undefined;
+  value: boolean | number | undefined;
+  setFilterLevel: SetNumSetting;
+}
+
+export interface LogsSettingsMenuProps {
+  bot: BotState;
+  setFilterLevel: SetNumSetting;
 }
