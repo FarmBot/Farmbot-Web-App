@@ -7,12 +7,13 @@ class LogService
   # Prevent logs table from growing out of proportion. For now, it is
   # randomly to every third request for performance.
   def self.maybe_clear_logs(device)
-    device
-      .logs
-      .find(:all,
-            order: 'created_at DESC',
-            limit: device.max_log_count || DEFAULT_MAX_LOGS)
-      .destroy_all if rand(0..3) == 3
+    logs    = Log.where(device_id: device.id)
+    limit   = device.max_log_count || DEFAULT_MAX_LOGS
+    current = logs.count
+    logs
+      .order(created_at: :desc)
+      .last(current - limit)
+      .destroy_all if current > limit
   end
 
   def self.process(delivery_info, payload)

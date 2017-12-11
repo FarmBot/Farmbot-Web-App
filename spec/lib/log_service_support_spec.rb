@@ -37,7 +37,7 @@ describe LogService do
     Log.destroy_all
     b4 = Log.count
     LogService.process(fake_delivery_info, normal_payl)
-    expect(b4).to be < Log.count
+    expect(Log.count).to be > b4
   end
 
   it "ignores legacy logs" do
