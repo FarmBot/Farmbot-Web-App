@@ -3,7 +3,7 @@ import { fakeResourceIndex } from "../test_helpers";
 
 describe("generateList()", () => {
   it("returns dropdown list", () => {
-    const items = generateList(fakeResourceIndex());
+    const items = generateList(fakeResourceIndex(), []);
     const plant = items[0];
     expect(plant).toEqual({
       headingId: "Plant",

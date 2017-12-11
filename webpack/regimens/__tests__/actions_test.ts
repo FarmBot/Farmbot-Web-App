@@ -37,9 +37,14 @@ describe("saveRegimen()", () => {
     saveRegimen(state.resources.index.all[0])(dispatch, getState);
     expect(dispatch).toHaveBeenCalledWith({
       payload: {
-        body: { color: "red", name: "Foo", regimen_items: [] },
+        body: {
+          color: "red",
+          name: "Foo",
+          regimen_items: []
+        },
         kind: "Regimen",
-        uuid: state.resources.index.all[0]
+        specialStatus: SpecialStatus.SAVED,
+        uuid: "Regimen.0.19"
       },
       type: Actions.SAVE_RESOURCE_START
     });
@@ -66,9 +71,14 @@ describe("deleteRegimen()", () => {
     deleteRegimen(state.resources.index.all[0])(dispatch, getState);
     expect(dispatch).toHaveBeenCalledWith({
       payload: {
-        body: { color: "red", name: "Foo", regimen_items: [] },
+        body: {
+          color: "red",
+          name: "Foo",
+          regimen_items: []
+        },
         kind: "Regimen",
-        uuid: state.resources.index.all[0]
+        specialStatus: "",
+        uuid: "Regimen.0.23"
       },
       type: Actions.DESTROY_RESOURCE_OK
     });

@@ -23,6 +23,8 @@ module Auth
     end
 
     def execute
+      Rollbar.warn("HERE IT IS: ", {  fbos_version: fbos_version.to_s,
+                                      user:         @user.to_json })
       SessionToken.as_json(user, AbstractJwtToken::BOT_AUD, fbos_version)
     end
 

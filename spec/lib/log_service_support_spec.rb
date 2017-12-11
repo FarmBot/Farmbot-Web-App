@@ -25,6 +25,15 @@ describe LogService do
     end
   end
 
+  it "clips overflowing logs" do
+    device = Device.find(device_id)
+    FactoryBot.create_list(:log, device.max_log_count + 10, device: device)
+    b4 = device.logs.count
+    LogService.process(fake_delivery_info, normal_payl)
+    expect(device.logs.count).to be < b4
+    expect(device.logs.count).to eq(device.max_log_count)
+  end
+
   it "calls .subscribe() on Transport." do
     fakee = FakeLogChan.new
     allow(Transport).to receive(:log_channel) { fakee }
@@ -37,7 +46,7 @@ describe LogService do
     Log.destroy_all
     b4 = Log.count
     LogService.process(fake_delivery_info, normal_payl)
-    expect(b4).to be < Log.count
+    expect(Log.count).to be > b4
   end
 
   it "ignores legacy logs" do
@@ -45,5 +54,48 @@ describe LogService do
     b4 = Log.count
     LogService.process(fake_delivery_info, legacy_payl)
     expect(b4).to eq(Log.count)
+  end
+
+  it "knows when to not save" do
+    dont_save1 = { # `fun` type (easter eggs n stuff)
+      "meta" => {
+        "z"=>0,
+        "y"=>0,
+        "x"=>0,
+        "type"=>"fun",
+        "major_version"=>6
+      },
+      "message"=>"dont_save1",
+      "created_at"=>1512585641,
+      "channels"=>[]
+    }
+
+    dont_save2 = { # Missing `type`.
+      "meta" => {
+        "z"=>0,
+        "y"=>0,
+        "x"=>0,
+        "major_version"=>6
+      },
+      "message"=>"dont_save2",
+      "created_at"=>1512585641,
+      "channels"=>[]
+    }
+
+    do_save = {
+      "meta" => {
+        "z"=>0,
+        "y"=>0,
+        "x"=>0,
+        "type"=>"info",
+        "major_version"=>6
+      },
+      "message"=>"dont_save",
+      "created_at"=>1512585641,
+      "channels"=>[]
+    }
+    expect(LogService.save?(dont_save1)).to be(false)
+    expect(LogService.save?(dont_save2)).to be(false)
+    expect(LogService.save?(do_save)).to be(true)
   end
 end

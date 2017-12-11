@@ -9,7 +9,8 @@ import {
   Coordinate,
   LegalSequenceKind,
   Point,
-  Identifier
+  Identifier,
+  MoveAbsolute
 } from "farmbot";
 import {
   Row,
@@ -67,19 +68,10 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
     }
   }
 
-  get location(): Tool | Coordinate {
-    if (this.args.location.kind !== "point"
-      && this.args.location.kind !== "identifier") {
-      return this.args.location;
-    } else {
-      throw new Error("A `point` or `identifier` node snuck in. Still WIP");
-    }
-  }
-
   get xyzDisabled(): boolean {
-    const isPoint = this.args.location.kind === "point";
-    const isTool = this.args.location.kind === "tool";
-    return !!(isPoint || isTool);
+    type Keys = MoveAbsolute["args"]["location"]["kind"];
+    const choices: Keys[] = ["point", "tool", "identifier"];
+    return !!choices.includes(this.args.location.kind);
   }
 
   getOffsetValue = (val: Xyz) => {
@@ -114,6 +106,9 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
         number = findPointerByTypeAndId(this.resources,
           pointer_type,
           pointer_id).body[axis];
+        break;
+      case "identifier":
+        number = 0;
     }
     return (number || 0).toString();
   }
@@ -157,7 +152,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
                 <TileMoveAbsSelect
                   resources={this.resources}
                   selectedItem={this.args.location}
-                  onChange={(x) => this.updateArgs({ location: x })} />
+                  onChange={(location) => this.updateArgs({ location })} />
               </Col>
               <Col xs={3}>
                 <InputBox

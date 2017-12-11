@@ -38,7 +38,7 @@ module Logs
       .reject do |i|
         # Don't save jokes or debug info:
         t = i.meta["type"]
-        ["fun", "debug"].include?(t)
+        Log::DISCARD.include?(t)
       end
       .map    { |i| i.as_json.except("id") }
     end

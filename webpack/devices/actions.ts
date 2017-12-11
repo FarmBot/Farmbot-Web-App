@@ -125,9 +125,8 @@ export function sync(): Thunk {
 export function execSequence(sequence: Sequence) {
   const noun = "Sequence execution";
   if (sequence.id) {
-    return getDevice()
-      .execSequence(sequence.id)
-      .then(commandOK(noun), commandErr(noun));
+    commandOK(noun);
+    return getDevice().execSequence(sequence.id).catch(commandErr(noun));
   } else {
     throw new Error("Can't execute unsaved sequences");
   }
