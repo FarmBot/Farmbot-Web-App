@@ -49,4 +49,4 @@ describe("findByUuid", () => {
   it("crashes on bad UUIDs", () => {
     expect(() => findByUuid(buildResourceIndex().index, "Nope!")).toThrow();
   });
-})
+});

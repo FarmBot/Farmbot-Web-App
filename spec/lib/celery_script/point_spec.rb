@@ -11,8 +11,8 @@ describe "Celery Script `point` node" do
           args:{
             location: {
               kind:"point",
-              args: { pointer_type: plant.class.to_s,
-                      pointer_id:   plant.id }
+              args: { pointer_type: Point.last.pointer.class.to_s,
+                      pointer_id:   Point.last.id }
             },
             offset:{ kind:"coordinate", args:{ x: 0, y: 0, z: 0} },
             speed: 100
