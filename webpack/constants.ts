@@ -260,6 +260,13 @@ export namespace ToolTips {
 
   export const SEQUENCE_LOG_END =
     `Send a log message upon the end of sequence execution.`;
+
+  export const FIRMWARE_LOG_SENT =
+    `Log all commands sent to firmware (clears after refresh).`;
+
+  export const FIRMWARE_LOG_RECEIVED =
+    `Log all responses received from firmware (clears after refresh).
+    Warning: extremely verbose.`;
 }
 
 export namespace Content {
@@ -295,6 +302,10 @@ export namespace Content {
     WiFi network and a web app account. Factory resetting the device will
     not delete data stored in your web app account. Are you sure you wish
     to continue?`.replace(/\s+/g, " ");
+
+  export const MCU_RESET_ALERT =
+    `Warning: This will reset all hardware settings to the default values.
+    Are you sure you wish to continue?`.replace(/\s+/g, " ");
 
   export const AUTO_FACTORY_RESET =
     `Automatically factory reset when the WiFi network cannot be detected.

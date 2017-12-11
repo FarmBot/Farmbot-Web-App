@@ -7,17 +7,19 @@ import * as _ from "lodash";
 
 const LogsRow = (tlog: TaggedLog, state: LogsState) => {
   const log = tlog.body;
+  const { x, y, z, verbosity } = log.meta;
   const time = formatLogTime(log.created_at);
   const type = (log.meta || {}).type;
-  const filtered = state[type as keyof LogsState];
-  const displayLog = _.isUndefined(filtered) || filtered;
-  const { x, y, z } = log.meta;
+  const filterLevel = state[type as keyof LogsState];
+  const displayLog = verbosity
+    ? verbosity <= filterLevel
+    : filterLevel != 0;
   return displayLog ?
     <tr key={tlog.uuid}>
       <td>
         <div className={`saucer ${type}`}>
           <p>
-            {log.meta.verbosity}
+            {verbosity}
           </p>
         </div>
         {_.startCase(type)}
