@@ -56,7 +56,7 @@ private
                                       .select { |p| p.pointer_type == "ToolSlot" }
                                       .map(&:pointer)
                                       .map(&:tool)
-                                      .map(&:id))
+                                      .pluck(:id))
     end
   end
 end
