@@ -30,7 +30,7 @@ FarmBot::Application.routes.draw do
     # resources. Otherwise methods like `save()` on the frontend would need to
     # keep track of an `isSingular` property, which I would prefer to not do.
     get   "/device/:id"  => "devices#show",   as: :get_device_redirect
-    get   "/device/dump" => "devices#dump",   as: :dump_device
+    get   "/export_data" => "devices#dump",   as: :dump_device
     put   "/device/:id"  => "devices#update", as: :put_device_redirect
     patch "/device/:id"  => "devices#update", as: :patch_device_redirect
     put   "/users/:id"   => "users#update",   as: :put_users_redirect
