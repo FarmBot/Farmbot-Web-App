@@ -11,15 +11,29 @@ jest.mock("../../i18n", () => {
 });
 
 import * as React from "react";
-import { Wow } from "../index";
+import { TosUpdate } from "../index";
 import { shallow } from "enzyme";
-describe("<Wow/>", () => {
+describe("<TosUpdate/>", () => {
   it("toggles server options", () => {
-    const x = shallow(<Wow />);
-    const wow = x.instance() as Wow;
+    const x = shallow(<TosUpdate />);
+    const wow = x.instance() as TosUpdate;
     wow.toggleServerOpts();
     expect(wow.state.hideServerSettings).toBeFalsy();
     wow.toggleServerOpts();
     expect(wow.state.hideServerSettings).toBeTruthy();
+  });
+
+  it("has a setter", () => {
+    type E = React.FormEvent<HTMLInputElement>;
+    const x = shallow(<TosUpdate />);
+    const wow = x.instance() as TosUpdate;
+    wow.setState = jest.fn();
+    const fn = wow.set("email");
+    fn({ currentTarget: { value: "foo@bar.com" } } as E);
+    expect(wow.setState).toHaveBeenCalledWith({ email: "foo@bar.com" });
+  });
+
+  it("submits a form", () => {
+
   });
 });
