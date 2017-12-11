@@ -79,7 +79,6 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
   }
 
   updateArgs = (update: Partial<Args>) => {
-    console.dir(update);
     const copy = defensiveClone(this.props.currentSequence).body;
     const step = (copy.body || [])[this.props.index];
     if (step && step.kind === "move_absolute") {

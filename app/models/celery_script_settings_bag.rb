@@ -55,10 +55,9 @@ module CeleryScriptSettingsBag
       .new
       .defineArg(:pointer_id, [Integer]) do |node|
         p_type = node&.parent&.args[:pointer_type]&.value
-        klass  = Point::POINTER_KINDS[p_type]
         # Don't try to validate if `pointer_type` is wrong.
         # That's a different respnsiblity.
-        if klass
+        if Point::POINTER_KINDS[p_type]
           bad_node = !Point.exists?(node.value)
           node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
         end

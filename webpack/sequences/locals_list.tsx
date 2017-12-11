@@ -48,7 +48,6 @@ interface ParentVariableFormProps {
   onChange: OnChange;
 }
 
-/** TODO: Write amazing unit tests for this. */
 const guessVecFromLabel =
   (label: string): Vector3 | undefined => {
     const step1 = label
