@@ -36,6 +36,6 @@ describe("<LogsSettingsMenu />", () => {
   testSettingToggle("sequence_init_log", 0);
   testSettingToggle("sequence_body_log", 1);
   testSettingToggle("sequence_complete_log", 2);
-  testSettingToggle("firmware_output_log" as ConfigurationName, 3);
-  testSettingToggle("firmware_input_log" as ConfigurationName, 4);
+  testSettingToggle("firmware_output_log", 3);
+  testSettingToggle("firmware_input_log", 4);
 });

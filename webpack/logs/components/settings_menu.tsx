@@ -6,7 +6,6 @@ import { ToggleButton } from "../../controls/toggle_button";
 import { updateConfig } from "../../devices/actions";
 import { noop } from "lodash";
 import { LogSettingProps, LogsSettingsMenuProps } from "../interfaces";
-import { ConfigurationName } from "farmbot";
 
 const LogSetting = (props: LogSettingProps) => {
   const { label, setting, toolTip, value, setFilterLevel } = props;
@@ -20,8 +19,8 @@ const LogSetting = (props: LogSettingProps) => {
         updateConfig({ [setting]: !value })(noop);
         if (!value === true) {
           switch (setting) {
-            case "firmware_output_log" as ConfigurationName:
-            case "firmware_input_log" as ConfigurationName:
+            case "firmware_output_log":
+            case "firmware_input_log":
               setFilterLevel("debug")(3);
               break;
             case "sequence_init_log":
@@ -68,15 +67,15 @@ export const LogsSettingsMenu = (props: LogsSettingsMenuProps) => {
     */}
     <LogSetting
       label={"Sent"}
-      setting={"firmware_output_log" as ConfigurationName}
+      setting={"firmware_output_log"}
       toolTip={ToolTips.FIRMWARE_LOG_SENT}
-      value={!!configuration["firmware_output_log" as ConfigurationName]}
+      value={!!configuration["firmware_output_log"]}
       setFilterLevel={setFilterLevel} />
     <LogSetting
       label={"Received"}
-      setting={"firmware_input_log" as ConfigurationName}
+      setting={"firmware_input_log"}
       toolTip={ToolTips.FIRMWARE_LOG_RECEIVED}
-      value={!!configuration["firmware_input_log" as ConfigurationName]}
+      value={!!configuration["firmware_input_log"]}
       setFilterLevel={setFilterLevel} />
   </div>;
 };
