@@ -36,6 +36,7 @@ import { InputBox } from "./tile_move_absolute/input_box";
 import { ToolTips } from "../../constants";
 import { StepIconGroup } from "../step_icon_group";
 import { StepInputBox } from "../inputs/step_input_box";
+import { extractParent } from "../locals_list";
 
 interface Args {
   location: Tool | Coordinate | Point | Identifier;
@@ -93,7 +94,12 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
 
   getAxisValue = (axis: Xyz): string => {
     let number: number | undefined;
-    const l = this.args.location;
+    const { body } = this.props.currentSequence.body.args.locals;
+    const parent = extractParent(body);
+    const maybe = ((parent && parent.args.data_value) || this.args.location);
+    const l = this.args.location.kind === "identifier" ?
+      maybe : this.args.location;
+
     switch (l.kind) {
       case "coordinate":
         number = l.args[axis];
@@ -107,8 +113,6 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
           pointer_type,
           pointer_id).body[axis];
         break;
-      case "identifier":
-        number = 0;
     }
     return (number || 0).toString();
   }
