@@ -61,13 +61,13 @@ describe("factoryReset()", () => {
   });
 
   it("doesn't call factoryReset", async () => {
+    window.confirm = () => false;
     await actions.factoryReset();
     expect(mockDevice.resetOS).not.toHaveBeenCalled();
   });
 
   it("calls factoryReset", async () => {
-    // tslint:disable-next-line:no-any
-    (global as any).confirm = () => true;
+    window.confirm = () => true;
     await actions.factoryReset();
     expect(mockDevice.resetOS).toHaveBeenCalled();
   });
@@ -96,7 +96,7 @@ describe("emergencyLock() / emergencyUnlock", function () {
   });
 
   it("calls emergencyUnlock", () => {
-    window.confirm = jest.fn(() => true);
+    window.confirm = () => true;
     actions.emergencyUnlock();
     expect(mockDevice.emergencyUnlock).toHaveBeenCalled();
   });
@@ -141,7 +141,14 @@ describe("MCUFactoryReset()", function () {
     jest.clearAllMocks();
   });
 
+  it("doesn't call resetMCU", () => {
+    window.confirm = () => false;
+    actions.MCUFactoryReset();
+    expect(mockDevice.resetMCU).not.toHaveBeenCalled();
+  });
+
   it("calls resetMCU", () => {
+    window.confirm = () => true;
     actions.MCUFactoryReset();
     expect(mockDevice.resetMCU).toHaveBeenCalled();
   });

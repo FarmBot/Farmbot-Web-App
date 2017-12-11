@@ -180,6 +180,9 @@ export function bulkToggleControlPanel(payload: boolean) {
 }
 
 export function MCUFactoryReset() {
+  if (!confirm(t(Content.MCU_RESET_ALERT))) {
+    return;
+  }
   return getDevice().resetMCU();
 }
 

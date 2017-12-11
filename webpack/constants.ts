@@ -296,6 +296,10 @@ export namespace Content {
     not delete data stored in your web app account. Are you sure you wish
     to continue?`.replace(/\s+/g, " ");
 
+  export const MCU_RESET_ALERT =
+    `Warning: This will reset all hardware settings to the default values.
+    Are you sure you wish to continue?`.replace(/\s+/g, " ");
+
   export const AUTO_FACTORY_RESET =
     `Automatically factory reset when the WiFi network cannot be detected.
     Useful for typos during FarmBot OS configuration or network changes.`
