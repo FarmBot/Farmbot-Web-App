@@ -260,6 +260,13 @@ export namespace ToolTips {
 
   export const SEQUENCE_LOG_END =
     `Send a log message upon the end of sequence execution.`;
+
+  export const FIRMWARE_LOG_SENT =
+    `Log all commands sent to firmware (clears after refresh).`;
+
+  export const FIRMWARE_LOG_RECEIVED =
+    `Log all responses received from firmware (clears after refresh).
+    Warning: extremely verbose.`;
 }
 
 export namespace Content {
