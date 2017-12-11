@@ -84,3 +84,15 @@ export function safeBooleanSettting(name: string): BooleanSetting {
     throw new Error(`Expected BooleanSetting but got '${name}'`);
   }
 }
+
+const isNumericSetting =
+  // tslint:disable-next-line:no-any
+  (x: any): x is NumericSetting => !!NumericSetting[x];
+
+export function safeNumericSetting(name: string): NumericSetting {
+  if (isNumericSetting(name)) {
+    return name;
+  } else {
+    throw new Error(`Expected NumericSetting but got '${name}'`);
+  }
+}

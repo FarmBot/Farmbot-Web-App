@@ -2,6 +2,28 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
+const mockStorj: Dictionary<number | boolean> = {};
+
+jest.mock("../../session", () => {
+  return {
+    Session: {
+      getNum: (k: string) => {
+        return mockStorj[k];
+      },
+      setNum: (k: string, v: number) => {
+        mockStorj[k] = v;
+      },
+      getBool: (k: string) => {
+        mockStorj[k] = !!mockStorj[k];
+        return mockStorj[k];
+      }
+    },
+    // tslint:disable-next-line:no-any
+    safeNumericSetting: (x: any) => x
+
+  };
+});
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { Logs } from "../index";
@@ -10,6 +32,8 @@ import { TaggedLog, SpecialStatus } from "../../resources/tagged_resources";
 import { Log } from "../../interfaces";
 import { generateUuid } from "../../resources/util";
 import { bot } from "../../__test_support__/fake_state/bot";
+import { Dictionary } from "farmbot";
+import { NumericSetting } from "../../session_keys";
 
 describe("<Logs />", () => {
   function fakeLogs(): TaggedLog[] {
@@ -48,13 +72,13 @@ describe("<Logs />", () => {
       .map(string =>
         expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
     const filterBtn = wrapper.find("button").first();
-    expect(filterBtn.text().toLowerCase()).toEqual("filter");
-    expect(filterBtn.hasClass("gray")).toBeTruthy();
+    expect(filterBtn.text().toLowerCase()).toEqual("filters active");
+    expect(filterBtn.hasClass("green")).toBeTruthy();
   });
 
   it("filters logs", () => {
     const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} />);
-    wrapper.setState({ info: false });
+    wrapper.setState({ info: 0 });
     expect(wrapper.text()).not.toContain("Fake log message 1");
     const filterBtn = wrapper.find("button").first();
     expect(filterBtn.text().toLowerCase()).toEqual("filters active");
@@ -74,8 +98,46 @@ describe("<Logs />", () => {
 
   it("shows verbosity", () => {
     const logs = fakeLogs();
-    logs[0].body.meta.verbosity = 999;
+    logs[0].body.meta.verbosity = -999;
     const wrapper = mount(<Logs logs={logs} bot={bot} />);
-    expect(wrapper.text()).toContain(999);
+    expect(wrapper.text()).toContain(-999);
+  });
+
+  it("loads filter setting", () => {
+    mockStorj[NumericSetting.warnLog] = 3;
+    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} />);
+    expect(wrapper.state().warn).toEqual(3);
+  });
+
+  it("shows overall filter status", () => {
+    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} />);
+    wrapper.setState({
+      success: 3, busy: 3, warn: 3, error: 3, info: 3, fun: 3, debug: 3
+    });
+    const filterBtn = wrapper.find("button").first();
+    expect(filterBtn.text().toLowerCase()).toEqual("filter");
+    expect(filterBtn.hasClass("gray")).toBeTruthy();
+  });
+
+  it("toggles filter", () => {
+    mockStorj[NumericSetting.warnLog] = 3;
+    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} />);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    expect(wrapper.state().warn).toEqual(3);
+    instance.toggle("warn")();
+    expect(wrapper.state().warn).toEqual(0);
+    instance.toggle("warn")();
+    expect(wrapper.state().warn).toEqual(1);
+  });
+
+  it("sets filter", () => {
+    mockStorj[NumericSetting.warnLog] = 3;
+    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} />);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    expect(wrapper.state().warn).toEqual(3);
+    instance.setFilterLevel("warn")(2);
+    expect(wrapper.state().warn).toEqual(2);
   });
 });
