@@ -27,6 +27,7 @@ describe "Celery Script `point` node" do
   let (:checker) { CeleryScript::Checker.new(tree, corpus) }
 
   it 'handles the corner case' do
+    binding.pry
     expect { checker.run! }.not_to raise_error
   end
 

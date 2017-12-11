@@ -8,12 +8,12 @@ class LogService
   # randomly to every third request for performance.
   def self.maybe_clear_logs(device)
     logs    = Log.where(device_id: device.id)
-    limit   = device.max_log_count || DEFAULT_MAX_LOGS
+    limit   = device.max_log_count || Device::DEFAULT_MAX_LOGS
     current = logs.count
     logs
       .order(created_at: :desc)
       .last(current - limit)
-      .destroy_all if current > limit
+      .map(&:destroy) if current > limit
   end
 
   def self.process(delivery_info, payload)
