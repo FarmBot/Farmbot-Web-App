@@ -11,8 +11,8 @@ import * as _ from "lodash";
 
 export class AxisInputBoxGroup extends
   React.Component<AxisInputBoxGroupProps, Partial<AxisInputBoxGroupState>> {
-  constructor() {
-    super();
+  constructor(props: AxisInputBoxGroupProps) {
+    super(props);
     this.state = {};
   }
 

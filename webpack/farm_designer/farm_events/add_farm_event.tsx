@@ -24,8 +24,8 @@ interface State {
 export class AddFarmEvent
   extends React.Component<AddEditFarmEventProps, Partial<State>> {
 
-  constructor() {
-    super();
+  constructor(props: AddEditFarmEventProps) {
+    super(props);
     this.state = {};
   }
 

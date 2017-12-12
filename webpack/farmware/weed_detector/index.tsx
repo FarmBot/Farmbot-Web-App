@@ -19,8 +19,8 @@ import { translateImageWorkspaceAndSave } from "./actions";
 @connect(mapStateToProps)
 export class WeedDetector
   extends React.Component<FarmwareProps, Partial<DetectorState>> {
-  constructor() {
-    super();
+  constructor(props: FarmwareProps) {
+    super(props);
     this.state = { remoteFarmwareSettings: {} };
   }
 

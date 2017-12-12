@@ -12,8 +12,8 @@ import { ToolTips } from "../../constants";
 import * as _ from "lodash";
 
 export class Peripherals extends React.Component<PeripheralsProps, PeripheralState> {
-  constructor() {
-    super();
+  constructor(props: PeripheralsProps) {
+    super(props);
     this.state = { isEditing: false };
   }
 

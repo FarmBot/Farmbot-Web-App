@@ -23,7 +23,7 @@ describe("<Body/>", () => {
   it("triggers onChange() event", () => {
     jest.clearAllMocks();
     const props = fakeProps();
-    const iw = new ImageWorkspace();
+    const iw = new ImageWorkspace(props);
     iw.props = props;
     iw.onHslChange("H")([4, 5]);
     expect(props.onChange).toHaveBeenCalledTimes(2);

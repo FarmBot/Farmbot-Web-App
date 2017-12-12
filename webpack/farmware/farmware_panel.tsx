@@ -47,8 +47,8 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
 }
 
 export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
-  constructor() {
-    super();
+  constructor(props: FWProps) {
+    super(props);
     this.state = { showFirstParty: false };
   }
 
