@@ -96,6 +96,9 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                     <EStopButton
                       bot={this.props.bot}
                       user={this.props.user} />
+                    <button>
+                      {this.props.bot.consistent ? "C" : "I"}
+                    </button>
                     {this.syncButton()}
                   </div>
                 </div>
