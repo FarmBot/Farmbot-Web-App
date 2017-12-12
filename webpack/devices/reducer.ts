@@ -26,7 +26,7 @@ export function versionOK(stringyVersion = "0.0.0",
   }
 }
 
-export let initialState: BotState = {
+export let initialState = (): BotState => ({
   consistent: true,
   stepSize: 100,
   controlPanelState: {
@@ -84,7 +84,7 @@ export let initialState: BotState = {
     raw_encoders: !!Session.getBool(BooleanSetting.rawEncoders),
     scaled_encoders: !!Session.getBool(BooleanSetting.scaledEncoders),
   }
-};
+});
 
 /** Translate X/Y/Z to the name that is used in `localStorage` */
 export const INVERSION_MAPPING: Record<Xyz, BooleanSetting> = {
@@ -100,7 +100,7 @@ export const ENCODER_MAPPING: Record<EncoderDisplay, BooleanSetting> = {
   scaled_encoders: BooleanSetting.scaledEncoders,
 };
 
-export let botReducer = generateReducer<BotState>(initialState)
+export let botReducer = generateReducer<BotState>(initialState())
   .add<boolean>(Actions.SET_CONSISTENCY, (s, a) => {
     s.consistent = a.payload;
     s.hardware.informational_settings.sync_status = maybeNegateStatus({
