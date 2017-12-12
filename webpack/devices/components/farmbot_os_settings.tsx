@@ -87,7 +87,7 @@ export class FarmbotOsSettings
     const { controller_version } = hardware.informational_settings;
 
     return <Widget className="device-widget">
-      <form onSubmit={this.saveBot.bind(this)}>
+      <form>
         <WidgetHeader title="Device" helpText={ToolTips.OS_SETTINGS}>
           <SaveBtn
             status={account.specialStatus}
