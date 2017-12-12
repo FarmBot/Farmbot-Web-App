@@ -50,7 +50,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
     this.setState({ buffer });
   }
 
-  defaultProps = () => {
+  usualProps = () => {
     const value = this.state.isEditing ?
       this.state.buffer : this.props.value;
     return {
@@ -70,6 +70,6 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
   }
 
   render() {
-    return <input {...this.defaultProps() } />;
+    return <input {...this.usualProps() } />;
   }
 }
