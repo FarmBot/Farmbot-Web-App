@@ -1,3 +1,3 @@
-// enzyme-adapter-react-15 is not important enough to import @types for.
+require("raf/polyfill");
 var Adapter = require('enzyme-adapter-react-16');
 require('enzyme').configure({ adapter: new Adapter() });
