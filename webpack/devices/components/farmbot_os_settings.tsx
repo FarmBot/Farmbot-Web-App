@@ -37,11 +37,6 @@ export class FarmbotOsSettings
     dispatch(edit(account, { name: e.currentTarget.value }));
   }
 
-  saveBot(e: React.MouseEvent<{}>) {
-    e.preventDefault();
-    this.props.dispatch(save(this.props.account.uuid));
-  }
-
   updateBot = (e: React.MouseEvent<{}>) => {
     this.props.dispatch(saveAccountChanges);
   }
