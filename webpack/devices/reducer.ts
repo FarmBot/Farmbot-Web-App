@@ -142,9 +142,20 @@ export let botReducer = generateReducer<BotState>(initialState())
   .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
     state.hardware = payload;
     const { informational_settings } = state.hardware;
+    const syncStatus = informational_settings.sync_status;
+    /** USE CASE: You reboot the bot. The old state values are still hanging
+     * around. You think the bot is broke, but it isn't. The FE is holding on
+     * to stale data. */
+    if (syncStatus === "maintenance") {
+      const emptyState = initialState();
+      state.hardware = emptyState.hardware;
+      state.hardware.informational_settings.sync_status = "maintenance";
+      return state;
+    }
+
     const info = {
       consistent: state.consistent,
-      syncStatus: informational_settings.sync_status,
+      syncStatus,
       fbosVersion: informational_settings.controller_version,
       autoSync: !!state.hardware.configuration.auto_sync
     };

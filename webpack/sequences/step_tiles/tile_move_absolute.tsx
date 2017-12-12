@@ -186,7 +186,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
                 </InputBox>
               </Col>
               <Col xs={3}>
-                <label>
+                {/*<label>
                   {t("Speed (%)")}
                 </label>
                 <StepInputBox
@@ -194,7 +194,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
                   step={this.step}
                   index={index}
                   dispatch={this.props.dispatch}
-                  sequence={this.props.currentSequence} />
+                sequence={this.props.currentSequence} />*/}
               </Col>
             </Row>
             <Row>

@@ -2,6 +2,7 @@ import { versionOK, botReducer, initialState } from "../reducer";
 import { Actions } from "../../constants";
 import { ControlPanelState } from "../interfaces";
 import * as _ from "lodash";
+import { defensiveClone } from "../../util";
 
 describe("safeStringFetch", () => {
   it("Checks the correct version on update", () => {
@@ -97,5 +98,22 @@ describe("botRedcuer", () => {
     action.payload = "scaled_encoders";
     expect(botReducer(initialState(), action).encoder_visibility.scaled_encoders)
       .toBe(!initialState().encoder_visibility.scaled_encoders);
+  });
+
+  it("resets hardware state when transitioning into mainenance mode.", () => {
+    const state = initialState();
+    const payload = defensiveClone(state.hardware);
+    payload.informational_settings.sync_status = "maintenance";
+    payload.location_data.position.x = -1;
+    payload.location_data.position.y = -1;
+    payload.location_data.position.z = -1;
+    const action = { type: Actions.BOT_CHANGE, payload };
+    // Make the starting state different than initialState();
+    const result = botReducer(state, action);
+    // Resets .hardware to initialState()
+    expect(result.hardware.location_data.position)
+      .toEqual(initialState().hardware.location_data.position);
+    expect(result.hardware.informational_settings.sync_status)
+      .toBe("maintenance");
   });
 });
