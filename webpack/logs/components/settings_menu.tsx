@@ -5,10 +5,17 @@ import { ToolTips } from "../../constants";
 import { ToggleButton } from "../../controls/toggle_button";
 import { updateConfig } from "../../devices/actions";
 import { noop } from "lodash";
-import { LogSettingProps, LogsSettingsMenuProps } from "../interfaces";
+import {
+  LogSettingProps, LogsSettingsMenuProps, LogsState
+} from "../interfaces";
+import { Session, safeNumericSetting } from "../../session";
 
 const LogSetting = (props: LogSettingProps) => {
   const { label, setting, toolTip, value, setFilterLevel } = props;
+  const updateMinFilterLevel = (name: keyof LogsState, level: number) => {
+    const currentLevel = Session.getNum(safeNumericSetting(name + "Log")) || 0;
+    if (currentLevel < level) { setFilterLevel(name)(level); }
+  };
   return <fieldset>
     <label>
       {t(label)}
@@ -21,16 +28,16 @@ const LogSetting = (props: LogSettingProps) => {
           switch (setting) {
             case "firmware_output_log":
             case "firmware_input_log":
-              setFilterLevel("debug")(3);
+              updateMinFilterLevel("debug", 3);
               break;
             case "sequence_init_log":
-              setFilterLevel("busy")(2);
+              updateMinFilterLevel("busy", 2);
               break;
             case "sequence_body_log":
-              setFilterLevel("info")(2);
+              updateMinFilterLevel("info", 2);
               break;
             case "sequence_complete_log":
-              setFilterLevel("success")(2);
+              updateMinFilterLevel("success", 2);
               break;
           }
         }
@@ -62,20 +69,17 @@ export const LogsSettingsMenu = (props: LogsSettingsMenuProps) => {
       value={configuration.sequence_complete_log}
       setFilterLevel={setFilterLevel} />
     {t("Firmware Logs:")}
-    {/*
-      // TODO: remove type assertions when names are added to farmbot-js
-    */}
     <LogSetting
       label={"Sent"}
       setting={"firmware_output_log"}
       toolTip={ToolTips.FIRMWARE_LOG_SENT}
-      value={!!configuration["firmware_output_log"]}
+      value={configuration.firmware_output_log}
       setFilterLevel={setFilterLevel} />
     <LogSetting
       label={"Received"}
       setting={"firmware_input_log"}
       toolTip={ToolTips.FIRMWARE_LOG_RECEIVED}
-      value={!!configuration["firmware_input_log"]}
+      value={configuration.firmware_input_log}
       setFilterLevel={setFilterLevel} />
   </div>;
 };
