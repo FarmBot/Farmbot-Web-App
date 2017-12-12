@@ -40,7 +40,7 @@ You will need the following:
 
 Setup for non-Ubuntu users after installing the dependencies listed above:
 
- 1. `git clone https://github.com/FarmBot/Farmbot-Web-App --depth=10`
+ 1. `git clone https://github.com/FarmBot/Farmbot-Web-App --branch=master --depth=10`
  0. `cd Farmbot-Web-App`
  0. `bundle install`
  0. `yarn install`
