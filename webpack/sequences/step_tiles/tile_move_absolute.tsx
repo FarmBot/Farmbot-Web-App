@@ -35,7 +35,6 @@ import { TileMoveAbsSelect } from "./tile_move_absolute/select";
 import { InputBox } from "./tile_move_absolute/input_box";
 import { ToolTips } from "../../constants";
 import { StepIconGroup } from "../step_icon_group";
-import { StepInputBox } from "../inputs/step_input_box";
 import { extractParent } from "../locals_list";
 
 interface Args {
