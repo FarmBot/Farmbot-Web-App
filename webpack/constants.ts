@@ -35,6 +35,9 @@ export namespace ToolTips {
     unsupervised. Tip: Recalibrate FarmBot after changing settings and test a
     few sequences to verify that everything works as expected.`;
 
+  export const PIN_BINDINGS =
+    `Assign a sequence to execute when a Raspberry Pi GPIO pin is activated.`;
+
   // Hardware Settings: Homing and Calibration
   export const HOMING =
     `(Alpha) If encoders or end-stops are enabled, home axis (find zero).`;
@@ -248,6 +251,22 @@ export namespace ToolTips {
   // Logs
   export const LOGS =
     `View and filter log messages.`;
+
+  export const SEQUENCE_LOG_BEGIN =
+    `Send a log message upon the start of sequence execution.`;
+
+  export const SEQUENCE_LOG_STEP =
+    `Send a log message for each sequence step.`;
+
+  export const SEQUENCE_LOG_END =
+    `Send a log message upon the end of sequence execution.`;
+
+  export const FIRMWARE_LOG_SENT =
+    `Log all commands sent to firmware (clears after refresh).`;
+
+  export const FIRMWARE_LOG_RECEIVED =
+    `Log all responses received from firmware (clears after refresh).
+    Warning: extremely verbose.`;
 }
 
 export namespace Content {
@@ -283,6 +302,19 @@ export namespace Content {
     WiFi network and a web app account. Factory resetting the device will
     not delete data stored in your web app account. Are you sure you wish
     to continue?`.replace(/\s+/g, " ");
+
+  export const MCU_RESET_ALERT =
+    `Warning: This will reset all hardware settings to the default values.
+    Are you sure you wish to continue?`.replace(/\s+/g, " ");
+
+  export const AUTO_FACTORY_RESET =
+    `Automatically factory reset when the WiFi network cannot be detected.
+    Useful for typos during FarmBot OS configuration or network changes.`
+      .replace(/\s+/g, " ");
+
+  export const AUTO_FACTORY_RESET_PERIOD =
+    `Time in minutes to attempt connecting to WiFi before a factory reset.`
+      .replace(/\s+/g, " ");
 
   export const TIMEZONE_GUESS_BROWSER =
     `This account did not have a timezone set. Farmbot requires a timezone to

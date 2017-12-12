@@ -8,7 +8,9 @@ import {
   Tool,
   Coordinate,
   LegalSequenceKind,
-  Point
+  Point,
+  Identifier,
+  MoveAbsolute
 } from "farmbot";
 import {
   Row,
@@ -34,9 +36,10 @@ import { InputBox } from "./tile_move_absolute/input_box";
 import { ToolTips } from "../../constants";
 import { StepIconGroup } from "../step_icon_group";
 import { StepInputBox } from "../inputs/step_input_box";
+import { extractParent } from "../locals_list";
 
 interface Args {
-  location: Tool | Coordinate | Point;
+  location: Tool | Coordinate | Point | Identifier;
   speed: number;
   offset: Coordinate;
 }
@@ -65,18 +68,11 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
       throw new Error("Impossible celery node detected.");
     }
   }
-  get location(): Tool | Coordinate {
-    if (this.args.location.kind !== "point") {
-      return this.args.location;
-    } else {
-      throw new Error("A `point` node snuck in. Still WIP");
-    }
-  }
 
   get xyzDisabled(): boolean {
-    const isPoint = this.args.location.kind === "point";
-    const isTool = this.args.location.kind === "tool";
-    return !!(isPoint || isTool);
+    type Keys = MoveAbsolute["args"]["location"]["kind"];
+    const choices: Keys[] = ["point", "tool", "identifier"];
+    return !!choices.includes(this.args.location.kind);
   }
 
   getOffsetValue = (val: Xyz) => {
@@ -98,7 +94,12 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
 
   getAxisValue = (axis: Xyz): string => {
     let number: number | undefined;
-    const l = this.args.location;
+    const { body } = this.props.currentSequence.body.args.locals;
+    const parent = extractParent(body);
+    const maybe = ((parent && parent.args.data_value) || this.args.location);
+    const l = this.args.location.kind === "identifier" ?
+      maybe : this.args.location;
+
     switch (l.kind) {
       case "coordinate":
         number = l.args[axis];
@@ -111,6 +112,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
         number = findPointerByTypeAndId(this.resources,
           pointer_type,
           pointer_id).body[axis];
+        break;
     }
     return (number || 0).toString();
   }
@@ -154,7 +156,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
                 <TileMoveAbsSelect
                   resources={this.resources}
                   selectedItem={this.args.location}
-                  onChange={(x) => this.updateArgs({ location: x })} />
+                  onChange={(location) => this.updateArgs({ location })} />
               </Col>
               <Col xs={3}>
                 <InputBox

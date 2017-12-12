@@ -6,7 +6,9 @@ describe Api::TokensController do
 
   describe '#show' do
     let(:user) { FactoryBot.create(:user, password: "password") }
-    let(:auth_token) { SessionToken.issue_to(user) }
+    let(:auth_token) do
+      SessionToken.issue_to(user, fbos_version: Gem::Version.new("9.9.9"))
+    end
 
     it 'creates a new token' do
       request.headers["Authorization"] = "bearer #{auth_token.encoded}"

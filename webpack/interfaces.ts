@@ -25,7 +25,13 @@ export interface SelectOptionsParams {
 export interface Log {
   id?: number | undefined;
   message: string;
-  meta: { type: ALLOWED_MESSAGE_TYPES; };
+  meta: {
+    type: ALLOWED_MESSAGE_TYPES;
+    x?: number;
+    y?: number;
+    z?: number;
+    verbosity?: number;
+  };
   channels: string[];
   created_at: number;
 }

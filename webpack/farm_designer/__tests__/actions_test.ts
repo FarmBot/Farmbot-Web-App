@@ -12,54 +12,28 @@ describe("movePlant", () => {
     jest.clearAllMocks();
   });
 
-  it("updates plant", () => {
-    const payload: MovePlantProps = {
-      deltaX: 1,
-      deltaY: 2,
-      plant: fakePlant(),
-      gridSize: { x: 3000, y: 1500 }
-    };
-    const { mock } = edit as jest.Mock<{}>;
-    movePlant(payload);
-    const oldPlant = mock.calls[0][0];
-    expect(oldPlant.body.x).toBe(100);
-    expect(oldPlant.body.y).toBe(200);
-    const update = mock.calls[0][1];
-    expect(update.x).toBe(101);
-    expect(update.y).toBe(202);
-  });
-
-  it("restricts plant to grid area: high", () => {
-    const payload: MovePlantProps = {
-      deltaX: 10000,
-      deltaY: 10000,
-      plant: fakePlant(),
-      gridSize: { x: 3000, y: 1500 }
-    };
-    const { mock } = edit as jest.Mock<{}>;
-    movePlant(payload);
-    const oldPlant = mock.calls[0][0];
-    expect(oldPlant.body.x).toBe(100);
-    expect(oldPlant.body.y).toBe(200);
-    const update = mock.calls[0][1];
-    expect(update.x).toBe(3000);
-    expect(update.y).toBe(1500);
-  });
-
-  it("restricts plant to grid area: low", () => {
-    const payload: MovePlantProps = {
-      deltaX: -10000,
-      deltaY: -10000,
-      plant: fakePlant(),
-      gridSize: { x: 3000, y: 1500 }
-    };
-    const { mock } = edit as jest.Mock<{}>;
-    movePlant(payload);
-    const oldPlant = mock.calls[0][0];
-    expect(oldPlant.body.x).toBe(100);
-    expect(oldPlant.body.y).toBe(200);
-    const update = mock.calls[0][1];
-    expect(update.x).toBe(0);
-    expect(update.y).toBe(0);
-  });
+  function movePlantTest(
+    caseDescription: string,
+    attempted: { x: number, y: number },
+    expected: { x: number, y: number }) {
+    it(`restricts plant to grid area: ${caseDescription}`, () => {
+      const payload: MovePlantProps = {
+        deltaX: attempted.x,
+        deltaY: attempted.y,
+        plant: fakePlant(),
+        gridSize: { x: 3000, y: 1500 }
+      };
+      movePlant(payload);
+      const [argList] = (edit as jest.Mock<{}>).mock.calls;
+      const oldPlant = argList[0];
+      expect(oldPlant.body.x).toBe(100);
+      expect(oldPlant.body.y).toBe(200);
+      const update = argList[1];
+      expect(update.x).toBe(expected.x);
+      expect(update.y).toBe(expected.y);
+    });
+  }
+  movePlantTest("within bounds", { x: 1, y: 2 }, { x: 101, y: 202 });
+  movePlantTest("too high", { x: 10000, y: 10000 }, { x: 3000, y: 1500 });
+  movePlantTest("too low", { x: -10000, y: -10000 }, { x: 0, y: 0 });
 });

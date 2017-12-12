@@ -1,6 +1,5 @@
-const mockDestroy = jest.fn();
 jest.mock("../../api/crud", () => ({
-  destroy: mockDestroy
+  destroy: jest.fn()
 }));
 
 const mockCopy = jest.fn();
@@ -16,20 +15,22 @@ jest.mock("../step_tiles/index", () => ({
 }));
 
 import * as React from "react";
-import { SequenceEditorMiddleActive, onDrop } from "../sequence_editor_middle_active";
+import {
+  SequenceEditorMiddleActive, onDrop
+} from "../sequence_editor_middle_active";
 import { mount } from "enzyme";
 import { ActiveMiddleProps } from "../interfaces";
-import { FAKE_RESOURCES, buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  FAKE_RESOURCES, buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { destroy } from "../../api/crud";
 
 describe("<SequenceEditorMiddleActive/>", () => {
   function fakeProps(): ActiveMiddleProps {
     return {
-      slots: [],
       dispatch: jest.fn(),
       sequence: fakeSequence(),
-      sequences: [],
-      tools: [],
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
       consistent: true,
@@ -46,7 +47,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
 
   it("deletes", () => {
     clickButton(2, "Delete");
-    expect(mockDestroy).toHaveBeenCalledWith("Sequence.0.17");
+    expect(destroy).toHaveBeenCalledWith("Sequence.0.17");
   });
 
   it("copies", () => {

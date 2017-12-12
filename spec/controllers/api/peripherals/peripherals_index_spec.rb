@@ -9,15 +9,19 @@ describe Api::PeripheralsController do
 
     it 'lists all Peripherals for a user' do
       sign_in user
-
+      user.device.peripherals.destroy_all # Prevent blinky tests.
       peripherals = FactoryBot.create_list(:peripheral, 2, device_id: user.device.id)
-      peripheral_ids = user.device.peripherals
-                       .map(&:id)
-                       .sort
+      expected = user
+        .device
+        .peripherals
+        .reload
+        .map(&:id)
+        .sort
       process :index, method: :get
       expect(response.status).to eq(200)
       expect(json.length).to eq(2)
-      expect(json.map { |s| s[:id] }.sort).to eq(peripheral_ids)
+      actual = json.map { |s| s[:id] }.sort
+      expect(actual).to eq(expected)
     end
   end
 end

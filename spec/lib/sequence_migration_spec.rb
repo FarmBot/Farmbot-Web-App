@@ -54,7 +54,7 @@ end
 
 describe SequenceMigration do
   it 'has a latest version' do
-      expect(SequenceMigration::Base.latest_version).to eq(5)
+      expect(SequenceMigration::Base.latest_version).to eq(6)
   end
 
   it 'updates speed on all the things < v5' do
@@ -70,6 +70,7 @@ describe SequenceMigration do
     expect(s.body[0]["args"]["speed"]).to eq(100)
     expect(s.body[1]["args"]["speed"]).to eq(100)
     expect(s.body[2]["args"]["speed"]).to eq(100)
+    expect(s.args.dig("locals","kind")).to eq("scope_declaration")
   end
 
   it 'warns developers that `up()` is required' do

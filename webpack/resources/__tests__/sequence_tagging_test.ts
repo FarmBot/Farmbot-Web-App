@@ -18,13 +18,13 @@ describe("maybeTagSteps()", () => {
             "x": 0,
             "y": 0,
             "z": 0,
-            "speed": 800
+            "speed": 100
           },
         }
       ],
       "args": {
-        "version": 4,
-        "label": "WIP"
+        "locals": { kind: "scope_declaration", args: {} },
+        "version": 4
       },
       "kind": "sequence"
     },

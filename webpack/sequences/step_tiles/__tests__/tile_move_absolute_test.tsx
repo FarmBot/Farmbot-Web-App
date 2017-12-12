@@ -2,8 +2,10 @@ import * as React from "react";
 import { TileMoveAbsolute } from "../tile_move_absolute";
 import { mount, ReactWrapper } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { MoveAbsolute } from "farmbot/dist";
+import { MoveAbsolute, SequenceBodyItem } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
+import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<TileMoveAbsolute/>", () => {
   function bootstrapTest() {
@@ -66,5 +68,39 @@ describe("<TileMoveAbsolute/>", () => {
     checkField(block, 5, "x-offset", "4");
     checkField(block, 6, "y-offset", "5");
     checkField(block, 7, "z-offset", "6");
+  });
+
+  it("retrieves a tool", () => {
+    const index = buildResourceIndex([
+      {
+        kind: "Tool",
+        uuid: "Tool.4.4",
+        specialStatus: SpecialStatus.SAVED,
+        body: {
+          id: 4,
+          name: "tool123"
+        }
+      }
+    ]).index;
+    const tool = index.references[index.byKind.Tool[0]];
+    if (!tool) { throw new Error("Impossible"); }
+
+    const currentStep: SequenceBodyItem = {
+      kind: "move_absolute",
+      args: {
+        location: { kind: "tool", args: { tool_id: tool.body.id || -1 } },
+        speed: 100,
+        offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+      }
+    };
+
+    const component = mount(<TileMoveAbsolute
+      currentSequence={fakeSequence()}
+      currentStep={currentStep}
+      dispatch={jest.fn()}
+      index={0}
+      resources={index} />).instance() as TileMoveAbsolute;
+
+    expect(component.tool).toEqual(tool);
   });
 });

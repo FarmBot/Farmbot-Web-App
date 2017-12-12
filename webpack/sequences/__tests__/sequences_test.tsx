@@ -14,11 +14,9 @@ import { ToolTips } from "../../constants";
 describe("<Sequences/>", () => {
   function fakeProps(): Props {
     return {
-      slots: [],
       dispatch: jest.fn(),
       sequence: fakeSequence(),
       sequences: [],
-      tools: [],
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
       auth,

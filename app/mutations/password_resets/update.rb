@@ -16,8 +16,9 @@ module PasswordResets
     def execute
       user.update_attributes!(password: password,
                               password_confirmation: password_confirmation)
-      Auth::CreateToken.run!(email:    user.email,
-                             password: password)
+      Auth::CreateToken.run!(email: user.email,
+                             password: password,
+                             fbos_version: Gem::Version.new("999.9.9"),)
     rescue JWT::ExpiredSignature
       add_error :reset, :too_old, OLD_TOKEN
     end

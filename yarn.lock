@@ -1996,9 +1996,9 @@ farmbot-toastr@^1.0.0, farmbot-toastr@^1.0.3:
     farmbot-toastr "^1.0.0"
     typescript "^2.3.4"
 
-farmbot@5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/farmbot/-/farmbot-5.0.2.tgz#d6e86036489040b330407f880582664ff903a9d6"
+farmbot@5.2.0-rc6:
+  version "5.2.0-rc6"
+  resolved "https://registry.yarnpkg.com/farmbot/-/farmbot-5.2.0-rc6.tgz#8b4d5801cb974dfe19cf344d8d7edc7ff2405b66"
   dependencies:
     mqtt "^2.13.1"
     typescript "^2.4.2"

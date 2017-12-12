@@ -1,8 +1,7 @@
 import * as React from "react";
 import { mount } from "enzyme";
-import { PasswordReset } from "../password_reset";
+import { PasswordReset, State } from "../password_reset";
 import * as moxios from "moxios";
-import { State } from "../interfaces";
 
 describe("<PasswordReset/>", () => {
   beforeEach(function () {
@@ -40,5 +39,18 @@ describe("<PasswordReset/>", () => {
         done();
       });
     });
+  });
+
+  it("Has a form set()ter", () => {
+    const el = mount(<PasswordReset />);
+    const i = el.instance() as PasswordReset;
+    const field = "password";
+    const value = "password123";
+    const fn = i.set(field);
+    i.setState = jest.fn(i.setState);
+    type E = React.FormEvent<HTMLInputElement>;
+    const e = { currentTarget: { value } } as E;
+    fn(e as E);
+    expect(i.setState).toHaveBeenCalledWith({ [field]: value });
   });
 });

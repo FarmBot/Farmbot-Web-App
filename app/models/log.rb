@@ -4,6 +4,8 @@ class Log < ApplicationRecord
   # Used by the frontend to pull most recent records. We don't currently support
   # pagination, but could later on.
   PAGE_SIZE = 25
+
+  DISCARD = ["fun", "debug"]
   # self.meta[:type] is used by the bot and the frontend as a sort of
   TYPES     = CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES
   # The means by which the message will be sent. Ex: frontend toast notification

@@ -1,5 +1,6 @@
 import { formatSelectedDropdown } from "../format_selected_dropdown";
 import { fakeResourceIndex } from "../test_helpers";
+import { PARENT_DDI } from "../generate_list";
 
 describe("formatSelectedDropdown()", () => {
   it("returns dropdown item: tool", () => {
@@ -38,5 +39,11 @@ describe("formatSelectedDropdown()", () => {
     const dropdown = formatSelectedDropdown(fakeResourceIndex(),
       { kind: "coordinate", args: { x: 10, y: 20, z: 30 } });
     expect(dropdown).toEqual({ label: "None", value: "" });
+  });
+
+  it("returns dropdown item: identifier", () => {
+    const ddi = formatSelectedDropdown(fakeResourceIndex(),
+      { kind: "identifier", args: { label: "parent" } });
+    expect(ddi).toEqual(PARENT_DDI[0]);
   });
 });

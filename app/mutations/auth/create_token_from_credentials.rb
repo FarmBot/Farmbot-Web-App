@@ -9,6 +9,7 @@ module Auth
 
     required do
       string :credentials
+      model  :fbos_version, class: Gem::Version
     end
 
     def validate
@@ -22,7 +23,7 @@ module Auth
     end
 
     def execute
-      SessionToken.as_json(user, AbstractJwtToken::BOT_AUD)
+      SessionToken.as_json(user, AbstractJwtToken::BOT_AUD, fbos_version)
     end
 
 private

@@ -20,7 +20,7 @@ interface State {
   serverPort: string;
 }
 
-export class Wow extends React.Component<Props, Partial<State>> {
+export class TosUpdate extends React.Component<Props, Partial<State>> {
   constructor() {
     super();
     this.submit = this.submit.bind(this);
@@ -193,7 +193,7 @@ detectLanguage().then((config) => {
     node.id = "root";
     document.body.appendChild(node);
 
-    const reactElem = React.createElement(Wow, {});
+    const reactElem = React.createElement(TosUpdate, {});
     const domElem = document.getElementById("root");
 
     if (domElem) {

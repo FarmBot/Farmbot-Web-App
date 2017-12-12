@@ -10,7 +10,7 @@ unless Rails.env == "production"
     DATE_RANGE_LO           = 1..3
     DATE_RANGE_HI           = 3..8
     ENV['MQTT_HOST']        = "blooper.io"
-    ENV['OS_UPDATE_SERVER'] = "http://blah.com"
+    ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
     Point.destroy_all
     Device.destroy_all
     User.destroy_all
@@ -75,7 +75,7 @@ unless Rails.env == "production"
     s = Sequences::Create.run!(device: u.device,
     name: "Goto 0, 0, 0",
     body: [{kind:"move_absolute",args:{location:{kind:"coordinate", args:{x:0,
-    y:0, z:0}}, offset:{kind:"coordinate", args:{x:0, y:0, z:0}}, speed:800}}])
+    y:0, z:0}}, offset:{kind:"coordinate", args:{x:0, y:0, z:0}}, speed:100}}])
     t  = Tools::Create.run!(name: "Trench Digging Tool", device: u.device)
     body_txt = File.read("spec/lib/celery_script/ast_fixture4.json")
                    .gsub("__SEQUENCE_ID__", s.id.to_s)

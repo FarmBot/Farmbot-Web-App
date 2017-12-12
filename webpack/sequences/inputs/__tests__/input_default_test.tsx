@@ -28,7 +28,7 @@ describe("<InputDefault/>", () => {
             "z": 0
           }
         },
-        "speed": 800
+        "speed": 100
       }
     };
 
@@ -42,7 +42,7 @@ describe("<InputDefault/>", () => {
         "body": [step],
         "args": {
           "version": 4,
-          "label": "WIP"
+          "locals": { kind: "scope_declaration", args: {} },
         },
         "kind": "sequence"
       },

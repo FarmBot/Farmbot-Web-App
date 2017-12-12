@@ -1,7 +1,7 @@
 import * as React from "react";
 import { splice, remove } from "./index";
 import { StepTitleBar } from "./step_title_bar";
-import { DropDownItem } from "../../ui";
+import { DropDownItem, Row, Col } from "../../ui";
 import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
 import { SendMessage, ALLOWED_CHANNEL_NAMES } from "farmbot";
@@ -15,7 +15,8 @@ import { ToolTips } from "../../constants";
 import {
   MESSAGE_STATUSES,
   EACH_CHANNEL,
-  channel
+  channel,
+  MESSAGE_STATUSES_DDI
 } from "./tile_send_message_support";
 import { StepIconGroup } from "../step_icon_group";
 type ChannelName = ALLOWED_CHANNEL_NAMES;
@@ -40,7 +41,8 @@ interface SendMessageParams {
   resources: ResourceIndex;
 }
 
-class RefactoredSendMessage extends React.Component<SendMessageParams, {}> {
+class RefactoredSendMessage
+  extends React.Component<SendMessageParams, {}> {
   get args() { return this.props.currentStep.args; }
   get message() { return this.args.message; }
   get message_type() { return this.args.message_type; }
@@ -49,9 +51,11 @@ class RefactoredSendMessage extends React.Component<SendMessageParams, {}> {
   get sequence() { return this.props.currentSequence; }
   get index() { return this.props.index; }
   get currentSelection() {
-    return { label: _.capitalize(this.message_type), value: this.message_type };
+    return MESSAGE_STATUSES_DDI[this.message_type];
   }
-  get channels() { return (this.step.body || []).map(x => x.args.channel_name); }
+  get channels() {
+    return (this.step.body || []).map(x => x.args.channel_name);
+  }
   hasChannel = (name: ChannelName) => {
     return this.channels.includes(name);
   }
@@ -94,8 +98,8 @@ class RefactoredSendMessage extends React.Component<SendMessageParams, {}> {
 
     return <div>
       <div className="step-wrapper">
-        <div className="row">
-          <div className="col-sm-12">
+        <Row>
+          <Col sm={12}>
             <div className="step-header send-message-step">
               <StepTitleBar index={index}
                 dispatch={dispatch}
@@ -107,16 +111,18 @@ class RefactoredSendMessage extends React.Component<SendMessageParams, {}> {
                   sequence: currentSequence,
                   index
                 }))}
-                onTrash={() => remove({ dispatch, index, sequence: currentSequence })}
+                onTrash={() => remove({
+                  dispatch, index, sequence: currentSequence
+                })}
                 helpText={t(ToolTips.SEND_MESSAGE)} />
             </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12">
+          </Col>
+        </Row>
+        <Row>
+          <Col sm={12}>
             <div className="step-content send-message-step">
-              <div className="row">
-                <div className="col-xs-12">
+              <Row>
+                <Col xs={12}>
                   <label>{t("Message")}</label>
                   <span className="char-limit">
                     {this.message.length}/300
@@ -142,17 +148,18 @@ class RefactoredSendMessage extends React.Component<SendMessageParams, {}> {
                           <input type="checkbox"
                             id={chan.name}
                             onChange={this.toggle(chan.name)}
-                            checked={this.hasChannel(chan.name) || chan.alwaysOn}
+                            checked={
+                              this.hasChannel(chan.name) || chan.alwaysOn}
                             disabled={chan.alwaysOn} />
                         </fieldset>;
                       })}</div>
                     </div>
                   </div>
-                </div>
-              </div>
+                </Col>
+              </Row>
             </div>
-          </div>
-        </div>
+          </Col>
+        </Row>
       </div>
     </div>;
   }

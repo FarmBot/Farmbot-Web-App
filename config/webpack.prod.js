@@ -18,9 +18,6 @@ conf.output = {
 
 [
   new ExtractTextPlugin({
-    // Temporary hotfix for some issues on staging.
-    // - RC 12 MAY 17
-    // filename: "dist/styles.css",
     filename: "dist/[name].[chunkhash].css",
     disable: false,
     allChunks: true

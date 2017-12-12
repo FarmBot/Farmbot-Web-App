@@ -13,7 +13,7 @@ import {
   TaggedPeripheral,
   TaggedDevice
 } from "../resources/tagged_resources";
-import { RestResources } from "../resources/interfaces";
+import { RestResources, ResourceIndex } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import { EncoderDisplay } from "../controls/interfaces";
@@ -28,6 +28,7 @@ export interface Props {
   deviceAccount: TaggedDevice;
   images: TaggedImage[];
   dispatch: Function;
+  resources: ResourceIndex;
 }
 
 /** How the device is stored in the API side.
@@ -120,6 +121,7 @@ export interface StepsPerMMBoxProps {
   bot: BotState;
   setting: ConfigurationName;
   dispatch: Function;
+  disabled?: boolean;
 }
 
 export interface McuInputBoxProps {
@@ -162,4 +164,5 @@ export interface ControlPanelState {
   motors: boolean;
   encoders_and_endstops: boolean;
   danger_zone: boolean;
+  power_and_reset: boolean;
 }

@@ -14,6 +14,7 @@ export function mapStateToProps(props: Everything): Props {
     auth: props.auth,
     bot: props.bot,
     dispatch: props.dispatch,
-    images: selectAllImages(props.resources.index)
+    images: selectAllImages(props.resources.index),
+    resources: props.resources.index,
   };
 }

@@ -5,6 +5,7 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { fakeResource } from "../../../__test_support__/fake_resource";
 import { AuthState } from "../../../auth/interfaces";
+import { FbosDetails } from "../fbos_settings/auto_update_row";
 
 describe("<FarmbotOsSettings/>", () => {
   it("renders settings", () => {
@@ -14,9 +15,20 @@ describe("<FarmbotOsSettings/>", () => {
       bot={bot}
       auth={fakeState().auth as AuthState} />);
     expect(osSettings.find("input").length).toBe(1);
-    expect(osSettings.find("button").length).toBe(9);
-    ["NAME", "TIME ZONE", "LAST SEEN", "FARMBOT OS", "RESTART FARMBOT",
-      "SHUTDOWN FARMBOT", "FACTORY RESET", "CAMERA", "FIRMWARE"].map(string =>
-        expect(osSettings.text()).toContain(string));
+    expect(osSettings.find("button").length).toBe(6);
+    ["NAME", "TIME ZONE", "LAST SEEN", "FARMBOT OS", "CAMERA", "FIRMWARE"]
+      .map(string => expect(osSettings.text()).toContain(string));
+  });
+});
+
+describe("<FbosDetails />", () => {
+  it("renders", () => {
+    const wrapper = mount(<FbosDetails {...bot} />);
+    ["Environment: ---",
+      "Commit: ---",
+      "Target: ---",
+      "Node name: ---",
+      "Firmware: "].map(string =>
+        expect(wrapper.text()).toContain(string));
   });
 });

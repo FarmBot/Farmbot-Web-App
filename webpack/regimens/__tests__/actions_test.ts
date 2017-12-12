@@ -36,11 +36,7 @@ describe("saveRegimen()", () => {
     const getState = () => state;
     saveRegimen(state.resources.index.all[0])(dispatch, getState);
     expect(dispatch).toHaveBeenCalledWith({
-      payload: {
-        body: { color: "red", name: "Foo", regimen_items: [] },
-        kind: "Regimen",
-        uuid: state.resources.index.all[0]
-      },
+      payload: state.resources.index.references[state.resources.index.all[0]],
       type: Actions.SAVE_RESOURCE_START
     });
   });
@@ -65,11 +61,7 @@ describe("deleteRegimen()", () => {
     (global as any).confirm = () => true;
     deleteRegimen(state.resources.index.all[0])(dispatch, getState);
     expect(dispatch).toHaveBeenCalledWith({
-      payload: {
-        body: { color: "red", name: "Foo", regimen_items: [] },
-        kind: "Regimen",
-        uuid: state.resources.index.all[0]
-      },
+      payload: state.resources.index.references[state.resources.index.all[0]],
       type: Actions.DESTROY_RESOURCE_OK
     });
   });

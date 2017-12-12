@@ -56,7 +56,8 @@ describe("botRedcuer", () => {
       type: Actions.BULK_TOGGLE_CONTROL_PANEL,
       payload: true
     });
-    _.values(state.controlPanelState).map(value => expect(value).toBeTruthy());
+    _.values(_.omit(state.controlPanelState, "power_and_reset"))
+      .map(value => expect(value).toBeTruthy());
   });
 
   it("fetches OS update info", () => {
