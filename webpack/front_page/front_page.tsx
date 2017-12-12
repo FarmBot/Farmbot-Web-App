@@ -15,8 +15,8 @@ import { ResendVerification } from "./resend_verification";
 import { CreateAccount } from "./create_account";
 
 export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
-  constructor() {
-    super();
+  constructor(props: {}) {
+    super(props);
     this.state = {
       registrationSent: false,
       regEmail: "",

@@ -21,8 +21,8 @@ interface State {
 }
 
 export class TosUpdate extends React.Component<Props, Partial<State>> {
-  constructor() {
-    super();
+  constructor(props: Props) {
+    super(props);
     this.submit = this.submit.bind(this);
     this.toggleServerOpts = this.toggleServerOpts.bind(this);
     this.state = {

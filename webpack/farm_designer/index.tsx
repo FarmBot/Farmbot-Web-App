@@ -13,6 +13,7 @@ import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { getBotSize } from "./map/util";
+import { catchErrors } from "../util";
 
 export const getDefaultAxisLength = (): AxisNumberProperty => {
   if (Session.getBool(BooleanSetting.mapXL)) {
@@ -35,6 +36,7 @@ export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 
 @connect(mapStateToProps)
 export class FarmDesigner extends React.Component<Props, Partial<State>> {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
   initializeSetting = (name: keyof State, defaultValue: boolean): boolean => {
     const currentValue = Session.getBool(safeBooleanSettting(name));

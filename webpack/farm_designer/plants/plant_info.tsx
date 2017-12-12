@@ -6,9 +6,11 @@ import { TaggedPlantPointer } from "../../resources/tagged_resources";
 import { mapStateToProps, formatPlantInfo } from "./map_state_to_props";
 import { PlantInfoBase } from "./plant_info_base";
 import { PlantPanel } from "./plant_panel";
+import { catchErrors } from "../../util";
 
 @connect(mapStateToProps)
 export class PlantInfo extends PlantInfoBase {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
   default = (plant_info: TaggedPlantPointer) => {
     const click = () => {

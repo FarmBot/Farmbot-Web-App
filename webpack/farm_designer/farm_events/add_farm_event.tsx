@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { mapStateToPropsAddEdit, } from "./map_state_to_props_add_edit";
 import { init } from "../../api/crud";
 import { EditFEForm } from "./edit_fe_form";
-import { betterCompact, JSXChildren } from "../../util";
+import { betterCompact, JSXChildren, catchErrors } from "../../util";
 import { entries } from "../../resources/util";
 import { Link } from "react-router";
 import {
@@ -23,9 +23,10 @@ interface State {
 @connect(mapStateToPropsAddEdit)
 export class AddFarmEvent
   extends React.Component<AddEditFarmEventProps, Partial<State>> {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
-  constructor() {
-    super();
+  constructor(props: AddEditFarmEventProps) {
+    super(props);
     this.state = {};
   }
 

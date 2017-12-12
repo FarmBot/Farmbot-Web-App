@@ -9,9 +9,12 @@ import { Props } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { ToolTips } from "../constants";
 import { isTaggedSequence } from "../resources/tagged_resources";
+import { catchErrors } from "../util";
 
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+
   render() {
     const { sequence } = this.props;
     const sequenceSelected = sequence && isTaggedSequence(sequence);

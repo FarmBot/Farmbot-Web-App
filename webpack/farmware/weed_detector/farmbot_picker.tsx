@@ -47,8 +47,8 @@ export function getHueBoxes(
 }
 
 export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> {
-  constructor() {
-    super();
+  constructor(props: FarmbotPickerProps) {
+    super(props);
     this.state = {};
   }
 

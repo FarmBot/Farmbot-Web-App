@@ -17,8 +17,8 @@ export interface State {
 export interface Props { }
 
 export class PasswordReset extends React.Component<Props, State> {
-  constructor() {
-    super();
+  constructor(props: Props) {
+    super(props);
     this.state = {
       password: "",
       passwordConfirmation: "",

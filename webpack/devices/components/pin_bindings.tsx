@@ -34,8 +34,8 @@ enum ColumnWidth {
 
 export class PinBindings
   extends React.Component<PinBindingsProps, PinBindingsState> {
-  constructor() {
-    super();
+  constructor(props: PinBindingsProps) {
+    super(props);
     this.state = {
       isEditing: false,
       pinNumberInput: undefined,
@@ -97,8 +97,8 @@ export class PinBindings
                 {`Pi GPIO ${pin_number}`}
               </Col>
               <Col xs={ColumnWidth.sequence}>
-                {findSequenceById(
-                  resources, parseInt(sequence_id)).body.name}
+                {sequence_id ? findSequenceById(
+                  resources, parseInt(sequence_id)).body.name : ""}
               </Col>
               <Col xs={ColumnWidth.button}>
                 <button

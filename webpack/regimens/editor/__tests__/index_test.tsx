@@ -61,8 +61,24 @@ describe("<RegimenEditorWidget />", () => {
   it("error: not logged in", () => {
     const props = fakeProps();
     props.auth = undefined;
-    const wrapper = () => mount(<RegimenEditorWidget {...props} />);
-    expect(wrapper).toThrowError("Must log in first");
+    const errors: Error[] = [];
+
+    class Wrap extends React.Component<{}, {}> {
+      componentDidCatch(e: Error) {
+        errors.push(e);
+      }
+
+      render() {
+        return <div>
+          <RegimenEditorWidget {...props} />
+        </div>;
+      }
+    }
+    const oldError = console.error;
+    console.error = jest.fn();
+    mount(<Wrap />);
+    expect(errors[0].message).toContain("Must log in first");
+    console.error = oldError;
   });
 
   it("deletes regimen", () => {

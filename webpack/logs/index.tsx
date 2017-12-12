@@ -13,12 +13,14 @@ import { LogsTable } from "./components/logs_table";
 import { Session, safeNumericSetting } from "../session";
 import { isUndefined } from "lodash";
 import { NumericSetting } from "../session_keys";
+import { catchErrors } from "../util";
 
 export const formatLogTime = (created_at: number) =>
   moment.unix(created_at).local().format("MMM D, h:mma");
 
 @connect(mapStateToProps)
 export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
   initialize = (name: NumericSetting, defaultValue: number): number => {
     const currentValue = Session.getNum(safeNumericSetting(name));

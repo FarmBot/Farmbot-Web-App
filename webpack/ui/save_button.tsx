@@ -21,12 +21,12 @@ interface SaveBtnProps {
 const spinner = <span className="btn-spinner" />;
 
 export function SaveBtn(props: SaveBtnProps) {
-  const STATUS_TRANSLATION = {
+  const STATUS_TRANSLATION: Partial<Record<SpecialStatus, string>> = {
     [SpecialStatus.DIRTY]: "is-dirty",
     [SpecialStatus.SAVING]: "is-saving"
   };
 
-  const CAPTIONS = {
+  const CAPTIONS: Partial<Record<SpecialStatus, string>> = {
     [SpecialStatus.DIRTY]: t((props.dirtyText || "Save ") + " *"),
     [SpecialStatus.SAVING]: t(props.savingText || "Saving")
   };
@@ -38,6 +38,6 @@ export function SaveBtn(props: SaveBtnProps) {
     spinner : "";
 
   return <button onClick={onClick} hidden={!!hidden} className={klass} >
-    {CAPTIONS["" + props.status] || (t(savedText || "Saved ") + " ✔")} {spinnerEl}
+    {CAPTIONS[props.status] || (t(savedText || "Saved ") + " ✔")} {spinnerEl}
   </button>;
 }

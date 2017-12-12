@@ -9,6 +9,7 @@ import { PlantInventoryItem } from "./plant_inventory_item";
 import { destroy } from "../../api/crud";
 import { error } from "farmbot-toastr";
 import { BackArrow } from "../../ui/index";
+import { catchErrors } from "../../util";
 
 export function mapStateToProps(props: Everything) {
   const plants = selectAllPlantPointers(props.resources.index);
@@ -32,6 +33,7 @@ export interface SelectPlantsProps {
 @connect(mapStateToProps)
 export class SelectPlants
   extends React.Component<SelectPlantsProps, {}> {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
   destroySelected = (plantUUIDs: string[]) => {
     if (plantUUIDs &&

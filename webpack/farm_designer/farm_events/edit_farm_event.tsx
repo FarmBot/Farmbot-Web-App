@@ -6,6 +6,7 @@ import { history } from "../../history";
 import { TaggedFarmEvent } from "../../resources/tagged_resources";
 import { EditFEForm } from "./edit_fe_form";
 import { t } from "i18next";
+import { catchErrors } from "../../util";
 
 @connect(mapStateToPropsAddEdit)
 export class EditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
@@ -13,6 +14,8 @@ export class EditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
     history.push("/app/designer/farm_events");
     return <div>{t("Loading")}...</div>;
   }
+
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
   renderForm(fe: TaggedFarmEvent) {
     return <EditFEForm farmEvent={fe}

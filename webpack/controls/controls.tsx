@@ -8,9 +8,11 @@ import { Props } from "./interfaces";
 import { Move } from "./move";
 import { BooleanSetting } from "../session_keys";
 import { Session } from "../session";
+import { catchErrors } from "../util";
 
 @connect(mapStateToProps)
 export class Controls extends React.Component<Props, {}> {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
   render() {
     const arduinoBusy = !!this
       .props

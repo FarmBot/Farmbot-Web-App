@@ -9,9 +9,12 @@ import { FarmwareProps } from "../devices/interfaces";
 import { WeedDetector } from "./weed_detector/index";
 import { envGet } from "./weed_detector/remote_env/selectors";
 import { FarmwareForms } from "./farmware_forms";
+import { catchErrors } from "../util";
 
 @connect(mapStateToProps)
 export class FarmwarePage extends React.Component<FarmwareProps, {}> {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+
   render() {
     return <Page className="farmware">
       <Row>
