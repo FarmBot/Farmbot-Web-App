@@ -125,7 +125,7 @@ describe("execSequence()", function () {
     const s = fakeSequence().body;
     await actions.execSequence(s);
     expect(mockDevice.execSequence).toHaveBeenCalledWith(s.id);
-    // expect(mockOk).toHaveBeenCalled();
+    expect(mockOk).toHaveBeenCalled();
   });
 
   it("implodes when executing unsaved sequences", () => {
