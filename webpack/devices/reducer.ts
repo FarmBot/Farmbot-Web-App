@@ -26,7 +26,7 @@ export function versionOK(stringyVersion = "0.0.0",
   }
 }
 
-export let initialState: BotState = {
+export let initialState = (): BotState => ({
   consistent: true,
   stepSize: 100,
   controlPanelState: {
@@ -84,7 +84,7 @@ export let initialState: BotState = {
     raw_encoders: !!Session.getBool(BooleanSetting.rawEncoders),
     scaled_encoders: !!Session.getBool(BooleanSetting.scaledEncoders),
   }
-};
+});
 
 /** Translate X/Y/Z to the name that is used in `localStorage` */
 export const INVERSION_MAPPING: Record<Xyz, BooleanSetting> = {
@@ -100,7 +100,7 @@ export const ENCODER_MAPPING: Record<EncoderDisplay, BooleanSetting> = {
   scaled_encoders: BooleanSetting.scaledEncoders,
 };
 
-export let botReducer = generateReducer<BotState>(initialState)
+export let botReducer = generateReducer<BotState>(initialState())
   .add<boolean>(Actions.SET_CONSISTENCY, (s, a) => {
     s.consistent = a.payload;
     s.hardware.informational_settings.sync_status = maybeNegateStatus({
@@ -142,9 +142,20 @@ export let botReducer = generateReducer<BotState>(initialState)
   .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
     state.hardware = payload;
     const { informational_settings } = state.hardware;
+    const syncStatus = informational_settings.sync_status;
+    /** USE CASE: You reboot the bot. The old state values are still hanging
+     * around. You think the bot is broke, but it isn't. The FE is holding on
+     * to stale data. */
+    if (syncStatus === "maintenance") {
+      const emptyState = initialState();
+      state.hardware = emptyState.hardware;
+      state.hardware.informational_settings.sync_status = "maintenance";
+      return state;
+    }
+
     const info = {
       consistent: state.consistent,
-      syncStatus: informational_settings.sync_status,
+      syncStatus,
       fbosVersion: informational_settings.controller_version,
       autoSync: !!state.hardware.configuration.auto_sync
     };

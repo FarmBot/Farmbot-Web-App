@@ -37,11 +37,6 @@ export class FarmbotOsSettings
     dispatch(edit(account, { name: e.currentTarget.value }));
   }
 
-  saveBot(e: React.MouseEvent<{}>) {
-    e.preventDefault();
-    this.props.dispatch(save(this.props.account.uuid));
-  }
-
   updateBot = (e: React.MouseEvent<{}>) => {
     this.props.dispatch(saveAccountChanges);
   }
@@ -87,7 +82,7 @@ export class FarmbotOsSettings
     const { controller_version } = hardware.informational_settings;
 
     return <Widget className="device-widget">
-      <form onSubmit={this.saveBot.bind(this)}>
+      <form onSubmit={(e) => e.preventDefault()}>
         <WidgetHeader title="Device" helpText={ToolTips.OS_SETTINGS}>
           <SaveBtn
             status={account.specialStatus}

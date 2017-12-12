@@ -30,8 +30,8 @@ describe("<TileMoveRelative/>", () => {
     const block = bootstrapTest().component;
     const inputs = block.find("input");
     const labels = block.find("label");
-    expect(inputs.length).toEqual(5);
-    expect(labels.length).toEqual(4);
+    expect(inputs.length).toEqual(4);
+    expect(labels.length).toEqual(3);
     expect(inputs.first().props().placeholder).toEqual("Move Relative");
     expect(labels.at(0).text().toLowerCase()).toEqual("x (mm)");
     expect(inputs.at(1).props().value).toEqual(1);
@@ -39,7 +39,7 @@ describe("<TileMoveRelative/>", () => {
     expect(inputs.at(2).props().value).toEqual(2);
     expect(labels.at(2).text().toLowerCase()).toEqual("z (mm)");
     expect(inputs.at(3).props().value).toEqual(3);
-    expect(labels.at(3).text().toLowerCase()).toEqual("speed (%)");
-    expect(inputs.at(4).props().value).toEqual(100);
+    // expect(labels.at(3).text().toLowerCase()).toEqual("speed (%)");
+    // expect(inputs.at(4).props().value).toEqual(100);
   });
 });
