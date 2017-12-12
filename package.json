@@ -50,7 +50,7 @@
     "coveralls": "^3.0.0",
     "css-loader": "^0.28.7",
     "enzyme": "^3.1.0",
-    "enzyme-adapter-react-15": "^1.0.2",
+    "enzyme-adapter-react-16": "^1.1.0",
     "extract-text-webpack-plugin": "^3.0.1",
     "farmbot": "5.2.0-rc6",
     "farmbot-toastr": "^1.0.3",
@@ -113,7 +113,8 @@
       "./webpack/__test_support__/setup_enzyme.js",
       "./webpack/__test_support__/localstorage.js",
       "./webpack/__test_support__/mock_fbtoaster.ts",
-      "./webpack/__test_support__/unmock_i18next.ts"
+      "./webpack/__test_support__/unmock_i18next.ts",
+      "./webpack/__test_support__/request_animation_frame.js"
     ],
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
