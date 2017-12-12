@@ -7,7 +7,7 @@ import { Row, Col, Widget, WidgetBody } from "../../ui/index";
 import { t } from "i18next";
 import { resetWeedDetection, scanImage, test } from "./actions";
 import { selectImage } from "../images/actions";
-import { Progress } from "../../util";
+import { Progress, catchErrors } from "../../util";
 import { FarmwareProps } from "../../devices/interfaces";
 import { mapStateToProps } from "../../farmware/state_to_props";
 import { ToolTips } from "../../constants";
@@ -19,6 +19,8 @@ import { translateImageWorkspaceAndSave } from "./actions";
 @connect(mapStateToProps)
 export class WeedDetector
   extends React.Component<FarmwareProps, Partial<DetectorState>> {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+
   constructor(props: FarmwareProps) {
     super(props);
     this.state = { remoteFarmwareSettings: {} };

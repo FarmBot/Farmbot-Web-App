@@ -7,6 +7,7 @@ import { history, getPathArray } from "../../history";
 import { svgToUrl } from "../../open_farm/icons";
 import { CropLiveSearchResult } from "../interfaces";
 import { findBySlug } from "../search_selectors";
+import { catchErrors } from "../../util";
 
 export function mapStateToProps(props: Everything): AddPlantProps {
   return {
@@ -25,7 +26,7 @@ export interface AddPlantProps {
 @connect(mapStateToProps)
 export class AddPlant
   extends React.Component<AddPlantProps, {}> {
-
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
   render() {
     const crop = getPathArray()[5];
     const result =

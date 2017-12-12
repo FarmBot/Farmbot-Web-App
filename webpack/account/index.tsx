@@ -11,6 +11,7 @@ import { updateNO } from "../resources/actions";
 import { deleteUser } from "./actions";
 import { success } from "farmbot-toastr/dist";
 import { LabsFeatures } from "./labs/labs_features";
+import { catchErrors } from "../util";
 
 const KEYS: (keyof User)[] = ["id", "name", "email", "created_at", "updated_at"];
 
@@ -38,7 +39,7 @@ export class Account extends React.Component<Props, State> {
    * TODO: Implement attribute level dirty tracking
    */
   tempHack =
-  (key: keyof User) => (key === "email") && this.setState({ warnThem: true });
+    (key: keyof User) => (key === "email") && this.setState({ warnThem: true });
 
   onChange = (e: React.FormEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
@@ -60,6 +61,8 @@ export class Account extends React.Component<Props, State> {
     .props
     .dispatch(save(this.props.user.uuid))
     .then(this.doSave, updateNO);
+
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
   render() {
     return <Page className="account">

@@ -8,6 +8,7 @@ import { box } from "boxed_value";
 import { TaggedResource } from "./resources/tagged_resources";
 import { AxiosResponse } from "axios";
 import { history } from "./history";
+import { ErrorInfo } from "react";
 
 // http://stackoverflow.com/a/901144/1064917
 // Grab a query string param by name, because react-router-redux doesn't
@@ -460,3 +461,7 @@ export function minFwVersionCheck(current: string | undefined, min: string) {
     return false;
   }
 }
+
+export const catchErrors = (error: Error, errorInfo: ErrorInfo) => {
+  Rollbar && Rollbar.error && Rollbar.error(error as any);
+};

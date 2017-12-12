@@ -6,6 +6,7 @@ import { selectAllPlantPointers } from "../../resources/selectors";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { TaggedPlantPointer } from "../../resources/tagged_resources";
 import { Everything } from "../../interfaces";
+import { catchErrors } from "../../util";
 
 interface Props {
   plants: TaggedPlantPointer[];
@@ -26,6 +27,7 @@ function mapStateToProps(props: Everything): Props {
 
 @connect(mapStateToProps)
 export class Plants extends React.Component<Props, State> {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
   state: State = { searchTerm: "" };
 
