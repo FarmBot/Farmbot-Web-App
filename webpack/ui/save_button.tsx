@@ -31,7 +31,7 @@ export function SaveBtn(props: SaveBtnProps) {
     [SpecialStatus.SAVING]: t(props.savingText || "Saving")
   };
 
-  const { savedText, onClick, hidden } = props;
+  const { onClick, hidden } = props;
   const statusClass = STATUS_TRANSLATION[props.status || ""] || "is-saved";
   const klass = `${props.color || "green"} ${statusClass} save-btn fb-button`;
   const spinnerEl = (props.status === SpecialStatus.SAVING) ?
