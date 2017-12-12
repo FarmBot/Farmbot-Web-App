@@ -23,5 +23,9 @@ module Api
       Devices::Destroy.run!(user: current_user, device: current_device)
       render json: "", status: 204
     end
+
+    def dump
+      mutate Devices::Dump.run(device: current_device)
+    end
   end
 end
