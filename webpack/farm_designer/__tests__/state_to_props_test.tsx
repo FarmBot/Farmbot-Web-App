@@ -11,4 +11,17 @@ describe("mapStateToProps()", () => {
     };
     expect(mapStateToProps(state).hoveredPlant).toBeFalsy();
   });
+
+  it("peripherals pins have correct states", () => {
+    const state = fakeState();
+    function checkValue(input: number, value: boolean) {
+      state.bot.hardware.pins = { 13: { value: input, mode: 0 } };
+      const peripheralPin = mapStateToProps(state).peripherals[0];
+      expect(peripheralPin.value).toEqual(value);
+    }
+    checkValue(0, false);
+    checkValue(-1, false);
+    checkValue(1, true);
+    checkValue(2, true);
+  });
 });

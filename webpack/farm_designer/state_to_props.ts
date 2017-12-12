@@ -45,7 +45,7 @@ export function mapStateToProps(props: Everything) {
       const pinStatus = x.body.pin
         ? props.bot.hardware.pins[x.body.pin]
         : undefined;
-      const value = pinStatus ? !!pinStatus.value : false;
+      const value = pinStatus ? pinStatus.value > 0 : false;
       return { label, value };
     });
 
