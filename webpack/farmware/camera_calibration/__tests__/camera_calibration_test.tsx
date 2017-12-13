@@ -18,7 +18,8 @@ describe("<CameraCalibration/>", () => {
       V_LO: 6,
       H_HI: 7,
       S_HI: 8,
-      V_HI: 9
+      V_HI: 9,
+      syncStatus: "synced"
     };
     const wrapper = mount(<CameraCalibration {...props} />);
     ["Camera Calibration",

@@ -61,12 +61,16 @@ export class ImageWorkspace extends React.Component<Props, {}> {
     }
   };
 
-  /** This will trigger onChange callback twice. Once for (H|S|L)_HI and again
-   * for (H|S|L)_LO */
+  /** This will trigger onChange callback only when necessary, at most twice.
+   * (H|S|L)_HI and (H|S|L)_LO */
   onHslChange = (key: keyof typeof CHANGE_MAP) =>
     (values: [number, number]) => {
       const keys = CHANGE_MAP[key];
-      [0, 1].map(i => this.props.onChange(keys[i], values[i]));
+      [0, 1].map(i => {
+        if (values[i] !== this.props[keys[i]]) {
+          this.props.onChange(keys[i], values[i]);
+        }
+      });
     };
 
   render() {

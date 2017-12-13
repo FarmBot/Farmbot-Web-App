@@ -29,5 +29,16 @@ describe("<Body/>", () => {
     expect(props.onChange).toHaveBeenCalledTimes(2);
     expect(props.onChange).toHaveBeenCalledWith("H_HI", 5);
     expect(props.onChange).toHaveBeenCalledWith("H_LO", 4);
+    jest.clearAllMocks();
+    iw.onHslChange("H")([2, 5]);
+    expect(props.onChange).toHaveBeenCalledTimes(1);
+    expect(props.onChange).toHaveBeenCalledWith("H_HI", 5);
+    jest.clearAllMocks();
+    iw.onHslChange("H")([4, 8]);
+    expect(props.onChange).toHaveBeenCalledTimes(1);
+    expect(props.onChange).toHaveBeenCalledWith("H_LO", 4);
+    jest.clearAllMocks();
+    iw.onHslChange("H")([2, 8]);
+    expect(props.onChange).not.toHaveBeenCalled();
   });
 });
