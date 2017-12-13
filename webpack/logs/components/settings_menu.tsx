@@ -28,6 +28,7 @@ const LogSetting = (props: LogSettingProps) => {
           switch (setting) {
             case "firmware_output_log":
             case "firmware_input_log":
+            case "arduino_debug_messages":
               updateMinFilterLevel("debug", 3);
               break;
             case "sequence_init_log":
@@ -80,6 +81,12 @@ export const LogsSettingsMenu = (props: LogsSettingsMenuProps) => {
       setting={"firmware_input_log"}
       toolTip={ToolTips.FIRMWARE_LOG_RECEIVED}
       value={configuration.firmware_input_log}
+      setFilterLevel={setFilterLevel} />
+    <LogSetting
+      label={"Debug"}
+      setting={"arduino_debug_messages"}
+      toolTip={ToolTips.FIRMWARE_DEBUG_MESSAGES}
+      value={!!configuration["arduino_debug_messages"]}
       setFilterLevel={setFilterLevel} />
   </div>;
 };

@@ -397,6 +397,7 @@ ul {
   height: 100%;
   opacity: 0.40;
   pointer-events: none;
+  z-index: 10;
   &.banner {
     &:after {
       content: "Not available when device is offline.";
@@ -411,6 +412,7 @@ ul {
       top: 25%;
       left: -2.5%;
       width: 105%;
+      z-index: 10;
     }
   }
 }

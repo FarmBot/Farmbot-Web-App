@@ -45,7 +45,8 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
             V_LO={envGet("CAMERA_CALIBRATION_V_LO", this.props.env)}
             H_HI={envGet("CAMERA_CALIBRATION_H_HI", this.props.env)}
             S_HI={envGet("CAMERA_CALIBRATION_S_HI", this.props.env)}
-            V_HI={envGet("CAMERA_CALIBRATION_V_HI", this.props.env)} />
+            V_HI={envGet("CAMERA_CALIBRATION_V_HI", this.props.env)}
+            syncStatus={this.props.syncStatus} />
         </Col>
         <Col xs={12} sm={6}>
           <WeedDetector {...this.props} />
