@@ -70,7 +70,9 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
     };
   }
 
-  shouldComponentUpdate(nextProps: BIProps) { return equals(this.props, nextProps); }
+  shouldComponentUpdate(nextProps: BIProps, nextState: Partial<BIState>) {
+    return !equals(this.props, nextProps) || !equals(this.state, nextState);
+  }
 
   render() {
     return <input {...this.usualProps() } />;

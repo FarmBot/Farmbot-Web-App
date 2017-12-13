@@ -466,7 +466,7 @@ export const catchErrors = (error: Error, errorInfo: ErrorInfo) => {
   Rollbar && Rollbar.error && Rollbar.error(error as any);
 };
 
-/** Default exports slow down my workflow in VSCode. I re-export it here. */
+/** Performs deep object comparison. ONLY WORKS ON JSON-y DATA TYPES. */
 export const equals = <T>(a: T, b: T): boolean => {
   // Some benchmarks claim that this is slower than `_.isEqual`.
   // For whatever reason, this is not true for our application.

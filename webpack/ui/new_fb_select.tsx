@@ -33,7 +33,9 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
     }
   }
 
-  shouldComponentUpdate(nextProps: FBSelectProps) { return !equals(this.props, nextProps); }
+  shouldComponentUpdate(nextProps: FBSelectProps) {
+    return !equals(this.props, nextProps);
+  }
 
   render() {
     return <div className="filter-search">
