@@ -67,9 +67,6 @@ export class AddFarmEvent
 
   componentWillUnmount() {
     const { uuid } = this.state;
-    // Legacy leftover from pre-TaggedResource era.
-    // TODO: Proper fix where we add a `findFarmEvent` selector
-    //       to mapStateToProps instead of juggling arrays.
     const fe = uuid && this.props.farmEvents.filter(x => x.uuid === uuid)[0];
     const unsaved = fe && !fe.body.id;
     if (fe && unsaved) { this.props.dispatch(destroy(fe.uuid, true)); }
