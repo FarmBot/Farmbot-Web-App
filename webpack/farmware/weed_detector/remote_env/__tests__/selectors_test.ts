@@ -1,6 +1,6 @@
-import { prepopulateEnv, envGet } from "../remote_env/selectors";
-import { DEFAULTS } from "../remote_env/constants";
-import { WD_ENV } from "../remote_env/interfaces";
+import { prepopulateEnv, envGet } from "../selectors";
+import { DEFAULTS } from "../constants";
+import { WD_ENV } from "../interfaces";
 
 describe("populateEnv()", () => {
   it("sets values", () => {
@@ -26,7 +26,7 @@ describe("envGet()", () => {
     "CAMERA_CALIBRATION_S_HI": 255,
     "CAMERA_CALIBRATION_V_HI": 255,
     "CAMERA_CALIBRATION_blur": 15,
-    "CAMERA_CALIBRATION_morph": 6,
+    "CAMERA_CALIBRATION_morph": 7,
     "CAMERA_CALIBRATION_iteration": 4,
     "CAMERA_CALIBRATION_camera_offset_x": 0,
     "CAMERA_CALIBRATION_camera_offset_y": 0,
@@ -38,9 +38,20 @@ describe("envGet()", () => {
     "CAMERA_CALIBRATION_image_bot_origin_location": 4
   };
 
-  it("grabs current value", () => {
+  it("grabs current value: integer", () => {
     const result = envGet("CAMERA_CALIBRATION_calibration_object_separation",
       myEnv);
     expect(result).toEqual(29);
+  });
+
+  it("grabs current value: zero", () => {
+    const result = envGet("CAMERA_CALIBRATION_camera_offset_x", myEnv);
+    expect(result).toEqual(0);
+  });
+
+  it("grabs current value: undefined", () => {
+    myEnv.CAMERA_CALIBRATION_morph = undefined;
+    const result = envGet("CAMERA_CALIBRATION_morph", myEnv);
+    expect(result).toEqual(6);
   });
 });

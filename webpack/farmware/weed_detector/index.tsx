@@ -15,6 +15,7 @@ import { ImageWorkspace } from "./image_workspace";
 import { WDENVKey as ENVKey } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";
 import { translateImageWorkspaceAndSave } from "./actions";
+import { MustBeOnline } from "../../devices/must_be_online";
 
 @connect(mapStateToProps)
 export class WeedDetector
@@ -72,21 +73,24 @@ export class WeedDetector
       <WidgetBody>
         <Row>
           <Col sm={12}>
-            <ImageWorkspace
-              onProcessPhoto={(id) => { this.props.dispatch(scanImage(id)); }}
-              onFlip={(uuid) => this.props.dispatch(selectImage(uuid))}
-              currentImage={this.props.currentImage}
-              images={this.props.images}
-              onChange={this.translateValueAndSave}
-              iteration={envGet("WEED_DETECTOR_iteration", this.props.env)}
-              morph={envGet("WEED_DETECTOR_morph", this.props.env)}
-              blur={envGet("WEED_DETECTOR_blur", this.props.env)}
-              H_LO={envGet("WEED_DETECTOR_H_LO", this.props.env)}
-              H_HI={envGet("WEED_DETECTOR_H_HI", this.props.env)}
-              S_LO={envGet("WEED_DETECTOR_S_LO", this.props.env)}
-              S_HI={envGet("WEED_DETECTOR_S_HI", this.props.env)}
-              V_LO={envGet("WEED_DETECTOR_V_LO", this.props.env)}
-              V_HI={envGet("WEED_DETECTOR_V_HI", this.props.env)} />
+            <MustBeOnline status={this.props.syncStatus}
+              lockOpen={process.env.NODE_ENV !== "production"}>
+              <ImageWorkspace
+                onProcessPhoto={(id) => { this.props.dispatch(scanImage(id)); }}
+                onFlip={(uuid) => this.props.dispatch(selectImage(uuid))}
+                currentImage={this.props.currentImage}
+                images={this.props.images}
+                onChange={this.translateValueAndSave}
+                iteration={envGet("WEED_DETECTOR_iteration", this.props.env)}
+                morph={envGet("WEED_DETECTOR_morph", this.props.env)}
+                blur={envGet("WEED_DETECTOR_blur", this.props.env)}
+                H_LO={envGet("WEED_DETECTOR_H_LO", this.props.env)}
+                H_HI={envGet("WEED_DETECTOR_H_HI", this.props.env)}
+                S_LO={envGet("WEED_DETECTOR_S_LO", this.props.env)}
+                S_HI={envGet("WEED_DETECTOR_S_HI", this.props.env)}
+                V_LO={envGet("WEED_DETECTOR_V_LO", this.props.env)}
+                V_HI={envGet("WEED_DETECTOR_V_HI", this.props.env)} />
+            </MustBeOnline>
           </Col>
         </Row>
       </WidgetBody>

@@ -9,6 +9,7 @@ import {
   LogSettingProps, LogsSettingsMenuProps, LogsState
 } from "../interfaces";
 import { Session, safeNumericSetting } from "../../session";
+import { ConfigurationName } from "farmbot";
 
 const LogSetting = (props: LogSettingProps) => {
   const { label, setting, toolTip, value, setFilterLevel } = props;
@@ -28,6 +29,7 @@ const LogSetting = (props: LogSettingProps) => {
           switch (setting) {
             case "firmware_output_log":
             case "firmware_input_log":
+            case "arduino_debug_messages" as ConfigurationName:
               updateMinFilterLevel("debug", 3);
               break;
             case "sequence_init_log":
@@ -80,6 +82,12 @@ export const LogsSettingsMenu = (props: LogsSettingsMenuProps) => {
       setting={"firmware_input_log"}
       toolTip={ToolTips.FIRMWARE_LOG_RECEIVED}
       value={configuration.firmware_input_log}
+      setFilterLevel={setFilterLevel} />
+    <LogSetting
+      label={"Debug"}
+      setting={"arduino_debug_messages" as ConfigurationName}
+      toolTip={ToolTips.FIRMWARE_DEBUG_MESSAGES}
+      value={!!configuration["arduino_debug_messages" as ConfigurationName]}
       setFilterLevel={setFilterLevel} />
   </div>;
 };
