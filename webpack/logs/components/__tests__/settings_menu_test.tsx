@@ -61,6 +61,7 @@ describe("<LogsSettingsMenu />", () => {
   testSettingToggle("sequence_complete_log", 2);
   testSettingToggle("firmware_output_log", 3);
   testSettingToggle("firmware_input_log", 4);
+  testSettingToggle("arduino_debug_messages" as ConfigurationName, 5);
 
   it("conditionally increases filter level", () => {
     const setFilterLevel = jest.fn();
