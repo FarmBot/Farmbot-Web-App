@@ -9,7 +9,6 @@ import {
   LogSettingProps, LogsSettingsMenuProps, LogsState
 } from "../interfaces";
 import { Session, safeNumericSetting } from "../../session";
-import { ConfigurationName } from "farmbot";
 
 const LogSetting = (props: LogSettingProps) => {
   const { label, setting, toolTip, value, setFilterLevel } = props;
