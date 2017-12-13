@@ -23,18 +23,20 @@ const TEXT_MAPPING: Record<SyncStatus, string> = {
   "maintenance": "MAINTENANCE DOWNTIME"
 };
 
-export function SyncButton({ user, bot, dispatch }: NavButtonProps) {
+export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) {
   if (!user) {
     return <span></span>;
   }
   let { sync_status } = bot.hardware.informational_settings;
   sync_status = sync_status || "unknown";
-  const color = COLOR_MAPPING[sync_status] || "red";
+  const color = consistent ?
+    (COLOR_MAPPING[sync_status] || "red") : "gray";
   const text = TEXT_MAPPING[sync_status] || "DISCONNECTED";
+
   return (
     <button
       className={`nav-sync ${color} fb-button`}
-      onClick={() => dispatch(sync())}>
+      onClick={() => consistent && dispatch(sync())}>
       {text}
     </button>
   );
