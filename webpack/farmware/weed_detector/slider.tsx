@@ -28,7 +28,7 @@ export class WeedDetectorSlider extends React.Component<SliderProps, State> {
     this.props.onRelease(i);
     setTimeout(() => {
       this.setState({ highValue: undefined, lowValue: undefined });
-    }, 100);
+    }, 500);
   };
 
   render() {

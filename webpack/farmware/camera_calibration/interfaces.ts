@@ -1,5 +1,6 @@
 import { TaggedImage } from "../../resources/tagged_resources";
 import { WD_ENV } from "../weed_detector/remote_env/interfaces";
+import { SyncStatus } from "farmbot";
 
 export interface CameraCalibrationState {
   settingsMenuOpen: boolean;
@@ -19,4 +20,5 @@ export interface CameraCalibrationProps {
   H_HI: number;
   S_HI: number;
   V_HI: number;
+  syncStatus: SyncStatus;
 }

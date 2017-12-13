@@ -267,6 +267,9 @@ export namespace ToolTips {
   export const FIRMWARE_LOG_RECEIVED =
     `Log all responses received from firmware (clears after refresh).
     Warning: extremely verbose.`;
+
+  export const FIRMWARE_DEBUG_MESSAGES =
+    `Log all debug received from firmware (clears after refresh).`;
 }
 
 export namespace Content {
