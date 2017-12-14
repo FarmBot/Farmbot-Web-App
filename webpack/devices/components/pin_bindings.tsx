@@ -13,6 +13,9 @@ import {
 } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { MustBeOnline } from "../must_be_online";
+import { Popover, Position } from "@blueprintjs/core";
+import { RpiGpioDiagram, gpio } from "./rpi_gpio_diagram";
+import { error } from "farmbot-toastr";
 
 export interface PinBindingsProps {
   bot: BotState;
@@ -45,6 +48,18 @@ export class PinBindings
 
   changeSelection = (input: DropDownItem) => {
     this.setState({ sequenceIdInput: parseInt(input.value as string) });
+  }
+
+  setSelectedPin = (pin: number | undefined) => {
+    if (!_.includes(this.boundPins, pin)) {
+      if (_.includes(_.flattenDeep(gpio), pin)) {
+        this.setState({ pinNumberInput: pin });
+      } else {
+        error("Invalid Raspberry Pi GPIO pin number.");
+      }
+    } else {
+      error("Raspberry Pi GPIO pin already bound.");
+    }
   }
 
   sequenceDropDownList = () => {
@@ -85,10 +100,15 @@ export class PinBindings
     }
   }
 
+  get boundPins(): number[] | undefined {
+    const { gpio_registry } = this.props.bot.hardware;
+    return gpio_registry && Object.keys(gpio_registry).map(x => parseInt(x));
+  }
+
   currentBindingsList = () => {
     const { bot, dispatch, resources } = this.props;
     const { gpio_registry } = bot.hardware;
-    return <div style={{ marginBottom: "1rem" }}>
+    return <div className={"bindings-list"}>
       {gpio_registry &&
         Object.entries(gpio_registry)
           .map(([pin_number, sequence_id]) => {
@@ -118,13 +138,25 @@ export class PinBindings
     const { pinNumberInput, sequenceIdInput } = this.state;
     return <Row>
       <Col xs={ColumnWidth.pin}>
-        <BlurableInput
-          onCommit={(e) => this.setState({
-            pinNumberInput: parseInt(e.currentTarget.value)
-          })}
-          name="pin_number"
-          value={pinNumberInput || ""}
-          type="number" />
+        <Row>
+          <Col xs={1}>
+            <Popover position={Position.TOP}>
+              <i className="fa fa-th-large" />
+              <RpiGpioDiagram
+                boundPins={this.boundPins}
+                setSelectedPin={this.setSelectedPin}
+                selectedPin={this.state.pinNumberInput} />
+            </Popover>
+          </Col>
+          <Col xs={9}>
+            <BlurableInput
+              onCommit={(e) =>
+                this.setSelectedPin(parseInt(e.currentTarget.value))}
+              name="pin_number"
+              value={_.isNumber(pinNumberInput) ? pinNumberInput : ""}
+              type="number" />
+          </Col>
+        </Row>
       </Col>
       <Col xs={ColumnWidth.sequence}>
         <FBSelect
@@ -137,8 +169,7 @@ export class PinBindings
         <button
           className="fb-button green"
           type="button"
-          onClick={() => { this.bindPin(); }}
-          style={{ marginTop: "0.5rem" }}>
+          onClick={() => { this.bindPin(); }} >
           {t("BIND")}
         </button>
       </Col>
