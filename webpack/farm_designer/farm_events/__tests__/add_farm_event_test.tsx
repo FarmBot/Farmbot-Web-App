@@ -13,6 +13,8 @@ import { mount } from "enzyme";
 import { AddFarmEvent } from "../add_farm_event";
 import { AddEditFarmEventProps } from "../../interfaces";
 import { fakeFarmEvent, fakeSequence } from "../../../__test_support__/fake_state/resources";
+import { wrap } from "module";
+import { destroy } from "../../../api/crud";
 
 describe("<AddFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {
@@ -50,5 +52,20 @@ describe("<AddFarmEvent />", () => {
   it("redirects", () => {
     const wrapper = mount(<AddFarmEvent {...fakeProps() } />);
     expect(wrapper.text()).toContain("Loading");
+  });
+
+  it("cleans up when unmounting", () => {
+    const props = fakeProps();
+    const wrapper = mount(<AddFarmEvent {...props } />);
+    wrapper.update();
+    const uuid: string = wrapper.state("uuid");
+    props.farmEvents[0].uuid = uuid;
+    props.farmEvents[0].body.id = undefined;
+    wrapper.setProps(props);
+    wrapper.update();
+    jest.resetAllMocks();
+    wrapper.unmount();
+    expect(props.dispatch).toHaveBeenCalled();
+    expect(props.dispatch).toHaveBeenCalledWith(expect.any(Function));
   });
 });
