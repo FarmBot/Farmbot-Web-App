@@ -13,8 +13,6 @@ import { mount } from "enzyme";
 import { AddFarmEvent } from "../add_farm_event";
 import { AddEditFarmEventProps } from "../../interfaces";
 import { fakeFarmEvent, fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { wrap } from "module";
-import { destroy } from "../../../api/crud";
 
 describe("<AddFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {
