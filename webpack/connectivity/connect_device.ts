@@ -152,7 +152,9 @@ const attachEventListeners =
     bot.client.on("close", ev("close"));
     bot.client.on("offline", ev("offline"));
     bot.client.on("error", ev("error"));
-    (((bot.client as any).stream as any).socket as WebSocket).onclose(ev("WS_ERROR") as any)
+    bot.client.on("connect", ev("connect"));
+    bot.client.on("reconnect", ev("reconnect"));
+
     bot.on("online", onOnline);
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));
