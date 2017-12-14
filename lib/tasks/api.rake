@@ -5,6 +5,7 @@ def same_thing
   sh "yarn install"
   sh "rails db:migrate"
 end
+
 namespace :api do
   desc "Run Webpack and Rails"
   task start: :environment do

@@ -465,3 +465,10 @@ export function minFwVersionCheck(current: string | undefined, min: string) {
 export const catchErrors = (error: Error, errorInfo: ErrorInfo) => {
   Rollbar && Rollbar.error && Rollbar.error(error as any);
 };
+
+/** Performs deep object comparison. ONLY WORKS ON JSON-y DATA TYPES. */
+export const equals = <T>(a: T, b: T): boolean => {
+  // Some benchmarks claim that this is slower than `_.isEqual`.
+  // For whatever reason, this is not true for our application.
+  return JSON.stringify(a) === JSON.stringify(b);
+};

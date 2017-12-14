@@ -2,7 +2,7 @@ import { fetchNewDevice, getDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "../interfaces";
 import { ALLOWED_CHANNEL_NAMES, Farmbot, BotStateTree } from "farmbot";
-import { get, throttle, noop } from "lodash";
+import { throttle, noop } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
@@ -25,7 +25,7 @@ export const TITLE = "New message from bot";
 
 /** TODO: This ought to be stored in Redux. It is here because of historical
  * reasons. Feel free to factor out when time allows. -RC, 10 OCT 17 */
-const HACKY_FLAGS = {
+export const HACKY_FLAGS = {
   needVersionCheck: true,
   alreadyToldUserAboutMalformedMsg: false
 };
@@ -80,12 +80,12 @@ export function readStatus() {
     .then(() => { commandOK(noun); }, () => { });
 }
 
-const onOffline = () => {
+export const onOffline = () => {
   dispatchNetworkDown("user.mqtt");
   error(t(Content.MQTT_DISCONNECTED));
 };
 
-const changeLastClientConnected = (bot: Farmbot) => () => {
+export const changeLastClientConnected = (bot: Farmbot) => () => {
   bot.setUserEnv({
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
   });
@@ -106,12 +106,10 @@ const onStatus = (dispatch: Function, getState: GetState) =>
     }
   }, 500));
 
-const onSent = (/** The MQTT Client Object (bot.client) */ client: {}) =>
-  (any: {}) => {
-    const theValue = get(client, "connected", false);
-    theValue ?
-      dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
-  };
+type Client = { connected?: boolean };
+
+export const onSent = (client: Client) => () => !!client.connected ?
+  dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
 
 const onLogs = (dispatch: Function) => (msg: Log) => {
   bothUp();
@@ -130,14 +128,15 @@ const onLogs = (dispatch: Function) => (msg: Log) => {
   }
 };
 
-function onMalformed() {
+export function onMalformed() {
   bothUp();
   if (!HACKY_FLAGS.alreadyToldUserAboutMalformedMsg) {
     warning(t(Content.MALFORMED_MESSAGE_REC_UPGRADE));
     HACKY_FLAGS.alreadyToldUserAboutMalformedMsg = true;
   }
 }
-const onOnline = () => dispatchNetworkUp("user.mqtt");
+
+export const onOnline = () => dispatchNetworkUp("user.mqtt");
 
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
