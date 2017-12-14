@@ -21,7 +21,7 @@ describe("<PlantPanel/>", () => {
     expect(txt).toContain("1 days old");
     expect(txt).toContain("(10, 30)");
     el.find("button").first().simulate("click");
-    expect(onDestroy.mock.calls.length).toEqual(1);
+    expect(onDestroy).toHaveBeenCalledTimes(1);
   });
 
   it("renders", () => {

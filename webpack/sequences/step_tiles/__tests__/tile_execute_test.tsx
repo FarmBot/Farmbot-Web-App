@@ -44,10 +44,13 @@ describe("<RefactoredExecuteBlock />", () => {
     // tslint:disable-next-line:no-any
     const instance = block.instance() as any;
     instance.changeSelection({ label: "", value: 10 });
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: Actions.OVERWRITE_RESOURCE
-    }));
-    const { payload } = dispatch.mock.calls[0][0];
-    expect(payload.update.body[0].args.sequence_id).toEqual(10);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.OVERWRITE_RESOURCE,
+      payload: expect.objectContaining({
+        update: expect.objectContaining({
+          body: [{ kind: "execute", args: { sequence_id: 10 } }]
+        })
+      })
+    });
   });
 });

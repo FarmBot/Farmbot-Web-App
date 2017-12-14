@@ -15,7 +15,6 @@ jest.mock("farmbot-toastr", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { BoardType } from "../board_type";
-import { getDevice } from "../../../../device";
 
 describe("<BoardType/>", () => {
   it("Farmduino", () => {
@@ -49,11 +48,11 @@ describe("<BoardType/>", () => {
   });
 
   it("calls updateConfig", () => {
-    const updateConfig = getDevice().updateConfig as jest.Mock<{}>;
     const wrapper = shallow(<BoardType
       firmwareVersion={"Arduino Disconnected!"} />);
     wrapper.find("FBSelect").simulate("change",
       { label: "firmware_hardware", value: "farmduino" });
-    expect(updateConfig).toBeCalledWith({ firmware_hardware: "farmduino" });
+    expect(mockDevice.updateConfig)
+      .toBeCalledWith({ firmware_hardware: "farmduino" });
   });
 });

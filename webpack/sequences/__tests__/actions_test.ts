@@ -21,8 +21,11 @@ describe("copySequence()", () => {
     const sequence = fakeSequence();
     const copy = copySequence(sequence);
     copy(jest.fn(), fakeState);
-    const args = mockInit.mock.calls[0][0];
-    expect(args.body.name).toEqual("fake copy 1");
+    expect(mockInit).toHaveBeenCalledWith(expect.objectContaining({
+      body: expect.objectContaining({
+        name: "fake copy 1"
+      })
+    }));
   });
 
   it("updates current path", () => {

@@ -43,6 +43,6 @@ describe("<PeripheralForm/>", function () {
     expect(inputs.at(3).props().value).toEqual("13");
     inputs.at(3).simulate("change");
     buttons.at(1).simulate("click");
-    expect(dispatch.mock.calls.length).toEqual(6);
+    expect(dispatch).toHaveBeenCalledTimes(6);
   });
 });

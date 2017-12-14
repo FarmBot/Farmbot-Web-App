@@ -14,7 +14,7 @@ import { API } from "../../api/index";
 
 describe("resend_verification.tsx - base case", () => {
   API.setBaseUrl("http://localhost:3000");
-  let props = () => ({
+  const props = () => ({
     ok: jest.fn(),
     no: jest.fn(),
     onGoBack: jest.fn(),
@@ -25,10 +25,9 @@ describe("resend_verification.tsx - base case", () => {
     const p = props();
     const el = mount(<ResendVerification {...p } />);
     el.find("button").first().simulate("click");
-    const { calls } = p.onGoBack.mock;
-    expect(p.no.mock.calls.length).toEqual(0);
-    expect(p.ok.mock.calls.length).toEqual(0);
-    expect(calls.length).toEqual(1);
+    expect(p.no).not.toHaveBeenCalled();
+    expect(p.ok).not.toHaveBeenCalled();
+    expect(p.onGoBack).toHaveBeenCalledTimes(1);
   });
 
   it("fires the `ok()` callback", (done) => {
@@ -38,7 +37,7 @@ describe("resend_verification.tsx - base case", () => {
     el.find("button").last().simulate("click");
     const { calls } = p.ok.mock;
     setImmediate(() => {
-      expect(p.no.mock.calls.length).toEqual(0);
+      expect(p.no).not.toHaveBeenCalled();
       expect(calls.length).toEqual(1);
       expect(get(calls[0][0], "data", "NOT FOUND")).toEqual("whatever");
       done();
