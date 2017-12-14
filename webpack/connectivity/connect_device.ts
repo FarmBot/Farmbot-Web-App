@@ -142,11 +142,17 @@ const onOnline = () => dispatchNetworkUp("user.mqtt");
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
     const ev =
-      (e: string) => () => console.log(`${e}: socket ${bot.client.connected ? "ON" : "OFF"}`);
+      (e: string) =>
+        () => {
+          const m = `${e}: socket ${bot.client.connected ? "ON" : "OFF"}`;
+          info(m);
+          console.log(m);
+        };
     bot.client.on("reconnect", ev("reconnect"));
     bot.client.on("close", ev("close"));
     bot.client.on("offline", ev("offline"));
     bot.client.on("error", ev("error"));
+    (((bot.client as any).stream as any).socket as WebSocket).onclose(ev("WS_ERROR") as any)
     bot.on("online", onOnline);
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));
