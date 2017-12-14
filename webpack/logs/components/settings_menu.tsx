@@ -86,7 +86,7 @@ export const LogsSettingsMenu = (props: LogsSettingsMenuProps) => {
       label={"Debug"}
       setting={"arduino_debug_messages"}
       toolTip={ToolTips.FIRMWARE_DEBUG_MESSAGES}
-      value={!!configuration["arduino_debug_messages"]}
+      value={configuration.arduino_debug_messages}
       setFilterLevel={setFilterLevel} />
   </div>;
 };

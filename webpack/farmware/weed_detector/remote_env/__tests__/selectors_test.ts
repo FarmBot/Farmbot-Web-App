@@ -52,6 +52,6 @@ describe("envGet()", () => {
   it("grabs current value: undefined", () => {
     myEnv.CAMERA_CALIBRATION_morph = undefined;
     const result = envGet("CAMERA_CALIBRATION_morph", myEnv);
-    expect(result).toEqual(6);
+    expect(result).toEqual(5);
   });
 });

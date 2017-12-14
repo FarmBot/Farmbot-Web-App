@@ -223,6 +223,20 @@ a {
   }
 }
 
+.pin-bindings-widget {
+  .fa-th-large {
+      color: $dark_gray;
+      margin-top: 0.5rem;
+      margin-left: 0.5rem;
+  }
+  .fb-button {
+    margin-top: 0.5rem;
+  }
+  .bindings-list {
+    margin-bottom: 1rem;
+  }
+}
+
 .full-width {
   width: 100%;
 }

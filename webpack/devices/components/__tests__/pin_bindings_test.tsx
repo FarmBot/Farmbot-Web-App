@@ -78,4 +78,29 @@ describe("<PinBindings/>", () => {
       pin_number: 1, sequence_id: 2
     });
   });
+
+  it("sets sequence id", () => {
+    const p = fakeProps();
+    const s = p.resources.references[p.resources.byKind.Sequence[0]];
+    const id = s && s.body.id;
+    const wrapper = mount(<PinBindings {...p } />);
+    expect(wrapper.state().sequenceIdInput).toEqual(undefined);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    instance.changeSelection({ label: "label", value: id });
+    expect(wrapper.state().sequenceIdInput).toEqual(id);
+  });
+
+  it("sets pin", () => {
+    const wrapper = mount(<PinBindings {...fakeProps() } />);
+    expect(wrapper.state().pinNumberInput).toEqual(undefined);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    instance.setSelectedPin(10);
+    expect(wrapper.state().pinNumberInput).toEqual(undefined);
+    instance.setSelectedPin(99);
+    expect(wrapper.state().pinNumberInput).toEqual(undefined);
+    instance.setSelectedPin(5);
+    expect(wrapper.state().pinNumberInput).toEqual(5);
+  });
 });
