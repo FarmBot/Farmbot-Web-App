@@ -13,6 +13,7 @@ import { overwrite } from "../../api/crud";
 import { FBSelect } from "../../ui/new_fb_select";
 import { StepIconGroup } from "../step_icon_group";
 import { StepTitleBar } from "./step_title_bar";
+import { ToolTips } from "../../constants";
 
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
@@ -103,7 +104,7 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
                   index,
                   sequence: currentSequence
                 })}
-                helpText={"Executes another sequence. Best used with `if` blocks"} />
+                helpText={t(ToolTips.EXECUTE_SEQUENCE)} />
             </div>
           </div>
         </div>
