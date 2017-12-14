@@ -24,7 +24,6 @@ export function StepButton({ children, step, color, dispatch, current }:
       <StepDragger
         dispatch={dispatch}
         step={step}
-        ghostCss="step-drag-ghost-image"
         intent="step_splice"
         draggerId={NULL_DRAGGER_ID} >
         <button
