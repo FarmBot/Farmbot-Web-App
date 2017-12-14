@@ -6,7 +6,8 @@ jest.mock("farmbot-toastr", () => ({
 }));
 
 jest.mock("../../index", () => ({
-  dispatchNetworkUp: jest.fn()
+  dispatchNetworkUp: jest.fn(),
+  dispatchNetworkDown: jest.fn()
 }));
 
 const mockDevice = {
@@ -25,13 +26,17 @@ import {
   TITLE,
   bothUp,
   initLog,
-  readStatus
+  readStatus,
+  onOffline,
+  changeLastClientConnected,
+  onSent,
+  onOnline
 } from "../../connect_device";
-import { Actions } from "../../../constants";
+import { Actions, Content } from "../../../constants";
 import { Log } from "../../../interfaces";
-import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES } from "farmbot";
+import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot } from "farmbot";
 import { success, error, info } from "farmbot-toastr";
-import { dispatchNetworkUp } from "../../index";
+import { dispatchNetworkUp, dispatchNetworkDown } from "../../index";
 import { getDevice } from "../../../device";
 
 describe("readStatus()", () => {
@@ -118,5 +123,47 @@ describe("bothUp()", () => {
     bothUp();
     expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt");
     expect(dispatchNetworkUp).toHaveBeenCalledWith("bot.mqtt");
+  });
+});
+
+describe("onOffline", () => {
+  it("tells the app MQTT is down", () => {
+    jest.resetAllMocks();
+    onOffline();
+    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt");
+    expect(error).toHaveBeenCalledWith(Content.MQTT_DISCONNECTED);
+  });
+});
+
+describe("onOnline", () => {
+  it("tells the app MQTT is up", () => {
+    jest.resetAllMocks();
+    onOnline();
+    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt");
+  });
+});
+
+describe("changeLastClientConnected", () => {
+  it("tells farmbot when the last browser session was opened", () => {
+    const setUserEnv = jest.fn();
+    const fakeFarmbot = { setUserEnv: setUserEnv as any } as Farmbot;
+    changeLastClientConnected(fakeFarmbot)();
+    expect(fakeFarmbot.setUserEnv)
+      .toHaveBeenCalled();
+    expect(Object.keys(setUserEnv.mock.calls[0][0]))
+      .toContain("LAST_CLIENT_CONNECTED");
+  });
+});
+
+describe("onSent", () => {
+  it("marks MQTT as up", () => {
+    jest.resetAllMocks();
+    onSent({ connected: true })();
+    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt");
+  });
+  it("marks MQTT as down", () => {
+    jest.resetAllMocks();
+    onSent({ connected: false })();
+    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt");
   });
 });

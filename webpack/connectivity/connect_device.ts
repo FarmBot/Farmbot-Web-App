@@ -80,12 +80,12 @@ export function readStatus() {
     .then(() => { commandOK(noun); }, () => { });
 }
 
-const onOffline = () => {
+export const onOffline = () => {
   dispatchNetworkDown("user.mqtt");
   error(t(Content.MQTT_DISCONNECTED));
 };
 
-const changeLastClientConnected = (bot: Farmbot) => () => {
+export const changeLastClientConnected = (bot: Farmbot) => () => {
   bot.setUserEnv({
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
   });
@@ -106,12 +106,10 @@ const onStatus = (dispatch: Function, getState: GetState) =>
     }
   }, 500));
 
-const onSent = (/** The MQTT Client Object (bot.client) */ client: {}) =>
-  (any: {}) => {
-    const theValue = get(client, "connected", false);
-    theValue ?
-      dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
-  };
+type Client = { connected?: boolean };
+
+export const onSent = (client: Client) => () => !!client.connected ?
+  dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
 
 const onLogs = (dispatch: Function) => (msg: Log) => {
   bothUp();
@@ -137,7 +135,8 @@ function onMalformed() {
     HACKY_FLAGS.alreadyToldUserAboutMalformedMsg = true;
   }
 }
-const onOnline = () => dispatchNetworkUp("user.mqtt");
+
+export const onOnline = () => dispatchNetworkUp("user.mqtt");
 
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
