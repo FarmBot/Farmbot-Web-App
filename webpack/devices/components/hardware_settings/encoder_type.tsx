@@ -9,7 +9,7 @@ export interface EncoderTypeProps {
   onChange(key: McuParamName, value: Encoder): void;
 }
 
-const LOOKUP: { [name: string]: DropDownItem } = {
+export const LOOKUP: { [name: string]: DropDownItem } = {
   [Encoder.differential]: { label: "Differential", value: Encoder.differential },
   [Encoder.quadrature]: { label: "Single-Ended", value: Encoder.quadrature },
   DEFAULT: { label: "---", value: Encoder.unknown }
@@ -24,9 +24,9 @@ const KEYS: McuParamName[] = [
 ];
 
 // tslint:disable-next-line:no-any
-function isEncoderValue(x: any): x is Encoder { return !!Encoder[x]; }
+export function isEncoderValue(x: any): x is Encoder { return !!Encoder[x]; }
 
-function findByType(input: number | string | undefined) {
+export function findByType(input: number | string | undefined) {
   return LOOKUP[input || "DEFAULT"] || LOOKUP.DEFAULT;
 }
 

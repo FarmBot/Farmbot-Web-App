@@ -111,7 +111,7 @@ type Client = { connected?: boolean };
 export const onSent = (client: Client) => () => !!client.connected ?
   dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
 
-const onLogs = (dispatch: Function) => (msg: Log) => {
+export const onLogs = (dispatch: Function) => (msg: Log) => {
   bothUp();
   if (isLog(msg)) {
     ifToastWorthy(msg, showLogOnScreen);
@@ -138,10 +138,10 @@ export function onMalformed() {
 
 export const onOnline = () => dispatchNetworkUp("user.mqtt");
 
-const onReconnect = () => success("Reconnected to the message broker");
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
-    bot.client.on("reconnect", throttle(onReconnect, 1000));
+    bot.client.on("reconnect",
+      throttle(() => success("Reconnected to the message broker"), 1000));
     bot.on("online", onOnline);
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));

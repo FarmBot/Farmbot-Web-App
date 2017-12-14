@@ -31,7 +31,8 @@ import {
   changeLastClientConnected,
   onSent,
   onOnline,
-  onMalformed
+  onMalformed,
+  onLogs
 } from "../../connect_device";
 import { Actions, Content } from "../../../constants";
 import { Log } from "../../../interfaces";
@@ -180,5 +181,15 @@ describe("onMalformed()", () => {
     expect(warning) // Only fire once.
       .not
       .toHaveBeenCalledWith(Content.MALFORMED_MESSAGE_REC_UPGRADE);
+  });
+});
+
+describe("onLogs", () => {
+  it("Calls `networkUp` when good logs come in", () => {
+    const fn = onLogs(jest.fn());
+    const log = fakeLog("error", []);
+    log.message = "bot xyz is offline";
+    fn(log);
+    expect(dispatchNetworkDown).toHaveBeenCalledWith("bot.mqtt");
   });
 });
