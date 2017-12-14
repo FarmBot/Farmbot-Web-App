@@ -25,7 +25,7 @@ export const TITLE = "New message from bot";
 
 /** TODO: This ought to be stored in Redux. It is here because of historical
  * reasons. Feel free to factor out when time allows. -RC, 10 OCT 17 */
-const HACKY_FLAGS = {
+export const HACKY_FLAGS = {
   needVersionCheck: true,
   alreadyToldUserAboutMalformedMsg: false
 };
@@ -128,7 +128,7 @@ const onLogs = (dispatch: Function) => (msg: Log) => {
   }
 };
 
-function onMalformed() {
+export function onMalformed() {
   bothUp();
   if (!HACKY_FLAGS.alreadyToldUserAboutMalformedMsg) {
     warning(t(Content.MALFORMED_MESSAGE_REC_UPGRADE));
@@ -140,20 +140,6 @@ export const onOnline = () => dispatchNetworkUp("user.mqtt");
 
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
-    const ev =
-      (e: string) =>
-        () => {
-          const m = `${e}: socket ${bot.client.connected ? "ON" : "OFF"}`;
-          info(m);
-          console.log(m);
-        };
-    bot.client.on("reconnect", ev("reconnect"));
-    bot.client.on("close", ev("close"));
-    bot.client.on("offline", ev("offline"));
-    bot.client.on("error", ev("error"));
-    bot.client.on("connect", ev("connect"));
-    bot.client.on("reconnect", ev("reconnect"));
-
     bot.on("online", onOnline);
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));

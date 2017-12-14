@@ -30,12 +30,13 @@ import {
   onOffline,
   changeLastClientConnected,
   onSent,
-  onOnline
+  onOnline,
+  onMalformed
 } from "../../connect_device";
 import { Actions, Content } from "../../../constants";
 import { Log } from "../../../interfaces";
 import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot } from "farmbot";
-import { success, error, info } from "farmbot-toastr";
+import { success, error, info, warning } from "farmbot-toastr";
 import { dispatchNetworkUp, dispatchNetworkDown } from "../../index";
 import { getDevice } from "../../../device";
 
@@ -161,9 +162,23 @@ describe("onSent", () => {
     onSent({ connected: true })();
     expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt");
   });
+
   it("marks MQTT as down", () => {
     jest.resetAllMocks();
     onSent({ connected: false })();
     expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt");
+  });
+});
+
+describe("onMalformed()", () => {
+  it("handles malformed messages", () => {
+    onMalformed();
+    expect(warning)
+      .toHaveBeenCalledWith(Content.MALFORMED_MESSAGE_REC_UPGRADE);
+    jest.resetAllMocks();
+    onMalformed();
+    expect(warning) // Only fire once.
+      .not
+      .toHaveBeenCalledWith(Content.MALFORMED_MESSAGE_REC_UPGRADE);
   });
 });
