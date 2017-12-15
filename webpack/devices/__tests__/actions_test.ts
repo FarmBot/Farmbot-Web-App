@@ -187,7 +187,7 @@ describe("homeAll()", function () {
     await actions.homeAll(100);
     expect(mockDevice.home)
       .toHaveBeenCalledWith({ axis: "all", speed: 100 });
-    expect(mockOk).toHaveBeenCalled();
+    expect(mockOk).not.toHaveBeenCalled();
   });
 });
 

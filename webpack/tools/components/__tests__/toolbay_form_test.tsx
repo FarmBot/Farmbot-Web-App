@@ -4,7 +4,6 @@ import { mount } from "enzyme";
 import { mapStateToProps } from "../../state_to_props";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { Actions } from "../../../constants";
-import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<ToolBayForm/>", () => {
   function bootstrapTest() {
