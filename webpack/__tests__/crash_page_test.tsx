@@ -24,10 +24,10 @@ describe("<CrashPage/>", () => {
     const CrashPage = crashPage(fakeError);
     const el = mount(<CrashPage />);
     const html = el.html();
-    expect(html).toContain(html);
-    expect(html).toContain("@@@A");
-    expect(html).toContain("@@@B");
-    expect(html).toContain("@@@C");
+    expect(html).toContain(fakeError.message);
+    expect(html).toContain(fakeError.stack[0]);
+    expect(html).toContain(fakeError.stack[1]);
+    expect(html).toContain(fakeError.stack[2]);
     jest.resetAllMocks();
     el.find("a").first().simulate("click");
     expect(Session.clear).toHaveBeenCalled();
