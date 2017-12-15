@@ -38,8 +38,8 @@ describe("refresh()", () => {
     const { mock } = dispatch;
     thunk(dispatch);
     setImmediate(() => {
-      expect(mock.calls.length).toEqual(2);
-      // Test call to refesh();
+      expect(dispatch).toHaveBeenCalledTimes(2);
+      // Test call to refresh();
       const firstCall = mock.calls[0][0];
       const dispatchAction1 = get(firstCall, "type", "NO TYPE FOUND");
       expect(dispatchAction1).toBe(Actions.REFRESH_RESOURCE_START);

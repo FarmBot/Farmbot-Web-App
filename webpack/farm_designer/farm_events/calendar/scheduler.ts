@@ -5,41 +5,43 @@ import { TimeUnit } from "../../interfaces";
 import { NEVER } from "../edit_fe_form";
 
 interface SchedulerProps {
-  originTime: Moment;
+  startTime: Moment;
+  currentTime: Moment;
+  endTime: Moment;
   intervalSeconds: number;
-  lowerBound: Moment;
-  upperBound?: Moment;
 }
 
 const nextYear = () => moment(moment().add(1, "year"));
 
-export function scheduler({ originTime,
-  intervalSeconds,
-  lowerBound,
-  upperBound }: SchedulerProps): Moment[] {
-  if (!intervalSeconds) { // 0, NaN and friends
-    return [originTime];
+export function scheduler({
+  startTime,
+  currentTime,
+  endTime,
+  intervalSeconds
+}: SchedulerProps): Moment[] {
+  if (currentTime > endTime) {
+    return []; // Farm event is over
   }
-  upperBound = upperBound || nextYear();
-  // # How many items must we skip to get to the first occurence?
-  const skip_intervals =
-    Math.ceil((lowerBound.unix() - originTime.unix()) / intervalSeconds);
-  // # At what time does the first event occur?
-  const first_item = originTime
-    .clone()
-    .add((skip_intervals * intervalSeconds), "seconds");
-  const list = [first_item];
-
-  times(60, () => {
-    const x = last(list);
-    if (x) {
-      const item = x.clone().add(intervalSeconds, "seconds");
-      if (item.isBefore(upperBound)) {
-        list.push(item);
+  const timeSinceStart = currentTime.unix() - startTime.unix();
+  const itemsMissed = Math.floor(timeSinceStart / intervalSeconds);
+  const nextItemTime = startTime.clone()
+    .add((itemsMissed * intervalSeconds), "seconds");
+  const scheduledItems = [
+    timeSinceStart > 0
+      ? nextItemTime // start time in the past
+      : startTime];  // start time in the future
+  times(60, () => {  // get next 60 or so calendar items
+    const previousItem = last(scheduledItems);
+    if (previousItem) {
+      const nextItem = previousItem.clone().add(intervalSeconds, "seconds");
+      if (nextItem.isBefore(endTime)) {
+        scheduledItems.push(nextItem);
       }
     }
   });
-  return list;
+  // Match FarmBot OS calendar item execution grace period
+  const gracePeriodCutoffTime = currentTime.subtract(1, "minutes");
+  return scheduledItems.filter(m => m.isAfter(gracePeriodCutoffTime));
 }
 
 /** Translate farmbot interval names to momentjs interval names */
@@ -55,7 +57,7 @@ const LOOKUP: Record<TimeUnit, unitOfTime.Base> = {
 
 /** GIVEN: A time unit (hourly, weekly, etc) and a repeat (number)
  *  RETURNS: Number of seconds for interval.
- *  EXAMPLE: f(2, "minutely") => 120;
+ *  EXAMPLE: f(2, "minutely") => 120; // "Every two minutes"
  */
 export function farmEventIntervalSeconds(repeat: number, unit: TimeUnit) {
   const momentUnit = LOOKUP[unit];
@@ -75,19 +77,21 @@ export interface TimeLine {
   start_time: string;
   /** ISO string */
   end_time?: string | undefined;
+  current_time?: string;
 }
 /** Takes a subset of FarmEvent<Sequence> data and generates a list of dates. */
-export function scheduleForFarmEvent({ start_time, end_time, repeat, time_unit }:
-  TimeLine): Moment[] {
-  const i = repeat && farmEventIntervalSeconds(repeat, time_unit);
-  if (i && (time_unit !== NEVER)) {
-    const hmm = scheduler({
-      originTime: moment(start_time),
-      lowerBound: moment(start_time),
-      upperBound: end_time ? moment(end_time) : nextYear(),
-      intervalSeconds: i
+export function scheduleForFarmEvent(
+  { start_time, end_time, repeat, time_unit, current_time = moment() }: TimeLine
+): Moment[] {
+  const interval = repeat && farmEventIntervalSeconds(repeat, time_unit);
+  if (interval && (time_unit !== NEVER)) {
+    const schedule = scheduler({
+      startTime: moment(start_time),
+      currentTime: moment(current_time),
+      endTime: end_time ? moment(end_time) : nextYear(),
+      intervalSeconds: interval
     });
-    return hmm;
+    return schedule;
   } else {
     return [moment(start_time)];
   }

@@ -34,14 +34,13 @@ const sequenceList = (dispatch: Function) =>
           kind: "execute",
           args: { sequence_id: ts.body.id || 0 }
         }}
-        ghostCss="step-drag-ghost-image"
         intent="step_splice"
         draggerId={NULL_DRAGGER_ID}>
         <Link
           to={`/app/sequences/${urlFriendly(ts.body.name) || ""}`}
           key={uuid}
           onClick={click} >
-          <button className={css.join(" ")}>
+          <button className={css.join(" ")} draggable={true}>
             {name}
           </button>
         </Link>

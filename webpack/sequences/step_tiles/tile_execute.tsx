@@ -3,16 +3,16 @@ import * as React from "react";
 import { splice, remove } from "../step_tiles/index";
 import { StepParams } from "../interfaces";
 import { t } from "i18next";
-import { DropDownItem } from "../../ui";
+import { DropDownItem, Row, Col } from "../../ui";
 import { selectAllSequences, findSequenceById } from "../../resources/selectors";
 import { Execute } from "farmbot/dist";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { ResourceIndex } from "../../resources/interfaces";
-import { defensiveClone } from "../../util";
-import { overwrite } from "../../api/crud";
+import { editStep } from "../../api/crud";
 import { FBSelect } from "../../ui/new_fb_select";
 import { StepIconGroup } from "../step_icon_group";
 import { StepTitleBar } from "./step_title_bar";
+import { ToolTips } from "../../constants";
 
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
@@ -26,7 +26,7 @@ export function ExecuteBlock(p: StepParams) {
   }
 }
 
-interface ExecBlockParams {
+export interface ExecBlockParams {
   currentStep: Execute;
   currentSequence: TaggedSequence;
   dispatch: Function;
@@ -35,17 +35,19 @@ interface ExecBlockParams {
 }
 export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}> {
   changeSelection = (input: DropDownItem) => {
-    const { props } = this;
-    if (_.isNumber(input.value)) {
-      const step2 = defensiveClone(props.currentStep);
-      step2.args.sequence_id = input.value;
-      const seq2 = defensiveClone(props.currentSequence);
-      seq2.body.body = seq2.body.body || [];
-      seq2.body.body[props.index] = step2;
-      props.dispatch(overwrite(props.currentSequence, seq2.body));
-    } else {
-      throw new Error("Never not a number;");
-    }
+    const { dispatch, currentSequence, currentStep, index } = this.props;
+    dispatch(editStep({
+      sequence: currentSequence,
+      step: currentStep,
+      index: index,
+      executor: (step: Execute) => {
+        if (_.isNumber(input.value)) {
+          step.args.sequence_id = input.value;
+        } else {
+          throw new Error("Never not a number;");
+        }
+      }
+    }));
   }
 
   sequenceDropDownList = () => {
@@ -84,8 +86,8 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
     const { dispatch, currentStep, index, currentSequence } = props;
     return (<div>
       <div className="step-wrapper">
-        <div className="row">
-          <div className="col-sm-12">
+        <Row>
+          <Col sm={12}>
             <div className="step-header execute-step">
               <StepTitleBar
                 step={currentStep}
@@ -103,22 +105,22 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
                   index,
                   sequence: currentSequence
                 })}
-                helpText={"Executes another sequence. Best used with `if` blocks"} />
+                helpText={t(ToolTips.EXECUTE_SEQUENCE)} />
             </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12">
+          </Col>
+        </Row>
+        <Row>
+          <Col sm={12}>
             <div className="step-content execute-step">
-              <div className="row">
-                <div className="col-xs-12">
+              <Row>
+                <Col sm={12}>
                   <label>{t("Sequence")}</label>
                   <this.SequenceSelectBox />
-                </div>
-              </div>
+                </Col>
+              </Row>
             </div>
-          </div>
-        </div>
+          </Col>
+        </Row>
       </div>
     </div>);
   }

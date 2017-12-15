@@ -75,14 +75,30 @@ describe("<InnerIf />", () => {
 describe("IfBlockDropDownHandler()", () => {
   it("onChange()", () => {
     const { onChange } = IfBlockDropDownHandler(fakeProps(), "_else");
+
     onChange(expectedItem);
-    const [argsList1] = (overwrite as jest.Mock).mock.calls;
-    expect(argsList1[1].body[0].args._else).toEqual(execute);
+    expect(overwrite).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({
+        body: [{
+          kind: "_if",
+          args: expect.objectContaining({ _else: execute })
+        }]
+      }));
+
     jest.clearAllMocks();
+
     onChange({ label: "None", value: "" });
-    const [argsList2] = (overwrite as jest.Mock).mock.calls;
-    expect(argsList2[1].body[0].args._else)
-      .toEqual({ kind: "nothing", args: {} });
+    expect(overwrite).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({
+        body: [{
+          kind: "_if",
+          args: expect.objectContaining({
+            _else: { kind: "nothing", args: {} }
+          })
+        }]
+      }));
   });
 
   it("selectedItem()", () => {

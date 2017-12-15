@@ -5,6 +5,7 @@ import { ConnectivityRow, StatusRowProps } from "./connectivity_row";
 import { RetryBtn } from "./retry_btn";
 import { SpecialStatus } from "../../resources/tagged_resources";
 import { ConnectivityDiagram } from "./diagram";
+import { ToolTips } from "../../constants";
 
 interface Props {
   onRefresh(): void;
@@ -28,7 +29,7 @@ export class ConnectivityPanel extends React.Component<Props, ConnectivityState>
     return <Widget className="connectivity-widget">
       <WidgetHeader
         title={t("Connectivity")}
-        helpText={t("Diagnose connectivity issues with FarmBot and the browser.")}>
+        helpText={t(ToolTips.CONNECTIVITY)}>
         <RetryBtn
           status={this.props.status}
           onClick={this.props.onRefresh}

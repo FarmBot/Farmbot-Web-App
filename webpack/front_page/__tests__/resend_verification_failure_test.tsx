@@ -27,7 +27,7 @@ describe("resend_verification.tsx - failure case", () => {
     el.find("button").last().simulate("click");
     const { calls } = props.no.mock;
     setImmediate(() => {
-      expect(props.ok.mock.calls.length).toEqual(0);
+      expect(props.ok).not.toHaveBeenCalled();
       expect(calls.length).toEqual(1);
       expect(get(calls[0][0], "err", "NOT FOUND")).toEqual("hi");
       done();

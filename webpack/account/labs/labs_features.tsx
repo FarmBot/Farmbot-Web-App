@@ -3,6 +3,7 @@ import { WidgetHeader, Widget, WidgetBody } from "../../ui/index";
 import { LabsFeaturesList } from "./labs_features_list_ui";
 import { maybeToggleFeature } from "./labs_features_list_data";
 import { t } from "i18next";
+import { ToolTips } from "../../constants";
 
 export class LabsFeatures extends React.Component<{}, {}> {
   state = {};
@@ -10,7 +11,7 @@ export class LabsFeatures extends React.Component<{}, {}> {
   render() {
     return <Widget className="peripherals-widget">
       <WidgetHeader title={t("App Settings")}
-        helpText={t("Customize your web app experience.")}>
+        helpText={t(ToolTips.LABS)}>
       </WidgetHeader>
       <WidgetBody>
         <LabsFeaturesList onToggle={(x) => {

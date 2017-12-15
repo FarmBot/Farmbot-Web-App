@@ -13,7 +13,7 @@ describe("<ToggleButton/>", function () {
       toggleValue={0}
       toggleAction={() => toggle()} />);
     toggleButton.simulate("click");
-    expect(toggle.mock.calls.length).toEqual(1);
+    expect(toggle).toHaveBeenCalledTimes(1);
   });
 
   it("displays no", () => {

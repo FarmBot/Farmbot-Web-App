@@ -9,6 +9,7 @@ import { mount } from "enzyme";
 import { CopyButton } from "../copy_button";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { SpecialStatus } from "../../../resources/tagged_resources";
+import { Actions } from "../../../constants";
 
 describe("Copy button", () => {
 
@@ -18,13 +19,17 @@ describe("Copy button", () => {
     const el = mount(<CopyButton dispatch={dispatch} regimen={regimen} />);
     expect(el.find("button").length).toBe(1);
     el.simulate("click");
-    expect(dispatch.mock.calls.length).toBe(1);
-    const action = dispatch.mock.calls[0][0];
-    expect(typeof action).toEqual("object");
-    expect(action.type).toEqual("INIT_RESOURCE");
-    const reg = action.payload.body;
-    expect(action.payload.specialStatus).toBe(SpecialStatus.DIRTY);
-    expect(reg.name).toContain("Foo copy");
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: expect.objectContaining({
+        body: expect.objectContaining({
+          name: expect.stringContaining("Foo copy")
+        }),
+        specialStatus: SpecialStatus.DIRTY,
+        kind: "Regimen"
+      }),
+      type: Actions.INIT_RESOURCE
+    });
     expect(mockPush).toHaveBeenCalledWith("/app/regimens/foo_copy_1");
   });
 
@@ -34,7 +39,7 @@ describe("Copy button", () => {
     const el = mount(<CopyButton dispatch={dispatch} regimen={regimen} />);
     expect(el.find("button").length).toBe(1);
     el.simulate("click");
-    expect(dispatch.mock.calls.length).toBe(1);
+    expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
   it("renders nothing if not given a regimen", () => {
@@ -42,7 +47,7 @@ describe("Copy button", () => {
     const el = mount(<CopyButton dispatch={dispatch} />);
     expect(el.find("button").length).toBe(0);
     el.simulate("click");
-    expect(dispatch.mock.calls.length).toBe(0);
+    expect(dispatch).not.toHaveBeenCalled();
   });
 
 });

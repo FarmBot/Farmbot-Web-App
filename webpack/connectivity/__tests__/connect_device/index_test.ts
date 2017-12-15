@@ -150,10 +150,9 @@ describe("changeLastClientConnected", () => {
     const setUserEnv = jest.fn();
     const fakeFarmbot = { setUserEnv: setUserEnv as any } as Farmbot;
     changeLastClientConnected(fakeFarmbot)();
-    expect(fakeFarmbot.setUserEnv)
-      .toHaveBeenCalled();
-    expect(Object.keys(setUserEnv.mock.calls[0][0]))
-      .toContain("LAST_CLIENT_CONNECTED");
+    expect(setUserEnv).toHaveBeenCalledWith(expect.objectContaining({
+      "LAST_CLIENT_CONNECTED": expect.any(String)
+    }));
   });
 });
 

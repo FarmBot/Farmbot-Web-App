@@ -63,15 +63,15 @@ describe("commitBulkEditor()", () => {
     state.resources.consumers.regimens.dailyOffsetMs = 2000;
     state.resources.consumers.regimens.weeks = [{
       days:
-      {
-        day1: true,
-        day2: false,
-        day3: false,
-        day4: false,
-        day5: false,
-        day6: false,
-        day7: false
-      }
+        {
+          day1: true,
+          day2: false,
+          day3: false,
+          day4: false,
+          day5: false,
+          day6: false,
+          day7: false
+        }
     }];
     return state;
   }
@@ -113,10 +113,16 @@ describe("commitBulkEditor()", () => {
     const getState = () => state;
     const dispatch = jest.fn();
     commitBulkEditor()(dispatch, getState);
-    const argsList = dispatch.mock.calls[0][0];
-    expect(argsList.type).toEqual(Actions.OVERWRITE_RESOURCE);
-    expect(argsList.payload.update.regimen_items[1])
-      .toEqual({ sequence_id: 1, time_offset: 2000 });
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: expect.objectContaining({
+        update: expect.objectContaining({
+          regimen_items: [
+            { id: 1, regimen_id: 1, sequence_id: 1, time_offset: 1000 },
+            { sequence_id: 1, time_offset: 2000 }]
+        }),
+      }),
+      type: Actions.OVERWRITE_RESOURCE
+    });
     expect(mockErr).not.toHaveBeenCalled();
   });
 });

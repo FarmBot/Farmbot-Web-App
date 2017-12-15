@@ -24,13 +24,18 @@ describe("movePlant", () => {
         gridSize: { x: 3000, y: 1500 }
       };
       movePlant(payload);
-      const [argList] = (edit as jest.Mock<{}>).mock.calls;
-      const oldPlant = argList[0];
-      expect(oldPlant.body.x).toBe(100);
-      expect(oldPlant.body.y).toBe(200);
-      const update = argList[1];
-      expect(update.x).toBe(expected.x);
-      expect(update.y).toBe(expected.y);
+      expect(edit).toHaveBeenCalledWith(
+        // Old plant
+        expect.objectContaining({
+          body: expect.objectContaining({
+            x: 100, y: 200
+          })
+        }),
+        // Update
+        expect.objectContaining({
+          x: expected.x, y: expected.y
+        })
+      );
     });
   }
   movePlantTest("within bounds", { x: 1, y: 2 }, { x: 101, y: 202 });

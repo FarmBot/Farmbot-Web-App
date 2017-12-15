@@ -229,7 +229,7 @@ export function homeAll(speed: number) {
   const noun = "'Home All' command";
   getDevice()
     .home({ axis: "all", speed })
-    .then(commandOK(noun), commandErr(noun));
+    .catch(commandErr(noun));
 }
 
 const startUpdate = () => {

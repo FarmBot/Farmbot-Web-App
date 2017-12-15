@@ -43,7 +43,7 @@ describe("<FarmEventForm/>", () => {
     const i = instance(p);
     expect(i.dispatch).toBe(p.dispatch);
     i.dispatch();
-    expect((p.dispatch as jest.Mock<{}>).mock.calls.length).toBe(1);
+    expect(p.dispatch).toHaveBeenCalledTimes(1);
   });
 
   it("has a view model", () => {

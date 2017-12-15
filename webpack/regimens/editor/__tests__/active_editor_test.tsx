@@ -4,6 +4,7 @@ import { ActiveEditor } from "../active_editor";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { ActiveEditorProps } from "../interfaces";
 import { Actions } from "../../../constants";
+import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<ActiveEditor />", () => {
   const props: ActiveEditorProps = {
@@ -37,11 +38,9 @@ describe("<ActiveEditor />", () => {
     wrapper.find("i").simulate("click");
     expect(props.dispatch).toHaveBeenCalledWith({
       payload: {
-        update: {
-          color: "red", name: "Foo", regimen_items: []
-        },
-        uuid: "Regimen.1.18",
-        specialStatus: "DIRTY"
+        update: expect.objectContaining({ regimen_items: [] }),
+        uuid: expect.stringContaining("Regimen"),
+        specialStatus: SpecialStatus.DIRTY
       },
       type: Actions.OVERWRITE_RESOURCE
     });

@@ -50,7 +50,6 @@ export interface StepDraggerProps {
   dispatch: Function;
   step: Step;
   intent: DataXferIntent;
-  ghostCss: string;
   children?: JSXChildren;
   draggerId: number;
 }
