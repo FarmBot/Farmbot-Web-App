@@ -136,12 +136,13 @@ export function onMalformed() {
   }
 }
 
+export const onReconnect =
+  () => warning("Attempting to reconnect to the message broker", "Offline");
 export const onOnline = () => dispatchNetworkUp("user.mqtt");
 
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
-    bot.client.on("reconnect",
-      throttle(() => success("Reconnected to the message broker"), 1000));
+    bot.client.on("reconnect", onOnline);
     bot.on("online", onOnline);
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));
