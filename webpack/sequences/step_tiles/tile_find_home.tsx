@@ -1,7 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
-import { splice, remove } from "./index";
-import { StepTitleBar } from "./step_title_bar";
 import { FindHome, ALLOWED_AXIS } from "farmbot";
 import { StepParams } from "../interfaces";
 import { TaggedSequence } from "../../resources/tagged_resources";
@@ -9,7 +6,8 @@ import { ResourceIndex } from "../../resources/interfaces";
 import { overwrite } from "../../api/crud";
 import { defensiveClone } from "../../util";
 import { ToolTips } from "../../constants";
-import { StepIconGroup } from "../step_icon_group";
+import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import { Row, Col } from "../../ui/index";
 
 export function TileFindHome(props: StepParams) {
   if (props.currentStep.kind === "find_home") {
@@ -50,58 +48,42 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
   render() {
     const { dispatch, index, currentStep, currentSequence } = this.props;
 
-    return <div>
-      <div className="step-wrapper">
-        <div className="row">
-          <div className="col-sm-12">
-            <div className="step-header find-home-step">
-              <StepTitleBar index={index}
-                dispatch={dispatch}
-                step={currentStep}
-                sequence={currentSequence} />
-              <StepIconGroup
-                onTrash={() => remove({ dispatch, index, sequence: currentSequence })}
-                onClone={() => dispatch(splice({
-                  step: currentStep,
-                  sequence: currentSequence,
-                  index
-                }))}
-                helpText={t(ToolTips.FIND_HOME)} />
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12">
-            <div className="step-content find-home-step">
-              <div className="row">
-                <div className="col-xs-12">
-                  <div className="bottom-content">
-                    <div className="channel-fields">
-                      <form>
-                        {AXIS_CHOICES.map((axis, i) => {
-                          return <div key={i} style={{ display: "inline" }}>
-                            <label>
-                              <input type="radio"
-                                value={axis}
-                                onChange={(e) => {
-                                  const nextVal =
-                                    e.currentTarget.value as typeof axis;
-                                  this.handleUpdate(nextVal);
-                                }}
-                                checked={this.isSelected(axis)} />
-                              {" "} Find {axis}
-                            </label>
-                          </div>;
-                        })}
-                      </form>
-                    </div>
-                  </div>
-                </div>
+    const className = "find-home-step";
+    return <StepWrapper>
+      <StepHeader
+        className={className}
+        helpText={ToolTips.FIND_HOME}
+        currentSequence={currentSequence}
+        currentStep={currentStep}
+        dispatch={dispatch}
+        index={index} />
+      <StepContent className={className}>
+        <Row>
+          <Col xs={12}>
+            <div className="bottom-content">
+              <div className="channel-fields">
+                <form>
+                  {AXIS_CHOICES.map((axis, i) => {
+                    return <div key={i} style={{ display: "inline" }}>
+                      <label>
+                        <input type="radio"
+                          value={axis}
+                          onChange={(e) => {
+                            const nextVal =
+                              e.currentTarget.value as typeof axis;
+                            this.handleUpdate(nextVal);
+                          }}
+                          checked={this.isSelected(axis)} />
+                        {" "} Find {axis}
+                      </label>
+                    </div>;
+                  })}
+                </form>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>;
+          </Col>
+        </Row>
+      </StepContent>
+    </StepWrapper>;
   }
 }

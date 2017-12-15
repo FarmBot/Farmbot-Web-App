@@ -7,7 +7,7 @@ import { FBSelect, NULL_CHOICE } from "../../../ui/new_fb_select";
 import { DropDownItem } from "../../../ui/fb_select";
 import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
-import { Col } from "../../../ui/index";
+import { Col, Row } from "../../../ui/index";
 import { ALLOWED_OPS } from "farmbot/dist";
 
 const IS_UNDEFINED: ALLOWED_OPS = "is_undefined";
@@ -40,7 +40,7 @@ export function If_(props: IfParams) {
     };
   }
 
-  return <div>
+  return <Row>
     <Col xs={12}>
       <h4 className="top">IF...</h4>
     </Col>
@@ -68,5 +68,5 @@ export function If_(props: IfParams) {
         index={index}
         field="rhs" />
     </Col>
-  </div>;
+  </Row>;
 }

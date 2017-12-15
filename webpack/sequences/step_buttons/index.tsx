@@ -26,7 +26,7 @@ export function StepButton({ children, step, color, dispatch, current }:
         step={step}
         intent="step_splice"
         draggerId={NULL_DRAGGER_ID} >
-        <button
+        <button draggable={true}
           className={`fb-button full-width block ${color}`}
           onClick={stepClick(dispatch, step, current)} >
           {children}
