@@ -23,7 +23,6 @@ interface RootComponentProps {
   store: Store;
 }
 
-// errorLoading(() => { })({});
 const controlsRoute = {
   path: "app/controls",
   getComponent(_discard: void, cb: Function) {

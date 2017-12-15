@@ -7,17 +7,11 @@ import { Session } from "./session";
 export function crashPage(error: object) {
   return class CrashPage extends React.Component<{}, {}> {
     render() {
-      console.error("Dynamic page loading failed", error);
       const stack = get(error, "stack", "No stack.");
       const message = get(error, "message", "No message available.");
       const Rollbar = get(window, "Rollbar", { error: noop });
       Rollbar.error(error);
-      let msg: string;
-      try {
-        msg = JSON.stringify({ message, stack });
-      } catch (error) {
-        msg = "Failed to extract error.";
-      }
+      const msg = JSON.stringify({ message, stack });
 
       return <Page>
         <h1> Something went wrong! </h1>
