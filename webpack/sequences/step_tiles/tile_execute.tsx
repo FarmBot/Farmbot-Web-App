@@ -1,6 +1,5 @@
 import * as _ from "lodash";
 import * as React from "react";
-import { splice, remove } from "../step_tiles/index";
 import { StepParams } from "../interfaces";
 import { t } from "i18next";
 import { DropDownItem, Row, Col } from "../../ui";
@@ -10,9 +9,8 @@ import { TaggedSequence } from "../../resources/tagged_resources";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
 import { FBSelect } from "../../ui/new_fb_select";
-import { StepIconGroup } from "../step_icon_group";
-import { StepTitleBar } from "./step_title_bar";
 import { ToolTips } from "../../constants";
+import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
@@ -84,44 +82,23 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
   render() {
     const props = this.props;
     const { dispatch, currentStep, index, currentSequence } = props;
-    return (<div>
-      <div className="step-wrapper">
+    const className = "execute-step";
+    return <StepWrapper>
+      <StepHeader
+        className={className}
+        helpText={ToolTips.EXECUTE_SEQUENCE}
+        currentSequence={currentSequence}
+        currentStep={currentStep}
+        dispatch={dispatch}
+        index={index} />
+      <StepContent className={className}>
         <Row>
-          <Col sm={12}>
-            <div className="step-header execute-step">
-              <StepTitleBar
-                step={currentStep}
-                index={index}
-                dispatch={dispatch}
-                sequence={currentSequence} />
-              <StepIconGroup
-                onClone={() => dispatch(splice({
-                  index,
-                  step: currentStep,
-                  sequence: currentSequence
-                }))}
-                onTrash={() => remove({
-                  dispatch,
-                  index,
-                  sequence: currentSequence
-                })}
-                helpText={t(ToolTips.EXECUTE_SEQUENCE)} />
-            </div>
+          <Col xs={12}>
+            <label>{t("Sequence")}</label>
+            <this.SequenceSelectBox />
           </Col>
         </Row>
-        <Row>
-          <Col sm={12}>
-            <div className="step-content execute-step">
-              <Row>
-                <Col sm={12}>
-                  <label>{t("Sequence")}</label>
-                  <this.SequenceSelectBox />
-                </Col>
-              </Row>
-            </div>
-          </Col>
-        </Row>
-      </div>
-    </div>);
+      </StepContent>
+    </StepWrapper>;
   }
 }

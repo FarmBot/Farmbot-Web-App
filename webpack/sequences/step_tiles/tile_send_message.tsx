@@ -1,6 +1,4 @@
 import * as React from "react";
-import { splice, remove } from "./index";
-import { StepTitleBar } from "./step_title_bar";
 import { DropDownItem, Row, Col } from "../../ui";
 import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
@@ -18,7 +16,8 @@ import {
   channel,
   MESSAGE_STATUSES_DDI
 } from "./tile_send_message_support";
-import { StepIconGroup } from "../step_icon_group";
+import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+
 type ChannelName = ALLOWED_CHANNEL_NAMES;
 export function TileSendMessage(props: StepParams) {
   if (props.currentStep.kind === "send_message") {
@@ -95,72 +94,55 @@ class RefactoredSendMessage
 
   render() {
     const { dispatch, index, currentStep, currentSequence } = this.props;
+    const className = "send-message-step";
 
-    return <div>
-      <div className="step-wrapper">
+    return <StepWrapper>
+      <StepHeader
+        className={className}
+        helpText={ToolTips.SEND_MESSAGE}
+        currentSequence={currentSequence}
+        currentStep={currentStep}
+        dispatch={dispatch}
+        index={index} />
+      <StepContent className={className}>
         <Row>
-          <Col sm={12}>
-            <div className="step-header send-message-step">
-              <StepTitleBar index={index}
-                dispatch={dispatch}
-                step={currentStep}
-                sequence={currentSequence} />
-              <StepIconGroup
-                onClone={() => dispatch(splice({
-                  step: currentStep,
-                  sequence: currentSequence,
-                  index
-                }))}
-                onTrash={() => remove({
-                  dispatch, index, sequence: currentSequence
-                })}
-                helpText={t(ToolTips.SEND_MESSAGE)} />
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col sm={12}>
-            <div className="step-content send-message-step">
-              <Row>
-                <Col xs={12}>
-                  <label>{t("Message")}</label>
-                  <span className="char-limit">
-                    {this.message.length}/300
+          <Col xs={12}>
+            <label>{t("Message")}</label>
+            <span className="char-limit">
+              {this.message.length}/300
                 </span>
-                  <StepInputBox dispatch={dispatch}
-                    step={currentStep}
-                    sequence={currentSequence}
-                    index={index}
-                    field="message" />
-                  <div className="bottom-content">
-                    <div className="channel-options">
-                      <FBSelect
-                        onChange={this.setMsgType}
-                        selectedItem={this.currentSelection}
-                        list={MESSAGE_STATUSES} />
-                    </div>
-                    <div className="channel-fields">
-                      <div>{EACH_CHANNEL.map((chan, inx) => {
-                        return <fieldset key={inx}>
-                          <label htmlFor={chan.name}>
-                            {chan.label}
-                          </label>
-                          <input type="checkbox"
-                            id={chan.name}
-                            onChange={this.toggle(chan.name)}
-                            checked={
-                              this.hasChannel(chan.name) || chan.alwaysOn}
-                            disabled={chan.alwaysOn} />
-                        </fieldset>;
-                      })}</div>
-                    </div>
-                  </div>
-                </Col>
-              </Row>
+            <StepInputBox dispatch={dispatch}
+              step={currentStep}
+              sequence={currentSequence}
+              index={index}
+              field="message" />
+            <div className="bottom-content">
+              <div className="channel-options">
+                <FBSelect
+                  onChange={this.setMsgType}
+                  selectedItem={this.currentSelection}
+                  list={MESSAGE_STATUSES} />
+              </div>
+              <div className="channel-fields">
+                <div>{EACH_CHANNEL.map((chan, inx) => {
+                  return <fieldset key={inx}>
+                    <label htmlFor={chan.name}>
+                      {chan.label}
+                    </label>
+                    <input type="checkbox"
+                      id={chan.name}
+                      onChange={this.toggle(chan.name)}
+                      checked={
+                        this.hasChannel(chan.name) || chan.alwaysOn}
+                      disabled={chan.alwaysOn} />
+                  </fieldset>;
+                })}
+                </div>
+              </div>
             </div>
           </Col>
         </Row>
-      </div>
-    </div>;
+      </StepContent>
+    </StepWrapper>;
   }
 }

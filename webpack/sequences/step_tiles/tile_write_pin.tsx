@@ -1,16 +1,15 @@
 import * as React from "react";
-import { StepTitleBar } from "./step_title_bar";
-import { splice, remove } from "./index";
 import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
-import { StepIconGroup } from "../step_icon_group";
 import { FBSelect } from "../../ui/new_fb_select";
 import {
   setPinMode, PIN_MODES, setPinValue, currentValueSelection,
   PIN_VALUES, currentModeSelection
 } from "./tile_pin_support";
+import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import { Row, Col } from "../../ui/index";
 
 export function TileWritePin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
@@ -30,53 +29,37 @@ export function TileWritePin(props: StepParams) {
       }
     }
   };
-  return (<div>
-    <div className="step-wrapper">
-      <div className="row">
-        <div className="col-sm-12">
-          <div className="step-header write-pin-step">
-            <StepTitleBar index={index}
-              dispatch={dispatch}
-              step={currentStep}
-              sequence={currentSequence} />
-            <StepIconGroup
-              onClone={() => dispatch(splice({
-                step: currentStep,
-                index,
-                sequence: currentSequence
-              }))}
-              onTrash={() => remove({ dispatch, index, sequence: currentSequence })}
-              helpText={t(ToolTips.WRITE_PIN)} />
-          </div>
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-sm-12">
-          <div className="step-content write-pin-step">
-            <div className="row">
-              <div className="col-xs-6 col-md-3">
-                <label>{t("Pin Number")}</label>
-                <StepInputBox dispatch={dispatch}
-                  step={currentStep}
-                  sequence={currentSequence}
-                  index={index}
-                  field="pin_number" />
-              </div>
-              <div className="col-xs-6 col-md-3">
-                <label>{t("Value")}</label>
-                {pinValueField()}
-              </div>
-              <div className="col-xs-6 col-md-3">
-                <label>{t("Pin Mode")}</label>
-                <FBSelect
-                  onChange={(x) => setPinMode(x, props)}
-                  selectedItem={currentModeSelection(currentStep)}
-                  list={PIN_MODES} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>);
+  const className = "write-pin-step";
+  return <StepWrapper>
+    <StepHeader
+      className={className}
+      helpText={ToolTips.WRITE_PIN}
+      currentSequence={currentSequence}
+      currentStep={currentStep}
+      dispatch={dispatch}
+      index={index} />
+    <StepContent className={className}>
+      <Row>
+        <Col xs={6} md={3}>
+          <label>{t("Pin Number")}</label>
+          <StepInputBox dispatch={dispatch}
+            step={currentStep}
+            sequence={currentSequence}
+            index={index}
+            field="pin_number" />
+        </Col>
+        <Col xs={6} md={3}>
+          <label>{t("Value")}</label>
+          {pinValueField()}
+        </Col>
+        <Col xs={6} md={3}>
+          <label>{t("Pin Mode")}</label>
+          <FBSelect
+            onChange={(x) => setPinMode(x, props)}
+            selectedItem={currentModeSelection(currentStep)}
+            list={PIN_MODES} />
+        </Col>
+      </Row>
+    </StepContent>
+  </StepWrapper>;
 }
