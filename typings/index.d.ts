@@ -9,3 +9,9 @@ interface Rollbar {
 }
 
 declare var Rollbar: Rollbar | undefined;
+
+declare namespace jest {
+  export interface Matchers<R> {
+    toBeSameTimeAs: jest.Expect;
+  }
+}
