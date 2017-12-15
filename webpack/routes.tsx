@@ -1,7 +1,6 @@
 import "./css/_index.scss";
 import * as React from "react";
 import { Provider } from "react-redux";
-import * as _ from "lodash";
 import { Router, RedirectFunction, RouterState } from "react-router";
 import { App } from "./app";
 import { store as _store } from "./redux/store";
@@ -11,6 +10,7 @@ import { ready } from "./config/actions";
 import { Session } from "./session";
 import { attachToRoot } from "./util";
 import { Callback } from "i18next";
+import { crashPage } from "./crash_page";
 
 const key = "Dec 8 13:16";
 
@@ -23,61 +23,13 @@ interface RootComponentProps {
   store: Store;
 }
 
-function errorLoading(err: object) {
-  console.error("Dynamic page loading failed", err);
-  const container = document.getElementById("root");
-  const stack = _.get(err, "stack", "No stack.");
-  const message = _.get(err, "message", "No message available.");
-
-  Rollbar && Rollbar.error && Rollbar.error(message);
-
-  let msg: string;
-  try {
-    msg = JSON.stringify({ message, stack });
-  } catch (error) {
-    msg = "Failed to extract error.";
-  }
-  if (container) {
-    container.innerHTML = (`
-    <div>
-      <h1> Something went wrong! </h1>
-      <p>We hit an internal error while rendering this page.</p>
-      <p>We have been notified of the issue and will investigate a solution shortly.</p>
-      <hr/>
-      <p>In the mean time, you can try the following:</P>
-      <ul>
-        <li> Refresh the page and log in again.</li>
-        <li> Send the error information (below) to our developer team via the
-        <a href="http://forum.farmbot.org/c/software">FarmBot software
-        forum</a>. Including additional information (such as steps leading up
-        to the error) help us identify solutions more quickly. </li>
-      <hr/>
-      <pre>
-      <br/>
-      ${msg}
-    </pre>
-    </div>
-  `);
-  }
-  sessionStorage.clear();
-  if (!location.hostname.includes("localhost")) {
-    // Clear cache for end users, but not developers.
-    localStorage.clear();
-  }
-  const y = document.querySelectorAll("link");
-  for (let x = 0; x < y.length; x++) {
-    const element = y[x];
-    element.remove();
-  }
-}
-
 // errorLoading(() => { })({});
 const controlsRoute = {
   path: "app/controls",
   getComponent(_discard: void, cb: Function) {
     import("./controls/controls")
       .then((module) => cb(undefined, module.Controls))
-      .catch(errorLoading);
+      .catch((e: object) => cb(undefined, crashPage(e)));
   }
 };
 
@@ -131,7 +83,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         getComponent(_discard: void, cb: Function) {
           import("./account/index")
             .then(module => cb(undefined, module.Account))
-            .catch(errorLoading);
+            .catch((e: object) => cb(undefined, crashPage(e)));
         }
       },
       controlsRoute,
@@ -140,7 +92,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         getComponent(_discard: void, cb: Function) {
           import("./devices/devices")
             .then(module => cb(undefined, module.Devices))
-            .catch(errorLoading);
+            .catch((e: object) => cb(undefined, crashPage(e)));
         }
       },
       {
@@ -148,7 +100,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         getComponent(_discard: void, cb: Function) {
           import("./farmware/index")
             .then(module => cb(undefined, module.FarmwarePage))
-            .catch(errorLoading);
+            .catch((e: object) => cb(undefined, crashPage(e)));
         }
       },
       {
@@ -157,7 +109,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         getComponent(_discard: void, cb: Function) {
           import("./farm_designer/index")
             .then(module => cb(undefined, module.FarmDesigner))
-            .catch(errorLoading);
+            .catch((e: object) => cb(undefined, crashPage(e)));
         },
         childRoutes: [
           {
@@ -165,7 +117,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/plant_inventory")
                 .then(module => cb(undefined, module.Plants))
-                .catch(errorLoading);
+                .catch((e: object) => cb(undefined, crashPage(e)));
             },
           },
           {
@@ -173,7 +125,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/crop_catalog")
                 .then(module => cb(undefined, module.CropCatalog))
-                .catch(errorLoading);
+                .catch((e: object) => cb(undefined, crashPage(e)));
             },
           },
           {
@@ -181,7 +133,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/crop_info")
                 .then(module => cb(undefined, module.CropInfo))
-                .catch(errorLoading);
+                .catch((e: object) => cb(undefined, crashPage(e)));
             },
           },
           {
@@ -189,7 +141,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/add_plant")
                 .then(module => cb(undefined, module.AddPlant))
-                .catch(errorLoading);
+                .catch((e: object) => cb(undefined, crashPage(e)));
             },
           },
           {
@@ -197,7 +149,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/select_plants")
                 .then(module => cb(undefined, module.SelectPlants))
-                .catch(errorLoading);
+                .catch((e: object) => cb(undefined, crashPage(e)));
             },
           },
           {
@@ -205,7 +157,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/plant_info")
                 .then(module => cb(undefined, module.PlantInfo))
-                .catch(errorLoading);
+                .catch((e: object) => cb(undefined, crashPage(e)));
             },
           },
           {
@@ -213,7 +165,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/edit_plant_info")
                 .then(module => cb(undefined, module.EditPlantInfo))
-                .catch(errorLoading);
+                .catch((e: object) => cb(undefined, crashPage(e)));
             },
           },
           {
@@ -221,7 +173,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/farm_events/farm_events")
                 .then(module => cb(undefined, module.FarmEvents))
-                .catch(errorLoading);
+                .catch((e: object) => cb(undefined, crashPage(e)));
             }
           },
           {
@@ -229,7 +181,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/farm_events/add_farm_event")
                 .then(module => cb(undefined, module.AddFarmEvent))
-                .catch(errorLoading);
+                .catch((e: object) => cb(undefined, crashPage(e)));
             }
           },
           {
@@ -237,7 +189,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/farm_events/edit_farm_event")
                 .then(module => cb(undefined, module.EditFarmEvent))
-                .catch(errorLoading);
+                .catch((e: object) => cb(undefined, crashPage(e)));
             }
           }
         ]
@@ -247,7 +199,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         getComponent(_discard: void, cb: Function) {
           import("./regimens/index")
             .then(module => cb(undefined, module.Regimens))
-            .catch(errorLoading);
+            .catch((e: object) => cb(undefined, crashPage(e)));
         },
       },
       {
@@ -255,7 +207,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         getComponent(_discard: void, cb: Function) {
           import("./regimens/index")
             .then(module => cb(undefined, module.Regimens))
-            .catch(errorLoading);
+            .catch((e: object) => cb(undefined, crashPage(e)));
         }
       },
       {
@@ -265,7 +217,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             .then(module => {
               cb(undefined, module.Sequences);
             })
-            .catch(errorLoading);
+            .catch((e: object) => cb(undefined, crashPage(e)));
         },
       },
       {
@@ -273,7 +225,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         getComponent(_discard: void, cb: Function) {
           import("./sequences/sequences")
             .then(module => cb(undefined, module.Sequences))
-            .catch(errorLoading);
+            .catch((e: object) => cb(undefined, crashPage(e)));
         },
       },
       {
@@ -281,7 +233,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         getComponent(_discard: void, cb: Function) {
           import("./tools/index")
             .then(module => cb(undefined, module.Tools))
-            .catch(errorLoading);
+            .catch((e: object) => cb(undefined, crashPage(e)));
         }
       },
       {
@@ -289,7 +241,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         getComponent(_discard: void, cb: Function) {
           import("./logs/index")
             .then(module => cb(undefined, module.Logs))
-            .catch(errorLoading);
+            .catch((e: object) => cb(undefined, crashPage(e)));
         }
       },
       {
@@ -297,7 +249,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         getComponent(_discard: void, cb: Function) {
           import("./404")
             .then(module => cb(undefined, module.FourOhFour))
-            .catch(errorLoading);
+            .catch((e: object) => cb(undefined, crashPage(e)));
         }
       }
     ]
