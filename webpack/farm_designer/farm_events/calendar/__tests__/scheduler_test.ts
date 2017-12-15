@@ -3,6 +3,10 @@ import * as moment from "moment";
 import { TimeUnit } from "../../../interfaces";
 import { Moment } from "moment";
 
+interface Expect extends jest.Matchers<void> {
+  toBeSameTimeAs: jest.Expect;
+}
+
 describe("scheduler", () => {
   it("runs every 4 hours, starting Tu, until Th w/ origin of Mo", () => {
     // 8am Monday
@@ -53,7 +57,7 @@ describe("scheduler", () => {
       const result = scheduleForFarmEvent(fakeEvent);
       expect(result.length).toEqual(expected.length);
       expected.map((expectation, index) => {
-        expect(result[index]).toBeSameTimeAs(expectation);
+        (expect(result[index]) as Expect).toBeSameTimeAs(expectation);
       });
     });
   }
