@@ -134,7 +134,8 @@
       "html",
       "json",
       "lcov"
-    ]
+    ],
+    "setupTestFrameworkScriptFile": "<rootDir>/webpack/__test_support__/customMatchers.js"
   },
   "engines": {
     "node": ">=8.9.0"

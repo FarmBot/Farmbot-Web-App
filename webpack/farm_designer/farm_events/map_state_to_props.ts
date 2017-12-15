@@ -59,6 +59,5 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
 export let addSequenceToCalendar =
   (f: FarmEventWithSequence, c: Calendar, now = moment()) => {
     scheduleForFarmEvent(f)
-      .filter(m => m.isAfter(now))
       .map(m => c.insert(occurrence(m, f)));
   };

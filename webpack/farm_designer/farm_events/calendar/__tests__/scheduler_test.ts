@@ -1,6 +1,7 @@
 import { scheduler, scheduleForFarmEvent, TimeLine, farmEventIntervalSeconds } from "../scheduler";
 import * as moment from "moment";
 import { TimeUnit } from "../../../interfaces";
+import { Moment } from "moment";
 
 describe("scheduler", () => {
   it("runs every 4 hours, starting Tu, until Th w/ origin of Mo", () => {
@@ -10,16 +11,16 @@ describe("scheduler", () => {
       .startOf("isoWeek")
       .startOf("day")
       .add(8, "hours");
-    // 3am Tuesday
-    const tuesday = monday.clone().add(19, "hours");
+    // 4am Tuesday
+    const tuesday = monday.clone().add(20, "hours");
     // 18pm Thursday
     const thursday = monday.clone().add(3, "days").add(10, "hours");
     const interval = moment.duration(4, "hours").asSeconds();
     const result1 = scheduler({
-      originTime: monday,
+      currentTime: monday,
       intervalSeconds: interval,
-      lowerBound: tuesday,
-      upperBound: thursday
+      startTime: tuesday,
+      endTime: thursday
     });
     expect(result1[0].format("dd")).toEqual("Tu");
     expect(result1[0].hour()).toEqual(4);
@@ -46,26 +47,77 @@ describe("scheduler", () => {
     EXPECTED.map(x => expect(REALITY).toContain(x));
   });
 
-  it("handles 0 as a repeat value? What happens?");
-});
+  function testSchedule(
+    description: string, fakeEvent: TimeLine, expected: Moment[]) {
+    it(description, () => {
+      const result = scheduleForFarmEvent(fakeEvent);
+      expect(result.length).toEqual(expected.length);
+      expected.map((expectation, index) => {
+        expect(result[index]).toBeSameTimeAs(expectation);
+      });
+    });
+  }
 
-it("schedules a FarmEvent", () => {
-  const fakeEvent: TimeLine = {
-    "start_time": "2017-08-01T17:30:00.000Z",
-    "end_time": "2017-08-07T05:00:00.000Z",
-    "repeat": 2,
-    "time_unit": "daily",
-  };
-  const EXPECTED = [
-    moment("2017-08-01T17:30:00.000Z"),
-    moment("2017-08-03T17:30:00.000Z"),
-    moment("2017-08-05T17:30:00.000Z")
-  ];
-  const result = scheduleForFarmEvent(fakeEvent);
-  expect(result.length).toEqual(3);
-  EXPECTED.map((expectation, index) => {
-    expect(expectation.isSame(result[index])).toBeTruthy();
-  });
+  testSchedule("schedules a FarmEvent",
+    {
+      "start_time": "2017-08-01T17:30:00.000Z",
+      "end_time": "2017-08-07T05:00:00.000Z",
+      "repeat": 2,
+      "time_unit": "daily",
+      current_time: "2017-08-01T16:30:00.000Z"
+    },
+    [
+      moment("2017-08-01T17:30:00.000Z"),
+      moment("2017-08-03T17:30:00.000Z"),
+      moment("2017-08-05T17:30:00.000Z")
+    ]);
+
+  testSchedule("handles 0 as a repeat value",
+    {
+      "start_time": "2017-08-01T17:30:00.000Z",
+      "end_time": "2017-08-07T05:00:00.000Z",
+      "repeat": 0,
+      "time_unit": "daily",
+      current_time: "2017-08-01T16:30:00.000Z"
+    },
+    [moment("2017-08-01T17:30:00.000Z")]);
+
+  testSchedule("handles start_time in the past",
+    {
+      "start_time": "2017-08-01T17:30:00.000Z",
+      "end_time": "2017-08-09T05:00:00.000Z",
+      "repeat": 2,
+      "time_unit": "daily",
+      current_time: "2017-08-03T18:30:00.000Z"
+    },
+    [
+      moment("2017-08-05T17:30:00.000Z"),
+      moment("2017-08-07T17:30:00.000Z")
+    ]);
+
+  testSchedule("uses grace period",
+    {
+      "start_time": "2017-08-01T17:30:00.000Z",
+      "end_time": "2017-08-02T05:00:00.000Z",
+      "repeat": 4,
+      "time_unit": "hourly",
+      current_time: "2017-08-01T17:30:30.000Z"
+    },
+    [
+      moment("2017-08-01T17:30:00.000Z"),
+      moment("2017-08-01T21:30:00.000Z"),
+      moment("2017-08-02T01:30:00.000Z")
+    ]);
+
+  testSchedule("farm event over",
+    {
+      "start_time": "2017-08-01T17:30:00.000Z",
+      "end_time": "2017-08-02T05:00:00.000Z",
+      "repeat": 4,
+      "time_unit": "hourly",
+      current_time: "2017-08-03T17:30:30.000Z"
+    },
+    []);
 });
 
 describe("farmEventIntervalSeconds", () => {
