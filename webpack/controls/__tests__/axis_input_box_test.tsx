@@ -1,6 +1,6 @@
 import * as React from "react";
 import { AxisInputBox } from "../axis_input_box";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { Xyz } from "farmbot/dist";
 
 describe("<AxisInputBox/>", () => {
@@ -19,5 +19,21 @@ describe("<AxisInputBox/>", () => {
   it("renders '' if undefined", () => {
     const el = inputBoxWithValue(undefined);
     expect(el.find("input").first().props().value).toBe("");
+  });
+
+  it("tests inputs", () => {
+    const onChange = jest.fn();
+    const wrapper = shallow(<AxisInputBox
+      axis={"x"} value={undefined} onChange={onChange} />);
+
+    function testInput(input: string, expected: number | undefined) {
+      jest.clearAllMocks();
+      wrapper.find("BlurableInput")
+        .simulate("commit", { currentTarget: { value: input } });
+      expect(onChange).toHaveBeenCalledWith("x", expected);
+    }
+    testInput("", undefined);
+    testInput("1", 1);
+    testInput("e", undefined);
   });
 });
