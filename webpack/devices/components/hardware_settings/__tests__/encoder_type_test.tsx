@@ -1,7 +1,8 @@
 import * as React from "react";
-import { EncoderType, EncoderTypeProps } from "../encoder_type";
+import { EncoderType, EncoderTypeProps, LOOKUP, findByType, isEncoderValue } from "../encoder_type";
 import { shallow } from "enzyme";
 import { FBSelect } from "../../../../ui/new_fb_select";
+import { Encoder } from "farmbot";
 
 describe("<EncoderType/>", () => {
   it("renders default content", () => {
@@ -16,5 +17,26 @@ describe("<EncoderType/>", () => {
     const el = shallow(<EncoderType {...props} />);
     expect(el.find(FBSelect).length).toEqual(3);
     // EncoderType
+  });
+});
+
+describe("findByType", () => {
+  it("handles undefined", () => {
+    expect(findByType(undefined)).toBe(LOOKUP.DEFAULT);
+  });
+
+  it("Handles known values like Encoder.differential", () => {
+    expect(findByType(Encoder.differential)).toBe(LOOKUP[Encoder.differential]);
+  });
+
+  it("Handles bad values like NaN", () => {
+    expect(findByType(-99)).toBe(LOOKUP.DEFAULT);
+  });
+});
+
+describe("isEncoderValue", () => {
+  it("determines typefulness", () => {
+    expect(isEncoderValue(-9)).toBeFalsy();
+    expect(isEncoderValue(Encoder.quadrature)).toBeTruthy();
   });
 });
