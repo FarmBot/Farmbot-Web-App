@@ -137,7 +137,7 @@ export function onMalformed() {
 }
 
 export const onOnline =
-  () => warning("Reconnected to the message broker", "Offline", "green");
+  () => warning("Attempting to reconnect to the message broker", "Offline");
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
     bot.client.on("reconnect", onOnline);
