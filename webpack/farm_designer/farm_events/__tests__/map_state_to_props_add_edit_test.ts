@@ -1,6 +1,5 @@
 import { mapStateToPropsAddEdit } from "../map_state_to_props_add_edit";
 import { fakeState } from "../../../__test_support__/fake_state";
-import * as moment from "moment";
 
 describe("mapStateToPropsAddEdit()", () => {
   const {

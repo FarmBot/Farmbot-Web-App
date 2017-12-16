@@ -2,7 +2,6 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { DetectorState, HSV } from "./interfaces";
 import { TitleBar } from "./title";
-import { getDevice } from "../../device";
 import { Row, Col, Widget, WidgetBody } from "../../ui/index";
 import { t } from "i18next";
 import { resetWeedDetection, scanImage, test } from "./actions";
@@ -42,10 +41,6 @@ export class WeedDetector
     S: ["CAMERA_CALIBRATION_S_LO", "CAMERA_CALIBRATION_S_HI"],
     V: ["CAMERA_CALIBRATION_V_LO", "CAMERA_CALIBRATION_V_LO"]
   };
-
-  test = () => {
-    getDevice().execScript("plant-detection");
-  }
 
   /** Maps <ImageWorkspace/> props to weed detector ENV vars. */
   translateValueAndSave = translateImageWorkspaceAndSave({

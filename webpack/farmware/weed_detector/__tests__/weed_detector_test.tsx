@@ -1,23 +1,34 @@
+const mockDevice = {
+  execScript: jest.fn(),
+};
+
+jest.mock("../../../device", () => ({
+  getDevice: () => {
+    return mockDevice;
+  }
+}));
+
 jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
 import * as React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { WeedDetector } from "../index";
 import { FarmwareProps } from "../../../devices/interfaces";
 
 describe("<WeedDetector />", () => {
+  const props: FarmwareProps = {
+    farmwares: {},
+    syncStatus: "unknown",
+    env: {},
+    user_env: {},
+    dispatch: jest.fn(),
+    currentImage: undefined,
+    images: []
+  };
+
   it("renders", () => {
-    const props: FarmwareProps = {
-      farmwares: {},
-      syncStatus: "unknown",
-      env: {},
-      user_env: {},
-      dispatch: jest.fn(),
-      currentImage: undefined,
-      images: []
-    };
     const wrapper = mount(<WeedDetector {...props} />);
     ["Weed Detector",
       "Color Range",
@@ -28,5 +39,21 @@ describe("<WeedDetector />", () => {
       "Scan image"
     ].map(string =>
       expect(wrapper.text()).toContain(string));
+  });
+
+  it("executes plant detection", () => {
+    const dispatch = jest.fn();
+    props.dispatch = dispatch;
+    const wrapper = shallow(<WeedDetector {...props} />);
+    wrapper.find("TitleBar").simulate("test");
+    dispatch.mock.calls[0][0]()();
+    expect(mockDevice.execScript).toHaveBeenCalledWith("plant-detection");
+  });
+
+  it("executes clear weeds", () => {
+    const wrapper = shallow(<WeedDetector {...props} />);
+    expect(wrapper.state().deletionProgress).toBeUndefined();
+    wrapper.find("TitleBar").simulate("deletionClick");
+    expect(wrapper.state().deletionProgress).toEqual("Deleting...");
   });
 });
