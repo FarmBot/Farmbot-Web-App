@@ -106,3 +106,105 @@ describe("mapStateToProps()", () => {
     expect(push).toBeTruthy();
   });
 });
+
+describe("mapResourcesToCalendar(): sequence farm events", () => {
+  function fakeSeqFEResources() {
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    sequence.body.body = [{ kind: "take_photo", args: {} }];
+
+    const sequenceFarmEvent = fakeFarmEvent("Sequence", 1);
+    sequenceFarmEvent.body.id = 1;
+    sequenceFarmEvent.body.start_time = "2017-12-20T01:02:00.000Z";
+    sequenceFarmEvent.body.end_time = "2017-12-20T01:05:00.000Z";
+
+    return buildResourceIndex([sequence, sequenceFarmEvent]);
+  }
+
+  const fakeSequenceFE = [{
+    day: expect.any(Number),
+    items: [{
+      executableId: 1,
+      heading: "fake",
+      id: 1,
+      mmddyy: expect.stringContaining("17"),
+      sortKey: expect.any(Number),
+      timeStr: expect.stringContaining("02")
+    }],
+    month: "Dec",
+    sortKey: expect.any(Number),
+    year: 17
+  }];
+
+  it("returns calendar rows", () => {
+    const testTime = moment("2017-12-15T01:00:00.000Z");
+    const calendar = mapResourcesToCalendar(
+      fakeSeqFEResources().index, testTime);
+    expect(calendar.getAll()).toEqual(fakeSequenceFE);
+  });
+});
+
+describe("mapResourcesToCalendar(): regimen farm events", () => {
+  function fakeRegFEResources() {
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    sequence.body.body = [{ kind: "take_photo", args: {} }];
+
+    const regimen = fakeRegimen();
+    regimen.body.id = 1;
+    regimen.body.regimen_items = [{
+      sequence_id: 1,
+      time_offset: 288660000
+    }];
+
+    const regimenFarmEvent = fakeFarmEvent("Regimen", 1);
+    regimenFarmEvent.body.id = 2;
+    regimenFarmEvent.body.start_time = "2017-12-20T01:02:00.000Z";
+    regimenFarmEvent.body.end_time = "2017-12-20T01:05:00.000Z";
+
+    return buildResourceIndex([sequence, regimen, regimenFarmEvent]);
+  }
+
+  const fakeRegimenFE = [{
+    day: expect.any(Number),
+    items: [
+      {
+        executableId: 1,
+        heading: "Foo",
+        subheading: "",
+        id: 2,
+        mmddyy: expect.stringContaining("17"),
+        sortKey: expect.any(Number),
+        timeStr: expect.stringContaining("02")
+      }
+    ],
+    month: "Dec",
+    sortKey: expect.any(Number),
+    year: 17
+  },
+  {
+    day: expect.any(Number),
+    items: [
+      {
+        executableId: 1,
+        heading: "Foo",
+        subheading: "fake",
+        id: 2,
+        mmddyy: expect.stringContaining("17"),
+        sortKey: expect.any(Number),
+        timeStr: expect.stringContaining("11")
+      }
+    ],
+    month: "Dec",
+    sortKey: expect.any(Number),
+    year: 17
+  }
+  ];
+
+  it("returns calendar rows", () => {
+    const testTime = moment("2017-12-15T01:00:00.000Z");
+    const calendar = mapResourcesToCalendar(
+      fakeRegFEResources().index, testTime);
+    expect(calendar.getAll()).toEqual(fakeRegimenFE);
+  });
+});
