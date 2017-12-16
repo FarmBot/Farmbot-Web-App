@@ -68,18 +68,23 @@ export interface TimeLine {
 }
 /** Takes a subset of FarmEvent<Sequence> data and generates a list of dates. */
 export function scheduleForFarmEvent(
-  { start_time, end_time, repeat, time_unit, current_time = moment() }: TimeLine
+  { start_time, end_time, repeat, time_unit }: TimeLine, timeNow = moment()
 ): Moment[] {
   const interval = repeat && farmEventIntervalSeconds(repeat, time_unit);
   if (interval && (time_unit !== NEVER)) {
     const schedule = scheduler({
       startTime: moment(start_time),
-      currentTime: moment(current_time),
+      currentTime: timeNow,
       endTime: end_time ? moment(end_time) : nextYear(),
       intervalSeconds: interval
     });
     return schedule;
   } else {
-    return [moment(start_time)];
+    const gracePeriod = timeNow.clone().subtract(1, "minute");
+    if (moment(end_time).isSameOrAfter(gracePeriod)) {
+      return [moment(start_time)];
+    } else {
+      return [];
+    }
   }
 }
