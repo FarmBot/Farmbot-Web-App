@@ -1,6 +1,6 @@
 import * as moment from "moment";
 import { Moment, unitOfTime } from "moment";
-import { times, last } from "lodash";
+import { take, filter, range } from "lodash";
 import { TimeUnit } from "../../interfaces";
 import { NEVER } from "../edit_fe_form";
 
@@ -19,29 +19,16 @@ export function scheduler({
   endTime,
   intervalSeconds
 }: SchedulerProps): Moment[] {
-  if (currentTime > endTime) {
-    return []; // Farm event is over
-  }
-  const timeSinceStart = currentTime.unix() - startTime.unix();
-  const itemsMissed = Math.floor(timeSinceStart / intervalSeconds);
-  const nextItemTime = startTime.clone()
-    .add((itemsMissed * intervalSeconds), "seconds");
-  const scheduledItems = [
-    timeSinceStart > 0
-      ? nextItemTime // start time in the past
-      : startTime];  // start time in the future
-  times(60, () => {  // get next 60 or so calendar items
-    const previousItem = last(scheduledItems);
-    if (previousItem) {
-      const nextItem = previousItem.clone().add(intervalSeconds, "seconds");
-      if (nextItem.isBefore(endTime)) {
-        scheduledItems.push(nextItem);
-      }
-    }
-  });
-  // Match FarmBot OS calendar item execution grace period
-  const gracePeriodCutoffTime = currentTime.subtract(1, "minutes");
-  return scheduledItems.filter(m => m.isAfter(gracePeriodCutoffTime));
+  return take(filter(
+    // Generate all occurrences in Farm Event.
+    range(startTime.unix(), endTime.unix(), intervalSeconds),
+    // Filter out past occurrences.
+    // Match FarmBot OS calendar item execution grace period (60 seconds).
+    (itemTime) => itemTime >= (currentTime.unix() - 60)),
+    // Take only the next 60 occurrences for performance reasons.
+    60) // At the least, this provides the next hour of calendar items.
+    // Convert from seconds back to Moment.
+    .map(x => moment.unix(x));
 }
 
 /** Translate farmbot interval names to momentjs interval names */

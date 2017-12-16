@@ -2,6 +2,7 @@ import { scheduler, scheduleForFarmEvent, TimeLine, farmEventIntervalSeconds } f
 import * as moment from "moment";
 import { TimeUnit } from "../../../interfaces";
 import { Moment } from "moment";
+import { range, padStart } from "lodash";
 
 describe("scheduler", () => {
   it("runs every 4 hours, starting Tu, until Th w/ origin of Mo", () => {
@@ -118,6 +119,30 @@ describe("scheduler", () => {
       current_time: "2017-08-03T17:30:30.000Z"
     },
     []);
+
+  testSchedule("first 60 items",
+    {
+      "start_time": "2017-08-02T17:00:00.000Z",
+      "end_time": "2017-08-02T19:00:00.000Z",
+      "repeat": 1,
+      "time_unit": "minutely",
+      current_time: "2017-08-01T15:30:00.000Z"
+    },
+    range(0, 60)
+      .map((x: number) =>
+        moment(`2017-08-02T17:${padStart("" + x, 2, "0")}:00.000Z`)));
+
+  testSchedule("only 60 items",
+    {
+      "start_time": "2017-08-02T16:00:00.000Z",
+      "end_time": "2017-08-02T21:00:00.000Z",
+      "repeat": 1,
+      "time_unit": "minutely",
+      current_time: "2017-08-02T17:01:00.000Z"
+    },
+    range(0, 60)
+      .map((x: number) =>
+        moment(`2017-08-02T17:${padStart("" + x, 2, "0")}:00.000Z`)));
 });
 
 describe("farmEventIntervalSeconds", () => {
