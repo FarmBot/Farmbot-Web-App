@@ -1,5 +1,6 @@
 import { BotState } from "../interfaces";
 import { McuParamName, McuParams } from "farmbot/dist";
+import { IntegerSize } from "../../util";
 
 export interface HomingRowProps {
   hardware: McuParams;
@@ -37,6 +38,7 @@ export interface NumericMCUInputGroupProps {
   x: McuParamName;
   y: McuParamName;
   z: McuParamName;
+  intSize?: IntegerSize;
 }
 
 export interface MotorsProps {

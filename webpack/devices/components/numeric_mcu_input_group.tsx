@@ -7,7 +7,7 @@ import { Col } from "../../ui/index";
 
 export function NumericMCUInputGroup(props: NumericMCUInputGroupProps) {
 
-  const { bot, dispatch, tooltip, name, x, y, z } = props;
+  const { bot, dispatch, tooltip, name, x, y, z, intSize } = props;
   return <Row>
     <Col xs={6}>
       <label>
@@ -19,19 +19,22 @@ export function NumericMCUInputGroup(props: NumericMCUInputGroupProps) {
       <McuInputBox
         setting={x}
         bot={bot}
-        dispatch={dispatch} />
+        dispatch={dispatch}
+        intSize={intSize} />
     </Col>
     <Col xs={2}>
       <McuInputBox
         setting={y}
         bot={bot}
-        dispatch={dispatch} />
+        dispatch={dispatch}
+        intSize={intSize} />
     </Col>
     <Col xs={2}>
       <McuInputBox
         setting={z}
         bot={bot}
-        dispatch={dispatch} />
+        dispatch={dispatch}
+        intSize={intSize} />
     </Col>
   </Row>;
 }
