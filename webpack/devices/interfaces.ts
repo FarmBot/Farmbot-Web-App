@@ -167,4 +167,5 @@ export interface ControlPanelState {
   encoders_and_endstops: boolean;
   danger_zone: boolean;
   power_and_reset: boolean;
+  pin_guard: boolean;
 }

@@ -41,6 +41,20 @@ export interface NumericMCUInputGroupProps {
   intSize?: IntegerSize;
 }
 
+export interface PinGuardMCUInputGroupProps {
+  bot: BotState;
+  dispatch: Function;
+  name: string;
+  pinNumber: McuParamName;
+  timeout: McuParamName;
+  activeState: McuParamName;
+}
+
+export interface PinGuardProps {
+  dispatch: Function;
+  bot: BotState;
+}
+
 export interface MotorsProps {
   dispatch: Function;
   bot: BotState;

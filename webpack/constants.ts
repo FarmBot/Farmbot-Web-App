@@ -137,6 +137,11 @@ export namespace ToolTips {
   export const INVERT_ENDPOINTS =
     `Swap axis end-stops during calibration.`;
 
+  // Hardware Settings: Pin Guard
+  export const PIN_GUARD_PIN_NUMBER =
+    `The number of the pin to guard. This pin will be deactivated after
+    the being active for the duration specified by TIMEOUT.`;
+
   // Farmware
   export const FARMWARE =
     `Manage Farmware (plugins).`;

@@ -194,7 +194,7 @@ export function botConfigChange(key: ConfigKey, value: number) {
 }
 
 export function settingToggle(
-  name: ConfigKey, bot: BotState, displayAlert: string | undefined
+  name: ConfigKey, bot: BotState, displayAlert?: string | undefined
 ) {
   if (displayAlert) { alert(displayAlert.replace(/\s+/g, " ")); }
   const noun = "Setting toggle";

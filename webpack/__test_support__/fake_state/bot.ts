@@ -8,7 +8,8 @@ export let bot: Everything["bot"] = {
     "motors": false,
     "encoders_and_endstops": false,
     "danger_zone": false,
-    "power_and_reset": false
+    "power_and_reset": false,
+    "pin_guard": false,
   },
   "hardware": {
     "gpio_registry": {},
