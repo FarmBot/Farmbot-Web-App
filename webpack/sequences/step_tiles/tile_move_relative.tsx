@@ -44,12 +44,12 @@ export function TileMoveRelative({
             field="z" />
         </Col>
         <Col xs={6} md={3}>
-          {/* <label>{t("Speed (%)")}</label>
+          <label>{t("Speed (%)")}</label>
           <StepInputBox dispatch={dispatch}
             step={currentStep}
             sequence={currentSequence}
             index={index}
-            field="speed" /> */}
+            field="speed" />
         </Col>
       </Row>
     </StepContent>

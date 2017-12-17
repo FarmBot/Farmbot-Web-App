@@ -55,8 +55,8 @@ describe("<TileMoveAbsolute/>", () => {
     const inputs = block.find("input");
     const labels = block.find("label");
     const buttons = block.find("button");
-    expect(inputs.length).toEqual(7);
-    expect(labels.length).toEqual(7);
+    expect(inputs.length).toEqual(8);
+    expect(labels.length).toEqual(8);
     expect(buttons.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Move Absolute");
     expect(labels.at(0).text().toLowerCase()).toEqual("import coordinates from");
@@ -64,10 +64,10 @@ describe("<TileMoveAbsolute/>", () => {
     checkField(block, 1, "x (mm)", "1");
     checkField(block, 2, "y (mm)", "2");
     checkField(block, 3, "z (mm)", "3");
-    // checkField(block, 4, "speed (%)", 100);
-    checkField(block, 4, "x-offset", "4");
-    checkField(block, 5, "y-offset", "5");
-    checkField(block, 6, "z-offset", "6");
+    checkField(block, 4, "speed (%)", 100);
+    checkField(block, 5, "x-offset", "4");
+    checkField(block, 6, "y-offset", "5");
+    checkField(block, 7, "z-offset", "6");
   });
 
   it("retrieves a tool", () => {
