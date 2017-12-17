@@ -8,6 +8,7 @@ import { findSequenceById } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { FarmEventWithRegimen, FarmEventWithSequence } from "./calendar/interfaces";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
+import { last } from "lodash";
 
 /** Prepares a FarmEvent[] for use with <FBSelect /> */
 export function mapStateToProps(state: Everything): FarmEventProps {
@@ -44,13 +45,16 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
     const fromEpoch = (ms: number) => moment(f.start_time)
       .startOf("day")
       .add(ms, "ms");
-    const o = occurrence(moment(f.start_time), f);
-    o.heading = f.executable.name;
-    o.subheading = "";
-    c.insert(o);
+    const gracePeriod = now.clone().subtract(1, "minute");
+    const lastRI = last(regimen_items);
+    if (lastRI && fromEpoch(lastRI.time_offset).isSameOrAfter(gracePeriod)) {
+      const o = occurrence(moment(f.start_time), f);
+      o.heading = f.executable.name;
+      o.subheading = "";
+      c.insert(o);
+    }
     regimen_items.map(ri => {
       const time = fromEpoch(ri.time_offset);
-      const gracePeriod = now.clone().subtract(1, "minute");
       if (time.isSameOrAfter(gracePeriod)
         && time.isSameOrAfter(moment(f.start_time))) {
         const oo = occurrence(time, f);

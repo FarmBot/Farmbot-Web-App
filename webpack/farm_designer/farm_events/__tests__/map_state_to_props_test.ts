@@ -207,4 +207,11 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
       fakeRegFEResources().index, testTime);
     expect(calendar.getAll()).toEqual(fakeRegimenFE);
   });
+
+  it("doesn't return calendar row after event is over", () => {
+    const testTime = moment("2017-12-27T01:00:00.000Z");
+    const calendar = mapResourcesToCalendar(
+      fakeRegFEResources().index, testTime);
+    expect(calendar.getAll()).toEqual([]);
+  });
 });
