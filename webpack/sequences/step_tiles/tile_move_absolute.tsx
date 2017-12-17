@@ -34,6 +34,7 @@ import { InputBox } from "./tile_move_absolute/input_box";
 import { ToolTips } from "../../constants";
 import { extractParent } from "../locals_list";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import { StepInputBox } from "../inputs/step_input_box";
 
 interface Args {
   location: Tool | Coordinate | Point | Identifier;
@@ -173,15 +174,15 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
             </InputBox>
           </Col>
           <Col xs={3}>
-            {/*<label>
-                  {t("Speed (%)")}
-                </label>
-                <StepInputBox
-                  field={"speed"}
-                  step={this.step}
-                  index={index}
-                  dispatch={this.props.dispatch}
-                sequence={this.props.currentSequence} />*/}
+            <label>
+              {t("Speed (%)")}
+            </label>
+            <StepInputBox
+              field={"speed"}
+              step={this.step}
+              index={index}
+              dispatch={this.props.dispatch}
+              sequence={this.props.currentSequence} />
           </Col>
         </Row>
         <Row>

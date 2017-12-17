@@ -1,5 +1,6 @@
 import { BotState } from "../interfaces";
 import { McuParamName, McuParams } from "farmbot/dist";
+import { IntegerSize } from "../../util";
 
 export interface HomingRowProps {
   hardware: McuParams;
@@ -37,6 +38,21 @@ export interface NumericMCUInputGroupProps {
   x: McuParamName;
   y: McuParamName;
   z: McuParamName;
+  intSize?: IntegerSize;
+}
+
+export interface PinGuardMCUInputGroupProps {
+  bot: BotState;
+  dispatch: Function;
+  name: string;
+  pinNumber: McuParamName;
+  timeout: McuParamName;
+  activeState: McuParamName;
+}
+
+export interface PinGuardProps {
+  dispatch: Function;
+  bot: BotState;
 }
 
 export interface MotorsProps {

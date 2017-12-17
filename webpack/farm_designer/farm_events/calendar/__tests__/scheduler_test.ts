@@ -2,6 +2,7 @@ import { scheduler, scheduleForFarmEvent, TimeLine, farmEventIntervalSeconds } f
 import * as moment from "moment";
 import { TimeUnit } from "../../../interfaces";
 import { Moment } from "moment";
+import { range, padStart } from "lodash";
 
 describe("scheduler", () => {
   it("runs every 4 hours, starting Tu, until Th w/ origin of Mo", () => {
@@ -48,9 +49,12 @@ describe("scheduler", () => {
   });
 
   function testSchedule(
-    description: string, fakeEvent: TimeLine, expected: Moment[]) {
+    description: string,
+    fakeEvent: TimeLine,
+    timeNow: Moment,
+    expected: Moment[]) {
     it(description, () => {
-      const result = scheduleForFarmEvent(fakeEvent);
+      const result = scheduleForFarmEvent(fakeEvent, timeNow);
       expect(result.length).toEqual(expected.length);
       expected.map((expectation, index) => {
         expect(result[index]).toBeSameTimeAs(expectation);
@@ -58,14 +62,21 @@ describe("scheduler", () => {
     });
   }
 
+  const singleFarmEvent: TimeLine = {
+    "start_time": "2017-08-01T17:00:00.000Z",
+    "end_time": "2017-08-01T18:00:00.000Z",
+    "repeat": 1,
+    "time_unit": "never"
+  };
+
   testSchedule("schedules a FarmEvent",
     {
       "start_time": "2017-08-01T17:30:00.000Z",
       "end_time": "2017-08-07T05:00:00.000Z",
       "repeat": 2,
-      "time_unit": "daily",
-      current_time: "2017-08-01T16:30:00.000Z"
+      "time_unit": "daily"
     },
+    moment("2017-08-01T16:30:00.000Z"),
     [
       moment("2017-08-01T17:30:00.000Z"),
       moment("2017-08-03T17:30:00.000Z"),
@@ -77,9 +88,9 @@ describe("scheduler", () => {
       "start_time": "2017-08-01T17:30:00.000Z",
       "end_time": "2017-08-07T05:00:00.000Z",
       "repeat": 0,
-      "time_unit": "daily",
-      current_time: "2017-08-01T16:30:00.000Z"
+      "time_unit": "daily"
     },
+    moment("2017-08-01T16:30:00.000Z"),
     [moment("2017-08-01T17:30:00.000Z")]);
 
   testSchedule("handles start_time in the past",
@@ -87,37 +98,76 @@ describe("scheduler", () => {
       "start_time": "2017-08-01T17:30:00.000Z",
       "end_time": "2017-08-09T05:00:00.000Z",
       "repeat": 2,
-      "time_unit": "daily",
-      current_time: "2017-08-03T18:30:00.000Z"
+      "time_unit": "daily"
     },
+    moment("2017-08-03T18:30:00.000Z"),
     [
       moment("2017-08-05T17:30:00.000Z"),
       moment("2017-08-07T17:30:00.000Z")
     ]);
+
+  testSchedule("handles start_time in the past: no repeat",
+    singleFarmEvent,
+    moment("2017-08-01T17:30:00.000Z"),
+    [moment("2017-08-01T17:00:00.000Z")]);
 
   testSchedule("uses grace period",
     {
       "start_time": "2017-08-01T17:30:00.000Z",
       "end_time": "2017-08-02T05:00:00.000Z",
       "repeat": 4,
-      "time_unit": "hourly",
-      current_time: "2017-08-01T17:30:30.000Z"
+      "time_unit": "hourly"
     },
+    moment("2017-08-01T17:30:30.000Z"),
     [
       moment("2017-08-01T17:30:00.000Z"),
       moment("2017-08-01T21:30:00.000Z"),
       moment("2017-08-02T01:30:00.000Z")
     ]);
 
+  testSchedule("uses grace period: no repeat",
+    singleFarmEvent,
+    moment("2017-08-01T17:00:30.000Z"),
+    [moment("2017-08-01T17:00:00.000Z")]);
+
   testSchedule("farm event over",
     {
       "start_time": "2017-08-01T17:30:00.000Z",
       "end_time": "2017-08-02T05:00:00.000Z",
       "repeat": 4,
-      "time_unit": "hourly",
-      current_time: "2017-08-03T17:30:30.000Z"
+      "time_unit": "hourly"
     },
+    moment("2017-08-03T17:30:30.000Z"),
     []);
+
+  testSchedule("farm event over: no repeat",
+    singleFarmEvent,
+    moment("2017-08-01T19:00:00.000Z"),
+    []);
+
+  testSchedule("first 60 items",
+    {
+      "start_time": "2017-08-02T17:00:00.000Z",
+      "end_time": "2017-08-02T19:00:00.000Z",
+      "repeat": 1,
+      "time_unit": "minutely"
+    },
+    moment("2017-08-01T15:30:00.000Z"),
+    range(0, 60)
+      .map((x: number) =>
+        moment(`2017-08-02T17:${padStart("" + x, 2, "0")}:00.000Z`)));
+
+  testSchedule("only 60 items",
+    {
+      "start_time": "2017-08-02T16:00:00.000Z",
+      "end_time": "2017-08-02T21:00:00.000Z",
+      "repeat": 1,
+      "time_unit": "minutely"
+    },
+    moment("2017-08-02T17:01:00.000Z"),
+    range(0, 60)
+      .map((x: number) =>
+        moment(`2017-08-02T17:${padStart("" + x, 2, "0")}:00.000Z`)));
 });
 
 describe("farmEventIntervalSeconds", () => {

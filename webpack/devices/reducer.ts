@@ -34,7 +34,8 @@ export let initialState = (): BotState => ({
     motors: false,
     encoders_and_endstops: false,
     danger_zone: false,
-    power_and_reset: false
+    power_and_reset: false,
+    pin_guard: false,
   },
   hardware: {
     gpio_registry: {},
@@ -132,6 +133,7 @@ export let botReducer = generateReducer<BotState>(initialState())
     s.controlPanelState.homing_and_calibration = a.payload;
     s.controlPanelState.motors = a.payload;
     s.controlPanelState.encoders_and_endstops = a.payload;
+    s.controlPanelState.pin_guard = a.payload;
     s.controlPanelState.danger_zone = a.payload;
     return s;
   })

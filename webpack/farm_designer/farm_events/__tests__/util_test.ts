@@ -1,13 +1,29 @@
+import { maybeWarnAboutMissedTasks } from "../util";
+import { fakeFarmEvent } from "../../../__test_support__/fake_state/resources";
+import { fakeState } from "../../../__test_support__/fake_state";
+import * as moment from "moment";
 
-import { executableType } from "../../util";
-
-describe("executableType", () => {
-  it("handles expected values", () => {
-    expect(executableType("Sequence")).toEqual("Sequence");
-    expect(executableType("Regimen")).toEqual("Regimen");
+describe("maybeWarnAboutMissedTasks()", () => {
+  beforeEach(function () {
+    jest.clearAllMocks();
   });
 
-  it("throws when given bad data", () => {
-    expect(() => executableType("Nope")).toThrowError();
+  function testWarn(time: string): () => void {
+    const callback = jest.fn();
+    const fe = fakeFarmEvent("Regimen", 1);
+    fe.body.start_time = "2017-05-21T22:00:00.000";
+    maybeWarnAboutMissedTasks(fe,
+      () => callback("missed event warning"),
+      moment(time))(jest.fn(), fakeState);
+    return callback;
+  }
+  it("warns", () => {
+    const cb = testWarn("2017-05-21T22:00:00.000");
+    expect(cb).toHaveBeenCalledWith("missed event warning");
+  });
+
+  it("doesn't warn", () => {
+    const cb = testWarn("2017-05-01T22:00:00.000");
+    expect(cb).not.toHaveBeenCalled();
   });
 });

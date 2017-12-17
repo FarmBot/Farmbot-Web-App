@@ -18,6 +18,7 @@ import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import { EncoderDisplay } from "../controls/interfaces";
 import { ConnectionStatus } from "../connectivity/interfaces";
+import { IntegerSize } from "../util";
 
 export interface Props {
   userToApi: ConnectionStatus | undefined;
@@ -128,6 +129,7 @@ export interface McuInputBoxProps {
   bot: BotState;
   setting: McuParamName;
   dispatch: Function;
+  intSize?: IntegerSize;
 }
 
 export interface EStopButtonProps {
@@ -165,4 +167,5 @@ export interface ControlPanelState {
   encoders_and_endstops: boolean;
   danger_zone: boolean;
   power_and_reset: boolean;
+  pin_guard: boolean;
 }
