@@ -20,6 +20,7 @@ import { versionOK } from "../devices/reducer";
 import { AuthState } from "../auth/interfaces";
 import { TaggedResource, SpecialStatus } from "../resources/tagged_resources";
 import { autoSync } from "./auto_sync";
+import { fancyDebug } from "../util";
 
 export const TITLE = "New message from bot";
 
@@ -154,7 +155,14 @@ const attachEventListeners =
       "message",
       "packetsend",
       "packetreceive"
-    ].map(x => bot.client.on(x, () => console.log(`Fired ${x} event`)));
+    ].map(x => bot.client.on(x, () => {
+      console.log(`Fired ${x} event`);
+      fancyDebug({
+        connected: bot.client.connected,
+        disconnecting: bot.client.disconnecting,
+        reconnecting: bot.client.reconnecting,
+      });
+    }));
     bot.on("online", onOnline);
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));
