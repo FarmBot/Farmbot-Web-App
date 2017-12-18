@@ -18,8 +18,7 @@ class DashboardController < ApplicationController
     define_method(actn) do
       @rev = LONG_REVISION
       begin
-        response.headers["Cache-Control"] = "no-cache, no-store"
-        response.headers["Pragma"] = "no-cache"
+        response.headers["Pragma"]  = "no-cache"
         response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
         render actn, layout: false
       rescue ActionView::MissingTemplate => q
