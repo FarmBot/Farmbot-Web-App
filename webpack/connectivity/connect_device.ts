@@ -145,7 +145,7 @@ export const onOnline = () => dispatchNetworkUp("user.mqtt");
 
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
-    bot.client.on("reconnect", onOnline);
+    bot.client.on("reconnect", onReconnect);
     bot.on("online", onOnline);
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));
