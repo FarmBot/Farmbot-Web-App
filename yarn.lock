@@ -2101,11 +2101,11 @@ farmbot-toastr@^1.0.0, farmbot-toastr@^1.0.3:
     farmbot-toastr "^1.0.0"
     typescript "^2.3.4"
 
-farmbot@5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/farmbot/-/farmbot-5.2.0.tgz#2456e5193996f2da6f2dfd255c42275b01c7ad97"
+farmbot@5.2.2:
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/farmbot/-/farmbot-5.2.2.tgz#062776af941c3aed6319ba12fad59ab0f07f1875"
   dependencies:
-    mqtt "^2.13.1"
+    mqtt "2.15.0"
     typescript "^2.4.2"
 
 fast-deep-equal@^1.0.0:
@@ -3981,9 +3981,9 @@ mqtt-packet@^5.4.0:
     process-nextick-args "^1.0.7"
     safe-buffer "^5.1.0"
 
-mqtt@^2.13.1:
-  version "2.13.1"
-  resolved "https://registry.yarnpkg.com/mqtt/-/mqtt-2.13.1.tgz#d83c7c5d9dc37864a363453f61fb5e1523c0144a"
+mqtt@2.15.0:
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/mqtt/-/mqtt-2.15.0.tgz#64bd27b7b75b22fa9594fae83c71cdada40bd460"
   dependencies:
     commist "^1.0.0"
     concat-stream "^1.6.0"
@@ -3992,7 +3992,7 @@ mqtt@^2.13.1:
     inherits "^2.0.3"
     minimist "^1.2.0"
     mqtt-packet "^5.4.0"
-    pump "^1.0.2"
+    pump "^2.0.0"
     readable-stream "^2.3.3"
     reinterval "^1.1.0"
     split2 "^2.1.1"
@@ -4900,9 +4900,16 @@ public-encrypt@^4.0.0:
     parse-asn1 "^5.0.0"
     randombytes "^2.0.1"
 
-pump@^1.0.0, pump@^1.0.2:
+pump@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/pump/-/pump-1.0.2.tgz#3b3ee6512f94f0e575538c17995f9f16990a5d51"
+  dependencies:
+    end-of-stream "^1.1.0"
+    once "^1.3.1"
+
+pump@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/pump/-/pump-2.0.0.tgz#7946da1c8d622b098e2ceb2d3476582470829c9d"
   dependencies:
     end-of-stream "^1.1.0"
     once "^1.3.1"
