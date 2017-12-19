@@ -20,8 +20,6 @@ import { versionOK } from "../devices/reducer";
 import { AuthState } from "../auth/interfaces";
 import { TaggedResource, SpecialStatus } from "../resources/tagged_resources";
 import { autoSync } from "./auto_sync";
-import { setInterval } from "timers";
-import { get } from "lodash";
 
 export const TITLE = "New message from bot";
 
@@ -144,21 +142,9 @@ export const onReconnect = () => {
 };
 
 export const onOnline = () => dispatchNetworkUp("user.mqtt");
-const STUB = { readyState: WebSocket.OPEN };
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
     bot.client.on("reconnect", onReconnect);
-    const rs = get(bot.client, "stream.socket", STUB);
-    //  :'(
-    const pollStatus = () => {
-      const closed = (rs.readyState === WebSocket.CLOSED);
-      if (closed) {
-        onReconnect();
-        bot.client.reconnect();
-      }
-    };
-    setInterval(pollStatus, 1500);
-
     bot.on("online", onOnline);
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));
