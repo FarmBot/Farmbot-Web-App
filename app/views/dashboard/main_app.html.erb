@@ -4,7 +4,6 @@
     <%= render "common_assets" %>
   </head>
   <body>
-    <%# Why is caching broke? - RC 18 Dec 17 %>
-    <%= javascript_include_tag *(webpack_asset_paths("app_bundle").map{|x| x + "?v=#{@rev || 1}"}) %>
+    <%= javascript_include_tag *webpack_asset_paths("app_bundle") %>
   </body>
 </html>
