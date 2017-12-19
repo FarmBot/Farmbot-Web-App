@@ -143,7 +143,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       const PRV_URL = globalConfig.PRIV_URL;
       return (
         <div>
-          <div>
+          <div className={"tos"}>
             <label>{t("I agree to the terms of use")}</label>
             <input type="checkbox"
               onChange={this.set("agreeToTerms")}

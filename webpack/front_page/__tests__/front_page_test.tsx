@@ -16,4 +16,12 @@ describe("<FrontPage />", () => {
     el.find("a.forgot-password").first().simulate("click");
     expect(el.text()).toContain("Reset Password");
   });
+
+  it("shows TOS and Privacy links", () => {
+    const el = mount(<FrontPage />);
+    ["Privacy Policy", "Terms of Use"].map(string =>
+      expect(el.text()).toContain(string));
+    ["https://farmbot.io/privacy/", "https://farmbot.io/tos/"]
+      .map(string => expect(el.html()).toContain(string));
+  });
 });
