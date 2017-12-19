@@ -77,13 +77,13 @@ export class Account extends React.Component<Props, State> {
           <ChangePassword />
         </Row>
         <Row>
+          <LabsFeatures />
+        </Row>
+        <Row>
           <DeleteAccount
             onClick={(password) => this
               .props
               .dispatch(deleteUser({ password }))} />
-        </Row>
-        <Row>
-          <LabsFeatures />
         </Row>
       </Col>
     </Page>;
