@@ -12,13 +12,13 @@ var conf = genConfig();
 conf.output = {
   path: path.join(__dirname, '..', 'public', 'webpack'),
   publicPath: '/webpack/',
-  filename: '[name].js',
+  filename: '[name]-[chunkhash].js',
   chunkFilename: '[id].chunk.js'
 };
 
 [
   new ExtractTextPlugin({
-    filename: "dist/[name].css",
+    filename: "dist/[name].[chunkhash].css",
     disable: false,
     allChunks: true
   }),
