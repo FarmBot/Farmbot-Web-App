@@ -136,10 +136,8 @@ export function onMalformed() {
   }
 }
 
-export const onReconnect = () => {
-  console.log("If you are reading this but cant see a toast, there's a CSS issue");
-  warning("Attempting to reconnect to the message broker", "Offline");
-};
+export const onReconnect =
+  () => warning("Attempting to reconnect to the message broker", "Offline");
 
 export const onOnline = () => dispatchNetworkUp("user.mqtt");
 const attachEventListeners =
