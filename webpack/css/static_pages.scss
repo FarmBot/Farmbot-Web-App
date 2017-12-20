@@ -35,6 +35,28 @@
     color: $blue;
     display: inline-block;
   }
+  .tos {
+    margin-bottom: 1rem;
+  }
+  input[type="checkbox"] {
+    float: left;
+    margin-right: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  a:link {
+    font-weight: 300;
+    color: $dark_gray;
+  }
+  a:visited {
+    color: $medium_gray;
+  }
+  a:hover {
+    font-weight: 500;
+  }
+  a:active {
+    color: $medium_gray;
+    font-weight: 500;
+  }
 }
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 736px) {

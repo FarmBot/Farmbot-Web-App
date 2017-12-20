@@ -4,6 +4,10 @@
   position: relative;
 }
 
+.designer-nav {
+  display: none;
+}
+
 .farm-designer-map {
   min-width: 100%;
   display: inline-block;
@@ -37,9 +41,9 @@
 }
 
 .crop-drag-info-image {
-  width: 100%;
+  width: 100% !important;
   background-color: $translucent;
-  width: 28rem;
+  max-width: 28rem;
 }
 
 .plant-catalog-image {

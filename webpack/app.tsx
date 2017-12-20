@@ -41,6 +41,7 @@ function mapStateToProps(props: Everything): AppProps {
       .map(x => x.body)
       .sortBy("created_at")
       .reverse()
+      .take(250)
       .value(),
     loaded: props.resources.loaded,
     consistent: !!(props.bot || {}).consistent,

@@ -30,7 +30,7 @@ export namespace OpenFarmAPI {
 }
 
 type OFIcon = Readonly<OFCropAttrs>;
-const STORAGE_KEY = "openfarm_icons";
+const STORAGE_KEY = "openfarm_icons_with_spread";
 
 function initLocalStorage() {
   localStorage[STORAGE_KEY] = "{}";
@@ -91,12 +91,13 @@ const cacheTheIcon = (slug: string) =>
       && resp.data.data.attributes) {
       const icon = {
         slug: resp.data.data.attributes.slug,
+        spread: resp.data.data.attributes.spread,
         svg_icon: resp.data.data.attributes.svg_icon
       };
       localStorageIconSet(icon);
       return icon;
     } else {
-      return { slug, svg_icon: undefined };
+      return { slug, spread: undefined, svg_icon: undefined };
     }
   };
 
