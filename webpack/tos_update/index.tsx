@@ -5,12 +5,12 @@ import { t, init } from "i18next";
 import { fun as log, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
 import { Session } from "../session";
-import { prettyPrintApiErrors } from "../util";
+import { prettyPrintApiErrors, HttpData } from "../util";
 import { detectLanguage } from "../i18n";
 import { API } from "../api";
 import "../css/_index.scss";
-import { HttpData } from "../util";
 import { Row, Col, Widget, WidgetHeader, WidgetBody } from "../ui/index";
+
 interface Props { }
 interface State {
   hideServerSettings: boolean;
