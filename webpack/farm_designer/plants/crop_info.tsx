@@ -85,7 +85,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
             {t("Add to map")}
           </a>
         </p>
-        <div className="panel-header-description">
+        <div className="panel-header-description crop-info-description">
           {result.crop.description}
         </div>
       </div>
