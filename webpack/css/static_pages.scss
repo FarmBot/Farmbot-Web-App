@@ -25,6 +25,11 @@
   input {
     margin-bottom: 1rem;
   }
+  .all-content-wrapper {
+    max-width: 50rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
   .widget-wrapper {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   }
@@ -36,7 +41,7 @@
     display: inline-block;
   }
   .tos {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
   }
   input[type="checkbox"] {
     float: left;
@@ -56,6 +61,13 @@
   a:active {
     color: $medium_gray;
     font-weight: 500;
+  }
+  .fa-gear {
+    float: right;
+  }
+  .fa-external-link {
+    margin-left: 1rem;
+    margin-bottom: 0.5rem;
   }
 }
 
