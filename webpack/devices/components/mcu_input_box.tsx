@@ -13,7 +13,9 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
 
   get value() {
     const v = this.props.bot.hardware.mcu_params[this.key];
-    return _.isUndefined(v) ? "" : (v || 0).toString();
+    const { filter } = this.props;
+    const goodValue = !_.isUndefined(v) && !(filter && v > filter);
+    return goodValue ? (v || 0).toString() : "";
   }
 
   clampInputAndWarn = (input: string, intSize: IntegerSize): number => {

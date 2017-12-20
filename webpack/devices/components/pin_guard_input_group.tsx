@@ -20,13 +20,15 @@ export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
       <McuInputBox
         setting={pinNumber}
         bot={bot}
-        dispatch={dispatch} />
+        dispatch={dispatch}
+        filter={32000} />
     </Col>
     <Col xs={4}>
       <McuInputBox
         setting={timeout}
         bot={bot}
-        dispatch={dispatch} />
+        dispatch={dispatch}
+        filter={32000} />
     </Col>
     <Col xs={2}>
       <ToggleButton
