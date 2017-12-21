@@ -54,7 +54,7 @@ export interface AxiosErrorResponse {
  *  pairs returned by the /api/xyz endpoint. */
 export function prettyPrintApiErrors(err: AxiosErrorResponse) {
   return _.map(safelyFetchErrors(err),
-    (v, k) => `${(k || "").split("_").join(" ")}: ${v.toString()}`.toLowerCase())
+    (v, k) => `${("" + k).split("_").join(" ")}: ${v.toString()}`.toLowerCase())
     .map(str => _.capitalize(str)).join(" ");
 }
 
