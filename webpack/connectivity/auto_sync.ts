@@ -4,6 +4,7 @@ import { ResourceName, TaggedResource, SpecialStatus } from "../resources/tagged
 import { overwrite, init } from "../api/crud";
 import { handleInbound } from "./auto_sync_handle_inbound";
 import { SyncPayload, MqttDataResult, Reason, UpdateMqttData } from "./interfaces";
+import { fancyDebug } from "../util";
 
 export function decodeBinary(payload: Buffer): SyncPayload {
   return JSON.parse((payload).toString());
@@ -56,8 +57,14 @@ export function handleCreateOrUpdate(dispatch: Function,
   const state = getState();
   const { index } = state.resources;
   const uuid = maybeDetermineUuid(index, data.kind, data.id);
+  const jti = state.auth && state.auth.token.unencoded.jti;
+  const isEcho = data.sessionId === jti;
+
+  fancyDebug({ isEcho, sessionId: data.sessionId, jti });
+
   if (uuid) {
-    return dispatch(handleUpdate(data, uuid));
+    return isEcho ?
+      console.log("SKIP") : dispatch(handleUpdate(data, uuid));
   } else {
     // Here be dragons.
     // PROBLEM:  You see incoming `UPDATE` messages.
@@ -70,11 +77,8 @@ export function handleCreateOrUpdate(dispatch: Function,
     // The ultimate problem: We need to know if the incoming data update was created
     // by us or some other user. That information lets us know if we are UPDATEing
     // data or INSERTing data.
-    const jti = state.auth && state.auth.token.unencoded.jti;
-    if (data.sessionId === jti) { // Ignore local echo?
-    } else {
-      dispatch(handleCreate(data));
-    }
+    return isEcho ?
+      console.log("SKIP...") : dispatch(handleCreate(data));
   }
 }
 

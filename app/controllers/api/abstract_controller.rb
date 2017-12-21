@@ -13,7 +13,10 @@ module Api
     before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
     after_action :skip_set_cookies_header
-
+    # before_action :slow_down
+    # def slow_down
+    #   sleep 0
+    # end
     rescue_from(User::BadSub) { sorry "Please log out and try again.", 422 }
     rescue_from(User::AlreadyVerified) { sorry "Already verified.", 409 }
 
