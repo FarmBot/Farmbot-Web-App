@@ -1,20 +1,18 @@
 import * as React from "react";
 import { t } from "i18next";
 import { ToggleButtonProps } from "./interfaces";
-import { isUndefined } from "util";
 
 export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
   caption() {
-    const useNoYes = isUndefined(this.props.noYes) ? true : this.props.noYes;
-    const noOff = useNoYes ? t("no") : t("off");
-    const yesOn = useNoYes ? t("yes") : t("on");
+    const { textTrue, textFalse } = this.props.customText
+      || { textFalse: t("no"), textTrue: t("yes") };
     const captions: { [s: string]: string | undefined } = {
-      "0": noOff,
-      "false": noOff,
-      "off": noOff,
-      "1": yesOn,
-      "true": yesOn,
-      "on": yesOn,
+      "0": textFalse,
+      "false": textFalse,
+      "off": textFalse,
+      "1": textTrue,
+      "true": textTrue,
+      "on": textTrue,
       "undefined": "🚫",
       "-1": "🚫"
     };
@@ -23,11 +21,11 @@ export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
   }
 
   css() {
-    const css = "fb-toggle-button fb-button";
-    if (this.props.disabled) { return css + " gray"; }
-    const redCSS = css + " red";
-    const greenCSS = css + " green";
-    const yellowCSS = css + " yellow";
+    const css = "fb-toggle-button fb-button ";
+    if (this.props.disabled) { return css + "gray"; }
+    const greenCSS = css + "green";
+    const redCSS = css + "red";
+    const yellowCSS = css + "yellow";
 
     const cssClasses: { [s: string]: string | undefined } = {
       "0": redCSS,

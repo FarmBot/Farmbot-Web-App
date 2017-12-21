@@ -5,11 +5,15 @@ import { Row } from "../../ui/row";
 import { Col } from "../../ui/index";
 import { settingToggle } from "../actions";
 import { ToggleButton } from "../../controls/toggle_button";
+import { isUndefined } from "util";
 
 export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
 
   const { bot, dispatch, name, pinNumber, timeout, activeState } = props;
   const { mcu_params } = bot.hardware;
+  const inactiveState = isUndefined(mcu_params[activeState])
+    ? undefined
+    : !mcu_params[activeState];
   return <Row>
     <Col xs={3}>
       <label>
@@ -32,8 +36,8 @@ export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
     </Col>
     <Col xs={2}>
       <ToggleButton
-        noYes={false}
-        toggleValue={mcu_params[activeState]}
+        customText={{ textFalse: "low", textTrue: "high" }}
+        toggleValue={inactiveState}
         toggleAction={() => settingToggle(activeState, bot)} />
     </Col>
   </Row>;

@@ -139,8 +139,8 @@ export namespace ToolTips {
 
   // Hardware Settings: Pin Guard
   export const PIN_GUARD_PIN_NUMBER =
-    `The number of the pin to guard. This pin will be deactivated after
-    the being active for the duration specified by TIMEOUT.`;
+    `The number of the pin to guard. This pin will be set to the specified
+    state after the duration specified by TIMEOUT.`;
 
   // Farmware
   export const FARMWARE =
