@@ -51,4 +51,19 @@ describe("<AddFarmEvent />", () => {
     const wrapper = mount(<AddFarmEvent {...fakeProps() } />);
     expect(wrapper.text()).toContain("Loading");
   });
+
+  it("cleans up when unmounting", () => {
+    const props = fakeProps();
+    const wrapper = mount(<AddFarmEvent {...props } />);
+    wrapper.update();
+    const uuid: string = wrapper.state("uuid");
+    props.farmEvents[0].uuid = uuid;
+    props.farmEvents[0].body.id = undefined;
+    wrapper.setProps(props);
+    wrapper.update();
+    jest.resetAllMocks();
+    wrapper.unmount();
+    expect(props.dispatch).toHaveBeenCalled();
+    expect(props.dispatch).toHaveBeenCalledWith(expect.any(Function));
+  });
 });

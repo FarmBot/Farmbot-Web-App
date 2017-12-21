@@ -8,9 +8,7 @@ import {
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import {
-  TaggedSequence,
-  TaggedTool,
-  TaggedToolSlotPointer
+  TaggedSequence
 } from "../resources/tagged_resources";
 import { ResourceIndex } from "../resources/interfaces";
 import { JSXChildren } from "../util";
@@ -18,8 +16,6 @@ import { JSXChildren } from "../util";
 export interface Props {
   dispatch: Function;
   sequences: TaggedSequence[];
-  tools: TaggedTool[];
-  slots: TaggedToolSlotPointer[];
   sequence: TaggedSequence | undefined;
   auth: AuthState | undefined;
   resources: ResourceIndex;
@@ -31,12 +27,6 @@ export interface Props {
 export interface SequenceEditorMiddleProps {
   dispatch: Function;
   sequence: TaggedSequence | undefined;
-  /** @deprecated Use props.resources now. */
-  sequences: TaggedSequence[];
-  /** @deprecated Use props.resources now. */
-  tools: TaggedTool[];
-  /** @deprecated Use props.resources now. */
-  slots: TaggedToolSlotPointer[];
   resources: ResourceIndex;
   syncStatus: SyncStatus;
   consistent: boolean;

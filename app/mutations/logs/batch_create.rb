@@ -10,10 +10,12 @@ module Logs
                   class: String,
                   in: CeleryScriptSettingsBag::ALLOWED_CHANNEL_NAMES
             hash :meta do
-              integer :x
-              integer :y
-              integer :z
               string :type, in: Log::TYPES
+              optional do
+                integer :x
+                integer :y
+                integer :z
+              end
             end
           end
         end
@@ -36,7 +38,7 @@ module Logs
       .reject do |i|
         # Don't save jokes or debug info:
         t = i.meta["type"]
-        ["fun", "debug"].include?(t)
+        Log::DISCARD.include?(t)
       end
       .map    { |i| i.as_json.except("id") }
     end

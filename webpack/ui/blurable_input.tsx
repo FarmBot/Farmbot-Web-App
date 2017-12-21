@@ -1,4 +1,5 @@
 import * as React from "react";
+import { equals } from "../util";
 
 interface BIProps {
   value: string | number;
@@ -50,7 +51,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
     this.setState({ buffer });
   }
 
-  defaultProps = () => {
+  usualProps = () => {
     const value = this.state.isEditing ?
       this.state.buffer : this.props.value;
     return {
@@ -69,7 +70,11 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
     };
   }
 
+  shouldComponentUpdate(nextProps: BIProps, nextState: Partial<BIState>) {
+    return !equals(this.props, nextProps) || !equals(this.state, nextState);
+  }
+
   render() {
-    return <input {...this.defaultProps() } />;
+    return <input {...this.usualProps() } />;
   }
 }

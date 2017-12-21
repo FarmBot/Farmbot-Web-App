@@ -1,50 +1,34 @@
 import * as React from "react";
-import { StepTitleBar } from "./step_title_bar";
-import { splice, remove } from "./index";
 import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
-import { StepIconGroup } from "../step_icon_group";
+import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import { Row, Col } from "../../ui/index";
 
-export function TileWait({ dispatch, currentStep, index, currentSequence }: StepParams) {
-  return (<div>
-    <div className="step-wrapper">
-      <div className="row">
-        <div className="col-sm-12">
-          <div className="step-header wait-step">
-            <StepTitleBar index={index}
-              dispatch={dispatch}
-              step={currentStep}
-              sequence={currentSequence} />
-            <StepIconGroup
-              onClone={() => dispatch(splice({
-                step: currentStep,
-                sequence: currentSequence,
-                index
-              }))}
-              onTrash={() => remove({ dispatch, index, sequence: currentSequence })}
-              helpText={t(ToolTips.WAIT)} />
-          </div>
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-sm-12">
-          <div className="step-content wait-step">
-            <div className="row">
-              <div className="col-xs-6 col-md-3">
-                <label>{t("Time in milliseconds")}</label>
-                <StepInputBox dispatch={dispatch}
-                  step={currentStep}
-                  sequence={currentSequence}
-                  index={index}
-                  field="milliseconds" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>);
+export function TileWait({
+  dispatch, currentStep, index, currentSequence }: StepParams) {
+  const className = "wait-step";
+  return <StepWrapper>
+    <StepHeader
+      className={className}
+      helpText={ToolTips.WAIT}
+      currentSequence={currentSequence}
+      currentStep={currentStep}
+      dispatch={dispatch}
+      index={index} />
+    <StepContent className={className}>
+      <Row>
+        <Col xs={6} md={3}>
+          <label>{t("Time in milliseconds")}</label>
+          <StepInputBox dispatch={dispatch}
+            step={currentStep}
+            sequence={currentSequence}
+            index={index}
+            field="milliseconds" />
+        </Col>
+      </Row>
+    </StepContent>
+  </StepWrapper>;
 
 }

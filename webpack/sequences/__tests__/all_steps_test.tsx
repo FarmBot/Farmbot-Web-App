@@ -20,7 +20,7 @@ describe("<AllSteps/>", () => {
             "x": 0,
             "y": 0,
             "z": 0,
-            "speed": 800
+            "speed": 100
           },
         },
         {
@@ -41,6 +41,7 @@ describe("<AllSteps/>", () => {
         }
       ],
       "args": {
+        "locals": { kind: "scope_declaration", args: {} },
         "is_outdated": false,
         "version": 4,
         "label": "WIP"

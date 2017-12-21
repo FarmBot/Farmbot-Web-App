@@ -7,12 +7,12 @@ describe("<LockableButton/>", () => {
     const fakeCB = jest.fn();
     const btn = mount(<LockableButton disabled={true} onClick={fakeCB} />);
     btn.simulate("click");
-    expect(fakeCB.mock.calls.length).toEqual(0);
+    expect(fakeCB).not.toHaveBeenCalled();
   });
   it("does trigger callback when clicked and enabled", () => {
     const fakeCB = jest.fn();
     const btn = mount(<LockableButton disabled={false} onClick={fakeCB} />);
     btn.simulate("click");
-    expect(fakeCB.mock.calls.length).toEqual(1);
+    expect(fakeCB).toHaveBeenCalled();
   });
 });

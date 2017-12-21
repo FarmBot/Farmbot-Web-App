@@ -9,9 +9,12 @@ import { FarmwareProps } from "../devices/interfaces";
 import { WeedDetector } from "./weed_detector/index";
 import { envGet } from "./weed_detector/remote_env/selectors";
 import { FarmwareForms } from "./farmware_forms";
+import { catchErrors } from "../util";
 
 @connect(mapStateToProps)
 export class FarmwarePage extends React.Component<FarmwareProps, {}> {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+
   render() {
     return <Page className="farmware">
       <Row>
@@ -42,7 +45,8 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
             V_LO={envGet("CAMERA_CALIBRATION_V_LO", this.props.env)}
             H_HI={envGet("CAMERA_CALIBRATION_H_HI", this.props.env)}
             S_HI={envGet("CAMERA_CALIBRATION_S_HI", this.props.env)}
-            V_HI={envGet("CAMERA_CALIBRATION_V_HI", this.props.env)} />
+            V_HI={envGet("CAMERA_CALIBRATION_V_HI", this.props.env)}
+            syncStatus={this.props.syncStatus} />
         </Col>
         <Col xs={12} sm={6}>
           <WeedDetector {...this.props} />

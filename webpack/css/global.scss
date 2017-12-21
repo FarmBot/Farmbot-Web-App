@@ -88,6 +88,12 @@ fieldset {
   &.hover {
     border: 2px solid $dark_gray;
   }
+  p {
+    font-weight: 900;
+    color: $white;
+    margin-left: 0.7rem;
+    margin-top: 0.3rem;
+  }
 }
 
 .saucer-connector {
@@ -193,7 +199,8 @@ a {
   font-weight: bold;
 }
 
-.hardware-widget {
+.hardware-widget,
+.device-widget {
   h4 {
     cursor: pointer;
   }
@@ -213,6 +220,20 @@ a {
   }
   label {
     padding: 0.5rem 0 0 0.5rem;
+  }
+}
+
+.pin-bindings-widget {
+  .fa-th-large {
+      color: $dark_gray;
+      margin-top: 0.5rem;
+      margin-left: 0.5rem;
+  }
+  .fb-button {
+    margin-top: 0.5rem;
+  }
+  .bindings-list {
+    margin-bottom: 1rem;
   }
 }
 
@@ -265,18 +286,6 @@ fieldset {
   position: absolute !important;
   left: 2rem;
   top: 6.2rem;
-}
-
-// .webcam-url-input {
-//   padding-left: 4rem !important;
-// }
-
-.step-drag-ghost-image {
-  max-width: 150px;
-}
-
-.step-drag-ghost-image-big {
-  max-width: 400px;
 }
 
 h3 {
@@ -390,6 +399,7 @@ ul {
   height: 100%;
   opacity: 0.40;
   pointer-events: none;
+  z-index: 10;
   &.banner {
     &:after {
       content: "Not available when device is offline.";
@@ -404,6 +414,7 @@ ul {
       top: 25%;
       left: -2.5%;
       width: 105%;
+      z-index: 10;
     }
   }
 }
@@ -508,6 +519,25 @@ ul {
       margin-right: 0;
     }
   }
+  .settings-menu-button {
+    float: right;
+    margin-left: 1rem;
+    margin-top: 0.25rem;
+  }
+}
+
+.logs-settings-menu {
+  label {
+    margin-top: 7px;
+  }
+  .saucer {
+    float: left;
+    margin-right: 10px;
+  }
+  .pt-popover-target {
+    display: inline;
+    margin-left: 1rem;
+  }
 }
 
 .logs-table {
@@ -522,5 +552,15 @@ ul {
   td {
     box-shadow: inset 1px 0 0 0 $gray !important;
     color: $dark_gray !important;
+    word-break: break-word;
+  }
+  td:nth-child(1),
+  td:nth-child(4) {
+    min-width: 106px;
+
+  }
+  td:nth-child(2),
+  td:nth-child(3) {
+    min-width: 120px;
   }
 }

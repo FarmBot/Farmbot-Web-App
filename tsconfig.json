@@ -17,7 +17,8 @@
     "strictNullChecks": true,
     "sourceMap": true,
     "allowJs": true,
-    "pretty": true
+    "pretty": true,
+    "removeComments": true
   },
   "exclude": [
     "node_modules",

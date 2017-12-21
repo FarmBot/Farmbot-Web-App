@@ -1,5 +1,5 @@
 ENV['MQTT_HOST'] = "blooper.io"
-ENV['OS_UPDATE_SERVER'] = "http://blah.com"
+ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
 require 'simplecov'
 #Ignore anything with the word 'spec' in it. No need to test your tests.
 SimpleCov.start do

@@ -13,6 +13,7 @@ import { selectAllLogs, maybeFetchUser } from "./resources/selectors";
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
+import { catchErrors } from "./util";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
 const fastClick = require("fastclick");
@@ -40,6 +41,7 @@ function mapStateToProps(props: Everything): AppProps {
       .map(x => x.body)
       .sortBy("created_at")
       .reverse()
+      .take(250)
       .value(),
     loaded: props.resources.loaded,
     consistent: !!(props.bot || {}).consistent,
@@ -62,6 +64,7 @@ const MUST_LOAD: ResourceName[] = [
 
 @connect(mapStateToProps)
 export class App extends React.Component<AppProps, {}> {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
   get isLoaded() {
     return (MUST_LOAD.length ===

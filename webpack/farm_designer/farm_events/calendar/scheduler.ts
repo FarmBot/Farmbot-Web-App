@@ -1,45 +1,34 @@
 import * as moment from "moment";
 import { Moment, unitOfTime } from "moment";
-import { times, last } from "lodash";
+import { take, filter, range } from "lodash";
 import { TimeUnit } from "../../interfaces";
 import { NEVER } from "../edit_fe_form";
 
 interface SchedulerProps {
-  originTime: Moment;
+  startTime: Moment;
+  currentTime: Moment;
+  endTime: Moment;
   intervalSeconds: number;
-  lowerBound: Moment;
-  upperBound?: Moment;
 }
 
 const nextYear = () => moment(moment().add(1, "year"));
 
-export function scheduler({ originTime,
-  intervalSeconds,
-  lowerBound,
-  upperBound }: SchedulerProps): Moment[] {
-  if (!intervalSeconds) { // 0, NaN and friends
-    return [originTime];
-  }
-  upperBound = upperBound || nextYear();
-  // # How many items must we skip to get to the first occurence?
-  const skip_intervals =
-    Math.ceil((lowerBound.unix() - originTime.unix()) / intervalSeconds);
-  // # At what time does the first event occur?
-  const first_item = originTime
-    .clone()
-    .add((skip_intervals * intervalSeconds), "seconds");
-  const list = [first_item];
-
-  times(60, () => {
-    const x = last(list);
-    if (x) {
-      const item = x.clone().add(intervalSeconds, "seconds");
-      if (item.isBefore(upperBound)) {
-        list.push(item);
-      }
-    }
-  });
-  return list;
+export function scheduler({
+  startTime,
+  currentTime,
+  endTime,
+  intervalSeconds
+}: SchedulerProps): Moment[] {
+  return take(filter(
+    // Generate all occurrences in Farm Event.
+    range(startTime.unix(), endTime.unix(), intervalSeconds),
+    // Filter out past occurrences.
+    // Match FarmBot OS calendar item execution grace period (60 seconds).
+    (itemTime) => itemTime >= (currentTime.unix() - 60)),
+    // Take only the next 60 occurrences for performance reasons.
+    60) // At the least, this provides the next hour of calendar items.
+    // Convert from seconds back to Moment.
+    .map(x => moment.unix(x));
 }
 
 /** Translate farmbot interval names to momentjs interval names */
@@ -55,7 +44,7 @@ const LOOKUP: Record<TimeUnit, unitOfTime.Base> = {
 
 /** GIVEN: A time unit (hourly, weekly, etc) and a repeat (number)
  *  RETURNS: Number of seconds for interval.
- *  EXAMPLE: f(2, "minutely") => 120;
+ *  EXAMPLE: f(2, "minutely") => 120; // "Every two minutes"
  */
 export function farmEventIntervalSeconds(repeat: number, unit: TimeUnit) {
   const momentUnit = LOOKUP[unit];
@@ -75,20 +64,27 @@ export interface TimeLine {
   start_time: string;
   /** ISO string */
   end_time?: string | undefined;
+  current_time?: string;
 }
 /** Takes a subset of FarmEvent<Sequence> data and generates a list of dates. */
-export function scheduleForFarmEvent({ start_time, end_time, repeat, time_unit }:
-  TimeLine): Moment[] {
-  const i = repeat && farmEventIntervalSeconds(repeat, time_unit);
-  if (i && (time_unit !== NEVER)) {
-    const hmm = scheduler({
-      originTime: moment(start_time),
-      lowerBound: moment(start_time),
-      upperBound: end_time ? moment(end_time) : nextYear(),
-      intervalSeconds: i
+export function scheduleForFarmEvent(
+  { start_time, end_time, repeat, time_unit }: TimeLine, timeNow = moment()
+): Moment[] {
+  const interval = repeat && farmEventIntervalSeconds(repeat, time_unit);
+  if (interval && (time_unit !== NEVER)) {
+    const schedule = scheduler({
+      startTime: moment(start_time),
+      currentTime: timeNow,
+      endTime: end_time ? moment(end_time) : nextYear(),
+      intervalSeconds: interval
     });
-    return hmm;
+    return schedule;
   } else {
-    return [moment(start_time)];
+    const gracePeriod = timeNow.clone().subtract(1, "minute");
+    if (moment(end_time).isSameOrAfter(gracePeriod)) {
+      return [moment(start_time)];
+    } else {
+      return [];
+    }
   }
 }

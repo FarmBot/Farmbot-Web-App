@@ -4,13 +4,21 @@ import { t } from "i18next";
 import { error as log, init as logInit } from "farmbot-toastr";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
-import { State, Props } from "./interfaces";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui/index";
 import { Session } from "../session";
 
+export interface State {
+  password?: string;
+  passwordConfirmation?: string;
+  serverURL?: string;
+  serverPort?: string;
+}
+
+export interface Props { }
+
 export class PasswordReset extends React.Component<Props, State> {
-  constructor() {
-    super();
+  constructor(props: Props) {
+    super(props);
     this.state = {
       password: "",
       passwordConfirmation: "",

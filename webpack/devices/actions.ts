@@ -125,9 +125,8 @@ export function sync(): Thunk {
 export function execSequence(sequence: Sequence) {
   const noun = "Sequence execution";
   if (sequence.id) {
-    return getDevice()
-      .execSequence(sequence.id)
-      .then(commandOK(noun), commandErr(noun));
+    commandOK(noun)();
+    return getDevice().execSequence(sequence.id).catch(commandErr(noun));
   } else {
     throw new Error("Can't execute unsaved sequences");
   }
@@ -180,6 +179,9 @@ export function bulkToggleControlPanel(payload: boolean) {
 }
 
 export function MCUFactoryReset() {
+  if (!confirm(t(Content.MCU_RESET_ALERT))) {
+    return;
+  }
   return getDevice().resetMCU();
 }
 
@@ -192,7 +194,7 @@ export function botConfigChange(key: ConfigKey, value: number) {
 }
 
 export function settingToggle(
-  name: ConfigKey, bot: BotState, displayAlert: string | undefined
+  name: ConfigKey, bot: BotState, displayAlert?: string | undefined
 ) {
   if (displayAlert) { alert(displayAlert.replace(/\s+/g, " ")); }
   const noun = "Setting toggle";
@@ -227,7 +229,7 @@ export function homeAll(speed: number) {
   const noun = "'Home All' command";
   getDevice()
     .home({ axis: "all", speed })
-    .then(commandOK(noun), commandErr(noun));
+    .catch(commandErr(noun));
 }
 
 const startUpdate = () => {
@@ -272,6 +274,27 @@ export function updateConfig(config: Configuration) {
   return function (dispatch: Function) {
     getDevice()
       .updateConfig(config)
+      .then(() => updateOK(dispatch, noun))
+      .catch(() => updateNO(dispatch, noun));
+  };
+}
+
+export function registerGpioPin(
+  pinBinding: { pin_number: number, sequence_id: number }) {
+  const noun = "Register GPIO Pin";
+  return function (dispatch: Function) {
+    getDevice()
+      .registerGpio(pinBinding)
+      .then(() => updateOK(dispatch, noun))
+      .catch(() => updateNO(dispatch, noun));
+  };
+}
+
+export function unregisterGpioPin(pin_number: number) {
+  const noun = "Unregister GPIO Pin";
+  return function (dispatch: Function) {
+    getDevice()
+      .unregisterGpio({ pin_number })
       .then(() => updateOK(dispatch, noun))
       .catch(() => updateNO(dispatch, noun));
   };

@@ -8,7 +8,9 @@ import { Devices } from "../devices";
 import { Props } from "../interfaces";
 import { auth } from "../../__test_support__/fake_state/token";
 import { bot } from "../../__test_support__/fake_state/bot";
-import { fakeDevice } from "../../__test_support__/resource_index_builder";
+import {
+  fakeDevice, buildResourceIndex, FAKE_RESOURCES
+} from "../../__test_support__/resource_index_builder";
 import { FarmbotOsSettings } from "../components/farmbot_os_settings";
 
 describe("<Devices/>", () => {
@@ -20,7 +22,8 @@ describe("<Devices/>", () => {
     bot: bot,
     deviceAccount: fakeDevice(),
     images: [],
-    dispatch: jest.fn()
+    dispatch: jest.fn(),
+    resources: buildResourceIndex(FAKE_RESOURCES).index
   });
 
   it("renders relevant panels", () => {

@@ -12,4 +12,6 @@ export enum Color {
   gridGray = "#333333",
   gridSoil = "#ccaa88",
   soilCloud = "#90612f",
+  black = "#000000",
+  orange = "#ffa500",
 }

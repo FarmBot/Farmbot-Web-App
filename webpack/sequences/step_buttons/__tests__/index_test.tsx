@@ -3,8 +3,7 @@ import { StepButtonParams } from "../../interfaces";
 import { StepButton } from "../index";
 import { shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { ReduxAction } from "../../../redux/interfaces";
-import { EditResourceParams } from "../../../api/interfaces";
+import { Actions } from "../../../constants";
 
 describe("<StepButton/>", () => {
   function props(): StepButtonParams {
@@ -25,15 +24,13 @@ describe("<StepButton/>", () => {
     const p = props();
     const el = shallow<StepButtonParams>(<StepButton {...p } />);
     el.find("button").simulate("click");
-    let action: ReduxAction<EditResourceParams>;
-    action = (p.dispatch as jest.Mock<{}>).mock.calls[0][0];
-    expect(action).toBeTruthy();
-    expect(action.type).toBe("OVERWRITE_RESOURCE");
-    if (p.current && p.current.body.body) {
-      // tslint:disable-next-line:no-any
-      expect((action.payload.update as any).body[0]).toMatchObject(p.step);
-    } else {
-      fail("No");
-    }
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: expect.objectContaining({
+        update: expect.objectContaining({
+          body: [p.step]
+        }),
+      }),
+      type: Actions.OVERWRITE_RESOURCE
+    });
   });
 });

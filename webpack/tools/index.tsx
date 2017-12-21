@@ -4,9 +4,11 @@ import { ToolsState, Props } from "./interfaces";
 import { Col, Row, Page } from "../ui";
 import { ToolBayList, ToolBayForm, ToolList, ToolForm } from "./components";
 import { mapStateToProps } from "./state_to_props";
+import { catchErrors } from "../util";
 
 @connect(mapStateToProps)
 export class Tools extends React.Component<Props, Partial<ToolsState>> {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
   state: ToolsState = { editingBays: false, editingTools: false };
 

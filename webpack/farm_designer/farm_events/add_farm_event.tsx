@@ -3,9 +3,9 @@ import { t } from "i18next";
 import * as moment from "moment";
 import { connect } from "react-redux";
 import { mapStateToPropsAddEdit, } from "./map_state_to_props_add_edit";
-import { init } from "../../api/crud";
+import { init, destroy } from "../../api/crud";
 import { EditFEForm } from "./edit_fe_form";
-import { betterCompact, JSXChildren } from "../../util";
+import { betterCompact, JSXChildren, catchErrors } from "../../util";
 import { entries } from "../../resources/util";
 import { Link } from "react-router";
 import {
@@ -23,9 +23,10 @@ interface State {
 @connect(mapStateToPropsAddEdit)
 export class AddFarmEvent
   extends React.Component<AddEditFarmEventProps, Partial<State>> {
+  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
-  constructor() {
-    super();
+  constructor(props: AddEditFarmEventProps) {
+    super(props);
     this.state = {};
   }
 
@@ -62,6 +63,13 @@ export class AddFarmEvent
       this.props.dispatch(action);
       this.setState({ uuid: action.payload.uuid });
     }
+  }
+
+  componentWillUnmount() {
+    const { uuid } = this.state;
+    const fe = uuid && this.props.farmEvents.filter(x => x.uuid === uuid)[0];
+    const unsaved = fe && !fe.body.id;
+    if (fe && unsaved) { this.props.dispatch(destroy(fe.uuid, true)); }
   }
 
   /** No executables. Can't load form. */

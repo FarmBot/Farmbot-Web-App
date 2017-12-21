@@ -15,6 +15,7 @@ import { GetState } from "../redux/interfaces";
 import { TestButton } from "./test_button";
 import { warning } from "farmbot-toastr";
 import { AllSteps } from "./all_steps";
+// import { LocalsList } from "./locals_list";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -80,7 +81,11 @@ export class SequenceEditorMiddleActive extends
               current={sequence.body.color}
               onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
           </Row>
-          <hr style={{ marginBottom: 0 }} />
+          {/*  <LocalsList
+            sequence={this.props.sequence}
+            resources={this.props.resources}
+          dispatch={this.props.dispatch} /> */}
+          <hr style={{ /* marginBottom: 0 */ }} />
         </div>
         <div className="sequence">
           <AllSteps onDrop={onDrop(dispatch, sequence)} {...this.props} />

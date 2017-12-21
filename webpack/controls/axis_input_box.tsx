@@ -8,6 +8,10 @@ export let AxisInputBox = ({ onChange, value, axis }: AxisInputBoxProps) => {
     <BlurableInput
       value={(isUndefined(value) ? "" : value)}
       type="number"
-      onCommit={e => onChange(axis, parseInt(e.currentTarget.value))} />
+      allowEmpty={true}
+      onCommit={e => {
+        const val = parseInt(e.currentTarget.value);
+        onChange(axis, isNaN(val) ? undefined : val);
+      }} />
   </Col>;
 };

@@ -29,6 +29,13 @@ export let handleSelect = (index: ResourceIndex, input: DropDownItem): LocationD
         .body
         .id || bail("No id");
       return { kind: "tool", args: { tool_id } };
+    case "identifier":
+      return {
+        kind: "identifier",
+        args: {
+          label: "" + input.value
+        }
+      };
     default:
       return { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };
   }

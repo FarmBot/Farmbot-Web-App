@@ -35,6 +35,13 @@ export namespace ToolTips {
     unsupervised. Tip: Recalibrate FarmBot after changing settings and test a
     few sequences to verify that everything works as expected.`;
 
+  export const PIN_BINDINGS =
+    `Assign a sequence to execute when a Raspberry Pi GPIO pin is activated.`;
+
+  // Connectivity
+  export const CONNECTIVITY =
+    `Diagnose connectivity issues with FarmBot and the browser.`;
+
   // Hardware Settings: Homing and Calibration
   export const HOMING =
     `(Alpha) If encoders or end-stops are enabled, home axis (find zero).`;
@@ -130,6 +137,11 @@ export namespace ToolTips {
   export const INVERT_ENDPOINTS =
     `Swap axis end-stops during calibration.`;
 
+  // Hardware Settings: Pin Guard
+  export const PIN_GUARD_PIN_NUMBER =
+    `The number of the pin to guard. This pin will be set to the specified
+    state after the duration specified by TIMEOUT.`;
+
   // Farmware
   export const FARMWARE =
     `Manage Farmware (plugins).`;
@@ -211,6 +223,9 @@ export namespace ToolTips {
     `Execute a sequence if a condition is satisfied. If the condition is not
     satisfied, chose to do nothing or execute a different sequence.`;
 
+  export const EXECUTE_SEQUENCE =
+    `Executes another sequence.`;
+
   export const EXECUTE_SCRIPT = `The Run Farmware step runs a Farmware package.
    Visit the Farmware page to install and manage Farmware.`;
 
@@ -248,131 +263,168 @@ export namespace ToolTips {
   // Logs
   export const LOGS =
     `View and filter log messages.`;
+
+  export const SEQUENCE_LOG_BEGIN =
+    `Send a log message upon the start of sequence execution.`;
+
+  export const SEQUENCE_LOG_STEP =
+    `Send a log message for each sequence step.`;
+
+  export const SEQUENCE_LOG_END =
+    `Send a log message upon the end of sequence execution.`;
+
+  export const FIRMWARE_LOG_SENT =
+    `Log all commands sent to firmware (clears after refresh).`;
+
+  export const FIRMWARE_LOG_RECEIVED =
+    `Log all responses received from firmware (clears after refresh).
+    Warning: extremely verbose.`;
+
+  export const FIRMWARE_DEBUG_MESSAGES =
+    `Log all debug received from firmware (clears after refresh).`;
+
+  // App
+  export const LABS =
+    `Customize your web app experience.`;
 }
 
 export namespace Content {
 
   // Account
   export const ACCOUNT_DELETE_WARNING =
-    `WARNING! Deleting your account will permanently delete all of your
+    trim(`WARNING! Deleting your account will permanently delete all of your
     Sequences , Regimens, Events, and Farm Designer data.Upon deleting your
     account, FarmBot will cease to function and become inaccessible until it is
     paired with another web app account. To do this, you will need to reboot
     your FarmBot so that is goes back into configuration mode for pairing with
     another user account. When this happens, all of the data on your FarmBot
     will be overwritten with the new account's data. If the account is brand
-    new, then FarmBot will become a blank slate.`.replace(/\s+/g, " ");
+    new, then FarmBot will become a blank slate.`);
 
   export const TYPE_PASSWORD_TO_DELETE =
-    `If you are sure you want to delete your account, type in
-    your password below to continue.`.replace(/\s+/g, " ");
+    trim(`If you are sure you want to delete your account, type in
+    your password below to continue.`);
 
   // Device
   export const FACTORY_RESET_WARNING =
-    `Factory resetting your FarmBot will destroy all data on the device,
+    trim(`Factory resetting your FarmBot will destroy all data on the device,
     revoking your FarmBot's abilily to connect to your web app account and your
     home wifi. Upon factory resetting, your device will restart into
     Configurator mode. Factory resetting your FarmBot will not affect any data
     or settings from your web app account, allowing you to do a complete restore
     to your device once it is back online and paired with your web app
-    account.`.replace(/\s+/g, " ");
+    account.`);
 
   export const FACTORY_RESET_ALERT =
-    `Warning: This will erase all data stored on your FarmBot's SD card,
+    trim(`Warning: This will erase all data stored on your FarmBot's SD card,
     requiring you to reconfigure FarmBot so that it can reconnect to your
     WiFi network and a web app account. Factory resetting the device will
     not delete data stored in your web app account. Are you sure you wish
-    to continue?`.replace(/\s+/g, " ");
+    to continue?`);
+
+  export const MCU_RESET_ALERT =
+    trim(`Warning: This will reset all hardware settings to the default values.
+    Are you sure you wish to continue?`);
+
+  export const AUTO_FACTORY_RESET =
+    trim(`Automatically factory reset when the WiFi network cannot be
+    detected. Useful for typos during FarmBot OS configuration or network
+    changes.`);
+
+  export const AUTO_FACTORY_RESET_PERIOD =
+    trim(`Time in minutes to attempt connecting to WiFi before a factory
+    reset.`);
 
   export const TIMEZONE_GUESS_BROWSER =
-    `This account did not have a timezone set. Farmbot requires a timezone to
-    operate. We have updated your timezone settings based on your browser.
-    Please verify these settings in the device settings panel. Device sync is
-    recommended.`.replace(/\s+/g, " ");
+    trim(`This account did not have a timezone set. Farmbot requires a
+    timezone to operate. We have updated your timezone settings based on
+    your browser. Please verify these settings in the device settings panel.
+    Device sync is recommended.`);
 
   export const TIMEZONE_GUESS_UTC =
-    `Warning: Farmbot could not guess your timezone. We have defaulted your
-    timezone to UTC, which is less than ideal for most users. Please select
-    your timezone from the dropdown. Device sync is recommended.`.replace(/\s+/g, " ");
+    trim(`Warning: Farmbot could not guess your timezone. We have defaulted
+    your timezone to UTC, which is less than ideal for most users. Please
+    select your timezone from the dropdown. Device sync is recommended.`);
 
   export const DIFFERENT_TZ_WARNING =
-    `Note: The selected timezone for your FarmBot is different than
-    your local browser time.`.replace(/\s+/g, " ");
+    trim(`Note: The selected timezone for your FarmBot is different than
+    your local browser time.`);
 
   export const RESTART_FARMBOT =
-    `This will restart FarmBot's Raspberry Pi and controller
-    software.`.replace(/\s+/g, " ");
+    trim(`This will restart FarmBot's Raspberry Pi and controller
+    software.`);
 
-  export const AUTO_SYNC = trim(`When enabled, device resources such as
-  sequences and regimens will be sent to the device automatically. This removes
-  the need to push "SYNC" after making changes in the web app. Changes to
-  running sequences and regimens while auto sync is enabled will result in
-  instantaneous change.`);
+  export const AUTO_SYNC =
+    trim(`When enabled, device resources such as sequences and regimens
+    will be sent to the device automatically. This removes the need to push
+    "SYNC" after making changes in the web app. Changes to running
+    sequences and regimens while auto sync is enabled will result in
+    instantaneous change.`);
 
   export const SHUTDOWN_FARMBOT =
-    `This will shutdown FarmBot's Raspberry Pi. To turn it
-    back on, unplug FarmBot and plug it back in.`.replace(/\s+/g, " ");
+    trim(`This will shutdown FarmBot's Raspberry Pi. To turn it
+    back on, unplug FarmBot and plug it back in.`);
 
   // Hardware Settings
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
-    `Restoring hardware parameter defaults will destroy the
-    current settings, resetting them to default values.`.replace(/\s+/g, " ");
+    trim(`Restoring hardware parameter defaults will destroy the
+    current settings, resetting them to default values.`);
 
   // App
   export const APP_LOAD_TIMEOUT_MESSAGE =
-    `App could not be fully loaded, we recommend you try
-    refreshing the page.`.replace(/\s+/g, " ");
+    trim(`App could not be fully loaded, we recommend you try
+    refreshing the page.`);
 
   export const MQTT_DISCONNECTED =
-    `Your web browser is unable to connect to the message broker.
+    trim(`Your web browser is unable to connect to the message broker.
     You might be behind a firewall or disconnected from the Internet. Check
     your network settings.
-    View Device > Connectivity for more details.`.replace(/\s+/g, " ");
+    View Device > Connectivity for more details.`);
 
   export const MALFORMED_MESSAGE_REC_UPGRADE =
-    `FarmBot sent a malformed message. You may need to upgrade
-    FarmBot OS. Please upgrade FarmBot OS and log back in.`.replace(/\s+/g, " ");
+    trim(`FarmBot sent a malformed message. You may need to upgrade
+    FarmBot OS. Please upgrade FarmBot OS and log back in.`);
 
   export const EXPERIMENTAL_WARNING =
-    `Warning! This is an EXPERIMENTAL feature. This feature may be broken and may
-    break or otherwise hinder your usage of the rest of the app. This feature may
-    disappear or break at any time.`.replace(/\s+/g, " ");
+    trim(`Warning! This is an EXPERIMENTAL feature. This feature may be
+    broken and may break or otherwise hinder your usage of the rest of the
+    app. This feature may disappear or break at any time.`);
 
   // Front Page
   export const TOS_UPDATE =
-    `The terms of service have recently changed. You must accept the new
-    terms of service to continue using the site.`.replace(/\s+/g, " ");
+    trim(`The terms of service have recently changed. You must accept the
+    new terms of service to continue using the site.`);
 
   // Sequences
   export const NO_SEQUENCE_SELECTED =
-    `No Sequence selected. Click one in the Sequences panel to edit, or
-    click "+" to create a new one.`.replace(/\s+/g, " ");
+    trim(`No Sequence selected. Click one in the Sequences panel to edit,
+    or click "+" to create a new one.`);
 
   // Regimens
   export const NO_REGIMEN_SELECTED =
-    `No Regimen selected. Click one in the Regimens panel to edit, or
-    click "+" in the Regimens panel to create a new one.`.replace(/\s+/g, " ");
+    trim(`No Regimen selected. Click one in the Regimens panel to edit, or
+    click "+" in the Regimens panel to create a new one.`);
 
   // Farm Events
   export const REGIMEN_TODAY_SKIPPED_ITEM_RISK =
-    `You are scheduling a regimen to run today. Be aware that
+    trim(`You are scheduling a regimen to run today. Be aware that
     running a regimen too late in the day may result in skipped
     regimen tasks. Consider rescheduling this event to tomorrow if
-    this is a concern.`.replace(/\s+/g, " ");
+    this is a concern.`);
 
   export const INVALID_RUN_TIME =
-    `This Farm Event does not appear to have a valid run time.
-    Perhaps you entered bad dates?`.replace(/\s+/g, " ");
+    trim(`This Farm Event does not appear to have a valid run time.
+    Perhaps you entered bad dates?`);
 
   export const FARM_EVENT_TZ_WARNING =
-    `Note: Times displayed according to local browser time, which
+    trim(`Note: Times displayed according to local browser time, which
     is currently different from your device timezone setting (on the
-    Device page).`.replace(/\s+/g, " ");
+    Device page).`);
 
   export const FIRST_PARTY_WARNING =
-    `Are you sure you want to delete this first party farmware?
+    trim(`Are you sure you want to delete this first party farmware?
     Doing so will limit the functionality of your FarmBot and
-    may cause unexpected behavior.`.replace(/\s+/g, " ");
+    may cause unexpected behavior.`);
 }
 
 export enum Actions {

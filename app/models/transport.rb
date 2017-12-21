@@ -10,11 +10,18 @@ module Transport
     @connection ||= Bunny.new(AMQP_URL, OPTS).start
   end
 
+  def self.log_channel
+    @log_channel ||=  self.connection
+                          .create_channel
+                          .queue("", exclusive: true)
+                          .bind("amq.topic", routing_key: "bot.*.logs")
+  end
+
   def self.topic
     @topic ||= self
-                 .connection
-                 .create_channel
-                 .topic("amq.topic", auto_delete: true)
+                  .connection
+                  .create_channel
+                  .topic("amq.topic", auto_delete: true)
   end
 
   def self.amqp_send(message, id, channel)

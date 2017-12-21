@@ -47,8 +47,8 @@ export function getHueBoxes(
 }
 
 export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> {
-  constructor() {
-    super();
+  constructor(props: FarmbotPickerProps) {
+    super(props);
     this.state = {};
   }
 
@@ -87,7 +87,9 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
   customPointer = () => <div />;
 
   render() {
-    const H_AVG = ((this.props.h[1] * 2 + this.props.h[0] * 2) / 2);
+    const H_AVG = !!this.props.invertHue
+      ? 0
+      : ((this.props.h[1] * 2 + this.props.h[0] * 2) / 2);
     /** 💥💥💥SURPRISING CODE AHEAD:
      * I think the typings for `react-color` might be missing `hsv` and `hsl`
      * as mandatory props. I don't have time to send a patch right now. Failing

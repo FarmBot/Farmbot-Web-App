@@ -33,6 +33,7 @@ export class BotConfigInputBox extends React.Component<StepsPerMMBoxProps, {}> {
     return <BlurableInput
       type="number"
       onCommit={this.change(this.props.setting, this.props.dispatch)}
-      value={value} />;
+      value={value}
+      disabled={this.props.disabled} />;
   }
 }

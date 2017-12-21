@@ -2,14 +2,13 @@ class FarmEventSerializer < ActiveModel::Serializer
   class BadExe < StandardError; end
   attributes :id, :start_time, :end_time, :repeat, :time_unit,
              :executable_id, :executable_type, :calendar
-
+  BAD_EXE = "Dont know how to calendarize %s"
   def calendar
     case object.executable
       when Sequence then sequence_calendar
       when Regimen  then []
       else
-        msg = "Dont know how to calendarize #{object.executable.class}"
-        throw BadExe.new(msg)
+        throw BadExe.new(BAD_EXE % object.executable.class)
     end
   end
 

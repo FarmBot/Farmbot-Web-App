@@ -45,7 +45,9 @@ describe("handleCreateOrUpdate", () => {
     const result = handleCreateOrUpdate(dispatch, getState, myPayload);
     expect(result).toBe(undefined);
     expect(dispatch).toHaveBeenCalled();
-    expect(dispatch.mock.calls[0][0].type).toBe(Actions.INIT_RESOURCE);
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: Actions.INIT_RESOURCE
+    }));
   });
 
   it("ignores local echo", () => {
@@ -71,7 +73,9 @@ describe("handleCreateOrUpdate", () => {
     myPayload.kind = "Sequence";
     handleCreateOrUpdate(dispatch, getState, myPayload);
     expect(dispatch).toHaveBeenCalled();
-    expect(dispatch.mock.calls[0][0].type).toBe(Actions.OVERWRITE_RESOURCE);
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: Actions.OVERWRITE_RESOURCE
+    }));
   });
 });
 

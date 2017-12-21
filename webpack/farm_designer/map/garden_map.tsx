@@ -34,8 +34,8 @@ const DRAG_ERROR = `ERROR - Couldn't get zoom level of garden map, check the
 
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {
-  constructor() {
-    super();
+  constructor(props: GardenMapProps) {
+    super(props);
     this.state = {};
   }
 

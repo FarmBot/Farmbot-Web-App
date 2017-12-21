@@ -2,34 +2,26 @@ import { Everything } from "../interfaces";
 import { Props } from "./interfaces";
 import {
   selectAllSequences,
-  selectAllTools,
-  findSequence,
-  selectAllToolSlotPointers
+  findSequence
 } from "../resources/selectors";
 import { getStepTag } from "../resources/sequence_tagging";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;
-  const syncStatus =
-    props.bot.hardware.informational_settings.sync_status || "unknown";
-  const sequence =
-    (uuid) ? findSequence(props.resources.index, uuid) : undefined;
+  const sequence = uuid ? findSequence(props.resources.index, uuid) : undefined;
+  sequence && (sequence.body.body || []).map(x => getStepTag(x));
 
-  if (sequence) {
-    (sequence.body.body || [])
-      .map(x => {
-        getStepTag(x);
-      });
-  }
   return {
     dispatch: props.dispatch,
     sequences: selectAllSequences(props.resources.index),
-    tools: selectAllTools(props.resources.index),
-    slots: selectAllToolSlotPointers(props.resources.index),
     sequence: sequence,
     auth: props.auth,
     resources: props.resources.index,
-    syncStatus,
+    syncStatus: (props
+      .bot
+      .hardware
+      .informational_settings
+      .sync_status || "unknown"),
     consistent: props.bot.consistent,
     autoSyncEnabled: !!props.bot.hardware.configuration.auto_sync
   };

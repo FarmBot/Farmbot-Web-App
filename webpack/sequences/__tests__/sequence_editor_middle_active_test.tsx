@@ -1,6 +1,5 @@
-const mockDestroy = jest.fn();
 jest.mock("../../api/crud", () => ({
-  destroy: mockDestroy
+  destroy: jest.fn()
 }));
 
 const mockCopy = jest.fn();
@@ -16,20 +15,22 @@ jest.mock("../step_tiles/index", () => ({
 }));
 
 import * as React from "react";
-import { SequenceEditorMiddleActive, onDrop } from "../sequence_editor_middle_active";
+import {
+  SequenceEditorMiddleActive, onDrop
+} from "../sequence_editor_middle_active";
 import { mount } from "enzyme";
 import { ActiveMiddleProps } from "../interfaces";
-import { FAKE_RESOURCES, buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  FAKE_RESOURCES, buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { destroy } from "../../api/crud";
 
 describe("<SequenceEditorMiddleActive/>", () => {
   function fakeProps(): ActiveMiddleProps {
     return {
-      slots: [],
       dispatch: jest.fn(),
       sequence: fakeSequence(),
-      sequences: [],
-      tools: [],
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
       consistent: true,
@@ -46,12 +47,14 @@ describe("<SequenceEditorMiddleActive/>", () => {
 
   it("deletes", () => {
     clickButton(2, "Delete");
-    expect(mockDestroy).toHaveBeenCalledWith("Sequence.0.17");
+    expect(destroy).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
   });
 
   it("copies", () => {
     clickButton(3, "Copy");
-    expect(mockCopy.mock.calls[0][0].uuid).toEqual("Sequence.1.35");
+    expect(mockCopy).toHaveBeenCalledWith(expect.objectContaining({
+      uuid: expect.stringContaining("Sequence")
+    }));
   });
 
   it("has drag area", () => {
@@ -71,9 +74,10 @@ describe("onDrop()", () => {
     dispatch.mock.calls[0][0](() => {
       return { value: 1, intent: "step_splice", draggerId: 2 };
     });
-    const argsList = mockSplice.mock.calls[0][0];
-    expect(argsList.step).toEqual(1);
-    expect(argsList.index).toEqual(0);
+    expect(mockSplice).toHaveBeenCalledWith(expect.objectContaining({
+      step: 1,
+      index: 0
+    }));
   });
 
   it("step_move", () => {
@@ -82,10 +86,11 @@ describe("onDrop()", () => {
     dispatch.mock.calls[0][0](() => {
       return { value: 4, intent: "step_move", draggerId: 5 };
     });
-    const argsList = mockMove.mock.calls[0][0];
-    expect(argsList.step).toEqual(4);
-    expect(argsList.to).toEqual(3);
-    expect(argsList.from).toEqual(5);
+    expect(mockMove).toHaveBeenCalledWith(expect.objectContaining({
+      step: 4,
+      to: 3,
+      from: 5
+    }));
   });
 
   it("not a valid step object", () => {

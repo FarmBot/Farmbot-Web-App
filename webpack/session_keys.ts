@@ -24,5 +24,12 @@ export enum BooleanSetting {
 
 export enum NumericSetting {
   botOriginQuadrant = "botOriginQuadrant",
-  zoomLevel = "zoomLevel"
+  zoomLevel = "zoomLevel",
+  successLog = "successLog",
+  busyLog = "busyLog",
+  warnLog = "warnLog",
+  errorLog = "errorLog",
+  infoLog = "infoLog",
+  funLog = "funLog",
+  debugLog = "debugLog"
 }

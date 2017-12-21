@@ -21,8 +21,8 @@ module Api
 
     def update
       mutate Sequences::Update.run(sequence_params, # params[:sequence].as_json,
-                                   device: current_device,
-                                   sequence: sequence)
+                                    device: current_device,
+                                    sequence: sequence)
     end
 
     def destroy

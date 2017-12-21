@@ -45,7 +45,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     const hasName = this.props.user && this.props.user.body.name;
 
     const firstName = hasName ?
-      `${hasName.split(" ")[0]} ▾` : `${t("Menu")} ▾`;
+      `${hasName.split(" ")[0].slice(0, 9)} ▾` : `${t("Menu")} ▾`;
 
     const menuIconClassNames: string[] = [
       "fa", "fa-bars", "mobile-menu-icon"

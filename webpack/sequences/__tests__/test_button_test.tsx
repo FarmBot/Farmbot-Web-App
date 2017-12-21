@@ -12,7 +12,10 @@ describe("<TestButton/>", () => {
         "name": "Goto 0, 0, 0",
         "color": "gray",
         "body": [],
-        "args": { "version": 4, "label": "WIP" },
+        "args": {
+          "version": 4,
+          "locals": { kind: "scope_declaration", args: {} },
+        },
         "kind": "sequence"
       },
       "uuid": "Sequence.23.47"

@@ -9,6 +9,7 @@ import {
 import { BotLocationData, StepsPerMmXY } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import * as _ from "lodash";
+import { minFwVersionCheck } from "../util";
 
 export function mapStateToProps(props: Everything) {
 
@@ -32,9 +33,21 @@ export function mapStateToProps(props: Everything) {
   };
 
   function stepsPerMmXY(): StepsPerMmXY {
-    const config = props.bot.hardware.configuration;
-    if (isNumber(config.steps_per_mm_x) && isNumber(config.steps_per_mm_y)) {
-      return { x: config.steps_per_mm_x, y: config.steps_per_mm_y };
+    const {
+      mcu_params, configuration, informational_settings
+    } = props.bot.hardware;
+    const { steps_per_mm_x, steps_per_mm_y } = configuration;
+    const { firmware_version } = informational_settings;
+    const { movement_step_per_mm_x, movement_step_per_mm_y } = mcu_params;
+    const stepsPerMm = () => {
+      if (minFwVersionCheck(firmware_version, "5.0.5")) {
+        return { x: movement_step_per_mm_x, y: movement_step_per_mm_y };
+      } else {
+        return { x: steps_per_mm_x, y: steps_per_mm_y };
+      }
+    };
+    if (isNumber(stepsPerMm().x) && isNumber(stepsPerMm().y)) {
+      return stepsPerMm();
     }
     return { x: undefined, y: undefined };
   }
@@ -45,7 +58,7 @@ export function mapStateToProps(props: Everything) {
       const pinStatus = x.body.pin
         ? props.bot.hardware.pins[x.body.pin]
         : undefined;
-      const value = pinStatus ? !!pinStatus.value : false;
+      const value = pinStatus ? pinStatus.value > 0 : false;
       return { label, value };
     });
 

@@ -16,9 +16,9 @@ describe("<AxisDisplayGroup />", () => {
   it("renders '' for falsy values", () => {
     const inputs = wrapper.find("input");
     const label = wrapper.find("label");
-    expect(inputs.at(0).props().value).toBe("");
-    expect(inputs.at(1).props().value).toBe("");
-    expect(inputs.at(2).props().value).toBe("");
+    expect(inputs.at(0).props().value).toBe("---");
+    expect(inputs.at(1).props().value).toBe("---");
+    expect(inputs.at(2).props().value).toBe("---");
     expect(label.text()).toBe("Heyoo");
   });
 

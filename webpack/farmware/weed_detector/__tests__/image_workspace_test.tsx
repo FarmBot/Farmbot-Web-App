@@ -23,11 +23,22 @@ describe("<Body/>", () => {
   it("triggers onChange() event", () => {
     jest.clearAllMocks();
     const props = fakeProps();
-    const iw = new ImageWorkspace();
+    const iw = new ImageWorkspace(props);
     iw.props = props;
     iw.onHslChange("H")([4, 5]);
     expect(props.onChange).toHaveBeenCalledTimes(2);
     expect(props.onChange).toHaveBeenCalledWith("H_HI", 5);
     expect(props.onChange).toHaveBeenCalledWith("H_LO", 4);
+    jest.clearAllMocks();
+    iw.onHslChange("H")([2, 5]);
+    expect(props.onChange).toHaveBeenCalledTimes(1);
+    expect(props.onChange).toHaveBeenCalledWith("H_HI", 5);
+    jest.clearAllMocks();
+    iw.onHslChange("H")([4, 8]);
+    expect(props.onChange).toHaveBeenCalledTimes(1);
+    expect(props.onChange).toHaveBeenCalledWith("H_LO", 4);
+    jest.clearAllMocks();
+    iw.onHslChange("H")([2, 8]);
+    expect(props.onChange).not.toHaveBeenCalled();
   });
 });

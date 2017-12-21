@@ -5,6 +5,7 @@ import * as React from "react";
 import { AddRegimen } from "../add_button";
 import { AddRegimenProps } from "../../interfaces";
 import { shallow } from "enzyme";
+import { Actions } from "../../../constants";
 
 describe("<AddRegimen/>", () => {
   function btn(props: AddRegimenProps) {
@@ -21,13 +22,15 @@ describe("<AddRegimen/>", () => {
   it("dispatches a new regimen onclick", () => {
     const dispatch = jest.fn();
     const b = btn({ dispatch, length });
-    expect(mockPush.mock.calls.length).toBe(0);
+    expect(mockPush).not.toHaveBeenCalled();
     b.find("button").simulate("click");
-    expect(dispatch.mock.calls.length).toEqual(1);
-    const action = dispatch.mock.calls[0][0];
-    expect(action.type).toEqual("INIT_RESOURCE");
-    expect(action.payload).toBeTruthy();
-    expect(action.payload.kind).toEqual("Regimen");
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.INIT_RESOURCE,
+      payload: expect.objectContaining({
+        kind: "Regimen"
+      })
+    });
   });
 
   it("has children (or defaults)");

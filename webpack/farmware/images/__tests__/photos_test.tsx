@@ -51,7 +51,6 @@ describe("<Photos/>", () => {
   });
 
   it("deletes photo", () => {
-    const { mock } = destroy as jest.Mock<{}>;
     const dispatch = jest.fn(() => { return Promise.resolve(); });
     const images = prepareImages(fakeImages);
     const currentImage = images[1];
@@ -60,6 +59,6 @@ describe("<Photos/>", () => {
     const deleteButton = wrapper.find("button").at(1);
     expect(deleteButton.text().toLowerCase()).toBe("delete photo");
     deleteButton.simulate("click");
-    expect(mock.calls[0][0]).toBe("Position 1");
+    expect(destroy).toHaveBeenCalledWith("Position 1");
   });
 });

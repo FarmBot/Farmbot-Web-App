@@ -9,6 +9,7 @@
   },
   "scripts": {
     "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "clean": "rm -rf public/dist && rm -rf public/webpack",
     "build": "TARGET=production bundle exec rake webpack:compile",
     "start": "echo 'use `rails api:start`'",
     "heroku-postbuild": "webpack --config=./config/webpack.prod.js",
@@ -38,9 +39,9 @@
     "@types/markdown-it": "^0.0.4",
     "@types/moxios": "^0.4.5",
     "@types/node": "^8.0.46",
-    "@types/react": "15.0.39",
+    "@types/react": "16.0.29",
     "@types/react-color": "^2.13.2",
-    "@types/react-dom": "^15.5.5",
+    "@types/react-dom": "16.0.3",
     "@types/react-redux": "^4.4.47",
     "@types/react-router": "3",
     "@types/redux": "^3.6.31",
@@ -49,9 +50,9 @@
     "coveralls": "^3.0.0",
     "css-loader": "^0.28.7",
     "enzyme": "^3.1.0",
-    "enzyme-adapter-react-15": "^1.0.2",
+    "enzyme-adapter-react-16": "^1.1.0",
     "extract-text-webpack-plugin": "^3.0.1",
-    "farmbot": "5.0.2",
+    "farmbot": "5.2.2",
     "farmbot-toastr": "^1.0.3",
     "fastclick": "^1.0.6",
     "file-loader": "^1.1.5",
@@ -66,14 +67,15 @@
     "moxios": "^0.4.0",
     "node-sass": "^4.5.3",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
-    "react": "^15.6.1",
+    "raf": "^3.4.0",
+    "react": "16.2.0",
     "react-addons-css-transition-group": "^15.6.2",
     "react-addons-test-utils": "^15.6.2",
     "react-color": "^2.13.8",
-    "react-dom": "^15.6.1",
+    "react-dom": "16.2.0",
     "react-redux": "^5.0.6",
     "react-router": "^3.0.0",
-    "react-test-renderer": "^15.6.1",
+    "react-test-renderer": "16.2.0",
     "redux": "^3.7.2",
     "redux-immutable-state-invariant": "^2.1.0",
     "redux-thunk": "^2.0.1",
@@ -101,6 +103,7 @@
       "globalConfig": {
         "NODE_ENV": "development",
         "TOS_URL": "https://farmbot.io/tos/",
+        "PRIV_URL": "https://farmbot.io/privacy/",
         "LONG_REVISION": "------------",
         "SHORT_REVISION": "--------"
       }
@@ -132,7 +135,8 @@
       "html",
       "json",
       "lcov"
-    ]
+    ],
+    "setupTestFrameworkScriptFile": "<rootDir>/webpack/__test_support__/customMatchers.js"
   },
   "engines": {
     "node": ">=8.9.0"

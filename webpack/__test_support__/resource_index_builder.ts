@@ -253,7 +253,6 @@ const tr13: TaggedResource = {
     "id": 23,
     "name": "Goto 0, 0, 0",
     "color": "gray",
-    "status": undefined,
     "body": [
       {
         "kind": "move_absolute",
@@ -274,14 +273,15 @@ const tr13: TaggedResource = {
               "z": 0
             }
           },
-          "speed": 800
+          "speed": 100
         }
       }
     ],
     "args": {
       "is_outdated": false,
       "version": 4,
-      "label": "foo"
+      "label": "foo",
+      "locals": { kind: "scope_declaration", args: {} },
     },
     "kind": "sequence"
   },

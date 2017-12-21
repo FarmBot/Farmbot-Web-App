@@ -9,7 +9,9 @@ export function mapStateToProps(props: Everything): LogsProps {
     logs: _(selectAllLogs(props.resources.index))
       .sortBy("body.created_at")
       .reverse()
-      .value()
+      .take(250)
+      .value(),
+    bot: props.bot
   };
 
 }

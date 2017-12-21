@@ -4,7 +4,7 @@ import { warning } from "farmbot-toastr";
 import { McuInputBoxProps } from "../interfaces";
 import { updateMCU } from "../actions";
 import { BlurableInput } from "../../ui/index";
-import { clampUnsignedInteger } from "../../util";
+import { clampUnsignedInteger, IntegerSize } from "../../util";
 import { t } from "i18next";
 
 export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
@@ -13,28 +13,36 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
 
   get value() {
     const v = this.props.bot.hardware.mcu_params[this.key];
-    return _.isUndefined(v) ? "" : (v || 0).toString();
+    const { filter } = this.props;
+    const goodValue = !_.isUndefined(v) && !(filter && v > filter);
+    return goodValue ? (v || 0).toString() : "";
+  }
+
+  clampInputAndWarn = (input: string, intSize: IntegerSize): number => {
+    const result = clampUnsignedInteger(input, intSize);
+    const max = intSize === "long" ? "2,000,000,000" : "32,000";
+    switch (result.outcome) {
+      case "ok":
+        break;
+      case "high":
+        warning(t(`Maximum input is ${max}. Rounding down.`));
+        break;
+      case "low":
+        warning(t("Must be a positive number. Rounding up to 0."));
+        break;
+      default:
+        warning(t(`Please enter a number between 0 and ${max}`));
+        throw new Error("Bad input in mcu_input_box. Impossible?");
+    }
+    return result.result;
   }
 
   commit = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
     const actuallyDifferent = this.value !== value;
     if (actuallyDifferent) {
-      const result = clampUnsignedInteger(value);
-      switch (result.outcome) {
-        case "ok":
-          break;
-        case "high":
-          warning(t("Maximum input is 32,000. Rounding down."));
-          break;
-        case "low":
-          warning(t("Must be a positive number. Rounding up to 0."));
-          break;
-        default:
-          warning(t("Please enter a number between 0 and 32,000"));
-          throw new Error("Bad input in mcu_input_box. Impossible?");
-      }
-      this.props.dispatch(updateMCU(this.key, result.result.toString()));
+      const result = this.clampInputAndWarn(value, this.props.intSize);
+      this.props.dispatch(updateMCU(this.key, result.toString()));
     }
   }
 

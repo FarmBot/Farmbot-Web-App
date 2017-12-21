@@ -5,6 +5,7 @@ import { mount } from "enzyme";
 import { TaggedSequence, SpecialStatus } from "../../../resources/tagged_resources";
 import { MoveAbsolute } from "farmbot/dist";
 import { Wrapper } from "../../../__test_support__/wrapper";
+import { Actions } from "../../../constants";
 
 describe("<InputDefault/>", () => {
   it("updates the step", () => {
@@ -28,7 +29,7 @@ describe("<InputDefault/>", () => {
             "z": 0
           }
         },
-        "speed": 800
+        "speed": 100
       }
     };
 
@@ -42,7 +43,7 @@ describe("<InputDefault/>", () => {
         "body": [step],
         "args": {
           "version": 4,
-          "label": "WIP"
+          "locals": { kind: "scope_declaration", args: {} },
         },
         "kind": "sequence"
       },
@@ -59,11 +60,16 @@ describe("<InputDefault/>", () => {
     const input = c.find("input").first();
     input.simulate("change");
     input.simulate("blur");
-    expect(dispatcher.mock.calls.length).toEqual(1);
-    const action = dispatcher.mock.calls[0][0];
-    const { payload } = action;
-    expect(action.type).toEqual("OVERWRITE_RESOURCE");
-    expect(payload.uuid).toContain("Sequence");
-    expect(payload.update.name).toEqual(tr.body.name);
+
+    expect(dispatcher).toHaveBeenCalledTimes(1);
+    expect(dispatcher).toHaveBeenCalledWith({
+      type: Actions.OVERWRITE_RESOURCE,
+      payload: expect.objectContaining({
+        uuid: expect.stringContaining("Sequence"),
+        update: expect.objectContaining({
+          name: tr.body.name
+        })
+      })
+    });
   });
 });

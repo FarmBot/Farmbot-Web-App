@@ -12,8 +12,8 @@ import { ToolTips } from "../../constants";
 import * as _ from "lodash";
 
 export class Peripherals extends React.Component<PeripheralsProps, PeripheralState> {
-  constructor() {
-    super();
+  constructor(props: PeripheralsProps) {
+    super(props);
     this.state = { isEditing: false };
   }
 
@@ -56,24 +56,24 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
     }
   }
 
-  emptyPeripheral = (): TaggedPeripheral => {
+  taggedPeripheral = (pin: number, label: string): TaggedPeripheral => {
     return {
       uuid: "WILL_BE_CHANGED_BY_REDUCER",
       specialStatus: SpecialStatus.SAVED,
       kind: "Peripheral",
-      body: { pin: 0, label: "New Peripheral" }
+      body: { pin, label }
     };
   }
 
+  emptyPeripheral = (): TaggedPeripheral => {
+    return this.taggedPeripheral(0, "New Peripheral");
+  }
+
   farmduinoPeripherals = (dispatch: Function) => {
-    function newPeripheral(pin: number, label: string) {
-      dispatch(init({
-        uuid: "WILL_BE_CHANGED_BY_REDUCER",
-        specialStatus: SpecialStatus.SAVED,
-        kind: "Peripheral",
-        body: { pin, label }
-      }));
-    }
+    const newPeripheral = (pin: number, label: string) => {
+      dispatch(init(this.taggedPeripheral(pin, label)));
+    };
+
     newPeripheral(7, "Lighting");
     newPeripheral(8, "Water");
     newPeripheral(9, "Vacuum");

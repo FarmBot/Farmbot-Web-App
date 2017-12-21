@@ -13,13 +13,14 @@ import * as moment from "moment";
  *
  * This function warns the user when "task loss" may occur.
  */
-export function maybeWarnAboutMissedTasks(tfe: TaggedFarmEvent, cb: Function) {
+export function maybeWarnAboutMissedTasks(
+  tfe: TaggedFarmEvent, cb: Function, now = moment()) {
   return function (dispatch: Function, getState: GetState) {
     const fe = tfe.body;
     // STEP 1: Only do this check if it is a Regimen -
     // sequences don't have this issue.
     if (fe.executable_type === "Regimen") {
-      const NOW = moment();
+      const NOW = now;
       const START_TIME = moment(fe.start_time);
       const TIMEFMT = "YYYY-MM-DD";
 

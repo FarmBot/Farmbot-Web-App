@@ -31,7 +31,6 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
           <StepDragger
             dispatch={dispatch}
             step={currentStep}
-            ghostCss="step-drag-ghost-image-big"
             intent="step_move"
             draggerId={index}>
             <div>

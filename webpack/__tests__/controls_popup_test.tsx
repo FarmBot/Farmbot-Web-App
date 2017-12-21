@@ -9,7 +9,6 @@ jest.mock("../device", () => ({
 import * as React from "react";
 import { ControlsPopup } from "../controls_popup";
 import { mount } from "enzyme";
-import { getDevice } from "../device";
 
 describe("<ControlsPopup />", () => {
   beforeEach(function () {
@@ -31,31 +30,24 @@ describe("<ControlsPopup />", () => {
   });
 
   it("x axis is inverted", () => {
-    const { mock } = getDevice().moveRelative as jest.Mock<{}>;
     const button = wrapper.find("button").first();
     expect(button.props().title).toBe("move x axis");
     button.simulate("click");
-    const args = mock.calls[0][0];
-    expect(args.x).toBe(100);
-    expect(args.y).toBe(0);
-    expect(args.z).toBe(0);
+    expect(mockDevice.moveRelative)
+      .toHaveBeenCalledWith({ speed: 100, x: 100, y: 0, z: 0 });
   });
 
   it("y axis is not inverted", () => {
-    const { mock } = getDevice().moveRelative as jest.Mock<{}>;
     const button = wrapper.find("button").at(2);
     expect(button.props().title).toBe("move y axis");
     button.simulate("click");
-    const args = mock.calls[0][0];
-    expect(args.x).toBe(0);
-    expect(args.y).toBe(100);
-    expect(args.z).toBe(0);
+    expect(mockDevice.moveRelative)
+      .toHaveBeenCalledWith({ speed: 100, x: 0, y: 100, z: 0 });
   });
 
   it("disabled when closed", () => {
-    const { mock } = getDevice().moveRelative as jest.Mock<{}>;
     wrapper.setState({ isOpen: false });
     [0, 1, 2, 3].map((i) => wrapper.find("button").at(i).simulate("click"));
-    expect(mock.calls.length).toBe(0);
+    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
   });
 });

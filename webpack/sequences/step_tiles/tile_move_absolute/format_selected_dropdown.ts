@@ -1,7 +1,7 @@
 import { ResourceIndex } from "../../../resources/interfaces";
 import { LocationData } from "./interfaces";
 import { NULL_CHOICE } from "../../../ui/index";
-import { dropDownName } from "./generate_list";
+import { dropDownName, PARENT_DDI } from "./generate_list";
 import {
   findToolById,
   findPointerByTypeAndId,
@@ -14,7 +14,10 @@ export function formatSelectedDropdown(ri: ResourceIndex, ld: LocationData): Dro
   switch (ld.kind) {
     case "tool": return toolbar(ri, ld);
     case "point": return point(ri, ld);
-    case "coordinate": default: return other();
+    case "identifier": return PARENT_DDI[0];
+    case "coordinate":
+    default:
+      return other();
   }
 }
 

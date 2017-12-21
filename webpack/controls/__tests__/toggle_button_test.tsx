@@ -13,7 +13,7 @@ describe("<ToggleButton/>", function () {
       toggleValue={0}
       toggleAction={() => toggle()} />);
     toggleButton.simulate("click");
-    expect(toggle.mock.calls.length).toEqual(1);
+    expect(toggle).toHaveBeenCalledTimes(1);
   });
 
   it("displays no", () => {
@@ -34,7 +34,7 @@ describe("<ToggleButton/>", function () {
     const toggleButton = mount(<ToggleButton
       toggleValue={0}
       toggleAction={jest.fn()}
-      noYes={false} />);
+      customText={{ textFalse: "off", textTrue: "on" }} />);
     expect(toggleButton.text()).toEqual("off");
   });
 
@@ -42,7 +42,7 @@ describe("<ToggleButton/>", function () {
     const toggleButton = mount(<ToggleButton
       toggleValue={1}
       toggleAction={jest.fn()}
-      noYes={false} />);
+      customText={{ textFalse: "off", textTrue: "on" }} />);
     expect(toggleButton.text()).toEqual("on");
   });
 
@@ -50,7 +50,7 @@ describe("<ToggleButton/>", function () {
     const toggleButton = mount(<ToggleButton
       toggleValue={undefined}
       toggleAction={jest.fn()}
-      noYes={false} />);
+      customText={{ textFalse: "off", textTrue: "on" }} />);
     expect(toggleButton.text()).toEqual("🚫");
   });
 });

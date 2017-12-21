@@ -34,14 +34,13 @@ const sequenceList = (dispatch: Function) =>
           kind: "execute",
           args: { sequence_id: ts.body.id || 0 }
         }}
-        ghostCss="step-drag-ghost-image"
         intent="step_splice"
         draggerId={NULL_DRAGGER_ID}>
         <Link
           to={`/app/sequences/${urlFriendly(ts.body.name) || ""}`}
           key={uuid}
           onClick={click} >
-          <button className={css.join(" ")}>
+          <button className={css.join(" ")} draggable={true}>
             {name}
           </button>
         </Link>
@@ -80,7 +79,10 @@ export class SequencesList extends
       specialStatus: SpecialStatus.SAVED,
       body: {
         name: "new sequence " + (this.props.sequences.length),
-        args: { version: -999, label: "WIP" },
+        args: {
+          version: -999,
+          locals: { kind: "scope_declaration", args: {} },
+        },
         color: "gray",
         kind: "sequence",
         body: []

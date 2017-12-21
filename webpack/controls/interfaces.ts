@@ -88,7 +88,7 @@ export interface ToggleButtonProps {
   toggleAction: () => void;
   toggleValue: number | string | boolean | undefined;
   disabled?: boolean | undefined;
-  noYes?: boolean;
+  customText?: { textFalse: string, textTrue: string };
 }
 
 export interface WebcamFeed {

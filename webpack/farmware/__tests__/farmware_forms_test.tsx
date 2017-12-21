@@ -10,7 +10,6 @@ jest.mock("../../device", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { FarmwareForms } from "../farmware_forms";
-import { getDevice } from "../../device";
 import { fakeFarmwares } from "../../__test_support__/fake_farmwares";
 
 describe("<FarmwareForms/>", () => {
@@ -35,29 +34,27 @@ describe("<FarmwareForms/>", () => {
   });
 
   it("runs", () => {
-    const runFarmware = getDevice().execScript as jest.Mock<{}>;
     const wrapper = mount(<FarmwareForms
       farmwares={fakeFarmwares()}
       user_env={{}} />);
     const run = wrapper.find("button").first();
     run.simulate("click");
     expect(run.text()).toEqual("Run");
-    const argsList = runFarmware.mock.calls[0];
-    expect(argsList[0]).toEqual("My Farmware");
-    const pairs = argsList[1][0];
-    expect(pairs.kind).toEqual("pair");
-    expect(pairs.args)
-      .toEqual({ "label": "my_farmware_config_1", "value": "4" });
+    expect(mockDevice.execScript).toHaveBeenCalledWith(
+      "My Farmware", [{
+        kind: "pair",
+        args: { label: "my_farmware_config_1", value: "4" }
+      }]
+    );
   });
 
   it("sets env", () => {
-    const setUserEnv = getDevice().setUserEnv;
     const wrapper = shallow(<FarmwareForms
       farmwares={fakeFarmwares()}
       user_env={{}} />);
     const input = wrapper.find("BlurableInput").first();
     input.simulate("commit", { currentTarget: { value: "changed value" } });
-    expect(setUserEnv).toBeCalledWith({
+    expect(mockDevice.setUserEnv).toBeCalledWith({
       "my_farmware_config_1": "changed value"
     });
   });

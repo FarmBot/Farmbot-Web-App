@@ -24,7 +24,7 @@ export let fakeFarmEventWithExecutable = (): FarmEventWithExecutable => {
       color: "red",
       name: "faker",
       kind: "sequence",
-      args: { version: 0, label: "WIP" }
+      args: { version: 0, label: "WIP", locals: { kind: "scope_declaration", args: {} }, }
     }
   };
 };

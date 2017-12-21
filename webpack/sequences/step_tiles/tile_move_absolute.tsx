@@ -1,21 +1,21 @@
 import * as _ from "lodash";
 import * as React from "react";
+import { t } from "i18next";
 import { Component } from "react";
 import { StepParams } from "../interfaces";
-import { splice, remove } from "./index";
 import { MoveAbsState } from "../interfaces";
 import {
   Tool,
   Coordinate,
   LegalSequenceKind,
-  Point
+  Point,
+  Identifier,
+  MoveAbsolute
 } from "farmbot";
 import {
   Row,
   Col
 } from "../../ui";
-import { t } from "i18next";
-import { StepTitleBar } from "./step_title_bar";
 import {
   isTaggedSequence,
   TaggedTool,
@@ -32,11 +32,12 @@ import { Xyz } from "../../devices/interfaces";
 import { TileMoveAbsSelect } from "./tile_move_absolute/select";
 import { InputBox } from "./tile_move_absolute/input_box";
 import { ToolTips } from "../../constants";
-import { StepIconGroup } from "../step_icon_group";
+import { extractParent } from "../locals_list";
+import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { StepInputBox } from "../inputs/step_input_box";
 
 interface Args {
-  location: Tool | Coordinate | Point;
+  location: Tool | Coordinate | Point | Identifier;
   speed: number;
   offset: Coordinate;
 }
@@ -65,18 +66,11 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
       throw new Error("Impossible celery node detected.");
     }
   }
-  get location(): Tool | Coordinate {
-    if (this.args.location.kind !== "point") {
-      return this.args.location;
-    } else {
-      throw new Error("A `point` node snuck in. Still WIP");
-    }
-  }
 
   get xyzDisabled(): boolean {
-    const isPoint = this.args.location.kind === "point";
-    const isTool = this.args.location.kind === "tool";
-    return !!(isPoint || isTool);
+    type Keys = MoveAbsolute["args"]["location"]["kind"];
+    const choices: Keys[] = ["point", "tool", "identifier"];
+    return !!choices.includes(this.args.location.kind);
   }
 
   getOffsetValue = (val: Xyz) => {
@@ -98,7 +92,12 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
 
   getAxisValue = (axis: Xyz): string => {
     let number: number | undefined;
-    const l = this.args.location;
+    const { body } = this.props.currentSequence.body.args.locals;
+    const parent = extractParent(body);
+    const maybe = ((parent && parent.args.data_value) || this.args.location);
+    const l = this.args.location.kind === "identifier" ?
+      maybe : this.args.location;
+
     switch (l.kind) {
       case "coordinate":
         number = l.args[axis];
@@ -111,6 +110,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
         number = findPointerByTypeAndId(this.resources,
           pointer_type,
           pointer_id).body[axis];
+        break;
     }
     return (number || 0).toString();
   }
@@ -128,102 +128,90 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
       throw new Error("WHOOPS!");
     }
 
-    return <div className="step-wrapper">
-      <Row>
-        <Col sm={12}>
-          <div className="step-header move-absolute-step">
-            <StepTitleBar index={index} dispatch={dispatch} step={currentStep}
-              sequence={currentSequence} />
-            <StepIconGroup
-              onClone={() => dispatch(splice({
-                step: currentStep,
-                index,
-                sequence: currentSequence
-              }))}
-              onTrash={() => remove({ dispatch, index, sequence: currentSequence })}
-              helpText={t(ToolTips.MOVE_ABSOLUTE)} />
-          </div>
-        </Col>
-      </Row>
-      <Row>
-        <Col sm={12}>
-          <div className="step-content move-absolute-step">
-            <Row>
-              <Col md={12}>
-                <label>{t("Import coordinates from")}</label>
-                <TileMoveAbsSelect
-                  resources={this.resources}
-                  selectedItem={this.args.location}
-                  onChange={(x) => this.updateArgs({ location: x })} />
-              </Col>
-              <Col xs={3}>
-                <InputBox
-                  onCommit={this.updateInputValue("x", "location")}
-                  disabled={this.xyzDisabled}
-                  name="location-x"
-                  value={this.getAxisValue("x")}>
-                  {t("X (mm)")}
-                </InputBox>
-              </Col>
-              <Col xs={3}>
-                <InputBox
-                  onCommit={this.updateInputValue("y", "location")}
-                  disabled={this.xyzDisabled}
-                  name="location-y"
-                  value={this.getAxisValue("y")}>
-                  {t("Y (mm)")}
-                </InputBox>
-              </Col>
-              <Col xs={3}>
-                <InputBox
-                  onCommit={this.updateInputValue("z", "location")}
-                  name="location-z"
-                  disabled={this.xyzDisabled}
-                  value={this.getAxisValue("z")}>
-                  {t("Z (mm)")}
-                </InputBox>
-              </Col>
-              <Col xs={3}>
-                <label>
-                  {t("Speed (%)")}
-                </label>
-                <StepInputBox
-                  field={"speed"}
-                  step={this.step}
-                  index={index}
-                  dispatch={this.props.dispatch}
-                  sequence={this.props.currentSequence} />
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={3}>
-                <InputBox
-                  onCommit={this.updateInputValue("x", "offset")}
-                  name="offset-x"
-                  value={this.getOffsetValue("x")}>
-                  {t("X-Offset")}
-                </InputBox>
-              </Col>
-              <Col xs={3}>
-                <InputBox
-                  onCommit={this.updateInputValue("y", "offset")}
-                  name="offset-y"
-                  value={this.getOffsetValue("y")}>
-                  {t("Y-Offset")}
-                </InputBox>
-              </Col>
-              <Col xs={3}>
-                <InputBox
-                  onCommit={this.updateInputValue("z", "offset")}
-                  name="offset-z"
-                  value={this.getOffsetValue("z")}>
-                  {t("Z-Offset")}
-                </InputBox>
-              </Col>
-            </Row>
-          </div>
-        </Col>
-      </Row>
-    </div>;
+    const className = "move-absolute-step";
+    return <StepWrapper>
+      <StepHeader
+        className={className}
+        helpText={ToolTips.MOVE_ABSOLUTE}
+        currentSequence={currentSequence}
+        currentStep={currentStep}
+        dispatch={dispatch}
+        index={index} />
+      <StepContent className={className}>
+        <Row>
+          <Col md={12}>
+            <label>{t("Import coordinates from")}</label>
+            <TileMoveAbsSelect
+              resources={this.resources}
+              selectedItem={this.args.location}
+              onChange={(location) => this.updateArgs({ location })} />
+          </Col>
+          <Col xs={3}>
+            <InputBox
+              onCommit={this.updateInputValue("x", "location")}
+              disabled={this.xyzDisabled}
+              name="location-x"
+              value={this.getAxisValue("x")}>
+              {t("X (mm)")}
+            </InputBox>
+          </Col>
+          <Col xs={3}>
+            <InputBox
+              onCommit={this.updateInputValue("y", "location")}
+              disabled={this.xyzDisabled}
+              name="location-y"
+              value={this.getAxisValue("y")}>
+              {t("Y (mm)")}
+            </InputBox>
+          </Col>
+          <Col xs={3}>
+            <InputBox
+              onCommit={this.updateInputValue("z", "location")}
+              name="location-z"
+              disabled={this.xyzDisabled}
+              value={this.getAxisValue("z")}>
+              {t("Z (mm)")}
+            </InputBox>
+          </Col>
+          <Col xs={3}>
+            <label>
+              {t("Speed (%)")}
+            </label>
+            <StepInputBox
+              field={"speed"}
+              step={this.step}
+              index={index}
+              dispatch={this.props.dispatch}
+              sequence={this.props.currentSequence} />
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={3}>
+            <InputBox
+              onCommit={this.updateInputValue("x", "offset")}
+              name="offset-x"
+              value={this.getOffsetValue("x")}>
+              {t("X-Offset")}
+            </InputBox>
+          </Col>
+          <Col xs={3}>
+            <InputBox
+              onCommit={this.updateInputValue("y", "offset")}
+              name="offset-y"
+              value={this.getOffsetValue("y")}>
+              {t("Y-Offset")}
+            </InputBox>
+          </Col>
+          <Col xs={3}>
+            <InputBox
+              onCommit={this.updateInputValue("z", "offset")}
+              name="offset-z"
+              value={this.getOffsetValue("z")}>
+              {t("Z-Offset")}
+            </InputBox>
+          </Col>
+        </Row>
+      </StepContent>
+    </StepWrapper>;
   }
 }

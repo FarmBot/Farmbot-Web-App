@@ -6,8 +6,7 @@ import { TaggedSequence } from "../../../resources/tagged_resources";
 import { If, Execute, Nothing } from "farmbot/dist";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { selectAllSequences, findSequenceById } from "../../../resources/selectors";
-import { splice, remove, isRecursive } from "../index";
-import { StepTitleBar } from "../step_title_bar";
+import { isRecursive } from "../index";
 import { If_ } from "./if";
 import { Then } from "./then";
 import { Else } from "./else";
@@ -16,7 +15,7 @@ import { overwrite } from "../../../api/crud";
 import { NULL_CHOICE } from "../../../ui/fb_select";
 import { range } from "lodash";
 import { ToolTips } from "../../../constants";
-import { StepIconGroup } from "../../step_icon_group";
+import { StepWrapper, StepHeader, StepContent } from "../../step_ui/index";
 
 export interface IfParams {
   currentSequence: TaggedSequence;
@@ -82,43 +81,29 @@ export function InnerIf(props: IfParams) {
     currentStep,
     currentSequence
   } = props;
-  const stuff = { dispatch, step: currentStep, sequence: currentSequence, index };
   const recursive = isRecursive(currentStep, currentSequence);
-  return <div>
-    <div className="step-wrapper">
-      <div className="row">
-        <div className="col-sm-12">
-          <div className="step-header if-step">
-            <StepTitleBar index={index}
-              dispatch={dispatch}
-              step={currentStep}
-              sequence={currentSequence} />
-            <StepIconGroup
-              onClone={() => dispatch(splice(stuff))}
-              onTrash={() => remove(stuff)}
-              helpText={t(ToolTips.IF)} />
-            {recursive && (
-              <span>
-                <i className="fa fa-exclamation-triangle"></i>
-                &nbsp;Recursive condition.
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-sm-12">
-          <div className="step-content if-step">
-            <div className="row">
-              <If_ {...props} />
-              <Then {...props} />
-              <Else {...props} />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>;
+  const className = "if-step";
+  return <StepWrapper>
+    <StepHeader
+      className={className}
+      helpText={ToolTips.IF}
+      currentSequence={currentSequence}
+      currentStep={currentStep}
+      dispatch={dispatch}
+      index={index}>
+      {recursive && (
+        <span>
+          <i className="fa fa-exclamation-triangle"></i>
+          &nbsp;{t("Recursive condition.")}
+        </span>
+      )}
+    </StepHeader>
+    <StepContent className={className}>
+      <If_ {...props} />
+      <Then {...props} />
+      <Else {...props} />
+    </StepContent>
+  </StepWrapper>;
 }
 
 /** Creates a function that can be used in the `onChange` event of a _else or
