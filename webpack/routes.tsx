@@ -12,7 +12,7 @@ import { attachToRoot } from "./util";
 import { Callback } from "i18next";
 import { crashPage } from "./crash_page";
 
-const key = "Dec 8 13:16";
+const key = "Dec 21 08:39";
 
 if (!localStorage[key]) {
   localStorage[key] = JSON.stringify("X");
