@@ -25,6 +25,11 @@
   input {
     margin-bottom: 1rem;
   }
+  .all-content-wrapper {
+    max-width: 50rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
   .widget-wrapper {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   }
@@ -34,6 +39,35 @@
   .forgot-password {
     color: $blue;
     display: inline-block;
+  }
+  .tos {
+    margin-bottom: 1.5rem;
+  }
+  input[type="checkbox"] {
+    float: left;
+    margin-right: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  a:link {
+    font-weight: 300;
+    color: $dark_gray;
+  }
+  a:visited {
+    color: $medium_gray;
+  }
+  a:hover {
+    font-weight: 500;
+  }
+  a:active {
+    color: $medium_gray;
+    font-weight: 500;
+  }
+  .fa-gear {
+    float: right;
+  }
+  .fa-external-link {
+    margin-left: 1rem;
+    margin-bottom: 0.5rem;
   }
 }
 

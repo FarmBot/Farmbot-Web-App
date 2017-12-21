@@ -4,6 +4,7 @@ class DashboardController < ApplicationController
   LONG_REVISION         = ENV["BUILT_AT"] || ENV["HEROKU_SLUG_COMMIT"] || "NONE"
   $FRONTEND_SHARED_DATA = { NODE_ENV:       Rails.env || "development",
                             TOS_URL:        ENV.fetch("TOS_URL", ""),
+                            PRIV_URL:       ENV.fetch("PRIV_URL", ""),
                             LONG_REVISION: LONG_REVISION,
                             SHORT_REVISION: LONG_REVISION.first(8) }.to_json
   def tos_update

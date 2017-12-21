@@ -1,9 +1,3 @@
-jest.mock("../../util", function () {
-  return {
-    hardRefresh: () => { }
-  };
-});
-
 jest.mock("../../i18n", () => {
   return {
     detectLanguage: () => Promise.resolve({})
@@ -24,7 +18,7 @@ jest.mock("axios", () => {
 
 import * as React from "react";
 import { TosUpdate } from "../index";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import axios from "axios";
 import { API } from "../../api/index";
 
@@ -37,7 +31,7 @@ describe("<TosUpdate/>", () => {
     const oldPriv = globalConfig.PRIV_URL;
     globalConfig.TOS_URL = "";
     globalConfig.PRIV_URL = "";
-    const el = shallow(<TosUpdate />);
+    const el = mount(<TosUpdate />);
     expect(el.text().toLocaleLowerCase()).toContain("something went wrong");
     globalConfig.TOS_URL = oldTos;
     globalConfig.PRIV_URL = oldPriv;

@@ -139,7 +139,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         showSpread={showSpread}
         showFarmbot={showFarmbot} />
 
-      <div className="panel-header gray-panel designer-mobile-nav">
+      <div className="panel-header gray-panel designer-nav">
         <div className="panel-tabs">
           <Link to="/app/designer" className={designerTabClasses.join(" ")}>
             {t("Designer")}

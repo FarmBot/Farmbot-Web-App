@@ -34,7 +34,7 @@ export function PinGuard(props: PinGuardProps) {
         </Col>
         <Col xs={3}>
           <label style={{ float: "right" }}>
-            {t("Active State")}
+            {t("To State")}
           </label>
         </Col>
       </Row>

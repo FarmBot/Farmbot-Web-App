@@ -9,7 +9,24 @@ import { findBySlug } from "../search_selectors";
 import { Everything } from "../../interfaces";
 import { OpenFarm } from "../openfarm";
 import { OFSearch } from "../util";
-import { catchErrors } from "../../util";
+import { catchErrors, JSXChildren } from "../../util";
+
+interface InforFieldProps {
+  title: string;
+  children?: JSXChildren;
+}
+
+function InfoField(props: InforFieldProps) {
+  const { title } = props;
+  return <li>
+    <p>
+      {_.startCase(title)}
+    </p>
+    <div>
+      {props.children}
+    </div>
+  </li>;
+}
 
 export function mapStateToProps(props: Everything): CropInfoProps {
   return {
@@ -68,7 +85,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
             {t("Add to map")}
           </a>
         </p>
-        <div className="panel-header-description">
+        <div className="panel-header-description crop-info-description">
           {result.crop.description}
         </div>
       </div>
@@ -92,9 +109,6 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
           OpenFarm
         </a>
         <div className="object-list">
-          <label>
-            {t("Crop Info")}
-          </label>
           <ul>
             {
               _(result.crop)
@@ -108,16 +122,15 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
                 ])
                 .toPairs()
                 .map((pair: string, i: number) => {
-                  const key = pair[0];
+                  const field = pair[0];
                   const value = pair[1];
-                  switch (key) {
+                  switch (field) {
                     case "svg_icon":
                       /**
                       * If there's a value, give it an img element to render the
                       * actual graphic. If no value, return "Not Set".
                       */
-                      return <li key={i}>
-                        <strong>{t("SVG Icon")}: </strong>
+                      return <InfoField key={i} title={field}>
                         {value ?
                           <div>
                             <img
@@ -130,7 +143,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
                             {t("Not Set")}
                           </span>
                         }
-                      </li>;
+                      </InfoField>;
                     /**
                      * Need to convert the `cm` provided by OpenFarm to `mm`
                      * to match the Farm Designer units.
@@ -138,26 +151,24 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
                     case "spread":
                     case "row_spacing":
                     case "height":
-                      return <li key={i}>
-                        <strong>
-                          {_.startCase(key)}:&nbsp;
-                        </strong>
-                        <span>
-                          {(parseInt(value) * 10) + t("mm") || t("Not Set")}
-                        </span>
-                      </li>;
+                      return <InfoField key={i} title={field}>
+                        {!isNaN(parseInt(value))
+                          ? (parseInt(value) * 10) + t("mm")
+                          : undefined || t("Not Set")}
+                      </InfoField>;
+                    case "common_names":
+                      return <InfoField key={i} title={field}>
+                        {_.isArray(value)
+                          ? value.join(", ")
+                          : value || t("Not Set")}
+                      </InfoField>;
                     /**
                      * Default behavior for all other properties.
                      */
                     default:
-                      return <li key={i}>
-                        <strong>
-                          {_.startCase(key)}:&nbsp;
-                        </strong>
-                        <span>
-                          {value || t("Not Set")}
-                        </span>
-                      </li>;
+                      return <InfoField key={i} title={field}>
+                        {value || t("Not Set")}
+                      </InfoField>;
                   }
                 }).value()
             }

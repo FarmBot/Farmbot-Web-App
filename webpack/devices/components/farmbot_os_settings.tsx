@@ -1,7 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
 import { FarmbotOsProps } from "../interfaces";
-import { saveAccountChanges } from "../actions";
 import {
   Widget,
   WidgetHeader,
@@ -38,7 +37,8 @@ export class FarmbotOsSettings
   }
 
   updateBot = (e: React.MouseEvent<{}>) => {
-    this.props.dispatch(saveAccountChanges);
+    const { account, dispatch } = this.props;
+    dispatch(save(account.uuid));
   }
 
   handleTimezone = (timezone: string) => {
