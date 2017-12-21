@@ -27,7 +27,7 @@ export function KeyValShowRow(p: KeyValRowProps) {
       <ToggleButton
         toggleValue={toggleValue}
         toggleAction={onClick}
-        noYes={false}
+        customText={{ textFalse: "off", textTrue: "on" }}
         disabled={disabled} />
     </Col>
   </Row>;

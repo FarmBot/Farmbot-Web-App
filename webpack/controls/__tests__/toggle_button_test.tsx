@@ -34,7 +34,7 @@ describe("<ToggleButton/>", function () {
     const toggleButton = mount(<ToggleButton
       toggleValue={0}
       toggleAction={jest.fn()}
-      noYes={false} />);
+      customText={{ textFalse: "off", textTrue: "on" }} />);
     expect(toggleButton.text()).toEqual("off");
   });
 
@@ -42,7 +42,7 @@ describe("<ToggleButton/>", function () {
     const toggleButton = mount(<ToggleButton
       toggleValue={1}
       toggleAction={jest.fn()}
-      noYes={false} />);
+      customText={{ textFalse: "off", textTrue: "on" }} />);
     expect(toggleButton.text()).toEqual("on");
   });
 
@@ -50,7 +50,7 @@ describe("<ToggleButton/>", function () {
     const toggleButton = mount(<ToggleButton
       toggleValue={undefined}
       toggleAction={jest.fn()}
-      noYes={false} />);
+      customText={{ textFalse: "off", textTrue: "on" }} />);
     expect(toggleButton.text()).toEqual("🚫");
   });
 });

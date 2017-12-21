@@ -193,12 +193,15 @@
   position: fixed;
   width: 300px;
   z-index: 3;
-  .panel-header-description {
+  .panel-header-description,
+  .crop-info-description {
+    font-size: 1.2rem;
+    padding: 0 1.4rem 1rem;
+  }
+  .crop-info-description {
     max-height: 10rem;
     overflow-y: auto;
     overflow-x: hidden;
-    font-size: 1.2rem;
-    padding: 0 1.4rem 1rem;
   }
 }
 
