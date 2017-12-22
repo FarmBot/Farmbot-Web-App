@@ -5,6 +5,7 @@ import { overwrite, init } from "../api/crud";
 import { handleInbound } from "./auto_sync_handle_inbound";
 import { SyncPayload, MqttDataResult, Reason, UpdateMqttData } from "./interfaces";
 import { fancyDebug } from "../util";
+import { outstandingRequests } from "./data_consistency";
 
 export function decodeBinary(payload: Buffer): SyncPayload {
   return JSON.parse((payload).toString());
@@ -59,8 +60,15 @@ export function handleCreateOrUpdate(dispatch: Function,
   const uuid = maybeDetermineUuid(index, data.kind, data.id);
   const jti = state.auth && state.auth.token.unencoded.jti;
   const isEcho = data.sessionId === jti;
-
-  fancyDebug({ isEcho, sessionId: data.sessionId, jti });
+  const wow: string[] = [];
+  outstandingRequests.forEach((x) => wow.push(x));
+  console.dir(wow.join(" "));
+  fancyDebug({
+    isEcho,
+    sessionId: data.sessionId,
+    jti,
+    wow
+  });
 
   if (uuid) {
     return isEcho ?

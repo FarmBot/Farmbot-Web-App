@@ -20,7 +20,7 @@ const MAX_WAIT = 2000;
 *
 * SOLUTION:
 *
-*   - On all AJAX requests, the API attaches an `X-Request-Id` header (UUID).
+*   - On all AJAX requests, the API attaches an `X-Farmbot-Sync` header (UUID).
 *   - On all auto_sync messages, the API attaches the same UUID under
 *     msg.args.label
 *   - When FBOS gets an auto_sync message, it replies with an `rpc_ok` message

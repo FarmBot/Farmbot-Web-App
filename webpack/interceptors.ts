@@ -13,6 +13,7 @@ import * as _ from "lodash";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Content } from "./constants";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";
+import { Dictionary } from "farmbot";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   const method = input.config.method;
@@ -66,8 +67,7 @@ export function requestFulfilled(auth: AuthState) {
     const isAPIRequest = req.includes(API.current.baseUrl);
     if (isAPIRequest) {
       config.headers = config.headers || {};
-      const headers = (config.headers as
-        { Authorization: string | undefined });
+      const headers: Dictionary<string> = config.headers;
       headers.Authorization = auth.token.encoded || "CANT_FIND_TOKEN";
     }
     return config;
