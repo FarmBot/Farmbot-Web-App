@@ -60,18 +60,10 @@ export function handleCreateOrUpdate(dispatch: Function,
   const uuid = maybeDetermineUuid(index, data.kind, data.id);
   const isEcho = outstandingRequests.all.has(data.sessionId);
   const wow: string[] = [];
-  outstandingRequests.all.forEach((x) => wow.push(x));
-  console.dir(wow.join(" "));
-  fancyDebug({
-    last: outstandingRequests.last,
-    isEcho,
-    sessionId: data.sessionId,
-    wow
-  });
 
   if (uuid) {
     return isEcho ?
-      console.log("SKIP") : dispatch(handleUpdate(data, uuid));
+      undefined : dispatch(handleUpdate(data, uuid));
   } else {
     // Here be dragons.
     // PROBLEM:  You see incoming `UPDATE` messages.
@@ -85,7 +77,7 @@ export function handleCreateOrUpdate(dispatch: Function,
     // by us or some other user. That information lets us know if we are UPDATEing
     // data or INSERTing data.
     return isEcho ?
-      console.log("SKIP...") : dispatch(handleCreate(data));
+      undefined : dispatch(handleCreate(data));
   }
 }
 
