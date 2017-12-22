@@ -37,6 +37,7 @@ import { GeneralizedError } from "./actions";
 import {
   recomputeLocalVarDeclaration
 } from "../sequences/step_tiles/tile_move_absolute/variables_support";
+import { equals, defensiveClone } from "../util";
 
 const consumerReducer = combineReducers<RestResources["consumers"]>({
   regimens,
@@ -179,14 +180,16 @@ export let resourceReducer = generateReducer
   .add<EditResourceParams>(Actions.EDIT_RESOURCE, (s, { payload }) => {
     const uuid = payload.uuid;
     const { update } = payload;
-    const oldResource = findByUuid(s.index, uuid);
-    const source: TaggedResource = merge(oldResource,
-      { body: update },
-      { specialStatus: SpecialStatus.DIRTY });
-    sanityCheck(source);
-    payload && isTaggedResource(source);
-    dontTouchThis(source);
-    maybeRecalculateLocalSequenceVariables(source);
+    const target = findByUuid(s.index, uuid);
+    const before = defensiveClone(target.body);
+    merge(target, { body: update });
+    if (!equals(before, target.body)) {
+      target.specialStatus = SpecialStatus.DIRTY;
+    }
+    sanityCheck(target);
+    payload && isTaggedResource(target);
+    dontTouchThis(target);
+    maybeRecalculateLocalSequenceVariables(target);
     return s;
   })
   .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
