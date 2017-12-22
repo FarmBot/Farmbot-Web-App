@@ -19,22 +19,22 @@ import { startTracking, outstandingRequests, stopTracking } from "../data_consis
 describe("startTracking", () => {
   it("dispatches actions / event handlers", () => {
     const uuid = "~UUID~";
-    const b4 = outstandingRequests.size;
+    const b4 = outstandingRequests.all.size;
     startTracking(uuid);
     expect(store.dispatch)
       .toHaveBeenCalledWith({ type: Actions.SET_CONSISTENCY, payload: false });
     expect(getDevice().on).toHaveBeenCalledWith(uuid, expect.anything());
-    expect(outstandingRequests.size).toBe(b4 + 1);
+    expect(outstandingRequests.all.size).toBe(b4 + 1);
   });
 });
 
 describe("stopTracking", () => {
   it("dispatches actions / event handlers", () => {
     const uuid = "~UUID~";
-    const b4 = outstandingRequests.size;
+    const b4 = outstandingRequests.all.size;
     stopTracking(uuid);
     expect(store.dispatch)
       .toHaveBeenCalledWith({ type: Actions.SET_CONSISTENCY, payload: true });
-    expect(outstandingRequests.size).toBe(b4 - 1);
+    expect(outstandingRequests.all.size).toBe(b4 - 1);
   });
 });

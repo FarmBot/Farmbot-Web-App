@@ -14,6 +14,7 @@ import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Content } from "./constants";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";
 import { Dictionary } from "farmbot";
+import { outstandingRequests } from "./connectivity/data_consistency";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   const method = input.config.method;
@@ -68,6 +69,7 @@ export function requestFulfilled(auth: AuthState) {
     if (isAPIRequest) {
       config.headers = config.headers || {};
       const headers: Dictionary<string> = config.headers;
+      headers["X-Request-Id"] = outstandingRequests.last;
       headers.Authorization = auth.token.encoded || "CANT_FIND_TOKEN";
     }
     return config;

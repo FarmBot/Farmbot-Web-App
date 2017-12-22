@@ -86,9 +86,8 @@ private
     REQ_ID = "X-Request-Id"
 
     def set_default_stuff
-
       request.format                 = "json"
-      id                             = response.headers[REQ_ID] || SecureRandom.uuid
+      id                             = request.headers[REQ_ID] || SecureRandom.uuid
       response.headers[REQ_ID]       = id
       # # IMPORTANT: We need to hoist X-Request-Id to a global so that it is
       # #            accessible for use with auto_sync.

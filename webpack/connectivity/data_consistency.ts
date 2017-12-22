@@ -1,17 +1,36 @@
 import { getDevice } from "../device";
 import { store } from "../redux/store";
 import { Actions } from "../constants";
+import { set } from "lodash";
+interface NonSense {
+  last: string;
+  all: Set<string>;
+}
 
-export const outstandingRequests: Set<string> = new Set();
-(window as any)["outstanding_requests"] = outstandingRequests;
+export const outstandingRequests: NonSense = {
+  last: "never-used",
+  all: new Set()
+};
+
+function storeUUID(uuid: string) {
+  outstandingRequests.last = uuid.toLowerCase().split(".").join("");
+  outstandingRequests.all.add(outstandingRequests.last);
+}
+
+function unstoreUUID(uuid: string) {
+  outstandingRequests.all.delete(PLACEHOLDER);
+  outstandingRequests.all.delete(uuid.toLowerCase().split(".").join(""));
+}
+
+set(window, "outstanding_requests", outstandingRequests);
+
 /** Use this when you need to throw the FE into an inconsistent state, but dont
  * have a real UUID available. It will be removed when a "real" UUID comes
  * along. This is necesary for creating an instantaneous "syncing..." label. */
 const PLACEHOLDER = "PLACEHOLDER";
-/** Max wait in MS before clearing out.
- * I based this figure off of our highest "problem response time" in production
- * plus an additional 25%. */
-const MAX_WAIT = 2000;
+/** Max wait in MS before clearing out. */
+const MAX_WAIT = 10000;
+
 /**
 * PROBLEM:  You save a sequence and click "RUN" very fast. The remote device
 *           did not have time to download the new sequence and so it crashes
@@ -44,15 +63,14 @@ const MAX_WAIT = 2000;
 export function startTracking(uuid = PLACEHOLDER) {
   ifQueueEmpty(() => store.dispatch(stash()));
   store.dispatch(setConsistency(false));
-  outstandingRequests.add(uuid);
+  storeUUID(uuid);
   const stop = () => stopTracking(uuid);
   getDevice().on(uuid, stop);
   setTimeout(stop, MAX_WAIT);
 }
 
 export function stopTracking(uuid: string) {
-  outstandingRequests.delete(uuid);
-  outstandingRequests.delete(PLACEHOLDER);
+  unstoreUUID(uuid);
   ifQueueEmpty(() => store.dispatch(setConsistency(true)));
 }
 
@@ -61,4 +79,4 @@ const setConsistency =
 const stash =
   () => ({ type: Actions.STASH_STATUS, payload: undefined });
 const ifQueueEmpty =
-  <T>(cb: () => T): T | false => (outstandingRequests.size === 0) && cb();
+  <T>(cb: () => T): T | false => (outstandingRequests.all.size === 0) && cb();

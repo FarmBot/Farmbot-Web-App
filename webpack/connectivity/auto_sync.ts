@@ -58,15 +58,14 @@ export function handleCreateOrUpdate(dispatch: Function,
   const state = getState();
   const { index } = state.resources;
   const uuid = maybeDetermineUuid(index, data.kind, data.id);
-  const jti = state.auth && state.auth.token.unencoded.jti;
-  const isEcho = data.sessionId === jti;
+  const isEcho = outstandingRequests.all.has(data.sessionId);
   const wow: string[] = [];
-  outstandingRequests.forEach((x) => wow.push(x));
+  outstandingRequests.all.forEach((x) => wow.push(x));
   console.dir(wow.join(" "));
   fancyDebug({
+    last: outstandingRequests.last,
     isEcho,
     sessionId: data.sessionId,
-    jti,
     wow
   });
 
