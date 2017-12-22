@@ -13,7 +13,7 @@ conf.output = {
   path: path.join(__dirname, '..', 'public', 'webpack'),
   publicPath: '/webpack/',
   filename: '[name]-[chunkhash].js',
-  chunkFilename: '[id].chunk.js'
+  chunkFilename: '[id].[chunkhash].js'
 };
 
 [
