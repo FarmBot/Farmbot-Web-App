@@ -161,12 +161,7 @@ export function stopIE() {
       }
     }
 
-    const REQUIRED_OBJECT_METHODS = ["entries"];
-    for (let i = 0; i < REQUIRED_OBJECT_METHODS.length; i++) {
-      if (!Object.prototype.hasOwnProperty(REQUIRED_OBJECT_METHODS[i])) {
-        flunk();
-      }
-    }
+    if (!Object.entries) { flunk(); }
   } catch (error) {
     flunk();
   }
