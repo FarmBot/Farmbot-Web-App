@@ -102,6 +102,7 @@ export function refresh(resource: TaggedResource, urlNeedsId = false) {
   return function (dispatch: Function) {
     dispatch(refreshStart(resource.uuid));
     const endPart = "" + urlNeedsId ? resource.body.id : "";
+    const statusBeforeError = resource.specialStatus;
     axios
       .get(urlFor(resource.kind) + endPart)
       .then((resp: HttpData<typeof resource.body>) => {
@@ -111,7 +112,11 @@ export function refresh(resource: TaggedResource, urlNeedsId = false) {
         if (isTaggedResource(newTR)) {
           dispatch(refreshOK(newTR));
         } else {
-          const action = refreshNO({ err: { message: "Unable to refresh" }, uuid: resource.uuid });
+          const action = refreshNO({
+            err: { message: "Unable to refresh" },
+            uuid: resource.uuid,
+            statusBeforeError
+          });
           dispatch(action);
         }
       });
@@ -142,6 +147,7 @@ export function destroy(uuid: string, force = false) {
     const resource = findByUuid(getState().resources.index, uuid);
     const maybeProceed = confirmationChecker(resource, force);
     return maybeProceed(() => {
+      const statusBeforeError = resource.specialStatus;
       if (resource.body.id) {
         maybeStartTracking(uuid);
         return axios
@@ -150,7 +156,7 @@ export function destroy(uuid: string, force = false) {
             dispatch(destroyOK(resource));
           })
           .catch(function (err: UnsafeError) {
-            dispatch(destroyNO({ err, uuid }));
+            dispatch(destroyNO({ err, uuid, statusBeforeError }));
             return Promise.reject(err);
           });
       } else {
@@ -214,6 +220,7 @@ function updateViaAjax(index: ResourceIndex,
     verb = "post";
   }
   maybeStartTracking(uuid);
+  const statusBeforeError = resource.specialStatus;
   return axios[verb](url, body)
     .then(function (resp: HttpData<typeof resource.body>) {
       const r1 = defensiveClone(resource);
@@ -226,7 +233,7 @@ function updateViaAjax(index: ResourceIndex,
       }
     })
     .catch(function (err: UnsafeError) {
-      dispatch(updateNO({ err, uuid }));
+      dispatch(updateNO({ err, uuid, statusBeforeError }));
       return Promise.reject(err);
     });
 }

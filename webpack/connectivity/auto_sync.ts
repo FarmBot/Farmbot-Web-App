@@ -5,7 +5,6 @@ import { overwrite, init } from "../api/crud";
 import { handleInbound } from "./auto_sync_handle_inbound";
 import { SyncPayload, MqttDataResult, Reason, UpdateMqttData } from "./interfaces";
 import { outstandingRequests } from "./data_consistency";
-import { fancyDebug } from "../util";
 
 export function decodeBinary(payload: Buffer): SyncPayload {
   return JSON.parse((payload).toString());
@@ -59,7 +58,6 @@ export function handleCreateOrUpdate(dispatch: Function,
   const { index } = state.resources;
   const hasCopy = maybeDetermineUuid(index, data.kind, data.id);
   const isEcho = outstandingRequests.all.has(data.sessionId);
-  outstandingRequests.all.forEach(x => console.log(`=> ${x}`));
   // Here be dragons. 🐲 🐉 ⚔ ️🛡️
   // PROBLEM:  You see incoming `UPDATE` messages.
   //           How do you know if it is a new record or an update to
@@ -77,11 +75,6 @@ export function handleCreateOrUpdate(dispatch: Function,
   // UPDATEing data or INSERTing data. It also prevents us from double updating
   // data when an update comes in twice.
   const action = hasCopy ? handleUpdate(data, hasCopy) : handleCreate(data);
-  fancyDebug({
-    isEcho,
-    hasCopy,
-    action
-  });
   return isEcho || dispatch(action);
 }
 

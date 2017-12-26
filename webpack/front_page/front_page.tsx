@@ -4,7 +4,7 @@ import { t } from "i18next";
 import * as _ from "lodash";
 import { error as log, success, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
-import { prettyPrintApiErrors, HttpData, fancyDebug } from "../util";
+import { prettyPrintApiErrors, HttpData } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState } from "./interfaces";
@@ -50,7 +50,6 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       event.currentTarget.checked;
       const isChk = (event.currentTarget.type === "checkbox");
       state[name] = "" + (event.currentTarget)[isChk ? "checked" : "value"];
-      fancyDebug(state);
 
       // WHY THE 2 ms timeout you ask????
       // There was a bug reported in Firefox.
