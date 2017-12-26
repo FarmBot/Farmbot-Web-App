@@ -31,5 +31,6 @@ export enum NumericSetting {
   errorLog = "errorLog",
   infoLog = "infoLog",
   funLog = "funLog",
-  debugLog = "debugLog"
+  debugLog = "debugLog",
+  successsLog = "successsLog"
 }
