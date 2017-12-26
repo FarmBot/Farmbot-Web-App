@@ -3,6 +3,7 @@ import { UnsafeError } from "../interfaces";
 import { Actions } from "../constants";
 import { toastErrors } from "../toast_errors";
 import { stopTracking } from "../connectivity/data_consistency";
+import { catchErrors } from "../util";
 
 export function createOK(payload: TaggedResource) {
   return { type: Actions.SAVE_RESOURCE_OK, payload };
@@ -27,6 +28,11 @@ export interface GeneralizedError {
 /** Generalized error handler when there are not special error handling
  * requirements */
 export const generalizedError = (payload: GeneralizedError) => {
+  const badStatus = payload.statusBeforeError == SpecialStatus.SAVING;
+  if (badStatus) {
+    /** If, somehow, a `SAVING` status sneaks in, default it to DIRTY. */
+    payload.statusBeforeError = SpecialStatus.DIRTY;
+  }
   toastErrors(payload);
   stopTracking(payload.uuid);
   return { type: Actions._RESOURCE_NO, payload };

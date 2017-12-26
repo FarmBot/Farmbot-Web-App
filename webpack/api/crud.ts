@@ -93,8 +93,9 @@ export function initSave(resource: TaggedResource) {
 export function save(uuid: string) {
   return function (dispatch: Function, getState: GetState) {
     const resource = findByUuid(getState().resources.index, uuid);
+    const oldStatus = resource.specialStatus;
     dispatch({ type: Actions.SAVE_RESOURCE_START, payload: resource });
-    return dispatch(update(uuid));
+    return dispatch(update(uuid, oldStatus));
   };
 }
 
@@ -135,10 +136,19 @@ export function refreshNO(payload: GeneralizedError): ReduxAction<GeneralizedErr
   return { type: Actions.REFRESH_RESOURCE_NO, payload };
 }
 
-function update(uuid: string) {
+interface AjaxUpdatePayload {
+  index: ResourceIndex;
+  uuid: string;
+  dispatch: Function;
+  statusBeforeError: SpecialStatus;
+}
+
+function update(uuid: string, statusBeforeError: SpecialStatus) {
   return function (dispatch: Function, getState: GetState) {
     maybeStartTracking(uuid);
-    return updateViaAjax(getState().resources.index, uuid, dispatch);
+    const { index } = getState().resources;
+    const payl: AjaxUpdatePayload = { index, uuid, dispatch, statusBeforeError };
+    return updateViaAjax(payl);
   };
 }
 
@@ -206,9 +216,8 @@ export function urlFor(tag: ResourceName) {
 }
 
 /** Shared functionality in create() and update(). */
-function updateViaAjax(index: ResourceIndex,
-  uuid: string,
-  dispatch: Function) {
+function updateViaAjax(payl: AjaxUpdatePayload) {
+  const { uuid, statusBeforeError, dispatch, index } = payl;
   const resource = findByUuid(index, uuid);
   const { body, kind } = resource;
   let verb: "post" | "put";
@@ -220,7 +229,6 @@ function updateViaAjax(index: ResourceIndex,
     verb = "post";
   }
   maybeStartTracking(uuid);
-  const statusBeforeError = resource.specialStatus;
   return axios[verb](url, body)
     .then(function (resp: HttpData<typeof resource.body>) {
       const r1 = defensiveClone(resource);

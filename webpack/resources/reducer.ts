@@ -170,12 +170,11 @@ export let resourceReducer = generateReducer
       throw new Error("BAD UUID IN UPDATE_RESOURCE_OK");
     }
   })
-  .add<TaggedResource>(Actions._RESOURCE_NO, (s, { payload }) => {
+  .add<GeneralizedError>(Actions._RESOURCE_NO, (s, { payload }) => {
     fancyDebug(payload);
     const uuid = payload.uuid;
-    debugger;
     const tr = merge(findByUuid(s.index, uuid), payload);
-    tr.specialStatus = SpecialStatus.SAVED;
+    tr.specialStatus = payload.statusBeforeError;
     sanityCheck(tr);
     return s;
   })

@@ -473,7 +473,7 @@ export function minFwVersionCheck(current: string | undefined, min: string) {
   }
 }
 
-export const catchErrors = (error: Error, errorInfo: ErrorInfo) => {
+export const catchErrors = (error: Error, errorInfo: ErrorInfo | undefined) => {
   Rollbar && Rollbar.error && Rollbar.error(error as any);
 };
 
