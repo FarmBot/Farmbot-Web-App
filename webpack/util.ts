@@ -167,10 +167,6 @@ export function stopIE() {
   }
 }
 
-export function pick<T, K extends keyof T>(target: T, key: K): T[K] {
-  return target[key];
-}
-
 /** Useful for calculating uploads and progress bars for Promise.all */
 export class Progress {
   constructor(public total: number,

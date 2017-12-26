@@ -12,7 +12,7 @@ export const outstandingRequests: NonSense = {
   all: new Set()
 };
 
-function storeUUID(uuid: string) {
+export function storeUUID(uuid: string) {
   outstandingRequests.last = uuid.toLowerCase().split(".").join("");
   outstandingRequests.all.add(outstandingRequests.last);
 }

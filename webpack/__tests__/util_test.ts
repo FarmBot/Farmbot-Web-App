@@ -16,8 +16,11 @@ import {
   clampUnsignedInteger,
   isUndefined,
   IntegerSize,
-  Progress
+  Progress,
+  colors,
+  randomColor
 } from "../util";
+import { times } from "lodash";
 describe("util", () => {
   describe("safeStringFetch", () => {
     const data = {
@@ -148,6 +151,10 @@ describe("util", () => {
 
       expect(semverCompare("1.0.0", ""))
         .toBe(SemverResult.LEFT_IS_GREATER);
+      expect(semverCompare("1.0.0", "x.y.z"))
+        .toBe(SemverResult.LEFT_IS_GREATER);
+      expect(semverCompare("x.y.z", "1.0.0"))
+        .toBe(SemverResult.RIGHT_IS_GREATER);
     });
   });
 });
@@ -284,5 +291,11 @@ describe("Progress", () => {
     counter.finish();
     expect(cb).toHaveBeenCalled();
     expect(counter.isDone).toBeTruthy();
+  });
+});
+
+describe("randomColor()", () => {
+  it("only picks valid colors", () => {
+    times(colors.length * 1.5, () => expect(colors).toContain(randomColor()));
   });
 });
