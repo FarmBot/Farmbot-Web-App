@@ -1,6 +1,7 @@
 import thunk from "redux-thunk";
 import { applyMiddleware, compose, Middleware } from "redux";
 import { EnvName } from "./interfaces";
+import { Actions } from "../constants";
 
 interface MiddlewareConfig {
   fn: Middleware;
@@ -24,7 +25,13 @@ export function getMiddleware(env: EnvName) {
   const middlewareFns = mwConfig
     .filter(function (mwc) { return (mwc.env === env) || (mwc.env === "*"); })
     .map((mwc) => mwc.fn);
-  const dtCompose = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+  const wow = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+  const dtCompose = wow && wow({
+    actionsBlacklist: [
+      Actions.NETWORK_EDGE_CHANGE,
+      Actions.RESOURCE_READY
+    ]
+  });
   const composeEnhancers = dtCompose || compose;
   const middlewares = applyMiddleware(...middlewareFns);
 
