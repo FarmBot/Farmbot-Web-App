@@ -2,7 +2,7 @@ import { Farmbot, RpcRequest } from "farmbot";
 import { dispatchNetworkDown, dispatchNetworkUp } from "./index";
 import { isNumber } from "lodash";
 
-const PING_INTERVAL = 1000;
+const PING_INTERVAL = 3000;
 const label = "ping";
 export const LAST_IN = "LAST_PING_IN";
 export const LAST_OUT = "LAST_PING_OUT";
@@ -22,14 +22,12 @@ export function readPing(bot: Farmbot, direction: Direction): number | undefined
 }
 
 export function markStale() {
-  console.log("Stale.");
   dispatchNetworkDown("bot.mqtt");
 }
 
 export function markActive() {
-  console.log("Active.");
-  dispatchNetworkUp("bot.mqtt");
   dispatchNetworkUp("user.mqtt");
+  dispatchNetworkUp("bot.mqtt");
 }
 
 export function isInactive(last: number | undefined, now: number): boolean {
