@@ -184,6 +184,7 @@ export let botReducer = generateReducer<BotState>(initialState())
     return s;
   })
   .add<void>(Actions._RESOURCE_NO, (s, a) => {
+    console.log("No longer needed?");
     /** Panic and restore syncStatus to what it was before operation failed. */
     if (s.consistent && (s.statusStash !== "syncing")) {
       s.hardware.informational_settings.sync_status = s.statusStash;

@@ -11,7 +11,8 @@ describe("Auth reducer", () => {
   }
 
   it("replaces the token", () => {
-    const result = authReducer({ token: undefined }, setToken(fakeToken()));
-    expect(result.token).toBeTruthy();
+    const result = authReducer(undefined, setToken(fakeToken()));
+    expect(result).toBeTruthy();
+    expect(result && result.token).toBeTruthy();
   });
 });
