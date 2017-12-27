@@ -23,7 +23,6 @@ function readPing(bot: Farmbot, direction: Direction): number | undefined {
 
 function markStale() {
   console.log("Stale.");
-  console.log("TODO: Mark bot offline here.");
   dispatchNetworkDown("bot.mqtt");
 }
 
