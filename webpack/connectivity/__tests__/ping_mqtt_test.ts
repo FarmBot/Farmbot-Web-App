@@ -15,7 +15,8 @@ import {
   isInactive,
   sendOutboundPing,
   startPinging,
-  PING
+  PING,
+  PING_INTERVAL
 } from "../ping_mqtt";
 import { Farmbot } from "farmbot";
 import { dispatchNetworkDown, dispatchNetworkUp } from "../index";
@@ -62,8 +63,9 @@ describe("ping util", () => {
 
   it("checks if the bot isInactive()", () => {
     expect(isInactive(undefined, 0)).toBeFalsy();
-    expect(isInactive(1, 6000)).toBeTruthy();
-    expect(isInactive(6000, 1)).toBeFalsy();
+    const TOO_LATE = PING_INTERVAL * 3;
+    expect(isInactive(1, TOO_LATE)).toBeTruthy();
+    expect(isInactive(TOO_LATE, 1)).toBeFalsy();
   });
 
   it("sends an outbound ping", () => {

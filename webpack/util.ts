@@ -483,3 +483,5 @@ export const equals = <T>(a: T, b: T): boolean => {
   // For whatever reason, this is not true for our application.
   return JSON.stringify(a) === JSON.stringify(b);
 };
+
+export const timestamp = (date = new Date()) => Math.round(date.getTime());

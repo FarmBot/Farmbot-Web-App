@@ -29,13 +29,13 @@ import { networkUp, networkDown } from "../actions";
 import { GetState } from "../../redux/interfaces";
 import { autoSync, routeMqttData } from "../auto_sync";
 import { handleInbound } from "../auto_sync_handle_inbound";
-const NOW = (new Date()).toJSON();
+const NOW = (new Date());
 describe("dispatchNetworkUp", () => {
   it("calls redux directly", () => {
     jest.resetAllMocks();
     dispatchNetworkUp("bot.mqtt", NOW);
     expect(mockRedux.store.dispatch)
-      .toHaveBeenLastCalledWith(networkUp("bot.mqtt", NOW));
+      .toHaveBeenLastCalledWith(networkUp("bot.mqtt", NOW.toJSON()));
   });
 });
 
@@ -44,7 +44,7 @@ describe("dispatchNetworkDown", () => {
     jest.resetAllMocks();
     dispatchNetworkDown("user.api", NOW);
     expect(mockRedux.store.dispatch)
-      .toHaveBeenLastCalledWith(networkDown("user.api", NOW));
+      .toHaveBeenLastCalledWith(networkDown("user.api", NOW.toJSON()));
   });
 });
 

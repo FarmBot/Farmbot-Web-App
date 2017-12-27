@@ -1,13 +1,15 @@
 import { Farmbot, RpcRequest } from "farmbot";
 import { dispatchNetworkDown, dispatchNetworkUp } from "./index";
 import { isNumber } from "lodash";
+import axios from "axios";
+import { API } from "../api/index";
+import { timestamp } from "../util";
 
-const PING_INTERVAL = 3000;
+export const PING_INTERVAL = 3000;
 const label = "ping";
 export const LAST_IN = "LAST_PING_IN";
 export const LAST_OUT = "LAST_PING_OUT";
 export const PING: Readonly<RpcRequest> = { kind: "rpc_request", args: { label } };
-const timestamp = () => Math.round((new Date()).getTime());
 
 type Direction = "in" | "out";
 
@@ -45,4 +47,10 @@ export function sendOutboundPing(bot: Farmbot) {
 export function startPinging(bot: Farmbot) {
   setInterval(() => sendOutboundPing(bot), PING_INTERVAL);
   bot.on(label, () => writePing(bot, "in"));
+}
+
+export function pingAPI() {
+  const ok = () => dispatchNetworkUp("user.api");
+  const no = () => dispatchNetworkDown("user.api");
+  axios.get(API.current.devicePath).then(ok, no);
 }
