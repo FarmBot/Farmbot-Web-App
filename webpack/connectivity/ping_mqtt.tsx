@@ -6,7 +6,7 @@ const PING_INTERVAL = 1000;
 const label = "ping";
 export const LAST_IN = "LAST_PING_IN";
 export const LAST_OUT = "LAST_PING_OUT";
-const PING: Readonly<RpcRequest> = { kind: "rpc_request", args: { label } };
+export const PING: Readonly<RpcRequest> = { kind: "rpc_request", args: { label } };
 const timestamp = () => Math.round((new Date()).getTime());
 
 type Direction = "in" | "out";

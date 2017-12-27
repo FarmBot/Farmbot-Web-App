@@ -14,7 +14,8 @@ import {
   markActive,
   isInactive,
   sendOutboundPing,
-  startPinging
+  startPinging,
+  PING
 } from "../ping_mqtt";
 import { Farmbot } from "farmbot";
 import { dispatchNetworkDown, dispatchNetworkUp } from "../index";
@@ -60,7 +61,7 @@ describe("ping util", () => {
   });
 
   it("checks if the bot isInactive()", () => {
-    expect(isInactive(0, undefined)).toBeFalsy();
+    expect(isInactive(undefined, 0)).toBeFalsy();
     expect(isInactive(1, 6000)).toBeTruthy();
     expect(isInactive(6000, 1)).toBeFalsy();
   });
@@ -69,8 +70,9 @@ describe("ping util", () => {
     const bot = fakeBot();
     const oldOutbound = readPing(bot, "out");
     sendOutboundPing(bot);
-    expect(bot.publish).toHaveBeenCalledWith("ping");
-    expect(oldOutbound).toBeLessThan(readPing(bot, "out"));
+    expect(bot.publish).toHaveBeenCalledWith(PING);
+    /** TODO: How to "time travel" in Jest without dumb hacks? */
+    expect(oldOutbound).toBeLessThanOrEqual(readPing(bot, "out") || NaN);
   });
 
   it("binds event handlers with startPinging()", () => {
