@@ -54,7 +54,7 @@ export interface AxiosErrorResponse {
  *  pairs returned by the /api/xyz endpoint. */
 export function prettyPrintApiErrors(err: AxiosErrorResponse) {
   return _.map(safelyFetchErrors(err),
-    (v, k) => `${(k || "").split("_").join(" ")}: ${v.toString()}`.toLowerCase())
+    (v, k) => `${("" + k).split("_").join(" ")}: ${v.toString()}`.toLowerCase())
     .map(str => _.capitalize(str)).join(" ");
 }
 
@@ -160,13 +160,11 @@ export function stopIE() {
         flunk();
       }
     }
+
+    if (!Object.entries) { flunk(); }
   } catch (error) {
     flunk();
   }
-}
-
-export function pick<T, K extends keyof T>(target: T, key: K): T[K] {
-  return target[key];
 }
 
 /** Useful for calculating uploads and progress bars for Promise.all */
@@ -475,7 +473,7 @@ export function minFwVersionCheck(current: string | undefined, min: string) {
   }
 }
 
-export const catchErrors = (error: Error, errorInfo: ErrorInfo) => {
+export const catchErrors = (error: Error, errorInfo: ErrorInfo | undefined) => {
   Rollbar && Rollbar.error && Rollbar.error(error as any);
 };
 
@@ -485,3 +483,5 @@ export const equals = <T>(a: T, b: T): boolean => {
   // For whatever reason, this is not true for our application.
   return JSON.stringify(a) === JSON.stringify(b);
 };
+
+export const timestamp = (date = new Date()) => Math.round(date.getTime());

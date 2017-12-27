@@ -47,7 +47,10 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   set = (name: keyof FrontPageState) =>
     (event: React.FormEvent<HTMLInputElement>) => {
       const state: { [name: string]: string } = {};
-      state[name] = (event.currentTarget).value;
+      event.currentTarget.checked;
+      const isChk = (event.currentTarget.type === "checkbox");
+      state[name] = "" + (event.currentTarget)[isChk ? "checked" : "value"];
+
       // WHY THE 2 ms timeout you ask????
       // There was a bug reported in Firefox.
       // I have no idea why, but the checkbox would uncheck itself after being

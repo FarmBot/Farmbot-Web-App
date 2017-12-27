@@ -93,8 +93,9 @@ export function initSave(resource: TaggedResource) {
 export function save(uuid: string) {
   return function (dispatch: Function, getState: GetState) {
     const resource = findByUuid(getState().resources.index, uuid);
+    const oldStatus = resource.specialStatus;
     dispatch({ type: Actions.SAVE_RESOURCE_START, payload: resource });
-    return dispatch(update(uuid));
+    return dispatch(update(uuid, oldStatus));
   };
 }
 
@@ -102,6 +103,7 @@ export function refresh(resource: TaggedResource, urlNeedsId = false) {
   return function (dispatch: Function) {
     dispatch(refreshStart(resource.uuid));
     const endPart = "" + urlNeedsId ? resource.body.id : "";
+    const statusBeforeError = resource.specialStatus;
     axios
       .get(urlFor(resource.kind) + endPart)
       .then((resp: HttpData<typeof resource.body>) => {
@@ -111,7 +113,11 @@ export function refresh(resource: TaggedResource, urlNeedsId = false) {
         if (isTaggedResource(newTR)) {
           dispatch(refreshOK(newTR));
         } else {
-          const action = refreshNO({ err: { message: "Unable to refresh" }, uuid: resource.uuid });
+          const action = refreshNO({
+            err: { message: "Unable to refresh" },
+            uuid: resource.uuid,
+            statusBeforeError
+          });
           dispatch(action);
         }
       });
@@ -130,10 +136,19 @@ export function refreshNO(payload: GeneralizedError): ReduxAction<GeneralizedErr
   return { type: Actions.REFRESH_RESOURCE_NO, payload };
 }
 
-function update(uuid: string) {
+interface AjaxUpdatePayload {
+  index: ResourceIndex;
+  uuid: string;
+  dispatch: Function;
+  statusBeforeError: SpecialStatus;
+}
+
+function update(uuid: string, statusBeforeError: SpecialStatus) {
   return function (dispatch: Function, getState: GetState) {
     maybeStartTracking(uuid);
-    return updateViaAjax(getState().resources.index, uuid, dispatch);
+    const { index } = getState().resources;
+    const payl: AjaxUpdatePayload = { index, uuid, dispatch, statusBeforeError };
+    return updateViaAjax(payl);
   };
 }
 
@@ -142,6 +157,7 @@ export function destroy(uuid: string, force = false) {
     const resource = findByUuid(getState().resources.index, uuid);
     const maybeProceed = confirmationChecker(resource, force);
     return maybeProceed(() => {
+      const statusBeforeError = resource.specialStatus;
       if (resource.body.id) {
         maybeStartTracking(uuid);
         return axios
@@ -150,7 +166,7 @@ export function destroy(uuid: string, force = false) {
             dispatch(destroyOK(resource));
           })
           .catch(function (err: UnsafeError) {
-            dispatch(destroyNO({ err, uuid }));
+            dispatch(destroyNO({ err, uuid, statusBeforeError }));
             return Promise.reject(err);
           });
       } else {
@@ -200,9 +216,8 @@ export function urlFor(tag: ResourceName) {
 }
 
 /** Shared functionality in create() and update(). */
-function updateViaAjax(index: ResourceIndex,
-  uuid: string,
-  dispatch: Function) {
+function updateViaAjax(payl: AjaxUpdatePayload) {
+  const { uuid, statusBeforeError, dispatch, index } = payl;
   const resource = findByUuid(index, uuid);
   const { body, kind } = resource;
   let verb: "post" | "put";
@@ -226,7 +241,7 @@ function updateViaAjax(index: ResourceIndex,
       }
     })
     .catch(function (err: UnsafeError) {
-      dispatch(updateNO({ err, uuid }));
+      dispatch(updateNO({ err, uuid, statusBeforeError }));
       return Promise.reject(err);
     });
 }

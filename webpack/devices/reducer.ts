@@ -6,6 +6,7 @@ import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 import { Session } from "../session";
 import { BooleanSetting } from "../session_keys";
 import { maybeNegateStatus, maybeNegateConsistency } from "../connectivity/maybe_negate_status";
+import { EdgeStatus } from "../connectivity/interfaces";
 
 /**
  * TODO: Refactor this method to use semverCompare() now that it is a thing.
@@ -183,6 +184,7 @@ export let botReducer = generateReducer<BotState>(initialState())
     return s;
   })
   .add<void>(Actions._RESOURCE_NO, (s, a) => {
+    console.log("No longer needed?");
     /** Panic and restore syncStatus to what it was before operation failed. */
     if (s.consistent && (s.statusStash !== "syncing")) {
       s.hardware.informational_settings.sync_status = s.statusStash;
@@ -190,7 +192,22 @@ export let botReducer = generateReducer<BotState>(initialState())
     return s;
   })
   .add<void>(Actions.STASH_STATUS, (s, a) => {
-    /** Store syncStatus when transitioning from consistent to inconsistent. */
-    s.statusStash = s.hardware.informational_settings.sync_status;
+    stashStatus(s);
+    return s;
+  })
+  .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, a) => {
+    const { name, status } = a.payload;
+    const isBotMqtt = name === "bot.mqtt";
+    const isDown = status.state === "down";
+
+    if (isBotMqtt && isDown) {
+      s.hardware.informational_settings.sync_status = undefined;
+    }
+
     return s;
   });
+
+/** Mutate syncStatus when transitioning from consistent to inconsistent. */
+function stashStatus(s: BotState) {
+  s.statusStash = s.hardware.informational_settings.sync_status;
+}

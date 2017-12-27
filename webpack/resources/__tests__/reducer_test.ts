@@ -3,6 +3,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { overwrite, refreshStart, refreshOK, refreshNO } from "../../api/crud";
 import { SpecialStatus, TaggedSequence, TaggedDevice } from "../tagged_resources";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { GeneralizedError } from "../actions";
 
 describe("resource reducer", () => {
   it("marks resources as DIRTY when reducing OVERWRITE_RESOURCE", () => {
@@ -36,10 +37,14 @@ describe("resource reducer", () => {
     const afterOk = resourceReducer(afterStart, refreshOK(device));
     const dev3 = afterOk.index.references[uuid] as TaggedDevice;
     expect(dev3.specialStatus).toBe(SpecialStatus.SAVED);
-
+    const payl: GeneralizedError = {
+      err: "X",
+      uuid: dev3.uuid,
+      statusBeforeError: SpecialStatus.DIRTY
+    };
     // SCENARIO: REFRESH_START ===> REFRESH_NO
     const afterNo =
-      resourceReducer(afterStart, refreshNO({ err: "X", uuid: dev3.uuid }));
+      resourceReducer(afterStart, refreshNO(payl));
     const dev4 = afterNo.index.references[uuid] as TaggedDevice;
     expect(dev4.specialStatus).toBe(SpecialStatus.SAVED);
   });

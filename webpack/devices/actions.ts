@@ -18,7 +18,7 @@ import { versionOK } from "./reducer";
 import { HttpData, oneOf } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
-import { refresh } from "../api/crud";
+import { pingAPI } from "../connectivity/ping_mqtt";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -319,7 +319,7 @@ export function resetNetwork(): ReduxAction<{}> {
 export function resetConnectionInfo(dev: TaggedDevice) {
   return function (dispatch: Function, state: GetState) {
     dispatch(resetNetwork());
-    dispatch(refresh(dev));
+    pingAPI();
     getDevice().readStatus();
   };
 }

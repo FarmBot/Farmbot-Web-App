@@ -30,6 +30,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { changeStepSize, resetNetwork, resetConnectionInfo } from "../actions";
 import { Actions } from "../../constants";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
+import { API } from "../../api/index";
 
 describe("checkControllerUpdates()", function () {
   beforeEach(function () {
@@ -226,9 +227,10 @@ describe("resetConnectionInfo()", () => {
   it("dispatches the right actions", () => {
     const mock1 = jest.fn();
     const d = fakeDevice();
+    API.setBaseUrl("http://localhost:300");
     resetConnectionInfo(d)(mock1, jest.fn());
     expect(mock1).toHaveBeenCalledWith(resetNetwork());
-    expect(mock1).toHaveBeenCalledTimes(2);
+    expect(mock1).toHaveBeenCalledTimes(1);
     expect(mockDevice.readStatus).toHaveBeenCalled();
   });
 });

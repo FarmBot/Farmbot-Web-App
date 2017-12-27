@@ -73,7 +73,7 @@ export namespace Session {
   }
 }
 
-const isBooleanSetting =
+export const isBooleanSetting =
   // tslint:disable-next-line:no-any
   (x: any): x is BooleanSetting => !!BooleanSetting[x];
 
@@ -85,7 +85,7 @@ export function safeBooleanSettting(name: string): BooleanSetting {
   }
 }
 
-const isNumericSetting =
+export const isNumericSetting =
   // tslint:disable-next-line:no-any
   (x: any): x is NumericSetting => !!NumericSetting[x];
 

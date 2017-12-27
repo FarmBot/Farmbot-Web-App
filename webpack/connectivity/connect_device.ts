@@ -20,7 +20,7 @@ import { versionOK } from "../devices/reducer";
 import { AuthState } from "../auth/interfaces";
 import { TaggedResource, SpecialStatus } from "../resources/tagged_resources";
 import { autoSync } from "./auto_sync";
-
+import { startPinging } from "./ping_mqtt";
 export const TITLE = "New message from bot";
 
 /** TODO: This ought to be stored in Redux. It is here because of historical
@@ -142,6 +142,7 @@ export const onReconnect =
 export const onOnline = () => dispatchNetworkUp("user.mqtt");
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
+    startPinging(bot);
     bot.client.on("reconnect", onReconnect);
     bot.on("online", onOnline);
     bot.on("offline", onOffline);

@@ -1,4 +1,5 @@
 require 'erb'
+
 puts "=== Retrieving container info"
 PLUGIN_PATH     = "mqtt/jwt_plugin/plugins/rabbit_auth_backend*"
 PLUGIN_IS_BUILT = Dir[PLUGIN_PATH].any?
@@ -10,13 +11,19 @@ puts "=== Setting config data"
 CONFIG_PATH     = "./mqtt"
 CONFIG_FILENAME = "rabbitmq.config"
 CONFIG_OUTPUT   = "#{CONFIG_PATH}/#{CONFIG_FILENAME}"
-NO_API_HOST     = "You need to set API_HOST to a real IP address or " +
-                  "domain name (not localhost)."
+NO_API_HOST     = "\nYou MUST set API_HOST to a real IP address or " +
+                  "domain name (not localhost).\n" +
+                  "API_PORT is also mandatory."
 TEMPLATE_FILE   = "./mqtt/rabbitmq.config.erb"
 TEMPLATE        = File.read(TEMPLATE_FILE)
 RENDERER        = ERB.new(TEMPLATE)
 PROTO           = ENV["FORCE_SSL"] ? "https:" : "http:"
 VHOST           = ENV.fetch("MQTT_VHOST") { "/" }
+
+if !ENV["API_HOST"] || !ENV["API_PORT"]
+  puts NO_API_HOST
+  exit
+end
 
 puts "=== Building JWT plugin config"
 farmbot_api_key_url = ENV.fetch("API_PUBLIC_KEY_PATH") do
@@ -32,7 +39,8 @@ processes = `sudo docker ps -a -f "name=farmbot-mqtt" -q`
 
 if processes.present?
   puts "=== Stopping pre-existing farmbot containers"
-  sh "cd mqtt; sudo docker rm #{processes}"
+  sh "cd mqtt && sudo docker stop #{processes}"
+  sh "cd mqtt && sudo docker rm #{processes}"
 end
 
 if IMG_IS_BUILT
