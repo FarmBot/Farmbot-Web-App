@@ -1,4 +1,11 @@
-import { scheduler, scheduleForFarmEvent, TimeLine, farmEventIntervalSeconds } from "../scheduler";
+import {
+  scheduler,
+  scheduleForFarmEvent,
+  TimeLine,
+  farmEventIntervalSeconds,
+  maxDisplayItems,
+  gracePeriodSeconds
+} from "../scheduler";
 import * as moment from "moment";
 import { TimeUnit } from "../../../interfaces";
 import { Moment } from "moment";
@@ -111,23 +118,23 @@ describe("scheduler", () => {
     moment("2017-08-01T17:30:00.000Z"),
     [moment("2017-08-01T17:00:00.000Z")]);
 
-  testSchedule("uses grace period",
+  testSchedule(`uses grace period (${gracePeriodSeconds}s)`,
     {
       "start_time": "2017-08-01T17:30:00.000Z",
       "end_time": "2017-08-02T05:00:00.000Z",
       "repeat": 4,
       "time_unit": "hourly"
     },
-    moment("2017-08-01T17:30:30.000Z"),
+    moment("2017-08-01T17:30:00.000Z").add(gracePeriodSeconds / 2, "seconds"),
     [
       moment("2017-08-01T17:30:00.000Z"),
       moment("2017-08-01T21:30:00.000Z"),
       moment("2017-08-02T01:30:00.000Z")
     ]);
 
-  testSchedule("uses grace period: no repeat",
+  testSchedule(`uses grace period (${gracePeriodSeconds}s): no repeat`,
     singleFarmEvent,
-    moment("2017-08-01T17:00:30.000Z"),
+    moment("2017-08-01T17:00:00.000Z").add(gracePeriodSeconds / 2, "seconds"),
     [moment("2017-08-01T17:00:00.000Z")]);
 
   testSchedule("farm event over",
@@ -145,7 +152,7 @@ describe("scheduler", () => {
     moment("2017-08-01T19:00:00.000Z"),
     []);
 
-  testSchedule("first 60 items",
+  testSchedule(`first ${maxDisplayItems} items`,
     {
       "start_time": "2017-08-02T17:00:00.000Z",
       "end_time": "2017-08-02T19:00:00.000Z",
@@ -153,21 +160,47 @@ describe("scheduler", () => {
       "time_unit": "minutely"
     },
     moment("2017-08-01T15:30:00.000Z"),
-    range(0, 60)
+    range(0, maxDisplayItems)
       .map((x: number) =>
         moment(`2017-08-02T17:${padStart("" + x, 2, "0")}:00.000Z`)));
 
-  testSchedule("only 60 items",
+  testSchedule(`only ${maxDisplayItems} items`,
     {
       "start_time": "2017-08-02T16:00:00.000Z",
       "end_time": "2017-08-02T21:00:00.000Z",
       "repeat": 1,
       "time_unit": "minutely"
     },
-    moment("2017-08-02T17:01:00.000Z"),
-    range(0, 60)
+    moment("2017-08-02T17:00:00.000Z").add(gracePeriodSeconds, "seconds"),
+    range(0, maxDisplayItems)
       .map((x: number) =>
         moment(`2017-08-02T17:${padStart("" + x, 2, "0")}:00.000Z`)));
+
+  testSchedule("item at end time is not rendered",
+    {
+      "start_time": "2017-08-01T17:30:00.000Z",
+      "end_time": "2017-08-02T01:30:00.000Z",
+      "repeat": 4,
+      "time_unit": "hourly"
+    },
+    moment("2017-08-01T16:30:00.000Z"),
+    [
+      moment("2017-08-01T17:30:00.000Z"),
+      moment("2017-08-01T21:30:00.000Z")
+    ]);
+
+  testSchedule(`renders item at grace period (${gracePeriodSeconds}s) cutoff`,
+    {
+      "start_time": "2017-08-01T17:30:00.000Z",
+      "end_time": "2017-08-02T01:30:00.000Z",
+      "repeat": 4,
+      "time_unit": "hourly"
+    },
+    moment("2017-08-01T17:30:00.000Z").add(gracePeriodSeconds, "seconds"),
+    [
+      moment("2017-08-01T17:30:00.000Z"),
+      moment("2017-08-01T21:30:00.000Z")
+    ]);
 });
 
 describe("farmEventIntervalSeconds", () => {
