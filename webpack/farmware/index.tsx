@@ -20,6 +20,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
       <Row>
         <Col xs={12} sm={7}>
           <Photos
+            timeOffset={this.props.timeOffset}
             dispatch={this.props.dispatch}
             images={this.props.images}
             currentImage={this.props.currentImage} />

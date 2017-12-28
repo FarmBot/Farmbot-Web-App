@@ -1,5 +1,5 @@
 import { Everything } from "../interfaces";
-import { selectAllImages } from "../resources/selectors";
+import { selectAllImages, maybeGetTimeOffset } from "../resources/selectors";
 import { FarmwareProps } from "../devices/interfaces";
 import { prepopulateEnv } from "./weed_detector/remote_env/selectors";
 import * as _ from "lodash";
@@ -21,6 +21,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     .informational_settings
     .sync_status || "unknown";
   return {
+    timeOffset: maybeGetTimeOffset(props.resources.index),
     farmwares,
     syncStatus,
     env: prepopulateEnv(props.bot.hardware.user_env),

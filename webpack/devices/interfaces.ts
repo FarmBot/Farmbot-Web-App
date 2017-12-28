@@ -155,6 +155,7 @@ export interface FarmwareProps {
   currentImage: TaggedImage | undefined;
   syncStatus: SyncStatus;
   farmwares: Dictionary<FarmwareManifest | undefined>;
+  timeOffset: number;
 }
 
 export interface HardwareSettingsProps {

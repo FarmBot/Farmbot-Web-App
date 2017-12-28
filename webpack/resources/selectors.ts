@@ -439,6 +439,11 @@ export function maybeFindPlantById(index: ResourceIndex, id: number) {
   if (resource && isTaggedPlantPointer(resource)) { return resource; }
 }
 
+/** Return the UTC offset of current bot if possible. If not, use UTC (0). */
+export function maybeGetTimeOffset(index: ResourceIndex): number {
+  const dev = maybeGetDevice(index);
+  return dev ? dev.body.tz_offset_hrs : 0;
+}
 export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {
   const dev = index.references[index.byKind.Device[0] || "nope"];
   return (dev && dev.kind === "Device") ?

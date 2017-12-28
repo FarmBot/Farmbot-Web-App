@@ -19,6 +19,7 @@ import { FarmwareProps } from "../../../devices/interfaces";
 
 describe("<WeedDetector />", () => {
   const props: FarmwareProps = {
+    timeOffset: 0,
     farmwares: {},
     syncStatus: "unknown",
     env: {},

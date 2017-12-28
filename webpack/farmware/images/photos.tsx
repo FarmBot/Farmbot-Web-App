@@ -65,6 +65,9 @@ export class Photos extends React.Component<PhotosProps, {}> {
 
   render() {
     const image = this.props.currentImage;
+    const created_at = image
+      ? moment(image.body.created_at).utcOffset(this.props.timeOffset).format("MMMM Do, YYYY h:mma")
+      : "";
     return (
       <Widget className="photos-widget">
         <WidgetHeader helpText={ToolTips.PHOTOS} title={"Photos"}>
@@ -91,7 +94,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
             <div className="image-created-at">
               <label>{t("Created At:")}</label>
               <span>
-                {moment(image.body.created_at).format("MMMM Do, YYYY h:mma")}
+                {created_at}
               </span>
             </div>
             : ""}
