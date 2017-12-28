@@ -13,10 +13,14 @@ class ApplicationRecord < ActiveRecord::Base
                      "updated_at",
                      "current_sign_in_at" ]
 
+  def the_changes
+    self.saved_changes.except(*self.class::DONT_BROADCAST)
+  end
+
   # Determine if the changes to the model are worth broadcasting or not.
   # Reduces network noise.
   def notable_changes?
-    !self.saved_changes.except(*self.class::DONT_BROADCAST).empty?
+    !the_changes.empty?
   end
 
   def broadcast?
@@ -32,7 +36,8 @@ class ApplicationRecord < ActiveRecord::Base
       nil : ActiveModel::Serializer.serializer_for(self).new(self))
     {
       args: { label: Transport.current_request_id },
-      body: body.as_json
+      body: body.as_json,
+      debug: the_changes
     }.to_json
   end
 
