@@ -10,7 +10,7 @@ import { FbosDetails } from "../fbos_settings/auto_update_row";
 describe("<FarmbotOsSettings/>", () => {
   it("renders settings", () => {
     const osSettings = mount(<FarmbotOsSettings
-      account={fakeResource("Device", { id: 0, name: "" })}
+      account={fakeResource("Device", { id: 0, name: "", tz_offset_hrs: 0 })}
       dispatch={jest.fn()}
       bot={bot}
       auth={fakeState().auth as AuthState} />);

@@ -12,7 +12,8 @@ export function fakeDevice(): TaggedDevice {
     "specialStatus": SpecialStatus.SAVED,
     "body": {
       "id": 415,
-      "name": "wispy-firefly-846"
+      "name": "wispy-firefly-846",
+      "tz_offset_hrs": 0
     },
     "uuid": "Device.415.0"
   };
