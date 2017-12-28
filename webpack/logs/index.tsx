@@ -104,7 +104,9 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
         </Col>
       </Row>
       <Row>
-        <LogsTable logs={this.props.logs} state={this.state} />
+        <LogsTable logs={this.props.logs}
+          state={this.state}
+          timeOffset={this.props.timeOffset} />
       </Row>
     </Page>;
   }
