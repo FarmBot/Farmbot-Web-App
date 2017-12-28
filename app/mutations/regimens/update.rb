@@ -23,8 +23,6 @@ module Regimens
           end
           regimen.update_attributes!(inputs.slice(:name, :color, :regimen_items))
         end
-
-        regimen.broadcast!
       end
       regimen
     rescue ActiveRecord::RecordInvalid => e
