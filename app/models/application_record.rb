@@ -11,8 +11,8 @@ class ApplicationRecord < ActiveRecord::Base
                      "last_sign_in_ip",
                      "sign_in_count",
                      "updated_at",
+                     "current_sign_in_ip",
                      "current_sign_in_at" ]
-
   def the_changes
     self.saved_changes.except(*self.class::DONT_BROADCAST)
   end
