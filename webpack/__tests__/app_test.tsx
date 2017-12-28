@@ -15,6 +15,7 @@ import { fakeUser } from "../__test_support__/fake_state/resources";
 describe("<App />: Controls Pop-Up", () => {
   function fakeProps(): AppProps {
     return {
+      timeOffset: 0, // Default to UTC
       dispatch: jest.fn(),
       loaded: [],
       logs: [],
@@ -61,7 +62,8 @@ describe.skip("<App />: Loading", () => {
       user: fakeUser(),
       bot: bot,
       consistent: true,
-      autoSyncEnabled: true
+      autoSyncEnabled: true,
+      timeOffset: 0
     };
     return p;
   }
@@ -95,7 +97,8 @@ describe("<App />: NavBar", () => {
       user: fakeUser(),
       bot: bot,
       consistent: true,
-      autoSyncEnabled: true
+      autoSyncEnabled: true,
+      timeOffset: 0
     };
   }
 

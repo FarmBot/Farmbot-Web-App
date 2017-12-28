@@ -45,8 +45,8 @@ const getfirstTickerLog = (logs: Log[]): Log => {
   }
 };
 
-const Ticker = (log: Log, index: number) => {
-  const time = formatLogTime(log.created_at);
+const Ticker = (log: Log, index: number, timeOffset: number) => {
+  const time = formatLogTime(log.created_at, timeOffset);
   const type = (log.meta || {}).type;
   return (
     // TODO: Should utilize log's `uuid` instead of index.
@@ -70,14 +70,14 @@ export let TickerList = (props: TickerListProps) => {
       className="ticker-list"
       onClick={props.toggle("tickerListOpen")} >
       <div className="first-ticker">
-        {Ticker(getfirstTickerLog(props.logs), -1)}
+        {Ticker(getfirstTickerLog(props.logs), -1, props.timeOffset)}
       </div>
       <Collapse isOpen={props.tickerListOpen}>
         {props
           .logs
           .filter((log, index) => index !== 0)
           .filter((log) => logFilter(log))
-          .map((log: Log, index: number) => Ticker(log, index))}
+          .map((log: Log, index: number) => Ticker(log, index, props.timeOffset))}
       </Collapse>
       <Collapse isOpen={props.tickerListOpen}>
         <Link to={"/app/logs"}>

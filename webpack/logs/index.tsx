@@ -15,8 +15,8 @@ import { isUndefined } from "lodash";
 import { NumericSetting } from "../session_keys";
 import { catchErrors } from "../util";
 
-export const formatLogTime = (created_at: number) =>
-  moment.unix(created_at).local().format("MMM D, h:mma");
+export const formatLogTime = (created_at: number, timeoffset: number) =>
+  moment.unix(created_at).utcOffset(timeoffset).format("MMM D, h:mma");
 
 @connect(mapStateToProps)
 export class Logs extends React.Component<LogsProps, Partial<LogsState>> {

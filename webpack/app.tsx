@@ -9,7 +9,7 @@ import { Everything, Log } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
 import { BotState } from "./devices/interfaces";
 import { ResourceName, TaggedUser } from "./resources/tagged_resources";
-import { selectAllLogs, maybeFetchUser } from "./resources/selectors";
+import { selectAllLogs, maybeFetchUser, maybeGetDevice } from "./resources/selectors";
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
@@ -30,10 +30,13 @@ export interface AppProps {
   bot: BotState;
   consistent: boolean;
   autoSyncEnabled: boolean;
+  timeOffset: number;
 }
 
 function mapStateToProps(props: Everything): AppProps {
+  const dev = maybeGetDevice(props.resources.index);
   return {
+    timeOffset: dev ? dev.body.tz_offset_hrs : 0, // Default to UTC,
     dispatch: props.dispatch,
     user: maybeFetchUser(props.resources.index),
     bot: props.bot,
@@ -89,6 +92,7 @@ export class App extends React.Component<AppProps, {}> {
     return <div className="app">
       <HotKeys dispatch={this.props.dispatch} />
       <NavBar
+        timeOffset={this.props.timeOffset}
         consistent={this.props.consistent}
         user={this.props.user}
         bot={this.props.bot}

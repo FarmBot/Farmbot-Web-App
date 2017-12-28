@@ -12,7 +12,7 @@ interface LogsRowProps {
 const LogsRow = ({ tlog, state, timeOffset }: LogsRowProps) => {
   const log = tlog.body;
   const { x, y, z, verbosity, type } = log.meta;
-  const time = formatLogTime(log.created_at);
+  const time = formatLogTime(log.created_at, timeOffset);
   return <tr key={tlog.uuid}>
     <td>
       <div className={`saucer ${type}`}>
