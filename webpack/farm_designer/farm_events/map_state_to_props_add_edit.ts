@@ -115,19 +115,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     }
   });
 
-  /**
-   * TODO: This is a hack to allow for recursive menu rendering. Putting this
-   * in one code block for containment and easier reference for once we can
-   * start facorting it out and cleaning things up.
-   *
-   * Basically, the new system of the menu will have a tree-like structure of
-   * objects. Right now, the objects are rendered in order with a
-   * { heading: true } attribute, which means having to modify the interfaces,
-   * have special considerations, etc. This will hopefully make it a little
-   * better. I think it would be better to handle this at the source and keep
-   * the ui logic less involved. -CV 8/3/2017
-   * -------------------------- BEGIN -------------------------------------*/
-  const newExecutableOptions = executableOptions
+  const executableWithHeading = executableOptions
     .filter(x => !x.heading)
     .map(x => {
       return {
@@ -169,7 +157,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     regimensById,
     sequencesById,
     farmEventsById,
-    executableOptions: newExecutableOptions, // <-- Temp, see comment above.
+    executableOptions: executableWithHeading,
     repeatOptions,
     formatDate,
     formatTime,
