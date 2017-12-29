@@ -33,7 +33,7 @@ export function markActive() {
 }
 
 export function isInactive(last: number | undefined, now: number): boolean {
-  return last ? (now - last) > (PING_INTERVAL * 2) : false;
+  return last ? (now - last) > (PING_INTERVAL * 2) : true;
 }
 
 export function sendOutboundPing(bot: Farmbot) {
