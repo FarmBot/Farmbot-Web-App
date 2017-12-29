@@ -28,10 +28,10 @@ set(window, "outstanding_requests", outstandingRequests);
 /** Use this when you need to throw the FE into an inconsistent state, but dont
  * have a real UUID available. It will be removed when a "real" UUID comes
  * along. This is necesary for creating an instantaneous "syncing..." label. */
-const PLACEHOLDER = "none";
+const PLACEHOLDER = "none"; // DONT CHANGE THIS FROM "none".
 
 /** Max wait in MS before clearing out. */
-const MAX_WAIT = 3500;
+const MAX_WAIT = 10000;
 
 /**
 * PROBLEM:  You save a sequence and click "RUN" very fast. The remote device
@@ -79,9 +79,9 @@ export function stopTracking(uuid: string) {
   unstoreUUID(cleanID);
   // Purpose: Determine if dispatch is actually required to avoid dispatching
   //          too many times for the same value.
-  // if (!getConsistencyState()) {
-  ifQueueEmpty(() => store.dispatch(setConsistency(true)));
-  // }
+  if (!getConsistencyState()) {
+    ifQueueEmpty(() => store.dispatch(setConsistency(true)));
+  }
 }
 
 const setConsistency =
