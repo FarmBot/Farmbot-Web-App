@@ -30,6 +30,9 @@ set(window, "outstanding_requests", outstandingRequests);
  * along. This is necesary for creating an instantaneous "syncing..." label. */
 const PLACEHOLDER = "PLACEHOLDER";
 
+/** Max wait in MS before clearing out. */
+const MAX_WAIT = 10000;
+
 /**
 * PROBLEM:  You save a sequence and click "RUN" very fast. The remote device
 *           did not have time to download the new sequence and so it crashes
@@ -67,6 +70,7 @@ export function startTracking(uuid = PLACEHOLDER) {
   }
   storeUUID(cleanID);
   getDevice().on(cleanID, () => stopTracking(cleanID));
+  setTimeout(stop, MAX_WAIT);
 }
 
 export function stopTracking(uuid: string) {
