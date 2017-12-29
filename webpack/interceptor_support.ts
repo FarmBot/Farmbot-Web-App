@@ -3,7 +3,6 @@ import { getDevice } from "./device";
 import { box } from "boxed_value";
 import * as _ from "lodash";
 import { ResourceName } from "./resources/tagged_resources";
-// import { startTracking } from "./connectivity/data_consistency";
 
 export let METHOD_MAP: Dictionary<DataChangeType> = {
   "post": "add",
@@ -57,7 +56,6 @@ export function notifyBotOfChanges(url: string | undefined,
     url.split("/").filter((chunk: ResourceName) => {
       return RESOURNCE_NAME_IN_URL.includes(chunk);
     }).map(async function (resource: ResourceName) {
-      // startTracking(uuid);
       const data_update: DataUpdateEndOfLife = {
         kind: "data_update",
         args: { value: action },

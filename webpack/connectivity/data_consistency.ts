@@ -15,13 +15,11 @@ export const outstandingRequests: NonSense = {
 
 export function storeUUID(uuid: string) {
   outstandingRequests.last = cleanUUID(uuid);
-  console.log(`Tracking ${outstandingRequests.last} ${location}`);
   outstandingRequests.all.add(outstandingRequests.last);
 }
 
 function unstoreUUID(uuid: string) {
   outstandingRequests.all.delete(PLACEHOLDER);
-  console.log(`Untracking ${cleanUUID(uuid)}`);
   outstandingRequests.all.delete(cleanUUID(uuid));
 }
 
@@ -33,7 +31,7 @@ set(window, "outstanding_requests", outstandingRequests);
 const PLACEHOLDER = "placeholder";
 
 /** Max wait in MS before clearing out. */
-const MAX_WAIT = 99000;
+const MAX_WAIT = 3500;
 
 /**
 * PROBLEM:  You save a sequence and click "RUN" very fast. The remote device
