@@ -18,7 +18,7 @@ interface FakeProps {
 
 function fakeResponse(config: Partial<FakeProps>): AxiosResponse {
   const output: Partial<AxiosResponse> = {
-    headers: { "x-request-id": config.uuid || uuid() },
+    headers: { "X-Farmbot-Rpc-Id": config.uuid || uuid() },
     config: {
       method: config.method || "put",
       url: config.url || "http://my.farmbot.io/api/tools/6"
@@ -33,7 +33,7 @@ describe("responseFulfilled", () => {
     jest.clearAllMocks();
     const resp = fakeResponse({ method: "post" });
     responseFulfilled(resp);
-    expect(startTracking).toHaveBeenCalledWith(resp.headers["x-request-id"]);
+    expect(startTracking).toHaveBeenCalledWith(resp.headers["X-Farmbot-Rpc-Id"]);
   });
 
   it("won't fire for webcam feed updates", () => {

@@ -145,7 +145,6 @@ interface AjaxUpdatePayload {
 
 function update(uuid: string, statusBeforeError: SpecialStatus) {
   return function (dispatch: Function, getState: GetState) {
-    maybeStartTracking(uuid);
     const { index } = getState().resources;
     const payl: AjaxUpdatePayload = { index, uuid, dispatch, statusBeforeError };
     return updateViaAjax(payl);

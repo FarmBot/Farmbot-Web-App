@@ -10,12 +10,11 @@ jest.mock("../../resources/tagged_resources", () => ({
   isTaggedResource: () => false
 }));
 
-import { refresh, destroyCatch } from "../crud";
+import { refresh } from "../crud";
 import { TaggedDevice, SpecialStatus } from "../../resources/tagged_resources";
 import { API } from "../index";
 import { get } from "lodash";
 import { Actions } from "../../constants";
-import { destroyNO } from "../../resources/actions";
 
 describe("refresh()", () => {
   API.setBaseUrl("http://localhost:3000");
