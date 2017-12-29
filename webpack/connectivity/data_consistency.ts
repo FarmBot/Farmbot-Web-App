@@ -28,7 +28,7 @@ set(window, "outstanding_requests", outstandingRequests);
 /** Use this when you need to throw the FE into an inconsistent state, but dont
  * have a real UUID available. It will be removed when a "real" UUID comes
  * along. This is necesary for creating an instantaneous "syncing..." label. */
-const PLACEHOLDER = "PLACEHOLDER";
+const PLACEHOLDER = "none";
 
 /** Max wait in MS before clearing out. */
 const MAX_WAIT = 3500;
