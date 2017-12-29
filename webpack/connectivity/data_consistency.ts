@@ -2,6 +2,7 @@ import { getDevice } from "../device";
 import { store } from "../redux/store";
 import { Actions } from "../constants";
 import { set } from "lodash";
+
 interface NonSense {
   last: string;
   all: Set<string>;
@@ -13,13 +14,13 @@ export const outstandingRequests: NonSense = {
 };
 
 export function storeUUID(uuid: string) {
-  outstandingRequests.last = uuid.toLowerCase().split(".").join("");
+  outstandingRequests.last = uuid;
   outstandingRequests.all.add(outstandingRequests.last);
 }
 
 function unstoreUUID(uuid: string) {
   outstandingRequests.all.delete(PLACEHOLDER);
-  outstandingRequests.all.delete(uuid.toLowerCase().split(".").join(""));
+  outstandingRequests.all.delete(uuid);
 }
 
 set(window, "outstanding_requests", outstandingRequests);
@@ -28,6 +29,7 @@ set(window, "outstanding_requests", outstandingRequests);
  * have a real UUID available. It will be removed when a "real" UUID comes
  * along. This is necesary for creating an instantaneous "syncing..." label. */
 const PLACEHOLDER = "PLACEHOLDER";
+
 /** Max wait in MS before clearing out. */
 const MAX_WAIT = 10000;
 
@@ -61,17 +63,22 @@ const MAX_WAIT = 10000;
 *     and friends.
 */
 export function startTracking(uuid = PLACEHOLDER) {
+  const cleanID = cleanUUID(uuid);
   ifQueueEmpty(() => store.dispatch(stash()));
-  store.dispatch(setConsistency(false));
-  storeUUID(uuid);
-  const stop = () => stopTracking(uuid);
-  getDevice().on(uuid, stop);
+  if (getConsistencyState()) {
+    store.dispatch(setConsistency(false));
+  }
+  storeUUID(cleanID);
+  getDevice().on(cleanID, () => stopTracking(cleanID));
   setTimeout(stop, MAX_WAIT);
 }
 
 export function stopTracking(uuid: string) {
-  unstoreUUID(uuid);
-  ifQueueEmpty(() => store.dispatch(setConsistency(true)));
+  const cleanID = cleanUUID(uuid);
+  unstoreUUID(cleanID);
+  if (!getConsistencyState()) { // Do we even need to dispatch?
+    ifQueueEmpty(() => store.dispatch(setConsistency(true)));
+  }
 }
 
 const setConsistency =
@@ -80,3 +87,8 @@ const stash =
   () => ({ type: Actions.STASH_STATUS, payload: undefined });
 const ifQueueEmpty =
   <T>(cb: () => T): T | false => (outstandingRequests.all.size === 0) && cb();
+const getConsistencyState = () => !!store.getState().bot.consistent;
+
+/** HTTP servers were stripping dots out of our UUIDs in headers...? */
+export const cleanUUID =
+  (uuid: string) => uuid.toLowerCase().split(".").join("");

@@ -11,12 +11,16 @@ class ApplicationRecord < ActiveRecord::Base
                      "last_sign_in_ip",
                      "sign_in_count",
                      "updated_at",
+                     "current_sign_in_ip",
                      "current_sign_in_at" ]
+  def the_changes
+    self.saved_changes.except(*self.class::DONT_BROADCAST)
+  end
 
   # Determine if the changes to the model are worth broadcasting or not.
   # Reduces network noise.
   def notable_changes?
-    !self.saved_changes.except(*self.class::DONT_BROADCAST).empty?
+    !the_changes.empty?
   end
 
   def broadcast?

@@ -39,6 +39,7 @@ export interface DeviceAccountSettings {
   id: number;
   name: string;
   timezone?: string | undefined;
+  tz_offset_hrs: number;
   last_saw_api?: string | undefined;
   last_saw_mq?: string | undefined;
 }
@@ -154,6 +155,7 @@ export interface FarmwareProps {
   currentImage: TaggedImage | undefined;
   syncStatus: SyncStatus;
   farmwares: Dictionary<FarmwareManifest | undefined>;
+  timeOffset: number;
 }
 
 export interface HardwareSettingsProps {

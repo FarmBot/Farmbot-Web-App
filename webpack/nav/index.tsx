@@ -59,7 +59,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
     const { toggle, close } = this;
     const { mobileMenuOpen, tickerListOpen, accountMenuOpen } = this.state;
-    const { logs } = this.props;
+    const { logs, timeOffset } = this.props;
 
     return (
       <div className="nav-wrapper">
@@ -67,7 +67,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           <Row>
             <Col xs={12}>
               <div>
-                <TickerList { ...{ logs, tickerListOpen, toggle } } />
+                <TickerList { ...{ logs, tickerListOpen, toggle, timeOffset } } />
                 <div className="nav-group">
                   <div className="nav-left">
                     <i

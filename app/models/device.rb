@@ -59,4 +59,8 @@ class Device < ApplicationRecord
     yield
     Device.current = prev
   end
+
+  def tz_offset_hrs
+    Time.now.in_time_zone(self.timezone || "UTC").utc_offset / 1.hour
+  end
 end

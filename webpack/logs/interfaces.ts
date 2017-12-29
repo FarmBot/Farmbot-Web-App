@@ -5,6 +5,7 @@ import { ConfigurationName } from "farmbot";
 export interface LogsProps {
   logs: TaggedLog[];
   bot: BotState;
+  timeOffset: number;
 }
 
 export interface Filters {
@@ -24,6 +25,7 @@ export interface LogsState extends Filters {
 export interface LogsTableProps {
   logs: TaggedLog[];
   state: LogsState;
+  timeOffset: number;
 }
 
 type ToggleEventHandler = (e: React.MouseEvent<HTMLButtonElement>) => void;

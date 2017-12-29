@@ -1,6 +1,6 @@
 class DeviceSerializer < ActiveModel::Serializer
   attributes :id, :name, :timezone, :last_saw_api, :last_saw_mq,
-    :last_seen
+    :last_seen, :tz_offset_hrs
 
   def last_seen
     # TODO: Remove this by December 2017.

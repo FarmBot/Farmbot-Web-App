@@ -11,6 +11,7 @@ describe("NavBar", () => {
   it("has correct parent classname", () => {
     const wrapper = shallow(
       <NavBar
+        timeOffset={0}
         consistent={true}
         logs={[log]}
         bot={bot}
@@ -24,6 +25,7 @@ describe("NavBar", () => {
 
   it("closes nav menu", () => {
     const wrapper = shallow(<NavBar
+      timeOffset={0}
       consistent={true}
       logs={[log]}
       bot={bot}

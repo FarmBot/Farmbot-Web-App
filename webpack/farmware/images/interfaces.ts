@@ -30,4 +30,5 @@ export interface PhotosProps {
   dispatch: Function;
   images: TaggedImage[];
   currentImage: TaggedImage | undefined;
+  timeOffset: number;
 }
