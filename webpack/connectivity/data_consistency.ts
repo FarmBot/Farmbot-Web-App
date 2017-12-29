@@ -64,20 +64,15 @@ export function startTracking(uuid = PLACEHOLDER) {
   ifQueueEmpty(() => store.dispatch(stash()));
   if (getConsistencyState()) {
     store.dispatch(setConsistency(false));
-  } else {
-    console.info("Ignoring useless call to `startTracking` " + cleanID);
   }
   storeUUID(cleanID);
-  const stop = () => stopTracking(cleanID);
-  getDevice().on(cleanID, stop);
+  getDevice().on(cleanID, () => stopTracking(cleanID));
 }
 
 export function stopTracking(uuid: string) {
   const cleanID = cleanUUID(uuid);
   unstoreUUID(cleanID);
-  if (getConsistencyState()) { // Already set to true?
-    console.info("Ignoring useless call to `stopTracking` " + cleanID);
-  } else {
+  if (!getConsistencyState()) { // Do we even need to dispatch?
     ifQueueEmpty(() => store.dispatch(setConsistency(true)));
   }
 }
@@ -89,4 +84,6 @@ const stash =
 const ifQueueEmpty =
   <T>(cb: () => T): T | false => (outstandingRequests.all.size === 0) && cb();
 const getConsistencyState = () => !!store.getState().bot.consistent;
+
+/** HTTP servers were stripping dots out of our UUIDs in headers...? */
 const cleanUUID = (uuid: string) => uuid.toLowerCase().split(".").join("");
