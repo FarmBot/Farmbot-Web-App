@@ -58,7 +58,7 @@ describe("handleCreateOrUpdate", () => {
     const getState = jest.fn(fakeState) as GetState;
     const fakeUuid = "x";
     myPayload.sessionId = fakeUuid;
-    storeUUID(fakeUuid);
+    storeUUID(fakeUuid, "no");
 
     const result = handleCreateOrUpdate(dispatch, getState, myPayload);
     expect(result).toBe(true);

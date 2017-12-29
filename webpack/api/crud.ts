@@ -145,7 +145,6 @@ interface AjaxUpdatePayload {
 
 function update(uuid: string, statusBeforeError: SpecialStatus) {
   return function (dispatch: Function, getState: GetState) {
-    maybeStartTracking(uuid);
     const { index } = getState().resources;
     const payl: AjaxUpdatePayload = { index, uuid, dispatch, statusBeforeError };
     return updateViaAjax(payl);
@@ -159,7 +158,7 @@ export function destroy(uuid: string, force = false) {
     return maybeProceed(() => {
       const statusBeforeError = resource.specialStatus;
       if (resource.body.id) {
-        maybeStartTracking(uuid);
+        maybeStartTracking(uuid, "crud.ts:162");
         return axios
           .delete(urlFor(resource.kind) + resource.body.id)
           .then(function (resp: HttpData<typeof resource.body>) {
@@ -185,7 +184,7 @@ export function saveAll(input: TaggedResource[],
       .filter(x => x.specialStatus === SpecialStatus.DIRTY)
       .map(tts => tts.uuid)
       .map(uuid => {
-        maybeStartTracking(uuid);
+        maybeStartTracking(uuid, "crud.ts:188");
         return dispatch(save(uuid));
       });
     Promise.all(p).then(callback, errBack);
@@ -228,7 +227,7 @@ function updateViaAjax(payl: AjaxUpdatePayload) {
   } else {
     verb = "post";
   }
-  maybeStartTracking(uuid);
+  maybeStartTracking(uuid, "crud.ts:238");
   return axios[verb](url, body)
     .then(function (resp: HttpData<typeof resource.body>) {
       const r1 = defensiveClone(resource);

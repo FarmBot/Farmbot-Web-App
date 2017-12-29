@@ -20,7 +20,7 @@ describe("startTracking", () => {
   it("dispatches actions / event handlers", () => {
     const uuid = "~UUID~";
     const b4 = outstandingRequests.all.size;
-    startTracking(uuid);
+    startTracking(uuid, "-");
     expect(store.dispatch)
       .toHaveBeenCalledWith({ type: Actions.SET_CONSISTENCY, payload: false });
     expect(getDevice().on).toHaveBeenCalledWith(uuid, expect.anything());
