@@ -8,7 +8,7 @@ const BLACKLIST: ResourceName[] = [
   "User"
 ];
 
-export function maybeStartTracking(uuid: string, location: string) {
+export function maybeStartTracking(uuid: string) {
   const ignore = BLACKLIST.includes(uuid.split(".")[0] as ResourceName);
-  ignore || startTracking(uuid, location);
+  ignore || startTracking(uuid);
 }

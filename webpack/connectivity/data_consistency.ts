@@ -13,15 +13,13 @@ export const outstandingRequests: NonSense = {
   all: new Set()
 };
 
-export function storeUUID(uuid: string, location: string) {
+export function storeUUID(uuid: string) {
   outstandingRequests.last = cleanUUID(uuid);
-  console.log(`Tracking ${outstandingRequests.last} ${location}`);
   outstandingRequests.all.add(outstandingRequests.last);
 }
 
 function unstoreUUID(uuid: string) {
   outstandingRequests.all.delete(PLACEHOLDER);
-  console.log(`Untracking ${cleanUUID(uuid)}`);
   outstandingRequests.all.delete(cleanUUID(uuid));
 }
 
@@ -33,7 +31,7 @@ set(window, "outstanding_requests", outstandingRequests);
 const PLACEHOLDER = "placeholder";
 
 /** Max wait in MS before clearing out. */
-const MAX_WAIT = 99000;
+const MAX_WAIT = 3500;
 
 /**
 * PROBLEM:  You save a sequence and click "RUN" very fast. The remote device
@@ -64,14 +62,14 @@ const MAX_WAIT = 99000;
 *     this and we could track data operations the same way a `exec_sequence`
 *     and friends.
 */
-export function startTracking(uuid = PLACEHOLDER, location: string) {
+export function startTracking(uuid = PLACEHOLDER) {
   const cleanID = cleanUUID(uuid);
   ifQueueEmpty(() => store.dispatch(stash()));
   const isConsistent = getConsistencyState();
   if (isConsistent) {
     store.dispatch(setConsistency(false));
   }
-  storeUUID(cleanID, location);
+  storeUUID(cleanID);
   getDevice().on(cleanID, () => stopTracking(cleanID));
   setTimeout(stop, MAX_WAIT);
 }

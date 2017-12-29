@@ -158,7 +158,7 @@ export function destroy(uuid: string, force = false) {
     return maybeProceed(() => {
       const statusBeforeError = resource.specialStatus;
       if (resource.body.id) {
-        maybeStartTracking(uuid, "crud.ts:162");
+        maybeStartTracking(uuid);
         return axios
           .delete(urlFor(resource.kind) + resource.body.id)
           .then(function (resp: HttpData<typeof resource.body>) {
@@ -184,7 +184,7 @@ export function saveAll(input: TaggedResource[],
       .filter(x => x.specialStatus === SpecialStatus.DIRTY)
       .map(tts => tts.uuid)
       .map(uuid => {
-        maybeStartTracking(uuid, "crud.ts:188");
+        maybeStartTracking(uuid);
         return dispatch(save(uuid));
       });
     Promise.all(p).then(callback, errBack);
@@ -227,7 +227,7 @@ function updateViaAjax(payl: AjaxUpdatePayload) {
   } else {
     verb = "post";
   }
-  maybeStartTracking(uuid, "crud.ts:238");
+  maybeStartTracking(uuid);
   return axios[verb](url, body)
     .then(function (resp: HttpData<typeof resource.body>) {
       const r1 = defensiveClone(resource);
