@@ -119,6 +119,7 @@ export interface AddEditFarmEventProps {
   handleTime(e: React.SyntheticEvent<HTMLInputElement>, currentISO: string): string;
   dispatch: Function;
   findExecutable: ExecutableQuery;
+  timeOffset: number;
 }
 
 /**

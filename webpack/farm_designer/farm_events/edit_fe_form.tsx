@@ -103,6 +103,7 @@ export interface EditFEProps {
   findExecutable: ExecutableQuery;
   title: string;
   deleteBtn?: boolean;
+  timeOffset: number;
 }
 
 interface State {
@@ -124,7 +125,9 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   get dispatch() { return this.props.dispatch; }
 
-  get viewModel() { return destructureFarmEvent(this.props.farmEvent); }
+  get viewModel() {
+    return destructureFarmEvent(this.props.farmEvent, this.props.timeOffset);
+  }
 
   get executable() {
     const et = this.fieldGet("executable_type");

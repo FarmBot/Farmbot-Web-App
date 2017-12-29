@@ -16,7 +16,7 @@
     "webpack": "./node_modules/.bin/webpack-dev-server --config config/webpack.dev.js --host 0.0.0.0",
     "test-slow": "jest --coverage --no-cache -w 2",
     "test": "jest --no-coverage --cache -w 5",
-    "typecheck": "./node_modules/.bin/tsc --noEmit --jsx preserve  | grep \"error\""
+    "typecheck": "./node_modules/.bin/tsc --noEmit --jsx preserve"
   },
   "keywords": [
     "farmbot"

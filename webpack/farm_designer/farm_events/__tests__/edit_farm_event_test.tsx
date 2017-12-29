@@ -31,7 +31,8 @@ describe("<EditFarmEvent />", () => {
       handleTime: jest.fn(),
       farmEvents: [],
       getFarmEvent: () => fakeFarmEvent("Sequence", 1),
-      findExecutable: () => sequence
+      findExecutable: () => sequence,
+      timeOffset: 0
     };
   }
 
