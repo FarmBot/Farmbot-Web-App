@@ -90,4 +90,5 @@ const ifQueueEmpty =
 const getConsistencyState = () => !!store.getState().bot.consistent;
 
 /** HTTP servers were stripping dots out of our UUIDs in headers...? */
-const cleanUUID = (uuid: string) => uuid.toLowerCase().split(".").join("");
+export const cleanUUID =
+  (uuid: string) => uuid.toLowerCase().split(".").join("");
