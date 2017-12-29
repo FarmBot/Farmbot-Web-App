@@ -41,7 +41,7 @@ const MAX_WAIT = 3500;
 *
 * SOLUTION:
 *
-*   - On all AJAX requests, the API attaches an `X-Request-Id` header (UUID).
+*   - On all AJAX requests, the API attaches an `X-Farmbot-Rpc-Id` header (UUID).
 *   - On all auto_sync messages, the API attaches the same UUID under
 *     msg.args.label
 *   - When FBOS gets an auto_sync message, it replies with an `rpc_ok` message
@@ -77,7 +77,9 @@ export function startTracking(uuid = PLACEHOLDER) {
 export function stopTracking(uuid: string) {
   const cleanID = cleanUUID(uuid);
   unstoreUUID(cleanID);
-  // if (!getConsistencyState()) { // Do we even need to dispatch?
+  // Purpose: Determine if dispatch is actually required to avoid dispatching
+  //          too many times for the same value.
+  // if (!getConsistencyState()) {
   ifQueueEmpty(() => store.dispatch(setConsistency(true)));
   // }
 }

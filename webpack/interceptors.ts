@@ -21,7 +21,7 @@ export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   dispatchNetworkUp("user.api");
 
   if (method && METHODS.includes(method)) {
-    const uuid = input.headers["x-request-id"] || "NONE";
+    const uuid = input.headers["X-Farmbot-Rpc-Id"] || "NONE";
     notifyBotOfChanges(input.config.url, METHOD_MAP[method], uuid);
   }
   return input;
@@ -69,7 +69,7 @@ export function requestFulfilled(auth: AuthState) {
     if (isAPIRequest) {
       config.headers = config.headers || {};
       const headers: Dictionary<string> = config.headers;
-      headers["X-Request-Id"] = outstandingRequests.last;
+      headers["X-Farmbot-Rpc-Id"] = outstandingRequests.last;
       headers.Authorization = auth.token.encoded || "CANT_FIND_TOKEN";
     }
     return config;
