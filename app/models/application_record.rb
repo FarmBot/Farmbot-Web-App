@@ -36,8 +36,7 @@ class ApplicationRecord < ActiveRecord::Base
       nil : ActiveModel::Serializer.serializer_for(self).new(self))
     {
       args: { label: Transport.current_request_id },
-      body: body.as_json,
-      debug: the_changes
+      body: body.as_json
     }.to_json
   end
 
