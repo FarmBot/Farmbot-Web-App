@@ -14,13 +14,13 @@ export const outstandingRequests: NonSense = {
 };
 
 export function storeUUID(uuid: string) {
-  outstandingRequests.last = uuid;
+  outstandingRequests.last = cleanUUID(uuid);
   outstandingRequests.all.add(outstandingRequests.last);
 }
 
 function unstoreUUID(uuid: string) {
   outstandingRequests.all.delete(PLACEHOLDER);
-  outstandingRequests.all.delete(uuid);
+  outstandingRequests.all.delete(cleanUUID(uuid));
 }
 
 set(window, "outstanding_requests", outstandingRequests);
