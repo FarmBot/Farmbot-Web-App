@@ -65,7 +65,8 @@ const MAX_WAIT = 3500;
 export function startTracking(uuid = PLACEHOLDER) {
   const cleanID = cleanUUID(uuid);
   ifQueueEmpty(() => store.dispatch(stash()));
-  if (getConsistencyState()) {
+  const isConsistent = getConsistencyState();
+  if (isConsistent) {
     store.dispatch(setConsistency(false));
   }
   storeUUID(cleanID);
@@ -76,9 +77,9 @@ export function startTracking(uuid = PLACEHOLDER) {
 export function stopTracking(uuid: string) {
   const cleanID = cleanUUID(uuid);
   unstoreUUID(cleanID);
-  if (!getConsistencyState()) { // Do we even need to dispatch?
-    ifQueueEmpty(() => store.dispatch(setConsistency(true)));
-  }
+  // if (!getConsistencyState()) { // Do we even need to dispatch?
+  ifQueueEmpty(() => store.dispatch(setConsistency(true)));
+  // }
 }
 
 const setConsistency =
