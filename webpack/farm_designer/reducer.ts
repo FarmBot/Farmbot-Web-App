@@ -7,6 +7,7 @@ import {
 import { cloneDeep } from "lodash";
 import { TaggedResource } from "../resources/tagged_resources";
 import { Actions } from "../constants";
+import { BotPosition } from "../devices/interfaces";
 
 export let initialState: DesignerState = {
   selectedPlants: undefined,
@@ -15,7 +16,8 @@ export let initialState: DesignerState = {
     icon: ""
   },
   cropSearchQuery: "",
-  cropSearchResults: []
+  cropSearchResults: [],
+  chosenLocation: { x: undefined, y: undefined, z: undefined },
 };
 
 export let designer = generateReducer<DesignerState>(initialState)
@@ -40,5 +42,9 @@ export let designer = generateReducer<DesignerState>(initialState)
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
     s.selectedPlants = undefined;
     s.hoveredPlant = { plantUUID: undefined, icon: "" };
+    return s;
+  })
+  .add<BotPosition>(Actions.CHOOSE_LOCATION, (s, { payload }) => {
+    s.chosenLocation = payload;
     return s;
   });
