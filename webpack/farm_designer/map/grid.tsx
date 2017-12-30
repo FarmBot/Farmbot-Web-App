@@ -2,30 +2,15 @@ import * as React from "react";
 import { GridProps } from "./interfaces";
 import { getXYFromQuadrant } from "./util";
 import * as _ from "lodash";
-import { history, getPathArray } from "../../history";
 import { Color } from "../../ui/colors";
 
 export function Grid(props: GridProps) {
-  function closePlantInfo() {
-    if (!isNaN(parseInt(getPathArray().slice(-1)[0]))) {
-      // A plant is selected and plant info is open. Unselect and close it.
-      props.dispatch({ type: "SELECT_PLANT", payload: undefined });
-      props.dispatch({
-        type: "TOGGLE_HOVERED_PLANT", payload: {
-          icon: "",
-          plantUUID: undefined
-        }
-      });
-      history.push("/app/designer/plants");
-    }
-  }
-
   const { quadrant, gridSize } = props.mapTransformProps;
   const origin = getXYFromQuadrant(0, 0, quadrant, gridSize);
   const arrowEnd = getXYFromQuadrant(25, 25, quadrant, gridSize);
   const xLabel = getXYFromQuadrant(15, -10, quadrant, gridSize);
   const yLabel = getXYFromQuadrant(-11, 18, quadrant, gridSize);
-  return <g className="drop-area-background" onClick={closePlantInfo}>
+  return <g className="drop-area-background" onClick={props.onClick}>
     <defs>
       <pattern id="minor_grid"
         width={10} height={10} patternUnits="userSpaceOnUse">

@@ -10,6 +10,7 @@ import { Everything } from "../../interfaces";
 import { OpenFarm } from "../openfarm";
 import { OFSearch } from "../util";
 import { catchErrors, JSXChildren } from "../../util";
+import { unselectPlant } from "../actions";
 
 interface InforFieldProps {
   title: string;
@@ -47,6 +48,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
   componentDidMount() {
     const crop = getPathArray()[5];
     OFSearch(crop)(this.props.dispatch);
+    unselectPlant(this.props.dispatch)();
   }
 
   handleDragStart = (e: DraggableEvent) => {

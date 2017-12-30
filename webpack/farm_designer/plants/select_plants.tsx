@@ -10,6 +10,7 @@ import { destroy } from "../../api/crud";
 import { error } from "farmbot-toastr";
 import { BackArrow } from "../../ui/index";
 import { catchErrors } from "../../util";
+import { unselectPlant } from "../actions";
 
 export function mapStateToProps(props: Everything) {
   const plants = selectAllPlantPointers(props.resources.index);
@@ -20,7 +21,8 @@ export function mapStateToProps(props: Everything) {
       .farm_designer
       .selectedPlants,
     plants,
-    dispatch: props.dispatch
+    dispatch: props.dispatch,
+    currentIcon: props.resources.consumers.farm_designer.hoveredPlant.icon
   };
 }
 
@@ -28,12 +30,37 @@ export interface SelectPlantsProps {
   plants: TaggedPlantPointer[];
   dispatch: Function;
   selected: string[];
+  currentIcon: string;
+}
+
+interface SelectPlantsState {
+  stashedUuid: string | undefined;
+  stashedIcon: string;
 }
 
 @connect(mapStateToProps)
 export class SelectPlants
-  extends React.Component<SelectPlantsProps, {}> {
+  extends React.Component<SelectPlantsProps, SelectPlantsState> {
   componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+
+  componentDidMount() {
+    const { dispatch, selected, currentIcon } = this.props;
+    this.setState({
+      stashedUuid: selected ? selected[0] : undefined,
+      stashedIcon: currentIcon
+    });
+    unselectPlant(dispatch)();
+  }
+
+  onBack = () => {
+    const { stashedUuid, stashedIcon } = this.state;
+    this.props.dispatch({ type: "SELECT_PLANT", payload: [stashedUuid] });
+    this.props.dispatch({
+      type: "TOGGLE_HOVERED_PLANT", payload: {
+        plantUUID: stashedUuid, icon: stashedIcon
+      }
+    });
+  }
 
   destroySelected = (plantUUIDs: string[]) => {
     if (plantUUIDs &&
@@ -56,8 +83,8 @@ export class SelectPlants
       className="panel-container green-panel plant-selection-panel">
       <div className="panel-header green-panel">
         <p className="panel-title">
-          <BackArrow />
-          Select plants
+          <BackArrow onClick={this.onBack} />
+          {t("Select plants")}
         </p>
 
         <div className="panel-title">
