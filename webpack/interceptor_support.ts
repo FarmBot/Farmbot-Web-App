@@ -68,7 +68,7 @@ export function notifyBotOfChanges(url: string | undefined,
 
 /** More nasty hacks until we have time to implement proper API push state
  * notifications. */
-function inferUpdateId(url: string) {
+export function inferUpdateId(url: string) {
   try {
     const ids = url
       .split("/")

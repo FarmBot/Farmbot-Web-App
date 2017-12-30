@@ -33,7 +33,8 @@ describe("<AddFarmEvent />", () => {
       handleTime: jest.fn(),
       farmEvents: [farmEvent],
       getFarmEvent: () => farmEvent,
-      findExecutable: () => sequence
+      findExecutable: () => sequence,
+      timeOffset: 0
     };
   }
 

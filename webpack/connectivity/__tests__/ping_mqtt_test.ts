@@ -62,7 +62,7 @@ describe("ping util", () => {
   });
 
   it("checks if the bot isInactive()", () => {
-    expect(isInactive(undefined, 0)).toBeFalsy();
+    expect(isInactive(undefined, 0)).toBeTruthy();
     const TOO_LATE = PING_INTERVAL * 3;
     expect(isInactive(1, TOO_LATE)).toBeTruthy();
     expect(isInactive(TOO_LATE, 1)).toBeFalsy();
@@ -81,5 +81,5 @@ describe("ping util", () => {
     const bot = fakeBot();
     startPinging(bot);
     expect(bot.on).toHaveBeenCalledWith("ping", expect.any(Function));
-  })
+  });
 });

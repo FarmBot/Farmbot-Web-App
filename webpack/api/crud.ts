@@ -151,6 +151,21 @@ function update(uuid: string, statusBeforeError: SpecialStatus) {
   };
 }
 
+interface DestroyNoProps {
+  uuid: string;
+  statusBeforeError: SpecialStatus;
+  dispatch: Function;
+}
+
+export const destroyCatch = (p: DestroyNoProps) => (err: UnsafeError) => {
+  p.dispatch(destroyNO({
+    err,
+    uuid: p.uuid,
+    statusBeforeError: p.statusBeforeError
+  }));
+  return Promise.reject(err);
+};
+
 export function destroy(uuid: string, force = false) {
   return function (dispatch: Function, getState: GetState) {
     const resource = findByUuid(getState().resources.index, uuid);
@@ -164,10 +179,7 @@ export function destroy(uuid: string, force = false) {
           .then(function (resp: HttpData<typeof resource.body>) {
             dispatch(destroyOK(resource));
           })
-          .catch(function (err: UnsafeError) {
-            dispatch(destroyNO({ err, uuid, statusBeforeError }));
-            return Promise.reject(err);
-          });
+          .catch(destroyCatch({ dispatch, uuid, statusBeforeError }));
       } else {
         dispatch(destroyOK(resource));
         return Promise.resolve("");

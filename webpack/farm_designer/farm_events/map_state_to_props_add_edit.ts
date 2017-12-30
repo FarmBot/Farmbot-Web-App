@@ -148,9 +148,9 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
       default: throw new Error("GOT A BAD `KIND` STRING");
     }
   };
-
+  const dev = getDeviceAccountSettings(props.resources.index);
   return {
-    deviceTimezone: getDeviceAccountSettings(props.resources.index)
+    deviceTimezone: dev
       .body
       .timezone,
     dispatch: props.dispatch,
@@ -164,6 +164,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     handleTime,
     farmEvents,
     getFarmEvent,
-    findExecutable
+    findExecutable,
+    timeOffset: dev.body.tz_offset_hrs
   };
 }
