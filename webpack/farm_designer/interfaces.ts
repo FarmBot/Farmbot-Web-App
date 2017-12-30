@@ -101,6 +101,7 @@ export interface DesignerState {
   hoveredPlant: HoveredPlantPayl;
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
+  chosenLocation: BotPosition;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;

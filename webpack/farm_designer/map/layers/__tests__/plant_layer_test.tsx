@@ -1,3 +1,9 @@
+jest.mock("../../../../history", () => ({
+  getPathArray: jest
+    .fn(() => { return "/app/designer/plants/select".split("/"); })
+    .mockImplementationOnce(() => { return "/app/designer/plants".split("/"); })
+}));
+
 jest.mock("../../../../session", () => {
   return {
     Session: {
@@ -51,5 +57,12 @@ describe("<PlantLayer/>", () => {
     p.visible = false;
     const wrapper = shallow(<PlantLayer {...p } />);
     expect(wrapper.html()).toEqual("<g id=\"plant-layer\"></g>");
+  });
+
+  it("is in non-clickable mode", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<PlantLayer {...p } />);
+    expect(wrapper.find("Link").props().style)
+      .toEqual({ pointerEvents: "none" });
   });
 });

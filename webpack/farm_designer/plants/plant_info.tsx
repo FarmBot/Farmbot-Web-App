@@ -7,20 +7,13 @@ import { mapStateToProps, formatPlantInfo } from "./map_state_to_props";
 import { PlantInfoBase } from "./plant_info_base";
 import { PlantPanel } from "./plant_panel";
 import { catchErrors } from "../../util";
+import { unselectPlant } from "../actions";
 
 @connect(mapStateToProps)
 export class PlantInfo extends PlantInfoBase {
   componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
   default = (plant_info: TaggedPlantPointer) => {
-    const click = () => {
-      this.props.dispatch({ type: "SELECT_PLANT", payload: undefined });
-      this.props.dispatch({
-        type: "TOGGLE_HOVERED_PLANT", payload: {
-          plantUUID: undefined, icon: ""
-        }
-      });
-    };
     const info = formatPlantInfo(plant_info);
     const { name, id } = info;
     return <div className="panel-container green-panel" >
@@ -29,7 +22,7 @@ export class PlantInfo extends PlantInfoBase {
           <Link to="/app/designer/plants" className="back-arrow">
             <i
               className="fa fa-arrow-left"
-              onClick={click} />
+              onClick={unselectPlant(this.props.dispatch)} />
           </Link>
           <span className="title">
             {name}

@@ -229,3 +229,18 @@
     }
   }
 }
+
+.move-to-panel-content {
+  margin-top: 4rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  button {
+    margin: 1rem;
+    margin-left: 2rem;
+    width: 88%;
+    float: left;
+  }
+  input {
+    min-width: 7rem;
+  }
+}
