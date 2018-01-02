@@ -53,16 +53,18 @@ interface DataUpdateEndOfLife {
 export function notifyBotOfChanges(url: string | undefined,
   action: DataChangeType, uuid: string) {
   if (url) {
-    url.split("/").filter((chunk: ResourceName) => {
-      return RESOURNCE_NAME_IN_URL.includes(chunk);
-    }).map(async function (resource: ResourceName) {
-      const data_update: DataUpdateEndOfLife = {
-        kind: "data_update",
-        args: { value: action },
-        body: toPairs({ [resource]: inferUpdateId(url) })
-      };
-      getDevice().publish(rpcRequest([data_update as any]));
-    });
+    url
+      .split("/")
+      .filter((chunk: ResourceName) => {
+        return RESOURNCE_NAME_IN_URL.includes(chunk);
+      }).map(async function (resource: ResourceName) {
+        const data_update: DataUpdateEndOfLife = {
+          kind: "data_update",
+          args: { value: action },
+          body: toPairs({ [resource]: inferUpdateId(url) })
+        };
+        getDevice().publish(rpcRequest([data_update as any]));
+      });
   }
 }
 
