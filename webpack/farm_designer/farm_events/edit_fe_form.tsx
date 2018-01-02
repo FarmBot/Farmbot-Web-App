@@ -52,12 +52,13 @@ export interface FarmEventViewModel {
   timeUnit: string;
   executable_type: string;
   executable_id: string;
+  timeOffset: number;
 }
 /** Breaks up a TaggedFarmEvent into a structure that can easily be used
  * by the edit form.
  * USE CASE EXAMPLE: We have a "date" and "time" field that are created from
  *                   a single "start_time" FarmEvent field. */
-function destructureFarmEvent(fe: TaggedFarmEvent): FarmEventViewModel {
+function destructureFarmEvent(fe: TaggedFarmEvent, timeOffset: number): FarmEventViewModel {
 
   return {
     startDate: formatDate((fe.body.start_time).toString()),
@@ -67,23 +68,30 @@ function destructureFarmEvent(fe: TaggedFarmEvent): FarmEventViewModel {
     repeat: (fe.body.repeat || 1).toString(),
     timeUnit: fe.body.time_unit,
     executable_type: fe.body.executable_type,
-    executable_id: (fe.body.executable_id || "").toString()
+    executable_id: (fe.body.executable_id || "").toString(),
+    timeOffset
   };
 }
 
+type PartialFE = Partial<TaggedFarmEvent["body"]>;
+
 /** Take a FormViewModel and recombine the fields into a Partial<FarmEvent>
  * that can be used to apply updates (such as a PUT request to the API). */
-export function recombine(vm: FarmEventViewModel): Partial<TaggedFarmEvent["body"]> {
+export function recombine(vm: FarmEventViewModel): PartialFE {
   // Make sure that `repeat` is set to `never` when dealing with regimens.
   const isReg = vm.executable_type === "Regimen";
   return {
-    start_time: moment(vm.startDate + " " + vm.startTime).toISOString(),
-    end_time: moment(vm.endDate + " " + vm.endTime).toISOString(),
+    start_time: offsetTime(vm.startDate, vm.startTime, vm.timeOffset),
+    end_time: offsetTime(vm.endDate, vm.endTime, vm.timeOffset),
     repeat: parseInt(vm.repeat, 10) || 1,
     time_unit: (isReg ? "never" : vm.timeUnit) as TimeUnit,
     executable_id: parseInt(vm.executable_id, 10),
     executable_type: vm.executable_type as ("Sequence" | "Regimen"),
   };
+}
+
+function offsetTime(date: string, time: string, offset: number): string {
+  return moment(`${date} ${time}`).utcOffset(offset).toISOString();
 }
 
 export interface EditFEProps {
@@ -95,6 +103,7 @@ export interface EditFEProps {
   findExecutable: ExecutableQuery;
   title: string;
   deleteBtn?: boolean;
+  timeOffset: number;
 }
 
 interface State {
@@ -116,7 +125,9 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   get dispatch() { return this.props.dispatch; }
 
-  get viewModel() { return destructureFarmEvent(this.props.farmEvent); }
+  get viewModel() {
+    return destructureFarmEvent(this.props.farmEvent, this.props.timeOffset);
+  }
 
   get executable() {
     const et = this.fieldGet("executable_type");

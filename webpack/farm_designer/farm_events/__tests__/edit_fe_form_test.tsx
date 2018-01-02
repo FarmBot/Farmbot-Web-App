@@ -14,7 +14,8 @@ describe("<FarmEventForm/>", () => {
     farmEvent: fakeFarmEvent("Sequence", 12),
     dispatch: jest.fn(),
     findExecutable: jest.fn(() => fakeSequence()),
-    title: "title"
+    title: "title",
+    timeOffset: 0
   });
 
   function instance(p: EditFEProps) {
@@ -113,7 +114,8 @@ describe("<FarmEventForm/>", () => {
       "repeat": "1",
       "timeUnit": "daily",
       "executable_type": "Regimen",
-      "executable_id": "1"
+      "executable_id": "1",
+      timeOffset: 0
     });
     expect(result.time_unit).toEqual("never");
     expect(result.time_unit).not.toEqual("daily");
@@ -128,7 +130,8 @@ describe("<FarmEventForm/>", () => {
       "repeat": "1",
       "timeUnit": "never",
       "executable_type": "Regimen",
-      "executable_id": "1"
+      "executable_id": "1",
+      timeOffset: 0
     });
     expect(result.start_time).toContain("2017-08-01");
     expect(result.end_time).toContain("2017-08-01");
@@ -157,7 +160,8 @@ describe("<FarmEventForm/>", () => {
       ]}
       findExecutable={jest.fn(() => seq)}
       dispatch={jest.fn()}
-      repeatOptions={repeatOptions} />);
+      repeatOptions={repeatOptions}
+      timeOffset={0} />);
     el.update();
     const txt = el.text().replace(/\s+/g, " ");
     expect(txt).toContain("Save *");

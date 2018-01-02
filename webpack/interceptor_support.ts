@@ -3,7 +3,6 @@ import { getDevice } from "./device";
 import { box } from "boxed_value";
 import * as _ from "lodash";
 import { ResourceName } from "./resources/tagged_resources";
-import { startTracking } from "./connectivity/data_consistency";
 
 export let METHOD_MAP: Dictionary<DataChangeType> = {
   "post": "add",
@@ -54,23 +53,24 @@ interface DataUpdateEndOfLife {
 export function notifyBotOfChanges(url: string | undefined,
   action: DataChangeType, uuid: string) {
   if (url) {
-    url.split("/").filter((chunk: ResourceName) => {
-      return RESOURNCE_NAME_IN_URL.includes(chunk);
-    }).map(async function (resource: ResourceName) {
-      startTracking(uuid);
-      const data_update: DataUpdateEndOfLife = {
-        kind: "data_update",
-        args: { value: action },
-        body: toPairs({ [resource]: inferUpdateId(url) })
-      };
-      getDevice().publish(rpcRequest([data_update as any]));
-    });
+    url
+      .split("/")
+      .filter((chunk: ResourceName) => {
+        return RESOURNCE_NAME_IN_URL.includes(chunk);
+      }).map(async function (resource: ResourceName) {
+        const data_update: DataUpdateEndOfLife = {
+          kind: "data_update",
+          args: { value: action },
+          body: toPairs({ [resource]: inferUpdateId(url) })
+        };
+        getDevice().publish(rpcRequest([data_update as any]));
+      });
   }
 }
 
 /** More nasty hacks until we have time to implement proper API push state
  * notifications. */
-function inferUpdateId(url: string) {
+export function inferUpdateId(url: string) {
   try {
     const ids = url
       .split("/")

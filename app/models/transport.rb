@@ -28,7 +28,7 @@ module Transport
     topic.publish(message, routing_key: "bot.device_#{id}.#{channel}")
   end
 
-  # We need to hoist the Rack X-Request-ID to a global state so that it can
+  # We need to hoist the Rack X-Farmbot-Rpc-Id to a global state so that it can
   # be used as a unique identifier for AMQP messages.
   def self.current_request_id
     RequestStore.store[:current_request_id] || "NONE"

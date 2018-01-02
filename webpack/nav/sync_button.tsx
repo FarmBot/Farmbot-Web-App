@@ -36,7 +36,7 @@ export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) 
   return (
     <button
       className={`nav-sync ${color} fb-button`}
-      onClick={() => consistent && dispatch(sync())}>
+      onClick={() => dispatch(sync())}>
       {text}
     </button>
   );

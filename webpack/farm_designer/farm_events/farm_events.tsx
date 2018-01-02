@@ -73,13 +73,12 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
   renderCalendarRows() {
     const years = _.uniq(_.map(this.props.calendarRows, "year"));
     return years.map(year => {
-      return (
-        <div key={moment(year, "YY").unix()}>
-          <div className="farm-event-year">
-            20{year}
-          </div>
-          {this.renderCalendarRowsInYear(year)}
-        </div>);
+      return <div key={moment(year, "YY").unix()}>
+        <div className="farm-event-year">
+          20{year}
+        </div>
+        {this.renderCalendarRowsInYear(year)}
+      </div>;
     });
   }
 

@@ -80,13 +80,13 @@ private
       x.is_a?(Array) ? x.map(&:deep_symbolize_keys!) : x.deep_symbolize_keys!
     end
 
-    REQ_ID = "X-Request-Id"
+    REQ_ID = "X-Farmbot-Rpc-Id"
 
     def set_default_stuff
       request.format                 = "json"
       id                             = request.headers[REQ_ID] || SecureRandom.uuid
       response.headers[REQ_ID]       = id
-      # # IMPORTANT: We need to hoist X-Request-Id to a global so that it is
+      # # IMPORTANT: We need to hoist X-Farmbot-Rpc-Id to a global so that it is
       # #            accessible for use with auto_sync.
       Transport.set_current_request_id(response.headers[REQ_ID])
     end
