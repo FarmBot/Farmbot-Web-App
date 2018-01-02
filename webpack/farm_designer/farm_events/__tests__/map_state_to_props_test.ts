@@ -56,11 +56,11 @@ describe("mapStateToProps()", () => {
     const testTime = moment().startOf("hour").valueOf();
     const { calendarRows, push } = mapStateToProps(testState(testTime));
 
-    const day1Time = moment(testTime).add(1, "day");
-    const day1ItemTime = day1Time.add(2, "minutes");
-    const day2Time = moment(testTime).add(2, "days");
-    const regimenStartTime = day2Time.clone().add(1, "minutes");
-    const regimenItemTime = day2Time.clone().add(10, "minutes");
+    const day1Time = moment(testTime).utcOffset(0).add(1, "day");
+    const day1ItemTime = day1Time.utcOffset(0).add(2, "minutes");
+    const day2Time = moment(testTime).utcOffset(0).add(2, "days");
+    const regimenStartTime = day2Time.clone().utcOffset(0).add(1, "minutes");
+    const regimenItemTime = day2Time.clone().utcOffset(0).add(10, "minutes");
     expect(calendarRows).toEqual([
       {
         day: day1Time.date(),

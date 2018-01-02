@@ -4,7 +4,10 @@ import { FarmEventProps } from "../interfaces";
 import { joinFarmEventsToExecutable } from "./calendar/selectors";
 import { Calendar } from "./calendar/index";
 import { occurrence } from "./calendar/occurrence";
-import { findSequenceById, getDeviceAccountSettings } from "../../resources/selectors";
+import {
+  findSequenceById,
+  maybeGetTimeOffset
+} from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { FarmEventWithRegimen, FarmEventWithSequence } from "./calendar/interfaces";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
@@ -24,7 +27,7 @@ export function mapResourcesToCalendar(
   const x = joinFarmEventsToExecutable(ri);
   const calendar = new Calendar();
   const addRegimenToCalendar = regimenCalendarAdder(ri);
-  const { tz_offset_hrs } = getDeviceAccountSettings(ri).body;
+  const tz_offset_hrs = maybeGetTimeOffset(ri);
 
   x.map(function (fe) {
     switch (fe.executable_type) {
@@ -42,7 +45,7 @@ export function mapResourcesToCalendar(
 }
 export let regimenCalendarAdder = (index: ResourceIndex) =>
   (f: FarmEventWithRegimen, c: Calendar, now = moment()) => {
-    const { tz_offset_hrs } = getDeviceAccountSettings(index).body;
+    const tz_offset_hrs = maybeGetTimeOffset(index);
     const { regimen_items } = f.executable;
     const fromEpoch = (ms: number) => moment(f.start_time)
       .startOf("day")

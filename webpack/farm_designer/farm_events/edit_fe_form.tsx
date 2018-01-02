@@ -36,6 +36,7 @@ import { scheduleForFarmEvent } from "./calendar/scheduler";
 import { executableType } from "../util";
 import { Content } from "../../constants";
 import { destroyOK } from "../../resources/actions";
+import { EventTimePicker } from "./event_time_picker";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -254,10 +255,10 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
                 onCommit={this.fieldSet("startDate")} />
             </Col>
             <Col xs={6}>
-              <BlurableInput
-                type="time"
+              <EventTimePicker
                 className="add-event-start-time"
                 name="start_time"
+                tzOffset={this.props.timeOffset}
                 value={this.fieldGet("startTime")}
                 onCommit={this.fieldSet("startTime")} />
             </Col>
@@ -270,6 +271,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             &nbsp;{t("Repeats?")}
           </label>
           <FarmEventRepeatForm
+            tzOffset={this.props.timeOffset}
             disabled={!allowRepeat}
             hidden={!allowRepeat}
             onChange={this.mergeState}

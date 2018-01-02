@@ -11,13 +11,14 @@ const DEFAULTS: RepeatFormProps = {
   timeUnit: "daily",
   repeat: "1",
   endDate: "2017-07-26",
-  endTime: "08:57"
+  endTime: "08:57",
+  tzOffset: 0
 };
 
 enum Selectors {
   REPEAT = "BlurableInput[name=\"repeat\"]",
   END_DATE = "BlurableInput[name=\"endDate\"]",
-  END_TIME = "BlurableInput[name=\"endTime\"]",
+  END_TIME = "EventTimePicker[name=\"endTime\"]",
   TIME_UNIT = "FBSelect"
 }
 
