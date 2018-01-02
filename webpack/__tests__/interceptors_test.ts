@@ -29,13 +29,6 @@ function fakeResponse(config: Partial<FakeProps>): AxiosResponse {
 }
 
 describe("responseFulfilled", () => {
-  it("fires off inconsistency tracking", () => {
-    jest.clearAllMocks();
-    const resp = fakeResponse({ method: "post" });
-    responseFulfilled(resp);
-    expect(startTracking).toHaveBeenCalledWith(resp.headers["X-Farmbot-Rpc-Id"]);
-  });
-
   it("won't fire for webcam feed updates", () => {
     jest.clearAllMocks();
     const resp = fakeResponse({
