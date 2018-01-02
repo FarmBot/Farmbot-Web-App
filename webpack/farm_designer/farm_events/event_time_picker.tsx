@@ -1,6 +1,7 @@
 import * as React from "react";
 import { BlurableInput } from "../../ui/blurable_input";
 import * as moment from "moment";
+import { defensiveClone, fancyDebug } from "../../util";
 
 interface Props {
   /** String, formatted as hh:mm (UTC 24hr time).
@@ -16,8 +17,18 @@ interface Props {
 const FORMAT = "HH:mm";
 
 /** TODO: Write good tests. */
-export function utcToBotTime(value: string, tzOffset: number) {
-  return moment(value, FORMAT).add(tzOffset, "hours").format(FORMAT);
+export function utcToBotTime(utcValue: string, tzOffset: number) {
+  const botLocalTime = moment(utcValue, FORMAT).clone().add(tzOffset, "hours").format(FORMAT);
+  fancyDebug({
+    utcValue,
+    tzOffset,
+    botLocalTime,
+  });
+  return botLocalTime;
+}
+
+export function botTimeToUtc(value: string, tzOffset: number) {
+  return moment(value, FORMAT).clone().subtract(tzOffset, "hours").format(FORMAT);
 }
 
 export function EventTimePicker(props: Props) {
@@ -28,5 +39,14 @@ export function EventTimePicker(props: Props) {
     type="time"
     className="add-event-start-time"
     value={utcToBotTime(value, tzOffset)}
-    onCommit={onCommit} />;
+    onCommit={(e) => {
+      /** Would love to change this `onCommit` callback signature from
+       * onCommit(ev: React.SyntheticEvent<HTMLInputElement>): void;
+       * to
+       * onCommit(ev: string): void;
+       * but won't for legacy / time reasons. */
+      const f = defensiveClone(e);
+      f.currentTarget.value = botTimeToUtc(e.currentTarget.value, tzOffset);
+      onCommit(f);
+    }} />;
 }
