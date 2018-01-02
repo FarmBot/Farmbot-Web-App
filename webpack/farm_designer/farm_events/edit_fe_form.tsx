@@ -37,6 +37,7 @@ import { executableType } from "../util";
 import { Content } from "../../constants";
 import { destroyOK } from "../../resources/actions";
 import { EventTimePicker } from "./event_time_picker";
+import { TzWarning } from "./tz_warning";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -292,6 +293,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             }}>
             {t("Delete")}
           </button>
+          <TzWarning deviceTimezone={this.props.deviceTimezone} />
         </div>
       </div>
     );
