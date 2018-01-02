@@ -290,7 +290,6 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             }}>
             {t("Delete")}
           </button>
-          <TzWarning deviceTimezone={this.props.deviceTimezone} />
         </div>
       </div>
     );
