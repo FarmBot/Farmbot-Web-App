@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BlurableInput } from "../../ui/blurable_input";
 import * as moment from "moment";
-import { defensiveClone, fancyDebug } from "../../util";
+import { fancyDebug } from "../../util";
 
 interface Props {
   /** String, formatted as hh:mm (UTC 24hr time).
