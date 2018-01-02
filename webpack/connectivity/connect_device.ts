@@ -137,6 +137,8 @@ export function onMalformed() {
 }
 
 export const onOnline = () => dispatchNetworkUp("user.mqtt");
+export const onReconnect =
+  () => warning("Attempting to reconnect to the message broker", "Offline");
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
     startPinging(bot);
@@ -149,6 +151,7 @@ const attachEventListeners =
     bot.on("status", onStatus(dispatch, getState));
     bot.on("malformed", onMalformed);
     bot.client.on("message", autoSync(dispatch, getState));
+    bot.client.on("reconnect", onReconnect);
   };
 
 /** Connect to MQTT and attach all relevant event handlers. */
