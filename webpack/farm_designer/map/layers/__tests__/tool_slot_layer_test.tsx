@@ -2,7 +2,10 @@ const mockHistory = jest.fn();
 jest.mock("../../../../history", () => ({
   history: {
     push: mockHistory
-  }
+  },
+  getPathArray: jest
+    .fn(() => { return "/app/designer/plants/select".split("/"); })
+    .mockImplementationOnce(() => { return "/app/designer/plants".split("/"); })
 }));
 
 import * as React from "react";
@@ -72,4 +75,10 @@ describe("<ToolSlotLayer/>", () => {
     expect(p.dispatch).not.toHaveBeenCalled();
   });
 
+  it("is in non-clickable mode", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<ToolSlotLayer {...p } />);
+    expect(wrapper.find("g").props().style)
+      .toEqual({ pointerEvents: "none" });
+  });
 });

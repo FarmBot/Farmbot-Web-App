@@ -2,6 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 import { LayerToggle } from "./layer_toggle";
 import { GardenMapLegendProps } from "./interfaces";
+import { history } from "../../history";
 
 export function GardenMapLegend(props: GardenMapLegendProps) {
 
@@ -84,6 +85,13 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
               className={"quadrant " + (botOriginQuadrant === 4 && "selected")}
               onClick={updateBotOriginQuadrant(4)} />
           </div>
+        </div>
+        <div className="move-to-mode">
+          <button
+            className="fb-button gray"
+            onClick={() => history.push("/app/designer/plants/move_to")}>
+            {t("move mode")}
+          </button>
         </div>
       </div>
     </div>

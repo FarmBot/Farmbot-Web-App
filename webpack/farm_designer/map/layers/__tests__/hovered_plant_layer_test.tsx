@@ -16,7 +16,8 @@ describe("<HoveredPlantLayer/>", () => {
           icon: ""
         },
         cropSearchQuery: "",
-        cropSearchResults: []
+        cropSearchResults: [],
+        chosenLocation: { x: undefined, y: undefined, z: undefined },
       },
       hoveredPlant: fakePlant(),
       isEditing: false,
