@@ -8,7 +8,7 @@ import {
 describe("occurrence", () => {
   it("builds a single entry for the calendar", () => {
     const fe = fakeFarmEventWithExecutable();
-    const t = occurrence(TIME.MONDAY, fe);
+    const t = occurrence(TIME.MONDAY, fe, 0);
     expect(t.executableId).toBe(fe.executable_id);
     expect(t.mmddyy).toBe("061917");
     expect(t.sortKey).toBe(moment(TIME.MONDAY).unix());

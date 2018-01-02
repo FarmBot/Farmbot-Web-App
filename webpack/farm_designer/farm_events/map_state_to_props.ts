@@ -4,7 +4,7 @@ import { FarmEventProps } from "../interfaces";
 import { joinFarmEventsToExecutable } from "./calendar/selectors";
 import { Calendar } from "./calendar/index";
 import { occurrence } from "./calendar/occurrence";
-import { findSequenceById } from "../../resources/selectors";
+import { findSequenceById, getDeviceAccountSettings } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { FarmEventWithRegimen, FarmEventWithSequence } from "./calendar/interfaces";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
@@ -24,6 +24,7 @@ export function mapResourcesToCalendar(
   const x = joinFarmEventsToExecutable(ri);
   const calendar = new Calendar();
   const addRegimenToCalendar = regimenCalendarAdder(ri);
+  const { tz_offset_hrs } = getDeviceAccountSettings(ri).body;
 
   x.map(function (fe) {
     switch (fe.executable_type) {
@@ -31,7 +32,7 @@ export function mapResourcesToCalendar(
         return addRegimenToCalendar(
           fe, calendar, now);
       case "Sequence":
-        return addSequenceToCalendar(fe, calendar, now);
+        return addSequenceToCalendar(fe, calendar, now, tz_offset_hrs);
       default:
         throw new Error(`Bad fe: ${JSON.stringify(fe)}`);
     }
@@ -41,6 +42,7 @@ export function mapResourcesToCalendar(
 }
 export let regimenCalendarAdder = (index: ResourceIndex) =>
   (f: FarmEventWithRegimen, c: Calendar, now = moment()) => {
+    const { tz_offset_hrs } = getDeviceAccountSettings(index).body;
     const { regimen_items } = f.executable;
     const fromEpoch = (ms: number) => moment(f.start_time)
       .startOf("day")
@@ -48,7 +50,7 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
     const gracePeriod = now.clone().subtract(1, "minute");
     const lastRI = last(regimen_items);
     if (lastRI && fromEpoch(lastRI.time_offset).isSameOrAfter(gracePeriod)) {
-      const o = occurrence(moment(f.start_time), f);
+      const o = occurrence(moment(f.start_time), f, tz_offset_hrs);
       o.heading = f.executable.name;
       o.subheading = "";
       c.insert(o);
@@ -57,7 +59,7 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
       const time = fromEpoch(ri.time_offset);
       if (time.isSameOrAfter(gracePeriod)
         && time.isSameOrAfter(moment(f.start_time))) {
-        const oo = occurrence(time, f);
+        const oo = occurrence(time, f, tz_offset_hrs);
         const seq = findSequenceById(index, ri.sequence_id);
         oo.heading = f.executable.name;
         oo.subheading = seq.body.name;
@@ -67,7 +69,7 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
   };
 
 export let addSequenceToCalendar =
-  (f: FarmEventWithSequence, c: Calendar, now = moment()) => {
+  (f: FarmEventWithSequence, c: Calendar, now = moment(), offset: number) => {
     scheduleForFarmEvent(f, now)
-      .map(m => c.insert(occurrence(m, f)));
+      .map(m => c.insert(occurrence(m, f, offset)));
   };
