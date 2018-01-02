@@ -31,7 +31,6 @@ import { history } from "../../history";
 // TIL: https://stackoverflow.com/a/24900248/1064917
 import { betterMerge } from "../../util";
 import { maybeWarnAboutMissedTasks } from "./util";
-import { TzWarning } from "./tz_warning";
 import { FarmEventRepeatForm } from "./farm_event_repeat_form";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
 import { executableType } from "../util";
@@ -154,8 +153,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   executableGet = (): DropDownItem => {
     const headingId: ExecutableType =
-      (this.executable.kind === "Sequence") ?
-        "Sequence" : "Regimen";
+      (this.executable.kind === "Sequence") ? "Sequence" : "Regimen";
     return {
       value: this.executable.body.id || 0,
       label: this.executable.body.name,
