@@ -45,8 +45,8 @@ export function EventTimePicker(props: Props) {
        * to
        * onCommit(ev: string): void;
        * but won't for legacy / time reasons. */
-      const f = defensiveClone(e);
-      f.currentTarget.value = botTimeToUtc(e.currentTarget.value, tzOffset);
-      onCommit(f);
+      e.currentTarget.value =
+        botTimeToUtc(e.currentTarget.value, tzOffset); /** <= Yuck! */
+      onCommit(e);
     }} />;
 }
