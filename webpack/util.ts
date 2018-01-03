@@ -231,7 +231,7 @@ export function smoothScrollToBottom() {
 }
 
 /** Fancy debug */
-export function fancyDebug(d: {}) {
+export function fancyDebug<T extends {}>(d: T): T {
   console.log(Object
     .keys(d)
     .map(key => [key, (d as Dictionary<string>)[key]])
@@ -242,6 +242,7 @@ export function fancyDebug(d: {}) {
       return `${key} => ${val}`;
     })
     .join("\n"));
+  return d;
 }
 
 export type CowardlyDictionary<T> = Dictionary<T | undefined>;
