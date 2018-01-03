@@ -5,6 +5,7 @@ import {
 } from "../../../__test_support__/farm_event_calendar_support";
 import { render } from "enzyme";
 import { get } from "lodash";
+import { Content } from "../../../constants";
 
 describe("<PureFarmEvents/>", () => {
   it("sorts items correctly", () => {
@@ -22,5 +23,14 @@ describe("<PureFarmEvents/>", () => {
     expect(rows.length).toEqual(21);
     expect(rows[0]).toEqual("12:05pm");
     expect(rows[2]).toEqual("02:00pm");
+  });
+
+  it("warns about unset timezones", () => {
+    const results = render(<PureFarmEvents push={jest.fn()}
+      calendarRows={calendarRows}
+      timezoneIsSet={false} />);
+    const txt = results.text();
+    expect(txt).toContain(Content.SET_TIMEZONE_HEADER);
+    expect(txt).toContain(Content.SET_TIMEZONE_BODY);
   });
 });

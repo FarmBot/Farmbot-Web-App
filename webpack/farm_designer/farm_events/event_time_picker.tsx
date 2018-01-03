@@ -19,11 +19,6 @@ const FORMAT = "HH:mm";
 /** TODO: Write good tests. */
 export function utcToBotTime(utcValue: string, tzOffset: number) {
   const botLocalTime = moment(utcValue, FORMAT).clone().add(tzOffset, "hours").format(FORMAT);
-  fancyDebug({
-    utcValue,
-    tzOffset,
-    botLocalTime,
-  });
   return botLocalTime;
 }
 
