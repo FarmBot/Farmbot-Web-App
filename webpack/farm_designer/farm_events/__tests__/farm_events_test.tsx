@@ -10,7 +10,8 @@ describe("<PureFarmEvents/>", () => {
   it("sorts items correctly", () => {
     const push = jest.fn();
     const results = render(<PureFarmEvents push={push}
-      calendarRows={calendarRows} />);
+      calendarRows={calendarRows}
+      timezoneIsSet={true} />);
     const rows = results
       .find(".farm-event-data-time")
       .toArray()

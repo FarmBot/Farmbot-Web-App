@@ -425,6 +425,12 @@ export namespace Content {
     trim(`Are you sure you want to delete this first party farmware?
     Doing so will limit the functionality of your FarmBot and
     may cause unexpected behavior.`);
+
+  export const SET_TIMEZONE_HEADER =
+    trim(`You must set a timezone before using the FarmEvent feature.`);
+
+  export const SET_TIMEZONE_BODY =
+    trim(`Set device timezone here.`);
 }
 
 export enum Actions {

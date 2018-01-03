@@ -6,7 +6,8 @@ import { Calendar } from "./calendar/index";
 import { occurrence } from "./calendar/occurrence";
 import {
   findSequenceById,
-  maybeGetTimeOffset
+  maybeGetTimeOffset,
+  maybeGetDevice
 } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { FarmEventWithRegimen, FarmEventWithSequence } from "./calendar/interfaces";
@@ -18,7 +19,9 @@ export function mapStateToProps(state: Everything): FarmEventProps {
   const push = (state && state.router && state.router.push) || (() => { });
   const calendar = mapResourcesToCalendar(state.resources.index, moment());
   const calendarRows = calendar.getAll();
-  return { calendarRows, push };
+  const dev = maybeGetDevice(state.resources.index);
+  const timezoneIsSet = !!(dev && (dev.body.timezone));
+  return { calendarRows, push, timezoneIsSet };
 }
 
 /** TODO: Reduce complexity, but write *good* unit tests *before* refactoring.*/
