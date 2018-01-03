@@ -417,14 +417,20 @@ export namespace Content {
     Perhaps you entered bad dates?`);
 
   export const FARM_EVENT_TZ_WARNING =
-    trim(`Note: Times displayed according to local browser time, which
-    is currently different from your device timezone setting (on the
-    Device page).`);
+    trim(`Note: Times displayed according to FarmBot's local time, which
+    is currently different from your browser's time. Timezone data is configurable
+    on the Device page).`);
 
   export const FIRST_PARTY_WARNING =
     trim(`Are you sure you want to delete this first party farmware?
     Doing so will limit the functionality of your FarmBot and
     may cause unexpected behavior.`);
+
+  export const SET_TIMEZONE_HEADER =
+    trim(`You must set a timezone before using the FarmEvent feature.`);
+
+  export const SET_TIMEZONE_BODY =
+    trim(`Set device timezone here.`);
 }
 
 export enum Actions {

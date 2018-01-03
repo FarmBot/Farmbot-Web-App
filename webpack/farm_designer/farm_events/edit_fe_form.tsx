@@ -31,12 +31,13 @@ import { history } from "../../history";
 // TIL: https://stackoverflow.com/a/24900248/1064917
 import { betterMerge } from "../../util";
 import { maybeWarnAboutMissedTasks } from "./util";
-import { TzWarning } from "./tz_warning";
 import { FarmEventRepeatForm } from "./farm_event_repeat_form";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
 import { executableType } from "../util";
 import { Content } from "../../constants";
 import { destroyOK } from "../../resources/actions";
+import { EventTimePicker } from "./event_time_picker";
+import { TzWarning } from "./tz_warning";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -154,8 +155,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   executableGet = (): DropDownItem => {
     const headingId: ExecutableType =
-      (this.executable.kind === "Sequence") ?
-        "Sequence" : "Regimen";
+      (this.executable.kind === "Sequence") ? "Sequence" : "Regimen";
     return {
       value: this.executable.body.id || 0,
       label: this.executable.body.name,
@@ -256,10 +256,10 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
                 onCommit={this.fieldSet("startDate")} />
             </Col>
             <Col xs={6}>
-              <BlurableInput
-                type="time"
+              <EventTimePicker
                 className="add-event-start-time"
                 name="start_time"
+                tzOffset={this.props.timeOffset}
                 value={this.fieldGet("startTime")}
                 onCommit={this.fieldSet("startTime")} />
             </Col>
@@ -272,6 +272,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             &nbsp;{t("Repeats?")}
           </label>
           <FarmEventRepeatForm
+            tzOffset={this.props.timeOffset}
             disabled={!allowRepeat}
             hidden={!allowRepeat}
             onChange={this.mergeState}

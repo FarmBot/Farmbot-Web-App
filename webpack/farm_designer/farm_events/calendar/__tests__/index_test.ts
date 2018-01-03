@@ -14,8 +14,8 @@ describe("calendar", () => {
 
   it("inserts dates", () => {
     const calendar = new Calendar();
-    calendar.insert(occurrence(TIME.MONDAY, fakeFarmEventWithExecutable()));
-    calendar.insert(occurrence(TIME.TUESDAY, fakeFarmEventWithExecutable()));
+    calendar.insert(occurrence(TIME.MONDAY, fakeFarmEventWithExecutable(), 0));
+    calendar.insert(occurrence(TIME.TUESDAY, fakeFarmEventWithExecutable(), 0));
     expect(calendar.getAll().length).toEqual(2);
     expect(calendar.value).toBeInstanceOf(Object);
     expect(calendar.value["061917"]).toBeInstanceOf(Array);
@@ -24,7 +24,7 @@ describe("calendar", () => {
 
   it("finds by date", () => {
     const calendar = new Calendar();
-    const wow = occurrence(TIME.MONDAY, fakeFarmEventWithExecutable());
+    const wow = occurrence(TIME.MONDAY, fakeFarmEventWithExecutable(), 0);
     calendar.insert(wow);
     expect(calendar.findByDate(TIME.FRIDAY)).toBeInstanceOf(Array);
     expect(calendar.findByDate(TIME.MONDAY)).toContain(wow);
