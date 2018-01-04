@@ -26,8 +26,6 @@ describe("<EditFarmEvent />", () => {
       farmEventsById: { "1": fakeFarmEvent("Sequence", 1) },
       executableOptions: [],
       repeatOptions: [],
-      formatDate: jest.fn(),
-      formatTime: jest.fn(),
       handleTime: jest.fn(),
       farmEvents: [],
       getFarmEvent: () => fakeFarmEvent("Sequence", 1),

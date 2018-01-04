@@ -24,9 +24,9 @@ import {
 } from "../../resources/tagged_resources";
 import { DropDownItem } from "../../ui/fb_select";
 
-export let formatTime = (input: string) => {
+export let formatTime = (input: string, timeOffset: number) => {
   const iso = new Date(input).toISOString();
-  return moment(iso).format("HH:mm");
+  return moment(iso).utcOffset(timeOffset).format("HH:mm");
 };
 
 export let formatDate = (input: string) => {
@@ -159,8 +159,6 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     farmEventsById,
     executableOptions: executableWithHeading,
     repeatOptions,
-    formatDate,
-    formatTime,
     handleTime,
     farmEvents,
     getFarmEvent,

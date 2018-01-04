@@ -1,7 +1,13 @@
 import * as React from "react";
 import { fakeFarmEvent, fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
-import { EditFEForm, EditFEProps, FarmEventViewModel, recombine } from "../edit_fe_form";
+import {
+  EditFEForm,
+  EditFEProps,
+  FarmEventViewModel,
+  recombine,
+  destructureFarmEvent
+} from "../edit_fe_form";
 import { isString } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
 import { SpecialStatus } from "../../../resources/tagged_resources";
@@ -165,5 +171,17 @@ describe("<FarmEventForm/>", () => {
     el.update();
     const txt = el.text().replace(/\s+/g, " ");
     expect(txt).toContain("Save *");
+  });
+});
+
+describe("destructureFarmEvent", () => {
+  it("Converts UTC to Bot's local time", () => {
+    const fe = fakeFarmEvent("Sequence", 12);
+    fe.body.start_time = "2017-12-28T21:32:00.000Z";
+    fe.body.end_time = "2018-12-28T22:32:00.000Z";
+
+    const { startTime, endTime } = destructureFarmEvent(fe, 1);
+    expect(startTime).toBe("22:32");
+    expect(endTime).toBe("23:32");
   });
 });
