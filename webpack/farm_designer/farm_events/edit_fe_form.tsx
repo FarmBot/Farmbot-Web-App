@@ -193,13 +193,14 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   commitViewModel = () => {
     const partial = recombine(betterMerge(this.viewModel, this.state.fe));
     this.dispatch(edit(this.props.farmEvent, partial));
+    const EditFEPath = window.location.pathname;
     this
       .dispatch(save(this.props.farmEvent.uuid))
       .then(() => {
         this.setState({ specialStatusLocal: SpecialStatus.SAVED });
         history.push("/app/designer/farm_events");
         const frmEvnt = this.props.farmEvent;
-        const nextRun = _.first(scheduleForFarmEvent(frmEvnt.body));
+        const nextRun = _.first(scheduleForFarmEvent(frmEvnt.body).items);
         if (nextRun) {
           // TODO: Internationalizing this will be a challenge.
           success(`This Farm Event will run ${nextRun.fromNow()}, but
@@ -209,6 +210,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK));
           }));
         } else {
+          history.push(EditFEPath);
           error(t(Content.INVALID_RUN_TIME));
         }
       })
