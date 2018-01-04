@@ -3,6 +3,8 @@ import { Actions } from "../../constants";
 import { ControlPanelState } from "../interfaces";
 import * as _ from "lodash";
 import { defensiveClone } from "../../util";
+import { networkUp, networkDown } from "../../connectivity/actions";
+import { stash } from "../../connectivity/data_consistency";
 
 describe("safeStringFetch", () => {
   it("Checks the correct version on update", () => {
@@ -115,5 +117,29 @@ describe("botRedcuer", () => {
       .toEqual(initialState().hardware.location_data.position);
     expect(result.hardware.informational_settings.sync_status)
       .toBe("maintenance");
+  });
+
+  it("stashes/unstashes sync status based on connectivity", () => {
+    const step1 = initialState();
+    step1.statusStash = "locked";
+    step1.hardware.informational_settings.sync_status = "synced";
+
+    const step2 = botReducer(step1, networkDown("bot.mqtt"));
+    expect(step2.statusStash)
+      .toBe(step1.hardware.informational_settings.sync_status);
+    expect(step2.hardware.informational_settings.sync_status).toBeUndefined();
+
+    const step3 = botReducer(step2, networkUp("bot.mqtt"));
+    expect(step3.hardware.informational_settings.sync_status)
+      .toBe(step2.statusStash);
+  });
+
+  it("handles STASH_STATUS", () => {
+    const step1 = initialState();
+    step1.statusStash = "locked";
+    step1.hardware.informational_settings.sync_status = "synced";
+    const step2 = botReducer(step1, stash());
+    expect(step2.statusStash)
+      .toBe(step1.hardware.informational_settings.sync_status);
   });
 });

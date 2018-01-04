@@ -18,23 +18,16 @@ export function dontExitIfBrowserIsOnHold(state: Everything) {
   window.onbeforeunload = (unsavedWork) ? stopThem : dontStopThem;
 }
 
-export interface Subscription {
-  fn: (state: Everything) => void;
-  env: EnvName;
-}
+export interface Subscription { fn: (state: Everything) => void; env: EnvName; }
 
 /** To make it easier to manage all things watching the state tree,
  * we keep subscriber functions in this array. */
-export let subscriptions: Subscription[] = [
-  autoRefreshBot,
-  { env: "*", fn: dontExitIfBrowserIsOnHold }
-];
+export let subscriptions: Subscription[] =
+  [autoRefreshBot, { env: "*", fn: dontExitIfBrowserIsOnHold }];
 
 export function registerSubscribers(store: Store) {
   const ENV_LIST = [process.env.NODE_ENV, "*"];
   subscriptions.forEach(function (s) {
-    if (ENV_LIST.includes(s.env)) {
-      store.subscribe(() => s.fn(store.getState()));
-    }
+    ENV_LIST.includes(s.env) && store.subscribe(() => s.fn(store.getState()));
   });
 }
