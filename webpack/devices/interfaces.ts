@@ -17,7 +17,7 @@ import { RestResources, ResourceIndex } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import { EncoderDisplay } from "../controls/interfaces";
-import { ConnectionStatus } from "../connectivity/interfaces";
+import { ConnectionStatus, ConnectionState } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
 
 export interface Props {
@@ -71,6 +71,7 @@ export interface BotState {
   /** Have all API requests been acknowledged by external services? This flag
    * lets us know if it is safe to do data critical tasks with the bot */
   consistent: boolean;
+  connectivity: ConnectionState;
 }
 
 export interface BotProp {

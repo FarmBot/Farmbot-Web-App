@@ -7,6 +7,13 @@ import { Session } from "../session";
 import { BooleanSetting } from "../session_keys";
 import { maybeNegateStatus, maybeNegateConsistency } from "../connectivity/maybe_negate_status";
 import { EdgeStatus } from "../connectivity/interfaces";
+import { ReduxAction } from "../redux/interfaces";
+import { connectivityReducer } from "../connectivity/reducer";
+
+const afterEach = (state: BotState, a: ReduxAction<{}>) => {
+  state.connectivity = connectivityReducer(state.connectivity, a);
+  return state;
+};
 
 /**
  * TODO: Refactor this method to use semverCompare() now that it is a thing.
@@ -85,6 +92,11 @@ export let initialState = (): BotState => ({
   encoder_visibility: {
     raw_encoders: !!Session.getBool(BooleanSetting.rawEncoders),
     scaled_encoders: !!Session.getBool(BooleanSetting.scaledEncoders),
+  },
+  connectivity: {
+    "bot.mqtt": undefined,
+    "user.mqtt": undefined,
+    "user.api": undefined
   }
 });
 
@@ -102,7 +114,7 @@ export const ENCODER_MAPPING: Record<EncoderDisplay, BooleanSetting> = {
   scaled_encoders: BooleanSetting.scaledEncoders,
 };
 
-export let botReducer = generateReducer<BotState>(initialState())
+export let botReducer = generateReducer<BotState>(initialState(), afterEach)
   .add<boolean>(Actions.SET_CONSISTENCY, (s, a) => {
     s.consistent = a.payload;
     s.hardware.informational_settings.sync_status = maybeNegateStatus({
@@ -191,13 +203,17 @@ export let botReducer = generateReducer<BotState>(initialState())
     const { name, status } = a.payload;
     const isBotMqtt = name === "bot.mqtt";
     const isDown = status.state === "down";
-    if (isBotMqtt) { /** Let's get rid of this ASAP. Way too hard to maintain */
+    if (isBotMqtt) { /** This is way too hard to maintain */
       if (isDown) {
-        console.log("OK WERE CLEARING IT OUT NOW!!");
+        console.log("~STASHING~");
         stashStatus(s);
         s.hardware.informational_settings.sync_status = undefined;
       } else {
-        s.hardware.informational_settings.sync_status = s.statusStash;
+        const botMqtt = s.connectivity["bot.mqtt"];
+        if (botMqtt && botMqtt.state === "down") { // Going from "down" to "up"
+          console.log("~UNSTASHING~");
+          s.hardware.informational_settings.sync_status = s.statusStash;
+        }
       }
     }
 

@@ -43,7 +43,6 @@ export function temporaryReconnectIdea(x: ConnectionStatus, a: EdgeStatus) {
    * https://github.com/mqttjs/MQTT.js/issues/743 */
   const wasDown = x.state === "down";
   const isUp = (a.status.state === "up");
-  // fancyDebug({ wasDown, isUp });
   if (wasDown && isUp) {
     console.log("TODO: Call fetchStatus()");
   }

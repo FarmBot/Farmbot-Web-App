@@ -7,9 +7,9 @@ import {
 
 export function mapStateToProps(props: Everything): Props {
   return {
-    userToApi: props.connectivity["user.api"],
-    userToMqtt: props.connectivity["user.mqtt"],
-    botToMqtt: props.connectivity["bot.mqtt"],
+    userToApi: props.bot.connectivity["user.api"],
+    userToMqtt: props.bot.connectivity["user.mqtt"],
+    botToMqtt: props.bot.connectivity["bot.mqtt"],
     deviceAccount: getDeviceAccountSettings(props.resources.index),
     auth: props.auth,
     bot: props.bot,
