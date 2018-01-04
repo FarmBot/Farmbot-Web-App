@@ -189,6 +189,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   commitViewModel = () => {
     const partial = recombine(betterMerge(this.viewModel, this.state.fe));
     this.dispatch(edit(this.props.farmEvent, partial));
+    const EditFEPath = window.location.pathname;
     this
       .dispatch(save(this.props.farmEvent.uuid))
       .then(() => {
@@ -205,6 +206,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK));
           }));
         } else {
+          history.push(EditFEPath);
           error(t(Content.INVALID_RUN_TIME));
         }
       })
