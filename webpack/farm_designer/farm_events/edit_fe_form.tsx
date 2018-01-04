@@ -81,18 +81,22 @@ type PartialFE = Partial<TaggedFarmEvent["body"]>;
 export function recombine(vm: FarmEventViewModel): PartialFE {
   // Make sure that `repeat` is set to `never` when dealing with regimens.
   const isReg = vm.executable_type === "Regimen";
-  return {
+  return ({
     start_time: offsetTime(vm.startDate, vm.startTime, vm.timeOffset),
     end_time: offsetTime(vm.endDate, vm.endTime, vm.timeOffset),
     repeat: parseInt(vm.repeat, 10) || 1,
     time_unit: (isReg ? "never" : vm.timeUnit) as TimeUnit,
     executable_id: parseInt(vm.executable_id, 10),
     executable_type: vm.executable_type as ("Sequence" | "Regimen"),
-  };
+  });
 }
 
 function offsetTime(date: string, time: string, offset: number): string {
-  return moment(`${date} ${time}`).utcOffset(offset).toISOString();
+  const out = moment(`${date} ${time}`).utcOffset(offset);
+  const [hrs, min] = time.split(":").map(x => parseInt(x));
+  out.hours(hrs);
+  out.minutes(min);
+  return out.toISOString();
 }
 
 export interface EditFEProps {
@@ -294,6 +298,17 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             {t("Delete")}
           </button>
           <TzWarning deviceTimezone={this.props.deviceTimezone} />
+          <ul>
+            <li>start_time: {this.props.farmEvent.body.start_time}</li>
+            <li>timeOffset: {this.viewModel.timeOffset}</li>
+            <li>startTime: {this.viewModel.startTime}</li>
+            <li>endTime: {this.viewModel.endTime}</li>
+            <li>this.fieldGet("startTime"): {this.fieldGet("startTime")}</li>
+            <li>recombine.start_time:
+            {recombine(betterMerge(this.viewModel, this.state.fe)).start_time}</li>
+            <li>recombine.end_time:
+            {recombine(betterMerge(this.viewModel, this.state.fe)).end_time}</li>
+          </ul>
         </div>
       </div>
     );

@@ -13,7 +13,7 @@ export function occurrence(m: moment.Moment,
   return {
     mmddyy: m.format(Calendar.DATE_FORMAT),
     sortKey: m.unix(),
-    timeStr: m.clone().format("hh:mma"),
+    timeStr: m.clone().utcOffset(utcOffset).format("hh:mma"),
     heading: fe.executable.name || fe.executable_type,
     executableId: fe.executable_id || 0,
     id: fe.id || 0,
