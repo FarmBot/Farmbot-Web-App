@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171031184914) do
+ActiveRecord::Schema.define(version: 20180104215253) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -180,6 +180,7 @@ ActiveRecord::Schema.define(version: 20171031184914) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "device_id"
+    t.integer "pullout_direction", default: 0
     t.index ["device_id"], name: "index_tools_on_device_id"
   end
 
