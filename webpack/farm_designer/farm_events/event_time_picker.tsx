@@ -25,7 +25,7 @@ export function botTimeToUtc(value: string, tzOffset: number) {
 }
 
 export function EventTimePicker(props: Props) {
-  const { value, onCommit, /*tzOffset,*/ disabled, name } = props;
+  const { value, onCommit, disabled, name } = props;
   return <BlurableInput
     disabled={!!disabled}
     name={name}

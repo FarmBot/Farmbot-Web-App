@@ -164,7 +164,6 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   }
 
   fieldSet = (name: keyof State["fe"]) => (e: FormEvent) => {
-    console.log(`Set ${name} to ${e.currentTarget.value}`);
     this.setState(betterMerge(this.state, {
       fe: { [name]: e.currentTarget.value },
       specialStatusLocal: SpecialStatus.DIRTY
@@ -295,13 +294,6 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             {t("Delete")}
           </button>
           <TzWarning deviceTimezone={this.props.deviceTimezone} />
-          <ul>
-            {
-              Object
-                .keys(this.viewModel)
-                .map((x: keyof FarmEventViewModel) => <li key={x}>{x}: {this.viewModel[x]} </li>)
-            }
-          </ul>
         </div>
       </div>
     );
