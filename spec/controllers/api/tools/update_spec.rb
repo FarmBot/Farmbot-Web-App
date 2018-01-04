@@ -21,7 +21,7 @@ describe Api::ToolsController do
       sign_in user
       patch :update, params: { id: tool.id, pullout_direction: bad_dir }
       expect(response.status).to eq(422)
-      expect(tool.reload.pullout_direction).not.to eq(bad_dir)
+      expect(tool.reload.pullout_direction).not_to eq(bad_dir)
     end
 
     it "updates a tool with an valid pullout direction" do
