@@ -21,15 +21,6 @@ export interface DragHelperLayerProps {
 
 export class DragHelperLayer extends
   React.Component<DragHelperLayerProps, {}> {
-
-  get plantInfo() {
-    if (this.props.currentPlant) {
-      const { x, y, radius } = this.props.currentPlant.body;
-      return { x, y, radius };
-    } else {
-      return { x: 0, y: 0, radius: 0 };
-    }
-  }
   render() {
     const { dragging, currentPlant, zoomLvl, activeDragXY,
       mapTransformProps, plantAreaOffset, editing } = this.props;

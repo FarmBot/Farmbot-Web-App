@@ -247,10 +247,10 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             <Col xs={12}>
               {t("Setup, customize, and control FarmBot from your")}
               &nbsp;
-            <span className="hidden-xs hidden-sm hidden-md">
+              <span className="hidden-xs hidden-sm">
                 {t("computer")}
               </span>
-              <span className="hidden-xs hidden-lg hidden-xl">
+              <span className="hidden-xs hidden-md hidden-lg hidden-xl">
                 {t("tablet")}
               </span>
               <span className="hidden-sm hidden-md hidden-lg hidden-xl">

@@ -24,38 +24,39 @@ export interface SpreadLayerProps {
 export function SpreadLayer(props: SpreadLayerProps) {
   const { plants, visible, mapTransformProps, currentPlant,
     dragging, zoomLvl, activeDragXY, activeDragSpread, editing } = props;
-  return (
-    <g id="spread-layer">
-      <defs>
-        <radialGradient id="SpreadGradient">
-          <stop offset="90%" stopColor="rgb(85, 50, 10)" stopOpacity={0.1} />
-          <stop offset="100%" stopColor="rgb(85, 50, 10)" stopOpacity={0} />
-        </radialGradient>
-      </defs>
+  return <g id="spread-layer">
+    <defs>
+      <radialGradient id="SpreadGradient">
+        <stop offset="90%" stopColor="rgb(85, 50, 10)" stopOpacity={0.1} />
+        <stop offset="100%" stopColor="rgb(85, 50, 10)" stopOpacity={0} />
+      </radialGradient>
+      <radialGradient id="DefaultSpreadGradient">
+        <stop offset="90%" stopColor="rgb(255, 255, 255)" stopOpacity={0.1} />
+        <stop offset="100%" stopColor="rgb(255, 255, 255)" stopOpacity={0} />
+      </radialGradient>
+    </defs>
 
-
-      {plants.map((p, index) => {
-        const selected = !!(currentPlant && (p.uuid === currentPlant.uuid));
-        return <g id={"spread-components-" + p.body.id} key={p.uuid}>
-          {visible &&
-            <SpreadCircle
-              plant={p}
-              key={"spread-" + p.uuid}
-              mapTransformProps={mapTransformProps}
-              selected={selected} />}
-          <SpreadOverlapHelper
-            key={"overlap-" + p.uuid}
-            dragging={selected && dragging && editing}
+    {plants.map((p, index) => {
+      const selected = !!(currentPlant && (p.uuid === currentPlant.uuid));
+      return <g id={"spread-components-" + p.body.id} key={p.uuid}>
+        {visible &&
+          <SpreadCircle
             plant={p}
+            key={"spread-" + p.uuid}
             mapTransformProps={mapTransformProps}
-            zoomLvl={zoomLvl}
-            activeDragXY={activeDragXY}
-            activeDragSpread={activeDragSpread} />
-        </g>;
-      })
-      }
-    </g>
-  );
+            selected={selected} />}
+        <SpreadOverlapHelper
+          key={"overlap-" + p.uuid}
+          dragging={selected && dragging && editing}
+          plant={p}
+          mapTransformProps={mapTransformProps}
+          zoomLvl={zoomLvl}
+          activeDragXY={activeDragXY}
+          activeDragSpread={activeDragSpread} />
+      </g>;
+    })
+    }
+  </g>;
 }
 
 interface SpreadCircleProps {
@@ -95,7 +96,9 @@ export class SpreadCircle extends
           // Convert `spread` from diameter in cm to radius in mm.
           // `radius * 10` is the default value for spread diameter (in mm).
           r={(this.state.spread || radius) / 2 * 10}
-          fill={"url(#SpreadGradient)"} />}
+          fill={!this.state.spread
+            ? "url(#DefaultSpreadGradient)"
+            : "url(#SpreadGradient)"} />}
     </g>;
   }
 }
