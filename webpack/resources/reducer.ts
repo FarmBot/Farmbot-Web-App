@@ -37,7 +37,7 @@ import { GeneralizedError } from "./actions";
 import {
   recomputeLocalVarDeclaration
 } from "../sequences/step_tiles/tile_move_absolute/variables_support";
-import { equals, defensiveClone, fancyDebug } from "../util";
+import { equals, defensiveClone } from "../util";
 
 const consumerReducer = combineReducers<RestResources["consumers"]>({
   regimens,
@@ -171,7 +171,6 @@ export let resourceReducer = generateReducer
     }
   })
   .add<GeneralizedError>(Actions._RESOURCE_NO, (s, { payload }) => {
-    fancyDebug(payload);
     const uuid = payload.uuid;
     const tr = merge(findByUuid(s.index, uuid), payload);
     tr.specialStatus = payload.statusBeforeError;

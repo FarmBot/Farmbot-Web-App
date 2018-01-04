@@ -61,5 +61,10 @@ export let bot: Everything["bot"] = {
     "scaled_encoders": false,
   },
   "dirty": false,
-  "currentOSVersion": "3.1.6"
+  "currentOSVersion": "3.1.6",
+  "connectivity": {
+    "bot.mqtt": undefined,
+    "user.mqtt": undefined,
+    "user.api": undefined,
+  }
 };

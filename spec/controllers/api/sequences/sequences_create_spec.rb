@@ -73,6 +73,7 @@ describe Api::SequencesController do
     end
 
     it 'doesnt allow nonsense in `sequence.args.locals`' do
+      Sequence.destroy_all
       input = { name: "Scare Birds",
                 body: [],
                 # Intentional nonsense to check validation logic.
@@ -82,7 +83,7 @@ describe Api::SequencesController do
       sign_in user
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
-      expect(Sequence.last.args["locals"]["kind"]).to_not be("wait")
+      expect(Sequence.last).to_not be
     end
 
     it 'strips excess `args`' do
