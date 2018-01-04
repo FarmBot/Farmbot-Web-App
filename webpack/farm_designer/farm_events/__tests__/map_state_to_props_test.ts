@@ -96,7 +96,7 @@ describe("mapStateToProps()", () => {
             mmddyy: regimenItemTime.format("MMDDYY"),
             sortKey: regimenItemTime.unix(),
             subheading: "fake",
-            timeStr: regimenItemTime.format("hh:mma")
+            timeStr: regimenItemTime.utcOffset(0).format("hh:mma")
           }],
         month: day2Time.format("MMM"),
         sortKey: regimenStartTime.unix(),
