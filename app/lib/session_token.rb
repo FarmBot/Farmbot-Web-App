@@ -43,7 +43,6 @@ class SessionToken < AbstractJwtToken
                 bot:                   "device_#{user.device.id}",
                 vhost:                 VHOST,
                 mqtt_ws:               MQTT_WS,
-                interim_email:         user.email, # Dont use this for anything ever -RC
                 os_update_server:      url,
                 fw_update_server:      "DEPRECATED",
                 beta_os_update_server: BETA_OS_URL }])
