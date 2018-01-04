@@ -11,7 +11,6 @@ import { resources } from "./fake_state/resources";
 /** Factory function for empty state object. */
 export function fakeState(dispatcher: Function = noop): Everything {
   return {
-    // connectivity: defensiveClone(DEFAULT_STATE),
     dispatch: jest.fn(),
     router: { push: jest.fn() },
     location,
