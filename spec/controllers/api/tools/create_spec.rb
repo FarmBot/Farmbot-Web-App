@@ -43,10 +43,10 @@ describe Api::ToolsController do
       sign_in user
       before_count = Tool.count
       post :create,
-           body: { pullout_direction: direction }.to_json,
-           params: {format: :json}
+            body:   { name: "foo", pullout_direction: direction }.to_json,
+            params: { format: :json }
       expect(response.status).to eq(200)
-      expect(Tool.count).to eq(before_count)
+      expect(Tool.count).to be > before_count
       expect(json[:pullout_direction]).to eq(direction)
     end
 

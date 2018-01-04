@@ -5,12 +5,13 @@ module Tools
     end
 
     optional do
-      integer :pullout_direction, in: Tool::PULLOUT_DIRECTIONS
+      integer :pullout_direction,
+                min: Tool::PULLOUT_DIRECTIONS.min,
+                max: Tool::PULLOUT_DIRECTIONS.max
       string :name
     end
 
     def execute
-      binding.pry
       tool.update_attributes!(inputs.except(:tool)) && tool
     end
   end
