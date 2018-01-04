@@ -23,7 +23,7 @@ module Api
 private
 
     def update_params
-      output = {tool: tool}
+      output = raw_json.merge(tool: tool)
       output[:name] = params[:name] if params[:name]
       output
     end
