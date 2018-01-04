@@ -2,6 +2,7 @@ import * as React from "react";
 import { SyncStatus } from "farmbot/dist";
 import { NavButtonProps } from "./interfaces";
 import { sync } from "../devices/actions";
+import { fancyDebug } from "../util";
 
 const COLOR_MAPPING: Record<SyncStatus, string> = {
   "synced": "green",
@@ -32,7 +33,7 @@ export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) 
   const color = consistent ?
     (COLOR_MAPPING[sync_status] || "red") : "gray";
   const text = TEXT_MAPPING[sync_status] || "DISCONNECTED";
-
+  fancyDebug({ text, sync_status, hmm: bot.hardware.informational_settings.sync_status });
   return (
     <button
       className={`nav-sync ${color} fb-button`}

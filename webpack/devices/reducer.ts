@@ -191,8 +191,14 @@ export let botReducer = generateReducer<BotState>(initialState())
     const { name, status } = a.payload;
     const isBotMqtt = name === "bot.mqtt";
     const isDown = status.state === "down";
-    if (isBotMqtt && isDown) {
-      s.hardware.informational_settings.sync_status = undefined;
+    if (isBotMqtt) { /** Let's get rid of this ASAP. Way too hard to maintain */
+      if (isDown) {
+        console.log("OK WERE CLEARING IT OUT NOW!!");
+        stashStatus(s);
+        s.hardware.informational_settings.sync_status = undefined;
+      } else {
+        s.hardware.informational_settings.sync_status = s.statusStash;
+      }
     }
 
     return s;

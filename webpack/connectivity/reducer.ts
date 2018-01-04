@@ -1,7 +1,8 @@
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
-import { ConnectionState, EdgeStatus, ResourceReady } from "./interfaces";
+import { ConnectionState, EdgeStatus, ResourceReady, ConnectionStatus } from "./interfaces";
 import { computeBestTime } from "./reducer_support";
+// import { fancyDebug } from "../util";
 
 export const DEFAULT_STATE: ConnectionState = {
   "bot.mqtt": undefined,
@@ -13,6 +14,10 @@ export let connectivityReducer =
   generateReducer<ConnectionState>(DEFAULT_STATE)
     .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
       s[payload.name] = payload.status;
+      const status = s["user.mqtt"];
+      if (payload.name === "bot.mqtt" && status) {
+        temporaryReconnectIdea(status, payload);
+      }
       return s;
     })
     .add<ResourceReady>(Actions.RESOURCE_READY, (s, a) => {
@@ -30,3 +35,16 @@ export let connectivityReducer =
 
       return s;
     });
+
+export function temporaryReconnectIdea(x: ConnectionStatus, a: EdgeStatus) {
+  /** Emitting side effects in a Reducer is considered bad practice.
+   * I was really hoping that this could be handled via the `connect` event
+   * in MQTT.js, but for some reason it's not triggering.
+   * https://github.com/mqttjs/MQTT.js/issues/743 */
+  const wasDown = x.state === "down";
+  const isUp = (a.status.state === "up");
+  // fancyDebug({ wasDown, isUp });
+  if (wasDown && isUp) {
+    console.log("TODO: Call fetchStatus()");
+  }
+}
