@@ -59,13 +59,13 @@ export interface FarmEventViewModel {
  * by the edit form.
  * USE CASE EXAMPLE: We have a "date" and "time" field that are created from
  *                   a single "start_time" FarmEvent field. */
-function destructureFarmEvent(fe: TaggedFarmEvent, timeOffset: number): FarmEventViewModel {
+export function destructureFarmEvent(fe: TaggedFarmEvent, timeOffset: number): FarmEventViewModel {
 
   return {
     startDate: formatDate((fe.body.start_time).toString()),
-    startTime: formatTime((fe.body.start_time).toString()),
+    startTime: formatTime((fe.body.start_time).toString(), timeOffset),
     endDate: formatDate((fe.body.end_time || new Date()).toString()),
-    endTime: formatTime((fe.body.end_time || new Date()).toString()),
+    endTime: formatTime((fe.body.end_time || new Date()).toString(), timeOffset),
     repeat: (fe.body.repeat || 1).toString(),
     timeUnit: fe.body.time_unit,
     executable_type: fe.body.executable_type,
@@ -294,6 +294,13 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             {t("Delete")}
           </button>
           <TzWarning deviceTimezone={this.props.deviceTimezone} />
+          <ul>
+            {
+              Object
+                .keys(this.viewModel)
+                .map((x: keyof FarmEventViewModel) => <li key={x}>{x}: {this.viewModel[x]} </li>)
+            }
+          </ul>
         </div>
       </div>
     );
