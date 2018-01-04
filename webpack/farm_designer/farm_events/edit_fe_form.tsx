@@ -195,7 +195,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         this.setState({ specialStatusLocal: SpecialStatus.SAVED });
         history.push("/app/designer/farm_events");
         const frmEvnt = this.props.farmEvent;
-        const nextRun = _.first(scheduleForFarmEvent(frmEvnt.body));
+        const nextRun = _.first(scheduleForFarmEvent(frmEvnt.body).items);
         if (nextRun) {
           // TODO: Internationalizing this will be a challenge.
           success(`This Farm Event will run ${nextRun.fromNow()}, but
