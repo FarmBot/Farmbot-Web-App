@@ -20,6 +20,7 @@ class SessionToken < AbstractJwtToken
   # If you have a really, really old FBOS
   OLD_OS_URL   = "https://api.github.com/repos/" +
                  "farmbot/farmbot_os/releases/8772352"
+  BETA_OS_URL  = BETA_OTA_URL || "NOT_SET"
   def self.issue_to(user,
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
@@ -32,19 +33,20 @@ class SessionToken < AbstractJwtToken
       raise Errors::Forbidden, MUST_VERIFY
     end
     url = (fbos_version <= FBOS_CUTOFF) ? OLD_OS_URL : OS_RELEASE
-    self.new([{ aud:              aud,
-                sub:              user.id,
-                iat:              iat,
-                jti:              SecureRandom.uuid,
-                iss:              iss,
-                exp:              exp,
-                mqtt:             MQTT,
-                mqtt_ws:          MQTT_WS,
-                os_update_server: url,
-                fw_update_server: "DEPRECATED",
-                interim_email:    user.email, # Dont use this for anything ever -RC
-                bot:              "device_#{user.device.id}",
-                vhost:            VHOST }])
+    self.new([{ aud:                   aud,
+                sub:                   user.id,
+                iat:                   iat,
+                jti:                   SecureRandom.uuid,
+                iss:                   iss,
+                exp:                   exp,
+                mqtt:                  MQTT,
+                bot:                   "device_#{user.device.id}",
+                vhost:                 VHOST,
+                mqtt_ws:               MQTT_WS,
+                interim_email:         user.email, # Dont use this for anything ever -RC
+                os_update_server:      url,
+                fw_update_server:      "DEPRECATED",
+                beta_os_update_server: BETA_OS_URL }])
   end
 
   def self.as_json(user, aud, fbos_version)
