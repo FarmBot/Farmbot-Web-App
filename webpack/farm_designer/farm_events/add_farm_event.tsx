@@ -117,7 +117,7 @@ export class AddFarmEvent
           dispatch={this.props.dispatch}
           findExecutable={this.props.findExecutable}
           title={t("Add Farm Event")}
-          timeOffset={0} />
+          timeOffset={this.props.timeOffset} />
       );
     } else {
       return this
