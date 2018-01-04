@@ -88,10 +88,10 @@ export class MoveTo extends React.Component<MoveToProps, MoveToState> {
         </Row>
         <Row>
           <Col xs={4}>
-            <input disabled value={x ? x : "---"} />
+            <input disabled value={isNumber(x) ? x : "---"} />
           </Col>
           <Col xs={4}>
-            <input disabled value={y ? y : "---"} />
+            <input disabled value={isNumber(y) ? y : "---"} />
           </Col>
           <AxisInputBox
             onChange={(_, val: number) => this.setState({ z: val })}
