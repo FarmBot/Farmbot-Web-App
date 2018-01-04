@@ -76,6 +76,21 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
 
 export let addSequenceToCalendar =
   (f: FarmEventWithSequence, c: Calendar, now = moment(), offset: number) => {
-    scheduleForFarmEvent(f, now)
-      .map(m => c.insert(occurrence(m, f, offset)));
+    const schedule = scheduleForFarmEvent(f, now);
+    // Display empty calendars in UI so that they can be edited or deleted.
+    if (f.end_time && schedule.items.length === 0) {
+      c.insert(occurrence(moment(f.end_time), f, offset, { empty: true }));
+    }
+    // Separate the last item from the calendar.
+    const lastItem = schedule.items.pop();
+    // Add all other items.
+    schedule.items.map(m => c.insert(occurrence(m, f, offset)));
+    if (schedule.shortenedBy > 0) {
+      // Indicate that not all items are displayed in the final item.
+      lastItem && c.insert(occurrence(
+        lastItem, f, offset, { numHidden: schedule.shortenedBy }));
+    } else {
+      // Add the final item. All items are displayed.
+      lastItem && c.insert(occurrence(lastItem, f, offset));
+    }
   };
