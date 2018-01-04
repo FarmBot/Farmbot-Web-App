@@ -71,7 +71,7 @@ describe("mapStateToProps()", () => {
             id: 1,
             mmddyy: day1ItemTime.format("MMDDYY"),
             sortKey: day1ItemTime.unix(),
-            timeStr: day1ItemTime.format("hh:mma")
+            timeStr: day1ItemTime.utcOffset(0).format("hh:mma")
           }],
         month: day1Time.format("MMM"),
         sortKey: day1Time.unix(),
@@ -87,7 +87,7 @@ describe("mapStateToProps()", () => {
             mmddyy: regimenStartTime.format("MMDDYY"),
             sortKey: regimenStartTime.unix(),
             subheading: "",
-            timeStr: regimenStartTime.format("hh:mma")
+            timeStr: regimenStartTime.utcOffset(0).format("hh:mma")
           },
           {
             executableId: 1,
