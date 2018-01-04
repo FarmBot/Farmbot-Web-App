@@ -3,6 +3,7 @@ import { Store } from "./interfaces";
 import { EnvName } from "./interfaces";
 import { all } from "../resources/selectors";
 import { SpecialStatus } from "../resources/tagged_resources";
+import { autoRefreshBot } from "./auto_refresh_bot";
 
 function stopThem() { return "You have unsaved work."; }
 function dontStopThem() { }
@@ -17,25 +18,16 @@ export function dontExitIfBrowserIsOnHold(state: Everything) {
   window.onbeforeunload = (unsavedWork) ? stopThem : dontStopThem;
 }
 
-interface Subscription {
-  fn: (state: Everything) => void;
-  env: EnvName;
-}
+export interface Subscription { fn: (state: Everything) => void; env: EnvName; }
 
 /** To make it easier to manage all things watching the state tree,
  * we keep subscriber functions in this array. */
-export let subscriptions: Subscription[] = [
-  {
-    env: "*",
-    fn: dontExitIfBrowserIsOnHold
-  }
-];
+export let subscriptions: Subscription[] =
+  [autoRefreshBot, { env: "*", fn: dontExitIfBrowserIsOnHold }];
 
 export function registerSubscribers(store: Store) {
   const ENV_LIST = [process.env.NODE_ENV, "*"];
   subscriptions.forEach(function (s) {
-    if (ENV_LIST.includes(s.env)) {
-      store.subscribe(() => s.fn(store.getState()));
-    }
+    ENV_LIST.includes(s.env) && store.subscribe(() => s.fn(store.getState()));
   });
 }

@@ -86,7 +86,7 @@ export function stopTracking(uuid: string) {
 
 const setConsistency =
   (payload: boolean) => ({ type: Actions.SET_CONSISTENCY, payload });
-const stash =
+export const stash =
   () => ({ type: Actions.STASH_STATUS, payload: undefined });
 const ifQueueEmpty =
   <T>(cb: () => T): T | false => (outstandingRequests.all.size === 0) && cb();

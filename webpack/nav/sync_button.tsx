@@ -32,7 +32,6 @@ export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) 
   const color = consistent ?
     (COLOR_MAPPING[sync_status] || "red") : "gray";
   const text = TEXT_MAPPING[sync_status] || "DISCONNECTED";
-
   return (
     <button
       className={`nav-sync ${color} fb-button`}
