@@ -20,7 +20,7 @@ class SessionToken < AbstractJwtToken
   # If you have a really, really old FBOS
   OLD_OS_URL   = "https://api.github.com/repos/" +
                  "farmbot/farmbot_os/releases/8772352"
-  BETA_OS_URL  = BETA_OTA_URL || "NOT_SET"
+  BETA_OS_URL  = ENV["BETA_OTA_URL"] || "NOT_SET"
   def self.issue_to(user,
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
