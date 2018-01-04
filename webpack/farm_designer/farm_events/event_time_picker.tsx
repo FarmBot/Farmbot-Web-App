@@ -25,21 +25,12 @@ export function botTimeToUtc(value: string, tzOffset: number) {
 }
 
 export function EventTimePicker(props: Props) {
-  const { value, onCommit, tzOffset, disabled, name } = props;
+  const { value, onCommit, /*tzOffset,*/ disabled, name } = props;
   return <BlurableInput
     disabled={!!disabled}
     name={name}
     type="time"
     className="add-event-start-time"
-    value={utcToBotTime(value, tzOffset)}
-    onCommit={(e) => {
-      /** Would love to change this `onCommit` callback signature from
-       * onCommit(ev: React.SyntheticEvent<HTMLInputElement>): void;
-       * to
-       * onCommit(ev: string): void;
-       * but won't for legacy / time reasons. */
-      e.currentTarget.value =
-        botTimeToUtc(e.currentTarget.value, tzOffset); /** <= Yuck! */
-      onCommit(e);
-    }} />;
+    value={value}
+    onCommit={onCommit} />;
 }
