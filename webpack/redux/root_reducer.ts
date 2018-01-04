@@ -8,10 +8,8 @@ import { Session } from "../session";
 import { resourceReducer as resources } from "../resources/reducer";
 import { Everything } from "../interfaces";
 import { Actions } from "../constants";
-import { connectivityReducer as connectivity } from "../connectivity/reducer";
 
 export let reducers = combineReducers({
-  connectivity,
   auth,
   bot,
   config,
