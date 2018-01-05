@@ -1,23 +1,6 @@
 class CreateConfigTables < ActiveRecord::Migration[5.1]
   def change
     create_table :firmware_config do |t|
-      # ======================================================
-      # CAN'T FIND A DEFAULT VALUE IN SOURCE CODE FOR THESE.
-      #  - RC
-      # ======================================================
-      t.integer :movement_home_spd_x,               default: -99
-      t.integer :movement_home_spd_y,               default: -99
-      t.integer :movement_home_spd_z,               default: -99
-      t.integer :movement_step_per_mm_x,            default: -99
-      t.integer :movement_step_per_mm_y,            default: -99
-      t.integer :movement_step_per_mm_z,            default: -99
-      t.integer :param_e_stop_on_mov_err,           default: -99
-      t.integer :param_mov_nr_retry,                default: -99
-
-      # ======================================================
-      # THESE DEFAULTS WERE PULLED FROM FIRMWARE SOURCE CODE
-      # ON 5 JAN 18
-      # ======================================================
       t.integer :encoder_enabled_x,                 default: 0
       t.integer :encoder_enabled_y,                 default: 0
       t.integer :encoder_enabled_z,                 default: 0
@@ -48,6 +31,9 @@ class CreateConfigTables < ActiveRecord::Migration[5.1]
       t.integer :movement_home_at_boot_x,           default: 0
       t.integer :movement_home_at_boot_y,           default: 0
       t.integer :movement_home_at_boot_z,           default: 0
+      t.integer :movement_home_spd_x,               default: 50
+      t.integer :movement_home_spd_y,               default: 50
+      t.integer :movement_home_spd_z,               default: 50
       t.integer :movement_home_up_x,                default: 0
       t.integer :movement_home_up_y,                default: 0
       t.integer :movement_home_up_z,                default: 1
@@ -68,6 +54,9 @@ class CreateConfigTables < ActiveRecord::Migration[5.1]
       t.integer :movement_min_spd_z,                default: 50
       t.integer :movement_secondary_motor_invert_x, default: 1
       t.integer :movement_secondary_motor_x,        default: 1
+      t.integer :movement_step_per_mm_x,            default: 5
+      t.integer :movement_step_per_mm_y,            default: 5
+      t.integer :movement_step_per_mm_z,            default: 25
       t.integer :movement_steps_acc_dec_x,          default: 300
       t.integer :movement_steps_acc_dec_y,          default: 300
       t.integer :movement_steps_acc_dec_z,          default: 300
@@ -81,6 +70,8 @@ class CreateConfigTables < ActiveRecord::Migration[5.1]
       t.integer :movement_timeout_y,                default: 120
       t.integer :movement_timeout_z,                default: 120
       t.integer :param_config_ok,                   default: 0
+      t.integer :param_e_stop_on_mov_err,           default: 0
+      t.integer :param_mov_nr_retry,                default: 3
       t.integer :param_test,                        default: 0
       t.integer :param_use_eeprom,                  default: 1
       t.integer :param_version,                     default: 1
@@ -142,10 +133,10 @@ class CreateConfigTables < ActiveRecord::Migration[5.1]
       t.boolean :sequence_body_log,         default: false
       t.boolean :sequence_complete_log,     default: false
       t.boolean :sequence_init_log,         default: false
-      t.string :firmware_hardware, default: default: "arduino"
+      t.boolean :beta_opt_in,               default: false
+      t.string  :firmware_hardware,         default: "arduino"
       t.integer :arduino_debug_messages,    default: -99
-      t.integer :fw_auto_update,            default: -99
-      t.integer :os_auto_update,            default: -99
+      t.integer :os_auto_update,            default: 0
       t.integer :network_not_found_timer
     end
   end
