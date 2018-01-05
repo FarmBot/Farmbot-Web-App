@@ -6,15 +6,18 @@ class Device < ApplicationRecord
   BAD_TZ             = "%{value} is not a valid timezone"
 
   has_many  :users
-  has_many  :farm_events,  dependent: :destroy
-  has_many  :points,       dependent: :destroy
-  has_many  :logs,         dependent: :destroy
-  has_many  :sequences,    dependent: :destroy
-  has_many  :regimens,     dependent: :destroy
-  has_many  :peripherals,  dependent: :destroy
-  has_many  :tools,        dependent: :destroy
-  has_many  :images,       dependent: :destroy
-  has_many  :webcam_feeds, dependent: :destroy
+  has_many  :farm_events,     dependent: :destroy
+  has_many  :points,          dependent: :destroy
+  has_many  :logs,            dependent: :destroy
+  has_many  :sequences,       dependent: :destroy
+  has_many  :regimens,        dependent: :destroy
+  has_many  :peripherals,     dependent: :destroy
+  has_many  :tools,           dependent: :destroy
+  has_many  :images,          dependent: :destroy
+  has_many  :webcam_feeds,    dependent: :destroy
+  has_one   :fbos_config,     dependent: :destroy
+  has_one   :firmware_config, dependent: :destroy
+  has_one   :web_app_config,  dependent: :destroy
   validates :timezone,     inclusion: { in: TIMEZONES,
                                         message: BAD_TZ,
                                         allow_nil: true }

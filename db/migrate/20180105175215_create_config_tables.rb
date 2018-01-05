@@ -1,6 +1,8 @@
 class CreateConfigTables < ActiveRecord::Migration[5.1]
   def change
-    create_table :firmware_config do |t|
+    create_table :firmware_configs do |t|
+      t.references :device
+      t.timestamps
       t.integer :encoder_enabled_x,                 default: 0
       t.integer :encoder_enabled_y,                 default: 0
       t.integer :encoder_enabled_z,                 default: 0
@@ -93,8 +95,9 @@ class CreateConfigTables < ActiveRecord::Migration[5.1]
       t.integer :status_general,                    default: 0
     end
 
-    create_table :web_app_config do |t|
+    create_table :web_app_configs do |t|
       t.references :device
+      t.timestamps
       t.boolean :confirm_step_deletion,  default: false
       t.boolean :disable_animations,     default: false
       t.boolean :disable_i18n,           default: false
@@ -125,19 +128,21 @@ class CreateConfigTables < ActiveRecord::Migration[5.1]
       t.integer :successs_log,           default: 1
     end
 
-    create_table :fbos_config do |t|
+    create_table :fbos_configs do |t|
+      t.references :device
+      t.timestamps
       t.boolean :auto_sync,                 default: false
+      t.boolean :beta_opt_in,               default: false
       t.boolean :disable_factory_reset,     default: false
       t.boolean :firmware_input_log,        default: false
       t.boolean :firmware_output_log,       default: false
       t.boolean :sequence_body_log,         default: false
       t.boolean :sequence_complete_log,     default: false
       t.boolean :sequence_init_log,         default: false
-      t.boolean :beta_opt_in,               default: false
-      t.string  :firmware_hardware,         default: "arduino"
       t.integer :arduino_debug_messages,    default: -99
-      t.integer :os_auto_update,            default: 0
       t.integer :network_not_found_timer
+      t.integer :os_auto_update,            default: 0
+      t.string  :firmware_hardware,         default: "arduino"
     end
   end
 end
