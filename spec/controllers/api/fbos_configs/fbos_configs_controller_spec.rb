@@ -48,7 +48,15 @@ describe Api::FbosConfigsController do
       end
     end
 
-    it 'disallows mass assignment attacks against device_id'
+    it 'disallows mass assignment attacks against device_id' do
+      sign_in user
+      body = { device_id: 99 }
+      conf = device.fbos_config
+      old_device_id = conf.device_id
+      put :update, body: body.to_json, params: { format: :json }
+      expect(response.status).to eq(200)
+      expect(conf.reload.device_id).to eq(old_device_id)
+    end
   end
 
   describe '#delete' do
