@@ -57,4 +57,11 @@ namespace :typescript do
     Typescript.generate(FirmwareConfig)
     Typescript.generate(FbosConfig)
   end
+
+  desc "Pick a random file that (maybe) needs unit tests"
+  task :random_coverage => :environment do
+    ideas = Dir["coverage/webpack/**/*.html"].sample(4)
+    binding.pry
+    sh `firefox #{ideas.join(" ")}`
+  end
 end
