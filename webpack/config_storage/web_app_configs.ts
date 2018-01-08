@@ -5,7 +5,7 @@
     If you do need to change this file, first write a database migration,
       then run `rake typescript:interfaces` */
 
-interface WebAppConfig {
+export interface WebAppConfig {
   id: number;
   device_id: number;
   created_at: string;

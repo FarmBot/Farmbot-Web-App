@@ -17,6 +17,10 @@ import { Image } from "../farmware/images/interfaces";
 import { betterCompact } from "../util";
 import * as _ from "lodash";
 import { WebcamFeed } from "../controls/interfaces";
+import { FbosConfig } from "../config_storage/fbos_configs";
+import { FirmwareConfig } from "../config_storage/firmware_configs";
+import { WebAppConfig } from "../config_storage/web_app_configs";
+
 export type ResourceName =
   | "Crop"
   | "Device"
@@ -30,7 +34,10 @@ export type ResourceName =
   | "Sequence"
   | "Tool"
   | "User"
-  | "WebcamFeed";
+  | "WebcamFeed"
+  | "FbosConfig"
+  | "FirmwareConfig"
+  | "WebAppConfig";
 
 export interface TaggedResourceBase {
   kind: ResourceName;
@@ -95,6 +102,9 @@ export type TaggedFarmEvent = Resource<"FarmEvent", FarmEvent>;
 export type TaggedImage = Resource<"Image", Image>;
 export type TaggedLog = Resource<"Log", Log>;
 export type TaggedPeripheral = Resource<"Peripheral", Peripheral>;
+export type TaggedFbosConfig = Resource<"FbosConfig", FbosConfig>;
+export type TaggedFirmwareConfig = Resource<"FirmwareConfig", FirmwareConfig>;
+export type TaggedWebAppConfig = Resource<"WebAppConfig", WebAppConfig>;
 
 type PointUnion = GenericPointer | PlantPointer | ToolSlotPointer;
 

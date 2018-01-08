@@ -70,7 +70,10 @@ export function emptyState(): RestResources {
         Regimen: [],
         Sequence: [],
         Tool: [],
-        User: []
+        User: [],
+        FbosConfig: [],
+        FirmwareConfig: [],
+        WebAppConfig: []
       },
       byKindAndId: {},
       references: {}

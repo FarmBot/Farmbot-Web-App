@@ -1,8 +1,8 @@
 module Configs
   class Update < Mutations::Command
     required do
-      duck :target_klass, methods: []
-      duck :update_attrs, methods: [:[], :[]=]
+      duck :target_klass, methods: [:update_attributes!]
+      duck :update_attrs, methods: [:deep_symbolize_keys]
     end
 
     def execute

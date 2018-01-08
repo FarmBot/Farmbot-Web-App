@@ -18,7 +18,7 @@ class Typescript
         If you do need to change this file, first write a database migration,
           then run `rake typescript:interfaces` */
 
-    interface <%= interface_name %> {
+    export interface <%= interface_name %> {
     <% fields.each do |field| %>  <%= field.head %>: <%= field.tail %>;
     <% end %>}
   END
