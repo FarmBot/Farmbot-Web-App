@@ -60,6 +60,14 @@ describe Api::FbosConfigsController do
   end
 
   describe '#delete' do
-    it 'resets everything to the defaults'
+    it 'resets everything to the defaults' do
+      sign_in user
+      old_conf = device.fbos_config
+      old_conf.update_attributes(arduino_debug_messages: 23)
+      delete :destroy, params: {}
+      expect(response.status).to eq(200)
+      new_conf = device.reload.fbos_config
+      expect(new_conf.arduino_debug_messages).to_not eq(23)
+    end
   end
 end

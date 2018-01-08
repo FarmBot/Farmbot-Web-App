@@ -14,7 +14,8 @@ module Api
     end
 
     def destroy
-      raise "WIP."
+      config_object.destroy!
+      render json: ""
     end
 
   private
