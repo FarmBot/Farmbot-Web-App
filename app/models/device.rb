@@ -15,14 +15,15 @@ class Device < ApplicationRecord
   has_many  :tools,           dependent: :destroy
   has_many  :images,          dependent: :destroy
   has_many  :webcam_feeds,    dependent: :destroy
-  has_one   :fbos_config,     dependent: :destroy
-  has_one   :firmware_config, dependent: :destroy
-  has_one   :web_app_config,  dependent: :destroy
   validates :timezone,     inclusion: { in: TIMEZONES,
                                         message: BAD_TZ,
                                         allow_nil: true }
   validates_presence_of :name
-
+  [FbosConfig, FirmwareConfig, WebAppConfig].map do |klass|
+    name = klass.table_name.singularize.to_sym
+    has_one name, dependent: :destroy
+    define_method(name) { super() || klass.create!(device: self) }
+  end
   # Give the user back the amount of logs they are allowed to view.
   def limited_log_list
     logs.all.last(max_log_count || DEFAULT_MAX_LOGS)
