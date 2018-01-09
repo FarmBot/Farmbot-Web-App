@@ -24,6 +24,11 @@ FarmBot::Application.routes.draw do
                                      :update,
                                      :destroy]
     resources :password_resets, only: [:create, :update]
+
+    resource :web_app_config,  only: [:show, :destroy, :update]
+    resource :fbos_config,     only: [:show, :destroy, :update]
+    resource :firmware_config, only: [:show, :destroy, :update]
+
     put "/password_resets"     => "password_resets#update", as: :whatever
     put "/users/verify/:token" => "users#verify",           as: :users_verify
     # Make life easier on API users by not adding special rules for singular
