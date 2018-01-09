@@ -23,3 +23,22 @@ export interface FbosConfig {
   os_auto_update: number;
   firmware_hardware: string;
 }
+
+export type NumberConfigKey = "id"
+    |"device_id"
+    |"arduino_debug_messages"
+    |"network_not_found_timer"
+    |"os_auto_update";
+
+export type StringConfigKey = "created_at"
+    |"updated_at"
+    |"firmware_hardware";
+
+export type BooleanConfigKey = "auto_sync"
+    |"beta_opt_in"
+    |"disable_factory_reset"
+    |"firmware_input_log"
+    |"firmware_output_log"
+    |"sequence_body_log"
+    |"sequence_complete_log"
+    |"sequence_init_log";

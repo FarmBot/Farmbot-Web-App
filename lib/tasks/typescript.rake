@@ -21,7 +21,10 @@ class Typescript
     export interface <%= interface_name %> {
     <% fields.each do |field| %>  <%= field.head %>: <%= field.tail %>;
     <% end %>}
-  END
+    <% fields_by_type.each do |field| %>
+    export type <%= field.head %> = <%= field.tail %><% end %>
+
+    END
 
   # CONFIG_KLASS = [ FbosConfig, WebAppConfig, FirmwareConfig ]
 
@@ -29,7 +32,7 @@ class Typescript
     @klass  = klass
     results = ERB.new(INTERFACE_TPL).result(binding)
     File.open("webpack/config_storage/#{klass.table_name}.ts", "w") do |f|
-      f.write(results)
+      f.write(results.strip + "\n")
     end
   end
 
@@ -47,6 +50,16 @@ class Typescript
       col_type = TYPE_MAPPING[t] or raise "NO! #{t.inspect} is not in TYPE_MAPPING"
       Pair[col.name, col_type]
     end
+  end
+
+  def self.fields_by_type
+    fields
+      .group_by { |x| x.tail }
+      .to_a
+      .map do |arr|
+        Pair["#{arr.first.camelize}ConfigKey",
+             arr.last.map{|x| x.head.inspect }.join("\n    |") + ";\n"]
+      end
   end
 end
 
