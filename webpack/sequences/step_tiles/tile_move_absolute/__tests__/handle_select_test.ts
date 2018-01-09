@@ -1,6 +1,5 @@
 import { handleSelect } from "../handle_select";
 import { fakeResourceIndex } from "../test_helpers";
-import { TaggedPoint, TaggedToolSlotPointer } from "../../../../resources/tagged_resources";
 
 describe("handleSelect()", () => {
   it("returns location data: point", () => {
