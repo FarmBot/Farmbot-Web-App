@@ -49,12 +49,12 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
       case 0:
         return () => {
           this.setState({ [name]: 1 });
-          Session.setNum(safeNumericSetting(name + "Log"), 1);
+          Session.setNum(safeNumericSetting(name + "_log"), 1);
         };
       default:
         return () => {
           this.setState({ [name]: 0 });
-          Session.setNum(safeNumericSetting(name + "Log"), 0);
+          Session.setNum(safeNumericSetting(name + "_log"), 0);
         };
     }
   }
@@ -62,7 +62,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
   setFilterLevel = (name: keyof LogsState) => {
     return (value: number) => {
       this.setState({ [name]: value });
-      Session.setNum(safeNumericSetting(name + "Log"), value);
+      Session.setNum(safeNumericSetting(name + "_log"), value);
     };
   };
 

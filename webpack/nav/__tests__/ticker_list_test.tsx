@@ -93,7 +93,7 @@ describe("<TickerList />", () => {
 
   it("all logs filtered out", () => {
     ["success", "busy", "warn", "error", "info", "fun", "debug"]
-      .map(logType => mockStorj[logType + "Log"] = 0);
+      .map(logType => mockStorj[logType + "_log"] = 0);
     log.meta.verbosity = 1;
     const wrapper = mount(<TickerList
       logs={[log]} tickerListOpen={false} toggle={jest.fn()} timeOffset={0} />);
