@@ -14,6 +14,7 @@ import { isUndefined } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { getBotSize } from "./map/util";
 import { catchErrors } from "../util";
+import { BooleanConfigKey } from "../config_storage/web_app_configs";
 
 export const getDefaultAxisLength = (): AxisNumberProperty => {
   if (Session.getBool(BooleanSetting.map_xl)) {
@@ -38,15 +39,16 @@ export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 export class FarmDesigner extends React.Component<Props, Partial<State>> {
   componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
-  initializeSetting = (name: (keyof State), defaultValue: boolean): boolean => {
-    const currentValue = Session.getBool(safeBooleanSettting(name));
-    if (isUndefined(currentValue)) {
-      Session.setBool(safeBooleanSettting(name), defaultValue);
-      return defaultValue;
-    } else {
-      return currentValue;
+  initializeSetting =
+    (name: keyof State, defaultValue: boolean): boolean => {
+      const currentValue = Session.getBool(safeBooleanSettting(name));
+      if (isUndefined(currentValue)) {
+        Session.setBool(safeBooleanSettting(name), defaultValue);
+        return defaultValue;
+      } else {
+        return currentValue;
+      }
     }
-  }
 
   getBotOriginQuadrant = (): BotOriginQuadrant => {
     const value = Session.getNum(NumericSetting.bot_origin_quadrant);
