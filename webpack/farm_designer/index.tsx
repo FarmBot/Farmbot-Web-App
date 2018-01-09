@@ -14,7 +14,6 @@ import { isUndefined } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { getBotSize } from "./map/util";
 import { catchErrors } from "../util";
-import { BooleanConfigKey } from "../config_storage/web_app_configs";
 
 export const getDefaultAxisLength = (): AxisNumberProperty => {
   if (Session.getBool(BooleanSetting.map_xl)) {
@@ -133,7 +132,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         zoom={this.updateZoomLevel}
         toggle={this.toggle}
         updateBotOriginQuadrant={this.updateBotOriginQuadrant}
-        bot_origin_quadrant={bot_origin_quadrant}
+        botOriginQuadrant={bot_origin_quadrant}
         zoomLvl={zoom_level}
         legendMenuOpen={legend_menu_open}
         showPlants={show_plants}
@@ -178,7 +177,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           stopAtHome={stopAtHome}
           hoveredPlant={this.props.hoveredPlant}
           zoomLvl={zoom_level}
-          bot_origin_quadrant={bot_origin_quadrant}
+          botOriginQuadrant={bot_origin_quadrant}
           gridSize={getGridSize(botSize)}
           gridOffset={gridOffset}
           peripherals={this.props.peripherals}
