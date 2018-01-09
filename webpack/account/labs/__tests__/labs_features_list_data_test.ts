@@ -26,7 +26,7 @@ describe("maybeToggleFeature()", () => {
       name: "Example",
       value: false,
       description: "I stub this.",
-      storageKey: BooleanSetting.weedDetector,
+      storageKey: BooleanSetting.weed_detector,
       experimental: true
     };
     const out = maybeToggleFeature(data);
@@ -39,9 +39,9 @@ describe("maybeToggleFeature()", () => {
     (global as any).confirm = () => true;
     const data: LabsFeature = {
       name: "Example1",
-      value: (mockStorj[BooleanSetting.weedDetector] = false),
+      value: (mockStorj[BooleanSetting.weed_detector] = false),
       description: "I stub this.",
-      storageKey: BooleanSetting.weedDetector,
+      storageKey: BooleanSetting.weed_detector,
       experimental: true
     };
     const out = maybeToggleFeature(data);
@@ -55,9 +55,9 @@ describe("maybeToggleFeature()", () => {
     Object.defineProperty(global, "confirm", conf);
     const output = maybeToggleFeature({
       name: "Example",
-      value: (mockStorj[BooleanSetting.weedDetector] = true),
+      value: (mockStorj[BooleanSetting.weed_detector] = true),
       description: "I stub this.",
-      storageKey: BooleanSetting.weedDetector,
+      storageKey: BooleanSetting.weed_detector,
       experimental: true
     });
     expect(conf).not.toHaveBeenCalled();
@@ -68,9 +68,9 @@ describe("maybeToggleFeature()", () => {
   it("updates a `LabsFeature` when consent is not required", () => {
     const data: LabsFeature = {
       name: "Example1",
-      value: (mockStorj[BooleanSetting.weedDetector] = false),
+      value: (mockStorj[BooleanSetting.weed_detector] = false),
       description: "I stub this.",
-      storageKey: BooleanSetting.weedDetector
+      storageKey: BooleanSetting.weed_detector
     };
     const out = maybeToggleFeature(data);
     out ?

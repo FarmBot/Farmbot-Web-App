@@ -41,11 +41,11 @@ describe("<BotPeripherals/>", () => {
 
   function animationToggle(
     props: BotPeripheralsProps, enabled: number, disabled: number) {
-    mockStorj[BooleanSetting.disableAnimations] = false;
+    mockStorj[BooleanSetting.disable_animations] = false;
     const wrapperEnabled = shallow(<BotPeripherals {...props } />);
     expect(wrapperEnabled.find("use").length).toEqual(enabled);
 
-    mockStorj[BooleanSetting.disableAnimations] = true;
+    mockStorj[BooleanSetting.disable_animations] = true;
     const wrapperDisabled = shallow(<BotPeripherals {...props } />);
     expect(wrapperDisabled.find("use").length).toEqual(disabled);
   }

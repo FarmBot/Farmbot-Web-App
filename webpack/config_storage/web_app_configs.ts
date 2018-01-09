@@ -38,6 +38,7 @@ export interface WebAppConfig {
   fun_log: number;
   debug_log: number;
   successs_log: number;
+  weed_detector: boolean;
 }
 
 export type NumberConfigKey = "id"
@@ -73,4 +74,5 @@ export type BooleanConfigKey = "confirm_step_deletion"
     |"show_points"
     |"x_axis_inverted"
     |"y_axis_inverted"
-    |"z_axis_inverted";
+    |"z_axis_inverted"
+    |"weed_detector";

@@ -16,7 +16,7 @@ import { getBotSize } from "./map/util";
 import { catchErrors } from "../util";
 
 export const getDefaultAxisLength = (): AxisNumberProperty => {
-  if (Session.getBool(BooleanSetting.mapXL)) {
+  if (Session.getBool(BooleanSetting.map_xl)) {
     return { x: 5900, y: 2900 };
   } else {
     return { x: 2900, y: 1400 };
@@ -24,7 +24,7 @@ export const getDefaultAxisLength = (): AxisNumberProperty => {
 };
 
 export const getGridSize = (botSize: BotSize) => {
-  if (Session.getBool(BooleanSetting.dynamicMap)) {
+  if (Session.getBool(BooleanSetting.dynamic_map)) {
     // Render the map size according to device axis length.
     return { x: botSize.x.value, y: botSize.y.value };
   }
@@ -38,7 +38,7 @@ export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 export class FarmDesigner extends React.Component<Props, Partial<State>> {
   componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
-  initializeSetting = (name: keyof State, defaultValue: boolean): boolean => {
+  initializeSetting = (name: (keyof State), defaultValue: boolean): boolean => {
     const currentValue = Session.getBool(safeBooleanSettting(name));
     if (isUndefined(currentValue)) {
       Session.setBool(safeBooleanSettting(name), defaultValue);
@@ -49,26 +49,26 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
   }
 
   getBotOriginQuadrant = (): BotOriginQuadrant => {
-    const value = Session.getNum(NumericSetting.botOriginQuadrant);
+    const value = Session.getNum(NumericSetting.bot_origin_quadrant);
     return isBotOriginQuadrant(value) ? value : 2;
   }
 
   getZoomLevel = (): number => {
-    return Session.getNum(NumericSetting.zoomLevel) || 1;
+    return Session.getNum(NumericSetting.zoom_level) || 1;
   }
 
   state: State = {
-    legendMenuOpen: this.initializeSetting(BooleanSetting.legendMenuOpen, false),
-    showPlants: this.initializeSetting(BooleanSetting.showPlants, true),
-    showPoints: this.initializeSetting(BooleanSetting.showPoints, true),
-    showSpread: this.initializeSetting(BooleanSetting.showSpread, false),
-    showFarmbot: this.initializeSetting(BooleanSetting.showFarmbot, true),
-    botOriginQuadrant: this.getBotOriginQuadrant(),
-    zoomLevel: this.getZoomLevel()
+    legend_menu_open: this.initializeSetting(BooleanSetting.legend_menu_open, false),
+    show_plants: this.initializeSetting(BooleanSetting.show_plants, true),
+    show_points: this.initializeSetting(BooleanSetting.show_points, true),
+    show_spread: this.initializeSetting(BooleanSetting.show_spread, false),
+    show_farmbot: this.initializeSetting(BooleanSetting.show_farmbot, true),
+    bot_origin_quadrant: this.getBotOriginQuadrant(),
+    zoom_level: this.getZoomLevel()
   };
 
   componentDidMount() {
-    this.updateBotOriginQuadrant(this.state.botOriginQuadrant)();
+    this.updateBotOriginQuadrant(this.state.bot_origin_quadrant)();
     this.updateZoomLevel(0)();
   }
 
@@ -78,14 +78,14 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
   }
 
   updateBotOriginQuadrant = (payload: BotOriginQuadrant) => () => {
-    this.setState({ botOriginQuadrant: payload });
-    Session.setNum(NumericSetting.botOriginQuadrant, payload);
+    this.setState({ bot_origin_quadrant: payload });
+    Session.setNum(NumericSetting.bot_origin_quadrant, payload);
   }
 
   updateZoomLevel = (zoomIncrement: number) => () => {
     const payload = Math.round((this.getZoomLevel() + zoomIncrement) * 10) / 10;
-    this.setState({ zoomLevel: payload });
-    Session.setNum(NumericSetting.zoomLevel, payload);
+    this.setState({ zoom_level: payload });
+    Session.setNum(NumericSetting.zoom_level, payload);
   }
 
   childComponent(props: Props) {
@@ -106,13 +106,13 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     }
 
     const {
-      legendMenuOpen,
-      showPlants,
-      showPoints,
-      showSpread,
-      showFarmbot,
-      botOriginQuadrant,
-      zoomLevel
+      legend_menu_open,
+      show_plants,
+      show_points,
+      show_spread,
+      show_farmbot,
+      bot_origin_quadrant,
+      zoom_level
     } = this.state;
 
     const designerTabClasses: string[] = ["active", "visible-xs"];
@@ -131,13 +131,13 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         zoom={this.updateZoomLevel}
         toggle={this.toggle}
         updateBotOriginQuadrant={this.updateBotOriginQuadrant}
-        botOriginQuadrant={botOriginQuadrant}
-        zoomLvl={zoomLevel}
-        legendMenuOpen={legendMenuOpen}
-        showPlants={showPlants}
-        showPoints={showPoints}
-        showSpread={showSpread}
-        showFarmbot={showFarmbot} />
+        bot_origin_quadrant={bot_origin_quadrant}
+        zoomLvl={zoom_level}
+        legendMenuOpen={legend_menu_open}
+        showPlants={show_plants}
+        showPoints={show_points}
+        showSpread={show_spread}
+        showFarmbot={show_farmbot} />
 
       <div className="panel-header gray-panel designer-nav">
         <div className="panel-tabs">
@@ -158,12 +158,12 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
 
       <div
         className="farm-designer-map"
-        style={{ zoom: zoomLevel }}>
+        style={{ zoom: zoom_level }}>
         <GardenMap
-          showPoints={showPoints}
-          showPlants={showPlants}
-          showSpread={showSpread}
-          showFarmbot={showFarmbot}
+          showPoints={show_points}
+          showPlants={show_plants}
+          showSpread={show_spread}
+          showFarmbot={show_farmbot}
           selectedPlant={this.props.selectedPlant}
           crops={this.props.crops}
           dispatch={this.props.dispatch}
@@ -175,8 +175,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           botSize={botSize}
           stopAtHome={stopAtHome}
           hoveredPlant={this.props.hoveredPlant}
-          zoomLvl={zoomLevel}
-          botOriginQuadrant={botOriginQuadrant}
+          zoomLvl={zoom_level}
+          bot_origin_quadrant={bot_origin_quadrant}
           gridSize={getGridSize(botSize)}
           gridOffset={gridOffset}
           peripherals={this.props.peripherals}

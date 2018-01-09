@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180105175215) do
+ActiveRecord::Schema.define(version: 20180109070610) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -354,6 +354,7 @@ ActiveRecord::Schema.define(version: 20180105175215) do
     t.integer "fun_log", default: 1
     t.integer "debug_log", default: 1
     t.integer "successs_log", default: 1
+    t.boolean "weed_detector", default: false
     t.index ["device_id"], name: "index_web_app_configs_on_device_id"
   end
 

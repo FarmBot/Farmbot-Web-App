@@ -66,7 +66,7 @@ interface RemoveParams {
 }
 
 export function remove({ dispatch, index, sequence }: RemoveParams) {
-  if (!Session.getBool(BooleanSetting.confirmStepDeletion) ||
+  if (!Session.getBool(BooleanSetting.confirm_step_deletion) ||
     confirm(t("Are you sure you want to delete this step?"))) {
     const original = sequence;
     const update = defensiveClone(original);

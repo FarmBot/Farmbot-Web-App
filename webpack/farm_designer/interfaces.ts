@@ -28,13 +28,13 @@ export function isBotOriginQuadrant(mystery: Mystery):
 }
 
 export interface State {
-  legendMenuOpen: boolean;
-  showPlants: boolean;
-  showPoints: boolean;
-  showSpread: boolean;
-  showFarmbot: boolean;
-  botOriginQuadrant: BotOriginQuadrant;
-  zoomLevel: number;
+  legend_menu_open: boolean;
+  show_plants: boolean;
+  show_points: boolean;
+  show_spread: boolean;
+  show_farmbot: boolean;
+  bot_origin_quadrant: BotOriginQuadrant;
+  zoom_level: number;
 }
 
 export interface Props {

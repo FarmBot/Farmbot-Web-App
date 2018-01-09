@@ -14,6 +14,7 @@ import { Session, safeNumericSetting } from "../session";
 import { isUndefined } from "lodash";
 import { NumericSetting } from "../session_keys";
 import { catchErrors } from "../util";
+import { NumberConfigKey } from "../config_storage/web_app_configs";
 
 export const formatLogTime = (created_at: number, timeoffset: number) =>
   moment.unix(created_at).utcOffset(timeoffset).format("MMM D, h:mma");
@@ -22,7 +23,7 @@ export const formatLogTime = (created_at: number, timeoffset: number) =>
 export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
   componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
-  initialize = (name: NumericSetting, defaultValue: number): number => {
+  initialize = (name: NumberConfigKey, defaultValue: number): number => {
     const currentValue = Session.getNum(safeNumericSetting(name));
     if (isUndefined(currentValue)) {
       Session.setNum(safeNumericSetting(name), defaultValue);
@@ -34,13 +35,13 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
 
   state: LogsState = {
     autoscroll: false,
-    success: this.initialize(NumericSetting.successLog, 1),
-    busy: this.initialize(NumericSetting.busyLog, 1),
-    warn: this.initialize(NumericSetting.warnLog, 1),
-    error: this.initialize(NumericSetting.errorLog, 1),
-    info: this.initialize(NumericSetting.infoLog, 1),
-    fun: this.initialize(NumericSetting.funLog, 1),
-    debug: this.initialize(NumericSetting.debugLog, 1),
+    success: this.initialize(NumericSetting.success_log, 1),
+    busy: this.initialize(NumericSetting.busy_log, 1),
+    warn: this.initialize(NumericSetting.warn_log, 1),
+    error: this.initialize(NumericSetting.error_log, 1),
+    info: this.initialize(NumericSetting.info_log, 1),
+    fun: this.initialize(NumericSetting.fun_log, 1),
+    debug: this.initialize(NumericSetting.debug_log, 1),
   };
 
   toggle = (name: keyof LogsState) => {

@@ -44,7 +44,7 @@ function waterFigure(
   props: { i: number, cx: number, cy: number }) {
   const { i, cx, cy } = props;
   const color = "rgb(11, 83, 148)";
-  const animate = !Session.getBool(BooleanSetting.disableAnimations);
+  const animate = !Session.getBool(BooleanSetting.disable_animations);
   const copies = animate ? 3 : 1;
   const animateClass = animate ? "animate" : "";
 
@@ -85,7 +85,7 @@ function vacuumFigure(
   props: { i: number, cx: number, cy: number }) {
   const { i, cx, cy } = props;
   const color = "black";
-  const animate = !Session.getBool(BooleanSetting.disableAnimations);
+  const animate = !Session.getBool(BooleanSetting.disable_animations);
   const copies = animate ? 3 : 1;
   const animateClass = animate ? "animate" : "";
 

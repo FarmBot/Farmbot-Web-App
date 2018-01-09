@@ -22,7 +22,7 @@ describe("getDefaultAxisLength()", () => {
   });
 
   it("returns XL axis lengths", () => {
-    mockStorj[BooleanSetting.mapXL] = true;
+    mockStorj[BooleanSetting.map_xl] = true;
     const axes = getDefaultAxisLength();
     expect(axes).toEqual({ x: 5900, y: 2900 });
   });
@@ -30,7 +30,7 @@ describe("getDefaultAxisLength()", () => {
 
 describe("getGridSize()", () => {
   it("returns default grid size", () => {
-    mockStorj[BooleanSetting.mapXL] = false;
+    mockStorj[BooleanSetting.map_xl] = false;
     const grid = getGridSize({
       x: { value: 100, isDefault: false },
       y: { value: 200, isDefault: false }
@@ -39,7 +39,7 @@ describe("getGridSize()", () => {
   });
 
   it("returns XL grid size", () => {
-    mockStorj[BooleanSetting.mapXL] = true;
+    mockStorj[BooleanSetting.map_xl] = true;
     const grid = getGridSize({
       x: { value: 100, isDefault: false },
       y: { value: 200, isDefault: false }
@@ -48,7 +48,7 @@ describe("getGridSize()", () => {
   });
 
   it("returns grid size using bot size", () => {
-    mockStorj[BooleanSetting.dynamicMap] = true;
+    mockStorj[BooleanSetting.dynamic_map] = true;
     const grid = getGridSize({
       x: { value: 100, isDefault: false },
       y: { value: 200, isDefault: false }

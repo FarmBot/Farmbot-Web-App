@@ -104,7 +104,7 @@ describe("<Logs />", () => {
   });
 
   it("loads filter setting", () => {
-    mockStorj[NumericSetting.warnLog] = 3;
+    mockStorj[NumericSetting.warn_log] = 3;
     const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} timeOffset={0} />);
     expect(wrapper.state().warn).toEqual(3);
   });
@@ -120,7 +120,7 @@ describe("<Logs />", () => {
   });
 
   it("toggles filter", () => {
-    mockStorj[NumericSetting.warnLog] = 3;
+    mockStorj[NumericSetting.warn_log] = 3;
     const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} timeOffset={0} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
@@ -132,7 +132,7 @@ describe("<Logs />", () => {
   });
 
   it("sets filter", () => {
-    mockStorj[NumericSetting.warnLog] = 3;
+    mockStorj[NumericSetting.warn_log] = 3;
     const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} timeOffset={0} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;

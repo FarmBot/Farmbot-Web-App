@@ -67,11 +67,11 @@ describe("<LogsSettingsMenu />", () => {
     const setFilterLevel = jest.fn();
     const wrapper = mount(<LogsSettingsMenu
       bot={bot} setFilterLevel={() => setFilterLevel} />);
-    mockStorj[NumericSetting.busyLog] = 0;
+    mockStorj[NumericSetting.busy_log] = 0;
     wrapper.find("button").at(0).simulate("click");
     expect(setFilterLevel).toHaveBeenCalledWith(2);
     jest.clearAllMocks();
-    mockStorj[NumericSetting.busyLog] = 3;
+    mockStorj[NumericSetting.busy_log] = 3;
     wrapper.find("button").at(0).simulate("click");
     expect(setFilterLevel).not.toHaveBeenCalled();
   });
