@@ -41,7 +41,6 @@ describe Api::WebAppConfigsController do
         :info_log              => 1,
         :fun_log               => 1,
         :debug_log             => 1,
-        :successs_log          => 1
       }.to_a.map { |key, value| expect(json[key]).to eq(value) }
 
       { created_at: String, updated_at: String }

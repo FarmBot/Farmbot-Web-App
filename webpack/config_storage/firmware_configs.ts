@@ -99,7 +99,6 @@ export interface FirmwareConfig {
   pin_guard_5_active_state: number;
   pin_guard_5_pin_nr: number;
   pin_guard_5_time_out: number;
-  status_general: number;
 }
 
 export type NumberConfigKey = "id"
@@ -192,8 +191,7 @@ export type NumberConfigKey = "id"
     |"pin_guard_4_time_out"
     |"pin_guard_5_active_state"
     |"pin_guard_5_pin_nr"
-    |"pin_guard_5_time_out"
-    |"status_general";
+    |"pin_guard_5_time_out";
 
 export type StringConfigKey = "created_at"
     |"updated_at";

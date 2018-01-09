@@ -13,7 +13,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   show_farmbot: "show_farmbot",
 
   /** "Labs" feature names. */
-  weed_detector: "weed_detector",
+  stub_config: "stub_config",
   disable_i18n: "disable_i18n",
   confirm_step_deletion: "confirm_step_deletion",
   hide_webcam_widget: "hide_webcam_widget",
@@ -34,7 +34,6 @@ export const NumericSetting: Record<NumberConfigKey, NumberConfigKey> = {
   id: "id",
   info_log: "info_log",
   success_log: "success_log",
-  successs_log: "successs_log",
   warn_log: "warn_log",
   zoom_level: "zoom_level",
 };

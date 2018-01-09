@@ -37,8 +37,7 @@ export interface WebAppConfig {
   info_log: number;
   fun_log: number;
   debug_log: number;
-  successs_log: number;
-  weed_detector: boolean;
+  stub_config: boolean;
 }
 
 export type NumberConfigKey = "id"
@@ -51,8 +50,7 @@ export type NumberConfigKey = "id"
     |"error_log"
     |"info_log"
     |"fun_log"
-    |"debug_log"
-    |"successs_log";
+    |"debug_log";
 
 export type StringConfigKey = "created_at"
     |"updated_at";
@@ -75,4 +73,4 @@ export type BooleanConfigKey = "confirm_step_deletion"
     |"x_axis_inverted"
     |"y_axis_inverted"
     |"z_axis_inverted"
-    |"weed_detector";
+    |"stub_config";
