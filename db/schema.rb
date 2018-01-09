@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180105175215) do
+ActiveRecord::Schema.define(version: 20180109165402) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -165,7 +165,6 @@ ActiveRecord::Schema.define(version: 20180105175215) do
     t.integer "pin_guard_5_active_state", default: 1
     t.integer "pin_guard_5_pin_nr", default: 0
     t.integer "pin_guard_5_time_out", default: 60
-    t.integer "status_general", default: 0
     t.index ["device_id"], name: "index_firmware_configs_on_device_id"
   end
 
@@ -353,7 +352,7 @@ ActiveRecord::Schema.define(version: 20180105175215) do
     t.integer "info_log", default: 1
     t.integer "fun_log", default: 1
     t.integer "debug_log", default: 1
-    t.integer "successs_log", default: 1
+    t.boolean "stub_config", default: false
     t.index ["device_id"], name: "index_web_app_configs_on_device_id"
   end
 

@@ -9,6 +9,7 @@ import { maybeNegateStatus, maybeNegateConsistency } from "../connectivity/maybe
 import { EdgeStatus } from "../connectivity/interfaces";
 import { ReduxAction } from "../redux/interfaces";
 import { connectivityReducer } from "../connectivity/reducer";
+import { BooleanConfigKey } from "../config_storage/web_app_configs";
 
 const afterEach = (state: BotState, a: ReduxAction<{}>) => {
   state.connectivity = connectivityReducer(state.connectivity, a);
@@ -85,13 +86,13 @@ export let initialState = (): BotState => ({
   currentOSVersion: undefined,
   currentFWVersion: undefined,
   axis_inversion: {
-    x: !!Session.getBool(BooleanSetting.xAxisInverted),
-    y: !!Session.getBool(BooleanSetting.yAxisInverted),
-    z: !!Session.getBool(BooleanSetting.zAxisInverted),
+    x: !!Session.getBool(BooleanSetting.x_axis_inverted),
+    y: !!Session.getBool(BooleanSetting.y_axis_inverted),
+    z: !!Session.getBool(BooleanSetting.z_axis_inverted),
   },
   encoder_visibility: {
-    raw_encoders: !!Session.getBool(BooleanSetting.rawEncoders),
-    scaled_encoders: !!Session.getBool(BooleanSetting.scaledEncoders),
+    raw_encoders: !!Session.getBool(BooleanSetting.raw_encoders),
+    scaled_encoders: !!Session.getBool(BooleanSetting.scaled_encoders),
   },
   connectivity: {
     "bot.mqtt": undefined,
@@ -101,17 +102,17 @@ export let initialState = (): BotState => ({
 });
 
 /** Translate X/Y/Z to the name that is used in `localStorage` */
-export const INVERSION_MAPPING: Record<Xyz, BooleanSetting> = {
-  x: BooleanSetting.xAxisInverted,
-  y: BooleanSetting.yAxisInverted,
-  z: BooleanSetting.zAxisInverted,
+export const INVERSION_MAPPING: Record<Xyz, BooleanConfigKey> = {
+  x: BooleanSetting.x_axis_inverted,
+  y: BooleanSetting.y_axis_inverted,
+  z: BooleanSetting.z_axis_inverted,
 };
 
 /** Translate `encode_visibility` key name to the name that is
  * used in `localStorage` */
-export const ENCODER_MAPPING: Record<EncoderDisplay, BooleanSetting> = {
-  raw_encoders: BooleanSetting.rawEncoders,
-  scaled_encoders: BooleanSetting.scaledEncoders,
+export const ENCODER_MAPPING: Record<EncoderDisplay, BooleanConfigKey> = {
+  raw_encoders: BooleanSetting.raw_encoders,
+  scaled_encoders: BooleanSetting.scaled_encoders,
 };
 
 export let botReducer = generateReducer<BotState>(initialState(), afterEach)

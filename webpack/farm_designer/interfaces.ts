@@ -16,6 +16,7 @@ import { isNumber } from "lodash";
 import { McuParams } from "farmbot/dist";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { SelectionBoxData } from "./map/selection_box";
+import { BooleanConfigKey } from "../config_storage/web_app_configs";
 
 /** TODO: Use Enums */
 export type BotOriginQuadrant = 1 | 2 | 3 | 4;
@@ -27,14 +28,16 @@ export function isBotOriginQuadrant(mystery: Mystery):
   return isNumber(mystery) && [1, 2, 3, 4].includes(mystery);
 }
 
-export interface State {
-  legendMenuOpen: boolean;
-  showPlants: boolean;
-  showPoints: boolean;
-  showSpread: boolean;
-  showFarmbot: boolean;
-  botOriginQuadrant: BotOriginQuadrant;
-  zoomLevel: number;
+type TypeCheckerHint = Partial<Record<BooleanConfigKey, boolean>>;
+
+export interface State extends TypeCheckerHint {
+  legend_menu_open: boolean;
+  show_plants: boolean;
+  show_points: boolean;
+  show_spread: boolean;
+  show_farmbot: boolean;
+  bot_origin_quadrant: BotOriginQuadrant;
+  zoom_level: number;
 }
 
 export interface Props {

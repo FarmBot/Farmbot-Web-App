@@ -38,7 +38,7 @@ describe("<Controls />", () => {
   }
 
   it("shows webcam widget", () => {
-    mockStorj[BooleanSetting.hideWebcamWidget] = false;
+    mockStorj[BooleanSetting.hide_webcam_widget] = false;
     const wrapper = mount(<Controls {...fakeProps() } />);
     const txt = wrapper.text().toLowerCase();
     ["webcam", "move", "peripherals"]
@@ -46,7 +46,7 @@ describe("<Controls />", () => {
   });
 
   it("hides webcam widget", () => {
-    mockStorj[BooleanSetting.hideWebcamWidget] = true;
+    mockStorj[BooleanSetting.hide_webcam_widget] = true;
     const wrapper = mount(<Controls {...fakeProps() } />);
     const txt = wrapper.text().toLowerCase();
     ["move", "peripherals"].map(string => expect(txt).toContain(string));

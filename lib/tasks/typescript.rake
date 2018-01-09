@@ -21,7 +21,10 @@ class Typescript
     export interface <%= interface_name %> {
     <% fields.each do |field| %>  <%= field.head %>: <%= field.tail %>;
     <% end %>}
-  END
+    <% fields_by_type.each do |field| %>
+    export type <%= field.head %> = <%= field.tail %><% end %>
+
+    END
 
   # CONFIG_KLASS = [ FbosConfig, WebAppConfig, FirmwareConfig ]
 
@@ -29,7 +32,7 @@ class Typescript
     @klass  = klass
     results = ERB.new(INTERFACE_TPL).result(binding)
     File.open("webpack/config_storage/#{klass.table_name}.ts", "w") do |f|
-      f.write(results)
+      f.write(results.strip + "\n")
     end
   end
 
@@ -48,6 +51,16 @@ class Typescript
       Pair[col.name, col_type]
     end
   end
+
+  def self.fields_by_type
+    fields
+      .group_by { |x| x.tail }
+      .to_a
+      .map do |arr|
+        Pair["#{arr.first.camelize}ConfigKey",
+             arr.last.map{|x| x.head.inspect }.join("\n    |") + ";\n"]
+      end
+  end
 end
 
 namespace :typescript do
@@ -59,9 +72,8 @@ namespace :typescript do
   end
 
   desc "Pick a random file that (maybe) needs unit tests"
-  task :random_coverage => :environment do
+  task :random => :environment do
     ideas = Dir["coverage/webpack/**/*.html"].sample(4)
-    binding.pry
-    sh `firefox #{ideas.join(" ")}`
+    spawn("firefox #{ideas.join(" ")}")
   end
 end

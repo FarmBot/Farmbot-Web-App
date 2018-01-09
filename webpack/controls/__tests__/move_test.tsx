@@ -65,7 +65,7 @@ describe("<Move />", () => {
       type: Actions.INVERT_JOG_BUTTON,
       payload: "x"
     });
-    expect(Session.invertBool).toHaveBeenCalledWith("xAxisInverted");
+    expect(Session.invertBool).toHaveBeenCalledWith("x_axis_inverted");
   });
 
   it("toggle: encoder data display", () => {
@@ -78,6 +78,6 @@ describe("<Move />", () => {
       type: Actions.DISPLAY_ENCODER_DATA,
       payload: "raw_encoders"
     });
-    expect(Session.invertBool).toHaveBeenCalledWith("rawEncoders");
+    expect(Session.invertBool).toHaveBeenCalledWith("raw_encoders");
   });
 });

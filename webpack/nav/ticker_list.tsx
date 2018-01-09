@@ -12,7 +12,7 @@ import { isNumber } from "lodash";
 const logFilter = (log: Log): Log | undefined => {
   const type = (log.meta || {}).type;
   const { verbosity } = log.meta;
-  const filterLevel = Session.getNum(safeNumericSetting(type + "Log"));
+  const filterLevel = Session.getNum(safeNumericSetting(type + "_log"));
   const filterLevelCompare = isNumber(filterLevel) ? filterLevel : 1;
   const displayLog = verbosity
     ? verbosity <= filterLevelCompare

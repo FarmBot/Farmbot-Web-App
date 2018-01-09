@@ -23,14 +23,14 @@ describe("remove()", () => {
 
   it("deletes step without confirmation", () => {
     const dispatch = jest.fn();
-    mockStorj[BooleanSetting.confirmStepDeletion] = false;
+    mockStorj[BooleanSetting.confirm_step_deletion] = false;
     remove({ index: 0, dispatch, sequence: fakeSequence() });
     expect(dispatch).toHaveBeenCalled();
   });
 
   it("deletes step with confirmation", () => {
     const dispatch = jest.fn();
-    mockStorj[BooleanSetting.confirmStepDeletion] = true;
+    mockStorj[BooleanSetting.confirm_step_deletion] = true;
     remove({ index: 0, dispatch, sequence: fakeSequence() });
     expect(dispatch).not.toHaveBeenCalled();
     // tslint:disable-next-line:no-any

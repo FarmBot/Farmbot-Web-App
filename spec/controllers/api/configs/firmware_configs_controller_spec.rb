@@ -102,7 +102,6 @@ describe Api::FirmwareConfigsController do
         pin_guard_5_active_state:          1,
         pin_guard_5_pin_nr:                0,
         pin_guard_5_time_out:              60,
-        status_general:                    0
       }.to_a.map { |key, value| expect(json[key]).to eq(value) }
 
       { created_at: String, updated_at: String }
@@ -113,7 +112,7 @@ describe Api::FirmwareConfigsController do
   describe '#update' do
     it 'handles update requests' do
       sign_in user
-      body = { pin_guard_5_time_out: 23, status_general: -1 }
+      body = { pin_guard_5_time_out: 23 }
       body.to_a.map { |key, val| expect(device.firmware_config.send(key)).not_to eq(val) }
       put :update, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(200)
@@ -139,11 +138,11 @@ describe Api::FirmwareConfigsController do
     it 'resets everything to the defaults' do
       sign_in user
       old_conf = device.firmware_config
-      old_conf.update_attributes(status_general: 23)
+      old_conf.update_attributes(pin_guard_5_pin_nr: 23)
       delete :destroy, params: {}
       expect(response.status).to eq(200)
       new_conf = device.reload.firmware_config
-      expect(new_conf.status_general).to_not eq(23)
+      expect(new_conf.pin_guard_5_pin_nr).to_not eq(23)
     end
   end
 end
