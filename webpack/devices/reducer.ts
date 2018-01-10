@@ -3,7 +3,6 @@ import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
 import { EncoderDisplay } from "../controls/interfaces";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
-import { Session } from "../session";
 import { BooleanSetting } from "../session_keys";
 import { maybeNegateStatus, maybeNegateConsistency } from "../connectivity/maybe_negate_status";
 import { EdgeStatus } from "../connectivity/interfaces";
@@ -178,10 +177,6 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
   })
   .add<string>(Actions.FETCH_FW_UPDATE_INFO_OK, (s, { payload }) => {
     s.currentFWVersion = payload;
-    return s;
-  })
-  .add<EncoderDisplay>(Actions.DISPLAY_ENCODER_DATA, (s, { payload }) => {
-    s.encoder_visibility[payload] = !s.encoder_visibility[payload];
     return s;
   })
   .add<void>(Actions.STASH_STATUS, (s, a) => {

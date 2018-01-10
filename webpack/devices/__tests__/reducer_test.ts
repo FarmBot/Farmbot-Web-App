@@ -90,18 +90,18 @@ describe("botRedcuer", () => {
 
   });
 
-  it("toggles encoder data display", () => {
-    const action = { type: Actions.DISPLAY_ENCODER_DATA, payload: "Q" };
+  // it("toggles encoder data display", () => {
+  //   const action = { type: Actions.DISPLAY_ENCODER_DATA, payload: "Q" };
 
-    action.payload = "raw_encoders";
-    const result = botReducer(initialState(), action);
-    expect(result.encoder_visibility.raw_encoders)
-      .toBe(!initialState().encoder_visibility.raw_encoders);
+  //   action.payload = "raw_encoders";
+  //   const result = botReducer(initialState(), action);
+  //   expect(result.encoder_visibility.raw_encoders)
+  //     .toBe(!initialState().encoder_visibility.raw_encoders);
 
-    action.payload = "scaled_encoders";
-    expect(botReducer(initialState(), action).encoder_visibility.scaled_encoders)
-      .toBe(!initialState().encoder_visibility.scaled_encoders);
-  });
+  //   action.payload = "scaled_encoders";
+  //   expect(botReducer(initialState(), action).encoder_visibility.scaled_encoders)
+  //     .toBe(!initialState().encoder_visibility.scaled_encoders);
+  // });
 
   it("resets hardware state when transitioning into mainenance mode.", () => {
     const state = initialState();

@@ -25,7 +25,12 @@ describe("<Move />", () => {
       dispatch: jest.fn(),
       bot: bot,
       user: undefined,
-      disabled: false
+      disabled: false,
+      raw_encoders: false,
+      scaled_encoders: false,
+      x_axis_inverted: false,
+      y_axis_inverted: false,
+      z_axis_inverted: false,
     };
   }
 
@@ -38,7 +43,7 @@ describe("<Move />", () => {
 
   it("has only raw encoder data display", () => {
     const p = fakeProps();
-    p.encoder_visibility.raw_encoders = true;
+    p.raw_encoders = true;
     const wrapper = mount(<Move {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("raw");
@@ -47,8 +52,8 @@ describe("<Move />", () => {
 
   it("has both encoder data displays", () => {
     const p = fakeProps();
-    p.bot.encoder_visibility.raw_encoders = true;
-    p.bot.encoder_visibility.scaled_encoders = true;
+    p.raw_encoders = true;
+    p.scaled_encoders = true;
     const wrapper = mount(<Move {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("raw");

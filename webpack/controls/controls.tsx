@@ -20,16 +20,24 @@ export class Controls extends React.Component<Props, {}> {
       .hardware
       .informational_settings
       .busy;
+    const moveProps = {
+      bot: this.props.bot,
+      user: this.props.user,
+      dispatch: this.props.dispatch,
+      disabled: arduinoBusy,
+      raw_encoders: !!Session.deprecatedGetBool(BooleanSetting.raw_encoders),
+      scaled_encoders: !!Session.deprecatedGetBool(BooleanSetting.scaled_encoders),
+      x_axis_inverted: !!Session.deprecatedGetBool(BooleanSetting.x_axis_inverted),
+      y_axis_inverted: !!Session.deprecatedGetBool(BooleanSetting.y_axis_inverted),
+      z_axis_inverted: !!Session.deprecatedGetBool(BooleanSetting.z_axis_inverted),
+    };
     const showWebcamWidget = !Session.deprecatedGetBool(BooleanSetting.hide_webcam_widget);
     return <Page className="controls">
       {showWebcamWidget
         ?
         <Row>
           <Col xs={12} sm={6} md={5} mdOffset={1}>
-            <Move bot={this.props.bot}
-              user={this.props.user}
-              dispatch={this.props.dispatch}
-              disabled={arduinoBusy} />
+            <Move {...moveProps} />
             <Peripherals
               bot={this.props.bot}
               peripherals={this.props.peripherals}
@@ -44,10 +52,7 @@ export class Controls extends React.Component<Props, {}> {
         :
         <Row>
           <Col xs={12} sm={6} md={5} mdOffset={1}>
-            <Move bot={this.props.bot}
-              user={this.props.user}
-              dispatch={this.props.dispatch}
-              disabled={arduinoBusy} />
+            <Move {...moveProps} />
           </Col>
           <Col xs={12} sm={5}>
             <Peripherals

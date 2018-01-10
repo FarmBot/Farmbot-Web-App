@@ -21,6 +21,11 @@ export interface MoveProps {
   bot: BotState;
   user: TaggedUser | undefined;
   disabled: boolean | undefined;
+  raw_encoders: boolean;
+  scaled_encoders: boolean;
+  x_axis_inverted: boolean;
+  y_axis_inverted: boolean;
+  z_axis_inverted: boolean;
 }
 
 export interface DirectionButtonProps {
