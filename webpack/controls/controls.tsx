@@ -20,7 +20,7 @@ export class Controls extends React.Component<Props, {}> {
       .hardware
       .informational_settings
       .busy;
-    const showWebcamWidget = !Session.getBool(BooleanSetting.hide_webcam_widget);
+    const showWebcamWidget = !Session.deprecatedGetBool(BooleanSetting.hide_webcam_widget);
     return <Page className="controls">
       {showWebcamWidget
         ?

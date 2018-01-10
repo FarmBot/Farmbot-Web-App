@@ -16,7 +16,7 @@ jest.mock("../../../session", () => {
       setNum: (k: string, v: number) => {
         mockStorj[k] = v;
       },
-      getBool: (k: string) => {
+      deprecatedGetBool: (k: string) => {
         mockStorj[k] = !!mockStorj[k];
         return mockStorj[k];
       }

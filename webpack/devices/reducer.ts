@@ -86,13 +86,13 @@ export let initialState = (): BotState => ({
   currentOSVersion: undefined,
   currentFWVersion: undefined,
   axis_inversion: {
-    x: !!Session.getBool(BooleanSetting.x_axis_inverted),
-    y: !!Session.getBool(BooleanSetting.y_axis_inverted),
-    z: !!Session.getBool(BooleanSetting.z_axis_inverted),
+    x: !!Session.deprecatedGetBool(BooleanSetting.x_axis_inverted),
+    y: !!Session.deprecatedGetBool(BooleanSetting.y_axis_inverted),
+    z: !!Session.deprecatedGetBool(BooleanSetting.z_axis_inverted),
   },
   encoder_visibility: {
-    raw_encoders: !!Session.getBool(BooleanSetting.raw_encoders),
-    scaled_encoders: !!Session.getBool(BooleanSetting.scaled_encoders),
+    raw_encoders: !!Session.deprecatedGetBool(BooleanSetting.raw_encoders),
+    scaled_encoders: !!Session.deprecatedGetBool(BooleanSetting.scaled_encoders),
   },
   connectivity: {
     "bot.mqtt": undefined,

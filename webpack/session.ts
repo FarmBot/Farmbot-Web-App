@@ -46,7 +46,7 @@ export namespace Session {
 
   /** Fetch a *boolean* value from localstorage. Returns `undefined` when
    * none are found.*/
-  export function getBool(key: BooleanConfigKey): boolean | undefined {
+  export function deprecatedGetBool(key: BooleanConfigKey): boolean | undefined {
     const output = JSON.parse(localStorage.getItem(key) || "null");
     return (isBoolean(output)) ? output : undefined;
   }
@@ -58,7 +58,7 @@ export namespace Session {
   }
 
   export function invertBool(key: BooleanConfigKey): boolean {
-    return Session.setBool(key, !Session.getBool(key));
+    return Session.setBool(key, !Session.deprecatedGetBool(key));
   }
 
   /** Extract numeric settings from `localStorage`. Returns `undefined` when

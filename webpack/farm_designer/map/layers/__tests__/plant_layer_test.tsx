@@ -7,7 +7,7 @@ jest.mock("../../../../history", () => ({
 jest.mock("../../../../session", () => {
   return {
     Session: {
-      getBool: () => { return false; }
+      deprecatedGetBool: () => { return false; }
     }
   };
 });

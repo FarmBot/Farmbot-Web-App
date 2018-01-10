@@ -84,7 +84,7 @@ export class SpreadCircle extends
     const { selected, mapTransformProps } = this.props;
     const { quadrant, gridSize } = mapTransformProps;
     const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
-    const animate = !Session.getBool(BooleanSetting.disable_animations);
+    const animate = !Session.deprecatedGetBool(BooleanSetting.disable_animations);
 
     return <g id={"spread-" + id}>
       {!selected &&

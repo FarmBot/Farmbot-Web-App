@@ -16,7 +16,7 @@ import { getBotSize } from "./map/util";
 import { catchErrors } from "../util";
 
 export const getDefaultAxisLength = (): AxisNumberProperty => {
-  if (Session.getBool(BooleanSetting.map_xl)) {
+  if (Session.deprecatedGetBool(BooleanSetting.map_xl)) {
     return { x: 5900, y: 2900 };
   } else {
     return { x: 2900, y: 1400 };
@@ -24,7 +24,7 @@ export const getDefaultAxisLength = (): AxisNumberProperty => {
 };
 
 export const getGridSize = (botSize: BotSize) => {
-  if (Session.getBool(BooleanSetting.dynamic_map)) {
+  if (Session.deprecatedGetBool(BooleanSetting.dynamic_map)) {
     // Render the map size according to device axis length.
     return { x: botSize.x.value, y: botSize.y.value };
   }
@@ -40,7 +40,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
 
   initializeSetting =
     (name: keyof State, defaultValue: boolean): boolean => {
-      const currentValue = Session.getBool(safeBooleanSettting(name));
+      const currentValue = Session.deprecatedGetBool(safeBooleanSettting(name));
       if (isUndefined(currentValue)) {
         Session.setBool(safeBooleanSettting(name), defaultValue);
         return defaultValue;
