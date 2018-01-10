@@ -206,13 +206,11 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     const isDown = status.state === "down";
     if (isBotMqtt) { /** This is way too hard to maintain */
       if (isDown) {
-        console.log("~STASHING~");
         stashStatus(s);
         s.hardware.informational_settings.sync_status = undefined;
       } else {
         const botMqtt = s.connectivity["bot.mqtt"];
         if (botMqtt && botMqtt.state === "down") { // Going from "down" to "up"
-          console.log("~UNSTASHING~");
           s.hardware.informational_settings.sync_status = s.statusStash;
         }
       }

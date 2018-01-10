@@ -16,8 +16,10 @@ const eachEntry = (): KeyTranslationPair[] => {
     .map(key => ({ jsCaseKey: camelCase(key), ruby_case_key: key, value: key }));
 };
 
-const transferKey = (x: KeyTranslationPair) =>
-  localStorage.setItem(x.ruby_case_key, localStorage.getItem(x.jsCaseKey) || "");
+const transferKey = (x: KeyTranslationPair) => {
+  const item = localStorage.getItem(x.jsCaseKey);
+  item && localStorage.setItem(x.ruby_case_key, item);
+};
 
 export const DONE_FLAG = "done";
 
