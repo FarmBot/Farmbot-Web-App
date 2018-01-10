@@ -1,3 +1,4 @@
 exclude_paths:
-- "public/app-resources/languages/*.js"
 - "**/*__test*"
+- "**/*spec*.rb"
+- "public/app-resources/languages/*.js"
