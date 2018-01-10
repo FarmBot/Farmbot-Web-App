@@ -1,3 +1,3 @@
-## other configuration excluded from example...
 exclude_paths:
-- public/app-resources/languages/*.js
+- "public/app-resources/languages/*.js"
+- "**/*__test*"
