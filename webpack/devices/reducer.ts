@@ -75,7 +75,8 @@ export let initialState = (): BotState => ({
       commit: "---",
       target: "---",
       env: "---",
-      node_name: "---"
+      node_name: "---",
+      firmware_commit: "---"
     },
     user_env: {},
     process_info: {
