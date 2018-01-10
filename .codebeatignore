@@ -4,3 +4,5 @@ webpack/**/*test*.tsx
 **__test**
 **__tests__**
 **test**
+webpack/entry.tsx
+webpack/password_reset/index.tsx

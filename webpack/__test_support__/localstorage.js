@@ -6,6 +6,7 @@ function whatever() {
   var store = {};
 
   return {
+    store,
     clear() {
       store = {};
     },
