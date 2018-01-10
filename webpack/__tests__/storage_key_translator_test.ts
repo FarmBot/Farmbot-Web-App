@@ -18,6 +18,8 @@ describe("maybeRunLocalstorageMigration", () => {
 
     maybeRunLocalstorageMigration();
 
+    expect(localStorage.getItem(NumericSetting.busy_log))
+      .toBeUndefined();
     expect(localStorage.getItem(NumericSetting.bot_origin_quadrant))
       .toBe(storedValue);
     expect(localStorage.getItem(DONE_FLAG)).toBe(DONE_FLAG);
