@@ -6,6 +6,7 @@ function whatever() {
   var store = {};
 
   return {
+    store,
     clear() {
       store = {};
     },
@@ -13,6 +14,7 @@ function whatever() {
       return store[key];
     },
     setItem(key, value) {
+      console.log(`Set ${key} to ${value} = = = =`);
       store[key] = value.toString();
     },
     removeItem(key) {

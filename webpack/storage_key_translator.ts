@@ -27,6 +27,6 @@ const translateKeys = () => eachEntry().map(transferKey);
 
 const doRunMigration = () => translateKeys() && markAsDone();
 
-const hasFlag = () => !!localStorage.getItem(DONE_FLAG);
+const mustRun = () => !localStorage.getItem(DONE_FLAG);
 
-export const maybeRunLocalstorageMigration = () => hasFlag() && doRunMigration();
+export const maybeRunLocalstorageMigration = () => mustRun() && doRunMigration();
