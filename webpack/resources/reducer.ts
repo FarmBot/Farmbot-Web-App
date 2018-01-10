@@ -125,6 +125,7 @@ export let resourceReducer = generateReducer
         case "Tool":
         case "User":
         case "WebcamFeed":
+        case "WebAppConfig":
           reindexResource(s.index, resource);
           dontTouchThis(resource);
           s.index.references[resource.uuid] = resource;
@@ -151,6 +152,7 @@ export let resourceReducer = generateReducer
       case "Tool":
       case "User":
       case "WebcamFeed":
+      case "WebAppConfig":
       case "Image":
         removeFromIndex(s.index, resource);
         break;

@@ -554,5 +554,7 @@ export function getWebAppConfig(i: ResourceIndex): TaggedWebAppConfig | undefine
   const conf = i.references[i.byKind.WebAppConfig[0] || "NO"];
   if (conf && conf.kind === "WebAppConfig") {
     return conf;
+  } else {
+    // debugger;
   }
 }

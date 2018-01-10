@@ -29,8 +29,9 @@ export function setBoolViaRedux(key: BooleanConfigKey, val: boolean) {
   if (conf) {
     store.dispatch(edit(conf, { [key]: val }));
     store.dispatch(save(conf.uuid));
-    return val;
   } else {
-    throw new Error("Impossible?");
+    console.log("Be concerned.");
+    debugger;
   }
+  return val;
 }

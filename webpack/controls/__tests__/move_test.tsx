@@ -12,7 +12,6 @@ import { mount } from "enzyme";
 import { Move } from "../move";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { MoveProps } from "../interfaces";
-import { Actions } from "../../constants";
 import { Session } from "../../session";
 
 describe("<Move />", () => {
@@ -75,10 +74,6 @@ describe("<Move />", () => {
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     instance.toggle_encoder_data("raw_encoders")();
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.DISPLAY_ENCODER_DATA,
-      payload: "raw_encoders"
-    });
     expect(Session.invertBool).toHaveBeenCalledWith("raw_encoders");
   });
 });
