@@ -16,7 +16,6 @@ import {
 import { RestResources, ResourceIndex } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
-import { EncoderDisplay } from "../controls/interfaces";
 import { ConnectionStatus, ConnectionState } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
 
@@ -64,19 +63,23 @@ export interface BotState {
    * spinner or not. */
   isUpdating?: boolean;
   controlPanelState: ControlPanelState;
-  /** The inversions for the jog buttons on the controls page. */
-  axis_inversion: Record<Xyz, boolean>;
-  /** The display setting for encoder data on the controls page. */
-  encoder_visibility: Record<EncoderDisplay, boolean>;
+  /**
+   *
+   * THESE ARE THE RESPONSIBILITY OF THE API SETTINGS STORE NOW. REMOVING
+   *   - RC 10 JAN 18
+   *
+   */
+  // /** The inversions for the jog buttons on the controls page. */
+  // axis_inversion: Record<Xyz, boolean>;
+  // /** The display setting for encoder data on the controls page. */
+  // encoder_visibility: Record<EncoderDisplay, boolean>;
   /** Have all API requests been acknowledged by external services? This flag
    * lets us know if it is safe to do data critical tasks with the bot */
   consistent: boolean;
   connectivity: ConnectionState;
 }
 
-export interface BotProp {
-  bot: BotState;
-}
+export interface BotProp { bot: BotState; }
 
 /** Status registers for the bot's status */
 export type HardwareState = BotStateTree;

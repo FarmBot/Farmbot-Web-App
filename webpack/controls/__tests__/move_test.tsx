@@ -38,7 +38,7 @@ describe("<Move />", () => {
 
   it("has only raw encoder data display", () => {
     const p = fakeProps();
-    p.bot.encoder_visibility.raw_encoders = true;
+    p.encoder_visibility.raw_encoders = true;
     const wrapper = mount(<Move {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("raw");
@@ -61,10 +61,6 @@ describe("<Move />", () => {
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     instance.toggle("x")();
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.INVERT_JOG_BUTTON,
-      payload: "x"
-    });
     expect(Session.invertBool).toHaveBeenCalledWith("x_axis_inverted");
   });
 

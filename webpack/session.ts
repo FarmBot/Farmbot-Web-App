@@ -1,8 +1,9 @@
 import { AuthState } from "./auth/interfaces";
 import { box } from "boxed_value";
-import { get, isNumber, isBoolean } from "lodash";
+import { get, isNumber } from "lodash";
 import { BooleanConfigKey, NumberConfigKey } from "./config_storage/web_app_configs";
 import { BooleanSetting, NumericSetting } from "./session_keys";
+import { getBoolViaRedux, setBoolViaRedux } from "./config/legacy_shims";
 
 /** The `Session` namespace is a wrapper for `localStorage`.
  * Use this to avoid direct access of `localStorage` where possible.
@@ -44,17 +45,15 @@ export namespace Session {
     return undefined as never;
   }
 
-  /** Fetch a *boolean* value from localstorage. Returns `undefined` when
-   * none are found.*/
+  /** @deprecated Don't use this anymore. This is a legacy articfact of when we
+   * used localStorage to store API settings. */
   export function deprecatedGetBool(key: BooleanConfigKey): boolean | undefined {
-    const output = JSON.parse(localStorage.getItem(key) || "null");
-    return (isBoolean(output)) ? output : undefined;
+    return getBoolViaRedux(key);
   }
 
   /** Store a boolean value in `localStorage` */
   export function setBool(key: BooleanConfigKey, val: boolean): boolean {
-    localStorage.setItem(key, JSON.stringify(val));
-    return val;
+    return setBoolViaRedux(key, val);
   }
 
   export function invertBool(key: BooleanConfigKey): boolean {

@@ -85,15 +85,6 @@ export let initialState = (): BotState => ({
   dirty: false,
   currentOSVersion: undefined,
   currentFWVersion: undefined,
-  axis_inversion: {
-    x: !!Session.deprecatedGetBool(BooleanSetting.x_axis_inverted),
-    y: !!Session.deprecatedGetBool(BooleanSetting.y_axis_inverted),
-    z: !!Session.deprecatedGetBool(BooleanSetting.z_axis_inverted),
-  },
-  encoder_visibility: {
-    raw_encoders: !!Session.deprecatedGetBool(BooleanSetting.raw_encoders),
-    scaled_encoders: !!Session.deprecatedGetBool(BooleanSetting.scaled_encoders),
-  },
   connectivity: {
     "bot.mqtt": undefined,
     "user.mqtt": undefined,
@@ -186,10 +177,6 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
   })
   .add<string>(Actions.FETCH_FW_UPDATE_INFO_OK, (s, { payload }) => {
     s.currentFWVersion = payload;
-    return s;
-  })
-  .add<Xyz>(Actions.INVERT_JOG_BUTTON, (s, { payload }) => {
-    s.axis_inversion[payload] = !s.axis_inversion[payload];
     return s;
   })
   .add<EncoderDisplay>(Actions.DISPLAY_ENCODER_DATA, (s, { payload }) => {

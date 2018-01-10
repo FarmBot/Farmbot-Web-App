@@ -20,22 +20,18 @@ export class Move extends React.Component<MoveProps, {}> {
 
   toggle = (name: Xyz) => () => {
     Session.invertBool(INVERSION_MAPPING[name]);
-    this.props.dispatch({ type: "INVERT_JOG_BUTTON", payload: name });
   };
 
   toggle_encoder_data =
-  (name: EncoderDisplay) => () => {
-    Session.invertBool(ENCODER_MAPPING[name]);
-    this.props.dispatch({ type: "DISPLAY_ENCODER_DATA", payload: name });
-  }
+    (name: EncoderDisplay) => () => Session.invertBool(ENCODER_MAPPING[name]);
 
   render() {
     const {
       sync_status, firmware_version
     } = this.props.bot.hardware.informational_settings;
-    const x_axis_inverted = this.props.bot.axis_inversion.x;
-    const y_axis_inverted = this.props.bot.axis_inversion.y;
-    const z_axis_inverted = this.props.bot.axis_inversion.z;
+    const x_axis_inverted = this.props.x_axis_inversion;
+    const y_axis_inverted = this.props.y_axis_inversion;
+    const z_axis_inverted = this.props.z_axis_inversion;
     const { raw_encoders, scaled_encoders } = this.props.bot.encoder_visibility;
     const xBtnColor = x_axis_inverted ? "green" : "red";
     const yBtnColor = y_axis_inverted ? "green" : "red";
