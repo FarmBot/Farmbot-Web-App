@@ -50,12 +50,12 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     }
 
   getBotOriginQuadrant = (): BotOriginQuadrant => {
-    const value = Session.getNum(NumericSetting.bot_origin_quadrant);
+    const value = Session.deprecatedGetNum(NumericSetting.bot_origin_quadrant);
     return isBotOriginQuadrant(value) ? value : 2;
   }
 
   getZoomLevel = (): number => {
-    return Session.getNum(NumericSetting.zoom_level) || 1;
+    return Session.deprecatedGetNum(NumericSetting.zoom_level) || 1;
   }
 
   state: State = {
@@ -80,13 +80,13 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
 
   updateBotOriginQuadrant = (payload: BotOriginQuadrant) => () => {
     this.setState({ bot_origin_quadrant: payload });
-    Session.setNum(NumericSetting.bot_origin_quadrant, payload);
+    Session.deprecatedSetNum(NumericSetting.bot_origin_quadrant, payload);
   }
 
   updateZoomLevel = (zoomIncrement: number) => () => {
     const payload = Math.round((this.getZoomLevel() + zoomIncrement) * 10) / 10;
     this.setState({ zoom_level: payload });
-    Session.setNum(NumericSetting.zoom_level, payload);
+    Session.deprecatedSetNum(NumericSetting.zoom_level, payload);
   }
 
   childComponent(props: Props) {

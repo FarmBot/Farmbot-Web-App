@@ -7,10 +7,10 @@ const mockStorj: Dictionary<number | boolean> = {};
 jest.mock("../../session", () => {
   return {
     Session: {
-      getNum: (k: string) => {
+      deprecatedGetNum: (k: string) => {
         return mockStorj[k];
       },
-      setNum: (k: string, v: number) => {
+      deprecatedSetNum: (k: string, v: number) => {
         mockStorj[k] = v;
       },
       deprecatedGetBool: (k: string) => {

@@ -61,12 +61,12 @@ export namespace Session {
 
   /** Extract numeric settings from `localStorage`. Returns `undefined` when
    * none are found. */
-  export function getNum(key: NumberConfigKey): number | undefined {
+  export function deprecatedGetNum(key: NumberConfigKey): number | undefined {
     return getNumViaRedux(key);
   }
 
   /** Set a numeric value in `localStorage`. */
-  export function setNum(key: NumberConfigKey, val: number): void {
+  export function deprecatedSetNum(key: NumberConfigKey, val: number): void {
     setNumViaRedux(key, val);
   }
 }
