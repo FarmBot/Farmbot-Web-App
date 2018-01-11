@@ -122,7 +122,9 @@ export class FarmbotOsSettings
           <MustBeOnline
             status={hardware.informational_settings.sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>
-            <AutoUpdateRow bot={this.props.bot} controller_version={controller_version} />
+            <AutoUpdateRow
+              bot={this.props.bot}
+              controller_version={controller_version} />
             {this.maybeShowAutoSync()}
             <CameraSelection env={hardware.user_env} />
             <BoardType firmwareVersion={firmware_version} />
