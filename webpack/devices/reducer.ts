@@ -180,6 +180,7 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     return s;
   })
   .add<void>(Actions.STASH_STATUS, (s, a) => {
+    console.log("Stash status (singular)");
     stashStatus(s);
     return s;
   })
@@ -189,9 +190,11 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     const isDown = status.state === "down";
     if (isBotMqtt) { /** This is way too hard to maintain */
       if (isDown) {
+        console.log("Edge change stash");
         stashStatus(s);
         s.hardware.informational_settings.sync_status = undefined;
       } else {
+        console.log("Edge change unstash");
         const botMqtt = s.connectivity["bot.mqtt"];
         if (botMqtt && botMqtt.state === "down") { // Going from "down" to "up"
           s.hardware.informational_settings.sync_status = s.statusStash;

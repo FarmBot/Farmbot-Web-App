@@ -14,7 +14,7 @@ export enum SyncStrat {
   OFFLINE
 }
 
-/** Highest version lacking auto sync. Remove in January 2018 -RC */
+/** Highest version lacking auto sync. Remove in April 2018 -RC */
 const TOO_OLD = "5.0.6";
 
 /** "Hints" for figuring out which of the 4 strategies is appropriate. */
@@ -73,7 +73,7 @@ export function maybeNegateStatus(x: OverrideHints): SyncStatus | undefined {
 }
 
 /** Legacy bots dont have enough info to unset their `consistency` flag.
- * TODO: Delete this method in January 2018.
+ * TODO: Delete this method in April 2018.
  */
 export function maybeNegateConsistency(x: OverrideHints): boolean {
   const { autoSync, fbosVersion, consistent, syncStatus } = x;
