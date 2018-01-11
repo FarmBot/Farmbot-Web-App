@@ -1,6 +1,6 @@
 import { store } from "../redux/store";
 import { getWebAppConfig } from "../resources/selectors";
-import { BooleanConfigKey } from "../config_storage/web_app_configs";
+import { BooleanConfigKey, NumberConfigKey } from "../config_storage/web_app_configs";
 import { edit, save } from "../api/crud";
 
 /**
@@ -29,9 +29,22 @@ export function setBoolViaRedux(key: BooleanConfigKey, val: boolean) {
   if (conf) {
     store.dispatch(edit(conf, { [key]: val }));
     store.dispatch(save(conf.uuid));
-  } else {
-    console.log("Be concerned.");
-    debugger;
+  }
+  return val;
+}
+
+/** Avoid using this function in new places. Pass props instead. */
+export function getNumViaRedux(key: NumberConfigKey): number | undefined {
+  const conf = getWebAppConfig(store.getState().resources.index);
+  return conf && conf.body[key];
+}
+
+/** Avoid using this function in new places. Pass props instead. */
+export function setNumViaRedux(key: NumberConfigKey, val: number): number {
+  const conf = getWebAppConfig(store.getState().resources.index);
+  if (conf) {
+    store.dispatch(edit(conf, { [key]: val }));
+    store.dispatch(save(conf.uuid));
   }
   return val;
 }

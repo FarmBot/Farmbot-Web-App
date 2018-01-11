@@ -1,9 +1,8 @@
 import { AuthState } from "./auth/interfaces";
 import { box } from "boxed_value";
-import { get, isNumber } from "lodash";
 import { BooleanConfigKey, NumberConfigKey } from "./config_storage/web_app_configs";
 import { BooleanSetting, NumericSetting } from "./session_keys";
-import { getBoolViaRedux, setBoolViaRedux } from "./config/legacy_shims";
+import { getBoolViaRedux, setBoolViaRedux, getNumViaRedux, setNumViaRedux } from "./config/legacy_shims";
 
 /** The `Session` namespace is a wrapper for `localStorage`.
  * Use this to avoid direct access of `localStorage` where possible.
@@ -63,13 +62,12 @@ export namespace Session {
   /** Extract numeric settings from `localStorage`. Returns `undefined` when
    * none are found. */
   export function getNum(key: NumberConfigKey): number | undefined {
-    const output = JSON.parse(get(localStorage, key, "null"));
-    return (isNumber(output)) ? output : undefined;
+    return getNumViaRedux(key);
   }
 
   /** Set a numeric value in `localStorage`. */
   export function setNum(key: NumberConfigKey, val: number): void {
-    localStorage.setItem(key, JSON.stringify(val));
+    setNumViaRedux(key, val);
   }
 }
 
