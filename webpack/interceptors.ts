@@ -15,7 +15,6 @@ import { Content } from "./constants";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";
 import { Dictionary } from "farmbot";
 import { outstandingRequests } from "./connectivity/data_consistency";
-import { fancyDebug } from "./util";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   const method = input.config.method;
@@ -24,11 +23,6 @@ export function responseFulfilled(input: AxiosResponse): AxiosResponse {
     const uuid = input.headers["X-Farmbot-Rpc-Id"] || "NONE";
     notifyBotOfChanges(input.config.url, METHOD_MAP[method], uuid);
   }
-  fancyDebug({
-    method,
-    uuid: input.headers["X-Farmbot-Rpc-Id"] || "NONE",
-    url: input.config.url
-  });
   return input;
 }
 
