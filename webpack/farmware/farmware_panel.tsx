@@ -195,7 +195,9 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
             <Row>
               <fieldset>
                 <Col xs={12}>
-                  <FBSelect list={this.fwList()}
+                  <FBSelect
+                    key={"farmware_" + this.selectedItem()}
+                    list={this.fwList()}
                     selectedItem={this.selectedItem()}
                     onChange={(x) => {
                       const selectedFarmware = x.value;

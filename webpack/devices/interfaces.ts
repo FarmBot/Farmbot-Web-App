@@ -54,8 +54,8 @@ export interface BotState {
   stepSize: number;
   /** The current os version on the github release api */
   currentOSVersion?: string;
-  /** The current fw version on the github release api */
-  currentFWVersion?: string;
+  /** The current beta os version on the github release api */
+  currentBetaOSVersion?: string;
   /** Is the bot in sync with the api */
   dirty: boolean;
   /** The state of the bot, as reported by the bot over MQTT. */
