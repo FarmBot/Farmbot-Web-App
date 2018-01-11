@@ -29,7 +29,8 @@ export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) 
   }
   let { sync_status } = bot.hardware.informational_settings;
   sync_status = sync_status || "unknown";
-  const color = consistent ?
+  const isOnline = sync_status && sync_status !== "unknown";
+  const color = consistent && isOnline ?
     (COLOR_MAPPING[sync_status] || "red") : "gray";
   const text = TEXT_MAPPING[sync_status] || "DISCONNECTED";
   return (
