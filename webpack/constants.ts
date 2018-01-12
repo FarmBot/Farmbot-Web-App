@@ -354,6 +354,10 @@ export namespace Content {
     trim(`This will restart FarmBot's Raspberry Pi and controller
     software.`);
 
+  export const OS_AUTO_UPDATE =
+    trim(`When enabled, FarmBot OS will periodically check for, download,
+    and install updates automatically.`);
+
   export const AUTO_SYNC =
     trim(`When enabled, device resources such as sequences and regimens
     will be sent to the device automatically. This removes the need to push
