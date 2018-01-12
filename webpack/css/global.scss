@@ -263,12 +263,22 @@ fieldset {
   opacity: 0.40;
 }
 
-.webcam-stream-valid img {
-  display: flex;
-  max-width: 100%;
-  margin: auto;
-  max-height: 650px;
-  min-height: 300px;
+.webcam-stream-valid {
+  img {
+    display: flex;
+    max-width: 100%;
+    margin: auto;
+    max-height: 650px;
+    min-height: 300px;
+  }
+  iframe {
+    display: flex;
+    width: 100%;
+    margin: auto;
+    max-height: 650px;
+    min-height: 300px;
+    border: none;
+  }
 }
 
 .webcam-stream-unavailable text {
