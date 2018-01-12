@@ -19,7 +19,6 @@ import { outstandingRequests } from "./connectivity/data_consistency";
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   const method = input.config.method;
   dispatchNetworkUp("user.api");
-
   if (method && METHODS.includes(method)) {
     const uuid = input.headers["X-Farmbot-Rpc-Id"] || "NONE";
     notifyBotOfChanges(input.config.url, METHOD_MAP[method], uuid);

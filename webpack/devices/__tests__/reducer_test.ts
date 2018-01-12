@@ -71,37 +71,6 @@ describe("botRedcuer", () => {
     expect(r).toBe("1.2.3");
   });
 
-  it("inverts X/Y/Z", () => {
-    const action = { type: Actions.INVERT_JOG_BUTTON, payload: "Q" };
-
-    action.payload = "x";
-    const result = botReducer(initialState(), action);
-    expect(result.axis_inversion.x)
-      .toBe(!initialState().axis_inversion.x);
-
-    action.payload = "y";
-    expect(botReducer(initialState(), action).axis_inversion.y)
-      .toBe(!initialState().axis_inversion.y);
-
-    action.payload = "z";
-    expect(botReducer(initialState(), action).axis_inversion.z)
-      .toBe(!initialState().axis_inversion.z);
-
-  });
-
-  it("toggles encoder data display", () => {
-    const action = { type: Actions.DISPLAY_ENCODER_DATA, payload: "Q" };
-
-    action.payload = "raw_encoders";
-    const result = botReducer(initialState(), action);
-    expect(result.encoder_visibility.raw_encoders)
-      .toBe(!initialState().encoder_visibility.raw_encoders);
-
-    action.payload = "scaled_encoders";
-    expect(botReducer(initialState(), action).encoder_visibility.scaled_encoders)
-      .toBe(!initialState().encoder_visibility.scaled_encoders);
-  });
-
   it("resets hardware state when transitioning into mainenance mode.", () => {
     const state = initialState();
     const payload = defensiveClone(state.hardware);

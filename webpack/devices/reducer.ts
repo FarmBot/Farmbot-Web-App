@@ -3,7 +3,6 @@ import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
 import { EncoderDisplay } from "../controls/interfaces";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
-import { Session } from "../session";
 import { BooleanSetting } from "../session_keys";
 import { maybeNegateStatus, maybeNegateConsistency } from "../connectivity/maybe_negate_status";
 import { EdgeStatus } from "../connectivity/interfaces";
@@ -86,15 +85,6 @@ export let initialState = (): BotState => ({
   dirty: false,
   currentOSVersion: undefined,
   currentBetaOSVersion: undefined,
-  axis_inversion: {
-    x: !!Session.getBool(BooleanSetting.x_axis_inverted),
-    y: !!Session.getBool(BooleanSetting.y_axis_inverted),
-    z: !!Session.getBool(BooleanSetting.z_axis_inverted),
-  },
-  encoder_visibility: {
-    raw_encoders: !!Session.getBool(BooleanSetting.raw_encoders),
-    scaled_encoders: !!Session.getBool(BooleanSetting.scaled_encoders),
-  },
   connectivity: {
     "bot.mqtt": undefined,
     "user.mqtt": undefined,
@@ -188,14 +178,6 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     versionOK(informational_settings.controller_version);
     state.hardware.informational_settings.sync_status = nextSyncStatus;
     return state;
-  })
-  .add<Xyz>(Actions.INVERT_JOG_BUTTON, (s, { payload }) => {
-    s.axis_inversion[payload] = !s.axis_inversion[payload];
-    return s;
-  })
-  .add<EncoderDisplay>(Actions.DISPLAY_ENCODER_DATA, (s, { payload }) => {
-    s.encoder_visibility[payload] = !s.encoder_visibility[payload];
-    return s;
   })
   .add<void>(Actions.STASH_STATUS, (s, a) => {
     stashStatus(s);

@@ -76,7 +76,7 @@ export const maybeToggleFeature =
   };
 
 /** Stub this when testing if need be. */
-const fetchVal = (k: BooleanConfigKey) => !!Session.getBool(k);
+const fetchVal = (k: BooleanConfigKey) => !!Session.deprecatedGetBool(k);
 
 /** Takes a `LabFeature` (probably one with an uninitialized fallback / default
  * value) and sets it to the _real_ value that's in localStorage. */

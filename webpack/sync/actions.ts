@@ -13,6 +13,7 @@ import { ResourceName } from "../resources/tagged_resources";
 import { User } from "../auth/interfaces";
 import { HttpData } from "../util";
 import { WebcamFeed } from "../controls/interfaces";
+import { WebAppConfig } from "../config_storage/web_app_configs";
 
 export interface ResourceReadyPayl {
   name: ResourceName;
@@ -38,6 +39,7 @@ export function fetchSyncData(dispatch: Function) {
   fetch<User>("User", API.current.usersPath);
   fetch<DeviceAccountSettings>("Device", API.current.devicePath);
   fetch<WebcamFeed>("WebcamFeed", API.current.webcamFeedPath);
+  fetch<WebAppConfig>("WebAppConfig", API.current.webAppConfigPath);
   fetch<FarmEvent[]>("FarmEvent", API.current.farmEventsPath);
   fetch<Image[]>("Image", API.current.imagesPath);
   fetch<Log[]>("Log", API.current.logsPath);

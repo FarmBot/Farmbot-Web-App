@@ -27,9 +27,11 @@ import {
   TaggedToolSlotPointer,
   TaggedUser,
   TaggedWebcamFeed,
-  TaggedDevice
+  TaggedDevice,
+  TaggedWebAppConfig
 } from "./tagged_resources";
 import { CowardlyDictionary, betterCompact, sortResourcesById } from "../util";
+import { isNumber } from "util";
 type StringMap = CowardlyDictionary<string>;
 
 /** Similar to findId(), but does not throw exceptions. Do NOT use this method
@@ -405,12 +407,12 @@ export let findSlotById = byId<TaggedToolSlotPointer>("Point");
 /** Find a Tool's corresponding Slot. */
 export let findSlotByToolId = (index: ResourceIndex, tool_id: number) => {
   const tool = findToolById(index, tool_id);
-  const query: any = { body: { tool_id: tool.body.id } };
+  const query = { body: { tool_id: tool.body.id } };
   const every = Object
     .keys(index.references)
     .map(x => index.references[x]);
   const tts = _.find(every, query);
-  if (tts && isTaggedToolSlotPointer(tts) && sanityCheck(tts)) {
+  if (tts && !isNumber(tts) && isTaggedToolSlotPointer(tts) && sanityCheck(tts)) {
     return tts;
   } else {
     return undefined;
@@ -522,6 +524,7 @@ export function mapToolIdToName(input: ResourceIndex) {
     .map(x => ({ key: "" + x.body.id, val: x.body.name }))
     .reduce((x, y) => ({ ...{ [y.key]: y.val, ...x } }), {} as StringMap);
 }
+
 /** I dislike this method. */
 export function findToolBySlotId(input: ResourceIndex, tool_slot_id: number):
   TaggedTool | undefined {
@@ -544,5 +547,12 @@ export function findToolBySlotId(input: ResourceIndex, tool_slot_id: number):
     return wow;
   } else {
     return undefined;
+  }
+}
+
+export function getWebAppConfig(i: ResourceIndex): TaggedWebAppConfig | undefined {
+  const conf = i.references[i.byKind.WebAppConfig[0] || "NO"];
+  if (conf && conf.kind === "WebAppConfig") {
+    return conf;
   }
 }

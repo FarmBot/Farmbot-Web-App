@@ -15,27 +15,19 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
     return _(items)
       .sortBy(x => x.sortKey)
       .value()
-      .map((farmEvent, index) => {
-        const url = `/app/designer/farm_events/` + (farmEvent.id || "UNSAVED_EVENT").toString();
-        let heading: string;
-        let subHeading: JSX.Element;
-
-        if (farmEvent.subheading) {
-          heading = farmEvent.subheading;
-          subHeading = <p style={{ color: "gray" }}>
-            {farmEvent.heading}
-          </p>;
-        } else {
-          heading = farmEvent.heading;
-          subHeading = <p />;
-        }
+      .map((occur, index) => {
+        debugger;
+        const url = `/app/designer/farm_events/` + (occur.id || "UNSAVED_EVENT").toString();
+        const heading = occur.subheading;
+        const subHeading = occur.subheading ?
+          <p style={{ color: "gray" }}> {occur.heading} </p> : <p />;
 
         return (
           <div
             className="farm-event-data-block"
-            key={`${farmEvent.sortKey}.${index}`}>
+            key={`${occur.sortKey}.${index}`}>
             <div className="farm-event-data-time">
-              {farmEvent.timeStr}
+              {occur.timeStr}
             </div>
             <div className="farm-event-data-executable">
               {heading}

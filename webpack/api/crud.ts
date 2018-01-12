@@ -215,7 +215,8 @@ export function urlFor(tag: ResourceName) {
     Device: API.current.devicePath,
     Image: API.current.imagesPath,
     Log: API.current.logsPath,
-    WebcamFeed: API.current.webcamFeedPath
+    WebcamFeed: API.current.webcamFeedPath,
+    WebAppConfig: API.current.webAppConfigPath
   };
   const url = OPTIONS[tag];
   if (url) {
@@ -226,6 +227,8 @@ export function urlFor(tag: ResourceName) {
   }
 }
 
+const SINGULAR_RESOURCE: ResourceName[] = ["WebAppConfig"];
+
 /** Shared functionality in create() and update(). */
 function updateViaAjax(payl: AjaxUpdatePayload) {
   const { uuid, statusBeforeError, dispatch, index } = payl;
@@ -235,7 +238,9 @@ function updateViaAjax(payl: AjaxUpdatePayload) {
   let url = urlFor(kind);
   if (body.id) {
     verb = "put";
-    url += body.id;
+    if (!SINGULAR_RESOURCE.includes(payl.uuid.split(".")[0] as ResourceName)) {
+      url += body.id;
+    }
   } else {
     verb = "post";
   }

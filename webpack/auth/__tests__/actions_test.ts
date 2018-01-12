@@ -1,7 +1,7 @@
 jest.mock("../../session", () => ({
   Session: {
     clear: jest.fn(),
-    getBool: () => true,
+    deprecatedGetBool: () => true,
     fetchStoredToken: () => ({})
   }
 }));

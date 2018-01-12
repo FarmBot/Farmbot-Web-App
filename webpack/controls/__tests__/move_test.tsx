@@ -1,7 +1,7 @@
 jest.mock("../../session", () => {
   return {
     Session: {
-      getBool: jest.fn(),
+      deprecatedGetBool: jest.fn(),
       invertBool: jest.fn()
     }
   };
@@ -12,7 +12,6 @@ import { mount } from "enzyme";
 import { Move } from "../move";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { MoveProps } from "../interfaces";
-import { Actions } from "../../constants";
 import { Session } from "../../session";
 
 describe("<Move />", () => {
@@ -25,7 +24,12 @@ describe("<Move />", () => {
       dispatch: jest.fn(),
       bot: bot,
       user: undefined,
-      disabled: false
+      disabled: false,
+      raw_encoders: false,
+      scaled_encoders: false,
+      x_axis_inverted: false,
+      y_axis_inverted: false,
+      z_axis_inverted: false,
     };
   }
 
@@ -38,7 +42,7 @@ describe("<Move />", () => {
 
   it("has only raw encoder data display", () => {
     const p = fakeProps();
-    p.bot.encoder_visibility.raw_encoders = true;
+    p.raw_encoders = true;
     const wrapper = mount(<Move {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("raw");
@@ -47,8 +51,8 @@ describe("<Move />", () => {
 
   it("has both encoder data displays", () => {
     const p = fakeProps();
-    p.bot.encoder_visibility.raw_encoders = true;
-    p.bot.encoder_visibility.scaled_encoders = true;
+    p.raw_encoders = true;
+    p.scaled_encoders = true;
     const wrapper = mount(<Move {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("raw");
@@ -61,10 +65,6 @@ describe("<Move />", () => {
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     instance.toggle("x")();
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.INVERT_JOG_BUTTON,
-      payload: "x"
-    });
     expect(Session.invertBool).toHaveBeenCalledWith("x_axis_inverted");
   });
 
@@ -74,10 +74,6 @@ describe("<Move />", () => {
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     instance.toggle_encoder_data("raw_encoders")();
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.DISPLAY_ENCODER_DATA,
-      payload: "raw_encoders"
-    });
     expect(Session.invertBool).toHaveBeenCalledWith("raw_encoders");
   });
 });

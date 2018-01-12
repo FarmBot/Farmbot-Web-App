@@ -24,9 +24,9 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
   componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
   initialize = (name: NumberConfigKey, defaultValue: number): number => {
-    const currentValue = Session.getNum(safeNumericSetting(name));
+    const currentValue = Session.deprecatedGetNum(safeNumericSetting(name));
     if (isUndefined(currentValue)) {
-      Session.setNum(safeNumericSetting(name), defaultValue);
+      Session.deprecatedSetNum(safeNumericSetting(name), defaultValue);
       return defaultValue;
     } else {
       return currentValue;
@@ -49,12 +49,12 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
       case 0:
         return () => {
           this.setState({ [name]: 1 });
-          Session.setNum(safeNumericSetting(name + "_log"), 1);
+          Session.deprecatedSetNum(safeNumericSetting(name + "_log"), 1);
         };
       default:
         return () => {
           this.setState({ [name]: 0 });
-          Session.setNum(safeNumericSetting(name + "_log"), 0);
+          Session.deprecatedSetNum(safeNumericSetting(name + "_log"), 0);
         };
     }
   }
@@ -62,7 +62,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
   setFilterLevel = (name: keyof LogsState) => {
     return (value: number) => {
       this.setState({ [name]: value });
-      Session.setNum(safeNumericSetting(name + "_log"), value);
+      Session.deprecatedSetNum(safeNumericSetting(name + "_log"), value);
     };
   };
 

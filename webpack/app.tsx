@@ -7,7 +7,7 @@ import { init, error } from "farmbot-toastr";
 import { NavBar } from "./nav";
 import { Everything, Log } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
-import { BotState } from "./devices/interfaces";
+import { BotState, Xyz } from "./devices/interfaces";
 import { ResourceName, TaggedUser } from "./resources/tagged_resources";
 import {
   selectAllLogs,
@@ -18,6 +18,8 @@ import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
 import { catchErrors } from "./util";
+import { Session } from "./session";
+import { BooleanSetting } from "./session_keys";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
 const fastClick = require("fastclick");
@@ -35,6 +37,7 @@ export interface AppProps {
   consistent: boolean;
   autoSyncEnabled: boolean;
   timeOffset: number;
+  axisInversion: Record<Xyz, boolean>;
 }
 
 function mapStateToProps(props: Everything): AppProps {
@@ -51,7 +54,12 @@ function mapStateToProps(props: Everything): AppProps {
       .value(),
     loaded: props.resources.loaded,
     consistent: !!(props.bot || {}).consistent,
-    autoSyncEnabled: !!props.bot.hardware.configuration.auto_sync
+    autoSyncEnabled: !!props.bot.hardware.configuration.auto_sync,
+    axisInversion: {
+      x: !!Session.deprecatedGetBool(BooleanSetting.x_axis_inverted),
+      y: !!Session.deprecatedGetBool(BooleanSetting.y_axis_inverted),
+      z: !!Session.deprecatedGetBool(BooleanSetting.z_axis_inverted),
+    }
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -110,7 +118,7 @@ export class App extends React.Component<AppProps, {}> {
         !currentPath.startsWith("/app/regimens") &&
         <ControlsPopup
           dispatch={this.props.dispatch}
-          axisInversion={this.props.bot.axis_inversion} />}
+          axisInversion={this.props.axisInversion} />}
     </div>;
   }
 }
