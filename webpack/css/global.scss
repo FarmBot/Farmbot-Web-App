@@ -574,3 +574,25 @@ ul {
     min-width: 120px;
   }
 }
+
+.release-notes-button {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.release-notes {
+  max-width: 250px;
+  h1 {
+    font-weight: 300;
+    font-size: 1.5rem;
+  }
+  li:before {
+    content: "• ";
+  }
+  li {
+    font-weight: 300;
+    font-size: 1.1rem;
+    line-height: 1.75rem;
+    margin-bottom: 1rem;
+  }
+}

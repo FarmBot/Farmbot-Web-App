@@ -4,15 +4,13 @@ import * as _ from "lodash";
 import { JobProgress } from "farmbot/dist";
 import { SemverResult, semverCompare } from "../../../util";
 import { BotProp } from "../../interfaces";
-import { Row, Col } from "../../../ui/index";
-import { ToggleButton } from "../../../controls/toggle_button";
-import { updateConfig, checkControllerUpdates } from "../../actions";
+import { checkControllerUpdates } from "../../actions";
 
 export let OsUpdateButton = ({ bot }: BotProp) => {
   let buttonStr = "Can't Connect to bot";
   let buttonColor = "yellow";
 
-  const { os_auto_update, beta_opt_in } = bot.hardware.configuration;
+  const { beta_opt_in } = bot.hardware.configuration;
   const { currentOSVersion, currentBetaOSVersion } = bot;
   const latestReleaseV = beta_opt_in
     ? currentBetaOSVersion
@@ -57,27 +55,11 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
     }
   }
 
-  return <div className="updates">
-    <Row>
-      <Col xs={4}>
-        <p>{t("Auto Updates?")}</p>
-      </Col>
-      <Col xs={3}>
-        <ToggleButton toggleValue={os_auto_update}
-          toggleAction={() => {
-            const newOsAutoUpdateNum = !os_auto_update ? 1 : 0;
-            updateConfig({ os_auto_update: newOsAutoUpdateNum })(_.noop);
-          }} />
-      </Col>
-      <Col xs={5}>
-        <button
-          className={"fb-button " + buttonColor}
-          title={latestReleaseV}
-          disabled={isWorking(osUpdateJob)}
-          onClick={() => checkControllerUpdates()}>
-          {downloadProgress(osUpdateJob) || buttonStr}
-        </button>
-      </Col>
-    </Row>
-  </div>;
+  return <button
+    className={"fb-button " + buttonColor}
+    title={latestReleaseV}
+    disabled={isWorking(osUpdateJob)}
+    onClick={() => checkControllerUpdates()}>
+    {downloadProgress(osUpdateJob) || buttonStr}
+  </button>;
 };
