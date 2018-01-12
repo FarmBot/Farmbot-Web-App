@@ -27,6 +27,7 @@ gem "rollbar"
 gem "skylight", "1.4.0"
 gem "bunny"
 gem "request_store"
+gem "secure_headers"
 
 group :development, :test do
   gem "codecov", require: false

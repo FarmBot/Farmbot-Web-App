@@ -33,4 +33,19 @@ class DashboardController < ApplicationController
   def lets_encrypt
     render plain: ACME_SECRET
   end
+
+  # Endpoint reports CSP violations, indicating a possible security problem.
+  def csrf_reports
+    payload = request.body.read || ""
+    begin
+      report = JSON.parse(payload)
+    rescue
+      report = {problem: "Crashed while parsing report"}
+    end
+    Rollbar.info("CSP VIOLATION!!!", report)
+    puts "============"
+    puts report.to_yaml
+    puts "============"
+    render json: report
+  end
 end
