@@ -7,7 +7,7 @@ import { edit, save } from "../api/crud";
  * HISTORICAL CONTEXT: We once stored user settings (like map zoom level) in localStorage and
  *    would retrieve values via `Session.getBool("zoom_level")`
  *
- * PROBLEM: localStorage is no longer used. Many parts of the were accessing
+ * PROBLEM: localStorage is no longer used. Many parts of the app were accessing
  *          values in places that did not have access to the Redux store.
  *
  * SOLUTION: Create a temporary shim that will "cheat" and directly call Redux
