@@ -38,6 +38,7 @@ import {
   recomputeLocalVarDeclaration
 } from "../sequences/step_tiles/tile_move_absolute/variables_support";
 import { equals, defensiveClone } from "../util";
+import { maybeRunLocalstorageMigration } from "../storage_key_translator";
 
 const consumerReducer = combineReducers<RestResources["consumers"]>({
   regimens,
@@ -223,6 +224,9 @@ export let resourceReducer = generateReducer
     return s;
   })
   .add<ResourceReadyPayl>(Actions.RESOURCE_READY, (s, { payload }) => {
+    // TRANSITION POINT: Remove in Mar 18 - RC
+    (payload.name === "WebAppConfig") && maybeRunLocalstorageMigration();
+
     const { name } = payload;
     /** Problem:  Most API resources are plural (array wrapped) resource.
      *            A small subset are singular (`device` and a few others),
