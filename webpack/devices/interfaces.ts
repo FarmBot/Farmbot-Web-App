@@ -112,6 +112,10 @@ export interface FarmbotOsProps {
   dispatch: Function;
 }
 
+export interface FarmbotOsState {
+  osReleaseNotes: string;
+}
+
 export interface CameraSelectionProps {
   env: Dictionary<string | undefined>
 }
