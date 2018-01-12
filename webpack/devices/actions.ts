@@ -152,7 +152,8 @@ export let fetchReleases =
           });
         })
         .catch((ferror) => {
-          error(t("Could not download FarmBot OS update information."));
+          !options.beta &&
+            error(t("Could not download FarmBot OS update information."));
           dispatch({
             type: options.beta
               ? "FETCH_BETA_OS_UPDATE_INFO_ERROR"

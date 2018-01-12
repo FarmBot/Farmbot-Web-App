@@ -35,7 +35,6 @@ const markAsDone = () => localStorage.setItem(DONE_FLAG, DONE_FLAG);
 const doRunMigration = () => {
   const keys = eachEntry();
   const newStuff: Dictionary<Primitive | undefined> = {};
-  debugger;
   keys.map(key => {
     const { ruby_case_key, value } = key;
     if (value) {

@@ -44,14 +44,12 @@ describe("<PureFarmEvents/>", () => {
       heading: "Every 4 hours",
       executableId: 25,
       subheading: "",
-      id: 79,
-      childExecutableName: "Goto 0, 0, 0 123"
+      id: 79
     }];
     const results = render(<PureFarmEvents push={jest.fn()}
       calendarRows={row}
-      timezoneIsSet={false} />);
+      timezoneIsSet={true} />);
     const txt = results.text();
-    expect(txt).toContain(Content.SET_TIMEZONE_HEADER);
-    expect(txt).toContain(Content.SET_TIMEZONE_BODY);
+    expect(txt).toContain("Every 4 hours");
   });
 });

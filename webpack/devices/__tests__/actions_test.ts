@@ -297,8 +297,7 @@ describe("fetchReleases()", () => {
     const dispatch = jest.fn();
     await actions.fetchReleases("url", { beta: true })(dispatch, jest.fn());
     await expect(axios.get).toHaveBeenCalledWith("url");
-    expect(mockError).toHaveBeenCalledWith(
-      "Could not download FarmBot OS update information.");
+    expect(mockError).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       payload: "error",
       type: "FETCH_BETA_OS_UPDATE_INFO_ERROR"
