@@ -137,25 +137,30 @@ export let saveAccountChanges: Thunk = function (dispatch, getState) {
 };
 
 export let fetchReleases =
-  (url: string) => (dispatch: Function, getState: Function) => {
-    axios
-      .get(url)
-      .then((resp: HttpData<GithubRelease>) => {
-        const version = resp.data.tag_name;
-        const versionWithoutV = version.toLowerCase().replace("v", "");
-        dispatch({
-          type: Actions.FETCH_OS_UPDATE_INFO_OK,
-          payload: versionWithoutV
+  (url: string, options = { beta: false }) =>
+    (dispatch: Function, getState: Function) => {
+      axios
+        .get(url)
+        .then((resp: HttpData<GithubRelease>) => {
+          const version = resp.data.tag_name;
+          const versionWithoutV = version.toLowerCase().replace("v", "");
+          dispatch({
+            type: options.beta
+              ? Actions.FETCH_BETA_OS_UPDATE_INFO_OK
+              : Actions.FETCH_OS_UPDATE_INFO_OK,
+            payload: versionWithoutV
+          });
+        })
+        .catch((ferror) => {
+          error(t("Could not download FarmBot OS update information."));
+          dispatch({
+            type: options.beta
+              ? "FETCH_BETA_OS_UPDATE_INFO_ERROR"
+              : "FETCH_OS_UPDATE_INFO_ERROR",
+            payload: ferror
+          });
         });
-      })
-      .catch((ferror) => {
-        error(t("Could not download FarmBot OS update information."));
-        dispatch({
-          type: "FETCH_OS_UPDATE_INFO_ERROR",
-          payload: ferror
-        });
-      });
-  };
+    };
 
 export function save(input: TaggedDevice) {
   return function (dispatch: Function, getState: GetState) {

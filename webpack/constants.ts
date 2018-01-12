@@ -365,6 +365,10 @@ export namespace Content {
     trim(`This will shutdown FarmBot's Raspberry Pi. To turn it
     back on, unplug FarmBot and plug it back in.`);
 
+  export const OS_BETA_RELEASES =
+    trim(`Warning! Opting in to FarmBot OS beta releases may reduce
+    FarmBot system stability. Are you sure?`);
+
   // Hardware Settings
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
     trim(`Restoring hardware parameter defaults will destroy the
@@ -468,6 +472,8 @@ export enum Actions {
   BOT_CHANGE = "BOT_CHANGE",
   FETCH_OS_UPDATE_INFO_OK = "FETCH_OS_UPDATE_INFO_OK",
   FETCH_FW_UPDATE_INFO_OK = "FETCH_FW_UPDATE_INFO_OK",
+  FETCH_BETA_OS_UPDATE_INFO_OK = "FETCH_BETA_OS_UPDATE_INFO_OK",
+  INVERT_JOG_BUTTON = "INVERT_JOG_BUTTON",
   DISPLAY_ENCODER_DATA = "DISPLAY_ENCODER_DATA",
   STASH_STATUS = "STASH_STATUS",
 

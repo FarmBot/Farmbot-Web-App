@@ -84,7 +84,7 @@ export let initialState = (): BotState => ({
   },
   dirty: false,
   currentOSVersion: undefined,
-  currentFWVersion: undefined,
+  currentBetaOSVersion: undefined,
   connectivity: {
     "bot.mqtt": undefined,
     "user.mqtt": undefined,
@@ -146,6 +146,10 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     s.currentOSVersion = payload;
     return s;
   })
+  .add<string>(Actions.FETCH_BETA_OS_UPDATE_INFO_OK, (s, { payload }) => {
+    s.currentBetaOSVersion = payload;
+    return s;
+  })
   .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
     state.hardware = payload;
     const { informational_settings } = state.hardware;
@@ -174,10 +178,6 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     versionOK(informational_settings.controller_version);
     state.hardware.informational_settings.sync_status = nextSyncStatus;
     return state;
-  })
-  .add<string>(Actions.FETCH_FW_UPDATE_INFO_OK, (s, { payload }) => {
-    s.currentFWVersion = payload;
-    return s;
   })
   .add<void>(Actions.STASH_STATUS, (s, a) => {
     stashStatus(s);
