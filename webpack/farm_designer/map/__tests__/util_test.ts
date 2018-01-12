@@ -57,10 +57,10 @@ describe("getbotSize()", () => {
   }
 
   function expectDefaultSize(botSize: BotSize) {
-    expect(botSize.x.value).toBe(3000);
-    expect(botSize.x.isDefault).toBeTruthy();
-    expect(botSize.y.value).toBe(1500);
-    expect(botSize.y.isDefault).toBeTruthy();
+    expect(botSize).toEqual({
+      x: { value: 3000, isDefault: true },
+      y: { value: 1500, isDefault: true }
+    });
   }
 
   it("returns default bed size: when settings undefined", () => {
@@ -116,10 +116,10 @@ describe("getbotSize()", () => {
     };
     p.stepsPerMmXY = { x: 5, y: 7 };
     const botSize = getBotSize(p.botMcuParams, p.stepsPerMmXY, p.defaultLength);
-    expect(botSize.x.value).toBe(100);
-    expect(botSize.x.isDefault).toBeFalsy();
-    expect(botSize.y.value).toBe(200);
-    expect(botSize.y.isDefault).toBeFalsy();
+    expect(botSize).toEqual({
+      x: { value: 100, isDefault: false },
+      y: { value: 200, isDefault: false }
+    });
   });
 
   it("calculates correct bed size: one axis", () => {
@@ -132,10 +132,10 @@ describe("getbotSize()", () => {
     };
     p.stepsPerMmXY = { x: 5, y: 7 };
     const botSize = getBotSize(p.botMcuParams, p.stepsPerMmXY, p.defaultLength);
-    expect(botSize.x.value).toBe(3000);
-    expect(botSize.x.isDefault).toBeTruthy();
-    expect(botSize.y.value).toBe(200);
-    expect(botSize.y.isDefault).toBeFalsy();
+    expect(botSize).toEqual({
+      x: { value: 3000, isDefault: true },
+      y: { value: 200, isDefault: false }
+    });
   });
 });
 

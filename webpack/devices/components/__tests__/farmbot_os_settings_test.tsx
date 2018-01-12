@@ -41,7 +41,7 @@ describe("<FarmbotOsSettings/>", () => {
     const osSettings = await mount(<FarmbotOsSettings {...fakeProps() } />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));
-    await expect(osSettings.state().osReleaseNotes)
+    expect(osSettings.state().osReleaseNotes)
       .toEqual("# FarmBot OS v6\n* note");
   });
 
@@ -49,7 +49,7 @@ describe("<FarmbotOsSettings/>", () => {
     const osSettings = await mount(<FarmbotOsSettings {...fakeProps() } />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));
-    await expect(osSettings.state().osReleaseNotes)
+    expect(osSettings.state().osReleaseNotes)
       .toEqual("Could not get release notes.");
   });
 });

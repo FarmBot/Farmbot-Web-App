@@ -16,11 +16,14 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
       .sortBy(x => x.sortKey)
       .value()
       .map((occur, index) => {
-        debugger;
-        const url = `/app/designer/farm_events/` + (occur.id || "UNSAVED_EVENT").toString();
-        const heading = occur.subheading;
-        const subHeading = occur.subheading ?
-          <p style={{ color: "gray" }}> {occur.heading} </p> : <p />;
+        const url = `/app/designer/farm_events/`
+          + (occur.id || "UNSAVED_EVENT").toString();
+        const heading = occur.subheading
+          ? occur.subheading
+          : occur.heading;
+        const subHeading = occur.subheading
+          ? <p style={{ color: "gray" }}> {occur.heading} </p>
+          : <p />;
 
         return (
           <div

@@ -19,9 +19,26 @@ describe("<FbosDetails/>", () => {
     bot.hardware.informational_settings.env = "fakeEnv";
     bot.hardware.informational_settings.commit = "fakeCommit";
     bot.hardware.informational_settings.target = "fakeTarget";
+    bot.hardware.informational_settings.node_name = "fakeName";
+    bot.hardware.informational_settings.firmware_version = "fakeFirmware";
+    bot.hardware.informational_settings.firmware_commit = "fakeFwCommit";
     const wrapper = shallow(<FbosDetails {...bot} />);
-    ["Environment", "fakeEnv", "Commit", "fakeCommit", "Target", "fakeTarget"]
+    ["Environment", "fakeEnv",
+      "Commit", "fakeComm",
+      "Target", "fakeTarget",
+      "Node name", "fakeName",
+      "Firmware", "fakeFirmware",
+      "Firmware commit", "fakeFwCo",
+      "Beta release Opt-In"
+    ]
       .map(string => expect(wrapper.text()).toContain(string));
+  });
+
+  it("simplifies node name", () => {
+    bot.hardware.informational_settings.node_name = "name@nodeName";
+    const wrapper = shallow(<FbosDetails {...bot} />);
+    expect(wrapper.text()).toContain("nodeName");
+    expect(wrapper.text()).not.toContain("name@");
   });
 
   it("toggles os beta opt in setting on", () => {
