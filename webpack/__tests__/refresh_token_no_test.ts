@@ -12,7 +12,7 @@ jest.mock("../session", () => {
   return {
     Session: {
       clear: jest.fn(),
-      getBool: jest.fn(),
+      deprecatedGetBool: jest.fn(),
     }
   };
 });

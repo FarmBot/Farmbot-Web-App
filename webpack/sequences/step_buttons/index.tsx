@@ -8,14 +8,12 @@ import { StepButtonParams } from "../interfaces";
 import { Col } from "../../ui/index";
 import { TaggedSequence } from "../../resources/tagged_resources";
 
-const stepClick = (dispatch: Function, step: Step, seq: TaggedSequence | undefined) =>
-  (event: React.FormEvent<HTMLButtonElement>) => {
-    if (seq) {
-      pushStep(step, dispatch, seq);
-    } else {
-      error(t("Select a sequence first"));
-    }
-  };
+export const stepClick =
+  (dispatch: Function, step: Step, seq: TaggedSequence | undefined) =>
+    () => {
+      (seq) ?
+        pushStep(step, dispatch, seq) : error(t("Select a sequence first"));
+    };
 
 export function StepButton({ children, step, color, dispatch, current }:
   StepButtonParams) {

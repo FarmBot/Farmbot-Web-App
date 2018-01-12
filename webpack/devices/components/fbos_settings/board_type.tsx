@@ -87,6 +87,7 @@ export class BoardType
       <Col xs={ColWidth.description}>
         <div>
           <FBSelect
+            key={this.getBoardType()}
             allowEmpty={true}
             list={FIRMWARE_CHOICES}
             selectedItem={this.selectedBoard()}

@@ -1,8 +1,8 @@
 import { AuthState } from "./auth/interfaces";
 import { box } from "boxed_value";
-import { get, isNumber, isBoolean } from "lodash";
 import { BooleanConfigKey, NumberConfigKey } from "./config_storage/web_app_configs";
 import { BooleanSetting, NumericSetting } from "./session_keys";
+import { getBoolViaRedux, setBoolViaRedux, getNumViaRedux, setNumViaRedux } from "./config/legacy_shims";
 
 /** The `Session` namespace is a wrapper for `localStorage`.
  * Use this to avoid direct access of `localStorage` where possible.
@@ -44,33 +44,30 @@ export namespace Session {
     return undefined as never;
   }
 
-  /** Fetch a *boolean* value from localstorage. Returns `undefined` when
-   * none are found.*/
-  export function getBool(key: BooleanConfigKey): boolean | undefined {
-    const output = JSON.parse(localStorage.getItem(key) || "null");
-    return (isBoolean(output)) ? output : undefined;
+  /** @deprecated Don't use this anymore. This is a legacy articfact of when we
+   * used localStorage to store API settings. */
+  export function deprecatedGetBool(key: BooleanConfigKey): boolean | undefined {
+    return getBoolViaRedux(key);
   }
 
   /** Store a boolean value in `localStorage` */
   export function setBool(key: BooleanConfigKey, val: boolean): boolean {
-    localStorage.setItem(key, JSON.stringify(val));
-    return val;
+    return setBoolViaRedux(key, val);
   }
 
   export function invertBool(key: BooleanConfigKey): boolean {
-    return Session.setBool(key, !Session.getBool(key));
+    return Session.setBool(key, !Session.deprecatedGetBool(key));
   }
 
   /** Extract numeric settings from `localStorage`. Returns `undefined` when
    * none are found. */
-  export function getNum(key: NumberConfigKey): number | undefined {
-    const output = JSON.parse(get(localStorage, key, "null"));
-    return (isNumber(output)) ? output : undefined;
+  export function deprecatedGetNum(key: NumberConfigKey): number | undefined {
+    return getNumViaRedux(key);
   }
 
   /** Set a numeric value in `localStorage`. */
-  export function setNum(key: NumberConfigKey, val: number): void {
-    localStorage.setItem(key, JSON.stringify(val));
+  export function deprecatedSetNum(key: NumberConfigKey, val: number): void {
+    setNumViaRedux(key, val);
   }
 }
 

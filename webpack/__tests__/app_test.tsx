@@ -22,7 +22,8 @@ describe("<App />: Controls Pop-Up", () => {
       user: fakeUser(),
       bot: bot,
       consistent: true,
-      autoSyncEnabled: true
+      autoSyncEnabled: true,
+      axisInversion: { x: false, y: false, z: false }
     };
   }
 
@@ -63,7 +64,8 @@ describe.skip("<App />: Loading", () => {
       bot: bot,
       consistent: true,
       autoSyncEnabled: true,
-      timeOffset: 0
+      timeOffset: 0,
+      axisInversion: { x: false, y: false, z: false }
     };
     return p;
   }
@@ -98,7 +100,8 @@ describe("<App />: NavBar", () => {
       bot: bot,
       consistent: true,
       autoSyncEnabled: true,
-      timeOffset: 0
+      timeOffset: 0,
+      axisInversion: { x: false, y: false, z: false }
     };
   }
 

@@ -30,29 +30,33 @@ export class FallbackImg extends React.Component<Props, State> {
   }
 
   fallback = () => {
-    return (
-      <div className="webcam-stream-unavailable">
-        <img src={this.props.fallback} style={{ maxWidth: "100%" }} />
-        <text>
-          {t("Unable to load webcam feed.")}
-        </text>
-      </div>
-    );
+    return <div className="webcam-stream-unavailable">
+      <img src={this.props.fallback} style={{ maxWidth: "100%" }} />
+      <text>
+        {t("Unable to load webcam feed.")}
+      </text>
+    </div>;
   }
 
   dontFallback = () => {
     const imgProps: Props = defensiveClone(this.props);
     delete imgProps.fallback;
-    return (
-      <div className="webcam-stream-valid">
-        <img
-          onError={() => this.setState({ needsFallback: true })}
-          src={this.props.src} />
-      </div>
-    );
+    const onError = () => this.setState({ needsFallback: true });
+    const splitSrc = this.props.src.split(" ");
+    const displaySrc = () => {
+      switch (splitSrc[0]) {
+        case "iframe":
+          return <iframe src={splitSrc[1]} />;
+        default:
+          return <img src={this.props.src} onError={onError} />;
+      }
+    };
+    return <div className="webcam-stream-valid">
+      {displaySrc()}
+    </div>;
   }
 
   render() {
-    return ((this.state.needsFallback) ? this.fallback : this.dontFallback)();
+    return (this.state.needsFallback ? this.fallback : this.dontFallback)();
   }
 }

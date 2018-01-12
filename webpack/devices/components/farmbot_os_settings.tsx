@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import { FarmbotOsProps } from "../interfaces";
+import { FarmbotOsProps, FarmbotOsState } from "../interfaces";
 import {
   Widget,
   WidgetHeader,
@@ -17,10 +17,13 @@ import { timezoneMismatch } from "../timezones/guess_timezone";
 import { LastSeen } from "./fbos_settings/last_seen_row";
 import { CameraSelection } from "./fbos_settings/camera_selection";
 import { BoardType } from "./fbos_settings/board_type";
+import { FarmbotOsRow } from "./fbos_settings/farmbot_os_row";
 import { AutoUpdateRow } from "./fbos_settings/auto_update_row";
 import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { isUndefined } from "lodash";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
+import axios from "axios";
+import { HttpData } from "../../util";
 
 export enum ColWidth {
   label = 3,
@@ -28,8 +31,33 @@ export enum ColWidth {
   button = 2
 }
 
+const OS_RELEASE_NOTES_URL =
+  "https://raw.githubusercontent.com/FarmBot/farmbot_os/staging/RELEASE_NOTES.md";
+
 export class FarmbotOsSettings
-  extends React.Component<FarmbotOsProps> {
+  extends React.Component<FarmbotOsProps, FarmbotOsState> {
+  state = { osReleaseNotes: "" };
+
+  componentDidMount() {
+    this.fetchReleaseNotes(OS_RELEASE_NOTES_URL,
+      (this.props.bot.hardware.informational_settings
+        .controller_version || "6").split(".")[0]);
+  }
+
+  fetchReleaseNotes = (url: string, osMajorVersion: string) => {
+    axios
+      .get(url)
+      .then((resp: HttpData<string>) => {
+        const notes = resp.data
+          .split("# v")
+          .filter(x => x.startsWith(osMajorVersion))[0]
+          .split("\n\n").join("\n");
+        const osReleaseNotes = "# FarmBot OS v" + notes;
+        this.setState({ osReleaseNotes });
+      })
+      .catch(() =>
+        this.setState({ osReleaseNotes: "Could not get release notes." }));
+  }
 
   changeBot = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { account, dispatch } = this.props;
@@ -122,7 +150,11 @@ export class FarmbotOsSettings
           <MustBeOnline
             status={hardware.informational_settings.sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>
-            <AutoUpdateRow bot={this.props.bot} controller_version={controller_version} />
+            <FarmbotOsRow
+              bot={this.props.bot}
+              controller_version={controller_version}
+              osReleaseNotes={this.state.osReleaseNotes} />
+            <AutoUpdateRow bot={this.props.bot} />
             {this.maybeShowAutoSync()}
             <CameraSelection env={hardware.user_env} />
             <BoardType firmwareVersion={firmware_version} />

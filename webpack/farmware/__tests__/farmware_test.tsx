@@ -4,7 +4,7 @@ jest.mock("react-redux", () => ({
 
 jest.mock("../../session", () => ({
   Session: {
-    getBool: () => true // Simulate opt-in to beta features.
+    deprecatedGetBool: () => true // Simulate opt-in to beta features.
   }
 }));
 

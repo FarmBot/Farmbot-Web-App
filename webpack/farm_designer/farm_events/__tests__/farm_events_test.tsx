@@ -6,6 +6,7 @@ import {
 import { render } from "enzyme";
 import { get } from "lodash";
 import { Content } from "../../../constants";
+import { defensiveClone } from "../../../util";
 
 describe("<PureFarmEvents/>", () => {
   it("sorts items correctly", () => {
@@ -28,6 +29,26 @@ describe("<PureFarmEvents/>", () => {
   it("warns about unset timezones", () => {
     const results = render(<PureFarmEvents push={jest.fn()}
       calendarRows={calendarRows}
+      timezoneIsSet={false} />);
+    const txt = results.text();
+    expect(txt).toContain(Content.SET_TIMEZONE_HEADER);
+    expect(txt).toContain(Content.SET_TIMEZONE_BODY);
+  });
+
+  it("renders FarmEvent lacking a subheading", () => {
+    const row = [defensiveClone(calendarRows[0])];
+    row[0].items = [{
+      mmddyy: "072417",
+      sortKey: 1500915900,
+      timeStr: "12:05pm",
+      heading: "Every 4 hours",
+      executableId: 25,
+      subheading: "",
+      id: 79,
+      childExecutableName: "Goto 0, 0, 0 123"
+    }];
+    const results = render(<PureFarmEvents push={jest.fn()}
+      calendarRows={row}
       timezoneIsSet={false} />);
     const txt = results.text();
     expect(txt).toContain(Content.SET_TIMEZONE_HEADER);

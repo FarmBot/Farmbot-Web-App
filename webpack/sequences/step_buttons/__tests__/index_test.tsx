@@ -1,24 +1,26 @@
 import * as React from "react";
 import { StepButtonParams } from "../../interfaces";
-import { StepButton } from "../index";
+import { StepButton, stepClick } from "../index";
 import { shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
+import { error } from "farmbot-toastr";
+
+function props(): StepButtonParams {
+  return {
+    current: fakeSequence(),
+    step: {
+      kind: "wait",
+      args: {
+        milliseconds: 9,
+      },
+    },
+    dispatch: jest.fn(),
+    color: "blue"
+  };
+}
 
 describe("<StepButton/>", () => {
-  function props(): StepButtonParams {
-    return {
-      current: fakeSequence(),
-      step: {
-        kind: "wait",
-        args: {
-          milliseconds: 9,
-        },
-      },
-      dispatch: jest.fn(),
-      color: "blue"
-    };
-  }
 
   it("clicks it", () => {
     const p = props();
@@ -32,5 +34,14 @@ describe("<StepButton/>", () => {
       }),
       type: Actions.OVERWRITE_RESOURCE
     });
+  });
+});
+
+describe("stepClick", () => {
+  it("pops a toast notification when you  must select a sequence", () => {
+    const p = props();
+    const clicker = stepClick(p.dispatch, p.step, undefined);
+    clicker();
+    expect(error).toHaveBeenCalledWith("Select a sequence first");
   });
 });

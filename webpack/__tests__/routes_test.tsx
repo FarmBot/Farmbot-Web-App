@@ -9,8 +9,8 @@ jest.mock("../session", () => ({
   Session: {
     fetchStoredToken: jest.fn(() => mockAuth)
       .mockImplementationOnce(() => { }),
-    getNum: () => undefined,
-    getBool: () => undefined,
+    deprecatedGetNum: () => undefined,
+    deprecatedGetBool: () => undefined,
     getAll: () => undefined,
     clear: mockClear
   }

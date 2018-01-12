@@ -3,7 +3,7 @@ import { Session } from "./session";
 import { BooleanSetting } from "./session_keys";
 
 export function LoadingPlant() {
-  const animations = !Session.getBool(BooleanSetting.disable_animations);
+  const animations = !Session.deprecatedGetBool(BooleanSetting.disable_animations);
   return <div className="loading-plant-div-container">
     <svg width="300px" height="500px">
       {animations &&

@@ -1,22 +1,23 @@
 import * as React from "react";
 import { t } from "i18next";
-import { isUndefined, noop } from "lodash";
 import * as _ from "lodash";
-import { JobProgress, Configuration } from "farmbot/dist";
+import { JobProgress } from "farmbot/dist";
 import { SemverResult, semverCompare } from "../../../util";
 import { BotProp } from "../../interfaces";
-import { Row, Col } from "../../../ui/index";
-import { ToggleButton } from "../../../controls/toggle_button";
-import { updateConfig, checkControllerUpdates } from "../../actions";
+import { checkControllerUpdates } from "../../actions";
 
 export let OsUpdateButton = ({ bot }: BotProp) => {
-  const osUpdateBool = bot.hardware.configuration.os_auto_update;
   let buttonStr = "Can't Connect to bot";
   let buttonColor = "yellow";
-  const { currentOSVersion } = bot;
+
+  const { beta_opt_in } = bot.hardware.configuration;
+  const { currentOSVersion, currentBetaOSVersion } = bot;
+  const latestReleaseV = beta_opt_in
+    ? currentBetaOSVersion
+    : currentOSVersion;
   const { controller_version } = bot.hardware.informational_settings;
-  if (_.isString(currentOSVersion) && _.isString(controller_version)) {
-    switch (semverCompare(currentOSVersion, controller_version)) {
+  if (_.isString(latestReleaseV) && _.isString(controller_version)) {
+    switch (semverCompare(latestReleaseV, controller_version)) {
       case SemverResult.RIGHT_IS_GREATER:
       case SemverResult.EQUAL:
         buttonStr = t("UP TO DATE");
@@ -29,13 +30,11 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
   } else {
     buttonStr = "Can't Connect to release server";
   }
-  const toggleVal = isUndefined(osUpdateBool) ? "undefined" : ("" + osUpdateBool);
 
-  // DONT TOUCH THIS!!! SERIOUSLY -- RC 8 August
-  // DO NOT REMOVE `|| {}` UNTIL SEPTEMBER.
   const osUpdateJob = (bot.hardware.jobs || {})["FBOS_OTA"];
 
-  const isWorking = (job: JobProgress | undefined) => job && (job.status == "working");
+  const isWorking = (job: JobProgress | undefined) =>
+    job && (job.status == "working");
 
   function downloadProgress(job: JobProgress | undefined) {
     if (job && isWorking(job)) {
@@ -56,28 +55,11 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
     }
   }
 
-  return <div className="updates">
-    <Row>
-      <Col xs={4}>
-        <p>{t("Auto Updates?")}</p>
-      </Col>
-      <Col xs={3}>
-        <ToggleButton toggleValue={toggleVal}
-          toggleAction={() => {
-            const os_auto_update: Configuration = {
-              os_auto_update: !osUpdateBool ? 1 : 0
-            };
-            updateConfig(os_auto_update)(noop);
-          }} />
-      </Col>
-      <Col xs={5}>
-        <button
-          className={"fb-button " + buttonColor}
-          disabled={isWorking(osUpdateJob)}
-          onClick={() => checkControllerUpdates()}>
-          {downloadProgress(osUpdateJob) || buttonStr}
-        </button>
-      </Col>
-    </Row>
-  </div>;
+  return <button
+    className={"fb-button " + buttonColor}
+    title={latestReleaseV}
+    disabled={isWorking(osUpdateJob)}
+    onClick={() => checkControllerUpdates()}>
+    {downloadProgress(osUpdateJob) || buttonStr}
+  </button>;
 };

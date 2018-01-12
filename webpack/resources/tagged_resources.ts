@@ -92,7 +92,8 @@ export type TaggedResource =
   | TaggedSequence
   | TaggedTool
   | TaggedUser
-  | TaggedWebcamFeed;
+  | TaggedWebcamFeed
+  | TaggedWebAppConfig;
 
 export type TaggedRegimen = Resource<"Regimen", Regimen>;
 export type TaggedTool = Resource<"Tool", Tool>;

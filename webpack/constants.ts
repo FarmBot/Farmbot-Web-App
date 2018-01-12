@@ -354,6 +354,10 @@ export namespace Content {
     trim(`This will restart FarmBot's Raspberry Pi and controller
     software.`);
 
+  export const OS_AUTO_UPDATE =
+    trim(`When enabled, FarmBot OS will periodically check for, download,
+    and install updates automatically.`);
+
   export const AUTO_SYNC =
     trim(`When enabled, device resources such as sequences and regimens
     will be sent to the device automatically. This removes the need to push
@@ -364,6 +368,10 @@ export namespace Content {
   export const SHUTDOWN_FARMBOT =
     trim(`This will shutdown FarmBot's Raspberry Pi. To turn it
     back on, unplug FarmBot and plug it back in.`);
+
+  export const OS_BETA_RELEASES =
+    trim(`Warning! Opting in to FarmBot OS beta releases may reduce
+    FarmBot system stability. Are you sure?`);
 
   // Hardware Settings
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
@@ -467,7 +475,7 @@ export enum Actions {
   SETTING_UPDATE_END = "SETTING_UPDATE_END",
   BOT_CHANGE = "BOT_CHANGE",
   FETCH_OS_UPDATE_INFO_OK = "FETCH_OS_UPDATE_INFO_OK",
-  FETCH_FW_UPDATE_INFO_OK = "FETCH_FW_UPDATE_INFO_OK",
+  FETCH_BETA_OS_UPDATE_INFO_OK = "FETCH_BETA_OS_UPDATE_INFO_OK",
   INVERT_JOG_BUTTON = "INVERT_JOG_BUTTON",
   DISPLAY_ENCODER_DATA = "DISPLAY_ENCODER_DATA",
   STASH_STATUS = "STASH_STATUS",

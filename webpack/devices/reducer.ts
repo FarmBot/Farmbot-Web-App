@@ -3,7 +3,6 @@ import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
 import { EncoderDisplay } from "../controls/interfaces";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
-import { Session } from "../session";
 import { BooleanSetting } from "../session_keys";
 import { maybeNegateStatus, maybeNegateConsistency } from "../connectivity/maybe_negate_status";
 import { EdgeStatus } from "../connectivity/interfaces";
@@ -85,16 +84,7 @@ export let initialState = (): BotState => ({
   },
   dirty: false,
   currentOSVersion: undefined,
-  currentFWVersion: undefined,
-  axis_inversion: {
-    x: !!Session.getBool(BooleanSetting.x_axis_inverted),
-    y: !!Session.getBool(BooleanSetting.y_axis_inverted),
-    z: !!Session.getBool(BooleanSetting.z_axis_inverted),
-  },
-  encoder_visibility: {
-    raw_encoders: !!Session.getBool(BooleanSetting.raw_encoders),
-    scaled_encoders: !!Session.getBool(BooleanSetting.scaled_encoders),
-  },
+  currentBetaOSVersion: undefined,
   connectivity: {
     "bot.mqtt": undefined,
     "user.mqtt": undefined,
@@ -156,6 +146,10 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     s.currentOSVersion = payload;
     return s;
   })
+  .add<string>(Actions.FETCH_BETA_OS_UPDATE_INFO_OK, (s, { payload }) => {
+    s.currentBetaOSVersion = payload;
+    return s;
+  })
   .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
     state.hardware = payload;
     const { informational_settings } = state.hardware;
@@ -184,18 +178,6 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     versionOK(informational_settings.controller_version);
     state.hardware.informational_settings.sync_status = nextSyncStatus;
     return state;
-  })
-  .add<string>(Actions.FETCH_FW_UPDATE_INFO_OK, (s, { payload }) => {
-    s.currentFWVersion = payload;
-    return s;
-  })
-  .add<Xyz>(Actions.INVERT_JOG_BUTTON, (s, { payload }) => {
-    s.axis_inversion[payload] = !s.axis_inversion[payload];
-    return s;
-  })
-  .add<EncoderDisplay>(Actions.DISPLAY_ENCODER_DATA, (s, { payload }) => {
-    s.encoder_visibility[payload] = !s.encoder_visibility[payload];
-    return s;
   })
   .add<void>(Actions.STASH_STATUS, (s, a) => {
     stashStatus(s);
