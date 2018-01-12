@@ -6,41 +6,33 @@ jest.mock("../../../../device", () => ({
 }));
 
 import * as React from "react";
-import { FbosDetails } from "../auto_update_row";
-import { shallow, mount } from "enzyme";
+import { AutoUpdateRow } from "../auto_update_row";
+import { mount } from "enzyme";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 
-describe("<FbosDetails/>", () => {
+describe("<AutoUpdateRow/>", () => {
   beforeEach(function () {
     jest.clearAllMocks();
   });
 
   it("renders", () => {
-    bot.hardware.informational_settings.env = "fakeEnv";
-    bot.hardware.informational_settings.commit = "fakeCommit";
-    bot.hardware.informational_settings.target = "fakeTarget";
-    const wrapper = shallow(<FbosDetails {...bot} />);
-    ["Environment", "fakeEnv", "Commit", "fakeCommit", "Target", "fakeTarget"]
-      .map(string => expect(wrapper.text()).toContain(string));
+    const wrapper = mount(<AutoUpdateRow bot={bot} />);
+    expect(wrapper.text().toLowerCase()).toContain("auto update");
   });
 
-  it("toggles os beta opt in setting on", () => {
-    bot.hardware.configuration.beta_opt_in = false;
-    const wrapper = mount(<FbosDetails {...bot} />);
-    wrapper.find("button").simulate("click");
-    expect(mockDevice.updateConfig).not.toHaveBeenCalled();
-    window.confirm = () => true;
-    wrapper.find("button").simulate("click");
+  it("toggles auto-update on", () => {
+    bot.hardware.configuration.os_auto_update = 0;
+    const wrapper = mount(<AutoUpdateRow bot={bot} />);
+    wrapper.find("button").first().simulate("click");
     expect(mockDevice.updateConfig)
-      .toHaveBeenCalledWith({ beta_opt_in: true });
+      .toHaveBeenCalledWith({ os_auto_update: 1 });
   });
 
-  it("toggles os beta opt in setting off", () => {
-    bot.hardware.configuration.beta_opt_in = true;
-    const wrapper = mount(<FbosDetails {...bot} />);
-    window.confirm = () => false;
-    wrapper.find("button").simulate("click");
+  it("toggles auto-update off", () => {
+    bot.hardware.configuration.os_auto_update = 1;
+    const wrapper = mount(<AutoUpdateRow bot={bot} />);
+    wrapper.find("button").first().simulate("click");
     expect(mockDevice.updateConfig)
-      .toHaveBeenCalledWith({ beta_opt_in: false });
+      .toHaveBeenCalledWith({ os_auto_update: 0 });
   });
 });
