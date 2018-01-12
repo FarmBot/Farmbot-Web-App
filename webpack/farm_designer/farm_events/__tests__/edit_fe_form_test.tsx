@@ -1,3 +1,12 @@
+const mockHistory = jest.fn();
+jest.mock("../../../history", () => ({
+  history: {
+    push: mockHistory
+  }
+}));
+
+jest.mock("farmbot-toastr", () => ({ success: jest.fn(), error: jest.fn() }));
+
 import * as React from "react";
 import { fakeFarmEvent, fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
@@ -11,6 +20,7 @@ import {
 import { isString } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
 import { SpecialStatus } from "../../../resources/tagged_resources";
+import { success, error } from "farmbot-toastr";
 
 describe("<FarmEventForm/>", () => {
   const props = (): EditFEForm["props"] => ({
@@ -18,7 +28,7 @@ describe("<FarmEventForm/>", () => {
     executableOptions: [],
     repeatOptions: [],
     farmEvent: fakeFarmEvent("Sequence", 12),
-    dispatch: jest.fn(),
+    dispatch: jest.fn(() => Promise.resolve()),
     findExecutable: jest.fn(() => fakeSequence()),
     title: "title",
     timeOffset: 0
@@ -31,6 +41,7 @@ describe("<FarmEventForm/>", () => {
 
   beforeEach(() => {
     context.form = new EditFEForm(props());
+    jest.clearAllMocks();
   });
 
   it("sets defaults", () => {
@@ -171,6 +182,26 @@ describe("<FarmEventForm/>", () => {
     el.update();
     const txt = el.text().replace(/\s+/g, " ");
     expect(txt).toContain("Save *");
+  });
+
+  it("displays success message on save", async () => {
+    const p = props();
+    p.farmEvent.body.start_time = "2020-05-22T05:00:00.000Z";
+    p.farmEvent.body.end_time = "2020-05-22T06:00:00.000Z";
+    const i = instance(p);
+    await i.commitViewModel();
+    expect(success).toHaveBeenCalledWith(
+      expect.stringContaining("must first SYNC YOUR DEVICE"));
+  });
+
+  it("displays error message on save", async () => {
+    const p = props();
+    p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
+    p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
+    const i = instance(p);
+    await i.commitViewModel();
+    expect(error).toHaveBeenCalledWith(expect.stringContaining(
+      "This Farm Event does not appear to have a valid run time"));
   });
 });
 
