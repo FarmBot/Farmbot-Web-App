@@ -52,35 +52,36 @@ module FarmBot
       config.x_permitted_cross_domain_policies = "none"
       config.referrer_policy = %w(origin-when-cross-origin strict-origin-when-cross-origin)
       config.csp = {
-        # "meta" values. these will shape the header, but the values are not included in the header.
-        preserve_schemes: true, # default: false. Schemes are removed from host sources to save bytes and discourage mixed content.
+        # preserve_schemes: true, # default: false. Schemes are removed from host sources to save bytes and discourage mixed content.
 
         # directive values: these values will directly translate into source directives
         default_src: %w(https: 'self'),
         base_uri: %w('self'),
         block_all_mixed_content: true, # see http://www.w3.org/TR/mixed-content/
         child_src: %w('self'), # if child-src isn't supported, the value for frame-src will be set.
-        connect_src: %w(wss:),
-        font_src: %w('self' data:),
-        form_action: %w('self' github.com),
+        connect_src: [ENV["MQTT_HOST"],
+                      "#{ENV["API_HOST"]}:#{ENV["API_PORT"]}",
+                      "api.github.com",
+                      "raw.githubusercontent.com",
+                      "openfarm.cc"] +
+          (Rails.env.production? ? %w(wss:) : %w(ws: localhost:3000 localhost:3808)),
+        font_src: %w('self' data: maxcdn.bootstrapcdn.com fonts.googleapis.com fonts.gstatic.com),
+        form_action: %w('self'), # React forms sometimes post to ''
         frame_ancestors: %w('none'),
-        img_src: %w(mycdn.com data:),
+        img_src: %w(* data:), # We need "*" to support webcam users.
         manifest_src: %w('self'),
-        media_src: %w(utoob.com),
-        object_src: %w('self'),
-        sandbox: [], # true and [] will set a maximally restrictive setting
-        plugin_types: %w(application/x-shockwave-flash),
-        script_src: %w('self'),
-        style_src: %w('unsafe-inline'),
-        worker_src: %w('self'),
-        upgrade_insecure_requests: false,#true, # see https://www.w3.org/TR/upgrade-insecure-requests/
+        media_src: %w(),
+        object_src: %w(),
+        sandbox: %w(allow-scripts allow-forms allow-same-origin allow-modals),
+        plugin_types: %w(),
+        script_src: %w('self' 'unsafe-eval' 'unsafe-inline') +
+          (Rails.env.production? ? [] : %w(chrome-extension: localhost:3808)),
+        style_src: %w('unsafe-inline' fonts.googleapis.com
+          maxcdn.bootstrapcdn.com fonts.gstatic.com),
+        worker_src: %w(),
+        upgrade_insecure_requests: Rails.env.production?,
         report_uri: %w(http://localhost:3000/csrf_reports)
       }
-      # # This is available only from 3.5.0; use the `report_only: true` setting for 3.4.1 and below.
-      # config.csp_report_only = config.csp.merge({
-      #   img_src: %w(somewhereelse.com),
-      #   report_uri: %w(https://report-uri.io/example-csp-report-only)
-      # })
     end
   end
 end
