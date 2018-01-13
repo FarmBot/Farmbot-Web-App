@@ -5,7 +5,6 @@ require "rails/all"
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env)
-
 module FarmBot
   class Application < Rails::Application
     config.active_job.queue_adapter = :delayed_job
@@ -35,6 +34,11 @@ module FarmBot
     Rails.application.routes.default_url_options[:port] = ENV["API_PORT"] || 3000
     # ¯\_(ツ)_/¯
     $API_URL = "//#{ Rails.application.routes.default_url_options[:host] }:#{ Rails.application.routes.default_url_options[:port] }"
+    ALL_LOCAL_URIS = (
+        [ENV["API_HOST"]] + (ENV["EXTRA_DOMAINS"] || "").split(",")
+      )
+      .map { |x| x.present? ? "#{x}:#{ENV["API_PORT"]}" : nil }.compact
+    puts ALL_LOCAL_URIS.inspect
     SecureHeaders::Configuration.default do |config|
       config.hsts                              = "max-age=#{1.week.to_i}"
       config.x_frame_options                   = "DENY"
@@ -51,8 +55,7 @@ module FarmBot
         base_uri: %w('self'),
         block_all_mixed_content: false, # :( Some webcam feeds use http://
         child_src: %w('self'),
-        connect_src: [ENV["MQTT_HOST"],
-                      "#{ENV["API_HOST"]}:#{ENV["API_PORT"]}",
+        connect_src: ALL_LOCAL_URIS + [ENV["MQTT_HOST"],
                       "api.github.com",
                       "raw.githubusercontent.com",
                       "openfarm.cc",
