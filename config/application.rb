@@ -36,29 +36,21 @@ module FarmBot
     # ¯\_(ツ)_/¯
     $API_URL = "//#{ Rails.application.routes.default_url_options[:host] }:#{ Rails.application.routes.default_url_options[:port] }"
     SecureHeaders::Configuration.default do |config|
-      config.cookies = {
-        secure: true, # mark all cookies as "Secure"
-        httponly: true, # mark all cookies as "HttpOnly"
-        samesite: {
-          lax: true # mark all cookies as SameSite=lax
-        }
-      }
-      # Add "; preload" and submit the site to hstspreload.org for best protection.
-      config.hsts = "max-age=#{1.week.to_i}"
-      config.x_frame_options = "DENY"
-      config.x_content_type_options = "nosniff"
-      config.x_xss_protection = "1; mode=block"
-      config.x_download_options = "noopen"
+      config.hsts                              = "max-age=#{1.week.to_i}"
+      config.x_frame_options                   = "DENY"
+      config.x_content_type_options            = "nosniff"
+      config.x_xss_protection                  = "1; mode=block"
+      config.x_download_options                = "noopen"
       config.x_permitted_cross_domain_policies = "none"
-      config.referrer_policy = %w(origin-when-cross-origin strict-origin-when-cross-origin)
-      config.csp = {
-        # preserve_schemes: true, # default: false. Schemes are removed from host sources to save bytes and discourage mixed content.
-
-        # directive values: these values will directly translate into source directives
+      config.referrer_policy                   = %w(
+        origin-when-cross-origin
+        strict-origin-when-cross-origin
+      )
+      config.csp                               = {
         default_src: %w(https: 'self'),
         base_uri: %w('self'),
-        block_all_mixed_content: true, # see http://www.w3.org/TR/mixed-content/
-        child_src: %w('self'), # if child-src isn't supported, the value for frame-src will be set.
+        block_all_mixed_content: true,
+        child_src: %w('self'),
         connect_src: [ENV["MQTT_HOST"],
                       "#{ENV["API_HOST"]}:#{ENV["API_PORT"]}",
                       "api.github.com",
@@ -66,19 +58,40 @@ module FarmBot
                       "openfarm.cc",
                       "api.rollbar.com"] +
           (Rails.env.production? ? %w(wss:) : %w(ws: localhost:3000 localhost:3808)),
-        font_src: %w('self' data: maxcdn.bootstrapcdn.com fonts.googleapis.com fonts.gstatic.com),
-        form_action: %w('self'), # React forms sometimes post to ''
+        font_src: %w(
+          'self'
+          data:
+          maxcdn.bootstrapcdn.com
+          fonts.googleapis.com
+          fonts.gstatic.com
+        ),
+        form_action: %w('self'),
         frame_ancestors: %w('none'),
         img_src: %w(* data:), # We need "*" to support webcam users.
         manifest_src: %w('self'),
         media_src: %w(),
         object_src: %w(),
-        sandbox: %w(allow-scripts allow-forms allow-same-origin allow-modals),
+        sandbox: %w(
+          allow-scripts
+          allow-forms
+          allow-same-origin
+          allow-modals
+        ),
         plugin_types: %w(),
-        script_src: %w('self' 'unsafe-eval' 'unsafe-inline' cdnjs.cloudflare.com) +
-          (Rails.env.production? ? [] : %w(chrome-extension: localhost:3808)),
-        style_src: %w('unsafe-inline' fonts.googleapis.com
-          maxcdn.bootstrapcdn.com fonts.gstatic.com),
+        script_src: %w(
+          'self'
+          'unsafe-eval'
+          'unsafe-inline'
+          cdnjs.cloudflare.com
+          chrome-extension:
+          localhost:3808
+        ),
+        style_src: %w(
+          'unsafe-inline'
+          fonts.googleapis.com
+          maxcdn.bootstrapcdn.com
+          fonts.gstatic.com
+        ),
         worker_src: %w(),
         upgrade_insecure_requests: false, # WHY? Some people run webcam feeds
                                           # over plain http://. I wish they
