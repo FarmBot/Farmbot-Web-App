@@ -80,7 +80,11 @@ module FarmBot
         style_src: %w('unsafe-inline' fonts.googleapis.com
           maxcdn.bootstrapcdn.com fonts.gstatic.com),
         worker_src: %w(),
-        upgrade_insecure_requests: Rails.env.production?,
+        upgrade_insecure_requests: false, # WHY? Some people run webcam feeds
+                                          # over plain http://. I wish they
+                                          # wouldn't, but I think it's too much
+                                          # of an inconvinience to block that
+                                          # feature. Comments welcome -RC.
         report_uri: %w(/csrf_reports)
       }
     end
