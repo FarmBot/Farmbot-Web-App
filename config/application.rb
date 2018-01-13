@@ -49,7 +49,7 @@ module FarmBot
       config.csp                               = {
         default_src: %w(https: 'self'),
         base_uri: %w('self'),
-        block_all_mixed_content: true,
+        block_all_mixed_content: false, # :( Some webcam feeds use http://
         child_src: %w('self'),
         connect_src: [ENV["MQTT_HOST"],
                       "#{ENV["API_HOST"]}:#{ENV["API_PORT"]}",
