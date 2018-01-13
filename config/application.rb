@@ -63,7 +63,8 @@ module FarmBot
                       "#{ENV["API_HOST"]}:#{ENV["API_PORT"]}",
                       "api.github.com",
                       "raw.githubusercontent.com",
-                      "openfarm.cc"] +
+                      "openfarm.cc",
+                      "api.rollbar.com"] +
           (Rails.env.production? ? %w(wss:) : %w(ws: localhost:3000 localhost:3808)),
         font_src: %w('self' data: maxcdn.bootstrapcdn.com fonts.googleapis.com fonts.gstatic.com),
         form_action: %w('self'), # React forms sometimes post to ''
