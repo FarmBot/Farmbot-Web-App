@@ -98,7 +98,7 @@ module FarmBot
                                           # wouldn't, but I think it's too much
                                           # of an inconvinience to block that
                                           # feature. Comments welcome -RC.
-        report_uri: %w(/csrf_reports)
+        report_uri: %w(/csp_reports)
       }
     end
   end

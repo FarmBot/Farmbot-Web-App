@@ -60,7 +60,7 @@ FarmBot::Application.routes.draw do
   get  "/"             => "dashboard#front_page",   as: :front_page
   get  "/app"          => "dashboard#main_app",     as: :dashboard
   get  "/tos_update"   => "dashboard#tos_update",   as: :tos_update
-  post "/csrf_reports" => "dashboard#csrf_reports", as: :csrf_report
+  post "/csp_reports"  => "dashboard#csp_reports",  as: :csp_report
 
   match "/app/*path",
           to: "dashboard#main_app",

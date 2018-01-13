@@ -35,7 +35,7 @@ class DashboardController < ApplicationController
   end
 
   # Endpoint reports CSP violations, indicating a possible security problem.
-  def csrf_reports
+  def csp_reports
     payload = request.body.read || ""
     begin
       report = JSON.parse(payload)
@@ -43,9 +43,7 @@ class DashboardController < ApplicationController
       report = {problem: "Crashed while parsing report"}
     end
     Rollbar.error("CSP VIOLATION!!!", report)
-    puts "============"
-    puts report.to_yaml
-    puts "============"
+
     render json: report
   end
 end
