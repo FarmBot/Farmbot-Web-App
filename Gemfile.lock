@@ -233,6 +233,8 @@ GEM
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
     ruby-graphviz (1.2.3)
+    secure_headers (5.0.4)
+      useragent (>= 0.15.0)
     simplecov (0.15.1)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
@@ -256,6 +258,7 @@ GEM
     tzinfo (1.2.4)
       thread_safe (~> 0.1)
     url (0.3.2)
+    useragent (0.16.9)
     warden (1.2.7)
       rack (>= 1.0)
     webpack-rails (0.9.11)
@@ -297,6 +300,7 @@ DEPENDENCIES
   rollbar
   rspec (~> 3.5.0)
   rspec-rails (~> 3.5.0)
+  secure_headers
   simplecov
   skylight (= 1.4.0)
   smarf_doc!

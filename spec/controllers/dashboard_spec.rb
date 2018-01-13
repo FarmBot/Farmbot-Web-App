@@ -23,5 +23,17 @@ describe DashboardController do
       expect { get :main_app, params: {path: "nope.jpg"} }
         .to raise_error(ActionController::RoutingError)
     end
+
+    it "receives CSP violation reports (malformed JSON)" do
+      expect(Rollbar).to receive(:error)
+        .with("CSP VIOLATION!!!", {problem: "Crashed while parsing report"})
+      post :csp_reports, body: "NOT JSON ! ! !"
+    end
+
+    it "receives CSP violation reports (malformed JSON)" do
+      expect(Rollbar).to receive(:error)
+        .with("CSP VIOLATION!!!", {})
+      post :csp_reports, body: {}.to_json, params: {format: :json}
+    end
   end
 end
