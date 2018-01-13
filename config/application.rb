@@ -74,13 +74,13 @@ module FarmBot
         object_src: %w(),
         sandbox: %w(allow-scripts allow-forms allow-same-origin allow-modals),
         plugin_types: %w(),
-        script_src: %w('self' 'unsafe-eval' 'unsafe-inline') +
+        script_src: %w('self' 'unsafe-eval' 'unsafe-inline' cdnjs.cloudflare.com) +
           (Rails.env.production? ? [] : %w(chrome-extension: localhost:3808)),
         style_src: %w('unsafe-inline' fonts.googleapis.com
           maxcdn.bootstrapcdn.com fonts.gstatic.com),
         worker_src: %w(),
         upgrade_insecure_requests: Rails.env.production?,
-        report_uri: %w(http://localhost:3000/csrf_reports)
+        report_uri: %w(/csrf_reports)
       }
     end
   end

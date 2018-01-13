@@ -42,7 +42,7 @@ class DashboardController < ApplicationController
     rescue
       report = {problem: "Crashed while parsing report"}
     end
-    Rollbar.info("CSP VIOLATION!!!", report)
+    Rollbar.error("CSP VIOLATION!!!", report)
     puts "============"
     puts report.to_yaml
     puts "============"
