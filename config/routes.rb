@@ -51,7 +51,7 @@ FarmBot::Application.routes.draw do
 
   # Generate a signed URL for Google Cloud Storage uploads.
   get "/api/storage_auth" => "api/images#storage_auth", as: :storage_auth
-  # You can set FORCE_SSL when you"re done.
+  # You can set FORCE_SSL when you're done.
   get "/.well-known/acme-challenge/:id" => "dashboard#lets_encrypt", as: :lets_encrypt
 
   # =======================================================================

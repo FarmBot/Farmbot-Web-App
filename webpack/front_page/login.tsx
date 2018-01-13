@@ -81,7 +81,7 @@ export class Login extends React.Component<LoginProps, {}> {
                 ref={(x) => x && (this.hiddenFieldRef = x)} />
             </div>
             <label>
-              {t("Email?")}
+              {t("Email")}
             </label>
             <BlurableInput
               type="email"
