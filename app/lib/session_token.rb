@@ -2,8 +2,6 @@
 # `Authorization` header, or used a password to gain access to the MQTT server.
 class SessionToken < AbstractJwtToken
   MUST_VERIFY  = "Verify account first"
-  DEFAULT_OS   = "https://api.github.com/repos/" \
-                 "farmbot/farmbot_os/releases/latest"
   MQTT         = ENV.fetch("MQTT_HOST")
   # If you are not using the standard MQTT broker (eg: you use a 3rd party
   # MQTT vendor), you will need to change this line.
