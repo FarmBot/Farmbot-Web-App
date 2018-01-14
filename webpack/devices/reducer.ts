@@ -9,8 +9,6 @@ import { EdgeStatus } from "../connectivity/interfaces";
 import { ReduxAction } from "../redux/interfaces";
 import { connectivityReducer } from "../connectivity/reducer";
 import { BooleanConfigKey } from "../config_storage/web_app_configs";
-import { maybeGetDevice } from "../device";
-import { RpcRequest } from "farmbot";
 
 const afterEach = (state: BotState, a: ReduxAction<{}>) => {
   state.connectivity = connectivityReducer(state.connectivity, a);
@@ -205,16 +203,16 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
 const stash =
   (s: BotState) => s.statusStash = s.hardware.informational_settings.sync_status;
 
-const FRESHEN_STATE_TREE: RpcRequest = {
-  kind: "rpc_request",
-  args: { label: "FRESHEN_STATE_TREE" },
-  body: [{ kind: "read_status", args: {} }]
-};
+// import { maybeGetDevice } from "../device";
+// import { RpcRequest } from "farmbot";
+// const FRESHEN_STATE_TREE: RpcRequest = {
+//   kind: "rpc_request",
+//   args: { label: "FRESHEN_STATE_TREE" },
+//   body: [{ kind: "read_status", args: {} }]
+// };
+// const dev = maybeGetDevice();
+// dev && dev.publish(FRESHEN_STATE_TREE);
 
 /** Put the old syncStatus back where it was after bot becomes consistent. */
 const unstash =
-  (s: BotState) => {
-    const dev = maybeGetDevice();
-    dev && dev.publish(FRESHEN_STATE_TREE);
-    s.hardware.informational_settings.sync_status = s.statusStash;
-  };
+  (s: BotState) => s.hardware.informational_settings.sync_status = s.statusStash;
