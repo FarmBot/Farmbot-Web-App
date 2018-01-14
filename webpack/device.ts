@@ -7,7 +7,9 @@ let device: Farmbot;
 
 const secure = location.protocol === "https:"; // :(
 
-export const getDevice = (): Farmbot => (device || bail("NO DEVICE SET"));
+export const maybeGetDevice = () => device;
+export const getDevice =
+  (): Farmbot => (maybeGetDevice() || bail("NO DEVICE SET"));
 
 export function fetchNewDevice(auth: AuthState): Promise<Farmbot> {
   device = new Farmbot({ token: auth.token.encoded, secure });
