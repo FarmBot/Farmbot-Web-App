@@ -180,29 +180,29 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     return state;
   })
   .add<void>(Actions.STASH_STATUS, (s, a) => {
-    stashStatus(s);
+    stash(s);
     return s;
   })
   .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, a) => {
     const { name, status } = a.payload;
-    const isBotMqtt = name === "bot.mqtt";
-    const isDown = status.state === "down";
-    if (isBotMqtt) { /** This is way too hard to maintain */
-      if (isDown) {
-        stashStatus(s);
+    switch ((name === "bot.mqtt") && status.state) {
+      case "down":
+        stash(s);
         s.hardware.informational_settings.sync_status = undefined;
-      } else {
-        const botMqtt = s.connectivity["bot.mqtt"];
-        if (botMqtt && botMqtt.state === "down") { // Going from "down" to "up"
-          s.hardware.informational_settings.sync_status = s.statusStash;
-        }
-      }
+        break;
+      case "up":
+        const currentState = s.connectivity["bot.mqtt"];
+        // Going from "down" to "up"
+        const backOnline = currentState && currentState.state === "down";
+        backOnline && unstash(s);
     }
-
     return s;
   });
 
 /** Mutate syncStatus when transitioning from consistent to inconsistent. */
-function stashStatus(s: BotState) {
-  s.statusStash = s.hardware.informational_settings.sync_status;
-}
+const stash =
+  (s: BotState) => s.statusStash = s.hardware.informational_settings.sync_status;
+
+/** Put the old syncStatus back where it was after bot becomes consistent. */
+const unstash =
+  (s: BotState) => s.hardware.informational_settings.sync_status = s.statusStash;
