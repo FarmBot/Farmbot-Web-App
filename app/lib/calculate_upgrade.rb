@@ -1,5 +1,4 @@
 class CalculateUpgrade < Mutations::Command
-    # If version <= this, you can't just fast forward to the latest FBOS version
     MEDIUM_OLDISH = Gem::Version.new("5.0.9")
     LEGACY_CUTOFF = Gem::Version.new("5.0.6")
 
