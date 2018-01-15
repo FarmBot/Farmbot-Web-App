@@ -17,9 +17,7 @@ If you are a developer interested in contributing or would like to provision you
 
 # Q: Where do I report security issues?
 
-We take security seriously and value the input of independent researchers. Please see our [responsible disclosure guidelines](https://farmbot.io/responsible-disclosure-of-security-vulnerabilities/).
-
-Please see our [responsible disclosure guidelines](https://farmbot.io/responsible-disclosure-of-security-vulnerabilities/).
+We take security seriously and value the input of independent researchers. Please see our [responsible disclosure guidelines](https://farm.bot/responsible-disclosure-of-security-vulnerabilities/).
 
 # Q: What is the Farmbot Web App?
 
