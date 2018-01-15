@@ -8,7 +8,10 @@ import { fancyDebug } from "../util";
 export interface PartialState {
   bot: { connectivity: { ["bot.mqtt"]: ConnectionStatus | undefined; } }
 }
-
+interface LastState {
+  value: NetworkState;
+  debounce: number;
+}
 /** PROBLEM: FarmBotJS does not (currently) have a reliable "reconnect"
  *           mechanism. If you get disconnected for a long time, the bot state
  *           will become very stale. This requires some acrobatics on our end.
@@ -16,17 +19,16 @@ export interface PartialState {
  *           re-fetch of the state tree when going from "up => down" or vice
  *           versa. */
 export function generateRefreshTrigger() {
-  const lastState: { value: NetworkState } = { value: "down" };
+  const last: LastState = { value: "down", debounce: 0 };
   return (device: Farmbot, state: PartialState) => {
+    last.debounce += 1;
     const connectionStatus = state.bot.connectivity["bot.mqtt"];
     const flag = connectionStatus ? connectionStatus.state : undefined;
-    if (device && flag && (flag !== lastState.value)) {
-      fancyDebug({ connectionStatus, flag, lastState });
+    if (device && flag && (flag !== last.value) && last.debounce > 5) {
+      fancyDebug({ connectionStatus, flag, last });
       device.readStatus();
-      console.log(`Set lastState.value from ${lastState.value} to ${flag}`);
-      lastState.value = flag;
-    } else {
-      console.log("nope!");
+      console.log(`Set lastState.value from ${last.value} to ${flag}`);
+      last.value = flag;
     }
   };
 }
