@@ -203,16 +203,6 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
 const stash =
   (s: BotState) => s.statusStash = s.hardware.informational_settings.sync_status;
 
-// import { maybeGetDevice } from "../device";
-// import { RpcRequest } from "farmbot";
-// const FRESHEN_STATE_TREE: RpcRequest = {
-//   kind: "rpc_request",
-//   args: { label: "FRESHEN_STATE_TREE" },
-//   body: [{ kind: "read_status", args: {} }]
-// };
-// const dev = maybeGetDevice();
-// dev && dev.publish(FRESHEN_STATE_TREE);
-
 /** Put the old syncStatus back where it was after bot becomes consistent. */
 const unstash =
   (s: BotState) => s.hardware.informational_settings.sync_status = s.statusStash;

@@ -1,9 +1,11 @@
 import { DeviceAccountSettings } from "../devices/interfaces";
 import { ResourceName } from "../resources/tagged_resources";
 
+export type NetworkState = "up" | "down";
+
 /** Description of a connection between two points on the network. */
 export interface ConnectionStatus {
-  state: "up" | "down";
+  state: NetworkState;
   at: string;
 }
 
@@ -28,7 +30,7 @@ type ConnectionRecord = Record<Edge, ConnectionStatus | undefined>;
 
 /** Mapping of known connection status.
  * An `undefined` value means we don't know. */
-export interface ConnectionState extends ConnectionRecord { }
+export type ConnectionState = ConnectionRecord;
 
 export interface UpdateMqttData {
   status: "UPDATE"
