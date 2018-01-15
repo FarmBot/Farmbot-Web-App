@@ -16,13 +16,11 @@ export interface PartialState {
  *           re-fetch of the state tree when going from "up => down" or vice
  *           versa. */
 export function generateRefreshTrigger() {
-  const lastState: { value?: NetworkState } = { value: undefined };
+  const lastState: { value: NetworkState } = { value: "down" };
   return (device: Farmbot, state: PartialState) => {
     const connectionStatus = state.bot.connectivity["bot.mqtt"];
     const flag = connectionStatus ? connectionStatus.state : undefined;
-    if (flag &&
-      (flag === "up") &&
-      (lastState.value === "down")) {
+    if (device && flag && (flag !== lastState.value)) {
       fancyDebug({ connectionStatus, flag, lastState });
       device.readStatus();
       console.log(`Set lastState.value from ${lastState.value} to ${flag}`);
