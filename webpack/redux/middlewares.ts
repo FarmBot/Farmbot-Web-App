@@ -12,12 +12,13 @@ interface MiddlewareConfig {
 
 const maybePingBot = generateRefreshTrigger();
 const stateFetchMiddleware: Middleware =
-  (store) => (_) => (action: any) => {
+  (store) => (next) => (action: any) => {
     const device = maybeGetDevice();
     const action_type = action.type;
     if (device && action_type === Actions.NETWORK_EDGE_CHANGE) {
       maybePingBot(device, store.getState() as any);
     }
+    return next(action);
   };
 /** To make it easier to manage all things watching the state tree,
  * we keep subscriber functions in this array. */
