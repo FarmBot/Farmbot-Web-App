@@ -20,7 +20,9 @@ export function generateRefreshTrigger() {
   return (device: Farmbot, state: PartialState) => {
     const connectionStatus = state.bot.connectivity["bot.mqtt"];
     const flag = connectionStatus ? connectionStatus.state : undefined;
-    if (device && flag && (flag !== lastState.value)) {
+    if (flag &&
+      (flag === "up") &&
+      (lastState.value === "down")) {
       fancyDebug({ connectionStatus, flag, lastState });
       device.readStatus();
       console.log(`Set lastState.value from ${lastState.value} to ${flag}`);
