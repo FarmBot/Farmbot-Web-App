@@ -5,7 +5,7 @@ import { Farmbot } from "farmbot";
  * This is a trimmed down version of the state tree that makes testing in
  * isolation more performant / easy to do. */
 export interface PartialState {
-  bot: { connectivity: { ["user.mqtt"]: ConnectionStatus | undefined; } }
+  bot: { connectivity: { ["bot.mqtt"]: ConnectionStatus | undefined; } }
 }
 
 /** PROBLEM: FarmBotJS does not (currently) have a reliable "reconnect"
@@ -17,9 +17,9 @@ export interface PartialState {
 export function generateRefreshTrigger() {
   const lastState: { value: NetworkState } = { value: "down" };
   return (device: Farmbot, state: PartialState) => {
-    const connectionStatus = state.bot.connectivity["user.mqtt"];
+    const connectionStatus = state.bot.connectivity["bot.mqtt"];
     const flag = connectionStatus ? connectionStatus.state : undefined;
-    if (device && flag && flag !== lastState.value) {
+    if (device && flag && (flag !== lastState.value)) {
       console.log("WERE DOING THIS!");
       device.readStatus();
       lastState.value = flag;
