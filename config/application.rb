@@ -38,7 +38,6 @@ module FarmBot
         [ENV["API_HOST"]] + (ENV["EXTRA_DOMAINS"] || "").split(",")
       )
       .map { |x| x.present? ? "#{x}:#{ENV["API_PORT"]}" : nil }.compact
-    puts ALL_LOCAL_URIS.inspect
     SecureHeaders::Configuration.default do |config|
       config.hsts                              = "max-age=#{1.week.to_i}"
       config.x_frame_options                   = "DENY"
