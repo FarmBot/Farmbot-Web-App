@@ -2,22 +2,35 @@ import thunk from "redux-thunk";
 import { applyMiddleware, compose, Middleware } from "redux";
 import { EnvName } from "./interfaces";
 import { Actions } from "../constants";
+import { generateRefreshTrigger } from "../connectivity/subscribe_and_refresh_bot";
+import { maybeGetDevice } from "../device";
 
 interface MiddlewareConfig {
   fn: Middleware;
   env: EnvName;
 }
 
+const maybePingBot = generateRefreshTrigger();
+const stateFetchMiddleware: Middleware =
+  (store) => (_) => (action: any) => {
+    const device = maybeGetDevice();
+    const action_type = action.type;
+    if (device && action_type === Actions.NETWORK_EDGE_CHANGE) {
+      maybePingBot(device, store.getState() as any);
+    }
+  };
 /** To make it easier to manage all things watching the state tree,
  * we keep subscriber functions in this array. */
 export let mwConfig: MiddlewareConfig[] = [
   {
     env: "*",
     fn: thunk
-  }
-  , {
+  }, {
     env: "development",
     fn: require("redux-immutable-state-invariant").default()
+  }, {
+    env: "*",
+    fn: stateFetchMiddleware
   }
 ];
 

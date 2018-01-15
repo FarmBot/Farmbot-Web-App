@@ -3,9 +3,6 @@ import { Store } from "./interfaces";
 import { rootReducer } from "./root_reducer";
 import { registerSubscribers } from "./subscribers";
 import { getMiddleware } from "./middlewares";
-import {
-  subscribeAndRefreshBot
-} from "../connectivity/subscribe_and_refresh_bot";
 import { set } from "lodash";
 
 const ENV = process.env.NODE_ENV || "development";
@@ -26,7 +23,6 @@ export function configureStore(options = {}) {
   // Make store global in case I need to probe it.
   set(window, "store", store2);
   registerSubscribers(store2);
-  subscribeAndRefreshBot(store2);
   return store2;
 }
 
