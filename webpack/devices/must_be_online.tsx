@@ -9,7 +9,7 @@ export interface MBOProps {
   hideBanner?: boolean;
   children?: JSXChildren;
 }
-console.log("We need to update this to go off of bot.connectivity");
+
 export function MustBeOnline({ children, hideBanner, lockOpen, status }: MBOProps) {
   const banner = hideBanner ? "" : "banner";
   const online = status === "up";
