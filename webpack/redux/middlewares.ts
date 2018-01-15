@@ -2,6 +2,7 @@ import thunk from "redux-thunk";
 import { applyMiddleware, compose, Middleware } from "redux";
 import { EnvName } from "./interfaces";
 import { Actions } from "../constants";
+import { stateFetchMiddlewareConfig } from "./state_fetch_middleware";
 
 export interface MiddlewareConfig {
   fn: Middleware;
@@ -13,7 +14,7 @@ export interface MiddlewareConfig {
 export let mwConfig: MiddlewareConfig[] = [
   { env: "*", fn: thunk },
   { env: "development", fn: require("redux-immutable-state-invariant").default() },
-  stateFetchMiddleware
+  stateFetchMiddlewareConfig
 ];
 
 export function getMiddleware(env: EnvName) {

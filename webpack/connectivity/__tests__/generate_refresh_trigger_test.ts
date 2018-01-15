@@ -11,17 +11,20 @@ describe("generateRefreshTrigger()", () => {
     return { bot: { connectivity: { ["bot.mqtt"]: next } } };
   }
 
-  it("creates a function that triggers a refresh", () => {
+  it("throttles the first 5 calls", () => {
     const device: Partial<Farmbot> = {
       readStatus: jest.fn(() => Promise.resolve())
     };
     const trigger = generateRefreshTrigger();
-    times(2, () => {
-      trigger(device as Farmbot, fakeState(UP));
-      trigger(device as Farmbot, fakeState(DOWN));
-    });
+    const go =
+      (x: ConnectionStatus | undefined) => trigger(device as Farmbot, fakeState(x));
+    go(UP);
+    go(DOWN);
+    go(UP);
+    go(DOWN);
+    go(UP);
     expect(device.readStatus).not.toHaveBeenCalled();
-    trigger(device as Farmbot, fakeState(UP));
+    go(UP);
     expect(device.readStatus).toHaveBeenCalled();
   });
 });
