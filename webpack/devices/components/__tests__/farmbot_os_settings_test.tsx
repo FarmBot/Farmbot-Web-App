@@ -25,7 +25,8 @@ describe("<FarmbotOsSettings/>", () => {
       account: fakeResource("Device", { id: 0, name: "", tz_offset_hrs: 0 }),
       dispatch: jest.fn(),
       bot: bot,
-      auth: fakeState().auth as AuthState
+      auth: fakeState().auth as AuthState,
+      botToMqttStatus: "up"
     };
   }
 

@@ -6,6 +6,7 @@ import {
   TaggedWebcamFeed,
   TaggedPeripheral
 } from "../resources/tagged_resources";
+import { NetworkState } from "../connectivity/interfaces";
 
 export interface Props {
   dispatch: Function;
@@ -14,6 +15,7 @@ export interface Props {
   user: TaggedUser | undefined;
   peripherals: TaggedPeripheral[];
   resources: RestResources;
+  botToMqttStatus: NetworkState;
 }
 
 export interface MoveProps {
@@ -26,6 +28,7 @@ export interface MoveProps {
   x_axis_inverted: boolean;
   y_axis_inverted: boolean;
   z_axis_inverted: boolean;
+  botToMqttStatus: NetworkState
 }
 
 export interface DirectionButtonProps {

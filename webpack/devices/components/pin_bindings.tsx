@@ -16,10 +16,12 @@ import { MustBeOnline } from "../must_be_online";
 import { Popover, Position } from "@blueprintjs/core";
 import { RpiGpioDiagram, gpio } from "./rpi_gpio_diagram";
 import { error } from "farmbot-toastr";
+import { NetworkState } from "../../connectivity/interfaces";
 
 export interface PinBindingsProps {
   bot: BotState;
   dispatch: Function;
+  botToMqttStatus: NetworkState;
   resources: ResourceIndex;
 }
 
@@ -177,15 +179,13 @@ export class PinBindings
   }
 
   render() {
-    const syncStatus = this.props.bot.hardware
-      .informational_settings.sync_status || "unknown";
     return <Widget className="pin-bindings-widget">
       <WidgetHeader
         title={"Pin Bindings"}
         helpText={ToolTips.PIN_BINDINGS} />
       <WidgetBody>
         <MustBeOnline
-          status={syncStatus}
+          status={this.props.botToMqttStatus}
           lockOpen={process.env.NODE_ENV !== "production"}>
           <Row>
             <Col xs={ColumnWidth.pin}>

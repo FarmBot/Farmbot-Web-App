@@ -36,7 +36,8 @@ describe("<PinBindings/>", () => {
     return {
       dispatch: jest.fn(),
       bot: bot,
-      resources: resources
+      resources: resources,
+      botToMqttStatus: "up"
     };
   }
 

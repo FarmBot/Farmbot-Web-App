@@ -15,15 +15,10 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     .filter(i => i.uuid === props.resources.consumers.farmware.currentImage)[0]
     || firstImage;
   const { farmwares } = props.bot.hardware.process_info;
-  const syncStatus = props
-    .bot
-    .hardware
-    .informational_settings
-    .sync_status || "unknown";
   return {
     timeOffset: maybeGetTimeOffset(props.resources.index),
     farmwares,
-    syncStatus,
+    botToMqttStatus: "up",
     env: prepopulateEnv(props.bot.hardware.user_env),
     user_env: props.bot.hardware.user_env,
     dispatch: props.dispatch,

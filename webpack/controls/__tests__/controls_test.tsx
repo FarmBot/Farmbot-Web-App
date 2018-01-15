@@ -33,7 +33,8 @@ describe("<Controls />", () => {
       feeds: [fakeWebcamFeed()],
       user: undefined,
       peripherals: [fakePeripheral()],
-      resources: fakeState().resources
+      resources: fakeState().resources,
+      botToMqttStatus: "up"
     };
   }
 
