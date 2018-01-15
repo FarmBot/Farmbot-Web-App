@@ -18,7 +18,6 @@ interface LastState {
  *           The code below will detect changes in connectivity and force a
  *           re-fetch of the state tree when going from "up => down" or vice
  *           versa. */
-
 export function generateRefreshTrigger() {
   const last: LastState = { value: "down", debounce: 0 };
   return (device: Farmbot, state: PartialState) => {

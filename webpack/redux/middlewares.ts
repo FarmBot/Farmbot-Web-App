@@ -2,43 +2,18 @@ import thunk from "redux-thunk";
 import { applyMiddleware, compose, Middleware } from "redux";
 import { EnvName } from "./interfaces";
 import { Actions } from "../constants";
-import { generateRefreshTrigger } from "../connectivity/subscribe_and_refresh_bot";
-import { maybeGetDevice } from "../device";
-import { get } from "lodash";
-import { Edge } from "../connectivity/interfaces";
 
-interface MiddlewareConfig {
+export interface MiddlewareConfig {
   fn: Middleware;
   env: EnvName;
 }
 
-const maybePingBot = generateRefreshTrigger();
-const expectation: Edge = "bot.mqtt";
-const stateFetchMiddleware: Middleware =
-  (store) => (next) => (action: any) => {
-    const device = maybeGetDevice();
-    const action_type = action.type;
-    const x = get(action, "payload.name", "?");
-    if (device
-      && action_type === Actions.NETWORK_EDGE_CHANGE
-      && x === expectation) {
-      maybePingBot(device, store.getState() as any);
-    }
-    return next(action);
-  };
 /** To make it easier to manage all things watching the state tree,
  * we keep subscriber functions in this array. */
 export let mwConfig: MiddlewareConfig[] = [
-  {
-    env: "*",
-    fn: thunk
-  }, {
-    env: "development",
-    fn: require("redux-immutable-state-invariant").default()
-  }, {
-    env: "*",
-    fn: stateFetchMiddleware
-  }
+  { env: "*", fn: thunk },
+  { env: "development", fn: require("redux-immutable-state-invariant").default() },
+  stateFetchMiddleware
 ];
 
 export function getMiddleware(env: EnvName) {
@@ -53,7 +28,7 @@ export function getMiddleware(env: EnvName) {
     ]
   });
   const composeEnhancers = dtCompose || compose;
-  const middlewares = applyMiddleware(...middlewareFns);
+  const middleware = applyMiddleware(...middlewareFns);
 
-  return composeEnhancers(middlewares);
+  return composeEnhancers(middleware);
 }
