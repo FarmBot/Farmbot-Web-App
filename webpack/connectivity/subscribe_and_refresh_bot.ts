@@ -16,7 +16,7 @@ export interface PartialState {
  *           re-fetch of the state tree when going from "up => down" or vice
  *           versa. */
 export function generateRefreshTrigger() {
-  const lastState: { value: NetworkState } = { value: "down" };
+  const lastState: { value?: NetworkState } = { value: undefined };
   return (device: Farmbot, state: PartialState) => {
     const connectionStatus = state.bot.connectivity["bot.mqtt"];
     const flag = connectionStatus ? connectionStatus.state : undefined;
