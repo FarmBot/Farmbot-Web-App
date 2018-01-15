@@ -6,7 +6,6 @@ import { getMiddleware } from "./middlewares";
 import {
   subscribeAndRefreshBot
 } from "../connectivity/subscribe_and_refresh_bot";
-import { Everything } from "../interfaces";
 import { set } from "lodash";
 
 const ENV = process.env.NODE_ENV || "development";

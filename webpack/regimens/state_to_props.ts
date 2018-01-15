@@ -71,11 +71,11 @@ const createRows = (index: ResourceIndex, dispatch: Function, regimen: TaggedReg
   (item: RegimenItem): RegimenItemCalendarRow => {
     const uuid = findId(index, "Sequence", item.sequence_id);
     const sequence = findSequence(index, uuid);
-    const { time_offset } = item;
-    const d = duration(time_offset);
+    const { time_offset_ms } = item;
+    const d = duration(time_offset_ms);
     const { name } = sequence.body;
     const color = sequence.body.color || randomColor();
     const hhmm = moment({ hour: d.hours(), minute: d.minutes() }).format(FMT);
-    const day = Math.floor(duration(time_offset).asDays()) + 1;
-    return { name, hhmm, color, day, dispatch, regimen, item, sortKey: time_offset };
+    const day = Math.floor(duration(time_offset_ms).asDays()) + 1;
+    return { name, hhmm, color, day, dispatch, regimen, item, sortKey: time_offset_ms };
   };

@@ -1,6 +1,5 @@
 import { NetworkState, ConnectionStatus } from "./interfaces";
 import { maybeGetDevice } from "../device";
-import { store } from "../redux/store";
 import { Store } from "redux";
 
 /** Needing to reproduce the `Everything` interface in tests is tedious.

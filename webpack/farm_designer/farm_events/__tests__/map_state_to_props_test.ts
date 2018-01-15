@@ -21,7 +21,7 @@ describe("mapStateToProps()", () => {
     regimen.body.id = 1;
     regimen.body.regimen_items = [{
       sequence_id: 1,
-      time_offset: moment(time).add(10, "minutes")
+      time_offset_ms: moment(time).add(10, "minutes")
         .diff(moment(time).clone().startOf("day"), "milliseconds")
     }];
 
@@ -200,7 +200,7 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
     regimen.body.id = 1;
     regimen.body.regimen_items = [{
       sequence_id: 1,
-      time_offset: 288660000
+      time_offset_ms: 288660000
     }];
 
     const regimenFarmEvent = fakeFarmEvent("Regimen", 1);

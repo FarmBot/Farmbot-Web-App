@@ -71,7 +71,7 @@ export interface RegimenItem {
   sequence_id: number;
   regimen_id?: number;
   /** Time (in milliseconds) to wait before executing the sequence */
-  time_offset: number;
+  time_offset_ms: number;
 }
 
 export interface AddRegimenProps {

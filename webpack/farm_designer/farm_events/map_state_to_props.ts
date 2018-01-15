@@ -55,14 +55,14 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
       .add(ms, "ms");
     const gracePeriod = now.clone().subtract(1, "minute");
     const lastRI = last(regimen_items);
-    if (lastRI && fromEpoch(lastRI.time_offset).isSameOrAfter(gracePeriod)) {
+    if (lastRI && fromEpoch(lastRI.time_offset_ms).isSameOrAfter(gracePeriod)) {
       const o = occurrence(moment(f.start_time), f, tz_offset_hrs);
       o.heading = f.executable.name;
       o.subheading = "";
       c.insert(o);
     }
     regimen_items.map(ri => {
-      const time = fromEpoch(ri.time_offset);
+      const time = fromEpoch(ri.time_offset_ms);
       if (time.isSameOrAfter(gracePeriod)
         && time.isSameOrAfter(moment(f.start_time))) {
         const oo = occurrence(time, f, tz_offset_hrs);

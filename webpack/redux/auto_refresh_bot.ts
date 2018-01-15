@@ -11,7 +11,7 @@ export const autoRefreshBot: Subscription = {
     const wasDown = mqttHistory.last.state === "down";
     if (x && wasDown && x.state === "up") {
       mqttHistory.last = x;
-      getDevice().readStatus().then(() => console.log("REFETCH"), () => { });
+      getDevice().readStatus().then(() => { }, () => { });
     }
   }
 };
