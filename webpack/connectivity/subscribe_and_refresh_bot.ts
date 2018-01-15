@@ -1,6 +1,8 @@
 import { NetworkState, ConnectionStatus } from "./interfaces";
 import { maybeGetDevice } from "../device";
 import { Store } from "redux";
+import { fancyDebug } from "../util";
+import { Farmbot } from "farmbot";
 
 /** Needing to reproduce the `Everything` interface in tests is tedious.
  * This is a trimmed down version of the state tree that makes testing in
@@ -15,16 +17,15 @@ export interface PartialState {
  *           The code below will detect changes in connectivity and force a
  *           re-fetch of the state tree when going from "up => down" or vice
  *           versa. */
-export function subscribeAndRefreshBot(store_: Store<PartialState>) {
+export function subscribeAndRefreshBot() {
   const lastState: { value: NetworkState } = { value: "down" };
-
-  store_.subscribe(() => {
-    const device = maybeGetDevice();
-    const currentState = store_.getState().bot.connectivity["user.mqtt"];
+  return (storeState: PartialState, device: Farmbot) => {
+    const currentState = storeState.bot.connectivity["user.mqtt"];
     const state = currentState ? currentState.state : undefined;
     if (device && state && state !== lastState.value) {
+      fancyDebug({ current: state, previous: lastState.value });
       device.readStatus();
       lastState.value = state;
     }
-  });
+  };
 }
