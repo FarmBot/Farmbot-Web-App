@@ -4,7 +4,6 @@ import { EnvName } from "./interfaces";
 import { Actions } from "../constants";
 import { generateRefreshTrigger } from "../connectivity/subscribe_and_refresh_bot";
 import { maybeGetDevice } from "../device";
-import { fancyDebug } from "../util";
 import { get } from "lodash";
 import { Edge } from "../connectivity/interfaces";
 
@@ -23,7 +22,6 @@ const stateFetchMiddleware: Middleware =
     if (device
       && action_type === Actions.NETWORK_EDGE_CHANGE
       && x === expectation) {
-      fancyDebug(action.payload);
       maybePingBot(device, store.getState() as any);
     }
     return next(action);

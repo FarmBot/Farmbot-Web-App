@@ -1,5 +1,6 @@
 import { NetworkState, ConnectionStatus } from "./interfaces";
 import { Farmbot } from "farmbot";
+import { fancyDebug } from "../util";
 
 /** Needing to reproduce the `Everything` interface in tests is tedious.
  * This is a trimmed down version of the state tree that makes testing in
@@ -20,8 +21,9 @@ export function generateRefreshTrigger() {
     const connectionStatus = state.bot.connectivity["bot.mqtt"];
     const flag = connectionStatus ? connectionStatus.state : undefined;
     if (device && flag && (flag !== lastState.value)) {
-      console.log("WERE DOING THIS!");
+      fancyDebug({ connectionStatus, flag, lastState });
       device.readStatus();
+      console.log(`Set lastState.value from ${lastState.value} to ${flag}`);
       lastState.value = flag;
     } else {
       console.log("nope!");
