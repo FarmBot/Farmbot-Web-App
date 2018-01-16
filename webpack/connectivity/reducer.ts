@@ -38,7 +38,11 @@ export let connectivityReducer =
       keys.map(x => {
         /** FBOS Is constantly sending us pings.
          * Sometimes those pings come in after a "down" message, which leads to
-         * "Flickering". To get around this, we use BACKOFF_TIME as a cooldown
+         * "Flickering".
+         * Example:
+         *                         .- Old Pings Here 👇 --.
+         * UP => (click reboot) => UP => UP => UP => UP => DOWN => DOWN
+         * To get around this, we use BACKOFF_TIME as a cooldown
          * period to smooth out the flickering.
          */
         const offset = x === "bot.mqtt" ? BACKOFF_TIME : 0;

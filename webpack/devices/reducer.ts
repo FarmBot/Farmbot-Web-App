@@ -150,6 +150,10 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     s.currentBetaOSVersion = payload;
     return s;
   })
+  .add<void>(Actions.RESET_NETWORK, (s, _) => {
+    clearSyncStatus(s);
+    return s;
+  })
   .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
     state.hardware = payload;
     const { informational_settings } = state.hardware;
@@ -188,7 +192,7 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     switch ((name === "bot.mqtt") && status.state) {
       case "down":
         stash(s);
-        s.hardware.informational_settings.sync_status = undefined;
+        clearSyncStatus(s);
         break;
       case "up":
         const currentState = s.connectivity["bot.mqtt"];
@@ -206,3 +210,6 @@ const stash =
 /** Put the old syncStatus back where it was after bot becomes consistent. */
 const unstash =
   (s: BotState) => s.hardware.informational_settings.sync_status = s.statusStash;
+
+const clearSyncStatus =
+  (s: BotState) => s.hardware.informational_settings.sync_status = undefined;
