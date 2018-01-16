@@ -25,7 +25,6 @@ export function generateRefreshTrigger() {
     const flag = connectionStatus ? connectionStatus.state : undefined;
     if (device && flag && (flag !== last.value) && last.debounce > 5) {
       device.readStatus();
-      console.log(`Set lastState.value from ${last.value} to ${flag}`);
       last.value = flag;
     }
   };
