@@ -1,6 +1,6 @@
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
-import { ConnectionState, EdgeStatus, ResourceReady } from "./interfaces";
+import { ConnectionState, EdgeStatus, ResourceReady, ConnectionStatus } from "./interfaces";
 import { computeBestTime } from "./reducer_support";
 
 export const DEFAULT_STATE: ConnectionState = {
@@ -12,8 +12,14 @@ export const DEFAULT_STATE: ConnectionState = {
 export let connectivityReducer =
   generateReducer<ConnectionState>(DEFAULT_STATE)
     .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
-      s[payload.name] = payload.status;
-      return s;
+      const now = s[payload.name];
+      if (shouldReplace(payload.status, now)) {
+        s[payload.name] = payload.status;
+        return s;
+      } else {
+        console.log("No, that's outdated.");
+        return s;
+      }
     })
     .add<ResourceReady>(Actions.RESOURCE_READY, (s, a) => {
       const isRelevant = a.payload.name === "devices";
@@ -30,3 +36,13 @@ export let connectivityReducer =
 
       return s;
     });
+
+function shouldReplace(incoming: ConnectionStatus, current?: ConnectionStatus) {
+  if (current) {
+    const alreadyHave = (new Date(current.at).getTime());
+    const possibleReplacement = (new Date(incoming.at).getTime());
+    return possibleReplacement > alreadyHave;
+  } else {
+    return true;
+  }
+}

@@ -2,7 +2,6 @@ import { isUndefined } from "lodash";
 import * as moment from "moment";
 import { StatusRowProps } from "./connectivity_row";
 import { ConnectionStatus } from "../../connectivity/interfaces";
-import { fancyDebug } from "../../util";
 
 const HOUR = 1000 * 60 * 60;
 
@@ -47,13 +46,13 @@ export function botToMQTT(stat: ConnectionStatus | undefined): StatusRowProps {
 export function browserToMQTT(status:
   ConnectionStatus | undefined): StatusRowProps {
 
-  return fancyDebug({
+  return {
     connectionName: "browserMQTT",
     from: "Browser",
     to: "Message Broker",
     children: lastSeen(status),
     connectionStatus: statusOf(status)
-  });
+  };
 }
 
 export function botToFirmware(version: string | undefined): StatusRowProps {
