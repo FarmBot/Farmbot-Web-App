@@ -5,7 +5,7 @@ import axios from "axios";
 import { API } from "../api/index";
 import { timestamp } from "../util";
 
-export const PING_INTERVAL = 3000;
+export const PING_INTERVAL = 1500;
 const label = "ping";
 export const LAST_IN = "LAST_PING_IN";
 export const LAST_OUT = "LAST_PING_OUT";

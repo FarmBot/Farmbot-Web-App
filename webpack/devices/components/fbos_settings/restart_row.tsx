@@ -5,7 +5,11 @@ import { Content } from "../../../constants";
 import { reboot } from "../../actions";
 import { ColWidth } from "../farmbot_os_settings";
 
-export function RestartRow() {
+interface RestartRowProps {
+  dispatch: Function;
+}
+
+export function RestartRow(props: RestartRowProps) {
   return <Row>
     <Col xs={ColWidth.label}>
       <label>
@@ -21,7 +25,7 @@ export function RestartRow() {
       <button
         className="fb-button yellow"
         type="button"
-        onClick={reboot}>
+        onClick={() => reboot(props.dispatch)}>
         {t("RESTART")}
       </button>
     </Col>
