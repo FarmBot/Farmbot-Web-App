@@ -1,7 +1,6 @@
 import { generateRefreshTrigger, PartialState } from "../generate_refresh_trigger";
 import { Farmbot } from "farmbot";
 import { ConnectionStatus } from "../interfaces";
-import { times } from "lodash";
 
 describe("generateRefreshTrigger()", () => {
   const UP: ConnectionStatus = { state: "up", at: "---" };
