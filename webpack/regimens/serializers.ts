@@ -12,7 +12,7 @@ export function regimenSerializer(input: Regimen) {
     .map(function wow(r) {
       if (r && r.sequence_id) {
         return {
-          time_offset: r.time_offset_ms,
+          time_offset: r.time_offset,
           sequence_id: r.sequence_id
         };
       } else {

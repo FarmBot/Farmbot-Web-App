@@ -21,7 +21,7 @@ describe("<ActiveEditor />", () => {
         dispatch: jest.fn(),
         regimen: fakeRegimen(),
         item: {
-          sequence_id: 0, time_offset_ms: 1000
+          sequence_id: 0, time_offset: 1000
         }
       }]
     }]

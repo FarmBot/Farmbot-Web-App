@@ -240,7 +240,7 @@ const tr12: TaggedResource = {
         "id": 33,
         "regimen_id": 11,
         "sequence_id": 23,
-        "time_offset_ms": 345900000
+        "time_offset": 345900000
       }
     ]
   },

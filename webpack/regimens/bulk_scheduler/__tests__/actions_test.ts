@@ -30,7 +30,7 @@ describe("commitBulkEditor()", () => {
               "id": 1,
               "regimen_id": 1,
               "sequence_id": 1,
-              "time_offset_ms": 1000
+              "time_offset": 1000
             }
           ]
         },
@@ -117,8 +117,8 @@ describe("commitBulkEditor()", () => {
       payload: expect.objectContaining({
         update: expect.objectContaining({
           regimen_items: [
-            { id: 1, regimen_id: 1, sequence_id: 1, time_offset_ms: 1000 },
-            { sequence_id: 1, time_offset_ms: 2000 }]
+            { id: 1, regimen_id: 1, sequence_id: 1, time_offset: 1000 },
+            { sequence_id: 1, time_offset: 2000 }]
         }),
       }),
       type: Actions.OVERWRITE_RESOURCE

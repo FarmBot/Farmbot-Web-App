@@ -25,7 +25,7 @@ describe("mapStateToProps()", () => {
               "id": 1,
               "regimen_id": 1,
               "sequence_id": 1,
-              "time_offset_ms": 1000
+              "time_offset": 1000
             }
           ]
         },
@@ -54,6 +54,6 @@ describe("mapStateToProps()", () => {
     state.resources.consumers.regimens.currentRegimen = regimenUuid;
     const props = mapStateToProps(state);
     props.current ? expect(props.current.uuid).toEqual(regimenUuid) : fail;
-    expect(props.calendar[0].items[0].item.time_offset_ms).toEqual(1000);
+    expect(props.calendar[0].items[0].item.time_offset).toEqual(1000);
   });
 });
