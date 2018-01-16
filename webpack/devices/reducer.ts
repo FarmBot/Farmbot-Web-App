@@ -152,6 +152,7 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
   })
   .add<void>(Actions.RESET_NETWORK, (s, _) => {
     clearSyncStatus(s);
+    clearStash(s);
     return s;
   })
   .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
@@ -213,3 +214,5 @@ const unstash =
 
 const clearSyncStatus =
   (s: BotState) => s.hardware.informational_settings.sync_status = undefined;
+
+const clearStash = (s: BotState) => s.statusStash = undefined;
