@@ -17,7 +17,7 @@ describe("<FarmwarePage />", () => {
   it("renders widgets", () => {
     const props: FarmwareProps = {
       farmwares: {},
-      syncStatus: "unknown",
+      botToMqttStatus: "up",
       env: {},
       user_env: {},
       dispatch: jest.fn(),

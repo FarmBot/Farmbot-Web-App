@@ -47,7 +47,6 @@ const doRunMigration = () => {
 
   const ok = () => {
     markAsDone();
-    window.location.reload();
   };
 
   return axios.put(API.current.webAppConfigPath, newStuff).then(ok, ok);

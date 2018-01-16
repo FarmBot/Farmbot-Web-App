@@ -2,8 +2,9 @@ import thunk from "redux-thunk";
 import { applyMiddleware, compose, Middleware } from "redux";
 import { EnvName } from "./interfaces";
 import { Actions } from "../constants";
+import { stateFetchMiddlewareConfig } from "./state_fetch_middleware";
 
-interface MiddlewareConfig {
+export interface MiddlewareConfig {
   fn: Middleware;
   env: EnvName;
 }
@@ -11,14 +12,9 @@ interface MiddlewareConfig {
 /** To make it easier to manage all things watching the state tree,
  * we keep subscriber functions in this array. */
 export let mwConfig: MiddlewareConfig[] = [
-  {
-    env: "*",
-    fn: thunk
-  }
-  , {
-    env: "development",
-    fn: require("redux-immutable-state-invariant").default()
-  }
+  { env: "*", fn: thunk },
+  { env: "development", fn: require("redux-immutable-state-invariant").default() },
+  stateFetchMiddlewareConfig
 ];
 
 export function getMiddleware(env: EnvName) {
@@ -33,7 +29,7 @@ export function getMiddleware(env: EnvName) {
     ]
   });
   const composeEnhancers = dtCompose || compose;
-  const middlewares = applyMiddleware(...middlewareFns);
+  const middleware = applyMiddleware(...middlewareFns);
 
-  return composeEnhancers(middlewares);
+  return composeEnhancers(middleware);
 }

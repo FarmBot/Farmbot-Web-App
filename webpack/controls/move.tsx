@@ -26,9 +26,7 @@ export class Move extends React.Component<MoveProps, {}> {
     (name: EncoderDisplay) => () => Session.invertBool(ENCODER_MAPPING[name]);
 
   render() {
-    const {
-      sync_status, firmware_version
-    } = this.props.bot.hardware.informational_settings;
+    const { firmware_version } = this.props.bot.hardware.informational_settings;
     const { x_axis_inverted, y_axis_inverted, z_axis_inverted } = this.props;
     const { raw_encoders, scaled_encoders } = this.props;
     const xBtnColor = x_axis_inverted ? "green" : "red";
@@ -117,7 +115,7 @@ export class Move extends React.Component<MoveProps, {}> {
         <WidgetBody>
           <MustBeOnline
             lockOpen={process.env.NODE_ENV !== "production"}
-            status={sync_status}>
+            status={this.props.botToMqttStatus}>
             <label className="text-center">
               {t("MOVE AMOUNT (mm)")}
             </label>

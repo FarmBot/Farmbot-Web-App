@@ -15,6 +15,10 @@ This repository is intended for *software developers* who wish to modify the [Fa
 
 If you are a developer interested in contributing or would like to provision your own server, you are in the right place.
 
+# Q: Where do I report security issues?
+
+We take security seriously and value the input of independent researchers. Please see our [responsible disclosure guidelines](https://farm.bot/responsible-disclosure-of-security-vulnerabilities/).
+
 # Q: What is the Farmbot Web App?
 
 This repo contains FarmBot's web based user interface, a RESTful JSON API and a Dockerized MQTT server. The API stores data such as user account information, plant data, authorization tokens and a variety of other resources. The MQTT server facilitates realtime messaging from the browser to the device.

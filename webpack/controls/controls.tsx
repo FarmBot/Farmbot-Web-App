@@ -4,7 +4,7 @@ import { Peripherals } from "./peripherals";
 import { Row, Page, Col } from "../ui";
 import { mapStateToProps } from "./state_to_props";
 import { WebcamPanel } from "./webcam";
-import { Props } from "./interfaces";
+import { Props, MoveProps } from "./interfaces";
 import { Move } from "./move";
 import { BooleanSetting } from "../session_keys";
 import { Session } from "../session";
@@ -20,7 +20,7 @@ export class Controls extends React.Component<Props, {}> {
       .hardware
       .informational_settings
       .busy;
-    const moveProps = {
+    const moveProps: MoveProps = {
       bot: this.props.bot,
       user: this.props.user,
       dispatch: this.props.dispatch,
@@ -30,6 +30,7 @@ export class Controls extends React.Component<Props, {}> {
       x_axis_inverted: !!Session.deprecatedGetBool(BooleanSetting.x_axis_inverted),
       y_axis_inverted: !!Session.deprecatedGetBool(BooleanSetting.y_axis_inverted),
       z_axis_inverted: !!Session.deprecatedGetBool(BooleanSetting.z_axis_inverted),
+      botToMqttStatus: this.props.botToMqttStatus
     };
     const showWebcamWidget = !Session.deprecatedGetBool(BooleanSetting.hide_webcam_widget);
     return <Page className="controls">

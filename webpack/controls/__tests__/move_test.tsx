@@ -30,6 +30,7 @@ describe("<Move />", () => {
       x_axis_inverted: false,
       y_axis_inverted: false,
       z_axis_inverted: false,
+      botToMqttStatus: "up",
     };
   }
 
