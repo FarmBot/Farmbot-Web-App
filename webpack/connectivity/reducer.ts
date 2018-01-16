@@ -9,7 +9,7 @@ export const DEFAULT_STATE: ConnectionState = {
   "user.api": undefined
 };
 
-const BACKOFF_TIME = 6000;
+const BACKOFF_TIME = 4000;
 
 export let connectivityReducer =
   generateReducer<ConnectionState>(DEFAULT_STATE)
