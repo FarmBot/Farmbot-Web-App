@@ -36,8 +36,14 @@ export let connectivityReducer =
       const keys: Keys = ["bot.mqtt", "user.mqtt", "user.api"];
       const later = new Date().getTime();
       keys.map(x => {
+        /** FBOS Is constantly sending us pings.
+         * Sometimes those pings come in after a "down" message, which leads to
+         * "Flickering". To get around this, we use BACKOFF_TIME as a cooldown
+         * period to smooth out the flickering.
+         */
+        const offset = x === "bot.mqtt" ? BACKOFF_TIME : 0;
         s[x] = {
-          at: new Date(x === "bot.mqtt" ? later : later + BACKOFF_TIME).toISOString(),
+          at: new Date(later + offset).toISOString(),
           state: "down"
         };
       });
