@@ -1,6 +1,6 @@
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
-import { ConnectionState, EdgeStatus, ResourceReady, ConnectionStatus } from "./interfaces";
+import { ConnectionState, EdgeStatus, ResourceReady } from "./interfaces";
 import { computeBestTime } from "./reducer_support";
 
 export const DEFAULT_STATE: ConnectionState = {

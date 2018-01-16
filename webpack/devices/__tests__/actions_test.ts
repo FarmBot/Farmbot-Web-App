@@ -45,7 +45,7 @@ jest.mock("axios", () => ({
 import * as actions from "../actions";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
-import { changeStepSize, resetNetwork, resetConnectionInfo, reboot } from "../actions";
+import { changeStepSize, resetNetwork, resetConnectionInfo } from "../actions";
 import { Actions } from "../../constants";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { API } from "../../api/index";
