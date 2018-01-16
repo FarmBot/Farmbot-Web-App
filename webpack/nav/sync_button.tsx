@@ -2,6 +2,8 @@ import * as React from "react";
 import { SyncStatus } from "farmbot/dist";
 import { NavButtonProps } from "./interfaces";
 import { sync } from "../devices/actions";
+import { ConnectionStatus } from "../connectivity/interfaces";
+import { fancyDebug } from "../util";
 
 const COLOR_MAPPING: Record<SyncStatus, string> = {
   "synced": "green",
@@ -27,23 +29,46 @@ export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) 
   if (!user) {
     return <span></span>;
   }
-  let { sync_status } = bot.hardware.informational_settings;
-  sync_status = sync_status || "unknown";
+  const x: CalculationProps = fancyDebug({
+    sync_status: bot.hardware.informational_settings.sync_status,
+    mqttToBot: bot.connectivity["bot.mqtt"],
+    consistent
+  });
   /** WHY DO WE TRACK ONLINE STATUS IN THE SYNC BUTTON?
    * When the device is offline, there might be old state floating around.
    * By checking bot.connectivity["bot.mqtt"] first, we can know if it is safe
    * to ignore the current sync_status.
    */
-  const x = bot.connectivity["bot.mqtt"];
-  const online = x && x.state === "up";
-  const color =
-    (consistent && online) ? (COLOR_MAPPING[sync_status] || "red") : "gray";
-  const text = online ? TEXT_MAPPING[sync_status] : undefined;
+
+  // const text = online ? TEXT_MAPPING[sync_status] : undefined;
   return (
     <button
-      className={`nav-sync ${color} fb-button`}
+      className={`nav-sync ${calculateColor(x)} fb-button`}
       onClick={() => dispatch(sync())}>
-      {text || TEXT_MAPPING.unknown}
+      {calculateText(x)}
     </button>
   );
+}
+
+interface CalculationProps {
+  sync_status: SyncStatus | undefined;
+  mqttToBot: ConnectionStatus | undefined;
+  consistent: boolean;
+}
+
+function calculateColor(x: CalculationProps) {
+  const { mqttToBot, consistent, sync_status } = x;
+  const online = mqttToBot && mqttToBot.state === "up";
+  const color = COLOR_MAPPING[sync_status || "unknown"];
+  return (!consistent || !online) ? "gray" : color;
+}
+
+function calculateText(x: CalculationProps) {
+  const { mqttToBot, sync_status } = x;
+  const online = mqttToBot && mqttToBot.state === "up";
+  if (online && sync_status) {
+    return TEXT_MAPPING[sync_status] || TEXT_MAPPING.unknown;
+  } else {
+    return TEXT_MAPPING.unknown;
+  }
 }
