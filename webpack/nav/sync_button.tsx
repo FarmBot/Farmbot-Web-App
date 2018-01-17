@@ -60,9 +60,12 @@ function calculateColor(x: CalculationProps) {
   fancyDebug(x);
   const { mqttToBot, consistent, sync_status } = x;
   const online = mqttToBot && mqttToBot.state === "up";
-  const color: string =
-    (sync_status ? COLOR_MAPPING[sync_status] : "red") || "red";
-  return (!consistent || !online) ? "gray" : color;
+
+  if (!online) { return "red"; }
+
+  if (!consistent) { return "gray"; }
+  debugger;
+  return (sync_status ? COLOR_MAPPING[sync_status] : "red") || "red";
 }
 
 function calculateText(x: CalculationProps) {

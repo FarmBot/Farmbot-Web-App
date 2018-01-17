@@ -12,6 +12,7 @@ const maybePingBot = generateRefreshTrigger();
 const expectation: Edge = "bot.mqtt";
 const stateFetchMiddleware: Middleware =
   (store) => (next) => (action: any) => {
+    console.log(action.type);
     const device = maybeGetDevice();
     const action_type = action.type;
     const x = get(action, "payload.name", "?");
