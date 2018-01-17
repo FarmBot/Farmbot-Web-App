@@ -7,9 +7,11 @@ module Images
 
     optional do
       hash :meta do
-        integer :x
-        integer :y
-        integer :z
+        optional do
+          integer :x
+          integer :y
+          integer :z
+        end
       end
     end
 
