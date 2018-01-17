@@ -23,7 +23,7 @@ export function PowerAndReset(props: PowerAndResetProps) {
         dispatch={dispatch} />
     </div>
     <Collapse isOpen={!!power_and_reset}>
-      <RestartRow />
+      <RestartRow dispatch={props.dispatch} />
       <ShutdownRow />
       <FactoryResetRow bot={bot} dispatch={dispatch} />
     </Collapse>

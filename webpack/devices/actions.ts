@@ -69,8 +69,9 @@ export function factoryReset() {
   getDevice().resetOS();
 }
 
-export function reboot() {
+export function reboot(dispatch: Function) {
   const noun = "Reboot Bot";
+  dispatch(resetNetwork());
   getDevice()
     .reboot()
     .then(commandOK(noun), commandErr(noun));

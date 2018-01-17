@@ -99,9 +99,11 @@ describe("reboot()", function () {
   });
 
   it("calls reboot", async () => {
-    await actions.reboot();
+    const dispatch = jest.fn();
+    await actions.reboot(dispatch);
     expect(mockDevice.reboot).toHaveBeenCalled();
     expect(mockOk).toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith(resetNetwork());
   });
 });
 

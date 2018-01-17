@@ -20,9 +20,11 @@ describe("<SyncButton/>", function () {
   });
 
   it("is gray when inconsistent", () => {
+    const onlineNotConsistent = defensiveClone(FAKE_BOT_STATE);
+    onlineNotConsistent.connectivity["bot.mqtt"] = { state: "up", at: "?" };
     const result = shallow(<SyncButton user={fakeUser()}
       dispatch={jest.fn()}
-      bot={FAKE_BOT_STATE}
+      bot={onlineNotConsistent}
       consistent={false}
       autoSyncEnabled={true} />);
     expect(result.hasClass("gray")).toBeTruthy();

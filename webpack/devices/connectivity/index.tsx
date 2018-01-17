@@ -21,8 +21,7 @@ interface ConnectivityState {
 export class ConnectivityPanel extends React.Component<Props, ConnectivityState> {
   state: ConnectivityState = { hoveredConnection: undefined };
 
-  hover = (name: string) =>
-    () => this.setState({ hoveredConnection: name });
+  hover = (name: string) => () => this.setState({ hoveredConnection: name });
 
   render() {
     const { rowData } = this.props;

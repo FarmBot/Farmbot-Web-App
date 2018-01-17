@@ -7,10 +7,15 @@ describe("Connectivity Reducer - RESET_NETWORK", () => {
     const action: ReduxAction<{}> = resetNetwork();
     const result = connectivityReducer(DEFAULT_STATE, action);
     const values: (keyof typeof DEFAULT_STATE)[] = [
-      "bot.mqtt",
       "user.mqtt",
-      "user.api"
+      "user.api",
+      "bot.mqtt"
     ];
-    values.map((x) => expect(result[x]).toBeUndefined());
+    values
+      .map((x) => {
+        const status = result[x];
+        const text = status ? status.state : "MISSING";
+        expect(text).toBe("down");
+      });
   });
 });
