@@ -28,7 +28,8 @@ describe("<CameraCalibration/>", () => {
     H_HI: 7,
     S_HI: 8,
     V_HI: 9,
-    botToMqttStatus: "up"
+    botToMqttStatus: "up",
+    syncStatus: "synced"
   };
 
   it("renders", () => {

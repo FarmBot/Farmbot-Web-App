@@ -23,7 +23,8 @@ describe("<FarmwarePage />", () => {
       dispatch: jest.fn(),
       currentImage: undefined,
       images: [],
-      timeOffset: 0
+      timeOffset: 0,
+      syncStatus: "synced"
     };
     const wrapper = mount(<FarmwarePage {...props} />);
     ["Take Photo",

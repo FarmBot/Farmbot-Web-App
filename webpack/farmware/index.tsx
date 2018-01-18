@@ -27,6 +27,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
         </Col>
         <Col xs={12} sm={5}>
           <FarmwarePanel
+            syncStatus={this.props.syncStatus}
             botToMqttStatus={this.props.botToMqttStatus}
             farmwares={this.props.farmwares} />
         </Col>
@@ -34,6 +35,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
       <Row>
         <Col xs={12} sm={6}>
           <CameraCalibration
+            syncStatus={this.props.syncStatus}
             dispatch={this.props.dispatch}
             currentImage={this.props.currentImage}
             images={this.props.images}
