@@ -8,7 +8,7 @@ const COLOR_MAPPING: Record<SyncStatus, string> = {
   "sync_now": "yellow",
   "syncing": "yellow",
   "sync_error": "red",
-  "locked": "red",
+  "booting": "yellow",
   "maintenance": "yellow",
   "unknown": "red"
 };
@@ -18,7 +18,7 @@ const TEXT_MAPPING: Record<SyncStatus, string> = {
   "sync_now": "SYNC NOW",
   "syncing": "SYNCING",
   "sync_error": "SYNC ERROR",
-  "locked": "LOCKED",
+  "booting": "BOOTING",
   "unknown": "DISCONNECTED",
   "maintenance": "MAINTENANCE DOWNTIME"
 };

@@ -90,7 +90,7 @@ describe("botRedcuer", () => {
 
   it("stashes/unstashes sync status based on connectivity", () => {
     const step1 = initialState();
-    step1.statusStash = "locked";
+    step1.statusStash = "booting";
     step1.hardware.informational_settings.sync_status = "synced";
 
     const step2 = botReducer(step1, networkDown("bot.mqtt"));
@@ -105,7 +105,7 @@ describe("botRedcuer", () => {
 
   it("handles STASH_STATUS", () => {
     const step1 = initialState();
-    step1.statusStash = "locked";
+    step1.statusStash = "booting";
     step1.hardware.informational_settings.sync_status = "synced";
     const step2 = botReducer(step1, stash());
     expect(step2.statusStash)
