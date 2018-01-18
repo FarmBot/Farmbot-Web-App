@@ -21,10 +21,11 @@ interface LastState {
 export function generateRefreshTrigger() {
   const last: LastState = { value: "down", debounce: 0 };
   return (device: Farmbot, state: PartialState) => {
-    last.debounce += 1; // Stuff gets crazy at app startup time.offli
+    last.debounce += 1; // Stuff gets crazy at app startup time.
     const connectionStatus = state.bot.connectivity["bot.mqtt"];
     const flag = connectionStatus ? connectionStatus.state : undefined;
     if (device && flag && (flag !== last.value) && last.debounce > 5) {
+      console.log("Calling changeLastClientConnected");
       changeLastClientConnected(device);
       last.value = flag;
     }
