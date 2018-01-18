@@ -24,7 +24,7 @@ export function generateRefreshTrigger() {
     last.debounce += 1; // Stuff gets crazy at app startup time.
     const connectionStatus = state.bot.connectivity["bot.mqtt"];
     const flag = connectionStatus ? connectionStatus.state : undefined;
-    if (device && flag && (flag !== last.value) && last.debounce > 5) {
+    if (device && flag && (flag !== last.value) && last.debounce > 10) {
       console.log("Calling changeLastClientConnected");
       changeLastClientConnected(device);
       last.value = flag;
