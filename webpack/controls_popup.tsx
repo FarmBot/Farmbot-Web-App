@@ -1,7 +1,8 @@
 import * as React from "react";
 
 import { DirectionButton } from "./controls/direction_button";
-import { Xyz } from "./devices/interfaces";
+import { Xyz, BotPosition } from "./devices/interfaces";
+import { McuParams } from "farmbot";
 
 export interface State {
   isOpen: boolean;
@@ -11,6 +12,8 @@ export interface State {
 export interface Props {
   dispatch: Function;
   axisInversion: Record<Xyz, boolean>;
+  botPosition: BotPosition;
+  mcuParams: McuParams;
 }
 
 export class ControlsPopup extends React.Component<Props, Partial<State>> {
@@ -25,6 +28,27 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
 
   public render() {
     const isOpen = this.state.isOpen ? "open" : "";
+    const { mcuParams } = this.props;
+    const directionAxesProps = {
+      x: {
+        isInverted: this.props.axisInversion.x,
+        stopAtHome: !!mcuParams.movement_stop_at_home_x,
+        stopAtMax: !!mcuParams.movement_stop_at_max_x,
+        axisLength: (mcuParams.movement_axis_nr_steps_x || 0)
+          / (mcuParams.movement_step_per_mm_x || 1),
+        negativeOnly: !!mcuParams.movement_home_up_x,
+        position: this.props.botPosition.x
+      },
+      y: {
+        isInverted: this.props.axisInversion.y,
+        stopAtHome: !!mcuParams.movement_stop_at_home_y,
+        stopAtMax: !!mcuParams.movement_stop_at_max_y,
+        axisLength: (mcuParams.movement_axis_nr_steps_y || 0)
+          / (mcuParams.movement_step_per_mm_y || 1),
+        negativeOnly: !!mcuParams.movement_home_up_y,
+        position: this.props.botPosition.y
+      }
+    };
     return <div
       className={"controls-popup " + isOpen}>
       <i className="fa fa-crosshairs"
@@ -32,27 +56,27 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
       <div className="controls-popup-menu-outer">
         <div className="controls-popup-menu-inner">
           <DirectionButton
-            axis="x"
+            axis={"x"}
             direction="right"
-            isInverted={this.props.axisInversion.x}
+            directionAxisProps={directionAxesProps.x}
             steps={this.state.stepSize}
             disabled={!isOpen} />
           <DirectionButton
-            axis="y"
+            axis={"y"}
             direction="up"
-            isInverted={this.props.axisInversion.y}
+            directionAxisProps={directionAxesProps.y}
             steps={this.state.stepSize}
             disabled={!isOpen} />
           <DirectionButton
-            axis="y"
+            axis={"y"}
             direction="down"
-            isInverted={this.props.axisInversion.y}
+            directionAxisProps={directionAxesProps.y}
             steps={this.state.stepSize}
             disabled={!isOpen} />
           <DirectionButton
-            axis="x"
+            axis={"x"}
             direction="left"
-            isInverted={this.props.axisInversion.x}
+            directionAxisProps={directionAxesProps.x}
             steps={this.state.stepSize}
             disabled={!isOpen} />
         </div>

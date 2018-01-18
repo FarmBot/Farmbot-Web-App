@@ -34,7 +34,14 @@ export interface MoveProps {
 export interface DirectionButtonProps {
   axis: Xyz;
   direction: "up" | "down" | "left" | "right";
-  isInverted: boolean;
+  directionAxisProps: {
+    isInverted: boolean;
+    stopAtHome: boolean;
+    stopAtMax: boolean;
+    axisLength: number;
+    negativeOnly: boolean;
+    position: number | undefined;
+  }
   steps: number;
   disabled: boolean | undefined;
 }

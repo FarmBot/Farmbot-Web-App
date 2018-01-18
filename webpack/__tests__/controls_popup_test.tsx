@@ -9,6 +9,7 @@ jest.mock("../device", () => ({
 import * as React from "react";
 import { ControlsPopup } from "../controls_popup";
 import { mount } from "enzyme";
+import { bot } from "../__test_support__/fake_state/bot";
 
 describe("<ControlsPopup />", () => {
   beforeEach(function () {
@@ -17,7 +18,9 @@ describe("<ControlsPopup />", () => {
 
   const wrapper = mount(<ControlsPopup
     dispatch={jest.fn()}
-    axisInversion={{ x: true, y: false, z: false }} />);
+    axisInversion={{ x: true, y: false, z: false }}
+    botPosition={{ x: undefined, y: undefined, z: undefined }}
+    mcuParams={bot.hardware.mcu_params} />);
 
   it("Has a false initial state", () => {
     expect(wrapper.state("isOpen")).toBeFalsy();
@@ -30,16 +33,16 @@ describe("<ControlsPopup />", () => {
   });
 
   it("x axis is inverted", () => {
-    const button = wrapper.find("button").first();
-    expect(button.props().title).toBe("move x axis");
+    const button = wrapper.find("button").at(3);
+    expect(button.props().title).toBe("move x axis (100)");
     button.simulate("click");
     expect(mockDevice.moveRelative)
       .toHaveBeenCalledWith({ speed: 100, x: 100, y: 0, z: 0 });
   });
 
   it("y axis is not inverted", () => {
-    const button = wrapper.find("button").at(2);
-    expect(button.props().title).toBe("move y axis");
+    const button = wrapper.find("button").at(1);
+    expect(button.props().title).toBe("move y axis (100)");
     button.simulate("click");
     expect(mockDevice.moveRelative)
       .toHaveBeenCalledWith({ speed: 100, x: 0, y: 100, z: 0 });
