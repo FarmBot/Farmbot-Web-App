@@ -171,7 +171,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
         </WidgetHeader>
         <WidgetBody>
           <MustBeOnline
-            botState={this.props.syncStatus}
+            syncStatus={this.props.syncStatus}
             networkState={this.props.botToMqttStatus}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <Row>

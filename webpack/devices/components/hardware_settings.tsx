@@ -26,7 +26,7 @@ export class HardwareSettings extends
         <WidgetHeader title="Hardware" helpText={ToolTips.HW_SETTINGS}>
           <MustBeOnline
             hideBanner={true}
-            botState={sync_status}
+            syncStatus={sync_status}
             networkState={this.props.botToMqttStatus}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <SaveBtn
@@ -50,7 +50,7 @@ export class HardwareSettings extends
           </button>
           <MustBeOnline
             networkState={this.props.botToMqttStatus}
-            botState={sync_status}
+            syncStatus={sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <div className="label-headings">
               <SpacePanelHeader />

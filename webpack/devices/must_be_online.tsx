@@ -6,15 +6,16 @@ import { SyncStatus } from "farmbot";
 /** Properties for the <MustBeOnline/> element. */
 export interface MBOProps {
   networkState: NetworkState;
-  botState: SyncStatus | undefined;
+  syncStatus: SyncStatus | undefined;
   lockOpen?: boolean;
   hideBanner?: boolean;
   children?: JSXChildren;
 }
 
-export function MustBeOnline({ children, hideBanner, lockOpen, networkState, botState }: MBOProps) {
+export function MustBeOnline(props: MBOProps) {
+  const { children, hideBanner, lockOpen, networkState, syncStatus } = props;
   const banner = hideBanner ? "" : "banner";
-  const botUp = botState && (botState !== "maintenance");
+  const botUp = syncStatus && (syncStatus !== "maintenance");
   const netUp = networkState === "up";
   if ((botUp && netUp) || lockOpen) {
     return <div> {children} </div>;

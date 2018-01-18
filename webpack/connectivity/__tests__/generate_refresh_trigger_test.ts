@@ -5,6 +5,7 @@ import { generateRefreshTrigger, PartialState } from "../generate_refresh_trigge
 import { Farmbot } from "farmbot";
 import { ConnectionStatus } from "../interfaces";
 import { changeLastClientConnected } from "../connect_device";
+import * as _ from "lodash";
 
 describe("generateRefreshTrigger()", () => {
   const UP: ConnectionStatus = { state: "up", at: "---" };
@@ -14,18 +15,17 @@ describe("generateRefreshTrigger()", () => {
     return { bot: { connectivity: { ["bot.mqtt"]: next } } };
   }
 
-  it("throttles the first 5 calls", () => {
+  it("throttles the first 10 calls", () => {
     const device: Partial<Farmbot> = {
       readStatus: jest.fn(() => Promise.resolve())
     };
     const trigger = generateRefreshTrigger();
     const go =
       (x: ConnectionStatus | undefined) => trigger(device as Farmbot, fakeState(x));
-    go(UP);
-    go(DOWN);
-    go(UP);
-    go(DOWN);
-    go(UP);
+    _.times(5, () => {
+      go(UP);
+      go(DOWN);
+    });
     expect(changeLastClientConnected).not.toHaveBeenCalled();
     go(UP);
     expect(changeLastClientConnected).toHaveBeenCalled();

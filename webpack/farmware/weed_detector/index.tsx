@@ -69,7 +69,7 @@ export class WeedDetector
         <Row>
           <Col sm={12}>
             <MustBeOnline
-              botState={this.props.syncStatus}
+              syncStatus={this.props.syncStatus}
               networkState={this.props.botToMqttStatus}
               lockOpen={process.env.NODE_ENV !== "production"}>
               <ImageWorkspace
