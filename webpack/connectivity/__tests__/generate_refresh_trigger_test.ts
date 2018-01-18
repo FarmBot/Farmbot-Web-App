@@ -1,6 +1,10 @@
+jest.mock("../connect_device", () => {
+  return { changeLastClientConnected: jest.fn() };
+});
 import { generateRefreshTrigger, PartialState } from "../generate_refresh_trigger";
 import { Farmbot } from "farmbot";
 import { ConnectionStatus } from "../interfaces";
+import { changeLastClientConnected } from "../connect_device";
 
 describe("generateRefreshTrigger()", () => {
   const UP: ConnectionStatus = { state: "up", at: "---" };
@@ -22,8 +26,8 @@ describe("generateRefreshTrigger()", () => {
     go(UP);
     go(DOWN);
     go(UP);
-    expect(device.readStatus).not.toHaveBeenCalled();
+    expect(changeLastClientConnected).not.toHaveBeenCalled();
     go(UP);
-    expect(device.readStatus).toHaveBeenCalled();
+    expect(changeLastClientConnected).toHaveBeenCalled();
   });
 });
