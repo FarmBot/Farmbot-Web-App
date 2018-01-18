@@ -4,15 +4,15 @@ import { NetworkState } from "../connectivity/interfaces";
 
 /** Properties for the <MustBeOnline/> element. */
 export interface MBOProps {
-  status: NetworkState;
+  networkState: NetworkState;
   lockOpen?: boolean;
   hideBanner?: boolean;
   children?: JSXChildren;
 }
 
-export function MustBeOnline({ children, hideBanner, lockOpen, status }: MBOProps) {
+export function MustBeOnline({ children, hideBanner, lockOpen, networkState }: MBOProps) {
   const banner = hideBanner ? "" : "banner";
-  const online = status === "up";
+  const online = networkState === "up";
   if (online || lockOpen) {
     return <div> {children} </div>;
   } else {
