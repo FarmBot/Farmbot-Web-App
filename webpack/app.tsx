@@ -118,7 +118,9 @@ export class App extends React.Component<AppProps, {}> {
         !currentPath.startsWith("/app/regimens") &&
         <ControlsPopup
           dispatch={this.props.dispatch}
-          axisInversion={this.props.axisInversion} />}
+          axisInversion={this.props.axisInversion}
+          botPosition={this.props.bot.hardware.location_data.position}
+          mcuParams={this.props.bot.hardware.mcu_params} />}
     </div>;
   }
 }

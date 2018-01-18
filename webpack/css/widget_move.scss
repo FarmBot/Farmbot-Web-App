@@ -69,6 +69,7 @@
   }
   &:disabled {
     border-bottom: none;
+    box-shadow: none !important;
   }
 }
 
