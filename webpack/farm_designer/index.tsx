@@ -14,6 +14,7 @@ import { isUndefined } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { getBotSize } from "./map/util";
 import { catchErrors } from "../util";
+import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom";
 
 export const getDefaultAxisLength = (): AxisNumberProperty => {
   if (Session.deprecatedGetBool(BooleanSetting.map_xl)) {
@@ -54,10 +55,6 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     return isBotOriginQuadrant(value) ? value : 2;
   }
 
-  getZoomLevel = (): number => {
-    return Session.deprecatedGetNum(NumericSetting.zoom_level) || 1;
-  }
-
   state: State = {
     legend_menu_open: this.initializeSetting(BooleanSetting.legend_menu_open, false),
     show_plants: this.initializeSetting(BooleanSetting.show_plants, true),
@@ -65,7 +62,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     show_spread: this.initializeSetting(BooleanSetting.show_spread, false),
     show_farmbot: this.initializeSetting(BooleanSetting.show_farmbot, true),
     bot_origin_quadrant: this.getBotOriginQuadrant(),
-    zoom_level: this.getZoomLevel()
+    zoom_level: calcZoomLevel(getZoomLevelIndex())
   };
 
   componentDidMount() {
@@ -84,9 +81,9 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
   }
 
   updateZoomLevel = (zoomIncrement: number) => () => {
-    const payload = Math.round((this.getZoomLevel() + zoomIncrement) * 10) / 10;
-    this.setState({ zoom_level: payload });
-    Session.deprecatedSetNum(NumericSetting.zoom_level, payload);
+    const newIndex = getZoomLevelIndex() + zoomIncrement;
+    this.setState({ zoom_level: calcZoomLevel(newIndex) });
+    saveZoomLevelIndex(newIndex);
   }
 
   childComponent(props: Props) {
@@ -133,7 +130,6 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         toggle={this.toggle}
         updateBotOriginQuadrant={this.updateBotOriginQuadrant}
         botOriginQuadrant={bot_origin_quadrant}
-        zoomLvl={zoom_level}
         legendMenuOpen={legend_menu_open}
         showPlants={show_plants}
         showPoints={show_points}
