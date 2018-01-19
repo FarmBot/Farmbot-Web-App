@@ -45,7 +45,6 @@ describe("<FarmDesigner/>", () => {
     localStorage["showPoints"] = "false";
     const wrapper = mount(<FarmDesigner { ...fakeProps() } />);
     const legendProps = wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
-    expect(legendProps.zoomLvl).toEqual(1);
     expect(legendProps.legendMenuOpen).toBeFalsy();
     expect(legendProps.showPlants).toBeTruthy();
     expect(legendProps.showPoints).toBeTruthy();

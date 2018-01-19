@@ -21,7 +21,7 @@ export function FbosDetails(bot: BotState) {
      env, commit, target, node_name, firmware_version, firmware_commit
   } = bot.hardware.informational_settings;
   const { beta_opt_in } = bot.hardware.configuration;
-  const shortenCommit = (longCommit: string) => longCommit.slice(0, 8);
+  const shortenCommit = (longCommit: string) => (longCommit || "").slice(0, 8);
   return <div>
     <p><b>Environment: </b>{env}</p>
     <p><b>Commit: </b>{shortenCommit(commit)}</p>
