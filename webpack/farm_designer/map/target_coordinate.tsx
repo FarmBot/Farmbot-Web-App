@@ -3,7 +3,7 @@ import { MapTransformProps } from "./interfaces";
 import { getXYFromQuadrant, round } from "./util";
 import { BotPosition } from "../../devices/interfaces";
 import { isNumber } from "lodash";
-import { Color } from "../../ui/colors";
+import { Color } from "../../ui/index";
 
 export interface TargetCoordinateProps {
   chosenLocation: BotPosition;

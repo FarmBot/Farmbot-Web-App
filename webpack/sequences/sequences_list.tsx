@@ -4,11 +4,7 @@ import { t } from "i18next";
 import { push } from "../history";
 import { selectSequence } from "./actions";
 import { SequencesListProps, SequencesListState } from "./interfaces";
-import {
-  sortResourcesById,
-  urlFriendly,
-  lastUrlChunk
-} from "../util";
+import { sortResourcesById, urlFriendly, lastUrlChunk } from "../util";
 import { Row, Col, ToolTip } from "../ui/index";
 import { TaggedSequence, SpecialStatus } from "../resources/tagged_resources";
 import { init } from "../api/crud";

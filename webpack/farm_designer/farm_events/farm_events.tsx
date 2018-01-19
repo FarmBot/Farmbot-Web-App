@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link } from "react-router";
 import { connect } from "react-redux";
 import { t } from "i18next";
-import { Row } from "../../ui";
+import { Row } from "../../ui/index";
 import { mapStateToProps } from "./map_state_to_props";
 import { FarmEventProps, CalendarOccurrence } from "../interfaces";
 import * as _ from "lodash";

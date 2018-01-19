@@ -1,11 +1,10 @@
 import * as React from "react";
-import { Widget, WidgetHeader } from "../../ui/index";
+import { Widget, WidgetHeader, FallbackImg } from "../../ui/index";
 import { t } from "i18next";
 import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
 import { PLACEHOLDER_FARMBOT } from "../../farmware/images/image_flipper";
 import { Flipper } from "./flipper";
-import { FallbackImg } from "../../ui/fallback_img";
 import { sortedFeeds } from "./edit";
 
 type State = {

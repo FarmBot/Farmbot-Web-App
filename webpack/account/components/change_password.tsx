@@ -6,7 +6,7 @@ import {
   WidgetHeader,
   WidgetBody,
   SaveBtn
-} from "../../ui";
+} from "../../ui/index";
 import { SpecialStatus } from "../../resources/tagged_resources";
 import Axios from "axios";
 import { API } from "../../api/index";

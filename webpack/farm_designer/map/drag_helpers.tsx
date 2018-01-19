@@ -3,7 +3,7 @@ import { DragHelpersProps } from "./interfaces";
 import { round, getXYFromQuadrant, getMapSize } from "./util";
 import { isUndefined } from "util";
 import { BotPosition } from "../../devices/interfaces";
-import { Color } from "../../ui/colors";
+import { Color } from "../../ui/index";
 
 enum Alignment {
   NONE = "not aligned",

@@ -1,8 +1,7 @@
 import * as React from "react";
 import { RegimenProps } from "../interfaces";
 import { t } from "i18next";
-import { ColorPicker } from "../../ui";
-import { Row, Col } from "../../ui/index";
+import { Row, Col, ColorPicker } from "../../ui/index";
 import { editRegimen } from "../actions";
 
 export function write({ dispatch, regimen }: RegimenProps):

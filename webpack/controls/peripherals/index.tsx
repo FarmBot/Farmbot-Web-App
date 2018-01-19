@@ -3,10 +3,12 @@ import { t } from "i18next";
 import { error } from "farmbot-toastr";
 import { PeripheralList } from "./peripheral_list";
 import { PeripheralForm } from "./peripheral_form";
-import { Widget, WidgetBody, WidgetHeader, SaveBtn } from "../../ui";
+import { Widget, WidgetBody, WidgetHeader, SaveBtn } from "../../ui/index";
 import { PeripheralsProps } from "../../devices/interfaces";
 import { PeripheralState } from "./interfaces";
-import { TaggedPeripheral, getArrayStatus, SpecialStatus } from "../../resources/tagged_resources";
+import {
+  TaggedPeripheral, getArrayStatus, SpecialStatus
+} from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import * as _ from "lodash";

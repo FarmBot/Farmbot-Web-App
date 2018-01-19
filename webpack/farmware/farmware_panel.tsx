@@ -8,15 +8,11 @@ import {
 import { MustBeOnline } from "../devices/must_be_online";
 import { ToolTips, Content } from "../constants";
 import {
-  Widget,
-  WidgetHeader,
-  WidgetBody,
-  Row,
-  Col,
-  DropDownItem
-} from "../ui";
+  Widget, WidgetHeader, WidgetBody,
+  Row, Col,
+  FBSelect, DropDownItem
+} from "../ui/index";
 import { betterCompact } from "../util";
-import { FBSelect } from "../ui/new_fb_select";
 import { Popover, Position } from "@blueprintjs/core";
 import { getFirstPartyFarmwareList } from "./actions";
 

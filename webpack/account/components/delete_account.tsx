@@ -7,7 +7,7 @@ import {
   WidgetBody,
   Col,
   Row
-} from "../../ui";
+} from "../../ui/index";
 import { DeleteAccountProps, DeleteAccountState } from "../interfaces";
 import { Content } from "../../constants";
 

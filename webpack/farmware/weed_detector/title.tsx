@@ -5,7 +5,7 @@ import { WidgetHeader } from "../../ui/index";
 import { WD_ENV } from "./remote_env/interfaces";
 import { envSave } from "./remote_env/actions";
 import { Popover, PopoverInteractionKind } from "@blueprintjs/core";
-import { DocSlug } from "../../ui/doc_link";
+import { DocSlug } from "../../ui/index";
 
 type ClickHandler = React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
 

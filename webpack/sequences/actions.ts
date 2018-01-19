@@ -1,6 +1,6 @@
 import { CeleryNode as Step, SequenceBodyItem } from "farmbot";
 import { ChangeStepSelect, SelectSequence } from "./interfaces";
-import { DropDownItem } from "../ui";
+import { DropDownItem } from "../ui/index";
 import { GetState } from "../redux/interfaces";
 import { edit, init, overwrite } from "../api/crud";
 import { TaggedSequence } from "../resources/tagged_resources";

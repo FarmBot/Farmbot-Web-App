@@ -1,9 +1,8 @@
 import * as React from "react";
 import { MCUFactoryReset, bulkToggleControlPanel } from "../actions";
-import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
+import { Widget, WidgetHeader, WidgetBody, SaveBtn } from "../../ui/index";
 import { HardwareSettingsProps } from "../interfaces";
 import { MustBeOnline } from "../must_be_online";
-import { SaveBtn } from "../../ui/save_button";
 import { ToolTips } from "../../constants";
 import { DangerZone } from "./hardware_settings/danger_zone";
 import { PinGuard } from "./hardware_settings/pin_guard";

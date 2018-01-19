@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DropDownItem } from "./fb_select";
+import { DropDownItem, NULL_CHOICE } from "./fb_select";
 import { FilterSearch } from "./filter_search";
 import { equals } from "../util";
 
@@ -15,12 +15,6 @@ export interface FBSelectProps {
   /** Text shown before user selection. */
   placeholder?: string | undefined;
 }
-
-/** Used as a placeholder for a selection of "none" when allowEmpty is true. */
-export const NULL_CHOICE: DropDownItem = Object.freeze({
-  label: "None",
-  value: ""
-});
 
 export class FBSelect extends React.Component<FBSelectProps, {}> {
 

@@ -4,29 +4,17 @@ import * as _ from "lodash";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
 import { TaggedFarmEvent, SpecialStatus } from "../../resources/tagged_resources";
-import {
-  TimeUnit,
-  ExecutableQuery,
-  ExecutableType
-} from "../interfaces";
-import {
-  formatTime,
-  formatDate
-} from "./map_state_to_props_add_edit";
+import { TimeUnit, ExecutableQuery, ExecutableType } from "../interfaces";
+import { formatTime, formatDate } from "./map_state_to_props_add_edit";
 import {
   BackArrow,
   BlurableInput,
-  Col,
-  Row,
-  SaveBtn
+  Col, Row,
+  SaveBtn,
+  FBSelect,
+  DropDownItem
 } from "../../ui/index";
-import { FBSelect } from "../../ui/new_fb_select";
-import {
-  destroy,
-  save,
-  edit
-} from "../../api/crud";
-import { DropDownItem } from "../../ui/fb_select";
+import { destroy, save, edit } from "../../api/crud";
 import { history } from "../../history";
 // TIL: https://stackoverflow.com/a/24900248/1064917
 import { betterMerge } from "../../util";

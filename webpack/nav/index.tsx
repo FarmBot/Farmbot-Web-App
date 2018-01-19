@@ -3,7 +3,7 @@ import { t } from "i18next";
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "../devices/components/e_stop_btn";
 import { Session } from "../session";
-import { Row, Col } from "../ui";
+import { Row, Col } from "../ui/index";
 import { getPathArray } from "../history";
 import { updatePageInfo } from "../util";
 import { SyncButton } from "./sync_button";

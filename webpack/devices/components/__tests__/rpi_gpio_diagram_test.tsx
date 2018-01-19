@@ -1,7 +1,7 @@
 import * as React from "react";
 import { mount } from "enzyme";
 import { RpiGpioDiagram, RpiGpioDiagramProps } from "../rpi_gpio_diagram";
-import { Color } from "../../../ui/colors";
+import { Color } from "../../../ui/index";
 
 describe("<RpiGpioDiagram />", () => {
   function fakeProps(): RpiGpioDiagramProps {

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Hue, Saturation } from "react-color/lib/components/common";
 import { FarmbotPickerProps } from "./interfaces";
 import * as _ from "lodash";
-import { Color } from "../../ui/colors";
+import { Color } from "../../ui/index";
 
 /** Wrapper class around `react-color`'s `<Saturation />` and `<Hue />`.
  *  Add an extra white box feature for showing user weed detection settings.

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as moment from "moment";
 import { connect } from "react-redux";
-import { Col, Row, Page, ToolTip } from "../ui";
+import { Col, Row, Page, ToolTip } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { t } from "i18next";
 import { Popover, Position } from "@blueprintjs/core";

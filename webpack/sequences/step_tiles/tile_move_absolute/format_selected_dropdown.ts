@@ -1,13 +1,12 @@
 import { ResourceIndex } from "../../../resources/interfaces";
 import { LocationData } from "./interfaces";
-import { NULL_CHOICE } from "../../../ui/index";
+import { NULL_CHOICE, DropDownItem } from "../../../ui/index";
 import { dropDownName, PARENT_DDI } from "./generate_list";
 import {
   findToolById,
   findPointerByTypeAndId,
   findToolBySlotId
 } from "../../../resources/selectors";
-import { DropDownItem } from "../../../ui/fb_select";
 import { Point, Tool } from "farmbot/dist";
 
 export function formatSelectedDropdown(ri: ResourceIndex, ld: LocationData): DropDownItem {

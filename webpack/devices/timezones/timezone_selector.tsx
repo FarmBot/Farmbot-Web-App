@@ -1,8 +1,7 @@
 import * as React from "react";
-import { DropDownItem } from "../../ui/fb_select";
+import { FBSelect, DropDownItem } from "../../ui/index";
 import { list } from "./tz_list";
 import { inferTimezone } from "./guess_timezone";
-import { FBSelect } from "../../ui/new_fb_select";
 import * as _ from "lodash";
 
 const CHOICES: DropDownItem[] = list.map(x => ({ label: x, value: x }));
