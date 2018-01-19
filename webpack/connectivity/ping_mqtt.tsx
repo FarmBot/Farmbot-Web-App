@@ -32,7 +32,7 @@ export function markActive() {
   dispatchNetworkUp("bot.mqtt");
 }
 
-export function isInactive(last: number | undefined, now: number): boolean {
+export function isInactive(last: number, now: number): boolean {
   return last ? (now - last) > (PING_INTERVAL * 2) : true;
 }
 
@@ -40,7 +40,7 @@ export function sendOutboundPing(bot: Farmbot) {
   bot.publish(PING);
   const now = timestamp();
   const lastPing = readPing(bot, "in");
-  isInactive(lastPing, now) ? markStale() : markActive();
+  lastPing && isInactive(lastPing, now) ? markStale() : markActive();
   writePing(bot, "out");
 }
 
