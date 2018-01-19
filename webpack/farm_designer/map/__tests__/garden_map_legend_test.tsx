@@ -1,3 +1,12 @@
+let mockAtMax = false;
+let mockAtMin = false;
+jest.mock("../zoom", () => {
+  return {
+    atMaxZoom: () => mockAtMax,
+    atMinZoom: () => mockAtMin,
+  };
+});
+
 import * as React from "react";
 import { shallow } from "enzyme";
 import { GardenMapLegend } from "../garden_map_legend";
@@ -10,7 +19,6 @@ describe("<GardenMapLegend />", () => {
       toggle: () => () => undefined,
       updateBotOriginQuadrant: () => () => undefined,
       botOriginQuadrant: 2,
-      zoomLvl: 1,
       legendMenuOpen: true,
       showPlants: false,
       showPoints: false,
@@ -19,30 +27,22 @@ describe("<GardenMapLegend />", () => {
     };
   }
 
-  function checkZoomButtons(level: number, disabled: number) {
-    const p = fakeProps();
-    p.zoomLvl = level;
-    const wrapper = shallow(<GardenMapLegend {...p} />);
-    expect(wrapper.find(".disabled").length).toEqual(disabled);
+  function checkZoomButtons(atMax: boolean, atMin: boolean, expected: number) {
+    mockAtMax = atMax;
+    mockAtMin = atMin;
+    const wrapper = shallow(<GardenMapLegend {...fakeProps() } />);
+    expect(wrapper.find(".disabled").length).toEqual(expected);
   }
 
-  const MAX = 1.8;
-  const MIN = 0.1;
-
   it("zoom buttons active", () => {
-    checkZoomButtons(1.0, 0);
-    checkZoomButtons(MIN + 0.1, 0);
+    checkZoomButtons(false, false, 0);
   });
 
   it("zoom out button disabled", () => {
-    checkZoomButtons(MIN + 0.01, 1);
-    checkZoomButtons(MIN, 1);
-    checkZoomButtons(MIN - 0.05, 1);
+    checkZoomButtons(false, true, 1);
   });
 
   it("zoom in button disabled", () => {
-    checkZoomButtons(MAX - 0.01, 1);
-    checkZoomButtons(MAX, 1);
-    checkZoomButtons(MAX + 0.05, 1);
+    checkZoomButtons(true, false, 1);
   });
 });
