@@ -144,32 +144,30 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     const TOS_URL = globalConfig.TOS_URL;
     if (TOS_URL) {
       const PRV_URL = globalConfig.PRIV_URL;
-      return (
-        <div>
-          <div className={"tos"}>
-            <label>{t("I agree to the terms of use")}</label>
-            <input type="checkbox"
-              onChange={this.set("agreeToTerms")}
-              value={this.state.agreeToTerms ? "false" : "true"} />
-          </div>
-          <ul>
-            <li>
-              <a
-                href={PRV_URL}
-                target="_blank">
-                {t("Privacy Policy")}
-              </a>
-            </li>
-            <li>
-              <a
-                href={TOS_URL}
-                target="_blank">
-                {t("Terms of Use")}
-              </a>
-            </li>
-          </ul>
+      return <div>
+        <div className={"tos"}>
+          <label>{t("I agree to the terms of use")}</label>
+          <input type="checkbox"
+            onChange={this.set("agreeToTerms")}
+            value={this.state.agreeToTerms ? "false" : "true"} />
         </div>
-      );
+        <ul>
+          <li>
+            <a
+              href={PRV_URL}
+              target="_blank">
+              {t("Privacy Policy")}
+            </a>
+          </li>
+          <li>
+            <a
+              href={TOS_URL}
+              target="_blank">
+              {t("Terms of Use")}
+            </a>
+          </li>
+        </ul>
+      </div>;
     }
   }
 

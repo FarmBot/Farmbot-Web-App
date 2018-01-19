@@ -87,10 +87,9 @@ export function DragHelpers(props: DragHelpersProps) {
           </g>
         </defs>
         {[0, 90, 180, 270].map(rotation => {
-          return (
-            <use key={rotation.toString()}
-              xlinkHref={"#crosshair-segment-" + plant.body.id}
-              transform={`rotate(${rotation}, ${qx}, ${qy})`} />);
+          return <use key={rotation.toString()}
+            xlinkHref={"#crosshair-segment-" + plant.body.id}
+            transform={`rotate(${rotation}, ${qx}, ${qy})`} />;
         })}
       </g>}
     {!dragging && // Non-active plants
@@ -105,10 +104,9 @@ export function DragHelpers(props: DragHelpersProps) {
           </g>
         </defs>
         {rotationArray(getAlignment(activeDragXY, gardenCoord)).map(rotation => {
-          return (
-            <use key={rotation.toString()}
-              xlinkHref={"#alignment-indicator-segment-" + plant.body.id}
-              transform={`rotate(${rotation}, ${qx}, ${qy})`} />);
+          return <use key={rotation.toString()}
+            xlinkHref={"#alignment-indicator-segment-" + plant.body.id}
+            transform={`rotate(${rotation}, ${qx}, ${qy})`} />;
         })}
       </g>}
   </g>;

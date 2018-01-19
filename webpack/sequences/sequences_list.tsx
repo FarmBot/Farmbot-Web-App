@@ -94,39 +94,37 @@ export class SequencesList extends
     const { sequences, dispatch } = this.props;
     const searchTerm = this.state.searchTerm.toLowerCase();
 
-    return (
-      <div className="sequence-list-panel">
-        <h3>
-          <i>{t("Sequences")}</i>
-        </h3>
-        <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
-        <button
-          className="fb-button green add"
-          onClick={() => {
-            dispatch(init(this.emptySequence()));
-            push("/app/sequences/new_sequence_" + (sequences.length++));
-          }}>
-          <i className="fa fa-plus" />
-        </button>
-        <input
-          onChange={this.onChange}
-          placeholder={t("Search Sequences...")} />
-        <Row>
-          <Col xs={12}>
-            <div className="sequence-list">
-              {
-                sortResourcesById(sequences)
-                  .filter(seq => seq
-                    .body
-                    .name
-                    .toLowerCase()
-                    .includes(searchTerm))
-                  .map(sequenceList(dispatch))
-              }
-            </div>
-          </Col>
-        </Row>
-      </div>
-    );
+    return <div className="sequence-list-panel">
+      <h3>
+        <i>{t("Sequences")}</i>
+      </h3>
+      <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
+      <button
+        className="fb-button green add"
+        onClick={() => {
+          dispatch(init(this.emptySequence()));
+          push("/app/sequences/new_sequence_" + (sequences.length++));
+        }}>
+        <i className="fa fa-plus" />
+      </button>
+      <input
+        onChange={this.onChange}
+        placeholder={t("Search Sequences...")} />
+      <Row>
+        <Col xs={12}>
+          <div className="sequence-list">
+            {
+              sortResourcesById(sequences)
+                .filter(seq => seq
+                  .body
+                  .name
+                  .toLowerCase()
+                  .includes(searchTerm))
+                .map(sequenceList(dispatch))
+            }
+          </div>
+        </Col>
+      </Row>
+    </div>;
   }
 }

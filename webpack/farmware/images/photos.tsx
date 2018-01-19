@@ -26,12 +26,10 @@ interface MetaInfoProps {
 function MetaInfo({ obj, attr, label }: MetaInfoProps) {
   const top = label || _.startCase(attr.split("_").join());
   const bottom = safeStringFetch(obj, attr);
-  return (
-    <div>
-      <label>{top}:</label>
-      <span>{bottom || "unknown"}</span>
-    </div>
-  );
+  return <div>
+    <label>{top}:</label>
+    <span>{bottom || "unknown"}</span>
+  </div>;
 }
 
 export class Photos extends React.Component<PhotosProps, {}> {
@@ -68,41 +66,39 @@ export class Photos extends React.Component<PhotosProps, {}> {
     const created_at = image
       ? moment(image.body.created_at).utcOffset(this.props.timeOffset).format("MMMM Do, YYYY h:mma")
       : "";
-    return (
-      <Widget className="photos-widget">
-        <WidgetHeader helpText={ToolTips.PHOTOS} title={"Photos"}>
-          <button
-            className="fb-button gray"
-            onClick={this.takePhoto}>
-            {t("Take Photo")}
-          </button>
-          <button
-            className="fb-button red"
-            onClick={() => this.destroy()}>
-            {t("Delete Photo")}
-          </button>
-        </WidgetHeader>
-        <WidgetBody>
-          <ImageFlipper
-            onFlip={id => { this.props.dispatch(selectImage(id)); }}
-            currentImage={this.props.currentImage}
-            images={this.props.images} />
-        </WidgetBody>
-        <WidgetFooter>
-          {/** Separated from <MetaInfo /> for stylistic purposes. */}
-          {image ?
-            <div className="image-created-at">
-              <label>{t("Created At:")}</label>
-              <span>
-                {created_at}
-              </span>
-            </div>
-            : ""}
-          <div className="image-metadatas">
-            {this.metaDatas()}
+    return <Widget className="photos-widget">
+      <WidgetHeader helpText={ToolTips.PHOTOS} title={"Photos"}>
+        <button
+          className="fb-button gray"
+          onClick={this.takePhoto}>
+          {t("Take Photo")}
+        </button>
+        <button
+          className="fb-button red"
+          onClick={() => this.destroy()}>
+          {t("Delete Photo")}
+        </button>
+      </WidgetHeader>
+      <WidgetBody>
+        <ImageFlipper
+          onFlip={id => { this.props.dispatch(selectImage(id)); }}
+          currentImage={this.props.currentImage}
+          images={this.props.images} />
+      </WidgetBody>
+      <WidgetFooter>
+        {/** Separated from <MetaInfo /> for stylistic purposes. */}
+        {image ?
+          <div className="image-created-at">
+            <label>{t("Created At:")}</label>
+            <span>
+              {created_at}
+            </span>
           </div>
-        </WidgetFooter>
-      </Widget>
-    );
+          : ""}
+        <div className="image-metadatas">
+          {this.metaDatas()}
+        </div>
+      </WidgetFooter>
+    </Widget>;
   }
 }

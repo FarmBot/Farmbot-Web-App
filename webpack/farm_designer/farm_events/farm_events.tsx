@@ -25,22 +25,20 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
           ? <p style={{ color: "gray" }}> {occur.heading} </p>
           : <p />;
 
-        return (
-          <div
-            className="farm-event-data-block"
-            key={`${occur.sortKey}.${index}`}>
-            <div className="farm-event-data-time">
-              {occur.timeStr}
-            </div>
-            <div className="farm-event-data-executable">
-              {heading}
-              {subHeading}
-            </div>
-            <Link to={url}>
-              <i className="fa fa-pencil-square-o edit-icon" />
-            </Link>
+        return <div
+          className="farm-event-data-block"
+          key={`${occur.sortKey}.${index}`}>
+          <div className="farm-event-data-time">
+            {occur.timeStr}
           </div>
-        );
+          <div className="farm-event-data-executable">
+            {heading}
+            {subHeading}
+          </div>
+          <Link to={url}>
+            <i className="fa fa-pencil-square-o edit-icon" />
+          </Link>
+        </div>;
       });
   }
 
@@ -48,21 +46,19 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
     return this.props.calendarRows.filter((day) => {
       return day.year == year;
     }).map(item => {
-      return (
-        <div className="farm-event" key={item.sortKey}>
-          <div className="farm-event-date">
-            <div className="farm-event-date-month">
-              {item.month}
-            </div>
-            <div className="farm-event-date-day">
-              <b>{item.day}</b>
-            </div>
+      return <div className="farm-event" key={item.sortKey}>
+        <div className="farm-event-date">
+          <div className="farm-event-date-month">
+            {item.month}
           </div>
-          <div className="farm-event-data">
-            {this.innerRows(item.items)}
+          <div className="farm-event-date-day">
+            <b>{item.day}</b>
           </div>
         </div>
-      );
+        <div className="farm-event-data">
+          {this.innerRows(item.items)}
+        </div>
+      </div>;
     });
   }
 
@@ -117,24 +113,22 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
 
   render() {
 
-    return (
-      <div className="panel-container magenta-panel farm-event-panel">
-        <div className="panel-header magenta-panel">
-          <div className="panel-tabs">
-            <Link to="/app/designer" className="visible-xs">
-              {t("Designer")}
-            </Link>
-            <Link to="/app/designer/plants">
-              {t("Plants")}
-            </Link>
-            <Link to="/app/designer/farm_events" className="active">
-              {t("Farm Events")}
-            </Link>
-          </div>
+    return <div className="panel-container magenta-panel farm-event-panel">
+      <div className="panel-header magenta-panel">
+        <div className="panel-tabs">
+          <Link to="/app/designer" className="visible-xs">
+            {t("Designer")}
+          </Link>
+          <Link to="/app/designer/plants">
+            {t("Plants")}
+          </Link>
+          <Link to="/app/designer/farm_events" className="active">
+            {t("Farm Events")}
+          </Link>
         </div>
-        {this.props.timezoneIsSet ? this.normalContent() : this.tzwarning()}
       </div>
-    );
+      {this.props.timezoneIsSet ? this.normalContent() : this.tzwarning()}
+    </div>;
   }
 }
 

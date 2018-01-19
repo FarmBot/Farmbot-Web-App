@@ -21,59 +21,57 @@ export class HardwareSettings extends
   render() {
     const { bot, dispatch } = this.props;
     const { sync_status } = this.props.bot.hardware.informational_settings;
-    return (
-      <Widget className="hardware-widget">
-        <WidgetHeader title="Hardware" helpText={ToolTips.HW_SETTINGS}>
-          <MustBeOnline
-            hideBanner={true}
-            syncStatus={sync_status}
-            networkState={this.props.botToMqttStatus}
-            lockOpen={process.env.NODE_ENV !== "production"}>
-            <SaveBtn
-              status={bot.isUpdating ? SpecialStatus.SAVING : SpecialStatus.SAVED}
-              dirtyText={" "}
-              savingText={"Updating..."}
-              savedText={"saved"}
-              hidden={false} />
-          </MustBeOnline>
-        </WidgetHeader>
-        <WidgetBody>
-          <button
-            className={"fb-button gray no-float"}
-            onClick={() => dispatch(bulkToggleControlPanel(true))}>
-            Expand All
+    return <Widget className="hardware-widget">
+      <WidgetHeader title="Hardware" helpText={ToolTips.HW_SETTINGS}>
+        <MustBeOnline
+          hideBanner={true}
+          syncStatus={sync_status}
+          networkState={this.props.botToMqttStatus}
+          lockOpen={process.env.NODE_ENV !== "production"}>
+          <SaveBtn
+            status={bot.isUpdating ? SpecialStatus.SAVING : SpecialStatus.SAVED}
+            dirtyText={" "}
+            savingText={"Updating..."}
+            savedText={"saved"}
+            hidden={false} />
+        </MustBeOnline>
+      </WidgetHeader>
+      <WidgetBody>
+        <button
+          className={"fb-button gray no-float"}
+          onClick={() => dispatch(bulkToggleControlPanel(true))}>
+          Expand All
           </button>
-          <button
-            className={"fb-button gray no-float"}
-            onClick={() => dispatch(bulkToggleControlPanel(false))}>
-            Collapse All
+        <button
+          className={"fb-button gray no-float"}
+          onClick={() => dispatch(bulkToggleControlPanel(false))}>
+          Collapse All
           </button>
-          <MustBeOnline
-            networkState={this.props.botToMqttStatus}
-            syncStatus={sync_status}
-            lockOpen={process.env.NODE_ENV !== "production"}>
-            <div className="label-headings">
-              <SpacePanelHeader />
-            </div>
-            <HomingAndCalibration
-              dispatch={dispatch}
-              bot={bot} />
-            <Motors
-              dispatch={dispatch}
-              bot={bot} />
-            <EncodersAndEndStops
-              dispatch={dispatch}
-              bot={bot} />
-            <PinGuard
-              dispatch={dispatch}
-              bot={bot} />
-            <DangerZone
-              dispatch={dispatch}
-              bot={bot}
-              onReset={MCUFactoryReset} />
-          </MustBeOnline>
-        </WidgetBody>
-      </Widget>
-    );
+        <MustBeOnline
+          networkState={this.props.botToMqttStatus}
+          syncStatus={sync_status}
+          lockOpen={process.env.NODE_ENV !== "production"}>
+          <div className="label-headings">
+            <SpacePanelHeader />
+          </div>
+          <HomingAndCalibration
+            dispatch={dispatch}
+            bot={bot} />
+          <Motors
+            dispatch={dispatch}
+            bot={bot} />
+          <EncodersAndEndStops
+            dispatch={dispatch}
+            bot={bot} />
+          <PinGuard
+            dispatch={dispatch}
+            bot={bot} />
+          <DangerZone
+            dispatch={dispatch}
+            bot={bot}
+            onReset={MCUFactoryReset} />
+        </MustBeOnline>
+      </WidgetBody>
+    </Widget>;
   }
 }

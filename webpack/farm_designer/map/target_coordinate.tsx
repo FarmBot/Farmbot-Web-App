@@ -27,10 +27,9 @@ export function TargetCoordinate(props: TargetCoordinateProps) {
         </g>
       </defs>
       {[45, 135, 225, 315].map(rotation => {
-        return (
-          <use key={rotation.toString()}
-            xlinkHref={"#target-coordinate-crosshair-segment"}
-            transform={`rotate(${rotation}, ${qx}, ${qy})`} />);
+        return <use key={rotation.toString()}
+          xlinkHref={"#target-coordinate-crosshair-segment"}
+          transform={`rotate(${rotation}, ${qx}, ${qy})`} />;
       })}
     </g>;
   } else {

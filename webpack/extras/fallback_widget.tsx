@@ -25,15 +25,13 @@ export class FallbackWidget extends
   React.Component<FallbackWidgetProps, {}> {
 
   render() {
-    return (
-      <Widget>
-        <WidgetHeader
-          title={t(this.props.title)}
-          helpText={this.props.helpText} />
-        <div className="widget-body">
-          {t("Widget load failed.")}
-        </div>
-      </Widget>
-    );
+    return <Widget>
+      <WidgetHeader
+        title={t(this.props.title)}
+        helpText={this.props.helpText} />
+      <div className="widget-body">
+        {t("Widget load failed.")}
+      </div>
+    </Widget>;
   }
 }

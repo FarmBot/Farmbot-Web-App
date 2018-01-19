@@ -18,18 +18,16 @@ export function write({ dispatch, regimen }: RegimenProps):
 
 export function RegimenNameInput({ regimen, dispatch }: RegimenProps) {
   const value = (regimen && regimen.body.name) || "";
-  return (
-    <Row>
-      <Col xs={11}>
-        <input
-          placeholder={t("Regimen Name")}
-          type="text"
-          onChange={write({ dispatch, regimen })}
-          value={value} />
-      </Col>
-      <ColorPicker
-        current={(regimen && regimen.body.color) || "gray"}
-        onChange={(color) => dispatch(editRegimen(regimen, { color }))} />
-    </Row>
-  );
+  return <Row>
+    <Col xs={11}>
+      <input
+        placeholder={t("Regimen Name")}
+        type="text"
+        onChange={write({ dispatch, regimen })}
+        value={value} />
+    </Col>
+    <ColorPicker
+      current={(regimen && regimen.body.color) || "gray"}
+      onChange={(color) => dispatch(editRegimen(regimen, { color }))} />
+  </Row>;
 }
