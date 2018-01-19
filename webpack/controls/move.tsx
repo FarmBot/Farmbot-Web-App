@@ -115,7 +115,8 @@ export class Move extends React.Component<MoveProps, {}> {
         <WidgetBody>
           <MustBeOnline
             lockOpen={process.env.NODE_ENV !== "production"}
-            status={this.props.botToMqttStatus}>
+            networkState={this.props.botToMqttStatus}
+            syncStatus={this.props.bot.hardware.informational_settings.sync_status}>
             <label className="text-center">
               {t("MOVE AMOUNT (mm)")}
             </label>

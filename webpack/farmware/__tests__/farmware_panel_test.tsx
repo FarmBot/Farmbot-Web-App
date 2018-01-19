@@ -30,7 +30,8 @@ describe("<FarmwarePanel/>: actions", () => {
   function fakeProps(): FWProps {
     return {
       farmwares: {},
-      botToMqttStatus: "up"
+      botToMqttStatus: "up",
+      syncStatus: "synced"
     };
   }
 
@@ -117,7 +118,8 @@ describe("<FarmwarePanel/>: farmware list", () => {
   function fakeProps(): FWProps {
     return {
       botToMqttStatus: "up",
-      farmwares: fakeFarmwares()
+      farmwares: fakeFarmwares(),
+      syncStatus: "synced"
     };
   }
 

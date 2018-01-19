@@ -27,7 +27,9 @@ export class CameraCalibration extends
         <WidgetBody>
           <Row>
             <Col sm={12}>
-              <MustBeOnline status={this.props.botToMqttStatus}
+              <MustBeOnline
+                syncStatus={this.props.syncStatus}
+                networkState={this.props.botToMqttStatus}
                 lockOpen={process.env.NODE_ENV !== "production"}>
                 <ImageWorkspace
                   onProcessPhoto={(id) => { this.props.dispatch(scanImage(id)); }}

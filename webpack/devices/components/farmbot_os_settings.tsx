@@ -148,7 +148,8 @@ export class FarmbotOsSettings
           </Row>
           <this.lastSeen />
           <MustBeOnline
-            status={this.props.botToMqttStatus}
+            syncStatus={this.props.bot.hardware.informational_settings.sync_status}
+            networkState={this.props.botToMqttStatus}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <FarmbotOsRow
               bot={this.props.bot}

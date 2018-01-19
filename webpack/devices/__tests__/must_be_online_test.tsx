@@ -4,7 +4,7 @@ import { MustBeOnline } from "../must_be_online";
 
 describe("<MustBeOnline/>", function () {
   it("Covers content when status is 'unknown'", function () {
-    const elem = <MustBeOnline status="down">
+    const elem = <MustBeOnline networkState="down" syncStatus={"sync_now"}>
       <span>Covered</span>
     </MustBeOnline>;
     const overlay = shallow(elem).find("div");
@@ -12,7 +12,7 @@ describe("<MustBeOnline/>", function () {
   });
 
   it("Uncovered when locked open", function () {
-    const elem = <MustBeOnline status="down" lockOpen={true}>
+    const elem = <MustBeOnline networkState="down" syncStatus={"sync_now"} lockOpen={true}>
       <span>Uncovered</span>
     </MustBeOnline>;
     const overlay = shallow(elem).find("div");
@@ -21,7 +21,7 @@ describe("<MustBeOnline/>", function () {
   });
 
   it("Doesn't show banner", function () {
-    const elem = <MustBeOnline status="down" hideBanner={true}>
+    const elem = <MustBeOnline networkState="down" syncStatus={"sync_now"} hideBanner={true}>
       <span>Uncovered</span>
     </MustBeOnline>;
     const overlay = shallow(elem).find("div");

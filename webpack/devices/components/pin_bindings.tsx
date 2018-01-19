@@ -185,7 +185,8 @@ export class PinBindings
         helpText={ToolTips.PIN_BINDINGS} />
       <WidgetBody>
         <MustBeOnline
-          status={this.props.botToMqttStatus}
+          syncStatus={this.props.bot.hardware.informational_settings.sync_status}
+          networkState={this.props.botToMqttStatus}
           lockOpen={process.env.NODE_ENV !== "production"}>
           <Row>
             <Col xs={ColumnWidth.pin}>

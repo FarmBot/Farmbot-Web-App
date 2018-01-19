@@ -23,6 +23,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     user_env: props.bot.hardware.user_env,
     dispatch: props.dispatch,
     currentImage,
-    images
+    images,
+    syncStatus: "synced"
   };
 }

@@ -5,8 +5,6 @@ import { registerSubscribers } from "./subscribers";
 import { getMiddleware } from "./middlewares";
 import { set } from "lodash";
 
-const ENV = process.env.NODE_ENV || "development";
-
 function dev(): Store {
   store = createStore(rootReducer,
     maybeFetchOldState(),
@@ -19,6 +17,7 @@ function prod(): Store {
 }
 
 export function configureStore(options = {}) {
+  const ENV = process.env.NODE_ENV || "development";
   const store2: Store = (ENV === "production" ? prod() : dev());
   // Make store global in case I need to probe it.
   set(window, "store", store2);

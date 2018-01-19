@@ -155,6 +155,7 @@ export interface FarmwareProps {
   botToMqttStatus: NetworkState;
   farmwares: Dictionary<FarmwareManifest | undefined>;
   timeOffset: number;
+  syncStatus: SyncStatus | undefined;
 }
 
 export interface HardwareSettingsProps {

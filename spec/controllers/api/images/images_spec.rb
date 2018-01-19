@@ -38,7 +38,7 @@ describe Api::ImagesController do
       post :create,
            body: { attachment_url: "https://placeholdit.imgix.net/~text?txt"\
                                    "size=5&txt=1%C3%971&w=1&h=1&txtpad=1",
-                   meta: { x: 1, y: 2, z: 3 } }.to_json,
+                   meta: { x: 1, z: 3 } }.to_json,
            params: {format: :json}
       expect(response.status).to eq(200)
       expect(Image.count).to be > before_count
@@ -46,7 +46,7 @@ describe Api::ImagesController do
       expect(json.key?(:attachment_processed_at)).to be_truthy
       expect(json[:attachment_url]).to include("placehold")
       expect(json.dig :meta, :x).to eq(1)
-      expect(json.dig :meta, :y).to eq(2)
+      expect(json.dig :meta, :y).to eq(nil)
       expect(json.dig :meta, :z).to eq(3)
     end
 

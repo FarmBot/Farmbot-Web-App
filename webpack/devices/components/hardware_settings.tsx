@@ -20,13 +20,14 @@ export class HardwareSettings extends
 
   render() {
     const { bot, dispatch } = this.props;
-
+    const { sync_status } = this.props.bot.hardware.informational_settings;
     return (
       <Widget className="hardware-widget">
         <WidgetHeader title="Hardware" helpText={ToolTips.HW_SETTINGS}>
           <MustBeOnline
             hideBanner={true}
-            status={this.props.botToMqttStatus}
+            syncStatus={sync_status}
+            networkState={this.props.botToMqttStatus}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <SaveBtn
               status={bot.isUpdating ? SpecialStatus.SAVING : SpecialStatus.SAVED}
@@ -48,7 +49,8 @@ export class HardwareSettings extends
             Collapse All
           </button>
           <MustBeOnline
-            status={this.props.botToMqttStatus}
+            networkState={this.props.botToMqttStatus}
+            syncStatus={sync_status}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <div className="label-headings">
               <SpacePanelHeader />
