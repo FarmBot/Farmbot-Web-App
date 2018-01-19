@@ -1,28 +1,9 @@
 import { MiddlewareConfig } from "./middlewares";
 import { Middleware } from "redux";
 import { Everything } from "../interfaces";
-import { NetworkState, ConnectionStatus } from "../connectivity/interfaces";
-import { maybeGetDevice } from "../device";
-import { changeLastClientConnected } from "../connectivity/connect_device";
+import { createRefreshTrigger } from "./create_refresh_trigger";
 
-let lastStatus: NetworkState | undefined;
-
-function maybeRefresh(status: ConnectionStatus | undefined) {
-  // If status is `undefined` it's too soon in the app lifecycle to call
-  // a refresh
-  if (status) {
-    const { state } = status;
-    const isUp = state === "up";
-    const wasDown = lastStatus === "down";
-    const device = maybeGetDevice();
-    lastStatus = state;
-    if (device && isUp && wasDown) {
-      console.log("Back online!");
-      changeLastClientConnected(device)();
-    }
-  }
-}
-
+const maybeRefresh = createRefreshTrigger();
 const stateFetchMiddleware: Middleware =
   (store) => (next) => (action: any) => {
     const s: Everything = store.getState() as any;
