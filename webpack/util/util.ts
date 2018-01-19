@@ -204,3 +204,12 @@ export const equals = <T>(a: T, b: T): boolean => {
 };
 
 export const timestamp = (date = new Date()) => Math.round(date.getTime());
+
+/** Used to scroll to the bottom of a sequence after adding a step. */
+export function scrollToBottom(elementId: string) {
+  const elToScroll = document.getElementById(elementId);
+  if (!elToScroll) { return; }
+
+  // Wait for the new element height and scroll to the bottom.
+  setTimeout(() => elToScroll.scrollTo(0, elToScroll.scrollHeight), 1);
+}
