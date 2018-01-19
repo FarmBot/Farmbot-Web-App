@@ -15,11 +15,11 @@ function maybeRefresh(status: ConnectionStatus | undefined) {
     const isUp = state === "up";
     const wasDown = lastStatus === "down";
     const device = maybeGetDevice();
+    lastStatus = state;
     if (device && isUp && wasDown) {
       console.log("Back online!");
       changeLastClientConnected(device)();
     }
-    lastStatus = state;
   }
 }
 
