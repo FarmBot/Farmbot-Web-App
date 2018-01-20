@@ -23,7 +23,7 @@ export function formatSelectedDropdown(ri: ResourceIndex, ld: LocationData): Dro
 
 function toolbar(ri: ResourceIndex, ld: Tool): DropDownItem {
   const tool = findToolById(ri, ld.args.tool_id).body;
-  const label = dropDownName("Tool", tool.name);
+  const label = dropDownName("Tool", tool.name || "untitled");
   return { label, value: tool.id || -999 };
 }
 
