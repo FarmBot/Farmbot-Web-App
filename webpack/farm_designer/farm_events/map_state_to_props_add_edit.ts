@@ -22,7 +22,7 @@ import {
   TaggedSequence,
   TaggedRegimen
 } from "../../resources/tagged_resources";
-import { DropDownItem } from "../../ui/fb_select";
+import { DropDownItem } from "../../ui/index";
 
 export let formatTime = (input: string, timeOffset: number) => {
   const iso = new Date(input).toISOString();

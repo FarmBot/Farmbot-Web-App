@@ -3,10 +3,9 @@ import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
-import { FBSelect } from "../../ui/new_fb_select";
 import { setPinMode, PIN_MODES, currentModeSelection } from "./tile_pin_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
-import { Row, Col } from "../../ui/index";
+import { Row, Col, FBSelect } from "../../ui/index";
 
 export function TileReadPin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;

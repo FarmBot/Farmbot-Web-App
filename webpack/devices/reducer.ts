@@ -4,7 +4,9 @@ import { Actions } from "../constants";
 import { EncoderDisplay } from "../controls/interfaces";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 import { BooleanSetting } from "../session_keys";
-import { maybeNegateStatus, maybeNegateConsistency } from "../connectivity/maybe_negate_status";
+import {
+  maybeNegateStatus, maybeNegateConsistency
+} from "../connectivity/maybe_negate_status";
 import { EdgeStatus } from "../connectivity/interfaces";
 import { ReduxAction } from "../redux/interfaces";
 import { connectivityReducer } from "../connectivity/reducer";

@@ -1,7 +1,6 @@
 import { Everything } from "../interfaces";
 import { Props } from "./interfaces";
 import * as _ from "lodash";
-import { NULL_CHOICE } from "../ui/fb_select";
 import {
   selectAllToolSlotPointers,
   selectAllTools,
@@ -13,7 +12,7 @@ import {
   TaggedToolSlotPointer
 } from "../resources/tagged_resources";
 import { edit } from "../api/crud";
-import { DropDownItem } from "../ui/index";
+import { DropDownItem, NULL_CHOICE } from "../ui/index";
 import { BotPosition } from "../devices/interfaces";
 
 export function mapStateToProps(props: Everything): Props {

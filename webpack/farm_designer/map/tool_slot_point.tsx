@@ -3,7 +3,7 @@ import { SlotWithTool } from "../../resources/interfaces";
 import { getXYFromQuadrant } from "./util";
 import { MapTransformProps } from "./interfaces";
 import * as _ from "lodash";
-import { Color } from "../../ui/colors";
+import { Color } from "../../ui/index";
 
 export interface TSPProps {
   slot: SlotWithTool;

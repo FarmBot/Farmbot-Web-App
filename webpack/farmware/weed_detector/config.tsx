@@ -1,12 +1,15 @@
 import * as React from "react";
 import { t } from "i18next";
-import { DropDownItem } from "../../ui/fb_select";
-import { Row, Col, NULL_CHOICE } from "../../ui/index";
-import { FBSelect } from "../../ui/new_fb_select";
+import {
+  BlurableInput,
+  Row, Col,
+  FBSelect, NULL_CHOICE, DropDownItem
+} from "../../ui/index";
 import { SettingsMenuProps } from "./interfaces";
 import * as _ from "lodash";
-import { BlurableInput } from "../../ui/blurable_input";
-import { SPECIAL_VALUE_DDI, CALIBRATION_DROPDOWNS, ORIGIN_DROPDOWNS } from "./constants";
+import {
+  SPECIAL_VALUE_DDI, CALIBRATION_DROPDOWNS, ORIGIN_DROPDOWNS
+} from "./constants";
 import { WD_ENV } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";
 import { SPECIAL_VALUES } from "./remote_env/constants";

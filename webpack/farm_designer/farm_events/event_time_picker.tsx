@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BlurableInput } from "../../ui/blurable_input";
+import { BlurableInput } from "../../ui/index";
 import * as moment from "moment";
 
 interface Props {

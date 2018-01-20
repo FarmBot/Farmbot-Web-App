@@ -3,7 +3,7 @@ import { t } from "i18next";
 import { connect } from "react-redux";
 import { Settings, DeleteAccount, ChangePassword } from "./components";
 import { Props } from "./interfaces";
-import { Page, Row, Col } from "../ui";
+import { Page, Row, Col } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { User } from "../auth/interfaces";
 import { edit, save } from "../api/crud";

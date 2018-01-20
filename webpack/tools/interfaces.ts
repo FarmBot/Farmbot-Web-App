@@ -1,4 +1,4 @@
-import { DropDownItem } from "../ui/fb_select";
+import { DropDownItem } from "../ui/index";
 import {
   TaggedTool,
   TaggedToolSlotPointer,

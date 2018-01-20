@@ -8,7 +8,9 @@ import {
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { API } from "./index";
 import axios from "axios";
-import { updateOK, updateNO, destroyOK, destroyNO, GeneralizedError } from "../resources/actions";
+import {
+  updateOK, updateNO, destroyOK, destroyNO, GeneralizedError
+} from "../resources/actions";
 import { UnsafeError } from "../interfaces";
 import { findByUuid } from "../resources/reducer";
 import { generateUuid } from "../resources/util";

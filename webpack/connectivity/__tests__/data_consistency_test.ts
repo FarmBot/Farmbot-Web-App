@@ -19,7 +19,9 @@ jest.mock("../../redux/store", () => {
 import { getDevice } from "../../device";
 import { store } from "../../redux/store";
 import { Actions } from "../../constants";
-import { startTracking, outstandingRequests, stopTracking, cleanUUID } from "../data_consistency";
+import {
+  startTracking, outstandingRequests, stopTracking, cleanUUID
+} from "../data_consistency";
 
 const unprocessedUuid = "~UU.ID~";
 const niceUuid = cleanUUID(unprocessedUuid);

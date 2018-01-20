@@ -3,7 +3,7 @@ import { DragHelpers } from "../drag_helpers";
 import { shallow } from "enzyme";
 import { DragHelpersProps } from "../interfaces";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
-import { Color } from "../../../ui/colors";
+import { Color } from "../../../ui/index";
 
 describe("<DragHelpers/>", () => {
   function fakeProps(): DragHelpersProps {

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Row, Col } from "../ui";
+import { Row, Col } from "../ui/index";
 import { AxisDisplayGroupProps } from "./interfaces";
 import { isNumber } from "lodash";
 

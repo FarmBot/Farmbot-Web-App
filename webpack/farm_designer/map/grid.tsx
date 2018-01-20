@@ -2,7 +2,7 @@ import * as React from "react";
 import { GridProps } from "./interfaces";
 import { getXYFromQuadrant } from "./util";
 import * as _ from "lodash";
-import { Color } from "../../ui/colors";
+import { Color } from "../../ui/index";
 
 export function Grid(props: GridProps) {
   const { quadrant, gridSize } = props.mapTransformProps;

@@ -2,7 +2,7 @@ import * as React from "react";
 import { StepButton } from "./step_buttons/index";
 import { t } from "i18next";
 import { Farmbot } from "farmbot";
-import { smoothScrollToBottom } from "../util";
+import { scrollToBottom } from "../util";
 import { Row, ToolTip } from "../ui/index";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { ToolTips } from "../constants";
@@ -157,7 +157,7 @@ export function StepButtonCluster({ dispatch, current }: StepButtonProps) {
             ALL_THE_BUTTONS.map(function (el, inx) {
               return <div key={inx} onClick={
                 // Follows user down the page as they add sequences.
-                () => { smoothScrollToBottom(); }}>
+                () => { scrollToBottom("sequenceDiv"); }}>
                 {el}
               </div>;
             })
