@@ -2,8 +2,7 @@ import * as React from "react";
 import { McuInputBox } from "./mcu_input_box";
 import { SpacePanelToolTip } from "./space_panel_tool_tip";
 import { NumericMCUInputGroupProps } from "./interfaces";
-import { Row } from "../../ui/row";
-import { Col } from "../../ui/index";
+import { Row, Col } from "../../ui/index";
 
 export function NumericMCUInputGroup(props: NumericMCUInputGroupProps) {
 

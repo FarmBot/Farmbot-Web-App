@@ -1,11 +1,10 @@
 import * as React from "react";
-import { Widget, WidgetHeader } from "../../ui/index";
+import { Widget, WidgetHeader, FallbackImg } from "../../ui/index";
 import { t } from "i18next";
 import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
 import { PLACEHOLDER_FARMBOT } from "../../farmware/images/image_flipper";
 import { Flipper } from "./flipper";
-import { FallbackImg } from "../../ui/fallback_img";
 import { sortedFeeds } from "./edit";
 
 type State = {
@@ -54,41 +53,39 @@ export class Show extends React.Component<WebcamPanelProps, State> {
     const title = flipper.current.name || "Webcam Feeds";
     const msg = this.getMessage(flipper.current.url);
     const imageClass = msg.length > 0 ? "no-flipper-image-container" : "";
-    return (
-      <Widget>
-        <WidgetHeader title={title} helpText={ToolTips.WEBCAM}>
-          <button
-            className="fb-button gray"
-            onClick={props.onToggle}>
-            {t("Edit")}
-          </button>
-          <IndexIndicator i={this.state.current} total={feeds.length} />
-        </WidgetHeader>
-        <div className="widget-body">
-          <div className="image-flipper">
-            <div className={imageClass}>
-              <p>{msg}</p>
-              <FallbackImg className="image-flipper-image"
-                src={flipper.current.url}
-                fallback={PLACEHOLDER_FARMBOT} />
-            </div>
-            <button
-              onClick={() => flipper.down((_, current) => this.setState({ current }))}
-              hidden={feeds.length < 2}
-              disabled={false}
-              className="image-flipper-left fb-button">
-              {t("Prev")}
-            </button>
-            <button
-              onClick={() => flipper.up((_, current) => this.setState({ current }))}
-              hidden={feeds.length < 2}
-              disabled={false}
-              className="image-flipper-right fb-button">
-              {t("Next")}
-            </button>
+    return <Widget>
+      <WidgetHeader title={title} helpText={ToolTips.WEBCAM}>
+        <button
+          className="fb-button gray"
+          onClick={props.onToggle}>
+          {t("Edit")}
+        </button>
+        <IndexIndicator i={this.state.current} total={feeds.length} />
+      </WidgetHeader>
+      <div className="widget-body">
+        <div className="image-flipper">
+          <div className={imageClass}>
+            <p>{msg}</p>
+            <FallbackImg className="image-flipper-image"
+              src={flipper.current.url}
+              fallback={PLACEHOLDER_FARMBOT} />
           </div>
+          <button
+            onClick={() => flipper.down((_, current) => this.setState({ current }))}
+            hidden={feeds.length < 2}
+            disabled={false}
+            className="image-flipper-left fb-button">
+            {t("Prev")}
+          </button>
+          <button
+            onClick={() => flipper.up((_, current) => this.setState({ current }))}
+            hidden={feeds.length < 2}
+            disabled={false}
+            className="image-flipper-right fb-button">
+            {t("Next")}
+          </button>
         </div>
-      </Widget>
-    );
+      </div>
+    </Widget>;
   }
 }

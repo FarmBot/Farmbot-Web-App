@@ -28,7 +28,9 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
         buttonColor = "green";
     }
   } else {
-    buttonStr = "Can't Connect to release server";
+    buttonStr = beta_opt_in
+      ? "No beta releases available"
+      : "Can't Connect to release server";
   }
 
   const osUpdateJob = (bot.hardware.jobs || {})["FBOS_OTA"];

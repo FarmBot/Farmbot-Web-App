@@ -7,14 +7,14 @@ import {
   Col,
   Row,
   BlurableInput,
-  SaveBtn
-} from "../../ui";
+  SaveBtn,
+  FBSelect
+} from "../../ui/index";
 import { t } from "i18next";
 import {
   TaggedToolSlotPointer, getArrayStatus, SpecialStatus
 } from "../../resources/tagged_resources";
 import { edit, destroy, saveAll, init } from "../../api/crud";
-import { FBSelect } from "../../ui/new_fb_select";
 import { ToolBayHeader } from "./toolbay_header";
 import { ToolTips } from "../../constants";
 import * as _ from "lodash";

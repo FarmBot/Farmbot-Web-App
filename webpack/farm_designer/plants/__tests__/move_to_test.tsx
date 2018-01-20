@@ -10,6 +10,11 @@ jest.mock("../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 
+let mockPath = "";
+jest.mock("../../../history", () => ({
+  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { MoveTo, MoveToProps } from "../move_to";
@@ -17,9 +22,7 @@ import { MoveTo, MoveToProps } from "../move_to";
 describe("<MoveTo />", () => {
   beforeEach(function () {
     jest.clearAllMocks();
-    Object.defineProperty(location, "pathname", {
-      value: "/app/designer/plants/move_to"
-    });
+    mockPath = "/app/designer/plants/move_to";
   });
 
   function fakeProps(): MoveToProps {

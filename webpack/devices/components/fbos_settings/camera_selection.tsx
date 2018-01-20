@@ -1,12 +1,11 @@
 import * as React from "react";
-import { DropDownItem, Row, Col } from "../../../ui/index";
+import { DropDownItem, Row, Col, FBSelect } from "../../../ui/index";
 import { t } from "i18next";
 import {
   CameraSelectionProps, CameraSelectionState
 } from "../../interfaces";
 import { info, success, error } from "farmbot-toastr/dist";
 import { getDevice } from "../../../device";
-import { FBSelect } from "../../../ui/new_fb_select";
 import { ColWidth } from "../farmbot_os_settings";
 
 const CAMERA_CHOICES = [

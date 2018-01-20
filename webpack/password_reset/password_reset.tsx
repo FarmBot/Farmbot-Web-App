@@ -66,47 +66,45 @@ export class PasswordReset extends React.Component<Props, State> {
       borderBottom: "none"
     };
 
-    return (
-      <div className="static-page">
-        <div className="all-content-wrapper">
-          <h1 className="text-center">
-            {t("Reset your password")}
-          </h1>
-          <br />
-          <Row>
-            <Col xs={12} sm={6} className="col-sm-push-3">
-              <Widget>
-                <WidgetHeader title={"Reset Password"} />
-                <WidgetBody>
-                  <form onSubmit={this.submit.bind(this)}>
-                    <label>
-                      {t("New Password")}
-                    </label>
-                    <input
-                      type="password"
-                      onChange={this.set("password").bind(this)} />
-                    <label>
-                      {t("Confirm New Password")}
-                    </label>
-                    <input
-                      type="password"
-                      onChange={this.set("passwordConfirmation").bind(this)} />
-                    <Row>
-                      <Col xs={12}>
-                        <button
-                          className="fb-button green pull-right"
-                          style={buttonStylesUniqueToOnlyThisPage}>
-                          {t("Reset")}
-                        </button>
-                      </Col>
-                    </Row>
-                  </form>
-                </WidgetBody>
-              </Widget>
-            </Col>
-          </Row>
-        </div>
+    return <div className="static-page">
+      <div className="all-content-wrapper">
+        <h1 className="text-center">
+          {t("Reset your password")}
+        </h1>
+        <br />
+        <Row>
+          <Col xs={12} sm={6} className="col-sm-push-3">
+            <Widget>
+              <WidgetHeader title={"Reset Password"} />
+              <WidgetBody>
+                <form onSubmit={this.submit.bind(this)}>
+                  <label>
+                    {t("New Password")}
+                  </label>
+                  <input
+                    type="password"
+                    onChange={this.set("password").bind(this)} />
+                  <label>
+                    {t("Confirm New Password")}
+                  </label>
+                  <input
+                    type="password"
+                    onChange={this.set("passwordConfirmation").bind(this)} />
+                  <Row>
+                    <Col xs={12}>
+                      <button
+                        className="fb-button green pull-right"
+                        style={buttonStylesUniqueToOnlyThisPage}>
+                        {t("Reset")}
+                      </button>
+                    </Col>
+                  </Row>
+                </form>
+              </WidgetBody>
+            </Widget>
+          </Col>
+        </Row>
       </div>
-    );
+    </div>;
   }
 }

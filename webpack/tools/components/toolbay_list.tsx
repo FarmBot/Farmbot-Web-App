@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Row, Col, Widget, WidgetBody, WidgetHeader } from "../../ui";
+import { Row, Col, Widget, WidgetBody, WidgetHeader } from "../../ui/index";
 import { ToolBayListProps } from "../interfaces";
 import { TaggedToolSlotPointer } from "../../resources/tagged_resources";
 import { ToolBayHeader } from "./toolbay_header";

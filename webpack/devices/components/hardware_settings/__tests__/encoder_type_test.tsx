@@ -1,7 +1,9 @@
 import * as React from "react";
-import { EncoderType, EncoderTypeProps, LOOKUP, findByType, isEncoderValue } from "../encoder_type";
+import {
+  EncoderType, EncoderTypeProps, LOOKUP, findByType, isEncoderValue
+} from "../encoder_type";
 import { shallow } from "enzyme";
-import { FBSelect } from "../../../../ui/new_fb_select";
+import { FBSelect } from "../../../../ui/index";
 import { Encoder } from "farmbot";
 
 describe("<EncoderType/>", () => {

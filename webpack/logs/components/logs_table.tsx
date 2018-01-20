@@ -68,7 +68,7 @@ const filterByVerbosity = (state: LogsState, logs: TaggedLog[]) => {
     })
     .filter((log: TaggedLog) => {
       const type = (log.body.meta || {}).type;
-      const verbosity = log.body.meta.verbosity;
+      const { verbosity } = log.body.meta;
       const filterLevel = state[type as keyof LogsState];
       const displayLog = verbosity
         ? verbosity <= filterLevel

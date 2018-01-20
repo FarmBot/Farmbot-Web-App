@@ -87,18 +87,16 @@ export class AddFarmEvent
   }
 
   placeholderTemplate(children: JSXChildren) {
-    return (
-      <div className="panel-container magenta-panel add-farm-event-panel">
-        <div className="panel-header magenta-panel">
-          <p className="panel-title"> <BackArrow /> {t("No Executables")} </p>
-        </div>
-        <div className="panel-content">
-          <label>
-            {children}
-          </label>
-        </div>
+    return <div className="panel-container magenta-panel add-farm-event-panel">
+      <div className="panel-header magenta-panel">
+        <p className="panel-title"> <BackArrow /> {t("No Executables")} </p>
       </div>
-    );
+      <div className="panel-content">
+        <label>
+          {children}
+        </label>
+      </div>
+    </div>;
   }
 
   render() {
@@ -108,17 +106,15 @@ export class AddFarmEvent
     //       to mapStateToProps instead of juggling arrays.
     const fe = uuid && this.props.farmEvents.filter(x => x.uuid === uuid)[0];
     if (fe) {
-      return (
-        <EditFEForm
-          farmEvent={fe}
-          deviceTimezone={this.props.deviceTimezone}
-          repeatOptions={this.props.repeatOptions}
-          executableOptions={this.props.executableOptions}
-          dispatch={this.props.dispatch}
-          findExecutable={this.props.findExecutable}
-          title={t("Add Farm Event")}
-          timeOffset={this.props.timeOffset} />
-      );
+      return <EditFEForm
+        farmEvent={fe}
+        deviceTimezone={this.props.deviceTimezone}
+        repeatOptions={this.props.repeatOptions}
+        executableOptions={this.props.executableOptions}
+        dispatch={this.props.dispatch}
+        findExecutable={this.props.findExecutable}
+        title={t("Add Farm Event")}
+        timeOffset={this.props.timeOffset} />;
     } else {
       return this
         .placeholderTemplate(((this.executable) ? this.loading : this.none)());

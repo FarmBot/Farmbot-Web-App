@@ -1,7 +1,6 @@
 import * as React from "react";
-import { Row, Col, DropDownItem } from "../../../ui/index";
+import { Row, Col, DropDownItem, FBSelect } from "../../../ui/index";
 import { t } from "i18next";
-import { FBSelect } from "../../../ui/new_fb_select";
 import { getDevice } from "../../../device";
 import { info, error } from "farmbot-toastr";
 import { FirmwareHardware } from "farmbot";

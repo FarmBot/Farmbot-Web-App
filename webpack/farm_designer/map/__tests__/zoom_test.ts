@@ -37,10 +37,22 @@ describe("zoom utilities", () => {
     expect(ZoomUtils.atMinZoom()).toBeFalsy();
   });
 
+  it("beyond max zoom", () => {
+    mockZoomValue = 999;
+    const result = ZoomUtils.getZoomLevelIndex();
+    expect(result).toEqual(ZoomUtils.maxZoomIndex);
+  });
+
   it("at min zoom", () => {
     mockZoomValue = ZoomUtils.minZoomLevel;
     expect(ZoomUtils.atMaxZoom()).toBeFalsy();
     expect(ZoomUtils.atMinZoom()).toBeTruthy();
+  });
+
+  it("beyond min zoom", () => {
+    mockZoomValue = -999;
+    const result = ZoomUtils.getZoomLevelIndex();
+    expect(result).toEqual(0);
   });
 
   it("at unknown zoom", () => {

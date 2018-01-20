@@ -3,11 +3,11 @@ import * as React from "react";
 import { IfParams, LHSOptions, operatorOptions } from "./index";
 import { t } from "i18next";
 import { StepInputBox } from "../../inputs/step_input_box";
-import { FBSelect, NULL_CHOICE } from "../../../ui/new_fb_select";
-import { DropDownItem } from "../../../ui/fb_select";
 import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
-import { Col, Row } from "../../../ui/index";
+import {
+  Col, Row, FBSelect, DropDownItem, NULL_CHOICE
+} from "../../../ui/index";
 import { ALLOWED_OPS } from "farmbot/dist";
 
 const IS_UNDEFINED: ALLOWED_OPS = "is_undefined";

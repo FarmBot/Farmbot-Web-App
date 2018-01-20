@@ -1,11 +1,10 @@
 const mockHistory = jest.fn();
+let mockPath = "/app/designer/plants";
 jest.mock("../../../../history", () => ({
   history: {
     push: mockHistory
   },
-  getPathArray: jest
-    .fn(() => { return "/app/designer/plants/select".split("/"); })
-    .mockImplementationOnce(() => { return "/app/designer/plants".split("/"); })
+  getPathArray: jest.fn(() => { return mockPath.split("/"); })
 }));
 
 import * as React from "react";
@@ -53,9 +52,7 @@ describe("<ToolSlotLayer/>", () => {
   });
 
   it("navigates to tools page", async () => {
-    Object.defineProperty(location, "pathname", {
-      value: "/app/designer/plants", configurable: true
-    });
+    mockPath = "/app/designer/plants";
     const p = fakeProps();
     const wrapper = shallow(<ToolSlotLayer {...p } />);
     const tools = wrapper.find("g").first();
@@ -64,9 +61,7 @@ describe("<ToolSlotLayer/>", () => {
   });
 
   it("doesn't navigate to tools page", async () => {
-    Object.defineProperty(location, "pathname", {
-      value: "/app/designer/plants/1", configurable: true
-    });
+    mockPath = "/app/designer/plants/1";
     const p = fakeProps();
     const wrapper = shallow(<ToolSlotLayer {...p } />);
     const tools = wrapper.find("g").first();
@@ -76,6 +71,7 @@ describe("<ToolSlotLayer/>", () => {
   });
 
   it("is in non-clickable mode", () => {
+    mockPath = "/app/designer/plants/select";
     const p = fakeProps();
     const wrapper = shallow(<ToolSlotLayer {...p } />);
     expect(wrapper.find("g").props().style)

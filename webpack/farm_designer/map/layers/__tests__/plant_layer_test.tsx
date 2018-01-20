@@ -1,7 +1,6 @@
+let mockPath = "/app/designer/plants";
 jest.mock("../../../../history", () => ({
-  getPathArray: jest
-    .fn(() => { return "/app/designer/plants/select".split("/"); })
-    .mockImplementationOnce(() => { return "/app/designer/plants".split("/"); })
+  getPathArray: jest.fn(() => { return mockPath.split("/"); })
 }));
 
 jest.mock("../../../../session", () => {
@@ -59,7 +58,15 @@ describe("<PlantLayer/>", () => {
     expect(wrapper.html()).toEqual("<g id=\"plant-layer\"></g>");
   });
 
+  it("is in clickable mode", () => {
+    mockPath = "/app/designer/plants";
+    const p = fakeProps();
+    const wrapper = shallow(<PlantLayer {...p } />);
+    expect(wrapper.find("Link").props().style).toEqual({});
+  });
+
   it("is in non-clickable mode", () => {
+    mockPath = "/app/designer/plants/select";
     const p = fakeProps();
     const wrapper = shallow(<PlantLayer {...p } />);
     expect(wrapper.find("Link").props().style)

@@ -29,16 +29,10 @@ jest.mock("farmbot-toastr", () => ({
   error: mockError
 }));
 
+let mockGetRelease: Promise<{}> = Promise.resolve({});
 jest.mock("axios", () => ({
   default: {
-    get: jest.fn(() => { return Promise.reject("error"); })
-      .mockImplementationOnce(() => { return Promise.resolve(); })
-      .mockImplementationOnce(() => {
-        return Promise.resolve({ data: { tag_name: "v1.0.0" } });
-      })
-      .mockImplementationOnce(() => {
-        return Promise.resolve({ data: { tag_name: "v1.0.0-beta" } });
-      })
+    get: jest.fn(() => { return mockGetRelease; })
   }
 }));
 
@@ -260,6 +254,7 @@ describe("fetchReleases()", () => {
   });
 
   it("fetches latest OS release version", async () => {
+    mockGetRelease = Promise.resolve({ data: { tag_name: "v1.0.0" } });
     const dispatch = jest.fn();
     await actions.fetchReleases("url")(dispatch, jest.fn());
     expect(axios.get).toHaveBeenCalledWith("url");
@@ -271,6 +266,7 @@ describe("fetchReleases()", () => {
   });
 
   it("fetches latest beta OS release version", async () => {
+    mockGetRelease = Promise.resolve({ data: { tag_name: "v1.0.0-beta" } });
     const dispatch = jest.fn();
     await actions.fetchReleases("url", { beta: true })(dispatch, jest.fn());
     expect(axios.get).toHaveBeenCalledWith("url");
@@ -282,6 +278,7 @@ describe("fetchReleases()", () => {
   });
 
   it("fails to fetches latest OS release version", async () => {
+    mockGetRelease = Promise.reject("error");
     const dispatch = jest.fn();
     await actions.fetchReleases("url")(dispatch, jest.fn());
     await expect(axios.get).toHaveBeenCalledWith("url");
@@ -294,6 +291,7 @@ describe("fetchReleases()", () => {
   });
 
   it("fails to fetches latest beta OS release version", async () => {
+    mockGetRelease = Promise.reject("error");
     const dispatch = jest.fn();
     await actions.fetchReleases("url", { beta: true })(dispatch, jest.fn());
     await expect(axios.get).toHaveBeenCalledWith("url");

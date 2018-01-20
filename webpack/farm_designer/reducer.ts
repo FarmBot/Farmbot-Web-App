@@ -1,9 +1,6 @@
 import { CropLiveSearchResult } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
-import {
-  DesignerState,
-  HoveredPlantPayl
-} from "./interfaces";
+import { DesignerState, HoveredPlantPayl } from "./interfaces";
 import { cloneDeep } from "lodash";
 import { TaggedResource } from "../resources/tagged_resources";
 import { Actions } from "../constants";

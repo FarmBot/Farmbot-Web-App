@@ -76,92 +76,90 @@ export class ImageWorkspace extends React.Component<Props, {}> {
   render() {
     const { H_LO, H_HI, S_LO, S_HI, V_LO, V_HI } = this.props;
 
-    return (
-      <div className="widget-content">
-        <Row>
-          <Col xs={12} md={6}>
-            <h4>
-              <i>{t("Color Range")}</i>
-            </h4>
-            <label htmlFor="hue">{t("HUE")}</label>
-            <WeedDetectorSlider
-              onRelease={this.onHslChange("H")}
-              lowest={RANGES.H.LOWEST}
-              highest={RANGES.H.HIGHEST}
-              lowValue={Math.min(H_LO, H_HI)}
-              highValue={Math.max(H_LO, H_HI)} />
-            <label htmlFor="saturation">{t("SATURATION")}</label>
-            <WeedDetectorSlider
-              onRelease={this.onHslChange("S")}
-              lowest={RANGES.S.LOWEST}
-              highest={RANGES.S.HIGHEST}
-              lowValue={S_LO}
-              highValue={S_HI} />
-            <label htmlFor="value">{t("VALUE")}</label>
-            <WeedDetectorSlider
-              onRelease={this.onHslChange("V")}
-              lowest={RANGES.V.LOWEST}
-              highest={RANGES.V.HIGHEST}
-              lowValue={V_LO}
-              highValue={V_HI} />
-          </Col>
-          <Col xs={12} md={6}>
-            <FarmbotColorPicker
-              h={[H_LO, H_HI]}
-              s={[S_LO, S_HI]}
-              v={[V_LO, V_HI]}
-              invertHue={this.props.invertHue} />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            <h4>
-              <i>{t("Processing Parameters")}</i>
-            </h4>
-          </Col>
+    return <div className="widget-content">
+      <Row>
+        <Col xs={12} md={6}>
+          <h4>
+            <i>{t("Color Range")}</i>
+          </h4>
+          <label htmlFor="hue">{t("HUE")}</label>
+          <WeedDetectorSlider
+            onRelease={this.onHslChange("H")}
+            lowest={RANGES.H.LOWEST}
+            highest={RANGES.H.HIGHEST}
+            lowValue={Math.min(H_LO, H_HI)}
+            highValue={Math.max(H_LO, H_HI)} />
+          <label htmlFor="saturation">{t("SATURATION")}</label>
+          <WeedDetectorSlider
+            onRelease={this.onHslChange("S")}
+            lowest={RANGES.S.LOWEST}
+            highest={RANGES.S.HIGHEST}
+            lowValue={S_LO}
+            highValue={S_HI} />
+          <label htmlFor="value">{t("VALUE")}</label>
+          <WeedDetectorSlider
+            onRelease={this.onHslChange("V")}
+            lowest={RANGES.V.LOWEST}
+            highest={RANGES.V.HIGHEST}
+            lowValue={V_LO}
+            highValue={V_HI} />
+        </Col>
+        <Col xs={12} md={6}>
+          <FarmbotColorPicker
+            h={[H_LO, H_HI]}
+            s={[S_LO, S_HI]}
+            v={[V_LO, V_HI]}
+            invertHue={this.props.invertHue} />
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={12}>
+          <h4>
+            <i>{t("Processing Parameters")}</i>
+          </h4>
+        </Col>
 
-          <Col xs={4}>
-            <label>{t("BLUR")}</label>
-            <BlurableInput type="number"
-              min={RANGES.BLUR.LOWEST}
-              max={RANGES.BLUR.HIGHEST}
-              onCommit={this.numericChange("blur")}
-              value={"" + this.props.blur} />
-          </Col>
+        <Col xs={4}>
+          <label>{t("BLUR")}</label>
+          <BlurableInput type="number"
+            min={RANGES.BLUR.LOWEST}
+            max={RANGES.BLUR.HIGHEST}
+            onCommit={this.numericChange("blur")}
+            value={"" + this.props.blur} />
+        </Col>
 
-          <Col xs={4}>
-            <label>{t("MORPH")}</label>
-            <BlurableInput type="number"
-              min={RANGES.MORPH.LOWEST}
-              max={RANGES.MORPH.HIGHEST}
-              onCommit={this.numericChange("morph")}
-              value={"" + this.props.morph} />
-          </Col>
-          <Col xs={4}>
-            <label>{t("ITERATION")}</label>
-            <BlurableInput type="number"
-              min={RANGES.ITERATION.LOWEST}
-              max={RANGES.ITERATION.HIGHEST}
-              onCommit={this.numericChange("iteration")}
-              value={"" + this.props.iteration} />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            <button
-              className="green fb-button"
-              title="Scan this image"
-              onClick={this.maybeProcessPhoto}
-              hidden={!this.props.images.length} >
-              {t("Scan image")}
-            </button>
-          </Col>
-        </Row>
-        <ImageFlipper
-          onFlip={this.props.onFlip}
-          images={this.props.images}
-          currentImage={this.props.currentImage} />
-      </div>
-    );
+        <Col xs={4}>
+          <label>{t("MORPH")}</label>
+          <BlurableInput type="number"
+            min={RANGES.MORPH.LOWEST}
+            max={RANGES.MORPH.HIGHEST}
+            onCommit={this.numericChange("morph")}
+            value={"" + this.props.morph} />
+        </Col>
+        <Col xs={4}>
+          <label>{t("ITERATION")}</label>
+          <BlurableInput type="number"
+            min={RANGES.ITERATION.LOWEST}
+            max={RANGES.ITERATION.HIGHEST}
+            onCommit={this.numericChange("iteration")}
+            value={"" + this.props.iteration} />
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={12}>
+          <button
+            className="green fb-button"
+            title="Scan this image"
+            onClick={this.maybeProcessPhoto}
+            hidden={!this.props.images.length} >
+            {t("Scan image")}
+          </button>
+        </Col>
+      </Row>
+      <ImageFlipper
+        onFlip={this.props.onFlip}
+        images={this.props.images}
+        currentImage={this.props.currentImage} />
+    </div>;
   }
 }
