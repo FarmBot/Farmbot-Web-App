@@ -24,10 +24,10 @@ import { overwrite } from "../../api/crud";
 import { defensiveClone } from "../../util";
 import { shallow } from "enzyme";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { FBSelect } from "../../ui/new_fb_select";
-import { InputBox } from "../step_tiles/tile_move_absolute/input_box";
-import { generateList } from "../step_tiles/tile_move_absolute/generate_list";
-import { handleSelect } from "../step_tiles/tile_move_absolute/handle_select";
+import { FBSelect } from "../../ui/index";
+import {
+  InputBox, generateList, handleSelect
+} from "../step_tiles/tile_move_absolute/index";
 
 const coord: Coordinate = { kind: "coordinate", args: { x: 1, y: 2, z: 3 } };
 const tool: Tool = { kind: "tool", args: { tool_id: 4 } };

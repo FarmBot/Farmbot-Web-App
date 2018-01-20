@@ -1,5 +1,7 @@
 import * as React from "react";
-import { SequenceEditorMiddleInactive, IMAGE_PATH } from "../sequence_editor_middle_inactive";
+import {
+  SequenceEditorMiddleInactive, IMAGE_PATH
+} from "../sequence_editor_middle_inactive";
 import { shallow } from "enzyme";
 import { Content } from "../../constants";
 

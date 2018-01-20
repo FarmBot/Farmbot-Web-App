@@ -9,8 +9,10 @@ import {
   WidgetHeader,
   BlurableInput,
   SaveBtn
-} from "../../ui";
-import { TaggedTool, getArrayStatus, SpecialStatus } from "../../resources/tagged_resources";
+} from "../../ui/index";
+import {
+  TaggedTool, getArrayStatus, SpecialStatus
+} from "../../resources/tagged_resources";
 import { edit, destroy, init, saveAll } from "../../api/crud";
 import { ToolTips } from "../../constants";
 

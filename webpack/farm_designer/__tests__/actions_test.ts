@@ -1,18 +1,10 @@
 const mockHistory = jest.fn();
+let mockPath = "/app/designer/plants";
 jest.mock("../../history", () => ({
   history: {
     push: mockHistory
   },
-  getPathArray: jest.fn()
-    .mockImplementationOnce(() => {
-      return "/app/designer/plants".split("/");
-    })
-    .mockImplementationOnce(() => {
-      return "/app/designer/plants/1/edit".split("/");
-    })
-    .mockImplementationOnce(() => {
-      return "/app/designer/plants/1".split("/");
-    })
+  getPathArray: jest.fn(() => { return mockPath.split("/"); })
 }));
 
 jest.mock("../../api/crud", () => ({
@@ -60,16 +52,27 @@ describe("movePlant", () => {
   movePlantTest("too low", { x: -10000, y: -10000 }, { x: 0, y: 0 });
 });
 
-describe("close plant", () => {
-  it("closes plant info", () => {
+describe("closePlantInfo()", () => {
+  it("no plant info open", () => {
+    mockPath = "/app/designer/plants";
     const dispatch = jest.fn();
-    closePlantInfo(dispatch)(); // no plant info open
+    closePlantInfo(dispatch)();
     expect(mockHistory).not.toHaveBeenCalled();
     expect(dispatch).not.toHaveBeenCalled();
-    closePlantInfo(dispatch)(); // plant edit open
+  });
+
+  it("plant edit open", () => {
+    mockPath = "/app/designer/plants/1/edit";
+    const dispatch = jest.fn();
+    closePlantInfo(dispatch)();
     expect(mockHistory).not.toHaveBeenCalled();
     expect(dispatch).not.toHaveBeenCalled();
-    closePlantInfo(dispatch)(); // plant info open
+  });
+
+  it("plant info open", () => {
+    mockPath = "/app/designer/plants/1";
+    const dispatch = jest.fn();
+    closePlantInfo(dispatch)();
     expect(mockHistory).toHaveBeenCalledWith("/app/designer/plants");
     expect(dispatch).toHaveBeenCalledWith({
       payload: undefined, type: "SELECT_PLANT"

@@ -5,7 +5,7 @@ import { round, getXYFromQuadrant } from "./util";
 import { DragHelpers } from "./drag_helpers";
 import { Session } from "../../session";
 import { BooleanSetting } from "../../session_keys";
-import { Color } from "../../ui/colors";
+import { Color } from "../../ui/index";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {

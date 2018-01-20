@@ -2,6 +2,11 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
+let mockPath = "";
+jest.mock("../../../history", () => ({
+  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+}));
+
 jest.mock("../../search_selectors", () => ({
   findBySlug: () => {
     return {
@@ -26,9 +31,7 @@ import { shallow } from "enzyme";
 
 describe("<CropInfo />", () => {
   it("renders", () => {
-    Object.defineProperty(location, "pathname", {
-      value: "/app/designer/plants/crop_search/mint"
-    });
+    mockPath = "/app/designer/plants/crop_search/mint";
     const wrapper = shallow(
       <CropInfo
         OFSearch={jest.fn()}

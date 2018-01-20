@@ -53,7 +53,6 @@ module FarmBot
         default_src: %w(https: 'self'),
         base_uri: %w('self'),
         block_all_mixed_content: false, # :( Some webcam feeds use http://
-        child_src: %w('self'),
         connect_src: ALL_LOCAL_URIS + [ENV["MQTT_HOST"],
                       "api.github.com",
                       "raw.githubusercontent.com",
@@ -68,7 +67,7 @@ module FarmBot
           fonts.gstatic.com
         ),
         form_action: %w('self'),
-        frame_ancestors: %w(*), # We need "*" to support webcam users.
+        frame_src: %w(*),       # We need "*" to support webcam users.
         img_src: %w(* data:),   # We need "*" to support webcam users.
         manifest_src: %w('self'),
         media_src: %w(),
@@ -78,6 +77,7 @@ module FarmBot
           allow-forms
           allow-same-origin
           allow-modals
+          allow-popups
         ),
         plugin_types: %w(),
         script_src: %w(

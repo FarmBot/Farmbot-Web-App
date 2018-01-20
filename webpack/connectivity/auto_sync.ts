@@ -1,6 +1,8 @@
 import { GetState } from "../redux/interfaces";
 import { maybeDetermineUuid } from "../resources/selectors";
-import { ResourceName, TaggedResource, SpecialStatus } from "../resources/tagged_resources";
+import {
+  ResourceName, TaggedResource, SpecialStatus
+} from "../resources/tagged_resources";
 import { overwrite, init } from "../api/crud";
 import { handleInbound } from "./auto_sync_handle_inbound";
 import { SyncPayload, MqttDataResult, Reason, UpdateMqttData } from "./interfaces";

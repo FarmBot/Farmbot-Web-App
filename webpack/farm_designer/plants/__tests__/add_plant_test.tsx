@@ -2,6 +2,11 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
+let mockPath = "";
+jest.mock("../../../history", () => ({
+  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { AddPlant, AddPlantProps } from "../add_plant";
@@ -24,9 +29,7 @@ describe("<AddPlant />", () => {
         }
       }]
     };
-    Object.defineProperty(location, "pathname", {
-      value: "/app/designer/plants/crop_search/mint/add"
-    });
+    mockPath = "/app/designer/plants/crop_search/mint/add";
     const wrapper = mount(<AddPlant {...props} />);
     expect(wrapper.text()).toContain("Mint");
     expect(wrapper.text()).toContain("Done");

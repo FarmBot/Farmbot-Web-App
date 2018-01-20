@@ -27,28 +27,26 @@ export function Edit(props: WebcamPanelProps) {
   const unsaved = props
     .feeds
     .filter(x => x.specialStatus === SpecialStatus.DIRTY);
-  return (
-    <Widget>
-      <WidgetHeader title="Edit" helpText={ToolTips.WEBCAM}>
-        <button
-          className="fb-button green"
-          onClick={props.init}>
-          <i className="fa fa-plus" />
-        </button>
-        <button
-          className="fb-button green"
-          onClick={() => { unsaved.map(x => props.save(x)); }}>
-          {t("Save")}{unsaved.length > 0 ? "*" : ""}
-        </button>
-        <button
-          className="fb-button gray"
-          onClick={props.onToggle}>
-          {t("View")}
-        </button>
-      </WidgetHeader>
-      <div className="widget-body">
-        {rows}
-      </div>
-    </Widget>
-  );
+  return <Widget>
+    <WidgetHeader title="Edit" helpText={ToolTips.WEBCAM}>
+      <button
+        className="fb-button green"
+        onClick={props.init}>
+        <i className="fa fa-plus" />
+      </button>
+      <button
+        className="fb-button green"
+        onClick={() => { unsaved.map(x => props.save(x)); }}>
+        {t("Save")}{unsaved.length > 0 ? "*" : ""}
+      </button>
+      <button
+        className="fb-button gray"
+        onClick={props.onToggle}>
+        {t("View")}
+      </button>
+    </WidgetHeader>
+    <div className="widget-body">
+      {rows}
+    </div>
+  </Widget>;
 }

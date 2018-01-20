@@ -17,7 +17,9 @@ jest.mock("../resend_verification", () => {
 });
 
 import * as React from "react";
-import { FormField, sendEmail, DidRegister, MustRegister, CreateAccount } from "../create_account";
+import {
+  FormField, sendEmail, DidRegister, MustRegister, CreateAccount
+} from "../create_account";
 import { shallow } from "enzyme";
 import { BlurableInput } from "../../ui/index";
 import { success, error } from "farmbot-toastr";

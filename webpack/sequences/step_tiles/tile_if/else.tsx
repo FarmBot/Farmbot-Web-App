@@ -1,8 +1,7 @@
 import * as React from "react";
 import { IfParams, seqDropDown, IfBlockDropDownHandler } from "./index";
 import { t } from "i18next";
-import { FBSelect } from "../../../ui/new_fb_select";
-import { Row, Col } from "../../../ui/index";
+import { Row, Col, FBSelect } from "../../../ui/index";
 
 export function Else(props: IfParams) {
   const { onChange, selectedItem } = IfBlockDropDownHandler(props, "_else");

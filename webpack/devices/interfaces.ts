@@ -101,7 +101,6 @@ export interface CalibrationButtonProps {
 export interface FarmbotOsProps {
   bot: BotState;
   account: TaggedDevice;
-  auth: AuthState;
   botToMqttStatus: NetworkState;
   dispatch: Function;
 }

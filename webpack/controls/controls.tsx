@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Peripherals } from "./peripherals";
-import { Row, Page, Col } from "../ui";
+import { Row, Page, Col } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { WebcamPanel } from "./webcam";
 import { Props, MoveProps } from "./interfaces";

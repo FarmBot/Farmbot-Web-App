@@ -16,23 +16,19 @@ export const links = [
 
 export const NavLinks = (props: NavLinksProps) => {
   const currPageSlug = getPathArray()[2];
-  return (
-    <div className="links">
-      <div className="nav-links">
-        {links.map(link => {
-          const isActive = (currPageSlug === link.slug) ? "active" : "";
-          return (
-            <Link
-              to={"/app/" + link.slug}
-              className={`${isActive}`}
-              key={link.slug}
-              onClick={props.close("mobileMenuOpen")}>
-              <i className={`fa fa-${link.icon}`} />
-              {link.name}
-            </Link>
-          );
-        })}
-      </div>
+  return <div className="links">
+    <div className="nav-links">
+      {links.map(link => {
+        const isActive = (currPageSlug === link.slug) ? "active" : "";
+        return <Link
+          to={"/app/" + link.slug}
+          className={`${isActive}`}
+          key={link.slug}
+          onClick={props.close("mobileMenuOpen")}>
+          <i className={`fa fa-${link.icon}`} />
+          {link.name}
+        </Link>;
+      })}
     </div>
-  );
+  </div>;
 };

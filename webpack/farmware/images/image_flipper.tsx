@@ -63,22 +63,20 @@ export class ImageFlipper extends
   render() {
     const image = this.imageJSX();
     const multipleImages = this.props.images.length > 1;
-    return (
-      <div className="image-flipper">
-        {image}
-        <button
-          onClick={this.go(1)}
-          disabled={!multipleImages || this.state.disablePrev}
-          className="image-flipper-left fb-button">
-          {t("Prev")}
-        </button>
-        <button
-          onClick={this.go(-1)}
-          disabled={!multipleImages || this.state.disableNext}
-          className="image-flipper-right fb-button">
-          {t("Next")}
-        </button>
-      </div>
-    );
+    return <div className="image-flipper">
+      {image}
+      <button
+        onClick={this.go(1)}
+        disabled={!multipleImages || this.state.disablePrev}
+        className="image-flipper-left fb-button">
+        {t("Prev")}
+      </button>
+      <button
+        onClick={this.go(-1)}
+        disabled={!multipleImages || this.state.disableNext}
+        className="image-flipper-right fb-button">
+        {t("Next")}
+      </button>
+    </div>;
   }
 }

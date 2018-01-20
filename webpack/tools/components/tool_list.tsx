@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Row, Col, Widget, WidgetBody, WidgetHeader } from "../../ui";
+import { Row, Col, Widget, WidgetBody, WidgetHeader } from "../../ui/index";
 import { t } from "i18next";
 import { ToolListProps } from "../interfaces";
 import { TaggedTool } from "../../resources/tagged_resources";
