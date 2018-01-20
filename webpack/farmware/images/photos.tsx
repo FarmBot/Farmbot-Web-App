@@ -63,7 +63,9 @@ export class Photos extends React.Component<PhotosProps, {}> {
   render() {
     const image = this.props.currentImage;
     const created_at = image
-      ? moment(image.body.created_at).utcOffset(this.props.timeOffset).format("MMMM Do, YYYY h:mma")
+      ? moment(image.body.created_at)
+        .utcOffset(this.props.timeOffset)
+        .format("MMMM Do, YYYY h:mma")
       : "";
     return <Widget className="photos-widget">
       <WidgetHeader helpText={ToolTips.PHOTOS} title={"Photos"}>

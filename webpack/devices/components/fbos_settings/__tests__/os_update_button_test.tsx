@@ -27,6 +27,15 @@ describe("<OsUpdateButton/>", () => {
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("Can't Connect to release server");
   });
+  it("renders buttons: no beta releases", () => {
+    bot.hardware.configuration.beta_opt_in = true;
+    const buttons = mount(<OsUpdateButton bot={bot} />);
+    expect(buttons.find("button").length).toBe(1);
+    const autoUpdate = buttons.find("button").first();
+    expect(autoUpdate.hasClass("yellow")).toBeTruthy();
+    const osUpdateButton = buttons.find("button").last();
+    expect(osUpdateButton.text()).toBe("No beta releases available");
+  });
   it("up to date", () => {
     bot.hardware.informational_settings.controller_version = "3.1.6";
     const buttons = mount(<OsUpdateButton bot={bot} />);
