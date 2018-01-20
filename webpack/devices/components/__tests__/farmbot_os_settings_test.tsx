@@ -9,9 +9,7 @@ import * as React from "react";
 import { FarmbotOsSettings } from "../farmbot_os_settings";
 import { mount } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { fakeState } from "../../../__test_support__/fake_state";
 import { fakeResource } from "../../../__test_support__/fake_resource";
-import { AuthState } from "../../../auth/interfaces";
 import { FbosDetails } from "../fbos_settings/farmbot_os_row";
 import { FarmbotOsProps } from "../../interfaces";
 import axios from "axios";
@@ -22,7 +20,6 @@ describe("<FarmbotOsSettings/>", () => {
       account: fakeResource("Device", { id: 0, name: "", tz_offset_hrs: 0 }),
       dispatch: jest.fn(),
       bot: bot,
-      auth: fakeState().auth as AuthState,
       botToMqttStatus: "up"
     };
   }

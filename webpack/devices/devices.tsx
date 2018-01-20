@@ -60,7 +60,6 @@ export class Devices extends React.Component<Props, {}> {
               account={this.props.deviceAccount}
               dispatch={this.props.dispatch}
               bot={this.props.bot}
-              auth={this.props.auth}
               botToMqttStatus={botToMqttStatus} />
             <ConnectivityPanel
               status={this.props.deviceAccount.specialStatus}
