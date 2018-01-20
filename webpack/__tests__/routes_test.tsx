@@ -2,13 +2,11 @@ jest.mock("fastclick", () => ({
   attach: jest.fn(),
 }));
 
-import { auth } from "../__test_support__/fake_state/token";
-const mockAuth = auth;
+let mockAuth: AuthState | undefined = undefined;
 const mockClear = jest.fn();
 jest.mock("../session", () => ({
   Session: {
-    fetchStoredToken: jest.fn(() => mockAuth)
-      .mockImplementationOnce(() => { }),
+    fetchStoredToken: jest.fn(() => mockAuth),
     deprecatedGetNum: () => undefined,
     deprecatedGetBool: () => undefined,
     getAll: () => undefined,
@@ -20,6 +18,8 @@ import * as React from "react";
 import { shallow } from "enzyme";
 import { RootComponent } from "../routes";
 import { store } from "../redux/store";
+import { AuthState } from "../auth/interfaces";
+import { auth } from "../__test_support__/fake_state/token";
 
 describe("<RootComponent />", () => {
   beforeEach(function () {
@@ -27,6 +27,7 @@ describe("<RootComponent />", () => {
   });
 
   it("clears session when not authorized", () => {
+    mockAuth = undefined;
     Object.defineProperty(location, "pathname", {
       value: "/app/account"
     });
@@ -35,6 +36,7 @@ describe("<RootComponent />", () => {
   });
 
   it("authorized", () => {
+    mockAuth = auth;
     Object.defineProperty(location, "pathname", {
       value: "/app/account"
     });

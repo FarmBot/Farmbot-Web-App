@@ -1,10 +1,7 @@
+let mockReleaseNoteData = {};
 jest.mock("axios", () => ({
   default: {
-    get: jest.fn(() => { return Promise.resolve({ data: "notes" }); })
-      .mockImplementationOnce(() => { return Promise.resolve(); })
-      .mockImplementationOnce(() => {
-        return Promise.resolve({ data: "intro\n\n# v6\n\n* note" });
-      })
+    get: jest.fn(() => { return Promise.resolve(mockReleaseNoteData); })
   }
 }));
 
@@ -39,6 +36,7 @@ describe("<FarmbotOsSettings/>", () => {
   });
 
   it("fetches OS release notes", async () => {
+    mockReleaseNoteData = { data: "intro\n\n# v6\n\n* note" };
     const osSettings = await mount(<FarmbotOsSettings {...fakeProps() } />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));
@@ -47,6 +45,7 @@ describe("<FarmbotOsSettings/>", () => {
   });
 
   it("doesn't fetch OS release notes", async () => {
+    mockReleaseNoteData = { data: "empty notes" };
     const osSettings = await mount(<FarmbotOsSettings {...fakeProps() } />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));

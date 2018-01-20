@@ -2,6 +2,11 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
+let mockPath = "";
+jest.mock("../../../history", () => ({
+  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+}));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { SelectPlants, SelectPlantsProps } from "../select_plants";
@@ -11,9 +16,7 @@ import { Actions } from "../../../constants";
 describe("<SelectPlants />", () => {
   beforeEach(function () {
     jest.clearAllMocks();
-    Object.defineProperty(location, "pathname", {
-      value: "/app/designer/plants/select"
-    });
+    mockPath = "/app/designer/plants/select";
   });
 
   function fakeProps(): SelectPlantsProps {
