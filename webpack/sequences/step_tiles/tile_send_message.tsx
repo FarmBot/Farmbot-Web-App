@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DropDownItem, Row, Col } from "../../ui";
+import { FBSelect, DropDownItem, Row, Col } from "../../ui/index";
 import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
 import { SendMessage, ALLOWED_CHANNEL_NAMES } from "farmbot";
@@ -8,7 +8,6 @@ import { StepParams } from "../interfaces";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
-import { FBSelect } from "../../ui/new_fb_select";
 import { ToolTips } from "../../constants";
 import {
   MESSAGE_STATUSES,

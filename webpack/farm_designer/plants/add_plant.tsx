@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BackArrow } from "../../ui";
+import { BackArrow } from "../../ui/index";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
 import { t } from "i18next";

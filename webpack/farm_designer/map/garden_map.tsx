@@ -18,14 +18,16 @@ import {
 import { findBySlug } from "../search_selectors";
 import { Grid } from "./grid";
 import { MapBackground } from "./map_background";
-import { PlantLayer } from "./layers/plant_layer";
-import { PointLayer } from "./layers/point_layer";
-import { SpreadLayer } from "./layers/spread_layer";
-import { ToolSlotLayer } from "./layers/tool_slot_layer";
-import { HoveredPlantLayer } from "./layers/hovered_plant_layer";
-import { FarmBotLayer } from "./layers/farmbot_layer";
+import {
+  PlantLayer,
+  SpreadLayer,
+  PointLayer,
+  ToolSlotLayer,
+  FarmBotLayer,
+  HoveredPlantLayer,
+  DragHelperLayer
+} from "./layers";
 import { cachedCrop } from "../../open_farm/icons";
-import { DragHelperLayer } from "./layers/drag_helper_layer";
 import { AxisNumberProperty } from "./interfaces";
 import { SelectionBox, SelectionBoxData } from "./selection_box";
 import { Actions } from "../../constants";

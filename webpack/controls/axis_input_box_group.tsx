@@ -1,7 +1,7 @@
 import * as React from "react";
 import { AxisInputBox } from "./axis_input_box";
 import { t } from "i18next";
-import { Row, Col } from "../ui";
+import { Row, Col } from "../ui/index";
 import {
   AxisInputBoxGroupProps,
   AxisInputBoxGroupState,

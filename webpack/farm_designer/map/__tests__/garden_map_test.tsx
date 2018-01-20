@@ -13,6 +13,11 @@ jest.mock("../../../api/crud", () => ({
   save: () => "save resource",
 }));
 
+let mockPath = "";
+jest.mock("../../../history", () => ({
+  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+}));
+
 import * as React from "react";
 import { GardenMap } from "../garden_map";
 import { shallow } from "enzyme";
@@ -91,10 +96,7 @@ describe("<GardenPlant/>", () => {
     const dispatch = jest.fn();
     p.dispatch = dispatch;
     const wrapper = shallow(<GardenMap {...p} />);
-    Object.defineProperty(location, "pathname", {
-      value: "/app/designer/plants/crop_search/strawberry/add",
-      configurable: true
-    });
+    mockPath = "/app/designer/plants/crop_search/strawberry/add";
     wrapper.find("#drop-area-svg").simulate("click", {
       preventDefault: jest.fn()
     });
@@ -105,10 +107,7 @@ describe("<GardenPlant/>", () => {
 
   it("doesn't drop plant: error", () => {
     const wrapper = shallow(<GardenMap {...fakeProps() } />);
-    Object.defineProperty(location, "pathname", {
-      value: "/app/designer/plants/crop_search/aplant/add",
-      configurable: true
-    });
+    mockPath = "/app/designer/plants/crop_search/aplant/add";
     Object.defineProperty(document, "querySelector", {
       value: () => { }, configurable: true
     });
@@ -121,10 +120,7 @@ describe("<GardenPlant/>", () => {
 
   it("doesn't drop plant: outside planting area", () => {
     const wrapper = shallow(<GardenMap {...fakeProps() } />);
-    Object.defineProperty(location, "pathname", {
-      value: "/app/designer/plants/crop_search/aplant/add",
-      configurable: true
-    });
+    mockPath = "/app/designer/plants/crop_search/aplant/add";
     wrapper.find("#drop-area-svg").simulate("click", {
       preventDefault: jest.fn(), pageX: -100, pageY: -100
     });
@@ -135,9 +131,7 @@ describe("<GardenPlant/>", () => {
   it("starts drag and sets activeSpread", async () => {
     const wrapper = shallow(<GardenMap {...fakeProps() } />);
     expect(wrapper.state()).toEqual({});
-    Object.defineProperty(location, "pathname", {
-      value: "/app/designer/plants/1/edit/"
-    });
+    mockPath = "/app/designer/plants/1/edit/";
     await wrapper.find("#drop-area-svg").simulate("mouseDown");
     expect(wrapper.state()).toEqual({
       activeDragSpread: 1000,
@@ -165,9 +159,7 @@ describe("<GardenPlant/>", () => {
   });
 
   it("drags: editing", () => {
-    Object.defineProperty(location, "pathname", {
-      value: "/app/designer/plants/1/edit", configurable: true
-    });
+    mockPath = "/app/designer/plants/1/edit";
     const p = fakeProps();
     const wrapper = shallow(<GardenMap {...p } />);
     expect(wrapper.state()).toEqual({});
@@ -188,9 +180,7 @@ describe("<GardenPlant/>", () => {
   });
 
   it("drags: selecting", () => {
-    Object.defineProperty(location, "pathname", {
-      value: "/app/designer/plants/select", configurable: true
-    });
+    mockPath = "/app/designer/plants/select";
     const p = fakeProps();
     const wrapper = shallow(<GardenMap {...p } />);
     expect(wrapper.state()).toEqual({});

@@ -12,10 +12,7 @@ import {
   Identifier,
   MoveAbsolute
 } from "farmbot";
-import {
-  Row,
-  Col
-} from "../../ui";
+import { Row, Col } from "../../ui/index";
 import {
   isTaggedSequence,
   TaggedTool,
@@ -29,8 +26,7 @@ import {
 import { defensiveClone, betterMerge } from "../../util";
 import { overwrite } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
-import { TileMoveAbsSelect } from "./tile_move_absolute/select";
-import { InputBox } from "./tile_move_absolute/input_box";
+import { TileMoveAbsSelect, InputBox } from "./tile_move_absolute/index";
 import { ToolTips } from "../../constants";
 import { extractParent } from "../locals_list";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { shallow } from "enzyme";
-import { MustBeOnline } from "../must_be_online";
+import { MustBeOnline, isBotUp } from "../must_be_online";
 
 describe("<MustBeOnline/>", function () {
   it("Covers content when status is 'unknown'", function () {
@@ -27,5 +27,17 @@ describe("<MustBeOnline/>", function () {
     const overlay = shallow(elem).find("div");
     expect(overlay.hasClass("unavailable")).toBeTruthy();
     expect(overlay.hasClass("banner")).toBeFalsy();
+  });
+});
+
+describe("isBotUp()", () => {
+  it("is up", () => {
+    expect(isBotUp("synced")).toBeTruthy();
+  });
+
+  it("is not up", () => {
+    expect(isBotUp("unknown")).toBeFalsy();
+    expect(isBotUp("maintenance")).toBeFalsy();
+    expect(isBotUp(undefined)).toBeFalsy();
   });
 });

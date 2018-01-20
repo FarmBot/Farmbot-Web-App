@@ -3,14 +3,14 @@ import { BulkEditorProps } from "./interfaces";
 import { AddButton } from "./add_button";
 import { WeekGrid } from "./week_grid";
 import { commitBulkEditor, setTimeOffset, setSequence } from "./actions";
-import { ToolTip, Row, Col, DropDownItem } from "../../ui/index";
-import { BlurableInput } from "../../ui/blurable_input";
+import {
+  BlurableInput, ToolTip, Row, Col, FBSelect, DropDownItem, NULL_CHOICE
+} from "../../ui/index";
 import { duration } from "moment";
 import { t } from "i18next";
 import { ToolTips } from "../../constants";
 import * as _ from "lodash";
 import { betterCompact } from "../../util";
-import { NULL_CHOICE, FBSelect } from "../../ui/new_fb_select";
 
 export class BulkSchedulerWidget extends React.Component<BulkEditorProps, {}> {
   selected = (): DropDownItem => {

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StatusRowProps } from "./connectivity_row";
 import { CowardlyDictionary } from "../../util";
-import { Color } from "../../ui/colors";
+import { Color } from "../../ui/index";
 
 export interface ConnectivityDiagramProps {
   rowData: StatusRowProps[];

@@ -20,6 +20,7 @@ import { Content } from "./constants";
 import { catchErrors } from "./util";
 import { Session } from "./session";
 import { BooleanSetting } from "./session_keys";
+import { getPathArray } from "./history";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
 const fastClick = require("fastclick");
@@ -99,7 +100,7 @@ export class App extends React.Component<AppProps, {}> {
 
   render() {
     const syncLoaded = this.isLoaded;
-    const currentPath = window.location.pathname;
+    const currentPage = getPathArray()[2];
     return <div className="app">
       <HotKeys dispatch={this.props.dispatch} />
       <NavBar
@@ -113,9 +114,7 @@ export class App extends React.Component<AppProps, {}> {
       />
       {!syncLoaded && <LoadingPlant />}
       {syncLoaded && this.props.children}
-      {!currentPath.startsWith("/app/controls") &&
-        !currentPath.startsWith("/app/account") &&
-        !currentPath.startsWith("/app/regimens") &&
+      {!(["controls", "account", "regimens"].includes(currentPage)) &&
         <ControlsPopup
           dispatch={this.props.dispatch}
           axisInversion={this.props.axisInversion}

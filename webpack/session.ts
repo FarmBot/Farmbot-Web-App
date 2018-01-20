@@ -2,7 +2,7 @@ import { AuthState } from "./auth/interfaces";
 import { box } from "boxed_value";
 import { BooleanConfigKey, NumberConfigKey } from "./config_storage/web_app_configs";
 import { BooleanSetting, NumericSetting } from "./session_keys";
-import { getBoolViaRedux, setBoolViaRedux, getNumViaRedux, setNumViaRedux } from "./config/legacy_shims";
+import * as LegacyShim from "./config/legacy_shims";
 
 /** The `Session` namespace is a wrapper for `localStorage`.
  * Use this to avoid direct access of `localStorage` where possible.
@@ -47,12 +47,12 @@ export namespace Session {
   /** @deprecated Don't use this anymore. This is a legacy articfact of when we
    * used localStorage to store API settings. */
   export function deprecatedGetBool(key: BooleanConfigKey): boolean | undefined {
-    return getBoolViaRedux(key);
+    return LegacyShim.getBoolViaRedux(key);
   }
 
   /** Store a boolean value in `localStorage` */
   export function setBool(key: BooleanConfigKey, val: boolean): boolean {
-    return setBoolViaRedux(key, val);
+    return LegacyShim.setBoolViaRedux(key, val);
   }
 
   export function invertBool(key: BooleanConfigKey): boolean {
@@ -62,12 +62,12 @@ export namespace Session {
   /** Extract numeric settings from `localStorage`. Returns `undefined` when
    * none are found. */
   export function deprecatedGetNum(key: NumberConfigKey): number | undefined {
-    return getNumViaRedux(key);
+    return LegacyShim.getNumViaRedux(key);
   }
 
   /** Set a numeric value in `localStorage`. */
   export function deprecatedSetNum(key: NumberConfigKey, val: number): void {
-    setNumViaRedux(key, val);
+    LegacyShim.setNumViaRedux(key, val);
   }
 }
 

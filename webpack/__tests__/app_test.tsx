@@ -6,6 +6,11 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
+let mockPath = "";
+jest.mock("../history", () => ({
+  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+}));
+
 import * as React from "react";
 import { App, AppProps } from "../app";
 import { mount } from "enzyme";
@@ -29,9 +34,7 @@ describe("<App />: Controls Pop-Up", () => {
 
   function controlsPopUp(page: string, exists: boolean) {
     it(`doesn't render controls pop-up on ${page} page`, () => {
-      Object.defineProperty(location, "pathname", {
-        value: "/app/" + page, configurable: true
-      });
+      mockPath = "/app/" + page;
       const wrapper = mount(<App {...fakeProps() } />);
       if (exists) {
         expect(wrapper.html()).toContain("controls-popup");

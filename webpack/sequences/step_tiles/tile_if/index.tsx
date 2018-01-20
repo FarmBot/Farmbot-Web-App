@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import * as React from "react";
 import { t } from "i18next";
-import { DropDownItem } from "../../../ui";
+import { DropDownItem, NULL_CHOICE } from "../../../ui/index";
 import { TaggedSequence } from "../../../resources/tagged_resources";
 import { If, Execute, Nothing } from "farmbot/dist";
 import { ResourceIndex } from "../../../resources/interfaces";
@@ -12,7 +12,6 @@ import { Then } from "./then";
 import { Else } from "./else";
 import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
-import { NULL_CHOICE } from "../../../ui/fb_select";
 import { range } from "lodash";
 import { ToolTips } from "../../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../../step_ui/index";

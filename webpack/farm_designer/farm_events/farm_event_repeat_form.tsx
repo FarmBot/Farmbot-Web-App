@@ -1,7 +1,8 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Row, Col, BlurableInput, DropDownItem } from "../../ui/index";
-import { FBSelect } from "../../ui/new_fb_select";
+import {
+  Row, Col, BlurableInput, FBSelect, DropDownItem
+} from "../../ui/index";
 import { repeatOptions } from "./map_state_to_props_add_edit";
 import { keyBy } from "lodash";
 import { TimeUnit } from "../interfaces";

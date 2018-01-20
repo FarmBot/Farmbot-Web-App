@@ -2,9 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 import { Button, Classes, MenuItem } from "@blueprintjs/core";
 import { ISelectItemRendererProps, Select } from "@blueprintjs/labs";
-
-import { DropDownItem } from "./fb_select";
-import { NULL_CHOICE } from "./new_fb_select";
+import { DropDownItem, NULL_CHOICE } from "./fb_select";
 
 const SelectComponent = Select.ofType<DropDownItem | undefined>();
 
@@ -47,20 +45,18 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
 
   render() {
     const { item, minimal, ...flags } = this.state;
-    return (
-      <SelectComponent
-        {...flags}
-        items={this.props.items}
-        itemPredicate={this.filter}
-        itemRenderer={this.default}
-        noResults={<MenuItem disabled text="No results." />}
-        onItemSelect={this.handleValueChange}
-        popoverProps={{ popoverClassName: minimal ? Classes.MINIMAL : "" }}>
-        <Button
-          rightIconName="double-caret-vertical"
-          text={item ? item.label : t("(No selection)")} />
-      </SelectComponent>
-    );
+    return <SelectComponent
+      {...flags}
+      items={this.props.items}
+      itemPredicate={this.filter}
+      itemRenderer={this.default}
+      noResults={<MenuItem disabled text="No results." />}
+      onItemSelect={this.handleValueChange}
+      popoverProps={{ popoverClassName: minimal ? Classes.MINIMAL : "" }}>
+      <Button
+        rightIconName="double-caret-vertical"
+        text={item ? item.label : t("(No selection)")} />
+    </SelectComponent>;
   }
 
   styleFor(item: DropDownItem): string {
@@ -73,13 +69,11 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
 
   private default = (params: ISelectItemRendererProps<DropDownItem>) => {
     const { handleClick, item, index } = params;
-    return (
-      <MenuItem
-        className={this.styleFor(item)}
-        key={item.label || index}
-        onClick={handleClick}
-        text={`${item.label}`} />
-    );
+    return <MenuItem
+      className={this.styleFor(item)}
+      key={item.label || index}
+      onClick={handleClick}
+      text={`${item.label}`} />;
   }
 
   private filter(query: string, item: DropDownItem, index: number) {

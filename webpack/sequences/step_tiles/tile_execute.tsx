@@ -2,13 +2,12 @@ import * as _ from "lodash";
 import * as React from "react";
 import { StepParams } from "../interfaces";
 import { t } from "i18next";
-import { DropDownItem, Row, Col } from "../../ui";
+import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
 import { selectAllSequences, findSequenceById } from "../../resources/selectors";
 import { Execute } from "farmbot/dist";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
-import { FBSelect } from "../../ui/new_fb_select";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 

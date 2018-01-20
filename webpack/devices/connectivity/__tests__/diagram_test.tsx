@@ -11,7 +11,7 @@ import {
   DiagramNodes,
   getConnectionColor
 } from "../diagram";
-import { Color } from "../../../ui/colors";
+import { Color } from "../../../ui/index";
 
 describe("<ConnectivityDiagram/>", () => {
   function fakeProps(): ConnectivityDiagramProps {
