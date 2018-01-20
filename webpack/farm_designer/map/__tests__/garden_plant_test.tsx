@@ -18,6 +18,7 @@ import { shallow } from "enzyme";
 import { GardenPlantProps } from "../interfaces";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { BooleanSetting } from "../../../session_keys";
+import { Actions } from "../../../constants";
 
 describe("<GardenPlant/>", () => {
   function fakeProps(): GardenPlantProps {
@@ -51,5 +52,15 @@ describe("<GardenPlant/>", () => {
     const wrapper = shallow(<GardenPlant {...fakeProps() } />);
     expect(wrapper.find(".soil-cloud").length).toEqual(1);
     expect(wrapper.find(".animate").length).toEqual(1);
+  });
+
+  it("Calls the onClick callback", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<GardenPlant {...p } />);
+    wrapper.find("image").at(0).simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_PLANT,
+      payload: [p.uuid]
+    });
   });
 });
