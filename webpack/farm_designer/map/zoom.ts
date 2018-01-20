@@ -1,6 +1,6 @@
 import { Session } from "../../session";
 import { NumericSetting } from "../../session_keys";
-import { findIndex, isNumber } from "lodash";
+import { findIndex, isNumber, clamp } from "lodash";
 
 /**
  * Map Zoom Level utilities
@@ -16,11 +16,13 @@ const zoomLevels =
 const foundIndex = findIndex(zoomLevels, (x) => x === 1);
 const zoomLevel1Index = foundIndex === -1 ? 9 : foundIndex;
 const zoomLevelsCount = zoomLevels.length;
+export const maxZoomIndex = zoomLevelsCount - 1;
+const clampZoom = (index: number): number => clamp(index, 0, maxZoomIndex);
 export const maxZoomLevel = zoomLevelsCount - zoomLevel1Index;
 export const minZoomLevel = 1 - zoomLevel1Index;
 
 export function atMaxZoom(): boolean {
-  return getZoomLevelIndex() >= (zoomLevelsCount - 1);
+  return getZoomLevelIndex() >= maxZoomIndex;
 }
 
 export function atMinZoom(): boolean {
@@ -30,9 +32,9 @@ export function atMinZoom(): boolean {
 /* Load the index of a saved zoom level. */
 export function getZoomLevelIndex(): number {
   const savedValue = Session.deprecatedGetNum(NumericSetting.zoom_level);
-  return isNumber(savedValue)
-    ? savedValue + zoomLevel1Index - 1
-    : zoomLevel1Index;
+  if (!isNumber(savedValue)) { return zoomLevel1Index; }
+  const zoomLevelIndex = savedValue + zoomLevel1Index - 1;
+  return clampZoom(zoomLevelIndex);
 }
 
 /* Save a zoom level index. */
@@ -43,5 +45,5 @@ export function saveZoomLevelIndex(index: number) {
 
 /* Calculate map zoom level from a zoom level index. */
 export function calcZoomLevel(index: number): number {
-  return zoomLevels[index];
+  return zoomLevels[clampZoom(index)];
 }
