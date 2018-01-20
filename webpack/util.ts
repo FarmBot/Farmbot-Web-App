@@ -474,13 +474,8 @@ export function minFwVersionCheck(current: string | undefined, min: string) {
   }
 }
 
-export const catchErrors = (error: Error, errorInfo: ErrorInfo | undefined) => {
-  if (_.get(window, "Rollbar")) {
-    Rollbar && Rollbar.error && Rollbar.error(error as any);
-  } else {
-    console.log("CRASH!");
-    console.error(error);
-  }
+export const catchErrors = (error: Error, errorInfo: ErrorInfo) => {
+  Rollbar && Rollbar.error && Rollbar.error(error as any);
 };
 
 /** Performs deep object comparison. ONLY WORKS ON JSON-y DATA TYPES. */
