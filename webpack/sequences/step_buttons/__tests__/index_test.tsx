@@ -24,7 +24,7 @@ describe("<StepButton/>", () => {
 
   it("clicks it", () => {
     const p = props();
-    const el = shallow<StepButtonParams>(<StepButton {...p } />);
+    const el = shallow(<StepButton {...p } />);
     el.find("button").simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: expect.objectContaining({
