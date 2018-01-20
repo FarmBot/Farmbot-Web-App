@@ -35,7 +35,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   function instance(p: EditFEProps) {
-    return mount<EditFEProps>(<EditFEForm {...p } />).instance() as EditFEForm;
+    return mount(<EditFEForm {...p } />).instance() as EditFEForm;
   }
   const context = { form: new EditFEForm(props()) };
 

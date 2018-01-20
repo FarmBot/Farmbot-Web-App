@@ -32,7 +32,7 @@ export function mapStateToProps(props: Everything): Props {
   /** Returns all tools in an <FBSelect /> compatible format. */
   const getToolOptions = () => {
     return _(tools)
-      .map(tool => ({ label: tool.body.name, value: (tool.body.id as number) }))
+      .map(tool => ({ label: tool.body.name || "untitled", value: (tool.body.id as number) }))
       .filter(ddi => _.isNumber(ddi.value))
       .compact()
       .value();
@@ -50,7 +50,7 @@ export function mapStateToProps(props: Everything): Props {
   const getChosenToolOption = (toolSlotUUID: string | undefined) => {
     const chosenTool = toolSlotUUID && getToolByToolSlotUUID(toolSlotUUID);
     if (chosenTool && isTaggedTool(chosenTool) && chosenTool.body.id) {
-      return { label: chosenTool.body.name, value: chosenTool.uuid };
+      return { label: chosenTool.body.name || "untitled", value: chosenTool.uuid };
     } else {
       return NULL_CHOICE;
     }

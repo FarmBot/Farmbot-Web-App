@@ -36,6 +36,10 @@ export function bail(message: string): never {
 }
 
 export const catchErrors = (error: Error, errorInfo: ErrorInfo | undefined) => {
-  // tslint:disable-next-line:no-any
-  Rollbar && Rollbar.error && Rollbar.error(error as any);
+  if (_.get(window, "Rollbar.error")) {
+    // tslint:disable-next-line:no-any
+    Rollbar && Rollbar.error && Rollbar.error(error as any);
+  } else {
+    throw error;
+  }
 };

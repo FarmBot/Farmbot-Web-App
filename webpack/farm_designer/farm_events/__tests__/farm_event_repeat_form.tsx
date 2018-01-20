@@ -47,7 +47,7 @@ describe("<FarmEventRepeatForm/>", () => {
   it("defaults to `daily` when a bad input it passed", () => {
     const p = props();
     p.timeUnit = "never";
-    const el = shallow<RepeatFormProps>(<FarmEventRepeatForm {...p } />);
+    const el = shallow(<FarmEventRepeatForm {...p } />);
     expect(formVal(el, Selectors.REPEAT)).toEqual(p.repeat);
     expect(getProp(el, "FBSelect", "selectedItem.value")).toEqual("daily");
   });
@@ -55,7 +55,7 @@ describe("<FarmEventRepeatForm/>", () => {
   it("disables all inputs via the `disabled` prop", () => {
     const p = props();
     p.disabled = true;
-    const el = shallow<RepeatFormProps>(<FarmEventRepeatForm {...p } />);
+    const el = shallow(<FarmEventRepeatForm {...p } />);
     expect(getProp(el, Selectors.END_DATE, "disabled")).toBeTruthy();
     expect(getProp(el, Selectors.END_TIME, "disabled")).toBeTruthy();
     expect(getProp(el, Selectors.REPEAT, "disabled")).toBeTruthy();
