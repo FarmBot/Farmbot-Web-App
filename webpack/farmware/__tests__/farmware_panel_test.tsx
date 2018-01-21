@@ -146,13 +146,12 @@ describe("<FarmwarePanel/>: farmware list", () => {
   });
 
   it("toggles first party farmware display", () => {
-    const panel = shallow(<FarmwarePanel {...fakeProps() } />);
-    panel.setState({ showFirstParty: true });
-    expect(panel.state().showFirstParty).toBeTruthy();
-    // tslint:disable-next-line:no-any
-    const instance = panel.instance() as any;
-    instance.toggleFirstPartyDisplay();
-    expect(panel.state().showFirstParty).toBeFalsy();
+    const p = fakeProps();
+    jest.resetAllMocks();
+    const panel = shallow(<FarmwarePanel {...p } />);
+    expect(p.onToggle).not.toHaveBeenCalled();
+    panel.find(FarmwareConfigMenu).simulate("toggle");
+    expect(p.onToggle).toHaveBeenCalled();
   });
 
   it("displays description", () => {
