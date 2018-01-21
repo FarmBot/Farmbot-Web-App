@@ -9,12 +9,12 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     .sortBy(x => x.body.id)
     .reverse()
     .value();
-
   const firstImage = images[0];
   const currentImage = images
     .filter(i => i.uuid === props.resources.consumers.farmware.currentImage)[0]
     || firstImage;
   const { farmwares } = props.bot.hardware.process_info;
+  const conf = getWebAppConfig(props.resources.index);
   return {
     timeOffset: maybeGetTimeOffset(props.resources.index),
     farmwares,
@@ -25,6 +25,6 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     currentImage,
     images,
     syncStatus: "synced",
-    webAppConfig: getWebAppConfig(props.resources.index) || {}
+    webAppConfig: conf ? conf.body : {}
   };
 }
