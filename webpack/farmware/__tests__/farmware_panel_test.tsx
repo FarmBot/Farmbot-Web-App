@@ -28,10 +28,13 @@ describe("<FarmwarePanel/>: actions", () => {
   });
 
   function fakeProps(): FWProps {
+    let showFirstParty = true;
     return {
       farmwares: {},
       botToMqttStatus: "up",
-      syncStatus: "synced"
+      syncStatus: "synced",
+      onToggle: jest.fn(() => showFirstParty = !showFirstParty),
+      showFirstParty
     };
   }
 
@@ -116,10 +119,13 @@ describe("<FarmwarePanel/>: farmware list", () => {
   });
 
   function fakeProps(): FWProps {
+    let showFirstParty = true;
     return {
       botToMqttStatus: "up",
       farmwares: fakeFarmwares(),
-      syncStatus: "synced"
+      syncStatus: "synced",
+      onToggle: jest.fn(() => showFirstParty = !showFirstParty),
+      showFirstParty
     };
   }
 

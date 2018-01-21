@@ -45,7 +45,7 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
 export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   constructor(props: FWProps) {
     super(props);
-    this.state = { showFirstParty: false };
+    this.state = {};
   }
 
   componentDidMount() {
@@ -99,10 +99,6 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
     this.setState({ firstPartyList });
   }
 
-  toggleFirstPartyDisplay = () => {
-    this.setState({ showFirstParty: !this.state.showFirstParty });
-  }
-
   firstPartyFarmwaresPresent = (firstPartyList: string[] | undefined) => {
     const fws = this.props.farmwares;
     const farmwareList = betterCompact(Object.keys(fws)
@@ -113,8 +109,8 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   }
 
   fwList = () => {
-    const { farmwares } = this.props;
-    const { firstPartyList, showFirstParty } = this.state;
+    const { farmwares, showFirstParty } = this.props;
+    const { firstPartyList } = this.state;
     const choices = betterCompact(Object
       .keys(farmwares)
       .map(x => farmwares[x]))
@@ -158,8 +154,8 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
         <Popover position={Position.BOTTOM_RIGHT}>
           <i className="fa fa-gear" />
           <FarmwareConfigMenu
-            show={this.state.showFirstParty}
-            toggle={this.toggleFirstPartyDisplay}
+            show={this.props.showFirstParty}
+            toggle={() => this.props.onToggle("show_first_party_farmware")}
             firstPartyFwsInstalled={
               this.firstPartyFarmwaresPresent(this.state.firstPartyList)} />
         </Popover>

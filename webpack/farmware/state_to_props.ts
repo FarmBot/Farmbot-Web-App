@@ -1,5 +1,5 @@
 import { Everything } from "../interfaces";
-import { selectAllImages, maybeGetTimeOffset } from "../resources/selectors";
+import { selectAllImages, maybeGetTimeOffset, getWebAppConfig } from "../resources/selectors";
 import { FarmwareProps } from "../devices/interfaces";
 import { prepopulateEnv } from "./weed_detector/remote_env/selectors";
 import * as _ from "lodash";
@@ -24,6 +24,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     dispatch: props.dispatch,
     currentImage,
     images,
-    syncStatus: "synced"
+    syncStatus: "synced",
+    webAppConfig: getWebAppConfig(props.resources.index) || {}
   };
 }
