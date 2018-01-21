@@ -38,6 +38,7 @@ export interface WebAppConfig {
   fun_log: number;
   debug_log: number;
   stub_config: boolean;
+  show_first_party_farmware: boolean;
 }
 
 export type NumberConfigKey = "id"
@@ -73,4 +74,5 @@ export type BooleanConfigKey = "confirm_step_deletion"
     |"x_axis_inverted"
     |"y_axis_inverted"
     |"z_axis_inverted"
-    |"stub_config";
+    |"stub_config"
+    |"show_first_party_farmware";
