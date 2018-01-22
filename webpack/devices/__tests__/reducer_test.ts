@@ -3,6 +3,8 @@ import { Actions } from "../../constants";
 import { ControlPanelState } from "../interfaces";
 import * as _ from "lodash";
 import { defensiveClone } from "../../util";
+import { networkUp, networkDown } from "../../connectivity/actions";
+import { stash } from "../../connectivity/data_consistency";
 
 describe("safeStringFetch", () => {
   it("Checks the correct version on update", () => {
@@ -69,37 +71,6 @@ describe("botRedcuer", () => {
     expect(r).toBe("1.2.3");
   });
 
-  it("inverts X/Y/Z", () => {
-    const action = { type: Actions.INVERT_JOG_BUTTON, payload: "Q" };
-
-    action.payload = "x";
-    const result = botReducer(initialState(), action);
-    expect(result.axis_inversion.x)
-      .toBe(!initialState().axis_inversion.x);
-
-    action.payload = "y";
-    expect(botReducer(initialState(), action).axis_inversion.y)
-      .toBe(!initialState().axis_inversion.y);
-
-    action.payload = "z";
-    expect(botReducer(initialState(), action).axis_inversion.z)
-      .toBe(!initialState().axis_inversion.z);
-
-  });
-
-  it("toggles encoder data display", () => {
-    const action = { type: Actions.DISPLAY_ENCODER_DATA, payload: "Q" };
-
-    action.payload = "raw_encoders";
-    const result = botReducer(initialState(), action);
-    expect(result.encoder_visibility.raw_encoders)
-      .toBe(!initialState().encoder_visibility.raw_encoders);
-
-    action.payload = "scaled_encoders";
-    expect(botReducer(initialState(), action).encoder_visibility.scaled_encoders)
-      .toBe(!initialState().encoder_visibility.scaled_encoders);
-  });
-
   it("resets hardware state when transitioning into mainenance mode.", () => {
     const state = initialState();
     const payload = defensiveClone(state.hardware);
@@ -115,5 +86,29 @@ describe("botRedcuer", () => {
       .toEqual(initialState().hardware.location_data.position);
     expect(result.hardware.informational_settings.sync_status)
       .toBe("maintenance");
+  });
+
+  it("stashes/unstashes sync status based on connectivity", () => {
+    const step1 = initialState();
+    step1.statusStash = "booting";
+    step1.hardware.informational_settings.sync_status = "synced";
+
+    const step2 = botReducer(step1, networkDown("bot.mqtt"));
+    expect(step2.statusStash)
+      .toBe(step1.hardware.informational_settings.sync_status);
+    expect(step2.hardware.informational_settings.sync_status).toBeUndefined();
+
+    const step3 = botReducer(step2, networkUp("bot.mqtt"));
+    expect(step3.hardware.informational_settings.sync_status)
+      .toBe(step2.statusStash);
+  });
+
+  it("handles STASH_STATUS", () => {
+    const step1 = initialState();
+    step1.statusStash = "booting";
+    step1.hardware.informational_settings.sync_status = "synced";
+    const step2 = botReducer(step1, stash());
+    expect(step2.statusStash)
+      .toBe(step1.hardware.informational_settings.sync_status);
   });
 });

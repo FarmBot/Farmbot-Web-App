@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Popover, Position } from "@blueprintjs/core";
-import { Saucer } from "../ui";
+import { Saucer } from "../ui/index";
 import { Color } from "../interfaces";
 import { colors } from "../util";
 

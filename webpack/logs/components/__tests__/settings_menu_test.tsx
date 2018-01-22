@@ -10,13 +10,13 @@ const mockStorj: Dictionary<number | boolean> = {};
 jest.mock("../../../session", () => {
   return {
     Session: {
-      getNum: (k: string) => {
+      deprecatedGetNum: (k: string) => {
         return mockStorj[k];
       },
       setNum: (k: string, v: number) => {
         mockStorj[k] = v;
       },
-      getBool: (k: string) => {
+      deprecatedGetBool: (k: string) => {
         mockStorj[k] = !!mockStorj[k];
         return mockStorj[k];
       }
@@ -67,11 +67,11 @@ describe("<LogsSettingsMenu />", () => {
     const setFilterLevel = jest.fn();
     const wrapper = mount(<LogsSettingsMenu
       bot={bot} setFilterLevel={() => setFilterLevel} />);
-    mockStorj[NumericSetting.busyLog] = 0;
+    mockStorj[NumericSetting.busy_log] = 0;
     wrapper.find("button").at(0).simulate("click");
     expect(setFilterLevel).toHaveBeenCalledWith(2);
     jest.clearAllMocks();
-    mockStorj[NumericSetting.busyLog] = 3;
+    mockStorj[NumericSetting.busy_log] = 3;
     wrapper.find("button").at(0).simulate("click");
     expect(setFilterLevel).not.toHaveBeenCalled();
   });

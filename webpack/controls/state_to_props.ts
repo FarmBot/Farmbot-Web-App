@@ -10,6 +10,8 @@ import * as _ from "lodash";
 export function mapStateToProps(props: Everything): Props {
   const peripherals = _.uniq(selectAllPeripherals(props.resources.index));
   const resources = props.resources;
+  const bot2mqtt = props.bot.connectivity["bot.mqtt"];
+  const botToMqttStatus = bot2mqtt ? bot2mqtt.state : "down";
 
   return {
     feeds: getFeeds(resources.index),
@@ -17,6 +19,7 @@ export function mapStateToProps(props: Everything): Props {
     bot: props.bot,
     user: maybeFetchUser(props.resources.index),
     resources,
-    peripherals
+    peripherals,
+    botToMqttStatus
   };
 }

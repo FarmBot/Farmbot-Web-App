@@ -1,11 +1,13 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Row, Col, BlurableInput, DropDownItem } from "../../ui/index";
-import { FBSelect } from "../../ui/new_fb_select";
+import {
+  Row, Col, BlurableInput, FBSelect, DropDownItem
+} from "../../ui/index";
 import { repeatOptions } from "./map_state_to_props_add_edit";
 import { keyBy } from "lodash";
 import { TimeUnit } from "../interfaces";
 import { FarmEventViewModel } from "./edit_fe_form";
+import { EventTimePicker } from "./event_time_picker";
 
 type Ev = React.SyntheticEvent<HTMLInputElement>;
 type Key = keyof FarmEventViewModel;
@@ -20,6 +22,7 @@ export interface RepeatFormProps {
   repeat: string;
   endDate: string;
   endTime: string;
+  tzOffset: number;
 }
 
 const indexKey: keyof DropDownItem = "value";
@@ -68,11 +71,11 @@ export function FarmEventRepeatForm(props: RepeatFormProps) {
             onCommit={changeHandler("endDate")} />
         </Col>
         <Col xs={6}>
-          <BlurableInput
+          <EventTimePicker
             disabled={disabled}
-            type="time"
             className="add-event-end-time"
             name="endTime"
+            tzOffset={props.tzOffset}
             value={endTime}
             onCommit={changeHandler("endTime")} />
         </Col>

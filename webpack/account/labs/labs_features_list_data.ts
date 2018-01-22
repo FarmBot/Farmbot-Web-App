@@ -1,14 +1,15 @@
 import { Content } from "../../constants";
 import { Session } from "../../session";
-import { BooleanSetting } from "../../session_keys";
 import { trim } from "../../util";
 import { t } from "i18next";
+import { BooleanConfigKey } from "../../config_storage/web_app_configs";
+import { BooleanSetting } from "../../session_keys";
 
 export interface LabsFeature {
   name: string;
   description: string;
   /** Entry for localStorage. Must be unique. */
-  storageKey: BooleanSetting;
+  storageKey: BooleanConfigKey;
   value: boolean;
   experimental?: boolean;
   displayInvert?: boolean;
@@ -21,7 +22,7 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
   {
     name: t("Internationalize Web App"),
     description: t("Turn off to set Web App to English."),
-    storageKey: BooleanSetting.disableI18n,
+    storageKey: BooleanSetting.disable_i18n,
     value: false,
     displayInvert: true,
     callback: () => window.location.reload()
@@ -30,14 +31,14 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
     name: t("Confirm Sequence step deletion"),
     description: trim(t(`Show a confirmation dialog when the sequence delete step
       icon is pressed.`)),
-    storageKey: BooleanSetting.confirmStepDeletion,
+    storageKey: BooleanSetting.confirm_step_deletion,
     value: false
   },
   {
     name: t("Hide Webcam widget"),
     description: trim(t(`If not using a webcam, use this setting to remove the
       widget from the Controls page.`)),
-    storageKey: BooleanSetting.hideWebcamWidget,
+    storageKey: BooleanSetting.hide_webcam_widget,
     value: false
   },
   {
@@ -45,20 +46,20 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
     description: trim(t(`Change the Farm Designer map size based on axis length.
       A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
       the HARDWARE widget.`)),
-    storageKey: BooleanSetting.dynamicMap,
+    storageKey: BooleanSetting.dynamic_map,
     value: false
   },
   {
     name: t("Double default map dimensions"),
     description: trim(t(`Double the default dimensions of the Farm Designer map
     for a map with four times the area.`)),
-    storageKey: BooleanSetting.mapXL,
+    storageKey: BooleanSetting.map_xl,
     value: false
   },
   {
     name: t("Display plant animations"),
     description: trim(t(`Enable plant animations in the Farm Designer.`)),
-    storageKey: BooleanSetting.disableAnimations,
+    storageKey: BooleanSetting.disable_animations,
     value: false,
     displayInvert: true
   }
@@ -75,7 +76,7 @@ export const maybeToggleFeature =
   };
 
 /** Stub this when testing if need be. */
-const fetchVal = (k: BooleanSetting) => !!Session.getBool(k);
+const fetchVal = (k: BooleanConfigKey) => !!Session.deprecatedGetBool(k);
 
 /** Takes a `LabFeature` (probably one with an uninitialized fallback / default
  * value) and sets it to the _real_ value that's in localStorage. */

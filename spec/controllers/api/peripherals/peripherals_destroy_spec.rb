@@ -20,9 +20,9 @@ describe Api::PeripheralsController do
       peripheral = FactoryBot.create(:peripheral)
       delete :destroy, params: { id: peripheral.id }
       before = Peripheral.count
-      expect(response.status).to eq(403)
+      expect(response.status).to eq(404)
       expect(before == Peripheral.count).to be_truthy
-      expect(json[:error]).to include("Not your Peripheral.")
+      expect(json[:error]).to include("not found")
     end
   end
 end

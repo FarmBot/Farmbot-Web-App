@@ -1,7 +1,12 @@
+let mockPath = "/app/designer/plants";
+jest.mock("../../../../history", () => ({
+  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+}));
+
 jest.mock("../../../../session", () => {
   return {
     Session: {
-      getBool: () => { return false; }
+      deprecatedGetBool: () => { return false; }
     }
   };
 });
@@ -51,5 +56,20 @@ describe("<PlantLayer/>", () => {
     p.visible = false;
     const wrapper = shallow(<PlantLayer {...p } />);
     expect(wrapper.html()).toEqual("<g id=\"plant-layer\"></g>");
+  });
+
+  it("is in clickable mode", () => {
+    mockPath = "/app/designer/plants";
+    const p = fakeProps();
+    const wrapper = shallow(<PlantLayer {...p } />);
+    expect(wrapper.find("Link").props().style).toEqual({});
+  });
+
+  it("is in non-clickable mode", () => {
+    mockPath = "/app/designer/plants/select";
+    const p = fakeProps();
+    const wrapper = shallow(<PlantLayer {...p } />);
+    expect(wrapper.find("Link").props().style)
+      .toEqual({ pointerEvents: "none" });
   });
 });

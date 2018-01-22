@@ -3,13 +3,12 @@ import * as _ from "lodash";
 import * as moment from "moment";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
-import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
+import { Widget, WidgetHeader, WidgetBody, WidgetFooter } from "../../ui/index";
 import { ImageFlipper } from "./image_flipper";
 import { PhotosProps } from "./interfaces";
 import { getDevice } from "../../device";
 import { ToolTips } from "../../constants";
 import { selectImage } from "./actions";
-import { WidgetFooter } from "../../ui/widget_footer";
 import { safeStringFetch } from "../../util";
 import { destroy } from "../../api/crud";
 
@@ -26,12 +25,10 @@ interface MetaInfoProps {
 function MetaInfo({ obj, attr, label }: MetaInfoProps) {
   const top = label || _.startCase(attr.split("_").join());
   const bottom = safeStringFetch(obj, attr);
-  return (
-    <div>
-      <label>{top}:</label>
-      <span>{bottom || "unknown"}</span>
-    </div>
-  );
+  return <div>
+    <label>{top}:</label>
+    <span>{bottom || "unknown"}</span>
+  </div>;
 }
 
 export class Photos extends React.Component<PhotosProps, {}> {
@@ -65,41 +62,44 @@ export class Photos extends React.Component<PhotosProps, {}> {
 
   render() {
     const image = this.props.currentImage;
-    return (
-      <Widget className="photos-widget">
-        <WidgetHeader helpText={ToolTips.PHOTOS} title={"Photos"}>
-          <button
-            className="fb-button gray"
-            onClick={this.takePhoto}>
-            {t("Take Photo")}
-          </button>
-          <button
-            className="fb-button red"
-            onClick={() => this.destroy()}>
-            {t("Delete Photo")}
-          </button>
-        </WidgetHeader>
-        <WidgetBody>
-          <ImageFlipper
-            onFlip={id => { this.props.dispatch(selectImage(id)); }}
-            currentImage={this.props.currentImage}
-            images={this.props.images} />
-        </WidgetBody>
-        <WidgetFooter>
-          {/** Separated from <MetaInfo /> for stylistic purposes. */}
-          {image ?
-            <div className="image-created-at">
-              <label>{t("Created At:")}</label>
-              <span>
-                {moment(image.body.created_at).format("MMMM Do, YYYY h:mma")}
-              </span>
-            </div>
-            : ""}
-          <div className="image-metadatas">
-            {this.metaDatas()}
+    const created_at = image
+      ? moment(image.body.created_at)
+        .utcOffset(this.props.timeOffset)
+        .format("MMMM Do, YYYY h:mma")
+      : "";
+    return <Widget className="photos-widget">
+      <WidgetHeader helpText={ToolTips.PHOTOS} title={"Photos"}>
+        <button
+          className="fb-button gray"
+          onClick={this.takePhoto}>
+          {t("Take Photo")}
+        </button>
+        <button
+          className="fb-button red"
+          onClick={() => this.destroy()}>
+          {t("Delete Photo")}
+        </button>
+      </WidgetHeader>
+      <WidgetBody>
+        <ImageFlipper
+          onFlip={id => { this.props.dispatch(selectImage(id)); }}
+          currentImage={this.props.currentImage}
+          images={this.props.images} />
+      </WidgetBody>
+      <WidgetFooter>
+        {/** Separated from <MetaInfo /> for stylistic purposes. */}
+        {image ?
+          <div className="image-created-at">
+            <label>{t("Created At:")}</label>
+            <span>
+              {created_at}
+            </span>
           </div>
-        </WidgetFooter>
-      </Widget>
-    );
+          : ""}
+        <div className="image-metadatas">
+          {this.metaDatas()}
+        </div>
+      </WidgetFooter>
+    </Widget>;
   }
 }

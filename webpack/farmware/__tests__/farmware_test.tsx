@@ -4,7 +4,7 @@ jest.mock("react-redux", () => ({
 
 jest.mock("../../session", () => ({
   Session: {
-    getBool: () => true // Simulate opt-in to beta features.
+    deprecatedGetBool: () => true // Simulate opt-in to beta features.
   }
 }));
 
@@ -17,12 +17,14 @@ describe("<FarmwarePage />", () => {
   it("renders widgets", () => {
     const props: FarmwareProps = {
       farmwares: {},
-      syncStatus: "unknown",
+      botToMqttStatus: "up",
       env: {},
       user_env: {},
       dispatch: jest.fn(),
       currentImage: undefined,
-      images: []
+      images: [],
+      timeOffset: 0,
+      syncStatus: "synced"
     };
     const wrapper = mount(<FarmwarePage {...props} />);
     ["Take Photo",

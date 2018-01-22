@@ -1,7 +1,6 @@
 import { Everything } from "../interfaces";
 import { Props } from "./interfaces";
 import * as _ from "lodash";
-import { NULL_CHOICE } from "../ui/fb_select";
 import {
   selectAllToolSlotPointers,
   selectAllTools,
@@ -13,7 +12,7 @@ import {
   TaggedToolSlotPointer
 } from "../resources/tagged_resources";
 import { edit } from "../api/crud";
-import { DropDownItem } from "../ui/index";
+import { DropDownItem, NULL_CHOICE } from "../ui/index";
 import { BotPosition } from "../devices/interfaces";
 
 export function mapStateToProps(props: Everything): Props {
@@ -33,7 +32,7 @@ export function mapStateToProps(props: Everything): Props {
   /** Returns all tools in an <FBSelect /> compatible format. */
   const getToolOptions = () => {
     return _(tools)
-      .map(tool => ({ label: tool.body.name, value: (tool.body.id as number) }))
+      .map(tool => ({ label: tool.body.name || "untitled", value: (tool.body.id as number) }))
       .filter(ddi => _.isNumber(ddi.value))
       .compact()
       .value();
@@ -51,7 +50,7 @@ export function mapStateToProps(props: Everything): Props {
   const getChosenToolOption = (toolSlotUUID: string | undefined) => {
     const chosenTool = toolSlotUUID && getToolByToolSlotUUID(toolSlotUUID);
     if (chosenTool && isTaggedTool(chosenTool) && chosenTool.body.id) {
-      return { label: chosenTool.body.name, value: chosenTool.uuid };
+      return { label: chosenTool.body.name || "untitled", value: chosenTool.uuid };
     } else {
       return NULL_CHOICE;
     }

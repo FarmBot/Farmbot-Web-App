@@ -1,5 +1,6 @@
 import { WidgetHeader } from "../widget_header";
 import { mount } from "enzyme";
+import { docLink } from "../doc_link";
 
 describe("<WidgetHeader />", () => {
   it("renders title", () => {
@@ -33,7 +34,7 @@ describe("<WidgetHeader />", () => {
       docPage: "farmware"
     }));
     expect(wrapper.html())
-      .toContain("https://software.farmbot.io/docs/farmware");
+      .toContain(docLink("farmware"));
     expect(wrapper.text()).toContain("Documentation");
     expect(wrapper.html()).toContain("fa-external-link");
   });

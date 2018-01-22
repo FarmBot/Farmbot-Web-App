@@ -40,17 +40,6 @@ describe("<SyncButton/>", function () {
     expect(result.hasClass("red")).toBeTruthy();
   });
 
-  it("disables syncing when inconsistent", () => {
-    const dispatch = jest.fn();
-    const result = shallow(<SyncButton user={fakeUser()}
-      dispatch={dispatch}
-      bot={FAKE_BOT_STATE}
-      consistent={false}
-      autoSyncEnabled={true} />);
-    result.find("button").simulate("click");
-    expect(dispatch).not.toHaveBeenCalled();
-  });
-
   it("syncs when clicked", () => {
     const dispatch = jest.fn();
     const result = shallow(<SyncButton user={fakeUser()}

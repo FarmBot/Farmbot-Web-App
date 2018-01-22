@@ -1,4 +1,5 @@
-import { SyncStatus, Dictionary, FarmwareManifest } from "farmbot/dist";
+import { Dictionary, FarmwareManifest, SyncStatus } from "farmbot/dist";
+import { NetworkState } from "../connectivity/interfaces";
 
 export interface FWState {
   selectedFarmware: string | undefined;
@@ -8,7 +9,8 @@ export interface FWState {
 }
 
 export interface FWProps {
-  syncStatus: SyncStatus;
+  botToMqttStatus: NetworkState;
+  syncStatus: SyncStatus | undefined;
   farmwares: Dictionary<FarmwareManifest | undefined>;
 }
 

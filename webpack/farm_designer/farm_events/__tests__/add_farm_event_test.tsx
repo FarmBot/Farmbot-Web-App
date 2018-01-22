@@ -28,12 +28,11 @@ describe("<AddFarmEvent />", () => {
       farmEventsById: { "1": farmEvent },
       executableOptions: [],
       repeatOptions: [],
-      formatDate: jest.fn(),
-      formatTime: jest.fn(),
       handleTime: jest.fn(),
       farmEvents: [farmEvent],
       getFarmEvent: () => farmEvent,
-      findExecutable: () => sequence
+      findExecutable: () => sequence,
+      timeOffset: 0
     };
   }
 

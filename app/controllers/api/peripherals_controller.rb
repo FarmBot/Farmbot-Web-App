@@ -9,11 +9,11 @@ module Api
     # with a new array of peripherals. Performing patch operations on
     # collections (where order is signifcant) was too much of a pain.
     def create
-      mutate Peripherals::Create.run(params.as_json, device: current_device)
+      mutate Peripherals::Create.run(raw_json, device: current_device)
     end
 
     def update
-      mutate Peripherals::Update.run(params.as_json,
+      mutate Peripherals::Update.run(raw_json,
        peripheral: peripheral,
        device: current_device)
     end
@@ -29,7 +29,7 @@ module Api
     private
 
     def peripheral
-      @peripheral ||= Peripheral.find(params[:id])
+      @peripheral ||= current_device.peripherals.find(params[:id])
     end
   end
 end

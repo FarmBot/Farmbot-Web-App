@@ -16,27 +16,55 @@ import { OsUpdateButton } from "../os_update_button";
 describe("<OsUpdateButton/>", () => {
   beforeEach(function () {
     bot.currentOSVersion = "3.1.6";
+    bot.hardware.configuration.beta_opt_in = false;
     jest.clearAllMocks();
   });
   it("renders buttons: not connected", () => {
     const buttons = mount(<OsUpdateButton bot={bot} />);
-    expect(buttons.find("button").length).toBe(2);
+    expect(buttons.find("button").length).toBe(1);
     const autoUpdate = buttons.find("button").first();
     expect(autoUpdate.hasClass("yellow")).toBeTruthy();
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("Can't Connect to release server");
+  });
+  it("renders buttons: no beta releases", () => {
+    bot.hardware.configuration.beta_opt_in = true;
+    const buttons = mount(<OsUpdateButton bot={bot} />);
+    expect(buttons.find("button").length).toBe(1);
+    const autoUpdate = buttons.find("button").first();
+    expect(autoUpdate.hasClass("yellow")).toBeTruthy();
+    const osUpdateButton = buttons.find("button").last();
+    expect(osUpdateButton.text()).toBe("No beta releases available");
   });
   it("up to date", () => {
     bot.hardware.informational_settings.controller_version = "3.1.6";
     const buttons = mount(<OsUpdateButton bot={bot} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UP TO DATE");
+    expect(osUpdateButton.props().title).toBe("3.1.6");
+  });
+  it("up to date: newer", () => {
+    bot.hardware.informational_settings.controller_version = "5.0.0";
+    const buttons = mount(<OsUpdateButton bot={bot} />);
+    const osUpdateButton = buttons.find("button").last();
+    expect(osUpdateButton.text()).toBe("UP TO DATE");
+    expect(osUpdateButton.props().title).toBe("3.1.6");
   });
   it("update available", () => {
     bot.hardware.informational_settings.controller_version = "3.1.5";
     const buttons = mount(<OsUpdateButton bot={bot} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UPDATE");
+    expect(osUpdateButton.props().title).toBe("3.1.6");
+  });
+  it("beta update available", () => {
+    bot.hardware.informational_settings.controller_version = "3.1.5";
+    bot.hardware.configuration.beta_opt_in = true;
+    bot.currentBetaOSVersion = "5.0.0-beta";
+    const buttons = mount(<OsUpdateButton bot={bot} />);
+    const osUpdateButton = buttons.find("button").last();
+    expect(osUpdateButton.text()).toBe("UPDATE");
+    expect(osUpdateButton.props().title).toBe("5.0.0-beta");
   });
   it("calls checkUpdates", () => {
     const buttons = mount(<OsUpdateButton bot={bot} />);
@@ -93,13 +121,5 @@ describe("<OsUpdateButton/>", () => {
     const osUpdateButton = buttons.find("button").last();
     osUpdateButton.simulate("click");
     expect(mockDevice.checkUpdates).not.toHaveBeenCalled();
-  });
-
-  it("toggles auto-update", () => {
-    bot.hardware.configuration.os_auto_update = 0;
-    const wrapper = mount(<OsUpdateButton bot={bot} />);
-    wrapper.find("button").first().simulate("click");
-    expect(mockDevice.updateConfig)
-      .toHaveBeenCalledWith({ os_auto_update: 1 });
   });
 });

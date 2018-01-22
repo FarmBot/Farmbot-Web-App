@@ -5,18 +5,14 @@ import {
   Vector3
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
-import { LocationData } from "./step_tiles/tile_move_absolute/interfaces";
+import {
+  LocationData, InputBox, generateList, formatSelectedDropdown, handleSelect
+} from "./step_tiles/tile_move_absolute/index";
 import { overwrite } from "../api/crud";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { defensiveClone } from "../util";
-import { Row } from "../ui/row";
-import { Col } from "../ui/index";
-import { InputBox } from "./step_tiles/tile_move_absolute/input_box";
+import { Row, Col, FBSelect } from "../ui/index";
 import { t } from "i18next";
-import { generateList } from "./step_tiles/tile_move_absolute/generate_list";
-import { formatSelectedDropdown } from "./step_tiles/tile_move_absolute/format_selected_dropdown";
-import { handleSelect } from "./step_tiles/tile_move_absolute/handle_select";
-import { FBSelect } from "../ui/new_fb_select";
 import { isNaN } from "lodash";
 
 type LocalVariable = ParameterDeclaration | VariableDeclaration;
@@ -171,7 +167,7 @@ export const ParentVariableForm =
         </Col>
       </Row>
     </div>;
-  }
+  };
 
 /** List of local variable declarations for a sequence. If no variables are
  * found, shows nothing. */

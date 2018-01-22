@@ -8,7 +8,9 @@ import {
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { API } from "./index";
 import axios from "axios";
-import { updateOK, updateNO, destroyOK, destroyNO, GeneralizedError } from "../resources/actions";
+import {
+  updateOK, updateNO, destroyOK, destroyNO, GeneralizedError
+} from "../resources/actions";
 import { UnsafeError } from "../interfaces";
 import { findByUuid } from "../resources/reducer";
 import { generateUuid } from "../resources/util";
@@ -93,8 +95,9 @@ export function initSave(resource: TaggedResource) {
 export function save(uuid: string) {
   return function (dispatch: Function, getState: GetState) {
     const resource = findByUuid(getState().resources.index, uuid);
+    const oldStatus = resource.specialStatus;
     dispatch({ type: Actions.SAVE_RESOURCE_START, payload: resource });
-    return dispatch(update(uuid));
+    return dispatch(update(uuid, oldStatus));
   };
 }
 
@@ -102,6 +105,7 @@ export function refresh(resource: TaggedResource, urlNeedsId = false) {
   return function (dispatch: Function) {
     dispatch(refreshStart(resource.uuid));
     const endPart = "" + urlNeedsId ? resource.body.id : "";
+    const statusBeforeError = resource.specialStatus;
     axios
       .get(urlFor(resource.kind) + endPart)
       .then((resp: HttpData<typeof resource.body>) => {
@@ -111,7 +115,11 @@ export function refresh(resource: TaggedResource, urlNeedsId = false) {
         if (isTaggedResource(newTR)) {
           dispatch(refreshOK(newTR));
         } else {
-          const action = refreshNO({ err: { message: "Unable to refresh" }, uuid: resource.uuid });
+          const action = refreshNO({
+            err: { message: "Unable to refresh" },
+            uuid: resource.uuid,
+            statusBeforeError
+          });
           dispatch(action);
         }
       });
@@ -130,18 +138,42 @@ export function refreshNO(payload: GeneralizedError): ReduxAction<GeneralizedErr
   return { type: Actions.REFRESH_RESOURCE_NO, payload };
 }
 
-function update(uuid: string) {
+interface AjaxUpdatePayload {
+  index: ResourceIndex;
+  uuid: string;
+  dispatch: Function;
+  statusBeforeError: SpecialStatus;
+}
+
+function update(uuid: string, statusBeforeError: SpecialStatus) {
   return function (dispatch: Function, getState: GetState) {
-    maybeStartTracking(uuid);
-    return updateViaAjax(getState().resources.index, uuid, dispatch);
+    const { index } = getState().resources;
+    const payl: AjaxUpdatePayload = { index, uuid, dispatch, statusBeforeError };
+    return updateViaAjax(payl);
   };
 }
+
+interface DestroyNoProps {
+  uuid: string;
+  statusBeforeError: SpecialStatus;
+  dispatch: Function;
+}
+
+export const destroyCatch = (p: DestroyNoProps) => (err: UnsafeError) => {
+  p.dispatch(destroyNO({
+    err,
+    uuid: p.uuid,
+    statusBeforeError: p.statusBeforeError
+  }));
+  return Promise.reject(err);
+};
 
 export function destroy(uuid: string, force = false) {
   return function (dispatch: Function, getState: GetState) {
     const resource = findByUuid(getState().resources.index, uuid);
     const maybeProceed = confirmationChecker(resource, force);
     return maybeProceed(() => {
+      const statusBeforeError = resource.specialStatus;
       if (resource.body.id) {
         maybeStartTracking(uuid);
         return axios
@@ -149,10 +181,7 @@ export function destroy(uuid: string, force = false) {
           .then(function (resp: HttpData<typeof resource.body>) {
             dispatch(destroyOK(resource));
           })
-          .catch(function (err: UnsafeError) {
-            dispatch(destroyNO({ err, uuid }));
-            return Promise.reject(err);
-          });
+          .catch(destroyCatch({ dispatch, uuid, statusBeforeError }));
       } else {
         dispatch(destroyOK(resource));
         return Promise.resolve("");
@@ -188,7 +217,8 @@ export function urlFor(tag: ResourceName) {
     Device: API.current.devicePath,
     Image: API.current.imagesPath,
     Log: API.current.logsPath,
-    WebcamFeed: API.current.webcamFeedPath
+    WebcamFeed: API.current.webcamFeedPath,
+    WebAppConfig: API.current.webAppConfigPath
   };
   const url = OPTIONS[tag];
   if (url) {
@@ -199,17 +229,20 @@ export function urlFor(tag: ResourceName) {
   }
 }
 
+const SINGULAR_RESOURCE: ResourceName[] = ["WebAppConfig"];
+
 /** Shared functionality in create() and update(). */
-function updateViaAjax(index: ResourceIndex,
-  uuid: string,
-  dispatch: Function) {
+function updateViaAjax(payl: AjaxUpdatePayload) {
+  const { uuid, statusBeforeError, dispatch, index } = payl;
   const resource = findByUuid(index, uuid);
   const { body, kind } = resource;
   let verb: "post" | "put";
   let url = urlFor(kind);
   if (body.id) {
     verb = "put";
-    url += body.id;
+    if (!SINGULAR_RESOURCE.includes(payl.uuid.split(".")[0] as ResourceName)) {
+      url += body.id;
+    }
   } else {
     verb = "post";
   }
@@ -226,7 +259,7 @@ function updateViaAjax(index: ResourceIndex,
       }
     })
     .catch(function (err: UnsafeError) {
-      dispatch(updateNO({ err, uuid }));
+      dispatch(updateNO({ err, uuid, statusBeforeError }));
       return Promise.reject(err);
     });
 }

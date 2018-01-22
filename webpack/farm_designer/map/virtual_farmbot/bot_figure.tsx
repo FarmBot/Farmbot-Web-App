@@ -2,7 +2,7 @@ import * as React from "react";
 import { AxisNumberProperty, MapTransformProps } from "../interfaces";
 import { getMapSize, getXYFromQuadrant } from "../util";
 import { BotPosition } from "../../../devices/interfaces";
-import { Color } from "../../../ui/colors";
+import { Color } from "../../../ui/index";
 
 export interface BotFigureProps {
   name: string;

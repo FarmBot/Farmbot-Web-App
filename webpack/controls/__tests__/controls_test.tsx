@@ -7,7 +7,7 @@ const mockStorj: Dictionary<boolean> = {};
 jest.mock("../../session", () => {
   return {
     Session: {
-      getBool: (k: string) => {
+      deprecatedGetBool: (k: string) => {
         mockStorj[k] = !!mockStorj[k];
         return mockStorj[k];
       }
@@ -33,12 +33,13 @@ describe("<Controls />", () => {
       feeds: [fakeWebcamFeed()],
       user: undefined,
       peripherals: [fakePeripheral()],
-      resources: fakeState().resources
+      resources: fakeState().resources,
+      botToMqttStatus: "up"
     };
   }
 
   it("shows webcam widget", () => {
-    mockStorj[BooleanSetting.hideWebcamWidget] = false;
+    mockStorj[BooleanSetting.hide_webcam_widget] = false;
     const wrapper = mount(<Controls {...fakeProps() } />);
     const txt = wrapper.text().toLowerCase();
     ["webcam", "move", "peripherals"]
@@ -46,7 +47,7 @@ describe("<Controls />", () => {
   });
 
   it("hides webcam widget", () => {
-    mockStorj[BooleanSetting.hideWebcamWidget] = true;
+    mockStorj[BooleanSetting.hide_webcam_widget] = true;
     const wrapper = mount(<Controls {...fakeProps() } />);
     const txt = wrapper.text().toLowerCase();
     ["move", "peripherals"].map(string => expect(txt).toContain(string));

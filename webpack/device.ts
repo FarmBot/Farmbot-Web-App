@@ -3,11 +3,13 @@ import { bail } from "./util";
 import { set } from "lodash";
 import { AuthState } from "./auth/interfaces";
 
-let device: Farmbot;
+let device: Farmbot | undefined;
 
 const secure = location.protocol === "https:"; // :(
 
-export const getDevice = (): Farmbot => (device || bail("NO DEVICE SET"));
+export const maybeGetDevice = () => device;
+export const getDevice =
+  (): Farmbot => (maybeGetDevice() || bail("NO DEVICE SET"));
 
 export function fetchNewDevice(auth: AuthState): Promise<Farmbot> {
   device = new Farmbot({ token: auth.token.encoded, secure });
@@ -15,5 +17,5 @@ export function fetchNewDevice(auth: AuthState): Promise<Farmbot> {
 
   return device
     .connect()
-    .then(() => device, () => bail("NO CONNECT"));
+    .then(() => device || bail("No."), () => bail("NO CONNECT"));
 }

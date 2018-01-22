@@ -2,17 +2,21 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
+let mockPath = "";
+jest.mock("../../../history", () => ({
+  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+}));
+
 import * as React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { SelectPlants, SelectPlantsProps } from "../select_plants";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import { Actions } from "../../../constants";
 
 describe("<SelectPlants />", () => {
   beforeEach(function () {
     jest.clearAllMocks();
-    Object.defineProperty(location, "pathname", {
-      value: "/app/designer/plants/select"
-    });
+    mockPath = "/app/designer/plants/select";
   });
 
   function fakeProps(): SelectPlantsProps {
@@ -26,6 +30,7 @@ describe("<SelectPlants />", () => {
       selected: ["plant.1"],
       plants: [plant1, plant2],
       dispatch: jest.fn(),
+      currentIcon: "fake icon"
     };
   }
 
@@ -87,5 +92,19 @@ describe("<SelectPlants />", () => {
     wrapper.find("button").first().simulate("click");
     expect(window.confirm).toHaveBeenCalledWith(
       "Are you sure you want to delete 2 plants?");
+  });
+
+  it("restores selected on back", () => {
+    const p = fakeProps();
+    p.selected = ["plant.1"];
+    const wrapper = shallow(<SelectPlants {...p} />);
+    wrapper.find("BackArrow").simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: { icon: "fake icon", plantUUID: "plant.1" },
+      type: Actions.TOGGLE_HOVERED_PLANT
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: ["plant.1"], type: Actions.SELECT_PLANT
+    });
   });
 });

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { MapBackgroundProps } from "./interfaces";
-import { Color } from "../../ui/colors";
+import { Color } from "../../ui/index";
 
 export function MapBackground(props: MapBackgroundProps) {
   const { mapTransformProps, plantAreaOffset } = props;

@@ -5,7 +5,7 @@ describe("mapStateToProps()", () => {
 
   it("sync status unknown", () => {
     const props = mapStateToProps(fakeState());
-    expect(props.syncStatus).toEqual("unknown");
+    expect(props.botToMqttStatus).toEqual("up");
   });
 
   it("currentImage undefined", () => {

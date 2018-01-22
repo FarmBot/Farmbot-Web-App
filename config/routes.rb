@@ -1,6 +1,6 @@
 FarmBot::Application.routes.draw do
 
-  namespace :api, defaults: {format: :json}, constraints: { format: 'json' } do
+  namespace :api, defaults: {format: :json}, constraints: { format: "json" } do
     resources :images,        only: [:create, :destroy, :show, :index]
     resources :regimens,      only: [:create, :destroy, :index, :update]
     resources :peripherals,   only: [:create, :destroy, :index, :update]
@@ -24,11 +24,16 @@ FarmBot::Application.routes.draw do
                                      :update,
                                      :destroy]
     resources :password_resets, only: [:create, :update]
+
+    resource :web_app_config,  only: [:show, :destroy, :update]
+    resource :fbos_config,     only: [:show, :destroy, :update]
+    resource :firmware_config, only: [:show, :destroy, :update]
+
     put "/password_resets"     => "password_resets#update", as: :whatever
     put "/users/verify/:token" => "users#verify",           as: :users_verify
     # Make life easier on API users by not adding special rules for singular
-    # resources. Otherwise methods like `save()` on the frontend would need to
-    # keep track of an `isSingular` property, which I would prefer to not do.
+    # resources.
+    # Might be safe to remove now with the advent of TaggerResource.kind
     get   "/device/:id"  => "devices#show",   as: :get_device_redirect
     get   "/export_data" => "devices#dump",   as: :dump_device
     put   "/device/:id"  => "devices#update", as: :put_device_redirect
@@ -47,19 +52,20 @@ FarmBot::Application.routes.draw do
   # Generate a signed URL for Google Cloud Storage uploads.
   get "/api/storage_auth" => "api/images#storage_auth", as: :storage_auth
   # You can set FORCE_SSL when you're done.
-  get "/.well-known/acme-challenge/:id" => "dashboard#lets_encrypt", as: :lets_encrypt
 
   # =======================================================================
   # NON-API (USER FACING) URLS:
   # =======================================================================
-  get "/"           => 'dashboard#front_page', as: :front_page
-  get "/app"        => 'dashboard#main_app',   as: :dashboard
-  get "/tos_update" => 'dashboard#tos_update', as: :tos_update
+  get  "/"             => "dashboard#front_page",   as: :front_page
+  get  "/app"          => "dashboard#main_app",     as: :dashboard
+  get  "/tos_update"   => "dashboard#tos_update",   as: :tos_update
+  post "/csp_reports"  => "dashboard#csp_reports",  as: :csp_report
+
   match "/app/*path",
-          to: 'dashboard#main_app',
+          to: "dashboard#main_app",
           via: :all,
-          constraints: { format: 'html' }
-  get "/password_reset/*token" => 'dashboard#password_reset',
+          constraints: { format: "html" }
+  get "/password_reset/*token" => "dashboard#password_reset",
     as: :password_reset
-  get "/verify" => 'dashboard#verify', as: :verify
+  get "/verify" => "dashboard#verify", as: :verify
 end

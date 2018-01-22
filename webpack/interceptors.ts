@@ -13,13 +13,14 @@ import * as _ from "lodash";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Content } from "./constants";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";
+import { Dictionary } from "farmbot";
+import { outstandingRequests } from "./connectivity/data_consistency";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   const method = input.config.method;
   dispatchNetworkUp("user.api");
-
   if (method && METHODS.includes(method)) {
-    const uuid = input.headers["x-request-id"] || "NONE";
+    const uuid = input.headers["X-Farmbot-Rpc-Id"] || "NONE";
     notifyBotOfChanges(input.config.url, METHOD_MAP[method], uuid);
   }
   return input;
@@ -66,8 +67,8 @@ export function requestFulfilled(auth: AuthState) {
     const isAPIRequest = req.includes(API.current.baseUrl);
     if (isAPIRequest) {
       config.headers = config.headers || {};
-      const headers = (config.headers as
-        { Authorization: string | undefined });
+      const headers: Dictionary<string> = config.headers;
+      headers["X-Farmbot-Rpc-Id"] = outstandingRequests.last;
       headers.Authorization = auth.token.encoded || "CANT_FIND_TOKEN";
     }
     return config;

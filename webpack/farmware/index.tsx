@@ -20,6 +20,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
       <Row>
         <Col xs={12} sm={7}>
           <Photos
+            timeOffset={this.props.timeOffset}
             dispatch={this.props.dispatch}
             images={this.props.images}
             currentImage={this.props.currentImage} />
@@ -27,12 +28,14 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
         <Col xs={12} sm={5}>
           <FarmwarePanel
             syncStatus={this.props.syncStatus}
+            botToMqttStatus={this.props.botToMqttStatus}
             farmwares={this.props.farmwares} />
         </Col>
       </Row>
       <Row>
         <Col xs={12} sm={6}>
           <CameraCalibration
+            syncStatus={this.props.syncStatus}
             dispatch={this.props.dispatch}
             currentImage={this.props.currentImage}
             images={this.props.images}
@@ -46,7 +49,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
             H_HI={envGet("CAMERA_CALIBRATION_H_HI", this.props.env)}
             S_HI={envGet("CAMERA_CALIBRATION_S_HI", this.props.env)}
             V_HI={envGet("CAMERA_CALIBRATION_V_HI", this.props.env)}
-            syncStatus={this.props.syncStatus} />
+            botToMqttStatus={this.props.botToMqttStatus} />
         </Col>
         <Col xs={12} sm={6}>
           <WeedDetector {...this.props} />

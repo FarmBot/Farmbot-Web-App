@@ -2,9 +2,6 @@
 # `Authorization` header, or used a password to gain access to the MQTT server.
 class SessionToken < AbstractJwtToken
   MUST_VERIFY  = "Verify account first"
-  DEFAULT_OS   = "https://api.github.com/repos/" \
-                 "farmbot/farmbot_os/releases/latest"
-  OS_RELEASE   = ENV.fetch("OS_UPDATE_SERVER") { DEFAULT_OS }
   MQTT         = ENV.fetch("MQTT_HOST")
   # If you are not using the standard MQTT broker (eg: you use a 3rd party
   # MQTT vendor), you will need to change this line.
@@ -15,11 +12,7 @@ class SessionToken < AbstractJwtToken
   end
   EXPIRY       = 40.days
   VHOST        = ENV.fetch("MQTT_VHOST") { "/" }
-  # If version <= this, you can't just fast forward to the latest FBOS version.
-  FBOS_CUTOFF  = Gem::Version.new("5.0.6")
-  # If you have a really, really old FBOS
-  OLD_OS_URL   = "https://api.github.com/repos/" +
-                 "farmbot/farmbot_os/releases/8772352"
+  BETA_OS_URL  = ENV["BETA_OTA_URL"] || "NOT_SET"
   def self.issue_to(user,
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
@@ -31,20 +24,21 @@ class SessionToken < AbstractJwtToken
       Rollbar.info("Verification Error", email: user.email)
       raise Errors::Forbidden, MUST_VERIFY
     end
-    url = (fbos_version <= FBOS_CUTOFF) ? OLD_OS_URL : OS_RELEASE
-    self.new([{ aud:              aud,
-                sub:              user.id,
-                iat:              iat,
-                jti:              SecureRandom.uuid,
-                iss:              iss,
-                exp:              exp,
-                mqtt:             MQTT,
-                mqtt_ws:          MQTT_WS,
-                os_update_server: url,
-                fw_update_server: "DEPRECATED",
-                interim_email:    user.email, # Dont use this for anything ever -RC
-                bot:              "device_#{user.device.id}",
-                vhost:            VHOST }])
+    url = CalculateUpgrade.run!(version: fbos_version)
+    self.new([{ aud:                   aud,
+                sub:                   user.id,
+                iat:                   iat,
+                jti:                   SecureRandom.uuid,
+                iss:                   iss,
+                exp:                   exp,
+                mqtt:                  MQTT,
+                bot:                   "device_#{user.device.id}",
+                vhost:                 VHOST,
+                mqtt_ws:               MQTT_WS,
+                os_update_server:      url,
+                interim_email:         user.email, # Dont use this for anything ever -RC
+                fw_update_server:      "DEPRECATED",
+                beta_os_update_server: BETA_OS_URL }])
   end
 
   def self.as_json(user, aud, fbos_version)

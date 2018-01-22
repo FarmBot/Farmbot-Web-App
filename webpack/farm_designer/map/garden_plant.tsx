@@ -5,7 +5,7 @@ import { round, getXYFromQuadrant } from "./util";
 import { DragHelpers } from "./drag_helpers";
 import { Session } from "../../session";
 import { BooleanSetting } from "../../session_keys";
-import { Color } from "../../ui/colors";
+import { Color } from "../../ui/index";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
@@ -38,7 +38,7 @@ export class GardenPlant extends
 
     const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
     const alpha = dragging ? 0.4 : 1.0;
-    const animate = !Session.getBool(BooleanSetting.disableAnimations);
+    const animate = !Session.deprecatedGetBool(BooleanSetting.disable_animations);
 
     return <g id={"plant-" + id}>
 

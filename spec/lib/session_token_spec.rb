@@ -30,10 +30,11 @@ describe SessionToken do
   end
 
   it 'issues a token to a user' do
-    SessionToken.issue_to(user, iat: 000,
+    token = SessionToken.issue_to(user, iat: 000,
                                 exp: 456,
                                 iss: "//lycos.com:9867",
                                 fbos_version: Gem::Version.new("9.9.9"))
+    expect(token.unencoded[:beta_os_update_server]).to be_kind_of(String)
   end
 
   it 'conditionally sets `os_update_server`' do
@@ -43,12 +44,12 @@ describe SessionToken do
         .unencoded[:os_update_server]
     end
 
-    expect(test_case["0.0.0"]).to eq(SessionToken::OLD_OS_URL)
-    expect(test_case["5.0.5"]).to eq(SessionToken::OLD_OS_URL)
-    expect(test_case["5.0.6"]).to eq(SessionToken::OLD_OS_URL)
-    expect(test_case["5.0.7"]).to eq(SessionToken::OS_RELEASE)
-    expect(test_case["5.0.8"]).to eq(SessionToken::OS_RELEASE)
-    expect(test_case["5.1.0"]).to eq(SessionToken::OS_RELEASE)
+    expect(test_case["0.0.0"]).to eq(CalculateUpgrade::OLD_OS_URL)
+    expect(test_case["5.0.5"]).to eq(CalculateUpgrade::OLD_OS_URL)
+    expect(test_case["5.0.6"]).to eq(CalculateUpgrade::OLD_OS_URL)
+    expect(test_case["5.0.8"]).to eq(CalculateUpgrade::MID_OS_URL)
+    expect(test_case["5.0.9"]).to eq(CalculateUpgrade::MID_OS_URL)
+    expect(test_case["6.0.1"]).to eq(CalculateUpgrade::OS_RELEASE)
   end
 
   it "doesn't honor expired tokens" do

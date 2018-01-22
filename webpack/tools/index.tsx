@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { ToolsState, Props } from "./interfaces";
-import { Col, Row, Page } from "../ui";
+import { Col, Row, Page } from "../ui/index";
 import { ToolBayList, ToolBayForm, ToolList, ToolForm } from "./components";
 import { mapStateToProps } from "./state_to_props";
 import { catchErrors } from "../util";

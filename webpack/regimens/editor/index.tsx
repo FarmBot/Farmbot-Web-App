@@ -12,12 +12,10 @@ import { ToolTips } from "../../constants";
 
 function MiddleSection({ regimen, dispatch, calendar }: MiddleSectionProps) {
   if (regimen && isTaggedRegimen(regimen) && calendar) {
-    return (
-      <ActiveEditor
-        dispatch={dispatch}
-        regimen={regimen}
-        calendar={calendar} />
-    );
+    return <ActiveEditor
+      dispatch={dispatch}
+      regimen={regimen}
+      calendar={calendar} />;
   } else {
     return <EmptyEditor />;
   }

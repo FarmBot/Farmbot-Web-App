@@ -22,14 +22,12 @@ export function AddRegimen(props: AddRegimenProps) {
   const classes = "fb-button green add " + props.className;
   let { length } = props;
   const { dispatch } = props;
-  return (
-    <button
-      className={classes}
-      onClick={() => {
-        dispatch(init(emptyRegimen(length)));
-        push("/app/regimens/new_regimen_" + (length++));
-      }}>
-      {props.children || <i className="fa fa-plus" />}
-    </button>
-  );
+  return <button
+    className={classes}
+    onClick={() => {
+      dispatch(init(emptyRegimen(length)));
+      push("/app/regimens/new_regimen_" + (length++));
+    }}>
+    {props.children || <i className="fa fa-plus" />}
+  </button>;
 }

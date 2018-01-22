@@ -12,7 +12,7 @@ import { attachToRoot } from "./util";
 import { Callback } from "i18next";
 import { crashPage } from "./crash_page";
 
-const key = "Dec 21 08:39";
+const key = "Jan 20 23:52";
 
 if (!localStorage[key]) {
   localStorage[key] = JSON.stringify("X");
@@ -148,6 +148,14 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/select_plants")
                 .then(module => cb(undefined, module.SelectPlants))
+                .catch((e: object) => cb(undefined, crashPage(e)));
+            },
+          },
+          {
+            path: "plants/move_to",
+            getComponent(_discard: void, cb: Function) {
+              import("./farm_designer/plants/move_to")
+                .then(module => cb(undefined, module.MoveTo))
                 .catch((e: object) => cb(undefined, crashPage(e)));
             },
           },

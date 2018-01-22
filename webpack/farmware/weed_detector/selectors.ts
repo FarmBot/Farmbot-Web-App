@@ -1,4 +1,4 @@
-import { DropDownItem, NULL_CHOICE } from "../../ui/fb_select";
+import { DropDownItem, NULL_CHOICE } from "../../ui/index";
 import { SPECIAL_VALUE_DDI } from "./constants";
 import { WD_ENV } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";

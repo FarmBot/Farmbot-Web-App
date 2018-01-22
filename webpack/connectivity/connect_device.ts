@@ -20,7 +20,7 @@ import { versionOK } from "../devices/reducer";
 import { AuthState } from "../auth/interfaces";
 import { TaggedResource, SpecialStatus } from "../resources/tagged_resources";
 import { autoSync } from "./auto_sync";
-
+import { startPinging } from "./ping_mqtt";
 export const TITLE = "New message from bot";
 
 /** TODO: This ought to be stored in Redux. It is here because of historical
@@ -136,21 +136,22 @@ export function onMalformed() {
   }
 }
 
+export const onOnline = () => dispatchNetworkUp("user.mqtt");
 export const onReconnect =
   () => warning("Attempting to reconnect to the message broker", "Offline");
-
-export const onOnline = () => dispatchNetworkUp("user.mqtt");
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
-    bot.client.on("reconnect", onReconnect);
+    startPinging(bot);
+    readStatus().then(changeLastClientConnected(bot), noop);
     bot.on("online", onOnline);
+    bot.on("online", () => bot.readStatus().then(noop, noop));
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));
     bot.on("logs", onLogs(dispatch));
     bot.on("status", onStatus(dispatch, getState));
     bot.on("malformed", onMalformed);
-    readStatus().then(changeLastClientConnected(bot), noop);
     bot.client.on("message", autoSync(dispatch, getState));
+    bot.client.on("reconnect", onReconnect);
   };
 
 /** Connect to MQTT and attach all relevant event handlers. */

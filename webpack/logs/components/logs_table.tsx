@@ -4,40 +4,38 @@ import { TaggedLog } from "../../resources/tagged_resources";
 import { LogsState, LogsTableProps } from "../interfaces";
 import { formatLogTime } from "../index";
 import * as _ from "lodash";
-
-const LogsRow = (tlog: TaggedLog, state: LogsState) => {
+interface LogsRowProps {
+  tlog: TaggedLog;
+  state: LogsState;
+  timeOffset: number;
+}
+const LogsRow = ({ tlog, state, timeOffset }: LogsRowProps) => {
   const log = tlog.body;
-  const { x, y, z, verbosity } = log.meta;
-  const time = formatLogTime(log.created_at);
-  const type = (log.meta || {}).type;
-  const filterLevel = state[type as keyof LogsState];
-  const displayLog = verbosity
-    ? verbosity <= filterLevel
-    : filterLevel != 0;
-  return displayLog ?
-    <tr key={tlog.uuid}>
-      <td>
-        <div className={`saucer ${type}`}>
-          <p>
-            {verbosity}
-          </p>
-        </div>
-        {_.startCase(type)}
-      </td>
-      <td>
-        {log.message || "Loading"}
-      </td>
-      <td>
-        {
-          (_.isNumber(x) && _.isNumber(y) && _.isNumber(z))
-            ? `${x}, ${y}, ${z}`
-            : "Unknown"
-        }
-      </td>
-      <td>
-        {time}
-      </td>
-    </tr> : undefined;
+  const { x, y, z, verbosity, type } = log.meta;
+  const time = formatLogTime(log.created_at, timeOffset);
+  return <tr key={tlog.uuid}>
+    <td>
+      <div className={`saucer ${type}`}>
+        <p>
+          {verbosity}
+        </p>
+      </div>
+      {_.startCase(type)}
+    </td>
+    <td>
+      {log.message || "Loading"}
+    </td>
+    <td>
+      {
+        (_.isNumber(x) && _.isNumber(y) && _.isNumber(z))
+          ? `${x}, ${y}, ${z}`
+          : "Unknown"
+      }
+    </td>
+    <td>
+      {time}
+    </td>
+  </tr>;
 };
 
 export const LogsTable = (props: LogsTableProps) => {
@@ -51,10 +49,30 @@ export const LogsTable = (props: LogsTableProps) => {
       </tr>
     </thead>
     <tbody>
-      {props.logs.map((log: TaggedLog) => {
-        const isFiltered = log.body.message.toLowerCase().includes("filtered");
-        if (!isFiltered) { return LogsRow(log, props.state); }
-      })}
+      {filterByVerbosity(props.state, props.logs)
+        .map((log: TaggedLog) => {
+          return <LogsRow
+            key={log.uuid}
+            tlog={log}
+            state={props.state}
+            timeOffset={props.timeOffset} />;
+        })}
     </tbody>
   </table>;
+};
+
+const filterByVerbosity = (state: LogsState, logs: TaggedLog[]) => {
+  return logs
+    .filter((log: TaggedLog) => {
+      return !log.body.message.toLowerCase().includes("filtered");
+    })
+    .filter((log: TaggedLog) => {
+      const type = (log.body.meta || {}).type;
+      const { verbosity } = log.body.meta;
+      const filterLevel = state[type as keyof LogsState];
+      const displayLog = verbosity
+        ? verbosity <= filterLevel
+        : filterLevel != 0;
+      return displayLog;
+    });
 };

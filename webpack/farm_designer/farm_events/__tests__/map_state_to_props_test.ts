@@ -9,6 +9,8 @@ import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
 import * as moment from "moment";
+import { countBy } from "lodash";
+import { TimeUnit } from "../../interfaces";
 
 describe("mapStateToProps()", () => {
   function testState(time: number) {
@@ -71,7 +73,7 @@ describe("mapStateToProps()", () => {
             id: 1,
             mmddyy: day1ItemTime.format("MMDDYY"),
             sortKey: day1ItemTime.unix(),
-            timeStr: day1ItemTime.format("hh:mma")
+            timeStr: day1ItemTime.utcOffset(0).format("hh:mma")
           }],
         month: day1Time.format("MMM"),
         sortKey: day1Time.unix(),
@@ -87,7 +89,7 @@ describe("mapStateToProps()", () => {
             mmddyy: regimenStartTime.format("MMDDYY"),
             sortKey: regimenStartTime.unix(),
             subheading: "",
-            timeStr: regimenStartTime.format("hh:mma")
+            timeStr: regimenStartTime.utcOffset(0).format("hh:mma")
           },
           {
             executableId: 1,
@@ -96,7 +98,7 @@ describe("mapStateToProps()", () => {
             mmddyy: regimenItemTime.format("MMDDYY"),
             sortKey: regimenItemTime.unix(),
             subheading: "fake",
-            timeStr: regimenItemTime.format("hh:mma")
+            timeStr: regimenItemTime.utcOffset(0).format("hh:mma")
           }],
         month: day2Time.format("MMM"),
         sortKey: regimenStartTime.unix(),
@@ -108,15 +110,24 @@ describe("mapStateToProps()", () => {
 });
 
 describe("mapResourcesToCalendar(): sequence farm events", () => {
-  function fakeSeqFEResources() {
+  interface EventData {
+    start_time: string;
+    end_time: string;
+    repeat?: number;
+    time_unit?: TimeUnit;
+  }
+
+  function fakeSeqFEResources(props: EventData) {
     const sequence = fakeSequence();
     sequence.body.id = 1;
     sequence.body.body = [{ kind: "take_photo", args: {} }];
 
     const sequenceFarmEvent = fakeFarmEvent("Sequence", 1);
     sequenceFarmEvent.body.id = 1;
-    sequenceFarmEvent.body.start_time = "2017-12-20T01:02:00.000Z";
-    sequenceFarmEvent.body.end_time = "2017-12-20T01:05:00.000Z";
+    sequenceFarmEvent.body.start_time = props.start_time;
+    sequenceFarmEvent.body.end_time = props.end_time;
+    sequenceFarmEvent.body.repeat = props.repeat || 1;
+    sequenceFarmEvent.body.time_unit = props.time_unit || "never";
 
     return buildResourceIndex([sequence, sequenceFarmEvent]);
   }
@@ -136,11 +147,46 @@ describe("mapResourcesToCalendar(): sequence farm events", () => {
     year: 17
   }];
 
-  it("returns calendar rows", () => {
+  it("returns calendar rows: single event", () => {
+    const eventData: EventData = {
+      start_time: "2017-12-20T01:02:00.000Z",
+      end_time: "2017-12-20T01:05:00.000Z"
+    };
     const testTime = moment("2017-12-15T01:00:00.000Z");
     const calendar = mapResourcesToCalendar(
-      fakeSeqFEResources().index, testTime);
+      fakeSeqFEResources(eventData).index, testTime);
     expect(calendar.getAll()).toEqual(fakeSequenceFE);
+  });
+
+  it("returns calendar rows: hidden items", () => {
+    const eventData: EventData = {
+      start_time: "2017-12-20T01:02:00.000Z",
+      end_time: "2017-12-20T04:05:00.000Z",
+      repeat: 1,
+      time_unit: "minutely"
+    };
+    const testTime = moment("2017-12-15T01:00:00.000Z");
+    const calendar = mapResourcesToCalendar(
+      fakeSeqFEResources(eventData).index, testTime);
+    const dayOneItems = calendar.getAll()[0].items;
+    expect(countBy(dayOneItems, "heading")).toEqual({
+      "fake": 59,
+      "+ 123 more: fake": 1
+    });
+  });
+
+  it("returns calendar rows: empty", () => {
+    const eventData: EventData = {
+      start_time: "2017-12-20T01:02:00.000Z",
+      end_time: "2019-12-20T01:05:00.000Z",
+      repeat: 100,
+      time_unit: "yearly"
+    };
+    const testTime = moment("2017-12-30T01:00:00.000Z");
+    const calendar = mapResourcesToCalendar(
+      fakeSeqFEResources(eventData).index, testTime);
+    const dayOneItems = calendar.getAll()[0].items;
+    expect(countBy(dayOneItems, "heading")).toEqual({ "*Empty*": 1 });
   });
 });
 

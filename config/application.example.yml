@@ -82,3 +82,8 @@ API_PUBLIC_KEY_PATH: "http://changeme.io/api/public_key"
 # If you are using a shared RabbitMQ server and need to use a VHost other than
 # "/", change this ENV var.
 MQTT_VHOST: "/"
+# If you run a server with multiple domain names (HINT: You probably don't),
+# you can list the names here. This is used by FarmBot employees so that they
+# can securly host the same server on multiple domain names
+#     ex: my.farm.bot, my.farmbot.io
+EXTRA_DOMAINS: staging.farm.bot,whatever.farm.bot

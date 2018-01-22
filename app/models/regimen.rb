@@ -16,4 +16,16 @@ class Regimen < ApplicationRecord
   belongs_to :device
   validates  :device, presence: true
 
+  # PROBLEM:
+  #  * data_update sends MQTT messages when models update.
+  #  * regimen_items are a "nested resource". The user does not know they exist
+  #    outside of a regimen
+  #  * We still need to be notified of updates to `regimen_item`s.
+  #
+  # SOLUTION:
+  #  * _always_ send `data_update` for Regimens, even though its kind of
+  #    wasteful.
+  def notable_changes?
+    true
+  end
 end

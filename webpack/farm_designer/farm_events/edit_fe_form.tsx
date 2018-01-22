@@ -4,39 +4,28 @@ import * as _ from "lodash";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
 import { TaggedFarmEvent, SpecialStatus } from "../../resources/tagged_resources";
-import {
-  TimeUnit,
-  ExecutableQuery,
-  ExecutableType
-} from "../interfaces";
-import {
-  formatTime,
-  formatDate
-} from "./map_state_to_props_add_edit";
+import { TimeUnit, ExecutableQuery, ExecutableType } from "../interfaces";
+import { formatTime, formatDate } from "./map_state_to_props_add_edit";
 import {
   BackArrow,
   BlurableInput,
-  Col,
-  Row,
-  SaveBtn
+  Col, Row,
+  SaveBtn,
+  FBSelect,
+  DropDownItem
 } from "../../ui/index";
-import { FBSelect } from "../../ui/new_fb_select";
-import {
-  destroy,
-  save,
-  edit
-} from "../../api/crud";
-import { DropDownItem } from "../../ui/fb_select";
+import { destroy, save, edit } from "../../api/crud";
 import { history } from "../../history";
 // TIL: https://stackoverflow.com/a/24900248/1064917
 import { betterMerge } from "../../util";
 import { maybeWarnAboutMissedTasks } from "./util";
-import { TzWarning } from "./tz_warning";
 import { FarmEventRepeatForm } from "./farm_event_repeat_form";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
 import { executableType } from "../util";
 import { Content } from "../../constants";
 import { destroyOK } from "../../resources/actions";
+import { EventTimePicker } from "./event_time_picker";
+import { TzWarning } from "./tz_warning";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -52,38 +41,50 @@ export interface FarmEventViewModel {
   timeUnit: string;
   executable_type: string;
   executable_id: string;
+  timeOffset: number;
 }
 /** Breaks up a TaggedFarmEvent into a structure that can easily be used
  * by the edit form.
  * USE CASE EXAMPLE: We have a "date" and "time" field that are created from
  *                   a single "start_time" FarmEvent field. */
-function destructureFarmEvent(fe: TaggedFarmEvent): FarmEventViewModel {
+export function destructureFarmEvent(fe: TaggedFarmEvent, timeOffset: number): FarmEventViewModel {
 
   return {
     startDate: formatDate((fe.body.start_time).toString()),
-    startTime: formatTime((fe.body.start_time).toString()),
+    startTime: formatTime((fe.body.start_time).toString(), timeOffset),
     endDate: formatDate((fe.body.end_time || new Date()).toString()),
-    endTime: formatTime((fe.body.end_time || new Date()).toString()),
+    endTime: formatTime((fe.body.end_time || new Date()).toString(), timeOffset),
     repeat: (fe.body.repeat || 1).toString(),
     timeUnit: fe.body.time_unit,
     executable_type: fe.body.executable_type,
-    executable_id: (fe.body.executable_id || "").toString()
+    executable_id: (fe.body.executable_id || "").toString(),
+    timeOffset
   };
 }
 
+type PartialFE = Partial<TaggedFarmEvent["body"]>;
+
 /** Take a FormViewModel and recombine the fields into a Partial<FarmEvent>
  * that can be used to apply updates (such as a PUT request to the API). */
-export function recombine(vm: FarmEventViewModel): Partial<TaggedFarmEvent["body"]> {
+export function recombine(vm: FarmEventViewModel): PartialFE {
   // Make sure that `repeat` is set to `never` when dealing with regimens.
   const isReg = vm.executable_type === "Regimen";
   return {
-    start_time: moment(vm.startDate + " " + vm.startTime).toISOString(),
-    end_time: moment(vm.endDate + " " + vm.endTime).toISOString(),
+    start_time: offsetTime(vm.startDate, vm.startTime, vm.timeOffset),
+    end_time: offsetTime(vm.endDate, vm.endTime, vm.timeOffset),
     repeat: parseInt(vm.repeat, 10) || 1,
     time_unit: (isReg ? "never" : vm.timeUnit) as TimeUnit,
     executable_id: parseInt(vm.executable_id, 10),
     executable_type: vm.executable_type as ("Sequence" | "Regimen"),
   };
+}
+
+function offsetTime(date: string, time: string, offset: number): string {
+  const out = moment(date).utcOffset(offset);
+  const [hrs, min] = time.split(":").map(x => parseInt(x));
+  out.hours(hrs);
+  out.minutes(min);
+  return out.toISOString();
 }
 
 export interface EditFEProps {
@@ -95,6 +96,7 @@ export interface EditFEProps {
   findExecutable: ExecutableQuery;
   title: string;
   deleteBtn?: boolean;
+  timeOffset: number;
 }
 
 interface State {
@@ -116,7 +118,9 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   get dispatch() { return this.props.dispatch; }
 
-  get viewModel() { return destructureFarmEvent(this.props.farmEvent); }
+  get viewModel() {
+    return destructureFarmEvent(this.props.farmEvent, this.props.timeOffset);
+  }
 
   get executable() {
     const et = this.fieldGet("executable_type");
@@ -143,8 +147,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   executableGet = (): DropDownItem => {
     const headingId: ExecutableType =
-      (this.executable.kind === "Sequence") ?
-        "Sequence" : "Regimen";
+      (this.executable.kind === "Sequence") ? "Sequence" : "Regimen";
     return {
       value: this.executable.body.id || 0,
       label: this.executable.body.name,
@@ -178,13 +181,14 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   commitViewModel = () => {
     const partial = recombine(betterMerge(this.viewModel, this.state.fe));
     this.dispatch(edit(this.props.farmEvent, partial));
+    const EditFEPath = window.location.pathname;
     this
       .dispatch(save(this.props.farmEvent.uuid))
       .then(() => {
         this.setState({ specialStatusLocal: SpecialStatus.SAVED });
         history.push("/app/designer/farm_events");
         const frmEvnt = this.props.farmEvent;
-        const nextRun = _.first(scheduleForFarmEvent(frmEvnt.body));
+        const nextRun = _.first(scheduleForFarmEvent(frmEvnt.body).items);
         if (nextRun) {
           // TODO: Internationalizing this will be a challenge.
           success(`This Farm Event will run ${nextRun.fromNow()}, but
@@ -194,6 +198,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK));
           }));
         } else {
+          history.push(EditFEPath);
           error(t(Content.INVALID_RUN_TIME));
         }
       })
@@ -210,80 +215,79 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     const fe = this.props.farmEvent;
     const repeats = this.fieldGet("timeUnit") !== NEVER;
     const allowRepeat = (!this.isReg && repeats);
-    return (
-      <div className="panel-container magenta-panel add-farm-event-panel">
-        <div className="panel-header magenta-panel">
-          <p className="panel-title">
-            <BackArrow onClick={() => {
-              if (!this.props.farmEvent.body.id) {
-                // Throw out unsaved farmevents.
-                this.props.dispatch(destroyOK(this.props.farmEvent));
-                return;
-              }
-            }} />
-            {this.props.title}
-          </p>
-        </div>
-        <div className="panel-content">
-          <label>
-            {t("Sequence or Regimen")}
-          </label>
-          <FBSelect
-            list={this.props.executableOptions}
-            onChange={this.executableSet}
-            selectedItem={this.executableGet()} />
-          <label>
-            {t("Starts")}
-          </label>
-          <Row>
-            <Col xs={6}>
-              <BlurableInput
-                type="date"
-                className="add-event-start-date"
-                name="start_date"
-                value={this.fieldGet("startDate")}
-                onCommit={this.fieldSet("startDate")} />
-            </Col>
-            <Col xs={6}>
-              <BlurableInput
-                type="time"
-                className="add-event-start-time"
-                name="start_time"
-                value={this.fieldGet("startTime")}
-                onCommit={this.fieldSet("startTime")} />
-            </Col>
-          </Row>
-          <label>
-            <input type="checkbox"
-              onChange={this.toggleRepeat}
-              disabled={this.isReg}
-              checked={repeats && !this.isReg} />
-            &nbsp;{t("Repeats?")}
-          </label>
-          <FarmEventRepeatForm
-            disabled={!allowRepeat}
-            hidden={!allowRepeat}
-            onChange={this.mergeState}
-            timeUnit={this.fieldGet("timeUnit") as TimeUnit}
-            repeat={this.fieldGet("repeat")}
-            endDate={this.fieldGet("endDate")}
-            endTime={this.fieldGet("endTime")} />
-          <SaveBtn
-            status={fe.specialStatus || this.state.specialStatusLocal}
-            color="magenta"
-            onClick={this.commitViewModel} />
-          <button className="fb-button red" hidden={!this.props.deleteBtn}
-            onClick={() => {
-              this.dispatch(destroy(fe.uuid)).then(() => {
-                history.push("/app/designer/farm_events");
-                success(t("Deleted farm event."), t("Deleted"));
-              });
-            }}>
-            {t("Delete")}
-          </button>
-          <TzWarning deviceTimezone={this.props.deviceTimezone} />
-        </div>
+    return <div className="panel-container magenta-panel add-farm-event-panel">
+      <div className="panel-header magenta-panel">
+        <p className="panel-title">
+          <BackArrow onClick={() => {
+            if (!this.props.farmEvent.body.id) {
+              // Throw out unsaved farmevents.
+              this.props.dispatch(destroyOK(this.props.farmEvent));
+              return;
+            }
+          }} />
+          {this.props.title}
+        </p>
       </div>
-    );
+      <div className="panel-content">
+        <label>
+          {t("Sequence or Regimen")}
+        </label>
+        <FBSelect
+          list={this.props.executableOptions}
+          onChange={this.executableSet}
+          selectedItem={this.executableGet()} />
+        <label>
+          {t("Starts")}
+        </label>
+        <Row>
+          <Col xs={6}>
+            <BlurableInput
+              type="date"
+              className="add-event-start-date"
+              name="start_date"
+              value={this.fieldGet("startDate")}
+              onCommit={this.fieldSet("startDate")} />
+          </Col>
+          <Col xs={6}>
+            <EventTimePicker
+              className="add-event-start-time"
+              name="start_time"
+              tzOffset={this.props.timeOffset}
+              value={this.fieldGet("startTime")}
+              onCommit={this.fieldSet("startTime")} />
+          </Col>
+        </Row>
+        <label>
+          <input type="checkbox"
+            onChange={this.toggleRepeat}
+            disabled={this.isReg}
+            checked={repeats && !this.isReg} />
+          &nbsp;{t("Repeats?")}
+        </label>
+        <FarmEventRepeatForm
+          tzOffset={this.props.timeOffset}
+          disabled={!allowRepeat}
+          hidden={!allowRepeat}
+          onChange={this.mergeState}
+          timeUnit={this.fieldGet("timeUnit") as TimeUnit}
+          repeat={this.fieldGet("repeat")}
+          endDate={this.fieldGet("endDate")}
+          endTime={this.fieldGet("endTime")} />
+        <SaveBtn
+          status={fe.specialStatus || this.state.specialStatusLocal}
+          color="magenta"
+          onClick={this.commitViewModel} />
+        <button className="fb-button red" hidden={!this.props.deleteBtn}
+          onClick={() => {
+            this.dispatch(destroy(fe.uuid)).then(() => {
+              history.push("/app/designer/farm_events");
+              success(t("Deleted farm event."), t("Deleted"));
+            });
+          }}>
+          {t("Delete")}
+        </button>
+        <TzWarning deviceTimezone={this.props.deviceTimezone} />
+      </div>
+    </div>;
   }
 }

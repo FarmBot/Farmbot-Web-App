@@ -2,7 +2,8 @@ import * as React from "react";
 import { SlotWithTool } from "../../../resources/interfaces";
 import { ToolSlotPoint } from "../tool_slot_point";
 import { MapTransformProps } from "../interfaces";
-import { history } from "../../../history";
+import { history, getPathArray } from "../../../history";
+import { getMode, Mode } from "../garden_map";
 
 export interface ToolSlotLayerProps {
   visible: boolean;
@@ -12,7 +13,7 @@ export interface ToolSlotLayerProps {
 }
 
 export function ToolSlotLayer(props: ToolSlotLayerProps) {
-  const pathArray = location.pathname.split("/");
+  const pathArray = getPathArray();
   const canClickTool = !(pathArray[3] === "plants" && pathArray.length > 4);
   function goToToolsPage() {
     if (canClickTool) {
@@ -21,10 +22,22 @@ export function ToolSlotLayer(props: ToolSlotLayerProps) {
   }
   const { slots, visible, mapTransformProps } = props;
   const cursor = canClickTool ? "pointer" : "default";
+
+  const maybeNoPointer = () => {
+    switch (getMode()) {
+      case Mode.boxSelect:
+      case Mode.clickToAdd:
+      case Mode.moveTo:
+        return { "pointerEvents": "none" };
+      default:
+        return { cursor: cursor };
+    }
+  };
+
   return <g
     id="toolslot-layer"
     onClick={goToToolsPage}
-    style={{ cursor: cursor }}>
+    style={maybeNoPointer()}>
     {visible &&
       slots.map(slot =>
         <ToolSlotPoint

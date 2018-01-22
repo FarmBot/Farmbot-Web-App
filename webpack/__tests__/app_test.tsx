@@ -6,6 +6,11 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
+let mockPath = "";
+jest.mock("../history", () => ({
+  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+}));
+
 import * as React from "react";
 import { App, AppProps } from "../app";
 import { mount } from "enzyme";
@@ -15,21 +20,21 @@ import { fakeUser } from "../__test_support__/fake_state/resources";
 describe("<App />: Controls Pop-Up", () => {
   function fakeProps(): AppProps {
     return {
+      timeOffset: 0, // Default to UTC
       dispatch: jest.fn(),
       loaded: [],
       logs: [],
       user: fakeUser(),
       bot: bot,
       consistent: true,
-      autoSyncEnabled: true
+      autoSyncEnabled: true,
+      axisInversion: { x: false, y: false, z: false }
     };
   }
 
   function controlsPopUp(page: string, exists: boolean) {
     it(`doesn't render controls pop-up on ${page} page`, () => {
-      Object.defineProperty(location, "pathname", {
-        value: "/app/" + page, configurable: true
-      });
+      mockPath = "/app/" + page;
       const wrapper = mount(<App {...fakeProps() } />);
       if (exists) {
         expect(wrapper.html()).toContain("controls-popup");
@@ -61,7 +66,9 @@ describe.skip("<App />: Loading", () => {
       user: fakeUser(),
       bot: bot,
       consistent: true,
-      autoSyncEnabled: true
+      autoSyncEnabled: true,
+      timeOffset: 0,
+      axisInversion: { x: false, y: false, z: false }
     };
     return p;
   }
@@ -95,7 +102,9 @@ describe("<App />: NavBar", () => {
       user: fakeUser(),
       bot: bot,
       consistent: true,
-      autoSyncEnabled: true
+      autoSyncEnabled: true,
+      timeOffset: 0,
+      axisInversion: { x: false, y: false, z: false }
     };
   }
 

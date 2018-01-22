@@ -16,6 +16,7 @@ import { isNumber } from "lodash";
 import { McuParams } from "farmbot/dist";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { SelectionBoxData } from "./map/selection_box";
+import { BooleanConfigKey } from "../config_storage/web_app_configs";
 
 /** TODO: Use Enums */
 export type BotOriginQuadrant = 1 | 2 | 3 | 4;
@@ -27,14 +28,16 @@ export function isBotOriginQuadrant(mystery: Mystery):
   return isNumber(mystery) && [1, 2, 3, 4].includes(mystery);
 }
 
-export interface State {
-  legendMenuOpen: boolean;
-  showPlants: boolean;
-  showPoints: boolean;
-  showSpread: boolean;
-  showFarmbot: boolean;
-  botOriginQuadrant: BotOriginQuadrant;
-  zoomLevel: number;
+type TypeCheckerHint = Partial<Record<BooleanConfigKey, boolean>>;
+
+export interface State extends TypeCheckerHint {
+  legend_menu_open: boolean;
+  show_plants: boolean;
+  show_points: boolean;
+  show_spread: boolean;
+  show_farmbot: boolean;
+  bot_origin_quadrant: BotOriginQuadrant;
+  zoom_level: number;
 }
 
 export interface Props {
@@ -101,6 +104,7 @@ export interface DesignerState {
   hoveredPlant: HoveredPlantPayl;
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
+  chosenLocation: BotPosition;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
@@ -114,11 +118,10 @@ export interface AddEditFarmEventProps {
   sequencesById: CowardlyDictionary<TaggedSequence>;
   farmEventsById: CowardlyDictionary<TaggedFarmEvent>;
   getFarmEvent(): TaggedFarmEvent | undefined;
-  formatDate(input: string): string;
-  formatTime(input: string): string;
   handleTime(e: React.SyntheticEvent<HTMLInputElement>, currentISO: string): string;
   dispatch: Function;
   findExecutable: ExecutableQuery;
+  timeOffset: number;
 }
 
 /**
@@ -148,6 +151,7 @@ export interface CalendarDay {
 }
 
 export interface FarmEventProps {
+  timezoneIsSet: boolean;
   /** Sorted list of the first (100?) events due on the calendar. */
   calendarRows: CalendarDay[];
   /** Call this function to navigate to different pages. */

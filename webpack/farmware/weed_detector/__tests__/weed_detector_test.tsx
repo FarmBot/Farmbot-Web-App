@@ -19,13 +19,15 @@ import { FarmwareProps } from "../../../devices/interfaces";
 
 describe("<WeedDetector />", () => {
   const props: FarmwareProps = {
+    timeOffset: 0,
     farmwares: {},
-    syncStatus: "unknown",
+    botToMqttStatus: "up",
     env: {},
     user_env: {},
     dispatch: jest.fn(),
     currentImage: undefined,
-    images: []
+    images: [],
+    syncStatus: "synced"
   };
 
   it("renders", () => {
