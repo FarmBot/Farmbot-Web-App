@@ -1,14 +1,10 @@
 import { toggleWebAppBool } from "../actions";
 import { BooleanSetting } from "../../session_keys";
-import { fakeResource } from "../../__test_support__/fake_resource";
-import { edit, save } from "../../api/crud";
-import { getWebAppConfig } from "../../resources/selectors";
 
 jest.mock("../../api/crud", () => {
   return { save: jest.fn(), edit: jest.fn() };
 });
 
-const mockFakeResource = fakeResource;
 jest.mock("../../resources/selectors", () => {
   return { getWebAppConfig: jest.fn(() => (undefined)) };
 });
