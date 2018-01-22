@@ -3,7 +3,7 @@ import { SlotWithTool } from "../../resources/interfaces";
 import { getXYFromQuadrant } from "./util";
 import { MapTransformProps } from "./interfaces";
 import * as _ from "lodash";
-import { Color } from "../../ui/colors";
+import { Color } from "../../ui/index";
 
 export interface TSPProps {
   slot: SlotWithTool;
@@ -28,8 +28,8 @@ export class ToolSlotPoint extends
     const { quadrant, gridSize } = this.props.mapTransformProps;
     const { qx, qy } = getXYFromQuadrant(x, y, quadrant, gridSize);
     const toolName = this.slot.tool ? this.slot.tool.body.name : "no tool";
-    const seedBin = _.includes(toolName.toLowerCase(), "seed bin");
-    const seedTray = _.includes(toolName.toLowerCase(), "seed tray");
+    const seedBin = _.includes((toolName || "").toLowerCase(), "seed bin");
+    const seedTray = _.includes((toolName || "").toLowerCase(), "seed tray");
     const seedTrayRect = getXYFromQuadrant(x, y, quadrant, gridSize);
     return <g id={"toolslot-" + id}>
       <defs>

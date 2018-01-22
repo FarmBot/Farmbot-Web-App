@@ -13,7 +13,7 @@ import { Session, safeNumericSetting } from "../../session";
 const LogSetting = (props: LogSettingProps) => {
   const { label, setting, toolTip, value, setFilterLevel } = props;
   const updateMinFilterLevel = (name: keyof LogsState, level: number) => {
-    const currentLevel = Session.getNum(safeNumericSetting(name + "Log")) || 0;
+    const currentLevel = Session.deprecatedGetNum(safeNumericSetting(name + "_log")) || 0;
     if (currentLevel < level) { setFilterLevel(name)(level); }
   };
   return <fieldset>

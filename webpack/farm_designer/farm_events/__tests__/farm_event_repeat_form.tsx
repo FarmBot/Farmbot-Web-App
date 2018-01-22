@@ -11,13 +11,14 @@ const DEFAULTS: RepeatFormProps = {
   timeUnit: "daily",
   repeat: "1",
   endDate: "2017-07-26",
-  endTime: "08:57"
+  endTime: "08:57",
+  tzOffset: 0
 };
 
 enum Selectors {
   REPEAT = "BlurableInput[name=\"repeat\"]",
   END_DATE = "BlurableInput[name=\"endDate\"]",
-  END_TIME = "BlurableInput[name=\"endTime\"]",
+  END_TIME = "EventTimePicker[name=\"endTime\"]",
   TIME_UNIT = "FBSelect"
 }
 
@@ -46,7 +47,7 @@ describe("<FarmEventRepeatForm/>", () => {
   it("defaults to `daily` when a bad input it passed", () => {
     const p = props();
     p.timeUnit = "never";
-    const el = shallow<RepeatFormProps>(<FarmEventRepeatForm {...p } />);
+    const el = shallow(<FarmEventRepeatForm {...p } />);
     expect(formVal(el, Selectors.REPEAT)).toEqual(p.repeat);
     expect(getProp(el, "FBSelect", "selectedItem.value")).toEqual("daily");
   });
@@ -54,7 +55,7 @@ describe("<FarmEventRepeatForm/>", () => {
   it("disables all inputs via the `disabled` prop", () => {
     const p = props();
     p.disabled = true;
-    const el = shallow<RepeatFormProps>(<FarmEventRepeatForm {...p } />);
+    const el = shallow(<FarmEventRepeatForm {...p } />);
     expect(getProp(el, Selectors.END_DATE, "disabled")).toBeTruthy();
     expect(getProp(el, Selectors.END_TIME, "disabled")).toBeTruthy();
     expect(getProp(el, Selectors.REPEAT, "disabled")).toBeTruthy();

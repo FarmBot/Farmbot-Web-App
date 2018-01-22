@@ -1,6 +1,8 @@
 import * as React from "react";
 import { t } from "i18next";
-import { BlurableInput, Widget, WidgetHeader, WidgetBody, SaveBtn } from "../../ui";
+import {
+  BlurableInput, Widget, WidgetHeader, WidgetBody, SaveBtn
+} from "../../ui/index";
 import { SettingsPropTypes } from "../interfaces";
 
 export class Settings extends React.Component<SettingsPropTypes, {}> {

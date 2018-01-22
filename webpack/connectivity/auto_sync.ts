@@ -1,9 +1,12 @@
 import { GetState } from "../redux/interfaces";
 import { maybeDetermineUuid } from "../resources/selectors";
-import { ResourceName, TaggedResource, SpecialStatus } from "../resources/tagged_resources";
+import {
+  ResourceName, TaggedResource, SpecialStatus
+} from "../resources/tagged_resources";
 import { overwrite, init } from "../api/crud";
 import { handleInbound } from "./auto_sync_handle_inbound";
 import { SyncPayload, MqttDataResult, Reason, UpdateMqttData } from "./interfaces";
+import { outstandingRequests } from "./data_consistency";
 
 export function decodeBinary(payload: Buffer): SyncPayload {
   return JSON.parse((payload).toString());
@@ -55,27 +58,26 @@ export function handleCreateOrUpdate(dispatch: Function,
 
   const state = getState();
   const { index } = state.resources;
-  const uuid = maybeDetermineUuid(index, data.kind, data.id);
-  if (uuid) {
-    return dispatch(handleUpdate(data, uuid));
-  } else {
-    // Here be dragons.
-    // PROBLEM:  You see incoming `UPDATE` messages.
-    //           How do you know if it is a new record or an update to
-    //           an existing?
-    // SOLUTION: Every inbound message has a `sessionId` that matches the `jwt`
-    //           of your JSON Web Token. If the `sessionId` is equal to your
-    //           JWT, then you can disregard the sync message- you probably
-    //           already got the data when your AJAX request finished.
-    // The ultimate problem: We need to know if the incoming data update was created
-    // by us or some other user. That information lets us know if we are UPDATEing
-    // data or INSERTing data.
-    const jti = state.auth && state.auth.token.unencoded.jti;
-    if (data.sessionId === jti) { // Ignore local echo?
-    } else {
-      dispatch(handleCreate(data));
-    }
-  }
+  const hasCopy = maybeDetermineUuid(index, data.kind, data.id);
+  const isEcho = outstandingRequests.all.has(data.sessionId);
+  // Here be dragons. 🐲 🐉 ⚔ ️🛡️
+  // PROBLEM:  You see incoming `UPDATE` messages.
+  //           How do you know if it is a new record or an update to
+  //           an existing?
+  //
+  // SOLUTION: Every inbound message has a `sessionId` that matches an entry in
+  //           the `outstandingRequests` dictionary. If we have a copy of the
+  //           `sessionId` in the `outstandingRequests` object, then you can
+  //           disregard the sync message- you probably already got the data
+  //           when your AJAX request finished. We call this an "echo"- a
+  //           repetition of a data update we alrleady knew about.
+  //
+  // The ultimate problem: We need to know if the incoming data update was
+  // created by us or some other user. That information lets us know if we are
+  // UPDATEing data or INSERTing data. It also prevents us from double updating
+  // data when an update comes in twice.
+  const action = hasCopy ? handleUpdate(data, hasCopy) : handleCreate(data);
+  return isEcho || dispatch(action);
 }
 
 export const autoSync =

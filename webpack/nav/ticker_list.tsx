@@ -12,7 +12,7 @@ import { isNumber } from "lodash";
 const logFilter = (log: Log): Log | undefined => {
   const type = (log.meta || {}).type;
   const { verbosity } = log.meta;
-  const filterLevel = Session.getNum(safeNumericSetting(type + "Log"));
+  const filterLevel = Session.deprecatedGetNum(safeNumericSetting(type + "_log"));
   const filterLevelCompare = isNumber(filterLevel) ? filterLevel : 1;
   const displayLog = verbosity
     ? verbosity <= filterLevelCompare
@@ -45,49 +45,45 @@ const getfirstTickerLog = (logs: Log[]): Log => {
   }
 };
 
-const Ticker = (log: Log, index: number) => {
-  const time = formatLogTime(log.created_at);
+const Ticker = (log: Log, index: number, timeOffset: number) => {
+  const time = formatLogTime(log.created_at, timeOffset);
   const type = (log.meta || {}).type;
-  return (
-    // TODO: Should utilize log's `uuid` instead of index.
-    <div key={index} className="status-ticker-wrapper">
-      <div className={`saucer ${type}`} />
-      <label className="status-ticker-message">
-        <Markdown>
-          {log.message.replace(/\s+/g, " ") || "Loading"}
-        </Markdown>
-      </label>
-      <label className="status-ticker-created-at">
-        {time}
-      </label>
-    </div>
-  );
+  // TODO: Should utilize log's `uuid` instead of index.
+  return <div key={index} className="status-ticker-wrapper">
+    <div className={`saucer ${type}`} />
+    <label className="status-ticker-message">
+      <Markdown>
+        {log.message.replace(/\s+/g, " ") || "Loading"}
+      </Markdown>
+    </label>
+    <label className="status-ticker-created-at">
+      {time}
+    </label>
+  </div>;
 };
 
 export let TickerList = (props: TickerListProps) => {
-  return (
-    <div
-      className="ticker-list"
-      onClick={props.toggle("tickerListOpen")} >
-      <div className="first-ticker">
-        {Ticker(getfirstTickerLog(props.logs), -1)}
-      </div>
-      <Collapse isOpen={props.tickerListOpen}>
-        {props
-          .logs
-          .filter((log, index) => index !== 0)
-          .filter((log) => logFilter(log))
-          .map((log: Log, index: number) => Ticker(log, index))}
-      </Collapse>
-      <Collapse isOpen={props.tickerListOpen}>
-        <Link to={"/app/logs"}>
-          <div className="logs-page-link">
-            <label>
-              {t("Filter logs")}
-            </label>
-          </div>
-        </Link>
-      </Collapse>
+  return <div
+    className="ticker-list"
+    onClick={props.toggle("tickerListOpen")} >
+    <div className="first-ticker">
+      {Ticker(getfirstTickerLog(props.logs), -1, props.timeOffset)}
     </div>
-  );
+    <Collapse isOpen={props.tickerListOpen}>
+      {props
+        .logs
+        .filter((log, index) => index !== 0)
+        .filter((log) => logFilter(log))
+        .map((log: Log, index: number) => Ticker(log, index, props.timeOffset))}
+    </Collapse>
+    <Collapse isOpen={props.tickerListOpen}>
+      <Link to={"/app/logs"}>
+        <div className="logs-page-link">
+          <label>
+            {t("Filter logs")}
+          </label>
+        </div>
+      </Link>
+    </Collapse>
+  </div>;
 };

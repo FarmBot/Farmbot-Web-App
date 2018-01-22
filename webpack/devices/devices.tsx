@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { HardwareSettings } from "./components/hardware_settings";
 import { FarmbotOsSettings } from "./components/farmbot_os_settings";
-import { Page, Col, Row } from "../ui";
+import { Page, Col, Row } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { Props } from "./interfaces";
 import { ConnectivityPanel } from "./connectivity/index";
@@ -51,6 +51,8 @@ export class Devices extends React.Component<Props, {}> {
 
   render() {
     if (this.props.auth) {
+      const botToMqttStatus =
+        this.props.botToMqtt ? this.props.botToMqtt.state : "down";
       return <Page className="devices">
         <Row>
           <Col xs={12} sm={6}>
@@ -58,7 +60,7 @@ export class Devices extends React.Component<Props, {}> {
               account={this.props.deviceAccount}
               dispatch={this.props.dispatch}
               bot={this.props.bot}
-              auth={this.props.auth} />
+              botToMqttStatus={botToMqttStatus} />
             <ConnectivityPanel
               status={this.props.deviceAccount.specialStatus}
               onRefresh={this.refresh}
@@ -75,12 +77,14 @@ export class Devices extends React.Component<Props, {}> {
             <HardwareSettings
               controlPanelState={this.props.bot.controlPanelState}
               dispatch={this.props.dispatch}
-              bot={this.props.bot} />
+              bot={this.props.bot}
+              botToMqttStatus={botToMqttStatus} />
             {this.props.bot.hardware.gpio_registry &&
               <PinBindings
                 dispatch={this.props.dispatch}
                 bot={this.props.bot}
-                resources={this.props.resources} />}
+                resources={this.props.resources}
+                botToMqttStatus={botToMqttStatus} />}
           </Col>
         </Row>
       </Page>;

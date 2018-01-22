@@ -2,9 +2,11 @@ import * as React from "react";
 import { t } from "i18next";
 import * as _ from "lodash";
 import {
-  Widget, WidgetBody, WidgetHeader, Row, Col, BlurableInput, DropDownItem
+  Widget, WidgetBody, WidgetHeader,
+  Row, Col,
+  BlurableInput,
+  FBSelect, DropDownItem
 } from "../../ui/index";
-import { FBSelect } from "../../ui/new_fb_select";
 import { ToolTips } from "../../constants";
 import { BotState } from "../interfaces";
 import { registerGpioPin, unregisterGpioPin } from "../actions";
@@ -16,10 +18,12 @@ import { MustBeOnline } from "../must_be_online";
 import { Popover, Position } from "@blueprintjs/core";
 import { RpiGpioDiagram, gpio } from "./rpi_gpio_diagram";
 import { error } from "farmbot-toastr";
+import { NetworkState } from "../../connectivity/interfaces";
 
 export interface PinBindingsProps {
   bot: BotState;
   dispatch: Function;
+  botToMqttStatus: NetworkState;
   resources: ResourceIndex;
 }
 
@@ -177,15 +181,14 @@ export class PinBindings
   }
 
   render() {
-    const syncStatus = this.props.bot.hardware
-      .informational_settings.sync_status || "unknown";
     return <Widget className="pin-bindings-widget">
       <WidgetHeader
         title={"Pin Bindings"}
         helpText={ToolTips.PIN_BINDINGS} />
       <WidgetBody>
         <MustBeOnline
-          status={syncStatus}
+          syncStatus={this.props.bot.hardware.informational_settings.sync_status}
+          networkState={this.props.botToMqttStatus}
           lockOpen={process.env.NODE_ENV !== "production"}>
           <Row>
             <Col xs={ColumnWidth.pin}>

@@ -8,9 +8,7 @@ import { AuthState } from "../auth/interfaces";
 export const storeToken =
   (old: AuthState, dispatch: Function) => (_new: AuthState | undefined) => {
     const t = _new || old;
-    if (!_new) {
-      console.warn("Failed to refresh token. Something is wrong.");
-    }
+    (!_new) && console.warn("Failed to refresh token. Something is wrong.");
     dispatch(setToken(t));
     didLogin(t, dispatch);
   };

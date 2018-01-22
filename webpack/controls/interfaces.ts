@@ -6,6 +6,7 @@ import {
   TaggedWebcamFeed,
   TaggedPeripheral
 } from "../resources/tagged_resources";
+import { NetworkState } from "../connectivity/interfaces";
 
 export interface Props {
   dispatch: Function;
@@ -14,6 +15,7 @@ export interface Props {
   user: TaggedUser | undefined;
   peripherals: TaggedPeripheral[];
   resources: RestResources;
+  botToMqttStatus: NetworkState;
 }
 
 export interface MoveProps {
@@ -21,12 +23,25 @@ export interface MoveProps {
   bot: BotState;
   user: TaggedUser | undefined;
   disabled: boolean | undefined;
+  raw_encoders: boolean;
+  scaled_encoders: boolean;
+  x_axis_inverted: boolean;
+  y_axis_inverted: boolean;
+  z_axis_inverted: boolean;
+  botToMqttStatus: NetworkState
 }
 
 export interface DirectionButtonProps {
   axis: Xyz;
   direction: "up" | "down" | "left" | "right";
-  isInverted: boolean;
+  directionAxisProps: {
+    isInverted: boolean;
+    stopAtHome: boolean;
+    stopAtMax: boolean;
+    axisLength: number;
+    negativeOnly: boolean;
+    position: number | undefined;
+  }
   steps: number;
   disabled: boolean | undefined;
 }

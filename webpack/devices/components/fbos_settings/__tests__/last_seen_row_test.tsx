@@ -7,7 +7,8 @@ describe("<LastSeen/>", () => {
   const resource = () => fakeResource("Device", {
     id: 1,
     name: "foo",
-    last_saw_api: ""
+    last_saw_api: "",
+    tz_offset_hrs: 0
   });
   it("blinks when loading", () => {
     const r = resource();

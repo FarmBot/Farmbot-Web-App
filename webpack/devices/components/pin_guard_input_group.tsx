@@ -1,8 +1,7 @@
 import * as React from "react";
 import { McuInputBox } from "./mcu_input_box";
 import { PinGuardMCUInputGroupProps } from "./interfaces";
-import { Row } from "../../ui/row";
-import { Col } from "../../ui/index";
+import { Row, Col } from "../../ui/index";
 import { settingToggle } from "../actions";
 import { ToggleButton } from "../../controls/toggle_button";
 import { isUndefined } from "util";

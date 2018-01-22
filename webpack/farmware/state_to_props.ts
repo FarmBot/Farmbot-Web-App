@@ -1,5 +1,5 @@
 import { Everything } from "../interfaces";
-import { selectAllImages } from "../resources/selectors";
+import { selectAllImages, maybeGetTimeOffset } from "../resources/selectors";
 import { FarmwareProps } from "../devices/interfaces";
 import { prepopulateEnv } from "./weed_detector/remote_env/selectors";
 import * as _ from "lodash";
@@ -15,18 +15,15 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     .filter(i => i.uuid === props.resources.consumers.farmware.currentImage)[0]
     || firstImage;
   const { farmwares } = props.bot.hardware.process_info;
-  const syncStatus = props
-    .bot
-    .hardware
-    .informational_settings
-    .sync_status || "unknown";
   return {
+    timeOffset: maybeGetTimeOffset(props.resources.index),
     farmwares,
-    syncStatus,
+    botToMqttStatus: "up",
     env: prepopulateEnv(props.bot.hardware.user_env),
     user_env: props.bot.hardware.user_env,
     dispatch: props.dispatch,
     currentImage,
-    images
+    images,
+    syncStatus: "synced"
   };
 }

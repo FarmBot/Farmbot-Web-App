@@ -28,7 +28,6 @@ export interface GardenMapLegendProps {
   toggle: (property: keyof State) => () => void;
   updateBotOriginQuadrant: (quadrant: number) => () => void;
   botOriginQuadrant: number;
-  zoomLvl: number;
   legendMenuOpen: boolean;
   showPlants: boolean;
   showPoints: boolean;
@@ -88,6 +87,7 @@ export interface MapBackgroundProps {
 export interface GridProps {
   mapTransformProps: MapTransformProps;
   dispatch: Function;
+  onClick(): void;
 }
 
 export interface VirtualFarmBotProps {

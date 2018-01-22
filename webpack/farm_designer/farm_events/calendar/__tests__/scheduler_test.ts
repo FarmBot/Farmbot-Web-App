@@ -1,4 +1,11 @@
-import { scheduler, scheduleForFarmEvent, TimeLine, farmEventIntervalSeconds } from "../scheduler";
+import {
+  scheduler,
+  scheduleForFarmEvent,
+  TimeLine,
+  farmEventIntervalSeconds,
+  maxDisplayItems,
+  gracePeriodSeconds
+} from "../scheduler";
 import * as moment from "moment";
 import { TimeUnit } from "../../../interfaces";
 import { Moment } from "moment";
@@ -23,9 +30,9 @@ describe("scheduler", () => {
       startTime: tuesday,
       endTime: thursday
     });
-    expect(result1[0].format("dd")).toEqual("Tu");
-    expect(result1[0].hour()).toEqual(4);
-    expect(result1.length).toEqual(16);
+    expect(result1.items[0].format("dd")).toEqual("Tu");
+    expect(result1.items[0].hour()).toEqual(4);
+    expect(result1.items.length).toEqual(16);
     const EXPECTED = [
       "04:00am Tu",
       "08:00am Tu",
@@ -44,130 +51,197 @@ describe("scheduler", () => {
       "12:00pm Th",
       "04:00pm Th"
     ];
-    const REALITY = result1.map(x => x.format("hh:mma dd"));
+    const REALITY = result1.items.map(x => x.format("hh:mma dd"));
     EXPECTED.map(x => expect(REALITY).toContain(x));
   });
+});
 
-  function testSchedule(
-    description: string,
-    fakeEvent: TimeLine,
-    timeNow: Moment,
-    expected: Moment[]) {
+describe("scheduleForFarmEvent", () => {
+  interface TestScheduleProps {
+    description: string;
+    fakeEvent: TimeLine;
+    timeNow: Moment;
+    expected: Moment[];
+    shortenedBy: number;
+  }
+
+  function testSchedule(props: TestScheduleProps) {
+    const { description, fakeEvent, timeNow, expected, shortenedBy } = props;
     it(description, () => {
       const result = scheduleForFarmEvent(fakeEvent, timeNow);
-      expect(result.length).toEqual(expected.length);
+      expect(result.items.length).toEqual(expected.length);
       expected.map((expectation, index) => {
-        expect(result[index]).toBeSameTimeAs(expectation);
+        expect(result.items[index]).toBeSameTimeAs(expectation);
       });
+      expect(result.shortenedBy).toEqual(shortenedBy);
     });
   }
 
   const singleFarmEvent: TimeLine = {
-    "start_time": "2017-08-01T17:00:00.000Z",
-    "end_time": "2017-08-01T18:00:00.000Z",
-    "repeat": 1,
-    "time_unit": "never"
+    start_time: "2017-08-01T17:00:00.000Z",
+    end_time: "2017-08-01T18:00:00.000Z",
+    repeat: 1,
+    time_unit: "never"
   };
 
-  testSchedule("schedules a FarmEvent",
+  const scheduleTestData: TestScheduleProps[] = [
     {
-      "start_time": "2017-08-01T17:30:00.000Z",
-      "end_time": "2017-08-07T05:00:00.000Z",
-      "repeat": 2,
-      "time_unit": "daily"
+      description: "schedules a FarmEvent",
+      fakeEvent: {
+        start_time: "2017-08-01T17:30:00.000Z",
+        end_time: "2017-08-07T05:00:00.000Z",
+        repeat: 2,
+        time_unit: "daily"
+      },
+      timeNow: moment("2017-08-01T16:30:00.000Z"),
+      expected: [
+        moment("2017-08-01T17:30:00.000Z"),
+        moment("2017-08-03T17:30:00.000Z"),
+        moment("2017-08-05T17:30:00.000Z")
+      ],
+      shortenedBy: 0
     },
-    moment("2017-08-01T16:30:00.000Z"),
-    [
-      moment("2017-08-01T17:30:00.000Z"),
-      moment("2017-08-03T17:30:00.000Z"),
-      moment("2017-08-05T17:30:00.000Z")
-    ]);
-
-  testSchedule("handles 0 as a repeat value",
     {
-      "start_time": "2017-08-01T17:30:00.000Z",
-      "end_time": "2017-08-07T05:00:00.000Z",
-      "repeat": 0,
-      "time_unit": "daily"
+      description: "handles 0 as a repeat value",
+      fakeEvent: {
+        start_time: "2017-08-01T17:30:00.000Z",
+        end_time: "2017-08-07T05:00:00.000Z",
+        repeat: 0,
+        time_unit: "daily"
+      },
+      timeNow: moment("2017-08-01T16:30:00.000Z"),
+      expected: [moment("2017-08-01T17:30:00.000Z")],
+      shortenedBy: 0
     },
-    moment("2017-08-01T16:30:00.000Z"),
-    [moment("2017-08-01T17:30:00.000Z")]);
-
-  testSchedule("handles start_time in the past",
     {
-      "start_time": "2017-08-01T17:30:00.000Z",
-      "end_time": "2017-08-09T05:00:00.000Z",
-      "repeat": 2,
-      "time_unit": "daily"
+      description: "handles start_time in the past",
+      fakeEvent: {
+        start_time: "2017-08-01T17:30:00.000Z",
+        end_time: "2017-08-09T05:00:00.000Z",
+        repeat: 2,
+        time_unit: "daily"
+      },
+      timeNow: moment("2017-08-03T18:30:00.000Z"),
+      expected: [
+        moment("2017-08-05T17:30:00.000Z"),
+        moment("2017-08-07T17:30:00.000Z")
+      ],
+      shortenedBy: 0
     },
-    moment("2017-08-03T18:30:00.000Z"),
-    [
-      moment("2017-08-05T17:30:00.000Z"),
-      moment("2017-08-07T17:30:00.000Z")
-    ]);
-
-  testSchedule("handles start_time in the past: no repeat",
-    singleFarmEvent,
-    moment("2017-08-01T17:30:00.000Z"),
-    [moment("2017-08-01T17:00:00.000Z")]);
-
-  testSchedule("uses grace period",
     {
-      "start_time": "2017-08-01T17:30:00.000Z",
-      "end_time": "2017-08-02T05:00:00.000Z",
-      "repeat": 4,
-      "time_unit": "hourly"
+      description: "handles start_time in the past: no repeat",
+      fakeEvent: singleFarmEvent,
+      timeNow: moment("2017-08-01T17:30:00.000Z"),
+      expected: [moment("2017-08-01T17:00:00.000Z")],
+      shortenedBy: 0
     },
-    moment("2017-08-01T17:30:30.000Z"),
-    [
-      moment("2017-08-01T17:30:00.000Z"),
-      moment("2017-08-01T21:30:00.000Z"),
-      moment("2017-08-02T01:30:00.000Z")
-    ]);
-
-  testSchedule("uses grace period: no repeat",
-    singleFarmEvent,
-    moment("2017-08-01T17:00:30.000Z"),
-    [moment("2017-08-01T17:00:00.000Z")]);
-
-  testSchedule("farm event over",
     {
-      "start_time": "2017-08-01T17:30:00.000Z",
-      "end_time": "2017-08-02T05:00:00.000Z",
-      "repeat": 4,
-      "time_unit": "hourly"
+      description: `uses grace period (${gracePeriodSeconds}s)`,
+      fakeEvent: {
+        start_time: "2017-08-01T17:30:00.000Z",
+        end_time: "2017-08-02T05:00:00.000Z",
+        repeat: 4,
+        time_unit: "hourly"
+      },
+      timeNow: moment("2017-08-01T17:30:00.000Z")
+        .add(gracePeriodSeconds / 2, "seconds"),
+      expected: [
+        moment("2017-08-01T17:30:00.000Z"),
+        moment("2017-08-01T21:30:00.000Z"),
+        moment("2017-08-02T01:30:00.000Z")
+      ],
+      shortenedBy: 0
     },
-    moment("2017-08-03T17:30:30.000Z"),
-    []);
-
-  testSchedule("farm event over: no repeat",
-    singleFarmEvent,
-    moment("2017-08-01T19:00:00.000Z"),
-    []);
-
-  testSchedule("first 60 items",
     {
-      "start_time": "2017-08-02T17:00:00.000Z",
-      "end_time": "2017-08-02T19:00:00.000Z",
-      "repeat": 1,
-      "time_unit": "minutely"
+      description: `uses grace period (${gracePeriodSeconds}s): no repeat`,
+      fakeEvent: singleFarmEvent,
+      timeNow: moment("2017-08-01T17:00:00.000Z")
+        .add(gracePeriodSeconds / 2, "seconds"),
+      expected: [moment("2017-08-01T17:00:00.000Z")],
+      shortenedBy: 0
     },
-    moment("2017-08-01T15:30:00.000Z"),
-    range(0, 60)
-      .map((x: number) =>
-        moment(`2017-08-02T17:${padStart("" + x, 2, "0")}:00.000Z`)));
-
-  testSchedule("only 60 items",
     {
-      "start_time": "2017-08-02T16:00:00.000Z",
-      "end_time": "2017-08-02T21:00:00.000Z",
-      "repeat": 1,
-      "time_unit": "minutely"
+      description: "farm event over",
+      fakeEvent: {
+        start_time: "2017-08-01T17:30:00.000Z",
+        end_time: "2017-08-02T05:00:00.000Z",
+        repeat: 4,
+        time_unit: "hourly"
+      },
+      timeNow: moment("2017-08-03T17:30:30.000Z"),
+      expected: [],
+      shortenedBy: 0
     },
-    moment("2017-08-02T17:01:00.000Z"),
-    range(0, 60)
-      .map((x: number) =>
-        moment(`2017-08-02T17:${padStart("" + x, 2, "0")}:00.000Z`)));
+    {
+      description: "farm event over: no repeat",
+      fakeEvent: singleFarmEvent,
+      timeNow: moment("2017-08-01T19:00:00.000Z"),
+      expected: [],
+      shortenedBy: 0
+    },
+    {
+      description: `first ${maxDisplayItems} items`,
+      fakeEvent: {
+        start_time: "2017-08-02T17:00:00.000Z",
+        end_time: "2017-08-02T19:00:00.000Z",
+        repeat: 1,
+        time_unit: "minutely"
+      },
+      timeNow: moment("2017-08-01T15:30:00.000Z"),
+      expected: range(0, maxDisplayItems)
+        .map((x: number) =>
+          moment(`2017-08-02T17:${padStart("" + x, 2, "0")}:00.000Z`)),
+      shortenedBy: 120 - maxDisplayItems
+    },
+    {
+      description: `only ${maxDisplayItems} items`,
+      fakeEvent: {
+        start_time: "2017-08-02T16:00:00.000Z",
+        end_time: "2017-08-02T21:00:00.000Z",
+        repeat: 1,
+        time_unit: "minutely"
+      },
+      timeNow: moment("2017-08-02T17:00:00.000Z")
+        .add(gracePeriodSeconds, "seconds"),
+      expected: range(0, maxDisplayItems)
+        .map((x: number) =>
+          moment(`2017-08-02T17:${padStart("" + x, 2, "0")}:00.000Z`)),
+      shortenedBy: 240 - maxDisplayItems
+    },
+    {
+      description: "item at end time is not rendered",
+      fakeEvent: {
+        start_time: "2017-08-01T17:30:00.000Z",
+        end_time: "2017-08-02T01:30:00.000Z",
+        repeat: 4,
+        time_unit: "hourly"
+      },
+      timeNow: moment("2017-08-01T16:30:00.000Z"),
+      expected: [
+        moment("2017-08-01T17:30:00.000Z"),
+        moment("2017-08-01T21:30:00.000Z")
+      ],
+      shortenedBy: 0
+    },
+    {
+      description: `shows item at grace period (${gracePeriodSeconds}s) cutoff`,
+      fakeEvent: {
+        start_time: "2017-08-01T17:30:00.000Z",
+        end_time: "2017-08-02T01:30:00.000Z",
+        repeat: 4,
+        time_unit: "hourly"
+      },
+      timeNow: moment("2017-08-01T17:30:00.000Z")
+        .add(gracePeriodSeconds, "seconds"),
+      expected: [
+        moment("2017-08-01T17:30:00.000Z"),
+        moment("2017-08-01T21:30:00.000Z")
+      ],
+      shortenedBy: 0
+    },
+  ];
+
+  scheduleTestData.map(testCaseData => testSchedule(testCaseData));
 });
 
 describe("farmEventIntervalSeconds", () => {

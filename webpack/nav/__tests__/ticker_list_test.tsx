@@ -3,13 +3,13 @@ const mockStorj: Dictionary<number | boolean> = {};
 jest.mock("../../session", () => {
   return {
     Session: {
-      getNum: (k: string) => {
+      deprecatedGetNum: (k: string) => {
         return mockStorj[k];
       },
-      setNum: (k: string, v: number) => {
+      deprecatedSetNum: (k: string, v: number) => {
         mockStorj[k] = v;
       },
-      getBool: (k: string) => {
+      deprecatedGetBool: (k: string) => {
         mockStorj[k] = !!mockStorj[k];
         return mockStorj[k];
       }
@@ -43,6 +43,7 @@ describe("<TickerList />", () => {
   it("shows log message and datetime", () => {
     const wrapper = mount(
       <TickerList
+        timeOffset={0}
         logs={[log]}
         tickerListOpen={false}
         toggle={jest.fn()} />
@@ -61,6 +62,7 @@ describe("<TickerList />", () => {
   it("shows empty log message", () => {
     const wrapper = mount(
       <TickerList
+        timeOffset={0}
         logs={[]}
         tickerListOpen={false}
         toggle={jest.fn()} />
@@ -73,6 +75,7 @@ describe("<TickerList />", () => {
   it("opens ticker", () => {
     const wrapper = mount(
       <TickerList
+        timeOffset={0}
         logs={[log, log]}
         tickerListOpen={true}
         toggle={jest.fn()} />
@@ -90,10 +93,10 @@ describe("<TickerList />", () => {
 
   it("all logs filtered out", () => {
     ["success", "busy", "warn", "error", "info", "fun", "debug"]
-      .map(logType => mockStorj[logType + "Log"] = 0);
+      .map(logType => mockStorj[logType + "_log"] = 0);
     log.meta.verbosity = 1;
     const wrapper = mount(<TickerList
-      logs={[log]} tickerListOpen={false} toggle={jest.fn()} />);
+      logs={[log]} tickerListOpen={false} toggle={jest.fn()} timeOffset={0} />);
     const labels = wrapper.find("label");
     expect(labels.length).toEqual(2);
     expect(labels.at(0).text())

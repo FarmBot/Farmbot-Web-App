@@ -21,7 +21,10 @@ import { toastErrors } from "../toast_errors";
 
 export function didLogin(authState: AuthState, dispatch: Function) {
   API.setBaseUrl(authState.token.unencoded.iss);
-  dispatch(fetchReleases(authState.token.unencoded.os_update_server));
+  const { os_update_server, beta_os_update_server } = authState.token.unencoded;
+  dispatch(fetchReleases(os_update_server));
+  beta_os_update_server && beta_os_update_server != "NOT_SET" &&
+    dispatch(fetchReleases(beta_os_update_server, { beta: true }));
   dispatch(setToken(authState));
   Sync.fetchSyncData(dispatch);
   dispatch(connectDevice(authState));

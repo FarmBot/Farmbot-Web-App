@@ -34,35 +34,31 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
   state: State = { guideOpen: false };
 
   render() {
-    return (
-      <div>
-        <Overlay
-          isOpen={this.state.guideOpen}
-          onClose={this.toggle("guideOpen")}>
-          <div className={hotkeyGuideClasses}>
-            <h3>{t("Hotkeys")}</h3>
-            <i
-              className="fa fa-times"
-              onClick={this.toggle("guideOpen")} />
-            {
-              this.hotkeys(this.props.dispatch, "")
-                .map(hotkey => {
-                  return (
-                    <Row key={hotkey.combo}>
-                      <Col xs={5}>
-                        <label>{hotkey.label}</label>
-                      </Col>
-                      <Col xs={7}>
-                        <code>{hotkey.combo}</code>
-                      </Col>
-                    </Row>
-                  );
-                })
-            }
-          </div>
-        </Overlay>
-      </div>
-    );
+    return <div>
+      <Overlay
+        isOpen={this.state.guideOpen}
+        onClose={this.toggle("guideOpen")}>
+        <div className={hotkeyGuideClasses}>
+          <h3>{t("Hotkeys")}</h3>
+          <i
+            className="fa fa-times"
+            onClick={this.toggle("guideOpen")} />
+          {
+            this.hotkeys(this.props.dispatch, "")
+              .map(hotkey => {
+                return <Row key={hotkey.combo}>
+                  <Col xs={5}>
+                    <label>{hotkey.label}</label>
+                  </Col>
+                  <Col xs={7}>
+                    <code>{hotkey.combo}</code>
+                  </Col>
+                </Row>;
+              })
+          }
+        </div>
+      </Overlay>
+    </div>;
   }
 
   toggle = (property: keyof State) => () =>

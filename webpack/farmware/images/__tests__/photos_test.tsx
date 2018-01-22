@@ -30,7 +30,10 @@ describe("<Photos/>", () => {
 
   it("renders title", () => {
     const wrapper = mount(<Photos
-      images={[]} currentImage={undefined} dispatch={jest.fn()} />);
+      images={[]}
+      currentImage={undefined}
+      dispatch={jest.fn()}
+      timeOffset={0} />);
     expect(wrapper.text()).toContain("Photos");
   });
 
@@ -38,14 +41,19 @@ describe("<Photos/>", () => {
     const dispatch = jest.fn();
     const images = prepareImages(fakeImages);
     const currentImage = images[1];
-    const props = { images, currentImage, dispatch };
+    const props = { images, currentImage, dispatch, timeOffset: 0 };
     const wrapper = mount(<Photos {...props} />);
     expect(wrapper.text()).toContain("Created At:June 1st, 2017");
     expect(wrapper.text()).toContain("X:632Y:347Z:164");
   });
 
   it("no photos", () => {
-    const props = { images: [], currentImage: undefined, dispatch: jest.fn() };
+    const props = {
+      images: [],
+      currentImage: undefined,
+      dispatch: jest.fn(),
+      timeOffset: 0
+    };
     const wrapper = mount(<Photos {...props} />);
     expect(wrapper.text()).toContain("Image:No meta data.");
   });
@@ -54,7 +62,12 @@ describe("<Photos/>", () => {
     const dispatch = jest.fn(() => { return Promise.resolve(); });
     const images = prepareImages(fakeImages);
     const currentImage = images[1];
-    const props = { images, currentImage, dispatch };
+    const props = {
+      images,
+      currentImage,
+      dispatch,
+      timeOffset: 0
+    };
     const wrapper = mount(<Photos {...props} />);
     const deleteButton = wrapper.find("button").at(1);
     expect(deleteButton.text().toLowerCase()).toBe("delete photo");

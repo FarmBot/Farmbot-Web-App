@@ -1,4 +1,4 @@
-import { DropDownItem } from "../ui/fb_select";
+import { DropDownItem } from "../ui/index";
 import {
   TaggedTool,
   TaggedToolSlotPointer,
@@ -25,7 +25,7 @@ export interface Props {
 
 export interface Tool {
   id?: number | undefined;
-  name: string;
+  name?: string;
 }
 
 export interface ToolBayListProps {

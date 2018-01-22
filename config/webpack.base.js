@@ -9,7 +9,8 @@ module.exports = function () {
       "password_reset": "./webpack/password_reset/index.tsx",
       "tos_update": "./webpack/tos_update/index.tsx"
     },
-    devtool: "eval",
+    // Was "eval", but that did not go well with our CSP
+    devtool: "cheap-module-source-map",
     module: {
       rules: [
         {

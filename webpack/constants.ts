@@ -354,6 +354,10 @@ export namespace Content {
     trim(`This will restart FarmBot's Raspberry Pi and controller
     software.`);
 
+  export const OS_AUTO_UPDATE =
+    trim(`When enabled, FarmBot OS will periodically check for, download,
+    and install updates automatically.`);
+
   export const AUTO_SYNC =
     trim(`When enabled, device resources such as sequences and regimens
     will be sent to the device automatically. This removes the need to push
@@ -364,6 +368,10 @@ export namespace Content {
   export const SHUTDOWN_FARMBOT =
     trim(`This will shutdown FarmBot's Raspberry Pi. To turn it
     back on, unplug FarmBot and plug it back in.`);
+
+  export const OS_BETA_RELEASES =
+    trim(`Warning! Opting in to FarmBot OS beta releases may reduce
+    FarmBot system stability. Are you sure?`);
 
   // Hardware Settings
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
@@ -417,14 +425,20 @@ export namespace Content {
     Perhaps you entered bad dates?`);
 
   export const FARM_EVENT_TZ_WARNING =
-    trim(`Note: Times displayed according to local browser time, which
-    is currently different from your device timezone setting (on the
-    Device page).`);
+    trim(`Note: Times displayed according to FarmBot's local time, which
+    is currently different from your browser's time. Timezone data is configurable
+    on the Device page).`);
 
   export const FIRST_PARTY_WARNING =
     trim(`Are you sure you want to delete this first party farmware?
     Doing so will limit the functionality of your FarmBot and
     may cause unexpected behavior.`);
+
+  export const SET_TIMEZONE_HEADER =
+    trim(`You must set a timezone before using the FarmEvent feature.`);
+
+  export const SET_TIMEZONE_BODY =
+    trim(`Set device timezone here.`);
 }
 
 export enum Actions {
@@ -461,7 +475,7 @@ export enum Actions {
   SETTING_UPDATE_END = "SETTING_UPDATE_END",
   BOT_CHANGE = "BOT_CHANGE",
   FETCH_OS_UPDATE_INFO_OK = "FETCH_OS_UPDATE_INFO_OK",
-  FETCH_FW_UPDATE_INFO_OK = "FETCH_FW_UPDATE_INFO_OK",
+  FETCH_BETA_OS_UPDATE_INFO_OK = "FETCH_BETA_OS_UPDATE_INFO_OK",
   INVERT_JOG_BUTTON = "INVERT_JOG_BUTTON",
   DISPLAY_ENCODER_DATA = "DISPLAY_ENCODER_DATA",
   STASH_STATUS = "STASH_STATUS",
@@ -475,6 +489,7 @@ export enum Actions {
   SELECT_PLANT = "SELECT_PLANT",
   TOGGLE_HOVERED_PLANT = "TOGGLE_HOVERED_PLANT",
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
+  CHOOSE_LOCATION = "CHOOSE_LOCATION",
 
   // Regimens
   PUSH_WEEK = "PUSH_WEEK",

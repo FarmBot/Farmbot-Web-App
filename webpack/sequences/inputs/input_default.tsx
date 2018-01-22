@@ -2,7 +2,7 @@ import * as React from "react";
 import { updateStep } from "../step_tiles/index";
 import { isString, isNumber } from "lodash";
 import { StepInputProps } from "../interfaces";
-import { BlurableInput } from "../../ui";
+import { BlurableInput } from "../../ui/index";
 import { Dictionary } from "farmbot/dist";
 
 export function InputDefault({

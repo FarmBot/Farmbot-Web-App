@@ -3,9 +3,8 @@ import { ActiveMiddleProps } from "./interfaces";
 import { execSequence } from "../devices/actions";
 import { editCurrentSequence } from "./actions";
 import { splice, move } from "./step_tiles/index";
-import { ColorPicker } from "../ui";
 import { t } from "i18next";
-import { BlurableInput, Row, Col, SaveBtn } from "../ui";
+import { BlurableInput, Row, Col, SaveBtn, ColorPicker } from "../ui/index";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
 import { copySequence } from "./actions";
@@ -48,57 +47,55 @@ export class SequenceEditorMiddleActive extends
   render() {
     const { dispatch, sequence } = this.props;
 
-    return (
-      <div className="sequence-editor-content">
-        <div className="sequence-editor-tools">
-          <div className="button-group">
-            <SaveBtn status={sequence.specialStatus}
-              onClick={() => { dispatch(save(sequence.uuid)); }} />
-            <TestButton
-              syncStatus={this.props.syncStatus}
-              sequence={sequence}
-              onFail={warning}
-              onClick={() => execSequence(sequence.body)} />
-            <button
-              className="fb-button red"
-              onClick={() => dispatch(destroy(sequence.uuid))}>
-              {t("Delete")}
-            </button>
-            <button
-              className="fb-button yellow"
-              onClick={copy(dispatch, sequence)}>
-              {t("Copy")}
-            </button>
-          </div>
-          <Row>
-            <Col xs={11}>
-              <BlurableInput value={sequence.body.name}
-                onCommit={(e) => {
-                  dispatch(edit(sequence, { name: e.currentTarget.value }));
-                }} />
-            </Col>
-            <ColorPicker
-              current={sequence.body.color}
-              onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
-          </Row>
-          {/*  <LocalsList
+    return <div className="sequence-editor-content">
+      <div className="sequence-editor-tools">
+        <div className="button-group">
+          <SaveBtn status={sequence.specialStatus}
+            onClick={() => { dispatch(save(sequence.uuid)); }} />
+          <TestButton
+            syncStatus={this.props.syncStatus}
+            sequence={sequence}
+            onFail={warning}
+            onClick={() => execSequence(sequence.body)} />
+          <button
+            className="fb-button red"
+            onClick={() => dispatch(destroy(sequence.uuid))}>
+            {t("Delete")}
+          </button>
+          <button
+            className="fb-button yellow"
+            onClick={copy(dispatch, sequence)}>
+            {t("Copy")}
+          </button>
+        </div>
+        <Row>
+          <Col xs={11}>
+            <BlurableInput value={sequence.body.name}
+              onCommit={(e) => {
+                dispatch(edit(sequence, { name: e.currentTarget.value }));
+              }} />
+          </Col>
+          <ColorPicker
+            current={sequence.body.color}
+            onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
+        </Row>
+        {/*  <LocalsList
             sequence={this.props.sequence}
             resources={this.props.resources}
           dispatch={this.props.dispatch} /> */}
-          <hr style={{ /* marginBottom: 0 */ }} />
-        </div>
-        <div className="sequence">
-          <AllSteps onDrop={onDrop(dispatch, sequence)} {...this.props} />
-          <Row>
-            <Col xs={12}>
-              <DropArea isLocked={true}
-                callback={(key) => onDrop(dispatch, sequence)(Infinity, key)}>
-                {t("DRAG COMMAND HERE")}
-              </DropArea>
-            </Col>
-          </Row>
-        </div>
+        <hr style={{ /* marginBottom: 0 */ }} />
       </div>
-    );
+      <div className="sequence" id="sequenceDiv">
+        <AllSteps onDrop={onDrop(dispatch, sequence)} {...this.props} />
+        <Row>
+          <Col xs={12}>
+            <DropArea isLocked={true}
+              callback={(key) => onDrop(dispatch, sequence)(Infinity, key)}>
+              {t("DRAG COMMAND HERE")}
+            </DropArea>
+          </Col>
+        </Row>
+      </div>
+    </div>;
   }
 }

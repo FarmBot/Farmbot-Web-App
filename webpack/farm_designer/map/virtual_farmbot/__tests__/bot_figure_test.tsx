@@ -2,7 +2,7 @@ import * as React from "react";
 import { shallow } from "enzyme";
 import { BotOriginQuadrant } from "../../../interfaces";
 import { BotFigure, BotFigureProps } from "../bot_figure";
-import { Color } from "../../../../ui/colors";
+import { Color } from "../../../../ui/index";
 
 describe("<BotFigure/>", () => {
   function fakeProps(): BotFigureProps {

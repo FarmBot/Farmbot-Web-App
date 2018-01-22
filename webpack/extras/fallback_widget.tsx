@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Widget, WidgetHeader } from "../ui";
+import { Widget, WidgetHeader } from "../ui/index";
 
 /*
  * Widget to display if the desired widget fails to load.
@@ -25,15 +25,13 @@ export class FallbackWidget extends
   React.Component<FallbackWidgetProps, {}> {
 
   render() {
-    return (
-      <Widget>
-        <WidgetHeader
-          title={t(this.props.title)}
-          helpText={this.props.helpText} />
-        <div className="widget-body">
-          {t("Widget load failed.")}
-        </div>
-      </Widget>
-    );
+    return <Widget>
+      <WidgetHeader
+        title={t(this.props.title)}
+        helpText={this.props.helpText} />
+      <div className="widget-body">
+        {t("Widget load failed.")}
+      </div>
+    </Widget>;
   }
 }

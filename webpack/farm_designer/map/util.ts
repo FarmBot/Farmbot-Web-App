@@ -1,7 +1,4 @@
-import {
-  BotOriginQuadrant,
-  isBotOriginQuadrant
-} from "../interfaces";
+import { BotOriginQuadrant, isBotOriginQuadrant } from "../interfaces";
 import { McuParams } from "farmbot";
 import { StepsPerMmXY } from "../../devices/interfaces";
 import { CheckedAxisLength, AxisNumberProperty, BotSize } from "./interfaces";

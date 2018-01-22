@@ -7,9 +7,7 @@ import {
   SyncStatus
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
-import {
-  TaggedSequence
-} from "../resources/tagged_resources";
+import { TaggedSequence } from "../resources/tagged_resources";
 import { ResourceIndex } from "../resources/interfaces";
 import { JSXChildren } from "../util";
 

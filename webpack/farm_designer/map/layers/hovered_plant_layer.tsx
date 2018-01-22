@@ -47,7 +47,7 @@ export class HoveredPlantLayer extends
     const hovered = !!this.props.designer.hoveredPlant.icon;
     const scaledRadius = currentPlant ? radius : radius * 1.2;
     const alpha = dragging ? 0.4 : 1.0;
-    const animate = !Session.getBool(BooleanSetting.disableAnimations);
+    const animate = !Session.deprecatedGetBool(BooleanSetting.disable_animations);
 
     return <g id="hovered-plant-layer">
       {this.props.visible && hovered &&

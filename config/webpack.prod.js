@@ -13,7 +13,7 @@ conf.output = {
   path: path.join(__dirname, '..', 'public', 'webpack'),
   publicPath: '/webpack/',
   filename: '[name]-[chunkhash].js',
-  chunkFilename: '[id].chunk.js'
+  chunkFilename: '[id].[chunkhash].js'
 };
 
 [
@@ -38,7 +38,9 @@ conf.output = {
     compressor: { warnings: false }
   }),
   new webpack.DefinePlugin({
-    "process.env.NODE_ENV": JSON.stringify("production")
+    'process.env': {
+      'NODE_ENV': JSON.stringify("production")
+    }
   })
 ].map(x => conf.plugins.push(x));
 

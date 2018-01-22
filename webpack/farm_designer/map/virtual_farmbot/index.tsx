@@ -10,8 +10,8 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
   const {
     mapTransformProps, plantAreaOffset, peripherals, eStopStatus
   } = props;
-  const displayTrail = Session.getBool(BooleanSetting.displayTrail);
-  const encoderFigure = Session.getBool(BooleanSetting.encoderFigure);
+  const displayTrail = Session.deprecatedGetBool(BooleanSetting.display_trail);
+  const encoderFigure = Session.deprecatedGetBool(BooleanSetting.encoder_figure);
 
   return <g id="virtual-farmbot">
     <BotPeripherals

@@ -18,6 +18,7 @@ export interface NavBarProps {
   user: TaggedUser | undefined;
   dispatch: Function;
   autoSyncEnabled: boolean;
+  timeOffset: number;
 }
 
 export interface NavBarState {
@@ -37,6 +38,7 @@ export interface TickerListProps {
   toggle: (property: keyof NavBarState) => ToggleEventHandler;
   logs: Log[]
   tickerListOpen: boolean;
+  timeOffset: number;
 }
 
 export interface NavLinksProps {

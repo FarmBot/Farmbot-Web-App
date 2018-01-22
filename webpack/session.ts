@@ -1,7 +1,8 @@
 import { AuthState } from "./auth/interfaces";
 import { box } from "boxed_value";
-import { get, isNumber, isBoolean } from "lodash";
+import { BooleanConfigKey, NumberConfigKey } from "./config_storage/web_app_configs";
 import { BooleanSetting, NumericSetting } from "./session_keys";
+import * as LegacyShim from "./config/legacy_shims";
 
 /** The `Session` namespace is a wrapper for `localStorage`.
  * Use this to avoid direct access of `localStorage` where possible.
@@ -43,56 +44,53 @@ export namespace Session {
     return undefined as never;
   }
 
-  /** Fetch a *boolean* value from localstorage. Returns `undefined` when
-   * none are found.*/
-  export function getBool(key: BooleanSetting): boolean | undefined {
-    const output = JSON.parse(localStorage.getItem(key) || "null");
-    return (isBoolean(output)) ? output : undefined;
+  /** @deprecated Don't use this anymore. This is a legacy articfact of when we
+   * used localStorage to store API settings. */
+  export function deprecatedGetBool(key: BooleanConfigKey): boolean | undefined {
+    return LegacyShim.getBoolViaRedux(key);
   }
 
   /** Store a boolean value in `localStorage` */
-  export function setBool(key: BooleanSetting, val: boolean): boolean {
-    localStorage.setItem(key, JSON.stringify(val));
-    return val;
+  export function setBool(key: BooleanConfigKey, val: boolean): boolean {
+    return LegacyShim.setBoolViaRedux(key, val);
   }
 
-  export function invertBool(key: BooleanSetting): boolean {
-    return Session.setBool(key, !Session.getBool(key));
+  export function invertBool(key: BooleanConfigKey): boolean {
+    return Session.setBool(key, !Session.deprecatedGetBool(key));
   }
 
   /** Extract numeric settings from `localStorage`. Returns `undefined` when
    * none are found. */
-  export function getNum(key: NumericSetting): number | undefined {
-    const output = JSON.parse(get(localStorage, key, "null"));
-    return (isNumber(output)) ? output : undefined;
+  export function deprecatedGetNum(key: NumberConfigKey): number | undefined {
+    return LegacyShim.getNumViaRedux(key);
   }
 
   /** Set a numeric value in `localStorage`. */
-  export function setNum(key: NumericSetting, val: number): void {
-    localStorage.setItem(key, JSON.stringify(val));
+  export function deprecatedSetNum(key: NumberConfigKey, val: number): void {
+    LegacyShim.setNumViaRedux(key, val);
   }
 }
 
-const isBooleanSetting =
+export const isBooleanSetting =
   // tslint:disable-next-line:no-any
-  (x: any): x is BooleanSetting => !!BooleanSetting[x];
+  (x: any): x is BooleanConfigKey => !!BooleanSetting[x as BooleanConfigKey];
 
-export function safeBooleanSettting(name: string): BooleanSetting {
+export function safeBooleanSettting(name: string): BooleanConfigKey {
   if (isBooleanSetting(name)) {
     return name;
   } else {
-    throw new Error(`Expected BooleanSetting but got '${name}'`);
+    throw new Error(`Expected BooleanConfigKey but got '${name}'`);
   }
 }
 
-const isNumericSetting =
+export const isNumericSetting =
   // tslint:disable-next-line:no-any
-  (x: any): x is NumericSetting => !!NumericSetting[x];
+  (x: any): x is NumberConfigKey => !!NumericSetting[x as NumberConfigKey];
 
-export function safeNumericSetting(name: string): NumericSetting {
+export function safeNumericSetting(name: string): NumberConfigKey {
   if (isNumericSetting(name)) {
     return name;
   } else {
-    throw new Error(`Expected NumericSetting but got '${name}'`);
+    throw new Error(`Expected NumberConfigKey but got '${name}'`);
   }
 }

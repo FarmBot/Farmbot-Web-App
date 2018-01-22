@@ -6,7 +6,9 @@ import * as React from "react";
 import { Sequences } from "../sequences";
 import { shallow } from "enzyme";
 import { Props } from "../interfaces";
-import { FAKE_RESOURCES, buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  FAKE_RESOURCES, buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { auth } from "../../__test_support__/fake_state/token";
 import { ToolTips } from "../../constants";

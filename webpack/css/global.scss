@@ -263,12 +263,22 @@ fieldset {
   opacity: 0.40;
 }
 
-.webcam-stream-valid img {
-  display: flex;
-  max-width: 100%;
-  margin: auto;
-  max-height: 650px;
-  min-height: 300px;
+.webcam-stream-valid {
+  img {
+    display: flex;
+    max-width: 100%;
+    margin: auto;
+    max-height: 650px;
+    min-height: 300px;
+  }
+  iframe {
+    display: flex;
+    width: 100%;
+    margin: auto;
+    max-height: 650px;
+    min-height: 300px;
+    border: none;
+  }
 }
 
 .webcam-stream-unavailable text {
@@ -562,5 +572,27 @@ ul {
   td:nth-child(2),
   td:nth-child(3) {
     min-width: 120px;
+  }
+}
+
+.release-notes-button {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.release-notes {
+  max-width: 250px;
+  h1 {
+    font-weight: 300;
+    font-size: 1.5rem;
+  }
+  li:before {
+    content: "• ";
+  }
+  li {
+    font-weight: 300;
+    font-size: 1.1rem;
+    line-height: 1.75rem;
+    margin-bottom: 1rem;
   }
 }

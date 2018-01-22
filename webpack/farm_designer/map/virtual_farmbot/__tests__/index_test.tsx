@@ -3,7 +3,7 @@ const mockStorj: Dictionary<boolean> = {};
 jest.mock("../../../../session", () => {
   return {
     Session: {
-      getBool: (k: string) => {
+      deprecatedGetBool: (k: string) => {
         mockStorj[k] = !!mockStorj[k];
         return mockStorj[k];
       },
@@ -42,13 +42,13 @@ describe("<VirtualFarmBot/>", () => {
   });
 
   it("shows trail", () => {
-    mockStorj["displayTrail"] = true;
+    mockStorj["display_trail"] = true;
     const wrapper = shallow(<VirtualFarmBot {...fakeProps() } />);
     expect(wrapper.find("BotTrail").length).toEqual(1);
   });
 
   it("shows encoder position", () => {
-    mockStorj["encoderFigure"] = true;
+    mockStorj["encoder_figure"] = true;
     const wrapper = shallow(<VirtualFarmBot {...fakeProps() } />);
     const figures = wrapper.find("BotFigure");
     expect(figures.length).toEqual(2);

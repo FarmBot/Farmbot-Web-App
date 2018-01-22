@@ -1,5 +1,10 @@
 import {
-  round, translateScreenToGarden, getBotSize, getMapSize, getXYFromQuadrant
+  round,
+  translateScreenToGarden,
+  getBotSize,
+  getMapSize,
+  getXYFromQuadrant,
+  getMouseXY
 } from "../util";
 import { McuParams } from "farmbot";
 import { AxisNumberProperty, BotSize } from "../interfaces";
@@ -57,10 +62,10 @@ describe("getbotSize()", () => {
   }
 
   function expectDefaultSize(botSize: BotSize) {
-    expect(botSize.x.value).toBe(3000);
-    expect(botSize.x.isDefault).toBeTruthy();
-    expect(botSize.y.value).toBe(1500);
-    expect(botSize.y.isDefault).toBeTruthy();
+    expect(botSize).toEqual({
+      x: { value: 3000, isDefault: true },
+      y: { value: 1500, isDefault: true }
+    });
   }
 
   it("returns default bed size: when settings undefined", () => {
@@ -116,10 +121,10 @@ describe("getbotSize()", () => {
     };
     p.stepsPerMmXY = { x: 5, y: 7 };
     const botSize = getBotSize(p.botMcuParams, p.stepsPerMmXY, p.defaultLength);
-    expect(botSize.x.value).toBe(100);
-    expect(botSize.x.isDefault).toBeFalsy();
-    expect(botSize.y.value).toBe(200);
-    expect(botSize.y.isDefault).toBeFalsy();
+    expect(botSize).toEqual({
+      x: { value: 100, isDefault: false },
+      y: { value: 200, isDefault: false }
+    });
   });
 
   it("calculates correct bed size: one axis", () => {
@@ -132,10 +137,10 @@ describe("getbotSize()", () => {
     };
     p.stepsPerMmXY = { x: 5, y: 7 };
     const botSize = getBotSize(p.botMcuParams, p.stepsPerMmXY, p.defaultLength);
-    expect(botSize.x.value).toBe(3000);
-    expect(botSize.x.isDefault).toBeTruthy();
-    expect(botSize.y.value).toBe(200);
-    expect(botSize.y.isDefault).toBeFalsy();
+    expect(botSize).toEqual({
+      x: { value: 3000, isDefault: true },
+      y: { value: 200, isDefault: false }
+    });
   });
 });
 
@@ -165,5 +170,14 @@ describe("getXYFromQuadrant()", () => {
     const { qx, qy } = getXYFromQuadrant(2200, 1100, 4, { x: 2000, y: 1000 });
     expect(qx).toEqual(-200);
     expect(qy).toEqual(-100);
+  });
+});
+
+describe("getMouseXY", () => {
+  it("Gets the X/Y of the mouse", () => {
+    const e: Partial<MouseEvent> = { clientX: 100, clientY: 200 };
+    const result = getMouseXY(e as MouseEvent);
+    expect(result.mx).toBe(-220);
+    expect(result.my).toBe(90);
   });
 });
