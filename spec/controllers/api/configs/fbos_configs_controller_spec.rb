@@ -23,9 +23,9 @@ describe Api::FbosConfigsController do
         sequence_body_log:       false,
         sequence_complete_log:   false,
         sequence_init_log:       false,
-        arduino_debug_messages:  -99,
+        arduino_debug_messages:  false,
         network_not_found_timer: nil,
-        os_auto_update:          0,
+        os_auto_update:          false,
         firmware_hardware:       "arduino"
       }.to_a.map { |key, value| expect(json[key]).to eq(value) }
 
