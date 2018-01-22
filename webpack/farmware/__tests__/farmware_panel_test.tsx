@@ -131,7 +131,7 @@ describe("<FarmwarePanel/>: farmware list", () => {
 
   it("lists farmware", () => {
     const p = fakeProps();
-    p.showFirstParty = true;
+    p.showFirstParty = false;
     const firstPartyFarmware = fakeFarmwares().farmware_0;
     if (firstPartyFarmware) { firstPartyFarmware.name = "first-party farmware"; }
     p.farmwares.farmware_1 = firstPartyFarmware;
@@ -139,7 +139,8 @@ describe("<FarmwarePanel/>: farmware list", () => {
     expect(panel.find("FBSelect").props().list).toEqual([{
       label: "My Farmware 0.0.0", value: "My Farmware"
     }]);
-    panel.setState({ showFirstParty: true });
+    panel.setProps({ showFirstParty: true });
+    panel.update();
     expect(panel.find("FBSelect").props().list).toEqual([
       { label: "My Farmware 0.0.0", value: "My Farmware" },
       { label: "first-party farmware 0.0.0", value: "first-party farmware" }
