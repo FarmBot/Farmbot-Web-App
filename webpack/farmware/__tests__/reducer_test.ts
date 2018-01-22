@@ -27,4 +27,16 @@ describe("famrwareReducer", () => {
     expect(newState.currentImage).not.toBeUndefined();
     expect(newState.currentImage).toBe(image.uuid);
   });
+
+  it("sets the current image via INIT_RESOURCE", () => {
+    const image = fakeImage();
+    const oldState: FarmwareState = { currentImage: undefined };
+    const newState = famrwareReducer(oldState, {
+      type: Actions.INIT_RESOURCE,
+      payload: image
+    });
+    expect(oldState.currentImage).not.toEqual(newState.currentImage);
+    expect(newState.currentImage).not.toBeUndefined();
+    expect(newState.currentImage).toBe(image.uuid);
+  });
 });
