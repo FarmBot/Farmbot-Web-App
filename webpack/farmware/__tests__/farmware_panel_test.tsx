@@ -131,6 +131,7 @@ describe("<FarmwarePanel/>: farmware list", () => {
 
   it("lists farmware", () => {
     const p = fakeProps();
+    p.showFirstParty = true;
     const firstPartyFarmware = fakeFarmwares().farmware_0;
     if (firstPartyFarmware) { firstPartyFarmware.name = "first-party farmware"; }
     p.farmwares.farmware_1 = firstPartyFarmware;
@@ -146,18 +147,11 @@ describe("<FarmwarePanel/>: farmware list", () => {
   });
 
   it("toggles first party farmware display", () => {
-    const p = fakeProps();
-    jest.resetAllMocks();
-    const panel = shallow(<FarmwarePanel {...p } />);
-    expect(p.onToggle).not.toHaveBeenCalled();
-    panel.find(FarmwareConfigMenu).simulate("toggle");
-    expect(p.onToggle).toHaveBeenCalled();
+    fail();
   });
 
   it("displays description", () => {
-    const panel = mount(<FarmwarePanel {...fakeProps() } />);
-    panel.setState({ selectedFarmware: "My Farmware" });
-    expect(panel.text()).toContain("Does things.");
+    fail();
   });
 
   it("all 1st party farmwares are installed", () => {
