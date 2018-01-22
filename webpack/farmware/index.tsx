@@ -11,6 +11,11 @@ import { envGet } from "./weed_detector/remote_env/selectors";
 import { FarmwareForms } from "./farmware_forms";
 import { catchErrors } from "../util";
 import { toggleWebAppBool } from "../config_storage/actions";
+import { BooleanConfigKey } from "../config_storage/web_app_configs";
+
+export const doToggle =
+  (dispatch: Function) =>
+    (key: BooleanConfigKey) => dispatch(toggleWebAppBool(key));
 
 @connect(mapStateToProps)
 export class FarmwarePage extends React.Component<FarmwareProps, {}> {
@@ -29,7 +34,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
         <Col xs={12} sm={5}>
           <FarmwarePanel
             showFirstParty={!!this.props.webAppConfig.show_first_party_farmware}
-            onToggle={(key) => this.props.dispatch(toggleWebAppBool(key))}
+            onToggle={doToggle(this.props.dispatch)}
             syncStatus={this.props.syncStatus}
             botToMqttStatus={this.props.botToMqttStatus}
             farmwares={this.props.farmwares} />

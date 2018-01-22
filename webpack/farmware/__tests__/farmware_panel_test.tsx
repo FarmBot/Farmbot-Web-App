@@ -147,11 +147,11 @@ describe("<FarmwarePanel/>: farmware list", () => {
   });
 
   it("toggles first party farmware display", () => {
-    fail();
-  });
-
-  it("displays description", () => {
-    fail();
+    jest.resetAllMocks();
+    const p = fakeProps();
+    const panel = shallow(<FarmwarePanel {...p } />);
+    panel.find(FarmwareConfigMenu).simulate("toggle", {});
+    expect(p.onToggle).toHaveBeenCalled();
   });
 
   it("all 1st party farmwares are installed", () => {
@@ -181,7 +181,7 @@ describe("<FarmwareConfigMenu />", () => {
   function fakeProps(): FarmwareConfigMenuProps {
     return {
       show: true,
-      toggle: jest.fn(),
+      onToggle: jest.fn(),
       firstPartyFwsInstalled: false
     };
   }
@@ -214,7 +214,7 @@ describe("<FarmwareConfigMenu />", () => {
     expect(button.hasClass("green")).toBeTruthy();
     expect(button.hasClass("fb-toggle-button")).toBeTruthy();
     button.simulate("click");
-    expect(p.toggle).toHaveBeenCalled();
+    expect(p.onToggle).toHaveBeenCalled();
   });
 
   it("1st party farmware display is disabled", () => {

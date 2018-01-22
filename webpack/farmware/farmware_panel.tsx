@@ -37,7 +37,7 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
       </label>
       <button
         className={"fb-button fb-toggle-button " + listBtnColor}
-        onClick={props.toggle} />
+        onClick={props.onToggle} />
     </fieldset>
   </div>;
 }
@@ -143,7 +143,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
           <i className="fa fa-gear" />
           <FarmwareConfigMenu
             show={this.props.showFirstParty}
-            toggle={() => this.props.onToggle("show_first_party_farmware")}
+            onToggle={() => this.props.onToggle("show_first_party_farmware")}
             firstPartyFwsInstalled={
               this.firstPartyFarmwaresPresent(this.state.firstPartyList)} />
         </Popover>

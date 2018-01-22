@@ -24,6 +24,6 @@ export type FarmwareManifestEntry = Record<"name" | "manifest", string>;
 
 export interface FarmwareConfigMenuProps {
   show: boolean | undefined;
-  toggle(): void;
+  onToggle(): void;
   firstPartyFwsInstalled: boolean;
 }
