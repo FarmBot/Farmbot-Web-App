@@ -130,7 +130,11 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
     const description = betterCompact(Object
       .keys(farmwares)
       .map(x => farmwares[x]))
-      .map((fw, i) => fw.meta.description || "");
+      .map((fw, i) => {
+        const isSelected = (fw.name == selectedName);
+        const label = isSelected ? (fw.meta || {}).description : "";
+        return label;
+      });
     return description;
   }
 
