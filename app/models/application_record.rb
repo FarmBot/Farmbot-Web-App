@@ -32,8 +32,12 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast_payload
-    body = (destroyed? ?
-      nil : ActiveModel::Serializer.serializer_for(self).new(self))
+    serializer = ActiveModel::Serializer.serializer_for(self)
+    if(destroyed?)
+      body = nil
+    else
+      body = (serializer ? serializer.new(self) : self.as_json)
+    end
     {
       args: { label: Transport.current_request_id },
       body: body.as_json
