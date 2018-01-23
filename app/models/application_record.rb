@@ -31,17 +31,17 @@ class ApplicationRecord < ActiveRecord::Base
     self.broadcast! if broadcast?
   end
 
-  def broadcast_payload
-    serializer = ActiveModel::Serializer.serializer_for(self)
+  def body_as_json
     if(destroyed?)
-      body = nil
+      return nil
     else
-      body = (serializer ? serializer.new(self) : self.as_json)
+      serializer = ActiveModel::Serializer.serializer_for(self)
+      return (serializer ? serializer.new(self) : self).as_json
     end
-    {
-      args: { label: Transport.current_request_id },
-      body: body.as_json
-    }.to_json
+  end
+
+  def broadcast_payload
+    { args: { label: Transport.current_request_id }, body: body_as_json }.to_json
   end
 
   # Overridable
