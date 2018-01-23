@@ -5,9 +5,10 @@ FarmBot::Application.configure do
     port: Rails.application.routes.default_url_options[:port]
   }
   config.action_mailer.delivery_method     = :smtp
-  config.action_mailer.smtp_settings       = {address:
-                                                ENV["API_HOST"] || "localhost",
-                                              port: 1025 }
+  config.action_mailer.smtp_settings       = {
+    address: FarmBot::Application::LOCAL_API_HOST,
+    port: 1025
+  }
   config.active_support.deprecation        = :log
   config.assets.debug                      = true
   config.assets.digest                     = true

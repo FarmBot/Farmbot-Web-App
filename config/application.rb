@@ -10,6 +10,7 @@ module FarmBot
     config.active_job.queue_adapter = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
+    LOCAL_API_HOST = ENV["API_HOST"] || "localhost"
     config.generators do |g|
       g.template_engine :erb
       g.test_framework :rspec, :fixture_replacement => :factory_bot, :views => false, :helper => false
@@ -30,7 +31,7 @@ module FarmBot
                  max_age: 0
       end
     end
-    Rails.application.routes.default_url_options[:host] = ENV["API_HOST"] || "localhost"
+    Rails.application.routes.default_url_options[:host] = LOCAL_API_HOST
     Rails.application.routes.default_url_options[:port] = ENV["API_PORT"] || 3000
     # ¯\_(ツ)_/¯
     $API_URL = "//#{ Rails.application.routes.default_url_options[:host] }:#{ Rails.application.routes.default_url_options[:port] }"
@@ -87,7 +88,7 @@ module FarmBot
           "cdnjs.cloudflare.com",
           "chrome-extension:",
           "localhost:3808",
-          "#{ENV["API_HOST"] || "localhost"}:3808",
+          "#{LOCAL_API_HOST}:3808",
         ],
         style_src: %w(
           'unsafe-inline'
