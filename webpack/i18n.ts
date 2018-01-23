@@ -18,7 +18,10 @@ export function getUserLang(langCode = "en_us") {
 
 export function generateI18nConfig(lang: string): InitOptions {
   // NOTE: Some users prefer English over i18nized version.
-  const choice = Session.deprecatedGetBool(BooleanSetting.disable_i18n) ? "en" : lang;
+  console.log("Change this back!");
+  // const choice = Session.deprecatedGetBool(BooleanSetting.disable_i18n) ? "en" : lang;
+  const choice =
+    Session.deprecatedGetBool(BooleanSetting.disable_i18n) ? "en" : "es";
   const langi = require("../public/app-resources/languages/" + choice + ".js");
 
   return {
@@ -30,4 +33,4 @@ export function generateI18nConfig(lang: string): InitOptions {
 }
 
 export const detectLanguage =
-  () => getUserLang(navigator.language).then(generateI18nConfig);
+  (lang = navigator.language) => getUserLang(lang).then(generateI18nConfig);
