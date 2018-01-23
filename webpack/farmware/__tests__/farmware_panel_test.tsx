@@ -140,7 +140,6 @@ describe("<FarmwarePanel/>: farmware list", () => {
       label: "My Farmware 0.0.0", value: "My Farmware"
     }]);
     panel.setProps({ showFirstParty: true });
-    panel.update();
     expect(panel.find("FBSelect").props().list).toEqual([
       { label: "My Farmware 0.0.0", value: "My Farmware" },
       { label: "first-party farmware 0.0.0", value: "first-party farmware" }
@@ -153,6 +152,21 @@ describe("<FarmwarePanel/>: farmware list", () => {
     const panel = shallow(<FarmwarePanel {...p } />);
     panel.find(FarmwareConfigMenu).simulate("toggle", {});
     expect(p.onToggle).toHaveBeenCalled();
+  });
+
+  it("displays description", () => {
+    const p = fakeProps();
+    const otherFarmware = fakeFarmwares().farmware_0;
+    if (otherFarmware) {
+      otherFarmware.name = "My Other Farmware";
+      otherFarmware.meta.description = "Does other things.";
+    }
+    p.farmwares.farmware_1 = otherFarmware;
+    const panel = mount(<FarmwarePanel {...p } />);
+    expect(panel.text()).not.toContain("Does things.");
+    panel.setState({ selectedFarmware: "My Farmware" });
+    expect(panel.text()).toContain("Does things.");
+    expect(panel.text()).not.toContain("Does other things.");
   });
 
   it("all 1st party farmwares are installed", () => {
