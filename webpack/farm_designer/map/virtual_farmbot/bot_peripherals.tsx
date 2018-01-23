@@ -122,7 +122,7 @@ export function BotPeripherals(props: BotPeripheralsProps) {
   const positionQ = getXYFromQuadrant(
     (position.x || 0), (position.y || 0), quadrant, gridSize);
 
-  return <g id={"virtual-peripherals"}>
+  return <g className={"virtual-peripherals"}>
     {peripherals.map((x, i) => {
       if (x.label.toLowerCase().includes("light") && x.value) {
         return lightsFigure({
