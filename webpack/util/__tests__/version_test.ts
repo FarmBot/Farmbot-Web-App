@@ -1,7 +1,7 @@
 import { semverCompare, SemverResult, minFwVersionCheck } from "../version";
 
 describe("semver compare", () => {
-  it("knows when RIGHT_IS_GREATER", () => {
+  it("knows when RIGHT_IS_GREATER: numeric", () => {
     expect(semverCompare("3.1.6", "4.0.0"))
       .toBe(SemverResult.RIGHT_IS_GREATER);
 
@@ -13,12 +13,25 @@ describe("semver compare", () => {
 
     expect(semverCompare("1.1.9", "2.0.2"))
       .toBe(SemverResult.RIGHT_IS_GREATER);
+  });
 
+  it("knows when RIGHT_IS_GREATER: undefined", () => {
     expect(semverCompare("", "1.0.0"))
+      .toBe(SemverResult.RIGHT_IS_GREATER);
+
+    expect(semverCompare("x.y.z", "1.0.0"))
       .toBe(SemverResult.RIGHT_IS_GREATER);
   });
 
-  it("knows when LEFT_IS_GREATER", () => {
+  it("knows when RIGHT_IS_GREATER: pre-release identifiers", () => {
+    expect(semverCompare("6.1.0", "6.1.1-beta"))
+      .toBe(SemverResult.RIGHT_IS_GREATER);
+
+    expect(semverCompare("1.1.1-beta", "1.1.1"))
+      .toBe(SemverResult.RIGHT_IS_GREATER);
+  });
+
+  it("knows when LEFT_IS_GREATER: numeric", () => {
     expect(semverCompare("4.0.0", "3.1.6"))
       .toBe(SemverResult.LEFT_IS_GREATER);
 
@@ -30,13 +43,33 @@ describe("semver compare", () => {
 
     expect(semverCompare("2.0.2", "1.1.9"))
       .toBe(SemverResult.LEFT_IS_GREATER);
+  });
 
+  it("knows when LEFT_IS_GREATER: undefined", () => {
     expect(semverCompare("1.0.0", ""))
       .toBe(SemverResult.LEFT_IS_GREATER);
+
     expect(semverCompare("1.0.0", "x.y.z"))
       .toBe(SemverResult.LEFT_IS_GREATER);
-    expect(semverCompare("x.y.z", "1.0.0"))
-      .toBe(SemverResult.RIGHT_IS_GREATER);
+  });
+
+  it("knows when LEFT_IS_GREATER: pre-release identifiers", () => {
+    expect(semverCompare("6.1.1-beta", "6.1.0"))
+      .toBe(SemverResult.LEFT_IS_GREATER);
+
+    expect(semverCompare("1.1.1", "1.1.1-beta"))
+      .toBe(SemverResult.LEFT_IS_GREATER);
+  });
+
+  it("knows when EQUAL", () => {
+    expect(semverCompare("1.1.1", "1.1.1"))
+      .toBe(SemverResult.EQUAL);
+
+    expect(semverCompare("", ""))
+      .toBe(SemverResult.EQUAL);
+
+    expect(semverCompare("1.1.1-beta", "1.1.1-beta"))
+      .toBe(SemverResult.EQUAL);
   });
 });
 
