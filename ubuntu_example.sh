@@ -61,9 +61,15 @@ rake db:create:all db:migrate db:seed
 RAILS_ENV=test rake db:create db:migrate && rspec spec
 npm run test
 
-# Run MQTT (new tab, SAME DIRECTORY)
-rails mqtt:start
+# INSTALLATION IS NOW COMPLETE =================================================
 
+
+# You may run the commands below every time you wish to start the server:
+# The commands before this were only one-off commands for installation.
 # Run the web server (new tab, SAME DIRECTORY)
+# Don't worry about the "MQTT server is unreachable" messages yet-
+#   we still need to start MQTT (next).
 rails api:start
 
+# Run MQTT (new tab, SAME DIRECTORY)
+rails mqtt:start

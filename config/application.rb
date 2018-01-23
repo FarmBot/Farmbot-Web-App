@@ -80,14 +80,15 @@ module FarmBot
           allow-popups
         ),
         plugin_types: %w(),
-        script_src: %w(
-          'self'
-          'unsafe-eval'
-          'unsafe-inline'
-          cdnjs.cloudflare.com
-          chrome-extension:
-          localhost:3808
-        ),
+        script_src: [
+          "'self'",
+          "'unsafe-eval'",
+          "'unsafe-inline'",
+          "cdnjs.cloudflare.com",
+          "chrome-extension:",
+          "localhost:3808",
+          "#{ENV["API_HOST"] || "localhost"}:3808",
+        ],
         style_src: %w(
           'unsafe-inline'
           fonts.googleapis.com
