@@ -18,6 +18,7 @@ import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import { ConnectionStatus, ConnectionState, NetworkState } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
+import { WebAppConfig } from "../config_storage/web_app_configs";
 
 export interface Props {
   userToApi: ConnectionStatus | undefined;
@@ -155,6 +156,9 @@ export interface FarmwareProps {
   farmwares: Dictionary<FarmwareManifest | undefined>;
   timeOffset: number;
   syncStatus: SyncStatus | undefined;
+  // Partial because easier testing. Change to normal `WebAppConfig` if it
+  // becomes cumbersome later on.
+  webAppConfig: Partial<WebAppConfig>;
 }
 
 export interface HardwareSettingsProps {

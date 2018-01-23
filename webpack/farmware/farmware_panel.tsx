@@ -37,7 +37,7 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
       </label>
       <button
         className={"fb-button fb-toggle-button " + listBtnColor}
-        onClick={props.toggle} />
+        onClick={props.onToggle} />
     </fieldset>
   </div>;
 }
@@ -45,7 +45,7 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
 export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   constructor(props: FWProps) {
     super(props);
-    this.state = { showFirstParty: false };
+    this.state = {};
   }
 
   componentDidMount() {
@@ -99,34 +99,24 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
     this.setState({ firstPartyList });
   }
 
-  toggleFirstPartyDisplay = () => {
-    this.setState({ showFirstParty: !this.state.showFirstParty });
-  }
-
   firstPartyFarmwaresPresent = (firstPartyList: string[] | undefined) => {
     const fws = this.props.farmwares;
     const farmwareList = betterCompact(Object.keys(fws)
-      .map(x => fws[x]).map(x => x ? x.name : ""));
+      .map(x => fws[x]).map(x => x && x.name));
     const allPresent = _.every(
       firstPartyList, (value) => farmwareList.includes(value));
     return allPresent;
   }
 
   fwList = () => {
-    const { farmwares } = this.props;
-    const { firstPartyList, showFirstParty } = this.state;
+    const { farmwares, showFirstParty } = this.props;
+    const { firstPartyList } = this.state;
     const choices = betterCompact(Object
       .keys(farmwares)
       .map(x => farmwares[x]))
       .filter(x => (firstPartyList && !showFirstParty)
         ? !firstPartyList.includes(x.name) : x)
-      .map((fw, i) => {
-        const hasVers = (fw.meta && _.isString(fw.meta.version));
-        // Guard against legacy Farmwares. Can be removed in a month.
-        // -- RC June 2017.
-        const label = hasVers ? `${fw.name} ${fw.meta.version}` : fw.name;
-        return { value: fw.name, label };
-      });
+      .map((fw, i) => ({ value: fw.name, label: (`${fw.name} ${fw.meta.version}`) }));
     return choices;
   }
 
@@ -142,8 +132,6 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
       .map(x => farmwares[x]))
       .map((fw, i) => {
         const isSelected = (fw.name == selectedName);
-        // Rollbar 356. I think this was caused by a user on an ancient version
-        // of FBOS. Remove in September '17. - RC 13 August.
         const label = isSelected ? (fw.meta || {}).description : "";
         return label;
       });
@@ -158,8 +146,8 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
         <Popover position={Position.BOTTOM_RIGHT}>
           <i className="fa fa-gear" />
           <FarmwareConfigMenu
-            show={this.state.showFirstParty}
-            toggle={this.toggleFirstPartyDisplay}
+            show={this.props.showFirstParty}
+            onToggle={() => this.props.onToggle("show_first_party_farmware")}
             firstPartyFwsInstalled={
               this.firstPartyFarmwaresPresent(this.state.firstPartyList)} />
         </Popover>
