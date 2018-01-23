@@ -1,5 +1,6 @@
 import * as Util from "../util";
 import { times } from "lodash";
+import { validBotLocationData } from "../index";
 describe("util", () => {
   describe("safeStringFetch", () => {
     const data = {
@@ -150,6 +151,17 @@ describe("util", () => {
     it("only picks valid colors", () => {
       times(Util.colors.length * 1.5, () =>
         expect(Util.colors).toContain(Util.randomColor()));
+    });
+  });
+
+  describe("validBotLocationData()", () => {
+    it("returns valid location_data object", () => {
+      const result = validBotLocationData(undefined);
+      expect(result).toEqual({
+        position: { x: undefined, y: undefined, z: undefined },
+        scaled_encoders: { x: undefined, y: undefined, z: undefined },
+        raw_encoders: { x: undefined, y: undefined, z: undefined }
+      });
     });
   });
 

@@ -6,10 +6,10 @@ import {
   joinToolsAndSlot,
   selectAllPeripherals
 } from "../resources/selectors";
-import { BotLocationData, StepsPerMmXY } from "../devices/interfaces";
+import { StepsPerMmXY } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import * as _ from "lodash";
-import { minFwVersionCheck } from "../util";
+import { minFwVersionCheck, validBotLocationData } from "../util";
 
 export function mapStateToProps(props: Everything) {
 
@@ -20,17 +20,6 @@ export function mapStateToProps(props: Everything) {
     : undefined;
   const { plantUUID } = props.resources.consumers.farm_designer.hoveredPlant;
   const hoveredPlant = plants.filter(x => x.uuid === plantUUID)[0];
-
-  const getBotLocationData = (): BotLocationData => {
-    if (props.bot.hardware.location_data) {
-      return props.bot.hardware.location_data;
-    }
-    return {
-      position: { x: undefined, y: undefined, z: undefined },
-      scaled_encoders: { x: undefined, y: undefined, z: undefined },
-      raw_encoders: { x: undefined, y: undefined, z: undefined },
-    };
-  };
 
   function stepsPerMmXY(): StepsPerMmXY {
     const {
@@ -72,7 +61,7 @@ export function mapStateToProps(props: Everything) {
     toolSlots: joinToolsAndSlot(props.resources.index),
     hoveredPlant,
     plants,
-    botLocationData: getBotLocationData(),
+    botLocationData: validBotLocationData(props.bot.hardware.location_data),
     botMcuParams: props.bot.hardware.mcu_params,
     stepsPerMmXY: stepsPerMmXY(),
     peripherals,

@@ -13,7 +13,7 @@ import {
 } from "../resources/tagged_resources";
 import { edit } from "../api/crud";
 import { DropDownItem, NULL_CHOICE } from "../ui/index";
-import { BotPosition } from "../devices/interfaces";
+import { validBotLocationData } from "../util";
 
 export function mapStateToProps(props: Everything): Props {
   const toolSlots = selectAllToolSlotPointers(props.resources.index);
@@ -67,13 +67,6 @@ export function mapStateToProps(props: Everything): Props {
       dispatch(edit(t, { tool_id }));
     };
 
-  const getBotPosition = (): BotPosition => {
-    if (props.bot.hardware.location_data) {
-      return props.bot.hardware.location_data.position;
-    }
-    return { x: undefined, y: undefined, z: undefined };
-  };
-
   return {
     toolSlots,
     tools,
@@ -84,7 +77,7 @@ export function mapStateToProps(props: Everything): Props {
     changeToolSlot,
     isActive,
     dispatch: _.noop,
-    botPosition: getBotPosition()
+    botPosition: validBotLocationData(props.bot.hardware.location_data).position
   };
 
 }
