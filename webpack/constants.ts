@@ -88,7 +88,8 @@ export namespace ToolTips {
     `Maximum travel speed after acceleration in motor steps per second.`;
 
   export const HOME_SPEED =
-    `Homing and calibration travel speed in motor steps per second.`;
+    `Home position adjustment travel speed (homing and calibration)
+    in motor steps per second.`;
 
   export const MIN_SPEED =
     `Minimum movement speed in motor steps per second. Also used for homing

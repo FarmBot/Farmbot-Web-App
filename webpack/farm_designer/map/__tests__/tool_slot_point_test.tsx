@@ -64,4 +64,17 @@ describe("<ToolSlotPoint/>", () => {
     expect(wrapper.find("#seed-tray").find("circle").length).toEqual(2);
   });
 
+  it("doesn't render toolbay slot", () => {
+    const p = fakeProps();
+    p.slot.toolSlot.body.pullout_direction = undefined;
+    const wrapper = shallow(<ToolSlotPoint {...p } />);
+    expect(wrapper.find("use").length).toEqual(0);
+  });
+
+  it("renders toolbay slot", () => {
+    const p = fakeProps();
+    p.slot.toolSlot.body.pullout_direction = 1;
+    const wrapper = shallow(<ToolSlotPoint {...p } />);
+    expect(wrapper.find("use").length).toEqual(1);
+  });
 });

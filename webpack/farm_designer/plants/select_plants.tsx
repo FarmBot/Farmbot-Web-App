@@ -11,6 +11,7 @@ import { error } from "farmbot-toastr";
 import { BackArrow } from "../../ui/index";
 import { catchErrors } from "../../util";
 import { unselectPlant } from "../actions";
+import { Actions } from "../../constants";
 
 export function mapStateToProps(props: Everything) {
   const plants = selectAllPlantPointers(props.resources.index);
@@ -52,11 +53,15 @@ export class SelectPlants
     unselectPlant(dispatch)();
   }
 
+  componentWillUnmount() {
+    this.props.dispatch({ type: Actions.SELECT_PLANT, payload: undefined });
+  }
+
   onBack = () => {
     const { stashedUuid, stashedIcon } = this.state;
-    this.props.dispatch({ type: "SELECT_PLANT", payload: [stashedUuid] });
+    this.props.dispatch({ type: Actions.SELECT_PLANT, payload: [stashedUuid] });
     this.props.dispatch({
-      type: "TOGGLE_HOVERED_PLANT", payload: {
+      type: Actions.TOGGLE_HOVERED_PLANT, payload: {
         plantUUID: stashedUuid, icon: stashedIcon
       }
     });
