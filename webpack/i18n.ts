@@ -1,6 +1,4 @@
 import axios from "axios";
-import { Session } from "./session";
-import { BooleanSetting } from "./session_keys";
 import { InitOptions } from "i18next";
 
 export function generateUrl(langCode: string) {
@@ -17,8 +15,7 @@ export function getUserLang(langCode = "en_us") {
 }
 
 export function generateI18nConfig(lang: string): InitOptions {
-  const choice = Session.deprecatedGetBool(BooleanSetting.disable_i18n) ? "en" : lang;
-  const translation = require("../public/app-resources/languages/" + choice + ".js");
+  const translation = require("../public/app-resources/languages/" + lang + ".js");
 
   return {
     nsSeparator: "",
