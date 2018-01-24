@@ -39,7 +39,7 @@ export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
   autoSyncEnabled: boolean;
 }
 
-export type ChannelName = ALLOWED_CHANNEL_NAMES | "espeak";
+export type ChannelName = ALLOWED_CHANNEL_NAMES;
 
 export const NUMERIC_FIELDS = ["milliseconds", "pin_mode", "pin_number",
   "pin_value", "rhs", "sequence_id", "speed", "x", "y", "z"];
