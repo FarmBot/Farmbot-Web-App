@@ -17,17 +17,16 @@ export function getUserLang(langCode = "en_us") {
 }
 
 export function generateI18nConfig(lang: string): InitOptions {
-  // NOTE: Some users prefer English over i18nized version.
   const choice = Session.deprecatedGetBool(BooleanSetting.disable_i18n) ? "en" : lang;
-  const langi = require("../public/app-resources/languages/" + choice + ".js");
+  const translation = require("../public/app-resources/languages/" + choice + ".js");
 
   return {
     nsSeparator: "",
     keySeparator: "",
     lng: lang,
-    resources: { [lang]: { translation: langi } }
+    resources: { [lang]: { translation } }
   };
 }
 
 export const detectLanguage =
-  () => getUserLang(navigator.language).then(generateI18nConfig);
+  (lang = navigator.language) => getUserLang(lang).then(generateI18nConfig);
