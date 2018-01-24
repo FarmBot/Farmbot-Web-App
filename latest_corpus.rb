@@ -1,15 +1,3 @@
-# require "json"
-# require "pry"
-# require "rails/all"
-# require "open-uri"
-# require_relative "./app/lib/celery_script/node_specification"
-# require_relative "./app/lib/celery_script/argument_specification"
-# require_relative "./app/lib/celery_script/corpus"
-# require_relative "./app/lib/sequence_migration"
-# require_relative "./app/models/celery_script_settings_bag.rb"
-# require_relative "./app/models/application_record.rb"
-# require_relative "./app/models/sequence.rb"
-# Dir["./app/lib/sequence_migration/*.rb"].each {|file| require file }
 class CorpusEmitter
   PIPE = "\n          | "
 
