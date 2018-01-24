@@ -36,7 +36,8 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
         pointer_type: "ToolSlot",
         meta: {},
         tool_id: undefined,
-        name: "Tool Slot"
+        name: "Tool Slot",
+        pullout_direction: 0
       }
     };
   }

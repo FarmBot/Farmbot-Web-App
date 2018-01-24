@@ -218,6 +218,7 @@ const tr11: TaggedPoint = {
     },
     "name": "Slot One.",
     "pointer_type": "ToolSlot",
+    "pullout_direction": 0,
     "radius": 25,
     "x": 10,
     "y": 10,
