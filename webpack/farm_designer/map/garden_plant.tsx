@@ -30,7 +30,7 @@ export class GardenPlant extends
   };
 
   render() {
-    const { selected, dragging, plant, mapTransformProps,
+    const { selected, dragging, plant, grayscale, mapTransformProps,
       activeDragXY, zoomLvl } = this.props;
     const { quadrant, gridSize } = mapTransformProps;
     const { id, radius, x, y } = plant.body;
@@ -41,6 +41,10 @@ export class GardenPlant extends
     const animate = !Session.deprecatedGetBool(BooleanSetting.disable_animations);
 
     return <g id={"plant-" + id}>
+
+      <filter id="grayscale">
+        <feColorMatrix type="saturate" values="0" />
+      </filter>
 
       {animate &&
         <circle
@@ -55,6 +59,7 @@ export class GardenPlant extends
         <image
           visibility={dragging ? "hidden" : "visible"}
           className={`plant-image is-chosen-${selected} ${animate ? "animate" : ""}`}
+          filter={grayscale ? "url(#grayscale)" : ""}
           opacity={alpha}
           xlinkHref={icon}
           onClick={this.click}
