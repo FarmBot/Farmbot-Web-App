@@ -13,7 +13,7 @@ import {
   TaggedPeripheral,
   TaggedDevice
 } from "../resources/tagged_resources";
-import { RestResources, ResourceIndex } from "../resources/interfaces";
+import { ResourceIndex } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import { ConnectionStatus, ConnectionState, NetworkState } from "../connectivity/interfaces";
@@ -139,7 +139,6 @@ export interface EStopButtonProps {
 }
 
 export interface PeripheralsProps {
-  resources: RestResources;
   bot: BotState;
   peripherals: TaggedPeripheral[];
   dispatch: Function;

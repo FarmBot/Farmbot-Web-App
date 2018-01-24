@@ -9,11 +9,13 @@ import { history } from "../../history";
 import { AxisInputBox } from "../../controls/axis_input_box";
 import { isNumber } from "lodash";
 import { Actions } from "../../constants";
+import { validBotLocationData } from "../../util/util";
 
 export function mapStateToProps(props: Everything) {
   return {
     chosenLocation: props.resources.consumers.farm_designer.chosenLocation,
-    currentBotLocation: props.bot.hardware.location_data.position,
+    currentBotLocation:
+      validBotLocationData(props.bot.hardware.location_data).position,
     dispatch: props.dispatch,
   };
 }

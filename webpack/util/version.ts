@@ -7,8 +7,12 @@ export enum SemverResult {
 }
 // CREDIT: https://github.com/substack/semver-compare
 export function semverCompare(left: string, right: string): SemverResult {
-  const pa: Array<string | undefined> = left.split(".");
-  const pb: Array<string | undefined> = right.split(".");
+  const leftSemVer = left.split("-")[0];
+  const rightSemVer = right.split("-")[0];
+  const leftHasSuffix = left.includes("-");
+  const rightHasSuffix = right.includes("-");
+  const pa: Array<string | undefined> = leftSemVer.split(".");
+  const pb: Array<string | undefined> = rightSemVer.split(".");
   for (let i = 0; i < 3; i++) {
     const num_left = Number(pa[i]);
     const num_right = Number(pb[i]);
@@ -29,6 +33,15 @@ export function semverCompare(left: string, right: string): SemverResult {
       return SemverResult.RIGHT_IS_GREATER;
     }
 
+  }
+
+  // num_left === num_right. Check presence of pre-release identifiers.
+  if (!leftHasSuffix && rightHasSuffix) {
+    return SemverResult.LEFT_IS_GREATER;
+  }
+
+  if (leftHasSuffix && !rightHasSuffix) {
+    return SemverResult.RIGHT_IS_GREATER;
   }
 
   return SemverResult.EQUAL;

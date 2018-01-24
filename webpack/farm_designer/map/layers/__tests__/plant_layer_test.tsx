@@ -28,6 +28,7 @@ describe("<PlantLayer/>", () => {
       currentPlant: undefined,
       dragging: false,
       editing: false,
+      selectedForDel: undefined,
       crops: [],
       dispatch: jest.fn(),
       zoomLvl: 1,

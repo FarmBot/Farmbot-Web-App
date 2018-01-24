@@ -328,6 +328,7 @@ export class GardenMap extends
             currentPlant={this.getPlant()}
             dragging={!!this.state.isDragging}
             editing={this.isEditing}
+            selectedForDel={this.props.designer.selectedPlants}
             zoomLvl={this.props.zoomLvl}
             activeDragXY={this.state.activeDragXY} />
           <ToolSlotLayer

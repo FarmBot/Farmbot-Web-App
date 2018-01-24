@@ -28,6 +28,7 @@ describe("<GardenPlant/>", () => {
       },
       plant: fakePlant(),
       selected: false,
+      grayscale: false,
       dragging: false,
       dispatch: jest.fn(),
       zoomLvl: 1.8,
@@ -62,5 +63,18 @@ describe("<GardenPlant/>", () => {
       type: Actions.SELECT_PLANT,
       payload: [p.uuid]
     });
+  });
+
+  it("has color", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<GardenPlant {...p } />);
+    expect(wrapper.find("image").props().filter).toEqual("");
+  });
+
+  it("has no color", () => {
+    const p = fakeProps();
+    p.grayscale = true;
+    const wrapper = shallow(<GardenPlant {...p } />);
+    expect(wrapper.find("image").props().filter).toEqual("url(#grayscale)");
   });
 });
