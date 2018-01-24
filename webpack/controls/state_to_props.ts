@@ -18,7 +18,6 @@ export function mapStateToProps(props: Everything): Props {
     dispatch: props.dispatch,
     bot: props.bot,
     user: maybeFetchUser(props.resources.index),
-    resources,
     peripherals,
     botToMqttStatus
   };

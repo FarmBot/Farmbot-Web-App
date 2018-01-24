@@ -20,7 +20,6 @@ import { mount } from "enzyme";
 import { Controls } from "../controls";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { fakePeripheral, fakeWebcamFeed } from "../../__test_support__/fake_state/resources";
-import { fakeState } from "../../__test_support__/fake_state";
 import { Dictionary } from "farmbot";
 import { BooleanSetting } from "../../session_keys";
 import { Props } from "../interfaces";
@@ -33,7 +32,6 @@ describe("<Controls />", () => {
       feeds: [fakeWebcamFeed()],
       user: undefined,
       peripherals: [fakePeripheral()],
-      resources: fakeState().resources,
       botToMqttStatus: "up"
     };
   }
