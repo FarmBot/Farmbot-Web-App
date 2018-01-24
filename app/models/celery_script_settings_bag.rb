@@ -23,7 +23,7 @@ module CeleryScriptSettingsBag
                              corpuses logs sequences farm_events
                              tool_slots tools points tokens users device)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
-  ALLOWED_CHANNEL_NAMES = %w(ticker toast email)
+  ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
   ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
   ALLOWED_DATA_TYPES    = %w(tool coordinate point)
   ALLOWED_OPS           = %w(< > is not is_undefined)
