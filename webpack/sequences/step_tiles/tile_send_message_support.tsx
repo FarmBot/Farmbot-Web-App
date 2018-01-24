@@ -1,11 +1,12 @@
-import { ALLOWED_CHANNEL_NAMES, Channel } from "farmbot/dist";
+import { Channel } from "farmbot/dist";
+import { ChannelName } from "../interfaces";
 
 /** All the attributes/config you need to render a Channel */
 interface ChanInfo {
   /** Always check it? */
   alwaysOn: boolean;
   /** CeleryScript name */
-  name: ALLOWED_CHANNEL_NAMES;
+  name: ChannelName;
   /** Human readable name */
   label: string;
 }
@@ -13,7 +14,8 @@ interface ChanInfo {
 export const EACH_CHANNEL: ChanInfo[] = [
   { alwaysOn: true, name: "ticker", label: "Ticker Notification" },
   { alwaysOn: false, name: "toast", label: "Toast Pop Up" },
-  { alwaysOn: false, name: "email", label: "Email" }
+  { alwaysOn: false, name: "email", label: "Email" },
+  { alwaysOn: false, name: "espeak", label: "Speak" },
 ];
 
 export const MESSAGE_STATUSES = [
@@ -47,6 +49,6 @@ export const MESSAGE_STATUSES_DDI = {
   }
 };
 
-export function channel(channel_name: ALLOWED_CHANNEL_NAMES): Channel {
+export function channel(channel_name: ChannelName): Channel {
   return { kind: "channel", args: { channel_name } };
 }

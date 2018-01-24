@@ -236,6 +236,10 @@
   }
 }
 
+.virtual-peripherals {
+  pointer-events: none;
+}
+
 .water-spray {
   &.animate {
     animation-duration: 3s;

@@ -17,6 +17,7 @@ export interface PlantLayerProps {
   mapTransformProps: MapTransformProps;
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
+  selectedForDel: string[] | undefined;
 }
 
 export interface CropSpreadDict {
@@ -49,6 +50,7 @@ export interface GardenPlantProps {
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
   uuid: string;
+  grayscale: boolean;
 }
 
 export interface GardenPlantState {

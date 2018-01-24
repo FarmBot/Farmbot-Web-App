@@ -92,9 +92,18 @@ export interface PlantPointer extends BasePoint {
   pointer_type: "Plant";
 }
 
+export enum ToolPulloutDirection {
+  NONE = 0,
+  POSITIVE_X = 1,
+  NEGATIVE_X = 2,
+  POSITIVE_Y = 3,
+  NEGATIVE_Y = 4,
+}
+
 export interface ToolSlotPointer extends BasePoint {
   tool_id: number | undefined;
   pointer_type: "ToolSlot";
+  pullout_direction?: ToolPulloutDirection;
 }
 
 export interface GenericPointer extends BasePoint {

@@ -4,7 +4,8 @@ import {
   Sequence as CeleryScriptSequence,
   SequenceBodyItem,
   LegalArgString,
-  SyncStatus
+  SyncStatus,
+  ALLOWED_CHANNEL_NAMES
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import { TaggedSequence } from "../resources/tagged_resources";
@@ -38,7 +39,7 @@ export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
   autoSyncEnabled: boolean;
 }
 
-export type CHANNEL_NAME = "toast" | "ticker";
+export type ChannelName = ALLOWED_CHANNEL_NAMES | "espeak";
 
 export const NUMERIC_FIELDS = ["milliseconds", "pin_mode", "pin_number",
   "pin_value", "rhs", "sequence_id", "speed", "x", "y", "z"];

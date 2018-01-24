@@ -19,6 +19,7 @@ import { ToolBayHeader } from "./toolbay_header";
 import { ToolTips } from "../../constants";
 import * as _ from "lodash";
 import { BotPosition } from "../../devices/interfaces";
+import { ToolPulloutDirection } from "../../interfaces";
 
 export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
 
@@ -58,6 +59,19 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
     }
   }
 
+  changePulloutDirection = (dispatch: Function, slot: TaggedToolSlotPointer) =>
+    () => {
+      const newDirection = (
+        old: ToolPulloutDirection | undefined): ToolPulloutDirection => {
+        if (_.isNumber(old) && old < 4) { return old + 1; }
+        return ToolPulloutDirection.NONE;
+      };
+      dispatch(edit(slot,
+        { pullout_direction: newDirection(slot.body.pullout_direction) }));
+    }
+
+  iconDirections = ["none", "right", "left", "up", "down"];
+
   render() {
     const { toggle, dispatch, toolSlots, botPosition } = this.props;
 
@@ -86,9 +100,15 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
           <ToolBayHeader />
           {this.props.getToolSlots().map(
             (slot: TaggedToolSlotPointer, index: number) => {
+              const { x, y, z, pullout_direction } = slot.body;
               return <Row key={index}>
                 <Col xs={2}>
-                  <label>{index + 1}</label>
+                  <label onClick={this.changePulloutDirection(dispatch, slot)}>
+                    {index + 1}
+                  </label>
+                  {_.isNumber(pullout_direction) &&
+                    <i className={`fa fa-arrow-circle-${
+                      this.iconDirections[pullout_direction]}`} />}
                   <button
                     className="blue fb-button"
                     title={this.positionButtonTitle(botPosition)}
@@ -98,7 +118,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
                 </Col>
                 <Col xs={2}>
                   <BlurableInput
-                    value={(slot.body.x || 0).toString()}
+                    value={(x || 0).toString()}
                     onCommit={(e) => {
                       dispatch(edit(slot, { x: parseInt(e.currentTarget.value, 10) }));
                     }}
@@ -106,7 +126,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
                 </Col>
                 <Col xs={2}>
                   <BlurableInput
-                    value={(slot.body.y || 0).toString()}
+                    value={(y || 0).toString()}
                     onCommit={(e) => {
                       dispatch(edit(slot, { y: parseInt(e.currentTarget.value, 10) }));
                     }}
@@ -114,7 +134,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
                 </Col>
                 <Col xs={2}>
                   <BlurableInput
-                    value={(slot.body.z || 0).toString()}
+                    value={(z || 0).toString()}
                     onCommit={(e) => {
                       dispatch(edit(slot, { z: parseInt(e.currentTarget.value, 10) }));
                     }}
