@@ -51,8 +51,9 @@ export class Devices extends React.Component<Props, {}> {
 
   render() {
     if (this.props.auth) {
-      const botToMqttStatus =
-        this.props.botToMqtt ? this.props.botToMqtt.state : "down";
+      const { botToMqtt } = this.props;
+      const botToMqttLastSeen = botToMqtt ? botToMqtt.at : "";
+      const botToMqttStatus = botToMqtt ? botToMqtt.state : "down";
       return <Page className="devices">
         <Row>
           <Col xs={12} sm={6}>
@@ -60,6 +61,7 @@ export class Devices extends React.Component<Props, {}> {
               account={this.props.deviceAccount}
               dispatch={this.props.dispatch}
               bot={this.props.bot}
+              botToMqttLastSeen={botToMqttLastSeen}
               botToMqttStatus={botToMqttStatus} />
             <ConnectivityPanel
               status={this.props.deviceAccount.specialStatus}

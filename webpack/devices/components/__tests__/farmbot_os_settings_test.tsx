@@ -20,6 +20,7 @@ describe("<FarmbotOsSettings/>", () => {
       account: fakeResource("Device", { id: 0, name: "", tz_offset_hrs: 0 }),
       dispatch: jest.fn(),
       bot: bot,
+      botToMqttLastSeen: "",
       botToMqttStatus: "up"
     };
   }
