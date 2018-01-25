@@ -1,5 +1,4 @@
 import axios from "axios";
-import { warning } from "farmbot-toastr";
 import { Log, Point } from "../interfaces";
 import { API } from "../api";
 import { Sequence } from "../sequences/interfaces";
@@ -14,6 +13,7 @@ import { User } from "../auth/interfaces";
 import { HttpData } from "../util";
 import { WebcamFeed } from "../controls/interfaces";
 import { WebAppConfig } from "../config_storage/web_app_configs";
+import { Session } from "../session";
 
 export interface ResourceReadyPayl {
   name: ResourceName;
@@ -31,10 +31,11 @@ export function fetchSyncData(dispatch: Function) {
       .get(url)
       .then((r: HttpData<T>): SyncResponse => dispatch({
         type, payload: { name, data: r.data }
-      }), fail);
-
-  const fail = () => warning("Please try refreshing the page or logging in again.",
-    "Error downloading data");
+      }),
+      /** NOTE: If a key resource fails to load, the app is guaranteed to be
+       * broke. Don't try to recover- just log the user out. It's probably a
+       * malformed token in SessionStorage */
+      Session.clear);
 
   fetch<User>("User", API.current.usersPath);
   fetch<DeviceAccountSettings>("Device", API.current.devicePath);
