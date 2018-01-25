@@ -5,13 +5,33 @@ import * as moment from "moment";
 import { TaggedDevice } from "../../../resources/tagged_resources";
 import { ColWidth } from "../farmbot_os_settings";
 
-interface LastSeenProps {
+export interface LastSeenProps {
   onClick?(): void;
+  botToMqttLastSeen: string;
   device: TaggedDevice;
 }
 
 export class LastSeen extends React.Component<LastSeenProps, {}> {
-  get lastSeen() { return this.props.device.body.last_saw_api; }
+  get lastSeen() {
+    const { last_saw_api } = this.props.device.body;
+    const { botToMqttLastSeen } = this.props;
+    const lastSeenAll = () => {
+      if (!last_saw_api) {
+        return botToMqttLastSeen;
+      }
+      if (!botToMqttLastSeen) {
+        return last_saw_api;
+      }
+      if (moment(last_saw_api).isAfter(botToMqttLastSeen)) {
+        return last_saw_api;
+      }
+      if (moment(botToMqttLastSeen).isAfter(last_saw_api)) {
+        return botToMqttLastSeen;
+      }
+    };
+    return lastSeenAll();
+  }
+
   show = (): string => {
     if (this.props.device.specialStatus) {
       return t("Loading...");

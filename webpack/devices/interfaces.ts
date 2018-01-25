@@ -103,6 +103,7 @@ export interface FarmbotOsProps {
   bot: BotState;
   account: TaggedDevice;
   botToMqttStatus: NetworkState;
+  botToMqttLastSeen: string;
   dispatch: Function;
 }
 

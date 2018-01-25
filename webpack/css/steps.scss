@@ -36,7 +36,6 @@
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
   .pt-popover-target {
-    display: inline-block;
     float: right;
     margin-top: 0.1rem;
   }
@@ -102,6 +101,13 @@
   }
   .help {
     float: right;
+  }
+  .step-warning {
+    display: inline-block;
+    float: none;
+    .pt-popover-target {
+      float: left;
+    }
   }
 }
 

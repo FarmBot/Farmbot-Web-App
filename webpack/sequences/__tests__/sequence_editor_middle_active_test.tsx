@@ -25,6 +25,8 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { destroy } from "../../api/crud";
+import { fakeHardwareFlags } from "../../__test_support__/sequence_hardware_settings";
+
 
 describe("<SequenceEditorMiddleActive/>", () => {
   function fakeProps(): ActiveMiddleProps {
@@ -34,7 +36,8 @@ describe("<SequenceEditorMiddleActive/>", () => {
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
       consistent: true,
-      autoSyncEnabled: false
+      autoSyncEnabled: false,
+      hardwareFlags: fakeHardwareFlags()
     };
   }
 

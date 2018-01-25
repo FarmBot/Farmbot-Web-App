@@ -5,12 +5,21 @@ import {
   SequenceBodyItem,
   LegalArgString,
   SyncStatus,
-  ALLOWED_CHANNEL_NAMES
+  ALLOWED_CHANNEL_NAMES,
+  Xyz
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { ResourceIndex } from "../resources/interfaces";
 import { JSXChildren } from "../util";
+
+export interface HardwareFlags {
+  findHomeEnabled: Record<Xyz, boolean>;
+  stopAtHome: Record<Xyz, boolean>;
+  stopAtMax: Record<Xyz, boolean>;
+  negativeOnly: Record<Xyz, boolean>;
+  axisLength: Record<Xyz, number>;
+}
 
 export interface Props {
   dispatch: Function;
@@ -21,6 +30,7 @@ export interface Props {
   syncStatus: SyncStatus;
   consistent: boolean;
   autoSyncEnabled: boolean;
+  hardwareFlags: HardwareFlags;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -30,6 +40,7 @@ export interface SequenceEditorMiddleProps {
   syncStatus: SyncStatus;
   consistent: boolean;
   autoSyncEnabled: boolean;
+  hardwareFlags: HardwareFlags;
 }
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
@@ -146,4 +157,5 @@ export interface StepParams {
   dispatch: Function;
   index: number;
   resources: ResourceIndex;
+  hardwareFlags?: HardwareFlags;
 }
