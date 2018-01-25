@@ -83,5 +83,40 @@ describe Api::PointsController do
       expect(response.status).to eq(422)
       expect(json[:error]).to include("Please use _valid_ JSON.")
     end
-  end
+
+    it "creates a toolslot with an valid pullout direction" do
+      direction = 1
+      sign_in user
+      before_count = ToolSlot.count
+      post :create,
+            body:   {
+              pointer_type: "ToolSlot",
+              name: "foo",
+              x: 0,
+              y: 0,
+              z: 0,
+              pullout_direction: direction
+            }.to_json,
+            params: { format: :json }
+      expect(response.status).to eq(200)
+      expect(ToolSlot.count).to be > before_count
+      expect(json[:pullout_direction]).to eq(direction)
+    end
+
+    it 'creates a new toolslot, with a default pullout' do
+      sign_in user
+      payload = {
+        pointer_type: "ToolSlot",
+        name: "foo",
+        x: 0,
+        y: 0,
+        z: 0
+      }
+      old_tool_count = ToolSlot.count
+      post :create, body: payload.to_json, params: {format: :json}
+      expect(response.status).to eq(200)
+      expect(ToolSlot.count).to be > old_tool_count
+      expect(json[:pullout_direction]).to eq(0)
+    end
+ end
 end

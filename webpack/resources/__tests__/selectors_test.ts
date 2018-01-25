@@ -34,7 +34,8 @@ const fakeSlot: TaggedToolSlotPointer = {
     z: 0,
     name: "wow",
     pointer_id: SLOT_ID,
-    meta: {}
+    meta: {},
+    pullout_direction: 0
   }
 };
 const fakeIndex = buildResourceIndex().index;

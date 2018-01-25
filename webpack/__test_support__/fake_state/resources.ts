@@ -86,7 +86,8 @@ export function fakeToolSlot(): TaggedToolSlotPointer {
     y: 10,
     z: 10,
     radius: 10,
-    meta: {}
+    meta: {},
+    pullout_direction: 0
   });
 }
 

@@ -66,7 +66,7 @@ describe("<ToolSlotPoint/>", () => {
 
   it("doesn't render toolbay slot", () => {
     const p = fakeProps();
-    p.slot.toolSlot.body.pullout_direction = undefined;
+    p.slot.toolSlot.body.pullout_direction = 0;
     const wrapper = shallow(<ToolSlotPoint {...p } />);
     expect(wrapper.find("use").length).toEqual(0);
   });

@@ -47,7 +47,8 @@ export function fakeResourceIndex(): ResourceIndex {
         "x": 100,
         "y": 200,
         "z": 300,
-        "tool_id": 1
+        "tool_id": 1,
+        "pullout_direction": 0
       },
       "uuid": "toolslot"
     },

@@ -10,6 +10,9 @@ module ToolSlots
 
     optional do
       integer :tool_id, empty: true
+      integer :pullout_direction,
+                min: ToolSlot::PULLOUT_DIRECTIONS.min,
+                max: ToolSlot::PULLOUT_DIRECTIONS.max
     end
 
     def validate
@@ -22,7 +25,7 @@ module ToolSlots
     end
 
     def pointer
-      ToolSlot.new(inputs.slice(:tool_id))
+      ToolSlot.new(inputs.slice(:tool_id, :pullout_direction))
     end
 
     def has_tool_id

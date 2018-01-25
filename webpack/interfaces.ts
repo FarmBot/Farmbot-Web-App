@@ -103,7 +103,7 @@ export enum ToolPulloutDirection {
 export interface ToolSlotPointer extends BasePoint {
   tool_id: number | undefined;
   pointer_type: "ToolSlot";
-  pullout_direction?: ToolPulloutDirection;
+  pullout_direction: ToolPulloutDirection;
 }
 
 export interface GenericPointer extends BasePoint {
