@@ -12,6 +12,7 @@ import {
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { auth } from "../../__test_support__/fake_state/token";
 import { ToolTips } from "../../constants";
+import { fakeHardwareFlags } from "../../__test_support__/sequence_hardware_settings";
 
 describe("<Sequences/>", () => {
   function fakeProps(): Props {
@@ -23,7 +24,8 @@ describe("<Sequences/>", () => {
       syncStatus: "synced",
       auth,
       consistent: true,
-      autoSyncEnabled: false
+      autoSyncEnabled: false,
+      hardwareFlags: fakeHardwareFlags()
     };
   }
 

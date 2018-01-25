@@ -4,7 +4,8 @@ import {
   StepWrapper,
   StepHeader,
   StepContent,
-  StepHeaderProps
+  StepHeaderProps,
+  StepWarning
 } from "../index";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 
@@ -50,5 +51,13 @@ describe("<StepContent />", () => {
     const div = wrapper.find("div").last();
     expect(div.hasClass("step-content")).toBeTruthy();
     expect(div.hasClass("step-class")).toBeTruthy();
+  });
+});
+
+describe("<StepWarning />", () => {
+  it("renders", () => {
+    const wrapper = mount(StepWarning("warning"));
+    expect(wrapper.find("i").hasClass("fa-exclamation-triangle")).toBeTruthy();
+    expect(wrapper.text()).toContain("Hardware setting conflict.");
   });
 });

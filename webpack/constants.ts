@@ -409,6 +409,11 @@ export namespace Content {
     trim(`No Sequence selected. Click one in the Sequences panel to edit,
     or click "+" to create a new one.`);
 
+  export const END_DETECTION_DISABLED =
+    trim(`This command will not execute correctly because you do not have
+    encoders or endstops enabled for the chosen axis. Enable endstops or
+    encoders from the Device page for: `);
+
   // Regimens
   export const NO_REGIMEN_SELECTED =
     trim(`No Regimen selected. Click one in the Regimens panel to edit, or

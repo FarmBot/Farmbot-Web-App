@@ -39,7 +39,8 @@ export class Sequences extends React.Component<Props, {}> {
               sequence={this.props.sequence}
               resources={this.props.resources}
               consistent={this.props.consistent}
-              autoSyncEnabled={this.props.autoSyncEnabled} />
+              autoSyncEnabled={this.props.autoSyncEnabled}
+              hardwareFlags={this.props.hardwareFlags} />
           </div>
         </Col>
         <Col sm={3}>

@@ -1,13 +1,16 @@
 import * as React from "react";
-import { FindHome, ALLOWED_AXIS } from "farmbot";
-import { StepParams } from "../interfaces";
+import { FindHome, ALLOWED_AXIS, Xyz } from "farmbot";
+import { StepParams, HardwareFlags } from "../interfaces";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { ResourceIndex } from "../../resources/interfaces";
 import { overwrite } from "../../api/crud";
 import { defensiveClone } from "../../util";
-import { ToolTips } from "../../constants";
-import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import { ToolTips, Content } from "../../constants";
+import {
+  StepWrapper, StepHeader, StepContent, StepWarning
+} from "../step_ui/index";
 import { Row, Col } from "../../ui/index";
+import { some } from "lodash";
 
 export function TileFindHome(props: StepParams) {
   if (props.currentStep.kind === "find_home") {
@@ -16,9 +19,10 @@ export function TileFindHome(props: StepParams) {
       currentSequence={props.currentSequence}
       dispatch={props.dispatch}
       index={props.index}
-      resources={props.resources} />;
+      resources={props.resources}
+      hardwareFlags={props.hardwareFlags} />;
   } else {
-    throw new Error("TileFindHome expects send_message");
+    throw new Error("TileFindHome expects find_home");
   }
 }
 interface FindHomeParams {
@@ -27,6 +31,7 @@ interface FindHomeParams {
   dispatch: Function;
   index: number;
   resources: ResourceIndex;
+  hardwareFlags: HardwareFlags | undefined;
 }
 
 const AXIS_CHOICES: ALLOWED_AXIS[] = ["x", "y", "z", "all"];
@@ -45,6 +50,36 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
     this.props.dispatch(overwrite(this.props.currentSequence, nextSequence));
   }
 
+  get settingConflicts(): Record<Xyz, boolean> {
+    const conflicts = { x: false, y: false, z: false };
+    if (this.props.hardwareFlags) {
+      const { axis } = this.props.currentStep.args;
+      const { findHomeEnabled } = this.props.hardwareFlags;
+      switch (axis) {
+        case "x":
+        case "y":
+        case "z":
+          conflicts[axis] = !findHomeEnabled[axis];
+          break;
+        case "all":
+          conflicts.x = !findHomeEnabled.x;
+          conflicts.y = !findHomeEnabled.y;
+          conflicts.z = !findHomeEnabled.z;
+          break;
+      }
+    }
+    return conflicts;
+  }
+
+  get settingConflictWarning() {
+    const conflictAxes: string[] = [];
+    Object.entries(this.settingConflicts)
+      .map(([label, value]) => {
+        if (value) { conflictAxes.push(label); }
+      });
+    return Content.END_DETECTION_DISABLED + conflictAxes.join(", ");
+  }
+
   render() {
     const { dispatch, index, currentStep, currentSequence } = this.props;
 
@@ -56,7 +91,10 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
         currentSequence={currentSequence}
         currentStep={currentStep}
         dispatch={dispatch}
-        index={index} />
+        index={index}>
+        {some(this.settingConflicts) &&
+          StepWarning(this.settingConflictWarning)}
+      </StepHeader>
       <StepContent className={className}>
         <Row>
           <Col xs={12}>

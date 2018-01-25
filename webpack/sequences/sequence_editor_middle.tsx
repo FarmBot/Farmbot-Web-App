@@ -11,7 +11,8 @@ export class SequenceEditorMiddle
       dispatch,
       sequence,
       resources,
-      syncStatus
+      syncStatus,
+      hardwareFlags
     } = this.props;
     if (sequence && isTaggedSequence(sequence)) {
       return <SequenceEditorMiddleActive
@@ -20,7 +21,8 @@ export class SequenceEditorMiddle
         resources={resources}
         syncStatus={syncStatus}
         consistent={true}
-        autoSyncEnabled={false} />;
+        autoSyncEnabled={false}
+        hardwareFlags={hardwareFlags} />;
     } else {
       return <SequenceEditorMiddleInactive />;
     }
