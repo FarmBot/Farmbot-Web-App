@@ -25,7 +25,7 @@ export class ToolBayList extends React.Component<ToolBayListProps, {}> {
           const tool = getToolByToolSlotUUID(slot.uuid);
           const name = (tool && tool.body.name) || "None";
           return <Row key={slot.uuid}>
-            <Col xs={2}>
+            <Col xs={1}>
               <label>{index + 1}</label>
             </Col>
             <Col xs={2}>{slot.body.x}</Col>
