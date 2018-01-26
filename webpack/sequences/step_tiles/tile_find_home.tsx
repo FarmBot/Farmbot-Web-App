@@ -7,7 +7,7 @@ import { overwrite } from "../../api/crud";
 import { defensiveClone } from "../../util";
 import { ToolTips, Content } from "../../constants";
 import {
-  StepWrapper, StepHeader, StepContent, StepWarning
+  StepWrapper, StepHeader, StepContent, StepWarning, conflictsString
 } from "../step_ui/index";
 import { Row, Col } from "../../ui/index";
 import { some } from "lodash";
@@ -72,12 +72,8 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
   }
 
   get settingConflictWarning() {
-    const conflictAxes: string[] = [];
-    Object.entries(this.settingConflicts)
-      .map(([label, value]) => {
-        if (value) { conflictAxes.push(label); }
-      });
-    return Content.END_DETECTION_DISABLED + conflictAxes.join(", ");
+    return Content.END_DETECTION_DISABLED
+      + conflictsString(this.settingConflicts);
   }
 
   render() {
@@ -93,7 +89,9 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
         dispatch={dispatch}
         index={index}>
         {some(this.settingConflicts) &&
-          StepWarning(this.settingConflictWarning)}
+          <StepWarning
+            warning={this.settingConflictWarning}
+            conflicts={this.settingConflicts} />}
       </StepHeader>
       <StepContent className={className}>
         <Row>
