@@ -17,9 +17,8 @@ import {
 import { edit, destroy, saveAll, init } from "../../api/crud";
 import { ToolBayHeader } from "./toolbay_header";
 import { ToolTips } from "../../constants";
-import * as _ from "lodash";
-import { BotPosition } from "../../devices/interfaces";
-import { ToolPulloutDirection } from "../../interfaces";
+import { Popover, Position } from "@blueprintjs/core";
+import { SlotMenu } from "./toolbay_slot_menu";
 
 export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
 
@@ -42,42 +41,11 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
     };
   }
 
-  positionIsDefined = (position: BotPosition): boolean => {
-    return _.isNumber(position.x) && _.isNumber(position.y) && _.isNumber(position.z);
-  }
-
-  useCurrentPosition = (dispatch: Function, slot: TaggedToolSlotPointer, position: BotPosition) => {
-    if (this.positionIsDefined(position)) {
-      dispatch(edit(slot, { x: position.x, y: position.y, z: position.z }));
-    }
-  };
-
-  positionButtonTitle = (position: BotPosition): string => {
-    if (this.positionIsDefined(position)) {
-      return `use current location (${position.x}, ${position.y}, ${position.z})`;
-    } else {
-      return "use current location (unknown)";
-    }
-  }
-
-  changePulloutDirection = (dispatch: Function, slot: TaggedToolSlotPointer) =>
-    () => {
-      const newDirection = (
-        old: ToolPulloutDirection | undefined): ToolPulloutDirection => {
-        if (_.isNumber(old) && old < 4) { return old + 1; }
-        return ToolPulloutDirection.NONE;
-      };
-      dispatch(edit(slot,
-        { pullout_direction: newDirection(slot.body.pullout_direction) }));
-    }
-
-  iconDirections = ["none", "right", "left", "up", "down"];
-
   render() {
     const { toggle, dispatch, toolSlots, botPosition } = this.props;
 
     const toolSlotStatus = getArrayStatus(toolSlots);
-    return <div>
+    return <div className={"toolbay-widget"}>
       <Widget>
         <WidgetHeader helpText={ToolTips.TOOLBAY_LIST} title="Tool Slots">
           <button
@@ -101,21 +69,16 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
           <ToolBayHeader />
           {this.props.getToolSlots().map(
             (slot: TaggedToolSlotPointer, index: number) => {
-              const { x, y, z, pullout_direction } = slot.body;
+              const { x, y, z } = slot.body;
               return <Row key={index}>
-                <Col xs={2}>
-                  <label onClick={this.changePulloutDirection(dispatch, slot)}>
-                    {index + 1}
-                  </label>
-                  {_.isNumber(pullout_direction) &&
-                    <i className={`fa fa-arrow-circle-${
-                      this.iconDirections[pullout_direction]}`} />}
-                  <button
-                    className="blue fb-button"
-                    title={this.positionButtonTitle(botPosition)}
-                    onClick={() => this.useCurrentPosition(dispatch, slot, botPosition)}>
-                    <i className="fa fa-crosshairs" />
-                  </button>
+                <Col xs={1}>
+                  <Popover position={Position.BOTTOM_LEFT}>
+                    <i className="fa fa-gear" />
+                    <SlotMenu
+                      dispatch={dispatch}
+                      slot={slot}
+                      botPosition={botPosition} />
+                  </Popover>
                 </Col>
                 <Col xs={2}>
                   <BlurableInput
@@ -141,7 +104,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
                     }}
                     type="number" />
                 </Col>
-                <Col xs={3}>
+                <Col xs={4}>
                   <FBSelect
                     list={this.props.getToolOptions()}
                     selectedItem={this.props.getChosenToolOption(slot.uuid)}
@@ -151,7 +114,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
                 </Col>
                 <Col xs={1}>
                   <button
-                    className="red fb-button"
+                    className="red fb-button del-button"
                     onClick={() => dispatch(destroy(slot.uuid))}>
                     <i className="fa fa-times" />
                   </button>

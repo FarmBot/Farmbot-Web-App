@@ -8,6 +8,7 @@ import {
   StepWarning
 } from "../index";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
+import { conflictsString } from "../step_warning";
 
 describe("<StepWrapper />", () => {
   it("renders", () => {
@@ -56,8 +57,22 @@ describe("<StepContent />", () => {
 
 describe("<StepWarning />", () => {
   it("renders", () => {
-    const wrapper = mount(StepWarning("warning"));
+    const wrapper = mount(<StepWarning warning={"warning"} />);
     expect(wrapper.find("i").hasClass("fa-exclamation-triangle")).toBeTruthy();
-    expect(wrapper.text()).toContain("Hardware setting conflict.");
+    expect(wrapper.text()).toContain("Hardware setting conflict");
+  });
+
+  it("lists axes", () => {
+    const wrapper = mount(<StepWarning
+      warning={"warning"}
+      conflicts={{ x: true, y: true, z: false }} />);
+    expect(wrapper.find("i").hasClass("fa-exclamation-triangle")).toBeTruthy();
+    expect(wrapper.text()).toContain("Hardware setting conflict: x, y");
+  });
+
+  it("conflictsString()", () => {
+    expect(conflictsString({ x: true, y: true, z: false })).toEqual("x, y");
+    expect(conflictsString({ x: true, y: false, z: false })).toEqual("x");
+    expect(conflictsString({ x: false, y: false, z: false })).toEqual("");
   });
 });

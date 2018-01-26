@@ -52,8 +52,10 @@ export class Devices extends React.Component<Props, {}> {
   render() {
     if (this.props.auth) {
       const { botToMqtt } = this.props;
-      const botToMqttLastSeen = botToMqtt ? botToMqtt.at : "";
       const botToMqttStatus = botToMqtt ? botToMqtt.state : "down";
+      const botToMqttLastSeen = (botToMqtt && botToMqttStatus === "up")
+        ? botToMqtt.at
+        : "";
       return <Page className="devices">
         <Row>
           <Col xs={12} sm={6}>

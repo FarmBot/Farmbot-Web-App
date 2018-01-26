@@ -45,7 +45,7 @@ describe("botToMQTT()", () => {
   it("handles loss of connectivity", () => {
     const result = botToMQTT(undefined);
     expect(result.connectionStatus).toBeFalsy();
-    expect(result.children).toContain("No messages seen yet.");
+    expect(result.children).toContain("No recent messages.");
   });
 });
 const NOW = moment().toJSON();

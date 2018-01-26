@@ -105,12 +105,12 @@ describe("<TileMoveAbsolute/>", () => {
     expect(component.tool).toEqual(tool);
   });
 
-  const conflictText = "Hardware setting conflict.";
+  const CONFLICT_TEXT_BASE = "Hardware setting conflict";
 
   it("doesn't show setting warning", () => {
     const p = fakeProps();
     const wrapper = mount(<TileMoveAbsolute {...p} />);
-    expect(wrapper.text()).not.toContain(conflictText);
+    expect(wrapper.text()).not.toContain(CONFLICT_TEXT_BASE);
   });
 
   it("doesn't show warning: axis length 0", () => {
@@ -119,7 +119,7 @@ describe("<TileMoveAbsolute/>", () => {
     p.hardwareFlags.stopAtMax.x = true;
     p.hardwareFlags.axisLength.x = 0;
     const wrapper = mount(<TileMoveAbsolute {...p} />);
-    expect(wrapper.text()).not.toContain(conflictText);
+    expect(wrapper.text()).not.toContain(CONFLICT_TEXT_BASE);
   });
 
   it("shows warning: too high", () => {
@@ -128,7 +128,7 @@ describe("<TileMoveAbsolute/>", () => {
     p.hardwareFlags.stopAtMax.x = true;
     p.hardwareFlags.axisLength.x = 100;
     const wrapper = mount(<TileMoveAbsolute {...p} />);
-    expect(wrapper.text()).toContain(conflictText);
+    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
   it("shows warning: too high (negativeOnly)", () => {
@@ -138,7 +138,7 @@ describe("<TileMoveAbsolute/>", () => {
     p.hardwareFlags.negativeOnly.x = true;
     p.hardwareFlags.axisLength.x = 100;
     const wrapper = mount(<TileMoveAbsolute {...p} />);
-    expect(wrapper.text()).toContain(conflictText);
+    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
   it("shows warning: too low (negativeOnly)", () => {
@@ -147,7 +147,7 @@ describe("<TileMoveAbsolute/>", () => {
     p.hardwareFlags.stopAtHome.x = true;
     p.hardwareFlags.negativeOnly.x = true;
     const wrapper = mount(<TileMoveAbsolute {...p} />);
-    expect(wrapper.text()).toContain(conflictText);
+    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
   it("shows warning: too low", () => {
@@ -156,6 +156,6 @@ describe("<TileMoveAbsolute/>", () => {
     p.hardwareFlags.stopAtHome.x = true;
     p.hardwareFlags.stopAtMax.x = true;
     const wrapper = mount(<TileMoveAbsolute {...p} />);
-    expect(wrapper.text()).toContain(conflictText);
+    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 });
