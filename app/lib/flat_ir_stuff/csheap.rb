@@ -24,7 +24,42 @@ class CSHeap
     end
   end
 
+  class HeapPair < Pair
+    def inspect
+      "#{head}(#{tail})"
+    end
+  end
+  class HeapEntry
+    attr_reader :parent, :child, :kind, :primary_args, :secondary_args
+    def inspect
+      [ "#<Heap:",
+        kind.to_s.camelize,
+        "parent=#{parent.inspect} ",
+        "child=#{child.inspect} ",
+        "primaries=#{primary_args.inspect}",
+        " secondaries=#{secondary_args.inspect}>" ].join("")
+    end
+
+    def initialize(hash)
+      @kind           = hash[Slicer::KIND  ].to_sym
+      @child          = hash[Slicer::NEXT  ].to_i
+      @parent         = hash[Slicer::PARENT].to_i
+      @primary_args   = []
+      @secondary_args = []
+      hash
+        .except(*Slicer::PRIMARY_FIELDS)
+        .to_a
+        .map do |y|
+          is_primary = y.first.to_s.starts_with?(Slicer::LINK)
+          (is_primary ? @primary_args : @secondary_args)
+            .push(HeapPair[y.first.to_s.gsub(Slicer::LINK, "").to_sym, y.last])
+        end
+    end
+  end
+
   def dump
-    return entries.values
+    return entries
+      .values
+      .map { |x| HeapEntry.new(x) }
   end
 end
