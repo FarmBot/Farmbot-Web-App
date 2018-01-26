@@ -44,12 +44,14 @@ describe("<TileFindHome/>", () => {
     expect(inputs.at(4).props().checked).toBeTruthy();
   });
 
+  const CONFLICT_TEXT_BASE = "Hardware setting conflict";
+
   it("doesn't render warning", () => {
     const p = fakeProps();
     p.currentStep.args.axis = "x";
     p.hardwareFlags.findHomeEnabled.x = true;
     const wrapper = mount(<TileFindHome {...p} />);
-    expect(wrapper.text()).not.toContain("Hardware setting conflict.");
+    expect(wrapper.text()).not.toContain(CONFLICT_TEXT_BASE);
   });
 
   it("renders warning: all axes", () => {
@@ -57,7 +59,7 @@ describe("<TileFindHome/>", () => {
     p.currentStep.args.axis = "all";
     p.hardwareFlags.findHomeEnabled.x = false;
     const wrapper = mount(<TileFindHome {...p} />);
-    expect(wrapper.text()).toContain("Hardware setting conflict.");
+    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
   it("renders warning: one axis", () => {
@@ -65,6 +67,6 @@ describe("<TileFindHome/>", () => {
     p.currentStep.args.axis = "x";
     p.hardwareFlags.findHomeEnabled.x = false;
     const wrapper = mount(<TileFindHome {...p} />);
-    expect(wrapper.text()).toContain("Hardware setting conflict.");
+    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 });

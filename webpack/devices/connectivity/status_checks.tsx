@@ -39,7 +39,9 @@ export function botToMQTT(stat: ConnectionStatus | undefined): StatusRowProps {
     from: "FarmBot",
     to: "Message Broker",
     connectionStatus: statusOf(stat),
-    children: lastSeen(stat)
+    children: (stat && stat.state === "up")
+      ? lastSeen(stat)
+      : "No recent messages."
   };
 }
 

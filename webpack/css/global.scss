@@ -596,3 +596,26 @@ ul {
     margin-bottom: 1rem;
   }
 }
+
+.toolbay-widget {
+  .fa-gear {
+    color: $dark_gray;
+    margin-top: 0.5rem;
+  }
+  .del-button {
+    margin-top: 0.5rem;
+  }
+}
+
+.toolbay-slot-menu {
+  .direction-icon {
+    color: $dark_gray;
+    margin-left: 1rem;
+  }
+  label {
+    margin-top: 1rem;
+  }
+  .fb-button {
+    margin-top: 1rem;
+  }
+}

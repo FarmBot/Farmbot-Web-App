@@ -29,7 +29,7 @@ import { Xyz } from "../../devices/interfaces";
 import { TileMoveAbsSelect, InputBox } from "./tile_move_absolute/index";
 import { ToolTips } from "../../constants";
 import { extractParent } from "../locals_list";
-import { StepWrapper, StepHeader, StepContent, StepWarning } from "../step_ui/index";
+import { StepWrapper, StepHeader, StepContent, StepWarning, conflictsString } from "../step_ui/index";
 import { StepInputBox } from "../inputs/step_input_box";
 
 interface Args {
@@ -142,12 +142,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
   }
 
   get settingConflictWarning() {
-    const conflictAxes: string[] = [];
-    Object.entries(this.settingConflicts)
-      .map(([label, value]) => {
-        if (value) { conflictAxes.push(label); }
-      });
-    return "Movement out of bounds for: " + conflictAxes.join(", ");
+    return "Movement out of bounds for: "
+      + conflictsString(this.settingConflicts);
   }
 
   render() {
@@ -166,7 +162,9 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
         dispatch={dispatch}
         index={index}>
         {_.some(this.settingConflicts) &&
-          StepWarning(this.settingConflictWarning)}
+          <StepWarning
+            warning={this.settingConflictWarning}
+            conflicts={this.settingConflicts} />}
       </StepHeader>
       <StepContent className={className}>
         <Row>
