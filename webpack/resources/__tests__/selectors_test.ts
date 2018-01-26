@@ -227,3 +227,17 @@ describe("maybeFindPlantById()", () => {
     expect(result).toBeUndefined();
   });
 });
+
+describe("getDeviceAccountSettings", () => {
+  it("crashes if < 1", () => {
+    pending();
+  });
+
+  it("crashes if > 1", () => {
+    pending();
+  });
+
+  it("returns exactly one device", () => {
+    pending();
+  });
+});
