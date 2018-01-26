@@ -1,11 +1,19 @@
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { buildResourceIndex, fakeDevice } from "../../__test_support__/resource_index_builder";
 import * as Selector from "../selectors";
-import { resourceReducer, emptyState } from "../reducer";
-import { TaggedTool, TaggedToolSlotPointer, SpecialStatus } from "../tagged_resources";
+import {
+  resourceReducer,
+  emptyState
+} from "../reducer";
+import {
+  TaggedTool,
+  TaggedToolSlotPointer,
+  SpecialStatus
+} from "../tagged_resources";
 import { createOK } from "../actions";
 import { generateUuid } from "../util";
 import {
-  fakeWebcamFeed, fakeSequence
+  fakeWebcamFeed,
+  fakeSequence
 } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import * as _ from "lodash";
@@ -229,15 +237,27 @@ describe("maybeFindPlantById()", () => {
 });
 
 describe("getDeviceAccountSettings", () => {
+  const DEV1 = fakeDevice();
+  DEV1.uuid = "Device.416.0";
+
+  const DEV2 = fakeDevice();
+  DEV2.uuid = "Device.417.0";
+
   it("crashes if < 1", () => {
-    pending();
+    const { index } = buildResourceIndex([]);
+    const kaboom = () => Selector.getDeviceAccountSettings(index);
+    expect(kaboom).toThrowError();
   });
 
   it("crashes if > 1", () => {
-    pending();
+    const { index } = buildResourceIndex([DEV1, DEV2]);
+    const kaboom = () => Selector.getDeviceAccountSettings(index);
+    expect(kaboom).toThrowError();
   });
 
   it("returns exactly one device", () => {
-    pending();
+    const { index } = buildResourceIndex([DEV1]);
+    const result = Selector.getDeviceAccountSettings(index);
+    expect(result.kind).toBe("Device");
   });
 });
