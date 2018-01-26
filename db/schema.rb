@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180124194814) do
+ActiveRecord::Schema.define(version: 20180126141955) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -261,6 +261,30 @@ ActiveRecord::Schema.define(version: 20180124194814) do
     t.index ["dependency_id"], name: "index_sequence_dependencies_on_dependency_id"
     t.index ["dependency_type"], name: "index_sequence_dependencies_on_dependency_type"
     t.index ["sequence_id"], name: "index_sequence_dependencies_on_sequence_id"
+  end
+
+  create_table "sequence_leafs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "sequence_id", null: false
+    t.bigint "node_id", null: false
+    t.string "kind", limit: 50
+    t.string "key", limit: 50
+    t.string "value", limit: 300
+    t.index ["node_id"], name: "index_sequence_leafs_on_node_id"
+    t.index ["sequence_id"], name: "index_sequence_leafs_on_sequence_id"
+  end
+
+  create_table "sequence_nodes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "sequence_id", null: false
+    t.bigint "parent_id"
+    t.bigint "child_id"
+    t.string "kind", limit: 50
+    t.index ["child_id"], name: "index_sequence_nodes_on_child_id"
+    t.index ["parent_id"], name: "index_sequence_nodes_on_parent_id"
+    t.index ["sequence_id"], name: "index_sequence_nodes_on_sequence_id"
   end
 
   create_table "sequences", id: :serial, force: :cascade do |t|
