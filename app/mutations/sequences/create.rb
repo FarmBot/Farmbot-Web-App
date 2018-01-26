@@ -36,6 +36,12 @@ module Sequences
         seq.save!
         reload_dependencies(seq)
       end
+      Slicer
+      .new
+      .run!({ kind: "sequence",
+              args: args,
+              body: body })
+      .tap{ |x| puts "TODO" }
       seq
     end
   end
