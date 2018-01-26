@@ -34,9 +34,9 @@ class Sequence < ApplicationRecord
   belongs_to :device
   has_many  :farm_events, as: :executable
   has_many  :regimen_items
-  has_many  :sequence_nodes,  dependent: :destroy
-  has_many  :sequence_leafes, dependent: :destroy
   has_many  :sequence_dependencies, dependent: :destroy
+  has_many  :primary_nodes,         dependent: :destroy
+  has_many  :edge_nodes,            dependent: :destroy
   serialize :body, CustomSerializer.new(Array)
   serialize :args, CustomSerializer.new(Hash)
 

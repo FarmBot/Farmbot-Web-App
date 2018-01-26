@@ -41,6 +41,18 @@ ActiveRecord::Schema.define(version: 20180126141955) do
     t.index ["timezone"], name: "index_devices_on_timezone"
   end
 
+  create_table "edge_nodes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "sequence_id", null: false
+    t.bigint "node_id", null: false
+    t.string "kind", limit: 50
+    t.string "key", limit: 50
+    t.string "value", limit: 300
+    t.index ["node_id"], name: "index_edge_nodes_on_node_id"
+    t.index ["sequence_id"], name: "index_edge_nodes_on_sequence_id"
+  end
+
   create_table "farm_events", id: :serial, force: :cascade do |t|
     t.integer "device_id"
     t.datetime "start_time"
@@ -239,6 +251,18 @@ ActiveRecord::Schema.define(version: 20180126141955) do
     t.index ["pointer_type", "pointer_id"], name: "index_points_on_pointer_type_and_pointer_id"
   end
 
+  create_table "primary_nodes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "sequence_id", null: false
+    t.bigint "parent_id"
+    t.bigint "child_id"
+    t.string "kind", limit: 50
+    t.index ["child_id"], name: "index_primary_nodes_on_child_id"
+    t.index ["parent_id"], name: "index_primary_nodes_on_parent_id"
+    t.index ["sequence_id"], name: "index_primary_nodes_on_sequence_id"
+  end
+
   create_table "regimen_items", id: :serial, force: :cascade do |t|
     t.bigint "time_offset"
     t.integer "regimen_id"
@@ -261,30 +285,6 @@ ActiveRecord::Schema.define(version: 20180126141955) do
     t.index ["dependency_id"], name: "index_sequence_dependencies_on_dependency_id"
     t.index ["dependency_type"], name: "index_sequence_dependencies_on_dependency_type"
     t.index ["sequence_id"], name: "index_sequence_dependencies_on_sequence_id"
-  end
-
-  create_table "sequence_leafs", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "sequence_id", null: false
-    t.bigint "node_id", null: false
-    t.string "kind", limit: 50
-    t.string "key", limit: 50
-    t.string "value", limit: 300
-    t.index ["node_id"], name: "index_sequence_leafs_on_node_id"
-    t.index ["sequence_id"], name: "index_sequence_leafs_on_sequence_id"
-  end
-
-  create_table "sequence_nodes", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "sequence_id", null: false
-    t.bigint "parent_id"
-    t.bigint "child_id"
-    t.string "kind", limit: 50
-    t.index ["child_id"], name: "index_sequence_nodes_on_child_id"
-    t.index ["parent_id"], name: "index_sequence_nodes_on_parent_id"
-    t.index ["sequence_id"], name: "index_sequence_nodes_on_sequence_id"
   end
 
   create_table "sequences", id: :serial, force: :cascade do |t|

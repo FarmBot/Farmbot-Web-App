@@ -1,6 +1,6 @@
 class NewSequenceSchema < ActiveRecord::Migration[5.1]
   def change
-    create_table :sequence_nodes do |t|
+    create_table :primary_nodes do |t|
       t.timestamps null: false
       t.references  :sequence, index: true, null: false
       t.references  :parent,   index: true, null: true
@@ -8,7 +8,7 @@ class NewSequenceSchema < ActiveRecord::Migration[5.1]
       t.string      :kind, limit: 50 # Longest CS Node kind: 28 characters.
     end
 
-    create_table :sequence_leafs do |t|
+    create_table :edge_nodes do |t|
       t.timestamps null: false
       t.references :sequence, index: true, null: false
       t.references :node,     index: true, null: false

@@ -3,8 +3,12 @@ require_relative "./csheap"
 class Slicer
   LINK   = "🔗"
   PARENT = LINK + "parent"
-  BODY   = LINK + "child"
-  NEXT   = BODY # "🔗next"
+  CHILD  = LINK + "child"
+  NEXT   = CHILD # "🔗next"
+  KIND   = :__KIND__
+
+  # Keys that primary nodes must have
+  PRIMARY_FIELDS = [PARENT, CHILD, KIND]
 
   def run!(node)
     raise "Not a hash" unless node.is_a?(Hash)
@@ -31,7 +35,7 @@ class Slicer
       .map do |key|
         v = s[:args][key]
         if (isCeleryScript(v))
-          k = LINK + key
+          k = LINK + key.to_s
           h.put(parentAddr, k, allocate(h, v, parentAddr).to_json)
         else
             h.put(parentAddr, key, v.to_json)
@@ -40,8 +44,8 @@ class Slicer
   end
 
   def iterateOverBody(heap, s, parentAddr)
-    body = s[:body] || []
-    body.present? && heap.put(parentAddr, BODY, "" + (parentAddr + 1).to_s)
+    body = (s[:body] || []).map(&:deep_symbolize_keys)
+    body.present? && heap.put(parentAddr, CHILD, "" + (parentAddr + 1).to_s)
     recurse_into_body(heap, 0, parentAddr, body)
   end
 
