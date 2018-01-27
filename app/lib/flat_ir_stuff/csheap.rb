@@ -24,53 +24,30 @@ class CSHeap
     end
   end
 
-  class HeapPair < Pair
-    def inspect
-      "#{head}(#{tail})"
-    end
-  end
-  class HeapEntry
-    attr_reader :parent, :child, :kind, :primary_nodes, :primary_nodes,
-                :db_entry
-    def inspect
-      [ "#<Heap:",
-        @db_entry.kind.to_s.camelize,
-        " parent=#{parent.inspect}",
-        " child=#{child.inspect}",
-        " primaries=#{primary_nodes.inspect}",
-        # " secondaries=#{primary_nodes.inspect}>",
-        " db_entry=#{db_entry}" ].join("")
-    end
-
-    def initialize(hash)
-      @child         = hash[Slicer::NEXT  ].to_i
-      @parent        = hash[Slicer::PARENT].to_i
-      @primary_nodes = []
-      @db_entry      = PrimaryNode.new(kind: hash[Slicer::KIND])
-      hash
-        .except(*Slicer::PRIMARY_FIELDS)
-        .to_a
-        .map do |y|
-          is_primary = y.first.to_s.starts_with?(Slicer::LINK)
-          is_primary ? add_primary_node(y) : add_edge_node(y)
-        end
-    end
-
-    def add_primary_node(y)
-      @primary_nodes.push(HeapPair[y.first.to_s.gsub(Slicer::LINK, "").to_sym, y.last])
-    end
-
-    def add_edge_node(node)
-      kind      = node.first
-      value     = JSON.parse(node.last)
-      edge_node = EdgeNode.new(kind: kind, value: value)
-      @db_entry.edge_nodes.push(edge_node)
-    end
-  end
-
   def dump
     return entries
       .values
-      .map { |x| HeapEntry.new(x) }
+      .map do |input|
+        output = {
+          kind:   input[Slicer::KIND],
+          parent: (input[Slicer::PARENT.to_s] || "0").to_i,
+          child:  (input[Slicer::CHILD.to_s ] || "0").to_i,
+          primary_nodes:    {},
+          edge_nodes:       {}
+        }
+
+        input
+          .without(Slicer::KIND, Slicer::PARENT, Slicer::CHILD)
+          .to_a
+          .map do |node|
+            key, value = *node
+            if key.to_s.starts_with?(Slicer::LINK)
+              output[:primary_nodes][key.gsub(Slicer::LINK, "")] = JSON.parse(value)
+            else
+              output[:edge_nodes][key] = JSON.parse(value)
+            end
+          end
+          output.deep_symbolize_keys
+      end
   end
 end
