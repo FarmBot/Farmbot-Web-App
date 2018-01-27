@@ -45,11 +45,10 @@ ActiveRecord::Schema.define(version: 20180126141955) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "sequence_id", null: false
-    t.bigint "node_id", null: false
+    t.bigint "primary_node_id", null: false
     t.string "kind", limit: 50
-    t.string "key", limit: 50
     t.string "value", limit: 300
-    t.index ["node_id"], name: "index_edge_nodes_on_node_id"
+    t.index ["primary_node_id"], name: "index_edge_nodes_on_primary_node_id"
     t.index ["sequence_id"], name: "index_edge_nodes_on_sequence_id"
   end
 
@@ -255,9 +254,10 @@ ActiveRecord::Schema.define(version: 20180126141955) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "sequence_id", null: false
-    t.bigint "parent_id"
-    t.bigint "child_id"
     t.string "kind", limit: 50
+    t.bigint "child_id"
+    t.bigint "parent_id"
+    t.string "parent_arg_name", limit: 50
     t.index ["child_id"], name: "index_primary_nodes_on_child_id"
     t.index ["parent_id"], name: "index_primary_nodes_on_parent_id"
     t.index ["sequence_id"], name: "index_primary_nodes_on_sequence_id"

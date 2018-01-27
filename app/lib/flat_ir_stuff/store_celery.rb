@@ -8,13 +8,11 @@ class StoreCelery < Mutations::Command
       sequence.primary_nodes.destroy_all
       sequence.edge_nodes.destroy_all
       x = flat_ir
-      # binding.pry
-      flat_ir
+      binding.pry if x.length > 3
+      y = flat_ir
         .reverse
-        .map do |node|
-          # STEP 1: Create a PrimaryNode for each step
-          # PrimaryNode.create!(sequence: sequence,)
-          # STEP 2: Create relevant SecondaryNodes
+        .map do |x|
+          Pair[x, PrimaryNode.new(sequence: sequence, kind: x.kind)]
         end
     end
   end

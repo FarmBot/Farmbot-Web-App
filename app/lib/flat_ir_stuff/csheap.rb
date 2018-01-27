@@ -30,30 +30,41 @@ class CSHeap
     end
   end
   class HeapEntry
-    attr_reader :parent, :child, :kind, :primary_args, :secondary_args
+    attr_reader :parent, :child, :kind, :primary_nodes, :primary_nodes,
+                :db_entry
     def inspect
       [ "#<Heap:",
-        kind.to_s.camelize,
-        "parent=#{parent.inspect} ",
-        "child=#{child.inspect} ",
-        "primaries=#{primary_args.inspect}",
-        " secondaries=#{secondary_args.inspect}>" ].join("")
+        @db_entry.kind.to_s.camelize,
+        " parent=#{parent.inspect}",
+        " child=#{child.inspect}",
+        " primaries=#{primary_nodes.inspect}",
+        # " secondaries=#{primary_nodes.inspect}>",
+        " db_entry=#{db_entry}" ].join("")
     end
 
     def initialize(hash)
-      @kind           = hash[Slicer::KIND  ].to_sym
-      @child          = hash[Slicer::NEXT  ].to_i
-      @parent         = hash[Slicer::PARENT].to_i
-      @primary_args   = []
-      @secondary_args = []
+      @child         = hash[Slicer::NEXT  ].to_i
+      @parent        = hash[Slicer::PARENT].to_i
+      @primary_nodes = []
+      @db_entry      = PrimaryNode.new(kind: hash[Slicer::KIND])
       hash
         .except(*Slicer::PRIMARY_FIELDS)
         .to_a
         .map do |y|
           is_primary = y.first.to_s.starts_with?(Slicer::LINK)
-          (is_primary ? @primary_args : @secondary_args)
-            .push(HeapPair[y.first.to_s.gsub(Slicer::LINK, "").to_sym, y.last])
+          is_primary ? add_primary_node(y) : add_edge_node(y)
         end
+    end
+
+    def add_primary_node(y)
+      @primary_nodes.push(HeapPair[y.first.to_s.gsub(Slicer::LINK, "").to_sym, y.last])
+    end
+
+    def add_edge_node(node)
+      kind      = node.first
+      value     = JSON.parse(node.last)
+      edge_node = EdgeNode.new(kind: kind, value: value)
+      @db_entry.edge_nodes.push(edge_node)
     end
   end
 
