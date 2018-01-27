@@ -64,7 +64,8 @@ export class Devices extends React.Component<Props, {}> {
               dispatch={this.props.dispatch}
               bot={this.props.bot}
               botToMqttLastSeen={botToMqttLastSeen}
-              botToMqttStatus={botToMqttStatus} />
+              botToMqttStatus={botToMqttStatus}
+              sourceFbosConfig={this.props.sourceFbosConfig} />
             <ConnectivityPanel
               status={this.props.deviceAccount.specialStatus}
               onRefresh={this.refresh}
@@ -82,7 +83,8 @@ export class Devices extends React.Component<Props, {}> {
               controlPanelState={this.props.bot.controlPanelState}
               dispatch={this.props.dispatch}
               bot={this.props.bot}
-              botToMqttStatus={botToMqttStatus} />
+              botToMqttStatus={botToMqttStatus}
+              sourceFbosConfig={this.props.sourceFbosConfig} />
             {this.props.bot.hardware.gpio_registry &&
               <PinBindings
                 dispatch={this.props.dispatch}

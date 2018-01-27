@@ -12,13 +12,14 @@ import { Sequence } from "../sequences/interfaces";
 import { ControlPanelState } from "../devices/interfaces";
 import { API } from "../api/index";
 import { User } from "../auth/interfaces";
-import { getDeviceAccountSettings } from "../resources/selectors";
+import { getDeviceAccountSettings, getFbosConfig } from "../resources/selectors";
 import { TaggedDevice } from "../resources/tagged_resources";
 import { versionOK } from "./reducer";
 import { HttpData, oneOf } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
 import { pingAPI } from "../connectivity/ping_mqtt";
+import { edit, save as apiSave } from "../api/crud";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -277,11 +278,27 @@ export function updateMCU(key: ConfigKey, val: string) {
 
 export function updateConfig(config: Configuration) {
   const noun = "Update Config";
-  return function (dispatch: Function) {
-    getDevice()
-      .updateConfig(config)
-      .then(() => updateOK(dispatch, noun))
-      .catch(() => updateNO(dispatch, noun));
+  let useAPI = false;
+  return function (dispatch: Function, getState?: () => Everything) {
+    if (getState) {
+      const fbosConfig = getFbosConfig(getState().resources.index);
+      if (fbosConfig) {
+        useAPI = fbosConfig.body.api_migrated;
+        if (useAPI) {
+          const [key, value] = Object.entries(config)[0];
+          dispatch(edit(fbosConfig, { [key]: value }));
+          dispatch(apiSave(fbosConfig.uuid))
+            .then(() => updateOK(_.noop, noun))
+            .catch(() => updateNO(_.noop, noun));
+        }
+      }
+    }
+    if (!useAPI) {
+      getDevice()
+        .updateConfig(config)
+        .then(() => updateOK(_.noop, noun))
+        .catch(() => updateNO(_.noop, noun));
+    }
   };
 }
 

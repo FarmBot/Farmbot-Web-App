@@ -1,7 +1,6 @@
-import { BotStateTree } from "farmbot";
+import { BotStateTree, ConfigurationName } from "farmbot";
 import {
   McuParamName,
-  ConfigurationName,
   Dictionary,
   SyncStatus,
   FarmwareManifest,
@@ -30,7 +29,14 @@ export interface Props {
   images: TaggedImage[];
   dispatch: Function;
   resources: ResourceIndex;
+  sourceFbosConfig: SourceFbosConfig;
 }
+
+export type SourceFbosConfig = (config: ConfigurationName) =>
+  {
+    value: boolean | number | string | undefined,
+    consistent: boolean
+  };
 
 /** How the device is stored in the API side.
  * This is what comes back from the API as JSON.
@@ -105,6 +111,7 @@ export interface FarmbotOsProps {
   botToMqttStatus: NetworkState;
   botToMqttLastSeen: string;
   dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
 }
 
 export interface FarmbotOsState {
@@ -117,13 +124,6 @@ export interface CameraSelectionProps {
 
 export interface CameraSelectionState {
   cameraStatus: "" | "sending" | "done" | "error";
-}
-
-export interface StepsPerMMBoxProps {
-  bot: BotState;
-  setting: ConfigurationName;
-  dispatch: Function;
-  disabled?: boolean;
 }
 
 export interface McuInputBoxProps {
@@ -166,6 +166,7 @@ export interface HardwareSettingsProps {
   dispatch: Function;
   botToMqttStatus: NetworkState;
   bot: BotState;
+  sourceFbosConfig: SourceFbosConfig;
 }
 
 export interface ControlPanelState {

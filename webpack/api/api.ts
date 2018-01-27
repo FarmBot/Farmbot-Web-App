@@ -115,8 +115,10 @@ export class API {
   get logsPath() { return `${this.baseUrl}/api/logs/`; }
   /** /api/webcam_feed */
   get webcamFeedPath() { return `${this.baseUrl}/api/webcam_feeds/`; }
-  /** /api/webcam_feed */
+  /** /api/web_app_config */
   get webAppConfigPath() { return `${this.baseUrl}/api/web_app_config/`; }
+  /** /api/fbos_config */
+  get fbosConfigPath() { return `${this.baseUrl}/api/fbos_config/`; }
   /** /api/users/verify/:token */
   verificationPath = (token: string) => ("/api/users/verify/" + token);
 }

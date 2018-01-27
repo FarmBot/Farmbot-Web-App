@@ -65,8 +65,18 @@ describe("<Logs />", () => {
     });
   }
 
+  const fakeProps = () => {
+    return {
+      logs: fakeLogs(),
+      bot,
+      timeOffset: 0,
+      dispatch: jest.fn(),
+      sourceFbosConfig: jest.fn()
+    };
+  };
+
   it("renders", () => {
-    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} timeOffset={0} />);
+    const wrapper = mount(<Logs {...fakeProps() } />);
     ["Logs", ToolTips.LOGS, "Type", "Message", "Time", "Info",
       "Fake log message 1", "Success", "Fake log message 2"]
       .map(string =>
@@ -77,7 +87,7 @@ describe("<Logs />", () => {
   });
 
   it("filters logs", () => {
-    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} timeOffset={0} />);
+    const wrapper = mount(<Logs {...fakeProps() } />);
     wrapper.setState({ info: 0 });
     expect(wrapper.text()).not.toContain("Fake log message 1");
     const filterBtn = wrapper.find("button").first();
@@ -86,31 +96,31 @@ describe("<Logs />", () => {
   });
 
   it("shows position", () => {
-    const logs = fakeLogs();
-    logs[0].body.meta.x = 100;
-    logs[1].body.meta.x = 0;
-    logs[1].body.meta.y = 1;
-    logs[1].body.meta.z = 2;
-    const wrapper = mount(<Logs logs={logs} bot={bot} timeOffset={0} />);
+    const p = fakeProps();
+    p.logs[0].body.meta.x = 100;
+    p.logs[1].body.meta.x = 0;
+    p.logs[1].body.meta.y = 1;
+    p.logs[1].body.meta.z = 2;
+    const wrapper = mount(<Logs {...p} />);
     expect(wrapper.text()).toContain("Unknown");
     expect(wrapper.text()).toContain("0, 1, 2");
   });
 
   it("shows verbosity", () => {
-    const logs = fakeLogs();
-    logs[0].body.meta.verbosity = -999;
-    const wrapper = mount(<Logs logs={logs} bot={bot} timeOffset={0} />);
+    const p = fakeProps();
+    p.logs[0].body.meta.verbosity = -999;
+    const wrapper = mount(<Logs {...p} />);
     expect(wrapper.text()).toContain(-999);
   });
 
   it("loads filter setting", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} timeOffset={0} />);
+    const wrapper = mount(<Logs {...fakeProps() } />);
     expect(wrapper.state().warn).toEqual(3);
   });
 
   it("shows overall filter status", () => {
-    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} timeOffset={0} />);
+    const wrapper = mount(<Logs {...fakeProps() } />);
     wrapper.setState({
       success: 3, busy: 3, warn: 3, error: 3, info: 3, fun: 3, debug: 3
     });
@@ -121,7 +131,7 @@ describe("<Logs />", () => {
 
   it("toggles filter", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} timeOffset={0} />);
+    const wrapper = mount(<Logs {...fakeProps() } />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     expect(wrapper.state().warn).toEqual(3);
@@ -133,7 +143,7 @@ describe("<Logs />", () => {
 
   it("sets filter", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount(<Logs logs={fakeLogs()} bot={bot} timeOffset={0} />);
+    const wrapper = mount(<Logs {...fakeProps() } />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     expect(wrapper.state().warn).toEqual(3);

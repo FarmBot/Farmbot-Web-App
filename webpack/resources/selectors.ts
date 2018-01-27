@@ -28,6 +28,7 @@ import {
   TaggedUser,
   TaggedWebcamFeed,
   TaggedDevice,
+  TaggedFbosConfig,
   TaggedWebAppConfig
 } from "./tagged_resources";
 import { CowardlyDictionary, betterCompact, sortResourcesById } from "../util";
@@ -553,6 +554,13 @@ export function findToolBySlotId(input: ResourceIndex, tool_slot_id: number):
 export function getWebAppConfig(i: ResourceIndex): TaggedWebAppConfig | undefined {
   const conf = i.references[i.byKind.WebAppConfig[0] || "NO"];
   if (conf && conf.kind === "WebAppConfig") {
+    return conf;
+  }
+}
+
+export function getFbosConfig(i: ResourceIndex): TaggedFbosConfig | undefined {
+  const conf = i.references[i.byKind.FbosConfig[0] || "NO"];
+  if (conf && conf.kind === "FbosConfig") {
     return conf;
   }
 }

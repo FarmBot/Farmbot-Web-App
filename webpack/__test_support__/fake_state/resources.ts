@@ -3,7 +3,7 @@ import { buildResourceIndex } from "../resource_index_builder";
 import {
   TaggedFarmEvent, TaggedSequence, TaggedRegimen, TaggedImage,
   TaggedTool, TaggedToolSlotPointer, TaggedUser, TaggedWebcamFeed,
-  TaggedPlantPointer, TaggedGenericPointer, TaggedPeripheral
+  TaggedPlantPointer, TaggedGenericPointer, TaggedPeripheral, TaggedFbosConfig
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
@@ -134,5 +134,27 @@ export function fakePeripheral(): TaggedPeripheral {
     id: idCounter++,
     label: "Fake Pin",
     pin: 1
+  });
+}
+
+export function fakeFbosConfig(): TaggedFbosConfig {
+  return fakeResource("FbosConfig", {
+    id: 1,
+    device_id: 1,
+    created_at: "",
+    updated_at: "",
+    auto_sync: false,
+    beta_opt_in: false,
+    disable_factory_reset: false,
+    firmware_input_log: false,
+    firmware_output_log: false,
+    sequence_body_log: false,
+    sequence_complete_log: false,
+    sequence_init_log: false,
+    network_not_found_timer: 0,
+    firmware_hardware: "arduino",
+    api_migrated: false,
+    os_auto_update: false,
+    arduino_debug_messages: false
   });
 }
