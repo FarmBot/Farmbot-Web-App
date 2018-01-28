@@ -3,9 +3,8 @@ import { SlotWithTool } from "../../resources/interfaces";
 import { getXYFromQuadrant } from "./util";
 import { MapTransformProps } from "./interfaces";
 import * as _ from "lodash";
-import { Color } from "../../ui/index";
-import { ToolPulloutDirection } from "../../interfaces";
 import { ToolbaySlot, ToolNames, Tool } from "./tool_graphics";
+import { ToolLabel } from "./tool_label";
 
 export interface TSPProps {
   slot: SlotWithTool;
@@ -45,9 +44,6 @@ export class ToolSlotPoint extends
       hovered: this.state.hovered,
       setHoverState: this.setHover
     };
-    const labelAnchor = pullout_direction === ToolPulloutDirection.NEGATIVE_X
-      ? "end"
-      : "start";
     return <g id={"toolslot-" + id}>
       {pullout_direction &&
         <ToolbaySlot
@@ -62,16 +58,13 @@ export class ToolSlotPoint extends
           tool={this.reduceToolName(toolName)}
           toolProps={toolProps} />}
 
-      <text textAnchor={labelAnchor}
-        visibility={this.state.hovered ? "visible" : "hidden"}
+      <ToolLabel
+        toolName={toolName}
+        hovered={this.state.hovered}
         x={qx}
         y={qy}
-        dx={labelAnchor === "start" ? 40 : -40}
-        dy={10}
-        fontSize={24}
-        fill={Color.darkGray}>
-        {toolName}
-      </text>
+        pulloutDirection={pullout_direction}
+        quadrant={quadrant} />
     </g>;
   }
 }
