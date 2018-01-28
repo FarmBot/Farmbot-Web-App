@@ -262,19 +262,21 @@ describe("fetchReleases()", () => {
     expect(axios.get).toHaveBeenCalledWith("url");
     expect(mockError).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
-      payload: "1.0.0",
+      payload: { version: "1.0.0", commit: undefined },
       type: Actions.FETCH_OS_UPDATE_INFO_OK
     });
   });
 
   it("fetches latest beta OS release version", async () => {
-    mockGetRelease = Promise.resolve({ data: { tag_name: "v1.0.0-beta" } });
+    mockGetRelease = Promise.resolve({
+      data: { tag_name: "v1.0.0-beta", target_commitish: "commit" }
+    });
     const dispatch = jest.fn();
     await actions.fetchReleases("url", { beta: true })(dispatch, jest.fn());
     expect(axios.get).toHaveBeenCalledWith("url");
     expect(mockError).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
-      payload: "1.0.0-beta",
+      payload: { version: "1.0.0-beta", commit: "commit" },
       type: Actions.FETCH_BETA_OS_UPDATE_INFO_OK
     });
   });

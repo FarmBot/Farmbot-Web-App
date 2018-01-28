@@ -40,3 +40,8 @@ export interface FbosDetailsProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
 }
+
+export interface OsUpdateButtonProps {
+  bot: BotState;
+  sourceFbosConfig: SourceFbosConfig;
+}

@@ -74,7 +74,7 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
       </Popover>
     </Col>
     <Col xs={3}>
-      <OsUpdateButton bot={bot} />
+      <OsUpdateButton bot={bot} sourceFbosConfig={sourceFbosConfig} />
     </Col>
   </Row >;
 }

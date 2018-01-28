@@ -62,6 +62,8 @@ export interface BotState {
   currentOSVersion?: string;
   /** The current beta os version on the github release api */
   currentBetaOSVersion?: string;
+  /** The current beta os commit on the github release api */
+  currentBetaOSCommit?: string;
   /** Is the bot in sync with the api */
   dirty: boolean;
   /** The state of the bot, as reported by the bot over MQTT. */
@@ -76,13 +78,17 @@ export interface BotState {
   connectivity: ConnectionState;
 }
 
-export interface BotProp { bot: BotState; }
-
 /** Status registers for the bot's status */
 export type HardwareState = BotStateTree;
 
 export interface GithubRelease {
   tag_name: string;
+  target_commitish: string;
+}
+
+export interface OsUpdateInfo {
+  version: string;
+  commit: string;
 }
 
 export interface MoveRelProps {

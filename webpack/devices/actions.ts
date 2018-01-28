@@ -143,13 +143,13 @@ export let fetchReleases =
       axios
         .get(url)
         .then((resp: HttpData<GithubRelease>) => {
-          const version = resp.data.tag_name;
-          const versionWithoutV = version.toLowerCase().replace("v", "");
+          const { tag_name, target_commitish } = resp.data;
+          const version = tag_name.toLowerCase().replace("v", "");
           dispatch({
             type: options.beta
               ? Actions.FETCH_BETA_OS_UPDATE_INFO_OK
               : Actions.FETCH_OS_UPDATE_INFO_OK,
-            payload: versionWithoutV
+            payload: { version, commit: target_commitish }
           });
         })
         .catch((ferror) => {

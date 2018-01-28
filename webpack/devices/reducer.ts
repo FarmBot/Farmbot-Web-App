@@ -1,4 +1,6 @@
-import { BotState, HardwareState, Xyz, ControlPanelState } from "./interfaces";
+import {
+  BotState, HardwareState, Xyz, ControlPanelState, OsUpdateInfo
+} from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
 import { EncoderDisplay } from "../controls/interfaces";
@@ -144,12 +146,13 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     s.controlPanelState.danger_zone = a.payload;
     return s;
   })
-  .add<string>(Actions.FETCH_OS_UPDATE_INFO_OK, (s, { payload }) => {
-    s.currentOSVersion = payload;
+  .add<OsUpdateInfo>(Actions.FETCH_OS_UPDATE_INFO_OK, (s, { payload }) => {
+    s.currentOSVersion = payload.version;
     return s;
   })
-  .add<string>(Actions.FETCH_BETA_OS_UPDATE_INFO_OK, (s, { payload }) => {
-    s.currentBetaOSVersion = payload;
+  .add<OsUpdateInfo>(Actions.FETCH_BETA_OS_UPDATE_INFO_OK, (s, { payload }) => {
+    s.currentBetaOSVersion = payload.version;
+    s.currentBetaOSCommit = payload.commit;
     return s;
   })
   .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
