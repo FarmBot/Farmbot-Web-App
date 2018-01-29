@@ -1,7 +1,13 @@
 require_relative "./csheap"
-
+# ORIGINAL IMPLEMENTATION HERE: https://github.com/FarmBot-Labs/Celery-Slicer
+# Take a nested ("canonical") representation of a CeleryScript sequence and
+# transofrms it to a flat/homogenous intermediate representation which is better
+# suited for storage in a relation database.
 class Slicer
+  # Nodes that point to other nodes rather than primitive data types (eg:
+  # `locals` and friends) will be prepended with a "🔗".
   LINK   = "🔗"
+  # Points to the originator of an `arg` or `body` node.
   PARENT = LINK + "parent"
   CHILD  = LINK + "child"
   NEXT   = CHILD # "🔗next"

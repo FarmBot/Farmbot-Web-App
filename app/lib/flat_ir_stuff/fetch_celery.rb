@@ -1,3 +1,7 @@
+# Service object that:
+# 1. Pulls out all PrimaryNodes and EdgeNodes for a sequence node (AST Flat IR form)
+# 2. Stitches the nodes back together in their "canonical" (nexted) AST
+#    representation
 class FetchCelery < Mutations::Command
   NodeContainer = Struct.new(:primary_nodes, :secondary_nodes)
 
@@ -18,6 +22,7 @@ class FetchCelery < Mutations::Command
 
 private
 
+  # This object gets mutated as the conversion passes over nodes.
   def sequence_as_json
     @sequence_as_json ||= { id:         sequence.id,
                             device_id:  sequence.device_id,

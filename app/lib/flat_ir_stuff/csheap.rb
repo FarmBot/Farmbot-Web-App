@@ -1,19 +1,39 @@
+# A heap-ish data structure required when converting canonical CeleryScript AST
+# nodes in the the Flat IR form.
+# This data strcutre is useful because it addresses each node in the
+# CeleryScript tree via a unique numerical index, rather than using mutable
+# references.
+# MORE INFO: https://github.com/FarmBot-Labs/Celery-Slicer
 class CSHeap
-  attr_accessor :entries, :here
+  attr_accessor
+    # A single node in the CeleryScript tree, as stored in the heap.
+    :entries,
+    # "here" represents the last item added to the heap and, often, the item
+    # that is currently being edited.
+    :here
 
+  # Index 0 of the heap represents a null pointer of sorts. If a field points to
+  #
   NULL    = 0
+
+  # What you will find at index 0 of the heap:
   NOTHING = { __KIND__: "nothing" }
 
+  # Set "here" to "null". Prepopulate "here" with an empty entry.
   def initialize
     @here    = CSHeap::NULL
     @entries = { @here => NOTHING }
   end
 
+  # Grow the heap and fill it was a CS node of type `__KIND__`.
+  # Returns the new value of `@here` after expansion.
   def allot(__KIND__)
     entries[@here += 1] = { __KIND__: __KIND__ }
     return @here
   end
 
+  # augment a heap entry with a new key/value pair.
+  # Throws an exception when given a bad heap index.
   def put(address, key, value)
     block = entries[address]
     if (block)
@@ -24,6 +44,8 @@ class CSHeap
     end
   end
 
+  # Dump the heap as an easy-to-serialize JSON object.
+  # We need this to reconstruct the node from its IR form to its canonical form.
   def dump
     return entries
       .values

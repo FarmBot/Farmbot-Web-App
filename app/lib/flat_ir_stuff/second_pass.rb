@@ -1,3 +1,8 @@
+# One of the challenges with the CeleryScript "flat" representation is that
+# nodes sometimes need forward references. Forward referencing nodes means that
+# we can't know everything about a node until we pass over all nodes.
+# Once we do pass over all nodes, we can go back and fill in the missing
+# information.
 class SecondPass < Mutations::Command
   CORPUS = CeleryScriptSettingsBag::Corpus.as_json({})
   KINDS  = (CORPUS[:nodes] + CORPUS[:args]).pluck("name")
