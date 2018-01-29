@@ -23,7 +23,8 @@ describe("<Devices/>", () => {
     deviceAccount: fakeDevice(),
     images: [],
     dispatch: jest.fn(),
-    resources: buildResourceIndex(FAKE_RESOURCES).index
+    resources: buildResourceIndex(FAKE_RESOURCES).index,
+    sourceFbosConfig: jest.fn()
   });
 
   it("renders relevant panels", () => {

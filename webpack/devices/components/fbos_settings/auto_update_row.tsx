@@ -1,19 +1,14 @@
 import * as React from "react";
 import { Row, Col } from "../../../ui/index";
 import { t } from "i18next";
-import { BotState } from "../../interfaces";
 import { ColWidth } from "../farmbot_os_settings";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { updateConfig } from "../../actions";
-import { noop } from "lodash";
 import { Content } from "../../../constants";
-
-interface AutoUpdateRowProps {
-  bot: BotState;
-}
+import { AutoUpdateRowProps } from "./interfaces";
 
 export function AutoUpdateRow(props: AutoUpdateRowProps) {
-  const { os_auto_update } = props.bot.hardware.configuration;
+  const osAutoUpdate = props.sourceFbosConfig("os_auto_update");
   return <Row>
     <Col xs={ColWidth.label}>
       <label>
@@ -26,10 +21,11 @@ export function AutoUpdateRow(props: AutoUpdateRowProps) {
       </p>
     </Col>
     <Col xs={ColWidth.button}>
-      <ToggleButton toggleValue={os_auto_update}
+      <ToggleButton toggleValue={osAutoUpdate.value}
+        dim={!osAutoUpdate.consistent}
         toggleAction={() => {
-          const newOsAutoUpdateNum = !os_auto_update ? 1 : 0;
-          updateConfig({ os_auto_update: newOsAutoUpdateNum })(noop);
+          const newOsAutoUpdateNum = !osAutoUpdate.value ? 1 : 0;
+          props.dispatch(updateConfig({ os_auto_update: newOsAutoUpdateNum }));
         }} />
     </Col>
   </Row>;

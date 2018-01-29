@@ -1,11 +1,13 @@
 import { TaggedLog } from "../resources/tagged_resources";
-import { BotState } from "../devices/interfaces";
+import { BotState, SourceFbosConfig } from "../devices/interfaces";
 import { ConfigurationName } from "farmbot";
 
 export interface LogsProps {
   logs: TaggedLog[];
   bot: BotState;
   timeOffset: number;
+  dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
 }
 
 export interface Filters {
@@ -41,11 +43,13 @@ export interface LogSettingProps {
   label: string;
   setting: ConfigurationName;
   toolTip: string;
-  value: boolean | number | undefined;
   setFilterLevel: SetNumSetting;
+  dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
 }
 
 export interface LogsSettingsMenuProps {
-  bot: BotState;
   setFilterLevel: SetNumSetting;
+  dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
 }

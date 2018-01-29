@@ -1,19 +1,14 @@
 import * as React from "react";
 import { Header } from "../hardware_settings/header";
 import { Collapse } from "@blueprintjs/core";
-import { BotState } from "../../interfaces";
 import { RestartRow } from "./restart_row";
 import { ShutdownRow } from "./shutdown_row";
 import { FactoryResetRow } from "./factory_reset_row";
-
-export interface PowerAndResetProps {
-  bot: BotState;
-  dispatch: Function;
-}
+import { PowerAndResetProps } from "./interfaces";
 
 export function PowerAndReset(props: PowerAndResetProps) {
-  const { bot, dispatch } = props;
-  const { power_and_reset } = bot.controlPanelState;
+  const { dispatch, sourceFbosConfig } = props;
+  const { power_and_reset } = props.controlPanelState;
   return <section>
     <div style={{ fontSize: "1px" }}>
       <Header
@@ -25,7 +20,9 @@ export function PowerAndReset(props: PowerAndResetProps) {
     <Collapse isOpen={!!power_and_reset}>
       <RestartRow />
       <ShutdownRow />
-      <FactoryResetRow bot={bot} dispatch={dispatch} />
+      <FactoryResetRow
+        dispatch={dispatch}
+        sourceFbosConfig={sourceFbosConfig} />
     </Collapse>
   </section>;
 }

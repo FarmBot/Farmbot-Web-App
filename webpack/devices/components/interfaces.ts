@@ -1,4 +1,4 @@
-import { BotState } from "../interfaces";
+import { BotState, SourceFbosConfig } from "../interfaces";
 import { McuParamName, McuParams } from "farmbot/dist";
 import { IntegerSize } from "../../util";
 
@@ -58,6 +58,7 @@ export interface PinGuardProps {
 export interface MotorsProps {
   dispatch: Function;
   bot: BotState;
+  sourceFbosConfig: SourceFbosConfig;
 }
 
 export interface EncodersProps {

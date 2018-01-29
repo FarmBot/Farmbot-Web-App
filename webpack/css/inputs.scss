@@ -28,6 +28,9 @@ input:not([role="combobox"]) {
   &.day {
     display: none;
   }
+  &.dim {
+    background: darken($white, 2%) !important;
+  }
 }
 
 .day-selector-wrapper {
@@ -45,6 +48,17 @@ select {
   padding: 7px;
   background: $white;
   width: 100%;
+}
+
+.filter-search {
+  &.dim {
+    Button {
+      background: darken($white, 2%) !important;
+      &:hover {
+        background: darken($white, 2%) !important;
+      }
+    }
+  }
 }
 
 .filter-search-item-none::after {
