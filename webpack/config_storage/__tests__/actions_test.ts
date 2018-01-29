@@ -1,7 +1,6 @@
 import { toggleWebAppBool } from "../actions";
 import { BooleanSetting } from "../../session_keys";
 import { edit, save } from "../../api/crud";
-import { getWebAppConfig } from "../../resources/selectors";
 import { fakeWebAppConfig } from "../../__test_support__/fake_state/resources";
 
 jest.mock("../../api/crud", () => {
