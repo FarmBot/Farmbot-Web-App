@@ -9,11 +9,10 @@ class StoreCelery < Mutations::Command
       sequence.edge_nodes.destroy_all
       x = flat_ir
       binding.pry if x.length > 3
-      y = flat_ir
-        .reverse
-        .map do |x|
-          Pair[x, PrimaryNode.new(sequence: sequence, kind: x.kind)]
-        end
+      # TODO:
+      # FIRST PASS:  Instantiate PrimaryNodes
+      # SECOND PASS: Instantiate EdgeNodes
+      # THIRD PASS:  Set `parent_arg_name` and `parent` as needed.
     end
   end
 
