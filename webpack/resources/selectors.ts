@@ -486,7 +486,7 @@ export function maybeFetchUser(index: ResourceIndex):
   const user = index.references[uuid || -1];
 
   if (user && sanityCheck(user) && list.length > 1) {
-    throw new Error("Index is broke. Expected exactly 1 user.");
+    throw new Error("PROBLEM: Expected 1 user. Got: " + list.length);
   }
   if ((list.length === 1) && user && user.kind === "User") {
     return user;
@@ -499,9 +499,7 @@ export function getUserAccountSettings(index: ResourceIndex): TaggedUser {
   if (user) {
     return user;
   } else {
-    throw new Error(`PROBLEM: Expected getUserAccountSettings() to return
-    exactly 1 user. We got some other number back, indicating a hazardous
-    condition.`);
+    throw new Error(`PROBLEM: Tried to fetch user before it was available.`);
   }
 }
 

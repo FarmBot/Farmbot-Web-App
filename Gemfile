@@ -12,7 +12,7 @@ gem "mutations"
 gem "active_model_serializers"
 gem "rack-cors"
 gem "rack-attack"
-gem "paperclip"
+gem "paperclip", "5.2.1"
 gem "figaro"
 gem "fog-google", git: "https://github.com/fog/fog-google"
 gem "pg", "0.21.0" # TODO: Why can't I upgrade to 1.0.0?
