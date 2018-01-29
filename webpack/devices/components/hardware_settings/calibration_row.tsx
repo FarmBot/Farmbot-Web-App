@@ -32,7 +32,7 @@ export function CalibrationRow(props: CalibrationRowProps) {
     {axisTrackingStatus(hardware)
       .map(row => {
         const { axis, disabled } = row;
-        return <Col xs={2} key={axis}>
+        return <Col xs={2} key={axis} className={"centered-button-div"}>
           <LockableButton
             disabled={disabled}
             onClick={() => calibrate(axis)}>

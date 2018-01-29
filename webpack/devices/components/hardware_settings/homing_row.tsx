@@ -26,7 +26,7 @@ export function HomingRow(props: HomingRowProps) {
     {axisTrackingStatus(hardware)
       .map((row) => {
         const { axis, disabled } = row;
-        return <Col xs={2} key={axis}>
+        return <Col xs={2} key={axis} className={"centered-button-div"}>
           <LockableButton disabled={disabled} onClick={() => findHome(axis)}>
             {t("HOME {{axis}}", { axis })}
           </LockableButton>

@@ -103,6 +103,7 @@ export interface ToggleButtonProps {
   disabled?: boolean | undefined;
   customText?: { textFalse: string, textTrue: string };
   dim?: boolean;
+  grayscale?: boolean;
 }
 
 export interface WebcamFeed {

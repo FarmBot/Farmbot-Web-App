@@ -90,7 +90,7 @@ export function Motors(props: MotorsProps) {
           </label>
           <SpacePanelToolTip tooltip={t(ToolTips.E_STOP_ON_MOV_ERR)} />
         </Col>
-        <Col xs={2}>
+        <Col xs={2} className={"centered-button-div"}>
           <ToggleButton
             toggleValue={mcu_params.param_e_stop_on_mov_err}
             toggleAction={() =>
@@ -157,7 +157,7 @@ export function Motors(props: MotorsProps) {
           </label>
           <SpacePanelToolTip tooltip={t(ToolTips.ENABLE_X2_MOTOR)} />
         </Col>
-        <Col xs={2}>
+        <Col xs={2} className={"centered-button-div"}>
           <ToggleButton
             toggleValue={mcu_params.movement_secondary_motor_x}
             toggleAction={() =>
@@ -171,8 +171,9 @@ export function Motors(props: MotorsProps) {
           </label>
           <SpacePanelToolTip tooltip={t(ToolTips.INVERT_MOTORS)} />
         </Col>
-        <Col xs={2}>
+        <Col xs={2} className={"centered-button-div"}>
           <ToggleButton
+            grayscale={!mcu_params["movement_secondary_motor_x"]}
             toggleValue={mcu_params.movement_secondary_motor_invert_x}
             toggleAction={() =>
               settingToggle("movement_secondary_motor_invert_x", bot, undefined)} />

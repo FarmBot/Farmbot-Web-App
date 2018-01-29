@@ -1,5 +1,6 @@
 import { McuParams } from "farmbot/dist";
 import { Xyz } from "../interfaces";
+import { transform } from "lodash";
 
 interface AxisStatus {
   axis: Xyz;
@@ -30,4 +31,12 @@ export function enabledAxisMap(h: McuParams): Record<Xyz, boolean> {
     y: !!(h.encoder_enabled_y || h.movement_enable_endpoints_y),
     z: !!(h.encoder_enabled_z || h.movement_enable_endpoints_z)
   };
+}
+
+export function disabledAxisMap(h: McuParams): Record<Xyz, boolean> {
+  return transform<boolean, Record<Xyz, boolean>>(
+    enabledAxisMap(h),
+    (d: Record<Xyz, boolean>[], value: boolean, key: Xyz) => {
+      d[0][key] = !value;
+    }, [{ x: false, y: false, z: false }])[0];
 }

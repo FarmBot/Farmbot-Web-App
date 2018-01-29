@@ -212,14 +212,21 @@ a {
       font-size: 1rem;
     }
   }
-  .label-headings div[class*="col"] {
-    text-align: right;
-  }
   .row {
     margin-bottom: 0.6rem;
   }
   label {
     padding: 0.5rem 0 0 0.5rem;
+  }
+  .centered-button-div {
+    .fb-button {
+      float: none !important;
+    }
+    label {
+      padding: 0;
+    }
+    text-align: center;
+    padding: 0.25rem;
   }
 }
 

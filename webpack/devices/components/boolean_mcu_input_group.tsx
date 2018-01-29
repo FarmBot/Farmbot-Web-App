@@ -14,9 +14,8 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
     x,
     y,
     z,
-    disableX,
-    disableY,
-    disableZ,
+    disable,
+    grayscale,
     caution,
     displayAlert
   } = props;
@@ -32,21 +31,24 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
       </label>
       <SpacePanelToolTip tooltip={tooltip} />
     </Col>
-    <Col xs={2}>
+    <Col xs={2} className={"centered-button-div"}>
       <ToggleButton
-        disabled={disableX}
+        grayscale={grayscale && grayscale.x}
+        disabled={disable && disable.x}
         toggleValue={mcu_params[x]}
         toggleAction={() => settingToggle(x, bot, displayAlert)} />
     </Col>
-    <Col xs={2}>
+    <Col xs={2} className={"centered-button-div"}>
       <ToggleButton
-        disabled={disableY}
+        grayscale={grayscale && grayscale.y}
+        disabled={disable && disable.y}
         toggleValue={mcu_params[y]}
         toggleAction={() => settingToggle(y, bot, displayAlert)} />
     </Col>
-    <Col xs={2}>
+    <Col xs={2} className={"centered-button-div"}>
       <ToggleButton
-        disabled={disableZ}
+        grayscale={grayscale && grayscale.z}
+        disabled={disable && disable.z}
         toggleValue={mcu_params[z]}
         toggleAction={() => settingToggle(z, bot, displayAlert)} />
     </Col>
