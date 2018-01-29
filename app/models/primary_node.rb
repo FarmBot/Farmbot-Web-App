@@ -5,6 +5,9 @@ class PrimaryNode < ApplicationRecord
   has_many   :edge_nodes
 
   def todo
-    "Make sure `kind` and `parent_arg_name` are valid"
+    [
+      "Make sure `kind` and `parent_arg_name` are valid",
+      "Turn off auto-sync for this class and EdgeNode"
+    ]
   end
 end
