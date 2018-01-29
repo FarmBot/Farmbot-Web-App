@@ -10,6 +10,7 @@ import { FbosDetails } from "../farmbot_os_row";
 import { shallow, mount } from "enzyme";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { FbosDetailsProps } from "../interfaces";
+import { fakeState } from "../../../../__test_support__/fake_state";
 
 describe("<FbosDetails/>", () => {
   beforeEach(function () {
@@ -19,7 +20,7 @@ describe("<FbosDetails/>", () => {
   const fakeProps = (): FbosDetailsProps => {
     return {
       bot,
-      dispatch: jest.fn(x => x()),
+      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
       }

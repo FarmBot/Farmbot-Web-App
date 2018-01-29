@@ -34,6 +34,7 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { ConfigurationName, Dictionary } from "farmbot";
 import { NumericSetting } from "../../../session_keys";
 import { LogsSettingsMenuProps } from "../../interfaces";
+import { fakeState } from "../../../__test_support__/fake_state";
 
 describe("<LogsSettingsMenu />", () => {
   beforeEach(() => {
@@ -43,7 +44,7 @@ describe("<LogsSettingsMenu />", () => {
   const fakeProps = (): LogsSettingsMenuProps => {
     return {
       setFilterLevel: () => jest.fn(),
-      dispatch: jest.fn(x => x()),
+      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
       }

@@ -12,11 +12,12 @@ import { mount } from "enzyme";
 import { Content } from "../../../../constants";
 import { AutoSyncRowProps } from "../interfaces";
 import { bot } from "../../../../__test_support__/fake_state/bot";
+import { fakeState } from "../../../../__test_support__/fake_state";
 
 describe("<AutoSyncRow/>", () => {
   const fakeProps = (): AutoSyncRowProps => {
     return {
-      dispatch: jest.fn(x => x()),
+      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
       }

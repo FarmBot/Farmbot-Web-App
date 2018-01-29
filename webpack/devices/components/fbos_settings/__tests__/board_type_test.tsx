@@ -17,12 +17,13 @@ import { mount, shallow } from "enzyme";
 import { BoardType } from "../board_type";
 import { BoardTypeProps } from "../interfaces";
 import { bot } from "../../../../__test_support__/fake_state/bot";
+import { fakeState } from "../../../../__test_support__/fake_state";
 
 describe("<BoardType/>", () => {
   const fakeProps = (): BoardTypeProps => {
     return {
       firmwareVersion: "",
-      dispatch: jest.fn(),
+      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
       }
@@ -67,7 +68,6 @@ describe("<BoardType/>", () => {
   it("calls updateConfig", () => {
     const p = fakeProps();
     p.firmwareVersion = "Arduino Disconnected!";
-    p.dispatch = jest.fn(x => Promise.resolve(x()));
     const wrapper = shallow(<BoardType {...p} />);
     wrapper.find("FBSelect").simulate("change",
       { label: "firmware_hardware", value: "farmduino" });

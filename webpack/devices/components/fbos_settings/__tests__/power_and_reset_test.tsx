@@ -11,12 +11,13 @@ import { mount } from "enzyme";
 import { PowerAndResetProps } from "../interfaces";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { panelState } from "../../../../__test_support__/control_panel_state";
+import { fakeState } from "../../../../__test_support__/fake_state";
 
 describe("<PowerAndReset/>", () => {
   const fakeProps = (): PowerAndResetProps => {
     return {
       controlPanelState: panelState(),
-      dispatch: jest.fn(x => x()),
+      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
       }

@@ -10,6 +10,7 @@ import { AutoUpdateRow } from "../auto_update_row";
 import { mount } from "enzyme";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { AutoUpdateRowProps } from "../interfaces";
+import { fakeState } from "../../../../__test_support__/fake_state";
 
 describe("<AutoUpdateRow/>", () => {
   beforeEach(function () {
@@ -18,7 +19,7 @@ describe("<AutoUpdateRow/>", () => {
 
   const fakeProps = (): AutoUpdateRowProps => {
     return {
-      dispatch: jest.fn(x => x()),
+      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
       }

@@ -9,6 +9,7 @@ import * as React from "react";
 import { shallow } from "enzyme";
 import { BotConfigInputBox, BotConfigInputBoxProps } from "../bot_config_input_box";
 import { bot } from "../../../__test_support__/fake_state/bot";
+import { fakeState } from "../../../__test_support__/fake_state";
 
 describe("<BotConfigInputBox />", () => {
   beforeEach(function () {
@@ -18,7 +19,7 @@ describe("<BotConfigInputBox />", () => {
   const fakeProps = (): BotConfigInputBoxProps => {
     return {
       setting: "network_not_found_timer",
-      dispatch: jest.fn(x => x()),
+      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
       }
