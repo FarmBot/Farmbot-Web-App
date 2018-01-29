@@ -11,6 +11,13 @@ export function EncodersAndEndStops(props: EncodersProps) {
 
   const { encoders_and_endstops } = props.bot.controlPanelState;
   const { dispatch, bot } = props;
+  const { mcu_params } = bot.hardware;
+
+  const encodersDisabled = {
+    x: !mcu_params["encoder_enabled_x"],
+    y: !mcu_params["encoder_enabled_y"],
+    z: !mcu_params["encoder_enabled_z"]
+  };
 
   return <section>
     <Header
@@ -33,6 +40,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         x={"encoder_use_for_pos_x"}
         y={"encoder_use_for_pos_y"}
         z={"encoder_use_for_pos_z"}
+        grayscale={encodersDisabled}
         dispatch={dispatch}
         bot={bot} />
       <BooleanMCUInputGroup
@@ -41,6 +49,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         x={"encoder_invert_x"}
         y={"encoder_invert_y"}
         z={"encoder_invert_z"}
+        grayscale={encodersDisabled}
         dispatch={dispatch}
         bot={bot} />
       <NumericMCUInputGroup
@@ -49,6 +58,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         x={"encoder_missed_steps_max_x"}
         y={"encoder_missed_steps_max_y"}
         z={"encoder_missed_steps_max_z"}
+        gray={encodersDisabled}
         bot={bot}
         dispatch={dispatch} />
       <NumericMCUInputGroup
@@ -57,6 +67,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         x={"encoder_missed_steps_decay_x"}
         y={"encoder_missed_steps_decay_y"}
         z={"encoder_missed_steps_decay_z"}
+        gray={encodersDisabled}
         bot={bot}
         dispatch={dispatch} />
       <NumericMCUInputGroup
@@ -65,6 +76,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         x={"encoder_scaling_x"}
         y={"encoder_scaling_y"}
         z={"encoder_scaling_z"}
+        gray={encodersDisabled}
         bot={bot}
         dispatch={dispatch} />
       <BooleanMCUInputGroup
@@ -81,6 +93,11 @@ export function EncodersAndEndStops(props: EncodersProps) {
         x={"movement_invert_endpoints_x"}
         y={"movement_invert_endpoints_y"}
         z={"movement_invert_endpoints_z"}
+        grayscale={{
+          x: !mcu_params["movement_enable_endpoints_x"],
+          y: !mcu_params["movement_enable_endpoints_y"],
+          z: !mcu_params["movement_enable_endpoints_z"]
+        }}
         dispatch={dispatch}
         bot={bot} />
     </Collapse>

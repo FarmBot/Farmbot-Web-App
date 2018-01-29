@@ -138,6 +138,7 @@ export interface McuInputBoxProps {
   dispatch: Function;
   intSize?: IntegerSize;
   filter?: number;
+  gray?: boolean;
 }
 
 export interface EStopButtonProps {

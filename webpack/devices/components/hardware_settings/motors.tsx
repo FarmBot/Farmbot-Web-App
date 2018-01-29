@@ -173,6 +173,7 @@ export function Motors(props: MotorsProps) {
         </Col>
         <Col xs={2} className={"centered-button-div"}>
           <ToggleButton
+            grayscale={!mcu_params["movement_secondary_motor_x"]}
             toggleValue={mcu_params.movement_secondary_motor_invert_x}
             toggleAction={() =>
               settingToggle("movement_secondary_motor_invert_x", bot, undefined)} />

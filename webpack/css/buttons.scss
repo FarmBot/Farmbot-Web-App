@@ -270,6 +270,9 @@
       background: lighten($red, 10%) !important;
     }
   }
+  &.grayscale {
+    filter: grayscale(100%);
+  }
 }
 
 .plus-button {
