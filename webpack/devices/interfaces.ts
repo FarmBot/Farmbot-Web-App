@@ -162,8 +162,6 @@ export interface FarmwareProps {
   farmwares: Dictionary<FarmwareManifest | undefined>;
   timeOffset: number;
   syncStatus: SyncStatus | undefined;
-  // Partial because easier testing. Change to normal `WebAppConfig` if it
-  // becomes cumbersome later on.
   webAppConfig: Partial<WebAppConfig>;
 }
 
