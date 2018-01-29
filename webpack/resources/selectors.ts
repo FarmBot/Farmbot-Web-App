@@ -31,7 +31,7 @@ import {
   TaggedFbosConfig,
   TaggedWebAppConfig
 } from "./tagged_resources";
-import { CowardlyDictionary, betterCompact, sortResourcesById } from "../util";
+import { CowardlyDictionary, betterCompact, sortResourcesById, bail } from "../util";
 import { isNumber } from "util";
 type StringMap = CowardlyDictionary<string>;
 
@@ -452,17 +452,16 @@ export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {
   return (dev && dev.kind === "Device") ?
     dev : undefined;
 }
-export function getDeviceAccountSettings(index: ResourceIndex) {
+export function getDeviceAccountSettings(index: ResourceIndex): TaggedDevice {
   const list = index.byKind.Device;
-  const uuid = list[0];
-  const device = index.references[uuid || -1];
-  if ((list.length === 1) && device && device.kind === "Device") {
-    sanityCheck(device);
-    return device;
-  } else {
-    throw new Error(`
-    PROBLEM: Expected getDeviceAccountSettings() to return exactly 1 device.
-    We got some other number back, indicating a hazardous condition.`);
+  const uuid = list[0] || "_";
+  const device = index.references[uuid];
+  switch (list.length) {
+    case 0: return bail(`Tried to load device before it was loaded.`);
+    case 1: return (device && device.kind === "Device" && sanityCheck(device))
+      ? device
+      : bail("Malformed device!");
+    default: return bail("Found more than 1 device");
   }
 }
 
