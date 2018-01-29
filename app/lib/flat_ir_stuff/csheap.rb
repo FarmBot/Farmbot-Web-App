@@ -63,8 +63,10 @@ class CSHeap
           .to_a
           .map do |node|
             key, value = *node
-            if key.to_s.starts_with?(Slicer::LINK)
-              output[:primary_nodes][key.gsub(Slicer::LINK, "")] = JSON.parse(value)
+            is_primary = key.to_s.starts_with?(Slicer::LINK)
+            if is_primary
+              clean_key = key.gsub(Slicer::LINK, "")
+              output[:primary_nodes][clean_key] = JSON.parse(value)
             else
               output[:edge_nodes][key] = JSON.parse(value)
             end
