@@ -33,7 +33,7 @@ export function DangerZone(props: DangerZoneProps) {
             </b>
           </p>
         </Col>
-        <Col xs={2}>
+        <Col xs={2} className={"centered-button-div"}>
           <button
             className="fb-button red"
             onClick={onReset}>

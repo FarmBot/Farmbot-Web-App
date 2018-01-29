@@ -27,13 +27,13 @@ export function PinGuard(props: PinGuardProps) {
           </label>
           <SpacePanelToolTip tooltip={t(ToolTips.PIN_GUARD_PIN_NUMBER)} />
         </Col>
-        <Col xs={3}>
+        <Col xs={4}>
           <label>
             {t("Timeout (sec)")}
           </label>
         </Col>
-        <Col xs={3}>
-          <label style={{ float: "right" }}>
+        <Col xs={2} className={"centered-button-div"}>
+          <label>
             {t("To State")}
           </label>
         </Col>
