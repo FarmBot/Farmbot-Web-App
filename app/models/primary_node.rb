@@ -1,6 +1,7 @@
 class PrimaryNode < ApplicationRecord
-  belongs_to :sequence
-  belongs_to :parent, class_name: PrimaryNode
+  belongs_to :sequence, required: true
+  has_one    :parent, class_name: "PrimaryNode", foreign_key: "parent_id"
+  has_one    :child,  class_name: "PrimaryNode", foreign_key: "child_id"
   has_many   :edge_nodes
 
   def todo
