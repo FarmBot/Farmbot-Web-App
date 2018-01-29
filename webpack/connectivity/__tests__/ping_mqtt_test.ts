@@ -5,6 +5,13 @@ jest.mock("../index", () => {
   };
 });
 
+let mockTimestamp = 0;
+jest.mock("../../util", () => {
+  return {
+    timestamp: () => mockTimestamp
+  };
+});
+
 import {
   writePing,
   LAST_IN,
@@ -16,12 +23,19 @@ import {
   sendOutboundPing,
   startPinging,
   PING,
-  PING_INTERVAL
+  ACTIVE_THRESHOLD
 } from "../ping_mqtt";
-import { Farmbot } from "farmbot";
+import { Farmbot, Dictionary } from "farmbot";
 import { dispatchNetworkDown, dispatchNetworkUp } from "../index";
+
+const TOO_LATE_TIME_DIFF = ACTIVE_THRESHOLD + 1;
+const ACCEPTABLE_TIME_DIFF = ACTIVE_THRESHOLD - 1;
+
+let state: Dictionary<string | number | boolean> = {
+  [LAST_IN]: 123, [LAST_OUT]: 456
+};
+
 function fakeBot(): Farmbot {
-  const state = { [LAST_IN]: 123, [LAST_OUT]: 456 };
   const fb: Partial<Farmbot> = {
     setState: jest.fn(),
     publish: jest.fn(),
@@ -32,7 +46,20 @@ function fakeBot(): Farmbot {
   return fb as Farmbot;
 }
 
+function expectStale() {
+  expect(dispatchNetworkDown).toHaveBeenCalledWith("bot.mqtt");
+}
+
+function expectActive() {
+  expect(dispatchNetworkUp).toHaveBeenCalledWith("bot.mqtt");
+  expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt");
+}
+
 describe("ping util", () => {
+  beforeEach(function () {
+    jest.clearAllMocks();
+  });
+
   it("sets the LAST_PING_(IN|OUT) in bot state", () => {
     const bot = fakeBot();
     writePing(bot, "in");
@@ -52,19 +79,17 @@ describe("ping util", () => {
 
   it("marks the bot's connection to MQTT as 'stale'", () => {
     markStale();
-    expect(dispatchNetworkDown).toHaveBeenCalledWith("bot.mqtt");
+    expectStale();
   });
 
   it("marks the bot's connection to MQTT as 'active'", () => {
     markActive();
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("bot.mqtt");
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt");
+    expectActive();
   });
 
   it("checks if the bot isInactive()", () => {
-    const TOO_LATE = PING_INTERVAL * 3;
-    expect(isInactive(1, TOO_LATE)).toBeTruthy();
-    expect(isInactive(TOO_LATE, 1)).toBeFalsy();
+    expect(isInactive(1, 1 + TOO_LATE_TIME_DIFF)).toBeTruthy();
+    expect(isInactive(1, 1)).toBeFalsy();
   });
 
   it("sends an outbound ping", () => {
@@ -72,8 +97,21 @@ describe("ping util", () => {
     const oldOutbound = readPing(bot, "out");
     sendOutboundPing(bot);
     expect(bot.publish).toHaveBeenCalledWith(PING);
-    /** TODO: How to "time travel" in Jest without dumb hacks? */
     expect(oldOutbound).toBeLessThanOrEqual(readPing(bot, "out") || NaN);
+  });
+
+  it("sends an outbound ping: mark active", () => {
+    mockTimestamp = 1 + ACCEPTABLE_TIME_DIFF;
+    state = { [LAST_IN]: 1 };
+    sendOutboundPing(fakeBot());
+    expectActive();
+  });
+
+  it("sends an outbound ping: mark stale", () => {
+    mockTimestamp = 1 + TOO_LATE_TIME_DIFF;
+    state = { [LAST_IN]: 1 };
+    sendOutboundPing(fakeBot());
+    expectStale();
   });
 
   it("binds event handlers with startPinging()", () => {

@@ -14,6 +14,8 @@ export interface FBSelectProps {
   allowEmpty?: boolean;
   /** Text shown before user selection. */
   placeholder?: string | undefined;
+  /** Extra class names to add. */
+  extraClass?: string;
 }
 
 export class FBSelect extends React.Component<FBSelectProps, {}> {
@@ -32,7 +34,8 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
   }
 
   render() {
-    return <div className="filter-search">
+    const { extraClass } = this.props;
+    return <div className={`filter-search ${extraClass ? extraClass : ""}`}>
       <FilterSearch
         selectedItem={this.item}
         items={this.list}

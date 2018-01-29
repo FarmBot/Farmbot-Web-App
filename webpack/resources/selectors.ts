@@ -28,6 +28,7 @@ import {
   TaggedUser,
   TaggedWebcamFeed,
   TaggedDevice,
+  TaggedFbosConfig,
   TaggedWebAppConfig
 } from "./tagged_resources";
 import { CowardlyDictionary, betterCompact, sortResourcesById, bail } from "../util";
@@ -484,7 +485,7 @@ export function maybeFetchUser(index: ResourceIndex):
   const user = index.references[uuid || -1];
 
   if (user && sanityCheck(user) && list.length > 1) {
-    throw new Error("Index is broke. Expected exactly 1 user.");
+    throw new Error("PROBLEM: Expected 1 user. Got: " + list.length);
   }
   if ((list.length === 1) && user && user.kind === "User") {
     return user;
@@ -497,9 +498,7 @@ export function getUserAccountSettings(index: ResourceIndex): TaggedUser {
   if (user) {
     return user;
   } else {
-    throw new Error(`PROBLEM: Expected getUserAccountSettings() to return
-    exactly 1 user. We got some other number back, indicating a hazardous
-    condition.`);
+    throw new Error(`PROBLEM: Tried to fetch user before it was available.`);
   }
 }
 
@@ -552,6 +551,13 @@ export function findToolBySlotId(input: ResourceIndex, tool_slot_id: number):
 export function getWebAppConfig(i: ResourceIndex): TaggedWebAppConfig | undefined {
   const conf = i.references[i.byKind.WebAppConfig[0] || "NO"];
   if (conf && conf.kind === "WebAppConfig") {
+    return conf;
+  }
+}
+
+export function getFbosConfig(i: ResourceIndex): TaggedFbosConfig | undefined {
+  const conf = i.references[i.byKind.FbosConfig[0] || "NO"];
+  if (conf && conf.kind === "FbosConfig") {
     return conf;
   }
 }

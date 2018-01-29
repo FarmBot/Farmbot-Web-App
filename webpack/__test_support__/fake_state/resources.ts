@@ -3,7 +3,8 @@ import { buildResourceIndex } from "../resource_index_builder";
 import {
   TaggedFarmEvent, TaggedSequence, TaggedRegimen, TaggedImage,
   TaggedTool, TaggedToolSlotPointer, TaggedUser, TaggedWebcamFeed,
-  TaggedPlantPointer, TaggedGenericPointer, TaggedPeripheral
+  TaggedPlantPointer, TaggedGenericPointer, TaggedPeripheral, TaggedFbosConfig,
+  TaggedWebAppConfig
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
@@ -134,5 +135,65 @@ export function fakePeripheral(): TaggedPeripheral {
     id: idCounter++,
     label: "Fake Pin",
     pin: 1
+  });
+}
+
+export function fakeFbosConfig(): TaggedFbosConfig {
+  return fakeResource("FbosConfig", {
+    id: 1,
+    device_id: 1,
+    created_at: "",
+    updated_at: "",
+    auto_sync: false,
+    beta_opt_in: false,
+    disable_factory_reset: false,
+    firmware_input_log: false,
+    firmware_output_log: false,
+    sequence_body_log: false,
+    sequence_complete_log: false,
+    sequence_init_log: false,
+    network_not_found_timer: 0,
+    firmware_hardware: "arduino",
+    api_migrated: false,
+    os_auto_update: false,
+    arduino_debug_messages: false
+  });
+}
+
+export function fakeWebAppConfig(): TaggedWebAppConfig {
+  return fakeResource("WebAppConfig", {
+    id: 1,
+    device_id: 1,
+    created_at: "2018-01-11T20:20:38.362Z",
+    updated_at: "2018-01-22T15:32:41.970Z",
+    confirm_step_deletion: false,
+    disable_animations: false,
+    disable_i18n: false,
+    display_trail: false,
+    dynamic_map: false,
+    encoder_figure: false,
+    hide_webcam_widget: false,
+    legend_menu_open: false,
+    map_xl: false,
+    raw_encoders: true,
+    scaled_encoders: true,
+    show_spread: false,
+    show_farmbot: true,
+    show_plants: true,
+    show_points: true,
+    x_axis_inverted: false,
+    y_axis_inverted: false,
+    z_axis_inverted: true,
+    bot_origin_quadrant: 2,
+    zoom_level: -3,
+    success_log: 3,
+    busy_log: 3,
+    warn_log: 3,
+    error_log: 3,
+    info_log: 3,
+    fun_log: 3,
+    debug_log: 3,
+    stub_config: false,
+    show_first_party_farmware: false
   });
 }

@@ -179,7 +179,7 @@ GEM
       mini_portile2 (~> 2.3.0)
     orm_adapter (0.5.0)
     os (0.9.6)
-    paperclip (5.1.0)
+    paperclip (5.2.1)
       activemodel (>= 4.2.0)
       activesupport (>= 4.2.0)
       cocaine (~> 0.5.5)
@@ -327,7 +327,7 @@ DEPENDENCIES
   jwt
   letter_opener
   mutations
-  paperclip
+  paperclip (= 5.2.1)
   pg (= 0.21.0)
   polymorphic_constraints
   pry

@@ -66,7 +66,7 @@ describe("botRedcuer", () => {
   it("fetches OS update info", () => {
     const r = botReducer(initialState(), {
       type: Actions.FETCH_OS_UPDATE_INFO_OK,
-      payload: "1.2.3"
+      payload: { version: "1.2.3", commit: undefined }
     }).currentOSVersion;
     expect(r).toBe("1.2.3");
   });
