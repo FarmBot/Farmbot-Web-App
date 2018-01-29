@@ -1,25 +1,28 @@
 import * as React from "react";
 import * as _ from "lodash";
 import { BlurableInput } from "../../ui/index";
-import { StepsPerMMBoxProps } from "../interfaces";
+import { SourceFbosConfig } from "../interfaces";
 import { ConfigurationName } from "farmbot/dist";
 import { updateConfig } from "../actions";
 
-/**
- * Steps per mm is not an actual Arduino command.
- * We needed to fake it on the UI layer to give the appearance that the settings
- * all coming from the same place.
- */
-export class BotConfigInputBox extends React.Component<StepsPerMMBoxProps, {}> {
+export interface BotConfigInputBoxProps {
+  setting: ConfigurationName;
+  dispatch: Function;
+  disabled?: boolean;
+  sourceFbosConfig: SourceFbosConfig;
+}
 
-  get setting() { return this.props.setting; }
+export class BotConfigInputBox
+  extends React.Component<BotConfigInputBoxProps, {}> {
 
-  get config() { return this.props.bot.hardware.configuration; }
+  get config() {
+    return this.props.sourceFbosConfig(this.props.setting);
+  }
 
   change = (key: ConfigurationName, dispatch: Function) => {
     return (event: React.FormEvent<HTMLInputElement>) => {
       const next = parseInt(event.currentTarget.value, 10);
-      const current = this.config[this.setting];
+      const current = this.config.value;
       if (!_.isNaN(next) && (next !== current)) {
         dispatch(updateConfig({ [key]: next }));
       }
@@ -27,13 +30,15 @@ export class BotConfigInputBox extends React.Component<StepsPerMMBoxProps, {}> {
   }
 
   render() {
-    const hmm = this.config[this.setting];
-    const value = (_.isNumber(hmm) || _.isBoolean(hmm)) ? hmm.toString() : "";
+    const current = this.config.value;
+    const boxValue = (_.isNumber(current) || _.isBoolean(current))
+      ? current.toString() : "";
 
     return <BlurableInput
       type="number"
+      className={!this.config.consistent ? "dim" : ""}
       onCommit={this.change(this.props.setting, this.props.dispatch)}
-      value={value}
+      value={boxValue}
       disabled={this.props.disabled} />;
   }
 }

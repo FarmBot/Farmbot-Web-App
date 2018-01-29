@@ -18,7 +18,7 @@ export class HardwareSettings extends
   React.Component<HardwareSettingsProps, {}> {
 
   render() {
-    const { bot, dispatch } = this.props;
+    const { bot, dispatch, sourceFbosConfig } = this.props;
     const { sync_status } = this.props.bot.hardware.informational_settings;
     return <Widget className="hardware-widget">
       <WidgetHeader title="Hardware" helpText={ToolTips.HW_SETTINGS}>
@@ -58,7 +58,8 @@ export class HardwareSettings extends
             bot={bot} />
           <Motors
             dispatch={dispatch}
-            bot={bot} />
+            bot={bot}
+            sourceFbosConfig={sourceFbosConfig} />
           <EncodersAndEndStops
             dispatch={dispatch}
             bot={bot} />

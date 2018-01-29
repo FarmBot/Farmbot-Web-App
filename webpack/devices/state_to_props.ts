@@ -2,10 +2,16 @@ import { Everything } from "../interfaces";
 import { Props } from "./interfaces";
 import {
   selectAllImages,
-  getDeviceAccountSettings
+  getDeviceAccountSettings,
+  getFbosConfig
 } from "../resources/selectors";
+import { sourceFbosConfigValue } from "./components/source_fbos_config_value";
 
 export function mapStateToProps(props: Everything): Props {
+  const conf = getFbosConfig(props.resources.index);
+  const { hardware } = props.bot;
+  const fbosConfig = (conf && conf.body && conf.body.api_migrated)
+    ? conf.body : undefined;
   return {
     userToApi: props.bot.connectivity["user.api"],
     userToMqtt: props.bot.connectivity["user.mqtt"],
@@ -16,5 +22,6 @@ export function mapStateToProps(props: Everything): Props {
     dispatch: props.dispatch,
     images: selectAllImages(props.resources.index),
     resources: props.resources.index,
+    sourceFbosConfig: sourceFbosConfigValue(fbosConfig, hardware.configuration),
   };
 }
