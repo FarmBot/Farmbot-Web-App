@@ -10,8 +10,8 @@ import { ColWidth } from "../farmbot_os_settings";
 
 export function FactoryResetRow(props: FactoryResetRowProps) {
   const { dispatch, sourceFbosConfig } = props;
-  const diableFactoryReset = sourceFbosConfig("disable_factory_reset");
-  const maybeDisableTimer = diableFactoryReset.value ? { color: "grey" } : {};
+  const disableFactoryReset = sourceFbosConfig("disable_factory_reset");
+  const maybeDisableTimer = disableFactoryReset.value ? { color: "grey" } : {};
   return <div>
     <Row>
       <Col xs={ColWidth.label}>
@@ -46,11 +46,11 @@ export function FactoryResetRow(props: FactoryResetRowProps) {
       </Col>
       <Col xs={ColWidth.button}>
         <ToggleButton
-          toggleValue={diableFactoryReset.value}
-          dim={!diableFactoryReset.consistent}
+          toggleValue={!disableFactoryReset.value}
+          dim={!disableFactoryReset.consistent}
           toggleAction={() => {
             dispatch(updateConfig({
-              disable_factory_reset: !diableFactoryReset.value
+              disable_factory_reset: !disableFactoryReset.value
             }));
           }} />
       </Col>
@@ -70,7 +70,7 @@ export function FactoryResetRow(props: FactoryResetRowProps) {
         <BotConfigInputBox
           setting="network_not_found_timer"
           dispatch={dispatch}
-          disabled={!!diableFactoryReset.value}
+          disabled={!!disableFactoryReset.value}
           sourceFbosConfig={sourceFbosConfig} />
       </Col>
     </Row >
