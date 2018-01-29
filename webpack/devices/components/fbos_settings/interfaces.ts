@@ -28,7 +28,6 @@ export interface FactoryResetRowProps {
 }
 
 export interface FarmbotOsRowProps {
-  controller_version: string | undefined;
   bot: BotState;
   osReleaseNotes: string;
   dispatch: Function;

@@ -33,6 +33,8 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
 
   componentWillReceiveProps() {
     this.setState({ sending: this.sending });
+    !["unknown", "Present"].includes(this.boardType) &&
+      this.setState({ boardType: this.boardType });
   }
 
   get sending() {

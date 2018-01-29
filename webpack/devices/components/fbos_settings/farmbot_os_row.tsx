@@ -39,9 +39,8 @@ export function FbosDetails(props: FbosDetailsProps) {
 }
 
 export function FarmbotOsRow(props: FarmbotOsRowProps) {
-  const {
-     controller_version, sourceFbosConfig, dispatch, bot, osReleaseNotes
-    } = props;
+  const { sourceFbosConfig, dispatch, bot, osReleaseNotes } = props;
+  const { controller_version } = bot.hardware.informational_settings;
   const version = controller_version || t(" unknown (offline)");
   return <Row>
     <Col xs={ColWidth.label}>

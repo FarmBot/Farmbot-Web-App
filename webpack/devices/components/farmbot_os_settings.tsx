@@ -92,10 +92,8 @@ export class FarmbotOsSettings
   }
 
   render() {
-    const { account, sourceFbosConfig } = this.props;
-    const {
-      firmware_version, controller_version, sync_status
-     } = this.props.bot.hardware.informational_settings;
+    const { bot, account, sourceFbosConfig } = this.props;
+    const { firmware_version, sync_status } = bot.hardware.informational_settings;
     return <Widget className="device-widget">
       <form onSubmit={(e) => e.preventDefault()}>
         <WidgetHeader title="Device" helpText={ToolTips.OS_SETTINGS}>
@@ -140,7 +138,6 @@ export class FarmbotOsSettings
             lockOpen={process.env.NODE_ENV !== "production"}>
             <FarmbotOsRow
               bot={this.props.bot}
-              controller_version={controller_version}
               osReleaseNotes={this.state.osReleaseNotes}
               dispatch={this.props.dispatch}
               sourceFbosConfig={sourceFbosConfig} />
