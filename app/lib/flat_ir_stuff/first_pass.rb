@@ -6,11 +6,8 @@ class FirstPass < Mutations::Command
     model :sequence, class: Sequence
     array :input do # CeleryScript flat IR AST
       hash do
-        string  :kind, in: KINDS
-        integer :parent
-        integer :child
-        hash    :primary_nodes do integer :* end
-        hash    :edge_nodes    do duck :*, methods: :to_json end
+        string :kind, in: KINDS
+        hash   :edge_nodes do duck :*, methods: :to_json end
       end
     end
   end

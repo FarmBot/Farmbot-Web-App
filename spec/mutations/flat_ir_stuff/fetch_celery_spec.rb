@@ -5,6 +5,7 @@ describe FetchCelery do
   let(:device) { user.device }
 
   it "Makes JSON that is identical to the legacy implementation" do
+    pending("Write tests for FirstPass and SecondPass before testing this.")
     Sequence.destroy_all
     expect(Sequence.count).to eq(0)
     expect(PrimaryNode.count).to eq(0)
@@ -21,7 +22,6 @@ describe FetchCelery do
           body: [{ kind: "channel", args: { channel_name: "toast" } }] }
       ]
     })
-    result = FetchCelery.run!(sequences: [known_good.reload])
-    binding.pry
+    result = FetchCelery.run!(sequence: known_good.reload)
   end
 end
