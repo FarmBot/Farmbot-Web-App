@@ -6,10 +6,7 @@ describe SecondPass do
     Sequence.all.destroy_all
     expect(EdgeNode.count).to eq(0)
     expect(PrimaryNode.count).to eq(0)
-    all = SecondPass.run!(nodes: FlatIrHelpers.fake_first_pass)
-    all.map(&:save!)
-    all.map(&:reload)
-    all
+    SecondPass.run!(nodes: FlatIrHelpers.fake_first_pass)
   end
 
   it "wires stuff up" do
@@ -18,7 +15,7 @@ describe SecondPass do
     expect(result.map(&:sequence_id).uniq.length).to eq(1)
   end
 
-  fit "references parent/children correctly" do
+  it "references parent/children correctly" do
     PrimaryNode.destroy_all
     EdgeNode.destroy_all
     nothing      = result.first
@@ -33,5 +30,11 @@ describe SecondPass do
     expect(sequence.child_id).to eq(send_message.id)
   end
 
-  it "sets proper parent_arg_name"
+  it "sets proper parent_arg_name" do
+    binding.pry
+    sequence = result.first.sequence
+    count = PrimaryNode.where(sequence: sequence,
+                              parent_arg_name: ["locals", "_else", "_then"]).count
+    expect(count).to eq(3)
+  end
 end

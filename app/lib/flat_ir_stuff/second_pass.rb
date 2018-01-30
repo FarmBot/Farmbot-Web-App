@@ -22,7 +22,9 @@ class SecondPass < Mutations::Command
   end
 
   def execute
-    nodes.map { |node| save_node(node) }
+    ActiveRecord::Base.transaction do
+      nodes.map { |node| save_node(node) }
+    end
   end
 
   def save_node(node)
@@ -34,7 +36,7 @@ class SecondPass < Mutations::Command
     create_edge_arg_node(node)
     # Save edge nodes
     instance = node[:instance]
-    instance.save!
+    instance.save! if instance.changed?
     instance
   end
 
