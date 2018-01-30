@@ -1,3 +1,8 @@
+const mockHistory = jest.fn();
+jest.mock("../../../history", () => ({
+  push: mockHistory
+}));
+
 import * as React from "react";
 import { PlantInventoryItem } from "../plant_inventory_item";
 import { shallow } from "enzyme";
@@ -5,43 +10,62 @@ import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
 
 describe("<PlantInventoryItem />", () => {
+  const fakeProps = () => {
+    return {
+      tpp: fakePlant(),
+      dispatch: jest.fn(),
+      hovered: false,
+    };
+  };
+
   it("renders", () => {
-    const wrapper = shallow(
-      <PlantInventoryItem
-        tpp={fakePlant()}
-        dispatch={jest.fn()} />);
+    const wrapper = shallow(<PlantInventoryItem {...fakeProps() } />);
     expect(wrapper.text()).toEqual("Strawberry Plant 11 days old");
+    expect(wrapper.find("div").first().hasClass("hovered")).toBeFalsy();
+  });
+
+  it("renders hovered", () => {
+    const p = fakeProps();
+    p.hovered = true;
+    const wrapper = shallow(<PlantInventoryItem {...p} />);
+    expect(wrapper.find("div").first().hasClass("hovered")).toBeTruthy();
   });
 
   it("hover begin", () => {
-    const dispatch = jest.fn();
-    const wrapper = shallow(
-      <PlantInventoryItem
-        tpp={fakePlant()}
-        dispatch={dispatch} />);
+    const p = fakeProps();
+    const wrapper = shallow(<PlantInventoryItem {...p} />);
     wrapper.simulate("mouseEnter");
-    expect(dispatch).toBeCalledWith({
+    expect(p.dispatch).toBeCalledWith({
       payload: {
         icon: "",
-        plantUUID: "Point.1.18"
+        plantUUID: p.tpp.uuid
       },
       type: Actions.TOGGLE_HOVERED_PLANT
     });
   });
 
   it("hover end", () => {
-    const dispatch = jest.fn();
-    const wrapper = shallow(
-      <PlantInventoryItem
-        tpp={fakePlant()}
-        dispatch={dispatch} />);
+    const p = fakeProps();
+    const wrapper = shallow(<PlantInventoryItem {...p} />);
     wrapper.simulate("mouseLeave");
-    expect(dispatch).toBeCalledWith({
+    expect(p.dispatch).toBeCalledWith({
       payload: {
         icon: "",
         plantUUID: undefined
       },
       type: Actions.TOGGLE_HOVERED_PLANT
     });
+  });
+
+  it("selects plant", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<PlantInventoryItem {...p} />);
+    wrapper.simulate("click");
+    expect(p.dispatch).toBeCalledWith({
+      payload: [p.tpp.uuid],
+      type: Actions.SELECT_PLANT
+    });
+    expect(mockHistory)
+      .toHaveBeenCalledWith("/app/designer/plants/" + p.tpp.body.id);
   });
 });

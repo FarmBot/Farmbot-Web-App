@@ -41,6 +41,7 @@ function fakeProps(): GardenMapProps {
         plantUUID: "",
         icon: ""
       },
+      hoveredPlantListItem: undefined,
       cropSearchQuery: "",
       cropSearchResults: [{
         crop: {

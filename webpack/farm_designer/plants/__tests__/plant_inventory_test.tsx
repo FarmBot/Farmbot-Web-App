@@ -12,7 +12,8 @@ describe("<PlantInventory />", () => {
     const wrapper = mount(
       <Plants
         plants={[fakePlant()]}
-        dispatch={jest.fn()} />);
+        dispatch={jest.fn()}
+        hoveredPlantListItem={undefined} />);
     ["Designer",
       "Plants",
       "Farm Events",

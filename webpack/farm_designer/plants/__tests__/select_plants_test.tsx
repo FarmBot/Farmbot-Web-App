@@ -69,7 +69,7 @@ describe("<SelectPlants />", () => {
     expect(selectAllButton.text()).toEqual("Select all");
     selectAllButton.simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith(
-      { "payload": ["plant.1", "plant.2"], "type": "SELECT_PLANT" });
+      { payload: ["plant.1", "plant.2"], type: Actions.SELECT_PLANT });
   });
 
   it("selects none", () => {
@@ -80,7 +80,7 @@ describe("<SelectPlants />", () => {
     expect(selectNoneButton.text()).toEqual("Select none");
     selectNoneButton.simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith(
-      { "payload": undefined, "type": "SELECT_PLANT" });
+      { payload: undefined, type: Actions.SELECT_PLANT });
   });
 
   it("confirms deletion of selected plants", () => {

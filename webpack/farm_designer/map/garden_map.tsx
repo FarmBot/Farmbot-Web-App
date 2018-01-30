@@ -2,7 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 import { error } from "farmbot-toastr";
 import { Plant, DEFAULT_PLANT_RADIUS } from "../plant";
-import { movePlant, closePlantInfo } from "../actions";
+import { movePlant, closePlantInfo, unselectPlant } from "../actions";
 import * as moment from "moment";
 import { GardenMapProps, GardenMapState } from "../interfaces";
 import { getPathArray } from "../../history";
@@ -63,6 +63,10 @@ export class GardenMap extends
   constructor(props: GardenMapProps) {
     super(props);
     this.state = {};
+  }
+
+  componentWillUnmount() {
+    unselectPlant(this.props.dispatch)();
   }
 
   get isEditing(): boolean { return getMode() === Mode.editPlant; }
@@ -130,7 +134,7 @@ export class GardenMap extends
             }
           });
         }
-        this.props.dispatch({ type: "SELECT_PLANT", payload: undefined });
+        this.props.dispatch({ type: Actions.SELECT_PLANT, payload: undefined });
         break;
     }
   }
@@ -261,7 +265,7 @@ export class GardenMap extends
               }
             });
             this.props.dispatch({
-              type: "SELECT_PLANT",
+              type: Actions.SELECT_PLANT,
               payload: this.getSelected(this.state.selectionBox)
             });
           }

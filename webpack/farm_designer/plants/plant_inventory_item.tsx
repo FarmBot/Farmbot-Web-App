@@ -4,12 +4,14 @@ import * as moment from "moment";
 import { DEFAULT_ICON, cachedCrop, svgToUrl } from "../../open_farm/icons";
 import { push } from "../../history";
 import { TaggedPlantPointer } from "../../resources/tagged_resources";
+import { Actions } from "../../constants";
 
 type IMGEvent = React.SyntheticEvent<HTMLImageElement>;
 
 interface PlantInventoryItemProps {
   tpp: TaggedPlantPointer;
   dispatch: Function;
+  hovered: boolean;
 }
 
 interface PlantInventoryItemState {
@@ -31,7 +33,7 @@ export class PlantInventoryItem extends
       const { icon } = this.state;
       const isEnter = action === "enter";
       dispatch({
-        type: "TOGGLE_HOVERED_PLANT", payload: {
+        type: Actions.TOGGLE_HOVERED_PLANT, payload: {
           plantUUID: (isEnter ? tpp.uuid : undefined),
           icon: (isEnter ? icon : "")
         }
@@ -40,7 +42,7 @@ export class PlantInventoryItem extends
 
     const click = () => {
       push("/app/designer/plants/" + plantId);
-      dispatch({ type: "SELECT_PLANT", payload: [tpp.uuid] });
+      dispatch({ type: Actions.SELECT_PLANT, payload: [tpp.uuid] });
     };
 
     // See `cachedIcon` for more details on this.
@@ -64,7 +66,7 @@ export class PlantInventoryItem extends
     const daysOld = currentDay.diff(moment(plantedAt), "days") + 1;
 
     return <div
-      className="plant-search-item"
+      className={`plant-search-item ${this.props.hovered ? "hovered" : ""}`}
       key={plantId}
       onMouseEnter={() => toggle("enter")}
       onMouseLeave={() => toggle("leave")}

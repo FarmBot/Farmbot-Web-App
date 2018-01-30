@@ -3,6 +3,7 @@ import { defensiveClone } from "../util";
 import { edit } from "../api/crud";
 import * as _ from "lodash";
 import { history, getPathArray } from "../history";
+import { Actions } from "../constants";
 
 export function movePlant(payload: MovePlantProps) {
   const tr = payload.plant;
@@ -15,12 +16,13 @@ export function movePlant(payload: MovePlantProps) {
 }
 
 export const unselectPlant = (dispatch: Function) => () => {
-  dispatch({ type: "SELECT_PLANT", payload: undefined });
+  dispatch({ type: Actions.SELECT_PLANT, payload: undefined });
   dispatch({
-    type: "TOGGLE_HOVERED_PLANT", payload: {
+    type: Actions.TOGGLE_HOVERED_PLANT, payload: {
       plantUUID: undefined, icon: ""
     }
   });
+  dispatch({ type: Actions.HOVER_PLANT_LIST_ITEM, payload: undefined });
 };
 
 export const closePlantInfo = (dispatch: Function) => () => {
