@@ -5,8 +5,7 @@ describe FetchCelery do
   let(:device) { user.device }
 
   it "Makes JSON that is identical to the legacy implementation" do
-    pending("Write tests for FirstPass and SecondPass before testing this.")
-    Sequence.destroy_all
+    Sequence.all.destroy_all
     expect(Sequence.count).to eq(0)
     expect(PrimaryNode.count).to eq(0)
     expect(EdgeNode.count).to eq(0)
