@@ -134,7 +134,7 @@ export class GardenMap extends
             }
           });
         }
-        this.props.dispatch({ type: "SELECT_PLANT", payload: undefined });
+        this.props.dispatch({ type: Actions.SELECT_PLANT, payload: undefined });
         break;
     }
   }
@@ -265,7 +265,7 @@ export class GardenMap extends
               }
             });
             this.props.dispatch({
-              type: "SELECT_PLANT",
+              type: Actions.SELECT_PLANT,
               payload: this.getSelected(this.state.selectionBox)
             });
           }

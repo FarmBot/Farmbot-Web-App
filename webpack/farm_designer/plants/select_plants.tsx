@@ -99,14 +99,14 @@ export class SelectPlants
           </button>
           <button className="fb-button gray"
             onClick={() => this.props.dispatch({
-              type: "SELECT_PLANT",
+              type: Actions.SELECT_PLANT,
               payload: plants.map(p => p.uuid)
             })}>
             {t("Select all")}
           </button>
           <button className="fb-button gray"
             onClick={() => this.props.dispatch({
-              type: "SELECT_PLANT",
+              type: Actions.SELECT_PLANT,
               payload: undefined
             })}>
             {t("Select none")}
@@ -127,6 +127,7 @@ export class SelectPlants
               <PlantInventoryItem
                 key={p.uuid}
                 tpp={p}
+                hovered={false}
                 dispatch={dispatch} />)}
         </div>
       </div>

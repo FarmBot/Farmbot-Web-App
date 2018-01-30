@@ -6,6 +6,7 @@ import { DragHelpers } from "./drag_helpers";
 import { Session } from "../../session";
 import { BooleanSetting } from "../../session_keys";
 import { Color } from "../../ui/index";
+import { Actions } from "../../constants";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
@@ -21,12 +22,24 @@ export class GardenPlant extends
   }
 
   click = () => {
-    this.props.dispatch({ type: "SELECT_PLANT", payload: [this.props.uuid] });
     this.props.dispatch({
-      type: "TOGGLE_HOVERED_PLANT", payload: {
+      type: Actions.SELECT_PLANT,
+      payload: [this.props.uuid]
+    });
+    this.props.dispatch({
+      type: Actions.TOGGLE_HOVERED_PLANT, payload: {
         plantUUID: this.props.uuid, icon: this.state.icon
       }
     });
+  };
+
+  iconHover = (action: "start" | "end") => {
+    const hovered = action === "start";
+    this.props.dispatch({
+      type: Actions.HOVER_PLANT_LIST_ITEM,
+      payload: hovered ? this.props.uuid : undefined
+    });
+    this.setState({ hover: hovered ? true : false });
   };
 
   get radius() {
@@ -64,8 +77,8 @@ export class GardenPlant extends
 
       <g id="plant-icon">
         <image
-          onMouseEnter={() => this.setState({ hover: true })}
-          onMouseLeave={() => this.setState({ hover: false })}
+          onMouseEnter={() => this.iconHover("start")}
+          onMouseLeave={() => this.iconHover("end")}
           visibility={dragging ? "hidden" : "visible"}
           className={`plant-image is-chosen-${selected} ${animate ? "animate" : ""}`}
           filter={(grayscale && !selected) ? "url(#grayscale)" : ""}
