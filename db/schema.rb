@@ -391,10 +391,12 @@ ActiveRecord::Schema.define(version: 20180126141955) do
     t.index ["device_id"], name: "index_webcam_feeds_on_device_id"
   end
 
+  add_foreign_key "edge_nodes", "sequences"
   add_foreign_key "log_dispatches", "devices"
   add_foreign_key "log_dispatches", "logs"
   add_foreign_key "peripherals", "devices"
   add_foreign_key "points", "devices"
+  add_foreign_key "primary_nodes", "sequences"
   add_foreign_key "sequence_dependencies", "sequences"
   add_foreign_key "tool_slots", "tools"
 end

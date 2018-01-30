@@ -67,7 +67,6 @@ class SecondPass < Mutations::Command
     child.save!  unless child.id
     parent.save! unless parent.id
 
-    puts "Linking #{node[:kind]} to a #{get_node(node[:parent]).try(:kind) || "empty"} parent"
     instance
       .update_attributes!(parent_id: parent.id, child_id: child.id)
   end

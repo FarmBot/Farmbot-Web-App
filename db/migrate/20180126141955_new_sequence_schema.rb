@@ -19,5 +19,8 @@ class NewSequenceSchema < ActiveRecord::Migration[5.1]
       # Serialized String, Integer or Boolean.
       t.string     :value,        limit: 300
     end
+
+    add_foreign_key :edge_nodes,    :sequences
+    add_foreign_key :primary_nodes, :sequences
   end
 end
