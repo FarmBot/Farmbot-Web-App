@@ -13,8 +13,8 @@ class StoreCelery < Mutations::Command
     Sequence.transaction do
       sequence.primary_nodes.destroy_all
       sequence.edge_nodes.destroy_all
-      first_pass  = FirstPass.run!(input:  flat_ir, sequence: sequence)
-      second_pass = SecondPass.run!(input: first_pass)
+      first_pass  = FirstPass.run!(nodes:  flat_ir, sequence: sequence)
+      second_pass = SecondPass.run!(nodes: first_pass)
       second_pass.map(&:save!)
     end
   end

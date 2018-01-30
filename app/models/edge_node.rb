@@ -3,6 +3,7 @@
 # primitive of sorts.
 class EdgeNode < ApplicationRecord
   belongs_to :sequence
+  validates_presence_of :sequence
   belongs_to :primary_node
   serialize  :value, JSON
 end

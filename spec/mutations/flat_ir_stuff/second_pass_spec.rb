@@ -18,7 +18,9 @@ describe SecondPass do
     expect(result.map(&:sequence_id).uniq.length).to eq(1)
   end
 
-  it "references parent/children correctly" do
+  fit "references parent/children correctly" do
+    PrimaryNode.destroy_all
+    EdgeNode.destroy_all
     nothing      = result.first
     sequence     = PrimaryNode.find_by(kind: "sequence")
     send_message = PrimaryNode.find_by(kind: "send_message")
@@ -29,8 +31,6 @@ describe SecondPass do
     expect(sequence.child).to eq(send_message)
     expect(sequence.parent_id).to eq(nothing.id)
     expect(sequence.child_id).to eq(send_message.id)
-    expect(PrimaryNode.where(parent_id: sequence.id).count).to eq(1)
-    binding.pry
   end
 
   it "sets proper parent_arg_name"

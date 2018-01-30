@@ -33,7 +33,9 @@ class SecondPass < Mutations::Command
     # Set arg nodes (edge nodes?)
     create_edge_arg_node(node)
     # Save edge nodes
-    node[:instance]
+    instance = node[:instance]
+    instance.save!
+    instance
   end
 
   def create_edge_arg_node(node)
@@ -58,9 +60,16 @@ class SecondPass < Mutations::Command
   end
 
   def asign_parent_child(node)
+    instance = node[:instance]
+    parent   = get_node(node[:parent])
+    child    = get_node(node[:child])
+
+    child.save!  unless child.id
+    parent.save! unless parent.id
+
     puts "Linking #{node[:kind]} to a #{get_node(node[:parent]).try(:kind) || "empty"} parent"
-    node[:instance].assign_attributes(parent: get_node(node[:parent]),
-                                      child:  get_node(node[:child]) )
+    instance
+      .update_attributes!(parent_id: parent.id, child_id: child.id)
   end
 
   # Returns the node that is passed in unless it's a "nothing" node.

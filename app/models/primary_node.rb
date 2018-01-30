@@ -3,9 +3,10 @@
 # CeleryScript is a tree of PrimaryNode objects in the center and primitice
 # "EdgeNode" types on the edge of the tree.
 class PrimaryNode < ApplicationRecord
-  belongs_to :sequence, required: true
-  has_one    :parent, class_name: "PrimaryNode", foreign_key: "parent_id"
-  has_one    :child,  class_name: "PrimaryNode", foreign_key: "child_id"
+  belongs_to :sequence
+  validates_presence_of :sequence
+  # belongs_to :parent, class_name: "PrimaryNode", foreign_key: "parent_id"
+  # has_one    :child,  class_name: "PrimaryNode", foreign_key: "child_id"
   has_many   :edge_nodes
 
   def todo
@@ -13,5 +14,13 @@ class PrimaryNode < ApplicationRecord
       "Make sure `kind` and `parent_arg_name` are valid",
       "Turn off auto-sync for this class and EdgeNode"
     ]
+  end
+
+  def parent
+    self.class.find_by(id: parent_id)
+    end
+
+  def child
+    self.class.find_by(id: child_id)
   end
 end
