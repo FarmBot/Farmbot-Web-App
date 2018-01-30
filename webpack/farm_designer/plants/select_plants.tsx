@@ -54,10 +54,10 @@ export class SelectPlants
   }
 
   componentWillUnmount() {
-    this.props.dispatch({ type: Actions.SELECT_PLANT, payload: undefined });
+    this.unstashSelectedPlant();
   }
 
-  onBack = () => {
+  unstashSelectedPlant = () => {
     const { stashedUuid, stashedIcon } = this.state;
     this.props.dispatch({ type: Actions.SELECT_PLANT, payload: [stashedUuid] });
     this.props.dispatch({
@@ -88,7 +88,7 @@ export class SelectPlants
       className="panel-container green-panel plant-selection-panel">
       <div className="panel-header green-panel">
         <p className="panel-title">
-          <BackArrow onClick={this.onBack} />
+          <BackArrow onClick={this.unstashSelectedPlant} />
           {t("Select plants")}
         </p>
 
