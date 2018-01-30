@@ -4,8 +4,10 @@ module Api
     before_action :clean_expired_farm_events, only: [:destroy]
 
     def index
-      sequences = Sequence.where(device: current_device).to_a
-      render json: FetchCelery.run!(sequences: sequences)
+      render json: Sequence
+        .where(device: current_device)
+        .to_a
+        .map { |s| FetchCelery.run!(sequence: s) }
     end
 
     def show

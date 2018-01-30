@@ -5,12 +5,14 @@
 # references.
 # MORE INFO: https://github.com/FarmBot-Labs/Celery-Slicer
 class CSHeap
-  attr_accessor
-    # A single node in the CeleryScript tree, as stored in the heap.
-    :entries,
-    # "here" represents the last item added to the heap and, often, the item
-    # that is currently being edited.
-    :here
+  # A single node in the CeleryScript tree, as stored in the heap.
+  # It's a collection of key/value pairs, a parent index, a child index and a
+  # __KIND__ key.
+  attr_accessor :entries
+
+  # "here" represents the last item added to the heap and, often, the item that
+  # is currently being edited.
+  attr_accessor :here
 
   # Index 0 of the heap represents a null pointer of sorts. If a field points to
   #

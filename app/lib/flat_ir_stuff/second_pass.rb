@@ -10,11 +10,12 @@ class SecondPass < Mutations::Command
   required do
     array :input do # CeleryScript flat IR AST
       hash do
-        string  :kind,     in: KINDS
-        model   :instance, class: PrimaryNode, new_records: true
+        string  :kind, in: KINDS
         integer :parent
         integer :child
         hash    :primary_nodes do integer :* end
+        hash    :edge_nodes do duck :*, methods: :to_json end
+        model   :instance, class: PrimaryNode, new_records: true
       end
     end
   end
