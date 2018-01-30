@@ -8,7 +8,8 @@ class SecondPass < Mutations::Command
   KINDS  = (CORPUS[:nodes] + CORPUS[:args]).pluck("name")
 
   required do
-    array :input do # CeleryScript flat IR AST
+    # model :sequence, class: Sequence
+    array :nodes do # CeleryScript flat IR AST
       hash do
         string  :kind, in: KINDS
         integer :parent
@@ -21,17 +22,52 @@ class SecondPass < Mutations::Command
   end
 
   def execute
-    input.map do |node|
-      parent_index, child_index = node.slice(:parent, :child).values
-      node[:instance].parent = input[parent_index][:instance] if parent_index != 0
-      node[:instance].child  = input[child_index][:instance]  if child_index  != 0
-      node[:primary_nodes]
-        .to_a
-        .map do |(parent_arg_name, arg_index)|
-          i = input[arg_index][:instance]
-          i.parent_arg_name = parent_arg_name
-        end
-      node[:instance]
-    end
+    nodes.map { |node| save_node(node) }
+  end
+
+  def save_node(node)
+    # Set parent_id, child_id
+    asign_parent_child(node)
+    # Set arg nodes (primaries)
+    assign_primary_arg_nodes(node)
+    # Set arg nodes (edge nodes?)
+    create_edge_arg_node(node)
+    # Save edge nodes
+    node[:instance]
+  end
+
+  def create_edge_arg_node(node)
+    instance = node[:instance]
+    node[:edge_nodes]
+      .to_a
+      .map do |(kind, value)|
+        EdgeNode.create!(sequence: instance.sequence,
+                         primary_node: instance,
+                         kind: kind,
+                         value: value)
+      end
+  end
+
+  def assign_primary_arg_nodes(node)
+    node[:primary_nodes]
+      .to_a
+      .map do |(parent_arg_name, value)|
+        instance = nodes[value][:instance]
+        instance.update_attributes!(parent_arg_name: parent_arg_name)
+      end
+  end
+
+  def asign_parent_child(node)
+    puts "Linking #{node[:kind]} to a #{get_node(node[:parent]).try(:kind) || "empty"} parent"
+    node[:instance].assign_attributes(parent: get_node(node[:parent]),
+                                      child:  get_node(node[:child]) )
+  end
+
+  # Returns the node that is passed in unless it's a "nothing" node.
+  def get_node(node_index)
+    node     = nodes[node_index]
+    instance = node[:instance]
+    raise "BAD INDEX!" unless node && instance
+    return instance
   end
 end
