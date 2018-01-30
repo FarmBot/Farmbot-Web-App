@@ -11,6 +11,7 @@ module FarmBot
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
     LOCAL_API_HOST = ENV["API_HOST"] || "localhost"
+    WEBPACK_URL    = "http://#{LOCAL_API_HOST}:3808"
     config.generators do |g|
       g.template_engine :erb
       g.test_framework :rspec, :fixture_replacement => :factory_bot, :views => false, :helper => false
@@ -58,7 +59,8 @@ module FarmBot
                       "api.github.com",
                       "raw.githubusercontent.com",
                       "openfarm.cc",
-                      "api.rollbar.com"] +
+                      "api.rollbar.com",
+                      WEBPACK_URL] +
           (Rails.env.production? ? %w(wss:) : %w(ws: localhost:3000 localhost:3808)),
         font_src: %w(
           'self'
@@ -88,7 +90,7 @@ module FarmBot
           "cdnjs.cloudflare.com",
           "chrome-extension:",
           "localhost:3808",
-          "#{LOCAL_API_HOST}:3808",
+          WEBPACK_URL,
         ],
         style_src: %w(
           'unsafe-inline'
