@@ -136,7 +136,17 @@
 .plant-selection-panel {
   .panel-content {
     padding: 15rem 1.4rem;
-    pointer-events: none;
+    padding-right: 0;
+    padding-left: 0;
+    max-height: calc(100vh - 10rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    .plant-search-item {
+      pointer-events: none;
+    }
+    img {
+      filter: grayscale(100%);
+    }
   }
 }
 
