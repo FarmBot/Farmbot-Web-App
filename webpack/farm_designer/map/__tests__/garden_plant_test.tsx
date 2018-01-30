@@ -33,7 +33,7 @@ describe("<GardenPlant/>", () => {
       dispatch: jest.fn(),
       zoomLvl: 1.8,
       activeDragXY: { x: undefined, y: undefined, z: undefined },
-      uuid: ""
+      uuid: "plantUuid"
     };
   }
 
@@ -62,6 +62,26 @@ describe("<GardenPlant/>", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_PLANT,
       payload: [p.uuid]
+    });
+  });
+
+  it("begins hover", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<GardenPlant {...p } />);
+    wrapper.find("image").at(0).simulate("mouseEnter");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.HOVER_PLANT_LIST_ITEM,
+      payload: p.uuid
+    });
+  });
+
+  it("ends hover", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<GardenPlant {...p } />);
+    wrapper.find("image").at(0).simulate("mouseLeave");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.HOVER_PLANT_LIST_ITEM,
+      payload: undefined
     });
   });
 

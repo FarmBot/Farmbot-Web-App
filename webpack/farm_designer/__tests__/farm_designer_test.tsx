@@ -20,6 +20,7 @@ describe("<FarmDesigner/>", () => {
           plantUUID: undefined,
           icon: ""
         },
+        hoveredPlantListItem: undefined,
         cropSearchQuery: "",
         cropSearchResults: [],
         chosenLocation: { x: undefined, y: undefined, z: undefined },

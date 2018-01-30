@@ -28,9 +28,10 @@ import {
   TaggedUser,
   TaggedWebcamFeed,
   TaggedDevice,
+  TaggedFbosConfig,
   TaggedWebAppConfig
 } from "./tagged_resources";
-import { CowardlyDictionary, betterCompact, sortResourcesById } from "../util";
+import { CowardlyDictionary, betterCompact, sortResourcesById, bail } from "../util";
 import { isNumber } from "util";
 type StringMap = CowardlyDictionary<string>;
 
@@ -451,17 +452,16 @@ export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {
   return (dev && dev.kind === "Device") ?
     dev : undefined;
 }
-export function getDeviceAccountSettings(index: ResourceIndex) {
+export function getDeviceAccountSettings(index: ResourceIndex): TaggedDevice {
   const list = index.byKind.Device;
-  const uuid = list[0];
-  const device = index.references[uuid || -1];
-  if ((list.length === 1) && device && device.kind === "Device") {
-    sanityCheck(device);
-    return device;
-  } else {
-    throw new Error(`
-    PROBLEM: Expected getDeviceAccountSettings() to return exactly 1 device.
-    We got some other number back, indicating a hazardous condition.`);
+  const uuid = list[0] || "_";
+  const device = index.references[uuid];
+  switch (list.length) {
+    case 0: return bail(`Tried to load device before it was loaded.`);
+    case 1: return (device && device.kind === "Device" && sanityCheck(device))
+      ? device
+      : bail("Malformed device!");
+    default: return bail("Found more than 1 device");
   }
 }
 
@@ -485,7 +485,7 @@ export function maybeFetchUser(index: ResourceIndex):
   const user = index.references[uuid || -1];
 
   if (user && sanityCheck(user) && list.length > 1) {
-    throw new Error("Index is broke. Expected exactly 1 user.");
+    throw new Error("PROBLEM: Expected 1 user. Got: " + list.length);
   }
   if ((list.length === 1) && user && user.kind === "User") {
     return user;
@@ -498,9 +498,7 @@ export function getUserAccountSettings(index: ResourceIndex): TaggedUser {
   if (user) {
     return user;
   } else {
-    throw new Error(`PROBLEM: Expected getUserAccountSettings() to return
-    exactly 1 user. We got some other number back, indicating a hazardous
-    condition.`);
+    throw new Error(`PROBLEM: Tried to fetch user before it was available.`);
   }
 }
 
@@ -553,6 +551,13 @@ export function findToolBySlotId(input: ResourceIndex, tool_slot_id: number):
 export function getWebAppConfig(i: ResourceIndex): TaggedWebAppConfig | undefined {
   const conf = i.references[i.byKind.WebAppConfig[0] || "NO"];
   if (conf && conf.kind === "WebAppConfig") {
+    return conf;
+  }
+}
+
+export function getFbosConfig(i: ResourceIndex): TaggedFbosConfig | undefined {
+  const conf = i.references[i.byKind.FbosConfig[0] || "NO"];
+  if (conf && conf.kind === "FbosConfig") {
     return conf;
   }
 }

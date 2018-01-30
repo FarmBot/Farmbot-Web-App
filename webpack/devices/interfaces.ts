@@ -1,7 +1,6 @@
-import { BotStateTree } from "farmbot";
+import { BotStateTree, ConfigurationName } from "farmbot";
 import {
   McuParamName,
-  ConfigurationName,
   Dictionary,
   SyncStatus,
   FarmwareManifest,
@@ -30,7 +29,14 @@ export interface Props {
   images: TaggedImage[];
   dispatch: Function;
   resources: ResourceIndex;
+  sourceFbosConfig: SourceFbosConfig;
 }
+
+export type SourceFbosConfig = (config: ConfigurationName) =>
+  {
+    value: boolean | number | string | undefined,
+    consistent: boolean
+  };
 
 /** How the device is stored in the API side.
  * This is what comes back from the API as JSON.
@@ -56,6 +62,8 @@ export interface BotState {
   currentOSVersion?: string;
   /** The current beta os version on the github release api */
   currentBetaOSVersion?: string;
+  /** The current beta os commit on the github release api */
+  currentBetaOSCommit?: string;
   /** Is the bot in sync with the api */
   dirty: boolean;
   /** The state of the bot, as reported by the bot over MQTT. */
@@ -70,13 +78,17 @@ export interface BotState {
   connectivity: ConnectionState;
 }
 
-export interface BotProp { bot: BotState; }
-
 /** Status registers for the bot's status */
 export type HardwareState = BotStateTree;
 
 export interface GithubRelease {
   tag_name: string;
+  target_commitish: string;
+}
+
+export interface OsUpdateInfo {
+  version: string;
+  commit: string;
 }
 
 export interface MoveRelProps {
@@ -105,6 +117,7 @@ export interface FarmbotOsProps {
   botToMqttStatus: NetworkState;
   botToMqttLastSeen: string;
   dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
 }
 
 export interface FarmbotOsState {
@@ -119,19 +132,13 @@ export interface CameraSelectionState {
   cameraStatus: "" | "sending" | "done" | "error";
 }
 
-export interface StepsPerMMBoxProps {
-  bot: BotState;
-  setting: ConfigurationName;
-  dispatch: Function;
-  disabled?: boolean;
-}
-
 export interface McuInputBoxProps {
   bot: BotState;
   setting: McuParamName;
   dispatch: Function;
   intSize?: IntegerSize;
   filter?: number;
+  gray?: boolean;
 }
 
 export interface EStopButtonProps {
@@ -156,8 +163,6 @@ export interface FarmwareProps {
   farmwares: Dictionary<FarmwareManifest | undefined>;
   timeOffset: number;
   syncStatus: SyncStatus | undefined;
-  // Partial because easier testing. Change to normal `WebAppConfig` if it
-  // becomes cumbersome later on.
   webAppConfig: Partial<WebAppConfig>;
 }
 
@@ -166,6 +171,7 @@ export interface HardwareSettingsProps {
   dispatch: Function;
   botToMqttStatus: NetworkState;
   bot: BotState;
+  sourceFbosConfig: SourceFbosConfig;
 }
 
 export interface ControlPanelState {

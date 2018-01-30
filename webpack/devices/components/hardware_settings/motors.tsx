@@ -6,7 +6,7 @@ import { SpacePanelToolTip } from "../space_panel_tool_tip";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { settingToggle } from "../../actions";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
-import { BotConfigInputBox } from "../step_per_mm_box";
+import { BotConfigInputBox } from "../bot_config_input_box";
 import { MotorsProps } from "../interfaces";
 import { Row, Col } from "../../../ui/index";
 import { Header } from "./header";
@@ -14,7 +14,8 @@ import { Collapse } from "@blueprintjs/core";
 import { McuInputBox } from "../mcu_input_box";
 import { minFwVersionCheck } from "../../../util";
 
-export function StepsPerMmSettings({ dispatch, bot }: MotorsProps) {
+export function StepsPerMmSettings(props: MotorsProps) {
+  const { dispatch, bot, sourceFbosConfig } = props;
   const { firmware_version } = bot.hardware.informational_settings;
   if (minFwVersionCheck(firmware_version, "5.0.5")) {
     return <NumericMCUInputGroup
@@ -36,27 +37,27 @@ export function StepsPerMmSettings({ dispatch, bot }: MotorsProps) {
       <Col xs={2}>
         <BotConfigInputBox
           setting="steps_per_mm_x"
-          bot={bot}
+          sourceFbosConfig={sourceFbosConfig}
           dispatch={dispatch} />
       </Col>
       <Col xs={2}>
         <BotConfigInputBox
           setting="steps_per_mm_y"
-          bot={bot}
+          sourceFbosConfig={sourceFbosConfig}
           dispatch={dispatch} />
       </Col>
       <Col xs={2}>
         <BotConfigInputBox
           setting="steps_per_mm_z"
-          bot={bot}
+          sourceFbosConfig={sourceFbosConfig}
           dispatch={dispatch} />
       </Col>
     </Row>;
   }
 }
 
-export function Motors({ dispatch, bot }: MotorsProps) {
-
+export function Motors(props: MotorsProps) {
+  const { dispatch, bot, sourceFbosConfig } = props;
   const { mcu_params } = bot.hardware;
   const { motors } = bot.controlPanelState;
   const { firmware_version } = bot.hardware.informational_settings;
@@ -89,7 +90,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
           </label>
           <SpacePanelToolTip tooltip={t(ToolTips.E_STOP_ON_MOV_ERR)} />
         </Col>
-        <Col xs={2}>
+        <Col xs={2} className={"centered-button-div"}>
           <ToggleButton
             toggleValue={mcu_params.param_e_stop_on_mov_err}
             toggleAction={() =>
@@ -131,7 +132,8 @@ export function Motors({ dispatch, bot }: MotorsProps) {
         dispatch={dispatch} />
       <StepsPerMmSettings
         dispatch={dispatch}
-        bot={bot} />
+        bot={bot}
+        sourceFbosConfig={sourceFbosConfig} />
       <BooleanMCUInputGroup
         name={t("Always Power Motors")}
         tooltip={t(ToolTips.ALWAYS_POWER_MOTORS)}
@@ -155,7 +157,7 @@ export function Motors({ dispatch, bot }: MotorsProps) {
           </label>
           <SpacePanelToolTip tooltip={t(ToolTips.ENABLE_X2_MOTOR)} />
         </Col>
-        <Col xs={2}>
+        <Col xs={2} className={"centered-button-div"}>
           <ToggleButton
             toggleValue={mcu_params.movement_secondary_motor_x}
             toggleAction={() =>
@@ -169,8 +171,9 @@ export function Motors({ dispatch, bot }: MotorsProps) {
           </label>
           <SpacePanelToolTip tooltip={t(ToolTips.INVERT_MOTORS)} />
         </Col>
-        <Col xs={2}>
+        <Col xs={2} className={"centered-button-div"}>
           <ToggleButton
+            grayscale={!mcu_params["movement_secondary_motor_x"]}
             toggleValue={mcu_params.movement_secondary_motor_invert_x}
             toggleAction={() =>
               settingToggle("movement_secondary_motor_invert_x", bot, undefined)} />

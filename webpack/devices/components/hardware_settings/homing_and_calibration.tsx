@@ -6,7 +6,7 @@ import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { HomingRow } from "./homing_row";
 import { CalibrationRow } from "./calibration_row";
 import { ZeroRow } from "./zero_row";
-import { enabledAxisMap } from "../axis_tracking_status";
+import { disabledAxisMap } from "../axis_tracking_status";
 import { HomingAndCalibrationProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
@@ -28,7 +28,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
    * Tells us if X/Y/Z have a means of checking their position.
    * FARMBOT WILL CRASH INTO WALLS IF THIS IS WRONG! BE CAREFUL.
    */
-  const enabled = enabledAxisMap(mcu_params);
+  const disabled = disabledAxisMap(mcu_params);
 
   return <section>
     <Header
@@ -43,9 +43,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
       <BooleanMCUInputGroup
         name={t("Find Home on Boot")}
         tooltip={t(ToolTips.FIND_HOME_ON_BOOT)}
-        disableX={!enabled.x}
-        disableY={!enabled.y}
-        disableZ={!enabled.z}
+        disable={disabled}
         x={"movement_home_at_boot_x"}
         y={"movement_home_at_boot_y"}
         z={"movement_home_at_boot_z"}
@@ -82,6 +80,11 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         x={"movement_axis_nr_steps_x"}
         y={"movement_axis_nr_steps_y"}
         z={"movement_axis_nr_steps_z"}
+        gray={{
+          x: !mcu_params["movement_stop_at_max_x"],
+          y: !mcu_params["movement_stop_at_max_y"],
+          z: !mcu_params["movement_stop_at_max_z"],
+        }}
         bot={bot}
         dispatch={dispatch}
         intSize={axisLengthIntSize} />

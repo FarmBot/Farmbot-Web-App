@@ -212,7 +212,7 @@ export function scrollToBottom(elementId: string) {
   if (!elToScroll) { return; }
 
   // Wait for the new element height and scroll to the bottom.
-  setTimeout(() => elToScroll.scrollTo(0, elToScroll.scrollHeight), 1);
+  setTimeout(() => elToScroll.scrollTop = elToScroll.scrollHeight, 1);
 }
 
 export function validBotLocationData(

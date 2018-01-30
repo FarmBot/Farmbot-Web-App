@@ -55,6 +55,7 @@ export interface GardenPlantProps {
 
 export interface GardenPlantState {
   icon: string;
+  hover: boolean;
 }
 
 export interface GardenPointProps {

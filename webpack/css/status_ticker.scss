@@ -45,6 +45,9 @@
   background: $black;
   .markdown p {
     font-weight: 600;
+    code {
+      background: $dark_gray;
+    }
   }
   .status-ticker-created-at {
     font-size: 1.2rem;

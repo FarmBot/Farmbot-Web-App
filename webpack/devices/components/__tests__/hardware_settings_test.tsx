@@ -1,32 +1,30 @@
 import * as React from "react";
 import { mount } from "enzyme";
 import { HardwareSettings } from "../hardware_settings";
-import { fakeState } from "../../../__test_support__/fake_state";
-import { ControlPanelState } from "../../interfaces";
+import { HardwareSettingsProps } from "../../interfaces";
 import { Actions } from "../../../constants";
+import { bot } from "../../../__test_support__/fake_state/bot";
+import { panelState } from "../../../__test_support__/control_panel_state";
 
 describe("<HardwareSettings />", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  function panelState(): ControlPanelState {
+  const fakeProps = (): HardwareSettingsProps => {
     return {
-      homing_and_calibration: false,
-      motors: false,
-      encoders_and_endstops: false,
-      danger_zone: false,
-      power_and_reset: false,
-      pin_guard: false
+      bot,
+      controlPanelState: panelState(),
+      botToMqttStatus: "up",
+      dispatch: jest.fn(),
+      sourceFbosConfig: (x) => {
+        return { value: bot.hardware.configuration[x], consistent: true };
+      }
     };
-  }
+  };
 
   it("renders", () => {
-    const wrapper = mount(<HardwareSettings
-      controlPanelState={panelState()}
-      dispatch={jest.fn()}
-      bot={fakeState().bot}
-      botToMqttStatus={"up"} />);
+    const wrapper = mount(<HardwareSettings {...fakeProps() } />);
     ["expand all", "x axis", "motors"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
@@ -37,16 +35,12 @@ describe("<HardwareSettings />", () => {
     buttonText: string,
     type: string,
     payload: boolean | string) {
-    const dispatch = jest.fn();
-    const wrapper = mount(<HardwareSettings
-      controlPanelState={panelState()}
-      dispatch={dispatch}
-      bot={fakeState().bot}
-      botToMqttStatus={"up"} />);
+    const p = fakeProps();
+    const wrapper = mount(<HardwareSettings {...p} />);
     const button = wrapper.find(buttonElement).at(buttonIndex);
     expect(button.text().toLowerCase()).toContain(buttonText);
     button.simulate("click");
-    expect(dispatch).toHaveBeenCalledWith({ payload, type });
+    expect(p.dispatch).toHaveBeenCalledWith({ payload, type });
   }
 
   it("expands all", () => {

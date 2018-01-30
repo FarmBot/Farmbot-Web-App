@@ -77,8 +77,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
   }
 
   private filter(query: string, item: DropDownItem, index: number) {
-    return `${index + 1}. ${item.label.toLowerCase()}`
-      .indexOf(query.toLowerCase()) >= 0;
+    return item.label.toLowerCase().indexOf(query.toLowerCase()) >= 0;
   }
 
   private handleValueChange = (item: DropDownItem | undefined) => {

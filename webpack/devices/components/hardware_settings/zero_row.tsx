@@ -30,7 +30,7 @@ export function ZeroRow() {
       </div>
     </Col>
     {AXES.map((axis) => {
-      return <Col xs={2} key={axis}>
+      return <Col xs={2} key={axis} className={"centered-button-div"}>
         <ZeroButton axis={axis} />
       </Col>;
     })}

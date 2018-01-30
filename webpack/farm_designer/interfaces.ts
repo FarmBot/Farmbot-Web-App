@@ -102,6 +102,7 @@ export interface Crop {
 export interface DesignerState {
   selectedPlants: string[] | undefined;
   hoveredPlant: HoveredPlantPayl;
+  hoveredPlantListItem: string | undefined;
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
   chosenLocation: BotPosition;

@@ -3,16 +3,34 @@ import { t } from "i18next";
 import * as _ from "lodash";
 import { JobProgress } from "farmbot/dist";
 import { SemverResult, semverCompare } from "../../../util";
-import { BotProp } from "../../interfaces";
+import { OsUpdateButtonProps } from "./interfaces";
 import { checkControllerUpdates } from "../../actions";
 
-export let OsUpdateButton = ({ bot }: BotProp) => {
-  let buttonStr = "Can't Connect to bot";
-  let buttonColor = "yellow";
+enum UpdateButton { upToDate, needsUpdate, unknown, unknownBeta, none }
 
-  const { beta_opt_in } = bot.hardware.configuration;
-  const { currentOSVersion, currentBetaOSVersion } = bot;
-  const latestReleaseV = beta_opt_in
+const buttonProps = (status: UpdateButton) => {
+  switch (status) {
+    case UpdateButton.needsUpdate:
+      return { color: "green", text: t("UPDATE") };
+    case UpdateButton.upToDate:
+      return { color: "gray", text: t("UP TO DATE") };
+    case UpdateButton.unknownBeta:
+      return { color: "yellow", text: t("No beta releases available") };
+    case UpdateButton.unknown:
+      return { color: "yellow", text: t("Can't connect to release server") };
+    default:
+      return { color: "yellow", text: t("Can't connect to bot") };
+  }
+};
+
+export let OsUpdateButton = (props: OsUpdateButtonProps) => {
+  const { bot, sourceFbosConfig } = props;
+  let buttonStatus = UpdateButton.none;
+
+  const betaOptIn = sourceFbosConfig("beta_opt_in").value;
+  const { currentOSVersion, currentBetaOSVersion, currentBetaOSCommit } = bot;
+  const { commit } = bot.hardware.informational_settings;
+  const latestReleaseV = betaOptIn
     ? currentBetaOSVersion
     : currentOSVersion;
   const { controller_version } = bot.hardware.informational_settings;
@@ -20,17 +38,22 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
     switch (semverCompare(latestReleaseV, controller_version)) {
       case SemverResult.RIGHT_IS_GREATER:
       case SemverResult.EQUAL:
-        buttonStr = t("UP TO DATE");
-        buttonColor = "gray";
+        buttonStatus = UpdateButton.upToDate;
         break;
       default:
-        buttonStr = t("UPDATE");
-        buttonColor = "green";
+        buttonStatus = UpdateButton.needsUpdate;
     }
   } else {
-    buttonStr = beta_opt_in
-      ? "No beta releases available"
-      : "Can't Connect to release server";
+    if (!_.isString(latestReleaseV)) {
+      buttonStatus = betaOptIn
+        ? UpdateButton.unknownBeta
+        : UpdateButton.unknown;
+    }
+  }
+  if (betaOptIn
+    && _.isString(commit) && _.isString(currentBetaOSCommit)
+    && commit !== currentBetaOSCommit) {
+    buttonStatus = UpdateButton.needsUpdate;
   }
 
   const osUpdateJob = (bot.hardware.jobs || {})["FBOS_OTA"];
@@ -58,10 +81,10 @@ export let OsUpdateButton = ({ bot }: BotProp) => {
   }
 
   return <button
-    className={"fb-button " + buttonColor}
+    className={"fb-button " + buttonProps(buttonStatus).color}
     title={latestReleaseV}
     disabled={isWorking(osUpdateJob)}
     onClick={() => checkControllerUpdates()}>
-    {downloadProgress(osUpdateJob) || buttonStr}
+    {downloadProgress(osUpdateJob) || buttonProps(buttonStatus).text}
   </button>;
 };

@@ -1,4 +1,4 @@
-import { BotState } from "../interfaces";
+import { BotState, SourceFbosConfig, Xyz } from "../interfaces";
 import { McuParamName, McuParams } from "farmbot/dist";
 import { IntegerSize } from "../../util";
 
@@ -19,9 +19,8 @@ export interface BooleanMCUInputGroupProps {
   x: McuParamName;
   y: McuParamName;
   z: McuParamName;
-  disableX?: boolean | undefined;
-  disableY?: boolean | undefined;
-  disableZ?: boolean | undefined;
+  disable?: Record<Xyz, boolean>;
+  grayscale?: Record<Xyz, boolean>;
   caution?: boolean | undefined;
   displayAlert?: string | undefined;
 }
@@ -39,6 +38,7 @@ export interface NumericMCUInputGroupProps {
   y: McuParamName;
   z: McuParamName;
   intSize?: IntegerSize;
+  gray?: Record<Xyz, boolean>;
 }
 
 export interface PinGuardMCUInputGroupProps {
@@ -58,6 +58,7 @@ export interface PinGuardProps {
 export interface MotorsProps {
   dispatch: Function;
   bot: BotState;
+  sourceFbosConfig: SourceFbosConfig;
 }
 
 export interface EncodersProps {
