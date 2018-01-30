@@ -13,19 +13,19 @@ class FirstPass < Mutations::Command
 
   required do
     model :sequence, class: Sequence
-    array :input do # CeleryScript flat IR AST
-      hash do
-        string  :kind, in: KINDS
-        integer :parent
-        integer :child
-        hash    :primary_nodes do integer :* end
-        hash    :edge_nodes do duck :*, methods: :to_json end
-      end
-    end
+    # array :flat_ir do # CeleryScript flat IR AST
+    #   hash do
+    #     string  :kind, in: KINDS
+    #     integer :parent
+    #     integer :child
+    #     hash    :primary_nodes do integer :* end
+    #     hash    :edge_nodes do duck :*, methods: :to_json end
+    #   end
+    # end
   end
 
   def execute
-    input.each do |item|
+    flat_ir.each do |item|
       # Edge nodes are primitive values.
       # We can instantiate all EdgeNodes on the first pass easily.
       edge_nodes = item[:edge_nodes].to_a.map do |(kind, value)|
@@ -40,6 +40,12 @@ class FirstPass < Mutations::Command
                                         sequence:   sequence,
                                         edge_nodes: edge_nodes)
     end
-    input
+    flat_ir
+  end
+
+private
+
+  def flat_ir
+    @flat_ir ||= Slicer.new.run!(sequence.as_json.deep_symbolize_keys)
   end
 end
