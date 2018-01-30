@@ -202,14 +202,6 @@
       cursor: -webkit-grabbing !important;
     }
   }
-  &:hover {
-    image {
-      transform: scale(1.1);
-      &.is-chosen-true {
-        transform: scale(1);
-      }
-    }
-  }
 }
 
 .plant-indicator.is-chosen-true {

@@ -10,7 +10,7 @@ import { Color } from "../../ui/index";
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
 
-  state: GardenPlantState = { icon: DEFAULT_ICON };
+  state: GardenPlantState = { icon: DEFAULT_ICON, hover: false };
 
   componentDidMount() {
     const OFS = this.props.plant.body.openfarm_slug;
@@ -28,6 +28,13 @@ export class GardenPlant extends
       }
     });
   };
+
+  get radius() {
+    const { selected, plant } = this.props;
+    const { hover } = this.state;
+    const { radius } = plant.body;
+    return (hover && !selected) ? radius * 1.1 : radius;
+  }
 
   render() {
     const { selected, dragging, plant, grayscale, mapTransformProps,
@@ -57,16 +64,18 @@ export class GardenPlant extends
 
       <g id="plant-icon">
         <image
+          onMouseEnter={() => this.setState({ hover: true })}
+          onMouseLeave={() => this.setState({ hover: false })}
           visibility={dragging ? "hidden" : "visible"}
           className={`plant-image is-chosen-${selected} ${animate ? "animate" : ""}`}
-          filter={grayscale ? "url(#grayscale)" : ""}
+          filter={(grayscale && !selected) ? "url(#grayscale)" : ""}
           opacity={alpha}
           xlinkHref={icon}
           onClick={this.click}
-          height={radius * 2}
-          width={radius * 2}
-          x={qx - radius}
-          y={qy - radius} />
+          height={this.radius * 2}
+          width={this.radius * 2}
+          x={qx - this.radius}
+          y={qy - this.radius} />
       </g>
 
       <DragHelpers // for inactive plants
