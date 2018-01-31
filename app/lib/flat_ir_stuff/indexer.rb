@@ -24,7 +24,7 @@
         .members
         .each do |key|
           setter = "#{key}="
-          struct.send(setter, collection.index_by { |record| record.send(key) } )
+          struct.send(setter, collection.group_by { |record| record.send(key) } )
         end
       @by = struct
     end

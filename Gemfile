@@ -28,6 +28,7 @@ gem "skylight", "1.4.0"
 gem "bunny"
 gem "request_store"
 gem "secure_headers"
+gem "hashdiff"
 
 group :development, :test do
   gem "codecov", require: false
