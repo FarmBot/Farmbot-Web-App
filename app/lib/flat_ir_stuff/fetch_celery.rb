@@ -36,13 +36,12 @@ private
 
   def recurse_into_node(node)
     raise "no" unless node.is_a?(PrimaryNode)
-    child = primary_nodes.by.id[node.child_id]
     output = {
       kind: node.kind,
       args: recurse_into_args(node),
     }
-    body = recurse_into_body(node)
-    output[:body] = body if !(child == null_node) && body.present?
+    body = recurse_into_body(node, [])
+    output[:body] = body if body
 
     return output
   end
@@ -67,22 +66,21 @@ private
     end
   end
 
-  def recurse_into_body(node, body_nodes = [], parent_id = node.parent_id)
-    all = primary_nodes.by.id[node.child_id]
-    raise "No way!" if all.length > 1
-    next_item = all.first
-
-    if (next_item != null_node) && (next_item.is_body_item?)
-      wow = recurse_into_node(next_item)
-      body_nodes.push(wow)
-      recurse_into_body(next_item, body_nodes, parent_id)
+  # Mutate an array to contain all the body items of the `origin` node
+  def recurse_into_body(origin, output_array = [])
+    # How do I detect if I should pass `output_array` or instantiate a new copy?
+    child = get_child(origin)
+    if child
+      puts "#{origin.kind} has #{child.kind} child node"
+      output_array.push(recurse_into_node(child))
+    else
+      puts "Skip " + origin.kind
     end
-
-    body_nodes
+    return output_array.empty? ? nil : output_array
   end
 
   def edge_nodes
-    @edge_nodes  ||= Indexer.new(sequence.edge_nodes)
+    @edge_nodes ||= Indexer.new(sequence.edge_nodes)
   end
 
   def primary_nodes
@@ -91,5 +89,16 @@ private
 
   def compare_me # TODO: DELETE THIS! - RC
     sequence.as_json.deep_symbolize_keys.slice(:args, :kind, :body)
+  end
+
+  def get_child(node) # => EdgeNode | nil
+    children = primary_nodes.by.parent_id[node.id]
+    if children
+      return children.find do |x|
+        !x.parent_arg_name && x.kind != "nothing"
+      end
+    else
+      return
+    end
   end
 end
