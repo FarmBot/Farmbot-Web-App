@@ -12,7 +12,8 @@ class PrimaryNode < ApplicationRecord
   def todo
     [
       "Make sure `kind` and `parent_arg_name` are valid",
-      "Turn off auto-sync for this class and EdgeNode"
+      "Turn off auto-sync for this class and EdgeNode",
+      "add a `comments` field to `PrimaryNode`"
     ]
   end
 

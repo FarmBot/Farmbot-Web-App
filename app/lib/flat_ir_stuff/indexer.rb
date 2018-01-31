@@ -2,11 +2,11 @@
   # To avoid excess DB calls, we will index the nodes in memory by field type.
   class Indexer
     # Fields that need indexing in both cases (Edge vs. Primary node)
-    COMMON_FIELDS  = [:kind, :sequence_id, :id]
+    COMMON_FIELDS  = [:kind, :id]
     # Fields that will be indexed if an EdgeNode collection is passed in.
-    EDGE_FIELDS    = COMMON_FIELDS + [:primary_node_id, :value]
+    EDGE_FIELDS    = COMMON_FIELDS + [:primary_node_id]
     # Fields that will be indexed if an PrimaryNode collection is passed in.
-    PRIMARY_FIELDS = COMMON_FIELDS + [:child_id, :parent_arg_name, :parent_id]
+    PRIMARY_FIELDS = COMMON_FIELDS + [:parent_id]
     # We pick the correct struct based on the class of the collection passed to
     # the constructor.
     KLASS_LOOKUP = { PrimaryNode => Struct.new(*PRIMARY_FIELDS),
@@ -17,14 +17,14 @@
 
     # Pass in a collection of EdgeNode or PrimaryNode objects.
     def initialize(collection)
-      model_class  = collection.first.class
-      struct_class = KLASS_LOOKUP[model_class] or raise "Bad class: " + model_class.inspect
+      struct_class = KLASS_LOOKUP[collection.klass]
       struct       = struct_class.new()
       struct
         .members
         .each do |key|
           setter = "#{key}="
-          struct.send(setter, collection.group_by { |record| record.send(key) } )
+          values = collection.group_by { |record| record.send(key) } || []
+          struct.send(setter, values)
         end
       @by = struct
     end
