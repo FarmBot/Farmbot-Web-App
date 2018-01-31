@@ -31,7 +31,6 @@ describe SecondPass do
   end
 
   it "sets proper parent_arg_name" do
-    binding.pry
     sequence = result.first.sequence
     count = PrimaryNode.where(sequence: sequence,
                               parent_arg_name: ["locals", "_else", "_then"]).count
