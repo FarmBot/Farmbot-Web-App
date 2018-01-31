@@ -1,11 +1,11 @@
 # Service object that:
 # 1. Pulls out all PrimaryNodes and EdgeNodes for a sequence node (AST Flat IR form)
-# 2. Stitches the nodes back together in their "canonical" (nexted) AST
+# 2. Stitches the nodes back together in their "canonical" (nested) AST
 #    representation
 class FetchCelery < Mutations::Command
 private  # = = = = = = =
 
-  # Returns an `EdgeNode` of `nil` for the following situations:
+  # Returns an `EdgeNode` or `nil` for the following situations:
   #   1. The first element of a node's `body` attribute
   #   2. (when already inside of a body array) The next `body` element in the chain.
   #   3. (when the node has no body) nil
@@ -22,6 +22,7 @@ private  # = = = = = = =
   def edge_nodes
     @edge_nodes ||= Indexer.new(sequence.edge_nodes)
   end
+
   # See docs for #edge_nodes()
   def primary_nodes
     @primary_nodes ||= Indexer.new(sequence.primary_nodes)
@@ -93,7 +94,8 @@ private  # = = = = = = =
   end
 
   def execute
-    return recurse_into_node(entry_node).deep_symbolize_keys
+    return recurse_into_node(entry_node)
+      .deep_symbolize_keys
   end
 
 end

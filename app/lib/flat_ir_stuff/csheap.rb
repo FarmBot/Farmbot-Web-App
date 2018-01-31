@@ -1,5 +1,5 @@
 # A heap-ish data structure required when converting canonical CeleryScript AST
-# nodes in the the Flat IR form.
+# nodes into the Flat IR form.
 # This data strcutre is useful because it addresses each node in the
 # CeleryScript tree via a unique numerical index, rather than using mutable
 # references.
@@ -15,13 +15,13 @@ class CSHeap
   attr_accessor :here
 
   # Index 0 of the heap represents a null pointer of sorts. If a field points to
-  #
+  # this address, it is considered empty.
   NULL    = 0
 
   # What you will find at index 0 of the heap:
   NOTHING = { __KIND__: "nothing" }
 
-  # Set "here" to "null". Prepopulate "here" with an empty entry.
+  # Set "here" to "null". Prepopulates "here" with an empty entry.
   def initialize
     @here    = CSHeap::NULL
     @entries = { @here => NOTHING }
@@ -46,7 +46,7 @@ class CSHeap
     end
   end
 
-  # Dump the heap as an easy-to-serialize JSON object.
+  # Dump the heap as an easy-to-traverse JSON object.
   # We need this to reconstruct the node from its IR form to its canonical form.
   def dump
     return entries
