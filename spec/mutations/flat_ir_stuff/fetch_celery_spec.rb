@@ -34,7 +34,9 @@ describe CeleryScript::FetchCelery do
 
   it "has edge cases" do
     s        = Sequences::Create.run!(USE_CASE, device: device)
-    expected = CeleryScript::FetchCelery.run!(sequence: Sequence.find(s.id))
+    expected = CeleryScript::FetchCelery
+      .run!(sequence: Sequence.find(s.id))
+      .except(:updated_at, :id, :created_at)
     expect(HashDiff.diff(USE_CASE, expected)).to eq([])
   end
 
