@@ -22,6 +22,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   disable_animations: "disable_animations",
   display_trail: "display_trail",
   encoder_figure: "encoder_figure",
+  enable_browser_speak: "enable_browser_speak",
 
   /** Farmware Settings Panel */
   show_first_party_farmware: "show_first_party_farmware"

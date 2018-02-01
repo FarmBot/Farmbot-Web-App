@@ -380,6 +380,7 @@ ActiveRecord::Schema.define(version: 20180201153221) do
     t.integer "debug_log", default: 1
     t.boolean "stub_config", default: false
     t.boolean "show_first_party_farmware", default: false
+    t.boolean "enable_browser_speak", default: false
     t.index ["device_id"], name: "index_web_app_configs_on_device_id"
   end
 
