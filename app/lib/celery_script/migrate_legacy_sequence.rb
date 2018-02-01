@@ -8,7 +8,11 @@ module CeleryScript
   end
 
   def execute
-    migrate! unless sequence.updated_at > CUTOFF_DATE
+    if !sequence.migrated_nodes
+      migrate!
+      sequence.update_attributes!(migrated_nodes: true)
+      sequence.reload
+    end
     sequence
   end
 

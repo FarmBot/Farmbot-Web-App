@@ -87,7 +87,9 @@ private  # = = = = = = =
   end
 
   def validate
+    MigrateLegacySequence.run!(sequence: sequence)
     if !primary_nodes.by.kind["sequence"]
+      binding.pry
       add_error :bad_sequence,
       :bad,
       "You must have a root node `sequence` at a minimum."
@@ -95,8 +97,7 @@ private  # = = = = = = =
   end
 
   def execute
-    return recurse_into_node(entry_node)
-      .deep_symbolize_keys
+    return recurse_into_node(entry_node).deep_symbolize_keys
   end
 
 end

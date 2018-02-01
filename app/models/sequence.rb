@@ -50,7 +50,7 @@ class Sequence < ApplicationRecord
 
   # http://stackoverflow.com/a/5127684/1064917
   before_validation :set_defaults
-
+  around_destroy :delete_nodes_too
   def set_defaults
     self.args              = {}.merge(DEFAULT_ARGS).merge(self.args)
     self.color           ||= "gray"
@@ -74,4 +74,13 @@ class Sequence < ApplicationRecord
       .slice(:kind, :args, :body)
     CeleryScript::JSONClimber.climb(hash, &blk)
   end
+
+  def delete_nodes_too
+    Sequence.transaction do
+      PrimaryNode.where(sequence_id: self.id).destroy_all
+      EdgeNode.where(sequence_id: self.id).destroy_all
+      yield
+    end
+  end
+
 end

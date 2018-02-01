@@ -13,7 +13,9 @@ class PrimaryNode < ApplicationRecord
 
   def todo
     [
-      "add a `comments` field to `PrimaryNode`"
+      "add a `comments` field to `PrimaryNode`",
+      "Destroy FarmEvent.if_still_using",
+      "Migration: Destroy all sequence deps and update their sequence"
     ]
   end
 

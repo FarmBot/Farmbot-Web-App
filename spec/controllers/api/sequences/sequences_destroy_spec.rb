@@ -26,7 +26,7 @@ describe Api::SequencesController do
       other_persons = FactoryBot.create(:sequence)
       input = { id: other_persons.id }
       delete :destroy, params: input
-      expect(response.status).to eq(403)
+      expect(response.status).to eq(404)
     end
 
    it 'allows deletion of recurive sequences' do
