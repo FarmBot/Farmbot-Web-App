@@ -194,6 +194,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     fun_log: 3,
     debug_log: 3,
     stub_config: false,
-    show_first_party_farmware: false
+    show_first_party_farmware: false,
+    enable_browser_speak: false,
   });
 }
