@@ -15,7 +15,8 @@ class PrimaryNode < ApplicationRecord
     [
       "add a `comments` field to `PrimaryNode`",
       "Destroy FarmEvent.if_still_using",
-      "Migration: Destroy all sequence deps and update their sequence"
+      "Migration: Destroy all sequence deps and update their sequence",
+      "Destroy the seq deps model (but not the table- not yet)"
     ]
   end
 
