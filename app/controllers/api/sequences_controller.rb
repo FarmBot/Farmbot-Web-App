@@ -7,7 +7,7 @@ module Api
       render json: Sequence
         .where(device: current_device)
         .to_a
-        .map { |s| FetchCelery.run!(sequence: s) }
+        .map { |s| CeleryScript::FetchCelery.run!(sequence: s) }
     end
 
     def show

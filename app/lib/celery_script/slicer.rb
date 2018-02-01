@@ -3,7 +3,8 @@ require_relative "./csheap"
 # Take a nested ("canonical") representation of a CeleryScript sequence and
 # transofrms it to a flat/homogenous intermediate representation which is better
 # suited for storage in a relation database.
-class Slicer
+module CeleryScript
+  class Slicer
   # Nodes that point to other nodes rather than primitive data types (eg:
   # `locals` and friends) will be prepended with a "🔗".
   LINK   = "🔗"
@@ -65,4 +66,5 @@ class Slicer
       recurse_into_body(heap, next_index, me, list)
     end
   end
+end
 end

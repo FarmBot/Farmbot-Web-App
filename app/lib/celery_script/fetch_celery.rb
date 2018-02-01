@@ -2,6 +2,7 @@
 # 1. Pulls out all PrimaryNodes and EdgeNodes for a sequence node (AST Flat IR form)
 # 2. Stitches the nodes back together in their "canonical" (nested) AST
 #    representation
+module CeleryScript
 class FetchCelery < Mutations::Command
 private  # = = = = = = =
 
@@ -98,4 +99,5 @@ private  # = = = = = = =
       .deep_symbolize_keys
   end
 
+end
 end

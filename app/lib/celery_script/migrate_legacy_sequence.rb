@@ -1,4 +1,5 @@
-class MigrateLegacySequence < Mutations::Command
+module CeleryScript
+  class MigrateLegacySequence < Mutations::Command
   # Any sequence that was `update_at` a time before this date must be upgraded.
   CUTOFF_DATE = DateTime.parse("2018-01-31 22:42:23 UTC")
 
@@ -16,4 +17,5 @@ private
   def migrate!
     StoreCelery.run!(sequence: sequence)
   end
+end
 end

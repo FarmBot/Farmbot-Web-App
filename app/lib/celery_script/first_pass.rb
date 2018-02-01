@@ -6,7 +6,8 @@
 #   Break the conversion down into two "passes". The first pass will create all
 #   relevant nodes that can be instantiated without forward references.
 #   Remaining nodes are created in the `SecondPass` phase.
-class FirstPass < Mutations::Command
+module CeleryScript
+  class FirstPass < Mutations::Command
   CORPUS = CeleryScriptSettingsBag::Corpus.as_json({})
   # All known celeryscript nodes:
   KINDS  = (CORPUS[:nodes] + CORPUS[:args]).pluck("name")
@@ -48,4 +49,5 @@ private
   def flat_ir
     @flat_ir ||= Slicer.new.run!(sequence.as_json.deep_symbolize_keys)
   end
+end
 end

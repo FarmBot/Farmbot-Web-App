@@ -3,6 +3,7 @@
 # we can't know everything about a node until we pass over all nodes.
 # Once we do pass over all nodes, we can go back and fill in the missing
 # information.
+module CeleryScript
 class SecondPass < Mutations::Command
   CORPUS = CeleryScriptSettingsBag::Corpus.as_json({})
   KINDS  = (CORPUS[:nodes] + CORPUS[:args]).pluck("name")
@@ -80,4 +81,5 @@ class SecondPass < Mutations::Command
     raise "BAD INDEX!" unless node && instance
     return instance
   end
+end
 end

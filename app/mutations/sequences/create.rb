@@ -36,7 +36,7 @@ module Sequences
         seq.save!
         reload_dependencies(seq)
       end
-      StoreCelery.run!(sequence: seq)
+      CeleryScript::StoreCelery.run!(sequence: seq)
       seq
     end
   end

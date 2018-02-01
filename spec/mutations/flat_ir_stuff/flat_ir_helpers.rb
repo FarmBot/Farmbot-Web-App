@@ -1,3 +1,4 @@
+module CeleryScript
 class FlatIrHelpers
   def self.fake_first_pass
     fake_tree = {
@@ -37,5 +38,5 @@ class FlatIrHelpers
     sequence.body = fake_tree[:body]
     FirstPass.run!(sequence: sequence)
   end
-
+end
 end

@@ -1,6 +1,6 @@
 require          "spec_helper"
 
-describe FetchCelery do
+describe CeleryScript::FetchCelery do
   let(:user) { FactoryBot.create(:user) }
   let(:device) { user.device }
 
@@ -21,7 +21,7 @@ describe FetchCelery do
           body: [{ kind: "channel", args: { channel_name: "toast" } }] }
       ]
     })
-    actual   = FetchCelery.run!(sequence: known_good.reload)
+    actual   = CeleryScript::FetchCelery.run!(sequence: known_good.reload)
     expected = known_good.as_json.deep_symbolize_keys.slice(:kind, :args, :body)
     expect(HashDiff.diff(actual, expected)).to eq([])
   end

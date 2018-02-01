@@ -1,12 +1,12 @@
 require "spec_helper"
 require_relative "./flat_ir_helpers"
 
-describe SecondPass do
+describe CeleryScript::SecondPass do
   let :result do
     Sequence.all.destroy_all
     expect(EdgeNode.count).to eq(0)
     expect(PrimaryNode.count).to eq(0)
-    SecondPass.run!(nodes: FlatIrHelpers.fake_first_pass)
+    CeleryScript::SecondPass.run!(nodes: CeleryScript::FlatIrHelpers.fake_first_pass)
   end
 
   it "wires stuff up" do

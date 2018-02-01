@@ -60,7 +60,7 @@ class Sequence < ApplicationRecord
   def maybe_migrate
     # spot check with Sequence.order("RANDOM()").first.maybe_migrate
     Sequences::Migrate.run!(sequence: self, device: self.device)
-    MigrateLegacySequence.run!(sequence: self)
+    CeleryScript::MigrateLegacySequence.run!(sequence: self)
   end
 
   def self.random

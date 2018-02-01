@@ -1,6 +1,7 @@
   # Re-combingind EdgeNodes and PrimaryNodes is very query intensive.
   # To avoid excess DB calls, we will index the nodes in memory by field type.
-  class Indexer
+  module CeleryScript
+    class Indexer
     # Fields that need indexing in both cases (Edge vs. Primary node)
     COMMON_FIELDS  = [:kind, :id]
     # Fields that will be indexed if an EdgeNode collection is passed in.
@@ -29,3 +30,4 @@
       @by = struct
     end
   end
+end

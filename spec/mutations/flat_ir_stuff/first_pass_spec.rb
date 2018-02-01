@@ -1,12 +1,12 @@
 require "spec_helper"
 require_relative "./flat_ir_helpers"
 
-describe FirstPass do
+describe CeleryScript::FirstPass do
   let :result do
     Sequence.all.destroy_all
     expect(EdgeNode.count).to eq(0)
     expect(PrimaryNode.count).to eq(0)
-    FlatIrHelpers.fake_first_pass
+    CeleryScript::FlatIrHelpers.fake_first_pass
   end
 
   it "travels up the tree via the `parent` property" do
