@@ -1,4 +1,7 @@
-import { BooleanConfigKey as BooleanWebAppConfigKey } from "./web_app_configs";
+import {
+  BooleanConfigKey as BooleanWebAppConfigKey,
+  NumberConfigKey as NumberWebAppConfigKey
+} from "./web_app_configs";
 import { GetState } from "../redux/interfaces";
 import { getWebAppConfig } from "../resources/selectors";
 import { edit, save } from "../api/crud";
@@ -14,5 +17,13 @@ export function toggleWebAppBool(key: BooleanWebAppConfigKey) {
     } else {
       throw new Error("Toggled settings before app was loaded.");
     }
+  };
+}
+
+export function getWebAppConfigValue(getState: GetState) {
+  return (key: BooleanWebAppConfigKey | NumberWebAppConfigKey):
+    boolean | number | undefined => {
+    const conf = getWebAppConfig(getState().resources.index);
+    return conf && conf.body[key];
   };
 }

@@ -47,6 +47,7 @@
     "@types/redux": "^3.6.31",
     "axios": "^0.17.0",
     "boxed_value": "^1.0.0",
+    "browser-speech": "^1.0.0",
     "coveralls": "^3.0.0",
     "css-loader": "^0.28.7",
     "enzyme": "^3.1.0",
@@ -115,7 +116,8 @@
       "./webpack/__test_support__/setup_enzyme.js",
       "./webpack/__test_support__/localstorage.js",
       "./webpack/__test_support__/mock_fbtoaster.ts",
-      "./webpack/__test_support__/unmock_i18next.ts"
+      "./webpack/__test_support__/unmock_i18next.ts",
+      "./webpack/__test_support__/additional_mocks.ts"
     ],
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"

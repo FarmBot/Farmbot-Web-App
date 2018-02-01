@@ -39,6 +39,7 @@ export interface WebAppConfig {
   debug_log: number;
   stub_config: boolean;
   show_first_party_farmware: boolean;
+  enable_browser_speak: boolean;
 }
 
 export type NumberConfigKey = "id"
@@ -75,4 +76,5 @@ export type BooleanConfigKey = "confirm_step_deletion"
     |"y_axis_inverted"
     |"z_axis_inverted"
     |"stub_config"
-    |"show_first_party_farmware";
+    |"show_first_party_farmware"
+    |"enable_browser_speak";

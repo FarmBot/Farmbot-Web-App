@@ -62,7 +62,14 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
     storageKey: BooleanSetting.disable_animations,
     value: false,
     displayInvert: true
-  }
+  },
+  {
+    name: t("Read speak logs in browser"),
+    description: trim(t(`Have the browser also read aloud log messages on the
+    "Speak" channel that are spoken by FarmBot.`)),
+    storageKey: BooleanSetting.enable_browser_speak,
+    value: false
+  },
 ].map(fetchRealValue));
 
 /** Always allow toggling from true => false (deactivate).
