@@ -22,7 +22,10 @@ describe CeleryScript::FetchCelery do
       ]
     })
     actual   = CeleryScript::FetchCelery.run!(sequence: known_good.reload)
-    expected = known_good.as_json.deep_symbolize_keys.slice(:kind, :args, :body)
+    expected = known_good
+      .as_json
+      .deep_symbolize_keys
+      .without(:device_id, :migrated_nodes)
     expect(HashDiff.diff(actual, expected)).to eq([])
   end
 end
