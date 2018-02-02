@@ -61,6 +61,8 @@ module CeleryScript
     # Mutate an array to contain all the body items of the `origin` node
     # Turns a linked list into a JSON array. Returns Array or nil
     def recurse_into_body(origin, output_array = [])
+      # How do I detect if I should pass `output_array` or instantiate a new copy?
+
       child = get_next_sibling(origin)
       child && output_array.push(recurse_into_node(child))
       return output_array.empty? ? nil : output_array
@@ -78,7 +80,9 @@ module CeleryScript
     # Top level function call for converting a single EdgeNode into a JSON
     # document. Returns Hash<Symbol, any>
     def recurse_into_node(node)
-      output = { kindt_body_node(node)
+      output = { kind: node.kind, args: recurse_into_args(node) }
+      body = get_first_body_node(node)
+
       output[:body] = recurse_into_body(body, []) if body
 
       return output
@@ -95,9 +99,7 @@ module CeleryScript
         updated_at: sequence.updated_at
       }
     end
-
   public # = = = = = = =
-
     required do
       model :sequence, class: Sequence
     end

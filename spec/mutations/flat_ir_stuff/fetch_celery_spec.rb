@@ -10,14 +10,14 @@ describe CeleryScript::FetchCelery do
     expect(Sequence.count).to eq(0)
     expect(PrimaryNode.count).to eq(0)
     expect(EdgeNode.count).to eq(0)
-    params = CeleryScript::FlatIrHelpers.typical_sequence
+    params          = CeleryScript::FlatIrHelpers.typical_sequence
     params[:device] = device
-    known_good = Sequences::Create.run!(params)
-    actual   = CeleryScript::FetchCelery.run!(sequence: known_good.reload)
-    expected = known_good
-      .as_json
-      .deep_symbolize_keys
-      .without(:device_id, :migrated_nodes)
+    known_good      = Sequences::Create.run!(params)
+    actual          = CeleryScript::FetchCelery.run!(sequence: known_good.reload)
+    expected        = known_good
+                        .as_json
+                        .deep_symbolize_keys
+                        .without(:device_id, :migrated_nodes)
     expect(actual[:body]).to be_kind_of(Array)
     expected[:body]
       .each_with_index do |item, index|
