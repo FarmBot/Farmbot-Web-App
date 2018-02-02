@@ -30,7 +30,7 @@ module CeleryScript
     end
 
     # Helper function for frequently references object. All nodes that point to
-    # this node as their `parent_id` or `child_id` indicate a `nil` condition.
+    # this node as their `parent_id` or `body_id` indicate a `nil` condition.
     def null_node
       @null_node ||= primary_nodes.by.id[entry_node.parent_id].first
     end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180201153221) do
+ActiveRecord::Schema.define(version: 20180202165503) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -255,10 +255,12 @@ ActiveRecord::Schema.define(version: 20180201153221) do
     t.datetime "updated_at", null: false
     t.bigint "sequence_id", null: false
     t.string "kind", limit: 50
-    t.bigint "child_id"
+    t.bigint "body_id"
     t.bigint "parent_id"
     t.string "parent_arg_name", limit: 50
-    t.index ["child_id"], name: "index_primary_nodes_on_child_id"
+    t.bigint "next_id"
+    t.index ["body_id"], name: "index_primary_nodes_on_body_id"
+    t.index ["next_id"], name: "index_primary_nodes_on_next_id"
     t.index ["parent_id"], name: "index_primary_nodes_on_parent_id"
     t.index ["sequence_id"], name: "index_primary_nodes_on_sequence_id"
   end

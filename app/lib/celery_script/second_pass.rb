@@ -9,12 +9,12 @@ class SecondPass < Mutations::Command
   KINDS  = (CORPUS[:nodes] + CORPUS[:args]).pluck("name")
 
   required do
-    # model :sequence, class: Sequence
     array :nodes do # CeleryScript flat IR AST
       hash do
         string  :kind, in: KINDS
         integer :parent
-        integer :child
+        integer :next
+        integer :body
         hash    :primary_nodes do integer :* end
         hash    :edge_nodes do duck :*, methods: :to_json end
         model   :instance, class: PrimaryNode, new_records: true
@@ -29,19 +29,19 @@ class SecondPass < Mutations::Command
   end
 
   def save_node(node)
-    # Set parent_id, child_id
-    asign_parent_child(node)
+    # Set parent_id, body_id, next_id
+    attach_body_parent_and_next_node(node)
     # Set arg nodes (primaries)
-    assign_primary_arg_nodes(node)
+    attach_primary_args(node)
     # Set arg nodes (edge nodes?)
-    create_edge_arg_node(node)
+    add_edge_args(node)
     # Save edge nodes
     instance = node[:instance]
     instance.save! if instance.changed?
     instance
   end
 
-  def create_edge_arg_node(node)
+  def add_edge_args(node)
     instance = node[:instance]
     node[:edge_nodes]
       .to_a
@@ -53,7 +53,7 @@ class SecondPass < Mutations::Command
       end
   end
 
-  def assign_primary_arg_nodes(node)
+  def attach_primary_args(node)
     node[:primary_nodes]
       .to_a
       .map do |(parent_arg_name, value)|
@@ -62,16 +62,18 @@ class SecondPass < Mutations::Command
       end
   end
 
-  def asign_parent_child(node)
+  def attach_body_parent_and_next_node(node)
     instance = node[:instance]
-    parent   = get_node(node[:parent])
-    child    = get_node(node[:child])
-
-    child.save!  unless child.id
-    parent.save! unless parent.id
+    [
+      parent = get_node(node[:parent]),
+      body   = get_node(node[:body]),
+      next_  = get_node(node[:next]),
+    ].map { |relative_node| relative_node.save! unless relative_node.id }
 
     instance
-      .update_attributes!(parent_id: parent.id, child_id: child.id)
+      .update_attributes!(parent_id: parent.id,
+                          body_id:   body.id,
+                          next_id:   next_.id)
   end
 
   # Returns the node that is passed in unless it's a "nothing" node.

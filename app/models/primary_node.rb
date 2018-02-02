@@ -24,8 +24,12 @@ class PrimaryNode < ApplicationRecord
     self.class.find_by(id: parent_id)
     end
 
-  def child
-    self.class.find_by(id: child_id)
+  def body
+    self.class.find_by(id: body_id)
+  end
+
+  def next
+    self.class.find_by(id: next_id)
   end
 
   def is_body_item? # Is this an arg or a body item?

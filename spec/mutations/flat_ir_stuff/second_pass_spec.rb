@@ -9,6 +9,14 @@ describe CeleryScript::SecondPass do
     CeleryScript::SecondPass.run!(nodes: CeleryScript::FlatIrHelpers.fake_first_pass)
   end
 
+  it "handles edge cases" do
+    x        = CeleryScript::FlatIrHelpers.typical_sequence
+    sequence = FactoryBot.create(:sequence, args: x[:args], body: x[:body])
+    step1    = CeleryScript::FirstPass.run!(sequence: sequence)
+    step2    = CeleryScript::SecondPass.run!(nodes: step1)
+    binding.pry
+  end
+
   it "wires stuff up" do
     expect(result.map(&:class).uniq).to eq([PrimaryNode])
     expect(result.length).to eq(11)
@@ -27,7 +35,7 @@ describe CeleryScript::SecondPass do
     expect(sequence.parent).to eq(nothing)
     expect(sequence.child).to eq(send_message)
     expect(sequence.parent_id).to eq(nothing.id)
-    expect(sequence.child_id).to eq(send_message.id)
+    expect(sequence.body_id).to eq(send_message.id)
   end
 
   it "sets proper parent_arg_name" do
