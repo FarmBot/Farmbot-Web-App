@@ -10,12 +10,12 @@ module CeleryScript
     LINK   = "🔗"
     # Points to the originator of an `arg` or `body` node.
     PARENT = LINK + "parent"
-    CHILD  = LINK + "child"
-    NEXT   = CHILD # "🔗next"
+    BODY   = LINK + "body_starts_at"
+    NEXT   = LINK + "next_body_item"
     KIND   = :__KIND__
 
     # Keys that primary nodes must have
-    PRIMARY_FIELDS = [PARENT, CHILD, KIND]
+    PRIMARY_FIELDS = [PARENT, BODY, KIND]
 
     def run!(node)
       raise "Not a hash" unless node.is_a?(Hash)
@@ -57,7 +57,7 @@ module CeleryScript
 
     def iterateOverBody(heap, s, parentAddr)
       body = (s[:body] || []).map(&:deep_symbolize_keys)
-      body.present? && heap.put(parentAddr, CHILD, "" + (parentAddr + 1).to_s)
+      body.present? && heap.put(parentAddr, BODY, "" + (parentAddr + 1).to_s)
       recurse_into_body(heap, 0, parentAddr, body)
     end
 

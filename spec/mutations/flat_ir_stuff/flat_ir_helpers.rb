@@ -1,8 +1,7 @@
 module CeleryScript
 class FlatIrHelpers
-    def self.flattened_heap
-      slicer = CeleryScript::Slicer.new
-      slicer.run!({
+    def self.typical_sequence
+      {
         kind: "sequence",
         name: "move_abs(1,2,3), move_rel(4,5,6), write_pin(13, off, digital)",
         color: "gray",
@@ -29,7 +28,12 @@ class FlatIrHelpers
             args: { pin_number: 0, pin_value: 0, pin_mode: 0 }
           }
         ]
-      })
+      }
+    end
+
+    def self.flattened_heap
+      slicer = CeleryScript::Slicer.new
+      slicer.run!(typical_sequence)
       slicer.heap_values
     end
 

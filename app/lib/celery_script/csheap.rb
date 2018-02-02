@@ -7,7 +7,7 @@
 module CeleryScript
   class CSHeap
     # A single node in the CeleryScript tree, as stored in the heap.
-    # It's a collection of key/value pairs, a parent index, a child index and a
+    # It's a collection of key/value pairs, a parent index, a body index and a
     # __KIND__ key.
     attr_accessor :entries
 
@@ -59,26 +59,26 @@ module CeleryScript
           output = {
             kind:   input[Slicer::KIND],
             parent: (input[Slicer::PARENT.to_s] || "0").to_i,
-            child:  (input[Slicer::CHILD.to_s ] || "0").to_i,
+            body:   (input[Slicer::BODY.to_s ] || "0").to_i,
+            next:   (input[Slicer::NEXT.to_s ] || "0").to_i,
             primary_nodes:    {},
             edge_nodes:       {}
           }
-
           input
-            .without(Slicer::KIND, Slicer::PARENT, Slicer::CHILD)
-            .to_a
-            .map do |node|
-              key, value = *node
-              is_primary = key.to_s.starts_with?(Slicer::LINK)
-              if is_primary
-                clean_key = key.gsub(Slicer::LINK, "")
-                output[:primary_nodes][clean_key] = JSON.parse(value)
-              else
-                output[:edge_nodes][key] = JSON.parse(value)
-              end
+          .without(Slicer::KIND, Slicer::PARENT, Slicer::BODY)
+          .to_a
+          .map do |node|
+            key, value = *node
+            is_primary = key.to_s.starts_with?(Slicer::LINK)
+            if is_primary
+              clean_key = key.gsub(Slicer::LINK, "")
+              output[:primary_nodes][clean_key] = JSON.parse(value)
+            else
+              output[:edge_nodes][key] = JSON.parse(value)
             end
-            output.deep_symbolize_keys
+          end
+          output.deep_symbolize_keys
         end
+      end
     end
   end
-end
