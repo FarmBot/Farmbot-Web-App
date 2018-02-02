@@ -1,4 +1,5 @@
 require "spec_helper"
+require_relative "./flat_ir_helpers"
 
 describe CeleryScript::FetchCelery do
   let(:user) { FactoryBot.create(:user) }
@@ -9,18 +10,9 @@ describe CeleryScript::FetchCelery do
     expect(Sequence.count).to eq(0)
     expect(PrimaryNode.count).to eq(0)
     expect(EdgeNode.count).to eq(0)
-    known_good = Sequences::Create.run!({
-      name: "New Sequence",
-      color: "gray",
-      device: device,
-      kind: "sequence",
-      args: {},
-      body: [
-        { kind: "send_message",
-          args: { message: "Hello, world!", message_type: "warn" },
-          body: [{ kind: "channel", args: { channel_name: "toast" } }] }
-      ]
-    })
+    params = CeleryScript::FlatIrHelpers.typical_sequence
+    params[:device] = device
+    known_good = Sequences::Create.run!(params)
     actual   = CeleryScript::FetchCelery.run!(sequence: known_good.reload)
     expected = known_good
       .as_json
