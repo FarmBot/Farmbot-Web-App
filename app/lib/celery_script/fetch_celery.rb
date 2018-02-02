@@ -6,17 +6,6 @@ module CeleryScript
   class FetchCelery < Mutations::Command
   private  # = = = = = = =
 
-    # Returns an `EdgeNode` or `nil` for the following situations:
-    #   1. The first element of a node's `body` attribute
-    #   2. (when already inside of a body array) The next `body` element in the chain.
-    #   3. (when the node has no body) nil
-    #   3. (when at the end of the body chain) nil
-    def get_child(node) # => EdgeNode | nil
-      children = primary_nodes.by.parent_id[node.id]
-      return children ?
-        children.find { |x| !x.parent_arg_name && x.kind != "nothing" } : nil
-    end
-
     # This class is too CPU intensive to make multiple SQL requests.
     # To speed up querying, we create an in-memory index for frequently
     # looked up attributes such as :id, :kind, :parent_id, :primary_node_id
@@ -27,6 +16,22 @@ module CeleryScript
     # See docs for #edge_nodes()
     def primary_nodes
       @primary_nodes ||= Indexer.new(sequence.primary_nodes)
+    end
+
+    def get_first_body_node(node)
+      return primary_nodes
+        .by
+        .id[node.body_id]
+        .select{|x| x.kind != "nothing"}
+        .first
+    end
+
+    def get_next_sibling(node) # => EdgeNode | nil
+      return primary_nodes
+        .by
+        .id[node.next_id]
+        .select{|x| x.kind != "nothing"}
+        .first
     end
 
     # Helper function for frequently references object. All nodes that point to
@@ -56,8 +61,7 @@ module CeleryScript
     # Mutate an array to contain all the body items of the `origin` node
     # Turns a linked list into a JSON array. Returns Array or nil
     def recurse_into_body(origin, output_array = [])
-      # How do I detect if I should pass `output_array` or instantiate a new copy?
-      child = get_child(origin)
+      child = get_next_sibling(origin)
       child && output_array.push(recurse_into_node(child))
       return output_array.empty? ? nil : output_array
     end
@@ -74,9 +78,8 @@ module CeleryScript
     # Top level function call for converting a single EdgeNode into a JSON
     # document. Returns Hash<Symbol, any>
     def recurse_into_node(node)
-      output = { kind: node.kind, args: recurse_into_args(node) }
-      body = recurse_into_body(node, [])
-      output[:body] = body if body
+      output = { kindt_body_node(node)
+      output[:body] = recurse_into_body(body, []) if body
 
       return output
     end
@@ -92,7 +95,9 @@ module CeleryScript
         updated_at: sequence.updated_at
       }
     end
-    public # = = = = = = =
+
+  public # = = = = = = =
+
     required do
       model :sequence, class: Sequence
     end

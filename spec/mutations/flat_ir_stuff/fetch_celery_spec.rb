@@ -18,6 +18,13 @@ describe CeleryScript::FetchCelery do
       .as_json
       .deep_symbolize_keys
       .without(:device_id, :migrated_nodes)
+    expect(actual[:body]).to be_kind_of(Array)
+    expected[:body]
+      .each_with_index do |item, index|
+        x = actual[:body][index]
+        y = expected[:body][index]
+        expect(HashDiff.diff(x, y)).to eq([])
+      end
     expect(HashDiff.diff(actual, expected)).to eq([])
   end
 end
