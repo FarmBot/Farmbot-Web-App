@@ -47,11 +47,14 @@ module CeleryScript
       end
     end
 
+    def values
+      entries.values
+    end
+
     # Dump the heap as an easy-to-traverse JSON object.
     # We need this to reconstruct the node from its IR form to its canonical form.
     def dump
-      return entries
-        .values
+      return values
         .map do |input|
           output = {
             kind:   input[Slicer::KIND],
