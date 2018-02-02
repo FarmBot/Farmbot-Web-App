@@ -18,18 +18,10 @@ module CeleryScript
       @primary_nodes ||= Indexer.new(sequence.primary_nodes)
     end
 
-    def get_first_body_node(node)
+    def find_node(id) # Use `next_id`, `id`, `body_id`, `parent_id`
       return primary_nodes
         .by
-        .id[node.body_id]
-        .select{|x| x.kind != "nothing"}
-        .first
-    end
-
-    def get_next_sibling(node) # => EdgeNode | nil
-      return primary_nodes
-        .by
-        .id[node.next_id]
+        .id[id]
         .select{|x| x.kind != "nothing"}
         .first
     end
@@ -45,47 +37,32 @@ module CeleryScript
       @entry_node ||= primary_nodes.by.kind["sequence"].first
     end
 
-    # Mutates "args" property to add all relevant edge ("e") nodes.
-    def add_e_nodes(arg_hash, node_array)
-      node_array.map { |node| arg_hash[node.kind] = node.value }
-    end
-
-    # Mutates "args" property to add all relevant primary ("p") nodes.
-    def add_p_nodes(arg_hash, node_array)
-      node_array.map do |node|
-        key = node.parent_arg_name
-        key && arg_hash[key] = recurse_into_node(node)
-      end
-    end
-
-    # Mutate an array to contain all the body items of the `origin` node
-    # Turns a linked list into a JSON array. Returns Array or nil
-    def recurse_into_body(origin, output_array = [])
-      # How do I detect if I should pass `output_array` or instantiate a new copy?
-
-      child = get_next_sibling(origin)
-      child && output_array.push(recurse_into_node(child))
-      return output_array.empty? ? nil : output_array
-    end
-
-    # Given a `node` object, creates the appropriate JSON representation of
-    # node.args based on relational IDs.
     def recurse_into_args(node)
-      result  = {}
-      add_p_nodes(result, primary_nodes.by.parent_id[node.id] || [])
-      add_e_nodes(result, edge_nodes.by.primary_node_id[node.id] || [])
-      result
+      puts "FIXME!"
+      node
+    end
+
+    def get_body_elements(node)
+      topmost = find_node(node.body_id)
+      body = []
+      if topmost # Start at head, if any.
+        body.push(topmost)
+        next_element = topmost
+        while next_element # Recurse down till you hit the tail
+          next_element = find_node(next_element.next_id)
+          next_element && body.push(next_element)
+        end
+      end
+      return body
     end
 
     # Top level function call for converting a single EdgeNode into a JSON
     # document. Returns Hash<Symbol, any>
     def recurse_into_node(node)
-      output = { kind: node.kind, args: recurse_into_args(node) }
-      body = get_first_body_node(node)
-
-      output[:body] = recurse_into_body(body, []) if body
-
-      return output
+      out  = { kind: node.kind, args: recurse_into_args(node) }
+      body = get_body_elements(node)
+      out[:body] = body.map { |x| recurse_into_node(x) }
+      return out
     end
 
     # Generates a hash that has all the other fields that API users expect,
@@ -99,7 +76,9 @@ module CeleryScript
         updated_at: sequence.updated_at
       }
     end
+
   public # = = = = = = =
+
     required do
       model :sequence, class: Sequence
     end
