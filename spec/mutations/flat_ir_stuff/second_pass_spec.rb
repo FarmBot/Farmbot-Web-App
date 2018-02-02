@@ -14,7 +14,21 @@ describe CeleryScript::SecondPass do
     sequence = FactoryBot.create(:sequence, args: x[:args], body: x[:body])
     step1    = CeleryScript::FirstPass.run!(sequence: sequence)
     step2    = CeleryScript::SecondPass.run!(nodes: step1)
-    binding.pry
+    comparison = step2
+      .map(&:as_json)
+      .map(&:symbolize_keys)
+      .map { |x| x.slice(:id, :kind, :next_id, :body_id, :parent_id) }
+      .index_by { |x| x[:id] }
+    comparison
+      .values
+      .map do |value|
+        puts """
+        === Node \##{value[:id]} (#{value[:kind]})
+        parent: #{(comparison[value[:parent_id]] || {})[:kind] || "nil"}
+        body  : #{(comparison[value[:body_id]] || {})[:kind] || "nil"}
+        next  : #{(comparison[value[:next_id]] || {})[:kind] || "nil"}
+        """
+      end
   end
 
   it "wires stuff up" do
@@ -31,9 +45,9 @@ describe CeleryScript::SecondPass do
     send_message = PrimaryNode.find_by(kind: "send_message")
     expect(PrimaryNode.where(kind: "sequence").count).to eq(1)
     expect(sequence.parent).to be
-    expect(sequence.child).to be
+    expect(sequence.body).to be
     expect(sequence.parent).to eq(nothing)
-    expect(sequence.child).to eq(send_message)
+    expect(sequence.body).to eq(send_message)
     expect(sequence.parent_id).to eq(nothing.id)
     expect(sequence.body_id).to eq(send_message.id)
   end

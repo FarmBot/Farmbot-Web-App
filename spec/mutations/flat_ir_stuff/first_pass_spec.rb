@@ -64,14 +64,14 @@ describe CeleryScript::FirstPass do
     expect(gr8_grandparent[:kind]).to eq("sequence")
   end
 
-  it "travels down the tree via `child`" do
+  it "travels down the tree via `body`" do
     top = result[1] # 0 is NULL
     expect(top[:kind]).to eq("sequence")
 
-    child1 = result[top[:child]]
+    child1 = result[top[:body]]
     expect(child1[:kind]).to eq("send_message")
 
-    child2 = result[child1[:child]]
+    child2 = result[child1[:body]]
     expect(child2[:kind]).to eq("channel")
   end
 
@@ -79,11 +79,11 @@ describe CeleryScript::FirstPass do
     top = result[1] # 0 is NULL
     expect(top[:edge_nodes].keys).to eq([])
 
-    child1 = result[top[:child]]
+    child1 = result[top[:body]]
     expect(child1[:edge_nodes][:message]).to eq("test case 1")
     expect(child1[:edge_nodes][:message_type]).to eq("success")
 
-    child2 = result[child1[:child]]
+    child2 = result[child1[:body]]
     expect(child2[:edge_nodes][:channel_name]).to eq("toast")
   end
 end
