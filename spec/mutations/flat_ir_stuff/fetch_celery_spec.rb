@@ -19,6 +19,22 @@ describe CeleryScript::FetchCelery do
                         .deep_symbolize_keys
                         .without(:device_id, :migrated_nodes)
     expect(actual[:body]).to be_kind_of(Array)
+    none = "nothing"
+    [
+      # Came from the JS implementation which is known good.
+      #KIND                 PARENT           NEXT             BODY
+      ["nothing",           none,            "sequence",      none           ],
+      ["sequence",          none,            none,            "move_absolute"],
+      ["move_absolute",     "sequence",      "move_relative", none           ],
+      ["coordinate",        "move_absolute", none,            none           ],
+      ["move_relative",     "move_absolute", "write_pin",     none           ],
+      ["write_pin",         "move_relative", none,            none           ],
+      ["scope_declaration", "sequence",      none,            none           ],
+    ].map do |(me, expect_parent, expect_next, expect_body)|
+      puts "I NEED TO VALIDATE parent_arg_name"
+      binding.pry
+    end
+
     expected[:body]
       .each_with_index do |item, index|
         x = actual[:body][index]

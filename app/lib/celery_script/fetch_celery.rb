@@ -37,9 +37,22 @@ module CeleryScript
       @entry_node ||= primary_nodes.by.kind["sequence"].first
     end
 
+    def attach_edges(node)
+      output = {}
+      (edge_nodes.by.primary_node_id[node.id] || [])
+        .map { |edge| output[edge.kind] = edge.value }
+      output
+    end
+
+    def attach_primary_nodes(node)
+      output = {}
+      (primary_nodes.by.parent_id[node.id] || []).select(&:parent_arg_name)
+        .map { |x| output[x.parent_arg_name] = recurse_into_node(x) }
+      output
+    end
+
     def recurse_into_args(node)
-      puts "FIXME!"
-      node
+      {}.merge!(attach_edges(node)).merge!(attach_primary_nodes(node))
     end
 
     def get_body_elements(node)
@@ -50,7 +63,13 @@ module CeleryScript
         next_element = topmost
         while next_element # Recurse down till you hit the tail
           next_element = find_node(next_element.next_id)
-          next_element && body.push(next_element)
+          if next_element
+            if next_element.parent_arg_name == "next_body_item"
+              puts "I need better validation of `parent_arg_name`"
+              binding.pry
+            end
+            body.push(next_element)
+          end
         end
       end
       return body
@@ -61,7 +80,7 @@ module CeleryScript
     def recurse_into_node(node)
       out  = { kind: node.kind, args: recurse_into_args(node) }
       body = get_body_elements(node)
-      out[:body] = body.map { |x| recurse_into_node(x) }
+      out[:body] = body.map { |x| recurse_into_node(x) } unless body.empty?
       return out
     end
 
@@ -78,18 +97,15 @@ module CeleryScript
     end
 
   public # = = = = = = =
-
+    NO_SEQUENCE = "You must have a root node `sequence` at a minimum."
     required do
       model :sequence, class: Sequence
     end
 
     def validate
       MigrateLegacySequence.run!(sequence: sequence)
-      if !primary_nodes.by.kind["sequence"]
-        add_error :bad_sequence,
-        :bad,
-        "You must have a root node `sequence` at a minimum."
-      end
+      root_node = primary_nodes.by.kind["sequence"]
+      add_error :bad_sequence, :bad, NO_SEQUENCE if !root_node
     end
 
     def execute
