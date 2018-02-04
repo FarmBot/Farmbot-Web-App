@@ -65,13 +65,14 @@ module CeleryScript
             edge_nodes:       {}
           }
           input
-          .without(Slicer::KIND, Slicer::PARENT, Slicer::BODY)
+          .without(*Slicer::PRIMARY_FIELDS)
           .to_a
           .map do |node|
             key, value = *node
             is_primary = key.to_s.starts_with?(Slicer::LINK)
             if is_primary
               clean_key = key.gsub(Slicer::LINK, "")
+              binding.pry if clean_key == "next_body_item"
               output[:primary_nodes][clean_key] = JSON.parse(value)
             else
               output[:edge_nodes][key] = JSON.parse(value)

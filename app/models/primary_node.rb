@@ -6,10 +6,14 @@ class PrimaryNode < ApplicationRecord
   belongs_to            :sequence
   validates_presence_of :sequence
   has_many   :edge_nodes
-  # BAD_KIND = "must be a valid CeleryScript node name"
-  # validates :kind, inclusion: { in:        CeleryScriptSettingsBag::ANY_ARG_NAME,
-  #                               message:   BAD_KIND,
-  #                               allow_nil: false }
+  BAD_KIND = "must be a valid CeleryScript argument name"
+  validates :kind, inclusion: { in: CeleryScriptSettingsBag::ANY_NODE_NAME,
+                                message: BAD_KIND,
+                                allow_nil: false }
+  validates :parent_arg_name,
+    inclusion: {in:        CeleryScriptSettingsBag::ANY_ARG_NAME,
+                message:   BAD_KIND,
+                allow_nil: true}
 
   def todo
     [

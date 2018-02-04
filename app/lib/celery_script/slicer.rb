@@ -15,7 +15,7 @@ module CeleryScript
     KIND   = :__KIND__
 
     # Keys that primary nodes must have
-    PRIMARY_FIELDS = [PARENT, BODY, KIND]
+    PRIMARY_FIELDS = [PARENT, BODY, KIND, NEXT]
 
     def run!(node)
       raise "Not a hash" unless node.is_a?(Hash)
