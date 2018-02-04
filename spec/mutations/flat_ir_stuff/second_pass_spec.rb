@@ -9,27 +9,27 @@ describe CeleryScript::SecondPass do
     CeleryScript::SecondPass.run!(nodes: CeleryScript::FlatIrHelpers.fake_first_pass)
   end
 
-  it "handles edge cases" do
-    x        = CeleryScript::FlatIrHelpers.typical_sequence
-    sequence = FactoryBot.create(:sequence, args: x[:args], body: x[:body])
-    step1    = CeleryScript::FirstPass.run!(sequence: sequence)
-    step2    = CeleryScript::SecondPass.run!(nodes: step1)
-    comparison = step2
-      .map(&:as_json)
-      .map(&:symbolize_keys)
-      .map { |x| x.slice(:id, :kind, :next_id, :body_id, :parent_id) }
-      .index_by { |x| x[:id] }
-    comparison
-      .values
-      .map do |value|
-        puts """
-        === Node \##{value[:id]} (#{value[:kind]})
-        parent: #{(comparison[value[:parent_id]] || {})[:kind] || "nil"}
-        body  : #{(comparison[value[:body_id]] || {})[:kind] || "nil"}
-        next  : #{(comparison[value[:next_id]] || {})[:kind] || "nil"}
-        """
-      end
-  end
+  # it "handles edge cases" do
+  #   x        = CeleryScript::FlatIrHelpers.typical_sequence
+  #   sequence = FactoryBot.create(:sequence, args: x[:args], body: x[:body])
+  #   step1    = CeleryScript::FirstPass.run!(sequence: sequence)
+  #   step2    = CeleryScript::SecondPass.run!(nodes: step1)
+  #   comparison = step2
+  #     .map(&:as_json)
+  #     .map(&:symbolize_keys)
+  #     .map { |x| x.slice(:id, :kind, :next_id, :body_id, :parent_id) }
+  #     .index_by { |x| x[:id] }
+  #   comparison
+  #     .values
+  #     .map do |value|
+  #       puts """
+  #       === Node \##{value[:id]} (#{value[:kind]})
+  #       parent: #{(comparison[value[:parent_id]] || {})[:kind] || "nil"}
+  #       body  : #{(comparison[value[:body_id]] || {})[:kind] || "nil"}
+  #       next  : #{(comparison[value[:next_id]] || {})[:kind] || "nil"}
+  #       """
+  #     end
+  # end
 
   it "wires stuff up" do
     expect(result.map(&:class).uniq).to eq([PrimaryNode])

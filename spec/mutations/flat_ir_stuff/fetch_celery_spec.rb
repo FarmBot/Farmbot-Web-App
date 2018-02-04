@@ -19,20 +19,23 @@ describe CeleryScript::FetchCelery do
                         .deep_symbolize_keys
                         .without(:device_id, :migrated_nodes)
     expect(actual[:body]).to be_kind_of(Array)
-    none = "nothing"
+    nodes = Sequence.find(actual[:id]).primary_nodes
+    _______________ = "nothing"
+    # This table came from the JS implementation, which is "known good".
     [
-      # Came from the JS implementation which is known good.
       #KIND                 PARENT           NEXT             BODY
-      ["nothing",           none,            "sequence",      none           ],
-      ["sequence",          none,            none,            "move_absolute"],
-      ["move_absolute",     "sequence",      "move_relative", none           ],
-      ["coordinate",        "move_absolute", none,            none           ],
-      ["move_relative",     "move_absolute", "write_pin",     none           ],
-      ["write_pin",         "move_relative", none,            none           ],
-      ["scope_declaration", "sequence",      none,            none           ],
+      ["nothing",           _______________, _______________, _______________],
+      ["sequence",          _______________, _______________, "move_absolute"],
+      ["move_absolute",     "sequence",      "move_relative", _______________],
+      ["coordinate",        "move_absolute", _______________, _______________],
+      ["move_relative",     "move_absolute", "write_pin",     _______________],
+      ["write_pin",         "move_relative", _______________, _______________],
+      ["scope_declaration", "sequence",      _______________, _______________],
     ].map do |(me, expect_parent, expect_next, expect_body)|
-      puts "I NEED TO VALIDATE parent_arg_name"
-      binding.pry
+      inspected = nodes.find_by(kind: me)
+      expect(inspected.parent.kind).to eq(expect_parent)
+      expect(inspected.next.kind).to   eq(expect_next)
+      expect(inspected.body.kind).to   eq(expect_body)
     end
 
     expected[:body]

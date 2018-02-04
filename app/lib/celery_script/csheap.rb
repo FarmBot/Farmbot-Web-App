@@ -72,7 +72,6 @@ module CeleryScript
             is_primary = key.to_s.starts_with?(Slicer::LINK)
             if is_primary
               clean_key = key.gsub(Slicer::LINK, "")
-              binding.pry if clean_key == "next_body_item"
               output[:primary_nodes][clean_key] = JSON.parse(value)
             else
               output[:edge_nodes][key] = JSON.parse(value)

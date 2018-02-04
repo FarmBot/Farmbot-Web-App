@@ -68,8 +68,7 @@ class SecondPass < Mutations::Command
       parent = get_node(node[:parent]),
       body   = get_node(node[:body]),
       next_  = get_node(node[:next]),
-    ].map { |relative_node| relative_node.save! unless relative_node.id }
-
+    ].map { |linked_node| linked_node.save! unless linked_node.id }
     instance
       .update_attributes!(parent_id: parent.id,
                           body_id:   body.id,

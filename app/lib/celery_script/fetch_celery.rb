@@ -63,13 +63,7 @@ module CeleryScript
         next_element = topmost
         while next_element # Recurse down till you hit the tail
           next_element = find_node(next_element.next_id)
-          if next_element
-            if next_element.parent_arg_name == "next_body_item"
-              puts "I need better validation of `parent_arg_name`"
-              binding.pry
-            end
-            body.push(next_element)
-          end
+          body.push(next_element) if next_element
         end
       end
       return body

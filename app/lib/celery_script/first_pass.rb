@@ -8,22 +8,8 @@
 #   Remaining nodes are created in the `SecondPass` phase.
 module CeleryScript
   class FirstPass < Mutations::Command
-    CORPUS = CeleryScriptSettingsBag::Corpus.as_json({})
-    # All known celeryscript nodes:
-    KINDS  = (CORPUS[:nodes] + CORPUS[:args]).pluck("name")
-
     required do
       model :sequence, class: Sequence
-      # array :flat_ir do # CeleryScript flat IR AST
-      #   hash do
-      #     string   :kind, in: KINDS
-      #     integer  :parent
-      #     integer  :child
-      #     interger :next
-      #     hash     :primary_nodes do integer :* end
-      #     hash     :edge_nodes do duck :*, methods: :to_json end
-      #   end
-      # end
     end
 
     def execute
