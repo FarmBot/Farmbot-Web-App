@@ -38,8 +38,6 @@ describe CeleryScript::FetchCelery do
       expect(inspected.body.kind).to   eq(expect_body)
     end
 
-    binding.pry
-
     expected[:body]
       .each_with_index do |item, index|
         x = actual[:body][index]
