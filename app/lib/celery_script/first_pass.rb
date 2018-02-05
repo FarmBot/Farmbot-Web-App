@@ -27,6 +27,7 @@ module CeleryScript
         instance = PrimaryNode.new(kind:       item[:kind],
                                    sequence:   sequence,
                                    edge_nodes: edge_nodes)
+        item[:instance] = instance
       end
       flat_ir
     end
