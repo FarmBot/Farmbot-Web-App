@@ -1,4 +1,3 @@
-require_relative "./csheap"
 # ORIGINAL IMPLEMENTATION HERE: https://github.com/FarmBot-Labs/Celery-Slicer
 # Take a nested ("canonical") representation of a CeleryScript sequence and
 # transofrms it to a flat/homogenous intermediate representation which is better
@@ -10,8 +9,8 @@ module CeleryScript
     LINK   = "🔗"
     # Points to the originator of an `arg` or `body` node.
     PARENT = LINK + "parent"
-    BODY   = LINK + "body_starts_at"
-    NEXT   = LINK + "next_body_item"
+    BODY   = LINK + "body"
+    NEXT   = LINK + "next"
     KIND   = :__KIND__
 
     # Keys that primary nodes must have
@@ -57,7 +56,7 @@ module CeleryScript
 
     def iterateOverBody(heap, s, parentAddr)
       body = (s[:body] || []).map(&:deep_symbolize_keys)
-      body.present? && heap.put(parentAddr, BODY, "" + (parentAddr + 1).to_s)
+      !body.none? && heap.put(parentAddr, BODY, "" + (parentAddr + 1).to_s)
       recurse_into_body(heap, 0, parentAddr, body)
     end
 
