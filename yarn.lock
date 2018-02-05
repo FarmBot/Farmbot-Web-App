@@ -844,6 +844,10 @@ browser-resolve@^1.11.2:
   dependencies:
     resolve "1.1.7"
 
+browser-speech@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/browser-speech/-/browser-speech-1.0.1.tgz#83b0509951b8ddef7e24a3f0a48ec9b6e2637215"
+
 browserify-aes@^1.0.0, browserify-aes@^1.0.4:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/browserify-aes/-/browserify-aes-1.1.1.tgz#38b7ab55edb806ff2dcda1a7f1620773a477c49f"
