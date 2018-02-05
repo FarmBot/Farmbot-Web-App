@@ -16,12 +16,6 @@ class StoreCelery < Mutations::Command
       sequence.edge_nodes.destroy_all
       first_pass  = FirstPass.run!(nodes: flat_ir, sequence: sequence)
       second_pass = CeleryScript::SecondPass.run!(nodes: first_pass)
-      first_pass
-        .map do |x|
-          nextt = first_pass[x[:next]]
-          raise "FirstPass is broke - `next` node of #{x[:kind]} has a parent_arg_name. It shouldnt tho" if nextt[:instance].parent_arg_name
-        end
-      binding.pry if second_pass.map{|x| x.next.parent_arg_name}.compact.present?
       second_pass.map(&:save!)
     end
   end

@@ -24,9 +24,9 @@ module CeleryScript
         # needed when we run the second pass (resolve parent/child nodes).
         # `:instance` represents a `PrimaryNode` that is missing information
         # which can only be resolved after all nodes have been processed.
-        item[:instance] = PrimaryNode.new(kind:       item[:kind],
-                                          sequence:   sequence,
-                                          edge_nodes: edge_nodes)
+        instance = PrimaryNode.new(kind:       item[:kind],
+                                   sequence:   sequence,
+                                   edge_nodes: edge_nodes)
       end
       flat_ir
     end

@@ -15,14 +15,14 @@ describe CeleryScript::FirstPass do
   body   = CeleryScript::Slicer::BODY
 
   CORRECT_LINKAGE = { # Came from the JS implementation which is known good.
-    0 => { kind => "nothing",           parent => 0             },
+    0 => { kind => "nothing",           parent => 0, next_ => 0 },
     1 => { kind => "sequence",          parent => 0, body  => 2 },
     2 => { kind => "move_absolute",     parent => 1, next_ => 3 },
-    3 => { kind => "coordinate",        parent => 2             },
-    4 => { kind => "coordinate",        parent => 2             },
+    3 => { kind => "coordinate",        parent => 2, next_ => 0 },
+    4 => { kind => "coordinate",        parent => 2, next_ => 0 },
     5 => { kind => "move_relative",     parent => 2, next_ => 6 },
     6 => { kind => "write_pin",         parent => 5, next_ => 0 },
-    7 => { kind => "scope_declaration", parent => 1             }
+    7 => { kind => "scope_declaration", parent => 1, next_ => 0 }
   }
 
   fit "Hmmm..." do
