@@ -44,6 +44,8 @@ describe CeleryScript::FetchCelery do
         y = expected[:body][index]
         expect(HashDiff.diff(x, y)).to eq([])
       end
-    expect(HashDiff.diff(actual, expected)).to eq([])
+      expected[:args][:locals][:body] ||= []
+      actual[:args][:locals][:body]   ||= []
+      expect(HashDiff.diff(actual, expected)).to eq([])
   end
 end

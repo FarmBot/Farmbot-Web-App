@@ -23,8 +23,8 @@ class SecondPass < Mutations::Command
   end
 
   def validate
+    # We need to know our own index.
     nodes.each_with_index do |node, index| node[:my_index] = index end
-    puts "=" * 100
   end
 
   def execute
@@ -41,7 +41,7 @@ class SecondPass < Mutations::Command
     # Set arg nodes (edge nodes?)
     add_edge_args(node)
     # Save edge nodes
-    add_next_node(node)
+    maybe_set_next_id(node)
     instance = node[:instance]
     instance.save! if instance.changed?
     instance
@@ -83,19 +83,32 @@ class SecondPass < Mutations::Command
 
   HMM = ["sequence", "move_absolute", "move_relative", "write_pin"]
 
-  def add_next_node(node)
+  # This method will (maybe) link a node to the next item in a `body`.
+  def maybe_set_next_id(node)
+    # If a node has a parent_arg_name, it lives in the `args`, not the `body`
     no_arg_name        = !node[:instance].parent_arg_name
+    return unless no_arg_name
+    # If a node has a `body`, it is the top level parent.
+    # It is not a body item and requires no linkage
     no_body            = nodes[node[:parent]][:kind] != "nothing"
-    is_first_body_item = nodes[node[:parent]][:body] == node[:my_index]
+    # If it's not an arg and not the top of a body, let's link it.
+    should_link        = (no_arg_name && no_body)
 
-    puts """
-     = = = #{node[:kind]} = =
-     Action:    #{(no_arg_name && no_body) ? "LINK" : "RETURN"}
-     Parent:    #{(nodes[node[:parent]] || {})[:kind] || "NIL!?!?!"}
-     Next:      #{(nodes[node[:next]] || {})[:kind] || "NIL!?!?!"}
-     Body:      #{(nodes[node[:body]] || {})[:kind] || "NIL!?!?!"}
-    """
-    return if no_arg_name || no_body# Irrelevant leaf node.
+    next_one = extract_next_node(node)[:instance]
+    next_one.save! unless next_one.id
+
+    this_one = node[:instance]
+    this_one.update_attributes!(next_id: next_one.id)
+  end
+
+  def extract_next_node(node)
+    nodes.find do |x|
+      no_parent_arg = !x[:instance].parent_arg_name
+      no_body       = (x[:body] === 0)
+      is_my_child   = (x[:parent] == node[:my_index])
+
+      no_parent_arg && no_body && is_my_child
+    end || nodes[0]
   end
 end
 end
