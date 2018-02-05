@@ -99,6 +99,7 @@ export interface FirmwareConfig {
   pin_guard_5_active_state: number;
   pin_guard_5_pin_nr: number;
   pin_guard_5_time_out: number;
+  api_migrated: boolean;
 }
 
 export type NumberConfigKey = "id"
@@ -195,3 +196,5 @@ export type NumberConfigKey = "id"
 
 export type StringConfigKey = "created_at"
     |"updated_at";
+
+export type BooleanConfigKey = "api_migrated";
