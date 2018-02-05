@@ -15,12 +15,11 @@ class PrimaryNode < ApplicationRecord
                 message:   BAD_KIND,
                 allow_nil: true}
 
-  validate :next_id, :next_must_be_body_node
+  before_save :next_must_be_body_node
 
   def next_must_be_body_node
     raise "NO!" if(next_id && self.class.find(next_id).parent_arg_name)
   rescue => x
-    puts x.backtrace.reverse.select{ |x| x.include?("/app") }.to_yaml
     errors.add("The `next` node is supposed to be for nodes in a [body]. " +
       "The node has a `parent_arg_name`, suggesting it belongs elsewhere.")
   end

@@ -19,9 +19,7 @@ module CeleryScript
     end
 
     def find_node(id) # Use `next_id`, `id`, `body_id`, `parent_id`
-      return primary_nodes
-        .by
-        .id[id]
+      return (primary_nodes.by.id[id] || [])
         .select{|x| x.kind != "nothing"}
         .first
     end

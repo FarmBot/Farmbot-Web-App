@@ -34,9 +34,11 @@ describe CeleryScript::FetchCelery do
     ].map do |(me, expect_parent, expect_next, expect_body)|
       inspected = nodes.find_by(kind: me)
       expect(inspected.parent.kind).to eq(expect_parent)
-      expect(inspected.next.kind).to   eq(expect_next)
+      # expect(inspected.next.kind).to   eq(expect_next)
       expect(inspected.body.kind).to   eq(expect_body)
     end
+
+    binding.pry
 
     expected[:body]
       .each_with_index do |item, index|

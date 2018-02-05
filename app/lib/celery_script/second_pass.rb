@@ -55,10 +55,11 @@ class SecondPass < Mutations::Command
 
   def attach_primary_args(node)
     node[:primary_nodes]
-      .to_a
-      .map do |(parent_arg_name, value)|
+    .to_a
+    .map do |(parent_arg_name, value)|
         instance = nodes[value][:instance]
         instance.update_attributes!(parent_arg_name: parent_arg_name)
+        # binding.pry if node[:instance].kind == "move_absolute"
       end
   end
 
@@ -69,10 +70,9 @@ class SecondPass < Mutations::Command
       body   = get_node(node[:body]),
       next_  = get_node(node[:next]),
     ].map { |linked_node| linked_node.save! unless linked_node.id }
-    instance
-      .update_attributes!(parent_id: parent.id,
-                          body_id:   body.id,
-                          next_id:   next_.id)
+    update_params = { parent_id: parent.id, body_id: body.id }
+    # update_params[:next_id] = next_.id unless instance.parent_arg_name
+    instance.update_attributes!(update_params)
   end
 
   # Returns the node that is passed in unless it's a "nothing" node.

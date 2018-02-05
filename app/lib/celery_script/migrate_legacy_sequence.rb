@@ -1,23 +1,23 @@
 module CeleryScript
   class MigrateLegacySequence < Mutations::Command
 
-  required do
-    model :sequence, class: Sequence
-  end
-
-  def execute
-    if !sequence.migrated_nodes
-      migrate!
-      sequence.update_attributes!(migrated_nodes: true)
-      sequence.reload
+    required do
+      model :sequence, class: Sequence
     end
-    sequence
-  end
 
-private
+    def execute
+      if !sequence.migrated_nodes
+        migrate!
+        sequence.update_attributes!(migrated_nodes: true)
+        sequence.reload
+      end
+      sequence
+    end
 
-  def migrate!
-    StoreCelery.run!(sequence: sequence)
+  private
+
+    def migrate!
+      StoreCelery.run!(sequence: sequence)
+    end
   end
-end
 end
