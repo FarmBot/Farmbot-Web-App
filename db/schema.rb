@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180201031848) do
+ActiveRecord::Schema.define(version: 20180205173255) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,17 @@ ActiveRecord::Schema.define(version: 20180201031848) do
     t.datetime "last_saw_api"
     t.datetime "last_saw_mq"
     t.index ["timezone"], name: "index_devices_on_timezone"
+  end
+
+  create_table "edge_nodes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "sequence_id", null: false
+    t.bigint "primary_node_id", null: false
+    t.string "kind", limit: 50
+    t.string "value", limit: 300
+    t.index ["primary_node_id"], name: "index_edge_nodes_on_primary_node_id"
+    t.index ["sequence_id"], name: "index_edge_nodes_on_sequence_id"
   end
 
   create_table "farm_events", id: :serial, force: :cascade do |t|
@@ -166,6 +177,7 @@ ActiveRecord::Schema.define(version: 20180201031848) do
     t.integer "pin_guard_5_active_state", default: 1
     t.integer "pin_guard_5_pin_nr", default: 0
     t.integer "pin_guard_5_time_out", default: 60
+    t.boolean "api_migrated", default: false
     t.index ["device_id"], name: "index_firmware_configs_on_device_id"
   end
 
@@ -239,6 +251,21 @@ ActiveRecord::Schema.define(version: 20180201031848) do
     t.index ["pointer_type", "pointer_id"], name: "index_points_on_pointer_type_and_pointer_id"
   end
 
+  create_table "primary_nodes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "sequence_id", null: false
+    t.string "kind", limit: 50
+    t.bigint "body_id"
+    t.bigint "parent_id"
+    t.string "parent_arg_name", limit: 50
+    t.bigint "next_id"
+    t.index ["body_id"], name: "index_primary_nodes_on_body_id"
+    t.index ["next_id"], name: "index_primary_nodes_on_next_id"
+    t.index ["parent_id"], name: "index_primary_nodes_on_parent_id"
+    t.index ["sequence_id"], name: "index_primary_nodes_on_sequence_id"
+  end
+
   create_table "regimen_items", id: :serial, force: :cascade do |t|
     t.bigint "time_offset"
     t.integer "regimen_id"
@@ -272,6 +299,7 @@ ActiveRecord::Schema.define(version: 20180201031848) do
     t.text "body"
     t.datetime "updated_at"
     t.datetime "created_at"
+    t.boolean "migrated_nodes", default: false
     t.index ["created_at"], name: "index_sequences_on_created_at"
     t.index ["device_id"], name: "index_sequences_on_device_id"
   end
@@ -368,10 +396,12 @@ ActiveRecord::Schema.define(version: 20180201031848) do
     t.index ["device_id"], name: "index_webcam_feeds_on_device_id"
   end
 
+  add_foreign_key "edge_nodes", "sequences"
   add_foreign_key "log_dispatches", "devices"
   add_foreign_key "log_dispatches", "logs"
   add_foreign_key "peripherals", "devices"
   add_foreign_key "points", "devices"
+  add_foreign_key "primary_nodes", "sequences"
   add_foreign_key "sequence_dependencies", "sequences"
   add_foreign_key "tool_slots", "tools"
 end
