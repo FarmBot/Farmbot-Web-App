@@ -16,12 +16,12 @@ module CeleryScript
       flat_ir
         .each do |node|
           node[:instance] = PrimaryNode
-            .create!(kind: node[CeleryScript::Slicer::KIND], sequence: sequence)
+            .create!(kind: node[CeleryScript::CSHeap::KIND], sequence: sequence)
         end
         .map do |node|
           model = node[:instance]
-          model.body_id   = fetch_sql_id_for(CeleryScript::Slicer::BODY,   node)
-          model.parent_id = fetch_sql_id_for(CeleryScript::Slicer::PARENT, node)
+          model.body_id   = fetch_sql_id_for(CeleryScript::CSHeap::BODY,   node)
+          model.parent_id = fetch_sql_id_for(CeleryScript::CSHeap::PARENT, node)
           model
         end
         .map do |model|
@@ -29,7 +29,9 @@ module CeleryScript
           # However, they might be args rather than true `next` body nodes.
           children = flat_ir.select { |x| x[:instance].parent_id == model.id }
           model.next_id   = children.last[:instance].id
-          # model.parent_arg_name = flat_ir[node[CeleryScript::Slicer::BODY]]
+          binding.pry
+
+          # model.parent_arg_name = flat_ir[node[CeleryScript::CSHeap::BODY]]
         end
       #   .each do |item|
       #   # Edge nodes are primitive values.
@@ -37,7 +39,7 @@ module CeleryScript
       #   edge_nodes = item[:edge_nodes] # No longer used.
       #     .to_a
       #     .select do |(key, value)|
-      #       key.to_s.start_with?(CeleryScript::Slicer::LINK)
+      #       key.to_s.start_with?(CeleryScript::CSHeap::LINK)
       #     end
       #     .tap{ |x| binding.pry if x.present? }
       #     .map do |(kind, value)|

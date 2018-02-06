@@ -6,6 +6,31 @@
 # MORE INFO: https://github.com/FarmBot-Labs/Celery-Slicer
 module CeleryScript
   class CSHeap
+    # Nodes that point to other nodes rather than primitive data types (eg:
+    # `locals` and friends) will be prepended with a "🔗".
+    LINK   = "🔗"
+    # Points to the originator of an `arg` or `body` node.
+    PARENT = LINK + "parent"
+    BODY   = LINK + "body"
+    NEXT   = LINK + "next"
+    KIND   = :__KIND__
+
+    # Keys that primary nodes must have
+    PRIMARY_FIELDS = [PARENT, BODY, KIND, NEXT]
+
+    # Index 0 of the heap represents a null pointer of sorts. If a field points to
+    # this address, it is considered empty.
+    NULL    = 0
+
+    # What you will find at index 0 of the heap:
+    NOTHING = {
+      PARENT => NULL,
+      BODY   => NULL,
+      NEXT   => NULL,
+      KIND   => "nothing"
+    }
+
+
     # A single node in the CeleryScript tree, as stored in the heap.
     # It's a collection of key/value pairs, a parent index, a body index and a
     # __KIND__ key.
@@ -15,21 +40,9 @@ module CeleryScript
     # is currently being edited.
     attr_accessor :here
 
-    # Index 0 of the heap represents a null pointer of sorts. If a field points to
-    # this address, it is considered empty.
-    NULL    = 0
-
-    # What you will find at index 0 of the heap:
-    NOTHING = {
-      CeleryScript::Slicer::PARENT => NULL,
-      CeleryScript::Slicer::BODY   => NULL,
-      CeleryScript::Slicer::NEXT   => NULL,
-      CeleryScript::Slicer::KIND   => "nothing"
-    }
-
     # Set "here" to "null". Prepopulates "here" with an empty entry.
     def initialize
-      @here    = CSHeap::NULL
+      @here    = NULL
       @entries = { @here => NOTHING }
     end
 
@@ -62,10 +75,10 @@ module CeleryScript
       return values
       # .map do |input|
       #     output = {
-      #       kind:   input[Slicer::KIND],
-      #       parent: (input[Slicer::PARENT.to_s] || "0").to_i,
-      #       body:   (input[Slicer::BODY.to_s ] || "0").to_i,
-      #       next:   (input[Slicer::NEXT.to_s ] || "0").to_i,
+      #       kind:   input[KIND],
+      #       parent: (input[PARENT.to_s] || "0").to_i,
+      #       body:   (input[BODY.to_s ] || "0").to_i,
+      #       next:   (input[NEXT.to_s ] || "0").to_i,
       #       primary_nodes:    {},
       #       edge_nodes:       {}
       #     }

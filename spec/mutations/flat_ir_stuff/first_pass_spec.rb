@@ -1,5 +1,6 @@
 require "spec_helper"
 require_relative "./flat_ir_helpers"
+require_relative "../../../app/lib/celery_script/slicer"
 
 describe CeleryScript::FirstPass do
   let :result do
@@ -9,10 +10,10 @@ describe CeleryScript::FirstPass do
     CeleryScript::FlatIrHelpers.fake_first_pass
   end
 
-  kind   = CeleryScript::Slicer::KIND
-  parent = CeleryScript::Slicer::PARENT
-  next_  = CeleryScript::Slicer::NEXT
-  body   = CeleryScript::Slicer::BODY
+  kind   = CeleryScript::CSHeap::KIND
+  parent = CeleryScript::CSHeap::PARENT
+  next_  = CeleryScript::CSHeap::NEXT
+  body   = CeleryScript::CSHeap::BODY
 
   CORRECT_LINKAGE = { # Came from the JS implementation which is known good.
     0 => { kind => "nothing",           parent => 0, next_ => 0 },
