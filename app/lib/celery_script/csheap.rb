@@ -21,12 +21,24 @@ module CeleryScript
       "HeapAddress(#{value})"
     end
 
-    def ==(val)
-      self.value == val
+    def hash
+      self.value
+    end
+
+    def ==(other)
+      self.value == other.value
+    end
+
+    def eql?(other)
+      self.value == other.value
     end
 
     def +(val)
       HeapAddress[@value + 1]
+    end
+
+    def -(val)
+      HeapAddress[@value - 1]
     end
 
     def is_address?
@@ -36,12 +48,16 @@ module CeleryScript
     def to_i
       @value
     end
+
+    def to_s
+      @value.to_s
+    end
   end
 
   class CSHeap
     # Nodes that point to other nodes rather than primitive data types (eg:
     # `locals` and friends) will be prepended with a "🔗".
-    LINK   = "🔗"
+    LINK   = ""
     # Points to the originator (parent) of an `arg` or `body` node.
     PARENT = LINK + "parent"
     # Points to the first element in the `body``
@@ -61,10 +77,10 @@ module CeleryScript
 
     # What you will find at index 0 of the heap:
     NOTHING = {
+      KIND   => "nothing",
       PARENT => NULL,
       BODY   => NULL,
-      NEXT   => NULL,
-      KIND   => "nothing"
+      NEXT   => NULL
     }
 
 
