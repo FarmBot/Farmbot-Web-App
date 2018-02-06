@@ -24,30 +24,30 @@ describe CeleryScript::FirstPass do
     6 => { kind => "write_pin",         parent => 5, next_ => 0 },
     7 => { kind => "scope_declaration", parent => 1, next_ => 0 }
   }
+  puts "FIX THIS"
+  # it "Hmmm..." do
+  #   pending("This might not be right anymore")
+  #   x        = CeleryScript::FlatIrHelpers.typical_sequence
+  #   sequence = FactoryBot.create(:sequence, args: x[:args], body: x[:body])
+  #   step1    = CeleryScript::FirstPass.run!(sequence: sequence)
 
-  it "Hmmm..." do
-    pending("This might not be right anymore")
-    x        = CeleryScript::FlatIrHelpers.typical_sequence
-    sequence = FactoryBot.create(:sequence, args: x[:args], body: x[:body])
-    step1    = CeleryScript::FirstPass.run!(sequence: sequence)
-
-    CORRECT_LINKAGE.to_a.map do |(index, correct)|
-      real = step1[index]
-      [
-        [real[:kind  ], correct[kind  ], kind  ],
-        [real[:parent], correct[parent], parent],
-        [real[:next  ], correct[next_ ], next_ ],
-        [real[:body  ], correct[body  ], body  ],
-      ]
-      .each_with_index do |(actual, expected, key), index|
-      be_right = [
-        eq(expected || 0),
-        "Expected #{key} at index #{index} to be #{expected} got #{actual}"
-      ]
-      expect(actual).to(*be_right)
-    end
-    end
-  end
+  #   CORRECT_LINKAGE.to_a.map do |(index, correct)|
+  #     real = step1[index]
+  #     [
+  #       [real[:kind  ], correct[kind  ], kind  ],
+  #       [real[:parent], correct[parent], parent],
+  #       [real[:next  ], correct[next_ ], next_ ],
+  #       [real[:body  ], correct[body  ], body  ],
+  #     ]
+  #     .each_with_index do |(actual, expected, key), index|
+  #     be_right = [
+  #       eq(expected || 0),
+  #       "Expected #{key} at index #{index} to be #{expected} got #{actual}"
+  #     ]
+  #     expect(actual).to(*be_right)
+  #   end
+  #   end
+  # end
 
   it "travels up the tree via the `parent` property" do
     espeak_node = result.find do |x|

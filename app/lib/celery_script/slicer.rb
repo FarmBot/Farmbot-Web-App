@@ -1,3 +1,4 @@
+require_relative "./csheap.rb"
 # ORIGINAL IMPLEMENTATION HERE: https://github.com/FarmBot-Labs/Celery-Slicer
 # Take a nested ("canonical") representation of a CeleryScript sequence and
 # transofrms it to a flat/homogenous intermediate representation which is better
@@ -18,7 +19,7 @@ module CeleryScript
 
     def run!(node)
       raise "Not a hash" unless node.is_a?(Hash)
-      heap = CSHeap.new()
+      heap = CeleryScript::CSHeap.new()
       allocate(heap, node, CSHeap::NULL)
       @heap_values = heap.values
       heap.dump()

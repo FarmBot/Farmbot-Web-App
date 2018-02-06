@@ -29,26 +29,28 @@ describe Api::SequencesController do
       expect(response.status).to eq(404)
     end
 
-   it 'allows deletion of recurive sequences' do
-     sign_in user
-     s = Sequences::Create.run!({ device: user.device,
+    it 'allows deletion of recurive sequences' do
+      sign_in user
+      s = Sequences::Create.run!({device: user.device,
                                   name: "Rick-cursion", body: [] })
-     patch :update,
-           params: {id: s.id },
-           body: {"sequence" => {
-                  "body" => [{"kind"=>"execute",
-                              "args"=>{ "sequence_id"=>s.id }}]}}.to_json,
-           as: :json
+      body = {
+        sequence: { body: [{ kind: "execute", args: { sequence_id: s[:id] } }] }
+      }.to_json
 
-     sequence.reload
-     input = { id: sequence.id }
-     before = Sequence.count
-     delete :destroy, params: input
-     after  = Sequence.count
-     expect(response.status).to eq(200)
-     expect(after).to be < before
-     expect { s.reload }.to(raise_error(ActiveRecord::RecordNotFound))
-   end
+      patch :update,
+            params: {id: s[:id] },
+            body: body,
+            as: :json
+
+      sequence.reload
+      input = { id: sequence.id }
+      before = Sequence.count
+      delete :destroy, params: input
+      after  = Sequence.count
+      expect(response.status).to eq(200)
+      expect(after).to be < before
+      expect { Sequence.find(s[:id]) }.to(raise_error(ActiveRecord::RecordNotFound))
+    end
 
     it 'does not destroy a sequence when in use by a sequence' do
       before = SequenceDependency.count

@@ -84,7 +84,8 @@ module CeleryScript
         name:       sequence.name,
         color:      sequence.color,
         created_at: sequence.created_at,
-        updated_at: sequence.updated_at
+        updated_at: sequence.updated_at,
+        args: { is_outdated: false }
       }
     end
 
@@ -97,11 +98,12 @@ module CeleryScript
     def validate
       MigrateLegacySequence.run!(sequence: sequence)
       root_node = primary_nodes.by.kind["sequence"]
-      add_error :bad_sequence, :bad, NO_SEQUENCE if !root_node
+      add_error :bad_sequence, :bad, NO_SEQUENCE unless root_node
     end
 
     def execute
-      return misc_fields.merge!(recurse_into_node(entry_node)).deep_symbolize_keys
+      h = misc_fields.merge!(recurse_into_node(entry_node))
+      return HashWithIndifferentAccess.new(h)
     end
   end
 end

@@ -54,8 +54,7 @@ module CeleryScript
     # Dump the heap as an easy-to-traverse JSON object.
     # We need this to reconstruct the node from its IR form to its canonical form.
     def dump
-      return values
-        .map do |input|
+      return values.map do |input|
           output = {
             kind:   input[Slicer::KIND],
             parent: (input[Slicer::PARENT.to_s] || "0").to_i,
