@@ -8,6 +8,12 @@
 #   Remaining nodes are created in the `SecondPass` phase.
 module CeleryScript
   class FirstPass < Mutations::Command
+    B = CeleryScript::CSHeap::BODY
+    K = CeleryScript::CSHeap::KIND
+    L = CeleryScript::CSHeap::LINK
+    N = CeleryScript::CSHeap::NEXT
+    P = CeleryScript::CSHeap::PARENT
+
     required do
       model :sequence, class: Sequence
     end
@@ -16,12 +22,12 @@ module CeleryScript
       flat_ir
         .each do |node|
           node[:instance] = PrimaryNode
-            .create!(kind: node[CeleryScript::CSHeap::KIND], sequence: sequence)
+            .create!(kind: node[K], sequence: sequence)
         end
         .map do |node|
           model = node[:instance]
-          model.body_id   = fetch_sql_id_for(CeleryScript::CSHeap::BODY,   node)
-          model.parent_id = fetch_sql_id_for(CeleryScript::CSHeap::PARENT, node)
+          model.body_id   = fetch_sql_id_for(B,   node)
+          model.parent_id = fetch_sql_id_for(P, node)
           model
         end
         .map do |model|
@@ -34,31 +40,32 @@ module CeleryScript
 
       primary_data = flat_ir
         .map {|x| x.without(*CeleryScript::CSHeap::PRIMARY_FIELDS, :instance)}
-        .map {|x| x.to_a.select {|(key, val)| key.to_s.starts_with?(CeleryScript::CSHeap::LINK)}.to_h }
+        .map {|x| x.to_a.select {|(key, val)| key.to_s.starts_with?(L)}.to_h }
         .map(&:invert)
 
       flat_ir
         .each_with_index do |node, flat_ir_index|
-          maybe_primary_data = primary_data[node[CeleryScript::CSHeap::PARENT].to_i][flat_ir_index.to_s]
-          node[:instance].parent_arg_name = maybe_primary_data.gsub(CeleryScript::CSHeap::LINK, "") if maybe_primary_data
+          maybe_primary_data = primary_data[node[P].to_i][flat_ir_index.to_s]
+          node[:instance].parent_arg_name = maybe_primary_data.gsub(L, "") if maybe_primary_data
         end
 
       edge_data = flat_ir
         .map {|x| x.without(*CeleryScript::CSHeap::PRIMARY_FIELDS, :instance)}
-        .map {|x| x.to_a.select {|(key, val)| !key.to_s.starts_with?(CeleryScript::CSHeap::LINK)}.to_h }
+        .map {|x| x.to_a.select {|(key, val)| !key.to_s.starts_with?(L)}.to_h }
         .map(&:invert)
 
-      binding.pry unless edge_data.empty?
-
+      puts "TODO: Set `next` to `nothing` if `body.kind === 'nothing'` "
+      puts "TODO: Make sure primary nodes are all wired up."
+      puts "TODO: Attach edge nodes to primary nodes"
+      raise "DO NOT PROCEEEEDEEE"
       #   .each do |item|
       #   # Edge nodes are primitive values.
       #   # We can instantiate all EdgeNodes on the first pass easily.
       #   edge_nodes = item[:edge_nodes] # No longer used.
       #     .to_a
       #     .select do |(key, value)|
-      #       key.to_s.start_with?(CeleryScript::CSHeap::LINK)
+      #       key.to_s.start_with?(L)
       #     end
-      #     .tap{ |x| binding.pry if x.present? }
       #     .map do |(kind, value)|
       #       EdgeNode.new(kind: kind, value: value, sequence: sequence)
       #     end
@@ -78,7 +85,10 @@ module CeleryScript
 private
 
     def fetch_sql_id_for(node_key, node)
-      flat_ir[node[node_key].to_i][:instance].id
+      index = node[node_key].to_i
+      flat_ir[index][:instance].id
+    rescue => q
+      binding.pry
     end
 
     def flat_ir

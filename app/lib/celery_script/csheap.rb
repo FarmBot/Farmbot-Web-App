@@ -1,18 +1,55 @@
 # A heap-ish data structure required when converting canonical CeleryScript AST
 # nodes into the Flat IR form.
-# This data strcutre is useful because it addresses each node in the
+# This data structure is useful because it addresses each node in the
 # CeleryScript tree via a unique numerical index, rather than using mutable
 # references.
 # MORE INFO: https://github.com/FarmBot-Labs/Celery-Slicer
 module CeleryScript
+  class HeapAddress
+    attr_reader :value
+
+    def initialize(value)
+      raise "BAD INPUT" unless value.is_a?(Integer)
+      @value = value.to_i
+    end
+
+    def self.[](value)
+      return self.new(value)
+    end
+
+    def inspect
+      "HeapAddress(#{value})"
+    end
+
+    def ==(val)
+      self.value == val
+    end
+
+    def +(val)
+      HeapAddress[@value + 1]
+    end
+
+    def is_address?
+      true
+    end
+
+    def to_i
+      @value
+    end
+  end
+
   class CSHeap
     # Nodes that point to other nodes rather than primitive data types (eg:
     # `locals` and friends) will be prepended with a "🔗".
     LINK   = "🔗"
-    # Points to the originator of an `arg` or `body` node.
+    # Points to the originator (parent) of an `arg` or `body` node.
     PARENT = LINK + "parent"
+    # Points to the first element in the `body``
     BODY   = LINK + "body"
+    # (Broke?) Points to the next node in the body chain. Pointing to NOTHING
+    # indicates the end of the body linked list.
     NEXT   = LINK + "next"
+    # Unique key name. See `celery_script_settings_bag.rb`
     KIND   = :__KIND__
 
     # Keys that primary nodes must have
@@ -20,7 +57,7 @@ module CeleryScript
 
     # Index 0 of the heap represents a null pointer of sorts. If a field points to
     # this address, it is considered empty.
-    NULL    = 0
+    NULL    = HeapAddress[0]
 
     # What you will find at index 0 of the heap:
     NOTHING = {
@@ -31,7 +68,7 @@ module CeleryScript
     }
 
 
-    # A single node in the CeleryScript tree, as stored in the heap.
+    # A dictionary of nodes in the CeleryScript tree, as stored in the heap.
     # It's a collection of key/value pairs, a parent index, a body index and a
     # __KIND__ key.
     attr_accessor :entries
@@ -56,6 +93,7 @@ module CeleryScript
     # augment a heap entry with a new key/value pair.
     # Throws an exception when given a bad heap index.
     def put(address, key, value)
+      address.is_address?
       block = entries[address]
       if (block)
         block[key] = value
@@ -65,6 +103,7 @@ module CeleryScript
       end
     end
 
+    # Just an alias
     def values
       entries.values
     end
