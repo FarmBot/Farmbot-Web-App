@@ -7,6 +7,6 @@ describe Points::Destroy do
     result = Points::Destroy.run(points: [s.tool_slot], device: s.device)
     expect(result.success?).to be(false)
     expect(result.errors.message_list)
-      .to include(Points::Destroy::STILL_IN_USE % s.sequence.name)
+      .to include(Points::Destroy::STILL_IN_USE % s.sequence[:name])
   end
 end

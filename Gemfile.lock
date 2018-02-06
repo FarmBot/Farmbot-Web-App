@@ -142,6 +142,7 @@ GEM
       multi_json (~> 1.11)
       os (~> 0.9)
       signet (~> 0.7)
+    hashdiff (0.3.7)
     httpclient (2.8.3)
     i18n (0.9.1)
       concurrent-ruby (~> 1.0)
@@ -324,6 +325,7 @@ DEPENDENCIES
   figaro
   fog-google!
   foreman
+  hashdiff
   jwt
   letter_opener
   mutations
@@ -353,4 +355,4 @@ RUBY VERSION
    ruby 2.4.2p198
 
 BUNDLED WITH
-   1.16.0
+   1.16.1

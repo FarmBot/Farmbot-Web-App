@@ -190,8 +190,8 @@ describe Api::SequencesController do
 
     it 'tracks Points' do
       point = FactoryBot.create(:point, device: user.device)
-      SequenceDependency.delete_all
-      Sequence.delete_all
+      SequenceDependency.destroy_all
+      Sequence.destroy_all
       old_count = SequenceDependency.count
       HAS_POINTS["body"][0]["args"]["location"]["args"]["pointer_id"] =
         point.id

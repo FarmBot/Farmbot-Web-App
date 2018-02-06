@@ -35,6 +35,8 @@ class Sequence < ApplicationRecord
   has_many  :farm_events, as: :executable
   has_many  :regimen_items
   has_many  :sequence_dependencies, dependent: :destroy
+  has_many  :primary_nodes,         dependent: :destroy
+  has_many  :edge_nodes,            dependent: :destroy
   serialize :body, CustomSerializer.new(Array)
   serialize :args, CustomSerializer.new(Hash)
 
@@ -48,7 +50,7 @@ class Sequence < ApplicationRecord
 
   # http://stackoverflow.com/a/5127684/1064917
   before_validation :set_defaults
-
+  around_destroy :delete_nodes_too
   def set_defaults
     self.args              = {}.merge(DEFAULT_ARGS).merge(self.args)
     self.color           ||= "gray"
@@ -58,6 +60,7 @@ class Sequence < ApplicationRecord
   def maybe_migrate
     # spot check with Sequence.order("RANDOM()").first.maybe_migrate
     Sequences::Migrate.run!(sequence: self, device: self.device)
+    CeleryScript::MigrateLegacySequence.run!(sequence: self)
   end
 
   def self.random
@@ -71,4 +74,13 @@ class Sequence < ApplicationRecord
       .slice(:kind, :args, :body)
     CeleryScript::JSONClimber.climb(hash, &blk)
   end
+
+  def delete_nodes_too
+    Sequence.transaction do
+      PrimaryNode.where(sequence_id: self.id).destroy_all
+      EdgeNode.where(sequence_id: self.id).destroy_all
+      yield
+    end
+  end
+
 end

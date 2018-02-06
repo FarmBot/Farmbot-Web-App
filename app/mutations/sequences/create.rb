@@ -36,7 +36,8 @@ module Sequences
         seq.save!
         reload_dependencies(seq)
       end
-      seq
+      CeleryScript::StoreCelery.run!(sequence: seq)
+      CeleryScript::FetchCelery.run!(sequence: seq.reload) # Perf nightmare?
     end
   end
 end

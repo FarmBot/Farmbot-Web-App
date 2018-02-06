@@ -14,8 +14,35 @@ describe Sequences::Create do
 
   it 'Builds a `sequence`' do
     seq = Sequences::Create.run!(sequence_params)
-    expect(seq.name).to eq(name)
-    expect(seq.device).to eq(device)
+    expect(seq[:name]).to eq(name)
+    expect(Sequence.find(seq[:id]).device).to eq(device)
+  end
+  it 'has nested `channel` nodes in a sequence' do
+    pending("TODO")
+    example = {
+      name: "Broke Send Message Block?",
+      args: {
+        version:-999,
+        locals: {
+          kind: "scope_declaration",
+          args: {},
+          body: []
+        }
+      },
+      color: "gray",
+      kind: "sequence",
+      body: [
+        {
+        uuid: "4a02f7e1-c85d-4adc-8be3-04f8ceae09e3",
+        kind: "send_message",
+        args: {  message: "FarmBot is at position {{ x }}, {{ y }}, {{ z }}.", message_type: "busy" },
+        body: [
+          {kind: "channel", :args=>{channel_name: "toast"}},
+          {kind: "channel", :args=>{channel_name: "email"}},
+          {kind: "channel", :args=>{channel_name: "espeak"}}
+        ]
+      }
+      ]}
   end
 
   it 'Gives validation errors for malformed AST nodes' do
@@ -85,8 +112,8 @@ describe Sequences::Create do
       ]
     }
     seq = Sequences::Create.run!(app)
-    expect(seq.body.first[:body].first["kind"]).to eq("channel")
-    expect(seq.body.dig(0, :args, :message)).to eq("Hello, world!")
+    expect(seq[:body].first[:body].first["kind"]).to eq("channel")
+    expect(seq[:body].dig(0, :args, :message)).to eq("Hello, world!")
   end
 
   it "Strips UUIDs and other 'noises', leaves other attributes in tact. " do
@@ -114,10 +141,10 @@ describe Sequences::Create do
       device: device,
       color:  "gray",
       name:   "New Sequence",
-    }).reload
-    expected    = result.body.dig(0, "args", "location", "args")
+    })
+    expected    = result[:body].dig(0, "args", "location", "args")
     actual      = body.dig(0, "args", "location", "args")
-    extra_stuff = result.body.map{|x| x["uuid"]}.compact
+    extra_stuff = result[:body].map{|x| x["uuid"]}.compact
     expect(extra_stuff.length).to eq(0)
     expect(expected).to eq(actual)
   end
