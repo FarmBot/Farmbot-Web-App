@@ -295,7 +295,7 @@ ActiveRecord::Schema.define(version: 20180202165503) do
     t.string "color"
     t.string "kind", limit: 280, default: "sequence"
     t.text "args"
-    t.text "body"
+    t.text "body" # Legacy!
     t.datetime "updated_at"
     t.datetime "created_at"
     t.boolean "migrated_nodes", default: false

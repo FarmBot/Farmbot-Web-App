@@ -20,7 +20,12 @@ module CeleryScript
     NULL    = 0
 
     # What you will find at index 0 of the heap:
-    NOTHING = { __KIND__: "nothing" }
+    NOTHING = {
+      CeleryScript::Slicer::PARENT => NULL,
+      CeleryScript::Slicer::BODY   => NULL,
+      CeleryScript::Slicer::NEXT   => NULL,
+      CeleryScript::Slicer::KIND   => "nothing"
+    }
 
     # Set "here" to "null". Prepopulates "here" with an empty entry.
     def initialize
@@ -54,30 +59,32 @@ module CeleryScript
     # Dump the heap as an easy-to-traverse JSON object.
     # We need this to reconstruct the node from its IR form to its canonical form.
     def dump
-      return values.map do |input|
-          output = {
-            kind:   input[Slicer::KIND],
-            parent: (input[Slicer::PARENT.to_s] || "0").to_i,
-            body:   (input[Slicer::BODY.to_s ] || "0").to_i,
-            next:   (input[Slicer::NEXT.to_s ] || "0").to_i,
-            primary_nodes:    {},
-            edge_nodes:       {}
-          }
-          input
-          .except(*Slicer::PRIMARY_FIELDS)
-          .to_a
-          .map do |node|
-            key, value = *node
-            is_primary = key.to_s.start_with?(Slicer::LINK)
-            if is_primary
-              clean_key = key.gsub(Slicer::LINK, "")
-              output[:primary_nodes][clean_key] = JSON.parse(value)
-            else
-              output[:edge_nodes][key] = JSON.parse(value)
-            end
-          end
-          output.deep_symbolize_keys
-        end
-      end
+      return values
+      # .map do |input|
+      #     output = {
+      #       kind:   input[Slicer::KIND],
+      #       parent: (input[Slicer::PARENT.to_s] || "0").to_i,
+      #       body:   (input[Slicer::BODY.to_s ] || "0").to_i,
+      #       next:   (input[Slicer::NEXT.to_s ] || "0").to_i,
+      #       primary_nodes:    {},
+      #       edge_nodes:       {}
+      #     }
+      #     input
+      #     .except(*Slicer::PRIMARY_FIELDS)
+      #     .to_a
+      #     .map do |node|
+      #       key, value = *node
+      #       is_primary = key.to_s.start_with?(Slicer::LINK)
+      #       if is_primary
+      #         clean_key = key.gsub(Slicer::LINK, "")
+      #         output[:primary_nodes][clean_key] = JSON.parse(value)
+      #       else
+      #         output[:edge_nodes][key] = JSON.parse(value)
+      #       end
+      #     end
+      #     output.deep_symbolize_keys
+      #   end
+      # end
     end
   end
+end

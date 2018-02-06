@@ -19,13 +19,13 @@ module CeleryScript
 
     def run!(node)
       raise "Not a hash" unless node.is_a?(Hash)
-      heap = CeleryScript::CSHeap.new()
+      heap = CSHeap.new()
       allocate(heap, node, CSHeap::NULL)
       @heap_values = heap.values
       heap.dump()
     end
 
-    def isCeleryScript(node)
+    def is_celery_script(node)
       node && node.is_a?(Hash) && node[:args] && node[:kind]
     end
 
@@ -36,17 +36,17 @@ module CeleryScript
     def allocate(h, s, parentAddr)
       addr = h.allot(s[:kind])
       h.put(addr, PARENT, parentAddr.to_json)
-      iterateOverBody(h, s, addr)
-      iterateOverArgs(h, s, addr)
+      iterate_over_body(h, s, addr)
+      iterate_over_args(h, s, addr)
       addr
     end
 
-    def iterateOverArgs(h, s, parentAddr)
+    def iterate_over_args(h, s, parentAddr)
       (s[:args] || {})
         .keys
         .map do |key|
           v = s[:args][key]
-          if (isCeleryScript(v))
+          if (is_celery_script(v))
             k = LINK + key.to_s
             h.put(parentAddr, k, allocate(h, v, parentAddr).to_json)
           else
@@ -55,7 +55,7 @@ module CeleryScript
         end
     end
 
-    def iterateOverBody(heap, s, parentAddr)
+    def iterate_over_body(heap, s, parentAddr)
       body = (s[:body] || []).map(&:deep_symbolize_keys)
       !body.none? && heap.put(parentAddr, BODY, "" + (parentAddr + 1).to_s)
       recurse_into_body(heap, 0, parentAddr, body)

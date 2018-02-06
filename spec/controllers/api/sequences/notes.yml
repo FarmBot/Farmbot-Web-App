@@ -1,0 +1,90 @@
+# From nothing to nothing
+# From sequence to nothing
+# From move_absolute to coordinate (should be move abs)
+# From coordinate to nothing
+# From coordinate to nothing
+# From move_absolute to tool
+# From tool to nothing
+# From coordinate to nothing
+# From move_relative to write_pin
+# From write_pin to read_pin
+# From read_pin to wait
+# From wait to send_message
+# From send_message to channel
+# From channel to nothing
+# From _if to execute
+# From execute to nothing
+# From nothing to nothing
+# From execute to nothing
+# From scope_declaration to nothing
+---
+- kind: move_absolute
+  args:
+    location:
+      kind: coordinate
+      args:
+        x: 1
+        y: 2
+        z: 3
+    offset:
+      kind: coordinate
+      args:
+        x: 0
+        y: 0
+        z: 0
+    speed: 4
+- kind: move_absolute
+  args:
+    location:
+      kind: tool
+      args:
+        tool_id: 1
+    offset:
+      kind: coordinate
+      args:
+        x: 0
+        y: 0
+        z: 0
+    speed: 4
+- kind: move_relative
+  args:
+    x: 1
+    y: 2
+    z: 3
+    speed: 4
+- kind: write_pin
+  args:
+    pin_number: 1
+    pin_value: 128
+    pin_mode: 1
+- kind: read_pin
+  args:
+    pin_number: 1
+    label: my_pin
+    pin_mode: 1
+- kind: wait
+  args:
+    milliseconds: 500
+- kind: send_message
+  args:
+    message: Bot at coord {{ x }} {{ y }} {{ z }}.
+    message_type: info
+  body:
+  - kind: channel
+    args:
+      channel_name: toast
+- kind: _if
+  args:
+    lhs: x
+    rhs: 300
+    op: is
+    _then:
+      kind: execute
+      args:
+        sequence_id: 1
+    _else:
+      kind: nothing
+      args: {}
+- kind: execute
+  args:
+    sequence_id: 1
