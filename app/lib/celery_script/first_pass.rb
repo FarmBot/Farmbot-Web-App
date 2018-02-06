@@ -27,12 +27,29 @@ module CeleryScript
         .map do |model|
           # We do `.last` because many nodes have this node as a parent,
           # However, they might be args rather than true `next` body nodes.
-          children = flat_ir.select { |x| x[:instance].parent_id == model.id }
-          model.next_id   = children.last[:instance].id
-          binding.pry
-
-          # model.parent_arg_name = flat_ir[node[CeleryScript::CSHeap::BODY]]
+          children      = flat_ir.select { |x| x[:instance].parent_id == model.id }
+          next_child    = children.last
+          model.next_id = next_child[:instance].id if next_child
         end
+
+      primary_data = flat_ir
+        .map {|x| x.without(*CeleryScript::CSHeap::PRIMARY_FIELDS, :instance)}
+        .map {|x| x.to_a.select {|(key, val)| key.to_s.starts_with?(CeleryScript::CSHeap::LINK)}.to_h }
+        .map(&:invert)
+
+      flat_ir
+        .each_with_index do |node, flat_ir_index|
+          maybe_primary_data = primary_data[node[CeleryScript::CSHeap::PARENT].to_i][flat_ir_index.to_s]
+          node[:instance].parent_arg_name = maybe_primary_data.gsub(CeleryScript::CSHeap::LINK, "") if maybe_primary_data
+        end
+
+      edge_data = flat_ir
+        .map {|x| x.without(*CeleryScript::CSHeap::PRIMARY_FIELDS, :instance)}
+        .map {|x| x.to_a.select {|(key, val)| !key.to_s.starts_with?(CeleryScript::CSHeap::LINK)}.to_h }
+        .map(&:invert)
+
+      binding.pry unless edge_data.empty?
+
       #   .each do |item|
       #   # Edge nodes are primitive values.
       #   # We can instantiate all EdgeNodes on the first pass easily.
