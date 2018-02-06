@@ -5,18 +5,6 @@ require_relative "./csheap.rb"
 # suited for storage in a relation database.
 module CeleryScript
   class Slicer
-    # Nodes that point to other nodes rather than primitive data types (eg:
-    # `locals` and friends) will be prepended with a "🔗".
-    LINK   = "🔗"
-    # Points to the originator of an `arg` or `body` node.
-    PARENT = LINK + "parent"
-    BODY   = LINK + "body"
-    NEXT   = LINK + "next"
-    KIND   = :__KIND__
-
-    # Keys that primary nodes must have
-    PRIMARY_FIELDS = [PARENT, BODY, KIND, NEXT]
-
     def run!(node)
       raise "Not a hash" unless node.is_a?(Hash)
       heap = CSHeap.new()
@@ -35,7 +23,7 @@ module CeleryScript
 
     def allocate(h, s, parentAddr)
       addr = h.allot(s[:kind])
-      h.put(addr, PARENT, parentAddr.to_json)
+      h.put(addr, CSHeap::PARENT, parentAddr.to_json)
       iterate_over_body(h, s, addr)
       iterate_over_args(h, s, addr)
       addr
@@ -47,7 +35,7 @@ module CeleryScript
         .map do |key|
           v = s[:args][key]
           if (is_celery_script(v))
-            k = LINK + key.to_s
+            k = CSHeap::LINK + key.to_s
             h.put(parentAddr, k, allocate(h, v, parentAddr).to_json)
           else
               h.put(parentAddr, key, v.to_json)
@@ -57,7 +45,7 @@ module CeleryScript
 
     def iterate_over_body(heap, s, parentAddr)
       body = (s[:body] || []).map(&:deep_symbolize_keys)
-      !body.none? && heap.put(parentAddr, BODY, "" + (parentAddr + 1).to_s)
+      !body.none? && heap.put(parentAddr, CSHeap::BODY, "" + (parentAddr + 1).to_s)
       recurse_into_body(heap, 0, parentAddr, body)
     end
 
@@ -67,7 +55,7 @@ module CeleryScript
         next_index   = index + 1
         next_item    = list[next_index]
         next_address = (next_item) ? (me + 1) : 0
-        heap.put(me, NEXT, "" + next_address.to_s)
+        heap.put(me, CSHeap::NEXT, "" + next_address.to_s)
         recurse_into_body(heap, next_index, me, list)
       end
     end
