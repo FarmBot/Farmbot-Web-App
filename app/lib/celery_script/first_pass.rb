@@ -8,54 +8,59 @@
 #   Remaining nodes are created in the `SecondPass` phase.
 module CeleryScript
   class FirstPass < Mutations::Command
-    B = CeleryScript::CSHeap::BODY
-    K = CeleryScript::CSHeap::KIND
-    L = CeleryScript::CSHeap::LINK
-    N = CeleryScript::CSHeap::NEXT
-    P = CeleryScript::CSHeap::PARENT
+    B    = CeleryScript::CSHeap::BODY
+    K    = CeleryScript::CSHeap::KIND
+    L    = CeleryScript::CSHeap::LINK
+    N    = CeleryScript::CSHeap::NEXT
+    P    = CeleryScript::CSHeap::PARENT
+    NULL = CeleryScript::CSHeap::NULL
+    I    = :instance
 
     required do
       model :sequence, class: Sequence
     end
 
     def execute
-      binding.pry if flat_ir.length > 3
+
       flat_ir
         .each do |node|
-          node[:instance] = PrimaryNode
-            .create!(kind: node[K], sequence: sequence)
+          # Step 1- instantiate records.
+          node[I] = PrimaryNode.create!(kind: node[K], sequence: sequence)
         end
         .map do |node|
-          model = node[:instance]
-          model.body_id   = fetch_sql_id_for(B,   node)
+          # Step 2- Assign SQL ids (not to be confused with array index IDs or
+          #         instances of HeapAddress)
+          model           = node[I]
+          model.body_id   = fetch_sql_id_for(B, node)
           model.parent_id = fetch_sql_id_for(P, node)
-          model
+          model.next_id   = fetch_sql_id_for(N, node)
+          node
         end
-        .map do |model|
-          # We do `.last` because many nodes have this node as a parent,
-          # However, they might be args rather than true `next` body nodes.
-          children      = flat_ir.select { |x| x[:instance].parent_id == model.id }
-          next_child    = children.last
-          model.next_id = next_child[:instance].id if next_child
+        .map do |node|
+          # Step 3- Set edge nodes
+          pairs = node
+            .to_a
+            .select do |x|
+              key = x.first.to_s
+              !key.starts_with?(L) && (x.first != I)
+            end
+            .map do |(key, value)|
+              EdgeNode.create!(kind:            key,
+                               value:           value,
+                               sequence_id:     sequence.id,
+                               primary_node_id: node[:instance].id)
+            end
+          node
+        end
+        .map do |node|
+          # Step 3- Set parent_arg_name
+          if ((node[N] == NULL) && (node[P] != NULL))
+            binding.pry
+          end
+          node
         end
 
-      primary_data = flat_ir
-        .map {|x| x.without(*CeleryScript::CSHeap::PRIMARY_FIELDS, :instance)}
-        .map {|x| x.to_a.select {|(key, val)| key.to_s.starts_with?(L)}.to_h }
-        .map(&:invert)
-
-      flat_ir
-        .each_with_index do |node, flat_ir_index|
-          maybe_primary_data = primary_data[node[P].to_i][flat_ir_index.to_s]
-          node[:instance].parent_arg_name = maybe_primary_data.gsub(L, "") if maybe_primary_data
-        end
-
-      edge_data = flat_ir
-        .map {|x| x.without(*CeleryScript::CSHeap::PRIMARY_FIELDS, :instance)}
-        .map {|x| x.to_a.select {|(key, val)| !key.to_s.starts_with?(L)}.to_h }
-        .map(&:invert)
-
-      puts "TODO: Set `next` to `nothing` if `body.kind === 'nothing'` "
+        puts "TODO: Set `next` to `nothing` if `body.kind === 'nothing'` "
       puts "TODO: Make sure primary nodes are all wired up."
       puts "TODO: Attach edge nodes to primary nodes"
       raise "DO NOT PROCEEEEDEEE"
@@ -73,12 +78,12 @@ module CeleryScript
 
       #   # Augment the flat IR array with a special "instance" field that will be
       #   # needed when we run the second pass (resolve parent/child nodes).
-      #   # `:instance` represents a `PrimaryNode` that is missing information
+      #   # `I` represents a `PrimaryNode` that is missing information
       #   # which can only be resolved after all nodes have been processed.
       #   instance = PrimaryNode.new(kind:       item[:kind],
       #                              sequence:   sequence,
       #                              edge_nodes: edge_nodes)
-      #   item[:instance] = instance
+      #   item[I] = instance
       # end
       # flat_ir
     end
@@ -87,7 +92,7 @@ private
 
     def fetch_sql_id_for(node_key, node)
       index = node[node_key].to_i
-      flat_ir[index][:instance].id
+      flat_ir[index][I].id
     end
 
     def flat_ir
