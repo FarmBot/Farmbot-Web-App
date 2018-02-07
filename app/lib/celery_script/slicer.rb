@@ -11,7 +11,10 @@ module CeleryScript
       heap = CSHeap.new()
       allocate(heap, node, CSHeap::NULL)
       @heap_values = heap.values
-      binding.pry if heap.entries.keys.length > 5
+      @heap_values.map do |x|
+        x[CSHeap::BODY] ||= CSHeap::NULL
+        x[CSHeap::NEXT] ||= CSHeap::NULL
+      end
       heap.dump()
     end
 
@@ -53,10 +56,12 @@ module CeleryScript
 
     def recurse_into_body(heap, canonical_list, previous_address, index = 0)
       if canonical_list[index]
-        my_heap_address   = allocate(heap, canonical_list[index], previous_address)
-        parent_key_to_set = (index == 0) ? CSHeap::BODY : CSHeap::NEXT
-        binding.pry if (index == 0)
-        heap.put(previous_address, parent_key_to_set, my_heap_address)
+        my_heap_address = allocate(heap, canonical_list[index], previous_address)
+        is_head         = index == 0
+        prev_next_key = is_head ? CSHeap::NULL : my_heap_address
+        prev_body_key = is_head ? my_heap_address : CSHeap::NULL
+        heap.put(previous_address, CSHeap::NEXT, prev_next_key)
+        heap.put(previous_address, CSHeap::BODY, prev_body_key)
         recurse_into_body(heap, canonical_list, my_heap_address, index + 1)
       end
     end

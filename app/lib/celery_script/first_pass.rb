@@ -19,6 +19,7 @@ module CeleryScript
     end
 
     def execute
+      binding.pry if flat_ir.length > 3
       flat_ir
         .each do |node|
           node[:instance] = PrimaryNode
@@ -57,7 +58,6 @@ module CeleryScript
       puts "TODO: Set `next` to `nothing` if `body.kind === 'nothing'` "
       puts "TODO: Make sure primary nodes are all wired up."
       puts "TODO: Attach edge nodes to primary nodes"
-      binding.pry
       raise "DO NOT PROCEEEEDEEE"
       #   .each do |item|
       #   # Edge nodes are primitive values.
@@ -88,8 +88,6 @@ private
     def fetch_sql_id_for(node_key, node)
       index = node[node_key].to_i
       flat_ir[index][:instance].id
-    rescue => q
-      binding.pry
     end
 
     def flat_ir
