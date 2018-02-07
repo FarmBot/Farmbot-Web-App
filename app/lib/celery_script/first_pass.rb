@@ -1,11 +1,12 @@
+require_relative "./csheap"
+
 # PROBLEM:
-#   The CeleryScript flat IR representation makes "forward refrences" to parts
-#   of the AST that have yet to be read.
+#   The CeleryScript flat IR representation (from CeleryScript::Slicer) makes
+#   "forward refrences" to parts of the AST that have yet to be read.
 #
 # SOLUTION:
-#   Break the conversion down into two "passes". The first pass will create all
-#   relevant nodes that can be instantiated without forward references.
-#   Remaining nodes are created in the `SecondPass` phase.
+#   Once we have a flat IR list, start filling out information
+#   on Primary/Edge nodes, such as `parent_id`, `next_id` and `parent_arg_name`.
 module CeleryScript
   class FirstPass < Mutations::Command
     B    = CeleryScript::CSHeap::BODY
@@ -21,37 +22,41 @@ module CeleryScript
     end
 
     def execute
-      return flat_ir
-        .each do |node|
-          # Step 1- instantiate records.
-          node[I] = PrimaryNode.create!(kind: node[K], sequence: sequence)
-        end
-        .each_with_index do |node, index|
-          # Step 2- Assign SQL ids (not to be confused with array index IDs or
-          #         instances of HeapAddress), also sets arent_arg_name
-          model                 = node[I]
-          model.parent_arg_name = parent_arg_name_for(node, index)
-          model.body_id         = fetch_sql_id_for(B, node)
-          model.parent_id       = fetch_sql_id_for(P, node)
-          model.next_id         = fetch_sql_id_for(N, node)
-          node
-        end
-        .map do |node|
-          # Step 3- Set edge nodes
-          pairs = node
-            .to_a
-            .select do |x|
-              key = x.first.to_s
-              !key.starts_with?(L) && (x.first != I)
-            end
-            .map do |(key, value)|
-              EdgeNode.create!(kind:            key,
-                               value:           value,
-                               sequence_id:     sequence.id,
-                               primary_node_id: node[:instance].id)
-            end
+      Sequence.transaction do
+        flat_ir
+          .each do |node|
+            # Step 1- instantiate records.
+            node[I] = PrimaryNode.create!(kind: node[K], sequence: sequence)
+          end
+          .each_with_index do |node, index|
+            # Step 2- Assign SQL ids (not to be confused with array index IDs or
+            #         instances of HeapAddress), also sets arent_arg_name
+            model                 = node[I]
+            model.parent_arg_name = parent_arg_name_for(node, index)
+            model.body_id         = fetch_sql_id_for(B, node)
+            model.parent_id       = fetch_sql_id_for(P, node)
+            model.next_id         = fetch_sql_id_for(N, node)
             node
-        end
+          end
+          .map do |node|
+            # Step 3- Set edge nodes
+            pairs = node
+              .to_a
+              .select do |x|
+                key = x.first.to_s
+                !key.starts_with?(L) && (x.first != I)
+              end
+              .map do |(key, value)|
+                EdgeNode.create!(kind:            key,
+                                 value:           value,
+                                 sequence_id:     sequence.id,
+                                 primary_node_id: node[:instance].id)
+              end
+              node[:instance]
+          end
+          .tap { |x| sequence.update_attributes(migrated_nodes: true) unless sequence.migrated_nodes }
+          .map { |x| x.save! if x.changed? }
+      end
     end
 
 private

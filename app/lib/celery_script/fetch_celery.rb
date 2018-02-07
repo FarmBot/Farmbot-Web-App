@@ -32,7 +32,7 @@ module CeleryScript
 
     # The topmost node (kind == "sequence") in a sequence.
     def entry_node
-      @entry_node ||= primary_nodes.by.kind["sequence"].first
+      @entry_node ||= primary_nodes.by.kind["sequence"].try(:first)
     end
 
     def attach_edges(node)
@@ -54,17 +54,13 @@ module CeleryScript
     end
 
     def get_body_elements(node)
-      topmost = find_node(node.body_id)
-      body = []
-      if topmost # Start at head, if any.
-        body.push(topmost)
-        next_element = topmost
-        while next_element # Recurse down till you hit the tail
-          next_element = find_node(next_element.next_id)
-          body.push(next_element) if next_element
-        end
+      next_node = node.body
+      results = []
+      until next_node.kind == "nothing"
+        results.push(next_node)
+        next_node = next_node.next
       end
-      return body
+      results
     end
 
     # Top level function call for converting a single EdgeNode into a JSON
@@ -85,25 +81,24 @@ module CeleryScript
         color:      sequence.color,
         created_at: sequence.created_at,
         updated_at: sequence.updated_at,
-        args: { is_outdated: false }
+        args:       { is_outdated: false }
       }
     end
 
   public # = = = = = = =
     NO_SEQUENCE = "You must have a root node `sequence` at a minimum."
+
     required do
       model :sequence, class: Sequence
     end
 
     def validate
-      MigrateLegacySequence.run!(sequence: sequence)
-      root_node = primary_nodes.by.kind["sequence"]
-      add_error :bad_sequence, :bad, NO_SEQUENCE unless root_node
+      add_error :bad_sequence, :bad, NO_SEQUENCE unless entry_node
     end
 
     def execute
-      h = misc_fields.merge!(recurse_into_node(entry_node))
-      return HashWithIndifferentAccess.new(h)
+      return HashWithIndifferentAccess
+        .new(misc_fields.merge!(recurse_into_node(entry_node)))
     end
   end
 end

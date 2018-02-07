@@ -58,10 +58,8 @@ class Sequence < ApplicationRecord
   end
 
   def maybe_migrate
-    puts "Needs fixed!"
-    # # spot check with Sequence.order("RANDOM()").first.maybe_migrate
-    # Sequences::Migrate.run!(sequence: self, device: self.device)
-    # CeleryScript::MigrateLegacySequence.run!(sequence: self)
+    puts "MAYBE_MIGRATE"
+    CeleryScript::FirstPass.run!(sequence: self) unless self.migrated_nodes
   end
 
   def self.random

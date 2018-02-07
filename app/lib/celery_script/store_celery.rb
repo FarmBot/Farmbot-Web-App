@@ -5,25 +5,17 @@
 # To get around the limitation, we must convert sequence JSON from canonical to
 # flat forms. `StoreCelery` handles the conversion and storage of CS Nodes.
 module CeleryScript
-class StoreCelery < Mutations::Command
-  required do
-    model :sequence, class: Sequence
-  end
+  class StoreCelery < Mutations::Command
+    required do
+      model :sequence, class: Sequence
+    end
 
-  def execute
-    Sequence.transaction do
-      sequence.primary_nodes.destroy_all
-      sequence.edge_nodes.destroy_all
-      first_pass  = FirstPass.run!(sequence: sequence)
-      second_pass = CeleryScript::SecondPass.run!(nodes: first_pass)
-      second_pass.map(&:save!)
+    def execute
+      Sequence.transaction do
+        sequence.primary_nodes.destroy_all
+        sequence.edge_nodes.destroy_all
+        FirstPass.run!(sequence: sequence)
+      end
     end
   end
-
-private
-
-  def flat_ir
-    @flat_ir ||= Slicer.new.run!(sequence.as_json.deep_symbolize_keys)
-  end
-end
 end
