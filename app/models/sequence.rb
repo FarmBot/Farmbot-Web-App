@@ -46,8 +46,6 @@ class Sequence < ApplicationRecord
   validates :name, uniqueness: { scope: :device }
   validates  :device, presence: true
 
-  after_find :maybe_migrate
-
   # http://stackoverflow.com/a/5127684/1064917
   before_validation :set_defaults
   around_destroy :delete_nodes_too
@@ -55,11 +53,6 @@ class Sequence < ApplicationRecord
     self.args              = {}.merge(DEFAULT_ARGS).merge(self.args)
     self.color           ||= "gray"
     self.kind            ||= "sequence"
-  end
-
-  def maybe_migrate
-    puts "MAYBE_MIGRATE"
-    CeleryScript::FirstPass.run!(sequence: self) unless self.migrated_nodes
   end
 
   def self.random

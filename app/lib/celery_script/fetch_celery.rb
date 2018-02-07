@@ -1,3 +1,5 @@
+require_relative "./csheap"
+
 # Service object that:
 # 1. Pulls out all PrimaryNodes and EdgeNodes for a sequence node (AST Flat IR form)
 # 2. Stitches the nodes back together in their "canonical" (nested) AST
@@ -97,6 +99,9 @@ module CeleryScript
     end
 
     def execute
+      CeleryScript::FirstPass
+        .run!(sequence: sequence) unless sequence.migrated_nodes
+
       return HashWithIndifferentAccess
         .new(misc_fields.merge!(recurse_into_node(entry_node)))
     end
