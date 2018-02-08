@@ -17,33 +17,6 @@ describe Sequences::Create do
     expect(seq[:name]).to eq(name)
     expect(Sequence.find(seq[:id]).device).to eq(device)
   end
-  it 'has nested `channel` nodes in a sequence' do
-    pending("TODO")
-    example = {
-      name: "Broke Send Message Block?",
-      args: {
-        version:-999,
-        locals: {
-          kind: "scope_declaration",
-          args: {},
-          body: []
-        }
-      },
-      color: "gray",
-      kind: "sequence",
-      body: [
-        {
-        uuid: "4a02f7e1-c85d-4adc-8be3-04f8ceae09e3",
-        kind: "send_message",
-        args: {  message: "FarmBot is at position {{ x }}, {{ y }}, {{ z }}.", message_type: "busy" },
-        body: [
-          {kind: "channel", :args=>{channel_name: "toast"}},
-          {kind: "channel", :args=>{channel_name: "email"}},
-          {kind: "channel", :args=>{channel_name: "espeak"}}
-        ]
-      }
-      ]}
-  end
 
   it 'Gives validation errors for malformed AST nodes' do
     move_abs = body.select{ |x| x["kind"] == "move_absolute" }.first

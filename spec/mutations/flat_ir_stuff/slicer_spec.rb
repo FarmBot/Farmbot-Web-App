@@ -9,6 +9,42 @@ describe CeleryScript::Slicer do
 
   n = "nothing"
 
+  CENTIPEDE_SEQUENCE = {
+    kind: "ROOT",
+    args: { a: "b" },
+    body: [
+      {
+        kind: "ROOT[0]",
+        args: {c: "d"},
+        body: [ { kind: "ROOT[0][0]", args: {e: "f"} } ]
+      },
+      {
+        kind: "ROOT[1]",
+        args: {c: "d"},
+        body: [
+          { kind: "ROOT[1][0]", args: {g: "H"} },
+          { kind: "ROOT[1][1]", args: {i: "j"} },
+          { kind: "ROOT[1][2]", args: {k: "l"} }
+        ]
+      },
+      {
+        kind: "ROOT[2]",
+        args: {c: "d"},
+        body: [
+          { kind: "ROOT[2][0]", args: {m: "n"} },
+          { kind: "ROOT[2][1]", args: {o: "p"} },
+          {
+            kind: "ROOT[2][2]",
+            args: {q: "r"},
+            body: [
+              { kind: "ROOT[2][2][0]", args: {g: "H"} },
+            ]
+          }
+        ]
+      }
+    ]
+  }
+
   CORRECT_LINKAGE = { # Came from the JS implementation which is known good.
     "sequence"          => { p: n,              b: "take_photo", n: n },
     "scope_declaration" => { p: "sequence",     b: n,            n: n, },
@@ -19,7 +55,24 @@ describe CeleryScript::Slicer do
     "execute"           => { p: "_if",          b: n,            n: n, },
   }
 
-  it "has edge cases" do
+
+  it "handles even the most heavily nested nodes" do
+    slicer = CeleryScript::Slicer.new
+    slicer.run!(CENTIPEDE_SEQUENCE)
+    hmm = slicer
+      .heap_values
+      .entries
+      .to_a
+      .map{|x| x.slice(:__KIND__, :__body, :__parent, :__next)}
+      .map
+      .with_index(0) do |x, index|
+        [index, x]
+      end
+      .to_h
+    binding.pry
+  end
+
+  it "attaches `body`, `next` and `parent`" do
     heap = CeleryScript::FlatIrHelpers.flattened_heap
     nothing_node = heap[0]
     expect(nothing_node[kind]).to         eq(n)

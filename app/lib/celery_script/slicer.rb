@@ -5,9 +5,11 @@ require_relative "./csheap.rb"
 # suited for storage in a relation database.
 module CeleryScript
   class Slicer
+    attr_reader :root_node
 
     def run!(node)
       raise "Not a hash" unless node.is_a?(Hash)
+      @root_node = node
       heap = CSHeap.new()
       allocate(heap, node, CSHeap::NULL)
       @heap_values = heap.values
