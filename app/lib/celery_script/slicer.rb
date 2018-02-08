@@ -60,10 +60,16 @@ module CeleryScript
       if canonical_list[index]
         my_heap_address = allocate(heap, canonical_list[index], previous_address)
         is_head         = index == 0
+
         prev_next_key = is_head ? CSHeap::NULL : my_heap_address
-        prev_body_key = is_head ? my_heap_address : CSHeap::NULL
         heap.put(previous_address, CSHeap::NEXT, prev_next_key)
+
+
+        # My intent originally:
+        # I don't want nodes to have a body_id if they don't have a body.
+        prev_body_key = is_head ? my_heap_address : CSHeap::NULL
         heap.put(previous_address, CSHeap::BODY, prev_body_key)
+
         recurse_into_body(heap, canonical_list, my_heap_address, index + 1)
       end
     end
