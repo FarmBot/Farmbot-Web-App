@@ -63,17 +63,19 @@ module CeleryScript
     def recurse_into_body(heap, canonical_list, previous_address, index = 0)
       if canonical_list[index]
         puts ("  " * @nesting_level) + "#{canonical_list.dig(index, :kind)}"
-        my_heap_address = allocate(heap, canonical_list[index], previous_address)
         is_head         = index == 0
+        heap.put(previous_address, CSHeap::BODY, previous_address + 1) if is_head
+
+        my_heap_address = allocate(heap, canonical_list[index], previous_address)
 
         prev_next_key = is_head ? CSHeap::NULL : my_heap_address
         heap.put(previous_address, CSHeap::NEXT, prev_next_key)
 
 
-        # My intent originally:
-        # I don't want nodes to have a body_id if they don't have a body.
-        body_attr_of_parent = is_head ? my_heap_address : CSHeap::NULL
-        heap.put(previous_address, CSHeap::BODY, body_attr_of_parent)
+        # # My intent originally:
+        # # I don't want nodes to have a body_id if they don't have a body.
+        # body_attr_of_parent = is_head ? my_heap_address : CSHeap::NULL
+        # heap.put(previous_address, CSHeap::BODY, body_attr_of_parent)
 
         recurse_into_body(heap, canonical_list, my_heap_address, index + 1)
       end
