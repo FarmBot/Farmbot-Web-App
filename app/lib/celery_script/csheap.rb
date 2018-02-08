@@ -128,31 +128,6 @@ module CeleryScript
     # We need this to reconstruct the node from its IR form to its canonical form.
     def dump
       return values
-      # .map do |input|
-      #     output = {
-      #       kind:   input[KIND],
-      #       parent: (input[PARENT.to_s] || "0").to_i,
-      #       body:   (input[BODY.to_s ] || "0").to_i,
-      #       next:   (input[NEXT.to_s ] || "0").to_i,
-      #       primary_nodes:    {},
-      #       edge_nodes:       {}
-      #     }
-      #     input
-      #     .except(*Slicer::PRIMARY_FIELDS)
-      #     .to_a
-      #     .map do |node|
-      #       key, value = *node
-      #       is_primary = key.to_s.start_with?(Slicer::LINK)
-      #       if is_primary
-      #         clean_key = key.gsub(Slicer::LINK, "")
-      #         output[:primary_nodes][clean_key] = JSON.parse(value)
-      #       else
-      #         output[:edge_nodes][key] = JSON.parse(value)
-      #       end
-      #     end
-      #     output.deep_symbolize_keys
-      #   end
-      # end
     end
   end
 end

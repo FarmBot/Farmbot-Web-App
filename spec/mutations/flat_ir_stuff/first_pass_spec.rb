@@ -15,7 +15,7 @@ describe CeleryScript::FirstPass do
   next_  = CeleryScript::CSHeap::NEXT
   body   = CeleryScript::CSHeap::BODY
 
-  CORRECT_LINKAGE = { # Came from the JS implementation which is known good.
+  EXPECTATIONS = { # Came from the JS implementation which is known good.
     0 => { kind => "nothing",           parent => 0, next_ => 0 },
     1 => { kind => "sequence",          parent => 0, body  => 2 },
     2 => { kind => "move_absolute",     parent => 1, next_ => 3 },
@@ -25,67 +25,72 @@ describe CeleryScript::FirstPass do
     6 => { kind => "write_pin",         parent => 5, next_ => 0 },
     7 => { kind => "scope_declaration", parent => 1, next_ => 0 }
   }
-  puts "FIX THIS"
-  # it "Hmmm..." do
-  #   pending("This might not be right anymore")
-  #   x        = CeleryScript::FlatIrHelpers.typical_sequence
-  #   sequence = FactoryBot.create(:sequence, args: x[:args], body: x[:body])
-  #   step1    = CeleryScript::FirstPass.run!(sequence: sequence)
 
-  #   CORRECT_LINKAGE.to_a.map do |(index, correct)|
-  #     real = step1[index]
-  #     [
-  #       [real[:kind  ], correct[kind  ], kind  ],
-  #       [real[:parent], correct[parent], parent],
-  #       [real[:next  ], correct[next_ ], next_ ],
-  #       [real[:body  ], correct[body  ], body  ],
-  #     ]
-  #     .each_with_index do |(actual, expected, key), index|
-  #     be_right = [
-  #       eq(expected || 0),
-  #       "Expected #{key} at index #{index} to be #{expected} got #{actual}"
-  #     ]
-  #     expect(actual).to(*be_right)
-  #   end
-  #   end
-  # end
+  it "sets the correct parent" do
+    parent_look_up = {
+      "sequence"     => "nothing",
+      "_if"          => "take_photo",
+      "take_photo"   => "send_message",
+      "send_message" => "sequence",
+    }
 
-  it "travels up the tree via the `parent` property" do
-    espeak_node = result.find do |x|
-      x[:kind] === "channel" && x[:edge_nodes][:channel_name] === "email"
-    end
+    result
+      .map do |node|
+        expected_parent = parent_look_up[node.kind]
+        expect(node.parent.kind).to eq(expected_parent) if expected_parent
+      end
+  end
+  {
+    kind: 'sequence',
+    args: { locals: { kind: 'scope_declaration', args: {}, body: [] } },
+    body: [
+      {
+        kind: 'send_message',
+        args: { message: 'test case 1', message_type: 'success' },
+        body: [
+          { kind: 'channel', args: { channel_name: 'toast' } },
+          { kind: 'channel', args: { channel_name: 'email' } },
+          { kind: 'channel', args: { channel_name: 'espeak' } } # Test this.
+        ],
+      },
+      { kind: 'take_photo', args: {} },
+      {
+        kind: '_if',
+        args: {
+          lhs: 'x',
+          op: 'is',
+          rhs: 0,
+          _then: { kind: 'nothing', args: {} },
+          _else: { kind: 'nothing', args: {} }
+        }
+      },
+    ]
+    }
 
-    parent = result[espeak_node[:parent]]
-    expect(parent[:kind]).to eq("channel")
-    expect(parent[:edge_nodes][:channel_name]).to eq("toast")
+  it "sets the correct next node" do
+    next_node_look_up = { "nothing"      => "nothing",
+                          "sequence"     => "nothing",
+                          "send_message" => "take_photo",
+                          "take_photo"   => "_if" }
 
-    grandparent = result[parent[:parent]]
-    expect(grandparent[:kind]).to eq("send_message")
-
-    gr8_grandparent = result[grandparent[:parent]]
-    expect(gr8_grandparent[:kind]).to eq("sequence")
+    result
+      .map do |node|
+        xpected_next = next_node_look_up[node.kind]
+        expect(node.next.kind).to eq(xpected_next) if xpected_next
+      end
   end
 
-  it "travels down the tree via `body`" do
-    top = result[1] # 0 is NULL
-    expect(top[:kind]).to eq("sequence")
+  it "set the correct body nodes" do
+    body_lookup = { "nothing"      => "nothing",
+                          "sequence"     => "nothing",
+                          "send_message" => "take_photo",
+                          "take_photo"   => "_if" }
 
-    child1 = result[top[:body]]
-    expect(child1[:kind]).to eq("send_message")
-
-    child2 = result[child1[:body]]
-    expect(child2[:kind]).to eq("channel")
+    result
+      .map do |node|
+        xpected_next = body_lookup[node.kind]
+        expect(node.next.kind).to eq(xpected_next) if xpected_next
+      end
   end
 
-  it "sets edge_nodes (but not primary_nodes)" do
-    top = result[1] # 0 is NULL
-    expect(top[:edge_nodes].keys).to eq([])
-
-    child1 = result[top[:body]]
-    expect(child1[:edge_nodes][:message]).to eq("test case 1")
-    expect(child1[:edge_nodes][:message_type]).to eq("success")
-
-    child2 = result[child1[:body]]
-    expect(child2[:edge_nodes][:channel_name]).to eq("toast")
-  end
 end

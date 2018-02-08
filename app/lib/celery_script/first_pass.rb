@@ -55,7 +55,10 @@ module CeleryScript
               node[:instance]
           end
           .tap { |x| sequence.update_attributes(migrated_nodes: true) unless sequence.migrated_nodes }
-          .map { |x| x.save! if x.changed? }
+          .map { |x|
+            x.save! if x.changed?
+            x
+          }
       end
     end
 
@@ -75,7 +78,6 @@ private
       link_symbol      = every_primary_link[HeapAddress[index]]
       needs_p_arg_name = (resides_in_args && link_symbol)
       parent_arg_name  = (needs_p_arg_name ? link_symbol.to_s.gsub(L, "") : nil)
-      puts "#{node[K]} resides in #{parent_arg_name || 'nothing'}"
       return parent_arg_name
     end
 

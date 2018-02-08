@@ -32,7 +32,7 @@ module Sequences
         CeleryScript::StoreCelery.run!(sequence: sequence)
         reload_dependencies(sequence)
       end
-      CeleryScript::FetchCelery.run!(sequence: sequence.reload).tap{ |x| binding.pry }
+      CeleryScript::FetchCelery.run!(sequence: sequence.reload)
     rescue ActiveRecord::RecordInvalid => e
       m = (e.try(:message) || "Unknown validation issues.")
       add_error :other, :unknown, m
