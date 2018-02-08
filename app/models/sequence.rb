@@ -54,6 +54,7 @@ class Sequence < ApplicationRecord
     self.color           ||= "gray"
     self.kind            ||= "sequence"
   end
+
   def maybe_migrate
     puts "FIXME"
   end

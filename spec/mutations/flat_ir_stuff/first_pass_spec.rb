@@ -40,32 +40,6 @@ describe CeleryScript::FirstPass do
         expect(node.parent.kind).to eq(expected_parent) if expected_parent
       end
   end
-  {
-    kind: 'sequence',
-    args: { locals: { kind: 'scope_declaration', args: {}, body: [] } },
-    body: [
-      {
-        kind: 'send_message',
-        args: { message: 'test case 1', message_type: 'success' },
-        body: [
-          { kind: 'channel', args: { channel_name: 'toast' } },
-          { kind: 'channel', args: { channel_name: 'email' } },
-          { kind: 'channel', args: { channel_name: 'espeak' } } # Test this.
-        ],
-      },
-      { kind: 'take_photo', args: {} },
-      {
-        kind: '_if',
-        args: {
-          lhs: 'x',
-          op: 'is',
-          rhs: 0,
-          _then: { kind: 'nothing', args: {} },
-          _else: { kind: 'nothing', args: {} }
-        }
-      },
-    ]
-    }
 
   it "sets the correct next node" do
     next_node_look_up = { "nothing"      => "nothing",
@@ -93,4 +67,21 @@ describe CeleryScript::FirstPass do
       end
   end
 
+  it "saves nodes" do
+    Sequence.destroy_all
+    result
+    {
+      "coordinate"        => 2,
+      "move_absolute"     => 1,
+      "move_relative"     => 1,
+      "nothing"           => 1,
+      "scope_declaration" => 1,
+      "sequence"          => 1,
+      "write_pin"         => 1,
+    }.to_a.map do |(kind, count)|
+      real_count = EdgeNode.where(kind: kind).count
+      msg = "Expected #{count} #{kind} nodes. Got #{real_count}"
+      expect(real_count).to(eq(count), msg)
+    end
+  end
 end

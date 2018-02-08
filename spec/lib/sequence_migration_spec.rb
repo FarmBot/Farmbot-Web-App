@@ -58,6 +58,7 @@ describe SequenceMigration do
   end
 
   it 'updates speed on all the things < v5' do
+    pending("Less relevant with Flat IR")
     s = FactoryBot.create(:sequence)
     s.args["version"] = 4
     s.body            = FIXTURE

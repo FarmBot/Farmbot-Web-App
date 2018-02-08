@@ -59,7 +59,7 @@ describe CeleryScript::Slicer do
   it "handles even the most heavily nested nodes" do
     slicer = CeleryScript::Slicer.new
     slicer.run!(CENTIPEDE_SEQUENCE)
-    hmm = slicer
+    results = slicer
       .heap_values
       .entries
       .to_a
@@ -67,9 +67,30 @@ describe CeleryScript::Slicer do
       .map
       .with_index(0) do |x, index|
         [index, x]
+      end.to_h
+
+    addr = CeleryScript::HeapAddress
+    expectations = {
+      0  => {kind => "nothing",       body => addr[0],  parent => addr[0],  next_ => addr[0] },
+      1  => {kind => "ROOT",          body => addr[2],  parent => addr[0],  next_ => addr[0] },
+      2  => {kind => "ROOT[0]",       body => addr[3],  parent => addr[1],  next_ => addr[4] },
+      3  => {kind => "ROOT[0][0]",    body => addr[0],  parent => addr[2],  next_ => addr[0] },
+      4  => {kind => "ROOT[1]",       body => addr[5],  parent => addr[2],  next_ => addr[8] },
+      5  => {kind => "ROOT[1][0]",    body => addr[0],  parent => addr[4],  next_ => addr[6] },
+      6  => {kind => "ROOT[1][1]",    body => addr[0],  parent => addr[5],  next_ => addr[7] },
+      7  => {kind => "ROOT[1][2]",    body => addr[0],  parent => addr[6],  next_ => addr[0] },
+      8  => {kind => "ROOT[2]",       body => addr[9],  parent => addr[4],  next_ => addr[0] },
+      9  => {kind => "ROOT[2][0]",    body => addr[0],  parent => addr[8],  next_ => addr[10]},
+      10 => {kind => "ROOT[2][1]",    body => addr[0],  parent => addr[9],  next_ => addr[11]},
+      11 => {kind => "ROOT[2][2]",    body => addr[12], parent => addr[10], next_ => addr[0] },
+      12 => {kind => "ROOT[2][2][0]", body => addr[0],  parent => addr[11], next_ => addr[0] },
+    }
+
+    results
+      .to_a
+      .each_with_index do |(index, item)|
+        expect(expectations[index]).to eq(item)
       end
-      .to_h
-    binding.pry
   end
 
   it "attaches `body`, `next` and `parent`" do
