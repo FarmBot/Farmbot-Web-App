@@ -55,23 +55,6 @@ describe Api::SequencesController do
       expect(json[:name]).to eq("Name is required")
     end
 
-    it 'tracks SequenceDependency' do
-      SequenceDependency.destroy_all
-      old_count = SequenceDependency.count
-      sign_in user
-      input = { name: "Scare Birds",
-                body: nodes }
-      sequence_body_for(user)
-      post :create,
-           body: input.to_json,
-           params: {format: :json}
-      expect(response.status).to eq(200)
-      new_count       = SequenceDependency.count
-      validated_count = SequenceDependency.where(sequence_id: json[:id]).count
-      expect(old_count < new_count).to be(true)
-      expect(validated_count).to eq(new_count)
-    end
-
     it 'doesnt allow nonsense in `sequence.args.locals`' do
       Sequence.destroy_all
       input = { name: "Scare Birds",
