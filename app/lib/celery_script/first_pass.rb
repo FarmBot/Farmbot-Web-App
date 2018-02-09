@@ -26,6 +26,9 @@ module CeleryScript
         flat_ir
           .each do |node|
             # Step 1- instantiate records.
+            # TODO: Switch create!() to new() once things are atleast working
+            #   - RC
+            puts "Creating a #{node[K]} node."
             node[I] = PrimaryNode.create!(kind: node[K], sequence: sequence)
           end
           .each_with_index do |node, index|
@@ -44,7 +47,7 @@ module CeleryScript
               .to_a
               .select do |x|
                 key = x.first.to_s
-                !key.starts_with?(L) && (x.first != I)
+                (x.first != I) && !key.starts_with?(L)
               end
               .map do |(key, value)|
                 EdgeNode.create!(kind:            key,
@@ -70,7 +73,7 @@ private
           x.except(B,K,L,N,P,I).invert.to_a.select{|(k,v)| k.is_a?(HeapAddress)}
         end
         .map(&:to_h)
-        .reduce(Hash.new, :merge)
+        .reduce({}, :merge)
     end
 
     def parent_arg_name_for(node, index)

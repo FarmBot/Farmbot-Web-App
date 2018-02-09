@@ -79,7 +79,7 @@ describe CeleryScript::FirstPass do
       "sequence"          => 1,
       "write_pin"         => 1,
     }.to_a.map do |(kind, count)|
-      real_count = EdgeNode.where(kind: kind).count
+      real_count = PrimaryNode.where(kind: kind).count
       msg = "Expected #{count} #{kind} nodes. Got #{real_count}"
       expect(real_count).to(eq(count), msg)
     end
