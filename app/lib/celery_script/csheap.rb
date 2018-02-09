@@ -5,6 +5,12 @@
 # references.
 # MORE INFO: https://github.com/FarmBot-Labs/Celery-Slicer
 module CeleryScript
+  # Supporting class for CSHeap (below this class)
+  # PROBLEM:  CSHeap uses numbers to address sibling/parent nodes.
+  # PROBLEM:  Numbers are very easy to mix up. Is it an array index? A SQL
+  #           primary key? A primitive value? It's not always easy to say.
+  # SOLUTION: Create a `HeapAddress` value type to remove ambiguity.
+  #           Prevents confusion between index IDs and SQL IDs.
   class HeapAddress
     attr_reader :value
 
@@ -71,8 +77,8 @@ module CeleryScript
     # Keys that primary nodes must have
     PRIMARY_FIELDS = [PARENT, BODY, KIND, NEXT]
 
-    # Index 0 of the heap represents a null pointer of sorts. If a field points to
-    # this address, it is considered empty.
+    # Index 0 of the heap represents a null pointer of sorts.
+    # If a field points to this address, it is considered empty.
     NULL    = HeapAddress[0]
 
     # What you will find at index 0 of the heap:
@@ -85,8 +91,17 @@ module CeleryScript
 
 
     # A dictionary of nodes in the CeleryScript tree, as stored in the heap.
-    # It's a collection of key/value pairs, a parent index, a body index and a
-    # __KIND__ key.
+    # Nodes will have:
+    #   * A `KIND` field   - What kind of node is it?
+    #                        `send_message`, `move_rel`, etc..
+    #   * A `PARENT` field - The node directly above the current node.
+    #   * A `BODY` field   - If a node has a body member (and it might not!),
+    #                        this field will point to the first node in the
+    #                        chain. NOTHING pointer indicates that the node has
+    #                        no body.
+    #   * A `NEXT` field   - If you are inside a node's BODY, the next node in
+    #                        chain is denoted by the address of NEXT. A NEXT
+    #                        value of NOTHING means you hit the end of the chain
     attr_accessor :entries
 
     # "here" represents the last item added to the heap and, often, the item that
@@ -101,13 +116,15 @@ module CeleryScript
 
     # Grow the heap and fill it was a CS node of type `__KIND__`.
     # Returns the new value of `@here` after expansion.
+    # "Create a new empty heap object and return its address for access later"
     def allot(__KIND__)
-      entries[@here += 1] = { __KIND__: __KIND__ }
+      entries[@here += 1] = { KIND => __KIND__ }
       return @here
     end
 
     # augment a heap entry with a new key/value pair.
     # Throws an exception when given a bad heap index.
+    # "Put this VALUE into this ADDRESS and annotate it with the KEY provided"
     def put(address, key, value)
       address.is_address?
       block = entries[address]

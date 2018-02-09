@@ -1,14 +1,16 @@
 require_relative "./csheap"
 
-# PROBLEM:
-#   The CeleryScript flat IR representation (from CeleryScript::Slicer) makes
-#   "forward refrences" to parts of the AST that have yet to be read.
-#
-# SOLUTION:
-#   Once we have a flat IR list, start filling out information
-#   on Primary/Edge nodes, such as `parent_id`, `next_id` and `parent_arg_name`.
+# ABOUT THIS CLASS:
+#   CSHeap creates an in memory representation of a Flat IR tree using array
+#   indexes (HeapAddress instances, really). This is fine when dealing with the
+#   nodes in memory. Users will need to store these nodes in the DB, though.
+#   This class takes a flat IR tree from memory and converts `HeapAddress`es
+#   to SQL primary/foreign keys.
 module CeleryScript
   class FirstPass < Mutations::Command
+    # The following constants are abbreviations of the full name, since the
+    # full name is quite long and they are referenced frequently in the code.
+    # Just remember that "B" is "BODY", "K" is "KIND", etc...
     B    = CeleryScript::CSHeap::BODY
     K    = CeleryScript::CSHeap::KIND
     L    = CeleryScript::CSHeap::LINK
@@ -66,6 +68,8 @@ module CeleryScript
 
 private
 
+    # Index every primary node in memory by its `HeapAddress`.
+    # We need this info in order to fill out the `parent_arg_name` of a node.
     def every_primary_link
       @every_primary_link ||= flat_ir
         .map do |x|

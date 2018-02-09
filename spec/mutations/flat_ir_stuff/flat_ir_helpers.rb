@@ -1,5 +1,6 @@
 module CeleryScript
-class FlatIrHelpers
+  # Some helpers to DRY up Flat IR unit tests.
+  class FlatIrHelpers
     def self.typical_sequence
       {
         kind: "sequence",

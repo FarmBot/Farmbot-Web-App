@@ -1,6 +1,6 @@
 # If a node in the sequence node tree has a `kind` and `args` property, it is
-# said to be a properly formed "PrimaryNode".
-# CeleryScript is a tree of PrimaryNode objects in the center and primitice
+# said to be a properly formed "PrimaryNode". Everything else is an `EdgeNode`.
+# CeleryScript is a tree of PrimaryNode objects in the center and primitive
 # "EdgeNode" types on the edge of the tree.
 class PrimaryNode < ApplicationRecord
   belongs_to            :sequence

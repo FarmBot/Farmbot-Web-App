@@ -2,7 +2,7 @@ require_relative "./csheap.rb"
 # ORIGINAL IMPLEMENTATION HERE: https://github.com/FarmBot-Labs/Celery-Slicer
 # Take a nested ("canonical") representation of a CeleryScript sequence and
 # transofrms it to a flat/homogenous intermediate representation which is better
-# suited for storage in a relation database.
+# suited for storage in a relational database.
 module CeleryScript
   class Slicer
     attr_reader :root_node
@@ -62,8 +62,9 @@ module CeleryScript
     def recurse_into_body(heap, canonical_list, previous_address, index = 0)
       if canonical_list[index]
         is_head         = index == 0
-        # THE IMPORTANT PART WE CHANGED:
-        heap.put(previous_address, CSHeap::BODY, previous_address + 1) if is_head
+        # BE CAREFUL EDITING THIS LINE, YOU MIGHT BREAK `BODY` NODES:
+        heap # See note above!
+          .put(previous_address, CSHeap::BODY, previous_address + 1) if is_head
 
         my_heap_address = allocate(heap, canonical_list[index], previous_address)
 

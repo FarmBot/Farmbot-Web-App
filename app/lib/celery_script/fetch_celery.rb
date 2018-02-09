@@ -20,23 +20,32 @@ module CeleryScript
       @primary_nodes ||= Indexer.new(PrimaryNode.where(sequence: sequence))
     end
 
-    def find_node(id) # Use `next_id`, `id`, `body_id`, `parent_id`
+    # Use `next_id`, `id`, `body_id`, `parent_id` from a sibling node to find
+    # the related node. EG: If you are traversing a node and want to find the
+    # PARENT, pass the `parent_id` to this function. MAY RETURN `nil`.
+    def find_node(id)
       return (primary_nodes.by.id[id] || [])
         .select{|x| x.kind != "nothing"}
         .first
     end
 
-    # Helper function for frequently references object. All nodes that point to
-    # this node as their `parent_id` or `body_id` indicate a `nil` condition.
+    # Helper function for frequently referenced "NOTHING" object.
+    # All nodes that point to this node as their `parent_id` or `body_id`
+    # indicate a `nil` condition.
     def null_node
       @null_node ||= primary_nodes.by.id[entry_node.parent_id].first
     end
 
-    # The topmost node (kind == "sequence") in a sequence.
+    # The topmost node is always `NOTHING`. The term "root node" refers to
+    # the node where (kind == "sequence") in a tree of nodes. We start recursion
+    # here and move down.
     def entry_node
       @entry_node ||= primary_nodes.by.kind["sequence"].try(:first)
     end
 
+    # Create a hash and attach all the EdgeNodes to it. Creates a partial "args"
+    # property when converting from flat IR to canonical form.
+    # Does not attach primary (fully formed CeleryScript) nodes.
     def attach_edges(node)
       output = {}
       (edge_nodes.by.primary_node_id[node.id] || [])
@@ -44,6 +53,8 @@ module CeleryScript
       output
     end
 
+    # Similar to attach_edges(node) but for fully formed CS nodes.
+    # Eg: Will attach a `coordinate` node to a `location` arg.
     def attach_primary_nodes(node)
       output = {}
       (primary_nodes.by.parent_id[node.id] || []).select(&:parent_arg_name)
@@ -55,6 +66,8 @@ module CeleryScript
       {}.merge!(attach_edges(node)).merge!(attach_primary_nodes(node))
     end
 
+    # Pass this method a PrimaryNode and it will return an array filled with
+    # that node's children (or an empty array, since body is always optional).
     def get_body_elements(node)
       next_node = node.body
       results = []
@@ -66,7 +79,7 @@ module CeleryScript
     end
 
     # Top level function call for converting a single EdgeNode into a JSON
-    # document. Returns Hash<Symbol, any>
+    # document. Returns Ruby hash that conforms to CeleryScript semantics.
     def recurse_into_node(node)
       out  = { kind: node.kind, args: recurse_into_args(node) }
       body = get_body_elements(node)
@@ -75,7 +88,7 @@ module CeleryScript
     end
 
     # Generates a hash that has all the other fields that API users expect,
-    # Eg: color, id, etc
+    # Eg: color, id, etc.
     def misc_fields
       return {
         id:         sequence.id,
@@ -95,14 +108,19 @@ module CeleryScript
     end
 
     def validate
+      # Legacy sequences won't have EdgeNode/PrimaryNode relations.
+      # We need to run the conversion before we can continue.
       CeleryScript::StoreCelery
         .run!(sequence: sequence) unless sequence.migrated_nodes
+      # A sequence lacking a `sequence` node is a syntax error.
+      # This should never show up in the frontend, but *is* helpful for devs
+      # when debugging.
       add_error :bad_sequence, :bad, NO_SEQUENCE unless entry_node
     end
 
     def execute
-      return HashWithIndifferentAccess
-        .new(misc_fields.merge!(recurse_into_node(entry_node)))
+      canonical_form = misc_fields.merge!(recurse_into_node(entry_node))
+      return HashWithIndifferentAccess.new(canonical_form)
     end
   end
 end

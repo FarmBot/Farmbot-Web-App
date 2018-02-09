@@ -39,10 +39,5 @@ module Api
     def sequence
       @sequence ||= sequences.find(params[:id])
     end
-
-    def authorize_user
-      raise Errors::Forbidden,
-            "Not your Sequence object." if sequence.device != current_device
-    end
   end
 end

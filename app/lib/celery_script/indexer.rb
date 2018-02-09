@@ -1,6 +1,9 @@
   # Re-combingind EdgeNodes and PrimaryNodes is very query intensive.
   # To avoid excess DB calls, we will index the nodes in memory by field type.
   module CeleryScript
+    # EXAMPLE USAGE:
+    #  nodes      = Index.new(MY_LIST_OF_NODES)
+    #  my_results = nodes.by.primary_node_id(5)
     class Indexer
     # Fields that need indexing in both cases (Edge vs. Primary node)
     COMMON_FIELDS  = [:kind, :id]

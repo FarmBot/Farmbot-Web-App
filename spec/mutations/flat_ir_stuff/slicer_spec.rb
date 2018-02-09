@@ -63,7 +63,7 @@ describe CeleryScript::Slicer do
       .heap_values
       .entries
       .to_a
-      .map{|x| x.slice(:__KIND__, :__body, :__parent, :__next)}
+      .map{ |x| x.slice(kind, body, parent, next_) }
       .map
       .with_index(0) do |x, index|
         [index, x]
