@@ -83,7 +83,13 @@ module CeleryScript
     def recurse_into_node(node)
       out  = { kind: node.kind, args: recurse_into_args(node) }
       body = get_body_elements(node)
-      out[:body] = body.map { |x| recurse_into_node(x) } unless body.empty?
+      if body.empty?
+        # Legacy sequences *must* have body on sequence.
+        # Others are fine.
+        out[:body] = [] if node.kind == "sequence"
+      else
+        out[:body] = body.map { |x| recurse_into_node(x) }
+      end
       out[:comment] = node.comment if node.comment
       return out
     end

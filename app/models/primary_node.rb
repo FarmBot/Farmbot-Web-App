@@ -19,18 +19,6 @@ class PrimaryNode < ApplicationRecord
 
   def next_must_be_body_node
     raise "NO!" if(next_id && self.class.find(next_id).parent_arg_name)
-  rescue => x
-    errors.add("The `next` node is supposed to be for nodes in a [body]. " +
-      "The node has a `parent_arg_name`, suggesting it belongs elsewhere.")
-  end
-
-  def todo
-    [
-      "add a `comments` field to `PrimaryNode`",
-      "Destroy FarmEvent.if_still_using",
-      "Migration: Destroy all sequence deps and update their sequence",
-      "Destroy the seq deps model (but not the table- not yet)"
-    ]
   end
 
   def parent
@@ -43,10 +31,6 @@ class PrimaryNode < ApplicationRecord
 
   def next
     self.class.find_by(id: next_id)
-  end
-
-  def is_body_item? # Is this an arg or a body item?
-    !self.parent_arg_name
   end
 
   def broadcast?
