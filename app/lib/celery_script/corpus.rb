@@ -53,7 +53,7 @@ module CeleryScript
     end
 
     def as_json(*)
-      { "tag": SequenceMigration::Base.latest_version,
+      { "tag": Sequence::LATEST_VERSION,
         "args": @arg_def_list.to_a.map(&:last).map{|x| x.as_json({}) },
         "nodes": @node_def_list.to_a.map(&:last).map{|x| x.as_json({}) }}
     end

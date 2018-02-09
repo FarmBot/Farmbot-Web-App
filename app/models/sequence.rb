@@ -3,10 +3,14 @@
 # most of the functionality of a programming language such a variables and
 # conditional logic.
 class Sequence < ApplicationRecord
+  # This number (YYYYMMDD) helps us prepare for the future by keeping things
+  # versioned. We can use it as a means of identifying legacy sequences when
+  # breaking changes happen.
+  LATEST_VERSION    = 20180209
   NOTHING           = { kind: "nothing", args: {} }
   SCOPE_DECLARATION = { kind: "scope_declaration", args: {} }
-  DEFAULT_ARGS      = { locals: SCOPE_DECLARATION,
-                        version: SequenceMigration::Base.latest_version }
+  DEFAULT_ARGS      = { locals:  SCOPE_DECLARATION,
+                        version: LATEST_VERSION  }
   # Does some extra magic for serialized columns for us, such as providing a
   # default value and making hashes have indifferent access.
   class CustomSerializer
@@ -53,10 +57,6 @@ class Sequence < ApplicationRecord
     self.args              = {}.merge(DEFAULT_ARGS).merge(self.args)
     self.color           ||= "gray"
     self.kind            ||= "sequence"
-  end
-
-  def maybe_migrate
-    puts "FIXME"
   end
 
   def self.random

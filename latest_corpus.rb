@@ -114,7 +114,7 @@ class CorpusEmitter
     */
     """)
     result.push(enum_type :CeleryNode, NODES.map(&:name).map(&:camelize), false)
-    result.push(const(:LATEST_VERSION, SequenceMigration::Base.latest_version))
+    result.push(const(:LATEST_VERSION, Sequence::LATEST_VERSION))
     result.push(const :DIGITAL, CeleryScriptSettingsBag::DIGITAL)
     result.push(const :ANALOG, CeleryScriptSettingsBag::ANALOG)
     result.push(enum_type :ALLOWED_PIN_MODES,
