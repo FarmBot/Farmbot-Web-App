@@ -12,12 +12,12 @@ module CeleryScript
     # To speed up querying, we create an in-memory index for frequently
     # looked up attributes such as :id, :kind, :parent_id, :primary_node_id
     def edge_nodes
-      @edge_nodes ||= Indexer.new(sequence.edge_nodes)
+      @edge_nodes ||= Indexer.new(EdgeNode.where(sequence: sequence))
     end
 
     # See docs for #edge_nodes()
     def primary_nodes
-      @primary_nodes ||= Indexer.new(sequence.primary_nodes)
+      @primary_nodes ||= Indexer.new(PrimaryNode.where(sequence: sequence))
     end
 
     def find_node(id) # Use `next_id`, `id`, `body_id`, `parent_id`
@@ -95,13 +95,12 @@ module CeleryScript
     end
 
     def validate
+      CeleryScript::StoreCelery
+        .run!(sequence: sequence) unless sequence.migrated_nodes
       add_error :bad_sequence, :bad, NO_SEQUENCE unless entry_node
     end
 
     def execute
-      CeleryScript::FirstPass
-        .run!(sequence: sequence) unless sequence.migrated_nodes
-
       return HashWithIndifferentAccess
         .new(misc_fields.merge!(recurse_into_node(entry_node)))
     end

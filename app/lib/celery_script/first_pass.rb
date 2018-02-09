@@ -28,7 +28,6 @@ module CeleryScript
             # Step 1- instantiate records.
             # TODO: Switch create!() to new() once things are atleast working
             #   - RC
-            puts "Creating a #{node[K]} node."
             node[I] = PrimaryNode.create!(kind: node[K], sequence: sequence)
           end
           .each_with_index do |node, index|

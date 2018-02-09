@@ -15,6 +15,7 @@ module CeleryScript
         sequence.primary_nodes.destroy_all
         sequence.edge_nodes.destroy_all
         FirstPass.run!(sequence: sequence)
+        sequence.reload
       end
     end
   end
