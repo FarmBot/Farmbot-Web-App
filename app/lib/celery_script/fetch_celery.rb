@@ -20,22 +20,6 @@ module CeleryScript
       @primary_nodes ||= Indexer.new(PrimaryNode.where(sequence: sequence))
     end
 
-    # Use `next_id`, `id`, `body_id`, `parent_id` from a sibling node to find
-    # the related node. EG: If you are traversing a node and want to find the
-    # PARENT, pass the `parent_id` to this function. MAY RETURN `nil`.
-    def find_node(id)
-      return (primary_nodes.by.id[id] || [])
-        .select{|x| x.kind != "nothing"}
-        .first
-    end
-
-    # Helper function for frequently referenced "NOTHING" object.
-    # All nodes that point to this node as their `parent_id` or `body_id`
-    # indicate a `nil` condition.
-    def null_node
-      @null_node ||= primary_nodes.by.id[entry_node.parent_id].first
-    end
-
     # The topmost node is always `NOTHING`. The term "root node" refers to
     # the node where (kind == "sequence") in a tree of nodes. We start recursion
     # here and move down.

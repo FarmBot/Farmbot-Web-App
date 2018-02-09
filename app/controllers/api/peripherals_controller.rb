@@ -19,11 +19,7 @@ module Api
     end
 
     def destroy
-      if (peripheral.device_id == current_device.id) && peripheral.destroy!
-        render json: ""
-      else
-        raise Errors::Forbidden, 'Not your Peripheral.'
-      end
+      peripheral.destroy! && (render json: "")
     end
 
     private
