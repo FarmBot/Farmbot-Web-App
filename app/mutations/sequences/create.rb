@@ -33,11 +33,12 @@ module Sequences
       seq.args["version"]     = Sequence::LATEST_VERSION
       # See comment above ^
       ActiveRecord::Base.transaction do
+        seq.migrated_nodes = true
         seq.save!
         reload_dependencies(seq)
+        CeleryScript::StoreCelery.run!(sequence: seq)
+        CeleryScript::FetchCelery.run!(sequence: seq.reload) # Perf nightmare?
       end
-      CeleryScript::StoreCelery.run!(sequence: seq)
-      CeleryScript::FetchCelery.run!(sequence: seq.reload) # Perf nightmare?
     end
   end
 end
