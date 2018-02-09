@@ -29,8 +29,8 @@ module Sequences
       ActiveRecord::Base.transaction do
         sequence.args["is_outdated"] = false
         sequence.update_attributes!(inputs.except(:sequence, :device))
-        CeleryScript::StoreCelery.run!(sequence: sequence)
         reload_dependencies(sequence)
+        CeleryScript::StoreCelery.run!(sequence: sequence)
       end
       CeleryScript::FetchCelery.run!(sequence: sequence.reload)
     rescue ActiveRecord::RecordInvalid => e
