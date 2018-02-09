@@ -61,6 +61,8 @@ module CeleryScript
   end
 
   class CSHeap
+    class BadAddress < Exception; end;
+    BAD_ADDR = "Bad node address: "
     # Nodes that point to other nodes rather than primitive data types (eg:
     # `locals` and friends) will be prepended with a "🔗".
     LINK    = "__"
@@ -133,7 +135,7 @@ module CeleryScript
         block[key.to_sym] = value
         return
       else
-        raise ("Bad node address: " + address)
+        raise BadAddress, BAD_ADDR + address.inspect
       end
     end
 
