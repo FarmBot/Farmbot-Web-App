@@ -32,6 +32,7 @@ module CeleryScript
     def allocate(h, s, parentAddr)
       addr = h.allot(s[:kind])
       h.put(addr, CSHeap::PARENT, parentAddr)
+      h.put(addr, CSHeap::COMMENT, s[:comment]) if s[:comment]
       iterate_over_body(h, s, addr)
       iterate_over_args(h, s, addr)
       addr

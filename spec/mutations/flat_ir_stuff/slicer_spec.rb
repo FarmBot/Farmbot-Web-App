@@ -2,10 +2,11 @@ require "spec_helper"
 require_relative "./flat_ir_helpers"
 
 describe CeleryScript::Slicer do
-  kind   = CeleryScript::CSHeap::KIND
-  parent = CeleryScript::CSHeap::PARENT
-  next_  = CeleryScript::CSHeap::NEXT
-  body   = CeleryScript::CSHeap::BODY
+  kind    = CeleryScript::CSHeap::KIND
+  parent  = CeleryScript::CSHeap::PARENT
+  next_   = CeleryScript::CSHeap::NEXT
+  body    = CeleryScript::CSHeap::BODY
+  comment = CeleryScript::CSHeap::COMMENT
 
   n = "nothing"
 
@@ -37,7 +38,13 @@ describe CeleryScript::Slicer do
             kind: "ROOT[2][2]",
             args: {q: "r"},
             body: [
-              { kind: "ROOT[2][2][0]", args: {g: "H"} },
+              {
+                kind: "ROOT[2][2][0]",
+                args: {
+                  g: "H"
+                },
+                comment: "very deep node"
+              },
             ]
           }
         ]
@@ -68,7 +75,8 @@ describe CeleryScript::Slicer do
       .with_index(0) do |x, index|
         [index, x]
       end.to_h
-
+    first_comment = slicer.heap_values.map{|x| x[comment] }.compact.first
+    expect(first_comment).to include("deep node")
     addr = CeleryScript::HeapAddress
     expectations = {
       0  => {kind => "nothing",       body => addr[0],  parent => addr[0],  next_ => addr[0] },

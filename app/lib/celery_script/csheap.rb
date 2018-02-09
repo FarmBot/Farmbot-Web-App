@@ -63,19 +63,20 @@ module CeleryScript
   class CSHeap
     # Nodes that point to other nodes rather than primitive data types (eg:
     # `locals` and friends) will be prepended with a "🔗".
-    LINK   = "__"
+    LINK    = "__"
     # Points to the originator (parent) of an `arg` or `body` node.
-    PARENT = (LINK + "parent").to_sym
+    PARENT  = (LINK + "parent").to_sym
     # Points to the first element in the `body``
-    BODY   = (LINK + "body").to_sym
+    BODY    = (LINK + "body").to_sym
     # (Broke?) Points to the next node in the body chain. Pointing to NOTHING
     # indicates the end of the body linked list.
-    NEXT   = (LINK + "next").to_sym
+    NEXT    = (LINK + "next").to_sym
     # Unique key name. See `celery_script_settings_bag.rb`
-    KIND   = :__KIND__
+    KIND    = :__KIND__
+    COMMENT = :__COMMENT__
 
     # Keys that primary nodes must have
-    PRIMARY_FIELDS = [PARENT, BODY, KIND, NEXT]
+    PRIMARY_FIELDS = [PARENT, BODY, KIND, NEXT, COMMENT]
 
     # Index 0 of the heap represents a null pointer of sorts.
     # If a field points to this address, it is considered empty.

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180202165503) do
+ActiveRecord::Schema.define(version: 20180209134752) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -177,6 +177,7 @@ ActiveRecord::Schema.define(version: 20180202165503) do
     t.integer "pin_guard_5_active_state", default: 1
     t.integer "pin_guard_5_pin_nr", default: 0
     t.integer "pin_guard_5_time_out", default: 60
+    t.boolean "api_migrated", default: false
     t.index ["device_id"], name: "index_firmware_configs_on_device_id"
   end
 
@@ -259,6 +260,7 @@ ActiveRecord::Schema.define(version: 20180202165503) do
     t.bigint "parent_id"
     t.string "parent_arg_name", limit: 50
     t.bigint "next_id"
+    t.string "comment", limit: 80
     t.index ["body_id"], name: "index_primary_nodes_on_body_id"
     t.index ["next_id"], name: "index_primary_nodes_on_next_id"
     t.index ["parent_id"], name: "index_primary_nodes_on_parent_id"
@@ -295,7 +297,7 @@ ActiveRecord::Schema.define(version: 20180202165503) do
     t.string "color"
     t.string "kind", limit: 280, default: "sequence"
     t.text "args"
-    t.text "body" # Legacy!
+    t.text "body"
     t.datetime "updated_at"
     t.datetime "created_at"
     t.boolean "migrated_nodes", default: false

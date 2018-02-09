@@ -84,6 +84,7 @@ module CeleryScript
       out  = { kind: node.kind, args: recurse_into_args(node) }
       body = get_body_elements(node)
       out[:body] = body.map { |x| recurse_into_node(x) } unless body.empty?
+      out[:comment] = node.comment if node.comment
       return out
     end
 

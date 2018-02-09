@@ -12,6 +12,7 @@ module CeleryScript
     # full name is quite long and they are referenced frequently in the code.
     # Just remember that "B" is "BODY", "K" is "KIND", etc...
     B    = CeleryScript::CSHeap::BODY
+    C    = CeleryScript::CSHeap::COMMENT
     K    = CeleryScript::CSHeap::KIND
     L    = CeleryScript::CSHeap::LINK
     N    = CeleryScript::CSHeap::NEXT
@@ -30,7 +31,9 @@ module CeleryScript
             # Step 1- instantiate records.
             # TODO: Switch create!() to new() once things are atleast working
             #   - RC
-            node[I] = PrimaryNode.create!(kind: node[K], sequence: sequence)
+            node[I] = PrimaryNode.create!(kind:     node[K],
+                                          sequence: sequence,
+                                          comment:  node[C] || nil)
           end
           .each_with_index do |node, index|
             # Step 2- Assign SQL ids (not to be confused with array index IDs or
@@ -73,7 +76,11 @@ private
     def every_primary_link
       @every_primary_link ||= flat_ir
         .map do |x|
-          x.except(B,K,L,N,P,I).invert.to_a.select{|(k,v)| k.is_a?(HeapAddress)}
+          x
+            .except(B,C,I,K,L,N,P)
+            .invert
+            .to_a
+            .select{|(k,v)| k.is_a?(HeapAddress)}
         end
         .map(&:to_h)
         .reduce({}, :merge)
