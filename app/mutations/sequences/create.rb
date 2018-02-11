@@ -37,8 +37,8 @@ module Sequences
         seq.migrated_nodes = true
         seq.save!
         CeleryScript::StoreCelery.run!(sequence: seq)
-        CeleryScript::FetchCelery.run!(sequence: seq.reload) # Perf nightmare?
       end
+      CeleryScript::FetchCelery.run!(sequence: seq.reload) # Perf nightmare?
     end
   end
 end

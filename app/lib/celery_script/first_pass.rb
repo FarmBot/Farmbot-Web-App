@@ -37,7 +37,7 @@ module CeleryScript
           end
           .each_with_index do |node, index|
             # Step 2- Assign SQL ids (not to be confused with array index IDs or
-            #         instances of HeapAddress), also sets parent_arg_name
+            # instances of HeapAddress), also sets parent_arg_name
             model                 = node[I]
             model.parent_arg_name = parent_arg_name_for(node, index)
             model.body_id         = fetch_sql_id_for(B, node)

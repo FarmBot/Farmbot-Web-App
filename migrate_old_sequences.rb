@@ -14,4 +14,6 @@ until next_seq == nil
   next_seq = find_next_seq
 end
 
-puts "=== DONE MIGRATING in #{Time.now - total_time} seconds!"
+t2 = Time.now - total_time
+
+puts "=== DONE MIGRATING #{count} sequences in #{t2} seconds! (#{count/t2} per second)"
