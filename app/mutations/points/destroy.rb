@@ -39,7 +39,7 @@ private
     end
 
     def all_deps
-      raise "TODO"
+      raise "Re-write this one last."
     end
 
     # point => tool_slot => tool
