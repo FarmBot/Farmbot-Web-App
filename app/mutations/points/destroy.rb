@@ -56,8 +56,7 @@ private
         .map    { |x| x&.pointer&.tool&.id }
         .compact
 
-      all_deps.where(dependency_type: "Tool",
-                     dependency_id: deps)
+      all_deps.where(dependency_type: "Tool", dependency_id: deps)
     end
   end
 end

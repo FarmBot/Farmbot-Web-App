@@ -41,7 +41,9 @@ module Points
     end
 
     def deps
-      @deps ||= EdgeNode.where(kind: "tool_id", value: current_tool_id)
+      @deps ||= Sequence
+        .where(id: EdgeNode.where(kind: "tool_id", value: current_tool_id)
+                    .pluck(:sequence_id))
     end
 
     def names

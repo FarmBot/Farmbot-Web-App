@@ -46,9 +46,14 @@ module Points
     end
 
     def prevent_removal_of_in_use_tools
-      Points::ToolRemovalCheck.run!(point:             point,
-                                    attempting_change: new_tool_id?,
-                                    next_tool_id:      tool_id)
+      results = Points::ToolRemovalCheck.run(point: point,
+                                             attempting_change: new_tool_id?,
+                                             next_tool_id: tool_id)
+
+      !results.success? && results
+        .errors
+        .values
+        .map { |e| add_error e.symbolic, e.symbolic, e.message }
     end
   end
 end
