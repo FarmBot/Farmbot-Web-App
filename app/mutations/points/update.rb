@@ -20,19 +20,11 @@ module Points
     end
 
     def validate
-      # TODO: Remove this guy.
-      throw "BRB" if (tool_id &&
-                      !device
-                        .tools
-                        .pluck(:id)
-                        .include?(tool_id))
       prevent_removal_of_in_use_tools
     end
 
     def execute
-      Point.transaction do
-        point.update_attributes!(update_params) && point
-      end
+      Point.transaction { point.update_attributes!(update_params) && point }
     end
 
   private
@@ -49,12 +41,14 @@ module Points
       p && p.update_attributes!(inputs.slice(*WHITELIST))
     end
 
-    def has_new_tool_id?
+    def new_tool_id?
       raw_inputs.key?("tool_id")
     end
 
     def prevent_removal_of_in_use_tools
-      raise "rewrite required"
+      Points::ToolRemovalCheck.run!(point:             point,
+                                    attempting_change: new_tool_id?,
+                                    next_tool_id:      tool_id)
     end
   end
 end
