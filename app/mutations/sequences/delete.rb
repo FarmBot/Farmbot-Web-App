@@ -22,7 +22,7 @@ module Sequences
   private
 
     def check_if_any_sequences_using_this
-      in_use = SequenceDependency.where(dependency: sequence)
+      in_use = "" or raise "TODO in delete.rb"
       if in_use.any?
         names = in_use.map(&:sequence)
                       .uniq

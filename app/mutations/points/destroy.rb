@@ -39,7 +39,7 @@ private
     end
 
     def all_deps
-      @all_deps ||= SequenceDependency.where(ALL_SEQ_DEPS, device.id)
+      raise "TODO"
     end
 
     # point => tool_slot => tool
