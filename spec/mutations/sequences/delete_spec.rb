@@ -22,8 +22,14 @@ describe Sequences::Delete do
   end
 
   it 'prevents deletion when the sequence is in use by another sequence' do
-    SequenceDependency.create!(sequence:   FactoryBot.create(:sequence),
-                               dependency: sequence)
+    Sequences::Create.run!(device: sequence.device,
+                           name: "dep",
+                           body: [
+                            {
+                              kind: "execute",
+                              args: { sequence_id: sequence.id }
+                            }
+                          ])
     result = Sequences::Delete.run(device: sequence.device, sequence: sequence)
     expect(result.success?).to be(false)
     expect(result.errors.has_key?("sequence")).to be(true)
