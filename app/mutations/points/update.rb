@@ -54,14 +54,7 @@ module Points
     end
 
     def prevent_removal_of_in_use_tools
-      results = Points::ToolRemovalCheck.run(point:             point,
-                                             attempting_change: has_new_tool_id?,
-                                             next_tool_id:      tool_id)
-      ok      = results.success?
-      results
-        .errors
-        .values
-        .map { |e| add_error e.symbolic, e.symbolic, e.message } unless ok
+      raise "rewrite required"
     end
   end
 end

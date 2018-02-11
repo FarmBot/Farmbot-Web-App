@@ -53,7 +53,6 @@ describe Api::SequencesController do
     end
 
     it 'does not destroy a sequence when in use by a sequence' do
-      before = SequenceDependency.count
       program = [
         {
           kind: "_if",

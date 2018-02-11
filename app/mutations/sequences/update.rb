@@ -30,7 +30,6 @@ module Sequences
         sequence.args["is_outdated"] = false
         sequence.migrated_nodes = true
         sequence.update_attributes!(inputs.except(:sequence, :device))
-        reload_dependencies(sequence)
         CeleryScript::StoreCelery.run!(sequence: sequence)
       end
       CeleryScript::FetchCelery.run!(sequence: sequence.reload)

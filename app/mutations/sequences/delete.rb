@@ -22,7 +22,7 @@ module Sequences
   private
 
     def check_if_any_sequences_using_this
-      in_use = "" or raise "TODO in delete.rb"
+      raise "rewrite required"
       if in_use.any?
         names = in_use.map(&:sequence)
                       .uniq
