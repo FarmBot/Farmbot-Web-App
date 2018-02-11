@@ -45,7 +45,7 @@ module Sequences
         kind: "sequence",
         body: symbolized_input[:body],
         args: {
-          version: SequenceMigration::Base.latest_version,
+          version: Sequence::LATEST_VERSION,
           locals:  symbolized_input
             .deep_symbolize_keys
             .dig(:args, :locals) || Sequence::SCOPE_DECLARATION

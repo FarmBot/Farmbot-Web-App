@@ -52,8 +52,8 @@ module CeleryScript
       fetchArg(name).additional_validation || CeleryScript::NOOP
     end
 
-    def as_json(optns)
-      { "tag": SequenceMigration::Base.latest_version,
+    def as_json(*)
+      { "tag": Sequence::LATEST_VERSION,
         "args": @arg_def_list.to_a.map(&:last).map{|x| x.as_json({}) },
         "nodes": @node_def_list.to_a.map(&:last).map{|x| x.as_json({}) }}
     end

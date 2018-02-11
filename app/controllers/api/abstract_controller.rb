@@ -6,7 +6,8 @@ module Api
     # endpoint that requires JSON.
     class OnlyJson < Exception; end;
     CONSENT_REQUIRED = "all device users must agree to terms of service."
-
+    NOT_JSON = "That request was not valid JSON. Consider checking the request"\
+               " body with a JSON validator.."
     respond_to :json
     before_action :check_fbos_version
     before_action :set_default_stuff
@@ -19,10 +20,7 @@ module Api
 
     rescue_from(JWT::VerificationError) { |e| auth_err }
 
-    rescue_from(ActionDispatch::Http::Parameters::ParseError) do
-      sorry "That request was not valid JSON. Consider checking the request " +
-            "body with a JSON validator..", 422
-    end
+    rescue_from(ActionDispatch::Http::Parameters::ParseError) { sorry NOT_JSON, 422 }
 
     rescue_from(ActiveRecord::ValueTooLong) do
       sorry "Please use reasonable lengths on string inputs", 422

@@ -3,10 +3,14 @@
 # most of the functionality of a programming language such a variables and
 # conditional logic.
 class Sequence < ApplicationRecord
+  # This number (YYYYMMDD) helps us prepare for the future by keeping things
+  # versioned. We can use it as a means of identifying legacy sequences when
+  # breaking changes happen.
+  LATEST_VERSION    = 20180209
   NOTHING           = { kind: "nothing", args: {} }
   SCOPE_DECLARATION = { kind: "scope_declaration", args: {} }
-  DEFAULT_ARGS      = { locals: SCOPE_DECLARATION,
-                        version: SequenceMigration::Base.latest_version }
+  DEFAULT_ARGS      = { locals:  SCOPE_DECLARATION,
+                        version: LATEST_VERSION  }
   # Does some extra magic for serialized columns for us, such as providing a
   # default value and making hashes have indifferent access.
   class CustomSerializer
@@ -35,6 +39,8 @@ class Sequence < ApplicationRecord
   has_many  :farm_events, as: :executable
   has_many  :regimen_items
   has_many  :sequence_dependencies, dependent: :destroy
+  has_many  :primary_nodes,         dependent: :destroy
+  has_many  :edge_nodes,            dependent: :destroy
   serialize :body, CustomSerializer.new(Array)
   serialize :args, CustomSerializer.new(Hash)
 
@@ -44,20 +50,13 @@ class Sequence < ApplicationRecord
   validates :name, uniqueness: { scope: :device }
   validates  :device, presence: true
 
-  after_find :maybe_migrate
-
   # http://stackoverflow.com/a/5127684/1064917
   before_validation :set_defaults
-
+  around_destroy :delete_nodes_too
   def set_defaults
     self.args              = {}.merge(DEFAULT_ARGS).merge(self.args)
     self.color           ||= "gray"
     self.kind            ||= "sequence"
-  end
-
-  def maybe_migrate
-    # spot check with Sequence.order("RANDOM()").first.maybe_migrate
-    Sequences::Migrate.run!(sequence: self, device: self.device)
   end
 
   def self.random
@@ -71,4 +70,13 @@ class Sequence < ApplicationRecord
       .slice(:kind, :args, :body)
     CeleryScript::JSONClimber.climb(hash, &blk)
   end
+
+  def delete_nodes_too
+    Sequence.transaction do
+      PrimaryNode.where(sequence_id: self.id).destroy_all
+      EdgeNode.where(sequence_id: self.id).destroy_all
+      yield
+    end
+  end
+
 end

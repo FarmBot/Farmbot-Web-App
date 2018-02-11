@@ -1,5 +1,6 @@
 module Regimens
   class Update < Mutations::Command
+    BAD_RECORD = "Failed to instantiate nested RegimenItem. Offending item: "
 
     required do
       model :device, class: Device
@@ -27,9 +28,7 @@ module Regimens
       regimen
     rescue ActiveRecord::RecordInvalid => e
       offender = e.record.as_json.slice("time_offset", "sequence_id").to_s
-      add_error :regimen_items,
-                :probably_bad,
-                "Failed to instantiate nested RegimenItem. Offending item: " + offender
+      add_error :regimen_items, :probably_bad, BAD_RECORD + offender
     end
   end
 end

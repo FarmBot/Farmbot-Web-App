@@ -194,6 +194,10 @@ module CeleryScriptSettingsBag
       .defineNode(:parameter_declaration, [:label, :data_type], [])
       .defineNode(:set_servo_angle,   [:pin_number, :pin_value], [])
       .defineNode(:install_first_party_farmware, [])
+
+  ANY_ARG_NAME  = Corpus.as_json[:args].pluck("name").map(&:to_s)
+  ANY_NODE_NAME = Corpus.as_json[:nodes].pluck("name").map(&:to_s)
+
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
   def self.within(array, node)

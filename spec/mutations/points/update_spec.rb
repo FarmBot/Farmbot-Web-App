@@ -9,6 +9,6 @@ describe Points::Update do
                                 tool_id: nil)
     expect(result.success?).to be(false)
     expect(result.errors.message_list)
-      .to include(Points::ToolRemovalCheck::IN_USE % s.sequence.name)
+      .to include(Points::ToolRemovalCheck::IN_USE % s.sequence[:name])
   end
 end
