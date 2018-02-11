@@ -64,14 +64,14 @@ module CeleryScript
     class BadAddress < Exception; end;
     BAD_ADDR = "Bad node address: "
     # Nodes that point to other nodes rather than primitive data types (eg:
-    # `locals` and friends) will be prepended with a "🔗".
+    # `locals` and friends) will be prepended with a LINK.
     LINK    = "__"
     # Points to the originator (parent) of an `arg` or `body` node.
     PARENT  = (LINK + "parent").to_sym
     # Points to the first element in the `body``
     BODY    = (LINK + "body").to_sym
-    # (Broke?) Points to the next node in the body chain. Pointing to NOTHING
-    # indicates the end of the body linked list.
+    # Points to the next node in the body chain. Pointing to NOTHING indicates
+    # the end of the body linked list.
     NEXT    = (LINK + "next").to_sym
     # Unique key name. See `celery_script_settings_bag.rb`
     KIND    = :__KIND__
