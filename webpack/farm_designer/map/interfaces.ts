@@ -34,6 +34,7 @@ export interface GardenMapLegendProps {
   showPoints: boolean;
   showSpread: boolean;
   showFarmbot: boolean;
+  showImages: boolean;
 }
 
 export type MapTransformProps = {

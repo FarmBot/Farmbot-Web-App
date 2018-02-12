@@ -11,6 +11,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   show_points: "show_points",
   show_spread: "show_spread",
   show_farmbot: "show_farmbot",
+  show_images: "show_images",
 
   /** "Labs" feature names. */
   stub_config: "stub_config",

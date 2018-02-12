@@ -61,6 +61,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     show_points: this.initializeSetting(BooleanSetting.show_points, true),
     show_spread: this.initializeSetting(BooleanSetting.show_spread, false),
     show_farmbot: this.initializeSetting(BooleanSetting.show_farmbot, true),
+    show_images: this.initializeSetting(BooleanSetting.show_images, false),
     bot_origin_quadrant: this.getBotOriginQuadrant(),
     zoom_level: calcZoomLevel(getZoomLevelIndex())
   };
@@ -109,6 +110,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       show_points,
       show_spread,
       show_farmbot,
+      show_images,
       bot_origin_quadrant,
       zoom_level
     } = this.state;
@@ -134,7 +136,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         showPlants={show_plants}
         showPoints={show_points}
         showSpread={show_spread}
-        showFarmbot={show_farmbot} />
+        showFarmbot={show_farmbot}
+        showImages={show_images} />
 
       <div className="panel-header gray-panel designer-nav">
         <div className="panel-tabs">
@@ -161,6 +164,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           showPlants={show_plants}
           showSpread={show_spread}
           showFarmbot={show_farmbot}
+          showImages={show_images}
           selectedPlant={this.props.selectedPlant}
           crops={this.props.crops}
           dispatch={this.props.dispatch}
@@ -177,7 +181,9 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           gridSize={getGridSize(botSize)}
           gridOffset={gridOffset}
           peripherals={this.props.peripherals}
-          eStopStatus={this.props.eStopStatus} />
+          eStopStatus={this.props.eStopStatus}
+          latestImages={this.props.latestImages}
+          cameraCalibrationData={this.props.cameraCalibrationData} />
       </div>
     </div>;
   }

@@ -32,8 +32,6 @@ export function Grid(props: GridProps) {
     </defs>
 
     <g id="grid">
-      <rect id="fill"
-        width={gridSize.x} height={gridSize.y} fill={Color.gridSoil} />
       <rect id="minor-grid"
         width={gridSize.x} height={gridSize.y} fill="url(#minor_grid)" />
       <rect id="major-grid"

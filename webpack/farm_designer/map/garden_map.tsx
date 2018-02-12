@@ -25,7 +25,8 @@ import {
   ToolSlotLayer,
   FarmBotLayer,
   HoveredPlantLayer,
-  DragHelperLayer
+  DragHelperLayer,
+  ImageLayer,
 } from "./layers";
 import { cachedCrop } from "../../open_farm/icons";
 import { AxisNumberProperty } from "./interfaces";
@@ -33,6 +34,7 @@ import { SelectionBox, SelectionBoxData } from "./selection_box";
 import { Actions } from "../../constants";
 import { isNumber } from "lodash";
 import { TargetCoordinate } from "./target_coordinate";
+import { Color } from "../../ui/index";
 
 const DRAG_ERROR = `ERROR - Couldn't get zoom level of garden map, check the
   handleDrop() or drag() method in garden_map.tsx`;
@@ -275,10 +277,11 @@ export class GardenMap extends
   }
 
   render() {
-    const mapSize = getMapSize(this.props.gridSize, this.props.gridOffset);
+    const { gridSize } = this.props;
+    const mapSize = getMapSize(gridSize, this.props.gridOffset);
     const mapTransformProps = {
       quadrant: this.props.botOriginQuadrant,
-      gridSize: this.props.gridSize
+      gridSize
     };
     return <div
       className="drop-area"
@@ -300,11 +303,20 @@ export class GardenMap extends
         <svg
           id="drop-area-svg"
           x={this.props.gridOffset.x} y={this.props.gridOffset.y}
-          width={this.props.gridSize.x} height={this.props.gridSize.y}
+          width={gridSize.x} height={gridSize.y}
           onMouseUp={this.endDrag}
           onMouseDown={this.startDrag}
           onMouseMove={this.drag}
           onClick={this.click}>
+          <g id="grid-fill">
+            <rect id="fill"
+              width={gridSize.x} height={gridSize.y} fill={Color.gridSoil} />
+          </g>
+          <ImageLayer
+            images={this.props.latestImages}
+            cameraCalibrationData={this.props.cameraCalibrationData}
+            visible={!!this.props.showImages}
+            mapTransformProps={mapTransformProps} />
           <Grid
             onClick={closePlantInfo(this.props.dispatch)}
             mapTransformProps={mapTransformProps}
