@@ -23,7 +23,8 @@ describe("<GardenMapLegend />", () => {
       showPlants: false,
       showPoints: false,
       showSpread: false,
-      showFarmbot: false
+      showFarmbot: false,
+      showImages: false,
     };
   }
 

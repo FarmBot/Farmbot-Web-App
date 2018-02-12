@@ -32,6 +32,7 @@ function fakeProps(): GardenMapProps {
     showPlants: true,
     showSpread: false,
     showFarmbot: false,
+    showImages: false,
     selectedPlant: fakePlant(),
     crops: [],
     dispatch: jest.fn(),
@@ -76,7 +77,13 @@ function fakeProps(): GardenMapProps {
     gridSize: { x: 1000, y: 1000 },
     gridOffset: { x: 100, y: 100 },
     peripherals: [],
-    eStopStatus: false
+    eStopStatus: false,
+    latestImages: [],
+    cameraCalibrationData: {
+      scale: undefined, rotation: undefined,
+      offset: { x: undefined, y: undefined },
+      origin: undefined
+    },
   };
 }
 

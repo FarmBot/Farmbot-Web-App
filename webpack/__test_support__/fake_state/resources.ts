@@ -179,6 +179,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     scaled_encoders: true,
     show_spread: false,
     show_farmbot: true,
+    show_images: false,
     show_plants: true,
     show_points: true,
     x_axis_inverted: false,

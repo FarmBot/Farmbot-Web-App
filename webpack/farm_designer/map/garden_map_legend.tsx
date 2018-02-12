@@ -16,7 +16,8 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
     showPlants,
     showPoints,
     showSpread,
-    showFarmbot
+    showFarmbot,
+    showImages,
   } = props;
 
   const plusBtnClass = atMaxZoom() ? "disabled" : "";
@@ -64,6 +65,10 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
           value={showFarmbot}
           label={t("FarmBot?")}
           onClick={toggle("show_farmbot")} />
+        <LayerToggle
+          value={showImages}
+          label={t("Photos?")}
+          onClick={toggle("show_images")} />
       </div>
       <div className="farmbot-origin">
         <label>
