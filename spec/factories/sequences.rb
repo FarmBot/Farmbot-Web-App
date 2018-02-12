@@ -8,5 +8,7 @@ FactoryBot.define do
     kind "sequence"
     args({ version: 4 })
     body([])
+
+    after(:create) { |s| CeleryScript::StoreCelery.run!(sequence: s) }
   end
 end
