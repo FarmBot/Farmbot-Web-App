@@ -57,6 +57,7 @@ describe("<FarmDesigner/>", () => {
     expect(legendProps.showPoints).toBeTruthy();
     expect(legendProps.showSpread).toBeFalsy();
     expect(legendProps.showFarmbot).toBeTruthy();
+    expect(legendProps.showImages).toBeFalsy();
     expect(legendProps.botOriginQuadrant).toEqual(2);
     // tslint:disable-next-line:no-any
     const gardenMapProps = wrapper.find("GardenMap").props() as any;

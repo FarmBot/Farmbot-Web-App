@@ -37,6 +37,7 @@ export interface State extends TypeCheckerHint {
   show_points: boolean;
   show_spread: boolean;
   show_farmbot: boolean;
+  show_images: boolean;
   bot_origin_quadrant: BotOriginQuadrant;
   zoom_level: number;
 }
@@ -167,6 +168,7 @@ export interface GardenMapProps {
   showPoints: boolean | undefined;
   showSpread: boolean | undefined;
   showFarmbot: boolean | undefined;
+  showImages: boolean | undefined;
   dispatch: Function;
   designer: DesignerState;
   points: TaggedGenericPointer[];

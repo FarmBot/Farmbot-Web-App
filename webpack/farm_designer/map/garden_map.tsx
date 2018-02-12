@@ -313,6 +313,7 @@ export class GardenMap extends
           <MapImage
             image={this.props.latestImage}
             cameraCalibrationData={this.props.cameraCalibrationData}
+            showImages={this.props.showImages}
             mapTransformProps={mapTransformProps} />
           <SpreadLayer
             mapTransformProps={mapTransformProps}

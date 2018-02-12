@@ -31,7 +31,8 @@ describe("<MapImage />", () => {
       mapTransformProps: {
         gridSize: { x: 0, y: 0 },
         quadrant: 1
-      }
+      },
+      showImages: true,
     };
   };
 

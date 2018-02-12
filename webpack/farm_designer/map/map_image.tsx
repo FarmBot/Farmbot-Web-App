@@ -91,6 +91,7 @@ const transform = (props: TransformProps): string => {
 export interface MapImageProps {
   image: TaggedImage | undefined;
   cameraCalibrationData: CameraCalibrationData;
+  showImages: boolean | undefined;
   mapTransformProps: MapTransformProps;
   sizeOverride?: ImageSize;
 }
@@ -101,7 +102,7 @@ export interface MapImageProps {
  * Require camera calibration data to display the image.
  */
 export function MapImage(props: MapImageProps) {
-  const { image, cameraCalibrationData, sizeOverride } = props;
+  const { image, cameraCalibrationData, sizeOverride, showImages } = props;
   const { scale, rotation, offset, origin } = cameraCalibrationData;
   const imageScale = parse(scale);
   const imageRotation = parse(rotation);
@@ -111,7 +112,7 @@ export function MapImage(props: MapImageProps) {
   const { quadrant, gridSize } = props.mapTransformProps;
 
   /* Check if the latest image exists. */
-  if (image) {
+  if (showImages && image) {
     const imageUrl = image.body.attachment_url;
     const { x, y } = image.body.meta;
     const { width, height } = getImageSize(imageUrl, sizeOverride);

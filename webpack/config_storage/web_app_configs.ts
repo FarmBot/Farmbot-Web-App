@@ -40,6 +40,7 @@ export interface WebAppConfig {
   stub_config: boolean;
   show_first_party_farmware: boolean;
   enable_browser_speak: boolean;
+  show_images: boolean;
 }
 
 export type NumberConfigKey = "id"
@@ -77,4 +78,5 @@ export type BooleanConfigKey = "confirm_step_deletion"
     |"z_axis_inverted"
     |"stub_config"
     |"show_first_party_farmware"
-    |"enable_browser_speak";
+    |"enable_browser_speak"
+    |"show_images";

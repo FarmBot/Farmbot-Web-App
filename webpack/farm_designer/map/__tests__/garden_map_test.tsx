@@ -32,6 +32,7 @@ function fakeProps(): GardenMapProps {
     showPlants: true,
     showSpread: false,
     showFarmbot: false,
+    showImages: false,
     selectedPlant: fakePlant(),
     crops: [],
     dispatch: jest.fn(),
