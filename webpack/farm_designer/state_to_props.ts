@@ -41,7 +41,7 @@ export function mapStateToProps(props: Everything) {
     }
     return { x: undefined, y: undefined };
   }
-
+  // MOVE THIS INTO DRY-er helper method before merging! - RC
   const peripherals = _.uniq(selectAllPeripherals(props.resources.index))
     .map(x => {
       const label = x.body.label;

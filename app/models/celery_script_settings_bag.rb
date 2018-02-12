@@ -150,7 +150,7 @@ module CeleryScriptSettingsBag
       end
       .defineArg(:peripheral_id,   [Integer]) do |node|
         no_periph = !Peripheral.exists?(node.value)
-        node.invalidate!(BAD_PERIPH_ID % node.value) if no_tool
+        node.invalidate!(BAD_PERIPH_ID % node.value) if no_periph
       end
       .defineNode(:read_peripheral,  [:peripheral_id])
       .defineNode(:write_peripheral, [:peripheral_id, :pin_value])

@@ -7,19 +7,32 @@ import { setPinMode, PIN_MODES, currentModeSelection } from "./tile_pin_support"
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
 import { editStep } from "../../api/crud";
-import { SequenceBodyItem } from "farmbot";
+import { SequenceBodyItem, ReadPeripheral } from "farmbot";
 import { TaggedSequence } from "../../resources/tagged_resources";
 
-export function convertToReadPeripheral(step: Readonly<SequenceBodyItem>,
-  sequence: Readonly<TaggedSequence>,
-  index: number) {
-  return editStep({
-    step,
-    sequence,
-    index,
-    executor(c) { c = { kind: "read_peripheral", args: { peripheral_id: 0 } }; }
-  });
-}
+export const EMPTY_READ_PERIPHERAL: ReadPeripheral = {
+  kind: "read_peripheral",
+  args: { peripheral_id: 0 }
+};
+
+export const changeStep =
+  (replacement: SequenceBodyItem) =>
+    (step: Readonly<SequenceBodyItem>,
+      sequence: Readonly<TaggedSequence>,
+      index: number) => {
+      return editStep({
+        step,
+        sequence,
+        index,
+        executor(c) {
+          c.kind = replacement.kind;
+          c.args = replacement.args;
+          c.body = replacement.body;
+        }
+      });
+    };
+
+const convertToReadPeripheral = changeStep(EMPTY_READ_PERIPHERAL);
 
 export function TileReadPin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;

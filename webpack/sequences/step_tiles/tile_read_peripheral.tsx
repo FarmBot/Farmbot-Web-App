@@ -1,15 +1,47 @@
 import * as React from "react";
 import { t } from "i18next";
-import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
-import { setPinMode, PIN_MODES, currentModeSelection } from "./tile_pin_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
-import { Row, Col, FBSelect } from "../../ui/index";
+import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
+import { ReadPin, WritePeripheral } from "farmbot";
+import { changeStep } from "./tile_read_pin";
+import { selectAllPeripherals } from "../../resources/selectors";
+import { TaggedPeripheral } from "../../resources/tagged_resources";
+import { editStep } from "../../api/crud";
+import { isNumber } from "lodash";
+import { joinKindAndId } from "../../resources/reducer";
+import { ResourceIndex } from "../../resources/interfaces";
+
+export const EMPTY_READ_PIN: ReadPin = {
+  kind: "read_pin",
+  args: { pin_mode: 0, pin_number: 13, label: "" }
+};
+
+const convertToReadPin = changeStep(EMPTY_READ_PIN);
+
+const selectedItem = (id: number, resources: ResourceIndex) => {
+  const lookup = joinKindAndId("Peripheral", id);
+  const item = resources.references[resources.byKindAndId[lookup] || "x"];
+  if (item && item.kind === "Peripheral") {
+    return { label: item.body.label, value: item.body.id || 0 };
+  }
+};
 
 export function TileReadPeripheral(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
   const className = "read-pin-step";
+  const payl = convertToReadPin(currentStep, currentSequence, index);
+  const peripherals: DropDownItem[] = selectAllPeripherals(props.resources)
+    .map(x => {
+      const label = x.body.label;
+      const value = x.body.id || 0;
+      return { label, value };
+    })
+    .filter(x => x.value);
+  if (currentStep.kind !== "read_peripheral") {
+    throw new Error("Expected `read_peripheral`");
+  }
   return <StepWrapper>
     <StepHeader
       className={className}
@@ -20,8 +52,36 @@ export function TileReadPeripheral(props: StepParams) {
       index={index} />
     <StepContent className={className}>
       <Row>
-        <Col xs={6} md={3}>
-          <label>{t("TODO: This. (read peripheral)")}</label>
+        <Col xs={12} md={12}>
+          <label>{t("Peripheral")}</label>
+          <FBSelect
+            allowEmpty={false}
+            list={peripherals}
+            placeholder="Select a peripheral..."
+            onChange={(selection) => {
+              dispatch(editStep({
+                sequence: currentSequence,
+                step: currentStep,
+                index: index,
+                executor: (step: WritePeripheral) => {
+                  if (isNumber(selection.value)) {
+                    step.args.peripheral_id = selection.value;
+                  } else {
+                    throw new Error("selection.value must be numeric");
+                  }
+                }
+              }));
+            }}
+            selectedItem={selectedItem(currentStep.args.peripheral_id, props.resources)} />
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={6} md={6}>
+          <label>
+            <a onClick={() => dispatch(payl)}>
+              {t("Enter peripheral data manually")}
+            </a>
+          </label>
         </Col>
       </Row>
     </StepContent>
