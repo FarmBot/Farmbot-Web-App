@@ -23,6 +23,7 @@ import { TileFindHome } from "./tile_find_home";
 import { t } from "i18next";
 import { Session } from "../../session";
 import { BooleanSetting } from "../../session_keys";
+import { TileReadPeripheral } from "./tile_read_peripheral";
 
 interface MoveParams {
   step: Step;
@@ -135,6 +136,7 @@ export function renderCeleryNode(kind: LegalSequenceKind, props: StepParams) {
     case "execute_script": return <TileExecuteScript {...props} />;
     case "take_photo": return <TileTakePhoto {...props} />;
     case "find_home": return <TileFindHome {...props} />;
+    case "read_peripheral": return <TileReadPeripheral {...props} />;
     default: return <div><hr /> ? Unknown step ? <hr /></div>;
   }
 }

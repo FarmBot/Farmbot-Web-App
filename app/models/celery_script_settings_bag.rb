@@ -29,9 +29,9 @@ module CeleryScriptSettingsBag
   ALLOWED_OPS           = %w(< > is not is_undefined)
   ALLOWED_AXIS          = %w(x y z all)
   ALLOWED_LHS           = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
-  STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
-                            send_message execute _if execute_script take_photo
-                            find_home)
+  STEPS                 = %w(_if execute execute_script find_home move_absolute
+                             move_relative read_peripheral read_pin send_message
+                             take_photo wait write_peripheral write_pin )
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
@@ -149,10 +149,11 @@ module CeleryScriptSettingsBag
         end
       end
       .defineArg(:peripheral_id,   [Integer]) do |node|
-        no_tool = !Tool.exists?(node.value)
+        no_periph = !Peripheral.exists?(node.value)
         node.invalidate!(BAD_PERIPH_ID % node.value) if no_tool
       end
-      .defineNode(:peripheral,      [:peripheral_id])
+      .defineNode(:read_peripheral,  [:peripheral_id])
+      .defineNode(:write_peripheral, [:peripheral_id, :pin_value])
       .defineNode(:nothing,        [])
       .defineNode(:tool,           [:tool_id])
       .defineNode(:coordinate,     [:x, :y, :z])

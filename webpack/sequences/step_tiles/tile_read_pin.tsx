@@ -6,12 +6,26 @@ import { ToolTips } from "../../constants";
 import { setPinMode, PIN_MODES, currentModeSelection } from "./tile_pin_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
-import { PeripheralSelection } from "./tile_read_pin/peripheral_selection";
+import { editStep } from "../../api/crud";
+import { SequenceBodyItem } from "farmbot";
+import { TaggedSequence } from "../../resources/tagged_resources";
+
+export function convertToReadPeripheral(step: Readonly<SequenceBodyItem>,
+  sequence: Readonly<TaggedSequence>,
+  index: number) {
+  return editStep({
+    step,
+    sequence,
+    index,
+    executor(c) { c = { kind: "read_peripheral", args: { peripheral_id: 0 } }; }
+  });
+}
 
 export function TileReadPin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
   const className = "read-pin-step";
   if (currentStep.kind != "read_pin") { throw new Error("read_pin only"); }
+  const payl = convertToReadPeripheral(currentStep, currentSequence, index);
 
   return <StepWrapper>
     <StepHeader
@@ -47,7 +61,15 @@ export function TileReadPin(props: StepParams) {
             list={PIN_MODES} />
         </Col>
       </Row>
-      <PeripheralSelection value={currentStep} />
+      <Row>
+        <Col xs={6} md={6}>
+          <label>
+            <a onClick={() => dispatch(payl)}>
+              {t("Use existing peripheral instead")}
+            </a>
+          </label>
+        </Col>
+      </Row>
     </StepContent>
   </StepWrapper>;
 }

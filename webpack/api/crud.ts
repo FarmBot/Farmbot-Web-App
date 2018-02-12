@@ -47,7 +47,7 @@ export function overwrite(tr: TaggedResource,
   };
 }
 
-interface EditStepProps {
+export interface EditStepProps {
   step: Readonly<SequenceBodyItem>;
   sequence: Readonly<TaggedSequence>;
   index: number;
@@ -62,7 +62,8 @@ interface EditStepProps {
 export function editStep({ step, sequence, index, executor }: EditStepProps) {
   // https://en.wikipedia.org/wiki/NeXTSTEP
   const nextStep = defensiveClone(step);
-  const nextSeq = defensiveClone(sequence);
+  // tslint:disable-next-line:prefer-const
+  let nextSeq = defensiveClone(sequence); // Allow mutation
   // Let the developer safely perform mutations here:
   executor(nextStep);
   nextSeq.body.body = nextSeq.body.body || [];
