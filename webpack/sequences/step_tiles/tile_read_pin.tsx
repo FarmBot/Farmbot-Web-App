@@ -6,10 +6,13 @@ import { ToolTips } from "../../constants";
 import { setPinMode, PIN_MODES, currentModeSelection } from "./tile_pin_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
+import { PeripheralSelection } from "./tile_read_pin/peripheral_selection";
 
 export function TileReadPin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
   const className = "read-pin-step";
+  if (currentStep.kind != "read_pin") { throw new Error("read_pin only"); }
+
   return <StepWrapper>
     <StepHeader
       className={className}
@@ -44,7 +47,7 @@ export function TileReadPin(props: StepParams) {
             list={PIN_MODES} />
         </Col>
       </Row>
-      <PeripheralSelection />
+      <PeripheralSelection value={currentStep} />
     </StepContent>
   </StepWrapper>;
 }

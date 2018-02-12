@@ -50,8 +50,7 @@ module Api
                 agree_to_terms: !!user[:agree_to_terms],
                 host:           $API_URL,
                 aud:            guess_aud_claim,
-                fbos_version:   fbos_version
-              })
+                fbos_version:   fbos_version })
       else
         render json: {error: NO_USER_ATTR}, status: 422
       end
