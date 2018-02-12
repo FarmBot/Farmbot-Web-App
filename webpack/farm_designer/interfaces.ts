@@ -56,7 +56,7 @@ export interface Props {
   stepsPerMmXY: StepsPerMmXY;
   peripherals: { label: string, value: boolean }[];
   eStopStatus: boolean;
-  latestImage: TaggedImage | undefined;
+  latestImages: TaggedImage[];
   cameraCalibrationData: CameraCalibrationData;
 }
 
@@ -186,7 +186,7 @@ export interface GardenMapProps {
   gridOffset: AxisNumberProperty;
   peripherals: { label: string, value: boolean }[];
   eStopStatus: boolean;
-  latestImage: TaggedImage | undefined;
+  latestImages: TaggedImage[];
   cameraCalibrationData: CameraCalibrationData;
 }
 

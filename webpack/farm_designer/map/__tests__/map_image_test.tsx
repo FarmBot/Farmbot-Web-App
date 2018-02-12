@@ -32,12 +32,18 @@ describe("<MapImage />", () => {
         gridSize: { x: 0, y: 0 },
         quadrant: 1
       },
-      showImages: true,
     };
   };
 
   it("doesn't render image", () => {
     const wrapper = mount(<MapImage {...fakeProps() } />);
+    expect(wrapper.html()).toEqual("<image></image>");
+  });
+
+  it("doesn't render placeholder image", () => {
+    const p = fakeProps();
+    p.image && (p.image.body.attachment_url = "/placehold.");
+    const wrapper = mount(<MapImage {...p} />);
     expect(wrapper.html()).toEqual("<image></image>");
   });
 
@@ -94,8 +100,16 @@ describe("<MapImage />", () => {
   const INPUT_SET_5 = cloneDeep(INPUT_SET_4);
   INPUT_SET_5.mapTransformProps.quadrant = 4;
 
+  const INPUT_SET_6 = cloneDeep(INPUT_SET_5);
+  INPUT_SET_6.cameraCalibrationData.origin = "BOTTOM_LEFT";
+
+  const INPUT_SET_7 = cloneDeep(INPUT_SET_6);
+  INPUT_SET_7.cameraCalibrationData.origin = "BOTTOM_RIGHT";
+
   const DATA = [
-    INPUT_SET_1, INPUT_SET_1, INPUT_SET_2, INPUT_SET_3, INPUT_SET_4, INPUT_SET_5
+    INPUT_SET_1,
+    INPUT_SET_1, INPUT_SET_2, INPUT_SET_3, INPUT_SET_4, INPUT_SET_5,
+    INPUT_SET_6, INPUT_SET_7
   ];
 
   const expectedSize = { width: 385.968, height: 514.624 };
@@ -114,6 +128,12 @@ describe("<MapImage />", () => {
   });
   renderedTest(5, DATA, {
     size: expectedSize, sx: 1, sy: -1, tx: 5436.016, ty: -2774.312
+  });
+  renderedTest(6, DATA, {
+    size: expectedSize, sx: -1, sy: 1, tx: -5821.984, ty: 2259.688
+  });
+  renderedTest(7, DATA, {
+    size: expectedSize, sx: 1, sy: 1, tx: 5436.016, ty: 2259.688
   });
 
 });

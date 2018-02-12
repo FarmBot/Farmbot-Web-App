@@ -25,7 +25,8 @@ import {
   ToolSlotLayer,
   FarmBotLayer,
   HoveredPlantLayer,
-  DragHelperLayer
+  DragHelperLayer,
+  ImageLayer,
 } from "./layers";
 import { cachedCrop } from "../../open_farm/icons";
 import { AxisNumberProperty } from "./interfaces";
@@ -33,7 +34,6 @@ import { SelectionBox, SelectionBoxData } from "./selection_box";
 import { Actions } from "../../constants";
 import { isNumber } from "lodash";
 import { TargetCoordinate } from "./target_coordinate";
-import { MapImage } from "./map_image";
 
 const DRAG_ERROR = `ERROR - Couldn't get zoom level of garden map, check the
   handleDrop() or drag() method in garden_map.tsx`;
@@ -310,10 +310,10 @@ export class GardenMap extends
             onClick={closePlantInfo(this.props.dispatch)}
             mapTransformProps={mapTransformProps}
             dispatch={this.props.dispatch} />
-          <MapImage
-            image={this.props.latestImage}
+          <ImageLayer
+            images={this.props.latestImages}
             cameraCalibrationData={this.props.cameraCalibrationData}
-            showImages={this.props.showImages}
+            visible={!!this.props.showImages}
             mapTransformProps={mapTransformProps} />
           <SpreadLayer
             mapTransformProps={mapTransformProps}

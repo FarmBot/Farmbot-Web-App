@@ -182,7 +182,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           gridOffset={gridOffset}
           peripherals={this.props.peripherals}
           eStopStatus={this.props.eStopStatus}
-          latestImage={this.props.latestImage}
+          latestImages={this.props.latestImages}
           cameraCalibrationData={this.props.cameraCalibrationData} />
       </div>
     </div>;

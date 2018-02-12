@@ -39,7 +39,7 @@ describe("<FarmDesigner/>", () => {
       stepsPerMmXY: { x: undefined, y: undefined },
       peripherals: [],
       eStopStatus: false,
-      latestImage: undefined,
+      latestImages: [],
       cameraCalibrationData: {
         scale: undefined, rotation: undefined,
         offset: { x: undefined, y: undefined },

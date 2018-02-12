@@ -52,10 +52,11 @@ export function mapStateToProps(props: Everything) {
       return { label, value };
     });
 
-  const latestImage = _(selectAllImages(props.resources.index))
+  const latestImages = _(selectAllImages(props.resources.index))
     .sortBy(x => x.body.id)
     .reverse()
-    .value()[0];
+    .take(5)
+    .value();
 
   const { user_env } = props.bot.hardware;
   const cameraCalibrationData = {
@@ -83,7 +84,7 @@ export function mapStateToProps(props: Everything) {
     stepsPerMmXY: stepsPerMmXY(),
     peripherals,
     eStopStatus: props.bot.hardware.informational_settings.locked,
-    latestImage,
+    latestImages,
     cameraCalibrationData,
   };
 }
