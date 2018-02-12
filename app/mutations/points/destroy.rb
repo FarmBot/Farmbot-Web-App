@@ -25,7 +25,11 @@ module Points
   private
 
     def every_tool_id_as_json
-      points.map { |x| x&.pointer&.tool&.id }.compact.uniq.map(&:to_json)
+      points
+        .map { |x| x.pointer.try(:tool_id) }
+        .compact
+        .uniq
+        .map(&:to_json)
     end
 
     def point_seq
