@@ -8,6 +8,7 @@ import {
   TaggedGenericPointer,
   TaggedPlantPointer,
   TaggedCrop,
+  TaggedImage,
 } from "../resources/tagged_resources";
 import { PlantPointer } from "../interfaces";
 import { SlotWithTool } from "../resources/interfaces";
@@ -54,6 +55,8 @@ export interface Props {
   stepsPerMmXY: StepsPerMmXY;
   peripherals: { label: string, value: boolean }[];
   eStopStatus: boolean;
+  latestImage: TaggedImage | undefined;
+  cameraCalibrationData: CameraCalibrationData;
 }
 
 export type TimeUnit =
@@ -181,6 +184,8 @@ export interface GardenMapProps {
   gridOffset: AxisNumberProperty;
   peripherals: { label: string, value: boolean }[];
   eStopStatus: boolean;
+  latestImage: TaggedImage | undefined;
+  cameraCalibrationData: CameraCalibrationData;
 }
 
 export interface GardenMapState {
@@ -226,4 +231,14 @@ export interface CropInfoProps {
   dispatch: Function;
   cropSearchResults: CropLiveSearchResult[];
   OFSearch: (query: string) => (dispatch: Function) => void;
+}
+
+export interface CameraCalibrationData {
+  scale: string | undefined;
+  rotation: string | undefined;
+  offset: {
+    x: string | undefined;
+    y: string | undefined;
+  },
+  origin: string | undefined;
 }

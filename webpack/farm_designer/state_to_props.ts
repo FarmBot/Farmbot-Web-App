@@ -4,7 +4,8 @@ import {
   selectAllPlantPointers,
   selectAllCrops,
   joinToolsAndSlot,
-  selectAllPeripherals
+  selectAllPeripherals,
+  selectAllImages
 } from "../resources/selectors";
 import { StepsPerMmXY } from "../devices/interfaces";
 import { isNumber } from "lodash";
@@ -51,6 +52,22 @@ export function mapStateToProps(props: Everything) {
       return { label, value };
     });
 
+  const latestImage = _(selectAllImages(props.resources.index))
+    .sortBy(x => x.body.id)
+    .reverse()
+    .value()[0];
+
+  const { user_env } = props.bot.hardware;
+  const cameraCalibrationData = {
+    scale: user_env["CAMERA_CALIBRATION_coord_scale"],
+    rotation: user_env["CAMERA_CALIBRATION_total_rotation_angle"],
+    offset: {
+      x: user_env["CAMERA_CALIBRATION_camera_offset_x"],
+      y: user_env["CAMERA_CALIBRATION_camera_offset_y"]
+    },
+    origin: user_env["CAMERA_CALIBRATION_image_bot_origin_location"],
+  };
+
   return {
     crops: selectAllCrops(props.resources.index),
     dispatch: props.dispatch,
@@ -65,6 +82,8 @@ export function mapStateToProps(props: Everything) {
     botMcuParams: props.bot.hardware.mcu_params,
     stepsPerMmXY: stepsPerMmXY(),
     peripherals,
-    eStopStatus: props.bot.hardware.informational_settings.locked
+    eStopStatus: props.bot.hardware.informational_settings.locked,
+    latestImage,
+    cameraCalibrationData,
   };
 }

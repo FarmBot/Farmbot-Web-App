@@ -76,7 +76,13 @@ function fakeProps(): GardenMapProps {
     gridSize: { x: 1000, y: 1000 },
     gridOffset: { x: 100, y: 100 },
     peripherals: [],
-    eStopStatus: false
+    eStopStatus: false,
+    latestImage: undefined,
+    cameraCalibrationData: {
+      scale: undefined, rotation: undefined,
+      offset: { x: undefined, y: undefined },
+      origin: undefined
+    },
   };
 }
 

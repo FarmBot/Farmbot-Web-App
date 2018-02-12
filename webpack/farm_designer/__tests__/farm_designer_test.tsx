@@ -38,7 +38,13 @@ describe("<FarmDesigner/>", () => {
       botMcuParams: bot.hardware.mcu_params,
       stepsPerMmXY: { x: undefined, y: undefined },
       peripherals: [],
-      eStopStatus: false
+      eStopStatus: false,
+      latestImage: undefined,
+      cameraCalibrationData: {
+        scale: undefined, rotation: undefined,
+        offset: { x: undefined, y: undefined },
+        origin: undefined
+      },
     };
   }
 
