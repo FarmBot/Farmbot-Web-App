@@ -9,20 +9,36 @@ module Points
     end
 
     def validate
-      # Collect sequence ids for all `point_id` args
-      sequence_ids = EdgeNode
-        .where(kind: "point_id", value: points.map(&:id))
-        .pluck(:sequence_id)
-        .uniq
-      # COllect names of sequences that still use this point.
-      still_in_use = Sequence.where(id: sequence_ids).pluck(:name).join(", ")
+      # Collect names of sequences that still use this point.
+      names = Sequence
+        .where(id: (tool_seq + point_seq).uniq)
+        .pluck(:name)
+        .join(", ")
 
-      add_error :point, :in_use, STILL_IN_USE % [names] if still_in_use.present?
+      add_error :point, :in_use, STILL_IN_USE % [names] if names.present?
     end
 
     def execute
       Point.transaction { points.map(&:destroy!) && "" }
     end
+
   private
+
+    def every_tool_id_as_json
+      points.map { |x| x&.pointer&.tool&.id }.compact.uniq.map(&:to_json)
+    end
+
+    def point_seq
+      @point_seq ||= EdgeNode
+        .where(kind: "point_id", value: points.map(&:id))
+        .pluck(:sequence_id)
+    end
+
+    def tool_seq
+      @tool_seq ||= EdgeNode
+        .where(kind: "tool_id")
+        .where("value = ?", every_tool_id_as_json)
+        .pluck(:sequence_id)
+    end
   end
 end
