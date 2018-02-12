@@ -7,7 +7,7 @@ describe CeleryScript::FirstPass do
     Sequence.all.destroy_all
     expect(EdgeNode.count).to eq(0)
     expect(PrimaryNode.count).to eq(0)
-    CeleryScript::FlatIrHelpers.fake_first_pass
+    CeleryScript::FlatIrHelpers.fake_first_pass.primary_nodes
   end
 
   kind   = CeleryScript::CSHeap::KIND
@@ -68,7 +68,6 @@ describe CeleryScript::FirstPass do
   end
 
   it "saves nodes" do
-    Sequence.destroy_all
     result
     {
       "coordinate"        => 2,
@@ -78,7 +77,9 @@ describe CeleryScript::FirstPass do
       "scope_declaration" => 1,
       "sequence"          => 1,
       "write_pin"         => 1,
-    }.to_a.map do |(kind, count)|
+    }
+    .to_a
+    .map do |(kind, count)|
       real_count = PrimaryNode.where(kind: kind).count
       msg = "Expected #{count} #{kind} nodes. Got #{real_count}"
       expect(real_count).to(eq(count), msg)

@@ -22,15 +22,18 @@ module Sequences
   private
 
     def check_if_any_sequences_using_this
-      in_use = SequenceDependency.where(dependency: sequence)
+      in_use = Sequence.where(id: EdgeNode
+        .where(kind: "sequence_id", value: sequence.id)
+        .where
+        .not(sequence_id: sequence.id)
+        .pluck(:value)
+        .uniq)
+        .pluck(:name)
+        .map(&:inspect)
       if in_use.any?
-        names = in_use.map(&:sequence)
-                      .uniq
-                      .map(&:name)
-                      .map(&:inspect)
-                      .join(", ")
+        names = in_use.join(", ")
         msg = IN_USE % ["sequences", names]
-        add_error(:sequence, :required, msg)
+        add_error(:sequence, :in_use, msg)
       end
     end
 

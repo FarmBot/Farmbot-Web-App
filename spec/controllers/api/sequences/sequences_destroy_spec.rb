@@ -53,7 +53,6 @@ describe Api::SequencesController do
     end
 
     it 'does not destroy a sequence when in use by a sequence' do
-      before = SequenceDependency.count
       program = [
         {
           kind: "_if",
@@ -75,16 +74,11 @@ describe Api::SequencesController do
       Sequences::Create.run!(name:   "Dep. tracking",
                              device: user.device,
                              body:   program)
-      expect(SequenceDependency.count).to be > before
-      sd = SequenceDependency.last
       newest = Sequence.last
-      expect(sd.dependency).to eq(sequence)
-      expect(sd.sequence).to eq(newest)
-
+      before = EdgeNode.where(kind: "sequence_id").count
       sign_in user
-      before = Sequence.count
       delete :destroy, params: { id: sequence.id }
-      after = Sequence.count
+      after = EdgeNode.where(kind: "sequence_id").count
       expect(response.status).to eq(422)
       expect(before).to eq(after)
       expect(json[:sequence]).to include("sequences are still relying on this sequence")
