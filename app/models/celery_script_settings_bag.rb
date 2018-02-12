@@ -45,6 +45,7 @@ module CeleryScriptSettingsBag
   BAD_MESSAGE_TYPE      = '"%s" is not a valid message_type. Allowed values: %s'
   BAD_MESSAGE           = "Messages must be between 1 and 300 characters"
   BAD_TOOL_ID           = 'Tool #%s does not exist.'
+  BAD_PERIPH_ID         = 'Peripheral #%s does not exist.'
   BAD_PACKAGE           = '"%s" is not a valid package. Allowed values: %s'
   BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
   BAD_POINTER_ID        = "Bad point ID: %s"
@@ -147,6 +148,11 @@ module CeleryScriptSettingsBag
           BAD_DATA_TYPE % [v.to_s, ALLOWED_DATA_TYPES.inspect]
         end
       end
+      .defineArg(:peripheral_id,   [Integer]) do |node|
+        no_tool = !Tool.exists?(node.value)
+        node.invalidate!(BAD_PERIPH_ID % node.value) if no_tool
+      end
+      .defineNode(:peripheral,      [:peripheral_id])
       .defineNode(:nothing,        [])
       .defineNode(:tool,           [:tool_id])
       .defineNode(:coordinate,     [:x, :y, :z])
