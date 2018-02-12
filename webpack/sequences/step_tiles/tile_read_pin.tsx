@@ -44,6 +44,7 @@ export function TileReadPin(props: StepParams) {
             list={PIN_MODES} />
         </Col>
       </Row>
+      <PeripheralSelection />
     </StepContent>
   </StepWrapper>;
 }
