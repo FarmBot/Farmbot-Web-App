@@ -7,7 +7,7 @@ module Peripherals
     end
 
     def execute
-      Peripheral.create!(inputs.merge(mode: 0))
+      Peripheral.create!(inputs)
     end
   end
 end

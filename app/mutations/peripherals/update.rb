@@ -7,7 +7,6 @@ module Peripherals
 
     optional do
       integer :pin
-      integer :mode
       string  :label
     end
 

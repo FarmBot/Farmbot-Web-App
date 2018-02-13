@@ -10,7 +10,7 @@ describe Api::PeripheralsController do
       sign_in user
       before = Peripheral.count
       post :create,
-        body: { pin: 13, mode: 0, label: "LED" }.to_json,
+        body: { pin: 13, label: "LED" }.to_json,
         params: { format: :json }
       expect(response.status).to eq(200)
       expect(json[:pin]).to eq(13)
@@ -19,7 +19,7 @@ describe Api::PeripheralsController do
     end
 
     it 'requires logged in user' do
-      post :create, params: { pin: 13, mode: 0, label: "LED" }
+      post :create, params: { pin: 13, label: "LED" }
       expect(response.status).to eq(401)
     end
   end
