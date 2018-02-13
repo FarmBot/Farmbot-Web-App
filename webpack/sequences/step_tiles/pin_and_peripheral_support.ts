@@ -1,3 +1,12 @@
+import { ReadPeripheral, SequenceBodyItem, ReadPin } from "farmbot";
+import { TaggedSequence } from "../../resources/tagged_resources";
+import { editStep } from "../../api/crud";
+
+export const EMPTY_READ_PIN: ReadPin = {
+  kind: "read_pin",
+  args: { pin_mode: 0, pin_number: 13, label: "" }
+};
+
 export const EMPTY_READ_PERIPHERAL: ReadPeripheral = {
   kind: "read_peripheral",
   args: { peripheral_id: 0 }

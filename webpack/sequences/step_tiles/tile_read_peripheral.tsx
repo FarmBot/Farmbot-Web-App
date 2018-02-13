@@ -4,18 +4,13 @@ import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
-import { ReadPin, WritePeripheral } from "farmbot";
-import { changeStep } from "./tile_read_pin";
+import { WritePeripheral } from "farmbot";
 import { selectAllPeripherals } from "../../resources/selectors";
 import { editStep } from "../../api/crud";
 import { isNumber } from "lodash";
 import { joinKindAndId } from "../../resources/reducer";
 import { ResourceIndex } from "../../resources/interfaces";
-
-export const EMPTY_READ_PIN: ReadPin = {
-  kind: "read_pin",
-  args: { pin_mode: 0, pin_number: 13, label: "" }
-};
+import { changeStep, EMPTY_READ_PIN } from "./pin_and_peripheral_support";
 
 const convertToReadPin = changeStep(EMPTY_READ_PIN);
 

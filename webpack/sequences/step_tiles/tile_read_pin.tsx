@@ -6,9 +6,7 @@ import { ToolTips } from "../../constants";
 import { setPinMode, PIN_MODES, currentModeSelection } from "./tile_pin_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
-import { editStep } from "../../api/crud";
-import { SequenceBodyItem, ReadPeripheral } from "farmbot";
-import { TaggedSequence } from "../../resources/tagged_resources";
+import { EMPTY_READ_PERIPHERAL, changeStep } from "./pin_and_peripheral_support";
 
 const convertToReadPeripheral = changeStep(EMPTY_READ_PERIPHERAL);
 
