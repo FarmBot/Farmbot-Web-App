@@ -62,8 +62,7 @@ export interface EditStepProps {
 export function editStep({ step, sequence, index, executor }: EditStepProps) {
   // https://en.wikipedia.org/wiki/NeXTSTEP
   const nextStep = defensiveClone(step);
-  // tslint:disable-next-line:prefer-const
-  let nextSeq = defensiveClone(sequence); // Allow mutation
+  const nextSeq = defensiveClone(sequence);
   // Let the developer safely perform mutations here:
   executor(nextStep);
   nextSeq.body.body = nextSeq.body.body || [];
