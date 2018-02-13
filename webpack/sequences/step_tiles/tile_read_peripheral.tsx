@@ -7,7 +7,6 @@ import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
 import { ReadPin, WritePeripheral } from "farmbot";
 import { changeStep } from "./tile_read_pin";
 import { selectAllPeripherals } from "../../resources/selectors";
-import { TaggedPeripheral } from "../../resources/tagged_resources";
 import { editStep } from "../../api/crud";
 import { isNumber } from "lodash";
 import { joinKindAndId } from "../../resources/reducer";
