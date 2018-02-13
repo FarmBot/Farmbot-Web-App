@@ -31,18 +31,13 @@ describe Api::PeripheralsController do
       before = Peripheral.count
       FactoryBot.create(:sequence, device: user.device,
                                    body: [
-                                     {
-                                       kind: "read_pin",
-                                       args: {
-                                        pin_number: {
-                                          kind: "peripheral",
-                                          args: { peripheral_id: peripheral.id }
-                                        },
-                                        label:      "hey",
-                                        pin_mode:    0
-                                       }
-                                     }
-                                   ])
+                                            {
+                                              kind: "read_peripheral",
+                                              args: {
+                                                peripheral_id: peripheral.id
+                                              }
+                                            }
+                                          ])
       delete :destroy, params: { id: peripheral.id }
       expect(response.status).to eq(422)
       expect(Peripheral.count).to eq(before)
