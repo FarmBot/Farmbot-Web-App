@@ -1,3 +1,3 @@
 class PeripheralSerializer < ActiveModel::Serializer
-  attributes :id, :pin, :mode, :label
+  attributes :id, :pin, :label
 end

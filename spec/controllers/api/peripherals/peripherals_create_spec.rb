@@ -14,7 +14,6 @@ describe Api::PeripheralsController do
         params: { format: :json }
       expect(response.status).to eq(200)
       expect(json[:pin]).to eq(13)
-      expect(json[:mode]).to eq(0)
       expect(json[:label]).to eq("LED")
       expect(before < Peripheral.count).to be_truthy
     end
