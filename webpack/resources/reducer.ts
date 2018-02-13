@@ -127,6 +127,7 @@ export let resourceReducer = generateReducer
         case "User":
         case "WebcamFeed":
         case "WebAppConfig":
+        case "FirmwareConfig":
         case "FbosConfig":
           reindexResource(s.index, resource);
           dontTouchThis(resource);
@@ -156,6 +157,7 @@ export let resourceReducer = generateReducer
       case "WebcamFeed":
       case "WebAppConfig":
       case "FbosConfig":
+      case "FirmwareConfig":
       case "Image":
         removeFromIndex(s.index, resource);
         break;

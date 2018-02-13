@@ -94,7 +94,8 @@ export type TaggedResource =
   | TaggedUser
   | TaggedWebcamFeed
   | TaggedFbosConfig
-  | TaggedWebAppConfig;
+  | TaggedWebAppConfig
+  | TaggedFirmwareConfig;
 
 export type TaggedRegimen = Resource<"Regimen", Regimen>;
 export type TaggedTool = Resource<"Tool", Tool>;
