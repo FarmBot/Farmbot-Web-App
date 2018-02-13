@@ -5,7 +5,7 @@ import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
 import { WritePeripheral } from "farmbot";
-import { selectAllPeripherals } from "../../resources/selectors";
+import { selectAllPeripherals, findId } from "../../resources/selectors";
 import { editStep } from "../../api/crud";
 import { isNumber } from "lodash";
 import { joinKindAndId } from "../../resources/reducer";
@@ -15,8 +15,7 @@ import { changeStep, EMPTY_READ_PIN } from "./pin_and_peripheral_support";
 const convertToReadPin = changeStep(EMPTY_READ_PIN);
 
 const selectedItem = (id: number, resources: ResourceIndex) => {
-  const lookup = joinKindAndId("Peripheral", id);
-  const item = resources.references[resources.byKindAndId[lookup] || "x"];
+  const item = resources.references[findId(resources, "Peripheral", id)];
   if (item && item.kind === "Peripheral") {
     return { label: item.body.label, value: item.body.id || 0 };
   }
