@@ -5,9 +5,12 @@ import { fakeImage } from "../../../../__test_support__/fake_state/resources";
 
 describe("<ImageLayer/>", () => {
   function fakeProps(): ImageLayerProps {
+    const image = fakeImage();
+    image.body.meta.z = 0;
+    image.body.meta.name = "rotated_image";
     return {
       visible: true,
-      images: [fakeImage()],
+      images: [image],
       mapTransformProps: {
         quadrant: 2, gridSize: { x: 3000, y: 1500 }
       },
@@ -15,7 +18,8 @@ describe("<ImageLayer/>", () => {
         offset: { x: "0", y: "0" },
         origin: "TOP_LEFT",
         rotation: "0",
-        scale: "1"
+        scale: "1",
+        calibrationZ: "0"
       },
       sizeOverride: { width: 10, height: 10 }
     };

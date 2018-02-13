@@ -55,7 +55,7 @@ export function mapStateToProps(props: Everything) {
   const latestImages = _(selectAllImages(props.resources.index))
     .sortBy(x => x.body.id)
     .reverse()
-    .take(5)
+    .take(50)
     .value();
 
   const { user_env } = props.bot.hardware;
@@ -67,6 +67,7 @@ export function mapStateToProps(props: Everything) {
       y: user_env["CAMERA_CALIBRATION_camera_offset_y"]
     },
     origin: user_env["CAMERA_CALIBRATION_image_bot_origin_location"],
+    calibrationZ: user_env["CAMERA_CALIBRATION_camera_z"],
   };
 
   return {
