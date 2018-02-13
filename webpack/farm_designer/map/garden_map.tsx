@@ -34,7 +34,6 @@ import { SelectionBox, SelectionBoxData } from "./selection_box";
 import { Actions } from "../../constants";
 import { isNumber } from "lodash";
 import { TargetCoordinate } from "./target_coordinate";
-import { Color } from "../../ui/index";
 
 const DRAG_ERROR = `ERROR - Couldn't get zoom level of garden map, check the
   handleDrop() or drag() method in garden_map.tsx`;
@@ -308,10 +307,6 @@ export class GardenMap extends
           onMouseDown={this.startDrag}
           onMouseMove={this.drag}
           onClick={this.click}>
-          <g id="grid-fill">
-            <rect id="fill"
-              width={gridSize.x} height={gridSize.y} fill={Color.gridSoil} />
-          </g>
           <ImageLayer
             images={this.props.latestImages}
             cameraCalibrationData={this.props.cameraCalibrationData}
