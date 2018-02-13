@@ -55,6 +55,10 @@ module Api
             "If you need larger numbers, let us know.", 422
     end
 
+    def default_serializer_options
+      {root: false, user: current_user}
+    end
+
 private
 
     def clean_expired_farm_events
@@ -152,10 +156,6 @@ private
                      user: current_user.try(:email) || "No User")
         render options.merge(json: outcome.errors.message, status: 422)
       end
-    end
-
-    def default_serializer_options
-      {root: false, user: current_user}
     end
 
     def bad_version
