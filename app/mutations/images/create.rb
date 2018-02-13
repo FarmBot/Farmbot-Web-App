@@ -11,6 +11,7 @@ module Images
           integer :x
           integer :y
           integer :z
+          string  :name
         end
       end
     end
