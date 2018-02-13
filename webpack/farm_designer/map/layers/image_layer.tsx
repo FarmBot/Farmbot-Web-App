@@ -3,7 +3,7 @@ import { MapTransformProps } from "../interfaces";
 import { CameraCalibrationData } from "../../interfaces";
 import { TaggedImage } from "../../../resources/tagged_resources";
 import { MapImage } from "../map_image";
-import { reverse } from "lodash";
+import { reverse, cloneDeep } from "lodash";
 
 export interface ImageLayerProps {
   visible: boolean;
@@ -19,7 +19,7 @@ export function ImageLayer(props: ImageLayerProps) {
    } = props;
   return <g id="image-layer">
     {visible &&
-      reverse(images).map(img =>
+      reverse(cloneDeep(images)).map(img =>
         <MapImage
           image={img}
           key={"image_" + img.body.id}

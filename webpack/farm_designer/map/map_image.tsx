@@ -13,6 +13,22 @@ const parse = (str: string | undefined) => {
   return !isNaN(parsed) ? parsed : undefined;
 };
 
+/* Check if the image has been rotated according to the calibration value. */
+const isRotated = (name: string | undefined) => {
+  return name &&
+    (name.includes("rotated")
+      || name.includes("marked")
+      || name.includes("calibration_result"));
+};
+
+/* Check if the calibration data is valid for the image provided using z. */
+const cameraZCheck =
+  (imageZ: number | undefined, calibZ: string | undefined) => {
+    const calibrationZ = parse(calibZ);
+    return isNumber(imageZ) && isNumber(calibrationZ) &&
+      Math.abs(imageZ - calibrationZ) < 5;
+  };
+
 interface ImageSize {
   width: number;
   height: number;
@@ -20,8 +36,8 @@ interface ImageSize {
 
 /* Get the size of the image at the URL. Allow overriding for tests. */
 const getImageSize = (url: string, size?: ImageSize): ImageSize => {
-  if (size) { return size; }
   if (url.includes("placehold")) { return { width: 0, height: 0 }; }
+  if (size) { return size; }
   const imageData = new Image();
   imageData.src = url;
   return {
@@ -102,9 +118,8 @@ export interface MapImageProps {
  */
 export function MapImage(props: MapImageProps) {
   const { image, cameraCalibrationData, sizeOverride } = props;
-  const { scale, rotation, offset, origin } = cameraCalibrationData;
+  const { scale, offset, origin, calibrationZ } = cameraCalibrationData;
   const imageScale = parse(scale);
-  const imageRotation = parse(rotation);
   const imageOffsetX = parse(offset.x);
   const imageOffsetY = parse(offset.y);
   const imageOrigin = origin ? origin.split("\"").join("") : undefined;
@@ -113,12 +128,14 @@ export function MapImage(props: MapImageProps) {
   /* Check if the image exists. */
   if (image) {
     const imageUrl = image.body.attachment_url;
-    const { x, y } = image.body.meta;
+    const { x, y, z } = image.body.meta;
+    const imageAnnotation = image.body.meta.name;
     const { width, height } = getImageSize(imageUrl, sizeOverride);
 
     /* Check for all necessary camera calibration and image data. */
     if (isNumber(x) && isNumber(y) && height > 0 && width > 0 &&
-      isNumber(imageScale) && isNumber(imageRotation) &&
+      isNumber(imageScale) && imageScale > 0 &&
+      cameraZCheck(z, calibrationZ) && isRotated(imageAnnotation) &&
       isNumber(imageOffsetX) && isNumber(imageOffsetY) && imageOrigin) {
       /* Use pixel to coordinate scale to scale image. */
       const size = { x: width * imageScale, y: height * imageScale };

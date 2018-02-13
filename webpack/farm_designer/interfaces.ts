@@ -243,4 +243,5 @@ export interface CameraCalibrationData {
     y: string | undefined;
   },
   origin: string | undefined;
+  calibrationZ: string | undefined;
 }

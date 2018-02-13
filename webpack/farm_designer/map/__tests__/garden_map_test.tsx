@@ -82,7 +82,8 @@ function fakeProps(): GardenMapProps {
     cameraCalibrationData: {
       scale: undefined, rotation: undefined,
       offset: { x: undefined, y: undefined },
-      origin: undefined
+      origin: undefined,
+      calibrationZ: undefined
     },
   };
 }
