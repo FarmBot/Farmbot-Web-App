@@ -8,8 +8,10 @@ import { Actions } from "../../../constants";
 import { FBSelect } from "../../../ui/index";
 
 const p = fakePeripheral();
-const exampleStep: ReadPeripheral =
-  ({ kind: "read_peripheral", args: { peripheral_id: 1 } });
+const exampleStep: ReadPeripheral = {
+  kind: "read_peripheral",
+  args: { pin_mode: 0, peripheral_id: 1 }
+};
 
 describe("<TileReadPeripheral/>", () => {
   function bootstrapTest(step: SequenceBodyItem = exampleStep, isShallow = false) {

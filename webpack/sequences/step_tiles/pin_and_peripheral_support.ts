@@ -9,7 +9,7 @@ export const EMPTY_READ_PIN: ReadPin = {
 
 export const EMPTY_READ_PERIPHERAL: ReadPeripheral = {
   kind: "read_peripheral",
-  args: { peripheral_id: 0 }
+  args: { peripheral_id: 0, pin_mode: 0 }
 };
 
 export const changeStep =
