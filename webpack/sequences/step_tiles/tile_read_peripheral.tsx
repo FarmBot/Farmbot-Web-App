@@ -8,7 +8,6 @@ import { WritePeripheral } from "farmbot";
 import { selectAllPeripherals, findId } from "../../resources/selectors";
 import { editStep } from "../../api/crud";
 import { isNumber } from "lodash";
-import { joinKindAndId } from "../../resources/reducer";
 import { ResourceIndex } from "../../resources/interfaces";
 import { changeStep, EMPTY_READ_PIN } from "./pin_and_peripheral_support";
 

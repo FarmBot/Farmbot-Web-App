@@ -1,9 +1,7 @@
 import * as React from "react";
-import { TileReadPin } from "../tile_read_pin";
-import { mount, shallow } from "enzyme";
+import { shallow } from "enzyme";
 import { fakeSequence, fakePeripheral } from "../../../__test_support__/fake_state/resources";
 import { ReadPeripheral, SequenceBodyItem, ReadPin } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer";
 import { TileReadPeripheral } from "../tile_read_peripheral";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 import { Actions } from "../../../constants";
