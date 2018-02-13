@@ -10,6 +10,7 @@ import { editStep } from "../../api/crud";
 import { isNumber } from "lodash";
 import { ResourceIndex } from "../../resources/interfaces";
 import { changeStep, EMPTY_READ_PIN } from "./pin_and_peripheral_support";
+import { PinMode } from "./tile_read_pin";
 
 const convertToReadPin = changeStep(EMPTY_READ_PIN);
 
@@ -45,7 +46,7 @@ export function TileReadPeripheral(props: StepParams) {
       index={index} />
     <StepContent className={className}>
       <Row>
-        <Col xs={12} md={12}>
+        <Col xs={12} md={6}>
           <label>{t("Peripheral")}</label>
           <FBSelect
             allowEmpty={false}
@@ -67,6 +68,7 @@ export function TileReadPeripheral(props: StepParams) {
             }}
             selectedItem={selectedItem(currentStep.args.peripheral_id, props.resources)} />
         </Col>
+        <PinMode {...props} />
       </Row>
       <Row>
         <Col xs={6} md={6}>
