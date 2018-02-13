@@ -43,10 +43,6 @@ module CeleryScript
       HeapAddress[@value + 1]
     end
 
-    def -(val)
-      HeapAddress[@value - 1]
-    end
-
     def is_address?
       true
     end

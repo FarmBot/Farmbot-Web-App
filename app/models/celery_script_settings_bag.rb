@@ -29,9 +29,9 @@ module CeleryScriptSettingsBag
   ALLOWED_OPS           = %w(< > is not is_undefined)
   ALLOWED_AXIS          = %w(x y z all)
   ALLOWED_LHS           = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
-  STEPS                 = %w(move_absolute move_relative write_pin read_pin wait
-                            send_message execute _if execute_script take_photo
-                            find_home)
+  STEPS                 = %w(_if execute execute_script find_home move_absolute
+                             move_relative read_peripheral read_pin send_message
+                             take_photo wait write_peripheral write_pin )
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
@@ -45,6 +45,7 @@ module CeleryScriptSettingsBag
   BAD_MESSAGE_TYPE      = '"%s" is not a valid message_type. Allowed values: %s'
   BAD_MESSAGE           = "Messages must be between 1 and 300 characters"
   BAD_TOOL_ID           = 'Tool #%s does not exist.'
+  BAD_PERIPH_ID         = 'Peripheral #%s does not exist.'
   BAD_PACKAGE           = '"%s" is not a valid package. Allowed values: %s'
   BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
   BAD_POINTER_ID        = "Bad point ID: %s"
@@ -147,6 +148,12 @@ module CeleryScriptSettingsBag
           BAD_DATA_TYPE % [v.to_s, ALLOWED_DATA_TYPES.inspect]
         end
       end
+      .defineArg(:peripheral_id,   [Integer]) do |node|
+        no_periph = !Peripheral.exists?(node.value)
+        node.invalidate!(BAD_PERIPH_ID % node.value) if no_periph
+      end
+      .defineNode(:read_peripheral,  [:peripheral_id, :pin_mode])
+      .defineNode(:write_peripheral, [:peripheral_id, :pin_value])
       .defineNode(:nothing,        [])
       .defineNode(:tool,           [:tool_id])
       .defineNode(:coordinate,     [:x, :y, :z])

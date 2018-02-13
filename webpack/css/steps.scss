@@ -1,10 +1,10 @@
 // Styles for ALL STEPS
 .step-wrapper {
   box-shadow: 0px 0px 10px $gray;
-  // CHRIS: I need to tweak this for DnD issues.
-  // margin-bottom: 1.5rem;
-  // margin-top: 1.5rem;
   border-radius: 3px;
+  a {
+    color: $dark_gray;
+  }
   .bottom-content {
     display: flex;
     fieldset {
@@ -21,6 +21,7 @@
         width: auto;
         cursor: pointer;
         display: inline-block;
+        color: $gray;
       }
       input {
         margin-left: 1rem;

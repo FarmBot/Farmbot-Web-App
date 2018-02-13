@@ -24,5 +24,24 @@ describe Api::PeripheralsController do
       expect(before == Peripheral.count).to be_truthy
       expect(json[:error]).to include("not found")
     end
+
+    it 'prevents deletion of in-use peripherals' do
+      sign_in user
+      peripheral
+      before = Peripheral.count
+      FactoryBot.create(:sequence, device: user.device,
+                                   body: [
+                                            {
+                                              kind: "read_peripheral",
+                                              args: {
+                                                peripheral_id: peripheral.id
+                                              }
+                                            }
+                                          ])
+      delete :destroy, params: { id: peripheral.id }
+      expect(response.status).to eq(422)
+      expect(Peripheral.count).to eq(before)
+      expect(json[:peripheral]).to include("still using it")
+    end
   end
 end

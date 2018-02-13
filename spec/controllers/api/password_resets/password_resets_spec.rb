@@ -34,6 +34,21 @@ describe Api::PasswordResetsController do
       expect(json.keys).to include(:user)
     end
 
+    it 'dissallows short passwords' do
+      params = {password:              "xpass",
+                password_confirmation: "xpass",
+                fbos_version:          Gem::Version.new("999.9.9"),
+                id:                    PasswordResetToken
+                                          .issue_to(user)
+                                          .encoded }
+      put :update, params: params
+      expect(user
+              .reload
+              .valid_password?(params[:password])).to eq(false)
+      expect(response.status).to eq(422)
+      expect(json[:password]).to include("too short")
+    end
+
     it 'handles token expiration' do
       token  = PasswordResetToken
                  .issue_to(user, {exp: Time.now.yesterday})

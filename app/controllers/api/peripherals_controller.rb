@@ -14,12 +14,12 @@ module Api
 
     def update
       mutate Peripherals::Update.run(raw_json,
-       peripheral: peripheral,
-       device: current_device)
+                                     peripheral: peripheral,
+                                     device: current_device)
     end
 
     def destroy
-      peripheral.destroy! && (render json: "")
+      mutate Peripherals::Destroy.run(peripheral: peripheral)
     end
 
     private

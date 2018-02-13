@@ -47,7 +47,7 @@ export function overwrite(tr: TaggedResource,
   };
 }
 
-interface EditStepProps {
+export interface EditStepProps {
   step: Readonly<SequenceBodyItem>;
   sequence: Readonly<TaggedSequence>;
   index: number;

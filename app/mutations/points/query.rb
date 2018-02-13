@@ -33,13 +33,10 @@ module Points
       end
 
       def points
-        if @points
-          @points
-        else
-          @points = Point.includes(:pointer).where(inputs.slice(*WHITELIST))
-          add_meta_fields if meta
-          @points
-        end
+        return @points if @points
+        @points = Point.includes(:pointer).where(inputs.slice(*WHITELIST))
+        add_meta_fields if meta
+        @points
       end
 
       def add_meta_fields
