@@ -26,7 +26,8 @@ describe("<MapImage />", () => {
         offset: { x: undefined, y: undefined },
         origin: undefined,
         rotation: undefined,
-        scale: undefined
+        scale: undefined,
+        calibrationZ: undefined
       },
       mapTransformProps: {
         gridSize: { x: 0, y: 0 },
@@ -37,13 +38,6 @@ describe("<MapImage />", () => {
 
   it("doesn't render image", () => {
     const wrapper = mount(<MapImage {...fakeProps() } />);
-    expect(wrapper.html()).toEqual("<image></image>");
-  });
-
-  it("doesn't render placeholder image", () => {
-    const p = fakeProps();
-    p.image && (p.image.body.attachment_url = "/placehold.");
-    const wrapper = mount(<MapImage {...p} />);
     expect(wrapper.html()).toEqual("<image></image>");
   });
 
@@ -74,11 +68,14 @@ describe("<MapImage />", () => {
   const INPUT_SET_1 = fakeProps();
   INPUT_SET_1.image && (INPUT_SET_1.image.body.meta.x = 0);
   INPUT_SET_1.image && (INPUT_SET_1.image.body.meta.y = 0);
+  INPUT_SET_1.image && (INPUT_SET_1.image.body.meta.z = 0);
+  INPUT_SET_1.image && (INPUT_SET_1.image.body.meta.name = "rotated_image");
   INPUT_SET_1.cameraCalibrationData = {
     offset: { x: "50", y: "75" },
     origin: "\"TOP_RIGHT\"",
     rotation: "-57.45",
-    scale: "0.8041"
+    scale: "0.8041",
+    calibrationZ: "0"
   };
   INPUT_SET_1.mapTransformProps = {
     gridSize: { x: 5900, y: 2900 },
@@ -87,12 +84,15 @@ describe("<MapImage />", () => {
   INPUT_SET_1.sizeOverride = { width: 480, height: 640 };
 
   const INPUT_SET_2 = cloneDeep(INPUT_SET_1);
-  INPUT_SET_2.image && (INPUT_SET_2.image.body.meta = { x: 221, y: 308, z: 1 });
+  INPUT_SET_2.image && (INPUT_SET_2.image.body.meta = {
+    x: 221, y: 308, z: 1, name: "marked_image"
+  });
   INPUT_SET_2.cameraCalibrationData.origin = "TOP_RIGHT";
   INPUT_SET_2.mapTransformProps.quadrant = 1;
 
   const INPUT_SET_3 = cloneDeep(INPUT_SET_2);
   INPUT_SET_3.mapTransformProps.quadrant = 2;
+  INPUT_SET_3.image && (INPUT_SET_3.image.body.meta.name = "calibration_result");
 
   const INPUT_SET_4 = cloneDeep(INPUT_SET_3);
   INPUT_SET_4.mapTransformProps.quadrant = 3;
@@ -136,4 +136,24 @@ describe("<MapImage />", () => {
     size: expectedSize, sx: 1, sy: 1, tx: 5436.016, ty: 2259.688
   });
 
+  it("doesn't render placeholder image", () => {
+    const p = INPUT_SET_1;
+    p.image && (p.image.body.attachment_url = "/placehold.");
+    const wrapper = mount(<MapImage {...p} />);
+    expect(wrapper.html()).toEqual("<image></image>");
+  });
+
+  it("doesn't render image taken at different height than calibration", () => {
+    const p = INPUT_SET_1;
+    p.image && (p.image.body.meta.z = 100);
+    const wrapper = mount(<MapImage {...p} />);
+    expect(wrapper.html()).toEqual("<image></image>");
+  });
+
+  it("doesn't render images that are not adjusted for camera rotation", () => {
+    const p = INPUT_SET_1;
+    p.image && (p.image.body.meta.name = "na");
+    const wrapper = mount(<MapImage {...p} />);
+    expect(wrapper.html()).toEqual("<image></image>");
+  });
 });

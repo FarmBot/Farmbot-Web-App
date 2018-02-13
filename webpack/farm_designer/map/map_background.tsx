@@ -27,5 +27,7 @@ export function MapBackground(props: MapBackgroundProps) {
     <rect id="no-access-perimeter" x={boardWidth} y={boardWidth}
       width={mapWidth - boardWidth * 2} height={mapHeight - boardWidth * 2}
       fill="url(#diagonalHatch)" />
+    <rect id="grid-fill" x={plantAreaOffset.x} y={plantAreaOffset.y}
+      width={gridSize.x} height={gridSize.y} fill={Color.gridSoil} />
   </g>;
 }
