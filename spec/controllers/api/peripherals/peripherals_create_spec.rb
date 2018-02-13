@@ -22,5 +22,15 @@ describe Api::PeripheralsController do
       post :create, params: { pin: 13, label: "LED" }
       expect(response.status).to eq(401)
     end
+
+    it 'limits label length' do
+      sign_in user
+      before = Peripheral.count
+      post :create,
+        body: { pin: 13, label: ("LED" * 1000) }.to_json,
+        params: { format: :json }
+      expect(json[:error]).to include("use reasonable lengths")
+      expect(response.status).to eq(422)
+    end
   end
 end
