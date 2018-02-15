@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180215064728) do
+ActiveRecord::Schema.define(version: 20180215171709) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -283,6 +283,18 @@ ActiveRecord::Schema.define(version: 20180215064728) do
     t.index ["device_id"], name: "index_regimens_on_device_id"
   end
 
+  create_table "sensor_readings", force: :cascade do |t|
+    t.bigint "device_id"
+    t.float "x"
+    t.float "y"
+    t.float "z"
+    t.integer "value"
+    t.integer "pin"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_sensor_readings_on_device_id"
+  end
+
   create_table "sequence_dependencies", id: :serial, force: :cascade do |t|
     t.string "dependency_type"
     t.integer "dependency_id"
@@ -407,6 +419,7 @@ ActiveRecord::Schema.define(version: 20180215064728) do
   add_foreign_key "peripherals", "devices"
   add_foreign_key "points", "devices"
   add_foreign_key "primary_nodes", "sequences"
+  add_foreign_key "sensor_readings", "devices"
   add_foreign_key "sequence_dependencies", "sequences"
   add_foreign_key "tool_slots", "tools"
 end

@@ -15,6 +15,7 @@ class Device < ApplicationRecord
   has_many  :tools,           dependent: :destroy
   has_many  :images,          dependent: :destroy
   has_many  :webcam_feeds,    dependent: :destroy
+  has_many  :sensor_reading,  dependent: :destroy
   validates :timezone,     inclusion: { in: TIMEZONES,
                                         message: BAD_TZ,
                                         allow_nil: true }
