@@ -15,6 +15,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     || firstImage;
   const { farmwares } = props.bot.hardware.process_info;
   const conf = getWebAppConfig(props.resources.index);
+  const { firstPartyFarmwareNames } = props.resources.consumers.farmware;
   return {
     timeOffset: maybeGetTimeOffset(props.resources.index),
     farmwares,
@@ -25,6 +26,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     currentImage,
     images,
     syncStatus: "synced",
-    webAppConfig: conf ? conf.body : {}
+    webAppConfig: conf ? conf.body : {},
+    firstPartyFarmwareNames
   };
 }

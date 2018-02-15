@@ -6,7 +6,7 @@ import { StepDragger } from "../draggable/step_dragger";
 import { renderCeleryNode } from "./step_tiles/index";
 import { ResourceIndex } from "../resources/interfaces";
 import { getStepTag } from "../resources/sequence_tagging";
-import { HardwareFlags } from "./interfaces";
+import { HardwareFlags, FarmwareInfo } from "./interfaces";
 
 interface AllStepsProps {
   sequence: TaggedSequence;
@@ -14,11 +14,14 @@ interface AllStepsProps {
   dispatch: Function;
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
+  farmwareInfo?: FarmwareInfo;
 }
 
 export class AllSteps extends React.Component<AllStepsProps, {}> {
   render() {
-    const { sequence, onDrop, dispatch, hardwareFlags } = this.props;
+    const {
+      sequence, onDrop, dispatch, hardwareFlags, farmwareInfo
+     } = this.props;
     const items = (sequence.body.body || [])
       .map((currentStep: SequenceBodyItem, index, arr) => {
         /** HACK: React's diff algorithm (probably?) can't keep track of steps
@@ -42,7 +45,8 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
                 dispatch: dispatch,
                 currentSequence: sequence,
                 resources: this.props.resources,
-                hardwareFlags
+                hardwareFlags,
+                farmwareInfo
               })}
             </div>
           </StepDragger>

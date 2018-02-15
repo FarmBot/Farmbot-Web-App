@@ -37,7 +37,8 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
             onToggle={doToggle(this.props.dispatch)}
             syncStatus={this.props.syncStatus}
             botToMqttStatus={this.props.botToMqttStatus}
-            farmwares={this.props.farmwares} />
+            farmwares={this.props.farmwares}
+            firstPartyFarmwareNames={this.props.firstPartyFarmwareNames} />
         </Col>
       </Row>
       <Row>

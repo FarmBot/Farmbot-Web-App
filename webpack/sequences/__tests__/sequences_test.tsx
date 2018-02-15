@@ -25,7 +25,12 @@ describe("<Sequences/>", () => {
       auth,
       consistent: true,
       autoSyncEnabled: false,
-      hardwareFlags: fakeHardwareFlags()
+      hardwareFlags: fakeHardwareFlags(),
+      farmwareInfo: {
+        farmwareNames: [],
+        firstPartyFarmwareNames: [],
+        showFirstPartyFarmware: false
+      }
     };
   }
 

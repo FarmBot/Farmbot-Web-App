@@ -31,6 +31,7 @@ export interface Props {
   consistent: boolean;
   autoSyncEnabled: boolean;
   hardwareFlags: HardwareFlags;
+  farmwareInfo: FarmwareInfo;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -41,6 +42,7 @@ export interface SequenceEditorMiddleProps {
   consistent: boolean;
   autoSyncEnabled: boolean;
   hardwareFlags: HardwareFlags;
+  farmwareInfo: FarmwareInfo;
 }
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
@@ -151,6 +153,12 @@ export type DataXferObj = StepMoveDataXfer | StepSpliceDataXfer;
 
 export type dispatcher = (a: Function | { type: string }) => DataXferObj;
 
+export interface FarmwareInfo {
+  farmwareNames: string[];
+  firstPartyFarmwareNames: string[];
+  showFirstPartyFarmware: boolean;
+}
+
 export interface StepParams {
   currentSequence: TaggedSequence;
   currentStep: SequenceBodyItem;
@@ -158,4 +166,5 @@ export interface StepParams {
   index: number;
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
+  farmwareInfo?: FarmwareInfo;
 }

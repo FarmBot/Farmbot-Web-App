@@ -18,6 +18,7 @@ import {
 import { Actions } from "../constants";
 import { connectDevice } from "../connectivity/connect_device";
 import { toastErrors } from "../toast_errors";
+import { getFirstPartyFarmwareList } from "../farmware/actions";
 
 export function didLogin(authState: AuthState, dispatch: Function) {
   API.setBaseUrl(authState.token.unencoded.iss);
@@ -25,6 +26,7 @@ export function didLogin(authState: AuthState, dispatch: Function) {
   dispatch(fetchReleases(os_update_server));
   beta_os_update_server && beta_os_update_server != "NOT_SET" &&
     dispatch(fetchReleases(beta_os_update_server, { beta: true }));
+  dispatch(getFirstPartyFarmwareList());
   dispatch(setToken(authState));
   Sync.fetchSyncData(dispatch);
   dispatch(connectDevice(authState));

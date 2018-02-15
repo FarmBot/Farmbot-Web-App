@@ -2,7 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 import { Button, Classes, MenuItem } from "@blueprintjs/core";
 import { ISelectItemRendererProps, Select } from "@blueprintjs/labs";
-import { DropDownItem, NULL_CHOICE } from "./fb_select";
+import { DropDownItem } from "./fb_select";
 
 const SelectComponent = Select.ofType<DropDownItem | undefined>();
 
@@ -22,6 +22,7 @@ interface Props {
   selectedItem: DropDownItem;
   onChange: (item: DropDownItem) => void;
   isASubMenu?: boolean;
+  nullChoice: DropDownItem;
 }
 
 interface State {
@@ -61,7 +62,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
 
   styleFor(item: DropDownItem): string {
     const styles = ["filter-search-item"];
-    if (Object.is(item, NULL_CHOICE)) {
+    if (Object.is(item, this.props.nullChoice)) {
       styles.push("filter-search-item-none");
     }
     return styles.join(" ");

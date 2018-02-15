@@ -12,11 +12,15 @@ jest.mock("axios", () => ({
 }));
 
 import { getFirstPartyFarmwareList } from "../actions";
+import { Actions } from "../../constants";
 
 describe("getFirstPartyFarmwareList()", () => {
   it("sets list", async () => {
-    const setList = jest.fn();
-    await getFirstPartyFarmwareList(setList);
-    expect(setList).toHaveBeenCalledWith(["farmware0", "farmware1"]);
+    const dispatch = jest.fn();
+    await getFirstPartyFarmwareList()(dispatch);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.FETCH_FIRST_PARTY_FARMWARE_NAMES_OK,
+      payload: ["farmware0", "farmware1"]
+    });
   });
 });

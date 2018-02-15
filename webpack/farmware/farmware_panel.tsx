@@ -14,7 +14,6 @@ import {
 } from "../ui/index";
 import { betterCompact } from "../util";
 import { Popover, Position } from "@blueprintjs/core";
-import { getFirstPartyFarmwareList } from "./actions";
 
 export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
   const listBtnColor = props.show ? "green" : "red";
@@ -48,10 +47,6 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
     this.state = {};
   }
 
-  componentDidMount() {
-    getFirstPartyFarmwareList(this.setFirstPartyList);
-  }
-
   /** Keep null checking DRY for this.state.selectedFarmware */
   ifFarmwareSelected = (cb: (label: string) => void) => {
     const { selectedFarmware } = this.state;
@@ -68,8 +63,9 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   remove = () => {
     this
       .ifFarmwareSelected(label => {
-        const { firstPartyList } = this.state;
-        const isFirstParty = firstPartyList && firstPartyList.includes(label);
+        const { firstPartyFarmwareNames } = this.props;
+        const isFirstParty = firstPartyFarmwareNames &&
+          firstPartyFarmwareNames.includes(label);
         if (!isFirstParty || confirm(Content.FIRST_PARTY_WARNING)) {
           getDevice()
             .removeFarmware(label)
@@ -95,10 +91,6 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
     }
   }
 
-  setFirstPartyList = (firstPartyList: string[]) => {
-    this.setState({ firstPartyList });
-  }
-
   firstPartyFarmwaresPresent = (firstPartyList: string[] | undefined) => {
     const fws = this.props.farmwares;
     const farmwareList = betterCompact(Object.keys(fws)
@@ -109,13 +101,12 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   }
 
   fwList = () => {
-    const { farmwares, showFirstParty } = this.props;
-    const { firstPartyList } = this.state;
+    const { farmwares, showFirstParty, firstPartyFarmwareNames } = this.props;
     const choices = betterCompact(Object
       .keys(farmwares)
       .map(x => farmwares[x]))
-      .filter(x => (firstPartyList && !showFirstParty)
-        ? !firstPartyList.includes(x.name) : x)
+      .filter(x => (firstPartyFarmwareNames && !showFirstParty)
+        ? !firstPartyFarmwareNames.includes(x.name) : x)
       .map((fw, i) => ({ value: fw.name, label: (`${fw.name} ${fw.meta.version}`) }));
     return choices;
   }
@@ -149,7 +140,8 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
             show={this.props.showFirstParty}
             onToggle={() => this.props.onToggle("show_first_party_farmware")}
             firstPartyFwsInstalled={
-              this.firstPartyFarmwaresPresent(this.state.firstPartyList)} />
+              this.firstPartyFarmwaresPresent(
+                this.props.firstPartyFarmwareNames)} />
         </Popover>
       </WidgetHeader>
       <WidgetBody>

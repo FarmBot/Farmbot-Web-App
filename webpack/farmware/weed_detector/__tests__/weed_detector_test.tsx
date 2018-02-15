@@ -28,7 +28,8 @@ describe("<WeedDetector />", () => {
     currentImage: undefined,
     images: [],
     syncStatus: "synced",
-    webAppConfig: {}
+    webAppConfig: {},
+    firstPartyFarmwareNames: []
   };
 
   it("renders", () => {

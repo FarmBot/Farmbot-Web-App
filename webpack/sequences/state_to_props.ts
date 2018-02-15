@@ -2,10 +2,12 @@ import { Everything } from "../interfaces";
 import { Props, HardwareFlags } from "./interfaces";
 import {
   selectAllSequences,
-  findSequence
+  findSequence,
+  getWebAppConfig
 } from "../resources/selectors";
 import { getStepTag } from "../resources/sequence_tagging";
 import { enabledAxisMap } from "../devices/components/axis_tracking_status";
+import { betterCompact } from "../util";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;
@@ -42,6 +44,15 @@ export function mapStateToProps(props: Everything): Props {
     };
   };
 
+  const { farmwares } = props.bot.hardware.process_info;
+  const farmwareNames = betterCompact(Object
+    .keys(farmwares)
+    .map(x => farmwares[x]))
+    .map(fw => fw.name);
+  const { firstPartyFarmwareNames } = props.resources.consumers.farmware;
+  const conf = getWebAppConfig(props.resources.index);
+  const showFirstPartyFarmware = !!(conf && conf.body.show_first_party_farmware);
+
   return {
     dispatch: props.dispatch,
     sequences: selectAllSequences(props.resources.index),
@@ -56,5 +67,10 @@ export function mapStateToProps(props: Everything): Props {
     consistent: props.bot.consistent,
     autoSyncEnabled: !!props.bot.hardware.configuration.auto_sync,
     hardwareFlags: hardwareFlags(),
+    farmwareInfo: {
+      farmwareNames,
+      firstPartyFarmwareNames,
+      showFirstPartyFarmware
+    }
   };
 }
