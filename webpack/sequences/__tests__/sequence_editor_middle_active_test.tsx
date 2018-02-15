@@ -27,7 +27,6 @@ import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { destroy } from "../../api/crud";
 import { fakeHardwareFlags } from "../../__test_support__/sequence_hardware_settings";
 
-
 describe("<SequenceEditorMiddleActive/>", () => {
   function fakeProps(): ActiveMiddleProps {
     return {
@@ -37,7 +36,12 @@ describe("<SequenceEditorMiddleActive/>", () => {
       syncStatus: "synced",
       consistent: true,
       autoSyncEnabled: false,
-      hardwareFlags: fakeHardwareFlags()
+      hardwareFlags: fakeHardwareFlags(),
+      farmwareInfo: {
+        farmwareNames: [],
+        firstPartyFarmwareNames: [],
+        showFirstPartyFarmware: false
+      }
     };
   }
 

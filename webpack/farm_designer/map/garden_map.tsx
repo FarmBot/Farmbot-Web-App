@@ -311,7 +311,8 @@ export class GardenMap extends
             images={this.props.latestImages}
             cameraCalibrationData={this.props.cameraCalibrationData}
             visible={!!this.props.showImages}
-            mapTransformProps={mapTransformProps} />
+            mapTransformProps={mapTransformProps}
+            getConfigValue={this.props.getConfigValue} />
           <Grid
             onClick={closePlantInfo(this.props.dispatch)}
             mapTransformProps={mapTransformProps}

@@ -164,6 +164,7 @@ export interface FarmwareProps {
   timeOffset: number;
   syncStatus: SyncStatus | undefined;
   webAppConfig: Partial<WebAppConfig>;
+  firstPartyFarmwareNames: string[];
 }
 
 export interface HardwareSettingsProps {

@@ -491,7 +491,7 @@ ul {
     }
     .controls-popup-menu-outer {
       transition: all 0.1s 0s ease-in-out;
-      width: 27rem;
+      width: 32rem;
       padding: 0.6rem 5rem 0rem 0rem;
     }
     .controls-popup-menu-inner {
@@ -501,6 +501,7 @@ ul {
   }
   .arrow-button {
     margin: 5px;
+    box-shadow: none !important;
   }
 }
 

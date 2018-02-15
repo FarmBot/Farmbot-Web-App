@@ -3,6 +3,7 @@ import * as React from "react";
 import { DirectionButton } from "./controls/direction_button";
 import { Xyz, BotPosition } from "./devices/interfaces";
 import { McuParams } from "farmbot";
+import { getDevice } from "./device";
 
 export interface State {
   isOpen: boolean;
@@ -79,6 +80,9 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
             directionAxisProps={directionAxesProps.x}
             steps={this.state.stepSize}
             disabled={!isOpen} />
+          <button
+            className="i fa fa-camera arrow-button fb-button brown"
+            onClick={() => getDevice().takePhoto()} />
         </div>
       </div>
     </div>;

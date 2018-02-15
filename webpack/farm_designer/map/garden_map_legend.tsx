@@ -4,6 +4,7 @@ import { LayerToggle } from "./layer_toggle";
 import { GardenMapLegendProps } from "./interfaces";
 import { history } from "../../history";
 import { atMaxZoom, atMinZoom } from "./zoom";
+import { ImageFilterMenu } from "./layers/image_layer";
 
 export function GardenMapLegend(props: GardenMapLegendProps) {
 
@@ -18,6 +19,9 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
     showSpread,
     showFarmbot,
     showImages,
+    dispatch,
+    tzOffset,
+    getConfigValue,
   } = props;
 
   const plusBtnClass = atMaxZoom() ? "disabled" : "";
@@ -68,7 +72,11 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
         <LayerToggle
           value={showImages}
           label={t("Photos?")}
-          onClick={toggle("show_images")} />
+          onClick={toggle("show_images")}
+          popover={<ImageFilterMenu
+            tzOffset={tzOffset}
+            dispatch={dispatch}
+            getConfigValue={getConfigValue} />} />
       </div>
       <div className="farmbot-origin">
         <label>

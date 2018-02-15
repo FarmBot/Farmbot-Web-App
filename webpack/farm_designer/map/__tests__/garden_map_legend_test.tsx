@@ -25,6 +25,9 @@ describe("<GardenMapLegend />", () => {
       showSpread: false,
       showFarmbot: false,
       showImages: false,
+      dispatch: jest.fn(),
+      tzOffset: 0,
+      getConfigValue: jest.fn(),
     };
   }
 

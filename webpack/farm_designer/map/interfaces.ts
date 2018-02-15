@@ -5,6 +5,7 @@ import {
 } from "../../resources/tagged_resources";
 import { State, BotOriginQuadrant } from "../interfaces";
 import { BotPosition, BotLocationData } from "../../devices/interfaces";
+import { GetWebAppConfigValue } from "../../config_storage/actions";
 
 export interface PlantLayerProps {
   plants: TaggedPlantPointer[];
@@ -35,6 +36,9 @@ export interface GardenMapLegendProps {
   showSpread: boolean;
   showFarmbot: boolean;
   showImages: boolean;
+  dispatch: Function;
+  tzOffset: number;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export type MapTransformProps = {

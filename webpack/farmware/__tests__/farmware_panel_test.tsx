@@ -10,12 +10,6 @@ jest.mock("../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 
-jest.mock("../actions", () => ({
-  getFirstPartyFarmwareList(setList: (x: string[]) => void) {
-    setList(["first-party farmware"]);
-  }
-}));
-
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { FarmwarePanel, FarmwareConfigMenu } from "../farmware_panel";
@@ -34,7 +28,8 @@ describe("<FarmwarePanel/>: actions", () => {
       botToMqttStatus: "up",
       syncStatus: "synced",
       onToggle: jest.fn(() => showFirstParty = !showFirstParty),
-      showFirstParty
+      showFirstParty,
+      firstPartyFarmwareNames: ["first-party farmware"]
     };
   }
 
@@ -125,7 +120,8 @@ describe("<FarmwarePanel/>: farmware list", () => {
       farmwares: fakeFarmwares(),
       syncStatus: "synced",
       onToggle: jest.fn(() => showFirstParty = !showFirstParty),
-      showFirstParty
+      showFirstParty,
+      firstPartyFarmwareNames: ["first-party farmware"]
     };
   }
 

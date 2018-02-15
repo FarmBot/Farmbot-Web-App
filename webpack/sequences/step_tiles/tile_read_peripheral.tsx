@@ -69,14 +69,14 @@ export function TileReadPeripheral(props: StepParams) {
             selectedItem={selectedItem(currentStep.args.peripheral_id, props.resources)} />
         </Col>
         <PinMode {...props} />
-      </Row>
-      <Row>
-        <Col xs={6} md={6}>
-          <label>
-            <a onClick={() => dispatch(payl)}>
-              {t("Enter peripheral data manually")}
-            </a>
-          </label>
+        <Col xs={6} md={3}>
+          <label>{t("Peripheral")}</label>
+          <div className={"fb-checkbox"}>
+            <input
+              type="checkbox"
+              onChange={() => dispatch(payl)}
+              checked={true} />
+          </div>
         </Col>
       </Row>
     </StepContent>

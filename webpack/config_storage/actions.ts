@@ -1,6 +1,7 @@
 import {
   BooleanConfigKey as BooleanWebAppConfigKey,
-  NumberConfigKey as NumberWebAppConfigKey
+  NumberConfigKey as NumberWebAppConfigKey,
+  StringConfigKey as StringWebAppConfigKey
 } from "./web_app_configs";
 import { GetState } from "../redux/interfaces";
 import { getWebAppConfig } from "../resources/selectors";
@@ -20,10 +21,31 @@ export function toggleWebAppBool(key: BooleanWebAppConfigKey) {
   };
 }
 
+type WebAppConfigKey =
+  BooleanWebAppConfigKey
+  | NumberWebAppConfigKey
+  | StringWebAppConfigKey;
+
+type WebAppConfigValue = boolean | number | string | undefined;
+
+export type GetWebAppConfigValue = (k: WebAppConfigKey) => WebAppConfigValue;
+
 export function getWebAppConfigValue(getState: GetState) {
-  return (key: BooleanWebAppConfigKey | NumberWebAppConfigKey):
-    boolean | number | undefined => {
+  return (key: WebAppConfigKey): WebAppConfigValue => {
     const conf = getWebAppConfig(getState().resources.index);
     return conf && conf.body[key];
+  };
+}
+
+export function setWebAppConfigValue(
+  key: WebAppConfigKey, value: WebAppConfigValue) {
+  return (dispatch: Function, getState: GetState) => {
+    const conf = getWebAppConfig(getState().resources.index);
+    if (conf) {
+      dispatch(edit(conf, { [key]: value }));
+      dispatch(save(conf.uuid));
+    } else {
+      throw new Error("Changed settings before app was loaded.");
+    }
   };
 }

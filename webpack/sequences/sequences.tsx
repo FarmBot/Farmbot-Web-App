@@ -40,7 +40,8 @@ export class Sequences extends React.Component<Props, {}> {
               resources={this.props.resources}
               consistent={this.props.consistent}
               autoSyncEnabled={this.props.autoSyncEnabled}
-              hardwareFlags={this.props.hardwareFlags} />
+              hardwareFlags={this.props.hardwareFlags}
+              farmwareInfo={this.props.farmwareInfo} />
           </div>
         </Col>
         <Col sm={3}>

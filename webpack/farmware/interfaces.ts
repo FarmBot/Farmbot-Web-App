@@ -5,7 +5,6 @@ import { BooleanConfigKey } from "../config_storage/web_app_configs";
 export interface FWState {
   selectedFarmware: string | undefined;
   packageUrl: string | undefined;
-  firstPartyList: string[];
 }
 
 export interface FWProps {
@@ -14,10 +13,12 @@ export interface FWProps {
   farmwares: Dictionary<FarmwareManifest | undefined>;
   showFirstParty: boolean;
   onToggle(key: BooleanConfigKey): void;
+  firstPartyFarmwareNames: string[];
 }
 
 export interface FarmwareState {
   currentImage: string | undefined;
+  firstPartyFarmwareNames: string[];
 }
 
 export type FarmwareManifestEntry = Record<"name" | "manifest", string>;

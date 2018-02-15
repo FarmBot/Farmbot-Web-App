@@ -30,7 +30,7 @@ describe("<TileReadPin/>", () => {
     const inputs = block.find("input");
     const labels = block.find("label");
     const buttons = block.find("button");
-    expect(inputs.length).toEqual(3);
+    expect(inputs.length).toEqual(4);
     expect(labels.length).toEqual(4);
     expect(buttons.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Read Pin");
