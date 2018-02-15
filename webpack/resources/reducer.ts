@@ -74,7 +74,8 @@ export function emptyState(): RestResources {
         User: [],
         FbosConfig: [],
         FirmwareConfig: [],
-        WebAppConfig: []
+        WebAppConfig: [],
+        SensorReading: []
       },
       byKindAndId: {},
       references: {}
@@ -158,6 +159,7 @@ export let resourceReducer = generateReducer
       case "WebAppConfig":
       case "FbosConfig":
       case "FirmwareConfig":
+      case "SensorReading":
       case "Image":
         removeFromIndex(s.index, resource);
         break;

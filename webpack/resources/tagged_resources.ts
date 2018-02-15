@@ -7,6 +7,7 @@ import {
   GenericPointer,
   PlantPointer,
   ToolSlotPointer,
+  SensorReading,
 } from "../interfaces";
 import { Peripheral } from "../controls/peripherals/interfaces";
 import { User } from "../auth/interfaces";
@@ -25,19 +26,20 @@ export type ResourceName =
   | "Crop"
   | "Device"
   | "FarmEvent"
+  | "FbosConfig"
+  | "FirmwareConfig"
+  | "Image"
+  | "Log"
   | "Peripheral"
   | "Plant"
-  | "Log"
-  | "Image"
   | "Point"
   | "Regimen"
+  | "SensorReading"
   | "Sequence"
   | "Tool"
   | "User"
-  | "WebcamFeed"
-  | "FbosConfig"
-  | "FirmwareConfig"
-  | "WebAppConfig";
+  | "WebAppConfig"
+  | "WebcamFeed";
 
 export interface TaggedResourceBase {
   kind: ResourceName;
@@ -81,21 +83,22 @@ export interface Resource<T extends ResourceName, U extends object>
 }
 
 export type TaggedResource =
-  | TaggedPoint
   | TaggedCrop
   | TaggedDevice
   | TaggedFarmEvent
+  | TaggedFbosConfig
+  | TaggedFirmwareConfig
   | TaggedImage
   | TaggedLog
   | TaggedPeripheral
+  | TaggedPoint
   | TaggedRegimen
+  | TaggedSensorReading
   | TaggedSequence
   | TaggedTool
   | TaggedUser
-  | TaggedWebcamFeed
-  | TaggedFbosConfig
   | TaggedWebAppConfig
-  | TaggedFirmwareConfig;
+  | TaggedWebcamFeed;
 
 export type TaggedRegimen = Resource<"Regimen", Regimen>;
 export type TaggedTool = Resource<"Tool", Tool>;
@@ -108,6 +111,7 @@ export type TaggedPeripheral = Resource<"Peripheral", Peripheral>;
 export type TaggedFbosConfig = Resource<"FbosConfig", FbosConfig>;
 export type TaggedFirmwareConfig = Resource<"FirmwareConfig", FirmwareConfig>;
 export type TaggedWebAppConfig = Resource<"WebAppConfig", WebAppConfig>;
+export type TaggedSensorReading = Resource<"SensorReading", SensorReading>;
 
 type PointUnion = GenericPointer | PlantPointer | ToolSlotPointer;
 

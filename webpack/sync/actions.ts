@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Log, Point } from "../interfaces";
+import { Log, Point, SensorReading } from "../interfaces";
 import { API } from "../api";
 import { Sequence } from "../sequences/interfaces";
 import { Tool } from "../tools/interfaces";
@@ -51,4 +51,5 @@ export function fetchSyncData(dispatch: Function) {
   fetch<Regimen[]>("Regimen", API.current.regimensPath);
   fetch<Sequence[]>("Sequence", API.current.sequencesPath);
   fetch<Tool[]>("Tool", API.current.toolsPath);
+  fetch<SensorReading[]>("SensorReading", API.current.sensorReadingPath);
 }
