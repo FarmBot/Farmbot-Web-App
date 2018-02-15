@@ -5,12 +5,14 @@ import {
   selectAllCrops,
   joinToolsAndSlot,
   selectAllPeripherals,
-  selectAllImages
+  selectAllImages,
+  maybeGetTimeOffset
 } from "../resources/selectors";
 import { StepsPerMmXY } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import * as _ from "lodash";
 import { minFwVersionCheck, validBotLocationData } from "../util";
+import { getWebAppConfigValue } from "../config_storage/actions";
 
 export function mapStateToProps(props: Everything) {
 
@@ -87,5 +89,7 @@ export function mapStateToProps(props: Everything) {
     eStopStatus: props.bot.hardware.informational_settings.locked,
     latestImages,
     cameraCalibrationData,
+    tzOffset: maybeGetTimeOffset(props.resources.index),
+    getConfigValue: getWebAppConfigValue(() => props),
   };
 }

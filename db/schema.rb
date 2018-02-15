@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180213175531) do
+ActiveRecord::Schema.define(version: 20180215064728) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -387,6 +387,8 @@ ActiveRecord::Schema.define(version: 20180213175531) do
     t.boolean "show_first_party_farmware", default: false
     t.boolean "enable_browser_speak", default: false
     t.boolean "show_images", default: false
+    t.string "photo_filter_begin"
+    t.string "photo_filter_end"
     t.index ["device_id"], name: "index_web_app_configs_on_device_id"
   end
 

@@ -46,6 +46,8 @@ describe("<FarmDesigner/>", () => {
         origin: undefined,
         calibrationZ: undefined
       },
+      tzOffset: 0,
+      getConfigValue: jest.fn(),
     };
   }
 

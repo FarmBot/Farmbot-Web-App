@@ -18,6 +18,7 @@ import { McuParams } from "farmbot/dist";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { SelectionBoxData } from "./map/selection_box";
 import { BooleanConfigKey } from "../config_storage/web_app_configs";
+import { GetWebAppConfigValue } from "../config_storage/actions";
 
 /** TODO: Use Enums */
 export type BotOriginQuadrant = 1 | 2 | 3 | 4;
@@ -58,6 +59,8 @@ export interface Props {
   eStopStatus: boolean;
   latestImages: TaggedImage[];
   cameraCalibrationData: CameraCalibrationData;
+  tzOffset: number;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export type TimeUnit =
@@ -188,6 +191,7 @@ export interface GardenMapProps {
   eStopStatus: boolean;
   latestImages: TaggedImage[];
   cameraCalibrationData: CameraCalibrationData;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export interface GardenMapState {

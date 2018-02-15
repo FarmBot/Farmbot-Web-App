@@ -41,6 +41,8 @@ export interface WebAppConfig {
   show_first_party_farmware: boolean;
   enable_browser_speak: boolean;
   show_images: boolean;
+  photo_filter_begin: string;
+  photo_filter_end: string;
 }
 
 export type NumberConfigKey = "id"
@@ -56,7 +58,9 @@ export type NumberConfigKey = "id"
     |"debug_log";
 
 export type StringConfigKey = "created_at"
-    |"updated_at";
+    |"updated_at"
+    |"photo_filter_begin"
+    |"photo_filter_end";
 
 export type BooleanConfigKey = "confirm_step_deletion"
     |"disable_animations"

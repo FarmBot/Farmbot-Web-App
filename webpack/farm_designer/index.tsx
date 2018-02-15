@@ -137,7 +137,10 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         showPoints={show_points}
         showSpread={show_spread}
         showFarmbot={show_farmbot}
-        showImages={show_images} />
+        showImages={show_images}
+        dispatch={this.props.dispatch}
+        tzOffset={this.props.tzOffset}
+        getConfigValue={this.props.getConfigValue} />
 
       <div className="panel-header gray-panel designer-nav">
         <div className="panel-tabs">
@@ -183,7 +186,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           peripherals={this.props.peripherals}
           eStopStatus={this.props.eStopStatus}
           latestImages={this.props.latestImages}
-          cameraCalibrationData={this.props.cameraCalibrationData} />
+          cameraCalibrationData={this.props.cameraCalibrationData}
+          getConfigValue={this.props.getConfigValue} />
       </div>
     </div>;
   }

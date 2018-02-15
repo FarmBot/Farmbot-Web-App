@@ -85,6 +85,7 @@ function fakeProps(): GardenMapProps {
       origin: undefined,
       calibrationZ: undefined
     },
+    getConfigValue: jest.fn(),
   };
 }
 

@@ -313,6 +313,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    label {
+      margin-bottom: 0;
+    }
+    button {
+      margin-bottom: 0.5rem;
+    }
+  }
+  .caret-menu-button {
+    display: inline;
+    margin-left: 0.5rem;
+    font-weight: bold;
+    font-size: medium;
+    cursor: pointer;
   }
   .farmbot-origin {
     .quadrants {
@@ -435,5 +448,11 @@
       left: -4.6rem;
       top: 0.6rem;
     }
+  }
+}
+
+.image-filter-menu {
+  th {
+    text-align: center;
   }
 }
