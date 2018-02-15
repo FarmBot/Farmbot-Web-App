@@ -196,7 +196,6 @@ private
     def mark_as_seen(bot = (current_user && current_user.device))
       when_farmbot_os do
         v = fbos_version.to_s
-        Rollbar.info("VERSION IS: #{v}") if bot && v
         bot.update_attributes!(last_saw_api: Time.now, fbos_version: v) if bot
       end
     end

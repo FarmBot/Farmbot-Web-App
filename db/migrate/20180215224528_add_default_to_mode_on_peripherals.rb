@@ -1,6 +1,7 @@
 class AddDefaultToModeOnPeripherals < ActiveRecord::Migration[5.1]
   def up
     change_column :peripherals, :mode, :integer, default: 0
+    Peripheral.where(mode: nil).update_all(mode: 0)
   end
 
   def down

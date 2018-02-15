@@ -21,9 +21,5 @@ describe Api::DevicesController do
       get :show, format: :json # FIXME: Y U NO DEFAULT JSON?
       expect(response.status).to eq(401)
     end
-
-    it 'updates fbos_version when appropriate' do
-      pending
-    end
   end
 end
