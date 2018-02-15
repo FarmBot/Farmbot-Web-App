@@ -1,15 +1,16 @@
 FarmBot::Application.routes.draw do
 
   namespace :api, defaults: {format: :json}, constraints: { format: "json" } do
-    resources :images,        only: [:create, :destroy, :show, :index]
-    resources :regimens,      only: [:create, :destroy, :index, :update]
-    resources :peripherals,   only: [:create, :destroy, :index, :update]
-    resources :corpuses,      only: [:index, :show]
-    resources :logs,          only: [:index, :create, :destroy]
-    resources :sequences,     only: [:create, :update, :destroy, :index, :show]
-    resources :farm_events,   only: [:create, :update, :destroy, :index]
-    resources :tools,         only: [:create, :show, :index, :destroy, :update]
-    resources :points,        only: [:create, :show, :index, :destroy, :update] do
+    resources :images,          only: [:create, :destroy, :show, :index]
+    resources :sensor_readings, only: [:create, :destroy, :show, :index]
+    resources :regimens,        only: [:create, :destroy, :index, :update]
+    resources :peripherals,     only: [:create, :destroy, :index, :update]
+    resources :corpuses,        only: [:index, :show]
+    resources :logs,            only: [:index, :create, :destroy]
+    resources :sequences,       only: [:create, :update, :destroy, :index, :show]
+    resources :farm_events,     only: [:create, :update, :destroy, :index]
+    resources :tools,           only: [:create, :show, :index, :destroy, :update]
+    resources :points,          only: [:create, :show, :index, :destroy, :update] do
         post :search, on: :collection
     end
     resource :public_key,     only: [:show]
