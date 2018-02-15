@@ -53,14 +53,14 @@ export function TileReadPin(props: StepParams) {
             field="label" />
         </Col>
         <PinMode {...props} />
-      </Row>
-      <Row>
-        <Col xs={6} md={6}>
-          <label>
-            <a onClick={() => dispatch(payl)}>
-              {t("Use existing peripheral instead")}
-            </a>
-          </label>
+        <Col xs={6} md={3}>
+          <label>{t("Peripheral")}</label>
+          <div className={"fb-checkbox"}>
+            <input
+              type="checkbox"
+              onChange={() => dispatch(payl)}
+              checked={false} />
+          </div>
         </Col>
       </Row>
     </StepContent>

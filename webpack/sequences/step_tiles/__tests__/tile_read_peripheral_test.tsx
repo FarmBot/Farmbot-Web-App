@@ -30,7 +30,7 @@ describe("<TileReadPeripheral/>", () => {
 
   it("toggles to `read_pin`", () => {
     const { component, dispatch } = bootstrapTest();
-    component.find("a").last().simulate("click");
+    component.find("input").last().simulate("change");
     expect(dispatch).toHaveBeenCalled();
     const action = expect
       .objectContaining({ "type": Actions.OVERWRITE_RESOURCE });
