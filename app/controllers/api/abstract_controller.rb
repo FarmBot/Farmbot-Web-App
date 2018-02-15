@@ -195,7 +195,8 @@ private
     # We update this column every time an FBOS device talks to the API.
     def mark_as_seen(entity = (current_user && current_user.device))
       when_farmbot_os do
-        entity.update_attributes(last_saw_api: Time.now) if entity
+        entity.update_attributes(last_saw_api: Time.now,
+                                 fbos_version: fbos_version.to_s) if entity
       end
     end
   end

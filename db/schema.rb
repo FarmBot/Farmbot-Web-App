@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180215171709) do
+ActiveRecord::Schema.define(version: 20180215205625) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,6 +38,7 @@ ActiveRecord::Schema.define(version: 20180215171709) do
     t.string "timezone", limit: 280
     t.datetime "last_saw_api"
     t.datetime "last_saw_mq"
+    t.string "fbos_version", limit: 15
     t.index ["timezone"], name: "index_devices_on_timezone"
   end
 
@@ -224,6 +225,7 @@ ActiveRecord::Schema.define(version: 20180215171709) do
     t.string "label", limit: 280
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "mode"
     t.index ["device_id"], name: "index_peripherals_on_device_id"
   end
 
