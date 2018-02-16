@@ -19,7 +19,6 @@ import {
 const pinValueField = (props: StepParams) => {
   const { currentSequence,
     currentStep, dispatch, index } = props;
-  if (currentStep.kind !== "write_peripheral") { throw new Error("NO"); }
   if (!(currentStep.args.pin_mode === 0) || currentStep.args.pin_value > 1) {
     return <StepInputBox dispatch={dispatch}
       step={currentStep}
