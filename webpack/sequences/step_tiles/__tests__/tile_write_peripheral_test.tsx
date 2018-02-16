@@ -8,6 +8,8 @@ import { EMPTY_WRITE_PERIPHERAL, StepCheckBox } from "../pin_and_peripheral_supp
 import { Actions } from "../../../constants";
 import { FBSelect } from "../../../ui/index";
 import { get } from "lodash";
+import { defensiveClone } from "../../../util/index";
+import { StepInputBox } from "../../inputs/step_input_box";
 
 describe("<TileWritePeripheral/>", () => {
   function bootStrapTest(step: SequenceBodyItem = EMPTY_WRITE_PERIPHERAL) {
@@ -45,5 +47,13 @@ describe("<TileWritePeripheral/>", () => {
     const path = "mock.calls[0][0].payload.update.body[0].args.pin_mode";
     const result = get(props.dispatch, path);
     expect(result).toEqual(0);
+  });
+
+  it("renders a `pin_value` field", () => {
+    const step = defensiveClone(EMPTY_WRITE_PERIPHERAL);
+    step.args.pin_value = 128;
+    step.args.pin_mode = 1;
+    const { el, props } = bootStrapTest(step);
+    expect(el.find(StepInputBox).length).toBe(1);
   });
 });
