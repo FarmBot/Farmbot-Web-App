@@ -23,7 +23,7 @@ export function PinMode(props: StepParams) {
 export function TileReadPin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
   const className = "read-pin-step";
-  if (currentStep.kind != "read_pin") { throw new Error("read_pin only"); }
+  // if (currentStep.kind != "read_pin") { throw new Error("read_pin only"); }
   const action = convertToReadPeripheral(currentStep, currentSequence, index);
 
   return <StepWrapper>
