@@ -56,7 +56,7 @@ export function TileReadPin(props: StepParams) {
         <Col xs={6} md={3}>
           <StepCheckBox
             onClick={() => dispatch(action)}
-            checked={true}>
+            checked={false}>
             {t("Peripheral")}
           </StepCheckBox>
         </Col>

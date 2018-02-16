@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ReadPeripheral, SequenceBodyItem, ReadPin } from "farmbot";
+import { ReadPeripheral, SequenceBodyItem, ReadPin, WritePin } from "farmbot";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { editStep } from "../../api/crud";
 import { StepParams } from "../interfaces";
@@ -19,6 +19,16 @@ export const EMPTY_READ_PIN: ReadPin = {
 export const EMPTY_READ_PERIPHERAL: ReadPeripheral = {
   kind: "read_peripheral",
   args: { peripheral_id: 0, pin_mode: 0 }
+};
+
+export const EMPTY_WRITE_PERIPHERAL: WritePeripheral = {
+  kind: "write_peripheral",
+  args: { peripheral_id: 0, pin_value: 0, pin_mode: 0 }
+};
+
+export const EMPTY_WRITE_PIN: WritePin = {
+  kind: "write_pin",
+  args: { pin_number: 13, pin_value: 0, pin_mode: 0 }
 };
 
 /** Generates a function that returns a redux action. */
@@ -49,6 +59,16 @@ const selectedItem = (id: number, resources: ResourceIndex) => {
   }
 };
 
+const getPeripheralId = (step: SequenceBodyItem) => {
+  switch (step.kind) { // Cute tricks to keep typechecker happy. Sorry.
+    case "write_peripheral":
+    case "read_peripheral":
+      return step.args.peripheral_id;
+    default:
+      throw new Error("No");
+  }
+};
+
 export function PeripheralSelector(props: StepParams) {
   const { currentStep, currentSequence, index, dispatch } = props;
   const peripherals: DropDownItem[] = selectAllPeripherals(props.resources)
@@ -58,9 +78,7 @@ export function PeripheralSelector(props: StepParams) {
       return { label, value };
     })
     .filter(x => x.value);
-  if (currentStep.kind !== "read_peripheral") {
-    throw new Error("Expected `read_peripheral`");
-  }
+
   return <>
     <label>{t("Peripheral")} </label>
     <FBSelect
@@ -82,7 +100,7 @@ export function PeripheralSelector(props: StepParams) {
         }));
       }
       }
-      selectedItem={selectedItem(currentStep.args.peripheral_id, props.resources)} />
+      selectedItem={selectedItem(getPeripheralId(currentStep), props.resources)} />
     </>;
 }
 

@@ -9,10 +9,16 @@ import {
 } from "./tile_pin_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
-import { PeripheralSelector } from "./pin_and_peripheral_support";
+import {
+  PeripheralSelector,
+  StepCheckBox,
+  changeStep,
+  EMPTY_WRITE_PIN
+} from "./pin_and_peripheral_support";
 
 const pinValueField = (props: StepParams) => {
-  const { currentSequence, currentStep, dispatch, index } = props;
+  const { currentSequence,
+    currentStep, dispatch, index } = props;
   if (currentStep.kind !== "write_peripheral") { throw new Error("NO"); }
   if (!(currentStep.args.pin_mode === 0) || currentStep.args.pin_value > 1) {
     return <StepInputBox dispatch={dispatch}
@@ -28,10 +34,13 @@ const pinValueField = (props: StepParams) => {
   }
 };
 
+const convertToWritePin = changeStep(EMPTY_WRITE_PIN);
+
 export function TileWritePeripheral(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
   const className = "write-pin-step";
   if (props.currentStep.kind === "write_peripheral") {
+    const action = convertToWritePin(currentStep, currentSequence, index);
     return <StepWrapper>
       <StepHeader
         className={className}
@@ -55,6 +64,13 @@ export function TileWritePeripheral(props: StepParams) {
               onChange={(x) => setPinMode(x, props)}
               selectedItem={currentModeSelection(currentStep)}
               list={PIN_MODES} />
+          </Col>
+          <Col xs={6} md={3}>
+            <StepCheckBox
+              onClick={() => dispatch(action)}
+              checked={true}>
+              {t("Peripheral")}
+            </StepCheckBox>
           </Col>
         </Row>
       </StepContent>
