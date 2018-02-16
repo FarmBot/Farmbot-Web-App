@@ -39,6 +39,7 @@ describe("<TileWritePeripheral/>", () => {
   });
 
   it("sets the pin mode", () => {
+    jest.resetAllMocks();
     const { el, props } = bootStrapTest(EMPTY_WRITE_PERIPHERAL);
     el.find(FBSelect).first().simulate("change", { value: 1 });
     const expectation =
