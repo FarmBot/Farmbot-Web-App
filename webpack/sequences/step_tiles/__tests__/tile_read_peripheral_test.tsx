@@ -1,11 +1,11 @@
 import * as React from "react";
 import { shallow } from "enzyme";
 import { fakeSequence, fakePeripheral } from "../../../__test_support__/fake_state/resources";
-import { ReadPeripheral, SequenceBodyItem, ReadPin, Nothing } from "farmbot/dist";
+import { ReadPeripheral, SequenceBodyItem, Nothing } from "farmbot/dist";
 import { TileReadPeripheral } from "../tile_read_peripheral";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 import { Actions } from "../../../constants";
-import { StepCheckBox, PeripheralSelector } from "../pin_and_peripheral_support";
+import { StepCheckBox } from "../pin_and_peripheral_support";
 
 const p = fakePeripheral();
 const exampleStep: ReadPeripheral = {

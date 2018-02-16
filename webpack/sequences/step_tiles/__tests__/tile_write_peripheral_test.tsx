@@ -1,4 +1,3 @@
-import * as React from "react";
 import { TileWritePeripheral } from "../tile_write_peripheral";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { SequenceBodyItem } from "farmbot";
@@ -54,7 +53,7 @@ describe("<TileWritePeripheral/>", () => {
     const step = defensiveClone(EMPTY_WRITE_PERIPHERAL);
     step.args.pin_value = 128;
     step.args.pin_mode = 1;
-    const { el, props } = bootStrapTest(step);
+    const { el } = bootStrapTest(step);
     expect(el.find(StepInputBox).length).toBe(1);
   });
 });
