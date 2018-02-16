@@ -30,7 +30,7 @@ describe("<TileWritePin/>", () => {
     const labels = wrapper.find("label");
     const buttons = wrapper.find("button");
     expect(inputs.length).toEqual(4);
-    expect(labels.length).toEqual(3);
+    expect(labels.length).toEqual(4);
     expect(buttons.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Write Pin");
     expect(labels.at(0).text()).toEqual("Pin Number");
@@ -50,7 +50,7 @@ describe("<TileWritePin/>", () => {
     const labels = wrapper.find("label");
     const buttons = wrapper.find("button");
     expect(inputs.length).toEqual(3);
-    expect(labels.length).toEqual(3);
+    expect(labels.length).toEqual(4);
     expect(buttons.length).toEqual(2);
     expect(inputs.first().props().placeholder).toEqual("Write Pin");
     expect(labels.at(0).text()).toEqual("Pin Number");

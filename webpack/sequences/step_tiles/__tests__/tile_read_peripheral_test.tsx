@@ -37,25 +37,8 @@ describe("<TileReadPeripheral/>", () => {
     expect(dispatch).toHaveBeenCalledWith(action);
   });
 
-  it("selects a peripheral", () => {
-    jest.clearAllMocks();
-    const { component, dispatch, peripheral } = bootstrapTest();
-    component
-      .find(PeripheralSelector)
-      .simulate("click", { value: peripheral.body.id });
-    expect(dispatch).toHaveBeenCalled();
-    const action = expect.objectContaining({ "type": Actions.OVERWRITE_RESOURCE });
-    expect(dispatch).toHaveBeenCalledWith(action);
-    const kaboom =
-      () => component.find(PeripheralSelector).simulate("change", { value: "NO" });
-    expect(kaboom).toThrowError();
-  });
-
   it("crashes if not passed `read_peripheral", () => {
-    const wrongStep: Nothing = {
-      kind: "nothing",
-      args: {}
-    };
+    const wrongStep: Nothing = { kind: "nothing", args: {} };
     expect(() => { bootstrapTest(wrongStep as any); }).toThrowError();
   });
 });
