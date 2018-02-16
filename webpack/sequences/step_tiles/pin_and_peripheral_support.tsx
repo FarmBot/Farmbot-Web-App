@@ -51,7 +51,7 @@ export const changeStep =
       });
     };
 
-const selectedItem = (id: number, resources: ResourceIndex) => {
+export const selectedItem = (id: number, resources: ResourceIndex) => {
   const uuid = maybeDetermineUuid(resources, "Peripheral", id) || "_";
   const item = resources.references[uuid];
   if (item && item.kind === "Peripheral") {
@@ -59,7 +59,7 @@ const selectedItem = (id: number, resources: ResourceIndex) => {
   }
 };
 
-const getPeripheralId = (step: SequenceBodyItem) => {
+export const getPeripheralId = (step: SequenceBodyItem) => {
   switch (step.kind) { // Cute tricks to keep typechecker happy. Sorry.
     case "write_peripheral":
     case "read_peripheral":
