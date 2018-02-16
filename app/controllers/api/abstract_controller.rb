@@ -193,9 +193,10 @@ private
 
     # Devices have a `last_saw_api` field to assist users with debugging.
     # We update this column every time an FBOS device talks to the API.
-    def mark_as_seen(entity = (current_user && current_user.device))
+    def mark_as_seen(bot = (current_user && current_user.device))
       when_farmbot_os do
-        entity.update_attributes(last_saw_api: Time.now) if entity
+        v = fbos_version.to_s
+        bot.update_attributes!(last_saw_api: Time.now, fbos_version: v) if bot
       end
     end
   end

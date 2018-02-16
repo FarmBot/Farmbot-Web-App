@@ -21,6 +21,14 @@ export interface SelectOptionsParams {
   z?: number;
 }
 
+export interface SensorReading {
+  id?: number | undefined;
+  x: number | undefined;
+  y: number | undefined;
+  z: number | undefined;
+  value: number;
+  pin: number;
+}
 export interface Log {
   id?: number | undefined;
   message: string;

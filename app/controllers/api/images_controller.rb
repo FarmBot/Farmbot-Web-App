@@ -9,7 +9,7 @@ module Api
     SECRET = ENV.fetch("GCS_ID") { "" }
 
     def create
-        mutate Images::Create.run({device: current_device}, raw_json)
+        mutate Images::Create.run(raw_json, device: current_device)
     end
 
     def index
