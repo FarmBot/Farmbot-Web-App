@@ -6,7 +6,7 @@ import { ToolTips } from "../../constants";
 import { setPinMode, PIN_MODES, currentModeSelection } from "./tile_pin_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
-import { EMPTY_READ_PERIPHERAL, changeStep } from "./pin_and_peripheral_support";
+import { EMPTY_READ_PERIPHERAL, changeStep, StepCheckBox } from "./pin_and_peripheral_support";
 
 const convertToReadPeripheral = changeStep(EMPTY_READ_PERIPHERAL);
 
@@ -24,7 +24,7 @@ export function TileReadPin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
   const className = "read-pin-step";
   if (currentStep.kind != "read_pin") { throw new Error("read_pin only"); }
-  const payl = convertToReadPeripheral(currentStep, currentSequence, index);
+  const action = convertToReadPeripheral(currentStep, currentSequence, index);
 
   return <StepWrapper>
     <StepHeader
@@ -54,13 +54,11 @@ export function TileReadPin(props: StepParams) {
         </Col>
         <PinMode {...props} />
         <Col xs={6} md={3}>
-          <label>{t("Peripheral")}</label>
-          <div className={"fb-checkbox"}>
-            <input
-              type="checkbox"
-              onChange={() => dispatch(payl)}
-              checked={false} />
-          </div>
+          <StepCheckBox
+            onClick={() => dispatch(action)}
+            checked={true}>
+            {t("Peripheral")}
+          </StepCheckBox>
         </Col>
       </Row>
     </StepContent>

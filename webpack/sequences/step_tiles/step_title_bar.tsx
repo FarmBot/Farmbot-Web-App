@@ -14,6 +14,7 @@ function translate(input: Step): string {
     "move_absolute": t("Move Absolute"),
     "move_relative": t("Move Relative"),
     "write_pin": t("Write Pin"),
+    "write_peripheral": t("Write Pin"),
     "read_pin": t("Read Pin"),
     "read_peripheral": t("Read Pin"),
     "wait": t("Wait"),
