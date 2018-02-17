@@ -43,10 +43,6 @@ export function setPinMode(
     executor: (step: WritePin) => {
       if (_.isNumber(x.value)) {
         step.args.pin_mode = x.value;
-        // To force ON/OFF display in digital mode, uncomment these lines:
-        // if (x.value === 0) {
-        //   step.args.pin_value = Math.min(1, step.args.pin_value);
-        // }
       } else {
         throw new Error("Numbers only in pin_mode.");
       }

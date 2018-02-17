@@ -37,6 +37,7 @@ module CeleryScriptSettingsBag
                           'argument. Allowed values: %s'
   BAD_SUB_SEQ           = 'Sequence #%s does not exist.'
   NO_SUB_SEQ            = 'missing a sequence selection for `execute` block.'
+  NO_PERIPH             = 'You must select a peripheral before writing to it.'
   BAD_REGIMEN           = 'Regimen #%s does not exist.'
   BAD_OP                = 'Can not put "%s" into an operand (OP) argument. '\
                           'Allowed values: %s'
@@ -149,23 +150,27 @@ module CeleryScriptSettingsBag
         end
       end
       .defineArg(:peripheral_id,   [Integer]) do |node|
-        no_periph = !Peripheral.exists?(node.value)
-        node.invalidate!(BAD_PERIPH_ID % node.value) if no_periph
+        if (node.value == 0)
+          node.invalidate!(NO_PERIPH)
+        else
+          no_periph = !Peripheral.exists?(node.value)
+          node.invalidate!(BAD_PERIPH_ID % node.value) if no_periph
+        end
       end
-      .defineNode(:read_peripheral,  [:peripheral_id, :pin_mode])
-      .defineNode(:write_peripheral, [:peripheral_id, :pin_value])
-      .defineNode(:nothing,        [])
-      .defineNode(:tool,           [:tool_id])
-      .defineNode(:coordinate,     [:x, :y, :z])
-      .defineNode(:move_absolute,  [:location, :speed, :offset])
-      .defineNode(:move_relative,  [:x, :y, :z, :speed])
-      .defineNode(:write_pin,      [:pin_number, :pin_value, :pin_mode ])
-      .defineNode(:read_pin,       [:pin_number, :label, :pin_mode])
-      .defineNode(:channel,        [:channel_name])
-      .defineNode(:wait,           [:milliseconds])
-      .defineNode(:send_message,   [:message, :message_type], [:channel])
-      .defineNode(:execute,        [:sequence_id])
-      .defineNode(:_if,            [:lhs, :op, :rhs, :_then, :_else], [:pair])
+      .defineNode(:read_peripheral,   [:peripheral_id, :pin_mode])
+      .defineNode(:nothing,           [])
+      .defineNode(:tool,              [:tool_id])
+      .defineNode(:coordinate,        [:x, :y, :z])
+      .defineNode(:move_absolute,     [:location, :speed, :offset])
+      .defineNode(:move_relative,     [:x, :y, :z, :speed])
+      .defineNode(:write_pin,         [:pin_number, :pin_value, :pin_mode ])
+      .defineNode(:write_peripheral,  [:peripheral_id, :pin_value, :pin_mode])
+      .defineNode(:read_pin,          [:pin_number, :label, :pin_mode])
+      .defineNode(:channel,           [:channel_name])
+      .defineNode(:wait,              [:milliseconds])
+      .defineNode(:send_message,      [:message, :message_type], [:channel])
+      .defineNode(:execute,           [:sequence_id])
+      .defineNode(:_if,               [:lhs, :op, :rhs, :_then, :_else], [:pair])
       .defineNode(:sequence,          [:version, :locals], STEPS)
       .defineNode(:home,              [:speed, :axis], [])
       .defineNode(:find_home,         [:speed, :axis], [])

@@ -24,6 +24,7 @@ import { t } from "i18next";
 import { Session } from "../../session";
 import { BooleanSetting } from "../../session_keys";
 import { TileReadPeripheral } from "./tile_read_peripheral";
+import { TileWritePeripheral } from "./tile_write_peripheral";
 
 interface MoveParams {
   step: Step;
@@ -125,18 +126,19 @@ function numericNonsense(val: string, copy: CeleryNode, field: LegalArgString) {
 
 export function renderCeleryNode(kind: LegalSequenceKind, props: StepParams) {
   switch (props.currentStep.kind) {
-    case "execute": return <ExecuteBlock {...props} />;
     case "_if": return <TileIf {...props} />;
-    case "move_relative": return <TileMoveRelative {...props} />;
-    case "move_absolute": return <TileMoveAbsolute {...props} />;
-    case "write_pin": return <TileWritePin {...props} />;
-    case "wait": return <TileWait {...props} />;
-    case "send_message": return <TileSendMessage {...props} />;
-    case "read_pin": return <TileReadPin {...props} />;
     case "execute_script": return <TileExecuteScript {...props} />;
-    case "take_photo": return <TileTakePhoto {...props} />;
+    case "execute": return <ExecuteBlock {...props} />;
     case "find_home": return <TileFindHome {...props} />;
+    case "move_absolute": return <TileMoveAbsolute {...props} />;
+    case "move_relative": return <TileMoveRelative {...props} />;
     case "read_peripheral": return <TileReadPeripheral {...props} />;
+    case "read_pin": return <TileReadPin {...props} />;
+    case "send_message": return <TileSendMessage {...props} />;
+    case "take_photo": return <TileTakePhoto {...props} />;
+    case "wait": return <TileWait {...props} />;
+    case "write_pin": return <TileWritePin {...props} />;
+    case "write_peripheral": return <TileWritePeripheral {...props} />;
     default: return <div><hr /> ? Unknown step ? <hr /></div>;
   }
 }

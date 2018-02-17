@@ -69,6 +69,26 @@ describe CeleryScript::Checker do
     expect {
       checker.check_leaf CeleryScript::AstLeaf.new(parent, 6, :location)
     }.to raise_error(CeleryScript::TypeCheckError)
+  end
 
+  it "validates subsequence presence" do
+    hash[:body] = [
+      { kind: "execute", args: { sequence_id: 0 } },
+    ]
+    chk = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?)
+      .to be false
+    expect(chk.error.message)
+      .to eq("missing a sequence selection for `execute` block.")
+  end
+  it "validates peripheral presence" do
+    hash[:body] = [
+      { kind: "read_peripheral", args: { peripheral_id: 0, pin_mode: 0 } }
+    ]
+    chk = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?)
+      .to be false
+    expect(chk.error.message)
+      .to eq("You must select a peripheral before writing to it.")
   end
 end

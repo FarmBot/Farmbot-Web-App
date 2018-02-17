@@ -4,8 +4,8 @@ import { EnvName } from "./interfaces";
 import { all } from "../resources/selectors";
 import { SpecialStatus } from "../resources/tagged_resources";
 
-function stopThem() { return "You have unsaved work."; }
-function dontStopThem() { }
+export function stopThem() { return "You have unsaved work."; }
+export function dontStopThem() { }
 
 /** Subscribe to the store. Stop the user from exiting if any part of the
  * state tree contains `dirty` resources. */
