@@ -1,55 +1,36 @@
-# DRY up some of the repetitive route configs.
-module Only
-  CREATE               = [:create ]
-  DESTROY              = [:destroy]
-  INDEX                = [:index  ]
-  SHOW                 = [:show   ]
-  UPDATE               = [:update ]
-
-  ALL                  = CREATE + DESTROY + INDEX + SHOW + UPDATE
-  CREATE_SHOW          = CREATE + SHOW
-  CREATE_UPDATE        = CREATE + UPDATE
-  INDEX_AND_SHOW       = INDEX  + SHOW
-  INDEX_CREATE_DESTROY = INDEX  + CREATE + DESTROY
-  NON_INDEX            = ALL    - INDEX
-  NON_INDEX_CREATE     = ALL    - INDEX  - CREATE
-  NON_SHOW             = ALL    - SHOW
-  NON_UPDATE           = ALL    - UPDATE
-end
-
 FarmBot::Application.routes.draw do
-
-  resources :sensors
   namespace :api, defaults: {format: :json}, constraints: { format: "json" } do
     # Standard API Resources:
     {
-      corpuses:         Only::INDEX_AND_SHOW,
-      farm_events:      Only::NON_SHOW,
-      images:           Only::NON_UPDATE,
-      logs:             Only::INDEX_CREATE_DESTROY,
-      password_resets:  Only::CREATE_UPDATE,
-      peripherals:      Only::NON_SHOW,
-      regimens:         Only::NON_SHOW,
-      sensor_readings:  Only::NON_UPDATE,
-      sequences:        Only::ALL,
-      tools:            Only::ALL,
-      webcam_feeds:     Only::ALL,
+      corpuses:        [:index, :show],
+      farm_events:     [:create, :destroy, :index, :update],
+      images:          [:create, :destroy, :index, :show],
+      logs:            [:create, :destroy, :index],
+      password_resets: [:create, :update],
+      peripherals:     [:create, :destroy, :index, :update],
+      sensors:         [:create, :destroy, :index, :update],
+      regimens:        [:create, :destroy, :index, :update],
+      sensor_readings: [:create, :destroy, :index, :show],
+      sequences:       [:create, :destroy, :index, :show, :update],
+      tools:           [:create, :destroy, :index, :show, :update],
+      webcam_feeds:    [:create, :destroy, :index, :show, :update],
     }.to_a.map{|(name, only)| resources name, only: only}
 
     # Singular API Resources:
     {
-      device:          Only::NON_INDEX,
-      fbos_config:     Only::NON_INDEX_CREATE,
-      firmware_config: Only::NON_INDEX_CREATE,
-      public_key:      Only::SHOW,
-      tokens:          Only::CREATE_SHOW,
-      web_app_config:  Only::NON_INDEX_CREATE
+      device:          [:create, :destroy, :show, :update],
+      fbos_config:     [:destroy, :show, :update,],
+      firmware_config: [:destroy, :show, :update,],
+      public_key:      [:show],
+      tokens:          [:create, :show],
+      web_app_config:  [:destroy, :show, :update],
     }.to_a.map{|(name, only)| resource name, only: only}
 
-    resources :points, only: Only::ALL do
+    resources :points, only: [:create, :destroy, :index, :show, :update,] do
       post :search, on: :collection
     end
-    resource :users,   only: Only::NON_INDEX do
+
+    resource :users,   only: [:create, :destroy, :show, :update,] do
       post :resend_verification, on: :member
     end
 

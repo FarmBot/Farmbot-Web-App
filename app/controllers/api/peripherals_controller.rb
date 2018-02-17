@@ -4,10 +4,6 @@ module Api
       render json: current_device.peripherals
     end
 
-    # Another Oddball endpoint. This controller action might not follow
-    # traditional conventions for REST APIs. Replaces *all* existing peripherals
-    # with a new array of peripherals. Performing patch operations on
-    # collections (where order is signifcant) was too much of a pain.
     def create
       mutate Peripherals::Create.run(raw_json, device: current_device)
     end

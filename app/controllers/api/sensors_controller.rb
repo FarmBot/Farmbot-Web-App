@@ -1,24 +1,25 @@
 module Api
   class SensorsController < Api::AbstractController
-
     def index
-      raise "Not yet implements :("
-    end
-
-    def show
-      raise "Not yet implements :("
+      render json: current_device.sensors
     end
 
     def create
-      raise "Not yet implements :("
+      mutate Sensors::Create.run(raw_json, device: current_device)
     end
 
     def update
-      raise "Not yet implements :("
+      mutate Sensors::Update.run(raw_json, sensor: sensor, device: current_device)
     end
 
     def destroy
-      raise "Not yet implements :("
+      mutate Sensors::Destroy.run(sensor: sensor)
+    end
+
+    private
+
+    def sensor
+      @sensor ||= current_device.sensors.find(params[:id])
     end
   end
 end
