@@ -1,5 +1,6 @@
 FarmBot::Application.routes.draw do
 
+  resources :sensors
   namespace :api, defaults: {format: :json}, constraints: { format: "json" } do
     resources :images,          only: [:create, :destroy, :show, :index]
     resources :sensor_readings, only: [:create, :destroy, :show, :index]
