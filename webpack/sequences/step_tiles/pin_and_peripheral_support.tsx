@@ -1,12 +1,17 @@
 import * as React from "react";
-import { ReadPeripheral, SequenceBodyItem, ReadPin, WritePin } from "farmbot";
+import {
+  ReadPeripheral,
+  SequenceBodyItem,
+  ReadPin,
+  WritePin,
+  WritePeripheral
+} from "farmbot";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { editStep } from "../../api/crud";
 import { StepParams } from "../interfaces";
 import { DropDownItem, FBSelect } from "../../ui/index";
 import { selectAllPeripherals, maybeDetermineUuid } from "../../resources/selectors";
 import { isNumber } from "lodash";
-import { WritePeripheral } from "../../../latest_corpus";
 import { ResourceIndex } from "../../resources/interfaces";
 import { t } from "i18next";
 import { JSXChildren } from "../../util/index";
