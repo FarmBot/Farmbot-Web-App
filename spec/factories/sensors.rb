@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :sensor do
     device
-    pin 1
+    sequence(:pin)
     label "MyString"
     mode 1
   end

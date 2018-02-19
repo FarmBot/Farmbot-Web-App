@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :peripheral do
     device
-    pin { rand(1..540) }
+    sequence(:pin)
     label "MyString"
   end
 end
