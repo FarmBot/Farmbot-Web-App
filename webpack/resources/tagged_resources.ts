@@ -8,6 +8,7 @@ import {
   PlantPointer,
   ToolSlotPointer,
   SensorReading,
+  Sensor,
 } from "../interfaces";
 import { Peripheral } from "../controls/peripherals/interfaces";
 import { User } from "../auth/interfaces";
@@ -34,6 +35,7 @@ export type ResourceName =
   | "Plant"
   | "Point"
   | "Regimen"
+  | "Sensor"
   | "SensorReading"
   | "Sequence"
   | "Tool"
@@ -93,6 +95,7 @@ export type TaggedResource =
   | TaggedPeripheral
   | TaggedPoint
   | TaggedRegimen
+  | TaggedSensor
   | TaggedSensorReading
   | TaggedSequence
   | TaggedTool
@@ -112,6 +115,7 @@ export type TaggedFbosConfig = Resource<"FbosConfig", FbosConfig>;
 export type TaggedFirmwareConfig = Resource<"FirmwareConfig", FirmwareConfig>;
 export type TaggedWebAppConfig = Resource<"WebAppConfig", WebAppConfig>;
 export type TaggedSensorReading = Resource<"SensorReading", SensorReading>;
+export type TaggedSensor = Resource<"Sensor", Sensor>;
 
 type PointUnion = GenericPointer | PlantPointer | ToolSlotPointer;
 
