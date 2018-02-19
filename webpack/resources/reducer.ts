@@ -75,7 +75,8 @@ export function emptyState(): RestResources {
         FbosConfig: [],
         FirmwareConfig: [],
         WebAppConfig: [],
-        SensorReading: []
+        SensorReading: [],
+        Sensor: []
       },
       byKindAndId: {},
       references: {}
@@ -130,6 +131,7 @@ export let resourceReducer = generateReducer
         case "WebAppConfig":
         case "FirmwareConfig":
         case "FbosConfig":
+        case "Sensor":
           reindexResource(s.index, resource);
           dontTouchThis(resource);
           s.index.references[resource.uuid] = resource;
@@ -161,6 +163,7 @@ export let resourceReducer = generateReducer
       case "FirmwareConfig":
       case "SensorReading":
       case "Image":
+      case "Sensor":
         removeFromIndex(s.index, resource);
         break;
       default:

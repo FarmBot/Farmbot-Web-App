@@ -121,6 +121,8 @@ export class API {
   get fbosConfigPath() { return `${this.baseUrl}/api/fbos_config/`; }
   /** /api/sensor_readings */
   get sensorReadingPath() { return `${this.baseUrl}/api/sensor_readings`; }
+  /** /api/sensor_readings */
+  get sensorPath() { return `${this.baseUrl}/api/sensors`; }
   /** /api/users/verify/:token */
   verificationPath = (token: string) => ("/api/users/verify/" + token);
 }
