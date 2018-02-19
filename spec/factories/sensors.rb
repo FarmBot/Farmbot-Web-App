@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :sensor do
-    device nil
+    device
     pin 1
     label "MyString"
     mode 1

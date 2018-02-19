@@ -1,9 +1,6 @@
 module Sensors
   class Update < Mutations::Command
-    required do
-      model :peripheral, class: Sensor
-      model :device,     class: Device
-    end
+    required { model :sensor, class: Sensor }
 
     optional do
       integer :pin
@@ -12,8 +9,8 @@ module Sensors
     end
 
     def execute
-      peripheral.update_attributes!(inputs.except(:peripheral, :device))
-      peripheral
+      sensor.update_attributes!(inputs.except(:sensor))
+      sensor
     end
   end
 end
