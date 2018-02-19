@@ -1,58 +1,56 @@
 FarmBot::Application.routes.draw do
-
   namespace :api, defaults: {format: :json}, constraints: { format: "json" } do
-    resources :images,          only: [:create, :destroy, :show, :index]
-    resources :sensor_readings, only: [:create, :destroy, :show, :index]
-    resources :regimens,        only: [:create, :destroy, :index, :update]
-    resources :peripherals,     only: [:create, :destroy, :index, :update]
-    resources :corpuses,        only: [:index, :show]
-    resources :logs,            only: [:index, :create, :destroy]
-    resources :sequences,       only: [:create, :update, :destroy, :index, :show]
-    resources :farm_events,     only: [:create, :update, :destroy, :index]
-    resources :tools,           only: [:create, :show, :index, :destroy, :update]
-    resources :points,          only: [:create, :show, :index, :destroy, :update] do
-        post :search, on: :collection
+    # Standard API Resources:
+    {
+      corpuses:        [:index, :show],
+      farm_events:     [:create, :destroy, :index, :update],
+      images:          [:create, :destroy, :index, :show],
+      logs:            [:create, :destroy, :index],
+      password_resets: [:create, :update],
+      peripherals:     [:create, :destroy, :index, :update],
+      sensors:         [:create, :destroy, :index, :update],
+      regimens:        [:create, :destroy, :index, :update],
+      sensor_readings: [:create, :destroy, :index, :show],
+      sequences:       [:create, :destroy, :index, :show, :update],
+      tools:           [:create, :destroy, :index, :show, :update],
+      webcam_feeds:    [:create, :destroy, :index, :show, :update],
+    }.to_a.map{|(name, only)| resources name, only: only}
+
+    # Singular API Resources:
+    {
+      device:          [:create, :destroy, :show, :update],
+      fbos_config:     [:destroy, :show, :update,],
+      firmware_config: [:destroy, :show, :update,],
+      public_key:      [:show],
+      tokens:          [:create, :show],
+      web_app_config:  [:destroy, :show, :update],
+    }.to_a.map{|(name, only)| resource name, only: only}
+
+    resources :points, only: [:create, :destroy, :index, :show, :update,] do
+      post :search, on: :collection
     end
-    resource :public_key,     only: [:show]
-    resource :tokens,         only: [:create, :show]
-    resource :users,          only: [:create, :update, :destroy, :show] do
+
+    resource :users,   only: [:create, :destroy, :show, :update,] do
       post :resend_verification, on: :member
     end
-    resource :device,         only: [:show, :destroy, :create, :update]
-    resources :webcam_feeds,  only: [:create,
-                                     :show,
-                                     :index,
-                                     :update,
-                                     :destroy]
-    resources :password_resets, only: [:create, :update]
 
-    resource :web_app_config,  only: [:show, :destroy, :update]
-    resource :fbos_config,     only: [:show, :destroy, :update]
-    resource :firmware_config, only: [:show, :destroy, :update]
-
-    put "/password_resets"     => "password_resets#update", as: :whatever
-    put "/users/verify/:token" => "users#verify",           as: :users_verify
     # Make life easier on API users by not adding special rules for singular
     # resources.
-    # Might be safe to remove now with the advent of TaggerResource.kind
-    get   "/device/:id"  => "devices#show",   as: :get_device_redirect
-    get   "/export_data" => "devices#dump",   as: :dump_device
-    put   "/device/:id"  => "devices#update", as: :put_device_redirect
-    patch "/device/:id"  => "devices#update", as: :patch_device_redirect
-    put   "/users/:id"   => "users#update",   as: :put_users_redirect
-    patch "/users/:id"   => "users#update",   as: :patch_users_redirect
-    put   "/webcam_feed/:id"  => "webcam_feeds#update",
-      as: :put_webcam_feed_redirect
-    patch "/webcam_feed/:id"  => "webcam_feeds#update",
-      as: :patch_webcam_feed_redirect
-
+    # Might be safe to remove now with the advent of TaggedResource.kind
+    get   "/device/:id"          => "devices#show",            as: :get_device_redirect
+    get   "/export_data"         => "devices#dump",            as: :dump_device
+    get   "/storage_auth"        => "api/images#storage_auth", as: :storage_auth
+    patch "/device/:id"          => "devices#update",          as: :patch_device_redirect
+    patch "/users/:id"           => "users#update",            as: :patch_users_redirect
+    patch "/webcam_feed/:id"     => "webcam_feeds#update",     as: :patch_webcam_feed_redirect
+    put   "/device/:id"          => "devices#update",          as: :put_device_redirect
+    put   "/password_resets"     => "password_resets#update",  as: :whatever
+    put   "/users/:id"           => "users#update",            as: :put_users_redirect
+    put   "/users/verify/:token" => "users#verify",            as: :users_verify
+    put   "/webcam_feed/:id"     => "webcam_feeds#update",     as: :put_webcam_feed_redirect
   end
 
   devise_for :users
-
-  # Generate a signed URL for Google Cloud Storage uploads.
-  get "/api/storage_auth" => "api/images#storage_auth", as: :storage_auth
-  # You can set FORCE_SSL when you're done.
 
   # =======================================================================
   # NON-API (USER FACING) URLS:
@@ -62,11 +60,8 @@ FarmBot::Application.routes.draw do
   get  "/tos_update"   => "dashboard#tos_update",   as: :tos_update
   post "/csp_reports"  => "dashboard#csp_reports",  as: :csp_report
 
-  match "/app/*path",
-          to: "dashboard#main_app",
-          via: :all,
-          constraints: { format: "html" }
-  get "/password_reset/*token" => "dashboard#password_reset",
-    as: :password_reset
+  get "/password_reset/*token" => "dashboard#password_reset", as: :password_reset
   get "/verify" => "dashboard#verify", as: :verify
+
+  match "/app/*path", to: "dashboard#main_app", via: :all, constraints: { format: "html" }
 end

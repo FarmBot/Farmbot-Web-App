@@ -12,10 +12,11 @@ class Device < ApplicationRecord
   has_many  :sequences,       dependent: :destroy
   has_many  :regimens,        dependent: :destroy
   has_many  :peripherals,     dependent: :destroy
+  has_many  :sensors,         dependent: :destroy
   has_many  :tools,           dependent: :destroy
   has_many  :images,          dependent: :destroy
   has_many  :webcam_feeds,    dependent: :destroy
-  has_many  :sensor_readings,  dependent: :destroy
+  has_many  :sensor_readings, dependent: :destroy
   validates :timezone,     inclusion: { in: TIMEZONES,
                                         message: BAD_TZ,
                                         allow_nil: true }
