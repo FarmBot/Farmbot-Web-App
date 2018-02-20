@@ -3,6 +3,9 @@
 class SessionToken < AbstractJwtToken
   MUST_VERIFY  = "Verify account first"
   MQTT         = ENV.fetch("MQTT_HOST")
+  # No beta URL provided? Then provide the latest stable.
+  DEFAULT_BETA_URL = \
+    "https://api.github.com/repos/FarmBot/farmbot_os/releases/latest"
   # If you are not using the standard MQTT broker (eg: you use a 3rd party
   # MQTT vendor), you will need to change this line.
   DEFAULT_MQTT_WS = \
@@ -10,7 +13,7 @@ class SessionToken < AbstractJwtToken
   MQTT_WS         = ENV["MQTT_WS"] || DEFAULT_MQTT_WS
   EXPIRY          = 40.days
   VHOST           = ENV.fetch("MQTT_VHOST") { "/" }
-  BETA_OS_URL     = ENV["BETA_OTA_URL"] || DEFAULT_MQTT_WS
+  BETA_OS_URL     = ENV["BETA_OTA_URL"] || DEFAULT_BETA_URL
   def self.issue_to(user,
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
