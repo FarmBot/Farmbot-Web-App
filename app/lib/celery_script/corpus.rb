@@ -14,7 +14,7 @@ module CeleryScript
       @arg_def_list[name.to_sym] or raise NO_ARG_SPEC
     end
 
-    def defineArg(arg_name, allowed_values, &blk)
+    def arg(arg_name, allowed_values, &blk)
       @arg_def_list[arg_name.to_sym] = ArgumentSpecification.new(arg_name,
                                                                  allowed_values,
                                                                  blk)
@@ -26,7 +26,7 @@ module CeleryScript
       n ? n : raise(TypeCheckError, BAD_NODE_NAME + name.to_s)
     end
 
-    def defineNode(kind, allowed_args, allowed_body_nodes = [])
+    def node(kind, allowed_args, allowed_body_nodes = [])
       @node_def_list[kind.to_sym] = NodeSpecification.new(kind,
                                                           allowed_args,
                                                           allowed_body_nodes)
