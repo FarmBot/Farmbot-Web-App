@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "2.4.2"
+ruby "2.5.0"
 
 gem "rails"
 gem "thin"
@@ -12,7 +12,7 @@ gem "mutations"
 gem "active_model_serializers"
 gem "rack-cors"
 gem "rack-attack"
-gem "paperclip", "5.2.1"
+gem "paperclip"
 gem "figaro"
 gem "fog-google", git: "https://github.com/fog/fog-google"
 gem "pg", "0.21.0" # TODO: Why can't I upgrade to 1.0.0?
@@ -24,7 +24,7 @@ gem "webpack-rails"
 # Active on the "official" FarmBot server, set the appropriate ENV
 # vars if you wish to use them on your own servers.
 gem "rollbar"
-gem "skylight", "1.4.0"
+gem "skylight"
 gem "bunny"
 gem "request_store"
 gem "secure_headers"
@@ -35,15 +35,15 @@ group :development, :test do
   gem "database_cleaner"
   gem "pry"
   gem "pry-rails"
-  gem "factory_bot_rails" # 4.8.0
+  gem "factory_bot_rails"
   gem "faker"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
   gem "rails-erd"
   # TODO: Upgrade versions when they fix this stuff:
   # https://stackoverflow.com/questions/43983466
   #   /controller-test-emits-debug-failure-messages-after-rails-5-1-upgrade
-  gem "rspec", "~> 3.5.0"
-  gem "rspec-rails", "~> 3.5.0"
+  gem "rspec"
+  gem "rspec-rails"
   gem "simplecov"
   gem "letter_opener"
 end
