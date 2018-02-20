@@ -60,6 +60,7 @@ MQTT_HOST: "0.0.0.0"
 NPM_ADDON: "Used by FarmBot, Inc. to load proprietary extras, like Rollbar."
 # Same as above. Can be deleted unless you are a Rollbar.IO customer.
 ROLLBAR_ACCESS_TOKEN: "____"
+ROLLBAR_CLIENT_TOKEN: "____"
 # FarmBot, Inc. uses SendGrid to send emails.
 # Delete these if you don't use send grid.
 SENDGRID_PASSWORD: "Used by FarmBot, Inc"
