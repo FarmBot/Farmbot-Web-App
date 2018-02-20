@@ -27,8 +27,8 @@
     "webpack-dev-server": "^2.9.3"
   },
   "dependencies": {
-    "@blueprintjs/core": "^1.32.0",
-    "@blueprintjs/datetime": "^1.23.0",
+    "@blueprintjs/core": "1.35.5",
+    "@blueprintjs/datetime": "1.25.3",
     "@blueprintjs/labs": "^0.4.0",
     "@types/enzyme": "^3.1.9",
     "@types/fastclick": "^1.0.28",

@@ -16,6 +16,19 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
+"@blueprintjs/core@1.35.5", "@blueprintjs/core@^1.35.3":
+  version "1.35.5"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.35.5.tgz#0474a3c701f93cc533d42a2b3546d094c1d0a0dd"
+  dependencies:
+    "@types/dom4" "^1.5.20"
+    "@types/tether" "^1.1.27"
+    classnames "^2.2"
+    dom4 "^1.8"
+    normalize.css "4.1.1"
+    pure-render-decorator "^1.1"
+    tether "^1.4"
+    tslib "^1.5.0"
+
 "@blueprintjs/core@^1.23.0":
   version "1.24.0"
   resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.24.0.tgz#879cf0b17d93c871c223ed478343cdda1abe45d2"
@@ -29,24 +42,11 @@
     tether "^1.4"
     tslib "^1.5.0"
 
-"@blueprintjs/core@^1.32.0", "@blueprintjs/core@^1.34.0":
-  version "1.34.1"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.34.1.tgz#ef0ded2adf6a94c353d81dbedfeb880af53db53c"
+"@blueprintjs/datetime@1.25.3":
+  version "1.25.3"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/datetime/-/datetime-1.25.3.tgz#ccbc775c196be39ef4be6ff36ac5e423ab5890ab"
   dependencies:
-    "@types/dom4" "^1.5.20"
-    "@types/tether" "^1.1.27"
-    classnames "^2.2"
-    dom4 "^1.8"
-    normalize.css "4.1.1"
-    pure-render-decorator "^1.1"
-    tether "^1.4"
-    tslib "^1.5.0"
-
-"@blueprintjs/datetime@^1.23.0":
-  version "1.25.0"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/datetime/-/datetime-1.25.0.tgz#158e01054f5db650302d1098d9af5d7b52d47946"
-  dependencies:
-    "@blueprintjs/core" "^1.34.0"
+    "@blueprintjs/core" "^1.35.3"
     classnames "^2.2"
     moment "^2.14.1"
     react-day-picker "^5.3.0"
