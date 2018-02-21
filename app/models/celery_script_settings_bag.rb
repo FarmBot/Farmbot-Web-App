@@ -51,10 +51,11 @@ module CeleryScriptSettingsBag
   BAD_PACKAGE           = '"%s" is not a valid package. Allowed values: %s'
   BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
   BAD_POINTER_ID        = "Bad point ID: %s"
+  BAD_PIN_ID            = "Can't find %s with id of %s"
   BAD_POINTER_TYPE      = '"%s" is not a type of point. Allowed values: %s'
   BAD_PIN_TYPE          = '"%s" is not a type of pin. Allowed values: %s'
   BAD_SPEED             = "Speed must be a percentage between 1-100"
-
+  PIN_TYPE_MAP          = { "Peripheral" => Peripheral, "Sensor" => Sensor }
   Corpus = CeleryScript::Corpus
       .new
       .arg(:_else,        [:execute, :nothing])
@@ -166,7 +167,11 @@ module CeleryScriptSettingsBag
         end
       end
       .node(:named_pin,             [:pin_type, :pin_id]) do |node|
-        binding.pry
+        klass = \
+          PIN_TYPE_MAP[node.args[:pin_type].value] or raise "IMPOSSIBLE"
+        id       = node.args[:pin_id].value
+        bad_node = !klass.exists?(id)
+        node.invalidate!(BAD_PIN_ID % [klass, id]) if bad_node
       end
       .node(:read_peripheral,       [:peripheral_id, :pin_mode])
       .node(:nothing,               [])
