@@ -1,26 +1,31 @@
 ENV['MQTT_HOST'] = "blooper.io"
 ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
 ENV['RAILS_ENV'] ||= 'test'
-require 'simplecov'
-require 'codecov'
-require 'pry'
 require File.expand_path('../../config/environment', __FILE__)
-require 'rspec/rails'
-require 'database_cleaner'
 require_relative './stuff'
 require_relative './topic_stub'
 require_relative './nice_response'
+
+ENV['MQTT_HOST'] = "blooper.io"
+ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
+require 'simplecov'
 #Ignore anything with the word 'spec' in it. No need to test your tests.
 SimpleCov.start do
   add_filter '/spec/'
   add_filter 'config/initializers'
 end
 
+require 'codecov'
 SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
   SimpleCov::Formatter::HTMLFormatter,
   SimpleCov::Formatter::Codecov,
 ])
+require 'pry'
 
+ENV['RAILS_ENV'] ||= 'test'
+require File.expand_path('../../config/environment', __FILE__)
+require 'rspec/rails'
+require_relative './stuff'
 
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
@@ -29,6 +34,7 @@ SmarfDoc.config do |c|
   c.output_file   = 'api_docs.md'
 end
 
+require 'database_cleaner'
 DatabaseCleaner.strategy = :truncation
 # then, whenever you need to clean the DB
 DatabaseCleaner.clean

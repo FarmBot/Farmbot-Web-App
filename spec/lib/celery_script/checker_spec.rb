@@ -81,6 +81,7 @@ describe CeleryScript::Checker do
     expect(chk.error.message)
       .to eq("missing a sequence selection for `execute` block.")
   end
+
   it "validates peripheral presence" do
     hash[:body] = [
       { kind: "read_peripheral", args: { peripheral_id: 0, pin_mode: 0 } }
@@ -90,5 +91,27 @@ describe CeleryScript::Checker do
       .to be false
     expect(chk.error.message)
       .to eq("You must select a peripheral before writing to it.")
+  end
+
+  it "Catches bad `pin_type`s in `read_pin`" do
+    hash[:body] = [
+      {
+        kind: "read_pin",
+        args: {
+          pin_mode:   0,
+          label:      "pin",
+          pin_number: {
+            kind: "named_pin",
+            args: {
+              pin_type: "Not correct",
+              pin_id: 1
+            }
+          }
+        }
+      }
+    ]
+    chk = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?).to be false
+    expect(chk.error.message).to include("not a type of pin")
   end
 end

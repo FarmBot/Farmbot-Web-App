@@ -8,6 +8,7 @@ module CeleryScriptSettingsBag
   # List of all celery script nodes that can be used as a varaible...
   ANY_VARIABLE          = [:tool, :coordinate, :point, :identifier]
   ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
+  ALLOWED_PIN_TYPES     = [Peripheral, Sensor].map(&:name)
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
                              sync check_updates power_off reboot toggle_pin
                              config_update calibrate execute move_absolute
@@ -51,20 +52,21 @@ module CeleryScriptSettingsBag
   BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
   BAD_POINTER_ID        = "Bad point ID: %s"
   BAD_POINTER_TYPE      = '"%s" is not a type of point. Allowed values: %s'
+  BAD_PIN_TYPE          = '"%s" is not a type of pin. Allowed values: %s'
   BAD_SPEED             = "Speed must be a percentage between 1-100"
 
   Corpus = CeleryScript::Corpus
       .new
       .arg(:_else,        [:execute, :nothing])
       .arg(:_then,        [:execute, :nothing])
-      .arg(:data_value,   ANY_VARIABLE)
-      .arg(:label,        [String])
       .arg(:locals,       [:scope_declaration])
-      .arg(:location,     ANY_VARIABLE)
-      .arg(:milliseconds, [Integer])
       .arg(:offset,       [:coordinate])
-      .arg(:package,      [String])
       .arg(:pin_number,   [Integer, :named_pin])
+      .arg(:data_value,   ANY_VARIABLE)
+      .arg(:location,     ANY_VARIABLE)
+      .arg(:label,        [String])
+      .arg(:milliseconds, [Integer])
+      .arg(:package,      [String])
       .arg(:pin_value,    [Integer])
       .arg(:radius,       [Integer])
       .arg(:rhs,          [Integer])
@@ -74,8 +76,12 @@ module CeleryScriptSettingsBag
       .arg(:x,            [Integer])
       .arg(:y,            [Integer])
       .arg(:z,            [Integer])
-      .arg(:labeled_pin_id,   [Integer]) { raise "TODO" }
-      .arg(:labeled_pin_type, [Integer]) { raise "TODO" }
+      .arg(:pin_id,       [Integer]) { raise "TODO" }
+      .arg(:pin_type,     [String]) do |node|
+        within(ALLOWED_PIN_TYPES, node) do |val|
+          BAD_PIN_TYPE % [val.to_s, ALLOWED_PIN_TYPES.inspect]
+        end
+      end
       .arg(:pointer_id,   [Integer]) do |node|
         p_type = node&.parent&.args[:pointer_type]&.value
         klass  = Point::POINTER_KINDS[p_type]
@@ -159,7 +165,7 @@ module CeleryScriptSettingsBag
           node.invalidate!(BAD_PERIPH_ID % node.value) if no_periph
         end
       end
-      .node(:named_pin,             [:labeled_pin_type, :labeled_pin_id])
+      .node(:named_pin,             [:pin_type, :pin_id])
       .node(:read_peripheral,       [:peripheral_id, :pin_mode])
       .node(:nothing,               [])
       .node(:tool,                  [:tool_id])
