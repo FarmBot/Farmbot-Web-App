@@ -34,6 +34,7 @@ import { SelectionBox, SelectionBoxData } from "./selection_box";
 import { Actions } from "../../constants";
 import { isNumber } from "lodash";
 import { TargetCoordinate } from "./target_coordinate";
+import { DrawnPoint } from "./drawn_point";
 
 const DRAG_ERROR = `ERROR - Couldn't get zoom level of garden map, check the
   handleDrop() or drag() method in garden_map.tsx`;
@@ -45,6 +46,7 @@ export enum Mode {
   editPlant = "editPlant",
   addPlant = "addPlant",
   moveTo = "moveTo",
+  createPoint = "createPoint",
 }
 
 export const getMode = (): Mode => {
@@ -55,6 +57,7 @@ export const getMode = (): Mode => {
     if (pathArray[4] === "select") { return Mode.boxSelect; }
     if (pathArray[4] === "crop_search") { return Mode.addPlant; }
     if (pathArray[4] === "move_to") { return Mode.moveTo; }
+    if (pathArray[4] === "create_point") { return Mode.createPoint; }
   }
   return Mode.none;
 };
@@ -137,6 +140,16 @@ export class GardenMap extends
         }
         this.props.dispatch({ type: Actions.SELECT_PLANT, payload: undefined });
         break;
+      case Mode.createPoint:
+        this.setState({ isDragging: true });
+        const center = this.getGardenCoordinates(e);
+        if (center) {
+          this.props.dispatch({
+            type: Actions.SET_CURRENT_POINT_DATA,
+            payload: { cx: center.x, cy: center.y, r: 0 }
+          });
+        }
+        break;
     }
   }
 
@@ -144,6 +157,7 @@ export class GardenMap extends
     switch (getMode()) {
       case Mode.boxSelect:
       case Mode.moveTo:
+      case Mode.createPoint:
         return undefined;
       default:
         return this.props.selectedPlant;
@@ -236,6 +250,7 @@ export class GardenMap extends
     return selected.length > 0 ? selected : undefined;
   }
 
+  // tslint:disable-next-line:cyclomatic-complexity
   drag = (e: React.MouseEvent<SVGElement>) => {
     switch (getMode()) {
       case Mode.editPlant:
@@ -270,6 +285,21 @@ export class GardenMap extends
               payload: this.getSelected(this.state.selectionBox)
             });
           }
+        }
+        break;
+      case Mode.createPoint:
+        const edge = this.getGardenCoordinates(e);
+        const { currentPoint } = this.props.designer;
+        if (edge && currentPoint && !!this.state.isDragging) {
+          const { cx, cy } = currentPoint;
+          this.props.dispatch({
+            type: Actions.SET_CURRENT_POINT_DATA,
+            payload: {
+              cx, cy,
+              r: Math.round(Math.sqrt(
+                Math.pow(edge.x - cx, 2) + Math.pow(edge.y - cy, 2))),
+            }
+          });
         }
         break;
     }
@@ -380,6 +410,11 @@ export class GardenMap extends
           {this.props.designer.chosenLocation &&
             <TargetCoordinate
               chosenLocation={this.props.designer.chosenLocation}
+              mapTransformProps={mapTransformProps} />}
+          {this.props.designer.currentPoint &&
+            <DrawnPoint
+              data={this.props.designer.currentPoint}
+              key={"currentPoint"}
               mapTransformProps={mapTransformProps} />}
         </svg>
       </svg>

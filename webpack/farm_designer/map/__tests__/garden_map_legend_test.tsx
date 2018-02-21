@@ -28,6 +28,7 @@ describe("<GardenMapLegend />", () => {
       dispatch: jest.fn(),
       tzOffset: 0,
       getConfigValue: jest.fn(),
+      imageAgeInfo: { newestDate: "", toOldest: 1 },
     };
   }
 

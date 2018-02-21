@@ -113,6 +113,7 @@ export interface DesignerState {
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
   chosenLocation: BotPosition;
+  currentPoint: CurrentPointPayl | undefined;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
@@ -248,4 +249,11 @@ export interface CameraCalibrationData {
   },
   origin: string | undefined;
   calibrationZ: string | undefined;
+}
+
+export interface CurrentPointPayl {
+  cx: number;
+  cy: number;
+  r: number;
+  color?: string;
 }

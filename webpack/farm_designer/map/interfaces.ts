@@ -39,6 +39,7 @@ export interface GardenMapLegendProps {
   dispatch: Function;
   tzOffset: number;
   getConfigValue: GetWebAppConfigValue;
+  imageAgeInfo: { newestDate: string, toOldest: number };
 }
 
 export type MapTransformProps = {
