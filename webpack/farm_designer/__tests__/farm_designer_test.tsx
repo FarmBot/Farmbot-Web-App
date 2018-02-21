@@ -26,6 +26,7 @@ describe("<FarmDesigner/>", () => {
         cropSearchQuery: "",
         cropSearchResults: [],
         chosenLocation: { x: undefined, y: undefined, z: undefined },
+        currentPoint: undefined,
       },
       hoveredPlant: undefined,
       points: [],

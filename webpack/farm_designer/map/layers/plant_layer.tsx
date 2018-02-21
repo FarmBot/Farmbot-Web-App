@@ -30,6 +30,7 @@ export function PlantLayer(props: PlantLayerProps) {
       case Mode.boxSelect:
       case Mode.clickToAdd:
       case Mode.moveTo:
+      case Mode.createPoint:
         return { "pointerEvents": "none" };
       default:
         return {};
