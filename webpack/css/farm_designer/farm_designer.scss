@@ -313,11 +313,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    fieldset {
+      width: 100%;
+    }
     label {
       margin-bottom: 0;
     }
     button {
+      float: none;
       margin-bottom: 0.5rem;
+      margin-left: 2rem;
     }
   }
   .caret-menu-button {
@@ -452,7 +457,17 @@
 }
 
 .image-filter-menu {
+  width: 32rem;
   th {
+    text-align: center;
+  }
+  .pt-slider {
+    margin-left: 3rem;
+    margin-top: 1rem;
+    width: 25rem;
+  }
+  .pt-slider-label {
+    white-space: nowrap;
     text-align: center;
   }
 }
