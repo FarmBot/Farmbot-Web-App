@@ -76,7 +76,7 @@ module CeleryScriptSettingsBag
       .arg(:x,            [Integer])
       .arg(:y,            [Integer])
       .arg(:z,            [Integer])
-      .arg(:pin_id,       [Integer]) { raise "TODO" }
+      .arg(:pin_id,       [Integer])
       .arg(:pin_type,     [String]) do |node|
         within(ALLOWED_PIN_TYPES, node) do |val|
           BAD_PIN_TYPE % [val.to_s, ALLOWED_PIN_TYPES.inspect]
@@ -165,7 +165,9 @@ module CeleryScriptSettingsBag
           node.invalidate!(BAD_PERIPH_ID % node.value) if no_periph
         end
       end
-      .node(:named_pin,             [:pin_type, :pin_id])
+      .node(:named_pin,             [:pin_type, :pin_id]) do |node|
+        binding.pry
+      end
       .node(:read_peripheral,       [:peripheral_id, :pin_mode])
       .node(:nothing,               [])
       .node(:tool,                  [:tool_id])

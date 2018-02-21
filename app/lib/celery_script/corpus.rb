@@ -26,10 +26,11 @@ module CeleryScript
       n ? n : raise(TypeCheckError, BAD_NODE_NAME + name.to_s)
     end
 
-    def node(kind, allowed_args, allowed_body_nodes = [])
+    def node(kind, allowed_args, allowed_body_nodes = [], &blk = nil)
       @node_def_list[kind.to_sym] = NodeSpecification.new(kind,
                                                           allowed_args,
-                                                          allowed_body_nodes)
+                                                          allowed_body_nodes,
+                                                          blk)
       self
     end
 

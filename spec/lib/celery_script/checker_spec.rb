@@ -114,4 +114,24 @@ describe CeleryScript::Checker do
     expect(chk.valid?).to be false
     expect(chk.error.message).to include("not a type of pin")
   end
+
+  it "Catches bad `pin_type`s in `read_pin`" do
+    p = FactoryBot.create(:peripheral)
+    hash[:body] = [
+      {
+        kind: "read_pin",
+        args: {
+          pin_mode: 0,
+          label: "pin",
+          pin_number: {
+            kind: "named_pin",
+            args: { pin_type: p.class.name, pin_id: p.id }
+          }
+        }
+      }
+    ]
+    chk = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?).to be false
+    expect(chk.error.message).to include("not a type of pin")
+  end
 end
