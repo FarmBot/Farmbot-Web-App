@@ -72,7 +72,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
     const { handleClick, item, index } = params;
     return <MenuItem
       className={this.styleFor(item)}
-      key={item.label || index}
+      key={index + item.label}
       onClick={handleClick}
       text={`${item.label}`} />;
   }

@@ -1,4 +1,4 @@
-import { CropLiveSearchResult } from "./interfaces";
+import { CropLiveSearchResult, CurrentPointPayl } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { DesignerState, HoveredPlantPayl } from "./interfaces";
 import { cloneDeep } from "lodash";
@@ -16,6 +16,7 @@ export let initialState: DesignerState = {
   cropSearchQuery: "",
   cropSearchResults: [],
   chosenLocation: { x: undefined, y: undefined, z: undefined },
+  currentPoint: undefined,
 };
 
 export let designer = generateReducer<DesignerState>(initialState)
@@ -34,6 +35,10 @@ export let designer = generateReducer<DesignerState>(initialState)
   })
   .add<string | undefined>(Actions.HOVER_PLANT_LIST_ITEM, (s, { payload }) => {
     s.hoveredPlantListItem = payload;
+    return s;
+  })
+  .add<CurrentPointPayl>(Actions.SET_CURRENT_POINT_DATA, (s, { payload }) => {
+    s.currentPoint = payload;
     return s;
   })
   .add<CropLiveSearchResult[]>(Actions.OF_SEARCH_RESULTS_OK, (s, a) => {

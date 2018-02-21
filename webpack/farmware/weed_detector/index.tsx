@@ -4,7 +4,7 @@ import { DetectorState, HSV } from "./interfaces";
 import { TitleBar } from "./title";
 import { Row, Col, Widget, WidgetBody } from "../../ui/index";
 import { t } from "i18next";
-import { resetWeedDetection, scanImage, test } from "./actions";
+import { deletePoints, scanImage, test } from "./actions";
 import { selectImage } from "../images/actions";
 import { Progress, catchErrors } from "../../util";
 import { FarmwareProps } from "../../devices/interfaces";
@@ -31,7 +31,7 @@ export class WeedDetector
       const percentage = `${Math.round((p.completed / p.total) * 100)} %`;
       this.setState({ deletionProgress: p.isDone ? "" : percentage });
     };
-    this.props.dispatch(resetWeedDetection(progress));
+    this.props.dispatch(deletePoints("weeds", "plant-detection", progress));
     this.setState({ deletionProgress: "Deleting..." });
   }
 

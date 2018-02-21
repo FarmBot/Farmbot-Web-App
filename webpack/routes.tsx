@@ -160,6 +160,14 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
             },
           },
           {
+            path: "plants/create_point",
+            getComponent(_discard: void, cb: Function) {
+              import("./farm_designer/plants/create_points")
+                .then(module => cb(undefined, module.CreatePoints))
+                .catch((e: object) => cb(undefined, crashPage(e)));
+            },
+          },
+          {
             path: "plants/:plant_id",
             getComponent(_discard: void, cb: Function) {
               import("./farm_designer/plants/plant_info")

@@ -10,11 +10,12 @@ import { Plants } from "./plants/plant_inventory";
 import { GardenMapLegend } from "./map/garden_map_legend";
 import { Session, safeBooleanSettting } from "../session";
 import { NumericSetting, BooleanSetting } from "../session_keys";
-import { isUndefined } from "lodash";
+import { isUndefined, last } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { getBotSize } from "./map/util";
 import { catchErrors } from "../util";
 import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom";
+import * as moment from "moment";
 
 export const getDefaultAxisLength = (): AxisNumberProperty => {
   if (Session.deprecatedGetBool(BooleanSetting.map_xl)) {
@@ -125,6 +126,15 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       y: !!this.props.botMcuParams.movement_stop_at_home_y
     };
 
+    const newestImage = this.props.latestImages[0];
+    const oldestImage = last(this.props.latestImages);
+    const newestDate = newestImage ? newestImage.body.created_at : "";
+    const toOldest = oldestImage && newestDate
+      ? Math.abs(moment(oldestImage.body.created_at)
+        .diff(moment(newestDate).clone(), "days"))
+      : 1;
+    const imageAgeInfo = { newestDate, toOldest };
+
     return <div className="farm-designer">
 
       <GardenMapLegend
@@ -140,7 +150,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         showImages={show_images}
         dispatch={this.props.dispatch}
         tzOffset={this.props.tzOffset}
-        getConfigValue={this.props.getConfigValue} />
+        getConfigValue={this.props.getConfigValue}
+        imageAgeInfo={imageAgeInfo} />
 
       <div className="panel-header gray-panel designer-nav">
         <div className="panel-tabs">
