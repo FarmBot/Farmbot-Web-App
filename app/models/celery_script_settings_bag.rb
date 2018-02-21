@@ -139,26 +139,26 @@ module CeleryScriptSettingsBag
           BAD_PACKAGE % [val.to_s, ALLOWED_PACKAGES.inspect]
         end
       end
-      .arg(:axis,            [String]) do |node|
+      .arg(:axis, [String]) do |node|
         within(ALLOWED_AXIS, node) do |val|
           BAD_AXIS % [val.to_s, ALLOWED_AXIS.inspect]
         end
       end
-      .arg(:message,         [String]) do |node|
+      .arg(:message, [String]) do |node|
         notString = !node.value.is_a?(String)
         tooShort  = notString || node.value.length == 0
         tooLong   = notString || node.value.length > 300
         node.invalidate! BAD_MESSAGE if (tooShort || tooLong)
       end
-      .arg(:speed,           [Integer]) do |node|
+      .arg(:speed, [Integer]) do |node|
         node.invalidate!(BAD_SPEED) unless node.value.between?(1, 100)
       end
-      .arg(:data_type,      [String]) do |node|
+      .arg(:data_type, [String]) do |node|
         within(ALLOWED_DATA_TYPES, node) do |v|
           BAD_DATA_TYPE % [v.to_s, ALLOWED_DATA_TYPES.inspect]
         end
       end
-      .arg(:peripheral_id,   [Integer]) do |node|
+      .arg(:peripheral_id, [Integer]) do |node|
         if (node.value == 0)
           node.invalidate!(NO_PERIPH)
         else
@@ -166,7 +166,7 @@ module CeleryScriptSettingsBag
           node.invalidate!(BAD_PERIPH_ID % node.value) if no_periph
         end
       end
-      .node(:named_pin,             [:pin_type, :pin_id]) do |node|
+      .node(:named_pin, [:pin_type, :pin_id]) do |node|
         klass = \
           PIN_TYPE_MAP[node.args[:pin_type].value] or raise "IMPOSSIBLE"
         id       = node.args[:pin_id].value
