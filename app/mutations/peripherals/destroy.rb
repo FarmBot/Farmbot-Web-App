@@ -13,16 +13,13 @@ module Peripherals
     end
 
   private
-    def sequences_using_it
-      raise "FIXME"
-      # @sequences_using_it ||= EdgeNode
-      #   .where(kind: "peripheral_id", value: peripheral.id)
-      #   .pluck(:sequence_id)
-    end
-
     def not_in_use?
-      names = Sequence.where(id: sequences_using_it).pluck(:name).join(", ")
-      add_error :peripheral, :in_use, (IN_USE % [names]) if names.present?
+      # TODO: Perform SQL UNION query here for teh performance
+      pins  = EdgeNode.where(kind: "pin_id", value: peripheral.id).pluck(:primary_node_id)
+      types = EdgeNode.where(kind: "pin_type", value: "Peripheral").pluck(:primary_node_id)
+      all   = PrimaryNode.includes(:sequence).where(id: pins && types).pluck(:sequence_id)
+      names = Sequence.where(id: all).pluck(:name)
+      add_error :peripheral, :in_use, (IN_USE % names) if names.present?
     end
   end
 end
