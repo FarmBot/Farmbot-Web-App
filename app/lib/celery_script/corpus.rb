@@ -4,7 +4,7 @@ module CeleryScript
   class Corpus
     BAD_NODE_NAME = "Can't find validation rules for node "
     NO_ARG_SPEC   = "CANT FIND ARG SPEC"
-    NO_NODE_SPEC  =
+    NO_NODE_SPEC  = "NO_NODE_SPEC"
 
     def initialize
       @arg_def_list  = HashWithIndifferentAccess.new

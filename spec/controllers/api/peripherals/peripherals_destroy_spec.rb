@@ -32,9 +32,17 @@ describe Api::PeripheralsController do
       FactoryBot.create(:sequence, device: user.device,
                                    body: [
                                             {
-                                              kind: "read_peripheral",
+                                              kind: "read_pin",
                                               args: {
-                                                peripheral_id: peripheral.id
+                                                pin_number: {
+                                                  kind: "named_pin",
+                                                  args: {
+                                                    pin_type: "Peripheral",
+                                                    pin_id: peripheral.id
+                                                  }
+                                                },
+                                                mode: 0,
+                                                label: "FOO"
                                               }
                                             }
                                           ])

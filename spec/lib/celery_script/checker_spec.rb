@@ -84,12 +84,25 @@ describe CeleryScript::Checker do
 
   it "validates peripheral presence" do
     hash[:body] = [
-      { kind: "read_peripheral", args: { peripheral_id: 0, pin_mode: 0 } }
+      {
+        kind: "read_pin",
+        args: {
+          pin_number: {
+            kind: "named_pin",
+            args: {
+              pin_type: "Peripheral",
+              pin_id: 0
+            }
+          },
+          pin_mode: 0,
+          label: "FOO"
+        }
+      }
     ]
     chk = CeleryScript::Checker.new(tree, corpus)
     expect(chk.valid?).to be false
     expect(chk.error.message)
-      .to eq("You must select a peripheral before writing to it.")
+      .to eq("You must select a Peripheral before using it.")
   end
 
   it "Catches bad `pin_type`s in `read_pin`" do

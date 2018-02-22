@@ -10,14 +10,14 @@ module CeleryScript
       def initialize(parent = nil, args:, body: nil, comment: "", kind:)
           @comment, @kind, @parent = comment, kind, parent
 
-          @args = HashWithIndifferentAccess.new(args.map  do |key, value|
+          @args = args.map do |key, value|
             [key, maybe_initialize(self, value, key)]
-          end.to_h) if args
+          end.to_h if args
 
-          @body = HashWithIndifferentAccess.new(body.map do |e|
+          @body = body.map do |e|
             raise TypeCheckError, BODY_HAS_NON_NODES unless is_node?(e)
             maybe_initialize(self, e)
-          end) if body
+          end if body
       end
 
       def maybe_initialize(parent, leaf_or_node, key = "__NEVER__")

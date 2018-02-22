@@ -14,9 +14,10 @@ module Peripherals
 
   private
     def sequences_using_it
-      @sequences_using_it ||= EdgeNode
-        .where(kind: "peripheral_id", value: peripheral.id)
-        .pluck(:sequence_id)
+      raise "FIXME"
+      # @sequences_using_it ||= EdgeNode
+      #   .where(kind: "peripheral_id", value: peripheral.id)
+      #   .pluck(:sequence_id)
     end
 
     def not_in_use?
