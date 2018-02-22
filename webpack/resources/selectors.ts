@@ -568,7 +568,15 @@ export function getAllPeripherals(input: ResourceIndex) {
     .byKind
     .Peripheral
     .map(x => input.references[x])
-    .map(x => (x && (x.kind == "Peripheral")) ? x : bail("Never"))
+    .map(x => (x && (x.kind == "Peripheral")) ? x : bail("Never"));
+}
+
+export function getAllSensors(input: ResourceIndex) {
+  return input
+    .byKind
+    .Sensor
+    .map(x => input.references[x])
+    .map(x => (x && (x.kind == "Sensor")) ? x : bail("Never"));
 }
 
 const isSaved =
@@ -576,3 +584,5 @@ const isSaved =
 
 export const getAllSavedPeripherals =
   (input: ResourceIndex) => getAllPeripherals(input).filter(isSaved);
+export const getAllSavedSensors =
+  (input: ResourceIndex) => getAllSensors(input).filter(isSaved);

@@ -4,7 +4,8 @@ import {
   TaggedFarmEvent, TaggedSequence, TaggedRegimen, TaggedImage,
   TaggedTool, TaggedToolSlotPointer, TaggedUser, TaggedWebcamFeed,
   TaggedPlantPointer, TaggedGenericPointer, TaggedPeripheral, TaggedFbosConfig,
-  TaggedWebAppConfig
+  TaggedWebAppConfig,
+  TaggedSensor
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
@@ -130,6 +131,14 @@ export function fakeWebcamFeed(): TaggedWebcamFeed {
   });
 }
 
+export function fakeSensor(): TaggedSensor {
+  return fakeResource("Sensor", {
+    id: idCounter++,
+    label: "Fake Pin",
+    mode: 0,
+    pin: 1
+  });
+}
 export function fakePeripheral(): TaggedPeripheral {
   return fakeResource("Peripheral", {
     id: idCounter++,
