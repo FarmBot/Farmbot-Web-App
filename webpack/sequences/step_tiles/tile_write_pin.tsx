@@ -10,12 +10,8 @@ import {
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
 import {
-  StepCheckBox,
-  changeStep,
-  EMPTY_WRITE_PERIPHERAL
+  StepCheckBox
 } from "./pin_and_peripheral_support";
-
-const convertToWritePeripheral = changeStep(EMPTY_WRITE_PERIPHERAL);
 
 export function TileWritePin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
@@ -36,7 +32,7 @@ export function TileWritePin(props: StepParams) {
     }
   };
   const className = "write-pin-step";
-  const action = convertToWritePeripheral(currentStep, currentSequence, index);
+  const action = () => { throw new Error("TODO"); };
 
   return <StepWrapper>
     <StepHeader

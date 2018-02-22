@@ -6,9 +6,7 @@ import { ToolTips } from "../../constants";
 import { setPinMode, PIN_MODES, currentModeSelection } from "./tile_pin_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
-import { EMPTY_READ_PERIPHERAL, changeStep, StepCheckBox } from "./pin_and_peripheral_support";
-
-const convertToReadPeripheral = changeStep(EMPTY_READ_PERIPHERAL);
+import { StepCheckBox } from "./pin_and_peripheral_support";
 
 export function PinMode(props: StepParams) {
   return <Col xs={6} md={3}>
@@ -23,9 +21,9 @@ export function PinMode(props: StepParams) {
 export function TileReadPin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
   const className = "read-pin-step";
-  // if (currentStep.kind != "read_pin") { throw new Error("read_pin only"); }
-  const action = convertToReadPeripheral(currentStep, currentSequence, index);
+  const action = () => {
 
+  };
   return <StepWrapper>
     <StepHeader
       className={className}

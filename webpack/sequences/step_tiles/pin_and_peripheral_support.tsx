@@ -9,6 +9,8 @@ import { editStep } from "../../api/crud";
 import { maybeDetermineUuid } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { JSXChildren } from "../../util/index";
+import { DropDownItem } from "../../ui";
+import { range } from "lodash";
 
 export const EMPTY_READ_PIN: ReadPin = {
   kind: "read_pin",
@@ -69,3 +71,34 @@ export function StepCheckBox(props: StepCheckBoxProps) {
     </div>
   </>;
 }
+
+/** `headingIds` required to group the three kinds of pins. */
+export enum PinGroupName { sensor = "👂", peripheral = "🔌", pin = "📌" }
+
+export function sensorsAsDropDowns(input: ResourceIndex): DropDownItem[] {
+  console.log("TODO");
+  return [];
+}
+
+export function peripheralsAsDropDowns(input: ResourceIndex): DropDownItem[] {
+  console.log("TODO");
+  return [];
+}
+
+/** Number of pins in an Arduino Mega */
+export const PIN_RANGE = range(0, 54);
+
+export const PIN_HEADING: DropDownItem =
+  ({ heading: true, label: "Pins", value: 0 });
+
+/** Pass it the number X and it will generate a DropDownItem for `pin x`. */
+const pinNumber2DropDown =
+  (n: number) => ({ label: `Pin ${n}`, value: n, headingId: PinGroupName.pin });
+
+export const pinDropdowns = [PIN_HEADING, ...PIN_RANGE.map(pinNumber2DropDown)];
+
+export const dropdownItemsForPinId = (input: ResourceIndex): DropDownItem[] => [
+  ...peripheralsAsDropDowns(input),
+  ...sensorsAsDropDowns(input),
+  ...pinDropdowns,
+];
