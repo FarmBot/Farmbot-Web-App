@@ -5,9 +5,11 @@ import {
   pinDropdowns,
   PIN_RANGE,
   PIN_HEADING,
-  PinGroupName
+  PinGroupName,
+  peripheralsAsDropDowns
 } from "../pin_and_peripheral_support";
 import * as _ from "lodash";
+import { fakePeripheral } from "../../../__test_support__/fake_state/resources";
 
 describe("Pin and Peripheral support files", () => {
   it("has a list of unnamed pins", () => {
@@ -20,8 +22,12 @@ describe("Pin and Peripheral support files", () => {
   });
 
   it("Makes a list of Peripheral drop down selectors", () => {
-    buildResourceIndex();
-    expect(2 + 2).toBe(4);
+    const p = fakePeripheral();
+    p.body.label = "The one";
+    const ri = buildResourceIndex([p]);
+    const result = peripheralsAsDropDowns(ri.index);
+    expect(result.length).toEqual(2); // Heading + 1 peripheral
+    expect(result[1].label).toEqual(p.body.label);
   });
 
   it("Makes a list of Sensor drop down selectors");

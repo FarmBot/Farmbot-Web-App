@@ -6,11 +6,12 @@ import {
 } from "farmbot";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { editStep } from "../../api/crud";
-import { maybeDetermineUuid } from "../../resources/selectors";
+import { maybeDetermineUuid, getAllSavedPeripherals } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { JSXChildren } from "../../util/index";
 import { DropDownItem } from "../../ui";
 import { range } from "lodash";
+import { bail } from "../../util/errors";
 
 export const EMPTY_READ_PIN: ReadPin = {
   kind: "read_pin",
@@ -80,9 +81,16 @@ export function sensorsAsDropDowns(input: ResourceIndex): DropDownItem[] {
   return [];
 }
 
+export const PERIPHERAL_HEADING: DropDownItem =
+  ({ heading: true, label: "Peripherals", value: 0 });
+
 export function peripheralsAsDropDowns(input: ResourceIndex): DropDownItem[] {
-  console.log("TODO");
-  return [];
+  const all: DropDownItem[] = getAllSavedPeripherals(input).map(x => ({
+    label: x.body.label,
+    value: x.body.id || 0,
+    headingId: PinGroupName.peripheral
+  }));
+  return [PERIPHERAL_HEADING, ...all];
 }
 
 /** Number of pins in an Arduino Mega */

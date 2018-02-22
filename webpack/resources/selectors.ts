@@ -29,7 +29,8 @@ import {
   TaggedWebcamFeed,
   TaggedDevice,
   TaggedFbosConfig,
-  TaggedWebAppConfig
+  TaggedWebAppConfig,
+  SpecialStatus
 } from "./tagged_resources";
 import { CowardlyDictionary, betterCompact, sortResourcesById, bail } from "../util";
 import { isNumber } from "util";
@@ -561,3 +562,17 @@ export function getFbosConfig(i: ResourceIndex): TaggedFbosConfig | undefined {
     return conf;
   }
 }
+
+export function getAllPeripherals(input: ResourceIndex) {
+  return input
+    .byKind
+    .Peripheral
+    .map(x => input.references[x])
+    .map(x => (x && (x.kind == "Peripheral")) ? x : bail("Never"))
+}
+
+const isSaved =
+  <T extends TaggedResource>(t: T) => t.specialStatus === SpecialStatus.SAVED;
+
+export const getAllSavedPeripherals =
+  (input: ResourceIndex) => getAllPeripherals(input).filter(isSaved);
