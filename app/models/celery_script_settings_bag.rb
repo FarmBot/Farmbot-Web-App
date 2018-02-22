@@ -31,8 +31,8 @@ module CeleryScriptSettingsBag
   ALLOWED_AXIS          = %w(x y z all)
   ALLOWED_LHS           = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
   STEPS                 = %w(_if execute execute_script find_home move_absolute
-                             move_relative read_peripheral read_pin send_message
-                             take_photo wait write_peripheral write_pin )
+                             move_relative read_pin send_message take_photo wait
+                             write_pin )
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
@@ -158,14 +158,6 @@ module CeleryScriptSettingsBag
           BAD_DATA_TYPE % [v.to_s, ALLOWED_DATA_TYPES.inspect]
         end
       end
-      .arg(:peripheral_id, [Integer]) do |node|
-        if (node.value == 0)
-          node.invalidate!(NO_PERIPH)
-        else
-          no_periph = !Peripheral.exists?(node.value)
-          node.invalidate!(BAD_PERIPH_ID % node.value) if no_periph
-        end
-      end
       .node(:named_pin, [:pin_type, :pin_id]) do |node|
         klass = \
           PIN_TYPE_MAP[node.args[:pin_type].value] or raise "IMPOSSIBLE"
@@ -173,14 +165,12 @@ module CeleryScriptSettingsBag
         bad_node = !klass.exists?(id)
         node.invalidate!(BAD_PIN_ID % [klass, id]) if bad_node
       end
-      .node(:read_peripheral,       [:peripheral_id, :pin_mode])
       .node(:nothing,               [])
       .node(:tool,                  [:tool_id])
       .node(:coordinate,            [:x, :y, :z])
       .node(:move_absolute,         [:location, :speed, :offset])
       .node(:move_relative,         [:x, :y, :z, :speed])
       .node(:write_pin,             [:pin_number, :pin_value, :pin_mode ])
-      .node(:write_peripheral,      [:peripheral_id, :pin_value, :pin_mode])
       .node(:read_pin,              [:pin_number, :label, :pin_mode])
       .node(:channel,               [:channel_name])
       .node(:wait,                  [:milliseconds])
@@ -233,4 +223,3 @@ module CeleryScriptSettingsBag
     node.invalidate!(yield(val)) if !array.include?(val)
   end
 end
-# {kind: "set_servo_angle", args: {pin_number: 4 | 5, pin_value: 0..360}}
