@@ -6,7 +6,11 @@ import { ToolTips } from "../../constants";
 import { setPinMode, PIN_MODES, currentModeSelection } from "./tile_pin_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
-import { pinsAsDropDowns, namedPin2DropDown, celery2DropDown, setArgsDotPinNumber } from "./pin_and_peripheral_support";
+import {
+  pinsAsDropDowns,
+  celery2DropDown,
+  setArgsDotPinNumber
+} from "./pin_and_peripheral_support";
 
 export function PinMode(props: StepParams) {
   return <Col xs={6} md={3}>
@@ -23,7 +27,6 @@ export function TileReadPin(props: StepParams) {
   const className = "read-pin-step";
   if (currentStep.kind !== "read_pin") { throw new Error("never"); }
   const { pin_number } = currentStep.args;
-  const action = () => { };
   return <StepWrapper>
     <StepHeader
       className={className}

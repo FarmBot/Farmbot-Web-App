@@ -7,7 +7,7 @@ import { ResourceIndex } from "../../resources/interfaces";
 import { JSXChildren } from "../../util/index";
 import { DropDownItem } from "../../ui";
 import { range, isNumber, isString } from "lodash";
-import { TaggedPeripheral, TaggedSensor, Resource, ResourceName } from "../../resources/tagged_resources";
+import { TaggedPeripheral, TaggedSensor, ResourceName } from "../../resources/tagged_resources";
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../util/errors";
 import { joinKindAndId } from "../../resources/reducer";
@@ -137,10 +137,6 @@ export const dropDown2CeleryArg =
       return item.value;
     }
   };
-
-
-
-
 
 export const setArgsDotPinNumber =
   (x: StepParams) => (d: DropDownItem) => {

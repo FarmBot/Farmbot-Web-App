@@ -158,8 +158,7 @@ module CeleryScriptSettingsBag
         end
       end
       .node(:named_pin, [:pin_type, :pin_id]) do |node|
-        klass = \
-          PIN_TYPE_MAP[node.args[:pin_type].value] or raise "IMPOSSIBLE"
+        klass    = PIN_TYPE_MAP[node.args[:pin_type].value] or raise "NEVER"
         id       = node.args[:pin_id].value
         bad_node = !klass.exists?(id)
         node.invalidate!(BAD_PIN_ID % [klass, id]) if bad_node
