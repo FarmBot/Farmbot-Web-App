@@ -38,7 +38,6 @@ module CeleryScriptSettingsBag
                           'argument. Allowed values: %s'
   BAD_SUB_SEQ           = 'Sequence #%s does not exist.'
   NO_SUB_SEQ            = 'missing a sequence selection for `execute` block.'
-  NO_PERIPH             = 'You must select a peripheral before writing to it.'
   BAD_REGIMEN           = 'Regimen #%s does not exist.'
   BAD_OP                = 'Can not put "%s" into an operand (OP) argument. '\
                           'Allowed values: %s'

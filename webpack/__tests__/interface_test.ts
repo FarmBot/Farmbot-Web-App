@@ -16,7 +16,7 @@ import "../draggable/interfaces";
 import "../farm_designer/farm_events/calendar/interfaces";
 import "../farm_designer/interfaces";
 import "../farm_designer/map/interfaces";
-import "../farmware/camera_calibration/interfaces.ts";
+import "../farmware/camera_calibration/interfaces";
 import "../farmware/camera_calibration/interfaces";
 import "../farmware/images/interfaces";
 import "../farmware/interfaces";

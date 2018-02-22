@@ -18,7 +18,6 @@ import {
   TaggedGenericPointer,
   TaggedImage,
   TaggedLog,
-  TaggedPeripheral,
   TaggedPlantPointer,
   TaggedRegimen,
   TaggedResource,
@@ -130,10 +129,6 @@ export function selectAllToolSlotPointers(index: ResourceIndex):
 
 export function selectAllTools(index: ResourceIndex) {
   return findAll(index, "Tool") as TaggedTool[];
-}
-
-export function selectAllPeripherals(index: ResourceIndex) {
-  return findAll(index, "Peripheral") as TaggedPeripheral[];
 }
 
 export function selectAllLogs(index: ResourceIndex) {
@@ -570,6 +565,8 @@ export function getAllPeripherals(input: ResourceIndex) {
     .map(x => input.references[x])
     .map(x => (x && (x.kind == "Peripheral")) ? x : bail("Never"));
 }
+
+export const selectAllPeripherals = getAllPeripherals;
 
 export function getAllSensors(input: ResourceIndex) {
   return input

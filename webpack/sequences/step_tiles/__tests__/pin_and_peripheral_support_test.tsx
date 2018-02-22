@@ -48,4 +48,13 @@ describe("Pin and Peripheral support files", () => {
     expect(result[0]).toBe(SENSOR_HEADING);
     expect(result[1].label).toEqual(s.body.label);
   });
+
+  it("does'nt add peripheral/sensor headers when none available", () => {
+    const s = fakeSensor();
+    s.body.label = "The one";
+    const ri = buildResourceIndex([]);
+    const result = sensorsAsDropDowns(ri.index);
+    expect(result).not.toContain(SENSOR_HEADING);
+    expect(result).not.toContain(PERIPHERAL_HEADING);
+  })
 });
