@@ -1,34 +1,18 @@
 import * as React from "react";
 import {
-  ReadPeripheral,
   SequenceBodyItem,
   ReadPin,
   WritePin,
-  WritePeripheral
 } from "farmbot";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { editStep } from "../../api/crud";
-import { StepParams } from "../interfaces";
-import { DropDownItem, FBSelect } from "../../ui/index";
-import { selectAllPeripherals, maybeDetermineUuid } from "../../resources/selectors";
-import { isNumber } from "lodash";
+import { maybeDetermineUuid } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
-import { t } from "i18next";
 import { JSXChildren } from "../../util/index";
 
 export const EMPTY_READ_PIN: ReadPin = {
   kind: "read_pin",
   args: { pin_mode: 0, pin_number: 13, label: "" }
-};
-
-export const EMPTY_READ_PERIPHERAL: ReadPeripheral = {
-  kind: "read_peripheral",
-  args: { peripheral_id: 0, pin_mode: 0 }
-};
-
-export const EMPTY_WRITE_PERIPHERAL: WritePeripheral = {
-  kind: "write_peripheral",
-  args: { peripheral_id: 0, pin_value: 0, pin_mode: 0 }
 };
 
 export const EMPTY_WRITE_PIN: WritePin = {
@@ -65,49 +49,8 @@ export const selectedItem = (id: number, resources: ResourceIndex) => {
 };
 
 export const getPeripheralId = (step: SequenceBodyItem) => {
-  switch (step.kind) { // Cute tricks to keep typechecker happy. Sorry.
-    case "write_peripheral":
-    case "read_peripheral":
-      return step.args.peripheral_id;
-    default:
-      throw new Error("No");
-  }
+  throw new Error("TODO");
 };
-
-export function PeripheralSelector(props: StepParams) {
-  const { currentStep, currentSequence, index, dispatch } = props;
-  const peripherals: DropDownItem[] = selectAllPeripherals(props.resources)
-    .map(x => {
-      const label = x.body.label;
-      const value = x.body.id || 0;
-      return { label, value };
-    })
-    .filter(x => x.value);
-
-  return <>
-    <label>{t("Peripheral")} </label>
-    <FBSelect
-      allowEmpty={false}
-      list={peripherals}
-      placeholder="Select a peripheral..."
-      onChange={(selection) => {
-        dispatch(editStep({
-          sequence: currentSequence,
-          step: currentStep,
-          index: index,
-          executor: (step: ReadPeripheral | WritePeripheral) => {
-            if (isNumber(selection.value)) {
-              step.args.peripheral_id = selection.value;
-            } else {
-              throw new Error("selection.value must be numeric");
-            }
-          }
-        }));
-      }
-      }
-      selectedItem={selectedItem(getPeripheralId(currentStep), props.resources)} />
-    </>;
-}
 
 interface StepCheckBoxProps {
   onClick(): void;
@@ -124,5 +67,5 @@ export function StepCheckBox(props: StepCheckBoxProps) {
         onChange={props.onClick}
         checked={!!props.checked} />
     </div>
-    </>;
+  </>;
 }
