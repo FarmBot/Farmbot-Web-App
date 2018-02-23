@@ -81,7 +81,8 @@ class Sequence < ApplicationRecord
     # TODO: Perform SQL UNION query here for teh performance
     pins  = EdgeNode.where(kind: "pin_id", value: pin.id).pluck(:primary_node_id)
     types = EdgeNode.where(kind: "pin_type", value: pin.class.name).pluck(:primary_node_id)
-    all   = PrimaryNode.includes(:sequence).where(id: pins && types).pluck(:sequence_id)
+    union = pins & types # DO NOT USE &&, I ACTUALLY MEANT TO TYPE `&` not `&&`!
+    all   = PrimaryNode.includes(:sequence).where(id: union).pluck(:sequence_id)
     sequences = Sequence.where(id: all)
     yield(sequences) if sequences.count > 0
   end
