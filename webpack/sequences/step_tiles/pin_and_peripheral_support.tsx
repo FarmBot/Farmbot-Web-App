@@ -146,8 +146,10 @@ export const setArgsDotPinNumber =
       sequence: currentSequence,
       index: index,
       executor(c) {
-        if (c.kind === "read_pin") {
-          c.args.pin_number = dropDown2CeleryArg(resources, d);
+        switch (c.kind) {
+          case "read_pin":
+          case "write_pin":
+            c.args.pin_number = dropDown2CeleryArg(resources, d);
         }
       }
     }));
