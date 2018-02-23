@@ -35,10 +35,9 @@ describe("<TileReadPin/>", () => {
     expect(buttons.length).toEqual(2);
     expect(inputs.first().props().placeholder).toEqual("Read Pin");
     expect(labels.at(0).text()).toEqual("Pin");
-    expect(inputs.at(1).props().value).toEqual(3);
     expect(labels.at(1).text()).toEqual("Data Label");
-    expect(inputs.at(2).props().value).toEqual("pinlabel");
+    expect(inputs.at(1).props().value).toEqual("pinlabel");
     expect(labels.at(2).text()).toEqual("Pin Mode");
-    expect(buttons.at(0).text()).toEqual("Analog");
+    expect(buttons.at(0).text()).toEqual("Pin 3");
   });
 });
