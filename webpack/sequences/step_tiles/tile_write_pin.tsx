@@ -10,15 +10,15 @@ import {
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
 import {
-  StepCheckBox,
-  changeStep,
-  EMPTY_WRITE_PERIPHERAL
+  celery2DropDown,
+  setArgsDotPinNumber,
+  pinsAsDropDowns
 } from "./pin_and_peripheral_support";
-
-const convertToWritePeripheral = changeStep(EMPTY_WRITE_PERIPHERAL);
 
 export function TileWritePin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
+  if (currentStep.kind !== "write_pin") { throw new Error("never"); }
+
   const pinValueField = () => {
     if (currentStep.kind === "write_pin") {
       if (!(currentStep.args.pin_mode === 0) || currentStep.args.pin_value > 1) {
@@ -36,7 +36,7 @@ export function TileWritePin(props: StepParams) {
     }
   };
   const className = "write-pin-step";
-  const action = convertToWritePeripheral(currentStep, currentSequence, index);
+  const { pin_number } = currentStep.args;
 
   return <StepWrapper>
     <StepHeader
@@ -48,13 +48,12 @@ export function TileWritePin(props: StepParams) {
       index={index} />
     <StepContent className={className}>
       <Row>
-        <Col xs={6} md={3}>
-          <label>{t("Pin Number")}</label>
-          <StepInputBox dispatch={dispatch}
-            step={currentStep}
-            sequence={currentSequence}
-            index={index}
-            field="pin_number" />
+        <Col xs={6} md={6}>
+          <label>{t("Pin")}</label>
+          <FBSelect
+            selectedItem={celery2DropDown(pin_number, props.resources)}
+            onChange={setArgsDotPinNumber(props)}
+            list={pinsAsDropDowns(props.resources)} />
         </Col>
         <Col xs={6} md={3}>
           <label>{t("Value")}</label>
@@ -66,13 +65,6 @@ export function TileWritePin(props: StepParams) {
             onChange={(x) => setPinMode(x, props)}
             selectedItem={currentModeSelection(currentStep)}
             list={PIN_MODES} />
-        </Col>
-        <Col xs={6} md={3}>
-          <StepCheckBox
-            onClick={() => dispatch(action)}
-            checked={false}>
-            {t("Peripheral")}
-          </StepCheckBox>
         </Col>
       </Row>
     </StepContent>

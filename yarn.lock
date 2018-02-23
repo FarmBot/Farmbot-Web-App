@@ -2258,9 +2258,9 @@ farmbot-toastr@^1.0.0, farmbot-toastr@^1.0.3:
     farmbot-toastr "^1.0.0"
     typescript "^2.3.4"
 
-farmbot@5.3.10:
-  version "5.3.10"
-  resolved "https://registry.yarnpkg.com/farmbot/-/farmbot-5.3.10.tgz#9a7295e723314ad8b0d3b094bab10c790314be93"
+farmbot@5.4.0-rc3:
+  version "5.4.0-rc3"
+  resolved "https://registry.yarnpkg.com/farmbot/-/farmbot-5.4.0-rc3.tgz#5d3024f5234d7b22ebe77867cd1edb0e7e1d577e"
   dependencies:
     mqtt "2.15.0"
     typescript "^2.4.2"
@@ -6807,13 +6807,13 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
+typescript@2.7.2:
+  version "2.7.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.2.tgz#2d615a1ef4aee4f574425cdff7026edf81919836"
+
 typescript@^2.0.9, typescript@^2.3.4, typescript@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.2.tgz#f8395f85d459276067c988aa41837a8f82870844"
-
-typescript@^2.5.3:
-  version "2.7.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.2.tgz#2d615a1ef4aee4f574425cdff7026edf81919836"
 
 ua-parser-js@^0.7.9:
   version "0.7.17"

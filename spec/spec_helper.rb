@@ -18,6 +18,7 @@ ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
 require_relative './stuff'
+require_relative './topic_stub'
 
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
@@ -112,28 +113,3 @@ class NiceResponse
     end
   end
 end
-
-#  BEGIN MQTT STUBS =======================================================
-
-class TopicStub
-  def self.publish(msg, opts)
-  end
-end
-
-class ChannelStub
-  def self.topic(name, opts)
-    return TopicStub
-  end
-end
-
-class MQTTStub
-  def self.create_channel
-    return ChannelStub
-  end
-end
-
-def Transport.connection
-  return MQTTStub
-end
-
-#  END MQTT STUBS =========================================================

@@ -145,13 +145,4 @@ describe CeleryScript::Corpus do
     checker = CeleryScript::Checker.new(tree, CeleryScriptSettingsBag::Corpus)
     expect(checker.error.message).to include("not a valid channel_name")
   end
-
-  it "Handles peripheral_id validations" do
-    tree = CeleryScript::AstNode.new({
-      "kind": "read_peripheral",
-      "args": { "peripheral_id": -1, "pin_mode": 0 }
-    })
-    checker = CeleryScript::Checker.new(tree, CeleryScriptSettingsBag::Corpus)
-    expect(checker.error.message).to include("Peripheral #-1 does not exist.")
-  end
 end

@@ -4,7 +4,8 @@ describe Api::PeripheralsController do
   include Devise::Test::ControllerHelpers
   describe '#destroy' do
     let(:user) { FactoryBot.create(:user) }
-    let(:peripheral) { FactoryBot.create(:peripheral, device: user.device) }
+    let(:peripheral) { FactoryBot.create(:peripheral, device: user.device,
+                                                      label:   "wow") }
 
     it 'deletes a Peripheral' do
       sign_in user
@@ -29,15 +30,18 @@ describe Api::PeripheralsController do
       sign_in user
       peripheral
       before = Peripheral.count
-      FactoryBot.create(:sequence, device: user.device,
-                                   body: [
-                                            {
-                                              kind: "read_peripheral",
-                                              args: {
-                                                peripheral_id: peripheral.id
-                                              }
-                                            }
-                                          ])
+      FactoryBot.create(:sequence,
+                        device: user.device,
+                        body: [{kind: "read_pin",
+                                args: {
+                                  pin_number: {
+                                    kind: "named_pin",
+                                    args: { pin_type: "Peripheral", pin_id: peripheral.id }
+                                  },
+                                  mode: 0,
+                                  label: "FOO"
+                                }
+                              }])
       delete :destroy, params: { id: peripheral.id }
       expect(response.status).to eq(422)
       expect(Peripheral.count).to eq(before)

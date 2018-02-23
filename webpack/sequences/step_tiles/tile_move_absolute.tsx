@@ -29,7 +29,13 @@ import { Xyz } from "../../devices/interfaces";
 import { TileMoveAbsSelect, InputBox } from "./tile_move_absolute/index";
 import { ToolTips } from "../../constants";
 import { extractParent } from "../locals_list";
-import { StepWrapper, StepHeader, StepContent, StepWarning, conflictsString } from "../step_ui/index";
+import {
+  StepWrapper,
+  StepHeader,
+  StepContent,
+  StepWarning,
+  conflictsString
+} from "../step_ui/index";
 import { StepInputBox } from "../inputs/step_input_box";
 
 interface Args {
@@ -123,7 +129,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
     if (this.props.hardwareFlags) {
       const {
         stopAtHome, stopAtMax, negativeOnly, axisLength
-       } = this.props.hardwareFlags;
+      } = this.props.hardwareFlags;
       ["x", "y", "z"].map((axis: Xyz) => {
         const coord = parseFloat(this.getAxisValue(axis));
         const offset = parseFloat(this.getOffsetValue(axis));

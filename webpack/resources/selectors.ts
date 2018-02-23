@@ -18,7 +18,6 @@ import {
   TaggedGenericPointer,
   TaggedImage,
   TaggedLog,
-  TaggedPeripheral,
   TaggedPlantPointer,
   TaggedRegimen,
   TaggedResource,
@@ -29,7 +28,8 @@ import {
   TaggedWebcamFeed,
   TaggedDevice,
   TaggedFbosConfig,
-  TaggedWebAppConfig
+  TaggedWebAppConfig,
+  SpecialStatus
 } from "./tagged_resources";
 import { CowardlyDictionary, betterCompact, sortResourcesById, bail } from "../util";
 import { isNumber } from "util";
@@ -129,10 +129,6 @@ export function selectAllToolSlotPointers(index: ResourceIndex):
 
 export function selectAllTools(index: ResourceIndex) {
   return findAll(index, "Tool") as TaggedTool[];
-}
-
-export function selectAllPeripherals(index: ResourceIndex) {
-  return findAll(index, "Peripheral") as TaggedPeripheral[];
 }
 
 export function selectAllLogs(index: ResourceIndex) {
@@ -561,3 +557,29 @@ export function getFbosConfig(i: ResourceIndex): TaggedFbosConfig | undefined {
     return conf;
   }
 }
+
+export function getAllPeripherals(input: ResourceIndex) {
+  return input
+    .byKind
+    .Peripheral
+    .map(x => input.references[x])
+    .map(x => (x && (x.kind == "Peripheral")) ? x : bail("Never"));
+}
+
+export const selectAllPeripherals = getAllPeripherals;
+
+export function getAllSensors(input: ResourceIndex) {
+  return input
+    .byKind
+    .Sensor
+    .map(x => input.references[x])
+    .map(x => (x && (x.kind == "Sensor")) ? x : bail("Never"));
+}
+
+const isSaved =
+  <T extends TaggedResource>(t: T) => t.specialStatus === SpecialStatus.SAVED;
+
+export const getAllSavedPeripherals =
+  (input: ResourceIndex) => getAllPeripherals(input).filter(isSaved);
+export const getAllSavedSensors =
+  (input: ResourceIndex) => getAllSensors(input).filter(isSaved);

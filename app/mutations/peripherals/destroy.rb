@@ -13,15 +13,11 @@ module Peripherals
     end
 
   private
-    def sequences_using_it
-      @sequences_using_it ||= EdgeNode
-        .where(kind: "peripheral_id", value: peripheral.id)
-        .pluck(:sequence_id)
-    end
-
     def not_in_use?
-      names = Sequence.where(id: sequences_using_it).pluck(:name).join(", ")
-      add_error :peripheral, :in_use, (IN_USE % [names]) if names.present?
+      Sequence.if_still_using(peripheral) do |sequences|
+        names = sequences.pluck(:name)
+        add_error :peripheral, :in_use, (IN_USE % names) if names.present?
+      end
     end
   end
 end

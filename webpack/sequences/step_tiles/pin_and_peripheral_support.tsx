@@ -1,113 +1,18 @@
 import * as React from "react";
 import {
-  ReadPeripheral,
-  SequenceBodyItem,
-  ReadPin,
-  WritePin,
-  WritePeripheral
-} from "farmbot";
-import { TaggedSequence } from "../../resources/tagged_resources";
-import { editStep } from "../../api/crud";
-import { StepParams } from "../interfaces";
-import { DropDownItem, FBSelect } from "../../ui/index";
-import { selectAllPeripherals, maybeDetermineUuid } from "../../resources/selectors";
-import { isNumber } from "lodash";
+  getAllSavedPeripherals,
+  getAllSavedSensors
+} from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
-import { t } from "i18next";
 import { JSXChildren } from "../../util/index";
-
-export const EMPTY_READ_PIN: ReadPin = {
-  kind: "read_pin",
-  args: { pin_mode: 0, pin_number: 13, label: "" }
-};
-
-export const EMPTY_READ_PERIPHERAL: ReadPeripheral = {
-  kind: "read_peripheral",
-  args: { peripheral_id: 0, pin_mode: 0 }
-};
-
-export const EMPTY_WRITE_PERIPHERAL: WritePeripheral = {
-  kind: "write_peripheral",
-  args: { peripheral_id: 0, pin_value: 0, pin_mode: 0 }
-};
-
-export const EMPTY_WRITE_PIN: WritePin = {
-  kind: "write_pin",
-  args: { pin_number: 13, pin_value: 0, pin_mode: 0 }
-};
-
-/** Generates a function that returns a redux action. */
-export const changeStep =
-  /** When put inside a call to `dispatch()`, transforms the provided step from
-   * one `kind` to another. Ex: Turn `read_pin` to `read_peripheral`. */
-  (replacement: SequenceBodyItem) =>
-    (step: Readonly<SequenceBodyItem>,
-      sequence: Readonly<TaggedSequence>,
-      index: number) => {
-      return editStep({
-        step,
-        sequence,
-        index,
-        executor(c) {
-          c.kind = replacement.kind;
-          c.args = replacement.args;
-          c.body = replacement.body;
-        }
-      });
-    };
-
-export const selectedItem = (id: number, resources: ResourceIndex) => {
-  const uuid = maybeDetermineUuid(resources, "Peripheral", id) || "_";
-  const item = resources.references[uuid];
-  if (item && item.kind === "Peripheral") {
-    return { label: item.body.label, value: item.body.id || 0 };
-  }
-};
-
-export const getPeripheralId = (step: SequenceBodyItem) => {
-  switch (step.kind) { // Cute tricks to keep typechecker happy. Sorry.
-    case "write_peripheral":
-    case "read_peripheral":
-      return step.args.peripheral_id;
-    default:
-      throw new Error("No");
-  }
-};
-
-export function PeripheralSelector(props: StepParams) {
-  const { currentStep, currentSequence, index, dispatch } = props;
-  const peripherals: DropDownItem[] = selectAllPeripherals(props.resources)
-    .map(x => {
-      const label = x.body.label;
-      const value = x.body.id || 0;
-      return { label, value };
-    })
-    .filter(x => x.value);
-
-  return <>
-    <label>{t("Peripheral")} </label>
-    <FBSelect
-      allowEmpty={false}
-      list={peripherals}
-      placeholder="Select a peripheral..."
-      onChange={(selection) => {
-        dispatch(editStep({
-          sequence: currentSequence,
-          step: currentStep,
-          index: index,
-          executor: (step: ReadPeripheral | WritePeripheral) => {
-            if (isNumber(selection.value)) {
-              step.args.peripheral_id = selection.value;
-            } else {
-              throw new Error("selection.value must be numeric");
-            }
-          }
-        }));
-      }
-      }
-      selectedItem={selectedItem(getPeripheralId(currentStep), props.resources)} />
-    </>;
-}
+import { DropDownItem } from "../../ui";
+import { range, isNumber, isString } from "lodash";
+import { TaggedPeripheral, TaggedSensor, ResourceName } from "../../resources/tagged_resources";
+import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
+import { bail } from "../../util/errors";
+import { joinKindAndId } from "../../resources/reducer";
+import { StepParams } from "../interfaces";
+import { editStep } from "../../api/crud";
 
 interface StepCheckBoxProps {
   onClick(): void;
@@ -124,5 +29,136 @@ export function StepCheckBox(props: StepCheckBoxProps) {
         onChange={props.onClick}
         checked={!!props.checked} />
     </div>
-    </>;
+  </>;
+}
+
+/** `headingIds` required to group the three kinds of pins. */
+export enum PinGroupName { sensor = "👂", peripheral = "🔌", pin = "📌" }
+
+export const PERIPHERAL_HEADING: DropDownItem =
+  ({ heading: true, label: "➖ Peripherals", value: 0 });
+
+export const SENSOR_HEADING: DropDownItem =
+  ({ heading: true, label: "➖ Sensors", value: 0 });
+
+export const PIN_HEADING: DropDownItem =
+  ({ heading: true, label: "➖ Pins", value: 0 });
+
+/** Pass it the number X and it will generate a DropDownItem for `pin x`. */
+const pinNumber2DropDown =
+  (n: number) => ({ label: `Pin ${n}`, value: n, headingId: PinGroupName.pin });
+
+const peripheral2DropDown =
+  (x: TaggedPeripheral): DropDownItem => ({
+    label: x.body.label,
+    value: x.uuid,
+    headingId: PinGroupName.peripheral
+  });
+
+const sensor2DropDown =
+  (x: TaggedSensor): DropDownItem => ({
+    label: x.body.label,
+    value: x.uuid,
+    headingId: PinGroupName.peripheral
+  });
+
+export function peripheralsAsDropDowns(input: ResourceIndex): DropDownItem[] {
+  const list = getAllSavedPeripherals(input).map(peripheral2DropDown);
+  return (list.length) ? [PERIPHERAL_HEADING, ...list] : [];
+}
+
+export function sensorsAsDropDowns(input: ResourceIndex): DropDownItem[] {
+  const list = getAllSavedSensors(input).map(sensor2DropDown);
+  return list.length ? [SENSOR_HEADING, ...list] : [];
+}
+
+/** Number of pins in an Arduino Mega */
+export const PIN_RANGE = range(0, 54);
+
+export const pinDropdowns = [PIN_HEADING, ...PIN_RANGE.map(pinNumber2DropDown)];
+
+export const pinsAsDropDowns = (input: ResourceIndex): DropDownItem[] => [
+  ...peripheralsAsDropDowns(input),
+  ...sensorsAsDropDowns(input),
+  ...pinDropdowns,
+];
+
+const TYPE_MAPPING: Record<AllowedPinTypes, PinGroupName> = {
+  "Peripheral": PinGroupName.peripheral,
+  "Sensor": PinGroupName.sensor
+};
+
+export const isPinType =
+  (x: string): x is AllowedPinTypes => !!TYPE_MAPPING[x as AllowedPinTypes];
+
+const NO = "UUID or ID not found";
+
+export const findByPinNumber =
+  (ri: ResourceIndex, input: NamedPin): TaggedPeripheral | TaggedSensor => {
+    const { pin_type, pin_id } = input.args;
+    const kindAndId = joinKindAndId(pin_type as ResourceName, pin_id);
+    const r = ri.references[ri.byKindAndId[kindAndId] || NO] || bail(NO);
+    switch (r.kind) {
+      case "Peripheral":
+      case "Sensor": return r;
+      default: return bail("Not a Peripheral or Sensor");
+    }
+  };
+
+export function namedPin2DropDown(ri: ResourceIndex, input: NamedPin) {
+  const { pin_type } = input.args;
+  const value = input.args.pin_id;
+
+  if (isPinType(pin_type)) {
+    const item = findByPinNumber(ri, input);
+    const { label } = item.body;
+    const headingId = TYPE_MAPPING[item.kind];
+    return { label, value, headingId };
+  } else {
+    bail("Bad pin_type: " + JSON.stringify(pin_type));
+  }
+}
+
+export const dropDown2CeleryArg =
+  (ri: ResourceIndex, item: DropDownItem): number | NamedPin => {
+    if (isString(item.value)) { // str means "Named Pin". num means "Raw Pin"
+      const uuid: string = item.value;
+      const r = ri.references[uuid];
+      if (r) {
+        return {
+          kind: "named_pin",
+          args: { pin_type: r.kind, pin_id: r.body.id || -99 }
+        };
+      } else {
+        return bail("Bad uuid in celery arg: " + uuid);
+      }
+    } else {
+      return item.value;
+    }
+  };
+
+export const setArgsDotPinNumber =
+  (x: StepParams) => (d: DropDownItem) => {
+    const { dispatch, currentSequence, index, resources, currentStep } = x;
+
+    dispatch(editStep({
+      step: currentStep,
+      sequence: currentSequence,
+      index: index,
+      executor(c) {
+        switch (c.kind) {
+          case "read_pin":
+          case "write_pin":
+            c.args.pin_number = dropDown2CeleryArg(resources, d);
+        }
+      }
+    }));
+  };
+
+type PinNumber = ReadPin["args"]["pin_number"];
+
+export function celery2DropDown(input: PinNumber, ri: ResourceIndex) {
+  return isNumber(input)
+    ? pinNumber2DropDown(input)
+    : namedPin2DropDown(ri, input);
 }

@@ -6,7 +6,7 @@ class PrimaryNode < ApplicationRecord
   belongs_to            :sequence
   validates_presence_of :sequence
   has_many   :edge_nodes
-  BAD_KIND = "must be a valid CeleryScript argument name"
+  BAD_KIND = "`kind` must be one of: " + CeleryScriptSettingsBag::ANY_NODE_NAME.join(", ")
   validates :kind, inclusion: { in: CeleryScriptSettingsBag::ANY_NODE_NAME,
                                 message: BAD_KIND,
                                 allow_nil: false }
