@@ -56,6 +56,7 @@ module CeleryScriptSettingsBag
   BAD_PIN_TYPE          = '"%s" is not a type of pin. Allowed values: %s'
   BAD_SPEED             = "Speed must be a percentage between 1-100"
   PIN_TYPE_MAP          = { "Peripheral" => Peripheral, "Sensor" => Sensor }
+
   Corpus = CeleryScript::Corpus
       .new
       .arg(:_else,        [:execute, :nothing])
@@ -159,8 +160,11 @@ module CeleryScriptSettingsBag
         end
       end
       .node(:named_pin, [:pin_type, :pin_id]) do |node|
-        klass    = PIN_TYPE_MAP[node.args[:pin_type].value] or raise "NEVER"
-        id       = node.args[:pin_id].value
+        args     = HashWithIndifferentAccess.new(node.args)
+        x        = args[:pin_type].value
+        klass    = PIN_TYPE_MAP[x]
+        raise "NEVER" unless klass
+        id       = args[:pin_id].value
         node.invalidate!(NO_PIN_ID % [klass]) if (id == 0)
         bad_node = !klass.exists?(id)
         node.invalidate!(BAD_PIN_ID % [klass, id]) if bad_node
