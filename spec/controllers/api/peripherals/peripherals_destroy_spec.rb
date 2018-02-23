@@ -9,7 +9,6 @@ describe Api::PeripheralsController do
 
     it 'deletes a Peripheral' do
       sign_in user
-      # Sequence.destroy_all
       peripheral
       before = Peripheral.count
       delete :destroy, params: { id: peripheral.id }
