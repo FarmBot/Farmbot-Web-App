@@ -6,7 +6,7 @@ import {
 import { ResourceIndex } from "../../resources/interfaces";
 import { JSXChildren } from "../../util/index";
 import { DropDownItem } from "../../ui";
-import { range, isNumber, isString, isObject } from "lodash";
+import { range, isNumber, isString } from "lodash";
 import { TaggedPeripheral, TaggedSensor, ResourceName } from "../../resources/tagged_resources";
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../util/errors";
@@ -148,11 +148,9 @@ export const setArgsDotPinNumber =
       executor(c) {
         if (c.kind === "read_pin") {
           c.args.pin_number = dropDown2CeleryArg(resources, d);
-        } else {
-          bail("Only for read_pin");
         }
       }
-    }))
+    }));
   };
 
 type PinNumber = ReadPin["args"]["pin_number"];

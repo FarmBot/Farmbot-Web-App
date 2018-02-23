@@ -14,17 +14,42 @@ import {
   PinGroupName,
   SENSOR_HEADING,
   sensorsAsDropDowns,
+  setArgsDotPinNumber,
 } from "../pin_and_peripheral_support";
 import * as _ from "lodash";
 import {
   fakePeripheral,
-  fakeSensor
+  fakeSensor,
+  fakeSequence
 } from "../../../__test_support__/fake_state/resources";
 import { DropDownItem } from "../../../ui";
 import { NamedPin, AllowedPinTypes } from "farmbot";
-import { TaggedSensor } from "../../../resources/tagged_resources";
+import { TaggedSensor, TaggedSequence } from "../../../resources/tagged_resources";
+import { StepParams } from "../../interfaces";
 
 describe("Pin and Peripheral support files", () => {
+  const newIndex = () => {
+    const peripheral = fakePeripheral();
+    const sequence = fakeSequence();
+    sequence.body.body = [
+      {
+        kind: "read_pin",
+        args: {
+          pin_mode: 0,
+          label: "example",
+          pin_number: {
+            kind: "named_pin",
+            args: {
+              pin_type: "Peripheral",
+              pin_id: peripheral.body.id || NaN
+            }
+          }
+        }
+      }
+    ];
+    return buildResourceIndex([sequence, peripheral, fakeSensor()]).index;
+  };
+
   it("has a list of unnamed pins", () => {
     expect(pinDropdowns.length)
       .toBe(PIN_RANGE.length + 1); // 54 pins plus the header.
@@ -154,6 +179,37 @@ describe("Pin and Peripheral support files", () => {
       const np: NamedPin = { kind: "named_pin", args: { pin_id, pin_type } };
       const result = dropDown2CeleryArg(ri, ddi);
       expect(result).toEqual(np);
+    });
+
+    it("bails on bad UUIDS", () => {
+      const ri = buildResourceIndex([]).index;
+      const ddi = { label: "sensor", value: "x.y.z" };
+      const boom = () => dropDown2CeleryArg(ri, ddi);
+      expect(boom).toThrowError("Bad uuid in celery arg: x.y.z");
+    });
+  });
+
+  describe("setArgsDotPinNumber", () => {
+    it("Sets step.args.pin_number", () => {
+      const resources = newIndex();
+      const dispatch = jest.fn();
+      const currentSequence =
+        resources.references[resources.byKind.Sequence[0]] as TaggedSequence;
+      const index = 0;
+      const currentStep = (currentSequence.body.body || [])[index];
+      const stepParams: StepParams = {
+        resources,
+        dispatch,
+        currentSequence,
+        currentStep,
+        index
+      };
+      const callback = setArgsDotPinNumber(stepParams);
+      const ddi: DropDownItem = { label: "hmm", value: 0 };
+      const action = { type: "OVERWRITE_RESOURCE" };
+      callback(ddi);
+      expect(stepParams.dispatch)
+        .toHaveBeenCalledWith(expect.objectContaining(action));
     });
   });
 });
