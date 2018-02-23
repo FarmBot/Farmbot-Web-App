@@ -5,10 +5,11 @@ describe Api::PeripheralsController do
   describe '#destroy' do
     let(:user) { FactoryBot.create(:user) }
     let(:peripheral) { FactoryBot.create(:peripheral, device: user.device,
-                                                      label:   "undeletable") }
+                                                      label:   "wow") }
 
     it 'deletes a Peripheral' do
       sign_in user
+      Sequence.destroy_all
       peripheral
       before = Peripheral.count
       delete :destroy, params: { id: peripheral.id }

@@ -10,7 +10,6 @@ module Sensors
         names = sequences.pluck(:name)
         add_error :sensor, :in_use, (IN_USE % names) if names.present?
       end
-      puts "TODO: RICK YOU NEED TO WRITE TESTS FOR THIS STILL!!!!"
     end
 
     def execute
