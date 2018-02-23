@@ -141,7 +141,7 @@ export function fakeSensor(): TaggedSensor {
 }
 export function fakePeripheral(): TaggedPeripheral {
   return fakeResource("Peripheral", {
-    id: idCounter++,
+    id: ++idCounter,
     label: "Fake Pin",
     pin: 1
   });

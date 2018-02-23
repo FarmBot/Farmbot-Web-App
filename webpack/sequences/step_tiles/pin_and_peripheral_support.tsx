@@ -6,7 +6,7 @@ import {
 import { ResourceIndex } from "../../resources/interfaces";
 import { JSXChildren } from "../../util/index";
 import { DropDownItem } from "../../ui";
-import { range, isNumber, isString } from "lodash";
+import { range, isNumber, isString, isObject } from "lodash";
 import { TaggedPeripheral, TaggedSensor, ResourceName } from "../../resources/tagged_resources";
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../util/errors";
@@ -88,21 +88,20 @@ const TYPE_MAPPING: Record<AllowedPinTypes, PinGroupName> = {
   "Sensor": PinGroupName.sensor
 };
 
-const isPinType =
-  (x: any): x is AllowedPinTypes => TYPE_MAPPING.hasOwnProperty(x);
+export const isPinType =
+  (x: string): x is AllowedPinTypes => !!TYPE_MAPPING[x as AllowedPinTypes];
+
+const NO = "UUID or ID not found";
 
 export const findByPinNumber =
   (ri: ResourceIndex, input: NamedPin): TaggedPeripheral | TaggedSensor => {
     const { pin_type, pin_id } = input.args;
     const kindAndId = joinKindAndId(pin_type as ResourceName, pin_id);
-    const uuid = ri.byKindAndId[kindAndId] || bail("no uuid found");
-    const r = ri.references[uuid] || bail("resource not found");
+    const r = ri.references[ri.byKindAndId[kindAndId] || NO] || bail(NO);
     switch (r.kind) {
       case "Peripheral":
-      case "Sensor":
-        return r;
-      default:
-        return bail("Neither sensor nor peripheral");
+      case "Sensor": return r;
+      default: return bail("Not a Peripheral or Sensor");
     }
   };
 
@@ -122,7 +121,7 @@ export function namedPin2DropDown(ri: ResourceIndex, input: NamedPin) {
 
 export const dropDown2CeleryArg =
   (ri: ResourceIndex, item: DropDownItem): number | NamedPin => {
-    if (isString(item.value)) {
+    if (isString(item.value)) { // str means "Named Pin". num means "Raw Pin"
       const uuid: string = item.value;
       const r = ri.references[uuid];
       if (r) {
