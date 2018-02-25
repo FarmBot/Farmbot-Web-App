@@ -88,3 +88,7 @@ MQTT_VHOST: "/"
 # can securly host the same server on multiple domain names
 #     ex: my.farm.bot, my.farmbot.io
 EXTRA_DOMAINS: staging.farm.bot,whatever.farm.bot
+# If you are a software developer and you wish to run integration tests, set the
+# ENV below to "true".
+# Most users will not want this enabled.
+RUN_CAPYBARA: true
