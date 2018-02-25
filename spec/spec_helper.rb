@@ -1,3 +1,4 @@
+DO_INTEGRATION   = !!ENV["RUN_CAPYBARA"]
 ENV["MQTT_HOST"] = "blooper.io"
 ENV["OS_UPDATE_SERVER"] = "http://non_legacy_update_url.com"
 require "simplecov"
@@ -33,7 +34,7 @@ DatabaseCleaner.strategy = :truncation
 DatabaseCleaner.clean
 
 RSpec.configure do |config|
-  if ENV["RUN_CAPYBARA"]
+  if DO_INTEGRATION
     # Do I need to run `env RAILS_ENV=productiono npm run build`?
     require "capybara/rails"
     require "capybara/rspec"
@@ -46,7 +47,7 @@ RSpec.configure do |config|
   config.color = true
   config.fail_fast = 10
   config.backtrace_exclusion_patterns = [/gems/]
-
+  config.filter_run_excluding type: :feature unless DO_INTEGRATION
   config.include Helpers
   config.infer_spec_type_from_file_location!
   config.order = "random"
