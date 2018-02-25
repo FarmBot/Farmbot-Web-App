@@ -12,6 +12,16 @@ HEREDOC
 describe Api::UsersController do
   let(:user) { FactoryBot.create(:user) }
   include Devise::Test::ControllerHelpers
+    it 'shows a user record' do
+      sign_in user
+      get :show, format: :json
+      expect(response.status).to eq(200)
+      expect(json).to be_kind_of(Array)
+      time_stamps = [:created_at, :updated_at]
+      expect(json.first.except(*time_stamps))
+        .to eq(UserSerializer.new(user).as_json.except(*time_stamps))
+    end
+
     it 'errors if you try to delete with the wrong password' do
       sign_in user
       delete :destroy, params: { password: "NOPE!" }, format: :json
