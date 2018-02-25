@@ -124,7 +124,7 @@ describe Api::PointsController do
                   x: 0,
                   y: 0,
                   z: 0,
-                  tool_id: (Tool.last.id + 100) }
+                  tool_id: (Tool.last.try(:id || 0) + 100) }
       old_tool_count = ToolSlot.count
       post :create, body: payload.to_json, params: {format: :json}
       expect(response.status).to eq(422)
