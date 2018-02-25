@@ -45,6 +45,20 @@ describe Api::LogsController do
       expect(Log.count).to eq(0)
     end
 
+    it 'only allows hashes / arrays' do
+      Log.destroy_all
+      stub =
+      """
+      {
+        'wrong': 'because JSON doesnt do single quotes'
+      }
+      """
+      sign_in user
+      post :create, body: stub.to_json, params: {format: :json}
+      expect(response.status).to eq(422)
+      binding.pry
+    end
+
     it 'creates many logs (with an Array)' do
       sign_in user
       before_count = Log.count

@@ -22,12 +22,15 @@ module Sequences
   private
 
     def check_if_any_sequences_using_this
+      # Finds CeleryScript nodes that are using `sequence_id` xyz, but excludes
+      # nodes within the current sequence, since that would make deletion
+      # impossible.
       in_use = Sequence.where(id: EdgeNode
-        .where(kind: "sequence_id", value: sequence.id)
-        .where
-        .not(sequence_id: sequence.id)
-        .pluck(:value)
-        .uniq)
+          .where(kind: "sequence_id", value: sequence.id)
+          .where
+          .not(sequence_id: sequence.id)
+          .pluck(:value)
+          .uniq)
         .pluck(:name)
         .map(&:inspect)
       if in_use.any?
