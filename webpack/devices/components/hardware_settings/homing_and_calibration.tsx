@@ -32,7 +32,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
 
   return <section>
     <Header
-      title={"Homing and Calibration"}
+      title={t("Homing and Calibration")}
       name={"homing_and_calibration"}
       dispatch={dispatch}
       bool={homing_and_calibration} />

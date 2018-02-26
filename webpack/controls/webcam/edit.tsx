@@ -21,7 +21,7 @@ export function Edit(props: WebcamPanelProps) {
       value={wcf.body.url}
       valuePlaceholder={"HTTP://..."}
       label={wcf.body.name}
-      labelPlaceholder={"Feed Name"}
+      labelPlaceholder={t("Feed Name")}
       valueType="string" />;
   });
   const unsaved = props

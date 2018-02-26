@@ -158,7 +158,7 @@ export class PinBindings
   render() {
     return <Widget className="pin-bindings-widget">
       <WidgetHeader
-        title={"Pin Bindings"}
+        title={t("Pin Bindings")}
         helpText={ToolTips.PIN_BINDINGS} />
       <WidgetBody>
         <MustBeOnline
