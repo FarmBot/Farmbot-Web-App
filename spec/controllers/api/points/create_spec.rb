@@ -105,18 +105,31 @@ describe Api::PointsController do
 
     it 'creates a new toolslot, with a default pullout' do
       sign_in user
-      payload = {
-        pointer_type: "ToolSlot",
-        name: "foo",
-        x: 0,
-        y: 0,
-        z: 0
-      }
+      payload = { pointer_type: "ToolSlot",
+                  name: "foo",
+                  x: 0,
+                  y: 0,
+                  z: 0 }
       old_tool_count = ToolSlot.count
       post :create, body: payload.to_json, params: {format: :json}
       expect(response.status).to eq(200)
       expect(ToolSlot.count).to be > old_tool_count
       expect(json[:pullout_direction]).to eq(0)
     end
- end
+
+    it 'disallows bad `tool_id`s' do
+      sign_in user
+      payload = { pointer_type: "ToolSlot",
+                  name: "foo",
+                  x: 0,
+                  y: 0,
+                  z: 0,
+                  tool_id: (Tool.last.try(:id || 0) + 100) }
+      old_tool_count = ToolSlot.count
+      post :create, body: payload.to_json, params: {format: :json}
+      expect(response.status).to eq(422)
+      expect(ToolSlot.count).to eq old_tool_count
+      expect(json[:tool_id]).to include("Can't find tool")
+    end
+  end
 end
