@@ -22,7 +22,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
   return <section>
     <Header
       bool={encoders_and_endstops}
-      title={"Encoders and Endstops"}
+      title={t("Encoders and Endstops")}
       name={"encoders_and_endstops"}
       dispatch={dispatch} />
     <Collapse isOpen={!!encoders_and_endstops}>

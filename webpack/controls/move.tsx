@@ -50,7 +50,7 @@ export class Move extends React.Component<MoveProps, {}> {
 
     return <Widget>
       <WidgetHeader
-        title="Move"
+        title=t("Move")
         helpText={ToolTips.MOVE}>
         <Popover position={Position.BOTTOM_RIGHT}>
           <i className="fa fa-gear" />
@@ -138,7 +138,7 @@ export class Move extends React.Component<MoveProps, {}> {
           </Row>
           <AxisDisplayGroup
             position={motor_coordinates}
-            label={"Motor Coordinates (mm)"} />
+            label={t("Motor Coordinates (mm)")} />
           {scaled_encoders &&
             <AxisDisplayGroup
               position={scaled_encoders_data}
@@ -146,7 +146,7 @@ export class Move extends React.Component<MoveProps, {}> {
           {raw_encoders &&
             <AxisDisplayGroup
               position={raw_encoders_data}
-              label={"Raw Encoder data"} />}
+              label={t("Raw Encoder data")} />}
           <AxisInputBoxGroup
             position={motor_coordinates}
             onCommit={input => moveAbs(input)}

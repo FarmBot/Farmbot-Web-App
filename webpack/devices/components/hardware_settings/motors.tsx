@@ -65,7 +65,7 @@ export function Motors(props: MotorsProps) {
   return <section>
     <Header
       bool={motors}
-      title={"Motors"}
+      title={t("Motors")}
       name={"motors"}
       dispatch={dispatch} />
     <Collapse isOpen={!!motors}>

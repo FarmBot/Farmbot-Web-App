@@ -16,7 +16,7 @@ export function PinGuard(props: PinGuardProps) {
   return <section>
     <Header
       bool={pin_guard}
-      title={"Pin Guard"}
+      title={t("Pin Guard")}
       name={"pin_guard"}
       dispatch={dispatch} />
     <Collapse isOpen={!!pin_guard}>
