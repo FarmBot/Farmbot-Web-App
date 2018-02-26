@@ -1,8 +1,32 @@
 require 'spec_helper'
-
+{:verb=>"POST",
+ :url=>"//storage.googleapis.com/farmbot-team/",
+ :form_data=>
+  {:key=>"temp1/ba8a09f1-e80d-40c7-9b57-6c94927440fd.jpg",
+   :acl=>"public-read",
+   :"Content-Type"=>"image/jpeg",
+   :policy=>
+    "eyJleHBpcmF0aW9uIjoiMjAxOC0wMi0yNlQxODozNTo0NFoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJmYXJtYm90LXRlYW0ifSx7ImtleSI6InRlbXAxL2JhOGEwOWYxLWU4MGQtNDBjNy05YjU3LTZjOTQ5Mjc0NDBmZC5qcGcifSx7ImFjbCI6InB1YmxpYy1yZWFkIn0seyJDb250ZW50LVR5cGUiOiJpbWFnZS9qcGVnIn0sWyJjb250ZW50LWxlbmd0aC1yYW5nZSIsMSw3MzQwMDMyXV19",
+   :signature=>"mmuv57hxWgiaSu0wMzjCNK5CRAU=",
+   :GoogleAccessId=>"GOOGOC5BHEGEQLVFBDCB",
+   :file=>"REPLACE_THIS_WITH_A_BINARY_JPEG_FILE"},
+ :instructions=>
+  "Send a 'from-data' request to the URL provided.Then POST the resulting URL as an 'attachment_url' (json) to api/images/."}
 describe Api::ImagesController do
   include Devise::Test::ControllerHelpers
   let(:user) { FactoryBot.create(:user) }
+  it "Creates a polict object" do
+    sign_in user
+    get :storage_auth
+
+    expect(response.status).to eq(200)
+    expect(json).to be_kind_of(Hash)
+    expect(json[:verb]).to eq("POST")
+    expect(json[:url]).to include("googleapis")
+    expect(json[:form_data].keys.sort).to include(:signature)
+    expect(json[:instructions])
+      .to include("POST the resulting URL as an 'attachment_url'")
+  end
 
   describe '#index' do
     it 'shows only the max images allowed' do
