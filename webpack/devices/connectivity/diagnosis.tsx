@@ -21,7 +21,7 @@ export function Diagnosis(props: DiagnosisProps) {
   const title = diagnosisStatus ? "Ok" : "Error";
   return <div>
     <div className={"connectivity-diagnosis"}>
-      <h4>Diagnosis</h4>
+      <h4>{t("Diagnosis")}</h4>
     </div>
     <Row>
       <Col xs={1}>

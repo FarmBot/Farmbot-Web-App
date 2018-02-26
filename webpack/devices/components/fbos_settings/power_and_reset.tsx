@@ -5,6 +5,7 @@ import { RestartRow } from "./restart_row";
 import { ShutdownRow } from "./shutdown_row";
 import { FactoryResetRow } from "./factory_reset_row";
 import { PowerAndResetProps } from "./interfaces";
+import { t } from "i18next";
 
 export function PowerAndReset(props: PowerAndResetProps) {
   const { dispatch, sourceFbosConfig } = props;
@@ -13,7 +14,7 @@ export function PowerAndReset(props: PowerAndResetProps) {
     <div style={{ fontSize: "1px" }}>
       <Header
         bool={power_and_reset}
-        title={"Power and Reset"}
+        title={t("Power and Reset")}
         name={"power_and_reset"}
         dispatch={dispatch} />
     </div>

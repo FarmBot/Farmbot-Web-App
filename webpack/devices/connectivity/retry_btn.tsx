@@ -1,5 +1,6 @@
 import * as React from "react";
 import { SpecialStatus } from "../../resources/tagged_resources";
+import { t } from "i18next";
 
 interface RetryBtnProps {
   flags: boolean[];
@@ -14,6 +15,6 @@ export function RetryBtn(props: RetryBtnProps) {
   return <button
     className={css + " fb-button"}
     onClick={props.onClick}>
-    Check Again
+    {t("Check Again")}
 </button>;
 }

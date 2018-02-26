@@ -9,8 +9,8 @@ import { getDevice } from "../../../device";
 import { ColWidth } from "../farmbot_os_settings";
 
 const CAMERA_CHOICES = [
-  { label: "USB Camera", value: "USB" },
-  { label: "Raspberry Pi Camera", value: "RPI" }
+  { label: t("USB Camera"), value: "USB" },
+  { label: t("Raspberry Pi Camera"), value: "RPI" }
 ];
 
 const CAMERA_CHOICES_DDI = {
