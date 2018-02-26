@@ -3,7 +3,7 @@ import { SequenceBodyItem as Step } from "farmbot";
 import { NUMERIC_FIELDS } from "../interfaces";
 import { ExecuteBlock } from "./tile_execute";
 import { StepParams, StepInputProps, StepTitleBarProps } from "../interfaces";
-import { defensiveClone, move as arrayMover } from "../../util";
+import { defensiveClone, move as arrayMover, equals } from "../../util";
 import { TileIf } from "./tile_if";
 import { TileWait } from "./tile_wait";
 import { TileMoveAbsolute } from "./tile_move_absolute";
@@ -95,7 +95,12 @@ export function updateStep(props: StepInputProps) {
     }
 
     seqCopy.body[index] = stepCopy;
-    dispatch(overwrite(sequence, seqCopy));
+    if (equals(sequence.body.body, seqCopy.body)) {
+      console.log("equal => NO OP.");
+    } else {
+      console.log("Not equal => mutating.");
+      dispatch(overwrite(sequence, seqCopy));
+    }
   };
 }
 
