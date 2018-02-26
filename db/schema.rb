@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180217173606) do
+ActiveRecord::Schema.define(version: 20180226164100) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -63,6 +63,14 @@ ActiveRecord::Schema.define(version: 20180217173606) do
     t.integer "executable_id"
     t.index ["device_id"], name: "index_farm_events_on_device_id"
     t.index ["executable_type", "executable_id"], name: "index_farm_events_on_executable_type_and_executable_id"
+  end
+
+  create_table "farmware_installations", force: :cascade do |t|
+    t.bigint "device_id"
+    t.string "url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_farmware_installations_on_device_id"
   end
 
   create_table "fbos_configs", force: :cascade do |t|
@@ -427,6 +435,7 @@ ActiveRecord::Schema.define(version: 20180217173606) do
   end
 
   add_foreign_key "edge_nodes", "sequences"
+  add_foreign_key "farmware_installations", "devices"
   add_foreign_key "log_dispatches", "devices"
   add_foreign_key "log_dispatches", "logs"
   add_foreign_key "peripherals", "devices"
