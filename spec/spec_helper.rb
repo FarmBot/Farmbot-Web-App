@@ -1,47 +1,60 @@
-ENV['MQTT_HOST'] = "blooper.io"
-ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
-require 'simplecov'
-#Ignore anything with the word 'spec' in it. No need to test your tests.
+DO_INTEGRATION   = !!ENV["RUN_CAPYBARA"]
+ENV["MQTT_HOST"] = "blooper.io"
+ENV["OS_UPDATE_SERVER"] = "http://non_legacy_update_url.com"
+require "simplecov"
+#Ignore anything with the word "spec" in it. No need to test your tests.
 SimpleCov.start do
-  add_filter '/spec/'
-  add_filter 'config/initializers'
+  add_filter "/spec/"
+  add_filter "config/initializers"
 end
 
-require 'codecov'
+require "codecov"
 SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
   SimpleCov::Formatter::HTMLFormatter,
   SimpleCov::Formatter::Codecov,
 ])
-require 'pry'
+require "pry"
 
-ENV['RAILS_ENV'] ||= 'test'
-require File.expand_path('../../config/environment', __FILE__)
-require 'rspec/rails'
-require_relative './stuff'
-require_relative './topic_stub'
+ENV["RAILS_ENV"] ||= "test"
+require File.expand_path("../../config/environment", __FILE__)
+require "rspec/rails"
+require_relative "./stuff"
+require_relative "./topic_stub"
 
-Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 SmarfDoc.config do |c|
-  c.template_file = 'api_docs.md.erb'
-  c.output_file   = 'api_docs.md'
+  c.template_file = "api_docs.md.erb"
+  c.output_file   = "api_docs.md"
 end
 
-require 'database_cleaner'
+require "database_cleaner"
 DatabaseCleaner.strategy = :truncation
 # then, whenever you need to clean the DB
 DatabaseCleaner.clean
 
 RSpec.configure do |config|
+  if DO_INTEGRATION
+    # Do I need to run `env RAILS_ENV=productiono npm run build`?
+    require "capybara/rails"
+    require "capybara/rspec"
+    require "selenium/webdriver"
+    # Be sure to run `RAILS_ENV=test rails api:start` and `rails mqtt:start`!
+    Capybara.run_server = false
+    Capybara.app_host = "http://localhost:3000"
+    Capybara.server_host = "localhost"
+    Capybara.server_port = "3000"
+  end
+
   config.color = true
   config.fail_fast = 10
   config.backtrace_exclusion_patterns = [/gems/]
-
+  config.filter_run_excluding type: :feature unless DO_INTEGRATION
   config.include Helpers
   config.infer_spec_type_from_file_location!
-  config.order = 'random'
+  config.order = "random"
 
-  if ENV['DOCS']
+  if ENV["DOCS"]
     config.after(:each, type: :controller) do
       SmarfDoc.run!(NiceResponse.new(request), response)
     end

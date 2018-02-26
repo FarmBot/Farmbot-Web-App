@@ -36,6 +36,15 @@ describe Api::FbosConfigsController do
   end
 
   describe '#update' do
+    it 'raise integer overflow erorrs' do
+      way_too_big = 123456789013333333332345
+      sign_in user
+      body = { network_not_found_timer: way_too_big }
+      put :update, body: body.to_json, params: { format: :json }
+      expect(response.status).to eq(422)
+      expect(json[:error]).to include("was too big/small")
+    end
+
     it 'handles update requests' do
       sign_in user
       body = { beta_opt_in: true, disable_factory_reset: true }

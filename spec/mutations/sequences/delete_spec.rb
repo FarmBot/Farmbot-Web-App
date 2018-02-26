@@ -1,9 +1,18 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Sequences::Delete do
   let(:sequence)     { FactoryBot.create(:sequence)  }
 
-  it 'refuses to delete a sequence that a regimen depends on' do
+  it "Cant delete sequences in use by farm events" do
+    FactoryBot.create(:farm_event, executable: sequence)
+    result = Sequences::Delete.run(device: sequence.device, sequence: sequence)
+    expect(result.success?).to be false
+    errors = result.errors.message
+    expect(errors.keys).to include("sequence")
+    expect(errors["sequence"]).to include("in use by some farm events")
+  end
+
+  it "refuses to delete a sequence that a regimen depends on" do
     regimen_item1 = FactoryBot.create(:regimen_item, sequence: sequence)
     regimen_item2 = FactoryBot.create(:regimen_item, sequence: sequence)
     expect(sequence.regimen_items.count).to eq(2)
@@ -15,13 +24,13 @@ describe Sequences::Delete do
                                           "this sequence")
   end
 
-  it 'deletes a sequence' do
+  it "deletes a sequence" do
     result = Sequences::Delete.run!(device: sequence.device, sequence: sequence)
     expect(result).to eq("")
     expect( Sequence.where(id: sequence.id).count ).to eq(0)
   end
 
-  it 'prevents deletion when the sequence is in use by another sequence' do
+  it "prevents deletion when the sequence is in use by another sequence" do
     Sequences::Create.run!(device: sequence.device,
                            name: "dep",
                            body: [
