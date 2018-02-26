@@ -28,3 +28,8 @@ export interface FarmwareConfigMenuProps {
   onToggle(): void;
   firstPartyFwsInstalled: boolean;
 }
+
+export interface FarmwareInstallation {
+  id?: number;
+  url: string;
+}
