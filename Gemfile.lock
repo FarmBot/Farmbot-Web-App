@@ -315,6 +315,9 @@ GEM
     uber (0.1.0)
     url (0.3.2)
     useragent (0.16.10)
+    valid_url (0.0.4)
+      addressable
+      rails
     warden (1.2.7)
       rack (>= 1.0)
     webpack-rails (0.9.11)
@@ -367,6 +370,7 @@ DEPENDENCIES
   smarf_doc!
   thin
   tzinfo
+  valid_url
   webpack-rails
 
 RUBY VERSION
