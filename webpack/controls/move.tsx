@@ -50,7 +50,7 @@ export class Move extends React.Component<MoveProps, {}> {
 
     return <Widget>
       <WidgetHeader
-        title=t("Move")
+        title={t("Move")}
         helpText={ToolTips.MOVE}>
         <Popover position={Position.BOTTOM_RIGHT}>
           <i className="fa fa-gear" />

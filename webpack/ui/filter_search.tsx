@@ -51,7 +51,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
       items={this.props.items}
       itemPredicate={this.filter}
       itemRenderer={this.default}
-      noResults={<MenuItem disabled text="No results." />}
+      noResults={<MenuItem disabled text={t("No results.")} />}
       onItemSelect={this.handleValueChange}
       popoverProps={{ popoverClassName: minimal ? Classes.MINIMAL : "" }}>
       <Button

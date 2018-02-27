@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { Channel } from "farmbot/dist";
 import { ChannelName } from "../interfaces";
 
@@ -12,18 +13,18 @@ interface ChanInfo {
 }
 
 export const EACH_CHANNEL: ChanInfo[] = [
-  { alwaysOn: true, name: "ticker", label: "Ticker Notification" },
-  { alwaysOn: false, name: "toast", label: "Toast Pop Up" },
-  { alwaysOn: false, name: "email", label: "Email" },
-  { alwaysOn: false, name: "espeak", label: "Speak" },
+  { alwaysOn: true, name: "ticker", label: t("Ticker Notification") },
+  { alwaysOn: false, name: "toast", label: t("Toast Pop Up") },
+  { alwaysOn: false, name: "email", label: t("Email") },
+  { alwaysOn: false, name: "espeak", label: t("Speak") },
 ];
 
 export const MESSAGE_STATUSES = [
-  { value: "success", label: "Success" },
-  { value: "busy", label: "Busy" },
-  { value: "warn", label: "Warning" },
-  { value: "error", label: "Error" },
-  { value: "info", label: "Info" }
+  { value: "success", label: t("Success") },
+  { value: "busy", label: t("Busy") },
+  { value: "warn", label: t("Warning") },
+  { value: "error", label: t("Error") },
+  { value: "info", label: t("Info") }
 ];
 
 export const MESSAGE_STATUSES_DDI = {

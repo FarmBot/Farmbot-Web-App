@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import { FindHome, ALLOWED_AXIS, Xyz } from "farmbot";
 import { StepParams, HardwareFlags } from "../interfaces";
 import { TaggedSequence } from "../../resources/tagged_resources";
@@ -110,7 +111,7 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
                             this.handleUpdate(nextVal);
                           }}
                           checked={this.isSelected(axis)} />
-                        {" "} Find {axis}
+                        {" "} {t("Find ")} {axis}
                       </label>
                     </div>;
                   })}

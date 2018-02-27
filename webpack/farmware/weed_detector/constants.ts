@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { DropDownItem } from "../../ui/index";
 import { SPECIAL_VALUES } from "./remote_env/constants";
 
@@ -12,19 +13,19 @@ export const SPECIAL_VALUE_DDI: { [index: number]: DropDownItem } = {
     value: SPECIAL_VALUES.Y
   },
   [SPECIAL_VALUES.TOP_LEFT]: {
-    label: "Top Left",
+    label: t("Top Left"),
     value: SPECIAL_VALUES.TOP_LEFT
   },
   [SPECIAL_VALUES.TOP_RIGHT]: {
-    label: "Top Right",
+    label: t("Top Right"),
     value: SPECIAL_VALUES.TOP_RIGHT
   },
   [SPECIAL_VALUES.BOTTOM_LEFT]: {
-    label: "Bottom Left",
+    label: t("Bottom Left"),
     value: SPECIAL_VALUES.BOTTOM_LEFT
   },
   [SPECIAL_VALUES.BOTTOM_RIGHT]: {
-    label: "Bottom Right",
+    label: t("Bottom Right"),
     value: SPECIAL_VALUES.BOTTOM_RIGHT
   },
 };

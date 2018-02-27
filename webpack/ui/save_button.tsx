@@ -27,7 +27,7 @@ export function SaveBtn(props: SaveBtnProps) {
   };
 
   const CAPTIONS: Partial<Record<SpecialStatus, string>> = {
-    [SpecialStatus.DIRTY]: t((props.dirtyText || "Save ") + " *"),
+    [SpecialStatus.DIRTY]: (t(props.dirtyText || "Save ") + " *"),
     [SpecialStatus.SAVING]: t(props.savingText || "Saving")
   };
 
