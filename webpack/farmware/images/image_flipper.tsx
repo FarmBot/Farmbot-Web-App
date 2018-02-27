@@ -34,8 +34,7 @@ export class ImageFlipper extends
       </div>;
     } else {
       return <div className="no-flipper-image-container">
-        <p>{t(`You haven't yet taken any photos with your FarmBot.
-          Once you do, they will show up here.`)}</p>
+        <p>{t("You haven't yet taken any photos with your FarmBot. Once you do, they will show up here.")}</p>
         <img
           className="image-flipper-image"
           src={PLACEHOLDER_FARMBOT} />

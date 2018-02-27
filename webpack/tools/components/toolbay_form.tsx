@@ -47,7 +47,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
     const toolSlotStatus = getArrayStatus(toolSlots);
     return <div className={"toolbay-widget"}>
       <Widget>
-        <WidgetHeader helpText={ToolTips.TOOLBAY_LIST} title="Tool Slots">
+        <WidgetHeader helpText={ToolTips.TOOLBAY_LIST} title={t("Tool Slots")}>
           <button
             className="gray fb-button"
             hidden={!!toolSlotStatus}

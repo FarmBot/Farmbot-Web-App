@@ -1,11 +1,11 @@
 import * as React from "react";
+import { t } from "i18next";
 import { isNumber } from "lodash";
 import { BotPosition } from "../../devices/interfaces";
 import { TaggedToolSlotPointer } from "../../resources/tagged_resources";
 import { ToolPulloutDirection } from "../../interfaces";
 import { edit } from "../../api/crud";
 import { SlotDirectionSelect } from "./toolbay_slot_direction_selection";
-import { t } from "i18next";
 
 const positionIsDefined = (position: BotPosition): boolean => {
   return isNumber(position.x) && isNumber(position.y) && isNumber(position.z);
@@ -22,7 +22,7 @@ const positionButtonTitle = (position: BotPosition): string => {
   if (positionIsDefined(position)) {
     return `(${position.x}, ${position.y}, ${position.z})`;
   } else {
-    return "(unknown)";
+    return t("(unknown)");
   }
 };
 

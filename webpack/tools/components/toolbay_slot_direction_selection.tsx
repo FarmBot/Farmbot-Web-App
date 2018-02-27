@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import { FBSelect, DropDownItem } from "../../ui/index";
 import { TaggedToolSlotPointer } from "../../resources/tagged_resources";
 import { ToolPulloutDirection } from "../../interfaces";
@@ -7,15 +8,15 @@ import { isNumber } from "lodash";
 
 const DIRECTION_CHOICES_DDI: { [index: number]: DropDownItem } = {
   [ToolPulloutDirection.NONE]:
-    { label: "None", value: ToolPulloutDirection.NONE },
+    { label: t("None"), value: ToolPulloutDirection.NONE },
   [ToolPulloutDirection.POSITIVE_X]:
-    { label: "Positive X", value: ToolPulloutDirection.POSITIVE_X },
+    { label: t("Positive X"), value: ToolPulloutDirection.POSITIVE_X },
   [ToolPulloutDirection.NEGATIVE_X]:
-    { label: "Negative X", value: ToolPulloutDirection.NEGATIVE_X },
+    { label: t("Negative X"), value: ToolPulloutDirection.NEGATIVE_X },
   [ToolPulloutDirection.POSITIVE_Y]:
-    { label: "Positive Y", value: ToolPulloutDirection.POSITIVE_Y },
+    { label: t("Positive Y"), value: ToolPulloutDirection.POSITIVE_Y },
   [ToolPulloutDirection.NEGATIVE_Y]:
-    { label: "Negative Y", value: ToolPulloutDirection.NEGATIVE_Y },
+    { label: t("Negative Y"), value: ToolPulloutDirection.NEGATIVE_Y },
 };
 
 const DIRECTION_CHOICES: DropDownItem[] = [

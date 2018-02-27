@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import { Popover, Position, PopoverInteractionKind } from "@blueprintjs/core";
 import { Xyz } from "farmbot";
 
@@ -7,7 +8,7 @@ interface StepWarningProps {
   conflicts?: Record<Xyz, boolean>;
 }
 
-const TITLE_BASE = "Hardware setting conflict";
+const TITLE_BASE = t("Hardware setting conflict");
 
 export const conflictsString = (conflicts: Record<Xyz, boolean>) => {
   const conflictAxes: string[] = [];
