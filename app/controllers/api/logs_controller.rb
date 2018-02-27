@@ -9,7 +9,6 @@ module Api
       case raw_json
       when Array then handle_many_logs
       when Hash  then handle_single_log
-      else; sorry "Post a JSON array or object.", 422
       end
     end
 

@@ -86,6 +86,7 @@ export class Login extends React.Component<LoginProps, {}> {
             <BlurableInput
               type="email"
               value={email || ""}
+              name="login_email"
               onCommit={onEmailChange} />
             <label>
               {t("Password")}
@@ -93,6 +94,7 @@ export class Login extends React.Component<LoginProps, {}> {
             <BlurableInput
               type="password"
               value={loginPassword || ""}
+              name="login_password"
               onCommit={onLoginPasswordChange} />
             <a className="forgot-password" onClick={onToggleForgotPassword} >
               {t("Forgot password?")}
