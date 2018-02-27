@@ -127,6 +127,10 @@ export class API {
   get farmwareInstallationPath() {
     return `${this.baseUrl}/api/farmware_installations`;
   }
+  /** /api/device_configs/:id */
+  get deviceConfigPath() {
+    return `${this.baseUrl}/api/device_settings`;
+  }
   /** /api/users/verify/:token */
   verificationPath = (token: string) => ("/api/users/verify/" + token);
 }

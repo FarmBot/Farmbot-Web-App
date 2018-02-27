@@ -36,6 +36,12 @@ export interface SensorReading {
   value: number;
   pin: number;
 }
+
+export interface DeviceConfig {
+  id?: number;
+  key: string;
+  value: string | number | boolean;
+}
 export interface Log {
   id?: number | undefined;
   message: string;

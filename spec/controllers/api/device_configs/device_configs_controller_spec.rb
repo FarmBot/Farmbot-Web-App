@@ -43,5 +43,4 @@ describe Api::DeviceConfigsController do
     expect(response.status).to be(200)
     expect(DeviceConfig.exists?(id)).to be false
   end
-
 end

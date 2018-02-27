@@ -9,6 +9,7 @@ import {
   ToolSlotPointer,
   SensorReading,
   Sensor,
+  DeviceConfig
 } from "../interfaces";
 import { Peripheral } from "../controls/peripherals/interfaces";
 import { User } from "../auth/interfaces";
@@ -27,7 +28,9 @@ import { FarmwareInstallation } from "../farmware/interfaces";
 export type ResourceName =
   | "Crop"
   | "Device"
+  | "DeviceConfig"
   | "FarmEvent"
+  | "FarmwareInstallation"
   | "FbosConfig"
   | "FirmwareConfig"
   | "Image"
@@ -42,8 +45,7 @@ export type ResourceName =
   | "Tool"
   | "User"
   | "WebAppConfig"
-  | "WebcamFeed"
-  | "FarmwareInstallation";
+  | "WebcamFeed";
 
 export interface TaggedResourceBase {
   kind: ResourceName;
@@ -106,6 +108,7 @@ export type TaggedResource =
   | TaggedWebcamFeed
   | TaggedFarmwareInstallation;
 
+export type TaggedDeviceConfig = Resource<"DeviceConfig", DeviceConfig>;
 export type TaggedRegimen = Resource<"Regimen", Regimen>;
 export type TaggedTool = Resource<"Tool", Tool>;
 export type TaggedSequence = Resource<"Sequence", Sequence>;
