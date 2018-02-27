@@ -15,6 +15,7 @@ import { WebcamFeed } from "../controls/interfaces";
 import { WebAppConfig } from "../config_storage/web_app_configs";
 import { Session } from "../session";
 import { FbosConfig } from "../config_storage/fbos_configs";
+import { FarmwareInstallation } from "../farmware/interfaces";
 
 export interface ResourceReadyPayl {
   name: ResourceName;
@@ -33,10 +34,10 @@ export function fetchSyncData(dispatch: Function) {
       .then((r: HttpData<T>): SyncResponse => dispatch({
         type, payload: { name, data: r.data }
       }),
-      /** NOTE: If a key resource fails to load, the app is guaranteed to be
-       * broke. Don't try to recover- just log the user out. It's probably a
-       * malformed token in SessionStorage */
-      Session.clear);
+        /** NOTE: If a key resource fails to load, the app is guaranteed to be
+         * broke. Don't try to recover- just log the user out. It's probably a
+         * malformed token in SessionStorage */
+        Session.clear);
 
   fetch<User>("User", API.current.usersPath);
   fetch<DeviceAccountSettings>("Device", API.current.devicePath);
@@ -53,4 +54,6 @@ export function fetchSyncData(dispatch: Function) {
   fetch<Tool[]>("Tool", API.current.toolsPath);
   fetch<SensorReading[]>("SensorReading", API.current.sensorReadingPath);
   fetch<Sensor[]>("Sensor", API.current.sensorPath);
+  fetch<FarmwareInstallation[]>("FarmwareInstallation",
+    API.current.farmwareInstallationPath);
 }

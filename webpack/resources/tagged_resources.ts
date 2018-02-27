@@ -22,6 +22,7 @@ import { WebcamFeed } from "../controls/interfaces";
 import { FbosConfig } from "../config_storage/fbos_configs";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
 import { WebAppConfig } from "../config_storage/web_app_configs";
+import { FarmwareInstallation } from "../farmware/interfaces";
 
 export type ResourceName =
   | "Crop"
@@ -41,7 +42,8 @@ export type ResourceName =
   | "Tool"
   | "User"
   | "WebAppConfig"
-  | "WebcamFeed";
+  | "WebcamFeed"
+  | "FarmwareInstallation";
 
 export interface TaggedResourceBase {
   kind: ResourceName;
@@ -101,7 +103,8 @@ export type TaggedResource =
   | TaggedTool
   | TaggedUser
   | TaggedWebAppConfig
-  | TaggedWebcamFeed;
+  | TaggedWebcamFeed
+  | TaggedFarmwareInstallation;
 
 export type TaggedRegimen = Resource<"Regimen", Regimen>;
 export type TaggedTool = Resource<"Tool", Tool>;
@@ -128,6 +131,8 @@ export type TaggedPoint = Resource<"Point", PointUnion>;
 export type TaggedUser = Resource<"User", User>;
 export type TaggedDevice = Resource<"Device", DeviceAccountSettings>;
 export type TaggedWebcamFeed = Resource<"WebcamFeed", WebcamFeed>;
+export type TaggedFarmwareInstallation =
+  Resource<"FarmwareInstallation", FarmwareInstallation>;
 
 /** Spot check to be certain a TaggedResource is what it says it is. */
 export function sanityCheck(x: object): x is TaggedResource {

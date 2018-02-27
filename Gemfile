@@ -28,9 +28,10 @@ gem "skylight"
 gem "bunny"
 gem "request_store"
 gem "secure_headers"
-gem "hashdiff"
+gem "valid_url"
 
 group :development, :test do
+  gem "hashdiff"
   gem "codecov", require: false
   gem "database_cleaner"
   gem "pry"
