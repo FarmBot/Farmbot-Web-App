@@ -2,33 +2,30 @@
 # configuration pairs.
 module Api
   class DeviceConfigsController < Api::AbstractController
+
     def create
       mutate DeviceConfigs::Create.run(params.as_json, device: current_device)
     end
 
     def index
-      render json: configs
-    end
-
-    def show
-      render json: config
+      render json: device_configs
     end
 
     def update
-      mutate DeviceConfigs::Update.run(params.as_json, config: config)
+      mutate DeviceConfigs::Update.run(raw_json, config: device_config)
     end
 
     def destroy
-      render json: config.destroy! && ""
+      render json: (device_config.destroy! && "")
     end
 
   private
 
-    def config
-      configs.find(params[:id])
+    def device_config
+      device_configs.find(params[:id])
     end
 
-    def configs
+    def device_configs
       current_device.device_configs
     end
   end
