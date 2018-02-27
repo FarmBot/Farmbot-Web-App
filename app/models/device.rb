@@ -1,9 +1,11 @@
 # Farmbot Device models all data related to an actual FarmBot in the real world.
 class Device < ApplicationRecord
-  DEFAULT_MAX_LOGS   = 100
-  DEFAULT_MAX_IMAGES = 100
-  TIMEZONES          = TZInfo::Timezone.all_identifiers
-  BAD_TZ             = "%{value} is not a valid timezone"
+  DEFAULT_MAX_LOGS    = 100
+  DEFAULT_MAX_IMAGES  = 100
+  DEFAULT_MAX_CONFIGS = 100
+
+  TIMEZONES           = TZInfo::Timezone.all_identifiers
+  BAD_TZ              = "%{value} is not a valid timezone"
 
   has_many  :users
   has_many  :farm_events,     dependent: :destroy
@@ -17,10 +19,9 @@ class Device < ApplicationRecord
   has_many  :images,          dependent: :destroy
   has_many  :webcam_feeds,    dependent: :destroy
   has_many  :sensor_readings, dependent: :destroy
-  validates :timezone,     inclusion: { in: TIMEZONES,
-                                        message: BAD_TZ,
-                                        allow_nil: true }
   validates_presence_of :name
+  validates :timezone,
+    inclusion: { in: TIMEZONES, message: BAD_TZ, allow_nil: true }
   [FbosConfig, FirmwareConfig, WebAppConfig].map do |klass|
     name = klass.table_name.singularize.to_sym
     has_one name, dependent: :destroy
