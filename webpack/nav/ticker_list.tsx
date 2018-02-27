@@ -27,7 +27,7 @@ const logFilter = (log: Log): Log | undefined => {
 const getfirstTickerLog = (logs: Log[]): Log => {
   if (logs.length == 0) {
     return {
-      message: "No logs yet.",
+      message: t("No logs yet."),
       meta: { type: "debug", verbosity: -1 },
       channels: [], created_at: NaN
     };
@@ -37,7 +37,7 @@ const getfirstTickerLog = (logs: Log[]): Log => {
       return filteredLogs[0];
     } else {
       return {
-        message: "No logs to display. Visit Logs page to view filters.",
+        message: t("No logs to display. Visit Logs page to view filters."),
         meta: { type: "debug", verbosity: -1 },
         channels: [], created_at: NaN
       };

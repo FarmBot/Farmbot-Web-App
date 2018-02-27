@@ -2,6 +2,7 @@ import * as React from "react";
 import { StatusRowProps } from "./connectivity_row";
 import { CowardlyDictionary } from "../../util";
 import { Color } from "../../ui/index";
+import { t } from "i18next";
 
 export interface ConnectivityDiagramProps {
   rowData: StatusRowProps[];
@@ -144,9 +145,9 @@ export function ConnectivityDiagram(props: ConnectivityDiagramProps) {
       viewBox="-100 -100 200 220">
       <g className="text"
         dominantBaseline="middle">
-        {nodeLabel("Browser", DiagramNodes.browser)}
+        {nodeLabel(t("Browser"), DiagramNodes.browser)}
         {nodeLabel("Web App", DiagramNodes.API)}
-        {nodeLabel("Message Broker", DiagramNodes.MQTT)}
+        {nodeLabel(t("Message Broker"), DiagramNodes.MQTT)}
         {nodeLabel("FarmBot", DiagramNodes.bot)}
         {nodeLabel("Raspberry Pi", DiagramNodes.RPI, "end")}
         {nodeLabel(board, DiagramNodes.arduino, "start")}

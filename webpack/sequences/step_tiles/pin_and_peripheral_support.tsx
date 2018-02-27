@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import {
   getAllSavedPeripherals,
   getAllSavedSensors
@@ -36,17 +37,17 @@ export function StepCheckBox(props: StepCheckBoxProps) {
 export enum PinGroupName { sensor = "👂", peripheral = "🔌", pin = "📌" }
 
 export const PERIPHERAL_HEADING: DropDownItem =
-  ({ heading: true, label: "➖ Peripherals", value: 0 });
+  ({ heading: true, label: "➖ "+t("Peripherals"), value: 0 });
 
 export const SENSOR_HEADING: DropDownItem =
-  ({ heading: true, label: "➖ Sensors", value: 0 });
+  ({ heading: true, label: "➖ "+t("Sensors"), value: 0 });
 
 export const PIN_HEADING: DropDownItem =
-  ({ heading: true, label: "➖ Pins", value: 0 });
+  ({ heading: true, label: "➖ "+t("Pins"), value: 0 });
 
 /** Pass it the number X and it will generate a DropDownItem for `pin x`. */
 const pinNumber2DropDown =
-  (n: number) => ({ label: `Pin ${n}`, value: n, headingId: PinGroupName.pin });
+  (n: number) => ({ label: t("Pin")+` ${n}`, value: n, headingId: PinGroupName.pin });
 
 const peripheral2DropDown =
   (x: TaggedPeripheral): DropDownItem => ({

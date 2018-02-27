@@ -50,7 +50,7 @@ export class Show extends React.Component<WebcamPanelProps, State> {
     const { props } = this;
     const feeds = sortedFeeds(this.props.feeds).map(x => x.body);
     const flipper = new Flipper(feeds, FALLBACK_FEED, this.state.current);
-    const title = flipper.current.name || "Webcam Feeds";
+    const title = flipper.current.name || t("Webcam Feeds");
     const msg = this.getMessage(flipper.current.url);
     const imageClass = msg.length > 0 ? "no-flipper-image-container" : "";
     return <Widget>

@@ -18,7 +18,7 @@ export class CameraCalibration extends
     const classname = "weed-detector-widget";
     return <Widget className={classname}>
       <TitleBar
-        title={"Camera Calibration"}
+        title={t("Camera Calibration")}
         help={t(ToolTips.CAMERA_CALIBRATION)}
         docs={"farmware#section-weed-detector"}
         onCalibrate={this.props.dispatch(calibrate)}

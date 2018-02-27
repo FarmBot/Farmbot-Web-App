@@ -71,7 +71,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
         .format("MMMM Do, YYYY h:mma")
       : "";
     return <Widget className="photos-widget">
-      <WidgetHeader helpText={ToolTips.PHOTOS} title={"Photos"}>
+      <WidgetHeader helpText={ToolTips.PHOTOS} title={t("Photos")}>
         <button
           className="fb-button gray"
           onClick={this.takePhoto}>
