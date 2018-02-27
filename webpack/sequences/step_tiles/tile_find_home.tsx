@@ -111,7 +111,7 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
                             this.handleUpdate(nextVal);
                           }}
                           checked={this.isSelected(axis)} />
-                        {" "} {t("Find ")} {axis}
+                        {" "} {t("Find ") + axis}
                       </label>
                     </div>;
                   })}

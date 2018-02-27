@@ -129,7 +129,7 @@ export class API {
   }
   /** /api/device_configs/:id */
   get deviceConfigPath() {
-    return `${this.baseUrl}/api/device_settings`;
+    return `${this.baseUrl}/api/device_configs`;
   }
   /** /api/users/verify/:token */
   verificationPath = (token: string) => ("/api/users/verify/" + token);

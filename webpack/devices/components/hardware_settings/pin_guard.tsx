@@ -39,35 +39,35 @@ export function PinGuard(props: PinGuardProps) {
         </Col>
       </Row>
       <PinGuardMCUInputGroup
-        name={t("Pin Guard ")+"1"}
+        name={t("Pin Guard {{ num }}", { num: 1 })}
         pinNumber={"pin_guard_1_pin_nr"}
         timeout={"pin_guard_1_time_out"}
         activeState={"pin_guard_1_active_state"}
         dispatch={dispatch}
         bot={bot} />
       <PinGuardMCUInputGroup
-        name={t("Pin Guard ")+"2"}
+        name={t("Pin Guard {{ num }}", { num: 2 })}
         pinNumber={"pin_guard_2_pin_nr"}
         timeout={"pin_guard_2_time_out"}
         activeState={"pin_guard_2_active_state"}
         dispatch={dispatch}
         bot={bot} />
       <PinGuardMCUInputGroup
-        name={t("Pin Guard ")+"3"}
+        name={t("Pin Guard {{ num }}", { num: 3 })}
         pinNumber={"pin_guard_3_pin_nr"}
         timeout={"pin_guard_3_time_out"}
         activeState={"pin_guard_3_active_state"}
         dispatch={dispatch}
         bot={bot} />
       <PinGuardMCUInputGroup
-        name={t("Pin Guard ")+"4"}
+        name={t("Pin Guard {{ num }}", { num: 4 })}
         pinNumber={"pin_guard_4_pin_nr"}
         timeout={"pin_guard_4_time_out"}
         activeState={"pin_guard_4_active_state"}
         dispatch={dispatch}
         bot={bot} />
       <PinGuardMCUInputGroup
-        name={t("Pin Guard ")+"5"}
+        name={t("Pin Guard {{ num }}", { num: 5 })}
         pinNumber={"pin_guard_5_pin_nr"}
         timeout={"pin_guard_5_time_out"}
         activeState={"pin_guard_5_active_state"}
