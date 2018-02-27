@@ -63,5 +63,10 @@ describe Api::PasswordResetsController do
       expect(user.reload.valid_password?(params[:password])).to eq(false)
       expect(json.to_json).to include(PasswordResets::Update::OLD_TOKEN)
     end
+
+    it 'handles bad emails' do
+      result = PasswordResets::Create.run(email: "bad@wrong.com")
+      expect(result.errors["email"].message).to eq("Email not found")
+    end
   end
 end

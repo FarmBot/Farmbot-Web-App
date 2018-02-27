@@ -16,6 +16,19 @@ describe Api::DeviceConfigsController do
     input.keys.map { |key| expect(json[key]).to eq(input[key]) }
   end
 
+  it 'does not create too many' do
+    sign_in user
+    FactoryBot.create_list(:device_config,
+                          Device::DEFAULT_MAX_CONFIGS,
+                          device: device)
+    b4 = DeviceConfig.count
+    input = { key: "Coffee Emoji", value: "☕" }
+    post :create, params: input
+    expect(response.status).to eq(422)
+    expect(json[:configs]).to include("over the limit")
+    expect(DeviceConfig.count).to eq(b4)
+  end
+
   it 'lists' do
     sign_in user
     FactoryBot.create_list(:device_config, 5, device: device)

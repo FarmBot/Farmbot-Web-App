@@ -10,7 +10,7 @@ module DeviceConfigs
 
     def validate
       # Ensure you're not over the limit
-      if device.device_configs.length > LIMIT
+      if device.device_configs.length >= LIMIT
         add_error :configs,
                   :configs,
                   "You are over the limit of #{LIMIT} configs."
