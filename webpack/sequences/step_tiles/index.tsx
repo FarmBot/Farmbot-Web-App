@@ -3,7 +3,7 @@ import { SequenceBodyItem as Step } from "farmbot";
 import { NUMERIC_FIELDS } from "../interfaces";
 import { ExecuteBlock } from "./tile_execute";
 import { StepParams, StepInputProps, StepTitleBarProps } from "../interfaces";
-import { defensiveClone, move as arrayMover, equals } from "../../util";
+import { defensiveClone, move as arrayMover } from "../../util";
 import { TileIf } from "./tile_if";
 import { TileWait } from "./tile_wait";
 import { TileMoveAbsolute } from "./tile_move_absolute";
@@ -14,9 +14,7 @@ import { TileWritePin } from "./tile_write_pin";
 import { TileExecuteScript } from "./tile_execute_script";
 import { TileTakePhoto } from "./tile_take_photo";
 import * as _ from "lodash";
-import {
-  CeleryNode, LegalSequenceKind, LegalArgString, If, Execute, Nothing
-} from "farmbot";
+import { CeleryNode, LegalArgString, If, Execute, Nothing } from "farmbot";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
@@ -95,12 +93,7 @@ export function updateStep(props: StepInputProps) {
     }
 
     seqCopy.body[index] = stepCopy;
-    if (equals(sequence.body.body, seqCopy.body)) {
-      console.log("equal => NO OP.");
-    } else {
-      console.log("Not equal => mutating.");
-      dispatch(overwrite(sequence, seqCopy));
-    }
+    dispatch(overwrite(sequence, seqCopy));
   };
 }
 
@@ -127,7 +120,7 @@ function numericNonsense(val: string, copy: CeleryNode, field: LegalArgString) {
   return _.assign(copy.args, { [field]: num });
 }
 
-export function renderCeleryNode(kind: LegalSequenceKind, props: StepParams) {
+export function renderCeleryNode(props: StepParams) {
   switch (props.currentStep.kind) {
     case "_if": return <TileIf {...props} />;
     case "execute_script": return <TileExecuteScript {...props} />;

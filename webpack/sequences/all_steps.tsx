@@ -1,6 +1,6 @@
 import * as React from "react";
 import { TaggedSequence } from "../resources/tagged_resources";
-import { SequenceBodyItem, LegalSequenceKind } from "farmbot/dist";
+import { SequenceBodyItem } from "farmbot/dist";
 import { DropArea } from "../draggable/drop_area";
 import { StepDragger } from "../draggable/step_dragger";
 import { renderCeleryNode } from "./step_tiles/index";
@@ -21,7 +21,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
   render() {
     const {
       sequence, onDrop, dispatch, hardwareFlags, farmwareInfo
-     } = this.props;
+    } = this.props;
     const items = (sequence.body.body || [])
       .map((currentStep: SequenceBodyItem, index, arr) => {
         /** HACK: React's diff algorithm (probably?) can't keep track of steps
@@ -39,10 +39,10 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
             intent="step_move"
             draggerId={index}>
             <div>
-              {renderCeleryNode(currentStep.kind as LegalSequenceKind, {
+              {renderCeleryNode({
                 currentStep,
                 index,
-                dispatch: dispatch,
+                dispatch,
                 currentSequence: sequence,
                 resources: this.props.resources,
                 hardwareFlags,
