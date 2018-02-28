@@ -52,6 +52,7 @@ describe Api::SequencesController do
       expect { Sequence.find(s[:id]) }.to(raise_error(ActiveRecord::RecordNotFound))
     end
 
+    it 'prevents deletion of sequences that are in use by pin bindings'
     it 'does not destroy a sequence when in use by a sequence' do
       program = [
         {

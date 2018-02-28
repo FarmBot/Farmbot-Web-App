@@ -1,11 +1,11 @@
 module PinBindings
   class Destroy < Mutations::Command
     required do
-      model   :device, class: Device
+      model   :pin_binding, class: PinBinding
     end
 
     def execute
-      raise "TODO"
+      pin_binding.destroy! && ""
     end
   end
 end

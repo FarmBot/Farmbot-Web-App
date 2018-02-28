@@ -1,11 +1,5 @@
 import { trim } from "./util";
 
-/**
- * Seems like a better idea to keep content and tooltips centralized. If we have
- * the ability to keep the app safer from possible accidental breakages by
- * avoiding going into components for copy changes, why not right? ¯\_(ツ)_/¯
- */
-
 export namespace ToolTips {
 
   // Controls

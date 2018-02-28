@@ -17,10 +17,13 @@ module Api
     end
 
     def update
-      mutate PinBindings::Update.run(raw_json, device: current_device)
+      mutate PinBindings::Update.run(raw_json, update_params)
     end
 
 private
+    def update_params
+      @update_params ||= { device: current_device, pin_binding: pin_binding }
+    end
 
     def pin_bindings
       PinBinding.where(device: current_device)

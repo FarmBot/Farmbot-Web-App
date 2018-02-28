@@ -33,8 +33,8 @@ ActiveRecord::Schema.define(version: 20180228144634) do
 
   create_table "device_configs", force: :cascade do |t|
     t.bigint "device_id"
-    t.string "key"
-    t.string "value"
+    t.string "key", limit: 100
+    t.string "value", limit: 300
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["device_id"], name: "index_device_configs_on_device_id"
@@ -80,42 +80,6 @@ ActiveRecord::Schema.define(version: 20180228144634) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["device_id"], name: "index_farmware_installations_on_device_id"
-  end
-
-  create_table "farmware_manifest_arguments", force: :cascade do |t|
-    t.bigint "farmware_manifest_id"
-    t.string "value"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["farmware_manifest_id"], name: "index_farmware_manifest_arguments_on_farmware_manifest_id"
-  end
-
-  create_table "farmware_manifest_configs", force: :cascade do |t|
-    t.bigint "farmware_manifest_id"
-    t.string "name"
-    t.string "label"
-    t.string "value"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["farmware_manifest_id"], name: "index_farmware_manifest_configs_on_farmware_manifest_id"
-  end
-
-  create_table "farmware_manifests", force: :cascade do |t|
-    t.integer "quantity"
-    t.string "author"
-    t.string "description"
-    t.string "language"
-    t.string "min_os_version_major"
-    t.string "name"
-    t.string "path"
-    t.string "url"
-    t.string "uuid"
-    t.string "version"
-    t.string "zip"
-    t.bigint "device_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["device_id"], name: "index_farmware_manifests_on_device_id"
   end
 
   create_table "fbos_configs", force: :cascade do |t|
@@ -492,8 +456,6 @@ ActiveRecord::Schema.define(version: 20180228144634) do
   add_foreign_key "device_configs", "devices"
   add_foreign_key "edge_nodes", "sequences"
   add_foreign_key "farmware_installations", "devices"
-  add_foreign_key "farmware_manifest_arguments", "farmware_manifests"
-  add_foreign_key "farmware_manifest_configs", "farmware_manifests"
   add_foreign_key "log_dispatches", "devices"
   add_foreign_key "log_dispatches", "logs"
   add_foreign_key "peripherals", "devices"
