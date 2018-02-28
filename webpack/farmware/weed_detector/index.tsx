@@ -62,8 +62,8 @@ export class WeedDetector
         onDeletionClick={this.clearWeeds}
         deletionProgress={this.state.deletionProgress}
         onTest={this.props.dispatch(test)}
-        title={"Weed Detector"}
-        help={t(ToolTips.WEED_DETECTOR)}
+        title={t("Weed Detector")}
+        help={ToolTips.WEED_DETECTOR}
         docs={"farmware#section-camera-calibration"} />
       <WidgetBody>
         <Row>

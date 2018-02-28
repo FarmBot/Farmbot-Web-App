@@ -25,7 +25,7 @@ export function PinGuard(props: PinGuardProps) {
           <label>
             {t("Pin Number")}
           </label>
-          <SpacePanelToolTip tooltip={t(ToolTips.PIN_GUARD_PIN_NUMBER)} />
+          <SpacePanelToolTip tooltip={ToolTips.PIN_GUARD_PIN_NUMBER} />
         </Col>
         <Col xs={4}>
           <label>

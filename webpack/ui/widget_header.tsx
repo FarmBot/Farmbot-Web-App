@@ -17,7 +17,7 @@ export function WidgetHeader(props: WidgetHeaderProps) {
     {props.helpText &&
       <i className="fa fa-question-circle help-icon">
         <div className="help-text">
-          {props.helpText}
+          {t(props.helpText)}
           {props.docPage &&
             <a
               href={docLink(props.docPage)}

@@ -21,7 +21,7 @@ export function HomingRow(props: HomingRowProps) {
       <label>
         {t("HOMING")}
       </label>
-      <SpacePanelToolTip tooltip={t(ToolTips.HOMING)} />
+      <SpacePanelToolTip tooltip={ToolTips.HOMING} />
     </Col>
     {axisTrackingStatus(hardware)
       .map((row) => {
