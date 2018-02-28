@@ -19,7 +19,7 @@ export class CameraCalibration extends
     return <Widget className={classname}>
       <TitleBar
         title={t("Camera Calibration")}
-        help={t(ToolTips.CAMERA_CALIBRATION)}
+        help={ToolTips.CAMERA_CALIBRATION}
         docs={"farmware#section-weed-detector"}
         onCalibrate={this.props.dispatch(calibrate)}
         env={this.props.env} />
