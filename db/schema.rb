@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180227172811) do
+ActiveRecord::Schema.define(version: 20180228144634) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -246,6 +246,16 @@ ActiveRecord::Schema.define(version: 20180227172811) do
     t.index ["device_id"], name: "index_peripherals_on_device_id"
   end
 
+  create_table "pin_bindings", force: :cascade do |t|
+    t.bigint "device_id"
+    t.integer "pin_num"
+    t.bigint "sequence_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_pin_bindings_on_device_id"
+    t.index ["sequence_id"], name: "index_pin_bindings_on_sequence_id"
+  end
+
   create_table "plants", id: :serial, force: :cascade do |t|
     t.string "openfarm_slug", limit: 280, default: "50", null: false
     t.datetime "created_at"
@@ -449,6 +459,8 @@ ActiveRecord::Schema.define(version: 20180227172811) do
   add_foreign_key "log_dispatches", "devices"
   add_foreign_key "log_dispatches", "logs"
   add_foreign_key "peripherals", "devices"
+  add_foreign_key "pin_bindings", "devices"
+  add_foreign_key "pin_bindings", "sequences"
   add_foreign_key "points", "devices"
   add_foreign_key "primary_nodes", "sequences"
   add_foreign_key "sensor_readings", "devices"

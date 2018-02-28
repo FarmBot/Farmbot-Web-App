@@ -78,7 +78,8 @@ export function emptyState(): RestResources {
         SensorReading: [],
         Sensor: [],
         FarmwareInstallation: [],
-        DeviceConfig: []
+        DeviceConfig: [],
+        PinBinding: []
       },
       byKindAndId: {},
       references: {}
@@ -135,6 +136,7 @@ export let resourceReducer = generateReducer
         case "FbosConfig":
         case "Sensor":
         case "FarmwareInstallation":
+        case "PinBinding":
           reindexResource(s.index, resource);
           dontTouchThis(resource);
           s.index.references[resource.uuid] = resource;
@@ -168,6 +170,7 @@ export let resourceReducer = generateReducer
       case "Image":
       case "Sensor":
       case "FarmwareInstallation":
+      case "PinBinding":
         removeFromIndex(s.index, resource);
         break;
       default:

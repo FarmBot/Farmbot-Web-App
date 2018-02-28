@@ -8,6 +8,7 @@ describe CeleryScript::FetchCelery do
   __NOTHING______ = "nothing"
 
   it "Makes JSON that is identical to the legacy implementation - part 1" do
+    PinBinding.destroy_all
     Sequence.all.destroy_all
     expect(Sequence.count).to eq(0)
     expect(PrimaryNode.count).to eq(0)

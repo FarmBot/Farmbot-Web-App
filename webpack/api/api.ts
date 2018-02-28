@@ -123,13 +123,13 @@ export class API {
   get sensorReadingPath() { return `${this.baseUrl}/api/sensor_readings`; }
   /** /api/sensor_readings */
   get sensorPath() { return `${this.baseUrl}/api/sensors`; }
+  /** /api/device_configs/:id */
+  get deviceConfigPath() { return `${this.baseUrl}/api/device_configs`; }
+  /** /api/pin_bindings/:id */
+  get pinBindingPath() { return `${this.baseUrl}/api/pin_bindings`; }
   /** /api/farmware_installations/:id */
   get farmwareInstallationPath() {
     return `${this.baseUrl}/api/farmware_installations`;
-  }
-  /** /api/device_configs/:id */
-  get deviceConfigPath() {
-    return `${this.baseUrl}/api/device_configs`;
   }
   /** /api/users/verify/:token */
   verificationPath = (token: string) => ("/api/users/verify/" + token);
