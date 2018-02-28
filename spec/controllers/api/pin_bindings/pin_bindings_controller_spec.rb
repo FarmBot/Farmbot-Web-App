@@ -46,6 +46,16 @@ describe Api::PinBindingsController do
       end
     end
 
+    it 'weed out bad sequence ids' do
+      sign_in user
+      s     = FactoryBot.create(:sequence, device: device)
+      input = { pin_num: 1, sequence_id: 0 }
+      b4    = PinBinding.count
+      post :create, body: input.to_json, params: { format: :json}
+      expect(response.status).to eq(422)
+      expect(json[:sequence_id]).to eq("Sequence ID is not valid")
+    end
+
     it 'updates pin bindings' do
       sign_in user
       s     = FactoryBot.create(:sequence, device: device)
