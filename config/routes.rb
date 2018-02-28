@@ -49,7 +49,6 @@ FarmBot::Application.routes.draw do
     put   "/device/:id"          => "devices#update",         as: :put_device_redirect
     put   "/password_resets"     => "password_resets#update", as: :whatever
     put   "/users/:id"           => "users#update",           as: :put_users_redirect
-    put   "/users/verify/:token" => "users#verify",           as: :users_verify
     put   "/webcam_feed/:id"     => "webcam_feeds#update",    as: :put_webcam_feed_redirect
   end
 
@@ -58,13 +57,13 @@ FarmBot::Application.routes.draw do
   # =======================================================================
   # NON-API (USER FACING) URLS:
   # =======================================================================
-  get  "/"             => "dashboard#front_page",   as: :front_page
-  get  "/app"          => "dashboard#main_app",     as: :dashboard
-  get  "/tos_update"   => "dashboard#tos_update",   as: :tos_update
-  post "/csp_reports"  => "dashboard#csp_reports",  as: :csp_report
+  get  "/"            => "dashboard#front_page",   as: :front_page
+  get  "/app"         => "dashboard#main_app",     as: :dashboard
+  get  "/tos_update"  => "dashboard#tos_update",   as: :tos_update
+  post "/csp_reports" => "dashboard#csp_reports",  as: :csp_report
 
-  get "/password_reset/*token" => "dashboard#password_reset", as: :password_reset
-  get "/verify" => "dashboard#verify", as: :verify
+  get "/password_reset/:token" => "dashboard#password_reset", as: :password_reset
+  get "/verify/:token"         => "dashboard#verify",         as: :verify_user
 
   match "/app/*path", to: "dashboard#main_app", via: :all, constraints: { format: "html" }
 end

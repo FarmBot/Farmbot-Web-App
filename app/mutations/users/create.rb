@@ -27,7 +27,7 @@ module Users
                  password:              password,
                  password_confirmation: password_confirmation,
                  name:                  name }
-      params[:agreed_to_terms_at] = Time.now if User::ENFORCE_TOS
+      params[:agreed_to_terms_at] = Time.now
       user   = User.create!(params)
       device = Devices::Create.run!(user: user)
       UserMailer

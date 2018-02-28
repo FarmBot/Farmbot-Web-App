@@ -5,7 +5,7 @@ class UserMailer < ApplicationMailer
   def welcome_email(user)
     @user      = user
     @user_name = user.name
-    @the_url   = reset_url(user)
+    @the_url   = UserMailer.reset_url(user)
     mail(to: @user.email, subject: 'Welcome to The FarmBot Web App!')
   end
 
@@ -21,15 +21,13 @@ class UserMailer < ApplicationMailer
   def email_update(user)
     raise NOTHING_TO_CONFIRM unless user.unconfirmed_email.present?
     @user    = user
-    @the_url = reset_url(user)
+    @the_url = UserMailer.reset_url(user)
 
     mail(to:      @user.unconfirmed_email,
          subject: 'FarmBot Email Update Instructions')
   end
 
-  private
-
-  def reset_url(user)
+  def self.reset_url(user)
     RESET_PATH % [$API_URL, user.confirmation_token]
   end
 end

@@ -27,6 +27,10 @@ class DashboardController < ApplicationController
     end
   end
 
+  def verify
+    raise "TODO WIP"
+  end
+
   # Endpoint reports CSP violations, indicating a possible security problem.
   def csp_reports
     payload = request.body.read || ""
