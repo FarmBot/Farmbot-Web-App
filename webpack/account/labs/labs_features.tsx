@@ -11,7 +11,7 @@ export class LabsFeatures extends React.Component<{}, {}> {
   render() {
     return <Widget className="peripherals-widget">
       <WidgetHeader title={t("App Settings")}
-        helpText={t(ToolTips.LABS)}>
+        helpText={ToolTips.LABS}>
       </WidgetHeader>
       <WidgetBody>
         <LabsFeaturesList onToggle={(x) => {

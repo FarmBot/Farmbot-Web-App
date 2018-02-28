@@ -29,7 +29,7 @@ export class ConnectivityPanel extends React.Component<Props, ConnectivityState>
     return <Widget className="connectivity-widget">
       <WidgetHeader
         title={t("Connectivity")}
-        helpText={t(ToolTips.CONNECTIVITY)}>
+        helpText={ToolTips.CONNECTIVITY}>
         <RetryBtn
           status={this.props.status}
           onClick={this.props.onRefresh}
