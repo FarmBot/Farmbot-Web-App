@@ -9,7 +9,8 @@ import {
   ToolSlotPointer,
   SensorReading,
   Sensor,
-  DeviceConfig
+  DeviceConfig,
+  PinBinding
 } from "../interfaces";
 import { Peripheral } from "../controls/peripherals/interfaces";
 import { User } from "../auth/interfaces";
@@ -36,6 +37,7 @@ export type ResourceName =
   | "Image"
   | "Log"
   | "Peripheral"
+  | "PinBinding"
   | "Plant"
   | "Point"
   | "Regimen"
@@ -45,7 +47,8 @@ export type ResourceName =
   | "Tool"
   | "User"
   | "WebAppConfig"
-  | "WebcamFeed";
+  | "WebcamFeed"
+  | "PinBinding";
 
 export interface TaggedResourceBase {
   kind: ResourceName;
@@ -106,8 +109,10 @@ export type TaggedResource =
   | TaggedUser
   | TaggedWebAppConfig
   | TaggedWebcamFeed
-  | TaggedFarmwareInstallation;
+  | TaggedFarmwareInstallation
+  | TaggedPinBinding;
 
+export type TaggedPinBinding = Resource<"PinBinding", PinBinding>;
 export type TaggedDeviceConfig = Resource<"DeviceConfig", DeviceConfig>;
 export type TaggedRegimen = Resource<"Regimen", Regimen>;
 export type TaggedTool = Resource<"Tool", Tool>;

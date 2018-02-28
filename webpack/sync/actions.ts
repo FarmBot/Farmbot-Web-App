@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Log, Point, SensorReading, Sensor, DeviceConfig } from "../interfaces";
+import { Log, Point, SensorReading, Sensor, DeviceConfig, PinBinding } from "../interfaces";
 import { API } from "../api";
 import { Sequence } from "../sequences/interfaces";
 import { Tool } from "../tools/interfaces";
@@ -57,4 +57,5 @@ export function fetchSyncData(dispatch: Function) {
   fetch<FarmwareInstallation[]>("FarmwareInstallation",
     API.current.farmwareInstallationPath);
   fetch<DeviceConfig[]>("DeviceConfig", API.current.deviceConfigPath);
+  fetch<PinBinding[]>("PinBinding", API.current.pinBindingPath);
 }

@@ -21,6 +21,12 @@ export interface SelectOptionsParams {
   z?: number;
 }
 
+export interface PinBinding {
+  id?: number;
+  sequence_id: number;
+  pin_num: number;
+}
+
 export interface Sensor {
   id?: number;
   pin: number | undefined;
