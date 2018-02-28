@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180226164100) do
+ActiveRecord::Schema.define(version: 20180227172811) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,6 +29,15 @@ ActiveRecord::Schema.define(version: 20180226164100) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
+  end
+
+  create_table "device_configs", force: :cascade do |t|
+    t.bigint "device_id"
+    t.string "key", limit: 100
+    t.string "value", limit: 300
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_device_configs_on_device_id"
   end
 
   create_table "devices", id: :serial, force: :cascade do |t|
@@ -434,6 +443,7 @@ ActiveRecord::Schema.define(version: 20180226164100) do
     t.index ["device_id"], name: "index_webcam_feeds_on_device_id"
   end
 
+  add_foreign_key "device_configs", "devices"
   add_foreign_key "edge_nodes", "sequences"
   add_foreign_key "farmware_installations", "devices"
   add_foreign_key "log_dispatches", "devices"

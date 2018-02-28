@@ -77,7 +77,8 @@ export function emptyState(): RestResources {
         WebAppConfig: [],
         SensorReading: [],
         Sensor: [],
-        FarmwareInstallation: []
+        FarmwareInstallation: [],
+        DeviceConfig: []
       },
       byKindAndId: {},
       references: {}

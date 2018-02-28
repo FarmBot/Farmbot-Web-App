@@ -74,7 +74,7 @@ export class SequencesList extends
       uuid: "REDUCER_MUST_CHANGE_THIS",
       specialStatus: SpecialStatus.SAVED,
       body: {
-        name: "new sequence " + (this.props.sequences.length),
+        name: t("new sequence {{ num }}", { num: this.props.sequences.length }),
         args: {
           version: -999,
           locals: { kind: "scope_declaration", args: {} },

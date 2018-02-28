@@ -26,9 +26,5 @@ module Auth
     def claims
       @claims ||= SessionToken.decode!(jwt.split(" ").last).unencoded
     end
-
-    def nope
-      add_error :jwt, :decode_error, "JSON Web Token is not valid."
-    end
   end
 end

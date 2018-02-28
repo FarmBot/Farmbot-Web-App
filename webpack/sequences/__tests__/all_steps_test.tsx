@@ -4,6 +4,9 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import { shallow } from "enzyme";
 import { TaggedSequence, SpecialStatus } from "../../resources/tagged_resources";
 import { maybeTagSteps } from "../../resources/sequence_tagging";
+import { TileMoveRelative } from "../step_tiles/tile_move_relative";
+import { TileReadPin } from "../step_tiles/tile_read_pin";
+import { TileWritePin } from "../step_tiles/tile_write_pin";
 
 describe("<AllSteps/>", () => {
   const TEST_CASE = {
@@ -59,12 +62,9 @@ describe("<AllSteps/>", () => {
       onDrop={() => { }}
       dispatch={jest.fn()}
       resources={buildResourceIndex([]).index} />);
-    [
-      "TileMoveRelative",
-      "TileReadPin",
-      "TileWritePin"
-    ].map(q => {
-      expect(el.find(q).length).toEqual(1);
-    });
+    [TileMoveRelative, TileReadPin, TileWritePin]
+      .map(q => {
+        expect(el.find(q).length).toEqual(1);
+      });
   });
 });

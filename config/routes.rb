@@ -2,21 +2,21 @@ FarmBot::Application.routes.draw do
   namespace :api, defaults: {format: :json}, constraints: { format: "json" } do
     # Standard API Resources:
     {
-      corpuses:         [:index, :show],
-      farm_events:      [:create, :destroy, :index, :update],
-      farmware_installations:
-                        [:create, :destroy, :index],
-      images:           [:create, :destroy, :index, :show],
-      logs:             [:create, :destroy, :index],
-      password_resets:  [:create, :update],
-      peripherals:      [:create, :destroy, :index, :update],
-      sensors:          [:create, :destroy, :index, :update],
-      regimens:         [:create, :destroy, :index, :update],
-      sensor_readings:  [:create, :destroy, :index, :show],
-      sequences:        [:create, :destroy, :index, :show, :update],
-      tools:            [:create, :destroy, :index, :show, :update],
-      webcam_feeds:     [:create, :destroy, :index, :show, :update],
-    }.to_a.map{|(name, only)| resources name, only: only}
+      corpuses:               [:index, :show],
+      farm_events:            [:create, :destroy, :index, :update],
+      farmware_installations: [:create, :destroy, :index],
+      images:                 [:create, :destroy, :index, :show],
+      logs:                   [:create, :destroy, :index],
+      password_resets:        [:create, :update],
+      peripherals:            [:create, :destroy, :index, :update],
+      sensors:                [:create, :destroy, :index, :update],
+      regimens:               [:create, :destroy, :index, :update],
+      sensor_readings:        [:create, :destroy, :index, :show],
+      sequences:              [:create, :destroy, :index, :show, :update],
+      tools:                  [:create, :destroy, :index, :show, :update],
+      webcam_feeds:           [:create, :destroy, :index, :show, :update],
+      device_configs:         [:create, :destroy, :index, :update],
+    }.to_a.map { |(name, only)| resources name, only: only }
 
     # Singular API Resources:
     {

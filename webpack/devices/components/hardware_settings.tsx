@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import { MCUFactoryReset, bulkToggleControlPanel } from "../actions";
 import { Widget, WidgetHeader, WidgetBody, SaveBtn } from "../../ui/index";
 import { HardwareSettingsProps } from "../interfaces";
@@ -21,7 +22,7 @@ export class HardwareSettings extends
     const { bot, dispatch, sourceFbosConfig } = this.props;
     const { sync_status } = this.props.bot.hardware.informational_settings;
     return <Widget className="hardware-widget">
-      <WidgetHeader title="Hardware" helpText={ToolTips.HW_SETTINGS}>
+      <WidgetHeader title={t("Hardware")} helpText={ToolTips.HW_SETTINGS}>
         <MustBeOnline
           hideBanner={true}
           syncStatus={sync_status}
@@ -39,12 +40,12 @@ export class HardwareSettings extends
         <button
           className={"fb-button gray no-float"}
           onClick={() => dispatch(bulkToggleControlPanel(true))}>
-          Expand All
+          {t("Expand All")}
           </button>
         <button
           className={"fb-button gray no-float"}
           onClick={() => dispatch(bulkToggleControlPanel(false))}>
-          Collapse All
+          {t("Collapse All")}
           </button>
         <MustBeOnline
           networkState={this.props.botToMqttStatus}

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import { AddRegimenProps } from "../interfaces";
 import { push } from "../../history";
 import { TaggedRegimen, SpecialStatus } from "../../resources/tagged_resources";
@@ -10,7 +11,7 @@ function emptyRegimen(length: number): TaggedRegimen {
     uuid: "NEVER",
     specialStatus: SpecialStatus.DIRTY,
     body: {
-      name: ("New regimen " + (length++)),
+      name: (t("New regimen ") + (length++)),
       color: "gray",
       regimen_items: []
     }

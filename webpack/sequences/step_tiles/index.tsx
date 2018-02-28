@@ -14,9 +14,7 @@ import { TileWritePin } from "./tile_write_pin";
 import { TileExecuteScript } from "./tile_execute_script";
 import { TileTakePhoto } from "./tile_take_photo";
 import * as _ from "lodash";
-import {
-  CeleryNode, LegalSequenceKind, LegalArgString, If, Execute, Nothing
-} from "farmbot";
+import { CeleryNode, LegalArgString, If, Execute, Nothing } from "farmbot";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
@@ -122,7 +120,7 @@ function numericNonsense(val: string, copy: CeleryNode, field: LegalArgString) {
   return _.assign(copy.args, { [field]: num });
 }
 
-export function renderCeleryNode(kind: LegalSequenceKind, props: StepParams) {
+export function renderCeleryNode(props: StepParams) {
   switch (props.currentStep.kind) {
     case "_if": return <TileIf {...props} />;
     case "execute_script": return <TileExecuteScript {...props} />;

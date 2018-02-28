@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import { destroy, edit } from "../../api/crud";
 import { PeripheralFormProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
@@ -19,7 +20,7 @@ export function PeripheralForm(props: PeripheralFormProps) {
         }}
         labelPlaceholder="Name"
         value={(p.body.pin || "").toString()}
-        valuePlaceholder="Pin #"
+        valuePlaceholder={t("Pin #")}
         onValueChange={(e) => {
           const { value } = e.currentTarget;
           const update: Partial<typeof p.body> = { pin: parseInt(value, 10) };

@@ -31,17 +31,17 @@ export type Operator = "lhs"
   | "_else";
 
 export const LHSOptions: DropDownItem[] = [
-  { value: "x", label: "X position" },
-  { value: "y", label: "Y Position" },
-  { value: "z", label: "Z position" }
-].concat(range(0, 70).map(x => ({ value: `pin${x}`, label: `Pin ${x}` })));
+  { value: "x", label: t("X position") },
+  { value: "y", label: t("Y position") },
+  { value: "z", label: t("Z position") }
+].concat(range(0, 70).map(x => ({ value: `pin${x}`, label: t("Pin ")+`${x}` })));
 
 export const operatorOptions: DropDownItem[] = [
-  { value: "<", label: "is less than" },
-  { value: ">", label: "is greater than" },
-  { value: "is", label: "is equal to" },
-  { value: "not", label: "is not equal to" },
-  { value: "is_undefined", label: "is unknown" }
+  { value: "<", label: t("is less than") },
+  { value: ">", label: t("is greater than") },
+  { value: "is", label: t("is equal to") },
+  { value: "not", label: t("is not equal to") },
+  { value: "is_undefined", label: t("is unknown") }
 ];
 
 export function seqDropDown(i: ResourceIndex) {
@@ -67,7 +67,7 @@ export function initialValue(input: Execute | Nothing, index: ResourceIndex) {
         throw new Error("Failed seq id type assertion.");
       }
     case "nothing":
-      return { label: "None", value: 0 };
+      return { label: t("None"), value: 0 };
     default:
       throw new Error("Only _else or _then");
   }

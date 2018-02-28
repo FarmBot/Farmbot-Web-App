@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import { Link } from "react-router";
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
@@ -26,7 +27,7 @@ export const NavLinks = (props: NavLinksProps) => {
           key={link.slug}
           onClick={props.close("mobileMenuOpen")}>
           <i className={`fa fa-${link.icon}`} />
-          {link.name}
+          {t(link.name)}
         </Link>;
       })}
     </div>

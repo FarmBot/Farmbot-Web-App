@@ -1,3 +1,4 @@
+require "spec_helper"
 
 describe Tool do
   describe 'names' do

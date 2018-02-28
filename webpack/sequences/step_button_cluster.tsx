@@ -82,7 +82,7 @@ export function StepButtonCluster({ dispatch, current }: StepButtonProps) {
       step={{
         kind: "send_message",
         args: {
-          message: "FarmBot is at position {{ x }}, {{ y }}, {{ z }}.",
+          message: t("FarmBot is at position ") + "{{ x }}, {{ y }}, {{ z }}.",
           message_type: "success"
         }
       }}

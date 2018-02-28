@@ -27,7 +27,7 @@ export class ToolForm extends React.Component<ToolFormProps, {}> {
   }
 
   emptyTool = (): TaggedTool => {
-    return this.taggedTool("Tool " + (this.props.tools.length + 1));
+    return this.taggedTool(t("Tool ") + (this.props.tools.length + 1));
   }
 
   stockTools = (dispatch: Function) => {
@@ -35,12 +35,12 @@ export class ToolForm extends React.Component<ToolFormProps, {}> {
       dispatch(init(this.taggedTool(name)));
     };
 
-    newTool("Seeder");
-    newTool("Watering Nozzle");
-    newTool("Weeder");
-    newTool("Soil Sensor");
-    newTool("Seed Bin");
-    newTool("Seed Tray");
+    newTool(t("Seeder"));
+    newTool(t("Watering Nozzle"));
+    newTool(t("Weeder"));
+    newTool(t("Soil Sensor"));
+    newTool(t("Seed Bin"));
+    newTool(t("Seed Tray"));
   }
 
   render() {
@@ -69,7 +69,7 @@ export class ToolForm extends React.Component<ToolFormProps, {}> {
           className="fb-button green"
           onClick={() => { this.stockTools(dispatch); }}>
           <i className="fa fa-plus" style={{ marginRight: "0.5rem" }} />
-          Stock Tools
+          {t("Stock Tools")}
         </button>
       </WidgetHeader>
       <WidgetBody>
