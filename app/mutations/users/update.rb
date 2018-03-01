@@ -37,7 +37,7 @@ private
 
     def set_unconfirmed_email
       return if skip_email_stuff
-      user.reset_confirmation_token
+      # user.reset_confirmation_token
       user.unconfirmed_email = email
       user.save!
       UserMailer.email_update(user).deliver_later

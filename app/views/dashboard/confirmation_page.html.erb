@@ -1,0 +1,9 @@
+<html>
+  <body>
+   You are being <%= link_to "redirected", app_landing_page_path %>.
+   <script>
+     localStorage.session = JSON.stringify(<%= raw @token %>)
+     window.location.replace("<%= app_landing_page_path %>");
+   </script>
+  </body>
+</html>

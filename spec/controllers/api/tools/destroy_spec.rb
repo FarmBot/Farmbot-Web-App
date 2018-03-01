@@ -22,6 +22,7 @@ describe Api::ToolsController do
     end
 
     it 'does not destroy a tool when in use by a sequence' do
+      PinBinding.destroy_all
       Sequence.destroy_all
       Sequences::Create.run!(name:   "Dep. tracking",
                              device: user.device,
