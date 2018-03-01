@@ -23,11 +23,13 @@ describe Api::PointsController do
 
     it 'creates a plant' do
       sign_in user
+      time = (DateTime.now - 1.day).to_json
       p = { x: 23,
             y: 45,
             name: "My Lettuce",
             pointer_type: "Plant",
-            openfarm_slug: "limestone-lettuce" }
+            openfarm_slug: "limestone-lettuce",
+            planted_at: time }
       post :create, body: p.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       plant = Plant.last
