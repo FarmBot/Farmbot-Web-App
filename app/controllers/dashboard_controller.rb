@@ -28,12 +28,10 @@ class DashboardController < ApplicationController
   end
 
   def verify
-    user = User.find_by!(confirmation_token: params.fetch(:token)) or raise "X"
-    user.update_attributes!(confirmation_token: SecureRandom.uuid,
-                            confirmed_at:       Time.now)
-    @token = SessionToken.as_json(user,
-                                  AbstractJwtToken::HUMAN_AUD,
-                                  Gem::Version.new("99.99.99")).to_json
+    user   = params[:token] && User.find_by!(confirmation_token: params[:token])
+    # Two use cases:                  re-confirmation   Email change
+    klass  = user.unconfirmed_email? ? Users::Reverify : Users::Verify
+    @token = klass.run!(user: user).to_json
     render :confirmation_page, layout: false
   end
 

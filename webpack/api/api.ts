@@ -131,6 +131,4 @@ export class API {
   get farmwareInstallationPath() {
     return `${this.baseUrl}/api/farmware_installations`;
   }
-  /** /api/users/verify/:token */
-  verificationPath = (token: string) => ("/api/users/verify/" + token);
 }
