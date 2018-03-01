@@ -52,7 +52,17 @@ describe Api::SequencesController do
       expect { Sequence.find(s[:id]) }.to(raise_error(ActiveRecord::RecordNotFound))
     end
 
-    it 'prevents deletion of sequences that are in use by pin bindings'
+    it 'prevents deletion of sequences that are in use by pin bindings' do
+      sign_in user
+      PinBindings::Create
+        .run!(device: user.device,
+              sequence_id: sequence.id,
+              pin_num: 23)
+      delete :destroy, params: { id: sequence.id }
+      expect(response.status).to eq(422)
+      expect(json[:sequence]).to eq("The following pin bindings are still relying on this sequence: pin 23")
+    end
+
     it 'does not destroy a sequence when in use by a sequence' do
       program = [
         {
