@@ -28,7 +28,14 @@ class DashboardController < ApplicationController
   end
 
   def verify
-    raise "TODO WIP"
+    # user = User.find_by!(confirmation_token: params.fetch(:token)) or raise "X"
+    user = User.first
+    user.update_attributes!(confirmation_token: SecureRandom.uuid,
+                            confirmed_at:       Time.now)
+    @token = SessionToken.as_json(user,
+                                  AbstractJwtToken::HUMAN_AUD,
+                                  Gem::Version.new("99.99.99")).to_json
+    render :confirmation_page, layout: false
   end
 
   # Endpoint reports CSP violations, indicating a possible security problem.

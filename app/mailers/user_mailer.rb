@@ -1,5 +1,5 @@
 class UserMailer < ApplicationMailer
-  RESET_PATH         = "http:%s/verify?token=%s"
+  RESET_PATH         = "http:%s/verify/%s"
   NOTHING_TO_CONFIRM = "FAILED EMAIL CHANGE"
   # Make sure the user gave us a valid email.
   def welcome_email(user)

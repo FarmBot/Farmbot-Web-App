@@ -57,10 +57,11 @@ FarmBot::Application.routes.draw do
   # =======================================================================
   # NON-API (USER FACING) URLS:
   # =======================================================================
-  get  "/"            => "dashboard#front_page",   as: :front_page
-  get  "/app"         => "dashboard#main_app",     as: :dashboard
-  get  "/tos_update"  => "dashboard#tos_update",   as: :tos_update
-  post "/csp_reports" => "dashboard#csp_reports",  as: :csp_report
+  get  "/"             => "dashboard#front_page",   as: :front_page
+  get  "/app"          => "dashboard#main_app",     as: :dashboard
+  get  "/app/controls" => "dashboard#main_app",     as: :app_landing_page
+  get  "/tos_update"   => "dashboard#tos_update",   as: :tos_update
+  post "/csp_reports"  => "dashboard#csp_reports",  as: :csp_report
 
   get "/password_reset/:token" => "dashboard#password_reset", as: :password_reset
   get "/verify/:token"         => "dashboard#verify",         as: :verify_user
