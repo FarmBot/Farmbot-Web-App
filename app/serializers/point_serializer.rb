@@ -2,6 +2,7 @@ class PointSerializer < ActiveModel::Serializer
   attributes  :id, :created_at, :updated_at, :device_id, :meta, :name,
               :pointer_type, :radius, :x, :y, :z
   attribute :openfarm_slug,     if: :plant?
+  attribute :planted_at,        if: :plant?
   attribute :tool_id,           if: :tool_slot?
   attribute :pullout_direction, if: :tool_slot?
 
@@ -19,6 +20,10 @@ class PointSerializer < ActiveModel::Serializer
 
   def openfarm_slug
     object.pointer.openfarm_slug
+  end
+
+  def planted_at
+    object.pointer.planted_at
   end
 
   def pullout_direction

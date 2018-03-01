@@ -117,6 +117,7 @@ interface BasePoint {
 export interface PlantPointer extends BasePoint {
   openfarm_slug: string;
   pointer_type: "Plant";
+  planted_at?: string;
 }
 
 export enum ToolPulloutDirection {
