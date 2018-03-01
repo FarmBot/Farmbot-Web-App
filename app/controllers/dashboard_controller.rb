@@ -28,8 +28,7 @@ class DashboardController < ApplicationController
   end
 
   def verify
-    # user = User.find_by!(confirmation_token: params.fetch(:token)) or raise "X"
-    user = User.first
+    user = User.find_by!(confirmation_token: params.fetch(:token)) or raise "X"
     user.update_attributes!(confirmation_token: SecureRandom.uuid,
                             confirmed_at:       Time.now)
     @token = SessionToken.as_json(user,
