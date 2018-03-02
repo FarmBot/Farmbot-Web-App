@@ -25,7 +25,7 @@ export const buildIndexer =
     return function (index: ResourceIndex, ) {
       const noop: MapperFn<T> = (i) => i;
       const output: CowardlyDictionary<T> = {};
-      const uuids = index.byKind.Sequence;
+      const uuids = index.byKind[kind];
       const m = mapper || noop;
       uuids.map(uuid => {
         assertUuid(kind, uuid);
