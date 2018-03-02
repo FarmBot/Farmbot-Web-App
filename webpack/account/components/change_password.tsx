@@ -19,21 +19,13 @@ interface PasswordForm {
   password: string;
 }
 
-interface ChangePWState {
-  status: SpecialStatus;
-  form: PasswordForm
-}
-const EMPTY_FORM = {
-  new_password: "",
-  new_password_confirmation: "",
-  password: ""
-};
+interface ChangePWState { status: SpecialStatus; form: PasswordForm }
+
+const EMPTY_FORM =
+  ({ new_password: "", new_password_confirmation: "", password: "" });
 
 export class ChangePassword extends React.Component<{}, ChangePWState> {
-  state: ChangePWState = {
-    status: SpecialStatus.SAVED,
-    form: EMPTY_FORM
-  };
+  state: ChangePWState = { status: SpecialStatus.SAVED, form: EMPTY_FORM };
 
   /** Set the `status` flag to `undefined`, but only if the form is empty.
    * Useful when the user manually clears the form. */
