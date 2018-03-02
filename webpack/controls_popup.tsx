@@ -5,12 +5,12 @@ import { Xyz, BotPosition } from "./devices/interfaces";
 import { McuParams } from "farmbot";
 import { getDevice } from "./device";
 
-export interface State {
+interface State {
   isOpen: boolean;
   stepSize: number;
 }
 
-export interface Props {
+interface Props {
   dispatch: Function;
   axisInversion: Record<Xyz, boolean>;
   botPosition: BotPosition;
