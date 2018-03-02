@@ -14,6 +14,7 @@ function calculateAxialLengths(props: JogMovementControlsProps) {
     z: _(mp.movement_axis_nr_steps_z, mp.movement_step_per_mm_z),
   };
 }
+
 export function buildDirectionProps(props: JogMovementControlsProps) {
   const { location_data, mcu_params } = props.bot.hardware;
   const botLocationData = validBotLocationData(location_data);
