@@ -39,19 +39,6 @@ export const attachAppToDom: Callback = (err, t) => {
 
 export class RootComponent extends React.Component<RootComponentProps, {}> {
 
-  requireAuth(_discard: RouterState, replace: RedirectFunction) {
-    const { store } = this.props;
-    if (Session.fetchStoredToken()) { // has a previous session in cache
-      if (store.getState().auth) { // Has session, logged in.
-        return;
-      } else { // Has session but not logged in (returning visitor).
-        store.dispatch(ready());
-      }
-    } else { // Not logged in yet.
-      Session.clear();
-    }
-  }
-
   /** These methods are a way to determine how to load certain modules
    * based on the device (mobile or desktop) for optimization/css purposes.
    * Open to revision.
