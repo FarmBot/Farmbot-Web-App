@@ -63,7 +63,7 @@ FarmBot::Application.routes.draw do
   get  "/tos_update"   => "dashboard#tos_update",   as: :tos_update
   post "/csp_reports"  => "dashboard#csp_reports",  as: :csp_report
 
-  get "/password_reset/:token" => "dashboard#password_reset", as: :password_reset
+  get "/password_reset/*token" => "dashboard#password_reset", as: :password_reset
   get "/verify/:token"         => "dashboard#verify",         as: :verify_user
 
   match "/app/*path", to: "dashboard#main_app", via: :all, constraints: { format: "html" }
