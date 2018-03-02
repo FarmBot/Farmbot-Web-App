@@ -8,9 +8,10 @@ jest.mock("../../../../device", () => ({
 import * as React from "react";
 import { MotorsProps } from "../../interfaces";
 import { bot } from "../../../../__test_support__/fake_state/bot";
-import { Motors, StepsPerMmSettings } from "../motors";
+import { Motors } from "../motors";
 import { render, shallow, mount } from "enzyme";
 import { McuParamName } from "farmbot";
+import { StepsPerMmSettings } from "../steps_per_mm_settings";
 
 describe("<Motors/>", () => {
   beforeEach(function () {
@@ -28,7 +29,7 @@ describe("<Motors/>", () => {
   };
 
   it("renders the base case", () => {
-    const el = render(<Motors {...fakeProps() } />);
+    const el = render(<Motors {...fakeProps()} />);
     const txt = el.text();
     [ // Not a whole lot to test here....
       "Enable 2nd X Motor",
