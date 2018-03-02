@@ -12,6 +12,7 @@ import { Motors } from "../motors";
 import { render, shallow, mount } from "enzyme";
 import { McuParamName } from "farmbot";
 import { StepsPerMmSettings } from "../steps_per_mm_settings";
+import { NumericMCUInputGroup } from "../../numeric_mcu_input_group";
 
 describe("<Motors/>", () => {
   beforeEach(function () {
@@ -89,12 +90,11 @@ describe("<StepsPerMmSettings/>", () => {
     expect(firstInputProps.setting).toBe("steps_per_mm_x");
   });
 
-  it("renders mcu settings", () => {
+  fit("renders mcu settings", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.firmware_version = "5.0.5R";
     const wrapper = shallow(<StepsPerMmSettings {...p} />);
-    const firstInputProps = wrapper.find("NumericMCUInputGroup")
-      .first().props();
+    const firstInputProps = wrapper.find(NumericMCUInputGroup).first().props();
     expect(firstInputProps.x).toBe("movement_step_per_mm_x");
   });
 });
