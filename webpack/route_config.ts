@@ -11,9 +11,6 @@ function maybeReplaceDesignerModules(next: RouterState, replace: RedirectFunctio
   }
 }
 
-const controlsRoute =
-  page("app/controls", async () => (await import("./controls/controls")).Controls);
-
 function page(path: string, getter: () => Promise<React.ReactType>) {
   return {
     path,
@@ -24,6 +21,8 @@ function page(path: string, getter: () => Promise<React.ReactType>) {
     }
   };
 }
+const controlsRoute =
+  page("app/controls", async () => (await import("./controls/controls")).Controls);
 
 const designerRoutes = {
   path: "app/designer",
