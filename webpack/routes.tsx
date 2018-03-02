@@ -43,7 +43,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
    * based on the device (mobile or desktop) for optimization/css purposes.
    * Open to revision.
    */
-  maybeReplaceDesignerModules(next: RouterState, replace: RedirectFunction) {
+  private maybeReplaceDesignerModules(next: RouterState, replace: RedirectFunction) {
     if (next.location.pathname === "/app/designer") {
       replace(`${next.location.pathname}/plants`);
     }
@@ -60,7 +60,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
     /app/404            => 404
   */
 
-  routes = {
+  private routes = {
     component: App,
     indexRoute: controlsRoute,
     childRoutes: [

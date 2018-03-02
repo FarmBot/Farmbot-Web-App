@@ -24,7 +24,7 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
     stepSize: 100
   };
 
-  toggle = (property: keyof State) => () =>
+  private toggle = (property: keyof State) => () =>
     this.setState({ [property]: !this.state[property] });
 
   public render() {
