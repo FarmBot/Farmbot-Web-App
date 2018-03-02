@@ -10,7 +10,7 @@ import {
 import { SpecialStatus } from "../../resources/tagged_resources";
 import Axios from "axios";
 import { API } from "../../api/index";
-import { prettyPrintApiErrors } from "../../util";
+import { prettyPrintApiErrors, equals } from "../../util";
 import { success, error } from "farmbot-toastr/dist";
 
 interface PasswordForm {
@@ -37,8 +37,8 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
 
   /** Set the `status` flag to `undefined`, but only if the form is empty.
    * Useful when the user manually clears the form. */
-  maybeClearForm = () => wowFixMe(EMPTY_FORM, this.state.form) ?
-    this.clearForm() : false;
+  maybeClearForm =
+    () => equals(EMPTY_FORM, this.state.form) ? this.clearForm() : false;
 
   clearForm = () => this.setState({ status: SpecialStatus.SAVED, form: EMPTY_FORM });
 
@@ -102,10 +102,4 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
       </WidgetBody>
     </Widget>;
   }
-}
-
-// TODO: Why does Object.is() not work when comparing EMPTY_FORM to
-//       this.state.form? Using this in the meantime. PRs and feedback welcome.
-function wowFixMe<T>(l: T, r: T): boolean {
-  return (JSON.stringify(l) === JSON.stringify(r));
 }
