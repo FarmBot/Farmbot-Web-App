@@ -59,7 +59,7 @@ const designerRoutes = {
   ]
 };
 
-export const routes = {
+export const topLevelRoutes = {
   component: App,
   indexRoute: controlsRoute,
   childRoutes: [
