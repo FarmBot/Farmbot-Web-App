@@ -18,7 +18,7 @@ export function Diagnosis(props: DiagnosisProps) {
   const diagnosisStatus =
     props.userMQTT && props.botAPI && props.botMQTT && props.botFirmware;
   const diagnosisColor = diagnosisStatus ? "green" : "red";
-  const title = diagnosisStatus ? "Ok" : "Error";
+  const title = diagnosisStatus ? t("Ok") : t("Error");
   return <div>
     <div className={"connectivity-diagnosis"}>
       <h4>{t("Diagnosis")}</h4>

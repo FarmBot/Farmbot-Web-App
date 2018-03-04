@@ -32,7 +32,7 @@ export class Sequences extends React.Component<Props, {}> {
             <h3>
               <i>{t("Sequence Editor")}</i>
             </h3>
-            <ToolTip helpText={ToolTips.SEQUENCE_EDITOR} />
+            <ToolTip helpText={t(ToolTips.SEQUENCE_EDITOR)} />
             <SequenceEditorMiddle
               syncStatus={this.props.syncStatus}
               dispatch={this.props.dispatch}
