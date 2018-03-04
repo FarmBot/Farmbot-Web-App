@@ -15,9 +15,9 @@ function page(path: string, getter: () => Promise<React.ReactType>) {
   return {
     path,
     getComponent(_: void, cb: Function) {
-      getter()
-        .then(component => cb(undefined, component))
-        .catch((e: object) => cb(undefined, crashPage(e)));
+      const ok = (component: React.ReactType) => cb(undefined, component);
+      const no = (e: object) => cb(undefined, crashPage(e));
+      return getter().then(ok, no);
     }
   };
 }
