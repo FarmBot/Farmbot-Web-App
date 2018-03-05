@@ -22,6 +22,7 @@ function page(path: string, getter: () => Promise<RouteComponent>): PlainRoute {
     }
   };
 }
+
 const controlsRoute: PlainRoute =
   page("app/controls", async () => (await import("./controls/controls")).Controls);
 
@@ -68,6 +69,7 @@ export const topLevelRoutes: PlainRoute = {
     controlsRoute,
     page("app/device", async () => (await import("./devices/devices")).Devices),
     page("app/farmware", async () => (await import("./farmware/index")).FarmwarePage),
+    designerRoutes,
     page("app/regimens", async () => (await import("./regimens/index")).Regimens),
     page("app/regimens/:regimen", async () => (await import("./regimens/index")).Regimens),
     page("app/sequences", async () => (await import("./sequences/sequences")).Sequences),
@@ -75,6 +77,5 @@ export const topLevelRoutes: PlainRoute = {
     page("app/tools", async () => (await import("./tools/index")).Tools),
     page("app/logs", async () => (await import("./logs/index")).Logs),
     page("*", async () => (await import("./404")).FourOhFour),
-    designerRoutes,
   ]
 };
