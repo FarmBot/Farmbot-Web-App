@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180301222052) do
+ActiveRecord::Schema.define(version: 20180305170608) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -260,6 +260,7 @@ ActiveRecord::Schema.define(version: 20180301222052) do
     t.string "openfarm_slug", limit: 280, default: "50", null: false
     t.datetime "created_at"
     t.datetime "planted_at"
+    t.string "plant_stage", limit: 10, default: "planned"
     t.index ["created_at"], name: "index_plants_on_created_at"
   end
 
