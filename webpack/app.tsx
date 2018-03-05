@@ -81,7 +81,7 @@ const MUST_LOAD: ResourceName[] = [
 export class App extends React.Component<AppProps, {}> {
   componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
-  get isLoaded() {
+  private get isLoaded() {
     return (MUST_LOAD.length ===
       _.intersection(this.props.loaded, MUST_LOAD).length);
   }
