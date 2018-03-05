@@ -19,10 +19,12 @@ function page<T>(path: string,
 
   return {
     path,
-    getComponent(_, cb) {
+    getComponent(_, cb): void {
       const ok = (mod: T) => cb(undefined, mod[key] as any);
       const no = (e: object) => cb(undefined, crashPage(e));
-      return getter().then(ok, no);
+      /** Whatever you do, make sure this function stays void or you will get a
+       * bunch of silent errors. - RC*/
+      getter().then(ok, no);
     }
   };
 }
