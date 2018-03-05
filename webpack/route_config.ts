@@ -18,7 +18,7 @@ function page(path: string, getter: () => Promise<RouteComponent>): PlainRoute {
     getComponent(_, cb) {
       const ok = (component: RouteComponent) => cb(undefined, component);
       const no = (e: object) => cb(undefined, crashPage(e));
-      return getter().then(ok, no);
+      getter().then(ok, no);
     }
   };
 }
