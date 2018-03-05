@@ -46,8 +46,7 @@ export class LastSeen extends React.Component<LastSeenProps, {}> {
       };
       return t(text, data);
     } else {
-      return t(" The device has never been seen. Most likely, " +
-        "there is a network connectivity issue on the device's end.");
+      return t("The device has never been seen. Most likely, there is a network connectivity issue on the device's end.");
     }
   }
 
