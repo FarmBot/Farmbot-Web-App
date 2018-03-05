@@ -55,9 +55,8 @@ export function deletePoints(
           prog.finish();
         })
         .catch(function (e) {
-          error(t("Some {{points}} failed to delete. Please try again.", {
-            points: pointName
-          }));
+          error(t("Some {{points}} failed to delete." +
+            " Are they in use by sequences?", { points: pointName }));
           prog.finish();
         });
     } catch (e) {
