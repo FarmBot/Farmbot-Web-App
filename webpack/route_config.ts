@@ -5,7 +5,8 @@ import { RouterState, RedirectFunction } from "react-router";
 /** These methods are a way to determine how to load certain modules
  * based on the device (mobile or desktop) for optimization/css purposes.
  */
-function maybeReplaceDesignerModules(next: RouterState, replace: RedirectFunction) {
+export function maybeReplaceDesignerModules(next: RouterState,
+  replace: RedirectFunction) {
   if (next.location.pathname === "/app/designer") {
     replace(`${next.location.pathname}/plants`);
   }
@@ -15,16 +16,16 @@ function page(path: string, getter: () => Promise<React.ReactType>) {
   return {
     path,
     getComponent(_: void, cb: Function) {
-      getter()
-        .then(component => cb(undefined, component))
-        .catch((e: object) => cb(undefined, crashPage(e)));
+      const ok = (component: React.ReactType) => cb(undefined, component);
+      const no = (e: object) => cb(undefined, crashPage(e));
+      return getter().then(ok, no);
     }
   };
 }
 const controlsRoute =
   page("app/controls", async () => (await import("./controls/controls")).Controls);
 
-const designerRoutes = {
+export const designerRoutes = {
   path: "app/designer",
   onEnter: maybeReplaceDesignerModules,
   getComponent(_discard: void, cb: Function) {
@@ -59,7 +60,7 @@ const designerRoutes = {
   ]
 };
 
-export const routes = {
+export const topLevelRoutes = {
   component: App,
   indexRoute: controlsRoute,
   childRoutes: [

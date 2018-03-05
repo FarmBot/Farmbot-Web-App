@@ -30,7 +30,7 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
         return <fieldset key={logType}>
           <label>
             <div className={`saucer ${logType}`} />
-            {_.startCase(logType)}
+            {t(_.startCase(logType))}
           </label>
           <button
             className={"fb-button fb-toggle-button " + btnColor(logType)}
