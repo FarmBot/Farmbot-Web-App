@@ -131,6 +131,7 @@ class CorpusEmitter
     result.push(enum_type :DataChangeType, CeleryScriptSettingsBag::ALLOWED_CHAGES)
     result.push(enum_type :PointType, CeleryScriptSettingsBag::ALLOWED_POINTER_TYPE)
     result.push(enum_type :AllowedPinTypes, CeleryScriptSettingsBag::ALLOWED_PIN_TYPES)
+    result.push(enum_type :PlantStage, CeleryScriptSettingsBag::PLANT_STAGES)
 
     File.open("latest_corpus.ts", "w") do |f|
       f.write(result.join.gsub("\n\n\n", "\n").gsub("\n\n", "\n").strip)

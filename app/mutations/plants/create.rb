@@ -13,6 +13,7 @@ module Plants
       float    :radius, default: 25
       float    :z, default: 0
       time     :planted_at, default: 0
+      string   :plant_stage, in: CeleryScriptSettingsBag::PLANT_STAGES
     end
 
     def execute
