@@ -1,7 +1,7 @@
 import { AuthState } from "./auth/interfaces";
 import { ConfigState } from "./config/interfaces";
 import { BotState } from "./devices/interfaces";
-import { Color as FarmBotJsColor, ALLOWED_MESSAGE_TYPES } from "farmbot";
+import { Color as FarmBotJsColor, ALLOWED_MESSAGE_TYPES, PlantStage } from "farmbot";
 import { DraggableState } from "./draggable/interfaces";
 import { PeripheralState } from "./controls/peripherals/interfaces";
 import { RestResources } from "./resources/interfaces";
@@ -108,7 +108,6 @@ interface BasePoint {
   x: number;
   y: number;
   z: number;
-  // device_id: number;
   pointer_id?: number | undefined;
   meta: { [key: string]: (string | undefined) };
   name: string;
@@ -118,6 +117,7 @@ export interface PlantPointer extends BasePoint {
   openfarm_slug: string;
   pointer_type: "Plant";
   planted_at?: string;
+  plant_stage: PlantStage;
 }
 
 export enum ToolPulloutDirection {
