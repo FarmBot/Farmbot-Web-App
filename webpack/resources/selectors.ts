@@ -29,10 +29,12 @@ import {
   TaggedDevice,
   TaggedFbosConfig,
   TaggedWebAppConfig,
-  SpecialStatus
+  SpecialStatus,
+  TaggedPoint
 } from "./tagged_resources";
 import { CowardlyDictionary, betterCompact, sortResourcesById, bail } from "../util";
 import { isNumber } from "util";
+import { buildIndexer } from "./selector_support";
 type StringMap = CowardlyDictionary<string>;
 
 /** Similar to findId(), but does not throw exceptions. Do NOT use this method
@@ -219,74 +221,17 @@ export function selectAllSequences(index: ResourceIndex) {
   return findAll(index, "Sequence") as TaggedSequence[];
 }
 
-export function indexSequenceById(index: ResourceIndex) {
-  const output: CowardlyDictionary<TaggedSequence> = {};
-  const uuids = index.byKind.Sequence;
-  uuids.map(uuid => {
-    assertUuid("Sequence", uuid);
-    const sequence = index.references[uuid];
-    if (sequence && isTaggedSequence(sequence) && sequence.body.id) {
-      output[sequence.body.id] = sequence;
-    }
-  });
-  return output;
-}
-
-export function indexRegimenById(index: ResourceIndex) {
-  const output: CowardlyDictionary<TaggedRegimen> = {};
-
-  const uuids = index.byKind.Regimen;
-  uuids.map(uuid => {
-    assertUuid("Regimen", uuid);
-    const regimen = index.references[uuid];
-    if (regimen && isTaggedRegimen(regimen) && regimen.body.id) {
-      output[regimen.body.id] = regimen;
-    }
-  });
-  return output;
-}
-
-export function indexFarmEventById(index: ResourceIndex) {
-  const output: CowardlyDictionary<TaggedFarmEvent> = {};
-
-  const uuids = index.byKind.FarmEvent;
-  uuids.map(uuid => {
-    assertUuid("FarmEvent", uuid);
-    const farmEvent = index.references[uuid];
-    if (farmEvent && isTaggedFarmEvent(farmEvent) && farmEvent.body.id) {
-      output[farmEvent.body.id] = farmEvent;
-    }
-  });
-  return output;
-}
-
-export function indexByToolId(index: ResourceIndex) {
-  const output: CowardlyDictionary<TaggedTool> = {};
-
-  const uuids = index.byKind.Tool;
-  uuids.map(uuid => {
-    assertUuid("Tool", uuid);
-    const Tool = index.references[uuid];
-    if (Tool && isTaggedTool(Tool) && Tool.body.id) {
-      output[Tool.body.id] = Tool;
-    }
-  });
-  return output;
-}
-
-export function indexBySlotId(index: ResourceIndex) {
-  const output: CowardlyDictionary<TaggedToolSlotPointer> = {};
-
-  const uuids = index.byKind.Point;
-  uuids.map(uuid => {
-    assertUuid("Point", uuid);
-    const tool_slot = index.references[uuid];
-    if (tool_slot && isTaggedToolSlotPointer(tool_slot) && tool_slot.body.id) {
-      output[tool_slot.body.id] = tool_slot;
-    }
-  });
-  return output;
-}
+const mapper = (i: TaggedPoint): TaggedToolSlotPointer | undefined => {
+  if (i.kind == "Point" && (i.body.pointer_type === "ToolSlot")) {
+    return i as TaggedToolSlotPointer;
+  }
+  return undefined;
+};
+export const indexBySlotId = buildIndexer<TaggedToolSlotPointer>("Point", mapper);
+export const indexSequenceById = buildIndexer<TaggedSequence>("Sequence");
+export const indexRegimenById = buildIndexer<TaggedRegimen>("Regimen");
+export const indexFarmEventById = buildIndexer<TaggedFarmEvent>("FarmEvent");
+export const indexByToolId = buildIndexer<TaggedTool>("Tool");
 
 export function assertUuid(expected: ResourceName, actual: string | undefined) {
   if (actual && !actual.startsWith(expected)) {
