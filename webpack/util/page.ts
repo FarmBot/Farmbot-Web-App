@@ -39,7 +39,7 @@ export function stopIE() {
 /** Dynamically change the meta title of the page. */
 export function updatePageInfo(pageName: string) {
   if (pageName === "designer") { pageName = "Farm Designer"; }
-  document.title = capitalize(pageName);
+  document.title = t(capitalize(pageName));
   // Possibly add meta "content" here dynamically as well
 }
 

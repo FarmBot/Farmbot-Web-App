@@ -10,17 +10,6 @@ import { RestResources } from "./resources/interfaces";
     in the UI. Only certain colors are valid. */
 export type Color = FarmBotJsColor;
 
-export interface SelectOptionsParams {
-  label: string;
-  value: string | number | undefined;
-  disabled?: boolean;
-  field?: string;
-  type?: string;
-  x?: number;
-  y?: number;
-  z?: number;
-}
-
 export interface PinBinding {
   id?: number;
   sequence_id: number;
@@ -144,9 +133,3 @@ export type Point =
   | PlantPointer;
 
 export type PointerTypeName = Point["pointer_type"];
-
-export const POINTER_NAMES: Readonly<PointerTypeName>[] = [
-  "Plant",
-  "GenericPointer",
-  "ToolSlot"
-];

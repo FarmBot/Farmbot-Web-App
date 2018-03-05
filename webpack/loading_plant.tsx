@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import { Session } from "./session";
 import { BooleanSetting } from "./session_keys";
 
@@ -73,7 +74,7 @@ export function LoadingPlant() {
         fontSize={35}
         textAnchor="middle"
         fill="#434343">
-        Loading...
+        {t("Loading...")}
       </text>
     </svg>
   </div>;

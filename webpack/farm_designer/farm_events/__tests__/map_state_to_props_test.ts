@@ -247,17 +247,17 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
   }
   ];
 
-  it("returns calendar rows", () => {
+  fit("returns calendar rows", () => {
     const testTime = moment("2017-12-15T01:00:00.000Z");
-    const calendar = mapResourcesToCalendar(
-      fakeRegFEResources().index, testTime);
+    const calendar =
+      mapResourcesToCalendar(fakeRegFEResources().index, testTime);
     expect(calendar.getAll()).toEqual(fakeRegimenFE);
   });
 
-  it("doesn't return calendar row after event is over", () => {
+  fit("doesn't return calendar row after event is over", () => {
     const testTime = moment("2017-12-27T01:00:00.000Z");
-    const calendar = mapResourcesToCalendar(
-      fakeRegFEResources().index, testTime);
+    const calendar =
+      mapResourcesToCalendar(fakeRegFEResources().index, testTime);
     expect(calendar.getAll()).toEqual([]);
   });
 });

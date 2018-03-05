@@ -1,6 +1,6 @@
 import axios from "axios";
 import { InitOptions } from "i18next";
-
+/** @public */
 export function generateUrl(langCode: string) {
   const lang = langCode.slice(0, 2);
   const url = "//" + location.host.split(":")

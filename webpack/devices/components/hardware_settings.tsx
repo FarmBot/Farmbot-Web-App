@@ -31,8 +31,8 @@ export class HardwareSettings extends
           <SaveBtn
             status={bot.isUpdating ? SpecialStatus.SAVING : SpecialStatus.SAVED}
             dirtyText={" "}
-            savingText={"Updating..."}
-            savedText={"saved"}
+            savingText={t("Updating...")}
+            savedText={t("saved")}
             hidden={false} />
         </MustBeOnline>
       </WidgetHeader>
