@@ -128,7 +128,6 @@ const tr7: TaggedPoint = {
     "id": 1392,
     "created_at": "2017-05-24T20:41:19.804Z",
     "updated_at": "2017-05-24T20:41:19.804Z",
-    // "device_id": 415,
     "meta": {
 
     },
@@ -138,7 +137,8 @@ const tr7: TaggedPoint = {
     "x": 347,
     "y": 385,
     "z": 0,
-    "openfarm_slug": "radish"
+    "openfarm_slug": "radish",
+    "plant_stage": "planned"
   },
   "uuid": "Point.1392.6"
 };
@@ -159,7 +159,8 @@ const tr8: TaggedPoint = {
     "x": 727,
     "y": 376,
     "z": 0,
-    "openfarm_slug": "garlic"
+    "openfarm_slug": "garlic",
+    "plant_stage": "planned"
   },
   "uuid": "Point.1393.7"
 };
@@ -331,7 +332,7 @@ export let FAKE_RESOURCES: TaggedResource[] = [tr1, fakeDevice(), tr2, tr3, tr4,
 
 export
   function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
-  state = emptyState()) {
+    state = emptyState()) {
   const KIND: keyof TaggedResource = "kind"; // Safety first, kids.
   return _(resources)
     .groupBy(KIND)

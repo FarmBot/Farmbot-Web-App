@@ -16,7 +16,8 @@ export function fakeResourceIndex(): ResourceIndex {
         "x": 1,
         "y": 2,
         "z": 3,
-        "openfarm_slug": "garlic"
+        "openfarm_slug": "garlic",
+        "plant_stage": "planned"
       },
       "uuid": "plant"
     },

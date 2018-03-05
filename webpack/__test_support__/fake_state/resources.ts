@@ -98,6 +98,7 @@ export function fakePlant(): TaggedPlantPointer {
     id: idCounter++,
     name: "Strawberry Plant 1",
     pointer_type: "Plant",
+    plant_stage: "planned",
     x: 100,
     y: 200,
     z: 0,
