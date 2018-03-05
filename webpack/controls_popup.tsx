@@ -5,12 +5,12 @@ import { Xyz, BotPosition } from "./devices/interfaces";
 import { McuParams } from "farmbot";
 import { getDevice } from "./device";
 
-export interface State {
+interface State {
   isOpen: boolean;
   stepSize: number;
 }
 
-export interface Props {
+interface Props {
   dispatch: Function;
   axisInversion: Record<Xyz, boolean>;
   botPosition: BotPosition;
@@ -24,7 +24,7 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
     stepSize: 100
   };
 
-  toggle = (property: keyof State) => () =>
+  private toggle = (property: keyof State) => () =>
     this.setState({ [property]: !this.state[property] });
 
   public render() {

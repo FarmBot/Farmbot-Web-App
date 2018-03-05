@@ -61,10 +61,10 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
     </div>;
   }
 
-  toggle = (property: keyof State) => () =>
+  private toggle = (property: keyof State) => () =>
     this.setState({ [property]: !this.state[property] });
 
-  hotkeys(dispatch: Function, slug: string) {
+  private hotkeys(dispatch: Function, slug: string) {
     const idx = _.findIndex(links, { slug });
     const right = "/app/" + (links[idx + 1] || links[0]).slug;
     const left = "/app/" + (links[idx - 1] || links[links.length - 1]).slug;
@@ -103,7 +103,7 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
     return hotkeyMap;
   }
 
-  renderHotkeys() {
+  public renderHotkeys() {
     const slug = getPathArray()[2];
     return <Hotkeys>
       {
