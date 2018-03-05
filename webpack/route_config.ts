@@ -1,6 +1,6 @@
 import { App } from "./app";
 import { crashPage } from "./crash_page";
-import { RouterState, RedirectFunction } from "react-router";
+import { RouterState, RedirectFunction, PlainRoute, RouteComponent } from "react-router";
 
 /** These methods are a way to determine how to load certain modules
  * based on the device (mobile or desktop) for optimization/css purposes.
@@ -12,23 +12,23 @@ export function maybeReplaceDesignerModules(next: RouterState,
   }
 }
 
-function page(path: string, getter: () => Promise<React.ReactType>) {
+function page(path: string, getter: () => Promise<RouteComponent>): PlainRoute {
   return {
     path,
-    getComponent(_: void, cb: Function) {
-      const ok = (component: React.ReactType) => cb(undefined, component);
+    getComponent(_, cb) {
+      const ok = (component: RouteComponent) => cb(undefined, component);
       const no = (e: object) => cb(undefined, crashPage(e));
       return getter().then(ok, no);
     }
   };
 }
-const controlsRoute =
+const controlsRoute: PlainRoute =
   page("app/controls", async () => (await import("./controls/controls")).Controls);
 
-export const designerRoutes = {
+export const designerRoutes: PlainRoute = {
   path: "app/designer",
   onEnter: maybeReplaceDesignerModules,
-  getComponent(_discard: void, cb: Function) {
+  getComponent(_, cb) {
     import("./farm_designer/index")
       .then(module => cb(undefined, module.FarmDesigner))
       .catch((e: object) => cb(undefined, crashPage(e)));
@@ -60,7 +60,7 @@ export const designerRoutes = {
   ]
 };
 
-export const topLevelRoutes = {
+export const topLevelRoutes: PlainRoute = {
   component: App,
   indexRoute: controlsRoute,
   childRoutes: [

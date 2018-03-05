@@ -5,13 +5,15 @@ import {
   designerRoutes,
   maybeReplaceDesignerModules
 } from "../route_config";
+import { noop } from "lodash";
 import { RouterState, RedirectFunction } from "react-router";
 
 async function makeSureTheyAreRoutes(input: typeof topLevelRoutes.childRoutes) {
   const cb = jest.fn();
-  await Promise.all(input.map(route => route.getComponent(undefined, cb)));
+  const all = (input || []);
+  await Promise.all(all.map(route => (route.getComponent || noop)({} as RouterState, cb)));
   expect(cb).toHaveBeenCalled();
-  expect(cb).toHaveBeenCalledTimes(input.length);
+  expect(cb).toHaveBeenCalledTimes(all.length);
   cb.mock.calls.map(x => expect(!!x[1]).toBeTruthy());
 }
 
