@@ -3,7 +3,6 @@ import { Store } from "./interfaces";
 import { EnvName } from "./interfaces";
 import { all } from "../resources/selectors";
 import { getWebAppConfig } from "../resources/config_selectors";
-import { fancyDebug } from "../util";
 
 export function stopThem() { return "You have unsaved work."; }
 export function dontStopThem() { }
