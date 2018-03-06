@@ -28,6 +28,8 @@ class UserMailer < ApplicationMailer
   end
 
   def self.reset_url(user)
-    RESET_PATH % [$API_URL, user.confirmation_token]
+    x = URI(RESET_PATH % [$API_URL, user.confirmation_token])
+    (x.port = nil) if (x.port === 443) # Sendgrid does not like :443 in URLs.
+    x.to_s
   end
 end
