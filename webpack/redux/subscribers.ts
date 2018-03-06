@@ -2,8 +2,8 @@ import { Everything } from "../interfaces";
 import { Store } from "./interfaces";
 import { EnvName } from "./interfaces";
 import { all } from "../resources/selectors";
-import { SpecialStatus } from "../resources/tagged_resources";
 import { getWebAppConfig } from "../resources/config_selectors";
+import { fancyDebug } from "../util";
 
 export function stopThem() { return "You have unsaved work."; }
 export function dontStopThem() { }
@@ -12,13 +12,17 @@ export function dontStopThem() { }
  * state tree contains `dirty` resources. */
 export function unsavedCheck(state: Everything) {
   const { index } = state.resources;
-  const unsavedWork =
-    !!all(index)
-      .filter(r => r.specialStatus === SpecialStatus.DIRTY)
-      .length;
+  const allOfThem = all(index);
+  const dirty = allOfThem.filter(r => !!r.specialStatus);
+  const total = dirty.length;
+  const doStop = (total === 0);
   const conf = getWebAppConfig(index);
-  const disabled = !!(conf && conf.body.discard_unsaved);
-  window.onbeforeunload = (!disabled && unsavedWork) ? stopThem : dontStopThem;
+
+  if (conf && conf.body.discard_unsaved) {
+    window.onbeforeunload = dontStopThem;
+  } else {
+    window.onbeforeunload = doStop ? dontStopThem : stopThem;
+  }
 }
 
 export interface Subscription { fn: (state: Everything) => void; env: EnvName; }
