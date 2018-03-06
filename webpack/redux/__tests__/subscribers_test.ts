@@ -4,11 +4,11 @@ jest.mock("../../resources/selectors", () => {
   };
 });
 
-import { dontExitIfBrowserIsOnHold, stopThem, dontStopThem } from "../subscribers";
+import { unsavedCheck, stopThem, dontStopThem } from "../subscribers";
 import { SpecialStatus } from "../../resources/tagged_resources";
 describe("dontExitIfBrowserIsOnHold", () => {
   it("knows when to attach the correct event handlers", () => {
-    dontExitIfBrowserIsOnHold({
+    unsavedCheck({
       resources: {
         index: [
           {
@@ -18,7 +18,7 @@ describe("dontExitIfBrowserIsOnHold", () => {
       }
     } as any);
     expect(window.onbeforeunload).toBe(stopThem);
-    dontExitIfBrowserIsOnHold({
+    unsavedCheck({
       resources: {
         index: [
           {
