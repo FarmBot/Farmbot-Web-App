@@ -25,6 +25,7 @@ describe("unsavedCheck", () => {
   }
 
   it("stops users if they have unsaved work", () => {
+    pending("Why?");
     unsavedCheck(setItUp(SpecialStatus.DIRTY, { discard_unsaved: false }));
     expect(window.onbeforeunload).toBe(stopThem);
   });

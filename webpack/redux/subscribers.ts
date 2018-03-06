@@ -14,13 +14,13 @@ export function unsavedCheck(state: Everything) {
   const allOfThem = all(index);
   const dirty = allOfThem.filter(r => !!r.specialStatus);
   const total = dirty.length;
-  const doStop = (total === 0);
+  const doStop = (total !== 0);
   const conf = getWebAppConfig(index);
 
   if (conf && conf.body.discard_unsaved) {
     window.onbeforeunload = dontStopThem;
   } else {
-    window.onbeforeunload = doStop ? dontStopThem : stopThem;
+    window.onbeforeunload = doStop ? stopThem : dontStopThem;
   }
 }
 
