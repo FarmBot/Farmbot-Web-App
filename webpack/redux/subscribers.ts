@@ -1,8 +1,9 @@
 import { Everything } from "../interfaces";
 import { Store } from "./interfaces";
 import { EnvName } from "./interfaces";
-import { all, getWebAppConfig } from "../resources/selectors";
+import { all } from "../resources/selectors";
 import { SpecialStatus } from "../resources/tagged_resources";
+import { getWebAppConfig } from "../resources/config_selectors";
 
 export function stopThem() { return "You have unsaved work."; }
 export function dontStopThem() { }
