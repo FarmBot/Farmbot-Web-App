@@ -3,6 +3,7 @@ require 'spec_helper'
 describe DashboardController do
   include Devise::Test::ControllerHelpers
   let(:user) { FactoryBot.create(:user, confirmed_at: nil) }
+  render_views
 
   describe 'dashboard endpoint' do
     it "renders the terms of service" do
@@ -54,10 +55,9 @@ describe DashboardController do
     it 'can not re-verify' do
       user.update_attributes(confirmed_at: Time.now)
       sign_in user
-      expect do
-        get :verify, params: { token: user.confirmation_token }, format: :json
-      end.to raise_error(User::AlreadyVerified)
-      # expect(response.status).to eq(409)
+      get :verify, params: { token: user.confirmation_token }
+      expect(response.status).to eq(409)
+      expect(response.body).to include("already verified")
     end
   end
 end
