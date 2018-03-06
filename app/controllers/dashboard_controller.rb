@@ -34,7 +34,7 @@ class DashboardController < ApplicationController
     @token = klass.run!(user: user).to_json
     render :confirmation_page, layout: false
   rescue User::AlreadyVerified
-    @failure_message = "You have already verified this account."
+    @already_registered = true
     render :confirmation_page, layout: false, status: 409
   end
 
