@@ -37,7 +37,7 @@ module Points
     def point_seq
       @point_seq ||= EdgeNode
         .where(kind: "pointer_id")
-        .where(EdgeNode.arel_table[:value].in(points.pluck(:id))) # WOW! -R.C.
+        .where(EdgeNode.value_is_one_of(*points.pluck(:id))) # WOW! -R.C.
         .pluck(:sequence_id)
     end
 
