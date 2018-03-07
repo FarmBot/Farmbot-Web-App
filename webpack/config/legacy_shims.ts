@@ -1,7 +1,7 @@
 import { store } from "../redux/store";
-import { getWebAppConfig } from "../resources/selectors";
 import { BooleanConfigKey, NumberConfigKey } from "../config_storage/web_app_configs";
 import { edit, save } from "../api/crud";
+import { getWebAppConfig } from "../resources/config_selectors";
 
 /**
  * HISTORICAL CONTEXT: We once stored user settings (like map zoom level) in localStorage and

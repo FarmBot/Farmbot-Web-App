@@ -1,8 +1,9 @@
 import { Everything } from "../interfaces";
-import { selectAllImages, maybeGetTimeOffset, getWebAppConfig } from "../resources/selectors";
+import { selectAllImages, maybeGetTimeOffset } from "../resources/selectors";
 import { FarmwareProps } from "../devices/interfaces";
 import { prepopulateEnv } from "./weed_detector/remote_env/selectors";
 import * as _ from "lodash";
+import { getWebAppConfig } from "../resources/config_selectors";
 
 export function mapStateToProps(props: Everything): FarmwareProps {
   const images = _(selectAllImages(props.resources.index))

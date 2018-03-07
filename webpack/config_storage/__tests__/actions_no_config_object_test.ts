@@ -5,7 +5,7 @@ jest.mock("../../api/crud", () => {
   return { save: jest.fn(), edit: jest.fn() };
 });
 
-jest.mock("../../resources/selectors", () => {
+jest.mock("../../resources/config_selectors", () => {
   return { getWebAppConfig: jest.fn(() => (undefined)) };
 });
 
