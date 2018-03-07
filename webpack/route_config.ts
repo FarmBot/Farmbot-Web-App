@@ -60,7 +60,7 @@ export const designerRoutes: PlainRoute = {
     page("plants/move_to",
       () => import("./farm_designer/plants/move_to"),
       "MoveTo"),
-    page("plants",
+    page("plants/create_point",
       () => import("./farm_designer/plants/create_points"),
       "CreatePoints"),
     page("plants/:plant_id",
