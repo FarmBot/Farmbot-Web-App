@@ -5,7 +5,7 @@ import { LogsProps } from "./interfaces";
 import {
   sourceFbosConfigValue
 } from "../devices/components/source_fbos_config_value";
-import { getFbosConfig } from "../resources/config_selectors";
+import { getFbosConfig } from "../resources/selectors_by_kind";
 
 export function mapStateToProps(props: Everything): LogsProps {
   const { hardware } = props.bot;

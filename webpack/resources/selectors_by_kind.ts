@@ -16,6 +16,7 @@ import {
   TaggedPoint,
   TaggedSensor,
   TaggedPeripheral,
+  TaggedWebAppConfig,
 } from "./tagged_resources";
 import { sortResourcesById } from "../util";
 import { error } from "farmbot-toastr";
@@ -77,3 +78,7 @@ export const getAllSavedPeripherals =
   (input: ResourceIndex) => selectAllPeripherals(input).filter(isSaved);
 export const getFbosConfig =
   (i: ResourceIndex): TaggedFbosConfig | undefined => findAll<TaggedFbosConfig>(i, "FbosConfig")[0];
+
+export const getWebAppConfig = (i: ResourceIndex): TaggedWebAppConfig | undefined => {
+  return findAll<TaggedWebAppConfig>(i, "WebAppConfig")[0];
+};

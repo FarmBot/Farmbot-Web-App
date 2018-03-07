@@ -5,7 +5,7 @@ import {
 } from "./web_app_configs";
 import { GetState } from "../redux/interfaces";
 import { edit, save } from "../api/crud";
-import { getWebAppConfig } from "../resources/config_selectors";
+import { getWebAppConfig } from "../resources/selectors_by_kind";
 
 /** Inverts boolean config key in WebAppConfig object, stored in the API. */
 export function toggleWebAppBool(key: BooleanWebAppConfigKey) {

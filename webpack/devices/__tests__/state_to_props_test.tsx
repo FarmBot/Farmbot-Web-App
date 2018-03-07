@@ -1,7 +1,7 @@
 import { fakeFbosConfig } from "../../__test_support__/fake_state/resources";
 
 let mockFbosConfig: TaggedFbosConfig | undefined = fakeFbosConfig();
-jest.mock("../../resources/config_selectors", () => ({
+jest.mock("../../resources/selectors_by_kind", () => ({
   getFbosConfig: () => mockFbosConfig
 }));
 

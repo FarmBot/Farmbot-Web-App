@@ -8,7 +8,7 @@ jest.mock("../../api/crud", () => {
 });
 
 let mockConfig = fakeWebAppConfig();
-jest.mock("../../resources/config_selectors", () => {
+jest.mock("../../resources/selectors_by_kind", () => {
   return {
     getWebAppConfig: () => mockConfig
   };

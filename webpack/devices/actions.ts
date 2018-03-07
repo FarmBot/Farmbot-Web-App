@@ -21,7 +21,7 @@ import { mcuParamValidator } from "./update_interceptor";
 import { pingAPI } from "../connectivity/ping_mqtt";
 import { edit, save as apiSave } from "../api/crud";
 import { WebAppConfig } from "../config_storage/web_app_configs";
-import { getFbosConfig } from "../resources/config_selectors";
+import { getFbosConfig } from "../resources/selectors_by_kind";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
