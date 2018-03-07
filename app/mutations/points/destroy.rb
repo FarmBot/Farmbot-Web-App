@@ -25,6 +25,8 @@ module Points
   private
 
     def every_tool_id_as_json
+      # TODO: If we unify Plant/ToolSlot/GenericPointer, this could be
+      # simplified.
       points
         .map { |x| x.pointer.try(:tool_id) }
         .compact
@@ -34,7 +36,8 @@ module Points
 
     def point_seq
       @point_seq ||= EdgeNode
-        .where(kind: "point_id", value: points.map(&:id))
+        .where(kind: "pointer_id")
+        .where(EdgeNode.arel_table[:value].in(points.pluck(:id))) # WOW! -R.C.
         .pluck(:sequence_id)
     end
 

@@ -29,11 +29,15 @@ describe Points::Destroy do
       ]
     }
     sequence = Sequences::Create.run!(params)
+    before   = Point.count
     # Attempt to delete
-    result = Points::Destroy.run(points: points, device: device)
+    result   = Points::Destroy.run(points: points, device: device)
     # Expect error about point in use still.
     expect(result.success?).to be false
-    binding.pry
+    expect(Point.count).to eq(before)
+    expect(result.errors.message_list.count).to eq(1)
+    expect(result.errors.message_list.first).to include(params[:name])
+    expect(result.errors.message_list.first).to include("still using it")
   end
 
   it "prevents deletion of active tool slots" do
