@@ -50,14 +50,5 @@ describe DashboardController do
       expect(user.reload.unconfirmed_email).to be nil
       expect(user.email).to eq email
     end
-
-    it 'can not re-verify' do
-      user.update_attributes(confirmed_at: Time.now)
-      sign_in user
-      expect do
-        get :verify, params: { token: user.confirmation_token }, format: :json
-      end.to raise_error(User::AlreadyVerified)
-      # expect(response.status).to eq(409)
-    end
   end
 end
