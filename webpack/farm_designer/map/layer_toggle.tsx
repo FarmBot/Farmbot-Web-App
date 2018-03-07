@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Popover, Position } from "@blueprintjs/core";
+import { t } from "i18next";
 
 export interface LayerToggleProps {
   label: string;
@@ -19,7 +20,7 @@ export function LayerToggle({ label, value, onClick, popover }: LayerToggleProps
           <Popover
             position={Position.BOTTOM_RIGHT}
             className={"caret-menu-button"}>
-            <i className="fa fa-caret-down" />
+            <i className="fa fa-caret-down" title={t("filter")} />
             {popover}
           </Popover>}
       </span>
