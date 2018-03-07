@@ -13,7 +13,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { TaggedFbosConfig, TaggedImage } from "../../resources/tagged_resources";
 
 describe("mapStateToProps()", () => {
-  it("is the source of API FBOS settings", () => {
+  it("uses the API as the source of FBOS settings", () => {
     const fakeApiConfig = fakeFbosConfig();
     fakeApiConfig.body.auto_sync = true;
     fakeApiConfig.body.api_migrated = true;
@@ -24,7 +24,7 @@ describe("mapStateToProps()", () => {
     });
   });
 
-  it("is the source of bot FBOS settings", () => {
+  it("uses the bot as the source of FBOS settings", () => {
     const state = fakeState();
     state.bot.hardware.configuration.auto_sync = false;
     mockFbosConfig = undefined;
@@ -34,7 +34,7 @@ describe("mapStateToProps()", () => {
     });
   });
 
-  it("is the source of bot FBOS settings: ignore API defaults", () => {
+  it("uses the bot as the source of FBOS settings: ignore API defaults", () => {
     const state = fakeState();
     state.bot.hardware.configuration.auto_sync = false;
     const fakeApiConfig = fakeFbosConfig();
