@@ -2,12 +2,12 @@ import { Everything } from "../interfaces";
 import { Props, HardwareFlags } from "./interfaces";
 import {
   selectAllSequences,
-  findSequence,
-  getWebAppConfig
+  findSequence
 } from "../resources/selectors";
 import { getStepTag } from "../resources/sequence_tagging";
 import { enabledAxisMap } from "../devices/components/axis_tracking_status";
 import { betterCompact } from "../util";
+import { getWebAppConfig } from "../resources/config_selectors";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;

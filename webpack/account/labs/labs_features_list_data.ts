@@ -70,6 +70,13 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
     storageKey: BooleanSetting.enable_browser_speak,
     value: false
   },
+  {
+    name: t("Discard Unsaved Changes"),
+    description: trim(t(`Don't ask about saving work before
+      closing browser tab.`)),
+    storageKey: BooleanSetting.discard_unsaved,
+    value: false
+  },
 ].map(fetchRealValue));
 
 /** Always allow toggling from true => false (deactivate).
@@ -86,7 +93,7 @@ export const maybeToggleFeature =
 const fetchVal = (k: BooleanConfigKey) => !!Session.deprecatedGetBool(k);
 
 /** Takes a `LabFeature` (probably one with an uninitialized fallback / default
- * value) and sets it to the _real_ value that's in localStorage. */
+ * value) and sets it to the _real_ value that's in the API. */
 const fetchRealValue = (x: LabsFeature): LabsFeature => {
   return { ...x, value: fetchVal(x.storageKey) };
 };

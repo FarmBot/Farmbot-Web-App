@@ -43,6 +43,7 @@ export interface WebAppConfig {
   show_images: boolean;
   photo_filter_begin: string;
   photo_filter_end: string;
+  discard_unsaved: boolean;
 }
 
 export type NumberConfigKey = "id"
@@ -83,4 +84,5 @@ export type BooleanConfigKey = "confirm_step_deletion"
     |"stub_config"
     |"show_first_party_farmware"
     |"enable_browser_speak"
-    |"show_images";
+    |"show_images"
+    |"discard_unsaved";
