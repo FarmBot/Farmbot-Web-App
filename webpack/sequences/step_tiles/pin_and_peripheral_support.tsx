@@ -1,7 +1,7 @@
 import { t } from "i18next";
 import {
   getAllSavedPeripherals,
-  getAllSavedSensors
+  selectAllSavedSensors
 } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { shouldDisplay } from "../../util";
@@ -61,7 +61,7 @@ export function peripheralsAsDropDowns(input: ResourceIndex): DropDownItem[] {
 }
 
 export function sensorsAsDropDowns(input: ResourceIndex): DropDownItem[] {
-  const list = getAllSavedSensors(input).map(sensor2DropDown);
+  const list = selectAllSavedSensors(input).map(sensor2DropDown);
   return list.length ? [SENSOR_HEADING, ...list] : [];
 }
 

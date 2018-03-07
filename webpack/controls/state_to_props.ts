@@ -1,7 +1,7 @@
 import { Everything } from "../interfaces";
 import {
   selectAllPeripherals,
-  getFeeds
+  selectAllWebcamFeeds
 } from "../resources/selectors";
 import { Props } from "./interfaces";
 import { maybeFetchUser } from "../resources/selectors";
@@ -14,7 +14,7 @@ export function mapStateToProps(props: Everything): Props {
   const botToMqttStatus = bot2mqtt ? bot2mqtt.state : "down";
 
   return {
-    feeds: getFeeds(resources.index),
+    feeds: selectAllWebcamFeeds(resources.index),
     dispatch: props.dispatch,
     bot: props.bot,
     user: maybeFetchUser(props.resources.index),

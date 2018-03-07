@@ -68,7 +68,7 @@ describe("findSlotByToolId", () => {
 
 describe("getFeeds", () => {
   it("returns empty array", () => {
-    expect(Selector.getFeeds(emptyState().index).length).toBe(0);
+    expect(Selector.selectAllWebcamFeeds(emptyState().index).length).toBe(0);
   });
 
   it("finds the only WebcamFeed", () => {
@@ -80,7 +80,7 @@ describe("getFeeds", () => {
         data: feed
       }
     }].reduce(resourceReducer, emptyState());
-    expect(Selector.getFeeds(state.index)[0].body).toEqual(feed);
+    expect(Selector.selectAllWebcamFeeds(state.index)[0].body).toEqual(feed);
   });
 });
 
@@ -163,13 +163,6 @@ describe("getSequenceByUUID()", () => {
     const find = () => Selector.getSequenceByUUID(fakeIndex, "bad");
     expect(find).toThrow("BAD Sequence UUID");
     expect(console.warn).toBeCalled();
-  });
-});
-
-describe("toArray()", () => {
-  it("returns array", () => {
-    const array = Selector.toArray(fakeIndex);
-    expect(array.length).toEqual(fakeIndex.all.length);
   });
 });
 

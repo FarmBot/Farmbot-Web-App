@@ -4,9 +4,9 @@ import {
   selectAllPlantPointers,
   selectAllCrops,
   joinToolsAndSlot,
-  selectAllPeripherals,
   selectAllImages,
-  maybeGetTimeOffset
+  maybeGetTimeOffset,
+  selectAllPeripherals
 } from "../resources/selectors";
 import { StepsPerMmXY } from "../devices/interfaces";
 import { isNumber } from "lodash";

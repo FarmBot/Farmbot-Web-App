@@ -95,3 +95,6 @@ EXTRA_DOMAINS: staging.farm.bot,whatever.farm.bot
 # ENV below to "true".
 # Most users will not want this enabled.
 RUN_CAPYBARA: true
+# Set this to "production" in most cases.
+# If you need help debugging issues, please delete this line.
+RAILS_ENV: "production"
