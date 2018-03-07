@@ -3,13 +3,13 @@ import { Props, HardwareFlags } from "./interfaces";
 import {
   selectAllSequences,
   findSequence,
-  getWebAppConfig,
   maybeGetDevice
 } from "../resources/selectors";
 import { getStepTag } from "../resources/sequence_tagging";
 import { enabledAxisMap } from "../devices/components/axis_tracking_status";
 import { betterCompact, semverCompare, SemverResult } from "../util";
 import { isUndefined } from "lodash";
+import { getWebAppConfig } from "../resources/config_selectors";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;

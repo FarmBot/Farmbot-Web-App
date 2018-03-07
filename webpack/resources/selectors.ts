@@ -28,7 +28,6 @@ import {
   TaggedWebcamFeed,
   TaggedDevice,
   TaggedFbosConfig,
-  TaggedWebAppConfig,
   SpecialStatus,
   TaggedPoint
 } from "./tagged_resources";
@@ -486,13 +485,6 @@ export function findToolBySlotId(input: ResourceIndex, tool_slot_id: number):
     return wow;
   } else {
     return undefined;
-  }
-}
-
-export function getWebAppConfig(i: ResourceIndex): TaggedWebAppConfig | undefined {
-  const conf = i.references[i.byKind.WebAppConfig[0] || "NO"];
-  if (conf && conf.kind === "WebAppConfig") {
-    return conf;
   }
 }
 
