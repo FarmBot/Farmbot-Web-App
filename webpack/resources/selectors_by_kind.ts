@@ -58,44 +58,22 @@ export let findRegimen = uuidFinder<TaggedRegimen>("Regimen");
 export let findFarmEvent = uuidFinder<TaggedFarmEvent>("FarmEvent");
 export let findPoints = uuidFinder<TaggedPoint>("Point");
 
-export const selectAllCrops =
-  (i: ResourceIndex) => findAll<TaggedCrop>(i, "Crop");
-
-export const selectAllFarmEvents =
-  (i: ResourceIndex) => findAll<TaggedFarmEvent>(i, "FarmEvent");
-
-export const selectAllImages =
-  (i: ResourceIndex) => findAll<TaggedImage>(i, "Image");
-
-export const selectAllLogs =
-  (i: ResourceIndex) => findAll<TaggedLog>(i, "Log");
-
+export const selectAllCrops = (i: ResourceIndex) => findAll<TaggedCrop>(i, "Crop");
+export const selectAllFarmEvents = (i: ResourceIndex) => findAll<TaggedFarmEvent>(i, "FarmEvent");
+export const selectAllImages = (i: ResourceIndex) => findAll<TaggedImage>(i, "Image");
+export const selectAllLogs = (i: ResourceIndex) => findAll<TaggedLog>(i, "Log");
 export const selectAllPeripherals =
   (i: ResourceIndex) => findAll<TaggedPeripheral>(i, "Peripheral");
-
-export const selectAllPoints =
-  (i: ResourceIndex) => findAll<TaggedPoint>(i, "Point");
-
-export const selectAllRegimens =
-  (i: ResourceIndex) => findAll<TaggedRegimen>(i, "Regimen");
-
-export const selectAllSensors =
-  (i: ResourceIndex) => findAll<TaggedSensor>(i, "Sensor");
-
-export const selectAllSequences =
-  (i: ResourceIndex) => findAll<TaggedSequence>(i, "Sequence");
-
-export const selectAllTools =
-  (i: ResourceIndex) => findAll<TaggedTool>(i, "Tool");
-
+export const selectAllPoints = (i: ResourceIndex) => findAll<TaggedPoint>(i, "Point");
+export const selectAllRegimens = (i: ResourceIndex) => findAll<TaggedRegimen>(i, "Regimen");
+export const selectAllSensors = (i: ResourceIndex) => findAll<TaggedSensor>(i, "Sensor");
+export const selectAllSequences = (i: ResourceIndex) => findAll<TaggedSequence>(i, "Sequence");
+export const selectAllTools = (i: ResourceIndex) => findAll<TaggedTool>(i, "Tool");
+export const selectAllSavedSensors =
+  (input: ResourceIndex) => selectAllSensors(input).filter(isSaved);
 export const selectAllWebcamFeeds =
   (i: ResourceIndex) => findAll<TaggedWebcamFeed>(i, "WebcamFeed");
-
 export const getAllSavedPeripherals =
   (input: ResourceIndex) => selectAllPeripherals(input).filter(isSaved);
-
-export const getAllSavedSensors =
-  (input: ResourceIndex) => selectAllSensors(input).filter(isSaved);
-
 export const getFbosConfig =
   (i: ResourceIndex): TaggedFbosConfig | undefined => findAll<TaggedFbosConfig>(i, "FbosConfig")[0];
