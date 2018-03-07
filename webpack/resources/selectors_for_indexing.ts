@@ -8,8 +8,16 @@ import {
   TaggedPoint
 } from "./tagged_resources";
 import { CowardlyDictionary } from "../util";
-import { ResourceIndex } from "./interfaces";
-import { assertUuid } from "./selectors";
+import {
+  ResourceIndex,
+  SlotWithTool
+} from "./interfaces";
+import {
+  assertUuid,
+  selectAllTools,
+  selectAllToolSlotPointers,
+  maybeFindToolById
+} from "./selectors";
 
 interface IndexLookupDictionary<T extends TaggedResource>
   extends CowardlyDictionary<T> { }
@@ -19,6 +27,8 @@ interface Indexer<T extends TaggedResource> {
 }
 
 interface MapperFn<T extends TaggedResource> { (item: T): T | undefined; }
+
+type StringMap = CowardlyDictionary<string>;
 
 /** Build a function,
 *    that returns a function,
@@ -60,3 +70,20 @@ export const indexSequenceById = buildIndexer<TaggedSequence>("Sequence");
 export const indexRegimenById = buildIndexer<TaggedRegimen>("Regimen");
 export const indexFarmEventById = buildIndexer<TaggedFarmEvent>("FarmEvent");
 export const indexByToolId = buildIndexer<TaggedTool>("Tool");
+
+export function mapToolIdToName(input: ResourceIndex) {
+  return selectAllTools(input)
+    .map(x => ({ key: "" + x.body.id, val: x.body.name }))
+    .reduce((x, y) => ({ ...{ [y.key]: y.val, ...x } }), {} as StringMap);
+}
+
+/** For those times that you need to ref a tool and slot together. */
+export function joinToolsAndSlot(index: ResourceIndex): SlotWithTool[] {
+  return selectAllToolSlotPointers(index)
+    .map(function (toolSlot) {
+      return {
+        toolSlot,
+        tool: maybeFindToolById(index, toolSlot.body.tool_id)
+      };
+    });
+}

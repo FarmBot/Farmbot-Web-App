@@ -166,13 +166,6 @@ describe("getSequenceByUUID()", () => {
   });
 });
 
-describe("toArray()", () => {
-  it("returns array", () => {
-    const array = Selector.toArray(fakeIndex);
-    expect(array.length).toEqual(fakeIndex.all.length);
-  });
-});
-
 describe("findAllById()", () => {
   it("returns", () => {
     const result = Selector.findAllById(fakeIndex, [23], "Sequence");

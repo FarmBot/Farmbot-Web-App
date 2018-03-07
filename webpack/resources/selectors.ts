@@ -1,22 +1,16 @@
 import * as _ from "lodash";
-import { error } from "farmbot-toastr";
-import { ResourceIndex, SlotWithTool } from "./interfaces";
+import { ResourceIndex } from "./interfaces";
 import { joinKindAndId } from "./reducer";
 import {
   isTaggedPlantPointer,
   isTaggedGenericPointer,
   isTaggedRegimen,
-  isTaggedResource,
   isTaggedSequence,
   isTaggedTool,
   isTaggedToolSlotPointer,
   ResourceName,
   sanityCheck,
-  TaggedCrop,
-  TaggedFarmEvent,
   TaggedGenericPointer,
-  TaggedImage,
-  TaggedLog,
   TaggedPlantPointer,
   TaggedRegimen,
   TaggedResource,
@@ -24,18 +18,15 @@ import {
   TaggedTool,
   TaggedToolSlotPointer,
   TaggedUser,
-  TaggedWebcamFeed,
   TaggedDevice,
-  TaggedFbosConfig,
-  SpecialStatus,
 } from "./tagged_resources";
-import { CowardlyDictionary, betterCompact, sortResourcesById, bail } from "../util";
-import { findAllById, maybeFindToolById } from "./selectors_by_id";
+import { betterCompact, bail } from "../util";
+import { findAllById } from "./selectors_by_id";
+import { findPoints, selectAllPoints } from "./selectors_by_kind";
 
 export * from "./selectors_by_id";
+export * from "./selectors_by_kind";
 export * from "./selectors_for_indexing";
-
-type StringMap = CowardlyDictionary<string>;
 
 /** Similar to findId(), but does not throw exceptions. Do NOT use this method
  * unless there is actually a reason for the resource to not have a UUID.
@@ -61,25 +52,6 @@ export let findId = (index: ResourceIndex, kind: ResourceName, id: number) => {
 };
 
 export let isKind = (name: ResourceName) => (tr: TaggedResource) => tr.kind === name;
-
-export function findAll(index: ResourceIndex, name: ResourceName) {
-  const results: TaggedResource[] = [];
-
-  index.byKind[name].map(function (uuid) {
-    const item = index.references[uuid];
-    (item && isTaggedResource(item) && results.push(item));
-  });
-  return sortResourcesById(results);
-}
-
-export function selectAllFarmEvents(index: ResourceIndex) {
-  return findAll(index, "FarmEvent") as TaggedFarmEvent[];
-}
-
-export function selectAllPoints(index: ResourceIndex) {
-  return findAll(index, "Point") as
-    (TaggedGenericPointer | TaggedPlantPointer | TaggedToolSlotPointer)[];
-}
 
 export function groupPointsByType(index: ResourceIndex) {
   return _(selectAllPoints(index))
@@ -124,34 +96,6 @@ export function selectAllToolSlotPointers(index: ResourceIndex):
   return betterCompact(genericPointers);
 }
 
-export function selectAllTools(index: ResourceIndex) {
-  return findAll(index, "Tool") as TaggedTool[];
-}
-
-export function selectAllLogs(index: ResourceIndex) {
-  return findAll(index, "Log") as TaggedLog[];
-}
-
-interface Finder<T> {
-  (i: ResourceIndex, u: string): T;
-}
-/** Generalized way to stamp out "finder" functions.
- * Pass in a `ResourceName` and it will add all the relevant checks.
- * WARNING: WILL THROW ERRORS IF RESOURCE NOT FOUND!
- */
-const find = (r: ResourceName) =>
-  function findResource(i: ResourceIndex, u: string) {
-    assertUuid(r, u);
-    const result = i.references[u];
-    if (result && isTaggedResource(result) && sanityCheck(result)) {
-      return result as TaggedResource;
-    } else {
-      error("Resource error");
-      throw new Error(`Tagged resource ${r} was not found or malformed: ` +
-        JSON.stringify(result));
-    }
-  };
-
 export function findToolSlot(i: ResourceIndex, uuid: string): TaggedToolSlotPointer {
   const ts = selectAllToolSlotPointers(i).filter(x => x.uuid === uuid)[0];
   if (ts) {
@@ -160,11 +104,6 @@ export function findToolSlot(i: ResourceIndex, uuid: string): TaggedToolSlotPoin
     throw new Error("ToolSlotPointer not found: " + uuid);
   }
 }
-export let findTool = find("Tool") as Finder<TaggedTool>;
-export let findSequence = find("Sequence") as Finder<TaggedSequence>;
-export let findRegimen = find("Regimen") as Finder<TaggedRegimen>;
-export let findFarmEvent = find("FarmEvent") as Finder<TaggedFarmEvent>;
-export let findPoints = find("Point") as Finder<TaggedPlantPointer>;
 
 export function findPlant(i: ResourceIndex, uuid: string):
   TaggedPlantPointer {
@@ -184,18 +123,6 @@ export function selectCurrentToolSlot(index: ResourceIndex, uuid: string) {
   }
 }
 
-export function selectAllImages(index: ResourceIndex) {
-  return findAll(index, "Image") as TaggedImage[];
-}
-
-export function selectAllRegimens(index: ResourceIndex) {
-  return findAll(index, "Regimen") as TaggedRegimen[];
-}
-
-export function selectAllCrops(index: ResourceIndex) {
-  return findAll(index, "Crop") as TaggedCrop[];
-}
-
 export function getRegimenByUUID(index: ResourceIndex, uuid: string) {
   assertUuid("Regimen", uuid);
   return index.references[uuid];
@@ -212,10 +139,6 @@ export function getSequenceByUUID(index: ResourceIndex,
   }
 }
 
-export function selectAllSequences(index: ResourceIndex) {
-  return findAll(index, "Sequence") as TaggedSequence[];
-}
-
 export function assertUuid(expected: ResourceName, actual: string | undefined) {
   if (actual && !actual.startsWith(expected)) {
     console.warn(`
@@ -227,17 +150,6 @@ export function assertUuid(expected: ResourceName, actual: string | undefined) {
   } else {
     return true;
   }
-}
-
-export function toArray(index: ResourceIndex) {
-  return index.all.map(function (uuid) {
-    const tr = index.references[uuid];
-    if (tr) {
-      return tr;
-    } else {
-      throw new Error("Fund bad index UUID: " + uuid);
-    }
-  });
 }
 
 /** GIVEN: a slot UUID.
@@ -286,11 +198,13 @@ export function maybeGetTimeOffset(index: ResourceIndex): number {
   const dev = maybeGetDevice(index);
   return dev ? dev.body.tz_offset_hrs : 0;
 }
+
 export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {
   const dev = index.references[index.byKind.Device[0] || "nope"];
   return (dev && dev.kind === "Device") ?
     dev : undefined;
 }
+
 export function getDeviceAccountSettings(index: ResourceIndex): TaggedDevice {
   const list = index.byKind.Device;
   const uuid = list[0] || "_";
@@ -302,19 +216,6 @@ export function getDeviceAccountSettings(index: ResourceIndex): TaggedDevice {
       : bail("Malformed device!");
     default: return bail("Found more than 1 device");
   }
-}
-
-export function getFeeds(index: ResourceIndex): TaggedWebcamFeed[] {
-  const list = index.byKind.WebcamFeed;
-  const output: TaggedWebcamFeed[] = [];
-  list.forEach(y => {
-    const x = index.references[y];
-    if (x && x.kind === "WebcamFeed") {
-      sanityCheck(x);
-      output.push(x);
-    }
-  });
-  return output;
 }
 
 export function maybeFetchUser(index: ResourceIndex):
@@ -344,53 +245,3 @@ export function getUserAccountSettings(index: ResourceIndex): TaggedUser {
 export function all(index: ResourceIndex) {
   return betterCompact(index.all.map(uuid => index.references[uuid]));
 }
-
-/** For those times that you need to ref a tool and slot together. */
-export function joinToolsAndSlot(index: ResourceIndex): SlotWithTool[] {
-  return selectAllToolSlotPointers(index)
-    .map(function (toolSlot) {
-      return {
-        toolSlot,
-        tool: maybeFindToolById(index, toolSlot.body.tool_id)
-      };
-    });
-}
-
-export function mapToolIdToName(input: ResourceIndex) {
-  return selectAllTools(input)
-    .map(x => ({ key: "" + x.body.id, val: x.body.name }))
-    .reduce((x, y) => ({ ...{ [y.key]: y.val, ...x } }), {} as StringMap);
-}
-
-export function getFbosConfig(i: ResourceIndex): TaggedFbosConfig | undefined {
-  const conf = i.references[i.byKind.FbosConfig[0] || "NO"];
-  if (conf && conf.kind === "FbosConfig") {
-    return conf;
-  }
-}
-
-export function getAllPeripherals(input: ResourceIndex) {
-  return input
-    .byKind
-    .Peripheral
-    .map(x => input.references[x])
-    .map(x => (x && (x.kind == "Peripheral")) ? x : bail("Never"));
-}
-
-export const selectAllPeripherals = getAllPeripherals;
-
-export function getAllSensors(input: ResourceIndex) {
-  return input
-    .byKind
-    .Sensor
-    .map(x => input.references[x])
-    .map(x => (x && (x.kind == "Sensor")) ? x : bail("Never"));
-}
-
-const isSaved =
-  <T extends TaggedResource>(t: T) => t.specialStatus === SpecialStatus.SAVED;
-
-export const getAllSavedPeripherals =
-  (input: ResourceIndex) => getAllPeripherals(input).filter(isSaved);
-export const getAllSavedSensors =
-  (input: ResourceIndex) => getAllSensors(input).filter(isSaved);
