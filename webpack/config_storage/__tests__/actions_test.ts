@@ -8,12 +8,6 @@ jest.mock("../../api/crud", () => {
 });
 
 let mockConfig = fakeWebAppConfig();
-jest.mock("../../resources/selectors", () => {
-  return {
-    assertUuid: jest.fn()
-  };
-});
-
 jest.mock("../../resources/config_selectors", () => {
   return {
     getWebAppConfig: () => mockConfig

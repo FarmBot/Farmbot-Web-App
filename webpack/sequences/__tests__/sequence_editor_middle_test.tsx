@@ -22,19 +22,20 @@ describe("<SequenceEditorMiddle/>", () => {
         farmwareNames: [],
         firstPartyFarmwareNames: [],
         showFirstPartyFarmware: false
-      }
+      },
+      installedOsVersion: undefined,
     };
   }
 
   it("active editor", () => {
-    const wrapper = mount(<SequenceEditorMiddle {...fakeProps() } />);
+    const wrapper = mount(<SequenceEditorMiddle {...fakeProps()} />);
     expect(wrapper.text()).toContain("Delete");
   });
 
   it("inactive editor", () => {
     const p = fakeProps();
     p.sequence = undefined;
-    const wrapper = mount(<SequenceEditorMiddle {...p } />);
+    const wrapper = mount(<SequenceEditorMiddle {...p} />);
     expect(wrapper.text()).toContain("No Sequence selected");
   });
 });

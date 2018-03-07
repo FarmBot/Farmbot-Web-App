@@ -5,6 +5,7 @@ import { maybeFindPlantById } from "../../resources/selectors";
 import { history } from "../../history";
 import { TaggedPlantPointer } from "../../resources/tagged_resources";
 import * as _ from "lodash";
+import { PlantStage } from "farmbot";
 
 export function mapStateToProps(props: Everything): EditPlantInfoProps {
   const findPlant = (id: string | undefined) => {
@@ -34,14 +35,16 @@ export interface FormattedPlantInfo {
   daysOld: number;
   plantedAt: string;
   slug: string;
+  plantStatus: PlantStage;
 }
 
 export function formatPlantInfo(rsrc: TaggedPlantPointer): FormattedPlantInfo {
   const p = rsrc.body;
-  const t = p.created_at ? moment(p.created_at) : moment();
+  const plantedAt = p.planted_at
+    ? moment(p.planted_at)
+    : moment(p.created_at) || moment();
   const currentDay = moment();
-  const plantedAt = p.created_at || moment();
-  const daysOld = currentDay.diff(moment(plantedAt), "days") + 1;
+  const daysOld = currentDay.diff(plantedAt, "days") + 1;
   return {
     slug: p.openfarm_slug,
     id: p.id,
@@ -50,6 +53,7 @@ export function formatPlantInfo(rsrc: TaggedPlantPointer): FormattedPlantInfo {
     x: p.x,
     y: p.y,
     uuid: rsrc.uuid,
-    plantedAt: moment(t).format("MMMM Do YYYY, h:mma")
+    plantedAt: plantedAt.format("MMMM Do YYYY, h:mma"),
+    plantStatus: p.plant_stage,
   };
 }

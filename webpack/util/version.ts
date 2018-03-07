@@ -1,11 +1,18 @@
-import { isString } from "lodash";
+import { isString, get } from "lodash";
+
+/**
+ * semverCompare(): Determine which version string is greater.
+ * Supports major, minor, and patch number comparison
+ * and checks the presence of pre-release identifiers.
+ * CREDIT: https://github.com/substack/semver-compare
+ */
 
 export enum SemverResult {
   LEFT_IS_GREATER = 1,
   RIGHT_IS_GREATER = -1,
   EQUAL = 0
 }
-// CREDIT: https://github.com/substack/semver-compare
+
 export function semverCompare(left: string, right: string): SemverResult {
   const leftSemVer = left.split("-")[0];
   const rightSemVer = right.split("-")[0];
@@ -47,6 +54,11 @@ export function semverCompare(left: string, right: string): SemverResult {
   return SemverResult.EQUAL;
 }
 
+/**
+ * minFwVersionCheck(): Conditionally display firmware settings based on
+ * the user's current Arduino firmware version.
+ */
+
 export function minFwVersionCheck(current: string | undefined, min: string) {
   if (isString(current)) {
     switch (semverCompare(current.slice(0, -1), min)) {
@@ -59,4 +71,36 @@ export function minFwVersionCheck(current: string | undefined, min: string) {
   } else {
     return false;
   }
+}
+
+/**
+ * shouldDisplay(): Determine whether a feature should be displayed based on
+ * the user's current FBOS version. Min FBOS version feature data is pulled
+ * from an external source to allow App and FBOS development flexibility.
+ */
+
+export enum MinVersionOverride {
+  ALWAYS = "0.0.0",
+  NEVER = "999.999.999",
+}
+
+const tempDataSource = JSON.stringify({ named_pins: MinVersionOverride.NEVER });
+
+export function shouldDisplay(
+  feature: string, current: string | undefined): boolean {
+  if (isString(current)) {
+    // TODO: get min version from JSON file
+    // for example: {"some_feature": "1.2.3", "other_feature": "2.3.4"}
+    const minOsVersionFeatureLookup = JSON.parse(tempDataSource);
+    const min = get(minOsVersionFeatureLookup, feature,
+      MinVersionOverride.NEVER);
+    switch (semverCompare(current, min)) {
+      case SemverResult.LEFT_IS_GREATER:
+      case SemverResult.EQUAL:
+        return true;
+      default:
+        return false;
+    }
+  }
+  return false;
 }

@@ -6,32 +6,17 @@ import { DropDownItem } from "./fb_select";
 
 const SelectComponent = Select.ofType<DropDownItem | undefined>();
 
-type PossibleReferences =
-  | "Sequence"
-  | "Regimen";
-
-interface ParentMenu {
-  title: string;
-  value: string | number;
-  subMenus: DropDownItem[];
-  reference: PossibleReferences;
-}
-
 interface Props {
   items: DropDownItem[];
   selectedItem: DropDownItem;
   onChange: (item: DropDownItem) => void;
-  isASubMenu?: boolean;
   nullChoice: DropDownItem;
 }
 
 interface State {
   item?: DropDownItem | undefined;
-  filterable?: boolean;
   minimal?: boolean;
   resetOnSelect?: boolean;
-  parentMenus: ParentMenu[];
-  subMenus: DropDownItem[];
 }
 
 export class FilterSearch extends React.Component<Props, Partial<State>> {
@@ -40,8 +25,6 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
     item: this.props.selectedItem,
     minimal: false,
     resetOnSelect: false,
-    parentMenus: [],
-    subMenus: []
   };
 
   render() {
@@ -65,6 +48,9 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
     if (Object.is(item, this.props.nullChoice)) {
       styles.push("filter-search-item-none");
     }
+    if (item.heading) {
+      styles.push("filter-search-heading-item");
+    }
     return styles.join(" ");
   }
 
@@ -78,7 +64,10 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
   }
 
   private filter(query: string, item: DropDownItem, index: number) {
-    return item.label.toLowerCase().indexOf(query.toLowerCase()) >= 0;
+    if (item.heading) { return true; }
+    const itemHeadingId = item.headingId ? item.headingId : "";
+    const itemSearchLabel = `${itemHeadingId}: ${item.label}`;
+    return itemSearchLabel.toLowerCase().indexOf(query.toLowerCase()) >= 0;
   }
 
   private handleValueChange = (item: DropDownItem | undefined) => {

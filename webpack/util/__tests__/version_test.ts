@@ -1,4 +1,5 @@
 import { semverCompare, SemverResult, minFwVersionCheck } from "../version";
+import { shouldDisplay } from "..";
 
 describe("semver compare", () => {
   it("knows when RIGHT_IS_GREATER: numeric", () => {
@@ -83,5 +84,17 @@ describe("minFwVersionCheck()", () => {
     expect(minFwVersionCheck("1.0.0R", "1.0.1")).toBeFalsy();
     expect(minFwVersionCheck(undefined, "1.0.1")).toBeFalsy();
     expect(minFwVersionCheck("1.0.0", "1.0.1")).toBeFalsy();
+  });
+});
+
+describe("shouldDisplay()", () => {
+  it("should display", () => {
+    expect(shouldDisplay("named_pin", "1000.0.0")).toBeTruthy();
+  });
+
+  it("shouldn't display", () => {
+    expect(shouldDisplay("named_pin", "1.0.0")).toBeFalsy();
+    expect(shouldDisplay("named_pin", undefined)).toBeFalsy();
+    expect(shouldDisplay("new_feature", "1.0.0")).toBeFalsy();
   });
 });

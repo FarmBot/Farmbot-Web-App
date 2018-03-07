@@ -3,7 +3,8 @@ module Points
     WHITELIST = [ :tool_id,
                   :openfarm_slug,
                   :pullout_direction,
-                  :plant_stage ]
+                  :plant_stage,
+                  :planted_at ]
 
     required do
       model :device, class: Device
@@ -20,6 +21,7 @@ module Points
       string  :openfarm_slug
       integer :pullout_direction
       string  :plant_stage, in: CeleryScriptSettingsBag::PLANT_STAGES
+      time    :planted_at
       hstore  :meta
     end
 

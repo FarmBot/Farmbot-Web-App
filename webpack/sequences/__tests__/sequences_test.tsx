@@ -30,7 +30,8 @@ describe("<Sequences/>", () => {
         farmwareNames: [],
         firstPartyFarmwareNames: [],
         showFirstPartyFarmware: false
-      }
+      },
+      installedOsVersion: undefined,
     };
   }
 
