@@ -10,11 +10,13 @@ import { isRecursive } from "../index";
 import { If_ } from "./if";
 import { Then } from "./then";
 import { Else } from "./else";
-import { defensiveClone } from "../../../util";
+import { defensiveClone, shouldDisplay } from "../../../util";
 import { overwrite } from "../../../api/crud";
-import { range } from "lodash";
 import { ToolTips } from "../../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../../step_ui/index";
+import {
+  sensorsAsDropDowns, peripheralsAsDropDowns, pinDropdowns
+} from "../pin_and_peripheral_support";
 
 export interface IfParams {
   currentSequence: TaggedSequence;
@@ -22,6 +24,7 @@ export interface IfParams {
   dispatch: Function;
   index: number;
   resources: ResourceIndex;
+  installedOsVersion?: string | undefined;
 }
 
 export type Operator = "lhs"
@@ -30,11 +33,19 @@ export type Operator = "lhs"
   | "_then"
   | "_else";
 
-export const LHSOptions: DropDownItem[] = [
-  { value: "x", label: t("X position") },
-  { value: "y", label: t("Y position") },
-  { value: "z", label: t("Z position") }
-].concat(range(0, 70).map(x => ({ value: `pin${x}`, label: t("Pin ")+`${x}` })));
+export const LHSOptions =
+  (resources: ResourceIndex, fbosVersion: string | undefined
+  ): DropDownItem[] => [
+      { heading: true, label: t("Positions"), value: 0 },
+      { value: "x", label: t("X position"), headingId: "Position" },
+      { value: "y", label: t("Y position"), headingId: "Position" },
+      { value: "z", label: t("Z position"), headingId: "Position" },
+      ...(shouldDisplay("named_pins", fbosVersion) ?
+        peripheralsAsDropDowns(resources) : []),
+      ...(shouldDisplay("named_pins", fbosVersion) ?
+        sensorsAsDropDowns(resources) : []),
+      ...pinDropdowns(n => `pin${n}`),
+    ];
 
 export const operatorOptions: DropDownItem[] = [
   { value: "<", label: t("is less than") },

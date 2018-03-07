@@ -23,12 +23,13 @@ describe("<If_/>", () => {
       currentStep,
       dispatch: jest.fn(),
       index: 0,
-      resources: emptyState().index
+      resources: emptyState().index,
+      installedOsVersion: undefined
     };
   }
 
   it("renders", () => {
-    const wrapper = mount(<If_ {...fakeProps() } />);
+    const wrapper = mount(<If_ {...fakeProps()} />);
     ["Variable", "Operator", "Value"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find("button").length).toEqual(2);

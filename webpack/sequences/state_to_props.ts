@@ -3,11 +3,13 @@ import { Props, HardwareFlags } from "./interfaces";
 import {
   selectAllSequences,
   findSequence,
-  getWebAppConfig
+  getWebAppConfig,
+  maybeGetDevice
 } from "../resources/selectors";
 import { getStepTag } from "../resources/sequence_tagging";
 import { enabledAxisMap } from "../devices/components/axis_tracking_status";
-import { betterCompact } from "../util";
+import { betterCompact, semverCompare, SemverResult } from "../util";
+import { isUndefined } from "lodash";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;
@@ -53,6 +55,23 @@ export function mapStateToProps(props: Everything): Props {
   const conf = getWebAppConfig(props.resources.index);
   const showFirstPartyFarmware = !!(conf && conf.body.show_first_party_farmware);
 
+  const installedOsVersion = (): string | undefined => {
+    const fromBotState = props.bot.hardware
+      .informational_settings.controller_version;
+    const device = maybeGetDevice(props.resources.index);
+    const fromAPI = device ? device.body.fbos_version : undefined;
+    if (isUndefined(fromBotState) && isUndefined(fromAPI)) { return undefined; }
+    switch (semverCompare(fromBotState || "", fromAPI || "")) {
+      case SemverResult.LEFT_IS_GREATER:
+      case SemverResult.EQUAL:
+        return fromBotState === "" ? undefined : fromBotState;
+      case SemverResult.RIGHT_IS_GREATER:
+        return fromAPI === "" ? undefined : fromAPI;
+      default:
+        return undefined;
+    }
+  };
+
   return {
     dispatch: props.dispatch,
     sequences: selectAllSequences(props.resources.index),
@@ -71,6 +90,7 @@ export function mapStateToProps(props: Everything): Props {
       farmwareNames,
       firstPartyFarmwareNames,
       showFirstPartyFarmware
-    }
+    },
+    installedOsVersion: installedOsVersion(),
   };
 }

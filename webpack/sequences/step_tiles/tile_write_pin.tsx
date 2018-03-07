@@ -16,7 +16,8 @@ import {
 } from "./pin_and_peripheral_support";
 
 export function TileWritePin(props: StepParams) {
-  const { dispatch, currentStep, index, currentSequence } = props;
+  const { dispatch, currentStep, index, currentSequence, installedOsVersion
+  } = props;
   if (currentStep.kind !== "write_pin") { throw new Error("never"); }
 
   const pinValueField = () => {
@@ -53,7 +54,7 @@ export function TileWritePin(props: StepParams) {
           <FBSelect
             selectedItem={celery2DropDown(pin_number, props.resources)}
             onChange={setArgsDotPinNumber(props)}
-            list={pinsAsDropDowns(props.resources)} />
+            list={pinsAsDropDowns(props.resources, installedOsVersion)} />
         </Col>
         <Col xs={6} md={3}>
           <label>{t("Value")}</label>

@@ -23,7 +23,8 @@ export function If_(props: IfParams) {
   const {
     dispatch,
     currentStep,
-    index
+    index,
+    installedOsVersion,
   } = props;
   const step = props.currentStep;
   const sequence = props.currentSequence;
@@ -40,6 +41,8 @@ export function If_(props: IfParams) {
     };
   }
 
+  const lhsOptions = LHSOptions(props.resources, installedOsVersion);
+
   return <Row>
     <Col xs={12}>
       <h4 className="top">{t("IF...")}</h4>
@@ -47,10 +50,11 @@ export function If_(props: IfParams) {
     <Col xs={4}>
       <label>{t("Variable")}</label>
       <FBSelect
-        list={LHSOptions}
+        list={lhsOptions}
         placeholder="Left hand side"
         onChange={updateField("lhs")}
-        selectedItem={LHSOptions.filter(x => x.value === lhs)[0] || NULL_CHOICE} />
+        selectedItem={lhsOptions
+          .filter(x => x.value === lhs)[0] || NULL_CHOICE} />
     </Col>
     <Col xs={4}>
       <label>{t("Operator")}</label>

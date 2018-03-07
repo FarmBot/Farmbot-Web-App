@@ -41,12 +41,13 @@ describe("<SequenceEditorMiddleActive/>", () => {
         farmwareNames: [],
         firstPartyFarmwareNames: [],
         showFirstPartyFarmware: false
-      }
+      },
+      installedOsVersion: undefined,
     };
   }
 
   function clickButton(position: number, text: string) {
-    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps() } />);
+    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
     const button = wrapper.find("button").at(position);
     expect(button.text()).toEqual(text);
     button.simulate("click");
@@ -65,7 +66,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
   });
 
   it("has drag area", () => {
-    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps() } />);
+    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
     expect(wrapper.find(".drag-drop-area").text()).toEqual("DRAG COMMAND HERE");
   });
 });
