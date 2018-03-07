@@ -1,11 +1,8 @@
 import { fakeFbosConfig } from "../../__test_support__/fake_state/resources";
 
 let mockFbosConfig: TaggedFbosConfig | undefined = fakeFbosConfig();
-jest.mock("../../resources/selectors", () => ({
-  getDeviceAccountSettings: jest.fn(),
-  assertUuid: jest.fn(),
-  getFbosConfig: () => mockFbosConfig,
-  selectAllImages: jest.fn()
+jest.mock("../../resources/config_selectors", () => ({
+  getFbosConfig: () => mockFbosConfig
 }));
 
 import { mapStateToProps } from "../state_to_props";

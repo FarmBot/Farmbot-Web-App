@@ -27,7 +27,6 @@ import {
   TaggedUser,
   TaggedWebcamFeed,
   TaggedDevice,
-  TaggedFbosConfig,
   SpecialStatus,
   TaggedPoint
 } from "./tagged_resources";
@@ -485,13 +484,6 @@ export function findToolBySlotId(input: ResourceIndex, tool_slot_id: number):
     return wow;
   } else {
     return undefined;
-  }
-}
-
-export function getFbosConfig(i: ResourceIndex): TaggedFbosConfig | undefined {
-  const conf = i.references[i.byKind.FbosConfig[0] || "NO"];
-  if (conf && conf.kind === "FbosConfig") {
-    return conf;
   }
 }
 
