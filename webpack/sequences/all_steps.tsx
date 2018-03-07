@@ -15,12 +15,13 @@ interface AllStepsProps {
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
   farmwareInfo?: FarmwareInfo;
+  installedOsVersion?: string | undefined;
 }
 
 export class AllSteps extends React.Component<AllStepsProps, {}> {
   render() {
     const {
-      sequence, onDrop, dispatch, hardwareFlags, farmwareInfo
+      sequence, onDrop, dispatch, hardwareFlags, farmwareInfo, installedOsVersion
     } = this.props;
     const items = (sequence.body.body || [])
       .map((currentStep: SequenceBodyItem, index, arr) => {
@@ -46,7 +47,8 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
                 currentSequence: sequence,
                 resources: this.props.resources,
                 hardwareFlags,
-                farmwareInfo
+                farmwareInfo,
+                installedOsVersion,
               })}
             </div>
           </StepDragger>

@@ -32,6 +32,7 @@ export interface Props {
   autoSyncEnabled: boolean;
   hardwareFlags: HardwareFlags;
   farmwareInfo: FarmwareInfo;
+  installedOsVersion: string | undefined;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -43,6 +44,7 @@ export interface SequenceEditorMiddleProps {
   autoSyncEnabled: boolean;
   hardwareFlags: HardwareFlags;
   farmwareInfo: FarmwareInfo;
+  installedOsVersion: string | undefined;
 }
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
@@ -167,4 +169,5 @@ export interface StepParams {
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
   farmwareInfo?: FarmwareInfo;
+  installedOsVersion?: string | undefined;
 }

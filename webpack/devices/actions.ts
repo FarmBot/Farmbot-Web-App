@@ -12,7 +12,7 @@ import { Sequence } from "../sequences/interfaces";
 import { ControlPanelState } from "../devices/interfaces";
 import { API } from "../api/index";
 import { User } from "../auth/interfaces";
-import { getDeviceAccountSettings, getFbosConfig } from "../resources/selectors";
+import { getDeviceAccountSettings } from "../resources/selectors";
 import { TaggedDevice } from "../resources/tagged_resources";
 import { versionOK } from "./reducer";
 import { HttpData, oneOf } from "../util";
@@ -21,6 +21,7 @@ import { mcuParamValidator } from "./update_interceptor";
 import { pingAPI } from "../connectivity/ping_mqtt";
 import { edit, save as apiSave } from "../api/crud";
 import { WebAppConfig } from "../config_storage/web_app_configs";
+import { getFbosConfig } from "../resources/config_selectors";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;

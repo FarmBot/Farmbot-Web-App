@@ -41,7 +41,8 @@ export class Sequences extends React.Component<Props, {}> {
               consistent={this.props.consistent}
               autoSyncEnabled={this.props.autoSyncEnabled}
               hardwareFlags={this.props.hardwareFlags}
-              farmwareInfo={this.props.farmwareInfo} />
+              farmwareInfo={this.props.farmwareInfo}
+              installedOsVersion={this.props.installedOsVersion} />
           </div>
         </Col>
         <Col sm={3}>

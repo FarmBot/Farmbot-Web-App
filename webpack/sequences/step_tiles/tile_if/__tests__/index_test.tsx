@@ -5,7 +5,12 @@ jest.mock("../../../../api/crud", () => ({
 import * as React from "react";
 import { mount } from "enzyme";
 import {
-  seqDropDown, initialValue, InnerIf, IfParams, IfBlockDropDownHandler
+  seqDropDown,
+  initialValue,
+  InnerIf,
+  IfParams,
+  IfBlockDropDownHandler,
+  LHSOptions
 } from "../index";
 import {
   buildResourceIndex, FAKE_RESOURCES
@@ -13,6 +18,7 @@ import {
 import { Execute, If } from "farmbot";
 import { TaggedSequence } from "../../../../resources/tagged_resources";
 import { overwrite } from "../../../../api/crud";
+import { fakeSensor, fakePeripheral } from "../../../../__test_support__/fake_state/resources";
 
 const fakeResourceIndex = buildResourceIndex(FAKE_RESOURCES).index;
 const fakeTaggedSequence = fakeResourceIndex
@@ -37,7 +43,8 @@ function fakeProps(): IfParams {
     currentStep,
     dispatch: jest.fn(),
     index: 0,
-    resources: fakeResourceIndex
+    resources: fakeResourceIndex,
+    installedOsVersion: undefined,
   };
 }
 
@@ -57,9 +64,33 @@ describe("initialValue()", () => {
   });
 });
 
+describe("LHSOptions()", () => {
+  it("returns positions and pins", () => {
+    const s = fakeSensor();
+    const p = fakePeripheral();
+    s.body.label = "not displayed";
+    p.body.label = "not displayed";
+    const ri = buildResourceIndex([s, p]);
+    const result = JSON.stringify(LHSOptions(ri.index, undefined));
+    expect(result).not.toContain("not displayed");
+    expect(result).toContain("X position");
+    expect(result).toContain("Pin 25");
+  });
+
+  it("returns positions, peripherals, sensors, pins", () => {
+    const s = fakeSensor();
+    const p = fakePeripheral();
+    s.body.label = "displayed";
+    p.body.label = "displayed";
+    const ri = buildResourceIndex([s, p]);
+    const result = JSON.stringify(LHSOptions(ri.index, "1000.0.0"));
+    expect(result).toContain("displayed");
+  });
+});
+
 describe("<InnerIf />", () => {
   it("renders", () => {
-    const wrapper = mount(<InnerIf {...fakeProps() } />);
+    const wrapper = mount(<InnerIf {...fakeProps()} />);
     ["IF", "THEN", "ELSE"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
@@ -67,7 +98,7 @@ describe("<InnerIf />", () => {
   it("is recursive", () => {
     const p = fakeProps();
     p.currentStep.args._then = execute;
-    const wrapper = mount(<InnerIf {...p } />);
+    const wrapper = mount(<InnerIf {...p} />);
     expect(wrapper.text()).toContain("Recursive condition");
   });
 });

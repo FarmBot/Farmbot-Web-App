@@ -61,9 +61,11 @@ export class PlantInventoryItem extends
     const label = plant.name || "Unknown plant";
 
     // Original planted date vs time now to determine age.
-    const plantedAt = plant.created_at || moment();
+    const plantedAt = plant.planted_at
+      ? moment(plant.planted_at)
+      : moment(plant.created_at) || moment();
     const currentDay = moment();
-    const daysOld = currentDay.diff(moment(plantedAt), "days") + 1;
+    const daysOld = currentDay.diff(plantedAt, "days") + 1;
 
     return <div
       className={`plant-search-item ${this.props.hovered ? "hovered" : ""}`}

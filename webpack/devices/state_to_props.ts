@@ -2,10 +2,10 @@ import { Everything } from "../interfaces";
 import { Props } from "./interfaces";
 import {
   selectAllImages,
-  getDeviceAccountSettings,
-  getFbosConfig
+  getDeviceAccountSettings
 } from "../resources/selectors";
 import { sourceFbosConfigValue } from "./components/source_fbos_config_value";
+import { getFbosConfig } from "../resources/config_selectors";
 
 export function mapStateToProps(props: Everything): Props {
   const conf = getFbosConfig(props.resources.index);

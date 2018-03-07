@@ -65,6 +65,16 @@ select {
     content: "*";
 }
 
+.filter-search-heading-item {
+  pointer-events: none;
+  font-weight: bold;
+  &:before {
+    content: "➖";
+    font-weight: bold;
+    color: inherit;
+  }
+}
+
 .fb-checkbox {
   input[type="checkbox"] {
     border-radius: 0;
