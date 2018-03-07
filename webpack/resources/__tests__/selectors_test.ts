@@ -68,7 +68,7 @@ describe("findSlotByToolId", () => {
 
 describe("getFeeds", () => {
   it("returns empty array", () => {
-    expect(Selector.getFeeds(emptyState().index).length).toBe(0);
+    expect(Selector.selectAllWebcamFeeds(emptyState().index).length).toBe(0);
   });
 
   it("finds the only WebcamFeed", () => {
@@ -80,7 +80,7 @@ describe("getFeeds", () => {
         data: feed
       }
     }].reduce(resourceReducer, emptyState());
-    expect(Selector.getFeeds(state.index)[0].body).toEqual(feed);
+    expect(Selector.selectAllWebcamFeeds(state.index)[0].body).toEqual(feed);
   });
 });
 

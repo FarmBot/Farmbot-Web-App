@@ -55,7 +55,7 @@ export let isKind = (name: ResourceName) => (tr: TaggedResource) => tr.kind === 
 
 export function groupPointsByType(index: ResourceIndex) {
   return _(selectAllPoints(index))
-    // If this fiails to compile....
+    // If this fails to compile....
     .tap(x => x[0].body.pointer_type)
     // ... this line must be updated:
     .groupBy("body.pointer_type")
@@ -109,7 +109,7 @@ export function findPlant(i: ResourceIndex, uuid: string):
   TaggedPlantPointer {
   const point = findPoints(i, uuid);
   if (point && sanityCheck(point) && point.body.pointer_type === "Plant") {
-    return point;
+    return point as TaggedPlantPointer;
   } else {
     throw new Error("That is not a true plant pointer");
   }

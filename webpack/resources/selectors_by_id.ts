@@ -19,18 +19,21 @@ import { findAll } from "./selectors";
 import * as _ from "lodash";
 
 /** FINDS: all tagged resources with particular ID */
-export function findAllById(i: ResourceIndex, ids: number[], k: ResourceName) {
-  const output: TaggedResource[] = [];
-  findAll(i, k).map(x => x.kind === k ? output.push(x) : "");
-  return output;
-}
-export let byId = <T extends TaggedResource>(name: ResourceName) =>
-  (index: ResourceIndex, id: number): T | undefined => {
-    const tools = findAll(index, name);
-    const f = (x: TaggedResource) => (x.kind === name) && (x.body.id === id);
-    // Maybe we should add a throw here?
-    return tools.filter(f)[0] as T | undefined;
+export const findAllById =
+  <T extends TaggedResource>(i: ResourceIndex, ids: number[], k: T["kind"]) => {
+    const output: TaggedResource[] = [];
+    findAll<T>(i, k).map(x => x.kind === k ? output.push(x) : "");
+    return output;
   };
+
+export let byId =
+  <T extends TaggedResource>(name: T["kind"]) =>
+    (index: ResourceIndex, id: number): T | undefined => {
+      const resources = findAll(index, name);
+      const f = (x: TaggedResource) => (x.kind === name) && (x.body.id === id);
+      // Maybe we should add a throw here?
+      return resources.filter(f)[0] as T | undefined;
+    };
 
 export let findFarmEventById = (ri: ResourceIndex, fe_id: number) => {
   const fe = byId("FarmEvent")(ri, fe_id);
