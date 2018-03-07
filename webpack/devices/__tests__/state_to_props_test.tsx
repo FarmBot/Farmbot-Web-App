@@ -1,16 +1,19 @@
-import { fakeFbosConfig } from "../../__test_support__/fake_state/resources";
+import { fakeFbosConfig, fakeImage } from "../../__test_support__/fake_state/resources";
 
 let mockFbosConfig: TaggedFbosConfig | undefined = fakeFbosConfig();
+const mockImages: TaggedImage | undefined = fakeImage();
+
 jest.mock("../../resources/selectors_by_kind", () => ({
-  getFbosConfig: () => mockFbosConfig
+  getFbosConfig: () => mockFbosConfig,
+  selectAllImages: () => [mockImages],
 }));
 
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
-import { TaggedFbosConfig } from "../../resources/tagged_resources";
+import { TaggedFbosConfig, TaggedImage } from "../../resources/tagged_resources";
 
 describe("mapStateToProps()", () => {
-  it("API source of FBOS settings", () => {
+  it("is the source of API FBOS settings", () => {
     const fakeApiConfig = fakeFbosConfig();
     fakeApiConfig.body.auto_sync = true;
     fakeApiConfig.body.api_migrated = true;
@@ -21,7 +24,7 @@ describe("mapStateToProps()", () => {
     });
   });
 
-  it("bot source of FBOS settings", () => {
+  it("is the source of bot FBOS settings", () => {
     const state = fakeState();
     state.bot.hardware.configuration.auto_sync = false;
     mockFbosConfig = undefined;
@@ -31,7 +34,7 @@ describe("mapStateToProps()", () => {
     });
   });
 
-  it("bot source of FBOS settings: ignore API defaults", () => {
+  it("is the source of bot FBOS settings: ignore API defaults", () => {
     const state = fakeState();
     state.bot.hardware.configuration.auto_sync = false;
     const fakeApiConfig = fakeFbosConfig();
