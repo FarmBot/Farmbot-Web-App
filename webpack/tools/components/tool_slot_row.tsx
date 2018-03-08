@@ -1,11 +1,35 @@
 import * as React from "react";
+import { Row, Col, FBSelect, DropDownItem } from "../../ui";
+import { Popover, Position } from "@blueprintjs/core";
+import { SlotMenu } from "./toolbay_slot_menu";
+import { TaggedToolSlotPointer } from "../../resources/tagged_resources";
+import { destroy } from "../../api/crud";
+import { Xyz } from "../../devices/interfaces";
+import { ToolBayNumberCol } from "./toolbay_number_column";
 
 interface ToolSlotRowProps {
-
+  dispatch: Function;
+  slot: TaggedToolSlotPointer;
+  botPosition: Record<"x" | "y" | "z", number | undefined>;
+  toolOptions: DropDownItem[];
+  chosenToolOption: DropDownItem;
+  onToolSlotChange(item: DropDownItem): void;
 }
 
-function ToolSlotRow(p: ToolSlotRowProps) {
-  return <Row key={index}>
+type Axis = Xyz & keyof (TaggedToolSlotPointer["body"]);
+const axes: Axis[] = ["x", "y", "z"];
+
+export function ToolSlotRow(p: ToolSlotRowProps) {
+  const {
+    dispatch,
+    slot,
+    botPosition,
+    toolOptions,
+    onToolSlotChange,
+    chosenToolOption
+  } = p;
+
+  return <Row>
     <Col xs={1}>
       <Popover position={Position.BOTTOM_LEFT}>
         <i className="fa fa-gear" />
@@ -15,39 +39,17 @@ function ToolSlotRow(p: ToolSlotRowProps) {
           botPosition={botPosition} />
       </Popover>
     </Col>
-    {/** ======================================================= */}
-    <Col xs={2}>
-      <BlurableInput
-        value={(x || 0).toString()}
-        onCommit={(e) => {
-          dispatch(edit(slot, { x: parseInt(e.currentTarget.value, 10) }));
-        }}
-        type="number" />
-    </Col>
-    <Col xs={2}>
-      <BlurableInput
-        value={(y || 0).toString()}
-        onCommit={(e) => {
-          dispatch(edit(slot, { y: parseInt(e.currentTarget.value, 10) }));
-        }}
-        type="number" />
-    </Col>
-    <Col xs={2}>
-      <BlurableInput
-        value={(z || 0).toString()}
-        onCommit={(e) => {
-          dispatch(edit(slot, { z: parseInt(e.currentTarget.value, 10) }));
-        }}
-        type="number" />
-    </Col>
-    {/** ======================================================= */}
+    {
+      axes
+        .map(axis => ({ axis, dispatch, slot, value: (slot.body[axis] || 0) }))
+        .map((props) => <ToolBayNumberCol {...props} />)
+    }
     <Col xs={4}>
       <FBSelect
-        list={this.props.getToolOptions()}
-        selectedItem={this.props.getChosenToolOption(slot.uuid)}
+        list={toolOptions}
+        selectedItem={chosenToolOption}
         allowEmpty={true}
-        onChange={this.props.changeToolSlot(slot,
-          this.props.dispatch)} />
+        onChange={onToolSlotChange} />
     </Col>
     <Col xs={1}>
       <button
@@ -57,22 +59,4 @@ function ToolSlotRow(p: ToolSlotRowProps) {
       </button>
     </Col>
   </Row>;
-}
-interface NumColProps {
-  axis: "x" | "y" | "z";
-  value?: number;
-  dispatch: Function;
-  slot: TaggedToolSlotPointer;
-}
-
-function ToolBayNumberCol({ axis, value, dispatch, slot }: NumColProps) {
-  return <Col xs={2}>
-    <BlurableInput
-      value={(value || 0).toString()}
-      onCommit={(e) => {
-        dispatch(edit(slot, { [axis]: parseInt(e.currentTarget.value, 10) }));
-      }}
-      type="number" />
-  </Col>;
-
 }

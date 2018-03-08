@@ -69,11 +69,6 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
           {this.props.getToolSlots().map(
             (slot: TaggedToolSlotPointer, index: number) => {
               const { x, y, z } = slot.body;
-              const numRows: NumColProps[] = [
-                { axis: "x", dispatch, value: x, slot },
-                { axis: "y", dispatch, value: y, slot },
-                { axis: "z", dispatch, value: z, slot },
-              ];
               return <Row key={index}>
                 <Col xs={1}>
                   <Popover position={Position.BOTTOM_LEFT}>
@@ -84,7 +79,6 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
                       botPosition={botPosition} />
                   </Popover>
                 </Col>
-                {/** ======================================================= */}
                 <Col xs={2}>
                   <BlurableInput
                     value={(x || 0).toString()}
@@ -109,7 +103,6 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
                     }}
                     type="number" />
                 </Col>
-                {/** ======================================================= */}
                 <Col xs={4}>
                   <FBSelect
                     list={this.props.getToolOptions()}
