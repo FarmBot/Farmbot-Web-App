@@ -14,7 +14,7 @@ import { GetState } from "../redux/interfaces";
 import { TestButton } from "./test_button";
 import { warning } from "farmbot-toastr";
 import { AllSteps } from "./all_steps";
-// import { LocalsList } from "./locals_list";
+import { LocalsList } from "./locals_list";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -45,7 +45,7 @@ const copy = function (dispatch: Function, sequence: TaggedSequence) {
 export class SequenceEditorMiddleActive extends
   React.Component<ActiveMiddleProps, {}> {
   render() {
-    const { dispatch, sequence } = this.props;
+    const { dispatch, sequence, shouldDisplay } = this.props;
 
     return <div className="sequence-editor-content">
       <div className="sequence-editor-tools">
@@ -79,10 +79,11 @@ export class SequenceEditorMiddleActive extends
             current={sequence.body.color}
             onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
         </Row>
-        {/*  <LocalsList
+        {shouldDisplay("variables") &&
+          <LocalsList
             sequence={this.props.sequence}
             resources={this.props.resources}
-          dispatch={this.props.dispatch} /> */}
+            dispatch={this.props.dispatch} />}
         <hr style={{ /* marginBottom: 0 */ }} />
       </div>
       <div className="sequence" id="sequenceDiv">
