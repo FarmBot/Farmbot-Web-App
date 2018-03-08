@@ -1,0 +1,849 @@
+---
+swagger: "2.0"
+info:
+  description: "No description"
+  version: "1.0.0"
+  title: "farmbot"
+  termsOfService: ""
+  contact: {}
+paths:
+  /:
+    get:
+      summary: "/"
+      description: "returns the String \"Empty Response\""
+      produces:
+      - "text/plain"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+          examples:
+            text/plain: "Empty Response"
+  /api/export_data:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+  /api/fbos_config:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    put:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    delete:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+  /api/firmware_config:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    put:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    delete:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+  /api/public_key:
+    get:
+      produces:
+      - "text/plain"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+            description: "Empty Response\n"
+  /api/tokens:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    post:
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+        x-examples:
+          application/json: "{\n  \"user\": {\n    \"email\": \"nya@hoppe.io\",\n\
+            \    \"password\": \"password\"\n  }\n}"
+      responses:
+        200:
+          description: "Status 200"
+  /api/web_app_config:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    put:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    delete:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+  /app/{imageName}:
+    get:
+      description: "imageName=nope.jpg"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "imageName"
+      in: "path"
+      required: true
+      type: "string"
+  /{jsonFile}:
+    post:
+      description: "jsonFile=csp_reports.json"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+          examples:
+            application/json: "{\n  \n}"
+        400:
+          description: "Status 400"
+          schema:
+            type: "object"
+            example: "{\n  \"problem\": \"Crashed while parsing report\"\n}"
+    parameters:
+    - name: "jsonFile"
+      in: "path"
+      required: true
+      type: "string"
+  /tos_update:
+    get:
+      description: "???\nwhat is a tos_update??"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+  /api/corpuses/{IntId}:
+    get:
+      summary: "Corpuse or Corpuses"
+      description: "* with IntId-Variable:  get one corpuse.\n* no IntId-Variable:\
+        \ get all corpuses"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/corpuse"
+    parameters:
+    - name: "IntId"
+      in: "path"
+      required: true
+      type: "string"
+  /api/device:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/device"
+    post:
+      consumes: []
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            name:
+              type: "string"
+          example: "{\n  \"name\": \"maculate-moon-349\"\n}"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/device"
+    delete:
+      description: "IMHO - cant work - how the server should know which device has\
+        \ to be deleted?"
+      produces:
+      - "text/plain"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+            description: "Empty Response\n"
+  /api/device/{IntId}:
+    put:
+      description: "why the server needs the farmbot-id and another attribute (e.g\
+        \ name or timezone)? IMHO the id should be unique (worldwide)"
+      consumes: []
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          example: "{\n  \"timezone\": \"Singapore\"\n}"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/device"
+          examples:
+            application/json: "{\n  \"id\": 206,\n  \"name\": \"decorticate-mountain-360\"\
+              ,\n  \"timezone\": \"Singapore\",\n  \"last_saw_api\": null,\n  \"last_saw_mq\"\
+              : null,\n  \"last_seen\": null,\n  \"tz_offset_hrs\": 8\n}"
+    parameters:
+    - name: "IntId"
+      in: "path"
+      required: true
+      type: "string"
+  /api/farm_events:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    post:
+      description: "This is how you could create a FarmEvent that fires every 4 minutes."
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+  /api/farm_events/{IntId}:
+    delete:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    patch:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "IntId"
+      in: "path"
+      required: true
+      type: "string"
+  /api/webcam_feeds:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/webcam_feed"
+    post:
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+        x-examples:
+          application/json: "{\n  \"name\": \"name1\",\n  \"url\": \"url1\"\n}"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/webcam_feed"
+  /api/webcam_feeds/{IntID}:
+    get:
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/webcam_feed"
+    delete:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    patch:
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+        x-examples:
+          application/json: "{\n  \"name\": \"ok\",\n  \"url\": \"/foo.jpg\"\n}"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/webcam_feed"
+    parameters:
+    - name: "IntID"
+      in: "path"
+      required: true
+      type: "string"
+  /api/users:
+    post:
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+        x-examples:
+          application/json: "{\n  \"email\": \"lera@runte.com\",\n  \"name\": \"Frank\"\
+            ,\n  \"password\": \"Password123\",\n  \"password_confirmation\": \"Password123\"\
+            \n}"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+            example: "{\n  \"message\": \"Check your email!\"\n}"
+    delete:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    patch:
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+        x-examples:
+          application/json: "{\n  \"new_password\": \"123456789\",\n  \"new_password_confirmation\"\
+            : \"123456789\",\n  \"password\": \"K5Ko82J340KaNl7s\"\n}"
+      responses:
+        200:
+          description: "Status 200"
+  /api/users/resend_verification:
+    post:
+      consumes: []
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          example: "{\n  \"email\": \"oma_quitzon@gleasonmacejkovic.com\"\n}"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+          examples:
+            application/json: "{\n  \"user\": \"Check your email!\"\n}"
+  /api/users/verify/{token}:
+    put:
+      description: "why token in path-variable and in request-body?\npath-variable\
+        \ != request-body is it on purpose?"
+      consumes: []
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          example: "{\n  \"token\": \"14d93f65-a933-4621-a33f-7848f23f5175\"\n}"
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "token"
+      in: "path"
+      required: true
+      type: "string"
+  /api/sequences:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    post:
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+        x-examples:
+          application/json: "{\n  \"name\": \"Scare Birds\",\n  \"body\": [\n    {\n\
+            \      \"kind\": \"move_absolute\",\n      \"args\": {\n        \"location\"\
+            : {\n          \"kind\": \"coordinate\",\n          \"args\": {\n    \
+            \        \"x\": 1,\n            \"y\": 2,\n            \"z\": 3\n    \
+            \      }\n        },\n        \"offset\": {\n          \"kind\": \"coordinate\"\
+            ,\n          \"args\": {\n            \"x\": 0,\n            \"y\": 0,\n\
+            \            \"z\": 0\n          }\n        },\n        \"speed\": 4\n\
+            \      },\n      \"uuid\": \"42d1090c-bb29-44ee-aad6-32fbeaa60f49\"\n\
+            \    },\n    {"
+      responses:
+        200:
+          description: "Status 200"
+  /api/sequences/{IntID}:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    delete:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    patch:
+      consumes: []
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          example: "{\n  \"id\": 58,\n  \"sequence\": {\n    \"name\": \"Scare Birds\"\
+            ,\n    \"body\": [\n      {\n        \"kind\": \"move_absolute\",\n  \
+            \      \"args\": {\n          \"location\": {\n            \"kind\": \"\
+            coordinate\",\n            \"args\": {\n              \"x\": 1,\n    \
+            \          \"y\": 2,\n              \"z\": 3\n            }\n        \
+            \  },\n          \"offset\": {\n            \"kind\": \"coordinate\",\n\
+            \            \"args\": {\n              \"x\": 0,\n              \"y\"\
+            : 0,\n              \"z\": 0\n            }\n          },\n          \"\
+            speed\": 4\n       "
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "IntID"
+      in: "path"
+      required: true
+      type: "string"
+  /api/tools:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    post:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+  /api/tools/{IntID}:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    put:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    delete:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "IntID"
+      in: "path"
+      required: true
+      type: "string"
+  /api/regimens:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    post:
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+        x-examples:
+          application/json: "{\n  \"color\": \"blue\",\n  \"name\": \"Wigglytuff Dratini\
+            \ Kakuna\",\n  \"regimen_items\": [\n    {\n      \"sequence_id\": \"\
+            7\",\n      \"time_offset\": \"123\"\n    }\n  ]\n}"
+      responses:
+        200:
+          description: "Status 200"
+  /api/regimens/{IntID}:
+    put:
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+        x-examples:
+          application/json: "{\n  \"color\": \"blue\",\n  \"name\": \"something new\"\
+            ,\n  \"regimen_items\": [\n    {\n      \"sequence_id\": \"29\",\n   \
+            \   \"time_offset\": \"1555500000\"\n    },\n    {\n      \"sequence_id\"\
+            : \"29\",\n      \"time_offset\": \"864300000\"\n    },\n    {\n     \
+            \ \"sequence_id\": \"29\",\n      \"time_offset\": \"950700000\"\n   \
+            \ }\n  ]\n}"
+      responses:
+        200:
+          description: "Status 200"
+    delete:
+      produces:
+      - "text/plain"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+            description: "Empty Response\n"
+    parameters:
+    - name: "IntID"
+      in: "path"
+      required: true
+      type: "string"
+  /api/points:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    post:
+      consumes: []
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          example: "{\n  \"pointer_type\": \"ToolSlot\",\n  \"name\": \"foo\",\n \
+            \ \"x\": 0,\n  \"y\": 0,\n  \"z\": 0,\n  \"pullout_direction\": 1\n}"
+      responses:
+        400:
+          description: "Status 400"
+          schema:
+            type: "object"
+            example: "{\n  \"error\": \"This is a JSON API. Please use _valid_ JSON.\"\
+              \n}"
+  /api/points/{IntID}:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    put:
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+        x-examples:
+          application/json: "{\n  \"x\": 99,\n  \"y\": 87,\n  \"z\": 33,\n  \"radius\"\
+            : 55,\n  \"meta\": {\n    \"foo\": \"BAR\"\n  }\n}"
+      responses:
+        200:
+          description: "Status 200"
+    delete:
+      description: "IMHO: Bad Design - IntID is sth like an array of IDs?"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "IntID"
+      in: "path"
+      required: true
+      type: "string"
+  /api/points/search:
+    post:
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+        x-examples:
+          application/json: "{\n  \"x\": 23\n}"
+      responses:
+        200:
+          description: "Status 200"
+  /api/peripherals:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+            example: "[\n  {\n    \"id\": 4,\n    \"pin\": 526,\n    \"mode\": 1,\n\
+              \    \"label\": \"MyString\"\n  },\n  {\n    \"id\": 3,\n    \"pin\"\
+              : 239,\n    \"mode\": 1,\n    \"label\": \"MyString\"\n  }\n]"
+    post:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+        x-examples:
+          application/json: "{\n  \"pin\": 13,\n  \"mode\": 0,\n  \"label\": \"LED\"\
+            \n}"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+          examples:
+            application/json: "{\n  \"id\": 5,\n  \"pin\": 13,\n  \"mode\": 0,\n \
+              \ \"label\": \"LED\"\n}"
+    patch:
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+        x-examples:
+          application/json: "{\n  \"pin\": 9\n}"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+            example: "{\n  \"id\": 2,\n  \"pin\": 9,\n  \"mode\": 1,\n  \"label\"\
+              : \"MyString\"\n}"
+  /api/peripherals/{IntID}:
+    delete:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "IntID"
+      in: "path"
+      required: true
+      type: "string"
+  /api/password_resets:
+    post:
+      description: "what happens if the emal-value has no \"@\"?"
+      consumes: []
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            email:
+              type: "string"
+          example: "{\n  \"email\": \"jaylen.mclaughlin@champlingreenholt.info\"\n\
+            }"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+            example: "{\n  \"status\": \"Check your email!\"\n}\n"
+  /api/password_resets/{StringID}:
+    put:
+      description: "StringID: caseSensitive?"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+        x-examples:
+          application/json: "{\n  \"fbos_version\": \"999.9.9\",\n  \"password\":\
+            \ \"xpassword123\",\n  \"password_confirmation\": \"xpassword123\"\n}"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+          examples:
+            application/json: "{\n  \"token\": {\n    \"unencoded\": {\n      \"aud\"\
+              : \"unknown\",\n      \"sub\": 123,\n      \"iat\": 1516898582,\n  \
+              \    \"jti\": \"de484199-4a43-47d3-be4a-a8309cec598d\",\n      \"iss\"\
+              : \"//172.17.0.1:3000\",\n      \"exp\": 1520354582,\n      \"mqtt\"\
+              : \"blooper.io\",\n      \"bot\": \"device_162\",\n      \"vhost\":\
+              \ \"/\",\n      \"mqtt_ws\": \"ws://172.17.0.1:3002/ws\",\n      \"\
+              os_update_server\": \"http://non_legacy_update_url.com\",\n      \"\
+              interim_email\": \"rosendo_dickinson@leuschke.name\",\n      \"fw_update_server\"\
+              : \"DEPRECATED\",\n      \"b"
+    parameters:
+    - name: "StringID"
+      in: "path"
+      required: true
+      type: "string"
+  /api/logs:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    post:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+  /api/logs/all:
+    delete:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+  /api/images:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    post:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+  /api/images/{IntID}:
+    get:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    delete:
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "IntID"
+      in: "path"
+      required: true
+      type: "string"
+definitions:
+  corpuse:
+    type: "object"
+    properties:
+      tag:
+        type: "integer"
+      args:
+        type: "array"
+        items:
+          required:
+          - "name"
+          type: "object"
+          properties:
+            name:
+              type: "string"
+              description: "only one of the following values allowed:\n\"pointer_id\"\
+                , \"pointer_type\", \"pin_mode\", \"sequence_id\", \"lhs\""
+            allowed_values:
+              type: "array"
+              description: "allowed values: \"integer\", \"integer\""
+              items:
+                type: "string"
+    example: "[\n  {\n    \"tag\": 6,\n    \"args\": [\n      {\n        \"name\"\
+      : \"pointer_id\",\n        \"allowed_values\": [\n          \"integer\"\n  \
+      \      ]\n      },\n      {\n        \"name\": \"pointer_type\",\n        \"\
+      allowed_values\": [\n          \"string\"\n        ]\n      },\n      {\n  \
+      \      \"name\": \"pin_mode\",\n        \"allowed_values\": [\n          \"\
+      integer\"\n        ]\n      },\n      {\n        \"name\": \"sequence_id\",\n\
+      \        \"allowed_values\": [\n          \"integer\"\n        ]\n      },\n\
+      \      {\n        \"name\": \"lhs\",\n        \"allowe"
+  device:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+      name:
+        type: "string"
+      timezone:
+        type: "string"
+      last_saw_api:
+        type: "object"
+      last_saw_mq:
+        type: "object"
+      last_seen:
+        type: "object"
+      tz_offset_hrs:
+        type: "number"
+    example: "{\r\n  \"id\": 87,\r\n  \"name\": \"polished-haze-901\",\r\n  \"timezone\"\
+      : \"Europe/Uzhgorod\",\r\n  \"last_saw_api\": null,\r\n  \"last_saw_mq\": null,\r\
+      \n  \"last_seen\": null,\r\n  \"tz_offset_hrs\": 2\r\n}"
+  webcam_feed:
+    type: "object"
+    example: "{\n  \"id\": 2,\n  \"url\": \"Url!\",\n  \"name\": \"Name!\",\n  \"\
+      updated_at\": \"2018-01-25T16:42:54.943Z\",\n  \"created_at\": \"2018-01-25T16:42:54.943Z\"\
+      \n}"
