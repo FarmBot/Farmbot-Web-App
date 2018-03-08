@@ -1,3 +1,8 @@
+import * as React from "react";
+import { TaggedToolSlotPointer } from "../../resources/tagged_resources";
+import { Col, BlurableInput } from "../../ui/index";
+import { edit } from "../../api/crud";
+
 interface NumColProps {
   axis: "x" | "y" | "z";
   value: number;

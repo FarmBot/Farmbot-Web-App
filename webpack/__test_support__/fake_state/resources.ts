@@ -2,13 +2,14 @@ import { Everything } from "../../interfaces";
 import { buildResourceIndex } from "../resource_index_builder";
 import {
   TaggedFarmEvent, TaggedSequence, TaggedRegimen, TaggedImage,
-  TaggedTool, TaggedToolSlotPointer, TaggedUser, TaggedWebcamFeed,
+  TaggedTool, TaggedUser, TaggedWebcamFeed,
   TaggedPlantPointer, TaggedGenericPointer, TaggedPeripheral, TaggedFbosConfig,
   TaggedWebAppConfig,
   TaggedSensor
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
+import { emptyToolSlot } from "../../tools/components/empty_tool_slot";
 
 export let resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -79,19 +80,7 @@ export function fakeUser(): TaggedUser {
   });
 }
 
-export function fakeToolSlot(): TaggedToolSlotPointer {
-  return fakeResource("Point", {
-    name: "ToolSlot 1",
-    pointer_type: "ToolSlot",
-    tool_id: 1,
-    x: 10,
-    y: 10,
-    z: 10,
-    radius: 10,
-    meta: {},
-    pullout_direction: 0
-  });
-}
+export const fakeToolSlot = emptyToolSlot;
 
 export function fakePlant(): TaggedPlantPointer {
   return fakeResource("Point", {
