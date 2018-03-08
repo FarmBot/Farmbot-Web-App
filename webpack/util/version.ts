@@ -1,4 +1,6 @@
-import { isString, get } from "lodash";
+import { isString, get, isUndefined } from "lodash";
+import { BotState } from "../devices/interfaces";
+import { TaggedDevice } from "../resources/tagged_resources";
 
 /**
  * semverCompare(): Determine which version string is greater.
@@ -84,23 +86,70 @@ export enum MinVersionOverride {
   NEVER = "999.999.999",
 }
 
-const tempDataSource = JSON.stringify({ named_pins: MinVersionOverride.NEVER });
-
 export function shouldDisplay(
-  feature: string, current: string | undefined): boolean {
-  if (isString(current)) {
-    // TODO: get min version from JSON file
-    // for example: {"some_feature": "1.2.3", "other_feature": "2.3.4"}
-    const minOsVersionFeatureLookup = JSON.parse(tempDataSource);
-    const min = get(minOsVersionFeatureLookup, feature,
-      MinVersionOverride.NEVER);
-    switch (semverCompare(current, min)) {
-      case SemverResult.LEFT_IS_GREATER:
-      case SemverResult.EQUAL:
-        return true;
-      default:
-        return false;
+  current: string | undefined, lookupData: string | undefined) {
+  return function (feature: string): boolean {
+    if (isString(current)) {
+      let minOsVersionFeatureLookup = {};
+      try {
+        minOsVersionFeatureLookup = JSON.parse(lookupData || "{}");
+      } catch (e) {
+        throw new Error(`Error parsing '${lookupData}', falling back to '{}'`);
+      }
+      const min = get(minOsVersionFeatureLookup, feature,
+        MinVersionOverride.NEVER);
+      switch (semverCompare(current, min)) {
+        case SemverResult.LEFT_IS_GREATER:
+        case SemverResult.EQUAL:
+          return true;
+        default:
+          return false;
+      }
     }
+    return false;
+  };
+}
+
+/**
+ * determineInstalledOsVersion(): Compare the current FBOS version in the bot's
+ * state with the API's fbos_version string and return the greatest version.
+ */
+
+export function determineInstalledOsVersion(
+  bot: BotState, device: TaggedDevice | undefined): string | undefined {
+  const fromBotState = bot.hardware.informational_settings.controller_version;
+  const fromAPI = device ? device.body.fbos_version : undefined;
+  if (isUndefined(fromBotState) && isUndefined(fromAPI)) { return undefined; }
+  switch (semverCompare(fromBotState || "", fromAPI || "")) {
+    case SemverResult.LEFT_IS_GREATER:
+    case SemverResult.EQUAL:
+      return fromBotState === "" ? undefined : fromBotState;
+    case SemverResult.RIGHT_IS_GREATER:
+      return fromAPI === "" ? undefined : fromAPI;
+    default:
+      return undefined;
   }
-  return false;
+}
+
+/**
+ * Compare installed FBOS version against the lowest version compatible
+ * with the web app to lock out incompatible FBOS versions from the App.
+ * It uses a different method than semverCompare() to only look at
+ * major and minor numeric versions and ignores patch and pre-release
+ * identifiers.
+ */
+
+export function versionOK(stringyVersion = "0.0.0",
+  _EXPECTED_MAJOR: number,
+  _EXPECTED_MINOR: number) {
+  const [actual_major, actual_minor] = stringyVersion
+    .split(".")
+    .map(x => parseInt(x, 10));
+  if (actual_major > _EXPECTED_MAJOR) {
+    return true;
+  } else {
+    const majorOK = (actual_major == _EXPECTED_MAJOR);
+    const minorOK = (actual_minor >= _EXPECTED_MINOR);
+    return (majorOK && minorOK);
+  }
 }

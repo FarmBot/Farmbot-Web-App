@@ -24,7 +24,7 @@ export function If_(props: IfParams) {
     dispatch,
     currentStep,
     index,
-    installedOsVersion,
+    shouldDisplay,
   } = props;
   const step = props.currentStep;
   const sequence = props.currentSequence;
@@ -41,7 +41,7 @@ export function If_(props: IfParams) {
     };
   }
 
-  const lhsOptions = LHSOptions(props.resources, installedOsVersion);
+  const lhsOptions = LHSOptions(props.resources, shouldDisplay || (x => false));
 
   return <Row>
     <Col xs={12}>

@@ -6,7 +6,7 @@ import { StepDragger } from "../draggable/step_dragger";
 import { renderCeleryNode } from "./step_tiles/index";
 import { ResourceIndex } from "../resources/interfaces";
 import { getStepTag } from "../resources/sequence_tagging";
-import { HardwareFlags, FarmwareInfo } from "./interfaces";
+import { HardwareFlags, FarmwareInfo, ShouldDisplay } from "./interfaces";
 
 interface AllStepsProps {
   sequence: TaggedSequence;
@@ -15,13 +15,13 @@ interface AllStepsProps {
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
   farmwareInfo?: FarmwareInfo;
-  installedOsVersion?: string | undefined;
+  shouldDisplay?: ShouldDisplay;
 }
 
 export class AllSteps extends React.Component<AllStepsProps, {}> {
   render() {
     const {
-      sequence, onDrop, dispatch, hardwareFlags, farmwareInfo, installedOsVersion
+      sequence, onDrop, dispatch, hardwareFlags, farmwareInfo, shouldDisplay
     } = this.props;
     const items = (sequence.body.body || [])
       .map((currentStep: SequenceBodyItem, index, arr) => {
@@ -48,7 +48,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
                 resources: this.props.resources,
                 hardwareFlags,
                 farmwareInfo,
-                installedOsVersion,
+                shouldDisplay,
               })}
             </div>
           </StepDragger>

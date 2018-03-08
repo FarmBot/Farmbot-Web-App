@@ -307,6 +307,48 @@ describe("fetchReleases()", () => {
   });
 });
 
+describe("fetchMinOsFeatureData()", () => {
+  it("fetches min OS feature data: empty", async () => {
+    mockGetRelease = Promise.resolve({ data: {} });
+    const dispatch = jest.fn();
+    await actions.fetchMinOsFeatureData("url")(dispatch, jest.fn());
+    expect(axios.get).toHaveBeenCalledWith("url");
+    expect(mockError).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: "{}",
+      type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK
+    });
+  });
+
+  it("fetches min OS feature data", async () => {
+    mockGetRelease = Promise.resolve({
+      data: {
+        "a_feature": "1.0.0", "b_feature": "2.0.0"
+      }
+    });
+    const dispatch = jest.fn();
+    await actions.fetchMinOsFeatureData("url")(dispatch, jest.fn());
+    expect(axios.get).toHaveBeenCalledWith("url");
+    expect(mockError).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: "{\"a_feature\":\"1.0.0\",\"b_feature\":\"2.0.0\"}",
+      type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK
+    });
+  });
+
+  it("fails to fetch min OS feature data", async () => {
+    mockGetRelease = Promise.reject("error");
+    const dispatch = jest.fn();
+    await actions.fetchMinOsFeatureData("url")(dispatch, jest.fn());
+    await expect(axios.get).toHaveBeenCalledWith("url");
+    expect(mockError).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: "error",
+      type: "FETCH_MIN_OS_FEATURE_INFO_ERROR"
+    });
+  });
+});
+
 describe("updateConfig()", () => {
   beforeEach(function () {
     jest.clearAllMocks();

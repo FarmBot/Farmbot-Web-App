@@ -65,6 +65,8 @@ export interface BotState {
   currentBetaOSVersion?: string;
   /** The current beta os commit on the github release api */
   currentBetaOSCommit?: string;
+  /** JSON string of minimum required FBOS versions for various features. */
+  minOsFeatureData?: string;
   /** Is the bot in sync with the api */
   dirty: boolean;
   /** The state of the bot, as reported by the bot over MQTT. */

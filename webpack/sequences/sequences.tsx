@@ -42,7 +42,7 @@ export class Sequences extends React.Component<Props, {}> {
               autoSyncEnabled={this.props.autoSyncEnabled}
               hardwareFlags={this.props.hardwareFlags}
               farmwareInfo={this.props.farmwareInfo}
-              installedOsVersion={this.props.installedOsVersion} />
+              shouldDisplay={this.props.shouldDisplay} />
           </div>
         </Col>
         <Col sm={3}>

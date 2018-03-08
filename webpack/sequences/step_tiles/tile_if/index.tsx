@@ -10,13 +10,14 @@ import { isRecursive } from "../index";
 import { If_ } from "./if";
 import { Then } from "./then";
 import { Else } from "./else";
-import { defensiveClone, shouldDisplay } from "../../../util";
+import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
 import { ToolTips } from "../../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../../step_ui/index";
 import {
   sensorsAsDropDowns, peripheralsAsDropDowns, pinDropdowns
 } from "../pin_and_peripheral_support";
+import { ShouldDisplay } from "../../interfaces";
 
 export interface IfParams {
   currentSequence: TaggedSequence;
@@ -24,7 +25,7 @@ export interface IfParams {
   dispatch: Function;
   index: number;
   resources: ResourceIndex;
-  installedOsVersion?: string | undefined;
+  shouldDisplay?: ShouldDisplay;
 }
 
 export type Operator = "lhs"
@@ -34,16 +35,14 @@ export type Operator = "lhs"
   | "_else";
 
 export const LHSOptions =
-  (resources: ResourceIndex, fbosVersion: string | undefined
+  (resources: ResourceIndex, shouldDisplay: ShouldDisplay
   ): DropDownItem[] => [
       { heading: true, label: t("Positions"), value: 0 },
       { value: "x", label: t("X position"), headingId: "Position" },
       { value: "y", label: t("Y position"), headingId: "Position" },
       { value: "z", label: t("Z position"), headingId: "Position" },
-      ...(shouldDisplay("named_pins", fbosVersion) ?
-        peripheralsAsDropDowns(resources) : []),
-      ...(shouldDisplay("named_pins", fbosVersion) ?
-        sensorsAsDropDowns(resources) : []),
+      ...(shouldDisplay("named_pins") ? peripheralsAsDropDowns(resources) : []),
+      ...(shouldDisplay("named_pins") ? sensorsAsDropDowns(resources) : []),
       ...pinDropdowns(n => `pin${n}`),
     ];
 

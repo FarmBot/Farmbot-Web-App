@@ -4,7 +4,6 @@ import {
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
 import { EncoderDisplay } from "../controls/interfaces";
-import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 import { BooleanSetting } from "../session_keys";
 import {
   maybeNegateStatus, maybeNegateConsistency
@@ -13,30 +12,13 @@ import { EdgeStatus } from "../connectivity/interfaces";
 import { ReduxAction } from "../redux/interfaces";
 import { connectivityReducer } from "../connectivity/reducer";
 import { BooleanConfigKey } from "../config_storage/web_app_configs";
+import { versionOK } from "../util";
+import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 
 const afterEach = (state: BotState, a: ReduxAction<{}>) => {
   state.connectivity = connectivityReducer(state.connectivity, a);
   return state;
 };
-
-/**
- * TODO: Refactor this method to use semverCompare() now that it is a thing.
- * - RC 16 Jun 2017.
- */
-export function versionOK(stringyVersion = "0.0.0",
-  _EXPECTED_MAJOR = EXPECTED_MAJOR,
-  _EXPECTED_MINOR = EXPECTED_MINOR) {
-  const [actual_major, actual_minor] = stringyVersion
-    .split(".")
-    .map(x => parseInt(x, 10));
-  if (actual_major > _EXPECTED_MAJOR) {
-    return true;
-  } else {
-    const majorOK = (actual_major == _EXPECTED_MAJOR);
-    const minorOK = (actual_minor >= _EXPECTED_MINOR);
-    return (majorOK && minorOK);
-  }
-}
 
 export let initialState = (): BotState => ({
   consistent: true,
@@ -89,6 +71,7 @@ export let initialState = (): BotState => ({
   dirty: false,
   currentOSVersion: undefined,
   currentBetaOSVersion: undefined,
+  minOsFeatureData: undefined,
   connectivity: {
     "bot.mqtt": undefined,
     "user.mqtt": undefined,
@@ -155,6 +138,10 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     s.currentBetaOSCommit = payload.commit;
     return s;
   })
+  .add<string>(Actions.FETCH_MIN_OS_FEATURE_INFO_OK, (s, { payload }) => {
+    s.minOsFeatureData = payload;
+    return s;
+  })
   .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
     state.hardware = payload;
     const { informational_settings } = state.hardware;
@@ -180,7 +167,8 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
 
     const nextSyncStatus = maybeNegateStatus(info);
 
-    versionOK(informational_settings.controller_version);
+    versionOK(informational_settings.controller_version,
+      EXPECTED_MAJOR, EXPECTED_MINOR);
     state.hardware.informational_settings.sync_status = nextSyncStatus;
     return state;
   })

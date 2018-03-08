@@ -23,7 +23,7 @@ export function PinMode(props: StepParams) {
 
 }
 export function TileReadPin(props: StepParams) {
-  const { dispatch, currentStep, index, currentSequence, installedOsVersion
+  const { dispatch, currentStep, index, currentSequence, shouldDisplay
   } = props;
   const className = "read-pin-step";
   if (currentStep.kind !== "read_pin") { throw new Error("never"); }
@@ -43,7 +43,7 @@ export function TileReadPin(props: StepParams) {
           <FBSelect
             selectedItem={celery2DropDown(pin_number, props.resources)}
             onChange={setArgsDotPinNumber(props)}
-            list={pinsAsDropDowns(props.resources, installedOsVersion)} />
+            list={pinsAsDropDowns(props.resources, shouldDisplay || (x => false))} />
         </Col>
         <Col xs={6} md={3}>
           <label>{t("Data Label")}</label>

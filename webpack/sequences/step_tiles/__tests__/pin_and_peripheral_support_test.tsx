@@ -113,7 +113,7 @@ describe("Pin and Peripheral support files", () => {
       s.body.label = "not displayed";
       p.body.label = "not displayed";
       const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDowns(ri.index, undefined);
+      const result = pinsAsDropDowns(ri.index, x => false);
       expect(JSON.stringify(result)).not.toContain("not displayed");
     });
 
@@ -123,7 +123,7 @@ describe("Pin and Peripheral support files", () => {
       s.body.label = "displayed";
       p.body.label = "displayed";
       const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDowns(ri.index, "1000.0.0");
+      const result = pinsAsDropDowns(ri.index, x => true);
       expect(JSON.stringify(result)).toContain("displayed");
     });
   });
