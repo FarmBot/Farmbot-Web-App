@@ -230,6 +230,23 @@ a {
   }
 }
 
+.change-ownership-form {
+  p {
+    padding: 1rem;
+    margin-left: 0.5rem;
+  }
+  .row {
+    margin-bottom: 1rem;
+  }
+  label {
+    margin-top: 0.5rem;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: 1rem;
+  }
+}
+
 .pin-bindings-widget {
   .fa-th-large {
       color: $dark_gray;

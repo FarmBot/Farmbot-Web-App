@@ -65,7 +65,8 @@ export class Devices extends React.Component<Props, {}> {
               bot={this.props.bot}
               botToMqttLastSeen={botToMqttLastSeen}
               botToMqttStatus={botToMqttStatus}
-              sourceFbosConfig={this.props.sourceFbosConfig} />
+              sourceFbosConfig={this.props.sourceFbosConfig}
+              shouldDisplay={this.props.shouldDisplay} />
             <ConnectivityPanel
               status={this.props.deviceAccount.specialStatus}
               onRefresh={this.refresh}

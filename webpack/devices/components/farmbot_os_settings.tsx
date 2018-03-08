@@ -157,7 +157,8 @@ export class FarmbotOsSettings
             <PowerAndReset
               controlPanelState={this.props.bot.controlPanelState}
               dispatch={this.props.dispatch}
-              sourceFbosConfig={sourceFbosConfig} />
+              sourceFbosConfig={sourceFbosConfig}
+              shouldDisplay={this.props.shouldDisplay} />
           </MustBeOnline>
         </WidgetBody>
       </form>

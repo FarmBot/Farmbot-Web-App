@@ -31,12 +31,12 @@ describe("<Sequences/>", () => {
         firstPartyFarmwareNames: [],
         showFirstPartyFarmware: false
       },
-      installedOsVersion: undefined,
+      shouldDisplay: jest.fn(),
     };
   }
 
   it("renders", () => {
-    const wrapper = shallow(<Sequences {...fakeProps() } />);
+    const wrapper = shallow(<Sequences {...fakeProps()} />);
     expect(wrapper.html()).toContain("Sequences");
     expect(wrapper.html()).toContain("Sequence Editor");
     expect(wrapper.html()).toContain(ToolTips.SEQUENCE_EDITOR);
@@ -46,7 +46,7 @@ describe("<Sequences/>", () => {
   it("step command cluster is hidden", () => {
     const p = fakeProps();
     p.sequence = undefined;
-    const wrapper = shallow(<Sequences {...p } />);
+    const wrapper = shallow(<Sequences {...p} />);
     expect(wrapper.text()).not.toContain("Commands");
   });
 });

@@ -20,7 +20,8 @@ describe("<PowerAndReset/>", () => {
       dispatch: jest.fn(x => x(jest.fn(), fakeState)),
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
-      }
+      },
+      shouldDisplay: jest.fn()
     };
   };
 

@@ -4,7 +4,6 @@ import {
   selectAllSavedSensors
 } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
-import { shouldDisplay } from "../../util";
 import { DropDownItem } from "../../ui";
 import { range, isNumber, isString } from "lodash";
 import {
@@ -13,7 +12,7 @@ import {
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../util/errors";
 import { joinKindAndId } from "../../resources/reducer";
-import { StepParams } from "../interfaces";
+import { StepParams, ShouldDisplay } from "../interfaces";
 import { editStep } from "../../api/crud";
 
 /** `headingIds` required to group the three kinds of pins. */
@@ -74,11 +73,9 @@ export function pinDropdowns(
 }
 
 export const pinsAsDropDowns =
-  (input: ResourceIndex, fbosVersion: string | undefined): DropDownItem[] => [
-    ...(shouldDisplay("named_pins", fbosVersion) ?
-      peripheralsAsDropDowns(input) : []),
-    ...(shouldDisplay("named_pins", fbosVersion) ?
-      sensorsAsDropDowns(input) : []),
+  (input: ResourceIndex, shouldDisplay: ShouldDisplay): DropDownItem[] => [
+    ...(shouldDisplay("named_pins") ? peripheralsAsDropDowns(input) : []),
+    ...(shouldDisplay("named_pins") ? sensorsAsDropDowns(input) : []),
     ...pinDropdowns(n => n),
   ];
 

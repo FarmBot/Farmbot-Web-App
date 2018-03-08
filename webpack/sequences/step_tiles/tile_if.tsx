@@ -10,7 +10,7 @@ export function TileIf(props: StepParams) {
       dispatch={props.dispatch}
       index={props.index}
       resources={props.resources}
-      installedOsVersion={props.installedOsVersion} />;
+      shouldDisplay={props.shouldDisplay} />;
   } else {
     return <p> Expected "_if" node</p>;
   }

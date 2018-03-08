@@ -23,7 +23,7 @@ describe("<SequenceEditorMiddle/>", () => {
         firstPartyFarmwareNames: [],
         showFirstPartyFarmware: false
       },
-      installedOsVersion: undefined,
+      shouldDisplay: jest.fn(),
     };
   }
 

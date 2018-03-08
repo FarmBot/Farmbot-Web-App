@@ -25,7 +25,7 @@ export class SequenceEditorMiddle
         autoSyncEnabled={false}
         hardwareFlags={hardwareFlags}
         farmwareInfo={farmwareInfo}
-        installedOsVersion={this.props.installedOsVersion} />;
+        shouldDisplay={this.props.shouldDisplay} />;
     } else {
       return <SequenceEditorMiddleInactive />;
     }

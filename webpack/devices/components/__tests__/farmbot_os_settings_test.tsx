@@ -27,12 +27,13 @@ describe("<FarmbotOsSettings/>", () => {
       botToMqttStatus: "up",
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
-      }
+      },
+      shouldDisplay: jest.fn()
     };
   };
 
   it("renders settings", () => {
-    const osSettings = mount(<FarmbotOsSettings {...fakeProps() } />);
+    const osSettings = mount(<FarmbotOsSettings {...fakeProps()} />);
     expect(osSettings.find("input").length).toBe(1);
     expect(osSettings.find("button").length).toBe(6);
     ["NAME", "TIME ZONE", "LAST SEEN", "FARMBOT OS", "CAMERA", "FIRMWARE"]
@@ -41,7 +42,7 @@ describe("<FarmbotOsSettings/>", () => {
 
   it("fetches OS release notes", async () => {
     mockReleaseNoteData = { data: "intro\n\n# v6\n\n* note" };
-    const osSettings = await mount(<FarmbotOsSettings {...fakeProps() } />);
+    const osSettings = await mount(<FarmbotOsSettings {...fakeProps()} />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));
     expect(osSettings.state().osReleaseNotes)
@@ -50,7 +51,7 @@ describe("<FarmbotOsSettings/>", () => {
 
   it("doesn't fetch OS release notes", async () => {
     mockReleaseNoteData = { data: "empty notes" };
-    const osSettings = await mount(<FarmbotOsSettings {...fakeProps() } />);
+    const osSettings = await mount(<FarmbotOsSettings {...fakeProps()} />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));
     expect(osSettings.state().osReleaseNotes)
@@ -86,7 +87,7 @@ describe("<FbosDetails />", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount(<FbosDetails {...fakeProps() } />);
+    const wrapper = mount(<FbosDetails {...fakeProps()} />);
     ["Environment: ---",
       "Commit: ---",
       "Target: ---",

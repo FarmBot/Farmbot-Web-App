@@ -32,7 +32,7 @@ export interface Props {
   autoSyncEnabled: boolean;
   hardwareFlags: HardwareFlags;
   farmwareInfo: FarmwareInfo;
-  installedOsVersion: string | undefined;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -44,7 +44,7 @@ export interface SequenceEditorMiddleProps {
   autoSyncEnabled: boolean;
   hardwareFlags: HardwareFlags;
   farmwareInfo: FarmwareInfo;
-  installedOsVersion: string | undefined;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
@@ -53,6 +53,8 @@ export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
   consistent: boolean;
   autoSyncEnabled: boolean;
 }
+
+export type ShouldDisplay = (x: string) => boolean;
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
 
@@ -169,5 +171,5 @@ export interface StepParams {
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
   farmwareInfo?: FarmwareInfo;
-  installedOsVersion?: string | undefined;
+  shouldDisplay?: ShouldDisplay;
 }

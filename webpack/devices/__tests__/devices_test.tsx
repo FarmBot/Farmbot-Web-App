@@ -24,17 +24,18 @@ describe("<Devices/>", () => {
     images: [],
     dispatch: jest.fn(),
     resources: buildResourceIndex(FAKE_RESOURCES).index,
-    sourceFbosConfig: jest.fn()
+    sourceFbosConfig: jest.fn(),
+    shouldDisplay: jest.fn()
   });
 
   it("renders relevant panels", () => {
-    const el = shallow(<Devices {...p() } />);
+    const el = shallow(<Devices {...p()} />);
     expect(el.find(FarmbotOsSettings).length).toBe(1);
   });
 
   it("Crashes when logged out", () => {
     const props = p();
     props.auth = undefined;
-    expect(() => render(<Devices {...props } />)).toThrow();
+    expect(() => render(<Devices {...props} />)).toThrow();
   });
 });
