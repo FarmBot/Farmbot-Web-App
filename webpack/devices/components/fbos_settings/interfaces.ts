@@ -1,4 +1,5 @@
 import { SourceFbosConfig, BotState, ControlPanelState } from "../../interfaces";
+import { ShouldDisplay } from "../../../sequences/interfaces";
 
 export interface AutoSyncRowProps {
   dispatch: Function;
@@ -20,6 +21,7 @@ export interface PowerAndResetProps {
   controlPanelState: ControlPanelState;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface FactoryResetRowProps {
