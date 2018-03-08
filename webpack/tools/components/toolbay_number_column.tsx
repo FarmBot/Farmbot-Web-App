@@ -10,6 +10,7 @@ interface NumColProps {
   slot: TaggedToolSlotPointer;
 }
 
+/** Used to display and edit the X/Y/Z numeric values in the tool bay form. */
 export function ToolBayNumberCol({ axis, value, dispatch, slot }: NumColProps) {
   return <Col xs={2}>
     <BlurableInput

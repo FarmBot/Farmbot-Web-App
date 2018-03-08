@@ -11,8 +11,11 @@ interface ToolSlotRowProps {
   dispatch: Function;
   slot: TaggedToolSlotPointer;
   botPosition: Record<"x" | "y" | "z", number | undefined>;
+  /** List of all legal tool options for the current tool slot. */
   toolOptions: DropDownItem[];
+  /** The current tool (if any) in the slot. */
   chosenToolOption: DropDownItem;
+  /** Broadcast tool change back up to parent. */
   onToolSlotChange(item: DropDownItem): void;
 }
 
