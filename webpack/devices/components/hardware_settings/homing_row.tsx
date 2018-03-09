@@ -14,7 +14,7 @@ const speed = Farmbot.defaults.speed;
 const findHome = (axis: Axis) => getDevice().findHome({ speed, axis });
 
 export function HomingRow(props: HomingRowProps) {
-  const { hardware } = props;
+  const { hardware, botDisconnected } = props;
 
   return <Row>
     <Col xs={6}>
@@ -27,7 +27,9 @@ export function HomingRow(props: HomingRowProps) {
       .map((row) => {
         const { axis, disabled } = row;
         return <Col xs={2} key={axis} className={"centered-button-div"}>
-          <LockableButton disabled={disabled} onClick={() => findHome(axis)}>
+          <LockableButton
+            disabled={disabled || botDisconnected}
+            onClick={() => findHome(axis)}>
             {t("HOME {{axis}}", { axis })}
           </LockableButton>
         </Col>;

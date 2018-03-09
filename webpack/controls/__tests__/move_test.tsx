@@ -31,11 +31,12 @@ describe("<Move />", () => {
       y_axis_inverted: false,
       z_axis_inverted: false,
       botToMqttStatus: "up",
+      firmwareSettings: bot.hardware.mcu_params,
     };
   }
 
   it("has default elements", () => {
-    const wrapper = mount(<Move {...fakeProps() } />);
+    const wrapper = mount(<Move {...fakeProps()} />);
     const txt = wrapper.text().toLowerCase();
     ["move amount (mm)", "110100100010000", "x axisy axisz axis", "motor", "go"]
       .map(string => expect(txt).toContain(string));

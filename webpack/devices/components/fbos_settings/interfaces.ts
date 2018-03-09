@@ -1,5 +1,6 @@
-import { SourceFbosConfig, BotState, ControlPanelState } from "../../interfaces";
-import { ShouldDisplay } from "../../../sequences/interfaces";
+import {
+  SourceFbosConfig, BotState, ControlPanelState, ShouldDisplay
+} from "../../interfaces";
 
 export interface AutoSyncRowProps {
   dispatch: Function;

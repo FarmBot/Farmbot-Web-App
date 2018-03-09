@@ -1,14 +1,13 @@
 jest.mock("farmbot-toastr", () => ({ warning: jest.fn() }));
 
 import { McuInputBox } from "../mcu_input_box";
-import { BotState } from "../../interfaces";
 import { warning } from "farmbot-toastr";
 
 describe("McuInputBox", () => {
   it("clamps numbers", () => {
     jest.clearAllMocks();
     const mib = new McuInputBox({
-      bot: {} as BotState,
+      sourceFwConfig: jest.fn(),
       setting: "encoder_enabled_x",
       dispatch: jest.fn()
     });
