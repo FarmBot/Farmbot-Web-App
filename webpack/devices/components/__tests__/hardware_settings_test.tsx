@@ -1,10 +1,11 @@
 import * as React from "react";
-import { mount } from "enzyme";
-import { HardwareSettings } from "../hardware_settings";
+import { mount, shallow } from "enzyme";
+import { HardwareSettings, FwParamExportMenu } from "../hardware_settings";
 import { HardwareSettingsProps } from "../../interfaces";
 import { Actions } from "../../../constants";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { panelState } from "../../../__test_support__/control_panel_state";
+import { fakeFirmwareConfig } from "../../../__test_support__/fake_state/resources";
 
 describe("<HardwareSettings />", () => {
   beforeEach(() => {
@@ -19,12 +20,16 @@ describe("<HardwareSettings />", () => {
       dispatch: jest.fn(),
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
-      }
+      },
+      sourceFwConfig: (x) => {
+        return { value: bot.hardware.mcu_params[x], consistent: true };
+      },
+      firmwareConfig: undefined,
     };
   };
 
   it("renders", () => {
-    const wrapper = mount(<HardwareSettings {...fakeProps() } />);
+    const wrapper = mount(<HardwareSettings {...fakeProps()} />);
     ["expand all", "x axis", "motors"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
@@ -56,5 +61,26 @@ describe("<HardwareSettings />", () => {
   it("toggles motor category", () => {
     checkDispatch("h4", 1, "motors",
       Actions.TOGGLE_CONTROL_PANEL_OPTION, "motors");
+  });
+
+  it("shows param export menu", () => {
+    const p = fakeProps();
+    p.firmwareConfig = fakeFirmwareConfig().body;
+    p.firmwareConfig.api_migrated = true;
+    const wrapper = shallow(<HardwareSettings {...p} />);
+    expect(wrapper.find("Popover").length).toEqual(1);
+  });
+
+  it("doesn't show param export menu", () => {
+    const wrapper = shallow(<HardwareSettings {...fakeProps()} />);
+    expect(wrapper.find("Popover").length).toEqual(0);
+  });
+});
+
+describe("<FwParamExportMenu />", () => {
+  it("lists all params", () => {
+    const config = fakeFirmwareConfig().body;
+    const wrapper = mount(<FwParamExportMenu firmwareConfig={config} />);
+    expect(wrapper.text()).toContain("movement_max_spd_");
   });
 });

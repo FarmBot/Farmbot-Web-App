@@ -30,7 +30,8 @@ export class Controls extends React.Component<Props, {}> {
       x_axis_inverted: !!Session.deprecatedGetBool(BooleanSetting.x_axis_inverted),
       y_axis_inverted: !!Session.deprecatedGetBool(BooleanSetting.y_axis_inverted),
       z_axis_inverted: !!Session.deprecatedGetBool(BooleanSetting.z_axis_inverted),
-      botToMqttStatus: this.props.botToMqttStatus
+      botToMqttStatus: this.props.botToMqttStatus,
+      firmwareSettings: this.props.firmwareSettings,
     };
     const showWebcamWidget = !Session.deprecatedGetBool(BooleanSetting.hide_webcam_widget);
     return <Page className="controls">

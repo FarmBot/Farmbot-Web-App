@@ -1,9 +1,13 @@
 import { Everything } from "../interfaces";
 import { Props, HardwareFlags } from "./interfaces";
-import { selectAllSequences, findSequence, maybeGetDevice } from "../resources/selectors";
+import {
+  selectAllSequences, findSequence, maybeGetDevice, getFirmwareConfig
+} from "../resources/selectors";
 import { getStepTag } from "../resources/sequence_tagging";
 import { enabledAxisMap } from "../devices/components/axis_tracking_status";
-import { betterCompact, shouldDisplay, determineInstalledOsVersion } from "../util";
+import {
+  betterCompact, shouldDisplay, determineInstalledOsVersion, validFwConfig
+} from "../util";
 import { getWebAppConfig } from "../resources/selectors";
 
 export function mapStateToProps(props: Everything): Props {
@@ -11,32 +15,34 @@ export function mapStateToProps(props: Everything): Props {
   const sequence = uuid ? findSequence(props.resources.index, uuid) : undefined;
   sequence && (sequence.body.body || []).map(x => getStepTag(x));
 
+  const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
+  const { mcu_params } = props.bot.hardware;
+  const firmwareSettings = fwConfig || mcu_params;
   const hardwareFlags = (): HardwareFlags => {
-    const { mcu_params } = props.bot.hardware;
     return {
-      findHomeEnabled: enabledAxisMap(mcu_params),
+      findHomeEnabled: enabledAxisMap(firmwareSettings),
       stopAtHome: {
-        x: !!mcu_params.movement_stop_at_home_x,
-        y: !!mcu_params.movement_stop_at_home_y,
-        z: !!mcu_params.movement_stop_at_home_z
+        x: !!firmwareSettings.movement_stop_at_home_x,
+        y: !!firmwareSettings.movement_stop_at_home_y,
+        z: !!firmwareSettings.movement_stop_at_home_z
       },
       stopAtMax: {
-        x: !!mcu_params.movement_stop_at_max_x,
-        y: !!mcu_params.movement_stop_at_max_y,
-        z: !!mcu_params.movement_stop_at_max_z
+        x: !!firmwareSettings.movement_stop_at_max_x,
+        y: !!firmwareSettings.movement_stop_at_max_y,
+        z: !!firmwareSettings.movement_stop_at_max_z
       },
       negativeOnly: {
-        x: !!mcu_params.movement_home_up_x,
-        y: !!mcu_params.movement_home_up_y,
-        z: !!mcu_params.movement_home_up_z
+        x: !!firmwareSettings.movement_home_up_x,
+        y: !!firmwareSettings.movement_home_up_y,
+        z: !!firmwareSettings.movement_home_up_z
       },
       axisLength: {
-        x: (mcu_params.movement_axis_nr_steps_x || 0)
-          / (mcu_params.movement_step_per_mm_x || 1),
-        y: (mcu_params.movement_axis_nr_steps_y || 0)
-          / (mcu_params.movement_step_per_mm_y || 1),
-        z: (mcu_params.movement_axis_nr_steps_z || 0)
-          / (mcu_params.movement_step_per_mm_z || 1)
+        x: (firmwareSettings.movement_axis_nr_steps_x || 0)
+          / (firmwareSettings.movement_step_per_mm_x || 1),
+        y: (firmwareSettings.movement_axis_nr_steps_y || 0)
+          / (firmwareSettings.movement_step_per_mm_y || 1),
+        z: (firmwareSettings.movement_axis_nr_steps_z || 0)
+          / (firmwareSettings.movement_step_per_mm_z || 1)
       },
     };
   };

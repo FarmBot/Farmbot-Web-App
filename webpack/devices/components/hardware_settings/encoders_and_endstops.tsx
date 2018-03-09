@@ -9,14 +9,13 @@ import { Collapse } from "@blueprintjs/core";
 
 export function EncodersAndEndStops(props: EncodersProps) {
 
-  const { encoders_and_endstops } = props.bot.controlPanelState;
-  const { dispatch, bot } = props;
-  const { mcu_params } = bot.hardware;
+  const { encoders_and_endstops } = props.controlPanelState;
+  const { dispatch, sourceFwConfig } = props;
 
   const encodersDisabled = {
-    x: !mcu_params["encoder_enabled_x"],
-    y: !mcu_params["encoder_enabled_y"],
-    z: !mcu_params["encoder_enabled_z"]
+    x: !sourceFwConfig("encoder_enabled_x").value,
+    y: !sourceFwConfig("encoder_enabled_y").value,
+    z: !sourceFwConfig("encoder_enabled_z").value
   };
 
   return <section>
@@ -33,7 +32,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"encoder_enabled_y"}
         z={"encoder_enabled_z"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <BooleanMCUInputGroup
         name={t("Use Encoders for Positioning")}
         tooltip={ToolTips.ENCODER_POSITIONING}
@@ -42,7 +41,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         z={"encoder_use_for_pos_z"}
         grayscale={encodersDisabled}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <BooleanMCUInputGroup
         name={t("Invert Encoders")}
         tooltip={ToolTips.INVERT_ENCODERS}
@@ -51,7 +50,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         z={"encoder_invert_z"}
         grayscale={encodersDisabled}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <NumericMCUInputGroup
         name={t("Max Missed Steps")}
         tooltip={ToolTips.MAX_MISSED_STEPS}
@@ -59,7 +58,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"encoder_missed_steps_max_y"}
         z={"encoder_missed_steps_max_z"}
         gray={encodersDisabled}
-        bot={bot}
+        sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
         name={t("Encoder Missed Step Decay")}
@@ -68,7 +67,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"encoder_missed_steps_decay_y"}
         z={"encoder_missed_steps_decay_z"}
         gray={encodersDisabled}
-        bot={bot}
+        sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
         name={t("Encoder Scaling")}
@@ -77,7 +76,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"encoder_scaling_y"}
         z={"encoder_scaling_z"}
         gray={encodersDisabled}
-        bot={bot}
+        sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <BooleanMCUInputGroup
         name={t("Enable Endstops")}
@@ -86,7 +85,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"movement_enable_endpoints_y"}
         z={"movement_enable_endpoints_z"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <BooleanMCUInputGroup
         name={t("Invert Endstops")}
         tooltip={ToolTips.INVERT_ENDPOINTS}
@@ -94,12 +93,12 @@ export function EncodersAndEndStops(props: EncodersProps) {
         y={"movement_invert_endpoints_y"}
         z={"movement_invert_endpoints_z"}
         grayscale={{
-          x: !mcu_params["movement_enable_endpoints_x"],
-          y: !mcu_params["movement_enable_endpoints_y"],
-          z: !mcu_params["movement_enable_endpoints_z"]
+          x: !sourceFwConfig("movement_enable_endpoints_x").value,
+          y: !sourceFwConfig("movement_enable_endpoints_y").value,
+          z: !sourceFwConfig("movement_enable_endpoints_z").value
         }}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
     </Collapse>
   </section>;
 }

@@ -41,7 +41,7 @@ export function If_(props: IfParams) {
     };
   }
 
-  const lhsOptions = LHSOptions(props.resources, shouldDisplay || (x => false));
+  const lhsOptions = LHSOptions(props.resources, shouldDisplay || (() => false));
 
   return <Row>
     <Col xs={12}>
