@@ -69,6 +69,93 @@ describe CeleryScript::Checker do
     expect {
       checker.check_leaf CeleryScript::AstLeaf.new(parent, 6, :location)
     }.to raise_error(CeleryScript::TypeCheckError)
+  end
 
+  it "validates subsequence presence" do
+    hash[:body] = [
+      { kind: "execute", args: { sequence_id: 0 } },
+    ]
+    chk = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?)
+      .to be false
+    expect(chk.error.message)
+      .to eq("missing a sequence selection for `execute` block.")
+  end
+
+  it "validates peripheral presence" do
+    hash[:body] = [
+      {
+        kind: "read_pin",
+        args: {
+          pin_number: {
+            kind: "named_pin",
+            args: {
+              pin_type: "Peripheral",
+              pin_id: 0
+            }
+          },
+          pin_mode: 0,
+          label: "FOO"
+        }
+      }
+    ]
+    chk = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?).to be false
+    expect(chk.error.message)
+      .to eq("You must select a Peripheral before using it.")
+  end
+
+  it "Catches bad `pin_type`s in `read_pin`" do
+    hash[:body] = [
+      {
+        kind: "read_pin",
+        args: {
+          pin_mode:   0,
+          label:      "pin",
+          pin_number: {
+            kind: "named_pin",
+            args: { pin_type: "Not correct", pin_id: 1 }
+          }
+        }
+      }
+    ]
+    chk = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?).to be false
+    expect(chk.error.message).to include("not a type of pin")
+  end
+
+  it "Catches bad `pin_type`s in `read_pin`" do
+    hash[:body] = [
+      {
+        kind: "read_pin",
+        args: {
+          pin_mode: 0,
+          label: "pin",
+          pin_number: {
+            kind: "named_pin",
+            args: { pin_type: "Peripheral", pin_id: 900 }
+          }
+        }
+      }
+    ]
+    chk = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?).to be false
+    expect(chk.error.message).to include("Can't find Peripheral with id of 900")
+  end
+
+  it "catches bad `axis` nodes" do
+    t = \
+      CeleryScript::AstNode.new({kind: "home", args: { speed: 100, axis: "?" }})
+    chk         = CeleryScript::Checker.new(t, corpus)
+    expect(chk.valid?).to be false
+    expect(chk.error.message).to include("not a valid axis")
+  end
+
+  it "catches bad `package` nodes" do
+    t = \
+      CeleryScript::AstNode.new({ kind: "factory_reset", args: { package: "?" }})
+    chk         = CeleryScript::Checker.new(t, corpus)
+    expect(chk.valid?).to be false
+    expect(chk.error.message).to include("not a valid package")
   end
 end

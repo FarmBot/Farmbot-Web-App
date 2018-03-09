@@ -1,6 +1,5 @@
 import { BotState, Xyz, BotPosition } from "../devices/interfaces";
 import { Vector3 } from "farmbot/dist";
-import { RestResources } from "../resources/interfaces";
 import {
   TaggedUser,
   TaggedWebcamFeed,
@@ -14,7 +13,6 @@ export interface Props {
   feeds: TaggedWebcamFeed[];
   user: TaggedUser | undefined;
   peripherals: TaggedPeripheral[];
-  resources: RestResources;
   botToMqttStatus: NetworkState;
 }
 
@@ -104,6 +102,8 @@ export interface ToggleButtonProps {
   toggleValue: number | string | boolean | undefined;
   disabled?: boolean | undefined;
   customText?: { textFalse: string, textTrue: string };
+  dim?: boolean;
+  grayscale?: boolean;
 }
 
 export interface WebcamFeed {

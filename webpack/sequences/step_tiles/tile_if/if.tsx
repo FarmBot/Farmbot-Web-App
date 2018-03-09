@@ -12,18 +12,19 @@ import { ALLOWED_OPS } from "farmbot/dist";
 
 const IS_UNDEFINED: ALLOWED_OPS = "is_undefined";
 const label_ops: Record<ALLOWED_OPS, string> = {
-  "is_undefined": "is unknown",
-  ">": "is greater than",
-  "<": "is less than",
-  "is": "is",
-  "not": "is not"
+  "is_undefined": t("is unknown"),
+  ">": t("is greater than"),
+  "<": t("is less than"),
+  "is": t("is"),
+  "not": t("is not")
 };
 
 export function If_(props: IfParams) {
   const {
     dispatch,
     currentStep,
-    index
+    index,
+    shouldDisplay,
   } = props;
   const step = props.currentStep;
   const sequence = props.currentSequence;
@@ -40,17 +41,20 @@ export function If_(props: IfParams) {
     };
   }
 
+  const lhsOptions = LHSOptions(props.resources, shouldDisplay || (x => false));
+
   return <Row>
     <Col xs={12}>
-      <h4 className="top">IF...</h4>
+      <h4 className="top">{t("IF...")}</h4>
     </Col>
     <Col xs={4}>
       <label>{t("Variable")}</label>
       <FBSelect
-        list={LHSOptions}
+        list={lhsOptions}
         placeholder="Left hand side"
         onChange={updateField("lhs")}
-        selectedItem={LHSOptions.filter(x => x.value === lhs)[0] || NULL_CHOICE} />
+        selectedItem={lhsOptions
+          .filter(x => x.value === lhs)[0] || NULL_CHOICE} />
     </Col>
     <Col xs={4}>
       <label>{t("Operator")}</label>

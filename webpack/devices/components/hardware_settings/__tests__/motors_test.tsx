@@ -8,18 +8,29 @@ jest.mock("../../../../device", () => ({
 import * as React from "react";
 import { MotorsProps } from "../../interfaces";
 import { bot } from "../../../../__test_support__/fake_state/bot";
-import { Motors, StepsPerMmSettings } from "../motors";
+import { Motors } from "../motors";
 import { render, shallow, mount } from "enzyme";
 import { McuParamName } from "farmbot";
+import { StepsPerMmSettings } from "../steps_per_mm_settings";
+import { NumericMCUInputGroup } from "../../numeric_mcu_input_group";
 
 describe("<Motors/>", () => {
   beforeEach(function () {
     jest.clearAllMocks();
   });
 
+  const fakeProps = (): MotorsProps => {
+    return {
+      dispatch: jest.fn(),
+      bot,
+      sourceFbosConfig: (x) => {
+        return { value: bot.hardware.configuration[x], consistent: true };
+      }
+    };
+  };
+
   it("renders the base case", () => {
-    const props: MotorsProps = { dispatch: jest.fn(), bot };
-    const el = render(<Motors {...props} />);
+    const el = render(<Motors {...fakeProps()} />);
     const txt = el.text();
     [ // Not a whole lot to test here....
       "Enable 2nd X Motor",
@@ -30,26 +41,26 @@ describe("<Motors/>", () => {
   });
 
   it("doesn't render homing speed", () => {
-    const props: MotorsProps = { dispatch: jest.fn(), bot };
-    props.bot.hardware.informational_settings.firmware_version = "4.0.0R";
-    const wrapper = render(<Motors {...props} />);
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.firmware_version = "4.0.0R";
+    const wrapper = render(<Motors {...p} />);
     expect(wrapper.text()).not.toContain("Homing Speed");
   });
 
   it("renders homing speed", () => {
-    const props: MotorsProps = { dispatch: jest.fn(), bot };
-    props.bot.hardware.informational_settings.firmware_version = "5.1.0R";
-    const wrapper = render(<Motors {...props} />);
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.firmware_version = "5.1.0R";
+    const wrapper = render(<Motors {...p} />);
     expect(wrapper.text()).toContain("Homing Speed");
   });
 
   function testParamToggle(
     description: string, parameter: McuParamName, position: number) {
     it(description, () => {
-      bot.controlPanelState.motors = true;
-      bot.hardware.mcu_params[parameter] = 1;
-      const props: MotorsProps = { dispatch: jest.fn(), bot };
-      const wrapper = mount(<Motors {...props} />);
+      const p = fakeProps();
+      p.bot.controlPanelState.motors = true;
+      p.bot.hardware.mcu_params[parameter] = 1;
+      const wrapper = mount(<Motors {...p} />);
       wrapper.find("button").at(position).simulate("click");
       expect(mockDevice.updateMcu)
         .toHaveBeenCalledWith({ [parameter]: 0 });
@@ -61,22 +72,29 @@ describe("<Motors/>", () => {
 });
 
 describe("<StepsPerMmSettings/>", () => {
+  const fakeProps = (): MotorsProps => {
+    return {
+      dispatch: jest.fn(),
+      bot,
+      sourceFbosConfig: jest.fn()
+    };
+  };
+
   it("renders OS settings", () => {
-    const props: MotorsProps = { dispatch: jest.fn(), bot };
-    props.bot.hardware.informational_settings.firmware_version = "4.0.0R";
-    const wrapper = shallow(<StepsPerMmSettings {...props} />);
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.firmware_version = "4.0.0R";
+    const wrapper = shallow(<StepsPerMmSettings {...p} />);
     const firstInputProps = wrapper.find("BotConfigInputBox")
       // tslint:disable-next-line:no-any
       .first().props() as any;
     expect(firstInputProps.setting).toBe("steps_per_mm_x");
   });
 
-  it("renders mcu settings", () => {
-    const props: MotorsProps = { dispatch: jest.fn(), bot };
-    props.bot.hardware.informational_settings.firmware_version = "5.0.5R";
-    const wrapper = shallow(<StepsPerMmSettings {...props} />);
-    const firstInputProps = wrapper.find("NumericMCUInputGroup")
-      .first().props();
+  fit("renders mcu settings", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.firmware_version = "5.0.5R";
+    const wrapper = shallow(<StepsPerMmSettings {...p} />);
+    const firstInputProps = wrapper.find(NumericMCUInputGroup).first().props();
     expect(firstInputProps.x).toBe("movement_step_per_mm_x");
   });
 });

@@ -31,6 +31,9 @@
   &.magenta-panel {
     background-color: $light_magenta;
   }
+  &.gray-panel {
+    background-color: $medium_light_gray;
+  }
 }
 
 .panel-header {
@@ -136,7 +139,42 @@
 .plant-selection-panel {
   .panel-content {
     padding: 15rem 1.4rem;
-    pointer-events: none;
+    padding-right: 0;
+    padding-left: 0;
+    max-height: calc(100vh - 10rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    .plant-search-item {
+      pointer-events: none;
+    }
+    img {
+      filter: grayscale(100%);
+    }
+  }
+}
+
+.point-creation-panel {
+  .panel-content {
+    .row {
+      margin-left: 0;
+      margin-right: 0;
+    }
+    padding: 10rem 3rem;
+    padding-right: 0;
+    padding-left: 0;
+    .fb-button {
+      margin: 1rem;
+      &.delete {
+        float: left;
+      }
+    }
+    .saucer {
+      margin-top: 0.25rem;
+      margin-left: 1rem;
+    }
+    .delete-row {
+      padding-left: 1rem;
+    }
   }
 }
 

@@ -38,6 +38,12 @@ export interface WebAppConfig {
   fun_log: number;
   debug_log: number;
   stub_config: boolean;
+  show_first_party_farmware: boolean;
+  enable_browser_speak: boolean;
+  show_images: boolean;
+  photo_filter_begin: string;
+  photo_filter_end: string;
+  discard_unsaved: boolean;
 }
 
 export type NumberConfigKey = "id"
@@ -53,7 +59,9 @@ export type NumberConfigKey = "id"
     |"debug_log";
 
 export type StringConfigKey = "created_at"
-    |"updated_at";
+    |"updated_at"
+    |"photo_filter_begin"
+    |"photo_filter_end";
 
 export type BooleanConfigKey = "confirm_step_deletion"
     |"disable_animations"
@@ -73,4 +81,8 @@ export type BooleanConfigKey = "confirm_step_deletion"
     |"x_axis_inverted"
     |"y_axis_inverted"
     |"z_axis_inverted"
-    |"stub_config";
+    |"stub_config"
+    |"show_first_party_farmware"
+    |"enable_browser_speak"
+    |"show_images"
+    |"discard_unsaved";

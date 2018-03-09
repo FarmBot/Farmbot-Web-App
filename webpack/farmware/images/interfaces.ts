@@ -11,6 +11,7 @@ export interface Image {
     x: number | undefined;
     y: number | undefined;
     z: number | undefined;
+    name?: string;
   };
 }
 

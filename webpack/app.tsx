@@ -17,7 +17,7 @@ import {
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
-import { catchErrors } from "./util";
+import { catchErrors, validBotLocationData } from "./util";
 import { Session } from "./session";
 import { BooleanSetting } from "./session_keys";
 import { getPathArray } from "./history";
@@ -81,7 +81,7 @@ const MUST_LOAD: ResourceName[] = [
 export class App extends React.Component<AppProps, {}> {
   componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
 
-  get isLoaded() {
+  private get isLoaded() {
     return (MUST_LOAD.length ===
       _.intersection(this.props.loaded, MUST_LOAD).length);
   }
@@ -101,6 +101,7 @@ export class App extends React.Component<AppProps, {}> {
   render() {
     const syncLoaded = this.isLoaded;
     const currentPage = getPathArray()[2];
+    const { location_data, mcu_params } = this.props.bot.hardware;
     return <div className="app">
       <HotKeys dispatch={this.props.dispatch} />
       <NavBar
@@ -118,8 +119,8 @@ export class App extends React.Component<AppProps, {}> {
         <ControlsPopup
           dispatch={this.props.dispatch}
           axisInversion={this.props.axisInversion}
-          botPosition={this.props.bot.hardware.location_data.position}
-          mcuParams={this.props.bot.hardware.mcu_params} />}
+          botPosition={validBotLocationData(location_data).position}
+          mcuParams={mcu_params} />}
     </div>;
   }
 }

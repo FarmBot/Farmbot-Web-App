@@ -47,7 +47,7 @@ export function overwrite(tr: TaggedResource,
   };
 }
 
-interface EditStepProps {
+export interface EditStepProps {
   step: Readonly<SequenceBodyItem>;
   sequence: Readonly<TaggedSequence>;
   index: number;
@@ -218,6 +218,7 @@ export function urlFor(tag: ResourceName) {
     Image: API.current.imagesPath,
     Log: API.current.logsPath,
     WebcamFeed: API.current.webcamFeedPath,
+    FbosConfig: API.current.fbosConfigPath,
     WebAppConfig: API.current.webAppConfigPath
   };
   const url = OPTIONS[tag];
@@ -229,7 +230,7 @@ export function urlFor(tag: ResourceName) {
   }
 }
 
-const SINGULAR_RESOURCE: ResourceName[] = ["WebAppConfig"];
+const SINGULAR_RESOURCE: ResourceName[] = ["WebAppConfig", "FbosConfig"];
 
 /** Shared functionality in create() and update(). */
 function updateViaAjax(payl: AjaxUpdatePayload) {

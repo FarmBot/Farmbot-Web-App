@@ -1,7 +1,9 @@
 import axios from "axios";
 import { t } from "i18next";
 import { error, success } from "farmbot-toastr";
-import { fetchReleases } from "../devices/actions";
+import {
+  fetchReleases, fetchMinOsFeatureData, FEATURE_MIN_VERSIONS_URL
+} from "../devices/actions";
 import { push } from "../history";
 import { AuthState } from "./interfaces";
 import { ReduxAction, Thunk } from "../redux/interfaces";
@@ -18,6 +20,7 @@ import {
 import { Actions } from "../constants";
 import { connectDevice } from "../connectivity/connect_device";
 import { toastErrors } from "../toast_errors";
+import { getFirstPartyFarmwareList } from "../farmware/actions";
 
 export function didLogin(authState: AuthState, dispatch: Function) {
   API.setBaseUrl(authState.token.unencoded.iss);
@@ -25,6 +28,8 @@ export function didLogin(authState: AuthState, dispatch: Function) {
   dispatch(fetchReleases(os_update_server));
   beta_os_update_server && beta_os_update_server != "NOT_SET" &&
     dispatch(fetchReleases(beta_os_update_server, { beta: true }));
+  dispatch(getFirstPartyFarmwareList());
+  dispatch(fetchMinOsFeatureData(FEATURE_MIN_VERSIONS_URL));
   dispatch(setToken(authState));
   Sync.fetchSyncData(dispatch);
   dispatch(connectDevice(authState));

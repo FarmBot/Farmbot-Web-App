@@ -10,7 +10,7 @@ export function WeekGrid({ weeks, dispatch }: WeekGridProps) {
     <Row>
       <Col xs={12}>
         <label className="regimen-days-label">
-          Days
+          {t("Days")}
         </label>
         {weeks.map(function (week, i) {
           return <WeekRow key={i} index={i} week={week}

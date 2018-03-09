@@ -1,6 +1,6 @@
 import * as React from "react";
 import { GridProps } from "./interfaces";
-import { getXYFromQuadrant } from "./util";
+import { getXYFromQuadrant, transformForQuadrant } from "./util";
 import * as _ from "lodash";
 import { Color } from "../../ui/index";
 
@@ -32,11 +32,9 @@ export function Grid(props: GridProps) {
     </defs>
 
     <g id="grid">
-      <rect id="fill"
-        width={gridSize.x} height={gridSize.y} fill={Color.gridSoil} />
       <rect id="minor-grid"
         width={gridSize.x} height={gridSize.y} fill="url(#minor_grid)" />
-      <rect id="major-grid"
+      <rect id="major-grid" transform={transformForQuadrant(quadrant, gridSize)}
         width={gridSize.x} height={gridSize.y} fill="url(#major_grid)" />
       <rect id="border" width={gridSize.x} height={gridSize.y} fill="none"
         stroke="rgba(0,0,0,0.3)" strokeWidth={2} />

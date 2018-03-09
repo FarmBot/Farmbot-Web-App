@@ -27,7 +27,7 @@ describe("maybeToggleFeature()", () => {
       value: false,
       description: "I stub this.",
       storageKey: BooleanSetting.stub_config,
-      experimental: true
+      confirmationMessage: "are you sure?"
     };
     const out = maybeToggleFeature(data);
     expect(data.value).toBeFalsy();
@@ -42,7 +42,7 @@ describe("maybeToggleFeature()", () => {
       value: (mockStorj[BooleanSetting.stub_config] = false),
       description: "I stub this.",
       storageKey: BooleanSetting.stub_config,
-      experimental: true
+      confirmationMessage: "are you sure?"
     };
     const out = maybeToggleFeature(data);
     out ?
@@ -58,7 +58,7 @@ describe("maybeToggleFeature()", () => {
       value: (mockStorj[BooleanSetting.stub_config] = true),
       description: "I stub this.",
       storageKey: BooleanSetting.stub_config,
-      experimental: true
+      confirmationMessage: "are you sure?"
     });
     expect(conf).not.toHaveBeenCalled();
     output ?

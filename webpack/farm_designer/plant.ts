@@ -16,6 +16,7 @@ export function Plant(options: PlantOptions): PlantPointer {
     y: (options.y || 0),
     z: 0,
     radius: (options.radius || DEFAULT_PLANT_RADIUS),
-    openfarm_slug
+    openfarm_slug,
+    plant_stage: "planned"
   };
 }

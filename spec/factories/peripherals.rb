@@ -1,8 +1,8 @@
 FactoryBot.define do
+  count = 0
   factory :peripheral do
     device
-    pin { rand(1..540) }
-    mode 1
+    pin { count = (count + 1) % 50 }
     label "MyString"
   end
 end

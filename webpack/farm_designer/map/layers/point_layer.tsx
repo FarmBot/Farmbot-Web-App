@@ -16,7 +16,7 @@ export function PointLayer(props: PointLayerProps) {
       points.map(p =>
         <GardenPoint
           point={p}
-          key={p.body.id}
+          key={p.uuid}
           mapTransformProps={mapTransformProps} />
       )}
   </g>;

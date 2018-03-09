@@ -4,7 +4,7 @@ import { t } from "i18next";
 
 export function ToolBayHeader(props: {}) {
   return <Row>
-    <Col xs={2}>
+    <Col xs={1}>
       <label>{t("Slot")}</label>
     </Col>
     <Col xs={2}>

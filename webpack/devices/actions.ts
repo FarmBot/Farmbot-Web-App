@@ -14,16 +14,21 @@ import { API } from "../api/index";
 import { User } from "../auth/interfaces";
 import { getDeviceAccountSettings } from "../resources/selectors";
 import { TaggedDevice } from "../resources/tagged_resources";
-import { versionOK } from "./reducer";
-import { HttpData, oneOf } from "../util";
+import { HttpData, oneOf, versionOK } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
 import { pingAPI } from "../connectivity/ping_mqtt";
+import { edit, save as apiSave } from "../api/crud";
+import { WebAppConfig } from "../config_storage/web_app_configs";
+import { getFbosConfig } from "../resources/selectors_by_kind";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
 export const EXPECTED_MAJOR = 5;
 export const EXPECTED_MINOR = 0;
+export const FEATURE_MIN_VERSIONS_URL =
+  "https://raw.githubusercontent.com/FarmBot/farmbot_os/staging/" +
+  "FEATURE_MIN_VERSIONS.json";
 // Already filtering messages in FarmBot OS and the API- this is just for
 // an additional layer of safety. If sensitive data ever hits a client, it will
 // be reported to Rollbar for investigation.
@@ -142,13 +147,13 @@ export let fetchReleases =
       axios
         .get(url)
         .then((resp: HttpData<GithubRelease>) => {
-          const version = resp.data.tag_name;
-          const versionWithoutV = version.toLowerCase().replace("v", "");
+          const { tag_name, target_commitish } = resp.data;
+          const version = tag_name.toLowerCase().replace("v", "");
           dispatch({
             type: options.beta
               ? Actions.FETCH_BETA_OS_UPDATE_INFO_OK
               : Actions.FETCH_OS_UPDATE_INFO_OK,
-            payload: versionWithoutV
+            payload: { version, commit: target_commitish }
           });
         })
         .catch((ferror) => {
@@ -162,6 +167,24 @@ export let fetchReleases =
           });
         });
     };
+
+export let fetchMinOsFeatureData = (url: string) =>
+  (dispatch: Function, getState: Function) => {
+    axios
+      .get(url)
+      .then((resp: HttpData<string>) => {
+        dispatch({
+          type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK,
+          payload: JSON.stringify(resp.data)
+        });
+      })
+      .catch((ferror) => {
+        dispatch({
+          type: "FETCH_MIN_OS_FEATURE_INFO_ERROR",
+          payload: ferror
+        });
+      });
+  };
 
 export function save(input: TaggedDevice) {
   return function (dispatch: Function, getState: GetState) {
@@ -277,11 +300,16 @@ export function updateMCU(key: ConfigKey, val: string) {
 
 export function updateConfig(config: Configuration) {
   const noun = "Update Config";
-  return function (dispatch: Function) {
-    getDevice()
-      .updateConfig(config)
-      .then(() => updateOK(dispatch, noun))
-      .catch(() => updateNO(dispatch, noun));
+  return function (dispatch: Function, getState: () => Everything) {
+    const fbosConfig = getFbosConfig(getState().resources.index);
+    if (fbosConfig && fbosConfig.body.api_migrated) {
+      dispatch(edit(fbosConfig, config as Partial<WebAppConfig>));
+      dispatch(apiSave(fbosConfig.uuid));
+    } else {
+      getDevice()
+        .updateConfig(config)
+        .then(_.noop, commandErr(noun));
+    }
   };
 }
 

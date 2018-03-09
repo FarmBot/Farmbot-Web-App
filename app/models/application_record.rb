@@ -12,7 +12,8 @@ class ApplicationRecord < ActiveRecord::Base
                      "sign_in_count",
                      "updated_at",
                      "current_sign_in_ip",
-                     "current_sign_in_at" ]
+                     "current_sign_in_at",
+                     "fbos_version" ]
   def the_changes
     self.saved_changes.except(*self.class::DONT_BROADCAST)
   end
@@ -31,13 +32,17 @@ class ApplicationRecord < ActiveRecord::Base
     self.broadcast! if broadcast?
   end
 
+  def body_as_json
+    if(destroyed?)
+      return nil
+    else
+      serializer = ActiveModel::Serializer.serializer_for(self)
+      return (serializer ? serializer.new(self) : self).as_json
+    end
+  end
+
   def broadcast_payload
-    body = (destroyed? ?
-      nil : ActiveModel::Serializer.serializer_for(self).new(self))
-    {
-      args: { label: Transport.current_request_id },
-      body: body.as_json
-    }.to_json
+    { args: { label: Transport.current_request_id }, body: body_as_json }.to_json
   end
 
   # Overridable

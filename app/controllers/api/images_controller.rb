@@ -5,11 +5,11 @@ module Api
   # 3. Image is transfered to the "trusted bucket".
   class ImagesController < Api::AbstractController
     BUCKET = ENV.fetch("GCS_BUCKET") { "YOU_MUST_CONFIG_GOOGLE_CLOUD_STORAGE" }
-    KEY    = ENV.fetch("GCS_KEY") { "" }
-    SECRET = ENV.fetch("GCS_ID") { "" }
+    KEY    = ENV.fetch("GCS_KEY")    { "YOU_MUST_CONFIG_GCS_KEY" }
+    SECRET = ENV.fetch("GCS_ID")     { "YOU_MUST_CONFIG_GCS_ID" }
 
     def create
-        mutate Images::Create.run({device: current_device}, raw_json)
+        mutate Images::Create.run(raw_json, device: current_device)
     end
 
     def index

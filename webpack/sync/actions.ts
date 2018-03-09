@@ -1,6 +1,5 @@
 import axios from "axios";
-import { warning } from "farmbot-toastr";
-import { Log, Point } from "../interfaces";
+import { Log, Point, SensorReading, Sensor, DeviceConfig, PinBinding } from "../interfaces";
 import { API } from "../api";
 import { Sequence } from "../sequences/interfaces";
 import { Tool } from "../tools/interfaces";
@@ -14,6 +13,9 @@ import { User } from "../auth/interfaces";
 import { HttpData } from "../util";
 import { WebcamFeed } from "../controls/interfaces";
 import { WebAppConfig } from "../config_storage/web_app_configs";
+import { Session } from "../session";
+import { FbosConfig } from "../config_storage/fbos_configs";
+import { FarmwareInstallation } from "../farmware/interfaces";
 
 export interface ResourceReadyPayl {
   name: ResourceName;
@@ -31,14 +33,16 @@ export function fetchSyncData(dispatch: Function) {
       .get(url)
       .then((r: HttpData<T>): SyncResponse => dispatch({
         type, payload: { name, data: r.data }
-      }), fail);
-
-  const fail = () => warning("Please try refreshing the page or logging in again.",
-    "Error downloading data");
+      }),
+        /** NOTE: If a key resource fails to load, the app is guaranteed to be
+         * broke. Don't try to recover- just log the user out. It's probably a
+         * malformed token in SessionStorage */
+        Session.clear);
 
   fetch<User>("User", API.current.usersPath);
   fetch<DeviceAccountSettings>("Device", API.current.devicePath);
   fetch<WebcamFeed>("WebcamFeed", API.current.webcamFeedPath);
+  fetch<FbosConfig>("FbosConfig", API.current.fbosConfigPath);
   fetch<WebAppConfig>("WebAppConfig", API.current.webAppConfigPath);
   fetch<FarmEvent[]>("FarmEvent", API.current.farmEventsPath);
   fetch<Image[]>("Image", API.current.imagesPath);
@@ -48,4 +52,10 @@ export function fetchSyncData(dispatch: Function) {
   fetch<Regimen[]>("Regimen", API.current.regimensPath);
   fetch<Sequence[]>("Sequence", API.current.sequencesPath);
   fetch<Tool[]>("Tool", API.current.toolsPath);
+  fetch<SensorReading[]>("SensorReading", API.current.sensorReadingPath);
+  fetch<Sensor[]>("Sensor", API.current.sensorPath);
+  fetch<FarmwareInstallation[]>("FarmwareInstallation",
+    API.current.farmwareInstallationPath);
+  fetch<DeviceConfig[]>("DeviceConfig", API.current.deviceConfigPath);
+  fetch<PinBinding[]>("PinBinding", API.current.pinBindingPath);
 }

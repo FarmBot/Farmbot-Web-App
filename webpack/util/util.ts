@@ -6,6 +6,7 @@ import { box } from "boxed_value";
 import { TaggedResource } from "../resources/tagged_resources";
 import { AxiosResponse } from "axios";
 import { history } from "../history";
+import { BotLocationData } from "../devices/interfaces";
 
 // http://stackoverflow.com/a/901144/1064917
 // Grab a query string param by name, because react-router-redux doesn't
@@ -211,5 +212,17 @@ export function scrollToBottom(elementId: string) {
   if (!elToScroll) { return; }
 
   // Wait for the new element height and scroll to the bottom.
-  setTimeout(() => elToScroll.scrollTo(0, elToScroll.scrollHeight), 1);
+  setTimeout(() => elToScroll.scrollTop = elToScroll.scrollHeight, 1);
+}
+
+export function validBotLocationData(
+  botLocationData: BotLocationData | undefined): BotLocationData {
+  if (botLocationData) {
+    return botLocationData;
+  }
+  return {
+    position: { x: undefined, y: undefined, z: undefined },
+    scaled_encoders: { x: undefined, y: undefined, z: undefined },
+    raw_encoders: { x: undefined, y: undefined, z: undefined },
+  };
 }

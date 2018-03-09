@@ -1,5 +1,11 @@
 module Points
   class Update < Mutations::Command
+    WHITELIST = [ :tool_id,
+                  :openfarm_slug,
+                  :pullout_direction,
+                  :plant_stage,
+                  :planted_at ]
+
     required do
       model :device, class: Device
       model :point,  class: Point
@@ -13,20 +19,18 @@ module Points
       float   :radius
       string  :name
       string  :openfarm_slug
+      integer :pullout_direction
+      string  :plant_stage, in: CeleryScriptSettingsBag::PLANT_STAGES
+      time    :planted_at
       hstore  :meta
     end
 
     def validate
-      throw "BRB" if (tool_id &&
-                      !device
-                        .tools
-                        .pluck(:id)
-                        .include?(tool_id))
       prevent_removal_of_in_use_tools
     end
 
     def execute
-      point.update_attributes!(update_params) && point
+      Point.transaction { point.update_attributes!(update_params) && point }
     end
 
   private
@@ -40,22 +44,22 @@ module Points
 
     def maybe_update_pointer
       p = point.pointer
-      p && p.assign_attributes(inputs.slice(:tool_id, :openfarm_slug))
+      p && p.update_attributes!(inputs.slice(*WHITELIST))
     end
 
-    def has_new_tool_id?
+    def new_tool_id?
       raw_inputs.key?("tool_id")
     end
 
     def prevent_removal_of_in_use_tools
-      results = Points::ToolRemovalCheck.run(point:             point,
-                                             attempting_change: has_new_tool_id?,
-                                             next_tool_id:      tool_id)
-      ok      = results.success?
-      results
+      results = Points::ToolRemovalCheck.run(point: point,
+                                             attempting_change: new_tool_id?,
+                                             next_tool_id: tool_id)
+
+      !results.success? && results
         .errors
         .values
-        .map { |e| add_error e.symbolic, e.symbolic, e.message } unless ok
+        .map { |e| add_error e.symbolic, e.symbolic, e.message }
     end
   end
 end

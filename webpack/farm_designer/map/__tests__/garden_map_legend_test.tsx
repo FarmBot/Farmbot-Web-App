@@ -23,7 +23,12 @@ describe("<GardenMapLegend />", () => {
       showPlants: false,
       showPoints: false,
       showSpread: false,
-      showFarmbot: false
+      showFarmbot: false,
+      showImages: false,
+      dispatch: jest.fn(),
+      tzOffset: 0,
+      getConfigValue: jest.fn(),
+      imageAgeInfo: { newestDate: "", toOldest: 1 },
     };
   }
 

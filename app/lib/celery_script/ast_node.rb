@@ -10,7 +10,7 @@ module CeleryScript
       def initialize(parent = nil, args:, body: nil, comment: "", kind:)
           @comment, @kind, @parent = comment, kind, parent
 
-          @args = args.map  do |key, value|
+          @args = args.map do |key, value|
             [key, maybe_initialize(self, value, key)]
           end.to_h if args
 

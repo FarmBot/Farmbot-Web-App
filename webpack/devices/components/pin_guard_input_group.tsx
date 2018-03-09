@@ -33,7 +33,7 @@ export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
         dispatch={dispatch}
         filter={32000} />
     </Col>
-    <Col xs={2}>
+    <Col xs={2} className={"centered-button-div"}>
       <ToggleButton
         customText={{ textFalse: "low", textTrue: "high" }}
         toggleValue={inactiveState}

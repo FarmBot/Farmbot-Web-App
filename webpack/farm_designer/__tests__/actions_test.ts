@@ -15,6 +15,7 @@ import { movePlant, closePlantInfo } from "../actions";
 import { MovePlantProps } from "../interfaces";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
 import { edit } from "../../api/crud";
+import { Actions } from "../../constants";
 
 describe("movePlant", () => {
   beforeEach(() => {
@@ -75,7 +76,7 @@ describe("closePlantInfo()", () => {
     closePlantInfo(dispatch)();
     expect(mockHistory).toHaveBeenCalledWith("/app/designer/plants");
     expect(dispatch).toHaveBeenCalledWith({
-      payload: undefined, type: "SELECT_PLANT"
+      payload: undefined, type: Actions.SELECT_PLANT
     });
   });
 });

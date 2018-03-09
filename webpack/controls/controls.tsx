@@ -43,7 +43,6 @@ export class Controls extends React.Component<Props, {}> {
               bot={this.props.bot}
               peripherals={this.props.peripherals}
               dispatch={this.props.dispatch}
-              resources={this.props.resources}
               disabled={arduinoBusy} />
           </Col>
           <Col xs={12} sm={6}>
@@ -60,7 +59,6 @@ export class Controls extends React.Component<Props, {}> {
               bot={this.props.bot}
               peripherals={this.props.peripherals}
               dispatch={this.props.dispatch}
-              resources={this.props.resources}
               disabled={arduinoBusy} />
           </Col>
         </Row>}

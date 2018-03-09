@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "2.4.2"
+ruby "2.5.0"
 
 gem "rails"
 gem "thin"
@@ -24,25 +24,29 @@ gem "webpack-rails"
 # Active on the "official" FarmBot server, set the appropriate ENV
 # vars if you wish to use them on your own servers.
 gem "rollbar"
-gem "skylight", "1.4.0"
+gem "skylight"
 gem "bunny"
 gem "request_store"
 gem "secure_headers"
+gem "valid_url"
 
 group :development, :test do
+  gem "hashdiff"
   gem "codecov", require: false
   gem "database_cleaner"
   gem "pry"
   gem "pry-rails"
-  gem "factory_bot_rails" # 4.8.0
+  gem "factory_bot_rails"
   gem "faker"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
   gem "rails-erd"
   # TODO: Upgrade versions when they fix this stuff:
   # https://stackoverflow.com/questions/43983466
   #   /controller-test-emits-debug-failure-messages-after-rails-5-1-upgrade
-  gem "rspec", "~> 3.5.0"
-  gem "rspec-rails", "~> 3.5.0"
+  gem "rspec"
+  gem "rspec-rails"
   gem "simplecov"
   gem "letter_opener"
+  gem "capybara"
+  gem "selenium-webdriver"
 end

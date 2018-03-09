@@ -29,14 +29,5 @@ module Api
     def farm_event
       @farm_event ||= FarmEvent.find(params[:id])
     end
-
-    # Probably safe to remove this endpoint now. This is from the pre-launch era
-    # when we were still on Angular 1.0.
-    # TODO: Remove this dead code?
-    def default_serializer_options
-      # For some strange reason, angular-data crashes if we don't call super()
-      # here. Rails doesn't care, though.
-      super.merge(start: params[:start], finish: params[:finish])
-    end
   end
 end

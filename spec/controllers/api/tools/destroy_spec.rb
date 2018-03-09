@@ -22,45 +22,38 @@ describe Api::ToolsController do
     end
 
     it 'does not destroy a tool when in use by a sequence' do
-      before = SequenceDependency.count
-      program = [
-        {
-          kind: "move_absolute",
-          args: {
-              location: {
-                kind: "tool",
-                args: {
-                  tool_id: tool.id
-                }
-              },
-              offset: {
-                kind: "coordinate",
-                args: {x: 1, y: 2, z: 3}
-              },
-              speed: 100
-          }
-        }
-      ]
+      PinBinding.destroy_all
+      Sequence.destroy_all
       Sequences::Create.run!(name:   "Dep. tracking",
                              device: user.device,
-                             body:   program)
-      expect(SequenceDependency.count).to be > before
+                             body:   [
+                              {
+                                kind: "move_absolute",
+                                args: {
+                                    location: { kind: "tool", args: { tool_id: tool.id }
+                                    },
+                                    offset: { kind: "coordinate", args: {x: 1, y: 2, z: 3} },
+                                    speed: 100
+                                }
+                              }
+                            ])
       sequence = Sequence.last
-      sd_list = SequenceDependency
-                  .where(sequence: sequence)
-                  .map(&:dependency)
-      expect(sd_list).to include(tool)
-      # expect(sd_list).to include(tool.slot)
-
+      sd_list  = EdgeNode
+        .where(kind: "tool_id", sequence: sequence)
+        .map { |x| Tool.find(x.value) }
       sign_in user
+      # If we dont do this, it will trigger the wrong error.
+      # We test this elsewhere - RC
       tool.tool_slot.update_attributes(tool: nil)
+
       before = Tool.count
       delete :destroy, params: { id: tool.id }
       after = Tool.count
+
       expect(response.status).to eq(422)
       expect(before).to eq(after)
-      expect(json[:tool]).to include(
-        Tools::Destroy::STILL_IN_USE % sequence.name)
+      expect(json[:tool])
+        .to include(Tools::Destroy::STILL_IN_USE % sequence.name)
     end
 
     it 'does not destroy a tool when in a slot' do

@@ -18,17 +18,16 @@ export interface FbosConfig {
   sequence_body_log: boolean;
   sequence_complete_log: boolean;
   sequence_init_log: boolean;
-  arduino_debug_messages: number;
   network_not_found_timer: number;
-  os_auto_update: number;
   firmware_hardware: string;
+  api_migrated: boolean;
+  os_auto_update: boolean;
+  arduino_debug_messages: boolean;
 }
 
 export type NumberConfigKey = "id"
     |"device_id"
-    |"arduino_debug_messages"
-    |"network_not_found_timer"
-    |"os_auto_update";
+    |"network_not_found_timer";
 
 export type StringConfigKey = "created_at"
     |"updated_at"
@@ -41,4 +40,7 @@ export type BooleanConfigKey = "auto_sync"
     |"firmware_output_log"
     |"sequence_body_log"
     |"sequence_complete_log"
-    |"sequence_init_log";
+    |"sequence_init_log"
+    |"api_migrated"
+    |"os_auto_update"
+    |"arduino_debug_messages";

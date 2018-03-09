@@ -14,7 +14,6 @@ import {
 } from "../ui/index";
 import { betterCompact } from "../util";
 import { Popover, Position } from "@blueprintjs/core";
-import { getFirstPartyFarmwareList } from "./actions";
 
 export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
   const listBtnColor = props.show ? "green" : "red";
@@ -37,7 +36,7 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
       </label>
       <button
         className={"fb-button fb-toggle-button " + listBtnColor}
-        onClick={props.toggle} />
+        onClick={props.onToggle} />
     </fieldset>
   </div>;
 }
@@ -45,11 +44,7 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
 export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   constructor(props: FWProps) {
     super(props);
-    this.state = { showFirstParty: false };
-  }
-
-  componentDidMount() {
-    getFirstPartyFarmwareList(this.setFirstPartyList);
+    this.state = {};
   }
 
   /** Keep null checking DRY for this.state.selectedFarmware */
@@ -68,8 +63,9 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
   remove = () => {
     this
       .ifFarmwareSelected(label => {
-        const { firstPartyList } = this.state;
-        const isFirstParty = firstPartyList && firstPartyList.includes(label);
+        const { firstPartyFarmwareNames } = this.props;
+        const isFirstParty = firstPartyFarmwareNames &&
+          firstPartyFarmwareNames.includes(label);
         if (!isFirstParty || confirm(Content.FIRST_PARTY_WARNING)) {
           getDevice()
             .removeFarmware(label)
@@ -95,38 +91,23 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
     }
   }
 
-  setFirstPartyList = (firstPartyList: string[]) => {
-    this.setState({ firstPartyList });
-  }
-
-  toggleFirstPartyDisplay = () => {
-    this.setState({ showFirstParty: !this.state.showFirstParty });
-  }
-
   firstPartyFarmwaresPresent = (firstPartyList: string[] | undefined) => {
     const fws = this.props.farmwares;
     const farmwareList = betterCompact(Object.keys(fws)
-      .map(x => fws[x]).map(x => x ? x.name : ""));
+      .map(x => fws[x]).map(x => x && x.name));
     const allPresent = _.every(
       firstPartyList, (value) => farmwareList.includes(value));
     return allPresent;
   }
 
   fwList = () => {
-    const { farmwares } = this.props;
-    const { firstPartyList, showFirstParty } = this.state;
+    const { farmwares, showFirstParty, firstPartyFarmwareNames } = this.props;
     const choices = betterCompact(Object
       .keys(farmwares)
       .map(x => farmwares[x]))
-      .filter(x => (firstPartyList && !showFirstParty)
-        ? !firstPartyList.includes(x.name) : x)
-      .map((fw, i) => {
-        const hasVers = (fw.meta && _.isString(fw.meta.version));
-        // Guard against legacy Farmwares. Can be removed in a month.
-        // -- RC June 2017.
-        const label = hasVers ? `${fw.name} ${fw.meta.version}` : fw.name;
-        return { value: fw.name, label };
-      });
+      .filter(x => (firstPartyFarmwareNames && !showFirstParty)
+        ? !firstPartyFarmwareNames.includes(x.name) : x)
+      .map((fw, i) => ({ value: fw.name, label: (`${fw.name} ${fw.meta.version}`) }));
     return choices;
   }
 
@@ -142,8 +123,6 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
       .map(x => farmwares[x]))
       .map((fw, i) => {
         const isSelected = (fw.name == selectedName);
-        // Rollbar 356. I think this was caused by a user on an ancient version
-        // of FBOS. Remove in September '17. - RC 13 August.
         const label = isSelected ? (fw.meta || {}).description : "";
         return label;
       });
@@ -158,10 +137,11 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
         <Popover position={Position.BOTTOM_RIGHT}>
           <i className="fa fa-gear" />
           <FarmwareConfigMenu
-            show={this.state.showFirstParty}
-            toggle={this.toggleFirstPartyDisplay}
+            show={this.props.showFirstParty}
+            onToggle={() => this.props.onToggle("show_first_party_farmware")}
             firstPartyFwsInstalled={
-              this.firstPartyFarmwaresPresent(this.state.firstPartyList)} />
+              this.firstPartyFarmwaresPresent(
+                this.props.firstPartyFarmwareNames)} />
         </Popover>
       </WidgetHeader>
       <WidgetBody>

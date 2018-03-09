@@ -5,20 +5,19 @@ import {
   Widget, WidgetBody, WidgetHeader,
   Row, Col,
   BlurableInput,
-  FBSelect, DropDownItem
+  DropDownItem
 } from "../../ui/index";
 import { ToolTips } from "../../constants";
 import { BotState } from "../interfaces";
 import { registerGpioPin, unregisterGpioPin } from "../actions";
-import {
-  selectAllSequences, findSequenceById
-} from "../../resources/selectors";
+import { findSequenceById } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { MustBeOnline } from "../must_be_online";
 import { Popover, Position } from "@blueprintjs/core";
 import { RpiGpioDiagram, gpio } from "./rpi_gpio_diagram";
 import { error } from "farmbot-toastr";
 import { NetworkState } from "../../connectivity/interfaces";
+import { SequenceSelectBox } from "../../sequences/sequence_select_box";
 
 export interface PinBindingsProps {
   bot: BotState;
@@ -63,30 +62,6 @@ export class PinBindings
       }
     } else {
       error("Raspberry Pi GPIO pin already bound.");
-    }
-  }
-
-  sequenceDropDownList = () => {
-    const { resources } = this.props;
-    const dropDownList: DropDownItem[] = [];
-    selectAllSequences(resources)
-      .map(sequence => {
-        const { id, name } = sequence.body;
-        if (_.isNumber(id)) {
-          dropDownList.push({ label: name, value: id });
-        }
-      });
-    return dropDownList;
-  }
-
-  selectedSequence = () => {
-    const { resources } = this.props;
-    const { sequenceIdInput } = this.state;
-    if (sequenceIdInput) {
-      const { id, name } = findSequenceById(resources, sequenceIdInput).body;
-      return { label: name, value: (id as number) };
-    } else {
-      return undefined;
     }
   }
 
@@ -163,11 +138,11 @@ export class PinBindings
         </Row>
       </Col>
       <Col xs={ColumnWidth.sequence}>
-        <FBSelect
+        <SequenceSelectBox
           key={sequenceIdInput}
           onChange={this.changeSelection}
-          selectedItem={this.selectedSequence()}
-          list={this.sequenceDropDownList()} />
+          resources={this.props.resources}
+          sequenceId={sequenceIdInput} />
       </Col>
       <Col xs={ColumnWidth.button}>
         <button
@@ -183,7 +158,7 @@ export class PinBindings
   render() {
     return <Widget className="pin-bindings-widget">
       <WidgetHeader
-        title={"Pin Bindings"}
+        title={t("Pin Bindings")}
         helpText={ToolTips.PIN_BINDINGS} />
       <WidgetBody>
         <MustBeOnline

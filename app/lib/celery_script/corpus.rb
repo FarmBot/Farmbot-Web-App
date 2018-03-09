@@ -4,32 +4,31 @@ module CeleryScript
   class Corpus
     BAD_NODE_NAME = "Can't find validation rules for node "
     NO_ARG_SPEC   = "CANT FIND ARG SPEC"
+    NO_NODE_SPEC  = "NO_NODE_SPEC"
 
     def initialize
-      @arg_def_list = {}
-      @node_def_list = {}
+      @arg_def_list  = HashWithIndifferentAccess.new
+      @node_def_list = HashWithIndifferentAccess.new
     end
 
     def fetchArg(name)
-      @arg_def_list[name.to_sym] or raise NO_ARG_SPEC
-    end
-
-    def defineArg(arg_name, allowed_values, &blk)
-      @arg_def_list[arg_name.to_sym] = ArgumentSpecification.new(arg_name,
-                                                                 allowed_values,
-                                                                 blk)
-      self
+      @arg_def_list[name] or raise NO_ARG_SPEC
     end
 
     def fetchNode(name)
-      n = @node_def_list[name.to_sym]
+      n = @node_def_list[name]
       n ? n : raise(TypeCheckError, BAD_NODE_NAME + name.to_s)
     end
 
-    def defineNode(kind, allowed_args, allowed_body_nodes = [])
-      @node_def_list[kind.to_sym] = NodeSpecification.new(kind,
-                                                          allowed_args,
-                                                          allowed_body_nodes)
+    def arg(arg_name, allowed_values, &blk)
+      @arg_def_list[arg_name] = \
+        ArgumentSpecification.new(arg_name, allowed_values, blk)
+      self
+    end
+
+    def node(kind, allowed_args, allowed_body_nodes = [], &blk)
+      @node_def_list[kind] = \
+        NodeSpecification.new(kind, allowed_args, allowed_body_nodes, blk)
       self
     end
 
@@ -48,12 +47,20 @@ module CeleryScript
       Array(fetchNode(node.kind).allowed_body_types).map(&:to_sym)
     end
 
-    def validator(name)
+    # Grab validator for a fully formed node.
+    def validate_node(node)
+      defn = @node_def_list[node.kind] or raise(TypeCheckError,
+                                                BAD_NODE_NAME + name.to_s)
+      defn.additional_validation&.call(node)
+    end
+
+    # Grabs validator for an __ARG__ type.
+    def arg_validator(name)
       fetchArg(name).additional_validation || CeleryScript::NOOP
     end
 
-    def as_json(optns)
-      { "tag": SequenceMigration::Base.latest_version,
+    def as_json(*)
+      { "tag": Sequence::LATEST_VERSION,
         "args": @arg_def_list.to_a.map(&:last).map{|x| x.as_json({}) },
         "nodes": @node_def_list.to_a.map(&:last).map{|x| x.as_json({}) }}
     end

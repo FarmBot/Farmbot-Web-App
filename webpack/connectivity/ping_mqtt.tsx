@@ -6,6 +6,8 @@ import { API } from "../api/index";
 import { timestamp } from "../util";
 
 export const PING_INTERVAL = 3000;
+export const ACTIVE_THRESHOLD = PING_INTERVAL * 2;
+
 const label = "ping";
 export const LAST_IN = "LAST_PING_IN";
 export const LAST_OUT = "LAST_PING_OUT";
@@ -33,14 +35,14 @@ export function markActive() {
 }
 
 export function isInactive(last: number, now: number): boolean {
-  return last ? (now - last) > (PING_INTERVAL * 2) : true;
+  return last ? (now - last) > ACTIVE_THRESHOLD : true;
 }
 
 export function sendOutboundPing(bot: Farmbot) {
   bot.publish(PING);
   const now = timestamp();
   const lastPing = readPing(bot, "in");
-  lastPing && isInactive(lastPing, now) ? markStale() : markActive();
+  lastPing && (isInactive(lastPing, now) ? markStale() : markActive());
   writePing(bot, "out");
 }
 

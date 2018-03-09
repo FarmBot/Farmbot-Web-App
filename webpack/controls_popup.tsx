@@ -3,13 +3,14 @@ import * as React from "react";
 import { DirectionButton } from "./controls/direction_button";
 import { Xyz, BotPosition } from "./devices/interfaces";
 import { McuParams } from "farmbot";
+import { getDevice } from "./device";
 
-export interface State {
+interface State {
   isOpen: boolean;
   stepSize: number;
 }
 
-export interface Props {
+interface Props {
   dispatch: Function;
   axisInversion: Record<Xyz, boolean>;
   botPosition: BotPosition;
@@ -23,7 +24,7 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
     stepSize: 100
   };
 
-  toggle = (property: keyof State) => () =>
+  private toggle = (property: keyof State) => () =>
     this.setState({ [property]: !this.state[property] });
 
   public render() {
@@ -79,6 +80,9 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
             directionAxisProps={directionAxesProps.x}
             steps={this.state.stepSize}
             disabled={!isOpen} />
+          <button
+            className="i fa fa-camera arrow-button fb-button brown"
+            onClick={() => getDevice().takePhoto()} />
         </div>
       </div>
     </div>;

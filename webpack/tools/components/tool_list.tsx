@@ -11,7 +11,7 @@ export class ToolList extends React.Component<ToolListProps, {}> {
     const { tools } = this.props;
 
     return <Widget>
-      <WidgetHeader helpText={ToolTips.TOOL_LIST} title="Tools">
+      <WidgetHeader helpText={ToolTips.TOOL_LIST} title={t("Tools")}>
         <button
           className="fb-button gray"
           onClick={toggle}>
@@ -33,7 +33,7 @@ export class ToolList extends React.Component<ToolListProps, {}> {
               {tool.body.name || "Name not found"}
             </Col>
             <Col xs={4}>
-              {this.props.isActive(tool) ? "active" : "inactive"}
+              {this.props.isActive(tool) ? t("active") : t("inactive")}
             </Col>
           </Row>;
         })}

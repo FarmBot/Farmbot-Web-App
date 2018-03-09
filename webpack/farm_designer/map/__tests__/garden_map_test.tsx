@@ -32,6 +32,7 @@ function fakeProps(): GardenMapProps {
     showPlants: true,
     showSpread: false,
     showFarmbot: false,
+    showImages: false,
     selectedPlant: fakePlant(),
     crops: [],
     dispatch: jest.fn(),
@@ -41,6 +42,7 @@ function fakeProps(): GardenMapProps {
         plantUUID: "",
         icon: ""
       },
+      hoveredPlantListItem: undefined,
       cropSearchQuery: "",
       cropSearchResults: [{
         crop: {
@@ -55,6 +57,7 @@ function fakeProps(): GardenMapProps {
         }, image: ""
       }],
       chosenLocation: { x: undefined, y: undefined, z: undefined },
+      currentPoint: undefined,
     },
     plants: [fakePlant(), fakePlant()],
     points: [],
@@ -75,7 +78,15 @@ function fakeProps(): GardenMapProps {
     gridSize: { x: 1000, y: 1000 },
     gridOffset: { x: 100, y: 100 },
     peripherals: [],
-    eStopStatus: false
+    eStopStatus: false,
+    latestImages: [],
+    cameraCalibrationData: {
+      scale: undefined, rotation: undefined,
+      offset: { x: undefined, y: undefined },
+      origin: undefined,
+      calibrationZ: undefined
+    },
+    getConfigValue: jest.fn(),
   };
 }
 
@@ -146,11 +157,11 @@ describe("<GardenPlant/>", () => {
     wrapper.find("#drop-area-svg").simulate("mouseUp");
     expect(p.dispatch).not.toHaveBeenCalled();
     expect(wrapper.state()).toEqual({
-      "activeDragSpread": undefined,
-      "activeDragXY": { "x": undefined, "y": undefined, "z": undefined },
-      "isDragging": false,
-      "pageX": 0,
-      "pageY": 0
+      activeDragSpread: undefined,
+      activeDragXY: { x: undefined, y: undefined, z: undefined },
+      isDragging: false,
+      pageX: 0,
+      pageY: 0
     });
     wrapper.setState({ isDragging: true });
     wrapper.find("#drop-area-svg").simulate("mouseUp");
@@ -179,6 +190,25 @@ describe("<GardenPlant/>", () => {
     expect(p.dispatch).toHaveBeenCalledWith("edit resource");
   });
 
+  it("starts drag: selecting", async () => {
+    const p = fakeProps();
+    const wrapper = shallow(<GardenMap {...p} />);
+    expect(wrapper.state()).toEqual({});
+    mockPath = "/app/designer/plants/select";
+    await wrapper.find("#drop-area-svg").simulate("mouseDown", {
+      pageX: 1000, pageY: 2000
+    });
+    expect(wrapper.state()).toEqual({
+      selectionBox: {
+        x0: 580, y0: 1790, x1: undefined, y1: undefined
+      }
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: undefined,
+      type: Actions.SELECT_PLANT
+    });
+  });
+
   it("drags: selecting", () => {
     mockPath = "/app/designer/plants/select";
     const p = fakeProps();
@@ -204,5 +234,50 @@ describe("<GardenPlant/>", () => {
       type: Actions.SELECT_PLANT,
       payload: [expect.any(String), expect.any(String)]
     }));
+  });
+
+  it("selects location", async () => {
+    const p = fakeProps();
+    const wrapper = shallow(<GardenMap {...p} />);
+    expect(wrapper.state()).toEqual({});
+    mockPath = "/app/designer/plants/move_to";
+    await wrapper.find("#drop-area-svg").simulate("click", {
+      pageX: 1000, pageY: 2000, preventDefault: jest.fn()
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: { x: 580, y: 1790, z: 0 },
+      type: Actions.CHOOSE_LOCATION
+    });
+  });
+
+  it("starts drawing point", async () => {
+    const p = fakeProps();
+    const wrapper = shallow(<GardenMap {...p} />);
+    expect(wrapper.state()).toEqual({});
+    mockPath = "/app/designer/plants/create_point/";
+    await wrapper.find("#drop-area-svg").simulate("mouseDown", {
+      pageX: 1, pageY: 2
+    });
+    expect(wrapper.state()).toEqual({ isDragging: true });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: { cx: -420, cy: -210, r: 0 },
+      type: Actions.SET_CURRENT_POINT_DATA
+    });
+  });
+
+  it("sets drawn point radius", async () => {
+    const p = fakeProps();
+    p.designer.currentPoint = { cx: -420, cy: -210, r: 0 };
+    const wrapper = shallow(<GardenMap {...p} />);
+    expect(wrapper.state()).toEqual({});
+    mockPath = "/app/designer/plants/create_point/";
+    wrapper.setState({ isDragging: true });
+    await wrapper.find("#drop-area-svg").simulate("mouseMove", {
+      pageX: 10, pageY: 20
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: { cx: -420, cy: -210, r: 22 },
+      type: Actions.SET_CURRENT_POINT_DATA
+    });
   });
 });

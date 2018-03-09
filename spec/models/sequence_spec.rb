@@ -3,6 +3,7 @@ describe Sequence do
   let(:regimen) { FactoryBot.create(:regimen) }
 
   it "Enforces uniqueness of names" do
+    PinBinding.destroy_all
     Sequence.destroy_all
     optns = { device: regimen.device,
               name: "Dupe",

@@ -161,7 +161,7 @@
   .plant-search-item {
     cursor: pointer;
     padding: 0.5rem 1rem;
-    &:hover {
+    &:hover, &.hovered {
       background: darken($light_green, 10%);
       transition: background 0.2s ease;
     }
@@ -192,6 +192,7 @@
 .hovered-plant-copy {
   cursor: pointer;
   transform-origin: center;
+  transform-box: fill-box;
 }
 
 .plant-link-wrapper {
@@ -201,23 +202,17 @@
       cursor: -webkit-grabbing !important;
     }
   }
-  &:hover {
-    image {
-      transform: scale(1.1);
-      &.is-chosen-true {
-        transform: scale(1);
-      }
-    }
-  }
 }
 
 .plant-indicator.is-chosen-true {
   animation: plant-selection-pop 0.2s 1 cubic-bezier(0, 0, 0, 0.9), pulse-and-rotate 4s 0.2s infinite linear;
   transform-origin: center;
+  transform-box: fill-box;
 }
 
 .plant-image {
   transform-origin: bottom;
+  transform-box: fill-box;
   &.animate {
     animation: plant-growth 0.25s cubic-bezier(0, 0, 0, 1.4);
   }
@@ -226,14 +221,20 @@
 .soil-cloud {
   animation: soil-poof 0.5s cubic-bezier(0, 0, 0, 1);
   transform-origin: center;
+  transform-box: fill-box;
 }
 
 .spread {
   transform-origin: center;
+  transform-box: fill-box;
   pointer-events: none;
   &.animate {
     animation: spread-pop 0.2s cubic-bezier(0, 0, 0, 1);
   }
+}
+
+.virtual-peripherals {
+  pointer-events: none;
 }
 
 .water-spray {
@@ -242,6 +243,7 @@
     animation-iteration-count: infinite;
     animation-name: water-spray-animation;
     transform-origin: center;
+    transform-box: fill-box;
     opacity: 0;
   }
 }
@@ -266,6 +268,7 @@
     animation-iteration-count: infinite;
     animation-name: vacuum-animation;
     transform-origin: center;
+    transform-box: fill-box;
     opacity: 0;
   }
 }
@@ -310,6 +313,24 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    fieldset {
+      width: 100%;
+    }
+    label {
+      margin-bottom: 0;
+    }
+    button {
+      float: none;
+      margin-bottom: 0.5rem;
+      margin-left: 2rem;
+    }
+  }
+  .caret-menu-button {
+    display: inline;
+    margin-left: 0.5rem;
+    font-weight: bold;
+    font-size: medium;
+    cursor: pointer;
   }
   .farmbot-origin {
     .quadrants {
@@ -432,5 +453,24 @@
       left: -4.6rem;
       top: 0.6rem;
     }
+  }
+}
+
+.image-filter-menu {
+  width: 32rem;
+  th {
+    text-align: center;
+  }
+  .pt-slider {
+    margin-left: 3rem;
+    margin-top: 1rem;
+    width: 25rem;
+  }
+  .pt-slider-label {
+    white-space: nowrap;
+    text-align: center;
+  }
+  input {
+    background: $white;
   }
 }

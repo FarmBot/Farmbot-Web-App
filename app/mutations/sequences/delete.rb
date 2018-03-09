@@ -8,6 +8,7 @@ module Sequences
     end
 
     def validate
+      check_if_any_pin_bindings_using_this
       check_if_any_regimens_using_this
       check_if_any_sequences_using_this
       FarmEvent.if_still_using(sequence) do
@@ -21,16 +22,32 @@ module Sequences
     end
   private
 
+    def check_if_any_pin_bindings_using_this
+      in_use = PinBinding
+        .where(sequence_id: sequence.id)
+        .pluck(:pin_num)
+        .map { |x| "pin #{x}"}
+      names = in_use.join(", ")
+      msg = IN_USE % ["pin bindings", names]
+      add_error(:sequence, :in_use, msg) if in_use.any?
+    end
+
     def check_if_any_sequences_using_this
-      in_use = SequenceDependency.where(dependency: sequence)
+      # Finds CeleryScript nodes that are using `sequence_id` xyz, but excludes
+      # nodes within the current sequence, since that would make deletion
+      # impossible.
+      in_use = Sequence.where(id: EdgeNode
+          .where(kind: "sequence_id", value: sequence.id)
+          .where
+          .not(sequence_id: sequence.id)
+          .pluck(:value)
+          .uniq)
+        .pluck(:name)
+        .map(&:inspect)
       if in_use.any?
-        names = in_use.map(&:sequence)
-                      .uniq
-                      .map(&:name)
-                      .map(&:inspect)
-                      .join(", ")
+        names = in_use.join(", ")
         msg = IN_USE % ["sequences", names]
-        add_error(:sequence, :required, msg)
+        add_error(:sequence, :in_use, msg)
       end
     end
 

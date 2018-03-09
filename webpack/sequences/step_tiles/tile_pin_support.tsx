@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { editStep } from "../../api/crud";
 import * as _ from "lodash";
 import { WritePin, SequenceBodyItem } from "farmbot";
@@ -5,21 +6,21 @@ import { DropDownItem } from "../../ui/index";
 import { StepParams } from "../interfaces";
 
 export const PIN_MODES = [
-  { value: 1, label: "Analog" },
-  { value: 0, label: "Digital" }
+  { value: 1, label: t("Analog") },
+  { value: 0, label: t("Digital") }
 ];
 
 export const PIN_VALUES = [
-  { value: 1, label: "ON" },
-  { value: 0, label: "OFF" }
+  { value: 1, label: t("ON") },
+  { value: 0, label: t("OFF") }
 ];
 
 export function currentModeSelection(currentStep: SequenceBodyItem) {
   const step = currentStep as WritePin;
   const pinMode = step.args.pin_mode;
   const modes: { [s: string]: string } = {
-    0: "Digital",
-    1: "Analog"
+    0: t("Digital"),
+    1: t("Analog")
   };
   return { label: modes[pinMode], value: pinMode };
 }
@@ -28,8 +29,8 @@ export function currentValueSelection(currentStep: SequenceBodyItem) {
   const step = currentStep as WritePin;
   const pinValue = step.args.pin_value;
   const values: { [s: string]: string } = {
-    0: "OFF",
-    1: "ON"
+    0: t("OFF"),
+    1: t("ON")
   };
   return { label: values[pinValue], value: pinValue };
 }
@@ -43,10 +44,6 @@ export function setPinMode(
     executor: (step: WritePin) => {
       if (_.isNumber(x.value)) {
         step.args.pin_mode = x.value;
-        // To force ON/OFF display in digital mode, uncomment these lines:
-        // if (x.value === 0) {
-        //   step.args.pin_value = Math.min(1, step.args.pin_value);
-        // }
       } else {
         throw new Error("Numbers only in pin_mode.");
       }

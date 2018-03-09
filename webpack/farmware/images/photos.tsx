@@ -43,9 +43,12 @@ export class Photos extends React.Component<PhotosProps, {}> {
     const i = this.props.currentImage;
     if (i) {
       const { meta } = i.body;
-      return Object.keys(meta).sort().map(function (key, index) {
-        return <MetaInfo key={index} attr={key} obj={meta} />;
-      });
+      return Object.keys(meta)
+        .filter(key => ["x", "y", "z"].includes(key))
+        .sort()
+        .map((key, index) => {
+          return <MetaInfo key={index} attr={key} obj={meta} />;
+        });
     } else {
       return <MetaInfo attr={t("image")} obj={{ image: t("No meta data.") }} />;
     }
@@ -68,7 +71,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
         .format("MMMM Do, YYYY h:mma")
       : "";
     return <Widget className="photos-widget">
-      <WidgetHeader helpText={ToolTips.PHOTOS} title={"Photos"}>
+      <WidgetHeader helpText={ToolTips.PHOTOS} title={t("Photos")}>
         <button
           className="fb-button gray"
           onClick={this.takePhoto}>

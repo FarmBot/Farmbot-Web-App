@@ -3,7 +3,6 @@ import { ToolBayForm } from "../toolbay_form";
 import { mount } from "enzyme";
 import { mapStateToProps } from "../../state_to_props";
 import { fakeState } from "../../../__test_support__/fake_state";
-import { Actions } from "../../../constants";
 
 describe("<ToolBayForm/>", () => {
   function bootstrapTest() {
@@ -35,18 +34,4 @@ describe("<ToolBayForm/>", () => {
     expect(test.component.text()).toContain("Trench Digging Tool");
     [0, 1, 2].map(i => expect(inputs.at(i).props().value).toEqual("10"));
   });
-
-  it("fills inputs with bot position", () => {
-    const test = bootstrapTest();
-    const buttons = test.component.find("button");
-    expect(buttons.length).toEqual(6);
-    buttons.at(3).simulate("click");
-    expect(test.dispatch).toHaveBeenCalledWith({
-      type: Actions.EDIT_RESOURCE,
-      payload: expect.objectContaining({
-        update: { x: 1, y: 2, z: 3 }
-      })
-    });
-  });
-
 });

@@ -21,12 +21,12 @@ export function HomingRow(props: HomingRowProps) {
       <label>
         {t("HOMING")}
       </label>
-      <SpacePanelToolTip tooltip={t(ToolTips.HOMING)} />
+      <SpacePanelToolTip tooltip={ToolTips.HOMING} />
     </Col>
     {axisTrackingStatus(hardware)
       .map((row) => {
         const { axis, disabled } = row;
-        return <Col xs={2} key={axis}>
+        return <Col xs={2} key={axis} className={"centered-button-div"}>
           <LockableButton disabled={disabled} onClick={() => findHome(axis)}>
             {t("HOME {{axis}}", { axis })}
           </LockableButton>

@@ -4,12 +4,15 @@ import {
   selectAllPlantPointers,
   selectAllCrops,
   joinToolsAndSlot,
+  selectAllImages,
+  maybeGetTimeOffset,
   selectAllPeripherals
 } from "../resources/selectors";
-import { BotLocationData, StepsPerMmXY } from "../devices/interfaces";
+import { StepsPerMmXY } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import * as _ from "lodash";
-import { minFwVersionCheck } from "../util";
+import { minFwVersionCheck, validBotLocationData } from "../util";
+import { getWebAppConfigValue } from "../config_storage/actions";
 
 export function mapStateToProps(props: Everything) {
 
@@ -20,17 +23,6 @@ export function mapStateToProps(props: Everything) {
     : undefined;
   const { plantUUID } = props.resources.consumers.farm_designer.hoveredPlant;
   const hoveredPlant = plants.filter(x => x.uuid === plantUUID)[0];
-
-  const getBotLocationData = (): BotLocationData => {
-    if (props.bot.hardware.location_data) {
-      return props.bot.hardware.location_data;
-    }
-    return {
-      position: { x: undefined, y: undefined, z: undefined },
-      scaled_encoders: { x: undefined, y: undefined, z: undefined },
-      raw_encoders: { x: undefined, y: undefined, z: undefined },
-    };
-  };
 
   function stepsPerMmXY(): StepsPerMmXY {
     const {
@@ -62,6 +54,24 @@ export function mapStateToProps(props: Everything) {
       return { label, value };
     });
 
+  const latestImages = _(selectAllImages(props.resources.index))
+    .sortBy(x => x.body.id)
+    .reverse()
+    .take(50)
+    .value();
+
+  const { user_env } = props.bot.hardware;
+  const cameraCalibrationData = {
+    scale: user_env["CAMERA_CALIBRATION_coord_scale"],
+    rotation: user_env["CAMERA_CALIBRATION_total_rotation_angle"],
+    offset: {
+      x: user_env["CAMERA_CALIBRATION_camera_offset_x"],
+      y: user_env["CAMERA_CALIBRATION_camera_offset_y"]
+    },
+    origin: user_env["CAMERA_CALIBRATION_image_bot_origin_location"],
+    calibrationZ: user_env["CAMERA_CALIBRATION_camera_z"],
+  };
+
   return {
     crops: selectAllCrops(props.resources.index),
     dispatch: props.dispatch,
@@ -72,10 +82,14 @@ export function mapStateToProps(props: Everything) {
     toolSlots: joinToolsAndSlot(props.resources.index),
     hoveredPlant,
     plants,
-    botLocationData: getBotLocationData(),
+    botLocationData: validBotLocationData(props.bot.hardware.location_data),
     botMcuParams: props.bot.hardware.mcu_params,
     stepsPerMmXY: stepsPerMmXY(),
     peripherals,
-    eStopStatus: props.bot.hardware.informational_settings.locked
+    eStopStatus: props.bot.hardware.informational_settings.locked,
+    latestImages,
+    cameraCalibrationData,
+    tzOffset: maybeGetTimeOffset(props.resources.index),
+    getConfigValue: getWebAppConfigValue(() => props),
   };
 }

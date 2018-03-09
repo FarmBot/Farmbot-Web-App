@@ -4,12 +4,22 @@ import {
   Sequence as CeleryScriptSequence,
   SequenceBodyItem,
   LegalArgString,
-  SyncStatus
+  SyncStatus,
+  ALLOWED_CHANNEL_NAMES,
+  Xyz
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { ResourceIndex } from "../resources/interfaces";
 import { JSXChildren } from "../util";
+
+export interface HardwareFlags {
+  findHomeEnabled: Record<Xyz, boolean>;
+  stopAtHome: Record<Xyz, boolean>;
+  stopAtMax: Record<Xyz, boolean>;
+  negativeOnly: Record<Xyz, boolean>;
+  axisLength: Record<Xyz, number>;
+}
 
 export interface Props {
   dispatch: Function;
@@ -20,6 +30,9 @@ export interface Props {
   syncStatus: SyncStatus;
   consistent: boolean;
   autoSyncEnabled: boolean;
+  hardwareFlags: HardwareFlags;
+  farmwareInfo: FarmwareInfo;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -29,6 +42,9 @@ export interface SequenceEditorMiddleProps {
   syncStatus: SyncStatus;
   consistent: boolean;
   autoSyncEnabled: boolean;
+  hardwareFlags: HardwareFlags;
+  farmwareInfo: FarmwareInfo;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
@@ -38,7 +54,9 @@ export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
   autoSyncEnabled: boolean;
 }
 
-export type CHANNEL_NAME = "toast" | "ticker";
+export type ShouldDisplay = (x: string) => boolean;
+
+export type ChannelName = ALLOWED_CHANNEL_NAMES;
 
 export const NUMERIC_FIELDS = ["milliseconds", "pin_mode", "pin_number",
   "pin_value", "rhs", "sequence_id", "speed", "x", "y", "z"];
@@ -139,10 +157,19 @@ export type DataXferObj = StepMoveDataXfer | StepSpliceDataXfer;
 
 export type dispatcher = (a: Function | { type: string }) => DataXferObj;
 
+export interface FarmwareInfo {
+  farmwareNames: string[];
+  firstPartyFarmwareNames: string[];
+  showFirstPartyFarmware: boolean;
+}
+
 export interface StepParams {
   currentSequence: TaggedSequence;
   currentStep: SequenceBodyItem;
   dispatch: Function;
   index: number;
   resources: ResourceIndex;
+  hardwareFlags?: HardwareFlags;
+  farmwareInfo?: FarmwareInfo;
+  shouldDisplay?: ShouldDisplay;
 }

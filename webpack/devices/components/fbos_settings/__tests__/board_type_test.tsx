@@ -15,41 +15,60 @@ jest.mock("farmbot-toastr", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { BoardType } from "../board_type";
+import { BoardTypeProps } from "../interfaces";
+import { bot } from "../../../../__test_support__/fake_state/bot";
+import { fakeState } from "../../../../__test_support__/fake_state";
 
 describe("<BoardType/>", () => {
+  const fakeProps = (): BoardTypeProps => {
+    return {
+      firmwareVersion: "",
+      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
+      sourceFbosConfig: (x) => {
+        return { value: bot.hardware.configuration[x], consistent: true };
+      }
+    };
+  };
+
   it("Farmduino", () => {
-    const wrapper = mount(<BoardType
-      firmwareVersion={"5.0.3.F"} />);
+    const p = fakeProps();
+    p.firmwareVersion = "5.0.3.F";
+    const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Farmduino");
   });
 
   it("Arduino/RAMPS", () => {
-    const wrapper = mount(<BoardType
-      firmwareVersion={"5.0.3.R"} />);
+    const p = fakeProps();
+    p.firmwareVersion = "5.0.3.R";
+    const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Arduino/RAMPS");
   });
 
   it("Other", () => {
-    const wrapper = mount(<BoardType
-      firmwareVersion={"4.0.2"} />);
+    const p = fakeProps();
+    p.firmwareVersion = "4.0.2";
+    const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Arduino/RAMPS");
   });
 
   it("Undefined", () => {
-    const wrapper = mount(<BoardType
-      firmwareVersion={undefined} />);
+    const p = fakeProps();
+    p.firmwareVersion = undefined;
+    const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("None");
   });
 
   it("Disconnected", () => {
-    const wrapper = mount(<BoardType
-      firmwareVersion={"Arduino Disconnected!"} />);
+    const p = fakeProps();
+    p.firmwareVersion = "Arduino Disconnected!";
+    const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("None");
   });
 
   it("calls updateConfig", () => {
-    const wrapper = shallow(<BoardType
-      firmwareVersion={"Arduino Disconnected!"} />);
+    const p = fakeProps();
+    p.firmwareVersion = "Arduino Disconnected!";
+    const wrapper = shallow(<BoardType {...p} />);
     wrapper.find("FBSelect").simulate("change",
       { label: "firmware_hardware", value: "farmduino" });
     expect(mockDevice.updateConfig)

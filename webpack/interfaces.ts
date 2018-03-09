@@ -1,7 +1,7 @@
 import { AuthState } from "./auth/interfaces";
 import { ConfigState } from "./config/interfaces";
 import { BotState } from "./devices/interfaces";
-import { Color as FarmBotJsColor, ALLOWED_MESSAGE_TYPES } from "farmbot";
+import { Color as FarmBotJsColor, ALLOWED_MESSAGE_TYPES, PlantStage } from "farmbot";
 import { DraggableState } from "./draggable/interfaces";
 import { PeripheralState } from "./controls/peripherals/interfaces";
 import { RestResources } from "./resources/interfaces";
@@ -10,17 +10,33 @@ import { RestResources } from "./resources/interfaces";
     in the UI. Only certain colors are valid. */
 export type Color = FarmBotJsColor;
 
-export interface SelectOptionsParams {
-  label: string;
-  value: string | number | undefined;
-  disabled?: boolean;
-  field?: string;
-  type?: string;
-  x?: number;
-  y?: number;
-  z?: number;
+export interface PinBinding {
+  id?: number;
+  sequence_id: number;
+  pin_num: number;
 }
 
+export interface Sensor {
+  id?: number;
+  pin: number | undefined;
+  label: string;
+  mode: number;
+}
+
+export interface SensorReading {
+  id?: number | undefined;
+  x: number | undefined;
+  y: number | undefined;
+  z: number | undefined;
+  value: number;
+  pin: number;
+}
+
+export interface DeviceConfig {
+  id?: number;
+  key: string;
+  value: string | number | boolean;
+}
 export interface Log {
   id?: number | undefined;
   message: string;
@@ -81,7 +97,6 @@ interface BasePoint {
   x: number;
   y: number;
   z: number;
-  // device_id: number;
   pointer_id?: number | undefined;
   meta: { [key: string]: (string | undefined) };
   name: string;
@@ -90,11 +105,22 @@ interface BasePoint {
 export interface PlantPointer extends BasePoint {
   openfarm_slug: string;
   pointer_type: "Plant";
+  planted_at?: string;
+  plant_stage: PlantStage;
+}
+
+export enum ToolPulloutDirection {
+  NONE = 0,
+  POSITIVE_X = 1,
+  NEGATIVE_X = 2,
+  POSITIVE_Y = 3,
+  NEGATIVE_Y = 4,
 }
 
 export interface ToolSlotPointer extends BasePoint {
   tool_id: number | undefined;
   pointer_type: "ToolSlot";
+  pullout_direction: ToolPulloutDirection;
 }
 
 export interface GenericPointer extends BasePoint {
@@ -107,9 +133,3 @@ export type Point =
   | PlantPointer;
 
 export type PointerTypeName = Point["pointer_type"];
-
-export const POINTER_NAMES: Readonly<PointerTypeName>[] = [
-  "Plant",
-  "GenericPointer",
-  "ToolSlot"
-];

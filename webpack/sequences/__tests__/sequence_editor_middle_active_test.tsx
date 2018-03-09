@@ -25,6 +25,7 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { destroy } from "../../api/crud";
+import { fakeHardwareFlags } from "../../__test_support__/sequence_hardware_settings";
 
 describe("<SequenceEditorMiddleActive/>", () => {
   function fakeProps(): ActiveMiddleProps {
@@ -34,12 +35,19 @@ describe("<SequenceEditorMiddleActive/>", () => {
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
       consistent: true,
-      autoSyncEnabled: false
+      autoSyncEnabled: false,
+      hardwareFlags: fakeHardwareFlags(),
+      farmwareInfo: {
+        farmwareNames: [],
+        firstPartyFarmwareNames: [],
+        showFirstPartyFarmware: false
+      },
+      shouldDisplay: jest.fn(),
     };
   }
 
   function clickButton(position: number, text: string) {
-    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps() } />);
+    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
     const button = wrapper.find("button").at(position);
     expect(button.text()).toEqual(text);
     button.simulate("click");
@@ -58,7 +66,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
   });
 
   it("has drag area", () => {
-    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps() } />);
+    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
     expect(wrapper.find(".drag-drop-area").text()).toEqual("DRAG COMMAND HERE");
   });
 });

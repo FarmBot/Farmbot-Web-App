@@ -2,12 +2,13 @@ import { isUndefined } from "lodash";
 import * as moment from "moment";
 import { StatusRowProps } from "./connectivity_row";
 import { ConnectionStatus } from "../../connectivity/interfaces";
+import { t } from "i18next";
 
 const HOUR = 1000 * 60 * 60;
 
 const SIX_HOURS = HOUR * 6;
 
-const NOT_SEEN = "No messages seen yet.";
+const NOT_SEEN = t("No messages seen yet.");
 
 function ago(input: string) {
   return moment(new Date(input)).fromNow();
@@ -37,9 +38,11 @@ export function botToMQTT(stat: ConnectionStatus | undefined): StatusRowProps {
   return {
     connectionName: "botMQTT",
     from: "FarmBot",
-    to: "Message Broker",
+    to: t("Message Broker"),
     connectionStatus: statusOf(stat),
-    children: lastSeen(stat)
+    children: (stat && stat.state === "up")
+      ? lastSeen(stat)
+      : t("No recent messages.")
   };
 }
 
@@ -48,8 +51,8 @@ export function browserToMQTT(status:
 
   return {
     connectionName: "browserMQTT",
-    from: "Browser",
-    to: "Message Broker",
+    from: t("Browser"),
+    to: t("Message Broker"),
     children: lastSeen(status),
     connectionStatus: statusOf(status)
   };
@@ -62,7 +65,7 @@ export function botToFirmware(version: string | undefined): StatusRowProps {
     connectionName: "botFirmware",
     from: "Raspberry Pi",
     to: boardIdentifier === "F" ? "Farmduino" : "Arduino",
-    children: online ? "Connected." : "Disconnected.",
+    children: online ? t("Connected.") : t("Disconnected."),
     connectionStatus: online
   };
 }
@@ -70,8 +73,8 @@ export function botToFirmware(version: string | undefined): StatusRowProps {
 export function browserToAPI(status?: ConnectionStatus | undefined): StatusRowProps {
   return {
     connectionName: "browserAPI",
-    from: "Browser",
-    to: "Internet",
+    from: t("Browser"),
+    to: t("Internet"),
     children: lastSeen(status),
     connectionStatus: statusOf(status)
   };

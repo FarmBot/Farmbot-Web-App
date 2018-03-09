@@ -35,7 +35,7 @@ You will need the following:
 
  1. A Linux or Mac based machine. We do not support windows at this time.
  0. [Docker 17.06.0-ce or greater](https://docs.docker.com/engine/installation/)
- 0. [Ruby 2.4.2](http://rvm.io/rvm/install)
+ 0. [Ruby 2..5.0](http://rvm.io/rvm/install)
  0. [ImageMagick](https://www.imagemagick.org/script/index.php) (`brew install imagemagick` (Mac) or `sudo apt-get install imagemagick` (Ubuntu))
  0. [Node JS >= v8.9.0](https://nodejs.org/en/download/)
  0. [`libpq-dev` and `postgresql`](http://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem/6040822#6040822) and `postgresql-contrib`

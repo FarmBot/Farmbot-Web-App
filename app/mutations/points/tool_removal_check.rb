@@ -33,15 +33,7 @@ module Points
     end
 
     def nope!
-      names = Sequence
-        .where(id: deps.pluck(:sequence_id))
-        .pluck(:name)
-        .join(", ")
       add_error :in_use, :in_use, (IN_USE % [names])
-    end
-
-    def is_tool_slot?
-      point.pointer_type == "ToolSlot"
     end
 
     def current_tool_id
@@ -49,8 +41,13 @@ module Points
     end
 
     def deps
-      @deps ||= SequenceDependency.where(dependency_type: "Tool",
-                                         dependency_id:   current_tool_id)
+      @deps ||= Sequence
+        .where(id: EdgeNode.where(kind: "tool_id", value: current_tool_id)
+                    .pluck(:sequence_id))
+    end
+
+    def names
+      @names ||= deps.pluck(:name).join(", ")
     end
   end
 end

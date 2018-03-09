@@ -29,9 +29,9 @@ export let formatTime = (input: string, timeOffset: number) => {
   return moment(iso).utcOffset(timeOffset).format("HH:mm");
 };
 
-export let formatDate = (input: string) => {
+export let formatDate = (input: string, timeOffset: number) => {
   const iso = new Date(input).toISOString();
-  return moment(iso).format("YYYY-MM-DD");
+  return moment(iso).utcOffset(timeOffset).format("YYYY-MM-DD");
 };
 
 export let repeatOptions = [
@@ -128,7 +128,6 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
   const regimensById = indexRegimenById(props.resources.index);
   const sequencesById = indexSequenceById(props.resources.index);
   const farmEventsById = indexFarmEventById(props.resources.index);
-
   const farmEvents = selectAllFarmEvents(props.resources.index);
 
   const getFarmEvent = (): TaggedFarmEvent | undefined => {

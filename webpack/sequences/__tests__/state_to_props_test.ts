@@ -12,4 +12,13 @@ describe("mapStateToProps()", () => {
     expect(returnedProps.sequence).toEqual(undefined);
     expect(returnedProps.syncStatus).toEqual("unknown");
   });
+
+  it("returns shouldDisplay()", () => {
+    const state = fakeState();
+    state.bot.hardware.informational_settings.controller_version = "2.0.0";
+    state.bot.minOsFeatureData = "{\"new_feature\": \"1.0.0\"}";
+    const props = mapStateToProps(state);
+    expect(props.shouldDisplay("some_feature")).toBeFalsy();
+    expect(props.shouldDisplay("new_feature")).toBeTruthy();
+  });
 });

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 
 interface SPTTProps {
   tooltip?: string | undefined;
@@ -8,7 +9,7 @@ export function SpacePanelToolTip({ tooltip }: SPTTProps) {
   return (tooltip && <div className="help">
     <i className="fa fa-question-circle help-icon" />
     <div className="help-text">
-      {tooltip}
+      {t(tooltip)}
     </div>
   </div>) || <span />;
 }

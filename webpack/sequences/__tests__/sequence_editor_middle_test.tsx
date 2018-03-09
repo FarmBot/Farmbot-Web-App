@@ -6,6 +6,7 @@ import {
   FAKE_RESOURCES, buildResourceIndex
 } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { fakeHardwareFlags } from "../../__test_support__/sequence_hardware_settings";
 
 describe("<SequenceEditorMiddle/>", () => {
   function fakeProps(): SequenceEditorMiddleProps {
@@ -15,19 +16,26 @@ describe("<SequenceEditorMiddle/>", () => {
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
       consistent: true,
-      autoSyncEnabled: false
+      autoSyncEnabled: false,
+      hardwareFlags: fakeHardwareFlags(),
+      farmwareInfo: {
+        farmwareNames: [],
+        firstPartyFarmwareNames: [],
+        showFirstPartyFarmware: false
+      },
+      shouldDisplay: jest.fn(),
     };
   }
 
   it("active editor", () => {
-    const wrapper = mount(<SequenceEditorMiddle {...fakeProps() } />);
+    const wrapper = mount(<SequenceEditorMiddle {...fakeProps()} />);
     expect(wrapper.text()).toContain("Delete");
   });
 
   it("inactive editor", () => {
     const p = fakeProps();
     p.sequence = undefined;
-    const wrapper = mount(<SequenceEditorMiddle {...p } />);
+    const wrapper = mount(<SequenceEditorMiddle {...p} />);
     expect(wrapper.text()).toContain("No Sequence selected");
   });
 });

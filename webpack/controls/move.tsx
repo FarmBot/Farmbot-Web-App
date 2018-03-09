@@ -9,12 +9,12 @@ import { StepSizeSelector } from "./step_size_selector";
 import { MustBeOnline } from "../devices/must_be_online";
 import { ToolTips } from "../constants";
 import { MoveProps, EncoderDisplay } from "./interfaces";
-import { Xyz, BotLocationData } from "../devices/interfaces";
+import { Xyz } from "../devices/interfaces";
 import { Popover, Position } from "@blueprintjs/core";
 import { AxisDisplayGroup } from "./axis_display_group";
 import { Session } from "../session";
 import { INVERSION_MAPPING, ENCODER_MAPPING } from "../devices/reducer";
-import { minFwVersionCheck } from "../util";
+import { minFwVersionCheck, validBotLocationData } from "../util";
 
 export class Move extends React.Component<MoveProps, {}> {
 
@@ -26,27 +26,23 @@ export class Move extends React.Component<MoveProps, {}> {
     (name: EncoderDisplay) => () => Session.invertBool(ENCODER_MAPPING[name]);
 
   render() {
-    const { firmware_version } = this.props.bot.hardware.informational_settings;
-    const { x_axis_inverted, y_axis_inverted, z_axis_inverted } = this.props;
-    const { raw_encoders, scaled_encoders } = this.props;
-    const xBtnColor = x_axis_inverted ? "green" : "red";
-    const yBtnColor = y_axis_inverted ? "green" : "red";
-    const zBtnColor = z_axis_inverted ? "green" : "red";
-    const rawBtnColor = raw_encoders ? "green" : "red";
-    const scaledBtnColor = scaled_encoders ? "green" : "red";
-    let locationData: BotLocationData;
-    if (this.props.bot.hardware.location_data) {
-      locationData = this.props.bot.hardware.location_data;
-    } else {
-      locationData = {
-        position: { x: undefined, y: undefined, z: undefined },
-        raw_encoders: { x: undefined, y: undefined, z: undefined },
-        scaled_encoders: { x: undefined, y: undefined, z: undefined },
-      };
-    }
+    const { location_data, informational_settings } = this.props.bot.hardware;
+    const { firmware_version } = informational_settings;
+    const { x_axis_inverted, y_axis_inverted, z_axis_inverted,
+      raw_encoders, scaled_encoders } = this.props;
+
+    const btnColor = (flag: boolean) => { return flag ? "green" : "red"; };
+    const xBtnColor = btnColor(x_axis_inverted);
+    const yBtnColor = btnColor(y_axis_inverted);
+    const zBtnColor = btnColor(z_axis_inverted);
+    const rawBtnColor = btnColor(raw_encoders);
+    const scaledBtnColor = btnColor(scaled_encoders);
+
+    const locationData = validBotLocationData(location_data);
     const motor_coordinates = locationData.position;
     const raw_encoders_data = locationData.raw_encoders;
     const scaled_encoders_data = locationData.scaled_encoders;
+
     const scaled_encoder_label =
       minFwVersionCheck(firmware_version, "5.0.5")
         ? "Scaled Encoder (mm)"
@@ -54,7 +50,7 @@ export class Move extends React.Component<MoveProps, {}> {
 
     return <Widget>
       <WidgetHeader
-        title="Move"
+        title={t("Move")}
         helpText={ToolTips.MOVE}>
         <Popover position={Position.BOTTOM_RIGHT}>
           <i className="fa fa-gear" />
@@ -142,7 +138,7 @@ export class Move extends React.Component<MoveProps, {}> {
           </Row>
           <AxisDisplayGroup
             position={motor_coordinates}
-            label={"Motor Coordinates (mm)"} />
+            label={t("Motor Coordinates (mm)")} />
           {scaled_encoders &&
             <AxisDisplayGroup
               position={scaled_encoders_data}
@@ -150,7 +146,7 @@ export class Move extends React.Component<MoveProps, {}> {
           {raw_encoders &&
             <AxisDisplayGroup
               position={raw_encoders_data}
-              label={"Raw Encoder data"} />}
+              label={t("Raw Encoder data")} />}
           <AxisInputBoxGroup
             position={motor_coordinates}
             onCommit={input => moveAbs(input)}

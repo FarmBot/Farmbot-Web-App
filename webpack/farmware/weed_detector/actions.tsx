@@ -10,9 +10,9 @@ import { getDevice } from "../../device";
 import { WDENVKey } from "./remote_env/interfaces";
 import { NumericValues } from "./image_workspace";
 import { envSave } from "./remote_env/actions";
+import { noop } from "lodash";
 type Key = keyof NumericValues;
 type Translation = Record<Key, WDENVKey>;
-const QUERY = { meta: { created_by: "plant-detection" } };
 
 export let translateImageWorkspaceAndSave = (map: Translation) => {
   return (key: Key, value: number) => {
@@ -20,17 +20,19 @@ export let translateImageWorkspaceAndSave = (map: Translation) => {
   };
 };
 
-export function resetWeedDetection(cb: ProgressCallback): Thunk {
+export function deletePoints(
+  pointName: string, createdBy: string, cb?: ProgressCallback): Thunk {
   // TODO: Generalize and add to api/crud.ts
   return async function (dispatch, getState) {
     const URL = API.current.pointSearchPath;
+    const QUERY = { meta: { created_by: createdBy } };
     try {
       const resp: HttpData<GenericPointer[]> = await axios.post(URL, QUERY);
       const ids = resp.data.map(x => x.id);
       // If you delete too many points, you will violate the URL length
       // limitation of 2,083. Chunking helps fix that.
       const chunks = _.chunk(ids, 179 /* Prime numbers, why not? */);
-      const prog = new Progress(chunks.length, cb);
+      const prog = new Progress(chunks.length, cb || noop);
       prog.inc();
       const promises = chunks.map(function (chunk) {
         return axios
@@ -47,11 +49,14 @@ export function resetWeedDetection(cb: ProgressCallback): Thunk {
             type: "DELETE_POINT_OK",
             payload: ids
           });
-          success(t("Deleted {{num}} weeds", { num: ids.length }));
+          success(t("Deleted {{num}} {{points}}", {
+            num: ids.length, points: pointName
+          }));
           prog.finish();
         })
         .catch(function (e) {
-          error(t("Some weeds failed to delete. Please try again."));
+          error(t("Some {{points}} failed to delete." +
+            " Are they in use by sequences?", { points: pointName }));
           prog.finish();
         });
     } catch (e) {

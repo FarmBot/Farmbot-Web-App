@@ -29,7 +29,13 @@ import { Xyz } from "../../devices/interfaces";
 import { TileMoveAbsSelect, InputBox } from "./tile_move_absolute/index";
 import { ToolTips } from "../../constants";
 import { extractParent } from "../locals_list";
-import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import {
+  StepWrapper,
+  StepHeader,
+  StepContent,
+  StepWarning,
+  conflictsString
+} from "../step_ui/index";
 import { StepInputBox } from "../inputs/step_input_box";
 
 interface Args {
@@ -118,6 +124,34 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
       this.updateArgs(_.merge({}, this.args, update));
     }
 
+  get settingConflicts(): Record<Xyz, boolean> {
+    const conflicts = { x: false, y: false, z: false };
+    if (this.props.hardwareFlags) {
+      const {
+        stopAtHome, stopAtMax, negativeOnly, axisLength
+      } = this.props.hardwareFlags;
+      ["x", "y", "z"].map((axis: Xyz) => {
+        const coord = parseFloat(this.getAxisValue(axis));
+        const offset = parseFloat(this.getOffsetValue(axis));
+        const sum = coord + offset;
+        if (stopAtHome[axis]) {
+          conflicts[axis] = negativeOnly[axis] ? sum > 0 : sum < 0;
+        }
+        if (stopAtMax[axis] && axisLength[axis] !== 0) {
+          conflicts[axis] = conflicts[axis] || (negativeOnly[axis]
+            ? sum < -axisLength[axis]
+            : sum > axisLength[axis]);
+        }
+      });
+    }
+    return conflicts;
+  }
+
+  get settingConflictWarning() {
+    return "Movement out of bounds for: "
+      + conflictsString(this.settingConflicts);
+  }
+
   render() {
     const { currentStep, dispatch, index, currentSequence } = this.props;
     if (currentSequence && !isTaggedSequence(currentSequence)) {
@@ -132,7 +166,12 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
         currentSequence={currentSequence}
         currentStep={currentStep}
         dispatch={dispatch}
-        index={index} />
+        index={index}>
+        {_.some(this.settingConflicts) &&
+          <StepWarning
+            warning={this.settingConflictWarning}
+            conflicts={this.settingConflicts} />}
+      </StepHeader>
       <StepContent className={className}>
         <Row>
           <Col md={12}>
@@ -140,7 +179,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
             <TileMoveAbsSelect
               resources={this.resources}
               selectedItem={this.args.location}
-              onChange={(location) => this.updateArgs({ location })} />
+              onChange={(location) => this.updateArgs({ location })}
+              shouldDisplay={this.props.shouldDisplay || (x => false)} />
           </Col>
           <Col xs={3}>
             <InputBox

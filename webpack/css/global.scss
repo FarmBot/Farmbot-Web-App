@@ -212,14 +212,38 @@ a {
       font-size: 1rem;
     }
   }
-  .label-headings div[class*="col"] {
-    text-align: right;
-  }
   .row {
     margin-bottom: 0.6rem;
   }
   label {
     padding: 0.5rem 0 0 0.5rem;
+  }
+  .centered-button-div {
+    .fb-button {
+      float: none !important;
+    }
+    label {
+      padding: 0;
+    }
+    text-align: center;
+    padding: 0.25rem;
+  }
+}
+
+.change-ownership-form {
+  p {
+    padding: 1rem;
+    margin-left: 0.5rem;
+  }
+  .row {
+    margin-bottom: 1rem;
+  }
+  label {
+    margin-top: 0.5rem;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: 1rem;
   }
 }
 
@@ -465,6 +489,7 @@ ul {
     z-index: 3;
     width: 6rem;
     height: 6rem;
+    bottom: 3rem;
     border-radius: 3rem;
     padding: 18px 20px;
     position: fixed;
@@ -483,7 +508,7 @@ ul {
     }
     .controls-popup-menu-outer {
       transition: all 0.1s 0s ease-in-out;
-      width: 27rem;
+      width: 32rem;
       padding: 0.6rem 5rem 0rem 0rem;
     }
     .controls-popup-menu-inner {
@@ -493,6 +518,7 @@ ul {
   }
   .arrow-button {
     margin: 5px;
+    box-shadow: none !important;
   }
 }
 
@@ -594,5 +620,28 @@ ul {
     font-size: 1.1rem;
     line-height: 1.75rem;
     margin-bottom: 1rem;
+  }
+}
+
+.toolbay-widget {
+  .fa-gear {
+    color: $dark_gray;
+    margin-top: 0.5rem;
+  }
+  .del-button {
+    margin-top: 0.5rem;
+  }
+}
+
+.toolbay-slot-menu {
+  .direction-icon {
+    color: $dark_gray;
+    margin-left: 1rem;
+  }
+  label {
+    margin-top: 1rem;
+  }
+  .fb-button {
+    margin-top: 1rem;
   }
 }

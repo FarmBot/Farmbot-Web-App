@@ -6,7 +6,7 @@ import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { HomingRow } from "./homing_row";
 import { CalibrationRow } from "./calibration_row";
 import { ZeroRow } from "./zero_row";
-import { enabledAxisMap } from "../axis_tracking_status";
+import { disabledAxisMap } from "../axis_tracking_status";
 import { HomingAndCalibrationProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
@@ -28,11 +28,11 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
    * Tells us if X/Y/Z have a means of checking their position.
    * FARMBOT WILL CRASH INTO WALLS IF THIS IS WRONG! BE CAREFUL.
    */
-  const enabled = enabledAxisMap(mcu_params);
+  const disabled = disabledAxisMap(mcu_params);
 
   return <section>
     <Header
-      title={"Homing and Calibration"}
+      title={t("Homing and Calibration")}
       name={"homing_and_calibration"}
       dispatch={dispatch}
       bool={homing_and_calibration} />
@@ -42,10 +42,8 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
       <ZeroRow />
       <BooleanMCUInputGroup
         name={t("Find Home on Boot")}
-        tooltip={t(ToolTips.FIND_HOME_ON_BOOT)}
-        disableX={!enabled.x}
-        disableY={!enabled.y}
-        disableZ={!enabled.z}
+        tooltip={ToolTips.FIND_HOME_ON_BOOT}
+        disable={disabled}
         x={"movement_home_at_boot_x"}
         y={"movement_home_at_boot_y"}
         z={"movement_home_at_boot_z"}
@@ -54,7 +52,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         caution={true} />
       <BooleanMCUInputGroup
         name={t("Stop at Home")}
-        tooltip={t(ToolTips.STOP_AT_HOME)}
+        tooltip={ToolTips.STOP_AT_HOME}
         x={"movement_stop_at_home_x"}
         y={"movement_stop_at_home_y"}
         z={"movement_stop_at_home_z"}
@@ -62,7 +60,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         bot={bot} />
       <BooleanMCUInputGroup
         name={t("Stop at Max")}
-        tooltip={t(ToolTips.STOP_AT_MAX)}
+        tooltip={ToolTips.STOP_AT_MAX}
         x={"movement_stop_at_max_x"}
         y={"movement_stop_at_max_y"}
         z={"movement_stop_at_max_z"}
@@ -70,7 +68,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         bot={bot} />
       <BooleanMCUInputGroup
         name={t("Negative Coordinates Only")}
-        tooltip={t(ToolTips.NEGATIVE_COORDINATES_ONLY)}
+        tooltip={ToolTips.NEGATIVE_COORDINATES_ONLY}
         x={"movement_home_up_x"}
         y={"movement_home_up_y"}
         z={"movement_home_up_z"}
@@ -78,16 +76,21 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         bot={bot} />
       <NumericMCUInputGroup
         name={t("Axis Length (steps)")}
-        tooltip={t(ToolTips.LENGTH)}
+        tooltip={ToolTips.LENGTH}
         x={"movement_axis_nr_steps_x"}
         y={"movement_axis_nr_steps_y"}
         z={"movement_axis_nr_steps_z"}
+        gray={{
+          x: !mcu_params["movement_stop_at_max_x"],
+          y: !mcu_params["movement_stop_at_max_y"],
+          z: !mcu_params["movement_stop_at_max_z"],
+        }}
         bot={bot}
         dispatch={dispatch}
         intSize={axisLengthIntSize} />
       <NumericMCUInputGroup
         name={t("Timeout after (seconds)")}
-        tooltip={t(ToolTips.TIMEOUT_AFTER)}
+        tooltip={ToolTips.TIMEOUT_AFTER}
         x={"movement_timeout_x"}
         y={"movement_timeout_y"}
         z={"movement_timeout_z"}

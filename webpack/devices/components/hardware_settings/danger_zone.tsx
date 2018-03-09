@@ -14,7 +14,7 @@ export function DangerZone(props: DangerZoneProps) {
   return <section>
     <Header
       bool={danger_zone}
-      title={"Danger Zone"}
+      title={t("Danger Zone")}
       name={"danger_zone"}
       dispatch={dispatch} />
     <Collapse isOpen={!!danger_zone}>
@@ -33,7 +33,7 @@ export function DangerZone(props: DangerZoneProps) {
             </b>
           </p>
         </Col>
-        <Col xs={2}>
+        <Col xs={2} className={"centered-button-div"}>
           <button
             className="fb-button red"
             onClick={onReset}>

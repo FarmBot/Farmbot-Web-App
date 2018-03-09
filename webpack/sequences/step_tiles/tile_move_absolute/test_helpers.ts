@@ -16,7 +16,8 @@ export function fakeResourceIndex(): ResourceIndex {
         "x": 1,
         "y": 2,
         "z": 3,
-        "openfarm_slug": "garlic"
+        "openfarm_slug": "garlic",
+        "plant_stage": "planned"
       },
       "uuid": "plant"
     },
@@ -47,7 +48,8 @@ export function fakeResourceIndex(): ResourceIndex {
         "x": 100,
         "y": 200,
         "z": 300,
-        "tool_id": 1
+        "tool_id": 1,
+        "pullout_direction": 0
       },
       "uuid": "toolslot"
     },

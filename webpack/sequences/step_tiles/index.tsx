@@ -14,9 +14,7 @@ import { TileWritePin } from "./tile_write_pin";
 import { TileExecuteScript } from "./tile_execute_script";
 import { TileTakePhoto } from "./tile_take_photo";
 import * as _ from "lodash";
-import {
-  CeleryNode, LegalSequenceKind, LegalArgString, If, Execute, Nothing
-} from "farmbot";
+import { CeleryNode, LegalArgString, If, Execute, Nothing } from "farmbot";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
@@ -122,19 +120,19 @@ function numericNonsense(val: string, copy: CeleryNode, field: LegalArgString) {
   return _.assign(copy.args, { [field]: num });
 }
 
-export function renderCeleryNode(kind: LegalSequenceKind, props: StepParams) {
+export function renderCeleryNode(props: StepParams) {
   switch (props.currentStep.kind) {
-    case "execute": return <ExecuteBlock {...props} />;
     case "_if": return <TileIf {...props} />;
-    case "move_relative": return <TileMoveRelative {...props} />;
-    case "move_absolute": return <TileMoveAbsolute {...props} />;
-    case "write_pin": return <TileWritePin {...props} />;
-    case "wait": return <TileWait {...props} />;
-    case "send_message": return <TileSendMessage {...props} />;
-    case "read_pin": return <TileReadPin {...props} />;
     case "execute_script": return <TileExecuteScript {...props} />;
-    case "take_photo": return <TileTakePhoto {...props} />;
+    case "execute": return <ExecuteBlock {...props} />;
     case "find_home": return <TileFindHome {...props} />;
+    case "move_absolute": return <TileMoveAbsolute {...props} />;
+    case "move_relative": return <TileMoveRelative {...props} />;
+    case "read_pin": return <TileReadPin {...props} />;
+    case "send_message": return <TileSendMessage {...props} />;
+    case "take_photo": return <TileTakePhoto {...props} />;
+    case "wait": return <TileWait {...props} />;
+    case "write_pin": return <TileWritePin {...props} />;
     default: return <div><hr /> ? Unknown step ? <hr /></div>;
   }
 }

@@ -15,9 +15,9 @@ sudo docker run hello-world # Should run!
 command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
 curl -sSL https://get.rvm.io | bash
 source /usr/local/rvm/scripts/rvm
-rvm install "ruby-2.4.2"
+rvm install "ruby-2.5.0"
 cd .
-rvm --default use 2.4.2
+rvm --default use 2.5.0
 # LOG OUT AND LOG BACK IN NOW.
 
 # Image Magick
@@ -61,9 +61,15 @@ rake db:create:all db:migrate db:seed
 RAILS_ENV=test rake db:create db:migrate && rspec spec
 npm run test
 
-# Run MQTT (new tab, SAME DIRECTORY)
-rails mqtt:start
+# INSTALLATION IS NOW COMPLETE =================================================
 
+
+# You may run the commands below every time you wish to start the server:
+# The commands before this were only one-off commands for installation.
 # Run the web server (new tab, SAME DIRECTORY)
+# Don't worry about the "MQTT server is unreachable" messages yet-
+#   we still need to start MQTT (next).
 rails api:start
 
+# Run MQTT (new tab, SAME DIRECTORY)
+rails mqtt:start

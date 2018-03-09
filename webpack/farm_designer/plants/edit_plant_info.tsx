@@ -23,7 +23,10 @@ export class EditPlantInfo extends PlantInfoBase {
           </span>
         </p>
       </div>
-      <PlantPanel info={info} onDestroy={this.destroy} />
+      <PlantPanel
+        info={info}
+        onDestroy={this.destroy}
+        updatePlant={this.updatePlant} />
     </div>;
   }
 

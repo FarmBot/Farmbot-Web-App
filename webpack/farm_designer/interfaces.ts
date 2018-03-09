@@ -8,6 +8,7 @@ import {
   TaggedGenericPointer,
   TaggedPlantPointer,
   TaggedCrop,
+  TaggedImage,
 } from "../resources/tagged_resources";
 import { PlantPointer } from "../interfaces";
 import { SlotWithTool } from "../resources/interfaces";
@@ -17,6 +18,7 @@ import { McuParams } from "farmbot/dist";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { SelectionBoxData } from "./map/selection_box";
 import { BooleanConfigKey } from "../config_storage/web_app_configs";
+import { GetWebAppConfigValue } from "../config_storage/actions";
 
 /** TODO: Use Enums */
 export type BotOriginQuadrant = 1 | 2 | 3 | 4;
@@ -36,6 +38,7 @@ export interface State extends TypeCheckerHint {
   show_points: boolean;
   show_spread: boolean;
   show_farmbot: boolean;
+  show_images: boolean;
   bot_origin_quadrant: BotOriginQuadrant;
   zoom_level: number;
 }
@@ -54,6 +57,10 @@ export interface Props {
   stepsPerMmXY: StepsPerMmXY;
   peripherals: { label: string, value: boolean }[];
   eStopStatus: boolean;
+  latestImages: TaggedImage[];
+  cameraCalibrationData: CameraCalibrationData;
+  tzOffset: number;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export type TimeUnit =
@@ -102,9 +109,11 @@ export interface Crop {
 export interface DesignerState {
   selectedPlants: string[] | undefined;
   hoveredPlant: HoveredPlantPayl;
+  hoveredPlantListItem: string | undefined;
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
   chosenLocation: BotPosition;
+  currentPoint: CurrentPointPayl | undefined;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
@@ -163,6 +172,7 @@ export interface GardenMapProps {
   showPoints: boolean | undefined;
   showSpread: boolean | undefined;
   showFarmbot: boolean | undefined;
+  showImages: boolean | undefined;
   dispatch: Function;
   designer: DesignerState;
   points: TaggedGenericPointer[];
@@ -180,6 +190,9 @@ export interface GardenMapProps {
   gridOffset: AxisNumberProperty;
   peripherals: { label: string, value: boolean }[];
   eStopStatus: boolean;
+  latestImages: TaggedImage[];
+  cameraCalibrationData: CameraCalibrationData;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export interface GardenMapState {
@@ -225,4 +238,22 @@ export interface CropInfoProps {
   dispatch: Function;
   cropSearchResults: CropLiveSearchResult[];
   OFSearch: (query: string) => (dispatch: Function) => void;
+}
+
+export interface CameraCalibrationData {
+  scale: string | undefined;
+  rotation: string | undefined;
+  offset: {
+    x: string | undefined;
+    y: string | undefined;
+  },
+  origin: string | undefined;
+  calibrationZ: string | undefined;
+}
+
+export interface CurrentPointPayl {
+  cx: number;
+  cy: number;
+  r: number;
+  color?: string;
 }

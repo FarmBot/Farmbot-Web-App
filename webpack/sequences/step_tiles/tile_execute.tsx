@@ -2,14 +2,14 @@ import * as _ from "lodash";
 import * as React from "react";
 import { StepParams } from "../interfaces";
 import { t } from "i18next";
-import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
-import { selectAllSequences, findSequenceById } from "../../resources/selectors";
+import { Row, Col, DropDownItem } from "../../ui/index";
 import { Execute } from "farmbot/dist";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import { SequenceSelectBox } from "../sequence_select_box";
 
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
@@ -47,37 +47,6 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
     }));
   }
 
-  sequenceDropDownList = () => {
-    const p = this.props;
-    const output: DropDownItem[] = [];
-    selectAllSequences(p.resources)
-      .map(function (x) {
-        const { id, name } = x.body;
-        if (_.isNumber(id) && (id !== p.currentStep.args.sequence_id)) {
-          output.push({ label: name, value: id });
-        }
-      });
-    return output;
-  }
-
-  SequenceSelectBox = () => {
-    return <FBSelect onChange={this.changeSelection}
-      selectedItem={this.selectedSequence()}
-      list={this.sequenceDropDownList()}
-      placeholder="Pick a sequence (or save a new one)" />;
-  }
-
-  selectedSequence = () => {
-    const p = this.props;
-    const { sequence_id } = p.currentStep.args;
-    if (sequence_id) {
-      const s = findSequenceById(p.resources, sequence_id);
-      return { label: s.body.name, value: (s.body.id as number) };
-    } else {
-      return undefined;
-    }
-  }
-
   render() {
     const props = this.props;
     const { dispatch, currentStep, index, currentSequence } = props;
@@ -94,7 +63,10 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
         <Row>
           <Col xs={12}>
             <label>{t("Sequence")}</label>
-            <this.SequenceSelectBox />
+            <SequenceSelectBox
+              onChange={this.changeSelection}
+              resources={this.props.resources}
+              sequenceId={this.props.currentStep.args.sequence_id} />
           </Col>
         </Row>
       </StepContent>

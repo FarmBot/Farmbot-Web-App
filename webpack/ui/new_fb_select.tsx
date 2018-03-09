@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DropDownItem, NULL_CHOICE } from "./fb_select";
+import { DropDownItem } from "./fb_select";
 import { FilterSearch } from "./filter_search";
 import { equals } from "../util";
 
@@ -14,14 +14,23 @@ export interface FBSelectProps {
   allowEmpty?: boolean;
   /** Text shown before user selection. */
   placeholder?: string | undefined;
+  /** Extra class names to add. */
+  extraClass?: string;
+  /** Custom label for NULL_CHOICE instead of "None". */
+  customNullLabel?: string;
 }
 
 export class FBSelect extends React.Component<FBSelectProps, {}> {
 
-  get item() { return this.props.selectedItem || NULL_CHOICE; }
+  NULL_CHOICE = Object.freeze({
+    label: this.props.customNullLabel || "None",
+    value: ""
+  });
+
+  get item() { return this.props.selectedItem || this.NULL_CHOICE; }
   get list() {
     if (this.props.allowEmpty) {
-      return this.props.list.concat(NULL_CHOICE);
+      return this.props.list.concat(this.NULL_CHOICE);
     } else {
       return this.props.list;
     }
@@ -32,11 +41,13 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
   }
 
   render() {
-    return <div className="filter-search">
+    const { extraClass } = this.props;
+    return <div className={`filter-search ${extraClass ? extraClass : ""}`}>
       <FilterSearch
         selectedItem={this.item}
         items={this.list}
-        onChange={this.props.onChange} />
+        onChange={this.props.onChange}
+        nullChoice={this.NULL_CHOICE} />
     </div>;
   }
 }

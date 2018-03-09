@@ -1,7 +1,7 @@
 module Sequences
   class Update < Mutations::Command
     include CeleryScriptValidators
-
+    UNKNOWN = "Unknown validation issues."
     required do
       model :device, class: Device
       model :sequence, class: Sequence
@@ -28,13 +28,13 @@ module Sequences
     def execute
       ActiveRecord::Base.transaction do
         sequence.args["is_outdated"] = false
+        sequence.migrated_nodes = true
         sequence.update_attributes!(inputs.except(:sequence, :device))
-        reload_dependencies(sequence)
+        CeleryScript::StoreCelery.run!(sequence: sequence)
       end
-      sequence
+      CeleryScript::FetchCelery.run!(sequence: sequence.reload)
     rescue ActiveRecord::RecordInvalid => e
-      m = (e.try(:message) || "Unknown validation issues.")
-      add_error :other, :unknown, m
+      add_error :other, :unknown, (e.try(:message) || UNKNOWN)
     end
   end
 end

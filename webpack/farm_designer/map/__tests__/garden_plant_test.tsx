@@ -28,11 +28,12 @@ describe("<GardenPlant/>", () => {
       },
       plant: fakePlant(),
       selected: false,
+      grayscale: false,
       dragging: false,
       dispatch: jest.fn(),
       zoomLvl: 1.8,
       activeDragXY: { x: undefined, y: undefined, z: undefined },
-      uuid: ""
+      uuid: "plantUuid"
     };
   }
 
@@ -62,5 +63,38 @@ describe("<GardenPlant/>", () => {
       type: Actions.SELECT_PLANT,
       payload: [p.uuid]
     });
+  });
+
+  it("begins hover", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<GardenPlant {...p } />);
+    wrapper.find("image").at(0).simulate("mouseEnter");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.HOVER_PLANT_LIST_ITEM,
+      payload: p.uuid
+    });
+  });
+
+  it("ends hover", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<GardenPlant {...p } />);
+    wrapper.find("image").at(0).simulate("mouseLeave");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.HOVER_PLANT_LIST_ITEM,
+      payload: undefined
+    });
+  });
+
+  it("has color", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<GardenPlant {...p } />);
+    expect(wrapper.find("image").props().filter).toEqual("");
+  });
+
+  it("has no color", () => {
+    const p = fakeProps();
+    p.grayscale = true;
+    const wrapper = shallow(<GardenPlant {...p } />);
+    expect(wrapper.find("image").props().filter).toEqual("url(#grayscale)");
   });
 });

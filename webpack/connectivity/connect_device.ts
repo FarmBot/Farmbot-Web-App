@@ -16,11 +16,14 @@ import {
   badVersion
 } from "../devices/actions";
 import { init } from "../api/crud";
-import { versionOK } from "../devices/reducer";
 import { AuthState } from "../auth/interfaces";
 import { TaggedResource, SpecialStatus } from "../resources/tagged_resources";
 import { autoSync } from "./auto_sync";
 import { startPinging } from "./ping_mqtt";
+import { talk } from "browser-speech";
+import { getWebAppConfigValue } from "../config_storage/actions";
+import { BooleanSetting } from "../session_keys";
+import { versionOK } from "../util";
 export const TITLE = "New message from bot";
 
 /** TODO: This ought to be stored in Redux. It is here because of historical
@@ -35,13 +38,13 @@ export const HACKY_FLAGS = {
 export let incomingStatus = (statusMessage: HardwareState) =>
   ({ type: Actions.BOT_CHANGE, payload: statusMessage });
 
-/** Determine if an incoming log is a toast message. If it is, execute the
+/** Determine if an incoming log has a certain channel. If it is, execute the
  * supplied callback. */
-export function ifToastWorthy(log: Log, cb: (log: Log) => void) {
+export function actOnChannelName(
+  log: Log, channelName: ALLOWED_CHANNEL_NAMES, cb: (log: Log) => void) {
   const CHANNELS: keyof Log = "channels";
-  const TOAST: ALLOWED_CHANNEL_NAMES = "toast";
   const chanList: string[] = log[CHANNELS] || ["ERROR FETCHING CHANNELS"];
-  return log && (chanList.includes(TOAST) ? cb(log) : noop());
+  return log && (chanList.includes(channelName) ? cb(log) : noop());
 }
 
 /** Take a log message (of type toast) and determines the correct kind of toast
@@ -59,6 +62,16 @@ export function showLogOnScreen(log: Log) {
     default:
       return info(log.message, TITLE);
   }
+}
+
+export function speakLogAloud(getState: GetState) {
+  return (log: Log) => {
+    const getConfigValue = getWebAppConfigValue(getState);
+    const speak = getConfigValue(BooleanSetting.enable_browser_speak);
+    if (speak) {
+      talk(log.message, navigator.language.slice(0, 2) || "en");
+    }
+  };
 }
 
 export const initLog = (log: Log): ReduxAction<TaggedResource> => init({
@@ -111,10 +124,11 @@ type Client = { connected?: boolean };
 export const onSent = (client: Client) => () => !!client.connected ?
   dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
 
-export const onLogs = (dispatch: Function) => (msg: Log) => {
+export const onLogs = (dispatch: Function, getState: GetState) => (msg: Log) => {
   bothUp();
   if (isLog(msg)) {
-    ifToastWorthy(msg, showLogOnScreen);
+    actOnChannelName(msg, "toast", showLogOnScreen);
+    actOnChannelName(msg, "espeak", speakLogAloud(getState));
     dispatch(initLog(msg));
     // CORRECT SOLUTION: Give each device its own topic for publishing
     //                   MQTT last will message.
@@ -147,7 +161,7 @@ const attachEventListeners =
     bot.on("online", () => bot.readStatus().then(noop, noop));
     bot.on("offline", onOffline);
     bot.on("sent", onSent(bot.client));
-    bot.on("logs", onLogs(dispatch));
+    bot.on("logs", onLogs(dispatch, getState));
     bot.on("status", onStatus(dispatch, getState));
     bot.on("malformed", onMalformed);
     bot.client.on("message", autoSync(dispatch, getState));

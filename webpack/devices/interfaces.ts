@@ -1,7 +1,6 @@
-import { BotStateTree } from "farmbot";
+import { BotStateTree, ConfigurationName } from "farmbot";
 import {
   McuParamName,
-  ConfigurationName,
   Dictionary,
   SyncStatus,
   FarmwareManifest,
@@ -13,11 +12,13 @@ import {
   TaggedPeripheral,
   TaggedDevice
 } from "../resources/tagged_resources";
-import { RestResources, ResourceIndex } from "../resources/interfaces";
+import { ResourceIndex } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import { ConnectionStatus, ConnectionState, NetworkState } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
+import { WebAppConfig } from "../config_storage/web_app_configs";
+import { ShouldDisplay } from "../sequences/interfaces";
 
 export interface Props {
   userToApi: ConnectionStatus | undefined;
@@ -29,7 +30,15 @@ export interface Props {
   images: TaggedImage[];
   dispatch: Function;
   resources: ResourceIndex;
+  sourceFbosConfig: SourceFbosConfig;
+  shouldDisplay: ShouldDisplay;
 }
+
+export type SourceFbosConfig = (config: ConfigurationName) =>
+  {
+    value: boolean | number | string | undefined,
+    consistent: boolean
+  };
 
 /** How the device is stored in the API side.
  * This is what comes back from the API as JSON.
@@ -39,6 +48,7 @@ export interface DeviceAccountSettings {
   name: string;
   timezone?: string | undefined;
   tz_offset_hrs: number;
+  fbos_version?: string | undefined;
   last_saw_api?: string | undefined;
   last_saw_mq?: string | undefined;
 }
@@ -55,6 +65,10 @@ export interface BotState {
   currentOSVersion?: string;
   /** The current beta os version on the github release api */
   currentBetaOSVersion?: string;
+  /** The current beta os commit on the github release api */
+  currentBetaOSCommit?: string;
+  /** JSON string of minimum required FBOS versions for various features. */
+  minOsFeatureData?: string;
   /** Is the bot in sync with the api */
   dirty: boolean;
   /** The state of the bot, as reported by the bot over MQTT. */
@@ -69,13 +83,17 @@ export interface BotState {
   connectivity: ConnectionState;
 }
 
-export interface BotProp { bot: BotState; }
-
 /** Status registers for the bot's status */
 export type HardwareState = BotStateTree;
 
 export interface GithubRelease {
   tag_name: string;
+  target_commitish: string;
+}
+
+export interface OsUpdateInfo {
+  version: string;
+  commit: string;
 }
 
 export interface MoveRelProps {
@@ -102,7 +120,10 @@ export interface FarmbotOsProps {
   bot: BotState;
   account: TaggedDevice;
   botToMqttStatus: NetworkState;
+  botToMqttLastSeen: string;
   dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface FarmbotOsState {
@@ -117,19 +138,13 @@ export interface CameraSelectionState {
   cameraStatus: "" | "sending" | "done" | "error";
 }
 
-export interface StepsPerMMBoxProps {
-  bot: BotState;
-  setting: ConfigurationName;
-  dispatch: Function;
-  disabled?: boolean;
-}
-
 export interface McuInputBoxProps {
   bot: BotState;
   setting: McuParamName;
   dispatch: Function;
   intSize?: IntegerSize;
   filter?: number;
+  gray?: boolean;
 }
 
 export interface EStopButtonProps {
@@ -138,7 +153,6 @@ export interface EStopButtonProps {
 }
 
 export interface PeripheralsProps {
-  resources: RestResources;
   bot: BotState;
   peripherals: TaggedPeripheral[];
   dispatch: Function;
@@ -155,6 +169,8 @@ export interface FarmwareProps {
   farmwares: Dictionary<FarmwareManifest | undefined>;
   timeOffset: number;
   syncStatus: SyncStatus | undefined;
+  webAppConfig: Partial<WebAppConfig>;
+  firstPartyFarmwareNames: string[];
 }
 
 export interface HardwareSettingsProps {
@@ -162,6 +178,7 @@ export interface HardwareSettingsProps {
   dispatch: Function;
   botToMqttStatus: NetworkState;
   bot: BotState;
+  sourceFbosConfig: SourceFbosConfig;
 }
 
 export interface ControlPanelState {

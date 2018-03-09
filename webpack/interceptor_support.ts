@@ -12,19 +12,8 @@ export let METHOD_MAP: Dictionary<DataChangeType> = {
 };
 export let METHODS = ["post", "put", "patch", "delete"];
 
-export let RESOURCES: ResourceName[] = [
-  "Point",
-  "Regimen",
-  "Peripheral",
-  "Log",
-  "Sequence",
-  "FarmEvent",
-  "Point",
-  "Device"
-];
-
 /** Temporary stub until auto_sync rollout. TODO: Remove */
-export const RESOURNCE_NAME_IN_URL = [
+const RESOURNCE_NAME_IN_URL = [
   "device",
   "farm_events",
   "logs",

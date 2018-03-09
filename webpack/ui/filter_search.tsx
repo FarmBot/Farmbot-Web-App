@@ -2,35 +2,21 @@ import * as React from "react";
 import { t } from "i18next";
 import { Button, Classes, MenuItem } from "@blueprintjs/core";
 import { ISelectItemRendererProps, Select } from "@blueprintjs/labs";
-import { DropDownItem, NULL_CHOICE } from "./fb_select";
+import { DropDownItem } from "./fb_select";
 
 const SelectComponent = Select.ofType<DropDownItem | undefined>();
-
-type PossibleReferences =
-  | "Sequence"
-  | "Regimen";
-
-interface ParentMenu {
-  title: string;
-  value: string | number;
-  subMenus: DropDownItem[];
-  reference: PossibleReferences;
-}
 
 interface Props {
   items: DropDownItem[];
   selectedItem: DropDownItem;
   onChange: (item: DropDownItem) => void;
-  isASubMenu?: boolean;
+  nullChoice: DropDownItem;
 }
 
 interface State {
   item?: DropDownItem | undefined;
-  filterable?: boolean;
   minimal?: boolean;
   resetOnSelect?: boolean;
-  parentMenus: ParentMenu[];
-  subMenus: DropDownItem[];
 }
 
 export class FilterSearch extends React.Component<Props, Partial<State>> {
@@ -39,8 +25,6 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
     item: this.props.selectedItem,
     minimal: false,
     resetOnSelect: false,
-    parentMenus: [],
-    subMenus: []
   };
 
   render() {
@@ -50,7 +34,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
       items={this.props.items}
       itemPredicate={this.filter}
       itemRenderer={this.default}
-      noResults={<MenuItem disabled text="No results." />}
+      noResults={<MenuItem disabled text={t("No results.")} />}
       onItemSelect={this.handleValueChange}
       popoverProps={{ popoverClassName: minimal ? Classes.MINIMAL : "" }}>
       <Button
@@ -61,8 +45,11 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
 
   styleFor(item: DropDownItem): string {
     const styles = ["filter-search-item"];
-    if (Object.is(item, NULL_CHOICE)) {
+    if (Object.is(item, this.props.nullChoice)) {
       styles.push("filter-search-item-none");
+    }
+    if (item.heading) {
+      styles.push("filter-search-heading-item");
     }
     return styles.join(" ");
   }
@@ -71,14 +58,16 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
     const { handleClick, item, index } = params;
     return <MenuItem
       className={this.styleFor(item)}
-      key={item.label || index}
+      key={index + item.label}
       onClick={handleClick}
       text={`${item.label}`} />;
   }
 
   private filter(query: string, item: DropDownItem, index: number) {
-    return `${index + 1}. ${item.label.toLowerCase()}`
-      .indexOf(query.toLowerCase()) >= 0;
+    if (item.heading) { return true; }
+    const itemHeadingId = item.headingId ? item.headingId : "";
+    const itemSearchLabel = `${itemHeadingId}: ${item.label}`;
+    return itemSearchLabel.toLowerCase().indexOf(query.toLowerCase()) >= 0;
   }
 
   private handleValueChange = (item: DropDownItem | undefined) => {

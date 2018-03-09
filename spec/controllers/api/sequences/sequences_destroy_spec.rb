@@ -26,32 +26,44 @@ describe Api::SequencesController do
       other_persons = FactoryBot.create(:sequence)
       input = { id: other_persons.id }
       delete :destroy, params: input
-      expect(response.status).to eq(403)
+      expect(response.status).to eq(404)
     end
 
-   it 'allows deletion of recurive sequences' do
-     sign_in user
-     s = Sequences::Create.run!({ device: user.device,
+    it 'allows deletion of recurive sequences' do
+      sign_in user
+      s = Sequences::Create.run!({device: user.device,
                                   name: "Rick-cursion", body: [] })
-     patch :update,
-           params: {id: s.id },
-           body: {"sequence" => {
-                  "body" => [{"kind"=>"execute",
-                              "args"=>{ "sequence_id"=>s.id }}]}}.to_json,
-           as: :json
+      body = {
+        sequence: { body: [{ kind: "execute", args: { sequence_id: s[:id] } }] }
+      }.to_json
 
-     sequence.reload
-     input = { id: sequence.id }
-     before = Sequence.count
-     delete :destroy, params: input
-     after  = Sequence.count
-     expect(response.status).to eq(200)
-     expect(after).to be < before
-     expect { s.reload }.to(raise_error(ActiveRecord::RecordNotFound))
-   end
+      patch :update,
+            params: {id: s[:id] },
+            body: body,
+            as: :json
+
+      sequence.reload
+      input = { id: sequence.id }
+      before = Sequence.count
+      delete :destroy, params: input
+      after  = Sequence.count
+      expect(response.status).to eq(200)
+      expect(after).to be < before
+      expect { Sequence.find(s[:id]) }.to(raise_error(ActiveRecord::RecordNotFound))
+    end
+
+    it 'prevents deletion of sequences that are in use by pin bindings' do
+      sign_in user
+      PinBindings::Create
+        .run!(device: user.device,
+              sequence_id: sequence.id,
+              pin_num: 23)
+      delete :destroy, params: { id: sequence.id }
+      expect(response.status).to eq(422)
+      expect(json[:sequence]).to eq("The following pin bindings are still relying on this sequence: pin 23")
+    end
 
     it 'does not destroy a sequence when in use by a sequence' do
-      before = SequenceDependency.count
       program = [
         {
           kind: "_if",
@@ -73,16 +85,11 @@ describe Api::SequencesController do
       Sequences::Create.run!(name:   "Dep. tracking",
                              device: user.device,
                              body:   program)
-      expect(SequenceDependency.count).to be > before
-      sd = SequenceDependency.last
       newest = Sequence.last
-      expect(sd.dependency).to eq(sequence)
-      expect(sd.sequence).to eq(newest)
-
+      before = EdgeNode.where(kind: "sequence_id").count
       sign_in user
-      before = Sequence.count
       delete :destroy, params: { id: sequence.id }
-      after = Sequence.count
+      after = EdgeNode.where(kind: "sequence_id").count
       expect(response.status).to eq(422)
       expect(before).to eq(after)
       expect(json[:sequence]).to include("sequences are still relying on this sequence")

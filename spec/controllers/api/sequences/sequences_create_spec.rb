@@ -55,24 +55,8 @@ describe Api::SequencesController do
       expect(json[:name]).to eq("Name is required")
     end
 
-    it 'tracks SequenceDependency' do
-      SequenceDependency.destroy_all
-      old_count = SequenceDependency.count
-      sign_in user
-      input = { name: "Scare Birds",
-                body: nodes }
-      sequence_body_for(user)
-      post :create,
-           body: input.to_json,
-           params: {format: :json}
-      expect(response.status).to eq(200)
-      new_count       = SequenceDependency.count
-      validated_count = SequenceDependency.where(sequence_id: json[:id]).count
-      expect(old_count < new_count).to be(true)
-      expect(validated_count).to eq(new_count)
-    end
-
     it 'doesnt allow nonsense in `sequence.args.locals`' do
+      PinBinding.destroy_all
       Sequence.destroy_all
       input = { name: "Scare Birds",
                 body: [],
@@ -190,24 +174,21 @@ describe Api::SequencesController do
 
     it 'tracks Points' do
       point = FactoryBot.create(:point, device: user.device)
-      SequenceDependency.delete_all
-      Sequence.delete_all
-      old_count = SequenceDependency.count
+      PinBinding.destroy_all
+      Sequence.destroy_all
       HAS_POINTS["body"][0]["args"]["location"]["args"]["pointer_id"] =
         point.id
       sign_in user
       input = { name: "Scare Birds",
                 body: HAS_POINTS["body"] }
       sequence_body_for(user)
+      before =  EdgeNode.where(kind: "pointer_id").count
       post :create,
           body: input.to_json,
           params: {format: :json}
       expect(response.status).to eq(200)
-      new_count       = SequenceDependency.count
-      validated_count = SequenceDependency.where(sequence_id: json[:id]).count
-      expect(old_count).to be < new_count
-      expect(validated_count).to eq(new_count)
-      expect(SequenceDependency.last.dependency.id).to eq(point.id)
+      now = EdgeNode.where(kind: "pointer_id").count
+      expect(now).to be > before
     end
 
     it 'prevents unbound variables' do

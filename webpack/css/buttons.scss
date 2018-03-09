@@ -248,6 +248,9 @@
     &:hover {
       background: $green;
     }
+    &.dim {
+      background: lighten($green, 20%) !important;
+    }
   }
   &.red {
     text-align: right !important;
@@ -263,6 +266,12 @@
       left: 0.2rem;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0px 0 rgba(0, 0, 0, 0.04), 0 4px 9px rgba(0, 0, 0, 0.13), 0 3px 3px rgba(0, 0, 0, 0.05);
     }
+    &.dim {
+      background: lighten($red, 10%) !important;
+    }
+  }
+  &.grayscale {
+    filter: grayscale(100%);
   }
 }
 
