@@ -3,7 +3,7 @@ import { t } from "i18next";
 import { MCUFactoryReset, bulkToggleControlPanel } from "../actions";
 import { Widget, WidgetHeader, WidgetBody, SaveBtn } from "../../ui/index";
 import { HardwareSettingsProps } from "../interfaces";
-import { MustBeOnline } from "../must_be_online";
+import { MustBeOnline, isBotUp } from "../must_be_online";
 import { ToolTips } from "../../constants";
 import { DangerZone } from "./hardware_settings/danger_zone";
 import { PinGuard } from "./hardware_settings/pin_guard";
@@ -35,8 +35,15 @@ export class HardwareSettings extends
   React.Component<HardwareSettingsProps, {}> {
 
   render() {
-    const { bot, dispatch, sourceFbosConfig } = this.props;
-    const { sync_status } = this.props.bot.hardware.informational_settings;
+    const {
+      bot, dispatch, sourceFbosConfig, sourceFwConfig, controlPanelState,
+      firmwareConfig
+    } = this.props;
+    const { informational_settings } = this.props.bot.hardware;
+    const firmwareVersion = informational_settings.firmware_version;
+    const { sync_status } = informational_settings;
+    const botDisconnected = !(isBotUp(sync_status) &&
+      this.props.botToMqttStatus === "up");
     return <Widget className="hardware-widget">
       <WidgetHeader title={t("Hardware")} helpText={ToolTips.HW_SETTINGS}>
         <MustBeOnline
@@ -63,35 +70,44 @@ export class HardwareSettings extends
           onClick={() => dispatch(bulkToggleControlPanel(false))}>
           {t("Collapse All")}
         </button>
-        {this.props.firmwareConfig &&
+        {firmwareConfig &&
           <Popover position={Position.BOTTOM_RIGHT}>
             <i className="fa fa-download" />
-            <FwParamExportMenu firmwareConfig={this.props.firmwareConfig} />
+            <FwParamExportMenu firmwareConfig={firmwareConfig} />
           </Popover>}
         <MustBeOnline
           networkState={this.props.botToMqttStatus}
           syncStatus={sync_status}
-          lockOpen={process.env.NODE_ENV !== "production"}>
+          lockOpen={process.env.NODE_ENV !== "production" ||
+            (firmwareConfig && firmwareConfig.api_migrated)}>
           <div className="label-headings">
             <SpacePanelHeader />
           </div>
           <HomingAndCalibration
             dispatch={dispatch}
-            bot={bot} />
+            bot={bot}
+            sourceFwConfig={sourceFwConfig}
+            firmwareConfig={firmwareConfig}
+            botDisconnected={botDisconnected} />
           <Motors
             dispatch={dispatch}
-            bot={bot}
-            sourceFbosConfig={sourceFbosConfig} />
+            firmwareVersion={firmwareVersion}
+            controlPanelState={controlPanelState}
+            sourceFbosConfig={sourceFbosConfig}
+            sourceFwConfig={sourceFwConfig} />
           <EncodersAndEndStops
             dispatch={dispatch}
-            bot={bot} />
+            controlPanelState={controlPanelState}
+            sourceFwConfig={sourceFwConfig} />
           <PinGuard
             dispatch={dispatch}
-            bot={bot} />
+            controlPanelState={controlPanelState}
+            sourceFwConfig={sourceFwConfig} />
           <DangerZone
             dispatch={dispatch}
-            bot={bot}
-            onReset={MCUFactoryReset} />
+            controlPanelState={controlPanelState}
+            onReset={MCUFactoryReset}
+            botDisconnected={botDisconnected} />
         </MustBeOnline>
       </WidgetBody>
     </Widget>;

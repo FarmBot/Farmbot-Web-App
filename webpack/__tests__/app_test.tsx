@@ -28,14 +28,15 @@ describe("<App />: Controls Pop-Up", () => {
       bot: bot,
       consistent: true,
       autoSyncEnabled: true,
-      axisInversion: { x: false, y: false, z: false }
+      axisInversion: { x: false, y: false, z: false },
+      firmwareConfig: undefined,
     };
   }
 
   function controlsPopUp(page: string, exists: boolean) {
     it(`doesn't render controls pop-up on ${page} page`, () => {
       mockPath = "/app/" + page;
-      const wrapper = mount(<App {...fakeProps() } />);
+      const wrapper = mount(<App {...fakeProps()} />);
       if (exists) {
         expect(wrapper.html()).toContain("controls-popup");
       } else {
@@ -68,27 +69,28 @@ describe.skip("<App />: Loading", () => {
       consistent: true,
       autoSyncEnabled: true,
       timeOffset: 0,
-      axisInversion: { x: false, y: false, z: false }
+      axisInversion: { x: false, y: false, z: false },
+      firmwareConfig: undefined,
     };
     return p;
   }
 
   it("MUST_LOADs not loaded", () => {
-    const wrapper = mount(<App {...fakeProps() } />);
+    const wrapper = mount(<App {...fakeProps()} />);
     expect(wrapper.html()).toContain("spinner");
   });
 
   it("MUST_LOADs partially loaded", () => {
     const p = fakeProps();
     p.loaded = ["Sequence"];
-    const wrapper = mount(<App {...p } />);
+    const wrapper = mount(<App {...p} />);
     expect(wrapper.html()).toContain("spinner");
   });
 
   it("MUST_LOADs loaded", () => {
     const p = fakeProps();
     p.loaded = ["Sequence", "Regimen", "FarmEvent", "Point"];
-    const wrapper = mount(<App {...p } />);
+    const wrapper = mount(<App {...p} />);
     expect(wrapper.html()).not.toContain("spinner");
   });
 });
@@ -104,18 +106,19 @@ describe("<App />: NavBar", () => {
       consistent: true,
       autoSyncEnabled: true,
       timeOffset: 0,
-      axisInversion: { x: false, y: false, z: false }
+      axisInversion: { x: false, y: false, z: false },
+      firmwareConfig: undefined,
     };
   }
 
   it("displays links", () => {
-    const wrapper = mount(<App {...fakeProps() } />);
+    const wrapper = mount(<App {...fakeProps()} />);
     expect(wrapper.text())
       .toContain("Farm DesignerControlsDeviceSequencesRegimensToolsFarmware");
   });
 
   it("displays ticker", () => {
-    const wrapper = mount(<App {...fakeProps() } />);
+    const wrapper = mount(<App {...fakeProps()} />);
     expect(wrapper.text()).toContain("No logs yet.");
   });
 });

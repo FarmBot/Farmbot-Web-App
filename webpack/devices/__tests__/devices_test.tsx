@@ -25,6 +25,7 @@ describe("<Devices/>", () => {
     dispatch: jest.fn(),
     resources: buildResourceIndex(FAKE_RESOURCES).index,
     sourceFbosConfig: jest.fn(),
+    sourceFwConfig: jest.fn(),
     shouldDisplay: jest.fn(),
     firmwareConfig: undefined,
   });

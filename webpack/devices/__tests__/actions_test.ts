@@ -24,10 +24,12 @@ jest.mock("../../device", () => ({
 const mockOk = jest.fn();
 const mockInfo = jest.fn();
 const mockError = jest.fn();
+const mockWarning = jest.fn();
 jest.mock("farmbot-toastr", () => ({
   success: mockOk,
   info: mockInfo,
-  error: mockError
+  error: mockError,
+  warning: mockWarning,
 }));
 
 let mockGetRelease: Promise<{}> = Promise.resolve({});
@@ -38,14 +40,20 @@ jest.mock("axios", () => ({
 }));
 
 import * as actions from "../actions";
-import { fakeSequence, fakeFbosConfig } from "../../__test_support__/fake_state/resources";
+import {
+  fakeSequence, fakeFbosConfig, fakeFirmwareConfig
+} from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import { changeStepSize, resetNetwork, resetConnectionInfo } from "../actions";
 import { Actions } from "../../constants";
-import { fakeDevice, buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  fakeDevice, buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
 import { API } from "../../api/index";
 import axios from "axios";
 import { SpecialStatus } from "../../resources/tagged_resources";
+import { McuParamName } from "farmbot";
+import { bot } from "../../__test_support__/fake_state/bot";
 
 describe("checkControllerUpdates()", function () {
   beforeEach(function () {
@@ -170,15 +178,96 @@ describe("MCUFactoryReset()", function () {
   });
 });
 
-describe("botConfigChange()", function () {
+describe("settingToggle()", () => {
   beforeEach(function () {
     jest.clearAllMocks();
   });
 
-  it("calls updateMcu", async () => {
-    await actions.botConfigChange("encoder_enabled_x", 0);
-    expect(mockDevice.updateMcu).toHaveBeenCalledWith({ encoder_enabled_x: 0 });
-    expect(mockOk).not.toHaveBeenCalled();
+  it("toggles mcu param via updateMcu", async () => {
+    bot.hardware.mcu_params.param_mov_nr_retry = 0;
+    const sourceSetting = (x: McuParamName) =>
+      ({ value: bot.hardware.mcu_params[x], consistent: true });
+    const state = fakeState();
+    const fakeConfig = fakeFirmwareConfig();
+    fakeConfig.body.api_migrated = false;
+    state.resources = buildResourceIndex([fakeConfig]);
+    await actions.settingToggle(
+      "param_mov_nr_retry", sourceSetting)(jest.fn(), () => state);
+    expect(mockDevice.updateMcu)
+      .toHaveBeenCalledWith({ param_mov_nr_retry: 1 });
+  });
+
+  it("toggles mcu param via FirmwareConfig", async () => {
+    bot.hardware.mcu_params.param_mov_nr_retry = 1;
+    const sourceSetting = (x: McuParamName) =>
+      ({ value: bot.hardware.mcu_params[x], consistent: true });
+    const state = fakeState();
+    const fakeConfig = fakeFirmwareConfig();
+    fakeConfig.body.api_migrated = true;
+    state.resources = buildResourceIndex([fakeConfig]);
+    const dispatch = jest.fn();
+    await actions.settingToggle(
+      "param_mov_nr_retry", sourceSetting)(dispatch, () => state);
+    expect(mockDevice.updateMcu).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: {
+        specialStatus: SpecialStatus.DIRTY,
+        update: { param_mov_nr_retry: 0 },
+        uuid: expect.stringContaining("FirmwareConfig")
+      },
+      type: Actions.EDIT_RESOURCE
+    });
+  });
+});
+
+describe("updateMCU()", () => {
+  beforeEach(function () {
+    jest.clearAllMocks();
+  });
+
+  it("updates mcu param via updateMcu", async () => {
+    bot.hardware.mcu_params.param_mov_nr_retry = 0;
+    const state = fakeState();
+    const fakeConfig = fakeFirmwareConfig();
+    fakeConfig.body.api_migrated = false;
+    state.resources = buildResourceIndex([fakeConfig]);
+    await actions.updateMCU(
+      "param_mov_nr_retry", "1")(jest.fn(), () => state);
+    expect(mockDevice.updateMcu)
+      .toHaveBeenCalledWith({ param_mov_nr_retry: "1" });
+  });
+
+  it("updates mcu param via FirmwareConfig", async () => {
+    bot.hardware.mcu_params.param_mov_nr_retry = 1;
+    const state = fakeState();
+    const fakeConfig = fakeFirmwareConfig();
+    fakeConfig.body.api_migrated = true;
+    state.resources = buildResourceIndex([fakeConfig]);
+    const dispatch = jest.fn();
+    await actions.updateMCU(
+      "param_mov_nr_retry", "0")(dispatch, () => state);
+    expect(mockDevice.updateMcu).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: {
+        specialStatus: SpecialStatus.DIRTY,
+        update: { param_mov_nr_retry: "0" },
+        uuid: expect.stringContaining("FirmwareConfig")
+      },
+      type: Actions.EDIT_RESOURCE
+    });
+  });
+
+  it("prevents update with incompatible value", async () => {
+    bot.hardware.mcu_params.movement_max_spd_x = 0;
+    const state = fakeState();
+    const fakeConfig = fakeFirmwareConfig();
+    fakeConfig.body.api_migrated = false;
+    state.resources = buildResourceIndex([fakeConfig]);
+    await actions.updateMCU(
+      "movement_min_spd_x", "100")(jest.fn(), () => state);
+    expect(mockDevice.updateMcu).not.toHaveBeenCalled();
+    expect(mockWarning).toHaveBeenCalledWith(
+      "Minimum speed should always be lower than maximum");
   });
 });
 
@@ -400,5 +489,13 @@ describe("updateConfig()", () => {
       },
       type: Actions.EDIT_RESOURCE
     });
+  });
+});
+
+describe("badVersion()", () => {
+  it("warns of old FBOS version", () => {
+    actions.badVersion();
+    expect(mockInfo).toHaveBeenCalledWith(
+      expect.stringContaining("old version"), "Please Update", "red");
   });
 });

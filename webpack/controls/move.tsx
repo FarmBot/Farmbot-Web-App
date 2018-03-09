@@ -124,7 +124,8 @@ export class Move extends React.Component<MoveProps, {}> {
             x_axis_inverted={x_axis_inverted}
             y_axis_inverted={y_axis_inverted}
             z_axis_inverted={z_axis_inverted}
-            disabled={this.props.disabled} />
+            disabled={this.props.disabled}
+            firmwareSettings={this.props.firmwareSettings} />
           <Row>
             <Col xs={3}>
               <label>{t("X AXIS")}</label>

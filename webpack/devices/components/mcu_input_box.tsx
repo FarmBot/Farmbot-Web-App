@@ -11,11 +11,21 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
 
   get key() { return this.props.setting; }
 
+  get config() {
+    return this.props.sourceFwConfig(this.key);
+  }
+
   get value() {
-    const v = this.props.bot.hardware.mcu_params[this.key];
+    const v = this.config.value;
     const { filter } = this.props;
     const goodValue = !_.isUndefined(v) && !(filter && v > filter);
     return goodValue ? (v || 0).toString() : "";
+  }
+
+  get className() {
+    const dim = !this.config.consistent ? "dim" : "";
+    const gray = this.props.gray ? "gray" : "";
+    return [dim, gray].join(" ");
   }
 
   clampInputAndWarn = (input: string, intSize: IntegerSize): number => {
@@ -49,7 +59,7 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
   render() {
     return <BlurableInput
       type="number"
-      className={this.props.gray ? "gray" : ""}
+      className={this.className}
       value={this.value}
       onCommit={this.commit} />;
   }

@@ -25,7 +25,8 @@ describe("<JogButtons/>", function () {
     x_axis_inverted: false,
     y_axis_inverted: false,
     z_axis_inverted: false,
-    disabled: false
+    disabled: false,
+    firmwareSettings: bot.hardware.mcu_params
   };
 
   it("calls home command", () => {

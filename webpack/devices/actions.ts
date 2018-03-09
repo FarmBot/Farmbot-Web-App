@@ -4,23 +4,23 @@ import * as _ from "lodash";
 import { success, warning, info, error } from "farmbot-toastr";
 import { getDevice } from "../device";
 import { Log, Everything } from "../interfaces";
-import { GithubRelease, MoveRelProps, MinOsFeatureLookup } from "./interfaces";
+import { GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig } from "./interfaces";
 import { Thunk, GetState, ReduxAction } from "../redux/interfaces";
-import { BotState } from "../devices/interfaces";
 import { McuParams, Configuration } from "farmbot";
 import { Sequence } from "../sequences/interfaces";
 import { ControlPanelState } from "../devices/interfaces";
 import { API } from "../api/index";
 import { User } from "../auth/interfaces";
-import { getDeviceAccountSettings } from "../resources/selectors";
-import { TaggedDevice } from "../resources/tagged_resources";
-import { HttpData, oneOf, versionOK } from "../util";
+import { getDeviceAccountSettings, getFirmwareConfig } from "../resources/selectors";
+import { TaggedDevice, TaggedFirmwareConfig } from "../resources/tagged_resources";
+import { HttpData, oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
 import { pingAPI } from "../connectivity/ping_mqtt";
 import { edit, save as apiSave } from "../api/crud";
-import { WebAppConfig } from "../config_storage/web_app_configs";
 import { getFbosConfig } from "../resources/selectors_by_kind";
+import { FbosConfig } from "../config_storage/fbos_configs";
+import { FirmwareConfig } from "../config_storage/firmware_configs";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -236,24 +236,29 @@ export function MCUFactoryReset() {
   return getDevice().resetMCU();
 }
 
-export function botConfigChange(key: ConfigKey, value: number) {
-  const noun = "Setting toggle";
-
-  return getDevice()
-    .updateMcu({ [key]: value })
-    .then(_.noop, commandErr(noun));
-}
-
 export function settingToggle(
-  name: ConfigKey, bot: BotState, displayAlert?: string | undefined
+  name: ConfigKey,
+  sourceFwConfig: SourceFwConfig,
+  displayAlert?: string | undefined
 ) {
-  if (displayAlert) { alert(displayAlert.replace(/\s+/g, " ")); }
   const noun = "Setting toggle";
-  return getDevice()
-    .updateMcu({
-      [name]: ((bot.hardware.mcu_params)[name] === 0) ? ON : OFF
-    })
-    .then(_.noop, commandErr(noun));
+  return function (dispatch: Function, getState: () => Everything) {
+    if (displayAlert) { alert(trim(displayAlert)); }
+    const update = { [name]: (sourceFwConfig(name).value === 0) ? ON : OFF };
+    const firmwareConfig = getFirmwareConfig(getState().resources.index);
+    const toggleFirmwareConfig = (fwConfig: TaggedFirmwareConfig) => {
+      dispatch(edit(fwConfig, update));
+      dispatch(apiSave(fwConfig.uuid));
+    };
+
+    if (firmwareConfig && firmwareConfig.body.api_migrated) {
+      return toggleFirmwareConfig(firmwareConfig);
+    } else {
+      return getDevice()
+        .updateMcu(update)
+        .then(_.noop, commandErr(noun));
+    }
+  };
 }
 
 export function moveRelative(props: MoveRelProps) {
@@ -303,19 +308,31 @@ const updateNO = (dispatch: Function, noun: string) => {
 export function updateMCU(key: ConfigKey, val: string) {
   const noun = "configuration update";
   return function (dispatch: Function, getState: () => Everything) {
-    const state = getState().bot.hardware.mcu_params;
+    const firmwareConfig = getFirmwareConfig(getState().resources.index);
+    const getParams = () => {
+      if (firmwareConfig && firmwareConfig.body.api_migrated) {
+        return firmwareConfig.body;
+      } else {
+        return getState().bot.hardware.mcu_params;
+      }
+    };
 
     function proceed() {
-      dispatch(startUpdate());
-      getDevice()
-        .updateMcu({ [key]: val })
-        .then(() => updateOK(dispatch, noun))
-        .catch(() => updateNO(dispatch, noun));
+      if (firmwareConfig && firmwareConfig.body.api_migrated) {
+        dispatch(edit(firmwareConfig, { [key]: val } as Partial<FirmwareConfig>));
+        dispatch(apiSave(firmwareConfig.uuid));
+      } else {
+        dispatch(startUpdate());
+        getDevice()
+          .updateMcu({ [key]: val })
+          .then(() => updateOK(dispatch, noun))
+          .catch(() => updateNO(dispatch, noun));
+      }
     }
 
     const dont = (err: string) => warning(err);
 
-    const validate = mcuParamValidator(key, parseInt(val, 10), state);
+    const validate = mcuParamValidator(key, parseInt(val, 10), getParams());
     validate(proceed, dont);
   };
 }
@@ -325,7 +342,7 @@ export function updateConfig(config: Configuration) {
   return function (dispatch: Function, getState: () => Everything) {
     const fbosConfig = getFbosConfig(getState().resources.index);
     if (fbosConfig && fbosConfig.body.api_migrated) {
-      dispatch(edit(fbosConfig, config as Partial<WebAppConfig>));
+      dispatch(edit(fbosConfig, config as Partial<FbosConfig>));
       dispatch(apiSave(fbosConfig.uuid));
     } else {
       getDevice()

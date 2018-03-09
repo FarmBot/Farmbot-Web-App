@@ -31,15 +31,23 @@ export interface Props {
   dispatch: Function;
   resources: ResourceIndex;
   sourceFbosConfig: SourceFbosConfig;
+  sourceFwConfig: SourceFwConfig;
   shouldDisplay: ShouldDisplay;
   firmwareConfig: FirmwareConfig | undefined;
 }
 
+/** Value and consistency of the value between the bot and /api/fbos_config. */
 export type SourceFbosConfig = (config: ConfigurationName) =>
   {
     value: boolean | number | string | undefined,
     consistent: boolean
   };
+
+/**
+ * Value and consistency of the value between the bot and /api/firmware_config.
+ * */
+export type SourceFwConfig = (config: McuParamName) =>
+  { value: number | undefined, consistent: boolean };
 
 /** Function to determine if a feature should be displayed. */
 export type ShouldDisplay = (x: Feature) => boolean;
@@ -152,7 +160,7 @@ export interface CameraSelectionState {
 }
 
 export interface McuInputBoxProps {
-  bot: BotState;
+  sourceFwConfig: SourceFwConfig;
   setting: McuParamName;
   dispatch: Function;
   intSize?: IntegerSize;
@@ -192,6 +200,7 @@ export interface HardwareSettingsProps {
   botToMqttStatus: NetworkState;
   bot: BotState;
   sourceFbosConfig: SourceFbosConfig;
+  sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;
 }
 

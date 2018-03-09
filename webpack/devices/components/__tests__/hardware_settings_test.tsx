@@ -21,6 +21,9 @@ describe("<HardwareSettings />", () => {
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
       },
+      sourceFwConfig: (x) => {
+        return { value: bot.hardware.mcu_params[x], consistent: true };
+      },
       firmwareConfig: undefined,
     };
   };
