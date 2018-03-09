@@ -2,6 +2,12 @@
 <html>
   <head>
     <%= render "common_assets" %>
+    <script
+      language="JavaScript"
+      type="text/javascript"
+      async
+      src="http://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js">
+    </script>
   </head>
   <body>
     <%= javascript_include_tag *webpack_asset_paths("app_bundle") %>
