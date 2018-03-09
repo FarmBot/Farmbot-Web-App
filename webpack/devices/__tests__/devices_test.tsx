@@ -25,7 +25,8 @@ describe("<Devices/>", () => {
     dispatch: jest.fn(),
     resources: buildResourceIndex(FAKE_RESOURCES).index,
     sourceFbosConfig: jest.fn(),
-    shouldDisplay: jest.fn()
+    shouldDisplay: jest.fn(),
+    firmwareConfig: undefined,
   });
 
   it("renders relevant panels", () => {

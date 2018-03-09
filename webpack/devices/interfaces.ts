@@ -18,6 +18,7 @@ import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import { ConnectionStatus, ConnectionState, NetworkState } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
 import { WebAppConfig } from "../config_storage/web_app_configs";
+import { FirmwareConfig } from "../config_storage/firmware_configs";
 
 export interface Props {
   userToApi: ConnectionStatus | undefined;
@@ -31,6 +32,7 @@ export interface Props {
   resources: ResourceIndex;
   sourceFbosConfig: SourceFbosConfig;
   shouldDisplay: ShouldDisplay;
+  firmwareConfig: FirmwareConfig | undefined;
 }
 
 export type SourceFbosConfig = (config: ConfigurationName) =>
@@ -190,6 +192,7 @@ export interface HardwareSettingsProps {
   botToMqttStatus: NetworkState;
   bot: BotState;
   sourceFbosConfig: SourceFbosConfig;
+  firmwareConfig: FirmwareConfig | undefined;
 }
 
 export interface ControlPanelState {

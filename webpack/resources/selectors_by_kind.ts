@@ -17,6 +17,7 @@ import {
   TaggedSensor,
   TaggedPeripheral,
   TaggedWebAppConfig,
+  TaggedFirmwareConfig,
 } from "./tagged_resources";
 import { sortResourcesById } from "../util";
 import { error } from "farmbot-toastr";
@@ -76,9 +77,9 @@ export const selectAllWebcamFeeds =
   (i: ResourceIndex) => findAll<TaggedWebcamFeed>(i, "WebcamFeed");
 export const getAllSavedPeripherals =
   (input: ResourceIndex) => selectAllPeripherals(input).filter(isSaved);
-export const getFbosConfig =
-  (i: ResourceIndex): TaggedFbosConfig | undefined => findAll<TaggedFbosConfig>(i, "FbosConfig")[0];
-
-export const getWebAppConfig = (i: ResourceIndex): TaggedWebAppConfig | undefined => {
-  return findAll<TaggedWebAppConfig>(i, "WebAppConfig")[0];
-};
+export const getFbosConfig = (i: ResourceIndex): TaggedFbosConfig | undefined =>
+  findAll<TaggedFbosConfig>(i, "FbosConfig")[0];
+export const getWebAppConfig = (i: ResourceIndex): TaggedWebAppConfig | undefined =>
+  findAll<TaggedWebAppConfig>(i, "WebAppConfig")[0];
+export const getFirmwareConfig = (i: ResourceIndex): TaggedFirmwareConfig | undefined =>
+  findAll<TaggedFirmwareConfig>(i, "FirmwareConfig")[0];

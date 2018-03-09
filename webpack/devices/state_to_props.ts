@@ -3,17 +3,23 @@ import { Props } from "./interfaces";
 import {
   selectAllImages,
   getDeviceAccountSettings,
-  maybeGetDevice
+  maybeGetDevice,
+  getFirmwareConfig
 } from "../resources/selectors";
 import { sourceFbosConfigValue } from "./components/source_fbos_config_value";
 import { getFbosConfig } from "../resources/selectors_by_kind";
 import { determineInstalledOsVersion, shouldDisplay } from "../util";
 
 export function mapStateToProps(props: Everything): Props {
-  const conf = getFbosConfig(props.resources.index);
   const { hardware } = props.bot;
-  const fbosConfig = (conf && conf.body && conf.body.api_migrated)
-    ? conf.body : undefined;
+  const maybeFbosConfig = getFbosConfig(props.resources.index);
+  const fbosConfig = maybeFbosConfig && maybeFbosConfig.body.api_migrated
+    ? maybeFbosConfig.body
+    : undefined;
+  const maybeFirmwareConfig = getFirmwareConfig(props.resources.index);
+  const firmwareConfig = maybeFirmwareConfig && maybeFirmwareConfig.body.api_migrated
+    ? maybeFirmwareConfig.body
+    : undefined;
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
   return {
@@ -28,5 +34,6 @@ export function mapStateToProps(props: Everything): Props {
     resources: props.resources.index,
     sourceFbosConfig: sourceFbosConfigValue(fbosConfig, hardware.configuration),
     shouldDisplay: shouldDisplay(installedOsVersion, props.bot.minOsFeatureData),
+    firmwareConfig,
   };
 }

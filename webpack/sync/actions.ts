@@ -16,6 +16,7 @@ import { WebAppConfig } from "../config_storage/web_app_configs";
 import { Session } from "../session";
 import { FbosConfig } from "../config_storage/fbos_configs";
 import { FarmwareInstallation } from "../farmware/interfaces";
+import { FirmwareConfig } from "../config_storage/firmware_configs";
 
 export interface ResourceReadyPayl {
   name: ResourceName;
@@ -44,6 +45,7 @@ export function fetchSyncData(dispatch: Function) {
   fetch<WebcamFeed>("WebcamFeed", API.current.webcamFeedPath);
   fetch<FbosConfig>("FbosConfig", API.current.fbosConfigPath);
   fetch<WebAppConfig>("WebAppConfig", API.current.webAppConfigPath);
+  fetch<FirmwareConfig>("FirmwareConfig", API.current.firmwareConfigPath);
   fetch<FarmEvent[]>("FarmEvent", API.current.farmEventsPath);
   fetch<Image[]>("Image", API.current.imagesPath);
   fetch<Log[]>("Log", API.current.logsPath);

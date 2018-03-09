@@ -85,7 +85,8 @@ export class Devices extends React.Component<Props, {}> {
               dispatch={this.props.dispatch}
               bot={this.props.bot}
               botToMqttStatus={botToMqttStatus}
-              sourceFbosConfig={this.props.sourceFbosConfig} />
+              sourceFbosConfig={this.props.sourceFbosConfig}
+              firmwareConfig={this.props.firmwareConfig} />
             {this.props.bot.hardware.gpio_registry &&
               <PinBindings
                 dispatch={this.props.dispatch}

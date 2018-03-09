@@ -228,6 +228,20 @@ a {
     text-align: center;
     padding: 0.25rem;
   }
+  .fa-download {
+    margin-top: -20px;
+    float: right;
+    color: $dark_gray !important;
+  }
+}
+
+.firmware-setting-export-menu {
+  button {
+    margin-bottom: 1rem;
+  }
+  ul {
+    font-size: 0.3rem;
+  }
 }
 
 .change-ownership-form {
