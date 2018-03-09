@@ -13,7 +13,7 @@ describe("<HomingRow />", () => {
     jest.clearAllMocks();
   });
   it("calls device", () => {
-    const result = mount(<ZeroRow />);
+    const result = mount(<ZeroRow botDisconnected={false} />);
     [0, 1, 2].map(i => result.find("ZeroButton").at(i).simulate("click"));
     ["x", "y", "z"].map(x =>
       expect(mockDevice.setZero).toHaveBeenCalledWith(x));

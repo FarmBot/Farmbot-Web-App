@@ -4,6 +4,7 @@ jest.mock("react-redux", () => ({
 
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
+import { Feature } from "../../devices/interfaces";
 
 describe("mapStateToProps()", () => {
   it("returns props", () => {
@@ -16,9 +17,10 @@ describe("mapStateToProps()", () => {
   it("returns shouldDisplay()", () => {
     const state = fakeState();
     state.bot.hardware.informational_settings.controller_version = "2.0.0";
-    state.bot.minOsFeatureData = "{\"new_feature\": \"1.0.0\"}";
+    state.bot.minOsFeatureData = { "jest_feature": "1.0.0" };
     const props = mapStateToProps(state);
-    expect(props.shouldDisplay("some_feature")).toBeFalsy();
-    expect(props.shouldDisplay("new_feature")).toBeTruthy();
+    // tslint:disable-next-line:no-any
+    expect(props.shouldDisplay("some_feature" as any)).toBeFalsy();
+    expect(props.shouldDisplay(Feature.jest_feature)).toBeTruthy();
   });
 });

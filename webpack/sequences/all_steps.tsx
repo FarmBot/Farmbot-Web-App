@@ -6,7 +6,8 @@ import { StepDragger } from "../draggable/step_dragger";
 import { renderCeleryNode } from "./step_tiles/index";
 import { ResourceIndex } from "../resources/interfaces";
 import { getStepTag } from "../resources/sequence_tagging";
-import { HardwareFlags, FarmwareInfo, ShouldDisplay } from "./interfaces";
+import { HardwareFlags, FarmwareInfo } from "./interfaces";
+import { ShouldDisplay } from "../devices/interfaces";
 
 interface AllStepsProps {
   sequence: TaggedSequence;

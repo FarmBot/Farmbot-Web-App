@@ -7,6 +7,7 @@ import { FactoryResetRow } from "./factory_reset_row";
 import { PowerAndResetProps } from "./interfaces";
 import { ChangeOwnershipForm } from "./change_ownership_form";
 import { t } from "i18next";
+import { Feature } from "../../interfaces";
 
 export function PowerAndReset(props: PowerAndResetProps) {
   const { dispatch, sourceFbosConfig, shouldDisplay } = props;
@@ -25,7 +26,7 @@ export function PowerAndReset(props: PowerAndResetProps) {
       <FactoryResetRow
         dispatch={dispatch}
         sourceFbosConfig={sourceFbosConfig} />
-      {shouldDisplay("change_ownership") &&
+      {shouldDisplay(Feature.change_ownership) &&
         <Popover position={Position.BOTTOM_LEFT}>
           <p className={"release-notes-button"}>
             {t("Change Ownership")}&nbsp;
