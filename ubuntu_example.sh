@@ -4,7 +4,7 @@
 sudo apt-get remove docker docker-engine docker.io
 
 # Install docker
-sudo apt-get install apt-transport-https ca-certificates curl software-properties-common --yes
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common rake --yes
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable" --yes
 sudo apt-get update --yes
