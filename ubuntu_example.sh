@@ -14,7 +14,7 @@ sudo docker run hello-world # Should run!
 # Install RVM
 command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
 curl -sSL https://get.rvm.io | bash
-source /usr/local/rvm/scripts/rvm
+source ~/.rvm/scripts/rvm
 rvm install "ruby-2.5.0"
 cd .
 rvm --default use 2.5.0
