@@ -32,13 +32,14 @@ describe("<Controls />", () => {
       feeds: [fakeWebcamFeed()],
       user: undefined,
       peripherals: [fakePeripheral()],
-      botToMqttStatus: "up"
+      botToMqttStatus: "up",
+      firmwareSettings: bot.hardware.mcu_params,
     };
   }
 
   it("shows webcam widget", () => {
     mockStorj[BooleanSetting.hide_webcam_widget] = false;
-    const wrapper = mount(<Controls {...fakeProps() } />);
+    const wrapper = mount(<Controls {...fakeProps()} />);
     const txt = wrapper.text().toLowerCase();
     ["webcam", "move", "peripherals"]
       .map(string => expect(txt).toContain(string));
@@ -46,7 +47,7 @@ describe("<Controls />", () => {
 
   it("hides webcam widget", () => {
     mockStorj[BooleanSetting.hide_webcam_widget] = true;
-    const wrapper = mount(<Controls {...fakeProps() } />);
+    const wrapper = mount(<Controls {...fakeProps()} />);
     const txt = wrapper.text().toLowerCase();
     ["move", "peripherals"].map(string => expect(txt).toContain(string));
     expect(txt).not.toContain("webcam");

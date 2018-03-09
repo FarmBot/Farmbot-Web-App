@@ -219,7 +219,8 @@ export function urlFor(tag: ResourceName) {
     Log: API.current.logsPath,
     WebcamFeed: API.current.webcamFeedPath,
     FbosConfig: API.current.fbosConfigPath,
-    WebAppConfig: API.current.webAppConfigPath
+    WebAppConfig: API.current.webAppConfigPath,
+    FirmwareConfig: API.current.firmwareConfigPath,
   };
   const url = OPTIONS[tag];
   if (url) {
@@ -230,7 +231,8 @@ export function urlFor(tag: ResourceName) {
   }
 }
 
-const SINGULAR_RESOURCE: ResourceName[] = ["WebAppConfig", "FbosConfig"];
+const SINGULAR_RESOURCE: ResourceName[] =
+  ["WebAppConfig", "FbosConfig", "FirmwareConfig"];
 
 /** Shared functionality in create() and update(). */
 function updateViaAjax(payl: AjaxUpdatePayload) {

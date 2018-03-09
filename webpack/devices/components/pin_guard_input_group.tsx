@@ -8,11 +8,12 @@ import { isUndefined } from "util";
 
 export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
 
-  const { bot, dispatch, name, pinNumber, timeout, activeState } = props;
-  const { mcu_params } = bot.hardware;
-  const inactiveState = isUndefined(mcu_params[activeState])
+  const { sourceFwConfig, dispatch, name, pinNumber, timeout, activeState
+  } = props;
+  const activeStateValue = sourceFwConfig(activeState).value;
+  const inactiveState = isUndefined(activeStateValue)
     ? undefined
-    : !mcu_params[activeState];
+    : !activeStateValue;
   return <Row>
     <Col xs={3}>
       <label>
@@ -22,14 +23,14 @@ export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
     <Col xs={3}>
       <McuInputBox
         setting={pinNumber}
-        bot={bot}
+        sourceFwConfig={sourceFwConfig}
         dispatch={dispatch}
         filter={32000} />
     </Col>
     <Col xs={4}>
       <McuInputBox
         setting={timeout}
-        bot={bot}
+        sourceFwConfig={sourceFwConfig}
         dispatch={dispatch}
         filter={32000} />
     </Col>
@@ -37,7 +38,8 @@ export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
       <ToggleButton
         customText={{ textFalse: "low", textTrue: "high" }}
         toggleValue={inactiveState}
-        toggleAction={() => settingToggle(activeState, bot)} />
+        dim={!sourceFwConfig(activeState).consistent}
+        toggleAction={() => settingToggle(activeState, sourceFwConfig)} />
     </Col>
   </Row>;
 }

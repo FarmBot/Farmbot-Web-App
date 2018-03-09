@@ -68,9 +68,9 @@ describe("botRedcuer", () => {
   it("fetches min OS feature data", () => {
     const r = botReducer(initialState(), {
       type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK,
-      payload: "{}"
+      payload: {}
     }).minOsFeatureData;
-    expect(r).toBe("{}");
+    expect(r).toEqual({});
   });
 
   it("resets hardware state when transitioning into mainenance mode.", () => {

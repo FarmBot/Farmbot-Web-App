@@ -17,7 +17,7 @@ import { StepWrapper, StepHeader, StepContent } from "../../step_ui/index";
 import {
   sensorsAsDropDowns, peripheralsAsDropDowns, pinDropdowns
 } from "../pin_and_peripheral_support";
-import { ShouldDisplay } from "../../interfaces";
+import { ShouldDisplay, Feature } from "../../../devices/interfaces";
 
 export interface IfParams {
   currentSequence: TaggedSequence;
@@ -41,8 +41,8 @@ export const LHSOptions =
       { value: "x", label: t("X position"), headingId: "Position" },
       { value: "y", label: t("Y position"), headingId: "Position" },
       { value: "z", label: t("Z position"), headingId: "Position" },
-      ...(shouldDisplay("named_pins") ? peripheralsAsDropDowns(resources) : []),
-      ...(shouldDisplay("named_pins") ? sensorsAsDropDowns(resources) : []),
+      ...(shouldDisplay(Feature.named_pins) ? peripheralsAsDropDowns(resources) : []),
+      ...(shouldDisplay(Feature.named_pins) ? sensorsAsDropDowns(resources) : []),
       ...pinDropdowns(n => `pin${n}`),
     ];
 
