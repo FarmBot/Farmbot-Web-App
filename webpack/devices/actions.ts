@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import { success, warning, info, error } from "farmbot-toastr";
 import { getDevice } from "../device";
 import { Log, Everything } from "../interfaces";
-import { GithubRelease, MoveRelProps } from "./interfaces";
+import { GithubRelease, MoveRelProps, MinOsFeatureLookup } from "./interfaces";
 import { Thunk, GetState, ReduxAction } from "../redux/interfaces";
 import { BotState } from "../devices/interfaces";
 import { McuParams, Configuration } from "farmbot";
@@ -168,15 +168,37 @@ export let fetchReleases =
         });
     };
 
+/**
+ * Structure and type checks for fetched minimum FBOS version feature object.
+ * @param x axios response data
+ */
+function validMinOsFeatureLookup(x: MinOsFeatureLookup): boolean {
+  return _.isObject(x) &&
+    Object.entries(x).every(([key, val]) =>
+      typeof key === "string" && // feature name
+      typeof val === "string" && // version string
+      val.split(".").length > 2); // "0.0.0"
+}
+
+/**
+ * Fetch and save minimum FBOS version data for UI feature display.
+ * @param url location of data
+ */
 export let fetchMinOsFeatureData = (url: string) =>
   (dispatch: Function, getState: Function) => {
     axios
       .get(url)
-      .then((resp: HttpData<string>) => {
-        dispatch({
-          type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK,
-          payload: JSON.stringify(resp.data)
-        });
+      .then((resp: HttpData<MinOsFeatureLookup>) => {
+        const data = resp.data;
+        if (validMinOsFeatureLookup(data)) {
+          dispatch({
+            type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK,
+            payload: data
+          });
+        } else {
+          console.log(`Warning! Got '${JSON.stringify(data)}', ` +
+            "expected min OS feature data.");
+        }
       })
       .catch((ferror) => {
         dispatch({

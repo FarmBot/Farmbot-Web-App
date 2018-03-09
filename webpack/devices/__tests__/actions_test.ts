@@ -308,32 +308,53 @@ describe("fetchReleases()", () => {
 });
 
 describe("fetchMinOsFeatureData()", () => {
+  afterEach(() =>
+    jest.restoreAllMocks());
+
   it("fetches min OS feature data: empty", async () => {
     mockGetRelease = Promise.resolve({ data: {} });
     const dispatch = jest.fn();
     await actions.fetchMinOsFeatureData("url")(dispatch, jest.fn());
     expect(axios.get).toHaveBeenCalledWith("url");
-    expect(mockError).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
-      payload: "{}",
+      payload: {},
       type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK
     });
   });
 
   it("fetches min OS feature data", async () => {
     mockGetRelease = Promise.resolve({
-      data: {
-        "a_feature": "1.0.0", "b_feature": "2.0.0"
-      }
+      data: { "a_feature": "1.0.0", "b_feature": "2.0.0" }
     });
     const dispatch = jest.fn();
     await actions.fetchMinOsFeatureData("url")(dispatch, jest.fn());
     expect(axios.get).toHaveBeenCalledWith("url");
-    expect(mockError).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
-      payload: "{\"a_feature\":\"1.0.0\",\"b_feature\":\"2.0.0\"}",
+      payload: { a_feature: "1.0.0", b_feature: "2.0.0" },
       type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK
     });
+  });
+
+  it("fetches bad min OS feature data: not an object", async () => {
+    mockGetRelease = Promise.resolve({ data: "bad" });
+    const dispatch = jest.fn();
+    const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
+    await actions.fetchMinOsFeatureData("url")(dispatch, jest.fn());
+    expect(axios.get).toHaveBeenCalledWith("url");
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockConsole).toHaveBeenCalledWith(
+      expect.stringContaining("\"bad\""));
+  });
+
+  it("fetches bad min OS feature data", async () => {
+    mockGetRelease = Promise.resolve({ data: { a: "0", b: 0 } });
+    const dispatch = jest.fn();
+    const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
+    await actions.fetchMinOsFeatureData("url")(dispatch, jest.fn());
+    expect(axios.get).toHaveBeenCalledWith("url");
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockConsole).toHaveBeenCalledWith(
+      expect.stringContaining("{\"a\":\"0\",\"b\":0}"));
   });
 
   it("fails to fetch min OS feature data", async () => {

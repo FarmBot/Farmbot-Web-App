@@ -180,7 +180,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
               resources={this.resources}
               selectedItem={this.args.location}
               onChange={(location) => this.updateArgs({ location })}
-              shouldDisplay={this.props.shouldDisplay || (x => false)} />
+              shouldDisplay={this.props.shouldDisplay || (() => false)} />
           </Col>
           <Col xs={3}>
             <InputBox

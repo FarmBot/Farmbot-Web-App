@@ -18,7 +18,6 @@ import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import { ConnectionStatus, ConnectionState, NetworkState } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
 import { WebAppConfig } from "../config_storage/web_app_configs";
-import { ShouldDisplay } from "../sequences/interfaces";
 
 export interface Props {
   userToApi: ConnectionStatus | undefined;
@@ -39,6 +38,18 @@ export type SourceFbosConfig = (config: ConfigurationName) =>
     value: boolean | number | string | undefined,
     consistent: boolean
   };
+
+/** Function to determine if a feature should be displayed. */
+export type ShouldDisplay = (x: Feature) => boolean;
+/** Names of features that use minimum FBOS version checking. */
+export enum Feature {
+  named_pins = "named_pins",
+  change_ownership = "change_ownership",
+  variables = "variables",
+  jest_feature = "jest_feature", // for tests
+}
+/** Object fetched from FEATURE_MIN_VERSIONS_URL. */
+export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
 
 /** How the device is stored in the API side.
  * This is what comes back from the API as JSON.
@@ -68,7 +79,7 @@ export interface BotState {
   /** The current beta os commit on the github release api */
   currentBetaOSCommit?: string;
   /** JSON string of minimum required FBOS versions for various features. */
-  minOsFeatureData?: string;
+  minOsFeatureData?: MinOsFeatureLookup;
   /** Is the bot in sync with the api */
   dirty: boolean;
   /** The state of the bot, as reported by the bot over MQTT. */

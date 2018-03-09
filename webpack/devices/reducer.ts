@@ -1,5 +1,6 @@
 import {
-  BotState, HardwareState, Xyz, ControlPanelState, OsUpdateInfo
+  BotState, HardwareState, Xyz, ControlPanelState, OsUpdateInfo,
+  MinOsFeatureLookup
 } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
@@ -138,10 +139,11 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     s.currentBetaOSCommit = payload.commit;
     return s;
   })
-  .add<string>(Actions.FETCH_MIN_OS_FEATURE_INFO_OK, (s, { payload }) => {
-    s.minOsFeatureData = payload;
-    return s;
-  })
+  .add<MinOsFeatureLookup>(Actions.FETCH_MIN_OS_FEATURE_INFO_OK,
+    (s, { payload }) => {
+      s.minOsFeatureData = payload;
+      return s;
+    })
   .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
     state.hardware = payload;
     const { informational_settings } = state.hardware;

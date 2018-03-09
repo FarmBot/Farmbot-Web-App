@@ -8,6 +8,7 @@ import {
 } from "../version";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
+import { Feature } from "../../devices/interfaces";
 
 describe("semver compare", () => {
   it("knows when RIGHT_IS_GREATER: numeric", () => {
@@ -96,24 +97,28 @@ describe("minFwVersionCheck()", () => {
 });
 
 describe("shouldDisplay()", () => {
-  const fakeMinOsData = JSON.stringify({ some_feature: "1.0.0" });
+  const fakeMinOsData = { jest_feature: "1.0.0" };
 
   it("should display", () => {
-    expect(shouldDisplay("1.0.0", fakeMinOsData)("some_feature")).toBeTruthy();
-    expect(shouldDisplay("10.0.0", fakeMinOsData)("some_feature")).toBeTruthy();
+    expect(shouldDisplay("1.0.0", fakeMinOsData)(Feature.jest_feature)).toBeTruthy();
+    expect(shouldDisplay("10.0.0", fakeMinOsData)(Feature.jest_feature)).toBeTruthy();
     expect(shouldDisplay("10.0.0",
-      "{\"some_feature\": \"1.0.0\"}")("some_feature")).toBeTruthy();
+      { jest_feature: "1.0.0" })(Feature.jest_feature)).toBeTruthy();
   });
 
   it("shouldn't display", () => {
-    expect(shouldDisplay("0.9.0", fakeMinOsData)("some_feature")).toBeFalsy();
-    expect(shouldDisplay(undefined, fakeMinOsData)("some_feature")).toBeFalsy();
-    expect(shouldDisplay("1.0.0", fakeMinOsData)("other_feature")).toBeFalsy();
-    expect(shouldDisplay("1.0.0", undefined)("other_feature")).toBeFalsy();
-    expect(shouldDisplay("1.0.0", "")("other_feature")).toBeFalsy();
-    expect(shouldDisplay("1.0.0", "{}")("other_feature")).toBeFalsy();
-    expect(() => shouldDisplay("1.0.0", "bad")("other_feature"))
-      .toThrowError("Error parsing 'bad', falling back to '{}'");
+    expect(shouldDisplay("0.9.0", fakeMinOsData)(Feature.jest_feature)).toBeFalsy();
+    expect(shouldDisplay(undefined, fakeMinOsData)(Feature.jest_feature)).toBeFalsy();
+    // tslint:disable-next-line:no-any
+    const unknown_feature = "unknown_feature" as any;
+    expect(shouldDisplay("1.0.0", fakeMinOsData)(unknown_feature)).toBeFalsy();
+    expect(shouldDisplay("1.0.0", undefined)(unknown_feature)).toBeFalsy();
+    // tslint:disable-next-line:no-any
+    expect(shouldDisplay("1.0.0", "" as any)(unknown_feature)).toBeFalsy();
+    // tslint:disable-next-line:no-any
+    expect(shouldDisplay("1.0.0", "{}" as any)(unknown_feature)).toBeFalsy();
+    // tslint:disable-next-line:no-any
+    expect(shouldDisplay("1.0.0", "bad" as any)(unknown_feature)).toBeFalsy();
   });
 });
 
