@@ -57,7 +57,6 @@ export function mapStateToProps(props: Everything) {
   const latestImages = _(selectAllImages(props.resources.index))
     .sortBy(x => x.body.id)
     .reverse()
-    .take(50)
     .value();
 
   const { user_env } = props.bot.hardware;
