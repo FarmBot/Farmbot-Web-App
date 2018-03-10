@@ -40,8 +40,9 @@ export function LegacyStepsPerMm(props: MotorsProps) {
 }
 
 export function StepsPerMmSettings(props: MotorsProps) {
-  const { dispatch, firmwareVersion, sourceFwConfig } = props;
-  if (minFwVersionCheck(firmwareVersion, "5.0.5")) {
+  const { dispatch, firmwareVersion, sourceFwConfig, isValidFwConfig
+  } = props;
+  if (minFwVersionCheck(firmwareVersion, "5.0.5") || isValidFwConfig) {
     return <NumericMCUInputGroup
       name={t("Steps per MM")}
       tooltip={ToolTips.STEPS_PER_MM}

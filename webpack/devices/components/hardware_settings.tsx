@@ -94,7 +94,8 @@ export class HardwareSettings extends
             firmwareVersion={firmwareVersion}
             controlPanelState={controlPanelState}
             sourceFbosConfig={sourceFbosConfig}
-            sourceFwConfig={sourceFwConfig} />
+            sourceFwConfig={sourceFwConfig}
+            isValidFwConfig={!!firmwareConfig} />
           <EncodersAndEndStops
             dispatch={dispatch}
             controlPanelState={controlPanelState}

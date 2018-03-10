@@ -72,6 +72,7 @@ export interface MotorsProps {
   controlPanelState: ControlPanelState;
   sourceFbosConfig: SourceFbosConfig;
   sourceFwConfig: SourceFwConfig;
+  isValidFwConfig: boolean;
 }
 
 export interface EncodersProps {
