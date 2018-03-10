@@ -1,13 +1,12 @@
-import axios from "axios";
+import axios, { AxiosPromise } from "axios";
 import * as _ from "lodash";
 import { OpenFarm, CropSearchResult } from "./openfarm";
 import { DEFAULT_ICON } from "../open_farm/icons";
-import { HttpPromise } from "../util";
 import { ExecutableType } from "./interfaces";
 
 const url = (q: string) => `${OpenFarm.cropUrl}?include=pictures&filter=${q}`;
-type X = HttpPromise<CropSearchResult>;
-const openFarmSearchQuery = (q: string): X => axios.get(url(q));
+const openFarmSearchQuery = (q: string): AxiosPromise<CropSearchResult> =>
+  axios.get<CropSearchResult>(url(q));
 
 interface IdURL {
   id: string;

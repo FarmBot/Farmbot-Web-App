@@ -10,7 +10,6 @@ import { Image } from "../farmware/images/interfaces";
 import { DeviceAccountSettings } from "../devices/interfaces";
 import { ResourceName } from "../resources/tagged_resources";
 import { User } from "../auth/interfaces";
-import { HttpData } from "../util";
 import { WebcamFeed } from "../controls/interfaces";
 import { WebAppConfig } from "../config_storage/web_app_configs";
 import { Session } from "../session";
@@ -31,8 +30,8 @@ export interface SyncResponse {
 export function fetchSyncData(dispatch: Function) {
   const fetch = <T>(name: ResourceName, url: string, type = "RESOURCE_READY") =>
     axios
-      .get(url)
-      .then((r: HttpData<T>): SyncResponse => dispatch({
+      .get<T>(url)
+      .then((r): SyncResponse => dispatch({
         type, payload: { name, data: r.data }
       }),
         /** NOTE: If a key resource fails to load, the app is guaranteed to be

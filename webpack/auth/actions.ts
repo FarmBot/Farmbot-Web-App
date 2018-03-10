@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { t } from "i18next";
 import { error, success } from "farmbot-toastr";
 import {
@@ -9,7 +9,6 @@ import { AuthState } from "./interfaces";
 import { ReduxAction, Thunk } from "../redux/interfaces";
 import * as Sync from "../sync/actions";
 import { API } from "../api";
-import { HttpData } from "../util";
 import { Session } from "../session";
 import { UnsafeError } from "../interfaces";
 import {
@@ -37,7 +36,7 @@ export function didLogin(authState: AuthState, dispatch: Function) {
 
 // We need to handle OK logins for numerous use cases (Ex: login & registration)
 function onLogin(dispatch: Function) {
-  return (response: HttpData<AuthState>) => {
+  return (response: AxiosResponse<AuthState>) => {
     const { data } = response;
     Session.replaceToken(data);
     didLogin(data, dispatch);

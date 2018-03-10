@@ -23,7 +23,6 @@ import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { isUndefined } from "lodash";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import axios from "axios";
-import { HttpData } from "../../util";
 
 export enum ColWidth {
   label = 3,
@@ -46,8 +45,8 @@ export class FarmbotOsSettings
 
   fetchReleaseNotes = (url: string, osMajorVersion: string) => {
     axios
-      .get(url)
-      .then((resp: HttpData<string>) => {
+      .get<string>(url)
+      .then(resp => {
         const notes = resp.data
           .split("# v")
           .filter(x => x.startsWith(osMajorVersion))[0]

@@ -4,7 +4,6 @@ import { Dictionary } from "farmbot";
 import { Color } from "../interfaces";
 import { box } from "boxed_value";
 import { TaggedResource, TaggedFirmwareConfig } from "../resources/tagged_resources";
-import { AxiosResponse } from "axios";
 import { history } from "../history";
 import { BotLocationData } from "../devices/interfaces";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
@@ -139,20 +138,6 @@ type JSXChild = JSX.Element | JSX.Element[] | Primitive | undefined;
 export type JSXChildren = JSXChild[] | JSXChild;
 
 export type Primitive = boolean | string | number;
-
-/** Axios uses `{data: any}` to describe AxiosResponse.data.
- * This interface adds type hints.
- * TODO: LOW HANGING FRUIT: Write user defined type guards to provide
- * real type safety. */
-export interface HttpData<T> extends AxiosResponse {
-  data: T;
-}
-
-/** Like AxiosPromise, but holds onto type information.
- * TODO: Write farmbot-resource library or something like that to do real
- *       runtime type checking.
- */
-export interface HttpPromise<T> extends Promise<HttpData<T>> { }
 
 export function shortRevision() {
   return (globalConfig.SHORT_REVISION || "NONE").slice(0, 8);

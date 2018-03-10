@@ -13,7 +13,7 @@ import { API } from "../api/index";
 import { User } from "../auth/interfaces";
 import { getDeviceAccountSettings, getFirmwareConfig } from "../resources/selectors";
 import { TaggedDevice, TaggedFirmwareConfig } from "../resources/tagged_resources";
-import { HttpData, oneOf, versionOK, trim } from "../util";
+import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
 import { pingAPI } from "../connectivity/ping_mqtt";
@@ -145,8 +145,8 @@ export let fetchReleases =
   (url: string, options = { beta: false }) =>
     (dispatch: Function, getState: Function) => {
       axios
-        .get(url)
-        .then((resp: HttpData<GithubRelease>) => {
+        .get<GithubRelease>(url)
+        .then(resp => {
           const { tag_name, target_commitish } = resp.data;
           const version = tag_name.toLowerCase().replace("v", "");
           dispatch({
@@ -187,8 +187,8 @@ function validMinOsFeatureLookup(x: MinOsFeatureLookup): boolean {
 export let fetchMinOsFeatureData = (url: string) =>
   (dispatch: Function, getState: Function) => {
     axios
-      .get(url)
-      .then((resp: HttpData<MinOsFeatureLookup>) => {
+      .get<MinOsFeatureLookup>(url)
+      .then(resp => {
         const data = resp.data;
         if (validMinOsFeatureLookup(data)) {
           dispatch({
@@ -211,8 +211,8 @@ export let fetchMinOsFeatureData = (url: string) =>
 export function save(input: TaggedDevice) {
   return function (dispatch: Function, getState: GetState) {
     return axios
-      .put(API.current.devicePath, input.body)
-      .then((resp: HttpData<User>) => dispatch({ type: "SAVE_DEVICE_OK", payload: resp.data }))
+      .put<User>(API.current.devicePath, input.body)
+      .then(resp => dispatch({ type: "SAVE_DEVICE_OK", payload: resp.data }))
       .catch(resp => error(t("Error saving device settings.")));
   };
 }
