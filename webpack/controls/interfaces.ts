@@ -1,9 +1,10 @@
-import { BotState, Xyz, BotPosition } from "../devices/interfaces";
+import { BotState, Xyz, BotPosition, ShouldDisplay } from "../devices/interfaces";
 import { Vector3, McuParams } from "farmbot/dist";
 import {
   TaggedUser,
   TaggedWebcamFeed,
-  TaggedPeripheral
+  TaggedPeripheral,
+  TaggedSensor
 } from "../resources/tagged_resources";
 import { NetworkState } from "../connectivity/interfaces";
 
@@ -13,8 +14,10 @@ export interface Props {
   feeds: TaggedWebcamFeed[];
   user: TaggedUser | undefined;
   peripherals: TaggedPeripheral[];
+  sensors: TaggedSensor[];
   botToMqttStatus: NetworkState;
   firmwareSettings: McuParams;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface MoveProps {

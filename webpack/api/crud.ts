@@ -212,6 +212,7 @@ export function urlFor(tag: ResourceName) {
     FarmEvent: API.current.farmEventsPath,
     Regimen: API.current.regimensPath,
     Peripheral: API.current.peripheralsPath,
+    Sensor: API.current.sensorPath,
     Point: API.current.pointsPath,
     User: API.current.usersPath,
     Device: API.current.devicePath,

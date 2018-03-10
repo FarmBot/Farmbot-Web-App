@@ -18,6 +18,10 @@ export namespace ToolTips {
     To edit and create new peripherals, press the EDIT button. Make sure to turn
     things off when you're done!`);
 
+  export const SENSORS =
+    trim(`Add sensors here to monitor FarmBot's sensors.
+    To edit and create new sensors, press the EDIT button.`);
+
   // Device
   export const OS_SETTINGS =
     trim(`View and change device settings.`);

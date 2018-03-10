@@ -6,7 +6,7 @@ import { getDevice } from "../device";
 import { Log, Everything } from "../interfaces";
 import { GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig } from "./interfaces";
 import { Thunk, GetState, ReduxAction } from "../redux/interfaces";
-import { McuParams, Configuration } from "farmbot";
+import { McuParams, Configuration, rpcRequest } from "farmbot";
 import { Sequence } from "../sequences/interfaces";
 import { ControlPanelState } from "../devices/interfaces";
 import { API } from "../api/index";
@@ -278,6 +278,15 @@ export function pinToggle(pin_number: number) {
   const noun = "Setting toggle";
   return getDevice()
     .togglePin({ pin_number })
+    .then(_.noop, commandErr(noun));
+}
+
+export function readPin(pin_number: number, label: string, pin_mode: number) {
+  const noun = "Read pin";
+  return getDevice()
+    .send(rpcRequest([{
+      kind: "read_pin", args: { pin_number, label, pin_mode }
+    }]))
     .then(_.noop, commandErr(noun));
 }
 

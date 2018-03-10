@@ -10,7 +10,8 @@ import { AuthState } from "../auth/interfaces";
 import {
   TaggedImage,
   TaggedPeripheral,
-  TaggedDevice
+  TaggedDevice,
+  TaggedSensor
 } from "../resources/tagged_resources";
 import { ResourceIndex } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
@@ -54,6 +55,7 @@ export type ShouldDisplay = (x: Feature) => boolean;
 /** Names of features that use minimum FBOS version checking. */
 export enum Feature {
   named_pins = "named_pins",
+  sensors = "sensors",
   change_ownership = "change_ownership",
   variables = "variables",
   jest_feature = "jest_feature", // for tests
@@ -176,6 +178,13 @@ export interface EStopButtonProps {
 export interface PeripheralsProps {
   bot: BotState;
   peripherals: TaggedPeripheral[];
+  dispatch: Function;
+  disabled: boolean | undefined;
+}
+
+export interface SensorsProps {
+  bot: BotState;
+  sensors: TaggedSensor[];
   dispatch: Function;
   disabled: boolean | undefined;
 }
