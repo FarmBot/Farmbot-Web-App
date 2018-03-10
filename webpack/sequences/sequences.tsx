@@ -38,8 +38,6 @@ export class Sequences extends React.Component<Props, {}> {
               dispatch={this.props.dispatch}
               sequence={this.props.sequence}
               resources={this.props.resources}
-              consistent={this.props.consistent}
-              autoSyncEnabled={this.props.autoSyncEnabled}
               hardwareFlags={this.props.hardwareFlags}
               farmwareInfo={this.props.farmwareInfo}
               shouldDisplay={this.props.shouldDisplay} />

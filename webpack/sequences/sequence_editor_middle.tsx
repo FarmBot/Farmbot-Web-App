@@ -21,8 +21,6 @@ export class SequenceEditorMiddle
         sequence={sequence}
         resources={resources}
         syncStatus={syncStatus}
-        consistent={true}
-        autoSyncEnabled={false}
         hardwareFlags={hardwareFlags}
         farmwareInfo={farmwareInfo}
         shouldDisplay={this.props.shouldDisplay} />;

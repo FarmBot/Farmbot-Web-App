@@ -9,7 +9,7 @@ import { FactoryResetRowProps } from "./interfaces";
 import { ColWidth } from "../farmbot_os_settings";
 
 export function FactoryResetRow(props: FactoryResetRowProps) {
-  const { dispatch, sourceFbosConfig } = props;
+  const { dispatch, sourceFbosConfig, botOnline } = props;
   const disableFactoryReset = sourceFbosConfig("disable_factory_reset");
   const maybeDisableTimer = disableFactoryReset.value ? { color: "grey" } : {};
   return <div>
@@ -28,7 +28,8 @@ export function FactoryResetRow(props: FactoryResetRowProps) {
         <button
           className="fb-button red"
           type="button"
-          onClick={factoryReset}>
+          onClick={factoryReset}
+          disabled={!botOnline}>
           {t("FACTORY RESET")}
         </button>
       </Col>

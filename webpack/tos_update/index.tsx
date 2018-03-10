@@ -5,7 +5,7 @@ import { t, init } from "i18next";
 import { fun as log, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
 import { Session } from "../session";
-import { prettyPrintApiErrors, HttpData } from "../util";
+import { prettyPrintApiErrors } from "../util";
 import { detectLanguage } from "../i18n";
 import { API } from "../api";
 import "../css/_index.scss";
@@ -51,8 +51,8 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
     const url = `//${this.state.serverHost}:${this.state.serverPort}`;
     API.setBaseUrl(url);
     axios
-      .post(API.current.tokensPath, payload)
-      .then((resp: HttpData<AuthState>) => {
+      .post<AuthState>(API.current.tokensPath, payload)
+      .then(resp => {
         Session.replaceToken(resp.data);
         window.location.href = "/app/controls";
       })

@@ -8,7 +8,7 @@ import { Row, Col } from "../../../ui";
 import { SpacePanelToolTip } from "../space_panel_tool_tip";
 import { t } from "i18next";
 
-function LegacyStepsPerMm(props: MotorsProps) {
+export function LegacyStepsPerMm(props: MotorsProps) {
   const { dispatch, sourceFbosConfig } = props;
 
   return <Row>
@@ -40,8 +40,9 @@ function LegacyStepsPerMm(props: MotorsProps) {
 }
 
 export function StepsPerMmSettings(props: MotorsProps) {
-  const { dispatch, firmwareVersion, sourceFwConfig } = props;
-  if (minFwVersionCheck(firmwareVersion, "5.0.5")) {
+  const { dispatch, firmwareVersion, sourceFwConfig, isValidFwConfig
+  } = props;
+  if (minFwVersionCheck(firmwareVersion, "5.0.5") || isValidFwConfig) {
     return <NumericMCUInputGroup
       name={t("Steps per MM")}
       tooltip={ToolTips.STEPS_PER_MM}

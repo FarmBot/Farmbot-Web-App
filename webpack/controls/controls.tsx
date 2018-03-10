@@ -1,6 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Peripherals } from "./peripherals";
+import { Sensors } from "./sensors";
 import { Row, Page, Col } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { WebcamPanel } from "./webcam";
@@ -9,6 +10,7 @@ import { Move } from "./move";
 import { BooleanSetting } from "../session_keys";
 import { Session } from "../session";
 import { catchErrors } from "../util";
+import { Feature } from "../devices/interfaces";
 
 @connect(mapStateToProps)
 export class Controls extends React.Component<Props, {}> {
@@ -48,6 +50,12 @@ export class Controls extends React.Component<Props, {}> {
           </Col>
           <Col xs={12} sm={6}>
             <WebcamPanel feeds={this.props.feeds} dispatch={this.props.dispatch} />
+            {this.props.shouldDisplay(Feature.sensors) &&
+              <Sensors
+                bot={this.props.bot}
+                sensors={this.props.sensors}
+                dispatch={this.props.dispatch}
+                disabled={arduinoBusy} />}
           </Col>
         </Row>
         :
@@ -61,6 +69,12 @@ export class Controls extends React.Component<Props, {}> {
               peripherals={this.props.peripherals}
               dispatch={this.props.dispatch}
               disabled={arduinoBusy} />
+            {this.props.shouldDisplay(Feature.sensors) &&
+              <Sensors
+                bot={this.props.bot}
+                sensors={this.props.sensors}
+                dispatch={this.props.dispatch}
+                disabled={arduinoBusy} />}
           </Col>
         </Row>}
     </Page>;

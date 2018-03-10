@@ -123,8 +123,8 @@ export class API {
   get firmwareConfigPath() { return `${this.baseUrl}/api/firmware_config/`; }
   /** /api/sensor_readings */
   get sensorReadingPath() { return `${this.baseUrl}/api/sensor_readings`; }
-  /** /api/sensor_readings */
-  get sensorPath() { return `${this.baseUrl}/api/sensors`; }
+  /** /api/sensors/ */
+  get sensorPath() { return `${this.baseUrl}/api/sensors/`; }
   /** /api/device_configs/:id */
   get deviceConfigPath() { return `${this.baseUrl}/api/device_configs`; }
   /** /api/pin_bindings/:id */

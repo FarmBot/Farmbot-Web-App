@@ -11,26 +11,34 @@ jest.mock("farmbot-toastr", () => ({ info: mockInfo, error: mockError }));
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { CameraSelection } from "../camera_selection";
+import { CameraSelectionProps } from "../interfaces";
 
 describe("<CameraSelection/>", () => {
   beforeEach(function () {
     jest.clearAllMocks();
   });
 
+  const fakeProps = (): CameraSelectionProps => {
+    return {
+      env: {},
+      botOnline: true,
+    };
+  };
+
   it("doesn't render camera", () => {
-    const cameraSelection = mount(<CameraSelection
-      env={{}} />);
+    const cameraSelection = mount(<CameraSelection {...fakeProps()} />);
     expect(cameraSelection.find("button").text()).toEqual("USB Camera");
   });
 
   it("renders camera", () => {
-    const cameraSelection = mount(<CameraSelection
-      env={{ "camera": "\"RPI\"" }} />);
+    const p = fakeProps();
+    p.env = { "camera": "\"RPI\"" };
+    const cameraSelection = mount(<CameraSelection {...p} />);
     expect(cameraSelection.find("button").text()).toEqual("Raspberry Pi Camera");
   });
 
   it("changes camera", () => {
-    const cameraSelection = shallow(<CameraSelection env={{}} />);
+    const cameraSelection = shallow(<CameraSelection {...fakeProps()} />);
     cameraSelection.find("FBSelect")
       .simulate("change", { label: "My Camera", value: "mycamera" });
     expect(mockInfo)

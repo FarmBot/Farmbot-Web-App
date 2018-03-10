@@ -659,3 +659,32 @@ ul {
     margin-top: 1rem;
   }
 }
+
+.sensors-widget {
+  p {
+    margin-top: 0.75rem;
+  }
+  .fa-plus {
+    margin-right: 0.5rem;
+  }
+  .sensor-reading-display {
+    &.moisture-sensor {
+      background: linear-gradient(to right, #a4c2f400 20%, #a4c2f4ff 80%, #a4c2f400 85%);
+    }
+    border-style: solid;
+    border-color: $dark_gray;
+    border-width: 0.1px;
+    height: 2rem;
+    width: 100%;
+    margin-top: 0.5rem;
+    .indicator {
+      background: $dark_gray;
+      height: 2rem;
+      position: relative;
+      span {
+        position: relative;
+        top: 0.15rem;
+      }
+    }
+  }
+}

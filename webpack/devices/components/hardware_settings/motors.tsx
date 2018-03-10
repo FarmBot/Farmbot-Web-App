@@ -17,7 +17,7 @@ import { StepsPerMmSettings } from "./steps_per_mm_settings";
 export function Motors(props: MotorsProps) {
   const {
     dispatch, firmwareVersion, sourceFbosConfig, controlPanelState,
-    sourceFwConfig
+    sourceFwConfig, isValidFwConfig
   } = props;
   const enable2ndXMotor = sourceFwConfig("movement_secondary_motor_x");
   const invert2ndXMotor = sourceFwConfig("movement_secondary_motor_invert_x");
@@ -67,7 +67,7 @@ export function Motors(props: MotorsProps) {
         z={"movement_max_spd_z"}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
-      {minFwVersionCheck(firmwareVersion, "5.0.5") &&
+      {(minFwVersionCheck(firmwareVersion, "5.0.5") || isValidFwConfig) &&
         <NumericMCUInputGroup
           name={t("Homing Speed (steps/s)")}
           tooltip={ToolTips.HOME_SPEED}
@@ -97,7 +97,8 @@ export function Motors(props: MotorsProps) {
         firmwareVersion={firmwareVersion}
         controlPanelState={controlPanelState}
         sourceFwConfig={sourceFwConfig}
-        sourceFbosConfig={sourceFbosConfig} />
+        sourceFbosConfig={sourceFbosConfig}
+        isValidFwConfig={isValidFwConfig} />
       <BooleanMCUInputGroup
         name={t("Always Power Motors")}
         tooltip={ToolTips.ALWAYS_POWER_MOTORS}
