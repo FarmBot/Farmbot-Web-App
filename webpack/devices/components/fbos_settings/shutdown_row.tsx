@@ -5,7 +5,7 @@ import { Content } from "../../../constants";
 import { powerOff } from "../../actions";
 import { ColWidth } from "../farmbot_os_settings";
 
-export function ShutdownRow() {
+export function ShutdownRow({ botOnline }: { botOnline: boolean }) {
   return <Row>
     <Col xs={ColWidth.label}>
       <label>
@@ -21,7 +21,8 @@ export function ShutdownRow() {
       <button
         className="fb-button red"
         type="button"
-        onClick={powerOff}>
+        onClick={powerOff}
+        disabled={!botOnline}>
         {t("SHUTDOWN")}
       </button>
     </Col>

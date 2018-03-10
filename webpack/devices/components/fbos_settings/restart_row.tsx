@@ -5,7 +5,7 @@ import { Content } from "../../../constants";
 import { reboot } from "../../actions";
 import { ColWidth } from "../farmbot_os_settings";
 
-export function RestartRow() {
+export function RestartRow({ botOnline }: { botOnline: boolean }) {
   return <Row>
     <Col xs={ColWidth.label}>
       <label>
@@ -21,7 +21,8 @@ export function RestartRow() {
       <button
         className="fb-button yellow"
         type="button"
-        onClick={reboot}>
+        onClick={reboot}
+        disabled={!botOnline}>
         {t("RESTART")}
       </button>
     </Col>

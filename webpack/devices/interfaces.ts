@@ -35,6 +35,7 @@ export interface Props {
   sourceFwConfig: SourceFwConfig;
   shouldDisplay: ShouldDisplay;
   firmwareConfig: FirmwareConfig | undefined;
+  isValidFbosConfig: boolean;
 }
 
 /** Value and consistency of the value between the bot and /api/fbos_config. */
@@ -147,18 +148,11 @@ export interface FarmbotOsProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   shouldDisplay: ShouldDisplay;
+  isValidFbosConfig: boolean;
 }
 
 export interface FarmbotOsState {
   osReleaseNotes: string;
-}
-
-export interface CameraSelectionProps {
-  env: Dictionary<string | undefined>
-}
-
-export interface CameraSelectionState {
-  cameraStatus: "" | "sending" | "done" | "error";
 }
 
 export interface McuInputBoxProps {

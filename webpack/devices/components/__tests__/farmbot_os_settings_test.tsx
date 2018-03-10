@@ -28,7 +28,8 @@ describe("<FarmbotOsSettings/>", () => {
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
       },
-      shouldDisplay: jest.fn()
+      shouldDisplay: jest.fn(),
+      isValidFbosConfig: false,
     };
   };
 

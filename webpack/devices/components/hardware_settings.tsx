@@ -78,8 +78,7 @@ export class HardwareSettings extends
         <MustBeOnline
           networkState={this.props.botToMqttStatus}
           syncStatus={sync_status}
-          lockOpen={process.env.NODE_ENV !== "production" ||
-            (firmwareConfig && firmwareConfig.api_migrated)}>
+          lockOpen={process.env.NODE_ENV !== "production" || !!firmwareConfig}>
           <div className="label-headings">
             <SpacePanelHeader />
           </div>

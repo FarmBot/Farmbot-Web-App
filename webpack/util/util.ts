@@ -3,10 +3,13 @@ import * as _ from "lodash";
 import { Dictionary } from "farmbot";
 import { Color } from "../interfaces";
 import { box } from "boxed_value";
-import { TaggedResource, TaggedFirmwareConfig } from "../resources/tagged_resources";
+import {
+  TaggedResource, TaggedFirmwareConfig, TaggedFbosConfig
+} from "../resources/tagged_resources";
 import { history } from "../history";
 import { BotLocationData } from "../devices/interfaces";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
+import { FbosConfig } from "../config_storage/fbos_configs";
 
 // http://stackoverflow.com/a/901144/1064917
 // Grab a query string param by name, because react-router-redux doesn't
@@ -218,6 +221,16 @@ export function validBotLocationData(
  */
 export function validFwConfig(
   config: TaggedFirmwareConfig | undefined): FirmwareConfig | undefined {
+  return (config && config.body.api_migrated)
+    ? config.body
+    : undefined;
+}
+
+/**
+ * Return FbosConfig if the data is valid.
+ */
+export function validFbosConfig(
+  config: TaggedFbosConfig | undefined): FbosConfig | undefined {
   return (config && config.body.api_migrated)
     ? config.body
     : undefined;

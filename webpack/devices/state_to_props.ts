@@ -6,16 +6,17 @@ import {
   maybeGetDevice,
   getFirmwareConfig
 } from "../resources/selectors";
-import { sourceFbosConfigValue, sourceFwConfigValue } from "./components/source_config_value";
+import {
+  sourceFbosConfigValue, sourceFwConfigValue
+} from "./components/source_config_value";
 import { getFbosConfig } from "../resources/selectors_by_kind";
-import { determineInstalledOsVersion, shouldDisplay, validFwConfig } from "../util";
+import {
+  determineInstalledOsVersion, shouldDisplay, validFwConfig, validFbosConfig
+} from "../util";
 
 export function mapStateToProps(props: Everything): Props {
   const { hardware } = props.bot;
-  const maybeFbosConfig = getFbosConfig(props.resources.index);
-  const fbosConfig = maybeFbosConfig && maybeFbosConfig.body.api_migrated
-    ? maybeFbosConfig.body
-    : undefined;
+  const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
   const firmwareConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
@@ -33,5 +34,6 @@ export function mapStateToProps(props: Everything): Props {
     sourceFwConfig: sourceFwConfigValue(firmwareConfig, hardware.mcu_params),
     shouldDisplay: shouldDisplay(installedOsVersion, props.bot.minOsFeatureData),
     firmwareConfig,
+    isValidFbosConfig: !!fbosConfig,
   };
 }

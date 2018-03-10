@@ -28,6 +28,7 @@ describe("<Devices/>", () => {
     sourceFwConfig: jest.fn(),
     shouldDisplay: jest.fn(),
     firmwareConfig: undefined,
+    isValidFbosConfig: false,
   });
 
   it("renders relevant panels", () => {
