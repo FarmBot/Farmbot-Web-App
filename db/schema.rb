@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180306195021) do
+ActiveRecord::Schema.define(version: 20180310220435) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -118,9 +118,9 @@ ActiveRecord::Schema.define(version: 20180306195021) do
     t.integer "encoder_missed_steps_max_x", default: 5
     t.integer "encoder_missed_steps_max_y", default: 5
     t.integer "encoder_missed_steps_max_z", default: 5
-    t.integer "encoder_scaling_x", default: 56
-    t.integer "encoder_scaling_y", default: 56
-    t.integer "encoder_scaling_z", default: 56
+    t.integer "encoder_scaling_x", default: 5556
+    t.integer "encoder_scaling_y", default: 5556
+    t.integer "encoder_scaling_z", default: 5556
     t.integer "encoder_type_x", default: 0
     t.integer "encoder_type_y", default: 0
     t.integer "encoder_type_z", default: 0
