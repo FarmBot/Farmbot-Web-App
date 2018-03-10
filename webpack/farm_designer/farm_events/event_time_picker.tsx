@@ -1,6 +1,5 @@
 import * as React from "react";
 import { BlurableInput } from "../../ui/index";
-import * as moment from "moment";
 
 interface Props {
   /** String, formatted as hh:mm (UTC 24hr time).
@@ -11,17 +10,6 @@ interface Props {
   disabled?: boolean;
   name: string;
   className: string;
-}
-
-const FORMAT = "HH:mm";
-
-export function utcToBotTime(utcValue: string, tzOffset: number) {
-  const botLocalTime = moment(utcValue, FORMAT).clone().add(tzOffset, "hours").format(FORMAT);
-  return botLocalTime;
-}
-
-export function botTimeToUtc(value: string, tzOffset: number) {
-  return moment(value, FORMAT).clone().subtract(tzOffset, "hours").format(FORMAT);
 }
 
 export function EventTimePicker(props: Props) {
