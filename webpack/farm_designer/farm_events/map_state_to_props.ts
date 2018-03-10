@@ -51,6 +51,7 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
     const tz_offset_hrs = maybeGetTimeOffset(index);
     const { regimen_items } = f.executable;
     const fromEpoch = (ms: number) => moment(f.start_time)
+      .utcOffset(tz_offset_hrs)
       .startOf("day")
       .add(ms, "ms");
     const gracePeriod = now.clone().subtract(1, "minute");

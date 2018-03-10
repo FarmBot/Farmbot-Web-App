@@ -21,7 +21,7 @@ describe("mapStateToProps()", () => {
     regimen.body.id = 1;
     regimen.body.regimen_items = [{
       sequence_id: 1,
-      time_offset: 64800000
+      time_offset: 28800000
     }];
 
     const sequenceFarmEvent = fakeFarmEvent("Sequence", 1);
@@ -51,13 +51,13 @@ describe("mapStateToProps()", () => {
 
     expect(calendarRows).toEqual([
       {
-        day: 21,
+        day: 22,
         items: [
           {
             executableId: 1,
             heading: "fake",
             id: 1,
-            mmddyy: "022122",
+            mmddyy: "022222",
             sortKey: 7956842400,
             timeStr: "02:00am"
           }],
@@ -66,13 +66,13 @@ describe("mapStateToProps()", () => {
         year: 22
       },
       {
-        day: 22,
+        day: 23,
         items: [
           {
             executableId: 1,
             heading: "Foo",
             id: 2,
-            mmddyy: "022222",
+            mmddyy: "022322",
             sortKey: 7956928800,
             subheading: "",
             timeStr: "02:00am"
@@ -81,10 +81,10 @@ describe("mapStateToProps()", () => {
             executableId: 1,
             heading: "Foo",
             id: 2,
-            mmddyy: "022222",
-            sortKey: 7956928800,
+            mmddyy: "022322",
+            sortKey: 7956950400,
             subheading: "fake",
-            timeStr: "02:00am"
+            timeStr: "08:00am"
           }],
         month: "Feb",
         sortKey: 7956928800,
