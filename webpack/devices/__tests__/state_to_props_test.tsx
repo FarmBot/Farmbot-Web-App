@@ -5,6 +5,7 @@ const mockImages: TaggedImage | undefined = fakeImage();
 
 jest.mock("../../resources/selectors_by_kind", () => ({
   getFbosConfig: () => mockFbosConfig,
+  getFirmwareConfig: () => undefined,
   selectAllImages: () => [mockImages],
 }));
 

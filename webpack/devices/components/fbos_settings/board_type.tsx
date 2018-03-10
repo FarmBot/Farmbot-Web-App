@@ -41,6 +41,10 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
     return !this.props.sourceFbosConfig("firmware_hardware").consistent;
   }
 
+  get apiValue() {
+    return this.props.sourceFbosConfig("firmware_hardware").value;
+  }
+
   get boardType() {
     if (this.props.firmwareVersion) {
       const boardIdentifier = this.props.firmwareVersion.slice(-1);
@@ -50,6 +54,7 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
         case "F":
           return "Farmduino";
         case "!":
+        case "W":
           return "unknown";
         default:
           return "Present";
@@ -66,6 +71,11 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
         return FIRMWARE_CHOICES_DDI["arduino"];
       case "Farmduino":
         return FIRMWARE_CHOICES_DDI["farmduino"];
+      case "unknown":
+        // If unknown/disconnected, display API FirmwareHardware value if valid
+        return (this.sending && typeof this.apiValue === "string")
+          ? FIRMWARE_CHOICES_DDI[this.apiValue]
+          : undefined;
       default:
         return undefined;
     }

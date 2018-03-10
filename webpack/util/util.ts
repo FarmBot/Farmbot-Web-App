@@ -3,10 +3,13 @@ import * as _ from "lodash";
 import { Dictionary } from "farmbot";
 import { Color } from "../interfaces";
 import { box } from "boxed_value";
-import { TaggedResource } from "../resources/tagged_resources";
-import { AxiosResponse } from "axios";
+import {
+  TaggedResource, TaggedFirmwareConfig, TaggedFbosConfig
+} from "../resources/tagged_resources";
 import { history } from "../history";
 import { BotLocationData } from "../devices/interfaces";
+import { FirmwareConfig } from "../config_storage/firmware_configs";
+import { FbosConfig } from "../config_storage/fbos_configs";
 
 // http://stackoverflow.com/a/901144/1064917
 // Grab a query string param by name, because react-router-redux doesn't
@@ -139,20 +142,6 @@ export type JSXChildren = JSXChild[] | JSXChild;
 
 export type Primitive = boolean | string | number;
 
-/** Axios uses `{data: any}` to describe AxiosResponse.data.
- * This interface adds type hints.
- * TODO: LOW HANGING FRUIT: Write user defined type guards to provide
- * real type safety. */
-export interface HttpData<T> extends AxiosResponse {
-  data: T;
-}
-
-/** Like AxiosPromise, but holds onto type information.
- * TODO: Write farmbot-resource library or something like that to do real
- *       runtime type checking.
- */
-export interface HttpPromise<T> extends Promise<HttpData<T>> { }
-
 export function shortRevision() {
   return (globalConfig.SHORT_REVISION || "NONE").slice(0, 8);
 }
@@ -225,4 +214,24 @@ export function validBotLocationData(
     scaled_encoders: { x: undefined, y: undefined, z: undefined },
     raw_encoders: { x: undefined, y: undefined, z: undefined },
   };
+}
+
+/**
+ * Return FirmwareConfig if the data is valid.
+ */
+export function validFwConfig(
+  config: TaggedFirmwareConfig | undefined): FirmwareConfig | undefined {
+  return (config && config.body.api_migrated)
+    ? config.body
+    : undefined;
+}
+
+/**
+ * Return FbosConfig if the data is valid.
+ */
+export function validFbosConfig(
+  config: TaggedFbosConfig | undefined): FbosConfig | undefined {
+  return (config && config.body.api_migrated)
+    ? config.body
+    : undefined;
 }

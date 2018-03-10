@@ -1,18 +1,27 @@
-import { BotState, SourceFbosConfig, Xyz } from "../interfaces";
+import { BotState, SourceFbosConfig, Xyz, SourceFwConfig, ControlPanelState } from "../interfaces";
 import { McuParamName, McuParams } from "farmbot/dist";
 import { IntegerSize } from "../../util";
+import { FirmwareConfig } from "../../config_storage/firmware_configs";
 
 export interface HomingRowProps {
   hardware: McuParams;
+  botDisconnected: boolean;
+}
+
+export interface ZeroRowProps {
+  botDisconnected: boolean;
 }
 
 export interface HomingAndCalibrationProps {
   dispatch: Function;
   bot: BotState;
+  sourceFwConfig: SourceFwConfig;
+  firmwareConfig: FirmwareConfig | undefined;
+  botDisconnected: boolean;
 }
 
 export interface BooleanMCUInputGroupProps {
-  bot: BotState;
+  sourceFwConfig: SourceFwConfig;
   dispatch: Function;
   tooltip?: string | undefined;
   name: string;
@@ -27,10 +36,11 @@ export interface BooleanMCUInputGroupProps {
 
 export interface CalibrationRowProps {
   hardware: McuParams;
+  botDisconnected: boolean;
 }
 
 export interface NumericMCUInputGroupProps {
-  bot: BotState;
+  sourceFwConfig: SourceFwConfig;
   dispatch: Function;
   tooltip?: string | undefined;
   name: string;
@@ -42,7 +52,7 @@ export interface NumericMCUInputGroupProps {
 }
 
 export interface PinGuardMCUInputGroupProps {
-  bot: BotState;
+  sourceFwConfig: SourceFwConfig;
   dispatch: Function;
   name: string;
   pinNumber: McuParamName;
@@ -52,22 +62,28 @@ export interface PinGuardMCUInputGroupProps {
 
 export interface PinGuardProps {
   dispatch: Function;
-  bot: BotState;
+  controlPanelState: ControlPanelState;
+  sourceFwConfig: SourceFwConfig;
 }
 
 export interface MotorsProps {
   dispatch: Function;
-  bot: BotState;
+  firmwareVersion: string | undefined;
+  controlPanelState: ControlPanelState;
   sourceFbosConfig: SourceFbosConfig;
+  sourceFwConfig: SourceFwConfig;
+  isValidFwConfig: boolean;
 }
 
 export interface EncodersProps {
   dispatch: Function;
-  bot: BotState;
+  controlPanelState: ControlPanelState;
+  sourceFwConfig: SourceFwConfig;
 }
 
 export interface DangerZoneProps {
   dispatch: Function;
-  bot: BotState;
+  controlPanelState: ControlPanelState;
   onReset(): void;
+  botDisconnected: boolean;
 }

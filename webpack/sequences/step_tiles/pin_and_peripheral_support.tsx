@@ -12,8 +12,9 @@ import {
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../util/errors";
 import { joinKindAndId } from "../../resources/reducer";
-import { StepParams, ShouldDisplay } from "../interfaces";
+import { StepParams } from "../interfaces";
 import { editStep } from "../../api/crud";
+import { ShouldDisplay, Feature } from "../../devices/interfaces";
 
 /** `headingIds` required to group the three kinds of pins. */
 export enum PinGroupName {
@@ -74,8 +75,8 @@ export function pinDropdowns(
 
 export const pinsAsDropDowns =
   (input: ResourceIndex, shouldDisplay: ShouldDisplay): DropDownItem[] => [
-    ...(shouldDisplay("named_pins") ? peripheralsAsDropDowns(input) : []),
-    ...(shouldDisplay("named_pins") ? sensorsAsDropDowns(input) : []),
+    ...(shouldDisplay(Feature.named_pins) ? peripheralsAsDropDowns(input) : []),
+    ...(shouldDisplay(Feature.named_pins) ? sensorsAsDropDowns(input) : []),
     ...pinDropdowns(n => n),
   ];
 

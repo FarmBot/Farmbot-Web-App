@@ -10,6 +10,9 @@ import { mount } from "enzyme";
 import { HomingAndCalibration } from "../homing_and_calibration";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { updateMCU } from "../../../actions";
+import {
+  fakeFirmwareConfig
+} from "../../../../__test_support__/fake_state/resources";
 
 describe("<HomingAndCalibration />", () => {
   beforeEach(function () {
@@ -22,7 +25,13 @@ describe("<HomingAndCalibration />", () => {
     bot.controlPanelState.homing_and_calibration = true;
     bot.hardware.informational_settings.firmware_version = fw;
     const result = mount(<HomingAndCalibration
-      dispatch={dispatch} bot={bot} />);
+      dispatch={dispatch}
+      bot={bot}
+      firmwareConfig={fakeFirmwareConfig().body}
+      sourceFwConfig={(x) => {
+        return { value: bot.hardware.mcu_params[x], consistent: true };
+      }}
+      botDisconnected={false} />);
     const e = { currentTarget: { value: provided } } as
       React.SyntheticEvent<HTMLInputElement>;
     const input = result.find("input").first().props();

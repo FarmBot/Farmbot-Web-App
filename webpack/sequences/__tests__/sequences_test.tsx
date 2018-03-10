@@ -23,8 +23,6 @@ describe("<Sequences/>", () => {
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
       auth,
-      consistent: true,
-      autoSyncEnabled: false,
       hardwareFlags: fakeHardwareFlags(),
       farmwareInfo: {
         farmwareNames: [],

@@ -4,19 +4,22 @@ import { getDevice } from "../../../device";
 import { Axis } from "../../interfaces";
 import { ToolTips } from "../../../constants";
 import { Row, Col } from "../../../ui/index";
+import { ZeroRowProps } from "../interfaces";
 
 const zero = (axis: Axis) => getDevice().setZero(axis);
 const AXES: Axis[] = ["x", "y", "z"];
 
-export function ZeroButton({ axis }: { axis: Axis }) {
+export function ZeroButton(props: { axis: Axis; disabled: boolean; }) {
+  const { axis, disabled } = props;
   return <button
     className="fb-button yellow"
+    disabled={disabled}
     onClick={() => zero(axis)} >
     {t("zero {{axis}}", { axis })}
   </button>;
 }
 
-export function ZeroRow() {
+export function ZeroRow({ botDisconnected }: ZeroRowProps) {
   return <Row>
     <Col xs={6}>
       <label>
@@ -31,7 +34,7 @@ export function ZeroRow() {
     </Col>
     {AXES.map((axis) => {
       return <Col xs={2} key={axis} className={"centered-button-div"}>
-        <ZeroButton axis={axis} />
+        <ZeroButton axis={axis} disabled={botDisconnected} />
       </Col>;
     })}
   </Row>;

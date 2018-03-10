@@ -18,14 +18,18 @@ describe("<HomingRow />", () => {
   //       Code being run is {t("HOME {{axis}}", { axis })}
   //       Result string is "HOME {{axis}}HOME {{axis}}HOME {{axis}}"
   xit("renders three buttons", () => {
-    const wrapper = mount(<HomingRow hardware={bot.hardware.mcu_params} />);
+    const wrapper = mount(<HomingRow
+      hardware={bot.hardware.mcu_params}
+      botDisconnected={false} />);
     const txt = wrapper.text();
     ["X", "Y", "Z"].map(function (axis) {
       expect(txt).toContain(`HOME ${axis}`);
     });
   });
   it("calls device", () => {
-    const result = mount(<HomingRow hardware={bot.hardware.mcu_params} />);
+    const result = mount(<HomingRow
+      hardware={bot.hardware.mcu_params}
+      botDisconnected={false} />);
     [0, 1, 2].map(i =>
       result.find("LockableButton").at(i).simulate("click"));
     [{ axis: "x", speed: 100 }, { axis: "y", speed: 100 }].map(x =>

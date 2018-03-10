@@ -14,7 +14,7 @@ import {
 import { UnsafeError } from "../interfaces";
 import { findByUuid } from "../resources/reducer";
 import { generateUuid } from "../resources/util";
-import { defensiveClone, HttpData } from "../util";
+import { defensiveClone } from "../util";
 import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
 import { SequenceBodyItem } from "farmbot/dist";
@@ -107,8 +107,8 @@ export function refresh(resource: TaggedResource, urlNeedsId = false) {
     const endPart = "" + urlNeedsId ? resource.body.id : "";
     const statusBeforeError = resource.specialStatus;
     axios
-      .get(urlFor(resource.kind) + endPart)
-      .then((resp: HttpData<typeof resource.body>) => {
+      .get<typeof resource.body>(urlFor(resource.kind) + endPart)
+      .then(resp => {
         const r1 = defensiveClone(resource);
         const r2 = { body: defensiveClone(resp.data) };
         const newTR = _.assign({}, r1, r2);
@@ -178,7 +178,7 @@ export function destroy(uuid: string, force = false) {
         maybeStartTracking(uuid);
         return axios
           .delete(urlFor(resource.kind) + resource.body.id)
-          .then(function (resp: HttpData<typeof resource.body>) {
+          .then(function () {
             dispatch(destroyOK(resource));
           })
           .catch(destroyCatch({ dispatch, uuid, statusBeforeError }));
@@ -212,6 +212,7 @@ export function urlFor(tag: ResourceName) {
     FarmEvent: API.current.farmEventsPath,
     Regimen: API.current.regimensPath,
     Peripheral: API.current.peripheralsPath,
+    Sensor: API.current.sensorPath,
     Point: API.current.pointsPath,
     User: API.current.usersPath,
     Device: API.current.devicePath,
@@ -219,7 +220,8 @@ export function urlFor(tag: ResourceName) {
     Log: API.current.logsPath,
     WebcamFeed: API.current.webcamFeedPath,
     FbosConfig: API.current.fbosConfigPath,
-    WebAppConfig: API.current.webAppConfigPath
+    WebAppConfig: API.current.webAppConfigPath,
+    FirmwareConfig: API.current.firmwareConfigPath,
   };
   const url = OPTIONS[tag];
   if (url) {
@@ -230,7 +232,8 @@ export function urlFor(tag: ResourceName) {
   }
 }
 
-const SINGULAR_RESOURCE: ResourceName[] = ["WebAppConfig", "FbosConfig"];
+const SINGULAR_RESOURCE: ResourceName[] =
+  ["WebAppConfig", "FbosConfig", "FirmwareConfig"];
 
 /** Shared functionality in create() and update(). */
 function updateViaAjax(payl: AjaxUpdatePayload) {
@@ -248,8 +251,8 @@ function updateViaAjax(payl: AjaxUpdatePayload) {
     verb = "post";
   }
   maybeStartTracking(uuid);
-  return axios[verb](url, body)
-    .then(function (resp: HttpData<typeof resource.body>) {
+  return axios[verb]<typeof resource.body>(url, body)
+    .then(function (resp) {
       const r1 = defensiveClone(resource);
       const r2 = { body: defensiveClone(resp.data) };
       const newTR = _.assign({}, r1, r2);

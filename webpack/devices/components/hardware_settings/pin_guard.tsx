@@ -10,8 +10,8 @@ import { ToolTips } from "../../../constants";
 
 export function PinGuard(props: PinGuardProps) {
 
-  const { pin_guard } = props.bot.controlPanelState;
-  const { dispatch, bot } = props;
+  const { pin_guard } = props.controlPanelState;
+  const { dispatch, sourceFwConfig } = props;
 
   return <section>
     <Header
@@ -44,35 +44,35 @@ export function PinGuard(props: PinGuardProps) {
         timeout={"pin_guard_1_time_out"}
         activeState={"pin_guard_1_active_state"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
         name={t("Pin Guard {{ num }}", { num: 2 })}
         pinNumber={"pin_guard_2_pin_nr"}
         timeout={"pin_guard_2_time_out"}
         activeState={"pin_guard_2_active_state"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
         name={t("Pin Guard {{ num }}", { num: 3 })}
         pinNumber={"pin_guard_3_pin_nr"}
         timeout={"pin_guard_3_time_out"}
         activeState={"pin_guard_3_active_state"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
         name={t("Pin Guard {{ num }}", { num: 4 })}
         pinNumber={"pin_guard_4_pin_nr"}
         timeout={"pin_guard_4_time_out"}
         activeState={"pin_guard_4_active_state"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
         name={t("Pin Guard {{ num }}", { num: 5 })}
         pinNumber={"pin_guard_5_pin_nr"}
         timeout={"pin_guard_5_time_out"}
         activeState={"pin_guard_5_active_state"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
     </Collapse>
   </section>;
 }

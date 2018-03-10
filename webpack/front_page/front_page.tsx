@@ -4,7 +4,7 @@ import { t } from "i18next";
 import * as _ from "lodash";
 import { error as log, success, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
-import { prettyPrintApiErrors, HttpData } from "../util";
+import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState } from "./interfaces";
@@ -69,8 +69,8 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       url = API.fetchBrowserLocation();
     }
     API.setBaseUrl(url);
-    axios.post(API.current.tokensPath, payload)
-      .then((resp: HttpData<AuthState>) => {
+    axios.post<AuthState>(API.current.tokensPath, payload)
+      .then(resp => {
         Session.replaceToken(resp.data);
         window.location.href = "/app/controls";
       }).catch((error: Error) => {

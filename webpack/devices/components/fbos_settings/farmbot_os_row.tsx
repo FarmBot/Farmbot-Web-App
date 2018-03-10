@@ -13,7 +13,7 @@ import { FbosDetailsProps, FarmbotOsRowProps } from "./interfaces";
 export function FbosDetails(props: FbosDetailsProps) {
   const { dispatch, sourceFbosConfig } = props;
   const {
-     env, commit, target, node_name, firmware_version, firmware_commit
+    env, commit, target, node_name, firmware_version, firmware_commit
   } = props.bot.hardware.informational_settings;
   const betaOptIn = sourceFbosConfig("beta_opt_in");
   const shortenCommit = (longCommit: string) => (longCommit || "").slice(0, 8);
@@ -39,7 +39,7 @@ export function FbosDetails(props: FbosDetailsProps) {
 }
 
 export function FarmbotOsRow(props: FarmbotOsRowProps) {
-  const { sourceFbosConfig, dispatch, bot, osReleaseNotes } = props;
+  const { sourceFbosConfig, dispatch, bot, osReleaseNotes, botOnline } = props;
   const { controller_version } = bot.hardware.informational_settings;
   const version = controller_version || t(" unknown (offline)");
   return <Row>
@@ -73,7 +73,10 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
       </Popover>
     </Col>
     <Col xs={3}>
-      <OsUpdateButton bot={bot} sourceFbosConfig={sourceFbosConfig} />
+      <OsUpdateButton
+        bot={bot}
+        sourceFbosConfig={sourceFbosConfig}
+        botOnline={botOnline} />
     </Col>
   </Row >;
 }

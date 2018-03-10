@@ -47,6 +47,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
           {this.props.getToolSlots().map(
             (slot: TaggedToolSlotPointer, index: number) => {
               return <ToolSlotRow
+                key={slot.uuid}
                 dispatch={dispatch}
                 slot={slot}
                 botPosition={botPosition}

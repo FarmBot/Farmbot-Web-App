@@ -8,8 +8,8 @@ import { Content } from "../../../constants";
 
 export function DangerZone(props: DangerZoneProps) {
 
-  const { dispatch, bot, onReset } = props;
-  const { danger_zone } = bot.controlPanelState;
+  const { dispatch, onReset, botDisconnected } = props;
+  const { danger_zone } = props.controlPanelState;
 
   return <section>
     <Header
@@ -36,6 +36,7 @@ export function DangerZone(props: DangerZoneProps) {
         <Col xs={2} className={"centered-button-div"}>
           <button
             className="fb-button red"
+            disabled={botDisconnected}
             onClick={onReset}>
             {t("RESET")}
           </button>

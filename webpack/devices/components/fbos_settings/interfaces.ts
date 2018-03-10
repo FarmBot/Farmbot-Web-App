@@ -1,5 +1,7 @@
-import { SourceFbosConfig, BotState, ControlPanelState } from "../../interfaces";
-import { ShouldDisplay } from "../../../sequences/interfaces";
+import {
+  SourceFbosConfig, BotState, ControlPanelState, ShouldDisplay
+} from "../../interfaces";
+import { Dictionary } from "farmbot";
 
 export interface AutoSyncRowProps {
   dispatch: Function;
@@ -9,6 +11,15 @@ export interface AutoSyncRowProps {
 export interface AutoUpdateRowProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
+}
+
+export interface CameraSelectionProps {
+  env: Dictionary<string | undefined>;
+  botOnline: boolean;
+}
+
+export interface CameraSelectionState {
+  cameraStatus: "" | "sending" | "done" | "error";
 }
 
 export interface BoardTypeProps {
@@ -22,11 +33,13 @@ export interface PowerAndResetProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   shouldDisplay: ShouldDisplay;
+  botOnline: boolean;
 }
 
 export interface FactoryResetRowProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
+  botOnline: boolean;
 }
 
 export interface FarmbotOsRowProps {
@@ -34,6 +47,7 @@ export interface FarmbotOsRowProps {
   osReleaseNotes: string;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
+  botOnline: boolean;
 }
 
 export interface FbosDetailsProps {
@@ -45,4 +59,5 @@ export interface FbosDetailsProps {
 export interface OsUpdateButtonProps {
   bot: BotState;
   sourceFbosConfig: SourceFbosConfig;
+  botOnline: boolean;
 }
