@@ -8,7 +8,7 @@ import { Row, Col } from "../../../ui";
 import { SpacePanelToolTip } from "../space_panel_tool_tip";
 import { t } from "i18next";
 
-function LegacyStepsPerMm(props: MotorsProps) {
+export function LegacyStepsPerMm(props: MotorsProps) {
   const { dispatch, sourceFbosConfig } = props;
 
   return <Row>

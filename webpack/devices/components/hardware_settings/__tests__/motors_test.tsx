@@ -11,9 +11,10 @@ import { bot } from "../../../../__test_support__/fake_state/bot";
 import { Motors } from "../motors";
 import { render, shallow, mount } from "enzyme";
 import { McuParamName } from "farmbot";
-import { StepsPerMmSettings } from "../steps_per_mm_settings";
+import { StepsPerMmSettings, LegacyStepsPerMm } from "../steps_per_mm_settings";
 import { NumericMCUInputGroup } from "../../numeric_mcu_input_group";
 import { panelState } from "../../../../__test_support__/control_panel_state";
+import { fakeState } from "../../../../__test_support__/fake_state";
 
 describe("<Motors/>", () => {
   beforeEach(function () {
@@ -22,7 +23,7 @@ describe("<Motors/>", () => {
 
   const fakeProps = (): MotorsProps => {
     return {
-      dispatch: jest.fn(),
+      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
       firmwareVersion: undefined,
       controlPanelState: panelState(),
       sourceFbosConfig: (x) => {
@@ -90,14 +91,14 @@ describe("<StepsPerMmSettings/>", () => {
   it("renders OS settings", () => {
     const p = fakeProps();
     p.firmwareVersion = "4.0.0R";
-    const wrapper = shallow(<StepsPerMmSettings {...p} />);
+    const wrapper = shallow(<LegacyStepsPerMm {...p} />);
     const firstInputProps = wrapper.find("BotConfigInputBox")
       // tslint:disable-next-line:no-any
       .first().props() as any;
     expect(firstInputProps.setting).toBe("steps_per_mm_x");
   });
 
-  fit("renders mcu settings", () => {
+  it("renders mcu settings", () => {
     const p = fakeProps();
     p.firmwareVersion = "5.0.5R";
     const wrapper = shallow(<StepsPerMmSettings {...p} />);
