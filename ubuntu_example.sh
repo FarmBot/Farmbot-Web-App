@@ -50,8 +50,9 @@ cp config/database.example.yml config/database.yml
 # Open `config/application.yml` in a text editor and change all the values.
 #
 # == Nothing will work if you skip this step!!! ==
-
-mv config/application.example.yml config/application.yml
+# Don't know which editor to use?
+# Use micro! `snap install micro --classic`
+cp config/application.example.yml config/application.yml
 # READ THE FILE AND CHANGE THE VALUES ^
 sudo -u postgres psql
 # Run this:
