@@ -3960,10 +3960,6 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-jsrsasign@^8.0.6:
-  version "8.0.6"
-  resolved "https://registry.yarnpkg.com/jsrsasign/-/jsrsasign-8.0.6.tgz#4586f00823e302e599a244a47be20c61aadd0fcf"
-
 killable@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/killable/-/killable-1.0.0.tgz#da8b84bd47de5395878f95d64d02f2449fe05e6b"

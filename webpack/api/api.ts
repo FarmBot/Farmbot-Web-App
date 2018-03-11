@@ -134,7 +134,4 @@ export class API {
   get farmwareInstallationPath() {
     return `${this.baseUrl}/api/farmware_installations`;
   }
-  get publicKeyPath() {
-    return `${this.baseUrl}/api/public_key`;
-  }
 }

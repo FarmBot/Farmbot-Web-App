@@ -89,7 +89,6 @@ module FarmBot
           "'unsafe-eval'",
           "'unsafe-inline'",
           "cdnjs.cloudflare.com",
-          "kjur.github.io",
           "chrome-extension:",
           "localhost:3808",
           WEBPACK_URL,

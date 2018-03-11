@@ -1,5 +1,4 @@
 /// <reference path="react-redux.d.ts" />
-/// <reference path="jsrassign.d.ts" />
 
 /** This contains all of the global ENV vars passed from server => client.
  * Previously was `process.env.XYZ`. */
