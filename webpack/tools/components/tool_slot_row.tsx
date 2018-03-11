@@ -45,7 +45,8 @@ export function ToolSlotRow(p: ToolSlotRowProps) {
     {
       axes
         .map(axis => ({ axis, dispatch, slot, value: (slot.body[axis] || 0) }))
-        .map((props) => <ToolBayNumberCol {...props} />)
+        .map((props) =>
+          <ToolBayNumberCol key={slot.uuid + props.axis} {...props} />)
     }
     <Col xs={4}>
       <FBSelect

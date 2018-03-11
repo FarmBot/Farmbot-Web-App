@@ -78,8 +78,7 @@ export class HardwareSettings extends
         <MustBeOnline
           networkState={this.props.botToMqttStatus}
           syncStatus={sync_status}
-          lockOpen={process.env.NODE_ENV !== "production" ||
-            (firmwareConfig && firmwareConfig.api_migrated)}>
+          lockOpen={process.env.NODE_ENV !== "production" || !!firmwareConfig}>
           <div className="label-headings">
             <SpacePanelHeader />
           </div>
@@ -94,7 +93,8 @@ export class HardwareSettings extends
             firmwareVersion={firmwareVersion}
             controlPanelState={controlPanelState}
             sourceFbosConfig={sourceFbosConfig}
-            sourceFwConfig={sourceFwConfig} />
+            sourceFwConfig={sourceFwConfig}
+            isValidFwConfig={!!firmwareConfig} />
           <EncodersAndEndStops
             dispatch={dispatch}
             controlPanelState={controlPanelState}

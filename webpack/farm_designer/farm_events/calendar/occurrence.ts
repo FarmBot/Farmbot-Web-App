@@ -23,7 +23,7 @@ export function occurrence(
     return normalHeading;
   };
   return {
-    mmddyy: m.format(Calendar.DATE_FORMAT),
+    mmddyy: m.utcOffset(utcOffset).format(Calendar.DATE_FORMAT),
     sortKey: m.unix(),
     timeStr: m.clone().utcOffset(utcOffset).format("hh:mma"),
     heading: heading(),

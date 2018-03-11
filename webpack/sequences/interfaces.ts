@@ -29,8 +29,6 @@ export interface Props {
   auth: AuthState | undefined;
   resources: ResourceIndex;
   syncStatus: SyncStatus;
-  consistent: boolean;
-  autoSyncEnabled: boolean;
   hardwareFlags: HardwareFlags;
   farmwareInfo: FarmwareInfo;
   shouldDisplay: ShouldDisplay;
@@ -41,8 +39,6 @@ export interface SequenceEditorMiddleProps {
   sequence: TaggedSequence | undefined;
   resources: ResourceIndex;
   syncStatus: SyncStatus;
-  consistent: boolean;
-  autoSyncEnabled: boolean;
   hardwareFlags: HardwareFlags;
   farmwareInfo: FarmwareInfo;
   shouldDisplay: ShouldDisplay;
@@ -51,8 +47,6 @@ export interface SequenceEditorMiddleProps {
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
   sequence: TaggedSequence;
   syncStatus: SyncStatus;
-  consistent: boolean;
-  autoSyncEnabled: boolean;
 }
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;

@@ -10,7 +10,7 @@ import { t } from "i18next";
 import { Feature } from "../../interfaces";
 
 export function PowerAndReset(props: PowerAndResetProps) {
-  const { dispatch, sourceFbosConfig, shouldDisplay } = props;
+  const { dispatch, sourceFbosConfig, shouldDisplay, botOnline } = props;
   const { power_and_reset } = props.controlPanelState;
   return <section>
     <div style={{ fontSize: "1px" }}>
@@ -21,12 +21,13 @@ export function PowerAndReset(props: PowerAndResetProps) {
         dispatch={dispatch} />
     </div>
     <Collapse isOpen={!!power_and_reset}>
-      <RestartRow />
-      <ShutdownRow />
+      <RestartRow botOnline={botOnline} />
+      <ShutdownRow botOnline={botOnline} />
       <FactoryResetRow
         dispatch={dispatch}
-        sourceFbosConfig={sourceFbosConfig} />
-      {shouldDisplay(Feature.change_ownership) &&
+        sourceFbosConfig={sourceFbosConfig}
+        botOnline={botOnline} />
+      {shouldDisplay(Feature.change_ownership) && botOnline &&
         <Popover position={Position.BOTTOM_LEFT}>
           <p className={"release-notes-button"}>
             {t("Change Ownership")}&nbsp;

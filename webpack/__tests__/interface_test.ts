@@ -8,6 +8,7 @@ import "../config/interfaces";
 import "../connectivity/interfaces";
 import "../controls/interfaces";
 import "../controls/peripherals/interfaces";
+import "../controls/sensors/interfaces";
 import "../controls/webcam/interfaces";
 import "../devices/components/interfaces";
 import "../devices/components/fbos_settings/interfaces";

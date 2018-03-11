@@ -1,5 +1,4 @@
-import axios from "axios";
-import { HttpData } from "../util";
+import axios, { AxiosResponse } from "axios";
 import { Dictionary } from "farmbot";
 import { isObject } from "lodash";
 
@@ -70,7 +69,7 @@ function HTTPIconFetch(slug: string) {
     return promiseCache[url];
   } else {
     promiseCache[url] = axios
-      .get(url)
+      .get<OFCropResponse>(url)
       .then(cacheTheIcon(slug), cacheTheIcon(slug));
     return promiseCache[url];
   }
@@ -84,7 +83,7 @@ export function cachedCrop(slug: string): Promise<OFIcon> {
 }
 
 const cacheTheIcon = (slug: string) =>
-  (resp: HttpData<OFCropResponse>): OFIcon => {
+  (resp: AxiosResponse<OFCropResponse>): OFIcon => {
     if (resp
       && resp.data
       && resp.data.data

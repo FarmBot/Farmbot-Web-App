@@ -65,6 +65,21 @@ describe("<BoardType/>", () => {
     expect(wrapper.text()).toContain("None");
   });
 
+  it("Stubbed", () => {
+    const p = fakeProps();
+    p.firmwareVersion = "STUBFW";
+    const wrapper = mount(<BoardType {...p} />);
+    expect(wrapper.text()).toContain("None");
+  });
+
+  it("Disconnected with valid FirmwareConfig", () => {
+    const p = fakeProps();
+    p.firmwareVersion = "Arduino Disconnected!";
+    p.sourceFbosConfig = () => ({ value: "farmduino", consistent: false });
+    const wrapper = mount(<BoardType {...p} />);
+    expect(wrapper.text()).toContain("Farmduino");
+  });
+
   it("calls updateConfig", () => {
     const p = fakeProps();
     p.firmwareVersion = "Arduino Disconnected!";

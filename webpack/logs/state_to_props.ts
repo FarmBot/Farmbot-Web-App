@@ -6,12 +6,11 @@ import {
   sourceFbosConfigValue
 } from "../devices/components/source_config_value";
 import { getFbosConfig } from "../resources/selectors_by_kind";
+import { validFbosConfig } from "../util";
 
 export function mapStateToProps(props: Everything): LogsProps {
   const { hardware } = props.bot;
-  const conf = getFbosConfig(props.resources.index);
-  const fbosConfig = (conf && conf.body && conf.body.api_migrated)
-    ? conf.body : undefined;
+  const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
   return {
     dispatch: props.dispatch,
     sourceFbosConfig: sourceFbosConfigValue(fbosConfig, hardware.configuration),

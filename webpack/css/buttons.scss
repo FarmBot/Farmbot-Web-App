@@ -13,6 +13,7 @@
   &.disabled,
   &:disabled {
     background: $gray !important;
+    color: $off_white !important;
     box-shadow: 0 2px 0px 0px lighten($gray, 5%) !important;
     pointer-events: none !important;
     cursor: not-allowed !important;

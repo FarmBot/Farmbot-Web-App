@@ -70,8 +70,6 @@ export function mapStateToProps(props: Everything): Props {
       .hardware
       .informational_settings
       .sync_status || "unknown"),
-    consistent: props.bot.consistent,
-    autoSyncEnabled: !!props.bot.hardware.configuration.auto_sync,
     hardwareFlags: hardwareFlags(),
     farmwareInfo: {
       farmwareNames,

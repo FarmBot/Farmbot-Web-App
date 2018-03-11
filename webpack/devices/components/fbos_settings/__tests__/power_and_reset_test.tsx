@@ -21,7 +21,8 @@ describe("<PowerAndReset/>", () => {
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
       },
-      shouldDisplay: jest.fn()
+      shouldDisplay: jest.fn(),
+      botOnline: true,
     };
   };
 

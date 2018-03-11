@@ -4,7 +4,7 @@ import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
 import { Thunk } from "../../redux/interfaces";
 import { API } from "../../api";
-import { Progress, ProgressCallback, HttpData } from "../../util";
+import { Progress, ProgressCallback } from "../../util";
 import { GenericPointer } from "../../interfaces";
 import { getDevice } from "../../device";
 import { WDENVKey } from "./remote_env/interfaces";
@@ -27,7 +27,7 @@ export function deletePoints(
     const URL = API.current.pointSearchPath;
     const QUERY = { meta: { created_by: createdBy } };
     try {
-      const resp: HttpData<GenericPointer[]> = await axios.post(URL, QUERY);
+      const resp = await axios.post<GenericPointer[]>(URL, QUERY);
       const ids = resp.data.map(x => x.id);
       // If you delete too many points, you will violate the URL length
       // limitation of 2,083. Chunking helps fix that.

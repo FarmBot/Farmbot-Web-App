@@ -26,13 +26,14 @@ describe("<OsUpdateButton/>", () => {
       bot,
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
-      }
+      },
+      botOnline: true,
     };
   };
 
   it("renders buttons: not connected", () => {
     bot.currentOSVersion = undefined;
-    const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     expect(buttons.find("button").length).toBe(1);
     const autoUpdate = buttons.find("button").first();
     expect(autoUpdate.hasClass("yellow")).toBeTruthy();
@@ -41,7 +42,7 @@ describe("<OsUpdateButton/>", () => {
   });
   it("renders buttons: not connected to bot", () => {
     bot.hardware.informational_settings.controller_version = undefined;
-    const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     expect(buttons.find("button").length).toBe(1);
     const autoUpdate = buttons.find("button").first();
     expect(autoUpdate.hasClass("yellow")).toBeTruthy();
@@ -50,7 +51,7 @@ describe("<OsUpdateButton/>", () => {
   });
   it("renders buttons: no beta releases", () => {
     bot.hardware.configuration.beta_opt_in = true;
-    const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     expect(buttons.find("button").length).toBe(1);
     const autoUpdate = buttons.find("button").first();
     expect(autoUpdate.hasClass("yellow")).toBeTruthy();
@@ -59,21 +60,21 @@ describe("<OsUpdateButton/>", () => {
   });
   it("up to date", () => {
     bot.hardware.informational_settings.controller_version = "3.1.6";
-    const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UP TO DATE");
     expect(osUpdateButton.props().title).toBe("3.1.6");
   });
   it("up to date: newer", () => {
     bot.hardware.informational_settings.controller_version = "5.0.0";
-    const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UP TO DATE");
     expect(osUpdateButton.props().title).toBe("3.1.6");
   });
   it("update available", () => {
     bot.hardware.informational_settings.controller_version = "3.1.5";
-    const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UPDATE");
     expect(osUpdateButton.props().title).toBe("3.1.6");
@@ -82,7 +83,7 @@ describe("<OsUpdateButton/>", () => {
     bot.hardware.informational_settings.controller_version = "3.1.5";
     bot.hardware.configuration.beta_opt_in = true;
     bot.currentBetaOSVersion = "5.0.0-beta";
-    const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UPDATE");
     expect(osUpdateButton.props().title).toBe("5.0.0-beta");
@@ -93,13 +94,13 @@ describe("<OsUpdateButton/>", () => {
     bot.hardware.configuration.beta_opt_in = true;
     bot.currentBetaOSVersion = "5.0.0-beta";
     bot.currentBetaOSCommit = "new commit";
-    const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UPDATE");
     expect(osUpdateButton.props().title).toBe("5.0.0-beta");
   });
   it("calls checkUpdates", () => {
-    const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     osUpdateButton.simulate("click");
     expect(mockDevice.checkUpdates).toHaveBeenCalledTimes(1);
@@ -110,7 +111,7 @@ describe("<OsUpdateButton/>", () => {
       bot.hardware.jobs = {
         "FBOS_OTA": { status: "working", bytes: progress, unit: "bytes" }
       };
-      const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+      const buttons = mount(<OsUpdateButton {...fakeProps()} />);
       const osUpdateButton = buttons.find("button").last();
       expect(osUpdateButton.text()).toBe(text);
     });
@@ -123,7 +124,7 @@ describe("<OsUpdateButton/>", () => {
     bot.hardware.jobs = {
       "FBOS_OTA": { status: "working", percent: 10, unit: "percent" }
     };
-    const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("10%");
   });
@@ -132,7 +133,7 @@ describe("<OsUpdateButton/>", () => {
       "FBOS_OTA": { status: "complete", percent: 100, unit: "percent" }
     };
     bot.hardware.informational_settings.controller_version = "3.1.6";
-    const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UP TO DATE");
   });
@@ -141,7 +142,7 @@ describe("<OsUpdateButton/>", () => {
       "FBOS_OTA": { status: "error", percent: 10, unit: "percent" }
     };
     bot.hardware.informational_settings.controller_version = "3.1.5";
-    const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UPDATE");
   });
@@ -149,7 +150,7 @@ describe("<OsUpdateButton/>", () => {
     bot.hardware.jobs = {
       "FBOS_OTA": { status: "working", percent: 10, unit: "percent" }
     };
-    const buttons = mount(<OsUpdateButton {...fakeProps() } />);
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     osUpdateButton.simulate("click");
     expect(mockDevice.checkUpdates).not.toHaveBeenCalled();

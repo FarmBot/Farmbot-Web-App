@@ -8,6 +8,7 @@ const BLACKLIST: ResourceName[] = [
   "User",
   "WebAppConfig",
   "FbosConfig",
+  "FirmwareConfig",
 ];
 
 export function maybeStartTracking(uuid: string) {

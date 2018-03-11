@@ -1,5 +1,4 @@
 import axios from "axios";
-import { HttpData } from "../util";
 import { FarmwareManifestEntry } from "./interfaces";
 import { Actions } from "../constants";
 
@@ -9,8 +8,8 @@ const farmwareManifestUrl =
 
 export const getFirstPartyFarmwareList = () => {
   return (dispatch: Function) => {
-    axios.get(farmwareManifestUrl)
-      .then((r: HttpData<FarmwareManifestEntry[]>) => {
+    axios.get<FarmwareManifestEntry[]>(farmwareManifestUrl)
+      .then(r => {
         const names = r.data.map((fw: FarmwareManifestEntry) => {
           return fw.name;
         });

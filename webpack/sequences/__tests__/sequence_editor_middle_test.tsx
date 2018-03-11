@@ -15,8 +15,6 @@ describe("<SequenceEditorMiddle/>", () => {
       sequence: fakeSequence(),
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
-      consistent: true,
-      autoSyncEnabled: false,
       hardwareFlags: fakeHardwareFlags(),
       farmwareInfo: {
         farmwareNames: [],

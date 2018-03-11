@@ -10,7 +10,8 @@ import { AuthState } from "../auth/interfaces";
 import {
   TaggedImage,
   TaggedPeripheral,
-  TaggedDevice
+  TaggedDevice,
+  TaggedSensor
 } from "../resources/tagged_resources";
 import { ResourceIndex } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
@@ -34,6 +35,7 @@ export interface Props {
   sourceFwConfig: SourceFwConfig;
   shouldDisplay: ShouldDisplay;
   firmwareConfig: FirmwareConfig | undefined;
+  isValidFbosConfig: boolean;
 }
 
 /** Value and consistency of the value between the bot and /api/fbos_config. */
@@ -54,6 +56,7 @@ export type ShouldDisplay = (x: Feature) => boolean;
 /** Names of features that use minimum FBOS version checking. */
 export enum Feature {
   named_pins = "named_pins",
+  sensors = "sensors",
   change_ownership = "change_ownership",
   variables = "variables",
   jest_feature = "jest_feature", // for tests
@@ -145,18 +148,11 @@ export interface FarmbotOsProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   shouldDisplay: ShouldDisplay;
+  isValidFbosConfig: boolean;
 }
 
 export interface FarmbotOsState {
   osReleaseNotes: string;
-}
-
-export interface CameraSelectionProps {
-  env: Dictionary<string | undefined>
-}
-
-export interface CameraSelectionState {
-  cameraStatus: "" | "sending" | "done" | "error";
 }
 
 export interface McuInputBoxProps {
@@ -176,6 +172,13 @@ export interface EStopButtonProps {
 export interface PeripheralsProps {
   bot: BotState;
   peripherals: TaggedPeripheral[];
+  dispatch: Function;
+  disabled: boolean | undefined;
+}
+
+export interface SensorsProps {
+  bot: BotState;
+  sensors: TaggedSensor[];
   dispatch: Function;
   disabled: boolean | undefined;
 }
