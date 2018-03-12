@@ -5,6 +5,8 @@ import { info, success } from "farmbot-toastr";
 import { getDevice } from "../../../device";
 import { transferOwnership } from "../../transfer_ownership/transfer_ownership";
 import { API } from "../../../api";
+import { NonsecureContentWarning } from "./nonsecure_content_warning";
+import { Content } from "../../../constants";
 
 interface ChangeOwnershipFormState {
   email: string;
@@ -72,6 +74,18 @@ export class ChangeOwnershipForm
             value={this.state.server}
             type="text" />
         </Col>
+      </Row>
+      <Row>
+        <NonsecureContentWarning urls={[API.current.baseUrl, this.state.server, location.protocol]}>
+          <Col xs={12}>
+            <strong>
+              {t(Content.NOT_HTTPS)}
+            </strong>
+            <p>
+              {t(Content.CONTACT_SYSADMIN)}
+            </p>
+          </Col>
+        </NonsecureContentWarning>
       </Row>
       <Row>
         <button

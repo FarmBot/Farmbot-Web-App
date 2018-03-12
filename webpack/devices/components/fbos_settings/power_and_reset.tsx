@@ -34,7 +34,8 @@ export function PowerAndReset(props: PowerAndResetProps) {
           <i className="fa fa-caret-down" />
           </p>
           <ChangeOwnershipForm />
-        </Popover>}
+        </Popover>
+      }
     </Collapse>
   </section>;
 }
