@@ -71,6 +71,7 @@ export class ChangeOwnershipForm
             allowEmpty={true}
             onCommit={e => this.setState({ server: e.currentTarget.value })}
             name="server"
+            disabled={true}
             value={this.state.server}
             type="text" />
         </Col>
