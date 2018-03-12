@@ -8,6 +8,7 @@ export interface TransferProps {
   device: Farmbot;
 }
 
+/** Pass control of your device over to another user. */
 export async function transferOwnership(input: TransferProps): Promise<void> {
   const { email, server, device } = input;
   const secret = await createTransferCert(input);
