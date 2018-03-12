@@ -151,6 +151,15 @@ describe Api::UsersController do
       expect(hmm.success?).to be true
     end
 
+    it 'prevents creating control certs for bad credentials' do
+      user1 = FactoryBot.create(:user, password: "password123")
+      body  = { email: "wrong@wrong.com", password: "password456" }.to_json
+      sign_in user1
+      post :control_certificate, body: body, format: :json
+      expect(response.status).to eq(422)
+      expect(json[:credentials]).to include("can't proceed")
+    end
+
     it 'refuses to send token to a user if they are already verified' do
       verified = User.create!(email:                 Faker::Internet.email,
                               password:              "password123",

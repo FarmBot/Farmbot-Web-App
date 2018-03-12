@@ -13,6 +13,11 @@ class User < ApplicationRecord
   # http://stackoverflow.com/a/5127684/1064917
   before_validation :set_defaults
 
+  def self.try_auth(email, password)
+    user = User.where(email: email).first
+    (user && user.valid_password?(password)) ? yield(user) : yield(nil)
+  end
+
   def set_defaults
     self.confirmation_token || self.reset_confirmation_token
   end

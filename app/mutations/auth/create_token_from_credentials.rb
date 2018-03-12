@@ -16,8 +16,10 @@ module Auth
       cipher_text = Base64.decode64(credentials)
       plain_text  = PRIVATE_KEY.private_decrypt(cipher_text)
       cred_info   = JSON.parse(plain_text).symbolize_keys!
-      @user       = User.where(email: cred_info[:email]).first
-      whoops! unless @user && @user.valid_password?(cred_info[:password])
+      User.try_auth(cred_info[:email], cred_info[:password]) do |maybe_user|
+        whoops! unless maybe_user
+        @user = maybe_user
+      end
     rescue OpenSSL::PKey::RSAError => e
       whoops!(BAD_KEY)
     end
