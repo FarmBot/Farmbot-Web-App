@@ -26,7 +26,7 @@ module Api
     end
 
     def control_certificate
-      mutate Users::GenerateControlCert.run(device: current_device)
+      mutate Users::GenerateControlCert.run(raw_json, device: current_device)
     end
 
     private

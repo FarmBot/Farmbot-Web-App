@@ -139,11 +139,16 @@ describe Api::UsersController do
 
     it 'generates a certificate to transfer device control' do
       user1 = FactoryBot.create(:user, password: "password123")
+      user2 = FactoryBot.create(:user, password: "password456")
+      body  = { email: user2.email, password: "password456" }.to_json
       sign_in user1
-      params = { email: user1.email, password: "password123" }
-      post :control_certificate, params: params, format: :json
-      expect(response.status).to be(200)
-      expect(response.body).to be("Hmm")
+      post :control_certificate, body: body, format: :json
+      expect(response.status).to eq(200)
+      credentials = response.body
+      expect(credentials).to be_kind_of(String)
+      hmm = Auth::CreateTokenFromCredentials
+        .run(credentials: credentials, fbos_version: Gem::Version.new("9.9.9"))
+      expect(hmm.success?).to be true
     end
 
     it 'refuses to send token to a user if they are already verified' do

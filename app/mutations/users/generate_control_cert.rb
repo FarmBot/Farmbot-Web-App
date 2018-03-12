@@ -8,8 +8,14 @@ module Users
     end
 
     def execute
-      puts "TODO: Implement creation of secrets file"
-      binding.pry
+      secret = {
+        email:        email,
+        password:     password,
+        requested_by: device.users.pluck(:email),
+        id:           SecureRandom.hex
+      }.to_json
+      ct       = KeyGen.current.public_encrypt(secret)
+      return Base64.encode64(ct)
     end
   end
 end
