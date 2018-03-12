@@ -13,8 +13,10 @@ import * as React from "react";
 import { ChangeOwnershipForm } from "../change_ownership_form";
 import { mount } from "enzyme";
 import { transferOwnership } from "../../../transfer_ownership/transfer_ownership";
-
+import { API } from "../../../../api";
 describe("<ChangeOwnershipForm/>", () => {
+  beforeEach(() => API.setBaseUrl("https://my.farm.bot"));
+
   it("renders", () => {
     const wrapper = mount(<ChangeOwnershipForm />);
     ["email", "password", "server"]

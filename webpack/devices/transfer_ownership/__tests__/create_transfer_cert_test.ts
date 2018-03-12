@@ -12,12 +12,10 @@ jest.mock("axios", () => {
 
 import { createTransferCert } from "../create_transfer_cert";
 import { getDevice } from "../../../device";
-import { API } from "../../../api";
 import axios from "axios";
 
 describe("createTransferCert", () => {
   it("creates a transfer cert", async () => {
-    API.setBaseUrl("http://lycos.com:1234");
     const p = {
       email: "admin@admin.com",
       password: "password123",
