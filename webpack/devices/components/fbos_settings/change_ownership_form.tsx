@@ -3,7 +3,7 @@ import { Row, Col, BlurableInput } from "../../../ui/index";
 import { t } from "i18next";
 import { info, success } from "farmbot-toastr";
 import { getDevice } from "../../../device";
-import { rpcRequest } from "farmbot";
+import { transferOwnership } from "../../transfer_ownership/transfer_ownership";
 
 interface ChangeOwnershipFormState {
   email: string;
@@ -21,16 +21,9 @@ export class ChangeOwnershipForm
 
   submitOwnershipChange = () => {
     info(t("Sending change of ownership..."), t("Sending"));
-    getDevice()
-      .send(rpcRequest([
-        { kind: "pair", args: { label: "email", value: this.state.email } },
-        { kind: "pair", args: { label: "secret", value: 0 } },
-        { kind: "pair", args: { label: "server", value: this.state.server } }
-        // tslint:disable-next-line:no-any
-      ] as any))
-      .then(() => {
-        success(t("Received change of ownership."));
-      });
+    const { email, password, server } = this.state;
+    transferOwnership({ email, password, server, device: getDevice() })
+      .then(() => success(t("Received change of ownership.")));
   }
 
   render() {
