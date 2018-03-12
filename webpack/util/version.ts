@@ -102,18 +102,17 @@ export enum MinVersionOverride {
 export function shouldDisplay(
   current: string | undefined, lookupData: MinOsFeatureLookup | undefined) {
   return function (feature: Feature): boolean {
-    return true;
-    // if (isString(current)) {
-    //   const min = (lookupData || {})[feature] || MinVersionOverride.NEVER;
-    //   switch (semverCompare(current, min)) {
-    //     case SemverResult.LEFT_IS_GREATER:
-    //     case SemverResult.EQUAL:
-    //       return true;
-    //     default:
-    //       return false;
-    //   }
-    // }
-    // return false;
+    if (isString(current)) {
+      const min = (lookupData || {})[feature] || MinVersionOverride.NEVER;
+      switch (semverCompare(current, min)) {
+        case SemverResult.LEFT_IS_GREATER:
+        case SemverResult.EQUAL:
+          return true;
+        default:
+          return false;
+      }
+    }
+    return false;
   };
 }
 

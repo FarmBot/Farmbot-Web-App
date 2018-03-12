@@ -5,9 +5,14 @@ jest.mock("../../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 
+jest.mock("../../../transfer_ownership/transfer_ownership", () => {
+  return { transferOwnership: jest.fn(() => Promise.resolve()) };
+});
+
 import * as React from "react";
 import { ChangeOwnershipForm } from "../change_ownership_form";
 import { mount } from "enzyme";
+import { transferOwnership } from "../../../transfer_ownership/transfer_ownership";
 
 describe("<ChangeOwnershipForm/>", () => {
   it("renders", () => {
@@ -19,23 +24,11 @@ describe("<ChangeOwnershipForm/>", () => {
   it("submits", () => {
     const wrapper = mount(<ChangeOwnershipForm />);
     wrapper.find("button").simulate("click");
-    expect(mockDevice.send).toHaveBeenCalledWith({
-      "kind": "rpc_request",
-      "args": { "label": expect.any(String) },
-      "body": [
-        {
-          "kind": "pair",
-          "args": { "label": "email", "value": "" }
-        },
-        {
-          "kind": "pair",
-          "args": { "label": "secret", "value": 0 }
-        },
-        {
-          "kind": "pair",
-          "args": { "label": "server", "value": "https://my.farm.bot" }
-        }
-      ]
+    expect(transferOwnership).toHaveBeenCalledWith({
+      device: mockDevice,
+      email: "",
+      password: "",
+      server: "https://my.farm.bot"
     });
   });
 });
