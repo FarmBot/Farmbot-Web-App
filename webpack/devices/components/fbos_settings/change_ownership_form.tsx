@@ -4,6 +4,7 @@ import { t } from "i18next";
 import { info, success } from "farmbot-toastr";
 import { getDevice } from "../../../device";
 import { transferOwnership } from "../../transfer_ownership/transfer_ownership";
+import { API } from "../../../api";
 
 interface ChangeOwnershipFormState {
   email: string;
@@ -13,11 +14,7 @@ interface ChangeOwnershipFormState {
 
 export class ChangeOwnershipForm
   extends React.Component<{}, ChangeOwnershipFormState> {
-  state = {
-    email: "",
-    password: "",
-    server: "https://my.farm.bot"
-  };
+  state = { email: "", password: "", server: API.current.baseUrl };
 
   submitOwnershipChange = () => {
     info(t("Sending change of ownership..."), t("Sending"));
