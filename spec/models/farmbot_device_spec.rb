@@ -23,6 +23,6 @@ describe Device do
     device.timezone = nil
     expect(device.tz_offset_hrs).to be 0
     device.timezone = "America/Chicago"
-    expect([-6, -7]).to include device.tz_offset_hrs # Remember DST!
+    expect([-5, -6, -7]).to include device.tz_offset_hrs # Remember DST!
   end
 end

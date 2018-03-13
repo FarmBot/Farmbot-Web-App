@@ -137,6 +137,29 @@ describe Api::UsersController do
       expect(response.status).to eq(422)
     end
 
+    it 'generates a certificate to transfer device control' do
+      user1 = FactoryBot.create(:user, password: "password123")
+      user2 = FactoryBot.create(:user, password: "password456")
+      body  = { email: user2.email, password: "password456" }.to_json
+      sign_in user1
+      post :control_certificate, body: body, format: :json
+      expect(response.status).to eq(200)
+      credentials = response.body
+      expect(credentials).to be_kind_of(String)
+      hmm = Auth::CreateTokenFromCredentials
+        .run(credentials: credentials, fbos_version: Gem::Version.new("9.9.9"))
+      expect(hmm.success?).to be true
+    end
+
+    it 'prevents creating control certs for bad credentials' do
+      user1 = FactoryBot.create(:user, password: "password123")
+      body  = { email: "wrong@wrong.com", password: "password456" }.to_json
+      sign_in user1
+      post :control_certificate, body: body, format: :json
+      expect(response.status).to eq(422)
+      expect(json[:credentials]).to include("can't proceed")
+    end
+
     it 'refuses to send token to a user if they are already verified' do
       verified = User.create!(email:                 Faker::Internet.email,
                               password:              "password123",
