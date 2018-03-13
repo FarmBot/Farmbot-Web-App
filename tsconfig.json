@@ -15,7 +15,6 @@
     "noUnusedLocals": true,
     "allowUnreachableCode": false,
     "strictNullChecks": true,
-    "strict": true,
     "sourceMap": true,
     "allowJs": true,
     "pretty": true,
