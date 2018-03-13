@@ -13,7 +13,7 @@ import { catchErrors } from "../util";
 
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   render() {
     const { sequence } = this.props;

@@ -37,7 +37,7 @@ describe("<Controls />", () => {
       sensors: [fakeSensor()],
       botToMqttStatus: "up",
       firmwareSettings: bot.hardware.mcu_params,
-      shouldDisplay: x => true,
+      shouldDisplay: () => true,
     };
   }
 
@@ -60,7 +60,7 @@ describe("<Controls />", () => {
 
   it("doesn't show sensors", () => {
     const p = fakeProps();
-    p.shouldDisplay = x => false;
+    p.shouldDisplay = () => false;
     const wrapper = mount(<Controls {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).not.toContain("sensors");

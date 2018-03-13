@@ -19,7 +19,7 @@ export const doToggle =
 
 @connect(mapStateToProps)
 export class FarmwarePage extends React.Component<FarmwareProps, {}> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   render() {
     return <Page className="farmware">

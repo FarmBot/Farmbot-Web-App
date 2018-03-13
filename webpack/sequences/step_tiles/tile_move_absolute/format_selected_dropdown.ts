@@ -32,7 +32,7 @@ function point(ri: ResourceIndex, ld: Point): DropDownItem {
   let label: string;
   switch (p.pointer_type) {
     case "ToolSlot":
-      const tool = p.tool_id && findToolBySlotId(ri, p.tool_id);
+      const tool = p.tool_id && findToolBySlotId(ri);
       label = dropDownName(p.pointer_type,
         tool ? ("using " + tool.body.name) : "no tool",
         { x: p.x, y: p.y, z: p.z });

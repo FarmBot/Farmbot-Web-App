@@ -63,7 +63,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
       text={`${item.label}`} />;
   }
 
-  private filter(query: string, item: DropDownItem, index: number) {
+  private filter(query: string, item: DropDownItem) {
     if (item.heading) { return true; }
     const itemHeadingId = item.headingId ? item.headingId : "";
     const itemSearchLabel = `${itemHeadingId}: ${item.label}`;

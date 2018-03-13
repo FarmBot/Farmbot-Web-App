@@ -63,7 +63,7 @@ export class FarmbotOsSettings
     dispatch(edit(account, { name: e.currentTarget.value }));
   }
 
-  updateBot = (e: React.MouseEvent<{}>) => {
+  updateBot = () => {
     const { account, dispatch } = this.props;
     dispatch(save(account.uuid));
   }

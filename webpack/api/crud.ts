@@ -193,7 +193,7 @@ export function destroy(uuid: string, force = false) {
 export function saveAll(input: TaggedResource[],
   callback: () => void = _.noop,
   errBack: (err: UnsafeError) => void = _.noop) {
-  return function (dispatch: Function, getState: GetState) {
+  return function (dispatch: Function) {
     const p = input
       .filter(x => x.specialStatus === SpecialStatus.DIRTY)
       .map(tts => tts.uuid)

@@ -7,7 +7,7 @@ import { stopIE, attachToRoot } from "../util";
 stopIE();
 
 detectLanguage().then((config) => {
-  i18next.init(config, (err, t) => {
+  i18next.init(config, () => {
     attachToRoot(FrontPage, {});
   });
 });

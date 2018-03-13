@@ -13,7 +13,7 @@ import { topLevelRoutes } from "./route_config";
 
 interface RootComponentProps { store: Store; }
 
-export const attachAppToDom: Callback = (err, t) => {
+export const attachAppToDom: Callback = () => {
   attachToRoot(RootComponent, { store: _store });
   _store.dispatch(ready());
 };

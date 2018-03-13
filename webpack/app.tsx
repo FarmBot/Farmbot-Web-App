@@ -83,7 +83,7 @@ const MUST_LOAD: ResourceName[] = [
 
 @connect(mapStateToProps)
 export class App extends React.Component<AppProps, {}> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   private get isLoaded() {
     return (MUST_LOAD.length ===

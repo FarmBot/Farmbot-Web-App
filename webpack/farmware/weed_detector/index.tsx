@@ -19,7 +19,7 @@ import { MustBeOnline } from "../../devices/must_be_online";
 @connect(mapStateToProps)
 export class WeedDetector
   extends React.Component<FarmwareProps, Partial<DetectorState>> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   constructor(props: FarmwareProps) {
     super(props);

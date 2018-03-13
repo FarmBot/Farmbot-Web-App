@@ -20,7 +20,7 @@ import * as _ from "lodash";
 
 /** FINDS: all tagged resources with particular ID */
 export const findAllById =
-  <T extends TaggedResource>(i: ResourceIndex, ids: number[], k: T["kind"]) => {
+  <T extends TaggedResource>(i: ResourceIndex, _ids: number[], k: T["kind"]) => {
     const output: TaggedResource[] = [];
     findAll<T>(i, k).map(x => x.kind === k ? output.push(x) : "");
     return output;
@@ -90,8 +90,11 @@ export let findSlotByToolId = (index: ResourceIndex, tool_id: number) => {
 };
 
 /** I dislike this method. */
-export function findToolBySlotId(input: ResourceIndex, tool_slot_id: number):
+export function findToolBySlotId(input: ResourceIndex):
   TaggedTool | undefined {
+  if (JSON.parse("true")) {
+    throw new Error("This method does not actually find tools by slot id...");
+  }
   const wow = input
     .byKind
     .Point

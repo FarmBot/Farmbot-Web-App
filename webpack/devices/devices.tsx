@@ -18,7 +18,7 @@ import { catchErrors } from "../util";
 @connect(mapStateToProps)
 export class Devices extends React.Component<Props, {}> {
   state = { online: navigator.onLine };
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   /** A record of all the things we know about connectivity right now. */
   get flags(): Record<DiagnosisName, StatusRowProps> {
@@ -46,7 +46,7 @@ export class Devices extends React.Component<Props, {}> {
   }
 
   refresh = () => {
-    this.props.dispatch(resetConnectionInfo(this.props.deviceAccount));
+    this.props.dispatch(resetConnectionInfo());
   };
 
   render() {

@@ -2,7 +2,7 @@ import * as I18n from "i18next";
 
 export const MISSING_DIV = "Add a div with id `root` to the page first.";
 
-export const onInit: I18n.Callback = async (err, t) => {
+export const onInit: I18n.Callback = async () => {
   const React = await import("react");
   const { render } = await import("react-dom");
   const { PasswordReset } = await import("./password_reset");

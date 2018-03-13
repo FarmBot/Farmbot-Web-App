@@ -11,7 +11,7 @@ export function generateUrl(langCode: string) {
 export function getUserLang(langCode = "en_us") {
   return axios.get(generateUrl(langCode))
     .then(() => { return langCode.slice(0, 2); })
-    .catch((error) => { return "en"; });
+    .catch(() => { return "en"; });
 }
 
 export function generateI18nConfig(lang: string): InitOptions {

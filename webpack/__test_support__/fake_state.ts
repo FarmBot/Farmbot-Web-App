@@ -9,7 +9,7 @@ import { draggable } from "./fake_state/draggable";
 import { resources } from "./fake_state/resources";
 
 /** Factory function for empty state object. */
-export function fakeState(dispatcher: Function = noop): Everything {
+export function fakeState(_: Function = noop): Everything {
   return {
     dispatch: jest.fn(),
     router: { push: jest.fn() },

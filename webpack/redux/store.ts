@@ -16,7 +16,7 @@ function prod(): Store {
   return createStore(rootReducer, ({} as any), getMiddleware("production"));
 }
 
-export function configureStore(options = {}) {
+export function configureStore() {
   const ENV = process.env.NODE_ENV || "development";
   const store2: Store = (ENV === "production" ? prod() : dev());
   // Make store global in case I need to probe it.

@@ -46,9 +46,7 @@ import {
 import { fakeState } from "../../__test_support__/fake_state";
 import { changeStepSize, resetNetwork, resetConnectionInfo } from "../actions";
 import { Actions } from "../../constants";
-import {
-  fakeDevice, buildResourceIndex
-} from "../../__test_support__/resource_index_builder";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { API } from "../../api/index";
 import axios from "axios";
 import { SpecialStatus } from "../../resources/tagged_resources";
@@ -330,9 +328,8 @@ describe("resetNetwork()", () => {
 describe("resetConnectionInfo()", () => {
   it("dispatches the right actions", () => {
     const mock1 = jest.fn();
-    const d = fakeDevice();
     API.setBaseUrl("http://localhost:300");
-    resetConnectionInfo(d)(mock1, jest.fn());
+    resetConnectionInfo()(mock1);
     expect(mock1).toHaveBeenCalledWith(resetNetwork());
     expect(mock1).toHaveBeenCalledTimes(1);
     expect(mockDevice.readStatus).toHaveBeenCalled();
@@ -347,7 +344,7 @@ describe("fetchReleases()", () => {
   it("fetches latest OS release version", async () => {
     mockGetRelease = Promise.resolve({ data: { tag_name: "v1.0.0" } });
     const dispatch = jest.fn();
-    await actions.fetchReleases("url")(dispatch, jest.fn());
+    await actions.fetchReleases("url")(dispatch);
     expect(axios.get).toHaveBeenCalledWith("url");
     expect(mockError).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
@@ -361,7 +358,7 @@ describe("fetchReleases()", () => {
       data: { tag_name: "v1.0.0-beta", target_commitish: "commit" }
     });
     const dispatch = jest.fn();
-    await actions.fetchReleases("url", { beta: true })(dispatch, jest.fn());
+    await actions.fetchReleases("url", { beta: true })(dispatch);
     expect(axios.get).toHaveBeenCalledWith("url");
     expect(mockError).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
@@ -373,7 +370,7 @@ describe("fetchReleases()", () => {
   it("fails to fetches latest OS release version", async () => {
     mockGetRelease = Promise.reject("error");
     const dispatch = jest.fn();
-    await actions.fetchReleases("url")(dispatch, jest.fn());
+    await actions.fetchReleases("url")(dispatch);
     await expect(axios.get).toHaveBeenCalledWith("url");
     expect(mockError).toHaveBeenCalledWith(
       "Could not download FarmBot OS update information.");
@@ -386,7 +383,7 @@ describe("fetchReleases()", () => {
   it("fails to fetches latest beta OS release version", async () => {
     mockGetRelease = Promise.reject("error");
     const dispatch = jest.fn();
-    await actions.fetchReleases("url", { beta: true })(dispatch, jest.fn());
+    await actions.fetchReleases("url", { beta: true })(dispatch);
     await expect(axios.get).toHaveBeenCalledWith("url");
     expect(mockError).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
@@ -403,7 +400,7 @@ describe("fetchMinOsFeatureData()", () => {
   it("fetches min OS feature data: empty", async () => {
     mockGetRelease = Promise.resolve({ data: {} });
     const dispatch = jest.fn();
-    await actions.fetchMinOsFeatureData("url")(dispatch, jest.fn());
+    await actions.fetchMinOsFeatureData("url")(dispatch);
     expect(axios.get).toHaveBeenCalledWith("url");
     expect(dispatch).toHaveBeenCalledWith({
       payload: {},
@@ -416,7 +413,7 @@ describe("fetchMinOsFeatureData()", () => {
       data: { "a_feature": "1.0.0", "b_feature": "2.0.0" }
     });
     const dispatch = jest.fn();
-    await actions.fetchMinOsFeatureData("url")(dispatch, jest.fn());
+    await actions.fetchMinOsFeatureData("url")(dispatch);
     expect(axios.get).toHaveBeenCalledWith("url");
     expect(dispatch).toHaveBeenCalledWith({
       payload: { a_feature: "1.0.0", b_feature: "2.0.0" },
@@ -428,7 +425,7 @@ describe("fetchMinOsFeatureData()", () => {
     mockGetRelease = Promise.resolve({ data: "bad" });
     const dispatch = jest.fn();
     const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
-    await actions.fetchMinOsFeatureData("url")(dispatch, jest.fn());
+    await actions.fetchMinOsFeatureData("url")(dispatch);
     expect(axios.get).toHaveBeenCalledWith("url");
     expect(dispatch).not.toHaveBeenCalled();
     expect(mockConsole).toHaveBeenCalledWith(
@@ -439,7 +436,7 @@ describe("fetchMinOsFeatureData()", () => {
     mockGetRelease = Promise.resolve({ data: { a: "0", b: 0 } });
     const dispatch = jest.fn();
     const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
-    await actions.fetchMinOsFeatureData("url")(dispatch, jest.fn());
+    await actions.fetchMinOsFeatureData("url")(dispatch);
     expect(axios.get).toHaveBeenCalledWith("url");
     expect(dispatch).not.toHaveBeenCalled();
     expect(mockConsole).toHaveBeenCalledWith(
@@ -449,7 +446,7 @@ describe("fetchMinOsFeatureData()", () => {
   it("fails to fetch min OS feature data", async () => {
     mockGetRelease = Promise.reject("error");
     const dispatch = jest.fn();
-    await actions.fetchMinOsFeatureData("url")(dispatch, jest.fn());
+    await actions.fetchMinOsFeatureData("url")(dispatch);
     await expect(axios.get).toHaveBeenCalledWith("url");
     expect(mockError).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({

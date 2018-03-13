@@ -14,7 +14,7 @@ import { Feature } from "../devices/interfaces";
 
 @connect(mapStateToProps)
 export class Controls extends React.Component<Props, {}> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
   render() {
     const arduinoBusy = !!this
       .props

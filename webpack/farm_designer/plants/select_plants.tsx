@@ -42,7 +42,7 @@ interface SelectPlantsState {
 @connect(mapStateToProps)
 export class SelectPlants
   extends React.Component<SelectPlantsProps, SelectPlantsState> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   componentDidMount() {
     const { dispatch, selected, currentIcon } = this.props;
