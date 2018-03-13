@@ -89,34 +89,6 @@ export let findSlotByToolId = (index: ResourceIndex, tool_id: number) => {
   }
 };
 
-/** I dislike this method. */
-export function findToolBySlotId(input: ResourceIndex):
-  TaggedTool | undefined {
-  if (JSON.parse("true")) {
-    throw new Error("This method does not actually find tools by slot id...");
-  }
-  const wow = input
-    .byKind
-    .Point
-    .map(x => input.references[x])
-    .map((x) => {
-      if (x
-        && (x.kind === "Point")
-        && x.body.pointer_type === "ToolSlot"
-        && x.body.tool_id) {
-        return maybeFindToolById(input, x.body.tool_id);
-      } else {
-        return undefined;
-      }
-    })
-    .filter(x => x)[0];
-  if (wow && wow.kind === "Tool") {
-    return wow;
-  } else {
-    return undefined;
-  }
-}
-
 /** Unlike other findById methods, this one allows undefined (missed) values */
 export function maybeFindPlantById(index: ResourceIndex, id: number) {
   const uuid = index.byKindAndId[joinKindAndId("Point", id)];
