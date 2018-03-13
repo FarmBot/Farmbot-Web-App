@@ -130,7 +130,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
       const {
         stopAtHome, stopAtMax, negativeOnly, axisLength
       } = this.props.hardwareFlags;
-      ["x", "y", "z"].map((axis: Xyz) => {
+      const axes: Xyz[] = ["x", "y", "z"];
+      axes.map((axis: Xyz) => {
         const coord = parseFloat(this.getAxisValue(axis));
         const offset = parseFloat(this.getOffsetValue(axis));
         const sum = coord + offset;
