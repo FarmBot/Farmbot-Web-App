@@ -1,21 +1,3 @@
-# Demonstrates the problem on all the bad sequence I found.
-def try_stuff(id)
-  # Find
-  s = Sequence.find(id)
-  # Display it unserialized
-  puts "Locals stored in DB: #{s.args["locals"]}"
-  # Create serialized version
-  serialized = CeleryScript::FetchCelery.run!(sequence: s)
-  # Display serialized version
-  puts "But serialized, the value is #{serialized[:args][:locals] || "nil"}"
-  # Try to convert it
-  converted = CeleryScript::StoreCelery.run!(sequence: s)
-  # Display locals
-  puts "converted, but unserialized version is #{converted.args[:locals]}"
-  # Serialized, converted, real deal.
-  puts "After serialization it's #{CeleryScript::FetchCelery.run!(sequence: converted)[:args][:locals]}"
-end
-
 def find_next_seq
   Sequence.where(migrated_nodes: false).order("updated_at").last
 end
@@ -34,6 +16,7 @@ until next_seq == nil
   next_seq = find_next_seq
   rescue => e
     puts "ERROR MIGRATING SEQUENCE #{next_seq.id}, #{next_seq.name.inspect}. #{e.try(:message)}"
+    exit
   end
 end
 
