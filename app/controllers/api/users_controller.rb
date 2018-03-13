@@ -25,6 +25,10 @@ module Api
         .run(user: User.find_by!(email: params[:email]))
     end
 
+    def control_certificate
+      mutate Users::GenerateControlCert.run(raw_json, device: current_device)
+    end
+
     private
 
     def user_params

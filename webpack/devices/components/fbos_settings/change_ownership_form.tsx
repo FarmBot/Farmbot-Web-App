@@ -3,7 +3,10 @@ import { Row, Col, BlurableInput } from "../../../ui/index";
 import { t } from "i18next";
 import { info, success } from "farmbot-toastr";
 import { getDevice } from "../../../device";
-import { rpcRequest } from "farmbot";
+import { transferOwnership } from "../../transfer_ownership/transfer_ownership";
+import { API } from "../../../api";
+import { NonsecureContentWarning } from "./nonsecure_content_warning";
+import { Content } from "../../../constants";
 
 interface ChangeOwnershipFormState {
   email: string;
@@ -13,24 +16,13 @@ interface ChangeOwnershipFormState {
 
 export class ChangeOwnershipForm
   extends React.Component<{}, ChangeOwnershipFormState> {
-  state = {
-    email: "",
-    password: "",
-    server: "https://my.farm.bot"
-  };
+  state = { email: "", password: "", server: API.current.baseUrl };
 
   submitOwnershipChange = () => {
     info(t("Sending change of ownership..."), t("Sending"));
-    getDevice()
-      .send(rpcRequest([
-        { kind: "pair", args: { label: "email", value: this.state.email } },
-        { kind: "pair", args: { label: "secret", value: 0 } },
-        { kind: "pair", args: { label: "server", value: this.state.server } }
-        // tslint:disable-next-line:no-any
-      ] as any))
-      .then(() => {
-        success(t("Received change of ownership."));
-      });
+    const { email, password, server } = this.state;
+    transferOwnership({ email, password, server, device: getDevice() })
+      .then(() => success(t("Received change of ownership.")));
   }
 
   render() {
@@ -79,9 +71,22 @@ export class ChangeOwnershipForm
             allowEmpty={true}
             onCommit={e => this.setState({ server: e.currentTarget.value })}
             name="server"
+            disabled={true}
             value={this.state.server}
             type="text" />
         </Col>
+      </Row>
+      <Row>
+        <NonsecureContentWarning urls={[API.current.baseUrl, this.state.server, location.protocol]}>
+          <Col xs={12}>
+            <strong>
+              {t(Content.NOT_HTTPS)}
+            </strong>
+            <p>
+              {t(Content.CONTACT_SYSADMIN)}
+            </p>
+          </Col>
+        </NonsecureContentWarning>
       </Row>
       <Row>
         <button

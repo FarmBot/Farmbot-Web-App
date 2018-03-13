@@ -35,6 +35,7 @@ FarmBot::Application.routes.draw do
 
     resource :users,   only: [:create, :destroy, :show, :update,] do
       post :resend_verification, on: :member
+      post :control_certificate, on: :collection
     end
 
     # Make life easier on API users by not adding special rules for singular

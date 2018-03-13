@@ -309,6 +309,13 @@ export namespace Content {
     your password below to continue.`);
 
   // Device
+  export const NOT_HTTPS =
+    trim(`WARNING: Sending passwords via HTTP:// is not secure.`);
+
+  export const CONTACT_SYSADMIN =
+    trim(`Please contact the system(s) administrator(s) and ask them to enable
+    HTTPS://`);
+
   export const FACTORY_RESET_WARNING =
     trim(`Factory resetting your FarmBot will destroy all data on the device,
     revoking your FarmBot's abilily to connect to your web app account and your

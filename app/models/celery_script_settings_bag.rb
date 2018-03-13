@@ -18,7 +18,7 @@ module CeleryScriptSettingsBag
                              install_farmware update_farmware take_photo zero
                              install_first_party_farmware remove_farmware
                              find_home register_gpio unregister_gpio
-                             set_servo_angle)
+                             set_servo_angle change_ownership)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
   RESOURCE_NAME         = %w(images plants regimens peripherals
@@ -216,6 +216,7 @@ module CeleryScriptSettingsBag
       .node(:variable_declaration,  [:label, :data_value], [])
       .node(:parameter_declaration, [:label, :data_type], [])
       .node(:set_servo_angle,       [:pin_number, :pin_value], [])
+      .node(:change_ownership,      [], [:pair])
       .node(:install_first_party_farmware, [])
 
   ANY_ARG_NAME  = Corpus.as_json[:args].pluck("name").map(&:to_s)

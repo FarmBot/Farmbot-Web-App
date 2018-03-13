@@ -56,6 +56,7 @@ export class API {
   static setBaseUrl(base: string) {
     current = new API(base);
   }
+
   /** The base URL can't be known until the user is logged in.
    * API.current will give URLs is the base URL is known and throw an
    * exception otherwise.
