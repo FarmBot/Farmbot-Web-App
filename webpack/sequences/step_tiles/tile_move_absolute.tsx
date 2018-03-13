@@ -23,7 +23,7 @@ import {
   findSlotByToolId,
   findPointerByTypeAndId
 } from "../../resources/selectors";
-import { defensiveClone, betterMerge } from "../../util";
+import { defensiveClone, betterMerge, bail } from "../../util";
 import { overwrite } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
 import { TileMoveAbsSelect, InputBox } from "./tile_move_absolute/index";
@@ -97,7 +97,11 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
     // Is it here?
     // LOCALS IS UNDEFINED!!
     // _that_ is the problem
-    const { body } = this.props.currentSequence.body.args.locals;
+    const { locals } = this.props.currentSequence.body.args;
+    if (!locals) {
+      return bail(JSON.stringify(this.props.currentStep));
+    }
+    const { body } = locals;
     const parent = extractParent(body);
     const maybe = ((parent && parent.args.data_value) || this.args.location);
     const l = this.args.location.kind === "identifier" ?
