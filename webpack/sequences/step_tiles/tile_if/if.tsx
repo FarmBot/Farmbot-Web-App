@@ -3,7 +3,7 @@ import * as React from "react";
 import { IfParams, LHSOptions, operatorOptions } from "./index";
 import { t } from "i18next";
 import { StepInputBox } from "../../inputs/step_input_box";
-import { defensiveClone } from "../../../util";
+import { defensiveClone, fancyDebug } from "../../../util";
 import { overwrite } from "../../../api/crud";
 import {
   Col, Row, FBSelect, DropDownItem, NULL_CHOICE
@@ -31,6 +31,7 @@ export function If_(props: IfParams) {
   const { op, lhs } = currentStep.args;
   function updateField(field: "lhs" | "op") {
     return (e: DropDownItem) => {
+      fancyDebug(e);
       const stepCopy = defensiveClone(step);
       const seqCopy = defensiveClone(sequence).body;
       const val = e.value;
