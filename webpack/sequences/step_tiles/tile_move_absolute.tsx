@@ -93,6 +93,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
   }
 
   getAxisValue = (axis: Xyz): string => {
+    debugger;
     let number: number | undefined;
     const { body } = this.props.currentSequence.body.args.locals;
     const parent = extractParent(body);
