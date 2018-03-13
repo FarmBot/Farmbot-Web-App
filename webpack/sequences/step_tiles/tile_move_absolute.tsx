@@ -93,8 +93,10 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
   }
 
   getAxisValue = (axis: Xyz): string => {
-    debugger;
     let number: number | undefined;
+    // Is it here?
+    // LOCALS IS UNDEFINED!!
+    // _that_ is the problem
     const { body } = this.props.currentSequence.body.args.locals;
     const parent = extractParent(body);
     const maybe = ((parent && parent.args.data_value) || this.args.location);
