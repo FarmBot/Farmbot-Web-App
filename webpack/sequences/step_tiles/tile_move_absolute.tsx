@@ -23,7 +23,7 @@ import {
   findSlotByToolId,
   findPointerByTypeAndId
 } from "../../resources/selectors";
-import { defensiveClone, betterMerge, bail } from "../../util";
+import { defensiveClone, betterMerge } from "../../util";
 import { overwrite } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
 import { TileMoveAbsSelect, InputBox } from "./tile_move_absolute/index";
