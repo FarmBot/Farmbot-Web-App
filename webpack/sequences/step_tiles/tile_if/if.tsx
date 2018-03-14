@@ -6,10 +6,14 @@ import { StepInputBox } from "../../inputs/step_input_box";
 import { defensiveClone, fancyDebug } from "../../../util";
 import { overwrite } from "../../../api/crud";
 import {
-  Col, Row, FBSelect, DropDownItem, NULL_CHOICE
+  Col,
+  Row,
+  FBSelect,
+  DropDownItem
 } from "../../../ui/index";
 import { ALLOWED_OPS } from "farmbot/dist";
 import { updateLhs } from "./update_lhs";
+import { displayLhs } from "./display_lhs";
 
 const IS_UNDEFINED: ALLOWED_OPS = "is_undefined";
 const label_ops: Record<ALLOWED_OPS, string> = {
@@ -25,11 +29,14 @@ export function If_(props: IfParams) {
     dispatch,
     currentStep,
     index,
-    shouldDisplay,
+    resources,
+    shouldDisplay
   } = props;
   const step = props.currentStep;
   const sequence = props.currentSequence;
-  const { op, lhs } = currentStep.args;
+  const { op } = currentStep.args;
+  const cb = props.shouldDisplay || (() => false);
+  const lhsOptions = LHSOptions(props.resources, cb);
   function updateField(field: "lhs" | "op") {
     return (e: DropDownItem) => {
       fancyDebug(e);
@@ -45,8 +52,6 @@ export function If_(props: IfParams) {
     };
   }
 
-  const lhsOptions = LHSOptions(props.resources, shouldDisplay || (() => false));
-
   return <Row>
     <Col xs={12}>
       <h4 className="top">{t("IF...")}</h4>
@@ -57,8 +62,7 @@ export function If_(props: IfParams) {
         list={lhsOptions}
         placeholder="Left hand side"
         onChange={updateLhs(props)}
-        selectedItem={lhsOptions
-          .filter(x => x.value === lhs)[0] || NULL_CHOICE} />
+        selectedItem={displayLhs({ currentStep, resources, shouldDisplay, lhsOptions })} />
     </Col>
     <Col xs={4}>
       <label>{t("Operator")}</label>

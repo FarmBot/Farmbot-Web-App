@@ -115,9 +115,15 @@ module CeleryScriptSettingsBag
         end
       end
       .arg(:lhs, ALLOWED_LHS_TYPES) do |node|
-        within(ALLOWED_LHS_STRINGS, node) do |val|
-          BAD_LHS % [val.to_s, ALLOWED_LHS_STRINGS.inspect]
-        end if node.value.is_a?(String)
+        case
+        when CeleryScript::AstNode
+          # Validate `named_location` and friends.
+        else
+          # Validate strings.
+          within(ALLOWED_LHS_STRINGS, node) do |val|
+            BAD_LHS % [val.to_s, ALLOWED_LHS_STRINGS.inspect]
+          end
+        end
       end
       .arg(:op,              [String]) do |node|
         within(ALLOWED_OPS, node) do |val|

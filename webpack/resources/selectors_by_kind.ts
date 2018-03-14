@@ -20,9 +20,10 @@ import {
   TaggedFirmwareConfig,
   TaggedToolSlotPointer,
 } from "./tagged_resources";
-import { sortResourcesById, betterCompact } from "../util";
+import { sortResourcesById, betterCompact, bail } from "../util";
 import { error } from "farmbot-toastr";
 import { assertUuid } from "./selectors";
+import { joinKindAndId } from "./reducer";
 
 const isSaved = <T extends TaggedResource>(t: T) => t.specialStatus === SpecialStatus.SAVED;
 
@@ -93,3 +94,15 @@ export const getWebAppConfig = (i: ResourceIndex): TaggedWebAppConfig | undefine
   findAll<TaggedWebAppConfig>(i, "WebAppConfig")[0];
 export const getFirmwareConfig = (i: ResourceIndex): TaggedFirmwareConfig | undefined =>
   findAll<TaggedFirmwareConfig>(i, "FirmwareConfig")[0];
+
+export const findByKindAndId =
+  <T extends TaggedResource>(i: ResourceIndex, kind: T["kind"], id: number | undefined): T => {
+    const kni = joinKindAndId(kind, id);
+    const uuid = i.byKindAndId[kni] || bail("Not found: " + kni);
+    const resource = i.references[uuid] || bail("Not found uuid: " + uuid);
+    if (resource.kind === kind) {
+      return resource as T; // Why `as T`?
+    } else {
+      return bail("Impossible! " + uuid);
+    }
+  };
