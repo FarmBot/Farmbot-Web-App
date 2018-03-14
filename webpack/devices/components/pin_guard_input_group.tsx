@@ -39,7 +39,7 @@ export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
         customText={{ textFalse: "low", textTrue: "high" }}
         toggleValue={inactiveState}
         dim={!sourceFwConfig(activeState).consistent}
-        toggleAction={() => settingToggle(activeState, sourceFwConfig)} />
+        toggleAction={() => dispatch(settingToggle(activeState, sourceFwConfig))} />
     </Col>
   </Row>;
 }
