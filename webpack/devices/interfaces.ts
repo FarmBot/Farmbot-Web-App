@@ -59,6 +59,7 @@ export enum Feature {
   sensors = "sensors",
   change_ownership = "change_ownership",
   variables = "variables",
+  api_pin_bindings = "api_pin_bindings",
   jest_feature = "jest_feature", // for tests
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
