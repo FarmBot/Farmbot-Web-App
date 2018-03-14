@@ -60,6 +60,7 @@ export enum Feature {
   change_ownership = "change_ownership",
   variables = "variables",
   api_pin_bindings = "api_pin_bindings",
+  farmduino_k14 = "farmduino_k14",
   jest_feature = "jest_feature", // for tests
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */

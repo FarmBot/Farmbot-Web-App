@@ -26,7 +26,8 @@ describe("<BoardType/>", () => {
       dispatch: jest.fn(x => x(jest.fn(), fakeState)),
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
-      }
+      },
+      shouldDisplay: x => false,
     };
   };
 
@@ -37,16 +38,16 @@ describe("<BoardType/>", () => {
     expect(wrapper.text()).toContain("Farmduino");
   });
 
+  it("Farmduino k1.4", () => {
+    const p = fakeProps();
+    p.firmwareVersion = "5.0.3.G";
+    const wrapper = mount(<BoardType {...p} />);
+    expect(wrapper.text()).toContain("1.4");
+  });
+
   it("Arduino/RAMPS", () => {
     const p = fakeProps();
     p.firmwareVersion = "5.0.3.R";
-    const wrapper = mount(<BoardType {...p} />);
-    expect(wrapper.text()).toContain("Arduino/RAMPS");
-  });
-
-  it("Other", () => {
-    const p = fakeProps();
-    p.firmwareVersion = "4.0.2";
     const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Arduino/RAMPS");
   });
@@ -61,8 +62,9 @@ describe("<BoardType/>", () => {
   it("Disconnected", () => {
     const p = fakeProps();
     p.firmwareVersion = "Arduino Disconnected!";
-    const wrapper = mount(<BoardType {...p} />);
-    expect(wrapper.text()).toContain("None");
+    expect(mount(<BoardType {...p} />).text()).toContain("None");
+    p.firmwareVersion = "disconnected";
+    expect(mount(<BoardType {...p} />).text()).toContain("None");
   });
 
   it("Stubbed", () => {
@@ -88,5 +90,22 @@ describe("<BoardType/>", () => {
       { label: "firmware_hardware", value: "farmduino" });
     expect(mockDevice.updateConfig)
       .toBeCalledWith({ firmware_hardware: "farmduino" });
+  });
+
+  it("displays standard boards", () => {
+    const wrapper = shallow(<BoardType {...fakeProps()} />);
+    expect(wrapper.find("FBSelect").props().list).toEqual([
+      { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
+      { label: "Farmduino (Genesis v1.3)", value: "farmduino" }]);
+  });
+
+  it("displays new board", () => {
+    const p = fakeProps();
+    p.shouldDisplay = x => true;
+    const wrapper = shallow(<BoardType {...p} />);
+    expect(wrapper.find("FBSelect").props().list).toEqual([
+      { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
+      { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
+      { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" }]);
   });
 });
