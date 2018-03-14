@@ -59,6 +59,12 @@ select {
       }
     }
   }
+  &.disabled {
+    button {
+      background: darken($white, 10%) !important;
+      pointer-events: none;
+    }
+  }
 }
 
 .filter-search-item-none::after {
