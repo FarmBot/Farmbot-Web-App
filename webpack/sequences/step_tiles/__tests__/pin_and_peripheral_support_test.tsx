@@ -15,7 +15,8 @@ import {
   SENSOR_HEADING,
   sensorsAsDropDowns,
   setArgsDotPinNumber,
-  pinsAsDropDowns,
+  pinsAsDropDownsReadPin,
+  pinsAsDropDownsWritePin,
   celery2DropDown,
 } from "../pin_and_peripheral_support";
 import * as _ from "lodash";
@@ -106,25 +107,49 @@ describe("Pin and Peripheral support files", () => {
     expect(isPinType("Peripheral")).toBe(true);
   });
 
-  describe("pinsAsDropDowns()", () => {
+  describe("pinsAsDropDownsWritePin()", () => {
+    it("doesn't display peripherals", () => {
+      const s = fakeSensor();
+      const p = fakePeripheral();
+      s.body.label = "not displayed";
+      p.body.label = "not displayed";
+      const ri = buildResourceIndex([s, p]);
+      const result = pinsAsDropDownsWritePin(ri.index, () => false);
+      expect(JSON.stringify(result)).not.toContain("not displayed");
+    });
+
+    it("displays peripherals", () => {
+      const s = fakeSensor();
+      const p = fakePeripheral();
+      s.body.label = "not displayed";
+      p.body.label = "displayed peripherial";
+      const ri = buildResourceIndex([s, p]);
+      const result = pinsAsDropDownsWritePin(ri.index, () => true);
+      expect(JSON.stringify(result)).toContain("displayed peripherial");
+      expect(JSON.stringify(result)).not.toContain("not displayed");
+    });
+  });
+
+  describe("pinsAsDropDownsReadPin()", () => {
     it("doesn't display peripherals and sensors", () => {
       const s = fakeSensor();
       const p = fakePeripheral();
       s.body.label = "not displayed";
       p.body.label = "not displayed";
       const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDowns(ri.index, () => false);
+      const result = pinsAsDropDownsReadPin(ri.index, () => false);
       expect(JSON.stringify(result)).not.toContain("not displayed");
     });
 
     it("displays peripherals and sensors", () => {
       const s = fakeSensor();
       const p = fakePeripheral();
-      s.body.label = "displayed";
-      p.body.label = "displayed";
+      s.body.label = "displayed sensor";
+      p.body.label = "displayed peripheral";
       const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDowns(ri.index, () => true);
-      expect(JSON.stringify(result)).toContain("displayed");
+      const result = pinsAsDropDownsReadPin(ri.index, () => true);
+      expect(JSON.stringify(result)).toContain("displayed sensor");
+      expect(JSON.stringify(result)).toContain("displayed peripheral");
     });
   });
 

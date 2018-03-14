@@ -5,6 +5,7 @@ import { Row, Col } from "../../ui/index";
 import { settingToggle } from "../actions";
 import { ToggleButton } from "../../controls/toggle_button";
 import { isUndefined } from "util";
+import { t } from "i18next";
 
 export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
 
@@ -36,10 +37,10 @@ export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
     </Col>
     <Col xs={2} className={"centered-button-div"}>
       <ToggleButton
-        customText={{ textFalse: "low", textTrue: "high" }}
+        customText={{ textFalse: t("low"), textTrue: t("high") }}
         toggleValue={inactiveState}
         dim={!sourceFwConfig(activeState).consistent}
-        toggleAction={() => settingToggle(activeState, sourceFwConfig)} />
+        toggleAction={() => dispatch(settingToggle(activeState, sourceFwConfig))} />
     </Col>
   </Row>;
 }
