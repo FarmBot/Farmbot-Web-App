@@ -129,7 +129,7 @@ export class API {
   /** /api/device_configs/:id */
   get deviceConfigPath() { return `${this.baseUrl}/api/device_configs`; }
   /** /api/pin_bindings/:id */
-  get pinBindingPath() { return `${this.baseUrl}/api/pin_bindings`; }
+  get pinBindingPath() { return `${this.baseUrl}/api/pin_bindings/`; }
   /** /api/farmware_installations/:id */
   get farmwareInstallationPath() {
     return `${this.baseUrl}/api/farmware_installations`;

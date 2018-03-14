@@ -12,7 +12,7 @@ import { Row, Col, FBSelect } from "../../ui/index";
 import {
   celery2DropDown,
   setArgsDotPinNumber,
-  pinsAsDropDowns
+  pinsAsDropDownsWritePin
 } from "./pin_and_peripheral_support";
 
 export function TileWritePin(props: StepParams) {
@@ -54,7 +54,7 @@ export function TileWritePin(props: StepParams) {
           <FBSelect
             selectedItem={celery2DropDown(pin_number, props.resources)}
             onChange={setArgsDotPinNumber(props)}
-            list={pinsAsDropDowns(props.resources, shouldDisplay || (x => false))} />
+            list={pinsAsDropDownsWritePin(props.resources, shouldDisplay || (x => false))} />
         </Col>
         <Col xs={6} md={3}>
           <label>{t("Value")}</label>

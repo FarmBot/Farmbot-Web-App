@@ -1,8 +1,8 @@
 import { Session } from "../../session";
-import { trim } from "../../util";
 import { t } from "i18next";
 import { BooleanConfigKey } from "../../config_storage/web_app_configs";
 import { BooleanSetting } from "../../session_keys";
+import { Content } from "../../constants";
 
 export interface LabsFeature {
   /** Toggle label. */
@@ -32,55 +32,47 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
   },
   {
     name: t("Confirm Sequence step deletion"),
-    description: trim(t(`Show a confirmation dialog when the sequence delete step
-      icon is pressed.`)),
+    description: t(Content.CONFIRM_STEP_DELETION),
     storageKey: BooleanSetting.confirm_step_deletion,
     value: false
   },
   {
     name: t("Hide Webcam widget"),
-    description: trim(t(`If not using a webcam, use this setting to remove the
-      widget from the Controls page.`)),
+    description: t(Content.HIDE_WEBCAM_WIDGET),
     storageKey: BooleanSetting.hide_webcam_widget,
     value: false
   },
   {
     name: t("Dynamic map size"),
-    description: trim(t(`Change the Farm Designer map size based on axis length.
-      A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
-      the HARDWARE widget.`)),
+    description: t(Content.DYNAMIC_MAP_SIZE),
     storageKey: BooleanSetting.dynamic_map,
     value: false
   },
   {
     name: t("Double default map dimensions"),
-    description: trim(t(`Double the default dimensions of the Farm Designer map
-    for a map with four times the area.`)),
+    description: t(Content.DOUBLE_MAP_DIMENSIONS),
     storageKey: BooleanSetting.map_xl,
     value: false
   },
   {
     name: t("Display plant animations"),
-    description: trim(t(`Enable plant animations in the Farm Designer.`)),
+    description: t(Content.PLANT_ANIMATIONS),
     storageKey: BooleanSetting.disable_animations,
     value: false,
     displayInvert: true
   },
   {
     name: t("Read speak logs in browser"),
-    description: trim(t(`Have the browser also read aloud log messages on the
-    "Speak" channel that are spoken by FarmBot.`)),
+    description: t(Content.BROWSER_SPEAK_LOGS),
     storageKey: BooleanSetting.enable_browser_speak,
     value: false
   },
   {
     name: t("Discard Unsaved Changes"),
-    description: trim(t(`Don't ask about saving work before
-      closing browser tab. Warning: may cause loss of data.`)),
+    description: t(Content.DISCARD_UNSAVED_CHANGES),
     storageKey: BooleanSetting.discard_unsaved,
     value: false,
-    confirmationMessage: trim(t(`Warning! When enabled, any unsaved changes
-    will be discarded when refreshing or closing the page. Are you sure?`))
+    confirmationMessage: t(Content.DISCARD_UNSAVED_CHANGES_CONFIRM)
   },
 ].map(fetchRealValue));
 

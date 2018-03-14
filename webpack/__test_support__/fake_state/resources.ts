@@ -6,7 +6,8 @@ import {
   TaggedPlantPointer, TaggedGenericPointer, TaggedPeripheral, TaggedFbosConfig,
   TaggedWebAppConfig,
   TaggedSensor,
-  TaggedFirmwareConfig
+  TaggedFirmwareConfig,
+  TaggedPinBinding
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
@@ -123,6 +124,14 @@ export function fakeWebcamFeed(): TaggedWebcamFeed {
   });
 }
 
+export function fakePinBinding(): TaggedPinBinding {
+  return fakeResource("PinBinding", {
+    id: idCounter++,
+    pin_num: 10,
+    sequence_id: 1
+  });
+}
+
 export function fakeSensor(): TaggedSensor {
   return fakeResource("Sensor", {
     id: idCounter++,
@@ -131,6 +140,7 @@ export function fakeSensor(): TaggedSensor {
     pin: 1
   });
 }
+
 export function fakePeripheral(): TaggedPeripheral {
   return fakeResource("Peripheral", {
     id: ++idCounter,

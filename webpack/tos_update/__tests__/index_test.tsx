@@ -37,14 +37,6 @@ describe("<TosUpdate/>", () => {
     globalConfig.PRIV_URL = oldPriv;
   });
 
-  it("toggles server options", () => {
-    const wow = instance();
-    wow.toggleServerOpts();
-    expect(wow.state.hideServerSettings).toBeFalsy();
-    wow.toggleServerOpts();
-    expect(wow.state.hideServerSettings).toBeTruthy();
-  });
-
   it("has a setter", () => {
     const wow = instance();
     wow.setState = jest.fn();

@@ -6,21 +6,18 @@ import { FirmwareHardware } from "farmbot";
 import { ColWidth } from "../farmbot_os_settings";
 import { updateConfig } from "../../actions";
 import { BoardTypeProps } from "./interfaces";
+import { Feature } from "../../interfaces";
 
-const FIRMWARE_CHOICES = [
-  { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
-  { label: "Farmduino (Genesis v1.3)", value: "farmduino" }
-];
+const ARDUINO = { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" };
+const FARMDUINO = { label: "Farmduino (Genesis v1.3)", value: "farmduino" };
+const FARMDUINO_K14 = {
+  label: "Farmduino (Genesis v1.4)", value: "farmduino_k14"
+};
 
 const FIRMWARE_CHOICES_DDI = {
-  [FIRMWARE_CHOICES[0].value]: {
-    label: FIRMWARE_CHOICES[0].label,
-    value: FIRMWARE_CHOICES[0].value
-  },
-  [FIRMWARE_CHOICES[1].value]: {
-    label: FIRMWARE_CHOICES[1].label,
-    value: FIRMWARE_CHOICES[1].value
-  }
+  [ARDUINO.value]: ARDUINO,
+  [FARMDUINO.value]: FARMDUINO,
+  [FARMDUINO_K14.value]: FARMDUINO_K14
 };
 
 interface BoardTypeState { boardType: string, sending: boolean }
@@ -45,6 +42,13 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
     return this.props.sourceFbosConfig("firmware_hardware").value;
   }
 
+  get firmwareChoices() {
+    const { shouldDisplay } = this.props;
+    return [ARDUINO, FARMDUINO,
+      ...(shouldDisplay(Feature.farmduino_k14) ? [FARMDUINO_K14] : [])
+    ];
+  }
+
   get boardType() {
     if (this.props.firmwareVersion) {
       const boardIdentifier = this.props.firmwareVersion.slice(-1);
@@ -53,11 +57,10 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
           return "Arduino/RAMPS";
         case "F":
           return "Farmduino";
-        case "!":
-        case "W":
-          return "unknown";
+        case "G":
+          return "Farmduino k1.4";
         default:
-          return "Present";
+          return "unknown";
       }
     } else {
       return "unknown";
@@ -67,10 +70,11 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
   get selectedBoard(): DropDownItem | undefined {
     switch (this.state.boardType) {
       case "Arduino/RAMPS":
-      case "Present":
         return FIRMWARE_CHOICES_DDI["arduino"];
       case "Farmduino":
         return FIRMWARE_CHOICES_DDI["farmduino"];
+      case "Farmduino k1.4":
+        return FIRMWARE_CHOICES_DDI["farmduino_k14"];
       case "unknown":
         // If unknown/disconnected, display API FirmwareHardware value if valid
         return (this.sending && typeof this.apiValue === "string")
@@ -84,7 +88,8 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
   sendOffConfig = (selectedItem: DropDownItem) => {
     // tslint:disable-next-line:no-any
     const isFwHardwareValue = (x?: any): x is FirmwareHardware => {
-      const values: FirmwareHardware[] = ["arduino", "farmduino"];
+      const values: FirmwareHardware[] = [
+        "arduino", "farmduino", "farmduino_k14"];
       return !!values.includes(x as FirmwareHardware);
     };
 
@@ -109,7 +114,7 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
           <FBSelect
             key={this.state.boardType}
             extraClass={this.state.sending ? "dim" : ""}
-            list={FIRMWARE_CHOICES}
+            list={this.firmwareChoices}
             selectedItem={this.selectedBoard}
             onChange={this.sendOffConfig} />
         </div>
