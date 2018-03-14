@@ -2,7 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 import { Row, Col } from "../../../ui/index";
 
-export function SpacePanelHeader(props: {}) {
+export function SpacePanelHeader(_: {}) {
   return <Row>
     <Col xs={2} xsOffset={6} className={"centered-button-div"}>
       <label>

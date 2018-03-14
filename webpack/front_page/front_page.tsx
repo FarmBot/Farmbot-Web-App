@@ -181,7 +181,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     const goBack = () => this.setState({ activePanel: "login" });
     return <ResendVerification
       onGoBack={goBack}
-      ok={(resp) => {
+      ok={() => {
         success(t("Verification email resent. Please check your email!"));
         goBack();
       }}

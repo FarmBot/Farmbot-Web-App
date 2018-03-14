@@ -25,7 +25,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
       sequence, onDrop, dispatch, hardwareFlags, farmwareInfo, shouldDisplay
     } = this.props;
     const items = (sequence.body.body || [])
-      .map((currentStep: SequenceBodyItem, index, arr) => {
+      .map((currentStep: SequenceBodyItem, index) => {
         /** HACK: React's diff algorithm (probably?) can't keep track of steps
          * via `index` alone- the content is too dynamic (copy/splice/pop/push)
          * To get around this, we add a `uuid` property to Steps that

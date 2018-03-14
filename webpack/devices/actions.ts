@@ -5,7 +5,7 @@ import { success, warning, info, error } from "farmbot-toastr";
 import { getDevice } from "../device";
 import { Log, Everything } from "../interfaces";
 import { GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig } from "./interfaces";
-import { Thunk, GetState, ReduxAction } from "../redux/interfaces";
+import { Thunk, ReduxAction } from "../redux/interfaces";
 import { McuParams, Configuration, rpcRequest } from "farmbot";
 import { Sequence } from "../sequences/interfaces";
 import { ControlPanelState } from "../devices/interfaces";
@@ -46,7 +46,7 @@ export function isLog(x: any): x is Log {
     return false;
   }
 }
-const commandErr = (noun = "Command") => (x: {}) => { };
+const commandErr = (_noun = "Command") => () => { };
 
 export const commandOK = (noun = "Command") => () => {
   const msg = noun + " request sent to device.";
@@ -99,7 +99,7 @@ export function emergencyUnlock() {
 
 export function sync(): Thunk {
   const noun = "Sync";
-  return function (dispatch, getState) {
+  return function (_dispatch, getState) {
     const IS_OK = versionOK(getState()
       .bot
       .hardware
@@ -137,13 +137,13 @@ export function execSequence(sequence: Sequence) {
   }
 }
 
-export let saveAccountChanges: Thunk = function (dispatch, getState) {
+export let saveAccountChanges: Thunk = function (_dispatch, getState) {
   return save(getDeviceAccountSettings(getState().resources.index));
 };
 
 export let fetchReleases =
   (url: string, options = { beta: false }) =>
-    (dispatch: Function, getState: Function) => {
+    (dispatch: Function) => {
       axios
         .get<GithubRelease>(url)
         .then(resp => {
@@ -185,7 +185,7 @@ function validMinOsFeatureLookup(x: MinOsFeatureLookup): boolean {
  * @param url location of data
  */
 export let fetchMinOsFeatureData = (url: string) =>
-  (dispatch: Function, getState: Function) => {
+  (dispatch: Function) => {
     axios
       .get<MinOsFeatureLookup>(url)
       .then(resp => {
@@ -209,11 +209,11 @@ export let fetchMinOsFeatureData = (url: string) =>
   };
 
 export function save(input: TaggedDevice) {
-  return function (dispatch: Function, getState: GetState) {
+  return function (dispatch: Function) {
     return axios
       .put<User>(API.current.devicePath, input.body)
       .then(resp => dispatch({ type: "SAVE_DEVICE_OK", payload: resp.data }))
-      .catch(resp => error(t("Error saving device settings.")));
+      .catch(() => error(t("Error saving device settings.")));
   };
 }
 
@@ -398,8 +398,8 @@ export function resetNetwork(): ReduxAction<{}> {
   return { type: Actions.RESET_NETWORK, payload: {} };
 }
 
-export function resetConnectionInfo(dev: TaggedDevice) {
-  return function (dispatch: Function, state: GetState) {
+export function resetConnectionInfo() {
+  return function (dispatch: Function) {
     dispatch(resetNetwork());
     pingAPI();
     getDevice().readStatus();

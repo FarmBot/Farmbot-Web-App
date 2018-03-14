@@ -2,7 +2,8 @@ import { resourceReducer, emptyState } from "../resources/reducer";
 import {
   TaggedResource, TaggedDevice, TaggedPoint,
   SpecialStatus,
-  TaggedLog
+  TaggedLog,
+  ResourceName
 } from "../resources/tagged_resources";
 import * as _ from "lodash";
 import { Actions } from "../constants";
@@ -338,7 +339,7 @@ export
     .groupBy(KIND)
     .toPairs()
     .map((x: [(TaggedResource["kind"]), TaggedResource[]]) => x)
-    .map(y => ({
+    .map((y: [ResourceName, TaggedResource[]]) => ({
       type: Actions.RESOURCE_READY,
       payload: { name: y[0], data: y[1].map(x => x.body) }
     }))

@@ -26,7 +26,7 @@ export function RegimenListItem({ regimen, dispatch }: RegimenListItemProps) {
 }
 
 function select(dispatch: Function, regimen: TaggedRegimen) {
-  return function (event: React.MouseEvent<{}>) {
+  return function () {
     if (regimen && isTaggedRegimen(regimen)) {
       dispatch(selectRegimen(regimen));
     }

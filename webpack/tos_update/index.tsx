@@ -124,7 +124,7 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
 }
 
 detectLanguage().then((config) => {
-  init(config, (err, t2) => {
+  init(config, (_, t2) => {
     const node = document.createElement("DIV");
     node.id = "root";
     document.body.appendChild(node);

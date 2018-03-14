@@ -46,7 +46,7 @@ describe("<PinBindings/>", () => {
       bot: bot,
       resources: resources,
       botToMqttStatus: "up",
-      shouldDisplay: x => false,
+      shouldDisplay: () => false,
     };
   }
 
@@ -77,7 +77,7 @@ describe("<PinBindings/>", () => {
     const s = fakeSequence();
     s.body.id = 1;
     p.resources = buildResourceIndex([fakePinBinding(), s]).index;
-    p.shouldDisplay = x => true;
+    p.shouldDisplay = () => true;
     const wrapper = mount(<PinBindings {...p} />);
     const buttons = wrapper.find("button");
     buttons.first().simulate("click");
@@ -101,7 +101,7 @@ describe("<PinBindings/>", () => {
   it("registers pin: api", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    p.shouldDisplay = x => true;
+    p.shouldDisplay = () => true;
     const wrapper = mount(<PinBindings {...p} />);
     const buttons = wrapper.find("button");
     expect(buttons.last().text()).toEqual("BIND");

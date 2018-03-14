@@ -7,7 +7,7 @@ import { UnsafeError } from "../interfaces";
 import { toastErrors } from "../toast_errors";
 
 export function deleteUser(payload: DeletionRequest): Thunk {
-  return (dispatch, getState) => {
+  return (_, getState) => {
     const state = getState().auth;
     if (state) {
       axios({

@@ -71,7 +71,7 @@ describe("LHSOptions()", () => {
     s.body.label = "not displayed";
     p.body.label = "not displayed";
     const ri = buildResourceIndex([s, p]);
-    const result = JSON.stringify(LHSOptions(ri.index, x => false));
+    const result = JSON.stringify(LHSOptions(ri.index, () => false));
     expect(result).not.toContain("not displayed");
     expect(result).toContain("X position");
     expect(result).toContain("Pin 25");
@@ -83,7 +83,7 @@ describe("LHSOptions()", () => {
     s.body.label = "displayed";
     p.body.label = "displayed";
     const ri = buildResourceIndex([s, p]);
-    const result = JSON.stringify(LHSOptions(ri.index, x => true));
+    const result = JSON.stringify(LHSOptions(ri.index, () => true));
     expect(result).toContain("displayed");
   });
 });

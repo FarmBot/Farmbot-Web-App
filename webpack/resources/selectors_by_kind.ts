@@ -18,9 +18,10 @@ import {
   TaggedPeripheral,
   TaggedWebAppConfig,
   TaggedFirmwareConfig,
+  TaggedToolSlotPointer,
   TaggedPinBinding,
 } from "./tagged_resources";
-import { sortResourcesById } from "../util";
+import { sortResourcesById, betterCompact } from "../util";
 import { error } from "farmbot-toastr";
 import { assertUuid } from "./selectors";
 
@@ -68,6 +69,15 @@ export const selectAllLogs = (i: ResourceIndex) => findAll<TaggedLog>(i, "Log");
 export const selectAllPeripherals =
   (i: ResourceIndex) => findAll<TaggedPeripheral>(i, "Peripheral");
 export const selectAllPoints = (i: ResourceIndex) => findAll<TaggedPoint>(i, "Point");
+
+export const selectAllToolSlots = (i: ResourceIndex): TaggedToolSlotPointer[] => {
+  return betterCompact(selectAllPoints(i)
+    .map((x): TaggedToolSlotPointer | undefined => {
+      const y = x.body; // Hack around TS taggedUnion issues (I think).
+      return (y.pointer_type === "ToolSlot") ? { ...x, body: y } : undefined;
+    }));
+};
+
 export const selectAllRegimens = (i: ResourceIndex) => findAll<TaggedRegimen>(i, "Regimen");
 export const selectAllSensors = (i: ResourceIndex) => findAll<TaggedSensor>(i, "Sensor");
 export const selectAllPinBindings =

@@ -124,7 +124,7 @@ export function betterParseNum(num: string | undefined,
     if (_.isNumber(maybe) && !_.isNaN(maybe)) {
       return maybe;
     }
-  } catch (_err) {
+  } catch (_) {
   }
   return fallback;
 }
@@ -175,7 +175,7 @@ export function bitArray(...values: boolean[]) {
 //   /applying-a-timeout-to-your-promises/#implementing-the-timeout
 export function withTimeout<T>(ms: number, promise: Promise<T>) {
   // Create a promise that rejects in <ms> milliseconds
-  const timeout = new Promise((resolve, reject) => {
+  const timeout = new Promise((_resolve, reject) => {
     const id = setTimeout(() => {
       clearTimeout(id);
       reject(`Timed out in  ${ms} ms.`);

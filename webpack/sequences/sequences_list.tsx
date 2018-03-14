@@ -12,7 +12,7 @@ import { ToolTips } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 
 const sequenceList = (dispatch: Function) =>
-  (ts: TaggedSequence, index: number) => {
+  (ts: TaggedSequence) => {
     const css = [
       `fb-button`,
       `block`,

@@ -21,7 +21,7 @@ export const formatLogTime = (created_at: number, timeoffset: number) =>
 
 @connect(mapStateToProps)
 export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   initialize = (name: NumberConfigKey, defaultValue: number): number => {
     const currentValue = Session.deprecatedGetNum(safeNumericSetting(name));

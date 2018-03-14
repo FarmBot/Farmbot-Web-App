@@ -19,7 +19,7 @@ import { FirmwareConfig } from "../../config_storage/firmware_configs";
 import { pickBy } from "lodash";
 
 export const FwParamExportMenu = (props: { firmwareConfig: FirmwareConfig }) => {
-  const filteredConfig = pickBy(props.firmwareConfig, (value, key) =>
+  const filteredConfig = pickBy(props.firmwareConfig, (_, key) =>
     !["id", "device_id", "api_migrated", "created_at", "updated_at",
       "param_test", "param_version"]
       .includes(key));

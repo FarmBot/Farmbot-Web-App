@@ -137,9 +137,7 @@ export function renderCeleryNode(props: StepParams) {
   }
 }
 
-const checkBranch = (branch: Execute | Nothing,
-  step: If,
-  sequence: TaggedSequence) => {
+const checkBranch = (branch: Execute | Nothing, _step: If, sequence: TaggedSequence) => {
   return (branch.kind === "execute")
     && (branch.args.sequence_id === sequence.body.id);
 };

@@ -105,11 +105,11 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     });
     return s;
   })
-  .add<void>(Actions.SETTING_UPDATE_START, (s, a) => {
+  .add<void>(Actions.SETTING_UPDATE_START, (s) => {
     s.isUpdating = true;
     return s;
   })
-  .add<void>(Actions.SETTING_UPDATE_END, (s, a) => {
+  .add<void>(Actions.SETTING_UPDATE_END, (s) => {
     s.isUpdating = false;
     return s;
   })
@@ -174,7 +174,7 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     state.hardware.informational_settings.sync_status = nextSyncStatus;
     return state;
   })
-  .add<void>(Actions.STASH_STATUS, (s, a) => {
+  .add<void>(Actions.STASH_STATUS, (s) => {
     stash(s);
     return s;
   })

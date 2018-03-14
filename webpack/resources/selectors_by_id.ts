@@ -20,7 +20,7 @@ import * as _ from "lodash";
 
 /** FINDS: all tagged resources with particular ID */
 export const findAllById =
-  <T extends TaggedResource>(i: ResourceIndex, ids: number[], k: T["kind"]) => {
+  <T extends TaggedResource>(i: ResourceIndex, _ids: number[], k: T["kind"]) => {
     const output: TaggedResource[] = [];
     findAll<T>(i, k).map(x => x.kind === k ? output.push(x) : "");
     return output;
@@ -88,31 +88,6 @@ export let findSlotByToolId = (index: ResourceIndex, tool_id: number) => {
     return undefined;
   }
 };
-
-/** I dislike this method. */
-export function findToolBySlotId(input: ResourceIndex, tool_slot_id: number):
-  TaggedTool | undefined {
-  const wow = input
-    .byKind
-    .Point
-    .map(x => input.references[x])
-    .map((x) => {
-      if (x
-        && (x.kind === "Point")
-        && x.body.pointer_type === "ToolSlot"
-        && x.body.tool_id) {
-        return maybeFindToolById(input, x.body.tool_id);
-      } else {
-        return undefined;
-      }
-    })
-    .filter(x => x)[0];
-  if (wow && wow.kind === "Tool") {
-    return wow;
-  } else {
-    return undefined;
-  }
-}
 
 /** Unlike other findById methods, this one allows undefined (missed) values */
 export function maybeFindPlantById(index: ResourceIndex, id: number) {

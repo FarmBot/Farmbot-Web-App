@@ -114,7 +114,7 @@ describe("Pin and Peripheral support files", () => {
       s.body.label = "not displayed";
       p.body.label = "not displayed";
       const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDownsWritePin(ri.index, x => false);
+      const result = pinsAsDropDownsWritePin(ri.index, () => false);
       expect(JSON.stringify(result)).not.toContain("not displayed");
     });
 
@@ -124,7 +124,7 @@ describe("Pin and Peripheral support files", () => {
       s.body.label = "not displayed";
       p.body.label = "displayed peripherial";
       const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDownsWritePin(ri.index, x => true);
+      const result = pinsAsDropDownsWritePin(ri.index, () => true);
       expect(JSON.stringify(result)).toContain("displayed peripherial");
       expect(JSON.stringify(result)).not.toContain("not displayed");
     });
@@ -137,7 +137,7 @@ describe("Pin and Peripheral support files", () => {
       s.body.label = "not displayed";
       p.body.label = "not displayed";
       const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDownsReadPin(ri.index, x => false);
+      const result = pinsAsDropDownsReadPin(ri.index, () => false);
       expect(JSON.stringify(result)).not.toContain("not displayed");
     });
 
@@ -147,7 +147,7 @@ describe("Pin and Peripheral support files", () => {
       s.body.label = "displayed sensor";
       p.body.label = "displayed peripheral";
       const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDownsReadPin(ri.index, x => true);
+      const result = pinsAsDropDownsReadPin(ri.index, () => true);
       expect(JSON.stringify(result)).toContain("displayed sensor");
       expect(JSON.stringify(result)).toContain("displayed peripheral");
     });

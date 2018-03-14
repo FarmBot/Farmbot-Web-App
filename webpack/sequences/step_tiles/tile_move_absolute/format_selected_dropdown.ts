@@ -5,7 +5,7 @@ import { dropDownName, PARENT_DDI } from "./generate_list";
 import {
   findToolById,
   findPointerByTypeAndId,
-  findToolBySlotId
+  maybeFindToolById
 } from "../../../resources/selectors";
 import { Point, Tool } from "farmbot/dist";
 
@@ -32,7 +32,7 @@ function point(ri: ResourceIndex, ld: Point): DropDownItem {
   let label: string;
   switch (p.pointer_type) {
     case "ToolSlot":
-      const tool = p.tool_id && findToolBySlotId(ri, p.tool_id);
+      const tool = maybeFindToolById(ri, p.tool_id);
       label = dropDownName(p.pointer_type,
         tool ? ("using " + tool.body.name) : "no tool",
         { x: p.x, y: p.y, z: p.z });

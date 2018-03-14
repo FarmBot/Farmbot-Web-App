@@ -75,8 +75,7 @@ export function setToken(auth: AuthState): ReduxAction<AuthState> {
 export function register(name: string,
   email: string,
   password: string,
-  confirmation: string,
-  url: string): Thunk {
+  confirmation: string): Thunk {
   return dispatch => {
     return requestRegistration(name, email, password, confirmation)
       .then(onLogin(dispatch), onRegistrationErr(dispatch));
@@ -84,7 +83,7 @@ export function register(name: string,
 }
 
 /** Handle user registration errors. */
-export function onRegistrationErr(dispatch: Function) {
+export function onRegistrationErr(_: Function) {
   return (err: UnsafeError) => toastErrors(err);
 }
 

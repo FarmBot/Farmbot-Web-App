@@ -43,7 +43,7 @@ export function mapStateToProps(props: Everything): CropInfoProps {
 
 @connect(mapStateToProps)
 export class CropInfo extends React.Component<CropInfoProps, {}> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   componentDidMount() {
     const crop = getPathArray()[5];

@@ -27,7 +27,7 @@ describe("<BoardType/>", () => {
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
       },
-      shouldDisplay: x => false,
+      shouldDisplay: () => false,
     };
   };
 
@@ -101,7 +101,7 @@ describe("<BoardType/>", () => {
 
   it("displays new board", () => {
     const p = fakeProps();
-    p.shouldDisplay = x => true;
+    p.shouldDisplay = () => true;
     const wrapper = shallow(<BoardType {...p} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },

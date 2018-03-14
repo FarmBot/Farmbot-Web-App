@@ -23,7 +23,7 @@ export let translateImageWorkspaceAndSave = (map: Translation) => {
 export function deletePoints(
   pointName: string, createdBy: string, cb?: ProgressCallback): Thunk {
   // TODO: Generalize and add to api/crud.ts
-  return async function (dispatch, getState) {
+  return async function (dispatch) {
     const URL = API.current.pointSearchPath;
     const QUERY = { meta: { created_by: createdBy } };
     try {
@@ -54,7 +54,7 @@ export function deletePoints(
           }));
           prog.finish();
         })
-        .catch(function (e) {
+        .catch(function () {
           error(t("Some {{points}} failed to delete." +
             " Are they in use by sequences?", { points: pointName }));
           prog.finish();

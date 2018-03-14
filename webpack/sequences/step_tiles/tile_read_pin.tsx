@@ -43,7 +43,7 @@ export function TileReadPin(props: StepParams) {
           <FBSelect
             selectedItem={celery2DropDown(pin_number, props.resources)}
             onChange={setArgsDotPinNumber(props)}
-            list={pinsAsDropDownsReadPin(props.resources, shouldDisplay || (x => false))} />
+            list={pinsAsDropDownsReadPin(props.resources, shouldDisplay || (() => false))} />
         </Col>
         <Col xs={6} md={3}>
           <label>{t("Data Label")}</label>

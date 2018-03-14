@@ -10,7 +10,7 @@ import { catchErrors } from "../../util";
 
 @connect(mapStateToProps)
 export class EditPlantInfo extends PlantInfoBase {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   default = (plant_info: TaggedPlantPointer) => {
     const info = formatPlantInfo(plant_info);

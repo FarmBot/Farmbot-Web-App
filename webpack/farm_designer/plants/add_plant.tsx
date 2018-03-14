@@ -26,7 +26,7 @@ export interface AddPlantProps {
 @connect(mapStateToProps)
 export class AddPlant
   extends React.Component<AddPlantProps, {}> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
   render() {
     const crop = getPathArray()[5];
     const result =

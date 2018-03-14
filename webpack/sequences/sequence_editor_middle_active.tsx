@@ -10,7 +10,6 @@ import { stepGet } from "../draggable/actions";
 import { copySequence } from "./actions";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { save, edit, destroy } from "../api/crud";
-import { GetState } from "../redux/interfaces";
 import { TestButton } from "./test_button";
 import { warning } from "farmbot-toastr";
 import { AllSteps } from "./all_steps";
@@ -21,7 +20,7 @@ export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
     (index: number, key: string) => {
       if (key.length > 0) {
-        dispatch1(function (dispatch2: Function, getState: GetState) {
+        dispatch1(function (dispatch2: Function) {
           const dataXferObj = dispatch2(stepGet(key));
           const step = dataXferObj.value;
           switch (dataXferObj.intent) {
@@ -39,8 +38,7 @@ export const onDrop =
     };
 
 const copy = function (dispatch: Function, sequence: TaggedSequence) {
-  return (e: React.SyntheticEvent<HTMLButtonElement>) =>
-    dispatch(copySequence(sequence));
+  return () => dispatch(copySequence(sequence));
 };
 
 export class SequenceEditorMiddleActive extends
