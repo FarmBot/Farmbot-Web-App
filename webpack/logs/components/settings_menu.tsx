@@ -18,17 +18,17 @@ interface LogSettingRecord {
 
 const SEQUENCE_LOG_SETTINGS: LogSettingRecord[] = [
   {
-    label: "Begin",
+    label: t("Begin"),
     setting: "sequence_init_log",
     tooltip: ToolTips.SEQUENCE_LOG_BEGIN
   },
   {
-    label: "Steps",
+    label: t("Steps"),
     setting: "sequence_body_log",
     tooltip: ToolTips.SEQUENCE_LOG_STEP
   },
   {
-    label: "Complete",
+    label: t("Complete"),
     setting: "sequence_complete_log",
     tooltip: ToolTips.SEQUENCE_LOG_END
   }
@@ -36,17 +36,17 @@ const SEQUENCE_LOG_SETTINGS: LogSettingRecord[] = [
 
 const FIRMWARE_LOG_SETTINGS: LogSettingRecord[] = [
   {
-    label: "Sent",
+    label: t("Sent"),
     setting: "firmware_output_log",
     tooltip: ToolTips.FIRMWARE_LOG_SENT
   },
   {
-    label: "Received",
+    label: t("Received"),
     setting: "firmware_input_log",
     tooltip: ToolTips.FIRMWARE_LOG_RECEIVED
   },
   {
-    label: "Debug",
+    label: t("Debug"),
     setting: "arduino_debug_messages",
     tooltip: ToolTips.FIRMWARE_DEBUG_MESSAGES
   },

@@ -23,7 +23,7 @@ export class ToolBayList extends React.Component<ToolBayListProps, {}> {
         <ToolBayHeader />
         {getToolSlots().map((slot: TaggedToolSlotPointer, index: number) => {
           const tool = getToolByToolSlotUUID(slot.uuid);
-          const name = (tool && tool.body.name) || "None";
+          const name = (tool && tool.body.name) || t("None");
           return <Row key={slot.uuid}>
             <Col xs={1}>
               <label>{index + 1}</label>

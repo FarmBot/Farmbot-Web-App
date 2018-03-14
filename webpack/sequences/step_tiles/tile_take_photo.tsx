@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui";
 import { Col, Row } from "../../ui/index";
+import { t } from "i18next";
 
 export function TileTakePhoto({
   dispatch, currentStep, index, currentSequence }: StepParams) {
@@ -20,8 +21,8 @@ export function TileTakePhoto({
       <Row>
         <Col xs={12}>
           <p>
-            Photos are viewable from the <Link to="/app/farmware">
-              farmware page</Link>.
+            {t("Photos are viewable from the")} <Link to="/app/farmware">
+              farmware {t("page")}</Link>.
                 </p>
         </Col>
       </Row>
