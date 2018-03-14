@@ -20,7 +20,8 @@ import { ShouldDisplay, Feature } from "../../devices/interfaces";
 export enum PinGroupName {
   Sensor = "Sensor",
   Peripheral = "Peripheral",
-  Pin = "Pin"
+  Pin = "Pin",
+  Position = "Position"
 }
 
 export const PERIPHERAL_HEADING: DropDownItem =

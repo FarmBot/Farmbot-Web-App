@@ -1,4 +1,7 @@
 unless Rails.env == "production"
+    PinBinding.destroy_all
+    User.destroy_all
+    Device.destroy_all
     ToolSlot.destroy_all
     Tool.destroy_all
     Point.destroy_all

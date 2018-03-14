@@ -1,7 +1,7 @@
 import { TaggedSequence } from "../../../resources/tagged_resources";
 import { If } from "farmbot";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { defensiveClone, fancyDebug } from "../../../util";
+import { defensiveClone, fancyDebug, bail } from "../../../util";
 import { DropDownItem } from "../../../ui";
 import { overwrite } from "../../../api/crud";
 import { isString } from "lodash";
@@ -17,7 +17,7 @@ interface LhsUpdateProps {
 
 export const updateLhs =
   (props: LhsUpdateProps) => {
-    const { currentStep, currentSequence, dispatch, index } = props;
+    const { currentStep, currentSequence, dispatch, index, resources } = props;
     return (e: DropDownItem) => {
       fancyDebug(e);
       const stepCopy = defensiveClone(currentStep);
@@ -27,14 +27,20 @@ export const updateLhs =
       if (isString(val)) {
         switch (e.headingId) {
           case PinGroupName.Peripheral:
-            throw new Error("Implement peripherals");
           case PinGroupName.Sensor:
-            throw new Error("Implement sensors");
-          case PinGroupName.Pin:
+            const resource = resources.references[e.value];
+            if (!resource) { return bail("NO"); }
+            stepCopy.args.lhs = {
+              kind: "named_pin",
+              args: { pin_type: resource.kind, pin_id: resource.body.id || 0 }
+            };
+            break;
+          case PinGroupName.Position: // "x", "y", "z"
+          case PinGroupName.Pin:      // "pin0", "pin2"
             stepCopy.args.lhs = val;
             break;
           default:
-            throw new Error("Unhandled heading ID: " + e.headingId);
+            throw new Error(`Unhandled LHS item: ${e.headingId} ${e.value}`);
         }
       }
       seqCopy.body[index] = stepCopy;
