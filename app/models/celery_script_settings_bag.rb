@@ -30,7 +30,7 @@ module CeleryScriptSettingsBag
   ALLOWED_DATA_TYPES    = %w(tool coordinate point)
   ALLOWED_OPS           = %w(< > is not is_undefined)
   ALLOWED_AXIS          = %w(x y z all)
-  ALLOWED_LHS_TYPES     = [String, :peripheral, :sensor, :named_pin, :pin]
+  ALLOWED_LHS_TYPES     = [String, :named_pin]
   ALLOWED_LHS_STRINGS   = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
   STEPS                 = %w(_if execute execute_script find_home move_absolute
                              move_relative read_pin send_message take_photo wait
