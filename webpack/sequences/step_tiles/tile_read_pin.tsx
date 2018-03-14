@@ -7,7 +7,7 @@ import { setPinMode, PIN_MODES, currentModeSelection } from "./tile_pin_support"
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
 import {
-  pinsAsDropDowns,
+  pinsAsDropDownsReadPin,
   celery2DropDown,
   setArgsDotPinNumber
 } from "./pin_and_peripheral_support";
@@ -43,7 +43,7 @@ export function TileReadPin(props: StepParams) {
           <FBSelect
             selectedItem={celery2DropDown(pin_number, props.resources)}
             onChange={setArgsDotPinNumber(props)}
-            list={pinsAsDropDowns(props.resources, shouldDisplay || (x => false))} />
+            list={pinsAsDropDownsReadPin(props.resources, shouldDisplay || (x => false))} />
         </Col>
         <Col xs={6} md={3}>
           <label>{t("Data Label")}</label>
