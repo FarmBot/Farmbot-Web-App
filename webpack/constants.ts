@@ -338,8 +338,7 @@ export namespace Content {
 
   export const AUTO_FACTORY_RESET =
     trim(`Automatically factory reset when the WiFi network cannot be
-    detected. Useful for typos during FarmBot OS configuration or network
-    changes.`);
+    detected. Useful for network changes.`);
 
   export const AUTO_FACTORY_RESET_PERIOD =
     trim(`Time in minutes to attempt connecting to WiFi before a factory
