@@ -9,7 +9,6 @@ jest.mock("i18next", () => {
 });
 
 import { detectLanguage } from "../../i18n";
-import { onInit } from "../on_init";
 import * as I18n from "i18next";
 
 describe("password reset index", () => {
