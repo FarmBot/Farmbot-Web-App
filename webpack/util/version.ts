@@ -103,13 +103,11 @@ export function shouldDisplay(
   current: string | undefined, lookupData: MinOsFeatureLookup | undefined) {
   return function (feature: Feature): boolean {
     /** Escape hatch for platform developers doing offline development. */
-    if (localStorage.getItem("IM_A_DEVELOPER")) {
-      return true;
-    }
-
-    if (isString(current)) {
+    const override = localStorage.getItem("IM_A_DEVELOPER");
+    const target = override || current;
+    if (isString(target)) {
       const min = (lookupData || {})[feature] || MinVersionOverride.NEVER;
-      switch (semverCompare(current, min)) {
+      switch (semverCompare(target, min)) {
         case SemverResult.LEFT_IS_GREATER:
         case SemverResult.EQUAL:
           return true;

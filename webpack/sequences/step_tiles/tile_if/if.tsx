@@ -9,6 +9,7 @@ import {
   Col, Row, FBSelect, DropDownItem, NULL_CHOICE
 } from "../../../ui/index";
 import { ALLOWED_OPS } from "farmbot/dist";
+import { updateLhs } from "./update_lhs";
 
 const IS_UNDEFINED: ALLOWED_OPS = "is_undefined";
 const label_ops: Record<ALLOWED_OPS, string> = {
@@ -36,7 +37,9 @@ export function If_(props: IfParams) {
       const seqCopy = defensiveClone(sequence).body;
       const val = e.value;
       seqCopy.body = seqCopy.body || [];
-      if (_.isString(val)) { stepCopy.args[field] = val; }
+      if (_.isString(val)) {
+        stepCopy.args[field] = val;
+      }
       seqCopy.body[index] = stepCopy;
       dispatch(overwrite(sequence, seqCopy));
     };
@@ -53,7 +56,7 @@ export function If_(props: IfParams) {
       <FBSelect
         list={lhsOptions}
         placeholder="Left hand side"
-        onChange={updateField("lhs")}
+        onChange={updateLhs(props)}
         selectedItem={lhsOptions
           .filter(x => x.value === lhs)[0] || NULL_CHOICE} />
     </Col>

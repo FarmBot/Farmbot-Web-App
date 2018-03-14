@@ -62,7 +62,7 @@ describe("Pin and Peripheral support files", () => {
       .map((x: DropDownItem) => x.headingId)
       .uniq()
       .value();
-    expect(values).toEqual([PinGroupName.pin]);
+    expect(values).toEqual([PinGroupName.Pin]);
   });
 
   it("Makes a list of Peripheral drop downs", () => {
@@ -74,7 +74,7 @@ describe("Pin and Peripheral support files", () => {
     expect(result[0]).toBe(PERIPHERAL_HEADING);
     expect(result[1]).toEqual({
       label: p.body.label,
-      headingId: PinGroupName.peripheral,
+      headingId: PinGroupName.Peripheral,
       value: expect.stringContaining("Peripheral.")
     });
   });
@@ -88,7 +88,7 @@ describe("Pin and Peripheral support files", () => {
     expect(result[0]).toBe(SENSOR_HEADING);
     expect(result[1]).toEqual({
       label: s.body.label,
-      headingId: PinGroupName.sensor,
+      headingId: PinGroupName.Sensor,
       value: expect.stringContaining("Sensor.")
     });
   });
@@ -179,7 +179,7 @@ describe("Pin and Peripheral support files", () => {
       const expected: DropDownItem = {
         label: p.body.label,
         value: p.body.id || NaN,
-        headingId: PinGroupName.peripheral
+        headingId: PinGroupName.Peripheral
       };
       expect(result).toEqual(expected);
     });
