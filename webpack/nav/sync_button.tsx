@@ -24,7 +24,7 @@ const TEXT_MAPPING: Record<SyncStatus, string> = {
   "maintenance": "MAINTENANCE DOWNTIME"
 };
 
-/** Animation during saving action */
+/** Animation during syncing action */
 const spinner = <span className="btn-spinner sync" />;
 
 export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) {
