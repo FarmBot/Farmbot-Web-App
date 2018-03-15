@@ -94,6 +94,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
 
   getAxisValue = (axis: Xyz): string => {
     let number: number | undefined;
+    const { locals } = this.props.currentSequence.body.args;
+    if (!locals) { return "-9"; }
     const { body } = this.props.currentSequence.body.args.locals;
     const parent = extractParent(body);
     const maybe = ((parent && parent.args.data_value) || this.args.location);
