@@ -24,6 +24,9 @@ const TEXT_MAPPING: Record<SyncStatus, string> = {
   "maintenance": "MAINTENANCE DOWNTIME"
 };
 
+/** Animation during saving action */
+const spinner = <span className="btn-spinner sync" />;
+
 export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) {
   if (!user) {
     return <span></span>;
@@ -32,9 +35,11 @@ export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) 
   sync_status = sync_status || "unknown";
   const color = consistent ? (COLOR_MAPPING[sync_status] || "red") : "gray";
   const text = t(TEXT_MAPPING[sync_status] || "DISCONNECTED");
+  const spinnerEl = (sync_status === "syncing") ? spinner : "";
+
   return <button
     className={`nav-sync ${color} fb-button`}
     onClick={() => dispatch(sync())}>
-    {text}
+    {text} {spinnerEl}
   </button>;
 }
