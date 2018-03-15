@@ -18,9 +18,10 @@ import { ShouldDisplay, Feature } from "../../devices/interfaces";
 
 /** `headingIds` required to group the three kinds of pins. */
 export enum PinGroupName {
-  sensor = "Sensor",
-  peripheral = "Peripheral",
-  pin = "Pin"
+  Sensor = "Sensor",
+  Peripheral = "Peripheral",
+  Pin = "Pin",
+  Position = "Position"
 }
 
 export const PERIPHERAL_HEADING: DropDownItem =
@@ -38,21 +39,21 @@ export const pinNumber2DropDown =
     (n: number) => {
       const analog = n > 53 ? ` (A${n - 54})` : "";
       const label = `${t("Pin")} ${n}${analog}`;
-      return { label, value: valueFormat(n), headingId: PinGroupName.pin };
+      return { label, value: valueFormat(n), headingId: PinGroupName.Pin };
     };
 
 const peripheral2DropDown =
   (x: TaggedPeripheral): DropDownItem => ({
     label: x.body.label,
     value: x.uuid,
-    headingId: PinGroupName.peripheral
+    headingId: PinGroupName.Peripheral
   });
 
 const sensor2DropDown =
   (x: TaggedSensor): DropDownItem => ({
     label: x.body.label,
     value: x.uuid,
-    headingId: PinGroupName.sensor
+    headingId: PinGroupName.Sensor
   });
 
 export function peripheralsAsDropDowns(input: ResourceIndex): DropDownItem[] {
@@ -87,8 +88,8 @@ export const pinsAsDropDownsReadPin =
   ];
 
 const TYPE_MAPPING: Record<AllowedPinTypes, PinGroupName> = {
-  "Peripheral": PinGroupName.peripheral,
-  "Sensor": PinGroupName.sensor
+  "Peripheral": PinGroupName.Peripheral,
+  "Sensor": PinGroupName.Sensor
 };
 
 export const isPinType =

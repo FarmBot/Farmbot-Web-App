@@ -30,7 +30,8 @@ module CeleryScriptSettingsBag
   ALLOWED_DATA_TYPES    = %w(tool coordinate point)
   ALLOWED_OPS           = %w(< > is not is_undefined)
   ALLOWED_AXIS          = %w(x y z all)
-  ALLOWED_LHS           = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
+  ALLOWED_LHS_TYPES     = [String, :named_pin]
+  ALLOWED_LHS_STRINGS   = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
   STEPS                 = %w(_if execute execute_script find_home move_absolute
                              move_relative read_pin send_message take_photo wait
                              write_pin )
@@ -113,9 +114,15 @@ module CeleryScriptSettingsBag
           node.invalidate!(BAD_SUB_SEQ % [node.value]) if missing
         end
       end
-      .arg(:lhs,             [String]) do |node|
-        within(ALLOWED_LHS, node) do |val|
-          BAD_LHS % [val.to_s, ALLOWED_LHS.inspect]
+      .arg(:lhs, ALLOWED_LHS_TYPES) do |node|
+        case node
+        when CeleryScript::AstNode
+          # Validate `named_location` and friends.
+        else
+          # Validate strings.
+          within(ALLOWED_LHS_STRINGS, node) do |val|
+            BAD_LHS % [val.to_s, ALLOWED_LHS_STRINGS.inspect]
+          end
         end
       end
       .arg(:op,              [String]) do |node|

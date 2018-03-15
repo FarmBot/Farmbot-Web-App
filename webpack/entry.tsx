@@ -4,7 +4,8 @@
  *
  * Try to keep this file light. */
 import { detectLanguage } from "./i18n";
-import { stopIE, shortRevision } from "./util";
+import { shortRevision } from "./util";
+import { stopIE } from "./util/stop_ie";
 import { init } from "i18next";
 import { attachAppToDom } from "./routes";
 

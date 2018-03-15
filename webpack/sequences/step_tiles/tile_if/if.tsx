@@ -6,9 +6,14 @@ import { StepInputBox } from "../../inputs/step_input_box";
 import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
 import {
-  Col, Row, FBSelect, DropDownItem, NULL_CHOICE
+  Col,
+  Row,
+  FBSelect,
+  DropDownItem
 } from "../../../ui/index";
 import { ALLOWED_OPS } from "farmbot/dist";
+import { updateLhs } from "./update_lhs";
+import { displayLhs } from "./display_lhs";
 
 const IS_UNDEFINED: ALLOWED_OPS = "is_undefined";
 const label_ops: Record<ALLOWED_OPS, string> = {
@@ -24,24 +29,26 @@ export function If_(props: IfParams) {
     dispatch,
     currentStep,
     index,
-    shouldDisplay,
+    resources
   } = props;
   const step = props.currentStep;
   const sequence = props.currentSequence;
-  const { op, lhs } = currentStep.args;
+  const { op } = currentStep.args;
+  const cb = props.shouldDisplay || (() => false);
+  const lhsOptions = LHSOptions(props.resources, cb);
   function updateField(field: "lhs" | "op") {
     return (e: DropDownItem) => {
       const stepCopy = defensiveClone(step);
       const seqCopy = defensiveClone(sequence).body;
       const val = e.value;
       seqCopy.body = seqCopy.body || [];
-      if (_.isString(val)) { stepCopy.args[field] = val; }
+      if (_.isString(val)) {
+        stepCopy.args[field] = val;
+      }
       seqCopy.body[index] = stepCopy;
       dispatch(overwrite(sequence, seqCopy));
     };
   }
-
-  const lhsOptions = LHSOptions(props.resources, shouldDisplay || (() => false));
 
   return <Row>
     <Col xs={12}>
@@ -52,9 +59,8 @@ export function If_(props: IfParams) {
       <FBSelect
         list={lhsOptions}
         placeholder="Left hand side"
-        onChange={updateField("lhs")}
-        selectedItem={lhsOptions
-          .filter(x => x.value === lhs)[0] || NULL_CHOICE} />
+        onChange={updateLhs(props)}
+        selectedItem={displayLhs({ currentStep, resources, lhsOptions })} />
     </Col>
     <Col xs={4}>
       <label>{t("Operator")}</label>
