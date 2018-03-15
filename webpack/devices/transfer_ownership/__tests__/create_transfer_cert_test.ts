@@ -25,7 +25,7 @@ describe("createTransferCert", () => {
     const x = await createTransferCert(p);
     expect(x).toBe("FAKE CERT");
     expect(axios.post).toHaveBeenCalled();
-    const url = "http://127.0.0.1:3000/api/users/control_certificate";
+    const url = "/api/users/control_certificate";
     const data = { "email": "admin@admin.com", "password": "password123" };
     expect(axios.post).toHaveBeenCalledWith(url, data);
   });

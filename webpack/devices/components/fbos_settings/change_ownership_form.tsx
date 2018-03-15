@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Row, Col, BlurableInput } from "../../../ui/index";
 import { t } from "i18next";
-import { info, success } from "farmbot-toastr";
+import { success, error } from "farmbot-toastr";
 import { getDevice } from "../../../device";
 import { transferOwnership } from "../../transfer_ownership/transfer_ownership";
 import { API } from "../../../api";
@@ -11,19 +11,20 @@ import { Content } from "../../../constants";
 interface ChangeOwnershipFormState {
   email: string;
   password: string;
-  server: string;
+}
+
+export function submitOwnershipChange(input: ChangeOwnershipFormState) {
+  const { email, password } = input;
+  const p = { email, password, device: getDevice() };
+  const ok = () => success(t("Received change of ownership."));
+  const no = () => error(t("Bad username or password"));
+  return transferOwnership(p).then(ok, no);
 }
 
 export class ChangeOwnershipForm
   extends React.Component<{}, ChangeOwnershipFormState> {
-  state = { email: "", password: "", server: API.current.baseUrl };
 
-  submitOwnershipChange = () => {
-    info(t("Sending change of ownership..."), t("Sending"));
-    const { email, password, server } = this.state;
-    transferOwnership({ email, password, server, device: getDevice() })
-      .then(() => success(t("Received change of ownership.")));
-  }
+  state: ChangeOwnershipFormState = { email: "", password: "" };
 
   render() {
     return <div className={"change-ownership-form"}>
@@ -69,15 +70,15 @@ export class ChangeOwnershipForm
         <Col xs={8}>
           <BlurableInput
             allowEmpty={true}
-            onCommit={e => this.setState({ server: e.currentTarget.value })}
+            onCommit={() => { }}
             name="server"
             disabled={true}
-            value={this.state.server}
+            value={API.current.baseUrl}
             type="text" />
         </Col>
       </Row>
       <Row>
-        <NonsecureContentWarning urls={[API.current.baseUrl, this.state.server, location.protocol]}>
+        <NonsecureContentWarning urls={[API.current.baseUrl, location.protocol]}>
           <Col xs={12}>
             <strong>
               {t(Content.NOT_HTTPS)}
@@ -91,7 +92,7 @@ export class ChangeOwnershipForm
       <Row>
         <button
           className={"fb-button gray"}
-          onClick={this.submitOwnershipChange}>
+          onClick={() => submitOwnershipChange(this.state)}>
           {t("submit")}
         </button>
       </Row>

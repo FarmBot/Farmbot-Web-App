@@ -29,8 +29,7 @@ describe("<ChangeOwnershipForm/>", () => {
     expect(transferOwnership).toHaveBeenCalledWith({
       device: mockDevice,
       email: "",
-      password: "",
-      server: "https://my.farm.bot"
+      password: ""
     });
   });
 });
