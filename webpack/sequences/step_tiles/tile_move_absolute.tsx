@@ -28,7 +28,7 @@ import { overwrite } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
 import { TileMoveAbsSelect, InputBox } from "./tile_move_absolute/index";
 import { ToolTips } from "../../constants";
-import { extractParent } from "../locals_list";
+// import { extractParent } from "../locals_list";
 import {
   StepWrapper,
   StepHeader,
@@ -94,12 +94,14 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
 
   getAxisValue = (axis: Xyz): string => {
     let number: number | undefined;
-    const { body } = this.props.currentSequence.body.args.locals;
-    const parent = extractParent(body);
-    const maybe = ((parent && parent.args.data_value) || this.args.location);
-    const l = this.args.location.kind === "identifier" ?
-      maybe : this.args.location;
-
+    // const { locals } = this.props.currentSequence.body.args;
+    // if (!locals) { return "-9"; }
+    // const { body } = this.props.currentSequence.body.args.locals;
+    // const parent = extractParent(body);
+    // const maybe = ((parent && parent.args.data_value) || this.args.location);
+    // const l = this.args.location.kind === "identifier" ?
+    //   maybe : this.args.location;
+    const l = this.args.location;
     switch (l.kind) {
       case "coordinate":
         number = l.args[axis];
