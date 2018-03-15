@@ -6,7 +6,7 @@ describe("handleSelect()", () => {
     const location = handleSelect(fakeResourceIndex(),
       {
         headingId: "GenericPointer",
-        label: "Map Point: Point 1 (10, 20, 30) ",
+        label: "Point 1 (10, 20, 30)",
         value: 2
       });
     expect(location).toEqual({
@@ -18,7 +18,7 @@ describe("handleSelect()", () => {
     const location = handleSelect(fakeResourceIndex(),
       {
         headingId: "Tool",
-        label: "Tool: Generic Tool",
+        label: "Generic Tool",
         value: 1
       });
     expect(location).toEqual({ kind: "tool", args: { tool_id: 1 } });
@@ -32,15 +32,15 @@ describe("handleSelect()", () => {
     });
   });
 
-  it("returns location data: ToolSlot", () => {
+  it("returns location data: identifier", () => {
     const location = handleSelect(fakeResourceIndex(),
       {
-        headingId: "ToolSlot",
-        label: "Map Point: Point 1 (10, 20, 30) ",
-        value: 3
+        headingId: "identifier",
+        label: "Parent",
+        value: "parent"
       });
     expect(location).toEqual({
-      kind: "point", args: { pointer_id: 3, pointer_type: "ToolSlot" }
+      kind: "identifier", args: { label: "parent" }
     });
   });
 });
