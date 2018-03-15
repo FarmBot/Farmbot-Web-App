@@ -1,6 +1,5 @@
 import { NULL_CHOICE, DropDownItem } from "../../../ui/index";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { ShouldDisplay } from "../../../devices/interfaces";
 import { If } from "farmbot";
 import { isString } from "util";
 import { findByKindAndId } from "../../../resources/selectors";
@@ -8,7 +7,6 @@ import { findByKindAndId } from "../../../resources/selectors";
 interface DisplayLhsProps {
   currentStep: If;
   resources: ResourceIndex;
-  shouldDisplay?: ShouldDisplay;
   lhsOptions: DropDownItem[];
 }
 

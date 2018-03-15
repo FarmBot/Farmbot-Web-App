@@ -1,7 +1,7 @@
 import { TaggedSequence } from "../../../resources/tagged_resources";
 import { If } from "farmbot";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { defensiveClone, fancyDebug, bail } from "../../../util";
+import { defensiveClone, bail } from "../../../util";
 import { DropDownItem } from "../../../ui";
 import { overwrite } from "../../../api/crud";
 import { isString } from "lodash";
@@ -19,7 +19,6 @@ export const updateLhs =
   (props: LhsUpdateProps) => {
     const { currentStep, currentSequence, dispatch, index, resources } = props;
     return (e: DropDownItem) => {
-      fancyDebug(e);
       const stepCopy = defensiveClone(currentStep);
       const seqCopy = defensiveClone(currentSequence).body;
       const val = e.value;

@@ -3,7 +3,7 @@ import * as React from "react";
 import { IfParams, LHSOptions, operatorOptions } from "./index";
 import { t } from "i18next";
 import { StepInputBox } from "../../inputs/step_input_box";
-import { defensiveClone, fancyDebug } from "../../../util";
+import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
 import {
   Col,
@@ -39,7 +39,6 @@ export function If_(props: IfParams) {
   const lhsOptions = LHSOptions(props.resources, cb);
   function updateField(field: "lhs" | "op") {
     return (e: DropDownItem) => {
-      fancyDebug(e);
       const stepCopy = defensiveClone(step);
       const seqCopy = defensiveClone(sequence).body;
       const val = e.value;
