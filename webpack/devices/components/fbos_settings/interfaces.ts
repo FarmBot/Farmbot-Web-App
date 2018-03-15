@@ -25,6 +25,7 @@ export interface CameraSelectionState {
 export interface BoardTypeProps {
   firmwareVersion: string | undefined;
   dispatch: Function;
+  shouldDisplay: ShouldDisplay;
   sourceFbosConfig: SourceFbosConfig;
 }
 

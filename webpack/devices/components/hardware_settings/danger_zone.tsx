@@ -27,10 +27,6 @@ export function DangerZone(props: DangerZoneProps) {
         <Col xs={6}>
           <p>
             {t(Content.RESTORE_DEFAULT_HARDWARE_SETTINGS)}
-            <br />
-            <b>
-              {t("Will reboot device.")}
-            </b>
           </p>
         </Col>
         <Col xs={2} className={"centered-button-div"}>

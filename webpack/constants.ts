@@ -308,6 +308,39 @@ export namespace Content {
     trim(`If you are sure you want to delete your account, type in
     your password below to continue.`);
 
+  // App Settings
+  export const CONFIRM_STEP_DELETION =
+    trim(`Show a confirmation dialog when the sequence delete step
+    icon is pressed.`);
+
+  export const HIDE_WEBCAM_WIDGET =
+    trim(`If not using a webcam, use this setting to remove the
+    widget from the Controls page.`);
+
+  export const DYNAMIC_MAP_SIZE =
+    trim(`Change the Farm Designer map size based on axis length.
+    A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
+    the HARDWARE widget.`);
+
+  export const DOUBLE_MAP_DIMENSIONS =
+    trim(`Double the default dimensions of the Farm Designer map
+    for a map with four times the area.`);
+
+  export const PLANT_ANIMATIONS =
+    trim(`Enable plant animations in the Farm Designer.`);
+
+  export const BROWSER_SPEAK_LOGS =
+    trim(`Have the browser also read aloud log messages on the
+    "Speak" channel that are spoken by FarmBot.`);
+
+  export const DISCARD_UNSAVED_CHANGES =
+    trim(`Don't ask about saving work before
+    closing browser tab. Warning: may cause loss of data.`);
+
+  export const DISCARD_UNSAVED_CHANGES_CONFIRM =
+    trim(`Warning! When enabled, any unsaved changes
+    will be discarded when refreshing or closing the page. Are you sure?`);
+
   // Device
   export const NOT_HTTPS =
     trim(`WARNING: Sending passwords via HTTP:// is not secure.`);
@@ -338,8 +371,7 @@ export namespace Content {
 
   export const AUTO_FACTORY_RESET =
     trim(`Automatically factory reset when the WiFi network cannot be
-    detected. Useful for typos during FarmBot OS configuration or network
-    changes.`);
+    detected. Useful for network changes.`);
 
   export const AUTO_FACTORY_RESET_PERIOD =
     trim(`Time in minutes to attempt connecting to WiFi before a factory

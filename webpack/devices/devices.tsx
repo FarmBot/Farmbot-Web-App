@@ -94,7 +94,8 @@ export class Devices extends React.Component<Props, {}> {
                 dispatch={this.props.dispatch}
                 bot={this.props.bot}
                 resources={this.props.resources}
-                botToMqttStatus={botToMqttStatus} />}
+                botToMqttStatus={botToMqttStatus}
+                shouldDisplay={this.props.shouldDisplay} />}
           </Col>
         </Row>
       </Page>;

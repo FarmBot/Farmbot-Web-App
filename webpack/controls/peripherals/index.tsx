@@ -94,7 +94,7 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
         <button
           className="fb-button gray"
           onClick={this.toggle}
-          hidden={!!status}>
+          hidden={!!status && isEditing}>
           {!isEditing && t("Edit")}
           {isEditing && t("Back")}
         </button>

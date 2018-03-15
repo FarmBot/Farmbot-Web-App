@@ -41,10 +41,10 @@ var HelperNamespace = (function () {
 
   // '.t("")' or '{t("")' or ' t("")' or '(t("")' or
   // '.t(``)' or '{t(``)' or ' t(``)' or '(t(``)'
-  var T_REGEX = /[.{(\s]t\(["`]([\w\s{}().,:'\-=\\?!]*)["`].*\)/g;
+  var T_REGEX = /[.{(\s]t\(["`]([\w\s{}().,:'\-=\\?\/%!]*)["`].*\)/g;
 
   // '``'
-  var C_REGEX = /[`]([\w\s{}().,:'\-=\\?!]*)[`].*/g;
+  var C_REGEX = /[`]([\w\s{}().,:'\-=\\?"+!]*)[`].*/g;
 
   /**
    * Get all the tags in the files with extension .ts of the current project
@@ -61,7 +61,10 @@ var HelperNamespace = (function () {
     //flatten list of list in a simple list
     var flatAllTags = [].concat.apply([], allTags);
     var flatConstantsTags = [].concat.apply([], constantsTags);
-    var flattenedTags = [].concat.apply([], [flatAllTags, flatConstantsTags]);
+    var flatExtraTags = [].concat.apply([],
+      ["DISCONNECTED", "Controls", "Device", "Farm Designer"]);
+    var flattenedTags = [].concat.apply([],
+      [flatAllTags, flatConstantsTags, flatExtraTags]);
 
     //distinct
     var uniq = Array.from(new Set(flattenedTags));

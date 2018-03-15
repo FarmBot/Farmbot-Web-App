@@ -45,8 +45,8 @@ export class Move extends React.Component<MoveProps, {}> {
 
     const scaled_encoder_label =
       minFwVersionCheck(firmware_version, "5.0.5")
-        ? "Scaled Encoder (mm)"
-        : "Scaled Encoder (steps)";
+        ? t("Scaled Encoder (mm)")
+        : t("Scaled Encoder (steps)");
 
     return <Widget>
       <WidgetHeader

@@ -8,9 +8,9 @@ import {
   DropDownItem
 } from "../../ui/index";
 import { ToolTips } from "../../constants";
-import { BotState } from "../interfaces";
+import { BotState, ShouldDisplay, Feature } from "../interfaces";
 import { registerGpioPin, unregisterGpioPin } from "../actions";
-import { findSequenceById } from "../../resources/selectors";
+import { findSequenceById, selectAllPinBindings } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { MustBeOnline } from "../must_be_online";
 import { Popover, Position } from "@blueprintjs/core";
@@ -18,12 +18,15 @@ import { RpiGpioDiagram, gpio } from "./rpi_gpio_diagram";
 import { error } from "farmbot-toastr";
 import { NetworkState } from "../../connectivity/interfaces";
 import { SequenceSelectBox } from "../../sequences/sequence_select_box";
+import { initSave, destroy } from "../../api/crud";
+import { TaggedPinBinding, SpecialStatus } from "../../resources/tagged_resources";
 
 export interface PinBindingsProps {
   bot: BotState;
   dispatch: Function;
   botToMqttStatus: NetworkState;
   resources: ResourceIndex;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface PinBindingsState {
@@ -49,6 +52,30 @@ export class PinBindings
     };
   }
 
+  get pinBindings(): {
+    pin_number: number, sequence_id: number, uuid?: string
+  }[] {
+    if (this.props.shouldDisplay(Feature.api_pin_bindings)) {
+      return selectAllPinBindings(this.props.resources)
+        .map(x => {
+          return {
+            pin_number: x.body.pin_num,
+            sequence_id: x.body.sequence_id,
+            uuid: x.uuid
+          };
+        });
+    } else {
+      const { gpio_registry } = this.props.bot.hardware;
+      return Object.entries(gpio_registry || {})
+        .map(([pin_number, sequence_id]) => {
+          return {
+            pin_number: parseInt(pin_number),
+            sequence_id: parseInt(sequence_id || "")
+          };
+        });
+    }
+  }
+
   changeSelection = (input: DropDownItem) => {
     this.setState({ sequenceIdInput: parseInt(input.value as string) });
   }
@@ -65,13 +92,28 @@ export class PinBindings
     }
   }
 
+  taggedPinBinding =
+    (pin_num: number, sequence_id: number): TaggedPinBinding => {
+      return {
+        uuid: "WILL_BE_CHANGED_BY_REDUCER",
+        specialStatus: SpecialStatus.SAVED,
+        kind: "PinBinding",
+        body: { pin_num, sequence_id }
+      };
+    }
+
   bindPin = () => {
     const { pinNumberInput, sequenceIdInput } = this.state;
     if (pinNumberInput && sequenceIdInput) {
-      this.props.dispatch(registerGpioPin({
-        pin_number: pinNumberInput,
-        sequence_id: sequenceIdInput
-      }));
+      if (this.props.shouldDisplay(Feature.api_pin_bindings)) {
+        this.props.dispatch(initSave(
+          this.taggedPinBinding(pinNumberInput, sequenceIdInput)));
+      } else {
+        this.props.dispatch(registerGpioPin({
+          pin_number: pinNumberInput,
+          sequence_id: sequenceIdInput
+        }));
+      }
       this.setState({
         pinNumberInput: undefined,
         sequenceIdInput: undefined
@@ -79,37 +121,41 @@ export class PinBindings
     }
   }
 
+  deleteBinding = (pin: number, uuid?: string) => {
+    if (this.props.shouldDisplay(Feature.api_pin_bindings)) {
+      this.props.dispatch(destroy(uuid || ""));
+    } else {
+      this.props.dispatch(unregisterGpioPin(pin));
+    }
+  }
+
   get boundPins(): number[] | undefined {
-    const { gpio_registry } = this.props.bot.hardware;
-    return gpio_registry && Object.keys(gpio_registry).map(x => parseInt(x));
+    return this.pinBindings.map(x => x.pin_number);
   }
 
   currentBindingsList = () => {
-    const { bot, dispatch, resources } = this.props;
-    const { gpio_registry } = bot.hardware;
+    const { resources } = this.props;
     return <div className={"bindings-list"}>
-      {gpio_registry &&
-        Object.entries(gpio_registry)
-          .map(([pin_number, sequence_id]) => {
-            return <Row key={`pin_${pin_number}_binding`}>
-              <Col xs={ColumnWidth.pin}>
-                {`Pi GPIO ${pin_number}`}
-              </Col>
-              <Col xs={ColumnWidth.sequence}>
-                {sequence_id ? findSequenceById(
-                  resources, parseInt(sequence_id)).body.name : ""}
-              </Col>
-              <Col xs={ColumnWidth.button}>
-                <button
-                  className="fb-button red"
-                  onClick={() => {
-                    dispatch(unregisterGpioPin(parseInt(pin_number)));
-                  }}>
-                  <i className="fa fa-minus" />
-                </button>
-              </Col>
-            </Row>;
-          })}
+      {this.pinBindings
+        .map(x => {
+          const { pin_number, sequence_id } = x;
+          return <Row key={`pin_${pin_number}_binding`}>
+            <Col xs={ColumnWidth.pin}>
+              {`Pi GPIO ${pin_number}`}
+            </Col>
+            <Col xs={ColumnWidth.sequence}>
+              {sequence_id ? findSequenceById(
+                resources, sequence_id).body.name : ""}
+            </Col>
+            <Col xs={ColumnWidth.button}>
+              <button
+                className="fb-button red"
+                onClick={() => this.deleteBinding(pin_number, x.uuid)}>
+                <i className="fa fa-minus" />
+              </button>
+            </Col>
+          </Row>;
+        })}
     </div>;
   }
 
@@ -164,7 +210,8 @@ export class PinBindings
         <MustBeOnline
           syncStatus={this.props.bot.hardware.informational_settings.sync_status}
           networkState={this.props.botToMqttStatus}
-          lockOpen={process.env.NODE_ENV !== "production"}>
+          lockOpen={this.props.shouldDisplay(Feature.api_pin_bindings)
+            || process.env.NODE_ENV !== "production"}>
           <Row>
             <Col xs={ColumnWidth.pin}>
               <label>

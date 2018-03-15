@@ -158,6 +158,7 @@ export class FarmbotOsSettings
             <BoardType
               firmwareVersion={firmware_version}
               dispatch={this.props.dispatch}
+              shouldDisplay={this.props.shouldDisplay}
               sourceFbosConfig={sourceFbosConfig} />
             <PowerAndReset
               controlPanelState={this.props.bot.controlPanelState}
