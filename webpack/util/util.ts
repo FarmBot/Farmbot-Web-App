@@ -3,9 +3,13 @@ import * as _ from "lodash";
 import { Dictionary } from "farmbot";
 import { Color } from "../interfaces";
 import { box } from "boxed_value";
-import { TaggedResource } from "../resources/tagged_resources";
-import { AxiosResponse } from "axios";
+import {
+  TaggedResource, TaggedFirmwareConfig, TaggedFbosConfig
+} from "../resources/tagged_resources";
 import { history } from "../history";
+import { BotLocationData } from "../devices/interfaces";
+import { FirmwareConfig } from "../config_storage/firmware_configs";
+import { FbosConfig } from "../config_storage/fbos_configs";
 
 // http://stackoverflow.com/a/901144/1064917
 // Grab a query string param by name, because react-router-redux doesn't
@@ -120,7 +124,7 @@ export function betterParseNum(num: string | undefined,
     if (_.isNumber(maybe) && !_.isNaN(maybe)) {
       return maybe;
     }
-  } catch (_err) {
+  } catch (_) {
   }
   return fallback;
 }
@@ -137,20 +141,6 @@ type JSXChild = JSX.Element | JSX.Element[] | Primitive | undefined;
 export type JSXChildren = JSXChild[] | JSXChild;
 
 export type Primitive = boolean | string | number;
-
-/** Axios uses `{data: any}` to describe AxiosResponse.data.
- * This interface adds type hints.
- * TODO: LOW HANGING FRUIT: Write user defined type guards to provide
- * real type safety. */
-export interface HttpData<T> extends AxiosResponse {
-  data: T;
-}
-
-/** Like AxiosPromise, but holds onto type information.
- * TODO: Write farmbot-resource library or something like that to do real
- *       runtime type checking.
- */
-export interface HttpPromise<T> extends Promise<HttpData<T>> { }
 
 export function shortRevision() {
   return (globalConfig.SHORT_REVISION || "NONE").slice(0, 8);
@@ -185,7 +175,7 @@ export function bitArray(...values: boolean[]) {
 //   /applying-a-timeout-to-your-promises/#implementing-the-timeout
 export function withTimeout<T>(ms: number, promise: Promise<T>) {
   // Create a promise that rejects in <ms> milliseconds
-  const timeout = new Promise((resolve, reject) => {
+  const timeout = new Promise((_resolve, reject) => {
     const id = setTimeout(() => {
       clearTimeout(id);
       reject(`Timed out in  ${ms} ms.`);
@@ -211,5 +201,37 @@ export function scrollToBottom(elementId: string) {
   if (!elToScroll) { return; }
 
   // Wait for the new element height and scroll to the bottom.
-  setTimeout(() => elToScroll.scrollTo(0, elToScroll.scrollHeight), 1);
+  setTimeout(() => elToScroll.scrollTop = elToScroll.scrollHeight, 1);
+}
+
+export function validBotLocationData(
+  botLocationData: BotLocationData | undefined): BotLocationData {
+  if (botLocationData) {
+    return botLocationData;
+  }
+  return {
+    position: { x: undefined, y: undefined, z: undefined },
+    scaled_encoders: { x: undefined, y: undefined, z: undefined },
+    raw_encoders: { x: undefined, y: undefined, z: undefined },
+  };
+}
+
+/**
+ * Return FirmwareConfig if the data is valid.
+ */
+export function validFwConfig(
+  config: TaggedFirmwareConfig | undefined): FirmwareConfig | undefined {
+  return (config && config.body.api_migrated)
+    ? config.body
+    : undefined;
+}
+
+/**
+ * Return FbosConfig if the data is valid.
+ */
+export function validFbosConfig(
+  config: TaggedFbosConfig | undefined): FbosConfig | undefined {
+  return (config && config.body.api_migrated)
+    ? config.body
+    : undefined;
 }

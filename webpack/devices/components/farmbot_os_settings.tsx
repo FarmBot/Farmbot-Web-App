@@ -10,7 +10,7 @@ import {
   SaveBtn
 } from "../../ui/index";
 import { save, edit, refresh } from "../../api/crud";
-import { MustBeOnline } from "../must_be_online";
+import { MustBeOnline, isBotUp } from "../must_be_online";
 import { ToolTips, Content } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
 import { timezoneMismatch } from "../timezones/guess_timezone";
@@ -23,7 +23,6 @@ import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { isUndefined } from "lodash";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import axios from "axios";
-import { HttpData } from "../../util";
 
 export enum ColWidth {
   label = 3,
@@ -46,8 +45,8 @@ export class FarmbotOsSettings
 
   fetchReleaseNotes = (url: string, osMajorVersion: string) => {
     axios
-      .get(url)
-      .then((resp: HttpData<string>) => {
+      .get<string>(url)
+      .then(resp => {
         const notes = resp.data
           .split("# v")
           .filter(x => x.startsWith(osMajorVersion))[0]
@@ -64,7 +63,7 @@ export class FarmbotOsSettings
     dispatch(edit(account, { name: e.currentTarget.value }));
   }
 
-  updateBot = (e: React.MouseEvent<{}>) => {
+  updateBot = () => {
     const { account, dispatch } = this.props;
     dispatch(save(account.uuid));
   }
@@ -87,28 +86,15 @@ export class FarmbotOsSettings
   lastSeen = () => {
     return <LastSeen
       onClick={() => this.props.dispatch(refresh(this.props.account))}
+      botToMqttLastSeen={this.props.botToMqttLastSeen}
       device={this.props.account} />;
   }
 
-  // TODO: Delete this function on 1 Jan 2018. This is a backwards compatibility
-  //       fix because old FBOS breaks when `auto_sync` is toggled. - RC
-  maybeShowAutoSync = () => {
-    const { auto_sync } = this.props.bot.hardware.configuration;
-    const isDevMode = location.host.includes("localhost"); // Enable in dev.
-    // Old FBOS => no auto_sync option => breaks when toggled.
-    const properFbosVersion = !isUndefined(auto_sync);
-
-    if (isDevMode || properFbosVersion) {
-      return <AutoSyncRow currentValue={!!auto_sync} />;
-    }
-  }
-
   render() {
-    const { account } = this.props;
-    const { hardware } = this.props.bot;
-    const { firmware_version } = hardware.informational_settings;
-    const { controller_version } = hardware.informational_settings;
-
+    const { bot, account, sourceFbosConfig } = this.props;
+    const { firmware_version, sync_status } = bot.hardware.informational_settings;
+    const botOnline =
+      !!(isBotUp(sync_status) && this.props.botToMqttStatus === "up");
     return <Widget className="device-widget">
       <form onSubmit={(e) => e.preventDefault()}>
         <WidgetHeader title="Device" helpText={ToolTips.OS_SETTINGS}>
@@ -148,20 +134,38 @@ export class FarmbotOsSettings
           </Row>
           <this.lastSeen />
           <MustBeOnline
-            syncStatus={this.props.bot.hardware.informational_settings.sync_status}
+            syncStatus={sync_status}
             networkState={this.props.botToMqttStatus}
-            lockOpen={process.env.NODE_ENV !== "production"}>
+            lockOpen={process.env.NODE_ENV !== "production"
+              || this.props.isValidFbosConfig}>
             <FarmbotOsRow
               bot={this.props.bot}
-              controller_version={controller_version}
-              osReleaseNotes={this.state.osReleaseNotes} />
-            <AutoUpdateRow bot={this.props.bot} />
-            {this.maybeShowAutoSync()}
-            <CameraSelection env={hardware.user_env} />
-            <BoardType firmwareVersion={firmware_version} />
+              osReleaseNotes={this.state.osReleaseNotes}
+              dispatch={this.props.dispatch}
+              sourceFbosConfig={sourceFbosConfig}
+              botOnline={botOnline} />
+            <AutoUpdateRow
+              dispatch={this.props.dispatch}
+              sourceFbosConfig={sourceFbosConfig} />
+            {(location.host.includes("localhost")
+              || !isUndefined(sourceFbosConfig("auto_sync").value)) &&
+              <AutoSyncRow
+                dispatch={this.props.dispatch}
+                sourceFbosConfig={sourceFbosConfig} />}
+            <CameraSelection
+              env={this.props.bot.hardware.user_env}
+              botOnline={botOnline} />
+            <BoardType
+              firmwareVersion={firmware_version}
+              dispatch={this.props.dispatch}
+              shouldDisplay={this.props.shouldDisplay}
+              sourceFbosConfig={sourceFbosConfig} />
             <PowerAndReset
-              bot={this.props.bot}
-              dispatch={this.props.dispatch} />
+              controlPanelState={this.props.bot.controlPanelState}
+              dispatch={this.props.dispatch}
+              sourceFbosConfig={sourceFbosConfig}
+              shouldDisplay={this.props.shouldDisplay}
+              botOnline={botOnline} />
           </MustBeOnline>
         </WidgetBody>
       </form>

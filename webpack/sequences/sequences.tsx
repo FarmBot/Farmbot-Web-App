@@ -13,7 +13,7 @@ import { catchErrors } from "../util";
 
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   render() {
     const { sequence } = this.props;
@@ -32,14 +32,15 @@ export class Sequences extends React.Component<Props, {}> {
             <h3>
               <i>{t("Sequence Editor")}</i>
             </h3>
-            <ToolTip helpText={ToolTips.SEQUENCE_EDITOR} />
+            <ToolTip helpText={t(ToolTips.SEQUENCE_EDITOR)} />
             <SequenceEditorMiddle
               syncStatus={this.props.syncStatus}
               dispatch={this.props.dispatch}
               sequence={this.props.sequence}
               resources={this.props.resources}
-              consistent={this.props.consistent}
-              autoSyncEnabled={this.props.autoSyncEnabled} />
+              hardwareFlags={this.props.hardwareFlags}
+              farmwareInfo={this.props.farmwareInfo}
+              shouldDisplay={this.props.shouldDisplay} />
           </div>
         </Col>
         <Col sm={3}>

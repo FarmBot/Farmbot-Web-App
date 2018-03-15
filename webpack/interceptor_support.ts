@@ -12,19 +12,8 @@ export let METHOD_MAP: Dictionary<DataChangeType> = {
 };
 export let METHODS = ["post", "put", "patch", "delete"];
 
-export let RESOURCES: ResourceName[] = [
-  "Point",
-  "Regimen",
-  "Peripheral",
-  "Log",
-  "Sequence",
-  "FarmEvent",
-  "Point",
-  "Device"
-];
-
 /** Temporary stub until auto_sync rollout. TODO: Remove */
-export const RESOURNCE_NAME_IN_URL = [
+const RESOURNCE_NAME_IN_URL = [
   "device",
   "farm_events",
   "logs",
@@ -50,8 +39,7 @@ interface DataUpdateEndOfLife {
 
 // LEGACY API. This was a temporary solution that was superceded by the auto
 // sync feature. End of life: 1 Jan 2018
-export function notifyBotOfChanges(url: string | undefined,
-  action: DataChangeType, uuid: string) {
+export function notifyBotOfChanges(url: string | undefined, action: DataChangeType) {
   if (url) {
     url
       .split("/")

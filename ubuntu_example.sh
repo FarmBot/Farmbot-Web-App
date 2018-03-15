@@ -4,7 +4,7 @@
 sudo apt-get remove docker docker-engine docker.io
 
 # Install docker
-sudo apt-get install apt-transport-https ca-certificates curl software-properties-common --yes
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common rake --yes
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable" --yes
 sudo apt-get update --yes
@@ -15,9 +15,9 @@ sudo docker run hello-world # Should run!
 command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
 curl -sSL https://get.rvm.io | bash
 source /usr/local/rvm/scripts/rvm
-rvm install "ruby-2.4.2"
+rvm install "ruby-2.5.0"
 cd .
-rvm --default use 2.4.2
+rvm --default use 2.5.0
 # LOG OUT AND LOG BACK IN NOW.
 
 # Image Magick
@@ -50,8 +50,9 @@ cp config/database.example.yml config/database.yml
 # Open `config/application.yml` in a text editor and change all the values.
 #
 # == Nothing will work if you skip this step!!! ==
-
-mv config/application.example.yml config/application.yml
+# Don't know which editor to use?
+# Use micro! `snap install micro --classic`
+cp config/application.example.yml config/application.yml
 # READ THE FILE AND CHANGE THE VALUES ^
 sudo -u postgres psql
 # Run this:
@@ -61,9 +62,15 @@ rake db:create:all db:migrate db:seed
 RAILS_ENV=test rake db:create db:migrate && rspec spec
 npm run test
 
-# Run MQTT (new tab, SAME DIRECTORY)
-rails mqtt:start
+# INSTALLATION IS NOW COMPLETE =================================================
 
+
+# You may run the commands below every time you wish to start the server:
+# The commands before this were only one-off commands for installation.
 # Run the web server (new tab, SAME DIRECTORY)
+# Don't worry about the "MQTT server is unreachable" messages yet-
+#   we still need to start MQTT (next).
 rails api:start
 
+# Run MQTT (new tab, SAME DIRECTORY)
+rails mqtt:start

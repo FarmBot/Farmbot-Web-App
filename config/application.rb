@@ -1,7 +1,8 @@
 require_relative "../app/models/transport.rb"
 require File.expand_path('../boot', __FILE__)
-
+require_relative "../app/lib/celery_script/csheap"
 require "rails/all"
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env)
@@ -10,6 +11,8 @@ module FarmBot
     config.active_job.queue_adapter = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
+    LOCAL_API_HOST = ENV["API_HOST"] || "localhost"
+    WEBPACK_URL    = "http://#{LOCAL_API_HOST}:3808"
     config.generators do |g|
       g.template_engine :erb
       g.test_framework :rspec, :fixture_replacement => :factory_bot, :views => false, :helper => false
@@ -30,7 +33,7 @@ module FarmBot
                  max_age: 0
       end
     end
-    Rails.application.routes.default_url_options[:host] = ENV["API_HOST"] || "localhost"
+    Rails.application.routes.default_url_options[:host] = LOCAL_API_HOST
     Rails.application.routes.default_url_options[:port] = ENV["API_PORT"] || 3000
     # ¯\_(ツ)_/¯
     $API_URL = "//#{ Rails.application.routes.default_url_options[:host] }:#{ Rails.application.routes.default_url_options[:port] }"
@@ -57,7 +60,8 @@ module FarmBot
                       "api.github.com",
                       "raw.githubusercontent.com",
                       "openfarm.cc",
-                      "api.rollbar.com"] +
+                      "api.rollbar.com",
+                      WEBPACK_URL] +
           (Rails.env.production? ? %w(wss:) : %w(ws: localhost:3000 localhost:3808)),
         font_src: %w(
           'self'
@@ -80,14 +84,15 @@ module FarmBot
           allow-popups
         ),
         plugin_types: %w(),
-        script_src: %w(
-          'self'
-          'unsafe-eval'
-          'unsafe-inline'
-          cdnjs.cloudflare.com
-          chrome-extension:
-          localhost:3808
-        ),
+        script_src: [
+          "'self'",
+          "'unsafe-eval'",
+          "'unsafe-inline'",
+          "cdnjs.cloudflare.com",
+          "chrome-extension:",
+          "localhost:3808",
+          WEBPACK_URL,
+        ],
         style_src: %w(
           'unsafe-inline'
           fonts.googleapis.com

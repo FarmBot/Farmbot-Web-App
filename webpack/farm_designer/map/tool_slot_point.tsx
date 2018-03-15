@@ -3,7 +3,8 @@ import { SlotWithTool } from "../../resources/interfaces";
 import { getXYFromQuadrant } from "./util";
 import { MapTransformProps } from "./interfaces";
 import * as _ from "lodash";
-import { Color } from "../../ui/index";
+import { ToolbaySlot, ToolNames, Tool } from "./tool_graphics";
+import { ToolLabel } from "./tool_label";
 
 export interface TSPProps {
   slot: SlotWithTool;
@@ -21,82 +22,49 @@ export class ToolSlotPoint extends
     hovered: false
   };
 
+  setHover = (state: boolean) => { this.setState({ hovered: state }); };
+
   get slot() { return this.props.slot; }
 
+  reduceToolName = (raw: string | undefined) => {
+    const lower = (raw || "").toLowerCase();
+    if (_.includes(lower, "seed bin")) { return ToolNames.seedBin; }
+    if (_.includes(lower, "seed tray")) { return ToolNames.seedTray; }
+    return ToolNames.tool;
+  }
+
   render() {
-    const { id, x, y } = this.slot.toolSlot.body;
+    const { id, x, y, pullout_direction } = this.slot.toolSlot.body;
     const { quadrant, gridSize } = this.props.mapTransformProps;
     const { qx, qy } = getXYFromQuadrant(x, y, quadrant, gridSize);
     const toolName = this.slot.tool ? this.slot.tool.body.name : "no tool";
-    const seedBin = _.includes((toolName || "").toLowerCase(), "seed bin");
-    const seedTray = _.includes((toolName || "").toLowerCase(), "seed tray");
-    const seedTrayRect = getXYFromQuadrant(x, y, quadrant, gridSize);
+    const toolProps = {
+      x: qx,
+      y: qy,
+      hovered: this.state.hovered,
+      setHoverState: this.setHover
+    };
     return <g id={"toolslot-" + id}>
-      <defs>
-        <radialGradient id="SeedBinGradient">
-          <stop offset="5%" stopColor="rgb(0, 0, 0)" stopOpacity={0.3} />
-          <stop offset="95%" stopColor="rgb(0, 0, 0)" stopOpacity={0.1} />
-        </radialGradient>
-        <pattern id="SeedTrayPattern"
-          x={0} y={0} width={0.25} height={0.25}>
-          <circle cx={6} cy={6} r={5} fill="url(#SeedBinGradient)" />
-        </pattern>
-      </defs>
+      {pullout_direction &&
+        <ToolbaySlot
+          id={id}
+          x={qx}
+          y={qy}
+          pulloutDirection={pullout_direction}
+          quadrant={quadrant} />}
 
-      {seedBin &&
-        <g id="seed-bin" key={this.slot.toolSlot.uuid}
-          onMouseOver={() => this.setState({ hovered: true })}
-          onMouseLeave={() => this.setState({ hovered: false })}>
-          <circle
-            cx={qx} cy={qy} r={35}
-            fill="rgba(128, 128, 128, 0.8)" />
-          <circle
-            cx={qx} cy={qy} r={30}
-            fill="url(#SeedBinGradient)" />
-          {this.state.hovered &&
-            <circle
-              cx={qx} cy={qy} r={35}
-              fill="rgba(0, 0, 0, 0.1)" />}
-        </g>
-      }
-      {seedTray &&
-        <g id="seed-tray" key={this.slot.toolSlot.uuid}
-          onMouseOver={() => this.setState({ hovered: true })}
-          onMouseLeave={() => this.setState({ hovered: false })}>
-          <circle
-            cx={qx} cy={qy} r={35}
-            fill="rgba(128, 128, 128, 0.8)" />
-          <rect
-            x={seedTrayRect.qx - 25} y={seedTrayRect.qy - 25}
-            width={50} height={50}
-            fill="url(#SeedTrayPattern)" />
-          {this.state.hovered &&
-            <circle
-              cx={qx} cy={qy} r={35}
-              fill="rgba(0, 0, 0, 0.1)" />}
-        </g>
-      }
-      {!seedBin && !seedTray &&
-        <circle key={this.slot.toolSlot.uuid}
-          onMouseOver={() => this.setState({ hovered: true })}
-          onMouseLeave={() => this.setState({ hovered: false })}
-          cx={qx}
-          cy={qy}
-          r={35}
-          fillOpacity={0.5}
-          fill={this.state.hovered ? Color.darkGray : Color.mediumGray} />
-      }
+      {(this.slot.tool || !pullout_direction) &&
+        <Tool
+          tool={this.reduceToolName(toolName)}
+          toolProps={toolProps} />}
 
-      <text
-        visibility={this.state.hovered ? "visible" : "hidden"}
+      <ToolLabel
+        toolName={toolName}
+        hovered={this.state.hovered}
         x={qx}
         y={qy}
-        dx={40}
-        dy={10}
-        fontSize={24}
-        fill={Color.darkGray}>
-        {toolName}
-      </text>
+        pulloutDirection={pullout_direction}
+        quadrant={quadrant} />
     </g>;
   }
 }

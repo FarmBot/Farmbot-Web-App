@@ -6,7 +6,8 @@ module Api
     # endpoint that requires JSON.
     class OnlyJson < Exception; end;
     CONSENT_REQUIRED = "all device users must agree to terms of service."
-
+    NOT_JSON = "That request was not valid JSON. Consider checking the request"\
+               " body with a JSON validator.."
     respond_to :json
     before_action :check_fbos_version
     before_action :set_default_stuff
@@ -19,10 +20,7 @@ module Api
 
     rescue_from(JWT::VerificationError) { |e| auth_err }
 
-    rescue_from(ActionDispatch::Http::Parameters::ParseError) do
-      sorry "That request was not valid JSON. Consider checking the request " +
-            "body with a JSON validator..", 422
-    end
+    rescue_from(ActionDispatch::Http::Parameters::ParseError) { sorry NOT_JSON, 422 }
 
     rescue_from(ActiveRecord::ValueTooLong) do
       sorry "Please use reasonable lengths on string inputs", 422
@@ -55,6 +53,10 @@ module Api
     rescue_from ActiveModel::RangeError do |_|
       sorry "One of those numbers was too big/small. " +
             "If you need larger numbers, let us know.", 422
+    end
+
+    def default_serializer_options
+      {root: false, user: current_user}
     end
 
 private
@@ -156,10 +158,6 @@ private
       end
     end
 
-    def default_serializer_options
-      {root: false, user: current_user}
-    end
-
     def bad_version
       render json: {error: "Upgrade to latest FarmBot OS"}, status: 426
     end
@@ -195,9 +193,10 @@ private
 
     # Devices have a `last_saw_api` field to assist users with debugging.
     # We update this column every time an FBOS device talks to the API.
-    def mark_as_seen(entity = (current_user && current_user.device))
+    def mark_as_seen(bot = (current_user && current_user.device))
       when_farmbot_os do
-        entity.update_attributes(last_saw_api: Time.now) if entity
+        v = fbos_version.to_s
+        bot.update_attributes!(last_saw_api: Time.now, fbos_version: v) if bot
       end
     end
   end

@@ -12,6 +12,18 @@ HEREDOC
 describe Api::UsersController do
   let(:user) { FactoryBot.create(:user) }
   include Devise::Test::ControllerHelpers
+    it 'shows a user record' do
+      sign_in user
+      get :show, format: :json
+      expect(response.status).to eq(200)
+      expect(json).to be_kind_of(Array)
+      time_stamps = [:created_at, :updated_at]
+      expect(json.first.except(*time_stamps))
+        .to eq(UserSerializer.new(user).as_json.except(*time_stamps))
+      expect(subject.default_serializer_options[:root]).to be false
+      expect(subject.default_serializer_options[:user]).to eq(user)
+    end
+
     it 'errors if you try to delete with the wrong password' do
       sign_in user
       delete :destroy, params: { password: "NOPE!" }, format: :json
@@ -112,14 +124,6 @@ describe Api::UsersController do
         end
       end
     end
-
-    it 'can not re-verify' do
-      user.update_attributes(confirmed_at: Time.now)
-      sign_in user
-      put :verify, params: { token: user.confirmation_token }, format: :json
-      expect(response.status).to eq(409)
-    end
-
     it 'handles password confirmation mismatch' do
       email = Faker::Internet.email
       original_count = User.count
@@ -131,6 +135,29 @@ describe Api::UsersController do
       expect(User.count > original_count).to be_falsy
       expect(json[:password]).to include("do not match")
       expect(response.status).to eq(422)
+    end
+
+    it 'generates a certificate to transfer device control' do
+      user1 = FactoryBot.create(:user, password: "password123")
+      user2 = FactoryBot.create(:user, password: "password456")
+      body  = { email: user2.email, password: "password456" }.to_json
+      sign_in user1
+      post :control_certificate, body: body, format: :json
+      expect(response.status).to eq(200)
+      credentials = response.body
+      expect(credentials).to be_kind_of(String)
+      hmm = Auth::CreateTokenFromCredentials
+        .run(credentials: credentials, fbos_version: Gem::Version.new("9.9.9"))
+      expect(hmm.success?).to be true
+    end
+
+    it 'prevents creating control certs for bad credentials' do
+      user1 = FactoryBot.create(:user, password: "password123")
+      body  = { email: "wrong@wrong.com", password: "password456" }.to_json
+      sign_in user1
+      post :control_certificate, body: body, format: :json
+      expect(response.status).to eq(422)
+      expect(json[:credentials]).to include("can't proceed")
     end
 
     it 'refuses to send token to a user if they are already verified' do

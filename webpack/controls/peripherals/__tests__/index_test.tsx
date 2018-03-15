@@ -8,7 +8,6 @@ import { mount } from "enzyme";
 import { Peripherals } from "../index";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { PeripheralsProps } from "../../../devices/interfaces";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 import { fakePeripheral } from "../../../__test_support__/fake_state/resources";
 
 describe("<Peripherals />", () => {
@@ -21,7 +20,6 @@ describe("<Peripherals />", () => {
       bot,
       peripherals: [fakePeripheral()],
       dispatch: jest.fn(),
-      resources: buildResourceIndex([]),
       disabled: false
     };
   }

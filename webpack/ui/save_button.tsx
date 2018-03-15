@@ -27,8 +27,8 @@ export function SaveBtn(props: SaveBtnProps) {
   };
 
   const CAPTIONS: Partial<Record<SpecialStatus, string>> = {
-    [SpecialStatus.DIRTY]: t((props.dirtyText || "Save ") + " *"),
-    [SpecialStatus.SAVING]: t(props.savingText || "Saving")
+    [SpecialStatus.DIRTY]: (props.dirtyText || t("Save") + " *"),
+    [SpecialStatus.SAVING]: props.savingText || t("Saving")
   };
 
   const { savedText, onClick, hidden } = props;
@@ -38,6 +38,6 @@ export function SaveBtn(props: SaveBtnProps) {
     spinner : "";
 
   return <button onClick={onClick} hidden={!!hidden} className={klass} >
-    {CAPTIONS[props.status] || (t(savedText || "Saved ") + " ✔")} {spinnerEl}
+    {CAPTIONS[props.status] || (savedText || t("Saved") + " ✔")} {spinnerEl}
   </button>;
 }

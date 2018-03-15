@@ -2,11 +2,17 @@ import { Everything } from "../../interfaces";
 import { buildResourceIndex } from "../resource_index_builder";
 import {
   TaggedFarmEvent, TaggedSequence, TaggedRegimen, TaggedImage,
-  TaggedTool, TaggedToolSlotPointer, TaggedUser, TaggedWebcamFeed,
-  TaggedPlantPointer, TaggedGenericPointer, TaggedPeripheral
+  TaggedTool, TaggedUser, TaggedWebcamFeed,
+  TaggedPlantPointer, TaggedGenericPointer, TaggedPeripheral, TaggedFbosConfig,
+  TaggedWebAppConfig,
+  TaggedSensor,
+  TaggedFirmwareConfig,
+  TaggedPinBinding
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
+import { emptyToolSlot } from "../../tools/components/empty_tool_slot";
+import { FirmwareConfig } from "../../config_storage/firmware_configs";
 
 export let resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -77,24 +83,14 @@ export function fakeUser(): TaggedUser {
   });
 }
 
-export function fakeToolSlot(): TaggedToolSlotPointer {
-  return fakeResource("Point", {
-    name: "ToolSlot 1",
-    pointer_type: "ToolSlot",
-    tool_id: 1,
-    x: 10,
-    y: 10,
-    z: 10,
-    radius: 10,
-    meta: {}
-  });
-}
+export const fakeToolSlot = emptyToolSlot;
 
 export function fakePlant(): TaggedPlantPointer {
   return fakeResource("Point", {
     id: idCounter++,
     name: "Strawberry Plant 1",
     pointer_type: "Plant",
+    plant_stage: "planned",
     x: 100,
     y: 200,
     z: 0,
@@ -128,10 +124,190 @@ export function fakeWebcamFeed(): TaggedWebcamFeed {
   });
 }
 
+export function fakePinBinding(): TaggedPinBinding {
+  return fakeResource("PinBinding", {
+    id: idCounter++,
+    pin_num: 10,
+    sequence_id: 1
+  });
+}
+
+export function fakeSensor(): TaggedSensor {
+  return fakeResource("Sensor", {
+    id: idCounter++,
+    label: "Fake Pin",
+    mode: 0,
+    pin: 1
+  });
+}
+
 export function fakePeripheral(): TaggedPeripheral {
   return fakeResource("Peripheral", {
-    id: idCounter++,
+    id: ++idCounter,
     label: "Fake Pin",
     pin: 1
   });
+}
+
+export function fakeFbosConfig(): TaggedFbosConfig {
+  return fakeResource("FbosConfig", {
+    id: 1,
+    device_id: 1,
+    created_at: "",
+    updated_at: "",
+    auto_sync: false,
+    beta_opt_in: false,
+    disable_factory_reset: false,
+    firmware_input_log: false,
+    firmware_output_log: false,
+    sequence_body_log: false,
+    sequence_complete_log: false,
+    sequence_init_log: false,
+    network_not_found_timer: 0,
+    firmware_hardware: "arduino",
+    api_migrated: false,
+    os_auto_update: false,
+    arduino_debug_messages: false
+  });
+}
+
+export function fakeWebAppConfig(): TaggedWebAppConfig {
+  return fakeResource("WebAppConfig", {
+    id: 1,
+    device_id: 1,
+    created_at: "2018-01-11T20:20:38.362Z",
+    updated_at: "2018-01-22T15:32:41.970Z",
+    confirm_step_deletion: false,
+    disable_animations: false,
+    disable_i18n: false,
+    display_trail: false,
+    dynamic_map: false,
+    encoder_figure: false,
+    hide_webcam_widget: false,
+    legend_menu_open: false,
+    map_xl: false,
+    raw_encoders: true,
+    scaled_encoders: true,
+    show_spread: false,
+    show_farmbot: true,
+    show_images: false,
+    show_plants: true,
+    show_points: true,
+    x_axis_inverted: false,
+    y_axis_inverted: false,
+    z_axis_inverted: true,
+    bot_origin_quadrant: 2,
+    zoom_level: -3,
+    success_log: 3,
+    busy_log: 3,
+    warn_log: 3,
+    error_log: 3,
+    info_log: 3,
+    fun_log: 3,
+    debug_log: 3,
+    stub_config: false,
+    show_first_party_farmware: false,
+    enable_browser_speak: false,
+    photo_filter_begin: "2018-01-11T20:20:38.362Z",
+    photo_filter_end: "2018-01-22T15:32:41.970Z",
+    discard_unsaved: false
+  });
+}
+
+export function fakeFirmwareConfig(): TaggedFirmwareConfig {
+  return fakeResource("FirmwareConfig", {
+    device_id: 1,
+    created_at: "",
+    updated_at: "",
+    encoder_enabled_x: 0,
+    encoder_enabled_y: 0,
+    encoder_enabled_z: 0,
+    encoder_invert_x: 0,
+    encoder_invert_y: 0,
+    encoder_invert_z: 0,
+    encoder_missed_steps_decay_x: 5,
+    encoder_missed_steps_decay_y: 5,
+    encoder_missed_steps_decay_z: 5,
+    encoder_missed_steps_max_x: 5,
+    encoder_missed_steps_max_y: 5,
+    encoder_missed_steps_max_z: 5,
+    encoder_scaling_x: 56,
+    encoder_scaling_y: 56,
+    encoder_scaling_z: 56,
+    encoder_type_x: 0,
+    encoder_type_y: 0,
+    encoder_type_z: 0,
+    encoder_use_for_pos_x: 0,
+    encoder_use_for_pos_y: 0,
+    encoder_use_for_pos_z: 0,
+    movement_axis_nr_steps_x: 0,
+    movement_axis_nr_steps_y: 0,
+    movement_axis_nr_steps_z: 0,
+    movement_enable_endpoints_x: 0,
+    movement_enable_endpoints_y: 0,
+    movement_enable_endpoints_z: 0,
+    movement_home_at_boot_x: 0,
+    movement_home_at_boot_y: 0,
+    movement_home_at_boot_z: 0,
+    movement_home_spd_x: 50,
+    movement_home_spd_y: 50,
+    movement_home_spd_z: 50,
+    movement_home_up_x: 0,
+    movement_home_up_y: 0,
+    movement_home_up_z: 1,
+    movement_invert_endpoints_x: 0,
+    movement_invert_endpoints_y: 0,
+    movement_invert_endpoints_z: 0,
+    movement_invert_motor_x: 0,
+    movement_invert_motor_y: 0,
+    movement_invert_motor_z: 0,
+    movement_keep_active_x: 0,
+    movement_keep_active_y: 0,
+    movement_keep_active_z: 1,
+    movement_max_spd_x: 400,
+    movement_max_spd_y: 400,
+    movement_max_spd_z: 400,
+    movement_min_spd_x: 50,
+    movement_min_spd_y: 50,
+    movement_min_spd_z: 50,
+    movement_secondary_motor_invert_x: 1,
+    movement_secondary_motor_x: 1,
+    movement_step_per_mm_x: 5,
+    movement_step_per_mm_y: 5,
+    movement_step_per_mm_z: 25,
+    movement_steps_acc_dec_x: 300,
+    movement_steps_acc_dec_y: 300,
+    movement_steps_acc_dec_z: 300,
+    movement_stop_at_home_x: 0,
+    movement_stop_at_home_y: 0,
+    movement_stop_at_home_z: 0,
+    movement_stop_at_max_x: 0,
+    movement_stop_at_max_y: 0,
+    movement_stop_at_max_z: 0,
+    movement_timeout_x: 120,
+    movement_timeout_y: 120,
+    movement_timeout_z: 120,
+    param_config_ok: 0,
+    param_e_stop_on_mov_err: 0,
+    param_mov_nr_retry: 3,
+    param_test: 0,
+    param_use_eeprom: 1,
+    param_version: 1,
+    pin_guard_1_active_state: 1,
+    pin_guard_1_pin_nr: 0,
+    pin_guard_1_time_out: 60,
+    pin_guard_2_active_state: 1,
+    pin_guard_2_pin_nr: 0,
+    pin_guard_2_time_out: 60,
+    pin_guard_3_active_state: 1,
+    pin_guard_3_pin_nr: 0,
+    pin_guard_3_time_out: 60,
+    pin_guard_4_active_state: 1,
+    pin_guard_4_pin_nr: 0,
+    pin_guard_4_time_out: 60,
+    pin_guard_5_active_state: 1,
+    pin_guard_5_pin_nr: 0,
+    pin_guard_5_time_out: 60,
+    api_migrated: false
+  } as FirmwareConfig);
 }

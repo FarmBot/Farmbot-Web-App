@@ -7,6 +7,10 @@ import {
   GenericPointer,
   PlantPointer,
   ToolSlotPointer,
+  SensorReading,
+  Sensor,
+  DeviceConfig,
+  PinBinding
 } from "../interfaces";
 import { Peripheral } from "../controls/peripherals/interfaces";
 import { User } from "../auth/interfaces";
@@ -20,24 +24,31 @@ import { WebcamFeed } from "../controls/interfaces";
 import { FbosConfig } from "../config_storage/fbos_configs";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
 import { WebAppConfig } from "../config_storage/web_app_configs";
+import { FarmwareInstallation } from "../farmware/interfaces";
 
 export type ResourceName =
   | "Crop"
   | "Device"
+  | "DeviceConfig"
   | "FarmEvent"
-  | "Peripheral"
-  | "Plant"
-  | "Log"
+  | "FarmwareInstallation"
+  | "FbosConfig"
+  | "FirmwareConfig"
   | "Image"
+  | "Log"
+  | "Peripheral"
+  | "PinBinding"
+  | "Plant"
   | "Point"
   | "Regimen"
+  | "Sensor"
+  | "SensorReading"
   | "Sequence"
   | "Tool"
   | "User"
+  | "WebAppConfig"
   | "WebcamFeed"
-  | "FbosConfig"
-  | "FirmwareConfig"
-  | "WebAppConfig";
+  | "PinBinding";
 
 export interface TaggedResourceBase {
   kind: ResourceName;
@@ -81,20 +92,28 @@ export interface Resource<T extends ResourceName, U extends object>
 }
 
 export type TaggedResource =
-  | TaggedPoint
   | TaggedCrop
   | TaggedDevice
   | TaggedFarmEvent
+  | TaggedFbosConfig
+  | TaggedFirmwareConfig
   | TaggedImage
   | TaggedLog
   | TaggedPeripheral
+  | TaggedPoint
   | TaggedRegimen
+  | TaggedSensor
+  | TaggedSensorReading
   | TaggedSequence
   | TaggedTool
   | TaggedUser
+  | TaggedWebAppConfig
   | TaggedWebcamFeed
-  | TaggedWebAppConfig;
+  | TaggedFarmwareInstallation
+  | TaggedPinBinding;
 
+export type TaggedPinBinding = Resource<"PinBinding", PinBinding>;
+export type TaggedDeviceConfig = Resource<"DeviceConfig", DeviceConfig>;
 export type TaggedRegimen = Resource<"Regimen", Regimen>;
 export type TaggedTool = Resource<"Tool", Tool>;
 export type TaggedSequence = Resource<"Sequence", Sequence>;
@@ -106,6 +125,8 @@ export type TaggedPeripheral = Resource<"Peripheral", Peripheral>;
 export type TaggedFbosConfig = Resource<"FbosConfig", FbosConfig>;
 export type TaggedFirmwareConfig = Resource<"FirmwareConfig", FirmwareConfig>;
 export type TaggedWebAppConfig = Resource<"WebAppConfig", WebAppConfig>;
+export type TaggedSensorReading = Resource<"SensorReading", SensorReading>;
+export type TaggedSensor = Resource<"Sensor", Sensor>;
 
 type PointUnion = GenericPointer | PlantPointer | ToolSlotPointer;
 
@@ -118,6 +139,8 @@ export type TaggedPoint = Resource<"Point", PointUnion>;
 export type TaggedUser = Resource<"User", User>;
 export type TaggedDevice = Resource<"Device", DeviceAccountSettings>;
 export type TaggedWebcamFeed = Resource<"WebcamFeed", WebcamFeed>;
+export type TaggedFarmwareInstallation =
+  Resource<"FarmwareInstallation", FarmwareInstallation>;
 
 /** Spot check to be certain a TaggedResource is what it says it is. */
 export function sanityCheck(x: object): x is TaggedResource {

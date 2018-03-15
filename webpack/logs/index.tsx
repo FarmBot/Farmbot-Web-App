@@ -21,7 +21,7 @@ export const formatLogTime = (created_at: number, timeoffset: number) =>
 
 @connect(mapStateToProps)
 export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   initialize = (name: NumberConfigKey, defaultValue: number): number => {
     const currentValue = Session.deprecatedGetNum(safeNumericSetting(name));
@@ -89,7 +89,9 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
             <Popover position={Position.BOTTOM_RIGHT}>
               <i className="fa fa-gear" />
               <LogsSettingsMenu
-                setFilterLevel={this.setFilterLevel} bot={this.props.bot} />
+                setFilterLevel={this.setFilterLevel}
+                dispatch={this.props.dispatch}
+                sourceFbosConfig={this.props.sourceFbosConfig} />
             </Popover>
           </div>
           <div className={"settings-menu-button"}>

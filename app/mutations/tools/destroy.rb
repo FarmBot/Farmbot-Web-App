@@ -23,12 +23,15 @@ module Tools
     end
 
     def any_deps?
-      names = SequenceDependency
-                .includes(:sequence)
-                .where(dependency: tool)
-                .pluck("sequences.name")
-                .map{|x| x || "Untitled sequence"}
-                .join(", ")
+      seq_ids = EdgeNode
+        .where(kind: "tool_id", value: tool.id)
+        .pluck(:sequence_id)
+      names = Sequence
+        .where(id: seq_ids)
+        .pluck(:name)
+        .map{|x| x || "Untitled sequence"}
+        .join(", ")
+
       add_error :tool, :in_use, STILL_IN_USE % [names] if names.present?
     end
   end

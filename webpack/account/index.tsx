@@ -62,7 +62,7 @@ export class Account extends React.Component<Props, State> {
     .dispatch(save(this.props.user.uuid))
     .then(this.doSave, updateNO);
 
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   render() {
     return <Page className="account">

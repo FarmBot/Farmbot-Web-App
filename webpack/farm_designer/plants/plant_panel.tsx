@@ -5,14 +5,40 @@ import { Link } from "react-router";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { round } from "../map/util";
 import { history } from "../../history";
+import { FBSelect, DropDownItem } from "../../ui";
+import { PlantOptions } from "../interfaces";
+import { PlantStage } from "farmbot";
+import * as moment from "moment";
 
-interface PlantPanelProps {
+export interface PlantPanelProps {
   info: FormattedPlantInfo;
   onDestroy?(uuid: string): void;
+  updatePlant?(uuid: string, update: PlantOptions): void;
 }
 
-export function PlantPanel({ info, onDestroy }: PlantPanelProps) {
-  const { name, slug, plantedAt, daysOld, uuid } = info;
+export const PLANT_STAGES: DropDownItem[] = [
+  { value: "planned", label: t("Planned") },
+  { value: "planted", label: t("Planted") },
+  { value: "harvested", label: t("Harvested") },
+];
+
+export const PLANT_STAGES_DDI = {
+  [PLANT_STAGES[0].value]: {
+    label: PLANT_STAGES[0].label,
+    value: PLANT_STAGES[0].value
+  },
+  [PLANT_STAGES[1].value]: {
+    label: PLANT_STAGES[1].label,
+    value: PLANT_STAGES[1].value
+  },
+  [PLANT_STAGES[2].value]: {
+    label: PLANT_STAGES[2].label,
+    value: PLANT_STAGES[2].value
+  },
+};
+
+export function PlantPanel({ info, onDestroy, updatePlant }: PlantPanelProps) {
+  const { name, slug, plantedAt, daysOld, uuid, plantStatus } = info;
   let { x, y } = info;
   if (onDestroy) { x = round(x); y = round(y); }
   const destroy = () => onDestroy && onDestroy(uuid);
@@ -62,6 +88,30 @@ export function PlantPanel({ info, onDestroy }: PlantPanelProps) {
         </b>
         <span>
           ({x}, {y})
+        </span>
+      </li>
+      <li>
+        <b>
+          {t("Status")}:&nbsp;
+        </b>
+        <span>
+          {updatePlant
+            ? <FBSelect
+              list={PLANT_STAGES}
+              selectedItem={PLANT_STAGES_DDI[plantStatus]}
+              onChange={e => {
+                const plant_stage = e.value as PlantStage;
+                const update: PlantOptions = { plant_stage };
+                switch (plant_stage) {
+                  case "planned":
+                    update.planted_at = undefined;
+                    break;
+                  case "planted":
+                    update.planted_at = moment().toISOString();
+                }
+                updatePlant(uuid, update);
+              }} />
+            : plantStatus}
         </span>
       </li>
     </ul>

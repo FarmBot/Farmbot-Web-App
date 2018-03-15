@@ -11,7 +11,7 @@ import { unselectPlant } from "../actions";
 
 @connect(mapStateToProps)
 export class PlantInfo extends PlantInfoBase {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   default = (plant_info: TaggedPlantPointer) => {
     const info = formatPlantInfo(plant_info);

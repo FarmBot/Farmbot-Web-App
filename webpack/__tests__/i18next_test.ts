@@ -7,7 +7,7 @@ jest.mock("axios", () => {
     }
   };
 });
-import { generateUrl, getUserLang } from "../i18n";
+import { generateUrl, getUserLang, generateI18nConfig } from "../i18n";
 import axios from "axios";
 
 const LANG_CODE = "en_US";
@@ -41,5 +41,12 @@ describe("getUserLang", () => {
       .catch((x) => {
         fail(x.message);
       });
+  });
+});
+
+describe("generateI18nConfig", () => {
+  it("generates a config with defaults", async () => {
+    const result = await generateI18nConfig("en");
+    expect(result.lng).toBe("en");
   });
 });

@@ -4,13 +4,11 @@ import { t } from "i18next";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { Content } from "../../../constants";
 import { updateConfig } from "../../actions";
-import { noop } from "lodash";
 import { ColWidth } from "../farmbot_os_settings";
-
-interface AutoSyncRowProps { currentValue: boolean; }
+import { AutoSyncRowProps } from "./interfaces";
 
 export function AutoSyncRow(props: AutoSyncRowProps) {
-  const auto_sync = !props.currentValue;
+  const autoSync = props.sourceFbosConfig("auto_sync");
   return <Row>
     <Col xs={ColWidth.label}>
       <label>
@@ -23,9 +21,11 @@ export function AutoSyncRow(props: AutoSyncRowProps) {
       </p>
     </Col>
     <Col xs={ColWidth.button}>
-      <ToggleButton toggleValue={props.currentValue}
+      <ToggleButton
+        toggleValue={autoSync.value}
+        dim={!autoSync.consistent}
         toggleAction={() => {
-          updateConfig({ auto_sync })(noop);
+          props.dispatch(updateConfig({ auto_sync: !autoSync.value }));
         }} />
     </Col>
   </Row>;

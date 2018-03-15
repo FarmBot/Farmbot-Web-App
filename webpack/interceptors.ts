@@ -20,12 +20,12 @@ export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   const method = input.config.method;
   dispatchNetworkUp("user.api");
   if (method && METHODS.includes(method)) {
-    const uuid = input.headers["X-Farmbot-Rpc-Id"] || "NONE";
-    notifyBotOfChanges(input.config.url, METHOD_MAP[method], uuid);
+    notifyBotOfChanges(input.config.url, METHOD_MAP[method]);
   }
   return input;
 }
 
+let ONLY_ONCE = true;
 export function responseRejected(x: SafeError | undefined) {
   if (x && isSafeError(x)) {
     dispatchNetworkUp("user.api");
@@ -50,7 +50,8 @@ export function responseRejected(x: SafeError | undefined) {
         break;
       case 451:
         // DONT REFACTOR: I want to use alert() because it's blocking.
-        alert(t(Content.TOS_UPDATE));
+        ONLY_ONCE && alert(t(Content.TOS_UPDATE));
+        ONLY_ONCE = false;
         window.location.href = "/tos_update";
         break;
     }

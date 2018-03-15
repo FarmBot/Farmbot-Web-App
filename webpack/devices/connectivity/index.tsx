@@ -29,7 +29,7 @@ export class ConnectivityPanel extends React.Component<Props, ConnectivityState>
     return <Widget className="connectivity-widget">
       <WidgetHeader
         title={t("Connectivity")}
-        helpText={t(ToolTips.CONNECTIVITY)}>
+        helpText={ToolTips.CONNECTIVITY}>
         <RetryBtn
           status={this.props.status}
           onClick={this.props.onRefresh}
@@ -44,7 +44,7 @@ export class ConnectivityPanel extends React.Component<Props, ConnectivityState>
               hoveredConnection={this.state.hoveredConnection} />
           </Col>
           <Col md={12} lg={8}>
-            <ConnectivityRow from="from" to="to" />
+            <ConnectivityRow from={t("from")} to={t("to")} />
             {rowData
               .map((x, y) => <ConnectivityRow {...x} key={y}
                 hover={this.hover}

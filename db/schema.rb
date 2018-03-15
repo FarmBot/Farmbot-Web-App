@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180109165402) do
+ActiveRecord::Schema.define(version: 20180310220435) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,6 +31,15 @@ ActiveRecord::Schema.define(version: 20180109165402) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
+  create_table "device_configs", force: :cascade do |t|
+    t.bigint "device_id"
+    t.string "key", limit: 100
+    t.string "value", limit: 300
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_device_configs_on_device_id"
+  end
+
   create_table "devices", id: :serial, force: :cascade do |t|
     t.string "name"
     t.integer "max_log_count", default: 100
@@ -38,7 +47,19 @@ ActiveRecord::Schema.define(version: 20180109165402) do
     t.string "timezone", limit: 280
     t.datetime "last_saw_api"
     t.datetime "last_saw_mq"
+    t.string "fbos_version", limit: 15
     t.index ["timezone"], name: "index_devices_on_timezone"
+  end
+
+  create_table "edge_nodes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "sequence_id", null: false
+    t.bigint "primary_node_id", null: false
+    t.string "kind", limit: 50
+    t.string "value", limit: 300
+    t.index ["primary_node_id"], name: "index_edge_nodes_on_primary_node_id"
+    t.index ["sequence_id"], name: "index_edge_nodes_on_sequence_id"
   end
 
   create_table "farm_events", id: :serial, force: :cascade do |t|
@@ -53,6 +74,14 @@ ActiveRecord::Schema.define(version: 20180109165402) do
     t.index ["executable_type", "executable_id"], name: "index_farm_events_on_executable_type_and_executable_id"
   end
 
+  create_table "farmware_installations", force: :cascade do |t|
+    t.bigint "device_id"
+    t.string "url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_farmware_installations_on_device_id"
+  end
+
   create_table "fbos_configs", force: :cascade do |t|
     t.bigint "device_id"
     t.datetime "created_at", null: false
@@ -65,10 +94,11 @@ ActiveRecord::Schema.define(version: 20180109165402) do
     t.boolean "sequence_body_log", default: false
     t.boolean "sequence_complete_log", default: false
     t.boolean "sequence_init_log", default: false
-    t.integer "arduino_debug_messages", default: -99
     t.integer "network_not_found_timer"
-    t.integer "os_auto_update", default: 0
     t.string "firmware_hardware", default: "arduino"
+    t.boolean "api_migrated", default: false
+    t.boolean "os_auto_update", default: false
+    t.boolean "arduino_debug_messages", default: false
     t.index ["device_id"], name: "index_fbos_configs_on_device_id"
   end
 
@@ -88,9 +118,9 @@ ActiveRecord::Schema.define(version: 20180109165402) do
     t.integer "encoder_missed_steps_max_x", default: 5
     t.integer "encoder_missed_steps_max_y", default: 5
     t.integer "encoder_missed_steps_max_z", default: 5
-    t.integer "encoder_scaling_x", default: 56
-    t.integer "encoder_scaling_y", default: 56
-    t.integer "encoder_scaling_z", default: 56
+    t.integer "encoder_scaling_x", default: 5556
+    t.integer "encoder_scaling_y", default: 5556
+    t.integer "encoder_scaling_z", default: 5556
     t.integer "encoder_type_x", default: 0
     t.integer "encoder_type_y", default: 0
     t.integer "encoder_type_z", default: 0
@@ -165,6 +195,7 @@ ActiveRecord::Schema.define(version: 20180109165402) do
     t.integer "pin_guard_5_active_state", default: 1
     t.integer "pin_guard_5_pin_nr", default: 0
     t.integer "pin_guard_5_time_out", default: 60
+    t.boolean "api_migrated", default: false
     t.index ["device_id"], name: "index_firmware_configs_on_device_id"
   end
 
@@ -208,16 +239,28 @@ ActiveRecord::Schema.define(version: 20180109165402) do
   create_table "peripherals", id: :serial, force: :cascade do |t|
     t.integer "device_id"
     t.integer "pin"
-    t.integer "mode"
     t.string "label", limit: 280
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "mode", default: 0
     t.index ["device_id"], name: "index_peripherals_on_device_id"
+  end
+
+  create_table "pin_bindings", force: :cascade do |t|
+    t.bigint "device_id"
+    t.integer "pin_num"
+    t.bigint "sequence_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_pin_bindings_on_device_id"
+    t.index ["sequence_id"], name: "index_pin_bindings_on_sequence_id"
   end
 
   create_table "plants", id: :serial, force: :cascade do |t|
     t.string "openfarm_slug", limit: 280, default: "50", null: false
     t.datetime "created_at"
+    t.datetime "planted_at"
+    t.string "plant_stage", limit: 10, default: "planned"
     t.index ["created_at"], name: "index_plants_on_created_at"
   end
 
@@ -238,6 +281,24 @@ ActiveRecord::Schema.define(version: 20180109165402) do
     t.index ["pointer_type", "pointer_id"], name: "index_points_on_pointer_type_and_pointer_id"
   end
 
+  create_table "primary_nodes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "sequence_id", null: false
+    t.string "kind", limit: 50
+    t.bigint "child_id"
+    t.bigint "parent_id"
+    t.string "parent_arg_name", limit: 50
+    t.bigint "next_id"
+    t.bigint "body_id"
+    t.string "comment", limit: 80
+    t.index ["body_id"], name: "index_primary_nodes_on_body_id"
+    t.index ["child_id"], name: "index_primary_nodes_on_child_id"
+    t.index ["next_id"], name: "index_primary_nodes_on_next_id"
+    t.index ["parent_id"], name: "index_primary_nodes_on_parent_id"
+    t.index ["sequence_id"], name: "index_primary_nodes_on_sequence_id"
+  end
+
   create_table "regimen_items", id: :serial, force: :cascade do |t|
     t.bigint "time_offset"
     t.integer "regimen_id"
@@ -251,6 +312,29 @@ ActiveRecord::Schema.define(version: 20180109165402) do
     t.string "name", limit: 280
     t.integer "device_id"
     t.index ["device_id"], name: "index_regimens_on_device_id"
+  end
+
+  create_table "sensor_readings", force: :cascade do |t|
+    t.bigint "device_id"
+    t.float "x"
+    t.float "y"
+    t.float "z"
+    t.integer "value"
+    t.integer "pin"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "mode", default: 0
+    t.index ["device_id"], name: "index_sensor_readings_on_device_id"
+  end
+
+  create_table "sensors", force: :cascade do |t|
+    t.bigint "device_id"
+    t.integer "pin"
+    t.string "label"
+    t.integer "mode"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_sensors_on_device_id"
   end
 
   create_table "sequence_dependencies", id: :serial, force: :cascade do |t|
@@ -271,6 +355,7 @@ ActiveRecord::Schema.define(version: 20180109165402) do
     t.text "body"
     t.datetime "updated_at"
     t.datetime "created_at"
+    t.boolean "migrated_nodes", default: false
     t.index ["created_at"], name: "index_sequences_on_created_at"
     t.index ["device_id"], name: "index_sequences_on_device_id"
   end
@@ -287,6 +372,7 @@ ActiveRecord::Schema.define(version: 20180109165402) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "tool_id"
+    t.integer "pullout_direction", default: 0
     t.index ["tool_id"], name: "index_tool_slots_on_tool_id"
   end
 
@@ -295,7 +381,6 @@ ActiveRecord::Schema.define(version: 20180109165402) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "device_id"
-    t.integer "pullout_direction", default: 0
     t.index ["device_id"], name: "index_tools_on_device_id"
   end
 
@@ -353,6 +438,12 @@ ActiveRecord::Schema.define(version: 20180109165402) do
     t.integer "fun_log", default: 1
     t.integer "debug_log", default: 1
     t.boolean "stub_config", default: false
+    t.boolean "show_first_party_farmware", default: false
+    t.boolean "enable_browser_speak", default: false
+    t.boolean "show_images", default: false
+    t.string "photo_filter_begin"
+    t.string "photo_filter_end"
+    t.boolean "discard_unsaved", default: false
     t.index ["device_id"], name: "index_web_app_configs_on_device_id"
   end
 
@@ -365,10 +456,18 @@ ActiveRecord::Schema.define(version: 20180109165402) do
     t.index ["device_id"], name: "index_webcam_feeds_on_device_id"
   end
 
+  add_foreign_key "device_configs", "devices"
+  add_foreign_key "edge_nodes", "sequences"
+  add_foreign_key "farmware_installations", "devices"
   add_foreign_key "log_dispatches", "devices"
   add_foreign_key "log_dispatches", "logs"
   add_foreign_key "peripherals", "devices"
+  add_foreign_key "pin_bindings", "devices"
+  add_foreign_key "pin_bindings", "sequences"
   add_foreign_key "points", "devices"
+  add_foreign_key "primary_nodes", "sequences"
+  add_foreign_key "sensor_readings", "devices"
+  add_foreign_key "sensors", "devices"
   add_foreign_key "sequence_dependencies", "sequences"
   add_foreign_key "tool_slots", "tools"
 end

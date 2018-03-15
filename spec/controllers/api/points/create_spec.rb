@@ -23,11 +23,13 @@ describe Api::PointsController do
 
     it 'creates a plant' do
       sign_in user
+      time = (DateTime.now - 1.day).to_json
       p = { x: 23,
             y: 45,
             name: "My Lettuce",
             pointer_type: "Plant",
-            openfarm_slug: "limestone-lettuce" }
+            openfarm_slug: "limestone-lettuce",
+            planted_at: time }
       post :create, body: p.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       plant = Plant.last
@@ -82,6 +84,54 @@ describe Api::PointsController do
       post :create, body: "{'x': 0}", params: { format: :json }
       expect(response.status).to eq(422)
       expect(json[:error]).to include("Please use _valid_ JSON.")
+    end
+
+    it "creates a toolslot with an valid pullout direction" do
+      direction = 1
+      sign_in user
+      before_count = ToolSlot.count
+      post :create,
+            body:   {
+              pointer_type: "ToolSlot",
+              name: "foo",
+              x: 0,
+              y: 0,
+              z: 0,
+              pullout_direction: direction
+            }.to_json,
+            params: { format: :json }
+      expect(response.status).to eq(200)
+      expect(ToolSlot.count).to be > before_count
+      expect(json[:pullout_direction]).to eq(direction)
+    end
+
+    it 'creates a new toolslot, with a default pullout' do
+      sign_in user
+      payload = { pointer_type: "ToolSlot",
+                  name: "foo",
+                  x: 0,
+                  y: 0,
+                  z: 0 }
+      old_tool_count = ToolSlot.count
+      post :create, body: payload.to_json, params: {format: :json}
+      expect(response.status).to eq(200)
+      expect(ToolSlot.count).to be > old_tool_count
+      expect(json[:pullout_direction]).to eq(0)
+    end
+
+    it 'disallows bad `tool_id`s' do
+      sign_in user
+      payload = { pointer_type: "ToolSlot",
+                  name: "foo",
+                  x: 0,
+                  y: 0,
+                  z: 0,
+                  tool_id: (Tool.count + 100) }
+      old_tool_count = ToolSlot.count
+      post :create, body: payload.to_json, params: {format: :json}
+      expect(response.status).to eq(422)
+      expect(ToolSlot.count).to eq old_tool_count
+      expect(json[:tool_id]).to include("Can't find tool")
     end
   end
 end

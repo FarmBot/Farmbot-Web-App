@@ -10,12 +10,6 @@ jest.mock("../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 
-jest.mock("../actions", () => ({
-  getFirstPartyFarmwareList(setList: (x: string[]) => void) {
-    setList(["first-party farmware"]);
-  }
-}));
-
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { FarmwarePanel, FarmwareConfigMenu } from "../farmware_panel";
@@ -28,10 +22,14 @@ describe("<FarmwarePanel/>: actions", () => {
   });
 
   function fakeProps(): FWProps {
+    let showFirstParty = true;
     return {
       farmwares: {},
       botToMqttStatus: "up",
-      syncStatus: "synced"
+      syncStatus: "synced",
+      onToggle: jest.fn(() => showFirstParty = !showFirstParty),
+      showFirstParty,
+      firstPartyFarmwareNames: ["first-party farmware"]
     };
   }
 
@@ -116,15 +114,20 @@ describe("<FarmwarePanel/>: farmware list", () => {
   });
 
   function fakeProps(): FWProps {
+    let showFirstParty = true;
     return {
       botToMqttStatus: "up",
       farmwares: fakeFarmwares(),
-      syncStatus: "synced"
+      syncStatus: "synced",
+      onToggle: jest.fn(() => showFirstParty = !showFirstParty),
+      showFirstParty,
+      firstPartyFarmwareNames: ["first-party farmware"]
     };
   }
 
   it("lists farmware", () => {
     const p = fakeProps();
+    p.showFirstParty = false;
     const firstPartyFarmware = fakeFarmwares().farmware_0;
     if (firstPartyFarmware) { firstPartyFarmware.name = "first-party farmware"; }
     p.farmwares.farmware_1 = firstPartyFarmware;
@@ -132,7 +135,7 @@ describe("<FarmwarePanel/>: farmware list", () => {
     expect(panel.find("FBSelect").props().list).toEqual([{
       label: "My Farmware 0.0.0", value: "My Farmware"
     }]);
-    panel.setState({ showFirstParty: true });
+    panel.setProps({ showFirstParty: true });
     expect(panel.find("FBSelect").props().list).toEqual([
       { label: "My Farmware 0.0.0", value: "My Farmware" },
       { label: "first-party farmware 0.0.0", value: "first-party farmware" }
@@ -140,19 +143,26 @@ describe("<FarmwarePanel/>: farmware list", () => {
   });
 
   it("toggles first party farmware display", () => {
-    const panel = shallow(<FarmwarePanel {...fakeProps() } />);
-    panel.setState({ showFirstParty: true });
-    expect(panel.state().showFirstParty).toBeTruthy();
-    // tslint:disable-next-line:no-any
-    const instance = panel.instance() as any;
-    instance.toggleFirstPartyDisplay();
-    expect(panel.state().showFirstParty).toBeFalsy();
+    jest.resetAllMocks();
+    const p = fakeProps();
+    const panel = shallow(<FarmwarePanel {...p } />);
+    panel.find(FarmwareConfigMenu).simulate("toggle", {});
+    expect(p.onToggle).toHaveBeenCalled();
   });
 
   it("displays description", () => {
-    const panel = mount(<FarmwarePanel {...fakeProps() } />);
+    const p = fakeProps();
+    const otherFarmware = fakeFarmwares().farmware_0;
+    if (otherFarmware) {
+      otherFarmware.name = "My Other Farmware";
+      otherFarmware.meta.description = "Does other things.";
+    }
+    p.farmwares.farmware_1 = otherFarmware;
+    const panel = mount(<FarmwarePanel {...p } />);
+    expect(panel.text()).not.toContain("Does things.");
     panel.setState({ selectedFarmware: "My Farmware" });
     expect(panel.text()).toContain("Does things.");
+    expect(panel.text()).not.toContain("Does other things.");
   });
 
   it("all 1st party farmwares are installed", () => {
@@ -182,7 +192,7 @@ describe("<FarmwareConfigMenu />", () => {
   function fakeProps(): FarmwareConfigMenuProps {
     return {
       show: true,
-      toggle: jest.fn(),
+      onToggle: jest.fn(),
       firstPartyFwsInstalled: false
     };
   }
@@ -215,7 +225,7 @@ describe("<FarmwareConfigMenu />", () => {
     expect(button.hasClass("green")).toBeTruthy();
     expect(button.hasClass("fb-toggle-button")).toBeTruthy();
     button.simulate("click");
-    expect(p.toggle).toHaveBeenCalled();
+    expect(p.onToggle).toHaveBeenCalled();
   });
 
   it("1st party farmware display is disabled", () => {

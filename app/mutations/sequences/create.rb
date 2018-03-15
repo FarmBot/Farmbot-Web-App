@@ -27,16 +27,18 @@ module Sequences
 
     def execute
       seq = Sequence.new(inputs)
+      # TODO: Delete this column in may '18 - RC
       seq.args["is_outdated"] = false
       # version is never user definable!
       # IF YOU REMOVE THIS BAD STUFF WILL HAPPEN:
-      seq.args["version"]     = SequenceMigration::Base.latest_version
+      seq.args["version"]     = Sequence::LATEST_VERSION
       # See comment above ^
       ActiveRecord::Base.transaction do
+        seq.migrated_nodes = true
         seq.save!
-        reload_dependencies(seq)
+        CeleryScript::StoreCelery.run!(sequence: seq)
       end
-      seq
+      CeleryScript::FetchCelery.run!(sequence: seq.reload) # Perf nightmare?
     end
   end
 end

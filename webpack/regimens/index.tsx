@@ -11,7 +11,7 @@ import { catchErrors } from "../util";
 
 @connect(mapStateToProps)
 export class Regimens extends React.Component<Props, {}> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   render() {
     const { current, calendar } = this.props;

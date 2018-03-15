@@ -1,6 +1,5 @@
 import { maybeWarnAboutMissedTasks } from "../util";
 import { fakeFarmEvent } from "../../../__test_support__/fake_state/resources";
-import { fakeState } from "../../../__test_support__/fake_state";
 import * as moment from "moment";
 
 describe("maybeWarnAboutMissedTasks()", () => {
@@ -14,7 +13,7 @@ describe("maybeWarnAboutMissedTasks()", () => {
     fe.body.start_time = "2017-05-21T22:00:00.000";
     maybeWarnAboutMissedTasks(fe,
       () => callback("missed event warning"),
-      moment(time))(jest.fn(), fakeState);
+      moment(time))();
     return callback;
   }
   it("warns", () => {

@@ -1,13 +1,14 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { t } from "i18next";
 import { error, success } from "farmbot-toastr";
-import { fetchReleases } from "../devices/actions";
+import {
+  fetchReleases, fetchMinOsFeatureData, FEATURE_MIN_VERSIONS_URL
+} from "../devices/actions";
 import { push } from "../history";
 import { AuthState } from "./interfaces";
 import { ReduxAction, Thunk } from "../redux/interfaces";
 import * as Sync from "../sync/actions";
 import { API } from "../api";
-import { HttpData } from "../util";
 import { Session } from "../session";
 import { UnsafeError } from "../interfaces";
 import {
@@ -18,6 +19,7 @@ import {
 import { Actions } from "../constants";
 import { connectDevice } from "../connectivity/connect_device";
 import { toastErrors } from "../toast_errors";
+import { getFirstPartyFarmwareList } from "../farmware/actions";
 
 export function didLogin(authState: AuthState, dispatch: Function) {
   API.setBaseUrl(authState.token.unencoded.iss);
@@ -25,6 +27,8 @@ export function didLogin(authState: AuthState, dispatch: Function) {
   dispatch(fetchReleases(os_update_server));
   beta_os_update_server && beta_os_update_server != "NOT_SET" &&
     dispatch(fetchReleases(beta_os_update_server, { beta: true }));
+  dispatch(getFirstPartyFarmwareList());
+  dispatch(fetchMinOsFeatureData(FEATURE_MIN_VERSIONS_URL));
   dispatch(setToken(authState));
   Sync.fetchSyncData(dispatch);
   dispatch(connectDevice(authState));
@@ -32,7 +36,7 @@ export function didLogin(authState: AuthState, dispatch: Function) {
 
 // We need to handle OK logins for numerous use cases (Ex: login & registration)
 function onLogin(dispatch: Function) {
-  return (response: HttpData<AuthState>) => {
+  return (response: AxiosResponse<AuthState>) => {
     const { data } = response;
     Session.replaceToken(data);
     didLogin(data, dispatch);
@@ -71,8 +75,7 @@ export function setToken(auth: AuthState): ReduxAction<AuthState> {
 export function register(name: string,
   email: string,
   password: string,
-  confirmation: string,
-  url: string): Thunk {
+  confirmation: string): Thunk {
   return dispatch => {
     return requestRegistration(name, email, password, confirmation)
       .then(onLogin(dispatch), onRegistrationErr(dispatch));
@@ -80,7 +83,7 @@ export function register(name: string,
 }
 
 /** Handle user registration errors. */
-export function onRegistrationErr(dispatch: Function) {
+export function onRegistrationErr(_: Function) {
   return (err: UnsafeError) => toastErrors(err);
 }
 

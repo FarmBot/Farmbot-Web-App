@@ -2,9 +2,9 @@ import * as React from "react";
 import { FBSelect, DropDownItem, Row, Col } from "../../ui/index";
 import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
-import { SendMessage, ALLOWED_CHANNEL_NAMES } from "farmbot";
+import { SendMessage } from "farmbot";
 import * as _ from "lodash";
-import { StepParams } from "../interfaces";
+import { StepParams, ChannelName } from "../interfaces";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
@@ -17,7 +17,6 @@ import {
 } from "./tile_send_message_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 
-type ChannelName = ALLOWED_CHANNEL_NAMES;
 export function TileSendMessage(props: StepParams) {
   if (props.currentStep.kind === "send_message") {
     return <RefactoredSendMessage

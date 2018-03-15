@@ -5,9 +5,6 @@ module Tools
     end
 
     optional do
-      integer :pullout_direction,
-                min: Tool::PULLOUT_DIRECTIONS.min,
-                max: Tool::PULLOUT_DIRECTIONS.max
       string :name
     end
 

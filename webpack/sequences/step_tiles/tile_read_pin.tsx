@@ -6,10 +6,28 @@ import { ToolTips } from "../../constants";
 import { setPinMode, PIN_MODES, currentModeSelection } from "./tile_pin_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
+import {
+  pinsAsDropDownsReadPin,
+  celery2DropDown,
+  setArgsDotPinNumber
+} from "./pin_and_peripheral_support";
 
+export function PinMode(props: StepParams) {
+  return <Col xs={6} md={3}>
+    <label>{t("Pin Mode")}</label>
+    <FBSelect
+      onChange={(x) => setPinMode(x, props)}
+      selectedItem={currentModeSelection(props.currentStep)}
+      list={PIN_MODES} />
+  </Col>;
+
+}
 export function TileReadPin(props: StepParams) {
-  const { dispatch, currentStep, index, currentSequence } = props;
+  const { dispatch, currentStep, index, currentSequence, shouldDisplay
+  } = props;
   const className = "read-pin-step";
+  if (currentStep.kind !== "read_pin") { throw new Error("never"); }
+  const { pin_number } = currentStep.args;
   return <StepWrapper>
     <StepHeader
       className={className}
@@ -20,13 +38,12 @@ export function TileReadPin(props: StepParams) {
       index={index} />
     <StepContent className={className}>
       <Row>
-        <Col xs={6} md={3}>
-          <label>{t("Pin Number")}</label>
-          <StepInputBox dispatch={dispatch}
-            step={currentStep}
-            sequence={currentSequence}
-            index={index}
-            field="pin_number" />
+        <Col xs={6} md={6}>
+          <label>{t("Pin")}</label>
+          <FBSelect
+            selectedItem={celery2DropDown(pin_number, props.resources)}
+            onChange={setArgsDotPinNumber(props)}
+            list={pinsAsDropDownsReadPin(props.resources, shouldDisplay || (() => false))} />
         </Col>
         <Col xs={6} md={3}>
           <label>{t("Data Label")}</label>
@@ -36,13 +53,7 @@ export function TileReadPin(props: StepParams) {
             sequence={currentSequence}
             field="label" />
         </Col>
-        <Col xs={6} md={3}>
-          <label>{t("Pin Mode")}</label>
-          <FBSelect
-            onChange={(x) => setPinMode(x, props)}
-            selectedItem={currentModeSelection(currentStep)}
-            list={PIN_MODES} />
-        </Col>
+        <PinMode {...props} />
       </Row>
     </StepContent>
   </StepWrapper>;

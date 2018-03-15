@@ -138,7 +138,7 @@ describe("<FarmEventForm/>", () => {
     expect(result.time_unit).not.toEqual("daily");
   });
 
-  it("Recombines local state back into a Partial<TaggedFarmEvent[\"body\"]>", () => {
+  it(`Recombines local state back into a Partial<TaggedFarmEvent["body"]>`, () => {
     const result = recombine({
       "startDate": "2017-08-01",
       "startTime": "08:35",
@@ -150,14 +150,14 @@ describe("<FarmEventForm/>", () => {
       "executable_id": "1",
       timeOffset: 0
     });
-    expect(result.start_time).toContain("2017-08-01");
-    expect(result.end_time).toContain("2017-08-01");
-    expect(result.start_time).toContain(":35:00.000");
-    expect(result.end_time).toContain(":33:00.000");
-    expect(result.repeat).toBe(1);
-    expect(result.time_unit).toBe("never");
-    expect(result.executable_id).toBe(1);
-    expect(result.executable_type).toBe("Regimen");
+    expect(result).toEqual({
+      start_time: "2017-08-01T08:35:00.000Z",
+      end_time: "2017-08-01T08:33:00.000Z",
+      repeat: 1,
+      time_unit: "never",
+      executable_type: "Regimen",
+      executable_id: 1
+    });
   });
 
   it("renders the correct save button text when adding", () => {

@@ -17,6 +17,7 @@ export function PlantLayer(props: PlantLayerProps) {
     currentPlant,
     dragging,
     editing,
+    selectedForDel,
     mapTransformProps
   } = props;
 
@@ -29,6 +30,7 @@ export function PlantLayer(props: PlantLayerProps) {
       case Mode.boxSelect:
       case Mode.clickToAdd:
       case Mode.moveTo:
+      case Mode.createPoint:
         return { "pointerEvents": "none" };
       default:
         return {};
@@ -46,6 +48,7 @@ export function PlantLayer(props: PlantLayerProps) {
         .map(p => {
           return {
             selected: !!(currentPlant && (p.uuid === currentPlant.uuid)),
+            grayscale: !!(selectedForDel && (selectedForDel.includes(p.uuid))),
             plantId: (p.body.id || "IMPOSSIBLE_ERR_NO_PLANT_ID").toString(),
             uuid: p.uuid,
             plant: p
@@ -63,6 +66,7 @@ export function PlantLayer(props: PlantLayerProps) {
               mapTransformProps={mapTransformProps}
               plant={p.plant}
               selected={p.selected}
+              grayscale={p.grayscale}
               dragging={p.selected && dragging && editing}
               dispatch={dispatch}
               zoomLvl={props.zoomLvl}

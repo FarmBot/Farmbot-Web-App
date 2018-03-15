@@ -9,9 +9,17 @@ import {
 } from "./tile_pin_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
+import {
+  celery2DropDown,
+  setArgsDotPinNumber,
+  pinsAsDropDownsWritePin
+} from "./pin_and_peripheral_support";
 
 export function TileWritePin(props: StepParams) {
-  const { dispatch, currentStep, index, currentSequence } = props;
+  const { dispatch, currentStep, index, currentSequence, shouldDisplay
+  } = props;
+  if (currentStep.kind !== "write_pin") { throw new Error("never"); }
+
   const pinValueField = () => {
     if (currentStep.kind === "write_pin") {
       if (!(currentStep.args.pin_mode === 0) || currentStep.args.pin_value > 1) {
@@ -29,6 +37,8 @@ export function TileWritePin(props: StepParams) {
     }
   };
   const className = "write-pin-step";
+  const { pin_number } = currentStep.args;
+
   return <StepWrapper>
     <StepHeader
       className={className}
@@ -39,13 +49,12 @@ export function TileWritePin(props: StepParams) {
       index={index} />
     <StepContent className={className}>
       <Row>
-        <Col xs={6} md={3}>
-          <label>{t("Pin Number")}</label>
-          <StepInputBox dispatch={dispatch}
-            step={currentStep}
-            sequence={currentSequence}
-            index={index}
-            field="pin_number" />
+        <Col xs={6} md={6}>
+          <label>{t("Pin")}</label>
+          <FBSelect
+            selectedItem={celery2DropDown(pin_number, props.resources)}
+            onChange={setArgsDotPinNumber(props)}
+            list={pinsAsDropDownsWritePin(props.resources, shouldDisplay || (() => false))} />
         </Col>
         <Col xs={6} md={3}>
           <label>{t("Value")}</label>

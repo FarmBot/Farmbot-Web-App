@@ -68,7 +68,7 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
   }
 
   emptyPeripheral = (): TaggedPeripheral => {
-    return this.taggedPeripheral(0, "New Peripheral");
+    return this.taggedPeripheral(0, t("New Peripheral"));
   }
 
   farmduinoPeripherals = (dispatch: Function) => {
@@ -76,11 +76,11 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
       dispatch(init(this.taggedPeripheral(pin, label)));
     };
 
-    newPeripheral(7, "Lighting");
-    newPeripheral(8, "Water");
-    newPeripheral(9, "Vacuum");
-    newPeripheral(10, "Peripheral 4");
-    newPeripheral(12, "Peripheral 5");
+    newPeripheral(7, t("Lighting"));
+    newPeripheral(8, t("Water"));
+    newPeripheral(9, t("Vacuum"));
+    newPeripheral(10, t("Peripheral ") + "4");
+    newPeripheral(12, t("Peripheral ") + "5");
   }
 
   render() {
@@ -90,11 +90,11 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
     const status = getArrayStatus(peripherals);
 
     return <Widget className="peripherals-widget">
-      <WidgetHeader title={"Peripherals"} helpText={ToolTips.PERIPHERALS}>
+      <WidgetHeader title={t("Peripherals")} helpText={ToolTips.PERIPHERALS}>
         <button
           className="fb-button gray"
           onClick={this.toggle}
-          hidden={!!status}>
+          hidden={!!status && isEditing}>
           {!isEditing && t("Edit")}
           {isEditing && t("Back")}
         </button>

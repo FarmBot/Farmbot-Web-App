@@ -27,7 +27,9 @@ describe("<WeedDetector />", () => {
     dispatch: jest.fn(),
     currentImage: undefined,
     images: [],
-    syncStatus: "synced"
+    syncStatus: "synced",
+    webAppConfig: {},
+    firstPartyFarmwareNames: []
   };
 
   it("renders", () => {

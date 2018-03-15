@@ -1,9 +1,6 @@
 // Styles for ALL STEPS
 .step-wrapper {
   box-shadow: 0px 0px 10px $gray;
-  // CHRIS: I need to tweak this for DnD issues.
-  // margin-bottom: 1.5rem;
-  // margin-top: 1.5rem;
   border-radius: 3px;
   .bottom-content {
     display: flex;
@@ -36,7 +33,6 @@
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
   .pt-popover-target {
-    display: inline-block;
     float: right;
     margin-top: 0.1rem;
   }
@@ -103,6 +99,13 @@
   .help {
     float: right;
   }
+  .step-warning {
+    display: inline-block;
+    float: none;
+    .pt-popover-target {
+      float: left;
+    }
+  }
 }
 
 .step-control {
@@ -147,16 +150,8 @@
         margin: 1.4rem 0 0.4rem;
       }
     }
-    // CHRIS HALP!
-    // Modifications for check box on "if" block.
-    // -RC 7 June 17
-    input[type=checkbox] {
-      width: inherit;
-      box-shadow: none;
-      vertical-align: middle;
-    }
     input {
-      height: 34px;
+      height: 3rem;
     }
   }
   &.execute-step {

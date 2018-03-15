@@ -24,7 +24,7 @@ export function generateReducer<State, U = any>(initialState: State,
 
   const actionHandlers: ActionHandlerDict = {};
 
-  const NOOP: ActionHandler<State> = (s, a) => s;
+  const NOOP: ActionHandler<State> = (s) => s;
 
   const reducer: GeneratedReducer =
     ((state = initialState, action: ReduxAction<any>): State => {

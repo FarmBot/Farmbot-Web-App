@@ -18,10 +18,17 @@ jest.mock("../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 
+let mockConfigValue = false;
+jest.mock("../../../config_storage/actions", () => {
+  return {
+    getWebAppConfigValue: () => () => mockConfigValue,
+  };
+});
+
 import { HardwareState } from "../../../devices/interfaces";
 import {
   incomingStatus,
-  ifToastWorthy,
+  actOnChannelName,
   showLogOnScreen,
   TITLE,
   bothUp,
@@ -32,7 +39,8 @@ import {
   onSent,
   onOnline,
   onMalformed,
-  onLogs
+  onLogs,
+  speakLogAloud
 } from "../../connect_device";
 import { Actions, Content } from "../../../constants";
 import { Log } from "../../../interfaces";
@@ -40,6 +48,8 @@ import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot } from "farmbot";
 import { success, error, info, warning } from "farmbot-toastr";
 import { dispatchNetworkUp, dispatchNetworkDown } from "../../index";
 import { getDevice } from "../../../device";
+import { fakeState } from "../../../__test_support__/fake_state";
+import { talk } from "browser-speech";
 
 describe("readStatus()", () => {
   it("forces a read_status request to FarmBot", () => {
@@ -67,17 +77,17 @@ function fakeLog(meta_type: ALLOWED_MESSAGE_TYPES,
   };
 }
 
-describe("ifToast", () => {
+describe("actOnChannelName()", () => {
   it("skips irrelevant channels like `email`", () => {
     const callback = jest.fn();
-    ifToastWorthy(fakeLog("success", ["email"]), callback);
+    actOnChannelName(fakeLog("success", ["email"]), "toast", callback);
     expect(callback).not.toHaveBeenCalled();
   });
 
-  it("executes callback only for `toast` types", () => {
+  it("executes callback for `toast` type", () => {
     const callback = jest.fn();
     const fakeToast = fakeLog("success", ["toast", "email"]);
-    ifToastWorthy(fakeToast, callback);
+    actOnChannelName(fakeToast, "toast", callback);
     expect(callback).toHaveBeenCalledWith(fakeToast);
   });
 });
@@ -103,6 +113,28 @@ describe("showLogOnScreen", () => {
 
   it("routes `success` to toastr.success()", () => {
     assertToastr(["success"], success);
+  });
+});
+
+describe("speakLogAloud", () => {
+  const fakeSpeakLog = fakeLog("info");
+  fakeSpeakLog.message = "hello";
+
+  it("doesn't call browser-speech", () => {
+    mockConfigValue = false;
+    const speak = speakLogAloud(jest.fn());
+    speak(fakeSpeakLog);
+    expect(talk).not.toHaveBeenCalled();
+  });
+
+  it("calls browser-speech", () => {
+    mockConfigValue = true;
+    const speak = speakLogAloud(jest.fn());
+    Object.defineProperty(navigator, "language", {
+      value: "en_us", configurable: true
+    });
+    speak(fakeSpeakLog);
+    expect(talk).toHaveBeenCalledWith("hello", "en");
   });
 });
 
@@ -185,7 +217,7 @@ describe("onMalformed()", () => {
 
 describe("onLogs", () => {
   it("Calls `networkUp` when good logs come in", () => {
-    const fn = onLogs(jest.fn());
+    const fn = onLogs(jest.fn(), fakeState);
     const log = fakeLog("error", []);
     log.message = "bot xyz is offline";
     fn(log);

@@ -6,7 +6,7 @@ import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { HomingRow } from "./homing_row";
 import { CalibrationRow } from "./calibration_row";
 import { ZeroRow } from "./zero_row";
-import { enabledAxisMap } from "../axis_tracking_status";
+import { disabledAxisMap } from "../axis_tracking_status";
 import { HomingAndCalibrationProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
@@ -14,8 +14,9 @@ import { minFwVersionCheck } from "../../../util";
 
 export function HomingAndCalibration(props: HomingAndCalibrationProps) {
 
-  const { dispatch, bot } = props;
-  const { mcu_params } = bot.hardware;
+  const { dispatch, bot, sourceFwConfig, firmwareConfig, botDisconnected
+  } = props;
+  const hardware = firmwareConfig ? firmwareConfig : bot.hardware.mcu_params;
   const { firmware_version } = bot.hardware.informational_settings;
   const { homing_and_calibration } = props.bot.controlPanelState;
 
@@ -28,70 +29,73 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
    * Tells us if X/Y/Z have a means of checking their position.
    * FARMBOT WILL CRASH INTO WALLS IF THIS IS WRONG! BE CAREFUL.
    */
-  const enabled = enabledAxisMap(mcu_params);
+  const disabled = disabledAxisMap(hardware);
 
   return <section>
     <Header
-      title={"Homing and Calibration"}
+      title={t("Homing and Calibration")}
       name={"homing_and_calibration"}
       dispatch={dispatch}
       bool={homing_and_calibration} />
     <Collapse isOpen={!!homing_and_calibration}>
-      <HomingRow hardware={mcu_params} />
-      <CalibrationRow hardware={mcu_params} />
-      <ZeroRow />
+      <HomingRow hardware={hardware} botDisconnected={botDisconnected} />
+      <CalibrationRow hardware={hardware} botDisconnected={botDisconnected} />
+      <ZeroRow botDisconnected={botDisconnected} />
       <BooleanMCUInputGroup
         name={t("Find Home on Boot")}
-        tooltip={t(ToolTips.FIND_HOME_ON_BOOT)}
-        disableX={!enabled.x}
-        disableY={!enabled.y}
-        disableZ={!enabled.z}
+        tooltip={ToolTips.FIND_HOME_ON_BOOT}
+        disable={disabled}
         x={"movement_home_at_boot_x"}
         y={"movement_home_at_boot_y"}
         z={"movement_home_at_boot_z"}
         dispatch={dispatch}
-        bot={bot}
+        sourceFwConfig={sourceFwConfig}
         caution={true} />
       <BooleanMCUInputGroup
         name={t("Stop at Home")}
-        tooltip={t(ToolTips.STOP_AT_HOME)}
+        tooltip={ToolTips.STOP_AT_HOME}
         x={"movement_stop_at_home_x"}
         y={"movement_stop_at_home_y"}
         z={"movement_stop_at_home_z"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <BooleanMCUInputGroup
         name={t("Stop at Max")}
-        tooltip={t(ToolTips.STOP_AT_MAX)}
+        tooltip={ToolTips.STOP_AT_MAX}
         x={"movement_stop_at_max_x"}
         y={"movement_stop_at_max_y"}
         z={"movement_stop_at_max_z"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <BooleanMCUInputGroup
         name={t("Negative Coordinates Only")}
-        tooltip={t(ToolTips.NEGATIVE_COORDINATES_ONLY)}
+        tooltip={ToolTips.NEGATIVE_COORDINATES_ONLY}
         x={"movement_home_up_x"}
         y={"movement_home_up_y"}
         z={"movement_home_up_z"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <NumericMCUInputGroup
         name={t("Axis Length (steps)")}
-        tooltip={t(ToolTips.LENGTH)}
+        tooltip={ToolTips.LENGTH}
         x={"movement_axis_nr_steps_x"}
         y={"movement_axis_nr_steps_y"}
         z={"movement_axis_nr_steps_z"}
-        bot={bot}
+        gray={{
+          x: !sourceFwConfig("movement_stop_at_max_x").value,
+          y: !sourceFwConfig("movement_stop_at_max_y").value,
+          z: !sourceFwConfig("movement_stop_at_max_z").value,
+        }}
+        sourceFwConfig={sourceFwConfig}
         dispatch={dispatch}
         intSize={axisLengthIntSize} />
       <NumericMCUInputGroup
         name={t("Timeout after (seconds)")}
-        tooltip={t(ToolTips.TIMEOUT_AFTER)}
+        tooltip={ToolTips.TIMEOUT_AFTER}
         x={"movement_timeout_x"}
         y={"movement_timeout_y"}
         z={"movement_timeout_z"}
-        bot={bot}
+        sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
     </Collapse>
   </section>;

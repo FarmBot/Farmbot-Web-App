@@ -12,15 +12,17 @@ import { ResourceName, TaggedUser } from "./resources/tagged_resources";
 import {
   selectAllLogs,
   maybeFetchUser,
-  maybeGetTimeOffset
+  maybeGetTimeOffset,
+  getFirmwareConfig
 } from "./resources/selectors";
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
-import { catchErrors } from "./util";
+import { catchErrors, validBotLocationData, validFwConfig } from "./util";
 import { Session } from "./session";
 import { BooleanSetting } from "./session_keys";
 import { getPathArray } from "./history";
+import { FirmwareConfig } from "./config_storage/firmware_configs";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
 const fastClick = require("fastclick");
@@ -36,9 +38,9 @@ export interface AppProps {
   user: TaggedUser | undefined;
   bot: BotState;
   consistent: boolean;
-  autoSyncEnabled: boolean;
   timeOffset: number;
   axisInversion: Record<Xyz, boolean>;
+  firmwareConfig: FirmwareConfig | undefined;
 }
 
 function mapStateToProps(props: Everything): AppProps {
@@ -55,12 +57,12 @@ function mapStateToProps(props: Everything): AppProps {
       .value(),
     loaded: props.resources.loaded,
     consistent: !!(props.bot || {}).consistent,
-    autoSyncEnabled: !!props.bot.hardware.configuration.auto_sync,
     axisInversion: {
       x: !!Session.deprecatedGetBool(BooleanSetting.x_axis_inverted),
       y: !!Session.deprecatedGetBool(BooleanSetting.y_axis_inverted),
       z: !!Session.deprecatedGetBool(BooleanSetting.z_axis_inverted),
-    }
+    },
+    firmwareConfig: validFwConfig(getFirmwareConfig(props.resources.index))
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -79,9 +81,9 @@ const MUST_LOAD: ResourceName[] = [
 
 @connect(mapStateToProps)
 export class App extends React.Component<AppProps, {}> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
-  get isLoaded() {
+  private get isLoaded() {
     return (MUST_LOAD.length ===
       _.intersection(this.props.loaded, MUST_LOAD).length);
   }
@@ -101,6 +103,7 @@ export class App extends React.Component<AppProps, {}> {
   render() {
     const syncLoaded = this.isLoaded;
     const currentPage = getPathArray()[2];
+    const { location_data, mcu_params } = this.props.bot.hardware;
     return <div className="app">
       <HotKeys dispatch={this.props.dispatch} />
       <NavBar
@@ -109,17 +112,15 @@ export class App extends React.Component<AppProps, {}> {
         user={this.props.user}
         bot={this.props.bot}
         dispatch={this.props.dispatch}
-        logs={this.props.logs}
-        autoSyncEnabled={this.props.autoSyncEnabled}
-      />
+        logs={this.props.logs} />
       {!syncLoaded && <LoadingPlant />}
       {syncLoaded && this.props.children}
       {!(["controls", "account", "regimens"].includes(currentPage)) &&
         <ControlsPopup
           dispatch={this.props.dispatch}
           axisInversion={this.props.axisInversion}
-          botPosition={this.props.bot.hardware.location_data.position}
-          mcuParams={this.props.bot.hardware.mcu_params} />}
+          botPosition={validBotLocationData(location_data).position}
+          mcuParams={this.props.firmwareConfig || mcu_params} />}
     </div>;
   }
 }

@@ -43,6 +43,8 @@ class Image < ApplicationRecord
     content_type: ["image/jpg", "image/jpeg", "image/png", "image/gif"]
 
   def set_attachment_by_url(url)
+    # File
+    # URI::HTTPS
     self.attachment = open(url)
     self.attachment_processed_at = Time.now
     self

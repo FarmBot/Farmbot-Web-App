@@ -2,25 +2,20 @@ import * as React from "react";
 import { Row, Col, Markdown } from "../../../ui/index";
 import { t } from "i18next";
 import { OsUpdateButton } from "./os_update_button";
-import { BotState } from "../../interfaces";
 import { Popover, Position } from "@blueprintjs/core";
 import { ColWidth } from "../farmbot_os_settings";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { updateConfig } from "../../actions";
-import { noop, last } from "lodash";
+import { last } from "lodash";
 import { Content } from "../../../constants";
+import { FbosDetailsProps, FarmbotOsRowProps } from "./interfaces";
 
-interface FarmbotOsRowProps {
-  controller_version: string | undefined;
-  bot: BotState;
-  osReleaseNotes: string;
-}
-
-export function FbosDetails(bot: BotState) {
+export function FbosDetails(props: FbosDetailsProps) {
+  const { dispatch, sourceFbosConfig } = props;
   const {
-     env, commit, target, node_name, firmware_version, firmware_commit
-  } = bot.hardware.informational_settings;
-  const { beta_opt_in } = bot.hardware.configuration;
+    env, commit, target, node_name, firmware_version, firmware_commit
+  } = props.bot.hardware.informational_settings;
+  const betaOptIn = sourceFbosConfig("beta_opt_in");
   const shortenCommit = (longCommit: string) => (longCommit || "").slice(0, 8);
   return <div>
     <p><b>Environment: </b>{env}</p>
@@ -34,16 +29,19 @@ export function FbosDetails(bot: BotState) {
         {t("Beta release Opt-In")}
       </label>
       <ToggleButton
-        toggleValue={beta_opt_in}
+        toggleValue={betaOptIn.value}
+        dim={!betaOptIn.consistent}
         toggleAction={() =>
-          (beta_opt_in || confirm(Content.OS_BETA_RELEASES)) &&
-          updateConfig({ beta_opt_in: !beta_opt_in })(noop)} />
+          (betaOptIn.value || confirm(Content.OS_BETA_RELEASES)) &&
+          dispatch(updateConfig({ beta_opt_in: !betaOptIn.value }))} />
     </fieldset>
   </div>;
 }
 
 export function FarmbotOsRow(props: FarmbotOsRowProps) {
-  const version = props.controller_version || t(" unknown (offline)");
+  const { sourceFbosConfig, dispatch, bot, osReleaseNotes, botOnline } = props;
+  const { controller_version } = bot.hardware.informational_settings;
+  const version = controller_version || t(" unknown (offline)");
   return <Row>
     <Col xs={ColWidth.label}>
       <label>
@@ -55,7 +53,10 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
         <p>
           {t("Version {{ version }}", { version })}
         </p>
-        <FbosDetails {...props.bot} />
+        <FbosDetails
+          bot={bot}
+          dispatch={dispatch}
+          sourceFbosConfig={sourceFbosConfig} />
       </Popover>
     </Col>
     <Col xs={3}>
@@ -66,13 +67,16 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
         </p>
         <div className="release-notes">
           <Markdown>
-            {props.osReleaseNotes}
+            {osReleaseNotes}
           </Markdown>
         </div>
       </Popover>
     </Col>
     <Col xs={3}>
-      <OsUpdateButton bot={props.bot} />
+      <OsUpdateButton
+        bot={bot}
+        sourceFbosConfig={sourceFbosConfig}
+        botOnline={botOnline} />
     </Col>
   </Row >;
 }

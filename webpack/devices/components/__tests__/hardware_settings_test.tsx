@@ -1,32 +1,35 @@
 import * as React from "react";
-import { mount } from "enzyme";
-import { HardwareSettings } from "../hardware_settings";
-import { fakeState } from "../../../__test_support__/fake_state";
-import { ControlPanelState } from "../../interfaces";
+import { mount, shallow } from "enzyme";
+import { HardwareSettings, FwParamExportMenu } from "../hardware_settings";
+import { HardwareSettingsProps } from "../../interfaces";
 import { Actions } from "../../../constants";
+import { bot } from "../../../__test_support__/fake_state/bot";
+import { panelState } from "../../../__test_support__/control_panel_state";
+import { fakeFirmwareConfig } from "../../../__test_support__/fake_state/resources";
 
 describe("<HardwareSettings />", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  function panelState(): ControlPanelState {
+  const fakeProps = (): HardwareSettingsProps => {
     return {
-      homing_and_calibration: false,
-      motors: false,
-      encoders_and_endstops: false,
-      danger_zone: false,
-      power_and_reset: false,
-      pin_guard: false
+      bot,
+      controlPanelState: panelState(),
+      botToMqttStatus: "up",
+      dispatch: jest.fn(),
+      sourceFbosConfig: (x) => {
+        return { value: bot.hardware.configuration[x], consistent: true };
+      },
+      sourceFwConfig: (x) => {
+        return { value: bot.hardware.mcu_params[x], consistent: true };
+      },
+      firmwareConfig: undefined,
     };
-  }
+  };
 
   it("renders", () => {
-    const wrapper = mount(<HardwareSettings
-      controlPanelState={panelState()}
-      dispatch={jest.fn()}
-      bot={fakeState().bot}
-      botToMqttStatus={"up"} />);
+    const wrapper = mount(<HardwareSettings {...fakeProps()} />);
     ["expand all", "x axis", "motors"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
@@ -37,16 +40,12 @@ describe("<HardwareSettings />", () => {
     buttonText: string,
     type: string,
     payload: boolean | string) {
-    const dispatch = jest.fn();
-    const wrapper = mount(<HardwareSettings
-      controlPanelState={panelState()}
-      dispatch={dispatch}
-      bot={fakeState().bot}
-      botToMqttStatus={"up"} />);
+    const p = fakeProps();
+    const wrapper = mount(<HardwareSettings {...p} />);
     const button = wrapper.find(buttonElement).at(buttonIndex);
     expect(button.text().toLowerCase()).toContain(buttonText);
     button.simulate("click");
-    expect(dispatch).toHaveBeenCalledWith({ payload, type });
+    expect(p.dispatch).toHaveBeenCalledWith({ payload, type });
   }
 
   it("expands all", () => {
@@ -62,5 +61,26 @@ describe("<HardwareSettings />", () => {
   it("toggles motor category", () => {
     checkDispatch("h4", 1, "motors",
       Actions.TOGGLE_CONTROL_PANEL_OPTION, "motors");
+  });
+
+  it("shows param export menu", () => {
+    const p = fakeProps();
+    p.firmwareConfig = fakeFirmwareConfig().body;
+    p.firmwareConfig.api_migrated = true;
+    const wrapper = shallow(<HardwareSettings {...p} />);
+    expect(wrapper.find("Popover").length).toEqual(1);
+  });
+
+  it("doesn't show param export menu", () => {
+    const wrapper = shallow(<HardwareSettings {...fakeProps()} />);
+    expect(wrapper.find("Popover").length).toEqual(0);
+  });
+});
+
+describe("<FwParamExportMenu />", () => {
+  it("lists all params", () => {
+    const config = fakeFirmwareConfig().body;
+    const wrapper = mount(<FwParamExportMenu firmwareConfig={config} />);
+    expect(wrapper.text()).toContain("movement_max_spd_");
   });
 });

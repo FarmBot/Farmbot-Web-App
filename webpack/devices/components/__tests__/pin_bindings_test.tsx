@@ -6,6 +6,11 @@ jest.mock("../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 
+jest.mock("../../../api/crud", () => ({
+  destroy: jest.fn(),
+  initSave: jest.fn()
+}));
+
 import * as React from "react";
 import { PinBindings, PinBindingsProps } from "../pin_bindings";
 import { mount } from "enzyme";
@@ -14,7 +19,10 @@ import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
 import { TaggedSequence } from "../../../resources/tagged_resources";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
+import {
+  fakeSequence, fakePinBinding
+} from "../../../__test_support__/fake_state/resources";
+import { destroy, initSave } from "../../../api/crud";
 
 describe("<PinBindings/>", () => {
   beforeEach(function () {
@@ -37,12 +45,13 @@ describe("<PinBindings/>", () => {
       dispatch: jest.fn(),
       bot: bot,
       resources: resources,
-      botToMqttStatus: "up"
+      botToMqttStatus: "up",
+      shouldDisplay: () => false,
     };
   }
 
   it("renders", () => {
-    const wrapper = mount(<PinBindings {...fakeProps() } />);
+    const wrapper = mount(<PinBindings {...fakeProps()} />);
     ["pin bindings", "pin number", "none", "bind"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
     ["pi gpio 10", "sequence 1", "pi gpio 11", "sequence 2"].map(string =>
@@ -52,39 +61,63 @@ describe("<PinBindings/>", () => {
     expect(buttons.length).toBe(4);
   });
 
-  it("unregisters pin", () => {
-    const dispatch = jest.fn();
+  it("unregisters pin: bot", () => {
     const p = fakeProps();
-    p.dispatch = dispatch;
+    p.dispatch = jest.fn(x => x(jest.fn()));
     const wrapper = mount(<PinBindings {...p} />);
     const buttons = wrapper.find("button");
     buttons.first().simulate("click");
-    dispatch.mock.calls[0][0](jest.fn());
     expect(mockDevice.unregisterGpio).toHaveBeenCalledWith({
       pin_number: 10
     });
   });
 
-  it("registers pin", () => {
-    const dispatch = jest.fn();
+  it("unregisters pin: api", () => {
     const p = fakeProps();
-    p.dispatch = dispatch;
+    const s = fakeSequence();
+    s.body.id = 1;
+    p.resources = buildResourceIndex([fakePinBinding(), s]).index;
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<PinBindings {...p} />);
+    const buttons = wrapper.find("button");
+    buttons.first().simulate("click");
+    expect(mockDevice.unregisterGpio).not.toHaveBeenCalled();
+    expect(destroy).toHaveBeenCalledWith(expect.stringContaining("PinBinding"));
+  });
+
+  it("registers pin: bot", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn(x => x(jest.fn()));
     const wrapper = mount(<PinBindings {...p} />);
     const buttons = wrapper.find("button");
     expect(buttons.last().text()).toEqual("BIND");
     wrapper.setState({ pinNumberInput: 1, sequenceIdInput: 2 });
     buttons.last().simulate("click");
-    dispatch.mock.calls[0][0](jest.fn());
     expect(mockDevice.registerGpio).toHaveBeenCalledWith({
       pin_number: 1, sequence_id: 2
     });
+  });
+
+  it("registers pin: api", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn();
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<PinBindings {...p} />);
+    const buttons = wrapper.find("button");
+    expect(buttons.last().text()).toEqual("BIND");
+    wrapper.setState({ pinNumberInput: 1, sequenceIdInput: 2 });
+    buttons.last().simulate("click");
+    expect(mockDevice.registerGpio).not.toHaveBeenCalled();
+    expect(initSave).toHaveBeenCalledWith(expect.objectContaining({
+      body: { pin_num: 1, sequence_id: 2 }, kind: "PinBinding"
+    }));
   });
 
   it("sets sequence id", () => {
     const p = fakeProps();
     const s = p.resources.references[p.resources.byKind.Sequence[0]];
     const id = s && s.body.id;
-    const wrapper = mount(<PinBindings {...p } />);
+    const wrapper = mount(<PinBindings {...p} />);
     expect(wrapper.state().sequenceIdInput).toEqual(undefined);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
@@ -93,7 +126,7 @@ describe("<PinBindings/>", () => {
   });
 
   it("sets pin", () => {
-    const wrapper = mount(<PinBindings {...fakeProps() } />);
+    const wrapper = mount(<PinBindings {...fakeProps()} />);
     expect(wrapper.state().pinNumberInput).toEqual(undefined);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;

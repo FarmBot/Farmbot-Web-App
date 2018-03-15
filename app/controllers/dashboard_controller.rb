@@ -27,6 +27,17 @@ class DashboardController < ApplicationController
     end
   end
 
+  def verify
+    user   = params[:token] && User.find_by!(confirmation_token: params[:token])
+    # Two use cases:                  re-confirmation   Email change
+    klass  = user.unconfirmed_email? ? Users::Reverify : Users::Verify
+    @token = klass.run!(user: user).to_json
+    render :confirmation_page, layout: false
+  rescue User::AlreadyVerified
+    @already_registered = true
+    render :confirmation_page, layout: false, status: 409
+  end
+
   # Endpoint reports CSP violations, indicating a possible security problem.
   def csp_reports
     payload = request.body.read || ""

@@ -11,6 +11,7 @@ import { catchErrors } from "../../util";
 interface Props {
   plants: TaggedPlantPointer[];
   dispatch: Function;
+  hoveredPlantListItem?: string | undefined;
 }
 
 interface State {
@@ -19,15 +20,17 @@ interface State {
 
 function mapStateToProps(props: Everything): Props {
   const plants = selectAllPlantPointers(props.resources.index);
+  const { hoveredPlantListItem } = props.resources.consumers.farm_designer;
   return {
     plants,
-    dispatch: props.dispatch
+    dispatch: props.dispatch,
+    hoveredPlantListItem,
   };
 }
 
 @connect(mapStateToProps)
 export class Plants extends React.Component<Props, State> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   state: State = { searchTerm: "" };
 
@@ -64,10 +67,14 @@ export class Plants extends React.Component<Props, State> {
               this.props.plants
                 .filter(p => p.body.name.toLowerCase()
                   .includes(this.state.searchTerm.toLowerCase()))
-                .map(p => <PlantInventoryItem
-                  key={p.uuid}
-                  tpp={p}
-                  dispatch={this.props.dispatch} />)
+                .map(p => {
+                  const hovered = this.props.hoveredPlantListItem === p.uuid;
+                  return <PlantInventoryItem
+                    key={p.uuid}
+                    tpp={p}
+                    hovered={hovered}
+                    dispatch={this.props.dispatch} />;
+                })
             }
           </div>
         </div>

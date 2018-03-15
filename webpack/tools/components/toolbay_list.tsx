@@ -12,7 +12,7 @@ export class ToolBayList extends React.Component<ToolBayListProps, {}> {
     const { getToolSlots, getToolByToolSlotUUID } = this.props;
 
     return <Widget>
-      <WidgetHeader helpText={ToolTips.TOOLBAY_LIST} title={"ToolBay 1"}>
+      <WidgetHeader helpText={ToolTips.TOOLBAY_LIST} title={t("ToolBay ") + "1"}>
         <button
           className="gray fb-button"
           onClick={toggle}>
@@ -23,9 +23,9 @@ export class ToolBayList extends React.Component<ToolBayListProps, {}> {
         <ToolBayHeader />
         {getToolSlots().map((slot: TaggedToolSlotPointer, index: number) => {
           const tool = getToolByToolSlotUUID(slot.uuid);
-          const name = (tool && tool.body.name) || "None";
+          const name = (tool && tool.body.name) || t("None");
           return <Row key={slot.uuid}>
-            <Col xs={2}>
+            <Col xs={1}>
               <label>{index + 1}</label>
             </Col>
             <Col xs={2}>{slot.body.x}</Col>

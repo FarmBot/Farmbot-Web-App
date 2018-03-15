@@ -16,13 +16,6 @@ module Api
       mutate Users::Destroy.run(user_params, user: current_user)
     end
 
-    def verify
-      user  = params[:token] && User.find_by!(confirmation_token: params[:token])
-      # Two use cases:                  re-confirmation   Email change
-      klass = user.unconfirmed_email? ? Users::Reverify : Users::Verify
-      mutate klass.run(user: user)
-    end
-
     def show
       render json: current_device.users
     end
@@ -30,6 +23,10 @@ module Api
     def resend_verification
       mutate Users::ResendVerification
         .run(user: User.find_by!(email: params[:email]))
+    end
+
+    def control_certificate
+      mutate Users::GenerateControlCert.run(raw_json, device: current_device)
     end
 
     private

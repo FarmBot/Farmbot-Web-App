@@ -5,7 +5,6 @@ module.exports = function () {
     entry: {
       "app_bundle": "./webpack/entry.tsx",
       "front_page": "./webpack/front_page/index.tsx",
-      "verification": "./webpack/verification.ts",
       "password_reset": "./webpack/password_reset/index.tsx",
       "tos_update": "./webpack/tos_update/index.tsx"
     },

@@ -53,19 +53,19 @@ export let regimensReducer = generateReducer<RegimenState>(initialState)
     }
     return s;
   })
-  .add<void>(Actions.PUSH_WEEK, (s, a) => {
+  .add<void>(Actions.PUSH_WEEK, (s) => {
     s.weeks.push(newWeek());
     return s;
   })
-  .add<void>(Actions.POP_WEEK, (s, a) => {
+  .add<void>(Actions.POP_WEEK, (s) => {
     s.weeks.pop();
     return s;
   })
-  .add<void>(Actions.DESELECT_ALL_DAYS, (s, a) => {
+  .add<void>(Actions.DESELECT_ALL_DAYS, (s) => {
     s.weeks.map((week) => DAYS.map((key) => week.days[key] = false));
     return s;
   })
-  .add<void>(Actions.SELECT_ALL_DAYS, (s, a) => {
+  .add<void>(Actions.SELECT_ALL_DAYS, (s) => {
     s.weeks.map((week) => DAYS.map((key) => week.days[key] = true));
     return s;
   })

@@ -68,6 +68,7 @@ module CeleryScript
     def validate_node(node)
       check_arity(node)
       node.args.map { |array| check_arg_validity(*array) }
+      corpus.validate_node(node)
     end
 
     def check_arity(node)
@@ -149,7 +150,7 @@ module CeleryScript
     end
 
     def run_additional_validations(node, expectation)
-      corpus.validator(expectation).call(node, TypeCheckError, corpus)
+      corpus.arg_validator(expectation).call(node, TypeCheckError, corpus)
     end
 
     # Calling this method with only one paramter

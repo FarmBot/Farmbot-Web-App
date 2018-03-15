@@ -45,7 +45,7 @@ describe("botToMQTT()", () => {
   it("handles loss of connectivity", () => {
     const result = botToMQTT(undefined);
     expect(result.connectionStatus).toBeFalsy();
-    expect(result.children).toContain("No messages seen yet.");
+    expect(result.children).toContain("No recent messages.");
   });
 });
 const NOW = moment().toJSON();
@@ -78,8 +78,8 @@ describe("botToFirmware()", () => {
   });
 
   it("returns board name", () => {
-    const output = botToFirmware("0.0.0.F");
-    expect(output.to).toContain("Farmduino");
+    expect(botToFirmware("0.0.0.F").to).toContain("Farmduino");
+    expect(botToFirmware("0.0.0.G").to).toContain("Farmduino");
   });
 
   it("board undefined", () => {
@@ -91,6 +91,7 @@ describe("botToFirmware()", () => {
     const output = botToFirmware("Arduino Disconnected!");
     expect(output.connectionStatus).toBe(false);
     expect(output.children).toContain("Disconnected");
+    expect(botToFirmware("STUBFW").children).toContain("Disconnected");
   });
 });
 

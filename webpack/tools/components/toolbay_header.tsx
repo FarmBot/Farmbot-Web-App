@@ -2,9 +2,9 @@ import * as React from "react";
 import { Col, Row } from "../../ui/index";
 import { t } from "i18next";
 
-export function ToolBayHeader(props: {}) {
+export function ToolBayHeader(_: {}) {
   return <Row>
-    <Col xs={2}>
+    <Col xs={1}>
       <label>{t("Slot")}</label>
     </Col>
     <Col xs={2}>

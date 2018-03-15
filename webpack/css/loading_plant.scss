@@ -17,6 +17,7 @@ $duration: 2;
 .loading-plant {
   transform: scale(1);
   transform-origin: bottom;
+  transform-box: fill-box;
   animation: loading-plant-pop $duration*0.3s cubic-bezier(0, 0, 0, 1.3);
 }
 
@@ -33,6 +34,7 @@ $duration: 2;
 
 .loading-plant-leaf {
   transform-origin: center;
+  transform-box: fill-box;
   transform: scale(1);
   opacity: 1;
   animation: loading-plant-leaf-pop $duration*0.5s cubic-bezier(0, 0, 0, 1) 1;
@@ -51,6 +53,7 @@ $duration: 2;
 
 .loading-plant-accent {
   transform-origin: center;
+  transform-box: fill-box;
   transform: scale(1);
   opacity: 1;
   animation: loading-plant-accent-pop $duration*0.5s cubic-bezier(0, 0, 0, 1.4) 1 ;
@@ -73,6 +76,7 @@ $duration: 2;
 
 .loading-plant-circle {
   transform-origin: center;
+  transform-box: fill-box;
   animation:
   loading-plant-circle-pop $duration*0.3s cubic-bezier(0, 0, 0, 1.4) 1,
   loading-plant-circle $duration*3s linear infinite $duration*0.3s;

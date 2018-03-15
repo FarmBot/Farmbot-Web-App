@@ -23,7 +23,7 @@ interface State {
 @connect(mapStateToPropsAddEdit)
 export class AddFarmEvent
   extends React.Component<AddEditFarmEventProps, Partial<State>> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   constructor(props: AddEditFarmEventProps) {
     super(props);

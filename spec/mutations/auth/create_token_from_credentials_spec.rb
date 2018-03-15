@@ -31,6 +31,18 @@ describe Auth::FromJWT do
     expect(results[:token].unencoded[:os_update_server]).to eq(CalculateUpgrade::OS_RELEASE)
   end
 
+  it 'Rejects bad email / password' do
+    input = {
+      email:        "x@y.z",
+      password:     "password123",
+      fbos_version: Gem::Version.new("10.9.8")
+    }
+    x = Auth::CreateToken.run(input)
+    expect(x.success?).to be false
+    expect(x.errors["auth"]).to be
+    expect(x.errors["auth"].message_list).to include("Bad email or password.")
+  end
+
   it 'sometimes renders the legacy URL' do
     pw      = "password123"
     user    = FactoryBot.create(:user, password: pw)

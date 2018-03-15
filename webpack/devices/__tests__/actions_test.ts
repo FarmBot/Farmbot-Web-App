@@ -12,7 +12,8 @@ const mockDevice = {
   togglePin: jest.fn(() => { return Promise.resolve(); }),
   home: jest.fn(() => { return Promise.resolve(); }),
   sync: jest.fn(() => { return Promise.resolve(); }),
-  readStatus: jest.fn(() => Promise.resolve())
+  readStatus: jest.fn(() => Promise.resolve()),
+  updateConfig: jest.fn(() => Promise.resolve())
 };
 
 jest.mock("../../device", () => ({
@@ -23,10 +24,12 @@ jest.mock("../../device", () => ({
 const mockOk = jest.fn();
 const mockInfo = jest.fn();
 const mockError = jest.fn();
+const mockWarning = jest.fn();
 jest.mock("farmbot-toastr", () => ({
   success: mockOk,
   info: mockInfo,
-  error: mockError
+  error: mockError,
+  warning: mockWarning,
 }));
 
 let mockGetRelease: Promise<{}> = Promise.resolve({});
@@ -37,13 +40,18 @@ jest.mock("axios", () => ({
 }));
 
 import * as actions from "../actions";
-import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import {
+  fakeSequence, fakeFbosConfig, fakeFirmwareConfig
+} from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import { changeStepSize, resetNetwork, resetConnectionInfo } from "../actions";
 import { Actions } from "../../constants";
-import { fakeDevice } from "../../__test_support__/resource_index_builder";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { API } from "../../api/index";
 import axios from "axios";
+import { SpecialStatus } from "../../resources/tagged_resources";
+import { McuParamName } from "farmbot";
+import { bot } from "../../__test_support__/fake_state/bot";
 
 describe("checkControllerUpdates()", function () {
   beforeEach(function () {
@@ -168,15 +176,96 @@ describe("MCUFactoryReset()", function () {
   });
 });
 
-describe("botConfigChange()", function () {
+describe("settingToggle()", () => {
   beforeEach(function () {
     jest.clearAllMocks();
   });
 
-  it("calls updateMcu", async () => {
-    await actions.botConfigChange("encoder_enabled_x", 0);
-    expect(mockDevice.updateMcu).toHaveBeenCalledWith({ encoder_enabled_x: 0 });
-    expect(mockOk).not.toHaveBeenCalled();
+  it("toggles mcu param via updateMcu", async () => {
+    bot.hardware.mcu_params.param_mov_nr_retry = 0;
+    const sourceSetting = (x: McuParamName) =>
+      ({ value: bot.hardware.mcu_params[x], consistent: true });
+    const state = fakeState();
+    const fakeConfig = fakeFirmwareConfig();
+    fakeConfig.body.api_migrated = false;
+    state.resources = buildResourceIndex([fakeConfig]);
+    await actions.settingToggle(
+      "param_mov_nr_retry", sourceSetting)(jest.fn(), () => state);
+    expect(mockDevice.updateMcu)
+      .toHaveBeenCalledWith({ param_mov_nr_retry: 1 });
+  });
+
+  it("toggles mcu param via FirmwareConfig", async () => {
+    bot.hardware.mcu_params.param_mov_nr_retry = 1;
+    const sourceSetting = (x: McuParamName) =>
+      ({ value: bot.hardware.mcu_params[x], consistent: true });
+    const state = fakeState();
+    const fakeConfig = fakeFirmwareConfig();
+    fakeConfig.body.api_migrated = true;
+    state.resources = buildResourceIndex([fakeConfig]);
+    const dispatch = jest.fn();
+    await actions.settingToggle(
+      "param_mov_nr_retry", sourceSetting)(dispatch, () => state);
+    expect(mockDevice.updateMcu).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: {
+        specialStatus: SpecialStatus.DIRTY,
+        update: { param_mov_nr_retry: 0 },
+        uuid: expect.stringContaining("FirmwareConfig")
+      },
+      type: Actions.EDIT_RESOURCE
+    });
+  });
+});
+
+describe("updateMCU()", () => {
+  beforeEach(function () {
+    jest.clearAllMocks();
+  });
+
+  it("updates mcu param via updateMcu", async () => {
+    bot.hardware.mcu_params.param_mov_nr_retry = 0;
+    const state = fakeState();
+    const fakeConfig = fakeFirmwareConfig();
+    fakeConfig.body.api_migrated = false;
+    state.resources = buildResourceIndex([fakeConfig]);
+    await actions.updateMCU(
+      "param_mov_nr_retry", "1")(jest.fn(), () => state);
+    expect(mockDevice.updateMcu)
+      .toHaveBeenCalledWith({ param_mov_nr_retry: "1" });
+  });
+
+  it("updates mcu param via FirmwareConfig", async () => {
+    bot.hardware.mcu_params.param_mov_nr_retry = 1;
+    const state = fakeState();
+    const fakeConfig = fakeFirmwareConfig();
+    fakeConfig.body.api_migrated = true;
+    state.resources = buildResourceIndex([fakeConfig]);
+    const dispatch = jest.fn();
+    await actions.updateMCU(
+      "param_mov_nr_retry", "0")(dispatch, () => state);
+    expect(mockDevice.updateMcu).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: {
+        specialStatus: SpecialStatus.DIRTY,
+        update: { param_mov_nr_retry: "0" },
+        uuid: expect.stringContaining("FirmwareConfig")
+      },
+      type: Actions.EDIT_RESOURCE
+    });
+  });
+
+  it("prevents update with incompatible value", async () => {
+    bot.hardware.mcu_params.movement_max_spd_x = 0;
+    const state = fakeState();
+    const fakeConfig = fakeFirmwareConfig();
+    fakeConfig.body.api_migrated = false;
+    state.resources = buildResourceIndex([fakeConfig]);
+    await actions.updateMCU(
+      "movement_min_spd_x", "100")(jest.fn(), () => state);
+    expect(mockDevice.updateMcu).not.toHaveBeenCalled();
+    expect(mockWarning).toHaveBeenCalledWith(
+      "Minimum speed should always be lower than maximum");
   });
 });
 
@@ -239,9 +328,8 @@ describe("resetNetwork()", () => {
 describe("resetConnectionInfo()", () => {
   it("dispatches the right actions", () => {
     const mock1 = jest.fn();
-    const d = fakeDevice();
     API.setBaseUrl("http://localhost:300");
-    resetConnectionInfo(d)(mock1, jest.fn());
+    resetConnectionInfo()(mock1);
     expect(mock1).toHaveBeenCalledWith(resetNetwork());
     expect(mock1).toHaveBeenCalledTimes(1);
     expect(mockDevice.readStatus).toHaveBeenCalled();
@@ -256,23 +344,25 @@ describe("fetchReleases()", () => {
   it("fetches latest OS release version", async () => {
     mockGetRelease = Promise.resolve({ data: { tag_name: "v1.0.0" } });
     const dispatch = jest.fn();
-    await actions.fetchReleases("url")(dispatch, jest.fn());
+    await actions.fetchReleases("url")(dispatch);
     expect(axios.get).toHaveBeenCalledWith("url");
     expect(mockError).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
-      payload: "1.0.0",
+      payload: { version: "1.0.0", commit: undefined },
       type: Actions.FETCH_OS_UPDATE_INFO_OK
     });
   });
 
   it("fetches latest beta OS release version", async () => {
-    mockGetRelease = Promise.resolve({ data: { tag_name: "v1.0.0-beta" } });
+    mockGetRelease = Promise.resolve({
+      data: { tag_name: "v1.0.0-beta", target_commitish: "commit" }
+    });
     const dispatch = jest.fn();
-    await actions.fetchReleases("url", { beta: true })(dispatch, jest.fn());
+    await actions.fetchReleases("url", { beta: true })(dispatch);
     expect(axios.get).toHaveBeenCalledWith("url");
     expect(mockError).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
-      payload: "1.0.0-beta",
+      payload: { version: "1.0.0-beta", commit: "commit" },
       type: Actions.FETCH_BETA_OS_UPDATE_INFO_OK
     });
   });
@@ -280,7 +370,7 @@ describe("fetchReleases()", () => {
   it("fails to fetches latest OS release version", async () => {
     mockGetRelease = Promise.reject("error");
     const dispatch = jest.fn();
-    await actions.fetchReleases("url")(dispatch, jest.fn());
+    await actions.fetchReleases("url")(dispatch);
     await expect(axios.get).toHaveBeenCalledWith("url");
     expect(mockError).toHaveBeenCalledWith(
       "Could not download FarmBot OS update information.");
@@ -293,12 +383,116 @@ describe("fetchReleases()", () => {
   it("fails to fetches latest beta OS release version", async () => {
     mockGetRelease = Promise.reject("error");
     const dispatch = jest.fn();
-    await actions.fetchReleases("url", { beta: true })(dispatch, jest.fn());
+    await actions.fetchReleases("url", { beta: true })(dispatch);
     await expect(axios.get).toHaveBeenCalledWith("url");
     expect(mockError).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       payload: "error",
       type: "FETCH_BETA_OS_UPDATE_INFO_ERROR"
     });
+  });
+});
+
+describe("fetchMinOsFeatureData()", () => {
+  afterEach(() =>
+    jest.restoreAllMocks());
+
+  it("fetches min OS feature data: empty", async () => {
+    mockGetRelease = Promise.resolve({ data: {} });
+    const dispatch = jest.fn();
+    await actions.fetchMinOsFeatureData("url")(dispatch);
+    expect(axios.get).toHaveBeenCalledWith("url");
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: {},
+      type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK
+    });
+  });
+
+  it("fetches min OS feature data", async () => {
+    mockGetRelease = Promise.resolve({
+      data: { "a_feature": "1.0.0", "b_feature": "2.0.0" }
+    });
+    const dispatch = jest.fn();
+    await actions.fetchMinOsFeatureData("url")(dispatch);
+    expect(axios.get).toHaveBeenCalledWith("url");
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: { a_feature: "1.0.0", b_feature: "2.0.0" },
+      type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK
+    });
+  });
+
+  it("fetches bad min OS feature data: not an object", async () => {
+    mockGetRelease = Promise.resolve({ data: "bad" });
+    const dispatch = jest.fn();
+    const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
+    await actions.fetchMinOsFeatureData("url")(dispatch);
+    expect(axios.get).toHaveBeenCalledWith("url");
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockConsole).toHaveBeenCalledWith(
+      expect.stringContaining("\"bad\""));
+  });
+
+  it("fetches bad min OS feature data", async () => {
+    mockGetRelease = Promise.resolve({ data: { a: "0", b: 0 } });
+    const dispatch = jest.fn();
+    const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
+    await actions.fetchMinOsFeatureData("url")(dispatch);
+    expect(axios.get).toHaveBeenCalledWith("url");
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockConsole).toHaveBeenCalledWith(
+      expect.stringContaining("{\"a\":\"0\",\"b\":0}"));
+  });
+
+  it("fails to fetch min OS feature data", async () => {
+    mockGetRelease = Promise.reject("error");
+    const dispatch = jest.fn();
+    await actions.fetchMinOsFeatureData("url")(dispatch);
+    await expect(axios.get).toHaveBeenCalledWith("url");
+    expect(mockError).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: "error",
+      type: "FETCH_MIN_OS_FEATURE_INFO_ERROR"
+    });
+  });
+});
+
+describe("updateConfig()", () => {
+  beforeEach(function () {
+    jest.clearAllMocks();
+  });
+
+  it("updates config: configUpdate", () => {
+    const dispatch = jest.fn();
+    const state = fakeState();
+    state.resources.index = buildResourceIndex([fakeFbosConfig()]).index;
+    actions.updateConfig({ auto_sync: true })(dispatch, () => state);
+    expect(mockDevice.updateConfig).toHaveBeenCalledWith({ auto_sync: true });
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it("updates config: FbosConfig", () => {
+    const dispatch = jest.fn(() => Promise.resolve());
+    const state = fakeState();
+    const fakeFBOSConfig = fakeFbosConfig();
+    fakeFBOSConfig.body.api_migrated = true;
+    state.resources.index = buildResourceIndex([fakeFBOSConfig]).index;
+    actions.updateConfig({ auto_sync: true })(dispatch, () => state);
+    expect(mockDevice.updateConfig).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: {
+        specialStatus: SpecialStatus.DIRTY,
+        update: { auto_sync: true },
+        uuid: expect.stringContaining("FbosConfig")
+      },
+      type: Actions.EDIT_RESOURCE
+    });
+  });
+});
+
+describe("badVersion()", () => {
+  it("warns of old FBOS version", () => {
+    actions.badVersion();
+    expect(mockInfo).toHaveBeenCalledWith(
+      expect.stringContaining("old version"), "Please Update", "red");
   });
 });

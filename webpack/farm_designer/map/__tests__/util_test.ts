@@ -4,7 +4,8 @@ import {
   getBotSize,
   getMapSize,
   getXYFromQuadrant,
-  getMouseXY
+  getMouseXY,
+  transformForQuadrant
 } from "../util";
 import { McuParams } from "farmbot";
 import { AxisNumberProperty, BotSize } from "../interfaces";
@@ -179,5 +180,27 @@ describe("getMouseXY", () => {
     const result = getMouseXY(e as MouseEvent);
     expect(result.mx).toBe(-220);
     expect(result.my).toBe(90);
+  });
+});
+
+describe("transformForQuadrant()", () => {
+  it("calculates transform for quadrant 1", () => {
+    expect(transformForQuadrant(1, { x: 200, y: 100 }))
+      .toEqual("scale(-1, 1) translate(-200, 0)");
+  });
+
+  it("calculates transform for quadrant 2", () => {
+    expect(transformForQuadrant(2, { x: 200, y: 100 }))
+      .toEqual("scale(1, 1) translate(0, 0)");
+  });
+
+  it("calculates transform for quadrant 3", () => {
+    expect(transformForQuadrant(3, { x: 200, y: 100 }))
+      .toEqual("scale(1, -1) translate(0, -100)");
+  });
+
+  it("calculates transform for quadrant 4", () => {
+    expect(transformForQuadrant(4, { x: 200, y: 100 }))
+      .toEqual("scale(-1, -1) translate(-200, -100)");
   });
 });

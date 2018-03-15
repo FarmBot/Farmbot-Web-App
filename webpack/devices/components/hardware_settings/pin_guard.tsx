@@ -10,13 +10,13 @@ import { ToolTips } from "../../../constants";
 
 export function PinGuard(props: PinGuardProps) {
 
-  const { pin_guard } = props.bot.controlPanelState;
-  const { dispatch, bot } = props;
+  const { pin_guard } = props.controlPanelState;
+  const { dispatch, sourceFwConfig } = props;
 
   return <section>
     <Header
       bool={pin_guard}
-      title={"Pin Guard"}
+      title={t("Pin Guard")}
       name={"pin_guard"}
       dispatch={dispatch} />
     <Collapse isOpen={!!pin_guard}>
@@ -25,54 +25,54 @@ export function PinGuard(props: PinGuardProps) {
           <label>
             {t("Pin Number")}
           </label>
-          <SpacePanelToolTip tooltip={t(ToolTips.PIN_GUARD_PIN_NUMBER)} />
+          <SpacePanelToolTip tooltip={ToolTips.PIN_GUARD_PIN_NUMBER} />
         </Col>
-        <Col xs={3}>
+        <Col xs={4}>
           <label>
             {t("Timeout (sec)")}
           </label>
         </Col>
-        <Col xs={3}>
-          <label style={{ float: "right" }}>
+        <Col xs={2} className={"centered-button-div"}>
+          <label>
             {t("To State")}
           </label>
         </Col>
       </Row>
       <PinGuardMCUInputGroup
-        name={t("Pin Guard 1")}
+        name={t("Pin Guard {{ num }}", { num: 1 })}
         pinNumber={"pin_guard_1_pin_nr"}
         timeout={"pin_guard_1_time_out"}
         activeState={"pin_guard_1_active_state"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
-        name={t("Pin Guard 2")}
+        name={t("Pin Guard {{ num }}", { num: 2 })}
         pinNumber={"pin_guard_2_pin_nr"}
         timeout={"pin_guard_2_time_out"}
         activeState={"pin_guard_2_active_state"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
-        name={t("Pin Guard 3")}
+        name={t("Pin Guard {{ num }}", { num: 3 })}
         pinNumber={"pin_guard_3_pin_nr"}
         timeout={"pin_guard_3_time_out"}
         activeState={"pin_guard_3_active_state"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
-        name={t("Pin Guard 4")}
+        name={t("Pin Guard {{ num }}", { num: 4 })}
         pinNumber={"pin_guard_4_pin_nr"}
         timeout={"pin_guard_4_time_out"}
         activeState={"pin_guard_4_active_state"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
-        name={t("Pin Guard 5")}
+        name={t("Pin Guard {{ num }}", { num: 5 })}
         pinNumber={"pin_guard_5_pin_nr"}
         timeout={"pin_guard_5_time_out"}
         activeState={"pin_guard_5_active_state"}
         dispatch={dispatch}
-        bot={bot} />
+        sourceFwConfig={sourceFwConfig} />
     </Collapse>
   </section>;
 }

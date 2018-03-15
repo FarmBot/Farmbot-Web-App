@@ -50,9 +50,9 @@ export interface FarmEventViewModel {
 export function destructureFarmEvent(fe: TaggedFarmEvent, timeOffset: number): FarmEventViewModel {
 
   return {
-    startDate: formatDate((fe.body.start_time).toString()),
+    startDate: formatDate((fe.body.start_time).toString(), timeOffset),
     startTime: formatTime((fe.body.start_time).toString(), timeOffset),
-    endDate: formatDate((fe.body.end_time || new Date()).toString()),
+    endDate: formatDate((fe.body.end_time || new Date()).toString(), timeOffset),
     endTime: formatTime((fe.body.end_time || new Date()).toString(), timeOffset),
     repeat: (fe.body.repeat || 1).toString(),
     timeUnit: fe.body.time_unit,
@@ -79,7 +79,7 @@ export function recombine(vm: FarmEventViewModel): PartialFE {
   };
 }
 
-function offsetTime(date: string, time: string, offset: number): string {
+export function offsetTime(date: string, time: string, offset: number): string {
   const out = moment(date).utcOffset(offset);
   const [hrs, min] = time.split(":").map(x => parseInt(x));
   out.hours(hrs);

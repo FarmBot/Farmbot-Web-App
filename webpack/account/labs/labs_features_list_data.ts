@@ -1,17 +1,20 @@
-import { Content } from "../../constants";
 import { Session } from "../../session";
-import { trim } from "../../util";
 import { t } from "i18next";
 import { BooleanConfigKey } from "../../config_storage/web_app_configs";
 import { BooleanSetting } from "../../session_keys";
+import { Content } from "../../constants";
 
 export interface LabsFeature {
+  /** Toggle label. */
   name: string;
   description: string;
   /** Entry for localStorage. Must be unique. */
   storageKey: BooleanConfigKey;
+  /** Placeholder value (use false). */
   value: boolean;
-  experimental?: boolean;
+  /** Confirmation message to display before allowing a toggle to true. */
+  confirmationMessage?: string;
+  /** Invert displayed toggle value for `disable_` settings. */
   displayInvert?: boolean;
   /** If the feature requires any special logic after being flipped, add it
    * here. */
@@ -29,40 +32,48 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
   },
   {
     name: t("Confirm Sequence step deletion"),
-    description: trim(t(`Show a confirmation dialog when the sequence delete step
-      icon is pressed.`)),
+    description: t(Content.CONFIRM_STEP_DELETION),
     storageKey: BooleanSetting.confirm_step_deletion,
     value: false
   },
   {
     name: t("Hide Webcam widget"),
-    description: trim(t(`If not using a webcam, use this setting to remove the
-      widget from the Controls page.`)),
+    description: t(Content.HIDE_WEBCAM_WIDGET),
     storageKey: BooleanSetting.hide_webcam_widget,
     value: false
   },
   {
     name: t("Dynamic map size"),
-    description: trim(t(`Change the Farm Designer map size based on axis length.
-      A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
-      the HARDWARE widget.`)),
+    description: t(Content.DYNAMIC_MAP_SIZE),
     storageKey: BooleanSetting.dynamic_map,
     value: false
   },
   {
     name: t("Double default map dimensions"),
-    description: trim(t(`Double the default dimensions of the Farm Designer map
-    for a map with four times the area.`)),
+    description: t(Content.DOUBLE_MAP_DIMENSIONS),
     storageKey: BooleanSetting.map_xl,
     value: false
   },
   {
     name: t("Display plant animations"),
-    description: trim(t(`Enable plant animations in the Farm Designer.`)),
+    description: t(Content.PLANT_ANIMATIONS),
     storageKey: BooleanSetting.disable_animations,
     value: false,
     displayInvert: true
-  }
+  },
+  {
+    name: t("Read speak logs in browser"),
+    description: t(Content.BROWSER_SPEAK_LOGS),
+    storageKey: BooleanSetting.enable_browser_speak,
+    value: false
+  },
+  {
+    name: t("Discard Unsaved Changes"),
+    description: t(Content.DISCARD_UNSAVED_CHANGES),
+    storageKey: BooleanSetting.discard_unsaved,
+    value: false,
+    confirmationMessage: t(Content.DISCARD_UNSAVED_CHANGES_CONFIRM)
+  },
 ].map(fetchRealValue));
 
 /** Always allow toggling from true => false (deactivate).
@@ -70,8 +81,8 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
 export const maybeToggleFeature =
   (x: LabsFeature): LabsFeature | undefined => {
     return (x.value
-      || !x.experimental
-      || window.confirm(Content.EXPERIMENTAL_WARNING)) ?
+      || !x.confirmationMessage
+      || window.confirm(x.confirmationMessage)) ?
       toggleFeatureValue(x) : undefined;
   };
 
@@ -79,7 +90,7 @@ export const maybeToggleFeature =
 const fetchVal = (k: BooleanConfigKey) => !!Session.deprecatedGetBool(k);
 
 /** Takes a `LabFeature` (probably one with an uninitialized fallback / default
- * value) and sets it to the _real_ value that's in localStorage. */
+ * value) and sets it to the _real_ value that's in the API. */
 const fetchRealValue = (x: LabsFeature): LabsFeature => {
   return { ...x, value: fetchVal(x.storageKey) };
 };

@@ -1,6 +1,7 @@
 import { ResourceIndex } from "../../../resources/interfaces";
 import { MoveAbsolute, PointType } from "farmbot/dist";
 import { JSXChildren } from "../../../util";
+import { ShouldDisplay } from "../../../devices/interfaces";
 export const TOOL: "Tool" = "Tool";
 
 export type CALLBACK = (out: LocationData) => void;
@@ -9,6 +10,7 @@ export interface TileMoveAbsProps {
   resources: ResourceIndex;
   selectedItem: LocationData;
   onChange: CALLBACK;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface InputBoxProps {

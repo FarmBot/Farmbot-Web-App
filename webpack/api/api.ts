@@ -56,6 +56,7 @@ export class API {
   static setBaseUrl(base: string) {
     current = new API(base);
   }
+
   /** The base URL can't be known until the user is logged in.
    * API.current will give URLs is the base URL is known and throw an
    * exception otherwise.
@@ -115,8 +116,22 @@ export class API {
   get logsPath() { return `${this.baseUrl}/api/logs/`; }
   /** /api/webcam_feed */
   get webcamFeedPath() { return `${this.baseUrl}/api/webcam_feeds/`; }
-  /** /api/webcam_feed */
+  /** /api/web_app_config */
   get webAppConfigPath() { return `${this.baseUrl}/api/web_app_config/`; }
-  /** /api/users/verify/:token */
-  verificationPath = (token: string) => ("/api/users/verify/" + token);
+  /** /api/fbos_config */
+  get fbosConfigPath() { return `${this.baseUrl}/api/fbos_config/`; }
+  /** /api/firmware_config */
+  get firmwareConfigPath() { return `${this.baseUrl}/api/firmware_config/`; }
+  /** /api/sensor_readings */
+  get sensorReadingPath() { return `${this.baseUrl}/api/sensor_readings`; }
+  /** /api/sensors/ */
+  get sensorPath() { return `${this.baseUrl}/api/sensors/`; }
+  /** /api/device_configs/:id */
+  get deviceConfigPath() { return `${this.baseUrl}/api/device_configs`; }
+  /** /api/pin_bindings/:id */
+  get pinBindingPath() { return `${this.baseUrl}/api/pin_bindings/`; }
+  /** /api/farmware_installations/:id */
+  get farmwareInstallationPath() {
+    return `${this.baseUrl}/api/farmware_installations`;
+  }
 }

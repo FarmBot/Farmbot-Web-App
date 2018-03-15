@@ -12,7 +12,7 @@ import { ToolTips } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 
 const sequenceList = (dispatch: Function) =>
-  (ts: TaggedSequence, index: number) => {
+  (ts: TaggedSequence) => {
     const css = [
       `fb-button`,
       `block`,
@@ -74,7 +74,7 @@ export class SequencesList extends
       uuid: "REDUCER_MUST_CHANGE_THIS",
       specialStatus: SpecialStatus.SAVED,
       body: {
-        name: "new sequence " + (this.props.sequences.length),
+        name: t("new sequence {{ num }}", { num: this.props.sequences.length }),
         args: {
           version: -999,
           locals: { kind: "scope_declaration", args: {} },

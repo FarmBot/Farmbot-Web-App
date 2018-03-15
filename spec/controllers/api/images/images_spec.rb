@@ -3,6 +3,18 @@ require 'spec_helper'
 describe Api::ImagesController do
   include Devise::Test::ControllerHelpers
   let(:user) { FactoryBot.create(:user) }
+  it "Creates a polict object" do
+    sign_in user
+    get :storage_auth
+
+    expect(response.status).to eq(200)
+    expect(json).to be_kind_of(Hash)
+    expect(json[:verb]).to eq("POST")
+    expect(json[:url]).to include("googleapis")
+    expect(json[:form_data].keys.sort).to include(:signature)
+    expect(json[:instructions])
+      .to include("POST the resulting URL as an 'attachment_url'")
+  end
 
   describe '#index' do
     it 'shows only the max images allowed' do

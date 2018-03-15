@@ -1,63 +1,51 @@
 module Points
   class Destroy < Mutations::Command
-    Problem       = Struct.new("Problem",
-                               :sequence_name,
-                               :resource_name,
-                               :resource_type)
-
-    ALL_SEQ_DEPS  = "sequence_id IN"\
-                    "(SELECT id FROM sequences WHERE sequences.device_id = ?)"
-
     STILL_IN_USE  = "Can't delete point because the following sequences "\
                     "are still using it: %s"
 
     required do
       model :device, class: Device
-      array :points,  class: Point
+      array :points, class: Point
     end
 
     def validate
-      any_deps?
+      # Collect names of sequences that still use this point.
+      names = Sequence
+        .where(id: (tool_seq + point_seq).uniq)
+        .pluck(:name)
+        .join(", ")
+
+      add_error :point, :in_use, STILL_IN_USE % [names] if names.present?
     end
 
     def execute
-      # Probably slow. TODO: Optimize if Skylight complains.
       Point.transaction { points.map(&:destroy!) && "" }
     end
 
-private
+  private
 
-    def any_deps?
-      if still_in_use.any?
-        names = still_in_use.map(&:name).join(", ")
-        add_error :point, :in_use, STILL_IN_USE % [names]
-      end
-    end
-
-    def still_in_use
-      @still_in_use ||= calculate_deps
-    end
-
-    def all_deps
-      @all_deps ||= SequenceDependency.where(ALL_SEQ_DEPS, device.id)
-    end
-
-    # point => tool_slot => tool
-    def calculate_deps
-      all_deps
-        .where(dependency_type: "Point", dependency_id: points.pluck(:id))
-        .or(refactor_plz)
-        .map(&:sequence)
-    end
-
-    def refactor_plz
-      deps = points
-        .select { |p| p.pointer_type == "ToolSlot" }
-        .map    { |x| x&.pointer&.tool&.id }
+    def every_tool_id_as_json
+      # TODO: If we unify Plant/ToolSlot/GenericPointer, this could be
+      # simplified.
+      points
+        .map { |x| x.pointer.try(:tool_id) }
         .compact
+        .uniq
+        .map(&:to_json)
+    end
 
-      all_deps.where(dependency_type: "Tool",
-                     dependency_id: deps)
+    def point_seq
+      @point_seq ||= EdgeNode
+        .where(kind: "pointer_id")
+        .where(EdgeNode.value_is_one_of(*points.pluck(:id))) # WOW! -R.C.
+        .pluck(:sequence_id)
+    end
+
+    def tool_seq
+      @tool_seq ||= EdgeNode
+        .where(kind: "tool_id")
+        .where("value = ?", every_tool_id_as_json)
+        .pluck(:sequence_id)
     end
   end
 end

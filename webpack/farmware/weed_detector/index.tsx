@@ -4,7 +4,7 @@ import { DetectorState, HSV } from "./interfaces";
 import { TitleBar } from "./title";
 import { Row, Col, Widget, WidgetBody } from "../../ui/index";
 import { t } from "i18next";
-import { resetWeedDetection, scanImage, test } from "./actions";
+import { deletePoints, scanImage, test } from "./actions";
 import { selectImage } from "../images/actions";
 import { Progress, catchErrors } from "../../util";
 import { FarmwareProps } from "../../devices/interfaces";
@@ -19,7 +19,7 @@ import { MustBeOnline } from "../../devices/must_be_online";
 @connect(mapStateToProps)
 export class WeedDetector
   extends React.Component<FarmwareProps, Partial<DetectorState>> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   constructor(props: FarmwareProps) {
     super(props);
@@ -31,7 +31,7 @@ export class WeedDetector
       const percentage = `${Math.round((p.completed / p.total) * 100)} %`;
       this.setState({ deletionProgress: p.isDone ? "" : percentage });
     };
-    this.props.dispatch(resetWeedDetection(progress));
+    this.props.dispatch(deletePoints("weeds", "plant-detection", progress));
     this.setState({ deletionProgress: "Deleting..." });
   }
 
@@ -62,8 +62,8 @@ export class WeedDetector
         onDeletionClick={this.clearWeeds}
         deletionProgress={this.state.deletionProgress}
         onTest={this.props.dispatch(test)}
-        title={"Weed Detector"}
-        help={t(ToolTips.WEED_DETECTOR)}
+        title={t("Weed Detector")}
+        help={ToolTips.WEED_DETECTOR}
         docs={"farmware#section-camera-calibration"} />
       <WidgetBody>
         <Row>

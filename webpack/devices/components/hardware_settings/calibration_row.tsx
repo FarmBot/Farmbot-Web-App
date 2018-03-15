@@ -15,7 +15,7 @@ function calibrate(axis: Axis) {
 
 export function CalibrationRow(props: CalibrationRowProps) {
 
-  const { hardware } = props;
+  const { hardware, botDisconnected } = props;
 
   return <Row>
     <Col xs={6}>
@@ -32,9 +32,9 @@ export function CalibrationRow(props: CalibrationRowProps) {
     {axisTrackingStatus(hardware)
       .map(row => {
         const { axis, disabled } = row;
-        return <Col xs={2} key={axis}>
+        return <Col xs={2} key={axis} className={"centered-button-div"}>
           <LockableButton
-            disabled={disabled}
+            disabled={disabled || botDisconnected}
             onClick={() => calibrate(axis)}>
             {t("CALIBRATE {{axis}}", { axis })}
           </LockableButton>

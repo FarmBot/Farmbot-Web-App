@@ -15,7 +15,7 @@ export class EditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
     return <div>{t("Loading")}...</div>;
   }
 
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   renderForm(fe: TaggedFarmEvent) {
     return <EditFEForm farmEvent={fe}

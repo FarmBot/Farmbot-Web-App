@@ -18,7 +18,7 @@ import { catchErrors } from "../util";
 @connect(mapStateToProps)
 export class Devices extends React.Component<Props, {}> {
   state = { online: navigator.onLine };
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   /** A record of all the things we know about connectivity right now. */
   get flags(): Record<DiagnosisName, StatusRowProps> {
@@ -46,13 +46,16 @@ export class Devices extends React.Component<Props, {}> {
   }
 
   refresh = () => {
-    this.props.dispatch(resetConnectionInfo(this.props.deviceAccount));
+    this.props.dispatch(resetConnectionInfo());
   };
 
   render() {
     if (this.props.auth) {
-      const botToMqttStatus =
-        this.props.botToMqtt ? this.props.botToMqtt.state : "down";
+      const { botToMqtt } = this.props;
+      const botToMqttStatus = botToMqtt ? botToMqtt.state : "down";
+      const botToMqttLastSeen = (botToMqtt && botToMqttStatus === "up")
+        ? botToMqtt.at
+        : "";
       return <Page className="devices">
         <Row>
           <Col xs={12} sm={6}>
@@ -60,7 +63,11 @@ export class Devices extends React.Component<Props, {}> {
               account={this.props.deviceAccount}
               dispatch={this.props.dispatch}
               bot={this.props.bot}
-              botToMqttStatus={botToMqttStatus} />
+              botToMqttLastSeen={botToMqttLastSeen}
+              botToMqttStatus={botToMqttStatus}
+              sourceFbosConfig={this.props.sourceFbosConfig}
+              shouldDisplay={this.props.shouldDisplay}
+              isValidFbosConfig={this.props.isValidFbosConfig} />
             <ConnectivityPanel
               status={this.props.deviceAccount.specialStatus}
               onRefresh={this.refresh}
@@ -78,13 +85,17 @@ export class Devices extends React.Component<Props, {}> {
               controlPanelState={this.props.bot.controlPanelState}
               dispatch={this.props.dispatch}
               bot={this.props.bot}
-              botToMqttStatus={botToMqttStatus} />
+              botToMqttStatus={botToMqttStatus}
+              sourceFbosConfig={this.props.sourceFbosConfig}
+              sourceFwConfig={this.props.sourceFwConfig}
+              firmwareConfig={this.props.firmwareConfig} />
             {this.props.bot.hardware.gpio_registry &&
               <PinBindings
                 dispatch={this.props.dispatch}
                 bot={this.props.bot}
                 resources={this.props.resources}
-                botToMqttStatus={botToMqttStatus} />}
+                botToMqttStatus={botToMqttStatus}
+                shouldDisplay={this.props.shouldDisplay} />}
           </Col>
         </Row>
       </Page>;

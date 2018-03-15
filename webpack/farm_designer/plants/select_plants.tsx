@@ -11,6 +11,7 @@ import { error } from "farmbot-toastr";
 import { BackArrow } from "../../ui/index";
 import { catchErrors } from "../../util";
 import { unselectPlant } from "../actions";
+import { Actions } from "../../constants";
 
 export function mapStateToProps(props: Everything) {
   const plants = selectAllPlantPointers(props.resources.index);
@@ -41,7 +42,7 @@ interface SelectPlantsState {
 @connect(mapStateToProps)
 export class SelectPlants
   extends React.Component<SelectPlantsProps, SelectPlantsState> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   componentDidMount() {
     const { dispatch, selected, currentIcon } = this.props;
@@ -52,11 +53,15 @@ export class SelectPlants
     unselectPlant(dispatch)();
   }
 
-  onBack = () => {
+  componentWillUnmount() {
+    this.unstashSelectedPlant();
+  }
+
+  unstashSelectedPlant = () => {
     const { stashedUuid, stashedIcon } = this.state;
-    this.props.dispatch({ type: "SELECT_PLANT", payload: [stashedUuid] });
+    this.props.dispatch({ type: Actions.SELECT_PLANT, payload: [stashedUuid] });
     this.props.dispatch({
-      type: "TOGGLE_HOVERED_PLANT", payload: {
+      type: Actions.TOGGLE_HOVERED_PLANT, payload: {
         plantUUID: stashedUuid, icon: stashedIcon
       }
     });
@@ -83,7 +88,7 @@ export class SelectPlants
       className="panel-container green-panel plant-selection-panel">
       <div className="panel-header green-panel">
         <p className="panel-title">
-          <BackArrow onClick={this.onBack} />
+          <BackArrow onClick={this.unstashSelectedPlant} />
           {t("Select plants")}
         </p>
 
@@ -94,14 +99,14 @@ export class SelectPlants
           </button>
           <button className="fb-button gray"
             onClick={() => this.props.dispatch({
-              type: "SELECT_PLANT",
+              type: Actions.SELECT_PLANT,
               payload: plants.map(p => p.uuid)
             })}>
             {t("Select all")}
           </button>
           <button className="fb-button gray"
             onClick={() => this.props.dispatch({
-              type: "SELECT_PLANT",
+              type: Actions.SELECT_PLANT,
               payload: undefined
             })}>
             {t("Select none")}
@@ -122,6 +127,7 @@ export class SelectPlants
               <PlantInventoryItem
                 key={p.uuid}
                 tpp={p}
+                hovered={false}
                 dispatch={dispatch} />)}
         </div>
       </div>

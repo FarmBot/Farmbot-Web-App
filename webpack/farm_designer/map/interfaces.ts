@@ -5,6 +5,7 @@ import {
 } from "../../resources/tagged_resources";
 import { State, BotOriginQuadrant } from "../interfaces";
 import { BotPosition, BotLocationData } from "../../devices/interfaces";
+import { GetWebAppConfigValue } from "../../config_storage/actions";
 
 export interface PlantLayerProps {
   plants: TaggedPlantPointer[];
@@ -17,6 +18,7 @@ export interface PlantLayerProps {
   mapTransformProps: MapTransformProps;
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
+  selectedForDel: string[] | undefined;
 }
 
 export interface CropSpreadDict {
@@ -33,6 +35,11 @@ export interface GardenMapLegendProps {
   showPoints: boolean;
   showSpread: boolean;
   showFarmbot: boolean;
+  showImages: boolean;
+  dispatch: Function;
+  tzOffset: number;
+  getConfigValue: GetWebAppConfigValue;
+  imageAgeInfo: { newestDate: string, toOldest: number };
 }
 
 export type MapTransformProps = {
@@ -49,10 +56,12 @@ export interface GardenPlantProps {
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
   uuid: string;
+  grayscale: boolean;
 }
 
 export interface GardenPlantState {
   icon: string;
+  hover: boolean;
 }
 
 export interface GardenPointProps {

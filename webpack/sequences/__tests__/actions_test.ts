@@ -10,7 +10,6 @@ jest.mock("../../api/crud", () => ({
 
 import { copySequence } from "../actions";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
-import { fakeState } from "../../__test_support__/fake_state";
 
 describe("copySequence()", () => {
   beforeEach(function () {
@@ -20,7 +19,7 @@ describe("copySequence()", () => {
   it("copies sequence", () => {
     const sequence = fakeSequence();
     const copy = copySequence(sequence);
-    copy(jest.fn(), fakeState);
+    copy(jest.fn());
     expect(mockInit).toHaveBeenCalledWith(expect.objectContaining({
       body: expect.objectContaining({
         name: "fake copy 1"
@@ -30,7 +29,7 @@ describe("copySequence()", () => {
 
   it("updates current path", () => {
     const copy = copySequence(fakeSequence());
-    copy(jest.fn(), fakeState);
+    copy(jest.fn());
     expect(mockPush).toHaveBeenCalledWith("/app/sequences/fake_copy_2");
   });
 });

@@ -6,7 +6,7 @@ import { commitBulkEditor, setTimeOffset, setSequence } from "./actions";
 import {
   BlurableInput, ToolTip, Row, Col, FBSelect, DropDownItem, NULL_CHOICE
 } from "../../ui/index";
-import { duration } from "moment";
+import * as moment from "moment";
 import { t } from "i18next";
 import { ToolTips } from "../../constants";
 import * as _ from "lodash";
@@ -73,6 +73,10 @@ export class BulkSchedulerWidget extends React.Component<BulkEditorProps, {}> {
         <Col xs={6}>
           <div>
             <label>{t("Time")}</label>
+            <i className="fa fa-clock-o" onClick={() =>
+              this.props.dispatch(setTimeOffset(timeToMs(
+                moment().add(3, "minutes").format("HH:mm"))))
+            } />
             <BlurableInput type="time"
               value={msToTime(dailyOffsetMs)}
               onCommit={({ currentTarget }) => {
@@ -89,7 +93,7 @@ export class BulkSchedulerWidget extends React.Component<BulkEditorProps, {}> {
 
 function msToTime(ms: number) {
   if (_.isNumber(ms)) {
-    const d = duration(ms);
+    const d = moment.duration(ms);
     const h = _.padStart(d.hours().toString(), 2, "0");
     const m = _.padStart(d.minutes().toString(), 2, "0");
     return `${h}:${m}`;

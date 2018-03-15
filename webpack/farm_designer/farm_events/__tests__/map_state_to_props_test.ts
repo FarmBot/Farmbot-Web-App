@@ -13,7 +13,7 @@ import { countBy } from "lodash";
 import { TimeUnit } from "../../interfaces";
 
 describe("mapStateToProps()", () => {
-  function testState(time: number) {
+  function testState() {
     const sequence = fakeSequence();
     sequence.body.id = 1;
     sequence.body.body = [{ kind: "take_photo", args: {} }];
@@ -21,26 +21,18 @@ describe("mapStateToProps()", () => {
     regimen.body.id = 1;
     regimen.body.regimen_items = [{
       sequence_id: 1,
-      time_offset: moment(time).add(10, "minutes")
-        .diff(moment(time).clone().startOf("day"), "milliseconds")
+      time_offset: 28800000
     }];
-
-    const getFutureTime =
-      (t: number, value: number, label: string) =>
-        // tslint:disable-next-line:no-any
-        moment(t).add(value as any, label).toISOString();
 
     const sequenceFarmEvent = fakeFarmEvent("Sequence", 1);
     sequenceFarmEvent.body.id = 1;
-    const plusOneDay = moment(getFutureTime(time, 1, "day")).valueOf();
-    sequenceFarmEvent.body.start_time = getFutureTime(plusOneDay, 2, "minutes");
-    sequenceFarmEvent.body.end_time = getFutureTime(plusOneDay, 3, "minutes");
+    sequenceFarmEvent.body.start_time = "2222-02-22T02:00:00.000Z";
+    sequenceFarmEvent.body.end_time = "2222-02-22T02:03:00.000Z";
 
     const regimenFarmEvent = fakeFarmEvent("Regimen", 1);
     regimenFarmEvent.body.id = 2;
-    const plusTwoDays = moment(getFutureTime(time, 2, "days")).valueOf();
-    regimenFarmEvent.body.start_time = getFutureTime(plusTwoDays, 1, "minute");
-    regimenFarmEvent.body.end_time = getFutureTime(plusTwoDays, 2, "minutes");
+    regimenFarmEvent.body.start_time = "2222-02-23T02:00:00.000Z";
+    regimenFarmEvent.body.end_time = "2222-02-23T02:03:00.000Z";
 
     const fakeResources = [
       sequence,
@@ -55,54 +47,48 @@ describe("mapStateToProps()", () => {
   }
 
   it("returns calendar rows", () => {
-    const testTime = moment().startOf("hour").valueOf();
-    const { calendarRows, push } = mapStateToProps(testState(testTime));
+    const { calendarRows, push } = mapStateToProps(testState());
 
-    const day1Time = moment(testTime).add(1, "day");
-    const day1ItemTime = day1Time.add(2, "minutes");
-    const day2Time = moment(testTime).add(2, "days");
-    const regimenStartTime = day2Time.clone().add(1, "minutes");
-    const regimenItemTime = day2Time.clone().add(10, "minutes");
     expect(calendarRows).toEqual([
       {
-        day: day1Time.date(),
+        day: 22,
         items: [
           {
             executableId: 1,
             heading: "fake",
             id: 1,
-            mmddyy: day1ItemTime.format("MMDDYY"),
-            sortKey: day1ItemTime.unix(),
-            timeStr: day1ItemTime.utcOffset(0).format("hh:mma")
+            mmddyy: "022222",
+            sortKey: 7956842400,
+            timeStr: "02:00am"
           }],
-        month: day1Time.format("MMM"),
-        sortKey: day1Time.unix(),
-        year: day1Time.year() - 2000
+        month: "Feb",
+        sortKey: 7956842400,
+        year: 22
       },
       {
-        day: day2Time.date(),
+        day: 23,
         items: [
           {
             executableId: 1,
             heading: "Foo",
             id: 2,
-            mmddyy: regimenStartTime.format("MMDDYY"),
-            sortKey: regimenStartTime.unix(),
+            mmddyy: "022322",
+            sortKey: 7956928800,
             subheading: "",
-            timeStr: regimenStartTime.utcOffset(0).format("hh:mma")
+            timeStr: "02:00am"
           },
           {
             executableId: 1,
             heading: "Foo",
             id: 2,
-            mmddyy: regimenItemTime.format("MMDDYY"),
-            sortKey: regimenItemTime.unix(),
+            mmddyy: "022322",
+            sortKey: 7956950400,
             subheading: "fake",
-            timeStr: regimenItemTime.utcOffset(0).format("hh:mma")
+            timeStr: "08:00am"
           }],
-        month: day2Time.format("MMM"),
-        sortKey: regimenStartTime.unix(),
-        year: day2Time.year() - 2000
+        month: "Feb",
+        sortKey: 7956928800,
+        year: 22
       }]);
 
     expect(push).toBeTruthy();
@@ -249,15 +235,15 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
 
   it("returns calendar rows", () => {
     const testTime = moment("2017-12-15T01:00:00.000Z");
-    const calendar = mapResourcesToCalendar(
-      fakeRegFEResources().index, testTime);
+    const calendar =
+      mapResourcesToCalendar(fakeRegFEResources().index, testTime);
     expect(calendar.getAll()).toEqual(fakeRegimenFE);
   });
 
   it("doesn't return calendar row after event is over", () => {
     const testTime = moment("2017-12-27T01:00:00.000Z");
-    const calendar = mapResourcesToCalendar(
-      fakeRegFEResources().index, testTime);
+    const calendar =
+      mapResourcesToCalendar(fakeRegFEResources().index, testTime);
     expect(calendar.getAll()).toEqual([]);
   });
 });

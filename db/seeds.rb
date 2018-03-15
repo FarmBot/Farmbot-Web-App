@@ -1,4 +1,7 @@
 unless Rails.env == "production"
+    PinBinding.destroy_all
+    User.destroy_all
+    Device.destroy_all
     ToolSlot.destroy_all
     Tool.destroy_all
     Point.destroy_all
@@ -78,7 +81,7 @@ unless Rails.env == "production"
     y:0, z:0}}, offset:{kind:"coordinate", args:{x:0, y:0, z:0}}, speed:100}}])
     t  = Tools::Create.run!(name: "Trench Digging Tool", device: u.device)
     body_txt = File.read("spec/lib/celery_script/ast_fixture4.json")
-                   .gsub("__SEQUENCE_ID__", s.id.to_s)
+                   .gsub("__SEQUENCE_ID__", s[:id].to_s)
                    .gsub("__TOOL_ID__", t.id.to_s)
     Sequences::Create.run!(device: u.device,
         name: "Every Node",
@@ -87,9 +90,9 @@ unless Rails.env == "production"
                          name:"Test Regimen 456",
                          color:"gray",
                          regimen_items: [
-                           {time_offset:300000, sequence_id:s.id},
-                           {time_offset:173100000, sequence_id:s.id},
-                           {time_offset:345900000, sequence_id:s.id}
+                           {time_offset:300000, sequence_id:s[:id]},
+                           {time_offset:173100000, sequence_id:s[:id]},
+                           {time_offset:345900000, sequence_id:s[:id]}
                          ])
     Peripherals::Create.run!(device: u.device, pin: 13, label: "LED")
     2.times do
@@ -111,4 +114,9 @@ unless Rails.env == "production"
                                 x: 10,
                                 y: 10,
                                 z: 10)
-end
+    d = u.device
+    PinBindings::Create
+      .run!(device: d, sequence_id: d.sequences.sample.id, pin_num: 15,)
+    Sensors::Create
+      .run!(device: d, pin: 14, label: "Stub sensor", mode: 0)
+  end

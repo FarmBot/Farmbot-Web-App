@@ -1,0 +1,14 @@
+<html>
+  <body>
+    <% if @already_registered %>
+      You have already verified your account.
+      Please <%= link_to "log in", "/" %>.
+    <% else %>
+      <p> You are now being <%= link_to "redirected", app_landing_page_path %>. </p>
+      <script>
+        localStorage.session = JSON.stringify(<%= raw @token %>)
+        window.location.replace("<%= app_landing_page_path %>");
+      </script>
+    <% end %>
+  </body>
+</html>

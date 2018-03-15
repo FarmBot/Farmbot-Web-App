@@ -1,7 +1,6 @@
-import { BotStateTree } from "farmbot";
+import { BotStateTree, ConfigurationName } from "farmbot";
 import {
   McuParamName,
-  ConfigurationName,
   Dictionary,
   SyncStatus,
   FarmwareManifest,
@@ -11,13 +10,16 @@ import { AuthState } from "../auth/interfaces";
 import {
   TaggedImage,
   TaggedPeripheral,
-  TaggedDevice
+  TaggedDevice,
+  TaggedSensor
 } from "../resources/tagged_resources";
-import { RestResources, ResourceIndex } from "../resources/interfaces";
+import { ResourceIndex } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import { ConnectionStatus, ConnectionState, NetworkState } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
+import { WebAppConfig } from "../config_storage/web_app_configs";
+import { FirmwareConfig } from "../config_storage/firmware_configs";
 
 export interface Props {
   userToApi: ConnectionStatus | undefined;
@@ -29,7 +31,40 @@ export interface Props {
   images: TaggedImage[];
   dispatch: Function;
   resources: ResourceIndex;
+  sourceFbosConfig: SourceFbosConfig;
+  sourceFwConfig: SourceFwConfig;
+  shouldDisplay: ShouldDisplay;
+  firmwareConfig: FirmwareConfig | undefined;
+  isValidFbosConfig: boolean;
 }
+
+/** Value and consistency of the value between the bot and /api/fbos_config. */
+export type SourceFbosConfig = (config: ConfigurationName) =>
+  {
+    value: boolean | number | string | undefined,
+    consistent: boolean
+  };
+
+/**
+ * Value and consistency of the value between the bot and /api/firmware_config.
+ * */
+export type SourceFwConfig = (config: McuParamName) =>
+  { value: number | undefined, consistent: boolean };
+
+/** Function to determine if a feature should be displayed. */
+export type ShouldDisplay = (x: Feature) => boolean;
+/** Names of features that use minimum FBOS version checking. */
+export enum Feature {
+  named_pins = "named_pins",
+  sensors = "sensors",
+  change_ownership = "change_ownership",
+  variables = "variables",
+  api_pin_bindings = "api_pin_bindings",
+  farmduino_k14 = "farmduino_k14",
+  jest_feature = "jest_feature", // for tests
+}
+/** Object fetched from FEATURE_MIN_VERSIONS_URL. */
+export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
 
 /** How the device is stored in the API side.
  * This is what comes back from the API as JSON.
@@ -39,6 +74,7 @@ export interface DeviceAccountSettings {
   name: string;
   timezone?: string | undefined;
   tz_offset_hrs: number;
+  fbos_version?: string | undefined;
   last_saw_api?: string | undefined;
   last_saw_mq?: string | undefined;
 }
@@ -55,6 +91,10 @@ export interface BotState {
   currentOSVersion?: string;
   /** The current beta os version on the github release api */
   currentBetaOSVersion?: string;
+  /** The current beta os commit on the github release api */
+  currentBetaOSCommit?: string;
+  /** JSON string of minimum required FBOS versions for various features. */
+  minOsFeatureData?: MinOsFeatureLookup;
   /** Is the bot in sync with the api */
   dirty: boolean;
   /** The state of the bot, as reported by the bot over MQTT. */
@@ -69,13 +109,17 @@ export interface BotState {
   connectivity: ConnectionState;
 }
 
-export interface BotProp { bot: BotState; }
-
 /** Status registers for the bot's status */
 export type HardwareState = BotStateTree;
 
 export interface GithubRelease {
   tag_name: string;
+  target_commitish: string;
+}
+
+export interface OsUpdateInfo {
+  version: string;
+  commit: string;
 }
 
 export interface MoveRelProps {
@@ -102,34 +146,24 @@ export interface FarmbotOsProps {
   bot: BotState;
   account: TaggedDevice;
   botToMqttStatus: NetworkState;
+  botToMqttLastSeen: string;
   dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
+  shouldDisplay: ShouldDisplay;
+  isValidFbosConfig: boolean;
 }
 
 export interface FarmbotOsState {
   osReleaseNotes: string;
 }
 
-export interface CameraSelectionProps {
-  env: Dictionary<string | undefined>
-}
-
-export interface CameraSelectionState {
-  cameraStatus: "" | "sending" | "done" | "error";
-}
-
-export interface StepsPerMMBoxProps {
-  bot: BotState;
-  setting: ConfigurationName;
-  dispatch: Function;
-  disabled?: boolean;
-}
-
 export interface McuInputBoxProps {
-  bot: BotState;
+  sourceFwConfig: SourceFwConfig;
   setting: McuParamName;
   dispatch: Function;
   intSize?: IntegerSize;
   filter?: number;
+  gray?: boolean;
 }
 
 export interface EStopButtonProps {
@@ -138,9 +172,15 @@ export interface EStopButtonProps {
 }
 
 export interface PeripheralsProps {
-  resources: RestResources;
   bot: BotState;
   peripherals: TaggedPeripheral[];
+  dispatch: Function;
+  disabled: boolean | undefined;
+}
+
+export interface SensorsProps {
+  bot: BotState;
+  sensors: TaggedSensor[];
   dispatch: Function;
   disabled: boolean | undefined;
 }
@@ -155,6 +195,8 @@ export interface FarmwareProps {
   farmwares: Dictionary<FarmwareManifest | undefined>;
   timeOffset: number;
   syncStatus: SyncStatus | undefined;
+  webAppConfig: Partial<WebAppConfig>;
+  firstPartyFarmwareNames: string[];
 }
 
 export interface HardwareSettingsProps {
@@ -162,6 +204,9 @@ export interface HardwareSettingsProps {
   dispatch: Function;
   botToMqttStatus: NetworkState;
   bot: BotState;
+  sourceFbosConfig: SourceFbosConfig;
+  sourceFwConfig: SourceFwConfig;
+  firmwareConfig: FirmwareConfig | undefined;
 }
 
 export interface ControlPanelState {

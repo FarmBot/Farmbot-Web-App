@@ -23,10 +23,11 @@ describe Api::FbosConfigsController do
         sequence_body_log:       false,
         sequence_complete_log:   false,
         sequence_init_log:       false,
-        arduino_debug_messages:  -99,
+        arduino_debug_messages:  false,
         network_not_found_timer: nil,
-        os_auto_update:          0,
-        firmware_hardware:       "arduino"
+        os_auto_update:          false,
+        firmware_hardware:       "arduino",
+        api_migrated:            false
       }.to_a.map { |key, value| expect(json[key]).to eq(value) }
 
       { created_at: String, updated_at: String }
@@ -35,6 +36,15 @@ describe Api::FbosConfigsController do
   end
 
   describe '#update' do
+    it 'raise integer overflow erorrs' do
+      way_too_big = 123456789013333333332345
+      sign_in user
+      body = { network_not_found_timer: way_too_big }
+      put :update, body: body.to_json, params: { format: :json }
+      expect(response.status).to eq(422)
+      expect(json[:error]).to include("was too big/small")
+    end
+
     it 'handles update requests' do
       sign_in user
       body = { beta_opt_in: true, disable_factory_reset: true }
@@ -56,6 +66,13 @@ describe Api::FbosConfigsController do
       put :update, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       expect(conf.reload.device_id).to eq(old_device_id)
+    end
+
+    it 'ignores unknown keys' do
+      sign_in user
+      body = { blah_blah_blah: true }
+      put :update, body: body.to_json, params: { format: :json }
+      expect(response.status).to eq(200)
     end
   end
 

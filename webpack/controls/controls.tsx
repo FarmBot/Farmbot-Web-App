@@ -1,6 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Peripherals } from "./peripherals";
+import { Sensors } from "./sensors";
 import { Row, Page, Col } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { WebcamPanel } from "./webcam";
@@ -9,10 +10,11 @@ import { Move } from "./move";
 import { BooleanSetting } from "../session_keys";
 import { Session } from "../session";
 import { catchErrors } from "../util";
+import { Feature } from "../devices/interfaces";
 
 @connect(mapStateToProps)
 export class Controls extends React.Component<Props, {}> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
   render() {
     const arduinoBusy = !!this
       .props
@@ -30,7 +32,8 @@ export class Controls extends React.Component<Props, {}> {
       x_axis_inverted: !!Session.deprecatedGetBool(BooleanSetting.x_axis_inverted),
       y_axis_inverted: !!Session.deprecatedGetBool(BooleanSetting.y_axis_inverted),
       z_axis_inverted: !!Session.deprecatedGetBool(BooleanSetting.z_axis_inverted),
-      botToMqttStatus: this.props.botToMqttStatus
+      botToMqttStatus: this.props.botToMqttStatus,
+      firmwareSettings: this.props.firmwareSettings,
     };
     const showWebcamWidget = !Session.deprecatedGetBool(BooleanSetting.hide_webcam_widget);
     return <Page className="controls">
@@ -43,11 +46,16 @@ export class Controls extends React.Component<Props, {}> {
               bot={this.props.bot}
               peripherals={this.props.peripherals}
               dispatch={this.props.dispatch}
-              resources={this.props.resources}
               disabled={arduinoBusy} />
           </Col>
           <Col xs={12} sm={6}>
             <WebcamPanel feeds={this.props.feeds} dispatch={this.props.dispatch} />
+            {this.props.shouldDisplay(Feature.sensors) &&
+              <Sensors
+                bot={this.props.bot}
+                sensors={this.props.sensors}
+                dispatch={this.props.dispatch}
+                disabled={arduinoBusy} />}
           </Col>
         </Row>
         :
@@ -60,8 +68,13 @@ export class Controls extends React.Component<Props, {}> {
               bot={this.props.bot}
               peripherals={this.props.peripherals}
               dispatch={this.props.dispatch}
-              resources={this.props.resources}
               disabled={arduinoBusy} />
+            {this.props.shouldDisplay(Feature.sensors) &&
+              <Sensors
+                bot={this.props.bot}
+                sensors={this.props.sensors}
+                dispatch={this.props.dispatch}
+                disabled={arduinoBusy} />}
           </Col>
         </Row>}
     </Page>;

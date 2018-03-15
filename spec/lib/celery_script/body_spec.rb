@@ -2,10 +2,10 @@ require "spec_helper"
 describe "Body nodes" do
   test_corpus = CeleryScript::Corpus
                   .new
-                  .defineArg(:foo, [Integer])
-                  .defineNode(:wrong, [], [])
-                  .defineNode(:bar, [:foo], [])
-                  .defineNode(:baz, [], [:bar])
+                  .arg(:foo, [Integer])
+                  .node(:wrong, [], [])
+                  .node(:bar, [:foo], [])
+                  .node(:baz, [], [:bar])
   it "always always empty bodies" do
     tree = CeleryScript::AstNode.new({
       "kind": "baz",

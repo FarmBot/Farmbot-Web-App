@@ -2,6 +2,7 @@ import { BotOriginQuadrant, isBotOriginQuadrant } from "../interfaces";
 import { McuParams } from "farmbot";
 import { StepsPerMmXY } from "../../devices/interfaces";
 import { CheckedAxisLength, AxisNumberProperty, BotSize } from "./interfaces";
+import { trim } from "../../util";
 
 const SNAP = 10;
 const LEFT_MENU_WIDTH = 320;
@@ -145,3 +146,24 @@ export function getMapSize(
     y: gridSize.y + gridOffset.y * 2
   };
 }
+
+/* Transform object based on selected map quadrant and grid size. */
+export const transformForQuadrant =
+  (quadrant: BotOriginQuadrant, gridSize: AxisNumberProperty) => {
+    const quadrantFlips = () => {
+      switch (quadrant) {
+        case 1: return { x: -1, y: 1 };
+        case 2: return { x: 1, y: 1 };
+        case 3: return { x: 1, y: -1 };
+        case 4: return { x: -1, y: -1 };
+        default: return { x: 1, y: 1 };
+      }
+    };
+    const origin = getXYFromQuadrant(0, 0, quadrant, gridSize);
+    const flip = quadrantFlips();
+    const translate = { x: flip.x * origin.qx, y: flip.y * origin.qy };
+    return trim(
+      `scale(${flip.x}, ${flip.y})
+       translate(${translate.x}, ${translate.y})`
+    );
+  };

@@ -3,14 +3,14 @@ import { DropDownItem, Row, Col, FBSelect } from "../../../ui/index";
 import { t } from "i18next";
 import {
   CameraSelectionProps, CameraSelectionState
-} from "../../interfaces";
+} from "./interfaces";
 import { info, success, error } from "farmbot-toastr/dist";
 import { getDevice } from "../../../device";
 import { ColWidth } from "../farmbot_os_settings";
 
 const CAMERA_CHOICES = [
-  { label: "USB Camera", value: "USB" },
-  { label: "Raspberry Pi Camera", value: "RPI" }
+  { label: t("USB Camera"), value: "USB" },
+  { label: t("Raspberry Pi Camera"), value: "RPI" }
 ];
 
 const CAMERA_CHOICES_DDI = {
@@ -63,7 +63,8 @@ export class CameraSelection
             list={CAMERA_CHOICES}
             selectedItem={this.selectedCamera()}
             placeholder="Select a camera..."
-            onChange={this.sendOffConfig} />
+            onChange={this.sendOffConfig}
+            extraClass={this.props.botOnline ? "" : "disabled"} />
         </div>
       </Col>
     </Row>;

@@ -6,11 +6,12 @@ import { DragHelpers } from "./drag_helpers";
 import { Session } from "../../session";
 import { BooleanSetting } from "../../session_keys";
 import { Color } from "../../ui/index";
+import { Actions } from "../../constants";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
 
-  state: GardenPlantState = { icon: DEFAULT_ICON };
+  state: GardenPlantState = { icon: DEFAULT_ICON, hover: false };
 
   componentDidMount() {
     const OFS = this.props.plant.body.openfarm_slug;
@@ -21,16 +22,35 @@ export class GardenPlant extends
   }
 
   click = () => {
-    this.props.dispatch({ type: "SELECT_PLANT", payload: [this.props.uuid] });
     this.props.dispatch({
-      type: "TOGGLE_HOVERED_PLANT", payload: {
+      type: Actions.SELECT_PLANT,
+      payload: [this.props.uuid]
+    });
+    this.props.dispatch({
+      type: Actions.TOGGLE_HOVERED_PLANT, payload: {
         plantUUID: this.props.uuid, icon: this.state.icon
       }
     });
   };
 
+  iconHover = (action: "start" | "end") => {
+    const hovered = action === "start";
+    this.props.dispatch({
+      type: Actions.HOVER_PLANT_LIST_ITEM,
+      payload: hovered ? this.props.uuid : undefined
+    });
+    this.setState({ hover: hovered ? true : false });
+  };
+
+  get radius() {
+    const { selected, plant } = this.props;
+    const { hover } = this.state;
+    const { radius } = plant.body;
+    return (hover && !selected) ? radius * 1.1 : radius;
+  }
+
   render() {
-    const { selected, dragging, plant, mapTransformProps,
+    const { selected, dragging, plant, grayscale, mapTransformProps,
       activeDragXY, zoomLvl } = this.props;
     const { quadrant, gridSize } = mapTransformProps;
     const { id, radius, x, y } = plant.body;
@@ -41,6 +61,10 @@ export class GardenPlant extends
     const animate = !Session.deprecatedGetBool(BooleanSetting.disable_animations);
 
     return <g id={"plant-" + id}>
+
+      <filter id="grayscale">
+        <feColorMatrix type="saturate" values="0" />
+      </filter>
 
       {animate &&
         <circle
@@ -53,15 +77,18 @@ export class GardenPlant extends
 
       <g id="plant-icon">
         <image
+          onMouseEnter={() => this.iconHover("start")}
+          onMouseLeave={() => this.iconHover("end")}
           visibility={dragging ? "hidden" : "visible"}
           className={`plant-image is-chosen-${selected} ${animate ? "animate" : ""}`}
+          filter={(grayscale && !selected) ? "url(#grayscale)" : ""}
           opacity={alpha}
           xlinkHref={icon}
           onClick={this.click}
-          height={radius * 2}
-          width={radius * 2}
-          x={qx - radius}
-          y={qy - radius} />
+          height={this.radius * 2}
+          width={this.radius * 2}
+          x={qx - this.radius}
+          y={qy - this.radius} />
       </g>
 
       <DragHelpers // for inactive plants

@@ -11,8 +11,9 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   show_points: "show_points",
   show_spread: "show_spread",
   show_farmbot: "show_farmbot",
+  show_images: "show_images",
 
-  /** "Labs" feature names. */
+  /** "Labs" feature names. (App preferences) */
   stub_config: "stub_config",
   disable_i18n: "disable_i18n",
   confirm_step_deletion: "confirm_step_deletion",
@@ -22,6 +23,11 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   disable_animations: "disable_animations",
   display_trail: "display_trail",
   encoder_figure: "encoder_figure",
+  enable_browser_speak: "enable_browser_speak",
+  discard_unsaved: "discard_unsaved",
+
+  /** Farmware Settings Panel */
+  show_first_party_farmware: "show_first_party_farmware",
 };
 
 export const NumericSetting: Record<NumberConfigKey, NumberConfigKey> = {

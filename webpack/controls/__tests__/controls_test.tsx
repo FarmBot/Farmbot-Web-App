@@ -19,8 +19,9 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { Controls } from "../controls";
 import { bot } from "../../__test_support__/fake_state/bot";
-import { fakePeripheral, fakeWebcamFeed } from "../../__test_support__/fake_state/resources";
-import { fakeState } from "../../__test_support__/fake_state";
+import {
+  fakePeripheral, fakeWebcamFeed, fakeSensor
+} from "../../__test_support__/fake_state/resources";
 import { Dictionary } from "farmbot";
 import { BooleanSetting } from "../../session_keys";
 import { Props } from "../interfaces";
@@ -33,24 +34,35 @@ describe("<Controls />", () => {
       feeds: [fakeWebcamFeed()],
       user: undefined,
       peripherals: [fakePeripheral()],
-      resources: fakeState().resources,
-      botToMqttStatus: "up"
+      sensors: [fakeSensor()],
+      botToMqttStatus: "up",
+      firmwareSettings: bot.hardware.mcu_params,
+      shouldDisplay: () => true,
     };
   }
 
   it("shows webcam widget", () => {
     mockStorj[BooleanSetting.hide_webcam_widget] = false;
-    const wrapper = mount(<Controls {...fakeProps() } />);
+    const wrapper = mount(<Controls {...fakeProps()} />);
     const txt = wrapper.text().toLowerCase();
-    ["webcam", "move", "peripherals"]
+    ["webcam", "move", "peripherals", "sensors"]
       .map(string => expect(txt).toContain(string));
   });
 
   it("hides webcam widget", () => {
     mockStorj[BooleanSetting.hide_webcam_widget] = true;
-    const wrapper = mount(<Controls {...fakeProps() } />);
+    const wrapper = mount(<Controls {...fakeProps()} />);
     const txt = wrapper.text().toLowerCase();
-    ["move", "peripherals"].map(string => expect(txt).toContain(string));
+    ["move", "peripherals", "sensors"]
+      .map(string => expect(txt).toContain(string));
     expect(txt).not.toContain("webcam");
+  });
+
+  it("doesn't show sensors", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => false;
+    const wrapper = mount(<Controls {...p} />);
+    const txt = wrapper.text().toLowerCase();
+    expect(txt).not.toContain("sensors");
   });
 });

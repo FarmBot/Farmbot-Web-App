@@ -35,8 +35,8 @@ describe("<TileSendMessage/>", () => {
     const inputs = block.find("input");
     const labels = block.find("label");
     const buttons = block.find("button");
-    expect(inputs.length).toEqual(5);
-    expect(labels.length).toEqual(4);
+    expect(inputs.length).toEqual(6);
+    expect(labels.length).toEqual(5);
     expect(buttons.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Send Message");
     expect(labels.at(0).text()).toEqual("Message");
@@ -51,5 +51,8 @@ describe("<TileSendMessage/>", () => {
     expect(labels.at(3).text()).toEqual("Email");
     expect(inputs.at(4).props().checked).toBeFalsy();
     expect(inputs.at(4).props().disabled).toBeFalsy();
+    expect(labels.at(4).text()).toEqual("Speak");
+    expect(inputs.at(5).props().checked).toBeFalsy();
+    expect(inputs.at(5).props().disabled).toBeFalsy();
   });
 });

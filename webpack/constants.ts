@@ -1,179 +1,178 @@
 import { trim } from "./util";
 
-/**
- * Seems like a better idea to keep content and tooltips centralized. If we have
- * the ability to keep the app safer from possible accidental breakages by
- * avoiding going into components for copy changes, why not right? ¯\_(ツ)_/¯
- */
-
 export namespace ToolTips {
 
   // Controls
   export const MOVE =
-    `Use these manual control buttons to move FarmBot in realtime. Press the
+    trim(`Use these manual control buttons to move FarmBot in realtime. Press the
     arrows for relative movements or type in new coordinates and press GO for an
     absolute movement. Tip: Press the Home button when you are done so FarmBot
-    is ready to get back to work.`;
+    is ready to get back to work.`);
 
   export const WEBCAM =
-    `If you have a webcam, you can view the video stream in this widget.
-    Press the edit button to update and save your webcam URL.`;
+    trim(`If you have a webcam, you can view the video stream in this widget.
+    Press the edit button to update and save your webcam URL.`);
 
   export const PERIPHERALS =
-    `Use these toggle switches to control FarmBot's peripherals in realtime. To
-    edit and create new peripherals, press the EDIT button. Make sure to turn
-    things off when you're done!`;
+    trim(`Use these toggle switches to control FarmBot's peripherals in realtime.
+    To edit and create new peripherals, press the EDIT button. Make sure to turn
+    things off when you're done!`);
+
+  export const SENSORS =
+    trim(`Add sensors here to monitor FarmBot's sensors.
+    To edit and create new sensors, press the EDIT button.`);
 
   // Device
   export const OS_SETTINGS =
-    `View and change device settings.`;
+    trim(`View and change device settings.`);
 
   export const HW_SETTINGS =
-    `Change settings of your FarmBot hardware with the fields below. Caution:
+    trim(`Change settings of your FarmBot hardware with the fields below. Caution:
     Changing these settings to extreme values can cause hardware malfunction.
     Make sure to test any new settings before letting your FarmBot use them
     unsupervised. Tip: Recalibrate FarmBot after changing settings and test a
-    few sequences to verify that everything works as expected.`;
+    few sequences to verify that everything works as expected.`);
 
   export const PIN_BINDINGS =
-    `Assign a sequence to execute when a Raspberry Pi GPIO pin is activated.`;
+    trim(`Assign a sequence to execute when a Raspberry Pi GPIO pin is activated.`);
 
   // Connectivity
   export const CONNECTIVITY =
-    `Diagnose connectivity issues with FarmBot and the browser.`;
+    trim(`Diagnose connectivity issues with FarmBot and the browser.`);
 
   // Hardware Settings: Homing and Calibration
   export const HOMING =
-    `(Alpha) If encoders or end-stops are enabled, home axis (find zero).`;
+    trim(`(Alpha) If encoders or end-stops are enabled, home axis (find zero).`);
 
   export const CALIBRATION =
-    `(Alpha) If encoders or end-stops are enabled, home axis and determine
-    maximum.`;
+    trim(`(Alpha) If encoders or end-stops are enabled, home axis and determine
+    maximum.`);
 
   export const SET_ZERO_POSITION =
-    `Set the current location as zero.`;
+    trim(`Set the current location as zero.`);
 
   export const FIND_HOME_ON_BOOT =
-    `If encoders or end-stops are enabled, find the home position when the
+    trim(`If encoders or end-stops are enabled, find the home position when the
     device powers on. Warning! This will perform homing on all axes when the
     device powers on. Encoders or endstops must be enabled. It is recommended
-    to make sure homing works properly before enabling this feature.`;
+    to make sure homing works properly before enabling this feature.`);
 
   export const STOP_AT_HOME =
-    `Stop at the home location of the axis.`;
+    trim(`Stop at the home location of the axis.`);
 
   export const STOP_AT_MAX =
-    `Don't allow movement past the maximum value provided in AXIS LENGTH.`;
+    trim(`Don't allow movement past the maximum value provided in AXIS LENGTH.`);
 
   export const NEGATIVE_COORDINATES_ONLY =
-    `Restrict travel to negative coordinate locations. Overridden by disabling
-    STOP AT HOME.`;
+    trim(`Restrict travel to negative coordinate locations. Overridden by
+    disabling STOP AT HOME.`);
 
   export const LENGTH =
-    `Set the length of each axis to provide software limits. Used only if
-    STOP AT MAX is enabled.`;
+    trim(`Set the length of each axis to provide software limits. Used only if
+    STOP AT MAX is enabled.`);
 
   export const TIMEOUT_AFTER =
-    `Amount of time to wait for a command to execute before stopping.`;
+    trim(`Amount of time to wait for a command to execute before stopping.`);
 
   // Hardware Settings: Motors
   export const MAX_MOVEMENT_RETRIES =
-    `Number of times to retry a movement before stopping.`;
+    trim(`Number of times to retry a movement before stopping.`);
 
   export const E_STOP_ON_MOV_ERR =
-    `Emergency stop if movement is not complete after the maximum number of
-    retries.`;
+    trim(`Emergency stop if movement is not complete after the maximum number of
+    retries.`);
 
   export const MAX_SPEED =
-    `Maximum travel speed after acceleration in motor steps per second.`;
+    trim(`Maximum travel speed after acceleration in motor steps per second.`);
 
   export const HOME_SPEED =
-    `Homing and calibration travel speed in motor steps per second.`;
+    trim(`Home position adjustment travel speed (homing and calibration)
+    in motor steps per second.`);
 
   export const MIN_SPEED =
-    `Minimum movement speed in motor steps per second. Also used for homing
-     and calibration.`;
+    trim(`Minimum movement speed in motor steps per second. Also used for homing
+     and calibration.`);
 
   export const ACCELERATE_FOR =
-    `Number of steps used for acceleration and deceleration.`;
+    trim(`Number of steps used for acceleration and deceleration.`);
 
   export const STEPS_PER_MM =
-    `The number of motor steps required to move the axis one millimeter.`;
+    trim(`The number of motor steps required to move the axis one millimeter.`);
 
   export const ALWAYS_POWER_MOTORS =
-    `Keep power applied to motors. Prevents slipping from gravity in certain
-    situations.`;
+    trim(`Keep power applied to motors. Prevents slipping from gravity in certain
+    situations.`);
 
   export const INVERT_MOTORS =
-    `Invert direction of motor during calibration.`;
+    trim(`Invert direction of motor during calibration.`);
 
   export const ENABLE_X2_MOTOR =
-    `Enable use of a second x-axis motor. Connects to E0 on RAMPS.`;
+    trim(`Enable use of a second x-axis motor. Connects to E0 on RAMPS.`);
 
   // Hardware Settings: Encoders and Endstops
   export const ENABLE_ENCODERS =
-    `(Alpha) Enable use of rotary encoders during calibration and homing.`;
+    trim(`(Alpha) Enable use of rotary encoders during calibration and homing.`);
 
   export const ENCODER_POSITIONING =
-    `[EXPERIMENTAL] Use encoders for positioning.`;
+    trim(`[EXPERIMENTAL] Use encoders for positioning.`);
 
   export const INVERT_ENCODERS =
-    `(Alpha) Reverse the direction of encoder position reading.`;
+    trim(`(Alpha) Reverse the direction of encoder position reading.`);
 
   export const MAX_MISSED_STEPS =
-    `(Alpha) Number of steps missed (determined by encoder) before motor is
-    considered to have stalled.`;
+    trim(`(Alpha) Number of steps missed (determined by encoder) before motor is
+    considered to have stalled.`);
 
   export const ENCODER_MISSED_STEP_DECAY =
-    `(Alpha) Reduction to missed step total for every good step.`;
+    trim(`(Alpha) Reduction to missed step total for every good step.`);
 
   export const ENCODER_SCALING =
-    `(Alpha) encoder scaling factor = 100 * (motor resolution * microsteps) /
-    (encoder resolution).`;
+    trim(`(Alpha) encoder scaling factor = 100 * (motor resolution * microsteps)
+    / (encoder resolution).`);
 
   export const ENABLE_ENDSTOPS =
-    `Enable use of electronic end-stops during calibration and homing.`;
+    trim(`Enable use of electronic end-stops during calibration and homing.`);
 
   export const INVERT_ENDPOINTS =
-    `Swap axis end-stops during calibration.`;
+    trim(`Swap axis end-stops during calibration.`);
 
   // Hardware Settings: Pin Guard
   export const PIN_GUARD_PIN_NUMBER =
-    `The number of the pin to guard. This pin will be set to the specified
-    state after the duration specified by TIMEOUT.`;
+    trim(`The number of the pin to guard. This pin will be set to the specified
+    state after the duration specified by TIMEOUT.`);
 
   // Farmware
   export const FARMWARE =
-    `Manage Farmware (plugins).`;
+    trim(`Manage Farmware (plugins).`);
 
   export const PHOTOS =
-    `Take and view photos with your FarmBot's camera.`;
+    trim(`Take and view photos with your FarmBot's camera.`);
 
   export const WEED_DETECTOR =
-    `Detect weeds using FarmBot's camera and display them on the Farm Designer
-    map.`;
+    trim(`Detect weeds using FarmBot's camera and display them on the
+    Farm Designer map.`);
 
   export const CAMERA_CALIBRATION =
-    `Calibrate FarmBot's camera for use in the weed detection software.`;
+    trim(`Calibrate FarmBot's camera for use in the weed detection software.`);
 
   // Sequences
   export const SEQUENCE_COMMANDS =
-    `These are the most basic commands FarmBot can execute. Drag and drop them
-    to create sequences for watering, planting seeds, measuring soil properties,
-    and more.`;
+    trim(`These are the most basic commands FarmBot can execute. Drag and drop
+    them to create sequences for watering, planting seeds, measuring soil
+    properties, and more.`);
 
   export const SEQUENCE_EDITOR =
-    `Drag and drop commands here to create sequences for watering, planting
+    trim(`Drag and drop commands here to create sequences for watering, planting
     seeds, measuring soil properties, and more. Press the Test button to
     immediately try your sequence with FarmBot. You can also edit, copy, and
     delete existing sequences; assign a color; and give your commands custom
-    names.`;
+    names.`);
 
   export const SEQUENCE_LIST =
-    `Here is the list of all of your sequences. Click one to edit.`;
+    trim(`Here is the list of all of your sequences. Click one to edit.`);
 
   export const MOVE_ABSOLUTE =
-    `The Move Absolute step instructs FarmBot to move to the specified
+    trim(`The Move Absolute step instructs FarmBot to move to the specified
     coordinate regardless of the current position. For example, if FarmBot is
     currently at X=1000, Y=1000 and it receives a Move Absolute where X=0 and
     Y=3000, then FarmBot will move to X=0, Y=3000. If FarmBot must move in
@@ -182,110 +181,114 @@ export namespace ToolTips {
     Offsets allow you to more easily instruct FarmBot to move to a location,
     but offset from it by the specified amount. For example moving to just
     above where a peripheral is located. Using offsets lets FarmBot do the
-    math for you.`;
+    math for you.`);
 
   export const MOVE_RELATIVE =
-    `The Move Relative step instructs FarmBot to move the specified distance
+    trim(`The Move Relative step instructs FarmBot to move the specified distance
     from its current location. For example, if FarmBot is currently at X=1000,
     Y=1000 and it receives a Move Relative where X=0 and Y=3000, then FarmBot
     will move to X=1000, Y=4000. If FarmBot must move in multiple directions,
     it will move diagonally. If you require straight movements along one axis
     at a time, use  multiple Move Relative steps. Move Relative steps should be
     preceded by a Move Absolute step to ensure you are starting from a known
-    location.`;
+    location.`);
 
   export const WRITE_PIN =
-    `The Write Pin step instructs FarmBot to set the specified pin on the
+    trim(`The Write Pin step instructs FarmBot to set the specified pin on the
     Arduino to the specified mode and value. Use the digital pin mode for
     on (1) and off (0) control, and analog pin mode for PWM (pulse width
-    modulation) (0-255).`;
+    modulation) (0-255).`);
 
   export const READ_PIN =
-    `The Read Pin step instructs FarmBot to read the current value of the
+    trim(`The Read Pin step instructs FarmBot to read the current value of the
     specified pin. Pin Mode: Use digital for a 0 (LOW) or 1 (HIGH) response,
-    and analog for a voltage reading (0-1023 for 0-5V).`;
+    and analog for a voltage reading (0-1023 for 0-5V).`);
 
   export const WAIT =
-    `The Wait step instructs FarmBot to wait for the specified amount of time.
-    Use it in combination with the Pin Write step to water for a length of
-    time.`;
+    trim(`The Wait step instructs FarmBot to wait for the specified amount
+    of time. Use it in combination with the Pin Write step to water for a
+    length of time.`);
 
   export const SEND_MESSAGE =
-    `The Send Message step instructs FarmBot to send a custom message to the
-    logs (and toast message and/or email, if selected). This can help you with
-    debugging your sequences.`;
+    trim(`The Send Message step instructs FarmBot to send a custom message
+    to the logs (and toast message and/or email, if selected). This can
+    help you with debugging your sequences.`);
 
   export const FIND_HOME =
-    `The Find Home step instructs the device to perform a homing command to
-    find and set zero for the chosen axis or axes.`;
+    trim(`The Find Home step instructs the device to perform a homing
+    command to find and set zero for the chosen axis or axes.`);
 
   export const IF =
-    `Execute a sequence if a condition is satisfied. If the condition is not
-    satisfied, chose to do nothing or execute a different sequence.`;
+    trim(`Execute a sequence if a condition is satisfied. If the condition
+    is not satisfied, chose to do nothing or execute a different sequence.`);
 
   export const EXECUTE_SEQUENCE =
-    `Executes another sequence.`;
+    trim(`Executes another sequence.`);
 
-  export const EXECUTE_SCRIPT = `The Run Farmware step runs a Farmware package.
-   Visit the Farmware page to install and manage Farmware.`;
+  export const EXECUTE_SCRIPT =
+    trim(`The Run Farmware step runs a Farmware package.
+   Visit the Farmware page to install and manage Farmware.`);
 
   export const TAKE_PHOTO =
-    `Snaps a photo using the device camera. Select the camera type on the
-    Device page.`;
+    trim(`Snaps a photo using the device camera. Select the camera type on the
+    Device page.`);
 
   // Regimens
   export const BULK_SCHEDULER =
-    `Add sequences to your regimen by selecting a sequence from the drop down,
-    specifying a time, choosing which days it should run on, and then clicking
-    the + button. For example: a Seeding sequence might be scheduled for Day 1,
-    while a Watering sequence would be scheduled to run every other day.`;
+    trim(`Add sequences to your regimen by selecting a sequence from the
+    drop down, specifying a time, choosing which days it should run on,
+    and then clicking the + button. For example: a Seeding sequence might
+    be scheduled for Day 1, while a Watering sequence would be scheduled
+    to run every other day.`);
 
   export const REGIMEN_EDITOR =
-    `Regimens allow FarmBot to take care of a plant throughout its entire life.
-    A regimen consists of many sequences that are scheduled to run based on the
-    age of the plant. Regimens are applied to plants from the farm designer
-    (coming soon) and can be re-used on many plants growing at the same or
-    different times. Multiple regimens can be applied to any one plant.`;
+    trim(`Regimens allow FarmBot to take care of a plant throughout its
+    entire life. A regimen consists of many sequences that are scheduled
+    to run based on the age of the plant. Regimens are applied to plants
+    from the farm designer (coming soon) and can be re-used on many plants
+    growing at the same or different times. Multiple regimens can be
+    applied to any one plant.`);
 
   export const REGIMEN_LIST =
-    `This is a list of all of your regimens. Click one to begin editing it.`;
+    trim(`This is a list of all of your regimens. Click one to begin
+    editing it.`);
 
   // Tools
   export const TOOL_LIST =
-    `This is a list of all your FarmBot Tools. Click the Edit button to add,
-    edit, or delete tools.`;
+    trim(`This is a list of all your FarmBot Tools. Click the Edit button
+    to add, edit, or delete tools.`);
 
   export const TOOLBAY_LIST =
-    `Toolbays are where you store your FarmBot Tools. Each Toolbay has Slots
-    that you can put your Tools in, which should be reflective of your real
-    FarmBot hardware configuration.`;
+    trim(`Toolbays are where you store your FarmBot Tools. Each Toolbay
+    has Slots that you can put your Tools in, which should be reflective
+    of your real FarmBot hardware configuration.`);
 
   // Logs
   export const LOGS =
-    `View and filter log messages.`;
+    trim(`View and filter log messages.`);
 
   export const SEQUENCE_LOG_BEGIN =
-    `Send a log message upon the start of sequence execution.`;
+    trim(`Send a log message upon the start of sequence execution.`);
 
   export const SEQUENCE_LOG_STEP =
-    `Send a log message for each sequence step.`;
+    trim(`Send a log message for each sequence step.`);
 
   export const SEQUENCE_LOG_END =
-    `Send a log message upon the end of sequence execution.`;
+    trim(`Send a log message upon the end of sequence execution.`);
 
   export const FIRMWARE_LOG_SENT =
-    `Log all commands sent to firmware (clears after refresh).`;
+    trim(`Log all commands sent to firmware (clears after refresh).`);
 
   export const FIRMWARE_LOG_RECEIVED =
-    `Log all responses received from firmware (clears after refresh).
-    Warning: extremely verbose.`;
+    trim(`Log all responses received from firmware (clears after refresh).
+    Warning: extremely verbose.`);
 
   export const FIRMWARE_DEBUG_MESSAGES =
-    `Log all debug received from firmware (clears after refresh).`;
+    trim(`Log all debug received from firmware (clears after refresh).`);
 
   // App
   export const LABS =
-    `Customize your web app experience.`;
+    trim(`Customize your web app experience.`);
 }
 
 export namespace Content {
@@ -305,7 +308,47 @@ export namespace Content {
     trim(`If you are sure you want to delete your account, type in
     your password below to continue.`);
 
+  // App Settings
+  export const CONFIRM_STEP_DELETION =
+    trim(`Show a confirmation dialog when the sequence delete step
+    icon is pressed.`);
+
+  export const HIDE_WEBCAM_WIDGET =
+    trim(`If not using a webcam, use this setting to remove the
+    widget from the Controls page.`);
+
+  export const DYNAMIC_MAP_SIZE =
+    trim(`Change the Farm Designer map size based on axis length.
+    A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
+    the HARDWARE widget.`);
+
+  export const DOUBLE_MAP_DIMENSIONS =
+    trim(`Double the default dimensions of the Farm Designer map
+    for a map with four times the area.`);
+
+  export const PLANT_ANIMATIONS =
+    trim(`Enable plant animations in the Farm Designer.`);
+
+  export const BROWSER_SPEAK_LOGS =
+    trim(`Have the browser also read aloud log messages on the
+    "Speak" channel that are spoken by FarmBot.`);
+
+  export const DISCARD_UNSAVED_CHANGES =
+    trim(`Don't ask about saving work before
+    closing browser tab. Warning: may cause loss of data.`);
+
+  export const DISCARD_UNSAVED_CHANGES_CONFIRM =
+    trim(`Warning! When enabled, any unsaved changes
+    will be discarded when refreshing or closing the page. Are you sure?`);
+
   // Device
+  export const NOT_HTTPS =
+    trim(`WARNING: Sending passwords via HTTP:// is not secure.`);
+
+  export const CONTACT_SYSADMIN =
+    trim(`Please contact the system(s) administrator(s) and ask them to enable
+    HTTPS://`);
+
   export const FACTORY_RESET_WARNING =
     trim(`Factory resetting your FarmBot will destroy all data on the device,
     revoking your FarmBot's abilily to connect to your web app account and your
@@ -328,8 +371,7 @@ export namespace Content {
 
   export const AUTO_FACTORY_RESET =
     trim(`Automatically factory reset when the WiFi network cannot be
-    detected. Useful for typos during FarmBot OS configuration or network
-    changes.`);
+    detected. Useful for network changes.`);
 
   export const AUTO_FACTORY_RESET_PERIOD =
     trim(`Time in minutes to attempt connecting to WiFi before a factory
@@ -408,6 +450,11 @@ export namespace Content {
     trim(`No Sequence selected. Click one in the Sequences panel to edit,
     or click "+" to create a new one.`);
 
+  export const END_DETECTION_DISABLED =
+    trim(`This command will not execute correctly because you do not have
+    encoders or endstops enabled for the chosen axis. Enable endstops or
+    encoders from the Device page for: `);
+
   // Regimens
   export const NO_REGIMEN_SELECTED =
     trim(`No Regimen selected. Click one in the Regimens panel to edit, or
@@ -426,8 +473,8 @@ export namespace Content {
 
   export const FARM_EVENT_TZ_WARNING =
     trim(`Note: Times displayed according to FarmBot's local time, which
-    is currently different from your browser's time. Timezone data is configurable
-    on the Device page).`);
+    is currently different from your browser's time. Timezone data is
+    configurable on the Device page).`);
 
   export const FIRST_PARTY_WARNING =
     trim(`Are you sure you want to delete this first party farmware?
@@ -476,6 +523,7 @@ export enum Actions {
   BOT_CHANGE = "BOT_CHANGE",
   FETCH_OS_UPDATE_INFO_OK = "FETCH_OS_UPDATE_INFO_OK",
   FETCH_BETA_OS_UPDATE_INFO_OK = "FETCH_BETA_OS_UPDATE_INFO_OK",
+  FETCH_MIN_OS_FEATURE_INFO_OK = "FETCH_MIN_OS_FEATURE_INFO_OK",
   INVERT_JOG_BUTTON = "INVERT_JOG_BUTTON",
   DISPLAY_ENCODER_DATA = "DISPLAY_ENCODER_DATA",
   STASH_STATUS = "STASH_STATUS",
@@ -488,8 +536,10 @@ export enum Actions {
   SEARCH_QUERY_CHANGE = "SEARCH_QUERY_CHANGE",
   SELECT_PLANT = "SELECT_PLANT",
   TOGGLE_HOVERED_PLANT = "TOGGLE_HOVERED_PLANT",
+  HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
   CHOOSE_LOCATION = "CHOOSE_LOCATION",
+  SET_CURRENT_POINT_DATA = "SET_CURRENT_POINT_DATA",
 
   // Regimens
   PUSH_WEEK = "PUSH_WEEK",
@@ -506,6 +556,7 @@ export enum Actions {
 
   // Farmware
   SELECT_IMAGE = "SELECT_IMAGE",
+  FETCH_FIRST_PARTY_FARMWARE_NAMES_OK = "FETCH_FIRST_PARTY_FARMWARE_NAMES_OK",
 
   // Network
   NETWORK_EDGE_CHANGE = "NETWORK_EDGE_CHANGE",

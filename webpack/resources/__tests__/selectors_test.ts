@@ -1,11 +1,19 @@
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { buildResourceIndex, fakeDevice } from "../../__test_support__/resource_index_builder";
 import * as Selector from "../selectors";
-import { resourceReducer, emptyState } from "../reducer";
-import { TaggedTool, TaggedToolSlotPointer, SpecialStatus } from "../tagged_resources";
+import {
+  resourceReducer,
+  emptyState
+} from "../reducer";
+import {
+  TaggedTool,
+  TaggedToolSlotPointer,
+  SpecialStatus
+} from "../tagged_resources";
 import { createOK } from "../actions";
 import { generateUuid } from "../util";
 import {
-  fakeWebcamFeed, fakeSequence
+  fakeWebcamFeed,
+  fakeSequence
 } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import * as _ from "lodash";
@@ -34,7 +42,8 @@ const fakeSlot: TaggedToolSlotPointer = {
     z: 0,
     name: "wow",
     pointer_id: SLOT_ID,
-    meta: {}
+    meta: {},
+    pullout_direction: 0
   }
 };
 const fakeIndex = buildResourceIndex().index;
@@ -59,7 +68,7 @@ describe("findSlotByToolId", () => {
 
 describe("getFeeds", () => {
   it("returns empty array", () => {
-    expect(Selector.getFeeds(emptyState().index).length).toBe(0);
+    expect(Selector.selectAllWebcamFeeds(emptyState().index).length).toBe(0);
   });
 
   it("finds the only WebcamFeed", () => {
@@ -71,7 +80,7 @@ describe("getFeeds", () => {
         data: feed
       }
     }].reduce(resourceReducer, emptyState());
-    expect(Selector.getFeeds(state.index)[0].body).toEqual(feed);
+    expect(Selector.selectAllWebcamFeeds(state.index)[0].body).toEqual(feed);
   });
 });
 
@@ -157,13 +166,6 @@ describe("getSequenceByUUID()", () => {
   });
 });
 
-describe("toArray()", () => {
-  it("returns array", () => {
-    const array = Selector.toArray(fakeIndex);
-    expect(array.length).toEqual(fakeIndex.all.length);
-  });
-});
-
 describe("findAllById()", () => {
   it("returns", () => {
     const result = Selector.findAllById(fakeIndex, [23], "Sequence");
@@ -224,5 +226,31 @@ describe("maybeFindPlantById()", () => {
   it("not found", () => {
     const result = Selector.maybeFindPlantById(fakeIndex, 0);
     expect(result).toBeUndefined();
+  });
+});
+
+describe("getDeviceAccountSettings", () => {
+  const DEV1 = fakeDevice();
+  DEV1.uuid = "Device.416.0";
+
+  const DEV2 = fakeDevice();
+  DEV2.uuid = "Device.417.0";
+
+  it("crashes if < 1", () => {
+    const { index } = buildResourceIndex([]);
+    const kaboom = () => Selector.getDeviceAccountSettings(index);
+    expect(kaboom).toThrowError();
+  });
+
+  it("crashes if > 1", () => {
+    const { index } = buildResourceIndex([DEV1, DEV2]);
+    const kaboom = () => Selector.getDeviceAccountSettings(index);
+    expect(kaboom).toThrowError();
+  });
+
+  it("returns exactly one device", () => {
+    const { index } = buildResourceIndex([DEV1]);
+    const result = Selector.getDeviceAccountSettings(index);
+    expect(result.kind).toBe("Device");
   });
 });

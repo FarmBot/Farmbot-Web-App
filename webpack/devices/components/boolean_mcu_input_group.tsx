@@ -8,20 +8,22 @@ import { BooleanMCUInputGroupProps } from "./interfaces";
 export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
 
   const {
-    bot,
     tooltip,
     name,
     x,
     y,
     z,
-    disableX,
-    disableY,
-    disableZ,
+    disable,
+    grayscale,
     caution,
-    displayAlert
+    displayAlert,
+    sourceFwConfig,
+    dispatch,
   } = props;
 
-  const { mcu_params } = bot.hardware;
+  const xParam = sourceFwConfig(x);
+  const yParam = sourceFwConfig(y);
+  const zParam = sourceFwConfig(z);
 
   return <Row>
     <Col xs={6}>
@@ -32,23 +34,32 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
       </label>
       <SpacePanelToolTip tooltip={tooltip} />
     </Col>
-    <Col xs={2}>
+    <Col xs={2} className={"centered-button-div"}>
       <ToggleButton
-        disabled={disableX}
-        toggleValue={mcu_params[x]}
-        toggleAction={() => settingToggle(x, bot, displayAlert)} />
+        grayscale={grayscale && grayscale.x}
+        disabled={disable && disable.x}
+        dim={!xParam.consistent}
+        toggleValue={xParam.value}
+        toggleAction={() =>
+          dispatch(settingToggle(x, sourceFwConfig, displayAlert))} />
     </Col>
-    <Col xs={2}>
+    <Col xs={2} className={"centered-button-div"}>
       <ToggleButton
-        disabled={disableY}
-        toggleValue={mcu_params[y]}
-        toggleAction={() => settingToggle(y, bot, displayAlert)} />
+        grayscale={grayscale && grayscale.y}
+        disabled={disable && disable.y}
+        dim={!yParam.consistent}
+        toggleValue={yParam.value}
+        toggleAction={() =>
+          dispatch(settingToggle(y, sourceFwConfig, displayAlert))} />
     </Col>
-    <Col xs={2}>
+    <Col xs={2} className={"centered-button-div"}>
       <ToggleButton
-        disabled={disableZ}
-        toggleValue={mcu_params[z]}
-        toggleAction={() => settingToggle(z, bot, displayAlert)} />
+        grayscale={grayscale && grayscale.z}
+        disabled={disable && disable.z}
+        dim={!zParam.consistent}
+        toggleValue={zParam.value}
+        toggleAction={() =>
+          dispatch(settingToggle(z, sourceFwConfig, displayAlert))} />
     </Col>
   </Row>;
 }

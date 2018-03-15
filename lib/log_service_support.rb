@@ -29,7 +29,7 @@ class LogService
     if(major_version >= 6)
       device_id = delivery_info.routing_key.split(".")[1].gsub("device_", "").to_i
       if save?(log)
-        device       = Device.find(device_id)
+        device = Device.find(device_id)
         db_log = Logs::Create.run!(log, device: device)
         db_log.save!
         maybe_clear_logs(device)

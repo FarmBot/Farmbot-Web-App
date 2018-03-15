@@ -8,7 +8,6 @@ describe Points::Update do
                                 point:   s.tool_slot,
                                 tool_id: nil)
     expect(result.success?).to be(false)
-    expect(result.errors.message_list)
-      .to include(Points::ToolRemovalCheck::IN_USE % s.sequence.name)
+    expect(result.errors.message_list).to include(Tool::IN_USE % s.sequence[:name])
   end
 end

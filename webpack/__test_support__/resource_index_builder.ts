@@ -2,7 +2,8 @@ import { resourceReducer, emptyState } from "../resources/reducer";
 import {
   TaggedResource, TaggedDevice, TaggedPoint,
   SpecialStatus,
-  TaggedLog
+  TaggedLog,
+  ResourceName
 } from "../resources/tagged_resources";
 import * as _ from "lodash";
 import { Actions } from "../constants";
@@ -128,7 +129,6 @@ const tr7: TaggedPoint = {
     "id": 1392,
     "created_at": "2017-05-24T20:41:19.804Z",
     "updated_at": "2017-05-24T20:41:19.804Z",
-    // "device_id": 415,
     "meta": {
 
     },
@@ -138,7 +138,8 @@ const tr7: TaggedPoint = {
     "x": 347,
     "y": 385,
     "z": 0,
-    "openfarm_slug": "radish"
+    "openfarm_slug": "radish",
+    "plant_stage": "planned"
   },
   "uuid": "Point.1392.6"
 };
@@ -159,7 +160,8 @@ const tr8: TaggedPoint = {
     "x": 727,
     "y": 376,
     "z": 0,
-    "openfarm_slug": "garlic"
+    "openfarm_slug": "garlic",
+    "plant_stage": "planned"
   },
   "uuid": "Point.1393.7"
 };
@@ -218,6 +220,7 @@ const tr11: TaggedPoint = {
     },
     "name": "Slot One.",
     "pointer_type": "ToolSlot",
+    "pullout_direction": 0,
     "radius": 25,
     "x": 10,
     "y": 10,
@@ -330,13 +333,13 @@ export let FAKE_RESOURCES: TaggedResource[] = [tr1, fakeDevice(), tr2, tr3, tr4,
 
 export
   function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
-  state = emptyState()) {
+    state = emptyState()) {
   const KIND: keyof TaggedResource = "kind"; // Safety first, kids.
   return _(resources)
     .groupBy(KIND)
     .toPairs()
     .map((x: [(TaggedResource["kind"]), TaggedResource[]]) => x)
-    .map(y => ({
+    .map((y: [ResourceName, TaggedResource[]]) => ({
       type: Actions.RESOURCE_READY,
       payload: { name: y[0], data: y[1].map(x => x.body) }
     }))

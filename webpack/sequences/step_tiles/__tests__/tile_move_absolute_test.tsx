@@ -6,9 +6,10 @@ import { MoveAbsolute, SequenceBodyItem } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 import { SpecialStatus } from "../../../resources/tagged_resources";
+import { fakeHardwareFlags } from "../../../__test_support__/sequence_hardware_settings";
 
 describe("<TileMoveAbsolute/>", () => {
-  function bootstrapTest() {
+  const fakeProps = () => {
     const currentStep: MoveAbsolute = {
       kind: "move_absolute",
       args: {
@@ -32,14 +33,14 @@ describe("<TileMoveAbsolute/>", () => {
       }
     };
     return {
-      component: mount(<TileMoveAbsolute
-        currentSequence={fakeSequence()}
-        currentStep={currentStep}
-        dispatch={jest.fn()}
-        index={0}
-        resources={emptyState().index} />)
+      currentSequence: fakeSequence(),
+      currentStep: currentStep,
+      dispatch: jest.fn(),
+      index: 0,
+      resources: emptyState().index,
+      hardwareFlags: fakeHardwareFlags()
     };
-  }
+  };
 
   function checkField(
     block: ReactWrapper, position: number, label: string, value: string | number
@@ -51,7 +52,7 @@ describe("<TileMoveAbsolute/>", () => {
   }
 
   it("renders inputs", () => {
-    const block = bootstrapTest().component;
+    const block = mount(<TileMoveAbsolute {...fakeProps() } />);
     const inputs = block.find("input");
     const labels = block.find("label");
     const buttons = block.find("button");
@@ -102,5 +103,59 @@ describe("<TileMoveAbsolute/>", () => {
       resources={index} />).instance() as TileMoveAbsolute;
 
     expect(component.tool).toEqual(tool);
+  });
+
+  const CONFLICT_TEXT_BASE = "Hardware setting conflict";
+
+  it("doesn't show setting warning", () => {
+    const p = fakeProps();
+    const wrapper = mount(<TileMoveAbsolute {...p} />);
+    expect(wrapper.text()).not.toContain(CONFLICT_TEXT_BASE);
+  });
+
+  it("doesn't show warning: axis length 0", () => {
+    const p = fakeProps();
+    p.currentStep.args.offset.args.x = 10000;
+    p.hardwareFlags.stopAtMax.x = true;
+    p.hardwareFlags.axisLength.x = 0;
+    const wrapper = mount(<TileMoveAbsolute {...p} />);
+    expect(wrapper.text()).not.toContain(CONFLICT_TEXT_BASE);
+  });
+
+  it("shows warning: too high", () => {
+    const p = fakeProps();
+    p.currentStep.args.offset.args.x = 10000;
+    p.hardwareFlags.stopAtMax.x = true;
+    p.hardwareFlags.axisLength.x = 100;
+    const wrapper = mount(<TileMoveAbsolute {...p} />);
+    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
+  });
+
+  it("shows warning: too high (negativeOnly)", () => {
+    const p = fakeProps();
+    p.currentStep.args.offset.args.x = -10000;
+    p.hardwareFlags.stopAtMax.x = true;
+    p.hardwareFlags.negativeOnly.x = true;
+    p.hardwareFlags.axisLength.x = 100;
+    const wrapper = mount(<TileMoveAbsolute {...p} />);
+    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
+  });
+
+  it("shows warning: too low (negativeOnly)", () => {
+    const p = fakeProps();
+    p.currentStep.args.offset.args.x = 10000;
+    p.hardwareFlags.stopAtHome.x = true;
+    p.hardwareFlags.negativeOnly.x = true;
+    const wrapper = mount(<TileMoveAbsolute {...p} />);
+    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
+  });
+
+  it("shows warning: too low", () => {
+    const p = fakeProps();
+    p.currentStep.args.offset.args.x = -10000;
+    p.hardwareFlags.stopAtHome.x = true;
+    p.hardwareFlags.stopAtMax.x = true;
+    const wrapper = mount(<TileMoveAbsolute {...p} />);
+    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 });
