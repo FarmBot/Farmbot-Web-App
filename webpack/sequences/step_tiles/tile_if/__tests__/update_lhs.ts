@@ -59,7 +59,7 @@ describe("updateLhs", () => {
   const currentStep = (currentSequence.body.body || [])[0] as If;
   const index = 0;
   /** The mock information is nested so deep :-\ */
-  const path = "mock.calls[0][0].payload.update.body[0].args.lhs.args";
+  const path = "mock.calls[0][0].payload.update.body[0].args.lhs";
 
   it("handles sensors", () => {
     const dispatch = jest.fn();
@@ -80,11 +80,45 @@ describe("updateLhs", () => {
     const expectedType =
       expect.objectContaining({ type: Actions.OVERWRITE_RESOURCE });
     expect(dispatch).toHaveBeenCalledWith(expectedType);
-    expect(get(dispatch, path + "pin_type")).toEqual("Peripheral");
-    expect(get(dispatch, path + "pin_id")).toEqual(peripheral.body.id);
+    expect(get(dispatch, path + ".args.pin_type")).toEqual("Peripheral");
+    expect(get(dispatch, path + ".args.pin_id")).toEqual(peripheral.body.id);
   });
 
   it("Handles positions / pins", () => {
-    pending();
+    const dispatch = jest.fn();
+    const props = {
+      currentStep,
+      currentSequence,
+      dispatch,
+      index,
+      resources: resources.index
+    };
+    const fn = updateLhs(props);
+    fn({ value: "pin5", label: "Click me!", headingId: PinGroupName.Pin });
+    expect(dispatch).toHaveBeenCalled();
+    const expectedType =
+      expect.objectContaining({ type: Actions.OVERWRITE_RESOURCE });
+    expect(dispatch).toHaveBeenCalledWith(expectedType);
+    expect(get(dispatch, path)).toEqual("pin5");
+  });
+
+  it("handles malformeed data", () => {
+    const dispatch = jest.fn();
+    const props = {
+      currentStep,
+      currentSequence,
+      dispatch,
+      index,
+      resources: resources.index
+    };
+    const fn = updateLhs(props);
+    // Bad headingId:
+    expect(() => fn({ value: "pin5", label: "Click me!", headingId: "Wrong" }))
+      .toThrowError();
+    expect(() => fn({
+      value: "X",
+      label: "Y",
+      headingId: PinGroupName.Peripheral
+    })).toThrowError();
   });
 });
