@@ -1,10 +1,6 @@
-const mockDevice = {
-  send: jest.fn(() => { return Promise.resolve(); }),
-};
+const mockDevice = { send: jest.fn(() => { return Promise.resolve(); }) };
 
-jest.mock("../../../device", () => ({
-  getDevice: () => (mockDevice)
-}));
+jest.mock("../../../device", () => ({ getDevice: () => (mockDevice) }));
 
 jest.mock("axios", () => {
   return {
@@ -16,8 +12,12 @@ jest.mock("axios", () => {
   };
 });
 
+jest.mock("farmbot-toastr", () => ({ error: jest.fn() }));
+
 import { transferOwnership } from "../transfer_ownership";
 import { getDevice } from "../../../device";
+import { submitOwnershipChange } from "../../components/fbos_settings/change_ownership_form";
+import { error } from "farmbot-toastr";
 
 describe("transferOwnership", () => {
   it("passes rejected promises down the chain", async () => {
@@ -34,5 +34,12 @@ describe("transferOwnership", () => {
     } catch (error) {
       expect(error).toEqual("NOPE");
     }
+  });
+});
+
+describe("submitOwnershipChange", () => {
+  it("pops a toast when things go wrong", async () => {
+    await submitOwnershipChange({ email: "email", password: "password" });
+    expect(error).toHaveBeenCalledWith("Bad username or password");
   });
 });

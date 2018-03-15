@@ -15,10 +15,10 @@ interface ChangeOwnershipFormState {
 
 export function submitOwnershipChange(input: ChangeOwnershipFormState) {
   const { email, password } = input;
+  const p = { email, password, device: getDevice() };
   const ok = () => success(t("Received change of ownership."));
   const no = () => error(t("Bad username or password"));
-  transferOwnership({ email, password, device: getDevice() })
-    .then(ok, no);
+  return transferOwnership(p).then(ok, no);
 }
 
 export class ChangeOwnershipForm
