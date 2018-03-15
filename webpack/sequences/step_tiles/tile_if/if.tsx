@@ -29,8 +29,7 @@ export function If_(props: IfParams) {
     dispatch,
     currentStep,
     index,
-    resources,
-    shouldDisplay
+    resources
   } = props;
   const step = props.currentStep;
   const sequence = props.currentSequence;
@@ -61,7 +60,7 @@ export function If_(props: IfParams) {
         list={lhsOptions}
         placeholder="Left hand side"
         onChange={updateLhs(props)}
-        selectedItem={displayLhs({ currentStep, resources, shouldDisplay, lhsOptions })} />
+        selectedItem={displayLhs({ currentStep, resources, lhsOptions })} />
     </Col>
     <Col xs={4}>
       <label>{t("Operator")}</label>

@@ -3,12 +3,10 @@ import {
 } from "../../../../__test_support__/resource_index_builder";
 import {
   SpecialStatus,
-  isTaggedSequence,
   TaggedSequence,
   TaggedPeripheral
 } from "../../../../resources/tagged_resources";
 import {
-  findAll,
   selectAllSequences,
   selectAllPeripherals
 } from "../../../../resources/selectors";
@@ -127,6 +125,9 @@ describe("updateLhs", () => {
 describe("displayLhs", () => {
   it("Finds peripherals to display", () => {
     const p = resources.index.references[resources.index.byKind.Peripheral[0]];
+    if (!p) {
+      throw new Error("Never");
+    }
     const pin_id = p.body.id || NaN;
     const result = displayLhs({
       currentStep: {
