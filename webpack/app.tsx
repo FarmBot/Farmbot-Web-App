@@ -38,7 +38,6 @@ export interface AppProps {
   user: TaggedUser | undefined;
   bot: BotState;
   consistent: boolean;
-  autoSyncEnabled: boolean;
   timeOffset: number;
   axisInversion: Record<Xyz, boolean>;
   firmwareConfig: FirmwareConfig | undefined;
@@ -58,7 +57,6 @@ function mapStateToProps(props: Everything): AppProps {
       .value(),
     loaded: props.resources.loaded,
     consistent: !!(props.bot || {}).consistent,
-    autoSyncEnabled: !!props.bot.hardware.configuration.auto_sync,
     axisInversion: {
       x: !!Session.deprecatedGetBool(BooleanSetting.x_axis_inverted),
       y: !!Session.deprecatedGetBool(BooleanSetting.y_axis_inverted),
@@ -114,9 +112,7 @@ export class App extends React.Component<AppProps, {}> {
         user={this.props.user}
         bot={this.props.bot}
         dispatch={this.props.dispatch}
-        logs={this.props.logs}
-        autoSyncEnabled={this.props.autoSyncEnabled}
-      />
+        logs={this.props.logs} />
       {!syncLoaded && <LoadingPlant />}
       {syncLoaded && this.props.children}
       {!(["controls", "account", "regimens"].includes(currentPage)) &&

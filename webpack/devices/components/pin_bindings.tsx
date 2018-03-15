@@ -210,7 +210,8 @@ export class PinBindings
         <MustBeOnline
           syncStatus={this.props.bot.hardware.informational_settings.sync_status}
           networkState={this.props.botToMqttStatus}
-          lockOpen={process.env.NODE_ENV !== "production"}>
+          lockOpen={this.props.shouldDisplay(Feature.api_pin_bindings)
+            || process.env.NODE_ENV !== "production"}>
           <Row>
             <Col xs={ColumnWidth.pin}>
               <label>

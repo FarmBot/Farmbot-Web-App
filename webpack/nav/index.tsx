@@ -38,8 +38,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       bot={this.props.bot}
       user={this.props.user}
       dispatch={this.props.dispatch}
-      consistent={this.props.consistent}
-      autoSyncEnabled={this.props.autoSyncEnabled} />;
+      consistent={this.props.consistent} />;
   }
   render() {
     const hasName = this.props.user && this.props.user.body.name;
@@ -66,7 +65,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         <Row>
           <Col xs={12}>
             <div>
-              <TickerList { ...{ logs, tickerListOpen, toggle, timeOffset } } />
+              <TickerList {...{ logs, tickerListOpen, toggle, timeOffset }} />
               <div className="nav-group">
                 <div className="nav-left">
                   <i

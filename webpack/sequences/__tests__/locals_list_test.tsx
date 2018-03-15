@@ -150,7 +150,7 @@ describe("guessVecFromLabel()", () => {
       "Alphabetical (a, b, c)",
       "tool 1,2,3",
       "Something else (test123)",
-      "Tool: Tool_1512679072 ",
+      "Tool_1512679072 ",
       "Tool"
     ].map(bad => {
       expect(guessVecFromLabel(bad)).toBeUndefined();
@@ -159,19 +159,19 @@ describe("guessVecFromLabel()", () => {
   it("returns vec3 on well formed strings", () => {
     [
       {
-        string: "Plant: Point_1512679072 (20, 50, 0)",
+        string: "Point_1512679072 (20, 50, 0)",
         expectation: { x: 20, y: 50, z: 0 }
       },
       {
-        string: "Plant: carrot (360, 290, 0)",
+        string: "carrot (360, 290, 0)",
         expectation: { x: 360, y: 290, z: 0 }
       },
       {
-        string: "Map Point: Safe-Remove Weed (633, 450, 0)",
+        string: "Safe-Remove Weed (633, 450, 0)",
         expectation: { x: 633, y: 450, z: 0 }
       },
       {
-        string: "Map Point: Point_1512679072 (0, 100, 0)",
+        string: "Point_1512679072 (0, 100, 0)",
         expectation: { x: 0, y: 100, z: 0 }
       }
     ].map(xmp => {
@@ -190,7 +190,7 @@ describe("guessVecFromLabel()", () => {
 describe("guessXYZ", () => {
   it("Gives labels precedence", () => {
     const result =
-      guessXYZ("Plant: Point_1512679072 (20, 50, 0)", goodVar);
+      guessXYZ("Point_1512679072 (20, 50, 0)", goodVar);
     expect(result.x).toEqual(20);
     expect(result.y).toEqual(50);
     expect(result.z).toEqual(0);
@@ -235,7 +235,7 @@ describe("<ParentVariableForm/>", () => {
     expect(p.allowEmpty).toBe(true);
     const choices = generateList(props.resources, []);
     expect(p.list).toEqual(choices);
-    const choice = choices[0];
+    const choice = choices[1];
     p.onChange(choice);
     expect(props.onChange)
       .toHaveBeenCalledWith(handleSelect(props.resources, choice));
