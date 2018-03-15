@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Row, Col, BlurableInput } from "../../../ui/index";
 import { t } from "i18next";
-import { info, success } from "farmbot-toastr";
+import { success, error } from "farmbot-toastr";
 import { getDevice } from "../../../device";
 import { transferOwnership } from "../../transfer_ownership/transfer_ownership";
 import { API } from "../../../api";
@@ -19,10 +19,11 @@ export class ChangeOwnershipForm
   state = { email: "", password: "", server: API.current.baseUrl };
 
   submitOwnershipChange = () => {
-    info(t("Sending change of ownership..."), t("Sending"));
     const { email, password, server } = this.state;
+    const ok = () => success(t("Received change of ownership."));
+    const no = () => error(t("Bad username or password"));
     transferOwnership({ email, password, server, device: getDevice() })
-      .then(() => success(t("Received change of ownership.")));
+      .then(ok, no);
   }
 
   render() {

@@ -11,8 +11,12 @@ export interface TransferProps {
 /** Pass control of your device over to another user. */
 export async function transferOwnership(input: TransferProps): Promise<void> {
   const { email, server, device } = input;
-  const secret = await createTransferCert(input);
-  const body = toPairs({ email, server, secret });
-  await device.send(rpcRequest([{ kind: "change_ownership", args: {}, body }]));
-  return Promise.resolve();
+  try {
+    const secret = await createTransferCert(input);
+    const body = toPairs({ email, server, secret });
+    await device.send(rpcRequest([{ kind: "change_ownership", args: {}, body }]));
+    return Promise.resolve();
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }
