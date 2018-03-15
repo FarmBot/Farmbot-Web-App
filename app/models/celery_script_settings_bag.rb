@@ -115,7 +115,7 @@ module CeleryScriptSettingsBag
         end
       end
       .arg(:lhs, ALLOWED_LHS_TYPES) do |node|
-        case
+        case node
         when CeleryScript::AstNode
           # Validate `named_location` and friends.
         else
