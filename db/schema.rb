@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180310220435) do
+ActiveRecord::Schema.define(version: 20180315205136) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -97,7 +97,7 @@ ActiveRecord::Schema.define(version: 20180310220435) do
     t.integer "network_not_found_timer"
     t.string "firmware_hardware", default: "arduino"
     t.boolean "api_migrated", default: false
-    t.boolean "os_auto_update", default: false
+    t.boolean "os_auto_update", default: true
     t.boolean "arduino_debug_messages", default: false
     t.index ["device_id"], name: "index_fbos_configs_on_device_id"
   end
