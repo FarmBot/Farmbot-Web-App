@@ -7,7 +7,8 @@ require_relative "./csheap"
 module CeleryScript
   class FetchCelery < Mutations::Command
   private  # = = = = = = =
-
+    # A safety measure for when you need to do square bracket access.
+    NOTHING  = Struct.new(:kind).new("nothing")
     # This class is too CPU intensive to make multiple SQL requests.
     # To speed up querying, we create an in-memory index for frequently
     # looked up attributes such as :id, :kind, :parent_id, :primary_node_id
@@ -53,7 +54,7 @@ module CeleryScript
     # Pass this method a PrimaryNode and it will return an array filled with
     # that node's children (or an empty array, since body is always optional).
     def get_body_elements(node)
-      next_node = node.body
+      next_node = primary_nodes.by.id[node.body_id].first || NOTHING
       results = []
       until next_node.kind == "nothing"
         results.push(next_node)

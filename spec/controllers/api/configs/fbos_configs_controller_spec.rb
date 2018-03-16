@@ -31,7 +31,8 @@ describe Api::FbosConfigsController do
       }.to_a.map do |key, value|
         actual   = json[key]
         expected = value
-        fail "#{key} should be #{expected} but got #{actual}" unless (actual == expected)
+        correct  = actual == expected
+        fail "#{key} should be #{expected} but got #{actual}" unless correct
       end
 
       { created_at: String, updated_at: String }
