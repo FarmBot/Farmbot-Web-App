@@ -6,7 +6,8 @@ class PrimaryNode < ApplicationRecord
   belongs_to            :sequence
   validates_presence_of :sequence
   has_many   :edge_nodes
-  BAD_KIND = "`kind` must be one of: " + CeleryScriptSettingsBag::ANY_NODE_NAME.join(", ")
+  BAD_KIND = "`kind` must be one of: " +
+              CeleryScriptSettingsBag::ANY_NODE_NAME.join(", ")
   validates :kind, inclusion: { in: CeleryScriptSettingsBag::ANY_NODE_NAME,
                                 message: BAD_KIND,
                                 allow_nil: false }
@@ -23,7 +24,7 @@ class PrimaryNode < ApplicationRecord
 
   def parent
     self.class.find_by(id: parent_id)
-    end
+  end
 
   def body
     self.class.find_by(id: body_id)

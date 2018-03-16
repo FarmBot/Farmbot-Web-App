@@ -7,8 +7,6 @@ require_relative "./csheap"
 module CeleryScript
   class FetchCelery < Mutations::Command
   private  # = = = = = = =
-    # A safety measure for when you need to do square bracket access.
-    NOTHING  = Struct.new(:kind).new("nothing")
     # This class is too CPU intensive to make multiple SQL requests.
     # To speed up querying, we create an in-memory index for frequently
     # looked up attributes such as :id, :kind, :parent_id, :primary_node_id
@@ -52,18 +50,18 @@ module CeleryScript
     end
 
     # If you don't do this in memory, you will get N+1s all over the place - RC
-    def find_by_id_in_memory(id)
-      primary_nodes.by.id[id].try(:first) || NOTHING
+    def find_by_id_in_memory(the_id)
+      primary_nodes.by.id[the_id].first
     end
 
     # Pass this method a PrimaryNode and it will return an array filled with
     # that node's children (or an empty array, since body is always optional).
-    def get_body_elements(node)
-      next_node = find_by_id_in_memory(node.body_id)
-      results = []
+    def get_body_elements(origin)
+      next_node = find_by_id_in_memory(origin.body_id)
+      results   = []
       until next_node.kind == "nothing"
         results.push(next_node)
-        next_node = find_by_id_in_memory(node.next_id)
+        next_node = find_by_id_in_memory(next_node[:next_id])
       end
       results
     end
@@ -104,6 +102,7 @@ module CeleryScript
     end
 
     def validate
+      sequence.reload
       # A sequence lacking a `sequence` node is a syntax error.
       # This should never show up in the frontend, but *is* helpful for devs
       # when debugging.
