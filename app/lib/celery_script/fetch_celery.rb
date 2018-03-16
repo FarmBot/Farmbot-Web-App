@@ -12,12 +12,12 @@ module CeleryScript
     # To speed up querying, we create an in-memory index for frequently
     # looked up attributes such as :id, :kind, :parent_id, :primary_node_id
     def edge_nodes
-      @edge_nodes ||= Indexer.new(EdgeNode.where(sequence: sequence))
+      @edge_nodes ||= Indexer.new(sequence.edge_nodes)
     end
 
     # See docs for #edge_nodes()
     def primary_nodes
-      @primary_nodes ||= Indexer.new(PrimaryNode.where(sequence: sequence))
+      @primary_nodes ||= Indexer.new(sequence.primary_nodes)
     end
 
     # The topmost node is always `NOTHING`. The term "root node" refers to
@@ -98,10 +98,6 @@ module CeleryScript
     end
 
     def validate
-      # Legacy sequences won't have EdgeNode/PrimaryNode relations.
-      # We need to run the conversion before we can continue.
-      CeleryScript::StoreCelery
-        .run!(sequence: sequence) unless sequence.migrated_nodes
       # A sequence lacking a `sequence` node is a syntax error.
       # This should never show up in the frontend, but *is* helpful for devs
       # when debugging.

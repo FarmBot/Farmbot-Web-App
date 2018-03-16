@@ -28,7 +28,11 @@ describe Api::FbosConfigsController do
         os_auto_update:          true,
         firmware_hardware:       "arduino",
         api_migrated:            false
-      }.to_a.map { |key, value| expect(json[key]).to eq(value) }
+      }.to_a.map do |key, value|
+        actual   = json[key]
+        expected = value
+        fail "#{key} should be #{expected} but got #{actual}" unless (actual == expected)
+      end
 
       { created_at: String, updated_at: String }
         .to_a.map { |key, value| expect(json[key]).to be_kind_of(value) }
