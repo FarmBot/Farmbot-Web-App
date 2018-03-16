@@ -70,7 +70,7 @@ module Api
 
     def policy_signature
       @policy_signature ||= Base64.encode64(
-        OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('sha1'),
+        OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha1'),
         SECRET,
         policy)).gsub("\n",'')
     end

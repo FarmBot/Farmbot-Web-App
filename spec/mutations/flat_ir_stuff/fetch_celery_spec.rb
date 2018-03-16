@@ -25,7 +25,7 @@ describe CeleryScript::FetchCelery do
     [
       #KIND                 PARENT           NEXT             BODY
       ["nothing",           __NOTHING______, __NOTHING______, __NOTHING______],
-      ["sequence",        __NOTHING______, __NOTHING______, "move_absolute"],
+      ["sequence",          __NOTHING______, __NOTHING______, "move_absolute"],
       ["move_absolute",     "sequence",      "move_relative", __NOTHING______],
       ["coordinate",        "move_absolute", __NOTHING______, __NOTHING______],
       ["move_relative",     "move_absolute", "write_pin",     __NOTHING______],
