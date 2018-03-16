@@ -51,14 +51,19 @@ module CeleryScript
       {}.merge!(attach_edges(node)).merge!(attach_primary_nodes(node))
     end
 
+    # If you don't do this in memory, you will get N+1s all over the place - RC
+    def find_by_id_in_memory(id)
+      primary_nodes.by.id[id].try(:first) || NOTHING
+    end
+
     # Pass this method a PrimaryNode and it will return an array filled with
     # that node's children (or an empty array, since body is always optional).
     def get_body_elements(node)
-      next_node = primary_nodes.by.id[node.body_id].first || NOTHING
+      next_node = find_by_id_in_memory(node.body_id)
       results = []
       until next_node.kind == "nothing"
         results.push(next_node)
-        next_node = next_node.next
+        next_node = find_by_id_in_memory(node.next_id)
       end
       results
     end
