@@ -1,4 +1,4 @@
-﻿module.exports = {
+module.exports = {
     " regimen": " regimen",
     " sequence": " Sequenz",
     " unknown (offline)": " Unbekannt (offline)",
