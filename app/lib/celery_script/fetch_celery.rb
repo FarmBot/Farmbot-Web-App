@@ -7,17 +7,16 @@ require_relative "./csheap"
 module CeleryScript
   class FetchCelery < Mutations::Command
   private  # = = = = = = =
-
     # This class is too CPU intensive to make multiple SQL requests.
     # To speed up querying, we create an in-memory index for frequently
     # looked up attributes such as :id, :kind, :parent_id, :primary_node_id
     def edge_nodes
-      @edge_nodes ||= Indexer.new(EdgeNode.where(sequence: sequence))
+      @edge_nodes ||= Indexer.new(sequence.edge_nodes)
     end
 
     # See docs for #edge_nodes()
     def primary_nodes
-      @primary_nodes ||= Indexer.new(PrimaryNode.where(sequence: sequence))
+      @primary_nodes ||= Indexer.new(sequence.primary_nodes)
     end
 
     # The topmost node is always `NOTHING`. The term "root node" refers to
@@ -50,14 +49,19 @@ module CeleryScript
       {}.merge!(attach_edges(node)).merge!(attach_primary_nodes(node))
     end
 
+    # If you don't do this in memory, you will get N+1s all over the place - RC
+    def find_by_id_in_memory(the_id)
+      primary_nodes.by.id[the_id].first
+    end
+
     # Pass this method a PrimaryNode and it will return an array filled with
     # that node's children (or an empty array, since body is always optional).
-    def get_body_elements(node)
-      next_node = node.body
-      results = []
+    def get_body_elements(origin)
+      next_node = find_by_id_in_memory(origin.body_id)
+      results   = []
       until next_node.kind == "nothing"
         results.push(next_node)
-        next_node = next_node.next
+        next_node = find_by_id_in_memory(next_node[:next_id])
       end
       results
     end
@@ -98,10 +102,7 @@ module CeleryScript
     end
 
     def validate
-      # Legacy sequences won't have EdgeNode/PrimaryNode relations.
-      # We need to run the conversion before we can continue.
-      CeleryScript::StoreCelery
-        .run!(sequence: sequence) unless sequence.migrated_nodes
+      sequence.reload
       # A sequence lacking a `sequence` node is a syntax error.
       # This should never show up in the frontend, but *is* helpful for devs
       # when debugging.
