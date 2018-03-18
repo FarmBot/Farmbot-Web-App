@@ -15,7 +15,6 @@ module Api
     skip_before_action :verify_authenticity_token
     after_action :skip_set_cookies_header
 
-    rescue_from(User::BadSub) { sorry "Please log out and try again.", 422 }
     rescue_from(User::AlreadyVerified) { sorry "Already verified.", 409 }
 
     rescue_from(JWT::VerificationError) { |e| auth_err }

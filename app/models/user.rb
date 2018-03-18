@@ -38,22 +38,4 @@ class User < ApplicationRecord
   def verified?
     SKIP_EMAIL_VALIDATION ? true : !!confirmed_at
   end
-
-  BAD_SUB = "SUB was neither string nor number"
-  class BadSub < StandardError; end # Safe to remove December '17 -RC
-  def self.find_by_email_or_id(sub) # Safe to remove December '17 -RC
-    case sub
-    when Integer then User.find(sub)
-    # HISTORICAL CONTEXT: We once used emails as a `sub` field. At the time,
-    # it seemed nice because it was human readable. The problem was that
-    # emails are mutable. Under this scheme, changing your email address
-    # would invalidate your JWT. Switching it to user_id (that does not
-    # change) gets around this issue. We still need to support emails in
-    # JWTs, atleast for another month or so because it would invalidate
-    # existing tokens otherwise.
-    # TODO: Only use user_id (not email) for validation after 25 OCT 17 - RC
-    when String then User.find_by!(email: sub)
-    else raise BadSub, BAD_SUB
-    end
-  end
 end
