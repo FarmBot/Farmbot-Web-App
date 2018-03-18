@@ -62,14 +62,6 @@ class Sequence < ApplicationRecord
     Sequence.order("RANDOM()").first
   end
 
-  # def traverse(&blk)
-  #   hash = as_json
-  #     .tap { |x| x[:kind] = "sequence" }
-  #     .deep_symbolize_keys
-  #     .slice(:kind, :args, :body)
-  #   CeleryScript::JSONClimber.climb(hash, &blk)
-  # end
-
   def delete_nodes_too
     Sequence.transaction do
       PrimaryNode.where(sequence_id: self.id).destroy_all
