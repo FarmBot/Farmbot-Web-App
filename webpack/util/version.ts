@@ -107,6 +107,7 @@ export function shouldDisplay(
     const target = override || current;
     if (isString(target)) {
       const min = (lookupData || {})[feature] || MinVersionOverride.NEVER;
+      Rollbar.configure({payload: {fbos: target}});
       switch (semverCompare(target, min)) {
         case SemverResult.LEFT_IS_GREATER:
         case SemverResult.EQUAL:
