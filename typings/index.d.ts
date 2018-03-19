@@ -5,10 +5,14 @@
 declare var globalConfig: { [k: string]: string };
 
 interface Rollbar {
-  error?(msg: string): void;
+  error?(msg: string | object): void;
+  global(config: object): void;
+  configure(object: object): object;
 }
 
-declare var Rollbar: Rollbar | undefined;
+interface Window {
+  Rollbar: Rollbar | undefined;
+}
 
 declare namespace jest {
   export interface Matchers<R> {

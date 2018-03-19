@@ -24,7 +24,7 @@ import { FirmwareConfig } from "../config_storage/firmware_configs";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
-export const EXPECTED_MAJOR = 5;
+export const EXPECTED_MAJOR = 6;
 export const EXPECTED_MINOR = 0;
 export const FEATURE_MIN_VERSIONS_URL =
   "https://raw.githubusercontent.com/FarmBot/farmbot_os/staging/" +
