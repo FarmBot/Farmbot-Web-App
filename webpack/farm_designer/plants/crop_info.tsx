@@ -57,7 +57,8 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
     icon ? img.src = DATA_URI + icon : DEFAULT_ICON;
 
     // TODO: Setting these doesn't work by default, needs a fix
-    // https://www.w3.org/TR/2011/WD-html5-20110405/dnd.html#dom-datatransfer-setdragimage
+    // https://www.w3.org/TR/2011/WD-html5-20110405
+    //    /dnd.html#dom-datatransfer-setdragimage
     img.height = 50;
     img.width = 50;
 
