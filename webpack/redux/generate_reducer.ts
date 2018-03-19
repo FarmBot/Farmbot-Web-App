@@ -43,7 +43,7 @@ export function generateReducer<State, U = any>(initialState: State,
       result = (afterEach || NOOP)(defensiveClone(result), action);
 
       // TODO: Do I really need to clone this?
-      return defensiveClone(result);
+      return result;
     }) as GeneratedReducer;
 
   reducer.add = <X>(name: string, fn: ActionHandler<State, X>) => {
