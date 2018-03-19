@@ -7,6 +7,7 @@ declare var globalConfig: { [k: string]: string };
 interface Rollbar {
   error?(msg: string | object): void;
   global(config: object): void;
+  configure(object: object): object;
 }
 
 interface Window {
