@@ -171,7 +171,6 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
 
     versionOK(informational_settings.controller_version,
       EXPECTED_MAJOR, EXPECTED_MINOR);
-    window.Rollbar && window.Rollbar.configure({ payload: { fbos: informational_settings.controller_version } });
     state.hardware.informational_settings.sync_status = nextSyncStatus;
     return state;
   })

@@ -1,13 +1,22 @@
 import thunk from "redux-thunk";
-import { applyMiddleware, compose, Middleware } from "redux";
-import { EnvName } from "./interfaces";
+import { applyMiddleware, compose } from "redux";
+import { EnvName, ReduxAction } from "./interfaces";
 import { Actions } from "../constants";
 import { stateFetchMiddlewareConfig } from "./state_fetch_middleware";
 import { revertToEnglishMiddleware } from "./revert_to_english_middleware";
 import { versionChangeMiddleware } from "./version_tracker_middleware";
+import { Everything } from "../interfaces";
+import { Middleware } from "redux";
+import { Store } from "redux";
+
+export interface MW extends Middleware {
+  (store: Store<Everything>):
+    (dispatch: Function) =>
+      (action: ReduxAction<object>) => void;
+}
 
 export interface MiddlewareConfig {
-  fn: Middleware;
+  fn: MW;
   env: EnvName;
 }
 
