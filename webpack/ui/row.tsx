@@ -1,7 +1,7 @@
 import * as React from "react";
 
 interface RowProps extends React.HTMLProps<HTMLDivElement> {
-  children?: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode;
   className?: string;
 }
 

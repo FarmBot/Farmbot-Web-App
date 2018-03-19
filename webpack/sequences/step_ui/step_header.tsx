@@ -8,7 +8,7 @@ import { StepIconGroup } from "../step_icon_group";
 import { splice, remove } from "../step_tiles/index";
 
 export interface StepHeaderProps {
-  children?: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode;
   className: string;
   helpText: string;
   currentSequence: TaggedSequence;

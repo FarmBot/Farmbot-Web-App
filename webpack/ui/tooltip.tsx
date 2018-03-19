@@ -2,7 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 
 interface ToolTipProps {
-  children?: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode;
   className?: string;
   helpText: string;
 }

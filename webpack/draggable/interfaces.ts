@@ -49,6 +49,6 @@ export interface StepDraggerProps {
   dispatch: Function;
   step: Step;
   intent: DataXferIntent;
-  children?: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode;
   draggerId: number;
 }

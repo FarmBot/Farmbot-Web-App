@@ -2,7 +2,7 @@ import * as React from "react";
 import { parseClassNames } from "./util";
 
 interface ColumnProps {
-  children?: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode;
   /** {xs-col-size} */
   xs?: number;
   /** {sm-col-size} */

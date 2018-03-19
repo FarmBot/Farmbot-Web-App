@@ -1,7 +1,7 @@
 import * as React from "react";
 
 interface WidgetFooterProps {
-  children?: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode;
 }
 
 export function WidgetFooter(props: WidgetFooterProps) {

@@ -88,7 +88,7 @@ export interface StepButtonParams {
   current: TaggedSequence | undefined;
   step: SequenceBodyItem;
   dispatch: Function;
-  children?: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode;
   color: "blue"
   | "green"
   | "orange"

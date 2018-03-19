@@ -76,7 +76,7 @@ export interface RegimenItem {
 export interface AddRegimenProps {
   dispatch: Function;
   className?: string;
-  children?: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode;
   length: number;
 }
 

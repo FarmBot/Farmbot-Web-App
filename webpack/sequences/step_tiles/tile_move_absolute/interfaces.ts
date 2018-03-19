@@ -14,7 +14,7 @@ export interface TileMoveAbsProps {
 
 export interface InputBoxProps {
   onCommit(e: React.SyntheticEvent<HTMLInputElement>): void;
-  children?: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode;
   disabled?: boolean;
   name: string;
   value: string;

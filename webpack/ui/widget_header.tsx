@@ -3,7 +3,7 @@ import { t } from "i18next";
 import { docLink, DocSlug } from "./doc_link";
 
 interface WidgetHeaderProps {
-  children?: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode;
   helpText?: string;
   docPage?: DocSlug;
   title: string;

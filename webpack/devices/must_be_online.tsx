@@ -8,7 +8,7 @@ export interface MBOProps {
   syncStatus: SyncStatus | undefined;
   lockOpen?: boolean;
   hideBanner?: boolean;
-  children?: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode;
 }
 
 export function isBotUp(status: SyncStatus | undefined) {
