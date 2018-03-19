@@ -1,13 +1,8 @@
 import { Middleware } from "redux";
+import { EnvName } from "./interfaces";
 
+const fn: Middleware = () => (dispatch) => (action: any) => dispatch(action);
 
-const fn: Middleware = (x: Everything) => (dispatch) => (action: any) => {
+const env: EnvName = "*";
 
-  // informational_settings.controller_version
-  if (isResourceReady) {
-    const conf: WebAppConfig = action.payload.data;
-    conf.disable_i18n && revertToEnglish();
-  }
-
-  return dispatch(action);
-};
+export const versionChangeMiddleware = { env, fn };

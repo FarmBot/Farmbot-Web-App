@@ -4,6 +4,7 @@ import { EnvName } from "./interfaces";
 import { Actions } from "../constants";
 import { stateFetchMiddlewareConfig } from "./state_fetch_middleware";
 import { revertToEnglishMiddleware } from "./revert_to_english_middleware";
+import { versionChangeMiddleware } from "./version_tracker_middleware";
 
 export interface MiddlewareConfig {
   fn: Middleware;
@@ -16,7 +17,8 @@ export let mwConfig: MiddlewareConfig[] = [
   { env: "*", fn: thunk },
   { env: "development", fn: require("redux-immutable-state-invariant").default() },
   stateFetchMiddlewareConfig,
-  revertToEnglishMiddleware
+  revertToEnglishMiddleware,
+  versionChangeMiddleware
 ];
 
 export function getMiddleware(env: EnvName) {
