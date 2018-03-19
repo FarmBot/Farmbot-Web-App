@@ -14,18 +14,17 @@ describe("<HomingRow />", () => {
   beforeEach(function () {
     jest.clearAllMocks();
   });
-  // TODO: fix this test
-  //       Code being run is {t("HOME {{axis}}", { axis })}
-  //       Result string is "HOME {{axis}}HOME {{axis}}HOME {{axis}}"
-  xit("renders three buttons", () => {
+
+  it("renders three buttons", () => {
     const wrapper = mount(<HomingRow
       hardware={bot.hardware.mcu_params}
       botDisconnected={false} />);
-    const txt = wrapper.text();
+    const txt = wrapper.text().toUpperCase();
     ["X", "Y", "Z"].map(function (axis) {
       expect(txt).toContain(`HOME ${axis}`);
     });
   });
+
   it("calls device", () => {
     const result = mount(<HomingRow
       hardware={bot.hardware.mcu_params}

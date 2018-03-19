@@ -1,8 +1,7 @@
 import * as React from "react";
-import { JSXChildren } from "../util";
 
 interface WidgetFooterProps {
-  children?: JSXChildren;
+  children?: React.ReactNode;
 }
 
 export function WidgetFooter(props: WidgetFooterProps) {

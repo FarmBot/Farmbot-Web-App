@@ -1,9 +1,6 @@
 import { t } from "i18next";
 import { error } from "farmbot-toastr";
 import {
-  METHODS,
-  notifyBotOfChanges,
-  METHOD_MAP,
   SafeError,
   isSafeError
 } from "./interceptor_support";
@@ -17,11 +14,7 @@ import { Dictionary } from "farmbot";
 import { outstandingRequests } from "./connectivity/data_consistency";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
-  const method = input.config.method;
   dispatchNetworkUp("user.api");
-  if (method && METHODS.includes(method)) {
-    notifyBotOfChanges(input.config.url, METHOD_MAP[method]);
-  }
   return input;
 }
 
