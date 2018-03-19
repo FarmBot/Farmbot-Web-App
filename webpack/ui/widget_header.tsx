@@ -1,10 +1,9 @@
 import * as React from "react";
 import { t } from "i18next";
-import { JSXChildren } from "../util";
 import { docLink, DocSlug } from "./doc_link";
 
 interface WidgetHeaderProps {
-  children?: JSXChildren;
+  children?: React.ReactNode | React.ReactNode[];
   helpText?: string;
   docPage?: DocSlug;
   title: string;

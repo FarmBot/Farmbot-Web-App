@@ -1,8 +1,7 @@
 import * as React from "react";
-import { JSXChildren } from "../../util";
 
 interface StepWrapperProps {
-  children?: JSXChildren;
+  children?: React.ReactChild | React.ReactChild[];
   className?: string;
 }
 

@@ -1,8 +1,7 @@
 import * as React from "react";
-import { JSXChildren } from "../util";
 
 interface WidgetBodyProps {
-  children?: JSXChildren;
+  children?: React.ReactNode | React.ReactNode[];
 }
 
 export function WidgetBody(props: WidgetBodyProps) {

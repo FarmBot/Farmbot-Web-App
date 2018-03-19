@@ -9,12 +9,12 @@ import { findBySlug } from "../search_selectors";
 import { Everything } from "../../interfaces";
 import { OpenFarm } from "../openfarm";
 import { OFSearch } from "../util";
-import { catchErrors, JSXChildren } from "../../util";
+import { catchErrors } from "../../util";
 import { unselectPlant } from "../actions";
 
 interface InforFieldProps {
   title: string;
-  children?: JSXChildren;
+  children?: React.ReactChild | React.ReactChild[];
 }
 
 function InfoField(props: InforFieldProps) {

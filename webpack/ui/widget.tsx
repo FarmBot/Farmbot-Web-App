@@ -1,8 +1,7 @@
 import * as React from "react";
-import { JSXChildren } from "../util";
 
 interface WidgetProps {
-  children?: JSXChildren;
+  children?: React.ReactNode | React.ReactNode[];
   className?: string;
 }
 

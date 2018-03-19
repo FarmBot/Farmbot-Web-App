@@ -1,10 +1,9 @@
 import * as React from "react";
-import { JSXChildren } from "../../util";
 
 interface Props {
   onClick: Function;
   disabled: boolean;
-  children?: JSXChildren;
+  children?: React.ReactChild | React.ReactChild[];
 }
 
 export function LockableButton({ onClick, disabled, children }: Props) {

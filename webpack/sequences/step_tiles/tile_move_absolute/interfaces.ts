@@ -1,6 +1,5 @@
 import { ResourceIndex } from "../../../resources/interfaces";
 import { MoveAbsolute, PointType } from "farmbot/dist";
-import { JSXChildren } from "../../../util";
 import { ShouldDisplay } from "../../../devices/interfaces";
 export const TOOL: "Tool" = "Tool";
 
@@ -15,7 +14,7 @@ export interface TileMoveAbsProps {
 
 export interface InputBoxProps {
   onCommit(e: React.SyntheticEvent<HTMLInputElement>): void;
-  children?: JSXChildren;
+  children?: React.ReactNode | React.ReactNode[];
   disabled?: boolean;
   name: string;
   value: string;

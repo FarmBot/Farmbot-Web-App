@@ -1,6 +1,5 @@
 import * as React from "react";
 import { t } from "i18next";
-import { JSXChildren } from "../../util";
 import { Row, Col } from "../../ui/index";
 import { TaggedSequence } from "../../resources/tagged_resources";
 import { SequenceBodyItem } from "farmbot";
@@ -9,7 +8,7 @@ import { StepIconGroup } from "../step_icon_group";
 import { splice, remove } from "../step_tiles/index";
 
 export interface StepHeaderProps {
-  children?: JSXChildren;
+  children?: React.ReactNode | React.ReactNode[];
   className: string;
   helpText: string;
   currentSequence: TaggedSequence;
@@ -26,7 +25,7 @@ export function StepHeader(props: StepHeaderProps) {
     currentStep,
     dispatch,
     index
-     } = props;
+  } = props;
   return <Row>
     <Col sm={12}>
       <div className={`step-header ${className}`} draggable={true}>
