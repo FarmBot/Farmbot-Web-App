@@ -190,10 +190,9 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         const frmEvnt = this.props.farmEvent;
         const nextRun = _.first(scheduleForFarmEvent(frmEvnt.body).items);
         if (nextRun) {
-          // TODO: Internationalizing this will be a challenge.
-          success(`This Farm Event will run ${nextRun.fromNow()}, but
+          success(t(`This Farm Event will run {{timeFromNow}}, but
             you must first SYNC YOUR DEVICE. If you do not sync, the event will
-            not run.`.replace(/\s+/g, " "));
+            not run.`.replace(/\s+/g, " "), { timeFromNow: nextRun.fromNow() }));
           this.props.dispatch(maybeWarnAboutMissedTasks(frmEvnt, function () {
             alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK));
           }));
