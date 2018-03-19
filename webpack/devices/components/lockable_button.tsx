@@ -3,7 +3,7 @@ import * as React from "react";
 interface Props {
   onClick: Function;
   disabled: boolean;
-  children?: React.ReactChild | React.ReactChild[];
+  children?: React.ReactNode;
 }
 
 export function LockableButton({ onClick, disabled, children }: Props) {

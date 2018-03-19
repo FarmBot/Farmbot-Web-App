@@ -1,7 +1,7 @@
 import * as React from "react";
 
 interface PageProps {
-  children?: React.ReactChild | React.ReactChild[];
+  children?: React.ReactNode;
   className?: string;
 }
 

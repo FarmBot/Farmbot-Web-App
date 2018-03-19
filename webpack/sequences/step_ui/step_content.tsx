@@ -2,7 +2,7 @@ import * as React from "react";
 import { Row, Col } from "../../ui/index";
 
 interface StepContentProps {
-  children?: React.ReactChild | React.ReactChild[];
+  children?: React.ReactNode;
   className: string;
 }
 

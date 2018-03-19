@@ -14,7 +14,7 @@ const md = require("markdown-it")({
 md.use(emoji);
 
 interface MarkdownProps {
-  children?: React.ReactChild | React.ReactChild[];
+  children?: React.ReactNode;
 }
 
 export function Markdown(props: MarkdownProps) {

@@ -14,7 +14,7 @@ import { unselectPlant } from "../actions";
 
 interface InforFieldProps {
   title: string;
-  children?: React.ReactChild | React.ReactChild[];
+  children?: React.ReactNode;
 }
 
 function InfoField(props: InforFieldProps) {
