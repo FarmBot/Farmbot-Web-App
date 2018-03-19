@@ -16,6 +16,7 @@ class DashboardController < ApplicationController
   [:main_app, :front_page, :verify, :password_reset].map do |actn|
     define_method(actn) do
       @rev = LONG_REVISION
+      @fbos_version = current_user&.device&.fbos_version || "0.0.0"
       begin
         response.headers["Cache-Control"] = "no-cache, no-store"
         response.headers["Pragma"] = "no-cache"

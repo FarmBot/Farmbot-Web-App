@@ -107,10 +107,6 @@ export function shouldDisplay(
     const target = override || current;
     if (isString(target)) {
       const min = (lookupData || {})[feature] || MinVersionOverride.NEVER;
-      console.log("CHANGING ROLLBAR FBOS VERSION TO " + (target || "NONE"));
-      window.Rollbar && window
-        .Rollbar
-        .global({ payload: { client: { javascript: { fbos_version: target } } } });
       switch (semverCompare(target, min)) {
         case SemverResult.LEFT_IS_GREATER:
         case SemverResult.EQUAL:

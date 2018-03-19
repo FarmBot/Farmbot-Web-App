@@ -14,6 +14,7 @@ try {
       captureUnhandledRejections: true,
       payload: {
           person: user,
+          fbos: <%= raw (@fbos_version || "0.0.0").to_json %>,
           environment: window.location.host,
           client: {
               javascript: {
