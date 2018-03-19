@@ -20,14 +20,7 @@ export function mapStateToProps(props: Everything): Props {
   const tools = selectAllTools(props.resources.index);
 
   /** Returns sorted tool slots specific to the tool bay id passed. */
-  const getToolSlots = (/** uuid: string */) => {
-    // TODO: three things:
-    //       1. We don't support multiple bays. Therefore, no need to filter.
-    //       2. If we add an index to this resource, we don't need to perform
-    //          filtering.
-    //       3. Once we do support multiple bays, re-add the slot's UUID param.
-    return toolSlots;
-  };
+  const getToolSlots = () => toolSlots;
 
   /** Returns all tools in an <FBSelect /> compatible format. */
   const getToolOptions = () => {
