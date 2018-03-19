@@ -20,9 +20,8 @@ import { SelectionBoxData } from "./map/selection_box";
 import { BooleanConfigKey } from "../config_storage/web_app_configs";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 
-/** TODO: Use Enums */
-export type BotOriginQuadrant = 1 | 2 | 3 | 4;
-export type ZoomLevelPayl = 0.1 | -0.1;
+export enum BotOriginQuadrant { ONE = 1, TWO = 2, THREE = 3, FOUR = 4 }
+export enum ZoomLevelPayl { POSITIVE = 0.1, NEGATIVE = -0.1 }
 
 type Mystery = BotOriginQuadrant | number | undefined;
 export function isBotOriginQuadrant(mystery: Mystery):
