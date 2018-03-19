@@ -4,7 +4,6 @@ import { AuthState } from "../auth/interfaces";
 import { BotState } from "../devices/interfaces";
 import { TaggedRegimen, TaggedSequence } from "../resources/tagged_resources";
 import { ResourceIndex } from "../resources/interfaces";
-import { JSXChildren } from "../util";
 
 export interface MiddleSectionProps {
   regimen: TaggedRegimen | undefined;
@@ -77,7 +76,7 @@ export interface RegimenItem {
 export interface AddRegimenProps {
   dispatch: Function;
   className?: string;
-  children?: JSXChildren;
+  children?: React.ReactNode;
   length: number;
 }
 

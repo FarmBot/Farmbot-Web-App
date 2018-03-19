@@ -135,11 +135,6 @@ export function oneOf(list: string[], target: string) {
   return !!matches;
 }
 
-/** TODO: Upgrading to TSC 2.4, maybe we don't need this?
- * - RC 20 June 2016 */
-type JSXChild = JSX.Element | JSX.Element[] | Primitive | undefined;
-export type JSXChildren = JSXChild[] | JSXChild;
-
 export type Primitive = boolean | string | number;
 
 export function shortRevision() {

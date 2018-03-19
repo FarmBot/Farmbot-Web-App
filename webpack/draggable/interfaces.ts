@@ -1,5 +1,4 @@
 import { SequenceBodyItem as Step } from "farmbot";
-import { JSXChildren } from "../util";
 
 /** An entry in the data transfer table. Used to transfer data from a "draggable"
  * to a "dropable". For type safety, this is a "tagged union". See Typescript
@@ -50,6 +49,6 @@ export interface StepDraggerProps {
   dispatch: Function;
   step: Step;
   intent: DataXferIntent;
-  children?: JSXChildren;
+  children?: React.ReactNode;
   draggerId: number;
 }

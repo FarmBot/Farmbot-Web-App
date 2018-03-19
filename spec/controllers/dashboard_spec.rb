@@ -37,7 +37,7 @@ describe DashboardController do
       expect(user.confirmed_at).to eq(nil)
       get :verify, params: params
       user.reload
-      expect(user.confirmation_token).to be # TODO: Hmm..
+      expect(user.confirmation_token).to be
       expect(user.confirmed_at).to be
       expect(user.confirmed_at - Time.now).to be < 3
     end

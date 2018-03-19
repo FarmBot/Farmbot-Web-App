@@ -29,8 +29,6 @@ module CeleryScript
         flat_ir
           .each do |node|
             # Step 1- instantiate records.
-            # TODO: Switch create!() to new() once things are atleast working
-            #   - RC
             node[I] = PrimaryNode.create!(kind:     node[K],
                                           sequence: sequence,
                                           comment:  node[C] || nil)
