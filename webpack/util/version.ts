@@ -107,6 +107,10 @@ export function shouldDisplay(
     const target = override || current;
     if (isString(target)) {
       const min = (lookupData || {})[feature] || MinVersionOverride.NEVER;
+      console.log("CHANGING ROLLBAR FBOS VERSION TO " + (target || "NONE"));
+      window.Rollbar && window
+        .Rollbar
+        .global({ payload: { client: { javascript: { fbos_version: target } } } });
       switch (semverCompare(target, min)) {
         case SemverResult.LEFT_IS_GREATER:
         case SemverResult.EQUAL:
@@ -121,8 +125,7 @@ export function shouldDisplay(
 
 /**
  * Compare the current FBOS version in the bot's
- * state with the API's fbos_version string and return the greatest version.
- */
+ * state with the API's fbos_version string and return the greatest version. */
 export function determineInstalledOsVersion(
   bot: BotState, device: TaggedDevice | undefined): string | undefined {
   const fromBotState = bot.hardware.informational_settings.controller_version;
