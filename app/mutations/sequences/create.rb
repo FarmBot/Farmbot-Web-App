@@ -20,14 +20,9 @@ module Sequences
 
     def execute
       ActiveRecord::Base.transaction do
-        # Possible nonsense ahead:
-        #  Theory: In production today, we were doing some nonsense where we
-        #          Store data in sequence.body and sequence.args, save it to the
-        #          DB, pull it back out, convert it to a Hash
-          p = inputs
-            .merge(migrated_nodes: true)
-            .without(:body, :args, "body", "args")
-          seq = Sequence.create!(p)
+          seq = Sequence.create!(inputs
+                                  .merge(migrated_nodes: true)
+                                  .without(:body, :args, "body", "args"))
           CeleryScript::FirstPass.run!( sequence: seq,
                                         args: args || {},
                                         body: body || [])
