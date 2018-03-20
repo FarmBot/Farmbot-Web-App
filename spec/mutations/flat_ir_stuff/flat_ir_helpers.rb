@@ -66,7 +66,7 @@ module CeleryScript
     end
 
     def self.fake_first_pass
-      FactoryBot.create(:sequence, body: typical_sequence[:body])
+      FakeSequence.create( body: typical_sequence[:body])
     end
   end
 end

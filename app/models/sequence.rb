@@ -79,19 +79,19 @@ class Sequence < ApplicationRecord
     yield(sequences) if sequences.count > 0
   end
 
-  def body=(*)
-    raise "WARNING: Sequence##{__method__} is deprecated."
-  end
+  # def body=(*)
+  #   raise "WARNING: Sequence##{__method__} is deprecated."
+  # end
 
-  def args=(*)
-    raise "WARNING: Sequence##{__method__} is deprecated."
-  end
+  # def args=(*)
+  #   raise "WARNING: Sequence##{__method__} is deprecated."
+  # end
 
-  def body(*)
-    raise "WARNING: Sequence##{__method__} is deprecated."
-  end
+  # def body(*)
+  #   raise "WARNING: Sequence##{__method__} is deprecated."
+  # end
 
-  def args(*)
-    raise "WARNING: Sequence##{__method__} is deprecated."
-  end
+  # def args(*)
+  #   raise "WARNING: Sequence##{__method__} is deprecated."
+  # end
 end

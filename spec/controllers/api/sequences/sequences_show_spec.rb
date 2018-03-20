@@ -13,7 +13,7 @@ describe Api::SequencesController do
 
     it 'shows sequence' do
       sign_in user
-      id = FactoryBot.create(:sequence, device: user.device).id
+      id = FakeSequence.create( device: user.device).id
       get :show, params: { id: id }
       expect(response.status).to eq(200)
       expect(json[:id]).to eq(id)

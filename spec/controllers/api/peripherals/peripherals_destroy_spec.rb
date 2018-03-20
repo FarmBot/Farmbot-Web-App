@@ -30,7 +30,7 @@ describe Api::PeripheralsController do
       sign_in user
       peripheral
       before = Peripheral.count
-      FactoryBot.create(:sequence,
+      FakeSequence.create(
                         device: user.device,
                         body: [{kind: "read_pin",
                                 args: {

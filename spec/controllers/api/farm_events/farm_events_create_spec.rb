@@ -5,7 +5,7 @@ describe Api::FarmEventsController do
 
   describe '#create' do
     let(:user) { FactoryBot.create(:user) }
-    let(:sequence) { FactoryBot.create(:sequence) }
+    let(:sequence) { FakeSequence.create() }
     let(:regimen) { FactoryBot.create(:regimen, device: user.device) }
 
     it 'makes a farm_event' do
