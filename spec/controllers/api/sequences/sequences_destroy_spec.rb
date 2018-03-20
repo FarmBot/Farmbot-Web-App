@@ -32,13 +32,21 @@ describe Api::SequencesController do
     it 'allows deletion of recurive sequences' do
       sign_in user
       s = Sequences::Create.run!({device: user.device,
-                                  name: "Rick-cursion", body: [] })
+                                  name: "Rick-cursion",
+                                  body: [] })
       body = {
-        sequence: { body: [{ kind: "execute", args: { sequence_id: s[:id] } }] }
+        sequence: {
+          body: [
+            {
+              kind: "execute",
+              args: { sequence_id: s[:id] }
+            }
+          ]
+        }
       }.to_json
 
       patch :update,
-            params: {id: s[:id] },
+            params: { id: s[:id] },
             body: body,
             as: :json
 

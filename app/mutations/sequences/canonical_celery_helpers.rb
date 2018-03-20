@@ -6,7 +6,7 @@ module Sequences
       end
 
       def args
-        hash :args do
+        hash :args, default: ({}) do
           optional do
             hash :locals do
               # Let CeleryScript lib do the type checking...
