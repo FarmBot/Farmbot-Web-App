@@ -30,17 +30,15 @@ describe Api::PeripheralsController do
       sign_in user
       peripheral
       before = Peripheral.count
-      FakeSequence.create(
-                        device: user.device,
-                        body: [{kind: "read_pin",
-                                args: {
+      FakeSequence.create(device: user.device,
+                          body: [{kind: "read_pin",
+                                  args: {
                                   pin_number: {
                                     kind: "named_pin",
                                     args: { pin_type: "Peripheral", pin_id: peripheral.id }
                                   },
-                                  mode: 0,
-                                  label: "FOO"
-                                }
+                                  pin_mode: 0,
+                                  label: "FOO" }
                               }])
       delete :destroy, params: { id: peripheral.id }
       expect(response.status).to eq(422)

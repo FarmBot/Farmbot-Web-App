@@ -25,8 +25,8 @@ module Sequences
       ActiveRecord::Base.transaction do
         sequence.migrated_nodes = true
         sequence.update_attributes!(inputs.except(:sequence, :device))
-        CeleryScript::StoreCelery
-          .run!(sequence: sequence, args: args, body: body)
+        params = {sequence: sequence, args: args || {}, body: body || []}
+        CeleryScript::StoreCelery.run!(params)
       end
       CeleryScript::FetchCelery.run!(sequence: sequence.reload)
     rescue ActiveRecord::RecordInvalid => e

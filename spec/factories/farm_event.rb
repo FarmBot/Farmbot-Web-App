@@ -6,8 +6,8 @@ FactoryBot.define do
     repeat { [*(1..5)].sample }
     # device
     after(:build) do |s|
-      s.device ||= s.executable.device
       s.executable ||= FakeSequence.create(device: s.device)
+      s.device ||= s.executable.try(:device) || binding.pry
     end
   end
 end
