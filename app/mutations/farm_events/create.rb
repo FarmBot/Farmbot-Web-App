@@ -1,7 +1,7 @@
 module FarmEvents
   class Create < Mutations::Command
     include FarmEvents::ExecutableHelpers
-    executable_fields :optional
+    has_executable_fields
     BACKWARDS_END_TIME = "This event starts before it ends. Did you flip the "\
                          "start and end times?"
 

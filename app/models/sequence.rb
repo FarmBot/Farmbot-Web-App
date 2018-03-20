@@ -80,22 +80,18 @@ class Sequence < ApplicationRecord
   end
 
   def body=(*)
-    puts "WARNING: #{__method__} is deprecated."
-    nil
+    raise "WARNING: Sequence##{__method__} is deprecated."
   end
 
   def args=(*)
-    puts "WARNING: #{__method__} is deprecated."
-    nil
+    raise "WARNING: Sequence##{__method__} is deprecated."
   end
 
   def body(*)
-    puts "WARNING: #{__method__} is deprecated."
-    nil
+    raise "WARNING: Sequence##{__method__} is deprecated."
   end
 
   def args(*)
-    puts "WARNING: #{__method__} is deprecated."
-    nil
+    raise "WARNING: Sequence##{__method__} is deprecated."
   end
 end

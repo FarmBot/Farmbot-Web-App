@@ -6,9 +6,9 @@ FactoryBot.define do
     color { Sequence::COLORS.sample }
     device
     kind "sequence"
-    args({ version: 4 })
-    body([])
 
-    after(:create) { |s| CeleryScript::StoreCelery.run!(sequence: s) }
+    after(:create) do |s,t,u|
+      CeleryScript::StoreCelery.run!(sequence: s)
+    end
   end
 end

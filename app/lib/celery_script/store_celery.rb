@@ -6,12 +6,21 @@
 # flat forms. `StoreCelery` handles the conversion and storage of CS Nodes.
 module CeleryScript
   class StoreCelery < Mutations::Command
+    using Sequences::CanonicalCeleryHelpers
+
     required do
       model :sequence, class: Sequence
+      body
+      args
     end
 
     def execute
-      raise "Deprecated"
+      Sequence.transaction do
+        sequence.primary_nodes.destroy_all
+        sequence.edge_nodes.destroy_all
+        FirstPass.run!(sequence: sequence, body: body, args: args)
+        sequence.reload
+      end
     end
   end
 end

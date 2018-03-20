@@ -6,6 +6,7 @@ require_relative "./csheap"
 #   from memory and converts `HeapAddress`es to SQL primary/foreign keys.
 module CeleryScript
   class FirstPass < Mutations::Command
+    using Sequences::CanonicalCeleryHelpers
     # The following constants are abbreviations of the full name, since the
     # full name is quite long and they are referenced frequently in the code.
     # Just remember that "B" is "BODY", "K" is "KIND", etc...
@@ -20,16 +21,8 @@ module CeleryScript
 
     required do
       model :sequence, class: Sequence
-      duck  :body, methods: [:[], :[]=, :each, :map]
-      hash  :args do
-        optional do
-          hash :locals do
-            optional do
-              duck :*, methods: [:[], :[]=], default: {}
-            end
-          end
-        end
-      end
+      body
+      args
     end
 
     def validate
@@ -114,7 +107,8 @@ private
     end
 
     def sequence_hash
-      @sequence_hash ||= HashWithIndifferentAccess.new(inputs)
+      @sequence_hash ||= \
+        HashWithIndifferentAccess.new(kind: "sequence", args: args, body: body)
     end
 
     def flat_ir

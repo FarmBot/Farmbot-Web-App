@@ -1,24 +1,17 @@
 module Sequences
   class Create < Mutations::Command
     include CeleryScriptValidators
+    using CanonicalCeleryHelpers
 
     required do
       model  :device, class: Device
       string :name
-      duck   :body, methods: [:[], :[]=, :each, :map]
+      body
     end
 
     optional do
-      string :color, in: Sequence::COLORS
-      hash :args do
-        optional do
-          hash :locals do
-            optional do
-              duck :*, methods: [:[], :[]=], default: {}
-            end
-          end
-        end
-      end
+      color
+      args
     end
 
     def validate
@@ -31,10 +24,10 @@ module Sequences
         #  Theory: In production today, we were doing some nonsense where we
         #          Store data in sequence.body and sequence.args, save it to the
         #          DB, pull it back out, convert it to a Hash
-          sequence = Sequence.create!(inputs.merge(migrated_nodes: true))
-          FirstPass.run!(sequence: sequence,
-                         args: inputs[:args] || {},
-                         body: inputs[:body] || [])
+          seq = Sequence.create!(inputs.merge(migrated_nodes: true))
+          CeleryScript::FirstPass.run!( sequence: seq,
+                                        args: args || {},
+                                        body: body || [])
           CeleryScript::FetchCelery.run!(sequence: seq.reload) # Perf nightmare?
       end
     end
