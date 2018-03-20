@@ -2,10 +2,8 @@ require_relative "./csheap"
 
 # ABOUT THIS CLASS:
 #   CSHeap creates an in memory representation of a Flat IR tree using array
-#   indexes (HeapAddress instances, really). This is fine when dealing with the
-#   nodes in memory. Users will need to store these nodes in the DB, though.
-#   This class takes a flat IR tree from memory and converts `HeapAddress`es
-#   to SQL primary/foreign keys.
+#   indexes (HeapAddress instances, really). This class takes a flat IR tree
+#   from memory and converts `HeapAddress`es to SQL primary/foreign keys.
 module CeleryScript
   class FirstPass < Mutations::Command
     # The following constants are abbreviations of the full name, since the
@@ -22,6 +20,24 @@ module CeleryScript
 
     required do
       model :sequence, class: Sequence
+      duck  :body, methods: [:[], :[]=, :each, :map]
+      hash  :args do
+        optional do
+          hash :locals do
+            optional do
+              duck :*, methods: [:[], :[]=], default: {}
+            end
+          end
+        end
+      end
+    end
+
+    def validate
+      #       IF YOU REMOVE THIS BAD STUFF WILL HAPPEN:
+      #       version is never user definable!
+      sequence_hash[:args] = \
+        Sequence::DEFAULT_ARGS.merge(sequence_hash[:args] || {})
+      # See comment above ^
     end
 
     def execute
@@ -97,8 +113,12 @@ private
       flat_ir[index][I].id
     end
 
+    def sequence_hash
+      @sequence_hash ||= HashWithIndifferentAccess.new(inputs)
+    end
+
     def flat_ir
-      @flat_ir ||= Slicer.new.run!(sequence.as_json.deep_symbolize_keys)
+      @flat_ir ||= Slicer.new.run!(sequence_hash)
     end
   end
 end

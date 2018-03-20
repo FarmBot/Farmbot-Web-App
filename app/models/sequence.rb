@@ -9,8 +9,8 @@ class Sequence < ApplicationRecord
   LATEST_VERSION    = 20180209
   NOTHING           = { kind: "nothing", args: {} }
   SCOPE_DECLARATION = { kind: "scope_declaration", args: {} }
-  DEFAULT_ARGS      = { locals:  SCOPE_DECLARATION,
-                        version: LATEST_VERSION  }
+  DEFAULT_ARGS      = { locals:      SCOPE_DECLARATION,
+                        version:     LATEST_VERSION }
   # Does some extra magic for serialized columns for us, such as providing a
   # default value and making hashes have indifferent access.
   class CustomSerializer
@@ -53,7 +53,6 @@ class Sequence < ApplicationRecord
   before_validation :set_defaults
   around_destroy :delete_nodes_too
   def set_defaults
-    self.args              = {}.merge(DEFAULT_ARGS).merge(self.args)
     self.color           ||= "gray"
     self.kind            ||= "sequence"
   end
@@ -78,5 +77,25 @@ class Sequence < ApplicationRecord
     all   = PrimaryNode.includes(:sequence).where(id: union).pluck(:sequence_id)
     sequences = Sequence.where(id: all)
     yield(sequences) if sequences.count > 0
+  end
+
+  def body=(*)
+    puts "WARNING: #{__method__} is deprecated."
+    nil
+  end
+
+  def args=(*)
+    puts "WARNING: #{__method__} is deprecated."
+    nil
+  end
+
+  def body(*)
+    puts "WARNING: #{__method__} is deprecated."
+    nil
+  end
+
+  def args(*)
+    puts "WARNING: #{__method__} is deprecated."
+    nil
   end
 end

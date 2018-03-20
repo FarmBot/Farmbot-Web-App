@@ -26,19 +26,17 @@ module Sequences
     end
 
     def execute
-      seq = Sequence.new(inputs)
-      # TODO: Delete this column in may '18 - RC
-      seq.args["is_outdated"] = false
-      # version is never user definable!
-      # IF YOU REMOVE THIS BAD STUFF WILL HAPPEN:
-      seq.args["version"]     = Sequence::LATEST_VERSION
-      # See comment above ^
       ActiveRecord::Base.transaction do
-        seq.migrated_nodes = true
-        seq.save!
-        CeleryScript::StoreCelery.run!(sequence: seq)
+        # Possible nonsense ahead:
+        #  Theory: In production today, we were doing some nonsense where we
+        #          Store data in sequence.body and sequence.args, save it to the
+        #          DB, pull it back out, convert it to a Hash
+          sequence = Sequence.create!(inputs.merge(migrated_nodes: true))
+          FirstPass.run!(sequence: sequence,
+                         args: inputs[:args] || {},
+                         body: inputs[:body] || [])
+          CeleryScript::FetchCelery.run!(sequence: seq.reload) # Perf nightmare?
       end
-      CeleryScript::FetchCelery.run!(sequence: seq.reload) # Perf nightmare?
     end
   end
 end

@@ -27,7 +27,6 @@ module Sequences
 
     def execute
       ActiveRecord::Base.transaction do
-        sequence.args["is_outdated"] = false
         sequence.migrated_nodes = true
         sequence.update_attributes!(inputs.except(:sequence, :device))
         CeleryScript::StoreCelery.run!(sequence: sequence)

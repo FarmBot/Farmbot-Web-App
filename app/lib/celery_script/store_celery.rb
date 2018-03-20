@@ -11,12 +11,7 @@ module CeleryScript
     end
 
     def execute
-      Sequence.transaction do
-        sequence.primary_nodes.destroy_all
-        sequence.edge_nodes.destroy_all
-        FirstPass.run!(sequence: sequence)
-        sequence.reload
-      end
+      raise "Deprecated"
     end
   end
 end

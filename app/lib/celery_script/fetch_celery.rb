@@ -90,7 +90,7 @@ module CeleryScript
         color:      sequence.color,
         created_at: sequence.created_at,
         updated_at: sequence.updated_at,
-        args:       Sequence::DEFAULT_ARGS.merge({ is_outdated: false })
+        args:       Sequence::DEFAULT_ARGS
       }
     end
 
