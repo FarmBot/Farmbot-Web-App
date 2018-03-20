@@ -341,6 +341,11 @@ export namespace Content {
     trim(`Warning! When enabled, any unsaved changes
     will be discarded when refreshing or closing the page. Are you sure?`);
 
+  export const VIRTUAL_TRAIL =
+    trim(`Display a virtual trail for FarmBot in the Farm Designer map to show
+    movement and watering history while the map is open. Toggling this setting
+    will clear data for the current trail.`);
+
   // Device
   export const NOT_HTTPS =
     trim(`WARNING: Sending passwords via HTTP:// is not secure.`);

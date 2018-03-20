@@ -44,7 +44,7 @@ export class Calendar {
           year: parseInt(item.mmddyy.slice(4, 6)),
           month: Calendar.MONTHS[item.mmddyy.slice(0, 2)] || "???",
           day: parseInt(item.mmddyy.slice(2, 4)),
-          items
+          items: _.sortBy(items, Calendar.SORT_KEY)
         };
       });
     return _(all).sortBy(Calendar.SORT_KEY).value();

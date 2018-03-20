@@ -21,11 +21,14 @@ describe("unsavedCheck", () => {
     };
     const output = fakeState();
     output.resources = buildResourceIndex([config]);
+    // `buildResourceIndex` clears specialStatus. Set it again:
+    const uuid = output.resources.index.all[0];
+    (output.resources.index.references[uuid] || {} as any)
+      .specialStatus = specialStatus;
     return output;
   }
 
   it("stops users if they have unsaved work", () => {
-    pending("Why?");
     unsavedCheck(setItUp(SpecialStatus.DIRTY, { discard_unsaved: false }));
     expect(window.onbeforeunload).toBe(stopThem);
   });

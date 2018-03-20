@@ -33,5 +33,14 @@ describe("<AddRegimen/>", () => {
     });
   });
 
-  it("has children (or defaults)");
+  it("uses props.children", () => {
+    const b = btn({ dispatch: jest.fn(), length: 0, children: "child" });
+    expect(b.text()).toContain("child");
+    expect(b.find(".fa-plus").length).toEqual(0);
+  });
+
+  it("has default children", () => {
+    const b = btn({ dispatch: jest.fn(), length: 0 });
+    expect(b.find(".fa-plus").length).toEqual(1);
+  });
 });
