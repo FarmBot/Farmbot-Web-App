@@ -7,7 +7,7 @@ FactoryBot.define do
     # device
     after(:build) do |s|
       s.executable ||= FakeSequence.create(device: s.device)
-      s.device ||= s.executable.try(:device) || binding.pry
+      s.device ||= s.executable.try(:device)
     end
   end
 end

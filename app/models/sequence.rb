@@ -79,4 +79,14 @@ class Sequence < ApplicationRecord
     sequences = Sequence.where(id: all)
     yield(sequences) if sequences.count > 0
   end
+
+  # Special serialization required for auto sync.
+  # See ApplicationRecord
+  def body_as_json
+    if destroyed?
+      return nil
+    else
+      return CeleryScript::FetchCelery.run!(sequence: self)
+    end
+  end
 end
