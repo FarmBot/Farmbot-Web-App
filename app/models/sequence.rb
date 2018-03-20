@@ -3,6 +3,7 @@
 # most of the functionality of a programming language such a variables and
 # conditional logic.
 class Sequence < ApplicationRecord
+  self.ignored_columns = %w(body args)
   # This number (YYYYMMDD) helps us prepare for the future by keeping things
   # versioned. We can use it as a means of identifying legacy sequences when
   # breaking changes happen.
@@ -78,20 +79,4 @@ class Sequence < ApplicationRecord
     sequences = Sequence.where(id: all)
     yield(sequences) if sequences.count > 0
   end
-
-  # def body=(*)
-  #   raise "WARNING: Sequence##{__method__} is deprecated."
-  # end
-
-  # def args=(*)
-  #   raise "WARNING: Sequence##{__method__} is deprecated."
-  # end
-
-  # def body(*)
-  #   raise "WARNING: Sequence##{__method__} is deprecated."
-  # end
-
-  # def args(*)
-  #   raise "WARNING: Sequence##{__method__} is deprecated."
-  # end
 end
