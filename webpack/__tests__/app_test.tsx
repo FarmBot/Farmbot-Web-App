@@ -57,7 +57,7 @@ describe("<App />: Controls Pop-Up", () => {
 
 });
 
-describe.skip("<App />: Loading", () => {
+describe("<App />: Loading", () => {
   function fakeProps(): AppProps {
     const p: AppProps = {
       dispatch: jest.fn(),
@@ -75,21 +75,21 @@ describe.skip("<App />: Loading", () => {
 
   it("MUST_LOADs not loaded", () => {
     const wrapper = mount(<App {...fakeProps()} />);
-    expect(wrapper.html()).toContain("spinner");
+    expect(wrapper.text()).toContain("Loading...");
   });
 
   it("MUST_LOADs partially loaded", () => {
     const p = fakeProps();
     p.loaded = ["Sequence"];
     const wrapper = mount(<App {...p} />);
-    expect(wrapper.html()).toContain("spinner");
+    expect(wrapper.text()).toContain("Loading...");
   });
 
   it("MUST_LOADs loaded", () => {
     const p = fakeProps();
     p.loaded = ["Sequence", "Regimen", "FarmEvent", "Point"];
     const wrapper = mount(<App {...p} />);
-    expect(wrapper.html()).not.toContain("spinner");
+    expect(wrapper.text()).not.toContain("Loading...");
   });
 });
 
