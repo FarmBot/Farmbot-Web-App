@@ -9,7 +9,7 @@ module FarmEvents
 
     module ClassMethods
       # :required or :optional
-      def executable_fields(optionality = "deprecated")
+      def has_executable_fields
         optional do
           integer :executable_id
           string  :executable_type, in: FarmEvent::EXECUTABLE_CLASSES.map(&:name)

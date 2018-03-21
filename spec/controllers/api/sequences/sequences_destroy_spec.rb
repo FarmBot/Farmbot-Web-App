@@ -10,7 +10,7 @@ describe Api::SequencesController do
   describe '#destroy' do
     let(:user) { FactoryBot.create(:user) }
     let(:device) { user.device }
-    let(:sequence) { FactoryBot.create(:sequence, device: device) }
+    let(:sequence) { FakeSequence.create( device: device) }
 
     it 'destroys a sequence' do
       sign_in user
@@ -23,7 +23,7 @@ describe Api::SequencesController do
 
     it 'doesnt destroy other peoples sequence' do
       sign_in user
-      other_persons = FactoryBot.create(:sequence)
+      other_persons = FakeSequence.create()
       input = { id: other_persons.id }
       delete :destroy, params: input
       expect(response.status).to eq(404)
@@ -32,13 +32,21 @@ describe Api::SequencesController do
     it 'allows deletion of recurive sequences' do
       sign_in user
       s = Sequences::Create.run!({device: user.device,
-                                  name: "Rick-cursion", body: [] })
+                                  name: "Rick-cursion",
+                                  body: [] })
       body = {
-        sequence: { body: [{ kind: "execute", args: { sequence_id: s[:id] } }] }
+        sequence: {
+          body: [
+            {
+              kind: "execute",
+              args: { sequence_id: s[:id] }
+            }
+          ]
+        }
       }.to_json
 
       patch :update,
-            params: {id: s[:id] },
+            params: { id: s[:id] },
             body: body,
             as: :json
 

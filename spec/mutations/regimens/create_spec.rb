@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe Regimens::Create do
   it 'Builds a regimen' do
-    seq1 = FactoryBot.create(:sequence)
-    seq2 = FactoryBot.create(:sequence, device: seq1.device)
+    seq1 = FakeSequence.create()
+    seq2 = FakeSequence.create( device: seq1.device)
     device = seq1.device
     optns = {
       device: device,
