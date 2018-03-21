@@ -29,7 +29,8 @@ module Sequences
         params = {sequence: sequence, args: args || {}, body: body || []}
         CeleryScript::StoreCelery.run!(params)
       end
-      CeleryScript::FetchCelery.run!(sequence: sequence.reload)
+      sequence.broadcast! # We must manually sync this resource.
+      CeleryScript::FetchCelery.run!(sequence: sequence)
     rescue ActiveRecord::RecordInvalid => e
       add_error :other, :unknown, (e.try(:message) || UNKNOWN)
     end

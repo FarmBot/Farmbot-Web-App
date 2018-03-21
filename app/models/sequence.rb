@@ -58,10 +58,6 @@ class Sequence < ApplicationRecord
     self.kind            ||= "sequence"
   end
 
-  def self.random
-    Sequence.order("RANDOM()").first
-  end
-
   def delete_nodes_too
     Sequence.transaction do
       PrimaryNode.where(sequence_id: self.id).destroy_all
@@ -80,14 +76,13 @@ class Sequence < ApplicationRecord
     yield(sequences) if sequences.count > 0
   end
 
+  def broadcast?
+    false unless destroyed?
+  end
+
   # Special serialization required for auto sync.
   # See ApplicationRecord
   def body_as_json
-    if destroyed?
-      return nil
-    else
-      puts "Fix this:"
-      return {this_is: "NOT OK!"} #CeleryScript::FetchCelery.run!(sequence: self)
-    end
+    return destroyed? ? nil : CeleryScript::FetchCelery.run!(sequence: self)
   end
 end

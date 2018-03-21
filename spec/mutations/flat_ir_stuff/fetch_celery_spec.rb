@@ -41,14 +41,14 @@ describe CeleryScript::FetchCelery do
         .to(eq(expect_body), "BAD BODY_ID: #{inspected.kind}")
     end
 
-    expected[:body]
-      .each_with_index do |item, index|
-        x = actual[:body][index]
-        y = expected[:body][index]
-        expect(HashDiff.diff(x, y)).to eq([])
-      end
-      expected[:args][:locals][:body] ||= []
-      actual[:args][:locals][:body]   ||= []
-      expect(HashDiff.diff(actual, expected)).to eq([])
+    expected[:body].each_with_index do |item, index|
+      x = actual[:body][index]
+      y = expected[:body][index]
+      expect(HashDiff.diff(x, y)).to eq([])
+    end
+    expected[:args][:locals][:body] ||= []
+    actual[:args][:locals][:body]   ||= []
+    comparison = [actual, expected].map{|x| x.except("updated_at", "created_at") }
+    expect(HashDiff.diff(*comparison)).to eq([])
   end
 end

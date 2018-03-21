@@ -10,7 +10,6 @@ describe Sensors::Destroy do
   end
 
   it "doesn't destroy a sensor if it's in use" do
-    puts "Boom"
     FakeSequence.create(device: sensor.device,
                         body: [{
                           kind: "read_pin",

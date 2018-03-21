@@ -27,7 +27,9 @@ module Sequences
         x = CeleryScript::FirstPass.run!(sequence: seq,
                                          args: args || {},
                                          body: body || [])
-        CeleryScript::FetchCelery.run!(sequence: seq.reload) # Perf nightmare?
+        result = CeleryScript::FetchCelery.run!(sequence: seq)
+        seq.broadcast! # We must manually sync this resource.
+        result
       end
     end
   end
