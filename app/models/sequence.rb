@@ -76,12 +76,22 @@ class Sequence < ApplicationRecord
     yield(sequences) if sequences.count > 0
   end
 
+  def manually_sync!
+    device.auto_sync_transaction { broadcast! } if device
+  end
+
+  # THIS IS AN OVERRIDE - See Sequence#body_as_json
   def broadcast?
     false unless destroyed?
   end
 
-  # Special serialization required for auto sync.
-  # See ApplicationRecord
+  # THIS IS AN OVERRIDE - Special serialization required for auto sync.
+  # When a sequence is created, we save it to the database to create a primary
+  # key, then we iterate over `EdgeNode` and `PrimaryNode`s, assigning that
+  # sequence_id as we go.
+  # The problem is that the auto-sync mechanism in the app thinks the Sequence
+  # is ready to broadcast as soon as it is created. It isn't. It needs to get
+  # "linked" with sequence nodes before it can be broadcasted.
   def body_as_json
     return destroyed? ? nil : CeleryScript::FetchCelery.run!(sequence: self)
   end

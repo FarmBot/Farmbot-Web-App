@@ -28,7 +28,7 @@ module Sequences
                                          args: args || {},
                                          body: body || [])
         result = CeleryScript::FetchCelery.run!(sequence: seq)
-        seq.broadcast! # We must manually sync this resource.
+        seq.manually_sync! # We must manually sync this resource.
         result
       end
     end
