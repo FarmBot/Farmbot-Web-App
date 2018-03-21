@@ -20,13 +20,14 @@ module Sequences
 
     def execute
       ActiveRecord::Base.transaction do
-          seq = Sequence.create!(inputs
-                                  .merge(migrated_nodes: true)
-                                  .without(:body, :args, "body", "args"))
-          CeleryScript::FirstPass.run!( sequence: seq,
-                                        args: args || {},
-                                        body: body || [])
-          CeleryScript::FetchCelery.run!(sequence: seq.reload) # Perf nightmare?
+        p = inputs
+          .merge(migrated_nodes: true)
+          .without(:body, :args, "body", "args")
+        seq = Sequence.create!(p)
+        x = CeleryScript::FirstPass.run!(sequence: seq,
+                                         args: args || {},
+                                         body: body || [])
+        CeleryScript::FetchCelery.run!(sequence: seq.reload) # Perf nightmare?
       end
     end
   end

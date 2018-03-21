@@ -86,7 +86,8 @@ class Sequence < ApplicationRecord
     if destroyed?
       return nil
     else
-      return CeleryScript::FetchCelery.run!(sequence: self)
+      puts "Fix this:"
+      return {this_is: "NOT OK!"} #CeleryScript::FetchCelery.run!(sequence: self)
     end
   end
 end

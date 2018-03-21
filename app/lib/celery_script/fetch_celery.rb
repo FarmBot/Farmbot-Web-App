@@ -102,7 +102,7 @@ module CeleryScript
     end
 
     def validate
-      sequence.reload
+      raise "NO!" unless entry_node
       # A sequence lacking a `sequence` node is a syntax error.
       # This should never show up in the frontend, but *is* helpful for devs
       # when debugging.

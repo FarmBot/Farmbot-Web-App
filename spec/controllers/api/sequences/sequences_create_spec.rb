@@ -176,16 +176,15 @@ describe Api::SequencesController do
       point = FactoryBot.create(:point, device: user.device)
       PinBinding.destroy_all
       Sequence.destroy_all
+      EdgeNode.destroy_all
+      PrimaryNode.destroy_all
       HAS_POINTS["body"][0]["args"]["location"]["args"]["pointer_id"] =
         point.id
       sign_in user
-      input = { name: "Scare Birds",
-                body: HAS_POINTS["body"] }
+      input = { name: "Scare Birds", body: HAS_POINTS["body"] }
       sequence_body_for(user)
       before =  EdgeNode.where(kind: "pointer_id").count
-      post :create,
-          body: input.to_json,
-          params: {format: :json}
+      post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(200)
       now = EdgeNode.where(kind: "pointer_id").count
       expect(now).to be > before

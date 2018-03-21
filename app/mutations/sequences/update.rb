@@ -3,6 +3,7 @@ module Sequences
     include CeleryScriptValidators
     using CanonicalCeleryHelpers
     UNKNOWN = "Unknown validation issues."
+    BLACKLIST = [:sequence, :device, :args, :body]
 
     required do
       model :device, class: Device
@@ -24,7 +25,7 @@ module Sequences
     def execute
       ActiveRecord::Base.transaction do
         sequence.migrated_nodes = true
-        sequence.update_attributes!(inputs.except(:sequence, :device))
+        sequence.update_attributes!(inputs.except(*BLACKLIST))
         params = {sequence: sequence, args: args || {}, body: body || []}
         CeleryScript::StoreCelery.run!(params)
       end
