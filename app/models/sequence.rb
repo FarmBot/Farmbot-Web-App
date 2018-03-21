@@ -3,7 +3,6 @@
 # most of the functionality of a programming language such a variables and
 # conditional logic.
 class Sequence < ApplicationRecord
-  self.ignored_columns = %w(body args)
   # This number (YYYYMMDD) helps us prepare for the future by keeping things
   # versioned. We can use it as a means of identifying legacy sequences when
   # breaking changes happen.
@@ -12,26 +11,6 @@ class Sequence < ApplicationRecord
   SCOPE_DECLARATION = { kind: "scope_declaration", args: {} }
   DEFAULT_ARGS      = { locals:      SCOPE_DECLARATION,
                         version:     LATEST_VERSION }
-  # Does some extra magic for serialized columns for us, such as providing a
-  # default value and making hashes have indifferent access.
-  class CustomSerializer
-    def initialize(default)
-      @default = default
-    end
-
-    def load(value)
-      output = value ? YAML.load(value) : @default.new
-      if(output.respond_to?(:with_indifferent_access))
-        return output.with_indifferent_access
-      else
-        return output.map(&:with_indifferent_access)
-      end
-    end
-
-    def dump(value)
-      YAML.dump(value || @default.new)
-    end
-  end
 
   COLORS = %w(blue green yellow orange purple pink gray red)
   include CeleryScriptSettingsBag
@@ -41,8 +20,6 @@ class Sequence < ApplicationRecord
   has_many  :regimen_items
   has_many  :primary_nodes,         dependent: :destroy
   has_many  :edge_nodes,            dependent: :destroy
-  serialize :body, CustomSerializer.new(Array)
-  serialize :args, CustomSerializer.new(Hash)
 
   # allowable label colors for the frontend.
   [ :name, :kind ].each { |n| validates n, presence: true }
