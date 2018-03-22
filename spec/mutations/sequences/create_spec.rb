@@ -85,7 +85,7 @@ describe Sequences::Create do
       ]
     }
     seq = Sequences::Create.run!(app)
-    expect(seq[:body].first[:body].first["kind"]).to eq("channel")
+    expect(seq.dig(:body, 0, :body, 0, "kind")).to eq("channel")
     expect(seq[:body].dig(0, :args, :message)).to eq("Hello, world!")
   end
 

@@ -9,7 +9,7 @@ module Devices
       Pair[:images,       ImageSerializer],
       Pair[:regimens,     RegimenSerializer],
       Pair[:peripherals,  PeripheralSerializer],
-      Pair[:sequences,    SequenceSerializer],
+      # Pair[:sequences,    SequenceSerializer],
       Pair[:farm_events,  FarmEventSerializer],
       Pair[:tools,        ToolSerializer],
       Pair[:points,       PointSerializer],

@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Sequences::Delete do
-  let(:sequence)     { FactoryBot.create(:sequence)  }
+  let(:sequence)     { FakeSequence.create()  }
 
   it "Cant delete sequences in use by farm events" do
     FactoryBot.create(:farm_event, executable: sequence)

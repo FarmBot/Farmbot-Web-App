@@ -8,7 +8,6 @@ describe Api::DevicesController do
               :images,
               :regimens,
               :peripherals,
-              :sequences,
               :farm_events,
               :tools,
               :points,

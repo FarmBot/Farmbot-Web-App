@@ -13,10 +13,10 @@ describe Api::SequencesController do
 
     it 'lists all sequences for a user' do
       sign_in user
-      sequences = FactoryBot
-                    .create_list(:sequence, 2, device: user.device)
-                    .map(&:id)
-                    .sort
+      sequences = 0
+                  .upto(1)
+                  .map { FakeSequence.create(device: user.device).id }
+                  .sort
       process :index, method: :get
       expect(response.status).to eq(200)
       expect(json.length).to eq(2)

@@ -14,7 +14,6 @@ const fn: MW =
           const state = store.getState();
           const device = maybeGetDevice(state.resources.index);
           if (device) {
-            console.log("Its working");
             window
               .Rollbar
               .configure({

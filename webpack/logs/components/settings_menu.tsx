@@ -16,7 +16,7 @@ interface LogSettingRecord {
   tooltip: string;
 }
 
-const SEQUENCE_LOG_SETTINGS: LogSettingRecord[] = [
+const SEQUENCE_LOG_SETTINGS = (): LogSettingRecord[] => [
   {
     label: t("Begin"),
     setting: "sequence_init_log",
@@ -34,7 +34,7 @@ const SEQUENCE_LOG_SETTINGS: LogSettingRecord[] = [
   }
 ];
 
-const FIRMWARE_LOG_SETTINGS: LogSettingRecord[] = [
+const FIRMWARE_LOG_SETTINGS = (): LogSettingRecord[] => [
   {
     label: t("Sent"),
     setting: "firmware_output_log",
@@ -106,8 +106,8 @@ export const LogsSettingsMenu = (props: LogsSettingsMenuProps) => {
   };
   return <div className={"logs-settings-menu"}>
     {t("Create logs for sequence:")}
-    {SEQUENCE_LOG_SETTINGS.map(p => <LogSettingRow key={p.setting} {...p} />)}
+    {SEQUENCE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
     {t("Firmware Logs:")}
-    {FIRMWARE_LOG_SETTINGS.map(p => <LogSettingRow key={p.setting} {...p} />)}
+    {FIRMWARE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
   </div>;
 };

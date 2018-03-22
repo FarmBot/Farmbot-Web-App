@@ -10,7 +10,7 @@ describe Api::SequencesController do
 
     it 'doesnt allow nonsense in `sequence.args.locals`' do
       sign_in user
-      sequence = FactoryBot.create(:sequence, device: user.device)
+      sequence = FakeSequence.create( device: user.device)
       input = { id: sequence.id,
                 sequence: { name: "Wrong `locals` declaration",
                             body: [],
@@ -23,7 +23,7 @@ describe Api::SequencesController do
 
     it 'updates existing sequences' do
       sign_in user
-      sequence = FactoryBot.create(:sequence, device: user.device)
+      sequence = FakeSequence.create( device: user.device)
       input = { sequence: { name: "Scare Birds" } }
       params = { id: sequence.id }
       patch :update,

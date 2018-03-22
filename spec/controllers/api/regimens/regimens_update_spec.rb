@@ -6,7 +6,7 @@ describe Api::RegimensController do
 
   describe '#update' do
     let(:user) { FactoryBot.create(:user) }
-    let(:sequence) { FactoryBot.create(:sequence, device: user.device) }
+    let(:sequence) { FakeSequence.create( device: user.device) }
     it 'updates an old regimen' do
       sign_in user
 
