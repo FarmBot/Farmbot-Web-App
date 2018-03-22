@@ -15,7 +15,7 @@ gem "rack-attack"
 gem "paperclip"
 gem "figaro"
 gem "fog-google", git: "https://github.com/fog/fog-google"
-gem "pg", "0.21.0" # TODO: Why can't I upgrade to 1.0.0?
+gem "pg" # , "0.21.0" # TODO: Why can't I upgrade to 1.0.0?
 gem "polymorphic_constraints"
 gem "tzinfo" # For validation of user selected timezone names
 gem "foreman"
