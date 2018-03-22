@@ -165,7 +165,7 @@ GEM
     logging (2.2.2)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
-    loofah (2.2.0)
+    loofah (2.2.2)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.0)
@@ -183,7 +183,7 @@ GEM
     multipart-post (2.0.0)
     mutations (0.8.1)
       activesupport
-    nio4r (2.2.0)
+    nio4r (2.3.0)
     nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
     orm_adapter (0.5.0)
@@ -194,7 +194,7 @@ GEM
       mime-types
       mimemagic (~> 0.3.0)
       terrapin (~> 0.6.0)
-    pg (0.21.0)
+    pg (1.0.0)
     polymorphic_constraints (1.0.0)
       rails
     pry (0.11.3)
@@ -242,7 +242,7 @@ GEM
       method_source
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
-    rake (12.3.0)
+    rake (12.3.1)
     representable (3.0.4)
       declarative (< 0.1.0)
       declarative-option (< 0.2.0)
@@ -293,7 +293,7 @@ GEM
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
-    skylight (1.5.1)
+    skylight (1.6.0)
       activesupport (>= 3.0.0)
     sprockets (3.7.1)
       concurrent-ruby (~> 1.0)
@@ -350,7 +350,7 @@ DEPENDENCIES
   letter_opener
   mutations
   paperclip
-  pg (= 0.21.0)
+  pg
   polymorphic_constraints
   pry
   pry-rails
