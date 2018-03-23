@@ -3,10 +3,11 @@ import { semverCompare, SemverResult, MinVersionOverride } from "../util";
 import { Content } from "../constants";
 import { Dictionary } from "lodash";
 
-const IDEAL_VERSION = [6, 3, 1].join(".");
+const IDEAL_VERSION =
+  globalConfig.FBOS_END_OF_LIFE_VERSION || MinVersionOverride.NEVER;
 
-/** Returns a function that, when given a version string, (possibly) reminds the
- * user to upgrade FBOS versions. */
+/** Returns a function that, when given a version string, (possibly) warns the
+ * user to upgrade FBOS versions before it hits end of life. */
 export function createReminderFn() {
   /** FBOS Version can change during the app lifecycle. We only want one
    * reminder per FBOS version change. */
