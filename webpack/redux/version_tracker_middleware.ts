@@ -20,7 +20,8 @@ const fn: MW =
   (store: Store<Everything>) =>
     (dispatch: Dispatch<object>) =>
       (action: any) => {
-        const fbos = getVersionFromState(store.getState());
+        const fbos = getVersionFromState(store.getState())
+          || MinVersionOverride.ALWAYS;
         window.Rollbar && window.Rollbar.configure({ payload: { fbos } });
         return dispatch(action);
       };
