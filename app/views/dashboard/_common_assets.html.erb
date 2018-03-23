@@ -5,7 +5,7 @@
 <script>
 // IMPORTANT!!!!
 // ALWAYS LOAD THIS *FIRST*
-window.globalConfig = <%= raw($FRONTEND_SHARED_DATA) %> // SEE COMMENTS!;
+window.globalConfig = <%= raw(@global_config) %> // SEE COMMENTS!;
 // READ COMMENT ABOVE
 window.process = {
   env: {
