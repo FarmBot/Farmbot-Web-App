@@ -1,16 +1,19 @@
 import { EnvName } from "./interfaces";
-import { determineInstalledOsVersion } from "../util/index";
+import { determineInstalledOsVersion, MinVersionOverride } from "../util/index";
 import { maybeGetDevice } from "../resources/selectors";
 import { MW } from "./middlewares";
 import { Everything } from "../interfaces";
 import { Store } from "redux";
 import { Dispatch } from "redux";
+import { createReminderFn } from "./upgrade_reminder";
 
-const NULL_VERSION = "NONE";
+const maybeRemindUserToUpdate = createReminderFn();
 
 function getVersionFromState(state: Everything) {
   const device = maybeGetDevice(state.resources.index);
-  return determineInstalledOsVersion(state.bot, device) || NULL_VERSION;
+  const v =
+    determineInstalledOsVersion(state.bot, device) || MinVersionOverride.ALWAYS;
+  return maybeRemindUserToUpdate(v);
 }
 
 const fn: MW =

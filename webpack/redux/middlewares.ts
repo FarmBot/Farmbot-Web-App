@@ -15,10 +15,7 @@ export interface MW extends Middleware {
       (action: ReduxAction<object>) => void;
 }
 
-export interface MiddlewareConfig {
-  fn: MW;
-  env: EnvName;
-}
+export interface MiddlewareConfig { fn: MW; env: EnvName; }
 
 /** To make it easier to manage all things watching the state tree,
  * we keep subscriber functions in this array. */
