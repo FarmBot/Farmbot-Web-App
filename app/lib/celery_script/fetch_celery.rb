@@ -110,6 +110,10 @@ module CeleryScript
 
     def execute
       canonical_form = misc_fields.merge!(recurse_into_node(entry_node))
+      canonical_form[:in_use] = \
+        EdgeNode.where(kind: "sequence_id", value: sequence.id).exists? ||
+        RegimenItem.where(sequence_id: sequence.id).exists? ||
+        FarmEvent.where(executable: sequence).exists?
       return HashWithIndifferentAccess.new(canonical_form)
     end
   end
