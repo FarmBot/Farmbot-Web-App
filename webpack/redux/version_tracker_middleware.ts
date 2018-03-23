@@ -6,23 +6,19 @@ import { Everything } from "../interfaces";
 import { Store } from "redux";
 import { Dispatch } from "redux";
 
+const NULL_VERSION = "NONE";
+
+function getVersionFromState(state: Everything) {
+  const device = maybeGetDevice(state.resources.index);
+  return determineInstalledOsVersion(state.bot, device) || NULL_VERSION;
+}
+
 const fn: MW =
   (store: Store<Everything>) =>
     (dispatch: Dispatch<object>) =>
       (action: any) => {
-        if (window.Rollbar) {
-          const state = store.getState();
-          const device = maybeGetDevice(state.resources.index);
-          if (device) {
-            window
-              .Rollbar
-              .configure({
-                payload: {
-                  fbos: determineInstalledOsVersion(state.bot, device) || "NONE"
-                }
-              });
-          }
-        }
+        const fbos = getVersionFromState(store.getState());
+        window.Rollbar && window.Rollbar.configure({ payload: { fbos } });
         return dispatch(action);
       };
 
