@@ -463,6 +463,9 @@ export namespace Content {
     encoders or endstops enabled for the chosen axis. Enable endstops or
     encoders from the Device page for: `);
 
+  export const IN_USE =
+    trim(`Used in another resource. Protected from deletion.`);
+
   // Regimens
   export const NO_REGIMEN_SELECTED =
     trim(`No Regimen selected. Click one in the Regimens panel to edit, or
