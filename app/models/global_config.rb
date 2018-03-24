@@ -18,11 +18,15 @@ class GlobalConfig < ApplicationRecord
   # Memoized version of every GlobalConfig, with key/values layed out in a hash.
   # Database values prempt values set in ::DEFAULTS
   def self.dump
-    @dump ||= reload
+    @dump ||= reload_
   end
 
-  def self.reload
-    @dump = DEFAULTS
-      .merge(GlobalConfig.all.map{ |x| {x.key => x.value} }.reduce({}, :merge))
+  def self.reload_
+    config_hash = GlobalConfig
+      .all
+      .map(&:reload)
+      .map{ |x| {x.key => x.value} }
+      .reduce({}, :merge)
+    @dump = DEFAULTS.merge(config_hash)
   end
 end
