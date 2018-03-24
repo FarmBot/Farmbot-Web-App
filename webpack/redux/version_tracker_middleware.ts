@@ -13,15 +13,15 @@ function getVersionFromState(state: Everything) {
   const device = maybeGetDevice(state.resources.index);
   const v =
     determineInstalledOsVersion(state.bot, device) || MinVersionOverride.ALWAYS;
-  return maybeRemindUserToUpdate(v);
+  maybeRemindUserToUpdate(v);
+  return v;
 }
 
 const fn: MW =
   (store: Store<Everything>) =>
     (dispatch: Dispatch<object>) =>
       (action: any) => {
-        const fbos = getVersionFromState(store.getState())
-          || MinVersionOverride.ALWAYS;
+        const fbos = getVersionFromState(store.getState());
         window.Rollbar && window.Rollbar.configure({ payload: { fbos } });
         return dispatch(action);
       };
