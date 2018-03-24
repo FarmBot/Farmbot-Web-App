@@ -23,7 +23,6 @@ class GlobalConfig < ApplicationRecord
 
   def self.reload
     @dump = DEFAULTS
-      .merge({})
       .merge(GlobalConfig.all.map{ |x| {x.key => x.value} }.reduce({}, :merge))
   end
 end
