@@ -14,7 +14,7 @@ class LogDeliveryMailer < ApplicationMailer
       @emails      = device.users.pluck(:email)
       @messages    = logs.map(&:message)
       @device_name = device.name || "Farmbot"
-      mail(to: @emails, subject: '🌱 New message from #{@device_name}!')
+      mail(to: @emails, subject: "🌱 New message from #{@device_name}!")
       ld.update_all(sent_at: Time.now)
     end
   end
