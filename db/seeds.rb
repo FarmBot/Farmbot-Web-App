@@ -55,7 +55,7 @@ unless Rails.env == "production"
         x: rand(40...970),
         y: rand(40...470),
         radius: rand(10...50),
-        name: Haikunator.haikunate,
+        name: Faker::StarWars.call_sign,
         pointer: Plant.new(
           openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample
         ))
