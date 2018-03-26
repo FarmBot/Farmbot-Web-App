@@ -46,7 +46,7 @@ describe Api::PinBindingsController do
       end
     end
 
-    it 'weed out bad sequence ids' do
+    it 'weeds out bad sequence ids' do
       sign_in user
       s     = FakeSequence.create( device: device)
       input = { pin_num: 1, sequence_id: 0 }

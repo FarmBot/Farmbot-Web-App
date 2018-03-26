@@ -7,7 +7,7 @@ describe Devices::Update do
 
   it 'updates an existing device' do
     previous_name = device.name
-    p = { last_saw_mq: Time.now.utc, name:  Haikunator.haikunate(1000) }
+    p = { last_saw_mq: Time.now.utc, name: "Farmbot" }
     Devices::Update.run!({device: device}, p)
     device.reload
     expect(device.name).to eq(p[:name])
