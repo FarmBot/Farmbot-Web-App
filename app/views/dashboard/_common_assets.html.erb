@@ -3,15 +3,11 @@
 <meta name="Expires" content="0">
 <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 <script>
-// IMPORTANT!!!!
-// ALWAYS LOAD THIS *FIRST*
+<%# IMPORTANT!!!! %>
+<%# ALWAYS LOAD THIS *FIRST* %>
 window.globalConfig = <%= raw($FRONTEND_SHARED_DATA) %> // SEE COMMENTS!;
-// READ COMMENT ABOVE
-window.process = {
-  env: {
-    NODE_ENV: <%= raw(Rails.env.inspect) %>
-  }
-}
+<%# READ COMMENT ABOVE %>
+window.process = { env: { NODE_ENV: <%= raw(Rails.env.inspect) %> } };
 </script>
 <%= render "addons" %>
 <meta content="farmbot-version" name="<%= %>%">
