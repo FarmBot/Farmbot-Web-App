@@ -440,6 +440,10 @@ export namespace Content {
     trim(`FarmBot sent a malformed message. You may need to upgrade
     FarmBot OS. Please upgrade FarmBot OS and log back in.`);
 
+  export const OLD_FBOS_REC_UPGRADE = trim(`Your version of FarmBot OS is
+    outdated and will soon no longer be supported. Please update your device as
+    soon as possible.`);
+
   export const EXPERIMENTAL_WARNING =
     trim(`Warning! This is an EXPERIMENTAL feature. This feature may be
     broken and may break or otherwise hinder your usage of the rest of the

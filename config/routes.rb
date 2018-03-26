@@ -38,6 +38,8 @@ FarmBot::Application.routes.draw do
       post :control_certificate, on: :collection
     end
 
+    get "/global_config" => "global_config#show", as: :global_config
+
     # Make life easier on API users by not adding special rules for singular
     # resources.
     # Might be safe to remove now with the advent of TaggedResource.kind
