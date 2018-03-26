@@ -3,10 +3,10 @@
 <meta name="Expires" content="0">
 <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 <script>
-// IMPORTANT!!!!
-// ALWAYS LOAD THIS *FIRST*
+<%# IMPORTANT!!!! %>
+<%# ALWAYS LOAD THIS *FIRST* %>
 window.globalConfig = <%= raw(@global_config) %> // SEE COMMENTS!;
-// READ COMMENT ABOVE
+<%# READ COMMENT ABOVE %>
 window.process = {
   env: {
     NODE_ENV: <%= raw(Rails.env.inspect) %>

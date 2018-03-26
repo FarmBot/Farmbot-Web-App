@@ -28,6 +28,7 @@ describe Api::RegimensController do
       expect(RegimenItem.count).to be > old_item_count
       expect(json[:name]).to eq(name)
       expect(json[:color]).to eq(color)
+      expect(json[:in_use]).to eq(false)
     end
   end
 end
