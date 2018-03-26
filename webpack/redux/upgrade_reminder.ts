@@ -4,7 +4,7 @@ import { Content } from "../constants";
 import { Dictionary } from "lodash";
 
 const IDEAL_VERSION =
-  globalConfig.FBOS_END_OF_LIFE_VERSION || MinVersionOverride.NEVER;
+  globalConfig.FBOS_END_OF_LIFE_VERSION || MinVersionOverride.ALWAYS;
 
 /** Returns a function that, when given a version string, (possibly) warns the
  * user to upgrade FBOS versions before it hits end of life. */
