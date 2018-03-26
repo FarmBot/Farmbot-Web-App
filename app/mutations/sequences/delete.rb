@@ -57,7 +57,6 @@ module Sequences
       if items.empty?
         ""
       else
-        binding.pry if items.present? && !items.first.respond_to?(:fancy_name)
         THE_FOLLOWING % {
           resource: FarmEvent.table_name.humanize,
           items: items.map(&:fancy_name).join(", ")
