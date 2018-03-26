@@ -13,9 +13,7 @@ class GlobalConfig < ApplicationRecord
                     PRIV_URL:                 ENV.fetch("PRIV_URL", ""),
                     LONG_REVISION:            LONG_REVISION,
                     SHORT_REVISION:           LONG_REVISION.first(8),
-                    # In case I forget to set it in the DB.
-                    # Easily overridden. - RC
-                    FBOS_END_OF_LIFE_VERSION: "6.0.1" }
+                    FBOS_END_OF_LIFE_VERSION: "0.0.0" }
 
   # Memoized version of every GlobalConfig, with key/values layed out in a hash.
   # Database values prempt values set in ::DEFAULTS
