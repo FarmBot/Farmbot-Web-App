@@ -28,16 +28,12 @@ private
     end
 
     def handle_single_log
-      outcome = new_log(raw_json)
+      outcome = Logs::Create.run(raw_json, device: current_device)
       if outcome.success?
         outcome.result.save!
         maybe_deliver(outcome.result)
       end
       mutate outcome
-    end
-
-    def new_log(input)
-      Logs::Create.run(input, device: current_device)
     end
 
     def maybe_deliver(log_or_logs)

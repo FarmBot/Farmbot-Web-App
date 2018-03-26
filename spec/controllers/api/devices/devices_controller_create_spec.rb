@@ -11,7 +11,7 @@ describe Api::DevicesController do
 
     it 'creates a new device for a user' do
       sign_in user
-      params     = { user_id: user.id, name: Haikunator.haikunate(1000) }
+      params     = { user_id: user.id, name: Faker::StarWars.call_sign }
       post :create, params: params
       expect(response.status).to eq(200)
       resp       = JSON.parse(response.body)

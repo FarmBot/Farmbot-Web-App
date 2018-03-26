@@ -147,6 +147,22 @@ describe Api::LogsController do
       end
     end
 
+    it 'delivers emails for logs marked as `fatal_email`' do
+      message = "KABOOOOMM - SYSTEM ERROR!"
+      sign_in user
+      empty_mail_bag
+      body         = { meta: { x: 1, y: 2, z: 3, type: "info" },
+                       channels: ["fatal_email"],
+                       message: message }.to_json
+      run_jobs_now do
+        post :create, body: body, params: {format: :json}
+        expect(response.status).to eq(200)
+        expect(last_email).to be
+        expect(last_email.body.to_s).to include(message)
+        expect(last_email.to).to include(user.email)
+      end
+    end
+
     it "handles bug that Connor reported" do
       sign_in user
       empty_mail_bag
