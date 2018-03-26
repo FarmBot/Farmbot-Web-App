@@ -55,6 +55,7 @@ export interface Regimen {
   name: string;
   color: Color;
   regimen_items: RegimenItem[];
+  in_use?: boolean;
 }
 
 export interface RegimenListItemProps {
