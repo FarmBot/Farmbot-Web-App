@@ -16,7 +16,7 @@ describe("version tracker middleware", () => {
     };
     versionChangeMiddleware.fn(fakeStore as Mw)(jest.fn())({ type: "ANY", payload: {} });
     expect(window.Rollbar.configure)
-      .toHaveBeenCalledWith({ "payload": { "fbos": "NONE" } });
+      .toHaveBeenCalledWith({ "payload": { "fbos": "0.0.0" } });
     window.Rollbar = before;
   });
 });
