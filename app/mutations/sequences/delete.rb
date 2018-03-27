@@ -54,14 +54,10 @@ module Sequences
     end
 
     def format_dep_list(klass, items)
-      if items.empty?
-        ""
-      else
-        THE_FOLLOWING % {
-          resource: FarmEvent.table_name.humanize,
-          items: items.map(&:fancy_name).join(", ")
-        }
-      end
+      THE_FOLLOWING % {
+        resource: FarmEvent.table_name.humanize,
+        items: items.map(&:fancy_name).join(", ")
+      } unless items.empty?
     end
 
     def all_deps
@@ -74,6 +70,7 @@ module Sequences
         .group_by { |x| x.class }
         .to_a
         .map  { |(klass, items)| format_dep_list(klass, items) }
+        .compact
         .join(AND)
     end
   end
