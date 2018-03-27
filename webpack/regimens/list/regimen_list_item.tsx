@@ -7,9 +7,11 @@ import {
   TaggedRegimen,
   isTaggedRegimen
 } from "../../resources/tagged_resources";
+import { t } from "i18next";
+import { Content } from "../../constants";
 
 export function RegimenListItem({ regimen, dispatch }: RegimenListItemProps) {
-  const name = regimen.body.name || "";
+  const name = (regimen.body.name || "") + (regimen.specialStatus ? " *" : "");
   const color = (regimen.body.color) || "gray";
   const style = [`block`, `full-width`, `fb-button`, `${color}`];
   lastUrlChunk() === urlFriendly(name) && style.push("active");
@@ -20,7 +22,9 @@ export function RegimenListItem({ regimen, dispatch }: RegimenListItemProps) {
     <button
       className={style.join(" ")}
       onClick={select(dispatch, regimen)}>
-      {name} {regimen.specialStatus && ("*")}
+      <label>{name}</label>
+      {regimen.body.in_use &&
+        <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
     </button>
   </Link>;
 }

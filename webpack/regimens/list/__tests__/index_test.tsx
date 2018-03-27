@@ -6,22 +6,24 @@ import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 
 describe("<RegimensList />", () => {
   function fakeProps(): RegimensListProps {
-    const regimen = fakeRegimen();
-    regimen.body.name = "Fake Regimen";
+    const regimen1 = fakeRegimen();
+    regimen1.body.name = "Fake Regimen 1";
+    const regimen2 = fakeRegimen();
+    regimen2.body.name = "Fake Regimen 2";
     return {
       dispatch: jest.fn(),
-      regimens: [regimen, regimen],
+      regimens: [regimen1, regimen2],
       regimen: undefined
     };
   }
   it("renders", () => {
-    const wrapper = mount(<RegimensList {...fakeProps() } />);
-    expect(wrapper.text()).toContain("Regimen");
-    expect(wrapper.text()).toContain("Fake Regimen Fake Regimen");
+    const wrapper = mount(<RegimensList {...fakeProps()} />);
+    ["Regimens", "Fake Regimen 1", "Fake Regimen 2"]
+      .map(string => expect(wrapper.text()).toContain(string));
   });
 
   it("sets search term", () => {
-    const wrapper = shallow(<RegimensList {...fakeProps() } />);
+    const wrapper = shallow(<RegimensList {...fakeProps()} />);
     wrapper.find("input").simulate("change",
       { currentTarget: { value: "term" } });
     expect(wrapper.state().searchTerm).toEqual("term");
