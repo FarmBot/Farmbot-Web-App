@@ -1,8 +1,10 @@
 import * as React from "react";
 import { RegimenListItemProps } from "../../interfaces";
 import { RegimenListItem } from "../regimen_list_item";
-import { render } from "enzyme";
+import { render, shallow } from "enzyme";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
+import { SpecialStatus } from "../../../resources/tagged_resources";
+import { Actions } from "../../../constants";
 
 describe("<RegimenListItem/>", () => {
   const fakeProps = (): RegimenListItemProps => {
@@ -22,6 +24,13 @@ describe("<RegimenListItem/>", () => {
     expect(html).toContain(props.regimen.body.color);
   });
 
+  it("shows unsaved data indicator", () => {
+    const props = fakeProps();
+    props.regimen.specialStatus = SpecialStatus.DIRTY;
+    const wrapper = render(<RegimenListItem {...props} />);
+    expect(wrapper.text()).toContain("Foo *");
+  });
+
   it("shows in-use indicator", () => {
     const props = fakeProps();
     props.regimen.body.in_use = true;
@@ -32,5 +41,17 @@ describe("<RegimenListItem/>", () => {
   it("doesn't show in-use indicator", () => {
     const wrapper = render(<RegimenListItem {...fakeProps()} />);
     expect(wrapper.find(".in-use").length).toEqual(0);
+  });
+
+  it("selects regimen", () => {
+    const props = fakeProps();
+    const wrapper = shallow(<RegimenListItem {...props} />);
+    wrapper.find("button").simulate("click");
+    expect(props.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_REGIMEN,
+      payload: expect.objectContaining({
+        uuid: props.regimen.uuid
+      })
+    });
   });
 });
