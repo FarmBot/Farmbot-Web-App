@@ -83,8 +83,8 @@
   }
 }
 
-.sequence-list-items {
-  margin-right: 15px;
+.sequence-list-items,
+.regimen-list {
   button {
     label {
       width: 90%;
@@ -99,6 +99,10 @@
     float: right;
     margin-top: 0.75rem;
   }
+}
+
+.sequence-list-items {
+  margin-right: 15px;
 }
 
 .sequence-list-panel,

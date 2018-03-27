@@ -73,6 +73,10 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
         c.insert(oo);
       }
     });
+    // Display empty regimens in UI so that they can be edited or deleted.
+    if (f.end_time && Object.keys(c.value).length === 0) {
+      c.insert(occurrence(moment(f.end_time), f, tz_offset_hrs, { empty: true }));
+    }
   };
 
 export let addSequenceToCalendar =
