@@ -33,7 +33,9 @@ export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) 
   }
   let { sync_status } = bot.hardware.informational_settings;
   sync_status = sync_status || "unknown";
-  const color = consistent ? (COLOR_MAPPING[sync_status] || "red") : "gray";
+  const color = !consistent && sync_status === "sync_now"
+    ? "gray"
+    : (COLOR_MAPPING[sync_status] || "red");
   const text = t(TEXT_MAPPING[sync_status] || "DISCONNECTED");
   const spinnerEl = (sync_status === "syncing") ? spinner : "";
 

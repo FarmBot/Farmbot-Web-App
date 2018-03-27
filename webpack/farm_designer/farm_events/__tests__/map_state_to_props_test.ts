@@ -240,10 +240,16 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
     expect(calendar.getAll()).toEqual(fakeRegimenFE);
   });
 
-  it("doesn't return calendar row after event is over", () => {
+  it(`returns "*Empty*" calendar row after event is over`, () => {
     const testTime = moment("2017-12-27T01:00:00.000Z");
     const calendar =
       mapResourcesToCalendar(fakeRegFEResources().index, testTime);
-    expect(calendar.getAll()).toEqual([]);
+    expect(calendar.getAll()).toEqual([{
+      "day": expect.any(Number),
+      "items": [expect.objectContaining({ "heading": "*Empty*" })],
+      "month": "Dec",
+      "sortKey": expect.any(Number),
+      "year": 17
+    }]);
   });
 });
