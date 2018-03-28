@@ -55,6 +55,9 @@ describe Api::UsersController do
     end
 
     it 'updates password' do
+      TokenIssuance.create(device: user.device,
+                           exp:    (Time.now+1.day).to_i,
+                           jti:    SecureRandom.uuid)
       sign_in user
       old_pass = user.password
       input = {
@@ -63,8 +66,10 @@ describe Api::UsersController do
         new_password_confirmation: "123456789",
         format: :json
       }
+      expect(TokenIssuance.where(device: user.device).count).to be >= 1
       patch :update, params: input
       expect(response.status).to eq(200)
+      expect(TokenIssuance.where(device: user.device).count).to be <= 1
       user.reload
       expect(user.valid_password?(old_pass)).to be_falsy
       expect(user.valid_password?("123456789")).to be_truthy
