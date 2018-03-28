@@ -2,13 +2,11 @@ class SendFactoryResetJob < ApplicationJob
   queue_as :default
 
   def perform(device)
-
-    CeleryBuilder
-      .build do |cs|
-        cs.rpc_request { cs.factory_reset(package: "farmbot_os") }
-      end
-      .dump
-    Transport.amqp_send()
-    # Do something later
+    payload = {
+      kind: "rpc_request",
+      args: { label: "FROM_API.#{SecureRandom.hex}" },
+      body: [ { kind: "factory_reset", args: { package: "farmbot_os" } } ]
+    }
+    Transport.amqp_send(payload.to_json, device.id, "from_clients")
   end
 end

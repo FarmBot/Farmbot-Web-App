@@ -24,6 +24,7 @@ module Users
       excludable = [:user]
       excludable.push(:email) unless skip_email_stuff
       user.update_attributes!(inputs.except(:user, :email))
+      SendFactoryResetJob.perform_later(user.device) if inputs[:password]
       user.reload
     end
 
