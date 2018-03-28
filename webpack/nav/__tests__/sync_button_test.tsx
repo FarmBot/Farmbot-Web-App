@@ -26,8 +26,17 @@ describe("<SyncButton/>", function () {
   it("is gray when inconsistent", () => {
     const p = fakeProps();
     p.consistent = false;
+    p.bot.hardware.informational_settings.sync_status = "sync_now";
     const result = shallow(<SyncButton {...p} />);
     expect(result.hasClass("gray")).toBeTruthy();
+  });
+
+  it("is not gray when disconnected", () => {
+    const p = fakeProps();
+    p.consistent = false;
+    p.bot.hardware.informational_settings.sync_status = "unknown";
+    const result = shallow(<SyncButton {...p} />);
+    expect(result.hasClass("gray")).toBeFalsy();
   });
 
   it("defaults to `disconnected` and `red` when uncertain", () => {
