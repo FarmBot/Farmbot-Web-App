@@ -8,17 +8,21 @@ module FarmEvents
 
     def execute
       if device.timezone
-        device
-          .farm_events
-          .where
-          .not(executable_type: "Regimen")
-          .where('end_time < ?', DateTime.now)
-          .map(&:destroy!)
-        temporary_hack
+        clean_regular_events
+        clean_regimen_events
       end
     end
 
   private
+
+    def clean_regular_events
+      device
+        .farm_events
+        .where
+        .not(executable_type: "Regimen")
+        .where('end_time < ?', DateTime.now)
+        .map(&:destroy!)
+    end
 
     def timezone
       @timezone ||= device.timezone or raise "Set Timezone Please"
@@ -30,7 +34,7 @@ module FarmEvents
 
     Info = Struct.new(:fe, :reg, :should_destroy?)
 
-    def temporary_hack
+    def clean_regimen_events
       device
         .farm_events
         .where(executable_type: "Regimen")
