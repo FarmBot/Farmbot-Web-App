@@ -28,4 +28,8 @@ class Regimen < ApplicationRecord
   def notable_changes?
     true
   end
+
+  def fancy_name
+    name
+  end
 end

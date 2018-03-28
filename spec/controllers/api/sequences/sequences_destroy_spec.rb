@@ -62,13 +62,13 @@ describe Api::SequencesController do
 
     it 'prevents deletion of sequences that are in use by pin bindings' do
       sign_in user
-      PinBindings::Create
-        .run!(device: user.device,
-              sequence_id: sequence.id,
-              pin_num: 23)
+      pb = PinBindings::Create.run!(device: user.device,
+                                    sequence_id: sequence.id,
+                                    pin_num: 23)
       delete :destroy, params: { id: sequence.id }
       expect(response.status).to eq(422)
-      expect(json[:sequence]).to eq("The following pin bindings are still relying on this sequence: pin 23")
+      expect(json[:sequence]).to include("in use")
+      expect(json[:sequence]).to include(pb.fancy_name)
     end
 
     it 'does not destroy a sequence when in use by a sequence' do
@@ -100,7 +100,8 @@ describe Api::SequencesController do
       after = EdgeNode.where(kind: "sequence_id").count
       expect(response.status).to eq(422)
       expect(before).to eq(after)
-      expect(json[:sequence]).to include("sequences are still relying on this sequence")
+      expect(json[:sequence]).to include("in use")
+      expect(json[:sequence]).to include("Dep. tracking")
     end
   end
 end
