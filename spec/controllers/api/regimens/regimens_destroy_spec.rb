@@ -8,7 +8,9 @@ describe Api::RegimensController do
 
     it 'prevents deletion of resources that are in use' do
       sign_in user
-      farm_event = FactoryBot.create(:farm_event, executable: regimen)
+      farm_event = FactoryBot.create(:farm_event,
+                                      executable: regimen,
+                                      start_time: Time.now.tomorrow)
       before     = Regimen.count
       delete :destroy, params: { id: regimen.id }
       after      = FarmEvent.count

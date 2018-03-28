@@ -35,24 +35,20 @@ describe Api::FarmEventsController do
       expect(json.keys).to include(:farm_event)
     end
 
-    it 'self destructs empty regimen events that start on the same day' do
-      # This is a demonstration of strange behavior on a very "edge" use case.
-      # It does not reflect how users would actually use the app, but I think it
-      # is worth pointing out incase implementation or usage changes in the
-      # future - RC.
+    it 'creates a one-off FarmEvent' do
       sign_in user
-      empty_regimen = FactoryBot.create(:regimen, device: user.device)
-      start_time    = (Time.now + 1.hour).to_json.gsub("\"", "")
-      input = { start_time:      start_time,
-                time_unit:       "never",
-                executable_id:   empty_regimen.id,
-                executable_type: "Regimen",
-                end_time:        "2017-06-05T18:33:04.342Z", # Gets overwritten
-                repeat:          1 }
+      r = FactoryBot.create(:regimen, device: user.device)
+      input = { "start_time": (Time.now + 1.hour).to_json.gsub("\"", ""),
+                "next_time": "2017-06-05T18:33:04.342Z",
+                "time_unit": "never",
+                "executable_id": r.id,
+                "executable_type": "Regimen",
+                "end_time": "2017-06-05T18:34:00.000Z",
+                "repeat": 1 }
       post :create, params: input
       expect(response.status).to eq(200)
       get :index
-      expect(json.length).to eq(0)
+      expect(json.length).to eq(1)
     end
 
     it 'disallows FarmEvents too far in the past' do

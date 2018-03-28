@@ -40,8 +40,11 @@ module FarmEvents
         .where(executable_type: "Regimen")
         .map do |x|
           reg_items      = x.executable.regimen_items || RegimenItem.none
-          max_offset     = (reg_items.pluck(:time_offset).max || 0)
-          should_destroy = ((x.end_time.in_time_zone(timezone).midnight + (max_offset / 1000)) < now)
+          max_offset     = (reg_items.pluck(:time_offset).max || 0) / 1000
+          local_start    = x.start_time.in_time_zone(timezone)
+          a              = local_start < now
+          b              = (local_start.midnight + max_offset) < now
+          should_destroy = a && b
           Info.new(x, x.executable, should_destroy)
         end
         .select { |x| x.should_destroy? }
