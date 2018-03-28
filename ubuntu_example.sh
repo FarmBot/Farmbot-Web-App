@@ -37,7 +37,7 @@ sudo apt-get update && sudo apt-get install yarn
 sudo apt-get install libpq-dev postgresql-contrib --yes
 
 # Install FarmBot Web App
-git clone https://github.com/FarmBot/Farmbot-Web-App --depth=10
+git clone https://github.com/FarmBot/Farmbot-Web-App --depth=10 --branch=master
 cd Farmbot-Web-App
 gem install bundler
 npm install yarn

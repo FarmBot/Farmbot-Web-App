@@ -72,4 +72,9 @@ class Sequence < ApplicationRecord
   def body_as_json
     return destroyed? ? nil : CeleryScript::FetchCelery.run!(sequence: self)
   end
+
+
+  def fancy_name
+    name
+  end
 end
