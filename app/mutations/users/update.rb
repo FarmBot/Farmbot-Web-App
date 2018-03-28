@@ -10,6 +10,9 @@ module Users
       string :password
       string :new_password
       string :new_password_confirmation
+      # Lock everyone out except for the person who requested
+      # the password change.
+      string :old_token_jti
     end
 
     def validate
@@ -24,11 +27,22 @@ module Users
       excludable = [:user]
       excludable.push(:email) unless skip_email_stuff
       user.update_attributes!(inputs.except(:user, :email))
-      SendFactoryResetJob.perform_later(user.device) if inputs[:password]
+      if inputs[:password]
+        SendFactoryResetJob.perform_later(user.device)
+        delete_all_tokens_except_this_one
+      end
       user.reload
     end
 
 private
+
+    def delete_all_tokens_except_this_one
+      TokenIssuance
+        .where(device_id: user.device.id)
+        .where
+        .not(jti: old_token_jti)
+        .destroy_all
+    end
 
     # Self hosted users will often not have an email server.
     # We can update emails immediately in those circumstances.

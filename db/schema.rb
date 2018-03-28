@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180326160853) do
+ActiveRecord::Schema.define(version: 20180328212540) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -358,12 +358,13 @@ ActiveRecord::Schema.define(version: 20180326160853) do
     t.index ["device_id"], name: "index_sequences_on_device_id"
   end
 
-  create_table "token_expirations", id: :serial, force: :cascade do |t|
-    t.string "sub"
-    t.integer "exp"
-    t.string "jti"
+  create_table "token_issuances", force: :cascade do |t|
+    t.bigint "device_id", null: false
+    t.integer "exp", null: false
+    t.string "jti", limit: 45, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_token_issuances_on_device_id"
   end
 
   create_table "tool_slots", id: :serial, force: :cascade do |t|
@@ -466,5 +467,6 @@ ActiveRecord::Schema.define(version: 20180326160853) do
   add_foreign_key "primary_nodes", "sequences"
   add_foreign_key "sensor_readings", "devices"
   add_foreign_key "sensors", "devices"
+  add_foreign_key "token_issuances", "devices"
   add_foreign_key "tool_slots", "tools"
 end
