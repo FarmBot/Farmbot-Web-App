@@ -25,4 +25,8 @@ class FarmEvent < ApplicationRecord
   def self.if_still_using(executable)
     yield if self.where(executable: executable).any?
   end
+
+  def fancy_name
+    executable.fancy_name
+  end
 end
