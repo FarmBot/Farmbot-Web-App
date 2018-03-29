@@ -5,7 +5,7 @@ module Sequences
     AND           = " and"
     # Override `THE_FOLLOWING` here.
     SPECIAL_CASES = {
-      FarmEvent => "%{resource} started on the following dates: %{items}"
+      FarmEvent => " %{resource} on the following dates: %{items}"
     }
 
     required do
