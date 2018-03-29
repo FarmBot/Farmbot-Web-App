@@ -3,6 +3,10 @@ module Sequences
     IN_USE        = "Sequence is still in use by"
     THE_FOLLOWING = " the following %{resource}: %{items}"
     AND           = " and"
+    # Override `THE_FOLLOWING` here.
+    SPECIAL_CASES = {
+      FarmEvent => "%{resource} started on the following dates: %{items}"
+    }
 
     required do
       model :device, class: Device
@@ -54,7 +58,7 @@ module Sequences
     end
 
     def format_dep_list(klass, items)
-      THE_FOLLOWING % {
+      (SPECIAL_CASES[klass] || THE_FOLLOWING) % {
         resource: klass.table_name.humanize,
         items: items.map(&:fancy_name).uniq.join(", ")
       } unless items.empty?

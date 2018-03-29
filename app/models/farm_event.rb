@@ -8,6 +8,10 @@ class FarmEvent < ApplicationRecord
   UNITS_OF_TIME      << NEVER
   EXECUTABLE_CLASSES = [Sequence, Regimen]
   FE_USE             = "still in use by some farm events"
+
+  WITH_YEAR          = "%m/%d/%y"
+  NO_YEAR            = "%m/%d"
+
   belongs_to :executable, polymorphic: true
   validates  :executable, presence: true
   belongs_to :device
@@ -27,6 +31,6 @@ class FarmEvent < ApplicationRecord
   end
 
   def fancy_name
-    executable.fancy_name
+    start_time.strftime(start_time.year == Time.now.year ? NO_YEAR : WITH_YEAR)
   end
 end
