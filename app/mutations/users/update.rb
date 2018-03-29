@@ -10,9 +10,6 @@ module Users
       string :password
       string :new_password
       string :new_password_confirmation
-      # Lock everyone out except for the person who requested
-      # the password change.
-      string :old_token_jti
     end
 
     def validate
@@ -37,10 +34,12 @@ module Users
 private
 
     def delete_all_tokens_except_this_one
+      # Lock everyone out except for the person who requested
+      # the password change.
       TokenIssuance
         .where(device_id: user.device.id)
         .where
-        .not(jti: old_token_jti)
+        .not(jti: (RequestStore[:jwt]||{})[:jti])
         .destroy_all
     end
 

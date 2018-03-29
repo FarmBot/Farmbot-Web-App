@@ -36,17 +36,13 @@ module Api
         .as_json
         .merge!(params.as_json["user"] || {})
         .deep_symbolize_keys
-      jti = RequestStore
-              .store
-              .dig(:jwt, :jti) || "NONE FOUND"
       {email:                     user[:email],
        name:                      user[:name],
        password:                  user[:password],
        password_confirmation:     user[:password_confirmation],
        new_password:              user[:new_password],
        new_password_confirmation: user[:new_password_confirmation],
-       agree_to_terms:            user[:agree_to_terms],
-       jti:                       jti}
+       agree_to_terms:            user[:agree_to_terms]}
     end
   end
 end
