@@ -2,14 +2,16 @@ module Api
   class TokensController < Api::AbstractController
     skip_before_action :authenticate_user!, only: :create
     skip_before_action :check_fbos_version, only: :create
+    before_action      :clean_out_old_tokens
+
     CREDS        = Auth::CreateTokenFromCredentials
     NO_CREDS     = Auth::CreateToken
     NO_USER_ATTR = "API requets need a `user` attribute that is a JSON object."
 
     # Give you the same token, but reloads all claims except `exp`
     def show
-      mutate Auth::ReloadToken.run(jwt:          request.headers["Authorization"],
-                                   fbos_version: fbos_version)
+      mutate Auth::ReloadToken
+        .run(jwt: request.headers["Authorization"], fbos_version: fbos_version)
     end
 
     def create
@@ -37,6 +39,12 @@ module Api
 
     def xhr? # I only wrote this because `request.xhr?` refused to be stubbed
       request.xhr?
+    end
+
+    # Every time a token is created, sweep the old TokenIssuances out of the
+    # database.
+    def clean_out_old_tokens
+      TokenIssuance.where("exp < ?", Time.now.to_i).destroy_all
     end
 
     def if_properly_formatted

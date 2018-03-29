@@ -1,8 +1,12 @@
 module Sequences
   class Delete < Mutations::Command
-    IN_USE        = "Sequence is in still in use by"
+    IN_USE        = "Sequence is still in use by"
     THE_FOLLOWING = " the following %{resource}: %{items}"
     AND           = " and"
+    # Override `THE_FOLLOWING` here.
+    SPECIAL_CASES = {
+      FarmEvent => " %{resource} on the following dates: %{items}"
+    }
 
     required do
       model :device, class: Device
@@ -54,9 +58,9 @@ module Sequences
     end
 
     def format_dep_list(klass, items)
-      THE_FOLLOWING % {
-        resource: FarmEvent.table_name.humanize,
-        items: items.map(&:fancy_name).join(", ")
+      (SPECIAL_CASES[klass] || THE_FOLLOWING) % {
+        resource: klass.table_name.humanize,
+        items: items.map(&:fancy_name).uniq.join(", ")
       } unless items.empty?
     end
 

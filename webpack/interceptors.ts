@@ -12,11 +12,19 @@ import { Content } from "./constants";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";
 import { Dictionary } from "farmbot";
 import { outstandingRequests } from "./connectivity/data_consistency";
+import { Session } from "./session";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   dispatchNetworkUp("user.api");
   return input;
 }
+
+/** These will raise type errors if our _.get usage ever requires changing. */
+const request: keyof SafeError = "request";
+const responseUrl: keyof SafeError["request"] = "responseURL";
+
+export const isLocalRequest = (x: SafeError) =>
+  _.get(x, [request, responseUrl], "").includes(API.current.baseUrl);
 
 let ONLY_ONCE = true;
 export function responseRejected(x: SafeError | undefined) {
@@ -26,7 +34,6 @@ export function responseRejected(x: SafeError | undefined) {
     const b = x.response.status > 399;
     // Openfarm API was sending too many 404's.
     const c = !_.get(x, "response.config.url", "").includes("openfarm.cc/");
-
     if (a && b && c) {
       setTimeout(() => {
         // Explicitly throw error so error reporting tool will save it.
@@ -35,6 +42,9 @@ export function responseRejected(x: SafeError | undefined) {
       }, 1);
     }
     switch (x.response.status) {
+      case 401:
+        isLocalRequest(x) && Session.clear();
+        break;
       case 404:
         // Log 404's, but don't generate any noise for the user.
         break;

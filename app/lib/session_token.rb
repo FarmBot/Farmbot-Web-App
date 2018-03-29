@@ -26,10 +26,12 @@ class SessionToken < AbstractJwtToken
       raise Errors::Forbidden, MUST_VERIFY
     end
     url = CalculateUpgrade.run!(version: fbos_version)
+    jti = SecureRandom.uuid
+    TokenIssuance.create!(device_id: user.device.id, exp: exp, jti: jti)
     self.new([{ aud:                   aud,
                 sub:                   user.id,
                 iat:                   iat,
-                jti:                   SecureRandom.uuid,
+                jti:                   jti,
                 iss:                   iss,
                 exp:                   exp,
                 mqtt:                  MQTT,
