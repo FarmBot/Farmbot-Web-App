@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import { JSXChildren } from "../util";
 import { NetworkState } from "../connectivity/interfaces";
 import { SyncStatus } from "farmbot";
@@ -24,6 +25,6 @@ export function MustBeOnline(props: MBOProps) {
   if ((botUp && netUp) || lockOpen) {
     return <div> {children} </div>;
   } else {
-    return <div className={`unavailable ${banner}`}> {children} </div>;
+    return <div className={`unavailable ${banner}`}> {t(children)} </div>;
   }
 }
