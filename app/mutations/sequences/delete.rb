@@ -56,7 +56,7 @@ module Sequences
     def format_dep_list(klass, items)
       THE_FOLLOWING % {
         resource: klass.table_name.humanize,
-        items: items.map(&:fancy_name).join(", ")
+        items: items.map(&:fancy_name).uniq.join(", ")
       } unless items.empty?
     end
 
