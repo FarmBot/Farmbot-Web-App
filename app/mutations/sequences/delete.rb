@@ -55,7 +55,7 @@ module Sequences
 
     def format_dep_list(klass, items)
       THE_FOLLOWING % {
-        resource: FarmEvent.table_name.humanize,
+        resource: klass.table_name.humanize,
         items: items.map(&:fancy_name).join(", ")
       } unless items.empty?
     end
