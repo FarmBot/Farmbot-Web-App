@@ -7,6 +7,7 @@
 module CeleryScriptSettingsBag
   # List of all celery script nodes that can be used as a varaible...
   ANY_VARIABLE          = [:tool, :coordinate, :point, :identifier]
+  PLANT_STAGES          = %w(planned planted harvested)
   ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_PIN_TYPES     = [Peripheral, Sensor].map(&:name)
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
@@ -17,7 +18,7 @@ module CeleryScriptSettingsBag
                              install_farmware update_farmware take_photo zero
                              install_first_party_farmware remove_farmware
                              find_home register_gpio unregister_gpio
-                             set_servo_angle)
+                             set_servo_angle change_ownership)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
   RESOURCE_NAME         = %w(images plants regimens peripherals
@@ -29,7 +30,8 @@ module CeleryScriptSettingsBag
   ALLOWED_DATA_TYPES    = %w(tool coordinate point)
   ALLOWED_OPS           = %w(< > is not is_undefined)
   ALLOWED_AXIS          = %w(x y z all)
-  ALLOWED_LHS           = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
+  ALLOWED_LHS_TYPES     = [String, :named_pin]
+  ALLOWED_LHS_STRINGS   = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
   STEPS                 = %w(_if execute execute_script find_home move_absolute
                              move_relative read_pin send_message take_photo wait
                              write_pin )
@@ -112,9 +114,15 @@ module CeleryScriptSettingsBag
           node.invalidate!(BAD_SUB_SEQ % [node.value]) if missing
         end
       end
-      .arg(:lhs,             [String]) do |node|
-        within(ALLOWED_LHS, node) do |val|
-          BAD_LHS % [val.to_s, ALLOWED_LHS.inspect]
+      .arg(:lhs, ALLOWED_LHS_TYPES) do |node|
+        case node
+        when CeleryScript::AstNode
+          # Validate `named_location` and friends.
+        else
+          # Validate strings.
+          within(ALLOWED_LHS_STRINGS, node) do |val|
+            BAD_LHS % [val.to_s, ALLOWED_LHS_STRINGS.inspect]
+          end
         end
       end
       .arg(:op,              [String]) do |node|
@@ -215,6 +223,7 @@ module CeleryScriptSettingsBag
       .node(:variable_declaration,  [:label, :data_value], [])
       .node(:parameter_declaration, [:label, :data_type], [])
       .node(:set_servo_angle,       [:pin_number, :pin_value], [])
+      .node(:change_ownership,      [], [:pair])
       .node(:install_first_party_farmware, [])
 
   ANY_ARG_NAME  = Corpus.as_json[:args].pluck("name").map(&:to_s)

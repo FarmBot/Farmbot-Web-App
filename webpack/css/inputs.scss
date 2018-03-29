@@ -59,10 +59,26 @@ select {
       }
     }
   }
+  &.disabled {
+    button {
+      background: darken($white, 10%) !important;
+      pointer-events: none;
+    }
+  }
 }
 
 .filter-search-item-none::after {
     content: "*";
+}
+
+.filter-search-heading-item {
+  pointer-events: none;
+  font-weight: bold;
+  &:before {
+    content: "➖";
+    font-weight: bold;
+    color: inherit;
+  }
 }
 
 .fb-checkbox {

@@ -7,6 +7,7 @@ import { renderCeleryNode } from "./step_tiles/index";
 import { ResourceIndex } from "../resources/interfaces";
 import { getStepTag } from "../resources/sequence_tagging";
 import { HardwareFlags, FarmwareInfo } from "./interfaces";
+import { ShouldDisplay } from "../devices/interfaces";
 
 interface AllStepsProps {
   sequence: TaggedSequence;
@@ -15,15 +16,16 @@ interface AllStepsProps {
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
   farmwareInfo?: FarmwareInfo;
+  shouldDisplay?: ShouldDisplay;
 }
 
 export class AllSteps extends React.Component<AllStepsProps, {}> {
   render() {
     const {
-      sequence, onDrop, dispatch, hardwareFlags, farmwareInfo
+      sequence, onDrop, dispatch, hardwareFlags, farmwareInfo, shouldDisplay
     } = this.props;
     const items = (sequence.body.body || [])
-      .map((currentStep: SequenceBodyItem, index, arr) => {
+      .map((currentStep: SequenceBodyItem, index) => {
         /** HACK: React's diff algorithm (probably?) can't keep track of steps
          * via `index` alone- the content is too dynamic (copy/splice/pop/push)
          * To get around this, we add a `uuid` property to Steps that
@@ -46,7 +48,8 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
                 currentSequence: sequence,
                 resources: this.props.resources,
                 hardwareFlags,
-                farmwareInfo
+                farmwareInfo,
+                shouldDisplay,
               })}
             </div>
           </StepDragger>

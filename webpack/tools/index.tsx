@@ -8,7 +8,7 @@ import { catchErrors } from "../util";
 
 @connect(mapStateToProps)
 export class Tools extends React.Component<Props, Partial<ToolsState>> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   state: ToolsState = { editingBays: false, editingTools: false };
 

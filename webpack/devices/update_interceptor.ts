@@ -36,7 +36,7 @@ export enum McuErrors {
 * MCU value. */
 export const greaterThan =
   (compareAgainst: ConfigKey, errorMessage = McuErrors.TOO_LOW) =>
-    (key: ConfigKey, val: number, state: McuParams): Result => {
+    (_key: ConfigKey, val: number, state: McuParams): Result => {
       const minimum = state[compareAgainst] || 0;
       return (val > minimum) ? OK : NO(errorMessage);
     };
@@ -45,7 +45,7 @@ export const greaterThan =
  * MCU value. */
 export const lessThan =
   (compareAgainst: ConfigKey, errorMessage = McuErrors.TOO_HIGH) =>
-    (key: ConfigKey, val: number, state: McuParams): Result => {
+    (_key: ConfigKey, val: number, state: McuParams): Result => {
       const minimum = state[compareAgainst] || 0;
       return (val < minimum) ? OK : NO(errorMessage);
     };

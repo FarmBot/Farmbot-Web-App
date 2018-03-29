@@ -10,17 +10,17 @@ import { stepGet } from "../draggable/actions";
 import { copySequence } from "./actions";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { save, edit, destroy } from "../api/crud";
-import { GetState } from "../redux/interfaces";
 import { TestButton } from "./test_button";
 import { warning } from "farmbot-toastr";
 import { AllSteps } from "./all_steps";
-// import { LocalsList } from "./locals_list";
+import { LocalsList } from "./locals_list";
+import { Feature } from "../devices/interfaces";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
     (index: number, key: string) => {
       if (key.length > 0) {
-        dispatch1(function (dispatch2: Function, getState: GetState) {
+        dispatch1(function (dispatch2: Function) {
           const dataXferObj = dispatch2(stepGet(key));
           const step = dataXferObj.value;
           switch (dataXferObj.intent) {
@@ -38,14 +38,13 @@ export const onDrop =
     };
 
 const copy = function (dispatch: Function, sequence: TaggedSequence) {
-  return (e: React.SyntheticEvent<HTMLButtonElement>) =>
-    dispatch(copySequence(sequence));
+  return () => dispatch(copySequence(sequence));
 };
 
 export class SequenceEditorMiddleActive extends
   React.Component<ActiveMiddleProps, {}> {
   render() {
-    const { dispatch, sequence } = this.props;
+    const { dispatch, sequence, shouldDisplay } = this.props;
 
     return <div className="sequence-editor-content">
       <div className="sequence-editor-tools">
@@ -79,10 +78,11 @@ export class SequenceEditorMiddleActive extends
             current={sequence.body.color}
             onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
         </Row>
-        {/*  <LocalsList
+        {shouldDisplay(Feature.variables) &&
+          <LocalsList
             sequence={this.props.sequence}
             resources={this.props.resources}
-          dispatch={this.props.dispatch} /> */}
+            dispatch={this.props.dispatch} />}
         <hr style={{ /* marginBottom: 0 */ }} />
       </div>
       <div className="sequence" id="sequenceDiv">

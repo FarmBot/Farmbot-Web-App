@@ -18,6 +18,10 @@ export namespace ToolTips {
     To edit and create new peripherals, press the EDIT button. Make sure to turn
     things off when you're done!`);
 
+  export const SENSORS =
+    trim(`Add sensors here to monitor FarmBot's sensors.
+    To edit and create new sensors, press the EDIT button.`);
+
   // Device
   export const OS_SETTINGS =
     trim(`View and change device settings.`);
@@ -304,7 +308,47 @@ export namespace Content {
     trim(`If you are sure you want to delete your account, type in
     your password below to continue.`);
 
+  // App Settings
+  export const CONFIRM_STEP_DELETION =
+    trim(`Show a confirmation dialog when the sequence delete step
+    icon is pressed.`);
+
+  export const HIDE_WEBCAM_WIDGET =
+    trim(`If not using a webcam, use this setting to remove the
+    widget from the Controls page.`);
+
+  export const DYNAMIC_MAP_SIZE =
+    trim(`Change the Farm Designer map size based on axis length.
+    A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
+    the HARDWARE widget.`);
+
+  export const DOUBLE_MAP_DIMENSIONS =
+    trim(`Double the default dimensions of the Farm Designer map
+    for a map with four times the area.`);
+
+  export const PLANT_ANIMATIONS =
+    trim(`Enable plant animations in the Farm Designer.`);
+
+  export const BROWSER_SPEAK_LOGS =
+    trim(`Have the browser also read aloud log messages on the
+    "Speak" channel that are spoken by FarmBot.`);
+
+  export const DISCARD_UNSAVED_CHANGES =
+    trim(`Don't ask about saving work before
+    closing browser tab. Warning: may cause loss of data.`);
+
+  export const DISCARD_UNSAVED_CHANGES_CONFIRM =
+    trim(`Warning! When enabled, any unsaved changes
+    will be discarded when refreshing or closing the page. Are you sure?`);
+
   // Device
+  export const NOT_HTTPS =
+    trim(`WARNING: Sending passwords via HTTP:// is not secure.`);
+
+  export const CONTACT_SYSADMIN =
+    trim(`Please contact the system(s) administrator(s) and ask them to enable
+    HTTPS://`);
+
   export const FACTORY_RESET_WARNING =
     trim(`Factory resetting your FarmBot will destroy all data on the device,
     revoking your FarmBot's abilily to connect to your web app account and your
@@ -327,8 +371,7 @@ export namespace Content {
 
   export const AUTO_FACTORY_RESET =
     trim(`Automatically factory reset when the WiFi network cannot be
-    detected. Useful for typos during FarmBot OS configuration or network
-    changes.`);
+    detected. Useful for network changes.`);
 
   export const AUTO_FACTORY_RESET_PERIOD =
     trim(`Time in minutes to attempt connecting to WiFi before a factory
@@ -480,6 +523,7 @@ export enum Actions {
   BOT_CHANGE = "BOT_CHANGE",
   FETCH_OS_UPDATE_INFO_OK = "FETCH_OS_UPDATE_INFO_OK",
   FETCH_BETA_OS_UPDATE_INFO_OK = "FETCH_BETA_OS_UPDATE_INFO_OK",
+  FETCH_MIN_OS_FEATURE_INFO_OK = "FETCH_MIN_OS_FEATURE_INFO_OK",
   INVERT_JOG_BUTTON = "INVERT_JOG_BUTTON",
   DISPLAY_ENCODER_DATA = "DISPLAY_ENCODER_DATA",
   STASH_STATUS = "STASH_STATUS",

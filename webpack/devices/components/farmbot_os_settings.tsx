@@ -10,7 +10,7 @@ import {
   SaveBtn
 } from "../../ui/index";
 import { save, edit, refresh } from "../../api/crud";
-import { MustBeOnline } from "../must_be_online";
+import { MustBeOnline, isBotUp } from "../must_be_online";
 import { ToolTips, Content } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
 import { timezoneMismatch } from "../timezones/guess_timezone";
@@ -23,7 +23,6 @@ import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { isUndefined } from "lodash";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import axios from "axios";
-import { HttpData } from "../../util";
 
 export enum ColWidth {
   label = 3,
@@ -46,8 +45,8 @@ export class FarmbotOsSettings
 
   fetchReleaseNotes = (url: string, osMajorVersion: string) => {
     axios
-      .get(url)
-      .then((resp: HttpData<string>) => {
+      .get<string>(url)
+      .then(resp => {
         const notes = resp.data
           .split("# v")
           .filter(x => x.startsWith(osMajorVersion))[0]
@@ -64,7 +63,7 @@ export class FarmbotOsSettings
     dispatch(edit(account, { name: e.currentTarget.value }));
   }
 
-  updateBot = (e: React.MouseEvent<{}>) => {
+  updateBot = () => {
     const { account, dispatch } = this.props;
     dispatch(save(account.uuid));
   }
@@ -94,6 +93,8 @@ export class FarmbotOsSettings
   render() {
     const { bot, account, sourceFbosConfig } = this.props;
     const { firmware_version, sync_status } = bot.hardware.informational_settings;
+    const botOnline =
+      !!(isBotUp(sync_status) && this.props.botToMqttStatus === "up");
     return <Widget className="device-widget">
       <form onSubmit={(e) => e.preventDefault()}>
         <WidgetHeader title="Device" helpText={ToolTips.OS_SETTINGS}>
@@ -135,12 +136,14 @@ export class FarmbotOsSettings
           <MustBeOnline
             syncStatus={sync_status}
             networkState={this.props.botToMqttStatus}
-            lockOpen={process.env.NODE_ENV !== "production"}>
+            lockOpen={process.env.NODE_ENV !== "production"
+              || this.props.isValidFbosConfig}>
             <FarmbotOsRow
               bot={this.props.bot}
               osReleaseNotes={this.state.osReleaseNotes}
               dispatch={this.props.dispatch}
-              sourceFbosConfig={sourceFbosConfig} />
+              sourceFbosConfig={sourceFbosConfig}
+              botOnline={botOnline} />
             <AutoUpdateRow
               dispatch={this.props.dispatch}
               sourceFbosConfig={sourceFbosConfig} />
@@ -149,15 +152,20 @@ export class FarmbotOsSettings
               <AutoSyncRow
                 dispatch={this.props.dispatch}
                 sourceFbosConfig={sourceFbosConfig} />}
-            <CameraSelection env={this.props.bot.hardware.user_env} />
+            <CameraSelection
+              env={this.props.bot.hardware.user_env}
+              botOnline={botOnline} />
             <BoardType
               firmwareVersion={firmware_version}
               dispatch={this.props.dispatch}
+              shouldDisplay={this.props.shouldDisplay}
               sourceFbosConfig={sourceFbosConfig} />
             <PowerAndReset
               controlPanelState={this.props.bot.controlPanelState}
               dispatch={this.props.dispatch}
-              sourceFbosConfig={sourceFbosConfig} />
+              sourceFbosConfig={sourceFbosConfig}
+              shouldDisplay={this.props.shouldDisplay}
+              botOnline={botOnline} />
           </MustBeOnline>
         </WidgetBody>
       </form>

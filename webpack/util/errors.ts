@@ -1,5 +1,4 @@
 import { Dictionary } from "farmbot";
-import { ErrorInfo } from "react";
 import { t } from "i18next";
 import * as _ from "lodash";
 
@@ -35,7 +34,7 @@ export function bail(message: string): never {
   throw new Error(message);
 }
 
-export const catchErrors = (error: Error, errorInfo: ErrorInfo | undefined) => {
+export const catchErrors = (error: Error) => {
   if (_.get(window, "Rollbar.error")) {
     // tslint:disable-next-line:no-any
     Rollbar && Rollbar.error && Rollbar.error(error as any);

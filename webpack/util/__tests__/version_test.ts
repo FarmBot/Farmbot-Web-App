@@ -1,4 +1,14 @@
-import { semverCompare, SemverResult, minFwVersionCheck } from "../version";
+import {
+  semverCompare,
+  SemverResult,
+  minFwVersionCheck,
+  shouldDisplay,
+  determineInstalledOsVersion,
+  versionOK,
+} from "../version";
+import { bot } from "../../__test_support__/fake_state/bot";
+import { fakeDevice } from "../../__test_support__/resource_index_builder";
+import { Feature } from "../../devices/interfaces";
 
 describe("semver compare", () => {
   it("knows when RIGHT_IS_GREATER: numeric", () => {
@@ -83,5 +93,69 @@ describe("minFwVersionCheck()", () => {
     expect(minFwVersionCheck("1.0.0R", "1.0.1")).toBeFalsy();
     expect(minFwVersionCheck(undefined, "1.0.1")).toBeFalsy();
     expect(minFwVersionCheck("1.0.0", "1.0.1")).toBeFalsy();
+  });
+});
+
+describe("shouldDisplay()", () => {
+  const fakeMinOsData = { jest_feature: "1.0.0" };
+
+  it("should display", () => {
+    expect(shouldDisplay("1.0.0", fakeMinOsData)(Feature.jest_feature)).toBeTruthy();
+    expect(shouldDisplay("10.0.0", fakeMinOsData)(Feature.jest_feature)).toBeTruthy();
+    expect(shouldDisplay("10.0.0",
+      { jest_feature: "1.0.0" })(Feature.jest_feature)).toBeTruthy();
+  });
+
+  it("shouldn't display", () => {
+    expect(shouldDisplay("0.9.0", fakeMinOsData)(Feature.jest_feature)).toBeFalsy();
+    expect(shouldDisplay(undefined, fakeMinOsData)(Feature.jest_feature)).toBeFalsy();
+    // tslint:disable-next-line:no-any
+    const unknown_feature = "unknown_feature" as any;
+    expect(shouldDisplay("1.0.0", fakeMinOsData)(unknown_feature)).toBeFalsy();
+    expect(shouldDisplay("1.0.0", undefined)(unknown_feature)).toBeFalsy();
+    // tslint:disable-next-line:no-any
+    expect(shouldDisplay("1.0.0", "" as any)(unknown_feature)).toBeFalsy();
+    // tslint:disable-next-line:no-any
+    expect(shouldDisplay("1.0.0", "{}" as any)(unknown_feature)).toBeFalsy();
+    // tslint:disable-next-line:no-any
+    expect(shouldDisplay("1.0.0", "bad" as any)(unknown_feature)).toBeFalsy();
+  });
+});
+
+describe("determineInstalledOsVersion()", () => {
+  const checkVersionResult =
+    (fromBot: string | undefined,
+      api: string | undefined,
+      expected: string | undefined) => {
+      bot.hardware.informational_settings.controller_version = fromBot;
+      const d = fakeDevice();
+      d.body.fbos_version = api;
+      const result = determineInstalledOsVersion(bot, d);
+      expect(result).toEqual(expected);
+    };
+
+  it("returns correct installed FBOS version string", () => {
+    checkVersionResult(undefined, undefined, undefined);
+    checkVersionResult("1.1.1", undefined, "1.1.1");
+    checkVersionResult(undefined, "1.1.1", "1.1.1");
+    checkVersionResult("bad", undefined, undefined);
+    checkVersionResult(undefined, "bad", undefined);
+    checkVersionResult("bad", "1.1.1", "1.1.1");
+    checkVersionResult("1.2.3", "2.3.4", "2.3.4");
+    checkVersionResult("1.0.1", "1.0.0", "1.0.1");
+  });
+});
+
+describe("versionOK()", () => {
+  it("checks if major/minor version meets min requirement", () => {
+    expect(versionOK("9.1.9-rc99", 3, 0)).toBeTruthy();
+    expect(versionOK("3.0.9-rc99", 3, 0)).toBeTruthy();
+    expect(versionOK("4.0.0", 3, 0)).toBeTruthy();
+    expect(versionOK("4.0.0", 3, 1)).toBeTruthy();
+    expect(versionOK("3.1.0", 3, 0)).toBeTruthy();
+    expect(versionOK("2.0.-", 3, 0)).toBeFalsy();
+    expect(versionOK("2.9.4", 3, 0)).toBeFalsy();
+    expect(versionOK("1.9.6", 3, 0)).toBeFalsy();
+    expect(versionOK("3.1.6", 4, 0)).toBeFalsy();
   });
 });

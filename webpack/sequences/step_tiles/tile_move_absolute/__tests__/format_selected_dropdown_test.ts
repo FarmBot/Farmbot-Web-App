@@ -6,7 +6,7 @@ describe("formatSelectedDropdown()", () => {
   it("returns dropdown item: tool", () => {
     const dropdown = formatSelectedDropdown(fakeResourceIndex(),
       { kind: "tool", args: { tool_id: 1 } });
-    expect(dropdown).toEqual({ label: "Tool: Generic Tool", value: 1 });
+    expect(dropdown).toEqual({ label: "Generic Tool", value: 1 });
   });
 
   it("returns dropdown item: point", () => {
@@ -17,21 +17,21 @@ describe("formatSelectedDropdown()", () => {
         }
       });
     expect(dropdown).toEqual({
-      label: "Map Point: Point 1 (10, 20, 30) ",
+      label: "Point 1 (10, 20, 30)",
       value: 2
     });
   });
 
-  it("returns dropdown item: tool", () => {
+  it("returns dropdown item: plant", () => {
     const dropdown = formatSelectedDropdown(fakeResourceIndex(),
       {
         kind: "point", args: {
-          pointer_type: "ToolSlot", pointer_id: 3
+          pointer_type: "Plant", pointer_id: 1
         }
       });
     expect(dropdown).toEqual({
-      label: "Tool Slot: using Generic Tool (100, 200, 300) ",
-      value: 3
+      label: "Plant 1 (1, 2, 3)",
+      value: 1
     });
   });
 

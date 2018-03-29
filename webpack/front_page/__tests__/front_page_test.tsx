@@ -31,13 +31,6 @@ describe("<FrontPage />", () => {
     jest.clearAllMocks();
   });
 
-  it("shows 3rd party server box", () => {
-    const el = mount(<FrontPage />);
-    expect(el.text()).not.toContain("Server URL");
-    el.find("button.fb-button.gray").first().simulate("click");
-    expect(el.text()).toContain("Server URL");
-  });
-
   it("shows forgot password box", () => {
     const el = mount(<FrontPage />);
     expect(el.text()).not.toContain("Reset Password");
@@ -61,7 +54,7 @@ describe("<FrontPage />", () => {
     // tslint:disable-next-line:no-any
     const instance = el.instance() as any;
     instance.submitLogin({ preventDefault: jest.fn() });
-    expect(API.setBaseUrl).toHaveBeenCalledWith("//localhost:3000");
+    expect(API.setBaseUrl).toHaveBeenCalled();
     expect(axios.post).toHaveBeenCalledWith(
       "://localhost:3000/api/tokens/",
       { user: { email: "foo@bar.io", password: "password" } });

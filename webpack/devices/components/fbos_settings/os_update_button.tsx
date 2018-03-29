@@ -24,7 +24,7 @@ const buttonProps = (status: UpdateButton) => {
 };
 
 export let OsUpdateButton = (props: OsUpdateButtonProps) => {
-  const { bot, sourceFbosConfig } = props;
+  const { bot, sourceFbosConfig, botOnline } = props;
   let buttonStatus = UpdateButton.none;
 
   const betaOptIn = sourceFbosConfig("beta_opt_in").value;
@@ -83,7 +83,7 @@ export let OsUpdateButton = (props: OsUpdateButtonProps) => {
   return <button
     className={"fb-button " + buttonProps(buttonStatus).color}
     title={latestReleaseV}
-    disabled={isWorking(osUpdateJob)}
+    disabled={isWorking(osUpdateJob) || !botOnline}
     onClick={() => checkControllerUpdates()}>
     {downloadProgress(osUpdateJob) || buttonProps(buttonStatus).text}
   </button>;

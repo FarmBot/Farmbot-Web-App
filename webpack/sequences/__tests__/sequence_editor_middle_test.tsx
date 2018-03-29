@@ -15,26 +15,25 @@ describe("<SequenceEditorMiddle/>", () => {
       sequence: fakeSequence(),
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
-      consistent: true,
-      autoSyncEnabled: false,
       hardwareFlags: fakeHardwareFlags(),
       farmwareInfo: {
         farmwareNames: [],
         firstPartyFarmwareNames: [],
         showFirstPartyFarmware: false
-      }
+      },
+      shouldDisplay: jest.fn(),
     };
   }
 
   it("active editor", () => {
-    const wrapper = mount(<SequenceEditorMiddle {...fakeProps() } />);
+    const wrapper = mount(<SequenceEditorMiddle {...fakeProps()} />);
     expect(wrapper.text()).toContain("Delete");
   });
 
   it("inactive editor", () => {
     const p = fakeProps();
     p.sequence = undefined;
-    const wrapper = mount(<SequenceEditorMiddle {...p } />);
+    const wrapper = mount(<SequenceEditorMiddle {...p} />);
     expect(wrapper.text()).toContain("No Sequence selected");
   });
 });

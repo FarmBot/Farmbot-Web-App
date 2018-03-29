@@ -39,8 +39,7 @@ interface DataUpdateEndOfLife {
 
 // LEGACY API. This was a temporary solution that was superceded by the auto
 // sync feature. End of life: 1 Jan 2018
-export function notifyBotOfChanges(url: string | undefined,
-  action: DataChangeType, uuid: string) {
+export function notifyBotOfChanges(url: string | undefined, action: DataChangeType) {
   if (url) {
     url
       .split("/")

@@ -38,7 +38,7 @@ export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 
 @connect(mapStateToProps)
 export class FarmDesigner extends React.Component<Props, Partial<State>> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   initializeSetting =
     (name: keyof State, defaultValue: boolean): boolean => {

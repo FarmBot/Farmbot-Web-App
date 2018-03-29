@@ -4,28 +4,31 @@ import * as _ from "lodash";
 import { success, warning, info, error } from "farmbot-toastr";
 import { getDevice } from "../device";
 import { Log, Everything } from "../interfaces";
-import { GithubRelease, MoveRelProps } from "./interfaces";
-import { Thunk, GetState, ReduxAction } from "../redux/interfaces";
-import { BotState } from "../devices/interfaces";
-import { McuParams, Configuration } from "farmbot";
+import { GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig } from "./interfaces";
+import { Thunk, ReduxAction } from "../redux/interfaces";
+import { McuParams, Configuration, rpcRequest } from "farmbot";
 import { Sequence } from "../sequences/interfaces";
 import { ControlPanelState } from "../devices/interfaces";
 import { API } from "../api/index";
 import { User } from "../auth/interfaces";
-import { getDeviceAccountSettings, getFbosConfig } from "../resources/selectors";
-import { TaggedDevice } from "../resources/tagged_resources";
-import { versionOK } from "./reducer";
-import { HttpData, oneOf } from "../util";
+import { getDeviceAccountSettings, getFirmwareConfig } from "../resources/selectors";
+import { TaggedDevice, TaggedFirmwareConfig } from "../resources/tagged_resources";
+import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
 import { pingAPI } from "../connectivity/ping_mqtt";
 import { edit, save as apiSave } from "../api/crud";
-import { WebAppConfig } from "../config_storage/web_app_configs";
+import { getFbosConfig } from "../resources/selectors_by_kind";
+import { FbosConfig } from "../config_storage/fbos_configs";
+import { FirmwareConfig } from "../config_storage/firmware_configs";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
 export const EXPECTED_MAJOR = 5;
 export const EXPECTED_MINOR = 0;
+export const FEATURE_MIN_VERSIONS_URL =
+  "https://raw.githubusercontent.com/FarmBot/farmbot_os/staging/" +
+  "FEATURE_MIN_VERSIONS.json";
 // Already filtering messages in FarmBot OS and the API- this is just for
 // an additional layer of safety. If sensitive data ever hits a client, it will
 // be reported to Rollbar for investigation.
@@ -43,7 +46,7 @@ export function isLog(x: any): x is Log {
     return false;
   }
 }
-const commandErr = (noun = "Command") => (x: {}) => { };
+const commandErr = (_noun = "Command") => () => { };
 
 export const commandOK = (noun = "Command") => () => {
   const msg = noun + " request sent to device.";
@@ -96,7 +99,7 @@ export function emergencyUnlock() {
 
 export function sync(): Thunk {
   const noun = "Sync";
-  return function (dispatch, getState) {
+  return function (_dispatch, getState) {
     const IS_OK = versionOK(getState()
       .bot
       .hardware
@@ -134,16 +137,16 @@ export function execSequence(sequence: Sequence) {
   }
 }
 
-export let saveAccountChanges: Thunk = function (dispatch, getState) {
+export let saveAccountChanges: Thunk = function (_dispatch, getState) {
   return save(getDeviceAccountSettings(getState().resources.index));
 };
 
 export let fetchReleases =
   (url: string, options = { beta: false }) =>
-    (dispatch: Function, getState: Function) => {
+    (dispatch: Function) => {
       axios
-        .get(url)
-        .then((resp: HttpData<GithubRelease>) => {
+        .get<GithubRelease>(url)
+        .then(resp => {
           const { tag_name, target_commitish } = resp.data;
           const version = tag_name.toLowerCase().replace("v", "");
           dispatch({
@@ -165,12 +168,52 @@ export let fetchReleases =
         });
     };
 
+/**
+ * Structure and type checks for fetched minimum FBOS version feature object.
+ * @param x axios response data
+ */
+function validMinOsFeatureLookup(x: MinOsFeatureLookup): boolean {
+  return _.isObject(x) &&
+    Object.entries(x).every(([key, val]) =>
+      typeof key === "string" && // feature name
+      typeof val === "string" && // version string
+      val.split(".").length > 2); // "0.0.0"
+}
+
+/**
+ * Fetch and save minimum FBOS version data for UI feature display.
+ * @param url location of data
+ */
+export let fetchMinOsFeatureData = (url: string) =>
+  (dispatch: Function) => {
+    axios
+      .get<MinOsFeatureLookup>(url)
+      .then(resp => {
+        const data = resp.data;
+        if (validMinOsFeatureLookup(data)) {
+          dispatch({
+            type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK,
+            payload: data
+          });
+        } else {
+          console.log(`Warning! Got '${JSON.stringify(data)}', ` +
+            "expected min OS feature data.");
+        }
+      })
+      .catch((ferror) => {
+        dispatch({
+          type: "FETCH_MIN_OS_FEATURE_INFO_ERROR",
+          payload: ferror
+        });
+      });
+  };
+
 export function save(input: TaggedDevice) {
-  return function (dispatch: Function, getState: GetState) {
+  return function (dispatch: Function) {
     return axios
-      .put(API.current.devicePath, input.body)
-      .then((resp: HttpData<User>) => dispatch({ type: "SAVE_DEVICE_OK", payload: resp.data }))
-      .catch(resp => error(t("Error saving device settings.")));
+      .put<User>(API.current.devicePath, input.body)
+      .then(resp => dispatch({ type: "SAVE_DEVICE_OK", payload: resp.data }))
+      .catch(() => error(t("Error saving device settings.")));
   };
 }
 
@@ -193,24 +236,29 @@ export function MCUFactoryReset() {
   return getDevice().resetMCU();
 }
 
-export function botConfigChange(key: ConfigKey, value: number) {
-  const noun = "Setting toggle";
-
-  return getDevice()
-    .updateMcu({ [key]: value })
-    .then(_.noop, commandErr(noun));
-}
-
 export function settingToggle(
-  name: ConfigKey, bot: BotState, displayAlert?: string | undefined
+  name: ConfigKey,
+  sourceFwConfig: SourceFwConfig,
+  displayAlert?: string | undefined
 ) {
-  if (displayAlert) { alert(displayAlert.replace(/\s+/g, " ")); }
   const noun = "Setting toggle";
-  return getDevice()
-    .updateMcu({
-      [name]: ((bot.hardware.mcu_params)[name] === 0) ? ON : OFF
-    })
-    .then(_.noop, commandErr(noun));
+  return function (dispatch: Function, getState: () => Everything) {
+    if (displayAlert) { alert(trim(displayAlert)); }
+    const update = { [name]: (sourceFwConfig(name).value === 0) ? ON : OFF };
+    const firmwareConfig = getFirmwareConfig(getState().resources.index);
+    const toggleFirmwareConfig = (fwConfig: TaggedFirmwareConfig) => {
+      dispatch(edit(fwConfig, update));
+      dispatch(apiSave(fwConfig.uuid));
+    };
+
+    if (firmwareConfig && firmwareConfig.body.api_migrated) {
+      return toggleFirmwareConfig(firmwareConfig);
+    } else {
+      return getDevice()
+        .updateMcu(update)
+        .then(_.noop, commandErr(noun));
+    }
+  };
 }
 
 export function moveRelative(props: MoveRelProps) {
@@ -230,6 +278,15 @@ export function pinToggle(pin_number: number) {
   const noun = "Setting toggle";
   return getDevice()
     .togglePin({ pin_number })
+    .then(_.noop, commandErr(noun));
+}
+
+export function readPin(pin_number: number, label: string, pin_mode: number) {
+  const noun = "Read pin";
+  return getDevice()
+    .send(rpcRequest([{
+      kind: "read_pin", args: { pin_number, label, pin_mode }
+    }]))
     .then(_.noop, commandErr(noun));
 }
 
@@ -260,19 +317,31 @@ const updateNO = (dispatch: Function, noun: string) => {
 export function updateMCU(key: ConfigKey, val: string) {
   const noun = "configuration update";
   return function (dispatch: Function, getState: () => Everything) {
-    const state = getState().bot.hardware.mcu_params;
+    const firmwareConfig = getFirmwareConfig(getState().resources.index);
+    const getParams = () => {
+      if (firmwareConfig && firmwareConfig.body.api_migrated) {
+        return firmwareConfig.body;
+      } else {
+        return getState().bot.hardware.mcu_params;
+      }
+    };
 
     function proceed() {
-      dispatch(startUpdate());
-      getDevice()
-        .updateMcu({ [key]: val })
-        .then(() => updateOK(dispatch, noun))
-        .catch(() => updateNO(dispatch, noun));
+      if (firmwareConfig && firmwareConfig.body.api_migrated) {
+        dispatch(edit(firmwareConfig, { [key]: val } as Partial<FirmwareConfig>));
+        dispatch(apiSave(firmwareConfig.uuid));
+      } else {
+        dispatch(startUpdate());
+        getDevice()
+          .updateMcu({ [key]: val })
+          .then(() => updateOK(dispatch, noun))
+          .catch(() => updateNO(dispatch, noun));
+      }
     }
 
     const dont = (err: string) => warning(err);
 
-    const validate = mcuParamValidator(key, parseInt(val, 10), state);
+    const validate = mcuParamValidator(key, parseInt(val, 10), getParams());
     validate(proceed, dont);
   };
 }
@@ -282,7 +351,7 @@ export function updateConfig(config: Configuration) {
   return function (dispatch: Function, getState: () => Everything) {
     const fbosConfig = getFbosConfig(getState().resources.index);
     if (fbosConfig && fbosConfig.body.api_migrated) {
-      dispatch(edit(fbosConfig, config as Partial<WebAppConfig>));
+      dispatch(edit(fbosConfig, config as Partial<FbosConfig>));
       dispatch(apiSave(fbosConfig.uuid));
     } else {
       getDevice()
@@ -329,8 +398,8 @@ export function resetNetwork(): ReduxAction<{}> {
   return { type: Actions.RESET_NETWORK, payload: {} };
 }
 
-export function resetConnectionInfo(dev: TaggedDevice) {
-  return function (dispatch: Function, state: GetState) {
+export function resetConnectionInfo() {
+  return function (dispatch: Function) {
     dispatch(resetNetwork());
     pingAPI();
     getDevice().readStatus();

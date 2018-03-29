@@ -1,7 +1,6 @@
 import { CeleryNode as Step, SequenceBodyItem } from "farmbot";
 import { ChangeStepSelect, SelectSequence } from "./interfaces";
 import { DropDownItem } from "../ui/index";
-import { GetState } from "../redux/interfaces";
 import { edit, init, overwrite } from "../api/crud";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { defensiveClone } from "../util";
@@ -24,7 +23,7 @@ export function editCurrentSequence(dispatch: Function, seq: TaggedSequence,
 
 let count = 1;
 export function copySequence(payload: TaggedSequence) {
-  return function (dispatch: Function, getState: GetState) {
+  return function (dispatch: Function) {
     const copy = defensiveClone(payload);
     copy.body.id = undefined;
     copy.body.name = copy.body.name + ` copy ${count++}`;
@@ -37,7 +36,7 @@ export function copySequence(payload: TaggedSequence) {
 export function moveStep(step: Step,
   from: number,
   to: number) {
-  return function (dispatch: Function, getState: GetState) {
+  return function () {
     return {
       type: "MOVE_STEP",
       payload: { step, from, to }
@@ -92,7 +91,7 @@ export function selectSequence(uuid: string): SelectSequence {
   };
 }
 
-export function addComment(step: Step, index: number, comment: string) {
+export function addComment(_: Step, index: number, comment: string) {
   return {
     type: "ADD_COMMENT",
     payload: { comment, index }

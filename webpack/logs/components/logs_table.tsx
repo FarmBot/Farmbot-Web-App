@@ -9,7 +9,7 @@ interface LogsRowProps {
   state: LogsState;
   timeOffset: number;
 }
-const LogsRow = ({ tlog, state, timeOffset }: LogsRowProps) => {
+const LogsRow = ({ tlog, timeOffset }: LogsRowProps) => {
   const log = tlog.body;
   const { x, y, z, verbosity, type } = log.meta;
   const time = formatLogTime(log.created_at, timeOffset);

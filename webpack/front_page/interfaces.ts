@@ -8,9 +8,6 @@ export interface FrontPageState {
   regEmail: string;
   regName: string;
   regPassword: string;
-  serverPort: string;
-  serverURL: string;
-  showServerOpts: boolean;
   activePanel:
   | "resendVerificationEmail" /** Render the "resend verification" panel. */
   | "login"                   /** Render default login panel */

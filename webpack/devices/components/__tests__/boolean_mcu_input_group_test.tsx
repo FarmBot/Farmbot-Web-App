@@ -4,13 +4,15 @@ import { mount } from "enzyme";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { settingToggle } from "../../actions";
-import { initialState } from "../../reducer";
+import { bot } from "../../../__test_support__/fake_state/bot";
 
 describe("BooleanMCUInputGroup", () => {
   it("triggers callbacks", () => {
     const dispatch = jest.fn();
     const el = mount(<BooleanMCUInputGroup
-      bot={initialState()}
+      sourceFwConfig={(x) => {
+        return { value: bot.hardware.mcu_params[x], consistent: true };
+      }}
       dispatch={dispatch}
       name={"Name"}
       x={"encoder_invert_x"}
@@ -23,12 +25,12 @@ describe("BooleanMCUInputGroup", () => {
     jest.clearAllMocks();
     xEl.simulate("click");
     expect(settingToggle)
-      .toHaveBeenCalledWith("encoder_invert_x", expect.any(Object), undefined);
+      .toHaveBeenCalledWith("encoder_invert_x", expect.any(Function), undefined);
     yEl.simulate("click");
     expect(settingToggle)
-      .toHaveBeenCalledWith("encoder_invert_y", expect.any(Object), undefined);
+      .toHaveBeenCalledWith("encoder_invert_y", expect.any(Function), undefined);
     zEl.simulate("click");
     expect(settingToggle)
-      .toHaveBeenCalledWith("encoder_enabled_z", expect.any(Object), undefined);
+      .toHaveBeenCalledWith("encoder_enabled_z", expect.any(Function), undefined);
   });
 });

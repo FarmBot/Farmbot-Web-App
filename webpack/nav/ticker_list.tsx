@@ -72,7 +72,7 @@ export let TickerList = (props: TickerListProps) => {
     <Collapse isOpen={props.tickerListOpen}>
       {props
         .logs
-        .filter((log, index) => index !== 0)
+        .filter((_, index) => index !== 0)
         .filter((log) => logFilter(log))
         .map((log: Log, index: number) => Ticker(log, index, props.timeOffset))}
     </Collapse>

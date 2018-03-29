@@ -5,14 +5,16 @@ import { Row, Col } from "../../ui/index";
 import { settingToggle } from "../actions";
 import { ToggleButton } from "../../controls/toggle_button";
 import { isUndefined } from "util";
+import { t } from "i18next";
 
 export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
 
-  const { bot, dispatch, name, pinNumber, timeout, activeState } = props;
-  const { mcu_params } = bot.hardware;
-  const inactiveState = isUndefined(mcu_params[activeState])
+  const { sourceFwConfig, dispatch, name, pinNumber, timeout, activeState
+  } = props;
+  const activeStateValue = sourceFwConfig(activeState).value;
+  const inactiveState = isUndefined(activeStateValue)
     ? undefined
-    : !mcu_params[activeState];
+    : !activeStateValue;
   return <Row>
     <Col xs={3}>
       <label>
@@ -22,22 +24,23 @@ export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
     <Col xs={3}>
       <McuInputBox
         setting={pinNumber}
-        bot={bot}
+        sourceFwConfig={sourceFwConfig}
         dispatch={dispatch}
         filter={32000} />
     </Col>
     <Col xs={4}>
       <McuInputBox
         setting={timeout}
-        bot={bot}
+        sourceFwConfig={sourceFwConfig}
         dispatch={dispatch}
         filter={32000} />
     </Col>
     <Col xs={2} className={"centered-button-div"}>
       <ToggleButton
-        customText={{ textFalse: "low", textTrue: "high" }}
+        customText={{ textFalse: t("low"), textTrue: t("high") }}
         toggleValue={inactiveState}
-        toggleAction={() => settingToggle(activeState, bot)} />
+        dim={!sourceFwConfig(activeState).consistent}
+        toggleAction={() => dispatch(settingToggle(activeState, sourceFwConfig))} />
     </Col>
   </Row>;
 }

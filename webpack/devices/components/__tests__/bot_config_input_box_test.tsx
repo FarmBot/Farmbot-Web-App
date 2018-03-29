@@ -28,7 +28,7 @@ describe("<BotConfigInputBox />", () => {
 
   it("renders value: number", () => {
     bot.hardware.configuration.network_not_found_timer = 10;
-    const wrapper = shallow(<BotConfigInputBox {...fakeProps() } />);
+    const wrapper = shallow(<BotConfigInputBox {...fakeProps()} />);
     const inputBoxProps = wrapper.find("BlurableInput").props();
     expect(inputBoxProps.value).toEqual("10");
     expect(inputBoxProps.className).toEqual("");
@@ -37,7 +37,7 @@ describe("<BotConfigInputBox />", () => {
   it("doesn't render value: string", () => {
     // tslint:disable-next-line:no-any
     bot.hardware.configuration.network_not_found_timer = "bad" as any;
-    const wrapper = shallow(<BotConfigInputBox {...fakeProps() } />);
+    const wrapper = shallow(<BotConfigInputBox {...fakeProps()} />);
     expect(wrapper.find("BlurableInput").props().value).toEqual("");
   });
 
@@ -71,7 +71,7 @@ describe("<BotConfigInputBox />", () => {
 
   it("not consistent", () => {
     const p = fakeProps();
-    p.sourceFbosConfig = x => { return { value: 10, consistent: false }; };
+    p.sourceFbosConfig = () => { return { value: 10, consistent: false }; };
     const wrapper = shallow(<BotConfigInputBox {...p} />);
     expect(wrapper.find("BlurableInput").props().className).toEqual("dim");
   });

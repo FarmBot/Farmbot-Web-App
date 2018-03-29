@@ -1,9 +1,10 @@
-import { BotState, Xyz, BotPosition } from "../devices/interfaces";
-import { Vector3 } from "farmbot/dist";
+import { BotState, Xyz, BotPosition, ShouldDisplay } from "../devices/interfaces";
+import { Vector3, McuParams } from "farmbot/dist";
 import {
   TaggedUser,
   TaggedWebcamFeed,
-  TaggedPeripheral
+  TaggedPeripheral,
+  TaggedSensor
 } from "../resources/tagged_resources";
 import { NetworkState } from "../connectivity/interfaces";
 
@@ -13,7 +14,10 @@ export interface Props {
   feeds: TaggedWebcamFeed[];
   user: TaggedUser | undefined;
   peripherals: TaggedPeripheral[];
+  sensors: TaggedSensor[];
   botToMqttStatus: NetworkState;
+  firmwareSettings: McuParams;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface MoveProps {
@@ -26,7 +30,8 @@ export interface MoveProps {
   x_axis_inverted: boolean;
   y_axis_inverted: boolean;
   z_axis_inverted: boolean;
-  botToMqttStatus: NetworkState
+  botToMqttStatus: NetworkState;
+  firmwareSettings: McuParams;
 }
 
 export interface DirectionButtonProps {
@@ -93,6 +98,7 @@ export interface JogMovementControlsProps {
   y_axis_inverted: boolean;
   z_axis_inverted: boolean;
   bot: BotState;
+  firmwareSettings: McuParams;
   disabled: boolean | undefined;
 }
 

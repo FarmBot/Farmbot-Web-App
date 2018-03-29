@@ -30,7 +30,7 @@ function mapStateToProps(props: Everything): Props {
 
 @connect(mapStateToProps)
 export class Plants extends React.Component<Props, State> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   state: State = { searchTerm: "" };
 

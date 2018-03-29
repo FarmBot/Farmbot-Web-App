@@ -18,7 +18,7 @@ import { catchErrors } from "../util";
 @connect(mapStateToProps)
 export class Devices extends React.Component<Props, {}> {
   state = { online: navigator.onLine };
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   /** A record of all the things we know about connectivity right now. */
   get flags(): Record<DiagnosisName, StatusRowProps> {
@@ -46,7 +46,7 @@ export class Devices extends React.Component<Props, {}> {
   }
 
   refresh = () => {
-    this.props.dispatch(resetConnectionInfo(this.props.deviceAccount));
+    this.props.dispatch(resetConnectionInfo());
   };
 
   render() {
@@ -65,7 +65,9 @@ export class Devices extends React.Component<Props, {}> {
               bot={this.props.bot}
               botToMqttLastSeen={botToMqttLastSeen}
               botToMqttStatus={botToMqttStatus}
-              sourceFbosConfig={this.props.sourceFbosConfig} />
+              sourceFbosConfig={this.props.sourceFbosConfig}
+              shouldDisplay={this.props.shouldDisplay}
+              isValidFbosConfig={this.props.isValidFbosConfig} />
             <ConnectivityPanel
               status={this.props.deviceAccount.specialStatus}
               onRefresh={this.refresh}
@@ -84,13 +86,16 @@ export class Devices extends React.Component<Props, {}> {
               dispatch={this.props.dispatch}
               bot={this.props.bot}
               botToMqttStatus={botToMqttStatus}
-              sourceFbosConfig={this.props.sourceFbosConfig} />
+              sourceFbosConfig={this.props.sourceFbosConfig}
+              sourceFwConfig={this.props.sourceFwConfig}
+              firmwareConfig={this.props.firmwareConfig} />
             {this.props.bot.hardware.gpio_registry &&
               <PinBindings
                 dispatch={this.props.dispatch}
                 bot={this.props.bot}
                 resources={this.props.resources}
-                botToMqttStatus={botToMqttStatus} />}
+                botToMqttStatus={botToMqttStatus}
+                shouldDisplay={this.props.shouldDisplay} />}
           </Col>
         </Row>
       </Page>;

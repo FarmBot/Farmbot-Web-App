@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180301222052) do
+ActiveRecord::Schema.define(version: 20180315205136) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -97,7 +97,7 @@ ActiveRecord::Schema.define(version: 20180301222052) do
     t.integer "network_not_found_timer"
     t.string "firmware_hardware", default: "arduino"
     t.boolean "api_migrated", default: false
-    t.boolean "os_auto_update", default: false
+    t.boolean "os_auto_update", default: true
     t.boolean "arduino_debug_messages", default: false
     t.index ["device_id"], name: "index_fbos_configs_on_device_id"
   end
@@ -118,9 +118,9 @@ ActiveRecord::Schema.define(version: 20180301222052) do
     t.integer "encoder_missed_steps_max_x", default: 5
     t.integer "encoder_missed_steps_max_y", default: 5
     t.integer "encoder_missed_steps_max_z", default: 5
-    t.integer "encoder_scaling_x", default: 56
-    t.integer "encoder_scaling_y", default: 56
-    t.integer "encoder_scaling_z", default: 56
+    t.integer "encoder_scaling_x", default: 5556
+    t.integer "encoder_scaling_y", default: 5556
+    t.integer "encoder_scaling_z", default: 5556
     t.integer "encoder_type_x", default: 0
     t.integer "encoder_type_y", default: 0
     t.integer "encoder_type_z", default: 0
@@ -260,6 +260,7 @@ ActiveRecord::Schema.define(version: 20180301222052) do
     t.string "openfarm_slug", limit: 280, default: "50", null: false
     t.datetime "created_at"
     t.datetime "planted_at"
+    t.string "plant_stage", limit: 10, default: "planned"
     t.index ["created_at"], name: "index_plants_on_created_at"
   end
 
@@ -442,6 +443,7 @@ ActiveRecord::Schema.define(version: 20180301222052) do
     t.boolean "show_images", default: false
     t.string "photo_filter_begin"
     t.string "photo_filter_end"
+    t.boolean "discard_unsaved", default: false
     t.index ["device_id"], name: "index_web_app_configs_on_device_id"
   end
 

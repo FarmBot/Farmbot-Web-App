@@ -9,11 +9,11 @@ import { ready } from "./config/actions";
 import { Session } from "./session";
 import { attachToRoot } from "./util";
 import { Callback } from "i18next";
-import { routes } from "./route_config";
+import { topLevelRoutes } from "./route_config";
 
 interface RootComponentProps { store: Store; }
 
-export const attachAppToDom: Callback = (err, t) => {
+export const attachAppToDom: Callback = () => {
   attachToRoot(RootComponent, { store: _store });
   _store.dispatch(ready());
 };
@@ -30,7 +30,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
     // ==== END HACK ====
     return <Provider store={_store}>
       <Router history={history}>
-        {routes}
+        {topLevelRoutes}
       </Router>
     </Provider>;
   }

@@ -36,18 +36,18 @@ module Sequences
       # Finds CeleryScript nodes that are using `sequence_id` xyz, but excludes
       # nodes within the current sequence, since that would make deletion
       # impossible.
-      in_use = Sequence.where(id: EdgeNode
-          .where(kind: "sequence_id", value: sequence.id)
-          .where
-          .not(sequence_id: sequence.id)
-          .pluck(:value)
-          .uniq)
+
+      in_use_ids = EdgeNode
+        .where(kind: "sequence_id", value: sequence.id)
+        .pluck(:sequence_id)
+        .uniq
+        .without(sequence.id)
+      in_use_names = Sequence.where(id: in_use_ids)
         .pluck(:name)
         .map(&:inspect)
-      if in_use.any?
-        names = in_use.join(", ")
-        msg = IN_USE % ["sequences", names]
-        add_error(:sequence, :in_use, msg)
+      if in_use_names.any?
+        names = in_use_names.join(", ")
+        add_error(:sequence, :in_use, (IN_USE % ["sequences", names]))
       end
     end
 

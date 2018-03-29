@@ -13,7 +13,7 @@ import { catchErrors } from "../util";
 
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {
-  componentDidCatch(x: Error, y: React.ErrorInfo) { catchErrors(x, y); }
+  componentDidCatch(x: Error) { catchErrors(x); }
 
   render() {
     const { sequence } = this.props;
@@ -38,10 +38,9 @@ export class Sequences extends React.Component<Props, {}> {
               dispatch={this.props.dispatch}
               sequence={this.props.sequence}
               resources={this.props.resources}
-              consistent={this.props.consistent}
-              autoSyncEnabled={this.props.autoSyncEnabled}
               hardwareFlags={this.props.hardwareFlags}
-              farmwareInfo={this.props.farmwareInfo} />
+              farmwareInfo={this.props.farmwareInfo}
+              shouldDisplay={this.props.shouldDisplay} />
           </div>
         </Col>
         <Col sm={3}>

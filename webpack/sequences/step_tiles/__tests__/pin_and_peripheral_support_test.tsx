@@ -15,6 +15,9 @@ import {
   SENSOR_HEADING,
   sensorsAsDropDowns,
   setArgsDotPinNumber,
+  pinsAsDropDownsReadPin,
+  pinsAsDropDownsWritePin,
+  celery2DropDown,
 } from "../pin_and_peripheral_support";
 import * as _ from "lodash";
 import {
@@ -51,16 +54,16 @@ describe("Pin and Peripheral support files", () => {
   };
 
   it("has a list of unnamed pins", () => {
-    expect(pinDropdowns.length)
+    expect(pinDropdowns(n => n).length)
       .toBe(PIN_RANGE.length + 1); // 54 pins plus the header.
-    expect(pinDropdowns[0]).toBe(PIN_HEADING);
+    expect(pinDropdowns(n => n)[0]).toBe(PIN_HEADING);
     // Grab all uniq heading IDs- we expect only 1.
-    const values = _(pinDropdowns)
+    const values = _(pinDropdowns(n => n))
       .tail()
       .map((x: DropDownItem) => x.headingId)
       .uniq()
       .value();
-    expect(values).toEqual([PinGroupName.pin]);
+    expect(values).toEqual([PinGroupName.Pin]);
   });
 
   it("Makes a list of Peripheral drop downs", () => {
@@ -70,7 +73,11 @@ describe("Pin and Peripheral support files", () => {
     const result = peripheralsAsDropDowns(ri.index);
     expect(result.length).toEqual(2); // Heading + 1 peripheral
     expect(result[0]).toBe(PERIPHERAL_HEADING);
-    expect(result[1].label).toEqual(p.body.label);
+    expect(result[1]).toEqual({
+      label: p.body.label,
+      headingId: PinGroupName.Peripheral,
+      value: expect.stringContaining("Peripheral.")
+    });
   });
 
   it("Makes a list of Sensor drop downs", () => {
@@ -78,23 +85,72 @@ describe("Pin and Peripheral support files", () => {
     s.body.label = "The one";
     const ri = buildResourceIndex([s]);
     const result = sensorsAsDropDowns(ri.index);
-    expect(result.length).toEqual(2); // Heading + 1 peripheral
+    expect(result.length).toEqual(2); // Heading + 1 sensor
     expect(result[0]).toBe(SENSOR_HEADING);
-    expect(result[1].label).toEqual(s.body.label);
+    expect(result[1]).toEqual({
+      label: s.body.label,
+      headingId: PinGroupName.Sensor,
+      value: expect.stringContaining("Sensor.")
+    });
   });
 
-  it("does'nt add peripheral/sensor headers when none available", () => {
-    const s = fakeSensor();
-    s.body.label = "The one";
+  it("doesn't add peripheral/sensor headers when none available", () => {
     const ri = buildResourceIndex([]);
-    const result = sensorsAsDropDowns(ri.index);
-    expect(result).not.toContain(SENSOR_HEADING);
-    expect(result).not.toContain(PERIPHERAL_HEADING);
+    const sResult = sensorsAsDropDowns(ri.index);
+    const pResult = peripheralsAsDropDowns(ri.index);
+    expect(sResult).not.toContain(SENSOR_HEADING);
+    expect(pResult).not.toContain(PERIPHERAL_HEADING);
   });
 
   it("Validates correctness of `pin_type` at runtime", () => {
     expect(isPinType("foo")).toBe(false);
     expect(isPinType("Peripheral")).toBe(true);
+  });
+
+  describe("pinsAsDropDownsWritePin()", () => {
+    it("doesn't display peripherals", () => {
+      const s = fakeSensor();
+      const p = fakePeripheral();
+      s.body.label = "not displayed";
+      p.body.label = "not displayed";
+      const ri = buildResourceIndex([s, p]);
+      const result = pinsAsDropDownsWritePin(ri.index, () => false);
+      expect(JSON.stringify(result)).not.toContain("not displayed");
+    });
+
+    it("displays peripherals", () => {
+      const s = fakeSensor();
+      const p = fakePeripheral();
+      s.body.label = "not displayed";
+      p.body.label = "displayed peripherial";
+      const ri = buildResourceIndex([s, p]);
+      const result = pinsAsDropDownsWritePin(ri.index, () => true);
+      expect(JSON.stringify(result)).toContain("displayed peripherial");
+      expect(JSON.stringify(result)).not.toContain("not displayed");
+    });
+  });
+
+  describe("pinsAsDropDownsReadPin()", () => {
+    it("doesn't display peripherals and sensors", () => {
+      const s = fakeSensor();
+      const p = fakePeripheral();
+      s.body.label = "not displayed";
+      p.body.label = "not displayed";
+      const ri = buildResourceIndex([s, p]);
+      const result = pinsAsDropDownsReadPin(ri.index, () => false);
+      expect(JSON.stringify(result)).not.toContain("not displayed");
+    });
+
+    it("displays peripherals and sensors", () => {
+      const s = fakeSensor();
+      const p = fakePeripheral();
+      s.body.label = "displayed sensor";
+      p.body.label = "displayed peripheral";
+      const ri = buildResourceIndex([s, p]);
+      const result = pinsAsDropDownsReadPin(ri.index, () => true);
+      expect(JSON.stringify(result)).toContain("displayed sensor");
+      expect(JSON.stringify(result)).toContain("displayed peripheral");
+    });
   });
 
   describe("findByPinNumber", () => {
@@ -119,6 +175,7 @@ describe("Pin and Peripheral support files", () => {
       Object
         .keys(ri.references)
         .map(key => {
+          // tslint:disable-next-line:no-any
           ri.references[key] = { kind: "Intentionally wrong" } as any;
         });
       const boom = () => findByPinNumber(ri, np);
@@ -140,7 +197,6 @@ describe("Pin and Peripheral support files", () => {
     it("converts peripherals to DropDownItems", () => {
       const p = fakePeripheral();
       const ri = buildResourceIndex([p]).index;
-      debugger;
       const pin_type: AllowedPinTypes = "Peripheral";
       const pin_id = p.body.id || 0;
       const np: NamedPin = { kind: "named_pin", args: { pin_id, pin_type } };
@@ -148,7 +204,7 @@ describe("Pin and Peripheral support files", () => {
       const expected: DropDownItem = {
         label: p.body.label,
         value: p.body.id || NaN,
-        headingId: PinGroupName.peripheral
+        headingId: PinGroupName.Peripheral
       };
       expect(result).toEqual(expected);
     });
@@ -210,6 +266,25 @@ describe("Pin and Peripheral support files", () => {
       callback(ddi);
       expect(stepParams.dispatch)
         .toHaveBeenCalledWith(expect.objectContaining(action));
+    });
+  });
+
+  describe("celery2DropDown()", () => {
+    it("returns pin number item", () => {
+      const ri = buildResourceIndex([]);
+      const result = celery2DropDown(0, ri.index);
+      expect(result).toEqual({ headingId: "Pin", label: "Pin 0", value: 0 });
+    });
+
+    it("returns named pin item", () => {
+      const s = fakeSensor();
+      s.body.id = 1;
+      const ri = buildResourceIndex([s]);
+      const result = celery2DropDown({
+        kind: "named_pin",
+        args: { pin_type: "Sensor", pin_id: 1 }
+      }, ri.index);
+      expect(result).toEqual({ headingId: "Sensor", label: "Fake Pin", value: 1 });
     });
   });
 });

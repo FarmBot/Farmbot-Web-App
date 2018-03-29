@@ -1,13 +1,10 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { API } from "./api/index";
 import { AuthState } from "./auth/interfaces";
-import { HttpData } from "./util";
 import { setToken } from "./auth/actions";
 
-type Resp = HttpData<AuthState>;
-
 /** What to do when the Token refresh request completes. */
-const ok = (x: Resp) => {
+const ok = (x: AxiosResponse<AuthState>) => {
   setToken(x.data); // Start using new token in HTTP requests.
   return x.data;
 };
@@ -19,6 +16,6 @@ export let maybeRefreshToken
     API.setBaseUrl(old.token.unencoded.iss);
     setToken(old); // Precaution: The Axios interceptors might not be set yet.
     return axios
-      .get(API.current.tokensPath)
+      .get<AuthState>(API.current.tokensPath)
       .then(ok, () => Promise.resolve(undefined));
   };

@@ -3,7 +3,7 @@ import { DropDownItem, Row, Col, FBSelect } from "../../../ui/index";
 import { t } from "i18next";
 import {
   CameraSelectionProps, CameraSelectionState
-} from "../../interfaces";
+} from "./interfaces";
 import { info, success, error } from "farmbot-toastr/dist";
 import { getDevice } from "../../../device";
 import { ColWidth } from "../farmbot_os_settings";
@@ -63,7 +63,8 @@ export class CameraSelection
             list={CAMERA_CHOICES}
             selectedItem={this.selectedCamera()}
             placeholder="Select a camera..."
-            onChange={this.sendOffConfig} />
+            onChange={this.sendOffConfig}
+            extraClass={this.props.botOnline ? "" : "disabled"} />
         </div>
       </Col>
     </Row>;

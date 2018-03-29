@@ -1,7 +1,6 @@
 import { AddEditFarmEventProps, ExecutableType } from "../interfaces";
 import { Everything } from "../../interfaces";
 import * as moment from "moment";
-import * as _ from "lodash";
 import { t } from "i18next";
 import { history, getPathArray } from "../../history";
 import {
@@ -79,51 +78,23 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     }
   };
 
-  const executableOptions: DropDownItem[] = [];
-
-  executableOptions.push({
-    label: t("Regimen"),
-    heading: true,
-    value: 0,
-    headingId: "Regimen"
-  });
-
-  selectAllRegimens(props.resources.index).map(regimen => {
-    if (regimen.kind === "Regimen" && regimen.body.id) {
-      executableOptions.push({
-        label: regimen.body.name,
-        headingId: "Regimen",
-        value: regimen.body.id
+  const addExecutables =
+    (resource: (TaggedSequence | TaggedRegimen)[]): DropDownItem[] => {
+      const d: DropDownItem[] = [];
+      resource.map(r => {
+        if (r.body.id) {
+          d.push({ label: r.body.name, headingId: r.kind, value: r.body.id });
+        }
       });
-    }
-  });
+      return d;
+    };
 
-  executableOptions.push({
-    label: t("Sequence"),
-    heading: true,
-    value: 0,
-    headingId: "Sequence"
-  });
-
-  selectAllSequences(props.resources.index).map(sequence => {
-    if (sequence.kind === "Sequence" && sequence.body.id) {
-      executableOptions.push({
-        label: sequence.body.name,
-        headingId: "Sequence",
-        value: sequence.body.id
-      });
-    }
-  });
-
-  const executableWithHeading = executableOptions
-    .filter(x => !x.heading)
-    .map(x => {
-      return {
-        label: `${x.headingId}: ${x.label}`,
-        value: x.value,
-        headingId: _.capitalize(x.headingId)
-      };
-    });
+  const executableList: DropDownItem[] = [
+    { label: t("Sequences"), heading: true, value: 0, headingId: "Sequence" },
+    ...addExecutables(selectAllSequences(props.resources.index)),
+    { label: t("Regimens"), heading: true, value: 0, headingId: "Regimen" },
+    ...addExecutables(selectAllRegimens(props.resources.index)),
+  ];
 
   const regimensById = indexRegimenById(props.resources.index);
   const sequencesById = indexSequenceById(props.resources.index);
@@ -156,7 +127,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     regimensById,
     sequencesById,
     farmEventsById,
-    executableOptions: executableWithHeading,
+    executableOptions: executableList,
     repeatOptions,
     handleTime,
     farmEvents,

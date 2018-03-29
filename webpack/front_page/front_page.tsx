@@ -4,7 +4,7 @@ import { t } from "i18next";
 import * as _ from "lodash";
 import { error as log, success, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
-import { prettyPrintApiErrors, HttpData } from "../util";
+import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState } from "./interfaces";
@@ -25,23 +25,16 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       regConfirmation: "",
       email: "",
       loginPassword: "",
-      showServerOpts: false,
-      serverURL: "",
-      serverPort: "",
       agreeToTerms: false,
       activePanel: "login"
     };
-    this.toggleServerOpts = this.toggleServerOpts;
   }
 
   componentDidMount() {
     if (Session.fetchStoredToken()) { window.location.href = "/app/controls"; }
     logInit();
     API.setBaseUrl(API.fetchBrowserLocation());
-    this.setState({
-      serverURL: API.fetchHostName(),
-      serverPort: API.inferPort()
-    });
+    this.setState({});
   }
 
   set = (name: keyof FrontPageState) =>
@@ -60,17 +53,11 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
 
   submitLogin = (e: React.FormEvent<{}>) => {
     e.preventDefault();
-    const { email, loginPassword, showServerOpts } = this.state;
+    const { email, loginPassword } = this.state;
     const payload = { user: { email, password: loginPassword } };
-    let url: string;
-    if (showServerOpts) {
-      url = `//${this.state.serverURL}:${this.state.serverPort}`;
-    } else {
-      url = API.fetchBrowserLocation();
-    }
-    API.setBaseUrl(url);
-    axios.post(API.current.tokensPath, payload)
-      .then((resp: HttpData<AuthState>) => {
+    API.setBaseUrl(API.fetchBrowserLocation());
+    axios.post<AuthState>(API.current.tokensPath, payload)
+      .then(resp => {
         Session.replaceToken(resp.data);
         window.location.href = "/app/controls";
       }).catch((error: Error) => {
@@ -114,10 +101,6 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     }).catch(error => {
       log(prettyPrintApiErrors(error));
     });
-  }
-
-  toggleServerOpts = () => {
-    this.setState({ showServerOpts: !this.state.showServerOpts });
   }
 
   toggleForgotPassword = () => this.setState({ activePanel: "forgotPassword" });
@@ -177,12 +160,6 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       onEmailChange: this.set("email"),
       loginPassword: this.state.loginPassword || "",
       onLoginPasswordChange: this.set("loginPassword"),
-      serverURL: this.state.serverURL || "",
-      onServerURLChange: this.set("serverURL"),
-      serverPort: this.state.serverPort || "",
-      onServerPortChange: this.set("serverPort"),
-      showServerOpts: !!this.state.showServerOpts,
-      onToggleServerOpts: this.toggleServerOpts,
       onToggleForgotPassword: this.toggleForgotPassword,
       onSubmit: this.submitLogin,
     };
@@ -204,7 +181,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     const goBack = () => this.setState({ activePanel: "login" });
     return <ResendVerification
       onGoBack={goBack}
-      ok={(resp) => {
+      ok={() => {
         success(t("Verification email resent. Please check your email!"));
         goBack();
       }}

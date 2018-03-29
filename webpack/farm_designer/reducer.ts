@@ -46,7 +46,7 @@ export let designer = generateReducer<DesignerState>(initialState)
     state.cropSearchResults = a.payload;
     return state;
   })
-  .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
+  .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s) => {
     s.selectedPlants = undefined;
     s.hoveredPlant = { plantUUID: undefined, icon: "" };
     return s;

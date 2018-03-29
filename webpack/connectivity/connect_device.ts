@@ -16,7 +16,6 @@ import {
   badVersion
 } from "../devices/actions";
 import { init } from "../api/crud";
-import { versionOK } from "../devices/reducer";
 import { AuthState } from "../auth/interfaces";
 import { TaggedResource, SpecialStatus } from "../resources/tagged_resources";
 import { autoSync } from "./auto_sync";
@@ -24,6 +23,7 @@ import { startPinging } from "./ping_mqtt";
 import { talk } from "browser-speech";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
+import { versionOK } from "../util";
 export const TITLE = "New message from bot";
 
 /** TODO: This ought to be stored in Redux. It is here because of historical

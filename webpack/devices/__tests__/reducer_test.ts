@@ -1,24 +1,10 @@
-import { versionOK, botReducer, initialState } from "../reducer";
+import { botReducer, initialState } from "../reducer";
 import { Actions } from "../../constants";
 import { ControlPanelState } from "../interfaces";
 import * as _ from "lodash";
 import { defensiveClone } from "../../util";
 import { networkUp, networkDown } from "../../connectivity/actions";
 import { stash } from "../../connectivity/data_consistency";
-
-describe("safeStringFetch", () => {
-  it("Checks the correct version on update", () => {
-    expect(versionOK("9.1.9-rc99", 3, 0)).toBeTruthy();
-    expect(versionOK("3.0.9-rc99", 3, 0)).toBeTruthy();
-    expect(versionOK("4.0.0", 3, 0)).toBeTruthy();
-    expect(versionOK("4.0.0", 3, 1)).toBeTruthy();
-    expect(versionOK("3.1.0", 3, 0)).toBeTruthy();
-    expect(versionOK("2.0.-", 3, 0)).toBeFalsy();
-    expect(versionOK("2.9.4", 3, 0)).toBeFalsy();
-    expect(versionOK("1.9.6", 3, 0)).toBeFalsy();
-    expect(versionOK("3.1.6", 4, 0)).toBeFalsy();
-  });
-});
 
 describe("botRedcuer", () => {
   it("Starts / stops an update", () => {
@@ -69,6 +55,22 @@ describe("botRedcuer", () => {
       payload: { version: "1.2.3", commit: undefined }
     }).currentOSVersion;
     expect(r).toBe("1.2.3");
+  });
+
+  it("fetches beta OS update info", () => {
+    const r = botReducer(initialState(), {
+      type: Actions.FETCH_BETA_OS_UPDATE_INFO_OK,
+      payload: { version: "1.2.3", commit: undefined }
+    }).currentBetaOSVersion;
+    expect(r).toBe("1.2.3");
+  });
+
+  it("fetches min OS feature data", () => {
+    const r = botReducer(initialState(), {
+      type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK,
+      payload: {}
+    }).minOsFeatureData;
+    expect(r).toEqual({});
   });
 
   it("resets hardware state when transitioning into mainenance mode.", () => {

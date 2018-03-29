@@ -5,9 +5,9 @@ jest.mock("../maybe_start_tracking", () => {
 jest.mock("axios", () => {
   return {
     default: {
-      delete: (url: string) => Promise.resolve({}),
-      post: (url: string, data: object) => Promise.resolve({ data }),
-      put: (url: string, data: object) => Promise.resolve({ data })
+      delete: () => Promise.resolve({}),
+      post: (data: object) => Promise.resolve({ data }),
+      put: (data: object) => Promise.resolve({ data })
     }
   };
 });
@@ -27,7 +27,7 @@ describe("AJAX data tracking", () => {
   API.setBaseUrl("http://blah.whatever.party");
   const initialState = { resources: buildResourceIndex() };
   const wrappedReducer =
-    (state: typeof initialState, action: ReduxAction<any>) => {
+    (state: typeof initialState, action: ReduxAction<void>) => {
       return { resources: resourceReducer(state.resources, action) };
     };
 

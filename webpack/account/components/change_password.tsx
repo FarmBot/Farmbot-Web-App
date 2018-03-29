@@ -47,7 +47,7 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
     this.setState({ status: SpecialStatus.SAVING });
     Axios
       .patch(API.current.usersPath, this.state.form)
-      .then((r) => {
+      .then(() => {
         success(t("Your password is changed."));
         this.clearForm();
       }, (e) => {

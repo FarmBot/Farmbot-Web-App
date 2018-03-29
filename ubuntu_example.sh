@@ -4,7 +4,7 @@
 sudo apt-get remove docker docker-engine docker.io
 
 # Install docker
-sudo apt-get install apt-transport-https ca-certificates curl software-properties-common --yes
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common rake --yes
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable" --yes
 sudo apt-get update --yes
@@ -50,8 +50,9 @@ cp config/database.example.yml config/database.yml
 # Open `config/application.yml` in a text editor and change all the values.
 #
 # == Nothing will work if you skip this step!!! ==
-
-mv config/application.example.yml config/application.yml
+# Don't know which editor to use?
+# Use micro! `snap install micro --classic`
+cp config/application.example.yml config/application.yml
 # READ THE FILE AND CHANGE THE VALUES ^
 sudo -u postgres psql
 # Run this:

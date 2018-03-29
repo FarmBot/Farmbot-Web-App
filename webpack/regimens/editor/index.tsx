@@ -23,7 +23,7 @@ function MiddleSection({ regimen, dispatch, calendar }: MiddleSectionProps) {
 
 function save({ regimen, dispatch }: RegimenProps) {
   if (regimen) {
-    return (event: React.FormEvent<{}>) => {
+    return () => {
       dispatch(saveRegimen(regimen.uuid));
     };
   } else { throw new Error("Tried to save regimen, but there wasn't one."); }
@@ -31,7 +31,7 @@ function save({ regimen, dispatch }: RegimenProps) {
 
 function remove({ regimen, dispatch }: DeleteButtonProps) {
   if (regimen) {
-    return (event: React.FormEvent<{}>) =>
+    return () =>
       regimen && dispatch(deleteRegimen(regimen.uuid));
   } else {
     // Technically unreachable, but I'll keep TS happy...

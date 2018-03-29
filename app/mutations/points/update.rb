@@ -1,6 +1,10 @@
 module Points
   class Update < Mutations::Command
-    WHITELIST = [:tool_id, :openfarm_slug, :pullout_direction]
+    WHITELIST = [ :tool_id,
+                  :openfarm_slug,
+                  :pullout_direction,
+                  :plant_stage,
+                  :planted_at ]
 
     required do
       model :device, class: Device
@@ -16,6 +20,8 @@ module Points
       string  :name
       string  :openfarm_slug
       integer :pullout_direction
+      string  :plant_stage, in: CeleryScriptSettingsBag::PLANT_STAGES
+      time    :planted_at
       hstore  :meta
     end
 

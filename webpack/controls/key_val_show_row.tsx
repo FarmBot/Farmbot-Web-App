@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Row, Col } from "../ui/index";
 import { ToggleButton } from "./toggle_button";
+import { t } from "i18next";
 
 export interface KeyValRowProps {
   label: string;
@@ -27,7 +28,7 @@ export function KeyValShowRow(p: KeyValRowProps) {
       <ToggleButton
         toggleValue={toggleValue}
         toggleAction={onClick}
-        customText={{ textFalse: "off", textTrue: "on" }}
+        customText={{ textFalse: t("off"), textTrue: t("on") }}
         disabled={disabled} />
     </Col>
   </Row>;

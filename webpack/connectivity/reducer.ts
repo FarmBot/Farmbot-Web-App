@@ -23,7 +23,7 @@ export let connectivityReducer =
       }
       return s;
     })
-    .add<Actions.RESET_NETWORK>(Actions.RESET_NETWORK, (s, a) => {
+    .add<Actions.RESET_NETWORK>(Actions.RESET_NETWORK, (s, _) => {
       type Keys = (keyof ConnectionState)[];
       const keys: Keys = ["bot.mqtt", "user.mqtt", "user.api"];
       keys.map(x => (s[x] = undefined));

@@ -1,92 +1,95 @@
-import * as React from "react";
 import { t } from "i18next";
 import {
   getAllSavedPeripherals,
-  getAllSavedSensors
+  selectAllSavedSensors
 } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
-import { JSXChildren } from "../../util/index";
 import { DropDownItem } from "../../ui";
 import { range, isNumber, isString } from "lodash";
-import { TaggedPeripheral, TaggedSensor, ResourceName } from "../../resources/tagged_resources";
+import {
+  TaggedPeripheral, TaggedSensor, ResourceName
+} from "../../resources/tagged_resources";
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../util/errors";
 import { joinKindAndId } from "../../resources/reducer";
 import { StepParams } from "../interfaces";
 import { editStep } from "../../api/crud";
-
-interface StepCheckBoxProps {
-  onClick(): void;
-  children?: JSXChildren;
-  checked?: boolean;
-}
-
-export function StepCheckBox(props: StepCheckBoxProps) {
-  return <>
-    <label>{props.children}</label>
-    <div className="fb-checkbox">
-      <input
-        type="checkbox"
-        onChange={props.onClick}
-        checked={!!props.checked} />
-    </div>
-  </>;
-}
+import { ShouldDisplay, Feature } from "../../devices/interfaces";
 
 /** `headingIds` required to group the three kinds of pins. */
-export enum PinGroupName { sensor = "👂", peripheral = "🔌", pin = "📌" }
+export enum PinGroupName {
+  Sensor = "Sensor",
+  Peripheral = "Peripheral",
+  Pin = "Pin",
+  Position = "Position"
+}
 
 export const PERIPHERAL_HEADING: DropDownItem =
-  ({ heading: true, label: "➖ "+t("Peripherals"), value: 0 });
+  ({ heading: true, label: t("Peripherals"), value: 0 });
 
 export const SENSOR_HEADING: DropDownItem =
-  ({ heading: true, label: "➖ "+t("Sensors"), value: 0 });
+  ({ heading: true, label: t("Sensors"), value: 0 });
 
 export const PIN_HEADING: DropDownItem =
-  ({ heading: true, label: "➖ "+t("Pins"), value: 0 });
+  ({ heading: true, label: t("Pins"), value: 0 });
 
 /** Pass it the number X and it will generate a DropDownItem for `pin x`. */
-const pinNumber2DropDown =
-  (n: number) => ({ label: t("Pin")+` ${n}`, value: n, headingId: PinGroupName.pin });
+export const pinNumber2DropDown =
+  (valueFormat: (n: number) => (string | number)) =>
+    (n: number) => {
+      const analog = n > 53 ? ` (A${n - 54})` : "";
+      const label = `${t("Pin")} ${n}${analog}`;
+      return { label, value: valueFormat(n), headingId: PinGroupName.Pin };
+    };
 
 const peripheral2DropDown =
   (x: TaggedPeripheral): DropDownItem => ({
     label: x.body.label,
     value: x.uuid,
-    headingId: PinGroupName.peripheral
+    headingId: PinGroupName.Peripheral
   });
 
 const sensor2DropDown =
   (x: TaggedSensor): DropDownItem => ({
     label: x.body.label,
     value: x.uuid,
-    headingId: PinGroupName.peripheral
+    headingId: PinGroupName.Sensor
   });
 
 export function peripheralsAsDropDowns(input: ResourceIndex): DropDownItem[] {
   const list = getAllSavedPeripherals(input).map(peripheral2DropDown);
-  return (list.length) ? [PERIPHERAL_HEADING, ...list] : [];
+  return list.length ? [PERIPHERAL_HEADING, ...list] : [];
 }
 
 export function sensorsAsDropDowns(input: ResourceIndex): DropDownItem[] {
-  const list = getAllSavedSensors(input).map(sensor2DropDown);
+  const list = selectAllSavedSensors(input).map(sensor2DropDown);
   return list.length ? [SENSOR_HEADING, ...list] : [];
 }
 
 /** Number of pins in an Arduino Mega */
-export const PIN_RANGE = range(0, 54);
+export const PIN_RANGE = range(0, 70);
 
-export const pinDropdowns = [PIN_HEADING, ...PIN_RANGE.map(pinNumber2DropDown)];
+export function pinDropdowns(
+  valueFormat: (n: number) => string | number): DropDownItem[] {
+  return [PIN_HEADING, ...PIN_RANGE.map(pinNumber2DropDown(valueFormat))];
+}
 
-export const pinsAsDropDowns = (input: ResourceIndex): DropDownItem[] => [
-  ...peripheralsAsDropDowns(input),
-  ...sensorsAsDropDowns(input),
-  ...pinDropdowns,
-];
+export const pinsAsDropDownsWritePin =
+  (input: ResourceIndex, shouldDisplay: ShouldDisplay): DropDownItem[] => [
+    ...(shouldDisplay(Feature.named_pins) ? peripheralsAsDropDowns(input) : []),
+    ...pinDropdowns(n => n),
+  ];
+
+export const pinsAsDropDownsReadPin =
+  (input: ResourceIndex, shouldDisplay: ShouldDisplay): DropDownItem[] => [
+    ...(shouldDisplay(Feature.named_pins) ? peripheralsAsDropDowns(input) : []),
+    ...(shouldDisplay(Feature.named_pins) ? sensorsAsDropDowns(input) : []),
+    ...pinDropdowns(n => n),
+  ];
 
 const TYPE_MAPPING: Record<AllowedPinTypes, PinGroupName> = {
-  "Peripheral": PinGroupName.peripheral,
-  "Sensor": PinGroupName.sensor
+  "Peripheral": PinGroupName.Peripheral,
+  "Sensor": PinGroupName.Sensor
 };
 
 export const isPinType =
@@ -160,6 +163,6 @@ type PinNumber = ReadPin["args"]["pin_number"];
 
 export function celery2DropDown(input: PinNumber, ri: ResourceIndex) {
   return isNumber(input)
-    ? pinNumber2DropDown(input)
+    ? pinNumber2DropDown(n => n)(input)
     : namedPin2DropDown(ri, input);
 }
