@@ -29,6 +29,7 @@ class Log < ApplicationRecord
   end
 
   # Legacy shims ===============================================================
+  #  TODO: Remove these once FBOS stops using the `meta` field.
   def meta
     {
       type:                      self.type,
@@ -38,14 +39,12 @@ class Log < ApplicationRecord
       x:                         self.x,
       y:                         self.y,
       z:                         self.z,
-      _META_FIELD_IS_DEPRECATED: true
     }
   end
 
   def meta=(hash)
-    hash.map do |(key,value)|
-      self.send("#{key}=", value)
-    end
+    meta.keys.map { |key| self.send("#{key}=", nil) }
+    hash.map      { |(key,value)| self.send("#{key}=", value)  }
     self.meta
   end
   # End Legacy shims ===========================================================

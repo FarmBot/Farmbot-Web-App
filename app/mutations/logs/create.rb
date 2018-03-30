@@ -75,6 +75,7 @@ module Logs
         verbosity:     meta[:verbosity],
         major_version: meta[:major_version],
         minor_version: meta[:minor_version],
+        type:          meta[:type]
       }
     end
   end
