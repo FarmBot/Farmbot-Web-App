@@ -175,5 +175,10 @@ describe Api::LogsController do
         expect(last_email).to eq(nil)
       end
     end
+
+    it 'filters logs based on log filtering settings in `WebAppConfig` ' do
+      pending 'TODO'
+      # Create a bunch of logs with different verbosity levels and try to filter
+    end
   end
 end
