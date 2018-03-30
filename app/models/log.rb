@@ -32,13 +32,13 @@ class Log < ApplicationRecord
   #  TODO: Remove these once FBOS stops using the `meta` field.
   def meta
     {
-      type:                      self.type,
-      major_version:             self.major_version,
-      minor_version:             self.minor_version,
-      verbosity:                 self.verbosity,
-      x:                         self.x,
-      y:                         self.y,
-      z:                         self.z,
+      type:          self.type,
+      major_version: self.major_version,
+      minor_version: self.minor_version,
+      verbosity:     self.verbosity,
+      x:             self.x,
+      y:             self.y,
+      z:             self.z,
     }
   end
 
