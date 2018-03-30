@@ -1,6 +1,11 @@
 # A device will emit logs when events occur on the Raspberry Pi. Logs are then
 # read by clients. Logs are only created by devices.
 class Log < ApplicationRecord
+  # We use log.type to store the log's type.
+  # Rails wants to use that name for single table inheritence, which we don't
+  # need for this table.
+  # Setting the `inheritence_column` to "none" alleviate
+  self.inheritance_column = "none"
   # Used by the frontend to pull most recent records. We don't currently support
   # pagination, but could later on.
   PAGE_SIZE = 25
@@ -21,8 +26,18 @@ class Log < ApplicationRecord
 
   def set_defaults
     self.channels ||= []
-    self.meta ||= {}
-    self.meta[:type] ||= "info"
+  end
+
+  def meta
+    {
+      type:          self.type,
+      major_version: self.major_version,
+      minor_version: self.minor_version,
+      verbosity:     self.verbosity,
+      x:             self.x,
+      y:             self.y,
+      z:             self.z
+    }
   end
 
   def meta=(*)
