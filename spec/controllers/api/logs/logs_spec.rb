@@ -178,52 +178,72 @@ describe Api::LogsController do
   end
 
   describe "#search" do
-    it 'filters logs based on log filtering settings in `WebAppConfig` ' do
+    examples = [
+      [1, "success"],
+      [1, "busy"],
+      [1, "warn"],
+      [1, "error"],
+      [1, "info"],
+      [1, "fun"],
+      [1, "debug"],
+
+      [2, "success"],
+      [2, "busy"],
+      [2, "warn"],
+      [2, "error"],
+      [2, "info"],
+      [2, "fun"],
+      [2, "debug"],
+
+      [3, "success"],
+      [3, "busy"],
+      [3, "warn"],
+      [3, "error"],
+      [3, "info"],
+      [3, "fun"],
+      [3, "debug"],
+    ]
+
+    it 'filters ALL logs based on log filtering settings in `WebAppConfig` ' do
       sign_in user
       Log.destroy_all
-      examples = [
-        [0, "success"],
-        [0, "busy"],
-        [0, "warn"],
-        [0, "error"],
-        [0, "info"],
-        [0, "fun"],
-        [0, "debug"],
-
-        [1, "success"],
-        [1, "busy"],
-        [1, "warn"],
-        [1, "error"],
-        [1, "info"],
-        [1, "fun"],
-        [1, "debug"],
-
-        [2, "success"],
-        [2, "busy"],
-        [2, "warn"],
-        [2, "error"],
-        [2, "info"],
-        [2, "fun"],
-        [2, "debug"],
-      ]
-     filters = {success_log: 3,
-                busy_log:    3,
-                warn_log:    3,
-                error_log:   3,
-                info_log:    3,
-                fun_log:     3,
-                debug_log:   3}
-      count = examples.length
       conf  = user.device.web_app_config
       examples.map do |(verbosity, type)|
         FactoryBot.create(:log, device:    user.device,
                                 verbosity: verbosity,
                                 type:      type)
       end
-      conf.update_attributes(filters)
+      conf.update_attributes(success_log: 3,
+                             busy_log:    3,
+                             warn_log:    3,
+                             error_log:   3,
+                             info_log:    3,
+                             fun_log:     3,
+                             debug_log:   3)
       post :search
       expect(response.status).to eq(200)
       expect(json.length).to eq(0)
+    end
+
+    it 'filters NO logs based on log filtering settings in `WebAppConfig` ' do
+      sign_in user
+      Log.destroy_all
+      conf  = user.device.web_app_config
+      examples.map do |(verbosity, type)|
+        FactoryBot.create(:log, device:    user.device,
+                                verbosity: verbosity,
+                                type:      type)
+      end
+      conf.update_attributes(success_log: 0,
+                             busy_log:    0,
+                             warn_log:    0,
+                             error_log:   0,
+                             info_log:    0,
+                             fun_log:     0,
+                             debug_log:   0)
+      post :search
+      expect(response.status).to eq(200)
+      expect(json.length).to eq(examples.length)
     end
   end
 end
