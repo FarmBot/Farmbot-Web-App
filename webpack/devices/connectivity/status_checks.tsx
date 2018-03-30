@@ -30,7 +30,7 @@ export function botToAPI(stat: string | undefined,
     from: "FarmBot",
     to: "Web App",
     connectionStatus: stat ? (now.diff(moment(stat)) < SIX_HOURS) : false,
-    children: stat ? t("Last message seen ") + `${ago(stat.at)}.` : NOT_SEEN
+    children: stat ? t("Last message seen ") + `${ago(stat)}.` : NOT_SEEN
   };
 }
 
