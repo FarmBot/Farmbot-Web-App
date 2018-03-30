@@ -15,7 +15,7 @@ function ago(input: string) {
 }
 
 function lastSeen(stat: ConnectionStatus | undefined): string {
-  return stat ? `Last message seen ${ago(stat.at)}.` : NOT_SEEN;
+  return stat ? t("Last message seen ") + `${ago(stat.at)}.` : NOT_SEEN;
 }
 
 function statusOf(stat: ConnectionStatus | undefined): boolean | undefined {
@@ -30,7 +30,7 @@ export function botToAPI(stat: string | undefined,
     from: "FarmBot",
     to: "Web App",
     connectionStatus: stat ? (now.diff(moment(stat)) < SIX_HOURS) : false,
-    children: stat ? `Last message seen ${ago(stat)}.` : NOT_SEEN
+    children: stat ? t("Last message seen ") + `${ago(stat)}.` : NOT_SEEN
   };
 }
 

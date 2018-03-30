@@ -29,7 +29,7 @@ export function SensorForm(props: SensorFormProps) {
         <Col xs={3}>
           <FBSelect
             selectedItem={
-              { label: `Pin ${p.body.pin}`, value: p.body.pin || "" }}
+              { label: t("Pin ") + `${p.body.pin}`, value: p.body.pin || "" }}
             onChange={d => dispatch(edit(p, {
               pin: parseInt(d.value.toString(), 10)
             }))}
