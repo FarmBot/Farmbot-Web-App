@@ -28,6 +28,7 @@ class Log < ApplicationRecord
     self.channels ||= []
   end
 
+  # Legacy shims ===============================================================
   def meta
     {
       type:          self.type,
@@ -40,9 +41,13 @@ class Log < ApplicationRecord
     }
   end
 
-  def meta=(*)
-    puts "This column is read-only now."
+  def meta=(hash)
+    hash.map do |(key,value)|
+      self.send("#{key}=", value)
+    end
+    self.meta
   end
+  # End Legacy shims ===========================================================
 
   def broadcast? # Logs get their own special channel. Don't echo twice!
     false
