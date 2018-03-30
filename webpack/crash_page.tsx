@@ -1,5 +1,5 @@
 import * as React from "react";
-import { get, noop } from "lodash";
+import { get } from "lodash";
 import { Page } from "./ui/index";
 import { Session } from "./session";
 
@@ -9,8 +9,9 @@ export function crashPage(error: object) {
     render() {
       const stack = get(error, "stack", "No stack.");
       const message = get(error, "message", "No message available.");
-      const Rollbar = get(window, "Rollbar", { error: noop });
-      Rollbar.error(error);
+      window.Rollbar &&
+        window.Rollbar.error &&
+        window.Rollbar.error(error);
       const msg = JSON.stringify({ message, stack });
 
       return <Page>

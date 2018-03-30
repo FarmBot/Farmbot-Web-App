@@ -83,6 +83,24 @@
   }
 }
 
+.sequence-list-items,
+.regimen-list {
+  button {
+    label {
+      width: 90%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin-top: 0.5rem;
+      float: left;
+    }
+  }
+  i {
+    float: right;
+    margin-top: 0.75rem;
+  }
+}
+
 .sequence-list-items {
   margin-right: 15px;
 }

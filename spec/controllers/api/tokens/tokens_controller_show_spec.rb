@@ -35,6 +35,21 @@ describe Api::TokensController do
       expect(json.dig(:error, :jwt)).to eq(Auth::ReloadToken::BAD_SUB)
     end
 
+
+    it 'allows good tokens' do
+      request.headers["Authorization"] = "bearer #{auth_token.encoded}"
+      get :show
+      expect(response.status).to be(200)
+    end
+
+    it 'denies expired (revoked) tokens' do
+      request.headers["Authorization"] = "bearer #{auth_token.encoded}"
+      TokenIssuance.destroy_all
+      get :show
+      expect(response.status).to eq(401)
+      expect(json.dig(:error, :jwt)).to include("log out and try again")
+    end
+
     it 'handles bad `sub` claims' do
       # Simulate a legacy API token.
       token = AbstractJwtToken.new([{

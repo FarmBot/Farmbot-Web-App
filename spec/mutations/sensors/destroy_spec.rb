@@ -10,18 +10,22 @@ describe Sensors::Destroy do
   end
 
   it "doesn't destroy a sensor if it's in use" do
-    FactoryBot.create(:sequence,
-                      device: sensor.device,
-                      body: [{kind: "read_pin",
+    FakeSequence.create(device: sensor.device,
+                        body: [{
+                          kind: "read_pin",
+                          args: {
+                            pin_mode: 0,
+                            label: "FOO",
+                            pin_number: {
+                              kind: "named_pin",
                               args: {
-                                pin_number: {
-                                  kind: "named_pin",
-                                  args: { pin_type: "Sensor", pin_id: sensor.id }
-                                },
-                                mode: 0,
-                                label: "FOO"
+                                pin_type: "Sensor",
+                                pin_id: sensor.id
                               }
-                            }])
+                            },
+                          }
+                        }
+                      ])
     before = Sensor.count
     result = Sensors::Destroy.run(sensor: sensor)
     expect(result.errors).to be

@@ -1,11 +1,7 @@
-[![codebeat badge](https://codebeat.co/badges/7b023dc5-6509-42af-ad6e-ec0b8262ef13)](https://codebeat.co/projects/github-com-rickcarlino-farmbot-web-app-master)
-
-
-[![Coverage Status](https://coveralls.io/repos/github/FarmBot/Farmbot-Web-App/badge.svg)](https://coveralls.io/github/FarmBot/Farmbot-Web-App)(Frontend)
-
-
-[![codecov](https://codecov.io/gh/FarmBot/Farmbot-Web-App/branch/master/graph/badge.svg)](https://codecov.io/gh/FarmBot/Farmbot-Web-App)(API)
-
+# FarmBot Web App
+[![codebeat badge](https://codebeat.co/badges/7f81859b-67fe-4bdb-b56f-050bfed35e9c)](https://codebeat.co/projects/github-com-farmbot-farmbot-web-app-staging)
+[![codecov](https://codecov.io/gh/FarmBot/Farmbot-Web-App/branch/master/graph/badge.svg)](https://codecov.io/gh/FarmBot/Farmbot-Web-App)
+[![Coverage Status](https://coveralls.io/repos/github/FarmBot/Farmbot-Web-App/badge.svg)](https://coveralls.io/github/FarmBot/Farmbot-Web-App)
 [![Maintainability](https://api.codeclimate.com/v1/badges/74091163d8a02bb8988f/maintainability)](https://codeclimate.com/github/FarmBot/Farmbot-Web-App/maintainability)
 
 

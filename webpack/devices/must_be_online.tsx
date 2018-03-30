@@ -1,6 +1,5 @@
 import * as React from "react";
 import { t } from "i18next";
-import { JSXChildren } from "../util";
 import { NetworkState } from "../connectivity/interfaces";
 import { SyncStatus } from "farmbot";
 
@@ -10,7 +9,7 @@ export interface MBOProps {
   syncStatus: SyncStatus | undefined;
   lockOpen?: boolean;
   hideBanner?: boolean;
-  children?: JSXChildren;
+  children?: React.ReactNode;
 }
 
 export function isBotUp(status: SyncStatus | undefined) {

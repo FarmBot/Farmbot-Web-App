@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Regimens::Update do
-  let(:sequence) { FactoryBot.create(:sequence) }
+  let(:sequence) { FakeSequence.create() }
   let(:device) { sequence.device }
 
   it 'updates an existing regimen' do

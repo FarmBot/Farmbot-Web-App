@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180315205136) do
+ActiveRecord::Schema.define(version: 20180328212540) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,7 +41,7 @@ ActiveRecord::Schema.define(version: 20180315205136) do
   end
 
   create_table "devices", id: :serial, force: :cascade do |t|
-    t.string "name"
+    t.string "name", default: "Farmbot"
     t.integer "max_log_count", default: 100
     t.integer "max_images_count", default: 100
     t.string "timezone", limit: 280
@@ -202,6 +202,13 @@ ActiveRecord::Schema.define(version: 20180315205136) do
   create_table "generic_pointers", id: :serial, force: :cascade do |t|
   end
 
+  create_table "global_configs", force: :cascade do |t|
+    t.string "key"
+    t.text "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "images", id: :serial, force: :cascade do |t|
     t.integer "device_id"
     t.text "meta"
@@ -337,15 +344,6 @@ ActiveRecord::Schema.define(version: 20180315205136) do
     t.index ["device_id"], name: "index_sensors_on_device_id"
   end
 
-  create_table "sequence_dependencies", id: :serial, force: :cascade do |t|
-    t.string "dependency_type"
-    t.integer "dependency_id"
-    t.integer "sequence_id", null: false
-    t.index ["dependency_id"], name: "index_sequence_dependencies_on_dependency_id"
-    t.index ["dependency_type"], name: "index_sequence_dependencies_on_dependency_type"
-    t.index ["sequence_id"], name: "index_sequence_dependencies_on_sequence_id"
-  end
-
   create_table "sequences", id: :serial, force: :cascade do |t|
     t.integer "device_id"
     t.string "name", null: false
@@ -360,12 +358,13 @@ ActiveRecord::Schema.define(version: 20180315205136) do
     t.index ["device_id"], name: "index_sequences_on_device_id"
   end
 
-  create_table "token_expirations", id: :serial, force: :cascade do |t|
-    t.string "sub"
-    t.integer "exp"
-    t.string "jti"
+  create_table "token_issuances", force: :cascade do |t|
+    t.bigint "device_id", null: false
+    t.integer "exp", null: false
+    t.string "jti", limit: 45, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_token_issuances_on_device_id"
   end
 
   create_table "tool_slots", id: :serial, force: :cascade do |t|
@@ -468,6 +467,6 @@ ActiveRecord::Schema.define(version: 20180315205136) do
   add_foreign_key "primary_nodes", "sequences"
   add_foreign_key "sensor_readings", "devices"
   add_foreign_key "sensors", "devices"
-  add_foreign_key "sequence_dependencies", "sequences"
+  add_foreign_key "token_issuances", "devices"
   add_foreign_key "tool_slots", "tools"
 end

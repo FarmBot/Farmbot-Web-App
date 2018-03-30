@@ -2,7 +2,7 @@ module FarmEvents
   class Update < Mutations::Command
     NOT_YOURS = 'Not your farm_event.'
     include FarmEvents::ExecutableHelpers
-    executable_fields :optional
+    has_executable_fields
 
     required do
       model :farm_event, class: FarmEvent

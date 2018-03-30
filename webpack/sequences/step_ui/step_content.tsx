@@ -1,9 +1,8 @@
 import * as React from "react";
-import { JSXChildren } from "../../util";
 import { Row, Col } from "../../ui/index";
 
 interface StepContentProps {
-  children?: JSXChildren;
+  children?: React.ReactNode;
   className: string;
 }
 

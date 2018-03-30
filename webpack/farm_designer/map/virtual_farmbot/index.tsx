@@ -5,6 +5,7 @@ import { BooleanSetting } from "../../../session_keys";
 import { BotFigure } from "./bot_figure";
 import { BotTrail } from "./bot_trail";
 import { BotPeripherals } from "./bot_peripherals";
+import { NegativePositionLabel } from "./negative_position_labels";
 
 export function VirtualFarmBot(props: VirtualFarmBotProps) {
   const {
@@ -14,6 +15,10 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
   const encoderFigure = Session.deprecatedGetBool(BooleanSetting.encoder_figure);
 
   return <g id="virtual-farmbot">
+    <NegativePositionLabel
+      position={props.botLocationData.position}
+      mapTransformProps={mapTransformProps}
+      plantAreaOffset={plantAreaOffset} />
     <BotPeripherals
       position={props.botLocationData.position}
       mapTransformProps={mapTransformProps}
@@ -32,6 +37,7 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
     {displayTrail &&
       <BotTrail
         position={props.botLocationData.position}
-        mapTransformProps={mapTransformProps} />}
+        mapTransformProps={mapTransformProps}
+        peripherals={peripherals} />}
   </g>;
 }

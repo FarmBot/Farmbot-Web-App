@@ -18,6 +18,7 @@ class Log < ApplicationRecord
   # http://stackoverflow.com/a/5127684/1064917
   before_validation :set_defaults
   has_one :log_dispatch, dependent: :destroy
+
   def set_defaults
     self.channels ||= []
     self.meta ||= {}

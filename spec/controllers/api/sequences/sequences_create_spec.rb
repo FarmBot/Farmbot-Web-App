@@ -80,7 +80,10 @@ describe Api::SequencesController do
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(200)
       expect(json[:args][:foo]).to eq(nil)
-      expect(Sequence.last.args[:foo]).to eq(nil)
+      generated_result = CeleryScript::FetchCelery
+        .run!(sequence: Sequence.find(json[:id]))
+        .deep_symbolize_keys
+      expect(generated_result.dig(:args, :foo)).to eq(nil)
     end
 
     it 'disallows typo `data_types` in `locals` declaration' do
@@ -168,24 +171,27 @@ describe Api::SequencesController do
       sign_in user
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(200)
-      expect(Sequence.last.args.dig("locals", "body", 0, "args", "label"))
-        .to eq("parent")
+      dig_path = [:args, :locals, :body, 0, :args, :label]
+      generated_result = CeleryScript::FetchCelery
+        .run!(sequence: Sequence.find(json[:id]))
+        .deep_symbolize_keys
+      expect(generated_result.dig(*dig_path)).to eq("parent")
+      expect(json.dig(*dig_path)).to eq("parent")
     end
 
     it 'tracks Points' do
       point = FactoryBot.create(:point, device: user.device)
       PinBinding.destroy_all
       Sequence.destroy_all
+      EdgeNode.destroy_all
+      PrimaryNode.destroy_all
       HAS_POINTS["body"][0]["args"]["location"]["args"]["pointer_id"] =
         point.id
       sign_in user
-      input = { name: "Scare Birds",
-                body: HAS_POINTS["body"] }
+      input = { name: "Scare Birds", body: HAS_POINTS["body"] }
       sequence_body_for(user)
       before =  EdgeNode.where(kind: "pointer_id").count
-      post :create,
-          body: input.to_json,
-          params: {format: :json}
+      post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(200)
       now = EdgeNode.where(kind: "pointer_id").count
       expect(now).to be > before

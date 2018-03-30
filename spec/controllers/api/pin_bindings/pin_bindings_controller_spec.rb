@@ -35,7 +35,7 @@ describe Api::PinBindingsController do
 
     it 'creates a pin binding' do
       sign_in user
-      s     = FactoryBot.create(:sequence, device: device)
+      s     = FakeSequence.create( device: device)
       input = { pin_num: 12, sequence_id: s.id}
       b4    = PinBinding.count
       post :create, body: input.to_json, params: { format: :json}
@@ -46,9 +46,9 @@ describe Api::PinBindingsController do
       end
     end
 
-    it 'weed out bad sequence ids' do
+    it 'weeds out bad sequence ids' do
       sign_in user
-      s     = FactoryBot.create(:sequence, device: device)
+      s     = FakeSequence.create( device: device)
       input = { pin_num: 1, sequence_id: 0 }
       b4    = PinBinding.count
       post :create, body: input.to_json, params: { format: :json}
@@ -58,7 +58,7 @@ describe Api::PinBindingsController do
 
     it 'updates pin bindings' do
       sign_in user
-      s     = FactoryBot.create(:sequence, device: device)
+      s     = FakeSequence.create( device: device)
       input = { pin_num: pin_binding.pin_num + 1, sequence_id: s.id}
       put :update,
         body: input.to_json,

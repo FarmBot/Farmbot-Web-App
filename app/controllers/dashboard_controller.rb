@@ -1,10 +1,6 @@
 class DashboardController < ApplicationController
-  LONG_REVISION         = ENV["BUILT_AT"] || ENV["HEROKU_SLUG_COMMIT"] || "NONE"
-  $FRONTEND_SHARED_DATA = { NODE_ENV:       Rails.env || "development",
-                            TOS_URL:        ENV.fetch("TOS_URL", ""),
-                            PRIV_URL:       ENV.fetch("PRIV_URL", ""),
-                            LONG_REVISION: LONG_REVISION,
-                            SHORT_REVISION: LONG_REVISION.first(8) }.to_json
+  before_action :set_global_config
+
   def tos_update
     # I want to keep an eye on this one in prod.
     # If `tos_update` is firing without us knowing about it, it could cause a
@@ -15,7 +11,6 @@ class DashboardController < ApplicationController
 
   [:main_app, :front_page, :verify, :password_reset].map do |actn|
     define_method(actn) do
-      @rev = LONG_REVISION
       begin
         response.headers["Cache-Control"] = "no-cache, no-store"
         response.headers["Pragma"] = "no-cache"
@@ -49,5 +44,11 @@ class DashboardController < ApplicationController
     Rollbar.error("CSP VIOLATION!!!", report)
 
     render json: report
+  end
+
+private
+
+  def set_global_config
+    @global_config = GlobalConfig.dump.to_json
   end
 end

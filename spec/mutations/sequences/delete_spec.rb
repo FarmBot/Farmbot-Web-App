@@ -1,15 +1,16 @@
 require "spec_helper"
 
 describe Sequences::Delete do
-  let(:sequence)     { FactoryBot.create(:sequence)  }
+  let(:sequence)     { FakeSequence.create()  }
 
   it "Cant delete sequences in use by farm events" do
-    FactoryBot.create(:farm_event, executable: sequence)
+    fe = FactoryBot.create(:farm_event, executable: sequence)
     result = Sequences::Delete.run(device: sequence.device, sequence: sequence)
     expect(result.success?).to be false
     errors = result.errors.message
     expect(errors.keys).to include("sequence")
-    expect(errors["sequence"]).to include("in use by some farm events")
+    expect(errors["sequence"]).to include("in use")
+    expect(errors["sequence"]).to include(fe.fancy_name)
   end
 
   it "refuses to delete a sequence that a regimen depends on" do
@@ -20,8 +21,9 @@ describe Sequences::Delete do
     expect(result.success?).to be false
     errors = result.errors.message
     expect(errors.keys).to include("sequence")
-    expect(errors["sequence"]).to include("regimens are still relying on " +
-                                          "this sequence")
+    expect(errors["sequence"]).to include("in use")
+    expect(errors["sequence"]).to include(regimen_item1.regimen.fancy_name)
+    expect(errors["sequence"]).to include(regimen_item2.regimen.fancy_name)
   end
 
   it "deletes a sequence" do
@@ -43,6 +45,7 @@ describe Sequences::Delete do
     expect(result.success?).to be(false)
     expect(result.errors.has_key?("sequence")).to be(true)
     message = result.errors["sequence"].message
-    expect(message).to include("sequences are still relying on this sequence")
+    expect(message).to include("in use")
+    expect(message).to include("dep")
   end
 end

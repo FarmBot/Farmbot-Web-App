@@ -30,14 +30,6 @@ const payload = (): UpdateMqttData => ({
   sessionId: "wow"
 });
 
-describe("handleInbound", () => {
-  it("handles SKIP and ERR");
-  it("handles UPDATE for unknowns");
-  it("handles skips");
-  it("handles skips");
-
-});
-
 describe("handleCreateOrUpdate", () => {
   it("creates new records if it doesn't have one locally", () => {
     const myPayload = payload();

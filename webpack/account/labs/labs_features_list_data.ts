@@ -74,6 +74,13 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
     value: false,
     confirmationMessage: t(Content.DISCARD_UNSAVED_CHANGES_CONFIRM)
   },
+  {
+    name: t("Display virtual FarmBot trail"),
+    description: t(Content.VIRTUAL_TRAIL),
+    storageKey: BooleanSetting.display_trail,
+    value: false,
+    callback: () => sessionStorage.virtualTrailRecords = "[]"
+  },
 ].map(fetchRealValue));
 
 /** Always allow toggling from true => false (deactivate).

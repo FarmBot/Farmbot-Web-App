@@ -36,7 +36,6 @@ module Api
         .as_json
         .merge!(params.as_json["user"] || {})
         .deep_symbolize_keys
-
       {email:                     user[:email],
        name:                      user[:name],
        password:                  user[:password],

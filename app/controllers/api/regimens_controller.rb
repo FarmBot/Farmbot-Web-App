@@ -27,7 +27,7 @@ module Api
     end
 
     def your_regimens
-      Regimen.where(regimen_params)
+      Regimen.includes(:farm_events).where(regimen_params)
     end
 
     def regimen_params

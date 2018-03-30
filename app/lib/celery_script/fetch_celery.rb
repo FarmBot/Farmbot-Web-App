@@ -90,7 +90,7 @@ module CeleryScript
         color:      sequence.color,
         created_at: sequence.created_at,
         updated_at: sequence.updated_at,
-        args:       Sequence::DEFAULT_ARGS.merge({ is_outdated: false })
+        args:       Sequence::DEFAULT_ARGS
       }
     end
 
@@ -102,15 +102,18 @@ module CeleryScript
     end
 
     def validate
-      sequence.reload
       # A sequence lacking a `sequence` node is a syntax error.
       # This should never show up in the frontend, but *is* helpful for devs
-      # when debugging.
+      # when debugging (and has caught quite a few bugs as well).
       add_error :bad_sequence, :bad, NO_SEQUENCE unless entry_node
     end
 
     def execute
       canonical_form = misc_fields.merge!(recurse_into_node(entry_node))
+      canonical_form[:in_use] = \
+        EdgeNode.where(kind: "sequence_id", value: sequence.id).exists? ||
+        RegimenItem.where(sequence_id: sequence.id).exists? ||
+        FarmEvent.where(executable: sequence).exists?
       return HashWithIndifferentAccess.new(canonical_form)
     end
   end
