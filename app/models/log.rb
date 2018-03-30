@@ -31,13 +31,14 @@ class Log < ApplicationRecord
   # Legacy shims ===============================================================
   def meta
     {
-      type:          self.type,
-      major_version: self.major_version,
-      minor_version: self.minor_version,
-      verbosity:     self.verbosity,
-      x:             self.x,
-      y:             self.y,
-      z:             self.z
+      type:                      self.type,
+      major_version:             self.major_version,
+      minor_version:             self.minor_version,
+      verbosity:                 self.verbosity,
+      x:                         self.x,
+      y:                         self.y,
+      z:                         self.z,
+      _META_FIELD_IS_DEPRECATED: true
     }
   end
 

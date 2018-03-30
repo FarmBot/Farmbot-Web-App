@@ -13,7 +13,7 @@ describe Api::LogsController do
       expect(response.status).to eq(200)
       expect(json.first[:id]).to eq(logs.first.id)
       expect(json.first[:created_at]).to eq(logs.first.created_at.to_i)
-      expect(json.last[:meta][:type]).to eq(logs.last.meta[:type])
+      expect(json.last[:meta][:type]).to eq(logs.last.type)
     end
   end
 
