@@ -175,10 +175,55 @@ describe Api::LogsController do
         expect(last_email).to eq(nil)
       end
     end
+  end
 
+  describe "#search" do
     it 'filters logs based on log filtering settings in `WebAppConfig` ' do
-      pending 'TODO'
-      # Create a bunch of logs with different verbosity levels and try to filter
+      sign_in user
+      Log.destroy_all
+      examples = [
+        [0, "success"],
+        [0, "busy"],
+        [0, "warn"],
+        [0, "error"],
+        [0, "info"],
+        [0, "fun"],
+        [0, "debug"],
+
+        [1, "success"],
+        [1, "busy"],
+        [1, "warn"],
+        [1, "error"],
+        [1, "info"],
+        [1, "fun"],
+        [1, "debug"],
+
+        [2, "success"],
+        [2, "busy"],
+        [2, "warn"],
+        [2, "error"],
+        [2, "info"],
+        [2, "fun"],
+        [2, "debug"],
+      ]
+     filters = {success_log: 3,
+                busy_log:    3,
+                warn_log:    3,
+                error_log:   3,
+                info_log:    3,
+                fun_log:     3,
+                debug_log:   3}
+      count = examples.length
+      conf  = user.device.web_app_config
+      examples.map do |(verbosity, type)|
+        FactoryBot.create(:log, device:    user.device,
+                                verbosity: verbosity,
+                                type:      type)
+      end
+      conf.update_attributes(filters)
+      post :search
+      expect(response.status).to eq(200)
+      expect(json.length).to eq(0)
     end
   end
 end

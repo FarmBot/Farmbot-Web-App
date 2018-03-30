@@ -1,7 +1,15 @@
 module Api
   class LogsController < Api::AbstractController
     def search
-      render json: current_device.limited_log_list
+      conf       = current_device.web_app_config
+      mt         = CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES
+      query      = mt
+                    .map { |x| "(type = '#{x}' AND verbosity > ?)" }
+                    .join(" OR ")
+      conditions = mt.map { |x| "#{x}_log" }.map{|x| conf.send(x)}
+      args_      = conditions.unshift(query)
+
+      render json: current_device.limited_log_list.where(*args_)
     end
 
     # This is one of the "oddball" endpoints for the FarmBot API.
