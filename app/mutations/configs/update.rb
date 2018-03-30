@@ -12,7 +12,9 @@ module Configs
 
     def sliced_attrs
       whitelist = target_klass.class.column_names.map(&:to_sym)
-      updates   = update_attrs.deep_symbolize_keys.except(:device_id)
+      updates   = update_attrs
+        .deep_symbolize_keys
+        .except(:device_id, :id, :created_at)
       updates.slice(*whitelist)
     end
   end
