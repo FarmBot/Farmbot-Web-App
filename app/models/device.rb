@@ -34,6 +34,13 @@ class Device < ApplicationRecord
     logs.all.last(max_log_count || DEFAULT_MAX_LOGS)
   end
 
+  def trim_log_list!
+    logs
+      .order(created_at: :desc)
+      .offset(max_log_count || DEFAULT_MAX_LOGS)
+      .destroy_all
+  end
+
   def self.current
     RequestStore.store[:device]
   end

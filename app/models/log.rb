@@ -25,6 +25,10 @@ class Log < ApplicationRecord
     self.meta[:type] ||= "info"
   end
 
+  def meta=(*)
+    puts "This column is read-only now."
+  end
+
   def broadcast? # Logs get their own special channel. Don't echo twice!
     false
   end
