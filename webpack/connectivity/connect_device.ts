@@ -25,7 +25,7 @@ import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
 export const TITLE = "New message from bot";
-
+const THROTTLE_MS = 600;
 /** TODO: This ought to be stored in Redux. It is here because of historical
  * reasons. Feel free to factor out when time allows. -RC, 10 OCT 17 */
 export const HACKY_FLAGS = {
@@ -117,14 +117,14 @@ const onStatus = (dispatch: Function, getState: GetState) =>
       if (!IS_OK) { badVersion(); }
       HACKY_FLAGS.needVersionCheck = false;
     }
-  }, 500));
+  }, THROTTLE_MS));
 
 type Client = { connected?: boolean };
 
 export const onSent = (client: Client) => () => !!client.connected ?
   dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
 
-export const onLogs = (dispatch: Function, getState: GetState) => (msg: Log) => {
+export const onLogs = (dispatch: Function, getState: GetState) => throttle((msg: Log) => {
   bothUp();
   if (isLog(msg)) {
     actOnChannelName(msg, "toast", showLogOnScreen);
@@ -140,7 +140,7 @@ export const onLogs = (dispatch: Function, getState: GetState) => (msg: Log) => 
       msg.message.includes("is offline") && msg.meta.type === "error";
     died && dispatchNetworkDown("bot.mqtt");
   }
-};
+}, THROTTLE_MS);
 
 export function onMalformed() {
   bothUp();
