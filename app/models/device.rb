@@ -67,4 +67,17 @@ class Device < ApplicationRecord
   def tz_offset_hrs
     Time.now.in_time_zone(self.timezone || "UTC").utc_offset / 1.hour
   end
+
+  # Send a realtime message to a logged in user.
+  def tell(message, transport = Transport)
+    log  = Log.new({ device:     self,
+                     message:    message,
+                     created_at: Time.now,
+                     channels:   [],
+                     meta:       { type: "info" } })
+    json = LogSerializer.new(log).as_json.to_json
+
+    transport.amqp_send(json, self.id, "logs")
+    log
+  end
 end
