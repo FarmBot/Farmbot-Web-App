@@ -222,7 +222,7 @@ describe Api::LogsController do
                              debug_log:   3)
       post :search
       expect(response.status).to eq(200)
-      expect(json.length).to eq(0)
+      expect(json.length).to eq(examples.length)
     end
 
     it 'filters NO logs based on log filtering settings in `WebAppConfig` ' do
@@ -243,7 +243,7 @@ describe Api::LogsController do
                              debug_log:   0)
       post :search
       expect(response.status).to eq(200)
-      expect(json.length).to eq(examples.length)
+      expect(json.length).to eq(0)
     end
   end
 end

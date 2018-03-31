@@ -37,10 +37,11 @@ class Device < ApplicationRecord
       .limit(max_log_count || DEFAULT_MAX_LOGS)
   end
 
-  def trim_log_list!
+  def trim_log_list!(multiplier = 1)
+    offset = (max_log_count || DEFAULT_MAX_LOGS) * multiplier
     logs
       .order(created_at: :desc)
-      .offset(max_log_count || DEFAULT_MAX_LOGS)
+      .offset(offset)
       .destroy_all
   end
 
