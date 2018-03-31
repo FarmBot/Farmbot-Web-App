@@ -4,12 +4,13 @@ module Api
       conf       = current_device.web_app_config
       mt         = CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES
       query      = mt
-                    .map { |x| "(type = '#{x}' AND verbosity > ?)" }
+                    .map { |x| "(type = '#{x}' AND verbosity <= ?)" }
                     .join(" OR ")
-      conditions = mt.map { |x| "#{x}_log" }.map{|x| conf.send(x)}
+      conditions = mt.map { |x| "#{x}_log" }.map{|x| conf.send(x) }
       args_      = conditions.unshift(query)
+      limit      = current_device.max_log_count || Device::DEFAULT_MAX_LOGS
 
-      render json: current_device.limited_log_list.where(*args_)
+      render json: current_device.logs.where(*args_).limit(limit)
     end
 
     # This is one of the "oddball" endpoints for the FarmBot API.
