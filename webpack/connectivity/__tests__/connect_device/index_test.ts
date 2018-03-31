@@ -71,7 +71,7 @@ function fakeLog(meta_type: ALLOWED_MESSAGE_TYPES,
   channels: ALLOWED_CHANNEL_NAMES[] = ["toast"]): Log {
   return {
     message: "toasty!",
-    meta: { type: meta_type },
+    type: meta_type,
     channels,
     created_at: -1
   };

@@ -50,7 +50,7 @@ export function actOnChannelName(
 /** Take a log message (of type toast) and determines the correct kind of toast
  * to execute. */
 export function showLogOnScreen(log: Log) {
-  switch (log.meta.type) {
+  switch (log.type) {
     case "success":
       return success(log.message, TITLE);
     case "busy":
@@ -137,7 +137,7 @@ export const onLogs = (dispatch: Function, getState: GetState) => throttle((msg:
     //                   inband signalling (for now).
     // TODO:             Make a `bot/device_123/offline` channel.
     const died =
-      msg.message.includes("is offline") && msg.meta.type === "error";
+      msg.message.includes("is offline") && msg.type === "error";
     died && dispatchNetworkDown("bot.mqtt");
   }
 }, THROTTLE_MS);

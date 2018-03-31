@@ -11,7 +11,7 @@ interface LogsRowProps {
 }
 const LogsRow = ({ tlog, timeOffset }: LogsRowProps) => {
   const log = tlog.body;
-  const { x, y, z, verbosity, type } = log.meta;
+  const { x, y, z, verbosity, type } = log;
   const time = formatLogTime(log.created_at, timeOffset);
   return <tr key={tlog.uuid}>
     <td>
@@ -67,8 +67,7 @@ const filterByVerbosity = (state: LogsState, logs: TaggedLog[]) => {
       return !log.body.message.toLowerCase().includes("filtered");
     })
     .filter((log: TaggedLog) => {
-      const type = (log.body.meta || {}).type;
-      const { verbosity } = log.body.meta;
+      const { type, verbosity } = log.body;
       const filterLevel = state[type as keyof LogsState];
       const displayLog = verbosity
         ? verbosity <= filterLevel
