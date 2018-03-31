@@ -33,4 +33,11 @@ describe Device do
     device.trim_log_list!
     expect(device.logs.count).to eq(device.max_log_count)
   end
+
+  it 'uses `tell` to send device messages' do
+    dbl = double("fake transport layer")
+    expect(dbl).to receive(:amqp_send)
+    result = device.tell("Hello!", dbl)
+    expect(result.message).to eq("Hello!")
+  end
 end

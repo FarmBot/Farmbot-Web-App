@@ -68,7 +68,7 @@ class Device < ApplicationRecord
   end
 
   # Send a realtime message to a logged in user.
-  def tell(message)
+  def tell(message, transport = Transport)
     log  = Log.new({ device:     self,
                      message:    message,
                      created_at: Time.now,
@@ -76,6 +76,7 @@ class Device < ApplicationRecord
                      meta:       { type: "info" } })
     json = LogSerializer.new(log).as_json.to_json
 
-    Transport.amqp_send(json, self.id, "logs")
+    transport.amqp_send(json, self.id, "logs")
+    log
   end
 end
