@@ -35,11 +35,7 @@ module Logs
       .map    { |i| Logs::Create.run(i, device: device) }
       .select { |i| i.success? } # <= Ignore rejects
       .map    { |i| i.result }
-      .reject do |i|
-        # Don't save jokes or debug info:
-        t = i.meta["type"]
-        Log::DISCARD.include?(t)
-      end
+      .reject { |i| Log::DISCARD.include?(i.type) } # Discard jokes
       .map    { |i| i.as_json.except("id") }
     end
   end

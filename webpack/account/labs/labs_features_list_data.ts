@@ -8,7 +8,7 @@ export interface LabsFeature {
   /** Toggle label. */
   name: string;
   description: string;
-  /** Entry for localStorage. Must be unique. */
+  /** Configuration key name such as "disable_i18n". Must be unique. */
   storageKey: BooleanConfigKey;
   /** Placeholder value (use false). */
   value: boolean;

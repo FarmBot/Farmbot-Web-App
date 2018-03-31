@@ -13,7 +13,7 @@ describe Api::LogsController do
       expect(response.status).to eq(200)
       expect(json.first[:id]).to eq(logs.first.id)
       expect(json.first[:created_at]).to eq(logs.first.created_at.to_i)
-      expect(json.last[:meta][:type]).to eq(logs.last.meta[:type])
+      expect(json.last[:meta][:type]).to eq(logs.last.type)
     end
   end
 
@@ -174,6 +174,76 @@ describe Api::LogsController do
              params: {format: :json}
         expect(last_email).to eq(nil)
       end
+    end
+  end
+
+  describe "#search" do
+    examples = [
+      [1, "success"],
+      [1, "busy"],
+      [1, "warn"],
+      [1, "error"],
+      [1, "info"],
+      [1, "fun"],
+      [1, "debug"],
+
+      [2, "success"],
+      [2, "busy"],
+      [2, "warn"],
+      [2, "error"],
+      [2, "info"],
+      [2, "fun"],
+      [2, "debug"],
+
+      [3, "success"],
+      [3, "busy"],
+      [3, "warn"],
+      [3, "error"],
+      [3, "info"],
+      [3, "fun"],
+      [3, "debug"],
+    ]
+
+    it 'filters ALL logs based on log filtering settings in `WebAppConfig` ' do
+      sign_in user
+      Log.destroy_all
+      conf  = user.device.web_app_config
+      examples.map do |(verbosity, type)|
+        FactoryBot.create(:log, device:    user.device,
+                                verbosity: verbosity,
+                                type:      type)
+      end
+      conf.update_attributes(success_log: 3,
+                             busy_log:    3,
+                             warn_log:    3,
+                             error_log:   3,
+                             info_log:    3,
+                             fun_log:     3,
+                             debug_log:   3)
+      post :search
+      expect(response.status).to eq(200)
+      expect(json.length).to eq(0)
+    end
+
+    it 'filters NO logs based on log filtering settings in `WebAppConfig` ' do
+      sign_in user
+      Log.destroy_all
+      conf  = user.device.web_app_config
+      examples.map do |(verbosity, type)|
+        FactoryBot.create(:log, device:    user.device,
+                                verbosity: verbosity,
+                                type:      type)
+      end
+      conf.update_attributes(success_log: 0,
+                             busy_log:    0,
+                             warn_log:    0,
+                             error_log:   0,
+                             info_log:    0,
+                             fun_log:     0,
+                             debug_log:   0)
+      post :search
+      expect(response.status).to eq(200)
+      expect(json.length).to eq(examples.length)
     end
   end
 end
