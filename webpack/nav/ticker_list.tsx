@@ -10,8 +10,7 @@ import { Session, safeNumericSetting } from "../session";
 import { isNumber } from "lodash";
 
 const logFilter = (log: Log): Log | undefined => {
-  const type = (log.meta || {}).type;
-  const { verbosity } = log.meta;
+  const { type, verbosity } = log;
   const filterLevel = Session.deprecatedGetNum(safeNumericSetting(type + "_log"));
   const filterLevelCompare = isNumber(filterLevel) ? filterLevel : 1;
   const displayLog = verbosity
@@ -28,7 +27,8 @@ const getfirstTickerLog = (logs: Log[]): Log => {
   if (logs.length == 0) {
     return {
       message: t("No logs yet."),
-      meta: { type: "debug", verbosity: -1 },
+      type: "debug",
+      verbosity: -1,
       channels: [], created_at: NaN
     };
   } else {
@@ -38,7 +38,8 @@ const getfirstTickerLog = (logs: Log[]): Log => {
     } else {
       return {
         message: t("No logs to display. Visit Logs page to view filters."),
-        meta: { type: "debug", verbosity: -1 },
+        type: "debug",
+        verbosity: -1,
         channels: [], created_at: NaN
       };
     }
@@ -47,7 +48,7 @@ const getfirstTickerLog = (logs: Log[]): Log => {
 
 const Ticker = (log: Log, index: number, timeOffset: number) => {
   const time = formatLogTime(log.created_at, timeOffset);
-  const type = (log.meta || {}).type;
+  const { type } = log;
   // TODO: Should utilize log's `uuid` instead of index.
   return <div key={index} className="status-ticker-wrapper">
     <div className={`saucer ${type}`} />

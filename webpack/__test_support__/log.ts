@@ -3,9 +3,7 @@ import { Log } from "../interfaces";
 export let log: Log = {
   id: 1234567,
   message: "Farmbot is up and Running!",
-  meta: {
-    type: "info"
-  },
+  type: "info",
   channels: [
     "toast"
   ],

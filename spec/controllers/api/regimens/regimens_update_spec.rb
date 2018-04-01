@@ -36,5 +36,22 @@ describe Api::RegimensController do
       expect(json[:name]).to eq("something new")
       expect(existing.name).to eq("something new")
     end
+
+    it 'catches bad regimen_items' do
+      sign_in user
+      existing = Regimens::Create.run!(device: user.device, name: "x", color: "red", regimen_items: [])
+      payload = {
+        "id"            => existing.id,
+        "name"          => "something new",
+        "color"         => "blue",
+        "regimen_items" => [ { "time_offset" => 950700000, "sequence_id" => 0 } ]
+        }
+      put :update, params: payload
+
+      expect(response.status).to eq(422)
+      expect(json[:regimen_items]).to be
+      expect(json[:regimen_items])
+        .to include("Failed to instantiate nested RegimenItem.")
+    end
   end
 end
