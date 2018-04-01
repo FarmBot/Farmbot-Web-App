@@ -45,6 +45,8 @@ export interface Log {
   y?: number;
   z?: number;
   verbosity?: number;
+  major_version?: number;
+  minor_version?: number;
   channels: string[];
   created_at: number;
 }

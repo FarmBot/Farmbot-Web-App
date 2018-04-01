@@ -18,6 +18,7 @@ class Log < ApplicationRecord
   belongs_to :device
 
   validates :device, presence: true
+  validates :type,   presence: true
   serialize  :meta
   validates :meta, presence: true
   # http://stackoverflow.com/a/5127684/1064917

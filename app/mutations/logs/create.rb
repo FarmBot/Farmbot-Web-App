@@ -28,7 +28,7 @@ module Logs
       #
       # TODO: Make the fields below mandadtory (allowing nil in some cases, but
       #       always requiring the key) and delete the `meta` field.
-      string :type, in: Log::TYPES
+      string  :type, in: Log::TYPES
       integer :x
       integer :y
       integer :z
@@ -51,7 +51,17 @@ module Logs
     end
 
     def validate
-      @log = Log.new(inputs.except(:meta).merge(temporary_stub))
+      @log               = Log.new
+      @log.device        = device
+      @log.message       = message
+      @log.channels      = channels || []
+      @log.x             = transitional_field(:x)
+      @log.y             = transitional_field(:y)
+      @log.z             = transitional_field(:z)
+      @log.verbosity     = transitional_field(:verbosity)
+      @log.major_version = transitional_field(:major_version)
+      @log.minor_version = transitional_field(:minor_version)
+      @log.type          = transitional_field(:type)
       @log.validate!
       add_error :log, :private, BAD_WORDS if has_bad_words
     end
@@ -66,17 +76,9 @@ module Logs
       !!inputs[:message].upcase.match(BLACKLIST)
     end
 
-    # We won't need this after `meta` field removal.
-    def temporary_stub
-      {
-        x:             meta[:x],
-        y:             meta[:y],
-        z:             meta[:z],
-        verbosity:     meta[:verbosity],
-        major_version: meta[:major_version],
-        minor_version: meta[:minor_version],
-        type:          meta[:type]
-      }
+    # Helper for dealing with the gradual removal of the meta field.
+    def transitional_field(name, default = nil)
+      return inputs[name] || meta[name] || meta[name.to_s] || default
     end
   end
 end

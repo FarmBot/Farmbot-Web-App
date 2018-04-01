@@ -24,6 +24,8 @@ import { talk } from "browser-speech";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
+import * as _ from "lodash";
+
 export const TITLE = "New message from bot";
 const THROTTLE_MS = 600;
 /** TODO: This ought to be stored in Redux. It is here because of historical
@@ -124,9 +126,24 @@ type Client = { connected?: boolean };
 export const onSent = (client: Client) => () => !!client.connected ?
   dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
 
+const LEGACY_META_KEY_NAMES: (keyof Log)[] = [
+  "type",
+  "x",
+  "y",
+  "z",
+  "verbosity",
+  "major_version",
+  "minor_version"
+];
+
+function legacyKeyTransformation(log: Log, key: keyof Log) {
+  log[key] = log[key] || _.get(log, ["meta", key], undefined);
+}
+
 export const onLogs = (dispatch: Function, getState: GetState) => throttle((msg: Log) => {
   bothUp();
   if (isLog(msg)) {
+    LEGACY_META_KEY_NAMES.map(key => legacyKeyTransformation(msg, key));
     actOnChannelName(msg, "toast", showLogOnScreen);
     actOnChannelName(msg, "espeak", speakLogAloud(getState));
     dispatch(initLog(msg));
