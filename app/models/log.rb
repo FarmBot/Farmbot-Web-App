@@ -43,7 +43,7 @@ class Log < ApplicationRecord
   end
 
   def meta=(hash)
-    hash.map      { |(key,value)| self.send("#{key}=", value)  }
+    hash.map      { |(key, value)| self.send("#{key}=", value)  }
     self.meta
   end
   # End Legacy shims ===========================================================
