@@ -1,4 +1,5 @@
 unless Rails.env == "production"
+    TokenIssuance.destroy_all
     PinBinding.destroy_all
     User.destroy_all
     Device.destroy_all
