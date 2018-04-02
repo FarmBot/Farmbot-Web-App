@@ -16,6 +16,7 @@ import {
   Position,
   PopoverInteractionKind
 } from "@blueprintjs/core/dist";
+import { ErrorBoundary } from "../error_boundary";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
@@ -60,47 +61,49 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     const { mobileMenuOpen, tickerListOpen, accountMenuOpen } = this.state;
     const { logs, timeOffset } = this.props;
 
-    return <div className="nav-wrapper">
-      <nav role="navigation">
-        <Row>
-          <Col xs={12}>
-            <div>
-              <TickerList {...{ logs, tickerListOpen, toggle, timeOffset }} />
-              <div className="nav-group">
-                <div className="nav-left">
-                  <i
-                    className={menuIconClassNames.join(" ")}
-                    onClick={this.toggle("mobileMenuOpen")} />
-                  <span className="mobile-menu-container">
-                    {MobileMenu({ close, mobileMenuOpen })}
-                  </span>
-                  <span className="top-menu-container">
-                    {NavLinks({ close })}
-                  </span>
-                </div>
-                <div className="nav-right">
-                  <Popover
-                    inline
-                    interactionKind={PopoverInteractionKind.HOVER}
-                    target={
-                      <div className="nav-name"
-                        onClick={this.toggle("accountMenuOpen")}>
-                        {firstName}
-                      </div>}
-                    position={Position.BOTTOM_RIGHT}
-                    content={AdditionalMenu({ logout: this.logout, close })}
-                    isOpen={accountMenuOpen}
-                    onClose={this.close("accountMenuOpen")} />
-                  <EStopButton
-                    bot={this.props.bot}
-                    user={this.props.user} />
-                  {this.syncButton()}
+    return <ErrorBoundary>
+      <div className="nav-wrapper">
+        <nav role="navigation">
+          <Row>
+            <Col xs={12}>
+              <div>
+                <TickerList {...{ logs, tickerListOpen, toggle, timeOffset }} />
+                <div className="nav-group">
+                  <div className="nav-left">
+                    <i
+                      className={menuIconClassNames.join(" ")}
+                      onClick={this.toggle("mobileMenuOpen")} />
+                    <span className="mobile-menu-container">
+                      {MobileMenu({ close, mobileMenuOpen })}
+                    </span>
+                    <span className="top-menu-container">
+                      {NavLinks({ close })}
+                    </span>
+                  </div>
+                  <div className="nav-right">
+                    <Popover
+                      inline
+                      interactionKind={PopoverInteractionKind.HOVER}
+                      target={
+                        <div className="nav-name"
+                          onClick={this.toggle("accountMenuOpen")}>
+                          {firstName}
+                        </div>}
+                      position={Position.BOTTOM_RIGHT}
+                      content={AdditionalMenu({ logout: this.logout, close })}
+                      isOpen={accountMenuOpen}
+                      onClose={this.close("accountMenuOpen")} />
+                    <EStopButton
+                      bot={this.props.bot}
+                      user={this.props.user} />
+                    {this.syncButton()}
+                  </div>
                 </div>
               </div>
-            </div>
-          </Col>
-        </Row>
-      </nav>
-    </div>;
+            </Col>
+          </Row>
+        </nav>
+      </div>
+    </ErrorBoundary>;
   }
 }

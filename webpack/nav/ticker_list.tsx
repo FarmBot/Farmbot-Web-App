@@ -8,6 +8,7 @@ import { t } from "i18next";
 import { formatLogTime } from "../logs/index";
 import { Session, safeNumericSetting } from "../session";
 import { isNumber } from "lodash";
+import { ErrorBoundary } from "../error_boundary";
 
 const logFilter = (log: Log): Log | undefined => {
   const { type, verbosity } = log;
@@ -64,27 +65,27 @@ const Ticker = (log: Log, index: number, timeOffset: number) => {
 };
 
 export let TickerList = (props: TickerListProps) => {
-  return <div
-    className="ticker-list"
-    onClick={props.toggle("tickerListOpen")} >
-    <div className="first-ticker">
-      {Ticker(getfirstTickerLog(props.logs), -1, props.timeOffset)}
+  return <ErrorBoundary>
+    <div className="ticker-list" onClick={props.toggle("tickerListOpen")} >
+      <div className="first-ticker">
+        {Ticker(getfirstTickerLog(props.logs), -1, props.timeOffset)}
+      </div>
+      <Collapse isOpen={props.tickerListOpen}>
+        {props
+          .logs
+          .filter((_, index) => index !== 0)
+          .filter((log) => logFilter(log))
+          .map((log: Log, index: number) => Ticker(log, index, props.timeOffset))}
+      </Collapse>
+      <Collapse isOpen={props.tickerListOpen}>
+        <Link to={"/app/logs"}>
+          <div className="logs-page-link">
+            <label>
+              {t("Filter logs")}
+            </label>
+          </div>
+        </Link>
+      </Collapse>
     </div>
-    <Collapse isOpen={props.tickerListOpen}>
-      {props
-        .logs
-        .filter((_, index) => index !== 0)
-        .filter((log) => logFilter(log))
-        .map((log: Log, index: number) => Ticker(log, index, props.timeOffset))}
-    </Collapse>
-    <Collapse isOpen={props.tickerListOpen}>
-      <Link to={"/app/logs"}>
-        <div className="logs-page-link">
-          <label>
-            {t("Filter logs")}
-          </label>
-        </div>
-      </Link>
-    </Collapse>
-  </div>;
+  </ErrorBoundary>;
 };
