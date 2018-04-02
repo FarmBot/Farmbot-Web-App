@@ -18,7 +18,7 @@ describe Api::LogsController do
   end
 
   describe "#create" do
-    it 'creates one log' do
+    it 'creates one log (legacy format)' do
       sign_in user
       before_count = Log.count
       post :create,
@@ -31,6 +31,32 @@ describe Api::LogsController do
       expect(Log.count).to be > before_count
       expect(Log.last.message).to eq("Hello, world!")
       expect(Log.last.device).to eq(user.device)
+    end
+
+    it 'creates one log' do
+      sign_in user
+      before_count = Log.count
+      body = {
+        channels: [ ],
+        major_version: 6,
+        message: "HELLO",
+        minor_version: 4,
+        type: "success",
+        verbosity: 1,
+        x: 0,
+        y: 0,
+        z: 0,
+      }
+      post :create, body: body.to_json, params: {format: :json}
+      expect(response.status).to eq(200)
+      expect(Log.count).to be > before_count
+      expect(json[:created_at]).to be_kind_of(Integer)
+      body.keys.map do |key|
+        actual   = json[key]
+        expected = body[key]
+
+        expect(actual).to eq(expected)
+      end
     end
 
     it 'disallows blacklisted (sensitive) words in logs' do
