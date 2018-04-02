@@ -9,8 +9,9 @@ class RepairLogs < ActiveRecord::Migration[5.1]
         puts "REPAIR: #{log.try(:message).inspect}"
         meta = log.meta || {}
         REPAIRABLES.map do |field|
-          log[field] ||= meta[field] || meta[field.to_s]
+          log[field] = meta[field] || meta[field.to_s] || log[field]
         end
+        log.validate!
         log.save!
       end
   end
