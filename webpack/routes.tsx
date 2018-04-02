@@ -10,6 +10,7 @@ import { Session } from "./session";
 import { attachToRoot } from "./util";
 import { Callback } from "i18next";
 import { topLevelRoutes } from "./route_config";
+import { ErrorBoundary } from "./error_boundary";
 
 interface RootComponentProps { store: Store; }
 
@@ -26,10 +27,12 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
   }
 
   render() {
-    return <Provider store={_store}>
-      <Router history={history}>
-        {topLevelRoutes}
-      </Router>
-    </Provider>;
+    return <ErrorBoundary>
+      <Provider store={_store}>
+        <Router history={history}>
+          {topLevelRoutes}
+        </Router>
+      </Provider>
+    </ErrorBoundary>;
   }
 }

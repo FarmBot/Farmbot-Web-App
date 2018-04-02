@@ -4,5 +4,7 @@ import { formatEnvKey } from "./translators";
 
 /** Send a number to FBOS for storage on the device. */
 export function envSave(key: WDENVKey, value: number) {
-  getDevice().setUserEnv({ [key]: JSON.stringify(formatEnvKey(key, value)) });
+  getDevice()
+    .setUserEnv({ [key]: JSON.stringify(formatEnvKey(key, value)) })
+    .then(() => { }, () => { });
 }

@@ -127,7 +127,7 @@ export const onSent = (client: Client) => () => !!client.connected ?
   dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
 
 const LEGACY_META_KEY_NAMES: (keyof Log)[] = [
-  "type",
+  // "type",
   "x",
   "y",
   "z",
