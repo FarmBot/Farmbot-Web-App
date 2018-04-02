@@ -1,12 +1,17 @@
 class RepairLogs < ActiveRecord::Migration[5.1]
+  REPAIRABLES = [:x, :y, :z, :verbosity, :major_version, :minor_version, :type]
+
   def up
     Log
       .where
       .not(meta: nil)
-      .select { |x| (x[:meta] || {})[:type] != x.type }
-      .map do |x|
-        old_type = (x[:meta] || {})[:type]
-        x.update_attributes!(type: old_type) if old_type
+      .map do |log|
+        puts "REPAIR: #{log.try(:message).inspect}"
+        meta = log.meta || {}
+        REPAIRABLES.map do |field|
+          log[:field] ||= meta[field] || meta[field.to_s]
+        end
+        log.save!
       end
   end
 
