@@ -22,7 +22,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   no = () => <Apology />;
 
-  ok = () => this.props.children;
+  ok = () => this.props.children || <div />;
 
   render() { return (this.state.hasError ? this.no : this.ok)(); }
 }
