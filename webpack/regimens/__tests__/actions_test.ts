@@ -82,4 +82,11 @@ describe("selectRegimen()", () => {
       type: Actions.SELECT_REGIMEN
     });
   });
+
+  it("crashes if malformed", () => {
+    const regimen = fakeRegimen();
+    regimen.uuid = "nope";
+    regimen.kind = "wrong" as any;
+    expect(() => selectRegimen(regimen)).toThrowError();
+  });
 });
