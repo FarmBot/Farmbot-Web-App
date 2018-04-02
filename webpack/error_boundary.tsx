@@ -1,5 +1,6 @@
 import * as React from "react";
 import { catchErrors } from "./util";
+import { Apology } from "./apology";
 
 interface State { hasError?: boolean; }
 interface Props { }
@@ -19,7 +20,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     }
   }
 
-  no = () => <h1>Something went wrong.</h1>;
+  no = () => <Apology />;
 
   ok = () => this.props.children;
 
