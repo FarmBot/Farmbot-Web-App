@@ -9,7 +9,6 @@ import { findBySlug } from "../search_selectors";
 import { Everything } from "../../interfaces";
 import { OpenFarm } from "../openfarm";
 import { OFSearch } from "../util";
-import { catchErrors } from "../../util";
 import { unselectPlant } from "../actions";
 
 interface InforFieldProps {
@@ -43,7 +42,6 @@ export function mapStateToProps(props: Everything): CropInfoProps {
 
 @connect(mapStateToProps)
 export class CropInfo extends React.Component<CropInfoProps, {}> {
-  componentDidCatch(x: Error) { catchErrors(x); }
 
   componentDidMount() {
     const crop = getPathArray()[5];

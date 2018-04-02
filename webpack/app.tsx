@@ -18,7 +18,7 @@ import {
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
-import { catchErrors, validBotLocationData, validFwConfig } from "./util";
+import { validBotLocationData, validFwConfig } from "./util";
 import { Session } from "./session";
 import { BooleanSetting } from "./session_keys";
 import { getPathArray } from "./history";
@@ -81,8 +81,6 @@ const MUST_LOAD: ResourceName[] = [
 
 @connect(mapStateToProps)
 export class App extends React.Component<AppProps, {}> {
-  componentDidCatch(x: Error) { catchErrors(x); }
-
   private get isLoaded() {
     return (MUST_LOAD.length ===
       _.intersection(this.props.loaded, MUST_LOAD).length);

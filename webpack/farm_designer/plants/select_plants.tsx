@@ -9,7 +9,6 @@ import { PlantInventoryItem } from "./plant_inventory_item";
 import { destroy } from "../../api/crud";
 import { error } from "farmbot-toastr";
 import { BackArrow } from "../../ui/index";
-import { catchErrors } from "../../util";
 import { unselectPlant } from "../actions";
 import { Actions } from "../../constants";
 
@@ -42,7 +41,6 @@ interface SelectPlantsState {
 @connect(mapStateToProps)
 export class SelectPlants
   extends React.Component<SelectPlantsProps, SelectPlantsState> {
-  componentDidCatch(x: Error) { catchErrors(x); }
 
   componentDidMount() {
     const { dispatch, selected, currentIcon } = this.props;

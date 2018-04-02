@@ -13,12 +13,10 @@ import { Diagnosis, DiagnosisName } from "./connectivity/diagnosis";
 import { StatusRowProps } from "./connectivity/connectivity_row";
 import { resetConnectionInfo } from "./actions";
 import { PinBindings } from "./components/pin_bindings";
-import { catchErrors } from "../util";
 
 @connect(mapStateToProps)
 export class Devices extends React.Component<Props, {}> {
   state = { online: navigator.onLine };
-  componentDidCatch(x: Error) { catchErrors(x); }
 
   /** A record of all the things we know about connectivity right now. */
   get flags(): Record<DiagnosisName, StatusRowProps> {

@@ -13,7 +13,6 @@ import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined, last } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { getBotSize } from "./map/util";
-import { catchErrors } from "../util";
 import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom";
 import * as moment from "moment";
 
@@ -38,7 +37,6 @@ export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 
 @connect(mapStateToProps)
 export class FarmDesigner extends React.Component<Props, Partial<State>> {
-  componentDidCatch(x: Error) { catchErrors(x); }
 
   initializeSetting =
     (name: keyof State, defaultValue: boolean): boolean => {
