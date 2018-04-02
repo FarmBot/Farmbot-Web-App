@@ -9,7 +9,6 @@ import { FarmwareProps } from "../devices/interfaces";
 import { WeedDetector } from "./weed_detector/index";
 import { envGet } from "./weed_detector/remote_env/selectors";
 import { FarmwareForms } from "./farmware_forms";
-import { catchErrors } from "../util";
 import { toggleWebAppBool } from "../config_storage/actions";
 import { BooleanConfigKey } from "../config_storage/web_app_configs";
 
@@ -19,8 +18,6 @@ export const doToggle =
 
 @connect(mapStateToProps)
 export class FarmwarePage extends React.Component<FarmwareProps, {}> {
-  componentDidCatch(x: Error) { catchErrors(x); }
-
   render() {
     return <Page className="farmware">
       <Row>

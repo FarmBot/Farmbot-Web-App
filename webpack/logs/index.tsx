@@ -13,7 +13,6 @@ import { LogsTable } from "./components/logs_table";
 import { Session, safeNumericSetting } from "../session";
 import { isUndefined } from "lodash";
 import { NumericSetting } from "../session_keys";
-import { catchErrors } from "../util";
 import { NumberConfigKey } from "../config_storage/web_app_configs";
 
 export const formatLogTime = (created_at: number, timeoffset: number) =>
@@ -21,8 +20,6 @@ export const formatLogTime = (created_at: number, timeoffset: number) =>
 
 @connect(mapStateToProps)
 export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
-  componentDidCatch(x: Error) { catchErrors(x); }
-
   initialize = (name: NumberConfigKey, defaultValue: number): number => {
     const currentValue = Session.deprecatedGetNum(safeNumericSetting(name));
     if (isUndefined(currentValue)) {
