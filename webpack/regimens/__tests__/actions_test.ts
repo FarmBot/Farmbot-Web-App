@@ -84,6 +84,7 @@ describe("selectRegimen()", () => {
   });
 
   it("crashes if malformed", () => {
+    console.warn = jest.fn();
     const regimen = fakeRegimen();
     regimen.uuid = "nope";
     regimen.kind = "wrong" as any;

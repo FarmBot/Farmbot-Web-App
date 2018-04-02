@@ -141,6 +141,11 @@ export function getSequenceByUUID(index: ResourceIndex,
 
 export function assertUuid(expected: ResourceName, actual: string | undefined) {
   if (actual && !actual.startsWith(expected)) {
+    console.warn(`
+    BAD NEWS!!! You thought this was a ${expected} UUID, but here's what it
+    actually was:
+      ${actual}
+    `);
     return false;
   } else {
     return true;
