@@ -115,7 +115,14 @@ module CeleryScript
         RegimenItem.where(sequence_id: sequence.id).exists? ||
         FarmEvent.where(executable: sequence).exists?
       s                   = HashWithIndifferentAccess.new(canonical_form)
-      s[:args][:locals] ||= Sequence::SCOPE_DECLARATION
+      # HISTORICAL NOTE:
+      #   When I prototyped the variables declaration stuff, a few (failed)
+      #   iterations snuck into the DB. Gradually migrating is easier than
+      #   running a full blow table wide migration.
+      # - RC 3-April-18
+      unless s.dig(:args, :locals, :kind) == "scope_declaration"
+        s[:args][:locals] ||= Sequence::SCOPE_DECLARATION
+      end
       return s
     end
   end
