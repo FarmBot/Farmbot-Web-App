@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180401141611) do
+ActiveRecord::Schema.define(version: 20180403211523) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -356,8 +356,6 @@ ActiveRecord::Schema.define(version: 20180401141611) do
     t.string "name", null: false
     t.string "color"
     t.string "kind", limit: 280, default: "sequence"
-    t.text "args"
-    t.text "body"
     t.datetime "updated_at"
     t.datetime "created_at"
     t.boolean "migrated_nodes", default: false

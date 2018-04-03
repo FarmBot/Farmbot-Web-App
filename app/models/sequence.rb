@@ -73,7 +73,6 @@ class Sequence < ApplicationRecord
     return destroyed? ? nil : CeleryScript::FetchCelery.run!(sequence: self)
   end
 
-
   def fancy_name
     name
   end
