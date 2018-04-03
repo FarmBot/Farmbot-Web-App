@@ -14,10 +14,8 @@ window.process = {
 }
 </script>
 <%= render "addons" %>
-<meta content="farmbot-version" name="<%= %>%">
 <meta content="width=device-width, initial-scale=1" name="viewport">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<%= stylesheet_link_tag 'application' %>
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i" rel="stylesheet">
 <%# Rails.env.production? ? javascript_include_tag(*webpack_asset_paths("new_commons")) : "" %>
 <% if false %>
