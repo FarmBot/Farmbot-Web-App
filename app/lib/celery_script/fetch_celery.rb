@@ -114,7 +114,9 @@ module CeleryScript
         EdgeNode.where(kind: "sequence_id", value: sequence.id).exists? ||
         RegimenItem.where(sequence_id: sequence.id).exists? ||
         FarmEvent.where(executable: sequence).exists?
-      return HashWithIndifferentAccess.new(canonical_form)
+      s                   = HashWithIndifferentAccess.new(canonical_form)
+      s[:args][:locals] ||= Sequence::SCOPE_DECLARATION
+      return s
     end
   end
 end
