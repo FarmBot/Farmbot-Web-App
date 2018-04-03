@@ -24,6 +24,7 @@ import { talk } from "browser-speech";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
+import * as _ from "lodash";
 
 export const TITLE = "New message from bot";
 const THROTTLE_MS = 600;
@@ -125,19 +126,19 @@ type Client = { connected?: boolean };
 export const onSent = (client: Client) => () => !!client.connected ?
   dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
 
-// const LEGACY_META_KEY_NAMES: (keyof Log)[] = [
-//   "type",
-//   "x",
-//   "y",
-//   "z",
-//   "verbosity",
-//   "major_version",
-//   "minor_version"
-// ];
+const LEGACY_META_KEY_NAMES: (keyof Log)[] = [
+  "type",
+  "x",
+  "y",
+  "z",
+  "verbosity",
+  "major_version",
+  "minor_version"
+];
 
-// function legacyKeyTransformation(log: Log, key: keyof Log) {
-//   log[key] = log[key] || _.get(log, ["meta", key], undefined);
-// }
+function legacyKeyTransformation(log: Log, key: keyof Log) {
+  log[key] = log[key] || _.get(log, ["meta", key], undefined);
+}
 
 export const onLogs = (dispatch: Function, getState: GetState) => throttle((msg: Log) => {
   bothUp();
