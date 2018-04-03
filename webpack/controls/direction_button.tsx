@@ -6,7 +6,7 @@ import { DirectionButtonProps, Payl } from "./interfaces";
 export function directionDisabled(props: DirectionButtonProps): boolean {
   const {
     stopAtHome, stopAtMax, axisLength, position, isInverted, negativeOnly
-   } = props.directionAxisProps;
+  } = props.directionAxisProps;
   const { direction } = props;
   const loc = position || 0;
   const jog = calculateDistance(props);
@@ -36,7 +36,7 @@ export function calculateDistance(props: DirectionButtonProps) {
   const isNegative = (direction === "down") || (direction === "left");
   const inverter = isInverted ? -1 : 1;
   const multiplier = isNegative ? -1 : 1;
-  const distance = (props.steps || 250) * multiplier * inverter;
+  const distance = props.steps * multiplier * inverter;
   return distance;
 }
 

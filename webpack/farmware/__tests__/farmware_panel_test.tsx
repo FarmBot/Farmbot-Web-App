@@ -4,7 +4,6 @@ const mockDevice = {
   removeFarmware: jest.fn(() => Promise.resolve()),
   execScript: jest.fn(() => Promise.resolve()),
   installFirstPartyFarmware: jest.fn(() => {
-    debugger;
     return Promise.resolve({});
   })
 };
