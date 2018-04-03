@@ -146,6 +146,7 @@ describe("findPlant()", () => {
     console.warn = jest.fn();
     const find = () => Selector.findPlant(fakeIndex, "bad");
     expect(find).toThrowError();
+    expect(console.warn).toBeCalled();
   });
 });
 
@@ -161,6 +162,7 @@ describe("getSequenceByUUID()", () => {
     console.warn = jest.fn();
     const find = () => Selector.getSequenceByUUID(fakeIndex, "bad");
     expect(find).toThrow("BAD Sequence UUID");
+    expect(console.warn).toBeCalled();
   });
 });
 
