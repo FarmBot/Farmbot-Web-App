@@ -130,6 +130,8 @@ GEM
     fog-xml (0.1.3)
       fog-core
       nokogiri (>= 1.5.11, < 2.0.0)
+    font-awesome-rails (4.7.0.3)
+      railties (>= 3.2, < 5.2)
     foreman (0.84.0)
       thor (~> 0.19.1)
     formatador (0.2.5)
@@ -344,6 +346,7 @@ DEPENDENCIES
   faker
   figaro
   fog-google!
+  font-awesome-rails
   foreman
   hashdiff
   jwt

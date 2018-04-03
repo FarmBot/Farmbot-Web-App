@@ -26,6 +26,7 @@ gem "bunny"
 gem "request_store"
 gem "secure_headers"
 gem "valid_url"
+gem "font-awesome-rails"
 
 group :development, :test do
   gem "hashdiff"
