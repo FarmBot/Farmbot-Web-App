@@ -246,7 +246,7 @@ describe Api::LogsController do
                              info_log:    3,
                              fun_log:     3,
                              debug_log:   3)
-      post :search
+      get :search
       expect(response.status).to eq(200)
       expect(json.length).to eq(examples.length)
     end
@@ -267,7 +267,7 @@ describe Api::LogsController do
                              info_log:    0,
                              fun_log:     0,
                              debug_log:   0)
-      post :search
+      get :search
       expect(response.status).to eq(200)
       expect(json.length).to eq(0)
     end

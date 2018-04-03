@@ -28,10 +28,10 @@ FarmBot::Application.routes.draw do
       web_app_config:  [:destroy, :show, :update],
     }.to_a.map{|(name, only)| resource name, only: only}
 
-    resources :points, except: [] do post :search, on: :collection end
+    resources(:points, except: []) { post :search, on: :collection }
 
     resources :logs, except: [:update, :show] do
-      post :search, on: :collection
+      get :search, on: :collection
     end
 
     resource :users, except: [:index] do
