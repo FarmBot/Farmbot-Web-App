@@ -24,7 +24,6 @@ import { talk } from "browser-speech";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
-import * as _ from "lodash";
 
 export const TITLE = "New message from bot";
 const THROTTLE_MS = 600;
