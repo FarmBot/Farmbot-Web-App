@@ -6,5 +6,5 @@ import { formatEnvKey } from "./translators";
 export function envSave(key: WDENVKey, value: number) {
   getDevice()
     .setUserEnv({ [key]: JSON.stringify(formatEnvKey(key, value)) })
-    .then(() => { }, () => { });
+    .catch(() => { });
 }

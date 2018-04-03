@@ -82,7 +82,7 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
             disabled={!isOpen} />
           <button
             className="i fa fa-camera arrow-button fb-button brown"
-            onClick={() => getDevice().takePhoto()} />
+            onClick={() => getDevice().takePhoto().catch(() => { })} />
         </div>
       </div>
     </div>;

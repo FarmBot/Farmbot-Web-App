@@ -1,5 +1,5 @@
 const mockDevice = {
-  execScript: jest.fn(),
+  execScript: jest.fn(() => Promise.resolve()),
 };
 
 jest.mock("../../../device", () => ({

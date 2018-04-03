@@ -28,10 +28,10 @@ export function Apology(_: {}) {
           </span>
         </li>
         <li>
-          Send the error information (below) to our developer team via the
+          Send a report to our developer team via the
         <a href="http://forum.farmbot.org/c/software">FarmBot software
         forum</a>. Including additional information (such as steps leading up
-                  to the error) help us identify solutions more quickly.
+                    to the error) helps us identify solutions more quickly.
         </li>
       </ol>
     </p>

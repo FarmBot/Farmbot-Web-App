@@ -27,7 +27,10 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
       </label>
       <button
         className="fb-button gray fa fa-download"
-        onClick={() => getDevice().installFirstPartyFarmware()}
+        onClick={() => {
+          const p = getDevice().installFirstPartyFarmware();
+          p && p.catch(() => { });
+        }}
         disabled={props.firstPartyFwsInstalled} />
     </fieldset>
     <fieldset>
@@ -57,7 +60,8 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
     this
       .ifFarmwareSelected(label => getDevice()
         .updateFarmware(label)
-        .then(() => this.setState({ selectedFarmware: undefined })));
+        .then(() => this.setState({ selectedFarmware: undefined }))
+        .catch(() => { }));
   }
 
   remove = () => {
@@ -69,7 +73,8 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
         if (!isFirstParty || confirm(Content.FIRST_PARTY_WARNING)) {
           getDevice()
             .removeFarmware(label)
-            .then(() => this.setState({ selectedFarmware: undefined }));
+            .then(() => this.setState({ selectedFarmware: undefined }))
+            .catch(() => { });
         }
       });
   }
@@ -85,7 +90,8 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
     if (this.state.packageUrl) {
       getDevice()
         .installFarmware(this.state.packageUrl)
-        .then(() => this.setState({ packageUrl: "" }));
+        .then(() => this.setState({ packageUrl: "" }))
+        .catch(() => { });
     } else {
       alert(t("Enter a URL"));
     }

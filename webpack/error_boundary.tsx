@@ -12,12 +12,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error) {
-    try {
-      this.setState({ hasError: true });
-      catchErrors(error);
-    } catch (e) {
-      this.setState({ hasError: true });
-    }
+    try { catchErrors(error); } catch (e) { }
+    this.setState({ hasError: true });
   }
 
   no = () => <Apology />;
