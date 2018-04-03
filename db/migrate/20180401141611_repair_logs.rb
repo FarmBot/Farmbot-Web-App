@@ -7,7 +7,7 @@ class RepairLogs < ActiveRecord::Migration[5.1]
       .not(meta: nil)
       .map do |log|
         puts "REPAIR: #{log.try(:message).inspect}"
-        meta = log.meta || {}
+        meta = log[:meta] || {}
         REPAIRABLES.map do |field|
           log[field] = meta[field] || meta[field.to_s] || log[field]
         end
