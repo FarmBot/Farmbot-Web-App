@@ -1,5 +1,5 @@
 const mockDevice = {
-  findHome: jest.fn()
+  findHome: jest.fn(() => Promise.resolve({}))
 };
 
 jest.mock("../../../../device", () => ({
