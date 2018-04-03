@@ -143,7 +143,7 @@ function legacyKeyTransformation(log: Log, key: keyof Log) {
 export const onLogs = (dispatch: Function, getState: GetState) => throttle((msg: Log) => {
   bothUp();
   if (isLog(msg)) {
-    // LEGACY_META_KEY_NAMES.map(key => legacyKeyTransformation(msg, key));
+    LEGACY_META_KEY_NAMES.map(key => legacyKeyTransformation(msg, key));
     actOnChannelName(msg, "toast", showLogOnScreen);
     actOnChannelName(msg, "espeak", speakLogAloud(getState));
     dispatch(initLog(msg));
