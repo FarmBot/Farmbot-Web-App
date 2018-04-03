@@ -14,6 +14,7 @@ export function scanImage(imageId: number) {
           label: "CAMERA_CALIBRATION_selected_image",
           value: "" + imageId
         }
-      }]);
+      }])
+      .catch(() => { });
   };
 }

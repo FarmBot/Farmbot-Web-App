@@ -1,9 +1,9 @@
 const mockDevice = {
-  installFarmware: jest.fn(() => { return Promise.resolve(); }),
-  updateFarmware: jest.fn(() => { return Promise.resolve(); }),
-  removeFarmware: jest.fn(() => { return Promise.resolve(); }),
-  execScript: jest.fn(() => { return Promise.resolve(); }),
-  installFirstPartyFarmware: jest.fn(),
+  installFarmware: jest.fn(() => Promise.resolve()),
+  updateFarmware: jest.fn(() => Promise.resolve()),
+  removeFarmware: jest.fn(() => Promise.resolve()),
+  execScript: jest.fn(() => Promise.resolve()),
+  installFirstPartyFarmware: jest.fn(() => Promise.resolve())
 };
 
 jest.mock("../../device", () => ({
@@ -34,7 +34,7 @@ describe("<FarmwarePanel/>: actions", () => {
   }
 
   it("calls install", () => {
-    const panel = mount(<FarmwarePanel {...fakeProps() } />);
+    const panel = mount(<FarmwarePanel {...fakeProps()} />);
     const buttons = panel.find("button");
     expect(buttons.at(0).text()).toEqual("Install");
     panel.setState({ packageUrl: "install this" });
@@ -43,7 +43,7 @@ describe("<FarmwarePanel/>: actions", () => {
   });
 
   it("farmware not selected", () => {
-    const panel = mount(<FarmwarePanel {...fakeProps() } />);
+    const panel = mount(<FarmwarePanel {...fakeProps()} />);
     panel.setState({ selectedFarmware: undefined });
     const updateBtn = panel.find("button").at(3);
     expect(updateBtn.text()).toEqual("Update");
@@ -56,7 +56,7 @@ describe("<FarmwarePanel/>: actions", () => {
   });
 
   it("calls update", () => {
-    const panel = mount(<FarmwarePanel {...fakeProps() } />);
+    const panel = mount(<FarmwarePanel {...fakeProps()} />);
     const buttons = panel.find("button");
     expect(buttons.at(3).text()).toEqual("Update");
     panel.setState({ selectedFarmware: "update this" });
@@ -65,7 +65,7 @@ describe("<FarmwarePanel/>: actions", () => {
   });
 
   it("calls remove", () => {
-    const panel = mount(<FarmwarePanel {...fakeProps() } />);
+    const panel = mount(<FarmwarePanel {...fakeProps()} />);
     const removeBtn = panel.find("button").at(2);
     expect(removeBtn.text()).toEqual("Remove");
     panel.setState({ selectedFarmware: "remove this" });
@@ -83,7 +83,7 @@ describe("<FarmwarePanel/>: actions", () => {
   });
 
   it("calls run", () => {
-    const panel = mount(<FarmwarePanel {...fakeProps() } />);
+    const panel = mount(<FarmwarePanel {...fakeProps()} />);
     const buttons = panel.find("button");
     expect(buttons.at(4).text()).toEqual("Run");
     panel.setState({ selectedFarmware: "run this" });
@@ -92,14 +92,14 @@ describe("<FarmwarePanel/>: actions", () => {
   });
 
   it("sets url to install", () => {
-    const panel = shallow(<FarmwarePanel {...fakeProps() } />);
+    const panel = shallow(<FarmwarePanel {...fakeProps()} />);
     const input = panel.find("input").first();
     input.simulate("change", { currentTarget: { value: "inputted url" } });
     expect(panel.state().packageUrl).toEqual("inputted url");
   });
 
   it("selects a farmware", () => {
-    const panel = shallow(<FarmwarePanel {...fakeProps() } />);
+    const panel = shallow(<FarmwarePanel {...fakeProps()} />);
     const dropdown = panel.find("FBSelect").first();
     dropdown.simulate("change", { value: "selected farmware" });
     expect(panel.state().selectedFarmware).toEqual("selected farmware");
@@ -131,7 +131,7 @@ describe("<FarmwarePanel/>: farmware list", () => {
     const firstPartyFarmware = fakeFarmwares().farmware_0;
     if (firstPartyFarmware) { firstPartyFarmware.name = "first-party farmware"; }
     p.farmwares.farmware_1 = firstPartyFarmware;
-    const panel = shallow(<FarmwarePanel {...p } />);
+    const panel = shallow(<FarmwarePanel {...p} />);
     expect(panel.find("FBSelect").props().list).toEqual([{
       label: "My Farmware 0.0.0", value: "My Farmware"
     }]);
@@ -145,7 +145,7 @@ describe("<FarmwarePanel/>: farmware list", () => {
   it("toggles first party farmware display", () => {
     jest.resetAllMocks();
     const p = fakeProps();
-    const panel = shallow(<FarmwarePanel {...p } />);
+    const panel = shallow(<FarmwarePanel {...p} />);
     panel.find(FarmwareConfigMenu).simulate("toggle", {});
     expect(p.onToggle).toHaveBeenCalled();
   });
@@ -158,7 +158,7 @@ describe("<FarmwarePanel/>: farmware list", () => {
       otherFarmware.meta.description = "Does other things.";
     }
     p.farmwares.farmware_1 = otherFarmware;
-    const panel = mount(<FarmwarePanel {...p } />);
+    const panel = mount(<FarmwarePanel {...p} />);
     expect(panel.text()).not.toContain("Does things.");
     panel.setState({ selectedFarmware: "My Farmware" });
     expect(panel.text()).toContain("Does things.");
@@ -166,7 +166,7 @@ describe("<FarmwarePanel/>: farmware list", () => {
   });
 
   it("all 1st party farmwares are installed", () => {
-    const panel = shallow(<FarmwarePanel {...fakeProps() } />);
+    const panel = shallow(<FarmwarePanel {...fakeProps()} />);
     // tslint:disable-next-line:no-any
     const instance = panel.instance() as any;
     const allInstalled = instance.firstPartyFarmwaresPresent([
@@ -175,7 +175,7 @@ describe("<FarmwarePanel/>: farmware list", () => {
   });
 
   it("some 1st party farmwares are missing", () => {
-    const panel = shallow(<FarmwarePanel {...fakeProps() } />);
+    const panel = shallow(<FarmwarePanel {...fakeProps()} />);
     // tslint:disable-next-line:no-any
     const instance = panel.instance() as any;
     const allInstalled = instance.firstPartyFarmwaresPresent([
@@ -199,7 +199,7 @@ describe("<FarmwareConfigMenu />", () => {
 
   it("calls install 1st party farmwares", () => {
     const wrapper = mount(
-      <FarmwareConfigMenu {...fakeProps() } />);
+      <FarmwareConfigMenu {...fakeProps()} />);
     const button = wrapper.find("button").first();
     expect(button.hasClass("fa-download")).toBeTruthy();
     button.simulate("click");
@@ -210,7 +210,7 @@ describe("<FarmwareConfigMenu />", () => {
     const p = fakeProps();
     p.firstPartyFwsInstalled = true;
     const wrapper = mount(
-      <FarmwareConfigMenu {...p } />);
+      <FarmwareConfigMenu {...p} />);
     const button = wrapper.find("button").first();
     expect(button.hasClass("fa-download")).toBeTruthy();
     button.simulate("click");

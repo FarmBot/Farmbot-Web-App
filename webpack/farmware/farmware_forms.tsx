@@ -17,7 +17,7 @@ export function FarmwareForms(props: FarmwareFormsProps): JSX.Element {
 
   function inputChange(key: string, e: React.SyntheticEvent<HTMLInputElement>) {
     const value = e.currentTarget.value;
-    getDevice().setUserEnv({ [key]: value });
+    getDevice().setUserEnv({ [key]: value }).catch(() => { });
   }
 
   function getEnvName(farmwareName: string, configName: string) {
@@ -35,7 +35,7 @@ export function FarmwareForms(props: FarmwareFormsProps): JSX.Element {
       const value = getValue(farmwareName, x);
       return { kind: "pair", args: { value, label } };
     });
-    getDevice().execScript(farmwareName, pairs);
+    getDevice().execScript(farmwareName, pairs).catch(() => { });
   }
 
   const { farmwares, user_env } = props;

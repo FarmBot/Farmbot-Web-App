@@ -8,10 +8,8 @@ import { ToolTips } from "../../../constants";
 import { Row, Col } from "../../../ui/index";
 import { CalibrationRowProps } from "../interfaces";
 
-function calibrate(axis: Axis) {
-  getDevice()
-    .calibrate({ axis });
-}
+const calibrate =
+  (axis: Axis) => getDevice().calibrate({ axis }).catch(() => { });
 
 export function CalibrationRow(props: CalibrationRowProps) {
 
