@@ -38,14 +38,6 @@ class Device < ApplicationRecord
       .limit(max_log_count || DEFAULT_MAX_LOGS)
   end
 
-  def trim_log_list!(multiplier = 1)
-    puts "Trimming #{self.id || "?"}"
-    logs
-      .order(created_at: :desc)
-      .offset((max_log_count || DEFAULT_MAX_LOGS) * multiplier)
-      .destroy_all
-  end
-
   def self.current
     RequestStore.store[:device]
   end
