@@ -36,6 +36,14 @@ module Api
 
 private
 
+    def clean_out_old_ones
+      current_device
+        .logs
+        .where
+        .not(id: current_device.limited_log_list.pluck(:id))
+        .delete_all
+    end
+
     def handle_many_logs
       mutate Logs::BatchCreate.run(device: current_device, logs: raw_json)
     end
