@@ -120,9 +120,9 @@ module CeleryScript
       #   iterations snuck into the DB. Gradually migrating is easier than
       #   running a full blow table wide migration.
       # - RC 3-April-18
-      unless s.dig(:args, :locals, :kind) == "scope_declaration"
-        s[:args][:locals] ||= Sequence::SCOPE_DECLARATION
-      end
+      has_scope = s.dig(:args, :locals, :kind) == "scope_declaration"
+      s[:args][:locals] = Sequence::SCOPE_DECLARATION unless has_scope
+
       return s
     end
   end
