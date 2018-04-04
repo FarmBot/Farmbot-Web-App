@@ -26,7 +26,7 @@ module Tools
       seq_ids = EdgeNode
         .where(kind: "tool_id", value: tool.id)
         .pluck(:sequence_id)
-      names = Sequence
+      names = Sequence # TODO: Convert this to a SQL view for less hack.
         .where(id: seq_ids)
         .pluck(:name)
         .map{|x| x || "Untitled sequence"}
