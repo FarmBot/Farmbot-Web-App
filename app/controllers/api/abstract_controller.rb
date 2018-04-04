@@ -15,6 +15,7 @@ module Api
     skip_before_action :verify_authenticity_token
     after_action :skip_set_cookies_header
 
+    rescue_from(ActionController::RoutingError) { sorry "Not found", 404 }
     rescue_from(User::AlreadyVerified) { sorry "Already verified.", 409 }
 
     rescue_from(JWT::VerificationError) { |e| auth_err }
