@@ -10,11 +10,8 @@ module Points
 
     def validate
       # Collect names of sequences that still use this point.
-      names = Sequence
-        .where(id: (tool_seq + point_seq).uniq)
-        .pluck(:name)
-        .join(", ")
-
+      names = (tool_seq + point_seq).uniq.join(", ")
+      # binding.pry if tool_seq.any?
       add_error :point, :in_use, STILL_IN_USE % [names] if names.present?
     end
 
@@ -36,16 +33,18 @@ module Points
 
     def point_seq
       @point_seq ||= EdgeNode
+        .includes(:sequence)
         .where(kind: "pointer_id")
         .where(EdgeNode.value_is_one_of(*points.pluck(:id))) # WOW! -R.C.
-        .pluck(:sequence_id)
+        .pluck("sequences.name")
     end
 
     def tool_seq
       @tool_seq ||= EdgeNode
+        .includes(:sequence)
         .where(kind: "tool_id")
         .where("value = ?", every_tool_id_as_json)
-        .pluck(:sequence_id)
+        .pluck("sequences.name")
     end
   end
 end
