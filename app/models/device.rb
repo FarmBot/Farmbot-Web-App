@@ -43,7 +43,7 @@ class Device < ApplicationRecord
     logs
       .order(created_at: :desc)
       .offset((max_log_count || DEFAULT_MAX_LOGS) * multiplier)
-      .delete_all
+      .destroy_all
   end
 
   def self.current
