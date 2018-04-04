@@ -1,8 +1,8 @@
 import * as React from "react";
-import { JSXChildren } from "../util";
+import { ErrorBoundary } from "../error_boundary";
 
 interface PageProps {
-  children?: JSXChildren;
+  children?: React.ReactNode;
   className?: string;
 }
 
@@ -10,6 +10,8 @@ export function Page(props: PageProps) {
   let finalClassName = "all-content-wrapper";
   if (props.className) { finalClassName += ` ${props.className}`; }
   return <div className={finalClassName}>
-    {props.children}
+    <ErrorBoundary>
+      {props.children}
+    </ErrorBoundary>
   </div>;
 }

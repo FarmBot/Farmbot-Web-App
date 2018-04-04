@@ -69,9 +69,9 @@ export class MoveTo extends React.Component<MoveToProps, MoveToState> {
         </p>
 
         <div className="panel-header-description">
-          {"Click a spot in the grid to choose a location. " +
+          {t("Click a spot in the grid to choose a location. " +
             "Once selected, press button to move FarmBot to this postion. " +
-            "Press the back arrow to exit."}
+            "Press the back arrow to exit.")}
         </div>
 
       </div>

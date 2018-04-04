@@ -1,23 +1,20 @@
 module Sequences
   class Update < Mutations::Command
     include CeleryScriptValidators
+    using CanonicalCeleryHelpers
     UNKNOWN = "Unknown validation issues."
+    BLACKLIST = [:sequence, :device, :args, :body]
+
     required do
       model :device, class: Device
       model :sequence, class: Sequence
     end
 
     optional do
-      duck :body, methods: [:[], :[]=, :each, :map]
       string :name
-      string :color, in: Sequence::COLORS
-      hash :args do
-        optional do
-          hash :locals do
-            duck :*, methods: [] # Let CeleryScript lib do the type checking...
-          end
-        end
-      end
+      color
+      args
+      body
     end
 
     def validate
@@ -27,12 +24,13 @@ module Sequences
 
     def execute
       ActiveRecord::Base.transaction do
-        sequence.args["is_outdated"] = false
         sequence.migrated_nodes = true
-        sequence.update_attributes!(inputs.except(:sequence, :device))
-        CeleryScript::StoreCelery.run!(sequence: sequence)
+        sequence.update_attributes!(inputs.except(*BLACKLIST))
+        params = {sequence: sequence, args: args || {}, body: body || []}
+        CeleryScript::StoreCelery.run!(params)
       end
-      CeleryScript::FetchCelery.run!(sequence: sequence.reload)
+      sequence.manually_sync! # We must manually sync this resource.
+      CeleryScript::FetchCelery.run!(sequence: sequence)
     rescue ActiveRecord::RecordInvalid => e
       add_error :other, :unknown, (e.try(:message) || UNKNOWN)
     end

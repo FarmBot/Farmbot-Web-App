@@ -90,7 +90,7 @@ module CeleryScript
         color:      sequence.color,
         created_at: sequence.created_at,
         updated_at: sequence.updated_at,
-        args:       Sequence::DEFAULT_ARGS.merge({ is_outdated: false })
+        args:       Sequence::DEFAULT_ARGS
       }
     end
 
@@ -102,16 +102,28 @@ module CeleryScript
     end
 
     def validate
-      sequence.reload
       # A sequence lacking a `sequence` node is a syntax error.
       # This should never show up in the frontend, but *is* helpful for devs
-      # when debugging.
+      # when debugging (and has caught quite a few bugs as well).
       add_error :bad_sequence, :bad, NO_SEQUENCE unless entry_node
     end
 
     def execute
       canonical_form = misc_fields.merge!(recurse_into_node(entry_node))
-      return HashWithIndifferentAccess.new(canonical_form)
+      canonical_form[:in_use] = \
+        EdgeNode.where(kind: "sequence_id", value: sequence.id).exists? ||
+        RegimenItem.where(sequence_id: sequence.id).exists? ||
+        FarmEvent.where(executable: sequence).exists?
+      s                   = HashWithIndifferentAccess.new(canonical_form)
+      # HISTORICAL NOTE:
+      #   When I prototyped the variables declaration stuff, a few (failed)
+      #   iterations snuck into the DB. Gradually migrating is easier than
+      #   running a full blow table wide migration.
+      # - RC 3-April-18
+      has_scope = s.dig(:args, :locals, :kind) == "scope_declaration"
+      s[:args][:locals] = Sequence::SCOPE_DECLARATION unless has_scope
+
+      return s
     end
   end
 end

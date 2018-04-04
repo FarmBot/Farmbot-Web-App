@@ -12,7 +12,7 @@ module Devices
 
     def execute
       merge_default_values
-      device = Device.create!({name: random_name}.merge(inputs.except(:user)))
+      device = Device.create!({name: "Farmbot"}.merge(inputs.except(:user)))
       ActiveRecord::Base.transaction do
         old_device = user.device
         user.update_attributes!(device_id: device.id) # Detach from old one.
@@ -24,11 +24,7 @@ module Devices
   private
 
     def merge_default_values
-      inputs[:name]  ||= random_name
-    end
-
-    def random_name
-      Haikunator.haikunate(1000)
+      inputs[:name]  ||= "Farmbot"
     end
   end
 end

@@ -6,6 +6,19 @@ describe Api::RegimensController do
     let(:user) { FactoryBot.create(:user) }
     let!(:regimen) { FactoryBot.create(:regimen, device: user.device) }
 
+    it 'prevents deletion of resources that are in use' do
+      sign_in user
+      farm_event = FactoryBot.create(:farm_event,
+                                      executable: regimen,
+                                      start_time: Time.now.tomorrow)
+      before     = Regimen.count
+      delete :destroy, params: { id: regimen.id }
+      after      = FarmEvent.count
+      expect(response.status).to eq(422)
+      expect(json[:regimen]).to include("still in use")
+      expect(Regimen.exists?(regimen.id)).to eq(true)
+    end
+
     it 'retrieves all regimina' do
       sign_in user
       old_count = Regimen.count

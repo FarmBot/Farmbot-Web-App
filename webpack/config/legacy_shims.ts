@@ -4,8 +4,8 @@ import { edit, save } from "../api/crud";
 import { getWebAppConfig } from "../resources/selectors_by_kind";
 
 /**
- * HISTORICAL CONTEXT: We once stored user settings (like map zoom level) in localStorage and
- *    would retrieve values via `Session.getBool("zoom_level")`
+ * HISTORICAL CONTEXT: We once stored user settings (like map zoom level) in
+ * localStorage and would retrieve values via `Session.getBool("zoom_level")`
  *
  * PROBLEM: localStorage is no longer used. Many parts of the app were accessing
  *          values in places that did not have access to the Redux store.

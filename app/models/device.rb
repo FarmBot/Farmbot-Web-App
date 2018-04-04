@@ -21,6 +21,7 @@ class Device < ApplicationRecord
   has_many  :sensor_readings, dependent: :destroy
   has_many  :device_configs,  dependent: :destroy
   has_many  :pin_bindings,    dependent: :destroy
+  has_many  :token_issuances, dependent: :destroy
   validates_presence_of :name
   validates :timezone,
     inclusion: { in: TIMEZONES, message: BAD_TZ, allow_nil: true }
@@ -31,7 +32,10 @@ class Device < ApplicationRecord
   end
   # Give the user back the amount of logs they are allowed to view.
   def limited_log_list
-    logs.all.last(max_log_count || DEFAULT_MAX_LOGS)
+    Log
+      .order(created_at: :desc)
+      .where(device_id: self.id)
+      .limit(max_log_count || DEFAULT_MAX_LOGS)
   end
 
   def self.current
@@ -55,5 +59,18 @@ class Device < ApplicationRecord
 
   def tz_offset_hrs
     Time.now.in_time_zone(self.timezone || "UTC").utc_offset / 1.hour
+  end
+
+  # Send a realtime message to a logged in user.
+  def tell(message, transport = Transport)
+    log  = Log.new({ device:     self,
+                     message:    message,
+                     created_at: Time.now,
+                     channels:   [],
+                     meta:       { type: "info" } })
+    json = LogSerializer.new(log).as_json.to_json
+
+    transport.amqp_send(json, self.id, "logs")
+    log
   end
 end

@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { mapStateToPropsAddEdit, } from "./map_state_to_props_add_edit";
 import { init, destroy } from "../../api/crud";
 import { EditFEForm } from "./edit_fe_form";
-import { betterCompact, JSXChildren, catchErrors } from "../../util";
+import { betterCompact } from "../../util";
 import { entries } from "../../resources/util";
 import { Link } from "react-router";
 import {
@@ -23,7 +23,6 @@ interface State {
 @connect(mapStateToPropsAddEdit)
 export class AddFarmEvent
   extends React.Component<AddEditFarmEventProps, Partial<State>> {
-  componentDidCatch(x: Error) { catchErrors(x); }
 
   constructor(props: AddEditFarmEventProps) {
     super(props);
@@ -86,7 +85,7 @@ export class AddFarmEvent
     return <p>{t("Loading")}...</p>;
   }
 
-  placeholderTemplate(children: JSXChildren) {
+  placeholderTemplate(children: React.ReactChild | React.ReactChild[]) {
     return <div className="panel-container magenta-panel add-farm-event-panel">
       <div className="panel-header magenta-panel">
         <p className="panel-title"> <BackArrow /> {t("No Executables")} </p>

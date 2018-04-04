@@ -22,16 +22,4 @@ describe Auth::FromJWT do
     result = Auth::FromJWT.run!(jwt: token)
     expect(result).to eq(user)
   end
-
-  it "allows emails as a `sub` field, but only until 25 OCT 17" do
-    t = fake[user.email]
-    result = Auth::FromJWT.run!(jwt: t)
-    expect(result).to eq(user)
-  end
-
-  it "crashes when sub is neither string nor Integer" do
-    expect {
-      Auth::FromJWT.run!(jwt: fake[1.23])
-    }.to raise_error(Auth::ReloadToken::BAD_SUB)
-  end
 end

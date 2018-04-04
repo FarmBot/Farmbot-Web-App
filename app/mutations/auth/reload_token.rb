@@ -11,7 +11,7 @@ module Auth
     end
 
     def validate
-      @user = User.find_by_email_or_id(claims["sub"])
+      @user = User.find(claims["sub"])
     end
 
     def execute

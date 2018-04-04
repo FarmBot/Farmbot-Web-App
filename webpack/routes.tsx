@@ -10,6 +10,7 @@ import { Session } from "./session";
 import { attachToRoot } from "./util";
 import { Callback } from "i18next";
 import { topLevelRoutes } from "./route_config";
+import { ErrorBoundary } from "./error_boundary";
 
 interface RootComponentProps { store: Store; }
 
@@ -19,19 +20,19 @@ export const attachAppToDom: Callback = () => {
 };
 
 export class RootComponent extends React.Component<RootComponentProps, {}> {
-  render() {
-    // ==== TEMPORARY HACK. TODO: Add a before hook, if such a thing exists in
-    // React Router. Or switch routing libs.
+  componentWillMount() {
     const notLoggedIn = !Session.fetchStoredToken();
     const restrictedArea = window.location.pathname.includes("/app");
-    if (notLoggedIn && restrictedArea) {
-      Session.clear();
-    }
-    // ==== END HACK ====
-    return <Provider store={_store}>
-      <Router history={history}>
-        {topLevelRoutes}
-      </Router>
-    </Provider>;
+    (notLoggedIn && restrictedArea && Session.clear());
+  }
+
+  render() {
+    return <ErrorBoundary>
+      <Provider store={_store}>
+        <Router history={history}>
+          {topLevelRoutes}
+        </Router>
+      </Provider>
+    </ErrorBoundary>;
   }
 }

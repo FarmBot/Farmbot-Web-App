@@ -341,6 +341,11 @@ export namespace Content {
     trim(`Warning! When enabled, any unsaved changes
     will be discarded when refreshing or closing the page. Are you sure?`);
 
+  export const VIRTUAL_TRAIL =
+    trim(`Display a virtual trail for FarmBot in the Farm Designer map to show
+    movement and watering history while the map is open. Toggling this setting
+    will clear data for the current trail.`);
+
   // Device
   export const NOT_HTTPS =
     trim(`WARNING: Sending passwords via HTTP:// is not secure.`);
@@ -435,6 +440,10 @@ export namespace Content {
     trim(`FarmBot sent a malformed message. You may need to upgrade
     FarmBot OS. Please upgrade FarmBot OS and log back in.`);
 
+  export const OLD_FBOS_REC_UPGRADE = trim(`Your version of FarmBot OS is
+    outdated and will soon no longer be supported. Please update your device as
+    soon as possible.`);
+
   export const EXPERIMENTAL_WARNING =
     trim(`Warning! This is an EXPERIMENTAL feature. This feature may be
     broken and may break or otherwise hinder your usage of the rest of the
@@ -454,6 +463,9 @@ export namespace Content {
     trim(`This command will not execute correctly because you do not have
     encoders or endstops enabled for the chosen axis. Enable endstops or
     encoders from the Device page for: `);
+
+  export const IN_USE =
+    trim(`Used in another resource. Protected from deletion.`);
 
   // Regimens
   export const NO_REGIMEN_SELECTED =

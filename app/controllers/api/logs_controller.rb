@@ -1,5 +1,18 @@
 module Api
   class LogsController < Api::AbstractController
+    def search
+      conf       = current_device.web_app_config
+      mt         = CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES
+      query      = mt
+                    .map { |x| "(type = '#{x}' AND verbosity <= ?)" }
+                    .join(" OR ")
+      conditions = mt.map { |x| "#{x}_log" }.map{|x| conf.send(x) }
+      args_      = conditions.unshift(query)
+      limit      = current_device.max_log_count || Device::DEFAULT_MAX_LOGS
+
+      render json: current_device.logs.where(*args_).limit(limit)
+    end
+
     # This is one of the "oddball" endpoints for the FarmBot API.
     # It is unique because it allows batch creation of logs.
     # When creating in batches, it is a "best effort" approach.
@@ -28,16 +41,12 @@ private
     end
 
     def handle_single_log
-      outcome = new_log(raw_json)
+      outcome = Logs::Create.run(raw_json, device: current_device)
       if outcome.success?
         outcome.result.save!
         maybe_deliver(outcome.result)
       end
       mutate outcome
-    end
-
-    def new_log(input)
-      Logs::Create.run(input, device: current_device)
     end
 
     def maybe_deliver(log_or_logs)

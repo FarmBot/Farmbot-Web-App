@@ -8,7 +8,7 @@ export interface LabsFeature {
   /** Toggle label. */
   name: string;
   description: string;
-  /** Entry for localStorage. Must be unique. */
+  /** Configuration key name such as "disable_i18n". Must be unique. */
   storageKey: BooleanConfigKey;
   /** Placeholder value (use false). */
   value: boolean;
@@ -73,6 +73,13 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
     storageKey: BooleanSetting.discard_unsaved,
     value: false,
     confirmationMessage: t(Content.DISCARD_UNSAVED_CHANGES_CONFIRM)
+  },
+  {
+    name: t("Display virtual FarmBot trail"),
+    description: t(Content.VIRTUAL_TRAIL),
+    storageKey: BooleanSetting.display_trail,
+    value: false,
+    callback: () => sessionStorage.virtualTrailRecords = "[]"
   },
 ].map(fetchRealValue));
 

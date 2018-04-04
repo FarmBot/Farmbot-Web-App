@@ -7,7 +7,6 @@ import { OpenFarmResults } from "./openfarm_search_results";
 import { CropCatalogProps } from "../interfaces";
 import { OFSearch } from "../util";
 import * as _ from "lodash";
-import { catchErrors } from "../../util";
 
 export function mapStateToProps(props: Everything): CropCatalogProps {
   return {
@@ -24,7 +23,6 @@ export function mapStateToProps(props: Everything): CropCatalogProps {
 
 @connect(mapStateToProps)
 export class CropCatalog extends React.Component<CropCatalogProps, {}> {
-  componentDidCatch(x: Error) { catchErrors(x); }
 
   debouncedOFSearch = _.debounce((searchTerm: string) => {
     this.props.OFSearch(searchTerm)(this.props.dispatch);

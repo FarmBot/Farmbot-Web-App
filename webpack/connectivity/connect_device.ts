@@ -24,8 +24,10 @@ import { talk } from "browser-speech";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
-export const TITLE = "New message from bot";
+import * as _ from "lodash";
 
+export const TITLE = "New message from bot";
+const THROTTLE_MS = 600;
 /** TODO: This ought to be stored in Redux. It is here because of historical
  * reasons. Feel free to factor out when time allows. -RC, 10 OCT 17 */
 export const HACKY_FLAGS = {
@@ -50,7 +52,7 @@ export function actOnChannelName(
 /** Take a log message (of type toast) and determines the correct kind of toast
  * to execute. */
 export function showLogOnScreen(log: Log) {
-  switch (log.meta.type) {
+  switch (log.type) {
     case "success":
       return success(log.message, TITLE);
     case "busy":
@@ -101,7 +103,7 @@ export const onOffline = () => {
 export const changeLastClientConnected = (bot: Farmbot) => () => {
   bot.setUserEnv({
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
-  });
+  }).catch(() => { });
 };
 
 const onStatus = (dispatch: Function, getState: GetState) =>
@@ -117,16 +119,31 @@ const onStatus = (dispatch: Function, getState: GetState) =>
       if (!IS_OK) { badVersion(); }
       HACKY_FLAGS.needVersionCheck = false;
     }
-  }, 500));
+  }, THROTTLE_MS));
 
 type Client = { connected?: boolean };
 
 export const onSent = (client: Client) => () => !!client.connected ?
   dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
 
-export const onLogs = (dispatch: Function, getState: GetState) => (msg: Log) => {
+const LEGACY_META_KEY_NAMES: (keyof Log)[] = [
+  "type",
+  "x",
+  "y",
+  "z",
+  "verbosity",
+  "major_version",
+  "minor_version"
+];
+
+function legacyKeyTransformation(log: Log, key: keyof Log) {
+  log[key] = log[key] || _.get(log, ["meta", key], undefined);
+}
+
+export const onLogs = (dispatch: Function, getState: GetState) => throttle((msg: Log) => {
   bothUp();
   if (isLog(msg)) {
+    LEGACY_META_KEY_NAMES.map(key => legacyKeyTransformation(msg, key));
     actOnChannelName(msg, "toast", showLogOnScreen);
     actOnChannelName(msg, "espeak", speakLogAloud(getState));
     dispatch(initLog(msg));
@@ -137,10 +154,10 @@ export const onLogs = (dispatch: Function, getState: GetState) => (msg: Log) => 
     //                   inband signalling (for now).
     // TODO:             Make a `bot/device_123/offline` channel.
     const died =
-      msg.message.includes("is offline") && msg.meta.type === "error";
+      msg.message.includes("is offline") && msg.type === "error";
     died && dispatchNetworkDown("bot.mqtt");
   }
-};
+}, THROTTLE_MS);
 
 export function onMalformed() {
   bothUp();
@@ -152,7 +169,7 @@ export function onMalformed() {
 
 export const onOnline = () => dispatchNetworkUp("user.mqtt");
 export const onReconnect =
-  () => warning("Attempting to reconnect to the message broker", "Offline");
+  () => warning(t("Attempting to reconnect to the message broker"), t("Offline"));
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
     startPinging(bot);

@@ -8,7 +8,7 @@ import { sortResourcesById, urlFriendly, lastUrlChunk } from "../util";
 import { Row, Col, ToolTip } from "../ui/index";
 import { TaggedSequence, SpecialStatus } from "../resources/tagged_resources";
 import { init } from "../api/crud";
-import { ToolTips } from "../constants";
+import { ToolTips, Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 
 const sequenceList = (dispatch: Function) =>
@@ -37,7 +37,9 @@ const sequenceList = (dispatch: Function) =>
           key={uuid}
           onClick={click} >
           <button className={css.join(" ")} draggable={true}>
-            {name}
+            <label>{name}</label>
+            {ts.body.in_use &&
+              <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
           </button>
         </Link>
       </StepDragger>

@@ -22,9 +22,10 @@ class LogService
     #   "created_at"=>1512585641,
     #   "channels"=>[] }
     log           = JSON.parse(payload)
-
+    primary       = log["major_version"]
+    secondary     = log.dig("meta", "major_version") # Legacy
     # Legacy bots will double save logs if we don't do this:
-    major_version = (log.dig("meta", "major_version") || 0).to_i
+    major_version =  (primary || secondary || 0).to_i
     puts log["message"] if Rails.env.production?
     if(major_version >= 6)
       device_id = delivery_info.routing_key.split(".")[1].gsub("device_", "").to_i

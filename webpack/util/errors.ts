@@ -35,9 +35,8 @@ export function bail(message: string): never {
 }
 
 export const catchErrors = (error: Error) => {
-  if (_.get(window, "Rollbar.error")) {
-    // tslint:disable-next-line:no-any
-    Rollbar && Rollbar.error && Rollbar.error(error as any);
+  if (window.Rollbar && window.Rollbar.error) {
+    window.Rollbar.error(error);
   } else {
     throw error;
   }

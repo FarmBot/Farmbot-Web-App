@@ -9,28 +9,8 @@ class Sequence < ApplicationRecord
   LATEST_VERSION    = 20180209
   NOTHING           = { kind: "nothing", args: {} }
   SCOPE_DECLARATION = { kind: "scope_declaration", args: {} }
-  DEFAULT_ARGS      = { locals:  SCOPE_DECLARATION,
-                        version: LATEST_VERSION  }
-  # Does some extra magic for serialized columns for us, such as providing a
-  # default value and making hashes have indifferent access.
-  class CustomSerializer
-    def initialize(default)
-      @default = default
-    end
-
-    def load(value)
-      output = value ? YAML.load(value) : @default.new
-      if(output.respond_to?(:with_indifferent_access))
-        return output.with_indifferent_access
-      else
-        return output.map(&:with_indifferent_access)
-      end
-    end
-
-    def dump(value)
-      YAML.dump(value || @default.new)
-    end
-  end
+  DEFAULT_ARGS      = { locals:      SCOPE_DECLARATION,
+                        version:     LATEST_VERSION }
 
   COLORS = %w(blue green yellow orange purple pink gray red)
   include CeleryScriptSettingsBag
@@ -40,8 +20,6 @@ class Sequence < ApplicationRecord
   has_many  :regimen_items
   has_many  :primary_nodes,         dependent: :destroy
   has_many  :edge_nodes,            dependent: :destroy
-  serialize :body, CustomSerializer.new(Array)
-  serialize :args, CustomSerializer.new(Hash)
 
   # allowable label colors for the frontend.
   [ :name, :kind ].each { |n| validates n, presence: true }
@@ -53,22 +31,9 @@ class Sequence < ApplicationRecord
   before_validation :set_defaults
   around_destroy :delete_nodes_too
   def set_defaults
-    self.args              = {}.merge(DEFAULT_ARGS).merge(self.args)
     self.color           ||= "gray"
     self.kind            ||= "sequence"
   end
-
-  def self.random
-    Sequence.order("RANDOM()").first
-  end
-
-  # def traverse(&blk)
-  #   hash = as_json
-  #     .tap { |x| x[:kind] = "sequence" }
-  #     .deep_symbolize_keys
-  #     .slice(:kind, :args, :body)
-  #   CeleryScript::JSONClimber.climb(hash, &blk)
-  # end
 
   def delete_nodes_too
     Sequence.transaction do
@@ -86,5 +51,29 @@ class Sequence < ApplicationRecord
     all   = PrimaryNode.includes(:sequence).where(id: union).pluck(:sequence_id)
     sequences = Sequence.where(id: all)
     yield(sequences) if sequences.count > 0
+  end
+
+  def manually_sync!
+    device.auto_sync_transaction { broadcast! } if device
+  end
+
+  # THIS IS AN OVERRIDE - See Sequence#body_as_json
+  def broadcast?
+    false unless destroyed?
+  end
+
+  # THIS IS AN OVERRIDE - Special serialization required for auto sync.
+  # When a sequence is created, we save it to the database to create a primary
+  # key, then we iterate over `EdgeNode` and `PrimaryNode`s, assigning that
+  # sequence_id as we go.
+  # The problem is that the auto-sync mechanism in the app thinks the Sequence
+  # is ready to broadcast as soon as it is created. It isn't. It needs to get
+  # "linked" with sequence nodes before it can be broadcasted.
+  def body_as_json
+    return destroyed? ? nil : CeleryScript::FetchCelery.run!(sequence: self)
+  end
+
+  def fancy_name
+    name
   end
 end

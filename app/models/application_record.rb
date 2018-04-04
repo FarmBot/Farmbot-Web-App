@@ -32,7 +32,7 @@ class ApplicationRecord < ActiveRecord::Base
     self.broadcast! if broadcast?
   end
 
-  def body_as_json
+  def body_as_json # REMEMBER: Subclasses might override this! - RC
     if(destroyed?)
       return nil
     else

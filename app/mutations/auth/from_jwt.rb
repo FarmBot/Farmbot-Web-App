@@ -8,11 +8,21 @@ module Auth
       token  = SessionToken.decode!(just_the_token)
       claims = token.unencoded
       RequestStore.store[:jwt] = claims.deep_symbolize_keys
-      u = User.includes(:device).find_by_email_or_id(claims["sub"])
+      u = User.includes(:device).find(claims["sub"])
       Device.current = u.device
+      check_it!(claims)
       u
-    rescue JWT::DecodeError, ActiveRecord::RecordNotFound, User::BadSub
+    rescue JWT::DecodeError, ActiveRecord::RecordNotFound
       add_error :jwt, :decode_error, Auth::ReloadToken::BAD_SUB
+    end
+
+    # Triggers ActiveRecord::RecordNotFound if TokenIssuance is expired or
+    # missing.
+    def check_it!(claims)
+      device_id = claims["bot"].gsub("device_", "").to_i
+      TokenIssuance
+        .where("exp > ?", Time.now.to_i)
+        .find_by!(jti: claims["jti"], device_id: device_id)
     end
 
     def just_the_token

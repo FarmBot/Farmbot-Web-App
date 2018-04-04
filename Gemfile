@@ -15,20 +15,18 @@ gem "rack-attack"
 gem "paperclip"
 gem "figaro"
 gem "fog-google", git: "https://github.com/fog/fog-google"
-gem "pg", "0.21.0" # TODO: Why can't I upgrade to 1.0.0?
+gem "pg"
 gem "polymorphic_constraints"
 gem "tzinfo" # For validation of user selected timezone names
 gem "foreman"
 gem "webpack-rails"
-# Error reporting tools.
-# Active on the "official" FarmBot server, set the appropriate ENV
-# vars if you wish to use them on your own servers.
 gem "rollbar"
 gem "skylight"
 gem "bunny"
 gem "request_store"
 gem "secure_headers"
 gem "valid_url"
+gem "font-awesome-rails"
 
 group :development, :test do
   gem "hashdiff"
@@ -40,9 +38,6 @@ group :development, :test do
   gem "faker"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
   gem "rails-erd"
-  # TODO: Upgrade versions when they fix this stuff:
-  # https://stackoverflow.com/questions/43983466
-  #   /controller-test-emits-debug-failure-messages-after-rails-5-1-upgrade
   gem "rspec"
   gem "rspec-rails"
   gem "simplecov"

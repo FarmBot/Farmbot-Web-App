@@ -8,7 +8,8 @@ describe("<Page />", () => {
   });
   it("gets correct className", () => {
     const result = mount(Page({ className: "some-class" }));
-    expect(result.find("div").hasClass("some-class")).toBeTruthy();
-    expect(result.find("div").hasClass("all-content-wrapper")).toBeTruthy();
+    const div = result.find("div").first();
+    expect(div.hasClass("some-class")).toBeTruthy();
+    expect(div.hasClass("all-content-wrapper")).toBeTruthy();
   });
 });

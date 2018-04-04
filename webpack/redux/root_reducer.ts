@@ -15,7 +15,8 @@ export let reducers = combineReducers({
   config,
   draggable,
   resources
-} as any); // TODO: Fix this. -RC. TSC 2.4 upgrade broke stuff.
+});
+
 /** This is the topmost reducer in the application. If you need to preempt a
  * "normal" reducer this is the place to do it */
 export function rootReducer(
@@ -24,7 +25,7 @@ export function rootReducer(
   action: ReduxAction<{}>) {
   (action.type === Actions.LOGOUT) && Session.clear();
 
-  // TODO: Get rid of this nasty type case / hack. Resulted from TSC 2.4 upgrade
+  // TODO: Get rid of this nasty type cast / hack. Resulted from TSC 2.4 upgrade
   // - RC 30 JUN 17
   return reducers(state, action) as Everything;
 }

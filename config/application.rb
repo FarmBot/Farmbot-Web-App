@@ -43,7 +43,8 @@ module FarmBot
       .map { |x| x.present? ? "#{x}:#{ENV["API_PORT"]}" : nil }.compact
     SecureHeaders::Configuration.default do |config|
       config.hsts                              = "max-age=#{1.week.to_i}"
-      config.x_frame_options                   = "DENY"
+      # We need this off in dev mode otherwise email previews won't show up.
+      config.x_frame_options                   = "DENY" if Rails.env.production?
       config.x_content_type_options            = "nosniff"
       config.x_xss_protection                  = "1; mode=block"
       config.x_download_options                = "noopen"
@@ -94,6 +95,7 @@ module FarmBot
           WEBPACK_URL,
         ],
         style_src: %w(
+          'self'
           'unsafe-inline'
           fonts.googleapis.com
           maxcdn.bootstrapcdn.com

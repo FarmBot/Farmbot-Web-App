@@ -11,7 +11,6 @@ import {
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { ResourceIndex } from "../resources/interfaces";
-import { JSXChildren } from "../util";
 import { ShouldDisplay } from "../devices/interfaces";
 
 export interface HardwareFlags {
@@ -58,6 +57,7 @@ export interface Sequence extends CeleryScriptSequence {
   id?: number;
   color: Color;
   name: string;
+  in_use?: boolean;
 }
 
 export interface SequenceReducerState {
@@ -89,7 +89,7 @@ export interface StepButtonParams {
   current: TaggedSequence | undefined;
   step: SequenceBodyItem;
   dispatch: Function;
-  children?: JSXChildren;
+  children?: React.ReactNode;
   color: "blue"
   | "green"
   | "orange"

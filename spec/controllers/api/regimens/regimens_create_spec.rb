@@ -6,7 +6,7 @@ describe Api::RegimensController do
 
   describe '#create' do
     let(:user) { FactoryBot.create(:user) }
-    let(:sequence) { FactoryBot.create(:sequence, device: user.device) }
+    let(:sequence) { FakeSequence.create( device: user.device) }
     it 'creates a new regimen' do
       sign_in user
       color = %w(blue green yellow orange purple pink gray red).sample
@@ -28,6 +28,7 @@ describe Api::RegimensController do
       expect(RegimenItem.count).to be > old_item_count
       expect(json[:name]).to eq(name)
       expect(json[:color]).to eq(color)
+      expect(json[:in_use]).to eq(false)
     end
   end
 end

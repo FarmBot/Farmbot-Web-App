@@ -9,12 +9,11 @@ import { findBySlug } from "../search_selectors";
 import { Everything } from "../../interfaces";
 import { OpenFarm } from "../openfarm";
 import { OFSearch } from "../util";
-import { catchErrors, JSXChildren } from "../../util";
 import { unselectPlant } from "../actions";
 
 interface InforFieldProps {
   title: string;
-  children?: JSXChildren;
+  children?: React.ReactNode;
 }
 
 function InfoField(props: InforFieldProps) {
@@ -43,7 +42,6 @@ export function mapStateToProps(props: Everything): CropInfoProps {
 
 @connect(mapStateToProps)
 export class CropInfo extends React.Component<CropInfoProps, {}> {
-  componentDidCatch(x: Error) { catchErrors(x); }
 
   componentDidMount() {
     const crop = getPathArray()[5];
@@ -57,7 +55,8 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
     icon ? img.src = DATA_URI + icon : DEFAULT_ICON;
 
     // TODO: Setting these doesn't work by default, needs a fix
-    // https://www.w3.org/TR/2011/WD-html5-20110405/dnd.html#dom-datatransfer-setdragimage
+    // https://www.w3.org/TR/2011/WD-html5-20110405
+    //    /dnd.html#dom-datatransfer-setdragimage
     img.height = 50;
     img.width = 50;
 

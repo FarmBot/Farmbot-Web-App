@@ -11,9 +11,4 @@ describe Sequence do
     Sequence.create!(optns)
     expect { Sequence.create!(optns) }.to raise_error(ActiveRecord::RecordInvalid)
   end
-
-  it "picks random values" do
-    FactoryBot.create(:sequence)
-    5.times { expect(Sequence.random).to be_kind_of(Sequence) }
-  end
 end

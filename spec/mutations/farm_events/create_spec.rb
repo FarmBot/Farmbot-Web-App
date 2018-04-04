@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe FarmEvents::Create do
-  let(:seq) { FactoryBot.create(:sequence) }
+  let(:seq) { FakeSequence.create() }
   it 'Builds a farm_event' do
     device = seq.device
     start_time = '2027-02-17T15:16:17.000Z'
