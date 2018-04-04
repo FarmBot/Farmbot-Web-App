@@ -5,7 +5,7 @@ module Points
 
     required do
       model :device, class: Device
-      array :points, class: Point
+      array :point_ids, class: Integer
     end
 
     def validate
@@ -20,9 +20,13 @@ module Points
 
   private
 
+    def points
+      @points ||= Point.where(id: point_ids)
+    end
+
     def every_tool_id_as_json
-      # TODO: If we unify Plant/ToolSlot/GenericPointer, this could be
-      # simplified.
+      # TODO: If we unify Plant/ToolSlot/GenericPointer,
+      # this could be simplified.
       points
         .map { |x| x.pointer.try(:tool_id) }
         .compact
