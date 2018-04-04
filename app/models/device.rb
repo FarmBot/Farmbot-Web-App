@@ -32,10 +32,12 @@ class Device < ApplicationRecord
   end
   # Give the user back the amount of logs they are allowed to view.
   def limited_log_list
+    puts "Trimming #{self.id || "?"}"
     Log
       .order(created_at: :desc)
       .where(device_id: self.id)
       .limit(max_log_count || DEFAULT_MAX_LOGS)
+      .destroy_all
   end
 
   def trim_log_list!(multiplier = 1)
