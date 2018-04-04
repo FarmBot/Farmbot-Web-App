@@ -28,6 +28,7 @@ module Points
         .compact
         .uniq
         .map(&:to_json)
+        .map(&:to_i)
     end
 
     def point_seq
@@ -39,12 +40,9 @@ module Points
     end
 
     def tool_seq
-      @tool_seq ||= EdgeNode
-        .includes(:sequence)
-        .where(kind: "tool_id")
-        .where("value = ?", every_tool_id_as_json)
-        .tap { |x| binding.pry if x.any? }
-        .pluck("sequences.name")
+      @tool_seq ||= InUseTool
+        .where(tool_id: every_tool_id_as_json, device_id: device.id)
+        .pluck(:sequence_name)
     end
   end
 end

@@ -23,16 +23,12 @@ module Tools
     end
 
     def any_deps?
-      seq_ids = EdgeNode
-        .where(kind: "tool_id", value: tool.id)
-        .pluck(:sequence_id)
-      names = Sequence # TODO: Convert this to a SQL view for less hack.
-        .where(id: seq_ids)
-        .pluck(:name)
-        .map{|x| x || "Untitled sequence"}
-        .join(", ")
-
       add_error :tool, :in_use, STILL_IN_USE % [names] if names.present?
+    end
+
+    def names
+      @names ||= \
+        InUseTool.where(tool_id: tool.id).pluck(:sequence_name).join(", ")
     end
   end
 end
