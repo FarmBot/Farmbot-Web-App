@@ -218,7 +218,7 @@ export function urlFor(tag: ResourceName) {
     User: API.current.usersPath,
     Device: API.current.devicePath,
     Image: API.current.imagesPath,
-    Log: API.current.logsPath,
+    Log: API.current.filteredLogsPath,
     WebcamFeed: API.current.webcamFeedPath,
     FbosConfig: API.current.fbosConfigPath,
     WebAppConfig: API.current.webAppConfigPath,

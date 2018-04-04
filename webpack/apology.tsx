@@ -2,8 +2,8 @@ import * as React from "react";
 import { Session } from "./session";
 
 const STYLE: React.CSSProperties = {
-  border: "2px solid red",
-  background: "blue",
+  border: "2px solid #434343",
+  background: "#a4c2f4",
   fontSize: "24px",
   color: "black",
   display: "block",
@@ -31,7 +31,7 @@ export function Apology(_: {}) {
           Send a report to our developer team via the
         <a href="http://forum.farmbot.org/c/software">FarmBot software
         forum</a>. Including additional information (such as steps leading up
-                    to the error) helps us identify solutions more quickly.
+                        to the error) helps us identify solutions more quickly.
         </li>
       </ol>
     </p>

@@ -112,8 +112,9 @@ export class API {
   get pointsPath() { return `${this.baseUrl}/api/points/`; }
   /** /api/points/search */
   get pointSearchPath() { return `${this.pointsPath}/search/`; }
-  /** /api/logs */
-  get logsPath() { return `${this.baseUrl}/api/logs/`; }
+  /** Rather than returning ALL logs, returns a filtered subset.
+   * /api/logs/search */
+  get filteredLogsPath() { return `${this.baseUrl}/api/logs/search`; }
   /** /api/webcam_feed */
   get webcamFeedPath() { return `${this.baseUrl}/api/webcam_feeds/`; }
   /** /api/web_app_config */
