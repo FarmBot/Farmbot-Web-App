@@ -1,7 +1,6 @@
 module Points
   class Destroy < Mutations::Command
-    STILL_IN_USE  = "Can't delete point because the following sequences "\
-                    "are still using it: %s"
+    STILL_IN_USE  = "The sequence '%s' is still using the following points: %s"
 
     required do
       model :device, class: Device
@@ -13,8 +12,10 @@ module Points
       errors = (tool_seq + point_seq)
         .group_by(&:sequence_name)
         .to_a
-        .map{|(seq_name, data)| [seq_name, data.map(&:fancy_name).join(", ")]}
-        .map{|data| data.join(" is still using the following points: ")}
+        .map do |(seq_name, data)|
+          [ seq_name, data.map(&:fancy_name).uniq.sort.join(", ") ]
+        end
+        .map{|data| STILL_IN_USE % data }
         .join(". ")
       add_error :point, :in_use, errors if errors.present?
     end
