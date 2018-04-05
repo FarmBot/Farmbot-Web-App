@@ -10,9 +10,13 @@ module Points
 
     def validate
       # Collect names of sequences that still use this point.
-      names = (tool_seq + point_seq).uniq.join(", ")
-      binding.pry if names.any?
-      add_error :point, :in_use, STILL_IN_USE % [names] if names.present?
+      errors = (tool_seq + point_seq)
+        .group_by(&:sequence_name)
+        .to_a
+        .map{|(seq_name, data)| [seq_name, data.map(&:fancy_name).join(", ")]}
+        .map{|data| data.join(" is still using the following points: ")}
+        .join(". ")
+      add_error :point, :in_use, errors if errors.present?
     end
 
     def execute
@@ -39,13 +43,13 @@ module Points
     def point_seq
       @point_seq ||= InUsePoint
         .where(point_id: points.pluck(:id))
-        .pluck(:sequence_name)
+        .to_a
     end
 
     def tool_seq
       @tool_seq ||= InUseTool
         .where(tool_id: every_tool_id_as_json, device_id: device.id)
-        .pluck(:sequence_name)
+        .to_a
     end
   end
 end

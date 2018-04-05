@@ -4,4 +4,8 @@ class InUseTool < ApplicationRecord
   def readonly?
     true
   end
+
+  def fancy_name
+    tool_name
+  end
 end

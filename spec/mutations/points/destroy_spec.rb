@@ -90,10 +90,11 @@ describe Points::Destroy do
                                             }
                                           },
                                         ])
+    expect(InUsePoint.count).to eq(2)
     result = Points::Destroy
       .run(point_ids: [point.id, plant.id], device: device)
       .errors
       .message
-    binding.pry
+    expect(false).to be(true)
   end
 end
