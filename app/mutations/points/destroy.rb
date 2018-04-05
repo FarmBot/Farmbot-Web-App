@@ -36,12 +36,9 @@ module Points
     end
 
     def point_seq
-      @point_seq ||= EdgeNode
-        .includes(:sequence)
-        .where(kind: "pointer_id")
-        .where(EdgeNode.value_is_one_of(*points.pluck(:id))) # WOW! -R.C.
-        .pluck("sequences.name")
-        .tap {|x| binding.pry if x.any? }
+      @point_seq ||= InUsePoint
+        .where(point_id: points.pluck(:id))
+        .pluck(:sequence_name)
     end
 
     def tool_seq
