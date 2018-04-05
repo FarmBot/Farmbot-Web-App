@@ -11,6 +11,7 @@ module Points
     def validate
       # Collect names of sequences that still use this point.
       names = (tool_seq + point_seq).uniq.join(", ")
+      binding.pry if names.any?
       add_error :point, :in_use, STILL_IN_USE % [names] if names.present?
     end
 

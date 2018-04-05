@@ -48,4 +48,52 @@ describe Points::Destroy do
     expect(result.errors.message_list)
       .to include(Points::Destroy::STILL_IN_USE % s.sequence[:name])
   end
+
+  it "handles multiple sequence dep tracking issues at deletion time" do
+    Device.destroy_all
+    Point.destroy_all
+    Tool.destroy_all
+
+    device      = FactoryBot.create(:device)
+    point       = FactoryBot.create(:point, device: device, x: 4, y: 5, z: 6)
+    plant       = FactoryBot.create(:plant_point, device: device, x: 0, y: 0, z: 0)
+    empty_point = { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+    sequence_a  = Sequences::Create.run!(device: device,
+                                        name: "Sequence A",
+                                        body: [
+                                          {
+                                            kind: "move_absolute",
+                                            args: {
+                                              location: {
+                                                kind: "point",
+                                                args: {
+                                                  pointer_id:   plant.id,
+                                                  pointer_type: "Plant"
+                                                }
+                                              },
+                                              speed: 100,
+                                              offset: empty_point
+                                            }
+                                          },
+                                          {
+                                            kind: "move_absolute",
+                                            args: {
+                                              location: {
+                                                kind: "point",
+                                                args: {
+                                                  pointer_id:   plant.id,
+                                                  pointer_type: "GenericPointer"
+                                                }
+                                              },
+                                              speed: 100,
+                                              offset: empty_point
+                                            }
+                                          },
+                                        ])
+    result = Points::Destroy
+      .run(point_ids: [point.id, plant.id], device: device)
+      .errors
+      .message
+    binding.pry
+  end
 end
