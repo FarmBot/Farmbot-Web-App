@@ -3,6 +3,7 @@ import { AxisNumberProperty, MapTransformProps } from "../interfaces";
 import { getMapSize, getXYFromQuadrant } from "../util";
 import { BotPosition } from "../../../devices/interfaces";
 import { Color } from "../../../ui/index";
+import { botPositionLabel } from "./bot_position_label";
 
 export interface BotFigureProps {
   name: string;
@@ -55,7 +56,7 @@ export class BotFigure extends
         dy={0}
         fontSize={24}
         fill={Color.darkGray}>
-        {`(${position.x}, ${position.y}, ${position.z})`}
+        {botPositionLabel(position)}
       </text>
     </g>;
   }
