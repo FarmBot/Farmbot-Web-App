@@ -23,7 +23,8 @@ export class EditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
       findExecutable={this.props.findExecutable}
       title={t("Edit Farm Event")}
       deleteBtn={true}
-      timeOffset={this.props.timeOffset} />;
+      timeOffset={this.props.timeOffset}
+      autoSyncEnabled={this.props.autoSyncEnabled} />;
   }
 
   render() {

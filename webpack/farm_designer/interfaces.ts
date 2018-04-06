@@ -130,6 +130,7 @@ export interface AddEditFarmEventProps {
   dispatch: Function;
   findExecutable: ExecutableQuery;
   timeOffset: number;
+  autoSyncEnabled: boolean;
 }
 
 /**
