@@ -294,6 +294,11 @@ export namespace ToolTips {
 export namespace Content {
 
   // Account
+  export const ACCOUNT_PASSWORD_CHANGE =
+    trim(`Upon successful password change, your FarmBot will factory reset
+    allowing you to configure it with the updated credentials. You will also be
+    logged out of other browser sessions. Continue?`);
+
   export const ACCOUNT_DELETE_WARNING =
     trim(`WARNING! Deleting your account will permanently delete all of your
     Sequences , Regimens, Events, and Farm Designer data.Upon deleting your

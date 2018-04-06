@@ -14,7 +14,8 @@ import {
   hasId,
   findSequenceById,
   findRegimenById,
-  getDeviceAccountSettings
+  getDeviceAccountSettings,
+  getFbosConfig
 } from "../../resources/selectors";
 import {
   TaggedFarmEvent,
@@ -22,6 +23,8 @@ import {
   TaggedRegimen
 } from "../../resources/tagged_resources";
 import { DropDownItem } from "../../ui/index";
+import { validFbosConfig } from "../../util";
+import { sourceFbosConfigValue } from "../../devices/components/source_config_value";
 
 export let formatTime = (input: string, timeOffset: number) => {
   const iso = new Date(input).toISOString();
@@ -119,6 +122,12 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     }
   };
   const dev = getDeviceAccountSettings(props.resources.index);
+
+  const { configuration } = props.bot.hardware;
+  const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
+  const autoSyncEnabled =
+    !!sourceFbosConfigValue(fbosConfig, configuration)("auto_sync").value;
+
   return {
     deviceTimezone: dev
       .body
@@ -133,6 +142,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     farmEvents,
     getFarmEvent,
     findExecutable,
-    timeOffset: dev.body.tz_offset_hrs
+    timeOffset: dev.body.tz_offset_hrs,
+    autoSyncEnabled,
   };
 }
