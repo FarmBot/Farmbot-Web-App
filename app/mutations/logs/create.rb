@@ -19,15 +19,15 @@ module Logs
       # at this point and we need the ability to perform SQL queries. The `meta`
       # field is no longer useful nor is it a clean solution.
       #
-      # Too many bots expect logs to be in the same shape as before and they
-      # also create logs with the expectation that logs have a `meta` field.
+      # Legacy FBOS versions expect logs to be in the same shape as before
+      # and they also produce logs with the expectation that logs have a `meta`
+      # field.
       #
-      # We will keep the `meta` field aroundn for now, but ideally, API users
+      # We will keep the `meta` field around for now, but ideally, API users
       # should access `log.FOO` instead of `log.meta.FOO` for future
       # compatibility.
       #
-      # TODO: Make the fields below mandadtory (allowing nil in some cases, but
-      #       always requiring the key) and delete the `meta` field.
+      # TODO: delete the `meta` field by 6 JUN 18
       string  :type, in: Log::TYPES
       integer :x
       integer :y
@@ -78,7 +78,8 @@ module Logs
 
     # Helper for dealing with the gradual removal of the meta field.
     def transitional_field(name, default = nil)
-      return inputs[name] || meta[name] || meta[name.to_s] || default
+      m = meta || {} # New logs wont have `meta`.
+      return inputs[name] || m[name] || m[name.to_s] || default
     end
   end
 end

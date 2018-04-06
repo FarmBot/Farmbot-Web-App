@@ -12,13 +12,4 @@ class EdgeNode < ApplicationRecord
   def broadcast?
     false
   end
-
-  # `value` is a serialized column.
-  # That makes stuff like this hard to do in ActiveRecord:
-  # SELECT * FROM edge_nodes WHERE value = (1,2,3)
-  # This helper makes it possbile like this:
-  # EdgeNode.where(EdgeNode.value_is_one_of("A", ["b"], 3))
-  def self.value_is_one_of(*values)
-    EdgeNode.arel_table[:value].in(values)
-  end
 end

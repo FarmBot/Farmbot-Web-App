@@ -3,7 +3,7 @@ import { BotPosition } from "../../../devices/interfaces";
 import { MapTransformProps, AxisNumberProperty } from "../interfaces";
 import { getXYFromQuadrant } from "../util";
 import { Color } from "../../../ui";
-import { isNumber } from "lodash";
+import { botPositionLabel } from "./bot_position_label";
 
 export interface NegativePositionLabelProps {
   position: BotPosition;
@@ -20,7 +20,6 @@ export function NegativePositionLabel(props: NegativePositionLabelProps) {
     -plantAreaOffset.x + 40,
     -plantAreaOffset.y - 10,
     quadrant, gridSize);
-  const show = (n: number | undefined) => isNumber(n) ? n : "---";
 
   return <g id={"negative-position-label"}
     fontFamily="Arial" textAnchor="middle" dominantBaseline="central"
@@ -29,7 +28,7 @@ export function NegativePositionLabel(props: NegativePositionLabelProps) {
       visibility={(xIsNegative || yIsNegative) ? "visible" : "hidden"}
       x={origin.qx}
       y={origin.qy}>
-      {`(${show(position.x)}, ${show(position.y)}, ${show(position.z)})`}
+      {botPositionLabel(position)}
     </text>
   </g>;
 }
