@@ -10,7 +10,7 @@ import axios from "axios";
 const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
 const name: ResourceName = "Log";
 
-const doRefresh = (dispatch: Function) => {
+export const doRefreshLogs = (dispatch: Function) => {
   console.log("Re-indexing all the logs");
   axios.get<Log[]>(API.current.filteredLogsPath).then((r) => dispatch({
     type: Actions.RESOURCE_READY,
@@ -18,7 +18,7 @@ const doRefresh = (dispatch: Function) => {
   }), noop);
 };
 
-const throttledRefresh = throttle(doRefresh, 1000);
+const throttledRefresh = throttle(doRefreshLogs, 1000);
 
 /** TODO: Write docs. */
 const fn: Middleware = () => (dispatch) => (action: any) => {
