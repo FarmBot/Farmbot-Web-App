@@ -1,5 +1,8 @@
 module Api
   class LogsController < Api::AbstractController
+
+    before_action :clean_out_old_ones
+
     def search
       conf       = current_device.web_app_config
       mt         = CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES
