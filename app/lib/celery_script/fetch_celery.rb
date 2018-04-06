@@ -114,7 +114,7 @@ module CeleryScript
         EdgeNode.where(kind: "sequence_id", value: sequence.id).exists? ||
         RegimenItem.where(sequence_id: sequence.id).exists? ||
         FarmEvent.where(executable: sequence).exists?
-      s                   = HashWithIndifferentAccess.new(canonical_form)
+      s = canonical_form.with_indifferent_access
       # HISTORICAL NOTE:
       #   When I prototyped the variables declaration stuff, a few (failed)
       #   iterations snuck into the DB. Gradually migrating is easier than
