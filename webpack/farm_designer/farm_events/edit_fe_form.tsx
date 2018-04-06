@@ -97,6 +97,7 @@ export interface EditFEProps {
   title: string;
   deleteBtn?: boolean;
   timeOffset: number;
+  autoSyncEnabled: boolean;
 }
 
 interface State {
@@ -190,9 +191,13 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         const frmEvnt = this.props.farmEvent;
         const nextRun = _.first(scheduleForFarmEvent(frmEvnt.body).items);
         if (nextRun) {
-          success(t(`This Farm Event will run {{timeFromNow}}, but
+          const nextRunText = this.props.autoSyncEnabled
+            ? t(`This Farm Event will run {{timeFromNow}}.`,
+              { timeFromNow: nextRun.fromNow() })
+            : t(`This Farm Event will run {{timeFromNow}}, but
             you must first SYNC YOUR DEVICE. If you do not sync, the event will
-            not run.`.replace(/\s+/g, " "), { timeFromNow: nextRun.fromNow() }));
+            not run.`.replace(/\s+/g, " "), { timeFromNow: nextRun.fromNow() });
+          success(nextRunText);
           this.props.dispatch(maybeWarnAboutMissedTasks(frmEvnt, function () {
             alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK));
           }));

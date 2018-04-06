@@ -10,8 +10,10 @@ import {
 import { SpecialStatus } from "../../resources/tagged_resources";
 import Axios from "axios";
 import { API } from "../../api/index";
-import { prettyPrintApiErrors, equals } from "../../util";
+import { prettyPrintApiErrors, equals, trim } from "../../util";
 import { success, error } from "farmbot-toastr/dist";
+import { Content } from "../../constants";
+import { uniq } from "lodash";
 
 interface PasswordForm {
   new_password: string;
@@ -26,6 +28,10 @@ const EMPTY_FORM =
 
 export class ChangePassword extends React.Component<{}, ChangePWState> {
   state: ChangePWState = { status: SpecialStatus.SAVED, form: EMPTY_FORM };
+
+  componentWillUnmount() {
+    this.clearForm();
+  }
 
   /** Set the `status` flag to `undefined`, but only if the form is empty.
    * Useful when the user manually clears the form. */
@@ -43,8 +49,7 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
       this.setState(wow, this.maybeClearForm);
     };
 
-  save = () => {
-    this.setState({ status: SpecialStatus.SAVING });
+  sendChange = () =>
     Axios
       .patch(API.current.usersPath, this.state.form)
       .then(() => {
@@ -54,6 +59,30 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
         error(e ? prettyPrintApiErrors(e) : t("Password change failed."));
         this.clearForm();
       });
+
+  save = () => {
+    const numUniqueValues = uniq(Object.values(this.state.form)).length;
+    switch (numUniqueValues) {
+      case 1:
+        error("Provided new and old passwords match. Password not changed.");
+        this.clearForm();
+        break;
+      case 2:
+        if (confirm(Content.ACCOUNT_PASSWORD_CHANGE)) {
+          this.setState({ status: SpecialStatus.SAVING });
+          this.sendChange();
+        }
+        this.clearForm();
+        break;
+      case 3:
+        error("New password and confirmation do not match.");
+        this.clearForm();
+        break;
+      default:
+        this.clearForm();
+        throw new Error(trim(`Password change form error:
+          ${numUniqueValues} unique values provided.`));
+    }
   }
 
   render() {
@@ -82,7 +111,7 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
             value={this.state.form.new_password}
             type="password" />
           <label>
-            {t("New Password")}
+            {t("Confirm New Password")}
           </label>
           <BlurableInput
             allowEmpty={true}
