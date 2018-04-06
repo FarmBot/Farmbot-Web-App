@@ -33,8 +33,8 @@ module Api
     end
 
     def destroy
-      ids = params[:id].to_s.split(",")
-      mutate Points::Destroy.run({ points: points.find(ids) }, device_params)
+      ids = params[:id].to_s.split(",").map(&:to_i)
+      mutate Points::Destroy.run({point_ids: ids}, device_params)
     end
 
     private

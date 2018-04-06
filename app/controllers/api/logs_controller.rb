@@ -1,5 +1,8 @@
 module Api
   class LogsController < Api::AbstractController
+
+    before_action :clean_out_old_ones
+
     def search
       conf       = current_device.web_app_config
       mt         = CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES
@@ -35,6 +38,14 @@ module Api
     end
 
 private
+
+    def clean_out_old_ones
+      current_device
+        .logs
+        .where
+        .not(id: current_device.limited_log_list.pluck(:id))
+        .delete_all
+    end
 
     def handle_many_logs
       mutate Logs::BatchCreate.run(device: current_device, logs: raw_json)
