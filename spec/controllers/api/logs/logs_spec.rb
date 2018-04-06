@@ -59,6 +59,16 @@ describe Api::LogsController do
       end
     end
 
+    it 'creates one log with only required fields' do
+      sign_in user
+      before_count = Log.count
+      body = { message: "HELLO", type: "info" }
+      post :create, body: body.to_json, params: {format: :json}
+      expect(response.status).to eq(200)
+      expect(Log.count).to be > before_count
+      expect(json[:message]).to eq("HELLO")
+    end
+
     it 'disallows blacklisted (sensitive) words in logs' do
       Log.destroy_all
       stub = { meta: { x: 1, y: 2, z: 3, type: "info" },
