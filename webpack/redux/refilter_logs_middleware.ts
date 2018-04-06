@@ -8,29 +8,24 @@ import { API } from "../api";
 import axios from "axios";
 
 const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
+const name: ResourceName = "Log";
 
 const doRefresh = (dispatch: Function) => {
-  const name: ResourceName = "Log";
   console.log("Re-indexing all the logs");
-  axios
-    .get<Log[]>(API.current.filteredLogsPath)
-    .then((r) => dispatch({
-      type: Actions.RESOURCE_READY,
-      payload: { name, data: r.data }
-    }))
-    .catch(noop);
+  axios.get<Log[]>(API.current.filteredLogsPath).then((r) => dispatch({
+    type: Actions.RESOURCE_READY,
+    payload: { name, data: r.data }
+  }), noop);
 };
 
 const throttledRefresh = throttle(doRefresh, 1000);
 
-/**
- * TODO: Write docs.
- */
+/** TODO: Write docs. */
 const fn: Middleware = () => (dispatch) => (action: any) => {
   const needsRefresh = action
+    && action.payload
     && action.type === Actions.UPDATE_RESOURCE_OK
-    && action.payload.name === WEB_APP_CONFIG
-    && action.payload;
+    && action.payload.kind === WEB_APP_CONFIG;
 
   needsRefresh && throttledRefresh(dispatch);
 
