@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180404165355) do
+ActiveRecord::Schema.define(version: 20180407131311) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -290,6 +290,12 @@ ActiveRecord::Schema.define(version: 20180404165355) do
     t.string "name", default: "untitled", null: false
     t.string "pointer_type", limit: 280, null: false
     t.integer "pointer_id", null: false
+    t.datetime "archived_at"
+    t.datetime "planted_at"
+    t.string "openfarm_slug", limit: 280, default: "50", null: false
+    t.string "plant_stage", limit: 10, default: "planned"
+    t.integer "tool_id"
+    t.integer "pullout_direction", default: 0
     t.index ["device_id"], name: "index_points_on_device_id"
     t.index ["meta"], name: "index_points_on_meta", using: :gin
     t.index ["pointer_type", "pointer_id"], name: "index_points_on_pointer_type_and_pointer_id"

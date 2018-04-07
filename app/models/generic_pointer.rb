@@ -1,6 +1,4 @@
-class GenericPointer < ApplicationRecord
-  has_one :point, as: :pointer
-
+class GenericPointer < Point
   def broadcast?
     false
   end

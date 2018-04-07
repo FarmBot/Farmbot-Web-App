@@ -14,7 +14,7 @@ module Points
     end
 
     def execute
-      Point.create!(inputs.merge(pointer: GenericPointer.new))
+      GenericPointer.create!(inputs)
     end
   end
 end

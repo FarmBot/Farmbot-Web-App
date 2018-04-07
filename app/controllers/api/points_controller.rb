@@ -3,13 +3,14 @@ require_relative "../../lib/hstore_filter"
 module Api
   class PointsController < Api::AbstractController
     class BadPointerType < StandardError; end
+    ALL_POINTERS     = Point::POINTER_KINDS.join(", ")
     BAD_POINTER_TYPE = <<~XYZ
       Please provide a JSON object with a `pointer_type` that matches one
       of the following values: %s
     XYZ
 
     rescue_from BadPointerType do |exc|
-      sorry BAD_POINTER_TYPE % [Point::POINTER_KINDS.keys.join(", ")], 422
+      sorry BAD_POINTER_TYPE.split(/\n+/).join(" ") % [ALL_POINTERS], 422
     end
 
     def index

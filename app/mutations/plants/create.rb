@@ -17,17 +17,7 @@ module Plants
     end
 
     def execute
-      Point.create!(creation_params)
-    end
-
-    def creation_params
-      inputs
-        .slice(:x, :y, :z, :device, :name, :radius)
-        .merge(pointer: pointer)
-    end
-
-    def pointer
-      Plant.new(inputs.slice(:openfarm_slug))
+      Plant.create!(inputs)
     end
   end
 end

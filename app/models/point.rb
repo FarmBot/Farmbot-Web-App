@@ -1,15 +1,27 @@
 class Point < ApplicationRecord
-  POINTER_KINDS = { "GenericPointer" => GenericPointer,
-                    "ToolSlot"       => ToolSlot,
-                    "Plant"          => Plant }
+  POINTER_KINDS = [
+    "GenericPointer",
+    "ToolSlot",
+    "Plant"
+  ]
+
   SHARED_FIELDS = [:x, :y, :z, :radius, :name, :meta]
+  INVALID_TYPE  = "%{value} is not a valid pointer type"
+
   belongs_to :device
-  belongs_to :pointer, polymorphic: true, dependent: :destroy
   validates :pointer_type,
-            inclusion: { in: POINTER_KINDS.keys,
-                         message: "%{value} is not a valid pointer type" }
-  validates :pointer, presence: true
-  validates_presence_of :pointer
+    inclusion: { in: POINTER_KINDS, message: INVALID_TYPE }
   validates_presence_of :device
-  accepts_nested_attributes_for :pointer
+
+  def pointer_id
+    raise "deprecated"
+  end
+
+  def self.constantize_pointer(name)
+    ({
+      "GenericPointer" => GenericPointer,
+      "ToolSlot"       => ToolSlot,
+      "Plant"          => Plant
+    })[name] || "none"
+  end
 end

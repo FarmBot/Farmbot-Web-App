@@ -1,7 +1,7 @@
 # A single slot in a larger tool rack. Lets the sequence builder know things
 # like where to put a tool when not in use, where to grab the next tool from,
 # etc.
-class ToolSlot < ApplicationRecord
+class ToolSlot < Point
   PULLOUT_DIRECTIONS = [NONE       = 0,
                         POSITIVE_X = 1,
                         NEGATIVE_X = 2,

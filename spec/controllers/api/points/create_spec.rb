@@ -43,6 +43,16 @@ describe Api::PointsController do
       end
     end
 
+    it 'validates pointer_type' do
+      sign_in user
+      body = { pointer_type: "TypoPointer" }
+      post :create, body: body.to_json, params: { format: :json }
+      expect(response.status).to eq(422)
+      expected = \
+        "Please provide a JSON object with a `pointer_type` that matches"
+      expect(json[:error]).to include(expected)
+    end
+
     it 'creates a point' do
       sign_in user
       body = { x:            1,
