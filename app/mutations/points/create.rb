@@ -14,7 +14,8 @@ module Points
     end
 
     def execute
-      GenericPointer.create!(inputs)
+      stub = { pointer_type: "GenericPoint", pointer_id: 0 }
+      GenericPointer.create!(inputs.merge(stub))
     end
   end
 end

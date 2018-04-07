@@ -22,7 +22,8 @@ module ToolSlots
     end
 
     def execute
-      ToolSlot.create!(inputs.slice(*FIELDS))
+      stub = {pointer_type: "ToolSlot", pointer_id: 0}
+      ToolSlot.create!(inputs.slice(*FIELDS).merge(stub))
     end
 
     def has_tool_id

@@ -88,7 +88,7 @@ module CeleryScriptSettingsBag
       end
       .arg(:pointer_id,   [Integer]) do |node|
         p_type = node&.parent&.args[:pointer_type]&.value
-        klass  = Point.constantize_pointer(p_type)
+        klass  = Point.descendants.map(&:name).include?(p_type)
         # Don't try to validate if `pointer_type` is wrong.
         # That's a different respnsiblity.
         if(klass)

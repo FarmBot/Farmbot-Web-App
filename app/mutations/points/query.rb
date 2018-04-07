@@ -8,7 +8,6 @@ module Points
         :x,
         :y,
         :z,
-        :pointer_id,
         :name,
         :pointer_type,
         :device
@@ -23,7 +22,6 @@ module Points
         float    :y
         float    :z
         hstore   :meta
-        integer  :pointer_id
         string   :name
         string   :pointer_type
       end

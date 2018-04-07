@@ -14,7 +14,6 @@ class ToolSlot < Point
   IN_USE = "already in use by another tool slot"
 
   belongs_to :tool
-  has_one :point, as: :pointer
   validates_uniqueness_of :tool,
     allow_blank: true,
     allow_nil: true,

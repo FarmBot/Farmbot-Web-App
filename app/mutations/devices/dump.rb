@@ -11,8 +11,8 @@ module Devices
       Pair[:peripherals,  PeripheralSerializer],
       # Pair[:sequences,    SequenceSerializer],
       Pair[:farm_events,  FarmEventSerializer],
-      Pair[:tools,        ToolSerializer],
-      Pair[:points,       PointSerializer],
+      # Pair[:tools,        ToolSerializer],
+      # Pair[:points,       PointSerializer],
       Pair[:users,        UserSerializer],
       Pair[:webcam_feeds, WebcamFeedSerializer]
     ]
