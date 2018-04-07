@@ -6,7 +6,11 @@ describe Api::PointsController do
     let(:device) { FactoryBot.create(:device) }
     let(:user) { FactoryBot.create(:user, device: device) }
     let!(:point) { FactoryBot.create(:generic_pointer, device: device) }
-    let(:slot) { Point.create(x: 0, y: 0, z: 0, radius: 1, pointer: ToolSlot.new, device: user.device) }
+    let(:slot) { ToolSlot.create(x:          0,
+                                 y:          0,
+                                 z:          0,
+                                 radius:     1,
+                                 device_id:  user.device.id) }
 
     it 'updates a point' do
       sign_in user

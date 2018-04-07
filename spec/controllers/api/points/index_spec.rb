@@ -25,13 +25,15 @@ describe Api::PointsController do
     it 'lists all plants' do
       Point.destroy_all
       plants = 3.times do |num|
-        Point.create!(x:       num,
-                      y:       num,
-                      z:       num,
-                      radius:  50,
-                      name:    "Cabbage #{num}",
-                      device:  user.device,
-                      pointer: Plant.new(openfarm_slug: "cabbage"))
+        Plant.create!(x:             num,
+                      y:             num,
+                      z:             num,
+                      radius:        50,
+                      name:          "Cabbage #{num}",
+                      device:        user.device,
+                      openfarm_slug: "cabbage",
+                      pointer_type:  "Plant",
+                      pointer_id:    0)
       end
       sign_in user
       get :index
