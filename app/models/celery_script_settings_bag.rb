@@ -58,6 +58,9 @@ module CeleryScriptSettingsBag
   BAD_PIN_TYPE          = '"%s" is not a type of pin. Allowed values: %s'
   BAD_SPEED             = "Speed must be a percentage between 1-100"
   PIN_TYPE_MAP          = { "Peripheral" => Peripheral, "Sensor" => Sensor }
+  KLASS_LOOKUP          = Point::ALL.reduce({}) do |acc, val|
+    (acc[val.name] = val) && acc
+  end
 
   Corpus = CeleryScript::Corpus
       .new

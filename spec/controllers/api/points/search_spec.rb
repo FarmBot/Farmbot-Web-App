@@ -8,8 +8,8 @@ describe Api::PointsController do
 
     it 'queries points' do
       sign_in user
-      FactoryBot.create(:point, device: device, meta: {foo1: 1})
-      FactoryBot.create(:point, device: device, meta: {bar2: 2})
+      FactoryBot.create(:generic_pointer, device: device, meta: {foo1: 1})
+      FactoryBot.create(:generic_pointer, device: device, meta: {bar2: 2})
       post :search,
            body: {meta: {foo1: 1}}.to_json,
            params: {format: :json }
@@ -21,8 +21,8 @@ describe Api::PointsController do
 
     it 'queries fields other than meta' do
       sign_in user
-      FactoryBot.create(:point, device: device, x: 23)
-      FactoryBot.create(:point, device: device, x: 98)
+      FactoryBot.create(:generic_pointer, device: device, x: 23)
+      FactoryBot.create(:generic_pointer, device: device, x: 98)
       post :search, body: {x: 23}.to_json, params: {format: :json }
       expect(response.status).to eq(200)
       expect(json.length).to eq(1)

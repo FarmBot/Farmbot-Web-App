@@ -5,7 +5,7 @@ describe Api::PointsController do
   describe '#update' do
     let(:device) { FactoryBot.create(:device) }
     let(:user) { FactoryBot.create(:user, device: device) }
-    let!(:point) { FactoryBot.create(:point, device: device) }
+    let!(:point) { FactoryBot.create(:generic_pointer, device: device) }
     let(:slot) { Point.create(x: 0, y: 0, z: 0, radius: 1, pointer: ToolSlot.new, device: user.device) }
 
     it 'updates a point' do

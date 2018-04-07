@@ -34,7 +34,7 @@ module Points
       # TODO: If we unify Plant/ToolSlot/GenericPointer,
       # this could be simplified.
       points
-        .map { |x| x.pointer.try(:tool_id) }
+        .map { |x| x.try(:tool_id) }
         .compact
         .uniq
         .map(&:to_json)

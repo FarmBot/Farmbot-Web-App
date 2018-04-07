@@ -7,5 +7,7 @@ FactoryBot.define do
     meta ({})
     device
     openfarm_slug "lettuce"
+    pointer_type  "Plant"
+    pointer_id    0
   end
 end

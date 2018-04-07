@@ -1,5 +1,6 @@
 class Point < ApplicationRecord
-  POINTER_KINDS = [ "GenericPointer", "ToolSlot", "Plant" ]
+  ALL           = [GenericPointer, Plant, ToolSlot]
+  POINTER_KINDS = ALL.map(&:name)
 
   belongs_to :device
   validates_presence_of :device

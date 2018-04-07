@@ -6,7 +6,7 @@ describe Points::Destroy do
     # Create device
     device = FactoryBot.create(:device)
     # create many points
-    points = FactoryBot.create_list(:point, 3, device: device)
+    points = FactoryBot.create_list(:generic_pointer, 3, device: device)
     # use one point in a sequence.
     params = {
       name:   "Test Case I",
@@ -54,8 +54,8 @@ describe Points::Destroy do
 
   it "handles multiple sequence dep tracking issues at deletion time" do
     device      = FactoryBot.create(:device)
-    point       = FactoryBot.create(:point, device: device, x: 4, y: 5, z: 6)
-    plant       = FactoryBot.create(:plant_point, device: device, x: 0, y: 1, z: 0)
+    point       = FactoryBot.create(:generic_pointer, device: device, x: 4, y: 5, z: 6)
+    plant       = FactoryBot.create(:plant, device: device, x: 0, y: 1, z: 0)
     empty_point = { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
     sequence_a  = Sequences::Create.run!(device: device,
                                         name: "Sequence A",
