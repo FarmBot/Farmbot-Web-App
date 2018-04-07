@@ -1,6 +1,6 @@
 class Point < ApplicationRecord
-  ALL           = [GenericPointer, Plant, ToolSlot]
-  POINTER_KINDS = ALL.map(&:name)
+  # Using real constants instead of strings results in circular dep. errors.
+  POINTER_KINDS = ["GenericPointer", "Plant", "ToolSlot"]
 
   belongs_to :device
   validates_presence_of :device
