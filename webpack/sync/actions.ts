@@ -28,8 +28,8 @@ export interface SyncResponse {
 }
 
 export function fetchSyncData(dispatch: Function) {
-  const fetch = <T>(name: ResourceName, url: string, type = "RESOURCE_READY") =>
-    axios
+  const fetch =
+    <T>(name: ResourceName, url: string, type = "RESOURCE_READY") => axios
       .get<T>(url)
       .then((r): SyncResponse => dispatch({
         type, payload: { name, data: r.data }

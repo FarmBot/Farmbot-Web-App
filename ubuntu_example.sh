@@ -55,6 +55,7 @@ cp config/database.example.yml config/database.yml
 cp config/application.example.yml config/application.yml
 # READ THE FILE AND CHANGE THE VALUES ^
 sudo -u postgres psql
+rake keys:generate
 # Run this:
 #     CREATE USER "your_username_here" WITH SUPERUSER;
 #     \q
