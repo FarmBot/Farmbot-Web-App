@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180407131311) do
+ActiveRecord::Schema.define(version: 20180409150813) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -199,9 +199,6 @@ ActiveRecord::Schema.define(version: 20180407131311) do
     t.index ["device_id"], name: "index_firmware_configs_on_device_id"
   end
 
-  create_table "generic_pointers", id: :serial, force: :cascade do |t|
-  end
-
   create_table "global_configs", force: :cascade do |t|
     t.string "key"
     t.text "value"
@@ -220,6 +217,25 @@ ActiveRecord::Schema.define(version: 20180407131311) do
     t.integer "attachment_file_size"
     t.datetime "attachment_updated_at"
     t.index ["device_id"], name: "index_images_on_device_id"
+  end
+
+  create_table "legacy_generic_pointers", id: :serial, force: :cascade do |t|
+  end
+
+  create_table "legacy_plants", id: :serial, force: :cascade do |t|
+    t.string "openfarm_slug", limit: 280, default: "50", null: false
+    t.datetime "created_at"
+    t.datetime "planted_at"
+    t.string "plant_stage", limit: 10, default: "planned"
+    t.index ["created_at"], name: "index_legacy_plants_on_created_at"
+  end
+
+  create_table "legacy_tool_slots", id: :serial, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "tool_id"
+    t.integer "pullout_direction", default: 0
+    t.index ["tool_id"], name: "index_legacy_tool_slots_on_tool_id"
   end
 
   create_table "log_dispatches", force: :cascade do |t|
@@ -268,14 +284,6 @@ ActiveRecord::Schema.define(version: 20180407131311) do
     t.datetime "updated_at", null: false
     t.index ["device_id"], name: "index_pin_bindings_on_device_id"
     t.index ["sequence_id"], name: "index_pin_bindings_on_sequence_id"
-  end
-
-  create_table "plants", id: :serial, force: :cascade do |t|
-    t.string "openfarm_slug", limit: 280, default: "50", null: false
-    t.datetime "created_at"
-    t.datetime "planted_at"
-    t.string "plant_stage", limit: 10, default: "planned"
-    t.index ["created_at"], name: "index_plants_on_created_at"
   end
 
   create_table "points", id: :serial, force: :cascade do |t|
@@ -378,14 +386,6 @@ ActiveRecord::Schema.define(version: 20180407131311) do
     t.index ["device_id"], name: "index_token_issuances_on_device_id"
   end
 
-  create_table "tool_slots", id: :serial, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "tool_id"
-    t.integer "pullout_direction", default: 0
-    t.index ["tool_id"], name: "index_tool_slots_on_tool_id"
-  end
-
   create_table "tools", id: :serial, force: :cascade do |t|
     t.string "name", limit: 280
     t.datetime "created_at", null: false
@@ -469,6 +469,7 @@ ActiveRecord::Schema.define(version: 20180407131311) do
   add_foreign_key "device_configs", "devices"
   add_foreign_key "edge_nodes", "sequences"
   add_foreign_key "farmware_installations", "devices"
+  add_foreign_key "legacy_tool_slots", "tools"
   add_foreign_key "log_dispatches", "devices"
   add_foreign_key "log_dispatches", "logs"
   add_foreign_key "peripherals", "devices"
@@ -479,5 +480,4 @@ ActiveRecord::Schema.define(version: 20180407131311) do
   add_foreign_key "sensor_readings", "devices"
   add_foreign_key "sensors", "devices"
   add_foreign_key "token_issuances", "devices"
-  add_foreign_key "tool_slots", "tools"
 end

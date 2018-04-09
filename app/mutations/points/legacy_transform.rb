@@ -12,5 +12,11 @@ module Points
       def execute
         raise "This is next"
       end
+
+      def migrate_tool
+        # sql = "SELECT * FROM tools WHERE id = ?"
+        # binding.pry
+        # records_array = ActiveRecord::Base.connection.execute(sql)
+      end
     end
 end
