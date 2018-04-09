@@ -13,8 +13,8 @@ module Points
       float   :radius
       string  :name
       string  :openfarm_slug
-      integer :pullout_direction
-      string  :plant_stage, in: CeleryScriptSettingsBag::PLANT_STAGES
+      integer :pullout_direction, in: ToolSlot::PULLOUT_DIRECTIONS
+      string  :plant_stage,       in: CeleryScriptSettingsBag::PLANT_STAGES
       time    :planted_at
       hstore  :meta
     end

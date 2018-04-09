@@ -20,7 +20,7 @@ describe Api::PointsController do
       get :show, params: payload
       expect(response.status).to eq(200)
       expect(json[:id]).to eq(tool_slot.id)
-      expect(json[:tool_id]).to eq(tool_slot.pointer.tool_id)
+      expect(json[:tool_id]).to eq(tool_slot.tool_id)
       expect(json[:name]).to eq(tool_slot.name)
       expect(json[:x]).to eq(tool_slot.x)
       expect(json[:y]).to eq(tool_slot.y)
