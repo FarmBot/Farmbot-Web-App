@@ -6,11 +6,12 @@ class RenameLegacyPointerTables < ActiveRecord::Migration[5.1]
   }
 
   def self.up
+    add_column :points, :migrated_at, :datetime
     NAME_MAPPING.map { |(old_name, new_name)| rename_table old_name, new_name }
   end
 
   def self.down
+    remove_column :points, :migrated_at, :datetime
     NAME_MAPPING.map { |(old_name, new_name)| rename_table new_name, old_name }
   end
 end
-

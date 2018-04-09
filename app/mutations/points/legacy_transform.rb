@@ -10,7 +10,20 @@ module Points
       end
 
       def execute
-        raise "This is next"
+        perform_migration unless point.migrated_at
+      end
+
+      def perform_migration
+        Point.transaction do
+          t = point.pointer_type
+          case t
+          when "ToolSlot"
+          when "Plant"
+          when "GenericPointer"
+          else
+            puts "Point #{point.id} has unknown pointer_type '#{t}'"
+          end
+        end
       end
 
       def migrate_tool

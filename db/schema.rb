@@ -304,6 +304,7 @@ ActiveRecord::Schema.define(version: 20180409150813) do
     t.string "plant_stage", limit: 10, default: "planned"
     t.integer "tool_id"
     t.integer "pullout_direction", default: 0
+    t.datetime "migrated_at"
     t.index ["device_id"], name: "index_points_on_device_id"
     t.index ["meta"], name: "index_points_on_meta", using: :gin
     t.index ["pointer_type", "pointer_id"], name: "index_points_on_pointer_type_and_pointer_id"
