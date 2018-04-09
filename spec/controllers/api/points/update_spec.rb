@@ -6,11 +6,13 @@ describe Api::PointsController do
     let(:device) { FactoryBot.create(:device) }
     let(:user) { FactoryBot.create(:user, device: device) }
     let!(:point) { FactoryBot.create(:generic_pointer, device: device) }
-    let(:slot) { ToolSlot.create(x:          0,
-                                 y:          0,
-                                 z:          0,
-                                 radius:     1,
-                                 device_id:  user.device.id) }
+    let(:slot) { ToolSlot.create!(x:            0,
+                                  y:            0,
+                                  z:            0,
+                                  radius:       1,
+                                  pointer_id:   0,
+                                  pointer_type: "ToolSlot",
+                                  device_id:  user.device.id) }
 
     it 'updates a point' do
       sign_in user
@@ -30,12 +32,14 @@ describe Api::PointsController do
     end
 
     it 'updates a plant' do
-      point = Point.create(x: 0,
-                           y: 0,
-                           z: 0,
-                           radius: 1,
-                           pointer: Plant.new(openfarm_slug: "lettuce"),
-                           device: user.device)
+      point = Plant.create!(x:             0,
+                            y:             0,
+                            z:             0,
+                            radius:        1,
+                            openfarm_slug: "lettuce",
+                            device:        user.device,
+                            pointer_type:  "Plant",
+                            pointer_id:    0)
       expect(point.pointer_type).to eq("Plant")
       sign_in user
       p = { id: point.id,

@@ -8,11 +8,13 @@ describe Api::PointsController do
     let(:device) { user.device }
 
     it 'renders a tool slot' do
-      tool_slot =  ToolSlot.create!(x:      0,
-                                    y:      0,
-                                    z:      0,
-                                    radius: 0,
-                                    device: user.device)
+      tool_slot =  ToolSlot.create!(x:            0,
+                                    y:            0,
+                                    z:            0,
+                                    radius:       0,
+                                    device:       user.device,
+                                    pointer_type: "ToolSlot",
+                                    pointer_id:   0)
       sign_in user
       payload = { id: tool_slot.id }
       get :show, params: payload

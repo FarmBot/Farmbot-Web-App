@@ -43,12 +43,14 @@ describe Api::PointsController do
     it 'lists all tool slots' do
       Point.destroy_all
       sign_in user
-      ts =  ToolSlot.create(x:      0,
-                            y:      0,
-                            z:      0,
-                            radius: 50,
-                            name:   "My TS",
-                            device: user.device)
+      ts =  ToolSlot.create!(x:            0,
+                             y:            0,
+                             z:            0,
+                             radius:       50,
+                             name:         "My TS",
+                             device:       user.device,
+                             pointer_type: "ToolSlot",
+                             pointer_id:   0)
       get :index
       expect(json.first[:id]).to eq(ts.id)
       expect(json.first[:name]).to eq(ts.name)
