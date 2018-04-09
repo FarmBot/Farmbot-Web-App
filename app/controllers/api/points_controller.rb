@@ -42,9 +42,13 @@ module Api
 
     # HISTORICAL CONTEXT:
     # Originally, Points, Tools and Plants were all independantly created as
-    # separate tables. As time progressed, we were able to merge them into a
-    # unified "points" table and use polymorphic associations to iron out the
-    # minor differences.
+    # separate tables.
+    # As time progressed, we were able to merge them into a unified "points"
+    # table and use polymorphic associations to iron out the minor differences.
+    # Polymorphic assns later proved to be error prove and inadequate, leading
+    # to a conversion to single table inheritance.
+    # STI is the current mecahnism. The method is a relic from previous
+    # iterations
     def pointer_klass
       case raw_json&.dig(:pointer_type)
         when "GenericPointer" then Points

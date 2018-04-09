@@ -13,6 +13,7 @@ module Points
     end
 
     def validate
+      puts "Convert this to use InUseTool after STI refactor."
       nope! if still_in_use?
     end
 
@@ -37,7 +38,7 @@ module Points
     end
 
     def current_tool_id
-      point.pointer.tool && point.pointer.tool.id
+      point.tool_id
     end
 
     def deps
