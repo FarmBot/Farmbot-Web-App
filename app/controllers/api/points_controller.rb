@@ -63,13 +63,7 @@ module Api
     end
 
     def points
-      Point
-        .where(device_params)
-        .tap do |x|
-          x.map do |y|
-            Points::LegacyTransform.run!(device: current_device, point: y)
-          end
-        end
+      @points ||= Point.where(device_params)
     end
 
     def device_params
