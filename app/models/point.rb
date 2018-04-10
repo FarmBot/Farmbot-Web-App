@@ -8,7 +8,8 @@ class Point < ApplicationRecord
   belongs_to :device
   validates_presence_of :device
 
-  after_find :maybe_migrate
+  after_find    :maybe_migrate
+  after_discard :maybe_broadcast
 
   def should_migrate?
     self.id && !self.migrated_at && (self.pointer_id != 0)
