@@ -22,7 +22,13 @@ class ToolSlot < Point
     presence: true,
     inclusion: { in: PULLOUT_DIRECTIONS, message: PULLOUT_ERR }
 
-  def broadcast?
-    false
+  def do_migrate
+    puts "MIGRATING TOOL SLOT #{self.id}"
+    Plant.transaction do
+      legacy = LegacyPlant.find(pointer_id)
+      self.update_attributes!(migrated_at:   Time.now,
+                              openfarm_slug: legacy.openfarm_slug,
+                              plant_stage:   legacy.plant_stage)
+    end
   end
 end

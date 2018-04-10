@@ -21,6 +21,7 @@ describe Api::PointsController do
 
     it 'queries fields other than meta' do
       sign_in user
+      GenericPointer.destroy_all
       FactoryBot.create(:generic_pointer, device: device, x: 23)
       FactoryBot.create(:generic_pointer, device: device, x: 98)
       post :search, body: {x: 23}.to_json, params: {format: :json }

@@ -23,17 +23,15 @@ module Points
 
       def points
         return @points if @points
-        @points = Point.where(inputs.except(:device))
+        @points = Point.where(device: device).where(inputs.except(:device))
         add_meta_fields if meta
         @points
       end
 
       def add_meta_fields
-        meta
-          .to_a
-          .each do |x|
-            @points = @points.where(H_QUERY, key: x[0] , value: x[1])
-          end
+        meta.map do |(key, value)|
+          @points = @points.where(H_QUERY, key: key, value: value)
+        end
       end
     end
 end

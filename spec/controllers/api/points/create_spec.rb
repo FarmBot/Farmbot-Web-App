@@ -69,10 +69,9 @@ describe Api::PointsController do
       expect(json[:y]).to eq(body[:y])
       expect(json[:z]).to eq(body[:z])
       expect(json[:radius]).to eq(body[:radius])
-      binding.pry
-      expect(json[:pointer_type]).to eq(body[:pointer_type])
       expect(json[:meta][:foo]).to eq(body[:meta][:foo])
       expect(Point.last.device).to eq(device)
+      expect(json[:pointer_type]).to eq(body[:pointer_type])
     end
 
     it 'requires x' do
