@@ -63,7 +63,7 @@ module Api
     end
 
     def points
-      @points ||= Point.where(device_params)
+      @points ||= Point.kept.where(device_params)
     end
 
     def device_params

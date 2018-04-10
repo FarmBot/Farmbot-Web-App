@@ -1,4 +1,6 @@
 class Point < ApplicationRecord
+  include Discard::Model
+
   # Using real constants instead of strings results in circular dep. errors.
   POINTER_KINDS           = ["GenericPointer", "Plant", "ToolSlot"]
   self.inheritance_column = 'pointer_type'

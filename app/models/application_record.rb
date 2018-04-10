@@ -14,6 +14,10 @@ class ApplicationRecord < ActiveRecord::Base
                      "current_sign_in_ip",
                      "current_sign_in_at",
                      "fbos_version" ]
+  def gone?
+    destroyed? || self.try(:discarded?)
+  end
+
   def the_changes
     self.saved_changes.except(*self.class::DONT_BROADCAST)
   end
@@ -25,7 +29,7 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast?
-    Device.current && (destroyed? || notable_changes?)
+    Device.current && (gone? || notable_changes?)
   end
 
   def maybe_broadcast
@@ -33,7 +37,7 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def body_as_json # REMEMBER: Subclasses might override this! - RC
-    if(destroyed?)
+    if(gone?)
       return nil
     else
       serializer = ActiveModel::Serializer.serializer_for(self)
