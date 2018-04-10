@@ -1,12 +1,12 @@
 FactoryBot.define do
-  factory :tool_slot do
+  factory :generic_pointer do
+    radius 1.5
     x { rand(1...550) }
     y { rand(1...550) }
     z { rand(1...550) }
     meta ({})
     device
-    tool
-    pointer_type("ToolSlot")
+    pointer_type GenericPointer.name
     pointer_id(0)
   end
 end

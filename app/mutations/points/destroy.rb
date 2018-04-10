@@ -31,11 +31,9 @@ module Points
     end
 
     def every_tool_id_as_json
-      # TODO: If we unify Plant/ToolSlot/GenericPointer,
-      # this could be simplified.
       points
-        .map { |x| x.pointer.try(:tool_id) }
-        .compact
+        .where.not(tool_id: nil)
+        .pluck(:tool_id)
         .uniq
         .map(&:to_json)
         .map(&:to_i)
