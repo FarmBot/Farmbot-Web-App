@@ -46,26 +46,26 @@ describe Api::PointsController do
       expect(Plant.count).to eq(0)
       plant
       sign_in user
-      b4 = Plant.count
+      b4 = Plant.kept.count
       delete :destroy, params: { id: plant.id }
       expect(response.status).to eq(200)
-      expect(Plant.count).to eq(b4 - 1)
+      expect(Plant.kept.count).to eq(b4 - 1)
     end
 
     it 'deletes a point' do
       sign_in user
-      b4 = Point.count
+      b4 = Point.kept.count
       delete :destroy, params: { id: point.id }
       expect(response.status).to eq(200)
-      expect(Point.count).to eq(b4 - 1)
+      expect(Point.kept.count).to eq(b4 - 1)
     end
 
     it 'performs batch deletion' do
       sign_in user
       points       = FactoryBot.create_list(:generic_pointer, 6, device: user.device)
-      before_count = Point.count
+      before_count = Point.kept.count
       delete :destroy, params: { id: points.map(&:id).join(",") }
-      expect(Point.count).to eq(before_count - 6)
+      expect(Point.kept.count).to eq(before_count - 6)
     end
   end
 end

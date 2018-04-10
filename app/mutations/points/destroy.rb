@@ -21,7 +21,9 @@ module Points
     end
 
     def execute
-      Point.transaction { points.map(&:destroy!) && "" }
+      Point.transaction do
+        points.update_all(discarded_at: Time.now)
+      end
     end
 
   private

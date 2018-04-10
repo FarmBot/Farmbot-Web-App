@@ -23,7 +23,6 @@ class ToolSlot < Point
     inclusion: { in: PULLOUT_DIRECTIONS, message: PULLOUT_ERR }
 
   def do_migrate
-    puts "MIGRATING TOOL SLOT #{self.id}"
     legacy = LegacyToolSlot.find(self[:pointer_id])
     self.update_attributes!(migrated_at:        Time.now,
                             pullout_direction: legacy.pullout_direction,

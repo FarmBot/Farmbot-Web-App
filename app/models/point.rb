@@ -1,4 +1,6 @@
 class Point < ApplicationRecord
+  include Discard::Model
+
   # Using real constants instead of strings results in circular dep. errors.
   POINTER_KINDS           = ["GenericPointer", "Plant", "ToolSlot"]
   self.inheritance_column = 'pointer_type'
@@ -6,7 +8,8 @@ class Point < ApplicationRecord
   belongs_to :device
   validates_presence_of :device
 
-  after_find :maybe_migrate
+  after_find    :maybe_migrate
+  after_discard :maybe_broadcast
 
   def should_migrate?
     self.id && !self.migrated_at && (self.pointer_id != 0)
