@@ -4,10 +4,9 @@ class Plant < Point
   def do_migrate
     puts "MIGRATING PLANT #{self.id}"
     legacy = LegacyPlant.find(self[:pointer_id])
-    self.assign_attributes(migrated_at:   Time.now,
-                           openfarm_slug: legacy.openfarm_slug,
-                           plant_stage:   legacy.plant_stage,
-                           pointer_type:  "Plant")
-    self
+    self.update_attributes!(migrated_at:   Time.now,
+                            openfarm_slug: legacy.openfarm_slug,
+                            plant_stage:   legacy.plant_stage,
+                            pointer_type:  "Plant")
   end
 end

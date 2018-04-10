@@ -25,10 +25,9 @@ class ToolSlot < Point
   def do_migrate
     puts "MIGRATING TOOL SLOT #{self.id}"
     legacy = LegacyToolSlot.find(self[:pointer_id])
-    self.assign_attributes(migrated_at:        Time.now,
+    self.update_attributes!(migrated_at:        Time.now,
                             pullout_direction: legacy.pullout_direction,
                             tool_id:           legacy.tool_id,
                             pointer_type:      "ToolSlot")
-    self
   end
 end
