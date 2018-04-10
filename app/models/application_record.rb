@@ -59,6 +59,7 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast!
+    # `espeak "ding"`
     AutoSyncJob.perform_later(broadcast_payload,
                               Device.current.id,
                               chan_name,

@@ -282,6 +282,9 @@ GEM
     rspec-support (3.7.1)
     ruby-graphviz (1.2.3)
     rubyzip (1.2.1)
+    scenic (1.4.1)
+      activerecord (>= 4.0.0)
+      railties (>= 4.0.0)
     secure_headers (5.0.5)
       useragent (>= 0.15.0)
     selenium-webdriver (3.11.0)
@@ -369,6 +372,7 @@ DEPENDENCIES
   rollbar
   rspec
   rspec-rails
+  scenic
   secure_headers
   selenium-webdriver
   simplecov
