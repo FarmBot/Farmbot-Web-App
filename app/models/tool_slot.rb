@@ -25,10 +25,10 @@ class ToolSlot < Point
   def do_migrate
     puts "MIGRATING TOOL SLOT #{self.id}"
     Plant.transaction do
-      legacy = LegacyPlant.find(pointer_id)
-      self.update_attributes!(migrated_at:   Time.now,
-                              openfarm_slug: legacy.openfarm_slug,
-                              plant_stage:   legacy.plant_stage)
+      legacy = LegacyToolSlot.find(pointer_id)
+      self.update_attributes!(migrated_at:       Time.now,
+                              pullout_direction: legacy.pullout_direction,
+                              tool_id:           legacy.tool_id)
     end
   end
 end
