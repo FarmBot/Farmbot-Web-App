@@ -1,6 +1,6 @@
 module Points
   class Destroy < Mutations::Command
-    STILL_IN_USE  = "The sequence '%s' is still using the following points: %s"
+      = "The sequence '%s' is still using the following points: %s"
 
     required do
       model :device, class: Device
@@ -15,7 +15,7 @@ module Points
         .map do |(seq_name, data)|
           [ seq_name, data.map(&:fancy_name).uniq.sort.join(", ") ]
         end
-        .map{|data| STILL_IN_USE % data }
+        .map { |data| STILL_IN_USE % data }
         .join(". ")
       add_error :point, :in_use, errors if errors.present?
     end
