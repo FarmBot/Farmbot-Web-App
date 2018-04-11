@@ -66,7 +66,15 @@ module Api
     end
 
     def points
-      @points ||= Point.kept.where(device_params)
+      @points ||= archival_scope.where(device_params)
+    end
+
+    def archival_scope
+      case params[:filter]
+      when "all" then return Point.all
+      when "old" then return Point.discarded
+      end
+      return Point.kept
     end
 
     def device_params

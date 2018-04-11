@@ -7,6 +7,8 @@ module Points
       array :point_ids, class: Integer
     end
 
+    optional { boolean :hard_delete, default: false }
+
     def validate
       # Collect names of sequences that still use this point.
       errors = (tool_seq + point_seq)
@@ -21,7 +23,8 @@ module Points
     end
 
     def execute
-      points.update_all(discarded_at: Time.now)
+      hard_delete ?
+        points.destroy_all : points.update_all(discarded_at: Time.now)
     end
 
   private
