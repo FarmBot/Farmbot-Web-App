@@ -1,6 +1,6 @@
 module Points
   class Destroy < Mutations::Command
-      = "The sequence '%s' is still using the following points: %s"
+    STILL_IN_USE  = "The sequence '%s' is still using the following points: %s"
 
     required do
       model :device, class: Device
