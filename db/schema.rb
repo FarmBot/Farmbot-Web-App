@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180410192539) do
+ActiveRecord::Schema.define(version: 20180411122627) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -310,6 +310,7 @@ ActiveRecord::Schema.define(version: 20180410192539) do
     t.index ["discarded_at"], name: "index_points_on_discarded_at"
     t.index ["meta"], name: "index_points_on_meta", using: :gin
     t.index ["pointer_type", "pointer_id"], name: "index_points_on_pointer_type_and_pointer_id"
+    t.index ["tool_id"], name: "index_points_on_tool_id"
   end
 
   create_table "primary_nodes", force: :cascade do |t|
