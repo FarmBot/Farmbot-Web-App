@@ -1,5 +1,5 @@
 const mockDevice = {
-  calibrate: jest.fn()
+  calibrate: jest.fn(() => Promise.resolve({}))
 };
 jest.mock("../../../../device", () => ({
   getDevice: () => (mockDevice)

@@ -1,15 +1,25 @@
 class Point < ApplicationRecord
-  POINTER_KINDS = { "GenericPointer" => GenericPointer,
-                    "ToolSlot"       => ToolSlot,
-                    "Plant"          => Plant }
-  SHARED_FIELDS = [:x, :y, :z, :radius, :name, :meta]
+  include Discard::Model
+
+  # Using real constants instead of strings results in circular dep. errors.
+  POINTER_KINDS           = ["GenericPointer", "Plant", "ToolSlot"]
+  self.inheritance_column = 'pointer_type'
+
   belongs_to :device
-  belongs_to :pointer, polymorphic: true, dependent: :destroy
-  validates :pointer_type,
-            inclusion: { in: POINTER_KINDS.keys,
-                         message: "%{value} is not a valid pointer type" }
-  validates :pointer, presence: true
-  validates_presence_of :pointer
   validates_presence_of :device
-  accepts_nested_attributes_for :pointer
+
+  after_find    :maybe_migrate
+  after_discard :maybe_broadcast
+
+  def should_migrate?
+    self.id && !self.migrated_at && (self.pointer_id != 0)
+  end
+
+  def maybe_migrate
+    do_migrate if should_migrate?
+  end
+
+  def do_migrate
+    # ABSTRACT METHOD.
+  end
 end

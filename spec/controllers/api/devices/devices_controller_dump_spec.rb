@@ -9,8 +9,8 @@ describe Api::DevicesController do
               :regimens,
               :peripherals,
               :farm_events,
-              :tools,
-              :points,
+              # :tools,
+              # :points,
               :users,
               :webcam_feeds]
 

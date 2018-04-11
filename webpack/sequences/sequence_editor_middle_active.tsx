@@ -83,7 +83,7 @@ export class SequenceEditorMiddleActive extends
             sequence={this.props.sequence}
             resources={this.props.resources}
             dispatch={this.props.dispatch} />}
-        <hr style={{ /* marginBottom: 0 */ }} />
+        <hr />
       </div>
       <div className="sequence" id="sequenceDiv">
         <AllSteps onDrop={onDrop(dispatch, sequence)} {...this.props} />

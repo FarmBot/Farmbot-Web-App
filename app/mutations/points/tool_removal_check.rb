@@ -13,6 +13,7 @@ module Points
     end
 
     def validate
+      puts "Convert this to use InUseTool after STI refactor."
       nope! if still_in_use?
     end
 
@@ -23,9 +24,9 @@ module Points
   private
 
     def is_removal_attempt
-      (attempting_change &&       # Wants to make a change
-       (next_tool_id === nil) &&  # Wants to remove tool_id
-       point.pointer.tool)        # Currently has a tool_id
+      (attempting_change &&      # Wants to make a change
+       (next_tool_id === nil) && # Wants to remove tool_id
+       point.tool_id)            # Currently has a tool_id
     end
 
     def still_in_use?
@@ -37,7 +38,7 @@ module Points
     end
 
     def current_tool_id
-      point.pointer.tool && point.pointer.tool.id
+      point.tool_id
     end
 
     def deps

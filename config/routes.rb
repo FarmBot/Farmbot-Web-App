@@ -6,7 +6,6 @@ FarmBot::Application.routes.draw do
       farm_events:            [:create, :destroy, :index, :update],
       farmware_installations: [:create, :destroy, :index],
       images:                 [:create, :destroy, :index, :show],
-      logs:                   [:create, :destroy, :index],
       password_resets:        [:create, :update],
       peripherals:            [:create, :destroy, :index, :update],
       sensors:                [:create, :destroy, :index, :update],
@@ -29,11 +28,13 @@ FarmBot::Application.routes.draw do
       web_app_config:  [:destroy, :show, :update],
     }.to_a.map{|(name, only)| resource name, only: only}
 
-    resources :points, only: [:create, :destroy, :index, :show, :update,] do
-      post :search, on: :collection
+    resources(:points, except: []) { post :search, on: :collection }
+
+    resources :logs, except: [:update, :show] do
+      get :search, on: :collection
     end
 
-    resource :users,   only: [:create, :destroy, :show, :update,] do
+    resource :users, except: [:index] do
       post :resend_verification, on: :member
       post :control_certificate, on: :collection
     end

@@ -16,14 +16,6 @@ export class FallbackImg extends React.Component<Props, State> {
 
   state: State = { needsFallback: false };
 
-  get imgProps() {
-    const imProps: Props = defensiveClone(this.props);
-    // React will complain at runtime if <img/> has extra props.
-    // Typescript will compile at compile if I don't use `any` here:
-    delete imProps.fallback;
-    return imProps;
-  }
-
   componentWillReceiveProps(next: Props) {
     // Sorry. The webcam page needs live updates. <img/> tag was acting wonky.
     (next.src !== this.props.src) && this.setState({ needsFallback: false });

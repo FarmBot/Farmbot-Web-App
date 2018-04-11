@@ -72,12 +72,13 @@ export function scanImage(imageId: number) {
     getDevice()
       .execScript("historical-plant-detection", [{
         kind: "pair", args: { label: label, value: "" + imageId }
-      }]);
+      }])
+      .catch(() => { });
   };
 }
 
 export function test() {
   return function () {
-    getDevice().execScript("plant-detection");
+    getDevice().execScript("plant-detection").catch(() => { });
   };
 }

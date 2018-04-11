@@ -13,9 +13,7 @@ describe("mapStateToProps()", () => {
       id: 1,
       created_at: -1,
       message: "Fake log message",
-      meta: {
-        type: "info"
-      },
+      type: "info",
       channels: []
     };
     return times(count, () => log).map((body: Log): TaggedLog => {

@@ -18,8 +18,7 @@ describe("NavBar", () => {
         user={taggedUser}
         dispatch={jest.fn()} />
     );
-
-    expect(wrapper.hasClass("nav-wrapper")).toBeTruthy();
+    expect(wrapper.find("div").first().hasClass("nav-wrapper")).toBeTruthy();
   });
 
   it("closes nav menu", () => {

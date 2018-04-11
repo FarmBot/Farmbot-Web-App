@@ -1,6 +1,9 @@
 class LogService
   def self.save?(log_as_ruby_hash)
-    t = (log_as_ruby_hash || {}).dig("meta", "type")
+    # TODO: Once we gt rid of legacy `log.meta` calls, this method can be
+    # simplified.
+    h = (log_as_ruby_hash.is_a?(Hash) && log_as_ruby_hash) || {}
+    t = h.dig("meta", "type") || h.dig("type")
     !!(t && !Log::DISCARD.include?(t))
   end
 
@@ -22,11 +25,12 @@ class LogService
     #   "created_at"=>1512585641,
     #   "channels"=>[] }
     log           = JSON.parse(payload)
-
+    primary       = log["major_version"]
+    secondary     = log.dig("meta", "major_version") # Legacy
     # Legacy bots will double save logs if we don't do this:
-    major_version = (log.dig("meta", "major_version") || 0).to_i
+    major_version =  (primary || secondary || 0).to_i
     puts log["message"] if Rails.env.production?
-    if(major_version >= 6)
+    if (major_version >= 6)
       device_id = delivery_info.routing_key.split(".")[1].gsub("device_", "").to_i
       if save?(log)
         device = Device.find(device_id)

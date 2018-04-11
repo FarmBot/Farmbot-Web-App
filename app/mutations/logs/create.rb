@@ -12,7 +12,31 @@ module Logs
       array :channels,
             class: String,
             in: CeleryScriptSettingsBag::ALLOWED_CHANNEL_NAMES
-      hash :meta do
+      # LEGACY SHIM AHEAD!!! ===================================================
+      #
+      # We onced stored certain fields in a `meta` column.
+      # The API has evolved since that time, the requirements are pretty solid
+      # at this point and we need the ability to perform SQL queries. The `meta`
+      # field is no longer useful nor is it a clean solution.
+      #
+      # Legacy FBOS versions expect logs to be in the same shape as before
+      # and they also produce logs with the expectation that logs have a `meta`
+      # field.
+      #
+      # We will keep the `meta` field around for now, but ideally, API users
+      # should access `log.FOO` instead of `log.meta.FOO` for future
+      # compatibility.
+      #
+      # TODO: delete the `meta` field by 6 JUN 18
+      string  :type, in: Log::TYPES
+      integer :x
+      integer :y
+      integer :z
+      integer :verbosity
+      integer :major_version
+      integer :minor_version
+
+      hash :meta do # This can be transitioned out soon.
         string :type, in: Log::TYPES
         optional do
           integer :x
@@ -23,10 +47,21 @@ module Logs
           integer :minor_version
         end
       end
+      # END LEGACY SHIM ========================================================
     end
 
     def validate
-      @log = Log.new(inputs)
+      @log               = Log.new
+      @log.device        = device
+      @log.message       = message
+      @log.channels      = channels || []
+      @log.x             = transitional_field(:x)
+      @log.y             = transitional_field(:y)
+      @log.z             = transitional_field(:z)
+      @log.verbosity     = transitional_field(:verbosity)
+      @log.major_version = transitional_field(:major_version)
+      @log.minor_version = transitional_field(:minor_version)
+      @log.type          = transitional_field(:type)
       @log.validate!
       add_error :log, :private, BAD_WORDS if has_bad_words
     end
@@ -39,6 +74,12 @@ module Logs
 
     def has_bad_words
       !!inputs[:message].upcase.match(BLACKLIST)
+    end
+
+    # Helper for dealing with the gradual removal of the meta field.
+    def transitional_field(name, default = nil)
+      m = meta || {} # New logs wont have `meta`.
+      return inputs[name] || m[name] || m[name.to_s] || default
     end
   end
 end

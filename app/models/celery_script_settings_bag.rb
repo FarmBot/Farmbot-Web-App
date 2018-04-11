@@ -58,6 +58,9 @@ module CeleryScriptSettingsBag
   BAD_PIN_TYPE          = '"%s" is not a type of pin. Allowed values: %s'
   BAD_SPEED             = "Speed must be a percentage between 1-100"
   PIN_TYPE_MAP          = { "Peripheral" => Peripheral, "Sensor" => Sensor }
+  KLASS_LOOKUP          = Point::POINTER_KINDS.reduce({}) do |acc, val|
+    (acc[val] = Kernel.const_get(val)) && acc
+  end
 
   Corpus = CeleryScript::Corpus
       .new
@@ -88,7 +91,7 @@ module CeleryScriptSettingsBag
       end
       .arg(:pointer_id,   [Integer]) do |node|
         p_type = node&.parent&.args[:pointer_type]&.value
-        klass  = Point::POINTER_KINDS[p_type]
+        klass  = KLASS_LOOKUP[p_type]
         # Don't try to validate if `pointer_type` is wrong.
         # That's a different respnsiblity.
         if(klass)

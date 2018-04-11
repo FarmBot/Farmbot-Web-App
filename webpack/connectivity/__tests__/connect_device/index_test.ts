@@ -71,7 +71,7 @@ function fakeLog(meta_type: ALLOWED_MESSAGE_TYPES,
   channels: ALLOWED_CHANNEL_NAMES[] = ["toast"]): Log {
   return {
     message: "toasty!",
-    meta: { type: meta_type },
+    type: meta_type,
     channels,
     created_at: -1
   };
@@ -179,7 +179,7 @@ describe("onOnline", () => {
 
 describe("changeLastClientConnected", () => {
   it("tells farmbot when the last browser session was opened", () => {
-    const setUserEnv = jest.fn();
+    const setUserEnv = jest.fn(() => Promise.resolve({}));
     const fakeFarmbot = { setUserEnv: setUserEnv as any } as Farmbot;
     changeLastClientConnected(fakeFarmbot)();
     expect(setUserEnv).toHaveBeenCalledWith(expect.objectContaining({

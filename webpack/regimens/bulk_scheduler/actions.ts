@@ -40,7 +40,7 @@ export function selectDays() {
 /** Sets daily offset of a regimen */
 export function setTimeOffset(ms: number) {
   if (isNaN(ms) || !isNumber(ms)) {
-    warning("Time is not properly formatted.", "Bad Input");
+    warning(t("Time is not properly formatted."), t("Bad Input"));
     throw new Error("Bad time input on regimen page: " + JSON.stringify(ms));
   } else {
     return { type: Actions.SET_TIME_OFFSET, payload: ms };

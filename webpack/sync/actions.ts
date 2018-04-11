@@ -28,8 +28,8 @@ export interface SyncResponse {
 }
 
 export function fetchSyncData(dispatch: Function) {
-  const fetch = <T>(name: ResourceName, url: string, type = "RESOURCE_READY") =>
-    axios
+  const fetch =
+    <T>(name: ResourceName, url: string, type = "RESOURCE_READY") => axios
       .get<T>(url)
       .then((r): SyncResponse => dispatch({
         type, payload: { name, data: r.data }
@@ -47,7 +47,7 @@ export function fetchSyncData(dispatch: Function) {
   fetch<FirmwareConfig>("FirmwareConfig", API.current.firmwareConfigPath);
   fetch<FarmEvent[]>("FarmEvent", API.current.farmEventsPath);
   fetch<Image[]>("Image", API.current.imagesPath);
-  fetch<Log[]>("Log", API.current.logsPath);
+  fetch<Log[]>("Log", API.current.filteredLogsPath);
   fetch<Peripheral[]>("Peripheral", API.current.peripheralsPath);
   fetch<Point[]>("Point", API.current.pointsPath);
   fetch<Regimen[]>("Regimen", API.current.regimensPath);

@@ -11,7 +11,8 @@ import { SpacePanelToolTip } from "../space_panel_tool_tip";
 import { Row, Col } from "../../../ui/index";
 
 const speed = Farmbot.defaults.speed;
-const findHome = (axis: Axis) => getDevice().findHome({ speed, axis });
+const findHome =
+  (axis: Axis) => getDevice().findHome({ speed, axis }).catch(() => { });
 
 export function HomingRow(props: HomingRowProps) {
   const { hardware, botDisconnected } = props;

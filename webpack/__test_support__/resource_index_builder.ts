@@ -320,9 +320,7 @@ const log: TaggedLog = {
   body: {
     id: 1091396, created_at: 1510010193,
     message: "Farmbot Movement complete.",
-    meta: {
-      type: "success"
-    },
+    type: "success",
     channels: []
   },
   uuid: "Log.1091396.70"

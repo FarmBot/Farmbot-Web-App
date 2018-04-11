@@ -7,12 +7,9 @@ import { Props } from "./interfaces";
 import { Page, Row, Col } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { isTaggedRegimen } from "../resources/tagged_resources";
-import { catchErrors } from "../util";
 
 @connect(mapStateToProps)
 export class Regimens extends React.Component<Props, {}> {
-  componentDidCatch(x: Error) { catchErrors(x); }
-
   render() {
     const { current, calendar } = this.props;
     const regimenSelected = current && isTaggedRegimen(current) && calendar;

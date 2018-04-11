@@ -95,6 +95,7 @@ module FarmBot
           WEBPACK_URL,
         ],
         style_src: %w(
+          'self'
           'unsafe-inline'
           fonts.googleapis.com
           maxcdn.bootstrapcdn.com

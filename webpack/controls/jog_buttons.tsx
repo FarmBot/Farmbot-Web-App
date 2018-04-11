@@ -13,7 +13,7 @@ export function JogButtons(props: JogMovementControlsProps) {
         <td>
           <button
             className="i fa fa-camera arrow-button fb-button"
-            onClick={() => getDevice().takePhoto()} />
+            onClick={() => getDevice().takePhoto().catch(() => { })} />
         </td>
         <td />
         <td />

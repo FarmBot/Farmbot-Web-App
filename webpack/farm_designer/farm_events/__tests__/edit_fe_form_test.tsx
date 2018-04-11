@@ -23,7 +23,7 @@ import { SpecialStatus } from "../../../resources/tagged_resources";
 import { success, error } from "farmbot-toastr";
 
 describe("<FarmEventForm/>", () => {
-  const props = (): EditFEForm["props"] => ({
+  const props = (): EditFEProps => ({
     deviceTimezone: undefined,
     executableOptions: [],
     repeatOptions: [],
@@ -31,11 +31,12 @@ describe("<FarmEventForm/>", () => {
     dispatch: jest.fn(() => Promise.resolve()),
     findExecutable: jest.fn(() => fakeSequence()),
     title: "title",
-    timeOffset: 0
+    timeOffset: 0,
+    autoSyncEnabled: false,
   });
 
   function instance(p: EditFEProps) {
-    return mount(<EditFEForm {...p } />).instance() as EditFEForm;
+    return mount(<EditFEForm {...p} />).instance() as EditFEForm;
   }
   const context = { form: new EditFEForm(props()) };
 
@@ -178,19 +179,34 @@ describe("<FarmEventForm/>", () => {
       findExecutable={jest.fn(() => seq)}
       dispatch={jest.fn()}
       repeatOptions={repeatOptions}
-      timeOffset={0} />);
+      timeOffset={0}
+      autoSyncEnabled={false} />);
     el.update();
     const txt = el.text().replace(/\s+/g, " ");
     expect(txt).toContain("Save *");
   });
 
-  it("displays success message on save", async () => {
+  it("displays success message on save: manual sync", async () => {
     const p = props();
+    p.autoSyncEnabled = false;
     p.farmEvent.body.start_time = "2020-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2020-05-22T06:00:00.000Z";
     const i = instance(p);
     await i.commitViewModel();
     expect(success).toHaveBeenCalledWith(
+      expect.stringContaining("must first SYNC YOUR DEVICE"));
+  });
+
+  it("displays success message on save: auto sync", async () => {
+    const p = props();
+    p.autoSyncEnabled = true;
+    p.farmEvent.body.start_time = "2020-05-22T05:00:00.000Z";
+    p.farmEvent.body.end_time = "2020-05-22T06:00:00.000Z";
+    const i = instance(p);
+    await i.commitViewModel();
+    expect(success).toHaveBeenCalledWith(
+      expect.stringContaining("This Farm Event will run"));
+    expect(success).not.toHaveBeenCalledWith(
       expect.stringContaining("must first SYNC YOUR DEVICE"));
   });
 

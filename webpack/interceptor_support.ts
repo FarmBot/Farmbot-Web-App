@@ -32,6 +32,9 @@ export function inferUpdateId(url: string) {
  * Sometimes it will be a real Axios error, other times it will not be.
  */
 export interface SafeError {
+  request: {
+    responseURL: string;
+  },
   response: {
     status: number;
   };

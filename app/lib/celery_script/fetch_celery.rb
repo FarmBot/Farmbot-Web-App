@@ -114,7 +114,16 @@ module CeleryScript
         EdgeNode.where(kind: "sequence_id", value: sequence.id).exists? ||
         RegimenItem.where(sequence_id: sequence.id).exists? ||
         FarmEvent.where(executable: sequence).exists?
-      return HashWithIndifferentAccess.new(canonical_form)
+      s = canonical_form.with_indifferent_access
+      # HISTORICAL NOTE:
+      #   When I prototyped the variables declaration stuff, a few (failed)
+      #   iterations snuck into the DB. Gradually migrating is easier than
+      #   running a full blow table wide migration.
+      # - RC 3-April-18
+      has_scope = s.dig(:args, :locals, :kind) == "scope_declaration"
+      s[:args][:locals] = Sequence::SCOPE_DECLARATION unless has_scope
+
+      return s
     end
   end
 end

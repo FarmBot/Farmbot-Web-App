@@ -41,18 +41,14 @@ describe("<Logs />", () => {
       id: 1,
       created_at: -1,
       message: "Fake log message 1",
-      meta: {
-        type: "info"
-      },
+      type: "info",
       channels: []
     },
     {
       id: 2,
       created_at: -1,
       message: "Fake log message 2",
-      meta: {
-        type: "success"
-      },
+      type: "success",
       channels: []
     }];
     return logs.map((body: Log): TaggedLog => {
@@ -76,7 +72,7 @@ describe("<Logs />", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount(<Logs {...fakeProps() } />);
+    const wrapper = mount(<Logs {...fakeProps()} />);
     ["Logs", ToolTips.LOGS, "Type", "Message", "Time", "Info",
       "Fake log message 1", "Success", "Fake log message 2"]
       .map(string =>
@@ -87,7 +83,7 @@ describe("<Logs />", () => {
   });
 
   it("filters logs", () => {
-    const wrapper = mount(<Logs {...fakeProps() } />);
+    const wrapper = mount(<Logs {...fakeProps()} />);
     wrapper.setState({ info: 0 });
     expect(wrapper.text()).not.toContain("Fake log message 1");
     const filterBtn = wrapper.find("button").first();
@@ -97,10 +93,10 @@ describe("<Logs />", () => {
 
   it("shows position", () => {
     const p = fakeProps();
-    p.logs[0].body.meta.x = 100;
-    p.logs[1].body.meta.x = 0;
-    p.logs[1].body.meta.y = 1;
-    p.logs[1].body.meta.z = 2;
+    p.logs[0].body.x = 100;
+    p.logs[1].body.x = 0;
+    p.logs[1].body.y = 1;
+    p.logs[1].body.z = 2;
     const wrapper = mount(<Logs {...p} />);
     expect(wrapper.text()).toContain("Unknown");
     expect(wrapper.text()).toContain("0, 1, 2");
@@ -108,19 +104,19 @@ describe("<Logs />", () => {
 
   it("shows verbosity", () => {
     const p = fakeProps();
-    p.logs[0].body.meta.verbosity = -999;
+    p.logs[0].body.verbosity = -999;
     const wrapper = mount(<Logs {...p} />);
     expect(wrapper.text()).toContain(-999);
   });
 
   it("loads filter setting", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount(<Logs {...fakeProps() } />);
+    const wrapper = mount(<Logs {...fakeProps()} />);
     expect(wrapper.state().warn).toEqual(3);
   });
 
   it("shows overall filter status", () => {
-    const wrapper = mount(<Logs {...fakeProps() } />);
+    const wrapper = mount(<Logs {...fakeProps()} />);
     wrapper.setState({
       success: 3, busy: 3, warn: 3, error: 3, info: 3, fun: 3, debug: 3
     });
@@ -131,7 +127,7 @@ describe("<Logs />", () => {
 
   it("toggles filter", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount(<Logs {...fakeProps() } />);
+    const wrapper = mount(<Logs {...fakeProps()} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     expect(wrapper.state().warn).toEqual(3);
@@ -143,7 +139,7 @@ describe("<Logs />", () => {
 
   it("sets filter", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount(<Logs {...fakeProps() } />);
+    const wrapper = mount(<Logs {...fakeProps()} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     expect(wrapper.state().warn).toEqual(3);
