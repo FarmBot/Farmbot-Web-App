@@ -21,9 +21,7 @@ module Points
     end
 
     def execute
-      Point.transaction do
-        points.update_all(discarded_at: Time.now)
-      end
+      points.update_all(discarded_at: Time.now)
     end
 
   private
