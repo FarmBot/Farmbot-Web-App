@@ -23,8 +23,11 @@ module Points
     end
 
     def execute
-      hard_delete ?
-        points.destroy_all : points.update_all(discarded_at: Time.now)
+      if hard_delete
+        points.destroy_all
+      else
+        points.update_all(discarded_at: Time.now)
+      end
     end
 
   private

@@ -14,7 +14,73 @@ describe Api::PointsController do
       Auth::CreateToken.run!(params)[:token].encoded
     end
 
-    it 'lists points' do
+    it "shows only discarded points" do
+      Point.destroy_all
+      old = Plant.create!(x:             5,
+                          y:             5,
+                          z:             5,
+                          radius:        50,
+                          name:          "old",
+                          device:        user.device,
+                          openfarm_slug: "cabbage",
+                          pointer_type:  "Plant",
+                          pointer_id:    0,
+                          discarded_at:   Time.now)
+
+      Plant.create!(x:             5,
+                    y:             5,
+                    z:             5,
+                    radius:        50,
+                    name:          "new",
+                    device:        user.device,
+                    openfarm_slug: "cabbage",
+                    pointer_type:  "Plant",
+                    pointer_id:    0,
+                    discarded_at:   nil)
+      SmarfDoc.note("If you want to see previously deleted points, " +
+                    "add `?filter=old` to the end of the URL.")
+      sign_in user
+      get :index, params: { filter: "old"}
+      expect(response.status).to eq(200)
+      expect(json.length).to eq(1)
+      expect(json.first[:name]).to eq("old")
+    end
+
+    it "shows `discarded` and `kept` points" do
+      Point.destroy_all
+      old = Plant.create!(x:             5,
+                          y:             5,
+                          z:             5,
+                          radius:        50,
+                          name:          "old",
+                          device:        user.device,
+                          openfarm_slug: "cabbage",
+                          pointer_type:  "Plant",
+                          pointer_id:    0,
+                          discarded_at:   Time.now)
+
+      Plant.create!(x:             5,
+                    y:             5,
+                    z:             5,
+                    radius:        50,
+                    name:          "new",
+                    device:        user.device,
+                    openfarm_slug: "cabbage",
+                    pointer_type:  "Plant",
+                    pointer_id:    0,
+                    discarded_at:   nil)
+      SmarfDoc.note("If you want to see previously deleted points alongside" \
+                    " your active points, add `?filter=all` to the end of "  \
+                    "the URL.")
+      sign_in user
+      get :index, params: { filter: "all"}
+      expect(response.status).to eq(200)
+      expect(json.length).to eq(2)
+      expect(json.pluck(:name)).to include("old")
+      expect(json.pluck(:name)).to include("new")
+    end
+
+    it 'lists non-discarded (active) points' do
       sign_in user
       FactoryBot.create_list(:generic_pointer, 3, device: device)
       get :index
