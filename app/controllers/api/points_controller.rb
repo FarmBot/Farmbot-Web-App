@@ -4,6 +4,8 @@ module Api
   class PointsController < Api::AbstractController
     class BadPointerType < StandardError; end
     ALL_POINTERS     = Point::POINTER_KINDS.join(", ")
+    # How long we wait until emptying out the discarded points bin.
+    EXPIRY           = 2.months
     BAD_POINTER_TYPE = <<~XYZ
       Please provide a JSON object with a `pointer_type` that matches one
       of the following values: %s
@@ -14,6 +16,7 @@ module Api
     end
 
     def index
+      Point.discarded.where("discarded_at < ?", Time.now - EXPIRY).destroy_all
       render json: points
     end
 
@@ -63,7 +66,15 @@ module Api
     end
 
     def points
-      @points ||= Point.kept.where(device_params)
+      @points ||= archival_scope.where(device_params)
+    end
+
+    def archival_scope
+      case params[:filter]
+      when "all" then return Point.all
+      when "old" then return Point.discarded
+      end
+      return Point.kept
     end
 
     def device_params

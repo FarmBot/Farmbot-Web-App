@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180410192539) do
+ActiveRecord::Schema.define(version: 20180411175813) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -310,6 +310,7 @@ ActiveRecord::Schema.define(version: 20180410192539) do
     t.index ["discarded_at"], name: "index_points_on_discarded_at"
     t.index ["meta"], name: "index_points_on_meta", using: :gin
     t.index ["pointer_type", "pointer_id"], name: "index_points_on_pointer_type_and_pointer_id"
+    t.index ["tool_id"], name: "index_points_on_tool_id"
   end
 
   create_table "primary_nodes", force: :cascade do |t|
@@ -484,18 +485,6 @@ ActiveRecord::Schema.define(version: 20180410192539) do
   add_foreign_key "sensors", "devices"
   add_foreign_key "token_issuances", "devices"
 
-  create_view "in_use_tools",  sql_definition: <<-SQL
-      SELECT tools.id AS tool_id,
-      tools.name AS tool_name,
-      sequences.name AS sequence_name,
-      sequences.id AS sequence_id,
-      sequences.device_id
-     FROM ((edge_nodes
-       JOIN sequences ON ((sequences.id = sequences.id)))
-       JOIN tools ON (((edge_nodes.value)::integer = tools.id)))
-    WHERE ((edge_nodes.kind)::text = 'tool_id'::text);
-  SQL
-
   create_view "in_use_points",  sql_definition: <<-SQL
       SELECT points.x,
       points.y,
@@ -510,6 +499,18 @@ ActiveRecord::Schema.define(version: 20180410192539) do
        JOIN sequences ON ((edge_nodes.sequence_id = sequences.id)))
        JOIN points ON (((edge_nodes.value)::integer = points.id)))
     WHERE ((edge_nodes.kind)::text = 'pointer_id'::text);
+  SQL
+
+  create_view "in_use_tools",  sql_definition: <<-SQL
+      SELECT tools.id AS tool_id,
+      tools.name AS tool_name,
+      sequences.name AS sequence_name,
+      sequences.id AS sequence_id,
+      sequences.device_id
+     FROM ((edge_nodes
+       JOIN sequences ON ((edge_nodes.sequence_id = sequences.id)))
+       JOIN tools ON (((edge_nodes.value)::integer = tools.id)))
+    WHERE ((edge_nodes.kind)::text = 'tool_id'::text);
   SQL
 
 end

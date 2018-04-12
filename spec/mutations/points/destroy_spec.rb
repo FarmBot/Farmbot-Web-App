@@ -2,9 +2,9 @@ require 'spec_helper'
 require_relative "scenario"
 
 describe Points::Destroy do
+  let(:device) { FactoryBot.create(:device) }
+
   it "prevents deletion of points that are in use" do
-    # Create device
-    device = FactoryBot.create(:device)
     # create many points
     points = FactoryBot.create_list(:generic_pointer, 3, device: device)
     # use one point in a sequence.
@@ -53,7 +53,6 @@ describe Points::Destroy do
   end
 
   it "handles multiple sequence dep tracking issues at deletion time" do
-    device      = FactoryBot.create(:device)
     point       = FactoryBot.create(:generic_pointer, device: device, x: 4, y: 5, z: 6)
     plant       = FactoryBot.create(:plant, device: device, x: 0, y: 1, z: 0)
     empty_point = { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
@@ -97,5 +96,11 @@ describe Points::Destroy do
       expect(result[:point])
         .to eq("The sequence 'Sequence A' is still using the following points:"\
                " plant at (0.0, 1.0, 0.0)")
+  end
+  it "performs a hard (real) delete" do
+    points = FactoryBot.create_list(:generic_pointer, 3, device: device)
+    ids    = points.pluck(:id)
+    Points::Destroy.run!(point_ids: ids, device: device, hard_delete: true)
+    expect(Point.where(id: ids).length).to eq(0)
   end
 end

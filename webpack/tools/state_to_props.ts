@@ -26,7 +26,7 @@ export function mapStateToProps(props: Everything): Props {
   const getToolOptions = () => {
     return _(tools)
       .map(tool => ({ label: tool.body.name || "untitled", value: (tool.body.id as number) }))
-      .filter(ddi => _.isNumber(ddi.value))
+      .filter(ddi => _.isNumber(ddi.value) && ddi.value > 0)
       .compact()
       .value();
   };

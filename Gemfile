@@ -31,6 +31,7 @@ gem "discard", "~> 1.0"
 gem "scenic"
 
 group :development, :test do
+  gem "lol_dba"
   gem "hashdiff"
   gem "codecov", require: false
   gem "database_cleaner"

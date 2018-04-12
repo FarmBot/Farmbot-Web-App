@@ -7,6 +7,8 @@ module Points
       array :point_ids, class: Integer
     end
 
+    optional { boolean :hard_delete, default: false }
+
     def validate
       # Collect names of sequences that still use this point.
       errors = (tool_seq + point_seq)
@@ -15,13 +17,15 @@ module Points
         .map do |(seq_name, data)|
           [ seq_name, data.map(&:fancy_name).uniq.sort.join(", ") ]
         end
-        .map{|data| STILL_IN_USE % data }
+        .map { |data| STILL_IN_USE % data }
         .join(". ")
       add_error :point, :in_use, errors if errors.present?
     end
 
     def execute
-      Point.transaction do
+      if hard_delete
+        points.destroy_all
+      else
         points.update_all(discarded_at: Time.now)
       end
     end

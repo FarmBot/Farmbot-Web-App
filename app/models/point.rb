@@ -22,4 +22,9 @@ class Point < ApplicationRecord
   def do_migrate
     # ABSTRACT METHOD.
   end
+
+  # Overridable
+  def name_used_when_syncing
+    "Point"
+  end
 end
