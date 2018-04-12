@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180411175813) do
+ActiveRecord::Schema.define(version: 20180412144034) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,6 +58,7 @@ ActiveRecord::Schema.define(version: 20180411175813) do
     t.bigint "primary_node_id", null: false
     t.string "kind", limit: 50
     t.string "value", limit: 300
+    t.index ["kind", "value"], name: "index_edge_nodes_on_kind_and_value"
     t.index ["primary_node_id"], name: "index_edge_nodes_on_primary_node_id"
     t.index ["sequence_id"], name: "index_edge_nodes_on_sequence_id"
   end
@@ -71,6 +72,7 @@ ActiveRecord::Schema.define(version: 20180411175813) do
     t.string "executable_type", limit: 280
     t.integer "executable_id"
     t.index ["device_id"], name: "index_farm_events_on_device_id"
+    t.index ["end_time"], name: "index_farm_events_on_end_time"
     t.index ["executable_type", "executable_id"], name: "index_farm_events_on_executable_type_and_executable_id"
   end
 
@@ -204,6 +206,7 @@ ActiveRecord::Schema.define(version: 20180411175813) do
     t.text "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_global_configs_on_key"
   end
 
   create_table "images", id: :serial, force: :cascade do |t|
@@ -263,7 +266,9 @@ ActiveRecord::Schema.define(version: 20180411175813) do
     t.integer "x"
     t.integer "y"
     t.integer "z"
+    t.index ["created_at"], name: "index_logs_on_created_at"
     t.index ["device_id"], name: "index_logs_on_device_id"
+    t.index ["type"], name: "index_logs_on_type"
   end
 
   create_table "peripherals", id: :serial, force: :cascade do |t|
@@ -274,6 +279,7 @@ ActiveRecord::Schema.define(version: 20180411175813) do
     t.datetime "updated_at", null: false
     t.integer "mode", default: 0
     t.index ["device_id"], name: "index_peripherals_on_device_id"
+    t.index ["mode"], name: "index_peripherals_on_mode"
   end
 
   create_table "pin_bindings", force: :cascade do |t|
@@ -388,6 +394,8 @@ ActiveRecord::Schema.define(version: 20180411175813) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["device_id"], name: "index_token_issuances_on_device_id"
+    t.index ["exp"], name: "index_token_issuances_on_exp"
+    t.index ["jti", "device_id"], name: "index_token_issuances_on_jti_and_device_id"
   end
 
   create_table "tools", id: :serial, force: :cascade do |t|
@@ -416,6 +424,7 @@ ActiveRecord::Schema.define(version: 20180411175813) do
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
     t.index ["agreed_to_terms_at"], name: "index_users_on_agreed_to_terms_at"
+    t.index ["confirmation_token"], name: "index_users_on_confirmation_token"
     t.index ["device_id"], name: "index_users_on_device_id"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
