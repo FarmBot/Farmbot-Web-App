@@ -81,24 +81,12 @@ describe Api::LogsController do
     end
 
     it 'Runs compaction when the logs pile up' do
-      payl = []
-      100.times do
-        payl.push({ meta: { x: 1,
-                            y: 2,
-                            z: 3,
-                            type: "info"
-                          },
-                    channels: ["toast"],
-                    message: "one" })
-      end
-      sign_in user
-      user.device.update_attributes!(max_log_count: 15)
       LogDispatch.destroy_all
       Log.destroy_all
-      before_count = Log.count
-      run_jobs_now do
-        post :create, body: payl.to_json, params: {format: :json}
-      end
+      100.times { Log.create!(device: user.device) }
+      sign_in user
+      user.device.update_attributes!(max_log_count: 15)
+      get :index, params: {format: :json}
       expect(response.status).to eq(200)
       expect(json.length).to eq(user.device.max_log_count)
     end
@@ -150,14 +138,6 @@ describe Api::LogsController do
 
   describe "#search" do
     EXAMPLES = [
-      [nil, "success"],
-      [nil, "busy"],
-      [nil, "warn"],
-      [nil, "error"],
-      [nil, "info"],
-      [nil, "fun"],
-      [nil, "debug"],
-
       [1, "success"],
       [1, "busy"],
       [1, "warn"],
