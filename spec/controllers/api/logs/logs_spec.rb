@@ -1,5 +1,4 @@
 require 'spec_helper'
-JSON_EXAMPLE = File.read("spec/controllers/api/logs/connor_fixture.json")
 
 describe Api::LogsController do
   include Devise::Test::ControllerHelpers
@@ -81,76 +80,13 @@ describe Api::LogsController do
       expect(Log.count).to eq(0)
     end
 
-    it 'creates many logs (with an Array)' do
-      sign_in user
-      before_count = Log.count
-      run_jobs_now do
-        post :create,
-             body: [
-              { meta: { x: 1, y: 2, z: 3, type: "info" },
-                channels: ["toast"],
-                message: "one" },
-              { meta: { x: 1, y: 2, z: 3, type: "info" },
-                channels: ["toast"],
-                message: "two" },
-              { meta: { x: 1, y: 2, z: 3, type: "info" },
-                channels: ["toast"],
-                message: "three" },
-             ].to_json,
-             params: {format: :json}
-      end
-      expect(response.status).to eq(200)
-      expect(before_count + 3).to eq(Log.count)
-    end
-
-    it 'does not bother saving `fun` or `debug` logs' do
-      sign_in user
-      Log.destroy_all
-      LogDispatch.destroy_all
-      before_count = Log.count
-      dispatch_before = LogDispatch.count
-      run_jobs_now do
-        post :create,
-             body: [
-              { meta: { x: 1, y: 2, z: 3, type: "info" },
-                channels: ["toast"],
-                message: "one" },
-              { meta: { x: 1, y: 2, z: 3, type: "fun" }, # Ignored
-                channels: [],
-                message: "two" },
-              { meta: { x: 1, y: 2, z: 3, type: "debug" }, # Ignored
-                channels: [],
-                message: "two" },
-              { meta: { x: 1, y: 2, z: 3, type: "info" },
-                channels: ["email"],
-                message: "three" },
-             ].to_json,
-             params: {format: :json}
-        expect(response.status).to   eq(200)
-        expect(Log.count).to         eq(before_count + 2)
-        expect(LogDispatch.count).to eq(dispatch_before + 1)
-      end
-    end
-
     it 'Runs compaction when the logs pile up' do
-      payl = []
-      100.times do
-        payl.push({ meta: { x: 1,
-                            y: 2,
-                            z: 3,
-                            type: "info"
-                          },
-                    channels: ["toast"],
-                    message: "one" })
-      end
+      LogDispatch.destroy_all
+      Log.destroy_all
+      100.times { Log.create!(device: user.device) }
       sign_in user
       user.device.update_attributes!(max_log_count: 15)
-      LogDispatch.destroy_all
-      Log.destroy_all
-      before_count = Log.count
-      run_jobs_now do
-        post :create, body: payl.to_json, params: {format: :json}
-      end
+      get :index, params: {format: :json}
       expect(response.status).to eq(200)
       expect(json.length).to eq(user.device.max_log_count)
     end
@@ -198,23 +134,10 @@ describe Api::LogsController do
         expect(last_email.to).to include(user.email)
       end
     end
-
-    it "handles bug that Connor reported" do
-      sign_in user
-      empty_mail_bag
-      Log.destroy_all
-      LogDispatch.destroy_all
-      run_jobs_now do
-        post :create,
-             body: JSON_EXAMPLE,
-             params: {format: :json}
-        expect(last_email).to eq(nil)
-      end
-    end
   end
 
   describe "#search" do
-    examples = [
+    EXAMPLES = [
       [1, "success"],
       [1, "busy"],
       [1, "warn"],
@@ -244,7 +167,7 @@ describe Api::LogsController do
       sign_in user
       Log.destroy_all
       conf  = user.device.web_app_config
-      examples.map do |(verbosity, type)|
+      EXAMPLES.map do |(verbosity, type)|
         FactoryBot.create(:log, device:    user.device,
                                 verbosity: verbosity,
                                 type:      type)
@@ -258,14 +181,18 @@ describe Api::LogsController do
                              debug_log:   3)
       get :search
       expect(response.status).to eq(200)
-      expect(json.length).to eq(examples.length)
+      expect(json.length).to eq(EXAMPLES.length)
     end
+
+    it 'sends emails'
+
+    it 'sends fata_emails'
 
     it 'filters NO logs based on log filtering settings in `WebAppConfig` ' do
       sign_in user
       Log.destroy_all
       conf  = user.device.web_app_config
-      examples.map do |(verbosity, type)|
+      EXAMPLES.map do |(verbosity, type)|
         FactoryBot.create(:log, device:    user.device,
                                 verbosity: verbosity,
                                 type:      type)
