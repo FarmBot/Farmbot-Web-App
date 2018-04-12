@@ -2,7 +2,7 @@ import * as React from "react";
 import { TaggedImage } from "../../resources/tagged_resources";
 import { CameraCalibrationData, BotOriginQuadrant } from "../interfaces";
 import { MapTransformProps } from "./interfaces";
-import { getXYFromQuadrant } from "./util";
+import { transformXY } from "./util";
 import { isNumber, round } from "lodash";
 
 const PRECISION = 3; // Number of decimals for image placement coordinates
@@ -123,7 +123,7 @@ export function MapImage(props: MapImageProps) {
   const imageOffsetX = parse(offset.x);
   const imageOffsetY = parse(offset.y);
   const imageOrigin = origin ? origin.split("\"").join("") : undefined;
-  const { quadrant, gridSize } = props.mapTransformProps;
+  const { quadrant } = props.mapTransformProps;
 
   /* Check if the image exists. */
   if (image) {
@@ -143,7 +143,7 @@ export function MapImage(props: MapImageProps) {
         x: x + imageOffsetX - size.x / 2,
         y: y + imageOffsetY - size.y / 2
       };
-      const qCoords = getXYFromQuadrant(o.x, o.y, quadrant, gridSize);
+      const qCoords = transformXY(o.x, o.y, props.mapTransformProps);
       const transformProps = { quadrant, qCoords, size, imageOrigin };
       return <image
         xlinkHref={imageUrl}

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { TaggedPlantPointer } from "../../../resources/tagged_resources";
 import { DesignerState } from "../../interfaces";
-import { getXYFromQuadrant, round } from "../util";
+import { transformXY, round } from "../util";
 import { MapTransformProps } from "../interfaces";
 import { SpreadCircle } from "./spread_layer";
 import { Circle } from "../circle";
@@ -41,9 +41,8 @@ export class HoveredPlantLayer extends
   render() {
     const { icon } = this.props.designer.hoveredPlant;
     const { currentPlant, mapTransformProps, dragging, isEditing } = this.props;
-    const { quadrant, gridSize } = mapTransformProps;
     const { id, x, y, radius } = this.plantInfo;
-    const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
+    const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
     const hovered = !!this.props.designer.hoveredPlant.icon;
     const scaledRadius = currentPlant ? radius : radius * 1.2;
     const alpha = dragging ? 0.4 : 1.0;

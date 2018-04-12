@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as _ from "lodash";
 import { MapTransformProps } from "../interfaces";
-import { getXYFromQuadrant } from "../util";
+import { transformXY } from "../util";
 import { BotPosition } from "../../../devices/interfaces";
 import { Color } from "../../../ui";
 
@@ -38,9 +38,8 @@ export interface BotTrailProps {
 }
 
 export function BotTrail(props: BotTrailProps) {
-  const { quadrant, gridSize } = props.mapTransformProps;
   const toQ = (ox: number, oy: number) =>
-    getXYFromQuadrant(ox, oy, quadrant, gridSize);
+    transformXY(ox, oy, props.mapTransformProps);
 
   const { x, y } = props.position;
   const watering = !!_.first(props.peripherals
