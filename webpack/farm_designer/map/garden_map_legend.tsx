@@ -5,6 +5,7 @@ import { GardenMapLegendProps } from "./interfaces";
 import { history } from "../../history";
 import { atMaxZoom, atMinZoom } from "./zoom";
 import { ImageFilterMenu } from "./image_filter_menu";
+import { showBugResetButton, resetBugs } from "./easter_eggs/bugs";
 
 export function GardenMapLegend(props: GardenMapLegendProps) {
 
@@ -106,6 +107,15 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
           {t("move mode")}
         </button>
       </div>
+      {showBugResetButton() &&
+        <div className="more-bugs">
+          <button
+            className="fb-button green"
+            onClick={resetBugs}>
+            {t("more bugs!")}
+          </button>
+        </div>
+      }
     </div>
   </div>;
 }

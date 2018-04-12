@@ -35,6 +35,7 @@ import { Actions } from "../../constants";
 import { isNumber } from "lodash";
 import { TargetCoordinate } from "./target_coordinate";
 import { DrawnPoint } from "./drawn_point";
+import { Bugs, showBugs } from "./easter_eggs/bugs";
 
 const DRAG_ERROR = `ERROR - Couldn't get zoom level of garden map, check the
   handleDrop() or drag() method in garden_map.tsx`;
@@ -418,6 +419,8 @@ export class GardenMap extends
               data={this.props.designer.currentPoint}
               key={"currentPoint"}
               mapTransformProps={mapTransformProps} />}
+          {showBugs() && <Bugs mapTransformProps={mapTransformProps}
+            botSize={this.props.botSize} />}
         </svg>
       </svg>
     </div>;
