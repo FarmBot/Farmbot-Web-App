@@ -72,7 +72,7 @@ export function translateScreenToGarden(
   const screenXY = page;
   const mapXY = ["x", "y"].reduce<XYCoordinate>(
     (result: XYCoordinate, axis: "x" | "y") => {
-      const unscrolled = screenXY[axis] - scroll[leftOrTop[axis]];
+      const unscrolled = screenXY[axis] + scroll[leftOrTop[axis]];
       const map = unscrolled - mapPadding[leftOrTop[axis]];
       const grid = map - gridOffset[axis] * zoomLvl;
       const unscaled = round(grid / zoomLvl);

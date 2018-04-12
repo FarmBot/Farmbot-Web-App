@@ -18,29 +18,48 @@ describe("Utils", () => {
 });
 
 describe("translateScreenToGarden()", () => {
-  it("translates garden coords to screen coords: corner case", () => {
-    const cornerCase = translateScreenToGarden({
+  it("translates screen coords to garden coords: zoomLvl = 1", () => {
+    const result = translateScreenToGarden({
       mapTransformProps: { quadrant: 2, gridSize: { x: 3000, y: 1500 } },
       page: { x: 520, y: 212 },
-      scroll: { left: 0, top: 0 },
+      scroll: { left: 10, top: 20 },
       zoomLvl: 1,
-      gridOffset: { x: 0, y: 0 },
+      gridOffset: { x: 30, y: 40 },
     });
-    expect(cornerCase.x).toEqual(200);
-    expect(cornerCase.y).toEqual(100);
+    expect(result).toEqual({ x: 180, y: 80 });
   });
 
-  it("translates garden coords to screen coords: edge case", () => {
-    const edgeCase = translateScreenToGarden({
+  it("translates screen coords to garden coords: zoomLvl < 1", () => {
+    const result = translateScreenToGarden({
       mapTransformProps: { quadrant: 2, gridSize: { x: 3000, y: 1500 } },
       page: { x: 1132, y: 382 },
-      scroll: { left: 0, top: 0 },
-      zoomLvl: 0.3,
-      gridOffset: { x: 0, y: 0 },
+      scroll: { left: 10, top: 20 },
+      zoomLvl: 0.33,
+      gridOffset: { x: 30, y: 40 },
     });
+    expect(result).toEqual({ x: 2470, y: 840 });
+  });
 
-    expect(Math.round(edgeCase.x)).toEqual(2710);
-    expect(Math.round(edgeCase.y)).toEqual(910);
+  it("translates screen coords to garden coords: zoomLvl > 1", () => {
+    const result = translateScreenToGarden({
+      mapTransformProps: { quadrant: 2, gridSize: { x: 3000, y: 1500 } },
+      page: { x: 1132, y: 382 },
+      scroll: { left: 10, top: 20 },
+      zoomLvl: 1.5,
+      gridOffset: { x: 30, y: 40 },
+    });
+    expect(result).toEqual({ x: 520, y: 150 });
+  });
+
+  it("translates screen coords to garden coords: other case", () => {
+    const result = translateScreenToGarden({
+      mapTransformProps: { quadrant: 3, gridSize: { x: 300, y: 150 } },
+      page: { x: 332, y: 132 },
+      scroll: { left: 10, top: 20 },
+      zoomLvl: 0.75,
+      gridOffset: { x: 30, y: 40 },
+    });
+    expect(result).toEqual({ x: 0, y: 130 });
   });
 });
 
