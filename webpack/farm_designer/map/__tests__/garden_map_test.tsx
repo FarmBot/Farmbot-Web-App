@@ -251,6 +251,23 @@ describe("<GardenPlant/>", () => {
     });
   });
 
+  it("selects location: zoom undefined", async () => {
+    const p = fakeProps();
+    const wrapper = shallow(<GardenMap {...p} />);
+    Object.defineProperty(window, "getComputedStyle", {
+      value: () => { return { zoom: undefined }; }, configurable: true
+    });
+    expect(wrapper.state()).toEqual({});
+    mockPath = "/app/designer/plants/move_to";
+    await wrapper.find("#drop-area-svg").simulate("click", {
+      pageX: 1000, pageY: 2000, preventDefault: jest.fn()
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: { x: 580, y: 1790, z: 0 },
+      type: Actions.CHOOSE_LOCATION
+    });
+  });
+
   it("starts drawing point", async () => {
     const p = fakeProps();
     const wrapper = shallow(<GardenMap {...p} />);

@@ -37,9 +37,6 @@ import { TargetCoordinate } from "./target_coordinate";
 import { DrawnPoint } from "./drawn_point";
 import { Bugs, showBugs } from "./easter_eggs/bugs";
 
-const DRAG_ERROR = `ERROR - Couldn't get zoom level of garden map, check the
-  handleDrop() or drag() method in garden_map.tsx`;
-
 export enum Mode {
   none = "none",
   boxSelect = "boxSelect",
@@ -113,7 +110,7 @@ export class GardenMap extends
     const map = document.querySelector(".farm-designer-map");
     const page = document.querySelector(".farm-designer");
     if (el && map && page) {
-      const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || DRAG_ERROR);
+      const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || "1");
       const params: ScreenToGardenParams = {
         page: { x: e.pageX, y: e.pageY },
         scroll: { left: page.scrollLeft, top: map.scrollTop * zoomLvl },
@@ -265,7 +262,7 @@ export class GardenMap extends
         const map = document.querySelector(".farm-designer-map");
         const { gridSize } = this.props;
         if (this.state.isDragging && plant && map) {
-          const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || DRAG_ERROR);
+          const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || "1");
           const { qx, qy } = transformXY(e.pageX, e.pageY, this.mapTransformProps);
           const deltaX = Math.round((qx - (this.state.pageX || qx)) / zoomLvl);
           const deltaY = Math.round((qy - (this.state.pageY || qy)) / zoomLvl);
