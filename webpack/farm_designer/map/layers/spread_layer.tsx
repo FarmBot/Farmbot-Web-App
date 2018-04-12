@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Component } from "react";
 import { TaggedPlantPointer } from "../../../resources/tagged_resources";
-import { round, getXYFromQuadrant } from "../util";
+import { round, transformXY } from "../util";
 import { cachedCrop } from "../../../open_farm/icons";
 import { MapTransformProps } from "../interfaces";
 import { SpreadOverlapHelper } from "../spread_overlap_helper";
@@ -82,8 +82,7 @@ export class SpreadCircle extends
   render() {
     const { radius, x, y, id } = this.props.plant.body;
     const { selected, mapTransformProps } = this.props;
-    const { quadrant, gridSize } = mapTransformProps;
-    const { qx, qy } = getXYFromQuadrant(round(x), round(y), quadrant, gridSize);
+    const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
     const animate = !Session.deprecatedGetBool(BooleanSetting.disable_animations);
 
     return <g id={"spread-" + id}>

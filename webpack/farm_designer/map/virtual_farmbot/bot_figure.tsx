@@ -1,6 +1,6 @@
 import * as React from "react";
 import { AxisNumberProperty, MapTransformProps } from "../interfaces";
-import { getMapSize, getXYFromQuadrant } from "../util";
+import { getMapSize, transformXY } from "../util";
 import { BotPosition } from "../../../devices/interfaces";
 import { Color } from "../../../ui/index";
 import { botPositionLabel } from "./bot_position_label";
@@ -24,11 +24,11 @@ export class BotFigure extends
   setHover = (state: boolean) => { this.setState({ hovered: state }); };
 
   render() {
-    const { name, position, plantAreaOffset, eStopStatus } = this.props;
-    const { quadrant, gridSize } = this.props.mapTransformProps;
-    const mapSize = getMapSize(gridSize, plantAreaOffset);
-    const positionQ = getXYFromQuadrant(
-      (position.x || 0), (position.y || 0), quadrant, gridSize);
+    const { name, position, plantAreaOffset, eStopStatus, mapTransformProps
+    } = this.props;
+    const mapSize = getMapSize(mapTransformProps.gridSize, plantAreaOffset);
+    const positionQ = transformXY(
+      (position.x || 0), (position.y || 0), mapTransformProps);
     const color = eStopStatus ? Color.virtualRed : Color.darkGray;
     const opacity = name.includes("encoder") ? 0.25 : 0.75;
     return <g id={name}>

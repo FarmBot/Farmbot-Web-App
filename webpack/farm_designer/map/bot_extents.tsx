@@ -1,13 +1,12 @@
 import * as React from "react";
-import { getXYFromQuadrant } from "./util";
+import { transformXY } from "./util";
 import { BotExtentsProps } from "./interfaces";
 
 export function BotExtents(props: BotExtentsProps) {
   const { stopAtHome, botSize, mapTransformProps } = props;
-  const { quadrant, gridSize } = mapTransformProps;
-  const homeLength = getXYFromQuadrant(
-    botSize.x.value, botSize.y.value, quadrant, gridSize);
-  const homeZero = getXYFromQuadrant(2, 2, quadrant, gridSize);
+  const homeLength = transformXY(
+    botSize.x.value, botSize.y.value, mapTransformProps);
+  const homeZero = transformXY(2, 2, mapTransformProps);
 
   return <g
     id="extents"
