@@ -51,6 +51,7 @@ module Logs
     end
 
     def validate
+      add_error :log, :private, BAD_WORDS if has_bad_words
       @log               = Log.new
       @log.device        = device
       @log.message       = message
@@ -63,14 +64,18 @@ module Logs
       @log.minor_version = transitional_field(:minor_version)
       @log.type          = transitional_field(:type)
       @log.validate!
-      add_error :log, :private, BAD_WORDS if has_bad_words
     end
 
     def execute
+      @log.save! && maybe_deliver
       @log
     end
 
     private
+
+    def maybe_deliver
+      LogDispatch.delay.deliver(device, @log)
+    end
 
     def has_bad_words
       !!inputs[:message].upcase.match(BLACKLIST)

@@ -29,6 +29,7 @@ gem "valid_url"
 gem "font-awesome-rails"
 gem "discard", "~> 1.0"
 gem "scenic"
+gem "bullet"
 
 group :development, :test do
   gem "lol_dba"
