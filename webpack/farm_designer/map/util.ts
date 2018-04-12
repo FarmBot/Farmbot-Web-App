@@ -5,8 +5,6 @@ import { CheckedAxisLength, AxisNumberProperty, BotSize } from "./interfaces";
 import { trim } from "../../util";
 
 const SNAP = 10;
-const LEFT_MENU_WIDTH = 320;
-const TOP_NAV_HEIGHT = 110;
 
 /**
  * Used for snapping.
@@ -22,27 +20,6 @@ export interface ScreenToGardenParams {
   pageY: number;
   zoomLvl: number;
   gridSize: AxisNumberProperty;
-}
-
-interface GetMouseXYPayl {
-  mx: number;
-  my: number;
-}
-
-/**
- * NOTE: This is the mouse position *CONSIDERING* the offset of the surrounding
- * elements that are also on the farm designer page.
- */
-export function getMouseXY(e: MouseEvent): GetMouseXYPayl {
-
-  const { clientX, clientY } = e;
-  const { scrollLeft, scrollTop, clientLeft, clientTop } = document.body;
-
-  const mx = (clientX + scrollLeft - clientLeft) - LEFT_MENU_WIDTH;
-  const my = (clientY + scrollTop - clientTop) - TOP_NAV_HEIGHT;
-
-  return { mx, my };
-
 }
 
 export function translateScreenToGarden(params: ScreenToGardenParams) {

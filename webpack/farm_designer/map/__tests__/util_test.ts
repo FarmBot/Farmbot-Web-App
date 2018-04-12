@@ -4,7 +4,6 @@ import {
   getBotSize,
   getMapSize,
   getXYFromQuadrant,
-  getMouseXY,
   transformForQuadrant
 } from "../util";
 import { McuParams } from "farmbot";
@@ -171,15 +170,6 @@ describe("getXYFromQuadrant()", () => {
     const { qx, qy } = getXYFromQuadrant(2200, 1100, 4, { x: 2000, y: 1000 });
     expect(qx).toEqual(-200);
     expect(qy).toEqual(-100);
-  });
-});
-
-describe("getMouseXY", () => {
-  it("Gets the X/Y of the mouse", () => {
-    const e: Partial<MouseEvent> = { clientX: 100, clientY: 200 };
-    const result = getMouseXY(e as MouseEvent);
-    expect(result.mx).toBe(-220);
-    expect(result.my).toBe(90);
   });
 });
 
