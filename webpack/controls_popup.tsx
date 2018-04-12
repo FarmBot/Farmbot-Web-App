@@ -15,6 +15,7 @@ interface Props {
   axisInversion: Record<Xyz, boolean>;
   botPosition: BotPosition;
   mcuParams: McuParams;
+  xySwap: boolean;
 }
 
 export class ControlsPopup extends React.Component<Props, Partial<State>> {
@@ -29,7 +30,7 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
 
   public render() {
     const isOpen = this.state.isOpen ? "open" : "";
-    const { mcuParams } = this.props;
+    const { mcuParams, xySwap } = this.props;
     const directionAxesProps = {
       x: {
         isInverted: this.props.axisInversion.x,
@@ -50,6 +51,8 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
         position: this.props.botPosition.y
       }
     };
+    const rightLeft = xySwap ? "y" : "x";
+    const upDown = xySwap ? "x" : "y";
     return <div
       className={"controls-popup " + isOpen}>
       <i className="fa fa-crosshairs"
@@ -57,27 +60,27 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
       <div className="controls-popup-menu-outer">
         <div className="controls-popup-menu-inner">
           <DirectionButton
-            axis={"x"}
+            axis={rightLeft}
             direction="right"
-            directionAxisProps={directionAxesProps.x}
+            directionAxisProps={directionAxesProps[rightLeft]}
             steps={this.state.stepSize}
             disabled={!isOpen} />
           <DirectionButton
-            axis={"y"}
+            axis={upDown}
             direction="up"
-            directionAxisProps={directionAxesProps.y}
+            directionAxisProps={directionAxesProps[upDown]}
             steps={this.state.stepSize}
             disabled={!isOpen} />
           <DirectionButton
-            axis={"y"}
+            axis={upDown}
             direction="down"
-            directionAxisProps={directionAxesProps.y}
+            directionAxisProps={directionAxesProps[upDown]}
             steps={this.state.stepSize}
             disabled={!isOpen} />
           <DirectionButton
-            axis={"x"}
+            axis={rightLeft}
             direction="left"
-            directionAxisProps={directionAxesProps.x}
+            directionAxisProps={directionAxesProps[rightLeft]}
             steps={this.state.stepSize}
             disabled={!isOpen} />
           <button

@@ -17,21 +17,22 @@ import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
 import { fakeUser } from "../__test_support__/fake_state/resources";
 
-describe("<App />: Controls Pop-Up", () => {
-  function fakeProps(): AppProps {
-    return {
-      timeOffset: 0, // Default to UTC
-      dispatch: jest.fn(),
-      loaded: [],
-      logs: [],
-      user: fakeUser(),
-      bot: bot,
-      consistent: true,
-      axisInversion: { x: false, y: false, z: false },
-      firmwareConfig: undefined,
-    };
-  }
+const fakeProps = (): AppProps => {
+  return {
+    timeOffset: 0, // Default to UTC
+    dispatch: jest.fn(),
+    loaded: [],
+    logs: [],
+    user: fakeUser(),
+    bot: bot,
+    consistent: true,
+    axisInversion: { x: false, y: false, z: false },
+    firmwareConfig: undefined,
+    xySwap: false,
+  };
+};
 
+describe("<App />: Controls Pop-Up", () => {
   function controlsPopUp(page: string, exists: boolean) {
     it(`doesn't render controls pop-up on ${page} page`, () => {
       mockPath = "/app/" + page;
@@ -58,21 +59,6 @@ describe("<App />: Controls Pop-Up", () => {
 });
 
 describe("<App />: Loading", () => {
-  function fakeProps(): AppProps {
-    const p: AppProps = {
-      dispatch: jest.fn(),
-      loaded: [],
-      logs: [],
-      user: fakeUser(),
-      bot: bot,
-      consistent: true,
-      timeOffset: 0,
-      axisInversion: { x: false, y: false, z: false },
-      firmwareConfig: undefined,
-    };
-    return p;
-  }
-
   it("MUST_LOADs not loaded", () => {
     const wrapper = mount(<App {...fakeProps()} />);
     expect(wrapper.text()).toContain("Loading...");
@@ -94,20 +80,6 @@ describe("<App />: Loading", () => {
 });
 
 describe("<App />: NavBar", () => {
-  function fakeProps(): AppProps {
-    return {
-      dispatch: jest.fn(),
-      loaded: [],
-      logs: [],
-      user: fakeUser(),
-      bot: bot,
-      consistent: true,
-      timeOffset: 0,
-      axisInversion: { x: false, y: false, z: false },
-      firmwareConfig: undefined,
-    };
-  }
-
   it("displays links", () => {
     const wrapper = mount(<App {...fakeProps()} />);
     expect(wrapper.text())

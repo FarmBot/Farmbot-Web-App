@@ -18,6 +18,7 @@ export interface Props {
   botToMqttStatus: NetworkState;
   firmwareSettings: McuParams;
   shouldDisplay: ShouldDisplay;
+  xySwap: boolean;
 }
 
 export interface MoveProps {
@@ -32,6 +33,7 @@ export interface MoveProps {
   z_axis_inverted: boolean;
   botToMqttStatus: NetworkState;
   firmwareSettings: McuParams;
+  xySwap: boolean;
 }
 
 export interface DirectionButtonProps {
@@ -100,6 +102,7 @@ export interface JogMovementControlsProps {
   bot: BotState;
   firmwareSettings: McuParams;
   disabled: boolean | undefined;
+  xySwap: boolean;
 }
 
 export interface ToggleButtonProps {

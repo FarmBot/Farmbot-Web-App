@@ -7,6 +7,8 @@ import { buildDirectionProps } from "./direction_axes_props";
 
 export function JogButtons(props: JogMovementControlsProps) {
   const directionAxesProps = buildDirectionProps(props);
+  const rightLeft = props.xySwap ? "y" : "x";
+  const upDown = props.xySwap ? "x" : "y";
   return <table className="jog-table" style={{ border: 0 }}>
     <tbody>
       <tr>
@@ -19,9 +21,9 @@ export function JogButtons(props: JogMovementControlsProps) {
         <td />
         <td>
           <DirectionButton
-            axis="y"
+            axis={upDown}
             direction="up"
-            directionAxisProps={directionAxesProps.y}
+            directionAxisProps={directionAxesProps[upDown]}
             steps={props.bot.stepSize || 1000}
             disabled={props.disabled} />
         </td>
@@ -46,25 +48,25 @@ export function JogButtons(props: JogMovementControlsProps) {
         <td />
         <td>
           <DirectionButton
-            axis="x"
+            axis={rightLeft}
             direction="left"
-            directionAxisProps={directionAxesProps.x}
+            directionAxisProps={directionAxesProps[rightLeft]}
             steps={props.bot.stepSize || 1000}
             disabled={props.disabled} />
         </td>
         <td>
           <DirectionButton
-            axis="y"
+            axis={upDown}
             direction="down"
-            directionAxisProps={directionAxesProps.y}
+            directionAxisProps={directionAxesProps[upDown]}
             steps={props.bot.stepSize || 1000}
             disabled={props.disabled} />
         </td>
         <td>
           <DirectionButton
-            axis="x"
+            axis={rightLeft}
             direction="right"
-            directionAxisProps={directionAxesProps.x}
+            directionAxisProps={directionAxesProps[rightLeft]}
             steps={props.bot.stepSize || 1000}
             disabled={props.disabled} />
         </td>

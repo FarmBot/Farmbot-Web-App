@@ -1,6 +1,7 @@
 const mockDevice = {
   home: jest.fn(() => { return Promise.resolve(); }),
   takePhoto: jest.fn(() => { return Promise.resolve(); }),
+  moveRelative: jest.fn(() => { return Promise.resolve(); }),
 };
 
 jest.mock("../../device", () => ({
@@ -18,40 +19,64 @@ import { bot } from "../../__test_support__/fake_state/bot";
 describe("<JogButtons/>", function () {
   beforeEach(function () {
     jest.clearAllMocks();
-    jogButtonProps.disabled = false;
   });
-  const jogButtonProps: JogMovementControlsProps = {
-    bot: bot,
-    x_axis_inverted: false,
-    y_axis_inverted: false,
-    z_axis_inverted: false,
-    disabled: false,
-    firmwareSettings: bot.hardware.mcu_params
+
+  const jogButtonProps = (): JogMovementControlsProps => {
+    return {
+      bot: bot,
+      x_axis_inverted: false,
+      y_axis_inverted: false,
+      z_axis_inverted: false,
+      disabled: false,
+      firmwareSettings: bot.hardware.mcu_params,
+      xySwap: false,
+    };
   };
 
   it("calls home command", () => {
-    const jogButtons = mount(<JogButtons {...jogButtonProps} />);
+    const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
     jogButtons.find("button").at(3).simulate("click");
     expect(mockDevice.home).toHaveBeenCalledTimes(1);
   });
 
   it("is disabled", () => {
-    jogButtonProps.disabled = true;
-    const jogButtons = mount(<JogButtons {...jogButtonProps} />);
+    const p = jogButtonProps();
+    p.disabled = true;
+    const jogButtons = mount(<JogButtons {...p} />);
     jogButtons.find("button").at(3).simulate("click");
     expect(mockDevice.home).not.toHaveBeenCalled();
   });
 
   it("call has correct args", () => {
-    const jogButtons = mount(<JogButtons {...jogButtonProps} />);
+    const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
     jogButtons.find("button").at(3).simulate("click");
     expect(mockDevice.home)
       .toHaveBeenCalledWith({ axis: "all", speed: 100 });
   });
 
   it("takes photo", () => {
-    const jogButtons = mount(<JogButtons {...jogButtonProps} />);
+    const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
     jogButtons.find("button").at(0).simulate("click");
     expect(mockDevice.takePhoto).toHaveBeenCalled();
+  });
+
+  it("has unswapped xy jog buttons", () => {
+    const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
+    const button = jogButtons.find("button").at(6);
+    expect(button.props().title).toBe("move x axis (100)");
+    button.simulate("click");
+    expect(mockDevice.moveRelative)
+      .toHaveBeenCalledWith({ speed: 100, x: 100, y: 0, z: 0 });
+  });
+
+  it("has swapped xy jog buttons", () => {
+    const p = jogButtonProps();
+    p.xySwap = true;
+    const jogButtons = mount(<JogButtons {...p} />);
+    const button = jogButtons.find("button").at(6);
+    expect(button.props().title).toBe("move y axis (100)");
+    button.simulate("click");
+    expect(mockDevice.moveRelative)
+      .toHaveBeenCalledWith({ speed: 100, x: 0, y: 100, z: 0 });
   });
 });

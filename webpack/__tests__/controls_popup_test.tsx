@@ -20,7 +20,8 @@ describe("<ControlsPopup />", () => {
     dispatch={jest.fn()}
     axisInversion={{ x: true, y: false, z: false }}
     botPosition={{ x: undefined, y: undefined, z: undefined }}
-    mcuParams={bot.hardware.mcu_params} />);
+    mcuParams={bot.hardware.mcu_params}
+    xySwap={false} />);
 
   it("Has a false initial state", () => {
     expect(wrapper.state("isOpen")).toBeFalsy();
@@ -52,5 +53,21 @@ describe("<ControlsPopup />", () => {
     wrapper.setState({ isOpen: false });
     [0, 1, 2, 3].map((i) => wrapper.find("button").at(i).simulate("click"));
     expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+  });
+
+  it("swaps axes", () => {
+    const swapped = mount(<ControlsPopup
+      dispatch={jest.fn()}
+      axisInversion={{ x: false, y: false, z: false }}
+      botPosition={{ x: undefined, y: undefined, z: undefined }}
+      mcuParams={bot.hardware.mcu_params}
+      xySwap={true} />);
+    swapped.setState({ isOpen: true });
+    expect(swapped.state("isOpen")).toBeTruthy();
+    const button = swapped.find("button").at(1);
+    expect(button.props().title).toBe("move x axis (100)");
+    button.simulate("click");
+    expect(mockDevice.moveRelative)
+      .toHaveBeenCalledWith({ speed: 100, x: 100, y: 0, z: 0 });
   });
 });

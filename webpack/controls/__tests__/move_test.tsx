@@ -7,12 +7,19 @@ jest.mock("../../session", () => {
   };
 });
 
+jest.mock("../../config_storage/actions", () => {
+  return {
+    toggleWebAppBool: jest.fn()
+  };
+});
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { Move } from "../move";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { MoveProps } from "../interfaces";
 import { Session } from "../../session";
+import { toggleWebAppBool } from "../../config_storage/actions";
 
 describe("<Move />", () => {
   beforeEach(function () {
@@ -32,6 +39,7 @@ describe("<Move />", () => {
       z_axis_inverted: false,
       botToMqttStatus: "up",
       firmwareSettings: bot.hardware.mcu_params,
+      xySwap: false,
     };
   }
 
@@ -62,8 +70,7 @@ describe("<Move />", () => {
   });
 
   it("toggle: invert jog button", () => {
-    const p = fakeProps();
-    const wrapper = mount(<Move {...p} />);
+    const wrapper = mount(<Move {...fakeProps()} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     instance.toggle("x")();
@@ -71,11 +78,18 @@ describe("<Move />", () => {
   });
 
   it("toggle: encoder data display", () => {
-    const p = fakeProps();
-    const wrapper = mount(<Move {...p} />);
+    const wrapper = mount(<Move {...fakeProps()} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     instance.toggle_encoder_data("raw_encoders")();
     expect(Session.invertBool).toHaveBeenCalledWith("raw_encoders");
+  });
+
+  it("toggle: xy swap", () => {
+    const wrapper = mount(<Move {...fakeProps()} />);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    instance.toggle_xy_swap();
+    expect(toggleWebAppBool).toHaveBeenCalledWith("xy_swap");
   });
 });
