@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BotPosition } from "../../../devices/interfaces";
 import { MapTransformProps, AxisNumberProperty } from "../interfaces";
-import { getXYFromQuadrant } from "../util";
+import { transformXY } from "../util";
 import { Color } from "../../../ui";
 import { botPositionLabel } from "./bot_position_label";
 
@@ -13,13 +13,12 @@ export interface NegativePositionLabelProps {
 
 export function NegativePositionLabel(props: NegativePositionLabelProps) {
   const { position, mapTransformProps, plantAreaOffset } = props;
-  const { quadrant, gridSize } = mapTransformProps;
   const xIsNegative = position.x && position.x < 0;
   const yIsNegative = position.y && position.y < 0;
-  const origin = getXYFromQuadrant(
+  const origin = transformXY(
     -plantAreaOffset.x + 40,
     -plantAreaOffset.y - 10,
-    quadrant, gridSize);
+    mapTransformProps);
 
   return <g id={"negative-position-label"}
     fontFamily="Arial" textAnchor="middle" dominantBaseline="central"

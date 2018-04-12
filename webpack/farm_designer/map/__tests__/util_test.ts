@@ -3,12 +3,11 @@ import {
   translateScreenToGarden,
   getBotSize,
   getMapSize,
-  getXYFromQuadrant,
-  getMouseXY,
+  transformXY,
   transformForQuadrant
 } from "../util";
 import { McuParams } from "farmbot";
-import { AxisNumberProperty, BotSize } from "../interfaces";
+import { AxisNumberProperty, BotSize, MapTransformProps } from "../interfaces";
 import { StepsPerMmXY } from "../../../devices/interfaces";
 
 describe("Utils", () => {
@@ -21,11 +20,11 @@ describe("Utils", () => {
 describe("translateScreenToGarden()", () => {
   it("translates garden coords to screen coords: corner case", () => {
     const cornerCase = translateScreenToGarden({
-      quadrant: 2,
-      pageX: 520,
-      pageY: 212,
+      mapTransformProps: { quadrant: 2, gridSize: { x: 3000, y: 1500 } },
+      page: { x: 520, y: 212 },
+      scroll: { left: 0, top: 0 },
       zoomLvl: 1,
-      gridSize: { x: 3000, y: 1500 }
+      gridOffset: { x: 0, y: 0 },
     });
     expect(cornerCase.x).toEqual(200);
     expect(cornerCase.y).toEqual(100);
@@ -33,11 +32,11 @@ describe("translateScreenToGarden()", () => {
 
   it("translates garden coords to screen coords: edge case", () => {
     const edgeCase = translateScreenToGarden({
-      quadrant: 2,
-      pageX: 1132,
-      pageY: 382,
+      mapTransformProps: { quadrant: 2, gridSize: { x: 3000, y: 1500 } },
+      page: { x: 1132, y: 382 },
+      scroll: { left: 0, top: 0 },
       zoomLvl: 0.3,
-      gridSize: { x: 3000, y: 1500 }
+      gridOffset: { x: 0, y: 0 },
     });
 
     expect(Math.round(edgeCase.x)).toEqual(2710);
@@ -154,53 +153,59 @@ describe("getMapSize()", () => {
   });
 });
 
-describe("getXYFromQuadrant()", () => {
+describe("transformXY", () => {
+  const gridSize = { x: 2000, y: 1000 };
+
+  type QXY = { qx: number, qy: number };
+
+  const transformCheck =
+    (original: QXY, transformed: QXY, transformProps: MapTransformProps) => {
+      expect(transformXY(original.qx, original.qy, transformProps))
+        .toEqual(transformed);
+      expect(transformXY(transformed.qx, transformed.qy, transformProps))
+        .toEqual(original);
+    };
+
   it("calculates transformed coordinate: quadrant 2", () => {
-    const { qx, qy } = getXYFromQuadrant(100, 200, 2, { x: 2000, y: 1000 });
-    expect(qx).toEqual(100);
-    expect(qy).toEqual(200);
+    const original = { qx: 100, qy: 200 };
+    const transformed = { qx: 100, qy: 200 };
+    const transformProps = { quadrant: 2, gridSize };
+    transformCheck(original, transformed, transformProps);
   });
 
   it("calculates transformed coordinate: quadrant 4", () => {
-    const { qx, qy } = getXYFromQuadrant(100, 200, 4, { x: 2000, y: 1000 });
-    expect(qx).toEqual(1900);
-    expect(qy).toEqual(800);
+    const original = { qx: 100, qy: 200 };
+    const transformed = { qx: 1900, qy: 800 };
+    const transformProps = { quadrant: 4, gridSize };
+    transformCheck(original, transformed, transformProps);
   });
 
   it("calculates transformed coordinate: quadrant 4 (outside of grid)", () => {
-    const { qx, qy } = getXYFromQuadrant(2200, 1100, 4, { x: 2000, y: 1000 });
-    expect(qx).toEqual(-200);
-    expect(qy).toEqual(-100);
-  });
-});
-
-describe("getMouseXY", () => {
-  it("Gets the X/Y of the mouse", () => {
-    const e: Partial<MouseEvent> = { clientX: 100, clientY: 200 };
-    const result = getMouseXY(e as MouseEvent);
-    expect(result.mx).toBe(-220);
-    expect(result.my).toBe(90);
+    const original = { qx: 2200, qy: 1100 };
+    const transformed = { qx: -200, qy: -100 };
+    const transformProps = { quadrant: 4, gridSize };
+    transformCheck(original, transformed, transformProps);
   });
 });
 
 describe("transformForQuadrant()", () => {
   it("calculates transform for quadrant 1", () => {
-    expect(transformForQuadrant(1, { x: 200, y: 100 }))
+    expect(transformForQuadrant({ quadrant: 1, gridSize: { x: 200, y: 100 } }))
       .toEqual("scale(-1, 1) translate(-200, 0)");
   });
 
   it("calculates transform for quadrant 2", () => {
-    expect(transformForQuadrant(2, { x: 200, y: 100 }))
+    expect(transformForQuadrant({ quadrant: 2, gridSize: { x: 200, y: 100 } }))
       .toEqual("scale(1, 1) translate(0, 0)");
   });
 
   it("calculates transform for quadrant 3", () => {
-    expect(transformForQuadrant(3, { x: 200, y: 100 }))
+    expect(transformForQuadrant({ quadrant: 3, gridSize: { x: 200, y: 100 } }))
       .toEqual("scale(1, -1) translate(0, -100)");
   });
 
   it("calculates transform for quadrant 4", () => {
-    expect(transformForQuadrant(4, { x: 200, y: 100 }))
+    expect(transformForQuadrant({ quadrant: 4, gridSize: { x: 200, y: 100 } }))
       .toEqual("scale(-1, -1) translate(-200, -100)");
   });
 });

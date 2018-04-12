@@ -1,6 +1,6 @@
 import * as React from "react";
 import { MapTransformProps } from "./interfaces";
-import { getXYFromQuadrant } from "./util";
+import { transformXY } from "./util";
 import { CurrentPointPayl } from "../interfaces";
 
 export interface DrawnPointProps {
@@ -10,9 +10,8 @@ export interface DrawnPointProps {
 
 export function DrawnPoint(props: DrawnPointProps) {
   const { data, mapTransformProps } = props;
-  const { quadrant, gridSize } = mapTransformProps;
   const { cx, cy, r, color } = data;
-  const { qx, qy } = getXYFromQuadrant(cx, cy, quadrant, gridSize);
+  const { qx, qy } = transformXY(cx, cy, mapTransformProps);
   return <g
     id="current-point"
     stroke={color ? color : "green"}

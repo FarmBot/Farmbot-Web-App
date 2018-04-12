@@ -1,6 +1,6 @@
 import * as React from "react";
 import { AxisNumberProperty, MapTransformProps } from "../interfaces";
-import { getMapSize, getXYFromQuadrant } from "../util";
+import { getMapSize, transformXY } from "../util";
 import { BotPosition } from "../../../devices/interfaces";
 import * as _ from "lodash";
 import { Session } from "../../../session";
@@ -116,11 +116,10 @@ function vacuumFigure(
 }
 
 export function BotPeripherals(props: BotPeripheralsProps) {
-  const { peripherals, position, plantAreaOffset } = props;
-  const { quadrant, gridSize } = props.mapTransformProps;
-  const mapSize = getMapSize(gridSize, plantAreaOffset);
-  const positionQ = getXYFromQuadrant(
-    (position.x || 0), (position.y || 0), quadrant, gridSize);
+  const { peripherals, position, plantAreaOffset, mapTransformProps } = props;
+  const mapSize = getMapSize(mapTransformProps.gridSize, plantAreaOffset);
+  const positionQ = transformXY(
+    (position.x || 0), (position.y || 0), mapTransformProps);
 
   return <g className={"virtual-peripherals"}>
     {peripherals.map((x, i) => {
