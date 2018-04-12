@@ -184,6 +184,10 @@ describe Api::LogsController do
       expect(json.length).to eq(EXAMPLES.length)
     end
 
+    it 'sends emails'
+
+    it 'sends fata_emails'
+
     it 'filters NO logs based on log filtering settings in `WebAppConfig` ' do
       sign_in user
       Log.destroy_all
