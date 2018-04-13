@@ -86,11 +86,12 @@ module CeleryScript
     def misc_fields
       return {
         id:         sequence.id,
-        name:       sequence.name,
-        color:      sequence.color,
         created_at: sequence.created_at,
         updated_at: sequence.updated_at,
-        args:       Sequence::DEFAULT_ARGS
+        args:       Sequence::DEFAULT_ARGS,
+        color:      sequence.color,
+        in_use:     sequence.in_use?,
+        name:       sequence.name,
       }
     end
 
@@ -110,12 +111,6 @@ module CeleryScript
 
     def execute
       canonical_form = misc_fields.merge!(recurse_into_node(entry_node))
-      # N+1 AHEAD:
-      canonical_form[:in_use] = \
-        EdgeNode.where(kind: "sequence_id", value: sequence.id).exists? ||
-        RegimenItem.where(sequence_id: sequence.id).exists? ||
-        FarmEvent.where(executable: sequence).exists?
-      raise "Eager load sequence_usage_report" if !sequence.association(:sequence_usage_report).loaded?
       s = canonical_form.with_indifferent_access
       # HISTORICAL NOTE:
       #   When I prototyped the variables declaration stuff, a few (failed)

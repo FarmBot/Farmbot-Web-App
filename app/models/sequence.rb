@@ -63,6 +63,20 @@ class Sequence < ApplicationRecord
     false unless destroyed?
   end
 
+  # Determines if the current sequence is used by any farmevents, regimens or
+  # sequences.
+  def in_use?
+    [sequence_usage_report.edge_node_count,
+     sequence_usage_report.farm_event_count,
+     sequence_usage_report.regimen_items_count].max != 0
+  end
+
+  # Eagerly load edge_node, primary_node and usage_report. This is a big deal
+  # for performance when serializing sequences.
+  def self.with_usage_reports
+    self.includes(:sequence_usage_report, :edge_nodes, :primary_nodes)
+  end
+
   # THIS IS AN OVERRIDE - Special serialization required for auto sync.
   # When a sequence is created, we save it to the database to create a primary
   # key, then we iterate over `EdgeNode` and `PrimaryNode`s, assigning that

@@ -33,10 +33,7 @@ module Api
     end
 
     def sequences
-      puts "TODO- maybe I need to do a raw SQL query here ? Hmmm..."
-      @sequences ||= Sequence
-                      .includes(:primary_nodes, :edge_nodes)
-                      .where(device: current_device)
+      @sequences ||= Sequence.with_usage_reports.where(device: current_device)
     end
 
     def sequence
