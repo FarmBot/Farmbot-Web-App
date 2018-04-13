@@ -484,6 +484,18 @@ ul {
   font-size: 1.2rem;
 }
 
+.move-settings-menu {
+  label {
+    margin-top: 7px;
+  }
+  p {
+    margin-top: 0.7rem;
+    font-size: 1.4rem;
+    color: $medium_gray;
+    font-weight: 400;
+  }
+}
+
 .controls-popup,
 .controls-popup-menu-outer {
   position: fixed;

@@ -60,10 +60,10 @@ export class Move extends React.Component<MoveProps, {}> {
         helpText={ToolTips.MOVE}>
         <Popover position={Position.BOTTOM_RIGHT}>
           <i className="fa fa-gear" />
-          <div>
-            <label>
+          <div className="move-settings-menu">
+            <p>
               {t("Invert Jog Buttons")}
-            </label>
+            </p>
             <fieldset>
               <label>
                 {t("X Axis")}
@@ -88,9 +88,10 @@ export class Move extends React.Component<MoveProps, {}> {
                 className={"fb-button fb-toggle-button " + zBtnColor}
                 onClick={this.toggle("z")} />
             </fieldset>
-            <label>
+
+            <p>
               {t("Display Encoder Data")}
-            </label>
+            </p>
             <fieldset>
               <label>
                 {t("Scaled encoder position")}
@@ -107,9 +108,10 @@ export class Move extends React.Component<MoveProps, {}> {
                 className={"fb-button fb-toggle-button " + rawBtnColor}
                 onClick={this.toggle_encoder_data("raw_encoders")} />
             </fieldset>
-            <label>
+
+            <p>
               {t("Swap jog buttons")}
-            </label>
+            </p>
             <fieldset>
               <label>
                 {t("x and y axis")}
