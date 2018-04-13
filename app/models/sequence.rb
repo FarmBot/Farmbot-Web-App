@@ -16,10 +16,11 @@ class Sequence < ApplicationRecord
   include CeleryScriptSettingsBag
 
   belongs_to :device
-  has_many  :farm_events, as: :executable
-  has_many  :regimen_items
-  has_many  :primary_nodes,         dependent: :destroy
-  has_many  :edge_nodes,            dependent: :destroy
+  has_one    :sequence_usage_report
+  has_many   :farm_events, as: :executable
+  has_many   :regimen_items
+  has_many   :primary_nodes,         dependent: :destroy
+  has_many   :edge_nodes,            dependent: :destroy
 
   # allowable label colors for the frontend.
   [ :name, :kind ].each { |n| validates n, presence: true }
