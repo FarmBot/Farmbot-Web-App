@@ -90,8 +90,7 @@ module CeleryScript
         updated_at: sequence.updated_at,
         args:       Sequence::DEFAULT_ARGS,
         color:      sequence.color,
-        in_use:     sequence.in_use?,
-        name:       sequence.name,
+        name:       sequence.name
       }
     end
 
@@ -112,6 +111,7 @@ module CeleryScript
     def execute
       canonical_form = misc_fields.merge!(recurse_into_node(entry_node))
       s = canonical_form.with_indifferent_access
+      s[:in_use]     = sequence.in_use?
       # HISTORICAL NOTE:
       #   When I prototyped the variables declaration stuff, a few (failed)
       #   iterations snuck into the DB. Gradually migrating is easier than
