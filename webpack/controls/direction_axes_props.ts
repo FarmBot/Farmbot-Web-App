@@ -1,11 +1,11 @@
-import { validBotLocationData } from "../util";
-import { JogMovementControlsProps } from "./interfaces";
+import { DirectionAxesProps } from "./interfaces";
+import { McuParams } from "farmbot";
 
 const _ = (nr_steps: number | undefined, steps_mm: number | undefined) => {
   return (nr_steps || 0) / (steps_mm || 1);
 };
 
-function calculateAxialLengths(props: JogMovementControlsProps) {
+function calculateAxialLengths(props: { firmwareSettings: McuParams }) {
   const fwParams = props.firmwareSettings;
 
   return {
@@ -15,35 +15,33 @@ function calculateAxialLengths(props: JogMovementControlsProps) {
   };
 }
 
-export function buildDirectionProps(props: JogMovementControlsProps) {
-  const { firmwareSettings } = props;
-  const { location_data } = props.bot.hardware;
-  const botLocationData = validBotLocationData(location_data);
+export function buildDirectionProps(props: DirectionAxesProps) {
+  const { firmwareSettings, botPosition } = props;
   const lengths = calculateAxialLengths(props);
   return {
     x: {
-      isInverted: props.x_axis_inverted,
+      isInverted: props.axisInversion.x,
       stopAtHome: !!firmwareSettings.movement_stop_at_home_x,
       stopAtMax: !!firmwareSettings.movement_stop_at_max_x,
       axisLength: lengths.x,
       negativeOnly: !!firmwareSettings.movement_home_up_x,
-      position: botLocationData.position.x
+      position: botPosition.x
     },
     y: {
-      isInverted: props.y_axis_inverted,
+      isInverted: props.axisInversion.y,
       stopAtHome: !!firmwareSettings.movement_stop_at_home_y,
       stopAtMax: !!firmwareSettings.movement_stop_at_max_y,
       axisLength: lengths.y,
       negativeOnly: !!firmwareSettings.movement_home_up_y,
-      position: botLocationData.position.y
+      position: botPosition.y
     },
     z: {
-      isInverted: props.z_axis_inverted,
+      isInverted: props.axisInversion.z,
       stopAtHome: !!firmwareSettings.movement_stop_at_home_z,
       stopAtMax: !!firmwareSettings.movement_stop_at_max_z,
       axisLength: lengths.z,
       negativeOnly: !!firmwareSettings.movement_home_up_z,
-      position: botLocationData.position.z
+      position: botPosition.z
     },
   };
 }

@@ -31,7 +31,7 @@ describe("<Move />", () => {
       dispatch: jest.fn(),
       bot: bot,
       user: undefined,
-      disabled: false,
+      arduinoBusy: false,
       raw_encoders: false,
       scaled_encoders: false,
       x_axis_inverted: false,

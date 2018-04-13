@@ -23,11 +23,10 @@ describe("<JogButtons/>", function () {
 
   const jogButtonProps = (): JogMovementControlsProps => {
     return {
-      bot: bot,
-      x_axis_inverted: false,
-      y_axis_inverted: false,
-      z_axis_inverted: false,
-      disabled: false,
+      stepSize: 100,
+      botPosition: { x: undefined, y: undefined, z: undefined },
+      axisInversion: { x: false, y: false, z: false },
+      arduinoBusy: false,
       firmwareSettings: bot.hardware.mcu_params,
       xySwap: false,
     };
@@ -41,7 +40,7 @@ describe("<JogButtons/>", function () {
 
   it("is disabled", () => {
     const p = jogButtonProps();
-    p.disabled = true;
+    p.arduinoBusy = true;
     const jogButtons = mount(<JogButtons {...p} />);
     jogButtons.find("button").at(3).simulate("click");
     expect(mockDevice.home).not.toHaveBeenCalled();
@@ -71,6 +70,7 @@ describe("<JogButtons/>", function () {
 
   it("has swapped xy jog buttons", () => {
     const p = jogButtonProps();
+    (p.stepSize as number | undefined) = undefined;
     p.xySwap = true;
     const jogButtons = mount(<JogButtons {...p} />);
     const button = jogButtons.find("button").at(6);

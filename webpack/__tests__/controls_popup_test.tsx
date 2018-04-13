@@ -10,18 +10,28 @@ import * as React from "react";
 import { ControlsPopup } from "../controls_popup";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
+import { ControlsPopupProps } from "../controls/interfaces";
 
 describe("<ControlsPopup />", () => {
   beforeEach(function () {
     jest.clearAllMocks();
   });
 
-  const wrapper = mount(<ControlsPopup
-    dispatch={jest.fn()}
-    axisInversion={{ x: true, y: false, z: false }}
-    botPosition={{ x: undefined, y: undefined, z: undefined }}
-    mcuParams={bot.hardware.mcu_params}
-    xySwap={false} />);
+  const fakeProps = (): ControlsPopupProps => {
+    return {
+      dispatch: jest.fn(),
+      axisInversion: { x: false, y: false, z: false },
+      botPosition: { x: undefined, y: undefined, z: undefined },
+      firmwareSettings: bot.hardware.mcu_params,
+      xySwap: false,
+      arduinoBusy: false,
+      stepSize: 100,
+    };
+  };
+
+  const p = fakeProps();
+  p.axisInversion.x = true;
+  const wrapper = mount(<ControlsPopup {...p} />);
 
   it("Has a false initial state", () => {
     expect(wrapper.state("isOpen")).toBeFalsy();
@@ -56,12 +66,9 @@ describe("<ControlsPopup />", () => {
   });
 
   it("swaps axes", () => {
-    const swapped = mount(<ControlsPopup
-      dispatch={jest.fn()}
-      axisInversion={{ x: false, y: false, z: false }}
-      botPosition={{ x: undefined, y: undefined, z: undefined }}
-      mcuParams={bot.hardware.mcu_params}
-      xySwap={true} />);
+    const swappedProps = fakeProps();
+    swappedProps.xySwap = true;
+    const swapped = mount(<ControlsPopup {...swappedProps} />);
     swapped.setState({ isOpen: true });
     expect(swapped.state("isOpen")).toBeTruthy();
     const button = swapped.find("button").at(1);

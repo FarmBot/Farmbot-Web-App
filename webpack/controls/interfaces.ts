@@ -25,7 +25,7 @@ export interface MoveProps {
   dispatch: Function;
   bot: BotState;
   user: TaggedUser | undefined;
-  disabled: boolean | undefined;
+  arduinoBusy: boolean;
   raw_encoders: boolean;
   scaled_encoders: boolean;
   x_axis_inverted: boolean;
@@ -95,14 +95,20 @@ export interface StepSizeSelectorProps {
   selector: (num: number) => void;
 }
 
-export interface JogMovementControlsProps {
-  x_axis_inverted: boolean;
-  y_axis_inverted: boolean;
-  z_axis_inverted: boolean;
-  bot: BotState;
+export interface DirectionAxesProps {
+  axisInversion: Record<Xyz, boolean>;
+  botPosition: BotPosition;
   firmwareSettings: McuParams;
-  disabled: boolean | undefined;
+}
+
+export interface JogMovementControlsProps extends DirectionAxesProps {
+  stepSize: number;
+  arduinoBusy: boolean;
   xySwap: boolean;
+}
+
+export interface ControlsPopupProps extends JogMovementControlsProps {
+  dispatch: Function;
 }
 
 export interface ToggleButtonProps {

@@ -24,7 +24,7 @@ export class Controls extends React.Component<Props, {}> {
       bot: this.props.bot,
       user: this.props.user,
       dispatch: this.props.dispatch,
-      disabled: arduinoBusy,
+      arduinoBusy,
       raw_encoders: !!Session.deprecatedGetBool(BooleanSetting.raw_encoders),
       scaled_encoders: !!Session.deprecatedGetBool(BooleanSetting.scaled_encoders),
       x_axis_inverted: !!Session.deprecatedGetBool(BooleanSetting.x_axis_inverted),

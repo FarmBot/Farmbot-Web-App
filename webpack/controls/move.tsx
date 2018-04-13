@@ -137,11 +137,14 @@ export class Move extends React.Component<MoveProps, {}> {
             selector={num => this.props.dispatch(changeStepSize(num))}
             selected={this.props.bot.stepSize} />
           <JogButtons
-            bot={this.props.bot}
-            x_axis_inverted={x_axis_inverted}
-            y_axis_inverted={y_axis_inverted}
-            z_axis_inverted={z_axis_inverted}
-            disabled={this.props.disabled}
+            stepSize={this.props.bot.stepSize}
+            botPosition={locationData.position}
+            axisInversion={{
+              x: x_axis_inverted,
+              y: y_axis_inverted,
+              z: z_axis_inverted
+            }}
+            arduinoBusy={this.props.arduinoBusy}
             firmwareSettings={this.props.firmwareSettings}
             xySwap={this.props.xySwap} />
           <Row>
@@ -169,7 +172,7 @@ export class Move extends React.Component<MoveProps, {}> {
           <AxisInputBoxGroup
             position={motor_coordinates}
             onCommit={input => moveAbs(input)}
-            disabled={this.props.disabled} />
+            disabled={this.props.arduinoBusy} />
         </MustBeOnline>
       </WidgetBody>
     </Widget>;

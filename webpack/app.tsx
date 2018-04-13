@@ -121,8 +121,10 @@ export class App extends React.Component<AppProps, {}> {
           dispatch={this.props.dispatch}
           axisInversion={this.props.axisInversion}
           botPosition={validBotLocationData(location_data).position}
-          mcuParams={this.props.firmwareConfig || mcu_params}
-          xySwap={this.props.xySwap} />}
+          firmwareSettings={this.props.firmwareConfig || mcu_params}
+          xySwap={this.props.xySwap}
+          arduinoBusy={!!this.props.bot.hardware.informational_settings.busy}
+          stepSize={this.props.bot.stepSize} />}
     </div>;
   }
 }
