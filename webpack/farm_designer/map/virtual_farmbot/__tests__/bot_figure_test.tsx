@@ -17,21 +17,23 @@ describe("<BotFigure/>", () => {
 
   function checkPositionForQuadrant(
     quadrant: BotOriginQuadrant,
+    xySwap: boolean,
     expected: { x: number, y: number },
     name: string,
     opacity: number) {
     it(`shows ${name} in correct location for quadrant ${quadrant}`, () => {
       const p = fakeProps();
       p.mapTransformProps.quadrant = quadrant;
+      p.mapTransformProps.xySwap = xySwap;
       p.name = name;
       const result = shallow(<BotFigure {...p} />);
 
       const expectedGantryProps = expect.objectContaining({
         id: "gantry",
-        x: expected.x - 10,
-        y: -100,
-        width: 20,
-        height: 1700,
+        x: xySwap ? -100 : expected.x - 10,
+        y: xySwap ? expected.x - 10 : -100,
+        width: xySwap ? 1700 : 20,
+        height: xySwap ? 20 : 1700,
         fill: Color.darkGray,
         fillOpacity: opacity
       });
@@ -40,8 +42,8 @@ describe("<BotFigure/>", () => {
 
       const expectedUTMProps = expect.objectContaining({
         id: "UTM",
-        cx: expected.x,
-        cy: expected.y,
+        cx: xySwap ? expected.y : expected.x,
+        cy: xySwap ? expected.x : expected.y,
         r: 35,
         fill: Color.darkGray,
         fillOpacity: opacity
@@ -51,11 +53,15 @@ describe("<BotFigure/>", () => {
     });
   }
 
-  checkPositionForQuadrant(1, { x: 3000, y: 0 }, "motors", 0.75);
-  checkPositionForQuadrant(2, { x: 0, y: 0 }, "motors", 0.75);
-  checkPositionForQuadrant(3, { x: 0, y: 1500 }, "motors", 0.75);
-  checkPositionForQuadrant(4, { x: 3000, y: 1500 }, "motors", 0.75);
-  checkPositionForQuadrant(2, { x: 0, y: 0 }, "encoders", 0.25);
+  checkPositionForQuadrant(1, false, { x: 3000, y: 0 }, "motors", 0.75);
+  checkPositionForQuadrant(2, false, { x: 0, y: 0 }, "motors", 0.75);
+  checkPositionForQuadrant(3, false, { x: 0, y: 1500 }, "motors", 0.75);
+  checkPositionForQuadrant(4, false, { x: 3000, y: 1500 }, "motors", 0.75);
+  checkPositionForQuadrant(1, true, { x: 0, y: 1500 }, "motors", 0.75);
+  checkPositionForQuadrant(2, true, { x: 0, y: 0 }, "motors", 0.75);
+  checkPositionForQuadrant(3, true, { x: 3000, y: 0 }, "motors", 0.75);
+  checkPositionForQuadrant(4, true, { x: 3000, y: 1500 }, "motors", 0.75);
+  checkPositionForQuadrant(2, false, { x: 0, y: 0 }, "encoders", 0.25);
 
   it("changes location", () => {
     const p = fakeProps();

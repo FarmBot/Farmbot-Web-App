@@ -170,9 +170,18 @@ describe("getbotSize()", () => {
 describe("getMapSize()", () => {
   it("calculates map size", () => {
     const mapSize = getMapSize(
-      { x: 2000, y: 1000 },
+      fakeMapTransformProps(),
       { x: 100, y: 50 });
-    expect(mapSize).toEqual({ x: 2200, y: 1100 });
+    expect(mapSize).toEqual({ h: 1600, w: 3200 });
+  });
+
+  it("calculates map size: X&Y Swapped", () => {
+    const fakeMPT = fakeMapTransformProps();
+    fakeMPT.xySwap = true;
+    const mapSize = getMapSize(
+      fakeMPT,
+      { x: 100, y: 50 });
+    expect(mapSize).toEqual({ h: 3200, w: 1600 });
   });
 });
 
@@ -184,10 +193,17 @@ describe("transformXY", () => {
 
   const transformCheck =
     (original: QXY, transformed: QXY, transformProps: MapTransformProps) => {
+      transformProps.xySwap = false;
       expect(transformXY(original.qx, original.qy, transformProps))
         .toEqual(transformed);
       expect(transformXY(transformed.qx, transformed.qy, transformProps))
         .toEqual(original);
+      transformProps.xySwap = true;
+      const transformedYX = { qx: transformed.qy, qy: transformed.qx };
+      expect(transformXY(original.qx, original.qy, transformProps))
+        .toEqual(transformedYX);
+      expect(transformXY(transformed.qx, transformed.qy, transformProps))
+        .toEqual({ qx: original.qy, qy: original.qx });
     };
 
   it("calculates transformed coordinate: quadrant 2", () => {

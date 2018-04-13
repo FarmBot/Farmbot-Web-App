@@ -44,7 +44,7 @@ export function round(num: number) {
  *   zoom level
  *   quadrant
  *   grid size
- *   XY swap (coming soon)
+ *   XY swap
  *
  */
 
@@ -69,6 +69,7 @@ export function translateScreenToGarden(
   params: ScreenToGardenParams
 ): XYCoordinate {
   const { page, scroll, zoomLvl, mapTransformProps, gridOffset } = params;
+  const { xySwap } = mapTransformProps;
   const screenXY = page;
   const mapXY = ["x", "y"].reduce<XYCoordinate>(
     (result: XYCoordinate, axis: "x" | "y") => {
@@ -79,8 +80,11 @@ export function translateScreenToGarden(
       result[axis] = unscaled;
       return result;
     }, { x: 0, y: 0 });
-  const gardenXY = quadTransform({ coordinate: mapXY, mapTransformProps });
-  return gardenXY;
+  const coordinate = xySwap ? { x: mapXY.y, y: mapXY.x } : mapXY;
+  const gardenXY = transformXY(coordinate.x, coordinate.y, mapTransformProps);
+  return xySwap
+    ? { x: gardenXY.qy, y: gardenXY.qx }
+    : { x: gardenXY.qx, y: gardenXY.qy };
 }
 
 /* BotOriginQuadrant diagram
@@ -112,7 +116,7 @@ interface QuadTransformParams {
 /** Quadrant coordinate transformation */
 function quadTransform(params: QuadTransformParams): XYCoordinate {
   const { coordinate, mapTransformProps } = params;
-  const { quadrant, gridSize } = mapTransformProps;
+  const { gridSize, quadrant } = mapTransformProps;
   if (isBotOriginQuadrant(quadrant)) {
     return ["x", "y"].reduce<XYCoordinate>(
       (result: XYCoordinate, axis: "x" | "y") => {
@@ -146,9 +150,24 @@ function quadTransform(params: QuadTransformParams): XYCoordinate {
 export function transformXY(
   x: number,
   y: number,
-  mapTransformProps: MapTransformProps
+  rawMapTransformProps: MapTransformProps
 ): { qx: number, qy: number } {
-  const transformed = quadTransform({ coordinate: { x, y }, mapTransformProps });
+  const { quadrant, gridSize, xySwap } = rawMapTransformProps;
+  const coordinate = {
+    x: xySwap ? y : x,
+    y: xySwap ? x : y,
+  };
+  const transformed = quadTransform({
+    coordinate,
+    mapTransformProps: {
+      quadrant,
+      gridSize: {
+        x: xySwap ? gridSize.y : gridSize.x,
+        y: xySwap ? gridSize.x : gridSize.y,
+      },
+      xySwap
+    }
+  });
   return {
     qx: transformed.x,
     qy: transformed.y
@@ -184,12 +203,17 @@ export function getBotSize(
 
 /** Calculate map dimensions */
 export function getMapSize(
-  gridSize: AxisNumberProperty,
+  mapTransformProps: MapTransformProps,
   gridOffset: AxisNumberProperty
-): AxisNumberProperty {
-  return {
+): { w: number, h: number } {
+  const { gridSize, xySwap } = mapTransformProps;
+  const mapSize = {
     x: gridSize.x + gridOffset.x * 2,
     y: gridSize.y + gridOffset.y * 2
+  };
+  return {
+    w: xySwap ? mapSize.y : mapSize.x,
+    h: xySwap ? mapSize.x : mapSize.y
   };
 }
 

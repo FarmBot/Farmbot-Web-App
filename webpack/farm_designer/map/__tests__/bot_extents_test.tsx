@@ -95,6 +95,33 @@ describe("<VirtualFarmBot/>", () => {
     expect(maxLines.at(1).props()).toEqual({ "x1": 2998, "x2": 2900, "y1": 100, "y2": 100 });
   });
 
+  it("renders max line in correct location", () => {
+    const p = fakeProps();
+    p.stopAtHome.x = false;
+    p.stopAtHome.y = false;
+    p.botSize = {
+      x: { value: 100, isDefault: false },
+      y: { value: 100, isDefault: true }
+    };
+    const wrapper = shallow(<BotExtents {...p} />);
+    const maxLines = wrapper.find("#max-lines").find("line");
+    expect(maxLines.at(0).props()).toEqual({ "x1": 100, "x2": 100, "y1": 2, "y2": 100 });
+  });
+
+  it("renders max line in correct location with swapped axes", () => {
+    const p = fakeProps();
+    p.stopAtHome.x = false;
+    p.stopAtHome.y = false;
+    p.mapTransformProps.xySwap = true;
+    p.botSize = {
+      x: { value: 100, isDefault: false },
+      y: { value: 100, isDefault: true }
+    };
+    const wrapper = shallow(<BotExtents {...p} />);
+    const maxLines = wrapper.find("#max-lines").find("line");
+    expect(maxLines.at(0).props()).toEqual({ "x1": 2, "x2": 100, "y1": 100, "y2": 100 });
+  });
+
   it("renders no lines", () => {
     const p = fakeProps();
     p.stopAtHome.x = false;
