@@ -26,18 +26,18 @@ export class BotFigure extends
   render() {
     const { name, position, plantAreaOffset, eStopStatus, mapTransformProps
     } = this.props;
-    const mapSize = getMapSize(mapTransformProps.gridSize, plantAreaOffset);
+    const { xySwap } = mapTransformProps;
+    const mapSize = getMapSize(mapTransformProps, plantAreaOffset);
     const positionQ = transformXY(
       (position.x || 0), (position.y || 0), mapTransformProps);
     const color = eStopStatus ? Color.virtualRed : Color.darkGray;
     const opacity = name.includes("encoder") ? 0.25 : 0.75;
     return <g id={name}>
       <rect id="gantry"
-        x={positionQ.qx - 10}
-        y={-plantAreaOffset.y
-        }
-        width={20}
-        height={mapSize.y}
+        x={xySwap ? -plantAreaOffset.x : positionQ.qx - 10}
+        y={xySwap ? positionQ.qy - 10 : -plantAreaOffset.y}
+        width={xySwap ? mapSize.w : 20}
+        height={xySwap ? 20 : mapSize.h}
         fillOpacity={opacity}
         fill={color} />
       <circle id="UTM"

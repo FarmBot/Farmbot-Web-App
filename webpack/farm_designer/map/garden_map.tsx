@@ -36,9 +36,7 @@ import { isNumber } from "lodash";
 import { TargetCoordinate } from "./target_coordinate";
 import { DrawnPoint } from "./drawn_point";
 import { Bugs, showBugs } from "./easter_eggs/bugs";
-
-const DRAG_ERROR = `ERROR - Couldn't get zoom level of garden map, check the
-  handleDrop() or drag() method in garden_map.tsx`;
+import { BooleanSetting } from "../../session_keys";
 
 export enum Mode {
   none = "none",
@@ -73,7 +71,8 @@ export class GardenMap extends
   get mapTransformProps(): MapTransformProps {
     return {
       quadrant: this.props.botOriginQuadrant,
-      gridSize: this.props.gridSize
+      gridSize: this.props.gridSize,
+      xySwap: !!this.props.getConfigValue(BooleanSetting.xy_swap),
     };
   }
 
@@ -113,7 +112,7 @@ export class GardenMap extends
     const map = document.querySelector(".farm-designer-map");
     const page = document.querySelector(".farm-designer");
     if (el && map && page) {
-      const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || DRAG_ERROR);
+      const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || "1");
       const params: ScreenToGardenParams = {
         page: { x: e.pageX, y: e.pageY },
         scroll: { left: page.scrollLeft, top: map.scrollTop * zoomLvl },
@@ -264,16 +263,19 @@ export class GardenMap extends
         const plant = this.getPlant();
         const map = document.querySelector(".farm-designer-map");
         const { gridSize } = this.props;
+        const { quadrant, xySwap } = this.mapTransformProps;
         if (this.state.isDragging && plant && map) {
-          const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || DRAG_ERROR);
+          const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || "1");
           const { qx, qy } = transformXY(e.pageX, e.pageY, this.mapTransformProps);
           const deltaX = Math.round((qx - (this.state.pageX || qx)) / zoomLvl);
           const deltaY = Math.round((qy - (this.state.pageY || qy)) / zoomLvl);
+          const dX = xySwap && (quadrant % 2 === 1) ? -deltaX : deltaX;
+          const dY = xySwap && (quadrant % 2 === 1) ? -deltaY : deltaY;
           this.setState({
             pageX: qx, pageY: qy,
-            activeDragXY: { x: plant.body.x + deltaX, y: plant.body.y + deltaY, z: 0 }
+            activeDragXY: { x: plant.body.x + dX, y: plant.body.y + dY, z: 0 }
           });
-          this.props.dispatch(movePlant({ deltaX, deltaY, plant, gridSize }));
+          this.props.dispatch(movePlant({ deltaX: dX, deltaY: dY, plant, gridSize }));
         }
         break;
       case Mode.boxSelect:
@@ -313,13 +315,14 @@ export class GardenMap extends
 
   render() {
     const { gridSize } = this.props;
-    const mapSize = getMapSize(gridSize, this.props.gridOffset);
+    const mapSize = getMapSize(this.mapTransformProps, this.props.gridOffset);
     const mapTransformProps = this.mapTransformProps;
+    const { xySwap } = mapTransformProps;
     return <div
       className="drop-area"
       style={{
-        height: mapSize.y + "px", maxHeight: mapSize.y + "px",
-        width: mapSize.x + "px", maxWidth: mapSize.x + "px"
+        height: mapSize.h + "px", maxHeight: mapSize.h + "px",
+        width: mapSize.w + "px", maxWidth: mapSize.w + "px"
       }}
       onDrop={this.handleDrop}
       onDragEnter={this.handleDragEnter}
@@ -335,7 +338,8 @@ export class GardenMap extends
         <svg
           id="drop-area-svg"
           x={this.props.gridOffset.x} y={this.props.gridOffset.y}
-          width={gridSize.x} height={gridSize.y}
+          width={xySwap ? gridSize.y : gridSize.x}
+          height={xySwap ? gridSize.x : gridSize.y}
           onMouseUp={this.endDrag}
           onMouseDown={this.startDrag}
           onMouseMove={this.drag}

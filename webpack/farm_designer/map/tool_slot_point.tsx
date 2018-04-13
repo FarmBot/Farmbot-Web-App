@@ -36,7 +36,7 @@ export class ToolSlotPoint extends
   render() {
     const { id, x, y, pullout_direction } = this.slot.toolSlot.body;
     const { mapTransformProps } = this.props;
-    const { quadrant } = mapTransformProps;
+    const { quadrant, xySwap } = mapTransformProps;
     const { qx, qy } = transformXY(x, y, this.props.mapTransformProps);
     const toolName = this.slot.tool ? this.slot.tool.body.name : "no tool";
     const toolProps = {
@@ -52,7 +52,8 @@ export class ToolSlotPoint extends
           x={qx}
           y={qy}
           pulloutDirection={pullout_direction}
-          quadrant={quadrant} />}
+          quadrant={quadrant}
+          xySwap={xySwap} />}
 
       {(this.slot.tool || !pullout_direction) &&
         <Tool
@@ -65,7 +66,8 @@ export class ToolSlotPoint extends
         x={qx}
         y={qy}
         pulloutDirection={pullout_direction}
-        quadrant={quadrant} />
+        quadrant={quadrant}
+        xySwap={xySwap} />
     </g>;
   }
 }

@@ -2,6 +2,7 @@ import * as React from "react";
 import { Grid } from "../grid";
 import { shallow } from "enzyme";
 import { GridProps } from "../interfaces";
+import { fakeMapTransformProps } from "../../../__test_support__/map_transform_props";
 
 describe("<Grid/>", () => {
   beforeEach(function () {
@@ -10,16 +11,14 @@ describe("<Grid/>", () => {
 
   function fakeProps(): GridProps {
     return {
-      mapTransformProps: {
-        quadrant: 2, gridSize: { x: 3000, y: 1500 }
-      },
+      mapTransformProps: fakeMapTransformProps(),
       dispatch: jest.fn(),
       onClick: jest.fn()
     };
   }
 
   it("renders grid", () => {
-    const wrapper = shallow(<Grid {...fakeProps() } />);
+    const wrapper = shallow(<Grid {...fakeProps()} />);
     expect(wrapper.find("#major-grid").props().width).toEqual(3000);
     expect(wrapper.find("#minor-grid").props().width).toEqual(3000);
     expect(wrapper.find("#axis-arrows").find("line").first().props())

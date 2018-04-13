@@ -23,6 +23,7 @@ import { Session } from "./session";
 import { BooleanSetting } from "./session_keys";
 import { getPathArray } from "./history";
 import { FirmwareConfig } from "./config_storage/firmware_configs";
+import { getWebAppConfigValue } from "./config_storage/actions";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
 const fastClick = require("fastclick");
@@ -40,6 +41,7 @@ export interface AppProps {
   consistent: boolean;
   timeOffset: number;
   axisInversion: Record<Xyz, boolean>;
+  xySwap: boolean;
   firmwareConfig: FirmwareConfig | undefined;
 }
 
@@ -62,6 +64,7 @@ function mapStateToProps(props: Everything): AppProps {
       y: !!Session.deprecatedGetBool(BooleanSetting.y_axis_inverted),
       z: !!Session.deprecatedGetBool(BooleanSetting.z_axis_inverted),
     },
+    xySwap: !!getWebAppConfigValue(() => props)(BooleanSetting.xy_swap),
     firmwareConfig: validFwConfig(getFirmwareConfig(props.resources.index))
   };
 }
@@ -118,7 +121,10 @@ export class App extends React.Component<AppProps, {}> {
           dispatch={this.props.dispatch}
           axisInversion={this.props.axisInversion}
           botPosition={validBotLocationData(location_data).position}
-          mcuParams={this.props.firmwareConfig || mcu_params} />}
+          firmwareSettings={this.props.firmwareConfig || mcu_params}
+          xySwap={this.props.xySwap}
+          arduinoBusy={!!this.props.bot.hardware.informational_settings.busy}
+          stepSize={this.props.bot.stepSize} />}
     </div>;
   }
 }

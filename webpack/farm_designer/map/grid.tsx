@@ -6,7 +6,9 @@ import { Color } from "../../ui/index";
 
 export function Grid(props: GridProps) {
   const { mapTransformProps } = props;
-  const { gridSize } = mapTransformProps;
+  const { gridSize, xySwap } = mapTransformProps;
+  const gridSizeW = xySwap ? gridSize.y : gridSize.x;
+  const gridSizeH = xySwap ? gridSize.x : gridSize.y;
   const origin = transformXY(0, 0, mapTransformProps);
   const arrowEnd = transformXY(25, 25, mapTransformProps);
   const xLabel = transformXY(15, -10, mapTransformProps);
@@ -34,10 +36,10 @@ export function Grid(props: GridProps) {
 
     <g id="grid">
       <rect id="minor-grid"
-        width={gridSize.x} height={gridSize.y} fill="url(#minor_grid)" />
+        width={gridSizeW} height={gridSizeH} fill="url(#minor_grid)" />
       <rect id="major-grid" transform={transformForQuadrant(mapTransformProps)}
-        width={gridSize.x} height={gridSize.y} fill="url(#major_grid)" />
-      <rect id="border" width={gridSize.x} height={gridSize.y} fill="none"
+        width={gridSizeW} height={gridSizeH} fill="url(#major_grid)" />
+      <rect id="border" width={gridSizeW} height={gridSizeH} fill="none"
         stroke="rgba(0,0,0,0.3)" strokeWidth={2} />
     </g>
 
