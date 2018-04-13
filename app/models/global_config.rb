@@ -13,7 +13,12 @@ class GlobalConfig < ApplicationRecord
                     PRIV_URL:                 ENV.fetch("PRIV_URL", ""),
                     LONG_REVISION:            LONG_REVISION,
                     SHORT_REVISION:           LONG_REVISION.first(8),
-                    FBOS_END_OF_LIFE_VERSION: "0.0.0" }
+                    FBOS_END_OF_LIFE_VERSION: "0.0.0",
+                    MINIMUM_FBOS_VERSION:     "6.0.0" }
+
+  def self.fetch(key)
+    self.dump[key] or raise("BAD KEY: #{key || "nil"}")
+  end
 
   # Memoized version of every GlobalConfig, with key/values layed out in a hash.
   # Database values prempt values set in ::DEFAULTS
@@ -27,6 +32,6 @@ class GlobalConfig < ApplicationRecord
       .map(&:reload)
       .map{ |x| {x.key => x.value} }
       .reduce({}, :merge)
-    @dump = DEFAULTS.merge(config_hash)
+    @dump = DEFAULTS.merge(config_hash).with_indifferent_access
   end
 end
