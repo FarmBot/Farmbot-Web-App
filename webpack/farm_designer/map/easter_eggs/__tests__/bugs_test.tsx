@@ -3,15 +3,14 @@ import { shallow, mount } from "enzyme";
 import { Bugs, BugsProps, showBugResetButton, showBugs, resetBugs } from "../bugs";
 import { EggKeys, setEggStatus, getEggStatus } from "../status";
 import { range } from "lodash";
+import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
 
 const expectAlive = (value: string) =>
   expect(getEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE)).toEqual(value);
 
 describe("<Bugs />", () => {
   const fakeProps = (): BugsProps => ({
-    mapTransformProps: {
-      quadrant: 2, gridSize: { x: 3000, y: 1500 }
-    },
+    mapTransformProps: fakeMapTransformProps(),
     botSize: {
       x: { value: 3000, isDefault: true },
       y: { value: 1500, isDefault: true }

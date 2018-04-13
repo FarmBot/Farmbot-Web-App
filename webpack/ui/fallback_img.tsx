@@ -24,9 +24,9 @@ export class FallbackImg extends React.Component<Props, State> {
   fallback = () => {
     return <div className="webcam-stream-unavailable">
       <img src={this.props.fallback} style={{ maxWidth: "100%" }} />
-      <text>
+      <p>
         {t("Unable to load webcam feed.")}
-      </text>
+      </p>
     </div>;
   }
 

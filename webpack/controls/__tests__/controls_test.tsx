@@ -38,6 +38,7 @@ describe("<Controls />", () => {
       botToMqttStatus: "up",
       firmwareSettings: bot.hardware.mcu_params,
       shouldDisplay: () => true,
+      xySwap: false,
     };
   }
 

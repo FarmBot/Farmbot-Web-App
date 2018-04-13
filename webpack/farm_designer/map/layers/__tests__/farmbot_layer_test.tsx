@@ -2,6 +2,7 @@ import * as React from "react";
 import { FarmBotLayer } from "../farmbot_layer";
 import { shallow } from "enzyme";
 import { FarmBotLayerProps } from "../../interfaces";
+import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
 
 describe("<FarmBotLayer/>", () => {
   function fakeProps(): FarmBotLayerProps {
@@ -12,9 +13,7 @@ describe("<FarmBotLayer/>", () => {
         scaled_encoders: { x: undefined, y: undefined, z: undefined },
         raw_encoders: { x: undefined, y: undefined, z: undefined },
       },
-      mapTransformProps: {
-        quadrant: 1, gridSize: { x: 3000, y: 1500 }
-      },
+      mapTransformProps: fakeMapTransformProps(),
       stopAtHome: { x: true, y: true },
       botSize: {
         x: { value: 3000, isDefault: true },
@@ -28,7 +27,7 @@ describe("<FarmBotLayer/>", () => {
 
   it("shows layer elements", () => {
     const p = fakeProps();
-    const result = shallow(<FarmBotLayer {...p } />);
+    const result = shallow(<FarmBotLayer {...p} />);
     const layer = result.find("#farmbot-layer");
     expect(layer.find("#virtual-farmbot")).toBeTruthy();
     expect(layer.find("#extents")).toBeTruthy();
@@ -37,7 +36,7 @@ describe("<FarmBotLayer/>", () => {
   it("toggles visibility off", () => {
     const p = fakeProps();
     p.visible = false;
-    const result = shallow(<FarmBotLayer {...p } />);
+    const result = shallow(<FarmBotLayer {...p} />);
     expect(result.html()).toEqual("<g id=\"farmbot-layer\"></g>");
   });
 });

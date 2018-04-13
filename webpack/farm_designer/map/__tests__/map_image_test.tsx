@@ -4,6 +4,7 @@ import { MapImage, MapImageProps } from "../map_image";
 import { SpecialStatus } from "../../../resources/tagged_resources";
 import { cloneDeep } from "lodash";
 import { trim } from "../../../util";
+import { fakeMapTransformProps } from "../../../__test_support__/map_transform_props";
 
 describe("<MapImage />", () => {
   const fakeProps = (): MapImageProps => {
@@ -29,15 +30,12 @@ describe("<MapImage />", () => {
         scale: undefined,
         calibrationZ: undefined
       },
-      mapTransformProps: {
-        gridSize: { x: 0, y: 0 },
-        quadrant: 1
-      },
+      mapTransformProps: fakeMapTransformProps(),
     };
   };
 
   it("doesn't render image", () => {
-    const wrapper = mount(<MapImage {...fakeProps() } />);
+    const wrapper = mount(<MapImage {...fakeProps()} />);
     expect(wrapper.html()).toEqual("<image></image>");
   });
 
@@ -77,10 +75,9 @@ describe("<MapImage />", () => {
     scale: "0.8041",
     calibrationZ: "0"
   };
-  INPUT_SET_1.mapTransformProps = {
-    gridSize: { x: 5900, y: 2900 },
-    quadrant: 3
-  };
+  INPUT_SET_1.mapTransformProps = fakeMapTransformProps();
+  INPUT_SET_1.mapTransformProps.gridSize = { x: 5900, y: 2900 },
+    INPUT_SET_1.mapTransformProps.quadrant = 3;
   INPUT_SET_1.sizeOverride = { width: 480, height: 640 };
 
   const INPUT_SET_2 = cloneDeep(INPUT_SET_1);

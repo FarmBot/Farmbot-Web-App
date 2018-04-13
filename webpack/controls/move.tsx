@@ -15,6 +15,8 @@ import { AxisDisplayGroup } from "./axis_display_group";
 import { Session } from "../session";
 import { INVERSION_MAPPING, ENCODER_MAPPING } from "../devices/reducer";
 import { minFwVersionCheck, validBotLocationData } from "../util";
+import { toggleWebAppBool } from "../config_storage/actions";
+import { BooleanSetting } from "../session_keys";
 
 export class Move extends React.Component<MoveProps, {}> {
 
@@ -25,11 +27,14 @@ export class Move extends React.Component<MoveProps, {}> {
   toggle_encoder_data =
     (name: EncoderDisplay) => () => Session.invertBool(ENCODER_MAPPING[name]);
 
+  toggle_xy_swap = () =>
+    this.props.dispatch(toggleWebAppBool(BooleanSetting.xy_swap));
+
   render() {
     const { location_data, informational_settings } = this.props.bot.hardware;
     const { firmware_version } = informational_settings;
     const { x_axis_inverted, y_axis_inverted, z_axis_inverted,
-      raw_encoders, scaled_encoders } = this.props;
+      raw_encoders, scaled_encoders, xySwap } = this.props;
 
     const btnColor = (flag: boolean) => { return flag ? "green" : "red"; };
     const xBtnColor = btnColor(x_axis_inverted);
@@ -37,6 +42,7 @@ export class Move extends React.Component<MoveProps, {}> {
     const zBtnColor = btnColor(z_axis_inverted);
     const rawBtnColor = btnColor(raw_encoders);
     const scaledBtnColor = btnColor(scaled_encoders);
+    const xySwapBtnColor = btnColor(xySwap);
 
     const locationData = validBotLocationData(location_data);
     const motor_coordinates = locationData.position;
@@ -54,10 +60,10 @@ export class Move extends React.Component<MoveProps, {}> {
         helpText={ToolTips.MOVE}>
         <Popover position={Position.BOTTOM_RIGHT}>
           <i className="fa fa-gear" />
-          <div>
-            <label>
+          <div className="move-settings-menu">
+            <p>
               {t("Invert Jog Buttons")}
-            </label>
+            </p>
             <fieldset>
               <label>
                 {t("X Axis")}
@@ -82,9 +88,10 @@ export class Move extends React.Component<MoveProps, {}> {
                 className={"fb-button fb-toggle-button " + zBtnColor}
                 onClick={this.toggle("z")} />
             </fieldset>
-            <label>
+
+            <p>
               {t("Display Encoder Data")}
-            </label>
+            </p>
             <fieldset>
               <label>
                 {t("Scaled encoder position")}
@@ -100,6 +107,18 @@ export class Move extends React.Component<MoveProps, {}> {
               <button
                 className={"fb-button fb-toggle-button " + rawBtnColor}
                 onClick={this.toggle_encoder_data("raw_encoders")} />
+            </fieldset>
+
+            <p>
+              {t("Swap jog buttons")}
+            </p>
+            <fieldset>
+              <label>
+                {t("x and y axis")}
+              </label>
+              <button
+                className={"fb-button fb-toggle-button " + xySwapBtnColor}
+                onClick={this.toggle_xy_swap} />
             </fieldset>
           </div>
         </Popover>
@@ -120,12 +139,16 @@ export class Move extends React.Component<MoveProps, {}> {
             selector={num => this.props.dispatch(changeStepSize(num))}
             selected={this.props.bot.stepSize} />
           <JogButtons
-            bot={this.props.bot}
-            x_axis_inverted={x_axis_inverted}
-            y_axis_inverted={y_axis_inverted}
-            z_axis_inverted={z_axis_inverted}
-            disabled={this.props.disabled}
-            firmwareSettings={this.props.firmwareSettings} />
+            stepSize={this.props.bot.stepSize}
+            botPosition={locationData.position}
+            axisInversion={{
+              x: x_axis_inverted,
+              y: y_axis_inverted,
+              z: z_axis_inverted
+            }}
+            arduinoBusy={this.props.arduinoBusy}
+            firmwareSettings={this.props.firmwareSettings}
+            xySwap={this.props.xySwap} />
           <Row>
             <Col xs={3}>
               <label>{t("X AXIS")}</label>
@@ -151,7 +174,7 @@ export class Move extends React.Component<MoveProps, {}> {
           <AxisInputBoxGroup
             position={motor_coordinates}
             onCommit={input => moveAbs(input)}
-            disabled={this.props.disabled} />
+            disabled={this.props.arduinoBusy} />
         </MustBeOnline>
       </WidgetBody>
     </Widget>;
