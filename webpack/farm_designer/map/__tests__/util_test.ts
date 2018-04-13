@@ -65,6 +65,21 @@ describe("translateScreenToGarden()", () => {
     });
     expect(result).toEqual({ x: 0, y: 130 });
   });
+
+  it("translates screen coords to garden coords: swapped X&Y", () => {
+    const fakeMTP = fakeMapTransformProps();
+    fakeMTP.xySwap = true;
+    fakeMTP.quadrant = 3;
+    fakeMTP.gridSize = { x: 150, y: 300 };
+    const result = translateScreenToGarden({
+      mapTransformProps: fakeMTP,
+      page: { x: 332, y: 132 },
+      scroll: { left: 10, top: 20 },
+      zoomLvl: 0.75,
+      gridOffset: { x: 30, y: 40 },
+    });
+    expect(result).toEqual({ x: 130, y: 0 });
+  });
 });
 
 describe("getbotSize()", () => {

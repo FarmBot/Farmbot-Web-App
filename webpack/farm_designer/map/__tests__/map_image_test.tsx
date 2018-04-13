@@ -47,8 +47,19 @@ describe("<MapImage />", () => {
     ty: number;
   }
 
+  interface ExtraTranslationData {
+    rot: number;
+    sx: number;
+    sy: number;
+    tx: number;
+    ty: number;
+  }
+
   const renderedTest =
-    (num: number, inputData: MapImageProps[], expectedData: ExpectedData) => {
+    (num: number,
+      inputData: MapImageProps[],
+      expectedData: ExpectedData,
+      extra?: ExtraTranslationData) => {
       it(`renders image: INPUT_SET_${num}`, () => {
         const wrapper = mount(<MapImage {...inputData[num]} />);
         expect(wrapper.find("image").props()).toEqual({
@@ -59,6 +70,8 @@ describe("<MapImage />", () => {
           height: expectedData.size.height,
           transform: trim(`scale(${expectedData.sx}, ${expectedData.sy})
       translate(${expectedData.tx}, ${expectedData.ty})`)
+            + (extra ? trim(` rotate(${extra.rot}) scale(${extra.sx}, ${extra.sy})
+      translate(${extra.tx}, ${extra.ty})`) : "")
         });
       });
     };
@@ -103,10 +116,13 @@ describe("<MapImage />", () => {
   const INPUT_SET_7 = cloneDeep(INPUT_SET_6);
   INPUT_SET_7.cameraCalibrationData.origin = "BOTTOM_RIGHT";
 
+  const INPUT_SET_8 = cloneDeep(INPUT_SET_7);
+  INPUT_SET_8.mapTransformProps.xySwap = true;
+
   const DATA = [
     INPUT_SET_1,
     INPUT_SET_1, INPUT_SET_2, INPUT_SET_3, INPUT_SET_4, INPUT_SET_5,
-    INPUT_SET_6, INPUT_SET_7
+    INPUT_SET_6, INPUT_SET_7, INPUT_SET_8
   ];
 
   const expectedSize = { width: 385.968, height: 514.624 };
@@ -132,6 +148,9 @@ describe("<MapImage />", () => {
   renderedTest(7, DATA, {
     size: expectedSize, sx: 1, sy: 1, tx: 5436.016, ty: 2259.688
   });
+  renderedTest(8, DATA, {
+    size: expectedSize, sx: 1, sy: 1, tx: 2388.344, ty: 5307.36
+  }, { rot: 90, sx: -1, sy: 1, tx: -514.624, ty: -514.624 });
 
   it("doesn't render placeholder image", () => {
     const p = INPUT_SET_1;
