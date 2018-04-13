@@ -162,7 +162,7 @@ private
       render json: {error: "Upgrade to latest FarmBot OS"}, status: 426
     end
 
-    EXPECTED_VER = Gem::Version::new(GlobalConfig.fetch("MINIMUM_FBOS_VERSION"))
+    EXPECTED_VER = Gem::Version::new GlobalConfig.dump["MINIMUM_FBOS_VERSION"]
 
     # Try to extract FarmBot OS version from user agent.
     # If none found, return lowest allowable version + 1 "tiny" bump to prevent
