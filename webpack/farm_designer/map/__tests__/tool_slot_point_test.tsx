@@ -2,13 +2,12 @@ import * as React from "react";
 import { ToolSlotPoint, TSPProps } from "../tool_slot_point";
 import { mount } from "enzyme";
 import { fakeToolSlot, fakeTool } from "../../../__test_support__/fake_state/resources";
+import { fakeMapTransformProps } from "../../../__test_support__/map_transform_props";
 
 describe("<ToolSlotPoint/>", () => {
   function fakeProps(): TSPProps {
     return {
-      mapTransformProps: {
-        quadrant: 2, gridSize: { x: 3000, y: 1500 }
-      },
+      mapTransformProps: fakeMapTransformProps(),
       slot: { toolSlot: fakeToolSlot(), tool: fakeTool() }
     };
   }
@@ -42,28 +41,28 @@ describe("<ToolSlotPoint/>", () => {
   it("displays 'no tool'", () => {
     const p = fakeProps();
     p.slot.tool = undefined;
-    const wrapper = mount(<ToolSlotPoint {...p } />);
+    const wrapper = mount(<ToolSlotPoint {...p} />);
     wrapper.setState({ hovered: true });
     expect(wrapper.find("text").text()).toEqual("no tool");
     expect(wrapper.find("text").props().dx).toEqual(40);
   });
 
   it("doesn't display tool name", () => {
-    const wrapper = mount(<ToolSlotPoint {...fakeProps() } />);
+    const wrapper = mount(<ToolSlotPoint {...fakeProps()} />);
     expect(wrapper.find("text").props().visibility).toEqual("hidden");
   });
 
   it("renders bin", () => {
     const p = fakeProps();
     if (p.slot.tool) { p.slot.tool.body.name = "seed bin"; }
-    const wrapper = mount(<ToolSlotPoint {...p } />);
+    const wrapper = mount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("#SeedBinGradient").length).toEqual(1);
   });
 
   it("renders tray", () => {
     const p = fakeProps();
     if (p.slot.tool) { p.slot.tool.body.name = "seed tray"; }
-    const wrapper = mount(<ToolSlotPoint {...p } />);
+    const wrapper = mount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("#SeedTrayPattern").length).toEqual(1);
   });
 });

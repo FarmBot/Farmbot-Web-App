@@ -36,6 +36,7 @@ import { isNumber } from "lodash";
 import { TargetCoordinate } from "./target_coordinate";
 import { DrawnPoint } from "./drawn_point";
 import { Bugs, showBugs } from "./easter_eggs/bugs";
+import { BooleanSetting } from "../../session_keys";
 
 export enum Mode {
   none = "none",
@@ -70,7 +71,8 @@ export class GardenMap extends
   get mapTransformProps(): MapTransformProps {
     return {
       quadrant: this.props.botOriginQuadrant,
-      gridSize: this.props.gridSize
+      gridSize: this.props.gridSize,
+      xySwap: !!this.props.getConfigValue(BooleanSetting.xy_swap),
     };
   }
 

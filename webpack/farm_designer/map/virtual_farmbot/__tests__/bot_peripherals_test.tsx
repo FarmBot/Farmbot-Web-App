@@ -16,15 +16,14 @@ import * as React from "react";
 import { shallow } from "enzyme";
 import { BotPeripheralsProps, BotPeripherals } from "../bot_peripherals";
 import { BooleanSetting } from "../../../../session_keys";
+import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
 
 describe("<BotPeripherals/>", () => {
   function fakeProps(): BotPeripheralsProps {
     return {
       peripherals: [{ label: "", value: false }],
       position: { x: 0, y: 0, z: 0 },
-      mapTransformProps: {
-        quadrant: 2, gridSize: { x: 3000, y: 1500 }
-      },
+      mapTransformProps: fakeMapTransformProps(),
       plantAreaOffset: { x: 100, y: 100 }
     };
   }
@@ -34,7 +33,7 @@ describe("<BotPeripherals/>", () => {
       const p = fakeProps();
       p.peripherals[0].label = name;
       p.peripherals[0].value = false;
-      const wrapper = shallow(<BotPeripherals {...p } />);
+      const wrapper = shallow(<BotPeripherals {...p} />);
       expect(wrapper.find(`#${name}`).length).toEqual(0);
     });
   }
@@ -42,11 +41,11 @@ describe("<BotPeripherals/>", () => {
   function animationToggle(
     props: BotPeripheralsProps, enabled: number, disabled: number) {
     mockStorj[BooleanSetting.disable_animations] = false;
-    const wrapperEnabled = shallow(<BotPeripherals {...props } />);
+    const wrapperEnabled = shallow(<BotPeripherals {...props} />);
     expect(wrapperEnabled.find("use").length).toEqual(enabled);
 
     mockStorj[BooleanSetting.disable_animations] = true;
-    const wrapperDisabled = shallow(<BotPeripherals {...props } />);
+    const wrapperDisabled = shallow(<BotPeripherals {...props} />);
     expect(wrapperDisabled.find("use").length).toEqual(disabled);
   }
 
@@ -54,7 +53,7 @@ describe("<BotPeripherals/>", () => {
     const p = fakeProps();
     p.peripherals[0].label = "lights";
     p.peripherals[0].value = true;
-    const wrapper = shallow(<BotPeripherals {...p } />);
+    const wrapper = shallow(<BotPeripherals {...p} />);
     expect(wrapper.find("#lights").length).toEqual(1);
     expect(wrapper.find("rect").last().props()).toEqual({
       fill: "url(#LightingGradient)",
@@ -66,7 +65,7 @@ describe("<BotPeripherals/>", () => {
     const p = fakeProps();
     p.peripherals[0].label = "water valve";
     p.peripherals[0].value = true;
-    const wrapper = shallow(<BotPeripherals {...p } />);
+    const wrapper = shallow(<BotPeripherals {...p} />);
     expect(wrapper.find("#water").length).toEqual(1);
     expect(wrapper.find("circle").last().props()).toEqual({
       cx: 0, cy: 0, fill: "rgb(11, 83, 148)", fillOpacity: 0.2, r: 55
@@ -78,7 +77,7 @@ describe("<BotPeripherals/>", () => {
     const p = fakeProps();
     p.peripherals[0].label = "vacuum pump";
     p.peripherals[0].value = true;
-    const wrapper = shallow(<BotPeripherals {...p } />);
+    const wrapper = shallow(<BotPeripherals {...p} />);
     expect(wrapper.find("#vacuum").length).toEqual(1);
     expect(wrapper.find("circle").last().props()).toEqual({
       fill: "url(#WaveGradient)", cx: 0, cy: 0, r: 100

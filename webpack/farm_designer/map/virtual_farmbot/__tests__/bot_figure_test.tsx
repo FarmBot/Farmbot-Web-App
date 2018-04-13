@@ -3,15 +3,14 @@ import { shallow } from "enzyme";
 import { BotOriginQuadrant } from "../../../interfaces";
 import { BotFigure, BotFigureProps } from "../bot_figure";
 import { Color } from "../../../../ui/index";
+import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
 
 describe("<BotFigure/>", () => {
   function fakeProps(): BotFigureProps {
     return {
       name: "",
       position: { x: 0, y: 0, z: 0 },
-      mapTransformProps: {
-        quadrant: 1, gridSize: { x: 3000, y: 1500 }
-      },
+      mapTransformProps: fakeMapTransformProps(),
       plantAreaOffset: { x: 100, y: 100 }
     };
   }

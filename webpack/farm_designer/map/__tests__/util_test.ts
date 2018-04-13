@@ -9,6 +9,7 @@ import {
 import { McuParams } from "farmbot";
 import { AxisNumberProperty, BotSize, MapTransformProps } from "../interfaces";
 import { StepsPerMmXY } from "../../../devices/interfaces";
+import { fakeMapTransformProps } from "../../../__test_support__/map_transform_props";
 
 describe("Utils", () => {
   it("rounds a number", () => {
@@ -20,7 +21,7 @@ describe("Utils", () => {
 describe("translateScreenToGarden()", () => {
   it("translates screen coords to garden coords: zoomLvl = 1", () => {
     const result = translateScreenToGarden({
-      mapTransformProps: { quadrant: 2, gridSize: { x: 3000, y: 1500 } },
+      mapTransformProps: fakeMapTransformProps(),
       page: { x: 520, y: 212 },
       scroll: { left: 10, top: 20 },
       zoomLvl: 1,
@@ -31,7 +32,7 @@ describe("translateScreenToGarden()", () => {
 
   it("translates screen coords to garden coords: zoomLvl < 1", () => {
     const result = translateScreenToGarden({
-      mapTransformProps: { quadrant: 2, gridSize: { x: 3000, y: 1500 } },
+      mapTransformProps: fakeMapTransformProps(),
       page: { x: 1132, y: 382 },
       scroll: { left: 10, top: 20 },
       zoomLvl: 0.33,
@@ -42,7 +43,7 @@ describe("translateScreenToGarden()", () => {
 
   it("translates screen coords to garden coords: zoomLvl > 1", () => {
     const result = translateScreenToGarden({
-      mapTransformProps: { quadrant: 2, gridSize: { x: 3000, y: 1500 } },
+      mapTransformProps: fakeMapTransformProps(),
       page: { x: 1132, y: 382 },
       scroll: { left: 10, top: 20 },
       zoomLvl: 1.5,
@@ -52,8 +53,11 @@ describe("translateScreenToGarden()", () => {
   });
 
   it("translates screen coords to garden coords: other case", () => {
+    const fakeMTP = fakeMapTransformProps();
+    fakeMTP.quadrant = 3;
+    fakeMTP.gridSize = { x: 300, y: 150 };
     const result = translateScreenToGarden({
-      mapTransformProps: { quadrant: 3, gridSize: { x: 300, y: 150 } },
+      mapTransformProps: fakeMTP,
       page: { x: 332, y: 132 },
       scroll: { left: 10, top: 20 },
       zoomLvl: 0.75,
@@ -173,7 +177,8 @@ describe("getMapSize()", () => {
 });
 
 describe("transformXY", () => {
-  const gridSize = { x: 2000, y: 1000 };
+  const mapTransformProps = fakeMapTransformProps();
+  mapTransformProps.gridSize = { x: 2000, y: 1000 };
 
   type QXY = { qx: number, qy: number };
 
@@ -188,43 +193,50 @@ describe("transformXY", () => {
   it("calculates transformed coordinate: quadrant 2", () => {
     const original = { qx: 100, qy: 200 };
     const transformed = { qx: 100, qy: 200 };
-    const transformProps = { quadrant: 2, gridSize };
-    transformCheck(original, transformed, transformProps);
+    mapTransformProps.quadrant = 2;
+    transformCheck(original, transformed, mapTransformProps);
   });
 
   it("calculates transformed coordinate: quadrant 4", () => {
     const original = { qx: 100, qy: 200 };
     const transformed = { qx: 1900, qy: 800 };
-    const transformProps = { quadrant: 4, gridSize };
-    transformCheck(original, transformed, transformProps);
+    mapTransformProps.quadrant = 4;
+    transformCheck(original, transformed, mapTransformProps);
   });
 
   it("calculates transformed coordinate: quadrant 4 (outside of grid)", () => {
     const original = { qx: 2200, qy: 1100 };
     const transformed = { qx: -200, qy: -100 };
-    const transformProps = { quadrant: 4, gridSize };
-    transformCheck(original, transformed, transformProps);
+    mapTransformProps.quadrant = 4;
+    transformCheck(original, transformed, mapTransformProps);
   });
 });
 
 describe("transformForQuadrant()", () => {
+  const mapTransformProps = fakeMapTransformProps();
+  mapTransformProps.gridSize = { x: 200, y: 100 };
+
   it("calculates transform for quadrant 1", () => {
-    expect(transformForQuadrant({ quadrant: 1, gridSize: { x: 200, y: 100 } }))
+    mapTransformProps.quadrant = 1;
+    expect(transformForQuadrant(mapTransformProps))
       .toEqual("scale(-1, 1) translate(-200, 0)");
   });
 
   it("calculates transform for quadrant 2", () => {
-    expect(transformForQuadrant({ quadrant: 2, gridSize: { x: 200, y: 100 } }))
+    mapTransformProps.quadrant = 2;
+    expect(transformForQuadrant(mapTransformProps))
       .toEqual("scale(1, 1) translate(0, 0)");
   });
 
   it("calculates transform for quadrant 3", () => {
-    expect(transformForQuadrant({ quadrant: 3, gridSize: { x: 200, y: 100 } }))
+    mapTransformProps.quadrant = 3;
+    expect(transformForQuadrant(mapTransformProps))
       .toEqual("scale(1, -1) translate(0, -100)");
   });
 
   it("calculates transform for quadrant 4", () => {
-    expect(transformForQuadrant({ quadrant: 4, gridSize: { x: 200, y: 100 } }))
+    mapTransformProps.quadrant = 4;
+    expect(transformForQuadrant(mapTransformProps))
       .toEqual("scale(-1, -1) translate(-200, -100)");
   });
 });

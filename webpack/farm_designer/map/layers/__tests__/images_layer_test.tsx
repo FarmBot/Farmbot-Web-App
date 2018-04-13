@@ -2,6 +2,7 @@ import * as React from "react";
 import { ImageLayer, ImageLayerProps } from "../image_layer";
 import { shallow } from "enzyme";
 import { fakeImage, fakeWebAppConfig } from "../../../../__test_support__/fake_state/resources";
+import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
 
 const mockConfig = fakeWebAppConfig();
 jest.mock("../../../../resources/selectors", () => {
@@ -19,9 +20,7 @@ describe("<ImageLayer/>", () => {
     return {
       visible: true,
       images: [image],
-      mapTransformProps: {
-        quadrant: 2, gridSize: { x: 3000, y: 1500 }
-      },
+      mapTransformProps: fakeMapTransformProps(),
       cameraCalibrationData: {
         offset: { x: "0", y: "0" },
         origin: "TOP_LEFT",

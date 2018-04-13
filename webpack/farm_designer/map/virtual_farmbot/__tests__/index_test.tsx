@@ -16,6 +16,7 @@ import { VirtualFarmBot } from "../index";
 import { shallow } from "enzyme";
 import { VirtualFarmBotProps } from "../../interfaces";
 import { Dictionary } from "farmbot";
+import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
 
 describe("<VirtualFarmBot/>", () => {
   function fakeProps(): VirtualFarmBotProps {
@@ -25,9 +26,7 @@ describe("<VirtualFarmBot/>", () => {
         scaled_encoders: { x: undefined, y: undefined, z: undefined },
         raw_encoders: { x: undefined, y: undefined, z: undefined },
       },
-      mapTransformProps: {
-        quadrant: 1, gridSize: { x: 3000, y: 1500 }
-      },
+      mapTransformProps: fakeMapTransformProps(),
       plantAreaOffset: { x: 100, y: 100 },
       peripherals: [],
       eStopStatus: false
@@ -35,7 +34,7 @@ describe("<VirtualFarmBot/>", () => {
   }
 
   it("shows bot position", () => {
-    const wrapper = shallow(<VirtualFarmBot {...fakeProps() } />);
+    const wrapper = shallow(<VirtualFarmBot {...fakeProps()} />);
     const figures = wrapper.find("BotFigure");
     expect(figures.length).toEqual(1);
     expect(figures.last().props().name).toEqual("motor-position");
@@ -43,13 +42,13 @@ describe("<VirtualFarmBot/>", () => {
 
   it("shows trail", () => {
     mockStorj["display_trail"] = true;
-    const wrapper = shallow(<VirtualFarmBot {...fakeProps() } />);
+    const wrapper = shallow(<VirtualFarmBot {...fakeProps()} />);
     expect(wrapper.find("BotTrail").length).toEqual(1);
   });
 
   it("shows encoder position", () => {
     mockStorj["encoder_figure"] = true;
-    const wrapper = shallow(<VirtualFarmBot {...fakeProps() } />);
+    const wrapper = shallow(<VirtualFarmBot {...fakeProps()} />);
     const figures = wrapper.find("BotFigure");
     expect(figures.length).toEqual(2);
     expect(figures.last().props().name).toEqual("encoder-position");
