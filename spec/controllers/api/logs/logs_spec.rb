@@ -186,7 +186,7 @@ describe Api::LogsController do
 
     it 'sends emails'
 
-    it 'sends fata_emails'
+    it 'sends fatal_emails'
 
     it 'filters NO logs based on log filtering settings in `WebAppConfig` ' do
       sign_in user

@@ -4,7 +4,7 @@ node_js:
 before_script:
 - sudo apt-get install curl -y
 - mv node_modules/.bin/which node_modules/.bin/which.backup
-- rvm install 2.5.0 && rvm use 2.5.0
+- rvm install 2.5.1 && rvm use 2.5.1
 - mv node_modules/.bin/which.backup node_modules/.bin/which
 - cp config/database.travis.yml config/database.yml
 - mkdir -p public/app

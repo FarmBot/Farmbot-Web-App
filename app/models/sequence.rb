@@ -16,10 +16,11 @@ class Sequence < ApplicationRecord
   include CeleryScriptSettingsBag
 
   belongs_to :device
-  has_many  :farm_events, as: :executable
-  has_many  :regimen_items
-  has_many  :primary_nodes,         dependent: :destroy
-  has_many  :edge_nodes,            dependent: :destroy
+  has_one    :sequence_usage_report
+  has_many   :farm_events, as: :executable
+  has_many   :regimen_items
+  has_many   :primary_nodes,         dependent: :destroy
+  has_many   :edge_nodes,            dependent: :destroy
 
   # allowable label colors for the frontend.
   [ :name, :kind ].each { |n| validates n, presence: true }
@@ -60,6 +61,20 @@ class Sequence < ApplicationRecord
   # THIS IS AN OVERRIDE - See Sequence#body_as_json
   def broadcast?
     false unless destroyed?
+  end
+
+  # Determines if the current sequence is used by any farmevents, regimens or
+  # sequences.
+  def in_use?
+    [sequence_usage_report.edge_node_count,
+     sequence_usage_report.farm_event_count,
+     sequence_usage_report.regimen_items_count].max != 0
+  end
+
+  # Eagerly load edge_node, primary_node and usage_report. This is a big deal
+  # for performance when serializing sequences.
+  def self.with_usage_reports
+    self.includes(:sequence_usage_report, :edge_nodes, :primary_nodes)
   end
 
   # THIS IS AN OVERRIDE - Special serialization required for auto sync.

@@ -13,7 +13,6 @@ module Points
     end
 
     def validate
-      puts "Convert this to use InUseTool after STI refactor."
       nope! if still_in_use?
     end
 
@@ -34,21 +33,11 @@ module Points
     end
 
     def nope!
-      add_error :in_use, :in_use, (IN_USE % [names])
-    end
-
-    def current_tool_id
-      point.tool_id
+      add_error :in_use, :in_use, (IN_USE % [deps.join(", ")])
     end
 
     def deps
-      @deps ||= Sequence
-        .where(id: EdgeNode.where(kind: "tool_id", value: current_tool_id)
-                    .pluck(:sequence_id))
-    end
-
-    def names
-      @names ||= deps.pluck(:name).join(", ")
+      @deps ||= InUseTool.where(tool_id: point.tool_id).pluck(:sequence_name)
     end
   end
 end
