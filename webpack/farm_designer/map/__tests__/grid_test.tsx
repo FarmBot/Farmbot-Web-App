@@ -18,12 +18,26 @@ describe("<Grid/>", () => {
   }
 
   it("renders grid", () => {
+    const expectedGridShape = { width: 3000, height: 1500 };
     const wrapper = shallow(<Grid {...fakeProps()} />);
-    expect(wrapper.find("#major-grid").props().width).toEqual(3000);
-    expect(wrapper.find("#minor-grid").props().width).toEqual(3000);
+    expect(wrapper.find("#major-grid").props()).toEqual(
+      expect.objectContaining(expectedGridShape));
+    expect(wrapper.find("#minor-grid").props()).toEqual(
+      expect.objectContaining(expectedGridShape));
     expect(wrapper.find("#axis-arrows").find("line").first().props())
       .toEqual({ x1: 0, x2: 25, y1: 0, y2: 0 });
     expect(wrapper.find("#axis-values").find("text").length).toEqual(43);
+  });
+
+  it("renders grid: X&Y swapped", () => {
+    const expectedGridShape = { width: 1500, height: 3000 };
+    const p = fakeProps();
+    p.mapTransformProps.xySwap = true;
+    const wrapper = shallow(<Grid {...p} />);
+    expect(wrapper.find("#major-grid").props()).toEqual(
+      expect.objectContaining(expectedGridShape));
+    expect(wrapper.find("#minor-grid").props()).toEqual(
+      expect.objectContaining(expectedGridShape));
   });
 
 });
