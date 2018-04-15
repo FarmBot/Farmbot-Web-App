@@ -19,13 +19,12 @@ import { GardenPlantProps } from "../interfaces";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { BooleanSetting } from "../../../session_keys";
 import { Actions } from "../../../constants";
+import { fakeMapTransformProps } from "../../../__test_support__/map_transform_props";
 
 describe("<GardenPlant/>", () => {
   function fakeProps(): GardenPlantProps {
     return {
-      mapTransformProps: {
-        quadrant: 2, gridSize: { x: 3000, y: 1500 }
-      },
+      mapTransformProps: fakeMapTransformProps(),
       plant: fakePlant(),
       selected: false,
       grayscale: false,
@@ -39,7 +38,7 @@ describe("<GardenPlant/>", () => {
 
   it("renders plant", () => {
     mockStorj[BooleanSetting.disable_animations] = true;
-    const wrapper = shallow(<GardenPlant {...fakeProps() } />);
+    const wrapper = shallow(<GardenPlant {...fakeProps()} />);
     expect(wrapper.find("image").length).toEqual(1);
     expect(wrapper.find("image").props().opacity).toEqual(1);
     expect(wrapper.find("text").length).toEqual(0);
@@ -50,14 +49,14 @@ describe("<GardenPlant/>", () => {
 
   it("renders plant animations", () => {
     mockStorj[BooleanSetting.disable_animations] = false;
-    const wrapper = shallow(<GardenPlant {...fakeProps() } />);
+    const wrapper = shallow(<GardenPlant {...fakeProps()} />);
     expect(wrapper.find(".soil-cloud").length).toEqual(1);
     expect(wrapper.find(".animate").length).toEqual(1);
   });
 
   it("Calls the onClick callback", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenPlant {...p } />);
+    const wrapper = shallow(<GardenPlant {...p} />);
     wrapper.find("image").at(0).simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_PLANT,
@@ -67,7 +66,7 @@ describe("<GardenPlant/>", () => {
 
   it("begins hover", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenPlant {...p } />);
+    const wrapper = shallow(<GardenPlant {...p} />);
     wrapper.find("image").at(0).simulate("mouseEnter");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_PLANT_LIST_ITEM,
@@ -77,7 +76,7 @@ describe("<GardenPlant/>", () => {
 
   it("ends hover", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenPlant {...p } />);
+    const wrapper = shallow(<GardenPlant {...p} />);
     wrapper.find("image").at(0).simulate("mouseLeave");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_PLANT_LIST_ITEM,
@@ -87,14 +86,14 @@ describe("<GardenPlant/>", () => {
 
   it("has color", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenPlant {...p } />);
+    const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find("image").props().filter).toEqual("");
   });
 
   it("has no color", () => {
     const p = fakeProps();
     p.grayscale = true;
-    const wrapper = shallow(<GardenPlant {...p } />);
+    const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find("image").props().filter).toEqual("url(#grayscale)");
   });
 });

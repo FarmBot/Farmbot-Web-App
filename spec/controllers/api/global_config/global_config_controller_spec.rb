@@ -8,6 +8,7 @@ describe Api::GlobalConfigController do
                                 value: "INITIAL_" + SecureRandom.hex)
 
     it 'shows configs' do
+      GlobalConfig.reload_
       get :show
       expect(json[:PING]).to eq(GlobalConfig.find_by(key: "PING").value)
     end

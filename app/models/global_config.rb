@@ -8,12 +8,20 @@ class GlobalConfig < ApplicationRecord
   validates_presence_of   :key
 
   LONG_REVISION = ENV["BUILT_AT"] || ENV["HEROKU_SLUG_COMMIT"] || "NONE"
-  DEFAULTS      = { NODE_ENV:                 Rails.env || "development",
-                    TOS_URL:                  ENV.fetch("TOS_URL", ""),
-                    PRIV_URL:                 ENV.fetch("PRIV_URL", ""),
-                    LONG_REVISION:            LONG_REVISION,
-                    SHORT_REVISION:           LONG_REVISION.first(8),
-                    FBOS_END_OF_LIFE_VERSION: "0.0.0" }
+  # Bootstrap initial defaults:
+  {
+    "NODE_ENV"                 => Rails.env || "development",
+    "TOS_URL"                  => ENV.fetch("TOS_URL", ""),
+    "PRIV_URL"                 => ENV.fetch("PRIV_URL", ""),
+    "LONG_REVISION"            => LONG_REVISION,
+    "SHORT_REVISION"           => LONG_REVISION.first(8),
+    "FBOS_END_OF_LIFE_VERSION" => "0.0.0",
+    "MINIMUM_FBOS_VERSION"     => "6.0.0"
+  }.map do |(key, value)|
+    self.find_or_create_by(key: key) do |conf|
+      conf.assign_attributes(key: key, value: value)
+    end
+  end
 
   # Memoized version of every GlobalConfig, with key/values layed out in a hash.
   # Database values prempt values set in ::DEFAULTS
@@ -22,11 +30,8 @@ class GlobalConfig < ApplicationRecord
   end
 
   def self.reload_
-    config_hash = GlobalConfig
-      .all
-      .map(&:reload)
-      .map{ |x| {x.key => x.value} }
-      .reduce({}, :merge)
-    @dump = DEFAULTS.merge(config_hash)
+    @dump = {}
+    GlobalConfig.all.map { |x| @dump[x.key] = x.value }
+    @dump
   end
 end

@@ -8,25 +8,20 @@ class LogDispatch < ApplicationRecord
   self.max_per_hour = 20
 
   # If this method grows, create a mutation.
-  def self.deliver(device, log_or_logs)
-    list = Array.wrap(log_or_logs)
-    send_routine_emails(list, device)
-    send_fatal_emails(list, device)
+  def self.deliver(device, log)
+    send_routine_emails(log, device)
+    send_fatal_emails(log, device)
   end
 
-  def self.send_routine_emails(log_array, device)
-    log_array
-      .select { |log | (log["channels"] || []).include?("email") }
-      .map    { |log | { device: device, log: log }}
-      .tap    { |logs| self.create!(logs) }
-
+  def self.send_routine_emails(log, device)
+    return unless (log["channels"] || []).include?("email")
+    self.create!(device: device, log: log)
     LogDeliveryMailer.log_digest(device).deliver_later
   end
 
-  def self.send_fatal_emails(log_array, device)
-    log_array
-      .select { |log| (log["channels"] || []).include?("fatal_email") }
-      .map    { |log| FatalErrorMailer.fatal_error(device, log).deliver_later }
+  def self.send_fatal_emails(log, device)
+    return unless (log["channels"] || []).include?("fatal_email")
+    FatalErrorMailer.fatal_error(device, log).deliver_later
   end
 
   def broadcast?

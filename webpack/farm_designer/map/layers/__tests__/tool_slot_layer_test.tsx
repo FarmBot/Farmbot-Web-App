@@ -9,6 +9,7 @@ jest.mock("../../../../history", () => ({
 
 import * as React from "react";
 import { ToolSlotLayer, ToolSlotLayerProps } from "../tool_slot_layer";
+import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
 import { fakeResource } from "../../../../__test_support__/fake_resource";
 import { ToolSlotPointer } from "../../../../interfaces";
 import { shallow } from "enzyme";
@@ -34,28 +35,26 @@ describe("<ToolSlotLayer/>", () => {
     return {
       visible: false,
       slots: [{ toolSlot, tool: undefined }],
-      mapTransformProps: {
-        quadrant: 1, gridSize: { x: 3000, y: 1500 }
-      },
+      mapTransformProps: fakeMapTransformProps(),
       dispatch: jest.fn()
     };
   }
   it("toggles visibility off", () => {
-    const result = shallow(<ToolSlotLayer {...fakeProps() } />);
+    const result = shallow(<ToolSlotLayer {...fakeProps()} />);
     expect(result.find("ToolSlotPoint").length).toEqual(0);
   });
 
   it("toggles visibility on", () => {
     const p = fakeProps();
     p.visible = true;
-    const result = shallow(<ToolSlotLayer {...p } />);
+    const result = shallow(<ToolSlotLayer {...p} />);
     expect(result.find("ToolSlotPoint").length).toEqual(1);
   });
 
   it("navigates to tools page", async () => {
     mockPath = "/app/designer/plants";
     const p = fakeProps();
-    const wrapper = shallow(<ToolSlotLayer {...p } />);
+    const wrapper = shallow(<ToolSlotLayer {...p} />);
     const tools = wrapper.find("g").first();
     await tools.simulate("click");
     expect(mockHistory).toHaveBeenCalledWith("/app/tools");
@@ -64,7 +63,7 @@ describe("<ToolSlotLayer/>", () => {
   it("doesn't navigate to tools page", async () => {
     mockPath = "/app/designer/plants/1";
     const p = fakeProps();
-    const wrapper = shallow(<ToolSlotLayer {...p } />);
+    const wrapper = shallow(<ToolSlotLayer {...p} />);
     const tools = wrapper.find("g").first();
     await tools.simulate("click");
     expect(mockHistory).not.toHaveBeenCalled();
@@ -74,7 +73,7 @@ describe("<ToolSlotLayer/>", () => {
   it("is in non-clickable mode", () => {
     mockPath = "/app/designer/plants/select";
     const p = fakeProps();
-    const wrapper = shallow(<ToolSlotLayer {...p } />);
+    const wrapper = shallow(<ToolSlotLayer {...p} />);
     expect(wrapper.find("g").props().style)
       .toEqual({ pointerEvents: "none" });
   });

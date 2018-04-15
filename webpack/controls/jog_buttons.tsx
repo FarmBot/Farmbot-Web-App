@@ -5,9 +5,15 @@ import { JogMovementControlsProps } from "./interfaces";
 import { getDevice } from "../device";
 import { buildDirectionProps } from "./direction_axes_props";
 
+const DEFAULT_STEP_SIZE = 100;
+
 export function JogButtons(props: JogMovementControlsProps) {
+  const { stepSize, xySwap, arduinoBusy } = props;
   const directionAxesProps = buildDirectionProps(props);
-  return <table className="jog-table" style={{ border: 0 }}>
+  const rightLeft = xySwap ? "y" : "x";
+  const upDown = xySwap ? "x" : "y";
+
+  return <table className="jog-table">
     <tbody>
       <tr>
         <td>
@@ -19,11 +25,11 @@ export function JogButtons(props: JogMovementControlsProps) {
         <td />
         <td>
           <DirectionButton
-            axis="y"
+            axis={upDown}
             direction="up"
-            directionAxisProps={directionAxesProps.y}
-            steps={props.bot.stepSize || 1000}
-            disabled={props.disabled} />
+            directionAxisProps={directionAxesProps[upDown]}
+            steps={stepSize || DEFAULT_STEP_SIZE}
+            disabled={arduinoBusy} />
         </td>
         <td />
         <td />
@@ -32,8 +38,8 @@ export function JogButtons(props: JogMovementControlsProps) {
             axis="z"
             direction="up"
             directionAxisProps={directionAxesProps.z}
-            steps={props.bot.stepSize || 1000}
-            disabled={props.disabled} />
+            steps={stepSize || DEFAULT_STEP_SIZE}
+            disabled={arduinoBusy} />
         </td>
       </tr>
       <tr>
@@ -41,32 +47,32 @@ export function JogButtons(props: JogMovementControlsProps) {
           <button
             className="i fa fa-home arrow-button fb-button"
             onClick={() => homeAll(100)}
-            disabled={props.disabled || false} />
+            disabled={arduinoBusy || false} />
         </td>
         <td />
         <td>
           <DirectionButton
-            axis="x"
+            axis={rightLeft}
             direction="left"
-            directionAxisProps={directionAxesProps.x}
-            steps={props.bot.stepSize || 1000}
-            disabled={props.disabled} />
+            directionAxisProps={directionAxesProps[rightLeft]}
+            steps={stepSize || DEFAULT_STEP_SIZE}
+            disabled={arduinoBusy} />
         </td>
         <td>
           <DirectionButton
-            axis="y"
+            axis={upDown}
             direction="down"
-            directionAxisProps={directionAxesProps.y}
-            steps={props.bot.stepSize || 1000}
-            disabled={props.disabled} />
+            directionAxisProps={directionAxesProps[upDown]}
+            steps={stepSize || DEFAULT_STEP_SIZE}
+            disabled={arduinoBusy} />
         </td>
         <td>
           <DirectionButton
-            axis="x"
+            axis={rightLeft}
             direction="right"
-            directionAxisProps={directionAxesProps.x}
-            steps={props.bot.stepSize || 1000}
-            disabled={props.disabled} />
+            directionAxisProps={directionAxesProps[rightLeft]}
+            steps={stepSize || DEFAULT_STEP_SIZE}
+            disabled={arduinoBusy} />
         </td>
         <td />
         <td>
@@ -74,8 +80,8 @@ export function JogButtons(props: JogMovementControlsProps) {
             axis="z"
             direction="down"
             directionAxisProps={directionAxesProps.z}
-            steps={props.bot.stepSize || 1000}
-            disabled={props.disabled} />
+            steps={stepSize || DEFAULT_STEP_SIZE}
+            disabled={arduinoBusy} />
         </td>
       </tr>
       <tr>

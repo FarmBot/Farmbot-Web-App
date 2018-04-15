@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "2.5.0"
+ruby "2.5.1"
 
 gem "rails"
 gem "thin"
@@ -27,8 +27,9 @@ gem "request_store"
 gem "secure_headers"
 gem "valid_url"
 gem "font-awesome-rails"
-gem "discard", "~> 1.0"
+gem "discard"
 gem "scenic"
+gem "bullet"
 
 group :development, :test do
   gem "lol_dba"

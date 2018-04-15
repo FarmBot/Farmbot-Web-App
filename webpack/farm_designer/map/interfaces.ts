@@ -45,6 +45,7 @@ export interface GardenMapLegendProps {
 export type MapTransformProps = {
   quadrant: BotOriginQuadrant,
   gridSize: AxisNumberProperty
+  xySwap: boolean;
 };
 
 export interface GardenPlantProps {

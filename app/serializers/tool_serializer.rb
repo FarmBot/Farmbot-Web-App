@@ -2,7 +2,8 @@ class ToolSerializer < ActiveModel::Serializer
   attributes :id, :name, :status
 
   def status
-    active = ToolSlot.where(tool_id: object.id).any?
-    active ? "active" : "inactive"
+    # The attribute `tool_slot_id` is added via a special SQL query.
+    # SEE: ToolsController::INDEX_QUERY
+    object[:tool_slot_id] ? "active" : "inactive"
   end
 end

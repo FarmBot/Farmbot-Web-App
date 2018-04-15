@@ -1,55 +1,27 @@
 import * as React from "react";
 
 import { DirectionButton } from "./controls/direction_button";
-import { Xyz, BotPosition } from "./devices/interfaces";
-import { McuParams } from "farmbot";
 import { getDevice } from "./device";
+import { buildDirectionProps } from "./controls/direction_axes_props";
+import { ControlsPopupProps } from "./controls/interfaces";
 
 interface State {
   isOpen: boolean;
-  stepSize: number;
 }
 
-interface Props {
-  dispatch: Function;
-  axisInversion: Record<Xyz, boolean>;
-  botPosition: BotPosition;
-  mcuParams: McuParams;
-}
-
-export class ControlsPopup extends React.Component<Props, Partial<State>> {
-
-  state: State = {
-    isOpen: false,
-    stepSize: 100
-  };
+export class ControlsPopup
+  extends React.Component<ControlsPopupProps, Partial<State>> {
+  state: State = { isOpen: false };
 
   private toggle = (property: keyof State) => () =>
     this.setState({ [property]: !this.state[property] });
 
   public render() {
     const isOpen = this.state.isOpen ? "open" : "";
-    const { mcuParams } = this.props;
-    const directionAxesProps = {
-      x: {
-        isInverted: this.props.axisInversion.x,
-        stopAtHome: !!mcuParams.movement_stop_at_home_x,
-        stopAtMax: !!mcuParams.movement_stop_at_max_x,
-        axisLength: (mcuParams.movement_axis_nr_steps_x || 0)
-          / (mcuParams.movement_step_per_mm_x || 1),
-        negativeOnly: !!mcuParams.movement_home_up_x,
-        position: this.props.botPosition.x
-      },
-      y: {
-        isInverted: this.props.axisInversion.y,
-        stopAtHome: !!mcuParams.movement_stop_at_home_y,
-        stopAtMax: !!mcuParams.movement_stop_at_max_y,
-        axisLength: (mcuParams.movement_axis_nr_steps_y || 0)
-          / (mcuParams.movement_step_per_mm_y || 1),
-        negativeOnly: !!mcuParams.movement_home_up_y,
-        position: this.props.botPosition.y
-      }
-    };
+    const { stepSize, xySwap, arduinoBusy } = this.props;
+    const directionAxesProps = buildDirectionProps(this.props);
+    const rightLeft = xySwap ? "y" : "x";
+    const upDown = xySwap ? "x" : "y";
     return <div
       className={"controls-popup " + isOpen}>
       <i className="fa fa-crosshairs"
@@ -57,29 +29,29 @@ export class ControlsPopup extends React.Component<Props, Partial<State>> {
       <div className="controls-popup-menu-outer">
         <div className="controls-popup-menu-inner">
           <DirectionButton
-            axis={"x"}
+            axis={rightLeft}
             direction="right"
-            directionAxisProps={directionAxesProps.x}
-            steps={this.state.stepSize}
-            disabled={!isOpen} />
+            directionAxisProps={directionAxesProps[rightLeft]}
+            steps={stepSize}
+            disabled={!isOpen || arduinoBusy} />
           <DirectionButton
-            axis={"y"}
+            axis={upDown}
             direction="up"
-            directionAxisProps={directionAxesProps.y}
-            steps={this.state.stepSize}
-            disabled={!isOpen} />
+            directionAxisProps={directionAxesProps[upDown]}
+            steps={stepSize}
+            disabled={!isOpen || arduinoBusy} />
           <DirectionButton
-            axis={"y"}
+            axis={upDown}
             direction="down"
-            directionAxisProps={directionAxesProps.y}
-            steps={this.state.stepSize}
-            disabled={!isOpen} />
+            directionAxisProps={directionAxesProps[upDown]}
+            steps={stepSize}
+            disabled={!isOpen || arduinoBusy} />
           <DirectionButton
-            axis={"x"}
+            axis={rightLeft}
             direction="left"
-            directionAxisProps={directionAxesProps.x}
-            steps={this.state.stepSize}
-            disabled={!isOpen} />
+            directionAxisProps={directionAxesProps[rightLeft]}
+            steps={stepSize}
+            disabled={!isOpen || arduinoBusy} />
           <button
             className="i fa fa-camera arrow-button fb-button brown"
             onClick={() => getDevice().takePhoto().catch(() => { })} />

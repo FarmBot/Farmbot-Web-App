@@ -55,7 +55,7 @@ export function DragHelpers(props: DragHelpersProps) {
   const {
     dragging, plant, zoomLvl, activeDragXY, mapTransformProps, plantAreaOffset
   } = props;
-  const mapSize = getMapSize(mapTransformProps.gridSize, plantAreaOffset);
+  const mapSize = getMapSize(mapTransformProps, plantAreaOffset);
   const { radius, x, y } = plant.body;
 
   const scale = 1 + Math.round(15 * (1.8 - zoomLvl)) / 10; // scale factor
@@ -71,8 +71,8 @@ export function DragHelpers(props: DragHelpersProps) {
       </text>}
     {dragging && // Active plant
       <g id="long-crosshair">
-        <rect x={qx - 0.5} y={-plantAreaOffset.y} width={1} height={mapSize.y} />
-        <rect x={-plantAreaOffset.x} y={qy - 0.5} width={mapSize.x} height={1} />
+        <rect x={qx - 0.5} y={-plantAreaOffset.y} width={1} height={mapSize.h} />
+        <rect x={-plantAreaOffset.x} y={qy - 0.5} width={mapSize.w} height={1} />
       </g>}
     {dragging && // Active plant
       <g id="short-crosshair">
