@@ -8,4 +8,8 @@ class Tool < ApplicationRecord
   validates  :name,   uniqueness: { scope: :device }
 
   IN_USE = "Tool in use by the following sequences: %s"
+
+  def fancy_name
+    "tool #{name.inspect}"
+  end
 end

@@ -4,7 +4,7 @@ describe "Point deletion edge cases" do
   let(:device) { FactoryBot.create(:device) }
 
   it "cant delete toolslots that have a tool that are in use by sequences" do
-    tool      = FactoryBot.create(:tool, device: device, name: "tool")
+    tool      = FactoryBot.create(:tool, device: device, name: "foo tool")
     tool_slot = FactoryBot.create(:tool_slot,
                                   device: device,
                                   tool_id: tool.id,
@@ -24,9 +24,10 @@ describe "Point deletion edge cases" do
             offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0} }
           },
         }])
-    result = Points::Destroy.run(point_ids: [tool_slot.id], device: device)
-    errors = result.errors.message_list
-    expect(errors)
-      .to include(Points::Destroy::STILL_IN_USE % ["sequence", "tool"])
+    result   = Points::Destroy.run(point_ids: [tool_slot.id], device: device)
+    errors   = result.errors.message_list
+    expected = "Could not delete the following point(s): foo tool. They are" \
+               " in use by the following sequence(s): sequence"
+    expect(errors).to include(expected)
   end
 end
