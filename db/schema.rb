@@ -528,7 +528,7 @@ ActiveRecord::Schema.define(version: 20180413145332) do
       SELECT sequences.id AS sequence_id,
       ( SELECT count(*) AS count
              FROM edge_nodes
-            WHERE (((edge_nodes.kind)::text = 'sequence_id'::text) AND ((edge_nodes.value)::integer = sequences.id))) AS edge_node_count,
+            WHERE ((edge_nodes.sequence_id = sequences.id) AND ((edge_nodes.kind)::text = 'sequence_id'::text) AND ((edge_nodes.value)::text = (sequences.id)::text))) AS edge_node_count,
       ( SELECT count(*) AS count
              FROM farm_events
             WHERE ((farm_events.executable_id = sequences.id) AND ((farm_events.executable_type)::text = 'Sequence'::text))) AS farm_event_count,
