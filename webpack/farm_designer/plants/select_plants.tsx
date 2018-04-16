@@ -69,8 +69,10 @@ export class SelectPlants
     if (plantUUIDs &&
       confirm(`Are you sure you want to delete ${plantUUIDs.length} plants?`)) {
       plantUUIDs.map(uuid => {
-        this.props.dispatch(destroy(uuid, true))
-          .catch(() => error(t("Could not delete plant."), t("Error")));
+        this
+          .props
+          .dispatch(destroy(uuid, true))
+          .then(() => { }, () => { });
       });
       history.push("/app/designer/plants");
     }
