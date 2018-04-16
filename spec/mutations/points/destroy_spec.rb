@@ -134,10 +134,6 @@ describe Points::Destroy do
     expect(result[:point]).to eq(expected)
   end
 
-  it "has a nicely formatted deletion error messages" do
-
-  end
-
   it "performs a hard (real) delete" do
     points = FactoryBot.create_list(:generic_pointer, 3, device: device)
     ids    = points.pluck(:id)
