@@ -37,8 +37,9 @@ describe Points::Destroy do
     expect(Point.count).to eq(before)
     expect(result.errors.message_list.count).to eq(1)
     expect(result.errors.message_list.first).to include(params[:name])
-    expected =  "The sequence 'Test Case I' is still using the following "\
-                "points: point at"
+    coords = [:x,:y,:z].map{|c|points.first[c]}.join(", ")
+    expected =  "Could not delete the following point(s): point at (#{coords}" \
+                "). They are in use by the following sequence(s): Test Case I"
     expect(result.errors.message_list.first).to include(expected)
   end
 
@@ -47,8 +48,8 @@ describe Points::Destroy do
     point_ids = [s.tool_slot.id]
     result = Points::Destroy.run(point_ids: point_ids, device: s.device)
     expect(result.success?).to be(false)
-    expected = "The sequence 'Scenario Sequence' is still using the following "\
-                "points: Scenario Tool"
+    expected  = "Could not delete the following point(s): Scenario Tool. They "\
+                "are in use by the following sequence(s): Scenario Sequence"
     expect(result.errors.message_list).to include(expected)
   end
 
@@ -89,14 +90,50 @@ describe Points::Destroy do
                                           },
                                         ])
 
+                                        sequence_a  = Sequences::Create.run!(device: device,
+                                        name: "Sequence B",
+                                        body: [
+                                          {
+                                            kind: "move_absolute",
+                                            args: {
+                                              location: {
+                                                kind: "point",
+                                                args: {
+                                                  pointer_id:   plant.id,
+                                                  pointer_type: "Plant"
+                                                }
+                                              },
+                                              speed: 100,
+                                              offset: empty_point
+                                            }
+                                          },
+                                          {
+                                            kind: "move_absolute",
+                                            args: {
+                                              location: {
+                                                kind: "point",
+                                                args: {
+                                                  pointer_id:   plant.id,
+                                                  pointer_type: "GenericPointer"
+                                                }
+                                              },
+                                              speed: 100,
+                                              offset: empty_point
+                                            }
+                                          },
+                                        ])
+
     result = Points::Destroy
       .run(point_ids: [point.id, plant.id], device: device)
       .errors
       .message
-      expect(result[:point])
-        .to eq("The sequence 'Sequence A' is still using the following points:"\
-               " plant at (0.0, 1.0, 0.0)")
+
+    expected =  "Could not delete the following point(s): plant at (0.0, 1.0,"\
+                " 0.0). They are in use by the following sequence(s): Sequence"\
+                " A, Sequence B"
+    expect(result[:point]).to eq(expected)
   end
+
   it "performs a hard (real) delete" do
     points = FactoryBot.create_list(:generic_pointer, 3, device: device)
     ids    = points.pluck(:id)
