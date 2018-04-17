@@ -14,8 +14,6 @@ class BatchQueue {
 
   work = () => {
     this.queue.map(fn => fn());
-    // NOTE: If we hit perf issues still, we can set a BATCH_SIZE where we never
-    //       exec more than X jobs per pass. YAGNI?
     this.clear();
   }
 
