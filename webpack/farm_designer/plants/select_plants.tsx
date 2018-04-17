@@ -7,7 +7,6 @@ import { TaggedPlantPointer } from "../../resources/tagged_resources";
 import { selectAllPlantPointers } from "../../resources/selectors";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { destroy } from "../../api/crud";
-import { error } from "farmbot-toastr";
 import { BackArrow } from "../../ui/index";
 import { unselectPlant } from "../actions";
 import { Actions } from "../../constants";

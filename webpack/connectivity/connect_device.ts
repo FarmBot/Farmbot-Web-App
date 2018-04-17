@@ -137,7 +137,9 @@ const LEGACY_META_KEY_NAMES: (keyof Log)[] = [
 ];
 
 function legacyKeyTransformation(log: Log, key: keyof Log) {
-  log[key] = log[key] || _.get(log, ["meta", key], undefined);
+  const before = log[key];
+  // You don't want to use || here, trust me. -RC
+  log[key] = !_.isUndefined(before) ? before : _.get(log, ["meta", key], undefined);
 }
 
 export const onLogs = (dispatch: Function, getState: GetState) => throttle((msg: Log) => {
