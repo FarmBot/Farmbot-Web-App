@@ -91,18 +91,11 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     return this.props.children || fallback;
   }
 
-  render() {
-    /**
-     * Kinda nasty, similar to the old q="NoTab" we used to determine no panels.
-     * This one just makes sure the designer can click it's panel tabs without
-     * the other headers getting in the way. There's more re-usability in this.
-     */
-    if (history.getCurrentLocation().pathname === "/app/designer") {
-      document.body.classList.add("designer-tab");
-    } else {
-      document.body.classList.remove("designer-tab");
-    }
+  get mapOnly() {
+    return history.getCurrentLocation().pathname === "/app/designer";
+  }
 
+  render() {
     const {
       legend_menu_open,
       show_plants,
@@ -133,6 +126,9 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       : 1;
     const imageAgeInfo = { newestDate, toOldest };
 
+    const displayDesignerNav = this.mapOnly ? "" : "hidden";
+    const displayPanel = this.mapOnly ? "hidden" : "";
+
     return <div className="farm-designer">
 
       <GardenMapLegend
@@ -151,7 +147,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         getConfigValue={this.props.getConfigValue}
         imageAgeInfo={imageAgeInfo} />
 
-      <div className="panel-header gray-panel designer-nav">
+      <div className={`panel-header gray-panel ${displayDesignerNav}`}>
         <div className="panel-tabs">
           <Link to="/app/designer" className={designerTabClasses.join(" ")}>
             {t("Designer")}
@@ -164,12 +160,12 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           </Link>
         </div>
       </div>
-      <div className="farm-designer-panels">
+      <div className={`farm-designer-panels ${displayPanel}`}>
         {this.childComponent(this.props)}
       </div>
 
       <div
-        className="farm-designer-map"
+        className={`farm-designer-map ${this.mapOnly ? "" : "panel-open"}`}
         style={{ zoom: zoom_level }}>
         <GardenMap
           showPoints={show_points}

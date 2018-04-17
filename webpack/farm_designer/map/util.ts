@@ -49,7 +49,10 @@ export function round(num: number) {
  */
 
 /** Controlled by .farm-designer-map padding x10 */
-const mapPadding = { left: 318, top: 110 };
+const paddingWhen = {
+  panelClosed: { left: 20, top: 150 },
+  panelOpen: { left: 318, top: 110 }
+};
 
 /** "x" => "left" and "y" => "top" */
 const leftOrTop: Record<"x" | "y", "top" | "left"> = { x: "left", y: "top" };
@@ -62,14 +65,18 @@ export interface ScreenToGardenParams {
   zoomLvl: number;
   mapTransformProps: MapTransformProps;
   gridOffset: AxisNumberProperty;
+  mapOnly: boolean;
 }
 
 /** Transform screen coordinates into garden coordinates  */
 export function translateScreenToGarden(
   params: ScreenToGardenParams
 ): XYCoordinate {
-  const { page, scroll, zoomLvl, mapTransformProps, gridOffset } = params;
+  const {
+    page, scroll, zoomLvl, mapTransformProps, gridOffset, mapOnly
+  } = params;
   const { xySwap } = mapTransformProps;
+  const mapPadding = mapOnly ? paddingWhen.panelClosed : paddingWhen.panelOpen;
   const screenXY = page;
   const mapXY = ["x", "y"].reduce<XYCoordinate>(
     (result: XYCoordinate, axis: "x" | "y") => {
