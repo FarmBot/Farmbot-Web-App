@@ -39,9 +39,9 @@ import {
   onSent,
   onOnline,
   onMalformed,
-  onLogs,
   speakLogAloud
 } from "../../connect_device";
+import { onLogs } from "../../log_handlers";
 import { Actions, Content } from "../../../constants";
 import { Log } from "../../../interfaces";
 import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot } from "farmbot";

@@ -9,7 +9,6 @@ import { GetState, ReduxAction } from "../redux/interfaces";
 import { Content, Actions } from "../constants";
 import { t } from "i18next";
 import {
-  isLog,
   EXPECTED_MAJOR,
   EXPECTED_MINOR,
   commandOK,
@@ -24,7 +23,7 @@ import { talk } from "browser-speech";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
-import * as _ from "lodash";
+import { onLogs } from "./log_handlers";
 
 export const TITLE = "New message from bot";
 const THROTTLE_MS = 600;
@@ -125,41 +124,6 @@ type Client = { connected?: boolean };
 
 export const onSent = (client: Client) => () => !!client.connected ?
   dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
-
-const LEGACY_META_KEY_NAMES: (keyof Log)[] = [
-  "type",
-  "x",
-  "y",
-  "z",
-  "verbosity",
-  "major_version",
-  "minor_version"
-];
-
-function legacyKeyTransformation(log: Log, key: keyof Log) {
-  const before = log[key];
-  // You don't want to use || here, trust me. -RC
-  log[key] = !_.isUndefined(before) ? before : _.get(log, ["meta", key], undefined);
-}
-
-export const onLogs = (dispatch: Function, getState: GetState) => throttle((msg: Log) => {
-  bothUp();
-  if (isLog(msg)) {
-    LEGACY_META_KEY_NAMES.map(key => legacyKeyTransformation(msg, key));
-    actOnChannelName(msg, "toast", showLogOnScreen);
-    actOnChannelName(msg, "espeak", speakLogAloud(getState));
-    dispatch(initLog(msg));
-    // CORRECT SOLUTION: Give each device its own topic for publishing
-    //                   MQTT last will message.
-    // FAST SOLUTION:    We would need to re-publish FBJS and FBOS to
-    //                   change topic structure. Instead, we will use
-    //                   inband signalling (for now).
-    // TODO:             Make a `bot/device_123/offline` channel.
-    const died =
-      msg.message.includes("is offline") && msg.type === "error";
-    died && dispatchNetworkDown("bot.mqtt");
-  }
-}, THROTTLE_MS);
 
 export function onMalformed() {
   bothUp();
