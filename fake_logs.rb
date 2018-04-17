@@ -29,7 +29,7 @@ end
 
 loop do
   puts "Sending..."
-  10.times { ping(0.1) }
+  10.times { ping(0.01) }
   puts "Enter to send again, y to exit."
   exit if gets.chomp.downcase == "y"
 end
