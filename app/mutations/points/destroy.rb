@@ -1,7 +1,6 @@
 module Points
   class Destroy < Mutations::Command
-    REASON        = "Could not delete the following item(s): "
-    STILL_IN_USE  = "%s because they are in use by the following sequence(s): %s."
+    STILL_IN_USE  = "Could not delete the following item(s): %s. Item(s) are in use by the following sequence(s): %s."
 
     required do
       model :device, class: Device
@@ -30,7 +29,7 @@ module Points
         sequences = errors[S].sort.uniq.join(", ")
         errors    = STILL_IN_USE % [points, sequences]
 
-        add_error :point, :in_use, errors
+        add_error :whoops, :in_use, errors
       end
     end
 
