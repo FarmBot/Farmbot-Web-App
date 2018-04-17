@@ -11,7 +11,6 @@ export interface AxiosErrorResponse {
 }
 
 const mapper = (v: string, k: string) => {
-  console.dir([k, v]);
   // "Reason: Explanation lorem ipsum dolor ipsum."
   const reason = _.capitalize(("" + k).split("_").join(" "));
   const explanation = v.toString();
