@@ -21,8 +21,9 @@ export const NavLinks = (props: NavLinksProps) => {
     <div className="nav-links">
       {links.map(link => {
         const isActive = (currPageSlug === link.slug) ? "active" : "";
+        const childPath = link.slug === "designer" ? "/plants" : "";
         return <Link
-          to={"/app/" + link.slug}
+          to={"/app/" + link.slug + childPath}
           className={`${isActive}`}
           key={link.slug}
           onClick={props.close("mobileMenuOpen")}>

@@ -26,6 +26,7 @@ describe("translateScreenToGarden()", () => {
       scroll: { left: 10, top: 20 },
       zoomLvl: 1,
       gridOffset: { x: 30, y: 40 },
+      mapOnly: false,
     });
     expect(result).toEqual({ x: 180, y: 80 });
   });
@@ -37,6 +38,7 @@ describe("translateScreenToGarden()", () => {
       scroll: { left: 10, top: 20 },
       zoomLvl: 0.33,
       gridOffset: { x: 30, y: 40 },
+      mapOnly: false,
     });
     expect(result).toEqual({ x: 2470, y: 840 });
   });
@@ -48,37 +50,52 @@ describe("translateScreenToGarden()", () => {
       scroll: { left: 10, top: 20 },
       zoomLvl: 1.5,
       gridOffset: { x: 30, y: 40 },
+      mapOnly: false,
     });
     expect(result).toEqual({ x: 520, y: 150 });
   });
 
   it("translates screen coords to garden coords: other case", () => {
-    const fakeMTP = fakeMapTransformProps();
-    fakeMTP.quadrant = 3;
-    fakeMTP.gridSize = { x: 300, y: 150 };
+    const mapTransformProps = fakeMapTransformProps();
+    mapTransformProps.quadrant = 3;
+    mapTransformProps.gridSize = { x: 300, y: 150 };
     const result = translateScreenToGarden({
-      mapTransformProps: fakeMTP,
+      mapTransformProps,
       page: { x: 332, y: 132 },
       scroll: { left: 10, top: 20 },
       zoomLvl: 0.75,
       gridOffset: { x: 30, y: 40 },
+      mapOnly: false,
     });
     expect(result).toEqual({ x: 0, y: 130 });
   });
 
   it("translates screen coords to garden coords: swapped X&Y", () => {
-    const fakeMTP = fakeMapTransformProps();
-    fakeMTP.xySwap = true;
-    fakeMTP.quadrant = 3;
-    fakeMTP.gridSize = { x: 150, y: 300 };
+    const mapTransformProps = fakeMapTransformProps();
+    mapTransformProps.xySwap = true;
+    mapTransformProps.quadrant = 3;
+    mapTransformProps.gridSize = { x: 150, y: 300 };
     const result = translateScreenToGarden({
-      mapTransformProps: fakeMTP,
+      mapTransformProps,
       page: { x: 332, y: 132 },
       scroll: { left: 10, top: 20 },
       zoomLvl: 0.75,
       gridOffset: { x: 30, y: 40 },
+      mapOnly: false,
     });
     expect(result).toEqual({ x: 130, y: 0 });
+  });
+
+  it("translates screen coords to garden coords: panel closed", () => {
+    const result = translateScreenToGarden({
+      mapTransformProps: fakeMapTransformProps(),
+      page: { x: 520, y: 212 },
+      scroll: { left: 10, top: 20 },
+      zoomLvl: 1,
+      gridOffset: { x: 30, y: 40 },
+      mapOnly: true,
+    });
+    expect(result).toEqual({ x: 480, y: 40 });
   });
 });
 
