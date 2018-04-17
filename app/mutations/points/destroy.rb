@@ -1,6 +1,7 @@
 module Points
   class Destroy < Mutations::Command
-    STILL_IN_USE  = "Could not delete the following item(s): %s. Item(s) are in use by the following sequence(s): %s."
+    STILL_IN_USE  = "Could not delete the following item(s): %s. Item(s) are "\
+                    "in use by the following sequence(s): %s."
 
     required do
       model :device, class: Device
