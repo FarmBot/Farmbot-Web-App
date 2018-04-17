@@ -1,7 +1,11 @@
+.panel-header,
 .farm-designer-panels {
   width: 30rem;
   position: fixed;
   top: 8.9rem;
+}
+
+.farm-designer-panels {
   bottom: 0;
   z-index: 1;
   .panel-container {

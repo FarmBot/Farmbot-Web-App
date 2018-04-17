@@ -2,6 +2,14 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
+let mockPath = "/app/designer/plants";
+jest.mock("../../history", () => ({
+  history: {
+    getCurrentLocation: jest.fn(() => { return { pathname: mockPath }; }),
+  },
+  getPathArray: jest.fn(() => { return mockPath.split("/"); }),
+}));
+
 import * as React from "react";
 import { FarmDesigner } from "../index";
 import { mount } from "enzyme";
@@ -86,8 +94,22 @@ describe("<FarmDesigner/>", () => {
   });
 
   it("renders nav titles", () => {
+    mockPath = "/app/designer/plants";
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
     ["Designer", "Plants", "Farm Events"].map(string =>
       expect(wrapper.text()).toContain(string));
+    expect(wrapper.find(".panel-header").first().hasClass("hidden")).toBeTruthy();
+    expect(wrapper.find(".farm-designer-panels").hasClass("hidden")).toBeFalsy();
+    expect(wrapper.find(".farm-designer-map").hasClass("panel-open")).toBeTruthy();
+  });
+
+  it("hides panel", () => {
+    mockPath = "/app/designer";
+    const wrapper = mount(<FarmDesigner {...fakeProps()} />);
+    ["Designer", "Plants", "Farm Events"].map(string =>
+      expect(wrapper.text()).toContain(string));
+    expect(wrapper.find(".panel-header").first().hasClass("hidden")).toBeFalsy();
+    expect(wrapper.find(".farm-designer-panels").hasClass("hidden")).toBeTruthy();
+    expect(wrapper.find(".farm-designer-map").hasClass("panel-open")).toBeFalsy();
   });
 });
