@@ -10,6 +10,7 @@ import { GetState } from "../redux/interfaces";
 import { dispatchNetworkDown } from ".";
 import { Log } from "../interfaces";
 import * as _ from "lodash";
+import { globalQueue } from "./batch_queue";
 
 const LEGACY_META_KEY_NAMES: (keyof Log)[] = [
   "type",
@@ -28,25 +29,6 @@ function legacyKeyTransformation(log: Log,
   log[key] = !_.isUndefined(before) ? before : _.get(log, ["meta", key], undefined);
 }
 
-class BatchQueue {
-  private queue: Function[] = [];
-  private timerId = 0;
-
-  constructor(workRate = 600) {
-    this.timerId = window.setInterval(this.work, workRate);
-  }
-
-  work = () => {
-    this.queue.map(fn => fn());
-    this.clear();
-  }
-  push = (job: Function) => this.queue.push(job);
-  clear = () => this.queue = [];
-  destroy = () => window.clearInterval(this.timerId);
-}
-
-const q = new BatchQueue(600);
-
 export const onLogs =
   (dispatch: Function, getState: GetState) => (msg: Log) => {
     bothUp();
@@ -54,7 +36,7 @@ export const onLogs =
       LEGACY_META_KEY_NAMES.map(key => legacyKeyTransformation(msg, key));
       actOnChannelName(msg, "toast", showLogOnScreen);
       actOnChannelName(msg, "espeak", speakLogAloud(getState));
-      q.push(() => {
+      globalQueue.push(() => {
         dispatch(initLog(msg));
         // CORRECT SOLUTION: Give each device its own topic for publishing
         //                   MQTT last will message.

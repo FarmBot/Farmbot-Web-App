@@ -2,7 +2,7 @@ import { fetchNewDevice, getDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "../interfaces";
 import { ALLOWED_CHANNEL_NAMES, Farmbot, BotStateTree } from "farmbot";
-import { throttle, noop } from "lodash";
+import { noop } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
@@ -24,9 +24,9 @@ import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
 import { onLogs } from "./log_handlers";
+import { globalQueue } from "./batch_queue";
 
 export const TITLE = "New message from bot";
-const THROTTLE_MS = 600;
 /** TODO: This ought to be stored in Redux. It is here because of historical
  * reasons. Feel free to factor out when time allows. -RC, 10 OCT 17 */
 export const HACKY_FLAGS = {
@@ -105,20 +105,22 @@ export const changeLastClientConnected = (bot: Farmbot) => () => {
   }).catch(() => { });
 };
 
-const onStatus = (dispatch: Function, getState: GetState) =>
-  (throttle(function (msg: BotStateTree) {
-    bothUp();
-    dispatch(incomingStatus(msg));
-    if (HACKY_FLAGS.needVersionCheck) {
-      const IS_OK = versionOK(getState()
-        .bot
-        .hardware
-        .informational_settings
-        .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
-      if (!IS_OK) { badVersion(); }
-      HACKY_FLAGS.needVersionCheck = false;
-    }
-  }, THROTTLE_MS));
+const onStatus =
+  (dispatch: Function, getState: GetState) => (msg: BotStateTree) => {
+    globalQueue.push(() => {
+      bothUp();
+      dispatch(incomingStatus(msg));
+      if (HACKY_FLAGS.needVersionCheck) {
+        const IS_OK = versionOK(getState()
+          .bot
+          .hardware
+          .informational_settings
+          .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
+        if (!IS_OK) { badVersion(); }
+        HACKY_FLAGS.needVersionCheck = false;
+      }
+    });
+  };
 
 type Client = { connected?: boolean };
 
