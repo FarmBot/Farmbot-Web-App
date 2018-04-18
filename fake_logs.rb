@@ -9,7 +9,7 @@ $log = {
   patch_version: 1,
   message: "hey!!!",
   created_at: Time.now.to_i,
-  channels: [ ]
+  channels: ["email"]
 }
 
 $count = 0
@@ -29,7 +29,7 @@ end
 
 loop do
   puts "Sending..."
-  10.times { ping(0.01) }
+  5.times { ping(0.1) }
   puts "Enter to send again, y to exit."
   exit if gets.chomp.downcase == "y"
 end
