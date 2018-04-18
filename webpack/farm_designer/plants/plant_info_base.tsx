@@ -1,9 +1,7 @@
 import * as React from "react";
-import { t } from "i18next";
 import { EditPlantInfoProps, PlantOptions } from "../interfaces";
 import { history, getPathArray } from "../../history";
 import { destroy, edit, save } from "../../api/crud";
-import { error } from "farmbot-toastr";
 
 export abstract class PlantInfoBase extends
   React.Component<EditPlantInfoProps, {}> {
@@ -17,8 +15,7 @@ export abstract class PlantInfoBase extends
 
   destroy = (plantUUID: string) => {
     this.props.dispatch(destroy(plantUUID))
-      .then(() => history.push("/app/designer/plants"))
-      .catch(() => error(t("Could not delete plant."), t("Error")));
+      .then(() => history.push("/app/designer/plants"), () => { });
   }
 
   updatePlant = (plantUUID: string, update: PlantOptions) => {

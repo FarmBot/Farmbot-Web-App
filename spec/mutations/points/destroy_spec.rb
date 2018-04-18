@@ -37,9 +37,9 @@ describe Points::Destroy do
     expect(Point.count).to eq(before)
     expect(result.errors.message_list.count).to eq(1)
     expect(result.errors.message_list.first).to include(params[:name])
-    coords = [:x,:y,:z].map{|c|points.first[c]}.join(", ")
-    expected =  "Could not delete the following point(s): point at (#{coords}" \
-                "). They are in use by the following sequence(s): Test Case I"
+    coords   =  [:x, :y, :z].map{|c|points.first[c]}.join(", ")
+    expected =  "Could not delete the following item(s): point at (#{coords})."\
+                " Item(s) are in use by the following sequence(s): Test Case I."
     expect(result.errors.message_list.first).to include(expected)
   end
 
@@ -48,8 +48,9 @@ describe Points::Destroy do
     point_ids = [s.tool_slot.id]
     result = Points::Destroy.run(point_ids: point_ids, device: s.device)
     expect(result.success?).to be(false)
-    expected  = "Could not delete the following point(s): Scenario Tool. They "\
-                "are in use by the following sequence(s): Scenario Sequence"
+    expected  = "Could not delete the following item(s): Scenario Tool. "\
+                "Item(s) are in use by the following sequence(s): Scenario "\
+                "Sequence."
     expect(result.errors.message_list).to include(expected)
   end
 
@@ -127,11 +128,10 @@ describe Points::Destroy do
       .run(point_ids: [point.id, plant.id], device: device)
       .errors
       .message
-
-    expected =  "Could not delete the following point(s): plant at (0.0, 1.0,"\
-                " 0.0). They are in use by the following sequence(s): Sequence"\
-                " A, Sequence B"
-    expect(result[:point]).to eq(expected)
+    expected =  "Could not delete the following item(s): plant at (0.0, 1.0,"\
+                " 0.0). Item(s) are in use by the following sequence(s): "\
+                "Sequence A, Sequence B."
+    expect(result[:whoops]).to eq(expected)
   end
 
   it "performs a hard (real) delete" do

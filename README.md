@@ -134,7 +134,6 @@ $.ajax({
 });
 ```
 
-
 # Want to Help?
 
 [Low Hanging Fruit](https://github.com/FarmBot/Farmbot-Web-App/search?utf8=%E2%9C%93&q=todo). [Raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new?title=Question%20about%20a%20TODO) if you have any questions.
