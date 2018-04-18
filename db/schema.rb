@@ -302,13 +302,15 @@ ActiveRecord::Schema.define(version: 20180418205557) do
   end
 
   create_table "plant_templates", force: :cascade do |t|
+    t.bigint "garden_id", null: false
+    t.bigint "device_id", null: false
     t.float "radius", default: 25.0, null: false
     t.float "x", null: false
     t.float "y", null: false
     t.float "z", default: 0.0, null: false
-    t.bigint "garden_id", null: false
     t.string "name", default: "untitled", null: false
-    t.string "openfarm_slug", limit: 280, default: "50", null: false
+    t.string "openfarm_slug", limit: 280, default: "null", null: false
+    t.index ["device_id"], name: "index_plant_templates_on_device_id"
     t.index ["garden_id"], name: "index_plant_templates_on_garden_id"
   end
 
@@ -548,7 +550,7 @@ ActiveRecord::Schema.define(version: 20180418205557) do
       SELECT sequences.id AS sequence_id,
       ( SELECT count(*) AS count
              FROM edge_nodes
-            WHERE ((edge_nodes.sequence_id = sequences.id) AND ((edge_nodes.kind)::text = 'sequence_id'::text) AND ((edge_nodes.value)::text = (sequences.id)::text))) AS edge_node_count,
+            WHERE (((edge_nodes.kind)::text = 'sequence_id'::text) AND ((edge_nodes.value)::integer = sequences.id))) AS edge_node_count,
       ( SELECT count(*) AS count
              FROM farm_events
             WHERE ((farm_events.executable_id = sequences.id) AND ((farm_events.executable_type)::text = 'Sequence'::text))) AS farm_event_count,

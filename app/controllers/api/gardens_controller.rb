@@ -18,8 +18,12 @@ module Api
 
     private
 
+    def gardens
+      @gardens ||= current_device.gardens
+    end
+
     def garden
-      @garden ||= current_device.gardens.find(params[:id])
+      @garden ||= gardens.find(params[:id])
     end
   end
 end
