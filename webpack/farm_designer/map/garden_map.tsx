@@ -32,7 +32,7 @@ import { cachedCrop } from "../../open_farm/icons";
 import { AxisNumberProperty, MapTransformProps } from "./interfaces";
 import { SelectionBox, SelectionBoxData } from "./selection_box";
 import { Actions } from "../../constants";
-import { isNumber } from "lodash";
+import { isNumber, last } from "lodash";
 import { TargetCoordinate } from "./target_coordinate";
 import { DrawnPoint } from "./drawn_point";
 import { Bugs, showBugs } from "./easter_eggs/bugs";
@@ -119,6 +119,7 @@ export class GardenMap extends
         mapTransformProps: this.mapTransformProps,
         gridOffset: this.props.gridOffset,
         zoomLvl,
+        mapOnly: last(getPathArray()) === "designer",
       };
       return translateScreenToGarden(params);
     } else {

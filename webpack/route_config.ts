@@ -35,7 +35,6 @@ const controlsRoute: PlainRoute =
 
 export const designerRoutes: PlainRoute = {
   path: "app/designer",
-  onEnter: maybeReplaceDesignerModules,
   getComponent(_, cb) {
     import("./farm_designer/index")
       .then(module => cb(undefined, module.FarmDesigner))

@@ -4,16 +4,15 @@
   position: relative;
 }
 
-.designer-nav {
-  display: none;
-}
-
 .farm-designer-map {
   min-width: 100%;
   display: inline-block;
-  padding: 11rem 2rem 2rem 31.8rem; // at zoom = 1.0: 110px 20px 20px 318px
+  padding: 15rem 2rem 2rem 2rem; // at zoom = 1.0: 150px 20px 20px 20px
   height: 100%;
   overflow: auto;
+  &.panel-open {
+    padding: 11rem 2rem 2rem 31.8rem; // at zoom = 1.0: 110px 20px 20px 318px
+  }
 }
 
 .drop-area {

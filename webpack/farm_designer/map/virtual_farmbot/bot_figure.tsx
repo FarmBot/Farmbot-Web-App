@@ -52,8 +52,10 @@ export class BotFigure extends
         visibility={this.state.hovered ? "visible" : "hidden"}
         x={positionQ.qx}
         y={positionQ.qy}
-        dx={35}
-        dy={0}
+        dx={xySwap ? 0 : 40}
+        dy={xySwap ? 55 : 0}
+        dominantBaseline="central"
+        textAnchor={xySwap ? "middle" : "start"}
         fontSize={24}
         fill={Color.darkGray}>
         {botPositionLabel(position)}
