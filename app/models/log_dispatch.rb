@@ -14,13 +14,13 @@ class LogDispatch < ApplicationRecord
   end
 
   def self.send_routine_emails(log, device)
-    return unless (log["channels"] || []).include?("email")
+    return unless (log.channels || []).include?("email")
     self.create!(device: device, log: log)
     LogDeliveryMailer.log_digest(device).deliver_later
   end
 
   def self.send_fatal_emails(log, device)
-    return unless (log["channels"] || []).include?("fatal_email")
+    return unless (log.channels || []).include?("fatal_email")
     FatalErrorMailer.fatal_error(device, log).deliver_later
   end
 
