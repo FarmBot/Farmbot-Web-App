@@ -12,9 +12,10 @@ $log = {
   channels: ["email"]
 }
 
-$count = 0
-$device_ids = Device.all.pluck(:id)
+$count     = 0
+$device_id = Device.last.id
 
+LogDispatch.destroy_all
 Log.destroy_all
 
 ATTEMPT_LOG = { WORKS: 1, TRIGGERS_ERROR: 0.1 }
@@ -24,7 +25,7 @@ def ping(interval = 0)
   $count += 1
   puts "Log ##{$count}"
   $log[:message] = "Hey! #{$count}"
-  $device_ids.map { |id| Transport.amqp_send($log.to_json, id, "logs") }
+  Transport.amqp_send($log.to_json, $device_id, "logs")
 end
 
 loop do
