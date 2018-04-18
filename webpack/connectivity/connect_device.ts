@@ -2,7 +2,7 @@ import { fetchNewDevice, getDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "../interfaces";
 import { ALLOWED_CHANNEL_NAMES, Farmbot, BotStateTree } from "farmbot";
-import { noop } from "lodash";
+import { noop, throttle } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
@@ -104,23 +104,20 @@ export const changeLastClientConnected = (bot: Farmbot) => () => {
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
   }).catch(() => { });
 };
-
-const onStatus =
-  (dispatch: Function, getState: GetState) => (msg: BotStateTree) => {
-    globalQueue.push(() => {
-      bothUp();
-      dispatch(incomingStatus(msg));
-      if (HACKY_FLAGS.needVersionCheck) {
-        const IS_OK = versionOK(getState()
-          .bot
-          .hardware
-          .informational_settings
-          .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
-        if (!IS_OK) { badVersion(); }
-        HACKY_FLAGS.needVersionCheck = false;
-      }
-    });
-  };
+const onStatus = (dispatch: Function, getState: GetState) =>
+  (throttle(function (msg: BotStateTree) {
+    bothUp();
+    dispatch(incomingStatus(msg));
+    if (HACKY_FLAGS.needVersionCheck) {
+      const IS_OK = versionOK(getState()
+        .bot
+        .hardware
+        .informational_settings
+        .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
+      if (!IS_OK) { badVersion(); }
+      HACKY_FLAGS.needVersionCheck = false;
+    }
+  }, 600, { leading: false, trailing: true }));
 
 type Client = { connected?: boolean };
 
