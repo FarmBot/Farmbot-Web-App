@@ -24,7 +24,6 @@ import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
 import { onLogs } from "./log_handlers";
-import { globalQueue } from "./batch_queue";
 
 export const TITLE = "New message from bot";
 /** TODO: This ought to be stored in Redux. It is here because of historical
