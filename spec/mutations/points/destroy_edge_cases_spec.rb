@@ -26,8 +26,8 @@ describe "Point deletion edge cases" do
         }])
     result   = Points::Destroy.run(point_ids: [tool_slot.id], device: device)
     errors   = result.errors.message_list
-    expected = "Could not delete the following point(s): foo tool. They are" \
-               " in use by the following sequence(s): sequence"
+    expected = "Could not delete the following item(s): foo tool. Item(s) are "\
+               "in use by the following sequence(s): sequence."
     expect(errors).to include(expected)
   end
 end

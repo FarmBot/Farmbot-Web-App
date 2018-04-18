@@ -9,6 +9,7 @@ config/application.yml
 config/database.yml
 coverage
 erd.pdf
+erd_diagram.png
 latest_corpus.ts
 log/*.log
 mqtt/rabbitmq.config

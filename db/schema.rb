@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180413145332) do
+ActiveRecord::Schema.define(version: 20180417123713) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -491,6 +491,7 @@ ActiveRecord::Schema.define(version: 20180413145332) do
   add_foreign_key "pin_bindings", "devices"
   add_foreign_key "pin_bindings", "sequences"
   add_foreign_key "points", "devices"
+  add_foreign_key "points", "tools"
   add_foreign_key "primary_nodes", "sequences"
   add_foreign_key "sensor_readings", "devices"
   add_foreign_key "sensors", "devices"
@@ -528,7 +529,7 @@ ActiveRecord::Schema.define(version: 20180413145332) do
       SELECT sequences.id AS sequence_id,
       ( SELECT count(*) AS count
              FROM edge_nodes
-            WHERE (((edge_nodes.kind)::text = 'sequence_id'::text) AND ((edge_nodes.value)::integer = sequences.id))) AS edge_node_count,
+            WHERE ((edge_nodes.sequence_id = sequences.id) AND ((edge_nodes.kind)::text = 'sequence_id'::text) AND ((edge_nodes.value)::text = (sequences.id)::text))) AS edge_node_count,
       ( SELECT count(*) AS count
              FROM farm_events
             WHERE ((farm_events.executable_id = sequences.id) AND ((farm_events.executable_type)::text = 'Sequence'::text))) AS farm_event_count,
