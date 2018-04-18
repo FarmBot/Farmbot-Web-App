@@ -8,6 +8,7 @@ require "rails/all"
 Bundler.require(:default, Rails.env)
 module FarmBot
   class Application < Rails::Application
+    Delayed::Worker.max_attempts = 4
     config.after_initialize do
       Bullet.enable  = true
       Bullet.console = true

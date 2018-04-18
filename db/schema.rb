@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180417123713) do
+ActiveRecord::Schema.define(version: 20180418205557) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -201,6 +201,14 @@ ActiveRecord::Schema.define(version: 20180417123713) do
     t.index ["device_id"], name: "index_firmware_configs_on_device_id"
   end
 
+  create_table "gardens", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "device_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_gardens_on_device_id"
+  end
+
   create_table "global_configs", force: :cascade do |t|
     t.string "key"
     t.text "value"
@@ -291,6 +299,17 @@ ActiveRecord::Schema.define(version: 20180417123713) do
     t.datetime "updated_at", null: false
     t.index ["device_id"], name: "index_pin_bindings_on_device_id"
     t.index ["sequence_id"], name: "index_pin_bindings_on_sequence_id"
+  end
+
+  create_table "plant_templates", force: :cascade do |t|
+    t.float "radius", default: 25.0, null: false
+    t.float "x", null: false
+    t.float "y", null: false
+    t.float "z", default: 0.0, null: false
+    t.bigint "garden_id", null: false
+    t.string "name", default: "untitled", null: false
+    t.string "openfarm_slug", limit: 280, default: "50", null: false
+    t.index ["garden_id"], name: "index_plant_templates_on_garden_id"
   end
 
   create_table "points", id: :serial, force: :cascade do |t|
