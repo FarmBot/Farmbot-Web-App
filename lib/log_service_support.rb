@@ -1,10 +1,16 @@
 class LogService
+  # Determines if the log should be discarded (Eg: "fun"/"debug" logs do not
+  # go in the DB)
   def self.save?(log_as_ruby_hash)
     # TODO: Once we gt rid of legacy `log.meta` calls, this method can be
     # simplified.
-    h = (log_as_ruby_hash.is_a?(Hash) && log_as_ruby_hash) || {}
-    t = h.dig("meta", "type") || h.dig("type")
-    !!(t && !Log::DISCARD.include?(t))
+    is_a_hash      = log_as_ruby_hash.is_a?(Hash)
+    hash           = is_a_hash ? log_as_ruby_hash : {}
+    legacy_type    = hash.dig("meta", "type")
+    type           = legacy_type || hash.dig("type")
+    should_discard = Log::DISCARD.include?(type)
+
+    !should_discard
   end
 
   # Prevent logs table from growing out of proportion. For now, it is

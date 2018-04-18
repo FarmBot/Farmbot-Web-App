@@ -3,7 +3,7 @@ $log = {
   y: 0,
   x: 0,
   verbosity: 1,
-  type: "debug",
+  type: "info",
   major_version: 6,
   minor_version: 4,
   patch_version: 1,
