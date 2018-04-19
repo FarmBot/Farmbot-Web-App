@@ -33,6 +33,7 @@ describe("<FarmEventForm/>", () => {
     title: "title",
     timeOffset: 0,
     autoSyncEnabled: false,
+    allowRegimenBackscheduling: false,
   });
 
   function instance(p: EditFEProps) {
@@ -134,9 +135,24 @@ describe("<FarmEventForm/>", () => {
       "executable_type": "Regimen",
       "executable_id": "1",
       timeOffset: 0
-    });
+    }, { forceRegimensToMidnight: false });
     expect(result.time_unit).toEqual("never");
     expect(result.time_unit).not.toEqual("daily");
+  });
+
+  it("sets regimen start_time to `00:00` as needed", () => {
+    const result = recombine({
+      "startDate": "2017-08-01",
+      "startTime": "08:35",
+      "endDate": "2017-08-01",
+      "endTime": "08:33",
+      "repeat": "1",
+      "timeUnit": "daily",
+      "executable_type": "Regimen",
+      "executable_id": "1",
+      timeOffset: 0
+    }, { forceRegimensToMidnight: true });
+    expect(result.start_time).toEqual("2017-08-01T00:00:00.000Z");
   });
 
   it(`Recombines local state back into a Partial<TaggedFarmEvent["body"]>`, () => {
@@ -150,7 +166,7 @@ describe("<FarmEventForm/>", () => {
       "executable_type": "Regimen",
       "executable_id": "1",
       timeOffset: 0
-    });
+    }, { forceRegimensToMidnight: false });
     expect(result).toEqual({
       start_time: "2017-08-01T08:35:00.000Z",
       end_time: "2017-08-01T08:33:00.000Z",
@@ -180,7 +196,8 @@ describe("<FarmEventForm/>", () => {
       dispatch={jest.fn()}
       repeatOptions={repeatOptions}
       timeOffset={0}
-      autoSyncEnabled={false} />);
+      autoSyncEnabled={false}
+      allowRegimenBackscheduling={false} />);
     el.update();
     const txt = el.text().replace(/\s+/g, " ");
     expect(txt).toContain("Save *");
@@ -210,8 +227,31 @@ describe("<FarmEventForm/>", () => {
       expect.stringContaining("must first SYNC YOUR DEVICE"));
   });
 
-  it("displays error message on save", async () => {
+  it("displays error message on save (add): start time has passed", () => {
     const p = props();
+    p.title = "add";
+    p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
+    p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
+    const i = instance(p);
+    i.commitViewModel();
+    expect(error).toHaveBeenCalledWith("Unable to save farm event.");
+    expect(error).toHaveBeenCalledWith(
+      "FarmEvent start time needs to be in the future, not the past.");
+  });
+
+  it("doesn't display error message on edit: start time has passed", () => {
+    const p = props();
+    p.title = "edit";
+    p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
+    p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
+    const i = instance(p);
+    i.commitViewModel();
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("displays error message on save: no items", async () => {
+    const p = props();
+    p.allowRegimenBackscheduling = true;
     p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
     const i = instance(p);

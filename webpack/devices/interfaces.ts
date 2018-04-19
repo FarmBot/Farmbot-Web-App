@@ -62,6 +62,7 @@ export enum Feature {
   api_pin_bindings = "api_pin_bindings",
   farmduino_k14 = "farmduino_k14",
   jest_feature = "jest_feature", // for tests
+  backscheduled_regimens = "backscheduled_regimens",
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;

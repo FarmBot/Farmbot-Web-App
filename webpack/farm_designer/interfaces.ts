@@ -137,6 +137,7 @@ export interface AddEditFarmEventProps {
   findExecutable: ExecutableQuery;
   timeOffset: number;
   autoSyncEnabled: boolean;
+  allowRegimenBackscheduling: boolean;
 }
 
 /**
