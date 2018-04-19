@@ -64,6 +64,23 @@ describe Api::PlantTemplatesController do
       expect(response.status).to be(200)
       params.map { |(key,value)| expect(json[key]).to eq(value) }
     end
+
+    it "moves stuff from one saved garden to another" do
+        sign_in user
+        plant_template = plant_templates.first
+        b4             = plant_template.saved_garden
+        new_garden     = user
+                          .device
+                          .saved_gardens
+                          .where
+                          .not(id: b4.id)
+                          .first or raise "Opps"
+        params         = { saved_garden_id: new_garden.id }
+        put :update,  params: { format: :json, id: plant_template.id },
+                      body:   params.to_json
+        expect(response.status).to be(200)
+        expect(json[:saved_garden_id]).to eq(new_garden.id)
+    end
   end
 
   describe "#destroy" do

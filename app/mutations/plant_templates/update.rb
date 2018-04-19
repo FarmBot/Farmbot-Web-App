@@ -28,7 +28,7 @@ module PlantTemplates
 
     def saved_garden
       if saved_garden_id
-        { saved_garden: device.saved_gardens.find(:saved_garden_id) }
+        { saved_garden: device.saved_gardens.find(saved_garden_id) }
       else
         {}
       end
