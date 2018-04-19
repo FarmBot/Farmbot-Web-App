@@ -11,7 +11,7 @@ module Configs
 
     def execute
       target.update_attributes!(sliced_attrs)
-      HOTFIX.map do |attr| # TODO: Delete this later on. August ish?
+      HOTFIX.map do |attr|
         target.update_attributes!(attr => GOOD) if target.try(attr) == BAD
       end
       target
