@@ -1,8 +1,5 @@
 module Api
   class LogsController < Api::AbstractController
-
-    before_action :clean_out_old_ones
-
     def search
       conf       = current_device.web_app_config
       mt         = CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES
@@ -27,16 +24,6 @@ module Api
     # Clears out *all* logs.
     def destroy
       render json: current_device.logs.destroy_all && ""
-    end
-
-private
-
-    def clean_out_old_ones
-      current_device
-        .logs
-        .where
-        .not(id: current_device.limited_log_list.pluck(:id))
-        .delete_all
     end
   end
 end
