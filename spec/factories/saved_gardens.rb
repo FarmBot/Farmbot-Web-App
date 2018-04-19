@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :garden do
+  factory :saved_garden do
     name { Faker::Ancient.hero }
     device
   end

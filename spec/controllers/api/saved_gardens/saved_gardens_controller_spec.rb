@@ -1,16 +1,16 @@
 require "spec_helper"
 
-describe Api::GardensController do
+describe Api::SavedGardensController do
   include Devise::Test::ControllerHelpers
 
   let(:user)    { FactoryBot.create(:user) }
-  let(:gardens) { FactoryBot.create_list(:garden, 3, device: user.device) }
+  let(:saved_gardens) { FactoryBot.create_list(:saved_garden, 3, device: user.device) }
 
   describe "#index" do
 
-    it "shows all gardens" do
+    it "shows all saved_gardens" do
       sign_in user
-      garden_size = gardens.length
+      garden_size = saved_gardens.length
       get :index
       expect(response.status).to be(200)
       expect(json.length).to be(garden_size)
@@ -19,22 +19,22 @@ describe Api::GardensController do
   end
 
   describe "#create" do
-    it "creates a gardens" do
+    it "creates a saved_gardens" do
       sign_in user
-      b4 = user.device.gardens.count
+      b4 = user.device.saved_gardens.count
       params = { name: Faker::StarWars.call_sign }
       post :create, params: {format: :json}, body: params.to_json
       expect(response.status).to be(200)
       expect(json[:name]).to be_kind_of(String)
       expect(json[:name]).to eq(params[:name])
-      expect(user.device.gardens.count).to be > b4
+      expect(user.device.saved_gardens.count).to be > b4
     end
   end
 
   describe "#update" do
     it "updates attributes" do
       sign_in user
-      garden = gardens.first
+      garden = saved_gardens.first
       b4     = garden.name
       params = { name: Faker::StarWars.call_sign }
       put :update, params: { format: :json, id: garden.id }, body: params.to_json
@@ -45,13 +45,13 @@ describe Api::GardensController do
   end
 
   describe "#destroy" do
-    it "destroys gardens" do
+    it "destroys saved_gardens" do
       sign_in user
-      garden = gardens.first
-      b4     = gardens.length
+      garden = saved_gardens.first
+      b4     = saved_gardens.length
       delete :destroy, params: { id: garden.id }
       expect(response.status).to be(200)
-      expect(user.device.gardens.count).to be < b4
+      expect(user.device.saved_gardens.count).to be < b4
     end
   end
 end

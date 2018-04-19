@@ -9,7 +9,7 @@ class Device < ApplicationRecord
 
   has_many  :device_configs,  dependent: :destroy
   has_many  :farm_events,     dependent: :destroy
-  has_many  :gardens,         dependent: :destroy
+  has_many  :saved_gardens,   dependent: :destroy
   has_many  :images,          dependent: :destroy
   has_many  :logs,            dependent: :destroy
   has_many  :peripherals,     dependent: :destroy

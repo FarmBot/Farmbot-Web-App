@@ -1,13 +1,13 @@
-class CreateGardens < ActiveRecord::Migration[5.1]
+class CreateSavedGardens < ActiveRecord::Migration[5.1]
   def change
-    create_table :gardens do |t|
+    create_table :saved_gardens do |t|
       t.string     :name,   null: false
       t.references :device, null: false
       t.timestamps
     end
 
     create_table :plant_templates do |t|
-      t.references :garden, null: false
+      t.references :saved_garden, null: false
       t.references :device, null: false
       t.float "radius", default: 25.0, null: false
       t.float "x", null: false

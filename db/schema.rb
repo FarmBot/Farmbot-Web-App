@@ -201,14 +201,6 @@ ActiveRecord::Schema.define(version: 20180418205557) do
     t.index ["device_id"], name: "index_firmware_configs_on_device_id"
   end
 
-  create_table "gardens", force: :cascade do |t|
-    t.string "name", null: false
-    t.bigint "device_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["device_id"], name: "index_gardens_on_device_id"
-  end
-
   create_table "global_configs", force: :cascade do |t|
     t.string "key"
     t.text "value"
@@ -302,7 +294,7 @@ ActiveRecord::Schema.define(version: 20180418205557) do
   end
 
   create_table "plant_templates", force: :cascade do |t|
-    t.bigint "garden_id", null: false
+    t.bigint "saved_garden_id", null: false
     t.bigint "device_id", null: false
     t.float "radius", default: 25.0, null: false
     t.float "x", null: false
@@ -311,7 +303,7 @@ ActiveRecord::Schema.define(version: 20180418205557) do
     t.string "name", default: "untitled", null: false
     t.string "openfarm_slug", limit: 280, default: "null", null: false
     t.index ["device_id"], name: "index_plant_templates_on_device_id"
-    t.index ["garden_id"], name: "index_plant_templates_on_garden_id"
+    t.index ["saved_garden_id"], name: "index_plant_templates_on_saved_garden_id"
   end
 
   create_table "points", id: :serial, force: :cascade do |t|
@@ -372,6 +364,14 @@ ActiveRecord::Schema.define(version: 20180418205557) do
     t.string "name", limit: 280
     t.integer "device_id"
     t.index ["device_id"], name: "index_regimens_on_device_id"
+  end
+
+  create_table "saved_gardens", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "device_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_saved_gardens_on_device_id"
   end
 
   create_table "sensor_readings", force: :cascade do |t|

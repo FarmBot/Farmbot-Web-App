@@ -1,4 +1,4 @@
-module Gardens
+module SavedGardens
   class Create < Mutations::Command
     required do
       string :name
@@ -9,7 +9,7 @@ module Gardens
     end
 
     def execute
-      Garden.create!(inputs)
+      SavedGarden.create!(inputs)
     end
   end
 end

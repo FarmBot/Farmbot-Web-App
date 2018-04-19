@@ -1,7 +1,7 @@
-module Gardens
+module SavedGardens
   class Update < Mutations::Command
     required do
-      model :garden, class: Garden
+      model :saved_garden, class: SavedGarden
     end
 
     optional do
@@ -9,8 +9,8 @@ module Gardens
     end
 
     def execute
-      garden.update_attributes!(inputs.except(:garden))
-      garden
+      saved_garden.update_attributes!(inputs.except(:saved_garden))
+      saved_garden
     end
   end
 end
