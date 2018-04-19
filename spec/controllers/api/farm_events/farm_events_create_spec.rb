@@ -65,6 +65,20 @@ describe Api::FarmEventsController do
       expect(json[:start_time]).to include("too far in the past")
     end
 
+    it 'allows FarmEvents (reasonably) in the past' do
+      sign_in user
+      r = FactoryBot.create(:regimen, device: user.device)
+      input = { "start_time": (Time.now - 2.weeks).as_json,
+                "time_unit": "never",
+                "executable_id": r.id,
+                "executable_type": "Regimen",
+                "end_time": "2017-06-05T18:34:00.000Z",
+                "repeat": 1 }
+      post :create, params: input
+      expect(response.status).to eq(200)
+    end
+
+
     it 'disallows FarmEvents too far in the future' do
       sign_in user
       r = FactoryBot.create(:regimen, device: user.device)
