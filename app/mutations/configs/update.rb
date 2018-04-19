@@ -10,10 +10,11 @@ module Configs
     end
 
     def execute
-      target.update_attributes!(sliced_attrs)
+      target.assign_attributes(sliced_attrs)
       HOTFIX.map do |attr|
-        target.update_attributes!(attr => GOOD) if target.try(attr) == BAD
+        target.assign_attributes(attr => GOOD) if target.try(attr) == BAD
       end
+      target.save!
       target
     end
 
