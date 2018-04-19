@@ -15,6 +15,8 @@ FarmBot::Application.routes.draw do
       tools:                  [:create, :destroy, :index, :show, :update],
       webcam_feeds:           [:create, :destroy, :index, :show, :update],
       device_configs:         [:create, :destroy, :index, :update],
+      saved_gardens:          [:create, :destroy, :index, :update],
+      plant_templates:         [:create, :destroy, :index, :update],
       pin_bindings:           [:create, :destroy, :index, :show, :update]
     }.to_a.map { |(name, only)| resources name, only: only }
 
