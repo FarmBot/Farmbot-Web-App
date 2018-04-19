@@ -15,6 +15,7 @@ class Device < ApplicationRecord
   has_many  :peripherals,     dependent: :destroy
   has_many  :pin_bindings,    dependent: :destroy
   has_many  :points,          dependent: :destroy
+  has_many  :plant_templates, dependent: :destroy
   has_many  :regimens,        dependent: :destroy
   has_many  :sensor_readings, dependent: :destroy
   has_many  :sensors,         dependent: :destroy
@@ -22,6 +23,7 @@ class Device < ApplicationRecord
   has_many  :token_issuances, dependent: :destroy
   has_many  :tools,           dependent: :destroy
   has_many  :webcam_feeds,    dependent: :destroy
+
   has_many  :users
   validates_presence_of :name
   validates :timezone,
