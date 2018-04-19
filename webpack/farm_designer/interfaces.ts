@@ -264,3 +264,12 @@ export interface CurrentPointPayl {
   r: number;
   color?: string;
 }
+/** WIP */
+export interface PlantTemplate {
+
+}
+
+/** WIP */
+export interface SavedGarden {
+
+}
