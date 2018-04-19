@@ -15,8 +15,7 @@ FarmBot::Application.routes.draw do
       tools:                  [:create, :destroy, :index, :show, :update],
       webcam_feeds:           [:create, :destroy, :index, :show, :update],
       device_configs:         [:create, :destroy, :index, :update],
-      saved_gardens:          [:create, :destroy, :index, :update],
-      plant_templates:         [:create, :destroy, :index, :update],
+      plant_templates:        [:create, :destroy, :index, :update],
       pin_bindings:           [:create, :destroy, :index, :show, :update]
     }.to_a.map { |(name, only)| resources name, only: only }
 
@@ -39,6 +38,12 @@ FarmBot::Application.routes.draw do
     resource :users, except: [:index] do
       post :resend_verification, on: :member
       post :control_certificate, on: :collection
+    end
+
+    resource :saved_gardens, except: [:show] do
+      post :snapshot, on: :collection
+      # post  :apply,    on: :member
+      # patch :apply,    on: :member
     end
 
     get "/global_config" => "global_config#show", as: :global_config

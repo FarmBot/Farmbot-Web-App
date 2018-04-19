@@ -16,6 +16,10 @@ module Api
       render json: garden.destroy! && ""
     end
 
+    def snapshot
+      mutate SavedGardens::SnapShot.run(raw_json, device: current_device)
+    end
+
     private
 
     def gardens
