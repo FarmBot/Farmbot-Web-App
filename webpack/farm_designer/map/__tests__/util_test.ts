@@ -95,7 +95,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       mapOnly: true,
     });
-    expect(result).toEqual({ x: 480, y: 40 });
+    expect(result).toEqual({ x: 480, y: 30 });
   });
 });
 

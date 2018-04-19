@@ -115,6 +115,7 @@ export class AddFarmEvent
         title={t("Add Farm Event")}
         timeOffset={this.props.timeOffset}
         autoSyncEnabled={this.props.autoSyncEnabled}
+        allowRegimenBackscheduling={this.props.allowRegimenBackscheduling}
       />;
     } else {
       return this

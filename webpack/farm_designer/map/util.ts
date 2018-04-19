@@ -50,7 +50,7 @@ export function round(num: number) {
 
 /** Controlled by .farm-designer-map padding x10 */
 const paddingWhen = {
-  panelClosed: { left: 20, top: 150 },
+  panelClosed: { left: 20, top: 160 },
   panelOpen: { left: 318, top: 110 }
 };
 
