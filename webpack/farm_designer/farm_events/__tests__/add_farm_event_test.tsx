@@ -34,6 +34,7 @@ describe("<AddFarmEvent />", () => {
       findExecutable: () => sequence,
       timeOffset: 0,
       autoSyncEnabled: false,
+      allowRegimenBackscheduling: false,
     };
   }
 

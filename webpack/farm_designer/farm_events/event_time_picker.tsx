@@ -8,14 +8,16 @@ interface Props {
   tzOffset: number;
   onCommit(ev: React.SyntheticEvent<HTMLInputElement>): void;
   disabled?: boolean;
+  hidden?: boolean;
   name: string;
   className: string;
 }
 
 export function EventTimePicker(props: Props) {
-  const { value, onCommit, disabled, name } = props;
+  const { value, onCommit, disabled, hidden, name } = props;
   return <BlurableInput
     disabled={!!disabled}
+    hidden={!!hidden}
     name={name}
     type="time"
     className="add-event-start-time"

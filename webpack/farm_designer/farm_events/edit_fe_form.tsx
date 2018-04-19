@@ -63,14 +63,18 @@ export function destructureFarmEvent(fe: TaggedFarmEvent, timeOffset: number): F
 }
 
 type PartialFE = Partial<TaggedFarmEvent["body"]>;
+type recombineOptions = { forceRegimensToMidnight: boolean };
 
 /** Take a FormViewModel and recombine the fields into a Partial<FarmEvent>
  * that can be used to apply updates (such as a PUT request to the API). */
-export function recombine(vm: FarmEventViewModel): PartialFE {
+export function recombine(vm: FarmEventViewModel,
+  options: recombineOptions): PartialFE {
   // Make sure that `repeat` is set to `never` when dealing with regimens.
   const isReg = vm.executable_type === "Regimen";
+  const startTime = isReg && options.forceRegimensToMidnight
+    ? "00:00" : vm.startTime;
   return {
-    start_time: offsetTime(vm.startDate, vm.startTime, vm.timeOffset),
+    start_time: offsetTime(vm.startDate, startTime, vm.timeOffset),
     end_time: offsetTime(vm.endDate, vm.endTime, vm.timeOffset),
     repeat: parseInt(vm.repeat, 10) || 1,
     time_unit: (isReg ? "never" : vm.timeUnit) as TimeUnit,
@@ -98,6 +102,7 @@ export interface EditFEProps {
   deleteBtn?: boolean;
   timeOffset: number;
   autoSyncEnabled: boolean;
+  allowRegimenBackscheduling: boolean;
 }
 
 interface State {
@@ -179,8 +184,33 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     this.mergeState("timeUnit", (!checked || this.isReg) ? "never" : "daily");
   };
 
+  /** Validates that start time is not in the past if:
+   *    * adding a new event (editing repeat info for ongoing events is allowed)
+   *    * is a sequence farm event (backscheduling of regimen events is allowed)
+   *    * installed FBOS version supports backscheduling of regimen farm events
+   *      (which is the reason this is a frontend validation)
+   *
+   *  Once saved, if
+   *    - Regimen Farm Event:
+   *      * Return to calendar view.
+   *      * If scheduled for today, warn about the possibility of missing tasks.
+   *      * Display the start time difference from now and maybe prompt to sync.
+   *    - Sequence Farm Event:
+   *      * Determine the time for the next item to be run.
+   *      * Return to calendar view only if more items exist to be run.
+   *      * Display the next item run time.
+   *      * If auto-sync is disabled, prompt the user to sync.
+   */
   commitViewModel = () => {
-    const partial = recombine(betterMerge(this.viewModel, this.state.fe));
+    const partial = recombine(betterMerge(this.viewModel, this.state.fe),
+      { forceRegimensToMidnight: this.props.allowRegimenBackscheduling });
+    const newEvent = this.props.title.toLowerCase().includes("add");
+    if (newEvent && (moment(partial.start_time) < moment())
+      && (!this.isReg || !this.props.allowRegimenBackscheduling)) {
+      error(t("Unable to save farm event."));
+      error(t("FarmEvent start time needs to be in the future, not the past."));
+      return;
+    }
     this.dispatch(edit(this.props.farmEvent, partial));
     const EditFEPath = window.location.pathname;
     this
@@ -189,7 +219,11 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         this.setState({ specialStatusLocal: SpecialStatus.SAVED });
         history.push("/app/designer/farm_events");
         const frmEvnt = this.props.farmEvent;
-        const nextRun = _.first(scheduleForFarmEvent(frmEvnt.body).items);
+        this.props.dispatch(maybeWarnAboutMissedTasks(frmEvnt, function () {
+          alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK));
+        }));
+        const nextRun = _.first(scheduleForFarmEvent(frmEvnt.body).items)
+          || (this.isReg && moment(frmEvnt.body.start_time));
         if (nextRun) {
           const nextRunText = this.props.autoSyncEnabled
             ? t(`This Farm Event will run {{timeFromNow}}.`,
@@ -198,10 +232,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
             you must first SYNC YOUR DEVICE. If you do not sync, the event will
             not run.`.replace(/\s+/g, " "), { timeFromNow: nextRun.fromNow() });
           success(nextRunText);
-          this.props.dispatch(maybeWarnAboutMissedTasks(frmEvnt, function () {
-            alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK));
-          }));
-        } else {
+        } else if (!this.isReg) {
           history.push(EditFEPath);
           error(t(Content.INVALID_RUN_TIME));
         }
@@ -219,6 +250,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     const fe = this.props.farmEvent;
     const repeats = this.fieldGet("timeUnit") !== NEVER;
     const allowRepeat = (!this.isReg && repeats);
+    const forceMidnight = this.isReg && this.props.allowRegimenBackscheduling;
     return <div className="panel-container magenta-panel add-farm-event-panel">
       <div className="panel-header magenta-panel">
         <p className="panel-title">
@@ -258,16 +290,19 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
               name="start_time"
               tzOffset={this.props.timeOffset}
               value={this.fieldGet("startTime")}
-              onCommit={this.fieldSet("startTime")} />
+              onCommit={this.fieldSet("startTime")}
+              disabled={forceMidnight}
+              hidden={forceMidnight} />
           </Col>
         </Row>
-        <label>
-          <input type="checkbox"
-            onChange={this.toggleRepeat}
-            disabled={this.isReg}
-            checked={repeats && !this.isReg} />
-          &nbsp;{t("Repeats?")}
-        </label>
+        {!this.isReg &&
+          <label>
+            <input type="checkbox"
+              onChange={this.toggleRepeat}
+              disabled={this.isReg}
+              checked={repeats && !this.isReg} />
+            &nbsp;{t("Repeats?")}
+          </label>}
         <FarmEventRepeatForm
           tzOffset={this.props.timeOffset}
           disabled={!allowRepeat}
