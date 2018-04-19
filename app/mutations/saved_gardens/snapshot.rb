@@ -7,14 +7,14 @@ module SavedGardens
 
     def execute
       SavedGarden.transaction do
-        binding.pry
+        # binding.pry
         create_templates_from_plants
         SavedGarden.create!(inputs)
       end
     end
 
     def create_templates_from_plants
-      raise "NOT IMPLEMENTED - RC"
+      # raise "NOT IMPLEMENTED - RC"
     end
   end
 end
