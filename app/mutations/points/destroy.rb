@@ -38,11 +38,27 @@ module Points
       if hard_delete
         points.destroy_all
       else
-        points.update_all(discarded_at: Time.now)
+        Point.transaction do
+          archive_points
+          destroy_all_others
+        end
       end
     end
 
   private
+
+    def archive_points
+      points
+        .where(pointer_type: "GenericPointer")
+        .update_all(discarded_at: Time.now)
+    end
+
+    def destroy_all_others
+      points
+      .where
+      .not(pointer_type: "GenericPointer")
+      .destroy_all
+    end
 
     def points
       @points ||= Point.where(id: point_ids)
