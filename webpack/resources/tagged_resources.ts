@@ -1,7 +1,7 @@
 import { Sequence } from "../sequences/interfaces";
 import { Tool } from "../tools/interfaces";
 import { Regimen } from "../regimens/interfaces";
-import { FarmEvent, Crop } from "../farm_designer/interfaces";
+import { FarmEvent, Crop, SavedGarden, PlantTemplate } from "../farm_designer/interfaces";
 import {
   Log,
   GenericPointer,
