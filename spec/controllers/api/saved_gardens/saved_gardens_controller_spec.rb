@@ -54,4 +54,36 @@ describe Api::SavedGardensController do
       expect(user.device.saved_gardens.count).to be < b4
     end
   end
+
+  describe "#snapshot" do
+    it "creates a saved garden from an existing garden" do
+      SavedGarden.destroy_all
+      PlantTemplate.destroy_all
+      sign_in user
+      gardens_b4   = user.device.saved_gardens.count
+      templates_b4 = user.device.plant_templates.count
+      plants = FactoryBot.create_list(:plant, 3, device: user.device)
+      post :snapshot
+      expect(response.status).to be(200)
+      expect(user.device.plant_templates.count).to eq(plants.length)
+      expect(user.device.saved_gardens.count).to be > gardens_b4
+      expect(user.device.plant_templates.count).to be > templates_b4
+    end
+  end
+
+  describe "#apply" do
+    it "converts plant templates to real plants" do
+      SavedGarden.destroy_all
+      Plant.destroy_all
+      PlantTemplate.destroy_all
+      sign_in user
+      # Create a garden
+      saved_garden = FactoryBot.create(:saved_garden, device: user.device)
+      FactoryBot.create_list(:plant_template, 3, device: user.device, saved_garden: saved_garden)
+      old_plant_count = user.device.plants.count
+      post :apply, params: {id: saved_garden.id }
+      expect(response.status).to be(200)
+      expect(user.device.plants.count).to be > old_plant_count
+    end
+  end
 end

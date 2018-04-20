@@ -43,7 +43,7 @@ FarmBot::Application.routes.draw do
     resources :saved_gardens, except: [ :show ] do
       post :snapshot, on: :collection
       # post  :apply,    on: :member
-      # patch :apply,    on: :member
+      patch :apply,    on: :member
     end
 
     get "/global_config" => "global_config#show", as: :global_config
