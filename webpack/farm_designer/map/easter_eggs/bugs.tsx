@@ -71,6 +71,7 @@ export class Bugs extends React.Component<BugsProps, BugsState> {
     if (!some(bugs, "alive")) {
       setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "false");
     }
+    this.forceUpdate();
   };
 
   get xMax() { return this.props.botSize.x.value; }
