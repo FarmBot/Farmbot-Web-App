@@ -16,6 +16,15 @@ module Api
       render json: garden.destroy! && ""
     end
 
+    def snapshot
+      mutate SavedGardens::SnapShot.run(params.as_json, device: current_device)
+    end
+
+    def apply
+      mutate SavedGardens::Apply
+        .run(garden: garden, device: current_device, destructive: false)
+    end
+
     private
 
     def gardens

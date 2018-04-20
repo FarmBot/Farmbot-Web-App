@@ -264,3 +264,19 @@ export interface CurrentPointPayl {
   r: number;
   color?: string;
 }
+
+export interface PlantTemplate {
+  id?: number;
+  saved_garden_id: number;
+  radius: number;
+  x: number;
+  y: number;
+  z: number;
+  name: string;
+  openfarm_slug: string;
+}
+
+export interface SavedGarden {
+  id?: number;
+  name?: string;
+}

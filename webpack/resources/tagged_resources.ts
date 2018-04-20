@@ -1,7 +1,7 @@
 import { Sequence } from "../sequences/interfaces";
 import { Tool } from "../tools/interfaces";
 import { Regimen } from "../regimens/interfaces";
-import { FarmEvent, Crop } from "../farm_designer/interfaces";
+import { FarmEvent, Crop, SavedGarden, PlantTemplate } from "../farm_designer/interfaces";
 import {
   Log,
   GenericPointer,
@@ -39,16 +39,17 @@ export type ResourceName =
   | "Peripheral"
   | "PinBinding"
   | "Plant"
+  | "PlantTemplate"
   | "Point"
   | "Regimen"
+  | "SavedGarden"
   | "Sensor"
   | "SensorReading"
   | "Sequence"
   | "Tool"
   | "User"
   | "WebAppConfig"
-  | "WebcamFeed"
-  | "PinBinding";
+  | "WebcamFeed";
 
 export interface TaggedResourceBase {
   kind: ResourceName;
@@ -95,22 +96,24 @@ export type TaggedResource =
   | TaggedCrop
   | TaggedDevice
   | TaggedFarmEvent
+  | TaggedFarmwareInstallation
   | TaggedFbosConfig
   | TaggedFirmwareConfig
   | TaggedImage
   | TaggedLog
   | TaggedPeripheral
+  | TaggedPinBinding
+  | TaggedPlantTemplate
   | TaggedPoint
   | TaggedRegimen
+  | TaggedSavedGarden
   | TaggedSensor
   | TaggedSensorReading
   | TaggedSequence
   | TaggedTool
   | TaggedUser
   | TaggedWebAppConfig
-  | TaggedWebcamFeed
-  | TaggedFarmwareInstallation
-  | TaggedPinBinding;
+  | TaggedWebcamFeed;
 
 export type TaggedPinBinding = Resource<"PinBinding", PinBinding>;
 export type TaggedDeviceConfig = Resource<"DeviceConfig", DeviceConfig>;
@@ -127,6 +130,8 @@ export type TaggedFirmwareConfig = Resource<"FirmwareConfig", FirmwareConfig>;
 export type TaggedWebAppConfig = Resource<"WebAppConfig", WebAppConfig>;
 export type TaggedSensorReading = Resource<"SensorReading", SensorReading>;
 export type TaggedSensor = Resource<"Sensor", Sensor>;
+export type TaggedSavedGarden = Resource<"SavedGarden", SavedGarden>;
+export type TaggedPlantTemplate = Resource<"PlantTemplate", PlantTemplate>;
 
 type PointUnion = GenericPointer | PlantPointer | ToolSlotPointer;
 

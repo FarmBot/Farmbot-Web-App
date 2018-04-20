@@ -15,8 +15,7 @@ FarmBot::Application.routes.draw do
       tools:                  [:create, :destroy, :index, :show, :update],
       webcam_feeds:           [:create, :destroy, :index, :show, :update],
       device_configs:         [:create, :destroy, :index, :update],
-      saved_gardens:          [:create, :destroy, :index, :update],
-      plant_templates:         [:create, :destroy, :index, :update],
+      plant_templates:        [:create, :destroy, :index, :update],
       pin_bindings:           [:create, :destroy, :index, :show, :update]
     }.to_a.map { |(name, only)| resources name, only: only }
 
@@ -41,21 +40,27 @@ FarmBot::Application.routes.draw do
       post :control_certificate, on: :collection
     end
 
+    resources :saved_gardens, except: [ :show ] do
+      post :snapshot, on: :collection
+      # post  :apply,    on: :member
+      patch :apply,    on: :member
+    end
+
     get "/global_config" => "global_config#show", as: :global_config
 
     # Make life easier on API users by not adding special rules for singular
     # resources.
     # Might be safe to remove now with the advent of TaggedResource.kind
-    get   "/device/:id"          => "devices#show",           as: :get_device_redirect
-    get   "/export_data"         => "devices#dump",           as: :dump_device
-    get   "/storage_auth"        => "images#storage_auth",    as: :storage_auth
-    patch "/device/:id"          => "devices#update",         as: :patch_device_redirect
-    patch "/users/:id"           => "users#update",           as: :patch_users_redirect
-    patch "/webcam_feed/:id"     => "webcam_feeds#update",    as: :patch_webcam_feed_redirect
-    put   "/device/:id"          => "devices#update",         as: :put_device_redirect
-    put   "/password_resets"     => "password_resets#update", as: :whatever
-    put   "/users/:id"           => "users#update",           as: :put_users_redirect
-    put   "/webcam_feed/:id"     => "webcam_feeds#update",    as: :put_webcam_feed_redirect
+    get   "/device/:id"      => "devices#show",           as: :get_device_redirect
+    get   "/export_data"     => "devices#dump",           as: :dump_device
+    get   "/storage_auth"    => "images#storage_auth",    as: :storage_auth
+    patch "/device/:id"      => "devices#update",         as: :patch_device_redirect
+    patch "/users/:id"       => "users#update",           as: :patch_users_redirect
+    patch "/webcam_feed/:id" => "webcam_feeds#update",    as: :patch_webcam_feed_redirect
+    put   "/device/:id"      => "devices#update",         as: :put_device_redirect
+    put   "/password_resets" => "password_resets#update", as: :whatever
+    put   "/users/:id"       => "users#update",           as: :put_users_redirect
+    put   "/webcam_feed/:id" => "webcam_feeds#update",    as: :put_webcam_feed_redirect
   end
 
   devise_for :users

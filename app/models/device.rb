@@ -76,4 +76,8 @@ class Device < ApplicationRecord
     transport.amqp_send(json, self.id, "logs")
     log
   end
+
+  def plants
+    points.where(pointer_type: "Plant")
+  end
 end

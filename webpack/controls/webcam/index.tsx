@@ -16,7 +16,7 @@ const EMPTY_FEED: TaggedWebcamFeed = {
   body: { url: "", name: "" }
 };
 
-const preToggleCleanup = (dispatch: Function) => (f: TaggedWebcamFeed) => {
+export const preToggleCleanup = (dispatch: Function) => (f: TaggedWebcamFeed) => {
   const { uuid } = f;
   const { name, url, id } = f.body;
 
@@ -55,9 +55,9 @@ export class WebcamPanel extends React.Component<P, S> {
 
   render() {
     if (this.state.activeMenu === "show") {
-      return <Show {...this.childProps("edit") } />;
+      return <Show {...this.childProps("edit")} />;
     } else {
-      return <Edit {...this.childProps("show") } />;
+      return <Edit {...this.childProps("show")} />;
     }
   }
 }
