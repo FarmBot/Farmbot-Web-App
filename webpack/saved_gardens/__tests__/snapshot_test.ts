@@ -1,13 +1,15 @@
-jest.mock("axios")
+jest.mock("axios", () => {
+  return { default: { post: jest.fn(() => Promise.resolve()) } };
+});
 
 import { snapshotGarden } from "../snapshot";
 import { API } from "../../api";
-import Axios from "axios";
+import axios from "axios";
 
 describe("snapshotGarden", () => {
   it("calls the API and lets auto-sync do the rest", () => {
     API.setBaseUrl("example.io");
     snapshotGarden();
-    expect(Axios.post).toHaveBeenCalledWith(API.current.snapshotPath);
+    expect(axios.post).toHaveBeenCalledWith(API.current.snapshotPath);
   });
 });
