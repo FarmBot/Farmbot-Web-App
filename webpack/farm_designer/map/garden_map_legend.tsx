@@ -6,7 +6,7 @@ import { history } from "../../history";
 import { atMaxZoom, atMinZoom } from "./zoom";
 import { ImageFilterMenu } from "./image_filter_menu";
 import { showBugResetButton, resetBugs } from "./easter_eggs/bugs";
-// import { snapShotGarden } from "../../saved_gardens/snapshot";
+// import { snapshotGarden } from "../../saved_gardens/snapshot";
 
 export function GardenMapLegend(props: GardenMapLegendProps) {
 
