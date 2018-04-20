@@ -40,7 +40,7 @@ FarmBot::Application.routes.draw do
       post :control_certificate, on: :collection
     end
 
-    resource :saved_gardens, except: [:show] do
+    resources :saved_gardens, except: [ :show ] do
       post :snapshot, on: :collection
       # post  :apply,    on: :member
       # patch :apply,    on: :member
