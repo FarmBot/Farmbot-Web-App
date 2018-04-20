@@ -33,6 +33,7 @@ describe("<Bugs />", () => {
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "");
     expectAlive("");
     const wrapper = mount(<Bugs {...fakeProps()} />);
+    wrapper.state().bugs[0].r = 101;
     range(10).map(b =>
       wrapper.find("image").at(b).simulate("click"));
     expectAlive("");

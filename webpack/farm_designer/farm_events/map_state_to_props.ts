@@ -13,6 +13,7 @@ import { ResourceIndex } from "../../resources/interfaces";
 import { FarmEventWithRegimen, FarmEventWithSequence } from "./calendar/interfaces";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
 import { last } from "lodash";
+import { RegimenItem } from "../../regimens/interfaces";
 
 /** Prepares a FarmEvent[] for use with <FBSelect /> */
 export function mapStateToProps(state: Everything): FarmEventProps {
@@ -46,27 +47,46 @@ export function mapResourcesToCalendar(
 
   return calendar;
 }
+
+const fromEpoch = (ms: number, start_time: string, tz_offset_hrs: number) =>
+  moment(start_time)
+    .utcOffset(tz_offset_hrs)
+    .startOf("day")
+    .add(ms, "ms");
+
+const itemGracePeriod = (now: moment.Moment) =>
+  now.clone().subtract(1, "minute");
+
+export const nextRegItemTimes =
+  (regimenItems: RegimenItem[],
+    startTime: string,
+    now: moment.Moment,
+    tzOffset: number): moment.Moment[] => {
+    const times = regimenItems.map(ri =>
+      fromEpoch(ri.time_offset, startTime, tzOffset));
+    return times.filter(time => time.isSameOrAfter(itemGracePeriod(now))
+      && time.isSameOrAfter(moment(startTime)));
+  };
+
 export let regimenCalendarAdder = (index: ResourceIndex) =>
   (f: FarmEventWithRegimen, c: Calendar, now = moment()) => {
-    const tz_offset_hrs = maybeGetTimeOffset(index);
+    const tz_offset = maybeGetTimeOffset(index);
     const { regimen_items } = f.executable;
-    const fromEpoch = (ms: number) => moment(f.start_time)
-      .utcOffset(tz_offset_hrs)
-      .startOf("day")
-      .add(ms, "ms");
-    const gracePeriod = now.clone().subtract(1, "minute");
+    const gracePeriod = itemGracePeriod(now);
     const lastRI = last(regimen_items);
-    if (lastRI && fromEpoch(lastRI.time_offset).isSameOrAfter(gracePeriod)) {
-      const o = occurrence(moment(f.start_time), f, tz_offset_hrs);
+    const lastRITime = lastRI &&
+      fromEpoch(lastRI.time_offset, f.start_time, tz_offset);
+    if (lastRITime && lastRITime.isSameOrAfter(gracePeriod)) {
+      const o = occurrence(moment(f.start_time), f, tz_offset);
       o.heading = f.executable.name;
       o.subheading = "";
       c.insert(o);
     }
     regimen_items.map(ri => {
-      const time = fromEpoch(ri.time_offset);
+      const time = fromEpoch(ri.time_offset, f.start_time, tz_offset);
       if (time.isSameOrAfter(gracePeriod)
         && time.isSameOrAfter(moment(f.start_time))) {
-        const oo = occurrence(time, f, tz_offset_hrs);
+        const oo = occurrence(time, f, tz_offset);
         const seq = findSequenceById(index, ri.sequence_id);
         oo.heading = f.executable.name;
         oo.subheading = seq.body.name;
@@ -75,7 +95,7 @@ export let regimenCalendarAdder = (index: ResourceIndex) =>
     });
     // Display empty regimens in UI so that they can be edited or deleted.
     if (f.end_time && Object.keys(c.value).length === 0) {
-      c.insert(occurrence(moment(f.end_time), f, tz_offset_hrs, { empty: true }));
+      c.insert(occurrence(moment(f.end_time), f, tz_offset, { empty: true }));
     }
   };
 

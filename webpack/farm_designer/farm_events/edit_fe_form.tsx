@@ -1,10 +1,13 @@
 import * as React from "react";
 import * as moment from "moment";
-import * as _ from "lodash";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
-import { TaggedFarmEvent, SpecialStatus } from "../../resources/tagged_resources";
-import { TimeUnit, ExecutableQuery, ExecutableType } from "../interfaces";
+import {
+  TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen
+} from "../../resources/tagged_resources";
+import {
+  TimeUnit, ExecutableQuery, ExecutableType, FarmEvent
+} from "../interfaces";
 import { formatTime, formatDate } from "./map_state_to_props_add_edit";
 import {
   BackArrow,
@@ -26,6 +29,8 @@ import { Content } from "../../constants";
 import { destroyOK } from "../../resources/actions";
 import { EventTimePicker } from "./event_time_picker";
 import { TzWarning } from "./tz_warning";
+import { nextRegItemTimes } from "./map_state_to_props";
+import { first } from "lodash";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -140,14 +145,21 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   executableSet = (e: DropDownItem) => {
     if (e.value) {
-      const update: Partial<State> = {
-        fe: {
-          executable_type: executableType(e.headingId),
-          executable_id: (e.value || "").toString()
-        },
-        specialStatusLocal: SpecialStatus.DIRTY
-      };
-      this.setState(betterMerge(this.state, update));
+      const { executable_type } = this.props.farmEvent.body;
+      if (executable_type === "Regimen" &&
+        executableType(e.headingId) === "Sequence") {
+        error(t("Cannot change from a Regimen to a Sequence."));
+        history.push("/app/designer/farm_events");
+      } else {
+        const update: Partial<State> = {
+          fe: {
+            executable_type: executableType(e.headingId),
+            executable_id: (e.value || "").toString()
+          },
+          specialStatusLocal: SpecialStatus.DIRTY
+        };
+        this.setState(betterMerge(this.state, update));
+      }
     }
   }
 
@@ -184,31 +196,62 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     this.mergeState("timeUnit", (!checked || this.isReg) ? "never" : "daily");
   };
 
-  /** Validates that start time is not in the past if:
-   *    * adding a new event (editing repeat info for ongoing events is allowed)
-   *    * is a sequence farm event (backscheduling of regimen events is allowed)
-   *    * installed FBOS version supports backscheduling of regimen farm events
-   *      (which is the reason this is a frontend validation)
-   *
-   *  Once saved, if
-   *    - Regimen Farm Event:
-   *      * Return to calendar view.
-   *      * If scheduled for today, warn about the possibility of missing tasks.
-   *      * Display the start time difference from now and maybe prompt to sync.
-   *    - Sequence Farm Event:
-   *      * Determine the time for the next item to be run.
-   *      * Return to calendar view only if more items exist to be run.
-   *      * Display the next item run time.
-   *      * If auto-sync is disabled, prompt the user to sync.
-   */
-  commitViewModel = () => {
+  nextItemTime = (fe: FarmEvent, now: moment.Moment
+  ): moment.Moment | undefined => {
+    const tz_offset = this.props.timeOffset;
+    const kind = fe.executable_type;
+    const start = fe.start_time;
+    const isRegimen = (x: TaggedSequence | TaggedRegimen): x is TaggedRegimen =>
+      !!(x.kind === "Regimen");
+    switch (kind) {
+      case "Sequence":
+        return first(scheduleForFarmEvent(fe, now).items);
+      case "Regimen":
+        const r = this.props.findExecutable(kind, fe.executable_id);
+        const nextItem = isRegimen(r)
+          ? first(nextRegItemTimes(r.body.regimen_items, start, now, tz_offset))
+          : undefined;
+        const futureStartTimeFallback = moment(start) > now
+          ? moment(start)
+          : undefined;
+        return nextItem || futureStartTimeFallback;
+      default:
+        throw new Error(`${kind} is not a valid executable_type`);
+    }
+  }
+
+  /** Rejects save of Farm Event if: */
+  maybeRejectStartTime = (f: Partial<FarmEvent>, now = moment()) => {
+    /** adding a new event (editing repeats for ongoing events is allowed) */
+    const newEvent = this.props.title.toLowerCase().includes("add");
+    /** start time is in the past */
+    const inThePast = moment(f.start_time) < now;
+    /** is a sequence event or: */
+    const sequenceEvent = !this.isReg;
+    /** installed FBOS does not support backscheduling of regimen farm events.
+     *  (this is the main reason this is a frontend validation)
+     */
+    const unsupportedOS = !this.props.allowRegimenBackscheduling;
+    return newEvent && (inThePast && (sequenceEvent || unsupportedOS));
+  }
+
+  /**  Once saved, if
+  *    - Regimen Farm Event:
+  *      * Return to calendar view.
+  *      * If scheduled for today, warn about the possibility of missing tasks.
+  *      * Display the start time difference from now and maybe prompt to sync.
+  *    - Sequence Farm Event:
+  *      * Determine the time for the next item to be run.
+  *      * Return to calendar view only if more items exist to be run.
+  *      * Display the next item run time.
+  *      * If auto-sync is disabled, prompt the user to sync.
+  */
+  commitViewModel = (now = moment()) => {
     const partial = recombine(betterMerge(this.viewModel, this.state.fe),
       { forceRegimensToMidnight: this.props.allowRegimenBackscheduling });
-    const newEvent = this.props.title.toLowerCase().includes("add");
-    if (newEvent && (moment(partial.start_time) < moment())
-      && (!this.isReg || !this.props.allowRegimenBackscheduling)) {
-      error(t("Unable to save farm event."));
-      error(t("FarmEvent start time needs to be in the future, not the past."));
+    if (this.maybeRejectStartTime(partial)) {
+      error(t("FarmEvent start time needs to be in the future, not the past."),
+        t("Unable to save farm event."));
       return;
     }
     this.dispatch(edit(this.props.farmEvent, partial));
@@ -221,20 +264,19 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         const frmEvnt = this.props.farmEvent;
         this.props.dispatch(maybeWarnAboutMissedTasks(frmEvnt, function () {
           alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK));
-        }));
-        const nextRun = _.first(scheduleForFarmEvent(frmEvnt.body).items)
-          || (this.isReg && moment(frmEvnt.body.start_time));
+        }, now));
+        const nextRun = this.nextItemTime(frmEvnt.body, now);
         if (nextRun) {
           const nextRunText = this.props.autoSyncEnabled
-            ? t(`This Farm Event will run {{timeFromNow}}.`,
-              { timeFromNow: nextRun.fromNow() })
-            : t(`This Farm Event will run {{timeFromNow}}, but
+            ? t(`The next item in this Farm Event will run {{timeFromNow}}.`,
+              { timeFromNow: nextRun.from(now) })
+            : t(`The next item in this Farm Event will run {{timeFromNow}}, but
             you must first SYNC YOUR DEVICE. If you do not sync, the event will
-            not run.`.replace(/\s+/g, " "), { timeFromNow: nextRun.fromNow() });
+            not run.`.replace(/\s+/g, " "), { timeFromNow: nextRun.from(now) });
           success(nextRunText);
-        } else if (!this.isReg) {
+        } else {
           history.push(EditFEPath);
-          error(t(Content.INVALID_RUN_TIME));
+          error(t(Content.INVALID_RUN_TIME), t("Warning"));
         }
       })
       .catch(() => {
@@ -315,7 +357,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         <SaveBtn
           status={fe.specialStatus || this.state.specialStatusLocal}
           color="magenta"
-          onClick={this.commitViewModel} />
+          onClick={() => this.commitViewModel()} />
         <button className="fb-button red" hidden={!this.props.deleteBtn}
           onClick={() => {
             this.dispatch(destroy(fe.uuid)).then(() => {
