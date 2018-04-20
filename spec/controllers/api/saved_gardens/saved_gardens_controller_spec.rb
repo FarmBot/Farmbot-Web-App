@@ -94,7 +94,18 @@ describe Api::SavedGardensController do
     #   saved_garden = FactoryBot.create(:saved_garden, device: user.device)
     #   FactoryBot.create_list(:plant_template, 3, device: user.device,
     #                                              saved_garden: saved_garden)
-    #   puts "Create sequence using a plant"
+    #   FakeSequence.create(device: user.device,
+    #     body: [{ kind: "move_absolute",
+    #             args: {
+    #               location: {
+    #                 kind: "point",
+    #                 args: { pointer_type: "Plant", pointer_id: plant.id }
+    #               },
+    #               speed: 100,
+    #               offset: { kind: "", args: { } }
+    #             }
+    #           }])
+
     #   old_plant_count = user.device.plants.count
     #   patch :apply, params: {id: saved_garden.id }
     #   expect(response.status).to be(200)
