@@ -13,6 +13,7 @@ module SavedGardens
         @garden = SavedGarden.create!(inputs)
         create_templates_from_plants
       end
+      ""
     end
 
     def create_templates_from_plants
