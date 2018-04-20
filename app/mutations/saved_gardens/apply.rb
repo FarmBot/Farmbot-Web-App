@@ -7,6 +7,14 @@ module SavedGardens
     end
 
     def execute
+      clean_out_plants if destructive
+      convert_templates_to_plants
+      ""
+    end
+
+    private
+
+    def convert_templates_to_plants
       Plant
         .create!(garden
         .plant_templates
@@ -21,7 +29,11 @@ module SavedGardens
             y:             template.y,
             z:             template.z }
         end)
-      ""
+    end
+
+    def clean_out_plants
+      Points::Destroy.run!(device: device,
+                           point_ids: device.plants.pluck(:id))
     end
   end
 end

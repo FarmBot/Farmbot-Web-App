@@ -41,7 +41,6 @@ class LogService
       if save?(log)
         device = Device.find(device_id)
         db_log = Logs::Create.run!(log, device: device)
-        maybe_clear_logs(device)
         LogDispatch.deliver(device, db_log)
       end
     end

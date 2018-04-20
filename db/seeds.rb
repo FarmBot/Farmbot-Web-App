@@ -1,4 +1,13 @@
 unless Rails.env == "production"
+    POINT_COUNT             = 8
+    PLANT_COUNT             = 8
+    DATE_RANGE_LO           = 1..3
+    DATE_RANGE_HI           = 3..8
+    ENV['MQTT_HOST']        = "blooper.io"
+    ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
+
+    LogDispatch.destroy_all
+    Log.destroy_all
     TokenIssuance.destroy_all
     PinBinding.destroy_all
     User.destroy_all
@@ -6,18 +15,13 @@ unless Rails.env == "production"
     ToolSlot.destroy_all
     Tool.destroy_all
     Point.destroy_all
-    LogDispatch.destroy_all
-
     User.destroy_all
-    POINT_COUNT             = 8
-    PLANT_COUNT             = 8
-    DATE_RANGE_LO           = 1..3
-    DATE_RANGE_HI           = 3..8
-    ENV['MQTT_HOST']        = "blooper.io"
-    ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
     Point.destroy_all
     Device.destroy_all
     User.destroy_all
+    PlantTemplate.destroy_all
+    SavedGarden.destroy_all
+
     Users::Create.run!(name:                  "Administrator",
                        email:                 "farmbot@farmbot.io",
                        password:              "password123",
@@ -59,6 +63,8 @@ unless Rails.env == "production"
                    pointer_id:    0,
                    openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample)
     end
+
+    Device.all.map { |device| SavedGardens::Snapshot.run!(device: device) }
 
     POINT_COUNT.times do
       GenericPointer.create(device: u.device,
