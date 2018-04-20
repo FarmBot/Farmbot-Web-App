@@ -2,13 +2,15 @@ import * as React from "react";
 import { ToolForm } from "../tool_form";
 import { mount } from "enzyme";
 import { fakeTool } from "../../../__test_support__/fake_state/resources";
+import { ToolFormProps } from "../../interfaces";
 
 describe("<ToolForm/>", () => {
-  function fakeProps() {
+  function fakeProps(): ToolFormProps {
     return {
       dispatch: jest.fn(),
       toggle: jest.fn(),
-      tools: [fakeTool(), fakeTool()]
+      tools: [fakeTool(), fakeTool()],
+      isActive: jest.fn(),
     };
   }
 
@@ -27,4 +29,20 @@ describe("<ToolForm/>", () => {
     expect(p.dispatch).toHaveBeenCalledTimes(6);
   });
 
+  it("has red delete button", () => {
+    const p = fakeProps();
+    p.isActive = () => false;
+    const wrapper = mount(<ToolForm {...p} />);
+    const delBtn = wrapper.find("button").last();
+    expect(delBtn.hasClass("red")).toBeTruthy();
+  });
+
+  it("has gray delete button", () => {
+    const p = fakeProps();
+    p.isActive = () => true;
+    const wrapper = mount(<ToolForm {...p} />);
+    const delBtn = wrapper.find("button").last();
+    expect(delBtn.hasClass("pseudo-disabled")).toBeTruthy();
+    expect(delBtn.props().title).toContain("in slot");
+  });
 });
