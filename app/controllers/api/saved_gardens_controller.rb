@@ -17,7 +17,7 @@ module Api
     end
 
     def snapshot
-      mutate SavedGardens::SnapShot.run(raw_json, device: current_device)
+      mutate SavedGardens::SnapShot.run(params.as_json, device: current_device)
     end
 
     private
