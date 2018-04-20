@@ -21,8 +21,10 @@ module Api
     end
 
     def apply
-      mutate SavedGardens::Apply
-        .run(garden: garden, device: current_device, destructive: false)
+      params  = { garden: garden,
+                  device: current_device,
+                  destructive: (request.method == "POST") }
+      mutate SavedGardens::Apply.run(params)
     end
 
     private

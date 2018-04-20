@@ -42,7 +42,7 @@ FarmBot::Application.routes.draw do
 
     resources :saved_gardens, except: [ :show ] do
       post :snapshot, on: :collection
-      # post  :apply,    on: :member
+      post  :apply,    on: :member
       patch :apply,    on: :member
     end
 
