@@ -70,11 +70,11 @@ export function handleCreateOrUpdate(dispatch: Function,
   //           `sessionId` in the `outstandingRequests` object, then you can
   //           disregard the sync message- you probably already got the data
   //           when your AJAX request finished. We call this an "echo"- a
-  //           repetition of a data update we alrleady knew about.
+  //           repetition of a data update we already knew about.
   //
   // The ultimate problem: We need to know if the incoming data update was
   // created by us or some other user. That information lets us know if we are
-  // UPDATEing data or INSERTing data. It also prevents us from double updating
+  // UPDATE-ing data or INSERTing data. It also prevents us from double updating
   // data when an update comes in twice.
   const action = hasCopy ? handleUpdate(data, hasCopy) : handleCreate(data);
   return isEcho || dispatch(action);

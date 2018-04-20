@@ -133,6 +133,8 @@ export class API {
   get pinBindingPath() { return `${this.baseUrl}/api/pin_bindings/`; }
   /** /api/saved_gardens/:id */
   get savedGardensPath() { return `${this.baseUrl}/api/saved_gardens`; }
+  /** /api/saved_gardens/:id */
+  get snapshotPath() { return this.savedGardensPath + "/snapshot"; }
   /** /api/plant_templates/:id */
   get plantTemplatePath() { return `${this.baseUrl}/api/plant_templates`; }
   /** /api/farmware_installations/:id */

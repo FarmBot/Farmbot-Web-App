@@ -1,5 +1,6 @@
 import axios from "axios";
+import { API } from "../api";
 
-export function snapShotGarden() {
-  axios.post();
+export function snapshotGarden() {
+  return axios.post<void>(API.current.snapshotPath).then(() => { });
 }

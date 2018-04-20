@@ -1,5 +1,5 @@
 module SavedGardens
-  class SnapShot < Mutations::Command
+  class Snapshot < Mutations::Command
     required do
       model  :device, class: Device
     end
