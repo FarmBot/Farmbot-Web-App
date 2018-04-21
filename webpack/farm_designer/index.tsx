@@ -1,7 +1,5 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router";
-import { t } from "i18next";
 import { GardenMap } from "./map/garden_map";
 import { Props, State, BotOriginQuadrant, isBotOriginQuadrant } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
@@ -15,6 +13,7 @@ import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { getBotSize } from "./map/util";
 import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom";
 import * as moment from "moment";
+import { DesignerNavTabs } from "./panel_header";
 
 export const getDefaultAxisLength = (): AxisNumberProperty => {
   if (Session.deprecatedGetBool(BooleanSetting.map_xl)) {
@@ -107,8 +106,6 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       zoom_level
     } = this.state;
 
-    const designerTabClasses: string[] = ["active", "visible-xs"];
-
     const botSize = getBotSize(
       this.props.botMcuParams, this.props.stepsPerMmXY, getDefaultAxisLength());
 
@@ -126,7 +123,6 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       : 1;
     const imageAgeInfo = { newestDate, toOldest };
 
-    const displayDesignerNav = this.mapOnly ? "" : "hidden";
     const displayPanel = this.mapOnly ? "hidden" : "";
 
     return <div className="farm-designer">
@@ -147,19 +143,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         getConfigValue={this.props.getConfigValue}
         imageAgeInfo={imageAgeInfo} />
 
-      <div className={`panel-header gray-panel ${displayDesignerNav}`}>
-        <div className="panel-tabs">
-          <Link to="/app/designer" className={designerTabClasses.join(" ")}>
-            {t("Designer")}
-          </Link>
-          <Link to="/app/designer/plants">
-            {t("Plants")}
-          </Link>
-          <Link to="/app/designer/farm_events">
-            {t("Farm Events")}
-          </Link>
-        </div>
-      </div>
+      <DesignerNavTabs />
       <div className={`farm-designer-panels ${displayPanel}`}>
         {this.childComponent(this.props)}
       </div>
