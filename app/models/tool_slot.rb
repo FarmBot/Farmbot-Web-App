@@ -23,10 +23,13 @@ class ToolSlot < Point
     inclusion: { in: PULLOUT_DIRECTIONS, message: PULLOUT_ERR }
 
   def do_migrate
-    legacy = LegacyToolSlot.find(self[:pointer_id])
-    self.update_attributes!(migrated_at:        Time.now,
-                            pullout_direction: legacy.pullout_direction,
-                            tool_id:           legacy.tool_id,
-                            pointer_type:      "ToolSlot")
+    LegacyToolSlot.transaction do
+      legacy = LegacyToolSlot.find(self[:pointer_id])
+      self.update_attributes!(migrated_at:       Time.now,
+                              pullout_direction: legacy.pullout_direction,
+                              tool_id:           legacy.tool_id,
+                              pointer_type:      "ToolSlot")
+      legacy.destroy!
+    end
   end
 end
