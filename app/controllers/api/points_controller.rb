@@ -25,7 +25,7 @@ module Api
     end
 
     def search
-      mutate Points::Query.run(raw_json, device_params)
+      mutate Points::Query.run(raw_json, scope: archival_scope)
     end
 
     def create
