@@ -6,6 +6,7 @@ import { selectAllPlantPointers } from "../../resources/selectors";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { TaggedPlantPointer } from "../../resources/tagged_resources";
 import { Everything } from "../../interfaces";
+import { DesignerNavTabs } from "../panel_header";
 
 interface Props {
   plants: TaggedPlantPointer[];
@@ -38,6 +39,7 @@ export class Plants extends React.Component<Props, State> {
 
   render() {
     return <div className="panel-container green-panel plant-inventory-panel">
+      <DesignerNavTabs />
       <div className="panel-content row">
         <div className="thin-search-wrapper">
           <div className="text-input-wrapper">

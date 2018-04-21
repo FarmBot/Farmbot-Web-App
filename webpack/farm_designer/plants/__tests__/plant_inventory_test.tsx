@@ -14,7 +14,10 @@ describe("<PlantInventory />", () => {
         plants={[fakePlant()]}
         dispatch={jest.fn()}
         hoveredPlantListItem={undefined} />);
-    ["Strawberry Plant",
+    ["Map",
+      "Plants",
+      "Farm Events",
+      "Strawberry Plant",
       "11 days old"
     ].map(string => expect(wrapper.text()).toContain(string));
     expect(wrapper.find("input").props().placeholder)

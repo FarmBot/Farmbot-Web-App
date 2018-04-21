@@ -17,9 +17,10 @@ const getCurrentTab = (): Tabs => {
 
 const TAB_COLOR = { Map: "gray", Plants: "green", FarmEvents: "magenta" };
 
-export function DesignerNavTabs() {
+export function DesignerNavTabs(props: { hidden?: boolean }) {
   const tab = getCurrentTab();
-  return <div className={`panel-header ${TAB_COLOR[tab]}-panel`}>
+  const hidden = props.hidden ? "hidden" : "";
+  return <div className={`panel-header ${TAB_COLOR[tab]}-panel ${hidden}`}>
     <div className="panel-tabs">
       <Link to="/app/designer"
         className={tab === "Map" ? "active" : ""}>

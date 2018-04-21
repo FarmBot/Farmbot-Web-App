@@ -143,7 +143,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         getConfigValue={this.props.getConfigValue}
         imageAgeInfo={imageAgeInfo} />
 
-      <DesignerNavTabs />
+      <DesignerNavTabs hidden={!this.mapOnly} />
       <div className={`farm-designer-panels ${displayPanel}`}>
         {this.childComponent(this.props)}
       </div>
