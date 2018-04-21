@@ -42,7 +42,7 @@ module Logs
           integer :x
           integer :y
           integer :z
-          integer :verbosity
+          integer :verbosity, default: 1
           integer :major_version
           integer :minor_version
         end
