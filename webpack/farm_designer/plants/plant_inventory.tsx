@@ -6,6 +6,7 @@ import { selectAllPlantPointers } from "../../resources/selectors";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { TaggedPlantPointer } from "../../resources/tagged_resources";
 import { Everything } from "../../interfaces";
+import { DesignerNavTabs } from "../panel_header";
 
 interface Props {
   plants: TaggedPlantPointer[];
@@ -38,22 +39,8 @@ export class Plants extends React.Component<Props, State> {
 
   render() {
     return <div className="panel-container green-panel plant-inventory-panel">
-      <div className="panel-header green-panel">
-        <div className="panel-tabs">
-          <Link to="/app/designer" className="visible-xs">
-            {t("Designer")}
-          </Link>
-          <Link to="/app/designer/plants" className="active">
-            {t("Plants")}
-          </Link>
-          <Link to="/app/designer/farm_events">
-            {t("Farm Events")}
-          </Link>
-        </div>
-      </div>
-
+      <DesignerNavTabs />
       <div className="panel-content row">
-
         <div className="thin-search-wrapper">
           <div className="text-input-wrapper">
             <i className="fa fa-search"></i>
@@ -61,30 +48,25 @@ export class Plants extends React.Component<Props, State> {
               placeholder={t("Search your plants...")} />
           </div>
           <div className="plant-panel-content">
-            {
-              this.props.plants
-                .filter(p => p.body.name.toLowerCase()
-                  .includes(this.state.searchTerm.toLowerCase()))
-                .map(p => {
-                  const hovered = this.props.hoveredPlantListItem === p.uuid;
-                  return <PlantInventoryItem
-                    key={p.uuid}
-                    tpp={p}
-                    hovered={hovered}
-                    dispatch={this.props.dispatch} />;
-                })
-            }
+            {this.props.plants
+              .filter(p => p.body.name.toLowerCase()
+                .includes(this.state.searchTerm.toLowerCase()))
+              .map(p => {
+                const hovered = this.props.hoveredPlantListItem === p.uuid;
+                return <PlantInventoryItem
+                  key={p.uuid}
+                  tpp={p}
+                  hovered={hovered}
+                  dispatch={this.props.dispatch} />;
+              })}
           </div>
         </div>
-
       </div>
-
       <Link to="/app/designer/plants/crop_search">
         <div className="plus-button fb-button green">
           <i className="fa fa-2x fa-plus" />
         </div>
       </Link>
-
     </div>;
   }
 }
