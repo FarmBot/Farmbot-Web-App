@@ -10,7 +10,11 @@ module Api
       args_      = conditions.unshift(query)
       limit      = current_device.max_log_count || Device::DEFAULT_MAX_LOGS
 
-      render json: current_device.logs.where(*args_).limit(limit)
+      render json: current_device
+        .logs
+        .order(created_at: :desc)
+        .where(*args_)
+        .limit(limit)
     end
 
     def create
