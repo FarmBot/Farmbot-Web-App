@@ -12,7 +12,11 @@ class Point < ApplicationRecord
   after_discard :maybe_broadcast
 
   def should_migrate?
-    self.id && !self.migrated_at && (self.pointer_id != 0)
+    self.id && !self.migrated_at && (self.pointer_id != 0) && !is_infinite?
+  end
+
+  def is_infinite? # Values of `infinity` will crash the migration process.
+    [x,y,z].map{ |x| (x / 0.0) }.map(&:infinite?).compact.count == 0
   end
 
   def maybe_migrate
