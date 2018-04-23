@@ -59,6 +59,7 @@ class Sequence < ApplicationRecord
   end
 
   # THIS IS AN OVERRIDE - See Sequence#body_as_json
+  # Use `#manually_sync!` for most use cases.
   def broadcast?
     if destroyed? then true else false end
   end

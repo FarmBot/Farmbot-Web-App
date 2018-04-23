@@ -58,12 +58,17 @@ class ApplicationRecord < ActiveRecord::Base
     "sync.#{name_used_when_syncing}.#{self.id}"
   end
 
+  def guess_sync_id
+    Device.current.try(:id) || self.try(:device).try(:id)
+  end
+
   def broadcast!
     # no = [User, Device, EdgeNode, PrimaryNode, TokenIssuance]
     # `espeak "#{self.class.name}"` if !no.include?(self.class)
+    dev_id = guess_sync_id
     AutoSyncJob.perform_later(broadcast_payload,
-                              Device.current.id,
+                              dev_id,
                               chan_name,
-                              Time.now.utc.to_i)
+                              Time.now.utc.to_i) if dev_id
   end
 end
