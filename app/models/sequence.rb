@@ -60,7 +60,7 @@ class Sequence < ApplicationRecord
 
   # THIS IS AN OVERRIDE - See Sequence#body_as_json
   def broadcast?
-    false unless destroyed?
+    if destroyed? then true else false end
   end
 
   # Determines if the current sequence is used by any farmevents, regimens or

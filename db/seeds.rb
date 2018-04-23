@@ -119,8 +119,8 @@ unless Rails.env == "production"
                                 y: 10,
                                 z: 10)
     d = u.device
-    PinBindings::Create
-      .run!(device: d, sequence_id: d.sequences.sample.id, pin_num: 15,)
+    # PinBindings::Create
+    #   .run!(device: d, sequence_id: d.sequences.sample.id, pin_num: 15,)
     Sensors::Create
       .run!(device: d, pin: 14, label: "Stub sensor", mode: 0)
   end

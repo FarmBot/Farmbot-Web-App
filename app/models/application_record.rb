@@ -59,6 +59,8 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast!
+    no = [User, Device, EdgeNode, PrimaryNode, TokenIssuance]
+    `espeak "#{self.class.name}"` if !no.include?(self.class)
     AutoSyncJob.perform_later(broadcast_payload,
                               Device.current.id,
                               chan_name,

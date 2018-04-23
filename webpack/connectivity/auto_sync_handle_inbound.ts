@@ -7,6 +7,7 @@ import { MqttDataResult } from "./interfaces";
 export function handleInbound(dispatch: Function,
   getState: GetState,
   data: MqttDataResult) {
+  console.log("Ding");
   switch (data.status) {
     case "ERR":
     case "SKIP":
