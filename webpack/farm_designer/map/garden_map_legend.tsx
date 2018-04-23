@@ -5,7 +5,7 @@ import { GardenMapLegendProps } from "./interfaces";
 import { history } from "../../history";
 import { atMaxZoom, atMinZoom } from "./zoom";
 import { ImageFilterMenu } from "./image_filter_menu";
-import { showBugResetButton, resetBugs } from "./easter_eggs/bugs";
+import { bugsControls } from "./easter_eggs/bugs";
 // import { snapshotGarden } from "../../saved_gardens/snapshot";
 
 export function GardenMapLegend(props: GardenMapLegendProps) {
@@ -114,15 +114,7 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
         {t("Snapshot")}
         </button>
       */}
-      {showBugResetButton() &&
-        <div className="more-bugs">
-          <button
-            className="fb-button green"
-            onClick={resetBugs}>
-            {t("more bugs!")}
-          </button>
-        </div>
-      }
+      {bugsControls()}
     </div>
   </div>;
 }

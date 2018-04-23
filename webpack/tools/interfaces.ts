@@ -57,4 +57,5 @@ export interface ToolFormProps {
   dispatch: Function;
   tools: TaggedTool[];
   toggle(): void;
+  isActive(tool: TaggedTool): boolean;
 }
