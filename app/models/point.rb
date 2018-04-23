@@ -23,8 +23,7 @@ class Point < ApplicationRecord
     # ABSTRACT METHOD.
   end
 
-  # Overridable
   def name_used_when_syncing
-    self.class.name
+    "Point"
   end
 end
