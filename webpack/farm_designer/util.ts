@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import { OpenFarm, CropSearchResult } from "./openfarm";
 import { DEFAULT_ICON } from "../open_farm/icons";
 import { ExecutableType } from "./interfaces";
+import { Actions } from "../constants";
 
 const url = (q: string) => `${OpenFarm.cropUrl}?include=pictures&filter=${q}`;
 const openFarmSearchQuery = (q: string): AxiosPromise<CropSearchResult> =>
@@ -29,7 +30,7 @@ export let OFSearch = (searchTerm: string) =>
           const id = _.get(datum, "relationships.pictures.data[0].id", "");
           return { crop, image: (images[id] || DEFAULT_ICON) };
         });
-        dispatch({ type: "OF_SEARCH_RESULTS_OK", payload });
+        dispatch({ type: Actions.OF_SEARCH_RESULTS_OK, payload });
       });
   };
 
