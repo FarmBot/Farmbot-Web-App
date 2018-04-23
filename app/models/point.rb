@@ -1,6 +1,6 @@
 class Point < ApplicationRecord
   include Discard::Model
-
+  MAX_AXIS_SIZE = 50_000 # No one has an axis value > 21k right now - RC
   # Using real constants instead of strings results in circular dep. errors.
   POINTER_KINDS           = ["GenericPointer", "Plant", "ToolSlot"]
   self.inheritance_column = "pointer_type"
@@ -10,6 +10,10 @@ class Point < ApplicationRecord
 
   after_find    :maybe_migrate
   after_discard :maybe_broadcast
+
+  [:x, :y, :z].map do |axis|
+    validates_numericality_of axis, less_than: MAX_AXIS_SIZE
+  end
 
   def should_migrate?
     self.id && !self.migrated_at && (self.pointer_id != 0) && !is_infinite?
