@@ -25,7 +25,7 @@ module Api
     end
 
     def search
-      mutate Points::Query.run(raw_json, scope: archival_scope)
+      mutate Points::Query.run(raw_json, points: points)
     end
 
     def create
@@ -66,10 +66,10 @@ module Api
     end
 
     def points
-      @points ||= archival_scope.where(device_params)
+      @points ||= unrestricted_archival_scope.where(device_params)
     end
 
-    def archival_scope
+    def unrestricted_archival_scope
       case params[:filter]
       when "all" then return Point.all
       when "old" then return Point.discarded
