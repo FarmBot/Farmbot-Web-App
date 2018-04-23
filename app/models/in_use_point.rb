@@ -15,5 +15,4 @@ class InUsePoint < ApplicationRecord
   def fancy_name
     "#{FANCY_NAMES[pointer_type] || DEFAULT_NAME} at (#{x}, #{y}, #{z})"
   end
-
 end

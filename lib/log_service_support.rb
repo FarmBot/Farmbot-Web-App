@@ -13,18 +13,6 @@ class LogService
     !should_discard
   end
 
-  # Prevent logs table from growing out of proportion. For now, it is
-  # randomly to every third request for performance.
-  def self.maybe_clear_logs(device)
-    logs    = Log.where(device_id: device.id)
-    limit   = device.max_log_count || Device::DEFAULT_MAX_LOGS
-    current = logs.count
-    logs
-      .order(created_at: :desc)
-      .last(current - limit)
-      .map(&:destroy) if current > limit
-  end
-
   def self.process(delivery_info, payload)
     # { "meta"=>{"z"=>0, "y"=>0, "x"=>0, "type"=>"info", "major_version"=>6},
     #   "message"=>"HQ FarmBot TEST 123 Pin 13 is 0",

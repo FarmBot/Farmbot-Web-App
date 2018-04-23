@@ -9,7 +9,9 @@ module Api
     end
 
     def update
-      mutate SavedGardens::Update.run(raw_json, saved_garden: garden, device: current_device)
+      mutate SavedGardens::Update.run(raw_json,
+                                      saved_garden: garden,
+                                      device: current_device)
     end
 
     def destroy

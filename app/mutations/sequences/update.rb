@@ -31,8 +31,6 @@ module Sequences
       end
       sequence.manually_sync! # We must manually sync this resource.
       CeleryScript::FetchCelery.run!(sequence: sequence)
-    rescue ActiveRecord::RecordInvalid => e
-      add_error :other, :unknown, (e.try(:message) || UNKNOWN)
     end
   end
 end

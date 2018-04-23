@@ -32,8 +32,9 @@ module SavedGardens
     end
 
     def clean_out_plants
-      Points::Destroy.run!(device: device,
-                           point_ids: device.plants.pluck(:id))
+      Points::Destroy.run!(device: device, point_ids: device.plants.pluck(:id))
+    rescue Mutations::ValidationException => e
+      binding.pry
     end
   end
 end
