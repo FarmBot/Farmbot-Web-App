@@ -59,7 +59,7 @@ module Logs
       @log.x             = transitional_field(:x)
       @log.y             = transitional_field(:y)
       @log.z             = transitional_field(:z)
-      @log.verbosity     = transitional_field(:verbosity)
+      @log.verbosity     = transitional_field(:verbosity, 1)
       @log.major_version = transitional_field(:major_version)
       @log.minor_version = transitional_field(:minor_version)
       @log.type          = transitional_field(:type)

@@ -1,12 +1,12 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Api::LogsController do
   include Devise::Test::ControllerHelpers
   let(:user) { FactoryBot.create(:user) }
   let!(:logs) { FactoryBot.create_list(:log, 5, device: user.device) }
 
-  describe '#index' do
-    it 'lists last x logs' do
+  describe "#index" do
+    it "lists last x logs" do
       sign_in user
       get :index
       expect(response.status).to eq(200)
@@ -17,7 +17,7 @@ describe Api::LogsController do
   end
 
   describe "#create" do
-    it 'creates one log (legacy format)' do
+    it "creates one log (legacy format)" do
       sign_in user
       before_count = Log.count
       post :create,
@@ -32,7 +32,7 @@ describe Api::LogsController do
       expect(Log.last.device).to eq(user.device)
     end
 
-    it 'creates one log' do
+    it "creates one log" do
       sign_in user
       before_count = Log.count
       body = {
@@ -58,7 +58,7 @@ describe Api::LogsController do
       end
     end
 
-    it 'creates one log with only required fields' do
+    it "creates one log with only required fields" do
       sign_in user
       before_count = Log.count
       body = { message: "HELLO", type: "info" }
@@ -68,7 +68,7 @@ describe Api::LogsController do
       expect(json[:message]).to eq("HELLO")
     end
 
-    it 'disallows blacklisted (sensitive) words in logs' do
+    it "disallows blacklisted (sensitive) words in logs" do
       Log.destroy_all
       stub = { meta: { x: 1, y: 2, z: 3, type: "info" },
                channels: ["toast"],
@@ -80,7 +80,7 @@ describe Api::LogsController do
       expect(Log.count).to eq(0)
     end
 
-    it 'Runs compaction when the logs pile up' do
+    it "Runs compaction when the logs pile up" do
       LogDispatch.destroy_all
       Log.destroy_all
       100.times { Log.create!(device: user.device) }
@@ -91,7 +91,7 @@ describe Api::LogsController do
       expect(json.length).to eq(user.device.max_log_count)
     end
 
-    it 'deletes ALL logs' do
+    it "deletes ALL logs" do
       sign_in user
       before = user.device.logs.count
       delete :destroy, params: { id: "all" }
@@ -100,7 +100,7 @@ describe Api::LogsController do
       expect(user.device.logs.count).to eq(0)
     end
 
-    it '(PENDING) delivers emails for logs marked as `email`' do
+    it "(PENDING) delivers emails for logs marked as `email`" do
       pending "Something is not right with the queue adapter in test ENV 🤔"
       sign_in user
       empty_mail_bag
@@ -120,7 +120,7 @@ describe Api::LogsController do
       end
     end
 
-    it 'delivers emails for logs marked as `email`' do
+    it "delivers emails for logs marked as `email`" do
       LogDispatch.destroy_all
       log = logs.first
       LogDispatch.create!(log: log, device: log.device)
@@ -131,7 +131,7 @@ describe Api::LogsController do
       expect(LogDispatch.where(sent_at: nil).count).to be < b4
     end
 
-    it 'delivers emails for logs marked as `fatal_email`' do
+    it "delivers emails for logs marked as `fatal_email`" do
       message = "KABOOOOMM - SYSTEM ERROR!"
       sign_in user
       empty_mail_bag
@@ -144,6 +144,7 @@ describe Api::LogsController do
         expect(last_email).to be
         expect(last_email.body.to_s).to include(message)
         expect(last_email.to).to include(user.email)
+        expect(json[:verbosity]).to eq(1)
       end
     end
   end
@@ -175,7 +176,7 @@ describe Api::LogsController do
       [3, "debug"],
     ]
 
-    it 'filters ALL logs based on log filtering settings in `WebAppConfig` ' do
+    it "filters ALL logs based on log filtering settings in `WebAppConfig` " do
       sign_in user
       Log.destroy_all
       conf  = user.device.web_app_config
@@ -196,7 +197,7 @@ describe Api::LogsController do
       expect(json.length).to eq(EXAMPLES.length)
     end
 
-    it 'filters NO logs based on log filtering settings in `WebAppConfig` ' do
+    it "filters NO logs based on log filtering settings in `WebAppConfig` " do
       sign_in user
       Log.destroy_all
       conf  = user.device.web_app_config

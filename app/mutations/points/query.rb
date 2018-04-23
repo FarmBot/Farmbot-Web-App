@@ -2,10 +2,10 @@ require_relative "../../lib/hstore_filter"
 # WHY??? ^
 module Points
     class Query < Mutations::Command
-      H_QUERY = "meta @> hstore(:key, :value)"
+      H_QUERY = "meta -> :key = :value"
 
       required do
-        model :device, class: Device
+        duck :scope, method: [:where]
       end
 
       optional do
@@ -22,16 +22,23 @@ module Points
       end
 
       def points
-        return @points if @points
-        @points = Point.where(device: device).where(inputs.except(:device))
-        add_meta_fields if meta
-        @points
+        @points ||= conditions.reduce(scope) do |collection, query|
+          collection.where(query)
+        end
       end
 
-      def add_meta_fields
-        meta.map do |(key, value)|
-          @points = @points.where(H_QUERY, key: key, value: value)
+      def conditions
+        @conditions ||= regular_conditions + meta_conditions
+      end
+
+      def meta_conditions
+        @meta_conditions ||= (meta || {}).map do |(k,v)|
+          [H_QUERY, {key: k, value: v}]
         end
+      end
+
+      def regular_conditions
+        @regular_conditions ||= [inputs.except(:scope, :meta)]
       end
     end
 end

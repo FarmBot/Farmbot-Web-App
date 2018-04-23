@@ -29,7 +29,7 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast?
-    Device.current && (gone? || notable_changes?)
+    current_device && (gone? || notable_changes?)
   end
 
   def maybe_broadcast
@@ -58,10 +58,16 @@ class ApplicationRecord < ActiveRecord::Base
     "sync.#{name_used_when_syncing}.#{self.id}"
   end
 
+  def current_device
+    @current_device ||= (Device.current || self.try(:device))
+  end
+
   def broadcast!
+    # no     = [User, Device, EdgeNode, PrimaryNode, TokenIssuance, ]
+    # `espeak "#{self.class.name}"` if !no.include?(self.class)
     AutoSyncJob.perform_later(broadcast_payload,
-                              Device.current.id,
+                              current_device.id,
                               chan_name,
-                              Time.now.utc.to_i)
+                              Time.now.utc.to_i) if current_device
   end
 end
