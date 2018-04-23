@@ -9,6 +9,14 @@ import { Content } from "../../../constants";
 import { defensiveClone } from "../../../util";
 
 describe("<PureFarmEvents/>", () => {
+  it("renders nav", () => {
+    const wrapper = render(<PureFarmEvents push={jest.fn()}
+      calendarRows={calendarRows}
+      timezoneIsSet={false} />);
+    ["Map", "Plants", "Farm Events"].map(string =>
+      expect(wrapper.text()).toContain(string));
+  });
+
   it("sorts items correctly", () => {
     const push = jest.fn();
     const results = render(<PureFarmEvents push={push}

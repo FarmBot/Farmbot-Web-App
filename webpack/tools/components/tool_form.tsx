@@ -45,7 +45,7 @@ export class ToolForm extends React.Component<ToolFormProps, {}> {
 
   render() {
     const toggle = () => this.props.toggle();
-    const { dispatch, tools } = this.props;
+    const { dispatch, tools, isActive } = this.props;
     const specialStatus = getArrayStatus(tools);
     return <Widget>
       <WidgetHeader helpText={ToolTips.TOOL_LIST} title="Tools">
@@ -79,6 +79,7 @@ export class ToolForm extends React.Component<ToolFormProps, {}> {
           </Col>
         </Row>
         {tools.map((tool: TaggedTool, index: number) => {
+          const inSlotClass = isActive(tool) ? "pseudo-disabled" : "";
           return <Row key={index}>
             <Col xs={10}>
               <BlurableInput
@@ -90,7 +91,8 @@ export class ToolForm extends React.Component<ToolFormProps, {}> {
             </Col>
             <Col xs={2}>
               <button
-                className="fb-button red"
+                className={`fb-button red ${inSlotClass}`}
+                title={isActive(tool) ? t("in slot") : ""}
                 onClick={() => { dispatch(destroy(tool.uuid)); }}>
                 <i className="fa fa-times"></i>
               </button>

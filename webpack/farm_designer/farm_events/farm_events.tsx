@@ -8,6 +8,7 @@ import { FarmEventProps, CalendarOccurrence } from "../interfaces";
 import * as _ from "lodash";
 import * as moment from "moment";
 import { Content } from "../../constants";
+import { DesignerNavTabs } from "../panel_header";
 
 export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
   innerRows = (items: CalendarOccurrence[]) => {
@@ -112,21 +113,8 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
   };
 
   render() {
-
     return <div className="panel-container magenta-panel farm-event-panel">
-      <div className="panel-header magenta-panel">
-        <div className="panel-tabs">
-          <Link to="/app/designer" className="visible-xs">
-            {t("Designer")}
-          </Link>
-          <Link to="/app/designer/plants">
-            {t("Plants")}
-          </Link>
-          <Link to="/app/designer/farm_events" className="active">
-            {t("Farm Events")}
-          </Link>
-        </div>
-      </div>
+      <DesignerNavTabs />
       {this.props.timezoneIsSet ? this.normalContent() : this.tzwarning()}
     </div>;
   }

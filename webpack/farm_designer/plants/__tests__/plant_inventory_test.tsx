@@ -14,7 +14,7 @@ describe("<PlantInventory />", () => {
         plants={[fakePlant()]}
         dispatch={jest.fn()}
         hoveredPlantListItem={undefined} />);
-    ["Designer",
+    ["Map",
       "Plants",
       "Farm Events",
       "Strawberry Plant",

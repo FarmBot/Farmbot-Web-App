@@ -329,6 +329,7 @@ export class GardenMap extends
       onDragEnter={this.handleDragEnter}
       onDragOver={this.handleDragOver}
       onMouseLeave={this.endDrag}
+      onMouseUp={this.endDrag}
       onDragEnd={this.endDrag}
       onDragStart={(e) => e.preventDefault()}>
       <svg

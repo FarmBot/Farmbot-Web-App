@@ -11,7 +11,6 @@ import * as React from "react";
 import { shallow } from "enzyme";
 import { GardenMapLegend } from "../garden_map_legend";
 import { GardenMapLegendProps } from "../interfaces";
-import { setEggStatus, EggKeys } from "../easter_eggs/status";
 
 describe("<GardenMapLegend />", () => {
   function fakeProps(): GardenMapLegendProps {
@@ -50,14 +49,5 @@ describe("<GardenMapLegend />", () => {
 
   it("zoom in button disabled", () => {
     checkZoomButtons(true, false, 1);
-  });
-
-  it("lays eggs", () => {
-    setEggStatus(EggKeys.BRING_ON_THE_BUGS, "");
-    const noEggs = shallow(<GardenMapLegend {...fakeProps()} />);
-    expect(noEggs.find(".more-bugs").length).toEqual(0);
-    setEggStatus(EggKeys.BRING_ON_THE_BUGS, "true");
-    const eggs = shallow(<GardenMapLegend {...fakeProps()} />);
-    expect(eggs.find(".more-bugs").length).toEqual(1);
   });
 });

@@ -1,6 +1,8 @@
 import * as React from "react";
 import { shallow, mount } from "enzyme";
-import { Bugs, BugsProps, showBugResetButton, showBugs, resetBugs } from "../bugs";
+import {
+  Bugs, BugsProps, showBugResetButton, showBugs, resetBugs, bugsControls
+} from "../bugs";
 import { EggKeys, setEggStatus, getEggStatus } from "../status";
 import { range } from "lodash";
 import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
@@ -83,5 +85,19 @@ describe("resetBugs()", () => {
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "false");
     resetBugs();
     expectAlive("true");
+  });
+});
+
+describe("bugsControls", () => {
+  it("lays eggs", () => {
+    setEggStatus(EggKeys.BRING_ON_THE_BUGS, "");
+    const noEggs = shallow(bugsControls());
+    expect(noEggs.find(".more-bugs").length).toEqual(0);
+    setEggStatus(EggKeys.BRING_ON_THE_BUGS, "true");
+    const stillNoEggs = shallow(bugsControls());
+    expect(stillNoEggs.find(".more-bugs").length).toEqual(0);
+    setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "false");
+    const eggs = shallow(bugsControls());
+    expect(eggs.find(".more-bugs").length).toEqual(1);
   });
 });
