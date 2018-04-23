@@ -81,7 +81,8 @@ export function handleCreateOrUpdate(dispatch: Function,
 }
 
 export const autoSync =
-  (dispatch: Function, getState: GetState) =>
-    (chan: string, payload: Buffer) => {
+  (dispatch: Function, getState: GetState) => {
+    return (chan: string, payload: Buffer) => {
       handleInbound(dispatch, getState, routeMqttData(chan, payload));
     };
+  };
