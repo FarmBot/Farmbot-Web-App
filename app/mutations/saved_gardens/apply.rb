@@ -6,6 +6,10 @@ module SavedGardens
       boolean :destructive # Not yet implemented. RC 4/20/18
     end
 
+    def validate
+      plant_safety_check if destructive
+    end
+
     def execute
       clean_out_plants if destructive
       convert_templates_to_plants
@@ -33,8 +37,15 @@ module SavedGardens
 
     def clean_out_plants
       Points::Destroy.run!(device: device, point_ids: device.plants.pluck(:id))
-    rescue Mutations::ValidationException => e
-      binding.pry
+    end
+
+    def plant_safety_check
+      add_error :whoops, :whoops, "whoops" if in_use_plants.count > 0
+    end
+
+    def in_use_plants
+      binding.pry # Hmmm...
+      @in_use_plants ||= device.in_use_points.where(point_type: "Plant")
     end
   end
 end

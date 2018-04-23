@@ -23,6 +23,8 @@ class Device < ApplicationRecord
   has_many  :token_issuances, dependent: :destroy
   has_many  :tools,           dependent: :destroy
   has_many  :webcam_feeds,    dependent: :destroy
+  has_many  :in_use_tools
+  has_many  :in_use_points
 
   has_many  :users
   validates_presence_of :name
