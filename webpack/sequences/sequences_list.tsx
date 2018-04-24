@@ -55,16 +55,14 @@ export class SequencesList extends
 
   componentDidMount() {
     const { dispatch, sequence, sequences } = this.props;
-    console.log("🔍 Starting...");
     sequence && urlFriendly(sequence.body.name) &&
       push("/app/sequences/" + urlFriendly(sequence.body.name));
 
     sequences.map(seq => {
       if (lastUrlChunk() === urlFriendly(seq.body.name)) {
         // TODO: Hack :( Can't seem to figure out why this won't work...
-        dispatch(selectSequence(seq.uuid));
         setTimeout(() => {
-          console.log("🔎 Found it! " + (seq.uuid || "No wayyyy"));
+          dispatch(selectSequence(seq.uuid));
           this.forceUpdate();
         }, 0);
       }
