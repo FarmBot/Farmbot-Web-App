@@ -61,7 +61,7 @@ describe Api::LogsController do
     it "creates one log with only required fields" do
       sign_in user
       before_count = Log.count
-      body = { message: "HELLO", type: "info" }
+      body = { message: "HELLO" }
       post :create, body: body.to_json, params: {format: :json}
       expect(response.status).to eq(200)
       expect(Log.count).to be > before_count

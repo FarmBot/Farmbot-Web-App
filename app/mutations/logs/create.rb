@@ -62,7 +62,7 @@ module Logs
       @log.verbosity     = transitional_field(:verbosity, 1)
       @log.major_version = transitional_field(:major_version)
       @log.minor_version = transitional_field(:minor_version)
-      @log.type          = transitional_field(:type)
+      @log.type          = transitional_field(:type, "info")
       @log.validate!
     end
 
