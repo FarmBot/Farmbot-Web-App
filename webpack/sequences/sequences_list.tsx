@@ -55,7 +55,7 @@ export class SequencesList extends
 
   componentDidMount() {
     const { dispatch, sequence, sequences } = this.props;
-
+    console.log("🔍 Starting...");
     sequence && urlFriendly(sequence.body.name) &&
       push("/app/sequences/" + urlFriendly(sequence.body.name));
 
@@ -63,6 +63,7 @@ export class SequencesList extends
       if (lastUrlChunk() === urlFriendly(seq.body.name)) {
         // TODO: Hack :( Can't seem to figure out why this won't work...
         setTimeout(() => {
+          console.log("🔎 Found it! " + (seq.uuid || "No wayyyy"));
           dispatch(selectSequence(seq.uuid));
         }, 0);
       }
