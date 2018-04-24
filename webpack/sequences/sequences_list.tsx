@@ -62,9 +62,10 @@ export class SequencesList extends
     sequences.map(seq => {
       if (lastUrlChunk() === urlFriendly(seq.body.name)) {
         // TODO: Hack :( Can't seem to figure out why this won't work...
+        dispatch(selectSequence(seq.uuid));
         setTimeout(() => {
           console.log("🔎 Found it! " + (seq.uuid || "No wayyyy"));
-          dispatch(selectSequence(seq.uuid));
+          this.forceUpdate();
         }, 0);
       }
     });
