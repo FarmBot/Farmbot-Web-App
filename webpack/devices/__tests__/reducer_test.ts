@@ -105,12 +105,16 @@ describe("botRedcuer", () => {
       .toBe(step2.statusStash);
   });
 
-  it("handles STASH_STATUS", () => {
+  it("handles STASH_STATUS / _RESOURCE_NO", () => {
     const step1 = initialState();
     step1.statusStash = "booting";
     step1.hardware.informational_settings.sync_status = "synced";
     const step2 = botReducer(step1, stash());
     expect(step2.statusStash)
       .toBe(step1.hardware.informational_settings.sync_status);
+    const no = { type: Actions._RESOURCE_NO, payload: undefined };
+    const step3 = botReducer(step2, no);
+    const step3Status = step3.hardware.informational_settings.sync_status;
+    expect(step3Status).toEqual(step3.statusStash);
   });
 });
