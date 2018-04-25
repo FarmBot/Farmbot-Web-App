@@ -20,6 +20,16 @@ jest.mock("../../resources/selectors", () => {
     })
   };
 });
+
+jest.mock("../../redux/store", () => {
+  return {
+    store: {
+      dispatch: jest.fn(),
+      getState: jest.fn(() => ({ resources: { index: {} } }))
+    }
+  };
+});
+
 import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 import { selectSequence } from "../actions";
 import { selectAllSequences } from "../../resources/selectors";
@@ -45,11 +55,12 @@ describe("setActiveSequenceByName", () => {
   });
 
   it("finds a sequence by name", () => {
-    const body = mockData.fakeSequences[0].body;
+    const tr = mockData.fakeSequences[0];
+    const body = tr.body;
     jest.clearAllTimers();
-    mockData.lastUrlChunk = name;
+    mockData.lastUrlChunk = body.name;
     setActiveSequenceByName();
     jest.runAllTimers();
-    expect(true).toBe(true);
+    expect(selectSequence).toHaveBeenCalledWith(tr.uuid);
   });
 });
