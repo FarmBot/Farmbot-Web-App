@@ -15,7 +15,7 @@ export function setActiveSequenceByName(_ = "") {
     const isMatch = (chunk === name);
     if (isMatch) {
       console.log("FOUND A MATCH!");
-      setTimeout(() => store.dispatch(selectSequence(seq.uuid)), 2000);
+      setTimeout(() => store.dispatch(selectSequence(seq.uuid)), 200);
     }
   });
 }
