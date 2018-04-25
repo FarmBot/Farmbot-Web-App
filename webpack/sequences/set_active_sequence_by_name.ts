@@ -4,18 +4,15 @@ import { urlFriendly, lastUrlChunk } from "../util";
 import { selectSequence } from "./actions";
 
 export function setActiveSequenceByName(_ = "") {
-  const sequences =
-    selectAllSequences(store.getState().resources.index);
-  const chunk = lastUrlChunk();
-  if (chunk == "sequences") {
+
+  if (lastUrlChunk() == "sequences") {
     return;
   }
-  sequences.map(seq => {
-    const name = urlFriendly(seq.body.name);
-    const isMatch = (chunk === name);
-    if (isMatch) {
-      console.log("FOUND A MATCH!");
-      setTimeout(() => store.dispatch(selectSequence(seq.uuid)), 200);
-    }
-  });
+
+  selectAllSequences(store.getState().resources.index)
+    .map(seq => {
+      const name = urlFriendly(seq.body.name);
+      const setSequence = () => store.dispatch(selectSequence(seq.uuid));
+      (lastUrlChunk() === name) && setTimeout(setSequence, 0);
+    });
 }
