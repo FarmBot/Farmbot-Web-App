@@ -53,18 +53,6 @@ export class SequencesList extends
     searchTerm: ""
   };
 
-  componentDidMount() {
-    const { dispatch, sequence, sequences } = this.props;
-    sequence && urlFriendly(sequence.body.name) &&
-      push("/app/sequences/" + urlFriendly(sequence.body.name));
-
-    sequences.map(seq => {
-      if (lastUrlChunk() === urlFriendly(seq.body.name)) {
-        dispatch(selectSequence(seq.uuid));
-      }
-    });
-  }
-
   onChange = (e: React.SyntheticEvent<HTMLInputElement>) =>
     this.setState({ searchTerm: e.currentTarget.value });
 
