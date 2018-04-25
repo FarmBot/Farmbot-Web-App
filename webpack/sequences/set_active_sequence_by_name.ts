@@ -13,6 +13,6 @@ export function setActiveSequenceByName(_ = "") {
     .map(seq => {
       const name = urlFriendly(seq.body.name);
       const setSequence = () => store.dispatch(selectSequence(seq.uuid));
-      (lastUrlChunk() === name) && setTimeout(setSequence, 0);
+      (lastUrlChunk() === name) && setTimeout(setSequence, 150);
     });
 }
