@@ -1,15 +1,21 @@
 import { selectAllSequences } from "../resources/selectors";
 import { store } from "../redux/store";
-import { urlFriendly } from "../util";
+import { urlFriendly, lastUrlChunk } from "../util";
 import { selectSequence } from "./actions";
 
-export function setActiveSequenceByName(name = "") {
-  const sequences = selectAllSequences(store.getState().resources.index);
-
+export function setActiveSequenceByName(_ = "") {
+  const sequences =
+    selectAllSequences(store.getState().resources.index);
+  const chunk = lastUrlChunk();
+  if (chunk == "sequences") {
+    return;
+  }
   sequences.map(seq => {
-    const isMatch = (urlFriendly(name) === urlFriendly(seq.body.name));
-    debugger;
-    isMatch && console.log("FOUND A MATCH!");
-    isMatch && store.dispatch(selectSequence(seq.uuid));
+    const name = urlFriendly(seq.body.name);
+    const isMatch = (chunk === name);
+    if (isMatch) {
+      console.log("FOUND A MATCH!");
+      setTimeout(() => store.dispatch(selectSequence(seq.uuid)), 2000);
+    }
   });
 }
