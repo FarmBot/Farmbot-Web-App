@@ -20,7 +20,7 @@ class Point < ApplicationRecord
   end
 
   def is_infinite? # Values of `infinity` will crash the migration process.
-    [x,y,z].map{ |x| (x / 0.0) }.map(&:infinite?).compact.count == 0
+    [x,y,z].compact.map(&:infinite?).compact.present?
   end
 
   def maybe_migrate
