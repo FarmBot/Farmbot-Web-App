@@ -34,13 +34,12 @@ describe Api::PointsController do
       sign_in user
       GenericPointer.destroy_all
       created_by = { created_by: "plant-detection" }
-      red        = { color: "red" }
       a = FactoryBot.create(:generic_pointer,
                           device: device,
                           meta: created_by)
       b = FactoryBot.create(:generic_pointer,
                           device: device,
-                          meta: created_by.merge(red))
+                          meta: created_by.merge({color: "red"}))
       c = FactoryBot.create(:generic_pointer,
                           device: device,
                           meta: {})
@@ -52,6 +51,16 @@ describe Api::PointsController do
       expect(ids).to     include(a.id)
       expect(ids).to     include(b.id)
       expect(ids).to_not include(c.id)
+    end
+
+    it 'handles result sets where size = 0' do
+      sign_in user
+      post :search,
+            body: { created_by: "plant-detection" }.to_json,
+            params: {format: :json }
+      expect(response.status).to eq(200)
+      expect(json).to be_kind_of(Array)
+      expect(json.length).to eq(0)
     end
   end
 end
