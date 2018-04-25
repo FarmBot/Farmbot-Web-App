@@ -6,7 +6,6 @@ import { box } from "boxed_value";
 import {
   TaggedResource, TaggedFirmwareConfig, TaggedFbosConfig
 } from "../resources/tagged_resources";
-import { history } from "../history";
 import { BotLocationData } from "../devices/interfaces";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
 import { FbosConfig } from "../config_storage/fbos_configs";
@@ -141,16 +140,7 @@ export function shortRevision() {
   return (globalConfig.SHORT_REVISION || "NONE").slice(0, 8);
 }
 
-/** When needing to reference the url in some js universally or vice versa. */
-export function urlFriendly(stringToFormat: string) {
-  return encodeURIComponent(stringToFormat.replace(/ /gi, "_").toLowerCase());
-}
-
-/** Get remainder of current url after the last "/". */
-export function lastUrlChunk() {
-  const p = history.getCurrentLocation().pathname;
-  return p.split("/")[p.split("/").length - 1];
-}
+export * from "./urls";
 
 export const trim = (i: string): string => i.replace(/\s+/g, " ");
 

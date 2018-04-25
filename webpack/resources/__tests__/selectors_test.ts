@@ -10,7 +10,7 @@ import {
   SpecialStatus
 } from "../tagged_resources";
 import { createOK } from "../actions";
-import { generateUuid } from "../util";
+import { generateUuid, hasId } from "../util";
 import {
   fakeWebcamFeed,
   fakeSequence
@@ -182,7 +182,7 @@ describe("toolsInUse()", () => {
 
 describe("hasId()", () => {
   it("has", () => {
-    const result = Selector.hasId(fakeIndex, "Sequence", 23);
+    const result = hasId(fakeIndex, "Sequence", 23);
     expect(result).toBeTruthy();
   });
 });

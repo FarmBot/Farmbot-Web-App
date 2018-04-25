@@ -13,7 +13,7 @@ import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {
-  componentWillMount() { setActiveSequenceByName("NO"); }
+  componentWillMount() { setActiveSequenceByName(); }
 
   render() {
     const { sequence } = this.props;

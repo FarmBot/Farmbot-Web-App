@@ -3,16 +3,13 @@ import { store } from "../redux/store";
 import { urlFriendly, lastUrlChunk } from "../util";
 import { selectSequence } from "./actions";
 
-export function setActiveSequenceByName(_ = "") {
+export function setActiveSequenceByName() {
 
-  if (lastUrlChunk() == "sequences") {
-    return;
-  }
+  if (lastUrlChunk() == "sequences") { return; }
 
-  selectAllSequences(store.getState().resources.index)
-    .map(seq => {
-      const name = urlFriendly(seq.body.name);
-      const setSequence = () => store.dispatch(selectSequence(seq.uuid));
-      (lastUrlChunk() === name) && setTimeout(setSequence, 150);
-    });
+  selectAllSequences(store.getState().resources.index).map(seq => {
+    const name = urlFriendly(seq.body.name);
+    const setSequence = () => store.dispatch(selectSequence(seq.uuid));
+    (lastUrlChunk() === name) && setTimeout(setSequence, 450);
+  });
 }
