@@ -21,6 +21,29 @@ require "rspec/rails"
 require_relative "./stuff"
 require_relative "./fake_sequence"
 
+class FakeBunny
+  def initialize(*)
+  end
+
+  def start(*)
+    self
+  end
+
+  def create_channel(*)
+    self
+  end
+
+  def topic(*)
+    self
+  end
+
+  def publish(*)
+    self
+  end
+end
+
+Transport.default_amqp_adapter = FakeBunny
+
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 SmarfDoc.config do |c|
