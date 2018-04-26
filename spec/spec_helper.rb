@@ -19,7 +19,6 @@ ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../../config/environment", __FILE__)
 require "rspec/rails"
 require_relative "./stuff"
-require_relative "./topic_stub"
 require_relative "./fake_sequence"
 
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }

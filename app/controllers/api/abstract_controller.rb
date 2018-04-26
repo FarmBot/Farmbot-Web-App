@@ -90,7 +90,7 @@ private
       response.headers[REQ_ID]       = id
       # # IMPORTANT: We need to hoist X-Farmbot-Rpc-Id to a global so that it is
       # #            accessible for use with auto_sync.
-      Transport.set_current_request_id(response.headers[REQ_ID])
+      Transport.current.set_current_request_id(response.headers[REQ_ID])
     end
 
     # Disable cookies. This is an API!

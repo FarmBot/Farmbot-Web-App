@@ -46,7 +46,7 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast_payload
-    { args: { label: Transport.current_request_id }, body: body_as_json }.to_json
+    { args: { label: Transport.current.current_request_id }, body: body_as_json }.to_json
   end
 
   # Overridable
