@@ -110,7 +110,11 @@ describe Api::SavedGardensController do
       old_plant_count = user.device.plants.count
       post :apply, params: {id: saved_garden.id }
       expect(response.status).to be(422)
-      expect(user.device.plants.count).to be > old_plant_count
+      expect(user.device.plants.count).to eq(old_plant_count)
+      expect(json[:whoops])
+        .to include("Unable to remove the following plants from the garden")
+      expect(json[:whoops])
+        .to include("plant at (#{plant.x}, #{plant.y}, #{plant.z})")
     end
 
     it "performs 'destructive' garden application" do

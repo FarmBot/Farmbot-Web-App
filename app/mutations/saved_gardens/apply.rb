@@ -1,5 +1,7 @@
 module SavedGardens
   class Apply < Mutations::Command
+    DEP_ERROR_REPORT = \
+      "Unable to remove the following plants from the garden: %s"
     required do
       model   :device, class: Device
       model   :garden, class: SavedGarden
@@ -40,12 +42,18 @@ module SavedGardens
     end
 
     def plant_safety_check
-      add_error :whoops, :whoops, "whoops" if in_use_plants.count > 0
+      add_error :whoops,
+                :whoops,
+                plant_error_message if in_use_plants.count > 0
+    end
+
+    def plant_error_message
+      @plant_error_message ||= \
+        DEP_ERROR_REPORT % in_use_plants.map(&:fancy_name).join(", ")
     end
 
     def in_use_plants
-      binding.pry # Hmmm...
-      @in_use_plants ||= device.in_use_points.where(point_type: "Plant")
+      @in_use_plants ||= device.in_use_points.where(pointer_type: "Plant")
     end
   end
 end
