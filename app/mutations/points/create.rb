@@ -1,3 +1,5 @@
+require_relative "../../lib/hstore_filter"
+# WHY??? ^
 module Points
   class Create < Mutations::Command
     required do
