@@ -25,11 +25,4 @@ describe Device do
     device.timezone = "America/Chicago"
     expect([-5, -6, -7]).to include device.tz_offset_hrs # Remember DST!
   end
-
-  it 'uses `tell` to send device messages' do
-    dbl = double("fake transport layer")
-    expect(dbl).to receive(:amqp_send)
-    result = device.tell("Hello!", dbl)
-    expect(result.message).to eq("Hello!")
-  end
 end
