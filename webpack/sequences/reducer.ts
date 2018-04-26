@@ -2,7 +2,6 @@ import { SequenceReducerState } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { TaggedResource } from "../resources/tagged_resources";
 import { Actions } from "../constants";
-// import { ResourceReady } from "../connectivity/interfaces";
 
 export const initialState: SequenceReducerState = {
   current: undefined

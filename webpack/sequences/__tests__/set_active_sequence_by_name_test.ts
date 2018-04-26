@@ -35,12 +35,10 @@ import { selectSequence } from "../actions";
 import { selectAllSequences } from "../../resources/selectors";
 
 describe("setActiveSequenceByName", () => {
-  jest.useFakeTimers();
 
   it("returns early if there is nothing to compare", () => {
     mockData.lastUrlChunk = "sequences";
     setActiveSequenceByName();
-    jest.runAllTimers();
     expect(selectSequence).not.toHaveBeenCalled();
   });
 
@@ -49,7 +47,6 @@ describe("setActiveSequenceByName", () => {
     const name = "a different value than " + body.name;
     mockData.lastUrlChunk = name;
     setActiveSequenceByName();
-    jest.runAllTimers();
     expect(selectAllSequences).toHaveBeenCalled();
     expect(selectSequence).not.toHaveBeenCalled();
   });
@@ -60,7 +57,6 @@ describe("setActiveSequenceByName", () => {
     jest.clearAllTimers();
     mockData.lastUrlChunk = body.name;
     setActiveSequenceByName();
-    jest.runAllTimers();
     expect(selectSequence).toHaveBeenCalledWith(tr.uuid);
   });
 });
