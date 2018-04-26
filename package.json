@@ -100,7 +100,6 @@
     "webpack-notifier": "^1.5.0"
   },
   "jest": {
-    "testURL": "http://www.testsuite.org:3000",
     "globals": {
       "globalConfig": {
         "NODE_ENV": "development",
