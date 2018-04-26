@@ -15,7 +15,6 @@ class ApplicationRecord < ActiveRecord::Base
                      "current_sign_in_at",
                      "fbos_version" ]
   def gone?
-    puts ({ destroyed: destroyed?, discarded: self.try(:discarded?) }).inspect
     destroyed? || self.try(:discarded?)
   end
 
