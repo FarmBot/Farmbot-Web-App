@@ -20,15 +20,9 @@ require File.expand_path("../../config/environment", __FILE__)
 # This is a stub for BunnyRB because we don't want the test suite to connect to
 # AMQP for real.
 class FakeTransport < Transport
-  MOCKED_METHODS = [ # Theses are the "real" I/O inducing methods that must be
-    :bind,           # Stubbed out.
-    :publish,
-    :queue,
-    :subscribe,
-    :create_channel,
-    # :connection,
-    :topic,
-  ]
+  # Theses are the "real" I/O inducing methods that must be Stubbed out.
+  MOCKED_METHODS = \
+    [ :bind, :publish, :queue, :subscribe, :create_channel, :topic ]
 
   # When you call an AMQP I/O method, instead of doing real I/O, it will deposit
   # the call into the @calls dictionary for observation.
