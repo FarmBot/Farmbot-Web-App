@@ -61,18 +61,6 @@ describe("util", () => {
     });
   });
 
-  describe("getParam", () => {
-    it("gets params", () => {
-      Object.defineProperty(window.location, "search", {
-        writable: true,
-        value: "?foo=bar&baz=wow"
-      });
-      expect(Util.getParam("foo")).toEqual("bar");
-      expect(Util.getParam("baz")).toEqual("wow");
-      expect(Util.getParam("blah")).toEqual("");
-    });
-  });
-
   describe("oneOf()", () => {
     it("determines matches", () => {
       expect(Util.oneOf(["foo"], "foobar")).toBeTruthy();

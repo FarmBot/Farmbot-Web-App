@@ -10,17 +10,6 @@ import { BotLocationData } from "../devices/interfaces";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
 import { FbosConfig } from "../config_storage/fbos_configs";
 
-// http://stackoverflow.com/a/901144/1064917
-// Grab a query string param by name, because react-router-redux doesn't
-// support query strings yet.
-export function getParam(name: string): string {
-  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-  const regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-    r = regex.exec(location.search);
-  // tslint:disable-next-line:no-null-keyword
-  return r === null ? "" : decodeURIComponent(r[1].replace(/\+/g, " "));
-}
-
 export let colors: Array<Color> = [
   "blue",
   "green",
