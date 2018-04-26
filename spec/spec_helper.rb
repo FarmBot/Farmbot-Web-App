@@ -26,8 +26,8 @@ class FakeTransport < Transport
     :queue,
     :subscribe,
     :create_channel,
-    :connection,
-    # :topic,
+    # :connection,
+    :topic,
   ]
 
   # When you call an AMQP I/O method, instead of doing real I/O, it will deposit

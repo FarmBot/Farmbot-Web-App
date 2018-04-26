@@ -36,14 +36,14 @@ class Transport
   end
 
   def amqp_topic
-    @topic ||= self
+    @amqp_topic ||= self
                   .connection
                   .create_channel
                   .topic("amq.topic", auto_delete: true)
   end
 
   def amqp_send(message, id, channel)
-    topic.publish(message, routing_key: "bot.device_#{id}.#{channel}")
+    amqp_topic.publish(message, routing_key: "bot.device_#{id}.#{channel}")
   end
 
   # We need to hoist the Rack X-Farmbot-Rpc-Id to a global state so that it can
