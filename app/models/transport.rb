@@ -16,13 +16,12 @@ class Transport
 
   attr_accessor :amqp_adapter, :request_store
 
-  def initialize(opts = {})
-    @amqp_adapter  = opts.fetch :amqp_adapter,  Transport.default_amqp_adapter
-    @request_store = opts.fetch :request_store, RequestStore.store
-  end
-
   def self.current
     @current ||= self.new
+  end
+
+  def self.current=(value)
+    @current = value
   end
 
   def connection

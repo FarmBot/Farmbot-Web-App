@@ -25,4 +25,15 @@ describe Device do
     device.timezone = "America/Chicago"
     expect([-5, -6, -7]).to include device.tz_offset_hrs # Remember DST!
   end
+
+  it "sends specific users toast messages" do
+    hello = "Hello!"
+    log   = device.tell(hello)
+    json, id, chan = Transport.current.calls[:amqp_send].last
+    json  = JSON.parse(json)
+
+    expect(id).to eq(device.id)
+    expect(log.message).to eq(hello)
+    expect(chan).to eq("logs")
+  end
 end

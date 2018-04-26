@@ -21,28 +21,57 @@ require "rspec/rails"
 require_relative "./stuff"
 require_relative "./fake_sequence"
 
-class FakeBunny
+# This is a stub for BunnyRB because we don't want the test suite to connect to
+# AMQP for real.
+class FakeTransport
+  MOCKED_METHODS = [
+    :amqp_send,
+    :bind,
+    :create_channel,
+    :publish,
+    :queue,
+    :subscribe,
+    :subscribe,
+    :topic,
+    :set_current_request_id,
+    :connection,
+    :log_channel
+  ]
+
+  def current_request_id
+    rand(0..100)
+  end
+
   def initialize(*)
+    self.clear!
   end
 
-  def start(*)
+  def clear!
+    @calls = {}
+  end
+
+  def start
     self
   end
 
-  def create_channel(*)
-    self
+  def calls
+    @calls
   end
 
-  def topic(*)
-    self
-  end
-
-  def publish(*)
-    self
+  MOCKED_METHODS.map do |name|
+    # Eval is Evil, but this is pretty quick for testing.
+    eval """
+      def #{name}(*x)
+        key  = #{name.inspect}
+        (@calls[key] ||= []).push(x)
+        @calls[key] = @calls[key].last(10)
+        self
+      end
+    """
   end
 end
 
-Transport.default_amqp_adapter = FakeBunny
+Transport.current = FakeTransport.new
 
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 

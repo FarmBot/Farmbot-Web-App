@@ -26,11 +26,9 @@ describe LogService do
   end
 
   it "calls .subscribe() on Transport." do
-    fakee = FakeLogChan.new
-    allow(Transport).to receive(:log_channel) { fakee }
-    expect(fakee.subcribe_calls).to eq(0)
     load "lib/log_service.rb"
-    expect(fakee.subcribe_calls).to eq(1)
+    arg1 = Transport.current.calls[:subscribe].last[0]
+    expect(arg1).to eq({block: true})
   end
 
   it "creates new messages in the DB when called" do
