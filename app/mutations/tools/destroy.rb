@@ -18,8 +18,14 @@ module Tools
       tool.destroy!
     end
 
+private
+
+    def slot
+      @slot ||= tool.tool_slot
+    end
+
     def any_slots?
-      add_error :tool, :in_slot, STILL_IN_SLOT if ToolSlot.where(tool: tool).any?
+      add_error :tool, :in_slot, STILL_IN_SLOT if slot.present?
     end
 
     def any_deps?

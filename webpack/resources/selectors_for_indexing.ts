@@ -13,11 +13,11 @@ import {
   SlotWithTool
 } from "./interfaces";
 import {
-  assertUuid,
   selectAllTools,
   selectAllToolSlotPointers,
   maybeFindToolById
 } from "./selectors";
+import { assertUuid } from "./util";
 
 interface IndexLookupDictionary<T extends TaggedResource>
   extends CowardlyDictionary<T> { }

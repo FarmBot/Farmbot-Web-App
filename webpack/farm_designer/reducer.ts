@@ -42,9 +42,8 @@ export let designer = generateReducer<DesignerState>(initialState)
     return s;
   })
   .add<CropLiveSearchResult[]>(Actions.OF_SEARCH_RESULTS_OK, (s, a) => {
-    const state = cloneDeep(s);
-    state.cropSearchResults = a.payload;
-    return state;
+    s.cropSearchResults = a.payload;
+    return s;
   })
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s) => {
     s.selectedPlants = undefined;

@@ -127,20 +127,6 @@ export interface StepTitleBarProps {
   sequence: TaggedSequence;
 }
 
-export type CHANGE_STEP = "CHANGE_STEP";
-
-export type CHANGE_STEP_SELECT = "CHANGE_STEP_SELECT" | "UPDATE_SUB_SEQUENCE";
-
-export interface ChangeStepSelect {
-  type: CHANGE_STEP_SELECT;
-  payload: {
-    value: number | string;
-    index: number;
-    field: string;
-    type?: string;
-  };
-}
-
 export interface SelectSequence {
   type: "SELECT_SEQUENCE";
   payload: string;

@@ -3,11 +3,12 @@ import { t } from "i18next";
 import { error, warning } from "farmbot-toastr";
 import { ReduxAction, Thunk } from "../../redux/interfaces";
 import { ToggleDayParams } from "./interfaces";
-import { assertUuid, findSequence, findRegimen } from "../../resources/selectors";
+import { findSequence, findRegimen } from "../../resources/selectors";
 import { groupRegimenItemsByWeek } from "./group_regimen_items_by_week";
 import { defensiveClone } from "../../util";
 import { overwrite } from "../../api/crud";
 import { Actions } from "../../constants";
+import { assertUuid } from "../../resources/util";
 
 export function pushWeek() {
   return {
