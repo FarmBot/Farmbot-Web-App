@@ -30,8 +30,7 @@ describe Device do
     Transport.current.clear!
     hello      = "Hello!"
     log        = device.tell(hello)
-    pending("BRB")
-    json, info = Transport.current.calls[:publish].last
+    json, info = Transport.current.connection.calls[:publish].last
     json       = JSON.parse(json)
     expect(info[:routing_key]).to eq("bot.device_#{device.id}.logs")
     expect(log.message).to eq(hello)

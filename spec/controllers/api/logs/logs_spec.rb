@@ -100,26 +100,6 @@ describe Api::LogsController do
       expect(user.device.logs.count).to eq(0)
     end
 
-    it "(PENDING) delivers emails for logs marked as `email`" do
-      pending "Something is not right with the queue adapter in test ENV 🤔"
-      sign_in user
-      empty_mail_bag
-      before_count = LogDispatch.count
-      body         = { meta: { x: 1, y: 2, z: 3, type: "info" },
-                       channels: ["email"],
-                       message: "Heyoooo" }.to_json
-      run_jobs_now do
-        post :create, body: body, params: {format: :json}
-        after_count = LogDispatch.count
-        expect(response.status).to eq(200)
-        expect(last_email).to be
-        expect(last_email.body.to_s).to include("Heyoooo")
-        expect(last_email.to).to include(user.email)
-        expect(before_count).to be < after_count
-        expect(LogDispatch.where(sent_at: nil).count).to eq(0)
-      end
-    end
-
     it "delivers emails for logs marked as `email`" do
       LogDispatch.destroy_all
       log = logs.first
