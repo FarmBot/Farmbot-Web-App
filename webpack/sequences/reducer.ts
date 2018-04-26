@@ -24,12 +24,6 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
     return s;
   })
   .add<string>(Actions.SELECT_SEQUENCE, function (s, { payload }) {
-    console.log("SELECTING IT");
     s.current = payload;
     return s;
   });
-  // .add<ResourceReady>(Actions.RESOURCE_READY, function (s, _) {
-  //   // console.log("UNSELECTING IT");
-  //   // s.current = undefined;
-  //   return s;
-  // });
