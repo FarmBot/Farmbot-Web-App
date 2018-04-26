@@ -4,7 +4,24 @@ import { Link } from "react-router";
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
 
-export const links = [
+/** Uses a slug and a child path to compute the `href` of a navbar link. */
+type LinkComputeFn = (slug: string, childPath: string) => string;
+
+/** If no LinkComputeFn is provided, the default behavior prevails. */
+const DEFAULT: LinkComputeFn =
+  (slug, childpath) => `/app/${slug}${childpath}`;
+
+interface NavLinkParams {
+  /** User visible verbiage. */
+  name: string;
+  /** Font awesome icon name. */
+  icon: string;
+  /** A unique name used for the path in the URL bar. */
+  slug: string;
+  computeHref?: LinkComputeFn
+}
+
+export const links: NavLinkParams[] = [
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
   { name: "Controls", icon: "keyboard-o", slug: "controls" },
   { name: "Device", icon: "cog", slug: "device" },
@@ -22,8 +39,9 @@ export const NavLinks = (props: NavLinksProps) => {
       {links.map(link => {
         const isActive = (currPageSlug === link.slug) ? "active" : "";
         const childPath = link.slug === "designer" ? "/plants" : "";
+        const fn = link.computeHref || DEFAULT;
         return <Link
-          to={"/app/" + link.slug + childPath}
+          to={fn(link.slug, childPath)}
           className={`${isActive}`}
           key={link.slug}
           onClick={props.close("mobileMenuOpen")}>
