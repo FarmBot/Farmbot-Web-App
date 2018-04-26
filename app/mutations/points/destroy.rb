@@ -50,14 +50,14 @@ module Points
     def archive_points
       points
         .where(pointer_type: "GenericPointer")
-        .update_all(discarded_at: Time.now)
+        .discard_all
     end
 
     def destroy_all_others
       points
-      .where
-      .not(pointer_type: "GenericPointer")
-      .destroy_all
+        .where
+        .not(pointer_type: "GenericPointer")
+        .destroy_all
     end
 
     def points

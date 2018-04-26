@@ -3,12 +3,36 @@ import { t } from "i18next";
 import { Link } from "react-router";
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
+import { computeSequenceUrlFromState } from "./compute_sequence_url_from_state";
+/** Uses a slug and a child path to compute the `href` of a navbar link. */
+export type LinkComputeFn = (slug: string, childPath: string) => string;
 
-export const links = [
+/** If no LinkComputeFn is provided, the default behavior prevails. */
+const DEFAULT: LinkComputeFn =
+  (slug, childpath) => `/app/${slug}${childpath}`;
+
+interface NavLinkParams {
+  /** User visible verbiage. */
+  name: string;
+  /** Font awesome icon name. */
+  icon: string;
+  /** A unique name used for the path in the URL bar. */
+  slug: string;
+  computeHref?: LinkComputeFn
+}
+
+const sequenceLink: NavLinkParams = {
+  name: "Sequences",
+  icon: "server",
+  slug: "sequences",
+  computeHref: computeSequenceUrlFromState
+};
+
+export const links: NavLinkParams[] = [
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
   { name: "Controls", icon: "keyboard-o", slug: "controls" },
   { name: "Device", icon: "cog", slug: "device" },
-  { name: "Sequences", icon: "server", slug: "sequences" },
+  sequenceLink,
   { name: "Regimens", icon: "calendar-check-o", slug: "regimens" },
   { name: "Tools", icon: "wrench", slug: "tools" },
   { name: "Farmware", icon: "crosshairs", slug: "farmware" },
@@ -22,8 +46,9 @@ export const NavLinks = (props: NavLinksProps) => {
       {links.map(link => {
         const isActive = (currPageSlug === link.slug) ? "active" : "";
         const childPath = link.slug === "designer" ? "/plants" : "";
+        const fn = link.computeHref || DEFAULT;
         return <Link
-          to={"/app/" + link.slug + childPath}
+          to={fn(link.slug, childPath)}
           className={`${isActive}`}
           key={link.slug}
           onClick={props.close("mobileMenuOpen")}>

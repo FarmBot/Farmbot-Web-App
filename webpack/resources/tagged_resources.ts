@@ -14,7 +14,6 @@ import {
 } from "../interfaces";
 import { Peripheral } from "../controls/peripherals/interfaces";
 import { User } from "../auth/interfaces";
-import { assertUuid } from "./selectors";
 import { DeviceAccountSettings } from "../devices/interfaces";
 import { isObject, isString, get } from "lodash";
 import { Image } from "../farmware/images/interfaces";
@@ -25,6 +24,7 @@ import { FbosConfig } from "../config_storage/fbos_configs";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
 import { WebAppConfig } from "../config_storage/web_app_configs";
 import { FarmwareInstallation } from "../farmware/interfaces";
+import { assertUuid } from "./util";
 
 export type ResourceName =
   | "Crop"

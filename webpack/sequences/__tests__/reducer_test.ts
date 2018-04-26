@@ -29,11 +29,4 @@ describe("sequence reducer", () => {
     const stateAfter = sequenceReducer(state, action);
     expect(stateAfter.current).toBe("sequence");
   });
-
-  it("unsets current sequence", () => {
-    const state = { current: "sequence" };
-    const action = { type: Actions.RESOURCE_READY, payload: undefined };
-    const stateAfter = sequenceReducer(state, action);
-    expect(stateAfter.current).toBe(undefined);
-  });
 });

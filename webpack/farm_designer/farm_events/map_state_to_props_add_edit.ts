@@ -11,7 +11,6 @@ import {
   findFarmEventById,
   selectAllRegimens,
   selectAllSequences,
-  hasId,
   findSequenceById,
   findRegimenById,
   getDeviceAccountSettings,
@@ -29,6 +28,7 @@ import {
 } from "../../util";
 import { sourceFbosConfigValue } from "../../devices/components/source_config_value";
 import { Feature } from "../../devices/interfaces";
+import { hasId } from "../../resources/util";
 
 export let formatTime = (input: string, timeOffset: number) => {
   const iso = new Date(input).toISOString();
