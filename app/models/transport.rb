@@ -25,7 +25,7 @@ class Transport
   end
 
   def connection
-    @connection ||= @amqp_adapter.new(AMQP_URL, OPTS).start
+    @connection ||= Transport.default_amqp_adapter.new(AMQP_URL, OPTS).start
   end
 
   def log_channel
@@ -35,7 +35,7 @@ class Transport
                           .bind("amq.topic", routing_key: "bot.*.logs")
   end
 
-  def topic
+  def amqp_topic
     @topic ||= self
                   .connection
                   .create_channel
@@ -49,10 +49,10 @@ class Transport
   # We need to hoist the Rack X-Farmbot-Rpc-Id to a global state so that it can
   # be used as a unique identifier for AMQP messages.
   def current_request_id
-    request_store[:current_request_id] || "NONE"
+    RequestStore.store[:current_request_id] || "NONE"
   end
 
   def set_current_request_id(uuid)
-    request_store[:current_request_id] = uuid
+    RequestStore.store[:current_request_id] = uuid
   end
 end

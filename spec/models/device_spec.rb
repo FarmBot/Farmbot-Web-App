@@ -27,13 +27,13 @@ describe Device do
   end
 
   it "sends specific users toast messages" do
-    hello = "Hello!"
-    log   = device.tell(hello)
-    json, id, chan = Transport.current.calls[:amqp_send].last
-    json  = JSON.parse(json)
-
-    expect(id).to eq(device.id)
+    Transport.current.clear!
+    hello      = "Hello!"
+    log        = device.tell(hello)
+    json, info = Transport.current.calls[:publish].last
+    json       = JSON.parse(json)
+    expect(info[:routing_key]).to eq("bot.device_#{device.id}.logs")
     expect(log.message).to eq(hello)
-    expect(chan).to eq("logs")
+    expect(json["message"]).to eq(hello)
   end
 end

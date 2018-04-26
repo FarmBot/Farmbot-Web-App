@@ -26,9 +26,12 @@ describe LogService do
   end
 
   it "calls .subscribe() on Transport." do
+    Transport.current.clear!
     load "lib/log_service.rb"
-    arg1 = Transport.current.calls[:subscribe].last[0]
-    expect(arg1).to eq({block: true})
+    arg1        = Transport.current.calls[:subscribe].last[0]
+    routing_key = Transport.current.calls[:bind].last[1][:routing_key]
+    expect(arg1).to        eq({block: true})
+    expect(routing_key).to eq("bot.*.logs")
   end
 
   it "creates new messages in the DB when called" do

@@ -17,46 +17,22 @@ require "pry"
 
 ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../../config/environment", __FILE__)
-require "rspec/rails"
-require_relative "./stuff"
-require_relative "./fake_sequence"
-
 # This is a stub for BunnyRB because we don't want the test suite to connect to
 # AMQP for real.
-class FakeTransport
-  MOCKED_METHODS = [
-    :amqp_send,
-    :bind,
-    :create_channel,
+class FakeTransport < Transport
+  MOCKED_METHODS = [ # Theses are the "real" I/O inducing methods that must be
+    :bind,           # Stubbed out.
     :publish,
     :queue,
     :subscribe,
-    :subscribe,
-    :topic,
-    :set_current_request_id,
+    :create_channel,
     :connection,
-    :log_channel
+    # :topic,
   ]
 
-  def current_request_id
-    rand(0..100)
-  end
-
-  def initialize(*)
-    self.clear!
-  end
-
-  def clear!
-    @calls = {}
-  end
-
-  def start
-    self
-  end
-
-  def calls
-    @calls
-  end
+  # When you call an AMQP I/O method, instead of doing real I/O, it will deposit
+  # the call into the @calls dictionary for observation.
+  attr_reader :calls
 
   MOCKED_METHODS.map do |name|
     # Eval is Evil, but this is pretty quick for testing.
@@ -69,9 +45,26 @@ class FakeTransport
       end
     """
   end
+
+  def initialize(*)
+    self.clear!
+  end
+
+  def start
+    self
+  end
+
+  def clear!
+    @calls = {}
+  end
 end
 
-Transport.current = FakeTransport.new
+Transport.default_amqp_adapter = FakeTransport
+Transport.current = Transport.default_amqp_adapter.new
+
+require "rspec/rails"
+require_relative "./stuff"
+require_relative "./fake_sequence"
 
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
