@@ -65,9 +65,6 @@ GEM
     arel (8.0.0)
     bcrypt (3.1.11)
     builder (3.2.3)
-    bullet (5.7.5)
-      activesupport (>= 3.0.0)
-      uniform_notifier (~> 1.11.0)
     bunny (2.9.2)
       amq-protocol (~> 2.3.0)
     capybara (3.0.1)
@@ -327,7 +324,6 @@ GEM
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     uber (0.1.0)
-    uniform_notifier (1.11.0)
     url (0.3.2)
     useragent (0.16.10)
     valid_url (0.0.4)
@@ -348,7 +344,6 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers
-  bullet
   bunny
   capybara
   codecov
