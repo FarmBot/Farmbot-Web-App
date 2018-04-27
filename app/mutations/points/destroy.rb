@@ -1,8 +1,7 @@
 module Points
   class Destroy < Mutations::Command
     STILL_IN_USE   = "Could not delete the following item(s): %s. Item(s) are "\
-                     "in use by the following sequence(s): %s."
-
+                      "in use by the following sequence(s): %s."
     JUST_ONE       =  "Could not delete %s. Item is in use by the following "\
                       "sequence(s): %s."
 
