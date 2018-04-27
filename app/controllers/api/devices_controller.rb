@@ -25,7 +25,13 @@ module Api
     end
 
     def dump
-      mutate Devices::Dump.run(device: current_device)
+      raise "Need to write tests for this and `dump_status`"
+      Devices::Dump.run_by_id(current_device.id)
+      render json: {ok: "OK"}
+    end
+
+    def dump_status
+      raise "Need a way to check the status of the job."
     end
   end
 end
