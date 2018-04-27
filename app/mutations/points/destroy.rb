@@ -1,7 +1,9 @@
 module Points
   class Destroy < Mutations::Command
-    STILL_IN_USE  = "Could not delete the following item(s): %s. Item(s) are "\
-                    "in use by the following sequence(s): %s."
+    STILL_IN_USE   = "Could not delete the following item(s): %s. Item(s) are "\
+                      "in use by the following sequence(s): %s."
+    JUST_ONE       =  "Could not delete %s. Item is in use by the following "\
+                      "sequence(s): %s."
 
     required do
       model :device, class: Device
@@ -15,7 +17,7 @@ module Points
 
     def validate
       # Collect names of sequences that still use this point.
-      errors = (tool_seq + point_seq)
+      problems = (tool_seq + point_seq)
         .group_by(&:sequence_name)
         .to_a
         .reduce({S => [], P => []}) do |total, (seq_name, data)|
@@ -24,13 +26,14 @@ module Points
           total
         end
 
-      points = errors[P].sort.uniq.join(", ")
+      p = problems[P].sort.uniq.join(", ")
 
-      if points.present?
-        sequences = errors[S].sort.uniq.join(", ")
-        errors    = STILL_IN_USE % [points, sequences]
+      if p.present?
+        sequences   = problems[S].sort.uniq.join(", ")
+        message     = (point_ids.count > 1) ? STILL_IN_USE : JUST_ONE
+        problems    = message % [p, sequences]
 
-        add_error :whoops, :in_use, errors
+        add_error :whoops, :in_use, problems
       end
     end
 
@@ -66,7 +69,8 @@ module Points
 
     def every_tool_id_as_json
       points
-        .where.not(tool_id: nil)
+        .where
+        .not(tool_id: nil)
         .pluck(:tool_id)
         .uniq
         .map(&:to_json)
