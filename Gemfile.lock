@@ -377,6 +377,7 @@ DEPENDENCIES
   rack-cors
   rails
   rails-erd
+  rails-html-sanitizer (~> 1.0.4)
   rails_12factor
   request_store
   rollbar
