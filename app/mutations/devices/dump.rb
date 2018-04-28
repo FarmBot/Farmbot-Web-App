@@ -1,28 +1,38 @@
 module Devices
   class Dump < Mutations::Command
-    RESOURCES = {
-      farm_events:  FarmEventSerializer,
-      images:       ImageSerializer,
-      peripherals:  PeripheralSerializer,
-      points:       PointSerializer,
-      regimens:     RegimenSerializer,
-      sequences:    SequenceSerializer,
-      tools:        ToolSerializer,
-      users:        UserSerializer,
-      webcam_feeds: WebcamFeedSerialize
-    }
-
+    RESOURCES = [
+      :device_configs,
+      :farm_events,
+      :images,
+      :logs,
+      :peripherals,
+      :pin_bindings,
+      :plant_templates,
+      :points,
+      :regimens,
+      :saved_gardens,
+      :sensor_readings,
+      :sensors,
+      :sequences,
+      :token_issuances,
+      :tools,
+      :users,
+      :webcam_feeds,
+    ]
     def self.run_by_id(id)
-      Devices::Dump.delay.run(device_id: current_device)
+      Devices::Dump.delay.run!(device_id: current_device)
     end
 
-    required { model :device_id, class: number }
+    required do
+      integer :device_id
+    end
 
     def execute
-      output = { device: DeviceSerializer.new(device).as_json }
-      RESOURCES.map do |(name, serializer)|
-        list = device.send(name)
-        output[name] = list.map { |x| serializer.new(x).as_json }
+      output = { device: device.body_as_json }
+      RESOURCES.eah do |name|
+        model        = device.send(name)
+        output[name] = \
+          model.try(:map) { |x| x.body_as_json } || x.body_as_json
       end
       output
     end
@@ -32,4 +42,5 @@ module Devices
     def device
       @device ||= Device.find(device_id)
     end
+  end
 end
