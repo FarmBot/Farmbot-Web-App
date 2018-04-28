@@ -178,6 +178,10 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
     stash(s);
     return s;
   })
+  .add<void>(Actions._RESOURCE_NO, (s) => {
+    unstash(s);
+    return s;
+  })
   .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, a) => {
     const { name, status } = a.payload;
     switch ((name === "bot.mqtt") && status.state) {

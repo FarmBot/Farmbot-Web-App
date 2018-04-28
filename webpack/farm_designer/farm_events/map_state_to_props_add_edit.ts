@@ -11,10 +11,11 @@ import {
   findFarmEventById,
   selectAllRegimens,
   selectAllSequences,
-  hasId,
   findSequenceById,
   findRegimenById,
-  getDeviceAccountSettings
+  getDeviceAccountSettings,
+  getFbosConfig,
+  maybeGetDevice
 } from "../../resources/selectors";
 import {
   TaggedFarmEvent,
@@ -22,6 +23,12 @@ import {
   TaggedRegimen
 } from "../../resources/tagged_resources";
 import { DropDownItem } from "../../ui/index";
+import {
+  validFbosConfig, shouldDisplay, determineInstalledOsVersion
+} from "../../util";
+import { sourceFbosConfigValue } from "../../devices/components/source_config_value";
+import { Feature } from "../../devices/interfaces";
+import { hasId } from "../../resources/util";
 
 export let formatTime = (input: string, timeOffset: number) => {
   const iso = new Date(input).toISOString();
@@ -119,6 +126,18 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     }
   };
   const dev = getDeviceAccountSettings(props.resources.index);
+
+  const { configuration } = props.bot.hardware;
+  const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
+  const autoSyncEnabled =
+    !!sourceFbosConfigValue(fbosConfig, configuration)("auto_sync").value;
+
+  const installedOsVersion = determineInstalledOsVersion(
+    props.bot, maybeGetDevice(props.resources.index));
+  const allowRegimenBackscheduling = shouldDisplay(
+    installedOsVersion, props.bot.minOsFeatureData)(
+      Feature.backscheduled_regimens);
+
   return {
     deviceTimezone: dev
       .body
@@ -133,6 +152,8 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     farmEvents,
     getFarmEvent,
     findExecutable,
-    timeOffset: dev.body.tz_offset_hrs
+    timeOffset: dev.body.tz_offset_hrs,
+    autoSyncEnabled,
+    allowRegimenBackscheduling,
   };
 }

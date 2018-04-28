@@ -15,9 +15,9 @@ sudo docker run hello-world # Should run!
 command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
 curl -sSL https://get.rvm.io | bash
 source /usr/local/rvm/scripts/rvm
-rvm install "ruby-2.5.0"
+rvm install "ruby-2.5.1"
 cd .
-rvm --default use 2.5.0
+rvm --default use 2.5.1
 # LOG OUT AND LOG BACK IN NOW.
 
 # Image Magick
@@ -55,6 +55,7 @@ cp config/database.example.yml config/database.yml
 cp config/application.example.yml config/application.yml
 # READ THE FILE AND CHANGE THE VALUES ^
 sudo -u postgres psql
+rake keys:generate
 # Run this:
 #     CREATE USER "your_username_here" WITH SUPERUSER;
 #     \q

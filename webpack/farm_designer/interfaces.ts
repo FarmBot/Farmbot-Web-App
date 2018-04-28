@@ -20,8 +20,14 @@ import { SelectionBoxData } from "./map/selection_box";
 import { BooleanConfigKey } from "../config_storage/web_app_configs";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 
+/* BotOriginQuadrant diagram
+
+2 --- 1
+|     |
+3 --- 4
+
+*/
 export enum BotOriginQuadrant { ONE = 1, TWO = 2, THREE = 3, FOUR = 4 }
-export enum ZoomLevelPayl { POSITIVE = 0.1, NEGATIVE = -0.1 }
 
 type Mystery = BotOriginQuadrant | number | undefined;
 export function isBotOriginQuadrant(mystery: Mystery):
@@ -130,6 +136,8 @@ export interface AddEditFarmEventProps {
   dispatch: Function;
   findExecutable: ExecutableQuery;
   timeOffset: number;
+  autoSyncEnabled: boolean;
+  allowRegimenBackscheduling: boolean;
 }
 
 /**
@@ -255,4 +263,20 @@ export interface CurrentPointPayl {
   cy: number;
   r: number;
   color?: string;
+}
+
+export interface PlantTemplate {
+  id?: number;
+  saved_garden_id: number;
+  radius: number;
+  x: number;
+  y: number;
+  z: number;
+  name: string;
+  openfarm_slug: string;
+}
+
+export interface SavedGarden {
+  id?: number;
+  name?: string;
 }

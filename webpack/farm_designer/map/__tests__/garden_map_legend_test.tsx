@@ -35,7 +35,7 @@ describe("<GardenMapLegend />", () => {
   function checkZoomButtons(atMax: boolean, atMin: boolean, expected: number) {
     mockAtMax = atMax;
     mockAtMin = atMin;
-    const wrapper = shallow(<GardenMapLegend {...fakeProps() } />);
+    const wrapper = shallow(<GardenMapLegend {...fakeProps()} />);
     expect(wrapper.find(".disabled").length).toEqual(expected);
   }
 

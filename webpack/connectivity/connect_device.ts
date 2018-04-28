@@ -2,14 +2,13 @@ import { fetchNewDevice, getDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "../interfaces";
 import { ALLOWED_CHANNEL_NAMES, Farmbot, BotStateTree } from "farmbot";
-import { throttle, noop } from "lodash";
+import { noop, throttle } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { Content, Actions } from "../constants";
 import { t } from "i18next";
 import {
-  isLog,
   EXPECTED_MAJOR,
   EXPECTED_MINOR,
   commandOK,
@@ -24,10 +23,9 @@ import { talk } from "browser-speech";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
-import * as _ from "lodash";
+import { onLogs } from "./log_handlers";
 
 export const TITLE = "New message from bot";
-const THROTTLE_MS = 600;
 /** TODO: This ought to be stored in Redux. It is here because of historical
  * reasons. Feel free to factor out when time allows. -RC, 10 OCT 17 */
 export const HACKY_FLAGS = {
@@ -105,7 +103,6 @@ export const changeLastClientConnected = (bot: Farmbot) => () => {
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
   }).catch(() => { });
 };
-
 const onStatus = (dispatch: Function, getState: GetState) =>
   (throttle(function (msg: BotStateTree) {
     bothUp();
@@ -119,45 +116,12 @@ const onStatus = (dispatch: Function, getState: GetState) =>
       if (!IS_OK) { badVersion(); }
       HACKY_FLAGS.needVersionCheck = false;
     }
-  }, THROTTLE_MS));
+  }, 600, { leading: false, trailing: true }));
 
 type Client = { connected?: boolean };
 
 export const onSent = (client: Client) => () => !!client.connected ?
   dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
-
-const LEGACY_META_KEY_NAMES: (keyof Log)[] = [
-  "type",
-  "x",
-  "y",
-  "z",
-  "verbosity",
-  "major_version",
-  "minor_version"
-];
-
-function legacyKeyTransformation(log: Log, key: keyof Log) {
-  log[key] = log[key] || _.get(log, ["meta", key], undefined);
-}
-
-export const onLogs = (dispatch: Function, getState: GetState) => throttle((msg: Log) => {
-  bothUp();
-  if (isLog(msg)) {
-    LEGACY_META_KEY_NAMES.map(key => legacyKeyTransformation(msg, key));
-    actOnChannelName(msg, "toast", showLogOnScreen);
-    actOnChannelName(msg, "espeak", speakLogAloud(getState));
-    dispatch(initLog(msg));
-    // CORRECT SOLUTION: Give each device its own topic for publishing
-    //                   MQTT last will message.
-    // FAST SOLUTION:    We would need to re-publish FBJS and FBOS to
-    //                   change topic structure. Instead, we will use
-    //                   inband signalling (for now).
-    // TODO:             Make a `bot/device_123/offline` channel.
-    const died =
-      msg.message.includes("is offline") && msg.type === "error";
-    died && dispatchNetworkDown("bot.mqtt");
-  }
-}, THROTTLE_MS);
 
 export function onMalformed() {
   bothUp();

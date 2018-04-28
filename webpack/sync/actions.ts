@@ -5,7 +5,7 @@ import { Sequence } from "../sequences/interfaces";
 import { Tool } from "../tools/interfaces";
 import { Regimen } from "../regimens/interfaces";
 import { Peripheral } from "../controls/peripherals/interfaces";
-import { FarmEvent } from "../farm_designer/interfaces";
+import { FarmEvent, SavedGarden, PlantTemplate } from "../farm_designer/interfaces";
 import { Image } from "../farmware/images/interfaces";
 import { DeviceAccountSettings } from "../devices/interfaces";
 import { ResourceName } from "../resources/tagged_resources";
@@ -28,8 +28,8 @@ export interface SyncResponse {
 }
 
 export function fetchSyncData(dispatch: Function) {
-  const fetch = <T>(name: ResourceName, url: string, type = "RESOURCE_READY") =>
-    axios
+  const fetch =
+    <T>(name: ResourceName, url: string, type = "RESOURCE_READY") => axios
       .get<T>(url)
       .then((r): SyncResponse => dispatch({
         type, payload: { name, data: r.data }
@@ -59,4 +59,7 @@ export function fetchSyncData(dispatch: Function) {
     API.current.farmwareInstallationPath);
   fetch<DeviceConfig[]>("DeviceConfig", API.current.deviceConfigPath);
   fetch<PinBinding[]>("PinBinding", API.current.pinBindingPath);
+  fetch<SavedGarden[]>("SavedGarden", API.current.savedGardensPath);
+  fetch<PlantTemplate[]>("PlantTemplate", API.current.plantTemplatePath);
+
 }

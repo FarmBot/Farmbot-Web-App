@@ -1,7 +1,7 @@
 import { designer } from "../reducer";
 import { Actions } from "../../constants";
 import { ReduxAction } from "../../redux/interfaces";
-import { DesignerState, HoveredPlantPayl, CurrentPointPayl } from "../interfaces";
+import { DesignerState, HoveredPlantPayl, CurrentPointPayl, CropLiveSearchResult } from "../interfaces";
 import { BotPosition } from "../../devices/interfaces";
 
 describe("designer reducer", () => {
@@ -79,5 +79,27 @@ describe("designer reducer", () => {
     expect(newState.currentPoint).toEqual({
       cx: 10, cy: 20, r: 30, color: "red"
     });
+  });
+
+  it("stores new OpenFarm assets", () => {
+    const payload: CropLiveSearchResult[] = [
+      {
+        crop: {
+          name: "wow",
+          slug: "wow",
+          binomial_name: "wow",
+          common_names: [],
+          description: "wow",
+          sun_requirements: "wow",
+          sowing_method: "wow",
+          processing_pictures: 0
+        },
+        image: "lettuce"
+      }
+    ];
+    const action: ReduxAction<typeof payload> =
+      { type: Actions.OF_SEARCH_RESULTS_OK, payload };
+    const newState = designer(oldState(), action);
+    expect(newState.cropSearchResults).toEqual(payload);
   });
 });

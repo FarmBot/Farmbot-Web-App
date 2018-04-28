@@ -4,16 +4,15 @@
   position: relative;
 }
 
-.designer-nav {
-  display: none;
-}
-
 .farm-designer-map {
   min-width: 100%;
   display: inline-block;
-  padding: 11rem 2rem 2rem 31.8rem;
+  padding: 16rem 2rem 2rem 2rem; // at zoom = 1.0: 160px 20px 20px 20px
   height: 100%;
   overflow: auto;
+  &.panel-open {
+    padding: 11rem 2rem 2rem 31.8rem; // at zoom = 1.0: 110px 20px 20px 318px
+  }
 }
 
 .drop-area {
@@ -218,6 +217,19 @@
   }
 }
 
+.bug {
+  z-index: 10;
+  transform-origin: bottom;
+  transform-box: fill-box;
+  &.animate {
+    animation: plant-growth 0.25s cubic-bezier(0, 0, 0, 1.4);
+  }
+  &.dead {
+    z-index: 5;
+    pointer-events: none;
+  }
+}
+
 .soil-cloud {
   animation: soil-poof 0.5s cubic-bezier(0, 0, 0, 1);
   transform-origin: center;
@@ -282,7 +294,7 @@
   position: fixed;
   top: 110px;
   right: -120px;
-  z-index: 2;
+  z-index: 3;
   transition: all 0.4s ease;
   box-shadow: 0px 1px 4px #555;
   max-width: 120px;
@@ -416,9 +428,14 @@
       }
     }
   }
+  .more-bugs,
   .move-to-mode {
     button {
       margin-right: 1rem;
+    }
+    p {
+      text-align: center;
+      padding-top: 2rem;
     }
   }
   .menu-pullout {

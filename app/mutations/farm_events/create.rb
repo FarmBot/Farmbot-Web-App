@@ -19,7 +19,6 @@ module FarmEvents
     end
 
     def validate
-      validate_start_time
       validate_end_time
       validate_executable
     end
@@ -29,10 +28,6 @@ module FarmEvents
       # Needs to be set this way for cleanup operations:
       p[:end_time] = (p[:start_time] + 1.minute) if is_one_time_event
       FarmEvent.create!(p)
-    end
-
-    def validate_start_time
-      add_error :start_time, :expired, BAD_START_TIME if (start_time < Time.now)
     end
 
     def validate_end_time

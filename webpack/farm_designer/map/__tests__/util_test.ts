@@ -3,13 +3,13 @@ import {
   translateScreenToGarden,
   getBotSize,
   getMapSize,
-  getXYFromQuadrant,
-  getMouseXY,
+  transformXY,
   transformForQuadrant
 } from "../util";
 import { McuParams } from "farmbot";
-import { AxisNumberProperty, BotSize } from "../interfaces";
+import { AxisNumberProperty, BotSize, MapTransformProps } from "../interfaces";
 import { StepsPerMmXY } from "../../../devices/interfaces";
+import { fakeMapTransformProps } from "../../../__test_support__/map_transform_props";
 
 describe("Utils", () => {
   it("rounds a number", () => {
@@ -19,29 +19,83 @@ describe("Utils", () => {
 });
 
 describe("translateScreenToGarden()", () => {
-  it("translates garden coords to screen coords: corner case", () => {
-    const cornerCase = translateScreenToGarden({
-      quadrant: 2,
-      pageX: 520,
-      pageY: 212,
+  it("translates screen coords to garden coords: zoomLvl = 1", () => {
+    const result = translateScreenToGarden({
+      mapTransformProps: fakeMapTransformProps(),
+      page: { x: 520, y: 212 },
+      scroll: { left: 10, top: 20 },
       zoomLvl: 1,
-      gridSize: { x: 3000, y: 1500 }
+      gridOffset: { x: 30, y: 40 },
+      mapOnly: false,
     });
-    expect(cornerCase.x).toEqual(200);
-    expect(cornerCase.y).toEqual(100);
+    expect(result).toEqual({ x: 180, y: 80 });
   });
 
-  it("translates garden coords to screen coords: edge case", () => {
-    const edgeCase = translateScreenToGarden({
-      quadrant: 2,
-      pageX: 1132,
-      pageY: 382,
-      zoomLvl: 0.3,
-      gridSize: { x: 3000, y: 1500 }
+  it("translates screen coords to garden coords: zoomLvl < 1", () => {
+    const result = translateScreenToGarden({
+      mapTransformProps: fakeMapTransformProps(),
+      page: { x: 1132, y: 382 },
+      scroll: { left: 10, top: 20 },
+      zoomLvl: 0.33,
+      gridOffset: { x: 30, y: 40 },
+      mapOnly: false,
     });
+    expect(result).toEqual({ x: 2470, y: 840 });
+  });
 
-    expect(Math.round(edgeCase.x)).toEqual(2710);
-    expect(Math.round(edgeCase.y)).toEqual(910);
+  it("translates screen coords to garden coords: zoomLvl > 1", () => {
+    const result = translateScreenToGarden({
+      mapTransformProps: fakeMapTransformProps(),
+      page: { x: 1132, y: 382 },
+      scroll: { left: 10, top: 20 },
+      zoomLvl: 1.5,
+      gridOffset: { x: 30, y: 40 },
+      mapOnly: false,
+    });
+    expect(result).toEqual({ x: 520, y: 150 });
+  });
+
+  it("translates screen coords to garden coords: other case", () => {
+    const mapTransformProps = fakeMapTransformProps();
+    mapTransformProps.quadrant = 3;
+    mapTransformProps.gridSize = { x: 300, y: 150 };
+    const result = translateScreenToGarden({
+      mapTransformProps,
+      page: { x: 332, y: 132 },
+      scroll: { left: 10, top: 20 },
+      zoomLvl: 0.75,
+      gridOffset: { x: 30, y: 40 },
+      mapOnly: false,
+    });
+    expect(result).toEqual({ x: 0, y: 130 });
+  });
+
+  it("translates screen coords to garden coords: swapped X&Y", () => {
+    const mapTransformProps = fakeMapTransformProps();
+    mapTransformProps.xySwap = true;
+    mapTransformProps.quadrant = 3;
+    mapTransformProps.gridSize = { x: 150, y: 300 };
+    const result = translateScreenToGarden({
+      mapTransformProps,
+      page: { x: 332, y: 132 },
+      scroll: { left: 10, top: 20 },
+      zoomLvl: 0.75,
+      gridOffset: { x: 30, y: 40 },
+      mapOnly: false,
+    });
+    expect(result).toEqual({ x: 130, y: 0 });
+  });
+
+  it("translates screen coords to garden coords: panel closed", () => {
+    const result = translateScreenToGarden({
+      mapTransformProps: fakeMapTransformProps(),
+      page: { x: 520, y: 212 },
+      scroll: { left: 10, top: 20 },
+      zoomLvl: 1,
+      gridOffset: { x: 30, y: 40 },
+      mapOnly: true,
+    });
+    expect(result).toEqual({ x: 480, y: 30 });
   });
 });
 
@@ -148,59 +202,89 @@ describe("getbotSize()", () => {
 describe("getMapSize()", () => {
   it("calculates map size", () => {
     const mapSize = getMapSize(
-      { x: 2000, y: 1000 },
+      fakeMapTransformProps(),
       { x: 100, y: 50 });
-    expect(mapSize).toEqual({ x: 2200, y: 1100 });
+    expect(mapSize).toEqual({ h: 1600, w: 3200 });
+  });
+
+  it("calculates map size: X&Y Swapped", () => {
+    const fakeMPT = fakeMapTransformProps();
+    fakeMPT.xySwap = true;
+    const mapSize = getMapSize(
+      fakeMPT,
+      { x: 100, y: 50 });
+    expect(mapSize).toEqual({ h: 3200, w: 1600 });
   });
 });
 
-describe("getXYFromQuadrant()", () => {
+describe("transformXY", () => {
+  const mapTransformProps = fakeMapTransformProps();
+  mapTransformProps.gridSize = { x: 2000, y: 1000 };
+
+  type QXY = { qx: number, qy: number };
+
+  const transformCheck =
+    (original: QXY, transformed: QXY, transformProps: MapTransformProps) => {
+      transformProps.xySwap = false;
+      expect(transformXY(original.qx, original.qy, transformProps))
+        .toEqual(transformed);
+      expect(transformXY(transformed.qx, transformed.qy, transformProps))
+        .toEqual(original);
+      transformProps.xySwap = true;
+      const transformedYX = { qx: transformed.qy, qy: transformed.qx };
+      expect(transformXY(original.qx, original.qy, transformProps))
+        .toEqual(transformedYX);
+      expect(transformXY(transformed.qx, transformed.qy, transformProps))
+        .toEqual({ qx: original.qy, qy: original.qx });
+    };
+
   it("calculates transformed coordinate: quadrant 2", () => {
-    const { qx, qy } = getXYFromQuadrant(100, 200, 2, { x: 2000, y: 1000 });
-    expect(qx).toEqual(100);
-    expect(qy).toEqual(200);
+    const original = { qx: 100, qy: 200 };
+    const transformed = { qx: 100, qy: 200 };
+    mapTransformProps.quadrant = 2;
+    transformCheck(original, transformed, mapTransformProps);
   });
 
   it("calculates transformed coordinate: quadrant 4", () => {
-    const { qx, qy } = getXYFromQuadrant(100, 200, 4, { x: 2000, y: 1000 });
-    expect(qx).toEqual(1900);
-    expect(qy).toEqual(800);
+    const original = { qx: 100, qy: 200 };
+    const transformed = { qx: 1900, qy: 800 };
+    mapTransformProps.quadrant = 4;
+    transformCheck(original, transformed, mapTransformProps);
   });
 
   it("calculates transformed coordinate: quadrant 4 (outside of grid)", () => {
-    const { qx, qy } = getXYFromQuadrant(2200, 1100, 4, { x: 2000, y: 1000 });
-    expect(qx).toEqual(-200);
-    expect(qy).toEqual(-100);
-  });
-});
-
-describe("getMouseXY", () => {
-  it("Gets the X/Y of the mouse", () => {
-    const e: Partial<MouseEvent> = { clientX: 100, clientY: 200 };
-    const result = getMouseXY(e as MouseEvent);
-    expect(result.mx).toBe(-220);
-    expect(result.my).toBe(90);
+    const original = { qx: 2200, qy: 1100 };
+    const transformed = { qx: -200, qy: -100 };
+    mapTransformProps.quadrant = 4;
+    transformCheck(original, transformed, mapTransformProps);
   });
 });
 
 describe("transformForQuadrant()", () => {
+  const mapTransformProps = fakeMapTransformProps();
+  mapTransformProps.gridSize = { x: 200, y: 100 };
+
   it("calculates transform for quadrant 1", () => {
-    expect(transformForQuadrant(1, { x: 200, y: 100 }))
+    mapTransformProps.quadrant = 1;
+    expect(transformForQuadrant(mapTransformProps))
       .toEqual("scale(-1, 1) translate(-200, 0)");
   });
 
   it("calculates transform for quadrant 2", () => {
-    expect(transformForQuadrant(2, { x: 200, y: 100 }))
+    mapTransformProps.quadrant = 2;
+    expect(transformForQuadrant(mapTransformProps))
       .toEqual("scale(1, 1) translate(0, 0)");
   });
 
   it("calculates transform for quadrant 3", () => {
-    expect(transformForQuadrant(3, { x: 200, y: 100 }))
+    mapTransformProps.quadrant = 3;
+    expect(transformForQuadrant(mapTransformProps))
       .toEqual("scale(1, -1) translate(0, -100)");
   });
 
   it("calculates transform for quadrant 4", () => {
-    expect(transformForQuadrant(4, { x: 200, y: 100 }))
+    mapTransformProps.quadrant = 4;
+    expect(transformForQuadrant(mapTransformProps))
       .toEqual("scale(-1, -1) translate(-200, -100)");
   });
 });

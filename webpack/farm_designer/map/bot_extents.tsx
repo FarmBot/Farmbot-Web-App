@@ -1,13 +1,13 @@
 import * as React from "react";
-import { getXYFromQuadrant } from "./util";
+import { transformXY } from "./util";
 import { BotExtentsProps } from "./interfaces";
 
 export function BotExtents(props: BotExtentsProps) {
   const { stopAtHome, botSize, mapTransformProps } = props;
-  const { quadrant, gridSize } = mapTransformProps;
-  const homeLength = getXYFromQuadrant(
-    botSize.x.value, botSize.y.value, quadrant, gridSize);
-  const homeZero = getXYFromQuadrant(2, 2, quadrant, gridSize);
+  const { xySwap } = mapTransformProps;
+  const homeLength = transformXY(
+    botSize.x.value, botSize.y.value, mapTransformProps);
+  const homeZero = transformXY(2, 2, mapTransformProps);
 
   return <g
     id="extents"
@@ -28,12 +28,12 @@ export function BotExtents(props: BotExtentsProps) {
       }
     </g>
     <g id="max-lines">
-      {!botSize.x.isDefault &&
+      {(xySwap ? !botSize.y.isDefault : !botSize.x.isDefault) &&
         <line
           x1={homeLength.qx} y1={homeZero.qy}
           x2={homeLength.qx} y2={homeLength.qy} />
       }
-      {!botSize.y.isDefault &&
+      {(xySwap ? !botSize.x.isDefault : !botSize.y.isDefault) &&
         <line
           x1={homeZero.qx} y1={homeLength.qy}
           x2={homeLength.qx} y2={homeLength.qy} />

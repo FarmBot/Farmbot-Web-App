@@ -2,7 +2,8 @@ jest.mock("../../session", () => ({
   Session: {
     clear: jest.fn(),
     deprecatedGetBool: () => true,
-    fetchStoredToken: () => ({})
+    fetchStoredToken: () => ({}),
+    replaceToken: jest.fn()
   }
 }));
 
@@ -39,6 +40,10 @@ jest.mock("../../toast_errors", () => {
   return { toastErrors: jest.fn() };
 });
 
+jest.mock("../../history", () => {
+  return { push: jest.fn() };
+});
+
 import { Session } from "../../session";
 import {
   logout,
@@ -46,15 +51,24 @@ import {
   requestRegistration,
   didLogin,
   loginErr,
-  onRegistrationErr
+  onRegistrationErr,
+  onLogin
 } from "../actions";
 import { Actions } from "../../constants";
 import { success, error } from "farmbot-toastr";
 import { API } from "../../api/api";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { AuthState } from "../interfaces";
 import { UnsafeError } from "../../interfaces";
 import { toastErrors } from "../../toast_errors";
+import { push } from "../../history";
+
+const mockToken: AuthState = {
+  token: {
+    encoded: "---",
+    unencoded: { iss: "iss", os_update_server: "os_update_server", jti: "---" }
+  }
+};
 
 describe("logout()", () => {
   it("displays the toast if you are logged out", () => {
@@ -100,12 +114,6 @@ describe("requestRegistration", () => {
 
 describe("didLogin()", () => {
   it("bootstraps the user session", () => {
-    const mockToken: AuthState = {
-      token: {
-        encoded: "---",
-        unencoded: { iss: "iss", os_update_server: "os_update_server", jti: "---" }
-      }
-    };
     const dispatch = jest.fn();
     const result = didLogin(mockToken, dispatch);
     expect(result).toBeUndefined();
@@ -130,5 +138,16 @@ describe("onRegistrationErr()", () => {
     const err: UnsafeError = {};
     onRegistrationErr(jest.fn())(err);
     expect(toastErrors).toHaveBeenCalledWith(err);
+  });
+});
+
+describe("onLogin", () => {
+  it("replaces the session token", () => {
+    const dispatch = jest.fn();
+    const thunk = onLogin(dispatch);
+    const response: Partial<AxiosResponse<AuthState>> = { data: mockToken };
+    thunk(response as AxiosResponse<AuthState>);
+    expect(Session.replaceToken).toHaveBeenCalledWith(response.data);
+    expect(push).toHaveBeenCalledWith("/app/controls");
   });
 });

@@ -12,24 +12,28 @@ describe Api::PointsController do
     HEREDOC
     let(:device) { FactoryBot.create(:device) }
     let(:user) { FactoryBot.create(:user, device: device) }
-    let!(:point) { FactoryBot.create(:point, device: device) }
+    let!(:point) { FactoryBot.create(:generic_pointer, device: device) }
     let(:plant) {
-      Point.create!(x:       10,
-                    y:       20,
-                    z:       30,
-                    radius:  1,
-                    pointer: Plant.create!(openfarm_slug: "lettuce"),
-                    device:  device)
+      Plant.create!(x:             10,
+                    y:             20,
+                    z:             30,
+                    radius:        1,
+                    openfarm_slug: "lettuce",
+                    pointer_type:  "Plant",
+                    pointer_id:    0,
+                    device:        device)
     }
     let(:tool) {Tool.create!(device: user.device)}
     let!(:tool_slot) do
-      Point.create(x:       0,
-                   y:       0,
-                   z:       0,
-                   radius:  50,
-                   name:    "Whatever",
-                   device: user.device,
-                   pointer: ToolSlot.new(tool: tool)).pointer
+      ToolSlot.create(x:            0,
+                      y:            0,
+                      z:            0,
+                      radius:       50,
+                      name:         "Whatever",
+                      pointer_type: "ToolSlot",
+                      pointer_id:   0,
+                      device:       user.device,
+                      tool_id:      tool.id)
     end
     let!(:sequence) { Sequences::Create.run!({
                     device: user.device,
@@ -42,26 +46,26 @@ describe Api::PointsController do
       expect(Plant.count).to eq(0)
       plant
       sign_in user
-      b4 = Plant.count
+      b4 = Plant.kept.count
       delete :destroy, params: { id: plant.id }
       expect(response.status).to eq(200)
-      expect(Plant.count).to eq(b4 - 1)
+      expect(Plant.kept.count).to eq(b4 - 1)
     end
 
     it 'deletes a point' do
       sign_in user
-      b4 = Point.count
+      b4 = Point.kept.count
       delete :destroy, params: { id: point.id }
       expect(response.status).to eq(200)
-      expect(Point.count).to eq(b4 - 1)
+      expect(Point.kept.count).to eq(b4 - 1)
     end
 
     it 'performs batch deletion' do
       sign_in user
-      points       = FactoryBot.create_list(:point, 6, device: user.device)
-      before_count = Point.count
+      points       = FactoryBot.create_list(:generic_pointer, 6, device: user.device)
+      before_count = Point.kept.count
       delete :destroy, params: { id: points.map(&:id).join(",") }
-      expect(Point.count).to eq(before_count - 6)
+      expect(Point.kept.count).to eq(before_count - 6)
     end
   end
 end

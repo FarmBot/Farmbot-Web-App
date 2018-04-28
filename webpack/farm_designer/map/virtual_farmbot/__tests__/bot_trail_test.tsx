@@ -1,6 +1,7 @@
 import * as React from "react";
 import { shallow } from "enzyme";
 import { BotTrail, BotTrailProps, VirtualTrail } from "../bot_trail";
+import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
 
 describe("<BotTrail/>", () => {
   function fakeProps(): BotTrailProps {
@@ -12,9 +13,7 @@ describe("<BotTrail/>", () => {
       { coord: { x: 4, y: 4 }, water: 20 }]);
     return {
       position: { x: 0, y: 0, z: 0 },
-      mapTransformProps: {
-        quadrant: 2, gridSize: { x: 3000, y: 1500 }
-      },
+      mapTransformProps: fakeMapTransformProps(),
       peripherals: []
     };
   }

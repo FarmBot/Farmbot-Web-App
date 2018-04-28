@@ -12,6 +12,8 @@ import * as _ from "lodash";
 import {
   validFwConfig, shouldDisplay, determineInstalledOsVersion
 } from "../util";
+import { BooleanSetting } from "../session_keys";
+import { getWebAppConfigValue } from "../config_storage/actions";
 
 export function mapStateToProps(props: Everything): Props {
   const peripherals = _.uniq(selectAllPeripherals(props.resources.index));
@@ -23,6 +25,7 @@ export function mapStateToProps(props: Everything): Props {
   const { mcu_params } = props.bot.hardware;
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
+  const getWebAppConfigVal = getWebAppConfigValue(() => props);
 
   return {
     feeds: selectAllWebcamFeeds(resources.index),
@@ -34,5 +37,6 @@ export function mapStateToProps(props: Everything): Props {
     botToMqttStatus,
     firmwareSettings: fwConfig || mcu_params,
     shouldDisplay: shouldDisplay(installedOsVersion, props.bot.minOsFeatureData),
+    xySwap: !!getWebAppConfigVal(BooleanSetting.xy_swap),
   };
 }

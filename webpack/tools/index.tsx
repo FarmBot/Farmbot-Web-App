@@ -44,6 +44,7 @@ export class Tools extends React.Component<Props, Partial<ToolsState>> {
               tools={this.props.tools} />}
           {isEditingTools &&
             <ToolForm
+              isActive={this.props.isActive}
               toggle={this.toggle("editingTools")}
               dispatch={this.props.dispatch}
               tools={this.props.tools} />}

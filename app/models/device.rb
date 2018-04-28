@@ -7,21 +7,24 @@ class Device < ApplicationRecord
   TIMEZONES           = TZInfo::Timezone.all_identifiers
   BAD_TZ              = "%{value} is not a valid timezone"
 
-  has_many  :users
-  has_many  :farm_events,     dependent: :destroy
-  has_many  :points,          dependent: :destroy
-  has_many  :logs,            dependent: :destroy
-  has_many  :sequences,       dependent: :destroy
-  has_many  :regimens,        dependent: :destroy
-  has_many  :peripherals,     dependent: :destroy
-  has_many  :sensors,         dependent: :destroy
-  has_many  :tools,           dependent: :destroy
-  has_many  :images,          dependent: :destroy
-  has_many  :webcam_feeds,    dependent: :destroy
-  has_many  :sensor_readings, dependent: :destroy
   has_many  :device_configs,  dependent: :destroy
+  has_many  :farm_events,     dependent: :destroy
+  has_many  :saved_gardens,   dependent: :destroy
+  has_many  :images,          dependent: :destroy
+  has_many  :logs,            dependent: :destroy
+  has_many  :peripherals,     dependent: :destroy
   has_many  :pin_bindings,    dependent: :destroy
+  has_many  :points,          dependent: :destroy
+  has_many  :plant_templates, dependent: :destroy
+  has_many  :regimens,        dependent: :destroy
+  has_many  :sensor_readings, dependent: :destroy
+  has_many  :sensors,         dependent: :destroy
+  has_many  :sequences,       dependent: :destroy
   has_many  :token_issuances, dependent: :destroy
+  has_many  :tools,           dependent: :destroy
+  has_many  :webcam_feeds,    dependent: :destroy
+
+  has_many  :users
   validates_presence_of :name
   validates :timezone,
     inclusion: { in: TIMEZONES, message: BAD_TZ, allow_nil: true }
@@ -72,5 +75,9 @@ class Device < ApplicationRecord
 
     transport.amqp_send(json, self.id, "logs")
     log
+  end
+
+  def plants
+    points.where(pointer_type: "Plant")
   end
 end

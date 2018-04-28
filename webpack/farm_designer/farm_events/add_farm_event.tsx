@@ -113,7 +113,10 @@ export class AddFarmEvent
         dispatch={this.props.dispatch}
         findExecutable={this.props.findExecutable}
         title={t("Add Farm Event")}
-        timeOffset={this.props.timeOffset} />;
+        timeOffset={this.props.timeOffset}
+        autoSyncEnabled={this.props.autoSyncEnabled}
+        allowRegimenBackscheduling={this.props.allowRegimenBackscheduling}
+      />;
     } else {
       return this
         .placeholderTemplate(((this.executable) ? this.loading : this.none)());

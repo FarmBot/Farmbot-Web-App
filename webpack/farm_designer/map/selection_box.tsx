@@ -1,6 +1,6 @@
 import * as React from "react";
 import { MapTransformProps } from "./interfaces";
-import { getXYFromQuadrant, round } from "./util";
+import { transformXY, round } from "./util";
 import { isNumber } from "lodash";
 
 export type SelectionBoxData =
@@ -13,10 +13,9 @@ export interface SelectionBoxProps {
 
 export function SelectionBox(props: SelectionBoxProps) {
   const { x0, y0, x1, y1 } = props.selectionBox;
-  const { quadrant, gridSize } = props.mapTransformProps;
   if (isNumber(x0) && isNumber(y0) && isNumber(x1) && isNumber(y1)) {
-    const initial = getXYFromQuadrant(round(x0), round(y0), quadrant, gridSize);
-    const drag = getXYFromQuadrant(round(x1), round(y1), quadrant, gridSize);
+    const initial = transformXY(round(x0), round(y0), props.mapTransformProps);
+    const drag = transformXY(round(x1), round(y1), props.mapTransformProps);
     const x = Math.min(initial.qx, drag.qx);
     const y = Math.min(initial.qy, drag.qy);
     const width = Math.max(initial.qx, drag.qx) - x;

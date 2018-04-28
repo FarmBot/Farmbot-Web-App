@@ -3,36 +3,37 @@ import { shallow } from "enzyme";
 import { BotOriginQuadrant } from "../../../interfaces";
 import { BotFigure, BotFigureProps } from "../bot_figure";
 import { Color } from "../../../../ui/index";
+import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
 
 describe("<BotFigure/>", () => {
   function fakeProps(): BotFigureProps {
     return {
       name: "",
       position: { x: 0, y: 0, z: 0 },
-      mapTransformProps: {
-        quadrant: 1, gridSize: { x: 3000, y: 1500 }
-      },
+      mapTransformProps: fakeMapTransformProps(),
       plantAreaOffset: { x: 100, y: 100 }
     };
   }
 
   function checkPositionForQuadrant(
     quadrant: BotOriginQuadrant,
+    xySwap: boolean,
     expected: { x: number, y: number },
     name: string,
     opacity: number) {
     it(`shows ${name} in correct location for quadrant ${quadrant}`, () => {
       const p = fakeProps();
       p.mapTransformProps.quadrant = quadrant;
+      p.mapTransformProps.xySwap = xySwap;
       p.name = name;
       const result = shallow(<BotFigure {...p} />);
 
       const expectedGantryProps = expect.objectContaining({
         id: "gantry",
-        x: expected.x - 10,
-        y: -100,
-        width: 20,
-        height: 1700,
+        x: xySwap ? -100 : expected.x - 10,
+        y: xySwap ? expected.x - 10 : -100,
+        width: xySwap ? 1700 : 20,
+        height: xySwap ? 20 : 1700,
         fill: Color.darkGray,
         fillOpacity: opacity
       });
@@ -41,8 +42,8 @@ describe("<BotFigure/>", () => {
 
       const expectedUTMProps = expect.objectContaining({
         id: "UTM",
-        cx: expected.x,
-        cy: expected.y,
+        cx: xySwap ? expected.y : expected.x,
+        cy: xySwap ? expected.x : expected.y,
         r: 35,
         fill: Color.darkGray,
         fillOpacity: opacity
@@ -52,11 +53,15 @@ describe("<BotFigure/>", () => {
     });
   }
 
-  checkPositionForQuadrant(1, { x: 3000, y: 0 }, "motors", 0.75);
-  checkPositionForQuadrant(2, { x: 0, y: 0 }, "motors", 0.75);
-  checkPositionForQuadrant(3, { x: 0, y: 1500 }, "motors", 0.75);
-  checkPositionForQuadrant(4, { x: 3000, y: 1500 }, "motors", 0.75);
-  checkPositionForQuadrant(2, { x: 0, y: 0 }, "encoders", 0.25);
+  checkPositionForQuadrant(1, false, { x: 3000, y: 0 }, "motors", 0.75);
+  checkPositionForQuadrant(2, false, { x: 0, y: 0 }, "motors", 0.75);
+  checkPositionForQuadrant(3, false, { x: 0, y: 1500 }, "motors", 0.75);
+  checkPositionForQuadrant(4, false, { x: 3000, y: 1500 }, "motors", 0.75);
+  checkPositionForQuadrant(1, true, { x: 0, y: 1500 }, "motors", 0.75);
+  checkPositionForQuadrant(2, true, { x: 0, y: 0 }, "motors", 0.75);
+  checkPositionForQuadrant(3, true, { x: 3000, y: 0 }, "motors", 0.75);
+  checkPositionForQuadrant(4, true, { x: 3000, y: 1500 }, "motors", 0.75);
+  checkPositionForQuadrant(2, false, { x: 0, y: 0 }, "encoders", 0.25);
 
   it("changes location", () => {
     const p = fakeProps();
@@ -79,12 +84,36 @@ describe("<BotFigure/>", () => {
   });
 
   it("shows coordinates on hover", () => {
-    const wrapper = shallow(<BotFigure {...fakeProps()} />);
+    const p = fakeProps();
+    p.position.x = 100;
+    const wrapper = shallow(<BotFigure {...p} />);
     expect(wrapper.state().hovered).toBeFalsy();
     const utm = wrapper.find("#UTM");
     utm.simulate("mouseOver");
     expect(wrapper.state().hovered).toBeTruthy();
+    expect(wrapper.find("text").props()).toEqual(expect.objectContaining({
+      x: 100, y: 0, dx: 40, dy: 0,
+      textAnchor: "start", visibility: "visible",
+    }));
+    expect(wrapper.text()).toEqual("(100, 0, 0)");
     utm.simulate("mouseLeave");
     expect(wrapper.state().hovered).toBeFalsy();
+    expect(wrapper.find("text").props()).toEqual(
+      expect.objectContaining({ visibility: "hidden" }));
+  });
+
+  it("shows coordinates on hover: X&Y swapped", () => {
+    const p = fakeProps();
+    p.position.x = 100;
+    p.mapTransformProps.xySwap = true;
+    const wrapper = shallow(<BotFigure {...p} />);
+    const utm = wrapper.find("#UTM");
+    utm.simulate("mouseOver");
+    expect(wrapper.state().hovered).toBeTruthy();
+    expect(wrapper.find("text").props()).toEqual(expect.objectContaining({
+      x: 0, y: 100, dx: 0, dy: 55,
+      textAnchor: "middle", visibility: "visible",
+    }));
+    expect(wrapper.text()).toEqual("(100, 0, 0)");
   });
 });

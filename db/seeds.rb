@@ -1,4 +1,13 @@
 unless Rails.env == "production"
+    POINT_COUNT             = 8
+    PLANT_COUNT             = 8
+    DATE_RANGE_LO           = 1..3
+    DATE_RANGE_HI           = 3..8
+    ENV['MQTT_HOST']        = "blooper.io"
+    ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
+
+    LogDispatch.destroy_all
+    Log.destroy_all
     TokenIssuance.destroy_all
     PinBinding.destroy_all
     User.destroy_all
@@ -6,18 +15,13 @@ unless Rails.env == "production"
     ToolSlot.destroy_all
     Tool.destroy_all
     Point.destroy_all
-    LogDispatch.destroy_all
-
     User.destroy_all
-    POINT_COUNT             = 2
-    PLANT_COUNT             = 2
-    DATE_RANGE_LO           = 1..3
-    DATE_RANGE_HI           = 3..8
-    ENV['MQTT_HOST']        = "blooper.io"
-    ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
     Point.destroy_all
     Device.destroy_all
     User.destroy_all
+    PlantTemplate.destroy_all
+    SavedGarden.destroy_all
+
     Users::Create.run!(name:                  "Administrator",
                        email:                 "farmbot@farmbot.io",
                        password:              "password123",
@@ -51,29 +55,28 @@ unless Rails.env == "production"
     end
 
     PLANT_COUNT.times do
-      Point.create(
-        device: u.device,
-        x: rand(40...970),
-        y: rand(40...470),
-        radius: rand(10...50),
-        name: Faker::StarWars.call_sign,
-        pointer: Plant.new(
-          openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample
-        ))
+      Plant.create(device:        u.device,
+                   x:             rand(40...970),
+                   y:             rand(40...470),
+                   radius:        rand(10...50),
+                   name:          Faker::StarWars.call_sign,
+                   pointer_id:    0,
+                   openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample)
     end
 
+    Device.all.map { |device| SavedGardens::Snapshot.run!(device: device) }
+
     POINT_COUNT.times do
-      Point.create(
-        device: u.device,
-        x: rand(40...970) + rand(40...970),
-        y: rand(40...470) + rand(40...470),
-        z: 5,
-        radius: (rand(1...150) + rand(1...150)) / 20,
-        pointer: GenericPointer.new(),
-        meta: {
-          created_by: "plant-detection",
-          color: (Sequence::COLORS + [nil]).sample
-        })
+      GenericPointer.create(device: u.device,
+                            x: rand(40...970) + rand(40...970),
+                            y: rand(40...470) + rand(40...470),
+                            z: 5,
+                            radius: (rand(1...150) + rand(1...150)) / 20,
+                            pointer_id: 0,
+                            meta: {
+                              created_by: "plant-detection",
+                              color: (Sequence::COLORS + [nil]).sample
+                            })
     end
 
     s = Sequences::Create.run!(device: u.device,
@@ -116,8 +119,8 @@ unless Rails.env == "production"
                                 y: 10,
                                 z: 10)
     d = u.device
-    PinBindings::Create
-      .run!(device: d, sequence_id: d.sequences.sample.id, pin_num: 15,)
+    # PinBindings::Create
+    #   .run!(device: d, sequence_id: d.sequences.sample.id, pin_num: 15,)
     Sensors::Create
       .run!(device: d, pin: 14, label: "Stub sensor", mode: 0)
   end

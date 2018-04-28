@@ -1,15 +1,18 @@
 import * as React from "react";
 import { GridProps } from "./interfaces";
-import { getXYFromQuadrant, transformForQuadrant } from "./util";
+import { transformXY, transformForQuadrant } from "./util";
 import * as _ from "lodash";
 import { Color } from "../../ui/index";
 
 export function Grid(props: GridProps) {
-  const { quadrant, gridSize } = props.mapTransformProps;
-  const origin = getXYFromQuadrant(0, 0, quadrant, gridSize);
-  const arrowEnd = getXYFromQuadrant(25, 25, quadrant, gridSize);
-  const xLabel = getXYFromQuadrant(15, -10, quadrant, gridSize);
-  const yLabel = getXYFromQuadrant(-11, 18, quadrant, gridSize);
+  const { mapTransformProps } = props;
+  const { gridSize, xySwap } = mapTransformProps;
+  const gridSizeW = xySwap ? gridSize.y : gridSize.x;
+  const gridSizeH = xySwap ? gridSize.x : gridSize.y;
+  const origin = transformXY(0, 0, mapTransformProps);
+  const arrowEnd = transformXY(25, 25, mapTransformProps);
+  const xLabel = transformXY(15, -10, mapTransformProps);
+  const yLabel = transformXY(-11, 18, mapTransformProps);
   return <g className="drop-area-background" onClick={props.onClick}>
     <defs>
       <pattern id="minor_grid"
@@ -33,10 +36,10 @@ export function Grid(props: GridProps) {
 
     <g id="grid">
       <rect id="minor-grid"
-        width={gridSize.x} height={gridSize.y} fill="url(#minor_grid)" />
-      <rect id="major-grid" transform={transformForQuadrant(quadrant, gridSize)}
-        width={gridSize.x} height={gridSize.y} fill="url(#major_grid)" />
-      <rect id="border" width={gridSize.x} height={gridSize.y} fill="none"
+        width={gridSizeW} height={gridSizeH} fill="url(#minor_grid)" />
+      <rect id="major-grid" transform={transformForQuadrant(mapTransformProps)}
+        width={gridSizeW} height={gridSizeH} fill="url(#major_grid)" />
+      <rect id="border" width={gridSizeW} height={gridSizeH} fill="none"
         stroke="rgba(0,0,0,0.3)" strokeWidth={2} />
     </g>
 
@@ -57,12 +60,12 @@ export function Grid(props: GridProps) {
     <g id="axis-values" fontFamily="Arial" fontSize="10"
       textAnchor="middle" dominantBaseline="central" fill="rgba(0, 0, 0, 0.3)">
       {_.range(100, gridSize.x, 100).map((i) => {
-        const location = getXYFromQuadrant(i, -10, quadrant, gridSize);
+        const location = transformXY(i, -10, mapTransformProps);
         return <text key={"x-label-" + i}
           x={location.qx} y={location.qy}>{i}</text>;
       })}
       {_.range(100, gridSize.y, 100).map((i) => {
-        const location = getXYFromQuadrant(-15, i, quadrant, gridSize);
+        const location = transformXY(-15, i, mapTransformProps);
         return <text key={"y-label-" + i}
           x={location.qx} y={location.qy}>{i}</text>;
       })}

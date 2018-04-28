@@ -1,7 +1,20 @@
+.panel-header,
 .farm-designer-panels {
   width: 30rem;
   position: fixed;
   top: 8.9rem;
+}
+
+@keyframes panel-pullout {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.farm-designer-panels {
   bottom: 0;
   z-index: 1;
   .panel-container {
@@ -14,6 +27,9 @@
       font-size: 1.3rem;
       margin-top: 2rem;
     }
+  }
+  div {
+    animation: panel-pullout 0s ease;
   }
 }
 
@@ -230,7 +246,7 @@
 .panel-header {
   position: fixed;
   width: 300px;
-  z-index: 3;
+  z-index: 2;
   .panel-header-description,
   .crop-info-description {
     font-size: 1.2rem;

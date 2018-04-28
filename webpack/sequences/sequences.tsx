@@ -9,9 +9,14 @@ import { Props } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { ToolTips } from "../constants";
 import { isTaggedSequence } from "../resources/tagged_resources";
+import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {
+  componentWillMount() {
+    if (!this.props.sequence) { setActiveSequenceByName(); }
+  }
+
   render() {
     const { sequence } = this.props;
     const sequenceSelected = sequence && isTaggedSequence(sequence);

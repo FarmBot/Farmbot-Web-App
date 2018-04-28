@@ -78,7 +78,9 @@ export function emptyState(): RestResources {
         Sensor: [],
         FarmwareInstallation: [],
         DeviceConfig: [],
-        PinBinding: []
+        PinBinding: [],
+        PlantTemplate: [],
+        SavedGarden: []
       },
       byKindAndId: {},
       references: {}
@@ -122,20 +124,22 @@ export let resourceReducer = generateReducer
         case "Crop":
         case "Device":
         case "FarmEvent":
+        case "FarmwareInstallation":
+        case "FbosConfig":
+        case "FirmwareConfig":
         case "Log":
         case "Peripheral":
+        case "PinBinding":
+        case "PlantTemplate":
         case "Point":
         case "Regimen":
+        case "SavedGarden":
+        case "Sensor":
         case "Sequence":
         case "Tool":
         case "User":
-        case "WebcamFeed":
         case "WebAppConfig":
-        case "FirmwareConfig":
-        case "FbosConfig":
-        case "Sensor":
-        case "FarmwareInstallation":
-        case "PinBinding":
+        case "WebcamFeed":
           reindexResource(s.index, resource);
           dontTouchThis(resource);
           s.index.references[resource.uuid] = resource;
@@ -154,22 +158,24 @@ export let resourceReducer = generateReducer
       case "Crop":
       case "Device":
       case "FarmEvent":
+      case "FarmwareInstallation":
+      case "FbosConfig":
+      case "FirmwareConfig":
+      case "Image":
       case "Log":
       case "Peripheral":
+      case "PinBinding":
+      case "PlantTemplate":
       case "Point":
       case "Regimen":
+      case "SavedGarden":
+      case "Sensor":
+      case "SensorReading":
       case "Sequence":
       case "Tool":
       case "User":
-      case "WebcamFeed":
       case "WebAppConfig":
-      case "FbosConfig":
-      case "FirmwareConfig":
-      case "SensorReading":
-      case "Image":
-      case "Sensor":
-      case "FarmwareInstallation":
-      case "PinBinding":
+      case "WebcamFeed":
         removeFromIndex(s.index, resource);
         break;
       default:

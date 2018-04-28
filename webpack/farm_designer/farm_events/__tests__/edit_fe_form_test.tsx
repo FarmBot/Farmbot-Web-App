@@ -8,22 +8,28 @@ jest.mock("../../../history", () => ({
 jest.mock("farmbot-toastr", () => ({ success: jest.fn(), error: jest.fn() }));
 
 import * as React from "react";
-import { fakeFarmEvent, fakeSequence } from "../../../__test_support__/fake_state/resources";
+import {
+  fakeFarmEvent, fakeSequence, fakeRegimen
+} from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
 import {
   EditFEForm,
   EditFEProps,
   FarmEventViewModel,
   recombine,
-  destructureFarmEvent
+  destructureFarmEvent,
+  offsetTime
 } from "../edit_fe_form";
 import { isString } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
 import { SpecialStatus } from "../../../resources/tagged_resources";
 import { success, error } from "farmbot-toastr";
+import * as moment from "moment";
+import { fakeState } from "../../../__test_support__/fake_state";
+import { history } from "../../../history";
 
 describe("<FarmEventForm/>", () => {
-  const props = (): EditFEForm["props"] => ({
+  const props = (): EditFEProps => ({
     deviceTimezone: undefined,
     executableOptions: [],
     repeatOptions: [],
@@ -31,11 +37,13 @@ describe("<FarmEventForm/>", () => {
     dispatch: jest.fn(() => Promise.resolve()),
     findExecutable: jest.fn(() => fakeSequence()),
     title: "title",
-    timeOffset: 0
+    timeOffset: 0,
+    autoSyncEnabled: false,
+    allowRegimenBackscheduling: false,
   });
 
   function instance(p: EditFEProps) {
-    return mount(<EditFEForm {...p } />).instance() as EditFEForm;
+    return mount(<EditFEForm {...p} />).instance() as EditFEForm;
   }
   const context = { form: new EditFEForm(props()) };
 
@@ -102,6 +110,16 @@ describe("<FarmEventForm/>", () => {
     expect(i.state.fe.executable_id).toEqual("wow");
   });
 
+  it("doesn't allow improper changes to the executable", () => {
+    const p = props();
+    p.farmEvent.body.executable_type = "Regimen";
+    const i = instance(p);
+    i.executableSet({ value: "wow", label: "hey", headingId: "Sequence" });
+    expect(error).toHaveBeenCalledWith(
+      "Cannot change from a Regimen to a Sequence.");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/farm_events");
+  });
+
   it("gets executable info", () => {
     const p = props();
     const i = instance(p);
@@ -133,9 +151,24 @@ describe("<FarmEventForm/>", () => {
       "executable_type": "Regimen",
       "executable_id": "1",
       timeOffset: 0
-    });
+    }, { forceRegimensToMidnight: false });
     expect(result.time_unit).toEqual("never");
     expect(result.time_unit).not.toEqual("daily");
+  });
+
+  it("sets regimen start_time to `00:00` as needed", () => {
+    const result = recombine({
+      "startDate": "2017-08-01",
+      "startTime": "08:35",
+      "endDate": "2017-08-01",
+      "endTime": "08:33",
+      "repeat": "1",
+      "timeUnit": "daily",
+      "executable_type": "Regimen",
+      "executable_id": "1",
+      timeOffset: 0
+    }, { forceRegimensToMidnight: true });
+    expect(result.start_time).toEqual("2017-08-01T00:00:00.000Z");
   });
 
   it(`Recombines local state back into a Partial<TaggedFarmEvent["body"]>`, () => {
@@ -149,7 +182,7 @@ describe("<FarmEventForm/>", () => {
       "executable_type": "Regimen",
       "executable_id": "1",
       timeOffset: 0
-    });
+    }, { forceRegimensToMidnight: false });
     expect(result).toEqual({
       start_time: "2017-08-01T08:35:00.000Z",
       end_time: "2017-08-01T08:33:00.000Z",
@@ -178,30 +211,186 @@ describe("<FarmEventForm/>", () => {
       findExecutable={jest.fn(() => seq)}
       dispatch={jest.fn()}
       repeatOptions={repeatOptions}
-      timeOffset={0} />);
+      timeOffset={0}
+      autoSyncEnabled={false}
+      allowRegimenBackscheduling={false} />);
     el.update();
     const txt = el.text().replace(/\s+/g, " ");
     expect(txt).toContain("Save *");
   });
 
-  it("displays success message on save", async () => {
+  it("displays success message on save: manual sync", async () => {
     const p = props();
-    p.farmEvent.body.start_time = "2020-05-22T05:00:00.000Z";
-    p.farmEvent.body.end_time = "2020-05-22T06:00:00.000Z";
+    p.autoSyncEnabled = false;
+    p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
+    p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
     const i = instance(p);
-    await i.commitViewModel();
+    await i.commitViewModel(moment("2016-05-22T05:00:00.000Z"));
     expect(success).toHaveBeenCalledWith(
       expect.stringContaining("must first SYNC YOUR DEVICE"));
   });
 
-  it("displays error message on save", async () => {
+  it("displays success message on save: auto sync", async () => {
     const p = props();
+    p.autoSyncEnabled = true;
+    p.farmEvent.body.executable_type = "Regimen";
+    const regimen = fakeRegimen();
+    regimen.body.regimen_items = [{ sequence_id: -1, time_offset: 100000000 }];
+    p.findExecutable = () => regimen;
     p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
     const i = instance(p);
-    await i.commitViewModel();
+    await i.commitViewModel(moment("2016-05-22T05:00:00.000Z"));
+    expect(success).toHaveBeenCalledWith(
+      expect.stringContaining("The next item in this Farm Event will run"));
+    expect(success).not.toHaveBeenCalledWith(
+      expect.stringContaining("must first SYNC YOUR DEVICE"));
+  });
+
+  it("warns about missed regimen items", async () => {
+    const p = props();
+    const state = fakeState();
+    state.resources.index.references = { [p.farmEvent.uuid]: p.farmEvent };
+    p.dispatch = jest.fn((x) => {
+      x(() => { }, () => state);
+      return Promise.resolve();
+    })
+      .mockImplementationOnce(() => Promise.resolve());
+    p.farmEvent.body.executable_type = "Regimen";
+    p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
+    p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
+    const i = instance(p);
+    window.alert = jest.fn();
+    await i.commitViewModel(moment(offsetTime("2017-05-22", "06:00", 0)));
+    expect(window.alert).toHaveBeenCalledWith(
+      expect.stringContaining("skipped regimen tasks"));
+  });
+
+  it("sends toast with regimen start time", async () => {
+    const p = props();
+    p.farmEvent.body.executable_type = "Regimen";
+    const regimen = fakeRegimen();
+    regimen.body.regimen_items = [{ sequence_id: -1, time_offset: 1000000000 }];
+    p.findExecutable = () => regimen;
+    p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
+    p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
+    const i = instance(p);
+    await i.commitViewModel(moment(offsetTime("2017-05-25", "06:00", 0)));
+    expect(success).toHaveBeenCalledWith(
+      expect.stringContaining("run in 8 days"));
+  });
+
+  it("sends toast with next sequence run time", async () => {
+    const p = props();
+    p.farmEvent.body.executable_type = "Sequence";
+    p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
+    p.farmEvent.body.end_time = "2017-06-22T06:00:00.000Z";
+    p.farmEvent.body.repeat = 7;
+    p.farmEvent.body.time_unit = "daily";
+    const i = instance(p);
+    await i.commitViewModel(moment(offsetTime("2017-05-25", "06:00", 0)));
+    expect(success).toHaveBeenCalledWith(
+      expect.stringContaining("will run in 4 days"));
+  });
+
+  const expectStartTimeToBeRejected = () => {
+    expect(error).toHaveBeenCalledWith(
+      "FarmEvent start time needs to be in the future, not the past.",
+      "Unable to save farm event.");
+  };
+
+  it("displays error message on save (add): start time has passed", () => {
+    const p = props();
+    p.title = "add";
+    p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
+    p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
+    const i = instance(p);
+    i.commitViewModel(moment("2017-06-22T05:00:00.000Z"));
+    expectStartTimeToBeRejected();
+  });
+
+  it("doesn't display error message on edit: start time has passed", () => {
+    const p = props();
+    p.title = "edit";
+    p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
+    p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
+    const i = instance(p);
+    i.commitViewModel(moment("2017-06-22T05:00:00.000Z"));
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("displays error message on save: no items", async () => {
+    const p = props();
+    p.allowRegimenBackscheduling = true;
+    p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
+    p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
+    const i = instance(p);
+    await i.commitViewModel(moment("2017-06-22T05:00:00.000Z"));
     expect(error).toHaveBeenCalledWith(expect.stringContaining(
-      "This Farm Event does not appear to have a valid run time"));
+      "This Farm Event does not appear to have a valid run time"), "Warning");
+  });
+
+  it("rejects start time: add with unsupported OS", () => {
+    const p = props();
+    p.title = "add";
+    p.allowRegimenBackscheduling = false;
+    p.farmEvent.body.executable_type = "Regimen";
+    p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
+    const fakeNow = moment("2017-06-01T02:00:00.000Z");
+    const reject = instance(p).maybeRejectStartTime(p.farmEvent.body, fakeNow);
+    expect(reject).toBeTruthy();
+  });
+
+  it("allows start time: edit with unsupported OS", () => {
+    const p = props();
+    p.allowRegimenBackscheduling = false;
+    p.farmEvent.body.executable_type = "Regimen";
+    p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
+    const fakeNow = moment("2017-06-01T02:00:00.000Z");
+    p.title = "edit";
+    const reject = instance(p).maybeRejectStartTime(p.farmEvent.body, fakeNow);
+    expect(reject).toBeFalsy();
+  });
+
+  it("allows start time: add with supported OS", () => {
+    const p = props();
+    p.title = "add";
+    p.allowRegimenBackscheduling = true;
+    p.farmEvent.body.executable_type = "Regimen";
+    p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
+    const fakeNow = moment("2017-06-01T02:00:00.000Z");
+    const reject = instance(p).maybeRejectStartTime(p.farmEvent.body, fakeNow);
+    expect(reject).toBeFalsy();
+  });
+
+  it("rejects start time: add sequence event", () => {
+    const p = props();
+    p.title = "add";
+    p.farmEvent.body.executable_type = "Sequence";
+    p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
+    const fakeNow = moment("2017-06-01T02:00:00.000Z");
+    const reject = instance(p).maybeRejectStartTime(p.farmEvent.body, fakeNow);
+    expect(reject).toBeTruthy();
+  });
+
+  it("allows start time: edit sequence event", () => {
+    const p = props();
+    p.farmEvent.body.executable_type = "Sequence";
+    p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
+    const fakeNow = moment("2017-06-01T02:00:00.000Z");
+    p.title = "edit";
+    const reject = instance(p).maybeRejectStartTime(p.farmEvent.body, fakeNow);
+    expect(reject).toBeFalsy();
+  });
+
+  it("allows start time in the future", () => {
+    const p = props();
+    p.title = "add";
+    p.farmEvent.body.executable_type = "Sequence";
+    p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
+    const fakeNow = moment("2017-06-01T00:00:00.000Z");
+    const reject = instance(p).maybeRejectStartTime(p.farmEvent.body, fakeNow);
+    expect(reject).toBeFalsy();
   });
 });
 

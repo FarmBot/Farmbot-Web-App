@@ -19,15 +19,15 @@ module Logs
       # at this point and we need the ability to perform SQL queries. The `meta`
       # field is no longer useful nor is it a clean solution.
       #
-      # Too many bots expect logs to be in the same shape as before and they
-      # also create logs with the expectation that logs have a `meta` field.
+      # Legacy FBOS versions expect logs to be in the same shape as before
+      # and they also produce logs with the expectation that logs have a `meta`
+      # field.
       #
-      # We will keep the `meta` field aroundn for now, but ideally, API users
+      # We will keep the `meta` field around for now, but ideally, API users
       # should access `log.FOO` instead of `log.meta.FOO` for future
       # compatibility.
       #
-      # TODO: Make the fields below mandadtory (allowing nil in some cases, but
-      #       always requiring the key) and delete the `meta` field.
+      # TODO: delete the `meta` field by 6 JUN 18
       string  :type, in: Log::TYPES
       integer :x
       integer :y
@@ -51,6 +51,7 @@ module Logs
     end
 
     def validate
+      add_error :log, :private, BAD_WORDS if has_bad_words
       @log               = Log.new
       @log.device        = device
       @log.message       = message
@@ -58,19 +59,23 @@ module Logs
       @log.x             = transitional_field(:x)
       @log.y             = transitional_field(:y)
       @log.z             = transitional_field(:z)
-      @log.verbosity     = transitional_field(:verbosity)
+      @log.verbosity     = transitional_field(:verbosity, 1)
       @log.major_version = transitional_field(:major_version)
       @log.minor_version = transitional_field(:minor_version)
-      @log.type          = transitional_field(:type)
+      @log.type          = transitional_field(:type, "info")
       @log.validate!
-      add_error :log, :private, BAD_WORDS if has_bad_words
     end
 
     def execute
+      @log.save! && maybe_deliver
       @log
     end
 
     private
+
+    def maybe_deliver
+      LogDispatch.delay.deliver(device, @log)
+    end
 
     def has_bad_words
       !!inputs[:message].upcase.match(BLACKLIST)
@@ -78,7 +83,8 @@ module Logs
 
     # Helper for dealing with the gradual removal of the meta field.
     def transitional_field(name, default = nil)
-      return inputs[name] || meta[name] || meta[name.to_s] || default
+      m = meta || {} # New logs wont have `meta`.
+      return inputs[name] || m[name] || m[name.to_s] || default
     end
   end
 end

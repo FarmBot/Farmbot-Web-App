@@ -33,14 +33,24 @@ describe Api::PointsController do
       post :create, body: p.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       plant = Plant.last
-      expect(plant.point.x).to eq(p[:x])
-      expect(plant.point.y).to eq(p[:y])
-      expect(plant.point.name).to eq(p[:name])
+      expect(plant.x).to eq(p[:x])
+      expect(plant.y).to eq(p[:y])
+      expect(plant.name).to eq(p[:name])
       expect(plant.openfarm_slug).to eq(p[:openfarm_slug])
       expect(plant.created_at).to be_truthy
       p.keys.each do |key|
         expect(json).to have_key(key)
       end
+    end
+
+    it 'validates pointer_type' do
+      sign_in user
+      body = { pointer_type: "TypoPointer" }
+      post :create, body: body.to_json, params: { format: :json }
+      expect(response.status).to eq(422)
+      expected = \
+        "Please provide a JSON object with a `pointer_type` that matches"
+      expect(json[:error]).to include(expected)
     end
 
     it 'creates a point' do
@@ -59,9 +69,9 @@ describe Api::PointsController do
       expect(json[:y]).to eq(body[:y])
       expect(json[:z]).to eq(body[:z])
       expect(json[:radius]).to eq(body[:radius])
-      expect(json[:pointer_type]).to eq(body[:pointer_type])
       expect(json[:meta][:foo]).to eq(body[:meta][:foo])
       expect(Point.last.device).to eq(device)
+      expect(json[:pointer_type]).to eq(body[:pointer_type])
     end
 
     it 'requires x' do

@@ -4,13 +4,12 @@ import { shallow } from "enzyme";
 import { DragHelpersProps } from "../interfaces";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Color } from "../../../ui/index";
+import { fakeMapTransformProps } from "../../../__test_support__/map_transform_props";
 
 describe("<DragHelpers/>", () => {
   function fakeProps(): DragHelpersProps {
     return {
-      mapTransformProps: {
-        quadrant: 2, gridSize: { x: 3000, y: 1500 }
-      },
+      mapTransformProps: fakeMapTransformProps(),
       plant: fakePlant(),
       dragging: false,
       zoomLvl: 1.8,
@@ -20,7 +19,7 @@ describe("<DragHelpers/>", () => {
   }
 
   it("doesn't render drag helpers", () => {
-    const wrapper = shallow(<DragHelpers {...fakeProps() } />);
+    const wrapper = shallow(<DragHelpers {...fakeProps()} />);
     expect(wrapper.find("text").length).toEqual(0);
     expect(wrapper.find("rect").length).toBeLessThanOrEqual(1);
     expect(wrapper.find("use").length).toEqual(0);
@@ -29,7 +28,7 @@ describe("<DragHelpers/>", () => {
   it("renders drag helpers", () => {
     const p = fakeProps();
     p.dragging = true;
-    const wrapper = shallow(<DragHelpers {...p } />);
+    const wrapper = shallow(<DragHelpers {...p} />);
     expect(wrapper.find("#coordinates-tooltip").length).toEqual(1);
     expect(wrapper.find("#long-crosshair").length).toEqual(1);
     expect(wrapper.find("#short-crosshair").length).toEqual(1);
@@ -42,7 +41,7 @@ describe("<DragHelpers/>", () => {
     p.dragging = true;
     p.plant.body.x = 104;
     p.plant.body.y = 199;
-    const wrapper = shallow(<DragHelpers {...p } />);
+    const wrapper = shallow(<DragHelpers {...p} />);
     expect(wrapper.find("text").length).toEqual(1);
     expect(wrapper.find("text").text()).toEqual("100, 200");
     expect(wrapper.find("text").props().fontSize).toEqual("1.25rem");
@@ -53,7 +52,7 @@ describe("<DragHelpers/>", () => {
     const p = fakeProps();
     p.dragging = true;
     p.zoomLvl = 0.9;
-    const wrapper = shallow(<DragHelpers {...p } />);
+    const wrapper = shallow(<DragHelpers {...p} />);
     expect(wrapper.find("text").length).toEqual(1);
     expect(wrapper.find("text").text()).toEqual("100, 200");
     expect(wrapper.find("text").props().fontSize).toEqual("3rem");
@@ -64,7 +63,7 @@ describe("<DragHelpers/>", () => {
     const p = fakeProps();
     p.dragging = true;
     p.plant.body.id = 5;
-    const wrapper = shallow(<DragHelpers {...p } />);
+    const wrapper = shallow(<DragHelpers {...p} />);
     const crosshair = wrapper.find("#short-crosshair");
     expect(crosshair.length).toEqual(1);
     const segment = crosshair.find("#crosshair-segment-5");
@@ -83,7 +82,7 @@ describe("<DragHelpers/>", () => {
     const p = fakeProps();
     p.dragging = true;
     p.zoomLvl = 0.9;
-    const wrapper = shallow(<DragHelpers {...p } />);
+    const wrapper = shallow(<DragHelpers {...p} />);
     const crosshair = wrapper.find("#short-crosshair");
     expect(crosshair.length).toEqual(1);
     expect(crosshair.find("rect").first().props())
@@ -98,7 +97,7 @@ describe("<DragHelpers/>", () => {
     p.plant.body.x = 100;
     p.plant.body.y = 100;
     p.activeDragXY = { x: 100, y: 0, z: 0 };
-    const wrapper = shallow(<DragHelpers {...p } />);
+    const wrapper = shallow(<DragHelpers {...p} />);
     const indicators = wrapper.find("#alignment-indicator");
     expect(indicators.length).toEqual(1);
     const segment = indicators.find("#alignment-indicator-segment-5");
@@ -119,7 +118,7 @@ describe("<DragHelpers/>", () => {
     p.plant.body.x = 100;
     p.plant.body.y = 100;
     p.activeDragXY = { x: 0, y: 100, z: 0 };
-    const wrapper = shallow(<DragHelpers {...p } />);
+    const wrapper = shallow(<DragHelpers {...p} />);
     const indicator = wrapper.find("#alignment-indicator");
     const segments = indicator.find("use");
     expect(segments.length).toEqual(2);
@@ -136,7 +135,7 @@ describe("<DragHelpers/>", () => {
     p.plant.body.x = 100;
     p.plant.body.y = 100;
     p.activeDragXY = { x: 100, y: 100, z: 0 };
-    const wrapper = shallow(<DragHelpers {...p } />);
+    const wrapper = shallow(<DragHelpers {...p} />);
     const indicator = wrapper.find("#alignment-indicator");
     const masterSegment = indicator.find("#alignment-indicator-segment-6");
     const segmentProps = masterSegment.find("rect").props();

@@ -16,15 +16,14 @@ import { PlantLayer } from "../plant_layer";
 import { shallow } from "enzyme";
 import { fakePlant } from "../../../../__test_support__/fake_state/resources";
 import { PlantLayerProps } from "../../interfaces";
+import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
 
 describe("<PlantLayer/>", () => {
   function fakeProps(): PlantLayerProps {
     return {
       visible: true,
       plants: [fakePlant()],
-      mapTransformProps: {
-        quadrant: 2, gridSize: { x: 3000, y: 1500 }
-      },
+      mapTransformProps: fakeMapTransformProps(),
       currentPlant: undefined,
       dragging: false,
       editing: false,
@@ -38,7 +37,7 @@ describe("<PlantLayer/>", () => {
 
   it("shows plants", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PlantLayer {...p } />);
+    const wrapper = shallow(<PlantLayer {...p} />);
     const layer = wrapper.find("#plant-layer");
     expect(layer.find(".plant-link-wrapper").length).toEqual(1);
     ["soil-cloud",
@@ -55,21 +54,21 @@ describe("<PlantLayer/>", () => {
   it("toggles visibility off", () => {
     const p = fakeProps();
     p.visible = false;
-    const wrapper = shallow(<PlantLayer {...p } />);
+    const wrapper = shallow(<PlantLayer {...p} />);
     expect(wrapper.html()).toEqual("<g id=\"plant-layer\"></g>");
   });
 
   it("is in clickable mode", () => {
     mockPath = "/app/designer/plants";
     const p = fakeProps();
-    const wrapper = shallow(<PlantLayer {...p } />);
+    const wrapper = shallow(<PlantLayer {...p} />);
     expect(wrapper.find("Link").props().style).toEqual({});
   });
 
   it("is in non-clickable mode", () => {
     mockPath = "/app/designer/plants/select";
     const p = fakeProps();
-    const wrapper = shallow(<PlantLayer {...p } />);
+    const wrapper = shallow(<PlantLayer {...p} />);
     expect(wrapper.find("Link").props().style)
       .toEqual({ pointerEvents: "none" });
   });

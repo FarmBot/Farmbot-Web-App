@@ -25,15 +25,6 @@ describe LogService do
     end
   end
 
-  it "clips overflowing logs" do
-    device = Device.find(device_id)
-    FactoryBot.create_list(:log, device.max_log_count + 10, device: device)
-    b4 = device.logs.count
-    LogService.process(fake_delivery_info, normal_payl)
-    expect(device.logs.count).to be < b4
-    expect(device.logs.count).to eq(device.max_log_count)
-  end
-
   it "calls .subscribe() on Transport." do
     fakee = FakeLogChan.new
     allow(Transport).to receive(:log_channel) { fakee }

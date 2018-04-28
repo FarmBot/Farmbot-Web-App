@@ -8,6 +8,11 @@ require "rails/all"
 Bundler.require(:default, Rails.env)
 module FarmBot
   class Application < Rails::Application
+    Delayed::Worker.max_attempts = 4
+    # config.after_initialize do
+    #   Bullet.enable  = true
+    #   Bullet.console = true
+    # end
     config.active_job.queue_adapter = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false

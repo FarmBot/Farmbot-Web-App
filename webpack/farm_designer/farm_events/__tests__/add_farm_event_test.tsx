@@ -32,12 +32,14 @@ describe("<AddFarmEvent />", () => {
       farmEvents: [farmEvent],
       getFarmEvent: () => farmEvent,
       findExecutable: () => sequence,
-      timeOffset: 0
+      timeOffset: 0,
+      autoSyncEnabled: false,
+      allowRegimenBackscheduling: false,
     };
   }
 
   it("renders", () => {
-    const wrapper = mount(<AddFarmEvent {...fakeProps() } />);
+    const wrapper = mount(<AddFarmEvent {...fakeProps()} />);
     wrapper.setState({ uuid: "FarmEvent" });
     ["Add Farm Event", "Sequence or Regimen", "fake", "Save"].map(string =>
       expect(wrapper.text()).toContain(string));
@@ -47,13 +49,13 @@ describe("<AddFarmEvent />", () => {
   });
 
   it("redirects", () => {
-    const wrapper = mount(<AddFarmEvent {...fakeProps() } />);
+    const wrapper = mount(<AddFarmEvent {...fakeProps()} />);
     expect(wrapper.text()).toContain("Loading");
   });
 
   it("cleans up when unmounting", () => {
     const props = fakeProps();
-    const wrapper = mount(<AddFarmEvent {...props } />);
+    const wrapper = mount(<AddFarmEvent {...props} />);
     wrapper.update();
     const uuid: string = wrapper.state("uuid");
     props.farmEvents[0].uuid = uuid;

@@ -1,7 +1,5 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router";
-import { t } from "i18next";
 import { GardenMap } from "./map/garden_map";
 import { Props, State, BotOriginQuadrant, isBotOriginQuadrant } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
@@ -15,6 +13,7 @@ import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { getBotSize } from "./map/util";
 import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom";
 import * as moment from "moment";
+import { DesignerNavTabs } from "./panel_header";
 
 export const getDefaultAxisLength = (): AxisNumberProperty => {
   if (Session.deprecatedGetBool(BooleanSetting.map_xl)) {
@@ -91,18 +90,11 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     return this.props.children || fallback;
   }
 
-  render() {
-    /**
-     * Kinda nasty, similar to the old q="NoTab" we used to determine no panels.
-     * This one just makes sure the designer can click it's panel tabs without
-     * the other headers getting in the way. There's more re-usability in this.
-     */
-    if (history.getCurrentLocation().pathname === "/app/designer") {
-      document.body.classList.add("designer-tab");
-    } else {
-      document.body.classList.remove("designer-tab");
-    }
+  get mapOnly() {
+    return history.getCurrentLocation().pathname === "/app/designer";
+  }
 
+  render() {
     const {
       legend_menu_open,
       show_plants,
@@ -113,8 +105,6 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       bot_origin_quadrant,
       zoom_level
     } = this.state;
-
-    const designerTabClasses: string[] = ["active", "visible-xs"];
 
     const botSize = getBotSize(
       this.props.botMcuParams, this.props.stepsPerMmXY, getDefaultAxisLength());
@@ -132,6 +122,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         .diff(moment(newestDate).clone(), "days"))
       : 1;
     const imageAgeInfo = { newestDate, toOldest };
+
+    const displayPanel = this.mapOnly ? "hidden" : "";
 
     return <div className="farm-designer">
 
@@ -151,25 +143,13 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         getConfigValue={this.props.getConfigValue}
         imageAgeInfo={imageAgeInfo} />
 
-      <div className="panel-header gray-panel designer-nav">
-        <div className="panel-tabs">
-          <Link to="/app/designer" className={designerTabClasses.join(" ")}>
-            {t("Designer")}
-          </Link>
-          <Link to="/app/designer/plants">
-            {t("Plants")}
-          </Link>
-          <Link to="/app/designer/farm_events">
-            {t("Farm Events")}
-          </Link>
-        </div>
-      </div>
-      <div className="farm-designer-panels">
+      <DesignerNavTabs hidden={!this.mapOnly} />
+      <div className={`farm-designer-panels ${displayPanel}`}>
         {this.childComponent(this.props)}
       </div>
 
       <div
-        className="farm-designer-map"
+        className={`farm-designer-map ${this.mapOnly ? "" : "panel-open"}`}
         style={{ zoom: zoom_level }}>
         <GardenMap
           showPoints={show_points}

@@ -180,7 +180,7 @@ describe Api::SequencesController do
     end
 
     it 'tracks Points' do
-      point = FactoryBot.create(:point, device: user.device)
+      point = FactoryBot.create(:generic_pointer, device: user.device)
       PinBinding.destroy_all
       Sequence.destroy_all
       EdgeNode.destroy_all

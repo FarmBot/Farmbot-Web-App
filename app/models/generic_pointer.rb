@@ -1,7 +1,5 @@
-class GenericPointer < ApplicationRecord
-  has_one :point, as: :pointer
-
-  def broadcast?
-    false
+class GenericPointer < Point
+  def name_used_when_syncing
+    "Point"
   end
 end

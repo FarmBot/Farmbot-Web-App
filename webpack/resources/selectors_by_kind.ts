@@ -23,8 +23,8 @@ import {
 } from "./tagged_resources";
 import { sortResourcesById, betterCompact, bail } from "../util";
 import { error } from "farmbot-toastr";
-import { assertUuid } from "./selectors";
 import { joinKindAndId } from "./reducer";
+import { assertUuid } from "./util";
 
 const isSaved = <T extends TaggedResource>(t: T) => t.specialStatus === SpecialStatus.SAVED;
 
