@@ -110,7 +110,7 @@ export class Move extends React.Component<MoveProps, {}> {
             </fieldset>
 
             <p>
-              {t("Swap jog buttons")}
+              {t("Swap jog buttons (and rotate map)")}
             </p>
             <fieldset>
               <label>
