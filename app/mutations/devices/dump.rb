@@ -19,8 +19,9 @@ module Devices
       :users,
       :webcam_feeds,
     ]
+
     def self.run_by_id(id)
-      Devices::Dump.delay.run!(device_id: current_device)
+      Devices::Dump.run!(device_id: id)
     end
 
     required do
@@ -29,7 +30,7 @@ module Devices
 
     def execute
       output = { device: device.body_as_json }
-      RESOURCES.eah do |name|
+      RESOURCES.each do |name|
         model        = device.send(name)
         output[name] = \
           model.try(:map) { |x| x.body_as_json } || x.body_as_json

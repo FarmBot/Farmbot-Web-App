@@ -25,9 +25,8 @@ module Api
     end
 
     def dump
-      raise "Need to write tests for this and `dump_status`"
-      Devices::Dump.run_by_id(current_device.id)
-      render json: {ok: "OK"}
+      Devices::Dump.delay.run_by_id(current_device.id)
+      render json: ""
     end
 
     def dump_status

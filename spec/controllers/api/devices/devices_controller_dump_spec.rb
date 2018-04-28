@@ -15,15 +15,13 @@ describe Api::DevicesController do
               :webcam_feeds]
 
   describe '#dump' do
-    it 'creates a backup of your account' do
-      # NOTE: As of 11 December 17, the dump endpoint is only for dev purposes.
-      #       Not going to spend a bunch of time  writing unit tests for this
-      #       endpoint- just basic syntax checking.
+    it 'queues the creation of an account backup' do
       sign_in user
-      get :dump, params: {}, session: { format: :json }
+      wow = double("WOW", run_by_id: nil)
+      expect(wow).to receive(:run_by_id)
+      expect(Devices::Dump).to receive(:delay).and_return(wow).once
+      post :dump, params: {}, session: { format: :json }
       expect(response.status).to eq(200)
-      actual = json.keys
-      EXPECTED.map { |key| expect(actual).to include(key) }
     end
   end
 end
