@@ -2,7 +2,7 @@ source "https://rubygems.org"
 ruby "2.5.1"
 
 gem "active_model_serializers"
-gem "bullet"
+# gem "bullet"
 gem "bunny"
 gem "delayed_job_active_record"
 gem "delayed_job"
@@ -30,6 +30,9 @@ gem "thin"
 gem "tzinfo" # For validation of user selected timezone names
 gem "valid_url"
 gem "webpack-rails"
+# Probably safe to remove after next rails upgrade.
+# https://nvd.nist.gov/vuln/detail/CVE-2018-3741
+gem "rails-html-sanitizer", "~> 1.0.4"
 
 group :development, :test do
   gem "capybara"

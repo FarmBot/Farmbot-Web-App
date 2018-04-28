@@ -48,9 +48,8 @@ describe Points::Destroy do
     point_ids = [s.tool_slot.id]
     result = Points::Destroy.run(point_ids: point_ids, device: s.device)
     expect(result.success?).to be(false)
-    expected  = "Could not delete the following item(s): Scenario Tool. "\
-                "Item(s) are in use by the following sequence(s): Scenario "\
-                "Sequence."
+    expected  = "Could not delete Scenario Tool. Item is in use by the "\
+                "following sequence(s): Scenario Sequence."
     expect(result.errors.message_list).to include(expected)
   end
 

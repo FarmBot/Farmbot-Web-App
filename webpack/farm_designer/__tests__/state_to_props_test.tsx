@@ -27,11 +27,6 @@ describe("mapStateToProps()", () => {
 
   it("stepsPerMm is defined", () => {
     const state = fakeState();
-    state.bot.hardware.informational_settings.firmware_version = "5.0.0R";
-    state.bot.hardware.configuration.steps_per_mm_x = 1;
-    state.bot.hardware.configuration.steps_per_mm_y = 2;
-    expect(mapStateToProps(state).stepsPerMmXY).toEqual({ x: 1, y: 2 });
-    state.bot.hardware.informational_settings.firmware_version = "5.0.6R";
     state.bot.hardware.mcu_params.movement_step_per_mm_x = 3;
     state.bot.hardware.mcu_params.movement_step_per_mm_y = 4;
     expect(mapStateToProps(state).stepsPerMmXY).toEqual({ x: 3, y: 4 });
