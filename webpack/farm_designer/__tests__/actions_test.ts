@@ -11,11 +11,12 @@ jest.mock("../../api/crud", () => ({
   edit: jest.fn()
 }));
 
-import { movePlant, closePlantInfo } from "../actions";
+import { movePlant, closePlantInfo, setDragIcon } from "../actions";
 import { MovePlantProps } from "../interfaces";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
 import { edit } from "../../api/crud";
 import { Actions } from "../../constants";
+import { DEFAULT_ICON } from "../../open_farm/icons";
 
 describe("movePlant", () => {
   beforeEach(() => {
@@ -78,5 +79,25 @@ describe("closePlantInfo()", () => {
     expect(dispatch).toHaveBeenCalledWith({
       payload: undefined, type: Actions.SELECT_PLANT
     });
+  });
+});
+
+describe("setDragIcon()", () => {
+  it("sets the drag icon", () => {
+    const setDragImage = jest.fn();
+    const e = { currentTarget: new Image(), dataTransfer: { setDragImage } };
+    setDragIcon("icon")(e);
+    const img = new Image();
+    img.src = "data:image/svg+xml;utf8,icon";
+    expect(setDragImage).toHaveBeenCalledWith(img, 0, 0);
+  });
+
+  it("sets a default drag icon", () => {
+    const setDragImage = jest.fn();
+    const e = { currentTarget: new Image(), dataTransfer: { setDragImage } };
+    setDragIcon(undefined)(e);
+    const img = new Image();
+    img.src = DEFAULT_ICON;
+    expect(setDragImage).toHaveBeenCalledWith(img, 0, 0);
   });
 });

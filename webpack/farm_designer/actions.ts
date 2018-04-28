@@ -1,9 +1,10 @@
-import { MovePlantProps } from "./interfaces";
+import { MovePlantProps, DraggableEvent } from "./interfaces";
 import { defensiveClone } from "../util";
 import { edit } from "../api/crud";
 import * as _ from "lodash";
 import { history, getPathArray } from "../history";
 import { Actions } from "../constants";
+import { svgToUrl, DEFAULT_ICON } from "../open_farm/icons";
 
 export function movePlant(payload: MovePlantProps) {
   const tr = payload.plant;
@@ -32,3 +33,13 @@ export const closePlantInfo = (dispatch: Function) => () => {
     history.push("/app/designer/plants");
   }
 };
+
+export const setDragIcon =
+  (icon: string | undefined) => (e: DraggableEvent) => {
+    const dragImg = new Image();
+    dragImg.src = icon ? svgToUrl(icon) : DEFAULT_ICON;
+    const width = dragImg.naturalWidth;
+    const height = dragImg.naturalHeight;
+    e.dataTransfer.setDragImage
+      && e.dataTransfer.setDragImage(dragImg, width / 2, height / 2);
+  };
