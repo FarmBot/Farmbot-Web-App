@@ -174,6 +174,7 @@ export class GardenMap extends
   handleDragOver = (e: React.DragEvent<HTMLElement>) => {
     switch (getMode()) {
       case Mode.addPlant:
+      case Mode.clickToAdd:
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
     }

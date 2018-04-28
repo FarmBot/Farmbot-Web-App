@@ -9,10 +9,8 @@ import {
   selectAllPeripherals,
   getFirmwareConfig
 } from "../resources/selectors";
-import { StepsPerMmXY } from "../devices/interfaces";
-import { isNumber } from "lodash";
 import * as _ from "lodash";
-import { minFwVersionCheck, validBotLocationData, validFwConfig } from "../util";
+import { validBotLocationData, validFwConfig } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
 
 export function mapStateToProps(props: Everything) {
@@ -26,27 +24,10 @@ export function mapStateToProps(props: Everything) {
   const hoveredPlant = plants.filter(x => x.uuid === plantUUID)[0];
 
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
-  const {
-    mcu_params, configuration, informational_settings
-  } = props.bot.hardware;
+  const { mcu_params } = props.bot.hardware;
   const firmwareSettings = fwConfig || mcu_params;
 
-  function stepsPerMmXY(): StepsPerMmXY {
-    const { steps_per_mm_x, steps_per_mm_y } = configuration;
-    const { firmware_version } = informational_settings;
-    const { movement_step_per_mm_x, movement_step_per_mm_y } = firmwareSettings;
-    const stepsPerMm = () => {
-      if (minFwVersionCheck(firmware_version, "5.0.5")) {
-        return { x: movement_step_per_mm_x, y: movement_step_per_mm_y };
-      } else {
-        return { x: steps_per_mm_x, y: steps_per_mm_y };
-      }
-    };
-    if (isNumber(stepsPerMm().x) && isNumber(stepsPerMm().y)) {
-      return stepsPerMm();
-    }
-    return { x: undefined, y: undefined };
-  }
+  const { movement_step_per_mm_x, movement_step_per_mm_y } = firmwareSettings;
 
   const peripherals = _.uniq(selectAllPeripherals(props.resources.index))
     .map(x => {
@@ -87,7 +68,7 @@ export function mapStateToProps(props: Everything) {
     plants,
     botLocationData: validBotLocationData(props.bot.hardware.location_data),
     botMcuParams: firmwareSettings,
-    stepsPerMmXY: stepsPerMmXY(),
+    stepsPerMmXY: { x: movement_step_per_mm_x, y: movement_step_per_mm_y },
     peripherals,
     eStopStatus: props.bot.hardware.informational_settings.locked,
     latestImages,

@@ -51,6 +51,7 @@ export const NavLinks = (props: NavLinksProps) => {
           to={fn(link.slug, childPath)}
           className={`${isActive}`}
           key={link.slug}
+          draggable={false}
           onClick={props.close("mobileMenuOpen")}>
           <i className={`fa fa-${link.icon}`} />
           {t(link.name)}

@@ -373,8 +373,7 @@ describe("<GardenPlant/>", () => {
     expect(eggs.find("Bugs").length).toEqual(1);
   });
 
-  it(".drop-area: handles drag over", () => {
-    mockPath = "/app/designer/plants/crop_search";
+  const expectHandledDragOver = () => {
     const wrapper = shallow(<GardenMap {...fakeProps()} />);
     const e = {
       dataTransfer: { dropEffect: undefined },
@@ -382,6 +381,17 @@ describe("<GardenPlant/>", () => {
     };
     wrapper.find(".drop-area").simulate("dragOver", e);
     expect(e.dataTransfer.dropEffect).toEqual("move");
+    expect(e.preventDefault).toHaveBeenCalled();
+  };
+
+  it(".drop-area: handles drag over (crop page)", () => {
+    mockPath = "/app/designer/plants/crop_search/mint";
+    expectHandledDragOver();
+  });
+
+  it(".drop-area: handles drag over (click-to-add mode)", () => {
+    mockPath = "/app/designer/plants/crop_search/mint/add";
+    expectHandledDragOver();
   });
 
   it(".drop-area: handles drag start", () => {
