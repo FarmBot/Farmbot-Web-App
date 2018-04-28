@@ -1,15 +1,15 @@
 import * as React from "react";
 import { t } from "i18next";
 import * as _ from "lodash";
-import { DATA_URI, DEFAULT_ICON, svgToUrl } from "../../open_farm/icons";
-import { CropInfoProps, DraggableEvent } from "../interfaces";
+import { svgToUrl } from "../../open_farm/icons";
+import { CropInfoProps } from "../interfaces";
 import { history, getPathArray } from "../../history";
 import { connect } from "react-redux";
 import { findBySlug } from "../search_selectors";
 import { Everything } from "../../interfaces";
 import { OpenFarm } from "../openfarm";
 import { OFSearch } from "../util";
-import { unselectPlant } from "../actions";
+import { unselectPlant, setDragIcon } from "../actions";
 
 interface InforFieldProps {
   title: string;
@@ -49,20 +49,6 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
     unselectPlant(this.props.dispatch)();
   }
 
-  handleDragStart = (e: DraggableEvent) => {
-    const icon = e.currentTarget.getAttribute("data-icon-url");
-    const img = document.createElement("img");
-    icon ? img.src = DATA_URI + icon : DEFAULT_ICON;
-
-    // TODO: Setting these doesn't work by default, needs a fix
-    // https://www.w3.org/TR/2011/WD-html5-20110405
-    //    /dnd.html#dom-datatransfer-setdragimage
-    img.height = 50;
-    img.width = 50;
-
-    e.dataTransfer.setDragImage && e.dataTransfer.setDragImage(img, 50, 50);
-  }
-
   render() {
     const crop = getPathArray()[5];
     const result =
@@ -93,10 +79,8 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
       <div className="panel-content">
         <div className="crop-drag-info-tile">
           <img className="crop-drag-info-image"
-            onDragStart={this.handleDragStart}
-            draggable={true}
             src={result.image}
-            data-icon-url={result.crop.svg_icon} />
+            onDragStart={setDragIcon(result.crop.svg_icon)} />
           <div className="crop-info-overlay">
             {t("Drag and drop into map")}
           </div>
@@ -137,7 +121,8 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
                             <img
                               src={svgToUrl(value)}
                               width={100}
-                              height={100} />
+                              height={100}
+                              onDragStart={setDragIcon(value)} />
                           </div>
                           :
                           <span>
