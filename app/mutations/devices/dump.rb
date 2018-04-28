@@ -21,7 +21,8 @@ module Devices
     ]
 
     def self.run_by_id(id)
-      Devices::Dump.run!(device_id: id)
+      results = Devices::Dump.run!(device_id: id)
+      raise "TODO: Email the `results` variable above as a JSON attachment."
     end
 
     required do

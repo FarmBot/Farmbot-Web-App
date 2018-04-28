@@ -28,9 +28,5 @@ module Api
       Devices::Dump.delay.run_by_id(current_device.id)
       render json: ""
     end
-
-    def dump_status
-      raise "Need a way to check the status of the job."
-    end
   end
 end

@@ -1,18 +1,8 @@
 require 'spec_helper'
 
 describe Api::DevicesController do
-
   include Devise::Test::ControllerHelpers
   let(:user) { FactoryBot.create(:user) }
-  EXPECTED = [:device,
-              :images,
-              :regimens,
-              :peripherals,
-              :farm_events,
-              # :tools,
-              # :points,
-              :users,
-              :webcam_feeds]
 
   describe '#dump' do
     it 'queues the creation of an account backup' do
