@@ -17,9 +17,47 @@ require "pry"
 
 ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../../config/environment", __FILE__)
+# This is a stub for BunnyRB because we don't want the test suite to connect to
+# AMQP for real.
+class FakeTransport < Transport
+  # Theses are the "real" I/O inducing methods that must be Stubbed out.
+  MOCKED_METHODS = \
+    [ :bind, :publish, :queue, :subscribe, :create_channel, :topic ]
+
+  # When you call an AMQP I/O method, instead of doing real I/O, it will deposit
+  # the call into the @calls dictionary for observation.
+  attr_reader :calls
+
+  MOCKED_METHODS.map do |name|
+    # Eval is Evil, but this is pretty quick for testing.
+    eval """
+      def #{name}(*x)
+        key  = #{name.inspect}
+        (@calls[key] ||= []).push(x)
+        @calls[key] = @calls[key].last(10)
+        self
+      end
+    """
+  end
+
+  def initialize(*)
+    self.clear!
+  end
+
+  def start
+    self
+  end
+
+  def clear!
+    @calls = {}
+  end
+end
+
+Transport.default_amqp_adapter = FakeTransport
+Transport.current = Transport.default_amqp_adapter.new
+
 require "rspec/rails"
 require_relative "./stuff"
-require_relative "./topic_stub"
 require_relative "./fake_sequence"
 
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
@@ -41,8 +79,8 @@ RSpec.configure do |config|
     require "capybara/rspec"
     require "selenium/webdriver"
     # Be sure to run `RAILS_ENV=test rails api:start` and `rails mqtt:start`!
-    Capybara.run_server = false
-    Capybara.app_host = "http://localhost:3000"
+    Capybara.run_server  = false
+    Capybara.app_host    = "http://localhost:3000"
     Capybara.server_host = "localhost"
     Capybara.server_port = "3000"
   end
