@@ -25,7 +25,7 @@ module Api
     end
 
     def dump
-      Devices::Dump.delay.run_by_id(current_device.id)
+      DataDumpMailer.email_json_dump(current_device).deliver_later
       render json: ""
     end
   end
