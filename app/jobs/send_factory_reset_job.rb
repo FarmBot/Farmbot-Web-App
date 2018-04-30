@@ -9,6 +9,6 @@ class SendFactoryResetJob < ApplicationJob
 
   def perform(device, transport = Transport)
     payl = SendFactoryResetJob.rpc_payload(device)
-    transport.amqp_send(payl.to_json, device.id, "from_clients")
+    transport.current.amqp_send(payl.to_json, device.id, "from_clients")
   end
 end

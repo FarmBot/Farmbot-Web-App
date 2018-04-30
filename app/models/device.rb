@@ -23,6 +23,8 @@ class Device < ApplicationRecord
   has_many  :token_issuances, dependent: :destroy
   has_many  :tools,           dependent: :destroy
   has_many  :webcam_feeds,    dependent: :destroy
+  has_many  :in_use_tools
+  has_many  :in_use_points
 
   has_many  :users
   validates_presence_of :name
@@ -65,7 +67,7 @@ class Device < ApplicationRecord
   end
 
   # Send a realtime message to a logged in user.
-  def tell(message, transport = Transport)
+  def tell(message)
     log  = Log.new({ device:     self,
                      message:    message,
                      created_at: Time.now,
@@ -73,7 +75,7 @@ class Device < ApplicationRecord
                      meta:       { type: "info" } })
     json = LogSerializer.new(log).as_json.to_json
 
-    transport.amqp_send(json, self.id, "logs")
+    Transport.current.amqp_send(json, self.id, "logs")
     log
   end
 
