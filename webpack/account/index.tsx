@@ -11,7 +11,7 @@ import { updateNO } from "../resources/actions";
 import { deleteUser } from "./actions";
 import { success } from "farmbot-toastr/dist";
 import { LabsFeatures } from "./labs/labs_features";
-import { ExportAccountPanel } from "./export_account_panel";
+import { ExportAccountPanel } from "./components/export_account_panel";
 import { requestAccountExport } from "./request_account_export";
 
 const KEYS: (keyof User)[] = ["id", "name", "email", "created_at", "updated_at"];

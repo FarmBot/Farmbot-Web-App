@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui";
-import { Content } from "../constants";
+import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui";
+import { Content } from "../../constants";
 import { t } from "i18next";
 
 export function ExportAccountPanel(props: { onClick: () => void }) {
