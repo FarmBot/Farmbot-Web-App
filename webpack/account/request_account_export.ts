@@ -7,4 +7,4 @@ import axios from "axios";
 const ok = () => success(t(Content.EXPORT_SENT));
 
 export const requestAccountExport =
-  () => axios.post<void>(API.current.exportDataPath).then(ok);
+  () => axios.post(API.current.exportDataPath).then(ok);
