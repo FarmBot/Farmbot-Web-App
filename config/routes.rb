@@ -52,7 +52,7 @@ FarmBot::Application.routes.draw do
     # resources.
     # Might be safe to remove now with the advent of TaggedResource.kind
     get   "/device/:id"      => "devices#show",           as: :get_device_redirect
-    get   "/export_data"     => "devices#dump",           as: :dump_device
+    post  "/export_data"     => "devices#dump",           as: :dump_device
     get   "/storage_auth"    => "images#storage_auth",    as: :storage_auth
     patch "/device/:id"      => "devices#update",         as: :patch_device_redirect
     patch "/users/:id"       => "users#update",           as: :patch_users_redirect

@@ -5,10 +5,6 @@ class Pair
 
   attr_accessor :head, :tail
 
-  def self.[](h,t)
-    self.new(h,t)
-  end
-
   def initialize(h, t)
       @head, @tail = h, t
   end
