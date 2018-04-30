@@ -10,7 +10,7 @@ describe Devices::Dump do
     resources = MODEL_NAMES
                   .map { |x| x.to_s.singularize.to_sym }
                   .map { |x| FactoryBot.create_list(x, 4, device: device) }
-    results   = Devices::Dump.run!(device_id: device.id)
+    results   = Devices::Dump.run!(device: device)
     MODEL_NAMES
       .concat(SPECIAL)
       .without(:device, :plants, :tool_slots, :generic_pointers)

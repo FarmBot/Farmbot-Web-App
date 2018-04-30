@@ -1,5 +1,5 @@
-require "rails_helper"
+require "spec_helper"
 
-RSpec.describe DataDumpMailer, type: :mailer do
-  pending "add some examples to (or delete) #{__FILE__}"
+describe DataDumpMailer, type: :mailer do
+  it 'sends a JSON file to users'
 end

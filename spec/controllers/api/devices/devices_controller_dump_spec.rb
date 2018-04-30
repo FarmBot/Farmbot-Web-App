@@ -7,11 +7,18 @@ describe Api::DevicesController do
   describe '#dump' do
     it 'queues the creation of an account backup' do
       sign_in user
-      wow = double("WOW", run_by_id: nil)
-      expect(wow).to receive(:run_by_id)
-      expect(Devices::Dump).to receive(:delay).and_return(wow).once
-      post :dump, params: {}, session: { format: :json }
+      empty_mail_bag
+      run_jobs_now do
+        post :dump, params: {}, session: { format: :json }
+      end
       expect(response.status).to eq(200)
+      mail = ActionMailer::Base.deliveries.last
+      expect(mail).to be_kind_of(Mail::Message)
+      expect(mail.to).to include(user.email)
+      expect(mail.subject).to eq(DataDumpMailer::SUBJECT)
+      expect(mail.attachments.count).to eq(1)
+      expect(mail.attachments.first.filename)
+        .to eq(DataDumpMailer::EXPORT_FILENAME)
     end
   end
 end
