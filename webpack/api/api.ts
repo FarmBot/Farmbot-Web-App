@@ -138,6 +138,7 @@ export class API {
   /** /api/saved_gardens/:id/apply */
   applyGardenPath =
     (gardenId: number) => `${this.savedGardensPath}/${gardenId}/apply`;
+  get exportDataPath() { return `${this.baseUrl}/api/export_data`; }
   /** /api/plant_templates/:id */
   get plantTemplatePath() { return `${this.baseUrl}/api/plant_templates`; }
   /** /api/farmware_installations/:id */

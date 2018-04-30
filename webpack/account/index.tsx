@@ -11,6 +11,8 @@ import { updateNO } from "../resources/actions";
 import { deleteUser } from "./actions";
 import { success } from "farmbot-toastr/dist";
 import { LabsFeatures } from "./labs/labs_features";
+import { ExportAccountPanel } from "./export_account_panel";
+import { requestAccountExport } from "./request_account_export";
 
 const KEYS: (keyof User)[] = ["id", "name", "email", "created_at", "updated_at"];
 
@@ -62,6 +64,9 @@ export class Account extends React.Component<Props, State> {
     .then(this.doSave, updateNO);
 
   render() {
+    const deleteAcct =
+      (password: string) => this.props.dispatch(deleteUser({ password }));
+
     return <Page className="account">
       <Col xs={12} sm={6} smOffset={3}>
         <Row>
@@ -77,10 +82,10 @@ export class Account extends React.Component<Props, State> {
           <LabsFeatures />
         </Row>
         <Row>
-          <DeleteAccount
-            onClick={(password) => this
-              .props
-              .dispatch(deleteUser({ password }))} />
+          <DeleteAccount onClick={deleteAcct} />
+        </Row>
+        <Row>
+          <ExportAccountPanel onClick={requestAccountExport} />
         </Row>
       </Col>
     </Page>;

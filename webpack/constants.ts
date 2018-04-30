@@ -313,6 +313,13 @@ export namespace Content {
     trim(`If you are sure you want to delete your account, type in
     your password below to continue.`);
 
+  export const EXPORT_DATA_DESC =
+    trim(`Export all data related to this device. Exports are delivered via
+    email as JSON.`);
+
+  export const EXPORT_SENT =
+    trim(`Export request received. Please allow up to 10 minutes for
+    delivery.`);
   // App Settings
   export const CONFIRM_STEP_DELETION =
     trim(`Show a confirmation dialog when the sequence delete step
