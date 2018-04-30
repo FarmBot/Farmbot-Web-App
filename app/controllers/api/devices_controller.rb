@@ -25,7 +25,8 @@ module Api
     end
 
     def dump
-      mutate Devices::Dump.run(device: current_device)
+      DataDumpMailer.email_json_dump(current_device).deliver_later
+      render json: ""
     end
   end
 end

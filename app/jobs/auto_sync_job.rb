@@ -5,6 +5,6 @@ class AutoSyncJob < ApplicationJob
     wayback = Time.at(created_at_utc_integer).utc
     mins    = ((wayback - Time.now.utc) / 1.minute).round
 
-    Transport.amqp_send(broadcast_payload, id, channel) if (mins < 2)
+    Transport.current.amqp_send(broadcast_payload, id, channel) if (mins < 2)
   end
 end

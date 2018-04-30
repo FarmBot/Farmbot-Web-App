@@ -9,7 +9,9 @@ module Api
     end
 
     def update
-      mutate SavedGardens::Update.run(raw_json, saved_garden: garden, device: current_device)
+      mutate SavedGardens::Update.run(raw_json,
+                                      saved_garden: garden,
+                                      device: current_device)
     end
 
     def destroy
@@ -21,8 +23,8 @@ module Api
     end
 
     def apply
-      params  = { garden: garden,
-                  device: current_device,
+      params  = { garden:      garden,
+                  device:      current_device,
                   destructive: (request.method == "POST") }
       mutate SavedGardens::Apply.run(params)
     end
