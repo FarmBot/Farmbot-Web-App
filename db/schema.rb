@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180430161447) do
+ActiveRecord::Schema.define(version: 20180501121046) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -225,25 +225,6 @@ ActiveRecord::Schema.define(version: 20180430161447) do
     t.index ["device_id"], name: "index_images_on_device_id"
   end
 
-  create_table "legacy_generic_pointers", id: :serial, force: :cascade do |t|
-  end
-
-  create_table "legacy_plants", id: :serial, force: :cascade do |t|
-    t.string "openfarm_slug", limit: 280, default: "50", null: false
-    t.datetime "created_at"
-    t.datetime "planted_at"
-    t.string "plant_stage", limit: 10, default: "planned"
-    t.index ["created_at"], name: "index_legacy_plants_on_created_at"
-  end
-
-  create_table "legacy_tool_slots", id: :serial, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "tool_id"
-    t.integer "pullout_direction", default: 0
-    t.index ["tool_id"], name: "index_legacy_tool_slots_on_tool_id"
-  end
-
   create_table "log_dispatches", force: :cascade do |t|
     t.bigint "device_id"
     t.bigint "log_id"
@@ -320,7 +301,6 @@ ActiveRecord::Schema.define(version: 20180430161447) do
     t.datetime "updated_at", null: false
     t.string "name", default: "untitled", null: false
     t.string "pointer_type", limit: 280, null: false
-    t.integer "pointer_id", null: false
     t.datetime "archived_at"
     t.datetime "planted_at"
     t.string "openfarm_slug", limit: 280, default: "50", null: false
@@ -332,7 +312,6 @@ ActiveRecord::Schema.define(version: 20180430161447) do
     t.index ["device_id"], name: "index_points_on_device_id"
     t.index ["discarded_at"], name: "index_points_on_discarded_at"
     t.index ["meta"], name: "index_points_on_meta", using: :gin
-    t.index ["pointer_type", "pointer_id"], name: "index_points_on_pointer_type_and_pointer_id"
     t.index ["tool_id"], name: "index_points_on_tool_id"
   end
 
@@ -508,7 +487,6 @@ ActiveRecord::Schema.define(version: 20180430161447) do
   add_foreign_key "device_configs", "devices"
   add_foreign_key "edge_nodes", "sequences"
   add_foreign_key "farmware_installations", "devices"
-  add_foreign_key "legacy_tool_slots", "tools"
   add_foreign_key "log_dispatches", "devices"
   add_foreign_key "log_dispatches", "logs"
   add_foreign_key "peripherals", "devices"
@@ -533,6 +511,20 @@ ActiveRecord::Schema.define(version: 20180430161447) do
     WHERE ((edge_nodes.kind)::text = 'tool_id'::text);
   SQL
 
+  create_view "sequence_usage_reports",  sql_definition: <<-SQL
+      SELECT sequences.id AS sequence_id,
+      ( SELECT count(*) AS count
+             FROM edge_nodes
+            WHERE (((edge_nodes.kind)::text = 'sequence_id'::text) AND ((edge_nodes.value)::integer = sequences.id))) AS edge_node_count,
+      ( SELECT count(*) AS count
+             FROM farm_events
+            WHERE ((farm_events.executable_id = sequences.id) AND ((farm_events.executable_type)::text = 'Sequence'::text))) AS farm_event_count,
+      ( SELECT count(*) AS count
+             FROM regimen_items
+            WHERE (regimen_items.sequence_id = sequences.id)) AS regimen_items_count
+     FROM sequences;
+  SQL
+
   create_view "in_use_points",  sql_definition: <<-SQL
       SELECT points.x,
       points.y,
@@ -548,20 +540,6 @@ ActiveRecord::Schema.define(version: 20180430161447) do
        JOIN sequences ON ((edge_nodes.sequence_id = sequences.id)))
        JOIN points ON (((edge_nodes.value)::integer = points.id)))
     WHERE ((edge_nodes.kind)::text = 'pointer_id'::text);
-  SQL
-
-  create_view "sequence_usage_reports",  sql_definition: <<-SQL
-      SELECT sequences.id AS sequence_id,
-      ( SELECT count(*) AS count
-             FROM edge_nodes
-            WHERE (((edge_nodes.kind)::text = 'sequence_id'::text) AND ((edge_nodes.value)::integer = sequences.id))) AS edge_node_count,
-      ( SELECT count(*) AS count
-             FROM farm_events
-            WHERE ((farm_events.executable_id = sequences.id) AND ((farm_events.executable_type)::text = 'Sequence'::text))) AS farm_event_count,
-      ( SELECT count(*) AS count
-             FROM regimen_items
-            WHERE (regimen_items.sequence_id = sequences.id)) AS regimen_items_count
-     FROM sequences;
   SQL
 
 end
