@@ -29,7 +29,6 @@ module SavedGardens
             name:          template.name,
             openfarm_slug: template.openfarm_slug,
             plant_stage:   "planned",
-            pointer_id:    0,
             radius:        template.radius,
             x:             template.x,
             y:             template.y,

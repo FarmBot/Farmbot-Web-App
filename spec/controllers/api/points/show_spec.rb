@@ -13,8 +13,7 @@ describe Api::PointsController do
                                     z:            0,
                                     radius:       0,
                                     device:       user.device,
-                                    pointer_type: "ToolSlot",
-                                    pointer_id:   0)
+                                    pointer_type: "ToolSlot")
       sign_in user
       payload = { id: tool_slot.id }
       get :show, params: payload

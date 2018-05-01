@@ -22,7 +22,7 @@ module ToolSlots
     end
 
     def execute
-      stub = {pointer_type: "ToolSlot", pointer_id: 0, device_id: device.id}
+      stub = {pointer_type: "ToolSlot", device_id: device.id}
       ToolSlot.create!(inputs.slice(*FIELDS).merge(stub))
     end
 
