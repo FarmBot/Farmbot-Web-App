@@ -28,7 +28,13 @@ describe Users::Update do
     u = FactoryBot.create(:user)
     expect(u.unconfirmed_email?).to be false
     Users::Update.run!(user: u, email: "example@mailinator.com")
-    expect(u.unconfirmed_email?).to be true
-    expect(u.unconfirmed_email).to eq("example@mailinator.com")
+
+    if User::SKIP_EMAIL_VALIDATION
+      expect(u.unconfirmed_email?).to be false
+      expect(u.email).to eq("example@mailinator.com")
+    else
+      expect(u.unconfirmed_email?).to be true
+      expect(u.unconfirmed_email).to eq("example@mailinator.com")
+    end
   end
 end

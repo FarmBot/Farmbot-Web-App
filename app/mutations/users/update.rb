@@ -23,7 +23,7 @@ module Users
       set_unconfirmed_email if email.present?
       excludable = [:user]
       excludable.push(:email) unless skip_email_stuff
-      user.update_attributes!(inputs.except(:user, :email))
+      user.update_attributes!(inputs.except(*excludable))
       if inputs[:password]
         SendFactoryResetJob.perform_later(user.device)
         delete_all_tokens_except_this_one
