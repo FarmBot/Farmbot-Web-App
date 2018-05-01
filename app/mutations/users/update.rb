@@ -2,6 +2,7 @@ module Users
   class Update < Mutations::Command
     PASSWORD_PROBLEMS = "Password and confirmation(s) must match."
     EMAIL_IN_USE      = "That email is already registered"
+
     required { model :user, class: User }
 
     optional do
@@ -14,42 +15,49 @@ module Users
 
     def validate
       confirm_new_password if password
-      if((email != user.email) && User.where(email: email).any?)
-        add_error(:email, :in_use, EMAIL_IN_USE)
-      end
+      email_is_invalid = attempting_email_change? && user_already_exists?
+      add_error(:email, :in_use, EMAIL_IN_USE) if email_is_invalid
     end
 
     def execute
-      attributes_excluded_from_update = [:user]
-      unless skip_email_stuff
-        set_unconfirmed_email if email.present?
-        attributes_excluded_from_update.push(:email)
-      end
-      user.update_attributes!(inputs.except(*attributes_excluded_from_update))
-
-      if inputs[:password]
-        SendFactoryResetJob.perform_later(user.device)
-        delete_all_tokens_except_this_one
-      end
+      user.update_attributes!(calculated_update)
+      maybe_perform_password_reset
       user.reload
     end
 
 private
 
-    def delete_all_tokens_except_this_one
-      # Lock everyone out except for the person who requested
-      # the password change.
-      TokenIssuance
-        .where(device_id: user.device.id)
-        .where
-        .not(jti: (RequestStore[:jwt]||{})[:jti])
-        .destroy_all
+    def attempting_email_change?
+      email != user.email
+    end
+
+    def user_already_exists?
+      User.where(email: email).any?
     end
 
     # Self hosted users will often not have an email server.
     # We can update emails immediately in those circumstances.
     def skip_email_stuff
-      @skip_email_stuff ||= !!ENV["NO_EMAILS"] || (email == user.email)
+      ENV["NO_EMAILS"] || (email == user.email)
+    end
+
+    # Revoke all session tokens except for the person who requested
+    # the password change.
+    def delete_all_tokens_except_this_one
+      TokenIssuance
+        .where(device_id: user.device.id)
+        .where
+        .not(jti: (RequestStore[:jwt] || {})[:jti])
+        .destroy_all
+    end
+
+    # Send a `factory_reset` RPC over AMQP/MQTT to all connected devices.
+    # Locks everyone out after a password reset.
+    def maybe_perform_password_reset
+      if inputs[:password]
+        SendFactoryResetJob.perform_later(user.device)
+        delete_all_tokens_except_this_one
+      end
     end
 
     def set_unconfirmed_email
@@ -57,6 +65,15 @@ private
       user.unconfirmed_email = email
       user.save!
       UserMailer.email_update(user).deliver_later
+    end
+
+    def calculated_update
+      attributes_excluded_from_update = [:user]
+      unless skip_email_stuff
+        set_unconfirmed_email if email.present?
+        attributes_excluded_from_update.push(:email)
+      end
+      inputs.except(*attributes_excluded_from_update)
     end
 
     def confirm_new_password
