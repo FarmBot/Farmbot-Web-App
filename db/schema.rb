@@ -198,9 +198,9 @@ ActiveRecord::Schema.define(version: 20180501121046) do
     t.integer "pin_guard_5_pin_nr", default: 0
     t.integer "pin_guard_5_time_out", default: 60
     t.boolean "api_migrated", default: false
-    t.integer "movement_invert_2_endpoints_x", default: 75
-    t.integer "movement_invert_2_endpoints_y", default: 76
-    t.integer "movement_invert_2_endpoints_z", default: 77
+    t.integer "movement_invert_2_endpoints_x", default: 0
+    t.integer "movement_invert_2_endpoints_y", default: 0
+    t.integer "movement_invert_2_endpoints_z", default: 0
     t.index ["device_id"], name: "index_firmware_configs_on_device_id"
   end
 
@@ -511,20 +511,6 @@ ActiveRecord::Schema.define(version: 20180501121046) do
     WHERE ((edge_nodes.kind)::text = 'tool_id'::text);
   SQL
 
-  create_view "sequence_usage_reports",  sql_definition: <<-SQL
-      SELECT sequences.id AS sequence_id,
-      ( SELECT count(*) AS count
-             FROM edge_nodes
-            WHERE (((edge_nodes.kind)::text = 'sequence_id'::text) AND ((edge_nodes.value)::integer = sequences.id))) AS edge_node_count,
-      ( SELECT count(*) AS count
-             FROM farm_events
-            WHERE ((farm_events.executable_id = sequences.id) AND ((farm_events.executable_type)::text = 'Sequence'::text))) AS farm_event_count,
-      ( SELECT count(*) AS count
-             FROM regimen_items
-            WHERE (regimen_items.sequence_id = sequences.id)) AS regimen_items_count
-     FROM sequences;
-  SQL
-
   create_view "in_use_points",  sql_definition: <<-SQL
       SELECT points.x,
       points.y,
@@ -540,6 +526,20 @@ ActiveRecord::Schema.define(version: 20180501121046) do
        JOIN sequences ON ((edge_nodes.sequence_id = sequences.id)))
        JOIN points ON (((edge_nodes.value)::integer = points.id)))
     WHERE ((edge_nodes.kind)::text = 'pointer_id'::text);
+  SQL
+
+  create_view "sequence_usage_reports",  sql_definition: <<-SQL
+      SELECT sequences.id AS sequence_id,
+      ( SELECT count(*) AS count
+             FROM edge_nodes
+            WHERE (((edge_nodes.kind)::text = 'sequence_id'::text) AND ((edge_nodes.value)::integer = sequences.id))) AS edge_node_count,
+      ( SELECT count(*) AS count
+             FROM farm_events
+            WHERE ((farm_events.executable_id = sequences.id) AND ((farm_events.executable_type)::text = 'Sequence'::text))) AS farm_event_count,
+      ( SELECT count(*) AS count
+             FROM regimen_items
+            WHERE (regimen_items.sequence_id = sequences.id)) AS regimen_items_count
+     FROM sequences;
   SQL
 
 end
