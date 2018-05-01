@@ -20,8 +20,8 @@ module Users
     end
 
     def execute
-      user.update_attributes!(calculated_update)
       maybe_perform_password_reset
+      user.update_attributes!(calculated_update)
       user.reload
     end
 
@@ -61,7 +61,7 @@ private
     end
 
     def set_unconfirmed_email
-      # user.reset_confirmation_token
+      user.reset_confirmation_token
       user.unconfirmed_email = email
       user.save!
       UserMailer.email_update(user).deliver_later
