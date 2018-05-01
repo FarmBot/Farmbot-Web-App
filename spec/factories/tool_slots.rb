@@ -7,6 +7,5 @@ FactoryBot.define do
     device
     tool
     pointer_type("ToolSlot")
-    pointer_id(0)
   end
 end

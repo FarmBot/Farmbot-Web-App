@@ -24,7 +24,6 @@ describe Api::PointsController do
                           device:        user.device,
                           openfarm_slug: "cabbage",
                           pointer_type:  "Plant",
-                          pointer_id:    0,
                           discarded_at:   Time.now)
 
       Plant.create!(x:             5,
@@ -35,7 +34,6 @@ describe Api::PointsController do
                     device:        user.device,
                     openfarm_slug: "cabbage",
                     pointer_type:  "Plant",
-                    pointer_id:    0,
                     discarded_at:   nil)
       SmarfDoc.note("If you want to see previously deleted points, " +
                     "add `?filter=old` to the end of the URL.")
@@ -56,7 +54,6 @@ describe Api::PointsController do
                           device:        user.device,
                           openfarm_slug: "cabbage",
                           pointer_type:  "Plant",
-                          pointer_id:    0,
                           discarded_at:   Time.now)
 
       Plant.create!(x:             5,
@@ -67,7 +64,6 @@ describe Api::PointsController do
                     device:        user.device,
                     openfarm_slug: "cabbage",
                     pointer_type:  "Plant",
-                    pointer_id:    0,
                     discarded_at:   nil)
       SmarfDoc.note("If you want to see previously deleted points alongside" \
                     " your active points, add `?filter=all` to the end of "  \
@@ -98,8 +94,7 @@ describe Api::PointsController do
                       name:          "Cabbage #{num}",
                       device:        user.device,
                       openfarm_slug: "cabbage",
-                      pointer_type:  "Plant",
-                      pointer_id:    0)
+                      pointer_type:  "Plant")
       end
       sign_in user
       get :index
@@ -115,8 +110,7 @@ describe Api::PointsController do
                              radius:       50,
                              name:         "My TS",
                              device:       user.device,
-                             pointer_type: "ToolSlot",
-                             pointer_id:   0)
+                             pointer_type: "ToolSlot")
       get :index
       expect(json.first[:id]).to eq(ts.id)
       expect(json.first[:name]).to eq(ts.name)
