@@ -20,7 +20,6 @@ describe Api::PointsController do
                     radius:        1,
                     openfarm_slug: "lettuce",
                     pointer_type:  "Plant",
-                    pointer_id:    0,
                     device:        device)
     }
     let(:tool) {Tool.create!(device: user.device)}
@@ -31,7 +30,6 @@ describe Api::PointsController do
                       radius:       50,
                       name:         "Whatever",
                       pointer_type: "ToolSlot",
-                      pointer_id:   0,
                       device:       user.device,
                       tool_id:      tool.id)
     end

@@ -7,6 +7,5 @@ FactoryBot.define do
     meta ({})
     device
     pointer_type GenericPointer.name
-    pointer_id(0)
   end
 end
