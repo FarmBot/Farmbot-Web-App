@@ -60,7 +60,6 @@ unless Rails.env == "production"
                    y:             rand(40...470),
                    radius:        rand(10...50),
                    name:          Faker::StarWars.call_sign,
-                   pointer_id:    0,
                    openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample)
     end
 
@@ -72,7 +71,6 @@ unless Rails.env == "production"
                             y: rand(40...470) + rand(40...470),
                             z: 5,
                             radius: (rand(1...150) + rand(1...150)) / 20,
-                            pointer_id: 0,
                             meta: {
                               created_by: "plant-detection",
                               color: (Sequence::COLORS + [nil]).sample
