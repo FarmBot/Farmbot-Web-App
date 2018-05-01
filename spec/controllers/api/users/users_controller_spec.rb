@@ -49,9 +49,13 @@ describe Api::UsersController do
       patch :update, params: input
       expect(response.status).to eq(200)
       expect(json[:name]).to eq("Ricky McRickerson")
-      # Updates to user email require confirmation.
-      expect(json[:email]).not_to eq(input[:email])
-      expect(json[:email]).to eq(user.email)
+      unless User::SKIP_EMAIL_VALIDATION
+        # Updates to user email require confirmation.
+        expect(json[:email]).not_to eq(input[:email])
+        expect(json[:email]).to eq(user.email)
+      else
+        expect(json[:email]).to eq(input[:email])
+      end
     end
 
     it 'updates password' do
