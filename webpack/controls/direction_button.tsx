@@ -2,6 +2,7 @@ import * as React from "react";
 import { Farmbot } from "farmbot";
 import { moveRelative } from "../devices/actions";
 import { DirectionButtonProps, Payl } from "./interfaces";
+import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 
 export function directionDisabled(props: DirectionButtonProps): boolean {
   const {
@@ -42,7 +43,7 @@ export function calculateDistance(props: DirectionButtonProps) {
 
 export class DirectionButton extends React.Component<DirectionButtonProps, {}> {
   sendCommand = () => {
-    const payload: Payl = { speed: Farmbot.defaults.speed, x: 0, y: 0, z: 0 };
+    const payload: Payl = { speed: CONFIG_DEFAULTS.speed, x: 0, y: 0, z: 0 };
     payload[this.props.axis] = calculateDistance(this.props);
     moveRelative(payload);
   }

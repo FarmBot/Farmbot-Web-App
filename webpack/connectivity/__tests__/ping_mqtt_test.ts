@@ -27,20 +27,23 @@ import {
 } from "../ping_mqtt";
 import { Farmbot, Dictionary } from "farmbot";
 import { dispatchNetworkDown, dispatchNetworkUp } from "../index";
+import { FarmBotInternalConfig } from "farmbot/dist/config";
 
 const TOO_LATE_TIME_DIFF = ACTIVE_THRESHOLD + 1;
 const ACCEPTABLE_TIME_DIFF = ACTIVE_THRESHOLD - 1;
 
-let state: Dictionary<string | number | boolean> = {
+let state: Partial<FarmBotInternalConfig> = {
   [LAST_IN]: 123, [LAST_OUT]: 456
 };
 
 function fakeBot(): Farmbot {
   const fb: Partial<Farmbot> = {
-    setState: jest.fn(),
+    setConfig: jest.fn(),
     publish: jest.fn(),
     on: jest.fn(),
-    getState() { return state; }
+    getConfig(key: keyof FarmBotInternalConfig) {
+      return (state as FarmBotInternalConfig)[key];
+    }
   };
 
   return fb as Farmbot;
@@ -63,12 +66,12 @@ describe("ping util", () => {
   it("sets the LAST_PING_(IN|OUT) in bot state", () => {
     const bot = fakeBot();
     writePing(bot, "in");
-    expect(bot.setState)
-      .toHaveBeenCalledWith(LAST_IN, expect.any(Number));
+    expect(bot.getConfig)
+      .toHaveBeenCalledWith(LAST_IN);
     jest.clearAllMocks();
     writePing(bot, "out");
-    expect(bot.setState)
-      .toHaveBeenCalledWith(LAST_OUT, expect.any(Number));
+    expect(bot.getConfig)
+      .toHaveBeenCalledWith(LAST_OUT);
   });
 
   it("reads LAST_PING_(IN|OUT)", () => {

@@ -1,4 +1,4 @@
-import { Farmbot, toPairs, rpcRequest } from "farmbot";
+import { Farmbot, rpcRequest } from "farmbot";
 import { createTransferCert } from "./create_transfer_cert";
 
 export interface TransferProps {
