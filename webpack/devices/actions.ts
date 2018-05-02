@@ -4,9 +4,11 @@ import * as _ from "lodash";
 import { success, warning, info, error } from "farmbot-toastr";
 import { getDevice } from "../device";
 import { Log, Everything } from "../interfaces";
-import { GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig } from "./interfaces";
+import {
+  GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis
+} from "./interfaces";
 import { Thunk, ReduxAction } from "../redux/interfaces";
-import { McuParams, Configuration, rpcRequest } from "farmbot";
+import { McuParams, Configuration, rpcRequest, Farmbot } from "farmbot";
 import { Sequence } from "../sequences/interfaces";
 import { ControlPanelState } from "../devices/interfaces";
 import { API } from "../api/index";
@@ -294,6 +296,13 @@ export function homeAll(speed: number) {
   const noun = "'Home All' command";
   getDevice()
     .home({ axis: "all", speed })
+    .catch(commandErr(noun));
+}
+
+export function findHome(axis: Axis, speed = Farmbot.defaults.speed) {
+  const noun = "'Find Home' command";
+  getDevice()
+    .findHome({ axis, speed })
     .catch(commandErr(noun));
 }
 
