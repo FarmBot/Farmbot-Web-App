@@ -109,11 +109,9 @@ export function sync(): Thunk {
     if (IS_OK) {
       getDevice()
         .sync()
-        .then(() => {
-          commandOK(noun);
-        }).catch(() => {
-          commandErr(noun);
-        });
+        // TODO: Probably wrong. Fix when there is time to QA - RC 5/2/18
+        .then(() => { commandOK(noun); })
+        .catch(commandErr(noun));
     } else {
       if (getState()
         .bot
@@ -234,7 +232,7 @@ export function MCUFactoryReset() {
   if (!confirm(t(Content.MCU_RESET_ALERT))) {
     return;
   }
-  return getDevice().resetMCU();
+  return getDevice().resetMCU().catch(commandErr("MCU Reset"));
 }
 
 export function settingToggle(

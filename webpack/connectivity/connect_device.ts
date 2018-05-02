@@ -102,7 +102,7 @@ export const onOffline = () => {
 export const changeLastClientConnected = (bot: Farmbot) => () => {
   bot.setUserEnv({
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
-  }).catch(() => { });
+  }).catch(() => { }); // This is internal stuff, don't alert user.
 };
 const onStatus = (dispatch: Function, getState: GetState) =>
   (throttle(function (msg: BotStateTree) {

@@ -3,9 +3,7 @@ const mockDevice = {
   updateFarmware: jest.fn(() => Promise.resolve()),
   removeFarmware: jest.fn(() => Promise.resolve()),
   execScript: jest.fn(() => Promise.resolve()),
-  installFirstPartyFarmware: jest.fn(() => {
-    return Promise.resolve({});
-  })
+  installFirstPartyFarmware: jest.fn(() => Promise.resolve())
 };
 
 jest.mock("../../device", () => ({
