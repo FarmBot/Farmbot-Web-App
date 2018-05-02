@@ -6,11 +6,12 @@ import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { EncodersProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
+import { Feature } from "../../interfaces";
 
 export function EncodersAndEndStops(props: EncodersProps) {
 
   const { encoders_and_endstops } = props.controlPanelState;
-  const { dispatch, sourceFwConfig } = props;
+  const { dispatch, sourceFwConfig, shouldDisplay } = props;
 
   const encodersDisabled = {
     x: !sourceFwConfig("encoder_enabled_x").value,
@@ -99,19 +100,20 @@ export function EncodersAndEndStops(props: EncodersProps) {
         }}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
-      <BooleanMCUInputGroup
-        name={t("Invert Endstops")}
-        tooltip={ToolTips.INVERT_ENDPOINTS}
-        x={"movement_invert_2_endpoints_x"}
-        y={"movement_invert_2_endpoints_y"}
-        z={"movement_invert_2_endpoints_z"}
-        grayscale={{
-          x: !sourceFwConfig("movement_enable_endpoints_x").value,
-          y: !sourceFwConfig("movement_enable_endpoints_y").value,
-          z: !sourceFwConfig("movement_enable_endpoints_z").value
-        }}
-        dispatch={dispatch}
-        sourceFwConfig={sourceFwConfig} />
+      {shouldDisplay(Feature.endstop_invert) &&
+        <BooleanMCUInputGroup
+          name={t("Invert Endstops")}
+          tooltip={ToolTips.INVERT_ENDPOINTS}
+          x={"movement_invert_2_endpoints_x"}
+          y={"movement_invert_2_endpoints_y"}
+          z={"movement_invert_2_endpoints_z"}
+          grayscale={{
+            x: !sourceFwConfig("movement_enable_endpoints_x").value,
+            y: !sourceFwConfig("movement_enable_endpoints_y").value,
+            z: !sourceFwConfig("movement_enable_endpoints_z").value
+          }}
+          dispatch={dispatch}
+          sourceFwConfig={sourceFwConfig} />}
     </Collapse>
   </section>;
 }
