@@ -46,7 +46,8 @@ export function isLog(x: any): x is Log {
     return false;
   }
 }
-const commandErr = (_noun = "Command") => () => { };
+export const commandErr =
+  (noun = "Command") => () => error(t(`${noun} failed`));
 
 export const commandOK = (noun = "Command") => () => {
   const msg = noun + " request sent to device.";

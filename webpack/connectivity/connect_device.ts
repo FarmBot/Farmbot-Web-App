@@ -12,7 +12,8 @@ import {
   EXPECTED_MAJOR,
   EXPECTED_MINOR,
   commandOK,
-  badVersion
+  badVersion,
+  commandErr
 } from "../devices/actions";
 import { init } from "../api/crud";
 import { AuthState } from "../auth/interfaces";
@@ -90,7 +91,7 @@ export function readStatus() {
   const noun = "'Read Status' command";
   return getDevice()
     .readStatus()
-    .then(() => { commandOK(noun); }, () => { });
+    .then(() => { commandOK(noun); }, commandErr(noun));
 }
 
 export const onOffline = () => {
