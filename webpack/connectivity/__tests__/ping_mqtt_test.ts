@@ -41,9 +41,9 @@ function fakeBot(): Farmbot {
     setConfig: jest.fn(),
     publish: jest.fn(),
     on: jest.fn(),
-    getConfig(key: keyof FarmBotInternalConfig) {
+    getConfig: jest.fn((key: keyof FarmBotInternalConfig) => {
       return (state as FarmBotInternalConfig)[key];
-    }
+    })
   };
 
   return fb as Farmbot;
@@ -66,12 +66,10 @@ describe("ping util", () => {
   it("sets the LAST_PING_(IN|OUT) in bot state", () => {
     const bot = fakeBot();
     writePing(bot, "in");
-    expect(bot.getConfig)
-      .toHaveBeenCalledWith(LAST_IN);
+    expect(bot.setConfig).toHaveBeenCalledWith(LAST_IN, expect.any(Number));
     jest.clearAllMocks();
     writePing(bot, "out");
-    expect(bot.getConfig)
-      .toHaveBeenCalledWith(LAST_OUT);
+    expect(bot.setConfig).toHaveBeenCalledWith(LAST_OUT, expect.any(Number));
   });
 
   it("reads LAST_PING_(IN|OUT)", () => {
