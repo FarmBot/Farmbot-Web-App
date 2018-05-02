@@ -2,7 +2,7 @@ class LogService
   # Determines if the log should be discarded (Eg: "fun"/"debug" logs do not
   # go in the DB)
   def self.save?(log_as_ruby_hash)
-    # TODO: Once we gt rid of legacy `log.meta` calls,
+    # TODO: Once we get rid of legacy `log.meta` calls (FBOS < 6.4.0 EOL),
     # this method can be simplified.
     is_a_hash      = log_as_ruby_hash.is_a?(Hash)
     hash           = is_a_hash ? log_as_ruby_hash : {}

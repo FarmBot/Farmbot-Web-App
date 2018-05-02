@@ -8,41 +8,35 @@ import { Row, Col, Widget, WidgetBody, WidgetHeader } from "../ui/index";
 import { StepSizeSelector } from "./step_size_selector";
 import { MustBeOnline } from "../devices/must_be_online";
 import { ToolTips } from "../constants";
-import { MoveProps, EncoderDisplay } from "./interfaces";
-import { Xyz } from "../devices/interfaces";
+import { MoveProps } from "./interfaces";
 import { Popover, Position } from "@blueprintjs/core";
 import { AxisDisplayGroup } from "./axis_display_group";
-import { Session } from "../session";
-import { INVERSION_MAPPING, ENCODER_MAPPING } from "../devices/reducer";
 import { minFwVersionCheck, validBotLocationData } from "../util";
 import { toggleWebAppBool } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
+import { ToggleButton } from "./toggle_button";
+import {
+  BooleanConfigKey as BooleanWebAppConfigKey
+} from "../config_storage/web_app_configs";
 
 export class Move extends React.Component<MoveProps, {}> {
 
-  toggle = (name: Xyz) => () => {
-    Session.invertBool(INVERSION_MAPPING[name]);
+  toggle = (key: BooleanWebAppConfigKey) => () => {
+    this.props.dispatch(toggleWebAppBool(key));
   };
-
-  toggle_encoder_data =
-    (name: EncoderDisplay) => () => Session.invertBool(ENCODER_MAPPING[name]);
-
-  toggle_xy_swap = () =>
-    this.props.dispatch(toggleWebAppBool(BooleanSetting.xy_swap));
 
   render() {
     const { location_data, informational_settings } = this.props.bot.hardware;
     const { firmware_version } = informational_settings;
-    const { x_axis_inverted, y_axis_inverted, z_axis_inverted,
-      raw_encoders, scaled_encoders, xySwap } = this.props;
+    const { getWebAppConfigVal } = this.props;
 
-    const btnColor = (flag: boolean) => { return flag ? "green" : "red"; };
-    const xBtnColor = btnColor(x_axis_inverted);
-    const yBtnColor = btnColor(y_axis_inverted);
-    const zBtnColor = btnColor(z_axis_inverted);
-    const rawBtnColor = btnColor(raw_encoders);
-    const scaledBtnColor = btnColor(scaled_encoders);
-    const xySwapBtnColor = btnColor(xySwap);
+    const x_axis_inverted = !!getWebAppConfigVal(BooleanSetting.x_axis_inverted);
+    const y_axis_inverted = !!getWebAppConfigVal(BooleanSetting.y_axis_inverted);
+    const z_axis_inverted = !!getWebAppConfigVal(BooleanSetting.z_axis_inverted);
+    const raw_encoders = !!getWebAppConfigVal(BooleanSetting.raw_encoders);
+    const scaled_encoders = !!getWebAppConfigVal(BooleanSetting.scaled_encoders);
+    const xySwap = !!getWebAppConfigVal(BooleanSetting.xy_swap);
+    const doFindHome = !!getWebAppConfigVal(BooleanSetting.home_button_homing);
 
     const locationData = validBotLocationData(location_data);
     const motor_coordinates = locationData.position;
@@ -68,25 +62,25 @@ export class Move extends React.Component<MoveProps, {}> {
               <label>
                 {t("X Axis")}
               </label>
-              <button
-                className={"fb-button fb-toggle-button " + xBtnColor}
-                onClick={this.toggle("x")} />
+              <ToggleButton
+                toggleAction={this.toggle(BooleanSetting.x_axis_inverted)}
+                toggleValue={x_axis_inverted} />
             </fieldset>
             <fieldset>
               <label>
                 {t("Y Axis")}
               </label>
-              <button
-                className={"fb-button fb-toggle-button " + yBtnColor}
-                onClick={this.toggle("y")} />
+              <ToggleButton
+                toggleAction={this.toggle(BooleanSetting.y_axis_inverted)}
+                toggleValue={y_axis_inverted} />
             </fieldset>
             <fieldset>
               <label>
                 {t("Z Axis")}
               </label>
-              <button
-                className={"fb-button fb-toggle-button " + zBtnColor}
-                onClick={this.toggle("z")} />
+              <ToggleButton
+                toggleAction={this.toggle(BooleanSetting.z_axis_inverted)}
+                toggleValue={z_axis_inverted} />
             </fieldset>
 
             <p>
@@ -96,17 +90,17 @@ export class Move extends React.Component<MoveProps, {}> {
               <label>
                 {t("Scaled encoder position")}
               </label>
-              <button
-                className={"fb-button fb-toggle-button " + scaledBtnColor}
-                onClick={this.toggle_encoder_data("scaled_encoders")} />
+              <ToggleButton
+                toggleAction={this.toggle(BooleanSetting.scaled_encoders)}
+                toggleValue={scaled_encoders} />
             </fieldset>
             <fieldset>
               <label>
                 {t("Raw encoder position")}
               </label>
-              <button
-                className={"fb-button fb-toggle-button " + rawBtnColor}
-                onClick={this.toggle_encoder_data("raw_encoders")} />
+              <ToggleButton
+                toggleAction={this.toggle(BooleanSetting.raw_encoders)}
+                toggleValue={raw_encoders} />
             </fieldset>
 
             <p>
@@ -116,9 +110,21 @@ export class Move extends React.Component<MoveProps, {}> {
               <label>
                 {t("x and y axis")}
               </label>
-              <button
-                className={"fb-button fb-toggle-button " + xySwapBtnColor}
-                onClick={this.toggle_xy_swap} />
+              <ToggleButton
+                toggleAction={this.toggle(BooleanSetting.xy_swap)}
+                toggleValue={xySwap} />
+            </fieldset>
+
+            <p>
+              {t("Home button behavior")}
+            </p>
+            <fieldset>
+              <label>
+                {t("perform homing (find home)")}
+              </label>
+              <ToggleButton
+                toggleAction={this.toggle(BooleanSetting.home_button_homing)}
+                toggleValue={doFindHome} />
             </fieldset>
           </div>
         </Popover>
@@ -148,7 +154,8 @@ export class Move extends React.Component<MoveProps, {}> {
             }}
             arduinoBusy={this.props.arduinoBusy}
             firmwareSettings={this.props.firmwareSettings}
-            xySwap={this.props.xySwap} />
+            xySwap={xySwap}
+            doFindHome={doFindHome} />
           <Row>
             <Col xs={3}>
               <label>{t("X AXIS")}</label>

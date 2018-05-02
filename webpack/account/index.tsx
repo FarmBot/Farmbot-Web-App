@@ -34,7 +34,7 @@ export class Account extends React.Component<Props, State> {
    *                     changed, but not which field).
    *
    * This is a quick fix until we can dedicate resources to implement
-   * reversable edits to TaggedResource. I don't want to do anything weird like
+   * reversible edits to TaggedResource. I don't want to do anything weird like
    * store `TaggedResource`s in `this.state` (risk of storing invalid UUIDs).
    *
    * TODO: Implement attribute level dirty tracking

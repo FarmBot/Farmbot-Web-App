@@ -7,9 +7,14 @@ import { Props } from "./interfaces";
 import { Page, Row, Col } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { isTaggedRegimen } from "../resources/tagged_resources";
+import { setActiveRegimenByName } from "./set_active_regimen_by_name";
 
 @connect(mapStateToProps)
 export class Regimens extends React.Component<Props, {}> {
+  componentWillMount() {
+    if (!this.props.current) { setActiveRegimenByName(); }
+  }
+
   render() {
     const { current, calendar } = this.props;
     const regimenSelected = current && isTaggedRegimen(current) && calendar;

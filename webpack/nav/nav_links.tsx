@@ -3,7 +3,7 @@ import { t } from "i18next";
 import { Link } from "react-router";
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
-import { computeSequenceUrlFromState } from "./compute_sequence_url_from_state";
+import { computeEditorUrlFromState } from "./compute_editor_url_from_state";
 /** Uses a slug and a child path to compute the `href` of a navbar link. */
 export type LinkComputeFn = (slug: string, childPath: string) => string;
 
@@ -21,19 +21,18 @@ interface NavLinkParams {
   computeHref?: LinkComputeFn
 }
 
-const sequenceLink: NavLinkParams = {
-  name: "Sequences",
-  icon: "server",
-  slug: "sequences",
-  computeHref: computeSequenceUrlFromState
-};
-
 export const links: NavLinkParams[] = [
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
   { name: "Controls", icon: "keyboard-o", slug: "controls" },
   { name: "Device", icon: "cog", slug: "device" },
-  sequenceLink,
-  { name: "Regimens", icon: "calendar-check-o", slug: "regimens" },
+  {
+    name: "Sequences", icon: "server", slug: "sequences",
+    computeHref: computeEditorUrlFromState("Sequence")
+  },
+  {
+    name: "Regimens", icon: "calendar-check-o", slug: "regimens",
+    computeHref: computeEditorUrlFromState("Regimen")
+  },
   { name: "Tools", icon: "wrench", slug: "tools" },
   { name: "Farmware", icon: "crosshairs", slug: "farmware" },
   { name: "Logs", icon: "list", slug: "logs" },
