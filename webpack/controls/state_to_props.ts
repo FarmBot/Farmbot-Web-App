@@ -12,7 +12,6 @@ import * as _ from "lodash";
 import {
   validFwConfig, shouldDisplay, determineInstalledOsVersion
 } from "../util";
-import { BooleanSetting } from "../session_keys";
 import { getWebAppConfigValue } from "../config_storage/actions";
 
 export function mapStateToProps(props: Everything): Props {
@@ -37,6 +36,6 @@ export function mapStateToProps(props: Everything): Props {
     botToMqttStatus,
     firmwareSettings: fwConfig || mcu_params,
     shouldDisplay: shouldDisplay(installedOsVersion, props.bot.minOsFeatureData),
-    xySwap: !!getWebAppConfigVal(BooleanSetting.xy_swap),
+    getWebAppConfigVal,
   };
 }

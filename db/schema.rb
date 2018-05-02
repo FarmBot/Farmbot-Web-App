@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180501121046) do
+ActiveRecord::Schema.define(version: 20180502050250) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -472,6 +472,7 @@ ActiveRecord::Schema.define(version: 20180501121046) do
     t.string "photo_filter_end"
     t.boolean "discard_unsaved", default: false
     t.boolean "xy_swap", default: false
+    t.boolean "home_button_homing", default: false
     t.index ["device_id"], name: "index_web_app_configs_on_device_id"
   end
 

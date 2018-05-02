@@ -1,6 +1,6 @@
 import * as React from "react";
 import { DirectionButton } from "./direction_button";
-import { homeAll } from "../devices/actions";
+import { homeAll, findHome } from "../devices/actions";
 import { JogMovementControlsProps } from "./interfaces";
 import { getDevice } from "../device";
 import { buildDirectionProps } from "./direction_axes_props";
@@ -8,7 +8,10 @@ import { buildDirectionProps } from "./direction_axes_props";
 const DEFAULT_STEP_SIZE = 100;
 
 export function JogButtons(props: JogMovementControlsProps) {
-  const { stepSize, xySwap, arduinoBusy } = props;
+  const { stepSize, xySwap, arduinoBusy, doFindHome } = props;
+  const homeBtnAction = doFindHome
+    ? () => findHome("all")
+    : () => homeAll(100);
   const directionAxesProps = buildDirectionProps(props);
   const rightLeft = xySwap ? "y" : "x";
   const upDown = xySwap ? "x" : "y";
@@ -46,7 +49,7 @@ export function JogButtons(props: JogMovementControlsProps) {
         <td>
           <button
             className="i fa fa-home arrow-button fb-button"
-            onClick={() => homeAll(100)}
+            onClick={homeBtnAction}
             disabled={arduinoBusy || false} />
         </td>
         <td />

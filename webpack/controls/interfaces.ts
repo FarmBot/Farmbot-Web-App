@@ -7,6 +7,7 @@ import {
   TaggedSensor
 } from "../resources/tagged_resources";
 import { NetworkState } from "../connectivity/interfaces";
+import { GetWebAppConfigValue } from "../config_storage/actions";
 
 export interface Props {
   dispatch: Function;
@@ -18,7 +19,7 @@ export interface Props {
   botToMqttStatus: NetworkState;
   firmwareSettings: McuParams;
   shouldDisplay: ShouldDisplay;
-  xySwap: boolean;
+  getWebAppConfigVal: GetWebAppConfigValue;
 }
 
 export interface MoveProps {
@@ -26,14 +27,9 @@ export interface MoveProps {
   bot: BotState;
   user: TaggedUser | undefined;
   arduinoBusy: boolean;
-  raw_encoders: boolean;
-  scaled_encoders: boolean;
-  x_axis_inverted: boolean;
-  y_axis_inverted: boolean;
-  z_axis_inverted: boolean;
   botToMqttStatus: NetworkState;
   firmwareSettings: McuParams;
-  xySwap: boolean;
+  getWebAppConfigVal: GetWebAppConfigValue;
 }
 
 export interface DirectionButtonProps {
@@ -59,8 +55,6 @@ export interface Payl {
 }
 
 export type Vector = Vector3;
-
-export type EncoderDisplay = "raw_encoders" | "scaled_encoders";
 
 export interface AxisDisplayGroupProps {
   position: BotPosition;
@@ -101,13 +95,17 @@ export interface DirectionAxesProps {
   firmwareSettings: McuParams;
 }
 
-export interface JogMovementControlsProps extends DirectionAxesProps {
+interface JogMovementControlsBaseProps extends DirectionAxesProps {
   stepSize: number;
   arduinoBusy: boolean;
   xySwap: boolean;
 }
 
-export interface ControlsPopupProps extends JogMovementControlsProps {
+export interface JogMovementControlsProps extends JogMovementControlsBaseProps {
+  doFindHome: boolean;
+}
+
+export interface ControlsPopupProps extends JogMovementControlsBaseProps {
   dispatch: Function;
 }
 
