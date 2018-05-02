@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Farmbot } from "farmbot";
 import { moveRelative } from "../devices/actions";
 import { DirectionButtonProps, Payl } from "./interfaces";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";

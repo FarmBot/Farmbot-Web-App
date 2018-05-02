@@ -25,7 +25,7 @@ import {
   PING,
   ACTIVE_THRESHOLD
 } from "../ping_mqtt";
-import { Farmbot, Dictionary } from "farmbot";
+import { Farmbot } from "farmbot";
 import { dispatchNetworkDown, dispatchNetworkUp } from "../index";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
 
