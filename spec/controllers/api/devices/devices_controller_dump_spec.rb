@@ -11,7 +11,7 @@ describe Api::DevicesController do
       run_jobs_now do
         post :dump, params: {}, session: { format: :json }
       end
-      expect(response.status).to eq(200)
+      expect(response.status).to eq(202)
       mail = ActionMailer::Base.deliveries.last
       expect(mail).to be_kind_of(Mail::Message)
       expect(mail.to).to include(user.email)
@@ -19,6 +19,16 @@ describe Api::DevicesController do
       expect(mail.attachments.count).to eq(1)
       expect(mail.attachments.first.filename)
         .to eq(DataDumpMailer::EXPORT_FILENAME)
+    end
+
+    it 'stores to disk when no email server is available' do
+
+      b4 = Api::DevicesController.send_emails
+      Api::DevicesController.send_emails = false
+      sign_in user
+      post :dump, params: {}, session: { format: :json }
+      expect(response.status).to eq(200)
+      Api::DevicesController.send_emails = b4
     end
   end
 end
