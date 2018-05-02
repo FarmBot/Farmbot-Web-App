@@ -8,7 +8,7 @@ begin
     .subscribe(block: true) do |info, _, payl|
       LogService.process(info, payl)
     end
-rescue Bunny::TCPConnectionFailedForAllHosts => e
+rescue StandardError => e
   puts "MQTT Broker is unreachable. Waiting 5 seconds..."
   sleep 5
   retry

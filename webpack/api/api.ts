@@ -92,6 +92,10 @@ export class API {
   get devicePath() { return `${this.baseUrl}/api/device/`; }
   /** /api/users/ */
   get usersPath() { return `${this.baseUrl}/api/users/`; }
+  /** /api/users/control_certificate */
+  get transferCertPath() {
+    return `${this.baseUrl}/api/users/control_certificate`;
+  }
   /** /api/users/resend_verification */
   get userResendConfirmationPath() {
     return this.usersPath + "/resend_verification";

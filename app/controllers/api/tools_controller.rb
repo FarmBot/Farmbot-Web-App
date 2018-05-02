@@ -1,14 +1,5 @@
 module Api
   class ToolsController < Api::AbstractController
-    INDEX_QUERY = 'SELECT
-      "tools".*,
-      points.id as tool_slot_id
-    FROM
-      "tools"
-    LEFT OUTER JOIN
-        "points" ON "points"."tool_id" = "tools"."id"
-    WHERE
-      "tools"."device_id" = %s;'
 
     def index
       render json: tools
@@ -39,11 +30,11 @@ private
     end
 
     def tools
-      Tool.find_by_sql(INDEX_QUERY % current_device.id)
+      @tools ||= Tool.outter_join_slots(current_device.id)
     end
 
     def tool
-      @tool ||= Tool.where(device: current_device).find(params[:id])
+      @tool ||= Tool.join_tool_slot_and_find_by_id(params[:id])
     end
   end
 end
