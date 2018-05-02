@@ -28,7 +28,7 @@ import { ResendPanelBody } from "../resend_panel_body";
 
 describe("<FormField/>", () => {
   it("renders correct props", () => {
-    const onCommit = jest.fn(); // TODO: Why is this not triggering in enzyme?
+    const onCommit = jest.fn();
     const el = shallow(<FormField
       onCommit={onCommit}
       value="my val"

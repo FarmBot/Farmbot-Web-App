@@ -1,4 +1,5 @@
 import * as React from "react";
+import { t } from "i18next";
 import { EditPlantInfoProps, PlantOptions } from "../interfaces";
 import { history, getPathArray } from "../../history";
 import { destroy, edit, save } from "../../api/crud";
@@ -6,10 +7,7 @@ import { destroy, edit, save } from "../../api/crud";
 export abstract class PlantInfoBase extends
   React.Component<EditPlantInfoProps, {}> {
 
-  get stringyID() {
-    // TODO: ("We should put this into a query object incase the URL changes")
-    return getPathArray()[4] || "";
-  }
+  get stringyID() { return getPathArray()[4] || ""; }
 
   get plant() { return this.props.findPlant(this.stringyID); }
 
@@ -27,7 +25,7 @@ export abstract class PlantInfoBase extends
 
   fallback = () => {
     history.push("/app/designer/plants");
-    return <span>Redirecting...</span>;
+    return <span>{t("Redirecting...")}</span>;
   }
 
 }

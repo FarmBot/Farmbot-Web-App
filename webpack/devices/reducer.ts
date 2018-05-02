@@ -6,9 +6,7 @@ import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
 import { EncoderDisplay } from "../controls/interfaces";
 import { BooleanSetting } from "../session_keys";
-import {
-  maybeNegateStatus, maybeNegateConsistency
-} from "../connectivity/maybe_negate_status";
+import { maybeNegateStatus } from "../connectivity/maybe_negate_status";
 import { EdgeStatus } from "../connectivity/interfaces";
 import { ReduxAction } from "../redux/interfaces";
 import { connectivityReducer } from "../connectivity/reducer";
@@ -164,7 +162,7 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
       fbosVersion: informational_settings.controller_version,
       autoSync: !!state.hardware.configuration.auto_sync
     };
-    state.consistent = maybeNegateConsistency(info);
+    state.consistent = info.consistent;
     info.consistent = state.consistent;
 
     const nextSyncStatus = maybeNegateStatus(info);
