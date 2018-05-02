@@ -8,7 +8,7 @@ import {
   GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis
 } from "./interfaces";
 import { Thunk, ReduxAction } from "../redux/interfaces";
-import { McuParams, Configuration, rpcRequest, Farmbot } from "farmbot";
+import { McuParams, Configuration, rpcRequest } from "farmbot";
 import { Sequence } from "../sequences/interfaces";
 import { ControlPanelState } from "../devices/interfaces";
 import { API } from "../api/index";
@@ -23,6 +23,7 @@ import { edit, save as apiSave } from "../api/crud";
 import { getFbosConfig } from "../resources/selectors_by_kind";
 import { FbosConfig } from "../config_storage/fbos_configs";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
+import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -48,7 +49,8 @@ export function isLog(x: any): x is Log {
     return false;
   }
 }
-const commandErr = (_noun = "Command") => () => { };
+export const commandErr =
+  (noun = "Command") => () => error(t(`${noun} failed`));
 
 export const commandOK = (noun = "Command") => () => {
   const msg = noun + " request sent to device.";
@@ -110,11 +112,9 @@ export function sync(): Thunk {
     if (IS_OK) {
       getDevice()
         .sync()
-        .then(() => {
-          commandOK(noun);
-        }).catch(() => {
-          commandErr(noun);
-        });
+        // TODO: Probably wrong. Fix when there is time to QA - RC 5/2/18
+        .then(() => { commandOK(noun); })
+        .catch(commandErr(noun));
     } else {
       if (getState()
         .bot
@@ -235,7 +235,7 @@ export function MCUFactoryReset() {
   if (!confirm(t(Content.MCU_RESET_ALERT))) {
     return;
   }
-  return getDevice().resetMCU();
+  return getDevice().resetMCU().catch(commandErr("MCU Reset"));
 }
 
 export function settingToggle(
@@ -299,7 +299,7 @@ export function homeAll(speed: number) {
     .catch(commandErr(noun));
 }
 
-export function findHome(axis: Axis, speed = Farmbot.defaults.speed) {
+export function findHome(axis: Axis, speed = CONFIG_DEFAULTS.speed) {
   const noun = "'Find Home' command";
   getDevice()
     .findHome({ axis, speed })

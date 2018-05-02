@@ -6,7 +6,15 @@ import { axisTrackingStatus } from "../axis_tracking_status";
 import { ToolTips } from "../../../constants";
 import { SpacePanelToolTip } from "../space_panel_tool_tip";
 import { Row, Col } from "../../../ui/index";
-import { findHome } from "../../actions";
+import { CONFIG_DEFAULTS } from "farmbot/dist/config";
+import { commandErr } from "../../actions";
+import { Axis } from "../../interfaces";
+import { getDevice } from "../../../device";
+
+const speed = CONFIG_DEFAULTS.speed;
+const findHome = (axis: Axis) => getDevice()
+  .findHome({ speed, axis })
+  .catch(commandErr("'Find Home' request"));
 
 export function HomingRow(props: HomingRowProps) {
   const { hardware, botDisconnected } = props;

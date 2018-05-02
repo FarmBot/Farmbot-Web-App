@@ -1,11 +1,11 @@
 import * as React from "react";
 import { StepButton } from "./step_buttons/index";
 import { t } from "i18next";
-import { Farmbot } from "farmbot";
 import { scrollToBottom } from "../util";
 import { Row, ToolTip } from "../ui/index";
 import { TaggedSequence } from "../resources/tagged_resources";
 import { ToolTips } from "../constants";
+import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 
 interface StepButtonProps {
   dispatch: Function;
@@ -31,7 +31,7 @@ export function StepButtonCluster({ dispatch, current }: StepButtonProps) {
               z: 0
             },
           },
-          speed: Farmbot.defaults.speed
+          speed: CONFIG_DEFAULTS.speed
         }
       }}
       color="blue">
@@ -41,7 +41,7 @@ export function StepButtonCluster({ dispatch, current }: StepButtonProps) {
       current={current}
       step={{
         kind: "move_relative",
-        args: { x: 0, y: 0, z: 0, speed: Farmbot.defaults.speed }
+        args: { x: 0, y: 0, z: 0, speed: CONFIG_DEFAULTS.speed }
       }}
       color="green">
       {t("MOVE RELATIVE")}
