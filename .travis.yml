@@ -9,13 +9,14 @@ cache:
 before_install:
   - rvm install 2.5.1
   - rvm use 2.5.1
+install:
+  - yarn install
 before_script:
 - sudo apt-get install curl -y
 - mv node_modules/.bin/which node_modules/.bin/which.backup
 - cp config/database.travis.yml config/database.yml
 - bundle install --jobs=3 --retry=3
 - bundle exec rake db:create db:migrate
-- yarn install
 script:
 - export SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
 - export MQTT_HOST=example.com
