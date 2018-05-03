@@ -2,16 +2,16 @@ language: node_js
 node_js:
 - 8.9.4
 cache:
-  bundler: true
   yarn: true
   directories:
    - /home/travis/.rvm/
+   - .vendor/bundle
 before_install:
   - rvm install 2.5.1
   - rvm use 2.5.1
 install:
   - yarn install
-  - bundle install --jobs=3 --retry=3
+  - bundle install --jobs=3 --retry=3 --path=.vendor/bundle
 before_script:
 - sudo apt-get install curl -y
 - mv node_modules/.bin/which node_modules/.bin/which.backup
