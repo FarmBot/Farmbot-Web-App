@@ -9,7 +9,7 @@ before_script:
 - mv node_modules/.bin/which node_modules/.bin/which.backup
 - rvm install 2.5.1 && rvm use 2.5.1
 - cp config/database.travis.yml config/database.yml
-- bundle install
+- bundle install --jobs=3 --retry=3
 - bundle exec rake db:create db:migrate
 - yarn install
 script:
