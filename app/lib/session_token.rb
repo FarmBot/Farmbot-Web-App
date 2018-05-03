@@ -40,7 +40,6 @@ class SessionToken < AbstractJwtToken
                 mqtt_ws:               MQTT_WS,
                 os_update_server:      url,
                 interim_email:         user.email, # Dont use this for anything ever -RC
-                fw_update_server:      "DEPRECATED",
                 beta_os_update_server: BETA_OS_URL }])
   end
 

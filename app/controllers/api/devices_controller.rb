@@ -2,6 +2,8 @@
 # settings. Consumed by the Angular SPA on the front end.
 module Api
   class DevicesController < Api::AbstractController
+    cattr_accessor :send_emails
+    self.send_emails = !ENV["NO_EMAILS"]
 
     # GET /api/device
     def show
@@ -25,8 +27,27 @@ module Api
     end
 
     def dump
+      send_emails ? email_data_dump : store_data_dump
+    end
+
+  private
+
+    # Store the JSON on the local filesystem for self hosted users that don't
+    # have email set up.
+    #
+    # Q: Why not just return JSON all the time instead of emailing?
+    #
+    # A: Querying and serializing every single resource a device has is
+    #    expensive. Slow requests will bog down requests for all users.
+    #    If the server has email enabled, it's better to do the work in a
+    #    background process.
+    def store_data_dump
+      mutate Devices::Dump.run(device: current_device)
+    end
+
+    def email_data_dump
       DataDumpMailer.email_json_dump(current_device).deliver_later
-      render json: ""
+      render json: nil, status: 202 # "Accepted"
     end
   end
 end
