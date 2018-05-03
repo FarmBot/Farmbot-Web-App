@@ -4,10 +4,14 @@ node_js:
 cache:
   bundler: true
   yarn: true
+  directories:
+   - /home/travis/.rvm/
+before_install:
+  - rvm install 2.5.1
+  - rvm use 2.5.1
 before_script:
 - sudo apt-get install curl -y
 - mv node_modules/.bin/which node_modules/.bin/which.backup
-- rvm install 2.5.1 && rvm use 2.5.1
 - cp config/database.travis.yml config/database.yml
 - bundle install --jobs=3 --retry=3
 - bundle exec rake db:create db:migrate
