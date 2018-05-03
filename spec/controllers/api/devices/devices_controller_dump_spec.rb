@@ -22,12 +22,13 @@ describe Api::DevicesController do
     end
 
     it 'stores to disk when no email server is available' do
-
       b4 = Api::DevicesController.send_emails
       Api::DevicesController.send_emails = false
       sign_in user
       post :dump, params: {}, session: { format: :json }
       expect(response.status).to eq(200)
+      # Just a spot check. Handle in depth usage at the mutation spec level. -RC
+      expect(json[:tools]).to be_kind_of(Array)
       Api::DevicesController.send_emails = b4
     end
   end
