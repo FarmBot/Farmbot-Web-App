@@ -21,3 +21,4 @@ public/system
 public/webpack
 public/webpack/*
 tmp
+public/direct_upload/temp/*.jpg
