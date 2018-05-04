@@ -54,6 +54,7 @@ FarmBot::Application.routes.draw do
     get   "/device/:id"      => "devices#show",           as: :get_device_redirect
     post  "/export_data"     => "devices#dump",           as: :dump_device
     get   "/storage_auth"    => "images#storage_auth",    as: :storage_auth
+    post  "/direct_upload"   => "images#direct_upload",   as: :direct_upload
     patch "/device/:id"      => "devices#update",         as: :patch_device_redirect
     patch "/users/:id"       => "users#update",           as: :patch_users_redirect
     patch "/webcam_feed/:id" => "webcam_feeds#update",    as: :patch_webcam_feed_redirect
