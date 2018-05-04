@@ -54,7 +54,6 @@ FarmBot::Application.routes.draw do
     get   "/device/:id"      => "devices#show",           as: :get_device_redirect
     post  "/export_data"     => "devices#dump",           as: :dump_device
     get   "/storage_auth"    => "images#storage_auth",    as: :storage_auth
-    post  "/direct_upload"   => "images#direct_upload",   as: :direct_upload
     patch "/device/:id"      => "devices#update",         as: :patch_device_redirect
     patch "/users/:id"       => "users#update",           as: :patch_users_redirect
     patch "/webcam_feed/:id" => "webcam_feeds#update",    as: :patch_webcam_feed_redirect
@@ -69,11 +68,12 @@ FarmBot::Application.routes.draw do
   # =======================================================================
   # NON-API (USER FACING) URLS:
   # =======================================================================
-  get  "/"             => "dashboard#front_page",   as: :front_page
-  get  "/app"          => "dashboard#main_app",     as: :dashboard
-  get  "/app/controls" => "dashboard#main_app",     as: :app_landing_page
-  get  "/tos_update"   => "dashboard#tos_update",   as: :tos_update
-  post "/csp_reports"  => "dashboard#csp_reports",  as: :csp_report
+  get  "/"              => "dashboard#front_page",    as: :front_page
+  get  "/app"           => "dashboard#main_app",      as: :dashboard
+  get  "/app/controls"  => "dashboard#main_app",      as: :app_landing_page
+  get  "/tos_update"    => "dashboard#tos_update",    as: :tos_update
+  post "/csp_reports"   => "dashboard#csp_reports",   as: :csp_report
+  post "/direct_upload" => "dashboard#direct_upload", as: :direct_upload
 
   get "/password_reset/*token" => "dashboard#password_reset", as: :password_reset
   get "/verify/:token"         => "dashboard#verify",         as: :verify_user

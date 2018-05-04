@@ -30,13 +30,8 @@ module Api
       mutate policy_class.run
     end
 
-    # (for self hosted users) Direct image upload endpoint.
-    # Do not use this if you use GCS- it will slow your app down.
-    def direct_upload
-      raise "BOOM!"
-    end
-
   private
+
     def policy_class
       if ImagesController.store_locally
         Images::GeneratePolicy
