@@ -1,4 +1,9 @@
 module Api
+  # The web app has many types of "setting bags" for user accounts:
+  #   fbos_configs, firmware_configs, web_app_configs
+  # Although they all have different use cases and attributes, the CRUD logic
+  # is essentially the same. As a result, they all inherit from
+  # AbstractConfigController
   class AbstractConfigController < Api::AbstractController
     class YouMustChangeThis; end
     KLASS         = YouMustChangeThis

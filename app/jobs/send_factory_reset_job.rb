@@ -1,3 +1,5 @@
+# As the name implies, will reset a FarmBot, but without blocking the main
+# HTTP process.
 class SendFactoryResetJob < ApplicationJob
   queue_as :default
 
