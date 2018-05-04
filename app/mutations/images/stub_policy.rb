@@ -1,9 +1,11 @@
 module Images
   class StubPolicy < Mutations::Command
+    URL = "#{$API_URL}/direct_upload/"
+
     def execute
       {
         verb:    "POST",
-        url:     "#{$API_URL}/api/images/dircect_upload",
+        url:     URL,
         form_data: {
           "key"            => random_filename,
           "acl"            => "public-read",
