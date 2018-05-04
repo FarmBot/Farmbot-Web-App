@@ -46,6 +46,16 @@ class DashboardController < ApplicationController
     render json: report
   end
 
+  # (for self hosted users) Direct image upload endpoint.
+  # Do not use this if you use GCS- it will slow your app down.
+  def direct_upload
+    raise "No." unless Api::ImagesController.store_locally
+    name        = params.fetch(:key).split("/").last
+    path        = File.join("public", "direct_upload", "temp", name)
+    File.open(path, "wb") { |f| f.write(params[:file]) }
+    render json: ""
+  end
+
 private
 
   def set_global_config
