@@ -1,4 +1,4 @@
-# Regimens are an order checklist of "TODO" items for a bot, spread out at
+# Regimens are an ordered checklist of "TODO" items for a bot, spread out at
 # specified times after a start date.
 # Examples: Water cabbage 3 times a day for 40 days, then twice a day for 20
 #           days after that.
