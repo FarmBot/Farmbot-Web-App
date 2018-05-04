@@ -20,13 +20,13 @@ module Sequences
 
     def execute
       ActiveRecord::Base.transaction do
-        p = inputs
-          .merge(migrated_nodes: true)
-          .without(:body, :args, "body", "args")
+        p   = inputs
+                .merge(migrated_nodes: true)
+                .without(:body, :args, "body", "args")
         seq = Sequence.create!(p)
-        x = CeleryScript::FirstPass.run!(sequence: seq,
-                                         args: args || {},
-                                         body: body || [])
+        x   = CeleryScript::FirstPass.run!(sequence: seq,
+                                           args: args || {},
+                                           body: body || [])
         result = CeleryScript::FetchCelery.run!(sequence: seq)
         seq.manually_sync! # We must manually sync this resource.
         result
