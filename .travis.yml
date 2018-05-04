@@ -13,8 +13,6 @@ install:
   - yarn install
   - bundle install --jobs=3 --retry=3 --path=/home/travis/bundle
 before_script:
-- sudo apt-get install curl -y
-- mv node_modules/.bin/which node_modules/.bin/which.backup
 - cp config/database.travis.yml config/database.yml
 - bundle exec rake db:create db:migrate
 script:
