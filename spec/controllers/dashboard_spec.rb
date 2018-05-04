@@ -50,5 +50,16 @@ describe DashboardController do
       expect(user.reload.unconfirmed_email).to be nil
       expect(user.email).to eq email
     end
+
+    it 'handles self hosted image uploads' do
+      name   = "wow.jpg"
+      params = {key:  "whatever/" + name,
+                file: StringIO.new(File.open("./spec/fixture.jpg").read)}
+      post :direct_upload, params: params
+      file = File.join("public", "direct_upload", "temp", name)
+      expect(File.file?(file)).to be(true)
+      expect(response.status).to be(200)
+      File.delete(file)
+    end
   end
 end
