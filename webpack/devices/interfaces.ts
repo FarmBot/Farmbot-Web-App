@@ -63,6 +63,7 @@ export enum Feature {
   farmduino_k14 = "farmduino_k14",
   jest_feature = "jest_feature", // for tests
   backscheduled_regimens = "backscheduled_regimens",
+  endstop_invert = "endstop_invert",
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
@@ -205,6 +206,7 @@ export interface HardwareSettingsProps {
   dispatch: Function;
   botToMqttStatus: NetworkState;
   bot: BotState;
+  shouldDisplay: ShouldDisplay;
   sourceFbosConfig: SourceFbosConfig;
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;

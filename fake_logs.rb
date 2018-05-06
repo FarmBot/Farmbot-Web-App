@@ -25,7 +25,7 @@ def ping(interval = 0)
   $count += 1
   puts "Log ##{$count}"
   $log[:message] = "Hey! #{$count}"
-  Transport.amqp_send($log.to_json, $device_id, "logs")
+  Transport.current.amqp_send($log.to_json, $device_id, "logs")
 end
 
 loop do

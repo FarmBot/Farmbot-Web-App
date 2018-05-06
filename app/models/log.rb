@@ -30,7 +30,7 @@ class Log < ApplicationRecord
   end
 
   # Legacy shims ===============================================================
-  #  TODO: Remove these once FBOS stops using the `meta` field.
+  #  TODO: Remove these once FBOS stops using the `meta` field (FBOS < v6.4.0).
   def meta
     {
       type:          self.type,

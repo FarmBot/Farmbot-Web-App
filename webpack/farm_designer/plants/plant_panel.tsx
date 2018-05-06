@@ -37,6 +37,31 @@ export const PLANT_STAGES_DDI = {
   },
 };
 
+export interface EditPlantStatusProps {
+  plantStatus: PlantStage,
+  updatePlant(uuid: string, update: PlantOptions): void;
+  uuid: string;
+}
+
+export function EditPlantStatus(props: EditPlantStatusProps) {
+  const { plantStatus, updatePlant, uuid } = props;
+  return <FBSelect
+    list={PLANT_STAGES}
+    selectedItem={PLANT_STAGES_DDI[plantStatus]}
+    onChange={e => {
+      const plant_stage = e.value as PlantStage;
+      const update: PlantOptions = { plant_stage };
+      switch (plant_stage) {
+        case "planned":
+          update.planted_at = undefined;
+          break;
+        case "planted":
+          update.planted_at = moment().toISOString();
+      }
+      updatePlant(uuid, update);
+    }} />;
+}
+
 export function PlantPanel({ info, onDestroy, updatePlant }: PlantPanelProps) {
   const { name, slug, plantedAt, daysOld, uuid, plantStatus } = info;
   let { x, y } = info;
@@ -96,22 +121,11 @@ export function PlantPanel({ info, onDestroy, updatePlant }: PlantPanelProps) {
         </b>
         <span>
           {updatePlant
-            ? <FBSelect
-              list={PLANT_STAGES}
-              selectedItem={PLANT_STAGES_DDI[plantStatus]}
-              onChange={e => {
-                const plant_stage = e.value as PlantStage;
-                const update: PlantOptions = { plant_stage };
-                switch (plant_stage) {
-                  case "planned":
-                    update.planted_at = undefined;
-                    break;
-                  case "planted":
-                    update.planted_at = moment().toISOString();
-                }
-                updatePlant(uuid, update);
-              }} />
-            : t(plantStatus) }
+            ? <EditPlantStatus
+              uuid={uuid}
+              plantStatus={plantStatus}
+              updatePlant={updatePlant} />
+            : plantStatus}
         </span>
       </li>
     </ul>

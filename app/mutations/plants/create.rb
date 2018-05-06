@@ -17,7 +17,7 @@ module Plants
     end
 
     def execute
-      stub = {pointer_type: "Plant", pointer_id: 0}
+      stub = { pointer_type: "Plant" }
       Plant.create!(inputs.merge(stub))
     end
   end

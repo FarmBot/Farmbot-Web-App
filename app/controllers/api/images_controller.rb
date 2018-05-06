@@ -4,12 +4,11 @@ module Api
   # 2. POST the URL from step 1 (or any URL) to ImagesController#Create
   # 3. Image is transfered to the "trusted bucket".
   class ImagesController < Api::AbstractController
-    BUCKET = ENV.fetch("GCS_BUCKET") { "YOU_MUST_CONFIG_GOOGLE_CLOUD_STORAGE" }
-    KEY    = ENV.fetch("GCS_KEY")    { "YOU_MUST_CONFIG_GCS_KEY" }
-    SECRET = ENV.fetch("GCS_ID")     { "YOU_MUST_CONFIG_GCS_ID" }
+    cattr_accessor :store_locally
+    self.store_locally = !ENV["GCS_BUCKET"]
 
     def create
-        mutate Images::Create.run(raw_json, device: current_device)
+      mutate Images::Create.run(raw_json, device: current_device)
     end
 
     def index
@@ -28,51 +27,17 @@ module Api
     # Creates a "policy object" + meta data so that users may upload an image to
     # Google Cloud Storage.
     def storage_auth
-      # Creates a 1 hour authorization for a user to upload an image file to a
-      # Google Cloud Storage bucket.
-      # You probably want to POST that URL to Images#Create after that.
-      render json: {
-        verb:    "POST",
-        url:     "//storage.googleapis.com/#{BUCKET}/",
-        form_data: {
-          "key"            => random_filename,
-          "acl"            => "public-read",
-          "Content-Type"   => "image/jpeg",
-          "policy"         => policy,
-          "signature"      => policy_signature,
-          "GoogleAccessId" => KEY,
-          "file"           => "REPLACE_THIS_WITH_A_BINARY_JPEG_FILE"
-        },
-        instructions: "Send a 'from-data' request to the URL provided."\
-                      "Then POST the resulting URL as an 'attachment_url' "\
-                      "(json) to api/images/."
-      }
+      mutate policy_class.run
     end
 
   private
 
-    # The image URL in the "untrusted bucket" in Google Cloud Storage
-    def random_filename
-      @range ||= "temp1/#{SecureRandom.uuid}.jpg"
-    end
-
-    def policy
-      @policy ||= Base64.encode64(
-        { 'expiration' => 1.hour.from_now.utc.xmlschema,
-          'conditions' => [
-           { 'bucket'                => BUCKET },
-           { 'key'                   => random_filename},
-           { 'acl'                   => 'public-read' },
-           { 'Content-Type'          => "image/jpeg"},
-           ['content-length-range', 1, 7.megabytes]
-         ]}.to_json).gsub(/\n/, '')
-    end
-
-    def policy_signature
-      @policy_signature ||= Base64.encode64(
-        OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha1'),
-        SECRET,
-        policy)).gsub("\n",'')
+    def policy_class
+      if ImagesController.store_locally
+        Images::GeneratePolicy
+      else
+        Images::StubPolicy
+      end
     end
 
     def image

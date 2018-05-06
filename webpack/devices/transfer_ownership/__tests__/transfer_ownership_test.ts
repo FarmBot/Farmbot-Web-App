@@ -12,6 +12,9 @@ jest.mock("axios", () => {
 
 import { transferOwnership } from "../transfer_ownership";
 import { getDevice } from "../../../device";
+import { API } from "../../../api";
+
+API.setBaseUrl("http://foo.bar");
 
 describe("transferOwnership", () => {
   it("creates a transfer cert", async () => {

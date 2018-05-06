@@ -45,6 +45,7 @@ export interface WebAppConfig {
   photo_filter_end: string;
   discard_unsaved: boolean;
   xy_swap: boolean;
+  home_button_homing: boolean;
 }
 
 export type NumberConfigKey = "id"
@@ -87,4 +88,5 @@ export type BooleanConfigKey = "confirm_step_deletion"
     |"enable_browser_speak"
     |"show_images"
     |"discard_unsaved"
-    |"xy_swap";
+    |"xy_swap"
+    |"home_button_homing";

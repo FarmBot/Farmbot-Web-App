@@ -86,31 +86,36 @@ describe Api::SavedGardensController do
       expect(user.device.plants.count).to be > old_plant_count
     end
 
-    it "prevents destructive application when plants in use."# do
-    #   SavedGarden.destroy_all
-    #   Plant.destroy_all
-    #   PlantTemplate.destroy_all
-    #   sign_in user
-    #   saved_garden = FactoryBot.create(:saved_garden, device: user.device)
-    #   FactoryBot.create_list(:plant_template, 3, device: user.device,
-    #                                              saved_garden: saved_garden)
-    #   FakeSequence.create(device: user.device,
-    #     body: [{ kind: "move_absolute",
-    #             args: {
-    #               location: {
-    #                 kind: "point",
-    #                 args: { pointer_type: "Plant", pointer_id: plant.id }
-    #               },
-    #               speed: 100,
-    #               offset: { kind: "", args: { } }
-    #             }
-    #           }])
+    it "prevents destructive application when plants in use." do
+      SavedGarden.destroy_all
+      Plant.destroy_all
+      PlantTemplate.destroy_all
+      sign_in user
+      saved_garden = FactoryBot.create(:saved_garden, device: user.device)
+      FactoryBot.create_list(:plant_template, 3, device: user.device,
+                                                 saved_garden: saved_garden)
+      plant = FactoryBot.create(:plant, device: user.device)
+      FakeSequence.create(device: user.device,
+        body: [{ kind: "move_absolute",
+                args: {
+                  location: {
+                    kind: "point",
+                    args: { pointer_type: "Plant", pointer_id: plant.id }
+                  },
+                  speed: 100,
+                  offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+                }
+              }])
 
-    #   old_plant_count = user.device.plants.count
-    #   patch :apply, params: {id: saved_garden.id }
-    #   expect(response.status).to be(200)
-    #   expect(user.device.plants.count).to be > old_plant_count
-    # end
+      old_plant_count = user.device.plants.count
+      post :apply, params: {id: saved_garden.id }
+      expect(response.status).to be(422)
+      expect(user.device.plants.count).to eq(old_plant_count)
+      expect(json[:whoops])
+        .to include("Unable to remove the following plants from the garden")
+      expect(json[:whoops])
+        .to include("plant at (#{plant.x}, #{plant.y}, #{plant.z})")
+    end
 
     it "performs 'destructive' garden application" do
       SavedGarden.destroy_all

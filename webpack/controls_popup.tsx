@@ -4,6 +4,7 @@ import { DirectionButton } from "./controls/direction_button";
 import { getDevice } from "./device";
 import { buildDirectionProps } from "./controls/direction_axes_props";
 import { ControlsPopupProps } from "./controls/interfaces";
+import { commandErr } from "./devices/actions";
 
 interface State {
   isOpen: boolean;
@@ -54,7 +55,7 @@ export class ControlsPopup
             disabled={!isOpen || arduinoBusy} />
           <button
             className="i fa fa-camera arrow-button fb-button brown"
-            onClick={() => getDevice().takePhoto().catch(() => { })} />
+            onClick={() => getDevice().takePhoto().catch(commandErr("Photo"))} />
         </div>
       </div>
     </div>;

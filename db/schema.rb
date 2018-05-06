@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180423202520) do
+ActiveRecord::Schema.define(version: 20180502050250) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -198,6 +198,9 @@ ActiveRecord::Schema.define(version: 20180423202520) do
     t.integer "pin_guard_5_pin_nr", default: 0
     t.integer "pin_guard_5_time_out", default: 60
     t.boolean "api_migrated", default: false
+    t.integer "movement_invert_2_endpoints_x", default: 0
+    t.integer "movement_invert_2_endpoints_y", default: 0
+    t.integer "movement_invert_2_endpoints_z", default: 0
     t.index ["device_id"], name: "index_firmware_configs_on_device_id"
   end
 
@@ -220,25 +223,6 @@ ActiveRecord::Schema.define(version: 20180423202520) do
     t.integer "attachment_file_size"
     t.datetime "attachment_updated_at"
     t.index ["device_id"], name: "index_images_on_device_id"
-  end
-
-  create_table "legacy_generic_pointers", id: :serial, force: :cascade do |t|
-  end
-
-  create_table "legacy_plants", id: :serial, force: :cascade do |t|
-    t.string "openfarm_slug", limit: 280, default: "50", null: false
-    t.datetime "created_at"
-    t.datetime "planted_at"
-    t.string "plant_stage", limit: 10, default: "planned"
-    t.index ["created_at"], name: "index_legacy_plants_on_created_at"
-  end
-
-  create_table "legacy_tool_slots", id: :serial, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "tool_id"
-    t.integer "pullout_direction", default: 0
-    t.index ["tool_id"], name: "index_legacy_tool_slots_on_tool_id"
   end
 
   create_table "log_dispatches", force: :cascade do |t|
@@ -317,7 +301,6 @@ ActiveRecord::Schema.define(version: 20180423202520) do
     t.datetime "updated_at", null: false
     t.string "name", default: "untitled", null: false
     t.string "pointer_type", limit: 280, null: false
-    t.integer "pointer_id", null: false
     t.datetime "archived_at"
     t.datetime "planted_at"
     t.string "openfarm_slug", limit: 280, default: "50", null: false
@@ -329,7 +312,6 @@ ActiveRecord::Schema.define(version: 20180423202520) do
     t.index ["device_id"], name: "index_points_on_device_id"
     t.index ["discarded_at"], name: "index_points_on_discarded_at"
     t.index ["meta"], name: "index_points_on_meta", using: :gin
-    t.index ["pointer_type", "pointer_id"], name: "index_points_on_pointer_type_and_pointer_id"
     t.index ["tool_id"], name: "index_points_on_tool_id"
   end
 
@@ -490,6 +472,7 @@ ActiveRecord::Schema.define(version: 20180423202520) do
     t.string "photo_filter_end"
     t.boolean "discard_unsaved", default: false
     t.boolean "xy_swap", default: false
+    t.boolean "home_button_homing", default: false
     t.index ["device_id"], name: "index_web_app_configs_on_device_id"
   end
 
@@ -505,7 +488,6 @@ ActiveRecord::Schema.define(version: 20180423202520) do
   add_foreign_key "device_configs", "devices"
   add_foreign_key "edge_nodes", "sequences"
   add_foreign_key "farmware_installations", "devices"
-  add_foreign_key "legacy_tool_slots", "tools"
   add_foreign_key "log_dispatches", "devices"
   add_foreign_key "log_dispatches", "logs"
   add_foreign_key "peripherals", "devices"
@@ -517,22 +499,6 @@ ActiveRecord::Schema.define(version: 20180423202520) do
   add_foreign_key "sensor_readings", "devices"
   add_foreign_key "sensors", "devices"
   add_foreign_key "token_issuances", "devices"
-
-  create_view "in_use_points",  sql_definition: <<-SQL
-      SELECT points.x,
-      points.y,
-      points.z,
-      (edge_nodes.value)::integer AS point_id,
-      points.pointer_type,
-      points.name AS pointer_name,
-      sequences.id AS sequence_id,
-      sequences.name AS sequence_name,
-      edge_nodes.id AS edge_node_id
-     FROM ((edge_nodes
-       JOIN sequences ON ((edge_nodes.sequence_id = sequences.id)))
-       JOIN points ON (((edge_nodes.value)::integer = points.id)))
-    WHERE ((edge_nodes.kind)::text = 'pointer_id'::text);
-  SQL
 
   create_view "in_use_tools",  sql_definition: <<-SQL
       SELECT tools.id AS tool_id,
@@ -558,6 +524,23 @@ ActiveRecord::Schema.define(version: 20180423202520) do
              FROM regimen_items
             WHERE (regimen_items.sequence_id = sequences.id)) AS regimen_items_count
      FROM sequences;
+  SQL
+
+  create_view "in_use_points",  sql_definition: <<-SQL
+      SELECT points.x,
+      points.y,
+      points.z,
+      sequences.id AS sequence_id,
+      edge_nodes.id AS edge_node_id,
+      points.device_id,
+      (edge_nodes.value)::integer AS point_id,
+      points.pointer_type,
+      points.name AS pointer_name,
+      sequences.name AS sequence_name
+     FROM ((edge_nodes
+       JOIN sequences ON ((edge_nodes.sequence_id = sequences.id)))
+       JOIN points ON (((edge_nodes.value)::integer = points.id)))
+    WHERE ((edge_nodes.kind)::text = 'pointer_id'::text);
   SQL
 
 end

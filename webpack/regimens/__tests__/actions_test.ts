@@ -48,7 +48,8 @@ describe("deleteRegimen()", () => {
     const state = fakeState();
     state.resources.index = buildResourceIndex([fakeRegimen()]).index;
     const getState = () => state;
-    deleteRegimen(state.resources.index.all[0])(dispatch, getState);
+    deleteRegimen(state.resources.index.all[0])(dispatch, getState)
+      .catch(() => { });
     expect(dispatch).not.toHaveBeenCalled();
   });
 
@@ -69,25 +70,15 @@ describe("deleteRegimen()", () => {
 
 describe("selectRegimen()", () => {
   it("selects regimen", () => {
-    const regimen = fakeRegimen();
-    regimen.uuid = "Regimen";
-    const action = selectRegimen(regimen);
+    const action = selectRegimen("Regimen.0.0");
     expect(action).toEqual({
-      payload: {
-        body: { color: "red", name: "Foo", regimen_items: [] },
-        kind: "Regimen",
-        uuid: "Regimen",
-        specialStatus: ""
-      },
+      payload: "Regimen.0.0",
       type: Actions.SELECT_REGIMEN
     });
   });
 
   it("crashes if malformed", () => {
     console.warn = jest.fn();
-    const regimen = fakeRegimen();
-    regimen.uuid = "nope";
-    regimen.kind = "wrong" as any;
-    expect(() => selectRegimen(regimen)).toThrowError();
+    expect(() => selectRegimen("wrong")).toThrowError();
   });
 });

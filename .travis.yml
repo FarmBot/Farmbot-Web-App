@@ -7,8 +7,6 @@ before_script:
 - rvm install 2.5.1 && rvm use 2.5.1
 - mv node_modules/.bin/which.backup node_modules/.bin/which
 - cp config/database.travis.yml config/database.yml
-- mkdir -p public/app
-- touch public/app/index.html
 - bundle install
 - bundle exec rake db:create db:migrate
 - yarn install

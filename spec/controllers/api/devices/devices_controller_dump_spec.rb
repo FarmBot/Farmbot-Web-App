@@ -1,29 +1,35 @@
 require 'spec_helper'
 
 describe Api::DevicesController do
-
   include Devise::Test::ControllerHelpers
   let(:user) { FactoryBot.create(:user) }
-  EXPECTED = [:device,
-              :images,
-              :regimens,
-              :peripherals,
-              :farm_events,
-              # :tools,
-              # :points,
-              :users,
-              :webcam_feeds]
 
   describe '#dump' do
-    it 'creates a backup of your account' do
-      # NOTE: As of 11 December 17, the dump endpoint is only for dev purposes.
-      #       Not going to spend a bunch of time  writing unit tests for this
-      #       endpoint- just basic syntax checking.
+    it 'queues the creation of an account backup' do
       sign_in user
-      get :dump, params: {}, session: { format: :json }
+      empty_mail_bag
+      run_jobs_now do
+        post :dump, params: {}, session: { format: :json }
+      end
+      expect(response.status).to eq(202)
+      mail = ActionMailer::Base.deliveries.last
+      expect(mail).to be_kind_of(Mail::Message)
+      expect(mail.to).to include(user.email)
+      expect(mail.subject).to eq(DataDumpMailer::SUBJECT)
+      expect(mail.attachments.count).to eq(1)
+      expect(mail.attachments.first.filename)
+        .to eq(DataDumpMailer::EXPORT_FILENAME)
+    end
+
+    it 'stores to disk when no email server is available' do
+      b4 = Api::DevicesController.send_emails
+      Api::DevicesController.send_emails = false
+      sign_in user
+      post :dump, params: {}, session: { format: :json }
       expect(response.status).to eq(200)
-      actual = json.keys
-      EXPECTED.map { |key| expect(actual).to include(key) }
+      # Just a spot check. Handle in depth usage at the mutation spec level. -RC
+      expect(json[:tools]).to be_kind_of(Array)
+      Api::DevicesController.send_emails = b4
     end
   end
 end
