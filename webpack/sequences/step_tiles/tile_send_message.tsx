@@ -97,7 +97,7 @@ class RefactoredSendMessage
     return <StepWrapper>
       <StepHeader
         className={className}
-        helpText={ToolTips.SEND_MESSAGE}
+        helpText={t(ToolTips.SEND_MESSAGE)}
         currentSequence={currentSequence}
         currentStep={currentStep}
         dispatch={dispatch}

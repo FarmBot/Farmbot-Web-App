@@ -30,8 +30,8 @@ export class WeedDetector
       const percentage = `${Math.round((p.completed / p.total) * 100)} %`;
       this.setState({ deletionProgress: p.isDone ? "" : percentage });
     };
-    this.props.dispatch(deletePoints("weeds", "plant-detection", progress));
-    this.setState({ deletionProgress: "Deleting..." });
+    this.props.dispatch(deletePoints(t("weeds"), "plant-detection", progress));
+    this.setState({ deletionProgress: t("Deleting...") });
   }
 
   /** Mapping of HSV values to FBOS Env variables. */
