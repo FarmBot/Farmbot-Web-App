@@ -518,6 +518,22 @@ ActiveRecord::Schema.define(version: 20180423202520) do
   add_foreign_key "sensors", "devices"
   add_foreign_key "token_issuances", "devices"
 
+  create_view "in_use_points",  sql_definition: <<-SQL
+      SELECT points.x,
+      points.y,
+      points.z,
+      (edge_nodes.value)::integer AS point_id,
+      points.pointer_type,
+      points.name AS pointer_name,
+      sequences.id AS sequence_id,
+      sequences.name AS sequence_name,
+      edge_nodes.id AS edge_node_id
+     FROM ((edge_nodes
+       JOIN sequences ON ((edge_nodes.sequence_id = sequences.id)))
+       JOIN points ON (((edge_nodes.value)::integer = points.id)))
+    WHERE ((edge_nodes.kind)::text = 'pointer_id'::text);
+  SQL
+
   create_view "in_use_tools",  sql_definition: <<-SQL
       SELECT tools.id AS tool_id,
       tools.name AS tool_name,
@@ -528,23 +544,6 @@ ActiveRecord::Schema.define(version: 20180423202520) do
        JOIN sequences ON ((edge_nodes.sequence_id = sequences.id)))
        JOIN tools ON (((edge_nodes.value)::integer = tools.id)))
     WHERE ((edge_nodes.kind)::text = 'tool_id'::text);
-  SQL
-
-  create_view "in_use_points",  sql_definition: <<-SQL
-      SELECT points.x,
-      points.y,
-      points.z,
-      sequences.id AS sequence_id,
-      edge_nodes.id AS edge_node_id,
-      points.device_id,
-      (edge_nodes.value)::integer AS point_id,
-      points.pointer_type,
-      points.name AS pointer_name,
-      sequences.name AS sequence_name
-     FROM ((edge_nodes
-       JOIN sequences ON ((edge_nodes.sequence_id = sequences.id)))
-       JOIN points ON (((edge_nodes.value)::integer = points.id)))
-    WHERE ((edge_nodes.kind)::text = 'pointer_id'::text);
   SQL
 
   create_view "sequence_usage_reports",  sql_definition: <<-SQL

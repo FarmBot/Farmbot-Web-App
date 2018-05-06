@@ -111,7 +111,7 @@ export function PlantPanel({ info, onDestroy, updatePlant }: PlantPanelProps) {
                 }
                 updatePlant(uuid, update);
               }} />
-            : plantStatus}
+            : t(plantStatus) }
         </span>
       </li>
     </ul>

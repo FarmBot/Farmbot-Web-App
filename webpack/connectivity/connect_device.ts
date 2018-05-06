@@ -95,7 +95,7 @@ export function readStatus() {
 
 export const onOffline = () => {
   dispatchNetworkDown("user.mqtt");
-  error(t(Content.MQTT_DISCONNECTED));
+  error(t(Content.MQTT_DISCONNECTED),t("Error"));
 };
 
 export const changeLastClientConnected = (bot: Farmbot) => () => {

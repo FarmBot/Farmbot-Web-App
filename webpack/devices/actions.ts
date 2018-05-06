@@ -49,7 +49,7 @@ export function isLog(x: any): x is Log {
 const commandErr = (_noun = "Command") => () => { };
 
 export const commandOK = (noun = "Command") => () => {
-  const msg = noun + " request sent to device.";
+  const msg = t(noun) + t(" request sent to device.");
   success(msg, t("Request sent"));
 };
 
@@ -90,7 +90,7 @@ export function emergencyLock() {
 
 export function emergencyUnlock() {
   const noun = "Emergency unlock";
-  if (confirm(`Are you sure you want to unlock the device?`)) {
+  if (confirm(t(`Are you sure you want to unlock the device?`))) {
     getDevice()
       .emergencyUnlock()
       .then(commandOK(noun), commandErr(noun));
