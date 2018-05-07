@@ -1,3 +1,6 @@
+# Meteor.JS on a budget. When a model changes on the API, we queue a background
+# job to tell browsers and bots about it so they can update their data in
+# realtime. See: ApplicationRecord.
 class AutoSyncJob < ApplicationJob
   queue_as :default
 
