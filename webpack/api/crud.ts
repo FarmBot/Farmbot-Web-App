@@ -21,6 +21,7 @@ import { SequenceBodyItem } from "farmbot/dist";
 import * as _ from "lodash";
 import { Actions } from "../constants";
 import { maybeStartTracking } from "./maybe_start_tracking";
+import { t } from "i18next";
 
 export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
@@ -280,7 +281,7 @@ const MUST_CONFIRM_LIST: ResourceName[] = [
 const confirmationChecker = (resource: TaggedResource, force = false) =>
   <T>(proceed: () => T): T | undefined => {
     if (MUST_CONFIRM_LIST.includes(resource.kind)) {
-      if (force || confirm("Are you sure you want to delete this item?")) {
+      if (force || confirm(t("Are you sure you want to delete this item?"))) {
         return proceed();
       } else {
         return undefined;

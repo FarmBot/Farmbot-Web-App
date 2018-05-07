@@ -1,17 +1,20 @@
 language: node_js
 node_js:
 - 8.9.4
+cache:
+  yarn: true
+  directories:
+   - /home/travis/.rvm/
+   - /home/travis/bundle
+before_install:
+  - rvm install 2.5.1
+  - rvm use 2.5.1
+install:
+  - yarn install
+  - bundle install --jobs=3 --retry=3 --path=/home/travis/bundle
 before_script:
-- sudo apt-get install curl -y
-- mv node_modules/.bin/which node_modules/.bin/which.backup
-- rvm install 2.5.1 && rvm use 2.5.1
-- mv node_modules/.bin/which.backup node_modules/.bin/which
 - cp config/database.travis.yml config/database.yml
-- mkdir -p public/app
-- touch public/app/index.html
-- bundle install
 - bundle exec rake db:create db:migrate
-- yarn install
 script:
 - export SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
 - export MQTT_HOST=example.com

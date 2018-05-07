@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Api::ImagesController do
   include Devise::Test::ControllerHelpers
   let(:user) { FactoryBot.create(:user) }
-  it "Creates a polict object" do
+  it "Creates a policy object" do
     sign_in user
     get :storage_auth
 
@@ -14,6 +14,21 @@ describe Api::ImagesController do
     expect(json[:form_data].keys.sort).to include(:signature)
     expect(json[:instructions])
       .to include("POST the resulting URL as an 'attachment_url'")
+  end
+
+  it "Creates a (stub) policy object" do
+    sign_in user
+    b4 = Api::ImagesController.store_locally
+    Api::ImagesController.store_locally = false
+    get :storage_auth
+    Api::ImagesController.store_locally = b4
+    expect(response.status).to eq(200)
+    expect(json).to be_kind_of(Hash)
+    expect(json[:verb]).to eq("POST")
+    expect(json[:url]).to include($API_URL)
+    [ :policy, :signature, :GoogleAccessId ]
+      .map { |key| expect(json.dig(:form_data, key)).to eq("N/A") }
+    expect(json[:form_data].keys.sort).to include(:signature)
   end
 
   describe '#index' do

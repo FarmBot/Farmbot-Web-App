@@ -14,7 +14,6 @@ export type GetState = () => Everything;
 
 /** A Redux Thunk function. */
 export interface Thunk {
-  // TODO: CONVERT THIS TO A GENERIC (Thunk<T>)
   // tslint:disable-next-line:no-any
   (dispatch: Function, getState: GetState): any;
 }

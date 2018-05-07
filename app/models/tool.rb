@@ -2,6 +2,9 @@
 # confused with Peripherals, which keep track of electronic data such as pin
 # modes.
 class Tool < ApplicationRecord
+  # We need this for the "status" virtual attribute in ToolSerializer.
+  # I could not figure out how to get AR to do it without N+1s.
+  # Help appreciated on this one if anyone can get this working the "Rails way"
   BASE        = 'SELECT
                   "tools".*,
                   points.id as tool_slot_id

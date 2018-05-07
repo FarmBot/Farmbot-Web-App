@@ -1,6 +1,8 @@
 # Api::DeviceConfigController is the RESTful endpoint for managing key/value
 # configuration pairs.
 module Api
+  # Device configs controller handles CRUD for user definable key/value pairs.
+  # Usually used by 3rd party Farmware devs. Not used often as of May 2018
   class DeviceConfigsController < Api::AbstractController
 
     def create

@@ -2,7 +2,6 @@ FarmBot::Application.routes.draw do
   namespace :api, defaults: {format: :json}, constraints: { format: "json" } do
     # Standard API Resources:
     {
-      corpuses:               [:index, :show],
       farm_events:            [:create, :destroy, :index, :update],
       farmware_installations: [:create, :destroy, :index],
       images:                 [:create, :destroy, :index, :show],
@@ -28,6 +27,7 @@ FarmBot::Application.routes.draw do
       tokens:          [:create, :show],
       web_app_config:  [:destroy, :show, :update],
     }.to_a.map{|(name, only)| resource name, only: only}
+    get "/corpus" => "corpuses#show", as: :api_corpus
 
     resources(:points, except: []) { post :search, on: :collection }
 
@@ -68,11 +68,12 @@ FarmBot::Application.routes.draw do
   # =======================================================================
   # NON-API (USER FACING) URLS:
   # =======================================================================
-  get  "/"             => "dashboard#front_page",   as: :front_page
-  get  "/app"          => "dashboard#main_app",     as: :dashboard
-  get  "/app/controls" => "dashboard#main_app",     as: :app_landing_page
-  get  "/tos_update"   => "dashboard#tos_update",   as: :tos_update
-  post "/csp_reports"  => "dashboard#csp_reports",  as: :csp_report
+  get  "/"              => "dashboard#front_page",    as: :front_page
+  get  "/app"           => "dashboard#main_app",      as: :dashboard
+  get  "/app/controls"  => "dashboard#main_app",      as: :app_landing_page
+  get  "/tos_update"    => "dashboard#tos_update",    as: :tos_update
+  post "/csp_reports"   => "dashboard#csp_reports",   as: :csp_report
+  post "/direct_upload" => "dashboard#direct_upload", as: :direct_upload
 
   get "/password_reset/*token" => "dashboard#password_reset", as: :password_reset
   get "/verify/:token"         => "dashboard#verify",         as: :verify_user

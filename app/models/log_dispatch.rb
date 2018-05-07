@@ -1,3 +1,6 @@
+# Prevents spamming a user when a malfunctioning Farmware tries to send
+# 200000 emails in 4 seconds.
+# Also helps group "fast" messages into a digest.
 class LogDispatch < ApplicationRecord
   class RateLimitError < StandardError; end
 
