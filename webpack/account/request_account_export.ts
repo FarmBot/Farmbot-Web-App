@@ -10,7 +10,7 @@ type Response = AxiosResponse<DataDumpExport | undefined>;
 
 function generateFilename({ device }: DataDumpExport): string {
   const name = (device && device.name + "_" + device.id) || "farmbot";
-  return `farmbot_export_${name}.json`;
+  return `export_${name}.json`.toLowerCase();
 }
 
 // Thanks, @KOL - https://stackoverflow.com/a/19328891/1064917

@@ -4,6 +4,7 @@ describe Devices::Dump do
   SPECIAL     = [:points, :sequences, :device]
   ADDITIONAL  = [:plants, :tool_slots, :generic_pointers]
   MODEL_NAMES = Devices::Dump::RESOURCES.without(*SPECIAL).concat(ADDITIONAL)
+  NOPE        = "Expected value[%s] to equal %s. Got %s instead"
 
   it "serializes _all_ the data" do
     device    = FactoryBot.create(:device)
@@ -24,19 +25,31 @@ describe Devices::Dump do
     results   = Devices::Dump.run!(device: device)
     MODEL_NAMES
       .concat(SPECIAL)
-      .without(:device, :plants, :tool_slots, :generic_pointers)
+      .without(:device, :plants, :tool_slots, :generic_pointers, :points)
       .map do |name|
-        expect(results[name]).to be
-        expect(results[name]).to eq(device.send(name).map(&:body_as_json))
+        actual   = results[name]
+        expect(actual).to be
+        expected = device.send(name).map(&:body_as_json)
+        if(actual != expected)
+          tpl = [name, expected, actual]
+          fail(NOPE % tpl.map{|x| (x).inspect.to_s.first(25) })
+        end
       end
     # Tests for a regression noted on 1 may 18:
     tool = results[:tools].find { |x| x[:id] == tools.last.id }
     expect(tool).to be
     expect(tool[:status]).to eq("active")
     # Expect archived points to show up.
-    binding.pry
-    # Expect :export_created_at to be correct
-    # Expect :server_url to be correct
-    # Expect :database_schema to be correct
+    serialized_plant = \
+      results[:points].find { |x| x[:id] == plant.id }
+    expect(serialized_plant).to be
+    expect(plant.discarded?).to be true
+    expect(results[:export_created_at]).to be
+    export_time = Time.parse(results[:export_created_at])
+    today       = Time.now
+    expect(today - export_time).to be < 1
+    expect(results[:database_schema])
+      .to eq(ActiveRecord::Migrator.current_version)
+    expect(results[:server_url]).to eq($API_URL)
   end
 end
