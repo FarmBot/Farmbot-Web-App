@@ -11,7 +11,7 @@ describe Api::DevicesController do
       run_jobs_now do
         post :dump, params: {}, session: { format: :json }
       end
-      expect(response.status).to eq(202)
+      expect(response.status).to eq(ENV["NO_EMAILS"] ? 200 : 202)
       mail = ActionMailer::Base.deliveries.last
       expect(mail).to be_kind_of(Mail::Message)
       expect(mail.to).to include(user.email)

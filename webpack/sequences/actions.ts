@@ -6,6 +6,7 @@ import { defensiveClone } from "../util";
 import { push } from "../history";
 import { urlFriendly } from "../util";
 import { Actions } from "../constants";
+import { t } from "i18next";
 
 export function pushStep(step: SequenceBodyItem,
   dispatch: Function,
@@ -27,7 +28,7 @@ export function copySequence(payload: TaggedSequence) {
   return function (dispatch: Function) {
     const copy = defensiveClone(payload);
     copy.body.id = undefined;
-    copy.body.name = copy.body.name + ` copy ${count++}`;
+    copy.body.name = copy.body.name + t(" copy ") + (count++);//+ t(" copy ") + (count++);
     copy.uuid = "HEY REDUCER! Set this!";
     dispatch(init(copy));
     push("/app/sequences/" + urlFriendly(copy.body.name));

@@ -34,13 +34,9 @@ export function mapResourcesToCalendar(
 
   x.map(function (fe) {
     switch (fe.executable_type) {
-      case "Regimen":
-        return addRegimenToCalendar(
-          fe, calendar, now);
+      case "Regimen": return addRegimenToCalendar(fe, calendar, now);
       case "Sequence":
         return addSequenceToCalendar(fe, calendar, now, tz_offset_hrs);
-      default:
-        throw new Error(`Bad fe: ${JSON.stringify(fe)}`);
     }
   });
 
