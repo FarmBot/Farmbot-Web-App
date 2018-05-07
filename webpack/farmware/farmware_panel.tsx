@@ -82,9 +82,10 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
 
   run = () => {
     this
-      .ifFarmwareSelected(label => getDevice()
-        .execScript(label)
-        .then(() => this.setState({ selectedFarmware: label })));
+      .ifFarmwareSelected(label => {
+        const ok = () => this.setState({ selectedFarmware: label });
+        getDevice().execScript(label).then(ok, ok);
+      });
   }
 
   install = () => {
