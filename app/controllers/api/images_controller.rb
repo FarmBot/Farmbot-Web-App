@@ -34,9 +34,9 @@ module Api
 
     def policy_class
       if ImagesController.store_locally
-        Images::GeneratePolicy
-      else
         Images::StubPolicy
+      else
+        Images::GeneratePolicy
       end
     end
 

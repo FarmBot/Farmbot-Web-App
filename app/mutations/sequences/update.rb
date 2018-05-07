@@ -11,8 +11,8 @@ module Sequences
       string :name
       # HISTORICAL NOTE ========================================================
       # Originally, `args` and `body` were optional. We stored them in a
-      args # serialized column and it was very inexpensive to retreive them
-      body # from the database. Serialized columns led to an enoromous amunt of
+      args # serialized column and it was very inexpensive to retrieve them
+      body # from the database. Serialized columns led to an enormous amount of
       # issues in other parts of the app, however. One of the tradeoffs that we
       # now face is that we can no longer call `sequence.args` and
       # `sequence.body` as quickly as in the old days. It also means these
