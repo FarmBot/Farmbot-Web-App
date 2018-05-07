@@ -166,7 +166,7 @@ describe("onOffline", () => {
     jest.resetAllMocks();
     onOffline();
     expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt");
-    expect(error).toHaveBeenCalledWith(Content.MQTT_DISCONNECTED);
+    expect(error).toHaveBeenCalledWith(Content.MQTT_DISCONNECTED, "Error");
   });
 });
 
