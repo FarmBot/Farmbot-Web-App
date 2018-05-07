@@ -25,7 +25,5 @@ export function rootReducer(
   action: ReduxAction<{}>) {
   (action.type === Actions.LOGOUT) && Session.clear();
 
-  // TODO: Get rid of this nasty type cast / hack. Resulted from TSC 2.4 upgrade
-  // - RC 30 JUN 17
-  return reducers(state, action) as Everything;
+  return reducers(state, action);
 }

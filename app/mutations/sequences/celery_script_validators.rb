@@ -17,10 +17,10 @@ module Sequences
     ]
 
     def validate_sequence
-      # TODO: The code below strips out unneeded attributes, or attributes that
+      # The code below strips out unneeded attributes, or attributes that
       # are not part of CeleryScript. We're only stripping attributes out of the
-      # first level, though. I would like to recursively strip out "noise" via
-      # CeleryScript::JSONClimber. I am holding off for now in the name of time.
+      # first level, though. Because of how EdgeNode and PrimaryNode work,
+      # superfluous attributes will disappear on save and that's OK.
       (inputs[:body] || []).map! { |x| x.slice(*ALLOWED_NODE_KEYS) }
       add_error :body, :syntax_error, checker.error.message if !checker.valid?
     end

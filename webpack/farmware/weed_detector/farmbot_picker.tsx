@@ -95,6 +95,8 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
      * as mandatory props. I don't have time to send a patch right now. Failing
      * to add these props is a runtime error.
      * TODO: Update `definitely-typed/react-color` typings
+     *       At this point, the fix may already be upstream. An update may fix
+     *       this issue.
      */
     const dontTouchThis = {
       hsv: { h: H_AVG, s: 0, v: 0 },

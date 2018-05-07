@@ -1,4 +1,4 @@
-# A single slot in a larger tool rack. Lets the sequence builder know things
+# A single slot in a tool rack. Lets the sequence builder know things
 # like where to put a tool when not in use, where to grab the next tool from,
 # etc.
 class ToolSlot < Point
