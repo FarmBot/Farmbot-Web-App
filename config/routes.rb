@@ -2,7 +2,6 @@ FarmBot::Application.routes.draw do
   namespace :api, defaults: {format: :json}, constraints: { format: "json" } do
     # Standard API Resources:
     {
-      corpuses:               [:index, :show],
       farm_events:            [:create, :destroy, :index, :update],
       farmware_installations: [:create, :destroy, :index],
       images:                 [:create, :destroy, :index, :show],
@@ -28,6 +27,7 @@ FarmBot::Application.routes.draw do
       tokens:          [:create, :show],
       web_app_config:  [:destroy, :show, :update],
     }.to_a.map{|(name, only)| resource name, only: only}
+    get "/corpus" => "corpuses#show", as: :api_corpus
 
     resources(:points, except: []) { post :search, on: :collection }
 

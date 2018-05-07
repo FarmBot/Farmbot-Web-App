@@ -4,6 +4,8 @@ require_relative "./csheap"
 # 1. Pulls out all PrimaryNodes and EdgeNodes for a sequence node (AST Flat IR form)
 # 2. Stitches the nodes back together in their "canonical" (nested) AST
 #    representation
+# THIS IS BASICALLY A SERIALIZER FOR COMPLEX DATA THAT RAILS CAN'T HANDLE BY
+# DEFAULT.
 module CeleryScript
   class FetchCelery < Mutations::Command
   private  # = = = = = = =
