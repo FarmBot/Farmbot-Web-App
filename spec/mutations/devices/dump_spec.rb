@@ -16,6 +16,11 @@ describe Devices::Dump do
       .where(pointer_type: "ToolSlot")
       .last
       .update_attributes(tool_id: tools.last.id)
+    plant = device
+      .points
+      .where(pointer_type: "Plant")
+      .last
+    plant.discard
     results   = Devices::Dump.run!(device: device)
     MODEL_NAMES
       .concat(SPECIAL)
@@ -28,5 +33,10 @@ describe Devices::Dump do
     tool = results[:tools].find { |x| x[:id] == tools.last.id }
     expect(tool).to be
     expect(tool[:status]).to eq("active")
+    # Expect archived points to show up.
+    binding.pry
+    # Expect :export_created_at to be correct
+    # Expect :server_url to be correct
+    # Expect :database_schema to be correct
   end
 end
