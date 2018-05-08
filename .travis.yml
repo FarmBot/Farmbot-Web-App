@@ -6,6 +6,23 @@ cache:
   directories:
    - /home/travis/.rvm/
    - /home/travis/bundle
+env:
+ # Production like setup
+ - SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
+   MQTT_HOST=example.com
+   OS_UPDATE_SERVER=http://example.com
+   FW_UPDATE_SERVER=http://example.com
+   DB=postgresql
+   COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG
+ # Self hosted like setup
+ - SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
+   MQTT_HOST=127.0.0.1
+   OS_UPDATE_SERVER=http://example.com
+   FW_UPDATE_SERVER=http://example.com
+   DB=postgresql
+   COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG
+   API_HOST=127.0.0.1
+   NO_EMAILS=TRUE
 before_install:
   - rvm install 2.5.1
   - rvm use 2.5.1
@@ -16,12 +33,6 @@ before_script:
 - cp config/database.travis.yml config/database.yml
 - bundle exec rake db:create db:migrate
 script:
-- export SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
-- export MQTT_HOST=example.com
-- export OS_UPDATE_SERVER=http://example.com
-- export FW_UPDATE_SERVER=http://example.com
-- export DB=postgresql
-- export COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG
 - bundle exec rspec --fail-fast=3
 - npm run typecheck
 - npm run test-slow
