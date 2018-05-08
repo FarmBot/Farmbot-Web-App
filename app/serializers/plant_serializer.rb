@@ -1,6 +1,6 @@
 class PlantSerializer < ActiveModel::Serializer
-  attributes :id, :created_at, :updated_at, :device_id, :meta, :name,
-             :openfarm_slug, :plant_stage, :planted_at, :pointer_type, :radius,
+  attributes :id, :created_at, :updated_at, :discarded_at, :device_id, :meta,
+             :name, :openfarm_slug, :plant_stage, :planted_at, :pointer_type, :radius,
              :x, :y, :z
 
   def x
