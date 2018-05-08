@@ -5,7 +5,10 @@ describe Api::ImagesController do
   let(:user) { FactoryBot.create(:user) }
   it "Creates a policy object" do
     sign_in user
+    b4 = Api::ImagesController.store_locally
+    Api::ImagesController.store_locally = false
     get :storage_auth
+    Api::ImagesController.store_locally = b4
 
     expect(response.status).to eq(200)
     expect(json).to be_kind_of(Hash)
@@ -19,7 +22,7 @@ describe Api::ImagesController do
   it "Creates a (stub) policy object" do
     sign_in user
     b4 = Api::ImagesController.store_locally
-    Api::ImagesController.store_locally = false
+    Api::ImagesController.store_locally = true
     get :storage_auth
     Api::ImagesController.store_locally = b4
     expect(response.status).to eq(200)

@@ -24,7 +24,7 @@ describe Api::SequencesController do
     it 'updates existing sequences' do
       sign_in user
       sequence = FakeSequence.create( device: user.device)
-      input = { sequence: { name: "Scare Birds" } }
+      input = { sequence: { name: "Scare Birds", args: {}, body: [] } }
       params = { id: sequence.id }
       patch :update,
         params: params,
