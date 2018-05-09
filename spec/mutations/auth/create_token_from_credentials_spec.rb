@@ -28,7 +28,7 @@ describe Auth::FromJWT do
       .run!(credentials: creds, fbos_version: Gem::Version.new("999.9.9"))
     expect(results[:token]).to be_kind_of(SessionToken)
     expect(results[:user]).to eq(user)
-    expect(results[:token].unencoded[:os_update_server]).to eq(CalculateUpgrade::OS_RELEASE)
+    expect(results[:token].unencoded[:os_update_server]).to eq(CalculateUpgrade::OLD_OS_URL)
   end
 
   it 'Rejects bad email / password' do

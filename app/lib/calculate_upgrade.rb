@@ -24,6 +24,6 @@ class CalculateUpgrade < Mutations::Command
   def execute
     return OLD_OS_URL if version <= LEGACY_CUTOFF
     return MID_OS_URL if version <= MEDIUM_OLDISH
-    return OS_RELEASE
+    return OLD_OS_URL
   end
 end
