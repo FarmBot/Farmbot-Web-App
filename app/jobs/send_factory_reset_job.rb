@@ -1,3 +1,5 @@
+# As the name implies, will reset a FarmBot, but without blocking the main
+# HTTP process.
 class SendFactoryResetJob < ApplicationJob
   queue_as :default
 
@@ -9,6 +11,6 @@ class SendFactoryResetJob < ApplicationJob
 
   def perform(device, transport = Transport)
     payl = SendFactoryResetJob.rpc_payload(device)
-    transport.amqp_send(payl.to_json, device.id, "from_clients")
+    transport.current.amqp_send(payl.to_json, device.id, "from_clients")
   end
 end

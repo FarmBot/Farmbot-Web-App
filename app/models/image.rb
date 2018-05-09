@@ -1,5 +1,5 @@
 require "open-uri"
-
+# A set of image URLs (thumbs) + Associated meta data.
 class Image < ApplicationRecord
   belongs_to :device
   validates  :device, presence: true

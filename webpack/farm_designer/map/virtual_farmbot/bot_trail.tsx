@@ -48,7 +48,7 @@ export function BotTrail(props: BotTrailProps) {
 
   const array = getNewTrailArray({ coord: { x, y }, water: 0 }, watering);
 
-  return <g id="trail">
+  return <g className="virtual-bot-trail">
     {array.map((cur: TrailRecord, i: number) => {
       const prev = (array[i - 1] || { coord: undefined }).coord; // prev coord
       const opacity = _.round(Math.max(0.25, i / (array.length - 1)), 2);

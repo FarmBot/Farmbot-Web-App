@@ -1,5 +1,5 @@
 const mockDevice = {
-  setZero: jest.fn()
+  setZero: jest.fn(() => Promise.resolve())
 };
 jest.mock("../../../../device", () => ({
   getDevice: () => (mockDevice)

@@ -14,7 +14,7 @@ module Logs
             in: CeleryScriptSettingsBag::ALLOWED_CHANNEL_NAMES
       # LEGACY SHIM AHEAD!!! ===================================================
       #
-      # We onced stored certain fields in a `meta` column.
+      # We once stored certain fields in a `meta` column.
       # The API has evolved since that time, the requirements are pretty solid
       # at this point and we need the ability to perform SQL queries. The `meta`
       # field is no longer useful nor is it a clean solution.
@@ -27,7 +27,7 @@ module Logs
       # should access `log.FOO` instead of `log.meta.FOO` for future
       # compatibility.
       #
-      # TODO: delete the `meta` field by 6 JUN 18
+      # TODO: delete the `meta` field once FBOS < v6.4.0 reach EOL.
       string  :type, in: Log::TYPES
       integer :x
       integer :y

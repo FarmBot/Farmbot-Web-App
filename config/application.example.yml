@@ -94,7 +94,7 @@ EXTRA_DOMAINS: staging.farm.bot,whatever.farm.bot
 # If you are a software developer and you wish to run integration tests, set the
 # ENV below to "true".
 # Most users will not want this enabled.
-RUN_CAPYBARA: true
+RUN_CAPYBARA: "true"
 # Set this to "production" in most cases.
 # If you need help debugging issues, please delete this line.
 RAILS_ENV: "production"

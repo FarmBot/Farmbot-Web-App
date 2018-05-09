@@ -10,7 +10,6 @@ describe Api::PointsController do
                                   y:            0,
                                   z:            0,
                                   radius:       1,
-                                  pointer_id:   0,
                                   pointer_type: "ToolSlot",
                                   device_id:  user.device.id) }
 
@@ -38,8 +37,7 @@ describe Api::PointsController do
                             radius:        1,
                             openfarm_slug: "lettuce",
                             device:        user.device,
-                            pointer_type:  "Plant",
-                            pointer_id:    0)
+                            pointer_type:  "Plant")
       sign_in user
       p = { id: point.id,
             x: 23,

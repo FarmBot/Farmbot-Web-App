@@ -26,10 +26,14 @@ describe Device do
     expect([-5, -6, -7]).to include device.tz_offset_hrs # Remember DST!
   end
 
-  it 'uses `tell` to send device messages' do
-    dbl = double("fake transport layer")
-    expect(dbl).to receive(:amqp_send)
-    result = device.tell("Hello!", dbl)
-    expect(result.message).to eq("Hello!")
+  it "sends specific users toast messages" do
+    Transport.current.clear!
+    hello      = "Hello!"
+    log        = device.tell(hello)
+    json, info = Transport.current.connection.calls[:publish].last
+    json       = JSON.parse(json)
+    expect(info[:routing_key]).to eq("bot.device_#{device.id}.logs")
+    expect(log.message).to eq(hello)
+    expect(json["message"]).to eq(hello)
   end
 end

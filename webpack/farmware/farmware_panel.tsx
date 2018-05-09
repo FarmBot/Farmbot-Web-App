@@ -14,6 +14,7 @@ import {
 } from "../ui/index";
 import { betterCompact } from "../util";
 import { Popover, Position } from "@blueprintjs/core";
+import { commandErr } from "../devices/actions";
 
 export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
   const listBtnColor = props.show ? "green" : "red";
@@ -28,8 +29,8 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
       <button
         className="fb-button gray fa fa-download"
         onClick={() => {
-          const p = getDevice().installFirstPartyFarmware();
-          p && p.catch(() => { });
+          const p = getDevice().installFirstPartyFarmware()
+          p && p.catch(commandErr("Farmware installation"));
         }}
         disabled={props.firstPartyFwsInstalled} />
     </fieldset>
@@ -61,7 +62,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
       .ifFarmwareSelected(label => getDevice()
         .updateFarmware(label)
         .then(() => this.setState({ selectedFarmware: undefined }))
-        .catch(() => { }));
+        .catch(commandErr("Update")));
   }
 
   remove = () => {
@@ -74,16 +75,18 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
           getDevice()
             .removeFarmware(label)
             .then(() => this.setState({ selectedFarmware: undefined }))
-            .catch(() => { });
+            .catch(commandErr("Farmware Removal"));
         }
       });
   }
 
   run = () => {
     this
-      .ifFarmwareSelected(label => getDevice()
-        .execScript(label)
-        .then(() => this.setState({ selectedFarmware: label })));
+      .ifFarmwareSelected(label => {
+        const ok = () => this.setState({ selectedFarmware: label });
+        const no = commandErr("Farmware execution");
+        getDevice().execScript(label).then(ok, no);
+      });
   }
 
   install = () => {
@@ -91,7 +94,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
       getDevice()
         .installFarmware(this.state.packageUrl)
         .then(() => this.setState({ packageUrl: "" }))
-        .catch(() => { });
+        .catch(commandErr("Farmware installation"));
     } else {
       alert(t("Enter a URL"));
     }

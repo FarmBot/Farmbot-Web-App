@@ -18,6 +18,9 @@ import { transferOwnership } from "../transfer_ownership";
 import { getDevice } from "../../../device";
 import { submitOwnershipChange } from "../../components/fbos_settings/change_ownership_form";
 import { error } from "farmbot-toastr";
+import { API } from "../../../api";
+
+API.setBaseUrl("http://foo.bar");
 
 describe("transferOwnership", () => {
   it("passes rejected promises down the chain", async () => {

@@ -48,7 +48,7 @@ class Typescript
     klass.columns.map do |col|
       t        = col.sql_type_metadata.sql_type
       col_type = TYPE_MAPPING[t] or raise "NO! #{t.inspect} is not in TYPE_MAPPING"
-      Pair[col.name, col_type]
+      Pair.new(col.name, col_type)
     end
   end
 
@@ -57,8 +57,8 @@ class Typescript
       .group_by { |x| x.tail }
       .to_a
       .map do |arr|
-        Pair["#{arr.first.camelize}ConfigKey",
-             arr.last.map{|x| x.head.inspect }.join("\n    |") + ";\n"]
+        Pair.new "#{arr.first.camelize}ConfigKey",
+                 arr.last.map{|x| x.head.inspect }.join("\n    |") + ";\n"
       end
   end
 end

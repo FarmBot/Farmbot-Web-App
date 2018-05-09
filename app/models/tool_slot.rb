@@ -1,4 +1,4 @@
-# A single slot in a larger tool rack. Lets the sequence builder know things
+# A single slot in a tool rack. Lets the sequence builder know things
 # like where to put a tool when not in use, where to grab the next tool from,
 # etc.
 class ToolSlot < Point
@@ -11,7 +11,7 @@ class ToolSlot < Point
   MIN_PULLOUT = PULLOUT_DIRECTIONS.min
   PULLOUT_ERR = "must be a value between #{MIN_PULLOUT} and #{MAX_PULLOUT}. "\
                 "%{value} is not valid."
-  IN_USE = "already in use by another tool slot"
+  IN_USE      = "already in use by another tool slot"
 
   belongs_to :tool
   validates_uniqueness_of :tool,
@@ -21,15 +21,4 @@ class ToolSlot < Point
   validates  :pullout_direction,
     presence: true,
     inclusion: { in: PULLOUT_DIRECTIONS, message: PULLOUT_ERR }
-
-  def do_migrate
-    LegacyToolSlot.transaction do
-      legacy = LegacyToolSlot.find(self[:pointer_id])
-      self.update_attributes!(migrated_at:       Time.now,
-                              pullout_direction: legacy.pullout_direction,
-                              tool_id:           legacy.tool_id,
-                              pointer_type:      "ToolSlot")
-      legacy.destroy!
-    end
-  end
 end

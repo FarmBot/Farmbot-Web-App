@@ -9,7 +9,7 @@ jest.mock("../../../history", () => ({
 }));
 
 import * as React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { AddFarmEvent } from "../add_farm_event";
 import { AddEditFarmEventProps } from "../../interfaces";
 import { fakeFarmEvent, fakeSequence } from "../../../__test_support__/fake_state/resources";
@@ -51,6 +51,14 @@ describe("<AddFarmEvent />", () => {
   it("redirects", () => {
     const wrapper = mount(<AddFarmEvent {...fakeProps()} />);
     expect(wrapper.text()).toContain("Loading");
+  });
+
+  it("renders `none`", () => {
+    const props: Partial<AddEditFarmEventProps> = {};
+    const comp = new AddFarmEvent(props as AddEditFarmEventProps);
+    const results = shallow(<div>{comp.none()}</div>);
+    expect(results.text())
+      .toContain("You haven't made any regimens or sequences yet.");
   });
 
   it("cleans up when unmounting", () => {

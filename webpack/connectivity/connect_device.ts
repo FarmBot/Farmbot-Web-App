@@ -12,7 +12,8 @@ import {
   EXPECTED_MAJOR,
   EXPECTED_MINOR,
   commandOK,
-  badVersion
+  badVersion,
+  commandErr
 } from "../devices/actions";
 import { init } from "../api/crud";
 import { AuthState } from "../auth/interfaces";
@@ -90,18 +91,18 @@ export function readStatus() {
   const noun = "'Read Status' command";
   return getDevice()
     .readStatus()
-    .then(() => { commandOK(noun); }, () => { });
+    .then(() => { commandOK(noun); }, commandErr(noun));
 }
 
 export const onOffline = () => {
   dispatchNetworkDown("user.mqtt");
-  error(t(Content.MQTT_DISCONNECTED));
+  error(t(Content.MQTT_DISCONNECTED),t("Error"));
 };
 
 export const changeLastClientConnected = (bot: Farmbot) => () => {
   bot.setUserEnv({
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
-  }).catch(() => { });
+  }).catch(() => { }); // This is internal stuff, don't alert user.
 };
 const onStatus = (dispatch: Function, getState: GetState) =>
   (throttle(function (msg: BotStateTree) {
@@ -136,17 +137,19 @@ export const onReconnect =
   () => warning(t("Attempting to reconnect to the message broker"), t("Offline"));
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
-    startPinging(bot);
-    readStatus().then(changeLastClientConnected(bot), noop);
-    bot.on("online", onOnline);
-    bot.on("online", () => bot.readStatus().then(noop, noop));
-    bot.on("offline", onOffline);
-    bot.on("sent", onSent(bot.client));
-    bot.on("logs", onLogs(dispatch, getState));
-    bot.on("status", onStatus(dispatch, getState));
-    bot.on("malformed", onMalformed);
-    bot.client.on("message", autoSync(dispatch, getState));
-    bot.client.on("reconnect", onReconnect);
+    if (bot.client) {
+      startPinging(bot);
+      readStatus().then(changeLastClientConnected(bot), noop);
+      bot.on("online", onOnline);
+      bot.on("online", () => bot.readStatus().then(noop, noop));
+      bot.on("offline", onOffline);
+      bot.on("sent", onSent(bot.client));
+      bot.on("logs", onLogs(dispatch, getState));
+      bot.on("status", onStatus(dispatch, getState));
+      bot.on("malformed", onMalformed);
+      bot.client.on("message", autoSync(dispatch, getState));
+      bot.client.on("reconnect", onReconnect);
+    }
   };
 
 /** Connect to MQTT and attach all relevant event handlers. */

@@ -2266,12 +2266,11 @@ farmbot-toastr@^1.0.0, farmbot-toastr@^1.0.3:
     farmbot-toastr "^1.0.0"
     typescript "^2.3.4"
 
-farmbot@5.4.0:
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/farmbot/-/farmbot-5.4.0.tgz#9172db92141e4de3c213a0357f04c2dcc01276c9"
+farmbot@6.0.0-rc2:
+  version "6.0.0-rc2"
+  resolved "https://registry.yarnpkg.com/farmbot/-/farmbot-6.0.0-rc2.tgz#614e418de2264d8366ef1e8fd83121fc18f40356"
   dependencies:
     mqtt "2.15.0"
-    typescript "^2.4.2"
 
 fast-deep-equal@^1.0.0:
   version "1.0.0"
@@ -6823,7 +6822,7 @@ typescript@2.7.2:
   version "2.7.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.2.tgz#2d615a1ef4aee4f574425cdff7026edf81919836"
 
-typescript@^2.0.9, typescript@^2.3.4, typescript@^2.4.2:
+typescript@^2.0.9, typescript@^2.3.4:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.2.tgz#f8395f85d459276067c988aa41837a8f82870844"
 
@@ -7478,6 +7477,6 @@ yargs@~3.10.0:
     decamelize "^1.0.0"
     window-size "0.1.0"
 
-yarn@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.5.1.tgz#e8680360e832ac89521eb80dad3a7bc27a40bab4"
+yarn@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.6.0.tgz#9cec6f7986dc237d39ec705ce74d95155fe55d4b"

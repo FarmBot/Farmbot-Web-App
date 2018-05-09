@@ -30,7 +30,7 @@ module CeleryScript
       #       version is never user definable!
       sequence_hash[:args] = \
         Sequence::DEFAULT_ARGS.merge(sequence_hash[:args] || {})
-      # See comment above ^
+      # See comment above ^ TODO: Investigate removal now that EdgeNodes exist.
     end
 
     def execute

@@ -5,13 +5,18 @@ describe User do
     end
   end
 
+  around(:each) do |example|
+    original = User::SKIP_EMAIL_VALIDATION
+    example.run
+    const_reassign(User, :SKIP_EMAIL_VALIDATION, original)
+  end
+
   describe 'SKIP_EMAIL_VALIDATION' do
     let (:user) { FactoryBot.create(:user, confirmed_at: nil) }
 
     it 'considers al users verified when set to `true`' do
       const_reassign(User, :SKIP_EMAIL_VALIDATION, true)
       expect(user.verified?).to be(true)
-      const_reassign(User, :SKIP_EMAIL_VALIDATION, false)
     end
 
     it 'does not skip when false' do

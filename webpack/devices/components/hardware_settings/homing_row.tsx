@@ -1,18 +1,20 @@
 import * as React from "react";
 import { t } from "i18next";
-import { getDevice } from "../../../device";
-import { Axis } from "../../interfaces";
 import { HomingRowProps } from "../interfaces";
-import { Farmbot } from "farmbot/dist";
 import { LockableButton } from "../lockable_button";
 import { axisTrackingStatus } from "../axis_tracking_status";
 import { ToolTips } from "../../../constants";
 import { SpacePanelToolTip } from "../space_panel_tool_tip";
 import { Row, Col } from "../../../ui/index";
+import { CONFIG_DEFAULTS } from "farmbot/dist/config";
+import { commandErr } from "../../actions";
+import { Axis } from "../../interfaces";
+import { getDevice } from "../../../device";
 
-const speed = Farmbot.defaults.speed;
-const findHome =
-  (axis: Axis) => getDevice().findHome({ speed, axis }).catch(() => { });
+const speed = CONFIG_DEFAULTS.speed;
+const findHome = (axis: Axis) => getDevice()
+  .findHome({ speed, axis })
+  .catch(commandErr("'Find Home' request"));
 
 export function HomingRow(props: HomingRowProps) {
   const { hardware, botDisconnected } = props;

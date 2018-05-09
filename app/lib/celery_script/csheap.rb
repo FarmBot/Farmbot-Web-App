@@ -2,7 +2,11 @@
 # nodes into the Flat IR form.
 # This data structure is useful because it addresses each node in the
 # CeleryScript tree via a unique numerical index, rather than using mutable
-# references.
+# references. This is very important when:
+#   * You are using a (functional) language that does not like mutable refs
+#   * You are storing data in a database that does not like
+#     trees (SQL, not Mongo)
+#   * You need to create "traces" of where you are in a sequence (using numbers)
 # MORE INFO: https://github.com/FarmBot-Labs/Celery-Slicer
 module CeleryScript
   # Supporting class for CSHeap (below this class)

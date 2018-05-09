@@ -212,6 +212,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     photo_filter_end: "2018-01-22T15:32:41.970Z",
     discard_unsaved: false,
     xy_swap: false,
+    home_button_homing: false,
   });
 }
 

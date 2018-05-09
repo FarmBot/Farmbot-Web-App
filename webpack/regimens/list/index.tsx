@@ -4,10 +4,8 @@ import { RegimenListItem } from "./regimen_list_item";
 import { AddRegimen } from "./add_button";
 import { Row, Col, ToolTip } from "../../ui/index";
 import { RegimensListProps, RegimensListState } from "../interfaces";
-import { sortResourcesById, urlFriendly, lastUrlChunk } from "../../util";
+import { sortResourcesById } from "../../util";
 import { ToolTips } from "../../constants";
-import { push } from "../../history";
-import { selectRegimen } from "../actions";
 
 export class RegimensList extends
   React.Component<RegimensListProps, RegimensListState> {
@@ -15,20 +13,6 @@ export class RegimensList extends
   state: RegimensListState = {
     searchTerm: ""
   };
-
-  componentDidMount() {
-    const { dispatch, regimen, regimens } = this.props;
-
-    regimen && urlFriendly(regimen.body.name) &&
-      push("/app/regimens/" + urlFriendly(regimen.body.name));
-
-    regimens.map(reg => {
-      if (lastUrlChunk() === urlFriendly(reg.body.name)) {
-        // TODO: Hack :( Can't seem to figure out why this won't work...
-        setTimeout(() => dispatch(selectRegimen(reg)), 0);
-      }
-    });
-  }
 
   rows = () => {
     const searchTerm = this.state.searchTerm.toLowerCase();

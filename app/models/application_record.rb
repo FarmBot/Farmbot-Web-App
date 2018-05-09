@@ -37,16 +37,15 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def body_as_json # REMEMBER: Subclasses might override this! - RC
-    if(gone?)
-      return nil
-    else
-      serializer = ActiveModel::Serializer.serializer_for(self)
-      return (serializer ? serializer.new(self) : self).as_json
-    end
+    gone? ? nil : force_serialization
   end
 
+  def force_serialization
+    serializer = ActiveModel::Serializer.serializer_for(self)
+    return (serializer ? serializer.new(self) : self).as_json
+  end
   def broadcast_payload
-    { args: { label: Transport.current_request_id }, body: body_as_json }.to_json
+    { args: { label: Transport.current.current_request_id }, body: body_as_json }.to_json
   end
 
   # Overridable

@@ -1,4 +1,8 @@
 module Mutations
+  # The "mutations" gem has a concept called "filters". They allow for creation
+  # of custom validation logic.
+  # This particular one is for validating the shape of data that is stored in
+  # an HStore column.
   class HstoreFilter < AdditionalFilter
     # At a minimum, expect the input to respond to these methods.
     HASHY_METHODS = [:[], :[]=, :map]
