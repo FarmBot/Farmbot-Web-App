@@ -15,11 +15,11 @@ class SessionToken < AbstractJwtToken
   VHOST           = ENV.fetch("MQTT_VHOST") { "/" }
   BETA_OS_URL     = ENV["BETA_OTA_URL"] || DEFAULT_BETA_URL
   def self.issue_to(user,
-                    iat: Time.now.to_i,
-                    exp: EXPIRY.from_now.to_i,
-                    iss: $API_URL,
-                    aud: AbstractJwtToken::UNKNOWN_AUD,
-                    fbos_version:) # Gem::Version
+                    iat:          Time.now.to_i,
+                    exp:          EXPIRY.from_now.to_i,
+                    iss:          $API_URL,
+                    aud:          AbstractJwtToken::UNKNOWN_AUD,
+                    fbos_version: nil) # Gem::Version
 
     unless user.verified?
       Rollbar.info("Verification Error", email: user.email)
