@@ -165,12 +165,10 @@ private
     EXPECTED_VER = Gem::Version::new GlobalConfig.dump["MINIMUM_FBOS_VERSION"]
 
     # Try to extract FarmBot OS version from user agent.
-    # If none found, return lowest allowable version + 1 "tiny" bump to prevent
-    # lockouts.
     def fbos_version
       when_farmbot_os do
-        Gem::Version::new(pretty_ua.upcase.split("/").last.split(" ").first)
-      end || CalculateUpgrade::NULL
+        Gem::Version::new(pretty_ua.upcase.split("/").last.split(" ").first) || CalculateUpgrade::NULL
+      end || CalculateUpgrade::NOT_FBOS
     end
 
     # This is how we lock old versions of FBOS out of the API:
@@ -183,7 +181,7 @@ private
     # Format the user agent header in a way that is easier for us to parse.
     def pretty_ua
       # "FARMBOTOS/3.1.0 (RPI3) RPI3 ()"
-      (request.user_agent || "").upcase
+      (request.user_agent || "FARMBOTOS/0.0.0 (RPI3) RPI3 ()").upcase
     end
 
     # Conditionally execute a block when the request was made by a FarmBot

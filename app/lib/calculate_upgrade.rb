@@ -1,5 +1,6 @@
 class CalculateUpgrade < Mutations::Command
     NULL          = Gem::Version.new("0.0.0")
+    NOT_FBOS      = Gem::Version.new("999.999.999")
     MEDIUM_OLDISH = Gem::Version.new("5.0.9")
     LEGACY_CUTOFF = Gem::Version.new("5.0.6")
 
