@@ -17,11 +17,12 @@ class CalculateUpgrade < Mutations::Command
     # Custom URL, or fallback to default if no custom URL is set.
     OS_RELEASE    = ENV.fetch("OS_UPDATE_SERVER") { DEFAULT_OS }
 
-  required do
+  optional do
     model :version, class: Gem::Version
   end
 
   def execute
+    return OLD_OS_URL if version.nil?
     return OLD_OS_URL if version <= LEGACY_CUTOFF
     return MID_OS_URL if version <= MEDIUM_OLDISH
     return OS_RELEASE

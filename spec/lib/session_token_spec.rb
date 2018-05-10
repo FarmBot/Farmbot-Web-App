@@ -50,6 +50,7 @@ describe SessionToken do
     expect(test_case["5.0.8"]).to eq(CalculateUpgrade::MID_OS_URL)
     expect(test_case["5.0.9"]).to eq(CalculateUpgrade::MID_OS_URL)
     expect(test_case["6.0.1"]).to eq(CalculateUpgrade::OS_RELEASE)
+    expect(test_case[nil]).to     eq(CalculateUpgrade::OLD_OS_URL)
   end
 
   it "doesn't honor expired tokens" do
