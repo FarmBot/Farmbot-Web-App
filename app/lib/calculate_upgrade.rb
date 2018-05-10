@@ -1,9 +1,10 @@
 class CalculateUpgrade < Mutations::Command
+    NULL          = Gem::Version::new("0.0.0")
     MEDIUM_OLDISH = Gem::Version.new("5.0.9")
     LEGACY_CUTOFF = Gem::Version.new("5.0.6")
 
     # For extremely old versions:
-    OLD_OS_URL    = "https://api.github.com/repos/farmbot/farmbot_os"+
+    OLD_OS_URL    = "https://api.github.com/repos/farmbot/farmbot_os" +
                     "/releases/8772352"
 
     # For versions that are slightly out of date:
