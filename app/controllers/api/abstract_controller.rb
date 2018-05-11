@@ -178,8 +178,8 @@ private
 
       # Attempt 2:
       #   If the user agent was missing, we would have returned by now.
-      #   If the UA includes FARMBOT_UA_STRING at this point, it's safe to
-      #   assume we have a have a non-legacy FBOS client.
+      #   If the UA includes FARMBOT_UA_STRING at this point, we can be certain
+      #   we have a have a non-legacy FBOS client.
       return Gem::Version::new(ua[10, 5]) if ua.include?(FARMBOT_UA_STRING)
 
       # Attempt 3:
@@ -214,6 +214,7 @@ private
         if bot
           v                = fbos_version
           bot.last_saw_api = Time.now
+          # Do _not_ set the FBOS version to 0.0.0 if the UA header is missing.
           bot.fbos_version = v.to_s if v != CalculateUpgrade::NULL
           bot.save!
         end
