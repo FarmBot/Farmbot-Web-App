@@ -169,7 +169,7 @@ private
 
     # Try to extract FarmBot OS version from user agent.
     def fbos_version
-      ua = (request.user_agent || NO_UA_FOUND).upcase
+      ua = pretty_ua
 
       # Attempt 1:
       #   The device is using an HTTP client that does not provide a user-agent.
