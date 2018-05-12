@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180508141310) do
+ActiveRecord::Schema.define(version: 20180502050250) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -301,6 +301,7 @@ ActiveRecord::Schema.define(version: 20180508141310) do
     t.datetime "updated_at", null: false
     t.string "name", default: "untitled", null: false
     t.string "pointer_type", limit: 280, null: false
+    t.datetime "archived_at"
     t.datetime "planted_at"
     t.string "openfarm_slug", limit: 280, default: "50", null: false
     t.string "plant_stage", limit: 10, default: "planned"
