@@ -170,7 +170,7 @@ private
     def fbos_version
       when_farmbot_os do
         Gem::Version::new(pretty_ua.upcase.split("/").last.split(" ").first)
-      end || EXPECTED_VER.bump
+      end || CalculateUpgrade::NULL
     end
 
     # This is how we lock old versions of FBOS out of the API:
