@@ -53,10 +53,10 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
     Axios
       .patch(API.current.usersPath, this.state.form)
       .then(() => {
-        success(t("Your password is changed."),t("Success"));
+        success(t("Your password is changed."), t("Success"));
         this.clearForm();
       }, (e) => {
-        error(e ? prettyPrintApiErrors(e) : t("Password change failed."),t("Error"));
+        error(e ? prettyPrintApiErrors(e) : t("Password change failed."), t("Error"));
         this.clearForm();
       });
 
@@ -64,7 +64,7 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
     const numUniqueValues = uniq(Object.values(this.state.form)).length;
     switch (numUniqueValues) {
       case 1:
-        error(t("Provided new and old passwords match. Password not changed."),t("Error"));
+        error(t("Provided new and old passwords match. Password not changed."), t("Error"));
         this.clearForm();
         break;
       case 2:
@@ -75,7 +75,7 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
         this.clearForm();
         break;
       case 3:
-        error(t("New password and confirmation do not match."),t("Error"));
+        error(t("New password and confirmation do not match."), t("Error"));
         this.clearForm();
         break;
       default:
