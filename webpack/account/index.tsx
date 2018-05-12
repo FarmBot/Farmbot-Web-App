@@ -55,7 +55,7 @@ export class Account extends React.Component<Props, State> {
   doSave = () => {
     const conf = this.state.warnThem ?
       t("Please check your email to confirm email address changes") : "Saved";
-    success(t(conf));
+    success(t(conf),t("Success"));
     this.setState({ warnThem: false });
   }
   onSave = () => this

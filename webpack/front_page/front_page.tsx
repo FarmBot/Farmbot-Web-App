@@ -96,7 +96,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     };
     axios.post(API.current.usersPath, form).then(() => {
       const m = "Almost done! Check your email for the verification link.";
-      success(t(m));
+      success(t(m),t("Success"));
       this.setState({ registrationSent: true });
     }).catch(error => {
       log(prettyPrintApiErrors(error));
