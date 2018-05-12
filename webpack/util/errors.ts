@@ -15,7 +15,7 @@ const mapper = (v: string, k: string) => {
   const reason = _.capitalize(("" + k).split("_").join(" "));
   const explanation = v.toString();
 
-  return `${reason}: ${explanation}`;
+  return t(`${reason}: ${explanation}`);
 };
 
 /** Concats and capitalizes all of the error key/value
