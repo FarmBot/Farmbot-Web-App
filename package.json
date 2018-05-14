@@ -61,7 +61,7 @@
     "imports-loader": "0.8.0",
     "jest": "^21.2.1",
     "json-loader": "0.5.7",
-    "lodash": "^4.17.4",
+    "lodash": "4.17.10",
     "markdown-it": "^8.4.0",
     "markdown-it-emoji": "^1.4.0",
     "moment": "^2.21.0",
