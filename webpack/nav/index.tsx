@@ -15,7 +15,7 @@ import {
   Popover,
   Position,
   PopoverInteractionKind
-} from "@blueprintjs/core/dist";
+} from "@blueprintjs/core";
 import { ErrorBoundary } from "../error_boundary";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
@@ -82,7 +82,6 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                   </div>
                   <div className="nav-right">
                     <Popover
-                      inline
                       interactionKind={PopoverInteractionKind.HOVER}
                       target={
                         <div className="nav-name"

@@ -16,20 +16,7 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-"@blueprintjs/core@1.36.1", "@blueprintjs/core@^1.36.1":
-  version "1.36.1"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.36.1.tgz#44260b55b3f8a5637bb9d10a01092aae69717d0a"
-  dependencies:
-    "@types/dom4" "^1.5.20"
-    "@types/tether" "^1.1.27"
-    classnames "^2.2"
-    dom4 "^1.8"
-    normalize.css "4.1.1"
-    pure-render-decorator "^1.1"
-    tether "^1.4"
-    tslib "^1.5.0"
-
-"@blueprintjs/core@^2.3.1":
+"@blueprintjs/core@2.3.1", "@blueprintjs/core@^2.3.1":
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-2.3.1.tgz#c998f8d22b02bfc9990b66b201f1ea095fb15450"
   dependencies:
@@ -42,15 +29,14 @@
     react-popper "^0.8.2"
     tslib "^1.9.0"
 
-"@blueprintjs/datetime@1.25.5":
-  version "1.25.5"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/datetime/-/datetime-1.25.5.tgz#d0ea07b529395a129543775da7eb714e930dcdae"
+"@blueprintjs/datetime@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/datetime/-/datetime-2.0.3.tgz#7fc561231a66d7f6e4de4693c08eb22cf611eefc"
   dependencies:
-    "@blueprintjs/core" "^1.36.1"
+    "@blueprintjs/core" "^2.3.1"
     classnames "^2.2"
-    moment "^2.14.1"
-    react-day-picker "^5.3.0"
-    tslib "^1.5.0"
+    react-day-picker "^7.0.7"
+    tslib "^1.9.0"
 
 "@blueprintjs/icons@^2.2.1":
   version "2.2.1"
@@ -102,10 +88,6 @@
 "@types/cheerio@*":
   version "0.22.7"
   resolved "https://registry.yarnpkg.com/@types/cheerio/-/cheerio-0.22.7.tgz#4a92eafedfb2b9f4437d3a4410006d81114c66ce"
-
-"@types/dom4@^1.5.20":
-  version "1.5.20"
-  resolved "https://registry.yarnpkg.com/@types/dom4/-/dom4-1.5.20.tgz#ccf636d3b794fe65a4191ebc7ff979a78efea6c2"
 
 "@types/dom4@^2.0.0":
   version "2.0.0"
@@ -196,10 +178,6 @@
 "@types/redux@^3.6.31":
   version "3.6.31"
   resolved "https://registry.yarnpkg.com/@types/redux/-/redux-3.6.31.tgz#40eafa7575db36b912ce0059b85de98c205b0708"
-
-"@types/tether@^1.1.27":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@types/tether/-/tether-1.4.3.tgz#bbcb46a35dfbeeaaf60d60afaba3d872b6e1ebf5"
 
 "@webassemblyjs/ast@1.4.3":
   version "1.4.3"
@@ -2575,10 +2553,6 @@ dom-serializer@0, dom-serializer@~0.1.0:
     domelementtype "~1.1.1"
     entities "~1.1.1"
 
-dom4@^1.8:
-  version "1.8.5"
-  resolved "https://registry.yarnpkg.com/dom4/-/dom4-1.8.5.tgz#4de3a2e59af45b2af8b30bc595713ecae5037037"
-
 dom4@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/dom4/-/dom4-2.0.1.tgz#03000cbea1ec33b3dde8cfd7a0cf77587d27e9d5"
@@ -3133,7 +3107,7 @@ fb-watchman@^2.0.0:
   dependencies:
     bser "^2.0.0"
 
-fbjs@^0.8.0, fbjs@^0.8.16, fbjs@^0.8.9:
+fbjs@^0.8.16, fbjs@^0.8.9:
   version "0.8.16"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.16.tgz#5e67432f550dc41b572bf55847b8aca64e5337db"
   dependencies:
@@ -5982,10 +5956,6 @@ normalize-url@^1.4.0:
     query-string "^4.1.0"
     sort-keys "^1.0.0"
 
-normalize.css@4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/normalize.css/-/normalize.css-4.1.1.tgz#4f0b1d5a235383252b04d8566b866cc5fcad9f0c"
-
 normalize.css@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/normalize.css/-/normalize.css-8.0.0.tgz#14ac5e461612538a4ce9be90a7da23f86e718493"
@@ -6777,7 +6747,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.6.0:
+prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.6.0, prop-types@^15.6.1:
   version "15.6.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
   dependencies:
@@ -6836,12 +6806,6 @@ punycode@^1.2.4, punycode@^1.4.1:
 punycode@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.0.tgz#5f863edc89b96db09074bad7947bf09056ca4e7d"
-
-pure-render-decorator@^1.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/pure-render-decorator/-/pure-render-decorator-1.2.1.tgz#568870eeca17a1cee536b4fe94a3477fcd31eeb9"
-  dependencies:
-    fbjs "^0.8.0"
 
 q@^1.1.2:
   version "1.5.1"
@@ -6974,11 +6938,11 @@ react-color@2.14.1:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
-react-day-picker@^5.3.0:
-  version "5.5.3"
-  resolved "https://registry.yarnpkg.com/react-day-picker/-/react-day-picker-5.5.3.tgz#d6a03bb0b15c6bb58629d749d8a7489cf6cfa52b"
+react-day-picker@^7.0.7:
+  version "7.1.9"
+  resolved "https://registry.yarnpkg.com/react-day-picker/-/react-day-picker-7.1.9.tgz#04b0d956faf1bf85bb6ec6f9ca7966433be13f36"
   dependencies:
-    prop-types "^15.5.10"
+    prop-types "^15.6.1"
 
 react-dom@16.3.2:
   version "16.3.2"
@@ -8182,10 +8146,6 @@ test-exclude@^4.2.1:
     read-pkg-up "^1.0.1"
     require-main-filename "^1.0.1"
 
-tether@^1.4:
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/tether/-/tether-1.4.4.tgz#9dc6eb2b3e601da2098fd264e7f7a8b264de1125"
-
 text-table@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
@@ -8350,7 +8310,7 @@ ts-loader@4.3.0:
     micromatch "^3.1.4"
     semver "^5.0.1"
 
-tslib@^1.5.0, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
+tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.1.tgz#a5d1f0532a49221c87755cfcc89ca37197242ba7"
 

@@ -38,7 +38,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
       onItemSelect={this.handleValueChange}
       popoverProps={{ popoverClassName: minimal ? Classes.MINIMAL : "" }}>
       <Button
-        rightIconName="double-caret-vertical"
+        rightIcon="double-caret-vertical"
         text={item ? item.label : t("(No selection)")} />
     </SelectComponent>;
   }
