@@ -36,18 +36,16 @@ def attempt(dep, operation, args)
   end
 end
 
+
+# BETTER IDEA:
+#   Parse `yarn outdated` list into String[] with format `name@version`
+# DEPS = `yarn outdated`
+#   .split("\n")[6..-1]
+#   .map{|y| y.split }
+#   .map{|y| "#{y[0]}@#{y[3]}"}
+#   .sort
 DEPS = [
-  "coveralls@3.0.1",
-  "css-loader@0.28.11",
-  "file-loader@1.1.11",
-  "i18next@11.3.2",
-  "imports-loader@0.8.0",
-  "lodash@4.17.10",
-  "moment@2.22.1",
-  "node-sass@4.9.0",
-  "optimize-css-assets-webpack-plugin@4.0.1",
   "react-color@2.14.1",
-  "sass-loader@7.0.1",
   "style-loader@0.21.0",
   "ts-jest@22.4.6",
   "ts-loader@4.3.0",
@@ -57,9 +55,9 @@ DEPS = [
   "@types/enzyme@3.1.10",
   "@types/lodash@4.14.108",
   "@types/node@10.0.8",
-  "@types/react@16.3.14",
   "@types/react-color@2.13.5",
   "@types/react-dom@16.0.5",
+  "@types/react@16.3.14",
 ]
 
 # puts "Making sure that type checks pass WITHOUT any upgrades"
