@@ -1,6 +1,6 @@
 'use strict';
 global.WEBPACK_ENV = "production";
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
+// var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var path = require("path");
 var genConfig = require("./webpack.base");
 var UglifyJsPlugin = require("webpack-uglify-js-plugin");
