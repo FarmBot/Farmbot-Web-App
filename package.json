@@ -56,7 +56,7 @@
     "farmbot": "6.0.0-rc2",
     "farmbot-toastr": "^1.0.3",
     "fastclick": "^1.0.6",
-    "file-loader": "1.1.7",
+    "file-loader": "1.1.11",
     "i18next": "^10.6.0",
     "imports-loader": "0.7.1",
     "jest": "^21.2.1",
