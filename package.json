@@ -73,7 +73,7 @@
     "react-addons-css-transition-group": "^15.6.2",
     "react-addons-test-utils": "^15.6.2",
     "react-color": "2.14.1",
-    "react-dom": "16.2.0",
+    "react-dom": "16.3.2",
     "react-redux": "^5.0.6",
     "react-router": "3.2",
     "react-test-renderer": "16.2.0",
