@@ -27,9 +27,9 @@
     "webpack-dev-server": "3.1.4"
   },
   "dependencies": {
-    "@blueprintjs/core": "1.35.7",
-    "@blueprintjs/datetime": "1.25.3",
-    "@blueprintjs/labs": "^0.4.0",
+    "@blueprintjs/core": "1.36.1",
+    "@blueprintjs/datetime": "1.25.5",
+    "@blueprintjs/labs": "^0.15.5",
     "@types/enzyme": "3.1.10",
     "@types/fastclick": "^1.0.28",
     "@types/history": "^4.6.1",
@@ -43,7 +43,7 @@
     "@types/react-color": "2.13.5",
     "@types/react-dom": "16.0.5",
     "@types/react-redux": "6.0.0",
-    "@types/react-router": "4.0.25",
+    "@types/react-router": "3.0.15",
     "@types/redux": "^3.6.31",
     "axios": "^0.18.0",
     "boxed_value": "^1.0.0",

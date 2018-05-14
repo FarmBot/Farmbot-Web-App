@@ -16,20 +16,7 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-"@blueprintjs/core@1.35.7":
-  version "1.35.7"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.35.7.tgz#e0e8042dd5b4d0a02cdbc65bbd1cb0b985f6bf32"
-  dependencies:
-    "@types/dom4" "^1.5.20"
-    "@types/tether" "^1.1.27"
-    classnames "^2.2"
-    dom4 "^1.8"
-    normalize.css "4.1.1"
-    pure-render-decorator "^1.1"
-    tether "^1.4"
-    tslib "^1.5.0"
-
-"@blueprintjs/core@^1.23.0", "@blueprintjs/core@^1.35.3":
+"@blueprintjs/core@1.36.1", "@blueprintjs/core@^1.36.1":
   version "1.36.1"
   resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.36.1.tgz#44260b55b3f8a5637bb9d10a01092aae69717d0a"
   dependencies:
@@ -42,24 +29,64 @@
     tether "^1.4"
     tslib "^1.5.0"
 
-"@blueprintjs/datetime@1.25.3":
-  version "1.25.3"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/datetime/-/datetime-1.25.3.tgz#ccbc775c196be39ef4be6ff36ac5e423ab5890ab"
+"@blueprintjs/core@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-2.3.1.tgz#c998f8d22b02bfc9990b66b201f1ea095fb15450"
   dependencies:
-    "@blueprintjs/core" "^1.35.3"
+    "@blueprintjs/icons" "^2.2.1"
+    "@types/dom4" "^2.0.0"
+    classnames "^2.2"
+    dom4 "^2.0.1"
+    normalize.css "^8.0.0"
+    popper.js "^1.14.1"
+    react-popper "^0.8.2"
+    tslib "^1.9.0"
+
+"@blueprintjs/datetime@1.25.5":
+  version "1.25.5"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/datetime/-/datetime-1.25.5.tgz#d0ea07b529395a129543775da7eb714e930dcdae"
+  dependencies:
+    "@blueprintjs/core" "^1.36.1"
     classnames "^2.2"
     moment "^2.14.1"
     react-day-picker "^5.3.0"
     tslib "^1.5.0"
 
-"@blueprintjs/labs@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/labs/-/labs-0.4.0.tgz#437dff2989d1f415d0bd295f6cd3e144af440138"
+"@blueprintjs/icons@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/icons/-/icons-2.2.1.tgz#1b4275fc67467218a8ffec6403c87c7af24532a5"
   dependencies:
-    "@blueprintjs/core" "^1.23.0"
     classnames "^2.2"
-    pure-render-decorator "1.2.1"
-    tslib "^1.5.0"
+    tslib "^1.9.0"
+
+"@blueprintjs/labs@^0.15.5":
+  version "0.15.5"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/labs/-/labs-0.15.5.tgz#7e804a650378c1d3e31218afa1ef2558e2d4d922"
+  dependencies:
+    "@blueprintjs/core" "^2.3.1"
+    "@blueprintjs/select" "^2.0.1"
+    "@blueprintjs/timezone" "^2.0.1"
+    classnames "^2.2"
+    tslib "^1.9.0"
+
+"@blueprintjs/select@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/select/-/select-2.0.1.tgz#4746aff7ed534113b17d0663bf548b2867dc4b2a"
+  dependencies:
+    "@blueprintjs/core" "^2.3.1"
+    classnames "^2.2"
+    tslib "^1.9.0"
+
+"@blueprintjs/timezone@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/timezone/-/timezone-2.0.1.tgz#bccf1cf0174a0e9488716047ba218f19502a4523"
+  dependencies:
+    "@blueprintjs/core" "^2.3.1"
+    "@blueprintjs/select" "^2.0.1"
+    classnames "^2.2"
+    moment "^2.14.1"
+    moment-timezone "^0.5.13"
+    tslib "^1.9.0"
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -80,6 +107,10 @@
   version "1.5.20"
   resolved "https://registry.yarnpkg.com/@types/dom4/-/dom4-1.5.20.tgz#ccf636d3b794fe65a4191ebc7ff979a78efea6c2"
 
+"@types/dom4@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/dom4/-/dom4-2.0.0.tgz#00dc42fed6b36a7a6dabb8f7a9c9e678ee644e05"
+
 "@types/enzyme@3.1.10":
   version "3.1.10"
   resolved "https://registry.yarnpkg.com/@types/enzyme/-/enzyme-3.1.10.tgz#28108a9864e65699751469551a803a35d2e26160"
@@ -91,7 +122,11 @@
   version "1.0.28"
   resolved "https://registry.yarnpkg.com/@types/fastclick/-/fastclick-1.0.28.tgz#db4b3f6f079235324b264338e229f9cdd98a6c4e"
 
-"@types/history@*", "@types/history@^4.6.1":
+"@types/history@^3":
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/@types/history/-/history-3.2.2.tgz#b6affa240cb10b5f841c6443d8a24d7f3fc8bb0c"
+
+"@types/history@^4.6.1":
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.6.2.tgz#12cfaba693ba20f114ed5765467ff25fdf67ddb0"
 
@@ -141,11 +176,11 @@
     "@types/react" "*"
     redux "^4.0.0"
 
-"@types/react-router@4.0.25":
-  version "4.0.25"
-  resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-4.0.25.tgz#1e25490780b80e0d8f96bf649379cca8638c1e5a"
+"@types/react-router@3.0.15":
+  version "3.0.15"
+  resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-3.0.15.tgz#b55b0dc5ad8f6fa66b609f0efc390b191381d082"
   dependencies:
-    "@types/history" "*"
+    "@types/history" "^3"
     "@types/react" "*"
 
 "@types/react@*", "@types/react@16.3.14":
@@ -1969,8 +2004,8 @@ commondir@^1.0.1:
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
 
 compare-versions@^3.1.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.2.0.tgz#f36f23aacc539da0e3e0f71af46ce5b953a6ae76"
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.2.1.tgz#a49eb7689d4caaf0b6db5220173fd279614000f7"
 
 component-emitter@^1.2.1:
   version "1.2.1"
@@ -2539,6 +2574,10 @@ dom-serializer@0, dom-serializer@~0.1.0:
 dom4@^1.8:
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/dom4/-/dom4-1.8.5.tgz#4de3a2e59af45b2af8b30bc595713ecae5037037"
+
+dom4@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/dom4/-/dom4-2.0.1.tgz#03000cbea1ec33b3dde8cfd7a0cf77587d27e9d5"
 
 domain-browser@^1.1.1:
   version "1.2.0"
@@ -5625,7 +5664,13 @@ mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkd
   dependencies:
     minimist "0.0.8"
 
-moment@2.22.1, moment@^2.14.1:
+moment-timezone@^0.5.13:
+  version "0.5.17"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.17.tgz#3c8fef32051d84c3af174d91dc52977dcb0ad7e5"
+  dependencies:
+    moment ">= 2.9.0"
+
+moment@2.22.1, "moment@>= 2.9.0", moment@^2.14.1:
   version "2.22.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.1.tgz#529a2e9bf973f259c9643d237fda84de3a26e8ad"
 
@@ -5936,6 +5981,10 @@ normalize-url@^1.4.0:
 normalize.css@4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/normalize.css/-/normalize.css-4.1.1.tgz#4f0b1d5a235383252b04d8566b866cc5fcad9f0c"
+
+normalize.css@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/normalize.css/-/normalize.css-8.0.0.tgz#14ac5e461612538a4ce9be90a7da23f86e718493"
 
 npm-bundled@^1.0.1:
   version "1.0.3"
@@ -6402,6 +6451,10 @@ pn@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/pn/-/pn-1.1.0.tgz#e2f4cef0e219f463c179ab37463e4e1ecdccbafb"
 
+popper.js@^1.12.9, popper.js@^1.14.1:
+  version "1.14.3"
+  resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.14.3.tgz#1438f98d046acf7b4d78cd502bf418ac64d4f095"
+
 portfinder@^1.0.9:
   version "1.0.13"
   resolved "https://registry.yarnpkg.com/portfinder/-/portfinder-1.0.13.tgz#bb32ecd87c27104ae6ee44b5a3ccbf0ebb1aede9"
@@ -6780,7 +6833,7 @@ punycode@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.0.tgz#5f863edc89b96db09074bad7947bf09056ca4e7d"
 
-pure-render-decorator@1.2.1, pure-render-decorator@^1.1:
+pure-render-decorator@^1.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/pure-render-decorator/-/pure-render-decorator-1.2.1.tgz#568870eeca17a1cee536b4fe94a3477fcd31eeb9"
   dependencies:
@@ -6935,6 +6988,13 @@ react-dom@16.3.2:
 react-is@^16.3.2:
   version "16.3.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.3.2.tgz#f4d3d0e2f5fbb6ac46450641eb2e25bf05d36b22"
+
+react-popper@^0.8.2:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/react-popper/-/react-popper-0.8.3.tgz#0f73333137c9fb0af6ec4074d2d0585a0a0461e1"
+  dependencies:
+    popper.js "^1.12.9"
+    prop-types "^15.6.0"
 
 react-reconciler@^0.7.0:
   version "0.7.0"
@@ -8286,7 +8346,7 @@ ts-loader@4.3.0:
     micromatch "^3.1.4"
     semver "^5.0.1"
 
-tslib@^1.5.0, tslib@^1.8.0, tslib@^1.8.1:
+tslib@^1.5.0, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.1.tgz#a5d1f0532a49221c87755cfcc89ca37197242ba7"
 
