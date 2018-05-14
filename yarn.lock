@@ -109,9 +109,9 @@
   version "21.1.8"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-21.1.8.tgz#d497213725684f1e5a37900b17a47c9c018f1a97"
 
-"@types/lodash@^4.14.105":
-  version "4.14.105"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.105.tgz#9fcc4627a1f98f8f8fce79ddb2bff4afd97e959b"
+"@types/lodash@4.14.108":
+  version "4.14.108"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.108.tgz#02656af3add2e5b3174f830862c47421c00ef817"
 
 "@types/markdown-it@^0.0.4":
   version "0.0.4"
