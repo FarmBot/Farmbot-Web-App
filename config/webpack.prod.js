@@ -8,6 +8,7 @@ var OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 var webpack = require("webpack");
 
 var conf = genConfig();
+conf.mode = "production";
 
 conf.output = {
   path: path.join(__dirname, '..', 'public', 'webpack'),
@@ -17,11 +18,11 @@ conf.output = {
 };
 
 [
-  new ExtractTextPlugin({
-    filename: "dist/[name].[chunkhash].css",
-    disable: false,
-    allChunks: true
-  }),
+  // new ExtractTextPlugin({
+  //   filename: "dist/[name].[chunkhash].css",
+  //   disable: false,
+  //   allChunks: true
+  // }),
   new OptimizeCssAssetsPlugin({
     assetNameRegExp: /\.css$/g,
     cssProcessor: require("cssnano"),
