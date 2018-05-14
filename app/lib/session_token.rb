@@ -39,6 +39,7 @@ class SessionToken < AbstractJwtToken
                 vhost:                 VHOST,
                 mqtt_ws:               MQTT_WS,
                 os_update_server:      url,
+                fw_update_server:      "DEPRECATED",
                 interim_email:         user.email, # Dont use this for anything ever -RC
                 beta_os_update_server: BETA_OS_URL }])
   end

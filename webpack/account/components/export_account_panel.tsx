@@ -5,7 +5,7 @@ import { t } from "i18next";
 
 export function ExportAccountPanel(props: { onClick: () => void }) {
   return <Widget>
-    <WidgetHeader title="Export Account Data" />
+    <WidgetHeader title={t("Export Account Data")} />
     <WidgetBody>
       <div>
         {t(Content.EXPORT_DATA_DESC)}

@@ -75,3 +75,19 @@ rails api:start
 
 # Run MQTT (new tab, SAME DIRECTORY)
 rails mqtt:start
+
+# NEXT STEP IS OPTIONAL. DO THIS IF YOU WANT TO USE PORT 80 INSTEAD OF 3000.
+
+# This is a quick alternative to running rails as root / sudo.
+
+# Step 1: Install `socat`
+sudo apt-get install socat
+# Step 2: Forward port 80 to port 3000
+sudo socat TCP-LISTEN:80,fork TCP:localhost:3000
+
+# Other options for routing traffic to port 80 include:
+#  * Using `iptables`
+#  * Configuring NGinx as a reverse proxy.
+# The options above are intended for advanced users.
+# Our ability to provide support to individual users for these use cases is
+# limited
