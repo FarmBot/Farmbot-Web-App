@@ -34,7 +34,7 @@
     "@types/fastclick": "^1.0.28",
     "@types/history": "^4.6.1",
     "@types/i18next": "^8.4.2",
-    "@types/jest": "^21.1.4",
+    "@types/jest": "22.2.3",
     "@types/lodash": "4.14.108",
     "@types/markdown-it": "^0.0.4",
     "@types/moxios": "^0.4.5",
