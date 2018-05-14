@@ -131,9 +131,9 @@
   version "10.0.8"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.0.8.tgz#37b4d91d4e958e4c2ba0be2b86e7ed4ff19b0858"
 
-"@types/react-color@^2.13.4":
-  version "2.13.4"
-  resolved "https://registry.yarnpkg.com/@types/react-color/-/react-color-2.13.4.tgz#0b89850fc5d2eee42e40910c48cf21215dec8f09"
+"@types/react-color@2.13.5":
+  version "2.13.5"
+  resolved "https://registry.yarnpkg.com/@types/react-color/-/react-color-2.13.5.tgz#38a5bcbb00c5de85d696a3f5adcd619256a57083"
   dependencies:
     "@types/react" "*"
 
