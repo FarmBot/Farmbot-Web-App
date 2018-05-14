@@ -83,7 +83,7 @@
     "sass-loader": "6.0.6",
     "stats-webpack-plugin": "0.6.2",
     "style-loader": "0.21.0",
-    "ts-jest": "^22.4.2",
+    "ts-jest": "22.4.6",
     "ts-lint": "^4.5.1",
     "ts-loader": "3.5.0",
     "tslint": "^5.8.0",
