@@ -8,6 +8,7 @@ var OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 var webpack = require("webpack");
 
 var conf = genConfig();
+conf.mode = "production";
 
 conf.output = {
   path: path.join(__dirname, '..', 'public', 'webpack'),
