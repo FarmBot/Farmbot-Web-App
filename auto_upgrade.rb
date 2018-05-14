@@ -37,43 +37,31 @@ def attempt(dep, operation, args)
 end
 
 
-# BETTER IDEA:
 #   Parse `yarn outdated` list into String[] with format `name@version`
-# DEPS = `yarn outdated`
-#   .split("\n")[6..-1]
-#   .map{|y| y.split }
-#   .map{|y| "#{y[0]}@#{y[3]}"}
-#   .sort
-DEPS = [
-  "tslint@5.10.0",
-  "typescript@2.8.3",
-  "url-loader@1.0.1",
-  "@types/enzyme@3.1.10",
-  "@types/lodash@4.14.108",
-  "@types/node@10.0.8",
-  "@types/react-color@2.13.5",
-  "@types/react-dom@16.0.5",
-  "@types/react@16.3.14",
-]
+DEPS = `yarn outdated`
+  .split("\n")[6..-1]
+  .map{|y| y.split }
+  .map{|y| "#{y[0]}@#{y[3]}"}
+  .sort
 
 # puts "Making sure that type checks pass WITHOUT any upgrades"
-# tc_ok   = type_check
+tc_ok   = type_check
 
 # puts "Making sure tests pass WITHOUT any upgrades"
-# test_ok = run_tests
+test_ok = run_tests
 
 # puts "Making sure build works WITHOUT any upgrades"
-# build_ok = run_build
+build_ok = run_build
 
-# proceed = tc_ok && test_ok && build_ok
+proceed = tc_ok && test_ok && build_ok
 
-# if (proceed)
-#   puts "LOOKS GOOD!"
-#   commit_upgrade("START")
-# else
-#   puts "Make sure types and tests pass before upgrading"
-#   exit
-# end
+if (proceed)
+  puts "LOOKS GOOD!"
+  commit_upgrade("START")
+else
+  puts "Make sure types and tests pass before upgrading"
+  exit
+end
 FAILED = []
 puts "Start upgrade..."
 DEPS.each do |dep|
