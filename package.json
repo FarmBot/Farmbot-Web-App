@@ -24,7 +24,7 @@
   "author": "farmbot.io",
   "license": "MIT",
   "optionalDependencies": {
-    "webpack-dev-server": "^2.9.3"
+    "webpack-dev-server": "3.1.4"
   },
   "dependencies": {
     "@blueprintjs/core": "1.35.7",
