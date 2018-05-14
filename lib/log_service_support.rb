@@ -1,4 +1,5 @@
 class LogService
+
   # Determines if the log should be discarded (Eg: "fun"/"debug" logs do not
   # go in the DB)
   def self.save?(log_as_ruby_hash)
