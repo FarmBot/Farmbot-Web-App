@@ -18,11 +18,11 @@ conf.output = {
 };
 
 [
-  new ExtractTextPlugin({
-    filename: "dist/[name].[chunkhash].css",
-    disable: false,
-    allChunks: true
-  }),
+  // new ExtractTextPlugin({
+  //   filename: "dist/[name].[chunkhash].css",
+  //   disable: false,
+  //   allChunks: true
+  // }),
   new OptimizeCssAssetsPlugin({
     assetNameRegExp: /\.css$/g,
     cssProcessor: require("cssnano"),
