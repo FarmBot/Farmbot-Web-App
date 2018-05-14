@@ -45,10 +45,6 @@ end
 #   .map{|y| "#{y[0]}@#{y[3]}"}
 #   .sort
 DEPS = [
-  "react-color@2.14.1",
-  "style-loader@0.21.0",
-  "ts-jest@22.4.6",
-  "ts-loader@4.3.0",
   "tslint@5.10.0",
   "typescript@2.8.3",
   "url-loader@1.0.1",
@@ -87,7 +83,7 @@ DEPS.each do |dep|
     attempt(dep, :run_tests,      [])
     attempt(dep, :run_build,      [])
     attempt(dep, :commit_upgrade, [dep])
-  rescue => UpgradeFailure
+  rescue UpgradeFailure => e
     FAILED.push(dep)
     attempt(dep, :stash,          [dep])
   end
