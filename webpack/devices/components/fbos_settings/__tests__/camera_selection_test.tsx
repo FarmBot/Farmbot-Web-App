@@ -27,14 +27,14 @@ describe("<CameraSelection/>", () => {
 
   it("doesn't render camera", () => {
     const cameraSelection = mount(<CameraSelection {...fakeProps()} />);
-    expect(cameraSelection.find("button").text()).toEqual("USB Camera");
+    expect(cameraSelection.find("button").text()).toContain("USB Camera");
   });
 
   it("renders camera", () => {
     const p = fakeProps();
     p.env = { "camera": "\"RPI\"" };
     const cameraSelection = mount(<CameraSelection {...p} />);
-    expect(cameraSelection.find("button").text()).toEqual("Raspberry Pi Camera");
+    expect(cameraSelection.find("button").text()).toContain("Raspberry Pi Camera");
   });
 
   it("changes camera", () => {
