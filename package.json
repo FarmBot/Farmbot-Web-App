@@ -75,6 +75,7 @@
     "react-redux": "^5.0.6",
     "react-router": "^3",
     "react-test-renderer": "16.3.2",
+    "react-transition-group": "^2.3.1",
     "redux": "^3.7.2",
     "redux-immutable-state-invariant": "^2.1.0",
     "redux-thunk": "^2.0.1",
