@@ -25,7 +25,9 @@ export function PlantLayer(props: PlantLayerProps) {
     .filter(c => !!c.body.spread)
     .map(c => cropSpreadDict[c.body.slug] = c.body.spread);
 
-  const maybeNoPointer = () => {
+  // TODO: This has a high similarity to code in `tool_slot_layers.tsx`. DRY up.
+  // -RC 14 May 18
+  const maybeNoPointer = (): React.SVGProps<SVGGElement>["style"] => {
     switch (getMode()) {
       case Mode.boxSelect:
       case Mode.clickToAdd:

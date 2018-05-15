@@ -23,7 +23,7 @@ export function ToolSlotLayer(props: ToolSlotLayerProps) {
   const { slots, visible, mapTransformProps } = props;
   const cursor = canClickTool ? "pointer" : "default";
 
-  const maybeNoPointer = () => {
+  const maybeNoPointer = (): React.SVGProps<SVGGElement>["style"] => {
     switch (getMode()) {
       case Mode.boxSelect:
       case Mode.clickToAdd:

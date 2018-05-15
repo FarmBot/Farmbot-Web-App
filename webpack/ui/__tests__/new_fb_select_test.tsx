@@ -14,14 +14,14 @@ describe("<FBSelect />", () => {
   it("renders", () => {
     const p = fakeProps();
     const wrapper = mount(<FBSelect {...p} />);
-    expect(wrapper.text()).toEqual("None");
+    expect(wrapper.text()).toContain("None");
   });
 
   it("renders item", () => {
     const p = fakeProps();
     p.selectedItem = { value: "item", label: "Item" };
     const wrapper = mount(<FBSelect {...p} />);
-    expect(wrapper.text()).toEqual("Item");
+    expect(wrapper.text()).toContain("Item");
   });
 
   it("allows empty", () => {
@@ -36,7 +36,7 @@ describe("<FBSelect />", () => {
   });
 
   it("doesn't allow empty", () => {
-    const wrapper = shallow(<FBSelect {...fakeProps() } />);
+    const wrapper = shallow(<FBSelect {...fakeProps()} />);
     // tslint:disable-next-line:no-any
     expect((wrapper.find("FilterSearch").props() as any).items)
       .toEqual([{ label: "Item", value: "item" }]);

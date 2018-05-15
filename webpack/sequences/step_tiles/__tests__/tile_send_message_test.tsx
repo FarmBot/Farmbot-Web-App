@@ -41,7 +41,7 @@ describe("<TileSendMessage/>", () => {
     expect(inputs.first().props().placeholder).toEqual("Send Message");
     expect(labels.at(0).text()).toEqual("Message");
     expect(inputs.at(1).props().value).toEqual("send this message");
-    expect(buttons.at(0).text()).toEqual("Info");
+    expect(buttons.at(0).text()).toContain("Info");
     expect(labels.at(1).text()).toEqual("Ticker Notification");
     expect(inputs.at(2).props().checked).toBeTruthy();
     expect(inputs.at(2).props().disabled).toBeTruthy();

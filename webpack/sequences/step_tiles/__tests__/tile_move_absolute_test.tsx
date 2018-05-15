@@ -61,7 +61,7 @@ describe("<TileMoveAbsolute/>", () => {
     expect(buttons.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Move Absolute");
     expect(labels.at(0).text().toLowerCase()).toEqual("import coordinates from");
-    expect(buttons.at(0).text()).toEqual("None");
+    expect(buttons.at(0).text()).toContain("None");
     checkField(block, 1, "x (mm)", "1");
     checkField(block, 2, "y (mm)", "2");
     checkField(block, 3, "z (mm)", "3");
