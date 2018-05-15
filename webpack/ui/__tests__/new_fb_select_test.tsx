@@ -14,14 +14,14 @@ describe("<FBSelect />", () => {
   it("renders", () => {
     const p = fakeProps();
     const wrapper = mount(<FBSelect {...p} />);
-    expect(wrapper.text()).toContain("None");
+    expect(wrapper.text()).toEqual("None");
   });
 
   it("renders item", () => {
     const p = fakeProps();
     p.selectedItem = { value: "item", label: "Item" };
     const wrapper = mount(<FBSelect {...p} />);
-    expect(wrapper.text()).toContain("Item");
+    expect(wrapper.text()).toEqual("Item");
   });
 
   it("allows empty", () => {

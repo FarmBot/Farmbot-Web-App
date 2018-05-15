@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Button, Classes, MenuItem } from "@blueprintjs/core";
+import { Button, Classes, MenuItem, Alignment } from "@blueprintjs/core";
 import { Select, ItemRenderer } from "@blueprintjs/select";
 import { DropDownItem } from "./fb_select";
 
@@ -38,8 +38,9 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
       onItemSelect={this.handleValueChange}
       popoverProps={{ popoverClassName: minimal ? Classes.MINIMAL : "" }}>
       <Button
-        rightIcon="double-caret-vertical"
+        alignText={Alignment.LEFT}
         text={item ? item.label : t("(No selection)")} />
+      <i className="fa fa-caret-down fa-lg" />
     </SelectComponent>;
   }
 

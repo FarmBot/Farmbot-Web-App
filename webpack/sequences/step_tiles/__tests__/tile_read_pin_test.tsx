@@ -38,6 +38,6 @@ describe("<TileReadPin/>", () => {
     expect(labels.at(1).text()).toEqual("Data Label");
     expect(inputs.at(1).props().value).toEqual("pinlabel");
     expect(labels.at(2).text()).toEqual("Pin Mode");
-    expect(buttons.at(0).text()).toContain("Pin 3");
+    expect(buttons.at(0).text()).toEqual("Pin 3");
   });
 });

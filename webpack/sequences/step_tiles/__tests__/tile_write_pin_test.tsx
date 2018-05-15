@@ -37,7 +37,7 @@ describe("<TileWritePin/>", () => {
     expect(inputs.at(1).props().value).toEqual(2);
     expect(labels.at(1).text()).toEqual("Value");
     expect(labels.at(2).text()).toEqual("Pin Mode");
-    expect(buttons.at(0).text()).toContain("Pin 3");
+    expect(buttons.at(0).text()).toEqual("Pin 3");
   });
 
   it("renders inputs: Digital", () => {
@@ -54,8 +54,8 @@ describe("<TileWritePin/>", () => {
     expect(inputs.first().props().placeholder).toEqual("Write Pin");
     expect(labels.at(0).text()).toEqual("Pin");
     expect(labels.at(1).text()).toEqual("Value");
-    expect(buttons.at(0).text()).toContain("Pin 3");
+    expect(buttons.at(0).text()).toEqual("Pin 3");
     expect(labels.at(2).text()).toEqual("Pin Mode");
-    expect(buttons.at(1).text()).toContain("ON");
+    expect(buttons.at(1).text()).toEqual("ON");
   });
 });

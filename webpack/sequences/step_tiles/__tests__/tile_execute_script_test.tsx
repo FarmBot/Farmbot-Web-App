@@ -69,7 +69,7 @@ describe("<TileExecuteScript/>", () => {
     const p = fakeProps();
     p.farmwareInfo = undefined;
     const wrapper = mount(<TileExecuteScript {...p} />);
-    expect(wrapper.find("button").text()).toContain("Manual Input");
+    expect(wrapper.find("button").text()).toEqual("Manual Input");
     expect(wrapper.find("label").at(1).text()).toEqual("Manual input");
     expect(wrapper.find("input").at(1).props().value).toEqual("farmware-to-execute");
   });

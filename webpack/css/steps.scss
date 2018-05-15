@@ -32,7 +32,7 @@
   padding: .75rem 1rem;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
-  .pt-popover-target {
+  .pt-popover-wrapper {
     float: right;
     margin-top: 0.1rem;
   }
@@ -102,7 +102,7 @@
   .step-warning {
     display: inline-block;
     float: none;
-    .pt-popover-target {
+    .pt-popover-wrapper {
       float: left;
     }
   }
