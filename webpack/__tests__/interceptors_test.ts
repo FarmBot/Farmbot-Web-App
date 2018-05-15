@@ -1,15 +1,17 @@
 jest.mock("../connectivity/data_consistency", () => {
   return {
-    startTracking: jest.fn()
+    startTracking: jest.fn(),
+    outstandingRequests: { last: "abc" }
   };
 });
 
-import { responseFulfilled, isLocalRequest } from "../interceptors";
+import { responseFulfilled, isLocalRequest, requestFulfilled } from "../interceptors";
 import { AxiosResponse } from "axios";
 import { uuid } from "farmbot";
 import { startTracking } from "../connectivity/data_consistency";
 import { SafeError } from "../interceptor_support";
 import { API } from "../api";
+import { auth } from "../__test_support__/fake_state/token";
 
 interface FakeProps {
   uuid: string;
@@ -54,5 +56,21 @@ describe("isLocalRequest", () => {
 
     const api = fake("http://localhost:3000/api/tools/1") as SafeError;
     expect(isLocalRequest(api)).toBe(true);
+  });
+});
+
+describe("requestFulfilled", () => {
+  it("returns unchanged config when not an API request", () => {
+    API.setBaseUrl("http://localhost:3000");
+    const config = requestFulfilled(auth)({ url: "other" });
+    expect(config).toEqual({ url: "other" });
+  });
+
+  it("returns config with headers", () => {
+    API.setBaseUrl("http://localhost:3000");
+    const config = requestFulfilled(auth)({ url: "http://localhost:3000/api" });
+    expect(config.url).toEqual("http://localhost:3000/api");
+    expect(config.headers.Authorization).toEqual(auth.token.encoded);
+    expect(config.headers["X-Farmbot-Rpc-Id"]).toEqual("abc");
   });
 });
