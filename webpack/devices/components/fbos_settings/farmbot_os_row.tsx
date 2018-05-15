@@ -21,7 +21,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     <p><b>Environment: </b>{env}</p>
     <p><b>Commit: </b>{shortenCommit(commit)}</p>
     <p><b>Target: </b>{target}</p>
-    <p><b>Node name: </b>{last(node_name.split("@"))}</p>
+    <p><b>Node name: </b>{last((node_name || "").split("@"))}</p>
     <p><b>Firmware: </b>{firmware_version}</p>
     <p><b>Firmware commit: </b>{shortenCommit(firmware_commit)}</p>
     <fieldset>
