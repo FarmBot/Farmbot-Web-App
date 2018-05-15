@@ -45,33 +45,12 @@
     classnames "^2.2"
     tslib "^1.9.0"
 
-"@blueprintjs/labs@^0.15.5":
-  version "0.15.5"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/labs/-/labs-0.15.5.tgz#7e804a650378c1d3e31218afa1ef2558e2d4d922"
-  dependencies:
-    "@blueprintjs/core" "^2.3.1"
-    "@blueprintjs/select" "^2.0.1"
-    "@blueprintjs/timezone" "^2.0.1"
-    classnames "^2.2"
-    tslib "^1.9.0"
-
 "@blueprintjs/select@^2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@blueprintjs/select/-/select-2.0.1.tgz#4746aff7ed534113b17d0663bf548b2867dc4b2a"
   dependencies:
     "@blueprintjs/core" "^2.3.1"
     classnames "^2.2"
-    tslib "^1.9.0"
-
-"@blueprintjs/timezone@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/timezone/-/timezone-2.0.1.tgz#bccf1cf0174a0e9488716047ba218f19502a4523"
-  dependencies:
-    "@blueprintjs/core" "^2.3.1"
-    "@blueprintjs/select" "^2.0.1"
-    classnames "^2.2"
-    moment "^2.14.1"
-    moment-timezone "^0.5.13"
     tslib "^1.9.0"
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
@@ -5634,13 +5613,7 @@ mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkd
   dependencies:
     minimist "0.0.8"
 
-moment-timezone@^0.5.13:
-  version "0.5.17"
-  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.17.tgz#3c8fef32051d84c3af174d91dc52977dcb0ad7e5"
-  dependencies:
-    moment ">= 2.9.0"
-
-moment@2.22.1, "moment@>= 2.9.0", moment@^2.14.1:
+moment@2.22.1:
   version "2.22.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.1.tgz#529a2e9bf973f259c9643d237fda84de3a26e8ad"
 

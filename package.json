@@ -29,7 +29,7 @@
   "dependencies": {
     "@blueprintjs/core": "2.3.1",
     "@blueprintjs/datetime": "2.0.3",
-    "@blueprintjs/labs": "^0.15.5",
+    "@blueprintjs/select": "^2.0.1",
     "@types/enzyme": "3.1.10",
     "@types/fastclick": "^1.0.28",
     "@types/history": "^4.6.1",
