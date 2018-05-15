@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import { GardenPlant } from "../garden_plant";
 import { PlantLayerProps, CropSpreadDict } from "../interfaces";
 import { defensiveClone } from "../../../util";
-import { getMode, Mode } from "../garden_map";
+import { maybeNoPointer } from "../maybe_no_pointer";
 
 const cropSpreadDict: CropSpreadDict = {};
 
@@ -25,20 +25,6 @@ export function PlantLayer(props: PlantLayerProps) {
     .filter(c => !!c.body.spread)
     .map(c => cropSpreadDict[c.body.slug] = c.body.spread);
 
-  // TODO: This has a high similarity to code in `tool_slot_layers.tsx`. DRY up.
-  // -RC 14 May 18
-  const maybeNoPointer = (): React.SVGProps<SVGGElement>["style"] => {
-    switch (getMode()) {
-      case Mode.boxSelect:
-      case Mode.clickToAdd:
-      case Mode.moveTo:
-      case Mode.createPoint:
-        return { "pointerEvents": "none" };
-      default:
-        return {};
-    }
-  };
-
   return <g id="plant-layer">
     {visible &&
       plants
@@ -58,7 +44,7 @@ export function PlantLayer(props: PlantLayerProps) {
         })
         .map(p => {
           return <Link className="plant-link-wrapper"
-            style={maybeNoPointer()}
+            style={maybeNoPointer({})}
             to={"/app/designer/plants/" + p.plantId}
             id={p.plantId}
             onClick={_.noop}
