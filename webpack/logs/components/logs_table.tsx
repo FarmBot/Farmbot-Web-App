@@ -4,6 +4,7 @@ import { TaggedLog } from "../../resources/tagged_resources";
 import { LogsState, LogsTableProps } from "../interfaces";
 import { formatLogTime } from "../index";
 import * as _ from "lodash";
+import { Classes } from "@blueprintjs/core";
 interface LogsRowProps {
   tlog: TaggedLog;
   state: LogsState;
@@ -37,9 +38,14 @@ const LogsRow = ({ tlog, timeOffset }: LogsRowProps) => {
     </td>
   </tr>;
 };
+const LOG_TABLE_CLASS = [
+  Classes.HTML_TABLE,
+  Classes.HTML_TABLE_STRIPED,
+  "logs-table"
+].join(" ");
 
 export const LogsTable = (props: LogsTableProps) => {
-  return <table className="pt-table pt-striped logs-table">
+  return <table className={LOG_TABLE_CLASS}>
     <thead>
       <tr>
         <th><label>{t("Type")}</label></th>

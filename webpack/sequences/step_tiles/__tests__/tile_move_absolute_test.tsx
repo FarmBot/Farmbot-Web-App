@@ -52,7 +52,7 @@ describe("<TileMoveAbsolute/>", () => {
   }
 
   it("renders inputs", () => {
-    const block = mount(<TileMoveAbsolute {...fakeProps() } />);
+    const block = mount(<TileMoveAbsolute {...fakeProps()} />);
     const inputs = block.find("input");
     const labels = block.find("label");
     const buttons = block.find("button");

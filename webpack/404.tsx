@@ -2,7 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 
 // No reusability here. Why not just keep it from taking up sass?
-const STYLES = {
+const STYLES: React.CSSProperties = {
   "textAlign": "center",
   "marginTop": "5rem"
 };

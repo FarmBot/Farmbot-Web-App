@@ -12,7 +12,7 @@ const STYLE: React.CSSProperties = {
 
 export function Apology(_: {}) {
   return <div style={STYLE}>
-    <p>
+    <div>
       <h1>Page Error</h1>
       <p>
         We can't render this part of the page due to an unrecoverable error.
@@ -31,9 +31,9 @@ export function Apology(_: {}) {
           Send a report to our developer team via the
         <a href="http://forum.farmbot.org/c/software">FarmBot software
         forum</a>. Including additional information (such as steps leading up
-                        to the error) helps us identify solutions more quickly.
+                          to the error) helps us identify solutions more quickly.
         </li>
       </ol>
-    </p>
+    </div>
   </div>;
 }

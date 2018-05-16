@@ -55,7 +55,7 @@ export function responseRejected(x: SafeError | undefined) {
         // DONT REFACTOR: I want to use alert() because it's blocking.
         ONLY_ONCE && alert(t(Content.TOS_UPDATE));
         ONLY_ONCE = false;
-        window.location.href = "/tos_update";
+        window.location.assign("/tos_update");
         break;
     }
     return Promise.reject(x);

@@ -2,6 +2,13 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
+jest.mock("../../../history", () => ({
+  history: {
+    push: jest.fn(),
+  },
+  getPathArray: () => ""
+}));
+
 const mockErr = jest.fn();
 jest.mock("farmbot-toastr", () => ({ error: mockErr }));
 
