@@ -57,7 +57,7 @@
     "file-loader": "1.1.11",
     "i18next": "11.3.2",
     "imports-loader": "0.8.0",
-    "jest": "^21.2.1",
+    "jest": "^22.4.3",
     "json-loader": "0.5.7",
     "lodash": "4.17.10",
     "markdown-it": "^8.4.0",
@@ -128,7 +128,6 @@
       "tsx",
       "js"
     ],
-    "mapCoverage": true,
     "collectCoverage": true,
     "collectCoverageFrom": [
       "webpack/**/*.{ts,tsx}"

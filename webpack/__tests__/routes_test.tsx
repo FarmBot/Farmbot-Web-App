@@ -14,6 +14,13 @@ jest.mock("../session", () => ({
   }
 }));
 
+let mockPathname = "";
+jest.mock("../history", () => ({
+  history: {
+    getCurrentLocation: () => ({ pathname: mockPathname })
+  }
+}));
+
 import * as React from "react";
 import { shallow } from "enzyme";
 import { RootComponent } from "../routes";
@@ -28,18 +35,14 @@ describe("<RootComponent />", () => {
 
   it("clears session when not authorized", () => {
     mockAuth = undefined;
-    Object.defineProperty(location, "pathname", {
-      value: "/app/account"
-    });
+    mockPathname = "/app/account";
     shallow(<RootComponent store={store} />);
     expect(mockClear).toHaveBeenCalled();
   });
 
   it("authorized", () => {
     mockAuth = auth;
-    Object.defineProperty(location, "pathname", {
-      value: "/app/account"
-    });
+    mockPathname = "/app/account";
     shallow(<RootComponent store={store} />);
     expect(mockClear).not.toHaveBeenCalled();
   });

@@ -18,6 +18,11 @@ import { Actions } from "../../../constants";
 import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<FarmbotOsSettings/>", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    window.alert = jest.fn();
+  });
+
   const fakeProps = (): FarmbotOsProps => {
     return {
       account: fakeResource("Device", { id: 0, name: "", tz_offset_hrs: 0 }),
