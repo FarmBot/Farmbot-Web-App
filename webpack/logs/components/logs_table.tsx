@@ -70,9 +70,6 @@ export const LogsTable = (props: LogsTableProps) => {
 const filterByVerbosity = (state: LogsState, logs: TaggedLog[]) => {
   return logs
     .filter((log: TaggedLog) => {
-      return !log.body.message.toLowerCase().includes("filtered");
-    })
-    .filter((log: TaggedLog) => {
       const { type, verbosity } = log.body;
       const filterLevel = state[type as keyof LogsState];
       const displayLog = verbosity
