@@ -5,12 +5,13 @@ import * as _ from "lodash";
 import { init, error } from "farmbot-toastr";
 
 import { NavBar } from "./nav";
-import { Everything, Log } from "./interfaces";
+import { Everything } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
 import { BotState, Xyz } from "./devices/interfaces";
-import { ResourceName, TaggedUser } from "./resources/tagged_resources";
 import {
-  selectAllLogs,
+  ResourceName, TaggedUser, TaggedLog
+} from "./resources/tagged_resources";
+import {
   maybeFetchUser,
   maybeGetTimeOffset,
   getFirmwareConfig
@@ -24,6 +25,7 @@ import { BooleanSetting } from "./session_keys";
 import { getPathArray } from "./history";
 import { FirmwareConfig } from "./config_storage/firmware_configs";
 import { getWebAppConfigValue } from "./config_storage/actions";
+import { takeSortedLogs } from "./logs/state_to_props";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
 const fastClick = require("fastclick");
@@ -35,7 +37,7 @@ init();
 export interface AppProps {
   dispatch: Function;
   loaded: ResourceName[];
-  logs: Log[];
+  logs: TaggedLog[];
   user: TaggedUser | undefined;
   bot: BotState;
   consistent: boolean;
@@ -51,12 +53,7 @@ function mapStateToProps(props: Everything): AppProps {
     dispatch: props.dispatch,
     user: maybeFetchUser(props.resources.index),
     bot: props.bot,
-    logs: _(selectAllLogs(props.resources.index))
-      .map(x => x.body)
-      .sortBy("created_at")
-      .reverse()
-      .take(250)
-      .value(),
+    logs: takeSortedLogs(250, props.resources.index),
     loaded: props.resources.loaded,
     consistent: !!(props.bot || {}).consistent,
     axisInversion: {

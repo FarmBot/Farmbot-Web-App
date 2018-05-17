@@ -28,37 +28,20 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { Logs } from "../index";
 import { ToolTips } from "../../constants";
-import { TaggedLog, SpecialStatus } from "../../resources/tagged_resources";
-import { Log } from "../../interfaces";
-import { generateUuid } from "../../resources/util";
+import { TaggedLog } from "../../resources/tagged_resources";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { Dictionary } from "farmbot";
 import { NumericSetting } from "../../session_keys";
+import { fakeLog } from "../../__test_support__/fake_state/resources";
 
 describe("<Logs />", () => {
   function fakeLogs(): TaggedLog[] {
-    const logs: Log[] = [{
-      id: 1,
-      created_at: -1,
-      message: "Fake log message 1",
-      type: "info",
-      channels: []
-    },
-    {
-      id: 2,
-      created_at: -1,
-      message: "Fake log message 2",
-      type: "success",
-      channels: []
-    }];
-    return logs.map((body: Log): TaggedLog => {
-      return {
-        kind: "Log",
-        uuid: generateUuid(body.id, "Log"),
-        specialStatus: SpecialStatus.SAVED,
-        body
-      };
-    });
+    const log1 = fakeLog();
+    log1.body.message = "Fake log message 1";
+    const log2 = fakeLog();
+    log2.body.message = "Fake log message 2";
+    log2.body.type = "success";
+    return [log1, log2];
   }
 
   const fakeProps = () => {
@@ -94,6 +77,8 @@ describe("<Logs />", () => {
   it("shows position", () => {
     const p = fakeProps();
     p.logs[0].body.x = 100;
+    p.logs[0].body.y = undefined;
+    p.logs[0].body.z = undefined;
     p.logs[1].body.x = 0;
     p.logs[1].body.y = 1;
     p.logs[1].body.z = 2;

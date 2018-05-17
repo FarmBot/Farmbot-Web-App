@@ -1,61 +1,63 @@
 import * as React from "react";
 import { Collapse } from "@blueprintjs/core";
 import { Markdown } from "../ui/index";
-import { Log } from "../interfaces";
 import { TickerListProps } from "./interfaces";
 import { Link } from "react-router";
 import { t } from "i18next";
 import { formatLogTime } from "../logs/index";
 import { Session, safeNumericSetting } from "../session";
-import { isNumber } from "lodash";
 import { ErrorBoundary } from "../error_boundary";
+import { ALLOWED_MESSAGE_TYPES } from "farmbot";
+import { filterByVerbosity } from "../logs/components/logs_table";
+import { TaggedLog, SpecialStatus } from "../resources/tagged_resources";
+import { isNumber } from "lodash";
 
-const logFilter = (log: Log): Log | undefined => {
-  const { type, verbosity } = log;
-  const filterLevel = Session.deprecatedGetNum(safeNumericSetting(type + "_log"));
-  const filterLevelCompare = isNumber(filterLevel) ? filterLevel : 1;
-  const displayLog = verbosity
-    ? verbosity <= filterLevelCompare
-    : filterLevel != 0;
-  const whitelisted = !log.message.toLowerCase().includes("filtered");
-  if (displayLog && whitelisted) {
-    return log;
-  }
-  return;
+/** Get current verbosity filter level for a message type from WebAppConfig. */
+const getFilterLevel = (type: ALLOWED_MESSAGE_TYPES): number => {
+  const filterLevel =
+    Session.deprecatedGetNum(safeNumericSetting(type + "_log"));
+  return isNumber(filterLevel) ? filterLevel : 1;
 };
 
-const getfirstTickerLog = (logs: Log[]): Log => {
-  if (logs.length == 0) {
-    return {
-      message: t("No logs yet."),
+/** Generate a fallback TaggedLog to display in the first line of the ticker. */
+const generateFallbackLog = (uuid: string, message: string): TaggedLog => {
+  return {
+    kind: "Log",
+    uuid,
+    specialStatus: SpecialStatus.SAVED,
+    body: {
+      message,
       type: "debug",
       verbosity: -1,
       channels: [], created_at: NaN
-    };
+    }
+  };
+};
+
+/** Choose the log to display in the first line of the ticker. */
+const getfirstTickerLog = (logs: TaggedLog[]): TaggedLog => {
+  if (logs.length == 0) {
+    return generateFallbackLog("no_logs_yet", t("No logs yet."));
   } else {
-    const filteredLogs = logs.filter(log => logFilter(log));
+    const filteredLogs = filterByVerbosity(getFilterLevel, logs);
     if (filteredLogs.length > 0) {
       return filteredLogs[0];
     } else {
-      return {
-        message: t("No logs to display. Visit Logs page to view filters."),
-        type: "debug",
-        verbosity: -1,
-        channels: [], created_at: NaN
-      };
+      return generateFallbackLog("no_logs_to_display",
+        t("No logs to display. Visit Logs page to view filters."));
     }
   }
 };
 
-const Ticker = (log: Log, index: number, timeOffset: number) => {
-  const time = formatLogTime(log.created_at, timeOffset);
-  const { type } = log;
-  // TODO: Should utilize log's `uuid` instead of index.
-  return <div key={index} className="status-ticker-wrapper">
+/** Format a single log for display in the ticker. */
+const Ticker = (log: TaggedLog, timeOffset: number) => {
+  const { message, type, created_at } = log.body;
+  const time = formatLogTime(created_at, timeOffset);
+  return <div key={log.uuid} className="status-ticker-wrapper">
     <div className={`saucer ${type}`} />
     <label className="status-ticker-message">
       <Markdown>
-        {log.message.replace(/\s+/g, " ") || "Loading"}
+        {message.replace(/\s+/g, " ") || "Loading"}
       </Markdown>
     </label>
     <label className="status-ticker-created-at">
@@ -64,18 +66,18 @@ const Ticker = (log: Log, index: number, timeOffset: number) => {
   </div>;
 };
 
+/** The logs ticker, with closed/open views, and a link to the Logs page. */
 export let TickerList = (props: TickerListProps) => {
   return <ErrorBoundary>
     <div className="ticker-list" onClick={props.toggle("tickerListOpen")} >
       <div className="first-ticker">
-        {Ticker(getfirstTickerLog(props.logs), -1, props.timeOffset)}
+        {Ticker(getfirstTickerLog(props.logs), props.timeOffset)}
       </div>
       <Collapse isOpen={props.tickerListOpen}>
-        {props
-          .logs
+        {filterByVerbosity(getFilterLevel, props.logs)
+          // Don't use first log again since it's already displayed in first row
           .filter((_, index) => index !== 0)
-          .filter((log) => logFilter(log))
-          .map((log: Log, index: number) => Ticker(log, index, props.timeOffset))}
+          .map((log: TaggedLog) => Ticker(log, props.timeOffset))}
       </Collapse>
       <Collapse isOpen={props.tickerListOpen}>
         <Link to={"/app/logs"}>

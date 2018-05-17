@@ -22,21 +22,14 @@ jest.mock("../../session", () => {
 
 import * as React from "react";
 import { mount } from "enzyme";
-
 import { TickerList } from "../ticker_list";
-import { Log } from "../../interfaces";
 import { Dictionary } from "farmbot";
+import { fakeLog } from "../../__test_support__/fake_state/resources";
 
 describe("<TickerList />", () => {
-  const log: Log = {
-    id: 1234567,
-    message: "Farmbot is up and Running!",
-    type: "info",
-    channels: [
-      "toast"
-    ],
-    created_at: 1501703421
-  };
+  const log = fakeLog();
+  log.body.message = "Farmbot is up and Running!";
+  log.body.created_at = 1501703421;
 
   it("shows log message and datetime", () => {
     const wrapper = mount(
@@ -85,7 +78,7 @@ describe("<TickerList />", () => {
   it("all logs filtered out", () => {
     ["success", "busy", "warn", "error", "info", "fun", "debug"]
       .map(logType => mockStorj[logType + "_log"] = 0);
-    log.verbosity = 1;
+    log.body.verbosity = 1;
     const wrapper = mount(<TickerList
       logs={[log]} tickerListOpen={false} toggle={jest.fn()} timeOffset={0} />);
     const labels = wrapper.find("label");
