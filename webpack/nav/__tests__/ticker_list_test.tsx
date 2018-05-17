@@ -25,47 +25,61 @@ import { mount } from "enzyme";
 import { TickerList } from "../ticker_list";
 import { Dictionary } from "farmbot";
 import { fakeLog } from "../../__test_support__/fake_state/resources";
+import { TickerListProps } from "../interfaces";
 
 describe("<TickerList />", () => {
-  const log = fakeLog();
-  log.body.message = "Farmbot is up and Running!";
-  log.body.created_at = 1501703421;
+  const fakeTaggedLog = () => {
+    const log = fakeLog();
+    log.body.message = "Farmbot is up and Running!";
+    log.body.created_at = 1501703421;
+    return log;
+  };
+
+  const fakeProps = (): TickerListProps => {
+    return {
+      timeOffset: 0,
+      logs: [fakeTaggedLog(), fakeTaggedLog()],
+      tickerListOpen: false,
+      toggle: jest.fn(),
+    };
+  };
+
+  function expectLogOccurrences(text: string, expectedCount: number) {
+    const count = (text.match(/Running/g) || []).length;
+    expect(count).toEqual(expectedCount);
+  }
 
   it("shows log message and datetime", () => {
-    const wrapper = mount(
-      <TickerList
-        timeOffset={0}
-        logs={[log]}
-        tickerListOpen={false}
-        toggle={jest.fn()} />
-    );
+    const wrapper = mount(<TickerList {...fakeProps()} />);
     const labels = wrapper.find("label");
     expect(labels.length).toEqual(2);
     expect(labels.at(0).text()).toContain("Farmbot is up and Running!");
     expect(labels.at(1).text()).toEqual("Aug 2, 7:50pm");
+    expectLogOccurrences(wrapper.text(), 1);
   });
 
   it("shows empty log message", () => {
-    const wrapper = mount(
-      <TickerList
-        timeOffset={0}
-        logs={[]}
-        tickerListOpen={false}
-        toggle={jest.fn()} />
-    );
+    const p = fakeProps();
+    p.logs = [];
+    const wrapper = mount(<TickerList {...p} />);
     const labels = wrapper.find("label");
     expect(labels.length).toEqual(2);
     expect(labels.at(0).text()).toContain("No logs yet.");
   });
 
+  it("shows 'loading' log message", () => {
+    const p = fakeProps();
+    p.logs[0].body.message = "";
+    const wrapper = mount(<TickerList {...p} />);
+    const labels = wrapper.find("label");
+    expect(labels.length).toEqual(2);
+    expect(labels.at(0).text()).toContain("Loading");
+  });
+
   it("opens ticker", () => {
-    const wrapper = mount(
-      <TickerList
-        timeOffset={0}
-        logs={[log, log]}
-        tickerListOpen={true}
-        toggle={jest.fn()} />
-    );
+    const p = fakeProps();
+    p.tickerListOpen = true;
+    const wrapper = mount(<TickerList {...p} />);
     const labels = wrapper.find("label");
     expect(labels.length).toEqual(5);
     expect(labels.at(0).text()).toContain("Farmbot is up and Running!");
@@ -73,14 +87,15 @@ describe("<TickerList />", () => {
     expect(labels.at(2).text()).toContain("Farmbot is up and Running!");
     expect(labels.at(1).text()).toEqual("Aug 2, 7:50pm");
     expect(labels.at(4).text()).toEqual("Filter logs");
+    expectLogOccurrences(wrapper.text(), 2);
   });
 
   it("all logs filtered out", () => {
     ["success", "busy", "warn", "error", "info", "fun", "debug"]
       .map(logType => mockStorj[logType + "_log"] = 0);
-    log.body.verbosity = 1;
-    const wrapper = mount(<TickerList
-      logs={[log]} tickerListOpen={false} toggle={jest.fn()} timeOffset={0} />);
+    const p = fakeProps();
+    p.logs[0].body.verbosity = 1;
+    const wrapper = mount(<TickerList {...p} />);
     const labels = wrapper.find("label");
     expect(labels.length).toEqual(2);
     expect(labels.at(0).text())

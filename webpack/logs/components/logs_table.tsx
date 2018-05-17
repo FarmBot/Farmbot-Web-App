@@ -84,6 +84,7 @@ export const filterByVerbosity =
       .filter((log: TaggedLog) => {
         const { type, verbosity } = log.body;
         const filterLevel = getLevelFor(type);
+        // If verbosity is 0 (or == False), display if log type is enabled
         const displayLog = verbosity
           ? verbosity <= filterLevel
           : filterLevel != 0;

@@ -33,6 +33,7 @@ import { bot } from "../../__test_support__/fake_state/bot";
 import { Dictionary } from "farmbot";
 import { NumericSetting } from "../../session_keys";
 import { fakeLog } from "../../__test_support__/fake_state/resources";
+import { LogsProps } from "../interfaces";
 
 describe("<Logs />", () => {
   function fakeLogs(): TaggedLog[] {
@@ -44,7 +45,7 @@ describe("<Logs />", () => {
     return [log1, log2];
   }
 
-  const fakeProps = () => {
+  const fakeProps = (): LogsProps => {
     return {
       logs: fakeLogs(),
       bot,
@@ -65,6 +66,13 @@ describe("<Logs />", () => {
     expect(filterBtn.hasClass("green")).toBeTruthy();
   });
 
+  it("shows message when logs are loading", () => {
+    const p = fakeProps();
+    p.logs[0].body.message = "";
+    const wrapper = mount(<Logs {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("loading");
+  });
+
   it("filters logs", () => {
     const wrapper = mount(<Logs {...fakeProps()} />);
     wrapper.setState({ info: 0 });
@@ -72,6 +80,17 @@ describe("<Logs />", () => {
     const filterBtn = wrapper.find("button").first();
     expect(filterBtn.text().toLowerCase()).toEqual("filters active");
     expect(filterBtn.hasClass("green")).toBeTruthy();
+  });
+
+  it("doesn't show logs of any verbosity when type is disabled", () => {
+    const p = fakeProps();
+    p.logs[0].body.verbosity = 0;
+    const notShownMessage = "This log should not be shown.";
+    p.logs[0].body.message = notShownMessage;
+    p.logs[0].body.type = "info";
+    const wrapper = mount(<Logs {...p} />);
+    wrapper.setState({ info: 0 });
+    expect(wrapper.text()).not.toContain(notShownMessage);
   });
 
   it("shows position", () => {
