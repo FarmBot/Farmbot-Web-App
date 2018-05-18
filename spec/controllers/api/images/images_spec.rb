@@ -62,7 +62,7 @@ describe Api::ImagesController do
   end
 
   describe "#create" do
-    it 'creates one image' do
+    it 'creates one image', :slow do
       sign_in user
       before_count = Image.count
       post :create,

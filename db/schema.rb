@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180508141310) do
+ActiveRecord::Schema.define(version: 20180518131709) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -310,6 +310,7 @@ ActiveRecord::Schema.define(version: 20180508141310) do
     t.datetime "discarded_at"
     t.index ["device_id"], name: "index_points_on_device_id"
     t.index ["discarded_at"], name: "index_points_on_discarded_at"
+    t.index ["id", "pointer_type"], name: "index_points_on_id_and_pointer_type"
     t.index ["meta"], name: "index_points_on_meta", using: :gin
     t.index ["tool_id"], name: "index_points_on_tool_id"
   end
