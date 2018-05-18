@@ -24,7 +24,8 @@ describe("<TileExecuteScript/>", () => {
       farmwareInfo: {
         farmwareNames: ["one", "two", "three"],
         firstPartyFarmwareNames: ["one"],
-        showFirstPartyFarmware: false
+        showFirstPartyFarmware: false,
+        farmwareConfigs: { "farmware-to-execute": [] },
       }
     };
   };
@@ -39,6 +40,13 @@ describe("<TileExecuteScript/>", () => {
     expect(labels.at(0).text()).toEqual("Package Name");
     expect(labels.at(1).text()).toEqual("Manual input");
     expect(inputs.at(1).props().value).toEqual("farmware-to-execute");
+  });
+
+  it("renders error on wrong step", () => {
+    const p = fakeProps();
+    p.currentStep = { kind: "wait", args: { milliseconds: 100 } };
+    const wrapper = mount(<TileExecuteScript {...p} />);
+    expect(wrapper.text()).toContain("ERROR");
   });
 
   it("renders farmware list", () => {
