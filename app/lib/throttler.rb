@@ -28,6 +28,12 @@ class Throttler
     end
   end
 
+  def usage_count_for(unique_id)
+    @entries[unique_id] || 0
+  end
+
+private
+
   def reset_everything(now)
     @current_period = calculate_period(now)
     @entries        = {}
@@ -37,12 +43,6 @@ class Throttler
     @entries[unique_id] ||= 0
     @entries[unique_id]  += 1
   end
-
-  def usage_count_for(unique_id)
-    @entries[unique_id] || 0
-  end
-
-private
 
   # Returns integer representation of current clock period
   def calculate_period(time)
