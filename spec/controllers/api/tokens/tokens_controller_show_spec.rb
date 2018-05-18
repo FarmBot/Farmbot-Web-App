@@ -10,7 +10,7 @@ describe Api::TokensController do
       SessionToken.issue_to(user, fbos_version: Gem::Version.new("9.9.9"))
     end
 
-    it 'creates a new token' do
+    it 'creates a new token', :slow do
       request.headers["Authorization"] = "bearer #{auth_token.encoded}"
       sleep 1 # To create unique IAT values.
       get :show
