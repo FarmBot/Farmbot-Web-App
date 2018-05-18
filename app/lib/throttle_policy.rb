@@ -3,13 +3,13 @@ class ThrottlePolicy
   attr_reader :rules
 
   # A throttler object paired with a max limit
-  class Rule
-    attr_reader :throttler, :limit
+   class Rule
+     attr_reader :throttler, :limit
 
-    def initialize(throttler, limit)
-      @throttler, @limit = throttler, limit
-    end
-  end
+     def initialize(throttler, limit)
+       @throttler, @limit = throttler, limit
+     end
+   end
 
   # Dictionary<throttlerr, number>
   def initialize(policy_rules)
@@ -20,6 +20,22 @@ class ThrottlePolicy
     rules.each { |r| r.throttler.record_event(unique_id, now) }
   end
 
-  def attempt(&blk)
+  def attempt_throttled_action(unique_id)
+    if !id_is_throttled(unique_id)
+      yield
+      true
+    else
+      false
+    end
+  end
+
+private
+
+  def id_is_throttled(unique_id)
+    rules.map do |rule|
+      actual = rule.throttler.usage_count_for(unique_id)
+      max    = rule.limit
+      actual > max
+    end.include?(true)
   end
 end
