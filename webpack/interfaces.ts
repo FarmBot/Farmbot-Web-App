@@ -5,6 +5,7 @@ import { Color as FarmBotJsColor, ALLOWED_MESSAGE_TYPES, PlantStage } from "farm
 import { DraggableState } from "./draggable/interfaces";
 import { PeripheralState } from "./controls/peripherals/interfaces";
 import { RestResources } from "./resources/interfaces";
+import { ChannelName } from "./sequences/interfaces";
 
 /** Regimens and sequences may have a "color" which determines how it looks
     in the UI. Only certain colors are valid. */
@@ -47,7 +48,7 @@ export interface Log {
   verbosity?: number;
   major_version?: number;
   minor_version?: number;
-  channels: string[];
+  channels: ChannelName[];
   created_at: number;
 }
 
