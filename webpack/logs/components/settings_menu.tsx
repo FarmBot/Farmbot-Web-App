@@ -4,9 +4,7 @@ import { Help } from "../../ui/index";
 import { ToolTips } from "../../constants";
 import { ToggleButton } from "../../controls/toggle_button";
 import { updateConfig } from "../../devices/actions";
-import {
-  LogSettingProps, LogsSettingsMenuProps, LogsState
-} from "../interfaces";
+import { LogSettingProps, LogsSettingsMenuProps, Filters } from "../interfaces";
 import { Session, safeNumericSetting } from "../../session";
 import { ConfigurationName } from "farmbot";
 
@@ -54,7 +52,8 @@ const FIRMWARE_LOG_SETTINGS = (): LogSettingRecord[] => [
 
 const LogSetting = (props: LogSettingProps) => {
   const { label, setting, toolTip, setFilterLevel, sourceFbosConfig } = props;
-  const updateMinFilterLevel = (name: keyof LogsState, level: number) => {
+  /** Update the current filter level to a minimum needed for log display. */
+  const updateMinFilterLevel = (name: keyof Filters, level: number) => {
     const currentLevel =
       Session.deprecatedGetNum(safeNumericSetting(name + "_log")) || 0;
     if (currentLevel < level) { setFilterLevel(name)(level); }

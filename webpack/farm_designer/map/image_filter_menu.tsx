@@ -180,7 +180,7 @@ export class ImageFilterMenu
         labelStepSize={this.labelStepSize}
         value={slider}
         onChange={this.sliderChange}
-        renderLabel={this.renderLabel}
+        labelRenderer={this.renderLabel}
         showTrackFill={false} />
     </div>;
   }

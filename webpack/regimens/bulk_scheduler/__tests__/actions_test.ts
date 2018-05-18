@@ -46,8 +46,7 @@ describe("commitBulkEditor()", () => {
           "body": [{ kind: "wait", args: { milliseconds: 100 } }],
           "args": {
             "locals": { kind: "scope_declaration", args: {} },
-            "version": 4,
-            "label": "WIP"
+            "version": 4
           },
           "kind": "sequence"
         },

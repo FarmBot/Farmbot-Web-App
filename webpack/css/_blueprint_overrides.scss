@@ -10,13 +10,13 @@
 
 // As of right now, all the menus appear from floated icons in the widgets.
 .widget-header {
-  .pt-popover-target {
+  .pt-popover-wrapper {
     float: right;
   }
 }
 
 .device-widget {
-  .pt-popover-target {
+  .pt-popover-wrapper {
     width: 100%;
   }
   .pt-icon-standard {
@@ -74,10 +74,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
     display: inline-block;
+    padding-right: 1rem;
   }
 }
 
-.pt-popover-target {
+.pt-popover-wrapper {
   position: relative;
   display: block;
   * {
@@ -92,7 +93,7 @@
   font-size: 1.6rem !important;
 }
 
-.nav-right .pt-popover-target {
+.nav-right .pt-popover-wrapper {
   transition: all 0.2s ease;
   text-transform: uppercase;
   color: $gray;

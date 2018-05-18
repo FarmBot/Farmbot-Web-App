@@ -29,7 +29,7 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
       <button
         className="fb-button gray fa fa-download"
         onClick={() => {
-          const p = getDevice().installFirstPartyFarmware()
+          const p = getDevice().installFirstPartyFarmware();
           p && p.catch(commandErr("Farmware installation"));
         }}
         disabled={props.firstPartyFwsInstalled} />
@@ -178,7 +178,7 @@ export class FarmwarePanel extends React.Component<FWProps, Partial<FWState>> {
             </fieldset>
           </Row>
           <Row>
-            <fieldset>
+            <fieldset className="farmware-selection-panel">
               <Col xs={12}>
                 <FBSelect
                   key={"farmware_" + this.selectedItem()}

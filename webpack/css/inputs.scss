@@ -51,6 +51,15 @@ select {
 }
 
 .filter-search {
+  span {
+    width: 100%;
+  }
+  i {
+    position: absolute;
+    right: 0.65rem;
+    top: 30%;
+    color: $dark_gray
+  }
   &.dim {
     Button {
       background: darken($white, 2%) !important;

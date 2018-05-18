@@ -6,7 +6,6 @@
   z-index: 3;
   background: $black;
   opacity: 0.9;
-  cursor: pointer;
   .pt-collapse {
     overflow-y: scroll !important;
     max-height: 20rem !important;
@@ -40,15 +39,19 @@
   }
 }
 
+.ticker-list,
 .first-ticker {
-  padding-bottom: 0.5rem;
-  background: $black;
   .markdown p {
     font-weight: 600;
     code {
       background: $dark_gray;
     }
   }
+}
+
+.first-ticker {
+  padding-bottom: 0.5rem;
+  background: $black;
   .status-ticker-created-at {
     font-size: 1.2rem;
     font-weight: 600;
@@ -77,6 +80,9 @@
 }
 
 .logs-page-link {
+  label {
+    cursor: pointer;
+  }
   text-align: center;
   &:hover {
     background: rgba(255, 255, 255, 0.2);

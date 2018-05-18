@@ -36,7 +36,7 @@ describe("<FBSelect />", () => {
   });
 
   it("doesn't allow empty", () => {
-    const wrapper = shallow(<FBSelect {...fakeProps() } />);
+    const wrapper = shallow(<FBSelect {...fakeProps()} />);
     // tslint:disable-next-line:no-any
     expect((wrapper.find("FilterSearch").props() as any).items)
       .toEqual([{ label: "Item", value: "item" }]);

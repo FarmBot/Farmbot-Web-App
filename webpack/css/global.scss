@@ -8,6 +8,13 @@ body {
   margin-bottom: 1rem;
 }
 
+.color-picker-col {
+  padding: 0;
+  .pt-popover-target {
+    float: left;
+  }
+}
+
 .colorpicker-menu {
   padding: 0;
   .pt-popover-arrow-fill {
@@ -574,6 +581,14 @@ ul {
   margin-top: 10%;
 }
 
+.farmware-selection-panel {
+  .filter-search {
+    i {
+      top: 38% !important;
+    }
+  }
+}
+
 .logs {
   .row {
     @media screen and (max-width: 974px) {
@@ -586,6 +601,9 @@ ul {
     margin-left: 1rem;
     margin-top: 0.25rem;
   }
+  .pt-popover-target {
+    float: right;
+  }
 }
 
 .logs-settings-menu {
@@ -596,9 +614,10 @@ ul {
     float: left;
     margin-right: 10px;
   }
-  .pt-popover-target {
-    display: inline;
+  .pt-popover-wrapper {
+    display: inline-block;
     margin-left: 1rem;
+    margin-top: 0.5rem;
   }
 }
 
@@ -670,6 +689,11 @@ ul {
   .fb-button {
     margin-top: 1rem;
   }
+  .filter-search {
+    i {
+      top: 38% !important;
+    }
+  }
 }
 
 .sensors-widget {
@@ -681,7 +705,7 @@ ul {
   }
   .sensor-reading-display {
     &.moisture-sensor {
-      background: linear-gradient(to right, unquote('#a4c2f400') 20%, unquote('#a4c2f4ff') 80%, unquote('#a4c2f400') 85%);
+      background: linear-gradient(to right, rgba($blue, 0) 20%, $blue 80%, rgba($blue, 0) 85%);
     }
     border-style: solid;
     border-color: $dark_gray;

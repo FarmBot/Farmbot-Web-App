@@ -30,7 +30,7 @@ describe("<TileExecuteScript/>", () => {
   };
 
   it("renders inputs", () => {
-    const wrapper = mount(<TileExecuteScript {...fakeProps() } />);
+    const wrapper = mount(<TileExecuteScript {...fakeProps()} />);
     const inputs = wrapper.find("input");
     const labels = wrapper.find("label");
     expect(inputs.length).toEqual(2);
@@ -42,7 +42,7 @@ describe("<TileExecuteScript/>", () => {
   });
 
   it("renders farmware list", () => {
-    const wrapper = shallow(<TileExecuteScript {...fakeProps() } />);
+    const wrapper = shallow(<TileExecuteScript {...fakeProps()} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { label: "two", value: "two" },
       { label: "three", value: "three" }]);

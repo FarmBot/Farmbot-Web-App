@@ -127,7 +127,7 @@ export namespace ToolTips {
     trim(`(Alpha) Reduction to missed step total for every good step.`);
 
   export const ENCODER_SCALING =
-    trim(`(Alpha) encoder scaling factor = 100 * (motor resolution * microsteps)
+    trim(`(Alpha) encoder scaling factor = 10000 * (motor resolution * microsteps)
     / (encoder resolution).`);
 
   export const ENABLE_ENDSTOPS =
