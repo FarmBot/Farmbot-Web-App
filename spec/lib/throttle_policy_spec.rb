@@ -3,9 +3,9 @@ NOW = Time.new("2018-05-18T09:38:02.259-05:00")
 
 describe Throttler do
   let(:policy)  do
-    policy = ThrottlePolicy.new(Throttler.new(1.minute, NOW) => 1,
-                                Throttler.new(1.hour,   NOW) => 10,
-                                Throttler.new(1.day,    NOW) => 100)
+    ThrottlePolicy.new  Throttler.new(1.minute, NOW) => 1,
+                        Throttler.new(1.hour,   NOW) => 10,
+                        Throttler.new(1.day,    NOW) => 100
   end
 
   it "initializes" do
@@ -25,17 +25,12 @@ describe Throttler do
   end
 
   it "calls a block when usage limits are under the threshhold" do
-    uid = 123
-    flag = {value: false}
-    policy.attempt_throttled_action(uid) { flag[:value] = true }
-    expect(flag[:value]).to be true
+    5.times { policy.track(123, NOW + 1) }
+    expect(policy.is_throttled 123).to be true
   end
 
   it "ignores the block when it's over the limit" do
-    uid = 123
-    flag = { value: false }
-    5.times { policy.track(123, NOW + 1) }
-    policy.attempt_throttled_action(uid) { flag[:value] = true }
-    expect(flag[:value]).to be false
+    expect(policy.is_throttled 123).to be false
   end
+
 end

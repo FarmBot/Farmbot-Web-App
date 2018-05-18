@@ -20,18 +20,7 @@ class ThrottlePolicy
     rules.each { |r| r.throttler.record_event(unique_id, now) }
   end
 
-  def attempt_throttled_action(unique_id)
-    if !id_is_throttled(unique_id)
-      yield
-      true
-    else
-      false
-    end
-  end
-
-private
-
-  def id_is_throttled(unique_id)
+  def is_throttled(unique_id)
     rules.map do |rule|
       actual = rule.throttler.usage_count_for(unique_id)
       max    = rule.limit

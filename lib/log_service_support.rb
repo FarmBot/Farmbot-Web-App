@@ -1,4 +1,7 @@
 class LogService
+  THROTTLE_POLICY  = ThrottlePolicy.new(Throttler.new(1.minute) => 1_000,
+                                        Throttler.new(1.hour)   => 10_000,
+                                        Throttler.new(1.day)    => 100_000)
 
   # Determines if the log should be discarded (Eg: "fun"/"debug" logs do not
   # go in the DB)
@@ -14,7 +17,17 @@ class LogService
     !should_discard
   end
 
+  # Calls .work(), but only if thorttle policy requirements are met.
   def self.process(delivery_info, payload)
+    device_id = delivery_info.routing_key.split(".")[1].gsub("device_", "").to_i
+    if THROTTLE_POLICY.is_throttled(device_id)
+      Rollbar.info("#{device_id} is throttled!")
+    else
+      self.work(delivery_info, payload, device_id)
+    end
+  end
+
+  def self.work(delivery_info, payload, device_id)
     # { "meta"=>{"z"=>0, "y"=>0, "x"=>0, "type"=>"info", "major_version"=>6},
     #   "message"=>"HQ FarmBot TEST 123 Pin 13 is 0",
     #   "created_at"=>1512585641,
@@ -26,7 +39,6 @@ class LogService
     major_version =  (primary || secondary || 0).to_i
     puts log["message"] if Rails.env.production?
     if (major_version >= 6)
-      device_id = delivery_info.routing_key.split(".")[1].gsub("device_", "").to_i
       if save?(log)
         device = Device.find(device_id)
         db_log = Logs::Create.run!(log, device: device)
