@@ -15,8 +15,7 @@ class AmqpLogParser < Mutations::Command
       "x"             => 0,
       "y"             => 0,
       "z"             => 0,
-      "type"          => "info",
-      "major_version" => 1       # <= Only legacy bots do this
+      "type"          => "info"
     },
     "major_version" => 6,        # <=  up-to-date bots do this
     "message"       => "HQ FarmBot TEST 123 Pin 13 is 0",
@@ -43,7 +42,7 @@ class AmqpLogParser < Mutations::Command
     end
 
     def valid?
-      problems.present?
+      !problems.present?
     end
 
     # Avoid calling this too much- will add DB hits to `LogService`.
@@ -77,7 +76,6 @@ private
     @output.payload = JSON.parse(payload)
   end
 
-
   def log
     @output.payload
   end
@@ -92,7 +90,7 @@ private
 
   # Weed out anamolies such as logs that are array types.
   def not_hash?
-    log.is_a?(Hash)
+    !log.is_a?(Hash)
   end
 
   # Determines if the log should be discarded
@@ -104,8 +102,8 @@ private
   end
 
   def find_problems!
-    @output.problems.push(TOO_OLD)  && return if major_version <= 6
-    @output.problems.push(NOT_HASH) && return if not_hash?
-    @output.problems.push(DISCARD)  && return if discard?
+    @output.problems.push(NOT_HASH) and return if not_hash?
+    @output.problems.push(TOO_OLD)  and return if major_version < 6
+    @output.problems.push(DISCARD)  and return if discard?
   end
 end

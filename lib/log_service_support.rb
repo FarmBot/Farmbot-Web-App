@@ -1,5 +1,6 @@
-require_relative "./amqp_log_parser"
-
+# A singleton that runs on a seperate process than the web server.
+# Listens to *ALL* incoming logs and stores them to the DB.
+# Also handles throttling.
 class LogService
   THROTTLE_POLICY  = ThrottlePolicy.new(Throttler.new(1.minute) => 1_000,
                                         Throttler.new(1.hour)   => 10_000,
@@ -26,7 +27,7 @@ class LogService
   end
 
   def self.warn_user(data)
-    # Hmmm...
+    raise "Stopped here."
     binding.pry
   end
 end
