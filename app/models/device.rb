@@ -85,11 +85,13 @@ class Device < ApplicationRecord
     points.where(pointer_type: "Plant")
   end
 
-  def throttle
-    throw "NOT IMPL"
+  # Sets the `throttled_at` field, but only if it is unpopulated.
+  # Performs no-op if `throttled_at` was already set.
+  def maybe_throttle
+    update_attributes!(throttled_at: Time.now) unless throttled_at
   end
 
-  def unthrottle
-    throw "NOT IMPL"
+  def maybe_unthrottle
+    update_attributes!(throttled_at: nil) if throttled_at
   end
 end
