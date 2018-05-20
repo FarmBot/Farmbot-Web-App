@@ -85,13 +85,23 @@ class Device < ApplicationRecord
     points.where(pointer_type: "Plant")
   end
 
+  THROTTLE_ON = "Device is sending too many logs. " \
+                "Temporarily suspending log messages"
   # Sets the `throttled_at` field, but only if it is unpopulated.
   # Performs no-op if `throttled_at` was already set.
   def maybe_throttle
-    update_attributes!(throttled_at: Time.now) unless throttled_at
+    if !throttled_at
+      update_attributes!(throttled_at: Time.now)
+      tell(THROTTLE_ON)
+    end
   end
 
+  THROTTLE_OFF =  "Cooldown period has ended. "\
+                  "Resuming log transmission."
   def maybe_unthrottle
-    update_attributes!(throttled_at: nil) if throttled_at
+    if throttled_at
+      update_attributes!(throttled_at: nil)
+      tell(THROTTLE_OFF)
+    end
   end
 end
