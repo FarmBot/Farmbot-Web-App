@@ -724,3 +724,17 @@ ul {
     }
   }
 }
+
+.farmmware-step-input-fields {
+  label {
+    padding-top: 1rem;
+  }
+  fieldset {
+    width: 95%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  button {
+    position: absolute;
+  }
+}

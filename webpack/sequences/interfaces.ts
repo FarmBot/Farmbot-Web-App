@@ -6,7 +6,8 @@ import {
   LegalArgString,
   SyncStatus,
   ALLOWED_CHANNEL_NAMES,
-  Xyz
+  Xyz,
+  FarmwareConfig
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import { TaggedSequence } from "../resources/tagged_resources";
@@ -136,10 +137,13 @@ export type DataXferObj = StepMoveDataXfer | StepSpliceDataXfer;
 
 export type dispatcher = (a: Function | { type: string }) => DataXferObj;
 
+export type FarmwareConfigs = { [x: string]: FarmwareConfig[] };
+
 export interface FarmwareInfo {
   farmwareNames: string[];
   firstPartyFarmwareNames: string[];
   showFirstPartyFarmware: boolean;
+  farmwareConfigs: FarmwareConfigs;
 }
 
 export interface StepParams {
