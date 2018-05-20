@@ -6,7 +6,7 @@ GIT
 
 GIT
   remote: https://github.com/fog/fog-google
-  revision: 2a7a338cb3daeab6158b6a28dbd56177474d29f7
+  revision: 08900e91270ecfe3fb42796c6f2e2e375bf40434
   specs:
     fog-google (1.3.3)
       fog-core

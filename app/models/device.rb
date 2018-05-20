@@ -84,4 +84,12 @@ class Device < ApplicationRecord
   def plants
     points.where(pointer_type: "Plant")
   end
+
+  def throttle
+    throw "NOT IMPL"
+  end
+
+  def unthrottle
+    throw "NOT IMPL"
+  end
 end
