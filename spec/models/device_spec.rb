@@ -36,4 +36,14 @@ describe Device do
     expect(log.message).to eq(hello)
     expect(json["message"]).to eq(hello)
   end
+
+  it "allows for caching" do
+    id        = device.id
+    cache_key = Device::CACHE_KEY % id
+    expect(Rails.cache.exist?(cache_key)).to be false
+    expect(Rails.cache.fetch(cache_key)).to eq(nil)
+    Device.cached_find(id)
+    expect(Rails.cache.exist?(cache_key)).to be true
+    expect(Rails.cache.fetch(cache_key)).to eq(device)
+  end
 end

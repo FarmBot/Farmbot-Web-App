@@ -10,6 +10,7 @@ class Device < ApplicationRecord
                         "Suspending log storage until %s."
   THROTTLE_OFF        = "Cooldown period has ended. "\
                         "Resuming log transmission."
+  CACHE_KEY           = "devices.%s"
 
   has_many  :device_configs,  dependent: :destroy
   has_many  :farm_events,     dependent: :destroy
@@ -93,14 +94,15 @@ class Device < ApplicationRecord
     points.where(pointer_type: "Plant")
   end
 
-  # Like Device.find, but with 150 seconds of caching.
+  # Like Device.find, but with 150 seconds of caching to avoid DB calls.
   def self.cached_find(id)
-    key = "devices##{id}"
-    Rails.cache.fetch(key, expires_in: 150.seconds) { Device.find(id) }
+    Rails
+      .cache
+      .fetch(CACHE_KEY % id, expires_in: 150.seconds) { Device.find(id) }
   end
 
   def refresh_cache
-    Rails.cache.write("devices##{self.id}", self)
+    Rails.cache.write(CACHE_KEY % id, self)
   end
 
   # Sets the `throttled_at` field, but only if it is unpopulated.
