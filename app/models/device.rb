@@ -114,19 +114,19 @@ class Device < ApplicationRecord
 
   # Sets the `throttled_at` field, but only if it is unpopulated.
   # Performs no-op if `throttled_at` was already set.
-  def maybe_throttle_until(time)
+  def maybe_throttle_until(until_time)
     if throttled_until.nil?
-      update_attributes!(throttled_until: time)
+      update_attributes!(throttled_until: until_time, throttled_at: Time.now)
       refresh_cache
-      cooldown = time.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
-      cooldown_notice(THROTTLE_ON % [cooldown], time)
+      cooldown = until_time.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
+      cooldown_notice(THROTTLE_ON % [cooldown], until_time)
     end
   end
 
   def maybe_unthrottle
     if throttled_until.present?
       old_time = throttled_until
-      update_attributes!(throttled_until: nil)
+      update_attributes!(throttled_until: nil, throttled_at: Time.now)
       refresh_cache
       cooldown_notice(THROTTLE_OFF, old_time)
     end
@@ -134,6 +134,6 @@ class Device < ApplicationRecord
 
   def cooldown_notice(message, throttle_time, now = Time.current)
     hours = ((throttle_time - now) / 1.hour).round
-    tell(message, [(hours > 12) ? "email" : "toast"], "alert")
+    tell(message, [(hours > 2) ? "email" : "toast"], "alert")
   end
 end
