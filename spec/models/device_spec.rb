@@ -69,4 +69,13 @@ describe Device do
     device.maybe_throttle_until(example)
     expect(device.throttled_until).to eq(example)
   end
+
+  it "unthrottles a runaway device" do
+    expect(device).to receive(:tell)
+    example = Time.now - 1.minute
+    device.update_attributes!(throttled_until: example)
+    expect(device.throttled_until).to eq(example)
+    device.maybe_unthrottle
+    expect(device.throttled_until).to eq(nil)
+  end
 end
