@@ -40,4 +40,12 @@ describe LogService do
     LogService.process(fake_delivery_info, normal_payl)
     expect(Log.count).to be > b4
   end
+
+  it "warns the user that they've been throttled" do
+    data           = AmqpLogParser::DeliveryInfo.new
+    data.device_id = FactoryBot.create(:device).id
+    time           = Time.now
+    expect_any_instance_of(Device).to receive(:maybe_throttle_until).with(time)
+    LogService.warn_user(data, time)
+  end
 end
