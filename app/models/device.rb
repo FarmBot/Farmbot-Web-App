@@ -69,12 +69,15 @@ class Device < ApplicationRecord
   end
 
   # Send a realtime message to a logged in user.
-  def tell(message)
-    log  = Log.new({ device:     self,
-                     message:    message,
-                     created_at: Time.now,
-                     channels:   [],
-                     meta:       { type: "info" } })
+  def tell(message, channels = [], type = "info")
+    log  = Log.new({ device:        self,
+                     message:       message,
+                     created_at:    Time.now,
+                     channels:      channels,
+                     major_version: 99,
+                     minor_version: 99,
+                     meta:          {},
+                     type:          type })
     json = LogSerializer.new(log).as_json.to_json
 
     Transport.current.amqp_send(json, self.id, "logs")
@@ -85,24 +88,31 @@ class Device < ApplicationRecord
     points.where(pointer_type: "Plant")
   end
 
+  def refresh_cache
+    Rails.cache.write("devices##{self.id}", self)
+  end
+
   THROTTLE_ON = "Device is sending too many logs. " \
                 "Suspending log storage until %s."
   # Sets the `throttled_at` field, but only if it is unpopulated.
   # Performs no-op if `throttled_at` was already set.
   def maybe_throttle_until(time)
-    if !throttled_until
+    if throttled_until.nil?
       update_attributes!(throttled_until: time)
+      refresh_cache
       cooldown = time.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
-      tell(THROTTLE_ON % [cooldown])
+      tell(THROTTLE_ON % [cooldown], ["toast"], "alert")
     end
   end
 
   THROTTLE_OFF =  "Cooldown period has ended. "\
                   "Resuming log transmission."
+
   def maybe_unthrottle
-    if throttled_until
+    if throttled_until.present?
       update_attributes!(throttled_until: nil)
-      tell(THROTTLE_OFF)
+      refresh_cache
+      tell(THROTTLE_OFF, ["toast"], "alert")
     end
   end
 end

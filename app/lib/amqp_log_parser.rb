@@ -45,9 +45,14 @@ class AmqpLogParser < Mutations::Command
       !problems.present?
     end
 
-    # Avoid calling this too much- will add DB hits to `LogService`.
+    # Prevents "runaway" bots from flooding the server with frivoulous database
+    # hits by using in memory cache of results for 150 seconds.
     def device
-      @device = Device.find(device_id)
+      Rails
+        .cache
+        .fetch("devices##{device_id}", expires_in: 150.seconds) do
+          Device.find(device_id)
+        end
     end
   end
 
