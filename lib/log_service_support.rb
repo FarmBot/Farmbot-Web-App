@@ -27,7 +27,7 @@ class LogService
     LogDispatch.deliver(dev, Logs::Create.run!(log, device: dev))
   end
 
-  def self.warn_user(data)
+  def self.warn_user(data, throttled_until)
     data.device.maybe_throttle_until(throttled_until)
   end
 end
