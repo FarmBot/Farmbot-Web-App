@@ -31,8 +31,8 @@ export function markStale() {
 }
 
 export function markActive() {
-  dispatchNetworkUp("user.mqtt");
-  dispatchNetworkUp("bot.mqtt");
+  // dispatchNetworkUp("user.mqtt");
+  // dispatchNetworkUp("bot.mqtt");
 }
 
 export function isInactive(last: number, now: number): boolean {

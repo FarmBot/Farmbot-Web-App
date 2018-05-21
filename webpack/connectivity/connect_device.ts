@@ -83,6 +83,11 @@ export const initLog = (log: Log): ReduxAction<TaggedResource> => init({
   body: log
 }, true);
 
+export const batchInitResources =
+  (payload: TaggedResource[]): ReduxAction<TaggedResource[]> => {
+    return { type: Actions.BATCH_INIT, payload };
+  };
+
 export const bothUp = () => {
   dispatchNetworkUp("user.mqtt");
   dispatchNetworkUp("bot.mqtt");
@@ -122,8 +127,10 @@ const onStatus = (dispatch: Function, getState: GetState) =>
 
 type Client = { connected?: boolean };
 
-export const onSent = (client: Client) => () => !!client.connected ?
-  dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
+export const onSent = (client: Client) => () => {
+  !!client.connected ?
+    dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
+};
 
 export function onMalformed() {
   bothUp();

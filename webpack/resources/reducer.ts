@@ -230,14 +230,7 @@ export let resourceReducer = generateReducer
     dontTouchThis(original);
     return s;
   })
-  .add<TaggedResource>(Actions.INIT_RESOURCE, (s: RestResources, { payload }) => {
-    const tr = payload;
-    reindexResource(s.index, tr);
-    s.index.references[tr.uuid] = tr;
-    sanityCheck(tr);
-    dontTouchThis(tr);
-    return s;
-  })
+  .add<TaggedResource>(Actions.INIT_RESOURCE, initResourceReducer)
   .add<TaggedResource>(Actions.SAVE_RESOURCE_START, (s, { payload }) => {
     const resource = findByUuid(s.index, payload.uuid);
     resource.specialStatus = SpecialStatus.SAVING;
@@ -277,6 +270,12 @@ export let resourceReducer = generateReducer
   .add<GeneralizedError>(Actions.REFRESH_RESOURCE_NO, (s, a) => {
     mutateSpecialStatus(a.payload.uuid, s.index, undefined);
     return s;
+  })
+  .add<TaggedResource[]>(Actions.BATCH_INIT, (s, { payload }) => {
+    return payload.reduce((state, resource) => {
+      const action = { type: Actions.INIT_RESOURCE, payload: resource };
+      return initResourceReducer(state, action);
+    }, s);
   });
 
 /** Helper method to change the `specialStatus` of a resource in the index */
@@ -366,4 +365,14 @@ function doRecalculateLocalSequenceVariables(next: TaggedSequence) {
   const recomputed = recomputeLocalVarDeclaration(next.body);
   next.body.args = recomputed.args;
   next.body.body = recomputed.body;
+}
+
+function initResourceReducer(s: RestResources,
+  { payload }: ReduxAction<TaggedResource>): RestResources {
+  const tr = payload;
+  reindexResource(s.index, tr);
+  s.index.references[tr.uuid] = tr;
+  sanityCheck(tr);
+  dontTouchThis(tr);
+  return s;
 }
