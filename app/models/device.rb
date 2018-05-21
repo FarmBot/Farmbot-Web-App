@@ -86,13 +86,14 @@ class Device < ApplicationRecord
   end
 
   THROTTLE_ON = "Device is sending too many logs. " \
-                "Temporarily suspending log messages"
+                "Suspending log storage until %s."
   # Sets the `throttled_at` field, but only if it is unpopulated.
   # Performs no-op if `throttled_at` was already set.
   def maybe_throttle_until(time)
     if !throttled_until
-      update_attributes!(throttled_until: Time.now)
-      tell(THROTTLE_ON)
+      update_attributes!(throttled_until: time)
+      cooldown = time.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
+      tell(THROTTLE_ON % [cooldown])
     end
   end
 
