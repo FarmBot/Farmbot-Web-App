@@ -2,9 +2,9 @@
 # Listens to *ALL* incoming logs and stores them to the DB.
 # Also handles throttling.
 class LogService
-  THROTTLE_POLICY  = ThrottlePolicy.new(Throttler.new(1.minute) => 0.5 * 1_000,
+  THROTTLE_POLICY  = ThrottlePolicy.new Throttler.new(1.minute) => 0.5 * 1_000,
                                         Throttler.new(1.hour)   => 0.5 * 10_000,
-                                        Throttler.new(1.day)    => 0.5 * 100_000)
+                                        Throttler.new(1.day)    => 0.5 * 100_000
 
   def self.process(delivery_info, payload)
     params = { routing_key: delivery_info.routing_key, payload: payload }

@@ -6,6 +6,10 @@ class Device < ApplicationRecord
 
   TIMEZONES           = TZInfo::Timezone.all_identifiers
   BAD_TZ              = "%{value} is not a valid timezone"
+  THROTTLE_ON         = "Device is sending too many logs. " \
+                        "Suspending log storage until %s."
+  THROTTLE_OFF        = "Cooldown period has ended. "\
+                        "Resuming log transmission."
 
   has_many  :device_configs,  dependent: :destroy
   has_many  :farm_events,     dependent: :destroy
@@ -37,6 +41,7 @@ class Device < ApplicationRecord
     has_one name, dependent: :destroy
     define_method(name) { super() || klass.create!(device: self) }
   end
+
   # Give the user back the amount of logs they are allowed to view.
   def limited_log_list
     Log
@@ -88,12 +93,16 @@ class Device < ApplicationRecord
     points.where(pointer_type: "Plant")
   end
 
+  # Like Device.find, but with 150 seconds of caching.
+  def self.cached_find(id)
+    key = "devices##{id}"
+    Rails.cache.fetch(key, expires_in: 150.seconds) { Device.find(id) }
+  end
+
   def refresh_cache
     Rails.cache.write("devices##{self.id}", self)
   end
 
-  THROTTLE_ON = "Device is sending too many logs. " \
-                "Suspending log storage until %s."
   # Sets the `throttled_at` field, but only if it is unpopulated.
   # Performs no-op if `throttled_at` was already set.
   def maybe_throttle_until(time)
@@ -104,9 +113,6 @@ class Device < ApplicationRecord
       tell(THROTTLE_ON % [cooldown], ["toast"], "alert")
     end
   end
-
-  THROTTLE_OFF =  "Cooldown period has ended. "\
-                  "Resuming log transmission."
 
   def maybe_unthrottle
     if throttled_until.present?
