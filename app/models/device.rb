@@ -119,15 +119,21 @@ class Device < ApplicationRecord
       update_attributes!(throttled_until: time)
       refresh_cache
       cooldown = time.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
-      tell(THROTTLE_ON % [cooldown], ["toast"], "alert")
+      cooldown_notice(THROTTLE_ON % [cooldown], time)
     end
   end
 
   def maybe_unthrottle
     if throttled_until.present?
+      old_time = throttled_until
       update_attributes!(throttled_until: nil)
       refresh_cache
-      tell(THROTTLE_OFF, ["toast"], "alert")
+      cooldown_notice(THROTTLE_OFF, old_time)
     end
+  end
+
+  def cooldown_notice(message, throttle_time, now = Time.current)
+    hours = ((throttle_time - now) / 1.hour).round
+    tell(message, [(hours > 12) ? "email" : "toast"], "alert")
   end
 end
