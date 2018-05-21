@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_05_20_201349) do
+ActiveRecord::Schema.define(version: 2018_05_21_140428) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -48,7 +48,7 @@ ActiveRecord::Schema.define(version: 2018_05_20_201349) do
     t.datetime "last_saw_api"
     t.datetime "last_saw_mq"
     t.string "fbos_version", limit: 15
-    t.datetime "throttled_at"
+    t.datetime "throttled_until"
     t.index ["timezone"], name: "index_devices_on_timezone"
   end
 

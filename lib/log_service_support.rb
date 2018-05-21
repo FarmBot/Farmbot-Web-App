@@ -15,10 +15,10 @@ class LogService
   end
 
   def self.maybe_deliver(data)
-    throttled = THROTTLE_POLICY.is_throttled(data.device_id)
-    ok        = data.valid? && !throttled
+    throttled_until = THROTTLE_POLICY.is_throttled(data.device_id)
+    ok              = data.valid? && !throttled_until
 
-    ok ? deliver(data) : warn_user(data)
+    ok ? deliver(data) : warn_user(data, throttled_until)
   end
 
   def self.deliver(data)
@@ -28,6 +28,6 @@ class LogService
   end
 
   def self.warn_user(data)
-    data.device.maybe_throttle
+    data.device.maybe_throttle_until(throttled_until)
   end
 end

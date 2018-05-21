@@ -20,11 +20,15 @@ class ThrottlePolicy
     rules.each { |r| r.throttler.record_event(unique_id, now) }
   end
 
+  # If throttled, returns the timeperiod when device will be unthrottled
+  # returns nil if not throttled
   def is_throttled(unique_id)
-    rules.map do |rule|
-      actual = rule.throttler.usage_count_for(unique_id)
-      max    = rule.limit
-      actual > max
-    end.include?(true)
+    rules
+      .map do |rule|
+        is_over = rule.throttler.usage_count_for(unique_id) > rule.limit
+        is_over ? rule.throttler.when_does_next_period_start? : nil
+      end
+      .compact
+      .max
   end
 end

@@ -24,13 +24,14 @@ describe Throttler do
     expect(count2).to eq([5, 5, 5])
   end
 
-  it "calls a block when usage limits are under the threshhold" do
+  it "returns the cool down end time when the ID is throttled" do
     5.times { policy.track(123, NOW + 1) }
-    expect(policy.is_throttled 123).to be true
+    result = policy.is_throttled(123)
+    expect(result).to be_kind_of(Time)
   end
 
   it "ignores the block when it's over the limit" do
-    expect(policy.is_throttled 123).to be false
+    expect(policy.is_throttled 123).to be nil
   end
 
 end

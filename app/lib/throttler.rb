@@ -32,7 +32,7 @@ class Throttler
     @entries[unique_id] || 0
   end
 
-  def when_does_next_period_start?(now = Time.now)
+  def when_does_next_period_start?
     Time.at(current_period * time_unit_in_seconds.to_i) + time_unit_in_seconds
   end
 

@@ -98,7 +98,8 @@ private
   def discard?
     # Handles new logs as well as legacy logs where type is stored in
     # log.meta.type.
-    Log::DISCARD.include?(log.dig("type") || log.dig("meta", "type"))
+    type = log.dig("type") || log.dig("meta", "type")
+    type.nil? || Log::DISCARD.include?(type)
   end
 
   def find_problems!

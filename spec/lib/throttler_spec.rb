@@ -4,9 +4,8 @@ describe Throttler do
   let(:stub_time) { Time.new(2018, 5, 18, 9, 38, 2) }
 
   it "sets a time unit window size" do
-    expected_time_period = 25246440
+    expected_time_period = 25444238
     one_min              = Throttler.new(1.minute, stub_time)
-
     expect(one_min.current_period).to eq(expected_time_period)
     expect(one_min.time_unit_in_seconds).to eq(60)
     expect(one_min.entries).to eq({})
@@ -35,7 +34,7 @@ describe Throttler do
 
   it "tells you when the next time period starts" do
     one_hour  = Throttler.new(1.hour, stub_time)
-    next_hour = one_hour.when_does_next_period_start?(stub_time)
+    next_hour = one_hour.when_does_next_period_start?
     expect(next_hour).to be_kind_of(Time)
     expect(next_hour.hour).to be(stub_time.hour + 1)
     expect(next_hour.min).to  be(0)

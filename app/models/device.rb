@@ -89,9 +89,9 @@ class Device < ApplicationRecord
                 "Temporarily suspending log messages"
   # Sets the `throttled_at` field, but only if it is unpopulated.
   # Performs no-op if `throttled_at` was already set.
-  def maybe_throttle
-    if !throttled_at
-      update_attributes!(throttled_at: Time.now)
+  def maybe_throttle_until(time)
+    if !throttled_until
+      update_attributes!(throttled_until: Time.now)
       tell(THROTTLE_ON)
     end
   end
@@ -99,8 +99,8 @@ class Device < ApplicationRecord
   THROTTLE_OFF =  "Cooldown period has ended. "\
                   "Resuming log transmission."
   def maybe_unthrottle
-    if throttled_at
-      update_attributes!(throttled_at: nil)
+    if throttled_until
+      update_attributes!(throttled_until: nil)
       tell(THROTTLE_OFF)
     end
   end
