@@ -1,10 +1,10 @@
 require "spec_helper"
 
 describe Throttler do
-  let(:stub_time) { Time.new(2018, 5, 18, 9, 38, 2) }
+  let(:stub_time) { Time.new(2018, 5, 18, 9, 38, 25) }
 
   it "sets a time unit window size" do
-    expected_time_period = 25444238
+    expected_time_period = stub_time.to_i / 1.minute.to_i
     one_min              = Throttler.new(1.minute, stub_time)
     expect(one_min.current_period).to eq(expected_time_period)
     expect(one_min.time_unit_in_seconds).to eq(60)
