@@ -102,7 +102,14 @@ class Device < ApplicationRecord
   end
 
   def refresh_cache
-    Rails.cache.write(CACHE_KEY % id, self)
+    # Why? Device.new(self.as_json)???
+    #
+    # "Some objects cannot be dumped: if the objects to be dumped include
+    # bindings, procedure or method objects, instances of class IO, or singleton
+    # objects, a TypeError will be raised."
+    # https://ruby-doc.org/core-2.3.1/Marshal.html
+    # TODO: Someone plz send help! - RC
+    Rails.cache.write(CACHE_KEY % self.id, Device.new(self.as_json))
   end
 
   # Sets the `throttled_at` field, but only if it is unpopulated.

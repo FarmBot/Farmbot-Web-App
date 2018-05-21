@@ -61,4 +61,12 @@ describe Device do
     expect(Device.cached_find(id).name).to eq("blah")
   end
 
+  it "throttles a device that sends too many logs" do
+    expect(device).to receive(:tell)
+    device.update_attributes!(throttled_until: nil)
+    expect(device.throttled_until).to be(nil)
+    example = Time.now + 1.minute
+    device.maybe_throttle_until(example)
+    expect(device.throttled_until).to eq(example)
+  end
 end
