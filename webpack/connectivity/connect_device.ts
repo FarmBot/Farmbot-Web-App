@@ -55,8 +55,9 @@ export function showLogOnScreen(log: Log) {
   switch (log.type) {
     case "success":
       return success(log.message, TITLE);
-    case "busy":
     case "warn":
+      return warning(log.message, TITLE);
+    case "busy":
     case "error":
       return error(log.message, TITLE);
     case "fun":

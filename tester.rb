@@ -7,5 +7,5 @@ loop do
     print msg.first
     d.tell(msg)
     d.tell(msg)
-''  end
+  end
 end
