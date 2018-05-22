@@ -109,7 +109,7 @@ class Device < ApplicationRecord
     # objects, a TypeError will be raised."
     # https://ruby-doc.org/core-2.3.1/Marshal.html
     # TODO: Someone plz send help! - RC
-    Rails.cache.write(CACHE_KEY % self.id, self)
+    Rails.cache.write(CACHE_KEY % self.id, Device.new(self.as_json))
   end
 
   # Sets the `throttled_at` field, but only if it is unpopulated.
