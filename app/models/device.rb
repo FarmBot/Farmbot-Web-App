@@ -74,22 +74,6 @@ class Device < ApplicationRecord
     Time.now.in_time_zone(self.timezone || "UTC").utc_offset / 1.hour
   end
 
-  # Send a realtime message to a logged in user.
-  def tell(message, channels = [], type = "info")
-    log  = Log.new({ device:        self,
-                     message:       message,
-                     created_at:    Time.now,
-                     channels:      channels,
-                     major_version: 99,
-                     minor_version: 99,
-                     meta:          {},
-                     type:          type })
-    json = LogSerializer.new(log).as_json.to_json
-
-    Transport.current.amqp_send(json, self.id, "logs")
-    log
-  end
-
   def plants
     points.where(pointer_type: "Plant")
   end
@@ -134,11 +118,26 @@ class Device < ApplicationRecord
       cooldown_notice(THROTTLE_OFF, old_time, "info")
     end
   end
+  # Send a realtime message to a logged in user.
+  def tell(message, channels = [], type = "info")
+    log  = Log.create!({ device:        self,
+                         message:       message,
+                         created_at:    Time.now,
+                         channels:      channels,
+                         major_version: 99,
+                         minor_version: 99,
+                         meta:          {},
+                         type:          type })
+    json = LogSerializer.new(log).as_json.to_json
+
+    Transport.current.amqp_send(json, self.id, "logs")
+    log
+  end
 
   def cooldown_notice(message, throttle_time, type, now = Time.current)
     hours    = ((throttle_time - now) / 1.hour).round
     channels = [(hours > 2) ? "email" : "toast"]
-    tell(message, channels , type).save
+    tell(message, channels , type)
   end
 
   # CONTEXT:
