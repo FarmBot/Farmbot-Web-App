@@ -19,6 +19,7 @@ class LogService
     ok              = data.valid? && !throttled_until
 
     data.device.auto_sync_transaction do
+      print ok ? "_" : "X"
       ok ? deliver(data) : warn_user(data, throttled_until)
     end
   end
@@ -26,7 +27,7 @@ class LogService
   def self.deliver(data)
     dev, log = [data.device, data.payload]
     dev.maybe_unthrottle
-    LogDispatch.deliver(dev, Logs::Create.run!(log, device: dev))
+    # LogDispatch.deliver(dev, Logs::Create.run!(log, device: dev))
   end
 
   def self.warn_user(data, throttled_until)

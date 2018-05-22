@@ -30,7 +30,6 @@ function legacyKeyTransformation(log: Log,
 
 export const onLogs =
   (_dispatch: Function, getState: GetState) => (msg: Log) => {
-    // bothUp();
     if (isLog(msg)) {
       LEGACY_META_KEY_NAMES.map(key => legacyKeyTransformation(msg, key));
       actOnChannelName(msg, "toast", showLogOnScreen);

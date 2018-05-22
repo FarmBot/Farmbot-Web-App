@@ -109,14 +109,15 @@ class Device < ApplicationRecord
     # objects, a TypeError will be raised."
     # https://ruby-doc.org/core-2.3.1/Marshal.html
     # TODO: Someone plz send help! - RC
-    Rails.cache.write(CACHE_KEY % self.id, Device.new(self.as_json))
+    Rails.cache.write(CACHE_KEY % self.id, self)
   end
 
   # Sets the `throttled_at` field, but only if it is unpopulated.
   # Performs no-op if `throttled_at` was already set.
   def maybe_throttle_until(until_time)
     if throttled_until.nil?
-      update_attributes!(throttled_until: until_time, throttled_at: Time.now)
+      reload
+        .update_attributes!(throttled_until: until_time, throttled_at: Time.now)
       refresh_cache
       cooldown = until_time.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
       cooldown_notice(THROTTLE_ON % [cooldown], until_time, "warn")
@@ -126,14 +127,16 @@ class Device < ApplicationRecord
   def maybe_unthrottle
     if throttled_until.present?
       old_time = throttled_until
-      update_attributes!(throttled_until: nil, throttled_at: Time.now)
+      reload # <= WHY!?! TODO: Find out why it crashes without this.
+        .update_attributes!(throttled_until: nil, throttled_at: Time.now)
       refresh_cache
       cooldown_notice(THROTTLE_OFF, old_time, "info")
     end
   end
 
   def cooldown_notice(message, throttle_time, type, now = Time.current)
-    hours = ((throttle_time - now) / 1.hour).round
-    tell(message, [(hours > 2) ? "email" : "toast"], "alert")
+    hours    = ((throttle_time - now) / 1.hour).round
+    channels = [(hours > 2) ? "email" : "toast"]
+    tell(message, channels , type)
   end
 end
