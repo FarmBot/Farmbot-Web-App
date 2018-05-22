@@ -9,7 +9,6 @@ export interface ToolSlotLayerProps {
   visible: boolean;
   slots: SlotWithTool[];
   mapTransformProps: MapTransformProps;
-  dispatch: Function;
 }
 
 export function ToolSlotLayer(props: ToolSlotLayerProps) {

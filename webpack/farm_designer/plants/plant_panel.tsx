@@ -9,11 +9,13 @@ import { FBSelect, DropDownItem } from "../../ui";
 import { PlantOptions } from "../interfaces";
 import { PlantStage } from "farmbot";
 import * as moment from "moment";
+import { Actions } from "../../constants";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
   onDestroy?(uuid: string): void;
   updatePlant?(uuid: string, update: PlantOptions): void;
+  dispatch: Function;
 }
 
 export const PLANT_STAGES: DropDownItem[] = [
@@ -62,7 +64,8 @@ export function EditPlantStatus(props: EditPlantStatusProps) {
     }} />;
 }
 
-export function PlantPanel({ info, onDestroy, updatePlant }: PlantPanelProps) {
+export function PlantPanel(props: PlantPanelProps) {
+  const { info, onDestroy, updatePlant, dispatch } = props;
   const { name, slug, plantedAt, daysOld, uuid, plantStatus } = info;
   let { x, y } = info;
   if (onDestroy) { x = round(x); y = round(y); }
@@ -129,6 +132,17 @@ export function PlantPanel({ info, onDestroy, updatePlant }: PlantPanelProps) {
         </span>
       </li>
     </ul>
+    <button className="fb-button gray"
+      hidden={true}
+      onClick={() => {
+        dispatch({
+          type: Actions.CHOOSE_LOCATION,
+          payload: { x, y, z: undefined }
+        });
+        history.push("/app/designer/plants/move_to");
+      }}>
+      {t("Move FarmBot to this plant")}
+    </button>
     <div>
       <label hidden={!onDestroy}>
         {t("Delete this plant")}
@@ -137,7 +151,7 @@ export function PlantPanel({ info, onDestroy, updatePlant }: PlantPanelProps) {
     <button
       className="fb-button red"
       hidden={!onDestroy}
-      onClick={destroy} >
+      onClick={destroy}>
       {t("Delete")}
     </button>
     <button

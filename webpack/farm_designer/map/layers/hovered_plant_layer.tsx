@@ -39,17 +39,19 @@ export class HoveredPlantLayer extends
   }
 
   render() {
-    const { icon } = this.props.designer.hoveredPlant;
-    const { currentPlant, mapTransformProps, dragging, isEditing } = this.props;
+    const {
+      currentPlant, mapTransformProps, dragging, isEditing, visible, designer
+    } = this.props;
+    const { icon } = designer.hoveredPlant;
+    const hovered = !!icon;
     const { id, x, y, radius } = this.plantInfo;
     const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
-    const hovered = !!this.props.designer.hoveredPlant.icon;
     const scaledRadius = currentPlant ? radius : radius * 1.2;
     const alpha = dragging ? 0.4 : 1.0;
     const animate = !Session.deprecatedGetBool(BooleanSetting.disable_animations);
 
     return <g id="hovered-plant-layer">
-      {this.props.visible && hovered &&
+      {visible && hovered &&
         <g id={"hovered-plant-" + id}>
           {currentPlant &&
             <g id="selected-plant-indicators">

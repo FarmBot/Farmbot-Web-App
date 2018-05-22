@@ -10,15 +10,17 @@ const cropSpreadDict: CropSpreadDict = {};
 
 export function PlantLayer(props: PlantLayerProps) {
   const {
-    crops,
-    plants,
+    mapTransformProps,
     dispatch,
     visible,
+    plants,
+    crops,
     currentPlant,
     dragging,
     editing,
     selectedForDel,
-    mapTransformProps
+    zoomLvl,
+    activeDragXY,
   } = props;
 
   crops
@@ -30,9 +32,6 @@ export function PlantLayer(props: PlantLayerProps) {
       plants
         .filter(x => !!x.body.id)
         .map(p => defensiveClone(p))
-        .map(p => {
-          return p;
-        })
         .map(p => {
           return {
             selected: !!(currentPlant && (p.uuid === currentPlant.uuid)),
@@ -57,8 +56,8 @@ export function PlantLayer(props: PlantLayerProps) {
               grayscale={p.grayscale}
               dragging={p.selected && dragging && editing}
               dispatch={dispatch}
-              zoomLvl={props.zoomLvl}
-              activeDragXY={props.activeDragXY} />
+              zoomLvl={zoomLvl}
+              activeDragXY={activeDragXY} />
           </Link>;
         })}
   </g>;

@@ -488,6 +488,10 @@ export namespace Content {
     trim(`No Regimen selected. Click one in the Regimens panel to edit, or
     click "+" in the Regimens panel to create a new one.`);
 
+  // Farm Designer
+  export const OUTSIDE_PLANTING_AREA =
+    trim(`Outside of planting area. Plants must be placed within the grid.`);
+
   // Farm Events
   export const REGIMEN_TODAY_SKIPPED_ITEM_RISK =
     trim(`You are scheduling a regimen to run today. Be aware that

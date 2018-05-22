@@ -9,6 +9,7 @@ import * as React from "react";
 import { PlantPanel, PlantPanelProps, EditPlantStatus, EditPlantStatusProps } from "../plant_panel";
 import { shallow } from "enzyme";
 import { FormattedPlantInfo } from "../map_state_to_props";
+import { Actions } from "../../../constants";
 
 describe("<PlantPanel/>", () => {
   beforeEach(function () {
@@ -32,6 +33,7 @@ describe("<PlantPanel/>", () => {
       info,
       onDestroy: jest.fn(),
       updatePlant: jest.fn(),
+      dispatch: jest.fn(),
     };
   };
 
@@ -46,23 +48,38 @@ describe("<PlantPanel/>", () => {
   it("calls destroy", () => {
     const p = fakeProps();
     const wrapper = shallow(<PlantPanel {...p} />);
-    wrapper.find("button").first().simulate("click");
+    const btn = wrapper.find("button").at(1);
+    expect(btn.text()).toEqual("Delete");
+    btn.simulate("click");
     expect(p.onDestroy).toHaveBeenCalledWith("Plant.0.0");
   });
 
   it("renders", () => {
-    const wrapper = shallow(<PlantPanel info={info} />);
+    const wrapper = shallow(<PlantPanel info={info} dispatch={jest.fn()} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("1 days old");
     expect(txt).toContain("(12, 34)");
   });
 
   it("enters select mode", () => {
-    const wrapper = shallow(<PlantPanel info={info} />);
+    const wrapper = shallow(<PlantPanel info={info} dispatch={jest.fn()} />);
     const btn = wrapper.find("button").last();
     btn.simulate("click");
     expect(btn.text()).toEqual("Delete multiple");
     expect(mockHistory).toHaveBeenCalledWith("/app/designer/plants/select");
+  });
+
+  it("navigates to 'move to' mode", () => {
+    const dispatch = jest.fn();
+    const wrapper = shallow(<PlantPanel info={info} dispatch={dispatch} />);
+    const btn = wrapper.find("button").first();
+    btn.simulate("click");
+    expect(btn.text()).toEqual("Move FarmBot to this plant");
+    expect(mockHistory).toHaveBeenCalledWith("/app/designer/plants/move_to");
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: { "x": 12, "y": 34, "z": undefined },
+      type: Actions.CHOOSE_LOCATION
+    });
   });
 });
 
