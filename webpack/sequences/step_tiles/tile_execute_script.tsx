@@ -29,7 +29,7 @@ export function TileExecuteScript({
 
     /** dispatch editStep for current ExecuteScript step */
     const updateStep = (executor: (stepCopy: ExecuteScript) => void) => {
-      return dispatch(editStep({
+      dispatch(editStep({
         sequence: currentSequence,
         step: currentStep,
         index: index,

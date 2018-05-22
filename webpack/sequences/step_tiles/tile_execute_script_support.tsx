@@ -120,7 +120,7 @@ export function FarmwareInputs(props: FarmwareInputsProps) {
 
   /** Add a Farmware input pair. */
   const addStepPair = (inputPair: Pair) => () => {
-    updateStep(addOrUpdatePair(inputPair, currentStep, updateStep));
+    addOrUpdatePair(inputPair, currentStep, updateStep);
   };
 
   /** Remove a Farmware input pair. */

@@ -17,7 +17,7 @@ jest.mock("../../../history", () => ({
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { MoveTo, MoveToProps } from "../move_to";
+import { MoveTo, MoveToProps, MoveToForm, MoveToFormProps } from "../move_to";
 
 describe("<MoveTo />", () => {
   beforeEach(function () {
@@ -34,16 +34,24 @@ describe("<MoveTo />", () => {
   }
 
   it("moves to location: bot's current z value", () => {
-    const wrapper = mount(<MoveTo {...fakeProps() } />);
+    const wrapper = mount(<MoveTo {...fakeProps()} />);
     wrapper.find("button").simulate("click");
     expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 1, y: 2, z: 30 });
   });
+});
+
+describe("<MoveToForm />", () => {
+  function fakeProps(): MoveToFormProps {
+    return {
+      chosenLocation: { x: 1, y: 2, z: 3 },
+      currentBotLocation: { x: 10, y: 20, z: 30 },
+    };
+  }
 
   it("moves to location: custom z value", () => {
-    const wrapper = mount(<MoveTo {...fakeProps() } />);
+    const wrapper = mount(<MoveToForm {...fakeProps()} />);
     wrapper.setState({ z: 50 });
     wrapper.find("button").simulate("click");
     expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 1, y: 2, z: 50 });
   });
-
 });
