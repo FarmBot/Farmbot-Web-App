@@ -190,7 +190,7 @@ export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {
 }
 
 export const getDeviceAccountSettings =
-  (index: ResourceIndex): TaggedDevice | undefined => {
+  (index: ResourceIndex): TaggedDevice => {
     const device = maybeGetDevice(index);
     switch (index.byKind.Device.length) {
       case 0: return bail(`Tried to load device before it was loaded.`);

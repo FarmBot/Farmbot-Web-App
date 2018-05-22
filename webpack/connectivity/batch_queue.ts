@@ -1,7 +1,7 @@
 import { TaggedLog } from "../resources/tagged_resources";
 import { store } from "../redux/store";
 import { batchInitResources, bothUp } from "./connect_device";
-import { getDeviceAccountSettings, maybeGetDevice } from "../resources/selectors";
+import { maybeGetDevice } from "../resources/selectors";
 import * as moment from "moment";
 import { DeviceAccountSettings } from "../devices/interfaces";
 
