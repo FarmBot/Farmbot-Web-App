@@ -11,7 +11,7 @@ describe Throttler do
   it "initializes" do
     expect(policy.rules).to be
     expect(policy.rules.map(&:limit).sort).to eq([1, 10, 100])
-    actual   = policy.rules.map(&:throttler).map(&:time_unit_in_seconds).sort
+    actual   = policy.rules.map(&:throttler).map(&:time_unit).sort
     expected = [1.minute, 1.hour, 1.day]
     expect(actual).to eq(expected)
   end
@@ -27,7 +27,7 @@ describe Throttler do
   it "returns the cool down end time when the ID is throttled" do
     5.times { policy.track(123, NOW + 1) }
     result = policy.is_throttled(123)
-    expect(result).to be_kind_of(Time)
+    expect(result).to be_kind_of(ThrottlePolicy::Violation)
   end
 
   it "ignores the block when it's over the limit" do

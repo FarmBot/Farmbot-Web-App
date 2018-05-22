@@ -65,9 +65,11 @@ describe Device do
     expect(device).to receive(:tell)
     device.update_attributes!(throttled_until: nil)
     expect(device.throttled_until).to be(nil)
-    example = Time.now + 1.minute
-    device.maybe_throttle_until(example)
-    expect(device.throttled_until).to eq(example)
+    five_minutes = Throttler.new(5.minutes, Time.now + 1.minute)
+    rule         = ThrottlePolicy::Rule.new(five_minutes, 500)
+    violation    = ThrottlePolicy::Violation.new(rule)
+    device.maybe_throttle(violation)
+    expect(device.throttled_until).to eq(example.ends_at)
   end
 
   it "unthrottles a runaway device" do

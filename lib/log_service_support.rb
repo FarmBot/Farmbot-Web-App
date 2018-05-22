@@ -15,11 +15,11 @@ class LogService
   end
 
   def self.maybe_deliver(data)
-    throttled_until = THROTTLE_POLICY.is_throttled(data.device_id)
-    ok              = data.valid? && !throttled_until
+    violation = THROTTLE_POLICY.is_throttled(data.device_id)
+    ok        = data.valid? && !violation
 
     data.device.auto_sync_transaction do
-      ok ? deliver(data) : warn_user(data, throttled_until)
+      ok ? deliver(data) : warn_user(data, violation)
     end
   end
 
@@ -29,7 +29,7 @@ class LogService
     LogDispatch.deliver(dev, Logs::Create.run!(log, device: dev))
   end
 
-  def self.warn_user(data, throttled_until)
-    data.device.maybe_throttle_until(throttled_until)
+  def self.warn_user(data, violation)
+    data.device.maybe_throttle(violation)
   end
 end

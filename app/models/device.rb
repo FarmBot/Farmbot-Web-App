@@ -6,7 +6,7 @@ class Device < ApplicationRecord
 
   TIMEZONES           = TZInfo::Timezone.all_identifiers
   BAD_TZ              = "%{value} is not a valid timezone"
-  THROTTLE_ON         = "Device is sending too many logs. " \
+  THROTTLE_ON         = "Device is sending too many logs (%s). " \
                         "Suspending log storage until %s."
   THROTTLE_OFF        = "Cooldown period has ended. "\
                         "Resuming log storage."
@@ -98,14 +98,16 @@ class Device < ApplicationRecord
 
   # Sets the `throttled_at` field, but only if it is unpopulated.
   # Performs no-op if `throttled_at` was already set.
-  def maybe_throttle_until(until_time)
+  def maybe_throttle(violation)
     # Some log validation errors will result in until_time being `nil`.
-    if (until_time && throttled_until.nil?)
-      reload
-        .update_attributes!(throttled_until: until_time, throttled_at: Time.now)
+    if (violation && throttled_until.nil?)
+      et = violation.ends_at
+      reload.update_attributes!(throttled_until: et,
+                                throttled_at:    Time.now)
       refresh_cache
-      cooldown = until_time.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
-      cooldown_notice(THROTTLE_ON % [cooldown], until_time, "warn")
+      cooldown = et.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
+      info = [violation.explanation, cooldown]
+      cooldown_notice(THROTTLE_ON % info, until_time, "warn")
     end
   end
 

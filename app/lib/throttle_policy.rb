@@ -11,6 +11,33 @@ class ThrottlePolicy
     end
   end
 
+  class Violation
+    attr_reader :rule
+
+    def initialize(rule)
+      @rule = rule
+    end
+
+    def ends_at
+      @rule.throttler.when_does_next_period_start?
+    end
+
+    def <=>(other)
+      self.timeframe <=> other.timeframe
+    end
+
+    def timeframe
+      rule.throttler.time_unit
+    end
+
+    def limit
+      rule.limit
+    end
+
+    def explanation
+      "more than #{limit} logs in #{timeframe.inspect}"
+    end
+  end
   # Dictionary<Throttler, Intger>
   def initialize(policy_rules)
     @rules = policy_rules.map { |rule_set| Rule.new(*rule_set) }
@@ -25,8 +52,8 @@ class ThrottlePolicy
   def is_throttled(unique_id)
     rules
       .map do |rule|
-        is_over = rule.throttler.usage_count_for(unique_id) > rule.limit
-        is_over ? rule.throttler.when_does_next_period_start? : nil
+        is_violation = rule.throttler.usage_count_for(unique_id) > rule.limit
+        is_violation ? Violation.new(rule) : nil
       end
       .compact
       .max

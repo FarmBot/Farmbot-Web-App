@@ -7,7 +7,7 @@ describe Throttler do
     expected_time_period = stub_time.to_i / 1.minute.to_i
     one_min              = Throttler.new(1.minute, stub_time)
     expect(one_min.current_period).to eq(expected_time_period)
-    expect(one_min.time_unit_in_seconds).to eq(60)
+    expect(one_min.time_unit).to eq(60)
     expect(one_min.entries).to eq({})
   end
 

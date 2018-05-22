@@ -53,7 +53,7 @@ function calculateCooldownTime(dev: Partial<DeviceAccountSettings>): number {
     const start = moment(throttled_at);
     const end = moment(throttled_until);
 
-    return start.diff(end, "minutes");
+    return start.diff(end, "seconds");
   } else {
     return 0;
   }

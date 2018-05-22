@@ -44,6 +44,7 @@ class ApplicationRecord < ActiveRecord::Base
     serializer = ActiveModel::Serializer.serializer_for(self)
     return (serializer ? serializer.new(self) : self).as_json
   end
+
   def broadcast_payload
     { args: { label: Transport.current.current_request_id }, body: body_as_json }.to_json
   end
@@ -62,8 +63,6 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast!
-    # no     = [User, Device, EdgeNode, PrimaryNode, TokenIssuance, ]
-    # `espeak "#{self.class.name}"` if !no.include?(self.class)
     AutoSyncJob.perform_later(broadcast_payload,
                               current_device.id,
                               chan_name,

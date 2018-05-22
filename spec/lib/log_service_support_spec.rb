@@ -45,7 +45,7 @@ describe LogService do
     data           = AmqpLogParser::DeliveryInfo.new
     data.device_id = FactoryBot.create(:device).id
     time           = Time.now
-    expect_any_instance_of(Device).to receive(:maybe_throttle_until).with(time)
+    expect_any_instance_of(Device).to receive(:maybe_throttle).with(time)
     LogService.warn_user(data, time)
   end
 end

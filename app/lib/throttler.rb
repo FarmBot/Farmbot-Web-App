@@ -9,12 +9,12 @@
 #   * A table of event counts for the current time period, indexed by
 #     the initiator ID.
 class Throttler
-  attr_reader :time_unit_in_seconds,
+  attr_reader :time_unit,
               :current_period, # Slice time into fixed size windows
               :entries
 
-  def initialize(unit_size_in_seconds, now = Time.now)
-    @time_unit_in_seconds = unit_size_in_seconds
+  def initialize(active_support_duration, now = Time.now)
+    @time_unit = active_support_duration
     reset_everything now
   end
 
@@ -33,7 +33,7 @@ class Throttler
   end
 
   def when_does_next_period_start?
-    Time.at(current_period * time_unit_in_seconds.to_i) + time_unit_in_seconds
+    Time.at(current_period * time_unit.to_i) + time_unit
   end
 
 private
@@ -50,7 +50,7 @@ private
 
   # Returns integer representation of current clock period
   def calculate_period(time)
-    (time.to_i / @time_unit_in_seconds)
+    (time.to_i / @time_unit)
   end
 
 end
