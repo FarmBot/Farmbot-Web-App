@@ -78,4 +78,8 @@ describe Device do
     device.maybe_unthrottle
     expect(device.throttled_until).to eq(nil)
   end
+
+  it "is a device" do
+    expect(Device.new.is_device).to eq(true)
+  end
 end

@@ -14,7 +14,7 @@ describe("BatchQueue", () => {
     const q = new BatchQueue(1);
     const log = fakeLog();
     q.push(log);
-    q.work();
+    q.maybeWork();
     expect(bothUp).toHaveBeenCalled();
     expect(batchInitResources).toHaveBeenCalledWith([log]);
   });

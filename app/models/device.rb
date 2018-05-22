@@ -140,6 +140,14 @@ class Device < ApplicationRecord
     tell(message, channels , type)
   end
 
+  # CONTEXT:
+  #  * We tried to use Rails low level caching, but it hit marshalling issues.
+  #  * We did a hack with Device.new(self.as_json) to get around it.
+  #  * Mutations does not allow unsaved models
+  #  * We converted the `model :device, class: Device` to:
+  #     `duck :device, methods [:id, :is_device]`
+  #
+  # This methd is not required, but adds a layer of safety.
   def is_device # SEE: Hack in Log::Create. TODO: Fix low level caching bug.
     true
   end
