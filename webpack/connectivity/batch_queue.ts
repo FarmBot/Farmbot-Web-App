@@ -5,14 +5,14 @@ import { batchInitResources, bothUp } from "./connect_device";
 /** Performs resource initialization (Eg: a storm of incoming logs) in batches
  * at a regular interval. We only need one work queue for the whole app,
  * but singletons are bad. */
-class BatchQueue {
+export class BatchQueue {
   private queue: TaggedLog[] = [];
-  private timerId = 0;
 
   /** Create a new batch queue that will check for new messages and execute them
    * at a specified work rate (ms).*/
   constructor(workRateMS: number) {
-    this.timerId = window.setInterval(this.work, workRateMS);
+    // We will need to store this int if we ever want to cancel queue polling:
+    window.setInterval(this.work, workRateMS);
   }
 
   work = () => {
@@ -26,7 +26,6 @@ class BatchQueue {
     this.queue.push(resource);
   }
   clear = () => this.queue = [];
-  destroy = () => window.clearInterval(this.timerId);
 }
 
 /** The only work queue needed for the whole app.
