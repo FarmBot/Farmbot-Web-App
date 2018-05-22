@@ -122,7 +122,7 @@ class Device < ApplicationRecord
   end
   # Send a realtime message to a logged in user.
   def tell(message, channels = [], type = "info")
-    log  = Log.create!({ device:        self,
+    log  = Log.new({ device:        self,
                          message:       message,
                          created_at:    Time.now,
                          channels:      channels,
@@ -133,13 +133,13 @@ class Device < ApplicationRecord
     json = LogSerializer.new(log).as_json.to_json
 
     Transport.current.amqp_send(json, self.id, "logs")
-    log
+    return log
   end
 
   def cooldown_notice(message, throttle_time, type, now = Time.current)
     hours    = ((throttle_time - now) / 1.hour).round
     channels = [(hours > 2) ? "email" : "toast"]
-    tell(message, channels , type)
+    tell(message, channels , type).save
   end
 
   # CONTEXT:

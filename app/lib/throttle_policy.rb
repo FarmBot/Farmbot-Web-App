@@ -31,7 +31,7 @@ class ThrottlePolicy
     end
 
     def limit
-      rule.limit
+      rule.limit.to_i
     end
 
     def explanation

@@ -62,7 +62,7 @@ describe Device do
   end
 
   it "throttles a device that sends too many logs" do
-    expect(device).to receive(:tell)
+    expect(device).to receive(:tell).and_return(Log.new)
     device.update_attributes!(throttled_until: nil)
     expect(device.throttled_until).to be(nil)
     five_minutes = Throttler.new(5.minutes, Time.now + 1.minute)
@@ -73,7 +73,7 @@ describe Device do
   end
 
   it "unthrottles a runaway device" do
-    expect(device).to receive(:tell)
+    expect(device).to receive(:tell).and_return(Log.new)
     example = Time.now - 1.minute
     device.update_attributes!(throttled_until: example)
     expect(device.throttled_until).to eq(example)
