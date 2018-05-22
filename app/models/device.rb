@@ -7,7 +7,7 @@ class Device < ApplicationRecord
   TIMEZONES           = TZInfo::Timezone.all_identifiers
   BAD_TZ              = "%{value} is not a valid timezone"
   THROTTLE_ON         = "Device is sending too many logs (%s). " \
-                        "Suspending log storage until %s."
+                        "Suspending log storage and display until %s."
   THROTTLE_OFF        = "Cooldown period has ended. "\
                         "Resuming log storage."
   CACHE_KEY           = "devices.%s"
