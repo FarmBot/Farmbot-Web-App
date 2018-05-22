@@ -76,6 +76,8 @@ export interface DeviceAccountSettings {
   name: string;
   timezone?: string | undefined;
   tz_offset_hrs: number;
+  throttled_until?: string;
+  throttled_at?: string;
   fbos_version?: string | undefined;
   last_saw_api?: string | undefined;
   last_saw_mq?: string | undefined;
