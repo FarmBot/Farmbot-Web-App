@@ -10,6 +10,8 @@ import { Everything } from "../../interfaces";
 import { OpenFarm } from "../openfarm";
 import { OFSearch } from "../util";
 import { unselectPlant, setDragIcon } from "../actions";
+import { validBotLocationData } from "../../util";
+import { createPlant } from "../map/garden_map";
 
 interface InforFieldProps {
   title: string;
@@ -28,6 +30,73 @@ function InfoField(props: InforFieldProps) {
   </li>;
 }
 
+const CropInfoList = (crop: OpenFarm.OFCrop) => {
+  return <div className="object-list">
+    <ul>
+      {_(crop)
+        .omit([
+          "slug",
+          "processing_pictures",
+          "description",
+          "main_image_path",
+          "tags_array",
+          "guides_count"
+        ])
+        .toPairs()
+        .map((pair: string, i: number) => {
+          const field = pair[0];
+          const value = pair[1];
+          switch (field) {
+            case "svg_icon":
+              /**
+              * If there's a value, give it an img element to render the
+              * actual graphic. If no value, return "Not Set".
+              */
+              return <InfoField key={i} title={field}>
+                {value
+                  ? <div>
+                    <img
+                      src={svgToUrl(value)}
+                      width={100}
+                      height={100}
+                      onDragStart={setDragIcon(value)} />
+                  </div>
+                  : <span>
+                    {t("Not Set")}
+                  </span>
+                }
+              </InfoField>;
+            /**
+             * Need to convert the `cm` provided by OpenFarm to `mm`
+             * to match the Farm Designer units.
+             */
+            case "spread":
+            case "row_spacing":
+            case "height":
+              return <InfoField key={i} title={field}>
+                {!isNaN(parseInt(value))
+                  ? (parseInt(value) * 10) + t("mm")
+                  : undefined || t("Not Set")}
+              </InfoField>;
+            case "common_names":
+              return <InfoField key={i} title={field}>
+                {_.isArray(value)
+                  ? value.join(", ")
+                  : value || t("Not Set")}
+              </InfoField>;
+            /**
+             * Default behavior for all other properties.
+             */
+            default:
+              return <InfoField key={i} title={field}>
+                {value || t("Not Set")}
+              </InfoField>;
+          }
+        }).value()}
+    </ul>
+  </div>;
+};
+
 export function mapStateToProps(props: Everything): CropInfoProps {
   return {
     OFSearch,
@@ -36,7 +105,8 @@ export function mapStateToProps(props: Everything): CropInfoProps {
       .resources
       .consumers
       .farm_designer
-      .cropSearchResults || []
+      .cropSearchResults || [],
+    botPosition: validBotLocationData(props.bot.hardware.location_data).position
   };
 }
 
@@ -47,6 +117,15 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
     const crop = getPathArray()[5];
     OFSearch(crop)(this.props.dispatch);
     unselectPlant(this.props.dispatch)();
+  }
+
+  get botXY(): Record<"x" | "y", number> | undefined {
+    const { x, y } = this.props.botPosition;
+    return _.isNumber(x) && _.isNumber(y) ? { x, y } : undefined;
+  }
+
+  get botXYLabel(): string {
+    return this.botXY ? `(${this.botXY.x}, ${this.botXY.y})` : "(unknown)";
   }
 
   render() {
@@ -93,73 +172,17 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
           target="_blank">
           OpenFarm
         </a>
-        <div className="object-list">
-          <ul>
-            {
-              _(result.crop)
-                .omit([
-                  "slug",
-                  "processing_pictures",
-                  "description",
-                  "main_image_path",
-                  "tags_array",
-                  "guides_count"
-                ])
-                .toPairs()
-                .map((pair: string, i: number) => {
-                  const field = pair[0];
-                  const value = pair[1];
-                  switch (field) {
-                    case "svg_icon":
-                      /**
-                      * If there's a value, give it an img element to render the
-                      * actual graphic. If no value, return "Not Set".
-                      */
-                      return <InfoField key={i} title={field}>
-                        {value ?
-                          <div>
-                            <img
-                              src={svgToUrl(value)}
-                              width={100}
-                              height={100}
-                              onDragStart={setDragIcon(value)} />
-                          </div>
-                          :
-                          <span>
-                            {t("Not Set")}
-                          </span>
-                        }
-                      </InfoField>;
-                    /**
-                     * Need to convert the `cm` provided by OpenFarm to `mm`
-                     * to match the Farm Designer units.
-                     */
-                    case "spread":
-                    case "row_spacing":
-                    case "height":
-                      return <InfoField key={i} title={field}>
-                        {!isNaN(parseInt(value))
-                          ? (parseInt(value) * 10) + t("mm")
-                          : undefined || t("Not Set")}
-                      </InfoField>;
-                    case "common_names":
-                      return <InfoField key={i} title={field}>
-                        {_.isArray(value)
-                          ? value.join(", ")
-                          : value || t("Not Set")}
-                      </InfoField>;
-                    /**
-                     * Default behavior for all other properties.
-                     */
-                    default:
-                      return <InfoField key={i} title={field}>
-                        {value || t("Not Set")}
-                      </InfoField>;
-                  }
-                }).value()
+        <CropInfoList {...result.crop} />
+        <button className="fb-button gray" disabled={!this.botXY}
+          onClick={() => {
+            if (this.botXY) {
+              createPlant(result.crop.name, result.crop.slug,
+                this.botXY, undefined, this.props.dispatch);
             }
-          </ul>
-        </div>
+          }}>
+          {t("Add plant at current FarmBot location {{coordinate}}",
+            { coordinate: this.botXYLabel })}
+        </button>
       </div>
     </div>;
   }

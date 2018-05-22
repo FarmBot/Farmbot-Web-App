@@ -65,6 +65,42 @@ export const getMode = (): Mode => {
   return Mode.none;
 };
 
+export const createPlant = (
+  cropName: string,
+  slug: string,
+  gardenCoords: AxisNumberProperty,
+  gridSize: AxisNumberProperty | undefined,
+  dispatch: Function) => {
+  const { x, y } = gardenCoords;
+  const tooLow = x < 0 || y < 0; // negative (beyond grid start)
+  const tooHigh = gridSize
+    ? x > gridSize.x || y > gridSize.y // beyond grid end
+    : false;
+  const outsideGrid = tooLow || tooHigh;
+  if (outsideGrid) {
+    error(t(Content.OUTSIDE_PLANTING_AREA));
+  } else {
+    const p: TaggedPlantPointer = {
+      kind: "Point",
+      uuid: "--never",
+      specialStatus: SpecialStatus.SAVED,
+      body: Plant({
+        x,
+        y,
+        openfarm_slug: slug,
+        name: cropName,
+        created_at: moment().toISOString(),
+        radius: DEFAULT_PLANT_RADIUS
+      })
+    };
+    // Stop non-plant objects from creating generic plants in the map
+    if (p.body.name != "name" && p.body.openfarm_slug != "slug") {
+      // Create and save a new plant in the garden map
+      dispatch(initSave(p));
+    }
+  }
+};
+
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {
   constructor(props: GardenMapProps) {
@@ -204,43 +240,15 @@ export class GardenMap extends
     }
   }
 
-  findCrop(slug?: string) {
-    return findBySlug(this.props.designer.cropSearchResults || [], slug);
-  }
-
   handleDrop = (
     e: React.DragEvent<HTMLElement> | React.MouseEvent<SVGElement>) => {
     e.preventDefault();
     const gardenCoords = this.getGardenCoordinates(e);
     if (gardenCoords) {
-      const crop = getPathArray()[5];
-      const OFEntry = this.findCrop(crop);
-      const { x, y } = gardenCoords;
-      const outsideGrid = x < 0 || y < 0 || // negative (beyond grid start)
-        x > this.props.gridSize.x || // beyond grid X end
-        y > this.props.gridSize.y; // beyond grid Y end
-      if (outsideGrid) {
-        error(t(Content.OUTSIDE_PLANTING_AREA));
-      } else {
-        const p: TaggedPlantPointer = {
-          kind: "Point",
-          uuid: "--never",
-          specialStatus: SpecialStatus.SAVED,
-          body: Plant({
-            x,
-            y,
-            openfarm_slug: OFEntry.crop.slug,
-            name: OFEntry.crop.name || "Mystery Crop",
-            created_at: moment().toISOString(),
-            radius: DEFAULT_PLANT_RADIUS
-          })
-        };
-        // Stop non-plant objects from creating generic plants in the map
-        if (p.body.name != "name" && p.body.openfarm_slug != "slug") {
-          // Create and save a new plant in the garden map
-          this.props.dispatch(initSave(p));
-        }
-      }
+      const { designer, gridSize, dispatch } = this.props;
+      const slug = getPathArray()[5];
+      const { crop } = findBySlug(designer.cropSearchResults || [], slug);
+      createPlant(crop.name, crop.slug, gardenCoords, gridSize, dispatch);
     } else {
       throw new Error(`Missing 'drop-area-svg', 'farm-designer-map', or
       'farm-designer' while trying to add a plant.`);
