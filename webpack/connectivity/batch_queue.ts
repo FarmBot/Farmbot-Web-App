@@ -17,6 +17,7 @@ export class BatchQueue {
 
   work = () => {
     const { length } = this.queue;
+    length && console.log("Processing " + length);
     length && store.dispatch(batchInitResources(this.queue));
     length && bothUp();
     this.clear();
