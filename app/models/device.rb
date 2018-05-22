@@ -107,7 +107,7 @@ class Device < ApplicationRecord
       refresh_cache
       cooldown = et.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
       info = [violation.explanation, cooldown]
-      cooldown_notice(THROTTLE_ON % info, until_time, "warn")
+      cooldown_notice(THROTTLE_ON % info, et, "warn")
     end
   end
 

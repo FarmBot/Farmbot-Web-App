@@ -69,7 +69,7 @@ describe Device do
     rule         = ThrottlePolicy::Rule.new(five_minutes, 500)
     violation    = ThrottlePolicy::Violation.new(rule)
     device.maybe_throttle(violation)
-    expect(device.throttled_until).to eq(example.ends_at)
+    expect(device.throttled_until).to eq(violation.ends_at)
   end
 
   it "unthrottles a runaway device" do
