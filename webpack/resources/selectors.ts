@@ -189,18 +189,15 @@ export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {
     dev : undefined;
 }
 
-export function getDeviceAccountSettings(index: ResourceIndex): TaggedDevice {
-  const list = index.byKind.Device;
-  const uuid = list[0] || "_";
-  const device = index.references[uuid];
-  switch (list.length) {
-    case 0: return bail(`Tried to load device before it was loaded.`);
-    case 1: return (device && device.kind === "Device" && sanityCheck(device))
-      ? device
-      : bail("Malformed device!");
-    default: return bail("Found more than 1 device");
-  }
-}
+export const getDeviceAccountSettings =
+  (index: ResourceIndex): TaggedDevice | undefined => {
+    const device = maybeGetDevice(index);
+    switch (index.byKind.Device.length) {
+      case 0: return bail(`Tried to load device before it was loaded.`);
+      case 1: return (device) ? device : bail("Malformed device!");
+      default: return bail("Found more than 1 device");
+    }
+  };
 
 export function maybeFetchUser(index: ResourceIndex):
   TaggedUser | undefined {

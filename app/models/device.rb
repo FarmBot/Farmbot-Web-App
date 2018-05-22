@@ -115,7 +115,8 @@ class Device < ApplicationRecord
   # Sets the `throttled_at` field, but only if it is unpopulated.
   # Performs no-op if `throttled_at` was already set.
   def maybe_throttle_until(until_time)
-    if throttled_until.nil?
+    # Some log validation errors will result in until_time being `nil`.
+    if (until_time && throttled_until.nil?)
       reload
         .update_attributes!(throttled_until: until_time, throttled_at: Time.now)
       refresh_cache
@@ -128,7 +129,7 @@ class Device < ApplicationRecord
     if throttled_until.present?
       old_time = throttled_until
       reload # <= WHY!?! TODO: Find out why it crashes without this.
-        .update_attributes!(throttled_until: nil, throttled_at: Time.now)
+        .update_attributes!(throttled_until: nil, throttled_at: nil)
       refresh_cache
       cooldown_notice(THROTTLE_OFF, old_time, "info")
     end
@@ -137,7 +138,7 @@ class Device < ApplicationRecord
   def cooldown_notice(message, throttle_time, type, now = Time.current)
     hours    = ((throttle_time - now) / 1.hour).round
     channels = [(hours > 2) ? "email" : "toast"]
-    tell(message, channels , type)
+    tell(message, channels , type).save
   end
 
   # CONTEXT:

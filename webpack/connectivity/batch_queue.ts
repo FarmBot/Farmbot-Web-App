@@ -1,7 +1,7 @@
 import { TaggedLog } from "../resources/tagged_resources";
 import { store } from "../redux/store";
 import { batchInitResources, bothUp } from "./connect_device";
-import { getDeviceAccountSettings } from "../resources/selectors";
+import { getDeviceAccountSettings, maybeGetDevice } from "../resources/selectors";
 import * as moment from "moment";
 import { DeviceAccountSettings } from "../devices/interfaces";
 
@@ -24,8 +24,8 @@ export class BatchQueue {
   }
 
   work = () => {
-    const { body } = getDeviceAccountSettings(store.getState().resources.index);
-    const cooldown = calculateCooldownTime(body);
+    const dev = maybeGetDevice(store.getState().resources.index);
+    const cooldown = dev && calculateCooldownTime(dev.body);
     if (cooldown) {
       console.log("Throttled...");
     } else {
