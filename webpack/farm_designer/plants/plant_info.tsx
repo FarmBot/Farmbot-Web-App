@@ -11,6 +11,10 @@ import { unselectPlant } from "../actions";
 @connect(mapStateToProps)
 export class PlantInfo extends PlantInfoBase {
 
+  componentWillUnmount() {
+    unselectPlant(this.props.dispatch)();
+  }
+
   default = (plant_info: TaggedPlantPointer) => {
     const info = formatPlantInfo(plant_info);
     const { name, id } = info;
