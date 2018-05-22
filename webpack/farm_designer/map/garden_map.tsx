@@ -7,7 +7,9 @@ import * as moment from "moment";
 import { GardenMapProps, GardenMapState } from "../interfaces";
 import { getPathArray } from "../../history";
 import { initSave, save, edit } from "../../api/crud";
-import { TaggedPlantPointer, SpecialStatus } from "../../resources/tagged_resources";
+import {
+  TaggedPlantPointer, SpecialStatus
+} from "../../resources/tagged_resources";
 import {
   translateScreenToGarden,
   round,
@@ -31,13 +33,14 @@ import {
 import { cachedCrop } from "../../open_farm/icons";
 import { AxisNumberProperty, MapTransformProps } from "./interfaces";
 import { SelectionBox, SelectionBoxData } from "./selection_box";
-import { Actions } from "../../constants";
+import { Actions, Content } from "../../constants";
 import { isNumber, last } from "lodash";
 import { TargetCoordinate } from "./target_coordinate";
 import { DrawnPoint } from "./drawn_point";
 import { Bugs, showBugs } from "./easter_eggs/bugs";
 import { BooleanSetting } from "../../session_keys";
 
+/** Garden map interaction modes. */
 export enum Mode {
   none = "none",
   boxSelect = "boxSelect",
@@ -48,6 +51,7 @@ export enum Mode {
   createPoint = "createPoint",
 }
 
+/** Determine the current map mode based on path. */
 export const getMode = (): Mode => {
   const pathArray = getPathArray();
   if (pathArray) {
@@ -68,6 +72,7 @@ export class GardenMap extends
     this.state = {};
   }
 
+  /** Assemble the props needed for placement of items in the map. */
   get mapTransformProps(): MapTransformProps {
     return {
       quadrant: this.props.botOriginQuadrant,
@@ -77,14 +82,17 @@ export class GardenMap extends
   }
 
   componentWillUnmount() {
+    // Clear plant selection when navigating away from the designer.
     unselectPlant(this.props.dispatch)();
   }
 
+  /** Currently editing a plant? */
   get isEditing(): boolean { return getMode() === Mode.editPlant; }
 
   endDrag = () => {
     const p = this.getPlant();
     if (p && this.state.isDragging) {
+      // Save the new plant location
       this.props.dispatch(edit(p, { x: round(p.body.x), y: round(p.body.y) }));
       this.props.dispatch(save(p.uuid));
     }
@@ -96,15 +104,19 @@ export class GardenMap extends
     });
   }
 
+  /** Fetch the current plant's spread.  */
   setActiveSpread(slug: string) {
     const selectedPlant = this.props.selectedPlant;
     const defaultSpreadCm = selectedPlant ? selectedPlant.body.radius : 0;
-    return cachedCrop(slug)
+    cachedCrop(slug)
       .then(({ spread }) =>
+        // Convert spread diameter from cm to mm.
+        // `radius * 10` is the default value for spread diameter (in mm).
         this.setState({ activeDragSpread: (spread || defaultSpreadCm) * 10 })
       );
   }
 
+  /** Get the garden map coordinate of a cursor or screen interaction. */
   getGardenCoordinates(
     e: React.DragEvent<HTMLElement> | React.MouseEvent<SVGElement>
   ): AxisNumberProperty | undefined {
@@ -139,18 +151,22 @@ export class GardenMap extends
       case Mode.boxSelect:
         const gardenCoords = this.getGardenCoordinates(e);
         if (gardenCoords) {
+          // Set the starting point (initial corner) of a  selection box
           this.setState({
             selectionBox: {
-              x0: gardenCoords.x, y0: gardenCoords.y, x1: undefined, y1: undefined
+              x0: gardenCoords.x, y0: gardenCoords.y,
+              x1: undefined, y1: undefined
             }
           });
         }
+        // Clear the previous plant selection when starting a new selection box
         this.props.dispatch({ type: Actions.SELECT_PLANT, payload: undefined });
         break;
       case Mode.createPoint:
         this.setState({ isDragging: true });
         const center = this.getGardenCoordinates(e);
         if (center) {
+          // Set the center of a new point
           this.props.dispatch({
             type: Actions.SET_CURRENT_POINT_DATA,
             payload: { cx: center.x, cy: center.y, r: 0 }
@@ -160,12 +176,13 @@ export class GardenMap extends
     }
   }
 
+  /** Return the selected plant, mode-allowing. */
   getPlant = (): TaggedPlantPointer | undefined => {
     switch (getMode()) {
       case Mode.boxSelect:
       case Mode.moveTo:
       case Mode.createPoint:
-        return undefined;
+        return undefined; // For modes without plant interaction
       default:
         return this.props.selectedPlant;
     }
@@ -175,7 +192,7 @@ export class GardenMap extends
     switch (getMode()) {
       case Mode.addPlant:
       case Mode.clickToAdd:
-        e.preventDefault();
+        e.preventDefault(); // Allows dragged-in plants to be placed in the map
         e.dataTransfer.dropEffect = "move";
     }
   }
@@ -191,15 +208,19 @@ export class GardenMap extends
     return findBySlug(this.props.designer.cropSearchResults || [], slug);
   }
 
-  handleDrop = (e: React.DragEvent<HTMLElement> | React.MouseEvent<SVGElement>) => {
+  handleDrop = (
+    e: React.DragEvent<HTMLElement> | React.MouseEvent<SVGElement>) => {
     e.preventDefault();
     const gardenCoords = this.getGardenCoordinates(e);
     if (gardenCoords) {
       const crop = getPathArray()[5];
       const OFEntry = this.findCrop(crop);
       const { x, y } = gardenCoords;
-      if (x < 0 || y < 0 || x > this.props.gridSize.x || y > this.props.gridSize.y) {
-        error(t("Outside of planting area. Plants must be placed within the grid."));
+      const outsideGrid = x < 0 || y < 0 || // negative (beyond grid start)
+        x > this.props.gridSize.x || // beyond grid X end
+        y > this.props.gridSize.y; // beyond grid Y end
+      if (outsideGrid) {
+        error(t(Content.OUTSIDE_PLANTING_AREA));
       } else {
         const p: TaggedPlantPointer = {
           kind: "Point",
@@ -214,7 +235,9 @@ export class GardenMap extends
             radius: DEFAULT_PLANT_RADIUS
           })
         };
+        // Stop non-plant objects from creating generic plants in the map
         if (p.body.name != "name" && p.body.openfarm_slug != "slug") {
+          // Create and save a new plant in the garden map
           this.props.dispatch(initSave(p));
         }
       }
@@ -227,12 +250,14 @@ export class GardenMap extends
   click = (e: React.MouseEvent<SVGElement>) => {
     switch (getMode()) {
       case Mode.clickToAdd:
+        // Create a new plant in the map
         this.handleDrop(e);
         break;
       case Mode.moveTo:
         e.preventDefault();
         const gardenCoords = this.getGardenCoordinates(e);
         if (gardenCoords) {
+          // Mark a new bot target location on the map
           this.props.dispatch({
             type: Actions.CHOOSE_LOCATION,
             payload: { x: gardenCoords.x, y: gardenCoords.y, z: 0 }
@@ -242,6 +267,7 @@ export class GardenMap extends
     }
   }
 
+  /** Return all plants within the selection box. */
   getSelected(box: SelectionBoxData) {
     const selected = this.props.plants.filter((p) => {
       if (box &&
@@ -284,12 +310,14 @@ export class GardenMap extends
         if (this.state.selectionBox) {
           const current = this.getGardenCoordinates(e);
           if (current) {
-            const box = this.state.selectionBox;
+            const { x0, y0 } = this.state.selectionBox;
             this.setState({
               selectionBox: {
-                x0: box.x0, y0: box.y0, x1: current.x, y1: current.y
+                x0, y0, // Keep box starting corner
+                x1: current.x, y1: current.y // Update box active corner
               }
             });
+            // Select all plants within the updated selection box
             this.props.dispatch({
               type: Actions.SELECT_PLANT,
               payload: this.getSelected(this.state.selectionBox)
@@ -302,10 +330,11 @@ export class GardenMap extends
         const { currentPoint } = this.props.designer;
         if (edge && currentPoint && !!this.state.isDragging) {
           const { cx, cy } = currentPoint;
+          // Adjust the radius of the point being created
           this.props.dispatch({
             type: Actions.SET_CURRENT_POINT_DATA,
             payload: {
-              cx, cy,
+              cx, cy, // Center was set by click, radius is adjusted by drag
               r: Math.round(Math.sqrt(
                 Math.pow(edge.x - cx, 2) + Math.pow(edge.y - cy, 2))),
             }
@@ -317,8 +346,8 @@ export class GardenMap extends
 
   render() {
     const { gridSize } = this.props;
-    const mapSize = getMapSize(this.mapTransformProps, this.props.gridOffset);
     const mapTransformProps = this.mapTransformProps;
+    const mapSize = getMapSize(mapTransformProps, this.props.gridOffset);
     const { xySwap } = mapTransformProps;
     return <div
       className="drop-area"
@@ -355,8 +384,7 @@ export class GardenMap extends
             getConfigValue={this.props.getConfigValue} />
           <Grid
             onClick={closePlantInfo(this.props.dispatch)}
-            mapTransformProps={mapTransformProps}
-            dispatch={this.props.dispatch} />
+            mapTransformProps={mapTransformProps} />
           <SpreadLayer
             mapTransformProps={mapTransformProps}
             plants={this.props.plants}
@@ -386,8 +414,7 @@ export class GardenMap extends
           <ToolSlotLayer
             mapTransformProps={mapTransformProps}
             visible={!!this.props.showFarmbot}
-            slots={this.props.toolSlots}
-            dispatch={this.props.dispatch} />
+            slots={this.props.toolSlots} />
           <FarmBotLayer
             mapTransformProps={mapTransformProps}
             visible={!!this.props.showFarmbot}

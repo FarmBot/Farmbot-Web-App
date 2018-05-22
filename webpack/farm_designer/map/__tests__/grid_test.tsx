@@ -12,7 +12,6 @@ describe("<Grid/>", () => {
   function fakeProps(): GridProps {
     return {
       mapTransformProps: fakeMapTransformProps(),
-      dispatch: jest.fn(),
       onClick: jest.fn()
     };
   }

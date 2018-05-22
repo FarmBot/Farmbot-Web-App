@@ -36,7 +36,6 @@ describe("<ToolSlotLayer/>", () => {
       visible: false,
       slots: [{ toolSlot, tool: undefined }],
       mapTransformProps: fakeMapTransformProps(),
-      dispatch: jest.fn()
     };
   }
   it("toggles visibility off", () => {
@@ -67,7 +66,6 @@ describe("<ToolSlotLayer/>", () => {
     const tools = wrapper.find("g").first();
     await tools.simulate("click");
     expect(mockHistory).not.toHaveBeenCalled();
-    expect(p.dispatch).not.toHaveBeenCalled();
   });
 
   it("is in non-clickable mode", () => {
