@@ -4,7 +4,11 @@ module Logs
     BAD_WORDS = "Log message contained blacklisted words"
 
     required do
-      model  :device, class: Device
+      # TODO: Some strange stuff happened with caching in the log service.
+      #       Had to change this from "model" to "duck" as a result.
+      #       See Device#refresh_cache(). Rails thinks cached `Device` objects
+      #       are unsaved.
+      duck  :device, methods: [:id, :is_device]
       string :message
     end
 
@@ -52,8 +56,9 @@ module Logs
 
     def validate
       add_error :log, :private, BAD_WORDS if has_bad_words
+      add_error :device, :no_id, "ID of device can't be nil" unless device.id
       @log               = Log.new
-      @log.device        = device
+      @log.device_id     = device.id
       @log.message       = message
       @log.channels      = channels || []
       @log.x             = transitional_field(:x)

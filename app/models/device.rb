@@ -9,7 +9,7 @@ class Device < ApplicationRecord
   THROTTLE_ON         = "Device is sending too many logs. " \
                         "Suspending log storage until %s."
   THROTTLE_OFF        = "Cooldown period has ended. "\
-                        "Resuming log transmission."
+                        "Resuming log storage."
   CACHE_KEY           = "devices.%s"
 
   has_many  :device_configs,  dependent: :destroy
@@ -138,5 +138,9 @@ class Device < ApplicationRecord
     hours    = ((throttle_time - now) / 1.hour).round
     channels = [(hours > 2) ? "email" : "toast"]
     tell(message, channels , type)
+  end
+
+  def is_device # SEE: Hack in Log::Create. TODO: Fix low level caching bug.
+    true
   end
 end
