@@ -42,9 +42,9 @@ describe("<EditPlantInfo />", () => {
     const p = fakeProps();
     p.dispatch = jest.fn(() => { return Promise.resolve(); });
     const wrapper = mount(<EditPlantInfo {...p} />);
-    const deleteButton = wrapper.find("button").at(1);
-    expect(deleteButton.props().hidden).toBeFalsy();
+    const deleteButton = wrapper.find("button").at(2);
     expect(deleteButton.text()).toEqual("Delete");
+    expect(deleteButton.props().hidden).toBeFalsy();
     deleteButton.simulate("click");
     expect(p.dispatch).toHaveBeenCalled();
   });
