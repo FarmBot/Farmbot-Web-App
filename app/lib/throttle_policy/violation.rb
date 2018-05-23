@@ -7,7 +7,7 @@ class ThrottlePolicy
     end
 
     def ends_at
-      @rule.throttler.when_does_next_period_start?
+      @rule.time_period.when_does_next_period_start?
     end
 
     def <=>(other)
@@ -15,7 +15,7 @@ class ThrottlePolicy
     end
 
     def timeframe
-      rule.throttler.time_unit
+      rule.time_period.time_unit
     end
 
     def limit

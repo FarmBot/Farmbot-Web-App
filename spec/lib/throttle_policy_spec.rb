@@ -12,16 +12,16 @@ describe klass do
   it "initializes" do
     expect(policy.rules).to be
     expect(policy.rules.map(&:limit).sort).to eq([1, 10, 100])
-    actual   = policy.rules.map(&:throttler).map(&:time_unit).sort
+    actual   = policy.rules.map(&:time_period).map(&:time_unit).sort
     expected = [1.minute, 1.hour, 1.day]
     expect(actual).to eq(expected)
   end
 
   it "tracks things" do
-    count1 = policy.rules.map(&:throttler).map{|t| t.usage_count_for(123)}
+    count1 = policy.rules.map(&:time_period).map{|t| t.usage_count_for(123)}
     expect(count1).to eq([0, 0, 0])
     5.times { policy.track(123, NOW + 1) }
-    count2 = policy.rules.map(&:throttler).map{|t| t.usage_count_for(123)}
+    count2 = policy.rules.map(&:time_period).map{|t| t.usage_count_for(123)}
     expect(count2).to eq([5, 5, 5])
   end
 
