@@ -2,7 +2,6 @@ source "https://rubygems.org"
 ruby "2.5.1"
 
 gem "active_model_serializers"
-# gem "bullet"
 gem "bunny"
 gem "delayed_job_active_record"
 gem "delayed_job"
