@@ -2,8 +2,7 @@ import { TaggedLog } from "../resources/tagged_resources";
 import { store } from "../redux/store";
 import { batchInitResources, bothUp } from "./connect_device";
 import { maybeGetDevice } from "../resources/selectors";
-import * as moment from "moment";
-import { DeviceAccountSettings } from "../devices/interfaces";
+import { deviceIsThrottled } from "./device_is_throttled";
 
 /** Performs resource initialization (Eg: a storm of incoming logs) in batches
  * at a regular interval. We only need one work queue for the whole app,
@@ -25,11 +24,7 @@ export class BatchQueue {
 
   work = () => {
     const dev = maybeGetDevice(store.getState().resources.index);
-    const cooldown = dev && calculateCooldownTime(dev.body);
-    if (cooldown) {
-      console.log("Throttled...");
-    } else {
-      console.log("Processing " + this.queue.length + " logs");
+    if (!deviceIsThrottled(dev ? dev.body : undefined)) {
       store.dispatch(batchInitResources(this.queue));
     }
     this.clear();
@@ -41,22 +36,6 @@ export class BatchQueue {
   }
 
   clear = () => this.queue = [];
-}
-
-/** Calculates minutes the device was forced to wait due to log flooding.
- * Note that this is _total_ time and not time elapsed.
- */
-function calculateCooldownTime(dev: Partial<DeviceAccountSettings>): number {
-  const { throttled_at, throttled_until } = dev;
-
-  if (throttled_at && throttled_until) {
-    const start = moment(throttled_at);
-    const end = moment(throttled_until);
-
-    return start.diff(end, "seconds");
-  } else {
-    return 0;
-  }
 }
 
 /** The only work queue needed for the whole app.
