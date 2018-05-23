@@ -55,8 +55,9 @@ export function showLogOnScreen(log: Log) {
   switch (log.type) {
     case "success":
       return success(log.message, TITLE);
-    case "busy":
     case "warn":
+      return warning(log.message, TITLE);
+    case "busy":
     case "error":
       return error(log.message, TITLE);
     case "fun":
@@ -82,6 +83,11 @@ export const initLog = (log: Log): ReduxAction<TaggedResource> => init({
   uuid: "MUST_CHANGE",
   body: log
 }, true);
+
+export const batchInitResources =
+  (payload: TaggedResource[]): ReduxAction<TaggedResource[]> => {
+    return { type: Actions.BATCH_INIT, payload };
+  };
 
 export const bothUp = () => {
   dispatchNetworkUp("user.mqtt");
@@ -122,8 +128,10 @@ const onStatus = (dispatch: Function, getState: GetState) =>
 
 type Client = { connected?: boolean };
 
-export const onSent = (client: Client) => () => !!client.connected ?
-  dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
+export const onSent = (client: Client) => () => {
+  !!client.connected ?
+    dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
+};
 
 export function onMalformed() {
   bothUp();

@@ -1,18 +1,18 @@
 require "spec_helper"
 
-describe Throttler do
+describe ThrottlePolicy::TimePeriod do
   let(:stub_time) { Time.new(2018, 5, 18, 9, 38, 25) }
 
   it "sets a time unit window size" do
     expected_time_period = stub_time.to_i / 1.minute.to_i
-    one_min              = Throttler.new(1.minute, stub_time)
+    one_min              = ThrottlePolicy::TimePeriod.new(1.minute, stub_time)
     expect(one_min.current_period).to eq(expected_time_period)
-    expect(one_min.time_unit_in_seconds).to eq(60)
+    expect(one_min.time_unit).to eq(60)
     expect(one_min.entries).to eq({})
   end
 
   it "increments the count" do
-    t   = Throttler.new(1.minute, stub_time)
+    t   = ThrottlePolicy::TimePeriod.new(1.minute, stub_time)
     uid = 123
 
     # Ignore events from the past.
@@ -33,7 +33,7 @@ describe Throttler do
   end
 
   it "tells you when the next time period starts" do
-    one_hour  = Throttler.new(1.hour, stub_time)
+    one_hour  = ThrottlePolicy::TimePeriod.new(1.hour, stub_time)
     next_hour = one_hour.when_does_next_period_start?
     expect(next_hour).to be_kind_of(Time)
     expect(next_hour.hour).to be(stub_time.hour + 1)

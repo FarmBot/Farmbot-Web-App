@@ -6,10 +6,10 @@ class Device < ApplicationRecord
 
   TIMEZONES           = TZInfo::Timezone.all_identifiers
   BAD_TZ              = "%{value} is not a valid timezone"
-  THROTTLE_ON         = "Device is sending too many logs. " \
-                        "Suspending log storage until %s."
+  THROTTLE_ON         = "Device is sending too many logs (%s). " \
+                        "Suspending log storage and display until %s."
   THROTTLE_OFF        = "Cooldown period has ended. "\
-                        "Resuming log transmission."
+                        "Resuming log storage."
   CACHE_KEY           = "devices.%s"
 
   has_many  :device_configs,  dependent: :destroy
@@ -74,22 +74,6 @@ class Device < ApplicationRecord
     Time.now.in_time_zone(self.timezone || "UTC").utc_offset / 1.hour
   end
 
-  # Send a realtime message to a logged in user.
-  def tell(message, channels = [], type = "info")
-    log  = Log.new({ device:        self,
-                     message:       message,
-                     created_at:    Time.now,
-                     channels:      channels,
-                     major_version: 99,
-                     minor_version: 99,
-                     meta:          {},
-                     type:          type })
-    json = LogSerializer.new(log).as_json.to_json
-
-    Transport.current.amqp_send(json, self.id, "logs")
-    log
-  end
-
   def plants
     points.where(pointer_type: "Plant")
   end
@@ -114,26 +98,59 @@ class Device < ApplicationRecord
 
   # Sets the `throttled_at` field, but only if it is unpopulated.
   # Performs no-op if `throttled_at` was already set.
-  def maybe_throttle_until(until_time)
-    if throttled_until.nil?
-      update_attributes!(throttled_until: until_time, throttled_at: Time.now)
+  def maybe_throttle(violation)
+    # Some log validation errors will result in until_time being `nil`.
+    if (violation && throttled_until.nil?)
+      et = violation.ends_at
+      reload.update_attributes!(throttled_until: et,
+                                throttled_at:    Time.now)
       refresh_cache
-      cooldown = until_time.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
-      cooldown_notice(THROTTLE_ON % [cooldown], until_time)
+      cooldown = et.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
+      info = [violation.explanation, cooldown]
+      cooldown_notice(THROTTLE_ON % info, et, "warn")
     end
   end
 
   def maybe_unthrottle
     if throttled_until.present?
       old_time = throttled_until
-      update_attributes!(throttled_until: nil, throttled_at: Time.now)
+      reload # <= WHY!?! TODO: Find out why it crashes without this.
+        .update_attributes!(throttled_until: nil, throttled_at: nil)
       refresh_cache
-      cooldown_notice(THROTTLE_OFF, old_time)
+      cooldown_notice(THROTTLE_OFF, old_time, "info")
     end
   end
+  # Send a realtime message to a logged in user.
+  def tell(message, channels = [], type = "info")
+    log  = Log.new({ device:        self,
+                         message:       message,
+                         created_at:    Time.now,
+                         channels:      channels,
+                         major_version: 99,
+                         minor_version: 99,
+                         meta:          {},
+                         type:          type })
+    json = LogSerializer.new(log).as_json.to_json
 
-  def cooldown_notice(message, throttle_time, now = Time.current)
-    hours = ((throttle_time - now) / 1.hour).round
-    tell(message, [(hours > 2) ? "email" : "toast"], "alert")
+    Transport.current.amqp_send(json, self.id, "logs")
+    return log
+  end
+
+  def cooldown_notice(message, throttle_time, type, now = Time.current)
+    hours    = ((throttle_time - now) / 1.hour).round
+    channels = [(hours > 2) ? "email" : "toast"]
+    tell(message, channels , type).save
+  end
+
+  # CONTEXT:
+  #  * We tried to use Rails low level caching, but it hit marshalling issues.
+  #  * We did a hack with Device.new(self.as_json) to get around it.
+  #  * Mutations does not allow unsaved models
+  #  * We converted the `model :device, class: Device` to:
+  #     `duck :device, methods [:id, :is_device]`
+  #
+  # This methd is not required, but adds a layer of safety.
+  def is_device # SEE: Hack in Log::Create. TODO: Fix low level caching bug.
+    true
   end
 end

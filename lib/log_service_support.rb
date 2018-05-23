@@ -2,9 +2,10 @@
 # Listens to *ALL* incoming logs and stores them to the DB.
 # Also handles throttling.
 class LogService
-  THROTTLE_POLICY  = ThrottlePolicy.new Throttler.new(1.minute) => 0.5 * 1_000,
-                                        Throttler.new(1.hour)   => 0.5 * 10_000,
-                                        Throttler.new(1.day)    => 0.5 * 100_000
+  T = ThrottlePolicy::TimePeriod
+  THROTTLE_POLICY  = ThrottlePolicy.new T.new(1.minute) => 0.5 * 1_000,
+                                        T.new(1.hour)   => 0.5 * 10_000,
+                                        T.new(1.day)    => 0.5 * 100_000
 
   def self.process(delivery_info, payload)
     params = { routing_key: delivery_info.routing_key, payload: payload }
@@ -15,11 +16,11 @@ class LogService
   end
 
   def self.maybe_deliver(data)
-    throttled_until = THROTTLE_POLICY.is_throttled(data.device_id)
-    ok              = data.valid? && !throttled_until
+    violation = THROTTLE_POLICY.is_throttled(data.device_id)
+    ok        = data.valid? && !violation
 
     data.device.auto_sync_transaction do
-      ok ? deliver(data) : warn_user(data, throttled_until)
+      ok ? deliver(data) : warn_user(data, violation)
     end
   end
 
@@ -29,7 +30,7 @@ class LogService
     LogDispatch.deliver(dev, Logs::Create.run!(log, device: dev))
   end
 
-  def self.warn_user(data, throttled_until)
-    data.device.maybe_throttle_until(throttled_until)
+  def self.warn_user(data, violation)
+    data.device.maybe_throttle(violation)
   end
 end
