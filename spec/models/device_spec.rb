@@ -65,7 +65,7 @@ describe Device do
     expect(device).to receive(:tell).and_return(Log.new)
     device.update_attributes!(throttled_until: nil)
     expect(device.throttled_until).to be(nil)
-    five_minutes = Throttler.new(5.minutes, Time.now + 1.minute)
+    five_minutes = ThrottlePolicy::Throttler.new(5.minutes, Time.now + 1.minute)
     rule         = ThrottlePolicy::Rule.new(five_minutes, 500)
     violation    = ThrottlePolicy::Violation.new(rule)
     device.maybe_throttle(violation)

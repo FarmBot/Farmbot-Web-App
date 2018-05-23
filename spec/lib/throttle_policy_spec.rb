@@ -1,11 +1,12 @@
 require "spec_helper"
 NOW = Time.new("2018-05-18T09:38:02.259-05:00")
 
-describe Throttler do
+klass = ThrottlePolicy::Throttler
+describe klass do
   let(:policy)  do
-    ThrottlePolicy.new  Throttler.new(1.minute, NOW) => 1,
-                        Throttler.new(1.hour,   NOW) => 10,
-                        Throttler.new(1.day,    NOW) => 100
+    ThrottlePolicy.new  klass.new(1.minute, NOW) => 1,
+                        klass.new(1.hour,   NOW) => 10,
+                        klass.new(1.day,    NOW) => 100
   end
 
   it "initializes" do
