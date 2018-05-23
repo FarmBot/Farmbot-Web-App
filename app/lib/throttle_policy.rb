@@ -1,7 +1,7 @@
 class ThrottlePolicy
   attr_reader :rules
 
-  # Dictionary<Throttler, Intger>
+  # Dictionary<TimePeriod, Intger>
   def initialize(policy_rules)
     @rules = policy_rules.map { |rule_set| Rule.new(*rule_set) }
   end

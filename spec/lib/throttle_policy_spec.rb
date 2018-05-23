@@ -1,7 +1,7 @@
 require "spec_helper"
 NOW = Time.new("2018-05-18T09:38:02.259-05:00")
 
-klass = ThrottlePolicy::Throttler
+klass = ThrottlePolicy::TimePeriod
 describe klass do
   let(:policy)  do
     ThrottlePolicy.new  klass.new(1.minute, NOW) => 1,

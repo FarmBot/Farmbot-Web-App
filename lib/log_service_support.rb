@@ -2,7 +2,7 @@
 # Listens to *ALL* incoming logs and stores them to the DB.
 # Also handles throttling.
 class LogService
-  T = ThrottlePolicy::Throttler
+  T = ThrottlePolicy::TimePeriod
   THROTTLE_POLICY  = ThrottlePolicy.new T.new(1.minute) => 0.5 * 1_000,
                                         T.new(1.hour)   => 0.5 * 10_000,
                                         T.new(1.day)    => 0.5 * 100_000
