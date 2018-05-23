@@ -26,7 +26,6 @@ import {
   initialState as designerState
 } from "../farm_designer/reducer";
 import { ResourceReadyPayl } from "../sync/actions";
-import { OFCropResponse } from "../open_farm/icons";
 import {
   famrwareReducer as farmware,
   farmwareState
@@ -103,18 +102,6 @@ const afterEach = (state: RestResources, a: ReduxAction<object>) => {
 /** Responsible for all RESTful resources. */
 export let resourceReducer = generateReducer
   <RestResources>(initialState, afterEach)
-  .add<ResourceReadyPayl>(Actions.SAVE_OPENFARM_RESOURCE, (s, { payload }) => {
-    const data = arrayWrap(payload);
-    const kind = payload.name;
-    data.map((body: ResourceReadyPayl) => {
-      const crop = body.data as OFCropResponse;
-      if (crop.data) {
-        const cropInfo = crop.data.attributes;
-        addToIndex(s.index, kind, cropInfo, generateUuid(undefined, kind));
-      }
-    });
-    return s;
-  })
   .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
     const resource = payload;
     resource.specialStatus = SpecialStatus.SAVED;

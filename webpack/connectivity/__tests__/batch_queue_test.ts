@@ -6,7 +6,7 @@ jest.mock("../connect_device", () => {
 });
 
 const mockThrottleStatus = { value: false };
-jest.mock("../is_throttled", () => {
+jest.mock("../device_is_throttled", () => {
   return { deviceIsThrottled: jest.fn(() => mockThrottleStatus.value) };
 });
 
