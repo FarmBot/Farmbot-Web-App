@@ -13,6 +13,7 @@ class Log < ApplicationRecord
   DISCARD   = ["fun", "debug", nil]
   # self.meta[:type] is used by the bot and the frontend as a sort of
   TYPES     = CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES
+  IS_FATAL_EMAIL = "channels LIKE '%fatal_email%'"
   # The means by which the message will be sent. Ex: frontend toast notification
   serialize  :channels
   belongs_to :device

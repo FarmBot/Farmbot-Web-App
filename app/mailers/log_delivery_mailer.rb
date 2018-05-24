@@ -8,7 +8,10 @@ class LogDeliveryMailer < ApplicationMailer
     raise LogDispatch::RateLimitError, WHOAH % [device.id] if too_many
     ld             = LogDispatch.where(sent_at: nil, device: device)
     if(ld.any?)
-      logs         = Log.find(ld.pluck(:log_id))
+      logs         = Log
+                      .where(id: ld.pluck(:log_id))
+                      .where
+                      .not(Log::IS_FATAL_EMAIL)
       @emails      = device.users.pluck(:email)
       @messages    = logs.map(&:message)
       @device_name = device.name || "Farmbot"
