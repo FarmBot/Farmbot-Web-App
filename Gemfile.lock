@@ -208,6 +208,9 @@ GEM
       mime-types
       mimemagic (~> 0.3.0)
       terrapin (~> 0.6.0)
+    passenger (5.3.1)
+      rack
+      rake (>= 0.8.1)
     pg (1.0.0)
     polymorphic_constraints (1.0.0)
       rails
@@ -371,6 +374,7 @@ DEPENDENCIES
   lol_dba
   mutations
   paperclip
+  passenger
   pg
   polymorphic_constraints
   pry
