@@ -54,16 +54,6 @@ cp config/application.example.yml config/application.yml
 # Don't know which editor to use?
 # Use micro! `snap install micro --classic`
 # READ THE FILE AND CHANGE THE VALUES ^
-<<<<<<< HEAD
-rake keys:generate
-# Next, we will work on the datbase:
-sudo -u postgres psql
-# Type this into `psql` (should be open after typing command above):
-#     CREATE USER "your_username_here" WITH SUPERUSER;
-#     \q
-
-# After typing \q you will be exited from `psql`. Continue database creation...
-=======
 
 # Next, we need to set some thing up in PostgreSQL
 # Run this command...
@@ -79,7 +69,6 @@ sudo -u postgres psql
 # Generate a set of *.pem files for data encryption:
 rake keys:generate
 # Create the database for the app to use:
->>>>>>> b585dfe1a0cc349c39720bf482129b51eb65beb4
 rake db:create:all db:migrate db:seed
 
 # Run the database migration and unit tests (API only)
@@ -92,17 +81,6 @@ npm run test
 # You may run the commands below every time you start the server. |
 # ================================================================+
 
-<<<<<<< HEAD
-# You may run the commands below every time you wish to start the server:
-# The commands before this were only one-off commands for installation.
-# Run the web server (new tab, SAME DIRECTORY)
-# Don't worry about the "MQTT server is unreachable" messages yet-
-#   we still need to start MQTT (next).
-bundle exec rails api:start
-
-# Run MQTT (new tab, SAME DIRECTORY)
-bundle exec rails mqtt:start
-=======
 # Runs the web server in new tab, but use SAME DIRECTORY AS BEFORE. Don't worry
 # about the "MQTT server is unreachable" messages yet- we still need to start
 # MQTT (next).
@@ -110,7 +88,6 @@ rails api:start
 
 # Run MQTT (new tab or window, SAME DIRECTORY)
 rails mqtt:start
->>>>>>> b585dfe1a0cc349c39720bf482129b51eb65beb4
 
 # RUNNING ON PORT 80 =======================================================+
 # NEXT STEP IS OPTIONAL. DO THIS IF YOU WANT TO USE PORT 80 INSTEAD OF 3000.|
@@ -126,11 +103,5 @@ sudo socat TCP-LISTEN:80,fork TCP:localhost:3000
 # Other options for routing traffic to port 80 include:
 #  * Using `iptables`
 #  * Configuring NGinx as a reverse proxy.
-<<<<<<< HEAD
-# The options above are intended for advanced users.
-# Our ability to provide support to individual users for these use cases is
-# limited
-=======
 # The options above are intended for advanced users. Our ability to provide
 # support to individual users for these use cases is limited.
->>>>>>> b585dfe1a0cc349c39720bf482129b51eb65beb4
