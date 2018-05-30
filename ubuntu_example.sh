@@ -44,6 +44,7 @@ npm install yarn
 bundle install
 yarn install
 cp config/database.example.yml config/database.yml
+cp config/application.example.yml config/application.yml
 
 # == This is a very important step!!! ==
 #
@@ -52,13 +53,15 @@ cp config/database.example.yml config/database.yml
 # == Nothing will work if you skip this step!!! ==
 # Don't know which editor to use?
 # Use micro! `snap install micro --classic`
-cp config/application.example.yml config/application.yml
 # READ THE FILE AND CHANGE THE VALUES ^
-sudo -u postgres psql
 rake keys:generate
-# Run this:
+# Next, we will work on the datbase:
+sudo -u postgres psql
+# Type this into `psql` (should be open after typing command above):
 #     CREATE USER "your_username_here" WITH SUPERUSER;
 #     \q
+
+# After typing \q you will be exited from `psql`. Continue database creation...
 rake db:create:all db:migrate db:seed
 RAILS_ENV=test rake db:create db:migrate && rspec spec
 npm run test
@@ -71,10 +74,10 @@ npm run test
 # Run the web server (new tab, SAME DIRECTORY)
 # Don't worry about the "MQTT server is unreachable" messages yet-
 #   we still need to start MQTT (next).
-rails api:start
+bundle exec rails api:start
 
 # Run MQTT (new tab, SAME DIRECTORY)
-rails mqtt:start
+bundle exec rails mqtt:start
 
 # NEXT STEP IS OPTIONAL. DO THIS IF YOU WANT TO USE PORT 80 INSTEAD OF 3000.
 
