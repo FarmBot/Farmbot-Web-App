@@ -15,6 +15,7 @@ module Points
         float    :z
         hstore   :meta
         string   :name
+        string   :pointer_type, in: Point::POINTER_KINDS
       end
 
       def execute

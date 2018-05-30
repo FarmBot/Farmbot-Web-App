@@ -4,6 +4,6 @@
 
 # Steps to Reproduce
 
-# My FarmBot API Version
+# Results of `git log -1`
 
-Run `git log -1` and paste the results here
+Run `git log -1` and paste the results here.

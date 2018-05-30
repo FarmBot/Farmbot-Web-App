@@ -54,6 +54,7 @@ cp config/application.example.yml config/application.yml
 # Don't know which editor to use?
 # Use micro! `snap install micro --classic`
 # READ THE FILE AND CHANGE THE VALUES ^
+<<<<<<< HEAD
 rake keys:generate
 # Next, we will work on the datbase:
 sudo -u postgres psql
@@ -62,13 +63,36 @@ sudo -u postgres psql
 #     \q
 
 # After typing \q you will be exited from `psql`. Continue database creation...
+=======
+
+# Next, we need to set some thing up in PostgreSQL
+# Run this command...
+  sudo -u postgres psql
+#  Now that you are in the PSQL command prompt, enter these commands:
+#
+#    CREATE USER "your_system_username_here" WITH SUPERUSER;
+#    \q
+#
+# ...after running `\q` we are back to the shell- Continue installation as
+# usual.
+
+# Generate a set of *.pem files for data encryption:
+rake keys:generate
+# Create the database for the app to use:
+>>>>>>> b585dfe1a0cc349c39720bf482129b51eb65beb4
 rake db:create:all db:migrate db:seed
+
+# Run the database migration and unit tests (API only)
 RAILS_ENV=test rake db:create db:migrate && rspec spec
+
+# Run UI-level unit tests:
 npm run test
 
-# INSTALLATION IS NOW COMPLETE =================================================
+# INSTALLATION IS NOW COMPLETE ===================================+
+# You may run the commands below every time you start the server. |
+# ================================================================+
 
-
+<<<<<<< HEAD
 # You may run the commands below every time you wish to start the server:
 # The commands before this were only one-off commands for installation.
 # Run the web server (new tab, SAME DIRECTORY)
@@ -78,19 +102,35 @@ bundle exec rails api:start
 
 # Run MQTT (new tab, SAME DIRECTORY)
 bundle exec rails mqtt:start
+=======
+# Runs the web server in new tab, but use SAME DIRECTORY AS BEFORE. Don't worry
+# about the "MQTT server is unreachable" messages yet- we still need to start
+# MQTT (next).
+rails api:start
 
-# NEXT STEP IS OPTIONAL. DO THIS IF YOU WANT TO USE PORT 80 INSTEAD OF 3000.
+# Run MQTT (new tab or window, SAME DIRECTORY)
+rails mqtt:start
+>>>>>>> b585dfe1a0cc349c39720bf482129b51eb65beb4
 
-# This is a quick alternative to running rails as root / sudo.
+# RUNNING ON PORT 80 =======================================================+
+# NEXT STEP IS OPTIONAL. DO THIS IF YOU WANT TO USE PORT 80 INSTEAD OF 3000.|
+# This is a quick alternative to running rails as root / sudo.              |
+# ==========================================================================+
 
 # Step 1: Install `socat`
 sudo apt-get install socat
+
 # Step 2: Forward port 80 to port 3000
 sudo socat TCP-LISTEN:80,fork TCP:localhost:3000
 
 # Other options for routing traffic to port 80 include:
 #  * Using `iptables`
 #  * Configuring NGinx as a reverse proxy.
+<<<<<<< HEAD
 # The options above are intended for advanced users.
 # Our ability to provide support to individual users for these use cases is
 # limited
+=======
+# The options above are intended for advanced users. Our ability to provide
+# support to individual users for these use cases is limited.
+>>>>>>> b585dfe1a0cc349c39720bf482129b51eb65beb4

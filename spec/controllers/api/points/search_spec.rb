@@ -62,5 +62,20 @@ describe Api::PointsController do
       expect(json).to be_kind_of(Array)
       expect(json.length).to eq(0)
     end
+
+    it 'filters by point_type' do
+      sign_in user
+      d = user.device
+      tool_slot       = FactoryBot.create(:tool_slot,       device: d)
+      plant           = FactoryBot.create(:plant,           device: d)
+      generic_pointer = FactoryBot.create(:generic_pointer, device: d)
+      post :search,
+            body: { pointer_type: "Plant" }.to_json,
+            params: {format: :json }
+      expect(response.status).to eq(200)
+      expect(json).to be_kind_of(Array)
+      expect(json.length).to eq(1)
+      expect(json.first[:pointer_type]).to eq("Plant")
+    end
   end
 end
