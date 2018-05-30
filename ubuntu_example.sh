@@ -55,7 +55,7 @@ cp config/application.example.yml config/application.yml
 # Use micro! `snap install micro --classic`
 # READ THE FILE AND CHANGE THE VALUES ^
 
-# Next, we need to set some thing up in PostgreSQL
+# Next, we need to set some things up in PostgreSQL
 # Run this command...
   sudo -u postgres psql
 #  Now that you are in the PSQL command prompt, enter these commands:
@@ -68,6 +68,7 @@ cp config/application.example.yml config/application.yml
 
 # Generate a set of *.pem files for data encryption:
 rake keys:generate
+
 # Create the database for the app to use:
 rake db:create:all db:migrate db:seed
 
@@ -84,10 +85,10 @@ npm run test
 # Runs the web server in new tab, but use SAME DIRECTORY AS BEFORE. Don't worry
 # about the "MQTT server is unreachable" messages yet- we still need to start
 # MQTT (next).
-rails api:start
+bundle exec rails api:start
 
 # Run MQTT (new tab or window, SAME DIRECTORY)
-rails mqtt:start
+bundle exec rails mqtt:start
 
 # RUNNING ON PORT 80 =======================================================+
 # NEXT STEP IS OPTIONAL. DO THIS IF YOU WANT TO USE PORT 80 INSTEAD OF 3000.|
