@@ -51,14 +51,22 @@ cp config/application.example.yml config/application.yml
 # Open `config/application.yml` in a text editor and change all the values.
 #
 # == Nothing will work if you skip this step!!! ==
-# Don't know which editor to use?
+# Don't know which text editor to use?
 # Use micro! `snap install micro --classic`
-# READ THE FILE AND CHANGE THE VALUES ^
+#
+# BE SURE TO READ `application.yml` AND CHANGE THE VALUES
 
 # Next, we need to set some things up in PostgreSQL
-# Run this command...
-  sudo -u postgres psql
-#  Now that you are in the PSQL command prompt, enter these commands:
+# Before proceeding, it is important to know your username on the machine.
+# Type the following command to determine your system username:
+whoami
+
+# ...then Run this command...
+sudo -u postgres psql
+
+#  Now that you are in the PSQL command prompt,
+#  enter the commands below. Replace your_system_username_here with the results
+#  of the `whoami` command:
 #
 #    CREATE USER "your_system_username_here" WITH SUPERUSER;
 #    \q
@@ -85,10 +93,13 @@ npm run test
 # Runs the web server in new tab, but use SAME DIRECTORY AS BEFORE. Don't worry
 # about the "MQTT server is unreachable" messages yet- we still need to start
 # MQTT (next).
-bundle exec rails api:start
+rails api:start
 
 # Run MQTT (new tab or window, SAME DIRECTORY)
-bundle exec rails mqtt:start
+rails mqtt:start
+
+# That's it! You can now visit the webserver on http://0.0.0.0:3000
+# (replace 0.0.0.0 with the IP address of your machine)
 
 # RUNNING ON PORT 80 =======================================================+
 # NEXT STEP IS OPTIONAL. DO THIS IF YOU WANT TO USE PORT 80 INSTEAD OF 3000.|
