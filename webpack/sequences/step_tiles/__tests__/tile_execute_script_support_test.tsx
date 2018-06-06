@@ -25,81 +25,127 @@ describe("<FarmwareInputs />", () => {
 
   it("renders current step pairs", () => {
     const wrapper = mount(<FarmwareInputs {...fakeProps()} />);
-    expect(wrapper.find("label").first().text()).toEqual("Inputs");
+    expect(wrapper.find("label").first().text()).toEqual("Parameters");
+    const bulkBtn = wrapper.find("input").first();
+    expect(bulkBtn.props().checked).toBeTruthy();
     const inputs = wrapper.find("fieldset");
     expect(inputs.find("label").text()).toEqual("Input 1");
-    const inputFieldProps = inputs.find("input").props();
+    const inputToggle = inputs.find("input").first();
+    expect(inputToggle.props().checked).toBeTruthy();
+    const inputFieldProps = inputs.find("input").last().props();
     expect(inputFieldProps.value).toEqual("1");
     expect(inputFieldProps.disabled).toEqual(false);
-    const button = inputs.find("button");
-    expect(button.text()).toEqual("");
-    expect(button.hasClass("red")).toBeTruthy();
   });
 
   it("renders current step pairs when bot is disconnected", () => {
     const p = fakeProps();
     p.farmwareInstalled = false;
     const wrapper = mount(<FarmwareInputs {...p} />);
-    expect(wrapper.find("label").first().text()).toEqual("Inputs");
+    expect(wrapper.find("label").first().text()).toEqual("Parameters");
+    const bulkBtn = wrapper.find("input").first();
+    expect(bulkBtn.props().checked).toBeTruthy();
     const inputs = wrapper.find("fieldset");
     expect(inputs.find("label").text()).toEqual("Input 1");
-    const inputFieldProps = inputs.find("input").props();
+    const inputToggle = inputs.find("input").first();
+    expect(inputToggle.props().checked).toBeTruthy();
+    const inputFieldProps = inputs.find("input").last().props();
     expect(inputFieldProps.value).toEqual("1");
     expect(inputFieldProps.disabled).toEqual(false);
-    const button = inputs.find("button");
-    expect(button.text()).toEqual("");
-    expect(button.hasClass("red")).toBeTruthy();
   });
 
   it("shows that current step pair is not needed", () => {
     const p = fakeProps();
     p.defaultConfigs = [];
     const wrapper = mount(<FarmwareInputs {...p} />);
-    expect(wrapper.find("label").first().text()).toEqual("Inputs");
+    expect(wrapper.find("label").first().text()).toEqual("Parameters");
+    const bulkBtn = wrapper.find("input").first();
+    expect(bulkBtn.props().checked).toBeTruthy();
     const inputs = wrapper.find("fieldset");
     expect(inputs.props().title).toContain("not needed");
     expect(inputs.find("label").text()).toEqual("Input 1");
-    const inputFieldProps = inputs.find("input").props();
+    const inputToggle = inputs.find("input").first();
+    expect(inputToggle.props().checked).toBeTruthy();
+    const inputFieldProps = inputs.find("input").last().props();
     expect(inputFieldProps.value).toEqual("1");
     expect(inputFieldProps.disabled).toEqual(true);
-    const button = inputs.find("button");
-    expect(button.text()).toEqual("");
-    expect(button.hasClass("red")).toBeTruthy();
   });
 
   it("renders config inputs needed by farmware", () => {
     const p = fakeProps();
-    p.currentStep.body = [];
+    delete p.currentStep.body;
     const wrapper = mount(<FarmwareInputs {...p} />);
-    expect(wrapper.find("label").first().text()).toEqual("Inputs");
+    expect(wrapper.find("label").first().text()).toEqual("Parameters");
+    const bulkBtn = wrapper.find("input").first();
+    expect(bulkBtn.props().checked).toBeFalsy();
     const inputs = wrapper.find("fieldset");
     expect(inputs.find("label").text()).toEqual("Input 1");
-    const inputFieldProps = inputs.find("input").props();
-    expect(inputFieldProps.value).toEqual("1");
-    expect(inputFieldProps.disabled).toEqual(false);
-    const button = inputs.find("button");
-    expect(button.text()).toEqual("*");
-    expect(button.hasClass("green")).toBeTruthy();
+    const inputToggle = inputs.find("input").first();
+    expect(inputToggle.props().checked).toBeFalsy();
+    expect(inputs.find("input").last().props().type).toEqual("checkbox");
   });
 
   it("adds an input pair", () => {
     const p = fakeProps();
     p.updateStep = jest.fn(x => { if (x) { x(p.currentStep); } });
-    p.currentStep.body = [];
+    delete p.currentStep.body;
     const wrapper = mount(<FarmwareInputs {...p} />);
     const inputs = wrapper.find("fieldset");
     expect(inputs.find("label").text()).toEqual("Input 1");
-    const button = inputs.find("button");
-    expect(button.text()).toEqual("*");
-    expect(button.hasClass("green")).toBeTruthy();
-    button.simulate("click");
+    const inputToggle = inputs.find("input").first();
+    expect(inputToggle.props().checked).toBeFalsy();
+    inputToggle.simulate("change");
     expect(p.currentStep.body).toEqual([{
       kind: "pair",
       args: { label: "my_farmware_input_1", value: "1" },
       comment: "Input 1",
     }]);
-    // expect(inputs.find("button").text()).toEqual("");
-    // expect(inputs.find("button").hasClass("red")).toBeTruthy();
+    // expect(wrapper.find("input").first().props().checked).toBeTruthy();
+    // expect(inputToggle.props().checked).toBeTruthy();
+  });
+
+  it("adds all input pairs", () => {
+    const p = fakeProps();
+    p.updateStep = jest.fn(x => { if (x) { x(p.currentStep); } });
+    delete p.currentStep.body;
+    p.defaultConfigs.push({ name: "input_2", label: "Input 2", value: "2" });
+    const wrapper = mount(<FarmwareInputs {...p} />);
+    const bulkBtn = wrapper.find("input").first();
+    expect(bulkBtn.props().checked).toBeFalsy();
+    bulkBtn.simulate("change");
+    expect(p.currentStep.body).toEqual([{
+      kind: "pair",
+      args: { label: "my_farmware_input_1", value: "1" },
+      comment: "Input 1",
+    },
+    {
+      kind: "pair",
+      args: { label: "my_farmware_input_2", value: "2" },
+      comment: "Input 2",
+    }]);
+    // expect(bulkBtn.props().checked).toBeTruthy();
+  });
+
+  it("adds remaining input pairs", () => {
+    const p = fakeProps();
+    p.updateStep = jest.fn(x => { if (x) { x(p.currentStep); } });
+    p.defaultConfigs.push({ name: "input_2", label: "Input 2", value: "2" });
+    const wrapper = mount(<FarmwareInputs {...p} />);
+    const bulkBtn = wrapper.find("input").first();
+    expect(bulkBtn.props().checked).toBeFalsy();
+    expect(wrapper.find(".fb-checkbox").first().hasClass("partial"))
+      .toBeTruthy();
+    bulkBtn.simulate("change");
+    expect(p.currentStep.body).toEqual([{
+      kind: "pair",
+      args: { label: "my_farmware_input_1", value: 1 },
+      comment: "Input 1",
+    },
+    {
+      kind: "pair",
+      args: { label: "my_farmware_input_2", value: "2" },
+      comment: "Input 2",
+    }]);
+    // expect(bulkBtn.props().checked).toBeTruthy();
   });
 
   it("removes an input pair", () => {
@@ -108,13 +154,23 @@ describe("<FarmwareInputs />", () => {
     const wrapper = mount(<FarmwareInputs {...p} />);
     const inputs = wrapper.find("fieldset");
     expect(inputs.find("label").text()).toEqual("Input 1");
-    const button = inputs.find("button");
-    expect(inputs.find("button").text()).toEqual("");
-    expect(inputs.find("button").hasClass("red")).toBeTruthy();
-    button.simulate("click");
+    const inputToggle = inputs.find("input").first();
+    expect(inputToggle.props().checked).toBeTruthy();
+    inputToggle.simulate("change");
     expect(p.currentStep.body).toEqual([]);
-    // expect(button.text()).toEqual("*");
-    // expect(button.hasClass("green")).toBeTruthy();
+    // expect(wrapper.find("input").first().props().checked).toBeFalsy();
+    // expect(inputToggle.props().checked).toBeFalsy();
+  });
+
+  it("removes all input pairs", () => {
+    const p = fakeProps();
+    p.updateStep = jest.fn(x => { if (x) { x(p.currentStep); } });
+    const wrapper = mount(<FarmwareInputs {...p} />);
+    const bulkBtn = wrapper.find("input").first();
+    expect(bulkBtn.props().checked).toBeTruthy();
+    bulkBtn.simulate("change");
+    expect(p.currentStep.body).toEqual(undefined);
+    // expect(bulkBtn.props().checked).toBeFalsy();
   });
 
   it("edits an input pair", () => {
@@ -126,5 +182,18 @@ describe("<FarmwareInputs />", () => {
     const inputField = inputs.find("BlurableInput");
     inputField.simulate("commit", { currentTarget: { value: "2" } });
     expect((p.currentStep.body || [])[0].args.value).toEqual("2");
+  });
+
+  it("resets a value to default", () => {
+    const p = fakeProps();
+    (p.currentStep.body || [])[0].args.value = "2";
+    p.updateStep = jest.fn(x => { if (x) { x(p.currentStep); } });
+    const wrapper = mount(<FarmwareInputs {...p} />);
+    expect((p.currentStep.body || [])[0].args.value).toEqual("2");
+    const resetValueBtn = wrapper.find("i").last();
+    expect(resetValueBtn.hasClass("fa-times-circle")).toBeTruthy();
+    resetValueBtn.simulate("click");
+    expect((p.currentStep.body || [])[0].args.value).toEqual("1");
+    // expect(resetValueBtn.hasClass("fa-times-circle")).toBeFalsy();
   });
 });

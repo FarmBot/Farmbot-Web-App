@@ -738,3 +738,43 @@ ul {
     position: absolute;
   }
 }
+
+.checkbox-row {
+  margin-top: 1rem;
+  label {
+    vertical-align: text-bottom;
+  }
+  .fb-checkbox {
+    display: inline;
+    margin-right: 1rem;
+    position: relative;
+    &.partial:after {
+      content: "";
+      position: absolute;
+      border: solid $dark_gray;
+      border-width: 0 0 3px 0;
+      bottom: 1.2rem;
+      left: 0.75rem;
+      padding: 0.6rem 0.3rem;
+    }
+  }
+  .pt-popover-wrapper, .pt-popover-target {
+    margin-left: 1rem;
+    display: inline-block !important;
+    margin-top: 0.4rem;
+  }
+}
+
+.farmware-input-group {
+  position: relative;
+  margin-left: 3rem;
+  i {
+    position: absolute;
+    right: 1rem;
+    top: 0.55rem;
+    color: $light_gray;
+    &:hover {
+      color: $dark_gray;
+    }
+  }
+}
