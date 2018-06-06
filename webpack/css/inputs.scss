@@ -95,21 +95,21 @@ select {
     border-radius: 0;
     -webkit-appearance: none;
     border: 0.5px solid $gray;
-    width: 3rem;
-    height: 3rem;
+    width: 2rem;
+    height: 2rem;
     background: $white;
     position: relative;
     margin-top: 0;
     cursor: pointer;
     &:checked:after {
-      content: '';
+      content: "";
       position: absolute;
       border: solid $dark_gray;
-      border-width: 0 4.5px 4.5px 0;
+      border-width: 0 3px 3px 0;
       transform: rotate(45deg);
       bottom: 0.5rem;
-      left: 0.8rem;
-      padding: 0.9rem 0.4rem;
+      left: 0.5rem;
+      padding: 0.6rem 0.3rem;
     }
   }
 }

@@ -233,6 +233,10 @@ export namespace ToolTips {
     trim(`The Run Farmware step runs a Farmware package.
    Visit the Farmware page to install and manage Farmware.`);
 
+  export const FARMWARE_CONFIGS =
+    trim(`The Farmware will use the parameter values set via the Farmware page
+    for any parameters that are not set in this sequence step.`);
+
   export const TAKE_PHOTO =
     trim(`Snaps a photo using the device camera. Select the camera type on the
     Device page.`);

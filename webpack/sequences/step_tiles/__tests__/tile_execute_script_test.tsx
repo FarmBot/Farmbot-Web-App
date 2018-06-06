@@ -92,7 +92,26 @@ describe("<TileExecuteScript/>", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: expect.objectContaining({
         update: expect.objectContaining({
-          body: [{ args: { label: "farmware-name" }, kind: "execute_script" }]
+          body: [{ kind: "execute_script", args: { label: "farmware-name" } }]
+        })
+      }),
+      type: Actions.OVERWRITE_RESOURCE
+    });
+  });
+
+  it("clears body when switching Farmware", () => {
+    const p = fakeProps();
+    p.currentStep.body = [
+      { kind: "pair", args: { label: "x", value: 1 }, comment: "X" }];
+    const wrapper = shallow(<TileExecuteScript {...p} />);
+    wrapper.find("FBSelect").simulate("change", {
+      label: "farmware-name",
+      value: "farmware-name"
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: expect.objectContaining({
+        update: expect.objectContaining({
+          body: [{ kind: "execute_script", args: { label: "farmware-name" } }]
         })
       }),
       type: Actions.OVERWRITE_RESOURCE
