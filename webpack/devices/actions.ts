@@ -59,9 +59,10 @@ export const commandOK = (noun = "Command") => () => {
 
 export function checkControllerUpdates() {
   const noun = "Check for Updates";
+  commandOK(noun)();
   getDevice()
     .checkUpdates()
-    .then(commandOK(noun), commandErr(noun));
+    .catch(commandErr(noun));
 }
 
 export function powerOff() {
