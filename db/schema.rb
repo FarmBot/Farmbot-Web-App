@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_05_24_161501) do
+ActiveRecord::Schema.define(version: 2018_06_06_131907) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -328,7 +328,7 @@ ActiveRecord::Schema.define(version: 2018_05_24_161501) do
     t.string "parent_arg_name", limit: 50
     t.bigint "next_id"
     t.bigint "body_id"
-    t.string "comment", limit: 80
+    t.string "comment", limit: 240
     t.index ["body_id"], name: "index_primary_nodes_on_body_id"
     t.index ["child_id"], name: "index_primary_nodes_on_child_id"
     t.index ["next_id"], name: "index_primary_nodes_on_next_id"
