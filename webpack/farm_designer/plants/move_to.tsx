@@ -10,6 +10,7 @@ import { AxisInputBox } from "../../controls/axis_input_box";
 import { isNumber } from "lodash";
 import { Actions } from "../../constants";
 import { validBotLocationData } from "../../util/util";
+import { unselectPlant } from "../actions";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -89,6 +90,10 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
 
 @connect(mapStateToProps)
 export class MoveTo extends React.Component<MoveToProps, {}> {
+
+  componentDidMount() {
+    unselectPlant(this.props.dispatch)();
+  }
 
   componentWillUnmount() {
     this.props.dispatch({

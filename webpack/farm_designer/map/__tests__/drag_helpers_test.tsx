@@ -112,6 +112,22 @@ describe("<DragHelpers/>", () => {
     expect(indicators.props().fill).toEqual(Color.red);
   });
 
+  it("renders vertical alignment indicators: rotated map", () => {
+    const p = fakeProps();
+    p.mapTransformProps.xySwap = true;
+    p.dragging = false;
+    p.plant.body.x = 100;
+    p.plant.body.y = 100;
+    p.activeDragXY = { x: 100, y: 0, z: 0 };
+    const wrapper = shallow(<DragHelpers {...p} />);
+    const indicator = wrapper.find("#alignment-indicator");
+    const segments = indicator.find("use");
+    expect(segments.length).toEqual(2);
+    expect(segments.at(0).props().transform).toEqual("rotate(0, 100, 100)");
+    expect(segments.at(1).props().transform).toEqual("rotate(180, 100, 100)");
+    expect(indicator.props().fill).toEqual(Color.red);
+  });
+
   it("renders horizontal alignment indicators", () => {
     const p = fakeProps();
     p.dragging = false;
@@ -124,6 +140,22 @@ describe("<DragHelpers/>", () => {
     expect(segments.length).toEqual(2);
     expect(segments.at(0).props().transform).toEqual("rotate(0, 100, 100)");
     expect(segments.at(1).props().transform).toEqual("rotate(180, 100, 100)");
+    expect(indicator.props().fill).toEqual(Color.red);
+  });
+
+  it("renders horizontal alignment indicators: rotated map", () => {
+    const p = fakeProps();
+    p.mapTransformProps.xySwap = true;
+    p.dragging = false;
+    p.plant.body.x = 100;
+    p.plant.body.y = 100;
+    p.activeDragXY = { x: 0, y: 100, z: 0 };
+    const wrapper = shallow(<DragHelpers {...p} />);
+    const indicator = wrapper.find("#alignment-indicator");
+    const segments = indicator.find("use");
+    expect(segments.length).toEqual(2);
+    expect(segments.at(0).props().transform).toEqual("rotate(90, 100, 100)");
+    expect(segments.at(1).props().transform).toEqual("rotate(270, 100, 100)");
     expect(indicator.props().fill).toEqual(Color.red);
   });
 
