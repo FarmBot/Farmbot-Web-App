@@ -21,8 +21,11 @@ enum Line {
 
 export function DragHelpers(props: DragHelpersProps) {
 
-  function getAlignment
-    (activeXYZ: BotPosition | undefined, plantXYZ: BotPosition): Alignment {
+  function getAlignment(
+    activeXYZ: BotPosition | undefined,
+    plantXYZ: BotPosition,
+    swappedXY: Boolean
+  ): Alignment {
     if (activeXYZ && !isUndefined(activeXYZ.x) && !isUndefined(activeXYZ.y)) {
       // Plant editing (dragging) is occuring
       const activeXY = { x: round(activeXYZ.x), y: round(activeXYZ.y) };
@@ -30,10 +33,10 @@ export function DragHelpers(props: DragHelpersProps) {
         return Alignment.BOTH;
       }
       if (activeXY.x == plantXYZ.x) {
-        return Alignment.VERTICAL;
+        return swappedXY ? Alignment.HORIZONTAL : Alignment.VERTICAL;
       }
       if (activeXY.y == plantXYZ.y) {
-        return Alignment.HORIZONTAL;
+        return swappedXY ? Alignment.VERTICAL : Alignment.HORIZONTAL;
       }
     }
     return Alignment.NONE;
@@ -55,6 +58,7 @@ export function DragHelpers(props: DragHelpersProps) {
   const {
     dragging, plant, zoomLvl, activeDragXY, mapTransformProps, plantAreaOffset
   } = props;
+  const { xySwap } = mapTransformProps;
   const mapSize = getMapSize(mapTransformProps, plantAreaOffset);
   const { radius, x, y } = plant.body;
 
@@ -102,11 +106,12 @@ export function DragHelpers(props: DragHelpersProps) {
               height={2 * scale} />
           </g>
         </defs>
-        {rotationArray(getAlignment(activeDragXY, gardenCoord)).map(rotation => {
-          return <use key={rotation.toString()}
-            xlinkHref={"#alignment-indicator-segment-" + plant.body.id}
-            transform={`rotate(${rotation}, ${qx}, ${qy})`} />;
-        })}
+        {rotationArray(getAlignment(activeDragXY, gardenCoord, xySwap))
+          .map(rotation => {
+            return <use key={rotation.toString()}
+              xlinkHref={"#alignment-indicator-segment-" + plant.body.id}
+              transform={`rotate(${rotation}, ${qx}, ${qy})`} />;
+          })}
       </g>}
   </g>;
 }
