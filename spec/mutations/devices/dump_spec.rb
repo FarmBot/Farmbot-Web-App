@@ -6,7 +6,7 @@ describe Devices::Dump do
   MODEL_NAMES = Devices::Dump::RESOURCES.without(*SPECIAL).concat(ADDITIONAL)
   NOPE        = "Expected value[%s] to equal %s. Got %s instead"
 
-  it "serializes _all_ the data" do
+  it "serializes _all_ the data", :slow do
     device    = FactoryBot.create(:device)
     resources = MODEL_NAMES
                   .map { |x| x.to_s.singularize.to_sym }

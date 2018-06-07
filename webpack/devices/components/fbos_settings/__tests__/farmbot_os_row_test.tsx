@@ -34,7 +34,7 @@ describe("<FbosDetails/>", () => {
     bot.hardware.informational_settings.node_name = "fakeName";
     bot.hardware.informational_settings.firmware_version = "fakeFirmware";
     bot.hardware.informational_settings.firmware_commit = "fakeFwCommit";
-    const wrapper = shallow(<FbosDetails {...fakeProps() } />);
+    const wrapper = shallow(<FbosDetails {...fakeProps()} />);
     ["Environment", "fakeEnv",
       "Commit", "fakeComm",
       "Target", "fakeTarget",
@@ -56,8 +56,11 @@ describe("<FbosDetails/>", () => {
 
   it("toggles os beta opt in setting on", () => {
     bot.hardware.configuration.beta_opt_in = false;
-    const wrapper = mount(<FbosDetails {...fakeProps() } />);
+    const wrapper = mount(<FbosDetails {...fakeProps()} />);
+    window.confirm = jest.fn();
     wrapper.find("button").simulate("click");
+    expect(window.confirm).toHaveBeenCalledWith(
+      expect.stringContaining("you sure?"));
     expect(mockDevice.updateConfig).not.toHaveBeenCalled();
     window.confirm = () => true;
     wrapper.find("button").simulate("click");
@@ -67,7 +70,7 @@ describe("<FbosDetails/>", () => {
 
   it("toggles os beta opt in setting off", () => {
     bot.hardware.configuration.beta_opt_in = true;
-    const wrapper = mount(<FbosDetails {...fakeProps() } />);
+    const wrapper = mount(<FbosDetails {...fakeProps()} />);
     window.confirm = () => false;
     wrapper.find("button").simulate("click");
     expect(mockDevice.updateConfig)

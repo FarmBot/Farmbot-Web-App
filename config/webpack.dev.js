@@ -5,6 +5,7 @@ var conf = genConfig();
 var devServerPort = 3808;
 const host = process.env["API_HOST"] || "localhost"
 
+conf.mode = "development";
 conf.output = {
   // must match config.webpack.output_dir
   path: path.join(__dirname, '..', 'public', 'webpack'),

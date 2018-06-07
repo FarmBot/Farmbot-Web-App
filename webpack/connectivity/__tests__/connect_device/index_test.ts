@@ -222,7 +222,7 @@ describe("onLogs", () => {
     const log = fakeLog("error", []);
     log.message = "bot xyz is offline";
     fn(log);
-    globalQueue.work();
+    globalQueue.maybeWork();
     expect(dispatchNetworkDown).toHaveBeenCalledWith("bot.mqtt");
   });
 });

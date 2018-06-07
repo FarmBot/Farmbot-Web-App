@@ -14,19 +14,22 @@ describe("deleteUser()", () => {
   });
 
   it("cancels the account", (done) => {
-    expect.assertions(2);
+    expect.assertions(3);
     API.setBaseUrl("http://example.com:80");
     const thunk = deleteUser({ password: "Foo!" });
     const dispatch = jest.fn();
     const getState = jest.fn();
     getState.mockImplementation(() => ({ auth: {} }));
+    window.alert = jest.fn();
     thunk(dispatch, getState);
+
     moxios.wait(function () {
       const request = moxios.requests.mostRecent();
       request.respondWith({
         status: 200,
         response: {}
       }).then(function (resp) {
+        expect(window.alert).toHaveBeenCalled();
         expect(resp.config.url).toContain("api/users");
         expect(resp.config.method).toBe("delete");
         done();

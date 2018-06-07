@@ -74,9 +74,11 @@ export class SequenceEditorMiddleActive extends
                 dispatch(edit(sequence, { name: e.currentTarget.value }));
               }} />
           </Col>
-          <ColorPicker
-            current={sequence.body.color}
-            onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
+          <Col xs={1} className="color-picker-col">
+            <ColorPicker
+              current={sequence.body.color}
+              onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
+          </Col>
         </Row>
         {shouldDisplay(Feature.variables) &&
           <LocalsList

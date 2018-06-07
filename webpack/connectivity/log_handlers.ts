@@ -1,6 +1,5 @@
 import { isLog } from "../devices/actions";
 import {
-  bothUp,
   actOnChannelName,
   showLogOnScreen,
   speakLogAloud,
@@ -30,23 +29,21 @@ function legacyKeyTransformation(log: Log,
 }
 
 export const onLogs =
-  (dispatch: Function, getState: GetState) => (msg: Log) => {
-    bothUp();
+  (_dispatch: Function, getState: GetState) => (msg: Log) => {
     if (isLog(msg)) {
       LEGACY_META_KEY_NAMES.map(key => legacyKeyTransformation(msg, key));
       actOnChannelName(msg, "toast", showLogOnScreen);
       actOnChannelName(msg, "espeak", speakLogAloud(getState));
-      globalQueue.push(() => {
-        dispatch(initLog(msg));
-        // CORRECT SOLUTION: Give each device its own topic for publishing
-        //                   MQTT last will message.
-        // FAST SOLUTION:    We would need to re-publish FBJS and FBOS to
-        //                   change topic structure. Instead, we will use
-        //                   inband signalling (for now).
-        // TODO:             Make a `bot/device_123/offline` channel.
-        const died =
-          msg.message.includes("is offline") && msg.type === "error";
-        died && dispatchNetworkDown("bot.mqtt");
-      });
+      const log = initLog(msg).payload;
+      log.kind == "Log" && globalQueue.push(log);
+      // CORRECT SOLUTION: Give each device its own topic for publishing
+      //                   MQTT last will message.
+      // FAST SOLUTION:    We would need to re-publish FBJS and FBOS to
+      //                   change topic structure. Instead, we will use
+      //                   inband signalling (for now).
+      // TODO:             Make a `bot/device_123/offline` channel.
+      const died =
+        msg.message.includes("is offline") && msg.type === "error";
+      died && dispatchNetworkDown("bot.mqtt");
     }
   };

@@ -10,6 +10,7 @@ import { AxisInputBox } from "../../controls/axis_input_box";
 import { isNumber } from "lodash";
 import { Actions } from "../../constants";
 import { validBotLocationData } from "../../util/util";
+import { unselectPlant } from "../actions";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -20,29 +21,21 @@ export function mapStateToProps(props: Everything) {
   };
 }
 
-export interface MoveToProps {
+export interface MoveToFormProps {
   chosenLocation: BotPosition;
   currentBotLocation: BotPosition;
+}
+
+export interface MoveToProps extends MoveToFormProps {
   dispatch: Function;
 }
 
-interface MoveToState {
+interface MoveToFormState {
   z: number | undefined;
 }
 
-@connect(mapStateToProps)
-export class MoveTo extends React.Component<MoveToProps, MoveToState> {
-  constructor(props: MoveToProps) {
-    super(props);
-    this.state = { z: undefined };
-  }
-
-  componentWillUnmount() {
-    this.props.dispatch({
-      type: Actions.CHOOSE_LOCATION,
-      payload: { x: undefined, y: undefined, z: undefined }
-    });
-  }
+export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState> {
+  state = { z: undefined };
 
   get vector(): { x: number, y: number, z: number } {
     const { chosenLocation } = this.props;
@@ -59,6 +52,57 @@ export class MoveTo extends React.Component<MoveToProps, MoveToState> {
 
   render() {
     const { x, y } = this.props.chosenLocation;
+    return <div>
+      <Row>
+        <Col xs={4}>
+          <label>{t("X AXIS")}</label>
+        </Col>
+        <Col xs={4}>
+          <label>{t("Y AXIS")}</label>
+        </Col>
+        <Col xs={4}>
+          <label>{t("Z AXIS")}</label>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={4}>
+          <input disabled value={isNumber(x) ? x : "---"} />
+        </Col>
+        <Col xs={4}>
+          <input disabled value={isNumber(y) ? y : "---"} />
+        </Col>
+        <AxisInputBox
+          onChange={(_, val: number) => this.setState({ z: val })}
+          axis={"z"}
+          value={this.state.z} />
+        <Row>
+          <button
+            onClick={() => moveAbs(this.vector)}
+            disabled={false}
+            className="fb-button gray" >
+            {t("Move to this coordinate")}
+          </button>
+        </Row>
+      </Row>
+    </div>;
+  }
+}
+
+@connect(mapStateToProps)
+export class MoveTo extends React.Component<MoveToProps, {}> {
+
+  componentDidMount() {
+    unselectPlant(this.props.dispatch)();
+  }
+
+  componentWillUnmount() {
+    this.props.dispatch({
+      type: Actions.CHOOSE_LOCATION,
+      payload: { x: undefined, y: undefined, z: undefined }
+    });
+  }
+
+  render() {
     return <div
       className="panel-container green-panel move-to-panel">
       <div className="panel-header green-panel">
@@ -73,41 +117,12 @@ export class MoveTo extends React.Component<MoveToProps, MoveToState> {
             "Once selected, press button to move FarmBot to this postion. " +
             "Press the back arrow to exit.")}
         </div>
-
       </div>
 
       <div className="panel-content move-to-panel-content">
-        <Row>
-          <Col xs={4}>
-            <label>{t("X AXIS")}</label>
-          </Col>
-          <Col xs={4}>
-            <label>{t("Y AXIS")}</label>
-          </Col>
-          <Col xs={4}>
-            <label>{t("Z AXIS")}</label>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={4}>
-            <input disabled value={isNumber(x) ? x : "---"} />
-          </Col>
-          <Col xs={4}>
-            <input disabled value={isNumber(y) ? y : "---"} />
-          </Col>
-          <AxisInputBox
-            onChange={(_, val: number) => this.setState({ z: val })}
-            axis={"z"}
-            value={this.state.z} />
-          <Row>
-            <button
-              onClick={() => moveAbs(this.vector)}
-              disabled={false}
-              className="fb-button gray" >
-              {t("Move to this coordinate")}
-            </button>
-          </Row>
-        </Row>
+        <MoveToForm
+          chosenLocation={this.props.chosenLocation}
+          currentBotLocation={this.props.currentBotLocation} />
       </div>
     </div>;
   }

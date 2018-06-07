@@ -9,12 +9,15 @@ module Points
       end
 
       optional do
-        float    :radius
-        float    :x
-        float    :y
-        float    :z
-        hstore   :meta
-        string   :name
+        float  :radius
+        float  :x
+        float  :y
+        float  :z
+        hstore :meta
+        string :name
+        string :pointer_type, in: Point::POINTER_KINDS
+        string :plant_stage,  in: CeleryScriptSettingsBag::PLANT_STAGES
+        string :openfarm_slug
       end
 
       def execute

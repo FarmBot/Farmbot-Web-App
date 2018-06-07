@@ -32,7 +32,7 @@ export class PlantInfo extends PlantInfoBase {
           </Link>
         </p>
       </div>
-      <PlantPanel info={info} />
+      <PlantPanel info={info} dispatch={this.props.dispatch} />
     </div>;
   }
 

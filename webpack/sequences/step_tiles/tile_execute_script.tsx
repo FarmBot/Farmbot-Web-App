@@ -5,44 +5,54 @@ import { ToolTips } from "../../constants";
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
-import { assign } from "lodash";
-import { defensiveClone } from "../../util";
-import { overwrite } from "../../api/crud";
-
-const MANUAL_INPUT = { label: "Manual Input", value: "" };
+import { editStep } from "../../api/crud";
+import { ExecuteScript, FarmwareConfig } from "farmbot";
+import { FarmwareInputs, farmwareList } from "./tile_execute_script_support";
 
 export function TileExecuteScript({
   dispatch, currentStep, index, currentSequence, farmwareInfo }: StepParams) {
   if (currentStep.kind === "execute_script") {
 
-    const farmwareList = () => {
-      if (farmwareInfo) {
-        const {
-          farmwareNames, showFirstPartyFarmware, firstPartyFarmwareNames
-        } = farmwareInfo;
-        return farmwareNames
-          .filter(x => (firstPartyFarmwareNames && !showFirstPartyFarmware)
-            ? !firstPartyFarmwareNames.includes(x) : x)
-          .map(name => ({ value: name, label: name }));
-      }
-      return [];
+    const farmwareName = currentStep.args.label;
+
+    /** Selected Farmware is installed on connected bot. */
+    const isInstalled = (name: string): boolean => {
+      return !!(farmwareInfo && farmwareInfo.farmwareNames.includes(name));
     };
 
-    const selectedFarmware = () => {
-      const farmware = currentStep.args.label;
-      if (farmwareInfo && farmwareInfo.farmwareNames.includes(farmware)) {
-        return { value: farmware, label: farmware };
+    const selectedFarmwareDDI = (name: string): DropDownItem => {
+      if (isInstalled(name)) {
+        return { value: name, label: name };
       }
-      return MANUAL_INPUT;
+      return { label: "Manual Input", value: "" };
     };
 
-    const updateStep = (item: DropDownItem) => {
-      const stepCopy = defensiveClone(currentStep);
-      const seqCopy = defensiveClone(currentSequence).body;
-      seqCopy.body = seqCopy.body || [];
-      assign(stepCopy.args, { label: item.value });
-      seqCopy.body[index] = stepCopy;
-      dispatch(overwrite(currentSequence, seqCopy));
+    /** dispatch editStep for current ExecuteScript step */
+    const updateStep = (executor: (stepCopy: ExecuteScript) => void) => {
+      dispatch(editStep({
+        sequence: currentSequence,
+        step: currentStep,
+        index: index,
+        executor
+      }));
+    };
+
+    /** Change step Farmware name. */
+    const updateStepFarmwareSelection = (item: DropDownItem) => {
+      updateStep((step: ExecuteScript) => {
+        if (step.body && (step.args.label !== "" + item.value)) {
+          // Clear step body when switching to a different Farmware
+          delete step.body;
+        }
+        step.args.label = "" + item.value;
+      });
+    };
+
+    /** Configs (inputs) from Farmware manifest for <FarmwareInputs />. */
+    const currentFarmwareConfigDefaults = (fwName: string): FarmwareConfig[] => {
+      return farmwareInfo && farmwareInfo.farmwareConfigs[fwName]
+        ? farmwareInfo.farmwareConfigs[fwName]
+        : [];
     };
 
     const className = "execute-script-step";
@@ -59,13 +69,13 @@ export function TileExecuteScript({
           <Col xs={12}>
             <label>{t("Package Name")}</label>
             <FBSelect
-              key={selectedFarmware().label}
-              list={farmwareList()}
-              selectedItem={selectedFarmware()}
-              onChange={updateStep}
+              key={farmwareName + selectedFarmwareDDI(farmwareName).value}
+              list={farmwareList(farmwareInfo)}
+              selectedItem={selectedFarmwareDDI(farmwareName)}
+              onChange={updateStepFarmwareSelection}
               allowEmpty={true}
               customNullLabel={"Manual Input"} />
-            {selectedFarmware() === MANUAL_INPUT &&
+            {!isInstalled(farmwareName) &&
               <div>
                 <label>{t("Manual input")}</label>
                 <StepInputBox dispatch={dispatch}
@@ -74,6 +84,12 @@ export function TileExecuteScript({
                   sequence={currentSequence}
                   field="label" />
               </div>}
+            <FarmwareInputs
+              farmwareName={farmwareName}
+              farmwareInstalled={isInstalled(farmwareName)}
+              defaultConfigs={currentFarmwareConfigDefaults(farmwareName)}
+              currentStep={currentStep}
+              updateStep={updateStep} />
           </Col>
         </Row>
       </StepContent>

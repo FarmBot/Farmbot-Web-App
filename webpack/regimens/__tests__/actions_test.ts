@@ -48,8 +48,11 @@ describe("deleteRegimen()", () => {
     const state = fakeState();
     state.resources.index = buildResourceIndex([fakeRegimen()]).index;
     const getState = () => state;
+    window.confirm = jest.fn();
     deleteRegimen(state.resources.index.all[0])(dispatch, getState)
       .catch(() => { });
+    expect(window.confirm).toHaveBeenCalledWith(
+      expect.stringContaining("delete this item?"));
     expect(dispatch).not.toHaveBeenCalled();
   });
 
@@ -58,8 +61,7 @@ describe("deleteRegimen()", () => {
     const state = fakeState();
     state.resources.index = buildResourceIndex([fakeRegimen()]).index;
     const getState = () => state;
-    // tslint:disable-next-line:no-any
-    (global as any).confirm = () => true;
+    window.confirm = () => true;
     deleteRegimen(state.resources.index.all[0])(dispatch, getState);
     expect(dispatch).toHaveBeenCalledWith({
       payload: state.resources.index.references[state.resources.index.all[0]],

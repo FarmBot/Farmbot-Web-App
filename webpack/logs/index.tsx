@@ -5,7 +5,7 @@ import { Col, Row, Page, ToolTip } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { t } from "i18next";
 import { Popover, Position } from "@blueprintjs/core";
-import { LogsState, LogsProps } from "./interfaces";
+import { LogsState, LogsProps, Filters } from "./interfaces";
 import { ToolTips } from "../constants";
 import { LogsSettingsMenu } from "./components/settings_menu";
 import { LogsFilterMenu } from "./components/filter_menu";
@@ -15,11 +15,14 @@ import { isUndefined } from "lodash";
 import { NumericSetting } from "../session_keys";
 import { NumberConfigKey } from "../config_storage/web_app_configs";
 
+/** Format log date and time for display in the app. */
 export const formatLogTime = (created_at: number, timeoffset: number) =>
   moment.unix(created_at).utcOffset(timeoffset).format("MMM D, h:mma");
 
 @connect(mapStateToProps)
 export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
+
+  /** Initialize log type verbosity level to the configured or default value. */
   initialize = (name: NumberConfigKey, defaultValue: number): number => {
     const currentValue = Session.deprecatedGetNum(safeNumericSetting(name));
     if (isUndefined(currentValue)) {
@@ -41,33 +44,31 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
     debug: this.initialize(NumericSetting.debug_log, 1),
   };
 
-  toggle = (name: keyof LogsState) => {
-    switch (this.state[name]) {
-      case 0:
-        return () => {
-          this.setState({ [name]: 1 });
-          Session.deprecatedSetNum(safeNumericSetting(name + "_log"), 1);
-        };
-      default:
-        return () => {
-          this.setState({ [name]: 0 });
-          Session.deprecatedSetNum(safeNumericSetting(name + "_log"), 0);
-        };
-    }
+  /** Toggle display of a log type. Verbosity level 0 hides all, 3 shows all.*/
+  toggle = (name: keyof Filters) => {
+    // If log type is off, set it to verbosity level 1, otherwise turn it off
+    const newSetting = this.state[name] === 0 ? 1 : 0;
+    return () => {
+      this.setState({ [name]: newSetting });
+      Session.deprecatedSetNum(safeNumericSetting(name + "_log"), newSetting);
+    };
   }
 
-  setFilterLevel = (name: keyof LogsState) => {
+  /** Set log type filter level. i.e., level 2 shows verbosity 2 and lower.*/
+  setFilterLevel = (name: keyof Filters) => {
     return (value: number) => {
       this.setState({ [name]: value });
       Session.deprecatedSetNum(safeNumericSetting(name + "_log"), value);
     };
   };
 
+  /** Determine if log type filters are active. */
   get filterActive() {
     const filterKeys = Object.keys(this.state)
       .filter(x => !(x === "autoscroll"));
     const filterValues = filterKeys
-      .map((key: keyof LogsState) => this.state[key]);
+      .map((key: keyof Filters) => this.state[key]);
+    // Filters active if every log type level is not equal to 3 (max verbosity)
     return !filterValues.every(x => x == 3);
   }
 

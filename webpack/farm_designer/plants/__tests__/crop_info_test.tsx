@@ -11,10 +11,15 @@ jest.mock("../../../history", () => ({
   }
 }));
 
+jest.mock("../../../api/crud", () => ({
+  initSave: jest.fn()
+}));
+
 import * as React from "react";
 import { CropInfo } from "../crop_info";
 import { shallow, mount } from "enzyme";
 import { CropInfoProps } from "../../interfaces";
+import { initSave } from "../../../api/crud";
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
@@ -35,7 +40,8 @@ describe("<CropInfo />", () => {
           processing_pictures: 1,
           svg_icon: "fake_mint_svg"
         }
-      }]
+      }],
+      botPosition: { x: undefined, y: undefined, z: undefined },
     };
   };
 
@@ -55,5 +61,35 @@ describe("<CropInfo />", () => {
     wrapper.find(".right-button").simulate("click");
     expect(mockHistory).toHaveBeenCalledWith(
       "/app/designer/plants/crop_search/mint/add");
+  });
+
+  it("returns to crop search", () => {
+    mockPath = "/app/designer/plants/crop_search/mint";
+    const wrapper = shallow(<CropInfo {...fakeProps()} />);
+    wrapper.find(".plant-panel-back-arrow").simulate("click");
+    expect(mockHistory).toHaveBeenCalledWith(
+      "/app/designer/plants/crop_search/");
+  });
+
+  it("disables 'add plant @ UTM' button", () => {
+    const wrapper = shallow(<CropInfo {...fakeProps()} />);
+    expect(wrapper.text()).toContain("location (unknown)");
+  });
+
+  it("adds a plant at the current bot position", () => {
+    const p = fakeProps();
+    p.botPosition = { x: 100, y: 200, z: undefined };
+    const wrapper = shallow(<CropInfo {...p} />);
+    const button = wrapper.find("button").last();
+    expect(button.text()).toContain("location (100, 200)");
+    button.simulate("click");
+    expect(initSave).toHaveBeenCalledWith(expect.objectContaining({
+      body: expect.objectContaining({
+        name: "Mint",
+        x: 100,
+        y: 200,
+        z: 0
+      })
+    }));
   });
 });

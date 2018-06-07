@@ -36,7 +36,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
       </radialGradient>
     </defs>
 
-    {plants.map((p) => {
+    {plants.map(p => {
       const selected = !!(currentPlant && (p.uuid === currentPlant.uuid));
       return <g id={"spread-components-" + p.body.id} key={p.uuid}>
         {visible &&
@@ -54,8 +54,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
           activeDragXY={activeDragXY}
           activeDragSpread={activeDragSpread} />
       </g>;
-    })
-    }
+    })}
   </g>;
 }
 

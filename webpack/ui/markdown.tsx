@@ -11,6 +11,7 @@ const md = require("markdown-it")({
   typographer: true,
 });
 
+md.disable("heading");
 md.use(emoji);
 
 interface MarkdownProps {
