@@ -11,6 +11,10 @@ This repository is intended for *software developers* who wish to modify the [Fa
 
 If you are a developer interested in contributing or would like to provision your own server, you are in the right place.
 
+We do not have the resources available to help novice developers learn to setup servers, environments, configurations, or perform basic Linux command line instructions.
+
+If you raise an issue indicating that you haven't followed the setup instructions, looked through past issues, or done a cursory internet search for basic help, expect the issue to be closed and we'll point you to the setup instructions. *Again, if you do not have at least intermediate Linux and Ruby experience, please use the hosted version of the web app at my.farm.bot.*
+
 # Q: Where do I report security issues?
 
 We take security seriously and value the input of independent researchers. Please see our [responsible disclosure guidelines](https://farm.bot/responsible-disclosure-of-security-vulnerabilities/).
@@ -25,17 +29,11 @@ For a list of example API requests and responses, see our [reference documentati
 
 # Q: How do I Setup an instance locally?
 
-## Prerequisites
+We provide example setup instructions for Ubuntu 18 [here](https://github.com/FarmBot/Farmbot-Web-App/blob/master/ubuntu_example.sh).
 
-Installation requires an x86 desktop machine running a fresh installation of Ubuntu 18.
+Installation was last tested against Ubuntu 18.04 in June of 2018 on an x86 based machine.
 
-We **do not recomend running the server on a Raspberry Pi** due to issues with ARM compilation and memory usage. **Windows is not supported** at this time.
-
-## Setup
-
-A step-by-step setup guide for Ubuntu 18 can be found [here](https://github.com/FarmBot/Farmbot-Web-App/blob/master/ubuntu_example.sh). Installation on distributions other than Ubuntu is possible, but we do not provide installation support.
-
-Installation was last tested against Ubuntu 18.04 in June of 2018. Please [Raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new?title=Installation%20Failure) if you hit problems with any of these steps. *We can't fix issues we don't know about.*
+Our ability to help individual users with private setup is limited. Using the public server at http://my.farm.bot is the recommended setup for end users. Please see the top of this document for more information.
 
 # Config Settings (important)
 
