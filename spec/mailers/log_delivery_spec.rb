@@ -1,13 +1,13 @@
 require "spec_helper"
 
 describe LogDeliveryMailer, type: :mailer do
-    let(:device)          { FactoryBot.create(:device) }
-    let!(:log_dispatches) { FactoryBot.create(:log_dispatch, device: device) }
+    let(:device) { FactoryBot.create(:device) }
+    let!(:logs)  { FactoryBot.create(:log, device: device) }
 
     it "throttles excess requests" do
-      LogDispatch.max_per_hour = -1 # Throttle it all
+      Log.max_per_hour = -1 # Throttle it all
       x = LogDeliveryMailer.log_digest(device)
-      expect { x.deliver_now }.to raise_error LogDispatch::RateLimitError
-      LogDispatch.max_per_hour = 20
+      expect { x.deliver_now }.to raise_error Log::RateLimitError
+      Log.max_per_hour = 20
     end
 end

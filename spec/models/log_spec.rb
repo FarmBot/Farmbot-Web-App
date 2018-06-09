@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe LogDispatch do
+describe Log do
   class FakeLogDeliveryMailer
     attr_accessor :calls
 
@@ -23,7 +23,7 @@ describe LogDispatch do
   end
 
   it "has a default wait time for batching" do
-    wt = LogDispatch.digest_wait_time
+    wt = Log.digest_wait_time
     expect(wt).to be_kind_of(Hash)
     expect(wt[:wait]).to eq(30.seconds)
   end
@@ -31,7 +31,7 @@ describe LogDispatch do
   it "sends routine emails" do
     fdm = FakeLogDeliveryMailer.new
     expect(fdm.calls).to eq(0)
-    LogDispatch.send_routine_emails(log, log.device, fdm)
+    Log.send_routine_emails(log, log.device, fdm)
     expect(fdm.calls).to eq(1)
   end
 end

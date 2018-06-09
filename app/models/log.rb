@@ -1,6 +1,7 @@
 # A device will emit logs when events occur on the Raspberry Pi. Logs are then
 # read by clients. Logs are only created by devices.
 class Log < ApplicationRecord
+  include LogDeliveryStuff
   # We use log.type to store the log's type.
   # Rails wants to use that name for single table inheritence, which we don't
   # need for this table.
@@ -20,11 +21,10 @@ class Log < ApplicationRecord
 
   validates :device, presence: true
   validates :type,   presence: true
-  serialize  :meta
+  serialize :meta
   validates :meta, presence: true
   # http://stackoverflow.com/a/5127684/1064917
   before_validation :set_defaults
-  has_one :log_dispatch, dependent: :destroy
 
   def set_defaults
     self.channels ||= []

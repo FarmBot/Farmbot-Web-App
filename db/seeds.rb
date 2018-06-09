@@ -6,7 +6,6 @@ unless Rails.env == "production"
     ENV['MQTT_HOST']        = "blooper.io"
     ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
 
-    LogDispatch.destroy_all
     Log.destroy_all
     TokenIssuance.destroy_all
     PinBinding.destroy_all
