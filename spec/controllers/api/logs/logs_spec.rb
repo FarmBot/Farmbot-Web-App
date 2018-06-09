@@ -81,7 +81,6 @@ describe Api::LogsController do
     end
 
     it "Runs compaction when the logs pile up" do
-      LogDispatch.destroy_all
       Log.destroy_all
       100.times { Log.create!(device: user.device) }
       sign_in user
@@ -101,14 +100,12 @@ describe Api::LogsController do
     end
 
     it "delivers emails for logs marked as `email`" do
-      LogDispatch.destroy_all
-      log = logs.first
-      LogDispatch.create!(log: log, device: log.device)
-      b4 = LogDispatch.where(sent_at: nil).count
+      log = Log.create!(device: user.device)
+      b4  = Log.where(sent_at: nil).count
       ldm = LogDeliveryMailer.new
       allow(ldm).to receive(:mail)
       ldm.log_digest(log.device)
-      expect(LogDispatch.where(sent_at: nil).count).to be < b4
+      expect(Log.where(sent_at: nil).count).to be < b4
     end
 
     it "delivers emails for logs marked as `fatal_email`" do

@@ -27,7 +27,7 @@ class LogService
   def self.deliver(data)
     dev, log = [data.device, data.payload]
     dev.maybe_unthrottle
-    LogDispatch.deliver(dev, Logs::Create.run!(log, device: dev))
+    Log.deliver(dev, Logs::Create.run!(log, device: dev))
   end
 
   def self.warn_user(data, violation)
