@@ -20,7 +20,7 @@ module Api
     end
 
     def destroy
-      image.delay.destroy!
+      Image.delay.maybe_destroy(image.id) # See notes. This is for edge cases.
       render json: ""
     end
 

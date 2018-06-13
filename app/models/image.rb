@@ -44,4 +44,17 @@ class Image < ApplicationRecord
     self.attachment_processed_at = Time.now
     self
   end
+
+  # Scenario:
+  #   User clicks "take photo" and "delete" on Image#123 very quickly.
+  # Problem:
+  #   Now there's a Delayed::Job pointing to (nonexistent) Image#123,
+  #   causing runtime errrors in the work queue.
+  # Solution:
+  #   Don't retry failed deletions. Users can always click the "delete"
+  #   button again if need be.
+  def self.maybe_destroy(id)
+    image = find_by(id: id)
+    image.destroy! if image
+  end
 end
