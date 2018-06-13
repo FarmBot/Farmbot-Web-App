@@ -9,7 +9,8 @@ var publicPath = '/webpack/';
 
 var conf = {
   mode: "none",
-  devtool: "eval-source-map", // inlines SourceMap per module
+  devtool: "source-map",
+  // Have not tried yet:
   // devtool: "hidden-source-map", // SourceMap without reference in original file
   // devtool: "cheap-source-map", // cheap-variant of SourceMap without module mappings
   // devtool: "cheap-module-source-map", // cheap-variant of SourceMap with module mappings
