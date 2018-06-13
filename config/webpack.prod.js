@@ -5,8 +5,9 @@ var UglifyJsPlugin = require("webpack-uglify-js-plugin");
 var OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 var webpack = require("webpack");
 var StatsPlugin = require('stats-webpack-plugin');
+var publicPath = '/webpack/';
 
-module.exports = {
+var conf = {
   mode: "none",
   // Was "eval", but that did not go well with our CSP
   devtool: "eval",
@@ -18,7 +19,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, '..', 'public', 'webpack'),
-    publicPath: '/webpack/',
+    publicPath,
     filename: '[name]-[chunkhash].js',
     chunkFilename: '[id].[name].[chunkhash].js'
   },
@@ -80,3 +81,11 @@ module.exports = {
     fs: "empty"
   }
 };
+var accessToken = process.env.ROLLBAR_ACCESS_TOKEN
+if (accessToken) {
+  var RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin')
+  var version = process.env.BUILT_AT || process.env.HEROKU_SLUG_COMMIT || "????"
+  var plugin = new RollbarSourceMapPlugin({accessToken, version, publicPath})
+  conf.plugins.push(plugin)
+}
+module.exports = conf;
