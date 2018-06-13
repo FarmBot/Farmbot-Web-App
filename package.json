@@ -34,7 +34,7 @@
     "@types/fastclick": "^1.0.28",
     "@types/history": "^4.6.1",
     "@types/i18next": "^8.4.2",
-    "@types/jest": "23.0.0",
+    "@types/jest": "23.0.2",
     "@types/lodash": "4.14.109",
     "@types/markdown-it": "^0.0.4",
     "@types/moxios": "^0.4.5",
@@ -95,8 +95,8 @@
     "yarn": "^1.6.0"
   },
   "devDependencies": {
-    "jscpd": "0.6.18",
-    "webpack-cli": "3.0.3",
+    "jscpd": "0.6.19",
+    "webpack-cli": "3.0.4",
     "webpack-notifier": "^1.5.0"
   },
   "jest": {

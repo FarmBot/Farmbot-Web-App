@@ -18,7 +18,7 @@ module Images
 
     def execute
       i = Image.create!(inputs.except(:attachment_url))
-      CreateAttachmentFromUrlJob.perform_later(image: i,
+      CreateAttachmentFromUrlJob.perform_later(image_id: i.id,
                                                attachment_url: attachment_url)
       i
     end

@@ -84,9 +84,9 @@
   version "8.4.3"
   resolved "https://registry.yarnpkg.com/@types/i18next/-/i18next-8.4.3.tgz#9136a9551bf5bf7169aa9f3125c1743f1f8dd6de"
 
-"@types/jest@23.0.0":
-  version "23.0.0"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.0.0.tgz#760cac74f00bb9c3075587716d2b3b4435663bc0"
+"@types/jest@23.0.2":
+  version "23.0.2"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.0.2.tgz#f03f9e6dd2206cc2a2e8fd033161b0b7cf905db6"
 
 "@types/lodash@4.14.109":
   version "4.14.109"
@@ -4049,9 +4049,9 @@ jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
 
-jscpd@0.6.18:
-  version "0.6.18"
-  resolved "https://registry.yarnpkg.com/jscpd/-/jscpd-0.6.18.tgz#7ab153d56529b5b32be16b4306cb2bf935ff2928"
+jscpd@0.6.19:
+  version "0.6.19"
+  resolved "https://registry.yarnpkg.com/jscpd/-/jscpd-0.6.19.tgz#c2ef022db2e06c41768cc3b4fbd7ec97e7117e8c"
   dependencies:
     blamer "^0.1.9"
     bluebird "^3.0.5"
@@ -4064,7 +4064,7 @@ jscpd@0.6.18:
     minimatch "^3.0.4"
     shelljs "^0.8.0"
     underscore ">=1.8.x"
-    winston ">=1.0.x"
+    winston "2.4.0"
 
 jsdom@^11.5.1:
   version "11.11.0"
@@ -7317,9 +7317,9 @@ webidl-conversions@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-4.0.2.tgz#a855980b1f0b6b359ba1d5d9fb39ae941faa63ad"
 
-webpack-cli@3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-3.0.3.tgz#1a8c6e09dee1fd45305f3b3828cf081903cee0f2"
+webpack-cli@3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-3.0.4.tgz#55d6ad2cdd608de8c0f757dde5bc4bf5bd2dec68"
   dependencies:
     chalk "^2.4.1"
     cross-spawn "^6.0.5"
@@ -7533,9 +7533,9 @@ window-size@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.0.tgz#5438cd2ea93b202efa3a19fe8887aee7c94f9c9d"
 
-winston@>=1.0.x:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/winston/-/winston-2.4.2.tgz#3ca01f763116fc48db61053b7544e750431f8db0"
+winston@2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/winston/-/winston-2.4.0.tgz#808050b93d52661ed9fb6c26b3f0c826708b0aee"
   dependencies:
     async "~1.0.0"
     colors "1.0.x"
