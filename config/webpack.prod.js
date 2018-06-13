@@ -83,9 +83,12 @@ var conf = {
 };
 var accessToken = process.env.ROLLBAR_ACCESS_TOKEN
 if (accessToken) {
+  console.log("============= PERFORMING ROLLBAR CONFIG")
   var RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin')
   var version = process.env.BUILT_AT || process.env.HEROKU_SLUG_COMMIT || "????"
   var plugin = new RollbarSourceMapPlugin({accessToken, version, publicPath})
   conf.plugins.push(plugin)
+} else {
+  console.log("============= SKIPPING ROLLBAR CONFIG")
 }
 module.exports = conf;
