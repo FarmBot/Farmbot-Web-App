@@ -9,6 +9,7 @@ begin
       LogService.process(info, payl)
     end
 rescue StandardError => e
+  Rollbar.error(e)
   puts "MQTT Broker is unreachable. Waiting 5 seconds..."
   sleep 5
   retry

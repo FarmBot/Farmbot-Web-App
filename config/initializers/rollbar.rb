@@ -11,7 +11,7 @@ if ENV["ROLLBAR_ACCESS_TOKEN"]
   Rollbar.configure do |config|
     config.access_token = ENV["ROLLBAR_ACCESS_TOKEN"]
     config.enabled = Rails.env.production? ? true : false
-    config.person_method = "current_device"
+    config.person_method = "current_device_id"
     config.environment = (ENV["API_HOST"] || $API_URL || ENV["ROLLBAR_ENV"] || Rails.env)
   end
 end
