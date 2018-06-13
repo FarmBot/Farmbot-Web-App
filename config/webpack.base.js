@@ -2,6 +2,7 @@ var StatsPlugin = require('stats-webpack-plugin');
 
 module.exports = function () {
   return {
+    mode: "production",
     entry: {
       "app_bundle": "./webpack/entry.tsx",
       "front_page": "./webpack/front_page/index.tsx",
@@ -9,7 +10,7 @@ module.exports = function () {
       "tos_update": "./webpack/tos_update/index.tsx"
     },
     // Was "eval", but that did not go well with our CSP
-    devtool: "cheap-module-source-map",
+    devtool: "eval",
     module: {
       rules: [
         {

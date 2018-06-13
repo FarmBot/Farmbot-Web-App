@@ -9,7 +9,7 @@ var webpack = require("webpack");
 
 var conf = genConfig();
 conf.mode = "production";
-
+conf.devtool = "eval"
 conf.output = {
   path: path.join(__dirname, '..', 'public', 'webpack'),
   publicPath: '/webpack/',

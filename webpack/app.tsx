@@ -27,6 +27,8 @@ import { FirmwareConfig } from "./config_storage/firmware_configs";
 import { getWebAppConfigValue } from "./config_storage/actions";
 import { takeSortedLogs } from "./logs/state_to_props";
 
+setTimeout(() => console.log("Hello?"), 5000)
+
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
 const fastClick = require("fastclick");
 fastClick.attach(document.body);
