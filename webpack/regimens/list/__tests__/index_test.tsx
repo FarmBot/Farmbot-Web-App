@@ -18,7 +18,7 @@ describe("<RegimensList />", () => {
   }
   it("renders", () => {
     const wrapper = mount(<RegimensList {...fakeProps()} />);
-    ["Regimens", "Fake Regimen 1", "Fake Regimen 2"]
+    ["Fake Regimen 1", "Fake Regimen 2"]
       .map(string => expect(wrapper.text()).toContain(string));
   });
 

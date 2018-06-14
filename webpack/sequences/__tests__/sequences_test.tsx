@@ -10,7 +10,6 @@ import {
   FAKE_RESOURCES, buildResourceIndex
 } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
-import { auth } from "../../__test_support__/fake_state/token";
 import { ToolTips } from "../../constants";
 import { fakeHardwareFlags } from "../../__test_support__/sequence_hardware_settings";
 
@@ -22,7 +21,6 @@ describe("<Sequences/>", () => {
       sequences: [],
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
-      auth,
       hardwareFlags: fakeHardwareFlags(),
       farmwareInfo: {
         farmwareNames: [],

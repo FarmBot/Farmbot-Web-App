@@ -1,10 +1,28 @@
+jest.mock("../../history", () => ({
+  push: jest.fn(),
+  history: {
+    getCurrentLocation: () => ({ pathname: "" })
+  }
+}));
+
+jest.mock("../actions", () => ({
+  selectSequence: jest.fn()
+}));
+
+jest.mock("../../api/crud", () => ({
+  init: jest.fn()
+}));
+
+
 import * as React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { SequencesList } from "../sequences_list";
-import { auth } from "../../__test_support__/fake_state/token";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { SequencesListProps } from "../interfaces";
 import { Actions } from "../../constants";
+import { init } from "../../api/crud";
+import { push } from "../../history";
+import { selectSequence } from "../actions";
 
 describe("<SequencesList />", () => {
   const fakeProps = (): SequencesListProps => {
@@ -14,7 +32,6 @@ describe("<SequencesList />", () => {
     fakeSequence2.body.name = "Sequence 2";
     return {
       dispatch: jest.fn(),
-      auth,
       sequence: undefined,
       sequences: [fakeSequence1, fakeSequence2]
     };
@@ -56,5 +73,33 @@ describe("<SequencesList />", () => {
   it("doesn't show in-use indicator", () => {
     const wrapper = mount(<SequencesList {...fakeProps()} />);
     expect(wrapper.find(".in-use").length).toEqual(0);
+  });
+
+  it("adds new sequence", () => {
+    const wrapper = mount(<SequencesList {...fakeProps()} />);
+    wrapper.find("button").first().simulate("click");
+    expect(init).toHaveBeenCalledWith(expect.objectContaining({
+      kind: "Sequence", body: expect.objectContaining({ body: [] })
+    }));
+    expect(push).toHaveBeenCalledWith("/app/sequences/new_sequence_2");
+  });
+
+  it("sets search term", () => {
+    const wrapper = shallow(<SequencesList {...fakeProps()} />);
+    expect(wrapper.state().searchTerm).toEqual("");
+    const searchField = wrapper.find("input").first();
+    expect(searchField.props().placeholder)
+      .toEqual("Search Sequences...");
+    searchField.simulate("change", {
+      currentTarget: { value: "search this" }
+    });
+    expect(wrapper.state().searchTerm).toEqual("search this");
+  });
+
+  it("opens sequence", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<SequencesList {...p} />);
+    wrapper.find("Link").first().simulate("click");
+    expect(selectSequence).toHaveBeenCalledWith(p.sequences[0].uuid);
   });
 });

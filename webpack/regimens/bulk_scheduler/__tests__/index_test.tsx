@@ -1,23 +1,23 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { BulkSchedulerWidget } from "../index";
+import { BulkScheduler } from "../index";
 import { BulkEditorProps } from "../interfaces";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 import { Actions } from "../../../constants";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 
-describe("<BulkSchedulerWidget />", () => {
+describe("<BulkScheduler />", () => {
   const weeks = [{
     days:
-      {
-        day1: true,
-        day2: false,
-        day3: false,
-        day4: false,
-        day5: false,
-        day6: false,
-        day7: false
-      }
+    {
+      day1: true,
+      day2: false,
+      day3: false,
+      day4: false,
+      day5: false,
+      day6: false,
+      day7: false
+    }
   }];
 
   function fakeProps(): BulkEditorProps {
@@ -34,10 +34,10 @@ describe("<BulkSchedulerWidget />", () => {
   }
 
   it("renders with sequence selected", () => {
-    const wrapper = mount(<BulkSchedulerWidget {...fakeProps()} />);
+    const wrapper = mount(<BulkScheduler {...fakeProps()} />);
     const buttons = wrapper.find("button");
     expect(buttons.length).toEqual(6);
-    ["Scheduler", "Sequence", "Fake Sequence", "Time",
+    ["Sequence", "Fake Sequence", "Time",
       "Days", "Week 1", "1234567"].map(string =>
         expect(wrapper.text()).toContain(string));
   });
@@ -45,7 +45,7 @@ describe("<BulkSchedulerWidget />", () => {
   it("renders without sequence selected", () => {
     const p = fakeProps();
     p.selectedSequence = undefined;
-    const wrapper = mount(<BulkSchedulerWidget {...p} />);
+    const wrapper = mount(<BulkScheduler {...p} />);
     ["Sequence", "None", "Time"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
@@ -53,7 +53,7 @@ describe("<BulkSchedulerWidget />", () => {
   it("changes time", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const wrapper = shallow(<BulkSchedulerWidget {...p} />);
+    const wrapper = shallow(<BulkScheduler {...p} />);
     const timeInput = wrapper.find("BlurableInput").first();
     expect(timeInput.props().value).toEqual("01:00");
     timeInput.simulate("commit", { currentTarget: { value: "02:00" } });
@@ -66,7 +66,7 @@ describe("<BulkSchedulerWidget />", () => {
   it("sets current time", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const wrapper = shallow(<BulkSchedulerWidget {...p} />);
+    const wrapper = shallow(<BulkScheduler {...p} />);
     const currentTimeBtn = wrapper.find(".fa-clock-o").first();
     currentTimeBtn.simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -78,7 +78,7 @@ describe("<BulkSchedulerWidget />", () => {
   it("changes sequence", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const wrapper = shallow(<BulkSchedulerWidget {...p} />);
+    const wrapper = shallow(<BulkScheduler {...p} />);
     const sequenceInput = wrapper.find("FBSelect").first();
     sequenceInput.simulate("change", { value: "Sequence" });
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -90,7 +90,7 @@ describe("<BulkSchedulerWidget />", () => {
   it("doesn't change sequence", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const wrapper = shallow(<BulkSchedulerWidget {...p} />);
+    const wrapper = shallow(<BulkScheduler {...p} />);
     const sequenceInput = wrapper.find("FBSelect").first();
     const change = () => sequenceInput.simulate("change", { value: 4 });
     expect(change).toThrowError("WARNING: Not a sequence UUID.");
