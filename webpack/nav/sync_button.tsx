@@ -28,6 +28,7 @@ const TEXT_MAPPING: Record<SyncStatus, string> = {
 const spinner = <span className="btn-spinner sync" />;
 
 export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) {
+
   if (!user) {
     return <span></span>;
   }
@@ -41,7 +42,12 @@ export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) 
 
   return <button
     className={`nav-sync ${color} fb-button`}
-    onClick={() => dispatch(sync())}>
+    onClick={() => {
+      if (1 + 1 === 2) {
+        throw new Error("Do sourcemaps work?");
+      }
+      dispatch(sync());
+    }}>
     {text} {spinnerEl}
   </button>;
 }
