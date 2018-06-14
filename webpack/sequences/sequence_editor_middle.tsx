@@ -13,7 +13,8 @@ export class SequenceEditorMiddle
       resources,
       syncStatus,
       hardwareFlags,
-      farmwareInfo
+      farmwareInfo,
+      shouldDisplay,
     } = this.props;
     if (sequence && isTaggedSequence(sequence)) {
       return <SequenceEditorMiddleActive
@@ -23,7 +24,7 @@ export class SequenceEditorMiddle
         syncStatus={syncStatus}
         hardwareFlags={hardwareFlags}
         farmwareInfo={farmwareInfo}
-        shouldDisplay={this.props.shouldDisplay} />;
+        shouldDisplay={shouldDisplay} />;
     } else {
       return <SequenceEditorMiddleInactive />;
     }

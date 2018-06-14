@@ -1,5 +1,4 @@
 import { Color } from "../interfaces";
-import { AuthState } from "../auth/interfaces";
 import {
   Sequence as CeleryScriptSequence,
   SequenceBodyItem,
@@ -26,7 +25,6 @@ export interface Props {
   dispatch: Function;
   sequences: TaggedSequence[];
   sequence: TaggedSequence | undefined;
-  auth: AuthState | undefined;
   resources: ResourceIndex;
   syncStatus: SyncStatus;
   hardwareFlags: HardwareFlags;
@@ -69,7 +67,6 @@ export interface SequencesListProps {
   sequences: TaggedSequence[];
   sequence: TaggedSequence | undefined;
   dispatch: Function;
-  auth: AuthState | undefined;
 }
 
 export interface SequencesListState {

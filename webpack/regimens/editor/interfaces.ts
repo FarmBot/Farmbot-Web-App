@@ -3,8 +3,6 @@ import {
   CalendarRow,
   RegimenItemCalendarRow
 } from "../interfaces";
-import { AuthState } from "../../auth/interfaces";
-import { BotState } from "../../devices/interfaces";
 import { TaggedRegimen } from "../../resources/tagged_resources";
 import { Actions } from "../../constants";
 
@@ -29,12 +27,10 @@ export interface RegimenItemDayGroupProps {
   dispatch: Function;
 }
 
-export interface RegimenEditorWidgetProps {
+export interface RegimenEditorProps {
   current: TaggedRegimen | undefined;
   dispatch: Function;
-  auth: AuthState | undefined;
   calendar: CalendarRow[];
-  bot: BotState;
 }
 
 export interface CopyButtnProps {
