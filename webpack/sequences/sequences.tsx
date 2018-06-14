@@ -4,12 +4,13 @@ import { connect } from "react-redux";
 import { SequencesList } from "./sequences_list";
 import { StepButtonCluster } from "./step_button_cluster";
 import { SequenceEditorMiddle } from "./sequence_editor_middle";
-import { Page, Col, ToolTip, Row } from "../ui/index";
+import { Page, Row } from "../ui/index";
 import { Props } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { ToolTips } from "../constants";
 import { isTaggedSequence } from "../resources/tagged_resources";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
+import { LeftPanel, CenterPanel, RightPanel } from "../ui";
 
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {
@@ -22,35 +23,37 @@ export class Sequences extends React.Component<Props, {}> {
     const sequenceSelected = sequence && isTaggedSequence(sequence);
     return <Page className="Sequence">
       <Row>
-        <Col sm={3}>
+        <LeftPanel
+          className="sequence-list-panel"
+          title={t("Sequences")}
+          helpText={t(ToolTips.SEQUENCE_LIST)}>
           <SequencesList
             dispatch={this.props.dispatch}
-            auth={this.props.auth}
             sequence={this.props.sequence}
             sequences={this.props.sequences} />
-        </Col>
-        <Col sm={6}>
-          <div className="sequence-editor-panel">
-            <h3>
-              <i>{t("Sequence Editor")}</i>
-            </h3>
-            <ToolTip helpText={t(ToolTips.SEQUENCE_EDITOR)} />
-            <SequenceEditorMiddle
-              syncStatus={this.props.syncStatus}
-              dispatch={this.props.dispatch}
-              sequence={this.props.sequence}
-              resources={this.props.resources}
-              hardwareFlags={this.props.hardwareFlags}
-              farmwareInfo={this.props.farmwareInfo}
-              shouldDisplay={this.props.shouldDisplay} />
-          </div>
-        </Col>
-        <Col sm={3}>
-          {sequenceSelected &&
-            <StepButtonCluster
-              current={this.props.sequence}
-              dispatch={this.props.dispatch} />}
-        </Col>
+        </LeftPanel>
+        <CenterPanel
+          className="sequence-editor-panel"
+          title={t("Sequence Editor")}
+          helpText={t(ToolTips.SEQUENCE_EDITOR)}>
+          <SequenceEditorMiddle
+            syncStatus={this.props.syncStatus}
+            dispatch={this.props.dispatch}
+            sequence={this.props.sequence}
+            resources={this.props.resources}
+            hardwareFlags={this.props.hardwareFlags}
+            farmwareInfo={this.props.farmwareInfo}
+            shouldDisplay={this.props.shouldDisplay} />
+        </CenterPanel>
+        <RightPanel
+          className="step-button-cluster-panel"
+          title={t("Commands")}
+          helpText={t(ToolTips.SEQUENCE_COMMANDS)}
+          show={sequenceSelected}>
+          <StepButtonCluster
+            current={this.props.sequence}
+            dispatch={this.props.dispatch} />
+        </RightPanel>
       </Row>
     </Page>;
   }

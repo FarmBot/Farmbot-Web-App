@@ -5,7 +5,9 @@ import { t } from "i18next";
 import { RegimenItem } from "../interfaces";
 import { TaggedRegimen } from "../../resources/tagged_resources";
 import { defensiveClone } from "../../util";
-import { overwrite } from "../../api/crud";
+import { overwrite, save, destroy } from "../../api/crud";
+import { SaveBtn } from "../../ui";
+import { CopyButton } from "./copy_button";
 
 /**
  * The bottom half of the regimen editor panel (when there's something to
@@ -14,6 +16,16 @@ import { overwrite } from "../../api/crud";
 export function ActiveEditor(props: ActiveEditorProps) {
   return <div className="regimen-editor-content">
     <div className="regimen-editor-tools">
+      <div className="button-group">
+        <SaveBtn
+          status={props.regimen.specialStatus}
+          onClick={() => props.dispatch(save(props.regimen.uuid))} />
+        <CopyButton regimen={props.regimen} dispatch={props.dispatch} />
+        <button className="fb-button red"
+          onClick={() => props.dispatch(destroy(props.regimen.uuid))}>
+          {t("Delete")}
+        </button>
+      </div>
       <RegimenNameInput regimen={props.regimen} dispatch={props.dispatch} />
       <hr />
     </div>

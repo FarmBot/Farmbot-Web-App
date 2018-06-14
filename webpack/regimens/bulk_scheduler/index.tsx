@@ -4,15 +4,14 @@ import { AddButton } from "./add_button";
 import { WeekGrid } from "./week_grid";
 import { commitBulkEditor, setTimeOffset, setSequence } from "./actions";
 import {
-  BlurableInput, ToolTip, Row, Col, FBSelect, DropDownItem, NULL_CHOICE
+  BlurableInput, Row, Col, FBSelect, DropDownItem, NULL_CHOICE
 } from "../../ui/index";
 import * as moment from "moment";
 import { t } from "i18next";
-import { ToolTips } from "../../constants";
 import * as _ from "lodash";
 import { betterCompact } from "../../util";
 
-export class BulkSchedulerWidget extends React.Component<BulkEditorProps, {}> {
+export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
   selected = (): DropDownItem => {
     const s = this.props.selectedSequence;
     if (s && s.body.id) {
@@ -52,11 +51,7 @@ export class BulkSchedulerWidget extends React.Component<BulkEditorProps, {}> {
       sequences
     } = this.props;
     const active = !!(sequences && sequences.length);
-    return <div className="bulk-scheduler">
-      <h3>
-        <i>{t("Scheduler")}</i>
-      </h3>
-      <ToolTip helpText={ToolTips.BULK_SCHEDULER} />
+    return <div>
       <AddButton
         active={active}
         click={() => { dispatch(commitBulkEditor()); }} />

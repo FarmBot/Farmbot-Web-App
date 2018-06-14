@@ -2,10 +2,9 @@ import * as React from "react";
 import { t } from "i18next";
 import { RegimenListItem } from "./regimen_list_item";
 import { AddRegimen } from "./add_button";
-import { Row, Col, ToolTip } from "../../ui/index";
+import { Row, Col } from "../../ui/index";
 import { RegimensListProps, RegimensListState } from "../interfaces";
 import { sortResourcesById } from "../../util";
-import { ToolTips } from "../../constants";
 
 export class RegimensList extends
   React.Component<RegimensListProps, RegimensListState> {
@@ -41,11 +40,7 @@ export class RegimensList extends
   render() {
     const { dispatch, regimens } = this.props;
 
-    return <div className="regimen-list-panel">
-      <h3>
-        <i>{t("Regimens")}</i>
-      </h3>
-      <ToolTip helpText={ToolTips.REGIMEN_LIST} />
+    return <div>
       <AddRegimen dispatch={dispatch} length={regimens.length} />
       <input
         onChange={this.onChange}

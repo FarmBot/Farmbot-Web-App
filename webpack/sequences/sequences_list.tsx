@@ -5,10 +5,10 @@ import { push } from "../history";
 import { selectSequence } from "./actions";
 import { SequencesListProps, SequencesListState } from "./interfaces";
 import { sortResourcesById, urlFriendly, lastUrlChunk } from "../util";
-import { Row, Col, ToolTip } from "../ui/index";
+import { Row, Col } from "../ui/index";
 import { TaggedSequence, SpecialStatus } from "../resources/tagged_resources";
 import { init } from "../api/crud";
-import { ToolTips, Content } from "../constants";
+import { Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 
 const sequenceList = (dispatch: Function) =>
@@ -78,11 +78,7 @@ export class SequencesList extends
     const { sequences, dispatch } = this.props;
     const searchTerm = this.state.searchTerm.toLowerCase();
 
-    return <div className="sequence-list-panel">
-      <h3>
-        <i>{t("Sequences")}</i>
-      </h3>
-      <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
+    return <div>
       <button
         className="fb-button green add"
         onClick={() => {

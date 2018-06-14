@@ -8,23 +8,19 @@ jest.mock("../../../api/crud", () => ({
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { RegimenEditorWidget } from "../index";
+import { RegimenEditor } from "../index";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
-import { RegimenEditorWidgetProps } from "../interfaces";
-import { auth } from "../../../__test_support__/fake_state/token";
-import { bot } from "../../../__test_support__/fake_state/bot";
+import { RegimenEditorProps } from "../interfaces";
 import { destroy, save } from "../../../api/crud";
 
-describe("<RegimenEditorWidget />", () => {
+describe("<RegimenEditor />", () => {
   beforeEach(function () {
     jest.clearAllMocks();
   });
 
-  function fakeProps(): RegimenEditorWidgetProps {
+  function fakeProps(): RegimenEditorProps {
     return {
       dispatch: jest.fn(),
-      auth,
-      bot,
       current: fakeRegimen(),
       calendar: [{
         day: "1",
@@ -45,55 +41,36 @@ describe("<RegimenEditorWidget />", () => {
   }
 
   it("active editor", () => {
-    const wrapper = mount(<RegimenEditorWidget {...fakeProps() } />);
-    ["Regimen Editor", "Delete", "Item 0", "10:00"].map(string =>
+    const wrapper = mount(<RegimenEditor {...fakeProps()} />);
+    ["Delete", "Item 0", "10:00"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 
   it("empty editor", () => {
     const props = fakeProps();
     props.current = undefined;
-    const wrapper = mount(<RegimenEditorWidget {...props} />);
-    ["Regimen Editor", "No Regimen selected."].map(string =>
+    const wrapper = mount(<RegimenEditor {...props} />);
+    ["No Regimen selected."].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 
-  it("error: not logged in", () => {
-    const props = fakeProps();
-    props.auth = undefined;
-    const errors: Error[] = [];
-
-    class Wrap extends React.Component<{}, {}> {
-      componentDidCatch(e: Error) {
-        errors.push(e);
-      }
-
-      render() {
-        return <div>
-          <RegimenEditorWidget {...props} />
-        </div>;
-      }
-    }
-    const oldError = console.error;
-    console.error = jest.fn();
-    mount(<Wrap />);
-    expect(errors[0].message).toContain("Must log in first");
-    console.error = oldError;
-  });
-
   it("deletes regimen", () => {
-    const wrapper = mount(<RegimenEditorWidget {...fakeProps() } />);
+    const p = fakeProps();
+    const wrapper = mount(<RegimenEditor {...p} />);
     const deleteButton = wrapper.find("button").at(2);
     expect(deleteButton.text()).toContain("Delete");
     deleteButton.simulate("click");
-    expect(destroy).toHaveBeenCalledWith("Regimen.6.23");
+    const expectedUuid = p.current && p.current.uuid;
+    expect(destroy).toHaveBeenCalledWith(expectedUuid);
   });
 
   it("saves regimen", () => {
-    const wrapper = mount(<RegimenEditorWidget {...fakeProps() } />);
+    const p = fakeProps();
+    const wrapper = mount(<RegimenEditor {...p} />);
     const saveeButton = wrapper.find("button").at(0);
     expect(saveeButton.text()).toContain("Save");
     saveeButton.simulate("click");
-    expect(save).toHaveBeenCalledWith("Regimen.8.25");
+    const expectedUuid = p.current && p.current.uuid;
+    expect(save).toHaveBeenCalledWith(expectedUuid);
   });
 });
