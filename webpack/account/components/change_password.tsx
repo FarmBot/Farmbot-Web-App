@@ -21,7 +21,7 @@ interface PasswordForm {
   password: string;
 }
 
-interface ChangePWState { status: SpecialStatus; form: PasswordForm }
+export interface ChangePWState { status: SpecialStatus; form: PasswordForm }
 
 const EMPTY_FORM =
   ({ new_password: "", new_password_confirmation: "", password: "" });
