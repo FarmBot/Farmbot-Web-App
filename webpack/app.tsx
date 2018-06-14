@@ -3,7 +3,6 @@ import { t } from "i18next";
 import { connect } from "react-redux";
 import * as _ from "lodash";
 import { init, error } from "farmbot-toastr";
-
 import { NavBar } from "./nav";
 import { Everything } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
@@ -26,8 +25,6 @@ import { getPathArray } from "./history";
 import { FirmwareConfig } from "./config_storage/firmware_configs";
 import { getWebAppConfigValue } from "./config_storage/actions";
 import { takeSortedLogs } from "./logs/state_to_props";
-
-setTimeout(() => console.log("Hello?"), 5000)
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
 const fastClick = require("fastclick");

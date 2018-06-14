@@ -10,10 +10,6 @@ var publicPath = '/webpack/';
 var conf = {
   mode: "none",
   devtool: "source-map",
-  // Have not tried yet:
-  // devtool: "hidden-source-map", // SourceMap without reference in original file
-  // devtool: "cheap-source-map", // cheap-variant of SourceMap without module mappings
-  // devtool: "cheap-module-source-map", // cheap-variant of SourceMap with module mappings
   entry: {
     "app_bundle": "./webpack/entry.tsx",
     "front_page": "./webpack/front_page/index.tsx",
@@ -86,12 +82,9 @@ var conf = {
 };
 var accessToken = process.env.ROLLBAR_ACCESS_TOKEN
 if (accessToken) {
-  console.log("============= PERFORMING ROLLBAR CONFIG")
   var RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin')
   var version = process.env.BUILT_AT || process.env.HEROKU_SLUG_COMMIT || "????"
   var plugin = new RollbarSourceMapPlugin({accessToken, version, publicPath})
   conf.plugins.push(plugin)
-} else {
-  console.log("============= SKIPPING ROLLBAR CONFIG")
 }
 module.exports = conf;

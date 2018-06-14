@@ -17,7 +17,6 @@ module.exports = {
     "password_reset": "./webpack/password_reset/index.tsx",
     "tos_update": "./webpack/tos_update/index.tsx"
   },
-  // Was "eval", but that did not go well with our CSP
   devtool: "eval",
   module: {
     rules: [
