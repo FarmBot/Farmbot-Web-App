@@ -13,3 +13,6 @@ export interface FrontPageState {
   | "login"                   /** Render default login panel */
   | "forgotPassword"          /** Render forgotten password pane */;
 }
+
+
+export type SetterCB = (stat: Partial<FrontPageState>) => void;
