@@ -28,6 +28,7 @@ const TEXT_MAPPING: Record<SyncStatus, string> = {
 const spinner = <span className="btn-spinner sync" />;
 
 export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) {
+
   if (!user) {
     return <span></span>;
   }
