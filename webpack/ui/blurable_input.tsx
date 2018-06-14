@@ -52,8 +52,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
   }
 
   updateBuffer = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    const buffer = e.currentTarget[this.relevantField()];
-    this.setState({ buffer });
+    this.setState({ buffer: e.currentTarget.value });
   }
 
   usualProps = () => {
