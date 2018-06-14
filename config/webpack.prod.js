@@ -34,7 +34,7 @@ var conf = {
       },
       {
         test: /\.tsx?$/,
-        use: "ts-loader"
+        use: "awesome-ts-loader"
       },
       {
         test: [/\.woff$/, /\.woff2$/, /\.ttf$/],
