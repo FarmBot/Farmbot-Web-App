@@ -34,6 +34,8 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
 
   state: BIState = { buffer: "", isEditing: false };
 
+  /** Prevent DOM snooping on `el.value`. Should not matter because we use
+   * CSP, but doesn't hurt to have extra security. */
   relevantField = (): "value" | "defaultValue" => {
     return this.props.type === "password" ? "defaultValue" : "value";
   }
@@ -55,8 +57,10 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
   }
 
   usualProps = () => {
+    const value = this.state.isEditing ?
+      this.state.buffer : this.props.value;
     return {
-      [this.relevantField()]: this.state.buffer,
+      [this.relevantField()]: value,
       hidden: !!this.props.hidden,
       onFocus: this.focus,
       onChange: this.updateBuffer,
