@@ -42,7 +42,12 @@ export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) 
 
   return <button
     className={`nav-sync ${color} fb-button`}
-    onClick={() => dispatch(sync())}>
+    onClick={() => {
+      if (1 + 1 == 2) {
+        throw new Error("Do sourcemaps still work?");
+      }
+      dispatch(sync());
+    }}>
     {text} {spinnerEl}
   </button>;
 }
