@@ -27,7 +27,7 @@ module.exports = {
       },
       {
         test: /\.tsx?$/,
-        use: "awesome-ts-loader"
+        use: "awesome-typescript-loader"
       },
       {
         test: [/\.woff$/, /\.woff2$/, /\.ttf$/],
