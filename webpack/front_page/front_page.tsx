@@ -7,12 +7,37 @@ import { AuthState } from "../auth/interfaces";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
-import { FrontPageState } from "./interfaces";
+import { FrontPageState, SetterCB } from "./interfaces";
 import { Row, Col } from "../ui/index";
 import { LoginProps, Login } from "./login";
 import { ForgotPassword, ForgotPasswordProps } from "./forgot_password";
 import { ResendVerification } from "./resend_verification";
 import { CreateAccount } from "./create_account";
+
+export interface PartialFromEvent {
+  currentTarget: {
+    checked: boolean;
+    defaultValue: string;
+    value: string;
+  }
+}
+
+export const setField =
+  (name: keyof FrontPageState, cb: SetterCB) => (event: PartialFromEvent) => {
+    const state: Partial<FrontPageState> = {};
+    switch (name) {
+      case "agreeToTerms": // Booleans
+        state[name] = event.currentTarget.checked;
+        break;
+      case "regPassword":
+      case "loginPassword": // Protected strings that use `defaultValue`.
+        state[name] = event.currentTarget.defaultValue;
+        break;
+      default: // all other strings
+        state[name] = event.currentTarget.value;
+    }
+    cb(state);
+  };
 
 export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   constructor(props: {}) {
@@ -36,20 +61,6 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     API.setBaseUrl(API.fetchBrowserLocation());
     this.setState({});
   }
-
-  set = (name: keyof FrontPageState) =>
-    (event: React.FormEvent<HTMLInputElement>) => {
-      const state: { [name: string]: string } = {};
-      event.currentTarget.checked;
-      const isChk = (event.currentTarget.type === "checkbox");
-      state[name] = "" + (event.currentTarget)[isChk ? "checked" : "value"];
-
-      // WHY THE 2 ms timeout you ask????
-      // There was a bug reported in Firefox.
-      // I have no idea why, but the checkbox would uncheck itself after being
-      // checked. Some sort of race condtion. ¯\_(ツ)_/¯
-      setTimeout(() => this.setState(state), 2);
-    };
 
   submitLogin = (e: React.FormEvent<{}>) => {
     e.preventDefault();
@@ -123,6 +134,8 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       });
   }
 
+  handleFormUpdate: SetterCB = (state) => this.setState(state);
+
   maybeRenderTos = () => {
     const TOS_URL = globalConfig.TOS_URL;
     if (TOS_URL) {
@@ -131,7 +144,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         <div className={"tos"}>
           <label>{t("I agree to the terms of use")}</label>
           <input type="checkbox"
-            onChange={this.set("agreeToTerms")}
+            onChange={setField("agreeToTerms", this.handleFormUpdate)}
             value={this.state.agreeToTerms ? "false" : "true"} />
         </div>
         <ul>
@@ -157,9 +170,9 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   loginPanel = () => {
     const props: LoginProps = {
       email: this.state.email || "",
-      onEmailChange: this.set("email"),
+      onEmailChange: setField("email", this.handleFormUpdate),
       loginPassword: this.state.loginPassword || "",
-      onLoginPasswordChange: this.set("loginPassword"),
+      onLoginPasswordChange: setField("loginPassword", this.handleFormUpdate),
       onToggleForgotPassword: this.toggleForgotPassword,
       onSubmit: this.submitLogin,
     };
@@ -172,7 +185,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       onGoBack: goBack,
       onSubmit: this.submitForgotPassword,
       email: this.state.email || "",
-      onEmailChange: this.set("email"),
+      onEmailChange: setField("email", this.handleFormUpdate),
     };
     return <ForgotPassword {...props} />;
   }

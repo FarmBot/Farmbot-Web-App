@@ -17,7 +17,7 @@ interface BIProps {
   name?: string;
   id?: string;
   /** Allow the user to empty out the form control. If unset, form control
-   * will reset itself to previous value. */
+   * will reset itself to previous defaultValue. */
   allowEmpty?: boolean;
   disabled?: boolean;
   className?: string;
@@ -34,6 +34,11 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
 
   state: BIState = { buffer: "", isEditing: false };
 
+  /** Prevent DOM snooping on `el.value`. Should not matter because we use
+   * CSP, but doesn't hurt to have extra security. */
+  relevantField = (): "value" | "defaultValue" => {
+    return this.props.type === "password" ? "defaultValue" : "value";
+  }
   /** Called on blur. */
   maybeCommit = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const shouldPassToParent = (this.state.buffer || (this.props.allowEmpty));
@@ -47,15 +52,14 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
   }
 
   updateBuffer = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    const buffer = e.currentTarget.value;
-    this.setState({ buffer });
+    this.setState({ buffer: e.currentTarget.value });
   }
 
   usualProps = () => {
     const value = this.state.isEditing ?
       this.state.buffer : this.props.value;
     return {
-      value: value,
+      [this.relevantField()]: value,
       hidden: !!this.props.hidden,
       onFocus: this.focus,
       onChange: this.updateBuffer,

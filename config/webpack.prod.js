@@ -30,7 +30,7 @@ var conf = {
       },
       {
         test: /\.tsx?$/,
-        use: "awesome-typescript-loader"
+        use: "ts-loader"
       },
       {
         test: [/\.woff$/, /\.woff2$/, /\.ttf$/],
