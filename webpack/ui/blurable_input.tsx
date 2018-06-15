@@ -41,9 +41,10 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
   }
   /** Called on blur. */
   maybeCommit = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    const shouldPassToParent = (this.state.buffer || (this.props.allowEmpty));
-    if (shouldPassToParent) { this.props.onCommit(e); }
+    const shouldPassToParent = this.state.buffer || (this.props.allowEmpty);
+    shouldPassToParent && this.props.onCommit(e);
     this.setState({ isEditing: false, buffer: "" });
+    e.currentTarget.setAttribute("value", ""); // Clear password fields
   }
 
   focus = () => {
@@ -79,6 +80,6 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
   }
 
   render() {
-    return <input {...this.usualProps() } />;
+    return <input {...this.usualProps()} />;
   }
 }
