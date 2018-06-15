@@ -154,12 +154,6 @@ describe("<FrontPage />", () => {
         }
       }
     }
-    const loginPassword = setField("loginPassword", spy)
-    const event1 = fakeEv({ defaultValue: "pw12" });
-    const expected1 = {loginPassword: event1.currentTarget.defaultValue};
-    loginPassword(event1);
-    expect(spy).toHaveBeenCalledWith(expected1);
-    jest.resetAllMocks();
 
     const agreeToTerms = setField("agreeToTerms", spy)
     const event2 = fakeEv({ checked: false });
@@ -171,7 +165,7 @@ describe("<FrontPage />", () => {
 
     const regName = setField("regName", spy)
     const event3 = fakeEv({ value: "hello!" });
-    const expected3 = {regName: event3.currentTarget.value};
+    const expected3 = { regName: event3.currentTarget.value };
     regName(event3);
     expect(spy).toHaveBeenCalledWith(expected3);
     jest.resetAllMocks();

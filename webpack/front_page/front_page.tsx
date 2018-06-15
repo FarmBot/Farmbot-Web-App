@@ -25,15 +25,14 @@ export interface PartialFromEvent {
 export const setField =
   (name: keyof FrontPageState, cb: SetterCB) => (event: PartialFromEvent) => {
     const state: Partial<FrontPageState> = {};
+
     switch (name) {
-      case "agreeToTerms": // Booleans
+      // Booleans
+      case "agreeToTerms":
         state[name] = event.currentTarget.checked;
         break;
-      case "regPassword":
-      case "loginPassword": // Protected strings that use `defaultValue`.
-        state[name] = event.currentTarget.defaultValue;
-        break;
-      default: // all other strings
+      // all others (string)
+      default:
         state[name] = event.currentTarget.value;
     }
     cb(state);
