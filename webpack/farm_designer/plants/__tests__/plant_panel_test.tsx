@@ -10,6 +10,7 @@ import { PlantPanel, PlantPanelProps, EditPlantStatus, EditPlantStatusProps } fr
 import { shallow } from "enzyme";
 import { FormattedPlantInfo } from "../map_state_to_props";
 import { Actions } from "../../../constants";
+import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<PlantPanel/>", () => {
   beforeEach(function () {
@@ -48,9 +49,7 @@ describe("<PlantPanel/>", () => {
   it("calls destroy", () => {
     const p = fakeProps();
     const wrapper = shallow(<PlantPanel {...p} />);
-    const btn = wrapper.find("button").at(1);
-    expect(btn.text()).toEqual("Delete");
-    btn.simulate("click");
+    clickButton(wrapper, 1, "Delete");
     expect(p.onDestroy).toHaveBeenCalledWith("Plant.0.0");
   });
 
@@ -63,18 +62,14 @@ describe("<PlantPanel/>", () => {
 
   it("enters select mode", () => {
     const wrapper = shallow(<PlantPanel info={info} dispatch={jest.fn()} />);
-    const btn = wrapper.find("button").last();
-    btn.simulate("click");
-    expect(btn.text()).toEqual("Delete multiple");
+    clickButton(wrapper, 2, "Delete multiple");
     expect(mockHistory).toHaveBeenCalledWith("/app/designer/plants/select");
   });
 
   it("navigates to 'move to' mode", () => {
     const dispatch = jest.fn();
     const wrapper = shallow(<PlantPanel info={info} dispatch={dispatch} />);
-    const btn = wrapper.find("button").first();
-    btn.simulate("click");
-    expect(btn.text()).toEqual("Move FarmBot to this plant");
+    clickButton(wrapper, 0, "Move FarmBot to this plant");
     expect(mockHistory).toHaveBeenCalledWith("/app/designer/plants/move_to");
     expect(dispatch).toHaveBeenCalledWith({
       payload: { "x": 12, "y": 34, "z": undefined },

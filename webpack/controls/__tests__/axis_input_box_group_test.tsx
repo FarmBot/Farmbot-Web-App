@@ -3,6 +3,7 @@ import { mount } from "enzyme";
 import { AxisInputBoxGroup } from "../axis_input_box_group";
 import { BotPosition } from "../../devices/interfaces";
 import { AxisInputBoxGroupProps } from "../interfaces";
+import { clickButton } from "../../__test_support__/helpers";
 
 describe("<AxisInputBoxGroup />", () => {
   beforeEach(function () {
@@ -45,9 +46,7 @@ describe("<AxisInputBoxGroup />", () => {
       props.position = coordinates.position;
       const wrapper = mount(<AxisInputBoxGroup {...props} />);
       wrapper.setState(coordinates.inputs);
-      const buttons = wrapper.find("button");
-      expect(buttons.text().toLowerCase()).toEqual("go");
-      buttons.simulate("click");
+      clickButton(wrapper, 0, "go");
       expect(props.onCommit).toHaveBeenCalledWith(coordinates.expected);
     });
   }
