@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_09_144559) do
+ActiveRecord::Schema.define(version: 2018_06_15_153318) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -51,6 +51,20 @@ ActiveRecord::Schema.define(version: 2018_06_09_144559) do
     t.datetime "throttled_until"
     t.datetime "throttled_at"
     t.index ["timezone"], name: "index_devices_on_timezone"
+  end
+
+  create_table "diagnostic_dumps", force: :cascade do |t|
+    t.bigint "device_id", null: false
+    t.string "fbos_commit", null: false
+    t.string "fbos_version", null: false
+    t.string "firmware_commit", null: false
+    t.string "firmware_state", null: false
+    t.string "network_interface", null: false
+    t.string "ticket_identifier", null: false
+    t.text "fbos_dmesg_dump", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_diagnostic_dumps_on_device_id"
   end
 
   create_table "edge_nodes", force: :cascade do |t|
@@ -478,6 +492,7 @@ ActiveRecord::Schema.define(version: 2018_06_09_144559) do
   end
 
   add_foreign_key "device_configs", "devices"
+  add_foreign_key "diagnostic_dumps", "devices"
   add_foreign_key "edge_nodes", "sequences"
   add_foreign_key "farmware_installations", "devices"
   add_foreign_key "peripherals", "devices"
