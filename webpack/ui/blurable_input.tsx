@@ -44,7 +44,8 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
     const shouldPassToParent = this.state.buffer || (this.props.allowEmpty);
     shouldPassToParent && this.props.onCommit(e);
     this.setState({ isEditing: false, buffer: "" });
-    e.currentTarget.setAttribute("value", ""); // Clear password fields
+    const isPw = (this.props.type === "password");
+    isPw && e.currentTarget.setAttribute("value", "");
   }
 
   focus = () => {
