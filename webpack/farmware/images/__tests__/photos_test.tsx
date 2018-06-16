@@ -2,8 +2,7 @@ jest.mock("../../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
-const mockOk = jest.fn();
-jest.mock("farmbot-toastr", () => ({ success: mockOk }));
+jest.mock("farmbot-toastr", () => ({ success: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";

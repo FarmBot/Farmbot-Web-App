@@ -1,11 +1,11 @@
 jest.unmock("../../actions");
-const mockPush = jest.fn();
-jest.mock("../../../history", () => ({ push: mockPush }));
+jest.mock("../../../history", () => ({ push: jest.fn() }));
 import * as React from "react";
 import { AddRegimen } from "../add_button";
 import { AddRegimenProps } from "../../interfaces";
 import { shallow } from "enzyme";
 import { Actions } from "../../../constants";
+import { push } from "../../../history";
 
 describe("<AddRegimen/>", () => {
   function btn(props: AddRegimenProps) {
@@ -22,7 +22,7 @@ describe("<AddRegimen/>", () => {
   it("dispatches a new regimen onclick", () => {
     const dispatch = jest.fn();
     const b = btn({ dispatch, length });
-    expect(mockPush).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
     b.find("button").simulate("click");
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith({

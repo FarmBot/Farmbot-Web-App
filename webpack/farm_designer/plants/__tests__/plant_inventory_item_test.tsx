@@ -1,13 +1,11 @@
-const mockHistory = jest.fn();
-jest.mock("../../../history", () => ({
-  push: mockHistory
-}));
+jest.mock("../../../history", () => ({ push: jest.fn() }));
 
 import * as React from "react";
 import { PlantInventoryItem } from "../plant_inventory_item";
 import { shallow } from "enzyme";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
+import { push } from "../../../history";
 
 describe("<PlantInventoryItem />", () => {
   const fakeProps = () => {
@@ -19,7 +17,7 @@ describe("<PlantInventoryItem />", () => {
   };
 
   it("renders", () => {
-    const wrapper = shallow(<PlantInventoryItem {...fakeProps() } />);
+    const wrapper = shallow(<PlantInventoryItem {...fakeProps()} />);
     expect(wrapper.text()).toEqual("Strawberry Plant 11 days old");
     expect(wrapper.find("div").first().hasClass("hovered")).toBeFalsy();
   });
@@ -65,7 +63,6 @@ describe("<PlantInventoryItem />", () => {
       payload: [p.tpp.uuid],
       type: Actions.SELECT_PLANT
     });
-    expect(mockHistory)
-      .toHaveBeenCalledWith("/app/designer/plants/" + p.tpp.body.id);
+    expect(push).toHaveBeenCalledWith("/app/designer/plants/" + p.tpp.body.id);
   });
 });

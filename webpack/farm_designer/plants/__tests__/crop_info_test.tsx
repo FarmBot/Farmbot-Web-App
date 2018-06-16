@@ -3,12 +3,9 @@ jest.mock("react-redux", () => ({
 }));
 
 let mockPath = "";
-const mockHistory = jest.fn();
 jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => { return mockPath.split("/"); }),
-  history: {
-    push: mockHistory
-  }
+  history: { push: jest.fn() }
 }));
 
 jest.mock("../../../api/crud", () => ({
@@ -20,6 +17,7 @@ import { CropInfo } from "../crop_info";
 import { shallow, mount } from "enzyme";
 import { CropInfoProps } from "../../interfaces";
 import { initSave } from "../../../api/crud";
+import { history } from "../../../history";
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
@@ -59,7 +57,7 @@ describe("<CropInfo />", () => {
     mockPath = "/app/designer/plants/crop_search/mint";
     const wrapper = shallow(<CropInfo {...fakeProps()} />);
     wrapper.find(".right-button").simulate("click");
-    expect(mockHistory).toHaveBeenCalledWith(
+    expect(history.push).toHaveBeenCalledWith(
       "/app/designer/plants/crop_search/mint/add");
   });
 
@@ -67,7 +65,7 @@ describe("<CropInfo />", () => {
     mockPath = "/app/designer/plants/crop_search/mint";
     const wrapper = shallow(<CropInfo {...fakeProps()} />);
     wrapper.find(".plant-panel-back-arrow").simulate("click");
-    expect(mockHistory).toHaveBeenCalledWith(
+    expect(history.push).toHaveBeenCalledWith(
       "/app/designer/plants/crop_search/");
   });
 

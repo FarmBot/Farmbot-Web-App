@@ -1,16 +1,14 @@
-const mockHistory = jest.fn();
-jest.mock("../../../history", () => ({
-  history: {
-    push: mockHistory
-  }
-}));
+jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
 import * as React from "react";
-import { PlantPanel, PlantPanelProps, EditPlantStatus, EditPlantStatusProps } from "../plant_panel";
+import {
+  PlantPanel, PlantPanelProps, EditPlantStatus, EditPlantStatusProps
+} from "../plant_panel";
 import { shallow } from "enzyme";
 import { FormattedPlantInfo } from "../map_state_to_props";
 import { Actions } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
+import { history } from "../../../history";
 
 describe("<PlantPanel/>", () => {
   beforeEach(function () {
@@ -63,14 +61,14 @@ describe("<PlantPanel/>", () => {
   it("enters select mode", () => {
     const wrapper = shallow(<PlantPanel info={info} dispatch={jest.fn()} />);
     clickButton(wrapper, 2, "Delete multiple");
-    expect(mockHistory).toHaveBeenCalledWith("/app/designer/plants/select");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants/select");
   });
 
   it("navigates to 'move to' mode", () => {
     const dispatch = jest.fn();
     const wrapper = shallow(<PlantPanel info={info} dispatch={dispatch} />);
     clickButton(wrapper, 0, "Move FarmBot to this plant");
-    expect(mockHistory).toHaveBeenCalledWith("/app/designer/plants/move_to");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants/move_to");
     expect(dispatch).toHaveBeenCalledWith({
       payload: { "x": 12, "y": 34, "z": undefined },
       type: Actions.CHOOSE_LOCATION

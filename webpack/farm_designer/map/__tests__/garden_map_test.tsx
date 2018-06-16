@@ -2,10 +2,7 @@ jest.mock("../../../open_farm/icons", () => ({
   cachedCrop: jest.fn(() => { return Promise.resolve({ spread: 100 }); })
 }));
 
-const mockError = jest.fn();
-jest.mock("farmbot-toastr", () => ({
-  error: mockError
-}));
+jest.mock("farmbot-toastr", () => ({ error: jest.fn() }));
 
 jest.mock("../../actions", () => ({
   closePlantInfo: jest.fn(),
@@ -33,6 +30,7 @@ import { Actions } from "../../../constants";
 import { initSave } from "../../../api/crud";
 import { setEggStatus, EggKeys } from "../easter_eggs/status";
 import { movePlant, unselectPlant } from "../../actions";
+import { error } from "farmbot-toastr";
 
 function fakeProps(): GardenMapProps {
   return {
@@ -143,7 +141,7 @@ describe("<GardenPlant/>", () => {
     wrapper.find("#drop-area-svg").simulate("click", {
       preventDefault: jest.fn(), pageX: -100, pageY: -100
     });
-    expect(mockError).toHaveBeenCalledWith(
+    expect(error).toHaveBeenCalledWith(
       expect.stringContaining("Outside of planting area"));
   });
 
