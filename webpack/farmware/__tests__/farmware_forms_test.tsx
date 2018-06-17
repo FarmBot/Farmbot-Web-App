@@ -11,6 +11,7 @@ import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { FarmwareForms } from "../farmware_forms";
 import { fakeFarmwares } from "../../__test_support__/fake_farmwares";
+import { clickButton } from "../../__test_support__/helpers";
 
 describe("<FarmwareForms/>", () => {
   it("doesn't render", () => {
@@ -37,9 +38,7 @@ describe("<FarmwareForms/>", () => {
     const wrapper = mount(<FarmwareForms
       farmwares={fakeFarmwares()}
       user_env={{}} />);
-    const run = wrapper.find("button").first();
-    run.simulate("click");
-    expect(run.text()).toEqual("Run");
+    clickButton(wrapper, 0, "run");
     expect(mockDevice.execScript).toHaveBeenCalledWith(
       "My Farmware", [{
         kind: "pair",

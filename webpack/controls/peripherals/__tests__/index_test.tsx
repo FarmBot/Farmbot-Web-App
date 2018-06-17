@@ -1,6 +1,5 @@
-const mockError = jest.fn();
 jest.mock("farmbot-toastr", () => ({
-  error: mockError
+  error: jest.fn()
 }));
 
 import * as React from "react";
@@ -9,6 +8,9 @@ import { Peripherals } from "../index";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { PeripheralsProps } from "../../../devices/interfaces";
 import { fakePeripheral } from "../../../__test_support__/fake_state/resources";
+import { clickButton } from "../../../__test_support__/helpers";
+import { SpecialStatus } from "../../../resources/tagged_resources";
+import { error } from "farmbot-toastr";
 
 describe("<Peripherals />", () => {
   beforeEach(function () {
@@ -25,7 +27,7 @@ describe("<Peripherals />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<Peripherals {...fakeProps() } />);
+    const wrapper = mount(<Peripherals {...fakeProps()} />);
     ["Peripherals", "Edit", "Save", "Fake Pin", "1"].map(string =>
       expect(wrapper.text()).toContain(string));
     const saveButton = wrapper.find("button").at(1);
@@ -34,22 +36,19 @@ describe("<Peripherals />", () => {
   });
 
   it("isEditing", () => {
-    const wrapper = mount(<Peripherals {...fakeProps() } />);
+    const wrapper = mount(<Peripherals {...fakeProps()} />);
     expect(wrapper.state().isEditing).toBeFalsy();
-    const edit = wrapper.find("button").at(0);
-    expect(edit.text()).toEqual("Edit");
-    edit.simulate("click");
+    clickButton(wrapper, 0, "edit");
     expect(wrapper.state().isEditing).toBeTruthy();
   });
 
-  function attemptSave(num: number, error: string) {
+  function attemptSave(num: number, errorString: string) {
     const p = fakeProps();
     p.peripherals[0].body.pin = num;
-    const wrapper = mount(<Peripherals {...p } />);
-    const save = wrapper.find("button").at(1);
-    expect(save.text()).toContain("Save");
-    save.simulate("click");
-    expect(mockError).toHaveBeenLastCalledWith(error);
+    p.peripherals[0].specialStatus = SpecialStatus.DIRTY;
+    const wrapper = mount(<Peripherals {...p} />);
+    clickButton(wrapper, 1, "save", { partial_match: true });
+    expect(error).toHaveBeenLastCalledWith(errorString);
   }
 
   it("save attempt: pin number too small", () => {
@@ -63,30 +62,25 @@ describe("<Peripherals />", () => {
   it("saves", () => {
     const p = fakeProps();
     p.peripherals[0].body.pin = 1;
-    const wrapper = mount(<Peripherals {...p } />);
-    const save = wrapper.find("button").at(1);
-    expect(save.text()).toContain("Save");
-    save.simulate("click");
+    p.peripherals[0].specialStatus = SpecialStatus.DIRTY;
+    const wrapper = mount(<Peripherals {...p} />);
+    clickButton(wrapper, 1, "save", { partial_match: true });
     expect(p.dispatch).toHaveBeenCalled();
   });
 
   it("adds empty peripheral", () => {
     const p = fakeProps();
-    const wrapper = mount(<Peripherals {...p } />);
+    const wrapper = mount(<Peripherals {...p} />);
     wrapper.setState({ isEditing: true });
-    const add = wrapper.find("button").at(2);
-    expect(add.text()).toEqual("");
-    add.simulate("click");
+    clickButton(wrapper, 2, "");
     expect(p.dispatch).toHaveBeenCalled();
   });
 
   it("adds farmduino peripherals", () => {
     const p = fakeProps();
-    const wrapper = mount(<Peripherals {...p } />);
+    const wrapper = mount(<Peripherals {...p} />);
     wrapper.setState({ isEditing: true });
-    const add = wrapper.find("button").at(3);
-    expect(add.text()).toEqual("Farmduino");
-    add.simulate("click");
+    clickButton(wrapper, 3, "farmduino");
     expect(p.dispatch).toHaveBeenCalledTimes(5);
   });
 });

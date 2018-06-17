@@ -16,6 +16,7 @@ import { CreatePoints, CreatePointsProps } from "../create_points";
 import { initSave } from "../../../api/crud";
 import { deletePoints } from "../../../farmware/weed_detector/actions";
 import { Actions } from "../../../constants";
+import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<CreatePoints />", () => {
   beforeEach(function () {
@@ -37,9 +38,7 @@ describe("<CreatePoints />", () => {
   it("creates point", () => {
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
     wrapper.setState({ cx: 10, cy: 20, r: 30, color: "red" });
-    const button = wrapper.find("button").at(0);
-    expect(button.text()).toEqual("Create point");
-    button.simulate("click");
+    clickButton(wrapper, 0, "create point");
     expect(initSave).toHaveBeenCalledWith({
       body: {
         meta: { color: "red", created_by: "farm-designer" },
