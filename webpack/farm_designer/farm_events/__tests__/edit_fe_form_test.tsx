@@ -1,7 +1,6 @@
-const mockHistory = jest.fn();
 jest.mock("../../../history", () => ({
   history: {
-    push: mockHistory
+    push: jest.fn()
   }
 }));
 

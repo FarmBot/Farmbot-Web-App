@@ -22,7 +22,7 @@ import * as React from "react";
 import {
   SequenceEditorMiddleActive, onDrop
 } from "../sequence_editor_middle_active";
-import { mount, ReactWrapper, shallow } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { ActiveMiddleProps } from "../interfaces";
 import {
   FAKE_RESOURCES, buildResourceIndex
@@ -36,6 +36,7 @@ import { SpecialStatus } from "../../resources/tagged_resources";
 import { move, splice } from "../step_tiles";
 import { copySequence, editCurrentSequence } from "../actions";
 import { execSequence } from "../../devices/actions";
+import { clickButton } from "../../__test_support__/helpers";
 
 describe("<SequenceEditorMiddleActive/>", () => {
   const sequence = fakeSequence();
@@ -57,15 +58,9 @@ describe("<SequenceEditorMiddleActive/>", () => {
     };
   }
 
-  function clickButton(position: number, text: string, wrapper: ReactWrapper) {
-    const button = wrapper.find("button").at(position);
-    expect(button.text()).toEqual(text);
-    button.simulate("click");
-  }
-
   it("saves", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
-    clickButton(0, "Save * ", wrapper);
+    clickButton(wrapper, 0, "Save * ");
     expect(save).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
   });
 
@@ -74,19 +69,19 @@ describe("<SequenceEditorMiddleActive/>", () => {
     p.syncStatus = "synced";
     p.sequence.specialStatus = SpecialStatus.SAVED;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    clickButton(1, "Test", wrapper);
+    clickButton(wrapper, 1, "Test");
     expect(execSequence).toHaveBeenCalledWith(p.sequence.body);
   });
 
   it("deletes", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
-    clickButton(2, "Delete", wrapper);
+    clickButton(wrapper, 2, "Delete");
     expect(destroy).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
   });
 
   it("copies", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
-    clickButton(3, "Copy", wrapper);
+    clickButton(wrapper, 3, "Copy");
     expect(copySequence).toHaveBeenCalledWith(expect.objectContaining({
       uuid: expect.stringContaining("Sequence")
     }));

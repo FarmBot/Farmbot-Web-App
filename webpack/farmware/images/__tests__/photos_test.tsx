@@ -2,8 +2,7 @@ jest.mock("../../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
-const mockOk = jest.fn();
-jest.mock("farmbot-toastr", () => ({ success: mockOk }));
+jest.mock("farmbot-toastr", () => ({ success: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";
@@ -12,6 +11,7 @@ import { TaggedImage } from "../../../resources/tagged_resources";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
 import { defensiveClone } from "../../../util";
 import { destroy } from "../../../api/crud";
+import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<Photos/>", () => {
   beforeEach(() => {
@@ -69,9 +69,7 @@ describe("<Photos/>", () => {
       timeOffset: 0
     };
     const wrapper = mount(<Photos {...props} />);
-    const deleteButton = wrapper.find("button").at(1);
-    expect(deleteButton.text().toLowerCase()).toBe("delete photo");
-    deleteButton.simulate("click");
+    clickButton(wrapper, 1, "delete photo");
     expect(destroy).toHaveBeenCalledWith("Position 1");
   });
 });

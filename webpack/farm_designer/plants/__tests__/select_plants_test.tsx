@@ -12,6 +12,7 @@ import { mount, shallow } from "enzyme";
 import { SelectPlants, SelectPlantsProps } from "../select_plants";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
+import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<SelectPlants />", () => {
   beforeEach(function () {
@@ -35,7 +36,7 @@ describe("<SelectPlants />", () => {
   }
 
   it("displays selected plant", () => {
-    const wrapper = mount(<SelectPlants {...fakeProps() } />);
+    const wrapper = mount(<SelectPlants {...fakeProps()} />);
     expect(wrapper.text()).toContain("Strawberry");
   });
 
@@ -65,9 +66,7 @@ describe("<SelectPlants />", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
     const wrapper = mount(<SelectPlants {...p} />);
-    const selectAllButton = wrapper.find("button").at(1);
-    expect(selectAllButton.text()).toEqual("Select all");
-    selectAllButton.simulate("click");
+    clickButton(wrapper, 1, "select all");
     expect(p.dispatch).toHaveBeenCalledWith(
       { payload: ["plant.1", "plant.2"], type: Actions.SELECT_PLANT });
   });
@@ -76,9 +75,7 @@ describe("<SelectPlants />", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
     const wrapper = mount(<SelectPlants {...p} />);
-    const selectNoneButton = wrapper.find("button").at(2);
-    expect(selectNoneButton.text()).toEqual("Select none");
-    selectNoneButton.simulate("click");
+    clickButton(wrapper, 2, "select none");
     expect(p.dispatch).toHaveBeenCalledWith(
       { payload: undefined, type: Actions.SELECT_PLANT });
   });
