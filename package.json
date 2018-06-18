@@ -34,11 +34,11 @@
     "@types/fastclick": "^1.0.28",
     "@types/history": "^4.6.1",
     "@types/i18next": "^8.4.2",
-    "@types/jest": "23.0.2",
+    "@types/jest": "23.1.0",
     "@types/lodash": "4.14.109",
     "@types/markdown-it": "^0.0.4",
     "@types/moxios": "^0.4.5",
-    "@types/node": "10.3.2",
+    "@types/node": "10.3.3",
     "@types/react": "16.3.14",
     "@types/react-color": "2.13.5",
     "@types/react-dom": "16.0.5",
@@ -55,7 +55,7 @@
     "farmbot-toastr": "^1.0.3",
     "fastclick": "^1.0.6",
     "file-loader": "1.1.11",
-    "i18next": "11.3.2",
+    "i18next": "11.3.3",
     "imports-loader": "0.8.0",
     "jest": "23.1.0",
     "json-loader": "0.5.7",
@@ -87,7 +87,7 @@
     "ts-lint": "^4.5.1",
     "ts-loader": "^4.4.1",
     "tslint": "5.10.0",
-    "typescript": "2.9.1",
+    "typescript": "2.9.2",
     "url-loader": "1.0.1",
     "webpack": "4.12.0",
     "webpack-uglify-js-plugin": "1.1.9",
@@ -96,8 +96,8 @@
     "yarn": "^1.6.0"
   },
   "devDependencies": {
-    "jscpd": "0.6.19",
-    "webpack-cli": "3.0.4",
+    "jscpd": "0.6.21",
+    "webpack-cli": "3.0.8",
     "webpack-notifier": "^1.5.0"
   },
   "jest": {

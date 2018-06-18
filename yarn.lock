@@ -84,9 +84,9 @@
   version "8.4.3"
   resolved "https://registry.yarnpkg.com/@types/i18next/-/i18next-8.4.3.tgz#9136a9551bf5bf7169aa9f3125c1743f1f8dd6de"
 
-"@types/jest@23.0.2":
-  version "23.0.2"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.0.2.tgz#f03f9e6dd2206cc2a2e8fd033161b0b7cf905db6"
+"@types/jest@23.1.0":
+  version "23.1.0"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.1.0.tgz#8054dd838ba23dc331794d26456b86c7e50bf0f6"
 
 "@types/lodash@4.14.109":
   version "4.14.109"
@@ -106,9 +106,9 @@
   version "10.1.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.1.2.tgz#1b928a0baa408fc8ae3ac012cc81375addc147c6"
 
-"@types/node@10.3.2":
-  version "10.3.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.3.2.tgz#3840ec6c12556fdda6e0e6d036df853101d732a4"
+"@types/node@10.3.3":
+  version "10.3.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.3.3.tgz#8798d9e39af2fa604f715ee6a6b19796528e46c3"
 
 "@types/react-color@2.13.5":
   version "2.13.5"
@@ -3090,9 +3090,9 @@ https-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
 
-i18next@11.3.2:
-  version "11.3.2"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-11.3.2.tgz#4a1a7bb14383ba6aed4abca139b03681fc96e023"
+i18next@11.3.3:
+  version "11.3.3"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-11.3.3.tgz#a6ca3c2a93237c94e242bda7df3411588ac37ea1"
 
 iconv-lite@0.4.19:
   version "0.4.19"
@@ -4049,9 +4049,9 @@ jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
 
-jscpd@0.6.19:
-  version "0.6.19"
-  resolved "https://registry.yarnpkg.com/jscpd/-/jscpd-0.6.19.tgz#c2ef022db2e06c41768cc3b4fbd7ec97e7117e8c"
+jscpd@0.6.21:
+  version "0.6.21"
+  resolved "https://registry.yarnpkg.com/jscpd/-/jscpd-0.6.21.tgz#bf4f0be95526146412738657aa96c9d03930fa4b"
   dependencies:
     blamer "^0.1.9"
     bluebird "^3.0.5"
@@ -7074,9 +7074,9 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@2.9.1:
-  version "2.9.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.1.tgz#fdb19d2c67a15d11995fd15640e373e09ab09961"
+typescript@2.9.2:
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
 
 typescript@^2.0.9, typescript@^2.3.4:
   version "2.8.3"
@@ -7341,9 +7341,9 @@ webidl-conversions@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-4.0.2.tgz#a855980b1f0b6b359ba1d5d9fb39ae941faa63ad"
 
-webpack-cli@3.0.4:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-3.0.4.tgz#55d6ad2cdd608de8c0f757dde5bc4bf5bd2dec68"
+webpack-cli@3.0.8:
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-3.0.8.tgz#90eddcf04a4bfc31aa8c0edc4c76785bc4f1ccd9"
   dependencies:
     chalk "^2.4.1"
     cross-spawn "^6.0.5"
