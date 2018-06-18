@@ -19,7 +19,10 @@ export class DiagnosticDumpRow extends React.Component<Props, {}> {
 
   download = (e: React.MouseEvent<{}>) => {
     e.preventDefault();
-    jsonDownload(this.props.diag.body);
+    const { body } = this.props.diag;
+    const { ticket_identifier } = body;
+    const fileName = `farmbot_diagnostics_${ticket_identifier}.json`;
+    jsonDownload(body, fileName);
   }
 
   render() {
