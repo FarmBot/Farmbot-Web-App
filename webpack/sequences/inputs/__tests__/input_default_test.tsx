@@ -4,7 +4,6 @@ import { InputDefault } from "../input_default";
 import { mount } from "enzyme";
 import { TaggedSequence, SpecialStatus } from "../../../resources/tagged_resources";
 import { MoveAbsolute } from "farmbot/dist";
-import { Wrapper } from "../../../__test_support__/wrapper";
 import { Actions } from "../../../constants";
 
 describe("<InputDefault/>", () => {
@@ -49,14 +48,12 @@ describe("<InputDefault/>", () => {
       },
       "uuid": "Sequence.74.145"
     };
-    const c = mount(<Wrapper>
-      <InputDefault
-        index={0}
-        field="speed"
-        step={step}
-        dispatch={dispatcher}
-        sequence={tr} />
-    </Wrapper>);
+    const c = mount(<InputDefault
+      index={0}
+      field="speed"
+      step={step}
+      dispatch={dispatcher}
+      sequence={tr} />);
     const input = c.find("input").first();
     input.simulate("change");
     input.simulate("blur");

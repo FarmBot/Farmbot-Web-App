@@ -8,15 +8,27 @@ import { WebcamPanel, preToggleCleanup } from "../index";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import { destroy, save } from "../../../api/crud";
 import { SpecialStatus } from "../../../resources/tagged_resources";
+import { clickButton, allButtonText } from "../../../__test_support__/helpers";
 
 describe("<WebcamPanel/>", () => {
-  it("toggles form states", () => {
+  it("toggles form state to edit", () => {
     const props = { feeds: [], dispatch: jest.fn() };
-    const el = mount(<WebcamPanel {...props} />);
-    expect(el.text()).toContain("edit");
-    el.find("button").first().simulate("click");
-    el.update();
-    expect(el.text()).toContain("view");
+    const wrapper = mount(<WebcamPanel {...props} />);
+    expect(wrapper.state().activeMenu).toEqual("show");
+    const text = allButtonText(wrapper);
+    expect(text.toLowerCase()).not.toContain("view");
+    clickButton(wrapper, 0, "edit");
+    expect(wrapper.state().activeMenu).toEqual("edit");
+  });
+
+  it("toggles form state to view", () => {
+    const props = { feeds: [], dispatch: jest.fn() };
+    const wrapper = mount(<WebcamPanel {...props} />);
+    wrapper.setState({ activeMenu: "edit" });
+    const text = allButtonText(wrapper);
+    expect(text.toLowerCase()).not.toContain("edit");
+    clickButton(wrapper, 2, "view");
+    expect(wrapper.state().activeMenu).toEqual("show");
   });
 });
 

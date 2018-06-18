@@ -6,6 +6,7 @@ import { Actions } from "../../../constants";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { panelState } from "../../../__test_support__/control_panel_state";
 import { fakeFirmwareConfig } from "../../../__test_support__/fake_state/resources";
+import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<HardwareSettings />", () => {
   beforeEach(() => {
@@ -43,9 +44,9 @@ describe("<HardwareSettings />", () => {
     payload: boolean | string) {
     const p = fakeProps();
     const wrapper = mount(<HardwareSettings {...p} />);
-    const button = wrapper.find(buttonElement).at(buttonIndex);
-    expect(button.text().toLowerCase()).toContain(buttonText);
-    button.simulate("click");
+    clickButton(wrapper, buttonIndex, buttonText, {
+      button_tag: buttonElement, partial_match: true
+    });
     expect(p.dispatch).toHaveBeenCalledWith({ payload, type });
   }
 

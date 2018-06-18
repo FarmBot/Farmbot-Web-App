@@ -12,6 +12,8 @@ import { RegimenEditor } from "../index";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { RegimenEditorProps } from "../interfaces";
 import { destroy, save } from "../../../api/crud";
+import { clickButton } from "../../../__test_support__/helpers";
+import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<RegimenEditor />", () => {
   beforeEach(function () {
@@ -19,9 +21,11 @@ describe("<RegimenEditor />", () => {
   });
 
   function fakeProps(): RegimenEditorProps {
+    const regimen = fakeRegimen();
+    regimen.specialStatus = SpecialStatus.DIRTY;
     return {
       dispatch: jest.fn(),
-      current: fakeRegimen(),
+      current: regimen,
       calendar: [{
         day: "1",
         items: [{
@@ -31,7 +35,7 @@ describe("<RegimenEditor />", () => {
           sortKey: 0,
           day: 1,
           dispatch: jest.fn(),
-          regimen: fakeRegimen(),
+          regimen: regimen,
           item: {
             sequence_id: 0, time_offset: 1000
           }
@@ -57,9 +61,7 @@ describe("<RegimenEditor />", () => {
   it("deletes regimen", () => {
     const p = fakeProps();
     const wrapper = mount(<RegimenEditor {...p} />);
-    const deleteButton = wrapper.find("button").at(2);
-    expect(deleteButton.text()).toContain("Delete");
-    deleteButton.simulate("click");
+    clickButton(wrapper, 2, "delete");
     const expectedUuid = p.current && p.current.uuid;
     expect(destroy).toHaveBeenCalledWith(expectedUuid);
   });
@@ -67,9 +69,7 @@ describe("<RegimenEditor />", () => {
   it("saves regimen", () => {
     const p = fakeProps();
     const wrapper = mount(<RegimenEditor {...p} />);
-    const saveeButton = wrapper.find("button").at(0);
-    expect(saveeButton.text()).toContain("Save");
-    saveeButton.simulate("click");
+    clickButton(wrapper, 0, "save", { partial_match: true });
     const expectedUuid = p.current && p.current.uuid;
     expect(save).toHaveBeenCalledWith(expectedUuid);
   });
