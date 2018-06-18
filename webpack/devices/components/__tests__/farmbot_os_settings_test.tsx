@@ -26,6 +26,7 @@ describe("<FarmbotOsSettings/>", () => {
   const fakeProps = (): FarmbotOsProps => {
     return {
       account: fakeResource("Device", { id: 0, name: "", tz_offset_hrs: 0 }),
+      diagnostics: [],
       dispatch: jest.fn(),
       bot,
       botToMqttLastSeen: "",

@@ -169,6 +169,7 @@ export class FarmbotOsSettings
               shouldDisplay={this.props.shouldDisplay}
               botOnline={botOnline} />
             <SendDiagnosticReport
+              diagnostics={this.props.diagnostics}
               expanded={this.props.bot.controlPanelState.diagnostic_dumps}
               shouldDisplay={this.props.shouldDisplay}
               dispatch={this.props.dispatch} />

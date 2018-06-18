@@ -5,11 +5,14 @@ import { t } from "i18next";
 import { Collapse } from "@blueprintjs/core";
 import { Header } from "./hardware_settings/header";
 import { ShouldDisplay, Feature } from "../interfaces";
+import { TaggedDiagnosticDump } from "../../resources/tagged_resources";
+import { DiagnosticDumpRow } from "./diagnostic_dump_row";
 
 export interface DiagReportProps {
   dispatch: Function;
   expanded: boolean;
   shouldDisplay: ShouldDisplay;
+  diagnostics: TaggedDiagnosticDump[];
 }
 
 export class SendDiagnosticReport extends React.Component<DiagReportProps, {}>{
@@ -19,10 +22,10 @@ export class SendDiagnosticReport extends React.Component<DiagReportProps, {}>{
         <Header
           expanded={this.props.expanded}
           title={t("Diagnostic Reports")}
-          name={"power_and_reset"}
+          name={Feature.diagnostic_dumps}
           dispatch={this.props.dispatch} />
       </div>
-      <Collapse isOpen={true}>
+      <Collapse isOpen={this.props.expanded}>
         <Row>
           <Col xs={ColWidth.label}>
             <label>
@@ -40,6 +43,12 @@ export class SendDiagnosticReport extends React.Component<DiagReportProps, {}>{
             </button>
           </Col>
         </Row>
+        {this.props.diagnostics.map(d => {
+          return <DiagnosticDumpRow
+            key={d.uuid}
+            diag={d}
+            dispatch={this.props.dispatch} />;
+        })}
       </Collapse>
     </section>;
   }
@@ -47,7 +56,8 @@ export class SendDiagnosticReport extends React.Component<DiagReportProps, {}>{
   noShow = () => <div />;
 
   render() {
-    const show = this.props.shouldDisplay(Feature.diagnostic_dumps);
-    return (show ? this.show : this.noShow)();
+    // const show = this.props.shouldDisplay(Feature.diagnostic_dumps);
+    // return (show ? this.show : this.noShow)();
+    return this.show();
   }
 }

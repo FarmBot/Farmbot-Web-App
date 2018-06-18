@@ -11,7 +11,8 @@ import {
   TaggedImage,
   TaggedPeripheral,
   TaggedDevice,
-  TaggedSensor
+  TaggedSensor,
+  TaggedDiagnosticDump
 } from "../resources/tagged_resources";
 import { ResourceIndex } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
@@ -149,6 +150,7 @@ export interface CalibrationButtonProps {
 
 export interface FarmbotOsProps {
   bot: BotState;
+  diagnostics: TaggedDiagnosticDump[];
   account: TaggedDevice;
   botToMqttStatus: NetworkState;
   botToMqttLastSeen: string;

@@ -8,7 +8,8 @@ import {
   TaggedSensor,
   TaggedFirmwareConfig,
   TaggedPinBinding,
-  TaggedLog
+  TaggedLog,
+  TaggedDiagnosticDump
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
@@ -115,6 +116,10 @@ export function fakePlant(): TaggedPlantPointer {
     meta: {},
     openfarm_slug: "strawberry"
   });
+}
+
+export function fakeDiagnosticDump(): TaggedDiagnosticDump {
+  return fakeResource("DiagnosticDump", { id: idCounter++ });
 }
 
 export function fakePoint(): TaggedGenericPointer {
