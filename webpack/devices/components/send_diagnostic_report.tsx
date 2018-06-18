@@ -7,6 +7,7 @@ import { Header } from "./hardware_settings/header";
 import { ShouldDisplay, Feature } from "../interfaces";
 import { TaggedDiagnosticDump } from "../../resources/tagged_resources";
 import { DiagnosticDumpRow } from "./diagnostic_dump_row";
+import { requestDiagnostic } from "../actions";
 
 export interface DiagReportProps {
   dispatch: Function;
@@ -38,7 +39,7 @@ export class SendDiagnosticReport extends React.Component<DiagReportProps, {}>{
           <Col xs={3}>
             <button
               className="fb-button yellow"
-              onClick={() => alert("TODO")}>
+              onClick={requestDiagnostic}>
               {t("Record Diagnostic")}
             </button>
           </Col>
