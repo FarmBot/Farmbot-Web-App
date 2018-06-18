@@ -30,6 +30,7 @@ export type ResourceName =
   | "Crop"
   | "Device"
   | "DeviceConfig"
+  | "DiagnosticDump"
   | "FarmEvent"
   | "FarmwareInstallation"
   | "FbosConfig"
@@ -95,6 +96,7 @@ export interface Resource<T extends ResourceName, U extends object>
 export type TaggedResource =
   | TaggedCrop
   | TaggedDevice
+  | TaggedDiagnosticDump
   | TaggedFarmEvent
   | TaggedFarmwareInstallation
   | TaggedFbosConfig
@@ -132,6 +134,7 @@ export type TaggedSensorReading = Resource<"SensorReading", SensorReading>;
 export type TaggedSensor = Resource<"Sensor", Sensor>;
 export type TaggedSavedGarden = Resource<"SavedGarden", SavedGarden>;
 export type TaggedPlantTemplate = Resource<"PlantTemplate", PlantTemplate>;
+export type TaggedDiagnosticDump = Resource<"DiagnosticDump", { id: number }>;
 
 type PointUnion = GenericPointer | PlantPointer | ToolSlotPointer;
 

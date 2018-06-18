@@ -55,12 +55,12 @@ ActiveRecord::Schema.define(version: 2018_06_15_153318) do
 
   create_table "diagnostic_dumps", force: :cascade do |t|
     t.bigint "device_id", null: false
+    t.string "ticket_identifier", null: false
     t.string "fbos_commit", null: false
     t.string "fbos_version", null: false
     t.string "firmware_commit", null: false
     t.string "firmware_state", null: false
     t.string "network_interface", null: false
-    t.string "ticket_identifier", null: false
     t.text "fbos_dmesg_dump", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
