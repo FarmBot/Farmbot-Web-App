@@ -8,8 +8,9 @@ import { DeviceAccountSettings } from "../devices/interfaces";
 interface DataDumpExport { device?: DeviceAccountSettings; }
 type Response = AxiosResponse<DataDumpExport | undefined>;
 
-function generateFilename({ device }: DataDumpExport): string {
-  const name = (device && device.name + "_" + device.id) || "farmbot";
+export function generateFilename({ device }: DataDumpExport): string {
+  let name: string;
+  name = device ? (device.name + "_" + device.id) : "farmbot";
   return `export_${name}.json`.toLowerCase();
 }
 

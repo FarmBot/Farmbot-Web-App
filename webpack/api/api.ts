@@ -17,7 +17,7 @@ interface UrlInfo {
 export class API {
   /** Guesses the most appropriate API port based on a number of environment
    *  factors such as hostname and protocol (HTTP vs. HTTPS). */
-  static inferPort(): string {
+  static inferPort(location = window.location): string {
 
     // ATTEMPT 1: Most devs running a webpack server on localhost
     //            run the API on port 3000.
