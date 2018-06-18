@@ -778,3 +778,21 @@ ul {
     }
   }
 }
+
+a.panel-link {
+    // TODO: Might need to move this to a better place. CC: @gabrielBurnworth
+    //
+    // PROBLEM: <a> links in the device panel are invisible.
+    // SOLUTION: Add {color: $dark_gray}
+    // PROBLEM 2: This rule probably does not belong at the bottom of
+    //            global.scss
+    color: $dark_gray;
+
+    &:visited {
+      color: $dark_gray;
+    };
+
+    &:active {
+      color: $dark_gray;
+    };
+}

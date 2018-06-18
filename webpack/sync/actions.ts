@@ -8,7 +8,7 @@ import { Peripheral } from "../controls/peripherals/interfaces";
 import { FarmEvent, SavedGarden, PlantTemplate } from "../farm_designer/interfaces";
 import { Image } from "../farmware/images/interfaces";
 import { DeviceAccountSettings } from "../devices/interfaces";
-import { ResourceName } from "../resources/tagged_resources";
+import { ResourceName, DiagnosticDump } from "../resources/tagged_resources";
 import { User } from "../auth/interfaces";
 import { WebcamFeed } from "../controls/interfaces";
 import { WebAppConfig } from "../config_storage/web_app_configs";
@@ -61,5 +61,5 @@ export function fetchSyncData(dispatch: Function) {
   fetch<PinBinding[]>("PinBinding", API.current.pinBindingPath);
   fetch<SavedGarden[]>("SavedGarden", API.current.savedGardensPath);
   fetch<PlantTemplate[]>("PlantTemplate", API.current.plantTemplatePath);
-
+  fetch<DiagnosticDump[]>("DiagnosticDump", API.current.diagnosticDumpsPath);
 }

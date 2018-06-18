@@ -14,7 +14,7 @@ function generateFilename({ device }: DataDumpExport): string {
 }
 
 // Thanks, @KOL - https://stackoverflow.com/a/19328891/1064917
-function handleNow(data: DataDumpExport) {
+export function jsonDownload(data: object) {
   // When email is not available on the API (self hosted).
   // Will synchronously load backup over the wire (slow)
   const a = document.createElement("a");
@@ -32,7 +32,7 @@ function handleNow(data: DataDumpExport) {
 
 const ok = (resp: Response) => {
   const { data } = resp;
-  return data ? handleNow(data) : success(t(Content.EXPORT_SENT));
+  return data ? jsonDownload(data) : success(t(Content.EXPORT_SENT));
 };
 
 export const requestAccountExport =

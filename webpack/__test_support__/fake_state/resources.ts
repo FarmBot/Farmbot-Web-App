@@ -119,7 +119,20 @@ export function fakePlant(): TaggedPlantPointer {
 }
 
 export function fakeDiagnosticDump(): TaggedDiagnosticDump {
-  return fakeResource("DiagnosticDump", { id: idCounter++ });
+  const string = "----PLACEHOLDER DIAG STUFF ---";
+  return fakeResource("DiagnosticDump", {
+    id: idCounter++,
+    device_id: 123,
+    ticket_identifier: string,
+    fbos_commit: string,
+    fbos_version: string,
+    firmware_commit: string,
+    firmware_state: string,
+    network_interface: string,
+    fbos_dmesg_dump: string,
+    created_at: string,
+    updated_at: string,
+  });
 }
 
 export function fakePoint(): TaggedGenericPointer {
