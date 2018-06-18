@@ -5,7 +5,7 @@ import { SendDiagnosticReport } from "../send_diagnostic_report";
 describe("<SendDiagnosticReport/>", () => {
   it("renders", () => {
     const dispatch = jest.fn();
-    const shouldDisplay = jest.fn();
+    const shouldDisplay = jest.fn(() => true);
     const el = render(<SendDiagnosticReport
       expanded={true}
       dispatch={dispatch}
