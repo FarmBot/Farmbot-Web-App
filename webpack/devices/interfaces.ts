@@ -11,7 +11,8 @@ import {
   TaggedImage,
   TaggedPeripheral,
   TaggedDevice,
-  TaggedSensor
+  TaggedSensor,
+  TaggedDiagnosticDump
 } from "../resources/tagged_resources";
 import { ResourceIndex } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
@@ -64,6 +65,7 @@ export enum Feature {
   jest_feature = "jest_feature", // for tests
   backscheduled_regimens = "backscheduled_regimens",
   endstop_invert = "endstop_invert",
+  diagnostic_dumps = "diagnostic_dumps"
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
@@ -148,6 +150,7 @@ export interface CalibrationButtonProps {
 
 export interface FarmbotOsProps {
   bot: BotState;
+  diagnostics: TaggedDiagnosticDump[];
   account: TaggedDevice;
   botToMqttStatus: NetworkState;
   botToMqttLastSeen: string;
@@ -221,4 +224,5 @@ export interface ControlPanelState {
   danger_zone: boolean;
   power_and_reset: boolean;
   pin_guard: boolean;
+  diagnostic_dumps: boolean;
 }

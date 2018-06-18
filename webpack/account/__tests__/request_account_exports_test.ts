@@ -10,12 +10,22 @@ jest.mock("axios",
 
 import { API } from "../../api";
 import { Content } from "../../constants";
-import { requestAccountExport } from "../request_account_export";
+import { requestAccountExport, generateFilename } from "../request_account_export";
 import { success } from "farmbot-toastr";
 import axios from "axios";
+import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
 API.setBaseUrl("http://www.foo.bar");
 
+describe("generateFilename", () => {
+  it("generates a filename", () => {
+    const device = fakeDevice().body;
+    device.name = "FOO";
+    device.id = 123;
+    const result = generateFilename({ device });
+    expect(result).toEqual("export_foo_123.json");
+  });
+});
 describe("requestAccountExport", () => {
   it("pops toast on completion (when API has email support)", async () => {
     await requestAccountExport();

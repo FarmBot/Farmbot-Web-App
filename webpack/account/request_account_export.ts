@@ -8,13 +8,14 @@ import { DeviceAccountSettings } from "../devices/interfaces";
 interface DataDumpExport { device?: DeviceAccountSettings; }
 type Response = AxiosResponse<DataDumpExport | undefined>;
 
-function generateFilename({ device }: DataDumpExport): string {
-  const name = (device && device.name + "_" + device.id) || "farmbot";
+export function generateFilename({ device }: DataDumpExport): string {
+  let name: string;
+  name = device ? (device.name + "_" + device.id) : "farmbot";
   return `export_${name}.json`.toLowerCase();
 }
 
 // Thanks, @KOL - https://stackoverflow.com/a/19328891/1064917
-function handleNow(data: DataDumpExport) {
+export function jsonDownload(data: object, fname = generateFilename(data)) {
   // When email is not available on the API (self hosted).
   // Will synchronously load backup over the wire (slow)
   const a = document.createElement("a");
@@ -24,7 +25,7 @@ function handleNow(data: DataDumpExport) {
     blob = new Blob([json], { type: "octet/stream" }),
     url = window.URL.createObjectURL(blob);
   a.href = url;
-  a.download = generateFilename(data);
+  a.download = fname;
   a.click();
   window.URL.revokeObjectURL(url);
   return a;
@@ -32,7 +33,7 @@ function handleNow(data: DataDumpExport) {
 
 const ok = (resp: Response) => {
   const { data } = resp;
-  return data ? handleNow(data) : success(t(Content.EXPORT_SENT));
+  return data ? jsonDownload(data) : success(t(Content.EXPORT_SENT));
 };
 
 export const requestAccountExport =

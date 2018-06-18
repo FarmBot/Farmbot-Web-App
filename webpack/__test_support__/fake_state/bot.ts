@@ -10,6 +10,7 @@ export let bot: Everything["bot"] = {
     "danger_zone": false,
     "power_and_reset": false,
     "pin_guard": false,
+    "diagnostic_dumps": false
   },
   "hardware": {
     "gpio_registry": {},

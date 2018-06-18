@@ -17,7 +17,7 @@ interface UrlInfo {
 export class API {
   /** Guesses the most appropriate API port based on a number of environment
    *  factors such as hostname and protocol (HTTP vs. HTTPS). */
-  static inferPort(): string {
+  static inferPort(location = window.location): string {
 
     // ATTEMPT 1: Most devs running a webpack server on localhost
     //            run the API on port 3000.
@@ -115,7 +115,7 @@ export class API {
   /** /api/points/ */
   get pointsPath() { return `${this.baseUrl}/api/points/`; }
   /** /api/points/search */
-  get pointSearchPath() { return `${this.pointsPath}/search/`; }
+  get pointSearchPath() { return `${this.pointsPath}search`; }
   /** Rather than returning ALL logs, returns a filtered subset.
    * /api/logs/search */
   get filteredLogsPath() { return `${this.baseUrl}/api/logs/search`; }
@@ -145,6 +145,8 @@ export class API {
   get exportDataPath() { return `${this.baseUrl}/api/export_data`; }
   /** /api/plant_templates/:id */
   get plantTemplatePath() { return `${this.baseUrl}/api/plant_templates`; }
+  /** /api/diagnostic_dumps/:id */
+  get diagnosticDumpsPath() { return `${this.baseUrl}/api/diagnostic_dumps`; }
   /** /api/farmware_installations/:id */
   get farmwareInstallationPath() {
     return `${this.baseUrl}/api/farmware_installations`;

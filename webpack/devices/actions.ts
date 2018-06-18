@@ -140,6 +140,11 @@ export function execSequence(sequence: Sequence) {
   }
 }
 
+export function requestDiagnostic() {
+  const noun = "Diagnostic Request";
+  return getDevice().dumpInfo().then(commandOK(noun), commandErr(noun));
+}
+
 export let saveAccountChanges: Thunk = function (_dispatch, getState) {
   return save(getDeviceAccountSettings(getState().resources.index));
 };

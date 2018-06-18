@@ -30,6 +30,7 @@ export type ResourceName =
   | "Crop"
   | "Device"
   | "DeviceConfig"
+  | "DiagnosticDump"
   | "FarmEvent"
   | "FarmwareInstallation"
   | "FbosConfig"
@@ -95,6 +96,7 @@ export interface Resource<T extends ResourceName, U extends object>
 export type TaggedResource =
   | TaggedCrop
   | TaggedDevice
+  | TaggedDiagnosticDump
   | TaggedFarmEvent
   | TaggedFarmwareInstallation
   | TaggedFbosConfig
@@ -132,6 +134,7 @@ export type TaggedSensorReading = Resource<"SensorReading", SensorReading>;
 export type TaggedSensor = Resource<"Sensor", Sensor>;
 export type TaggedSavedGarden = Resource<"SavedGarden", SavedGarden>;
 export type TaggedPlantTemplate = Resource<"PlantTemplate", PlantTemplate>;
+export type TaggedDiagnosticDump = Resource<"DiagnosticDump", DiagnosticDump>;
 
 type PointUnion = GenericPointer | PlantPointer | ToolSlotPointer;
 
@@ -146,6 +149,20 @@ export type TaggedDevice = Resource<"Device", DeviceAccountSettings>;
 export type TaggedWebcamFeed = Resource<"WebcamFeed", WebcamFeed>;
 export type TaggedFarmwareInstallation =
   Resource<"FarmwareInstallation", FarmwareInstallation>;
+
+export interface DiagnosticDump {
+  id: number;
+  device_id: number;
+  ticket_identifier: string;
+  fbos_commit: string;
+  fbos_version: string;
+  firmware_commit: string;
+  firmware_state: string;
+  network_interface: string;
+  fbos_dmesg_dump: string;
+  created_at: string;
+  updated_at: string;
+}
 
 /** Spot check to be certain a TaggedResource is what it says it is. */
 export function sanityCheck(x: object): x is TaggedResource {

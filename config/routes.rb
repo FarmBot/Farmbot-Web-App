@@ -2,6 +2,7 @@ FarmBot::Application.routes.draw do
   namespace :api, defaults: {format: :json}, constraints: { format: "json" } do
     # Standard API Resources:
     {
+      diagnostic_dumps:       [:create, :destroy, :index],
       farm_events:            [:create, :destroy, :index, :update],
       farmware_installations: [:create, :destroy, :index],
       images:                 [:create, :destroy, :index, :show],

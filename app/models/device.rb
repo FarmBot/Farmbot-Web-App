@@ -12,24 +12,25 @@ class Device < ApplicationRecord
                         "Resuming log storage."
   CACHE_KEY           = "devices.%s"
 
-  has_many  :device_configs,  dependent: :destroy
-  has_many  :farm_events,     dependent: :destroy
+  has_many  :device_configs,         dependent: :destroy
+  has_many  :farm_events,            dependent: :destroy
   has_many  :farmware_installations, dependent: :destroy
-  has_many  :images,          dependent: :destroy
-  has_many  :logs,            dependent: :destroy
-  has_many  :peripherals,     dependent: :destroy
-  has_many  :pin_bindings,    dependent: :destroy
-  has_many  :plant_templates, dependent: :destroy
-  has_many  :points,          dependent: :destroy
-  has_many  :regimens,        dependent: :destroy
-  has_many  :saved_gardens,   dependent: :destroy
-  has_many  :sensor_readings, dependent: :destroy
-  has_many  :sensors,         dependent: :destroy
-  has_many  :sequences,       dependent: :destroy
-  has_many  :token_issuances, dependent: :destroy
-  has_many  :tools,           dependent: :destroy
-  has_many  :webcam_feeds,    dependent: :destroy
-  has_one   :fbos_config,     dependent: :destroy
+  has_many  :images,                 dependent: :destroy
+  has_many  :logs,                   dependent: :destroy
+  has_many  :peripherals,            dependent: :destroy
+  has_many  :pin_bindings,           dependent: :destroy
+  has_many  :plant_templates,        dependent: :destroy
+  has_many  :points,                 dependent: :destroy
+  has_many  :regimens,               dependent: :destroy
+  has_many  :saved_gardens,          dependent: :destroy
+  has_many  :sensor_readings,        dependent: :destroy
+  has_many  :sensors,                dependent: :destroy
+  has_many  :sequences,              dependent: :destroy
+  has_many  :token_issuances,        dependent: :destroy
+  has_many  :tools,                  dependent: :destroy
+  has_many  :webcam_feeds,           dependent: :destroy
+  has_many  :diagnostic_dumps,       dependent: :destroy
+  has_one   :fbos_config,            dependent: :destroy
   has_many  :in_use_tools
   has_many  :in_use_points
 

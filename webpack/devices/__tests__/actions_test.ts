@@ -13,7 +13,8 @@ const mockDevice = {
   home: jest.fn(() => { return Promise.resolve(); }),
   sync: jest.fn(() => { return Promise.resolve(); }),
   readStatus: jest.fn(() => Promise.resolve()),
-  updateConfig: jest.fn(() => Promise.resolve())
+  updateConfig: jest.fn(() => Promise.resolve()),
+  dumpInfo: jest.fn(() => Promise.resolve()),
 };
 
 jest.mock("../../device", () => ({
@@ -171,6 +172,13 @@ describe("MCUFactoryReset()", function () {
     window.confirm = () => true;
     actions.MCUFactoryReset();
     expect(mockDevice.resetMCU).toHaveBeenCalled();
+  });
+});
+
+describe("requestDiagnostic", () => {
+  it("requests that FBOS build a diagnostic report", () => {
+    actions.requestDiagnostic();
+    expect(mockDevice.dumpInfo).toHaveBeenCalled();
   });
 });
 

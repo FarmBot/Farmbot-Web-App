@@ -21,7 +21,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
 
   return <section>
     <Header
-      bool={encoders_and_endstops}
+      expanded={encoders_and_endstops}
       title={t("Encoders and Endstops")}
       name={"encoders_and_endstops"}
       dispatch={dispatch} />
