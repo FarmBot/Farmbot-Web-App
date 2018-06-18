@@ -115,7 +115,7 @@ export class API {
   /** /api/points/ */
   get pointsPath() { return `${this.baseUrl}/api/points/`; }
   /** /api/points/search */
-  get pointSearchPath() { return `${this.pointsPath}/search/`; }
+  get pointSearchPath() { return `${this.pointsPath}search`; }
   /** Rather than returning ALL logs, returns a filtered subset.
    * /api/logs/search */
   get filteredLogsPath() { return `${this.baseUrl}/api/logs/search`; }

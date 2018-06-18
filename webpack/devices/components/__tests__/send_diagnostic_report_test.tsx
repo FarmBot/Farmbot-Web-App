@@ -14,5 +14,19 @@ describe("<SendDiagnosticReport/>", () => {
       dispatch={dispatch}
       shouldDisplay={shouldDisplay} />);
     expect(el.text()).toContain("DIAGNOSTIC CHECK");
+    expect(shouldDisplay).toHaveBeenCalled();
+  });
+
+  it("doesn't render", () => {
+    const dispatch = jest.fn();
+    const shouldDisplay = jest.fn(() => false);
+    const fake = fakeDiagnosticDump();
+    const el = render(<SendDiagnosticReport
+      diagnostics={[fake]}
+      expanded={true}
+      dispatch={dispatch}
+      shouldDisplay={shouldDisplay} />);
+    expect(el.text()).toEqual("");
+    expect(shouldDisplay).toHaveBeenCalled();
   });
 });

@@ -57,8 +57,7 @@ export class SendDiagnosticReport extends React.Component<DiagReportProps, {}>{
   noShow = () => <div />;
 
   render() {
-    // const show = this.props.shouldDisplay(Feature.diagnostic_dumps);
-    // return (show ? this.show : this.noShow)();
-    return this.show();
+    const show = this.props.shouldDisplay(Feature.diagnostic_dumps);
+    return (show ? this.show : this.noShow)();
   }
 }
