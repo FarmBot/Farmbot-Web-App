@@ -15,7 +15,7 @@ export function PinGuard(props: PinGuardProps) {
 
   return <section>
     <Header
-      bool={pin_guard}
+      expanded={pin_guard}
       title={t("Pin Guard")}
       name={"pin_guard"}
       dispatch={dispatch} />

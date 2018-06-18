@@ -7,7 +7,7 @@ describe("<Header/>", () => {
     const fn = jest.fn();
     const el = shallow(<Header
       title="FOO"
-      bool={true}
+      expanded={true}
       name={"motors"}
       dispatch={fn} />);
     expect(el.text()).toContain("FOO");

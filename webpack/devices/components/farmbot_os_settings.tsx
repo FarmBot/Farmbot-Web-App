@@ -162,13 +162,16 @@ export class FarmbotOsSettings
               dispatch={this.props.dispatch}
               shouldDisplay={this.props.shouldDisplay}
               sourceFbosConfig={sourceFbosConfig} />
-            <SendDiagnosticReport />
             <PowerAndReset
               controlPanelState={this.props.bot.controlPanelState}
               dispatch={this.props.dispatch}
               sourceFbosConfig={sourceFbosConfig}
               shouldDisplay={this.props.shouldDisplay}
               botOnline={botOnline} />
+            <SendDiagnosticReport
+              expanded={this.props.bot.controlPanelState.diagnostic_dumps}
+              shouldDisplay={this.props.shouldDisplay}
+              dispatch={this.props.dispatch} />
           </MustBeOnline>
         </WidgetBody>
       </form>

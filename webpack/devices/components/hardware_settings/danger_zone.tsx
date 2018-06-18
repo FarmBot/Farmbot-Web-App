@@ -13,7 +13,7 @@ export function DangerZone(props: DangerZoneProps) {
 
   return <section>
     <Header
-      bool={danger_zone}
+      expanded={danger_zone}
       title={t("Danger Zone")}
       name={"danger_zone"}
       dispatch={dispatch} />

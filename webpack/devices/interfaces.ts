@@ -64,6 +64,7 @@ export enum Feature {
   jest_feature = "jest_feature", // for tests
   backscheduled_regimens = "backscheduled_regimens",
   endstop_invert = "endstop_invert",
+  diagnostic_dumps = "diagnostic_dumps"
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
@@ -221,4 +222,5 @@ export interface ControlPanelState {
   danger_zone: boolean;
   power_and_reset: boolean;
   pin_guard: boolean;
+  diagnostic_dumps: boolean;
 }

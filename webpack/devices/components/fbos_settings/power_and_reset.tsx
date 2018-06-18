@@ -15,7 +15,7 @@ export function PowerAndReset(props: PowerAndResetProps) {
   return <section>
     <div style={{ fontSize: "1px" }}>
       <Header
-        bool={power_and_reset}
+        expanded={power_and_reset}
         title={t("Power and Reset")}
         name={"power_and_reset"}
         dispatch={dispatch} />
