@@ -6,6 +6,15 @@ describe Api::DiagnosticDumpsController do
 
   include Devise::Test::ControllerHelpers
 
+  it 'lists all diagnostics' do
+    sign_in user
+    DiagnosticDump.destroy_all
+    device_config = FactoryBot.create_list(:diagnostic_dump, 3, device: device)
+    get :index
+    expect(json.length).to eq(3)
+    expect(json.pluck(:device_id).uniq).to eq([user.device.id])
+  end
+
   it 'creates a dump' do
     sign_in user
     DiagnosticDump.destroy_all
