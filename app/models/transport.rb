@@ -31,7 +31,7 @@ class Transport
   def log_channel
     @log_channel ||=  self.connection
                           .create_channel
-                          .queue("", exclusive: true)
+                          .queue("logs_worker_rickwuzhere", exclusive: true)
                           .bind("amq.topic", routing_key: "bot.*.logs")
   end
 
