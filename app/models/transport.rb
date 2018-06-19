@@ -29,10 +29,10 @@ class Transport
   end
 
   def log_channel
-    @log_channel ||=  self.connection
-                          .create_channel
-                          .queue("api_log_workers")
-                          .bind("amq.topic", routing_key: "bot.*.logs")
+    @log_channel ||= self.connection
+                         .create_channel
+                         .queue("api_log_workers")
+                         .bind("amq.topic", routing_key: "bot.*.logs")
   end
 
   def amqp_topic
