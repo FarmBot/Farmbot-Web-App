@@ -26,6 +26,7 @@ export interface Props {
 export interface Tool {
   id?: number | undefined;
   name?: string;
+  status?: string | undefined;
 }
 
 export interface ToolBayListProps {

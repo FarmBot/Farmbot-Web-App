@@ -127,7 +127,7 @@ export namespace ToolTips {
     trim(`(Alpha) Reduction to missed step total for every good step.`);
 
   export const ENCODER_SCALING =
-    trim(`(Alpha) encoder scaling factor = 100 * (motor resolution * microsteps)
+    trim(`(Alpha) encoder scaling factor = 10000 * (motor resolution * microsteps)
     / (encoder resolution).`);
 
   export const ENABLE_ENDSTOPS =
@@ -232,6 +232,10 @@ export namespace ToolTips {
   export const EXECUTE_SCRIPT =
     trim(`The Run Farmware step runs a Farmware package.
    Visit the Farmware page to install and manage Farmware.`);
+
+  export const FARMWARE_CONFIGS =
+    trim(`The Farmware will use the parameter values set via the Farmware page
+    for any parameters that are not set in this sequence step.`);
 
   export const TAKE_PHOTO =
     trim(`Snaps a photo using the device camera. Select the camera type on the
@@ -488,6 +492,10 @@ export namespace Content {
     trim(`No Regimen selected. Click one in the Regimens panel to edit, or
     click "+" in the Regimens panel to create a new one.`);
 
+  // Farm Designer
+  export const OUTSIDE_PLANTING_AREA =
+    trim(`Outside of planting area. Plants must be placed within the grid.`);
+
   // Farm Events
   export const REGIMEN_TODAY_SKIPPED_ITEM_RISK =
     trim(`You are scheduling a regimen to run today. Be aware that
@@ -521,7 +529,7 @@ export enum Actions {
   // Resources
   DESTROY_RESOURCE_OK = "DESTROY_RESOURCE_OK",
   INIT_RESOURCE = "INIT_RESOURCE",
-  SAVE_OPENFARM_RESOURCE = "SAVE_OPENFARM_RESOURCE",
+  BATCH_INIT = "BATCH_INIT",
   SAVE_RESOURCE_OK = "SAVE_RESOURCE_OK",
   UPDATE_RESOURCE_OK = "UPDATE_RESOURCE_OK",
   EDIT_RESOURCE = "EDIT_RESOURCE",

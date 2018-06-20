@@ -71,13 +71,21 @@ export interface GardenPointProps {
   point: TaggedGenericPointer;
 }
 
-export interface DragHelpersProps {
+export interface DragHelpersBaseProps {
   dragging: boolean;
-  plant: Readonly<TaggedPlantPointer>;
   mapTransformProps: MapTransformProps;
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
   plantAreaOffset: AxisNumberProperty;
+}
+
+export interface DragHelperLayerProps extends DragHelpersBaseProps {
+  currentPlant: TaggedPlantPointer | undefined;
+  editing: boolean;
+}
+
+export interface DragHelpersProps extends DragHelpersBaseProps {
+  plant: Readonly<TaggedPlantPointer>;
 }
 
 export type AxisNumberProperty = Record<"x" | "y", number>;
@@ -97,7 +105,6 @@ export interface MapBackgroundProps {
 
 export interface GridProps {
   mapTransformProps: MapTransformProps;
-  dispatch: Function;
   onClick(): void;
 }
 

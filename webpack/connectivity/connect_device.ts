@@ -1,7 +1,7 @@
 import { fetchNewDevice, getDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "../interfaces";
-import { ALLOWED_CHANNEL_NAMES, Farmbot, BotStateTree } from "farmbot";
+import { Farmbot, BotStateTree } from "farmbot";
 import { noop, throttle } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
@@ -25,6 +25,7 @@ import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
 import { onLogs } from "./log_handlers";
+import { ChannelName } from "../sequences/interfaces";
 
 export const TITLE = "New message from bot";
 /** TODO: This ought to be stored in Redux. It is here because of historical
@@ -42,9 +43,9 @@ export let incomingStatus = (statusMessage: HardwareState) =>
 /** Determine if an incoming log has a certain channel. If it is, execute the
  * supplied callback. */
 export function actOnChannelName(
-  log: Log, channelName: ALLOWED_CHANNEL_NAMES, cb: (log: Log) => void) {
+  log: Log, channelName: ChannelName, cb: (log: Log) => void) {
   const CHANNELS: keyof Log = "channels";
-  const chanList: string[] = log[CHANNELS] || ["ERROR FETCHING CHANNELS"];
+  const chanList: ChannelName[] = log[CHANNELS] || ["ERROR FETCHING CHANNELS"];
   return log && (chanList.includes(channelName) ? cb(log) : noop());
 }
 
@@ -54,8 +55,9 @@ export function showLogOnScreen(log: Log) {
   switch (log.type) {
     case "success":
       return success(log.message, TITLE);
-    case "busy":
     case "warn":
+      return warning(log.message, TITLE);
+    case "busy":
     case "error":
       return error(log.message, TITLE);
     case "fun":
@@ -82,6 +84,11 @@ export const initLog = (log: Log): ReduxAction<TaggedResource> => init({
   body: log
 }, true);
 
+export const batchInitResources =
+  (payload: TaggedResource[]): ReduxAction<TaggedResource[]> => {
+    return { type: Actions.BATCH_INIT, payload };
+  };
+
 export const bothUp = () => {
   dispatchNetworkUp("user.mqtt");
   dispatchNetworkUp("bot.mqtt");
@@ -96,7 +103,7 @@ export function readStatus() {
 
 export const onOffline = () => {
   dispatchNetworkDown("user.mqtt");
-  error(t(Content.MQTT_DISCONNECTED),t("Error"));
+  error(t(Content.MQTT_DISCONNECTED), t("Error"));
 };
 
 export const changeLastClientConnected = (bot: Farmbot) => () => {
@@ -121,8 +128,10 @@ const onStatus = (dispatch: Function, getState: GetState) =>
 
 type Client = { connected?: boolean };
 
-export const onSent = (client: Client) => () => !!client.connected ?
-  dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
+export const onSent = (client: Client) => () => {
+  !!client.connected ?
+    dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
+};
 
 export function onMalformed() {
   bothUp();

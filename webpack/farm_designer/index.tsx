@@ -10,7 +10,7 @@ import { Session, safeBooleanSettting } from "../session";
 import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined, last } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
-import { getBotSize } from "./map/util";
+import { getBotSize, round } from "./map/util";
 import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom";
 import * as moment from "moment";
 import { DesignerNavTabs } from "./panel_header";
@@ -26,7 +26,7 @@ export const getDefaultAxisLength = (): AxisNumberProperty => {
 export const getGridSize = (botSize: BotSize) => {
   if (Session.deprecatedGetBool(BooleanSetting.dynamic_map)) {
     // Render the map size according to device axis length.
-    return { x: botSize.x.value, y: botSize.y.value };
+    return { x: round(botSize.x.value), y: round(botSize.y.value) };
   }
   // Use a default map size.
   return getDefaultAxisLength();

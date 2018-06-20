@@ -24,7 +24,7 @@ describe("<SequenceSelectBox />", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount(<SequenceSelectBox {...fakeProps() } />);
+    const wrapper = mount(<SequenceSelectBox {...fakeProps()} />);
     expect(wrapper.text()).toEqual("None");
   });
 

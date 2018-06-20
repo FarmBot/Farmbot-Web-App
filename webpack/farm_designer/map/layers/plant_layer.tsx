@@ -4,47 +4,34 @@ import * as _ from "lodash";
 import { GardenPlant } from "../garden_plant";
 import { PlantLayerProps, CropSpreadDict } from "../interfaces";
 import { defensiveClone } from "../../../util";
-import { getMode, Mode } from "../garden_map";
+import { maybeNoPointer } from "../maybe_no_pointer";
 
 const cropSpreadDict: CropSpreadDict = {};
 
 export function PlantLayer(props: PlantLayerProps) {
   const {
-    crops,
-    plants,
+    mapTransformProps,
     dispatch,
     visible,
+    plants,
+    crops,
     currentPlant,
     dragging,
     editing,
     selectedForDel,
-    mapTransformProps
+    zoomLvl,
+    activeDragXY,
   } = props;
 
   crops
     .filter(c => !!c.body.spread)
     .map(c => cropSpreadDict[c.body.slug] = c.body.spread);
 
-  const maybeNoPointer = () => {
-    switch (getMode()) {
-      case Mode.boxSelect:
-      case Mode.clickToAdd:
-      case Mode.moveTo:
-      case Mode.createPoint:
-        return { "pointerEvents": "none" };
-      default:
-        return {};
-    }
-  };
-
   return <g id="plant-layer">
     {visible &&
       plants
         .filter(x => !!x.body.id)
         .map(p => defensiveClone(p))
-        .map(p => {
-          return p;
-        })
         .map(p => {
           return {
             selected: !!(currentPlant && (p.uuid === currentPlant.uuid)),
@@ -56,7 +43,7 @@ export function PlantLayer(props: PlantLayerProps) {
         })
         .map(p => {
           return <Link className="plant-link-wrapper"
-            style={maybeNoPointer()}
+            style={maybeNoPointer({})}
             to={"/app/designer/plants/" + p.plantId}
             id={p.plantId}
             onClick={_.noop}
@@ -69,8 +56,8 @@ export function PlantLayer(props: PlantLayerProps) {
               grayscale={p.grayscale}
               dragging={p.selected && dragging && editing}
               dispatch={dispatch}
-              zoomLvl={props.zoomLvl}
-              activeDragXY={props.activeDragXY} />
+              zoomLvl={zoomLvl}
+              activeDragXY={activeDragXY} />
           </Link>;
         })}
   </g>;

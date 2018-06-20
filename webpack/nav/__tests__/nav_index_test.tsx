@@ -3,7 +3,6 @@ import { shallow } from "enzyme";
 
 import { NavBar } from "../index";
 import { bot } from "../../__test_support__/fake_state/bot";
-import { log } from "../../__test_support__/log";
 import { taggedUser } from "../../__test_support__/user";
 
 describe("NavBar", () => {
@@ -13,7 +12,7 @@ describe("NavBar", () => {
       <NavBar
         timeOffset={0}
         consistent={true}
-        logs={[log]}
+        logs={[]}
         bot={bot}
         user={taggedUser}
         dispatch={jest.fn()} />
@@ -25,7 +24,7 @@ describe("NavBar", () => {
     const wrapper = shallow(<NavBar
       timeOffset={0}
       consistent={true}
-      logs={[log]}
+      logs={[]}
       bot={bot}
       user={taggedUser}
       dispatch={jest.fn()} />);

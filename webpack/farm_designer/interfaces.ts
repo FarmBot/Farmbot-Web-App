@@ -245,6 +245,7 @@ export interface CropInfoProps {
   dispatch: Function;
   cropSearchResults: CropLiveSearchResult[];
   OFSearch: (query: string) => (dispatch: Function) => void;
+  botPosition: BotPosition;
 }
 
 export interface CameraCalibrationData {

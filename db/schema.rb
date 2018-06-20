@@ -10,11 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180508141310) do
+ActiveRecord::Schema.define(version: 2018_06_06_131907) do
 
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
   enable_extension "hstore"
+  enable_extension "plpgsql"
 
   create_table "delayed_jobs", id: :serial, force: :cascade do |t|
     t.integer "priority", default: 0, null: false
@@ -48,6 +48,8 @@ ActiveRecord::Schema.define(version: 20180508141310) do
     t.datetime "last_saw_api"
     t.datetime "last_saw_mq"
     t.string "fbos_version", limit: 15
+    t.datetime "throttled_until"
+    t.datetime "throttled_at"
     t.index ["timezone"], name: "index_devices_on_timezone"
   end
 
@@ -250,6 +252,7 @@ ActiveRecord::Schema.define(version: 20180508141310) do
     t.integer "x"
     t.integer "y"
     t.integer "z"
+    t.datetime "sent_at"
     t.index ["created_at"], name: "index_logs_on_created_at"
     t.index ["device_id"], name: "index_logs_on_device_id"
     t.index ["type"], name: "index_logs_on_type"
@@ -310,6 +313,7 @@ ActiveRecord::Schema.define(version: 20180508141310) do
     t.datetime "discarded_at"
     t.index ["device_id"], name: "index_points_on_device_id"
     t.index ["discarded_at"], name: "index_points_on_discarded_at"
+    t.index ["id", "pointer_type"], name: "index_points_on_id_and_pointer_type"
     t.index ["meta"], name: "index_points_on_meta", using: :gin
     t.index ["tool_id"], name: "index_points_on_tool_id"
   end
@@ -324,7 +328,7 @@ ActiveRecord::Schema.define(version: 20180508141310) do
     t.string "parent_arg_name", limit: 50
     t.bigint "next_id"
     t.bigint "body_id"
-    t.string "comment", limit: 80
+    t.string "comment", limit: 240
     t.index ["body_id"], name: "index_primary_nodes_on_body_id"
     t.index ["child_id"], name: "index_primary_nodes_on_child_id"
     t.index ["next_id"], name: "index_primary_nodes_on_next_id"

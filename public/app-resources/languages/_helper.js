@@ -57,14 +57,16 @@ var HelperNamespace = (function () {
       return searchInFile(x, T_REGEX)
     });
     var constantsTags = searchInFile(srcPath + 'webpack/constants.ts', C_REGEX);
+    var diagnosticTags = searchInFile(srcPath + 'webpack/devices/connectivity/diagnostic_messages.ts', C_REGEX);
 
     //flatten list of list in a simple list
     var flatAllTags = [].concat.apply([], allTags);
     var flatConstantsTags = [].concat.apply([], constantsTags);
+    var flatDiagnosticTags = [].concat.apply([], diagnosticTags);
     var flatExtraTags = [].concat.apply([],
       ["DISCONNECTED", "Controls", "Device", "Farm Designer"]);
     var flattenedTags = [].concat.apply([],
-      [flatAllTags, flatConstantsTags, flatExtraTags]);
+      [flatAllTags, flatConstantsTags, flatDiagnosticTags, flatExtraTags]);
 
     //distinct
     var uniq = Array.from(new Set(flattenedTags));

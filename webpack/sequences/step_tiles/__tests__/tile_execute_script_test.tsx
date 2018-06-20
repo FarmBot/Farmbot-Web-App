@@ -24,13 +24,14 @@ describe("<TileExecuteScript/>", () => {
       farmwareInfo: {
         farmwareNames: ["one", "two", "three"],
         firstPartyFarmwareNames: ["one"],
-        showFirstPartyFarmware: false
+        showFirstPartyFarmware: false,
+        farmwareConfigs: { "farmware-to-execute": [] },
       }
     };
   };
 
   it("renders inputs", () => {
-    const wrapper = mount(<TileExecuteScript {...fakeProps() } />);
+    const wrapper = mount(<TileExecuteScript {...fakeProps()} />);
     const inputs = wrapper.find("input");
     const labels = wrapper.find("label");
     expect(inputs.length).toEqual(2);
@@ -41,8 +42,15 @@ describe("<TileExecuteScript/>", () => {
     expect(inputs.at(1).props().value).toEqual("farmware-to-execute");
   });
 
+  it("renders error on wrong step", () => {
+    const p = fakeProps();
+    p.currentStep = { kind: "wait", args: { milliseconds: 100 } };
+    const wrapper = mount(<TileExecuteScript {...p} />);
+    expect(wrapper.text()).toContain("ERROR");
+  });
+
   it("renders farmware list", () => {
-    const wrapper = shallow(<TileExecuteScript {...fakeProps() } />);
+    const wrapper = shallow(<TileExecuteScript {...fakeProps()} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { label: "two", value: "two" },
       { label: "three", value: "three" }]);
@@ -84,7 +92,26 @@ describe("<TileExecuteScript/>", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: expect.objectContaining({
         update: expect.objectContaining({
-          body: [{ args: { label: "farmware-name" }, kind: "execute_script" }]
+          body: [{ kind: "execute_script", args: { label: "farmware-name" } }]
+        })
+      }),
+      type: Actions.OVERWRITE_RESOURCE
+    });
+  });
+
+  it("clears body when switching Farmware", () => {
+    const p = fakeProps();
+    p.currentStep.body = [
+      { kind: "pair", args: { label: "x", value: 1 }, comment: "X" }];
+    const wrapper = shallow(<TileExecuteScript {...p} />);
+    wrapper.find("FBSelect").simulate("change", {
+      label: "farmware-name",
+      value: "farmware-name"
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: expect.objectContaining({
+        update: expect.objectContaining({
+          body: [{ kind: "execute_script", args: { label: "farmware-name" } }]
         })
       }),
       type: Actions.OVERWRITE_RESOURCE

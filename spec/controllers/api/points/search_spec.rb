@@ -62,5 +62,48 @@ describe Api::PointsController do
       expect(json).to be_kind_of(Array)
       expect(json.length).to eq(0)
     end
+
+    it 'filters by point_type' do
+      sign_in user
+      d = user.device
+      tool_slot       = FactoryBot.create(:tool_slot,       device: d)
+      plant           = FactoryBot.create(:plant,           device: d)
+      generic_pointer = FactoryBot.create(:generic_pointer, device: d)
+      post :search,
+            body: { pointer_type: "Plant" }.to_json,
+            params: {format: :json }
+      expect(response.status).to eq(200)
+      expect(json).to be_kind_of(Array)
+      expect(json.length).to eq(1)
+      expect(json.first[:pointer_type]).to eq("Plant")
+    end
+
+    it 'filters by openfarm_slug' do
+      sign_in user
+      d = user.device
+      tomato = FactoryBot.create(:plant, device: d, openfarm_slug: "tomato")
+      potato = FactoryBot.create(:plant, device: d, openfarm_slug: "potato")
+      post :search,
+            body: { openfarm_slug: "tomato" }.to_json,
+            params: {format: :json }
+      expect(response.status).to eq(200)
+      expect(json).to be_kind_of(Array)
+      expect(json.length).to eq(1)
+      expect(json.first[:openfarm_slug]).to eq("tomato")
+    end
+
+    it 'filters by plant_stage' do
+      sign_in user
+      d = user.device
+      tomato = FactoryBot.create(:plant, device: d, plant_stage: "planted")
+      potato = FactoryBot.create(:plant, device: d, plant_stage: "harvested")
+      post :search,
+            body: { plant_stage: "harvested" }.to_json,
+            params: {format: :json }
+      expect(response.status).to eq(200)
+      expect(json).to be_kind_of(Array)
+      expect(json.length).to eq(1)
+      expect(json.first[:plant_stage]).to eq("harvested")
+    end
   end
 end

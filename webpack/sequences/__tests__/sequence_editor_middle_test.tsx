@@ -19,7 +19,8 @@ describe("<SequenceEditorMiddle/>", () => {
       farmwareInfo: {
         farmwareNames: [],
         firstPartyFarmwareNames: [],
-        showFirstPartyFarmware: false
+        showFirstPartyFarmware: false,
+        farmwareConfigs: {},
       },
       shouldDisplay: jest.fn(),
     };

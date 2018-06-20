@@ -63,7 +63,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       }).catch((error: Error) => {
         switch (_.get(error, "response.status")) {
           case 451: // TOS was updated; User must agree to terms.
-            window.location.href = "/tos_update";
+            window.location.assign("/tos_update");
             break;
           case 403: // User did not click verification email link.
             log(t("Account Not Verified"));
@@ -96,7 +96,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     };
     axios.post(API.current.usersPath, form).then(() => {
       const m = "Almost done! Check your email for the verification link.";
-      success(t(m));
+      success(t(m), t("Success"));
       this.setState({ registrationSent: true });
     }).catch(error => {
       log(prettyPrintApiErrors(error));

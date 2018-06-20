@@ -26,7 +26,6 @@ import {
   initialState as designerState
 } from "../farm_designer/reducer";
 import { ResourceReadyPayl } from "../sync/actions";
-import { OFCropResponse } from "../open_farm/icons";
 import {
   famrwareReducer as farmware,
   farmwareState
@@ -103,18 +102,6 @@ const afterEach = (state: RestResources, a: ReduxAction<object>) => {
 /** Responsible for all RESTful resources. */
 export let resourceReducer = generateReducer
   <RestResources>(initialState, afterEach)
-  .add<ResourceReadyPayl>(Actions.SAVE_OPENFARM_RESOURCE, (s, { payload }) => {
-    const data = arrayWrap(payload);
-    const kind = payload.name;
-    data.map((body: ResourceReadyPayl) => {
-      const crop = body.data as OFCropResponse;
-      if (crop.data) {
-        const cropInfo = crop.data.attributes;
-        addToIndex(s.index, kind, cropInfo, generateUuid(undefined, kind));
-      }
-    });
-    return s;
-  })
   .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
     const resource = payload;
     resource.specialStatus = SpecialStatus.SAVED;
@@ -230,14 +217,7 @@ export let resourceReducer = generateReducer
     dontTouchThis(original);
     return s;
   })
-  .add<TaggedResource>(Actions.INIT_RESOURCE, (s: RestResources, { payload }) => {
-    const tr = payload;
-    reindexResource(s.index, tr);
-    s.index.references[tr.uuid] = tr;
-    sanityCheck(tr);
-    dontTouchThis(tr);
-    return s;
-  })
+  .add<TaggedResource>(Actions.INIT_RESOURCE, initResourceReducer)
   .add<TaggedResource>(Actions.SAVE_RESOURCE_START, (s, { payload }) => {
     const resource = findByUuid(s.index, payload.uuid);
     resource.specialStatus = SpecialStatus.SAVING;
@@ -277,6 +257,12 @@ export let resourceReducer = generateReducer
   .add<GeneralizedError>(Actions.REFRESH_RESOURCE_NO, (s, a) => {
     mutateSpecialStatus(a.payload.uuid, s.index, undefined);
     return s;
+  })
+  .add<TaggedResource[]>(Actions.BATCH_INIT, (s, { payload }) => {
+    return payload.reduce((state, resource) => {
+      const action = { type: Actions.INIT_RESOURCE, payload: resource };
+      return initResourceReducer(state, action);
+    }, s);
   });
 
 /** Helper method to change the `specialStatus` of a resource in the index */
@@ -366,4 +352,14 @@ function doRecalculateLocalSequenceVariables(next: TaggedSequence) {
   const recomputed = recomputeLocalVarDeclaration(next.body);
   next.body.args = recomputed.args;
   next.body.body = recomputed.body;
+}
+
+function initResourceReducer(s: RestResources,
+  { payload }: ReduxAction<TaggedResource>): RestResources {
+  const tr = payload;
+  reindexResource(s.index, tr);
+  s.index.references[tr.uuid] = tr;
+  sanityCheck(tr);
+  dontTouchThis(tr);
+  return s;
 }

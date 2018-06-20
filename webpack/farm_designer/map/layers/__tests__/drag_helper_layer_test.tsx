@@ -1,8 +1,9 @@
 import * as React from "react";
-import { DragHelperLayer, DragHelperLayerProps } from "../drag_helper_layer";
+import { DragHelperLayer } from "../drag_helper_layer";
 import { shallow } from "enzyme";
 import { fakePlant } from "../../../../__test_support__/fake_state/resources";
 import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
+import { DragHelperLayerProps } from "../../interfaces";
 
 describe("<DragHelperLayer/>", () => {
   function fakeProps(): DragHelperLayerProps {

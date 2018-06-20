@@ -5,9 +5,12 @@ module Api
     # This error is thrown when you try to use a non-JSON request body on an
     # endpoint that requires JSON.
     class OnlyJson < Exception; end;
-    CONSENT_REQUIRED = "all device users must agree to terms of service."
-    NOT_JSON = "That request was not valid JSON. Consider checking the request"\
-               " body with a JSON validator.."
+    CONSENT_REQUIRED = \
+      "all device users must agree to terms of service."
+    NOT_JSON         = "That request was not valid JSON. Consider checking the"\
+                        " request body with a JSON validator.."
+    FARMBOT_UA_STRING = "FARMBOTOS"
+    NO_UA_FOUND   = FARMBOT_UA_STRING + "/0.0.0 (RPI3) RPI3 (MISSING)"
     respond_to :json
     before_action :check_fbos_version
     before_action :set_default_stuff
@@ -165,12 +168,23 @@ private
     EXPECTED_VER = Gem::Version::new GlobalConfig.dump["MINIMUM_FBOS_VERSION"]
 
     # Try to extract FarmBot OS version from user agent.
-    # If none found, return lowest allowable version + 1 "tiny" bump to prevent
-    # lockouts.
     def fbos_version
-      when_farmbot_os do
-        Gem::Version::new(pretty_ua.upcase.split("/").last.split(" ").first)
-      end || EXPECTED_VER.bump
+      ua = pretty_ua
+
+      # Attempt 1:
+      #   The device is using an HTTP client that does not provide a user-agent.
+      #   We will assume this is an old FBOS version and set it to 0.0.0
+      return CalculateUpgrade::NULL if ua == NO_UA_FOUND
+
+      # Attempt 2:
+      #   If the user agent was missing, we would have returned by now.
+      #   If the UA includes FARMBOT_UA_STRING at this point, we can be certain
+      #   we have a have a non-legacy FBOS client.
+      return Gem::Version::new(ua[10, 5]) if ua.include?(FARMBOT_UA_STRING)
+
+      # Attempt 3:
+      #   Pass CalculateUpgrade::NOT_FBOS if all other attempts fail.
+      return CalculateUpgrade::NOT_FBOS
     end
 
     # This is how we lock old versions of FBOS out of the API:
@@ -183,20 +197,27 @@ private
     # Format the user agent header in a way that is easier for us to parse.
     def pretty_ua
       # "FARMBOTOS/3.1.0 (RPI3) RPI3 ()"
-      (request.user_agent || "").upcase
+      # If there is no user-agent present, we assume it is a _very_ old version
+      # of FBOS.
+      (request.user_agent || NO_UA_FOUND).upcase
     end
 
     # Conditionally execute a block when the request was made by a FarmBot
     def when_farmbot_os
-      yield if pretty_ua.include?("FARMBOTOS")
+      yield if pretty_ua.include?(FARMBOT_UA_STRING)
     end
 
     # Devices have a `last_saw_api` field to assist users with debugging.
     # We update this column every time an FBOS device talks to the API.
     def mark_as_seen(bot = (current_user && current_user.device))
       when_farmbot_os do
-        v = fbos_version.to_s
-        bot.update_attributes!(last_saw_api: Time.now, fbos_version: v) if bot
+        if bot
+          v                = fbos_version
+          bot.last_saw_api = Time.now
+          # Do _not_ set the FBOS version to 0.0.0 if the UA header is missing.
+          bot.fbos_version = v.to_s if v != CalculateUpgrade::NULL
+          bot.save!
+        end
       end
     end
   end

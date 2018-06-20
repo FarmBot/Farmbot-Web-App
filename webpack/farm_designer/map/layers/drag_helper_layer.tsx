@@ -1,23 +1,11 @@
 import * as React from "react";
-import { TaggedPlantPointer } from "../../../resources/tagged_resources";
-import { MapTransformProps, AxisNumberProperty } from "../interfaces";
+import { DragHelperLayerProps } from "../interfaces";
 import { DragHelpers } from "../drag_helpers";
-import { BotPosition } from "../../../devices/interfaces";
 
 /**
  * For showing drag helpers for the selected plant.
  * This layer must be rendered after the hovered plant layer.
  */
-
-export interface DragHelperLayerProps {
-  currentPlant: TaggedPlantPointer | undefined;
-  mapTransformProps: MapTransformProps;
-  dragging: boolean;
-  editing: boolean;
-  zoomLvl: number;
-  activeDragXY: BotPosition | undefined;
-  plantAreaOffset: AxisNumberProperty;
-}
 
 export class DragHelperLayer extends
   React.Component<DragHelperLayerProps, {}> {
