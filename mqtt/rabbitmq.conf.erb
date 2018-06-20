@@ -1,0 +1,12 @@
+auth_backends.1           = http
+
+auth_cache.cached_backend = http
+auth_cache.cache_ttl      = 600000
+
+auth_http.http_method     = post
+auth_http.resource_path   = <%= fully_formed_url %>/api/rmq/resource
+auth_http.topic_path      = <%= fully_formed_url %>/api/rmq/topic
+auth_http.user_path       = <%= fully_formed_url %>/api/rmq/user
+auth_http.vhost_path      = <%= fully_formed_url %>/api/rmq/vhost
+
+mqtt.allow_anonymous      = false
