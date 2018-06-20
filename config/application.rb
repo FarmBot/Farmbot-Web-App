@@ -13,6 +13,7 @@ module FarmBot
     #   Bullet.enable  = true
     #   Bullet.console = true
     # end
+    config.assets.compile = false
     config.active_job.queue_adapter = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
