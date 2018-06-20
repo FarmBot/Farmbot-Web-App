@@ -34,11 +34,11 @@
     "@types/fastclick": "^1.0.28",
     "@types/history": "^4.6.1",
     "@types/i18next": "^8.4.2",
-    "@types/jest": "23.1.0",
-    "@types/lodash": "4.14.109",
+    "@types/jest": "23.1.1",
+    "@types/lodash": "4.14.110",
     "@types/markdown-it": "^0.0.4",
     "@types/moxios": "^0.4.5",
-    "@types/node": "10.3.3",
+    "@types/node": "10.3.4",
     "@types/react": "16.3.14",
     "@types/react-color": "2.13.5",
     "@types/react-dom": "16.0.5",
@@ -96,7 +96,7 @@
     "yarn": "^1.6.0"
   },
   "devDependencies": {
-    "jscpd": "0.6.21",
+    "jscpd": "0.6.22",
     "webpack-cli": "3.0.8",
     "webpack-notifier": "^1.5.0"
   },
