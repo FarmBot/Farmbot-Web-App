@@ -2,7 +2,8 @@ require "bunny"
 # A wrapper around AMQP to stay DRY. Will make life easier if we ever need to
 # change protocols
 class Transport
-  LOCAL    = "amqp://guest:guest@localhost:5672"
+  LOCAL    = "amqp://guest:guest@#192.168.1.207:5672"
+  puts "Fix Transport::LOCAL"
   AMQP_URL = ENV['CLOUDAMQP_URL'] || ENV['RABBITMQ_URL'] || LOCAL
   OPTS     = { read_timeout: 10, heartbeat: 10, log_level: 'info' }
 

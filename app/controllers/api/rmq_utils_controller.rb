@@ -12,17 +12,17 @@ module Api
     end
 
     def vhost
-      binding.pry
+      # binding.pry
       render json: "allow"
     end
 
     def resource
-      binding.pry
+      # binding.pry
       render json: "allow"
     end
 
     def topic
-      binding.pry
+      # binding.pry
       render json: "allow"
     end
   end
