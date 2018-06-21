@@ -5,17 +5,19 @@ DOCKER_IMG_NAME = "farmbot-mqtt"
 IMG_IS_BUILT    = `cd mqtt; sudo docker images`.include?(DOCKER_IMG_NAME)
 
 puts "=== Setting config data"
-CONFIG_PATH     = "./mqtt"
-CONFIG_FILENAME = "rabbitmq.conf"
-CONFIG_OUTPUT   = "#{CONFIG_PATH}/#{CONFIG_FILENAME}"
-NO_API_HOST     = "\nYou MUST set API_HOST to a real IP address or " +
-                  "domain name (not localhost).\n" +
-                  "API_PORT is also mandatory."
-TEMPLATE_FILE   = "./mqtt/rabbitmq.conf.erb"
-TEMPLATE        = File.read(TEMPLATE_FILE)
-RENDERER        = ERB.new(TEMPLATE)
-PROTO           = ENV["FORCE_SSL"] ? "https:" : "http:"
-VHOST           = ENV.fetch("MQTT_VHOST") { "/" }
+CONFIG_PATH      = "./mqtt"
+CONFIG_FILENAME  = "rabbitmq.conf"
+CONFIG_OUTPUT    = "#{CONFIG_PATH}/#{CONFIG_FILENAME}"
+NO_API_HOST      = "\nYou MUST set API_HOST to a real IP address or " +
+                   "domain name (not localhost).\n" +
+                   "API_PORT is also mandatory."
+TEMPLATE_FILE    = "./mqtt/rabbitmq.conf.erb"
+TEMPLATE         = File.read(TEMPLATE_FILE)
+RENDERER         = ERB.new(TEMPLATE)
+PROTO            = ENV["FORCE_SSL"] ? "https:" : "http:"
+VHOST            = ENV.fetch("MQTT_VHOST") { "/" }
+admin_password   = ENV.fetch("ADMIN_PASSWORD")
+fully_formed_url = PROTO + $API_URL
 
 if !ENV["API_HOST"] || !ENV["API_PORT"]
   puts NO_API_HOST
