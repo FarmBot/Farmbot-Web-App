@@ -25,11 +25,6 @@ if !ENV["API_HOST"] || !ENV["API_PORT"]
   exit
 end
 
-puts "=== Building JWT plugin config"
-farmbot_api_key_url = ENV.fetch("API_PUBLIC_KEY_PATH") do
-  "#{PROTO}#{$API_URL}/api/public_key"
-end
-
 # Write the config file.
 File.write(CONFIG_OUTPUT, RENDERER.result(binding))
 
