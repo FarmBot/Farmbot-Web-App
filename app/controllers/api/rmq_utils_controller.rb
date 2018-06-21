@@ -1,38 +1,50 @@
 module Api
   class RmqUtilsController < Api::AbstractController
-
+    TOPIC_REGEX     = \
+      /(bot\.device_)\d*\.(from_clients|from_device|logs|status|sync)\.?.*/
     # The only valid format for AMQP / MQTT topics.
     # Prevents a whole host of abuse / security issues.
-    TOPIC_REGEX = \
-      /(bot\.device_)\d*\.(from_clients|from_device|logs|status|sync)\.?.*/
     MALFORMED_TOPIC = "malformed topic. Must match #{TOPIC_REGEX.inspect}"
-    ALL = [:user, :vhost, :resource, :topic]
+    ALL             = [:user, :vhost, :resource, :topic]
+    VHOST           = ENV.fetch("MQTT_VHOST") { "/" }
+
     skip_before_action :check_fbos_version, only: ALL
     skip_before_action :authenticate_user!, only: ALL
 
     before_action :scrutinize_topic_string
 
     def user
-      (username == "guest") ? deny : allow
+      case username
+      when "guest" then deny
+      when "admin" then authenticate_admin
+      else; device_id_in_username == current_device.id ? allow : deny
+      end
     end
 
     def vhost
-      # binding.pry
-      allow
+      (params["vhost"] == VHOST) ? allow : deny
     end
 
     def resource
-      puts params
-      # binding.pry
-      allow
+      ok = \
+        (params["resource"] == "queue") && params["permission"] == "configure"
+      ok ? allow : binding.pry
     end
 
     def topic
-      # binding.pry
-      allow
+      device_id_in_topic == device_id_in_username ? allow : deny
     end
 
   private
+
+    def is_admin
+      username == "admin"
+    end
+
+    def authenticate_admin
+      correct_pw = password == ENV.fetch("ADMIN_PASSWORD")
+      (is_admin && correct_pw) ? allow : deny
+    end
 
     def deny
       render json: "deny"
@@ -55,16 +67,25 @@ module Api
     end
 
     def scrutinize_topic_string
+      return if is_admin
       is_ok = routing_key ? !!TOPIC_REGEX.match(routing_key) : true
       render json: MALFORMED_TOPIC, status: 422 unless is_ok
     end
 
-    def routing_key_id
+    def device_id_in_topic
       routing_key                # "bot.device_9.logs"
         .gsub("bot.device_", "") # "9.logs"
         .split(".")              # ["9", "logs"]
         .first                   # "9"
         .to_i || 0               # 9
+    end
+
+    def current_device
+      @current_device ||= Auth::FromJWT.run!(jwt: password).device
+    end
+
+    def device_id_in_username
+      @device_id ||= username.gsub("device_", "").to_i
     end
   end
 end
