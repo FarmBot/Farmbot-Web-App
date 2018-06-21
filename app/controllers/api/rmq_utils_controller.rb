@@ -26,9 +26,9 @@ module Api
     end
 
     def resource
-      ok = \
-        (params["resource"] == "queue") && params["permission"] == "configure"
-      ok ? allow : binding.pry
+      ok = ["queue", "exchange"].include?(params["resource"]) &&
+           ["configure", "read", "write"].include?(params["permission"])
+      ok ? allow : deny
     end
 
     def topic
