@@ -22,8 +22,6 @@ if !ENV["API_HOST"] || !ENV["API_PORT"]
   exit
 end
 
-fully_formed_url = "#{PROTO}#{$API_URL}"
-
 # Write the config file.
 File.write(CONFIG_OUTPUT, RENDERER.result(binding))
 

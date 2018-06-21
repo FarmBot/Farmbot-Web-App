@@ -20,23 +20,7 @@ unless Rails.env == "production"
     User.destroy_all
     PlantTemplate.destroy_all
     SavedGarden.destroy_all
-
-    Users::Create.run!(name:                  "Administrator",
-                       email:                 "farmbot@farmbot.io",
-                       password:              "password123",
-                       password_confirmation: "password123",
-                       agree_to_terms:        true)
-    signed_tos = User.last
-    signed_tos.agreed_to_terms_at = nil
-    signed_tos.confirmed_at = Time.now
-    signed_tos.save(validate: false)
-    Users::Create.run!(name:                  "Administrator",
-                       email:                 "admin@admin.com",
-                       password:              "password123",
-                       password_confirmation: "password123",
-                       agree_to_terms:        true)
-    u = User.last
-    u.update_attributes(confirmed_at: Time.now)
+    u = User.admin_user
     Log.transaction do
       FactoryBot.create_list(:log, 35, device: u.device)
     end
@@ -116,8 +100,6 @@ unless Rails.env == "production"
                                 y: 10,
                                 z: 10)
     d = u.device
-    # PinBindings::Create
-    #   .run!(device: d, sequence_id: d.sequences.sample.id, pin_num: 15,)
     Sensors::Create
       .run!(device: d, pin: 14, label: "Stub sensor", mode: 0)
   end

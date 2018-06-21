@@ -38,4 +38,15 @@ class User < ApplicationRecord
   def verified?
     SKIP_EMAIL_VALIDATION ? true : !!confirmed_at
   end
+
+  def self.admin_user
+    @admin_user ||= self.find_or_create_by(email: "admin@admin.com") do |u|
+      u.name                  = "Administrator"
+      u.password              = ENV.fetch("ADMIN_PASSWORD")
+      u.password_confirmation = ENV.fetch("ADMIN_PASSWORD")
+      u.confirmed_at          = Time.now
+      u.agreed_to_terms_at    = Time.now
+      u.device_id             = Devices::Create.run!(user: u).id
+    end
+  end
 end

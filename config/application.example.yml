@@ -15,10 +15,6 @@
 # SERVER WONT WORK IF YOU FORGET TO DELETE THIS EXAMPLE TEXT BELOW.
 # ADD A REAL RSA_KEY OR DELETE THIS LINE!!
 RSA_KEY: "Change this! Keys look like `-----BEGIN RSA .........`"
-# If you use Let's Encrypt for SSL,
-# you must set this when renewing SSL.
-# Otherwise, not required and CAN BE REMOVED.
-ACME_SECRET: "-----"
 # If your server is on a domain (eg: my-own-farmbot.com), put it here.
 # DONT USE `localhost`.
 # DONT USE `127.0.0.1`.
@@ -59,8 +55,6 @@ HEROKU_SLUG_COMMIT: "This is set by Heroku, used by Frontend to show current ver
 # Use a REAL IP ADDRESS if you are controlling real bots.
 # 0.0.0.0 is only OK for software testing. Change this!
 MQTT_HOST: "98.76.54.32"
-# Delete this line if you are not an employee of FarmBot, Inc.
-NPM_ADDON: "Used by FarmBot, Inc. to load proprietary extras, like Rollbar."
 # Same as above. Can be deleted unless you are a Rollbar.IO customer.
 ROLLBAR_ACCESS_TOKEN: "____"
 ROLLBAR_CLIENT_TOKEN: "____"
@@ -79,10 +73,6 @@ NO_EMAILS: "TRUE"
 # If you are not using the standard MQTT broker (eg: you use a 3rd party
 # MQTT vendor), you will need to change this line.
 MQTT_WS: "ws://DELETE_OR_CHANGE_THIS_LINE/ws"
-# ENV var used by FarmBot employees when building different versions of the JWT
-# auth backend plugin.
-# Can be deleted safely.
-API_PUBLIC_KEY_PATH: "http://changeme.io/api/public_key"
 # If you are using a shared RabbitMQ server and need to use a VHost other than
 # "/", change this ENV var.
 MQTT_VHOST: "/"
@@ -98,3 +88,6 @@ RUN_CAPYBARA: "true"
 # Set this to "production" in most cases.
 # If you need help debugging issues, please delete this line.
 RAILS_ENV: "production"
+# Every server has a superuser.
+# Set this to something SECURE.
+ADMIN_PASSWORD: ""
