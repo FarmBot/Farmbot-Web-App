@@ -3,7 +3,9 @@ import { t } from "i18next";
 import { Link } from "react-router";
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
-import { computeEditorUrlFromState } from "./compute_editor_url_from_state";
+import {
+  computeEditorUrlFromState, computeFarmwareUrlFromState
+} from "./compute_editor_url_from_state";
 /** Uses a slug and a child path to compute the `href` of a navbar link. */
 export type LinkComputeFn = (slug: string, childPath: string) => string;
 
@@ -34,7 +36,10 @@ export const links: NavLinkParams[] = [
     computeHref: computeEditorUrlFromState("Regimen")
   },
   { name: "Tools", icon: "wrench", slug: "tools" },
-  { name: "Farmware", icon: "crosshairs", slug: "farmware" },
+  {
+    name: "Farmware", icon: "crosshairs", slug: "farmware",
+    computeHref: computeFarmwareUrlFromState
+  },
   { name: "Logs", icon: "list", slug: "logs" },
 ];
 

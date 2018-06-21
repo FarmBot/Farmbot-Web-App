@@ -3,11 +3,10 @@ import * as _ from "lodash";
 import * as moment from "moment";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
-import { Widget, WidgetHeader, WidgetBody, WidgetFooter } from "../../ui/index";
 import { ImageFlipper } from "./image_flipper";
 import { PhotosProps } from "./interfaces";
 import { getDevice } from "../../device";
-import { ToolTips } from "../../constants";
+import { Content } from "../../constants";
 import { selectImage } from "./actions";
 import { safeStringFetch } from "../../util";
 import { destroy } from "../../api/crud";
@@ -34,8 +33,8 @@ function MetaInfo({ obj, attr, label }: MetaInfoProps) {
 export class Photos extends React.Component<PhotosProps, {}> {
 
   takePhoto = () => {
-    const ok = () => success(t("Processing now. Results usually available in one minute."),t("Success"));
-    const no = () => error(t("Error taking photo"),t("Error"));
+    const ok = () => success(t(Content.PROCESSING_PHOTO), t("Success"));
+    const no = () => error(t("Error taking photo"), t("Error"));
     getDevice().takePhoto().then(ok, no);
   }
 
@@ -70,10 +69,10 @@ export class Photos extends React.Component<PhotosProps, {}> {
         .utcOffset(this.props.timeOffset)
         .format("MMMM Do, YYYY h:mma")
       : "";
-    return <Widget className="photos-widget">
-      <WidgetHeader helpText={ToolTips.PHOTOS} title={t("Photos")}>
+    return <div className="photos">
+      <div className="farmware-button">
         <button
-          className="fb-button gray"
+          className="fb-button green"
           onClick={this.takePhoto}>
           {t("Take Photo")}
         </button>
@@ -82,14 +81,12 @@ export class Photos extends React.Component<PhotosProps, {}> {
           onClick={() => this.destroy()}>
           {t("Delete Photo")}
         </button>
-      </WidgetHeader>
-      <WidgetBody>
-        <ImageFlipper
-          onFlip={id => { this.props.dispatch(selectImage(id)); }}
-          currentImage={this.props.currentImage}
-          images={this.props.images} />
-      </WidgetBody>
-      <WidgetFooter>
+      </div>
+      <ImageFlipper
+        onFlip={id => { this.props.dispatch(selectImage(id)); }}
+        currentImage={this.props.currentImage}
+        images={this.props.images} />
+      <div className="photos-footer">
         {/** Separated from <MetaInfo /> for stylistic purposes. */}
         {image ?
           <div className="image-created-at">
@@ -102,7 +99,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
         <div className="image-metadatas">
           {this.metaDatas()}
         </div>
-      </WidgetFooter>
-    </Widget>;
+      </div>
+    </div>;
   }
 }

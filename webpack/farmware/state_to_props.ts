@@ -16,9 +16,10 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     || firstImage;
   const { farmwares } = props.bot.hardware.process_info;
   const conf = getWebAppConfig(props.resources.index);
-  const { firstPartyFarmwareNames } = props.resources.consumers.farmware;
+  const { currentFarmware, firstPartyFarmwareNames } = props.resources.consumers.farmware;
   return {
     timeOffset: maybeGetTimeOffset(props.resources.index),
+    currentFarmware,
     farmwares,
     botToMqttStatus: "up",
     env: prepopulateEnv(props.bot.hardware.user_env),
