@@ -9,52 +9,103 @@ jest.mock("../../device", () => ({
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { FarmwareForms } from "../farmware_forms";
-import { fakeFarmwares } from "../../__test_support__/fake_farmwares";
+import {
+  needsFarmwareForm, farmwareHelpText, getConfigEnvName,
+  FarmwareForm, FarmwareFormProps, ConfigFields
+} from "../farmware_forms";
+import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
 
-describe("<FarmwareForms/>", () => {
-  it("doesn't render", () => {
-    const farmwares = fakeFarmwares();
-    const farmware = farmwares.farmware_0;
-    if (farmware) { farmware.config = []; }
-    const wrapper = mount(<FarmwareForms
-      farmwares={farmwares}
-      user_env={{}} />);
-    expect(wrapper.text()).toEqual("");
+describe("getConfigEnvName()", () => {
+  it("generates correct name", () => {
+    expect(getConfigEnvName("My Farmware", "config_1"))
+      .toEqual("my_farmware_config_1");
+    expect(getConfigEnvName("My-Farmware", "config_1"))
+      .toEqual("my_farmware_config_1");
+  });
+});
+
+describe("needsFarmwareForm()", () => {
+  it("needs form", () => {
+    const farmware = fakeFarmware();
+    expect(needsFarmwareForm(farmware)).toEqual(true);
   });
 
-  it("renders", () => {
-    const wrapper = mount(<FarmwareForms
-      farmwares={fakeFarmwares()}
-      user_env={{}} />);
-    ["My Farmware", "version: 0.0.0", "Does things."].map(string =>
+  it("doesn't need form", () => {
+    const farmware = fakeFarmware();
+    farmware.config = [];
+    expect(needsFarmwareForm(farmware)).toEqual(false);
+  });
+});
+
+describe("farmwareHelpText()", () => {
+  it("generates string", () => {
+    const farmware = fakeFarmware();
+    expect(farmwareHelpText(farmware)).toEqual("Does things. (version: 0.0.0)");
+  });
+
+  it("generates blank string", () => {
+    expect(farmwareHelpText(undefined)).toEqual("");
+  });
+});
+
+describe("<ConfigFields />", () => {
+  const fakeProps = () => {
+    return {
+      farmware: fakeFarmware(),
+      getValue: jest.fn()
+    };
+  };
+
+  it("renders fields", () => {
+    const p = fakeProps();
+    p.farmware.config.push({ name: "config_2", label: "Config 2", value: "2" });
+    const wrapper = mount(<ConfigFields {...fakeProps()} />);
+    expect(wrapper.text()).toEqual("Config 1");
+  });
+
+  it("changes field", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<ConfigFields {...p} />);
+    wrapper.find("BlurableInput").simulate("commit",
+      { currentTarget: { value: 1 } });
+    expect(mockDevice.setUserEnv).toHaveBeenCalledWith({
+      "my_fake_farmware_config_1": 1
+    });
+  });
+});
+
+describe("<FarmwareForm />", () => {
+  const fakeProps = (): FarmwareFormProps => {
+    return {
+      farmware: fakeFarmware(),
+      user_env: {}
+    };
+  };
+
+  it("renders form", () => {
+    const wrapper = mount(<FarmwareForm {...fakeProps()} />);
+    ["Run", "Config 1"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find("label").last().text()).toContain("Config 1");
     expect(wrapper.find("input").props().value).toEqual("4");
   });
 
-  it("runs", () => {
-    const wrapper = mount(<FarmwareForms
-      farmwares={fakeFarmwares()}
-      user_env={{}} />);
-    clickButton(wrapper, 0, "run");
-    expect(mockDevice.execScript).toHaveBeenCalledWith(
-      "My Farmware", [{
-        kind: "pair",
-        args: { label: "my_farmware_config_1", value: "4" }
-      }]
-    );
+  it("renders no fields", () => {
+    const p = fakeProps();
+    p.farmware.config = [];
+    const wrapper = mount(<FarmwareForm {...p} />);
+    expect(wrapper.text()).toEqual("Run");
   });
 
-  it("sets env", () => {
-    const wrapper = shallow(<FarmwareForms
-      farmwares={fakeFarmwares()}
-      user_env={{}} />);
-    const input = wrapper.find("BlurableInput").first();
-    input.simulate("commit", { currentTarget: { value: "changed value" } });
-    expect(mockDevice.setUserEnv).toBeCalledWith({
-      "my_farmware_config_1": "changed value"
-    });
+  it("runs farmware", () => {
+    const wrapper = mount(<FarmwareForm {...fakeProps()} />);
+    clickButton(wrapper, 0, "run");
+    expect(mockDevice.execScript).toHaveBeenCalledWith(
+      "My Fake Farmware", [{
+        kind: "pair",
+        args: { label: "my_fake_farmware_config_1", value: "4" }
+      }]
+    );
   });
 });

@@ -11,9 +11,9 @@
 
 .image-flipper-left {
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
+  left: -5px;
+  top: -5px;
+  bottom: -5px;
   background-color: rgba(0, 0, 0, 0.5);
   &:hover {
     background-color: rgba(0, 0, 0, 0.7);
@@ -22,9 +22,9 @@
 
 .image-flipper-right {
   position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  right: -5px;
+  top: -5px;
+  bottom: -5px;
   background-color: rgba(0, 0, 0, 0.5);
   &:hover {
     background-color: rgba(0, 0, 0, 0.7);
@@ -57,8 +57,14 @@
   }
 }
 
-.photos-widget {
-  .widget-footer {
+.photos {
+  .photos-footer {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    position: relative;
+    left: 2.5rem;
+    bottom: -1rem;
+    width: 90%;
     display: flex;
     justify-content: space-between;
     label {

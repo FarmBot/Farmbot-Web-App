@@ -3,10 +3,6 @@ import { WD_ENV } from "../weed_detector/remote_env/interfaces";
 import { NetworkState } from "../../connectivity/interfaces";
 import { SyncStatus } from "farmbot";
 
-export interface CameraCalibrationState {
-  settingsMenuOpen: boolean;
-}
-
 export interface CameraCalibrationProps {
   dispatch: Function;
   images: TaggedImage[];

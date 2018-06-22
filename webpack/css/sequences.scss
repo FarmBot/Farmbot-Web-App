@@ -1,3 +1,4 @@
+.farmware-input-panel,
 .sequence-editor-panel,
 .regimen-editor-panel {
   height: calc(100vh - 5rem);
@@ -26,6 +27,18 @@
   }
 }
 
+.farmware-input-panel {
+  padding-left: 0;
+  padding-right: 0;
+  h3 {
+    padding-left: 15px;
+  }
+  .title-help-text {
+    padding-left: 3rem;
+  }
+}
+
+.farmware-input-panel-contents,
 .sequence-editor-content,
 .regimen-editor-content {
   margin-right: -15px;
@@ -52,6 +65,15 @@
   margin-top: 15px;
 }
 
+.farmware-input-panel-contents {
+  padding: 15px;
+  width: 100%;
+  height: calc(100vh - 18rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 15px;
+}
+
 .sequence-steps {
   margin-right: 15px;
 }
@@ -69,11 +91,16 @@
   margin-right: -15px;
 }
 
+.farmware-info-panel,
 .step-button-cluster-panel {
   @media screen and (max-width: 974px) {
     margin-left: 15px;
     margin-right: 15px;
   }
+}
+
+.farmware-info-panel button {
+  margin-bottom: 3rem;
 }
 
 .step-button-cluster {
@@ -83,6 +110,7 @@
   }
 }
 
+.farmware-list-items,
 .sequence-list-items,
 .regimen-list {
   button {
@@ -105,6 +133,7 @@
   margin-right: 15px;
 }
 
+.farmware-list-panel,
 .sequence-list-panel,
 .regimen-list-panel {
   padding-top: 0.4rem;
@@ -113,6 +142,29 @@
   @media screen and (max-width: 974px) {
     margin-left: 15px;
     margin-right: 15px;
+  }
+}
+
+.farmware-list-panel {
+  margin-bottom: 5rem;
+  label {
+    font-weight: bold;
+    font-size: 1.4rem;
+  }
+  p {
+    font-size: 1.2rem;
+  }
+}
+
+.farmware-list-items {
+  margin-left: -15px;
+}
+
+.farmware-input-panel-contents {
+  @media screen and (max-width: 974px) {
+    margin-left: 15px;
+    margin-right: 15px;
+    padding-right: 5rem;
   }
 }
 

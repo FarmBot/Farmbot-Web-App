@@ -27,7 +27,7 @@ import {
 } from "../farm_designer/reducer";
 import { ResourceReadyPayl } from "../sync/actions";
 import {
-  famrwareReducer as farmware,
+  farmwareReducer as farmware,
   farmwareState
 } from "../farmware/reducer";
 import { Actions } from "../constants";
