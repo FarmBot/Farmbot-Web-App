@@ -1,12 +1,13 @@
 
-import { famrwareReducer } from "../reducer";
+import { farmwareReducer } from "../reducer";
 import { FarmwareState } from "../interfaces";
 import { Actions } from "../../constants";
 import { fakeImage } from "../../__test_support__/fake_state/resources";
 
-describe("famrwareReducer", () => {
+describe("farmwareReducer", () => {
   const fakeState = (): FarmwareState => {
     return {
+      currentFarmware: undefined,
       currentImage: undefined,
       firstPartyFarmwareNames: []
     };
@@ -16,7 +17,7 @@ describe("famrwareReducer", () => {
     const image = fakeImage();
     const oldState = fakeState();
     oldState.currentImage = image.uuid;
-    const newState = famrwareReducer(oldState, {
+    const newState = farmwareReducer(oldState, {
       type: Actions.DESTROY_RESOURCE_OK,
       payload: image
     });
@@ -27,7 +28,7 @@ describe("famrwareReducer", () => {
   it("adds UUID to state on SELECT_IMAGE", () => {
     const image = fakeImage();
     const oldState = fakeState();
-    const newState = famrwareReducer(oldState, {
+    const newState = farmwareReducer(oldState, {
       type: Actions.SELECT_IMAGE,
       payload: image.uuid
     });
@@ -36,10 +37,21 @@ describe("famrwareReducer", () => {
     expect(newState.currentImage).toBe(image.uuid);
   });
 
+  it("sets the current farmware via SELECT_FARMWARE", () => {
+    const oldState = fakeState();
+    const newState = farmwareReducer(oldState, {
+      type: Actions.SELECT_FARMWARE,
+      payload: "My Farmware"
+    });
+    expect(oldState.currentFarmware).not.toEqual(newState.currentFarmware);
+    expect(newState.currentFarmware).not.toBeUndefined();
+    expect(newState.currentFarmware).toBe("My Farmware");
+  });
+
   it("sets the current image via INIT_RESOURCE", () => {
     const image = fakeImage();
     const oldState = fakeState();
-    const newState = famrwareReducer(oldState, {
+    const newState = farmwareReducer(oldState, {
       type: Actions.INIT_RESOURCE,
       payload: image
     });
@@ -51,7 +63,7 @@ describe("famrwareReducer", () => {
   it("sets 1st party farmware list", () => {
     const FARMWARE_NAMES = ["1stPartyOne", "1stPartyTwo"];
     const oldState = fakeState();
-    const newState = famrwareReducer(oldState, {
+    const newState = farmwareReducer(oldState, {
       type: Actions.FETCH_FIRST_PARTY_FARMWARE_NAMES_OK,
       payload: ["1stPartyOne", "1stPartyTwo"]
     });

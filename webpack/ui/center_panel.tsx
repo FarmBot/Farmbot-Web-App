@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Col, ToolTip } from ".";
+import { Col, ToolTip, DocSlug } from ".";
 import { t } from "i18next";
 
 interface CenterProps {
@@ -8,6 +8,7 @@ interface CenterProps {
   title: string;
   helpText: string;
   width?: number;
+  docPage?: DocSlug;
 }
 
 export function CenterPanel(props: CenterProps) {
@@ -16,7 +17,7 @@ export function CenterPanel(props: CenterProps) {
       <h3>
         <i>{t(props.title)}</i>
       </h3>
-      <ToolTip helpText={t(props.helpText)} />
+      <ToolTip helpText={t(props.helpText)} docPage={props.docPage} />
       {props.children}
     </div>
   </Col>;

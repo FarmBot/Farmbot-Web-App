@@ -1,6 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
 import { ImageFlipperProps, ImageFlipperState } from "./interfaces";
+import { Content } from "../../constants";
 
 export const PLACEHOLDER_FARMBOT = "/placeholder_farmbot.jpg";
 
@@ -34,7 +35,7 @@ export class ImageFlipper extends
       </div>;
     } else {
       return <div className="no-flipper-image-container">
-        <p>{t("You haven't yet taken any photos with your FarmBot. Once you do, they will show up here.")}</p>
+        <p>{t(Content.NO_IMAGES_YET)}</p>
         <img
           className="image-flipper-image"
           src={PLACEHOLDER_FARMBOT} />
