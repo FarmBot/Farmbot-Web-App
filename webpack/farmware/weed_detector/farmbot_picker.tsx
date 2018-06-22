@@ -18,7 +18,7 @@ const selectedCSS: React.CSSProperties = {
 const unselectedCSS: React.CSSProperties = {
   position: "absolute",
   borderWidth: "5px 0 5px 0",
-  borderColor: Color.offWhite,
+  borderColor: Color.lightGray,
   borderStyle: "solid",
   background: "rgba(0, 0, 0, 0.3)",
   boxShadow: "0 0 15px 2px rgba(0, 0, 0, 0.3) inset"

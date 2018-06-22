@@ -149,6 +149,12 @@ export namespace ToolTips {
   export const FARMWARE =
     trim(`Manage Farmware (plugins).`);
 
+  export const FARMWARE_LIST =
+    trim(`View, select, and install new Farmware.`);
+
+  export const FARMWARE_INFO =
+    trim(`Farmware (plugin) details and management.`);
+
   export const PHOTOS =
     trim(`Take and view photos with your FarmBot's camera.`);
 
@@ -522,6 +528,17 @@ export namespace Content {
 
   export const SET_TIMEZONE_BODY =
     trim(`Set device timezone here.`);
+
+  // Farmware
+  export const NO_IMAGES_YET =
+    trim(`You haven't yet taken any photos with your FarmBot.
+    Once you do, they will show up here.`);
+
+  export const PROCESSING_PHOTO =
+    trim(`Processing now. Results usually available in one minute.`);
+
+  export const NOT_AVAILABLE_WHEN_OFFLINE =
+    trim(`Not available when device is offline.`);
 }
 
 export enum Actions {
@@ -591,6 +608,7 @@ export enum Actions {
   SELECT_SEQUENCE = "SELECT_SEQUENCE",
 
   // Farmware
+  SELECT_FARMWARE = "SELECT_FARMWARE",
   SELECT_IMAGE = "SELECT_IMAGE",
   FETCH_FIRST_PARTY_FARMWARE_NAMES_OK = "FETCH_FIRST_PARTY_FARMWARE_NAMES_OK",
 

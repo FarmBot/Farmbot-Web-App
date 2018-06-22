@@ -1,11 +1,5 @@
 import { BotStateTree, ConfigurationName } from "farmbot";
-import {
-  McuParamName,
-  Dictionary,
-  SyncStatus,
-  FarmwareManifest,
-  LocationName
-} from "farmbot";
+import { McuParamName, SyncStatus, LocationName } from "farmbot";
 import { AuthState } from "../auth/interfaces";
 import {
   TaggedImage,
@@ -21,6 +15,7 @@ import { ConnectionStatus, ConnectionState, NetworkState } from "../connectivity
 import { IntegerSize } from "../util";
 import { WebAppConfig } from "../config_storage/web_app_configs";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
+import { Farmwares } from "../farmware/interfaces";
 
 export interface Props {
   userToApi: ConnectionStatus | undefined;
@@ -199,11 +194,12 @@ export interface FarmwareProps {
   images: TaggedImage[];
   currentImage: TaggedImage | undefined;
   botToMqttStatus: NetworkState;
-  farmwares: Dictionary<FarmwareManifest | undefined>;
+  farmwares: Farmwares;
   timeOffset: number;
   syncStatus: SyncStatus | undefined;
   webAppConfig: Partial<WebAppConfig>;
   firstPartyFarmwareNames: string[];
+  currentFarmware: string | undefined;
 }
 
 export interface HardwareSettingsProps {

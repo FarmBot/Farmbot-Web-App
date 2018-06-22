@@ -48,6 +48,20 @@
   color: transparent;
   transition: all 0.5s ease;
   transition-delay: 0.5s;
+  a {
+    pointer-events: all;
+  }
+  a:link {
+    font-style: normal;
+    color: $black;
+  }
+  a:hover {
+    font-weight: 600;
+    color: $black;
+  }
+  a:active {
+    color: $black;
+  }
 }
 
 .title-help-icon {

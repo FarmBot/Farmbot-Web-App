@@ -51,7 +51,7 @@ export function deletePoints(
           });
           success(t("Deleted {{num}} {{points}}", {
             num: ids.length, points: pointName
-          }),t("Success"));
+          }), t("Success"));
           prog.finish();
         })
         .catch(function () {
