@@ -6,7 +6,7 @@ GIT
 
 GIT
   remote: https://github.com/fog/fog-google
-  revision: 39bd2cfdd08c05b42745615b721627ed1a02d221
+  revision: 317ed9306c30bb607500aa51924bd7ac86917fec
   specs:
     fog-google (1.5.0)
       fog-core
@@ -69,7 +69,7 @@ GEM
     arel (9.0.0)
     bcrypt (3.1.12)
     builder (3.2.3)
-    bunny (2.10.0)
+    bunny (2.11.0)
       amq-protocol (~> 2.3.0)
     capybara (3.2.1)
       addressable
@@ -130,8 +130,8 @@ GEM
       excon (~> 0.58)
       formatador (~> 0.2)
       mime-types
-    fog-json (1.1.0)
-      fog-core (~> 2.0)
+    fog-json (1.2.0)
+      fog-core
       multi_json (~> 1.10)
     fog-xml (0.1.3)
       fog-core
@@ -221,7 +221,7 @@ GEM
       pry (>= 0.10.4)
     public_suffix (3.0.2)
     rack (2.0.5)
-    rack-attack (5.3.0)
+    rack-attack (5.3.1)
       rack
     rack-cors (1.0.2)
     rack-test (1.0.0)

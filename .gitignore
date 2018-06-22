@@ -14,6 +14,7 @@ erd_diagram.png
 latest_corpus.ts
 log/*.log
 mqtt/rabbitmq.config
+mqtt/rabbitmq.conf
 node_modules
 node_modules/
 package-lock.json
