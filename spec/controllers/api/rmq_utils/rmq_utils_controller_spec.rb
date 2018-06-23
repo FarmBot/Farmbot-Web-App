@@ -104,10 +104,8 @@ describe Api::RmqUtilsController do
   end
 
   it "denies RMQ resource usage" do
-    post :resource, params: credentials.merge({
-      resource:   "something_else",
-      permission: "something_else",
-    })
+    post :resource, params: credentials.merge({ resource:   "something_else",
+                                                permission: "something_else" })
     expect(response.status).to eq(403)
     expect(response.body).to include("deny")
   end

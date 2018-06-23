@@ -18,31 +18,18 @@ module Api
       case username
       when "guest" then deny
       when "admin" then authenticate_admin
-      else
-        if device_id_in_username == current_device.id
-          allow
-        else
-          deny
-        end
+      else; device_id_in_username == current_device.id ? allow : deny
       end
     end
 
     def vhost
-      if (params["vhost"] == VHOST)
-        allow
-      else
-        deny
-      end
+      params["vhost"] == VHOST ? allow : deny
     end
 
     def resource
       res, perm = [params["resource"], params["permission"]]
       ok        = RESOURCES.include?(res) && PERMISSIONS.include?(perm)
-      if ok
-        allow
-      else
-        deny
-      end
+      ok ? allow : deny
     end
 
     def topic
@@ -57,11 +44,8 @@ module Api
 
     def authenticate_admin
       correct_pw = password == ENV.fetch("ADMIN_PASSWORD")
-      if is_admin && correct_pw
-        allow
-      else
-        deny
-      end
+      ok         = is_admin && correct_pw
+      ok         ? allow : deny
     end
 
     def deny
