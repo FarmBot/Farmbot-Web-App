@@ -1,9 +1,9 @@
 module Api
   class RmqUtilsController < Api::AbstractController
-    TOPIC_REGEX     = \
-      /(bot\.device_)\d*\.(from_clients|from_device|logs|status|sync)\.?.*/
     # The only valid format for AMQP / MQTT topics.
     # Prevents a whole host of abuse / security issues.
+    TOPIC_REGEX     = \
+      /(bot\.device_)\d*\.(from_clients|from_device|logs|status|sync)\.?.*/
     MALFORMED_TOPIC = "malformed topic. Must match #{TOPIC_REGEX.inspect}"
     ALL             = [:user, :vhost, :resource, :topic]
     VHOST           = ENV.fetch("MQTT_VHOST") { "/" }
@@ -17,18 +17,31 @@ module Api
       case username
       when "guest" then deny
       when "admin" then authenticate_admin
-      else; device_id_in_username == current_device.id ? allow : deny
+      else
+        if device_id_in_username == current_device.id
+          allow
+        else
+          deny
+        end
       end
     end
 
     def vhost
-      (params["vhost"] == VHOST) ? allow : deny
+      if (params["vhost"] == VHOST)
+        allow
+      else
+        deny
+      end
     end
 
     def resource
       ok = ["queue", "exchange"].include?(params["resource"]) &&
            ["configure", "read", "write"].include?(params["permission"])
-      ok ? allow : deny
+      if ok
+        allow
+      else
+        deny
+      end
     end
 
     def topic
@@ -43,7 +56,11 @@ module Api
 
     def authenticate_admin
       correct_pw = password == ENV.fetch("ADMIN_PASSWORD")
-      (is_admin && correct_pw) ? allow : deny
+      if is_admin && correct_pw
+        allow
+      else
+        deny
+      end
     end
 
     def deny
