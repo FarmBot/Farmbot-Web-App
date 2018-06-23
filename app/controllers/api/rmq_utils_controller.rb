@@ -7,7 +7,8 @@ module Api
     MALFORMED_TOPIC = "malformed topic. Must match #{TOPIC_REGEX.inspect}"
     ALL             = [:user, :vhost, :resource, :topic]
     VHOST           = ENV.fetch("MQTT_VHOST") { "/" }
-
+    RESOURCES       = ["queue", "exchange"]
+    PERMISSIONS     = ["configure", "read", "write"]
     skip_before_action :check_fbos_version, only: ALL
     skip_before_action :authenticate_user!, only: ALL
 
@@ -35,8 +36,8 @@ module Api
     end
 
     def resource
-      ok = ["queue", "exchange"].include?(params["resource"]) &&
-           ["configure", "read", "write"].include?(params["permission"])
+      res, perm = [params["resource"], params["permission"]]
+      ok        = RESOURCES.include?(res) && PERMISSIONS.include?(perm)
       if ok
         allow
       else
@@ -64,7 +65,7 @@ module Api
     end
 
     def deny
-      render json: "deny"
+      render json: "deny", status: 403
     end
 
     def allow
@@ -90,7 +91,7 @@ module Api
     end
 
     def device_id_in_topic
-      routing_key                # "bot.device_9.logs"
+      (routing_key || "")        # "bot.device_9.logs"
         .gsub("bot.device_", "") # "9.logs"
         .split(".")              # ["9", "logs"]
         .first                   # "9"
@@ -99,6 +100,8 @@ module Api
 
     def current_device
       @current_device ||= Auth::FromJWT.run!(jwt: password).device
+    rescue Mutations::ValidationException => e
+      raise JWT::VerificationError, "RMQ Provided bad token"
     end
 
     def device_id_in_username
