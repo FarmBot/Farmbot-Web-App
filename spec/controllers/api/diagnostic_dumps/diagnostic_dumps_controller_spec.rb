@@ -37,7 +37,7 @@ describe Api::DiagnosticDumpsController do
     expect(json[:network_interface]).to        eq("123_network_interface")
     expect(json[:fbos_dmesg_dump]).to          eq("123_fbos_dmesg_dump")
     expect(json[:firmware_state]).to           eq("123_firmware_state")
-    expect(json[:ticket_identifier].length).to eq(5)
+    expect(json[:ticket_identifier].length).to be >= 4
   end
 
   it 'deletes' do
