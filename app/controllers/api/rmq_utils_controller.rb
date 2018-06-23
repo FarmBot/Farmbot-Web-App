@@ -1,4 +1,9 @@
 module Api
+  # When RabbitMQ gets a connection, it will check in with the API to make sure
+  # the user is allowed to perform the action.
+  # Returning "allow" will allow them to perform the requested action.
+  # Any other response results in denial.
+  # Results are cached for 10 minutes to prevent too many requests to the API.
   class RmqUtilsController < Api::AbstractController
     # The only valid format for AMQP / MQTT topics.
     # Prevents a whole host of abuse / security issues.
@@ -29,7 +34,7 @@ module Api
     def resource
       res, perm = [params["resource"], params["permission"]]
       ok        = RESOURCES.include?(res) && PERMISSIONS.include?(perm)
-      ok ? allow : deny
+      ok        ? allow : deny
     end
 
     def topic

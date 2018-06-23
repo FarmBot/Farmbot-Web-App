@@ -2,7 +2,6 @@ require "bunny"
 # A wrapper around AMQP to stay DRY. Will make life easier if we ever need to
 # change protocols
 class Transport
-  puts "Fix Transport::LOCAL"
   OPTS     = { read_timeout: 10, heartbeat: 10, log_level: 'info' }
 
   def self.amqp_url
