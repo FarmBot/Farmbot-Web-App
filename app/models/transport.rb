@@ -2,9 +2,13 @@ require "bunny"
 # A wrapper around AMQP to stay DRY. Will make life easier if we ever need to
 # change protocols
 class Transport
-  LOCAL    = "amqp://guest:guest@localhost:5672"
-  AMQP_URL = ENV['CLOUDAMQP_URL'] || ENV['RABBITMQ_URL'] || LOCAL
   OPTS     = { read_timeout: 10, heartbeat: 10, log_level: 'info' }
+
+  def self.amqp_url
+    @amqp_url ||= ENV['CLOUDAMQP_URL'] ||
+                  ENV['RABBITMQ_URL']  ||
+                  "amqp://admin:#{ENV.fetch("ADMIN_PASSWORD")}@localhost:5672"
+  end
 
   def self.default_amqp_adapter=(value)
     @default_amqp_adapter = value
@@ -25,7 +29,8 @@ class Transport
   end
 
   def connection
-    @connection ||= Transport.default_amqp_adapter.new(AMQP_URL, OPTS).start
+    @connection ||= Transport
+                    .default_amqp_adapter.new(Transport.amqp_url, OPTS).start
   end
 
   def log_channel

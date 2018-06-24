@@ -1,7 +1,7 @@
 module Devices
   class Create < Mutations::Command
     required do
-      model :user, class: User
+      model :user, class: User, new_records: true
     end
 
     optional do
