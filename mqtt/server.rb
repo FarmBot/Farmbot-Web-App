@@ -1,5 +1,9 @@
 require 'erb'
 
+def needs_admin_password
+  raise "You must set an ADMIN_PASSWORD in application.yml."
+end
+
 puts "=== Retrieving container info"
 DOCKER_IMG_NAME = "farmbot-mqtt"
 IMG_IS_BUILT    = `cd mqtt; sudo docker images`.include?(DOCKER_IMG_NAME)
@@ -16,7 +20,10 @@ TEMPLATE         = File.read(TEMPLATE_FILE)
 RENDERER         = ERB.new(TEMPLATE)
 PROTO            = ENV["FORCE_SSL"] ? "https:" : "http:"
 VHOST            = ENV.fetch("MQTT_VHOST") { "/" }
-admin_password   = ENV.fetch("ADMIN_PASSWORD")
+admin_password   = ENV.fetch("ADMIN_PASSWORD")  { needs_admin_password }.inspect
+
+needs_admin_password if admin_password.length < 5
+
 fully_formed_url = PROTO + $API_URL
 
 if !ENV["API_HOST"] || !ENV["API_PORT"]
