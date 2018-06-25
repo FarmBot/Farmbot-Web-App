@@ -61,9 +61,9 @@
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/dom4/-/dom4-2.0.0.tgz#00dc42fed6b36a7a6dabb8f7a9c9e678ee644e05"
 
-"@types/enzyme@3.1.11":
-  version "3.1.11"
-  resolved "https://registry.yarnpkg.com/@types/enzyme/-/enzyme-3.1.11.tgz#0a059d2fe2c686f024ada911d24473cdb2e13903"
+"@types/enzyme@3.1.10":
+  version "3.1.10"
+  resolved "https://registry.yarnpkg.com/@types/enzyme/-/enzyme-3.1.10.tgz#28108a9864e65699751469551a803a35d2e26160"
   dependencies:
     "@types/cheerio" "*"
     "@types/react" "*"

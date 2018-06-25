@@ -30,7 +30,7 @@
     "@blueprintjs/core": "2.3.1",
     "@blueprintjs/datetime": "2.0.3",
     "@blueprintjs/select": "^2.0.1",
-    "@types/enzyme": "3.1.11",
+    "@types/enzyme": "3.1.10",
     "@types/fastclick": "^1.0.28",
     "@types/history": "^4.6.1",
     "@types/i18next": "^8.4.2",
