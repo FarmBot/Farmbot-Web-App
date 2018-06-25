@@ -16,7 +16,9 @@ TEMPLATE         = File.read(TEMPLATE_FILE)
 RENDERER         = ERB.new(TEMPLATE)
 PROTO            = ENV["FORCE_SSL"] ? "https:" : "http:"
 VHOST            = ENV.fetch("MQTT_VHOST") { "/" }
-admin_password   = ENV.fetch("ADMIN_PASSWORD")
+admin_password   = ENV.fetch("ADMIN_PASSWORD") do
+  raise "You must set an ADMIN_PASSWORD in application.yml."
+end
 fully_formed_url = PROTO + $API_URL
 
 if !ENV["API_HOST"] || !ENV["API_PORT"]

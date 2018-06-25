@@ -28,17 +28,29 @@ module Api
     end
 
     def vhost
-      params["vhost"] == VHOST ? allow : deny
+      if is_admin
+        allow
+      else
+        params["vhost"] == VHOST ? allow : deny
+      end
     end
 
     def resource
-      res, perm = [params["resource"], params["permission"]]
-      ok        = RESOURCES.include?(res) && PERMISSIONS.include?(perm)
-      ok        ? allow : deny
+      if is_admin
+        allow
+      else
+        res, perm = [params["resource"], params["permission"]]
+        ok        = RESOURCES.include?(res) && PERMISSIONS.include?(perm)
+        ok        ? allow : deny
+      end
     end
 
     def topic
-      device_id_in_topic == device_id_in_username ? allow : deny
+      if is_admin
+        allow
+      else
+        device_id_in_topic == device_id_in_username ? allow : deny
+      end
     end
 
   private
