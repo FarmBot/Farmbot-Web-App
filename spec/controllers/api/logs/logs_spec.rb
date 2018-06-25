@@ -20,16 +20,22 @@ describe Api::LogsController do
     it "creates one log (legacy format)" do
       sign_in user
       before_count = Log.count
-      post :create,
-           body: { meta: { x: 1, y: 2, z: 3, type: "info" },
-                   channels: ["toast"],
-                   message: "Hello, world!"
-                 }.to_json,
-           params: {format: :json}
+      now          = DateTime.now - 37.3.hours
+      created_at   = now.utc.to_i
+      post :create, body: {
+             created_at: created_at,
+             meta: { x: 1,
+                     y: 2,
+                     z: 3,
+                     type: "info" },
+            channels: ["toast"],
+            message: "Hello, world!" }.to_json,
+           params: { format: :json }
       expect(response.status).to eq(200)
       expect(Log.count).to be > before_count
       expect(Log.last.message).to eq("Hello, world!")
       expect(Log.last.device).to eq(user.device)
+      expect(Log.last.created_at.to_time.to_s).to eq(now.to_time.to_s)
     end
 
     it "creates one log" do
