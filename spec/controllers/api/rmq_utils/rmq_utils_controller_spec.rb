@@ -15,6 +15,15 @@ describe Api::RmqUtilsController do
       password: token }
   end
 
+  it "allows admins to do anything" do
+    Api::RmqUtilsController::ALL.map do |action|
+      post action, params: { username: "admin",
+                             password: ENV.fetch("ADMIN_PASSWORD") }
+      expect(response.status).to eq(200)
+      expect(response.body).to include("allow")
+    end
+  end
+
   it "allows access to ones own topic" do
     p = credentials.merge(routing_key: "bot.#{credentials[:username]}.logs")
     post :topic, params: p
