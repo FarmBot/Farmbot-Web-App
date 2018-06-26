@@ -1,5 +1,5 @@
-<% if (response.success? || note.present?) %>
-# <%= response.success? ? "" : "(NOT OK)" %> <%= request.pretty_url %>
+<% if (response.successful? || note.present?) %>
+# <%= response.successful? ? "" : "(NOT OK)" %> <%= request.pretty_url %>
 <% if note.present? %>
 **Notes:** <%= note %>
 <% end %>
