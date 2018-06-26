@@ -1,3 +1,3 @@
 class SensorReadingSerializer < ActiveModel::Serializer
-  attributes :id, :pin, :value, :x, :y, :z
+  attributes :id, :created_at, :pin, :value, :x, :y, :z
 end
