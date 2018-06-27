@@ -6,7 +6,7 @@ begin
     .current
     .log_channel
     .subscribe(block: true) do |info, _, payl|
-      LogService.process(info, payl)
+      LogService.process(info, payl.force_encoding("UTF-8"))
     end
 rescue StandardError => e
   Rollbar.error(e)
