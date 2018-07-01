@@ -66,7 +66,7 @@ export class SelectPlants
 
   destroySelected = (plantUUIDs: string[]) => {
     if (plantUUIDs &&
-      confirm(`Are you sure you want to delete ${plantUUIDs.length} plants?`)) {
+      confirm(t("Are you sure you want to delete {{length}} plants?",  {length : plantUUIDs.length} ))) {
       plantUUIDs.map(uuid => {
         this
           .props
@@ -113,8 +113,8 @@ export class SelectPlants
         </div>
 
         <div className="panel-header-description">
-          {"Drag a box around the plants you would like to select. " +
-            "Press the back arrow to exit."}
+          {t("Drag a box around the plants you would like to select. " +
+            "Press the back arrow to exit.")}
         </div>
 
       </div>
