@@ -13,7 +13,7 @@ describe("<StepTitleBar/>", () => {
       }
     };
     const dispatch = jest.fn();
-    const block =mount<>(<StepTitleBar
+    const block = mount<{}>(<StepTitleBar
       step={currentStep}
       index={0}
       dispatch={dispatch}
@@ -34,7 +34,7 @@ describe("<StepTitleBar/>", () => {
       },
       comment: "new title"
     };
-    const block =mount<>(<StepTitleBar
+    const block = mount<{}>(<StepTitleBar
       step={currentStep}
       index={0}
       dispatch={jest.fn()}

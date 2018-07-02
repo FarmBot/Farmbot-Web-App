@@ -90,7 +90,7 @@ describe("LHSOptions()", () => {
 
 describe("<InnerIf />", () => {
   it("renders", () => {
-    const wrapper =mount<>(<InnerIf {...fakeProps()} />);
+    const wrapper = mount<{}>(<InnerIf {...fakeProps()} />);
     ["IF", "THEN", "ELSE"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
@@ -98,7 +98,7 @@ describe("<InnerIf />", () => {
   it("is recursive", () => {
     const p = fakeProps();
     p.currentStep.args._then = execute;
-    const wrapper =mount<>(<InnerIf {...p} />);
+    const wrapper = mount<{}>(<InnerIf {...p} />);
     expect(wrapper.text()).toContain("Recursive condition");
   });
 });

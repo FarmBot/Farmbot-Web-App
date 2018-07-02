@@ -14,7 +14,7 @@ describe("<TileWait/>", () => {
       }
     };
     return {
-      component:mount<>(<TileWait
+      component: mount<{}>(<TileWait
         currentSequence={fakeSequence()}
         currentStep={currentStep}
         dispatch={jest.fn()}

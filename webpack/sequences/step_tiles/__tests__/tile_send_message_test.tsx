@@ -21,7 +21,7 @@ describe("<TileSendMessage/>", () => {
       }]
     };
     return {
-      component:mount<>(<TileSendMessage
+      component: mount<{}>(<TileSendMessage
         currentSequence={fakeSequence()}
         currentStep={currentStep}
         dispatch={jest.fn()}

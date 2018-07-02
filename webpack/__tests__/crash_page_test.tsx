@@ -22,7 +22,7 @@ describe("<CrashPage/>", () => {
       message: "@@@ERROR@@@"
     };
     const CrashPage = crashPage(fakeError);
-    const el =mount<>(<CrashPage />);
+    const el = mount<typeof CrashPage>(<CrashPage />);
     const html = el.html();
     expect(html).toContain(fakeError.message);
     expect(html).toContain(fakeError.stack[0]);

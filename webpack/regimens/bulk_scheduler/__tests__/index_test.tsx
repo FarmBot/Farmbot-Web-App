@@ -34,7 +34,7 @@ describe("<BulkScheduler />", () => {
   }
 
   it("renders with sequence selected", () => {
-    const wrapper =mount<>(<BulkScheduler {...fakeProps()} />);
+    const wrapper = mount<{}>(<BulkScheduler {...fakeProps()} />);
     const buttons = wrapper.find("button");
     expect(buttons.length).toEqual(6);
     ["Sequence", "Fake Sequence", "Time",
@@ -45,7 +45,7 @@ describe("<BulkScheduler />", () => {
   it("renders without sequence selected", () => {
     const p = fakeProps();
     p.selectedSequence = undefined;
-    const wrapper =mount<>(<BulkScheduler {...p} />);
+    const wrapper = mount<{}>(<BulkScheduler {...p} />);
     ["Sequence", "None", "Time"].map(string =>
       expect(wrapper.text()).toContain(string));
   });

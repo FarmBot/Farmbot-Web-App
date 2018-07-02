@@ -29,12 +29,12 @@ describe("<FarmwareInfo />", () => {
   it("renders no manifest info message", () => {
     const p = fakeProps();
     p.farmware = undefined;
-    const wrapper =mount<>(<FarmwareInfo {...p} />);
+    const wrapper = mount<{}>(<FarmwareInfo {...p} />);
     expect(wrapper.text()).toEqual("Not available when device is offline.");
   });
 
   it("renders info", () => {
-    const wrapper =mount<>(<FarmwareInfo {...fakeProps()} />);
+    const wrapper = mount<{}>(<FarmwareInfo {...fakeProps()} />);
     ["Description", "Version", "Language", "Author", "Manage"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.text()).toContain("Does things.");
@@ -44,18 +44,18 @@ describe("<FarmwareInfo />", () => {
     const p = fakeProps();
     p.farmware = fakeFarmware();
     p.farmware.meta.author = "Farmbot.io";
-    const wrapper =mount<>(<FarmwareInfo {...p} />);
+    const wrapper = mount<{}>(<FarmwareInfo {...p} />);
     expect(wrapper.text()).toContain("FarmBot, Inc.");
   });
 
   it("updates Farmware", () => {
-    const wrapper =mount<>(<FarmwareInfo {...fakeProps()} />);
+    const wrapper = mount<{}>(<FarmwareInfo {...fakeProps()} />);
     clickButton(wrapper, 0, "Update");
     expect(mockDevice.updateFarmware).toHaveBeenCalledWith("My Fake Farmware");
   });
 
   it("removes Farmware", () => {
-    const wrapper =mount<>(<FarmwareInfo {...fakeProps()} />);
+    const wrapper = mount<{}>(<FarmwareInfo {...fakeProps()} />);
     clickButton(wrapper, 1, "Remove");
     expect(mockDevice.removeFarmware).toHaveBeenCalledWith("My Fake Farmware");
   });
@@ -65,7 +65,7 @@ describe("<FarmwareInfo />", () => {
     p.farmware = fakeFarmware();
     p.farmware.name = "Fake 1st-Party Farmware";
     p.firstPartyFarmwareNames = ["Fake 1st-Party Farmware"];
-    const wrapper =mount<>(<FarmwareInfo {...p} />);
+    const wrapper = mount<{}>(<FarmwareInfo {...p} />);
     clickButton(wrapper, 1, "Remove");
     expect(mockDevice.removeFarmware).not.toHaveBeenCalled();
   });
@@ -75,7 +75,7 @@ describe("<FarmwareInfo />", () => {
     p.farmware = fakeFarmware();
     p.farmware.name = "Fake 1st-Party Farmware";
     p.firstPartyFarmwareNames = ["Fake 1st-Party Farmware"];
-    const wrapper =mount<>(<FarmwareInfo {...p} />);
+    const wrapper = mount<{}>(<FarmwareInfo {...p} />);
     window.confirm = jest.fn(() => true);
     clickButton(wrapper, 1, "Remove");
     expect(window.confirm).toHaveBeenCalledWith(

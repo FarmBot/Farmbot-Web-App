@@ -17,7 +17,7 @@ describe("<AxisInputBoxGroup />", () => {
   };
 
   it("has 3 inputs and a button", () => {
-    const wrapper =mount<>(<AxisInputBoxGroup {...props} />);
+    const wrapper = mount<AxisInputBoxGroup>(<AxisInputBoxGroup {...props} />);
     expect(wrapper.find("input").length).toEqual(3);
     expect(wrapper.find("button").length).toEqual(1);
 
@@ -25,13 +25,13 @@ describe("<AxisInputBoxGroup />", () => {
 
   it("button is disabled", () => {
     props.disabled = true;
-    const wrapper =mount<>(<AxisInputBoxGroup {...props} />);
+    const wrapper = mount<AxisInputBoxGroup>(<AxisInputBoxGroup {...props} />);
     wrapper.find("button").simulate("click");
     expect(props.onCommit).not.toHaveBeenCalled();
   });
 
   it("changes", () => {
-    const wrapper =mount<>(<AxisInputBoxGroup {...props} />);
+    const wrapper = mount<AxisInputBoxGroup>(<AxisInputBoxGroup {...props} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     instance.change("x", 10);
@@ -44,7 +44,7 @@ describe("<AxisInputBoxGroup />", () => {
     it(`Go: ${testCase}`, () => {
       props.disabled = false;
       props.position = coordinates.position;
-      const wrapper =mount<>(<AxisInputBoxGroup {...props} />);
+      const wrapper = mount<AxisInputBoxGroup>(<AxisInputBoxGroup {...props} />);
       wrapper.setState(coordinates.inputs);
       clickButton(wrapper, 0, "go");
       expect(props.onCommit).toHaveBeenCalledWith(coordinates.expected);

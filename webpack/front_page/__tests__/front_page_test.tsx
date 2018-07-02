@@ -41,14 +41,14 @@ describe("<FrontPage />", () => {
   });
 
   it("shows forgot password box", () => {
-    const el =mount<>(<FrontPage />);
+    const el = mount<{}>(<FrontPage />);
     expect(el.text()).not.toContain("Reset Password");
     el.find("a.forgot-password").first().simulate("click");
     expect(el.text()).toContain("Reset Password");
   });
 
   it("shows TOS and Privacy links", () => {
-    const el =mount<>(<FrontPage />);
+    const el = mount<{}>(<FrontPage />);
     ["Privacy Policy", "Terms of Use"].map(string =>
       expect(el.text()).toContain(string));
     ["https://farmbot.io/privacy/", "https://farmbot.io/tos/"]
@@ -57,7 +57,7 @@ describe("<FrontPage />", () => {
 
   it("submits login: success", async () => {
     mockAxiosResponse = Promise.resolve({ data: "new data" });
-    const el =mount<>(<FrontPage />);
+    const el = mount<{}>(<FrontPage />);
     el.setState({ email: "foo@bar.io", loginPassword: "password" });
     // tslint:disable-next-line:no-any
     const instance = el.instance() as any;
@@ -71,7 +71,7 @@ describe("<FrontPage />", () => {
 
   it("submits login: not verified", async () => {
     mockAxiosResponse = Promise.reject({ response: { status: 403 } });
-    const el =mount<>(<FrontPage />);
+    const el = mount<{}>(<FrontPage />);
     el.setState({ email: "foo@bar.io", loginPassword: "password" });
     // tslint:disable-next-line:no-any
     const instance = el.instance() as any;
@@ -88,7 +88,7 @@ describe("<FrontPage />", () => {
   it("submits login: TOS update", async () => {
     mockAxiosResponse = Promise.reject({ response: { status: 451 } });
     window.location.assign = jest.fn();
-    const el =mount<>(<FrontPage />);
+    const el = mount<{}>(<FrontPage />);
     el.setState({ email: "foo@bar.io", loginPassword: "password" });
     // tslint:disable-next-line:no-any
     const instance = el.instance() as any;
@@ -102,7 +102,7 @@ describe("<FrontPage />", () => {
   });
 
   it("submits registration", () => {
-    const el =mount<>(<FrontPage />);
+    const el = mount<{}>(<FrontPage />);
     el.setState({
       regEmail: "foo@bar.io",
       regName: "Foo Bar",
@@ -122,7 +122,7 @@ describe("<FrontPage />", () => {
   });
 
   it("submits forgot password", () => {
-    const el =mount<>(<FrontPage />);
+    const el = mount<{}>(<FrontPage />);
     el.setState({ email: "foo@bar.io" });
     // tslint:disable-next-line:no-any
     const instance = el.instance() as any;
@@ -132,7 +132,7 @@ describe("<FrontPage />", () => {
   });
 
   it("renders proper panels", () => {
-    const el =mount<>(<FrontPage />);
+    const el = mount<{}>(<FrontPage />);
     el.setState({ activePanel: "resendVerificationEmail" });
     expect(el.text()).toContain("Account Not Verified");
     el.setState({ activePanel: "forgotPassword" });

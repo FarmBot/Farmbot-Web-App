@@ -13,14 +13,14 @@ describe("<FBSelect />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper =mount<>(<FBSelect {...p} />);
+    const wrapper = mount<{}>(<FBSelect {...p} />);
     expect(wrapper.text()).toEqual("None");
   });
 
   it("renders item", () => {
     const p = fakeProps();
     p.selectedItem = { value: "item", label: "Item" };
-    const wrapper =mount<>(<FBSelect {...p} />);
+    const wrapper = mount<{}>(<FBSelect {...p} />);
     expect(wrapper.text()).toEqual("Item");
   });
 
@@ -45,7 +45,7 @@ describe("<FBSelect />", () => {
   it("has extra class", () => {
     const p = fakeProps();
     p.extraClass = "extra";
-    const wrapper =mount<>(<FBSelect {...p} />);
+    const wrapper = mount<{}>(<FBSelect {...p} />);
     expect(wrapper.find("div").first().hasClass("extra")).toBeTruthy();
   });
 });

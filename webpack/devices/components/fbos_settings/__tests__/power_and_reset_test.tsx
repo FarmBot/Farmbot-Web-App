@@ -29,7 +29,7 @@ describe("<PowerAndReset/>", () => {
   it("open", () => {
     const p = fakeProps();
     p.controlPanelState.power_and_reset = true;
-    const wrapper =mount<>(<PowerAndReset {...p} />);
+    const wrapper = mount<{}>(<PowerAndReset {...p} />);
     ["Power and Reset", "Restart", "Shutdown", "Factory Reset",
       "Automatic Factory Reset", "Connection Attempt Period"]
       .map(string => expect(wrapper.text().toLowerCase())
@@ -39,7 +39,7 @@ describe("<PowerAndReset/>", () => {
   it("closed", () => {
     const p = fakeProps();
     p.controlPanelState.power_and_reset = false;
-    const wrapper =mount<>(<PowerAndReset {...p} />);
+    const wrapper = mount<{}>(<PowerAndReset {...p} />);
     expect(wrapper.text().toLowerCase())
       .toContain("Power and Reset".toLowerCase());
     expect(wrapper.text().toLowerCase())
@@ -50,7 +50,7 @@ describe("<PowerAndReset/>", () => {
     bot.hardware.configuration.disable_factory_reset = true;
     const p = fakeProps();
     p.controlPanelState.power_and_reset = true;
-    const wrapper =mount<>(<PowerAndReset {...p} />);
+    const wrapper = mount<{}>(<PowerAndReset {...p} />);
     expect(wrapper.find("input").last().props().disabled).toBeTruthy();
     expect(wrapper.find("label").last().props().style)
       .toEqual({ color: "grey" });
@@ -60,7 +60,7 @@ describe("<PowerAndReset/>", () => {
     bot.hardware.configuration.disable_factory_reset = false;
     const p = fakeProps();
     p.controlPanelState.power_and_reset = true;
-    const wrapper =mount<>(<PowerAndReset {...p} />);
+    const wrapper = mount<{}>(<PowerAndReset {...p} />);
     wrapper.find("button").at(3).simulate("click");
     expect(mockDevice.updateConfig)
       .toHaveBeenCalledWith({ disable_factory_reset: true });

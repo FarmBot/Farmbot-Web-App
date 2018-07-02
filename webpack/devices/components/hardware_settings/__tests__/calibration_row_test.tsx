@@ -14,7 +14,7 @@ describe("<HomingRow />", () => {
     jest.clearAllMocks();
   });
   it("calls device", () => {
-    const result =mount<>(<CalibrationRow
+    const result = mount<{}>(<CalibrationRow
       hardware={bot.hardware.mcu_params}
       botDisconnected={false} />);
     [0, 1, 2].map(i => result.find("LockableButton").at(i).simulate("click"));

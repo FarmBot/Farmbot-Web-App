@@ -4,7 +4,7 @@ import { AdditionalMenu } from "../additional_menu";
 
 describe("AdditionalMenu", () => {
   it("renders the account menu", () => {
-    const wrapper =mount<>(<AdditionalMenu
+    const wrapper = mount<{}>(<AdditionalMenu
       logout={jest.fn()}
       close={jest.fn()} />);
     const text = wrapper.text();

@@ -30,13 +30,13 @@ describe("<CreatePoints />", () => {
     };
   };
   it("renders", () => {
-    const wrapper =mount<>(<CreatePoints {...fakeProps()} />);
+    const wrapper = mount<{}>(<CreatePoints {...fakeProps()} />);
     ["create point", "cancel", "delete", "x", "y", "radius", "color"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("creates point", () => {
-    const wrapper =mount<>(<CreatePoints {...fakeProps()} />);
+    const wrapper = mount<{}>(<CreatePoints {...fakeProps()} />);
     wrapper.setState({ cx: 10, cy: 20, r: 30, color: "red" });
     clickButton(wrapper, 0, "create point");
     expect(initSave).toHaveBeenCalledWith({
@@ -54,7 +54,7 @@ describe("<CreatePoints />", () => {
 
   it("deletes all points", () => {
     const p = fakeProps();
-    const wrapper =mount<>(<CreatePoints {...p} />);
+    const wrapper = mount<{}>(<CreatePoints {...p} />);
     const button = wrapper.find("button").last();
     expect(button.text()).toEqual("Delete all created points");
     window.confirm = jest.fn();

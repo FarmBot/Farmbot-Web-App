@@ -13,7 +13,7 @@ import { clickButton, allButtonText } from "../../../__test_support__/helpers";
 describe("<WebcamPanel/>", () => {
   it("toggles form state to edit", () => {
     const props = { feeds: [], dispatch: jest.fn() };
-    const wrapper =mount<>(<WebcamPanel {...props} />);
+    const wrapper = mount<WebcamPanel>(<WebcamPanel {...props} />);
     expect(wrapper.instance().state.activeMenu).toEqual("show");
     const text = allButtonText(wrapper);
     expect(text.toLowerCase()).not.toContain("view");
@@ -23,7 +23,7 @@ describe("<WebcamPanel/>", () => {
 
   it("toggles form state to view", () => {
     const props = { feeds: [], dispatch: jest.fn() };
-    const wrapper =mount<>(<WebcamPanel {...props} />);
+    const wrapper = mount<WebcamPanel>(<WebcamPanel {...props} />);
     wrapper.setState({ activeMenu: "edit" });
     const text = allButtonText(wrapper);
     expect(text.toLowerCase()).not.toContain("edit");

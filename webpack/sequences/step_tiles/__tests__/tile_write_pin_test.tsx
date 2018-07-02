@@ -25,7 +25,7 @@ describe("<TileWritePin/>", () => {
   }
 
   it("renders inputs: Analog", () => {
-    const wrapper =mount<>(<TileWritePin {...fakeProps()} />);
+    const wrapper = mount<{}>(<TileWritePin {...fakeProps()} />);
     const inputs = wrapper.find("input");
     const labels = wrapper.find("label");
     const buttons = wrapper.find("button");
@@ -44,7 +44,7 @@ describe("<TileWritePin/>", () => {
     const p = fakeProps();
     p.currentStep.args.pin_mode = 0;
     p.currentStep.args.pin_value = 1;
-    const wrapper =mount<>(<TileWritePin {...p} />);
+    const wrapper = mount<{}>(<TileWritePin {...p} />);
     const inputs = wrapper.find("input");
     const labels = wrapper.find("label");
     const buttons = wrapper.find("button");

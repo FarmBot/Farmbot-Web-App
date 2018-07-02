@@ -17,13 +17,13 @@ describe("<ToolForm/>", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper =mount<>(<ToolForm {...p} />);
+    const wrapper = mount<{}>(<ToolForm {...p} />);
     expect(wrapper.find("input").length).toEqual(p.tools.length);
   });
 
   it("adds stock tools", () => {
     const p = fakeProps();
-    const wrapper =mount<>(<ToolForm {...p} />);
+    const wrapper = mount<{}>(<ToolForm {...p} />);
     clickButton(wrapper, 3, "stock tools");
     expect(p.dispatch).toHaveBeenCalledTimes(6);
   });
@@ -31,7 +31,7 @@ describe("<ToolForm/>", () => {
   it("has red delete button", () => {
     const p = fakeProps();
     p.isActive = () => false;
-    const wrapper =mount<>(<ToolForm {...p} />);
+    const wrapper = mount<{}>(<ToolForm {...p} />);
     const delBtn = wrapper.find("button").last();
     expect(delBtn.hasClass("red")).toBeTruthy();
   });
@@ -39,7 +39,7 @@ describe("<ToolForm/>", () => {
   it("has gray delete button", () => {
     const p = fakeProps();
     p.isActive = () => true;
-    const wrapper =mount<>(<ToolForm {...p} />);
+    const wrapper = mount<{}>(<ToolForm {...p} />);
     const delBtn = wrapper.find("button").last();
     expect(delBtn.hasClass("pseudo-disabled")).toBeTruthy();
     expect(delBtn.props().title).toContain("in slot");

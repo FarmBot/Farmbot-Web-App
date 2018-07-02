@@ -13,7 +13,7 @@ describe("<ToolList />", () => {
       state,
       toggle,
       props,
-      component:mount<>(<ToolList dispatch={state.dispatch}
+      component: mount<{}>(<ToolList dispatch={state.dispatch}
         tools={props.tools}
         toggle={toggle}
         isActive={props.isActive} />)

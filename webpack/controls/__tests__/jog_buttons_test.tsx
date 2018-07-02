@@ -35,7 +35,7 @@ describe("<JogButtons/>", function () {
   };
 
   it("calls home command", () => {
-    const jogButtons =mount<>(<JogButtons {...jogButtonProps()} />);
+    const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
     jogButtons.find("button").at(3).simulate("click");
     expect(mockDevice.home).toHaveBeenCalledTimes(1);
   });
@@ -43,7 +43,7 @@ describe("<JogButtons/>", function () {
   it("calls find home command", () => {
     const p = jogButtonProps();
     p.doFindHome = true;
-    const jogButtons =mount<>(<JogButtons {...p} />);
+    const jogButtons = mount(<JogButtons {...p} />);
     jogButtons.find("button").at(3).simulate("click");
     expect(mockDevice.findHome).toHaveBeenCalledTimes(1);
   });
@@ -51,26 +51,26 @@ describe("<JogButtons/>", function () {
   it("is disabled", () => {
     const p = jogButtonProps();
     p.arduinoBusy = true;
-    const jogButtons =mount<>(<JogButtons {...p} />);
+    const jogButtons = mount(<JogButtons {...p} />);
     jogButtons.find("button").at(3).simulate("click");
     expect(mockDevice.home).not.toHaveBeenCalled();
   });
 
   it("call has correct args", () => {
-    const jogButtons =mount<>(<JogButtons {...jogButtonProps()} />);
+    const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
     jogButtons.find("button").at(3).simulate("click");
     expect(mockDevice.home)
       .toHaveBeenCalledWith({ axis: "all", speed: 100 });
   });
 
   it("takes photo", () => {
-    const jogButtons =mount<>(<JogButtons {...jogButtonProps()} />);
+    const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
     jogButtons.find("button").at(0).simulate("click");
     expect(mockDevice.takePhoto).toHaveBeenCalled();
   });
 
   it("has unswapped xy jog buttons", () => {
-    const jogButtons =mount<>(<JogButtons {...jogButtonProps()} />);
+    const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
     const button = jogButtons.find("button").at(6);
     expect(button.props().title).toBe("move x axis (100)");
     button.simulate("click");
@@ -82,7 +82,7 @@ describe("<JogButtons/>", function () {
     const p = jogButtonProps();
     (p.stepSize as number | undefined) = undefined;
     p.xySwap = true;
-    const jogButtons =mount<>(<JogButtons {...p} />);
+    const jogButtons = mount(<JogButtons {...p} />);
     const button = jogButtons.find("button").at(6);
     expect(button.props().title).toBe("move y axis (100)");
     button.simulate("click");

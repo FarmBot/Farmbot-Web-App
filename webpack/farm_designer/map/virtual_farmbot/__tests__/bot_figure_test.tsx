@@ -26,7 +26,7 @@ describe("<BotFigure/>", () => {
       p.mapTransformProps.quadrant = quadrant;
       p.mapTransformProps.xySwap = xySwap;
       p.name = name;
-      const result = shallow(<BotFigure {...p} />);
+      const result = shallow<BotFigure>(<BotFigure {...p} />);
 
       const expectedGantryProps = expect.objectContaining({
         id: "gantry",
@@ -67,7 +67,7 @@ describe("<BotFigure/>", () => {
     const p = fakeProps();
     p.mapTransformProps.quadrant = 2;
     p.position = { x: 100, y: 200, z: 0 };
-    const result = shallow(<BotFigure {...p} />);
+    const result = shallow<BotFigure>(<BotFigure {...p} />);
     const gantry = result.find("#gantry");
     expect(gantry.length).toEqual(1);
     expect(gantry.props().x).toEqual(90);
@@ -79,14 +79,14 @@ describe("<BotFigure/>", () => {
   it("changes color on e-stop", () => {
     const p = fakeProps();
     p.eStopStatus = true;
-    const wrapper = shallow(<BotFigure {...p} />);
+    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
     expect(wrapper.find("#gantry").props().fill).toEqual(Color.virtualRed);
   });
 
   it("shows coordinates on hover", () => {
     const p = fakeProps();
     p.position.x = 100;
-    const wrapper = shallow(<BotFigure {...p} />);
+    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
     expect(wrapper.instance().state.hovered).toBeFalsy();
     const utm = wrapper.find("#UTM");
     utm.simulate("mouseOver");
@@ -106,7 +106,7 @@ describe("<BotFigure/>", () => {
     const p = fakeProps();
     p.position.x = 100;
     p.mapTransformProps.xySwap = true;
-    const wrapper = shallow(<BotFigure {...p} />);
+    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
     const utm = wrapper.find("#UTM");
     utm.simulate("mouseOver");
     expect(wrapper.instance().state.hovered).toBeTruthy();

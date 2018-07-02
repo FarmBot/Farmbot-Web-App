@@ -5,7 +5,7 @@ import { mount } from "enzyme";
 
 describe("<Diagnosis/>", () => {
   it("renders help text", () => {
-    const el =mount<>(<Diagnosis
+    const el = mount<{}>(<Diagnosis
       userAPI={true}
       userMQTT={true}
       botMQTT={true}
@@ -16,7 +16,7 @@ describe("<Diagnosis/>", () => {
   });
 
   it("renders diagnosis error color", () => {
-    const el =mount<>(<Diagnosis
+    const el = mount<{}>(<Diagnosis
       userAPI={true}
       userMQTT={true}
       botMQTT={true}

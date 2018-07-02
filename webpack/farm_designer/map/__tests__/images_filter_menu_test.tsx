@@ -49,11 +49,11 @@ describe("<ImageFilterMenu />", () => {
       i: number) => {
       it(`sets filter: ${filter}`, () => {
         const p = fakeProps();
-        const wrapper = shallow(<ImageFilterMenu {...p} />);
+        const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
         wrapper.find("BlurableInput").at(i).simulate("commit", {
           currentTarget: { value: "2001-01-03" }
         });
-        expect(wrapper.state()[filter]).toEqual("2001-01-03");
+        expect(wrapper.instance().state[filter]).toEqual("2001-01-03");
         expect(setWebAppConfigValue)
           .toHaveBeenCalledWith(key, "2001-01-03T00:00:00.000Z");
       });
@@ -68,12 +68,12 @@ describe("<ImageFilterMenu />", () => {
       i: number) => {
       it(`sets filter: ${filter}`, () => {
         const p = fakeProps();
-        const wrapper = shallow(<ImageFilterMenu {...p} />);
+        const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
         wrapper.setState({ beginDate: "2001-01-03", endDate: "2001-01-03" });
         wrapper.find("BlurableInput").at(i).simulate("commit", {
           currentTarget: { value: "05:00" }
         });
-        expect(wrapper.state()[filter]).toEqual("05:00");
+        expect(wrapper.instance().state[filter]).toEqual("05:00");
         expect(setWebAppConfigValue)
           .toHaveBeenCalledWith(key, "2001-01-03T05:00:00.000Z");
       });
@@ -95,7 +95,7 @@ describe("<ImageFilterMenu />", () => {
   it("changes slider", () => {
     const p = fakeProps();
     p.imageAgeInfo.newestDate = "2001-01-03T05:00:00.000Z";
-    const wrapper = shallow(<ImageFilterMenu {...p} />);
+    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
     wrapper.find("Slider").simulate("change", 1);
     expect(wrapper.instance().state.slider).toEqual(1);
     expect(setWebAppConfigValue)
@@ -107,7 +107,7 @@ describe("<ImageFilterMenu />", () => {
   it("displays slider labels", () => {
     const p = fakeProps();
     p.imageAgeInfo.newestDate = "2001-01-03T00:00:00.000Z";
-    const wrapper =mount<>(<ImageFilterMenu {...p} />);
+    const wrapper = mount<{}>(<ImageFilterMenu {...p} />);
     ["Jan-1", "Jan-2", "Jan-3"].map(date =>
       expect(wrapper.text()).toContain(date));
   });

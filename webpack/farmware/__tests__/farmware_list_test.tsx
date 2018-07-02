@@ -25,7 +25,7 @@ describe("<FarmwareList />", () => {
   };
 
   it("renders", () => {
-    const wrapper =mount<>(<FarmwareList {...fakeProps()} />);
+    const wrapper = mount<{}>(<FarmwareList {...fakeProps()} />);
     ["Photos",
       "Camera Calibration",
       "Weed Detector",
@@ -62,7 +62,7 @@ describe("<FarmwareList />", () => {
 
   it("installs a new farmware", () => {
     const p = fakeProps();
-    const wrapper =mount<>(<FarmwareList {...p} />);
+    const wrapper = mount<{}>(<FarmwareList {...p} />);
     wrapper.setState({ packageUrl: FAKE_INSTALL_URL });
     window.alert = jest.fn();
     clickButton(wrapper, 0, "Install");
@@ -77,7 +77,7 @@ describe("<FarmwareList />", () => {
     p.farmwares["farmware_1"] = farmware;
     p.firstPartyFarmwareNames = ["Fake First-Party Farmware"];
     p.showFirstParty = false;
-    const wrapper =mount<>(<FarmwareList {...p} />);
+    const wrapper = mount<{}>(<FarmwareList {...p} />);
     expect(wrapper.text()).not.toContain("Fake First-Party Farmware");
   });
 
@@ -88,7 +88,7 @@ describe("<FarmwareList />", () => {
     p.farmwares["farmware_1"] = farmware;
     p.firstPartyFarmwareNames = ["Fake First-Party Farmware"];
     p.showFirstParty = true;
-    const wrapper =mount<>(<FarmwareList {...p} />);
+    const wrapper = mount<{}>(<FarmwareList {...p} />);
     expect(wrapper.text()).toContain("Fake First-Party Farmware");
   });
 

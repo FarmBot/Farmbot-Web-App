@@ -12,7 +12,7 @@ describe("<TileTakePhoto/>", () => {
       args: {}
     };
     return {
-      component:mount<>(<TileTakePhoto
+      component: mount<{}>(<TileTakePhoto
         currentSequence={fakeSequence()}
         currentStep={currentStep}
         dispatch={jest.fn()}

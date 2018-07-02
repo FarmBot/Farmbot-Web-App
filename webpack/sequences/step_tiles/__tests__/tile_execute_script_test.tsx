@@ -31,7 +31,7 @@ describe("<TileExecuteScript/>", () => {
   };
 
   it("renders inputs", () => {
-    const wrapper =mount<>(<TileExecuteScript {...fakeProps()} />);
+    const wrapper = mount<{}>(<TileExecuteScript {...fakeProps()} />);
     const inputs = wrapper.find("input");
     const labels = wrapper.find("label");
     expect(inputs.length).toEqual(2);
@@ -45,7 +45,7 @@ describe("<TileExecuteScript/>", () => {
   it("renders error on wrong step", () => {
     const p = fakeProps();
     p.currentStep = { kind: "wait", args: { milliseconds: 100 } };
-    const wrapper =mount<>(<TileExecuteScript {...p} />);
+    const wrapper = mount<{}>(<TileExecuteScript {...p} />);
     expect(wrapper.text()).toContain("ERROR");
   });
 
@@ -69,14 +69,14 @@ describe("<TileExecuteScript/>", () => {
   it("doesn't show manual input if installed farmware is selected", () => {
     const p = fakeProps();
     (p.currentStep as ExecuteScript).args.label = "two";
-    const wrapper =mount<>(<TileExecuteScript {...p} />);
+    const wrapper = mount<{}>(<TileExecuteScript {...p} />);
     expect(wrapper.find("label").length).toEqual(1);
   });
 
   it("renders manual input", () => {
     const p = fakeProps();
     p.farmwareInfo = undefined;
-    const wrapper =mount<>(<TileExecuteScript {...p} />);
+    const wrapper = mount<{}>(<TileExecuteScript {...p} />);
     expect(wrapper.find("button").text()).toEqual("Manual Input");
     expect(wrapper.find("label").at(1).text()).toEqual("Manual input");
     expect(wrapper.find("input").at(1).props().value).toEqual("farmware-to-execute");

@@ -51,7 +51,7 @@ describe("<PeripheralList/>", function () {
   };
 
   it("renders a list of peripherals, in sorted order", function () {
-    const wrapper =mount<>(<PeripheralList dispatch={() => { }}
+    const wrapper = mount<{}>(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
       pins={pins}
       disabled={false} />);
@@ -71,7 +71,7 @@ describe("<PeripheralList/>", function () {
   });
 
   it("toggles pins", () => {
-    const wrapper =mount<>(<PeripheralList dispatch={() => { }}
+    const wrapper = mount<{}>(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
       pins={pins}
       disabled={false} />);
@@ -84,7 +84,7 @@ describe("<PeripheralList/>", function () {
   });
 
   it("pins toggles are disabled", () => {
-    const wrapper =mount<>(<PeripheralList dispatch={() => { }}
+    const wrapper = mount<{}>(<PeripheralList dispatch={() => { }}
       peripherals={peripherals}
       pins={pins}
       disabled={true} />);

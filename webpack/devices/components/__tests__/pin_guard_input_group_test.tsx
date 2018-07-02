@@ -25,7 +25,7 @@ describe("<PinGuardMCUInputGroup/>", () => {
 
   it("calls toggle action ", () => {
     const p = fakeProps();
-    const wrapper =mount<>(<PinGuardMCUInputGroup {...p} />);
+    const wrapper = mount<{}>(<PinGuardMCUInputGroup {...p} />);
     wrapper.find("button").simulate("click");
     expect(settingToggle).toHaveBeenCalledWith("pin_guard_1_active_state",
       expect.any(Function));

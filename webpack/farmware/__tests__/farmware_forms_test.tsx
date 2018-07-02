@@ -60,7 +60,7 @@ describe("<ConfigFields />", () => {
   it("renders fields", () => {
     const p = fakeProps();
     p.farmware.config.push({ name: "config_2", label: "Config 2", value: "2" });
-    const wrapper =mount<>(<ConfigFields {...fakeProps()} />);
+    const wrapper = mount<{}>(<ConfigFields {...fakeProps()} />);
     expect(wrapper.text()).toEqual("Config 1");
   });
 
@@ -84,7 +84,7 @@ describe("<FarmwareForm />", () => {
   };
 
   it("renders form", () => {
-    const wrapper =mount<>(<FarmwareForm {...fakeProps()} />);
+    const wrapper = mount<{}>(<FarmwareForm {...fakeProps()} />);
     ["Run", "Config 1"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find("label").last().text()).toContain("Config 1");
@@ -94,12 +94,12 @@ describe("<FarmwareForm />", () => {
   it("renders no fields", () => {
     const p = fakeProps();
     p.farmware.config = [];
-    const wrapper =mount<>(<FarmwareForm {...p} />);
+    const wrapper = mount<{}>(<FarmwareForm {...p} />);
     expect(wrapper.text()).toEqual("Run");
   });
 
   it("runs farmware", () => {
-    const wrapper =mount<>(<FarmwareForm {...fakeProps()} />);
+    const wrapper = mount<{}>(<FarmwareForm {...fakeProps()} />);
     clickButton(wrapper, 0, "run");
     expect(mockDevice.execScript).toHaveBeenCalledWith(
       "My Fake Farmware", [{

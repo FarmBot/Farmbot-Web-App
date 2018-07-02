@@ -22,7 +22,7 @@ describe("resend_verification.tsx - failure case", () => {
       onGoBack: jest.fn(),
       email: "foo@bar.com"
     };
-    const el =mount<>(<ResendVerification {...props} />);
+    const el = mount<{}>(<ResendVerification {...props} />);
     expect.assertions(3);
     el.find("button").last().simulate("click");
     const { calls } = props.no.mock;

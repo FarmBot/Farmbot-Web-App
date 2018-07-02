@@ -38,7 +38,7 @@ describe("<SequencesList />", () => {
 
   it("renders list", () => {
     const p = fakeProps();
-    const wrapper =mount<>(<SequencesList {...p} />);
+    const wrapper = mount<{}>(<SequencesList {...p} />);
     expect(wrapper.find("input").first().props().placeholder)
       .toContain("Search Sequences");
     ["Sequence 1", "Sequence 2"].map(string =>
@@ -47,7 +47,7 @@ describe("<SequencesList />", () => {
 
   it("has correct drag data", () => {
     const p = fakeProps();
-    const wrapper =mount<>(<SequencesList {...p} />);
+    const wrapper = mount<{}>(<SequencesList {...p} />);
     const seq = wrapper.find("div").last();
     expect(seq.text()).toEqual("Sequence 2");
     seq.simulate("dragStart", { dataTransfer: { setData: jest.fn() } });
@@ -65,17 +65,17 @@ describe("<SequencesList />", () => {
   it("shows in-use indicator", () => {
     const p = fakeProps();
     p.sequences[0].body.in_use = true;
-    const wrapper =mount<>(<SequencesList {...p} />);
+    const wrapper = mount<{}>(<SequencesList {...p} />);
     expect(wrapper.find(".in-use").length).toEqual(1);
   });
 
   it("doesn't show in-use indicator", () => {
-    const wrapper =mount<>(<SequencesList {...fakeProps()} />);
+    const wrapper = mount<{}>(<SequencesList {...fakeProps()} />);
     expect(wrapper.find(".in-use").length).toEqual(0);
   });
 
   it("adds new sequence", () => {
-    const wrapper =mount<>(<SequencesList {...fakeProps()} />);
+    const wrapper = mount<{}>(<SequencesList {...fakeProps()} />);
     wrapper.find("button").first().simulate("click");
     expect(init).toHaveBeenCalledWith(expect.objectContaining({
       kind: "Sequence", body: expect.objectContaining({ body: [] })

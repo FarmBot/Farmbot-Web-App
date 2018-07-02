@@ -17,7 +17,7 @@ describe("<TileMoveRelative/>", () => {
       }
     };
     return {
-      component:mount<>(<TileMoveRelative
+      component: mount<{}>(<TileMoveRelative
         currentSequence={fakeSequence()}
         currentStep={currentStep}
         dispatch={jest.fn()}

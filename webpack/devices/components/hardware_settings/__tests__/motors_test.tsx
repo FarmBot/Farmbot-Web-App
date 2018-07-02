@@ -76,7 +76,7 @@ describe("<Motors/>", () => {
       const p = fakeProps();
       p.controlPanelState.motors = true;
       bot.hardware.mcu_params[parameter] = 1;
-      const wrapper =mount<>(<Motors {...p} />);
+      const wrapper = mount<{}>(<Motors {...p} />);
       wrapper.find("button").at(position).simulate("click");
       expect(mockDevice.updateMcu)
         .toHaveBeenCalledWith({ [parameter]: 0 });

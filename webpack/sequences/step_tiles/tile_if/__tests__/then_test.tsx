@@ -28,7 +28,7 @@ describe("<Then/>", () => {
   }
 
   it("renders", () => {
-    const wrapper =mount<>(<Then {...fakeProps() } />);
+    const wrapper = mount<{}>(<Then {...fakeProps() } />);
     ["THEN", "Execute Sequence"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find("button").length).toEqual(1);

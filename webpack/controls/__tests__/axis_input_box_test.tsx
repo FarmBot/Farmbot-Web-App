@@ -7,7 +7,7 @@ describe("<AxisInputBox/>", () => {
   function inputBoxWithValue(value: number | undefined) {
     const axis: Xyz = "x";
     const props = { axis, value, onChange: jest.fn() };
-    returnmount<>(<AxisInputBox {...props } />);
+    return mount(<AxisInputBox {...props} />);
   }
 
   it("renders 0 if 0", () => {

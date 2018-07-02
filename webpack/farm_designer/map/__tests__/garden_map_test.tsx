@@ -158,7 +158,7 @@ describe("<GardenPlant/>", () => {
 
   it("ends drag", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenMap {...p} />);
+    const wrapper = shallow<GardenMap>(<GardenMap {...p} />);
     expect(wrapper.state()).toEqual({});
     wrapper.find("#drop-area-svg").simulate("mouseUp");
     expect(p.dispatch).not.toHaveBeenCalled();
