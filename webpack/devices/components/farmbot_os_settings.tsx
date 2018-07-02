@@ -79,7 +79,7 @@ export class FarmbotOsSettings
   maybeWarnTz = () => {
     const wrongTZ = timezoneMismatch(this.props.account.body.timezone);
     if (wrongTZ) {
-      return Content.DIFFERENT_TZ_WARNING;
+      return t(Content.DIFFERENT_TZ_WARNING);
     } else {
       return "";
     }

@@ -54,16 +54,16 @@ export function actOnChannelName(
 export function showLogOnScreen(log: Log) {
   switch (log.type) {
     case "success":
-      return success(log.message, TITLE);
+      return success(log.message, t(TITLE));
     case "warn":
-      return warning(log.message, TITLE);
+      return warning(log.message, t(TITLE));
     case "busy":
     case "error":
-      return error(log.message, TITLE);
+      return error(log.message, t(TITLE));
     case "fun":
     case "info":
     default:
-      return info(log.message, TITLE);
+      return info(log.message, t(TITLE));
   }
 }
 

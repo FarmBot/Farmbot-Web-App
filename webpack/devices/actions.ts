@@ -136,7 +136,7 @@ export function execSequence(sequence: Sequence) {
     commandOK(noun)();
     return getDevice().execSequence(sequence.id).catch(commandErr(noun));
   } else {
-    throw new Error("Can't execute unsaved sequences");
+    throw new Error(t("Can't execute unsaved sequences"));
   }
 }
 
