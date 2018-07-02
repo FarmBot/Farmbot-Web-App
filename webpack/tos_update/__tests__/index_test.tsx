@@ -31,7 +31,7 @@ describe("<TosUpdate/>", () => {
     const oldPriv = globalConfig.PRIV_URL;
     globalConfig.TOS_URL = "";
     globalConfig.PRIV_URL = "";
-    const el = mount(<TosUpdate />);
+    const el =mount<>(<TosUpdate />);
     expect(el.text().toLocaleLowerCase()).toContain("something went wrong");
     globalConfig.TOS_URL = oldTos;
     globalConfig.PRIV_URL = oldPriv;

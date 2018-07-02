@@ -30,7 +30,7 @@ describe("<AddPlant />", () => {
       }]
     };
     mockPath = "/app/designer/plants/crop_search/mint/add";
-    const wrapper = mount(<AddPlant {...props} />);
+    const wrapper =mount<>(<AddPlant {...props} />);
     expect(wrapper.text()).toContain("Mint");
     expect(wrapper.text()).toContain("Done");
     expect(wrapper.find("img").props().src)

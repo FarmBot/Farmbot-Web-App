@@ -17,7 +17,7 @@ describe("<Edit/>", () => {
 
   it("renders the list of feeds", () => {
     const p = fakeProps();
-    const wrapper = mount(<Edit {...p} />);
+    const wrapper =mount<>(<Edit {...p} />);
     [
       p.feeds[0].body.name,
       p.feeds[0].body.url,
@@ -29,7 +29,7 @@ describe("<Edit/>", () => {
 
   it("saves feeds", () => {
     const p = fakeProps();
-    const wrapper = mount(<Edit {...p} />);
+    const wrapper =mount<>(<Edit {...p} />);
     clickButton(wrapper, 1, "save*");
     expect(p.save).toHaveBeenCalledWith(p.feeds[0]);
   });
@@ -38,7 +38,7 @@ describe("<Edit/>", () => {
     const p = fakeProps();
     p.feeds[0].specialStatus = SpecialStatus.SAVED;
     p.feeds[1].specialStatus = SpecialStatus.SAVED;
-    const wrapper = mount(<Edit {...p} />);
+    const wrapper =mount<>(<Edit {...p} />);
     expect(wrapper.find("button").at(1).text()).toEqual("Save");
   });
 });

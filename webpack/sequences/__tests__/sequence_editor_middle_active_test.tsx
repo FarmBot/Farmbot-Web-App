@@ -59,7 +59,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
   }
 
   it("saves", () => {
-    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
+    const wrapper =mount<>(<SequenceEditorMiddleActive {...fakeProps()} />);
     clickButton(wrapper, 0, "Save * ");
     expect(save).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
   });
@@ -68,19 +68,19 @@ describe("<SequenceEditorMiddleActive/>", () => {
     const p = fakeProps();
     p.syncStatus = "synced";
     p.sequence.specialStatus = SpecialStatus.SAVED;
-    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    const wrapper =mount<>(<SequenceEditorMiddleActive {...p} />);
     clickButton(wrapper, 1, "Test");
     expect(execSequence).toHaveBeenCalledWith(p.sequence.body);
   });
 
   it("deletes", () => {
-    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
+    const wrapper =mount<>(<SequenceEditorMiddleActive {...fakeProps()} />);
     clickButton(wrapper, 2, "Delete");
     expect(destroy).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
   });
 
   it("copies", () => {
-    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
+    const wrapper =mount<>(<SequenceEditorMiddleActive {...fakeProps()} />);
     clickButton(wrapper, 3, "Copy");
     expect(copySequence).toHaveBeenCalledWith(expect.objectContaining({
       uuid: expect.stringContaining("Sequence")
@@ -88,7 +88,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
   });
 
   it("has drag area", () => {
-    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
+    const wrapper =mount<>(<SequenceEditorMiddleActive {...fakeProps()} />);
     expect(wrapper.find(".drag-drop-area").text()).toEqual("DRAG COMMAND HERE");
   });
 

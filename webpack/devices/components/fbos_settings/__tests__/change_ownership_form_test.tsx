@@ -18,13 +18,13 @@ describe("<ChangeOwnershipForm/>", () => {
   beforeEach(() => API.setBaseUrl("https://my.farm.bot"));
 
   it("renders", () => {
-    const wrapper = mount(<ChangeOwnershipForm />);
+    const wrapper =mount<>(<ChangeOwnershipForm />);
     ["email", "password", "server"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("submits", () => {
-    const wrapper = mount(<ChangeOwnershipForm />);
+    const wrapper =mount<>(<ChangeOwnershipForm />);
     wrapper.find("button").simulate("click");
     expect(transferOwnership).toHaveBeenCalledWith({
       device: mockDevice,

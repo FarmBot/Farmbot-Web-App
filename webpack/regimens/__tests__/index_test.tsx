@@ -36,7 +36,7 @@ describe("<Regimens />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<Regimens {...fakeProps()} />);
+    const wrapper =mount<>(<Regimens {...fakeProps()} />);
     ["Regimens", "Regimen Editor", "Scheduler"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
@@ -44,7 +44,7 @@ describe("<Regimens />", () => {
   it("scheduler is hidden", () => {
     const p = fakeProps();
     p.current = undefined;
-    const wrapper = mount(<Regimens {...p} />);
+    const wrapper =mount<>(<Regimens {...p} />);
     expect(wrapper.text()).not.toContain("Scheduler");
   });
 });

@@ -43,7 +43,7 @@ describe("<Move />", () => {
   }
 
   it("has default elements", () => {
-    const wrapper = mount(<Move {...fakeProps()} />);
+    const wrapper =mount<>(<Move {...fakeProps()} />);
     const txt = wrapper.text().toLowerCase();
     ["move amount (mm)", "110100100010000", "x axisy axisz axis", "motor", "go"]
       .map(string => expect(txt).toContain(string));
@@ -52,7 +52,7 @@ describe("<Move />", () => {
   it("has only raw encoder data display", () => {
     const p = fakeProps();
     mockConfig.raw_encoders = true;
-    const wrapper = mount(<Move {...p} />);
+    const wrapper =mount<>(<Move {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("raw");
     expect(txt).not.toContain("scaled");
@@ -62,14 +62,14 @@ describe("<Move />", () => {
     const p = fakeProps();
     mockConfig.raw_encoders = true;
     mockConfig.scaled_encoders = true;
-    const wrapper = mount(<Move {...p} />);
+    const wrapper =mount<>(<Move {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("raw");
     expect(txt).toContain("scaled");
   });
 
   it("toggle: invert jog button", () => {
-    const wrapper = mount(<Move {...fakeProps()} />);
+    const wrapper =mount<>(<Move {...fakeProps()} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     instance.toggle(BooleanSetting.xy_swap)();
@@ -78,7 +78,7 @@ describe("<Move />", () => {
 
   it("changes step size", () => {
     const p = fakeProps();
-    const wrapper = mount(<Move {...p} />);
+    const wrapper =mount<>(<Move {...p} />);
     clickButton(wrapper, 0, "1");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.CHANGE_STEP_SIZE,

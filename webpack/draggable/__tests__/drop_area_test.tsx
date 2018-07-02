@@ -32,33 +32,33 @@ describe("<DropArea />", () => {
   it("handles drag enter", () => {
     const preventDefault = jest.fn();
     const wrapper = shallow(<DropArea {...props()} />);
-    expect(wrapper.state().isHovered).toEqual(false);
+    expect(wrapper.instance().state.isHovered).toEqual(false);
     wrapper.simulate("dragEnter", { preventDefault });
     expect(preventDefault).toHaveBeenCalled();
-    expect(wrapper.state().isHovered).toEqual(true);
+    expect(wrapper.instance().state.isHovered).toEqual(true);
   });
 
   it("handles drag leave", () => {
     const wrapper = shallow(<DropArea {...props()} />);
     wrapper.setState({ isHovered: true });
     wrapper.simulate("dragLeave");
-    expect(wrapper.state().isHovered).toEqual(false);
+    expect(wrapper.instance().state.isHovered).toEqual(false);
   });
 
   it("handles drag over", () => {
     const preventDefault = jest.fn();
     const wrapper = shallow(<DropArea {...props()} />);
-    expect(wrapper.state().isHovered).toEqual(false);
+    expect(wrapper.instance().state.isHovered).toEqual(false);
     wrapper.simulate("dragOver", { preventDefault });
     expect(preventDefault).toHaveBeenCalled();
-    expect(wrapper.state().isHovered).toEqual(false);
+    expect(wrapper.instance().state.isHovered).toEqual(false);
   });
 
   it("handles drop", () => {
     const preventDefault = jest.fn();
     const p = props();
     const wrapper = shallow(<DropArea {...p} />);
-    expect(wrapper.state().isHovered).toEqual(false);
+    expect(wrapper.instance().state.isHovered).toEqual(false);
     wrapper.simulate("drop", {
       preventDefault, dataTransfer: {
         getData: () => "key"
@@ -66,6 +66,6 @@ describe("<DropArea />", () => {
     });
     expect(p.callback).toHaveBeenCalledWith("key");
     expect(preventDefault).toHaveBeenCalled();
-    expect(wrapper.state().isHovered).toEqual(true);
+    expect(wrapper.instance().state.isHovered).toEqual(true);
   });
 });

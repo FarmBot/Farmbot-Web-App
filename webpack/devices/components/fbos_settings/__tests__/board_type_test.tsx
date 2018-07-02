@@ -33,28 +33,28 @@ describe("<BoardType/>", () => {
   it("Farmduino", () => {
     const p = fakeProps();
     p.firmwareVersion = "5.0.3.F";
-    const wrapper = mount(<BoardType {...p} />);
+    const wrapper =mount<>(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Farmduino");
   });
 
   it("Farmduino k1.4", () => {
     const p = fakeProps();
     p.firmwareVersion = "5.0.3.G";
-    const wrapper = mount(<BoardType {...p} />);
+    const wrapper =mount<>(<BoardType {...p} />);
     expect(wrapper.text()).toContain("1.4");
   });
 
   it("Arduino/RAMPS", () => {
     const p = fakeProps();
     p.firmwareVersion = "5.0.3.R";
-    const wrapper = mount(<BoardType {...p} />);
+    const wrapper =mount<>(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Arduino/RAMPS");
   });
 
   it("Undefined", () => {
     const p = fakeProps();
     p.firmwareVersion = undefined;
-    const wrapper = mount(<BoardType {...p} />);
+    const wrapper =mount<>(<BoardType {...p} />);
     expect(wrapper.text()).toContain("None");
   });
 
@@ -69,7 +69,7 @@ describe("<BoardType/>", () => {
   it("Stubbed", () => {
     const p = fakeProps();
     p.firmwareVersion = "STUBFW";
-    const wrapper = mount(<BoardType {...p} />);
+    const wrapper =mount<>(<BoardType {...p} />);
     expect(wrapper.text()).toContain("None");
   });
 
@@ -77,7 +77,7 @@ describe("<BoardType/>", () => {
     const p = fakeProps();
     p.firmwareVersion = "Arduino Disconnected!";
     p.sourceFbosConfig = () => ({ value: "farmduino", consistent: false });
-    const wrapper = mount(<BoardType {...p} />);
+    const wrapper =mount<>(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Farmduino");
   });
 

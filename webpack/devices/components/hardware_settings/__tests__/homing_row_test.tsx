@@ -16,7 +16,7 @@ describe("<HomingRow />", () => {
   });
 
   it("renders three buttons", () => {
-    const wrapper = mount(<HomingRow
+    const wrapper =mount<>(<HomingRow
       hardware={bot.hardware.mcu_params}
       botDisconnected={false} />);
     const txt = wrapper.text().toUpperCase();
@@ -26,7 +26,7 @@ describe("<HomingRow />", () => {
   });
 
   it("calls device", () => {
-    const result = mount(<HomingRow
+    const result =mount<>(<HomingRow
       hardware={bot.hardware.mcu_params}
       botDisconnected={false} />);
     [0, 1, 2].map(i =>

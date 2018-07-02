@@ -16,7 +16,7 @@ describe("<TileReadPin/>", () => {
       }
     };
     return {
-      component: mount(<TileReadPin
+      component:mount<>(<TileReadPin
         currentSequence={fakeSequence()}
         currentStep={currentStep}
         dispatch={jest.fn()}

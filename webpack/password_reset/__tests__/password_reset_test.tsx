@@ -16,7 +16,7 @@ describe("<PasswordReset/>", () => {
 
   it("resets the users password", (done) => {
     expect.assertions(5);
-    const el = mount(<PasswordReset />);
+    const el =mount<>(<PasswordReset />);
     el.setState({
       password: "knocknock",
       passwordConfirmation: "knocknock",
@@ -42,7 +42,7 @@ describe("<PasswordReset/>", () => {
   });
 
   it("Has a form set()ter", () => {
-    const el = mount(<PasswordReset />);
+    const el =mount<>(<PasswordReset />);
     const i = el.instance() as PasswordReset;
     const field = "password";
     const value = "password123";

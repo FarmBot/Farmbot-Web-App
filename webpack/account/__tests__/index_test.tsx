@@ -16,7 +16,7 @@ describe("<Account />", () => {
     const props = mapStateToProps(fakeState());
     props.dispatch = jest.fn();
 
-    const el = mount(<Account {...props} />);
+    const el =mount<>(<Account {...props} />);
     expect(() => {
       (el.instance() as Account).onChange({
         currentTarget: {
@@ -39,7 +39,7 @@ describe("<Account />", () => {
   it("triggers the onSave() event", () => {
     const props = mapStateToProps(fakeState());
     props.dispatch = jest.fn(() => Promise.resolve({}));
-    const el = mount(<Account {...props} />);
+    const el =mount<>(<Account {...props} />);
 
     (el.instance() as Account).onSave();
     expect(props.dispatch).toHaveBeenCalledTimes(1);

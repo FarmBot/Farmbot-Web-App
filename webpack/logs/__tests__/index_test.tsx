@@ -56,7 +56,7 @@ describe("<Logs />", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount(<Logs {...fakeProps()} />);
+    const wrapper =mount<>(<Logs {...fakeProps()} />);
     ["Logs", ToolTips.LOGS, "Type", "Message", "Time", "Info",
       "Fake log message 1", "Success", "Fake log message 2"]
       .map(string =>
@@ -69,12 +69,12 @@ describe("<Logs />", () => {
   it("shows message when logs are loading", () => {
     const p = fakeProps();
     p.logs[0].body.message = "";
-    const wrapper = mount(<Logs {...p} />);
+    const wrapper =mount<>(<Logs {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("loading");
   });
 
   it("filters logs", () => {
-    const wrapper = mount(<Logs {...fakeProps()} />);
+    const wrapper =mount<>(<Logs {...fakeProps()} />);
     wrapper.setState({ info: 0 });
     expect(wrapper.text()).not.toContain("Fake log message 1");
     const filterBtn = wrapper.find("button").first();
@@ -88,7 +88,7 @@ describe("<Logs />", () => {
     const notShownMessage = "This log should not be shown.";
     p.logs[0].body.message = notShownMessage;
     p.logs[0].body.type = "info";
-    const wrapper = mount(<Logs {...p} />);
+    const wrapper =mount<>(<Logs {...p} />);
     wrapper.setState({ info: 0 });
     expect(wrapper.text()).not.toContain(notShownMessage);
   });
@@ -101,7 +101,7 @@ describe("<Logs />", () => {
     p.logs[1].body.x = 0;
     p.logs[1].body.y = 1;
     p.logs[1].body.z = 2;
-    const wrapper = mount(<Logs {...p} />);
+    const wrapper =mount<>(<Logs {...p} />);
     expect(wrapper.text()).toContain("Unknown");
     expect(wrapper.text()).toContain("0, 1, 2");
   });
@@ -109,18 +109,18 @@ describe("<Logs />", () => {
   it("shows verbosity", () => {
     const p = fakeProps();
     p.logs[0].body.verbosity = -999;
-    const wrapper = mount(<Logs {...p} />);
+    const wrapper =mount<>(<Logs {...p} />);
     expect(wrapper.text()).toContain(-999);
   });
 
   it("loads filter setting", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount(<Logs {...fakeProps()} />);
-    expect(wrapper.state().warn).toEqual(3);
+    const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
+    expect(wrapper.instance().state.warn).toEqual(3);
   });
 
   it("shows overall filter status", () => {
-    const wrapper = mount(<Logs {...fakeProps()} />);
+    const wrapper =mount<>(<Logs {...fakeProps()} />);
     wrapper.setState({
       success: 3, busy: 3, warn: 3, error: 3, info: 3, fun: 3, debug: 3
     });
@@ -131,23 +131,23 @@ describe("<Logs />", () => {
 
   it("toggles filter", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount(<Logs {...fakeProps()} />);
+    const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
-    expect(wrapper.state().warn).toEqual(3);
+    expect(wrapper.instance().state.warn).toEqual(3);
     instance.toggle("warn")();
-    expect(wrapper.state().warn).toEqual(0);
+    expect(wrapper.instance().state.warn).toEqual(0);
     instance.toggle("warn")();
-    expect(wrapper.state().warn).toEqual(1);
+    expect(wrapper.instance().state.warn).toEqual(1);
   });
 
   it("sets filter", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount(<Logs {...fakeProps()} />);
+    const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
-    expect(wrapper.state().warn).toEqual(3);
+    expect(wrapper.instance().state.warn).toEqual(3);
     instance.setFilterLevel("warn")(2);
-    expect(wrapper.state().warn).toEqual(2);
+    expect(wrapper.instance().state.warn).toEqual(2);
   });
 });

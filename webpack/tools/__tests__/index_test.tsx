@@ -25,7 +25,7 @@ describe("<Tools />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<Tools {...fakeProps()} />);
+    const wrapper =mount<>(<Tools {...fakeProps()} />);
     const txt = wrapper.text();
     const strings = [
       "ToolBay 1",

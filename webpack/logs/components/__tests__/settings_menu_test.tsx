@@ -52,7 +52,7 @@ describe("<LogsSettingsMenu />", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount(<LogsSettingsMenu {...fakeProps() } />);
+    const wrapper =mount<>(<LogsSettingsMenu {...fakeProps() } />);
     ["begin", "steps", "complete"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
@@ -60,7 +60,7 @@ describe("<LogsSettingsMenu />", () => {
   function testSettingToggle(setting: ConfigurationName, position: number) {
     it("toggles setting", () => {
       bot.hardware.configuration[setting] = false;
-      const wrapper = mount(<LogsSettingsMenu {...fakeProps() } />);
+      const wrapper =mount<>(<LogsSettingsMenu {...fakeProps() } />);
       wrapper.find("button").at(position).simulate("click");
       expect(mockDevice.updateConfig)
         .toHaveBeenCalledWith({ [setting]: true });
@@ -77,7 +77,7 @@ describe("<LogsSettingsMenu />", () => {
     const p = fakeProps();
     const setFilterLevel = jest.fn();
     p.setFilterLevel = () => setFilterLevel;
-    const wrapper = mount(<LogsSettingsMenu {...p} />);
+    const wrapper =mount<>(<LogsSettingsMenu {...p} />);
     mockStorj[NumericSetting.busy_log] = 0;
     wrapper.find("button").at(0).simulate("click");
     expect(setFilterLevel).toHaveBeenCalledWith(2);

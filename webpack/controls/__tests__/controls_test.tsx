@@ -32,7 +32,7 @@ describe("<Controls />", () => {
 
   it("shows webcam widget", () => {
     mockConfig.hide_webcam_widget = false;
-    const wrapper = mount(<Controls {...fakeProps()} />);
+    const wrapper =mount<>(<Controls {...fakeProps()} />);
     const txt = wrapper.text().toLowerCase();
     ["webcam", "move", "peripherals", "sensors"]
       .map(string => expect(txt).toContain(string));
@@ -40,7 +40,7 @@ describe("<Controls />", () => {
 
   it("hides webcam widget", () => {
     mockConfig.hide_webcam_widget = true;
-    const wrapper = mount(<Controls {...fakeProps()} />);
+    const wrapper =mount<>(<Controls {...fakeProps()} />);
     const txt = wrapper.text().toLowerCase();
     ["move", "peripherals", "sensors"]
       .map(string => expect(txt).toContain(string));
@@ -50,7 +50,7 @@ describe("<Controls />", () => {
   it("doesn't show sensors", () => {
     const p = fakeProps();
     p.shouldDisplay = () => false;
-    const wrapper = mount(<Controls {...p} />);
+    const wrapper =mount<>(<Controls {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).not.toContain("sensors");
   });

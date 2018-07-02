@@ -21,7 +21,7 @@ describe("<LogsFilterMenu />", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount(<LogsFilterMenu {...fakeProps()} />);
+    const wrapper =mount<>(<LogsFilterMenu {...fakeProps()} />);
     logTypes.map(string =>
       expect(wrapper.text().toLowerCase())
         .toContain(string.toLowerCase()));
@@ -34,7 +34,7 @@ describe("<LogsFilterMenu />", () => {
     const p = fakeProps();
     p.toggle = (x) => () => toggle(x);
     p.setFilterLevel = (x) => () => setFilterLevel(x);
-    const wrapper = mount(<LogsFilterMenu {...p} />);
+    const wrapper =mount<>(<LogsFilterMenu {...p} />);
     wrapper.find("button").at(2).simulate("click");
     expect(toggle).toHaveBeenCalledWith("success");
   });
@@ -42,7 +42,7 @@ describe("<LogsFilterMenu />", () => {
   it("shows filter status", () => {
     fakeState.debug = 3;
     fakeState.success = 0;
-    const wrapper = mount(<LogsFilterMenu {...fakeProps()} />);
+    const wrapper =mount<>(<LogsFilterMenu {...fakeProps()} />);
     const toggles = wrapper.find("button");
     expect(toggles.last().hasClass("green")).toBeTruthy();
     expect(toggles.at(2).hasClass("red")).toBeTruthy();
@@ -52,7 +52,7 @@ describe("<LogsFilterMenu />", () => {
     const setFilterLevel = jest.fn();
     const p = fakeProps();
     p.setFilterLevel = (x) => () => setFilterLevel(x);
-    const wrapper = mount(<LogsFilterMenu {...p} />);
+    const wrapper =mount<>(<LogsFilterMenu {...p} />);
     clickButton(wrapper, 0, "max");
     logTypes.map(logType =>
       expect(setFilterLevel).toHaveBeenCalledWith(logType));

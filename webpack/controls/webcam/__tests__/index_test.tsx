@@ -13,22 +13,22 @@ import { clickButton, allButtonText } from "../../../__test_support__/helpers";
 describe("<WebcamPanel/>", () => {
   it("toggles form state to edit", () => {
     const props = { feeds: [], dispatch: jest.fn() };
-    const wrapper = mount(<WebcamPanel {...props} />);
-    expect(wrapper.state().activeMenu).toEqual("show");
+    const wrapper =mount<>(<WebcamPanel {...props} />);
+    expect(wrapper.instance().state.activeMenu).toEqual("show");
     const text = allButtonText(wrapper);
     expect(text.toLowerCase()).not.toContain("view");
     clickButton(wrapper, 0, "edit");
-    expect(wrapper.state().activeMenu).toEqual("edit");
+    expect(wrapper.instance().state.activeMenu).toEqual("edit");
   });
 
   it("toggles form state to view", () => {
     const props = { feeds: [], dispatch: jest.fn() };
-    const wrapper = mount(<WebcamPanel {...props} />);
+    const wrapper =mount<>(<WebcamPanel {...props} />);
     wrapper.setState({ activeMenu: "edit" });
     const text = allButtonText(wrapper);
     expect(text.toLowerCase()).not.toContain("edit");
     clickButton(wrapper, 2, "view");
-    expect(wrapper.state().activeMenu).toEqual("show");
+    expect(wrapper.instance().state.activeMenu).toEqual("show");
   });
 });
 

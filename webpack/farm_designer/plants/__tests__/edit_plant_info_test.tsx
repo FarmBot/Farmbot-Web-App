@@ -31,7 +31,7 @@ describe("<EditPlantInfo />", () => {
   };
 
   it("renders", async () => {
-    const wrapper = mount(<EditPlantInfo {...fakeProps()} />);
+    const wrapper =mount<>(<EditPlantInfo {...fakeProps()} />);
     expect(wrapper.text()).toContain("Strawberry Plant 1");
     expect(wrapper.text().replace(/\s+/g, " "))
       .toContain("Plant Type: Strawberry");
@@ -40,7 +40,7 @@ describe("<EditPlantInfo />", () => {
   it("deletes plant", async () => {
     const p = fakeProps();
     p.dispatch = jest.fn(() => { return Promise.resolve(); });
-    const wrapper = mount(<EditPlantInfo {...p} />);
+    const wrapper =mount<>(<EditPlantInfo {...p} />);
     const deleteButton = wrapper.find("button").at(2);
     expect(deleteButton.text()).toEqual("Delete");
     expect(deleteButton.props().hidden).toBeFalsy();

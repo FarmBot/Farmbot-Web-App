@@ -34,8 +34,8 @@ describe("<Bugs />", () => {
   it("kills bugs", () => {
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "");
     expectAlive("");
-    const wrapper = mount(<Bugs {...fakeProps()} />);
-    wrapper.state().bugs[0].r = 101;
+    const wrapper =mount<>(<Bugs {...fakeProps()} />);
+    wrapper.instance().state.bugs[0].r = 101;
     range(10).map(b =>
       wrapper.find("image").at(b).simulate("click"));
     expectAlive("");
@@ -48,7 +48,7 @@ describe("<Bugs />", () => {
         className: expect.stringContaining("dead"),
         filter: expect.stringContaining("grayscale")
       }));
-    expect(wrapper.state().bugs[0]).toEqual(expect.objectContaining({
+    expect(wrapper.instance().state.bugs[0]).toEqual(expect.objectContaining({
       alive: false, hp: 50
     }));
   });

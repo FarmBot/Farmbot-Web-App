@@ -31,7 +31,7 @@ describe("<ControlsPopup />", () => {
 
   const p = fakeProps();
   p.axisInversion.x = true;
-  const wrapper = mount(<ControlsPopup {...p} />);
+  const wrapper =mount<>(<ControlsPopup {...p} />);
 
   it("Has a false initial state", () => {
     expect(wrapper.state("isOpen")).toBeFalsy();
@@ -68,7 +68,7 @@ describe("<ControlsPopup />", () => {
   it("swaps axes", () => {
     const swappedProps = fakeProps();
     swappedProps.xySwap = true;
-    const swapped = mount(<ControlsPopup {...swappedProps} />);
+    const swapped =mount<>(<ControlsPopup {...swappedProps} />);
     swapped.setState({ isOpen: true });
     expect(swapped.state("isOpen")).toBeTruthy();
     const button = swapped.find("button").at(1);

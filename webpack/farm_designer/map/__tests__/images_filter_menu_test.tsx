@@ -97,7 +97,7 @@ describe("<ImageFilterMenu />", () => {
     p.imageAgeInfo.newestDate = "2001-01-03T05:00:00.000Z";
     const wrapper = shallow(<ImageFilterMenu {...p} />);
     wrapper.find("Slider").simulate("change", 1);
-    expect(wrapper.state().slider).toEqual(1);
+    expect(wrapper.instance().state.slider).toEqual(1);
     expect(setWebAppConfigValue)
       .toHaveBeenCalledWith("photo_filter_begin", "2001-01-02T00:00:00.000Z");
     expect(setWebAppConfigValue)
@@ -107,7 +107,7 @@ describe("<ImageFilterMenu />", () => {
   it("displays slider labels", () => {
     const p = fakeProps();
     p.imageAgeInfo.newestDate = "2001-01-03T00:00:00.000Z";
-    const wrapper = mount(<ImageFilterMenu {...p} />);
+    const wrapper =mount<>(<ImageFilterMenu {...p} />);
     ["Jan-1", "Jan-2", "Jan-3"].map(date =>
       expect(wrapper.text()).toContain(date));
   });

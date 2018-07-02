@@ -36,14 +36,14 @@ describe("<SelectPlants />", () => {
   }
 
   it("displays selected plant", () => {
-    const wrapper = mount(<SelectPlants {...fakeProps()} />);
+    const wrapper =mount<>(<SelectPlants {...fakeProps()} />);
     expect(wrapper.text()).toContain("Strawberry");
   });
 
   it("displays multiple selected plants", () => {
     const p = fakeProps();
     p.selected = ["plant.1", "plant.2"];
-    const wrapper = mount(<SelectPlants {...p} />);
+    const wrapper =mount<>(<SelectPlants {...p} />);
     ["Strawberry", "Blueberry", "Delete"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
@@ -51,21 +51,21 @@ describe("<SelectPlants />", () => {
   it("displays no selected plants: selection empty", () => {
     const p = fakeProps();
     p.selected = [];
-    const wrapper = mount(<SelectPlants {...p} />);
+    const wrapper =mount<>(<SelectPlants {...p} />);
     expect(wrapper.text()).not.toContain("Strawberry Plant");
   });
 
   it("displays no selected plants: selection invalid", () => {
     const p = fakeProps();
     p.selected = ["not a uuid"];
-    const wrapper = mount(<SelectPlants {...p} />);
+    const wrapper =mount<>(<SelectPlants {...p} />);
     expect(wrapper.text()).not.toContain("Strawberry Plant");
   });
 
   it("selects all", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const wrapper = mount(<SelectPlants {...p} />);
+    const wrapper =mount<>(<SelectPlants {...p} />);
     clickButton(wrapper, 1, "select all");
     expect(p.dispatch).toHaveBeenCalledWith(
       { payload: ["plant.1", "plant.2"], type: Actions.SELECT_PLANT });
@@ -74,7 +74,7 @@ describe("<SelectPlants />", () => {
   it("selects none", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const wrapper = mount(<SelectPlants {...p} />);
+    const wrapper =mount<>(<SelectPlants {...p} />);
     clickButton(wrapper, 2, "select none");
     expect(p.dispatch).toHaveBeenCalledWith(
       { payload: undefined, type: Actions.SELECT_PLANT });
@@ -83,7 +83,7 @@ describe("<SelectPlants />", () => {
   it("confirms deletion of selected plants", () => {
     const p = fakeProps();
     p.selected = ["plant.1", "plant.2"];
-    const wrapper = mount(<SelectPlants {...p} />);
+    const wrapper =mount<>(<SelectPlants {...p} />);
     expect(wrapper.text()).toContain("Delete");
     window.confirm = jest.fn();
     wrapper.find("button").first().simulate("click");

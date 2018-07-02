@@ -29,7 +29,7 @@ describe("<If_/>", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<If_ {...fakeProps()} />);
+    const wrapper =mount<>(<If_ {...fakeProps()} />);
     ["Variable", "Operator", "Value"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find("button").length).toEqual(2);

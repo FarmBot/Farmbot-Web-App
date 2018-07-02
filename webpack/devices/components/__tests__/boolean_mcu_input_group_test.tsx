@@ -9,7 +9,7 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 describe("BooleanMCUInputGroup", () => {
   it("triggers callbacks", () => {
     const dispatch = jest.fn();
-    const el = mount(<BooleanMCUInputGroup
+    const el =mount<>(<BooleanMCUInputGroup
       sourceFwConfig={(x) => {
         return { value: bot.hardware.mcu_params[x], consistent: true };
       }}

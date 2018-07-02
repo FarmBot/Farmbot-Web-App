@@ -23,7 +23,7 @@ describe("resend_verification.tsx - base case", () => {
 
   it("fires the `onGoBack()` callback", () => {
     const p = props();
-    const el = mount(<ResendVerification {...p } />);
+    const el =mount<>(<ResendVerification {...p } />);
     el.find("button").first().simulate("click");
     expect(p.no).not.toHaveBeenCalled();
     expect(p.ok).not.toHaveBeenCalled();
@@ -32,7 +32,7 @@ describe("resend_verification.tsx - base case", () => {
 
   it("fires the `ok()` callback", (done) => {
     const p = props();
-    const el = mount(<ResendVerification {...p } />);
+    const el =mount<>(<ResendVerification {...p } />);
     expect.assertions(3);
     el.find("button").last().simulate("click");
     const { calls } = p.ok.mock;

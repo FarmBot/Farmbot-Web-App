@@ -35,7 +35,7 @@ describe("<MapImage />", () => {
   };
 
   it("doesn't render image", () => {
-    const wrapper = mount(<MapImage {...fakeProps()} />);
+    const wrapper =mount<>(<MapImage {...fakeProps()} />);
     expect(wrapper.html()).toEqual("<image></image>");
   });
 
@@ -61,7 +61,7 @@ describe("<MapImage />", () => {
       expectedData: ExpectedData,
       extra?: ExtraTranslationData) => {
       it(`renders image: INPUT_SET_${num}`, () => {
-        const wrapper = mount(<MapImage {...inputData[num]} />);
+        const wrapper =mount<>(<MapImage {...inputData[num]} />);
         expect(wrapper.find("image").props()).toEqual({
           xlinkHref: "image_url",
           x: 0,
@@ -155,21 +155,21 @@ describe("<MapImage />", () => {
   it("doesn't render placeholder image", () => {
     const p = INPUT_SET_1;
     p.image && (p.image.body.attachment_url = "/placehold.");
-    const wrapper = mount(<MapImage {...p} />);
+    const wrapper =mount<>(<MapImage {...p} />);
     expect(wrapper.html()).toEqual("<image></image>");
   });
 
   it("doesn't render image taken at different height than calibration", () => {
     const p = INPUT_SET_1;
     p.image && (p.image.body.meta.z = 100);
-    const wrapper = mount(<MapImage {...p} />);
+    const wrapper =mount<>(<MapImage {...p} />);
     expect(wrapper.html()).toEqual("<image></image>");
   });
 
   it("doesn't render images that are not adjusted for camera rotation", () => {
     const p = INPUT_SET_1;
     p.image && (p.image.body.meta.name = "na");
-    const wrapper = mount(<MapImage {...p} />);
+    const wrapper =mount<>(<MapImage {...p} />);
     expect(wrapper.html()).toEqual("<image></image>");
   });
 });

@@ -25,14 +25,14 @@ describe("<AutoSyncRow/>", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount(<AutoSyncRow {...fakeProps() } />);
+    const wrapper =mount<>(<AutoSyncRow {...fakeProps() } />);
     ["AUTO SYNC", Content.AUTO_SYNC]
       .map(string => expect(wrapper.text()).toContain(string));
   });
 
   it("toggles", () => {
     bot.hardware.configuration.auto_sync = true;
-    const wrapper = mount(<AutoSyncRow {...fakeProps() } />);
+    const wrapper =mount<>(<AutoSyncRow {...fakeProps() } />);
     wrapper.find("button").simulate("click");
     expect(mockDevice.updateConfig)
       .toHaveBeenCalledWith({ auto_sync: false });

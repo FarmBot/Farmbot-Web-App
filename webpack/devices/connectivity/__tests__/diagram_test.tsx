@@ -58,14 +58,14 @@ describe("<ConnectivityDiagram/>", () => {
   }
 
   it("renders diagram", () => {
-    const wrapper = mount(<ConnectivityDiagram {...fakeProps() } />);
+    const wrapper =mount<>(<ConnectivityDiagram {...fakeProps() } />);
     expect(wrapper.text())
       .toContain("BrowserWeb AppMessage BrokerFarmBotRaspberry PiF");
   });
 
   it("hover", () => {
     const p = fakeProps();
-    const wrapper = mount(<ConnectivityDiagram {...p } />);
+    const wrapper =mount<>(<ConnectivityDiagram {...p } />);
     wrapper.find(".connector-hover-area").first().simulate("mouseEnter");
     expect(p.hover).toHaveBeenCalledWith("EF");
   });
@@ -130,7 +130,7 @@ describe("<Connector/>", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<Connector {...fakeProps() } />);
+    const wrapper =mount<>(<Connector {...fakeProps() } />);
     const lines = wrapper.find("line");
     expect(lines.length).toEqual(3);
     expect(lines.at(0).props())
@@ -154,7 +154,7 @@ describe("<Connector/>", () => {
   it("renders connected color", () => {
     const p = fakeProps();
     p.connectionData.connectionStatus = true;
-    const wrapper = mount(<Connector {...p } />);
+    const wrapper =mount<>(<Connector {...p } />);
     expect(wrapper.find("line").at(1).props().stroke).toEqual(Color.green);
   });
 });

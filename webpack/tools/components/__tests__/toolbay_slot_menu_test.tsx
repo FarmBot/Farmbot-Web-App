@@ -16,7 +16,7 @@ describe("<SlotMenu />", () => {
 
   it("changes slot direction", () => {
     const p = fakeProps();
-    const wrapper = mount(<SlotMenu {...p} />);
+    const wrapper =mount<>(<SlotMenu {...p} />);
     wrapper.find("i").first().simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: {
@@ -31,7 +31,7 @@ describe("<SlotMenu />", () => {
   it("changes slot direction: reset", () => {
     const p = fakeProps();
     p.slot.body.pullout_direction = 4;
-    const wrapper = mount(<SlotMenu {...p} />);
+    const wrapper =mount<>(<SlotMenu {...p} />);
     wrapper.find("i").first().simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: {
@@ -47,7 +47,7 @@ describe("<SlotMenu />", () => {
     it("icon shows direction", () => {
       const p = fakeProps();
       p.slot.body.pullout_direction = direction;
-      const wrapper = mount(<SlotMenu {...p} />);
+      const wrapper =mount<>(<SlotMenu {...p} />);
       expect(wrapper.html()).toContain(expected);
     });
   };
@@ -58,7 +58,7 @@ describe("<SlotMenu />", () => {
 
   it("fills inputs with bot position", () => {
     const p = fakeProps();
-    const wrapper = mount(<SlotMenu {...p} />);
+    const wrapper =mount<>(<SlotMenu {...p} />);
     const buttons = wrapper.find("button");
     buttons.last().simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -72,7 +72,7 @@ describe("<SlotMenu />", () => {
   it("doesn't fills inputs with bot position unknown", () => {
     const p = fakeProps();
     p.botPosition = { x: undefined, y: undefined, z: undefined };
-    const wrapper = mount(<SlotMenu {...p} />);
+    const wrapper =mount<>(<SlotMenu {...p} />);
     const buttons = wrapper.find("button");
     buttons.last().simulate("click");
     expect(p.dispatch).not.toHaveBeenCalled();

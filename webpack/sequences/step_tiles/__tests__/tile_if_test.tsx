@@ -18,7 +18,7 @@ describe("<TileIf/>", () => {
       }
     };
     return {
-      component: mount(<TileIf
+      component:mount<>(<TileIf
         currentSequence={fakeSequence()}
         currentStep={currentStep}
         dispatch={jest.fn()}

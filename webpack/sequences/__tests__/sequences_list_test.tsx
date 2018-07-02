@@ -13,7 +13,6 @@ jest.mock("../../api/crud", () => ({
   init: jest.fn()
 }));
 
-
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { SequencesList } from "../sequences_list";
@@ -39,7 +38,7 @@ describe("<SequencesList />", () => {
 
   it("renders list", () => {
     const p = fakeProps();
-    const wrapper = mount(<SequencesList {...p} />);
+    const wrapper =mount<>(<SequencesList {...p} />);
     expect(wrapper.find("input").first().props().placeholder)
       .toContain("Search Sequences");
     ["Sequence 1", "Sequence 2"].map(string =>
@@ -48,7 +47,7 @@ describe("<SequencesList />", () => {
 
   it("has correct drag data", () => {
     const p = fakeProps();
-    const wrapper = mount(<SequencesList {...p} />);
+    const wrapper =mount<>(<SequencesList {...p} />);
     const seq = wrapper.find("div").last();
     expect(seq.text()).toEqual("Sequence 2");
     seq.simulate("dragStart", { dataTransfer: { setData: jest.fn() } });
@@ -66,17 +65,17 @@ describe("<SequencesList />", () => {
   it("shows in-use indicator", () => {
     const p = fakeProps();
     p.sequences[0].body.in_use = true;
-    const wrapper = mount(<SequencesList {...p} />);
+    const wrapper =mount<>(<SequencesList {...p} />);
     expect(wrapper.find(".in-use").length).toEqual(1);
   });
 
   it("doesn't show in-use indicator", () => {
-    const wrapper = mount(<SequencesList {...fakeProps()} />);
+    const wrapper =mount<>(<SequencesList {...fakeProps()} />);
     expect(wrapper.find(".in-use").length).toEqual(0);
   });
 
   it("adds new sequence", () => {
-    const wrapper = mount(<SequencesList {...fakeProps()} />);
+    const wrapper =mount<>(<SequencesList {...fakeProps()} />);
     wrapper.find("button").first().simulate("click");
     expect(init).toHaveBeenCalledWith(expect.objectContaining({
       kind: "Sequence", body: expect.objectContaining({ body: [] })
@@ -85,15 +84,15 @@ describe("<SequencesList />", () => {
   });
 
   it("sets search term", () => {
-    const wrapper = shallow(<SequencesList {...fakeProps()} />);
-    expect(wrapper.state().searchTerm).toEqual("");
+    const wrapper = shallow<SequencesList>(<SequencesList {...fakeProps()} />);
+    expect(wrapper.instance().state.searchTerm).toEqual("");
     const searchField = wrapper.find("input").first();
     expect(searchField.props().placeholder)
       .toEqual("Search Sequences...");
     searchField.simulate("change", {
       currentTarget: { value: "search this" }
     });
-    expect(wrapper.state().searchTerm).toEqual("search this");
+    expect(wrapper.instance().state.searchTerm).toEqual("search this");
   });
 
   it("opens sequence", () => {

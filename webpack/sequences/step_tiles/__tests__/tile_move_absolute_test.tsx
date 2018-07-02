@@ -52,7 +52,7 @@ describe("<TileMoveAbsolute/>", () => {
   }
 
   it("renders inputs", () => {
-    const block = mount(<TileMoveAbsolute {...fakeProps()} />);
+    const block =mount<>(<TileMoveAbsolute {...fakeProps()} />);
     const inputs = block.find("input");
     const labels = block.find("label");
     const buttons = block.find("button");
@@ -95,7 +95,7 @@ describe("<TileMoveAbsolute/>", () => {
       }
     };
 
-    const component = mount(<TileMoveAbsolute
+    const component =mount<>(<TileMoveAbsolute
       currentSequence={fakeSequence()}
       currentStep={currentStep}
       dispatch={jest.fn()}
@@ -109,7 +109,7 @@ describe("<TileMoveAbsolute/>", () => {
 
   it("doesn't show setting warning", () => {
     const p = fakeProps();
-    const wrapper = mount(<TileMoveAbsolute {...p} />);
+    const wrapper =mount<>(<TileMoveAbsolute {...p} />);
     expect(wrapper.text()).not.toContain(CONFLICT_TEXT_BASE);
   });
 
@@ -118,7 +118,7 @@ describe("<TileMoveAbsolute/>", () => {
     p.currentStep.args.offset.args.x = 10000;
     p.hardwareFlags.stopAtMax.x = true;
     p.hardwareFlags.axisLength.x = 0;
-    const wrapper = mount(<TileMoveAbsolute {...p} />);
+    const wrapper =mount<>(<TileMoveAbsolute {...p} />);
     expect(wrapper.text()).not.toContain(CONFLICT_TEXT_BASE);
   });
 
@@ -127,7 +127,7 @@ describe("<TileMoveAbsolute/>", () => {
     p.currentStep.args.offset.args.x = 10000;
     p.hardwareFlags.stopAtMax.x = true;
     p.hardwareFlags.axisLength.x = 100;
-    const wrapper = mount(<TileMoveAbsolute {...p} />);
+    const wrapper =mount<>(<TileMoveAbsolute {...p} />);
     expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
@@ -137,7 +137,7 @@ describe("<TileMoveAbsolute/>", () => {
     p.hardwareFlags.stopAtMax.x = true;
     p.hardwareFlags.negativeOnly.x = true;
     p.hardwareFlags.axisLength.x = 100;
-    const wrapper = mount(<TileMoveAbsolute {...p} />);
+    const wrapper =mount<>(<TileMoveAbsolute {...p} />);
     expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
@@ -146,7 +146,7 @@ describe("<TileMoveAbsolute/>", () => {
     p.currentStep.args.offset.args.x = 10000;
     p.hardwareFlags.stopAtHome.x = true;
     p.hardwareFlags.negativeOnly.x = true;
-    const wrapper = mount(<TileMoveAbsolute {...p} />);
+    const wrapper =mount<>(<TileMoveAbsolute {...p} />);
     expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
@@ -155,7 +155,7 @@ describe("<TileMoveAbsolute/>", () => {
     p.currentStep.args.offset.args.x = -10000;
     p.hardwareFlags.stopAtHome.x = true;
     p.hardwareFlags.stopAtMax.x = true;
-    const wrapper = mount(<TileMoveAbsolute {...p} />);
+    const wrapper =mount<>(<TileMoveAbsolute {...p} />);
     expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 });

@@ -33,7 +33,7 @@ describe("<Photos/>", () => {
     const images = prepareImages(fakeImages);
     const currentImage = images[1];
     const props = { images, currentImage, dispatch, timeOffset: 0 };
-    const wrapper = mount(<Photos {...props} />);
+    const wrapper =mount<>(<Photos {...props} />);
     expect(wrapper.text()).toContain("Created At:June 1st, 2017");
     expect(wrapper.text()).toContain("X:632Y:347Z:164");
   });
@@ -45,7 +45,7 @@ describe("<Photos/>", () => {
       dispatch: jest.fn(),
       timeOffset: 0
     };
-    const wrapper = mount(<Photos {...props} />);
+    const wrapper =mount<>(<Photos {...props} />);
     expect(wrapper.text()).toContain("Image:No meta data.");
   });
 
@@ -59,7 +59,7 @@ describe("<Photos/>", () => {
       dispatch,
       timeOffset: 0
     };
-    const wrapper = mount(<Photos {...props} />);
+    const wrapper =mount<>(<Photos {...props} />);
     clickButton(wrapper, 1, "delete photo");
     expect(destroy).toHaveBeenCalledWith("Position 1");
   });

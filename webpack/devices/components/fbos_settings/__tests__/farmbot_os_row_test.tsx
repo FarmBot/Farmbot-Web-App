@@ -56,7 +56,7 @@ describe("<FbosDetails/>", () => {
 
   it("toggles os beta opt in setting on", () => {
     bot.hardware.configuration.beta_opt_in = false;
-    const wrapper = mount(<FbosDetails {...fakeProps()} />);
+    const wrapper =mount<>(<FbosDetails {...fakeProps()} />);
     window.confirm = jest.fn();
     wrapper.find("button").simulate("click");
     expect(window.confirm).toHaveBeenCalledWith(
@@ -70,7 +70,7 @@ describe("<FbosDetails/>", () => {
 
   it("toggles os beta opt in setting off", () => {
     bot.hardware.configuration.beta_opt_in = true;
-    const wrapper = mount(<FbosDetails {...fakeProps()} />);
+    const wrapper =mount<>(<FbosDetails {...fakeProps()} />);
     window.confirm = () => false;
     wrapper.find("button").simulate("click");
     expect(mockDevice.updateConfig)
