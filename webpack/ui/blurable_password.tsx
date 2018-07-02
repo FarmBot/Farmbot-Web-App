@@ -1,6 +1,6 @@
 import * as React from "react";
 
-interface BPProps {
+export interface BPProps {
   onCommit(e: React.SyntheticEvent<HTMLInputElement>): void;
   name?: string;
 }
