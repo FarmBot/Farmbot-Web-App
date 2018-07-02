@@ -3,6 +3,7 @@ import { ToolForm } from "../tool_form";
 import { mount } from "enzyme";
 import { fakeTool } from "../../../__test_support__/fake_state/resources";
 import { ToolFormProps } from "../../interfaces";
+import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<ToolForm/>", () => {
   function fakeProps(): ToolFormProps {
@@ -23,9 +24,7 @@ describe("<ToolForm/>", () => {
   it("adds stock tools", () => {
     const p = fakeProps();
     const wrapper = mount(<ToolForm {...p} />);
-    const add = wrapper.find("button").at(3);
-    expect(add.text()).toEqual("Stock Tools");
-    add.simulate("click");
+    clickButton(wrapper, 3, "stock tools");
     expect(p.dispatch).toHaveBeenCalledTimes(6);
   });
 

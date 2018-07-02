@@ -20,6 +20,7 @@ import {
   TaggedFirmwareConfig,
   TaggedToolSlotPointer,
   TaggedPinBinding,
+  TaggedDiagnosticDump,
 } from "./tagged_resources";
 import { sortResourcesById, betterCompact, bail } from "../util";
 import { error } from "farmbot-toastr";
@@ -79,6 +80,8 @@ export const selectAllToolSlots = (i: ResourceIndex): TaggedToolSlotPointer[] =>
     }));
 };
 
+export const selectAllDiagnosticDumps =
+  (i: ResourceIndex) => findAll<TaggedDiagnosticDump>(i, "DiagnosticDump");
 export const selectAllRegimens = (i: ResourceIndex) => findAll<TaggedRegimen>(i, "Regimen");
 export const selectAllSensors = (i: ResourceIndex) => findAll<TaggedSensor>(i, "Sensor");
 export const selectAllPinBindings =

@@ -2,6 +2,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { LogsFilterMenu } from "../filter_menu";
 import { LogsFilterMenuProps, LogsState } from "../../interfaces";
+import { clickButton } from "../../../__test_support__/helpers";
 
 const logTypes = ["success", "busy", "warn", "error", "info", "fun", "debug"];
 
@@ -52,15 +53,11 @@ describe("<LogsFilterMenu />", () => {
     const p = fakeProps();
     p.setFilterLevel = (x) => () => setFilterLevel(x);
     const wrapper = mount(<LogsFilterMenu {...p} />);
-    const max = wrapper.find("button").first();
-    expect(max.text()).toEqual("max");
-    max.simulate("click");
+    clickButton(wrapper, 0, "max");
     logTypes.map(logType =>
       expect(setFilterLevel).toHaveBeenCalledWith(logType));
     jest.clearAllMocks();
-    const normal = wrapper.find("button").at(1);
-    expect(normal.text()).toEqual("normal");
-    normal.simulate("click");
+    clickButton(wrapper, 1, "normal");
     logTypes.map(logType =>
       expect(setFilterLevel).toHaveBeenCalledWith(logType));
   });

@@ -6,7 +6,6 @@ unless Rails.env == "production"
     ENV['MQTT_HOST']        = "blooper.io"
     ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
 
-    LogDispatch.destroy_all
     Log.destroy_all
     TokenIssuance.destroy_all
     PinBinding.destroy_all
@@ -21,23 +20,17 @@ unless Rails.env == "production"
     User.destroy_all
     PlantTemplate.destroy_all
     SavedGarden.destroy_all
-
-    Users::Create.run!(name:                  "Administrator",
-                       email:                 "farmbot@farmbot.io",
+    User.admin_user
+    Users::Create.run!(name:                  "Test",
+                       email:                 "test@test.com",
                        password:              "password123",
                        password_confirmation: "password123",
-                       agree_to_terms:        true)
-    signed_tos = User.last
-    signed_tos.agreed_to_terms_at = nil
-    signed_tos.confirmed_at = Time.now
-    signed_tos.save(validate: false)
-    Users::Create.run!(name:                  "Administrator",
-                       email:                 "admin@admin.com",
-                       password:              "password123",
-                       password_confirmation: "password123",
-                       agree_to_terms:        true)
+                       confirmed_at:          Time.now,
+                       agreed_to_terms_at:    Time.now)
+    User.all.update_all(confirmed_at:          Time.now,
+                        agreed_to_terms_at:    Time.now)
     u = User.last
-    u.update_attributes(confirmed_at: Time.now)
+    u.update_attributes(device: Devices::Create.run!(user: u))
     Log.transaction do
       FactoryBot.create_list(:log, 35, device: u.device)
     end
@@ -117,8 +110,6 @@ unless Rails.env == "production"
                                 y: 10,
                                 z: 10)
     d = u.device
-    # PinBindings::Create
-    #   .run!(device: d, sequence_id: d.sequences.sample.id, pin_num: 15,)
     Sensors::Create
       .run!(device: d, pin: 14, label: "Stub sensor", mode: 0)
   end

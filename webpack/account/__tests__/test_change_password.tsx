@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChangePassword } from "../components/index";
+import { ChangePassword, ChangePWState } from "../components/index";
 import { mount } from "enzyme";
 import { getProp } from "../../__test_support__/helpers";
 import { SpecialStatus } from "../../resources/tagged_resources";
@@ -13,7 +13,7 @@ describe("<ChangePassword/>", function () {
   });
 
   function testCase() {
-    const el = mount(<ChangePassword />);
+    const el = mount<{}, ChangePWState>(<ChangePassword />);
     return {
       el,
       instance(): ChangePassword { return el.instance() as ChangePassword; }
@@ -27,11 +27,11 @@ describe("<ChangePassword/>", function () {
       form: { ...instance().state.form, password: "X" }
     });
     el.update();
-    expect(getProp(el.find("input").first(), "value")).toEqual("X");
+    expect(getProp(el.find("input").first(), "defaultValue")).toEqual("X");
     expect(instance().state.status).toBe(SpecialStatus.DIRTY);
     instance().maybeClearForm();
     expect(instance().state.status).toBe(SpecialStatus.DIRTY);
-    expect(getProp(el.find("input").first(), "value")).toEqual("X");
+    expect(getProp(el.find("input").first(), "defaultValue")).toEqual("X");
   });
 
   it("it does fire maybeClearForm() when form is empty.", () => {

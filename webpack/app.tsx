@@ -3,7 +3,6 @@ import { t } from "i18next";
 import { connect } from "react-redux";
 import * as _ from "lodash";
 import { init, error } from "farmbot-toastr";
-
 import { NavBar } from "./nav";
 import { Everything } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";

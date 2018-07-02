@@ -101,16 +101,6 @@ private
       reset_session
     end
 
-    def current_device
-      if @current_device
-        @current_device
-      else
-        @current_device = (current_user.try(:device) || no_device)
-        Device.current  = @current_device # Mutable state eww
-        @current_device
-      end
-    end
-
     def no_device
       raise Errors::NoBot
     end

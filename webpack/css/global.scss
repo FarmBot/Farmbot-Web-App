@@ -589,6 +589,45 @@ ul {
   }
 }
 
+.farmware {
+  button {
+    margin: 0.5rem;
+  }
+}
+
+.farmware-input-panel,
+.farmware-info-panel {
+  label, h4 {
+    margin-top: 2rem;
+  }
+}
+
+.farmware-list-items {
+  margin-left: -30px;
+  margin-right: -20px;
+  padding: 0.5rem;
+  padding-left: 1.5rem;
+  padding-top: 0.75rem;
+  cursor: pointer;
+  label {
+    cursor: pointer;
+  }
+  &:hover, &.selected {
+    background: $medium_light_gray;
+    p {
+      font-weight: bold;
+    }
+  }
+}
+
+.farmware-button,
+.farmware-settings-menu {
+  float: right !important;
+  position: absolute !important;
+  right: 3rem;
+  top: 1rem;
+}
+
 .logs {
   .row {
     @media screen and (max-width: 974px) {
@@ -777,4 +816,22 @@ ul {
       color: $dark_gray;
     }
   }
+}
+
+a.panel-link {
+    // TODO: Might need to move this to a better place. CC: @gabrielBurnworth
+    //
+    // PROBLEM: <a> links in the device panel are invisible.
+    // SOLUTION: Add {color: $dark_gray}
+    // PROBLEM 2: This rule probably does not belong at the bottom of
+    //            global.scss
+    color: $dark_gray;
+
+    &:visited {
+      color: $dark_gray;
+    };
+
+    &:active {
+      color: $dark_gray;
+    };
 }

@@ -21,6 +21,7 @@ import { toggleWebAppBool } from "../../config_storage/actions";
 import { Dictionary } from "farmbot";
 import { BooleanSetting } from "../../session_keys";
 import { Actions } from "../../constants";
+import { clickButton } from "../../__test_support__/helpers";
 
 describe("<Move />", () => {
   beforeEach(function () {
@@ -78,9 +79,7 @@ describe("<Move />", () => {
   it("changes step size", () => {
     const p = fakeProps();
     const wrapper = mount(<Move {...p} />);
-    const btn = wrapper.find("button").first();
-    expect(btn.text()).toEqual("1");
-    btn.simulate("click");
+    clickButton(wrapper, 0, "1");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.CHANGE_STEP_SIZE,
       payload: 1

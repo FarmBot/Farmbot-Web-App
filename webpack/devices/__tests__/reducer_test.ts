@@ -45,8 +45,12 @@ describe("botRedcuer", () => {
       type: Actions.BULK_TOGGLE_CONTROL_PANEL,
       payload: true
     });
-    _.values(_.omit(state.controlPanelState, "power_and_reset"))
-      .map(value => expect(value).toBeTruthy());
+
+    const bulkToggable =
+      _.omit(state.controlPanelState, "power_and_reset", "diagnostic_dumps");
+    _.values(bulkToggable).map(value => {
+      expect(value).toBeTruthy();
+    });
   });
 
   it("fetches OS update info", () => {

@@ -36,7 +36,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
       title={t("Homing and Calibration")}
       name={"homing_and_calibration"}
       dispatch={dispatch}
-      bool={homing_and_calibration} />
+      expanded={homing_and_calibration} />
     <Collapse isOpen={!!homing_and_calibration}>
       <HomingRow hardware={hardware} botDisconnected={botDisconnected} />
       <CalibrationRow hardware={hardware} botDisconnected={botDisconnected} />

@@ -4,10 +4,8 @@ class FatalErrorPreview < ActionMailer::Preview
     device = Device.last
     log    = Logs::Create.run!({
       device:   device,
-      message:  "Please login to the web application to "\
-                "Unlock your device once you've verified"\
-                " there are no issues with your hardware"\
-                " and software configuration.",
+      message:  "루비 온 레일즈(Ruby on Rails)는 루비로 작성된 MVC 패턴을 이용하는 오픈" +
+                " 소스 웹 프레임워크이다.",
       channels: ["fatal_email"],
       meta: {
           type:          "error",

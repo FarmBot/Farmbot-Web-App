@@ -13,7 +13,8 @@ const mockDevice = {
   home: jest.fn(() => { return Promise.resolve(); }),
   sync: jest.fn(() => { return Promise.resolve(); }),
   readStatus: jest.fn(() => Promise.resolve()),
-  updateConfig: jest.fn(() => Promise.resolve())
+  updateConfig: jest.fn(() => Promise.resolve()),
+  dumpInfo: jest.fn(() => Promise.resolve()),
 };
 
 jest.mock("../../device", () => ({
@@ -21,15 +22,12 @@ jest.mock("../../device", () => ({
     return mockDevice;
   }
 }));
-const mockOk = jest.fn();
-const mockInfo = jest.fn();
-const mockError = jest.fn();
-const mockWarning = jest.fn();
+
 jest.mock("farmbot-toastr", () => ({
-  success: mockOk,
-  info: mockInfo,
-  error: mockError,
-  warning: mockWarning,
+  success: jest.fn(),
+  info: jest.fn(),
+  error: jest.fn(),
+  warning: jest.fn(),
 }));
 
 let mockGetRelease: Promise<{}> = Promise.resolve({});
@@ -52,6 +50,7 @@ import axios from "axios";
 import { SpecialStatus } from "../../resources/tagged_resources";
 import { McuParamName } from "farmbot";
 import { bot } from "../../__test_support__/fake_state/bot";
+import { success, error, warning, info } from "farmbot-toastr";
 
 describe("checkControllerUpdates()", function () {
   beforeEach(function () {
@@ -61,7 +60,7 @@ describe("checkControllerUpdates()", function () {
   it("calls checkUpdates", async () => {
     await actions.checkControllerUpdates();
     expect(mockDevice.checkUpdates).toHaveBeenCalled();
-    expect(mockOk).toHaveBeenCalled();
+    expect(success).toHaveBeenCalled();
   });
 });
 
@@ -73,7 +72,7 @@ describe("powerOff()", function () {
   it("calls powerOff", async () => {
     await actions.powerOff();
     expect(mockDevice.powerOff).toHaveBeenCalled();
-    expect(mockOk).toHaveBeenCalled();
+    expect(success).toHaveBeenCalled();
   });
 });
 
@@ -103,7 +102,7 @@ describe("reboot()", function () {
   it("calls reboot", async () => {
     await actions.reboot();
     expect(mockDevice.reboot).toHaveBeenCalled();
-    expect(mockOk).toHaveBeenCalled();
+    expect(success).toHaveBeenCalled();
   });
 });
 
@@ -134,7 +133,7 @@ describe("sync()", function () {
     actions.sync()(jest.fn(), getState);
     expect(mockDevice.sync).not.toHaveBeenCalled();
     const expectedMessage = ["FarmBot is not connected.", "Disconnected", "red"];
-    expect(mockInfo).toBeCalledWith(...expectedMessage);
+    expect(info).toBeCalledWith(...expectedMessage);
   });
 });
 
@@ -147,7 +146,7 @@ describe("execSequence()", function () {
     const s = fakeSequence().body;
     await actions.execSequence(s);
     expect(mockDevice.execSequence).toHaveBeenCalledWith(s.id);
-    expect(mockOk).toHaveBeenCalled();
+    expect(success).toHaveBeenCalled();
   });
 
   it("implodes when executing unsaved sequences", () => {
@@ -173,6 +172,13 @@ describe("MCUFactoryReset()", function () {
     window.confirm = () => true;
     actions.MCUFactoryReset();
     expect(mockDevice.resetMCU).toHaveBeenCalled();
+  });
+});
+
+describe("requestDiagnostic", () => {
+  it("requests that FBOS build a diagnostic report", () => {
+    actions.requestDiagnostic();
+    expect(mockDevice.dumpInfo).toHaveBeenCalled();
   });
 });
 
@@ -264,7 +270,7 @@ describe("updateMCU()", () => {
     await actions.updateMCU(
       "movement_min_spd_x", "100")(jest.fn(), () => state);
     expect(mockDevice.updateMcu).not.toHaveBeenCalled();
-    expect(mockWarning).toHaveBeenCalledWith(
+    expect(warning).toHaveBeenCalledWith(
       "Minimum speed should always be lower than maximum");
   });
 });
@@ -277,7 +283,7 @@ describe("pinToggle()", function () {
   it("calls togglePin", async () => {
     await actions.pinToggle(5);
     expect(mockDevice.togglePin).toHaveBeenCalledWith({ pin_number: 5 });
-    expect(mockOk).not.toHaveBeenCalled();
+    expect(success).not.toHaveBeenCalled();
   });
 });
 
@@ -290,7 +296,7 @@ describe("homeAll()", function () {
     await actions.homeAll(100);
     expect(mockDevice.home)
       .toHaveBeenCalledWith({ axis: "all", speed: 100 });
-    expect(mockOk).not.toHaveBeenCalled();
+    expect(success).not.toHaveBeenCalled();
   });
 });
 
@@ -346,7 +352,7 @@ describe("fetchReleases()", () => {
     const dispatch = jest.fn();
     await actions.fetchReleases("url")(dispatch);
     expect(axios.get).toHaveBeenCalledWith("url");
-    expect(mockError).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       payload: { version: "1.0.0", commit: undefined },
       type: Actions.FETCH_OS_UPDATE_INFO_OK
@@ -360,7 +366,7 @@ describe("fetchReleases()", () => {
     const dispatch = jest.fn();
     await actions.fetchReleases("url", { beta: true })(dispatch);
     expect(axios.get).toHaveBeenCalledWith("url");
-    expect(mockError).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       payload: { version: "1.0.0-beta", commit: "commit" },
       type: Actions.FETCH_BETA_OS_UPDATE_INFO_OK
@@ -372,7 +378,7 @@ describe("fetchReleases()", () => {
     const dispatch = jest.fn();
     await actions.fetchReleases("url")(dispatch);
     await expect(axios.get).toHaveBeenCalledWith("url");
-    expect(mockError).toHaveBeenCalledWith(
+    expect(error).toHaveBeenCalledWith(
       "Could not download FarmBot OS update information.");
     expect(dispatch).toHaveBeenCalledWith({
       payload: "error",
@@ -385,7 +391,7 @@ describe("fetchReleases()", () => {
     const dispatch = jest.fn();
     await actions.fetchReleases("url", { beta: true })(dispatch);
     await expect(axios.get).toHaveBeenCalledWith("url");
-    expect(mockError).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       payload: "error",
       type: "FETCH_BETA_OS_UPDATE_INFO_ERROR"
@@ -448,7 +454,7 @@ describe("fetchMinOsFeatureData()", () => {
     const dispatch = jest.fn();
     await actions.fetchMinOsFeatureData("url")(dispatch);
     await expect(axios.get).toHaveBeenCalledWith("url");
-    expect(mockError).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       payload: "error",
       type: "FETCH_MIN_OS_FEATURE_INFO_ERROR"
@@ -492,7 +498,7 @@ describe("updateConfig()", () => {
 describe("badVersion()", () => {
   it("warns of old FBOS version", () => {
     actions.badVersion();
-    expect(mockInfo).toHaveBeenCalledWith(
+    expect(info).toHaveBeenCalledWith(
       expect.stringContaining("old version"), "Please Update", "red");
   });
 });

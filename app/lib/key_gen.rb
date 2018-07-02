@@ -5,6 +5,7 @@ class KeyGen
   PROD_KEY_FILE    = "/keys/production.pem"
   KEY_FILE         = "jwt.#{Rails.env}.pem"
   SAVE_PATH        = (Rails.env == "production") ? PROD_KEY_FILE : KEY_FILE
+  # SAVE_PATH        = KEY_FILE
 
   def self.try_file
     OpenSSL::PKey::RSA.new(File.read(SAVE_PATH)) if File.file?(SAVE_PATH)

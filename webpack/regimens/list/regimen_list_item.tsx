@@ -14,7 +14,7 @@ export function RegimenListItem({ regimen, dispatch }: RegimenListItemProps) {
   const name = (regimen.body.name || "") + (regimen.specialStatus ? " *" : "");
   const color = (regimen.body.color) || "gray";
   const style = [`block`, `full-width`, `fb-button`, `${color}`];
-  lastUrlChunk() === urlFriendly(name) && style.push("active");
+  lastUrlChunk() === urlFriendly(regimen.body.name) && style.push("active");
 
   return <Link
     to={`/app/regimens/${urlFriendly(name)}`}

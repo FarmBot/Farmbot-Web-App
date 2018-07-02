@@ -2,7 +2,7 @@
 var hasInclude = !!Array.prototype.includes
 var user;
 try {
-  user = (JSON.parse(localStorage.session || "{}").user);
+  user = {user_id: (JSON.parse(localStorage.session || "{}").user || {}).id || 0};
 } catch(e) {
 };
 <% if ENV["ROLLBAR_ACCESS_TOKEN"] && ENV["ROLLBAR_CLIENT_TOKEN"] %>

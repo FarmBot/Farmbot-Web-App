@@ -1,17 +1,12 @@
 import { BotStateTree, ConfigurationName } from "farmbot";
-import {
-  McuParamName,
-  Dictionary,
-  SyncStatus,
-  FarmwareManifest,
-  LocationName
-} from "farmbot";
+import { McuParamName, SyncStatus, LocationName } from "farmbot";
 import { AuthState } from "../auth/interfaces";
 import {
   TaggedImage,
   TaggedPeripheral,
   TaggedDevice,
-  TaggedSensor
+  TaggedSensor,
+  TaggedDiagnosticDump
 } from "../resources/tagged_resources";
 import { ResourceIndex } from "../resources/interfaces";
 import { TaggedUser } from "../resources/tagged_resources";
@@ -20,6 +15,7 @@ import { ConnectionStatus, ConnectionState, NetworkState } from "../connectivity
 import { IntegerSize } from "../util";
 import { WebAppConfig } from "../config_storage/web_app_configs";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
+import { Farmwares } from "../farmware/interfaces";
 
 export interface Props {
   userToApi: ConnectionStatus | undefined;
@@ -64,6 +60,7 @@ export enum Feature {
   jest_feature = "jest_feature", // for tests
   backscheduled_regimens = "backscheduled_regimens",
   endstop_invert = "endstop_invert",
+  diagnostic_dumps = "diagnostic_dumps"
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
@@ -148,6 +145,7 @@ export interface CalibrationButtonProps {
 
 export interface FarmbotOsProps {
   bot: BotState;
+  diagnostics: TaggedDiagnosticDump[];
   account: TaggedDevice;
   botToMqttStatus: NetworkState;
   botToMqttLastSeen: string;
@@ -196,11 +194,12 @@ export interface FarmwareProps {
   images: TaggedImage[];
   currentImage: TaggedImage | undefined;
   botToMqttStatus: NetworkState;
-  farmwares: Dictionary<FarmwareManifest | undefined>;
+  farmwares: Farmwares;
   timeOffset: number;
   syncStatus: SyncStatus | undefined;
   webAppConfig: Partial<WebAppConfig>;
   firstPartyFarmwareNames: string[];
+  currentFarmware: string | undefined;
 }
 
 export interface HardwareSettingsProps {
@@ -221,4 +220,5 @@ export interface ControlPanelState {
   danger_zone: boolean;
   power_and_reset: boolean;
   pin_guard: boolean;
+  diagnostic_dumps: boolean;
 }

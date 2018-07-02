@@ -8,7 +8,8 @@ import {
   TaggedSensor,
   TaggedFirmwareConfig,
   TaggedPinBinding,
-  TaggedLog
+  TaggedLog,
+  TaggedDiagnosticDump
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
@@ -114,6 +115,23 @@ export function fakePlant(): TaggedPlantPointer {
     radius: 25,
     meta: {},
     openfarm_slug: "strawberry"
+  });
+}
+
+export function fakeDiagnosticDump(): TaggedDiagnosticDump {
+  const string = "----PLACEHOLDER DIAG STUFF ---";
+  return fakeResource("DiagnosticDump", {
+    id: idCounter++,
+    device_id: 123,
+    ticket_identifier: string,
+    fbos_commit: string,
+    fbos_version: string,
+    firmware_commit: string,
+    firmware_state: string,
+    network_interface: string,
+    fbos_dmesg_dump: string,
+    created_at: string,
+    updated_at: string,
   });
 }
 

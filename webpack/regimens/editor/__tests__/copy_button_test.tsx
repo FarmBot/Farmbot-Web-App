@@ -1,7 +1,4 @@
-const mockPush = jest.fn();
-jest.mock("../../../history", () => ({
-  push: (url: string) => mockPush(url)
-}));
+jest.mock("../../../history", () => ({ push: jest.fn() }));
 
 jest.unmock("../../../api/crud");
 import * as React from "react";
@@ -10,6 +7,7 @@ import { CopyButton } from "../copy_button";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { SpecialStatus } from "../../../resources/tagged_resources";
 import { Actions } from "../../../constants";
+import { push } from "../../../history";
 
 describe("Copy button", () => {
 
@@ -30,7 +28,7 @@ describe("Copy button", () => {
       }),
       type: Actions.INIT_RESOURCE
     });
-    expect(mockPush).toHaveBeenCalledWith("/app/regimens/foo_copy_1");
+    expect(push).toHaveBeenCalledWith("/app/regimens/foo_copy_1");
   });
 
   it("Render a button when given a regimen", () => {

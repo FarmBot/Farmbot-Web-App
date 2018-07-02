@@ -39,6 +39,7 @@ module Logs
       integer :verbosity
       integer :major_version
       integer :minor_version
+      integer :created_at
 
       hash :meta do # This can be transitioned out soon.
         string :type, in: Log::TYPES
@@ -68,6 +69,7 @@ module Logs
       @log.major_version = transitional_field(:major_version)
       @log.minor_version = transitional_field(:minor_version)
       @log.type          = transitional_field(:type, "info")
+      @log.created_at    = DateTime.strptime(created_at.to_s,'%s') if created_at
       @log.validate!
     end
 
@@ -79,7 +81,7 @@ module Logs
     private
 
     def maybe_deliver
-      LogDispatch.delay.deliver(device, @log)
+      Log.delay.deliver(device, @log)
     end
 
     def has_bad_words

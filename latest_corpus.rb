@@ -83,7 +83,7 @@ class CorpusEmitter
     end
   end
 
-  HASH  = JSON.load(open("http://localhost:3000/api/corpuses/3")).deep_symbolize_keys
+  HASH  = JSON.load(open("http://localhost:3000/api/corpus")).deep_symbolize_keys
   ARGS  = {}
   HASH[:args].map{ |x| CSArg.new(x) }.each{|x| ARGS[x.name] = x}
   NODES = HASH[:nodes].map { |x| CSNode.new(x) }

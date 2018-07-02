@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_06_131907) do
+ActiveRecord::Schema.define(version: 2018_06_15_153318) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -51,6 +51,20 @@ ActiveRecord::Schema.define(version: 2018_06_06_131907) do
     t.datetime "throttled_until"
     t.datetime "throttled_at"
     t.index ["timezone"], name: "index_devices_on_timezone"
+  end
+
+  create_table "diagnostic_dumps", force: :cascade do |t|
+    t.bigint "device_id", null: false
+    t.string "ticket_identifier", null: false
+    t.string "fbos_commit", null: false
+    t.string "fbos_version", null: false
+    t.string "firmware_commit", null: false
+    t.string "firmware_state", null: false
+    t.string "network_interface", null: false
+    t.text "fbos_dmesg_dump", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_diagnostic_dumps_on_device_id"
   end
 
   create_table "edge_nodes", force: :cascade do |t|
@@ -225,17 +239,6 @@ ActiveRecord::Schema.define(version: 2018_06_06_131907) do
     t.integer "attachment_file_size"
     t.datetime "attachment_updated_at"
     t.index ["device_id"], name: "index_images_on_device_id"
-  end
-
-  create_table "log_dispatches", force: :cascade do |t|
-    t.bigint "device_id"
-    t.bigint "log_id"
-    t.datetime "sent_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["device_id"], name: "index_log_dispatches_on_device_id"
-    t.index ["log_id"], name: "index_log_dispatches_on_log_id"
-    t.index ["sent_at"], name: "index_log_dispatches_on_sent_at"
   end
 
   create_table "logs", id: :serial, force: :cascade do |t|
@@ -489,10 +492,9 @@ ActiveRecord::Schema.define(version: 2018_06_06_131907) do
   end
 
   add_foreign_key "device_configs", "devices"
+  add_foreign_key "diagnostic_dumps", "devices"
   add_foreign_key "edge_nodes", "sequences"
   add_foreign_key "farmware_installations", "devices"
-  add_foreign_key "log_dispatches", "devices"
-  add_foreign_key "log_dispatches", "logs"
   add_foreign_key "peripherals", "devices"
   add_foreign_key "pin_bindings", "devices"
   add_foreign_key "pin_bindings", "sequences"
