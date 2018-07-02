@@ -7,8 +7,6 @@ describe("<Login/>", () => {
     const p: LoginProps = {
       /** Attributes */
       email: undefined,
-      loginPassword: undefined,
-
       /** Callbacks */
       onToggleForgotPassword: jest.fn(),
       onSubmit: jest.fn(),

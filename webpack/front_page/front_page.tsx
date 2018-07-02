@@ -170,7 +170,6 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     const props: LoginProps = {
       email: this.state.email || "",
       onEmailChange: setField("email", this.handleFormUpdate),
-      loginPassword: this.state.loginPassword || "",
       onLoginPasswordChange: setField("loginPassword", this.handleFormUpdate),
       onToggleForgotPassword: this.toggleForgotPassword,
       onSubmit: this.submitLogin,

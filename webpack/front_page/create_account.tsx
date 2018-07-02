@@ -1,5 +1,13 @@
 import * as React from "react";
-import { WidgetBody, Col, Widget, WidgetHeader, Row, BlurableInput } from "../ui/index";
+import {
+  WidgetBody,
+  Col,
+  Widget,
+  WidgetHeader,
+  Row,
+  BlurableInput,
+  BIProps
+} from "../ui/index";
 import { t } from "i18next";
 import { resendEmail } from "./resend_verification";
 import { success, error } from "farmbot-toastr";
@@ -24,10 +32,7 @@ interface CreateAccountProps {
   set: KeySetter;
 }
 
-type FieldType =
-  | "email"
-  | "password"
-  | "text";
+type FieldType = BIProps["type"];
 
 interface FormFieldProps {
   label: string;
