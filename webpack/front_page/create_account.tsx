@@ -68,9 +68,12 @@ const FIELDS: FieldData[] = [
 const renderFormFields = (get: KeyGetter, set: KeySetter) => {
   return FIELDS.map((f) => {
     if (f.type == "password") {
-      return <BlurablePassword
-        key={f.label}
-        onCommit={(e) => set(f.keyName, e.currentTarget.value)} />;
+      return <div>
+        <label> {t(f.label)} </label>
+        <BlurablePassword
+          key={f.label}
+          onCommit={(e) => set(f.keyName, e.currentTarget.value)} />
+      </div>;
     } else {
       return <FormField
         key={f.label}

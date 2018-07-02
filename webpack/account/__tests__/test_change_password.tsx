@@ -1,7 +1,6 @@
 import * as React from "react";
 import { ChangePassword, ChangePWState } from "../components/index";
 import { mount } from "enzyme";
-import { getProp } from "../../__test_support__/helpers";
 import { SpecialStatus } from "../../resources/tagged_resources";
 import * as moxios from "moxios";
 import { API } from "../../api/api";
