@@ -25,6 +25,7 @@ import { BlurableInput } from "../../ui/index";
 import { success, error } from "farmbot-toastr";
 import { resendEmail } from "../resend_verification";
 import { ResendPanelBody } from "../resend_panel_body";
+import { BlurablePassword } from "../../ui/blurable_password";
 
 describe("<FormField/>", () => {
   it("renders correct props", () => {
@@ -92,7 +93,8 @@ describe("<MustRegister/>", () => {
       sent={false}
       get={jest.fn()}
       set={jest.fn()} />);
-    expect(el.find(FormField).length).toEqual(4);
+    expect(el.find(FormField).length).toEqual(2);
+    expect(el.find(BlurablePassword).length).toEqual(2);
     expect(el.html().toLowerCase()).toContain("create account");
   });
 });

@@ -13,6 +13,7 @@ import { resendEmail } from "./resend_verification";
 import { success, error } from "farmbot-toastr";
 import { bail } from "../util";
 import { ResendPanelBody } from "./resend_panel_body";
+import { BlurablePassword } from "../ui/blurable_password";
 
 type RegKeyName =
   | "regConfirmation"
@@ -49,7 +50,13 @@ export const FormField = (props: FormFieldProps) => <div>
     onCommit={(e) => props.onCommit(e.currentTarget.value)} />
 </div>;
 
-const FIELDS: { label: string, type: FieldType, keyName: RegKeyName }[] = [
+interface FieldData {
+  label: string,
+  type: FieldType | "password",
+  keyName: RegKeyName
+}
+
+const FIELDS: FieldData[] = [
   { label: "Email", type: "email", keyName: "regEmail" },
   { label: "Name", type: "text", keyName: "regName" },
   { label: "Password", type: "password", keyName: "regPassword" },
@@ -60,12 +67,18 @@ const FIELDS: { label: string, type: FieldType, keyName: RegKeyName }[] = [
  * Renders a list of input boxes on the registration panel form. */
 const renderFormFields = (get: KeyGetter, set: KeySetter) => {
   return FIELDS.map((f) => {
-    return <FormField
-      key={f.label}
-      label={f.label}
-      type={f.type}
-      value={get(f.keyName) || ""}
-      onCommit={(val) => set(f.keyName, val)} />;
+    if (f.type == "password") {
+      return <BlurablePassword
+        key={f.label}
+        onCommit={(e) => set(f.keyName, e.currentTarget.value)} />;
+    } else {
+      return <FormField
+        key={f.label}
+        label={f.label}
+        type={f.type}
+        value={get(f.keyName) || ""}
+        onCommit={(val) => set(f.keyName, val)} />;
+    }
   });
 };
 

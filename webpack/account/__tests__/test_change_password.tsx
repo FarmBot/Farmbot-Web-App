@@ -27,11 +27,11 @@ describe("<ChangePassword/>", function () {
       form: { ...instance().state.form, password: "X" }
     });
     el.update();
-    expect(getProp(el.find("input").first(), "defaultValue")).toEqual("X");
+    expect(instance().state.form.password).toEqual("X");
     expect(instance().state.status).toBe(SpecialStatus.DIRTY);
     instance().maybeClearForm();
     expect(instance().state.status).toBe(SpecialStatus.DIRTY);
-    expect(getProp(el.find("input").first(), "defaultValue")).toEqual("X");
+    expect(instance().state.form.password).toEqual("X");
   });
 
   it("it does fire maybeClearForm() when form is empty.", () => {
