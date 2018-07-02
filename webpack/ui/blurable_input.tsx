@@ -1,7 +1,7 @@
 import * as React from "react";
 import { equals } from "../util";
 
-interface BIProps {
+export interface BIProps {
   value: string | number;
   onCommit(e: React.SyntheticEvent<HTMLInputElement>): void;
   min?: number;
@@ -10,7 +10,6 @@ interface BIProps {
   | "text"
   | "number"
   | "email"
-  | "password"
   | "time"
   | "date"
   | "hidden";
@@ -34,18 +33,11 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
 
   state: BIState = { buffer: "", isEditing: false };
 
-  /** Prevent DOM snooping on `el.value`. Should not matter because we use
-   * CSP, but doesn't hurt to have extra security. */
-  relevantField = (): "value" | "defaultValue" => {
-    return this.props.type === "password" ? "defaultValue" : "value";
-  }
   /** Called on blur. */
   maybeCommit = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const shouldPassToParent = this.state.buffer || (this.props.allowEmpty);
     shouldPassToParent && this.props.onCommit(e);
     this.setState({ isEditing: false, buffer: "" });
-    const isPw = (this.props.type === "password");
-    isPw && e.currentTarget.setAttribute("value", "");
   }
 
   focus = () => {
@@ -61,7 +53,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
     const value = this.state.isEditing ?
       this.state.buffer : this.props.value;
     return {
-      [this.relevantField()]: value,
+      value,
       hidden: !!this.props.hidden,
       onFocus: this.focus,
       onChange: this.updateBuffer,

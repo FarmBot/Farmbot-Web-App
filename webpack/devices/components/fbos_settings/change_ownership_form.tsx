@@ -7,6 +7,7 @@ import { transferOwnership } from "../../transfer_ownership/transfer_ownership";
 import { API } from "../../../api";
 import { NonsecureContentWarning } from "./nonsecure_content_warning";
 import { Content } from "../../../constants";
+import { BlurablePassword } from "../../../ui/blurable_password";
 
 interface ChangeOwnershipFormState {
   email: string;
@@ -53,12 +54,9 @@ export class ChangeOwnershipForm
           </label>
         </Col>
         <Col xs={8}>
-          <BlurableInput
-            allowEmpty={true}
+          <BlurablePassword
             onCommit={e => this.setState({ password: e.currentTarget.value })}
-            name="password"
-            value={this.state.password}
-            type="password" />
+            name="password" />
         </Col>
       </Row>
       <Row>
