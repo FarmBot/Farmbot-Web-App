@@ -29,7 +29,7 @@ describe("<PeripheralForm/>", function () {
   ];
 
   it("renders a list of editable peripherals, in sorted order", function () {
-    const form = mount<{}>(<PeripheralForm dispatch={dispatch}
+    const form = mount(<PeripheralForm dispatch={dispatch}
       peripherals={peripherals} />);
     const inputs = form.find("input");
     const buttons = form.find("button");

@@ -35,7 +35,7 @@ describe("<TestButton/>", () => {
   it("doesnt fire if unsaved", () => {
     const props = fakeProps();
     props.sequence.specialStatus = SpecialStatus.DIRTY;
-    const result = mount<{}>(<TestButton {...props} />);
+    const result = mount(<TestButton {...props} />);
     const btn = result.find("button");
     btn.simulate("click");
     expect(btn.hasClass("pseudo-disabled")).toBeTruthy();
@@ -48,7 +48,7 @@ describe("<TestButton/>", () => {
     props.syncStatus = "sync_now";
     props.sequence.specialStatus = SpecialStatus.SAVED;
     props.sequence.body.id = 1;
-    const result = mount<{}>(<TestButton {...props} />);
+    const result = mount(<TestButton {...props} />);
     const btn = result.find("button");
     btn.simulate("click");
     expect(btn.hasClass("pseudo-disabled")).toBeTruthy();
@@ -61,7 +61,7 @@ describe("<TestButton/>", () => {
     props.syncStatus = "synced";
     props.sequence.specialStatus = SpecialStatus.SAVED;
     props.sequence.body.id = 1;
-    const result = mount<{}>(<TestButton {...props} />);
+    const result = mount(<TestButton {...props} />);
     const btn = result.find("button");
     btn.simulate("click");
     expect(btn.hasClass("orange")).toBeTruthy();

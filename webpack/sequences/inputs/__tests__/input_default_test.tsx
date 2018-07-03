@@ -48,7 +48,7 @@ describe("<InputDefault/>", () => {
       },
       "uuid": "Sequence.74.145"
     };
-    const c = mount<{}>(<InputDefault
+    const c = mount(<InputDefault
       index={0}
       field="speed"
       step={step}

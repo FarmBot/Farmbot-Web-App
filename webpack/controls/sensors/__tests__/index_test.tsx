@@ -31,7 +31,7 @@ describe("<Sensors />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount<{}>(<Sensors {...fakeProps()} />);
+    const wrapper = mount(<Sensors {...fakeProps()} />);
     ["Sensors", "Edit", "Save", "Fake Pin", "1"].map(string =>
       expect(wrapper.text()).toContain(string));
     const saveButton = wrapper.find("button").at(1);
@@ -51,7 +51,7 @@ describe("<Sensors />", () => {
     p.sensors[0].body.pin = 1;
     p.sensors[1].body.pin = 1;
     p.sensors[0].specialStatus = SpecialStatus.DIRTY;
-    const wrapper = mount<{}>(<Sensors {...p} />);
+    const wrapper = mount(<Sensors {...p} />);
     clickButton(wrapper, 1, "save", { partial_match: true });
     expect(error).toHaveBeenLastCalledWith("Pin numbers must be unique.");
   });
@@ -60,14 +60,14 @@ describe("<Sensors />", () => {
     const p = fakeProps();
     p.sensors[0].body.pin = 1;
     p.sensors[0].specialStatus = SpecialStatus.DIRTY;
-    const wrapper = mount<{}>(<Sensors {...p} />);
+    const wrapper = mount(<Sensors {...p} />);
     clickButton(wrapper, 1, "save", { partial_match: true });
     expect(p.dispatch).toHaveBeenCalled();
   });
 
   it("adds empty sensor", () => {
     const p = fakeProps();
-    const wrapper = mount<{}>(<Sensors {...p} />);
+    const wrapper = mount(<Sensors {...p} />);
     wrapper.setState({ isEditing: true });
     clickButton(wrapper, 2, "");
     expect(p.dispatch).toHaveBeenCalled();
@@ -75,7 +75,7 @@ describe("<Sensors />", () => {
 
   it("adds stock sensors", () => {
     const p = fakeProps();
-    const wrapper = mount<{}>(<Sensors {...p} />);
+    const wrapper = mount(<Sensors {...p} />);
     wrapper.setState({ isEditing: true });
     clickButton(wrapper, 3, "stock sensors");
     expect(p.dispatch).toHaveBeenCalledTimes(2);

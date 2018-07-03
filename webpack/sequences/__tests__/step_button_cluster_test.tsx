@@ -8,7 +8,7 @@ describe("<StepButtonCluster />", () => {
     "run farmware", "take photo"];
 
   it("renders sequence commands", () => {
-    const wrapper = mount<{}>(<StepButtonCluster
+    const wrapper = mount(<StepButtonCluster
       dispatch={jest.fn()}
       current={undefined} />);
     commands.map(command =>
@@ -17,7 +17,7 @@ describe("<StepButtonCluster />", () => {
 
   it("has correct drag data", () => {
     const dispatch = jest.fn();
-    const wrapper = mount<{}>(<StepButtonCluster
+    const wrapper = mount(<StepButtonCluster
       dispatch={dispatch}
       current={undefined} />);
     const stepButton = wrapper.find("div").last();

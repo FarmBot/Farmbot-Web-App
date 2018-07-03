@@ -49,13 +49,13 @@ describe("<FarmwarePage />", () => {
   };
 
   it("renders panels", () => {
-    const wrapper = mount<{}>(<FarmwarePage {...fakeProps()} />);
+    const wrapper = mount(<FarmwarePage {...fakeProps()} />);
     ["Farmware", "My Farmware"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 
   it("renders photos page by default", () => {
-    const wrapper = mount<{}>(<FarmwarePage {...fakeProps()} />);
+    const wrapper = mount(<FarmwarePage {...fakeProps()} />);
     expect(wrapper.text()).toContain("Take Photo");
   });
 
@@ -72,7 +72,7 @@ describe("<FarmwarePage />", () => {
     it(`renders ${farmware} Farmware page`, () => {
       const p = fakeProps();
       p.currentFarmware = farmware;
-      const wrapper = mount<{}>(<FarmwarePage {...p} />);
+      const wrapper = mount(<FarmwarePage {...p} />);
       expectedText.map(string =>
         expect(wrapper.text()).toContain(string));
     })
@@ -81,7 +81,7 @@ describe("<FarmwarePage />", () => {
     const p = fakeProps();
     p.farmwares["My Fake Farmware"] = fakeFarmware();
     p.currentFarmware = "My Fake Farmware";
-    const wrapper = mount<{}>(<FarmwarePage {...p} />);
+    const wrapper = mount(<FarmwarePage {...p} />);
     ["My Fake Farmware", "Does things", "Run", "Config 1",
       "Information", "Description", "Version", "Update", "Remove"
     ].map(string =>
@@ -94,7 +94,7 @@ describe("<FarmwarePage />", () => {
     farmware.config = [];
     p.farmwares["My Fake Farmware"] = farmware;
     p.currentFarmware = "My Fake Farmware";
-    const wrapper = mount<{}>(<FarmwarePage {...p} />);
+    const wrapper = mount(<FarmwarePage {...p} />);
     ["My Fake Farmware", "Does things", "Run", "No inputs provided."
     ].map(string =>
       expect(wrapper.text()).toContain(string));
@@ -106,7 +106,7 @@ describe("<FarmwarePage />", () => {
     farmware.config = [];
     p.farmwares["My Fake Farmware"] = farmware;
     p.currentFarmware = "My Fake Farmware";
-    const wrapper = mount<{}>(<FarmwarePage {...p} />);
+    const wrapper = mount(<FarmwarePage {...p} />);
     clickButton(wrapper, 1, "Run");
     expect(mockDevice.execScript).toHaveBeenCalledWith("My Fake Farmware");
   });

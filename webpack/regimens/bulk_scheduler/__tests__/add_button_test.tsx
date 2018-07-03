@@ -6,7 +6,7 @@ import { AddButton } from "../add_button";
 describe("<AddButton />", () => {
   it("renders an add button when active", () => {
     const props: AddButtonProps = { active: true, click: jest.fn() };
-    const wrapper = mount<{}>(<AddButton {...props} />);
+    const wrapper = mount(<AddButton {...props} />);
     const button = wrapper.find("button");
     ["green", "add"].map(klass => {
       expect(button.hasClass(klass)).toBeTruthy();
@@ -18,7 +18,7 @@ describe("<AddButton />", () => {
 
   it("renders a <div> when inactive", () => {
     const props: AddButtonProps = { active: false, click: jest.fn() };
-    const wrapper = mount<{}>(<AddButton {...props} />);
+    const wrapper = mount(<AddButton {...props} />);
     expect(wrapper.html()).toEqual("<div></div>");
   });
 });

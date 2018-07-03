@@ -35,7 +35,7 @@ describe("<FarmwareConfigMenu />", () => {
   }
 
   it("calls install 1st party farmwares", () => {
-    const wrapper = mount<{}>(<FarmwareConfigMenu {...fakeProps()} />);
+    const wrapper = mount(<FarmwareConfigMenu {...fakeProps()} />);
     const button = wrapper.find("button").first();
     expect(button.hasClass("fa-download")).toBeTruthy();
     button.simulate("click");

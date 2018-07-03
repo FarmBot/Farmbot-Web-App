@@ -17,7 +17,7 @@ describe("<DrawnPoint/>", () => {
   }
 
   it("renders point", () => {
-    const wrapper = mount<{}>(<DrawnPoint {...fakeProps()} />);
+    const wrapper = mount(<DrawnPoint {...fakeProps()} />);
     expect(wrapper.find("g").props().stroke).toEqual("red");
     expect(wrapper.find("circle").first().props()).toEqual({
       id: "point-radius", strokeDasharray: "4 5",

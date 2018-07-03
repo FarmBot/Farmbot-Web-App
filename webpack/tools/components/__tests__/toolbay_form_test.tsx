@@ -15,7 +15,7 @@ describe("<ToolBayForm/>", () => {
       toggle,
       props,
       dispatch,
-      component: mount<{}>(<ToolBayForm
+      component: mount(<ToolBayForm
         toggle={toggle}
         dispatch={dispatch}
         toolSlots={props.toolSlots}

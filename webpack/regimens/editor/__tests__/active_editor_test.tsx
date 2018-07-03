@@ -28,13 +28,13 @@ describe("<ActiveEditor />", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount<{}>(<ActiveEditor {...props} />);
+    const wrapper = mount(<ActiveEditor {...props} />);
     ["Day", "Item 0", "10:00"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 
   it("removes regimen item", () => {
-    const wrapper = mount<{}>(<ActiveEditor {...props} />);
+    const wrapper = mount(<ActiveEditor {...props} />);
     wrapper.find("i").simulate("click");
     expect(props.dispatch).toHaveBeenCalledWith({
       payload: {

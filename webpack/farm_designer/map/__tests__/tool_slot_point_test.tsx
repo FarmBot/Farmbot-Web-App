@@ -18,7 +18,7 @@ describe("<ToolSlotPoint/>", () => {
       const p = fakeProps();
       if (!tool) { p.slot.tool = undefined; }
       p.slot.toolSlot.body.pullout_direction = slot;
-      const wrapper = mount<{}>(<ToolSlotPoint {...p} />);
+      const wrapper = mount(<ToolSlotPoint {...p} />);
       expect(wrapper.find("circle").length).toEqual(tool);
       expect(wrapper.find("use").length).toEqual(slot);
     });
@@ -31,7 +31,7 @@ describe("<ToolSlotPoint/>", () => {
   it("displays tool name", () => {
     const p = fakeProps();
     p.slot.toolSlot.body.pullout_direction = 2;
-    const wrapper = mount<{}>(<ToolSlotPoint {...p} />);
+    const wrapper = mount(<ToolSlotPoint {...p} />);
     wrapper.setState({ hovered: true });
     expect(wrapper.find("text").props().visibility).toEqual("visible");
     expect(wrapper.find("text").text()).toEqual("Foo");
@@ -41,28 +41,28 @@ describe("<ToolSlotPoint/>", () => {
   it("displays 'no tool'", () => {
     const p = fakeProps();
     p.slot.tool = undefined;
-    const wrapper = mount<{}>(<ToolSlotPoint {...p} />);
+    const wrapper = mount(<ToolSlotPoint {...p} />);
     wrapper.setState({ hovered: true });
     expect(wrapper.find("text").text()).toEqual("no tool");
     expect(wrapper.find("text").props().dx).toEqual(40);
   });
 
   it("doesn't display tool name", () => {
-    const wrapper = mount<{}>(<ToolSlotPoint {...fakeProps()} />);
+    const wrapper = mount(<ToolSlotPoint {...fakeProps()} />);
     expect(wrapper.find("text").props().visibility).toEqual("hidden");
   });
 
   it("renders bin", () => {
     const p = fakeProps();
     if (p.slot.tool) { p.slot.tool.body.name = "seed bin"; }
-    const wrapper = mount<{}>(<ToolSlotPoint {...p} />);
+    const wrapper = mount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("#SeedBinGradient").length).toEqual(1);
   });
 
   it("renders tray", () => {
     const p = fakeProps();
     if (p.slot.tool) { p.slot.tool.body.name = "seed tray"; }
-    const wrapper = mount<{}>(<ToolSlotPoint {...p} />);
+    const wrapper = mount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("#SeedTrayPattern").length).toEqual(1);
   });
 });

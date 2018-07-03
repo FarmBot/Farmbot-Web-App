@@ -45,7 +45,7 @@ describe("<CropInfo />", () => {
 
   it("renders", () => {
     mockPath = "/app/designer/plants/crop_search/mint";
-    const wrapper = mount<{}>(<CropInfo {...fakeProps()} />);
+    const wrapper = mount(<CropInfo {...fakeProps()} />);
     expect(wrapper.text()).toContain("Mint");
     expect(wrapper.text()).toContain("Drag and drop into map");
     expect(wrapper.text()).toContain("Row Spacing1000mm");

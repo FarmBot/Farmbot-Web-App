@@ -50,7 +50,7 @@ describe("<TickerList />", () => {
   }
 
   it("shows log message and datetime", () => {
-    const wrapper = mount<{}>(<TickerList {...fakeProps()} />);
+    const wrapper = mount(<TickerList {...fakeProps()} />);
     const labels = wrapper.find("label");
     expect(labels.length).toEqual(2);
     expect(labels.at(0).text()).toContain("Farmbot is up and Running!");
@@ -61,7 +61,7 @@ describe("<TickerList />", () => {
   it("shows empty log message", () => {
     const p = fakeProps();
     p.logs = [];
-    const wrapper = mount<{}>(<TickerList {...p} />);
+    const wrapper = mount(<TickerList {...p} />);
     const labels = wrapper.find("label");
     expect(labels.length).toEqual(2);
     expect(labels.at(0).text()).toContain("No logs yet.");
@@ -70,7 +70,7 @@ describe("<TickerList />", () => {
   it("shows 'loading' log message", () => {
     const p = fakeProps();
     p.logs[0].body.message = "";
-    const wrapper = mount<{}>(<TickerList {...p} />);
+    const wrapper = mount(<TickerList {...p} />);
     const labels = wrapper.find("label");
     expect(labels.length).toEqual(2);
     expect(labels.at(0).text()).toContain("Loading");
@@ -79,7 +79,7 @@ describe("<TickerList />", () => {
   it("opens ticker", () => {
     const p = fakeProps();
     p.tickerListOpen = true;
-    const wrapper = mount<{}>(<TickerList {...p} />);
+    const wrapper = mount(<TickerList {...p} />);
     const labels = wrapper.find("label");
     expect(labels.length).toEqual(5);
     expect(labels.at(0).text()).toContain("Farmbot is up and Running!");
@@ -95,7 +95,7 @@ describe("<TickerList />", () => {
       .map(logType => mockStorj[logType + "_log"] = 0);
     const p = fakeProps();
     p.logs[0].body.verbosity = 1;
-    const wrapper = mount<{}>(<TickerList {...p} />);
+    const wrapper = mount(<TickerList {...p} />);
     const labels = wrapper.find("label");
     expect(labels.length).toEqual(2);
     expect(labels.at(0).text())

@@ -29,7 +29,7 @@ describe("<ToolbaySlot />", () => {
           p.pulloutDirection = direction;
           p.quadrant = quadrant;
           p.xySwap = xySwap;
-          const wrapper = mount<{}>(<ToolbaySlot {...p} />);
+          const wrapper = mount(<ToolbaySlot {...p} />);
           expect(wrapper.find("use").props().transform).toEqual(expected);
         });
     };
@@ -76,7 +76,7 @@ describe("<Tool/>", () => {
   };
 
   it("renders standard tool styling", () => {
-    const wrapper = mount<{}>(<Tool {...fakeProps()} />);
+    const wrapper = mount(<Tool {...fakeProps()} />);
     const props = wrapper.find("circle").last().props();
     expect(props.r).toEqual(35);
     expect(props.cx).toEqual(10);
@@ -87,7 +87,7 @@ describe("<Tool/>", () => {
   it("tool hover", () => {
     const p = fakeProps();
     p.toolProps.hovered = true;
-    const wrapper = mount<{}>(<Tool {...p} />);
+    const wrapper = mount(<Tool {...p} />);
     const props = wrapper.find("circle").last().props();
     expect(props.fill).toEqual(Color.darkGray);
   });
@@ -95,7 +95,7 @@ describe("<Tool/>", () => {
   it("renders special tool styling: bin", () => {
     const p = fakeProps();
     p.tool = "seedBin";
-    const wrapper = mount<{}>(<Tool {...p} />);
+    const wrapper = mount(<Tool {...p} />);
     const elements = wrapper.find("#seed-bin").find("circle");
     expect(elements.length).toEqual(2);
     expect(elements.last().props().fill).toEqual("url(#SeedBinGradient)");
@@ -105,7 +105,7 @@ describe("<Tool/>", () => {
     const p = fakeProps();
     p.tool = "seedBin";
     p.toolProps.hovered = true;
-    const wrapper = mount<{}>(<Tool {...p} />);
+    const wrapper = mount(<Tool {...p} />);
     p.toolProps.hovered = true;
     expect(wrapper.find("#seed-bin").find("circle").length).toEqual(3);
   });
@@ -113,7 +113,7 @@ describe("<Tool/>", () => {
   it("renders special tool styling: tray", () => {
     const p = fakeProps();
     p.tool = "seedTray";
-    const wrapper = mount<{}>(<Tool {...p} />);
+    const wrapper = mount(<Tool {...p} />);
     const elements = wrapper.find("#seed-tray");
     expect(elements.find("circle").length).toEqual(2);
     expect(elements.find("rect").length).toEqual(1);
@@ -124,7 +124,7 @@ describe("<Tool/>", () => {
     const p = fakeProps();
     p.tool = "seedTray";
     p.toolProps.hovered = true;
-    const wrapper = mount<{}>(<Tool {...p} />);
+    const wrapper = mount(<Tool {...p} />);
     p.toolProps.hovered = true;
     expect(wrapper.find("#seed-tray").find("circle").length).toEqual(3);
   });

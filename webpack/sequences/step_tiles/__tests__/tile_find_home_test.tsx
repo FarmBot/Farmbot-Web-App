@@ -28,7 +28,7 @@ describe("<TileFindHome/>", () => {
   };
 
   it("renders inputs", () => {
-    const wrapper = mount<{}>(<TileFindHome {...fakeProps() } />);
+    const wrapper = mount(<TileFindHome {...fakeProps()} />);
     const inputs = wrapper.find("input");
     const labels = wrapper.find("label");
     expect(inputs.length).toEqual(5);
@@ -50,7 +50,7 @@ describe("<TileFindHome/>", () => {
     const p = fakeProps();
     p.currentStep.args.axis = "x";
     p.hardwareFlags.findHomeEnabled.x = true;
-    const wrapper = mount<{}>(<TileFindHome {...p} />);
+    const wrapper = mount(<TileFindHome {...p} />);
     expect(wrapper.text()).not.toContain(CONFLICT_TEXT_BASE);
   });
 
@@ -58,7 +58,7 @@ describe("<TileFindHome/>", () => {
     const p = fakeProps();
     p.currentStep.args.axis = "all";
     p.hardwareFlags.findHomeEnabled.x = false;
-    const wrapper = mount<{}>(<TileFindHome {...p} />);
+    const wrapper = mount(<TileFindHome {...p} />);
     expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
@@ -66,7 +66,7 @@ describe("<TileFindHome/>", () => {
     const p = fakeProps();
     p.currentStep.args.axis = "x";
     p.hardwareFlags.findHomeEnabled.x = false;
-    const wrapper = mount<{}>(<TileFindHome {...p} />);
+    const wrapper = mount(<TileFindHome {...p} />);
     expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 });

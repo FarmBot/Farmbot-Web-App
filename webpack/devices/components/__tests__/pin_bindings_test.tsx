@@ -51,7 +51,7 @@ describe("<PinBindings/>", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount<{}>(<PinBindings {...fakeProps()} />);
+    const wrapper = mount(<PinBindings {...fakeProps()} />);
     ["pin bindings", "pin number", "none", "bind"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
     ["pi gpio 10", "sequence 1", "pi gpio 11", "sequence 2"].map(string =>
@@ -64,7 +64,7 @@ describe("<PinBindings/>", () => {
   it("unregisters pin: bot", () => {
     const p = fakeProps();
     p.dispatch = jest.fn(x => x(jest.fn()));
-    const wrapper = mount<{}>(<PinBindings {...p} />);
+    const wrapper = mount(<PinBindings {...p} />);
     const buttons = wrapper.find("button");
     buttons.first().simulate("click");
     expect(mockDevice.unregisterGpio).toHaveBeenCalledWith({
@@ -78,7 +78,7 @@ describe("<PinBindings/>", () => {
     s.body.id = 1;
     p.resources = buildResourceIndex([fakePinBinding(), s]).index;
     p.shouldDisplay = () => true;
-    const wrapper = mount<{}>(<PinBindings {...p} />);
+    const wrapper = mount(<PinBindings {...p} />);
     const buttons = wrapper.find("button");
     buttons.first().simulate("click");
     expect(mockDevice.unregisterGpio).not.toHaveBeenCalled();
@@ -88,7 +88,7 @@ describe("<PinBindings/>", () => {
   it("registers pin: bot", () => {
     const p = fakeProps();
     p.dispatch = jest.fn(x => x(jest.fn()));
-    const wrapper = mount<{}>(<PinBindings {...p} />);
+    const wrapper = mount(<PinBindings {...p} />);
     const buttons = wrapper.find("button");
     expect(buttons.last().text()).toEqual("BIND");
     wrapper.setState({ pinNumberInput: 1, sequenceIdInput: 2 });
@@ -102,7 +102,7 @@ describe("<PinBindings/>", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
     p.shouldDisplay = () => true;
-    const wrapper = mount<{}>(<PinBindings {...p} />);
+    const wrapper = mount(<PinBindings {...p} />);
     const buttons = wrapper.find("button");
     expect(buttons.last().text()).toEqual("BIND");
     wrapper.setState({ pinNumberInput: 1, sequenceIdInput: 2 });

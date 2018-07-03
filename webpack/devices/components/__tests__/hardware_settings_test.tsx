@@ -31,7 +31,7 @@ describe("<HardwareSettings />", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount<{}>(<HardwareSettings {...fakeProps()} />);
+    const wrapper = mount(<HardwareSettings {...fakeProps()} />);
     ["expand all", "x axis", "motors"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
@@ -43,7 +43,7 @@ describe("<HardwareSettings />", () => {
     type: string,
     payload: boolean | string) {
     const p = fakeProps();
-    const wrapper = mount<{}>(<HardwareSettings {...p} />);
+    const wrapper = mount(<HardwareSettings {...p} />);
     clickButton(wrapper, buttonIndex, buttonText, {
       button_tag: buttonElement, partial_match: true
     });
@@ -82,7 +82,7 @@ describe("<HardwareSettings />", () => {
 describe("<FwParamExportMenu />", () => {
   it("lists all params", () => {
     const config = fakeFirmwareConfig().body;
-    const wrapper = mount<{}>(<FwParamExportMenu firmwareConfig={config} />);
+    const wrapper = mount(<FwParamExportMenu firmwareConfig={config} />);
     expect(wrapper.text()).toContain("movement_max_spd_");
   });
 });

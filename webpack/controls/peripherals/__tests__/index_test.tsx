@@ -27,7 +27,7 @@ describe("<Peripherals />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount<Peripherals>(<Peripherals {...fakeProps()} />);
+    const wrapper = mount(<Peripherals {...fakeProps()} />);
     ["Peripherals", "Edit", "Save", "Fake Pin", "1"].map(string =>
       expect(wrapper.text()).toContain(string));
     const saveButton = wrapper.find("button").at(1);
@@ -46,7 +46,7 @@ describe("<Peripherals />", () => {
     const p = fakeProps();
     p.peripherals[0].body.pin = num;
     p.peripherals[0].specialStatus = SpecialStatus.DIRTY;
-    const wrapper = mount<Peripherals>(<Peripherals {...p} />);
+    const wrapper = mount(<Peripherals {...p} />);
     clickButton(wrapper, 1, "save", { partial_match: true });
     expect(error).toHaveBeenLastCalledWith(errorString);
   }
@@ -63,14 +63,14 @@ describe("<Peripherals />", () => {
     const p = fakeProps();
     p.peripherals[0].body.pin = 1;
     p.peripherals[0].specialStatus = SpecialStatus.DIRTY;
-    const wrapper = mount<Peripherals>(<Peripherals {...p} />);
+    const wrapper = mount(<Peripherals {...p} />);
     clickButton(wrapper, 1, "save", { partial_match: true });
     expect(p.dispatch).toHaveBeenCalled();
   });
 
   it("adds empty peripheral", () => {
     const p = fakeProps();
-    const wrapper = mount<Peripherals>(<Peripherals {...p} />);
+    const wrapper = mount(<Peripherals {...p} />);
     wrapper.setState({ isEditing: true });
     clickButton(wrapper, 2, "");
     expect(p.dispatch).toHaveBeenCalled();
@@ -78,7 +78,7 @@ describe("<Peripherals />", () => {
 
   it("adds farmduino peripherals", () => {
     const p = fakeProps();
-    const wrapper = mount<Peripherals>(<Peripherals {...p} />);
+    const wrapper = mount(<Peripherals {...p} />);
     wrapper.setState({ isEditing: true });
     clickButton(wrapper, 3, "farmduino");
     expect(p.dispatch).toHaveBeenCalledTimes(5);

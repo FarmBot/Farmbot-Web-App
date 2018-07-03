@@ -5,7 +5,7 @@ import { FallbackWidget } from "../fallback_widget";
 describe("<FallbackWidget/>", function () {
 
   it("renders widget fallback", function () {
-    const wrapper = mount<{}>(<FallbackWidget title="FakeWidget" />);
+    const wrapper = mount(<FallbackWidget title="FakeWidget" />);
     const widget = wrapper.find(".widget-wrapper");
     const header = widget.find(".widget-header");
     expect(header.text()).toContain("FakeWidget");

@@ -45,7 +45,7 @@ describe("<RegimenEditor />", () => {
   }
 
   it("active editor", () => {
-    const wrapper = mount<{}>(<RegimenEditor {...fakeProps()} />);
+    const wrapper = mount(<RegimenEditor {...fakeProps()} />);
     ["Delete", "Item 0", "10:00"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
@@ -53,14 +53,14 @@ describe("<RegimenEditor />", () => {
   it("empty editor", () => {
     const props = fakeProps();
     props.current = undefined;
-    const wrapper = mount<{}>(<RegimenEditor {...props} />);
+    const wrapper = mount(<RegimenEditor {...props} />);
     ["No Regimen selected."].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 
   it("deletes regimen", () => {
     const p = fakeProps();
-    const wrapper = mount<{}>(<RegimenEditor {...p} />);
+    const wrapper = mount(<RegimenEditor {...p} />);
     clickButton(wrapper, 2, "delete");
     const expectedUuid = p.current && p.current.uuid;
     expect(destroy).toHaveBeenCalledWith(expectedUuid);
@@ -68,7 +68,7 @@ describe("<RegimenEditor />", () => {
 
   it("saves regimen", () => {
     const p = fakeProps();
-    const wrapper = mount<{}>(<RegimenEditor {...p} />);
+    const wrapper = mount(<RegimenEditor {...p} />);
     clickButton(wrapper, 0, "save", { partial_match: true });
     const expectedUuid = p.current && p.current.uuid;
     expect(save).toHaveBeenCalledWith(expectedUuid);

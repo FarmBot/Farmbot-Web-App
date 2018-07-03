@@ -47,7 +47,7 @@ describe("<SensorList/>", function () {
   };
 
   it("renders a list of sensors, in sorted order", function () {
-    const wrapper = mount<{}>(<SensorList {...fakeProps()} />);
+    const wrapper = mount(<SensorList {...fakeProps()} />);
     const labels = wrapper.find("label");
     const pinNumbers = wrapper.find("p");
     expect(labels.first().text()).toEqual("GPIO 51");
@@ -73,7 +73,7 @@ describe("<SensorList/>", function () {
     });
 
   it("reads pins", () => {
-    const wrapper = mount<{}>(<SensorList {...fakeProps()} />);
+    const wrapper = mount(<SensorList {...fakeProps()} />);
     const toggle = wrapper.find("button");
     toggle.first().simulate("click");
     expect(mockDevice.send).toHaveBeenCalledWith(expectedPayload(51, 1));
@@ -85,7 +85,7 @@ describe("<SensorList/>", function () {
   it("pins toggles are disabled", () => {
     const p = fakeProps();
     p.disabled = true;
-    const wrapper = mount<{}>(<SensorList {...p} />);
+    const wrapper = mount(<SensorList {...p} />);
     const toggle = wrapper.find("button");
     toggle.first().simulate("click");
     toggle.last().simulate("click");

@@ -21,13 +21,13 @@ describe("<EncodersAndEndStops />", () => {
 
   it("doesn't show new inversion param", () => {
     mockFeatures.endstop_invert = false;
-    const wrapper = mount<{}>(<EncodersAndEndStops {...fakeProps()} />);
+    const wrapper = mount(<EncodersAndEndStops {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).not.toContain("invert endstops");
   });
 
   it("shows new inversion param", () => {
     mockFeatures.endstop_invert = true;
-    const wrapper = mount<{}>(<EncodersAndEndStops {...fakeProps()} />);
+    const wrapper = mount(<EncodersAndEndStops {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).not.toContain("invert endstops");
   });
 });

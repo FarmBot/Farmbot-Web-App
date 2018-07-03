@@ -37,7 +37,7 @@ describe("<WeedDetector />", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount<{}>(<WeedDetector {...props} />);
+    const wrapper = mount(<WeedDetector {...props} />);
     ["Color Range",
       "HUE01793090",
       "SATURATION025550255",

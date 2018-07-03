@@ -24,7 +24,7 @@ describe("<WeekGrid />", () => {
 
   it("renders", () => {
     const props: WeekGridProps = { weeks, dispatch: jest.fn() };
-    const wrapper = mount<{}>(<WeekGrid {...props} />);
+    const wrapper = mount(<WeekGrid {...props} />);
     const buttons = wrapper.find("button");
     expect(buttons.length).toEqual(4);
     ["Days", "Week 1", "1234567"].map(string =>
@@ -33,7 +33,7 @@ describe("<WeekGrid />", () => {
 
   function checkAction(position: number, text: string, type: Actions) {
     const props: WeekGridProps = { weeks, dispatch: jest.fn() };
-    const wrapper = mount<{}>(<WeekGrid {...props} />);
+    const wrapper = mount(<WeekGrid {...props} />);
     const button = wrapper.find("button").at(position);
     expect(button.text().toLowerCase()).toContain(text.toLowerCase());
     button.simulate("click");

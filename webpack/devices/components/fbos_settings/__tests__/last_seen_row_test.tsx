@@ -23,12 +23,12 @@ describe("<LastSeen/>", () => {
   it("blinks when loading", () => {
     const p = props();
     p.device.specialStatus = SpecialStatus.SAVING;
-    const wrapper = mount<{}>(<LastSeen {...p} />);
+    const wrapper = mount(<LastSeen {...p} />);
     expect(wrapper.text()).toContain("Loading");
   });
 
   it("tells you the device has never been seen", () => {
-    const wrapper = mount<{}>(<LastSeen {...props() } />);
+    const wrapper = mount(<LastSeen {...props() } />);
     expect(wrapper.text()).toContain("network connectivity issue");
   });
 
@@ -36,7 +36,7 @@ describe("<LastSeen/>", () => {
     const p = props();
     p.device.body.last_saw_api = "2017-08-07T19:40:01.487Z";
     p.botToMqttLastSeen = "";
-    const wrapper = mount<{}>(<LastSeen {...p} />);
+    const wrapper = mount(<LastSeen {...p} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     expect(instance.lastSeen).toEqual("2017-08-07T19:40:01.487Z");
@@ -46,7 +46,7 @@ describe("<LastSeen/>", () => {
     const p = props();
     p.device.body.last_saw_api = "2017-08-07T19:40:01.487Z";
     p.botToMqttLastSeen = "2017-08-07T20:40:01.487Z";
-    const wrapper = mount<{}>(<LastSeen {...p} />);
+    const wrapper = mount(<LastSeen {...p} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     expect(instance.lastSeen).toEqual("2017-08-07T20:40:01.487Z");
@@ -54,7 +54,7 @@ describe("<LastSeen/>", () => {
 
   it("handles a click", () => {
     const p = props();
-    const wrapper = mount<{}>(<LastSeen {...p} />);
+    const wrapper = mount(<LastSeen {...p} />);
     wrapper.find("i").simulate("click");
     expect(p.onClick).toHaveBeenCalled();
   });

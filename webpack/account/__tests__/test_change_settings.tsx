@@ -11,7 +11,7 @@ describe("<Settings/>", function () {
       onChange: jest.fn(),
       onSave: jest.fn()
     };
-    const dom = mount<Settings>(<Settings {...props} />);
+    const dom = mount(<Settings {...props} />);
     expect(props.onSave).not.toHaveBeenCalled();
     dom.find("button").simulate("click");
     expect(props.onSave).toHaveBeenCalled();

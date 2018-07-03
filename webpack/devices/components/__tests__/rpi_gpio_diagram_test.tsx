@@ -13,7 +13,7 @@ describe("<RpiGpioDiagram />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount<RpiGpioDiagram>(<RpiGpioDiagram {...fakeProps()} />);
+    const wrapper = mount(<RpiGpioDiagram {...fakeProps()} />);
     expect(wrapper.find("rect").length).toEqual(42);
   });
 
@@ -32,7 +32,7 @@ describe("<RpiGpioDiagram />", () => {
 
   it("pin click", () => {
     const p = fakeProps();
-    const wrapper = mount<RpiGpioDiagram>(<RpiGpioDiagram {...p} />);
+    const wrapper = mount(<RpiGpioDiagram {...p} />);
     wrapper.find("rect").at(6).simulate("click");
     expect(p.setSelectedPin).toHaveBeenCalledWith(17);
     jest.clearAllMocks();

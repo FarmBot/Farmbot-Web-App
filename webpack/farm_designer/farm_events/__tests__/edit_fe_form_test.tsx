@@ -42,7 +42,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   function instance(p: EditFEProps) {
-    return mount<{}>(<EditFEForm {...p} />).instance() as EditFEForm;
+    return mount(<EditFEForm {...p} />).instance() as EditFEForm;
   }
   const context = { form: new EditFEForm(props()) };
 
@@ -196,7 +196,7 @@ describe("<FarmEventForm/>", () => {
     const seq = fakeSequence();
     const fe = fakeFarmEvent("Sequence", seq.body.id || 0);
     fe.specialStatus = SpecialStatus.DIRTY;
-    const el = mount<{}>(<EditFEForm
+    const el = mount(<EditFEForm
       farmEvent={fe}
       title=""
       deviceTimezone="America/Chicago"

@@ -21,7 +21,7 @@ import { LabsFeatures } from "../labs_features";
 
 describe("<LabsFeatures/>", () => {
   it("triggers the correct callback on click", () => {
-    const el = mount<LabsFeatures>(<LabsFeatures />);
+    const el = mount(<LabsFeatures />);
     expect(mocks.fetchLabFeatures.mock.calls.length).toBeGreaterThan(0);
     el.find("button").simulate("click");
     expect(mockFeatures[0].callback).toHaveBeenCalled();

@@ -12,12 +12,12 @@ import { conflictsString } from "../step_warning";
 
 describe("<StepWrapper />", () => {
   it("renders", () => {
-    const wrapper = mount<{}>(<StepWrapper />);
+    const wrapper = mount(<StepWrapper />);
     expect(wrapper.find("div").hasClass("step-wrapper")).toBeTruthy();
   });
 
   it("renders with extra className", () => {
-    const wrapper = mount<{}>(<StepWrapper className={"step-class"} />);
+    const wrapper = mount(<StepWrapper className={"step-class"} />);
     expect(wrapper.find("div").hasClass("step-class")).toBeTruthy();
   });
 });
@@ -34,21 +34,21 @@ describe("<StepHeader />", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount<{}>(<StepHeader  {...fakeProps} />);
+    const wrapper = mount(<StepHeader  {...fakeProps} />);
     const div = wrapper.find("div").at(2);
     expect(div.hasClass("step-header")).toBeTruthy();
     expect(div.hasClass("step-class")).toBeTruthy();
   });
 
   it("renders with children", () => {
-    const wrapper = mount<{}>(<StepHeader  {...fakeProps} />);
+    const wrapper = mount(<StepHeader  {...fakeProps} />);
     expect(wrapper.text()).toContain("child");
   });
 });
 
 describe("<StepContent />", () => {
   it("renders", () => {
-    const wrapper = mount<{}>(<StepContent className={"step-class"} />);
+    const wrapper = mount(<StepContent className={"step-class"} />);
     const div = wrapper.find("div").last();
     expect(div.hasClass("step-content")).toBeTruthy();
     expect(div.hasClass("step-class")).toBeTruthy();
@@ -57,13 +57,13 @@ describe("<StepContent />", () => {
 
 describe("<StepWarning />", () => {
   it("renders", () => {
-    const wrapper = mount<{}>(<StepWarning warning={"warning"} />);
+    const wrapper = mount(<StepWarning warning={"warning"} />);
     expect(wrapper.find("i").hasClass("fa-exclamation-triangle")).toBeTruthy();
     expect(wrapper.text()).toContain("Hardware setting conflict");
   });
 
   it("lists axes", () => {
-    const wrapper = mount<{}>(<StepWarning
+    const wrapper = mount(<StepWarning
       warning={"warning"}
       conflicts={{ x: true, y: true, z: false }} />);
     expect(wrapper.find("i").hasClass("fa-exclamation-triangle")).toBeTruthy();

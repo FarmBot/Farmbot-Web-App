@@ -107,7 +107,7 @@ describe("<ImageFilterMenu />", () => {
   it("displays slider labels", () => {
     const p = fakeProps();
     p.imageAgeInfo.newestDate = "2001-01-03T00:00:00.000Z";
-    const wrapper = mount<{}>(<ImageFilterMenu {...p} />);
+    const wrapper = mount(<ImageFilterMenu {...p} />);
     ["Jan-1", "Jan-2", "Jan-3"].map(date =>
       expect(wrapper.text()).toContain(date));
   });

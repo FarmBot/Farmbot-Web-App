@@ -4,7 +4,7 @@ import { FourOhFour } from "../404";
 
 describe("<FourOhFour/>", function () {
   it("renders helpful text", function () {
-    const dom = mount<FourOhFour>(<FourOhFour />);
+    const dom = mount(<FourOhFour />);
     expect(dom.html()).toContain("Page Not Found");
   });
 });

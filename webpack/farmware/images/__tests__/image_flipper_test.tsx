@@ -118,7 +118,7 @@ describe("<ImageFlipper/>", () => {
     const images = prepareImages(fakeImages);
     const currentImage = images[1];
     const props = { images, currentImage, onFlip };
-    const wrapper = mount<{}>(<ImageFlipper {...props} />);
+    const wrapper = mount(<ImageFlipper {...props} />);
     const prevButton = wrapper.find("button").first();
     expect(prevButton.text().toLowerCase()).toBe("prev");
     expect(prevButton.props().disabled).toBeFalsy();

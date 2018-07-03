@@ -4,7 +4,7 @@ import { WeedDetectorConfig } from "../config"
 
 describe("<WeedDetectorConfig />", () => {
   it("renders", () => {
-    const wrapper = mount<{}>(<WeedDetectorConfig
+    const wrapper = mount(<WeedDetectorConfig
       values={{}} onChange={jest.fn()} />);
     ["Invert Hue Range Selection",
       "Calibration Object Separation",

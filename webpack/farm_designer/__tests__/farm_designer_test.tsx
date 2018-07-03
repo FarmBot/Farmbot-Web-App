@@ -64,7 +64,7 @@ describe("<FarmDesigner/>", () => {
 
   it("loads default map settings", () => {
     localStorage["showPoints"] = "false";
-    const wrapper = mount<{}>(<FarmDesigner {...fakeProps()} />);
+    const wrapper = mount(<FarmDesigner {...fakeProps()} />);
     const legendProps = wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
     expect(legendProps.legendMenuOpen).toBeFalsy();
     expect(legendProps.showPlants).toBeTruthy();
@@ -87,7 +87,7 @@ describe("<FarmDesigner/>", () => {
     image1.body.created_at = "2001-01-03T00:00:00.000Z";
     image2.body.created_at = "2001-01-01T00:00:00.000Z";
     p.latestImages = [image1, image2];
-    const wrapper = mount<{}>(<FarmDesigner {...p} />);
+    const wrapper = mount(<FarmDesigner {...p} />);
     const legendProps = wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
     expect(legendProps.imageAgeInfo)
       .toEqual({ newestDate: "2001-01-03T00:00:00.000Z", toOldest: 2 });
@@ -95,7 +95,7 @@ describe("<FarmDesigner/>", () => {
 
   it("renders nav titles", () => {
     mockPath = "/app/designer/plants";
-    const wrapper = mount<{}>(<FarmDesigner {...fakeProps()} />);
+    const wrapper = mount(<FarmDesigner {...fakeProps()} />);
     ["Map", "Plants", "Farm Events"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find(".panel-header").first().hasClass("hidden")).toBeTruthy();
@@ -105,7 +105,7 @@ describe("<FarmDesigner/>", () => {
 
   it("hides panel", () => {
     mockPath = "/app/designer";
-    const wrapper = mount<{}>(<FarmDesigner {...fakeProps()} />);
+    const wrapper = mount(<FarmDesigner {...fakeProps()} />);
     ["Map", "Plants", "Farm Events"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find(".panel-header").first().hasClass("hidden")).toBeFalsy();

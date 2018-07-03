@@ -13,7 +13,7 @@ describe("<ToolBayList />", () => {
       state,
       toggle,
       props,
-      component: mount<{}>(<ToolBayList dispatch={state.dispatch}
+      component: mount(<ToolBayList dispatch={state.dispatch}
         getToolByToolSlotUUID={props.getToolByToolSlotUUID}
         getToolSlots={props.getToolSlots}
         toggle={toggle} />)

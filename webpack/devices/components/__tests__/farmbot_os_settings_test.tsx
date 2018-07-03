@@ -40,7 +40,7 @@ describe("<FarmbotOsSettings/>", () => {
   };
 
   it("renders settings", () => {
-    const osSettings = mount<{}>(<FarmbotOsSettings {...fakeProps()} />);
+    const osSettings = mount(<FarmbotOsSettings {...fakeProps()} />);
     expect(osSettings.find("input").length).toBe(1);
     expect(osSettings.find("button").length).toBe(6);
     ["NAME", "TIME ZONE", "LAST SEEN", "FARMBOT OS", "CAMERA", "FIRMWARE"]
@@ -94,7 +94,7 @@ describe("<FbosDetails />", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount<{}>(<FbosDetails {...fakeProps()} />);
+    const wrapper = mount(<FbosDetails {...fakeProps()} />);
     ["Environment: ---",
       "Commit: ---",
       "Target: ---",
