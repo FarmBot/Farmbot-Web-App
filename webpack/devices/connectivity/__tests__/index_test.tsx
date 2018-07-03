@@ -37,8 +37,8 @@ describe("<ConnectivityPanel/>", () => {
 
   it("sets hovered connection", () => {
     const testcase = test();
-    const el = mount(testcase.component);
+    const el = mount<ConnectivityPanel>(testcase.component);
     el.find(".saucer").last().simulate("mouseEnter");
-    expect(el.state().hoveredConnection).toEqual("AB");
+    expect(el.instance().state.hoveredConnection).toEqual("AB");
   });
 });

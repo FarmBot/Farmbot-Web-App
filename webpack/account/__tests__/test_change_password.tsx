@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChangePassword, ChangePWState } from "../components/index";
+import { ChangePassword } from "../components/index";
 import { mount } from "enzyme";
 import { SpecialStatus } from "../../resources/tagged_resources";
 import * as moxios from "moxios";
@@ -12,7 +12,7 @@ describe("<ChangePassword/>", function () {
   });
 
   function testCase() {
-    const el = mount<{}, ChangePWState>(<ChangePassword />);
+    const el = mount(<ChangePassword />);
     return {
       el,
       instance(): ChangePassword { return el.instance() as ChangePassword; }

@@ -158,7 +158,7 @@ describe("<GardenPlant/>", () => {
 
   it("ends drag", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenMap {...p} />);
+    const wrapper = shallow<GardenMap>(<GardenMap {...p} />);
     expect(wrapper.state()).toEqual({});
     wrapper.find("#drop-area-svg").simulate("mouseUp");
     expect(p.dispatch).not.toHaveBeenCalled();
@@ -172,7 +172,7 @@ describe("<GardenPlant/>", () => {
     wrapper.setState({ isDragging: true });
     wrapper.find("#drop-area-svg").simulate("mouseUp");
     expect(p.dispatch).toHaveBeenCalled();
-    expect(wrapper.state().isDragging).toBeFalsy();
+    expect(wrapper.instance().state.isDragging).toBeFalsy();
   });
 
   it("drags: editing", () => {

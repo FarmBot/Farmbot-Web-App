@@ -28,7 +28,7 @@ describe("<TileFindHome/>", () => {
   };
 
   it("renders inputs", () => {
-    const wrapper = mount(<TileFindHome {...fakeProps() } />);
+    const wrapper = mount(<TileFindHome {...fakeProps()} />);
     const inputs = wrapper.find("input");
     const labels = wrapper.find("label");
     expect(inputs.length).toEqual(5);

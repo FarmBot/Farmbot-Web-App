@@ -115,8 +115,8 @@ describe("<Logs />", () => {
 
   it("loads filter setting", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount(<Logs {...fakeProps()} />);
-    expect(wrapper.state().warn).toEqual(3);
+    const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
+    expect(wrapper.instance().state.warn).toEqual(3);
   });
 
   it("shows overall filter status", () => {
@@ -131,23 +131,23 @@ describe("<Logs />", () => {
 
   it("toggles filter", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount(<Logs {...fakeProps()} />);
+    const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
-    expect(wrapper.state().warn).toEqual(3);
+    expect(wrapper.instance().state.warn).toEqual(3);
     instance.toggle("warn")();
-    expect(wrapper.state().warn).toEqual(0);
+    expect(wrapper.instance().state.warn).toEqual(0);
     instance.toggle("warn")();
-    expect(wrapper.state().warn).toEqual(1);
+    expect(wrapper.instance().state.warn).toEqual(1);
   });
 
   it("sets filter", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount(<Logs {...fakeProps()} />);
+    const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
-    expect(wrapper.state().warn).toEqual(3);
+    expect(wrapper.instance().state.warn).toEqual(3);
     instance.setFilterLevel("warn")(2);
-    expect(wrapper.state().warn).toEqual(2);
+    expect(wrapper.instance().state.warn).toEqual(2);
   });
 });

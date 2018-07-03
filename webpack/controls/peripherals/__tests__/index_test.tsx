@@ -36,10 +36,10 @@ describe("<Peripherals />", () => {
   });
 
   it("isEditing", () => {
-    const wrapper = mount(<Peripherals {...fakeProps()} />);
-    expect(wrapper.state().isEditing).toBeFalsy();
+    const wrapper = mount<Peripherals>(<Peripherals {...fakeProps()} />);
+    expect(wrapper.instance().state.isEditing).toBeFalsy();
     clickButton(wrapper, 0, "edit");
-    expect(wrapper.state().isEditing).toBeTruthy();
+    expect(wrapper.instance().state.isEditing).toBeTruthy();
   });
 
   function attemptSave(num: number, errorString: string) {

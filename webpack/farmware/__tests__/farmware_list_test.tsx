@@ -39,8 +39,9 @@ describe("<FarmwareList />", () => {
 
   it("doesn't install a new farmware without URL", () => {
     const p = fakeProps();
-    const wrapper = mount(<FarmwareList {...p} />);
-    expect(wrapper.state().packageUrl).toEqual("");
+    const wrapper =
+      mount<FarmwareList>(<FarmwareList {...p} />);
+    expect(wrapper.instance().state.packageUrl).toEqual("");
     window.alert = jest.fn();
     clickButton(wrapper, 0, "Install");
     expect(window.alert).toHaveBeenCalledWith("Enter a URL");
@@ -50,12 +51,13 @@ describe("<FarmwareList />", () => {
   const FAKE_INSTALL_URL = "https://foo.bar/manifest.json";
 
   it("changes install URL", () => {
-    const wrapper = shallow(<FarmwareList {...fakeProps()} />);
-    expect(wrapper.state().packageUrl).toEqual("");
+    const wrapper =
+      shallow<FarmwareList>(<FarmwareList {...fakeProps()} />);
+    expect(wrapper.instance().state.packageUrl).toEqual("");
     wrapper.find("input").simulate("change", {
       currentTarget: { value: FAKE_INSTALL_URL }
     });
-    expect(wrapper.state().packageUrl).toEqual(FAKE_INSTALL_URL);
+    expect(wrapper.instance().state.packageUrl).toEqual(FAKE_INSTALL_URL);
   });
 
   it("installs a new farmware", () => {

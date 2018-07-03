@@ -13,7 +13,6 @@ jest.mock("../../api/crud", () => ({
   init: jest.fn()
 }));
 
-
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { SequencesList } from "../sequences_list";
@@ -85,15 +84,15 @@ describe("<SequencesList />", () => {
   });
 
   it("sets search term", () => {
-    const wrapper = shallow(<SequencesList {...fakeProps()} />);
-    expect(wrapper.state().searchTerm).toEqual("");
+    const wrapper = shallow<SequencesList>(<SequencesList {...fakeProps()} />);
+    expect(wrapper.instance().state.searchTerm).toEqual("");
     const searchField = wrapper.find("input").first();
     expect(searchField.props().placeholder)
       .toEqual("Search Sequences...");
     searchField.simulate("change", {
       currentTarget: { value: "search this" }
     });
-    expect(wrapper.state().searchTerm).toEqual("search this");
+    expect(wrapper.instance().state.searchTerm).toEqual("search this");
   });
 
   it("opens sequence", () => {

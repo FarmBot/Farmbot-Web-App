@@ -117,24 +117,24 @@ describe("<PinBindings/>", () => {
     const p = fakeProps();
     const s = p.resources.references[p.resources.byKind.Sequence[0]];
     const id = s && s.body.id;
-    const wrapper = mount(<PinBindings {...p} />);
-    expect(wrapper.state().sequenceIdInput).toEqual(undefined);
+    const wrapper = mount<PinBindings>(<PinBindings {...p} />);
+    expect(wrapper.instance().state.sequenceIdInput).toEqual(undefined);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     instance.changeSelection({ label: "label", value: id });
-    expect(wrapper.state().sequenceIdInput).toEqual(id);
+    expect(wrapper.instance().state.sequenceIdInput).toEqual(id);
   });
 
   it("sets pin", () => {
-    const wrapper = mount(<PinBindings {...fakeProps()} />);
-    expect(wrapper.state().pinNumberInput).toEqual(undefined);
+    const wrapper = mount<PinBindings>(<PinBindings {...fakeProps()} />);
+    expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
     instance.setSelectedPin(10);
-    expect(wrapper.state().pinNumberInput).toEqual(undefined);
+    expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
     instance.setSelectedPin(99);
-    expect(wrapper.state().pinNumberInput).toEqual(undefined);
+    expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
     instance.setSelectedPin(5);
-    expect(wrapper.state().pinNumberInput).toEqual(5);
+    expect(wrapper.instance().state.pinNumberInput).toEqual(5);
   });
 });

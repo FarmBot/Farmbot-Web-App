@@ -55,9 +55,10 @@ describe("<WeedDetector />", () => {
   });
 
   it("executes clear weeds", () => {
-    const wrapper = shallow(<WeedDetector {...props} />);
-    expect(wrapper.state().deletionProgress).toBeUndefined();
+    const wrapper =
+      shallow<WeedDetector>(<WeedDetector {...props} />);
+    expect(wrapper.instance().state.deletionProgress).toBeUndefined();
     wrapper.find("button").at(1).simulate("click");
-    expect(wrapper.state().deletionProgress).toEqual("Deleting...");
+    expect(wrapper.instance().state.deletionProgress).toEqual("Deleting...");
   });
 });

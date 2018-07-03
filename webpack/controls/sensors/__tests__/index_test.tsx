@@ -40,10 +40,10 @@ describe("<Sensors />", () => {
   });
 
   it("isEditing", () => {
-    const wrapper = mount(<Sensors {...fakeProps()} />);
-    expect(wrapper.state().isEditing).toBeFalsy();
+    const wrapper = mount<Sensors>(<Sensors {...fakeProps()} />);
+    expect(wrapper.instance().state.isEditing).toBeFalsy();
     clickButton(wrapper, 0, "edit");
-    expect(wrapper.state().isEditing).toBeTruthy();
+    expect(wrapper.instance().state.isEditing).toBeTruthy();
   });
 
   it("save attempt: pin number too small", () => {

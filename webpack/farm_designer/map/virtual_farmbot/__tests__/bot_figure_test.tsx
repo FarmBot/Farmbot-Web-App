@@ -26,7 +26,7 @@ describe("<BotFigure/>", () => {
       p.mapTransformProps.quadrant = quadrant;
       p.mapTransformProps.xySwap = xySwap;
       p.name = name;
-      const result = shallow(<BotFigure {...p} />);
+      const result = shallow<BotFigure>(<BotFigure {...p} />);
 
       const expectedGantryProps = expect.objectContaining({
         id: "gantry",
@@ -67,7 +67,7 @@ describe("<BotFigure/>", () => {
     const p = fakeProps();
     p.mapTransformProps.quadrant = 2;
     p.position = { x: 100, y: 200, z: 0 };
-    const result = shallow(<BotFigure {...p} />);
+    const result = shallow<BotFigure>(<BotFigure {...p} />);
     const gantry = result.find("#gantry");
     expect(gantry.length).toEqual(1);
     expect(gantry.props().x).toEqual(90);
@@ -79,25 +79,25 @@ describe("<BotFigure/>", () => {
   it("changes color on e-stop", () => {
     const p = fakeProps();
     p.eStopStatus = true;
-    const wrapper = shallow(<BotFigure {...p} />);
+    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
     expect(wrapper.find("#gantry").props().fill).toEqual(Color.virtualRed);
   });
 
   it("shows coordinates on hover", () => {
     const p = fakeProps();
     p.position.x = 100;
-    const wrapper = shallow(<BotFigure {...p} />);
-    expect(wrapper.state().hovered).toBeFalsy();
+    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
+    expect(wrapper.instance().state.hovered).toBeFalsy();
     const utm = wrapper.find("#UTM");
     utm.simulate("mouseOver");
-    expect(wrapper.state().hovered).toBeTruthy();
+    expect(wrapper.instance().state.hovered).toBeTruthy();
     expect(wrapper.find("text").props()).toEqual(expect.objectContaining({
       x: 100, y: 0, dx: 40, dy: 0,
       textAnchor: "start", visibility: "visible",
     }));
     expect(wrapper.text()).toEqual("(100, 0, 0)");
     utm.simulate("mouseLeave");
-    expect(wrapper.state().hovered).toBeFalsy();
+    expect(wrapper.instance().state.hovered).toBeFalsy();
     expect(wrapper.find("text").props()).toEqual(
       expect.objectContaining({ visibility: "hidden" }));
   });
@@ -106,10 +106,10 @@ describe("<BotFigure/>", () => {
     const p = fakeProps();
     p.position.x = 100;
     p.mapTransformProps.xySwap = true;
-    const wrapper = shallow(<BotFigure {...p} />);
+    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
     const utm = wrapper.find("#UTM");
     utm.simulate("mouseOver");
-    expect(wrapper.state().hovered).toBeTruthy();
+    expect(wrapper.instance().state.hovered).toBeTruthy();
     expect(wrapper.find("text").props()).toEqual(expect.objectContaining({
       x: 0, y: 100, dx: 0, dy: 55,
       textAnchor: "middle", visibility: "visible",

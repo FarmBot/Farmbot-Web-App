@@ -21,7 +21,7 @@ describe("NavBar", () => {
   });
 
   it("closes nav menu", () => {
-    const wrapper = shallow(<NavBar
+    const wrapper = shallow<NavBar>(<NavBar
       timeOffset={0}
       consistent={true}
       logs={[]}
@@ -30,8 +30,8 @@ describe("NavBar", () => {
       dispatch={jest.fn()} />);
     const link = wrapper.find("Link").first();
     link.simulate("click");
-    expect(wrapper.state().mobileMenuOpen).toBeFalsy();
+    expect(wrapper.instance().state.mobileMenuOpen).toBeFalsy();
     link.simulate("click");
-    expect(wrapper.state().mobileMenuOpen).toBeFalsy();
+    expect(wrapper.instance().state.mobileMenuOpen).toBeFalsy();
   });
 });

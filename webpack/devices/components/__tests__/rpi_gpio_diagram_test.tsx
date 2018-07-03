@@ -13,17 +13,17 @@ describe("<RpiGpioDiagram />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<RpiGpioDiagram {...fakeProps() } />);
+    const wrapper = mount(<RpiGpioDiagram {...fakeProps()} />);
     expect(wrapper.find("rect").length).toEqual(42);
   });
 
   it("pin hover", () => {
-    const wrapper = mount(<RpiGpioDiagram {...fakeProps() } />);
+    const wrapper = mount<RpiGpioDiagram>(<RpiGpioDiagram {...fakeProps()} />);
     wrapper.find("rect").at(5).simulate("mouseEnter");
-    expect(wrapper.state().hoveredPin).toEqual("GND");
+    expect(wrapper.instance().state.hoveredPin).toEqual("GND");
     const pinToHover = wrapper.find("rect").at(6);
     pinToHover.simulate("mouseEnter");
-    expect(wrapper.state().hoveredPin).toEqual(17);
+    expect(wrapper.instance().state.hoveredPin).toEqual(17);
     expect(wrapper.find("rect").at(6).props().fill).toEqual(Color.white);
     pinToHover.simulate("mouseLeave");
     expect(pinToHover.props().fill).toEqual(Color.green);

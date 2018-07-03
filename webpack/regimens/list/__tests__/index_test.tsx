@@ -23,9 +23,9 @@ describe("<RegimensList />", () => {
   });
 
   it("sets search term", () => {
-    const wrapper = shallow(<RegimensList {...fakeProps()} />);
+    const wrapper = shallow<RegimensList>(<RegimensList {...fakeProps()} />);
     wrapper.find("input").simulate("change",
       { currentTarget: { value: "term" } });
-    expect(wrapper.state().searchTerm).toEqual("term");
+    expect(wrapper.instance().state.searchTerm).toEqual("term");
   });
 });
