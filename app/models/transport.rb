@@ -1,4 +1,6 @@
 require "bunny"
+require "rabbitmq/http/client"
+
 # A wrapper around AMQP to stay DRY. Will make life easier if we ever need to
 # change protocols
 class Transport
@@ -7,7 +9,21 @@ class Transport
   def self.amqp_url
     @amqp_url ||= ENV['CLOUDAMQP_URL'] ||
                   ENV['RABBITMQ_URL']  ||
-                  "amqp://admin:#{ENV.fetch("ADMIN_PASSWORD")}@localhost:5672"
+                  "amqp://admin:#{ENV.fetch("ADMIN_PASSWORD")}@#{ENV.fetch("MQTT_HOST")}:5672"
+  end
+
+  def self.mgmt_url
+    if @mgmt_url
+      @mgmt_url
+    else
+      uri        = URI(amqp_url)
+      uri.scheme = (ENV["FORCE_SSL"] ? "https" : "http")
+      @mgmt_url = uri.to_s
+    end
+  end
+
+  def self.mgmt
+    @mgmt ||= RabbitMQ::HTTP::Client.new(mgmt_url)
   end
 
   def self.default_amqp_adapter=(value)

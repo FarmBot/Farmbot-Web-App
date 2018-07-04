@@ -8,7 +8,7 @@ gem "delayed_job"
 gem "devise"
 gem "discard"
 gem "figaro"
-gem "fog-google", "1.6.0"
+gem "fog-google"
 gem "font-awesome-rails"
 gem "foreman"
 gem "jwt"
@@ -28,6 +28,7 @@ gem "skylight"
 gem "tzinfo" # For validation of user selected timezone names
 gem "valid_url"
 gem "webpack-rails"
+gem "rabbitmq_http_api_client"
 
 group :development, :test do
   gem "thin"

@@ -57,10 +57,11 @@ puts "=== Starting MQTT"
 exec [
   'cd mqtt;',
   'sudo docker run',
-  '-p "5672:5672"',  # AMQP (RabbitMQ)
-  '-p "1883:1883"',  # MQTT
-  '-p "8883:8883"',  # MQTT over TLS/SSL
-  '-p "3002:15675"', # MQTT over WebSockets
+  '-p "5672:5672"',   # AMQP (RabbitMQ)
+  '-p "1883:1883"',   # MQTT
+  '-p "8883:8883"',   # MQTT over TLS/SSL
+  '-p "3002:15675"',  # MQTT over WebSockets
+  '-p "15672:15672"', # Management API
   '--name "farmbot-mqtt"',
   'farmbot-mqtt'
 ].join(" ")
