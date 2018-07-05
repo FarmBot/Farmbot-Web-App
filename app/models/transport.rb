@@ -69,6 +69,14 @@ class Transport
       @endpoint ||= "http://#{ENV.fetch("MQTT_HOST")}:15672"
     end
 
+    def self.username
+      @username ||= URI(Transport.amqp_url).user || "admin"
+    end
+
+    def self.password
+      @password ||= URI(Transport.amqp_url).password
+    end
+
     def self.api_url
       uri        = URI(Transport.amqp_url)
       uri.scheme = ENV["FORCE_SSL"] ? "https" : "http"
@@ -79,9 +87,8 @@ class Transport
     end
 
     def self.client
-      @client   ||= RabbitMQ::HTTP::Client.new(api_url,
-                                            username: "admin",
-                                            password: ENV.fetch("ADMIN_PASSWORD"))
+      @client ||= RabbitMQ::HTTP::Client.new(api_url, username: self.username,
+                                                      password: self.password)
     end
 
     def self.find_connection_by_name(name)
