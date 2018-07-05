@@ -68,7 +68,7 @@ const FIELDS: FieldData[] = [
 const renderFormFields = (get: KeyGetter, set: KeySetter) => {
   return FIELDS.map((f) => {
     if (f.type == "password") {
-      return <div>
+      return <div key={f.label}>
         <label> {t(f.label)} </label>
         <BlurablePassword
           key={f.label}

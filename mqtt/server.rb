@@ -20,7 +20,7 @@ TEMPLATE         = File.read(TEMPLATE_FILE)
 RENDERER         = ERB.new(TEMPLATE)
 PROTO            = ENV["FORCE_SSL"] ? "https:" : "http:"
 VHOST            = ENV.fetch("MQTT_VHOST") { "/" }
-admin_password   = ENV.fetch("ADMIN_PASSWORD")  { needs_admin_password }.inspect
+admin_password   = ENV.fetch("ADMIN_PASSWORD")  { needs_admin_password }
 
 needs_admin_password if admin_password.length < 5
 
@@ -57,10 +57,11 @@ puts "=== Starting MQTT"
 exec [
   'cd mqtt;',
   'sudo docker run',
-  '-p "5672:5672"',  # AMQP (RabbitMQ)
-  '-p "1883:1883"',  # MQTT
-  '-p "8883:8883"',  # MQTT over TLS/SSL
-  '-p "3002:15675"', # MQTT over WebSockets
+  '-p "5672:5672"',   # AMQP (RabbitMQ)
+  '-p "1883:1883"',   # MQTT
+  '-p "8883:8883"',   # MQTT over TLS/SSL
+  '-p "3002:15675"',  # MQTT over WebSockets
+  '-p "15672:15672"', # Management API
   '--name "farmbot-mqtt"',
   'farmbot-mqtt'
 ].join(" ")
