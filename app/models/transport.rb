@@ -82,13 +82,15 @@ class Transport
       uri.scheme = ENV["FORCE_SSL"] ? "https" : "http"
       uri.user   = nil
       uri.port   = 15672
-      puts "=== " + uri.to_s
       uri.to_s
     end
 
     def self.client
-      @client ||= RabbitMQ::HTTP::Client.new(api_url, username: self.username,
-                                                      password: self.password)
+      url = ENV["RABBIT_MGMT_URL"] || api_url
+      puts "=== " + url
+      @client ||= RabbitMQ::HTTP::Client.new(url,
+                                             username: self.username,
+                                             password: self.password)
     end
 
     def self.find_connection_by_name(name)
