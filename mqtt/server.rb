@@ -20,7 +20,7 @@ TEMPLATE         = File.read(TEMPLATE_FILE)
 RENDERER         = ERB.new(TEMPLATE)
 PROTO            = ENV["FORCE_SSL"] ? "https:" : "http:"
 VHOST            = ENV.fetch("MQTT_VHOST") { "/" }
-admin_password   = ENV.fetch("ADMIN_PASSWORD")  { needs_admin_password }.inspect
+admin_password   = ENV.fetch("ADMIN_PASSWORD")  { needs_admin_password }
 
 needs_admin_password if admin_password.length < 5
 
