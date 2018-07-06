@@ -24,5 +24,7 @@ class TokenIssuance < ApplicationRecord
   #     Move this into a background worker.
   def maybe_evict_clients
     Transport::Mgmt.try(:close_connections_for_username, "device_#{device_id}")
+  rescue Faraday::ConnectionFailed
+    nil
   end
 end
