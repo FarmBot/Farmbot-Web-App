@@ -91,3 +91,8 @@ RAILS_ENV: "production"
 # Every server has a superuser.
 # Set this to something SECURE.
 ADMIN_PASSWORD: ""
+# Some hosts (Eg: FarmBot, Inc.) run the RabbitMQ management API on a
+# non-standard host.
+# Include the protocol! (http vs. https)
+# DELETE THIS LINE if you are a self-hosted user.
+RABBIT_MGMT_URL: "http://delete_this_line.com"

@@ -62,15 +62,15 @@ module Api
     def authenticate_admin
       correct_pw = password == ENV.fetch("ADMIN_PASSWORD")
       ok         = is_admin && correct_pw
-      ok         ? allow : deny
+      ok         ? allow("management", "administrator") : deny
     end
 
     def deny
       render json: "deny", status: 403
     end
 
-    def allow
-      render json: "allow"
+    def allow(*tags)
+      render json: (["allow"] + tags).join(" ")
     end
 
     def username

@@ -61,4 +61,48 @@ class Transport
   def set_current_request_id(uuid)
     RequestStore.store[:current_request_id] = uuid
   end
-end
+
+  module Mgmt
+    require "rabbitmq/http/client"
+
+    def self.username
+      @username ||= URI(Transport.amqp_url).user || "admin"
+    end
+
+    def self.password
+      @password ||= URI(Transport.amqp_url).password
+    end
+
+    def self.api_url
+      uri        = URI(Transport.amqp_url)
+      uri.scheme = ENV["FORCE_SSL"] ? "https" : "http"
+      uri.user   = nil
+      uri.port   = 15672
+      uri.to_s
+    end
+
+    def self.client
+      url = ENV["RABBIT_MGMT_URL"] || api_url
+      puts "=== " + url
+      @client ||= RabbitMQ::HTTP::Client.new(url,
+                                             username: self.username,
+                                             password: self.password)
+    end
+
+    def self.connections
+      client.list_connections
+    end
+
+    def self.find_connection_by_name(name)
+      connections
+        .select { |x| x.fetch("user").include?(name) }
+        .pluck("name")
+        .compact
+        .uniq
+    end
+
+    def self.close_connections_for_username(name)
+      find_connection_by_name(name).map { |connec| client.close_connection(connec) }
+    end
+  end # Mqmt
+end # Transport
