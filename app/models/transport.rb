@@ -65,10 +65,6 @@ class Transport
   module Mgmt
     require "rabbitmq/http/client"
 
-    def self.endpoint
-      @endpoint ||= "http://#{ENV.fetch("MQTT_HOST")}:15672"
-    end
-
     def self.username
       @username ||= URI(Transport.amqp_url).user || "admin"
     end
@@ -93,11 +89,16 @@ class Transport
                                              password: self.password)
     end
 
+    def self.connections
+      client.list_connections
+    end
+
     def self.find_connection_by_name(name)
-      client
-        .list_connections
+      connections
         .select { |x| x.fetch("user").include?(name) }
         .pluck("name")
+        .compact
+        .uniq
     end
 
     def self.close_connections_for_username(name)

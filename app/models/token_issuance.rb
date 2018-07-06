@@ -25,6 +25,6 @@ class TokenIssuance < ApplicationRecord
   def maybe_evict_clients
     Transport::Mgmt.try(:close_connections_for_username, "device_#{device_id}")
   rescue Faraday::ConnectionFailed
-    nil
+    Rollbar.error("Failed to evict clients on token revocation")
   end
 end
