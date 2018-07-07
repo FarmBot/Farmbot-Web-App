@@ -19,12 +19,21 @@ class TokenIssuance < ApplicationRecord
   # SIMPLE SOLUTION:
   #     Kick _everyone_ off the broker. The clients with the revoked token will
   #     not be able to reconnect.
-  #
-  # TODO:
-  #     Move this into a background worker.
   def maybe_evict_clients
     Transport::Mgmt.try(:close_connections_for_username, "device_#{device_id}")
   rescue Faraday::ConnectionFailed
     Rollbar.error("Failed to evict clients on token revocation")
+  end
+
+  def self.expired
+    self.where("exp < ?", Time.now.to_i)
+  end
+
+  def self.any_expired?
+    expired.any?
+  end
+
+  def self.clean_old_tokens
+    expired.destroy_all
   end
 end

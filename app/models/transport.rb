@@ -82,9 +82,7 @@ class Transport
     end
 
     def self.client
-      url = ENV["RABBIT_MGMT_URL"] || api_url
-      puts "=== " + url
-      @client ||= RabbitMQ::HTTP::Client.new(url,
+      @client ||= RabbitMQ::HTTP::Client.new(ENV["RABBIT_MGMT_URL"] || api_url,
                                              username: self.username,
                                              password: self.password)
     end
