@@ -9,7 +9,7 @@ describe Transport::Mgmt do
     fake_connections = [{ "name" => "A", "user" => "1" },
                         { "name" => "B", "user" => "2" },
                         { "name" => "C", "user" => "3" }]
-    allow(Transport::Mgmt).to receive(:connections).and_return(fake_connections)
-    expect(Transport::Mgmt.find_connection_by_name("1")).to eq(["A"])
+                        allow(Transport::Mgmt).to receive(:connections).and_return(fake_connections)
+                        expect(Transport::Mgmt.find_connection_by_name("1")).to eq(["A"])
   end
 end
