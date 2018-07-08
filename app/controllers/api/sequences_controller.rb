@@ -23,7 +23,7 @@ module Api
     end
 
     def destroy
-      mutate Sequences::Delete.run(sequence: sequence, device: current_device)
+      mutate Sequences::Destroy.run(sequence: sequence, device: current_device)
     end
 
     private
