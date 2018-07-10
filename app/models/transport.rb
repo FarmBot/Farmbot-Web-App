@@ -41,6 +41,13 @@ class Transport
                          .bind("amq.topic", routing_key: "bot.*.logs")
   end
 
+  def resource_channel
+    @log_channel ||= self.connection
+                         .create_channel
+                         .queue("api_log_workers")
+                         .bind("amq.topic", routing_key: "bot.*.resources_v0")
+  end
+
   def amqp_topic
     @amqp_topic ||= self
                   .connection

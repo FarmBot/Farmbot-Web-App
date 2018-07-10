@@ -1,0 +1,49 @@
+{
+  "type": "array",
+  "definitions": {},
+  "items": {
+    "type": "object",
+    "properties": {
+      "kind": {
+        "type": "string",
+        "title": "The `kind` Schema"
+      },
+      "uuid": {
+        "type": "string",
+        "title": "The `uuid` Schema"
+      },
+      "args": {
+        "type": "object",
+        "properties": {
+          "resource_type": {
+            "type": "string",
+            "title": "The Resource_type Schema",
+            "enum": [
+              "DeviceConfig",
+              "DiagnosticDump",
+              "FarmEvent",
+              "FarmwareInstallations",
+              "Image",
+              "Log",
+              "Peripheral",
+              "PinBinding",
+              "PlantTemplate",
+              "Point",
+              "Regimen",
+              "SavedGarden",
+              "SensorReading",
+              "Sensor",
+              "Sequence",
+              "Tool",
+              "WebcamFeed"
+            ]
+          },
+          "resource_id": {
+            "type": "integer",
+            "title": "The Resource_id Schema"
+          }
+        }
+      }
+    }
+  }
+}
