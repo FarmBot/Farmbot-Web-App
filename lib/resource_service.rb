@@ -1,4 +1,4 @@
-class ResourceService
+class ResourceService < Mutations::Command
   RESOURCES = %w{ DeviceConfig DiagnosticDump FarmEvent FarmwareInstallations
                   Image Log Peripheral PinBinding PlantTemplate Point Regimen
                   SavedGarden SensorReading Sensor Sequence Tool WebcamFeed }
