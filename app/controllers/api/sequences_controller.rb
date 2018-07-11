@@ -6,7 +6,6 @@ module Api
       render json: sequences
         .to_a
         .map { |s| CeleryScript::FetchCelery.run!(sequence: s) }
-        .concat(PUBLIC_SEQUENCES)
     end
 
     def show
