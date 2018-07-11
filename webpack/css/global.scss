@@ -131,6 +131,35 @@ fieldset {
   }
 }
 
+.chip-temp-display {
+  position: relative;
+  .saucer {
+    height: 1rem;
+    width: 1rem;
+    position: absolute;
+    right: 1rem;
+    top: 2px;
+    cursor: default;
+  }
+}
+
+.wifi-strength-display {
+  position: relative;
+  .percent-bar {
+    width: 25%;
+    position: absolute;
+    height: 1rem;
+    left: 13rem;
+    top: 2px;
+    clip-path: polygon(0 85%, 100% 0, 100% 100%, 0% 100%);
+    background-color: $light_gray;
+    .percent-bar-fill {
+      height: 100%;
+      background-color: $green;
+    }
+  }
+}
+
 .all-content-wrapper {
   margin: 0 auto;
   padding: 11rem 3rem 0;
