@@ -224,6 +224,7 @@ export function urlFor(tag: ResourceName) {
     FbosConfig: API.current.fbosConfigPath,
     WebAppConfig: API.current.webAppConfigPath,
     FirmwareConfig: API.current.firmwareConfigPath,
+    DiagnosticDump: API.current.diagnosticDumpsPath,
   };
   const url = OPTIONS[tag];
   if (url) {

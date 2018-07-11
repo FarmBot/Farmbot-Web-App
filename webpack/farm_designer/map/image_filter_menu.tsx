@@ -174,14 +174,15 @@ export class ImageFilterMenu
           </tr>
         </tbody>
       </table>
-      <Slider
-        min={0}
-        max={this.props.imageAgeInfo.toOldest + 1}
-        labelStepSize={this.labelStepSize}
-        value={slider}
-        onChange={this.sliderChange}
-        labelRenderer={this.renderLabel}
-        showTrackFill={false} />
+      {this.props.imageAgeInfo.newestDate !== "" &&
+        <Slider
+          min={0}
+          max={this.props.imageAgeInfo.toOldest + 1}
+          labelStepSize={this.labelStepSize}
+          value={slider}
+          onChange={this.sliderChange}
+          labelRenderer={this.renderLabel}
+          showTrackFill={false} />}
     </div>;
   }
 }
