@@ -127,7 +127,7 @@ class CorpusEmitter
     result.push(enum_type :Color, Sequence::COLORS)
     result.push(enum_type :LegalArgString, HASH[:args].map{ |x| x[:name] }.sort.uniq)
     result.push(enum_type :LegalKindString, HASH[:nodes].map{ |x| x[:name] }.sort.uniq)
-    result.push(enum_type :LegalSequenceKind, CeleryScriptSettingsBag::STEPS.sort)
+    result.push(enum_type :LegalSequenceKind, CeleryScriptSettingsBag::RPCS.sort)
     result.push(enum_type :DataChangeType, CeleryScriptSettingsBag::ALLOWED_CHAGES)
     result.push(enum_type :PointType, CeleryScriptSettingsBag::ALLOWED_POINTER_TYPE)
     result.push(enum_type :AllowedPinTypes, CeleryScriptSettingsBag::ALLOWED_PIN_TYPES)

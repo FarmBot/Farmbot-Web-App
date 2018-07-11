@@ -1,6 +1,8 @@
 module Api
   class SequencesController < Api::AbstractController
-    PUBLIC_SEQUENCES            = Sequence.with_usage_reports.where public: true
+    PUBLIC_SEQUENCES            = Sequence
+                                    .with_usage_reports
+                                    .where(is_public: true)
     SERIALIZED_PUBLIC_SEQUENCES = PUBLIC_SEQUENCES.to_a.map do |s|
       CeleryScript::FetchCelery.run!(sequence: s)
     end

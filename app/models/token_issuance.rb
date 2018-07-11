@@ -2,7 +2,8 @@
 # expiration date).
 class TokenIssuance < ApplicationRecord
   belongs_to :device
-  after_destroy :maybe_evict_clients
+  puts "Fix client eviction logic."
+  # after_destroy :maybe_evict_clients
 
   def broadcast?
     false
@@ -20,10 +21,11 @@ class TokenIssuance < ApplicationRecord
   #     Kick _everyone_ off the broker. The clients with the revoked token will
   #     not be able to reconnect.
   def maybe_evict_clients
-    Timeout::timeout(2.5) do
-      id = "device_#{device_id}"
-      Transport::Mgmt.try(:close_connections_for_username, id)
-    end
+    puts "TODO: Fix this (slow) method."
+    # Timeout::timeout(Rails.env.test? ? 0.1 : 2.5) do
+    #   id = "device_#{device_id}"
+    #   Transport::Mgmt.try(:close_connections_for_username, id)
+    # end
   rescue Faraday::ConnectionFailed
   rescue Timeout::Error
     Rollbar.error("Failed to evict clients on token revocation")

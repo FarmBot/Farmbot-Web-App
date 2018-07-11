@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Sync",
+    "body": [
+      {
+        "kind": "sync",
+        "args": {}
+      }
+    ]
+  },
+  {
+    "name": "E-stop",
+    "body": [
+      {
+        "kind": "emergency_lock",
+        "args": {}
+      }
+    ]
+  },
+  {
+    "name": "Shutdown",
+    "body": [
+      {
+        "kind": "power_off",
+        "args": {}
+      }
+    ]
+  },
+  {
+    "name": "Reboot",
+    "body": [
+      {
+        "kind": "reboot",
+        "args": {}
+      }
+    ]
+  }
+]

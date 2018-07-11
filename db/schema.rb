@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_07_10_184108) do
+ActiveRecord::Schema.define(version: 2018_07_11_143520) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -51,6 +51,13 @@ ActiveRecord::Schema.define(version: 2018_07_10_184108) do
     t.datetime "throttled_until"
     t.datetime "throttled_at"
     t.index ["timezone"], name: "index_devices_on_timezone"
+  end
+
+  create_table "devices_permissions", id: false, force: :cascade do |t|
+    t.bigint "device_id", null: false
+    t.bigint "permission_id", null: false
+    t.index ["device_id", "permission_id"], name: "index_devices_permissions_on_device_id_and_permission_id"
+    t.index ["permission_id", "device_id"], name: "index_devices_permissions_on_permission_id_and_device_id"
   end
 
   create_table "diagnostic_dumps", force: :cascade do |t|
@@ -273,6 +280,12 @@ ActiveRecord::Schema.define(version: 2018_07_10_184108) do
     t.index ["mode"], name: "index_peripherals_on_mode"
   end
 
+  create_table "permissions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "name", limit: 16
+  end
+
   create_table "pin_bindings", force: :cascade do |t|
     t.bigint "device_id"
     t.integer "pin_num"
@@ -393,7 +406,7 @@ ActiveRecord::Schema.define(version: 2018_07_10_184108) do
     t.datetime "updated_at"
     t.datetime "created_at"
     t.boolean "migrated_nodes", default: false
-    t.boolean "public", default: false
+    t.boolean "is_public", default: false
     t.index ["created_at"], name: "index_sequences_on_created_at"
     t.index ["device_id"], name: "index_sequences_on_device_id"
   end

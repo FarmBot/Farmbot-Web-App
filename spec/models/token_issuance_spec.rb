@@ -9,8 +9,8 @@ describe TokenIssuance do
   end
 
   it "clears out old stuff via #clean_old_tokens" do
-    TokenIssuance.delete_all
-    TokenIssuance.create(device_id: 8,
+    TokenIssuance.destroy_all
+    TokenIssuance.create(device_id: FactoryBot.create(:device).id,
                          exp: 1.year.ago.to_i,
                          jti: "WOW")
     expect(TokenIssuance.count).to eq(1)
