@@ -10,16 +10,15 @@ module CeleryScriptSettingsBag
   PLANT_STAGES          = %w(planned planted harvested)
   ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_PIN_TYPES     = [Peripheral, Sensor].map(&:name)
-  RPCS                  = %w(_if calibrate change_ownership check_updates
-                             config_update dump_info emergency_lock
-                             emergency_unlock execute execute_script
-                             factory_reset find_home home install_farmware
-                             install_first_party_farmware move_absolute
-                             move_relative power_off read_pin read_status
-                             reboot register_gpio remove_farmware send_message
-                             set_servo_angle set_user_env sync take_photo
-                             toggle_pin unregister_gpio update_farmware wait
-                             write_pin zero)
+  ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
+                             sync check_updates power_off reboot toggle_pin
+                             config_update calibrate execute move_absolute
+                             move_relative write_pin read_pin send_message
+                             factory_reset execute_script set_user_env wait
+                             install_farmware update_farmware take_photo zero
+                             install_first_party_farmware remove_farmware
+                             find_home register_gpio unregister_gpio
+                             set_servo_angle change_ownership dump_info)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
   RESOURCE_NAME         = %w(images plants regimens peripherals
@@ -33,6 +32,9 @@ module CeleryScriptSettingsBag
   ALLOWED_AXIS          = %w(x y z all)
   ALLOWED_LHS_TYPES     = [String, :named_pin]
   ALLOWED_LHS_STRINGS   = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
+  STEPS                 = %w(_if execute execute_script find_home move_absolute
+                             move_relative read_pin send_message take_photo wait
+                             write_pin )
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
@@ -190,7 +192,7 @@ module CeleryScriptSettingsBag
       .node(:send_message,          [:message, :message_type], [:channel])
       .node(:execute,               [:sequence_id])
       .node(:_if,                   [:lhs, :op, :rhs, :_then, :_else], [:pair])
-      .node(:sequence,              [:version, :locals], RPCS)
+      .node(:sequence,              [:version, :locals], STEPS)
       .node(:home,                  [:speed, :axis], [])
       .node(:find_home,             [:speed, :axis], [])
       .node(:zero,                  [:axis], [])
@@ -203,7 +205,7 @@ module CeleryScriptSettingsBag
       .node(:reboot,                [], [])
       .node(:toggle_pin,            [:pin_number], [])
       .node(:explanation,           [:message], [])
-      .node(:rpc_request,           [:label], RPCS)
+      .node(:rpc_request,           [:label], ALLOWED_RPC_NODES)
       .node(:rpc_ok,                [:label], [])
       .node(:rpc_error,             [:label], [:explanation])
       .node(:calibrate,             [:axis], [])

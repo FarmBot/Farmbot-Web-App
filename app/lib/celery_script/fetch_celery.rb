@@ -92,8 +92,7 @@ module CeleryScript
         updated_at: sequence.updated_at,
         args:       Sequence::DEFAULT_ARGS,
         color:      sequence.color,
-        name:       sequence.name,
-        public:     (sequence.is_public || false),
+        name:       sequence.name
       }
     end
 

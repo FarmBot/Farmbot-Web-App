@@ -1,12 +1,5 @@
 module Api
   class SequencesController < Api::AbstractController
-    PUBLIC_SEQUENCES            = Sequence
-                                    .with_usage_reports
-                                    .where(is_public: true)
-    SERIALIZED_PUBLIC_SEQUENCES = PUBLIC_SEQUENCES.to_a.map do |s|
-      CeleryScript::FetchCelery.run!(sequence: s)
-    end
-
     before_action :clean_expired_farm_events, only: [:destroy]
 
     def index
@@ -16,9 +9,8 @@ module Api
         .concat(PUBLIC_SEQUENCES)
     end
 
-    def show # TODO:
-      s = sequences.or(PUBLIC_SEQUENCES).find(params[:id])
-      render json: CeleryScript::FetchCelery.run!(sequence: s)
+    def show
+      render json: CeleryScript::FetchCelery.run!(sequence: sequence)
     end
 
     def create
