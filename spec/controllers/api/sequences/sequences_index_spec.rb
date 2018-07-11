@@ -12,6 +12,8 @@ describe Api::SequencesController do
     let(:user) { FactoryBot.create(:user) }
 
     it 'lists all sequences for a user' do
+      PinBinding.destroy_all
+      Sequence.destroy_all
       sign_in user
       sequences = 0
                   .upto(1)
