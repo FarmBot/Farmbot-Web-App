@@ -33,8 +33,9 @@ class Device < ApplicationRecord
   has_one   :fbos_config,            dependent: :destroy
   has_many  :in_use_tools
   has_many  :in_use_points
-
   has_many  :users
+  has_and_belongs_to_many :permissions
+
   validates_presence_of :name
   validates :timezone,
     inclusion: { in: TIMEZONES, message: BAD_TZ, allow_nil: true }

@@ -283,7 +283,7 @@ ActiveRecord::Schema.define(version: 2018_07_11_143520) do
   create_table "permissions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "name", limit: 16
+    t.string "name", limit: 16, null: false
   end
 
   create_table "pin_bindings", force: :cascade do |t|

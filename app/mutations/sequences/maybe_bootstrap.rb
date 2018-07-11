@@ -5,7 +5,6 @@ module Sequences
 
     def self.run!
       Sequence.transaction do
-        public_device.save!
         PUBLIC_SEQUENCES
           .reject { |p| Sequence.where(is_public: true, name: p["name"]).any? }
           .map    { |p| p[:device] = public_device; p }
@@ -18,7 +17,13 @@ module Sequences
   private
 
     def self.public_device
-      @public_device ||= Device.find_or_create_by!(name: "Public FarmBot")
+      @public_device ||= maybe_create_public_device
+    end
+
+    def self.maybe_create_public_device
+      perm = Permission.to_create_public_sequences
+      dev  = perm.devices.last
+      dev || Device.create!(name: "Sequence Publisher", permissions: [perm])
     end
   end
 end
