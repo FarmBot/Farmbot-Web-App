@@ -1,5 +1,8 @@
 import * as React from "react";
 import { equals } from "../util";
+import { isNumber } from "lodash";
+import { error } from "farmbot-toastr";
+import { t } from "i18next";
 
 export interface BIProps {
   value: string | number;
@@ -33,9 +36,27 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
 
   state: BIState = { buffer: "", isEditing: false };
 
+  withinLimits = (): boolean => {
+    if (this.props.type === "number") {
+      const value = parseInt(this.state.buffer);
+      if (isNumber(this.props.min) && value < this.props.min) {
+        error(t("Value must be greater than or equal to {{min}}.",
+          { min: this.props.min }));
+        return false;
+      }
+      if (isNumber(this.props.max) && value > this.props.max) {
+        error(t("Value must be less than or equal to {{max}}.",
+          { max: this.props.max }));
+        return false;
+      }
+    }
+    return true;
+  }
+
   /** Called on blur. */
   maybeCommit = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    const shouldPassToParent = this.state.buffer || (this.props.allowEmpty);
+    const bufferOk = this.state.buffer || this.props.allowEmpty;
+    const shouldPassToParent = bufferOk && this.withinLimits();
     shouldPassToParent && this.props.onCommit(e);
     this.setState({ isEditing: false, buffer: "" });
   }
@@ -61,6 +82,8 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
       onBlur: this.maybeCommit,
       name: this.props.name,
       id: this.props.id,
+      min: this.props.min,
+      max: this.props.max,
       type: this.props.type || "text",
       disabled: this.props.disabled,
       className: this.props.className,

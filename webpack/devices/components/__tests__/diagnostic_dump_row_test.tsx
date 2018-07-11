@@ -19,7 +19,7 @@ describe("<DiagnosticDumpRow/>", () => {
     diag.body.ticket_identifier = "0000";
     const el = mount(<DiagnosticDumpRow dispatch={dispatch} diag={diag} />);
     expect(el.text()).toContain("0000");
-    el.find("a").first().simulate("click");
+    el.find("button.green").first().simulate("click");
     expect(jsonDownload).toHaveBeenCalledWith(diag.body, "farmbot_diagnostics_0000.json");
     el.find("button.red").first().simulate("click");
     expect(destroy).toHaveBeenCalledWith(diag.uuid);
