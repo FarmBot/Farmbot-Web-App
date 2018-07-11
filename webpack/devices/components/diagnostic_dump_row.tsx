@@ -4,6 +4,7 @@ import { TaggedDiagnosticDump } from "../../resources/tagged_resources";
 import { jsonDownload } from "../../account/request_account_export";
 import { destroy } from "../../api/crud";
 import { ago } from "../connectivity/status_checks";
+import { t } from "i18next";
 
 export interface Props {
   diag: TaggedDiagnosticDump;
@@ -27,19 +28,23 @@ export class DiagnosticDumpRow extends React.Component<Props, {}> {
 
   render() {
     return <Row>
-      <Col xs={1}>
-        <span>
-          <button
-            className="red fb-button del-button"
-            onClick={this.destroy}>
-            <i className="fa fa-times" />
-          </button>
-        </span>
+      <Col xs={2}>
+        <button
+          className="green fb-button"
+          onClick={this.download}>
+          {t("Download")}
+        </button>
       </Col>
-      <Col xs={11}>
-        <a onClick={this.download} className="panel-link">
-          Download diagnostic report {this.ticket} (Saved {this.age})
-        </a>
+      <Col xs={9}>
+        {t("Diagnostic report {{ticket}} (Saved {{age}})",
+          { ticket: this.ticket, age: this.age })}
+      </Col>
+      <Col xs={1}>
+        <button
+          className="red fb-button del-button"
+          onClick={this.destroy}>
+          <i className="fa fa-times" />
+        </button>
       </Col>
     </Row >;
   }

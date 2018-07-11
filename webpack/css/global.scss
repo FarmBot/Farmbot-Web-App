@@ -174,12 +174,6 @@ a {
 }
 
 .input-group {
-  a {
-    color: #434343;
-    &:visited {
-      color: #434343;
-    }
-  }
   input[type=checkbox] {
     box-shadow: none;
   }
@@ -384,9 +378,20 @@ a {
   text-decoration: none !important;
   outline: none !important;
   cursor: pointer !important;
-  color: $off_white;
+  color: $dark_gray;
+  &:link {
+    font-weight: 500;
+    color: $dark_gray;
+  }
   &:visited {
-    color: $off_white;
+    color: $dark_gray;
+  }
+  &:hover {
+    font-weight: bold;
+    color: $dark_gray;
+  }
+  &:active {
+    color: $dark_gray;
   }
 }
 
@@ -845,22 +850,4 @@ ul {
       color: $dark_gray;
     }
   }
-}
-
-a.panel-link {
-    // TODO: Might need to move this to a better place. CC: @gabrielBurnworth
-    //
-    // PROBLEM: <a> links in the device panel are invisible.
-    // SOLUTION: Add {color: $dark_gray}
-    // PROBLEM 2: This rule probably does not belong at the bottom of
-    //            global.scss
-    color: $dark_gray;
-
-    &:visited {
-      color: $dark_gray;
-    };
-
-    &:active {
-      color: $dark_gray;
-    };
 }

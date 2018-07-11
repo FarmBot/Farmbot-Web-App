@@ -446,6 +446,12 @@ export namespace Content {
     trim(`Warning! Opting in to FarmBot OS beta releases may reduce
     FarmBot system stability. Are you sure?`);
 
+  export const DIAGNOSTIC_CHECK =
+    trim(`Save snapshot of FarmBot OS system information, including
+    user and device identity, to the database. A code will be returned
+    that you can provide in support requests to allow FarmBot to look up
+    data relevant to the issue to help us identify the problem.`);
+
   // Hardware Settings
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
     trim(`Restoring hardware parameter defaults will destroy the

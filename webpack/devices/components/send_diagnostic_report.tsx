@@ -8,6 +8,7 @@ import { ShouldDisplay, Feature } from "../interfaces";
 import { TaggedDiagnosticDump } from "../../resources/tagged_resources";
 import { DiagnosticDumpRow } from "./diagnostic_dump_row";
 import { requestDiagnostic } from "../actions";
+import { Content } from "../../constants";
 
 export interface DiagReportProps {
   dispatch: Function;
@@ -16,7 +17,7 @@ export interface DiagReportProps {
   diagnostics: TaggedDiagnosticDump[];
 }
 
-export class SendDiagnosticReport extends React.Component<DiagReportProps, {}>{
+export class SendDiagnosticReport extends React.Component<DiagReportProps, {}> {
   show = () => {
     return <section>
       <div style={{ fontSize: "1px" }}>
@@ -34,7 +35,7 @@ export class SendDiagnosticReport extends React.Component<DiagReportProps, {}>{
             </label>
           </Col>
           <Col xs={6}>
-            <p>...</p>
+            <p>{t(Content.DIAGNOSTIC_CHECK)}</p>
           </Col>
           <Col xs={3}>
             <button
@@ -44,6 +45,7 @@ export class SendDiagnosticReport extends React.Component<DiagReportProps, {}>{
             </button>
           </Col>
         </Row>
+        <hr />
         {this.props.diagnostics.map(d => {
           return <DiagnosticDumpRow
             key={d.uuid}

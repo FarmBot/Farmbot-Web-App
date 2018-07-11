@@ -146,7 +146,7 @@ export class API {
   /** /api/plant_templates/:id */
   get plantTemplatePath() { return `${this.baseUrl}/api/plant_templates`; }
   /** /api/diagnostic_dumps/:id */
-  get diagnosticDumpsPath() { return `${this.baseUrl}/api/diagnostic_dumps`; }
+  get diagnosticDumpsPath() { return `${this.baseUrl}/api/diagnostic_dumps/`; }
   /** /api/farmware_installations/:id */
   get farmwareInstallationPath() {
     return `${this.baseUrl}/api/farmware_installations`;
