@@ -49,6 +49,7 @@ private
         .where
         .not(jti: (RequestStore[:jwt] || {})[:jti])
         .destroy_all
+      CleanOutOldDbItemsJob.perform_later
     end
 
     # Send a `factory_reset` RPC over AMQP/MQTT to all connected devices.

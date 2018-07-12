@@ -31,8 +31,6 @@ module Sequences
         seq.manually_sync! # We must manually sync this resource.
         result
       end
-    rescue ActiveRecord::RecordInvalid
-      binding.pry
     end
   end
 end

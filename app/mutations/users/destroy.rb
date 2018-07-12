@@ -13,7 +13,6 @@ module Users
 
     def execute
       user.destroy!
-      CleanOutOldDbItemsJob.perform_later if TokenIssuance.any_expired?
       true
     end
 
