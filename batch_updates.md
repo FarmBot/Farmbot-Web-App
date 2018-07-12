@@ -2,43 +2,40 @@
 
 Not all resources support the experimental resource API.
 
-|Resource                |Delete?  |Upsert?  |
-|------------------------|---------|---------|
-| DeviceConfig           |No       |No       |
-| DiagnosticDump         |No       |No       |
-| FarmEvent              |No       |No       |
-| FarmwareInstallations  |No       |No       |
-| Image                  |No       |No       |
-| Log                    |No       |No       |
-| Peripheral             |No       |No       |
-| PinBinding             |No       |No       |
-| PlantTemplate          |No       |No       |
-| Point                  |No       |No       |
-| Regimen                |No       |No       |
-| SavedGarden            |No       |No       |
-| SensorReading          |No       |No       |
-| Sensor                 |No       |No       |
-| Sequence               |No       |No       |
-| Tool                   |No       |No       |
-| WebcamFeed             |No       |No       |
+|Resource               |Delete?  |Upsert?  |
+|-----------------------|---------|---------|
+| DeviceConfig          |No       |No       |
+| DiagnosticDump        |No       |No       |
+| FarmEvent             |No       |No       |
+| FarmwareInstallations |No       |No       |
+| Image                 |No       |No       |
+| Log                   |No       |No       |
+| Peripheral            |No       |No       |
+| PinBinding            |No       |No       |
+| PlantTemplate         |No       |No       |
+| Point                 |No       |No       |
+| Regimen               |No       |No       |
+| SavedGarden           |No       |No       |
+| SensorReading         |No       |No       |
+| Sensor                |No       |No       |
+| Sequence              |No       |No       |
+| Tool                  |No       |No       |
+| WebcamFeed            |No       |No       |
 
-# Delete
+# Step 1: Send the Update
 
-Delete multiple resources by sending an MQTT message to `bot/deivce_x/resources/delete`:
-
-The JSON follows the format of:
+Send an AMQP message in the format of:
 
 ```
-[
-  {
-    "kind": "delete",
-    "uuid": "123-456-whatever",
-    "args": { "resource_type": "Sensor", "resource_id": 123 }
-  },
-  {
-    "kind": "delete",
-    "uuid": "123-456-whatever",
-    "args": { "resource_type": "Tool", "resource_id": 456 }
-  }
-]
+bot/device_<id>/resources_v0/<action>/<resource type>/<resource_id or 0>/<Transaction UUID>
 ```
+
+Example:
+
+```
+bot.device_3.resources_v0.destroy.Sequence.2.123-456
+```
+
+# Step 2(A): Get a Result
+
+# Step 2(B): Get a Result

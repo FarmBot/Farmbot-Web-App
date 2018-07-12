@@ -1,51 +1,91 @@
 module Resources
-  class Job
-    attr_reader :device, :kind, :resource_id, :resource_type, :uuid
+  DEVICE_REGEX = /device_\d*/
+  ACTIONS      = [
+    DESTROY = "destroy"
+  ]
+  RESOURCES    = { # Because I don't trust Kernel.const_get
+    "DeviceConfig"          => DeviceConfig,
+    "DiagnosticDump"        => DiagnosticDump,
+    "FarmEvent"             => FarmEvent,
+    "FarmwareInstallations" => FarmwareInstallations,
+    "Image"                 => Image,
+    "Log"                   => Log,
+    "Peripheral"            => Peripheral,
+    "PinBinding"            => PinBinding,
+    "PlantTemplate"         => PlantTemplate,
+    "Point"                 => Point,
+    "Regimen"               => Regimen,
+    "SavedGarden"           => SavedGarden,
+    "SensorReading"         => SensorReading,
+    "Sensor"                => Sensor,
+    "Sequence"              => Sequence,
+    "Tool"                  => Tool,
+    "WebcamFeed"            => WebcamFeed,
+  }
 
-    def initialize(device, kind, resource_id, resource_type, uuid)
+  class Job < Mutations::Command
+    required do
+      duck    :body, methods: [:[], :[]=]
+      duck    :resource, duck: [:where, :find_by]
+      integer :resource_id
+      model   :device, class: Device
+      string  :action, in: ACTIONS
+      string  :uuid
     end
 
-    def reject
+    def validate
+      # Security critical. Should never occur in production.
+      never unless RESOURCES.values.include?(resource)
     end
 
-    def resolve
+    def execute
+      case action
+      when DESTROY then do_deletion
+      else; never
+      end
     end
-  end
+
+    private
+
+    def plural_resource
+      @plural_resource ||= resource.name.pluralize
+    end
+
+    def do_deletion
+      model_name = resource.model_name
+      mutation   = Kernel.const_get(model_name.name.pluralize)::Destroy
+      mutation.run!(model_name.singular => model, device: device)
+    end
+
+    def model
+      @model ||= device.send(plural_resource.downcase).find(resource_id)
+    end
+
+    # Escape hatch for things that should "never happen".
+    def never
+      raise "PANIC"
+    end
+  end # Job
+
+  class Service
+    def self.process(delivery_info, body)
+      Job.run!(PreProcessor.from_amqp(delivery_info, body))
+    rescue Mutations::ValidationException => q
+      binding.pry
+    end
+  end # Service
 
   class PreProcessor < Mutations::Command
-    ACTIONS      = ["destroy"]
-    RESOURCES    = { # Because I don't trust Kernel.const_get
-      "DeviceConfig"          => DeviceConfig,
-      "DiagnosticDump"        => DiagnosticDump,
-      "FarmEvent"             => FarmEvent,
-      "FarmwareInstallations" => FarmwareInstallations,
-      "Image"                 => Image,
-      "Log"                   => Log,
-      "Peripheral"            => Peripheral,
-      "PinBinding"            => PinBinding,
-      "PlantTemplate"         => PlantTemplate,
-      "Point"                 => Point,
-      "Regimen"               => Regimen,
-      "SavedGarden"           => SavedGarden,
-      "SensorReading"         => SensorReading,
-      "Sensor"                => Sensor,
-      "Sequence"              => Sequence,
-      "Tool"                  => Tool,
-      "WebcamFeed"            => WebcamFeed,
-    }
-
-    DEVICE_REGEX = /device_\d*/
-
     def self.from_amqp(delivery_info, body)
-      # ["bot", "device_3", "resources_v0", "destroy", "Sequence", "2"]
+      # ["bot", "device_3", "resources_v0", "destroy", "Sequence", "2", "123-456
       _, device_name, _, action, resource, resource_id, uuid =  \
         delivery_info.routing_key.split(".")
       run!(device_name: device_name,
-          action:      action,
-          resource:    resource,
-          resource_id: resource_id,
-          uuid:        uuid,
-          body:        body.empty? ? "{}" : body)
+           action:      action,
+           resource:    resource,
+           resource_id: resource_id,
+           uuid:        uuid,
+           body:        body.empty? ? "{}" : body)
     end
 
     required do
@@ -67,7 +107,7 @@ module Resources
 
     def execute
       {
-        action:      action.to_sym,
+        action:      action,
         device:      @device,
         body:        @body,
         resource_id: resource_id,
@@ -95,12 +135,5 @@ module Resources
       @device = Device.find_by(id: id)
       add_error :device, :device, "Can't find device ##{id}" unless @device
     end
-  end
-
-  class Service
-    def self.process(delivery_info, body)
-      puts PreProcessor.from_amqp(delivery_info, body)
-      puts "Got a resource message, but this is a noop atm."
-    end
-  end # Service
+  end # PreProcessor
 end # Resources
