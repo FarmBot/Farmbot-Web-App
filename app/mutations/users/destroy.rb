@@ -13,7 +13,6 @@ module Users
 
     def execute
       user.destroy!
-      true
     end
 
 private

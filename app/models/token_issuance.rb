@@ -4,7 +4,6 @@ class TokenIssuance < ApplicationRecord
   belongs_to :device
   # Number of ms Rails will wait for the API.
   API_TIMEOUT = Rails.env.test? ? 0.01 : 2.5
-  puts "Fix client eviction logic."
 
   def broadcast?
     false
