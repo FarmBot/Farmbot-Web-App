@@ -10,10 +10,8 @@ import { FarmbotOsSettings } from "../farmbot_os_settings";
 import { mount, shallow } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeResource } from "../../../__test_support__/fake_resource";
-import { FbosDetails } from "../fbos_settings/farmbot_os_row";
 import { FarmbotOsProps } from "../../interfaces";
 import axios from "axios";
-import { FbosDetailsProps } from "../fbos_settings/interfaces";
 import { Actions } from "../../../constants";
 import { SpecialStatus } from "../../../resources/tagged_resources";
 
@@ -80,26 +78,4 @@ describe("<FarmbotOsSettings/>", () => {
     });
   });
 
-});
-
-describe("<FbosDetails />", () => {
-  const fakeProps = (): FbosDetailsProps => {
-    return {
-      dispatch: jest.fn(),
-      bot: bot,
-      sourceFbosConfig: (x) => {
-        return { value: bot.hardware.configuration[x], consistent: true };
-      }
-    };
-  };
-
-  it("renders", () => {
-    const wrapper = mount(<FbosDetails {...fakeProps()} />);
-    ["Environment: ---",
-      "Commit: ---",
-      "Target: ---",
-      "Node name: ---",
-      "Firmware: "].map(string =>
-        expect(wrapper.text()).toContain(string));
-  });
 });

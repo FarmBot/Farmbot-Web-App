@@ -21,6 +21,39 @@ import { SequenceSelectBox } from "../../sequences/sequence_select_box";
 import { initSave, destroy } from "../../api/crud";
 import { TaggedPinBinding, SpecialStatus } from "../../resources/tagged_resources";
 
+/**
+ * PROBLEM SCENARIO: New FarmBot boots up. It does not have any sequences yet,
+ * because it's never talked with the API. You _must_ be able to E-stop the
+ * device via button press.
+ *
+ * SOLUTION: Bake some sane defaults (heretofore "builtin sequences" and
+ * "builtin bindings") into the FBOS image. Make the
+ *
+ * NEW PROBLEM: We need a way to map FBOS friendly magic numbers to human
+ * friendly labels on the UI layer.
+ *
+ * SOLUTION: Hard code a magic number mapping in to the FE.
+ *
+ * PRECAUTIONS:
+ *  + Numbers can never change (will break old FBOS versions)
+ *  + If we ever need to share this mapping, keep it in the API as a constant.
+ *  + Numbers will cause runtime errors if sent to the API. Best to keep these
+ *    numbers local to FE/FBOS.
+ */
+export const magicNumbers = {
+  sequences: {
+    emergency_lock: -1,
+    emergency_unlock: -2,
+    sync: -3,
+    reboot: -4,
+    power_off: -5,
+  },
+  pin_bindings: {
+    emergency_lock: -1,
+    emergency_unlock: -2
+  }
+};
+
 export interface PinBindingsProps {
   bot: BotState;
   dispatch: Function;

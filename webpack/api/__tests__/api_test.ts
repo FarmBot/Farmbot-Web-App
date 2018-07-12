@@ -12,7 +12,7 @@ describe("API", () => {
       [API.current.sensorReadingPath, BASE + "/api/sensor_readings"],
       [API.current.deviceConfigPath, BASE + "/api/device_configs"],
       [API.current.plantTemplatePath, BASE + "/api/plant_templates"],
-      [API.current.diagnosticDumpsPath, BASE + "/api/diagnostic_dumps"],
+      [API.current.diagnosticDumpsPath, BASE + "/api/diagnostic_dumps/"],
       [API.current.farmwareInstallationPath, BASE + "/api/farmware_installations"],
     ].map(x => expect(x[0]).toEqual(x[1]));
   });

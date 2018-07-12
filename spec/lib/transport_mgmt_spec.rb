@@ -1,8 +1,16 @@
 require "spec_helper"
 
 describe Transport::Mgmt do
-  it "generates a URL" do
-    expect(Transport::Mgmt.api_url).to eq("http://blooper.io:15672")
+  it "generates credentials" do
+    the_list = [:foo, :bar]
+    dbl      = double("Fake API", list_connections: the_list)
+
+    expect(Transport::Mgmt.username).to eq("admin")
+    expect(Transport::Mgmt.password).to eq(ENV.fetch("ADMIN_PASSWORD"))
+    expect(Transport::Mgmt.client).to be_kind_of(RabbitMQ::HTTP::Client)
+    expect(Transport::Mgmt.client.endpoint).to eq(Transport::Mgmt.api_url)
+    Transport::Mgmt.instance_variable_set(:@client, dbl)
+    expect(Transport::Mgmt.connections).to eq(the_list)
   end
 
   it "finds connections by name" do

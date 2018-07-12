@@ -2,7 +2,8 @@
 # expiration date).
 class TokenIssuance < ApplicationRecord
   belongs_to :device
-  after_destroy :maybe_evict_clients
+  # Number of ms Rails will wait for the API.
+  API_TIMEOUT = Rails.env.test? ? 0.01 : 2.5
 
   def broadcast?
     false
@@ -20,7 +21,7 @@ class TokenIssuance < ApplicationRecord
   #     Kick _everyone_ off the broker. The clients with the revoked token will
   #     not be able to reconnect.
   def maybe_evict_clients
-    Timeout::timeout(2.5) do
+    Timeout::timeout(API_TIMEOUT) do
       id = "device_#{device_id}"
       Transport::Mgmt.try(:close_connections_for_username, id)
     end
