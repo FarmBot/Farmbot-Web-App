@@ -10,7 +10,7 @@ export let AxisInputBox = ({ onChange, value, axis }: AxisInputBoxProps) => {
       type="number"
       allowEmpty={true}
       onCommit={e => {
-        const val = parseInt(e.currentTarget.value);
+        const val = parseFloat(e.currentTarget.value);
         onChange(axis, isNaN(val) ? undefined : val);
       }} />
   </Col>;

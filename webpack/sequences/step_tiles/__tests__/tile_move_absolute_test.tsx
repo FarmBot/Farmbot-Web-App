@@ -16,7 +16,7 @@ describe("<TileMoveAbsolute/>", () => {
         location: {
           kind: "coordinate",
           args: {
-            x: 1,
+            x: 1.1,
             y: 2,
             z: 3
           }
@@ -25,7 +25,7 @@ describe("<TileMoveAbsolute/>", () => {
         offset: {
           kind: "coordinate",
           args: {
-            x: 4,
+            x: 4.4,
             y: 5,
             z: 6
           }
@@ -62,11 +62,11 @@ describe("<TileMoveAbsolute/>", () => {
     expect(inputs.first().props().placeholder).toEqual("Move Absolute");
     expect(labels.at(0).text().toLowerCase()).toEqual("import coordinates from");
     expect(buttons.at(0).text()).toEqual("None");
-    checkField(block, 1, "x (mm)", "1");
+    checkField(block, 1, "x (mm)", "1.1");
     checkField(block, 2, "y (mm)", "2");
     checkField(block, 3, "z (mm)", "3");
     checkField(block, 4, "speed (%)", 100);
-    checkField(block, 5, "x-offset", "4");
+    checkField(block, 5, "x-offset", "4.4");
     checkField(block, 6, "y-offset", "5");
     checkField(block, 7, "z-offset", "6");
   });
