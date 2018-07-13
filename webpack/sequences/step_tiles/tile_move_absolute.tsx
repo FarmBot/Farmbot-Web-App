@@ -121,7 +121,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
 
   updateInputValue = (axis: Xyz, place: LocationArg) =>
     (e: React.SyntheticEvent<HTMLInputElement>) => {
-      const num = parseInt(e.currentTarget.value, 10);
+      const num = parseFloat(e.currentTarget.value);
       const update = { [place]: { args: { [axis]: num } } };
       this.updateArgs(_.merge({}, this.args, update));
     }

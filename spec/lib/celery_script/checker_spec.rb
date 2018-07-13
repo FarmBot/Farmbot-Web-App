@@ -60,8 +60,8 @@ describe CeleryScript::Checker do
   it 'handles wrong leaf types' do
     hash[:body][0][:args][:location][:args][:x] = "supposed to be an Integer"
     result = checker.run
-    expect(result.message).to eq("Expected leaf 'x' within 'coordinate' to"\
-                                  " be one of: [Integer] but got String")
+    expect(result.message).to eq("Expected leaf 'x' within 'coordinate' to be "\
+                                 "one of: [Integer, Float] but got String")
   end
 
   it "finds a bad leaf" do

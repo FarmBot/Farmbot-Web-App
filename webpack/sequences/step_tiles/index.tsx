@@ -116,7 +116,7 @@ export function updateStepTitle(props: StepTitleBarProps) {
 
 function numericNonsense(val: string, copy: CeleryNode, field: LegalArgString) {
   // Fix negative number issues.
-  const num = (val == "-") ? "-" : parseInt(val, 10);
+  const num = (val == "-") ? "-" : parseFloat(val);
   return _.assign(copy.args, { [field]: num });
 }
 
