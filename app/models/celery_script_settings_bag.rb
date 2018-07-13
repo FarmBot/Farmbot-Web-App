@@ -80,9 +80,9 @@ module CeleryScriptSettingsBag
       .arg(:url,          [String])
       .arg(:value,        [String, Integer, TrueClass, FalseClass])
       .arg(:version,      [Integer])
-      .arg(:x,            [Integer])
-      .arg(:y,            [Integer])
-      .arg(:z,            [Integer])
+      .arg(:x,            [Integer, Float])
+      .arg(:y,            [Integer, Float])
+      .arg(:z,            [Integer, Float])
       .arg(:pin_id,       [Integer])
       .arg(:pin_type,     [String]) do |node|
         within(ALLOWED_PIN_TYPES, node) do |val|
