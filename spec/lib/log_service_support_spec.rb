@@ -1,5 +1,5 @@
 require "spec_helper"
-require_relative "../../lib/log_service"
+# require_relative "../../lib/log_service"
 
 describe LogService do
   normal_payl  = '{"meta":{"z":0,"y":0,"x":0,"type":"info","major_version":6},' +
