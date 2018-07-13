@@ -1,3 +1,3 @@
 require_relative "./service_runner_base.rb"
 
-ServiceRunner.go!(:log_channel, LogService)
+ServiceRunner.go!(Transport.current.log_channel, LogService)

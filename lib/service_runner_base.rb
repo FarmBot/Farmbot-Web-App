@@ -1,11 +1,12 @@
 class ServiceRunner
+  WAIT_TIME = Rails.env.test? ? 0.01 : 5
 
   def self.go!(channel, worker_klass)
     self.new(channel, worker_klass).run!
   end
 
   def initialize(channel, worker_klass)
-    @channel = Transport.current.send(channel)
+    @channel = channel
     @worker  = worker_klass
   end
 
@@ -16,7 +17,7 @@ class ServiceRunner
   rescue StandardError => e
     Rollbar.error(e)
     puts "MQTT Broker is unreachable. Waiting 5 seconds..."
-    sleep 5
+    sleep WAIT_TIME
     retry
   end
 end
