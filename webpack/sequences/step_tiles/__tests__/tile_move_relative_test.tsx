@@ -10,7 +10,7 @@ describe("<TileMoveRelative/>", () => {
     const currentStep: MoveRelative = {
       kind: "move_relative",
       args: {
-        x: 1,
+        x: 1.1,
         y: 2,
         z: 3,
         speed: 100
@@ -34,7 +34,7 @@ describe("<TileMoveRelative/>", () => {
     expect(labels.length).toEqual(4);
     expect(inputs.first().props().placeholder).toEqual("Move Relative");
     expect(labels.at(0).text().toLowerCase()).toEqual("x (mm)");
-    expect(inputs.at(1).props().value).toEqual(1);
+    expect(inputs.at(1).props().value).toEqual(1.1);
     expect(labels.at(1).text().toLowerCase()).toEqual("y (mm)");
     expect(inputs.at(2).props().value).toEqual(2);
     expect(labels.at(2).text().toLowerCase()).toEqual("z (mm)");

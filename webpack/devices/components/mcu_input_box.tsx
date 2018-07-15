@@ -51,7 +51,9 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
     const { value } = e.currentTarget;
     const actuallyDifferent = this.value !== value;
     if (actuallyDifferent) {
-      const result = this.clampInputAndWarn(value, this.props.intSize);
+      const result = this.props.float
+        ? Math.max(0, parseFloat(value))
+        : this.clampInputAndWarn(value, this.props.intSize);
       this.props.dispatch(updateMCU(this.key, result.toString()));
     }
   }
