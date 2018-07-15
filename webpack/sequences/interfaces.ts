@@ -49,8 +49,12 @@ export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
 
-export const NUMERIC_FIELDS = ["milliseconds", "pin_mode", "pin_number",
-  "pin_value", "rhs", "sequence_id", "speed", "x", "y", "z"];
+export const INT_NUMERIC_FIELDS = ["milliseconds", "pin_mode", "pin_number",
+  "pin_value", "rhs", "sequence_id", "speed"];
+
+export const FLOAT_NUMERIC_FIELDS = ["x", "y", "z"];
+
+export const NUMERIC_FIELDS = INT_NUMERIC_FIELDS.concat(FLOAT_NUMERIC_FIELDS);
 
 export interface Sequence extends CeleryScriptSequence {
   id?: number;

@@ -50,6 +50,7 @@ export interface NumericMCUInputGroupProps {
   x: McuParamName;
   y: McuParamName;
   z: McuParamName;
+  float?: boolean;
   intSize?: IntegerSize;
   gray?: Record<Xyz, boolean>;
 }
