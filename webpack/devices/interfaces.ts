@@ -164,6 +164,7 @@ export interface McuInputBoxProps {
   setting: McuParamName;
   dispatch: Function;
   intSize?: IntegerSize;
+  float?: boolean;
   filter?: number;
   gray?: boolean;
 }

@@ -49,6 +49,7 @@ export function StepsPerMmSettings(props: MotorsProps) {
       x={"movement_step_per_mm_x"}
       y={"movement_step_per_mm_y"}
       z={"movement_step_per_mm_z"}
+      float={true}
       sourceFwConfig={sourceFwConfig}
       dispatch={dispatch} />;
   } else {

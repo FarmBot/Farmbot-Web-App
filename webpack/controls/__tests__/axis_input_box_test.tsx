@@ -34,6 +34,7 @@ describe("<AxisInputBox/>", () => {
     }
     testInput("", undefined);
     testInput("1", 1);
+    testInput("1.1", 1.1);
     testInput("e", undefined);
   });
 });
