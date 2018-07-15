@@ -11,10 +11,18 @@ import { ChannelName } from "./sequences/interfaces";
     in the UI. Only certain colors are valid. */
 export type Color = FarmBotJsColor;
 
-export interface PinBinding {
-  id?: number;
+export type PinBinding = StandardPinBinding | SpecialPinBinding;
+
+interface PinBindingBase { id?: number; pin_num: number; }
+
+interface StandardPinBinding extends PinBindingBase {
+  binding_type: "standard";
   sequence_id: number;
-  pin_num: number;
+}
+
+export interface SpecialPinBinding extends PinBindingBase {
+  binding_type: "special";
+  special_action: string; // TODO: Maybe use enum? RC 15 JUL 18
 }
 
 export interface Sensor {

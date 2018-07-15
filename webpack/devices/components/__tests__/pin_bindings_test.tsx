@@ -108,9 +108,15 @@ describe("<PinBindings/>", () => {
     wrapper.setState({ pinNumberInput: 1, sequenceIdInput: 2 });
     buttons.last().simulate("click");
     expect(mockDevice.registerGpio).not.toHaveBeenCalled();
-    expect(initSave).toHaveBeenCalledWith(expect.objectContaining({
-      body: { pin_num: 1, sequence_id: 2 }, kind: "PinBinding"
-    }));
+    const expectedResult = expect.objectContaining({
+      kind: "PinBinding",
+      body: {
+        pin_num: 1,
+        sequence_id: 2,
+        binding_type: "standard"
+      }
+    });
+    expect(initSave).toHaveBeenCalledWith(expectedResult);
   });
 
   it("sets sequence id", () => {
