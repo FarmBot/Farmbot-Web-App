@@ -2,10 +2,6 @@ require "spec_helper"
 
 module PinBindingSpecHelper
   def self.test(mutation, has_seq, has_actn, expected_result)
-    # integer :pin_num
-    # integer :sequence_id
-    # model   :device, class: Device
-    # model   :pin_binding, class: PinBinding
     actn                    = PinBinding.special_actions.values.sample
     sequence                = Sequence.last
     device                  = sequence.device
