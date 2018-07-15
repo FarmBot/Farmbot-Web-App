@@ -70,5 +70,26 @@ describe Api::PinBindingsController do
         expect(pin_binding[key]).to eq(input[key])
       end
     end
+
+    it 'disallows pin 17' do
+      sign_in user
+      s     = FakeSequence.create( device: device)
+      input = { pin_num: 17, sequence_id: s.id}
+      b4    = PinBinding.count
+      post :create, body: input.to_json, params: { format: :json}
+      expect(response.status).to eq(422)
+      expect(json[:pin_num]).to include("Pin numbers 17 and 23 cannot be used.")
+    end
+
+    it 'disallows pin 23' do
+      sign_in user
+      s     = FakeSequence.create( device: device)
+      input = { pin_num: 23, sequence_id: s.id}
+      put :update,
+        body: input.to_json,
+        params: { format: :json, id: pin_binding.id}
+      expect(response.status).to eq(422)
+      expect(json[:pin_num]).to include("Pin numbers 17 and 23 cannot be used.")
+    end
   end
 end

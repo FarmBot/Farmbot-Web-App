@@ -22,6 +22,7 @@ end
 
 describe "Pin Binding updates" do
   it "enforces mutual exclusivity" do
+    PinBinding.destroy_all
     Sequence.destroy_all
     Device.destroy_all
     device = FactoryBot.create(:device)

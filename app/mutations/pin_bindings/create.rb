@@ -13,6 +13,7 @@ module PinBindings
     end
 
     def validate
+      validate_pin_num
       validate_sequence_id
       exactly_one_choice
       not_both_actions
