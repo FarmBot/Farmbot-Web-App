@@ -41,12 +41,26 @@ describe Resources::PreProcessor do
     it "handles failure" do
       body   = "[]"
       chan   = CHANNEL_TPL % props
-      Resources::Service.process(DeliveryInfoShim.new(chan), body)
+      result = Resources::Service.process(DeliveryInfoShim.new(chan), body)
+      err    = result.calls[:publish].last
+      expect(err).to be_kind_of(Array)
+      expect(err.last).to be_kind_of(Hash)
+      expect(err.last[:routing_key]).to be_kind_of(String)
+      dev_id = err.last[:routing_key].split(".").second
+      expect(dev_id).to eq("device_#{props[:device_id]}")
+      body = JSON.parse(err.first).deep_symbolize_keys
+      expect(body[:kind]).to eq("rpc_error")
+      expect(body[:args]).to be_kind_of(Hash)
+      expect(body[:body]).to be_kind_of(Array)
+      expl = body[:body].first
+      expect(expl).to be_kind_of(Hash)
+      expect(expl[:kind]).to eq("explanation")
+      expect(expl[:args][:message]).to eq("body must be a JSON object")
     end
   end
 
   describe Resources::Job do
-    it "allows nesting?" do
+    it "executes deletion" do
       y = preprocessed
       before = PinBinding.count
       x = Resources::Job.run(y)
