@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_07_13_182937) do
+ActiveRecord::Schema.define(version: 2018_07_16_163108) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -252,9 +252,9 @@ ActiveRecord::Schema.define(version: 2018_07_13_182937) do
     t.integer "major_version"
     t.integer "minor_version"
     t.integer "verbosity", default: 1
-    t.integer "x"
-    t.integer "y"
-    t.integer "z"
+    t.float "x"
+    t.float "y"
+    t.float "z"
     t.datetime "sent_at"
     t.index ["created_at"], name: "index_logs_on_created_at"
     t.index ["device_id"], name: "index_logs_on_device_id"
