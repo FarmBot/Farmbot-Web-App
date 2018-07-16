@@ -36,6 +36,4 @@ describe AmqpLogParser do
     expect(data.valid?).to be(false)
     expect(data.problems).to include AmqpLogParser::TOO_OLD
   end
-
-  it "passes all other logs"
 end

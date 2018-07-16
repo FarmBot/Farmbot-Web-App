@@ -37,6 +37,13 @@ describe Resources::PreProcessor do
     end.to raise_error(Mutations::ValidationException, "body must be a JSON object")
   end
 
+  describe Resources::Service do
+    it "handles failure" do
+      body   = "[]"
+      chan   = CHANNEL_TPL % props
+      Resources::Service.process(DeliveryInfoShim.new(chan), body)
+    end
+  end
 
   describe Resources::Job do
     it "allows nesting?" do
