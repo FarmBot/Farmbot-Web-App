@@ -2,22 +2,20 @@ module Resources
   class Service
     def self.process(delivery_info, body)
       params = PreProcessor.from_amqp(delivery_info, body)
-      puts "TODO: Transport.amqp_send(message, id, channel)"
-      Job.run!(params)
+      result = Job.run!(params)
+      payl   = result ? result.to_json : ""
+      Transport
+        .current
+        .amqp_send(payl, params[:device].id, "from_api")
     rescue Mutations::ValidationException => q
-      params ||= {}
-      device_id = params.fetch(:device) do
-        delivery_info
-          &.routing_key
-          &.split(".")
-          .try(:[], 1)
-          &.gsub("device_", "")
-          &.to_i
-      end
+      params  ||= {}
+      raw_chan  = delivery_info&.routing_key&.split(".") || []
+      device_id =
+        params.fetch(:device) { raw_chan[1]&.gsub("device_", "")&.to_i }
       if device_id
         message = {
           kind: "rpc_error",
-          args: { label: params.fetch(:uuid) { "NONE" } },
+          args: { label: params[:uuid] || raw_chan[6] || "NONE" },
           body: (q
           .errors
           .values

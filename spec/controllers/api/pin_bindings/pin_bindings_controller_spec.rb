@@ -57,13 +57,13 @@ describe Api::PinBindingsController do
     end
 
     it 'updates pin bindings' do
-      puts "Blinky test"
       sign_in user
       s     = FakeSequence.create(device: device)
       input = { pin_num: pin_binding.pin_num + 1, sequence_id: s.id}
       put :update,
         body: input.to_json,
         params: { format: :json, id: pin_binding.id}
+      binding.pry unless response.status == 200
       expect(response.status).to eq(200)
       pin_binding.reload
       input.map do |(key, _)|

@@ -18,7 +18,6 @@ end
 
 describe "Pin Binding updates" do
   it "enforces mutual exclusivity" do
-    puts "Blinky test"
     Point.destroy_all
     Tool.destroy_all
     PinBinding.destroy_all

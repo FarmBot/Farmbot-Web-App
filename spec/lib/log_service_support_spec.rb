@@ -46,7 +46,6 @@ describe LogService do
   end
 
   it "creates new messages in the DB when called" do
-    puts "Blinky test"
     Log.destroy_all
     b4 = Log.count
     LogService.process(fake_delivery_info, normal_payl)
