@@ -18,6 +18,7 @@ end
 
 describe "Pin Binding updates" do
   it "enforces mutual exclusivity" do
+    puts "Blinky test"
     PinBinding.destroy_all
     Sequence.destroy_all
     Device.destroy_all
