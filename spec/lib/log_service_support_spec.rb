@@ -26,9 +26,9 @@ describe LogService do
   end
 
   it "calls .subscribe() on Transport." do
-    pending('Fixme')
     Transport.current.clear!
-    load "lib/log_service_runner.rb"
+          # lib/log_service_runner.rb
+    load "./lib/log_service_runner.rb"
     arg1        = Transport.current.connection.calls[:subscribe].last[0]
     routing_key = Transport.current.connection.calls[:bind].last[1][:routing_key]
     expect(arg1).to        eq({block: true})
