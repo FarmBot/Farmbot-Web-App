@@ -8,9 +8,9 @@ module Images
     optional do
       hash :meta do
         optional do
-          integer :x
-          integer :y
-          integer :z
+          float :x
+          float :y
+          float :z
           string  :name
         end
       end
