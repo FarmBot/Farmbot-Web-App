@@ -10,8 +10,10 @@ describe LogService do
   '"message":"HQ FarmBot TEST 123 Pin 13 is 0","created_at":'+
   '1512585641,"channels":[]}'
   FakeDeliveryInfo   = Struct.new(:routing_key)
-  device_id          = FactoryBot.create(:device).id
-  fake_delivery_info = FakeDeliveryInfo.new("bot.device_#{device_id}.logs")
+  let!(:device_id) { FactoryBot.create(:device).id }
+  let!(:fake_delivery_info) do
+    FakeDeliveryInfo.new("bot.device_#{device_id}.logs")
+  end
 
   class FakeLogChan
     attr_reader :subcribe_calls
@@ -35,6 +37,7 @@ describe LogService do
   end
 
   it "creates new messages in the DB when called" do
+    puts "Blinky test"
     Log.destroy_all
     b4 = Log.count
     LogService.process(fake_delivery_info, normal_payl)

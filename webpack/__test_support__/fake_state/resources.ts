@@ -163,7 +163,8 @@ export function fakePinBinding(): TaggedPinBinding {
   return fakeResource("PinBinding", {
     id: idCounter++,
     pin_num: 10,
-    sequence_id: 1
+    sequence_id: 1,
+    binding_type: "standard"
   });
 }
 

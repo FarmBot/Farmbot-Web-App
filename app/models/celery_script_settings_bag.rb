@@ -32,6 +32,8 @@ module CeleryScriptSettingsBag
   ALLOWED_AXIS          = %w(x y z all)
   ALLOWED_LHS_TYPES     = [String, :named_pin]
   ALLOWED_LHS_STRINGS   = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
+  ALLOWED_SPEC_ACTION   = %w(dump_info emergency_lock emergency_unlock power_off
+                             read_status reboot sync take_photo)
   STEPS                 = %w(_if execute execute_script find_home move_absolute
                              move_relative read_pin send_message take_photo wait
                              write_pin )
