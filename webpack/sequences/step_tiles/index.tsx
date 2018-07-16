@@ -1,6 +1,6 @@
 import * as React from "react";
 import { SequenceBodyItem as Step } from "farmbot";
-import { NUMERIC_FIELDS } from "../interfaces";
+import { FLOAT_NUMERIC_FIELDS, NUMERIC_FIELDS } from "../interfaces";
 import { ExecuteBlock } from "./tile_execute";
 import { StepParams, StepInputProps, StepTitleBarProps } from "../interfaces";
 import { defensiveClone, move as arrayMover } from "../../util";
@@ -115,9 +115,10 @@ export function updateStepTitle(props: StepTitleBarProps) {
 }
 
 function numericNonsense(val: string, copy: CeleryNode, field: LegalArgString) {
-  // Fix negative number issues.
-  const num = (val == "-") ? "-" : parseInt(val, 10);
-  return _.assign(copy.args, { [field]: num });
+  const parsedNumber = FLOAT_NUMERIC_FIELDS.includes(field)
+    ? parseFloat(val)
+    : parseInt(val, 10);
+  return _.assign(copy.args, { [field]: parsedNumber });
 }
 
 export function renderCeleryNode(props: StepParams) {
