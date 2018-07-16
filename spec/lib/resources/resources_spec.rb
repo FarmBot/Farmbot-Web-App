@@ -77,5 +77,12 @@ describe Resources::PreProcessor do
       expect(x.success?).to be true
       expect(before).to     be > PinBinding.count
     end
+
+    it "crashes when attempting to process unsupported classes" do
+      y               = preprocessed
+      y[:resource]    = Device
+      y[:resource_id] = y[:device].id
+      expect { Resources::Job.run(y) }.to raise_error("PANIC")
+    end
   end
 end
