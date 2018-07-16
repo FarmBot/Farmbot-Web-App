@@ -34,7 +34,7 @@ module Resources
     end
 
     def model
-      @model ||= device.send(plural_resource.downcase).find(resource_id)
+      @model ||= device.send(plural_resource.tableize).find(resource_id)
     end
 
     # Escape hatch for things that should "never happen".
