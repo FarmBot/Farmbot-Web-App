@@ -63,7 +63,6 @@ describe Api::PinBindingsController do
       put :update,
         body: input.to_json,
         params: { format: :json, id: pin_binding.id}
-      binding.pry unless response.status == 200
       expect(response.status).to eq(200)
       pin_binding.reload
       input.map do |(key, _)|
