@@ -20,6 +20,7 @@ describe Resources::PreProcessor do
     chan   = CHANNEL_TPL % props
     Resources::PreProcessor.from_amqp(DeliveryInfoShim.new(chan), body)
   end
+
   it "converts string types to real types" do
     expect(preprocessed[:action]).to      eq("destroy")
     expect(preprocessed[:device]).to      eq(pb.device)
@@ -56,6 +57,15 @@ describe Resources::PreProcessor do
       expect(expl).to be_kind_of(Hash)
       expect(expl[:kind]).to eq("explanation")
       expect(expl[:args][:message]).to eq("body must be a JSON object")
+    end
+
+    it "processes resources" do
+      body   = {}.to_json
+      chan   = CHANNEL_TPL % props
+      before = PinBinding.count
+      result = Resources::Service.process(DeliveryInfoShim.new(chan), body)
+      expect(result).to eq("")
+      expect(PinBinding.count).to be < before
     end
   end
 
