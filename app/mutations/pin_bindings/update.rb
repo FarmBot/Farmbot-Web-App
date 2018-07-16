@@ -8,11 +8,14 @@ module PinBindings
     end
 
     optional do
+      string  :special_action, in: PinBinding.special_actions.values
       integer :sequence_id
       integer :pin_num
     end
 
     def validate
+      validate_pin_num
+      not_both_actions
       validate_sequence_id if sequence_id
     end
 

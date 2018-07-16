@@ -57,8 +57,9 @@ describe Api::PinBindingsController do
     end
 
     it 'updates pin bindings' do
+      puts "Blinky test"
       sign_in user
-      s     = FakeSequence.create( device: device)
+      s     = FakeSequence.create(device: device)
       input = { pin_num: pin_binding.pin_num + 1, sequence_id: s.id}
       put :update,
         body: input.to_json,
@@ -69,6 +70,27 @@ describe Api::PinBindingsController do
         expect(json[key]).to eq(input[key])
         expect(pin_binding[key]).to eq(input[key])
       end
+    end
+
+    it 'disallows pin 17' do
+      sign_in user
+      s     = FakeSequence.create( device: device)
+      input = { pin_num: 17, sequence_id: s.id}
+      b4    = PinBinding.count
+      post :create, body: input.to_json, params: { format: :json}
+      expect(response.status).to eq(422)
+      expect(json[:pin_num]).to include("Pin numbers 17 and 23 cannot be used.")
+    end
+
+    it 'disallows pin 23' do
+      sign_in user
+      s     = FakeSequence.create( device: device)
+      input = { pin_num: 23, sequence_id: s.id}
+      put :update,
+        body: input.to_json,
+        params: { format: :json, id: pin_binding.id}
+      expect(response.status).to eq(422)
+      expect(json[:pin_num]).to include("Pin numbers 17 and 23 cannot be used.")
     end
   end
 end

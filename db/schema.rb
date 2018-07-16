@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_15_153318) do
+ActiveRecord::Schema.define(version: 2018_07_16_163108) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -252,9 +252,9 @@ ActiveRecord::Schema.define(version: 2018_06_15_153318) do
     t.integer "major_version"
     t.integer "minor_version"
     t.integer "verbosity", default: 1
-    t.integer "x"
-    t.integer "y"
-    t.integer "z"
+    t.float "x"
+    t.float "y"
+    t.float "z"
     t.datetime "sent_at"
     t.index ["created_at"], name: "index_logs_on_created_at"
     t.index ["device_id"], name: "index_logs_on_device_id"
@@ -273,15 +273,8 @@ ActiveRecord::Schema.define(version: 2018_06_15_153318) do
     t.index ["mode"], name: "index_peripherals_on_mode"
   end
 
-  create_table "pin_bindings", force: :cascade do |t|
-    t.bigint "device_id"
-    t.integer "pin_num"
-    t.bigint "sequence_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["device_id"], name: "index_pin_bindings_on_device_id"
-    t.index ["sequence_id"], name: "index_pin_bindings_on_sequence_id"
-  end
+# Could not dump table "pin_bindings" because of following StandardError
+#   Unknown type 'special_action' for column 'special_action'
 
   create_table "plant_templates", force: :cascade do |t|
     t.bigint "saved_garden_id", null: false

@@ -2,8 +2,9 @@ import * as React from "react";
 import { TileSendMessage } from "../tile_send_message";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { SendMessage } from "farmbot/dist";
+import { SendMessage, Channel } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
+import { channel } from "../tile_send_message_support";
 
 describe("<TileSendMessage/>", () => {
   function bootstrapTest() {
@@ -54,5 +55,10 @@ describe("<TileSendMessage/>", () => {
     expect(labels.at(4).text()).toEqual("Speak");
     expect(inputs.at(5).props().checked).toBeFalsy();
     expect(inputs.at(5).props().disabled).toBeFalsy();
+  });
+
+  it("creates a channel via helpers", () => {
+    const chan: Channel = { kind: "channel", args: { channel_name: "email" } };
+    expect(channel("email")).toEqual(chan);
   });
 });

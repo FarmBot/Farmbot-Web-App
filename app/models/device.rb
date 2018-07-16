@@ -79,11 +79,13 @@ class Device < ApplicationRecord
     points.where(pointer_type: "Plant")
   end
 
+  TIMEOUT = (Rails.env.test? ? 0.001 : 150).seconds
+
   # Like Device.find, but with 150 seconds of caching to avoid DB calls.
   def self.cached_find(id)
     Rails
       .cache
-      .fetch(CACHE_KEY % id, expires_in: 150.seconds) { Device.find(id) }
+      .fetch(CACHE_KEY % id, expires_in: TIMEOUT) { Device.find(id) }
   end
 
   def refresh_cache

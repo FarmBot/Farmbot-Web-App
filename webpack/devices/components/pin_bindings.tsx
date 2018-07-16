@@ -91,9 +91,12 @@ export class PinBindings
     if (this.props.shouldDisplay(Feature.api_pin_bindings)) {
       return selectAllPinBindings(this.props.resources)
         .map(x => {
+          const { body } = x;
+          const sequence_id = // TODO: Handle special bindings.
+            body.binding_type == "standard" ? body.sequence_id : 0;
           return {
             pin_number: x.body.pin_num,
-            sequence_id: x.body.sequence_id,
+            sequence_id,
             uuid: x.uuid
           };
         });
@@ -131,7 +134,7 @@ export class PinBindings
         uuid: "WILL_BE_CHANGED_BY_REDUCER",
         specialStatus: SpecialStatus.SAVED,
         kind: "PinBinding",
-        body: { pin_num, sequence_id }
+        body: { pin_num, sequence_id, binding_type: "standard" }
       };
     }
 

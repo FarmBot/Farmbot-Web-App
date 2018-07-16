@@ -33,9 +33,9 @@ module Logs
       #
       # TODO: delete the `meta` field once FBOS < v6.4.0 reach EOL.
       string  :type, in: Log::TYPES
-      integer :x
-      integer :y
-      integer :z
+      float :x
+      float :y
+      float :z
       integer :verbosity
       integer :major_version
       integer :minor_version
@@ -44,9 +44,9 @@ module Logs
       hash :meta do # This can be transitioned out soon.
         string :type, in: Log::TYPES
         optional do
-          integer :x
-          integer :y
-          integer :z
+          float :x
+          float :y
+          float :z
           integer :verbosity
           integer :major_version
           integer :minor_version
