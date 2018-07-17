@@ -8,22 +8,20 @@ describe Resources::Job do
       { body: {}, device: device, action: "destroy", uuid: SecureRandom.uuid }
 
     test_cases = [
-      # DeviceConfig,
-      # DiagnosticDump,
-      # FarmEvent,
-      # FarmwareInstallation,
-      # Image,
-      # Log,
-      # PlantTemplate,
-      # Point,
-      # Regimen,
-      # SavedGarden,
-      # SensorReading,
+      FarmEvent,
+      FarmwareInstallation,
+      Image,
+      Log,
+      PlantTemplate,
+      SavedGarden,
+      SensorReading,
       WebcamFeed,
       Peripheral,
       PinBinding,
       Sensor,
-      Tool,
+      # Tool,
+      # Point,
+      # Regimen,
     ]
      .each{ |k| k.destroy_all }
      .map { |k| FactoryBot.create(k.model_name.singular.to_sym, device: device) }

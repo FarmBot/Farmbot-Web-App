@@ -19,8 +19,6 @@ module Resources
       when DESTROY then do_deletion
       else; never
       end
-    rescue => x
-      binding.pry
     end
 
     private
@@ -33,6 +31,8 @@ module Resources
       model_name = resource.model_name
       mutation   = Kernel.const_get(model_name.name.pluralize)::Destroy
       mutation.run!(model_name.singular => model, device: device)
+    rescue => x
+      binding.pry
     end
 
     def model

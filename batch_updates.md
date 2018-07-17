@@ -4,8 +4,6 @@ Not all resources support the experimental resource API.
 
 |Resource               |Delete?  |Upsert?  |
 |-----------------------|---------|---------|
-| DeviceConfig          |No       |No       |
-| DiagnosticDump        |No       |No       |
 | FarmEvent             |No       |No       |
 | FarmwareInstallations |No       |No       |
 | Image                 |No       |No       |

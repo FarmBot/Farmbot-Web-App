@@ -10,6 +10,7 @@ class CreateDestroyer < Mutations::Command
   end
 
   def execute
+    # MAGIC AHEAD: Pull stuff into scope for block below.
     symbolized_name = resource.model_name.singular
     klass           = resource
 
@@ -27,6 +28,8 @@ class CreateDestroyer < Mutations::Command
 
       def execute
         self.send(@@resource_name).destroy! && ""
+      rescue => x
+        binding.pry
       end
 
       def not_yours
