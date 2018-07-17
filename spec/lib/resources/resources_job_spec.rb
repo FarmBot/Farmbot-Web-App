@@ -34,6 +34,6 @@ describe Resources::Job do
      end
   end
 
-  it "deals with points later"
   it "doesn't let you delete other people's resources"
+  it "deals with points"
 end

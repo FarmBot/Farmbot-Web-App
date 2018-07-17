@@ -31,8 +31,6 @@ module Resources
       model_name = resource.model_name
       mutation   = Kernel.const_get(model_name.name.pluralize)::Destroy
       mutation.run!(model_name.singular => model, device: device)
-    rescue => x
-      binding.pry
     end
 
     def model

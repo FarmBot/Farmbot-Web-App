@@ -4,17 +4,15 @@
 # don't have special logic.
 class CreateDestroyer < Mutations::Command
   BAD_OWNERSHIP = "You do not own that %s"
-  CACHE         = {}
 
   required { duck :resource }
 
   def execute
-    return CACHE[resource] if CACHE[resource]
     klass = Class.new(Mutations::Command)
-    CACHE[resource] = klass
-    binding.pry if klass.instance_variable_get("@resource")
+
     klass.instance_variable_set("@resource", resource)
-    klass.class_eval do |x, y|
+
+    klass.class_eval do |x|
       def self.resource
         @resource
       end
@@ -29,11 +27,10 @@ class CreateDestroyer < Mutations::Command
 
       required do
         model :device,                    class: Device
-        model klass.resource_name.to_sym, class: klass.resource
+        model klass.resource_name.to_sym, class: x.resource
       end
 
       def validate
-        puts "===> #{resource_name}"
         not_yours unless self.send(resource_name).device == device
       end
 
@@ -42,9 +39,7 @@ class CreateDestroyer < Mutations::Command
       end
 
       def not_yours
-        add_error resource_name,
-                  resource_name,
-                  BAD_OWNERSHIP % resource_name
+        add_error resource_name, resource_name, BAD_OWNERSHIP % resource_name
       end
     end
 

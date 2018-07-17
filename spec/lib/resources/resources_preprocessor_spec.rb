@@ -82,7 +82,8 @@ describe Resources::PreProcessor do
       y               = preprocessed
       y[:resource]    = Device
       y[:resource_id] = y[:device].id
-      expect { Resources::Job.run(y) }.to raise_error("PANIC")
+      xpect           = "PANIC: Tried to do batch op on Device"
+      expect { Resources::Job.run(y) }.to raise_error(xpect)
     end
   end
 end
