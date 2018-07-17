@@ -7,20 +7,20 @@ describe Resources::Job do
     puts "TODO: Test cases for points, sequences."
     device     = FactoryBot.create(:device)
     test_cases = [
-      WebcamFeed,
       FarmEvent,
+      FarmwareInstallation,
       Image,
       Log,
-      PlantTemplate,
-      SavedGarden,
-      SensorReading,
       Peripheral,
-      FarmwareInstallation,
       PinBinding,
-      Sensor,
-      Regimen,
-      # Tool,
+      PlantTemplate,
       # Point,
+      Regimen,
+      SavedGarden,
+      Sensor,
+      SensorReading,
+      # Tool,
+      WebcamFeed,
     ]
     .each{ |k| k.delete_all }
     .map { |k| FactoryBot.create(k.model_name.singular.to_sym, device: device) }
