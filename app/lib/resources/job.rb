@@ -19,6 +19,8 @@ module Resources
       when DESTROY then do_deletion
       else; never
       end
+    rescue => x
+      binding.pry
     end
 
     private
@@ -39,7 +41,7 @@ module Resources
 
     # Escape hatch for things that should "never happen".
     def never
-      raise "PANIC"
+      raise "PANIC: Tried to do batch op on #{resource}"
     end
   end # Job
 end # Resources

@@ -4,8 +4,8 @@ module Resources
     DESTROY = "destroy"
   ]
   RESOURCES    = { # Because I don't trust Kernel.const_get
-    "DeviceConfig"          => DeviceConfig,
-    "DiagnosticDump"        => DiagnosticDump,
+    # "DeviceConfig"          => DeviceConfig,
+    # "DiagnosticDump"        => DiagnosticDump,
     "FarmEvent"             => FarmEvent,
     "FarmwareInstallations" => FarmwareInstallations,
     "Image"                 => Image,
