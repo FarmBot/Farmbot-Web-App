@@ -1,5 +1,6 @@
 module Resources
   class Job < Mutations::Command
+    NOT_FOUND = "Resource not found"
     required do
       duck    :body, methods: [:[], :[]=]
       duck    :resource, duck: [:where, :find_by]
@@ -31,6 +32,8 @@ module Resources
       model_name = resource.model_name
       mutation   = Kernel.const_get(model_name.name.pluralize)::Destroy
       mutation.run!(model_name.singular => model, device: device)
+    rescue ActiveRecord::RecordNotFound
+      add_error :resource, :resource, NOT_FOUND
     end
 
     def model

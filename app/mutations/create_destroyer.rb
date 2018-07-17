@@ -22,12 +22,12 @@ class CreateDestroyer < Mutations::Command
       end
 
       def resource_name
-        self.class.resource_name
+        self.class.resource_name.to_sym
       end
 
       required do
         model :device,                    class: Device
-        model klass.resource_name.to_sym, class: x.resource
+        model x.resource_name, class: x.resource
       end
 
       def validate
