@@ -14,12 +14,10 @@ describe Resources::Job do
       Peripheral,
       PinBinding,
       PlantTemplate,
-      # Point,
       Regimen,
       SavedGarden,
       Sensor,
       SensorReading,
-      # Tool,
       WebcamFeed,
     ]
     .each{ |k| k.delete_all }
@@ -58,5 +56,21 @@ describe Resources::Job do
     expect(errors).to include("You do not own that farm_event")
   end
 
-  it "deals with points"
+  it "deals with points" do
+    device = FactoryBot.create(:device)
+    Devices::Destroy
+    params = [
+      FactoryBot.create(:generic_pointer, device: device),
+      FactoryBot.create(:plant,           device: device),
+      FactoryBot.create(:tool_slot,       device: device)
+    ].map do |r|
+      base.merge({resource: Point, resource_id: r.id, device: device})
+    end
+    .map do |params|
+      res   = params[:resource]
+      count = res.count
+      Resources::Job.run!(params)
+      expect(res.count).to eq(count - 1)
+    end
+  end
 end

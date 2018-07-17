@@ -17,7 +17,6 @@ Not all resources support the experimental resource API.
 | SensorReading         |No       |No       |
 | Sensor                |No       |No       |
 | Sequence              |No       |No       |
-| Tool                  |No       |No       |
 | WebcamFeed            |No       |No       |
 
 # Step 1: Send the Update
