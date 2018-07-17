@@ -145,6 +145,10 @@ class Device < ApplicationRecord
     tell(message, channels , type).save
   end
 
+  def regimina
+    regimens # :(
+  end
+
   # CONTEXT:
   #  * We tried to use Rails low level caching, but it hit marshalling issues.
   #  * We did a hack with Device.new(self.as_json) to get around it.

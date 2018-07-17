@@ -6,33 +6,31 @@ describe Resources::Job do
     device     = FactoryBot.create(:device)
     base       = \
       { body: {}, device: device, action: "destroy", uuid: SecureRandom.uuid }
-
     test_cases = [
+      WebcamFeed,
       FarmEvent,
-      FarmwareInstallation,
       Image,
       Log,
       PlantTemplate,
       SavedGarden,
       SensorReading,
-      WebcamFeed,
       Peripheral,
+      FarmwareInstallation,
       PinBinding,
       Sensor,
+      Regimen,
       # Tool,
       # Point,
-      # Regimen,
     ]
-     .each{ |k| k.destroy_all }
-     .map { |k| FactoryBot.create(k.model_name.singular.to_sym, device: device) }
+    .each{ |k| k.delete_all }
+    .map { |k| FactoryBot.create(k.model_name.singular.to_sym, device: device) }
      .concat([FakeSequence.create( device: device)])
      .map { |r| base.merge({resource: r.class, resource_id: r.id }) }
      .map do |params|
         res   = params[:resource]
         count = res.count
-        expect(count).to eq(1)
         Resources::Job.run!(params)
-        expect(res.count).to eq(0)
+        expect(res.count).to eq(count - 1)
      end
   end
 

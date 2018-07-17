@@ -5,7 +5,7 @@ module Resources
   ]
   RESOURCES    = { # Because I don't trust Kernel.const_get
     "FarmEvent"             => FarmEvent,
-    "FarmwareInstallations" => FarmwareInstallations,
+    "FarmwareInstallations" => FarmwareInstallation,
     "Image"                 => Image,
     "Log"                   => Log,
     "Peripheral"            => Peripheral,

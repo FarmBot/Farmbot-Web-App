@@ -4,39 +4,50 @@
 # don't have special logic.
 class CreateDestroyer < Mutations::Command
   BAD_OWNERSHIP = "You do not own that %s"
+  CACHE         = {}
 
-  required do
-    duck   :resource
-  end
+  required { duck :resource }
 
   def execute
-    # MAGIC AHEAD: Pull stuff into scope for block below.
-    symbolized_name = resource.model_name.singular
-    klass           = resource
+    return CACHE[resource] if CACHE[resource]
+    klass = Class.new(Mutations::Command)
+    CACHE[resource] = klass
+    binding.pry if klass.instance_variable_get("@resource")
+    klass.instance_variable_set("@resource", resource)
+    klass.class_eval do |x, y|
+      def self.resource
+        @resource
+      end
 
-    Class.new(Mutations::Command) do
-      @@resource_name = symbolized_name
+      def self.resource_name
+        resource.model_name.singular
+      end
+
+      def resource_name
+        self.class.resource_name
+      end
 
       required do
-        model :device,         class: Device
-        model @@resource_name, class: klass
+        model :device,                    class: Device
+        model klass.resource_name.to_sym, class: klass.resource
       end
 
       def validate
-        not_yours unless self.send(@@resource_name).device == device
+        puts "===> #{resource_name}"
+        not_yours unless self.send(resource_name).device == device
       end
 
       def execute
-        self.send(@@resource_name).destroy! && ""
-      rescue => x
-        binding.pry
+        self.send(resource_name).destroy! && ""
       end
 
       def not_yours
-        add_error @@resource_name,
-                  @@resource_name,
-                  BAD_OWNERSHIP % @@resource_name
+        add_error resource_name,
+                  resource_name,
+                  BAD_OWNERSHIP % resource_name
       end
     end
+
+    return klass
   end
 end
