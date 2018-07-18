@@ -23,7 +23,8 @@ module Resources
           .values
           .map { |err| { kind: "explanation", args: { message: err.message }} })
         }.to_json
-        Transport.current.amqp_send(message, device_id, "from_api")
+        chan = ["from_api", (raw_chan.last || "")].join(".")
+        Transport.current.amqp_send(message, device_id, chan)
       end
     end
   end # Service
