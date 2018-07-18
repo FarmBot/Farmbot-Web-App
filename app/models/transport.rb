@@ -56,7 +56,11 @@ class Transport
   end
 
   def amqp_send(message, id, channel)
-    amqp_topic.publish(message, routing_key: "bot.device_#{id}.#{channel}")
+    routing_key = "bot.device_#{id}.#{channel}"
+    puts "=> #{routing_key}"
+    puts message
+    puts "<="
+    amqp_topic.publish(message, routing_key: routing_key)
   end
 
   # We need to hoist the Rack X-Farmbot-Rpc-Id to a global state so that it can
