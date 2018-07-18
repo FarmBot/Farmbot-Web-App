@@ -98,6 +98,7 @@ export class PinBindingInputGroup
     const {
       pinNumberInput, sequenceIdInput, bindingType, specialActionInput
     } = this.state;
+    const { shouldDisplay } = this.props;
 
     return <Row>
       <Col xs={PinBindingColWidth.pin}>
@@ -137,6 +138,9 @@ export class PinBindingInputGroup
           }}
           list={Object.entries(bindingTypeLabelLookup)
             .filter(([value, _]) => !(value == ""))
+            .filter(([value, _]) =>
+              shouldDisplay(Feature.api_pin_bindings)
+              || !(value == PinBindingType.special))
             .map(([value, label]) => ({ label, value }))} />
       </Col>
       <Col xs={PinBindingColWidth.target}>
