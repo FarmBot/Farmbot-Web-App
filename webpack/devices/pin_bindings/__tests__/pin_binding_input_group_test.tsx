@@ -151,8 +151,8 @@ describe("<PinBindingInputGroup/>", () => {
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
     instance.setSelectedPin(99); // invalid pin
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
-    instance.setSelectedPin(6); // available pin
-    expect(wrapper.instance().state.pinNumberInput).toEqual(6);
+    instance.setSelectedPin(5); // available pin
+    expect(wrapper.instance().state.pinNumberInput).toEqual(5);
     instance.setSelectedPin(1); // reserved pin
     expect(wrapper.instance().state.pinNumberInput).toEqual(1);
     expect(warning).toHaveBeenCalledWith(
