@@ -1,11 +1,11 @@
 require "spec_helper"
 
-describe Sequences::Delete do
+describe Sequences::Destroy do
   let(:sequence)     { FakeSequence.create()  }
 
   it "Cant delete sequences in use by farm events" do
     fe = FactoryBot.create(:farm_event, executable: sequence)
-    result = Sequences::Delete.run(device: sequence.device, sequence: sequence)
+    result = Sequences::Destroy.run(device: sequence.device, sequence: sequence)
     expect(result.success?).to be false
     errors = result.errors.message
     expect(errors.keys).to include("sequence")
@@ -17,7 +17,7 @@ describe Sequences::Delete do
     regimen_item1 = FactoryBot.create(:regimen_item, sequence: sequence)
     regimen_item2 = FactoryBot.create(:regimen_item, sequence: sequence)
     expect(sequence.regimen_items.count).to eq(2)
-    result = Sequences::Delete.run(device: sequence.device, sequence: sequence)
+    result = Sequences::Destroy.run(device: sequence.device, sequence: sequence)
     expect(result.success?).to be false
     errors = result.errors.message
     expect(errors.keys).to include("sequence")
@@ -27,7 +27,7 @@ describe Sequences::Delete do
   end
 
   it "deletes a sequence" do
-    result = Sequences::Delete.run!(device: sequence.device, sequence: sequence)
+    result = Sequences::Destroy.run!(device: sequence.device, sequence: sequence)
     expect(result).to eq("")
     expect( Sequence.where(id: sequence.id).count ).to eq(0)
   end
@@ -41,7 +41,7 @@ describe Sequences::Delete do
                               args: { sequence_id: sequence.id }
                             }
                           ])
-    result = Sequences::Delete.run(device: sequence.device, sequence: sequence)
+    result = Sequences::Destroy.run(device: sequence.device, sequence: sequence)
     expect(result.success?).to be(false)
     expect(result.errors.has_key?("sequence")).to be(true)
     message = result.errors["sequence"].message

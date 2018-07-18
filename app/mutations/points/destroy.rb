@@ -7,15 +7,19 @@ module Points
 
     required do
       model :device, class: Device
-      array :point_ids, class: Integer
     end
 
-    optional { boolean :hard_delete, default: false }
+    optional do
+      boolean :hard_delete, default: false
+      array   :point_ids,   class: Integer
+      model   :point,       class: Point
+    end
 
     P = :point
     S = :sequence
 
     def validate
+      maybe_wrap_ids
       # Collect names of sequences that still use this point.
       problems = (tool_seq + point_seq)
         .group_by(&:sequence_name)
@@ -87,6 +91,11 @@ module Points
       @tool_seq ||= InUseTool
         .where(tool_id: every_tool_id_as_json, device_id: device.id)
         .to_a
+    end
+
+    def  maybe_wrap_ids
+      raise "NO" unless (point || point_ids)
+      inputs[:point_ids] = [point.id] if point
     end
   end
 end

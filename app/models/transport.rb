@@ -41,6 +41,13 @@ class Transport
                          .bind("amq.topic", routing_key: "bot.*.logs")
   end
 
+  def resource_channel
+    @resource_channel ||= self.connection
+                         .create_channel
+                         .queue("resource_workers")
+                         .bind("amq.topic", routing_key: "bot.*.resources_v0.#")
+  end
+
   def amqp_topic
     @amqp_topic ||= self
                   .connection
@@ -49,7 +56,10 @@ class Transport
   end
 
   def amqp_send(message, id, channel)
-    amqp_topic.publish(message, routing_key: "bot.device_#{id}.#{channel}")
+    raise "BAD `id`" unless id.is_a?(String) || id.is_a?(Integer)
+    routing_key = "bot.device_#{id}.#{channel}"
+    puts message if Rails.env.production?
+    amqp_topic.publish(message, routing_key: routing_key)
   end
 
   # We need to hoist the Rack X-Farmbot-Rpc-Id to a global state so that it can

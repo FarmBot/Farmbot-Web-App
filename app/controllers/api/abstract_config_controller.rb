@@ -14,8 +14,7 @@ module Api
     end
 
     def update
-      mutate Configs::Update
-        .run(target: config_object, update_attrs: raw_json)
+      mutate Configs::Update.run(target: config_object, update_attrs: raw_json)
     end
 
     def destroy

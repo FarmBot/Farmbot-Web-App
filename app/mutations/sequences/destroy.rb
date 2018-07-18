@@ -1,5 +1,5 @@
 module Sequences
-  class Delete < Mutations::Command
+  class Destroy < Mutations::Command
     IN_USE        = "Sequence is still in use by"
     THE_FOLLOWING = " the following %{resource}: %{items}"
     AND           = " and"
