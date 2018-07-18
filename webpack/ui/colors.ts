@@ -16,4 +16,5 @@ export enum Color {
   black = "#000000",
   orange = "#ffa500",
   blue = "#3377dd",
+  magenta = "#a64d79",
 }
