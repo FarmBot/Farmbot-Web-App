@@ -2,8 +2,7 @@ module Resources
   class Service
     def self.process(delivery_info, body)
       params = PreProcessor.from_amqp(delivery_info, body)
-      puts "<="
-      puts params
+      puts params if Rails.env.production?
       result = Job.run!(params)
       payl   = result ? result.to_json : ""
       chan = ["from_api", (params[:uuid] || "NONE")].join(".")
