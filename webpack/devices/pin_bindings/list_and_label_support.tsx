@@ -27,19 +27,39 @@ export const specialActionList: DropDownItem[] =
     .map((action: PinBindingSpecialAction) =>
       ({ label: specialActionLabelLookup[action], value: action }));
 
-const sysLedBindings = [5, 12, 13, 16, 20, 22, 24, 25];
-export const sysBtnBindings = [17, 23];
+enum ButtonPin {
+  estop = 16,
+  unlock = 22,
+  btn3 = 26,
+  btn4 = 5,
+  btn5 = 20,
+}
+
+enum LEDPin {
+  sync = 24,
+  connection = 25,
+  led3 = 12,
+  led4 = 13,
+  estop = 17,
+  unlock = 23,
+  btn3 = 27,
+  btn4 = 6,
+  btn5 = 21,
+}
+
+const sysLedBindings = Object.values(LEDPin);
+export const sysBtnBindings = [ButtonPin.estop, ButtonPin.unlock];
 export const sysBindings = sysLedBindings.concat(sysBtnBindings);
 
 const piI2cPins = [0, 1, 2, 3];
 export const reservedPiGPIO = piI2cPins;
 
 const LabeledGpioPins: { [x: number]: string } = {
-  17: "Button 1: E-STOP",
-  23: "Button 2: UNLOCK",
-  27: "Button 3",
-  6: "Button 4",
-  21: "Button 5",
+  [ButtonPin.estop]: "Button 1: E-STOP",
+  [ButtonPin.unlock]: "Button 2: UNLOCK",
+  [ButtonPin.btn3]: "Button 3",
+  [ButtonPin.btn4]: "Button 4",
+  [ButtonPin.btn5]: "Button 5",
 };
 
 export const generatePinLabel = (pin: number) =>
@@ -75,14 +95,14 @@ export const RpiPinList = (taken: number[]): DropDownItem[] =>
 
 export const sysBtnBindingData = [
   {
-    pin_number: 17,
+    pin_number: ButtonPin.estop,
     sequence_id: undefined,
     special_action: PinBindingSpecialAction.emergency_lock,
     binding_type: PinBindingType.special,
     uuid: "FBOS built-in binding: emergency_lock"
   },
   {
-    pin_number: 23,
+    pin_number: ButtonPin.unlock,
     sequence_id: undefined,
     special_action: PinBindingSpecialAction.emergency_unlock,
     binding_type: PinBindingType.special,
