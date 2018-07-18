@@ -2,12 +2,14 @@ module Resources
   class Service
     def self.process(delivery_info, body)
       params = PreProcessor.from_amqp(delivery_info, body)
+      puts "<="
       puts params
       result = Job.run!(params)
       payl   = result ? result.to_json : ""
+      chan = ["from_api", (params[:uuid] || "NONE")].join(".")
       Transport
         .current
-        .amqp_send(payl, params[:device].id, "from_api")
+        .amqp_send(payl, params[:device].id, chan)
     rescue Mutations::ValidationException => q
       Rollbar.error(q)
       params  ||= {}

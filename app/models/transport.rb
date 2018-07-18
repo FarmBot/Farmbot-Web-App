@@ -60,7 +60,6 @@ class Transport
     routing_key = "bot.device_#{id}.#{channel}"
     puts "=> #{routing_key}"
     puts message
-    puts "<="
     amqp_topic.publish(message, routing_key: routing_key)
   end
 
