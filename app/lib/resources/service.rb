@@ -6,9 +6,9 @@ module Resources
       result = Job.run!(params)
       payl   = result ? result.to_json : ""
       chan = ["from_api", (params[:uuid] || "NONE")].join(".")
-      Transport
-        .current
-        .amqp_send(payl, params[:device].id, chan)
+      params[:device].auto_sync_transaction do
+        Transport.current.amqp_send(payl, params[:device].id, chan)
+      end
     rescue Mutations::ValidationException => q
       Rollbar.error(q)
       params  ||= {}
