@@ -68,9 +68,9 @@ describe Resources::Job do
     end
     .map do |params|
       res   = params[:resource]
-      count = res.count
+      count = res.where(discarded_at: nil).count
       Resources::Job.run!(params)
-      expect(res.count).to eq(count - 1)
+      expect(res.where(discarded_at: nil).count).to eq(count - 1)
     end
   end
 end
