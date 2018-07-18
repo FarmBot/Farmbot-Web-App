@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Color } from "../../ui/colors";
 import * as _ from "lodash";
+import { reservedPiGPIO } from "./list_and_label_support";
 
 export interface RpiGpioDiagramProps {
   boundPins: number[] | undefined;
@@ -55,7 +56,7 @@ export class RpiGpioDiagram extends React.Component<RpiGpioDiagramProps, RpiGpio
       {[3, 5.5].map((x, xi) => {
         return _.range(8, 56, 2.5).map((y, yi) => {
           const pin = gpio[yi][xi];
-          const color = () => {
+          const normalColor = () => {
             switch (pin) {
               case "GND":
                 return Color.black;
@@ -70,9 +71,12 @@ export class RpiGpioDiagram extends React.Component<RpiGpioDiagramProps, RpiGpio
                 return Color.green;
             }
           };
+          const color = _.isNumber(pin) && reservedPiGPIO.includes(pin)
+            ? Color.magenta
+            : normalColor();
           const pinColor = _.includes(this.props.boundPins, pin)
             ? Color.darkGray
-            : color();
+            : color;
           return <rect strokeWidth={0.5} key={`gpio_${pin}_${xi}_${yi}`}
             stroke={pinColor} fill={pinColor}
             x={x} y={y} width={1.5} height={1.5}

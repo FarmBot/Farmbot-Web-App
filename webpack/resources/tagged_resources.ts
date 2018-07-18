@@ -10,7 +10,6 @@ import {
   SensorReading,
   Sensor,
   DeviceConfig,
-  PinBinding
 } from "../interfaces";
 import { Peripheral } from "../controls/peripherals/interfaces";
 import { User } from "../auth/interfaces";
@@ -25,6 +24,7 @@ import { FirmwareConfig } from "../config_storage/firmware_configs";
 import { WebAppConfig } from "../config_storage/web_app_configs";
 import { FarmwareInstallation } from "../farmware/interfaces";
 import { assertUuid } from "./util";
+import { PinBinding } from "../devices/pin_bindings/interfaces";
 
 export type ResourceName =
   | "Crop"
