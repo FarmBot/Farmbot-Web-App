@@ -66,8 +66,8 @@ describe("<PinBindings/>", () => {
     const wrapper = mount(<PinBindings {...p} />);
     ["pin bindings", "pin number", "none", "bind"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
-    ["1", "17", "e-stop",
-      "2", "23", "unlock",
+    ["1", "16", "e-stop",
+      "2", "22", "unlock",
       "26", "action"].map(string =>
         expect(wrapper.text().toLowerCase()).toContain(string));
     const buttons = wrapper.find("button");
