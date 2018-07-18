@@ -1,7 +1,7 @@
 # I heard you like mutations. So we made a mutation class that creates mutations
 # so you can mutate while you mutate.
-# This class will create a "base case" `::Delete` mutation. Very useful when you
-# don't have special logic.
+# This class will create a "base case" `::Destroy` mutation. Very useful when
+# you don't have special logic in your ::Destroy class and just need a base case
 class CreateDestroyer < Mutations::Command
   BAD_OWNERSHIP = "You do not own that %s"
 

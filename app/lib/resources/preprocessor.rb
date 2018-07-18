@@ -3,9 +3,12 @@ module Resources
   # into fully formed
   class PreProcessor < Mutations::Command
     def self.from_amqp(delivery_info, body)
-      # ["bot", "device_3", "resources_v0", "destroy", "Sequence", "2", "123-456
-      _, device_name, _, action, resource, resource_id, uuid =  \
-        delivery_info.routing_key.split(".")
+      # Parse the AMQP rotuing key into an Array of strings.
+      # A properly formatted routing_key will look like this after processing:
+      #
+      # ["bot", "device_3", "resources_v0", "destroy", "Sequence", "2", "xyz"]
+      segments = delivery_info.routing_key.split(".")
+      _, device_name, _, action, resource, resource_id, uuid = segments
       run!(device_name: device_name,
            action:      action,
            resource:    resource,

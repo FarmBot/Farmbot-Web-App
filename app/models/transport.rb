@@ -56,6 +56,7 @@ class Transport
   end
 
   def amqp_send(message, id, channel)
+    raise "BAD `id`" unless id.is_a?(String) || id.is_a?(Integer)
     routing_key = "bot.device_#{id}.#{channel}"
     puts "=> #{routing_key}"
     puts message

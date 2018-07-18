@@ -12,8 +12,8 @@ module Resources
       Rollbar.error(q)
       params  ||= {}
       raw_chan  = delivery_info&.routing_key&.split(".") || []
-      device_id =
-        params.fetch(:device) { raw_chan[1]&.gsub("device_", "")&.to_i }
+      device    = params[:device]
+      device_id = device ? device.id : raw_chan[1]&.gsub("device_", "")&.to_i
       if device_id
         message = {
           kind: "rpc_error",

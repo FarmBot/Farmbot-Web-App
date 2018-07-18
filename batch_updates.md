@@ -38,7 +38,7 @@ NOTES:
 
  * `<Transaction UUID>` can be any user defined string. Ensure that the string is unique. We recommend using UUIDs.
  * `<resource_id>` This is the `.id` property of the resource you are deleting.
- * `<action>` Only `delete` is supported as of July 2018.
+ * `<action>` Only `destroy` is supported as of July 2018.
  * `<resource type>` See "resource" column of table above. **Case sensitive**.
 
 **For deletion messages** the body of the message is unimportant and is discarded by the server.
