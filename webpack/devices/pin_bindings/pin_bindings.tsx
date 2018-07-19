@@ -1,9 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import {
-  Widget, WidgetBody, WidgetHeader,
-  Row, Col,
-} from "../../ui/index";
+import { Widget, WidgetBody, WidgetHeader, Row, Col } from "../../ui/index";
 import { ToolTips } from "../../constants";
 import { Feature } from "../interfaces";
 import { selectAllPinBindings } from "../../resources/selectors";
@@ -16,6 +13,7 @@ import { sysBtnBindingData } from "./list_and_label_support";
 import { PinBindingsList } from "./pin_bindings_list";
 import { PinBindingInputGroup } from "./pin_binding_input_group";
 
+/** Width of UI columns in Pin Bindings widget. */
 export enum PinBindingColWidth {
   pin = 4,
   type = 3,
@@ -23,6 +21,7 @@ export enum PinBindingColWidth {
   button = 1
 }
 
+/** Use binding type to return a sequence ID or a special action. */
 const getBindingTarget = (bindingBody: PinBinding): {
   sequence_id: number | undefined,
   special_action: PinBindingSpecialAction | undefined
@@ -35,6 +34,7 @@ const getBindingTarget = (bindingBody: PinBinding): {
 export const PinBindings = (props: PinBindingsProps) => {
   const { dispatch, resources, shouldDisplay, botToMqttStatus, bot } = props;
 
+  /** Return pin binding data according to FBOS version. */
   const getPinBindings = (): PinBindingListItems[] => {
     if (shouldDisplay(Feature.api_pin_bindings)) {
       const userBindings = selectAllPinBindings(resources)

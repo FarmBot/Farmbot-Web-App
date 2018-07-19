@@ -49,6 +49,7 @@ describe("destroy", () => {
   };
 
   it("not confirmed", () => {
+    window.confirm = () => false;
     expect(fakeDestroy()).rejects.toEqual("User pressed cancel");
     expectNotDestroyed();
   });
