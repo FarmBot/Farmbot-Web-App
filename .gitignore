@@ -25,3 +25,4 @@ public/webpack/*
 tmp
 public/direct_upload/temp/*.jpg
 scratchpad.rb
+*scratchpad*
