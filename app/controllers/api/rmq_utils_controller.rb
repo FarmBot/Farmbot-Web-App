@@ -8,7 +8,7 @@ module Api
     # The only valid format for AMQP / MQTT topics.
     # Prevents a whole host of abuse / security issues.
     TOPIC_REGEX     = \
-      /(bot\.device_)\d*\.(from_clients|from_device|logs|status|sync)\.?.*/
+      /(bot\.device_)\d*\.(from_clients|from_device|logs|status|sync|resources_v0|from_api)\.?.*/
     MALFORMED_TOPIC = "malformed topic. Must match #{TOPIC_REGEX.inspect}"
     ALL             = [:user, :vhost, :resource, :topic]
     VHOST           = ENV.fetch("MQTT_VHOST") { "/" }

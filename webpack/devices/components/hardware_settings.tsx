@@ -15,21 +15,7 @@ import {
 } from "./hardware_settings/homing_and_calibration";
 import { SpecialStatus } from "../../resources/tagged_resources";
 import { Popover, Position } from "@blueprintjs/core";
-import { FirmwareConfig } from "../../config_storage/firmware_configs";
-import { pickBy } from "lodash";
-
-export const FwParamExportMenu = (props: { firmwareConfig: FirmwareConfig }) => {
-  const filteredConfig = pickBy(props.firmwareConfig, (_, key) =>
-    !["id", "device_id", "api_migrated", "created_at", "updated_at",
-      "param_test", "param_version"]
-      .includes(key));
-  return <div className={"firmware-setting-export-menu"}>
-    <ul>
-      {Object.entries(filteredConfig).map(([param, value]) =>
-        <li key={param}>{param}: {value}</li>)}
-    </ul>
-  </div>;
-};
+import { FwParamExportMenu } from "./hardware_settings/export_menu";
 
 export class HardwareSettings extends
   React.Component<HardwareSettingsProps, {}> {

@@ -15,6 +15,7 @@ import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
 import { emptyToolSlot } from "../../tools/components/empty_tool_slot";
 import { FirmwareConfig } from "../../config_storage/firmware_configs";
+import { PinBindingType } from "../../devices/pin_bindings/interfaces";
 
 export let resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -164,7 +165,7 @@ export function fakePinBinding(): TaggedPinBinding {
     id: idCounter++,
     pin_num: 10,
     sequence_id: 1,
-    binding_type: "standard"
+    binding_type: PinBindingType.standard,
   });
 }
 

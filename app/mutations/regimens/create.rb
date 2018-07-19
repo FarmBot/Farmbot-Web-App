@@ -20,3 +20,4 @@ module Regimens
     end
   end
 end
+Regimina ||= Regimens # Lol, inflection errors

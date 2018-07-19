@@ -79,10 +79,12 @@ describe("<FarmwarePage />", () => {
   );
   it("renders installed Farmware page", () => {
     const p = fakeProps();
-    p.farmwares["My Fake Farmware"] = fakeFarmware();
-    p.currentFarmware = "My Fake Farmware";
+    const farmware = fakeFarmware();
+    farmware.name = "My Fake Test Farmware";
+    p.farmwares["My Fake Test Farmware"] = farmware;
+    p.currentFarmware = "My Fake Test Farmware";
     const wrapper = mount(<FarmwarePage {...p} />);
-    ["My Fake Farmware", "Does things", "Run", "Config 1",
+    ["My Fake Test Farmware", "Does things", "Run", "Config 1",
       "Information", "Description", "Version", "Update", "Remove"
     ].map(string =>
       expect(wrapper.text()).toContain(string));
@@ -92,8 +94,9 @@ describe("<FarmwarePage />", () => {
     const p = fakeProps();
     const farmware = fakeFarmware();
     farmware.config = [];
-    p.farmwares["My Fake Farmware"] = farmware;
-    p.currentFarmware = "My Fake Farmware";
+    farmware.name = "My Fake Test Farmware";
+    p.farmwares["My Fake Test Farmware"] = farmware;
+    p.currentFarmware = "My Fake Test Farmware";
     const wrapper = mount(<FarmwarePage {...p} />);
     ["My Fake Farmware", "Does things", "Run", "No inputs provided."
     ].map(string =>
@@ -104,10 +107,11 @@ describe("<FarmwarePage />", () => {
     const p = fakeProps();
     const farmware = fakeFarmware();
     farmware.config = [];
-    p.farmwares["My Fake Farmware"] = farmware;
-    p.currentFarmware = "My Fake Farmware";
+    farmware.name = "My Fake Test Farmware";
+    p.farmwares["My Fake Test Farmware"] = farmware;
+    p.currentFarmware = "My Fake Test Farmware";
     const wrapper = mount(<FarmwarePage {...p} />);
     clickButton(wrapper, 1, "Run");
-    expect(mockDevice.execScript).toHaveBeenCalledWith("My Fake Farmware");
+    expect(mockDevice.execScript).toHaveBeenCalledWith("My Fake Test Farmware");
   });
 });

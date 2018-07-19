@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Log, Point, SensorReading, Sensor, DeviceConfig, PinBinding } from "../interfaces";
+import { Log, Point, SensorReading, Sensor, DeviceConfig } from "../interfaces";
 import { API } from "../api";
 import { Sequence } from "../sequences/interfaces";
 import { Tool } from "../tools/interfaces";
@@ -16,6 +16,7 @@ import { Session } from "../session";
 import { FbosConfig } from "../config_storage/fbos_configs";
 import { FarmwareInstallation } from "../farmware/interfaces";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
+import { PinBinding } from "../devices/pin_bindings/interfaces";
 
 export interface ResourceReadyPayl {
   name: ResourceName;

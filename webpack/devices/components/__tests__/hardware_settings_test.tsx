@@ -1,6 +1,6 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { HardwareSettings, FwParamExportMenu } from "../hardware_settings";
+import { HardwareSettings } from "../hardware_settings";
 import { HardwareSettingsProps } from "../../interfaces";
 import { Actions } from "../../../constants";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -76,13 +76,5 @@ describe("<HardwareSettings />", () => {
   it("doesn't show param export menu", () => {
     const wrapper = shallow(<HardwareSettings {...fakeProps()} />);
     expect(wrapper.find("Popover").length).toEqual(0);
-  });
-});
-
-describe("<FwParamExportMenu />", () => {
-  it("lists all params", () => {
-    const config = fakeFirmwareConfig().body;
-    const wrapper = mount(<FwParamExportMenu firmwareConfig={config} />);
-    expect(wrapper.text()).toContain("movement_max_spd_");
   });
 });
