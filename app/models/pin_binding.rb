@@ -18,4 +18,11 @@ class PinBinding < ApplicationRecord
   def fancy_name
     "pin #{pin_num}"
   end
+
+  def random_pin_num
+    [*(0..69)]
+      .without(*OFF_LIMITS)
+      .without(*device.pin_bindings.pluck(:pin_num))
+      .sample
+  end
 end

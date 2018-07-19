@@ -5,7 +5,9 @@ module PinBindingSpecHelper
     actn                    = PinBinding.special_actions.values.sample
     sequence                = Sequence.last
     device                  = sequence.device
-    params                  = { pin_num:     12,
+    pb                      = PinBinding.last
+    pn                      = pb.random_pin_num
+    params                  = { pin_num:     pn,
                                 device:      device,
                                 pin_binding: PinBinding.last }
     params[:special_action] = actn        if has_actn
@@ -18,10 +20,7 @@ end
 
 describe "Pin Binding updates" do
   it "enforces mutual exclusivity" do
-    puts "Blinky test"
-    PinBinding.destroy_all
-    Sequence.destroy_all
-    Device.destroy_all
+    [Point, Tool, PinBinding, Sequence, Device].map(&:destroy_all)
     device = FactoryBot.create(:device)
     PinBinding.create!(device: device)
     Sequence.create!(device: device, name: "test")

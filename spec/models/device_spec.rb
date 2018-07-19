@@ -45,7 +45,7 @@ describe Device do
     expect(Rails.cache.fetch(cache_key)).to eq(nil)
     Device.cached_find(id)
     expect(Rails.cache.exist?(cache_key)).to be true
-    expect(Rails.cache.fetch(cache_key)).to eq(device)
+    expect(Rails.cache.fetch(cache_key).id).to eq(device.id)
     Rails.cache.delete(cache_key)
   end
 
