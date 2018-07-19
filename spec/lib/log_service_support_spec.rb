@@ -1,5 +1,5 @@
 require "spec_helper"
-require_relative "../../lib/log_service_support"
+# require_relative "../../lib/log_service"
 
 describe LogService do
   normal_payl  = '{"meta":{"z":0,"y":0,"x":0,"type":"info","major_version":6},' +
@@ -29,15 +29,23 @@ describe LogService do
 
   it "calls .subscribe() on Transport." do
     Transport.current.clear!
-    load "lib/log_service.rb"
+    load "./lib/log_service_runner.rb"
     arg1        = Transport.current.connection.calls[:subscribe].last[0]
     routing_key = Transport.current.connection.calls[:bind].last[1][:routing_key]
     expect(arg1).to        eq({block: true})
     expect(routing_key).to eq("bot.*.logs")
   end
 
+  it "calls .subscribe() on Transport." do
+    Transport.current.clear!
+    load "./lib/resource_service_runner.rb"
+    arg1        = Transport.current.connection.calls[:subscribe].last[0]
+    routing_key = Transport.current.connection.calls[:bind].last[1][:routing_key]
+    expect(arg1).to        eq({block: true})
+    expect(routing_key).to eq("bot.*.resources_v0.#")
+  end
+
   it "creates new messages in the DB when called" do
-    puts "Blinky test"
     Log.destroy_all
     b4 = Log.count
     LogService.process(fake_delivery_info, normal_payl)

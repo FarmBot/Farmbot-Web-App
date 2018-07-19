@@ -66,6 +66,7 @@ describe("<FarmwareInfo />", () => {
     p.farmware.name = "Fake 1st-Party Farmware";
     p.firstPartyFarmwareNames = ["Fake 1st-Party Farmware"];
     const wrapper = mount(<FarmwareInfo {...p} />);
+    window.confirm = jest.fn(() => false);
     clickButton(wrapper, 1, "Remove");
     expect(mockDevice.removeFarmware).not.toHaveBeenCalled();
   });

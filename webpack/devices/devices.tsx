@@ -12,7 +12,7 @@ import {
 import { Diagnosis, DiagnosisName } from "./connectivity/diagnosis";
 import { StatusRowProps } from "./connectivity/connectivity_row";
 import { resetConnectionInfo } from "./actions";
-import { PinBindings } from "./components/pin_bindings";
+import { PinBindings } from "./pin_bindings/pin_bindings";
 import { selectAllDiagnosticDumps } from "../resources/selectors";
 
 @connect(mapStateToProps)
