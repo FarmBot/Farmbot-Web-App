@@ -37,7 +37,7 @@ export const specialActionList: DropDownItem[] =
       ({ label: specialActionLabelLookup[action], value: action }));
 
 /** Pin numbers for standard buttons. */
-enum ButtonPin {
+export enum ButtonPin {
   estop = 16,
   unlock = 22,
   btn3 = 26,
