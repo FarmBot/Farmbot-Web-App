@@ -20,9 +20,17 @@ import {
   fakeSequence
 } from "../../../__test_support__/fake_state/resources";
 import { initSave } from "../../../api/crud";
-import { PinBindingInputGroupProps, PinBindingType, PinBindingSpecialAction } from "../interfaces";
-import { PinBindingInputGroup } from "../pin_binding_input_group";
+import {
+  PinBindingInputGroupProps, PinBindingType, PinBindingSpecialAction
+} from "../interfaces";
+import {
+  PinBindingInputGroup, PinNumberInputGroup, BindingTypeDropDown,
+  ActionTargetDropDown, SequenceTargetDropDown
+} from "../pin_binding_input_group";
 import { error, warning } from "farmbot-toastr";
+import {
+  fakeResourceIndex
+} from "../../../sequences/step_tiles/tile_move_absolute/test_helpers";
 
 describe("<PinBindingInputGroup/>", () => {
   beforeEach(function () {
@@ -138,7 +146,7 @@ describe("<PinBindingInputGroup/>", () => {
     expect(wrapper.instance().state.sequenceIdInput).toEqual(undefined);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
-    instance.changeSelection({ label: "label", value: id });
+    instance.setSequenceIdInput({ label: "label", value: id });
     expect(wrapper.instance().state.sequenceIdInput).toEqual(id);
   });
 
@@ -162,16 +170,14 @@ describe("<PinBindingInputGroup/>", () => {
   it("changes pin number", () => {
     const wrapper = shallow<PinBindingInputGroup>(<PinBindingInputGroup {...fakeProps()} />);
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
-    wrapper.find("FBSelect").at(0)
-      .simulate("change", { label: "", value: 7 });
+    wrapper.instance().setSelectedPin(7);
     expect(wrapper.instance().state.pinNumberInput).toEqual(7);
   });
 
   it("changes binding type", () => {
     const wrapper = shallow<PinBindingInputGroup>(<PinBindingInputGroup {...fakeProps()} />);
     expect(wrapper.instance().state.bindingType).toEqual(PinBindingType.standard);
-    wrapper.find("FBSelect").at(1)
-      .simulate("change", { label: "", value: PinBindingType.special });
+    wrapper.instance().setBindingType({ label: "", value: PinBindingType.special });
     expect(wrapper.instance().state.bindingType).toEqual(PinBindingType.special);
   });
 
@@ -179,9 +185,58 @@ describe("<PinBindingInputGroup/>", () => {
     const wrapper = shallow<PinBindingInputGroup>(<PinBindingInputGroup {...fakeProps()} />);
     wrapper.setState({ bindingType: PinBindingType.special });
     expect(wrapper.instance().state.specialActionInput).toEqual(undefined);
-    wrapper.find("FBSelect").at(2)
-      .simulate("change", { label: "", value: PinBindingSpecialAction.sync });
+    wrapper.instance().setSpecialAction({ label: "", value: PinBindingSpecialAction.sync });
     expect(wrapper.instance().state.specialActionInput)
       .toEqual(PinBindingSpecialAction.sync);
+  });
+});
+
+describe("<PinNumberInputGroup />", () => {
+  it("sets pin", () => {
+    const setSelectedPin = jest.fn();
+    const wrapper = shallow(<PinNumberInputGroup
+      pinNumberInput={undefined}
+      boundPins={[]}
+      setSelectedPin={setSelectedPin} />);
+    wrapper.find("FBSelect").simulate("change", { label: "", value: 7 });
+    expect(setSelectedPin).toHaveBeenCalledWith(7);
+  });
+});
+
+describe("<BindingTypeDropDown />", () => {
+  it("sets binding type", () => {
+    const setBindingType = jest.fn();
+    const wrapper = shallow(<BindingTypeDropDown
+      bindingType={PinBindingType.standard}
+      shouldDisplay={() => true}
+      setBindingType={setBindingType} />);
+    const ddi = { label: "", value: PinBindingType.special };
+    wrapper.find("FBSelect").simulate("change", ddi);
+    expect(setBindingType).toHaveBeenCalledWith(ddi);
+  });
+});
+
+describe("<ActionTargetDropDown />", () => {
+  it("sets action", () => {
+    const setSpecialAction = jest.fn();
+    const wrapper = shallow(<ActionTargetDropDown
+      specialActionInput={undefined}
+      setSpecialAction={setSpecialAction} />);
+    const ddi = { label: "", value: PinBindingSpecialAction.sync };
+    wrapper.find("FBSelect").simulate("change", ddi);
+    expect(setSpecialAction).toHaveBeenCalledWith(ddi);
+  });
+});
+
+describe("<SequenceTargetDropDown />", () => {
+  it("sets action", () => {
+    const setSequenceIdInput = jest.fn();
+    const wrapper = shallow(<SequenceTargetDropDown
+      sequenceIdInput={undefined}
+      resources={fakeResourceIndex()}
+      setSequenceIdInput={setSequenceIdInput} />);
+    const ddi = { label: "", value: 1 };
+    wrapper.find("SequenceSelectBox").simulate("change", ddi);
+    expect(setSequenceIdInput).toHaveBeenCalledWith(ddi);
   });
 });
