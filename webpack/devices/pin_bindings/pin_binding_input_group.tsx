@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Row, Col, DropDownItem, FBSelect, NULL_CHOICE } from "../../ui";
+import { Row, Col, FBSelect, NULL_CHOICE } from "../../ui";
 import { PinBindingColWidth } from "./pin_bindings";
 import { Popover, Position } from "@blueprintjs/core";
 import { RpiGpioDiagram } from "./rpi_gpio_diagram";
@@ -16,7 +16,9 @@ import { registerGpioPin } from "../actions";
 import { error, warning } from "farmbot-toastr";
 import {
   validGpioPins, sysBindings, generatePinLabel, RpiPinList,
-  bindingTypeLabelLookup, specialActionLabelLookup, specialActionList, reservedPiGPIO
+  bindingTypeLabelLookup, specialActionLabelLookup, specialActionList,
+  reservedPiGPIO,
+  bindingTypeList
 } from "./list_and_label_support";
 import { SequenceSelectBox } from "../../sequences/sequence_select_box";
 
@@ -30,10 +32,7 @@ export class PinBindingInputGroup
     bindingType: PinBindingType.standard,
   };
 
-  changeSelection = (input: DropDownItem) => {
-    this.setState({ sequenceIdInput: parseInt("" + input.value) });
-  }
-
+  /** Validate and provide warnings about a selected pin number. */
   setSelectedPin = (pin: number | undefined) => {
     if (!includes(this.boundPins, pin)) {
       if (includes(validGpioPins, pin)) {
@@ -49,11 +48,13 @@ export class PinBindingInputGroup
     }
   }
 
-  get boundPins(): number[] | undefined {
+  /** Generate a list of unavailable pin numbers. */
+  get boundPins(): number[] {
     const userBindings = this.props.pinBindings.map(x => x.pin_number);
     return userBindings.concat(sysBindings);
   }
 
+  /** Validate and save a pin binding. */
   bindPin = () => {
     const { shouldDisplay, dispatch } = this.props;
     const {
@@ -94,80 +95,106 @@ export class PinBindingInputGroup
     }
   }
 
-  render() {
-    const {
-      pinNumberInput, sequenceIdInput, bindingType, specialActionInput
-    } = this.state;
+  /** pin number selection */
+  pinNumberInputGroup = () => {
+    const { pinNumberInput } = this.state;
+
+    const selectedPinNumber = isNumber(pinNumberInput) ? {
+      label: generatePinLabel(pinNumberInput),
+      value: "" + pinNumberInput
+    } : NULL_CHOICE;
+
+    return <Row>
+      <Col xs={1}>
+        <Popover position={Position.TOP}>
+          <i className="fa fa-th-large" />
+          <RpiGpioDiagram
+            boundPins={this.boundPins}
+            setSelectedPin={this.setSelectedPin}
+            selectedPin={this.state.pinNumberInput} />
+        </Popover>
+      </Col>
+      <Col xs={9}>
+        <FBSelect
+          key={"pin_number_input_" + pinNumberInput}
+          onChange={ddi =>
+            this.setSelectedPin(parseInt("" + ddi.value))}
+          selectedItem={selectedPinNumber}
+          list={RpiPinList(this.boundPins)} />
+      </Col>
+    </Row>;
+  }
+
+  /** binding type selection: sequence or action */
+  bindingTypeDropDown = () => {
+    const { bindingType } = this.state;
     const { shouldDisplay } = this.props;
+    return <FBSelect
+      key={"binding_type_input_" + bindingType}
+      onChange={(ddi: { label: string, value: PinBindingType }) =>
+        this.setState({
+          bindingType: ddi.value,
+          sequenceIdInput: undefined,
+          specialActionInput: undefined
+        })}
+      selectedItem={{
+        label: bindingTypeLabelLookup[bindingType],
+        value: bindingType
+      }}
+      list={bindingTypeList(shouldDisplay)} />;
+  }
+
+  /** sequence selection */
+  sequenceTargetDropDown = () => {
+    const { sequenceIdInput } = this.state;
+    return <SequenceSelectBox
+      key={sequenceIdInput}
+      onChange={ddi =>
+        this.setState({ sequenceIdInput: parseInt("" + ddi.value) })}
+      resources={this.props.resources}
+      sequenceId={sequenceIdInput} />;
+  }
+
+  /** special action selection */
+  actionTargetDropDown = () => {
+    const { specialActionInput } = this.state;
+
+    const setSpecialAction =
+      (ddi: { label: string, value: PinBindingSpecialAction }) =>
+        this.setState({ specialActionInput: ddi.value });
+
+    const selectedSpecialAction = specialActionInput ? {
+      label: specialActionLabelLookup[specialActionInput || ""],
+      value: "" + specialActionInput
+    } : NULL_CHOICE;
+
+    return <FBSelect
+      key={"special_action_input_" + specialActionInput}
+      onChange={setSpecialAction}
+      selectedItem={selectedSpecialAction}
+      list={specialActionList} />;
+  }
+
+  render() {
+    const { bindingType } = this.state;
 
     return <Row>
       <Col xs={PinBindingColWidth.pin}>
-        <Row>
-          <Col xs={1}>
-            <Popover position={Position.TOP}>
-              <i className="fa fa-th-large" />
-              <RpiGpioDiagram
-                boundPins={this.boundPins}
-                setSelectedPin={this.setSelectedPin}
-                selectedPin={this.state.pinNumberInput} />
-            </Popover>
-          </Col>
-          <Col xs={9}>
-            <FBSelect
-              key={"pin_number_input_" + pinNumberInput}
-              onChange={ddi =>
-                this.setSelectedPin(parseInt("" + ddi.value))}
-              selectedItem={isNumber(pinNumberInput)
-                ? {
-                  label: generatePinLabel(pinNumberInput),
-                  value: "" + pinNumberInput
-                }
-                : NULL_CHOICE}
-              list={RpiPinList(this.boundPins || [])} />
-          </Col>
-        </Row>
+        <this.pinNumberInputGroup />
       </Col>
       <Col xs={PinBindingColWidth.type}>
-        <FBSelect
-          key={"binding_type_input_" + pinNumberInput}
-          onChange={(ddi: { label: string, value: PinBindingType }) =>
-            this.setState({ bindingType: ddi.value })}
-          selectedItem={{
-            label: bindingTypeLabelLookup[bindingType],
-            value: bindingType
-          }}
-          list={Object.entries(bindingTypeLabelLookup)
-            .filter(([value, _]) => !(value == ""))
-            .filter(([value, _]) =>
-              shouldDisplay(Feature.api_pin_bindings)
-              || !(value == PinBindingType.special))
-            .map(([value, label]) => ({ label, value }))} />
+        <this.bindingTypeDropDown />
       </Col>
       <Col xs={PinBindingColWidth.target}>
         {bindingType == PinBindingType.special
-          ? <FBSelect
-            key={"special_action_input_" + pinNumberInput}
-            onChange={
-              (ddi: { label: string, value: PinBindingSpecialAction }) =>
-                this.setState({ specialActionInput: ddi.value })}
-            selectedItem={specialActionInput
-              ? {
-                label: specialActionLabelLookup[specialActionInput || ""],
-                value: "" + specialActionInput
-              }
-              : NULL_CHOICE}
-            list={specialActionList} />
-          : <SequenceSelectBox
-            key={sequenceIdInput}
-            onChange={this.changeSelection}
-            resources={this.props.resources}
-            sequenceId={sequenceIdInput} />}
+          ? <this.actionTargetDropDown />
+          : <this.sequenceTargetDropDown />}
       </Col>
       <Col xs={PinBindingColWidth.button}>
         <button
           className="fb-button green"
           type="button"
-          onClick={() => { this.bindPin(); }} >
+          onClick={this.bindPin} >
           {t("BIND")}
         </button>
       </Col>

@@ -1,6 +1,7 @@
 import { PinBindingType, PinBindingSpecialAction, PinBinding } from "./interfaces";
 import { TaggedPinBinding, SpecialStatus } from "../../resources/tagged_resources";
 
+/** Return the correct Pin Binding resource according to binding type. */
 export const taggedPinBinding =
   (bodyInputs: {
     pin_num: number,
