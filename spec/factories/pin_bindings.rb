@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :pin_binding do
     device
-    pin_num { [*0..32].without(17, 23).sample }
+    pin_num { self.random_pin_num }
   end
 end

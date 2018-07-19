@@ -3,12 +3,10 @@ module PinBindings
     BAD_SEQ_ID       = "Sequence ID is not valid"
     MUTUAL_EXCLUSION = "Pin Bindings require exactly one sequence or special " \
                        "action. Please pick one."
-    OFF_LIMITS       = [17, 23]
-    BAD_PIN_NUM      = "Pin numbers #{OFF_LIMITS.join(" and ")} cannot be used."
 
     def validate_pin_num
-      if pin_num && OFF_LIMITS.include?(pin_num)
-        add_error :pin_num, :pin_num, BAD_PIN_NUM
+      if pin_num && PinBinding::OFF_LIMITS.include?(pin_num)
+        add_error :pin_num, :pin_num, PinBinding::BAD_PIN_NUM
       end
     end
 
