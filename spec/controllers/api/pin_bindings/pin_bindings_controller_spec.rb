@@ -79,7 +79,7 @@ describe Api::PinBindingsController do
       b4    = PinBinding.count
       post :create, body: input.to_json, params: { format: :json}
       expect(response.status).to eq(422)
-      expect(json[:pin_num]).to include("Pin numbers 17 and 23 cannot be used.")
+      expect(json[:pin_num]).to include(PinBinding::BAD_PIN_NUM)
     end
 
     it 'disallows pin 23' do
@@ -90,7 +90,7 @@ describe Api::PinBindingsController do
         body: input.to_json,
         params: { format: :json, id: pin_binding.id}
       expect(response.status).to eq(422)
-      expect(json[:pin_num]).to include("Pin numbers 17 and 23 cannot be used.")
+      expect(json[:pin_num]).to include(PinBinding::BAD_PIN_NUM)
     end
   end
 end
