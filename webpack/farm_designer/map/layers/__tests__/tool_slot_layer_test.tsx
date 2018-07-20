@@ -13,10 +13,6 @@ import { shallow } from "enzyme";
 import { history } from "../../../../history";
 
 describe("<ToolSlotLayer/>", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function fakeProps(): ToolSlotLayerProps {
     const ts: ToolSlotPointer = {
       pointer_type: "ToolSlot",

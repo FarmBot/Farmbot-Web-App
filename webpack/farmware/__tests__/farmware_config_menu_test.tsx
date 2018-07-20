@@ -22,10 +22,6 @@ import { getDevice } from "../../device";
 import { toggleWebAppBool } from "../../config_storage/actions";
 
 describe("<FarmwareConfigMenu />", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   function fakeProps(): FarmwareConfigMenuProps {
     return {
       show: true,

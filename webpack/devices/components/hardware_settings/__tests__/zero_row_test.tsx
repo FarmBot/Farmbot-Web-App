@@ -9,9 +9,6 @@ import { mount } from "enzyme";
 import { ZeroRow } from "../zero_row";
 
 describe("<HomingRow />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
   it("calls device", () => {
     const result = mount(<ZeroRow botDisconnected={false} />);
     [0, 1, 2].map(i => result.find("ZeroButton").at(i).simulate("click"));

@@ -13,10 +13,6 @@ import { SpecialStatus } from "../../../resources/tagged_resources";
 import { error } from "farmbot-toastr";
 
 describe("<Peripherals />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function fakeProps(): PeripheralsProps {
     return {
       bot,

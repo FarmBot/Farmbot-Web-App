@@ -9,13 +9,13 @@ describe Api::FarmEventsController do
 
     it 'lists all farm_events for a user' do
       sign_in user
-
       farm_events    = FactoryBot.create_list(:farm_event,
                                               2,
-                                              device_id: user.device.id)
+                                              device_id: user.device.id,
+                                              end_time: 2.years.from_now)
       farm_event_ids = user.device.farm_events
-                       .map(&:id)
-                       .sort
+                        .map(&:id)
+                        .sort
       process :index, method: :get
       expect(response.status).to eq(200)
       expect(json.length).to eq(2)

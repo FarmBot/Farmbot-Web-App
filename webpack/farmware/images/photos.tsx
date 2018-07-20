@@ -26,7 +26,7 @@ function MetaInfo({ obj, attr, label }: MetaInfoProps) {
   const bottom = safeStringFetch(obj, attr);
   return <div>
     <label>{top}:</label>
-    <span>{bottom || "unknown"}</span>
+    <span>{bottom || t("unknown")}</span>
   </div>;
 }
 

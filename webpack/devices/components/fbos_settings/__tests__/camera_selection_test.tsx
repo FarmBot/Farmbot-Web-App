@@ -14,10 +14,6 @@ import { CameraSelectionProps } from "../interfaces";
 import { info } from "farmbot-toastr";
 
 describe("<CameraSelection/>", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): CameraSelectionProps => {
     return {
       env: {},

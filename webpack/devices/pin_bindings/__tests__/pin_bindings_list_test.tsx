@@ -26,10 +26,6 @@ import { error } from "farmbot-toastr";
 import { sysBtnBindingData } from "../list_and_label_support";
 
 describe("<PinBindingsList/>", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function fakeProps(): PinBindingsListProps {
     const fakeResources: TaggedSequence[] = [fakeSequence(), fakeSequence()];
     fakeResources[0].body.id = 1;

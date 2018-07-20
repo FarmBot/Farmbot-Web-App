@@ -98,7 +98,6 @@ function fakeProps(): GardenMapProps {
 
 describe("<GardenPlant/>", () => {
   beforeEach(function () {
-    jest.clearAllMocks();
     Object.defineProperty(document, "querySelector", {
       value: () => { return { scrollLeft: 1, scrollTop: 2 }; },
       configurable: true

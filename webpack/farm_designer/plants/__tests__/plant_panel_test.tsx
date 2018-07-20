@@ -11,10 +11,6 @@ import { clickButton } from "../../../__test_support__/helpers";
 import { history } from "../../../history";
 
 describe("<PlantPanel/>", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const info: FormattedPlantInfo = {
     x: 12,
     y: 34,
@@ -77,10 +73,6 @@ describe("<PlantPanel/>", () => {
 });
 
 describe("<EditPlantStatus />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): EditPlantStatusProps => {
     return {
       uuid: "Plant.0.0",

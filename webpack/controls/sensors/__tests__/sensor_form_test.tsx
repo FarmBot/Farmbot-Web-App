@@ -6,10 +6,6 @@ import { SensorFormProps } from "../interfaces";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
 
 describe("<SensorForm/>", function () {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): SensorFormProps => {
     const fakeSensor1 = fakeSensor();
     const fakeSensor2 = fakeSensor();

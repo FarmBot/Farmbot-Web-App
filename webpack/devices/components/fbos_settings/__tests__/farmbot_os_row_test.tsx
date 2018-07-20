@@ -6,10 +6,6 @@ import { FarmbotOsRowProps } from "../interfaces";
 import { fakeState } from "../../../../__test_support__/fake_state";
 
 describe("<FarmbotOsRow/>", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): FarmbotOsRowProps => {
     return {
       bot,

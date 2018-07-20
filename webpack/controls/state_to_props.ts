@@ -4,7 +4,9 @@ import {
   selectAllWebcamFeeds,
   getFirmwareConfig,
   selectAllSensors,
-  maybeGetDevice
+  maybeGetDevice,
+  selectAllSensorReadings,
+  maybeGetTimeOffset
 } from "../resources/selectors";
 import { Props } from "./interfaces";
 import { maybeFetchUser } from "../resources/selectors";
@@ -37,5 +39,7 @@ export function mapStateToProps(props: Everything): Props {
     firmwareSettings: fwConfig || mcu_params,
     shouldDisplay: shouldDisplay(installedOsVersion, props.bot.minOsFeatureData),
     getWebAppConfigVal,
+    sensorReadings: selectAllSensorReadings(props.resources.index),
+    timeOffset: maybeGetTimeOffset(props.resources.index),
   };
 }

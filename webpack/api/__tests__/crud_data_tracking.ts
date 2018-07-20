@@ -36,14 +36,12 @@ describe("AJAX data tracking", () => {
     betterCompact(Object.values(store.getState().resources.index.references));
 
   it("sets consistency when calling destroy()", () => {
-    jest.clearAllMocks();
     const uuid = store.getState().resources.index.byKind.Tool[0];
     store.dispatch(destroy(uuid));
     expect(maybeStartTracking).toHaveBeenCalled();
   });
 
   it("sets consistency when calling saveAll()", () => {
-    jest.clearAllMocks();
     const r = resources().map(x => {
       x.specialStatus = SpecialStatus.DIRTY;
       return x;
@@ -56,7 +54,6 @@ describe("AJAX data tracking", () => {
   });
 
   it("sets consistency when calling initSave()", () => {
-    jest.clearAllMocks();
     store.dispatch(initSave(resources()[0]));
     expect(maybeStartTracking).toHaveBeenCalled();
   });

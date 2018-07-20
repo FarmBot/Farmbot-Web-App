@@ -37,10 +37,6 @@ import { LogsSettingsMenuProps } from "../../interfaces";
 import { fakeState } from "../../../__test_support__/fake_state";
 
 describe("<LogsSettingsMenu />", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): LogsSettingsMenuProps => {
     return {
       setFilterLevel: () => jest.fn(),
@@ -52,7 +48,7 @@ describe("<LogsSettingsMenu />", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount(<LogsSettingsMenu {...fakeProps() } />);
+    const wrapper = mount(<LogsSettingsMenu {...fakeProps()} />);
     ["begin", "steps", "complete"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
@@ -60,7 +56,7 @@ describe("<LogsSettingsMenu />", () => {
   function testSettingToggle(setting: ConfigurationName, position: number) {
     it("toggles setting", () => {
       bot.hardware.configuration[setting] = false;
-      const wrapper = mount(<LogsSettingsMenu {...fakeProps() } />);
+      const wrapper = mount(<LogsSettingsMenu {...fakeProps()} />);
       wrapper.find("button").at(position).simulate("click");
       expect(mockDevice.updateConfig)
         .toHaveBeenCalledWith({ [setting]: true });

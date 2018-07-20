@@ -112,4 +112,20 @@ select {
       padding: 0.6rem 0.3rem;
     }
   }
+  &.large {
+    input[type="checkbox"] {
+      width: 3rem;
+      height: 3rem;
+      &:checked:after {
+        content: "";
+        position: absolute;
+        border: solid $dark_gray;
+        border-width: 0 4px 4px 0;
+        transform: rotate(45deg);
+        bottom: 0.5rem;
+        left: 0.9rem;
+        padding: 1rem 0.3rem;
+      }
+    }
+  }
 }
