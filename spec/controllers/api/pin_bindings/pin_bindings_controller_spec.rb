@@ -59,7 +59,7 @@ describe Api::PinBindingsController do
     it 'updates pin bindings' do
       sign_in user
       s     = FakeSequence.create(device: device)
-      input = { pin_num: pin_binding.pin_num + 1, sequence_id: s.id}
+      input = { pin_num: pin_binding.random_pin_num, sequence_id: s.id}
       put :update,
         body: input.to_json,
         params: { format: :json, id: pin_binding.id}
