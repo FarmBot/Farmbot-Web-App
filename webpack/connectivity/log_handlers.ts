@@ -44,6 +44,6 @@ export const onLogs =
       // TODO:             Make a `bot/device_123/offline` channel.
       const died =
         msg.message.includes("is offline") && msg.type === "error";
-      died && dispatchNetworkDown("bot.mqtt");
+      died && dispatchNetworkDown("bot.mqtt", undefined, "Got offline message");
     }
   };

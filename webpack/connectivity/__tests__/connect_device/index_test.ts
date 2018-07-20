@@ -155,7 +155,7 @@ describe("initLog", () => {
 
 describe("bothUp()", () => {
   it("marks MQTT and API as up", () => {
-    bothUp();
+    bothUp("tests");
     expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt");
     expect(dispatchNetworkUp).toHaveBeenCalledWith("bot.mqtt");
   });
