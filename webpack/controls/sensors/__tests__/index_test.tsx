@@ -13,10 +13,6 @@ import { clickButton } from "../../../__test_support__/helpers";
 import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<Sensors />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function fakeProps(): SensorsProps {
     const fakeSensor1 = fakeSensor();
     const fakeSensor2 = fakeSensor();

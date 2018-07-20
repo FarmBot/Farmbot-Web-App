@@ -59,10 +59,6 @@ function expectActive() {
 }
 
 describe("ping util", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("sets the LAST_PING_(IN|OUT) in bot state", () => {
     const bot = fakeBot();
     writePing(bot, "in");

@@ -16,10 +16,6 @@ import { WritePin } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
 
 describe("Pin tile support functions", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function fakeProps() {
     const currentStep: WritePin = {
       kind: "write_pin",

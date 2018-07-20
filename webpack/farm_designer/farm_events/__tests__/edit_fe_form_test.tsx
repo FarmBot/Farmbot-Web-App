@@ -48,7 +48,6 @@ describe("<FarmEventForm/>", () => {
 
   beforeEach(() => {
     context.form = new EditFEForm(props());
-    jest.clearAllMocks();
   });
 
   it("sets defaults", () => {

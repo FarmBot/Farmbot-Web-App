@@ -18,7 +18,6 @@ describe("<OsUpdateButton/>", () => {
   beforeEach(function () {
     bot.currentOSVersion = "3.1.6";
     bot.hardware.configuration.beta_opt_in = false;
-    jest.clearAllMocks();
   });
 
   const fakeProps = (): OsUpdateButtonProps => {

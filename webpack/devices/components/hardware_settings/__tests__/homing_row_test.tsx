@@ -11,10 +11,6 @@ import { HomingRow } from "../homing_row";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 
 describe("<HomingRow />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("renders three buttons", () => {
     const wrapper = mount(<HomingRow
       hardware={bot.hardware.mcu_params}

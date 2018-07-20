@@ -19,10 +19,6 @@ import { Actions } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<CreatePoints />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): CreatePointsProps => {
     return {
       dispatch: jest.fn(),

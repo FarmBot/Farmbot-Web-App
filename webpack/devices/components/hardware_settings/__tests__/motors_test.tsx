@@ -17,10 +17,6 @@ import { panelState } from "../../../../__test_support__/control_panel_state";
 import { fakeState } from "../../../../__test_support__/fake_state";
 
 describe("<Motors/>", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): MotorsProps => {
     return {
       dispatch: jest.fn(x => x(jest.fn(), fakeState)),

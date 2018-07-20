@@ -13,10 +13,6 @@ import { FbosDetailsProps } from "../interfaces";
 import { fakeState } from "../../../../__test_support__/fake_state";
 
 describe("<FbosDetails/>", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): FbosDetailsProps => {
     return {
       botInfoSettings: bot.hardware.informational_settings,

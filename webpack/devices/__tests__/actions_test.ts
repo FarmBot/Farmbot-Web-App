@@ -53,10 +53,6 @@ import { bot } from "../../__test_support__/fake_state/bot";
 import { success, error, warning, info } from "farmbot-toastr";
 
 describe("checkControllerUpdates()", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("calls checkUpdates", async () => {
     await actions.checkControllerUpdates();
     expect(mockDevice.checkUpdates).toHaveBeenCalled();
@@ -65,10 +61,6 @@ describe("checkControllerUpdates()", function () {
 });
 
 describe("powerOff()", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("calls powerOff", async () => {
     await actions.powerOff();
     expect(mockDevice.powerOff).toHaveBeenCalled();
@@ -77,10 +69,6 @@ describe("powerOff()", function () {
 });
 
 describe("factoryReset()", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("doesn't call factoryReset", async () => {
     window.confirm = () => false;
     await actions.factoryReset();
@@ -95,10 +83,6 @@ describe("factoryReset()", () => {
 });
 
 describe("reboot()", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("calls reboot", async () => {
     await actions.reboot();
     expect(mockDevice.reboot).toHaveBeenCalled();
@@ -107,10 +91,6 @@ describe("reboot()", function () {
 });
 
 describe("emergencyLock() / emergencyUnlock", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("calls emergencyLock", () => {
     actions.emergencyLock();
     expect(mockDevice.emergencyLock).toHaveBeenCalled();
@@ -124,10 +104,6 @@ describe("emergencyLock() / emergencyUnlock", function () {
 });
 
 describe("sync()", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("doesn't call sync: disconnected", () => {
     const getState = () => fakeState();
     actions.sync()(jest.fn(), getState);
@@ -138,10 +114,6 @@ describe("sync()", function () {
 });
 
 describe("execSequence()", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("calls execSequence", async () => {
     const s = fakeSequence().body;
     await actions.execSequence(s);
@@ -158,10 +130,6 @@ describe("execSequence()", function () {
 });
 
 describe("MCUFactoryReset()", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("doesn't call resetMCU", () => {
     window.confirm = () => false;
     actions.MCUFactoryReset();
@@ -183,10 +151,6 @@ describe("requestDiagnostic", () => {
 });
 
 describe("settingToggle()", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("toggles mcu param via updateMcu", async () => {
     bot.hardware.mcu_params.param_mov_nr_retry = 0;
     const sourceSetting = (x: McuParamName) =>
@@ -225,10 +189,6 @@ describe("settingToggle()", () => {
 });
 
 describe("updateMCU()", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("updates mcu param via updateMcu", async () => {
     bot.hardware.mcu_params.param_mov_nr_retry = 0;
     const state = fakeState();
@@ -276,10 +236,6 @@ describe("updateMCU()", () => {
 });
 
 describe("pinToggle()", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("calls togglePin", async () => {
     await actions.pinToggle(5);
     expect(mockDevice.togglePin).toHaveBeenCalledWith({ pin_number: 5 });
@@ -288,10 +244,6 @@ describe("pinToggle()", function () {
 });
 
 describe("homeAll()", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("calls home", async () => {
     await actions.homeAll(100);
     expect(mockDevice.home)
@@ -343,10 +295,6 @@ describe("resetConnectionInfo()", () => {
 });
 
 describe("fetchReleases()", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("fetches latest OS release version", async () => {
     mockGetRelease = Promise.resolve({ data: { tag_name: "v1.0.0" } });
     const dispatch = jest.fn();
@@ -463,10 +411,6 @@ describe("fetchMinOsFeatureData()", () => {
 });
 
 describe("updateConfig()", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("updates config: configUpdate", () => {
     const dispatch = jest.fn();
     const state = fakeState();

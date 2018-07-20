@@ -16,10 +16,6 @@ import { push } from "../../history";
 import { Actions } from "../../constants";
 
 describe("copySequence()", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("copies sequence", () => {
     const sequence = fakeSequence();
     const copy = copySequence(sequence);

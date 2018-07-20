@@ -29,10 +29,6 @@ import { auth } from "../__test_support__/fake_state/token";
 import { Session } from "../session";
 
 describe("<RootComponent />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("clears session when not authorized", () => {
     mockAuth = undefined;
     mockPathname = "/app/account";

@@ -34,7 +34,6 @@ describe("<DirectionButton/>", function () {
   const buttonProps = fakeButtonProps();
 
   beforeEach(function () {
-    jest.clearAllMocks();
     buttonProps.disabled = false;
   });
 

@@ -7,10 +7,6 @@ import { API } from "../../api/api";
 import { error } from "farmbot-toastr";
 
 describe("<ChangePassword/>", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function testCase() {
     const el = mount(<ChangePassword />);
     return {

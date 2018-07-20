@@ -18,10 +18,6 @@ import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { EditPlantInfoProps } from "../../interfaces";
 
 describe("<EditPlantInfo />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): EditPlantInfoProps => {
     return {
       push: jest.fn(),

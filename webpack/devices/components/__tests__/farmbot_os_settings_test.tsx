@@ -17,7 +17,6 @@ import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<FarmbotOsSettings/>", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
     window.alert = jest.fn();
   });
 

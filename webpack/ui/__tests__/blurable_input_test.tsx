@@ -6,10 +6,6 @@ import { BlurableInput, BIProps } from "../blurable_input";
 import { error } from "farmbot-toastr";
 
 describe("<BlurableInput />", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): BIProps => {
     return {
       onCommit: jest.fn(),

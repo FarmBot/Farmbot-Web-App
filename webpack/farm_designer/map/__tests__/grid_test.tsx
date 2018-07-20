@@ -5,10 +5,6 @@ import { GridProps } from "../interfaces";
 import { fakeMapTransformProps } from "../../../__test_support__/map_transform_props";
 
 describe("<Grid/>", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function fakeProps(): GridProps {
     return {
       mapTransformProps: fakeMapTransformProps(),

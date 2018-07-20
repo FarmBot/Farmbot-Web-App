@@ -17,10 +17,6 @@ import { DEFAULT_ICON } from "../../open_farm/icons";
 import { history } from "../../history";
 
 describe("movePlant", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   function movePlantTest(
     caseDescription: string,
     attempted: { x: number, y: number },

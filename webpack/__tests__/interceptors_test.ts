@@ -54,7 +54,6 @@ function fakeResponse(config: Partial<FakeProps>): AxiosResponse {
 
 describe("responseFulfilled", () => {
   it("won't fire for webcam feed updates", () => {
-    jest.clearAllMocks();
     const resp = fakeResponse({
       method: "post",
       url: "https://staging.farmbot.io/api/webcam_feeds/"
@@ -65,10 +64,6 @@ describe("responseFulfilled", () => {
 });
 
 describe("responseRejected", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it("undefined error", async () => {
     await expect(responseRejected(undefined)).rejects.toEqual(undefined);
     expect(dispatchNetworkUp).not.toHaveBeenCalled();

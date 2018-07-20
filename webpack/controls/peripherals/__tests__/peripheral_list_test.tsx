@@ -12,10 +12,6 @@ import { TaggedPeripheral, SpecialStatus } from "../../../resources/tagged_resou
 import { Pins } from "farmbot/dist";
 
 describe("<PeripheralList/>", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const peripherals: TaggedPeripheral[] = [
     {
       uuid: "Peripheral.2.2",

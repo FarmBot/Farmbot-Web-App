@@ -20,10 +20,6 @@ jest.mock("../../../config_storage/actions", () => {
 });
 
 describe("<ImageFilterMenu />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   mockConfig.body.photo_filter_begin = "";
   mockConfig.body.photo_filter_end = "";
 

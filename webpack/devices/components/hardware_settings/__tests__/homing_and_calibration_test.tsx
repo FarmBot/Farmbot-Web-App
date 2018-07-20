@@ -15,10 +15,6 @@ import {
 import { warning } from "farmbot-toastr";
 
 describe("<HomingAndCalibration />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function testAxisLengthInput(
     fw: string, provided: string, expected: string) {
     const dispatch = jest.fn();

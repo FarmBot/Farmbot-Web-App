@@ -11,10 +11,6 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { updateMCU } from "../../actions";
 
 describe("McuInputBox", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): McuInputBoxProps => {
     return {
       sourceFwConfig: (x) => {

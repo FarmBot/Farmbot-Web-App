@@ -27,7 +27,6 @@ import { destroyOK, destroyNO } from "../../resources/actions";
 
 describe("destroy", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
     mockResource.body.id = 1;
     mockResource.kind = "Regimen";
   });

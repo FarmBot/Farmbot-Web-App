@@ -115,10 +115,6 @@ describe("<SequenceEditorMiddleActive/>", () => {
 });
 
 describe("onDrop()", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("step_splice", () => {
     const dispatch = jest.fn();
     onDrop(dispatch, fakeSequence())(0, "fakeUuid");

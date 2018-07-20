@@ -8,9 +8,6 @@ jest.mock("../../../device", () => ({
 import { calibrate, scanImage } from "../actions";
 
 describe("scanImage()", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
   it("calls out to the device", () => {
     // Run function to invoke side effects
     const thunk = scanImage(4);
@@ -25,9 +22,6 @@ describe("scanImage()", () => {
 });
 
 describe("calibrate()", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
   it("calls out to the device", () => {
     // Run function to invoke side effects
     const thunk = calibrate();

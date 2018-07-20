@@ -13,10 +13,6 @@ import {
 } from "../interfaces";
 
 describe("<PinBindings/>", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function fakeProps(): PinBindingsProps {
     const fakeSequence1 = fakeSequence();
     fakeSequence1.body.id = 1;
