@@ -1,5 +1,6 @@
 class ServiceRunner
-  WAIT_TIME = Rails.env.test? ? 0.01 : 5
+  WAIT_TIME     = Rails.env.test? ? 0.01 : 5
+  OFFLINE_ERROR = Bunny::TCPConnectionFailedForAllHosts
 
   def self.go!(channel, worker_klass)
     self.new(channel, worker_klass).run!
@@ -14,11 +15,12 @@ class ServiceRunner
     @channel.subscribe(block: true) do |info, _, payl|
       @worker.process(info, payl.force_encoding("UTF-8"))
     end
-  rescue Bunny::TCPConnectionFailedForAllHosts
-    retry
+  rescue OFFLINE_ERROR => e
   rescue StandardError => e
-    Rollbar.error(e)
-    puts "Something caused the broker to crash..."
+    unless e.is_a?(OFFLINE_ERROR)
+      Rollbar.error(e)
+      puts "Something caused the broker to crash..."
+    end
     sleep WAIT_TIME
     retry
   end
