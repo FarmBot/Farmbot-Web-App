@@ -36,6 +36,13 @@ describe("<FarmwareInfo />", () => {
     expect(wrapper.text()).toContain("Does things.");
   });
 
+  it("renders farmware tools version", () => {
+    const p = fakeProps();
+    if (p.farmware) { p.farmware.farmware_tools_version = "1.0.0"; }
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    expect(wrapper.text()).toContain("Farmware Tools version");
+  });
+
   it("renders 1st-party author", () => {
     const p = fakeProps();
     p.farmware = fakeFarmware();
