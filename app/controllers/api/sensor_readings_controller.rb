@@ -24,7 +24,7 @@ module Api
     end
 
     def reading
-      @image ||= readings.find(params[:id])
+      @reading ||= readings.find(params[:id])
     end
   end
 end
