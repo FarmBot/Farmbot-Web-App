@@ -1,3 +1,10 @@
 require_relative "../app/lib/service_runner_base.rb"
 
-ServiceRunner.go!(Transport.current.log_channel, LogService)
+begin
+  ServiceRunner.go!(Transport.current.log_channel, LogService)
+# :nocov:
+rescue
+  sleep 3
+  retry
+end
+# :nocov:
