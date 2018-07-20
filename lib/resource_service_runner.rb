@@ -5,7 +5,9 @@ require_relative "../app/lib/resources/job.rb"
 require_relative "../app/lib/resources/service.rb"
 begin
   ServiceRunner.go!(Transport.current.resource_channel, Resources::Service)
+# :nocov:
 rescue
   sleep 3
   retry
 end
+# :nocov:

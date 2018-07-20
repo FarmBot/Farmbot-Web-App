@@ -1,2 +1,0 @@
-ignore:
-  - "app/models/transport.rb"  # Too many stubs to bother testing.
