@@ -60,7 +60,7 @@ export enum Feature {
   jest_feature = "jest_feature", // for tests
   backscheduled_regimens = "backscheduled_regimens",
   endstop_invert = "endstop_invert",
-  diagnostic_dumps = "diagnostic_dumps"
+  diagnostic_dumps = "diagnostic_dumps",
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;

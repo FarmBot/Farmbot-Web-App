@@ -9,6 +9,7 @@ import { Props, MoveProps } from "./interfaces";
 import { Move } from "./move";
 import { BooleanSetting } from "../session_keys";
 import { Feature } from "../devices/interfaces";
+import { SensorReadings } from "./sensor_readings/sensor_readings";
 
 @connect(mapStateToProps)
 export class Controls extends React.Component<Props, {}> {
@@ -68,6 +69,11 @@ export class Controls extends React.Component<Props, {}> {
                 sensors={this.props.sensors}
                 dispatch={this.props.dispatch}
                 disabled={arduinoBusy} />}
+            {this.props.sensorReadings.length > 0 &&
+              <SensorReadings
+                sensorReadings={this.props.sensorReadings}
+                sensors={this.props.sensors}
+                timeOffset={this.props.timeOffset} />}
           </Col>
         </Row>}
     </Page>;

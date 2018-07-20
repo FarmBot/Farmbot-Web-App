@@ -9,7 +9,8 @@ import {
   TaggedFirmwareConfig,
   TaggedPinBinding,
   TaggedLog,
-  TaggedDiagnosticDump
+  TaggedDiagnosticDump,
+  TaggedSensorReading
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
@@ -175,6 +176,19 @@ export function fakeSensor(): TaggedSensor {
     label: "Fake Pin",
     mode: 0,
     pin: 1
+  });
+}
+
+export function fakeSensorReading(): TaggedSensorReading {
+  return fakeResource("SensorReading", {
+    id: idCounter++,
+    created_at: "2018-01-11T20:20:38.362Z",
+    pin: 1,
+    value: 0,
+    mode: 0,
+    x: 10,
+    y: 20,
+    z: 30,
   });
 }
 

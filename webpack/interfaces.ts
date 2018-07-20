@@ -25,6 +25,7 @@ export interface SensorReading {
   z: number | undefined;
   value: number;
   pin: number;
+  created_at: string;
 }
 
 export interface DeviceConfig {
