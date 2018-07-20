@@ -20,6 +20,7 @@ import { ShouldDisplay, Feature } from "../../devices/interfaces";
 export enum PinGroupName {
   Sensor = "Sensor",
   Peripheral = "Peripheral",
+  RPi = "Raspberry Pi",
   Pin = "Pin",
   Position = "Position"
 }
@@ -89,7 +90,8 @@ export const pinsAsDropDownsReadPin =
 
 const TYPE_MAPPING: Record<AllowedPinTypes, PinGroupName> = {
   "Peripheral": PinGroupName.Peripheral,
-  "Sensor": PinGroupName.Sensor
+  "Sensor": PinGroupName.Sensor,
+  "RPi": PinGroupName.RPi
 };
 
 export const isPinType =
