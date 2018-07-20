@@ -2,13 +2,17 @@ import { ResourceName } from "../resources/tagged_resources";
 import { startTracking } from "../connectivity/data_consistency";
 
 const BLACKLIST: ResourceName[] = [
-  "Log",
-  "Image",
-  "WebcamFeed",
-  "User",
-  "WebAppConfig",
+  "DiagnosticDump",
   "FbosConfig",
   "FirmwareConfig",
+  "Image",
+  "Log",
+  "PlantTemplate",
+  "SavedGarden",
+  "SensorReading",
+  "User",
+  "WebAppConfig",
+  "WebcamFeed",
 ];
 
 export function maybeStartTracking(uuid: string) {
