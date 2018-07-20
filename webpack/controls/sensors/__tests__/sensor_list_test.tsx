@@ -13,10 +13,6 @@ import { fakeSensor } from "../../../__test_support__/fake_state/resources";
 import { SensorListProps } from "../interfaces";
 
 describe("<SensorList/>", function () {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): SensorListProps => {
     const pins: Pins = {
       50: {

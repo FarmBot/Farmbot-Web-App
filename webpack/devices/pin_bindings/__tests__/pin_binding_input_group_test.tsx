@@ -33,10 +33,6 @@ import {
 } from "../../../sequences/step_tiles/tile_move_absolute/test_helpers";
 
 describe("<PinBindingInputGroup/>", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function fakeProps(): PinBindingInputGroupProps {
     const fakeResources: TaggedSequence[] = [fakeSequence(), fakeSequence()];
     fakeResources[0].body.id = 1;

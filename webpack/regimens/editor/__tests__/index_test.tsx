@@ -16,10 +16,6 @@ import { clickButton } from "../../../__test_support__/helpers";
 import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<RegimenEditor />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function fakeProps(): RegimenEditorProps {
     const regimen = fakeRegimen();
     regimen.specialStatus = SpecialStatus.DIRTY;

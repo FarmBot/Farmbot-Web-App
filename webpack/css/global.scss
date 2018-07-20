@@ -306,6 +306,38 @@ a {
   }
 }
 
+.sensor-history-table {
+  font-size: 1.2rem;
+  th, td {
+    width: 1%;
+  }
+  .sensor-history-table-contents {
+    display: block;
+    max-height: 20rem;
+    overflow-y: auto;
+  }
+}
+
+.sensor-history-footer {
+  display: flex;
+  justify-content: space-between;
+  .date {
+    span {
+      white-space: nowrap;
+    }
+    label {
+      margin-right: 0.5rem;
+    }
+  }
+  .location {
+    display: flex;
+    label {
+      margin-left: 1rem;
+      margin-right: 0.5rem;
+    }
+  }
+}
+
 .full-width {
   width: 100%;
 }

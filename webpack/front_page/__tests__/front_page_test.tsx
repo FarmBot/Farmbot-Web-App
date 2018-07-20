@@ -36,10 +36,6 @@ import { API } from "../../api";
 import { Session } from "../../session";
 
 describe("<FrontPage />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("shows forgot password box", () => {
     const el = mount(<FrontPage />);
     expect(el.text()).not.toContain("Reset Password");
@@ -152,18 +148,17 @@ describe("<FrontPage />", () => {
           value: "value",
           ...input
         }
-      }
-    }
+      };
+    };
 
-    const agreeToTerms = setField("agreeToTerms", spy)
+    const agreeToTerms = setField("agreeToTerms", spy);
     const event2 = fakeEv({ checked: false });
     const expected2 = { agreeToTerms: event2.currentTarget.checked };
     agreeToTerms(event2);
     expect(spy).toHaveBeenCalledWith(expected2);
     jest.resetAllMocks();
 
-
-    const regName = setField("regName", spy)
+    const regName = setField("regName", spy);
     const event3 = fakeEv({ value: "hello!" });
     const expected3 = { regName: event3.currentTarget.value };
     regName(event3);

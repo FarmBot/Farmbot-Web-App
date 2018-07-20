@@ -3,10 +3,6 @@ import { mount } from "enzyme";
 import { ToggleButton } from "../toggle_button";
 
 describe("<ToggleButton/>", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("calls toggle action", () => {
     const toggle = jest.fn();
     const toggleButton = mount(<ToggleButton

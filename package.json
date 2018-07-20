@@ -14,7 +14,7 @@
     "start": "echo 'use `rails api:start`'",
     "heroku-postbuild": "webpack --config=./config/webpack.prod.js",
     "webpack": "./node_modules/.bin/webpack-dev-server --config config/webpack.dev.js",
-    "test-slow": "jest --coverage --no-cache -w 2",
+    "test-slow": "jest --coverage --no-cache -w 4",
     "test": "jest --no-coverage --cache -w 5",
     "typecheck": "./node_modules/.bin/tsc --noEmit --jsx preserve"
   },
@@ -101,6 +101,8 @@
     "webpack-notifier": "^1.5.0"
   },
   "jest": {
+    "clearMocks": true,
+    "logHeapUsage": true,
     "globals": {
       "globalConfig": {
         "NODE_ENV": "development",

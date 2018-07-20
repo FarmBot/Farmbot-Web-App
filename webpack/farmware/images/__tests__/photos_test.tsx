@@ -14,10 +14,6 @@ import { destroy } from "../../../api/crud";
 import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<Photos/>", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   function prepareImages(data: TaggedImage[]): TaggedImage[] {
     const images: TaggedImage[] = [];
     data.forEach((item, index) => {

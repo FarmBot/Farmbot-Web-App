@@ -24,10 +24,6 @@ import { Actions } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
 
 describe("<Move />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const mockConfig: Dictionary<boolean> = {};
 
   function fakeProps(): MoveProps {

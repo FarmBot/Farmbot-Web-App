@@ -23,7 +23,6 @@ describe("<TestButton/>", () => {
   }
 
   function fakeProps(): TestBtnProps {
-    jest.clearAllMocks();
     return {
       onClick: jest.fn(),
       onFail: jest.fn(),

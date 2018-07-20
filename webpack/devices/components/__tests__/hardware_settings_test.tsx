@@ -9,10 +9,6 @@ import { fakeFirmwareConfig } from "../../../__test_support__/fake_state/resourc
 import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<HardwareSettings />", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): HardwareSettingsProps => {
     return {
       bot,

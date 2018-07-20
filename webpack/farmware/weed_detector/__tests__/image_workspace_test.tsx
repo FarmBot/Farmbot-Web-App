@@ -21,7 +21,6 @@ describe("<Body/>", () => {
   }
 
   it("triggers onChange() event", () => {
-    jest.clearAllMocks();
     const props = fakeProps();
     const iw = new ImageWorkspace(props);
     iw.props = props;
@@ -43,7 +42,6 @@ describe("<Body/>", () => {
   });
 
   it("triggers numericChange()", () => {
-    jest.clearAllMocks();
     const props = fakeProps();
     const iw = new ImageWorkspace(props);
     const trigger = iw.numericChange("blur");

@@ -11,10 +11,6 @@ import { Everything } from "../../../interfaces";
 import { ToggleDayParams } from "../interfaces";
 
 describe("commitBulkEditor()", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   function newFakeState() {
     const state = fakeState();
     const fakeResources: TaggedResource[] = [
@@ -62,15 +58,15 @@ describe("commitBulkEditor()", () => {
     state.resources.consumers.regimens.dailyOffsetMs = 2000;
     state.resources.consumers.regimens.weeks = [{
       days:
-        {
-          day1: true,
-          day2: false,
-          day3: false,
-          day4: false,
-          day5: false,
-          day6: false,
-          day7: false
-        }
+      {
+        day1: true,
+        day2: false,
+        day3: false,
+        day4: false,
+        day5: false,
+        day6: false,
+        day7: false
+      }
     }];
     return state;
   }

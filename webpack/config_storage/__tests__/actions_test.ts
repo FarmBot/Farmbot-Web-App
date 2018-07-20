@@ -41,9 +41,6 @@ describe("getWebAppConfigValue", () => {
 });
 
 describe("setWebAppConfigValue", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
   const getState = jest.fn(() => ({ resources: { index: {} } }));
 
   it("sets a numeric setting value", () => {

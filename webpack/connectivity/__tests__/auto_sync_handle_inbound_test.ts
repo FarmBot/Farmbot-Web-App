@@ -20,7 +20,6 @@ describe("handleInbound()", () => {
   const getState: GetState = jest.fn(fakeState);
 
   it("handles SKIP", () => {
-    jest.clearAllMocks();
     const fixtr: SkipMqttData = { status: "SKIP" };
     const result = handleInbound(dispatch, getState, fixtr);
     expect(result).toBeUndefined();
@@ -29,7 +28,6 @@ describe("handleInbound()", () => {
   });
 
   it("handles ERR", () => {
-    jest.clearAllMocks();
     const fixtr: BadMqttData = { status: "ERR", reason: "Whatever" };
     const result = handleInbound(dispatch, getState, fixtr);
     expect(result).toBeUndefined();
@@ -38,7 +36,6 @@ describe("handleInbound()", () => {
   });
 
   it("handles UPDATE", () => {
-    jest.clearAllMocks();
     const fixtr: UpdateMqttData = {
       status: "UPDATE",
       kind: "Sequence",
@@ -51,7 +48,6 @@ describe("handleInbound()", () => {
   });
 
   it("handles DELETE when the record is in system", () => {
-    jest.clearAllMocks();
     const i = getState().resources.index.byKind.Sequence;
     // Pick an ID that we know will be in the DB
     const id = parseInt(Object.values(i)[0].split(".")[1], 10);
@@ -62,7 +58,6 @@ describe("handleInbound()", () => {
   });
 
   it("handles DELETE when the record is *not* in system", () => {
-    jest.clearAllMocks();
     const fixtr: DeleteMqttData = {
       status: "DELETE",
       kind: "Sequence",

@@ -22,6 +22,9 @@ export namespace ToolTips {
     trim(`Add sensors here to monitor FarmBot's sensors.
     To edit and create new sensors, press the EDIT button.`);
 
+  export const SENSOR_HISTORY =
+    trim(`View and filter historical sensor reading data.`);
+
   // Device
   export const OS_SETTINGS =
     trim(`View and change device settings.`);

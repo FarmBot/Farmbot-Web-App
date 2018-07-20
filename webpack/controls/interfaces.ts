@@ -4,7 +4,8 @@ import {
   TaggedUser,
   TaggedWebcamFeed,
   TaggedPeripheral,
-  TaggedSensor
+  TaggedSensor,
+  TaggedSensorReading
 } from "../resources/tagged_resources";
 import { NetworkState } from "../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
@@ -20,6 +21,8 @@ export interface Props {
   firmwareSettings: McuParams;
   shouldDisplay: ShouldDisplay;
   getWebAppConfigVal: GetWebAppConfigValue;
+  sensorReadings: TaggedSensorReading[];
+  timeOffset: number;
 }
 
 export interface MoveProps {

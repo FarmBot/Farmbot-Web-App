@@ -22,7 +22,6 @@ describe("BooleanMCUInputGroup", () => {
     const xEl = el.find(ToggleButton).at(Buttons.xAxis);
     const yEl = el.find(ToggleButton).at(Buttons.yAxis);
     const zEl = el.find(ToggleButton).at(Buttons.zAxis);
-    jest.clearAllMocks();
     xEl.simulate("click");
     expect(settingToggle)
       .toHaveBeenCalledWith("encoder_invert_x", expect.any(Function), undefined);

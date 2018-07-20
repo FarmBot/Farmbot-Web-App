@@ -6,10 +6,6 @@ import { AxisInputBoxGroupProps } from "../interfaces";
 import { clickButton } from "../../__test_support__/helpers";
 
 describe("<AxisInputBoxGroup />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const props: AxisInputBoxGroupProps = {
     position: { x: undefined, y: undefined, z: undefined },
     onCommit: jest.fn(),

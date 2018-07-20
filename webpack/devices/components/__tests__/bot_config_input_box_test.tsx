@@ -12,10 +12,6 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeState } from "../../../__test_support__/fake_state";
 
 describe("<BotConfigInputBox />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): BotConfigInputBoxProps => {
     return {
       setting: "network_not_found_timer",

@@ -16,7 +16,6 @@ import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<SelectPlants />", () => {
   beforeEach(function () {
-    jest.clearAllMocks();
     mockPath = "/app/designer/plants/select";
   });
 

@@ -11,6 +11,12 @@ interface LogsRowProps {
   timeOffset: number;
 }
 
+export const xyzTableEntry =
+  (x: number | undefined, y: number | undefined, z: number | undefined) =>
+    (isNumber(x) && isNumber(y) && isNumber(z))
+      ? `${x}, ${y}, ${z}`
+      : "Unknown";
+
 /** A log is displayed in a single row of the logs table. */
 const LogsRow = ({ tlog, timeOffset }: LogsRowProps) => {
   const { uuid } = tlog;
@@ -29,11 +35,7 @@ const LogsRow = ({ tlog, timeOffset }: LogsRowProps) => {
       {message || "Loading"}
     </td>
     <td>
-      {
-        (isNumber(x) && isNumber(y) && isNumber(z))
-          ? `${x}, ${y}, ${z}`
-          : "Unknown"
-      }
+      {xyzTableEntry(x, y, z)}
     </td>
     <td>
       {time}

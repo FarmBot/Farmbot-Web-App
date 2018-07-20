@@ -13,10 +13,6 @@ import { AutoUpdateRowProps } from "../interfaces";
 import { fakeState } from "../../../../__test_support__/fake_state";
 
 describe("<AutoUpdateRow/>", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): AutoUpdateRowProps => {
     return {
       dispatch: jest.fn(x => x(jest.fn(), fakeState)),
@@ -27,13 +23,13 @@ describe("<AutoUpdateRow/>", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount(<AutoUpdateRow {...fakeProps() } />);
+    const wrapper = mount(<AutoUpdateRow {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("auto update");
   });
 
   it("toggles auto-update on", () => {
     bot.hardware.configuration.os_auto_update = 0;
-    const wrapper = mount(<AutoUpdateRow {...fakeProps() } />);
+    const wrapper = mount(<AutoUpdateRow {...fakeProps()} />);
     wrapper.find("button").first().simulate("click");
     expect(mockDevice.updateConfig)
       .toHaveBeenCalledWith({ os_auto_update: 1 });
@@ -41,7 +37,7 @@ describe("<AutoUpdateRow/>", () => {
 
   it("toggles auto-update off", () => {
     bot.hardware.configuration.os_auto_update = 1;
-    const wrapper = mount(<AutoUpdateRow {...fakeProps() } />);
+    const wrapper = mount(<AutoUpdateRow {...fakeProps()} />);
     wrapper.find("button").first().simulate("click");
     expect(mockDevice.updateConfig)
       .toHaveBeenCalledWith({ os_auto_update: 0 });
