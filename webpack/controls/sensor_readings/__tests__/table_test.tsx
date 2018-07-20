@@ -18,7 +18,17 @@ describe("<SensorReadingsTable />", () => {
   it("renders", () => {
     const wrapper = mount(<SensorReadingsTable {...fakeProps()} />);
     const txt = wrapper.text().toLowerCase();
-    ["sensor", "value", "mode", "position", "time", "(pin 1)", "10, 20, 30"]
+    ["sensor", "value", "mode", "position", "time",
+      "(pin 1)", "10, 20, 30", "digital"]
       .map(string => expect(txt).toContain(string));
+  });
+
+  it("renders analog mode", () => {
+    const p = fakeProps();
+    const sr = fakeSensorReading();
+    sr.body.mode = 1;
+    p.readingsForPeriod = () => [sr];
+    const wrapper = mount(<SensorReadingsTable {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("analog");
   });
 });
