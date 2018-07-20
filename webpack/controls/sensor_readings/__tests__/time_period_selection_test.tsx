@@ -34,7 +34,7 @@ describe("<TimePeriodSelection />", () => {
     const wrapper = shallow(<TimePeriodSelection {...p} />);
     wrapper.find("BlurableInput").simulate("commit",
       { currentTarget: { value: "2002-01-10" } });
-    expect(p.setEndDate).toHaveBeenCalledWith(1010649600);
+    expect(p.setEndDate).toHaveBeenCalledWith(expect.any(Number));
   });
 
   it("updates end date", () => {
