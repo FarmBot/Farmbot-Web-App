@@ -14,9 +14,11 @@ class ServiceRunner
     @channel.subscribe(block: true) do |info, _, payl|
       @worker.process(info, payl.force_encoding("UTF-8"))
     end
+  rescue Bunny::TCPConnectionFailedForAllHosts
+    retry
   rescue StandardError => e
     Rollbar.error(e)
-    puts "MQTT Broker is unreachable. Waiting 5 seconds..."
+    puts "Something caused the broker to crash..."
     sleep WAIT_TIME
     retry
   end
