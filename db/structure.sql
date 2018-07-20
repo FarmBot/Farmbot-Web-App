@@ -430,9 +430,9 @@ CREATE TABLE public.firmware_configs (
     movement_min_spd_z integer DEFAULT 50,
     movement_secondary_motor_invert_x integer DEFAULT 1,
     movement_secondary_motor_x integer DEFAULT 1,
-    movement_step_per_mm_x integer DEFAULT 5,
-    movement_step_per_mm_y integer DEFAULT 5,
-    movement_step_per_mm_z integer DEFAULT 25,
+    movement_step_per_mm_x double precision DEFAULT 5,
+    movement_step_per_mm_y double precision DEFAULT 5,
+    movement_step_per_mm_z double precision DEFAULT 25,
     movement_steps_acc_dec_x integer DEFAULT 300,
     movement_steps_acc_dec_y integer DEFAULT 300,
     movement_steps_acc_dec_z integer DEFAULT 300,
@@ -2271,6 +2271,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180615153318'),
 ('20180713182937'),
 ('20180716163108'),
-('20180719143412');
+('20180719143412'),
+('20180720021451');
 
 
