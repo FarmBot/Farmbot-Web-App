@@ -239,7 +239,7 @@ const SINGULAR_RESOURCE: ResourceName[] =
   ["WebAppConfig", "FbosConfig", "FirmwareConfig"];
 
 /** Shared functionality in create() and update(). */
-function updateViaAjax(payl: AjaxUpdatePayload) {
+export function updateViaAjax(payl: AjaxUpdatePayload) {
   const { uuid, statusBeforeError, dispatch, index } = payl;
   const resource = findByUuid(index, uuid);
   const { body, kind } = resource;
