@@ -10,6 +10,18 @@ jest.mock("../../../api/crud", () => ({
   destroy: jest.fn()
 }));
 
+import { PinBindingSpecialAction, PinBindingType, } from "../interfaces";
+const mockData = [{
+  pin_number: 1, sequence_id: undefined,
+  special_action: PinBindingSpecialAction.sync,
+  binding_type: PinBindingType.special,
+  uuid: ""
+}];
+jest.mock("../tagged_pin_binding_init", () => ({
+  sysBtnBindingData: mockData,
+  sysBtnBindings: [1]
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import {
@@ -23,7 +35,7 @@ import { destroy } from "../../../api/crud";
 import { PinBindingsList } from "../pin_bindings_list";
 import { PinBindingsListProps } from "../interfaces";
 import { error } from "farmbot-toastr";
-import { sysBtnBindingData } from "../list_and_label_support";
+import { sysBtnBindingData } from "../tagged_pin_binding_init";
 
 describe("<PinBindingsList/>", () => {
   function fakeProps(): PinBindingsListProps {

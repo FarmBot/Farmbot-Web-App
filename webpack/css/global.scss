@@ -302,6 +302,9 @@ a {
 }
 
 .pin-bindings-widget {
+  .fa-exclamation-triangle {
+    color: $orange;
+  }
   .fa-th-large {
       color: $dark_gray;
       margin-top: 0.5rem;
@@ -313,6 +316,14 @@ a {
   .bindings-list {
     margin-bottom: 1rem;
     font-size: 1.2rem;
+  }
+  .stock-pin-bindings-button {
+    button {
+      margin: 0;
+    }
+    i {
+      margin-right: 0.5rem;
+    }
   }
 }
 
