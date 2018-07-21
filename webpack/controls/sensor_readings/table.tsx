@@ -57,7 +57,7 @@ const TableRow = (props: {
 }) => {
   const { sensorReading, timeOffset, period, sensorName } = props;
   const { uuid, body } = sensorReading;
-  const { value, x, y, z, created_at } = body;
+  const { value, x, y, z, created_at, mode } = body;
   const color = period === "previous" ? "gray" : "";
   return <tr key={uuid} style={{ color }}>
     <td style={{ width: `${TableColWidth.sensor}px` }}>
@@ -67,7 +67,7 @@ const TableRow = (props: {
       {value}
     </td>
     <td style={{ width: `${TableColWidth.mode}px` }}>
-      {-1/* {mode} */}
+      {mode > 0 ? t("Analog") : t("Digital")}
     </td>
     <td style={{ width: `${TableColWidth.location}px` }}>
       {xyzTableEntry(x, y, z)}

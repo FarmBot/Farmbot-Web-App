@@ -71,7 +71,8 @@ export class Devices extends React.Component<Props, {}> {
             <ConnectivityPanel
               status={this.props.deviceAccount.specialStatus}
               onRefresh={this.refresh}
-              rowData={this.rowData}>
+              rowData={this.rowData}
+              fbosInfo={this.props.bot.hardware.informational_settings}>
               <Diagnosis
                 userAPI={!!this.flags.userAPI}
                 userMQTT={!!this.flags.userMQTT.connectionStatus}

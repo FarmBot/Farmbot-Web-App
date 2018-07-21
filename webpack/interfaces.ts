@@ -24,6 +24,7 @@ export interface SensorReading {
   y: number | undefined;
   z: number | undefined;
   value: number;
+  mode: number;
   pin: number;
   created_at: string;
 }
