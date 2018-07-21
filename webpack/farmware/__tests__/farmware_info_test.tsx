@@ -36,6 +36,13 @@ describe("<FarmwareInfo />", () => {
     expect(wrapper.text()).toContain("Does things.");
   });
 
+  it("doesn't render farmware tools version", () => {
+    const p = fakeProps();
+    if (p.farmware) { p.farmware.farmware_tools_version = "latest"; }
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    expect(wrapper.text()).not.toContain("Farmware Tools version");
+  });
+
   it("renders farmware tools version", () => {
     const p = fakeProps();
     if (p.farmware) { p.farmware.farmware_tools_version = "1.0.0"; }
