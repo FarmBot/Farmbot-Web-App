@@ -1,6 +1,6 @@
 class PinBinding < ApplicationRecord
-  OFF_LIMITS       = [ 6, 12, 13, 16, 17, 21, 22, 23, 24, 25, 27 ]
-  BAD_PIN_NUM      = \
+  OFF_LIMITS  = [ 6, 12, 13, 17, 21, 23, 24, 25, 27 ]
+  BAD_PIN_NUM = \
     "The following pin numbers cannot be used: %s" % OFF_LIMITS.join(", ")
 
   belongs_to :device
