@@ -24,19 +24,19 @@ export const colorFromTemp = (temp: number | undefined): string => {
   }
 };
 
-function ChipTemperatureDisplay({ chip, temperature }: {
-  chip: string, temperature: number | undefined
+export function ChipTemperatureDisplay({ chip, temperature }: {
+  chip?: string, temperature: number | undefined
 }): JSX.Element {
   return <div className="chip-temp-display">
     <p>
-      <b>{chip.toUpperCase()} {t("CPU temperature")}: </b>
-      {temperature}&deg;C
+      <b>{chip && chip.toUpperCase()} {t("CPU temperature")}: </b>
+      {temperature ? <span>{temperature}&deg;C</span> : t("unknown")}
     </p>
     {<Saucer color={colorFromTemp(temperature)} className={"small-inline"} />}
   </div>;
 }
 
-function WiFiStrengthDisplay({ wifiStrength }: {
+export function WiFiStrengthDisplay({ wifiStrength }: {
   wifiStrength: number | undefined
 }): JSX.Element {
   const percent = wifiStrength

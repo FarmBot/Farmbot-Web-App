@@ -4,6 +4,7 @@ import { DropDownItem } from "../../ui";
 import { gpio } from "./rpi_gpio_diagram";
 import { flattenDeep, isNumber } from "lodash";
 import { ShouldDisplay, Feature } from "../interfaces";
+import { sysBtnBindings } from "./tagged_pin_binding_init";
 
 export const bindingTypeLabelLookup: { [x: string]: string } = {
   [PinBindingType.standard]: t("Sequence"),
@@ -59,8 +60,6 @@ enum LEDPin {
 }
 
 const sysLedBindings = Object.values(LEDPin);
-/** Pin numbers reserved for built-in pin bindings. */
-export const sysBtnBindings = [ButtonPin.estop, ButtonPin.unlock];
 /** All pin numbers used by FarmBot OS that cannot be used in pin bindings. */
 export const sysBindings = sysLedBindings.concat(sysBtnBindings);
 
@@ -110,20 +109,16 @@ export const RpiPinList = (taken: number[]): DropDownItem[] =>
     .sort(sortByNameAndPin)
     .map(n => ({ label: generatePinLabel(n), value: n }));
 
-/** FarmBot OS built-in pin binding data used by Pin Bindings widget. */
-export const sysBtnBindingData = [
+/** FarmBot OS default pin binding data used by Pin Bindings widget. */
+export const stockPinBindings = [
   {
-    pin_number: ButtonPin.estop,
-    sequence_id: undefined,
+    pin_num: ButtonPin.estop,
     special_action: PinBindingSpecialAction.emergency_lock,
     binding_type: PinBindingType.special,
-    uuid: "FBOS built-in binding: emergency_lock"
   },
   {
-    pin_number: ButtonPin.unlock,
-    sequence_id: undefined,
+    pin_num: ButtonPin.unlock,
     special_action: PinBindingSpecialAction.emergency_unlock,
     binding_type: PinBindingType.special,
-    uuid: "FBOS built-in binding: emergency_unlock"
   },
 ];

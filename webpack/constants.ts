@@ -39,6 +39,10 @@ export namespace ToolTips {
   export const PIN_BINDINGS =
     trim(`Assign a sequence to execute when a Raspberry Pi GPIO pin is activated.`);
 
+  export const PIN_BINDING_WARNING =
+    trim(`Warning: Binding to a pin without a physical button and
+    pull-down resistor connected may put FarmBot into an unstable state.`);
+
   // Connectivity
   export const CONNECTIVITY =
     trim(`Diagnose connectivity issues with FarmBot and the browser.`);

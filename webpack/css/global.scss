@@ -149,7 +149,7 @@ fieldset {
     width: 25%;
     position: absolute;
     height: 1rem;
-    left: 13rem;
+    left: 12rem;
     top: 2px;
     clip-path: polygon(0 85%, 100% 0, 100% 100%, 0% 100%);
     background-color: $light_gray;
@@ -158,6 +158,16 @@ fieldset {
       background-color: $green;
     }
   }
+}
+
+.fbos-info {
+  margin: auto;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  background: $white;
+  padding: 1rem;
+  box-shadow: 0px 0px 10px $light_gray;
+  width: 18rem;
 }
 
 .all-content-wrapper {
@@ -292,6 +302,9 @@ a {
 }
 
 .pin-bindings-widget {
+  .fa-exclamation-triangle {
+    color: $orange;
+  }
   .fa-th-large {
       color: $dark_gray;
       margin-top: 0.5rem;
@@ -303,6 +316,14 @@ a {
   .bindings-list {
     margin-bottom: 1rem;
     font-size: 1.2rem;
+  }
+  .stock-pin-bindings-button {
+    button {
+      margin: 0;
+    }
+    i {
+      margin-right: 0.5rem;
+    }
   }
 }
 

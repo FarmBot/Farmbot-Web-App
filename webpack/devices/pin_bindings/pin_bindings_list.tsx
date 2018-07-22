@@ -2,7 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 import { Feature } from "../interfaces";
 import {
-  sysBtnBindings, bindingTypeLabelLookup, specialActionLabelLookup,
+  bindingTypeLabelLookup, specialActionLabelLookup,
   generatePinLabel, sortByNameAndPin
 } from "./list_and_label_support";
 import { destroy } from "../../api/crud";
@@ -12,6 +12,7 @@ import { findSequenceById } from "../../resources/selectors";
 import { unregisterGpioPin } from "../actions";
 import { PinBindingColWidth } from "./pin_bindings";
 import { PinBindingsListProps } from "./interfaces";
+import { sysBtnBindings } from "./tagged_pin_binding_init";
 
 export const PinBindingsList = (props: PinBindingsListProps) => {
   const { pinBindings, resources, shouldDisplay, dispatch } = props;

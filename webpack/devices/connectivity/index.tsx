@@ -6,12 +6,17 @@ import { RetryBtn } from "./retry_btn";
 import { SpecialStatus } from "../../resources/tagged_resources";
 import { ConnectivityDiagram } from "./diagram";
 import { ToolTips } from "../../constants";
+import {
+  ChipTemperatureDisplay, WiFiStrengthDisplay
+} from "../components/fbos_settings/fbos_details";
+import { InformationalSettings } from "farmbot";
 
 interface Props {
   onRefresh(): void;
   rowData: StatusRowProps[];
   children?: React.ReactChild;
   status: SpecialStatus;
+  fbosInfo: InformationalSettings;
 }
 
 interface ConnectivityState {
@@ -26,6 +31,7 @@ export class ConnectivityPanel extends React.Component<Props, ConnectivityState>
 
   render() {
     const { rowData } = this.props;
+    const { soc_temp, wifi_level } = this.props.fbosInfo;
     return <Widget className="connectivity-widget">
       <WidgetHeader
         title={t("Connectivity")}
@@ -42,6 +48,11 @@ export class ConnectivityPanel extends React.Component<Props, ConnectivityState>
               rowData={rowData}
               hover={this.hover}
               hoveredConnection={this.state.hoveredConnection} />
+            <div className="fbos-info">
+              <label>{t("Raspberry Pi Info")}</label>
+              <ChipTemperatureDisplay temperature={soc_temp} />
+              <WiFiStrengthDisplay wifiStrength={wifi_level} />
+            </div>
           </Col>
           <Col md={12} lg={8}>
             <ConnectivityRow from={t("from")} to={t("to")} />

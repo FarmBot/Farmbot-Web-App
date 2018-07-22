@@ -79,12 +79,20 @@ describe("<FbosDetails/>", () => {
       .toHaveBeenCalledWith({ beta_opt_in: false });
   });
 
-  it("displays N/A when no wifi strength value is undefined", () => {
+  it("displays N/A when wifi strength value is undefined", () => {
     const p = fakeProps();
     p.botInfoSettings.wifi_level = undefined;
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("WiFi Strength: N/A");
     expect(wrapper.text()).not.toContain("dBm");
+  });
+
+  it("displays unknown when cpu temp value is undefined", () => {
+    const p = fakeProps();
+    p.botInfoSettings.soc_temp = undefined;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text()).toContain("CPU temperature: unknown");
+    expect(wrapper.text()).not.toContain("&deg;C");
   });
 });
 

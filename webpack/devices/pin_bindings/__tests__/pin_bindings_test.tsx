@@ -54,19 +54,18 @@ describe("<PinBindings/>", () => {
       expect(wrapper.text().toLowerCase()).toContain(string));
     const buttons = wrapper.find("button");
     expect(buttons.length).toBe(6);
+    expect(wrapper.text().toLowerCase()).not.toContain("stock bindings");
   });
 
   it("renders: api", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
     const wrapper = mount(<PinBindings {...p} />);
-    ["pin bindings", "pin number", "none", "bind"].map(string =>
+    ["pin bindings", "pin number", "none", "bind", "stock bindings"]
+    .map(string =>      expect(wrapper.text().toLowerCase()).toContain(string));
+    ["26", "action"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
-    ["1", "16", "e-stop",
-      "2", "22", "unlock",
-      "26", "action"].map(string =>
-        expect(wrapper.text().toLowerCase()).toContain(string));
     const buttons = wrapper.find("button");
-    expect(buttons.length).toBe(8);
+    expect(buttons.length).toBe(7);
   });
 });

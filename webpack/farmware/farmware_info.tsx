@@ -45,6 +45,12 @@ export function FarmwareInfo(props: FarmwareInfoProps) {
     <p>{farmware.meta.version}</p>
     <label>{t("Min OS version required")}</label>
     <p>{farmware.meta.min_os_version_major + ".0.0"}</p>
+    {farmware.farmware_tools_version &&
+      farmware.farmware_tools_version != "latest" &&
+      <div>
+        <label>{t("Farmware Tools version")}</label>
+        <p>{farmware.farmware_tools_version}</p>
+      </div>}
     <label>{t("Language")}</label>
     <p>{farmware.meta.language}</p>
     <label>{t("Author")}</label>
