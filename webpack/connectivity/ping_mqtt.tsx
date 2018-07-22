@@ -27,12 +27,12 @@ export function readPing(bot: Farmbot, direction: Direction): number | undefined
 }
 
 export function markStale() {
-  dispatchNetworkDown("bot.mqtt");
+  dispatchNetworkDown("bot.mqtt", undefined, "markStale()");
 }
 
 export function markActive() {
-  dispatchNetworkUp("user.mqtt");
-  dispatchNetworkUp("bot.mqtt");
+  dispatchNetworkUp("user.mqtt", undefined, "markActive()");
+  dispatchNetworkUp("bot.mqtt", undefined, "markActive()");
 }
 
 export function isInactive(last: number, now: number): boolean {
@@ -53,7 +53,7 @@ export function startPinging(bot: Farmbot) {
 }
 
 export function pingAPI() {
-  const ok = () => dispatchNetworkUp("user.api");
-  const no = () => dispatchNetworkDown("user.api");
+  const ok = () => dispatchNetworkUp("user.api", undefined, "pingApi OK");
+  const no = () => dispatchNetworkDown("user.api", undefined, "pingApi NO");
   axios.get(API.current.devicePath).then(ok, no);
 }

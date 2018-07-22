@@ -2,6 +2,7 @@ import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
 import { ConnectionState, EdgeStatus, ResourceReady } from "./interfaces";
 import { computeBestTime } from "./reducer_support";
+import { padEnd } from "lodash";
 
 export const DEFAULT_STATE: ConnectionState = {
   "bot.mqtt": undefined,
@@ -9,9 +10,19 @@ export const DEFAULT_STATE: ConnectionState = {
   "user.api": undefined
 };
 
+const debugState = { lastLog: "" };
+
 export let connectivityReducer =
   generateReducer<ConnectionState>(DEFAULT_STATE)
     .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
+      const x = s[payload.name];
+      const from = padEnd((x && x.state) || "unknown", 7);
+      const to = padEnd(payload.status.state, 5);
+      const log = `${from} ➡️ ${to} (${payload.why})`;
+      if (debugState.lastLog !== log && payload.name == "bot.mqtt") {
+        console.log(log);
+        debugState.lastLog = log;
+      }
       s[payload.name] = payload.status;
       return s;
     })

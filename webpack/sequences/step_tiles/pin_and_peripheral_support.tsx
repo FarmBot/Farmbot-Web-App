@@ -16,10 +16,12 @@ import { StepParams } from "../interfaces";
 import { editStep } from "../../api/crud";
 import { ShouldDisplay, Feature } from "../../devices/interfaces";
 
-/** `headingIds` required to group the three kinds of pins. */
+/** `headingIds` required to group the four kinds of pins. */
 export enum PinGroupName {
   Sensor = "Sensor",
   Peripheral = "Peripheral",
+  BoxLed3 = "Box LED (3)",
+  BoxLed4 = "Box LED (4)",
   Pin = "Pin",
   Position = "Position"
 }
@@ -89,7 +91,9 @@ export const pinsAsDropDownsReadPin =
 
 const TYPE_MAPPING: Record<AllowedPinTypes, PinGroupName> = {
   "Peripheral": PinGroupName.Peripheral,
-  "Sensor": PinGroupName.Sensor
+  "Sensor": PinGroupName.Sensor,
+  "BoxLed3": PinGroupName.BoxLed3,
+  "BoxLed4": PinGroupName.BoxLed4,
 };
 
 export const isPinType =

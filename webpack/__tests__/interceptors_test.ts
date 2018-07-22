@@ -33,6 +33,8 @@ import { dispatchNetworkUp, dispatchNetworkDown } from "../connectivity";
 import { error } from "farmbot-toastr";
 import { Session } from "../session";
 
+const A_STRING = expect.any(String);
+
 interface FakeProps {
   uuid: string;
   method: string;
@@ -67,7 +69,7 @@ describe("responseRejected", () => {
   it("undefined error", async () => {
     await expect(responseRejected(undefined)).rejects.toEqual(undefined);
     expect(dispatchNetworkUp).not.toHaveBeenCalled();
-    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.api");
+    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.api", undefined, A_STRING);
   });
 
   it("safe error", async () => {
@@ -77,7 +79,7 @@ describe("responseRejected", () => {
     };
     await expect(responseRejected(safeError)).rejects.toEqual(safeError);
     expect(dispatchNetworkDown).not.toHaveBeenCalled();
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.api");
+    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.api", undefined, A_STRING);
   });
 
   it("handles 500", async () => {

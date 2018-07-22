@@ -3,7 +3,7 @@ import { networkUp, networkDown } from "../actions";
 
 describe("connectivityReducer", () => {
   it("goes up", () => {
-    const state = connectivityReducer(DEFAULT_STATE, networkUp("user.mqtt"));
+    const state = connectivityReducer(DEFAULT_STATE, networkUp("user.mqtt", undefined, "tests"));
     expect(state).toBeDefined();
     const x = state && state["user.mqtt"];
     if (x) {
@@ -15,7 +15,7 @@ describe("connectivityReducer", () => {
   });
 
   it("goes down", () => {
-    const state = connectivityReducer(DEFAULT_STATE, networkDown("user.api"));
+    const state = connectivityReducer(DEFAULT_STATE, networkDown("user.api", undefined, "tests"));
     const x = state && state["user.api"];
     if (x) {
       expect(x.state).toBe("down");

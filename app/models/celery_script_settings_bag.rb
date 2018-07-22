@@ -5,11 +5,16 @@
 # the rug. Shoving configuration into a module is not a design pattern. Feedback
 # welcome for refactoring of this code.
 module CeleryScriptSettingsBag
+  class BoxLed
+    def self.exists?(id)
+      true # Not super important right now. - RC 22 JUL 18
+    end
+  end
+
   # List of all celery script nodes that can be used as a varaible...
   ANY_VARIABLE          = [:tool, :coordinate, :point, :identifier]
   PLANT_STAGES          = %w(planned planted harvested)
   ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
-  ALLOWED_PIN_TYPES     = [Peripheral, Sensor].map(&:name)
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
                              sync check_updates power_off reboot toggle_pin
                              config_update calibrate execute move_absolute
@@ -59,7 +64,11 @@ module CeleryScriptSettingsBag
   BAD_POINTER_TYPE      = '"%s" is not a type of point. Allowed values: %s'
   BAD_PIN_TYPE          = '"%s" is not a type of pin. Allowed values: %s'
   BAD_SPEED             = "Speed must be a percentage between 1-100"
-  PIN_TYPE_MAP          = { "Peripheral" => Peripheral, "Sensor" => Sensor }
+  PIN_TYPE_MAP          = { "Peripheral" => Peripheral,
+                            "Sensor"     => Sensor,
+                            "BoxLed3"    => BoxLed,
+                            "BoxLed4"    => BoxLed }
+  ALLOWED_PIN_TYPES     = PIN_TYPE_MAP.keys
   KLASS_LOOKUP          = Point::POINTER_KINDS.reduce({}) do |acc, val|
     (acc[val] = Kernel.const_get(val)) && acc
   end
@@ -173,14 +182,12 @@ module CeleryScriptSettingsBag
         end
       end
       .node(:named_pin, [:pin_type, :pin_id]) do |node|
-        args     = HashWithIndifferentAccess.new(node.args)
-        x        = args[:pin_type].value
-        klass    = PIN_TYPE_MAP[x]
-        raise "NEVER" unless klass
-        id       = args[:pin_id].value
+        args  = HashWithIndifferentAccess.new(node.args)
+        klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
+        id    = args[:pin_id].value
         node.invalidate!(NO_PIN_ID % [klass]) if (id == 0)
         bad_node = !klass.exists?(id)
-        node.invalidate!(BAD_PIN_ID % [klass, id]) if bad_node
+        node.invalidate!(BAD_PIN_ID % [klass.name, id]) if bad_node
       end
       .node(:nothing,               [])
       .node(:tool,                  [:tool_id])
