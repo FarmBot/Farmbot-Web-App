@@ -52,6 +52,7 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import { talk } from "browser-speech";
 import { globalQueue } from "../../batch_queue";
 
+const A_STRING = expect.any(String);
 describe("readStatus()", () => {
   it("forces a read_status request to FarmBot", () => {
     readStatus();
@@ -155,9 +156,9 @@ describe("initLog", () => {
 
 describe("bothUp()", () => {
   it("marks MQTT and API as up", () => {
-    bothUp();
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt");
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("bot.mqtt");
+    bothUp("tests");
+    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt", undefined, A_STRING);
+    expect(dispatchNetworkUp).toHaveBeenCalledWith("bot.mqtt", undefined, A_STRING);
   });
 });
 
@@ -165,7 +166,7 @@ describe("onOffline", () => {
   it("tells the app MQTT is down", () => {
     jest.resetAllMocks();
     onOffline();
-    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt");
+    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt", undefined, A_STRING);
     expect(error).toHaveBeenCalledWith(Content.MQTT_DISCONNECTED, "Error");
   });
 });
@@ -174,7 +175,7 @@ describe("onOnline", () => {
   it("tells the app MQTT is up", () => {
     jest.resetAllMocks();
     onOnline();
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt");
+    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt", undefined, A_STRING);
   });
 });
 
@@ -193,13 +194,13 @@ describe("onSent", () => {
   it("marks MQTT as up", () => {
     jest.resetAllMocks();
     onSent({ connected: true })();
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt");
+    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt", undefined, A_STRING);
   });
 
   it("marks MQTT as down", () => {
     jest.resetAllMocks();
     onSent({ connected: false })();
-    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt");
+    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt", undefined, A_STRING);
   });
 });
 
@@ -223,6 +224,6 @@ describe("onLogs", () => {
     log.message = "bot xyz is offline";
     fn(log);
     globalQueue.maybeWork();
-    expect(dispatchNetworkDown).toHaveBeenCalledWith("bot.mqtt");
+    expect(dispatchNetworkDown).toHaveBeenCalledWith("bot.mqtt", undefined, A_STRING);
   });
 });

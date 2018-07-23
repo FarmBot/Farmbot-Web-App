@@ -50,12 +50,12 @@ function fakeBot(): Farmbot {
 }
 
 function expectStale() {
-  expect(dispatchNetworkDown).toHaveBeenCalledWith("bot.mqtt");
+  expect(dispatchNetworkDown).toHaveBeenCalledWith("bot.mqtt", undefined, expect.any(String));
 }
 
 function expectActive() {
-  expect(dispatchNetworkUp).toHaveBeenCalledWith("bot.mqtt");
-  expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt");
+  expect(dispatchNetworkUp).toHaveBeenCalledWith("bot.mqtt", undefined, expect.any(String));
+  expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt", undefined, expect.any(String));
 }
 
 describe("ping util", () => {

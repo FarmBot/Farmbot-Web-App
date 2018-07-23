@@ -19,7 +19,8 @@ module CeleryScript
       { String     => "string",
         Integer    => "integer",
         TrueClass  => "boolean",
-        FalseClass => "boolean", }[v] || v
+        FalseClass => "boolean",
+        Float      => "float"}[v] || v
     end
 
     def as_json(optns)

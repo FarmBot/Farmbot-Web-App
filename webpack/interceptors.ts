@@ -15,7 +15,7 @@ import { outstandingRequests } from "./connectivity/data_consistency";
 import { Session } from "./session";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
-  dispatchNetworkUp("user.api");
+  dispatchNetworkUp("user.api", undefined, "responseFulfilled()");
   return input;
 }
 
@@ -29,7 +29,7 @@ export const isLocalRequest = (x: SafeError) =>
 let ONLY_ONCE = true;
 export function responseRejected(x: SafeError | undefined) {
   if (x && isSafeError(x)) {
-    dispatchNetworkUp("user.api");
+    dispatchNetworkUp("user.api", undefined, "isSafeError() REST error");
     const a = ![451, 401, 422].includes(x.response.status);
     const b = x.response.status > 399;
     // Openfarm API was sending too many 404's.
@@ -60,7 +60,7 @@ export function responseRejected(x: SafeError | undefined) {
     }
     return Promise.reject(x);
   } else {
-    dispatchNetworkDown("user.api");
+    dispatchNetworkDown("user.api", undefined, "responseRejected");
     return Promise.reject(x);
   }
 }

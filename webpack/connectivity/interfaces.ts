@@ -12,6 +12,7 @@ export interface ConnectionStatus {
 export interface EdgeStatus {
   name: Edge;
   status: ConnectionStatus;
+  why: string;
 }
 
 /** Name of a connection between two points. "." can be read as "to".

@@ -81,7 +81,7 @@ describe Resources::PreProcessor do
       expect(errors).to include("Action isn't an option")
       segment = options.fetch(:routing_key).split(".")
       expect(segment[0]).to eq("bot")
-      expect(segment[1]).to eq("device_#{devi.id}")
+      expect(segment[1]).to eq("device_#{dev.id}")
       expect(segment[2]).to eq("from_api")
       expect(segment[3]).to eq("wrong_uuid")
     end
