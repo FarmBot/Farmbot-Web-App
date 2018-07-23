@@ -42,7 +42,9 @@ describe Resources::PreProcessor do
     it "handles failure" do
       body   = "[]"
       chan   = CHANNEL_TPL % props
-      result = Resources::Service.process(DeliveryInfoShim.new(chan), body)
+      shim   = DeliveryInfoShim.new(chan)
+      Resources::Service.process(shim, body)
+      result = Transport.current.connection
       err    = result.calls[:publish].last
       expect(err).to be_kind_of(Array)
       expect(err.last).to be_kind_of(Hash)
