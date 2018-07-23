@@ -39,7 +39,7 @@ describe Resources::PreProcessor do
   end
 
   describe Resources::Service do
-    it "handles failure" do
+    it "handles syntax errors using step1" do
       body   = "[]"
       chan   = CHANNEL_TPL % props
       shim   = DeliveryInfoShim.new(chan)
@@ -61,12 +61,30 @@ describe Resources::PreProcessor do
       expect(expl[:args][:message]).to eq("body must be a JSON object")
     end
 
+    it "handles semantic errors using step2" do
+      Transport.current.connection.clear!
+      x = Resources::Service.step2(action:      "wrong_action",
+                                   device:      FactoryBot.create(:device),
+                                   body:        "wrong_body",
+                                   resource_id: 0,
+                                   resource:    "wrong_resource",
+                                   uuid:        "wrong_uuid")
+      call_args = x.calls[:publish].last
+      message   = JSON.parse(call_args.first)
+      options   = call_args.last
+      expect(message).to         be_kind_of(Hash)
+      expect(message["kind"]).to eq("rpc_error")
+      expect(message.dig("args","label")).to eq("wrong_uuid")
+      message.dig("body").pluck("args").pluck("message")
+      errors = message.dig("body").pluck("args").pluck("message")
+      expect(errors).to include("Action isn't an option")
+    end
+
     it "processes resources" do
       body   = {}.to_json
       chan   = CHANNEL_TPL % props
       before = PinBinding.count
       result = Resources::Service.process(DeliveryInfoShim.new(chan), body)
-      # expect(result).to eq("")
       expect(PinBinding.count).to be < before
     end
   end

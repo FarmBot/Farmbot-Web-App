@@ -37,21 +37,17 @@ module Resources
       dev.auto_sync_transaction do
         Transport.current.amqp_send(ok(uuid), dev.id, chan)
       end
-    rescue ArgumentError => x
-      binding.pry
     rescue Mutations::ValidationException => q
       Rollbar.error(q)
-      raw_chan  = delivery_info&.routing_key&.split(".") || []
-      device    = params[:device]
-      message   = {
-        kind: "rpc_error",
-        args: { label: params[:uuid] || raw_chan[6] || "NONE" },
-        body: (q
-        .errors
-        .values
-        .map { |err| { kind: "explanation", args: { message: err.message }} })
-      }.to_json
-      chan = ["from_api", (raw_chan.last || "")].join(".")
+      device = params.fetch(:device)
+      uuid   = params.fetch(:uuid)
+      chan   = ["from_api", uuid].join(".")
+      errors = q.errors.values.map do |err|
+        { kind: "explanation", args: { message: err.message }}
+      end
+      message = { kind: "rpc_error",
+                  args: { label: uuid },
+                  body: errors }.to_json
       Transport.current.amqp_send(message, device.id, chan)
     end
 
