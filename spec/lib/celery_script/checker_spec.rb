@@ -94,7 +94,7 @@ describe CeleryScript::Checker do
               pin_id: 0
             }
           },
-          pin_mode: 0,
+          pin_mode: CeleryScriptSettingsBag::ANALOG,
           label: "FOO"
         }
       }
@@ -129,7 +129,7 @@ describe CeleryScript::Checker do
       {
         kind: "read_pin",
         args: {
-          pin_mode: 0,
+          pin_mode: CeleryScriptSettingsBag::ANALOG,
           label: "pin",
           pin_number: {
             kind: "named_pin",

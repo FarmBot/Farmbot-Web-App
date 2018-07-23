@@ -195,8 +195,12 @@ module CeleryScriptSettingsBag
       .node(:coordinate,            [:x, :y, :z])
       .node(:move_absolute,         [:location, :speed, :offset])
       .node(:move_relative,         [:x, :y, :z, :speed])
-      .node(:write_pin,             [:pin_number, :pin_value, :pin_mode ]) { |n| no_analog(n) }
-      .node(:read_pin,              [:pin_number, :label, :pin_mode])      { |n| no_analog(n) }
+      .node(:write_pin,             [:pin_number, :pin_value, :pin_mode ]) do |n|
+        no_rpi_analog(n)
+      end
+      .node(:read_pin,              [:pin_number, :label, :pin_mode]) do |n|
+        no_rpi_analog(n)
+      end
       .node(:channel,               [:channel_name])
       .node(:wait,                  [:milliseconds])
       .node(:send_message,          [:message, :message_type], [:channel])
@@ -250,11 +254,18 @@ module CeleryScriptSettingsBag
     node.invalidate!(yield(val)) if !array.include?(val)
   end
 
-  def self.no_analog(node)
-    args         = HashWithIndifferentAccess.new(node.args)
-    is_named_pin = args.fetch(:pin_number).kind == "named_pin"
-    if is_named_pin && (args.fetch(:pin_mode).value == ANALOG)
-      node.invalidate!(CANT_ANALOG)
+  def self.no_rpi_analog(node)
+    args        = HashWithIndifferentAccess.new(node.args)
+    pin_mode    = args.fetch(:pin_mode).try(:value) || DIGITAL
+    pin_number  = args.fetch(:pin_number)
+    is_analog   = pin_mode == ANALOG
+    is_node     = pin_number.is_a?(CeleryScript::AstNode)
+    needs_check = is_analog && is_node
+
+    if needs_check
+      pin_type_args = pin_number.args.with_indifferent_access
+      pin_type      = pin_type_args.fetch(:pin_type).try(:value) || ""
+      node.invalidate!(CANT_ANALOG) if pin_type.include?("BoxLed")
     end
   end
 end
