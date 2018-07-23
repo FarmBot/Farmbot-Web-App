@@ -94,7 +94,7 @@ describe CeleryScript::Checker do
               pin_id: 0
             }
           },
-          pin_mode: 0,
+          pin_mode: CeleryScriptSettingsBag::ANALOG,
           label: "FOO"
         }
       }
@@ -129,7 +129,7 @@ describe CeleryScript::Checker do
       {
         kind: "read_pin",
         args: {
-          pin_mode: 0,
+          pin_mode: CeleryScriptSettingsBag::ANALOG,
           label: "pin",
           pin_number: {
             kind: "named_pin",
@@ -159,6 +159,25 @@ describe CeleryScript::Checker do
     ]
     chk = CeleryScript::Checker.new(tree, corpus)
     expect(chk.valid?).to be true
+  end
+
+  it 'disallows analog for "BoxLed3", "BoxLed4"' do
+    hash[:body] = [
+      {
+        kind: "write_pin",
+        args: {
+          pin_value: 23,
+          pin_mode: CeleryScriptSettingsBag::ANALOG,
+          pin_number: {
+            kind: "named_pin",
+            args: { pin_type: ["BoxLed3", "BoxLed4"].sample, pin_id: 41 }
+          }
+        }
+      }
+    ]
+    chk = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?).to be false
+    expect(chk.error.message).to include(CeleryScriptSettingsBag::CANT_ANALOG)
   end
 
   it "catches bad `axis` nodes" do

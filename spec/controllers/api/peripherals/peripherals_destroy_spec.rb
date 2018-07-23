@@ -37,7 +37,7 @@ describe Api::PeripheralsController do
                                     kind: "named_pin",
                                     args: { pin_type: "Peripheral", pin_id: peripheral.id }
                                   },
-                                  pin_mode: 0,
+                                  pin_mode: CeleryScriptSettingsBag::ANALOG,
                                   label: "FOO" }
                               }])
       delete :destroy, params: { id: peripheral.id }

@@ -39,10 +39,12 @@ describe Resources::PreProcessor do
   end
 
   describe Resources::Service do
-    it "handles failure" do
+    it "handles syntax errors using step1" do
       body   = "[]"
       chan   = CHANNEL_TPL % props
-      result = Resources::Service.process(DeliveryInfoShim.new(chan), body)
+      shim   = DeliveryInfoShim.new(chan)
+      Resources::Service.process(shim, body)
+      result = Transport.current.connection
       err    = result.calls[:publish].last
       expect(err).to be_kind_of(Array)
       expect(err.last).to be_kind_of(Hash)
@@ -59,12 +61,36 @@ describe Resources::PreProcessor do
       expect(expl[:args][:message]).to eq("body must be a JSON object")
     end
 
+    it "handles semantic errors using step2" do
+      Transport.current.connection.clear!
+      dev = FactoryBot.create(:device)
+      x   = Resources::Service.step2(action:      "wrong_action",
+                                     device:      dev,
+                                     body:        "wrong_body",
+                                     resource_id: 0,
+                                     resource:    "wrong_resource",
+                                     uuid:        "wrong_uuid")
+      call_args = x.calls[:publish].last
+      message   = JSON.parse(call_args.first)
+      options   = call_args.last
+      expect(message).to         be_kind_of(Hash)
+      expect(message["kind"]).to eq("rpc_error")
+      expect(message.dig("args","label")).to eq("wrong_uuid")
+      message.dig("body").pluck("args").pluck("message")
+      errors = message.dig("body").pluck("args").pluck("message")
+      expect(errors).to include("Action isn't an option")
+      segment = options.fetch(:routing_key).split(".")
+      expect(segment[0]).to eq("bot")
+      expect(segment[1]).to eq("device_#{dev.id}")
+      expect(segment[2]).to eq("from_api")
+      expect(segment[3]).to eq("wrong_uuid")
+    end
+
     it "processes resources" do
       body   = {}.to_json
       chan   = CHANNEL_TPL % props
       before = PinBinding.count
       result = Resources::Service.process(DeliveryInfoShim.new(chan), body)
-      # expect(result).to eq("")
       expect(PinBinding.count).to be < before
     end
   end

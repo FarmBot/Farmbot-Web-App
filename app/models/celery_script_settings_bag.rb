@@ -68,6 +68,7 @@ module CeleryScriptSettingsBag
                             "Sensor"     => Sensor,
                             "BoxLed3"    => BoxLed,
                             "BoxLed4"    => BoxLed }
+  CANT_ANALOG           = "Analog modes are not supported for Box LEDs"
   ALLOWED_PIN_TYPES     = PIN_TYPE_MAP.keys
   KLASS_LOOKUP          = Point::POINTER_KINDS.reduce({}) do |acc, val|
     (acc[val] = Kernel.const_get(val)) && acc
@@ -194,8 +195,12 @@ module CeleryScriptSettingsBag
       .node(:coordinate,            [:x, :y, :z])
       .node(:move_absolute,         [:location, :speed, :offset])
       .node(:move_relative,         [:x, :y, :z, :speed])
-      .node(:write_pin,             [:pin_number, :pin_value, :pin_mode ])
-      .node(:read_pin,              [:pin_number, :label, :pin_mode])
+      .node(:write_pin,             [:pin_number, :pin_value, :pin_mode ]) do |n|
+        no_rpi_analog(n)
+      end
+      .node(:read_pin,              [:pin_number, :label, :pin_mode]) do |n|
+        no_rpi_analog(n)
+      end
       .node(:channel,               [:channel_name])
       .node(:wait,                  [:milliseconds])
       .node(:send_message,          [:message, :message_type], [:channel])
@@ -247,5 +252,20 @@ module CeleryScriptSettingsBag
   def self.within(array, node)
     val = node&.value
     node.invalidate!(yield(val)) if !array.include?(val)
+  end
+
+  def self.no_rpi_analog(node)
+    args        = HashWithIndifferentAccess.new(node.args)
+    pin_mode    = args.fetch(:pin_mode).try(:value) || DIGITAL
+    pin_number  = args.fetch(:pin_number)
+    is_analog   = pin_mode == ANALOG
+    is_node     = pin_number.is_a?(CeleryScript::AstNode)
+    needs_check = is_analog && is_node
+
+    if needs_check
+      pin_type_args = pin_number.args.with_indifferent_access
+      pin_type      = pin_type_args.fetch(:pin_type).try(:value) || ""
+      node.invalidate!(CANT_ANALOG) if pin_type.include?("BoxLed")
+    end
   end
 end

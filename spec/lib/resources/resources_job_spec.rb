@@ -4,7 +4,6 @@ describe Resources::Job do
   base = { body: {}, action: "destroy", uuid: SecureRandom.uuid }
 
   it "executes deletion for various resources" do
-    puts "TODO: Test cases for points, sequences."
     device     = FactoryBot.create(:device)
     test_cases = [
       FarmEvent,
