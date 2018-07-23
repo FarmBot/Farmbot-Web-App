@@ -63,12 +63,13 @@ describe Resources::PreProcessor do
 
     it "handles semantic errors using step2" do
       Transport.current.connection.clear!
-      x = Resources::Service.step2(action:      "wrong_action",
-                                   device:      FactoryBot.create(:device),
-                                   body:        "wrong_body",
-                                   resource_id: 0,
-                                   resource:    "wrong_resource",
-                                   uuid:        "wrong_uuid")
+      dev = FactoryBot.create(:device)
+      x   = Resources::Service.step2(action:      "wrong_action",
+                                     device:      dev,
+                                     body:        "wrong_body",
+                                     resource_id: 0,
+                                     resource:    "wrong_resource",
+                                     uuid:        "wrong_uuid")
       call_args = x.calls[:publish].last
       message   = JSON.parse(call_args.first)
       options   = call_args.last
@@ -78,6 +79,11 @@ describe Resources::PreProcessor do
       message.dig("body").pluck("args").pluck("message")
       errors = message.dig("body").pluck("args").pluck("message")
       expect(errors).to include("Action isn't an option")
+      segment = options.fetch(:routing_key).split(".")
+      expect(segment[0]).to eq("bot")
+      expect(segment[1]).to eq("device_#{devi.id}")
+      expect(segment[2]).to eq("from_api")
+      expect(segment[3]).to eq("wrong_uuid")
     end
 
     it "processes resources" do

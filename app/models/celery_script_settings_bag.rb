@@ -181,6 +181,7 @@ module CeleryScriptSettingsBag
         node.invalidate!(NO_PIN_ID % [klass]) if (id == 0)
         bad_node = !klass.exists?(id)
         node.invalidate!(BAD_PIN_ID % [klass, id]) if bad_node
+        # binding.pry if [BoxLed3, BoxLed4].includes(klass)
       end
       .node(:nothing,               [])
       .node(:tool,                  [:tool_id])
