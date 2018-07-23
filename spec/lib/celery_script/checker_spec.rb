@@ -180,6 +180,29 @@ describe CeleryScript::Checker do
     expect(chk.error.message).to include(CeleryScriptSettingsBag::CANT_ANALOG)
   end
 
+
+  it 'gives human-friendly names to "BoxLed3", "BoxLed4"' do
+    hash[:body] = [
+      {
+        kind: "write_pin",
+        args: {
+          pin_value: 23,
+          pin_mode: CeleryScriptSettingsBag::DIGITAL,
+          pin_number: {
+            kind: "named_pin",
+            args: { pin_type: ["BoxLed3", "BoxLed4"].sample, pin_id: 0 }
+          }
+        }
+      }
+    ]
+    chk = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?).to be false
+    expected = \
+      CeleryScriptSettingsBag::NO_PIN_ID % CeleryScriptSettingsBag::BoxLed.name
+    expect(chk.error.message).to eq(expected)
+  end
+
+
   it "catches bad `axis` nodes" do
     t = \
       CeleryScript::AstNode.new({kind: "home", args: { speed: 100, axis: "?" }})
