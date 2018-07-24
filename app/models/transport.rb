@@ -82,7 +82,6 @@ class Transport
     require "rabbitmq/http/client"
 
     def self.username
-      binding.pry
       @username ||= URI(Transport.amqp_url).user || "admin"
     end
 
