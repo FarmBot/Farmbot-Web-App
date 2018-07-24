@@ -3,12 +3,18 @@ require "bunny"
 # A wrapper around AMQP to stay DRY. Will make life easier if we ever need to
 # change protocols
 class Transport
-  OPTS     = { read_timeout: 10, heartbeat: 10, log_level: 'info' }
+  # Temporary until production RMQ is properly vetted - RC 24 JUL 18
+  LEGACY = "amqp://guest:guest@localhost:5672"
+  PW     = ENV["ADMIN_PASSWORD"]
+  HOST   = ENV["MQTT_HOST"]
+  LOCAL  = PW && HOST && "amqp://admin:#{PW}@#{HOST}:5672"
+  OPTS   = { read_timeout: 10, heartbeat: 10, log_level: "info" }
 
   def self.amqp_url
-    @amqp_url ||= ENV['CLOUDAMQP_URL'] ||
-                  ENV['RABBITMQ_URL']  ||
-                  "amqp://admin:#{ENV.fetch("ADMIN_PASSWORD")}@#{ENV.fetch("MQTT_HOST")}:5672"
+    @amqp_url ||= ENV["CLOUDAMQP_URL"] ||
+                  ENV["RABBITMQ_URL"]  ||
+                  LOCAL                ||
+                  LEGACY
   end
 
   def self.default_amqp_adapter=(value)
@@ -76,6 +82,7 @@ class Transport
     require "rabbitmq/http/client"
 
     def self.username
+      binding.pry
       @username ||= URI(Transport.amqp_url).user || "admin"
     end
 
