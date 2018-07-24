@@ -17,11 +17,6 @@ namespace :api do
     sh "PORT=3000 bundle exec foreman start --procfile=Procfile.api_only"
   end
 
-  desc "Run __LEGACY__ Webpack and Rails"
-  task legacy_start: :environment do
-    sh "PORT=3000 bundle exec foreman start --procfile=mqtt_legacy/Procfile.legacy"
-  end
-
   desc "Pull the latest Farmbot API version"
   task(update: :environment) { same_thing }
 

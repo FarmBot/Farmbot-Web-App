@@ -3,7 +3,6 @@ require "spec_helper"
 describe Transport::Mgmt do
 
   it "generates credentials" do
-    pending("RE-ENABLE AFTER NEXT RELEASE")
     the_list = [:foo, :bar]
     dbl      = double("Fake API", list_connections: the_list)
     expect(["admin", "guest"]).to include(Transport::Mgmt.username)
