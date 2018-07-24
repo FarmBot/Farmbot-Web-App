@@ -4,7 +4,6 @@
 *.pem
 *scratchpad*
 /tmp
-# For self hosted users...
 api_docs.md
 config/application.yml
 config/database.yml
@@ -14,7 +13,6 @@ erd_diagram.png
 erd.pdf
 latest_corpus.ts
 log/*.log
-mqtt_legacy/rabbitmq.config
 mqtt/rabbitmq.conf
 mqtt/rabbitmq.config
 node_modules
