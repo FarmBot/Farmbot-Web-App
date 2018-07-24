@@ -101,8 +101,7 @@ describe CeleryScript::Checker do
     ]
     chk = CeleryScript::Checker.new(tree, corpus)
     expect(chk.valid?).to be false
-    expect(chk.error.message)
-      .to eq("You must select a Peripheral before using it.")
+    expect(chk.error.message).to eq("Peripheral requires a valid pin number")
   end
 
   it "Catches bad `pin_type`s in `read_pin`" do
