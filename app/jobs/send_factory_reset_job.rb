@@ -11,6 +11,7 @@ class SendFactoryResetJob < ApplicationJob
 
   def perform(device, transport = Transport)
     payl = SendFactoryResetJob.rpc_payload(device)
+    # TODO: Use `from_api` now. RC 23-JUL-18
     transport.current.amqp_send(payl.to_json, device.id, "from_clients")
   end
 end

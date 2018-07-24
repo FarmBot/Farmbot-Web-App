@@ -43,23 +43,12 @@ NOTES:
 
 **For deletion messages** the body of the message is unimportant and is discarded by the server.
 
-# Step 2(B): Handle Success
-
-The results will be streamed to the following MQTT channel:
-
-```
-bot/device_<id>/from_api/<Transaction UUID>
-```
-
-**The response will vary depending on the type of resource and action.**
-
-
-# Step 2(B): Handle Failure
+# Step 2(A): Handle Failure
 
 If your message is malformed or the server was unable to complete the request, you will receive an error message on the following MQTT channel:
 
 ```
-bot/device_<id>/from_api/<Transaction UUID>
+bot/device_<id>/from_api
 ```
 
 The message will take the same format as RPC errors:
@@ -76,3 +65,13 @@ The message will take the same format as RPC errors:
   ]
 }
 ```
+
+# Step 2(B): Handle Success
+
+If successful, an `rpc_ok` CeleryScript node will be streamed to the following MQTT channel:
+
+```
+bot/device_<id>/from_api
+```
+
+**This is not a JSON resource.** It is merely an indication that the server has accepted the request and processed it. The resource itself will be streamed over the `auto_sync`* channel.
