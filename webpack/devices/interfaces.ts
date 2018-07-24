@@ -61,6 +61,7 @@ export enum Feature {
   backscheduled_regimens = "backscheduled_regimens",
   endstop_invert = "endstop_invert",
   diagnostic_dumps = "diagnostic_dumps",
+  rpi_led_control = "rpi_led_control",
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
