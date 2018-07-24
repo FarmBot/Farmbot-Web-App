@@ -6,6 +6,10 @@
 # welcome for refactoring of this code.
 module CeleryScriptSettingsBag
   class BoxLed
+    def self.name
+      "Raspberry Pi Box LED"
+    end
+
     def self.exists?(id)
       true # Not super important right now. - RC 22 JUL 18
     end
@@ -60,7 +64,7 @@ module CeleryScriptSettingsBag
   BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
   BAD_POINTER_ID        = "Bad point ID: %s"
   BAD_PIN_ID            = "Can't find %s with id of %s"
-  NO_PIN_ID             = "You must select a %s before using it."
+  NO_PIN_ID             = "%s requires a valid pin number"
   BAD_POINTER_TYPE      = '"%s" is not a type of point. Allowed values: %s'
   BAD_PIN_TYPE          = '"%s" is not a type of pin. Allowed values: %s'
   BAD_SPEED             = "Speed must be a percentage between 1-100"
@@ -186,7 +190,7 @@ module CeleryScriptSettingsBag
         args  = HashWithIndifferentAccess.new(node.args)
         klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
         id    = args[:pin_id].value
-        node.invalidate!(NO_PIN_ID % [klass]) if (id == 0)
+        node.invalidate!(NO_PIN_ID % [klass.name]) if (id == 0)
         bad_node = !klass.exists?(id)
         node.invalidate!(BAD_PIN_ID % [klass.name, id]) if bad_node
       end

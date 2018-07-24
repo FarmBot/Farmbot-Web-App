@@ -83,7 +83,7 @@ describe Resources::PreProcessor do
       expect(segment[0]).to eq("bot")
       expect(segment[1]).to eq("device_#{dev.id}")
       expect(segment[2]).to eq("from_api")
-      expect(segment[3]).to eq("wrong_uuid")
+      expect(segment[3]).to eq(nil)
     end
 
     it "processes resources" do
